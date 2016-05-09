@@ -23,7 +23,7 @@ static void *print_new(t_symbol *sel, int argc, t_atom *argv)
 {
     t_print *x = (t_print *)pd_new(print_class);
     if (argc == 0)
-        x->x_sym = gensym ("print");
+        x->x_sym = sym_print;
     else if (argc == 1 && argv->a_type == A_SYMBOL)
     {
         t_symbol *s = atom_getSymbolAtIndex(0, argc, argv);
@@ -83,7 +83,7 @@ static void print_anything(t_print *x, t_symbol *s, int argc, t_atom *argv)
 
 static void print_setup(void)
 {
-    print_class = class_new(gensym ("print"), (t_newmethod)print_new, 0,
+    print_class = class_new(sym_print, (t_newmethod)print_new, 0,
         sizeof(t_print), 0, A_GIMME, 0);
     class_addBang(print_class, print_bang);
     class_addFloat(print_class, print_float);

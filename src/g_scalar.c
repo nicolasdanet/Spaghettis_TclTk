@@ -167,8 +167,8 @@ void glist_scalar(t_glist *glist,
 void scalar_getbasexy(t_scalar *x, t_float *basex, t_float *basey)
 {
     t_template *template = template_findbyname(x->sc_template);
-    *basex = template_getfloat(template, gensym ("x"), x->sc_vector, 0);
-    *basey = template_getfloat(template, gensym ("y"), x->sc_vector, 0);
+    *basex = template_getfloat(template, sym_x, x->sc_vector, 0);
+    *basey = template_getfloat(template, sym_y, x->sc_vector, 0);
 }
 
 static void scalar_getrect(t_gobj *z, t_glist *owner,
@@ -264,10 +264,10 @@ static void scalar_displace(t_gobj *z, t_glist *glist, int dx, int dy)
         post_error ("scalar: couldn't find template %s", templatesym->s_name);
         return;
     }
-    gotx = template_find_field(template, gensym ("x"), &xonset, &xtype, &zz);
+    gotx = template_find_field(template, sym_x, &xonset, &xtype, &zz);
     if (gotx && (xtype != DATA_FLOAT))
         gotx = 0;
-    goty = template_find_field(template, gensym ("y"), &yonset, &ytype, &zz);
+    goty = template_find_field(template, sym_y, &yonset, &ytype, &zz);
     if (goty && (ytype != DATA_FLOAT))
         goty = 0;
     if (gotx)
@@ -356,8 +356,8 @@ int scalar_doclick(t_word *data, t_template *template, t_scalar *sc,
     t_glist *templatecanvas = template_findcanvas(template);
     t_gobj *y;
     t_atom at[2];
-    t_float basex = template_getfloat(template, gensym ("x"), data, 0);
-    t_float basey = template_getfloat(template, gensym ("y"), data, 0);
+    t_float basex = template_getfloat(template, sym_x, data, 0);
+    t_float basey = template_getfloat(template, sym_y, data, 0);
     SET_FLOAT(at, basex + xloc);
     SET_FLOAT(at+1, basey + yloc);
     if (doit)

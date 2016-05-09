@@ -149,12 +149,12 @@ void garray_init( void)
         return;
     b = buffer_new();
     
-    canvas_setActiveFileNameAndDirectory (gensym ("_float_template"), gensym ("."));
+    canvas_setActiveFileNameAndDirectory (sym__float_template, sym___dot__);
     buffer_withStringUnzeroed(b, garray_floattemplatefile, strlen(garray_floattemplatefile));
     buffer_eval(b, &pd_canvasMaker, 0, 0);
     pd_vMessage(s__X.s_thing, sym__pop, "i", 0);
     
-    canvas_setActiveFileNameAndDirectory (gensym ("_float_array_template"), gensym ("."));
+    canvas_setActiveFileNameAndDirectory (sym__float_array_template, sym___dot__);
     buffer_withStringUnzeroed(b, garray_arraytemplatefile, strlen(garray_arraytemplatefile));
     buffer_eval(b, &pd_canvasMaker, 0, 0);
     garray_arraytemplatecanvas = s__X.s_thing;
@@ -206,7 +206,7 @@ t_array *garray_getarray(t_garray *x)
         post_error ("array: couldn't find template %s", templatesym->s_name);
         return (0);
     }
-    if (!template_find_field(template, gensym ("z"), 
+    if (!template_find_field(template, sym_z, 
         &zonset, &ztype, &zarraytype))
     {
         post_error ("array: template %s has no 'z' field", templatesym->s_name);
@@ -229,7 +229,7 @@ static t_array *garray_getarray_floatonly(t_garray *x,
     int yonset, type;
     t_symbol *arraytype;
     t_template *template = template_findbyname(a->a_templatesym);
-    if (!template_find_field(template, gensym ("y"), &yonset,
+    if (!template_find_field(template, sym_y, &yonset,
         &type, &arraytype) || type != DATA_FLOAT)
             return (0);
     *yonsetp = yonset;
@@ -308,14 +308,14 @@ t_garray *graph_array(t_glist *gl, t_symbol *s, t_symbol *templateargsym,
         post_error ("array %s: only 'float' type understood", templateargsym->s_name);
         return (0);
     }
-    templatesym = gensym ("pd-float-array");
+    templatesym = sym_pd__dash__float__dash__array;
     template = template_findbyname(templatesym);
     if (!template)
     {
         post_error ("array: couldn't find template %s", templatesym->s_name);
         return (0);
     }
-    if (!template_find_field(template, gensym ("z"), 
+    if (!template_find_field(template, sym_z, 
         &zonset, &ztype, &zarraytype))
     {
         post_error ("array: template %s has no 'z' field", templatesym->s_name);
@@ -340,9 +340,9 @@ t_garray *graph_array(t_glist *gl, t_symbol *s, t_symbol *templateargsym,
         n = 100;
     array_resize(x->x_scalar->sc_vector[zonset].w_array, n);
 
-    template_setfloat(template, gensym ("style"), x->x_scalar->sc_vector,
+    template_setfloat(template, sym_style, x->x_scalar->sc_vector,
         style, 1);
-    template_setfloat(template, gensym ("linewidth"), x->x_scalar->sc_vector, 
+    template_setfloat(template, sym_linewidth, x->x_scalar->sc_vector, 
         ((style == PLOT_POINTS) ? 2 : 1), 1);
 
            /* bashily unbind #A -- this would create garbage if #A were
@@ -381,7 +381,7 @@ void garray_properties(t_garray *x)
     t_array *a = garray_getarray(x);
     t_scalar *sc = x->x_scalar;
     int style = template_getfloat(template_findbyname(sc->sc_template),
-        gensym ("style"), x->x_scalar->sc_vector, 1);
+        sym_style, x->x_scalar->sc_vector, 1);
     int filestyle = (style == 0 ? PLOT_POLYGONS :
         (style == 1 ? PLOT_POINTS : style));
 
@@ -425,7 +425,7 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize,
         (filestyle == 1 ? PLOT_POINTS : filestyle));
     t_float stylewas = template_getfloat(
         template_findbyname(x->x_scalar->sc_template),
-            gensym ("style"), x->x_scalar->sc_vector, 1);
+            sym_style, x->x_scalar->sc_vector, 1);
     if (0) // deleteit
     {
         int wasused = x->x_usedindsp;
@@ -481,7 +481,7 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize,
             garray_resize_long(x, size);
         else if (style != stylewas)
             garray_fittograph(x, size, style);
-        template_setfloat(scalartemplate, gensym ("style"),
+        template_setfloat(scalartemplate, sym_style,
             x->x_scalar->sc_vector, (t_float)style, 0);
 
         garray_setsaveit(x, (saveit != 0));
@@ -491,6 +491,7 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize,
 }
 
 /* jsarlo { */
+#if 0
 void garray_arrayviewlist_new(t_garray *x)
 {/*
     int i, xonset=0, yonset=0, type=0, elemsize=0;
@@ -578,6 +579,7 @@ void garray_arrayviewlist_close(t_garray *x)
              x->x_realname->s_name);*/
 }
 /* } jsarlo */
+#endif
 
 static void garray_free(t_garray *x)
 {
@@ -754,7 +756,7 @@ static void garray_save(t_gobj *z, t_buffer *b)
     t_garray *x = (t_garray *)z;
     t_array *array = garray_getarray(x);
     t_template *scalartemplate;
-    if (x->x_scalar->sc_template != gensym ("pd-float-array"))
+    if (x->x_scalar->sc_template != sym_pd__dash__float__dash__array)
     {
             /* LATER "save" the scalar as such */ 
         post_error ("can't save arrays of type %s yet", 
@@ -767,7 +769,7 @@ static void garray_save(t_gobj *z, t_buffer *b)
             x->x_scalar->sc_template->s_name);
         return;
     }
-    style = template_getfloat(scalartemplate, gensym ("style"),
+    style = template_getfloat(scalartemplate, sym_style,
             x->x_scalar->sc_vector, 0);    
     filestyle = (style == PLOT_POINTS ? 1 : 
         (style == PLOT_POLYGONS ? 0 : style)); 
@@ -1189,7 +1191,7 @@ void garray_resize_long(t_garray *x, long n)
         n = 1;
     garray_fittograph(x, n, template_getfloat(
         template_findbyname(x->x_scalar->sc_template),
-            gensym ("style"), x->x_scalar->sc_vector, 1));
+            sym_style, x->x_scalar->sc_vector, 1));
     array_resize_and_redraw(array, x->x_glist, n);
     if (x->x_usedindsp)
         dsp_update();
@@ -1213,18 +1215,18 @@ void g_array_setup(void)
     garray_class = class_new(sym_array, 0, (t_method)garray_free,
         sizeof(t_garray), CLASS_GRAPHIC, 0);
     class_setWidgetBehavior(garray_class, &garray_widgetbehavior);
-    class_addMethod(garray_class, (t_method)garray_const, gensym ("const"),
+    class_addMethod(garray_class, (t_method)garray_const, sym_const,    /* LEGACY !!! */
         A_DEFFLOAT, A_NULL);
     class_addList(garray_class, garray_list);
     class_addMethod(garray_class, (t_method)garray_bounds, sym_bounds,
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
     class_addMethod(garray_class, (t_method)garray_xticks, sym_xticks,
         A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    /*class_addMethod(garray_class, (t_method)garray_xlabel, gensym ("xlabel"),
+    /*class_addMethod(garray_class, (t_method)garray_xlabel, gen_sym ("xlabel"),
         A_GIMME, 0);*/
     class_addMethod(garray_class, (t_method)garray_yticks, sym_yticks,
         A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    /*class_addMethod(garray_class, (t_method)garray_ylabel, gensym ("ylabel"),
+    /*class_addMethod(garray_class, (t_method)garray_ylabel, gen_sym ("ylabel"),
         A_GIMME, 0);*/
     class_addMethod(garray_class, (t_method)garray_rename, sym_rename,
         A_SYMBOL, 0);
@@ -1232,25 +1234,25 @@ void g_array_setup(void)
         A_SYMBOL, A_NULL);
     class_addMethod(garray_class, (t_method)garray_write, sym_write,
         A_SYMBOL, A_NULL);
-    class_addMethod(garray_class, (t_method)garray_resize, gensym ("resize"),
+    class_addMethod(garray_class, (t_method)garray_resize, sym_resize,
         A_FLOAT, A_NULL);
-    class_addMethod(garray_class, (t_method)garray_print, gensym ("print"),
+    class_addMethod(garray_class, (t_method)garray_print, sym_print,
         A_NULL);
-    class_addMethod(garray_class, (t_method)garray_sinesum, gensym ("sinesum"),
+    class_addMethod(garray_class, (t_method)garray_sinesum, sym_sinesum,
         A_GIMME, 0);
     class_addMethod(garray_class, (t_method)garray_cosinesum,
-        gensym ("cosinesum"), A_GIMME, 0);
+        sym_cosinesum, A_GIMME, 0);
     class_addMethod(garray_class, (t_method)garray_normalize,
-        gensym ("normalize"), A_DEFFLOAT, 0);
+        sym_normalize, A_DEFFLOAT, 0);
     class_addMethod(garray_class, (t_method)garray_arraydialog,
         sym__arraydialog, A_SYMBOL, A_FLOAT, A_FLOAT, A_NULL);
 /* jsarlo { */
-    class_addMethod(garray_class, (t_method)garray_arrayviewlist_new,
-        gensym ("arrayviewlistnew"), A_NULL);
+    /*class_addMethod(garray_class, (t_method)garray_arrayviewlist_new,
+        gen_sym ("arrayviewlistnew"), A_NULL);
     class_addMethod(garray_class, (t_method)garray_arrayviewlist_fillpage,
-        gensym ("arrayviewlistfillpage"), A_FLOAT, A_DEFFLOAT, A_NULL);
+        gen_sym ("arrayviewlistfillpage"), A_FLOAT, A_DEFFLOAT, A_NULL);
     class_addMethod(garray_class, (t_method)garray_arrayviewlist_close,
-      gensym ("arrayviewclose"), A_NULL);
+      gen_sym ("arrayviewclose"), A_NULL);*/
 /* } jsarlo */
     class_setSaveFunction(garray_class, garray_save);
 }

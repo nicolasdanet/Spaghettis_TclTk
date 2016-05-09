@@ -564,7 +564,7 @@ static void *gtemplate_donew(t_symbol *sym, int argc, t_atom *argv)
     t_gtemplate *x = (t_gtemplate *)pd_new(gtemplate_class);
     t_template *t = template_findbyname(sym);
     int i;
-    t_symbol *sx = gensym ("x");
+    t_symbol *sx = sym_x;
     x->x_owner = canvas_getCurrent();
     x->x_next = 0;
     x->x_sym = sym;
@@ -1355,8 +1355,8 @@ static void *plot_new(t_symbol *classsym, int argc, t_atom *argv)
     int defstyle = PLOT_POLYGONS;
     x->x_canvas = canvas_getCurrent();
 
-    fielddesc_setfloat_var(&x->x_xpoints, gensym ("x"));
-    fielddesc_setfloat_var(&x->x_ypoints, gensym ("y"));
+    fielddesc_setfloat_var(&x->x_xpoints, sym_x);
+    fielddesc_setfloat_var(&x->x_ypoints, sym_y);
     fielddesc_setfloat_var(&x->x_wpoints, gensym ("w"));
     
     fielddesc_setfloat_const(&x->x_vis, 1);
@@ -1511,13 +1511,13 @@ int array_getfields(t_symbol *elemtemplatesym,
     elemsize = elemtemplate->t_n * sizeof(t_word);
     if (yfielddesc && yfielddesc->fd_var)
         varname = yfielddesc->fd_un.fd_varsym;
-    else varname = gensym ("y");
+    else varname = sym_y;
     if (!template_find_field(elemtemplate, varname, &yonset, &type, &dummy)
         || type != DATA_FLOAT)    
             yonset = -1;
     if (xfielddesc && xfielddesc->fd_var)
         varname = xfielddesc->fd_un.fd_varsym;
-    else varname = gensym ("x");
+    else varname = sym_x;
     if (!template_find_field(elemtemplate, varname, &xonset, &type, &dummy)
         || type != DATA_FLOAT) 
             xonset = -1;

@@ -1096,7 +1096,7 @@ void g_graph_setup_class(t_class *c)
     class_addMethod(c, (t_method)graph_array, sym_array,
         A_SYMBOL, A_FLOAT, A_SYMBOL, A_DEFFLOAT, A_NULL);
     class_addMethod(c, (t_method)canvas_menuarray,
-        sym_menuarray, A_NULL);
+        sym_menuarray, A_NULL); /* LEGACY !!! */
     class_addMethod(c, (t_method)glist_sort,
         sym_sort, A_NULL);
 }

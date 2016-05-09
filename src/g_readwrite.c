@@ -798,9 +798,9 @@ void g_readwrite_setup(void)
         sym_saveto, A_CANT, 0);
 /* ------------------ from the menu ------------------------- */
     class_addMethod(canvas_class, (t_method)canvas_menusave,
-        sym_menusave, A_DEFFLOAT, 0);
+        sym_menusave, A_DEFFLOAT, 0);   /* LEGACY !!! */
     class_addMethod(canvas_class, (t_method)canvas_menusaveas,
-        sym_menusaveas, A_DEFFLOAT, 0);
+        sym_menusaveas, A_DEFFLOAT, 0); /* LEGACY !!! */
 }
 
 

@@ -1792,7 +1792,7 @@ static void text_template_init( void)
         return;
     b = buffer_new();
     
-    canvas_setActiveFileNameAndDirectory (gensym ("_text_template"), gensym ("."));
+    canvas_setActiveFileNameAndDirectory (gensym ("_text_template"), sym___dot__);
     buffer_withStringUnzeroed(b, text_templatefile, strlen(text_templatefile));
     buffer_eval(b, &pd_canvasMaker, 0, 0);
     pd_vMessage(s__X.s_thing, sym__pop, "i", 0);
@@ -1906,7 +1906,7 @@ void x_qlist_setup(void )
     class_addMethod(qlist_class, (t_method)textbuf_close, sym_close, 0);
     class_addMethod(qlist_class, (t_method)textbuf_addline, 
         gensym ("addline"), A_GIMME, 0);
-    /*class_addMethod(qlist_class, (t_method)qlist_print, gensym ("print"),
+    /*class_addMethod(qlist_class, (t_method)qlist_print, gen_sym ("print"),
         A_DEFSYMBOL, 0);*/
     class_addMethod(qlist_class, (t_method)qlist_tempo,
         gensym ("tempo"), A_FLOAT, 0);
@@ -1936,7 +1936,7 @@ void x_qlist_setup(void )
         0);
     class_addMethod(textfile_class, (t_method)textbuf_addline, 
         gensym ("addline"), A_GIMME, 0);
-    /*class_addMethod(textfile_class, (t_method)qlist_print, gensym ("print"),
+    /*class_addMethod(textfile_class, (t_method)qlist_print, gen_sym ("print"),
         A_DEFSYMBOL, 0);*/
     class_addBang(textfile_class, textfile_bang);
 }

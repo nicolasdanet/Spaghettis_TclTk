@@ -203,13 +203,13 @@ void x_scalar_setup(void )
     class_addMethod(scalar_define_class, (t_method)canvas_close,
         sym_close, A_DEFFLOAT, 0);
     class_addMethod(scalar_define_class, (t_method)canvas_close,
-        sym_menuclose, A_DEFFLOAT, 0);
+        sym_menuclose, A_DEFFLOAT, 0); /* LEGACY !!! */
     /*class_addMethod(scalar_define_class, (t_method)canvas_find_parent,
         gensym ("findparent"), A_NULL);*/
     class_addMethod(scalar_define_class, (t_method)canvas_menusave,
-        sym_menusave, 0);
+        sym_menusave, 0); /* LEGACY !!! */
     class_addMethod(scalar_define_class, (t_method)canvas_menusaveas,
-        sym_menusaveas, 0);
+        sym_menusaveas, 0); /* LEGACY !!! */
     
     class_addMethod(scalar_define_class, (t_method)scalar_define_send,
         sym_send, A_SYMBOL, 0);

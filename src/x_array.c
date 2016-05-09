@@ -430,7 +430,7 @@ static void *array_rangeop_new(t_class *class,
     x->x_sym = x->x_struct = x->x_field = 0;
     gpointer_init(&x->x_gp);
     x->x_elemtemplate = &s_;
-    x->x_elemfield = gensym ("y"); 
+    x->x_elemfield = sym_y; 
     x->x_onset = 0;
     x->x_n = -1;
     if (onsetin)
@@ -851,13 +851,13 @@ void x_array_setup(void )
     class_addMethod(array_define_class, (t_method)canvas_close,
         sym_close, A_DEFFLOAT, 0);
     class_addMethod(array_define_class, (t_method)canvas_close,
-        sym_menuclose, A_DEFFLOAT, 0);
+        sym_menuclose, A_DEFFLOAT, 0); /* LEGACY !!! */
     /*class_addMethod(array_define_class, (t_method)canvas_find_parent,
         gensym ("findparent"), A_NULL)*/
     class_addMethod(array_define_class, (t_method)canvas_menusave,
-        sym_menusave, 0);
+        sym_menusave, 0); /* LEGACY !!! */
     class_addMethod(array_define_class, (t_method)canvas_menusaveas,
-        sym_menusaveas, 0);
+        sym_menusaveas, 0); /* LEGACY !!! */
     
     class_addMethod(array_define_class, (t_method)array_define_send,
         sym_send, A_SYMBOL, 0);

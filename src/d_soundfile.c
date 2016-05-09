@@ -2155,7 +2155,7 @@ static void readsf_setup(void)
         sym_dsp, A_CANT, 0);
     class_addMethod(readsf_class, (t_method)readsf_open, sym_open, 
         A_GIMME, 0);
-    class_addMethod(readsf_class, (t_method)readsf_print, gensym ("print"), 0);
+    class_addMethod(readsf_class, (t_method)readsf_print, sym_print, 0);
 }
 
 /******************************* writesf *******************/
@@ -2637,7 +2637,7 @@ static void writesf_setup(void)
         sym_dsp, A_CANT, 0);
     class_addMethod(writesf_class, (t_method)writesf_open, sym_open, 
         A_GIMME, 0);
-    class_addMethod(writesf_class, (t_method)writesf_print, gensym ("print"), 0);
+    class_addMethod(writesf_class, (t_method)writesf_print, sym_print, 0);
     CLASS_SIGNAL(writesf_class, t_writesf, x_f);
 }
 
