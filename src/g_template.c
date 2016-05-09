@@ -1229,7 +1229,7 @@ static void curve_motion(void *z, t_float dx, t_float dy, t_float modifier)
         /* LATER figure out what to do to notify for an array? */
     if (curve_motion_scalar)
         template_notifyforscalar(curve_motion_template, curve_motion_glist, 
-            curve_motion_scalar, gensym ("change"), 1, &at);
+            curve_motion_scalar, sym_change, 1, &at);
     if (curve_motion_scalar)
         scalar_redraw(curve_motion_scalar, curve_motion_glist);
     if (curve_motion_array)
@@ -2575,7 +2575,7 @@ static void drawnumber_motion(void *z, t_float dx, t_float dy, t_float modifier)
     if (drawnumber_motion_scalar)
         template_notifyforscalar(drawnumber_motion_template,
             drawnumber_motion_glist, drawnumber_motion_scalar,
-                gensym ("change"), 1, &at);
+                sym_change, 1, &at);
 
     if (drawnumber_motion_scalar)
         scalar_redraw(drawnumber_motion_scalar, drawnumber_motion_glist);
@@ -2642,7 +2642,7 @@ static void drawnumber_key(void *z, t_float fkey)
         if (drawnumber_motion_scalar)
             template_notifyforscalar(drawnumber_motion_template,
                 drawnumber_motion_glist, drawnumber_motion_scalar,
-                    gensym ("change"), 1, &at);
+                    sym_change, 1, &at);
         if (drawnumber_motion_scalar)
             scalar_redraw(drawnumber_motion_scalar, drawnumber_motion_glist);
         if (drawnumber_motion_array)

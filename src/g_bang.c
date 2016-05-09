@@ -541,9 +541,9 @@ void bng_setup (void)
     class_addClick (c, bng_click);
     
     class_addMethod (c, (t_method)bng_loadbang,             sym_loadbang,               A_NULL);
-    class_addMethod (c, (t_method)bng_initialize,           gensym ("initialize"),      A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)bng_dialog,               gensym ("_iemdialog"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)bng_size,                 gensym ("size"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_initialize,           sym_initialize,             A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)bng_dialog,               sym__iemdialog,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_size,                 sym_size,                   A_GIMME, A_NULL);
     class_addMethod (c, (t_method)bng_flashtime,            gensym ("flashtime"),       A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_move,             gensym ("move"),            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_position,         gensym ("position"),        A_GIMME, A_NULL);

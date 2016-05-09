@@ -701,9 +701,9 @@ void radio_setup (void)
     class_addClick (c, radio_click);
     
     class_addMethod (c, (t_method)radio_loadbang,           sym_loadbang,               A_NULL);
-    class_addMethod (c, (t_method)radio_initialize,         gensym ("initialize"),      A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)radio_dialog,             gensym ("_iemdialog"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)radio_size,               gensym ("size"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)radio_initialize,         sym_initialize,             A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)radio_dialog,             sym__iemdialog,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)radio_size,               sym_size,                   A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_move,             gensym ("move"),            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_position,         gensym ("position"),        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_labelFont,        gensym ("labelfont"),       A_GIMME, A_NULL);

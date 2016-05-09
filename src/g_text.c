@@ -63,7 +63,7 @@ void glist_text(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         if (argc > 2) buffer_deserialize(x->te_buffer, argc-2, argv+2);
         else
         {
-            SET_SYMBOL(&at, gensym ("comment"));
+            SET_SYMBOL(&at, sym_comment);
             buffer_deserialize(x->te_buffer, 1, &at);
         }
         glist_add(gl, &x->te_g);
@@ -72,7 +72,7 @@ void glist_text(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
     {
         int xpix, ypix;
         pd_vMessage((t_pd *)canvas_getView(gl), sym_editmode, "i", 1);
-        SET_SYMBOL(&at, gensym ("comment"));
+        SET_SYMBOL(&at, sym_comment);
         canvas_deselectAll(gl);
         canvas_getLastCoordinates(gl, &xpix, &ypix);
         x->te_xCoordinate = xpix-1;
@@ -525,7 +525,7 @@ typedef struct _gatom
 static t_symbol *gatom_escapit(t_symbol *s)
 {
     if (!*s->s_name)
-        return (gensym ("-"));
+        return (sym___dash__);
     else if (*s->s_name == '-')
     {
         char shmo[100];
@@ -1169,7 +1169,7 @@ void text_save(t_gobj *z, t_buffer *b)
     {
         t_atomtype t = ((t_gatom *)x)->a_atom.a_type;
         t_symbol *sel = (t == A_SYMBOL ? sym_symbolatom :
-            (t == A_FLOAT ? sym_floatatom : gensym ("intatom")));
+            (t == A_FLOAT ? sym_floatatom : sym_intatom));
         t_symbol *label = gatom_escapit(((t_gatom *)x)->a_label);
         t_symbol *symfrom = gatom_escapit(((t_gatom *)x)->a_symfrom);
         t_symbol *symto = gatom_escapit(((t_gatom *)x)->a_symto);
@@ -1416,7 +1416,7 @@ void g_text_setup(void)
         CLASS_NOINLET | CLASS_BOX, 0);
     class_addAnything(text_class, text_anything);
 
-    message_class = class_new(gensym ("message"), 0, (t_method)message_free,
+    message_class = class_new(sym_message, 0, (t_method)message_free,
         sizeof(t_message), CLASS_BOX, 0);
     class_addBang(message_class, message_bang);
     class_addFloat(message_class, message_float);
@@ -1428,20 +1428,20 @@ void g_text_setup(void)
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
     class_addMethod(message_class, (t_method)message_set, sym_set,
         A_GIMME, 0);
-    class_addMethod(message_class, (t_method)message_add, gensym ("add"),
+    class_addMethod(message_class, (t_method)message_add, sym_add,
         A_GIMME, 0);
-    class_addMethod(message_class, (t_method)message_add2, gensym ("add2"),
+    class_addMethod(message_class, (t_method)message_add2, sym_add2, /* LEGACY !!! */
         A_GIMME, 0);
     class_addMethod(message_class, (t_method)message_addcomma,
-        gensym ("addcomma"), 0);
+        sym_addcomma, 0);
     class_addMethod(message_class, (t_method)message_addsemi,
-        gensym ("addsemi"), 0);
+        sym_addsemi, 0); /* LEGACY !!! */
     class_addMethod(message_class, (t_method)message_adddollar,
-        gensym ("adddollar"), A_FLOAT, 0);
+        sym_adddollar, A_FLOAT, 0);
     class_addMethod(message_class, (t_method)message_adddollsym,
-        gensym ("adddollsym"), A_SYMBOL, 0);
+        sym_adddollsym, A_SYMBOL, 0); /* LEGACY !!! */
 
-    messresponder_class = class_new(gensym ("messresponder"), 0, 0,
+    messresponder_class = class_new(sym_messresponder, 0, 0,
         sizeof(t_object), CLASS_PURE, 0);
     class_addBang(messresponder_class, messresponder_bang);
     class_addFloat(messresponder_class, (t_method) messresponder_float);
@@ -1449,7 +1449,7 @@ void g_text_setup(void)
     class_addList(messresponder_class, messresponder_list);
     class_addAnything(messresponder_class, messresponder_anything);
 
-    gatom_class = class_new(gensym ("gatom"), 0, (t_method)gatom_free,
+    gatom_class = class_new(sym_gatom, 0, (t_method)gatom_free,
         sizeof(t_gatom), CLASS_NOINLET | CLASS_BOX, 0);
     class_addBang(gatom_class, gatom_bang);
     class_addFloat(gatom_class, gatom_float);
@@ -1459,7 +1459,7 @@ void g_text_setup(void)
         A_GIMME, 0);
     class_addMethod(gatom_class, (t_method)gatom_click, sym_click,
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addMethod(gatom_class, (t_method)gatom_param, gensym ("param"),
+    class_addMethod(gatom_class, (t_method)gatom_param, sym_param,   /* LEGACY !!! */
         A_GIMME, 0);
     class_setWidgetBehavior(gatom_class, &gatom_widgetbehavior);
     class_setPropertiesFunction(gatom_class, gatom_properties);

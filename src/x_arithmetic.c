@@ -722,7 +722,7 @@ void x_arithmetic_setup(void)
     class_addFloat(binop1_plus_class, (t_method)binop1_plus_float);
     class_setHelpName(binop1_plus_class, binop1_sym);
     
-    binop1_minus_class = class_new(gensym ("-"),
+    binop1_minus_class = class_new(sym___minus__,
         (t_newmethod)binop1_minus_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
     class_addBang(binop1_minus_class, binop1_minus_bang);

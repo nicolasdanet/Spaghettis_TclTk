@@ -410,7 +410,7 @@ void panel_setup (void)
         A_GIMME,
         A_NULL);
         
-    class_addMethod (c, (t_method)panel_dialog,             gensym ("_iemdialog"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_dialog,             sym__iemdialog,             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)panel_gripSize,           gensym ("gripsize"),        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_move,             gensym ("move"),            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_position,         gensym ("position"),        A_GIMME, A_NULL);
@@ -426,7 +426,7 @@ void panel_setup (void)
 
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)panel_gripSize,           gensym ("size"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_gripSize,           sym_size,                   A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_move,             gensym ("delta"),           A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_position,         gensym ("pos"),             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_dummy,            gensym ("color"),           A_GIMME, A_NULL);

@@ -1410,7 +1410,7 @@ static void change_set(t_change *x, t_float f)
 
 void change_setup(void)
 {
-    change_class = class_new(gensym ("change"), (t_newmethod)change_new, 0,
+    change_class = class_new(sym_change, (t_newmethod)change_new, 0,
         sizeof(t_change), 0, A_DEFFLOAT, 0);
     class_addBang(change_class, change_bang);
     class_addFloat(change_class, change_float);

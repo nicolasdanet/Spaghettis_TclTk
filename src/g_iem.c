@@ -34,7 +34,7 @@ extern t_class *panel_class;
 
 t_symbol *iemgui_empty (void)
 {
-    return gensym ("empty");
+    return sym_empty;
 }
 
 static t_symbol *iemgui_parseEmpty (t_symbol *s)
