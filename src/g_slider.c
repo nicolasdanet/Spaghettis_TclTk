@@ -774,7 +774,7 @@ void slider_setup (void)
     class_addMethod (c, (t_method)slider_set,               sym_set,                    A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)slider_steady,            gensym ("steady"),          A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)slider_logarithmic,       gensym ("logarithmic"),     A_NULL);
-    class_addMethod (c, (t_method)slider_linear,            gensym ("linear"),          A_NULL);
+    class_addMethod (c, (t_method)slider_linear,            sym_linear,                 A_NULL);
     class_addMethod (c, (t_method)iemjump_send,             sym_send,                   A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)iemjump_receive,          gensym ("receive"),         A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)iemjump_label,            gensym ("label"),           A_DEFSYMBOL, A_NULL);
@@ -788,7 +788,7 @@ void slider_setup (void)
     class_addMethod (c, (t_method)iemjump_labelPosition,    gensym ("label_pos"),       A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_labelFont,        gensym ("label_font"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)slider_logarithmic,       gensym ("log"),             A_NULL);
-    class_addMethod (c, (t_method)slider_linear,            gensym ("lin"),             A_NULL);
+    class_addMethod (c, (t_method)slider_linear,            sym_lin,                    A_NULL);
     
     class_addCreator ((t_newmethod)slider_new, gensym ("hsl"), A_GIMME, A_NULL);
     class_addCreator ((t_newmethod)slider_new, gensym ("vsl"), A_GIMME, A_NULL);

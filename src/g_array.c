@@ -264,7 +264,7 @@ static void garray_fittograph(t_garray *x, int n, int style)
     t_glist *gl = x->x_glist;
     if (gl->gl_graphics == &x->x_gobj && !x->x_gobj.g_next)
     {
-        pd_vMessage(&gl->gl_obj.te_g.g_pd, gensym ("bounds"), "ffff",
+        pd_vMessage(&gl->gl_obj.te_g.g_pd, sym_bounds, "ffff",
             0., gl->gl_valueUp, (double)
                 (style == PLOT_POINTS || n == 1 ? n : n-1),
                     gl->gl_valueDown);
@@ -1064,20 +1064,20 @@ static void garray_list(t_garray *x, t_symbol *s, int argc, t_atom *argv)
 static void garray_bounds(t_garray *x, t_float x1, t_float y1,
     t_float x2, t_float y2)
 {
-    pd_vMessage(&x->x_glist->gl_obj.te_g.g_pd, gensym ("bounds"), "ffff", x1, y1, x2, y2);
+    pd_vMessage(&x->x_glist->gl_obj.te_g.g_pd, sym_bounds, "ffff", x1, y1, x2, y2);
 }
 
     /* same for "xticks", etc */
 static void garray_xticks(t_garray *x,
     t_float point, t_float inc, t_float f)
 {
-    pd_vMessage(&x->x_glist->gl_obj.te_g.g_pd, gensym ("xticks"), "fff", point, inc, f);
+    pd_vMessage(&x->x_glist->gl_obj.te_g.g_pd, sym_xticks, "fff", point, inc, f);
 }
 
 static void garray_yticks(t_garray *x,
     t_float point, t_float inc, t_float f)
 {
-    pd_vMessage(&x->x_glist->gl_obj.te_g.g_pd, gensym ("yticks"), "fff", point, inc, f);
+    pd_vMessage(&x->x_glist->gl_obj.te_g.g_pd, sym_yticks, "fff", point, inc, f);
 }
 
 /*
@@ -1216,13 +1216,13 @@ void g_array_setup(void)
     class_addMethod(garray_class, (t_method)garray_const, gensym ("const"),
         A_DEFFLOAT, A_NULL);
     class_addList(garray_class, garray_list);
-    class_addMethod(garray_class, (t_method)garray_bounds, gensym ("bounds"),
+    class_addMethod(garray_class, (t_method)garray_bounds, sym_bounds,
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addMethod(garray_class, (t_method)garray_xticks, gensym ("xticks"),
+    class_addMethod(garray_class, (t_method)garray_xticks, sym_xticks,
         A_FLOAT, A_FLOAT, A_FLOAT, 0);
     /*class_addMethod(garray_class, (t_method)garray_xlabel, gensym ("xlabel"),
         A_GIMME, 0);*/
-    class_addMethod(garray_class, (t_method)garray_yticks, gensym ("yticks"),
+    class_addMethod(garray_class, (t_method)garray_yticks, sym_yticks,
         A_FLOAT, A_FLOAT, A_FLOAT, 0);
     /*class_addMethod(garray_class, (t_method)garray_ylabel, gensym ("ylabel"),
         A_GIMME, 0);*/

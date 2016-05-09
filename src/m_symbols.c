@@ -63,8 +63,10 @@ t_symbol *sym__A;
 t_symbol *sym__N;
 t_symbol *sym__X;
 t_symbol *sym_array;
+t_symbol *sym_atom;
 t_symbol *sym_bindlist;
 t_symbol *sym_bng;
+t_symbol *sym_bounds;
 t_symbol *sym_canvas;
 t_symbol *sym_canvasmaker;
 t_symbol *sym_clear;
@@ -83,10 +85,13 @@ t_symbol *sym_floatatom;
 t_symbol *sym_guiconnect;
 t_symbol *sym_guistub;
 t_symbol *sym_graph;
+t_symbol *sym_hold;
 t_symbol *sym_hradio;
 t_symbol *sym_hslider;
 t_symbol *sym_inlet;
+t_symbol *sym_inlet__tilde__;
 t_symbol *sym_key;
+t_symbol *sym_linear;
 t_symbol *sym_loadbang;
 t_symbol *sym_mergefile;
 t_symbol *sym_motion;                                        
@@ -98,6 +103,9 @@ t_symbol *sym_new;
 t_symbol *sym_obj;
 t_symbol *sym_objectmaker;
 t_symbol *sym_open;
+t_symbol *sym_outlet;
+t_symbol *sym_outlet__tilde__;
+t_symbol *sym_pad;
 t_symbol *sym_pd;
 t_symbol *sym_quit;
 t_symbol *sym_read;
@@ -109,6 +117,7 @@ t_symbol *sym_scalar;
 t_symbol *sym_send;
 t_symbol *sym_set;
 t_symbol *sym_setbounds;
+t_symbol *sym_sort;
 t_symbol *sym_struct;
 t_symbol *sym_subpatch;
 t_symbol *sym_symbolatom;
@@ -120,6 +129,8 @@ t_symbol *sym_vradio;
 t_symbol *sym_vslider;
 t_symbol *sym_vu;
 t_symbol *sym_write;
+t_symbol *sym_xticks;
+t_symbol *sym_yticks;
 t_symbol *sym_BackSpace;
 t_symbol *sym_Delete;
 t_symbol *sym_Down;
@@ -136,7 +147,9 @@ t_symbol *sym_Up;
 
 #if PD_WITH_LEGACY
 
+t_symbol *sym_lin;
 t_symbol *sym_menu__dash__open;
+t_symbol *sym_menuarray;
 t_symbol *sym_menuclose;
 t_symbol *sym_menusave;
 t_symbol *sym_menusaveas;
@@ -186,8 +199,10 @@ void symbols_initialize (void)
     sym__N                  = gensym ("#N");
     sym__X                  = gensym ("#X");
     sym_array               = gensym ("array");
+    sym_atom                = gensym ("atom");
     sym_bindlist            = gensym ("bindlist");
     sym_bng                 = gensym ("bng");
+    sym_bounds              = gensym ("bounds");
     sym_canvas              = gensym ("canvas");
     sym_canvasmaker         = gensym ("canvasmaker");
     sym_clear               = gensym ("clear");
@@ -206,10 +221,13 @@ void symbols_initialize (void)
     sym_guiconnect          = gensym ("guiconnect");
     sym_guistub             = gensym ("guistub");
     sym_graph               = gensym ("graph");
+    sym_hold                = gensym ("hold");
     sym_hradio              = gensym ("hradio");
     sym_hslider             = gensym ("hslider");
     sym_inlet               = gensym ("inlet");
+    sym_inlet__tilde__      = gensym ("inlet~");
     sym_key                 = gensym ("key");
+    sym_linear              = gensym ("linear");
     sym_loadbang            = gensym ("loadbang");
     sym_mergefile           = gensym ("mergefile");
     sym_motion              = gensym ("motion");
@@ -221,6 +239,9 @@ void symbols_initialize (void)
     sym_obj                 = gensym ("obj");
     sym_objectmaker         = gensym ("objectmaker");
     sym_open                = gensym ("open");
+    sym_outlet              = gensym ("outlet");
+    sym_outlet__tilde__     = gensym ("outlet~");
+    sym_pad                 = gensym ("pad");
     sym_pd                  = gensym ("pd");
     sym_quit                = gensym ("quit");
     sym_read                = gensym ("read");
@@ -232,6 +253,7 @@ void symbols_initialize (void)
     sym_send                = gensym ("send");
     sym_set                 = gensym ("set");
     sym_setbounds           = gensym ("setbounds");
+    sym_sort                = gensym ("sort");
     sym_struct              = gensym ("struct");
     sym_subpatch            = gensym ("subpatch");
     sym_symbolatom          = gensym ("symbolatom");
@@ -243,6 +265,8 @@ void symbols_initialize (void)
     sym_vslider             = gensym ("vslider");
     sym_vu                  = gensym ("vu");
     sym_write               = gensym ("write");
+    sym_xticks              = gensym ("xticks");
+    sym_yticks              = gensym ("yticks");
     sym_BackSpace           = gensym ("BackSpace");
     sym_Delete              = gensym ("Delete");
     sym_Down                = gensym ("Down");
@@ -256,7 +280,9 @@ void symbols_initialize (void)
     
     #if PD_WITH_LEGACY
 
+    sym_lin                 = gensym ("lin");
     sym_menu__dash__open    = gensym ("menu-open");
+    sym_menuarray           = gensym ("menuarray");
     sym_menuclose           = gensym ("menuclose");
     sym_menusave            = gensym ("menusave");
     sym_menusaveas          = gensym ("menusaveas");

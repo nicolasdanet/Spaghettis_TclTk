@@ -123,7 +123,7 @@ static t_symbol *rtext_gettype(t_boxtext *x)
     case TYPE_TEXT: return sym_text;
     case TYPE_OBJECT: return sym_obj;
     case TYPE_MESSAGE: return sym_msg;
-    case TYPE_ATOM: return gensym ("atom");
+    case TYPE_ATOM: return sym_atom;
     }
     return (&s_);
 }

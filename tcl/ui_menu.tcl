@@ -276,11 +276,11 @@ proc _object {m} {
     $m add command \
         -label [_ "Toggle"] \
         -accelerator "${accelerator}+7" \
-        -command { ::ui_menu::_handle toggle }
+        -command { ::ui_menu::_handle tgl }
     $m add command \
         -label [_ "Dial"] \
         -accelerator "${accelerator}+8" \
-        -command { ::ui_menu::_handle numbox }
+        -command { ::ui_menu::_handle nbx }
     $m add command \
         -label [_ "Array"] \
         -accelerator "${accelerator}+9" \
@@ -289,10 +289,10 @@ proc _object {m} {
     
     $m add command \
         -label [_ "VU"] \
-        -command { ::ui_menu::_handle vumeter }
+        -command { ::ui_menu::_handle vu }
     $m add command \
         -label [_ "Panel"] \
-        -command { ::ui_menu::_handle mycnv }
+        -command { ::ui_menu::_handle cnv }
     $m add separator
     
     menu $m.vertical

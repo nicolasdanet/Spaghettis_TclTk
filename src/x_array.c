@@ -87,7 +87,7 @@ static void array_define_yrange(t_glist *x, t_float ylo, t_float yhi)
     if (gl && gl->gl_graphics && pd_class(&gl->gl_graphics->g_pd) == garray_class)
     {
         int n = garray_getarray((t_garray *)gl->gl_graphics)->a_n;
-        pd_vMessage(&x->gl_graphics->g_pd, gensym ("bounds"),
+        pd_vMessage(&x->gl_graphics->g_pd, sym_bounds,
             "ffff", 0., yhi, (double)(n == 1 ? n : n-1), ylo);
         /*pd_vMessage(&x->gl_graphics->g_pd, gensym ("xlabel"),
             "fff", ylo + glist_pixelstoy(gl, 2) - glist_pixelstoy(gl, 0),

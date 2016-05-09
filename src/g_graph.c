@@ -1083,22 +1083,22 @@ extern void canvas_menuarray(t_glist *canvas);
 void g_graph_setup_class(t_class *c)
 {
     class_setWidgetBehavior(c, &graph_widgetbehavior);
-    class_addMethod(c, (t_method)graph_bounds, gensym ("bounds"),
+    class_addMethod(c, (t_method)graph_bounds, sym_bounds,
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addMethod(c, (t_method)graph_xticks, gensym ("xticks"),
+    class_addMethod(c, (t_method)graph_xticks, sym_xticks,
         A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    /* class_addMethod(c, (t_method)graph_xlabel, gensym ("xlabel"),
+    /* class_addMethod(c, (t_method)graph_xlabel, gen_sym ("xlabel"),
         A_GIMME, 0); */
-    class_addMethod(c, (t_method)graph_yticks, gensym ("yticks"),
+    class_addMethod(c, (t_method)graph_yticks, sym_yticks,
         A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    /* class_addMethod(c, (t_method)graph_ylabel, gensym ("ylabel"),
+    /* class_addMethod(c, (t_method)graph_ylabel, gen_sym ("ylabel"),
         A_GIMME, 0); */
     class_addMethod(c, (t_method)graph_array, sym_array,
         A_SYMBOL, A_FLOAT, A_SYMBOL, A_DEFFLOAT, A_NULL);
     class_addMethod(c, (t_method)canvas_menuarray,
-        gensym ("menuarray"), A_NULL);
+        sym_menuarray, A_NULL);
     class_addMethod(c, (t_method)glist_sort,
-        gensym ("sort"), A_NULL);
+        sym_sort, A_NULL);
 }
 
 void g_graph_setup( void)

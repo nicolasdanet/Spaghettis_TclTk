@@ -274,11 +274,11 @@ static void *vinlet_newsig(t_symbol *s)
      *
      * up till now we provide several upsampling methods and 1 single downsampling method (no filtering !)
      */
-    if (s == gensym ("hold"))
+    if (s == sym_hold)
         x->x_updown.r_type=1;       /* up: sample and hold */
-    else if (s == gensym ("lin") || s == gensym ("linear"))
+    else if (s == sym_linear)
         x->x_updown.r_type=2;       /* up: linear interpolation */
-    else if (s == gensym ("pad"))
+    else if (s == sym_pad)
         x->x_updown.r_type=0;       /* up: zero-padding */
     else x->x_updown.r_type=3;      /* sample/hold unless version<0.44 */
 
@@ -289,7 +289,7 @@ static void vinlet_setup(void)
 {
     vinlet_class = class_new (sym_inlet, (t_newmethod)vinlet_new,
         (t_method)vinlet_free, sizeof(t_vinlet), CLASS_NOINLET, A_DEFSYMBOL, 0);
-    class_addCreator((t_newmethod)vinlet_newsig, gensym ("inlet~"), A_DEFSYMBOL, 0);
+    class_addCreator((t_newmethod)vinlet_newsig, sym_inlet__tilde__, A_DEFSYMBOL, 0);
     class_addBang(vinlet_class, vinlet_bang);
     class_addPointer(vinlet_class, vinlet_pointer);
     class_addFloat(vinlet_class, vinlet_float);
@@ -593,10 +593,9 @@ static void *voutlet_newsig(t_symbol *s)
      *
      * up till now we provide several upsampling methods and 1 single downsampling method (no filtering !)
      */
-    if (s == gensym ("hold"))x->x_updown.r_type=1;        /* up: sample and hold */
-    else if (s == gensym ("lin"))x->x_updown.r_type=2;    /* up: linear interpolation */
-    else if (s == gensym ("linear"))x->x_updown.r_type=2; /* up: linear interpolation */
-    else if (s == gensym ("pad"))x->x_updown.r_type=0;    /* up: zero pad */
+    if (s == sym_hold)x->x_updown.r_type=1;        /* up: sample and hold */
+    else if (s == sym_linear)x->x_updown.r_type=2; /* up: linear interpolation */
+    else if (s == sym_pad)x->x_updown.r_type=0;    /* up: zero pad */
     else x->x_updown.r_type=3;                           /* up: zero-padding; down: ignore samples inbetween */
 
     return (x);
@@ -605,9 +604,9 @@ static void *voutlet_newsig(t_symbol *s)
 
 static void voutlet_setup(void)
 {
-    voutlet_class = class_new(gensym ("outlet"), (t_newmethod)voutlet_new,
+    voutlet_class = class_new(sym_outlet, (t_newmethod)voutlet_new,
         (t_method)voutlet_free, sizeof(t_voutlet), CLASS_NOINLET, A_DEFSYMBOL, 0);
-    class_addCreator((t_newmethod)voutlet_newsig, gensym ("outlet~"), A_DEFSYMBOL, 0);
+    class_addCreator((t_newmethod)voutlet_newsig, sym_outlet__tilde__, A_DEFSYMBOL, 0);
     class_addBang(voutlet_class, voutlet_bang);
     class_addPointer(voutlet_class, voutlet_pointer);
     class_addFloat(voutlet_class, (t_method)voutlet_float);

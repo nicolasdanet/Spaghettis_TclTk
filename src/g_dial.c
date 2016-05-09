@@ -746,7 +746,7 @@ void dial_setup (void)
     class_addMethod (c, (t_method)dial_set,                 sym_set,                    A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)dial_steps,               gensym ("steps"),           A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)dial_logarithmic,         gensym ("logarithmic"),     A_NULL);
-    class_addMethod (c, (t_method)dial_linear,              gensym ("linear"),          A_NULL);
+    class_addMethod (c, (t_method)dial_linear,              sym_linear,                 A_NULL);
     class_addMethod (c, (t_method)iemjump_send,             sym_send,                   A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)iemjump_receive,          gensym ("receive"),         A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)iemjump_label,            gensym ("label"),           A_DEFSYMBOL, A_NULL);
@@ -761,7 +761,7 @@ void dial_setup (void)
     class_addMethod (c, (t_method)iemjump_labelFont,        gensym ("label_font"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)dial_steps,               gensym ("log_height"),      A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)dial_logarithmic,         gensym ("log"),             A_NULL);
-    class_addMethod (c, (t_method)dial_linear,              gensym ("lin"),             A_NULL);
+    class_addMethod (c, (t_method)dial_linear,              sym_lin,                    A_NULL);
     
     class_addCreator ((t_newmethod)dial_new, gensym ("my_numbox"), A_GIMME, A_NULL);
     
