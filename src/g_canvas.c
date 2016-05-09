@@ -82,7 +82,7 @@ static void *subpatch_new (t_symbol *s)
     t_glist *x = NULL;
     t_glist *z = canvas_getCurrent();
     
-    if (s == &s_) { s = gensym ("subpatch"); }
+    if (s == &s_) { s = sym_subpatch; }
     
     SET_FLOAT  (a + 0, 0);
     SET_FLOAT  (a + 1, CANVAS_WINDOW_HEADER_HEIGHT);
@@ -676,9 +676,9 @@ void canvas_setup (void)
         
     /* Creator function by sending the "canvas" message to #N. */
             
-    class_addMethod (pd_canvasMaker, (t_method)canvas_new, gensym ("canvas"), A_GIMME, A_NULL);
+    class_addMethod (pd_canvasMaker, (t_method)canvas_new, sym_canvas, A_GIMME, A_NULL);
     
-    c = class_new (gensym ("canvas"),
+    c = class_new (sym_canvas,
             NULL, 
             (t_method)canvas_free, 
             sizeof (t_glist), 
@@ -694,19 +694,19 @@ void canvas_setup (void)
     class_addMouseUp (c, canvas_mouseup);
     class_addBounds (c, canvas_setBounds);
 
-    class_addMethod (c, (t_method)canvas_coords,        gensym ("coords"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_restore,       gensym ("restore"),     A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_obj,           gensym ("obj"),         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_msg,           gensym ("msg"),         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_floatatom,     gensym ("floatatom"),   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_symbolatom,    gensym ("symbolatom"),  A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)glist_text,           gensym ("text"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_graph,         gensym ("graph"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)glist_scalar,         gensym ("scalar"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_width,         sym_f,                  A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_coords,        sym_coords,     A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_restore,       sym_restore,    A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_obj,           sym_obj,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_msg,           sym_msg,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_floatatom,     sym_floatatom,  A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_symbolatom,    sym_symbolatom, A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)glist_text,           sym_text,       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_graph,         sym_graph,      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)glist_scalar,         sym_scalar,     A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_width,         sym_f,          A_GIMME, A_NULL);
     
     class_addMethod (c, (t_method)canvas_connect,
-        gensym ("connect"),
+        sym_connect,
         A_FLOAT,
         A_FLOAT,
         A_FLOAT,
@@ -714,7 +714,7 @@ void canvas_setup (void)
         A_NULL);
         
     class_addMethod (c, (t_method)canvas_disconnect,
-        gensym ("disconnect"),
+        sym_disconnect,
         A_FLOAT,
         A_FLOAT,
         A_FLOAT,

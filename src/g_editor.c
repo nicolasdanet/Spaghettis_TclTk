@@ -890,12 +890,12 @@ void canvas_key(t_glist *x, t_symbol *s, int ac, t_atom *av)
         char buf[UTF8_MAXIMUM_BYTES + 1];
         switch((int)(av[1].a_w.w_float))
         {
-        case 8:  gotkeysym = gensym ("BackSpace"); break;
-        case 9:  gotkeysym = gensym ("Tab"); break;
-        case 10: gotkeysym = gensym ("Return"); break;
-        case 27: gotkeysym = gensym ("Escape"); break;
-        case 32: gotkeysym = gensym ("Space"); break;
-        case 127:gotkeysym = gensym ("Delete"); break;
+        case 8:  gotkeysym = sym_BackSpace; break;
+        case 9:  gotkeysym = sym_Tab; break;
+        case 10: gotkeysym = sym_Return; break;
+        case 27: gotkeysym = sym_Escape; break;
+        case 32: gotkeysym = sym_Space; break;
+        case 127:gotkeysym = sym_Delete; break;
         default:
         /*-- moo: assume keynum is a Unicode codepoint; encode as UTF-8 --*/
             sz = u8_wc_toutf8 (buf, (UCS4_CODE_POINT)(av[1].a_w.w_float));
@@ -903,7 +903,7 @@ void canvas_key(t_glist *x, t_symbol *s, int ac, t_atom *av)
             gotkeysym = gensym (buf);
         }
     }
-    else gotkeysym = gensym ("?");
+    else gotkeysym = sym__dummy;
     fflag = (av[0].a_type == A_FLOAT ? av[0].a_w.w_float : 0);
     keynum = (av[1].a_type == A_FLOAT ? av[1].a_w.w_float : 0);
     if (keynum == '\\' || keynum == '{' || keynum == '}')
@@ -920,27 +920,28 @@ void canvas_key(t_glist *x, t_symbol *s, int ac, t_atom *av)
             keynum = '\n';
     if (!keynumsym)
     {
-        keynumsym  = gensym ("_key");
-        keyupsym   = gensym ("_keyup");
-        keynamesym = gensym ("_keyname");
+        keynumsym  = sym__key;
+        keyupsym   = sym__keyup;
+        keynamesym = sym__keyname;
     }
 #ifdef __APPLE__
         if (keynum == 30 || keynum == 63232)
-            keynum = 0, gotkeysym = gensym ("Up");
+            keynum = 0, gotkeysym = sym_Up;
         else if (keynum == 31 || keynum == 63233)
-            keynum = 0, gotkeysym = gensym ("Down");
+            keynum = 0, gotkeysym = sym_Down;
         else if (keynum == 28 || keynum == 63234)
-            keynum = 0, gotkeysym = gensym ("Left");
+            keynum = 0, gotkeysym = sym_Left;
         else if (keynum == 29 || keynum == 63235)
-            keynum = 0, gotkeysym = gensym ("Right");
+            keynum = 0, gotkeysym = sym_Right;
+        /*
         else if (keynum == 63273)
-            keynum = 0, gotkeysym = gensym ("Home");
+            keynum = 0, gotkeysym = gen_sym ("Home");
         else if (keynum == 63275)
-            keynum = 0, gotkeysym = gensym ("End");
+            keynum = 0, gotkeysym = gen_sym ("End");
         else if (keynum == 63276)
-            keynum = 0, gotkeysym = gensym ("Prior");
+            keynum = 0, gotkeysym = gen_sym ("Prior");
         else if (keynum == 63277)
-            keynum = 0, gotkeysym = gensym ("Next");
+            keynum = 0, gotkeysym = gen_sym ("Next");*/
 #endif
     if (keynumsym->s_thing && down)
         pd_float(keynumsym->s_thing, (t_float)keynum);
@@ -1166,7 +1167,7 @@ void canvas_stowconnections(t_glist *x)
         int s2 = canvas_isObjectSelected(x, &t.tr_destObject->te_g);
         if (s1 != s2)
             buffer_vAppend(x->gl_editor->e_buffer, "ssiiii;",
-                sym__X, gensym ("connect"),
+                sym__X, sym_connect,
                     canvas_getIndexOfObject(x, &t.tr_srcObject->te_g), t.tr_srcIndexOfOutlet,
                         canvas_getIndexOfObject(x, &t.tr_destObject->te_g), t.tr_destIndexOfInlet);
     }
@@ -1197,7 +1198,7 @@ static t_buffer *canvas_docopy(t_glist *x)
         if (canvas_isObjectSelected(x, &t.tr_srcObject->te_g)
             && canvas_isObjectSelected(x, &t.tr_destObject->te_g))
         {
-            buffer_vAppend(b, "ssiiii;", sym__X, gensym ("connect"),
+            buffer_vAppend(b, "ssiiii;", sym__X, sym_connect,
                 canvas_getIndexOfObjectAmongSelected(x, &t.tr_srcObject->te_g), t.tr_srcIndexOfOutlet,
                 canvas_getIndexOfObjectAmongSelected(x, &t.tr_destObject->te_g), t.tr_destIndexOfInlet);
         }
@@ -1270,7 +1271,7 @@ static void canvas_dopaste(t_glist *x, t_buffer *b)
 {
     t_gobj *newgobj, *last, *g2;
     int dspstate = dsp_suspend(), nbox, count;
-    t_symbol *asym = gensym ("#A");
+    t_symbol *asym = sym__A;
         /* save and clear bindings to symbols #a, $N, $X; restore when done */
     t_pd *boundx = s__X.s_thing, *bounda = asym->s_thing, 
         *boundn = s__N.s_thing;

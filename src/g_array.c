@@ -292,7 +292,7 @@ t_garray *graph_array(t_glist *gl, t_symbol *s, t_symbol *templateargsym,
     t_float fsize, t_float fflags)
 {
     int n = fsize, i, zz, nwords, zonset, ztype, saveit;
-    t_symbol *zarraytype, *asym = gensym ("#A");
+    t_symbol *zarraytype, *asym = sym__A;
     t_garray *x;
     t_pd *x2;
     t_template *template, *ztemplate;
@@ -592,8 +592,8 @@ static void garray_free(t_garray *x)
     guistub_destroyWithKey(x);
     pd_unbind(&x->x_gobj.g_pd, x->x_realname);
         /* just in case we're still bound to #A from loading... */
-    while (x2 = pd_findByClass(gensym ("#A"), garray_class))
-        pd_unbind(x2, gensym ("#A"));
+    while (x2 = pd_findByClass (sym__A, garray_class))
+        pd_unbind(x2, sym__A);
     pd_free(&x->x_scalar->sc_g.g_pd);
 }
 
@@ -739,7 +739,7 @@ void garray_savecontentsto(t_garray *x, t_buffer *b)
             int chunk = n - n2, i;
             if (chunk > ARRAYWRITECHUNKSIZE)
                 chunk = ARRAYWRITECHUNKSIZE;
-            buffer_vAppend(b, "si", gensym ("#A"), n2);
+            buffer_vAppend(b, "si", sym__A, n2);
             for (i = 0; i < chunk; i++)
                 buffer_vAppend(b, "f", ((t_word *)(array->a_vec))[n2+i].w_float);
             buffer_vAppend(b, ";");

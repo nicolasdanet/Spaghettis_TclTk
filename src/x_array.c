@@ -169,7 +169,7 @@ void array_define_save(t_gobj *z, t_buffer *bb)
 {
     t_glist *x = (t_glist *)z;
     t_glist *gl = (x->gl_graphics ? canvas_castToGlistChecked(&x->gl_graphics->g_pd) : 0);
-    buffer_vAppend(bb, "ssff", sym__X, gensym ("obj"),
+    buffer_vAppend(bb, "ssff", sym__X, sym_obj,
         (float)x->gl_obj.te_xCoordinate, (float)x->gl_obj.te_yCoordinate);
     buffer_serialize(bb, x->gl_obj.te_buffer);
     buffer_appendSemicolon(bb);
@@ -831,7 +831,7 @@ void x_array_setup(void )
         (t_method)canvas_free, sizeof(t_glist), 0, 0);
     
     class_addMethod(array_define_class, (t_method)canvas_restore,
-        gensym ("restore"), A_GIMME, 0);
+        sym_restore, A_GIMME, 0);
     class_addMethod(array_define_class, (t_method)canvas_click,
         sym_click, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
     class_addMethod(array_define_class, (t_method)canvas_dsp,

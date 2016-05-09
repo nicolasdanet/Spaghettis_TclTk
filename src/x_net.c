@@ -328,9 +328,9 @@ static void netsend_setup(void)
         (t_method)netsend_free,
         sizeof(t_netsend), 0, A_GIMME, 0);
     class_addMethod(netsend_class, (t_method)netsend_connect,
-        gensym ("connect"), A_SYMBOL, A_FLOAT, 0);
+        sym_connect, A_SYMBOL, A_FLOAT, 0);
     class_addMethod(netsend_class, (t_method)netsend_disconnect,
-        gensym ("disconnect"), 0);
+        sym_disconnect, 0);
     class_addMethod(netsend_class, (t_method)netsend_send, gensym ("send"),
         A_GIMME, 0);
 }

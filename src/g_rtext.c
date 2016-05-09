@@ -120,9 +120,9 @@ static t_symbol *rtext_gettype(t_boxtext *x)
 {
     switch (x->x_text->te_type) 
     {
-    case TYPE_TEXT: return gensym ("text");
-    case TYPE_OBJECT: return gensym ("obj");
-    case TYPE_MESSAGE: return gensym ("msg");
+    case TYPE_TEXT: return sym_text;
+    case TYPE_OBJECT: return sym_obj;
+    case TYPE_MESSAGE: return sym_msg;
     case TYPE_ATOM: return gensym ("atom");
     }
     return (&s_);

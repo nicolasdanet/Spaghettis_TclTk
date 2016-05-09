@@ -356,7 +356,7 @@ static void toggle_behaviorSave (t_gobj *z, t_buffer *b)
     
     buffer_vAppend (b, "ssiisiisssiiiisssff", 
         sym__X,
-        gensym ("obj"),
+        sym_obj,
         (int)cast_object (z)->te_xCoordinate,
         (int)cast_object (z)->te_yCoordinate,
         gensym ("tgl"), 

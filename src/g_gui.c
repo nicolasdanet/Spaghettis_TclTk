@@ -122,7 +122,7 @@ void guiconnect_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (gensym ("guiconnect"),
+    c = class_new (sym_guiconnect,
             NULL,
             (t_method)guiconnect_free,
             sizeof (t_guiconnect), 
@@ -131,7 +131,7 @@ void guiconnect_setup (void)
         
     class_addAnything (c, guiconnect_anything);
     
-    class_addMethod (c, (t_method)guiconnect_signoff, gensym ("_signoff"), A_NULL);
+    class_addMethod (c, (t_method)guiconnect_signoff, sym__signoff, A_NULL);
         
     guiconnect_class = c;
 }
@@ -262,7 +262,7 @@ void guistub_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (gensym ("guistub"),
+    c = class_new (sym_guistub,
             NULL, 
             (t_method)guistub_free,
             sizeof (t_guistub),
@@ -271,9 +271,9 @@ void guistub_setup (void)
         
     class_addAnything (c, guistub_anything);
 
-    class_addMethod (c, (t_method)guistub_data,     gensym ("_data"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)guistub_end,      gensym ("_end"),        A_NULL);
-    class_addMethod (c, (t_method)guistub_signoff,  gensym ("_signoff"),    A_NULL);
+    class_addMethod (c, (t_method)guistub_data,     sym__data,      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)guistub_end,      sym__end,       A_NULL);
+    class_addMethod (c, (t_method)guistub_signoff,  sym__signoff,   A_NULL);
     
     guistub_class = c;
 }

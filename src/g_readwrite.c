@@ -628,18 +628,18 @@ static void canvas_saveto(t_glist *x, t_buffer *b)
         buffer_serialize(bz, x->gl_obj.te_buffer);
         patchsym = atom_getSymbolAtIndex(1, buffer_size(bz), buffer_atoms(bz));
         buffer_free(bz);
-        buffer_vAppend(b, "ssiiiisi;", gensym ("#N"), gensym ("canvas"),
+        buffer_vAppend(b, "ssiiiisi;", gensym ("#N"), sym_canvas,
             (int)(x->gl_windowTopLeftX),
             (int)(x->gl_windowTopLeftY),
             (int)(x->gl_windowBottomRightX - x->gl_windowTopLeftX),
             (int)(x->gl_windowBottomRightY - x->gl_windowTopLeftY),
-            (patchsym != &s_ ? patchsym: gensym ("subpatch")),
+            (patchsym != &s_ ? patchsym : sym_subpatch),
             x->gl_isMapped);
     }
         /* root or abstraction */
     else 
     {
-        buffer_vAppend(b, "ssiiiii;", gensym ("#N"), gensym ("canvas"),
+        buffer_vAppend(b, "ssiiiii;", gensym ("#N"), sym_canvas,
             (int)(x->gl_windowTopLeftX),
             (int)(x->gl_windowTopLeftY),
             (int)(x->gl_windowBottomRightX - x->gl_windowTopLeftX),
@@ -655,7 +655,7 @@ static void canvas_saveto(t_glist *x, t_buffer *b)
     {
         int srcno = canvas_getIndexOfObject(x, &t.tr_srcObject->te_g);
         int sinkno = canvas_getIndexOfObject(x, &t.tr_destObject->te_g);
-        buffer_vAppend(b, "ssiiii;", sym__X, gensym ("connect"),
+        buffer_vAppend(b, "ssiiii;", sym__X, sym_connect,
             srcno, t.tr_srcIndexOfOutlet, sinkno, t.tr_destIndexOfInlet);
     }
         /* unless everything is the default (as in ordinary subpatches)
@@ -667,14 +667,14 @@ static void canvas_saveto(t_glist *x, t_buffer *b)
                 /* if we have a graph-on-parent rectangle, we're new style.
                 The format is arranged so
                 that old versions of Pd can at least do something with it. */
-            buffer_vAppend(b, "ssfffffffff;", sym__X, gensym ("coords"),
+            buffer_vAppend(b, "ssfffffffff;", sym__X, sym_coords,
                 x->gl_indexStart, x->gl_valueUp,
                 x->gl_indexEnd, x->gl_valueDown,
                 (t_float)x->gl_width, (t_float)x->gl_height,
                 (t_float)((x->gl_hideText)?2.:1.),
                 (t_float)x->gl_marginX, (t_float)x->gl_marginY); 
                     /* otherwise write in 0.38-compatible form */
-        else buffer_vAppend(b, "ssfffffff;", sym__X, gensym ("coords"),
+        else buffer_vAppend(b, "ssfffffff;", sym__X, sym_coords,
                 x->gl_indexStart, x->gl_valueUp,
                 x->gl_indexEnd, x->gl_valueDown,
                 (t_float)x->gl_width, (t_float)x->gl_height,
@@ -719,7 +719,7 @@ static void canvas_savetemplatesto(t_glist *x, t_buffer *b, int wholething)
             continue;
         }
             /* drop "pd-" prefix from template symbol to print */
-        buffer_vAppend(b, "sss", gensym ("#N"), gensym ("struct"),
+        buffer_vAppend(b, "sss", gensym ("#N"), sym_struct,
             gensym (templatevec[i]->s_name + 3));
         for (j = 0; j < m; j++)
         {
@@ -729,7 +729,7 @@ static void canvas_savetemplatesto(t_glist *x, t_buffer *b, int wholething)
                 case DATA_FLOAT: type = &s_float; break;
                 case DATA_SYMBOL: type = &s_symbol; break;
                 case DATA_ARRAY: type = gensym ("array"); break;
-                case DATA_TEXT: type = gensym ("text"); break;
+                case DATA_TEXT: type = sym_text; break;
                 default: type = &s_float; PD_BUG;
             }
             if (template->t_vec[j].ds_type == DATA_ARRAY)

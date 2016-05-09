@@ -1149,27 +1149,27 @@ void text_save(t_gobj *z, t_buffer *b)
                     || canvas_istable((t_glist *)x))))
         {  
             mess1((t_pd *)x, gensym ("saveto"), b);
-            buffer_vAppend(b, "ssii", sym__X, gensym ("restore"),
+            buffer_vAppend(b, "ssii", sym__X, sym_restore,
                 (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         }
         else    /* otherwise just save the text */
         {
-            buffer_vAppend(b, "ssii", sym__X, gensym ("obj"),
+            buffer_vAppend(b, "ssii", sym__X, sym_obj,
                 (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         }
         buffer_serialize(b, x->te_buffer);
     }
     else if (x->te_type == TYPE_MESSAGE)
     {
-        buffer_vAppend(b, "ssii", sym__X, gensym ("msg"),
+        buffer_vAppend(b, "ssii", sym__X, sym_msg,
             (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         buffer_serialize(b, x->te_buffer);
     }
     else if (x->te_type == TYPE_ATOM)
     {
         t_atomtype t = ((t_gatom *)x)->a_atom.a_type;
-        t_symbol *sel = (t == A_SYMBOL ? gensym ("symbolatom") :
-            (t == A_FLOAT ? gensym ("floatatom") : gensym ("intatom")));
+        t_symbol *sel = (t == A_SYMBOL ? sym_symbolatom :
+            (t == A_FLOAT ? sym_floatatom : gensym ("intatom")));
         t_symbol *label = gatom_escapit(((t_gatom *)x)->a_label);
         t_symbol *symfrom = gatom_escapit(((t_gatom *)x)->a_symfrom);
         t_symbol *symto = gatom_escapit(((t_gatom *)x)->a_symto);
@@ -1182,7 +1182,7 @@ void text_save(t_gobj *z, t_buffer *b)
     }           
     else        
     {
-        buffer_vAppend(b, "ssii", sym__X, gensym ("text"),
+        buffer_vAppend(b, "ssii", sym__X, sym_text,
             (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         buffer_serialize(b, x->te_buffer);
     }
@@ -1412,7 +1412,7 @@ static void text_anything(t_object *x, t_symbol *s, int argc, t_atom *argv)
 
 void g_text_setup(void)
 {
-    text_class = class_new(gensym ("text"), 0, 0, sizeof(t_object),
+    text_class = class_new (sym_text, 0, 0, sizeof(t_object),
         CLASS_NOINLET | CLASS_BOX, 0);
     class_addAnything(text_class, text_anything);
 

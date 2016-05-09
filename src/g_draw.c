@@ -227,7 +227,7 @@ void canvas_redrawAllByTemplateByCanvas (t_glist *glist, int action)
 void canvas_redrawAllByTemplateByCanvas (t_glist *glist, int action)
 {
     t_gobj   *g = NULL;
-    t_symbol *s = gensym ("struct");
+    t_symbol *s = sym_struct;
     
     for (g = glist->gl_graphics; g; g = g->g_next) {
     //

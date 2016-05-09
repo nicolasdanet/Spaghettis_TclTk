@@ -234,7 +234,7 @@ t_glist *canvas_addGraph (t_glist *glist, t_symbol *name,
     x->gl_hasRectangle          = 0;
     
     canvas_bind (x);
-    buffer_vAppend (cast_object (x)->te_buffer, "s", gensym ("graph"));
+    buffer_vAppend (cast_object (x)->te_buffer, "s", sym_graph);
     if (!createdFromMenu) { stack_push (cast_pd (x)); }
     glist_add (glist, cast_gobj (x));
     
@@ -335,7 +335,7 @@ int canvas_hasGraphOnParentTitle (t_glist *glist)
     //
     int argc     = (cast_object (glist)->te_buffer ? buffer_size (cast_object (glist)->te_buffer)  : 0);
     t_atom *argv = (cast_object (glist)->te_buffer ? buffer_atoms (cast_object (glist)->te_buffer) : NULL);
-    return !(argc && IS_SYMBOL (argv) && GET_SYMBOL (argv) == gensym ("graph"));
+    return !(argc && IS_SYMBOL (argv) && GET_SYMBOL (argv) == sym_graph);
     //
     }
 }

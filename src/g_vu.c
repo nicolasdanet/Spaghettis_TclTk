@@ -497,7 +497,7 @@ static void vu_behaviorSave (t_gobj *z, t_buffer *b)
     
     buffer_vAppend (b, "ssiisiissiiiissii",
         sym__X,
-        gensym ("obj"),
+        sym_obj,
         (int)cast_object (x)->te_xCoordinate,
         (int)cast_object (x)->te_yCoordinate,
         gensym ("vu"),

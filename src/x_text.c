@@ -184,8 +184,8 @@ static void textbuf_free(t_textbuf *x)
         guiconnect_release(x->b_guiconnect, 1000);
     }
         /* just in case we're still bound to #A from loading... */
-    while (x2 = pd_findByClass(gensym ("#A"), text_define_class))
-        pd_unbind(x2, gensym ("#A"));
+    while (x2 = pd_findByClass(sym__A, text_define_class))
+        pd_unbind(x2, sym__A);
 }
 
     /* random helper function */
@@ -230,7 +230,7 @@ typedef struct _text_define
 static void *text_define_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_text_define *x = (t_text_define *)pd_new(text_define_class);
-    t_symbol *asym = gensym ("#A");
+    t_symbol *asym = sym__A;
     x->x_keep = 0;
     x->x_bindsym = &s_;
     while (argc && argv->a_type == A_SYMBOL &&
@@ -340,13 +340,13 @@ void text_define_set(t_text_define *x, t_symbol *s, int argc, t_atom *argv)
 static void text_define_save(t_gobj *z, t_buffer *bb)
 {
     t_text_define *x = (t_text_define *)z;
-    buffer_vAppend(bb, "ssff", sym__X, gensym ("obj"),
+    buffer_vAppend(bb, "ssff", sym__X, sym_obj,
         (float)x->x_ob.te_xCoordinate, (float)x->x_ob.te_yCoordinate);
     buffer_serialize(bb, x->x_ob.te_buffer);
     buffer_appendSemicolon(bb);
     if (x->x_keep)
     {
-        buffer_vAppend(bb, "ss", gensym ("#A"), gensym ("set"));
+        buffer_vAppend(bb, "ss", sym__A, gensym ("set"));
         buffer_serialize(bb, x->x_binbuf);
         buffer_appendSemicolon(bb);
     }
@@ -1825,7 +1825,7 @@ void x_qlist_setup(void )
     class_addBang(text_define_class, text_define_bang);
     class_setHelpName(text_define_class, gensym ("text-object"));
 
-    class_addCreator((t_newmethod)text_new, gensym ("text"), A_GIMME, 0);
+    class_addCreator((t_newmethod)text_new, sym_text, A_GIMME, 0);
 
     text_get_class = class_new(gensym ("text get"),
         (t_newmethod)text_get_new, (t_method)text_client_free,

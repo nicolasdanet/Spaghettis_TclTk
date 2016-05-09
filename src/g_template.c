@@ -91,7 +91,7 @@ t_template *template_new(t_symbol *templatesym, int argc, t_atom *argv)
         else if (newtypesym == &s_symbol)
             newtype = DATA_SYMBOL;
                 /* "list" is old name.. accepted here but never saved as such */
-        else if (newtypesym == gensym ("text") || newtypesym == &s_list)
+        else if (newtypesym == sym_text || newtypesym == &s_list)
             newtype = DATA_TEXT;
         else if (newtypesym == gensym ("array"))
         {
@@ -547,7 +547,7 @@ static void template_setup(void)
     template_class = class_new(gensym ("template"), 0, (t_method)template_free,
         sizeof(t_template), CLASS_PURE, 0);
     class_addMethod(pd_canvasMaker, (t_method)template_usetemplate,
-        gensym ("struct"), A_GIMME, 0);
+        sym_struct, A_GIMME, 0);
         
 }
 
@@ -691,7 +691,7 @@ static void gtemplate_free(t_gtemplate *x)
 
 static void gtemplate_setup(void)
 {
-    gtemplate_class = class_new(gensym ("struct"),
+    gtemplate_class = class_new (sym_struct,
         (t_newmethod)gtemplate_new, (t_method)gtemplate_free,
         sizeof(t_gtemplate), CLASS_NOINLET, A_GIMME, 0);
     class_addCreator((t_newmethod)gtemplate_new_old, gensym ("template"),

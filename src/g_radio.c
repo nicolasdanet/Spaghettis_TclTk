@@ -527,7 +527,7 @@ static void radio_behaviorSave (t_gobj *z, t_buffer *b)
     
     buffer_vAppend (b, "ssiisiiiisssiiiisssf", 
         sym__X,
-        gensym ("obj"),
+        sym_obj,
         (int)cast_object (z)->te_xCoordinate,
         (int)cast_object (z)->te_yCoordinate,
         x->x_isVertical ? gensym ("vradio") : gensym ("hradio"),

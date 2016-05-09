@@ -548,7 +548,7 @@ static void dial_behaviorSave (t_gobj *z, t_buffer *b)
 
     buffer_vAppend (b, "ssiisiiffiisssiiiisssfi",
         sym__X,
-        gensym ("obj"),
+        sym_obj,
         (int)cast_object (z)->te_xCoordinate,
         (int)cast_object (z)->te_yCoordinate,
         gensym ("nbx"),

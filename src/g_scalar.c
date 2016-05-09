@@ -391,7 +391,7 @@ static void scalar_save(t_gobj *z, t_buffer *b)
     t_atom a, *argv;
     int i, argc;
     canvas_writescalar(x->sc_template, x->sc_vector, b2, 0);
-    buffer_vAppend(b, "ss", sym__X, gensym ("scalar"));
+    buffer_vAppend(b, "ss", sym__X, sym_scalar);
     buffer_serialize(b, b2);
     buffer_appendSemicolon(b);
     buffer_free(b2);
@@ -450,7 +450,7 @@ static void scalar_free(t_scalar *x)
 
 void g_scalar_setup(void)
 {
-    scalar_class = class_new(gensym ("scalar"), 0, (t_method)scalar_free, 0,
+    scalar_class = class_new(sym_scalar, 0, (t_method)scalar_free, 0,
         CLASS_GRAPHIC, 0);
     class_setWidgetBehavior(scalar_class, &scalar_widgetbehavior);
     class_setSaveFunction(scalar_class, scalar_save);
