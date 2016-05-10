@@ -145,9 +145,9 @@ void message_initialize (void)
     
     symbols_initialize();
     
-    PD_ASSERT (sym__N == &s__N);
-    PD_ASSERT (sym__X == &s__X);
-    PD_ASSERT (sym__A == &s__A);
+    PD_ASSERT (sym___hash__N == &s__N);
+    PD_ASSERT (sym___hash__X == &s__X);
+    PD_ASSERT (sym___hash__A == &s__A);
 }
 
 // -----------------------------------------------------------------------------------------------------------

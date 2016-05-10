@@ -73,7 +73,7 @@ static void *sig_tilde_new(t_float f)
 {
     t_sig *x = (t_sig *)pd_new(sig_tilde_class);
     x->x_f = f;
-    outlet_new(&x->x_obj, gensym ("signal"));
+    outlet_new(&x->x_obj, sym_signal);
     return (x);
 }
 
@@ -211,7 +211,7 @@ static void line_tilde_dsp(t_line *x, t_signal **sp)
 static void *line_tilde_new(void)
 {
     t_line *x = (t_line *)pd_new(line_tilde_class);
-    outlet_new(&x->x_obj, gensym ("signal"));
+    outlet_new(&x->x_obj, sym_signal);
     inlet_newFloat(&x->x_obj, &x->x_inletvalue);
     x->x_ticksleft = x->x_retarget = 0;
     x->x_value = x->x_target = x->x_inletvalue = x->x_inletwas = 0;
@@ -400,7 +400,7 @@ static void vline_tilde_dsp(t_vline *x, t_signal **sp)
 static void *vline_tilde_new(void)
 {
     t_vline *x = (t_vline *)pd_new(vline_tilde_class);
-    outlet_new(&x->x_obj, gensym ("signal"));
+    outlet_new(&x->x_obj, sym_signal);
     inlet_newFloat(&x->x_obj, &x->x_inlet1);
     inlet_newFloat(&x->x_obj, &x->x_inlet2);
     x->x_inlet1 = x->x_inlet2 = 0;

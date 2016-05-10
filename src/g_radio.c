@@ -526,7 +526,7 @@ static void radio_behaviorSave (t_gobj *z, t_buffer *b)
     iemgui_serialize (&x->x_gui, &names, &colors);
     
     buffer_vAppend (b, "ssiisiiiisssiiiisssf", 
-        sym__X,
+        sym___hash__X,
         sym_obj,
         (int)cast_object (z)->te_xCoordinate,
         (int)cast_object (z)->te_yCoordinate,

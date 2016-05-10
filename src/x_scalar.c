@@ -28,7 +28,7 @@ static void *scalar_define_new(t_symbol *s, int argc, t_atom *argv)
     t_atom a[9];
     t_glist *gl;
     t_glist *x, *z = canvas_getCurrent();
-    t_symbol *templatesym = &s_float, *asym = sym__A;
+    t_symbol *templatesym = &s_float, *asym = sym___hash__A;
     t_template *template;
     t_scalar *sc;
     int keep = 0;
@@ -138,7 +138,7 @@ static void scalar_define_set(t_glist *x, t_symbol *s, int argc, t_atom *argv)
 static void scalar_define_save(t_gobj *z, t_buffer *bb)
 {
     t_glist *x = (t_glist *)z;
-    buffer_vAppend(bb, "ssff", sym__X, sym_obj,
+    buffer_vAppend(bb, "ssff", sym___hash__X, sym_obj,
         (float)x->gl_obj.te_xCoordinate, (float)x->gl_obj.te_yCoordinate);
     buffer_serialize(bb, x->gl_obj.te_buffer);
     buffer_appendSemicolon(bb);
@@ -147,7 +147,7 @@ static void scalar_define_save(t_gobj *z, t_buffer *bb)
     {
         t_buffer *b2 = buffer_new();
         t_scalar *sc = (t_scalar *)(x->gl_graphics);
-        buffer_vAppend(bb, "ss", sym__A, sym_set);
+        buffer_vAppend(bb, "ss", sym___hash__A, sym_set);
         canvas_writescalar(sc->sc_template, sc->sc_vector, b2, 0);
         buffer_serialize(bb, b2);
         buffer_appendSemicolon(bb);

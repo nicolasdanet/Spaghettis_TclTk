@@ -286,7 +286,7 @@ static void *tabread_tilde_new(t_symbol *s)
     t_tabread_tilde *x = (t_tabread_tilde *)pd_new(tabread_tilde_class);
     x->x_arrayname = s;
     x->x_vec = 0;
-    outlet_new(&x->x_obj, gensym ("signal"));
+    outlet_new(&x->x_obj, sym_signal);
     x->x_f = 0;
     return (x);
 }
@@ -384,7 +384,7 @@ static void *tabread4_tilde_new(t_symbol *s)
     t_tabread4_tilde *x = (t_tabread4_tilde *)pd_new(tabread4_tilde_class);
     x->x_arrayname = s;
     x->x_vec = 0;
-    outlet_new(&x->x_obj, gensym ("signal"));
+    outlet_new(&x->x_obj, sym_signal);
     inlet_newFloat(&x->x_obj, &x->x_onset);
     x->x_f = 0;
     x->x_onset = 0;
@@ -561,7 +561,7 @@ static void *tabosc4_tilde_new(t_symbol *s)
     x->x_vec = 0;
     x->x_fnpoints = 512.;
     x->x_finvnpoints = (1./512.);
-    outlet_new(&x->x_obj, gensym ("signal"));
+    outlet_new(&x->x_obj, sym_signal);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, sym_ft1);
     x->x_f = 0;
     return (x);

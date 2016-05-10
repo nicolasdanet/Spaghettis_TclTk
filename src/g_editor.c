@@ -1167,7 +1167,7 @@ void canvas_stowconnections(t_glist *x)
         int s2 = canvas_isObjectSelected(x, &t.tr_destObject->te_g);
         if (s1 != s2)
             buffer_vAppend(x->gl_editor->e_buffer, "ssiiii;",
-                sym__X, sym_connect,
+                sym___hash__X, sym_connect,
                     canvas_getIndexOfObject(x, &t.tr_srcObject->te_g), t.tr_srcIndexOfOutlet,
                         canvas_getIndexOfObject(x, &t.tr_destObject->te_g), t.tr_destIndexOfInlet);
     }
@@ -1198,7 +1198,7 @@ static t_buffer *canvas_docopy(t_glist *x)
         if (canvas_isObjectSelected(x, &t.tr_srcObject->te_g)
             && canvas_isObjectSelected(x, &t.tr_destObject->te_g))
         {
-            buffer_vAppend(b, "ssiiii;", sym__X, sym_connect,
+            buffer_vAppend(b, "ssiiii;", sym___hash__X, sym_connect,
                 canvas_getIndexOfObjectAmongSelected(x, &t.tr_srcObject->te_g), t.tr_srcIndexOfOutlet,
                 canvas_getIndexOfObjectAmongSelected(x, &t.tr_destObject->te_g), t.tr_destIndexOfInlet);
         }
@@ -1271,7 +1271,7 @@ static void canvas_dopaste(t_glist *x, t_buffer *b)
 {
     t_gobj *newgobj, *last, *g2;
     int dspstate = dsp_suspend(), nbox, count;
-    t_symbol *asym = sym__A;
+    t_symbol *asym = sym___hash__A;
         /* save and clear bindings to symbols #a, $N, $X; restore when done */
     t_pd *boundx = s__X.s_thing, *bounda = asym->s_thing, 
         *boundn = s__N.s_thing;

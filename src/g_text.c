@@ -1149,19 +1149,19 @@ void text_save(t_gobj *z, t_buffer *b)
                     || canvas_istable((t_glist *)x))))
         {  
             mess1((t_pd *)x, sym_saveto, b);
-            buffer_vAppend(b, "ssii", sym__X, sym_restore,
+            buffer_vAppend(b, "ssii", sym___hash__X, sym_restore,
                 (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         }
         else    /* otherwise just save the text */
         {
-            buffer_vAppend(b, "ssii", sym__X, sym_obj,
+            buffer_vAppend(b, "ssii", sym___hash__X, sym_obj,
                 (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         }
         buffer_serialize(b, x->te_buffer);
     }
     else if (x->te_type == TYPE_MESSAGE)
     {
-        buffer_vAppend(b, "ssii", sym__X, sym_msg,
+        buffer_vAppend(b, "ssii", sym___hash__X, sym_msg,
             (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         buffer_serialize(b, x->te_buffer);
     }
@@ -1173,7 +1173,7 @@ void text_save(t_gobj *z, t_buffer *b)
         t_symbol *label = gatom_escapit(((t_gatom *)x)->a_label);
         t_symbol *symfrom = gatom_escapit(((t_gatom *)x)->a_symfrom);
         t_symbol *symto = gatom_escapit(((t_gatom *)x)->a_symto);
-        buffer_vAppend(b, "ssiiifffsss", sym__X, sel,
+        buffer_vAppend(b, "ssiiifffsss", sym___hash__X, sel,
             (int)x->te_xCoordinate, (int)x->te_yCoordinate, (int)x->te_width,
             (double)((t_gatom *)x)->a_draglo,
             (double)((t_gatom *)x)->a_draghi,
@@ -1182,7 +1182,7 @@ void text_save(t_gobj *z, t_buffer *b)
     }           
     else        
     {
-        buffer_vAppend(b, "ssii", sym__X, sym_text,
+        buffer_vAppend(b, "ssii", sym___hash__X, sym_text,
             (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         buffer_serialize(b, x->te_buffer);
     }

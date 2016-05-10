@@ -184,8 +184,8 @@ static void textbuf_free(t_textbuf *x)
         guiconnect_release(x->b_guiconnect, 1000);
     }
         /* just in case we're still bound to #A from loading... */
-    while (x2 = pd_findByClass(sym__A, text_define_class))
-        pd_unbind(x2, sym__A);
+    while (x2 = pd_findByClass(sym___hash__A, text_define_class))
+        pd_unbind(x2, sym___hash__A);
 }
 
     /* random helper function */
@@ -230,7 +230,7 @@ typedef struct _text_define
 static void *text_define_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_text_define *x = (t_text_define *)pd_new(text_define_class);
-    t_symbol *asym = sym__A;
+    t_symbol *asym = sym___hash__A;
     x->x_keep = 0;
     x->x_bindsym = &s_;
     while (argc && argv->a_type == A_SYMBOL &&
@@ -340,13 +340,13 @@ void text_define_set(t_text_define *x, t_symbol *s, int argc, t_atom *argv)
 static void text_define_save(t_gobj *z, t_buffer *bb)
 {
     t_text_define *x = (t_text_define *)z;
-    buffer_vAppend(bb, "ssff", sym__X, sym_obj,
+    buffer_vAppend(bb, "ssff", sym___hash__X, sym_obj,
         (float)x->x_ob.te_xCoordinate, (float)x->x_ob.te_yCoordinate);
     buffer_serialize(bb, x->x_ob.te_buffer);
     buffer_appendSemicolon(bb);
     if (x->x_keep)
     {
-        buffer_vAppend(bb, "ss", sym__A, sym_set);
+        buffer_vAppend(bb, "ss", sym___hash__A, sym_set);
         buffer_serialize(bb, x->x_binbuf);
         buffer_appendSemicolon(bb);
     }
