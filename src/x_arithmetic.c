@@ -716,7 +716,7 @@ void x_arithmetic_setup(void)
     t_symbol *binop23_sym = sym___ampersand____ampersand__;
     t_symbol *math_sym = sym_sqrt;
 
-    binop1_plus_class = class_new(gensym ("+"), (t_newmethod)binop1_plus_new, 0,
+    binop1_plus_class = class_new (sym___plus__, (t_newmethod)binop1_plus_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
     class_addBang(binop1_plus_class, binop1_plus_bang);
     class_addFloat(binop1_plus_class, (t_method)binop1_plus_float);
@@ -729,14 +729,14 @@ void x_arithmetic_setup(void)
     class_addFloat(binop1_minus_class, (t_method)binop1_minus_float);
     class_setHelpName(binop1_minus_class, binop1_sym);
 
-    binop1_times_class = class_new(gensym ("*"),
+    binop1_times_class = class_new(sym___asterisk__,
         (t_newmethod)binop1_times_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
     class_addBang(binop1_times_class, binop1_times_bang);
     class_addFloat(binop1_times_class, (t_method)binop1_times_float);
     class_setHelpName(binop1_times_class, binop1_sym);
 
-    binop1_div_class = class_new(gensym ("/"),
+    binop1_div_class = class_new (sym___slash__,
         (t_newmethod)binop1_div_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
     class_addBang(binop1_div_class, binop1_div_bang);
@@ -750,14 +750,14 @@ void x_arithmetic_setup(void)
     class_addFloat(binop1_pow_class, (t_method)binop1_pow_float);
     class_setHelpName(binop1_pow_class, binop1_sym);
 
-    binop1_max_class = class_new(gensym ("max"),
+    binop1_max_class = class_new (sym_max,
         (t_newmethod)binop1_max_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
     class_addBang(binop1_max_class, binop1_max_bang);
     class_addFloat(binop1_max_class, (t_method)binop1_max_float);
     class_setHelpName(binop1_max_class, binop1_sym);
 
-    binop1_min_class = class_new(gensym ("min"),
+    binop1_min_class = class_new (sym_min,
         (t_newmethod)binop1_min_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
     class_addBang(binop1_min_class, binop1_min_bang);
@@ -766,37 +766,37 @@ void x_arithmetic_setup(void)
 
         /* ------------------ binop2 ----------------------- */
 
-    binop2_ee_class = class_new(gensym ("=="), (t_newmethod)binop2_ee_new, 0,
+    binop2_ee_class = class_new(sym___equals____equals__, (t_newmethod)binop2_ee_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
     class_addBang(binop2_ee_class, binop2_ee_bang);
     class_addFloat(binop2_ee_class, (t_method)binop2_ee_float);
     class_setHelpName(binop2_ee_class, binop23_sym);
 
-    binop2_ne_class = class_new(gensym ("!="), (t_newmethod)binop2_ne_new, 0,
+    binop2_ne_class = class_new(sym___exclamation____equals__, (t_newmethod)binop2_ne_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
     class_addBang(binop2_ne_class, binop2_ne_bang);
     class_addFloat(binop2_ne_class, (t_method)binop2_ne_float);
     class_setHelpName(binop2_ne_class, binop23_sym);
 
-    binop2_gt_class = class_new(gensym (">"), (t_newmethod)binop2_gt_new, 0,
+    binop2_gt_class = class_new(sym___greater__, (t_newmethod)binop2_gt_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
     class_addBang(binop2_gt_class, binop2_gt_bang);
     class_addFloat(binop2_gt_class, (t_method)binop2_gt_float);
     class_setHelpName(binop2_gt_class, binop23_sym);
 
-    binop2_lt_class = class_new(gensym ("<"), (t_newmethod)binop2_lt_new, 0,
+    binop2_lt_class = class_new(sym___less__, (t_newmethod)binop2_lt_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
     class_addBang(binop2_lt_class, binop2_lt_bang);
     class_addFloat(binop2_lt_class, (t_method)binop2_lt_float);
     class_setHelpName(binop2_lt_class, binop23_sym);
 
-    binop2_ge_class = class_new(gensym (">="), (t_newmethod)binop2_ge_new, 0,
+    binop2_ge_class = class_new(sym___greater____equals__, (t_newmethod)binop2_ge_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
     class_addBang(binop2_ge_class, binop2_ge_bang);
     class_addFloat(binop2_ge_class, (t_method)binop2_ge_float);
     class_setHelpName(binop2_ge_class, binop23_sym);
 
-    binop2_le_class = class_new(gensym ("<="), (t_newmethod)binop2_le_new, 0,
+    binop2_le_class = class_new (sym___less____equals__, (t_newmethod)binop2_le_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
     class_addBang(binop2_le_class, binop2_le_bang);
     class_addFloat(binop2_le_class, (t_method)binop2_le_float);
@@ -804,7 +804,7 @@ void x_arithmetic_setup(void)
 
         /* ------------------ binop3 ----------------------- */
 
-    binop3_ba_class = class_new(gensym ("&"), (t_newmethod)binop3_ba_new, 0,
+    binop3_ba_class = class_new (sym___ampersand__, (t_newmethod)binop3_ba_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
     class_addBang(binop3_ba_class, binop2_ba_bang);
     class_addFloat(binop3_ba_class, (t_method)binop2_ba_float);
@@ -816,43 +816,43 @@ void x_arithmetic_setup(void)
     class_addFloat(binop3_la_class, (t_method)binop2_la_float);
     class_setHelpName(binop3_la_class, binop23_sym);
 
-    binop3_bo_class = class_new(gensym ("|"), (t_newmethod)binop3_bo_new, 0,
+    binop3_bo_class = class_new (sym___bar__, (t_newmethod)binop3_bo_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
     class_addBang(binop3_bo_class, binop2_bo_bang);
     class_addFloat(binop3_bo_class, (t_method)binop2_bo_float);
     class_setHelpName(binop3_bo_class, binop23_sym);
 
-    binop3_lo_class = class_new(gensym ("||"), (t_newmethod)binop3_lo_new, 0,
+    binop3_lo_class = class_new (sym___bar____bar__, (t_newmethod)binop3_lo_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
     class_addBang(binop3_lo_class, binop2_lo_bang);
     class_addFloat(binop3_lo_class, (t_method)binop2_lo_float);
     class_setHelpName(binop3_lo_class, binop23_sym);
 
-    binop3_ls_class = class_new(gensym ("<<"), (t_newmethod)binop3_ls_new, 0,
+    binop3_ls_class = class_new(sym___less____less__, (t_newmethod)binop3_ls_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
     class_addBang(binop3_ls_class, binop2_ls_bang);
     class_addFloat(binop3_ls_class, (t_method)binop2_ls_float);
     class_setHelpName(binop3_ls_class, binop23_sym);
 
-    binop3_rs_class = class_new(gensym (">>"), (t_newmethod)binop3_rs_new, 0,
+    binop3_rs_class = class_new(sym___greater____greater__, (t_newmethod)binop3_rs_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
     class_addBang(binop3_rs_class, binop2_rs_bang);
     class_addFloat(binop3_rs_class, (t_method)binop2_rs_float);
     class_setHelpName(binop3_rs_class, binop23_sym);
 
-    binop3_pc_class = class_new(gensym ("%"), (t_newmethod)binop3_pc_new, 0,
+    binop3_pc_class = class_new(sym___percent__, (t_newmethod)binop3_pc_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
     class_addBang(binop3_pc_class, binop2_pc_bang);
     class_addFloat(binop3_pc_class, (t_method)binop2_pc_float);
     class_setHelpName(binop3_pc_class, binop23_sym);
 
-    binop3_mod_class = class_new(gensym ("mod"), (t_newmethod)binop3_mod_new, 0,
+    binop3_mod_class = class_new(sym_mod, (t_newmethod)binop3_mod_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
     class_addBang(binop3_mod_class, binop3_mod_bang);
     class_addFloat(binop3_mod_class, (t_method)binop3_mod_float);
     class_setHelpName(binop3_mod_class, binop23_sym);
 
-    binop3_div_class = class_new(gensym ("div"), (t_newmethod)binop3_div_new, 0,
+    binop3_div_class = class_new (sym_div, (t_newmethod)binop3_div_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
     class_addBang(binop3_div_class, binop3_div_bang);
     class_addFloat(binop3_div_class, (t_method)binop3_div_float);
@@ -860,27 +860,27 @@ void x_arithmetic_setup(void)
 
         /* ------------------- math functions --------------- */
     
-    sin_class = class_new(gensym ("sin"), sin_new, 0,
+    sin_class = class_new (sym_sin, sin_new, 0,
         sizeof(t_object), 0, 0);
     class_addFloat(sin_class, (t_method)sin_float);
     class_setHelpName(sin_class, math_sym);
     
-    cos_class = class_new(gensym ("cos"), cos_new, 0,
+    cos_class = class_new (sym_cos, cos_new, 0,
         sizeof(t_object), 0, 0);
     class_addFloat(cos_class, (t_method)cos_float);
     class_setHelpName(cos_class, math_sym);
     
-    tan_class = class_new(gensym ("tan"), tan_new, 0,
+    tan_class = class_new (sym_tan, tan_new, 0,
         sizeof(t_object), 0, 0);
     class_addFloat(tan_class, (t_method)tan_float);
     class_setHelpName(tan_class, math_sym);
 
-    atan_class = class_new(gensym ("atan"), atan_new, 0,
+    atan_class = class_new(sym_atan, atan_new, 0,
         sizeof(t_object), 0, 0);
     class_addFloat(atan_class, (t_method)atan_float);
     class_setHelpName(atan_class, math_sym);
 
-    atan2_class = class_new(gensym ("atan2"), atan2_new, 0,
+    atan2_class = class_new(sym_atan2, atan2_new, 0,
         sizeof(t_atan2), 0, 0);
     class_addFloat(atan2_class, (t_method)atan2_float);    
     class_setHelpName(atan2_class, math_sym);
@@ -895,17 +895,17 @@ void x_arithmetic_setup(void)
     class_addFloat(log_class, (t_method)log_float);    
     class_setHelpName(log_class, math_sym);
 
-    exp_class = class_new(gensym ("exp"), exp_new, 0,
+    exp_class = class_new(sym_exp, exp_new, 0,
         sizeof(t_object), 0, 0);
     class_addFloat(exp_class, (t_method)exp_float);
     class_setHelpName(exp_class, math_sym);
 
-    abs_class = class_new(gensym ("abs"), abs_new, 0,
+    abs_class = class_new(sym_abs, abs_new, 0,
         sizeof(t_object), 0, 0);
     class_addFloat(abs_class, (t_method)abs_float);    
     class_setHelpName(abs_class, math_sym);
 
-    wrap_class = class_new(gensym ("wrap"), wrap_new, 0,
+    wrap_class = class_new (sym_wrap, wrap_new, 0,
         sizeof(t_object), 0, 0);
     class_addFloat(wrap_class, (t_method)wrap_float);    
     class_setHelpName(wrap_class, math_sym);
