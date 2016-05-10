@@ -126,9 +126,9 @@ proc create {top type
     set iemExtra($top)              $extra
     set iemExtraMaximum($top)       $extraMaximum
     set iemExtraLabel($top)         $extraLabel
-    set iemSend($top)               [::rauteToDollar [::parseEmpty $send]]
-    set iemReceive($top)            [::rauteToDollar [::parseEmpty $receive]]
-    set iemName($top)               [::rauteToDollar [::parseEmpty $name]]
+    set iemSend($top)               [::hashToDollar [::parseEmpty $send]]
+    set iemReceive($top)            [::hashToDollar [::parseEmpty $receive]]
+    set iemName($top)               [::hashToDollar [::parseEmpty $name]]
     set iemNameDeltaX($top)         $nameDeltaX
     set iemNameDeltaY($top)         $nameDeltaY
     set iemNameFontSize($top)       $nameFontSize
@@ -501,9 +501,9 @@ proc _apply {top} {
             $iemCheck($top) \
             $iemLoadbang($top) \
             $iemExtra($top) \
-            [::sanitized [::dollarToRaute [::withEmpty $iemSend($top)]]] \
-            [::sanitized [::dollarToRaute [::withEmpty $iemReceive($top)]]] \
-            [::sanitized [::dollarToRaute [::withEmpty $iemName($top)]]] \
+            [::sanitized [::dollarToHash [::withEmpty $iemSend($top)]]] \
+            [::sanitized [::dollarToHash [::withEmpty $iemReceive($top)]]] \
+            [::sanitized [::dollarToHash [::withEmpty $iemName($top)]]] \
             $iemNameDeltaX($top) \
             $iemNameDeltaY($top) \
             $iemNameFontSize($top) \

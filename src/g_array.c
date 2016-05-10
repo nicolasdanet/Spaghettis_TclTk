@@ -392,7 +392,7 @@ void garray_properties(t_garray *x)
         properly; right now we just detect a leading '$' and escape
         it.  There should be a systematic way of doing this. */
     sprintf(cmdbuf, "::ui_array::show %%s %s %d %d\n",
-            dollar_toRaute(x->x_name)->s_name, a->a_n, x->x_saveit + 
+            dollar_toHash(x->x_name)->s_name, a->a_n, x->x_saveit + 
             2 * filestyle);
     guistub_new(&x->x_gobj.g_pd, x, cmdbuf);
 }
@@ -410,7 +410,7 @@ void glist_arraydialog(t_glist *parent, t_symbol *name, t_float size,
     if (0 /* otherflag */ == 0 || (!(gl = glist_findgraph(parent))))
         gl = canvas_addGraph(parent, &s_, 0, 1,
             size, -1, 0, 0, 0, 0);
-    a = graph_array(gl, dollar_fromRaute(name), &s_float, size, flags);
+    a = graph_array(gl, dollar_fromHash(name), &s_float, size, flags);
     canvas_dirty(parent, 1);
 }
 
@@ -438,7 +438,7 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize,
         long size;
         int styleonset, styletype;
         t_symbol *stylearraytype;
-        t_symbol *argname = dollar_fromRaute(name);
+        t_symbol *argname = dollar_fromHash(name);
         t_array *a = garray_getarray(x);
         t_template *scalartemplate;
         if (!a)

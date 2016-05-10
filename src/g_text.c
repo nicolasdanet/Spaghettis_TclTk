@@ -534,7 +534,7 @@ static t_symbol *gatom_escapit(t_symbol *s)
         shmo[99] = 0;
         return (gensym (shmo));
     }
-    else return (dollar_toRaute(s));
+    else return (dollar_toHash(s));
 }
 
     /* undo previous operation: strip leading "-" if found. */
@@ -542,7 +542,7 @@ static t_symbol *gatom_unescapit(t_symbol *s)
 {
     if (*s->s_name == '-')
         return (gensym (s->s_name+1));
-    else return (dollar_fromRaute(s));
+    else return (dollar_fromHash(s));
 }
 
 static void gatom_redraw(t_gobj *client, t_glist *glist)

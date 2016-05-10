@@ -704,7 +704,7 @@ static void clip_float(t_clip *x, t_float f)
 
 static void clip_setup(void)
 {
-    clip_class = class_new(gensym ("clip"), (t_newmethod)clip_new, 0,
+    clip_class = class_new (sym_clip, (t_newmethod)clip_new, 0,
         sizeof(t_clip), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
     class_addFloat(clip_class, clip_float);
     class_addBang(clip_class, clip_bang);
@@ -712,9 +712,9 @@ static void clip_setup(void)
 
 void x_arithmetic_setup(void)
 {
-    t_symbol *binop1_sym = gensym ("pow");
-    t_symbol *binop23_sym = gensym ("&&");
-    t_symbol *math_sym = gensym ("sqrt");
+    t_symbol *binop1_sym = sym_pow;
+    t_symbol *binop23_sym = sym___ampersand____ampersand__;
+    t_symbol *math_sym = sym_sqrt;
 
     binop1_plus_class = class_new(gensym ("+"), (t_newmethod)binop1_plus_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
@@ -743,7 +743,7 @@ void x_arithmetic_setup(void)
     class_addFloat(binop1_div_class, (t_method)binop1_div_float);
     class_setHelpName(binop1_div_class, binop1_sym);
 
-    binop1_pow_class = class_new(gensym ("pow"),
+    binop1_pow_class = class_new(sym_pow,
         (t_newmethod)binop1_pow_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
     class_addBang(binop1_pow_class, binop1_pow_bang);
@@ -810,7 +810,7 @@ void x_arithmetic_setup(void)
     class_addFloat(binop3_ba_class, (t_method)binop2_ba_float);
     class_setHelpName(binop3_ba_class, binop23_sym);
 
-    binop3_la_class = class_new(gensym ("&&"), (t_newmethod)binop3_la_new, 0,
+    binop3_la_class = class_new(sym___ampersand____ampersand__, (t_newmethod)binop3_la_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
     class_addBang(binop3_la_class, binop2_la_bang);
     class_addFloat(binop3_la_class, (t_method)binop2_la_float);
@@ -885,7 +885,7 @@ void x_arithmetic_setup(void)
     class_addFloat(atan2_class, (t_method)atan2_float);    
     class_setHelpName(atan2_class, math_sym);
 
-    sqrt_class = class_new(gensym ("sqrt"), sqrt_new, 0,
+    sqrt_class = class_new(sym_sqrt, sqrt_new, 0,
         sizeof(t_object), 0, 0);
     class_addFloat(sqrt_class, (t_method)sqrt_float);
     class_setHelpName(sqrt_class, math_sym);

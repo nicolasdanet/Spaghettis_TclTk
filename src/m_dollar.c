@@ -156,7 +156,7 @@ void dollar_expandDollarNumber (t_atom *dollar, t_atom *a, int argc, t_atom *arg
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol *dollar_toRaute (t_symbol *s)
+t_symbol *dollar_toHash (t_symbol *s)
 {
     char t[PD_STRING + 1] = { 0 };
     char *s1 = NULL;
@@ -177,7 +177,7 @@ t_symbol *dollar_toRaute (t_symbol *s)
     }
 }
 
-t_symbol *dollar_fromRaute (t_symbol *s)
+t_symbol *dollar_fromHash (t_symbol *s)
 {
     char t[PD_STRING + 1] = { 0 };
     char *s1 = NULL;

@@ -58,7 +58,7 @@ proc _create {top name size flags} {
     wm minsize   $top {*}[::styleMinimumSize]
     wm geometry  $top [::rightNextTo $::var(windowFocused)]
     
-    set arrayName($top)         [::rauteToDollar $name]
+    set arrayName($top)         [::dollarToHash $name]
     set arraySize($top)         $size
     set arraySize(${top}.old)   $size
     set arraySave($top)         [expr {$flags & 1}]
@@ -148,7 +148,7 @@ proc _apply {top} {
     ::ui_array::_forceSize $top
     
     ::ui_interface::pdsend "$top _arraydialog \
-            [::sanitized [::dollarToRaute [::withEmpty $arrayName($top)]]] \
+            [::sanitized [::dollarToHash [::withEmpty $arrayName($top)]]] \
             $arraySize($top) \
             [expr {$arraySave($top) + (2 * $arrayDraw($top))}]"
 }

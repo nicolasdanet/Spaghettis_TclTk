@@ -93,7 +93,7 @@ proc parseDash  {x} {
 
     if {[string equal -length 1 $x "-"]} { return [string replace $x 0 0 ""] }
     
-    return [::rauteToDollar $x]
+    return [::hashToDollar $x]
 }
 
 proc withDash   {x} {
@@ -101,14 +101,14 @@ proc withDash   {x} {
     if {$x eq ""} { return "-" }
     if {[string equal -length 1 $x "-"]} { return [string replace $x 0 0 "--"] }
     
-    return [::dollarToRaute $x]
+    return [::dollarToHash $x]
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc rauteToDollar {x} { return [string map {"#" "$"} $x] }
-proc dollarToRaute {x} { return [string map {"$" "#"} $x] }    
+proc hashToDollar {x} { return [string map {"#" "$"} $x] }
+proc dollarToHash {x} { return [string map {"$" "#"} $x] }    
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------

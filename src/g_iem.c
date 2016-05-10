@@ -226,9 +226,9 @@ void iemgui_serializeNames (t_iem *iem, t_iemnames *n)
 {
     iemgui_fetchUnexpandedNames (iem, n);
     
-    n->n_unexpandedSend    = dollar_toRaute (n->n_unexpandedSend);
-    n->n_unexpandedReceive = dollar_toRaute (n->n_unexpandedReceive);
-    n->n_unexpandedLabel   = dollar_toRaute (n->n_unexpandedLabel);
+    n->n_unexpandedSend    = dollar_toHash (n->n_unexpandedSend);
+    n->n_unexpandedReceive = dollar_toHash (n->n_unexpandedReceive);
+    n->n_unexpandedLabel   = dollar_toHash (n->n_unexpandedLabel);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -250,7 +250,7 @@ void iemgui_checkSendReceiveLoop (t_iem *iem)
 
 void iemgui_setSend (void *x, t_iem *iem, t_symbol *s)
 {
-    t_symbol *t = dollar_fromRaute (iemgui_parseEmpty (s));
+    t_symbol *t = dollar_fromHash (iemgui_parseEmpty (s));
     iem->iem_unexpandedSend = t;
     iem->iem_send = iemgui_expandDollar (iem->iem_owner, t);
     iem->iem_canSend = (s == iemgui_empty()) ? 0 : 1;
@@ -259,7 +259,7 @@ void iemgui_setSend (void *x, t_iem *iem, t_symbol *s)
 
 void iemgui_setReceive (void *x, t_iem *iem, t_symbol *s)
 {
-    t_symbol *t = dollar_fromRaute (iemgui_parseEmpty (s));
+    t_symbol *t = dollar_fromHash (iemgui_parseEmpty (s));
     if (iem->iem_canReceive) { pd_unbind (cast_pd (iem), iem->iem_receive); }
     iem->iem_unexpandedReceive = t;
     iem->iem_receive = iemgui_expandDollar (iem->iem_owner, t);
@@ -270,7 +270,7 @@ void iemgui_setReceive (void *x, t_iem *iem, t_symbol *s)
 
 void iemgui_setLabel (void *x, t_iem *iem, t_symbol *s)
 {
-    t_symbol *t = dollar_fromRaute (iemgui_parseEmpty (s));
+    t_symbol *t = dollar_fromHash (iemgui_parseEmpty (s));
     iem->iem_unexpandedLabel = t;
     iem->iem_label = iemgui_expandDollar (iem->iem_owner, t);
 
@@ -497,9 +497,9 @@ void iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
     int canSend                 = 1;
     int canReceive              = 1;
 
-    t_symbol *s1 = dollar_fromRaute (iemgui_fetchName (7, argv));
-    t_symbol *s2 = dollar_fromRaute (iemgui_fetchName (8, argv));
-    t_symbol *s3 = dollar_fromRaute (iemgui_fetchName (9, argv));
+    t_symbol *s1 = dollar_fromHash (iemgui_fetchName (7, argv));
+    t_symbol *s2 = dollar_fromHash (iemgui_fetchName (8, argv));
+    t_symbol *s3 = dollar_fromHash (iemgui_fetchName (9, argv));
 
     iem->iem_unexpandedSend     = s1;
     iem->iem_unexpandedReceive  = s2;

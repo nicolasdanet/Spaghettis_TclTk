@@ -31,6 +31,7 @@ t_symbol s_         = { ""          , NULL, NULL };         /* Shared. */
 
 /* Shared. */
 
+t_symbol *sym___ampersand____ampersand__;
 t_symbol *sym___comma__;
 t_symbol *sym___dash__;
 t_symbol *sym___dot__;
@@ -84,6 +85,7 @@ t_symbol *sym_canvasmaker;
 t_symbol *sym_change;
 t_symbol *sym_clear;
 t_symbol *sym_click;
+t_symbol *sym_clip;
 t_symbol *sym_close;
 t_symbol *sym_cnv;
 t_symbol *sym_color;
@@ -92,6 +94,8 @@ t_symbol *sym_connect;
 t_symbol *sym_coords;
 t_symbol *sym_cosinesum;
 t_symbol *sym_data;
+t_symbol *sym_dbtopow;
+t_symbol *sym_dbtorms;
 t_symbol *sym_deselect;
 t_symbol *sym_dirty;
 t_symbol *sym_disconnect;
@@ -112,6 +116,7 @@ t_symbol *sym_ft1;
 t_symbol *sym_flashtime;
 t_symbol *sym_floatatom;
 t_symbol *sym_foregroundcolor;
+t_symbol *sym_ftom;
 t_symbol *sym_gatom;
 t_symbol *sym_get;
 t_symbol *sym_getposition;
@@ -144,6 +149,7 @@ t_symbol *sym_mouse;
 t_symbol *sym_mouseup;
 t_symbol *sym_move;
 t_symbol *sym_msg;
+t_symbol *sym_mtof;
 t_symbol *sym_nbx;
 t_symbol *sym_new;
 t_symbol *sym_next;
@@ -162,6 +168,8 @@ t_symbol *sym_pd__dash__float__dash__array;
 t_symbol *sym_plot;
 t_symbol *sym_pointer;
 t_symbol *sym_position;
+t_symbol *sym_pow;
+t_symbol *sym_powtodb;
 t_symbol *sym_print;
 t_symbol *sym_quit;
 t_symbol *sym_radio;
@@ -172,6 +180,7 @@ t_symbol *sym_rename;
 t_symbol *sym_resize;
 t_symbol *sym_restore;
 t_symbol *sym_rewind;
+t_symbol *sym_rmstodb;
 t_symbol *sym_saveto;
 t_symbol *sym_savetofile;
 t_symbol *sym_scalar;
@@ -185,6 +194,7 @@ t_symbol *sym_sinesum;
 t_symbol *sym_size;
 t_symbol *sym_slider;
 t_symbol *sym_sort;
+t_symbol *sym_sqrt;
 t_symbol *sym_steady;
 t_symbol *sym_steps;
 t_symbol *sym_struct;
@@ -264,6 +274,7 @@ t_symbol *sym_vumeter;
 
 void symbols_initialize (void)
 { 
+    sym___ampersand____ampersand__      = gensym ("&&");
     sym___comma__                       = gensym (",");
     sym___dash__                        = gensym ("-");
     sym___dot__                         = gensym (".");
@@ -317,6 +328,7 @@ void symbols_initialize (void)
     sym_change                          = gensym ("change");
     sym_clear                           = gensym ("clear");
     sym_click                           = gensym ("click");
+    sym_clip                            = gensym ("clip");
     sym_close                           = gensym ("close");
     sym_cnv                             = gensym ("cnv");
     sym_color                           = gensym ("color");
@@ -325,6 +337,8 @@ void symbols_initialize (void)
     sym_coords                          = gensym ("coords");
     sym_cosinesum                       = gensym ("cosinesum");
     sym_data                            = gensym ("data");
+    sym_dbtopow                         = gensym ("dbtopow");
+    sym_dbtorms                         = gensym ("dbtorms");
     sym_deselect                        = gensym ("deselect");
     sym_dirty                           = gensym ("dirty");
     sym_disconnect                      = gensym ("disconnect");
@@ -345,6 +359,7 @@ void symbols_initialize (void)
     sym_flashtime                       = gensym ("flashtime");
     sym_floatatom                       = gensym ("floatatom");
     sym_foregroundcolor                 = gensym ("foregroundcolor");
+    sym_ftom                            = gensym ("ftom");
     sym_gatom                           = gensym ("gatom");
     sym_get                             = gensym ("get");
     sym_getposition                     = gensym ("getposition");
@@ -377,6 +392,7 @@ void symbols_initialize (void)
     sym_mouseup                         = gensym ("mouseup");
     sym_move                            = gensym ("move");
     sym_msg                             = gensym ("msg");
+    sym_mtof                            = gensym ("mtof");
     sym_nbx                             = gensym ("nbx");
     sym_new                             = gensym ("new");
     sym_next                            = gensym ("next");
@@ -395,6 +411,8 @@ void symbols_initialize (void)
     sym_plot                            = gensym ("plot");
     sym_pointer                         = gensym ("pointer");
     sym_position                        = gensym ("position");
+    sym_pow                             = gensym ("pow");
+    sym_powtodb                         = gensym ("powtodb");
     sym_print                           = gensym ("print");
     sym_quit                            = gensym ("quit");
     sym_radio                           = gensym ("radio");
@@ -405,6 +423,7 @@ void symbols_initialize (void)
     sym_resize                          = gensym ("resize");
     sym_restore                         = gensym ("restore");
     sym_rewind                          = gensym ("rewind");
+    sym_rmstodb                         = gensym ("rmstodb");
     sym_saveto                          = gensym ("saveto");
     sym_savetofile                      = gensym ("savetofile");
     sym_scalar                          = gensym ("scalar");
@@ -418,6 +437,7 @@ void symbols_initialize (void)
     sym_size                            = gensym ("size");
     sym_slider                          = gensym ("slider");
     sym_sort                            = gensym ("sort");
+    sym_sqrt                            = gensym ("sqrt");
     sym_steady                          = gensym ("steady");
     sym_steps                           = gensym ("steps");
     sym_struct                          = gensym ("struct");
