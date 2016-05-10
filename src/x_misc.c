@@ -89,7 +89,7 @@ static void random_setup(void)
         sizeof(t_random), 0, A_DEFFLOAT, 0);
     class_addBang(random_class, random_bang);
     class_addMethod(random_class, (t_method)random_seed,
-        gensym ("seed"), A_FLOAT, 0);
+        sym_seed, A_FLOAT, 0);
 }
 
 

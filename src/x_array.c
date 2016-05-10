@@ -35,7 +35,7 @@ static void *table_donew(t_symbol *s, int size, int flags,
     if (s == &s_)
     {
          char  tabname[255];
-         t_symbol *t = gensym ("table"); 
+         t_symbol *t = sym_table; 
          sprintf(tabname, "%s%d", t->s_name, tabcount++);
          s = gensym (tabname); 
     }
@@ -75,7 +75,7 @@ int canvas_istable(t_glist *x)
     t_atom *argv = (x->gl_obj.te_buffer? buffer_atoms(x->gl_obj.te_buffer):0);
     int argc = (x->gl_obj.te_buffer? buffer_size(x->gl_obj.te_buffer) : 0);
     int istable = (argc && argv[0].a_type == A_SYMBOL &&
-        argv[0].a_w.w_symbol == gensym ("table"));
+        argv[0].a_w.w_symbol == sym_table);
     return (istable);
 }
 
@@ -827,7 +827,7 @@ static void *arrayobj_new(t_symbol *s, int argc, t_atom *argv)
 
 void x_array_setup(void )
 {
-    array_define_class = class_new(gensym ("array define"), 0,
+    array_define_class = class_new(sym_array__space__define, 0,
         (t_method)canvas_free, sizeof(t_glist), 0, 0);
     
     class_addMethod(array_define_class, (t_method)canvas_restore,
@@ -853,7 +853,7 @@ void x_array_setup(void )
     class_addMethod(array_define_class, (t_method)canvas_close,
         sym_menuclose, A_DEFFLOAT, 0); /* LEGACY !!! */
     /*class_addMethod(array_define_class, (t_method)canvas_find_parent,
-        gensym ("findparent"), A_NULL)*/
+        gen_sym ("findparent"), A_NULL)*/
     class_addMethod(array_define_class, (t_method)canvas_menusave,
         sym_menusave, 0); /* LEGACY !!! */
     class_addMethod(array_define_class, (t_method)canvas_menusaveas,
@@ -870,59 +870,59 @@ void x_array_setup(void )
 
     class_addCreator((t_newmethod)arrayobj_new, sym_array, A_GIMME, 0);
 
-    class_addCreator((t_newmethod)table_new, gensym ("table"),
+    class_addCreator((t_newmethod)table_new, sym_table,
         A_DEFSYMBOL, A_DEFFLOAT, 0);
 
-    array_size_class = class_new(gensym ("array size"),
+    array_size_class = class_new(sym_array__space__size,
         (t_newmethod)array_size_new, (t_method)array_client_free,
             sizeof(t_array_size), 0, A_GIMME, 0);
     class_addBang(array_size_class, array_size_bang);
     class_addFloat(array_size_class, array_size_float);
     class_setHelpName(array_size_class, sym_array);
 
-    array_sum_class = class_new(gensym ("array sum"),
+    array_sum_class = class_new(sym_array__space__sum,
         (t_newmethod)array_sum_new, (t_method)array_client_free,
             sizeof(t_array_sum), 0, A_GIMME, 0);
     class_addBang(array_sum_class, array_sum_bang);
     class_addFloat(array_sum_class, array_sum_float);
     class_setHelpName(array_sum_class, sym_array);
 
-    array_get_class = class_new(gensym ("array get"),
+    array_get_class = class_new(sym_array__space__get,
         (t_newmethod)array_get_new, (t_method)array_client_free,
             sizeof(t_array_get), 0, A_GIMME, 0);
     class_addBang(array_get_class, array_get_bang);
     class_addFloat(array_get_class, array_get_float);
     class_setHelpName(array_get_class, sym_array);
 
-    array_set_class = class_new(gensym ("array set"),
+    array_set_class = class_new(sym_array__space__set,
         (t_newmethod)array_set_new, (t_method)array_client_free,
             sizeof(t_array_set), 0, A_GIMME, 0);
     class_addList(array_set_class, array_set_list);
     class_setHelpName(array_set_class, sym_array);
 
-    array_quantile_class = class_new(gensym ("array quantile"),
+    array_quantile_class = class_new(sym_array__space__quantile,
         (t_newmethod)array_quantile_new, (t_method)array_client_free,
             sizeof(t_array_quantile), 0, A_GIMME, 0);
     class_addFloat(array_quantile_class, array_quantile_float);
     class_setHelpName(array_quantile_class, sym_array);
 
-    array_random_class = class_new(gensym ("array random"),
+    array_random_class = class_new(sym_array__space__random,
         (t_newmethod)array_random_new, (t_method)array_client_free,
             sizeof(t_array_random), 0, A_GIMME, 0);
     class_addMethod(array_random_class, (t_method)array_random_seed,
-        gensym ("seed"), A_FLOAT, 0);
+        sym_seed, A_FLOAT, 0);
     class_addFloat(array_random_class, array_random_float);
     class_addBang(array_random_class, array_random_bang);
     class_setHelpName(array_random_class, sym_array);
 
-    array_max_class = class_new(gensym ("array max"),
+    array_max_class = class_new(sym_array__space__max,
         (t_newmethod)array_max_new, (t_method)array_client_free,
             sizeof(t_array_max), 0, A_GIMME, 0);
     class_addFloat(array_max_class, array_max_float);
     class_addBang(array_max_class, array_max_bang);
     class_setHelpName(array_max_class, sym_array);
 
-    array_min_class = class_new(gensym ("array min"),
+    array_min_class = class_new(sym_array__space__min,
         (t_newmethod)array_min_new, (t_method)array_client_free,
             sizeof(t_array_min), 0, A_GIMME, 0);
     class_addFloat(array_min_class, array_min_float);
