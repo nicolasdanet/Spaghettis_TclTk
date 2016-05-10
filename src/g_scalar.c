@@ -244,7 +244,7 @@ static void scalar_select(t_gobj *z, t_glist *owner, int state)
     gpointer_setglist(&gp, owner, x);
     SET_POINTER(&at, &gp);
     if (tmpl = template_findbyname(templatesym))
-        template_notify(tmpl, (state ? gensym ("select") : gensym ("deselect")),
+        template_notify(tmpl, (state ? sym_select : sym_deselect),
             1, &at);
     gpointer_unset(&gp);
     scalar_drawselectrect(x, owner, state);
@@ -281,7 +281,7 @@ static void scalar_displace(t_gobj *z, t_glist *glist, int dx, int dy)
     SET_POINTER(&at[0], &gp);
     SET_FLOAT(&at[1], (t_float)dx);
     SET_FLOAT(&at[2], (t_float)dy);
-    template_notify(template, gensym ("displace"), 2, at);
+    template_notify(template, sym_displace, 2, at);
     scalar_redraw(x, glist);
 }
 

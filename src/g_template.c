@@ -1314,14 +1314,14 @@ static void curve_free(t_curve *x)
 
 static void curve_setup(void)
 {
-    curve_class = class_new(gensym ("drawpolygon"), (t_newmethod)curve_new,
+    curve_class = class_new(sym_drawpolygon, (t_newmethod)curve_new,
         (t_method)curve_free, sizeof(t_curve), 0, A_GIMME, 0);
     class_setDrawCommand(curve_class);
-    class_addCreator((t_newmethod)curve_new, gensym ("drawcurve"),
+    class_addCreator((t_newmethod)curve_new, sym_drawcurve,
         A_GIMME, 0);
-    class_addCreator((t_newmethod)curve_new, gensym ("filledpolygon"),
+    class_addCreator((t_newmethod)curve_new, sym_filledpolygon,
         A_GIMME, 0);
-    class_addCreator((t_newmethod)curve_new, gensym ("filledcurve"),
+    class_addCreator((t_newmethod)curve_new, sym_filledcurve,
         A_GIMME, 0);
     class_setParentWidgetBehavior(curve_class, &curve_widgetbehavior);
     class_addFloat(curve_class, curve_float);
@@ -1357,7 +1357,7 @@ static void *plot_new(t_symbol *classsym, int argc, t_atom *argv)
 
     fielddesc_setfloat_var(&x->x_xpoints, sym_x);
     fielddesc_setfloat_var(&x->x_ypoints, sym_y);
-    fielddesc_setfloat_var(&x->x_wpoints, gensym ("w"));
+    fielddesc_setfloat_var(&x->x_wpoints, sym_w);
     
     fielddesc_setfloat_const(&x->x_vis, 1);
     fielddesc_setfloat_const(&x->x_scalarvis, 1);
@@ -1523,7 +1523,7 @@ int array_getfields(t_symbol *elemtemplatesym,
             xonset = -1;
     if (wfielddesc && wfielddesc->fd_var)
         varname = wfielddesc->fd_un.fd_varsym;
-    else varname = gensym ("w");
+    else varname = sym_w;
     if (!template_find_field(elemtemplate, varname, &wonset, &type, &dummy)
         || type != DATA_FLOAT) 
             wonset = -1;
@@ -2323,7 +2323,7 @@ t_parentwidgetbehavior plot_widgetbehavior =
 
 static void plot_setup(void)
 {
-    plot_class = class_new(gensym ("plot"), (t_newmethod)plot_new, 0,
+    plot_class = class_new(sym_plot, (t_newmethod)plot_new, 0,
         sizeof(t_plot), 0, A_GIMME, 0);
     class_setDrawCommand(plot_class);
     class_addFloat(plot_class, plot_float);
@@ -2705,14 +2705,14 @@ static void drawnumber_free(t_drawnumber *x)
 
 static void drawnumber_setup(void)
 {
-    drawnumber_class = class_new(gensym ("drawtext"),
+    drawnumber_class = class_new(sym_drawtext,
         (t_newmethod)drawnumber_new, (t_method)drawnumber_free,
         sizeof(t_drawnumber), 0, A_GIMME, 0);
     class_setDrawCommand(drawnumber_class);
     class_addFloat(drawnumber_class, drawnumber_float);
-    class_addCreator((t_newmethod)drawnumber_new, gensym ("drawsymbol"),
+    class_addCreator((t_newmethod)drawnumber_new, sym_drawsymbol,
         A_GIMME, 0);
-    class_addCreator((t_newmethod)drawnumber_new, gensym ("drawnumber"),
+    class_addCreator((t_newmethod)drawnumber_new, sym_drawnumber,
         A_GIMME, 0);
     class_setParentWidgetBehavior(drawnumber_class, &drawnumber_widgetbehavior);
 }

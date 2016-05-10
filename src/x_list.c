@@ -551,7 +551,7 @@ static void *list_new(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
     else
     {
         t_symbol *s2 = argv[0].a_w.w_symbol;
-        if (s2 == gensym ("append"))
+        if (s2 == sym_append)
             pd_newest = list_append_new(s, argc-1, argv+1);
         else if (s2 == gensym ("prepend"))
             pd_newest = list_prepend_new(s, argc-1, argv+1);

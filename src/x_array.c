@@ -89,10 +89,10 @@ static void array_define_yrange(t_glist *x, t_float ylo, t_float yhi)
         int n = garray_getarray((t_garray *)gl->gl_graphics)->a_n;
         pd_vMessage(&x->gl_graphics->g_pd, sym_bounds,
             "ffff", 0., yhi, (double)(n == 1 ? n : n-1), ylo);
-        /*pd_vMessage(&x->gl_graphics->g_pd, gensym ("xlabel"),
+        /*pd_vMessage(&x->gl_graphics->g_pd, gen_sym ("xlabel"),
             "fff", ylo + glist_pixelstoy(gl, 2) - glist_pixelstoy(gl, 0),
                 0., (float)(n-1));
-        pd_vMessage(&x->gl_graphics->g_pd, gensym ("ylabel"),
+        pd_vMessage(&x->gl_graphics->g_pd, gen_sym ("ylabel"),
             "fff", glist_pixelstox(gl, 0) - glist_pixelstox(gl, 5), ylo, yhi);*/
     }
     else { PD_BUG; }

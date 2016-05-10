@@ -444,19 +444,19 @@ static void ptrobj_free(t_ptrobj *x)
 
 static void ptrobj_setup(void)
 {
-    ptrobj_class = class_new(gensym ("pointer"), (t_newmethod)ptrobj_new,
+    ptrobj_class = class_new(sym_pointer, (t_newmethod)ptrobj_new,
         (t_method)ptrobj_free, sizeof(t_ptrobj), 0, A_GIMME, 0);
-    class_addMethod(ptrobj_class, (t_method)ptrobj_next, gensym ("next"), 0); 
+    class_addMethod(ptrobj_class, (t_method)ptrobj_next, sym_next, 0); 
     class_addMethod(ptrobj_class, (t_method)ptrobj_send, sym_send, 
         A_SYMBOL, 0); 
-    class_addMethod(ptrobj_class, (t_method)ptrobj_traverse, gensym ("traverse"),
+    class_addMethod(ptrobj_class, (t_method)ptrobj_traverse, sym_traverse,
         A_SYMBOL, 0); 
-    class_addMethod(ptrobj_class, (t_method)ptrobj_vnext, gensym ("vnext"), 
+    class_addMethod(ptrobj_class, (t_method)ptrobj_vnext, sym_vnext, /* LEGACY !!! */
         A_DEFFLOAT, 0); 
     class_addMethod(ptrobj_class, (t_method)ptrobj_sendwindow,
-        gensym ("send-window"), A_GIMME, 0); 
+        sym_send__dash__window, A_GIMME, 0);                    /* LEGACY !!! */
     class_addMethod(ptrobj_class, (t_method)ptrobj_rewind,
-        gensym ("rewind"), 0); 
+        sym_rewind, 0); 
     class_addPointer(ptrobj_class, ptrobj_pointer); 
     class_addBang(ptrobj_class, ptrobj_bang); 
 }
@@ -577,7 +577,7 @@ static void get_free(t_get *x)
 
 static void get_setup(void)
 {
-    get_class = class_new(gensym ("get"), (t_newmethod)get_new,
+    get_class = class_new (sym_get, (t_newmethod)get_new,
         (t_method)get_free, sizeof(t_get), 0, A_GIMME, 0);
     class_addPointer(get_class, get_pointer); 
     class_addMethod(get_class, (t_method)get_set, sym_set,
@@ -859,7 +859,7 @@ static void elem_free(t_elem *x, t_gpointer *gp)
 
 static void elem_setup(void)
 {
-    elem_class = class_new(gensym ("element"), (t_newmethod)elem_new,
+    elem_class = class_new(sym_element, (t_newmethod)elem_new,
         (t_method)elem_free, sizeof(t_elem), 0, A_DEFSYMBOL, A_DEFSYMBOL, 0);
     class_addFloat(elem_class, elem_float); 
     class_addMethod(elem_class, (t_method)elem_set, sym_set,
@@ -942,7 +942,7 @@ static void getsize_pointer(t_getsize *x, t_gpointer *gp)
 
 static void getsize_setup(void)
 {
-    getsize_class = class_new(gensym ("getsize"), (t_newmethod)getsize_new, 0,
+    getsize_class = class_new(sym_getsize, (t_newmethod)getsize_new, 0,
         sizeof(t_getsize), 0, A_DEFSYMBOL, A_DEFSYMBOL, 0);
     class_addPointer(getsize_class, getsize_pointer); 
     class_addMethod(getsize_class, (t_method)getsize_set, sym_set,
@@ -1114,7 +1114,7 @@ static void setsize_free(t_setsize *x)
 
 static void setsize_setup(void)
 {
-    setsize_class = class_new(gensym ("setsize"), (t_newmethod)setsize_new,
+    setsize_class = class_new (sym_setsize, (t_newmethod)setsize_new,
         (t_method)setsize_free, sizeof(t_setsize), 0,
         A_DEFSYMBOL, A_DEFSYMBOL, A_DEFFLOAT, 0);
     class_addFloat(setsize_class, setsize_float);
@@ -1268,7 +1268,7 @@ static void append_free(t_append *x)
 
 static void append_setup(void)
 {
-    append_class = class_new(gensym ("append"), (t_newmethod)append_new,
+    append_class = class_new (sym_append, (t_newmethod)append_new,
         (t_method)append_free, sizeof(t_append), 0, A_GIMME, 0);
     class_addFloat(append_class, append_float); 
     class_addMethod(append_class, (t_method)append_set, sym_set,

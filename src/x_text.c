@@ -1886,9 +1886,9 @@ void x_qlist_setup(void )
 
     qlist_class = class_new(gensym ("qlist"), (t_newmethod)qlist_new,
         (t_method)qlist_free, sizeof(t_qlist), 0, 0);
-    class_addMethod(qlist_class, (t_method)qlist_rewind, gensym ("rewind"), 0);
+    class_addMethod(qlist_class, (t_method)qlist_rewind, sym_rewind, 0);
     class_addMethod(qlist_class, (t_method)qlist_next,
-        gensym ("next"), A_DEFFLOAT, 0);  
+        sym_next, A_DEFFLOAT, 0);  
     class_addMethod(qlist_class, (t_method)qlist_set, sym_set,
         A_GIMME, 0);
     class_addMethod(qlist_class, (t_method)qlist_clear, sym_clear, 0);
@@ -1896,7 +1896,7 @@ void x_qlist_setup(void )
         A_GIMME, 0);
     class_addMethod(qlist_class, (t_method)qlist_add2, sym_add2, /* LEGACY !!! */
         A_GIMME, 0);
-    class_addMethod(qlist_class, (t_method)qlist_add, gensym ("append"),
+    class_addMethod(qlist_class, (t_method)qlist_add, sym_append,
         A_GIMME, 0);
     class_addMethod(qlist_class, (t_method)qlist_read, sym_read,
         A_SYMBOL, A_DEFSYMBOL, 0);
@@ -1916,7 +1916,7 @@ void x_qlist_setup(void )
 
     textfile_class = class_new(gensym ("textfile"), (t_newmethod)textfile_new,
         (t_method)textbuf_free, sizeof(t_qlist), 0, 0);
-    class_addMethod(textfile_class, (t_method)textfile_rewind, gensym ("rewind"),
+    class_addMethod(textfile_class, (t_method)textfile_rewind, sym_rewind,
         0);
     class_addMethod(textfile_class, (t_method)qlist_set, sym_set,
         A_GIMME, 0);
@@ -1925,7 +1925,7 @@ void x_qlist_setup(void )
         A_GIMME, 0);
     class_addMethod(textfile_class, (t_method)qlist_add2, sym_add2, /* LEGACY !!! */
         A_GIMME, 0);
-    class_addMethod(textfile_class, (t_method)qlist_add, gensym ("append"),
+    class_addMethod(textfile_class, (t_method)qlist_add, sym_append,
         A_GIMME, 0);
     class_addMethod(textfile_class, (t_method)qlist_read, sym_read, 
         A_SYMBOL, A_DEFSYMBOL, 0);

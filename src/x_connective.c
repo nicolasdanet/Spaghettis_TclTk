@@ -468,17 +468,17 @@ static void *select_new(t_symbol *s, int argc, t_atom *argv)
 
 void select_setup(void)
 {
-    sel1_class = class_new(gensym ("select"), 0, 0,
+    sel1_class = class_new(sym_select, 0, 0,
         sizeof(t_sel1), 0, 0);
     class_addFloat(sel1_class, sel1_float);
     class_addSymbol(sel1_class, sel1_symbol);
 
-    sel2_class = class_new(gensym ("select"), 0, (t_method)sel2_free,
+    sel2_class = class_new(sym_select, 0, (t_method)sel2_free,
         sizeof(t_sel2), 0, 0);
     class_addFloat(sel2_class, sel2_float);
     class_addSymbol(sel2_class, sel2_symbol);
 
-    class_addCreator((t_newmethod)select_new, gensym ("select"),  A_GIMME, 0);
+    class_addCreator((t_newmethod)select_new, sym_select,  A_GIMME, 0);
     class_addCreator((t_newmethod)select_new, gensym ("sel"),  A_GIMME, 0);
 }
 
