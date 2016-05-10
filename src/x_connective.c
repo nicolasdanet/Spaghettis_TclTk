@@ -328,7 +328,7 @@ static void receive_free(t_receive *x)
 
 static void receive_setup(void)
 {
-    receive_class = class_new(gensym ("receive"), (t_newmethod)receive_new, 
+    receive_class = class_new(sym_receive, (t_newmethod)receive_new, 
         (t_method)receive_free, sizeof(t_receive), CLASS_NOINLET, A_DEFSYMBOL, 0);
     class_addCreator((t_newmethod)receive_new, gensym ("r"), A_DEFSYMBOL, 0);
     class_addBang(receive_class, receive_bang);

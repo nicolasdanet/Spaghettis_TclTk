@@ -410,32 +410,32 @@ void panel_setup (void)
         A_GIMME,
         A_NULL);
         
-    class_addMethod (c, (t_method)panel_dialog,             sym__iemdialog,             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_gripSize,           gensym ("gripsize"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_move,             gensym ("move"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_position,         gensym ("position"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_labelFont,        gensym ("labelfont"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_labelPosition,    gensym ("labelposition"),   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_backgroundColor,  gensym ("backgroundcolor"), A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_labelColor,       gensym ("labelcolor"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_panelSize,          gensym ("panelsize"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_getPosition,        gensym ("getposition"),     A_NULL);
-    class_addMethod (c, (t_method)iemjump_send,             sym_send,                   A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)iemjump_receive,          gensym ("receive"),         A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)iemjump_label,            gensym ("label"),           A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)panel_dialog,             sym__iemdialog,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_gripSize,           sym_gripsize,           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_move,             sym_move,               A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_position,         sym_position,           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelFont,        sym_labelfont,          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelPosition,    sym_labelposition,      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_backgroundColor,  sym_backgroundcolor,    A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelColor,       sym_labelcolor,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_panelSize,          sym_panelsize,          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_getPosition,        sym_getposition,        A_NULL);
+    class_addMethod (c, (t_method)iemjump_send,             sym_send,               A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemjump_receive,          sym_receive,            A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemjump_label,            sym_label,              A_DEFSYMBOL, A_NULL);
 
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)panel_gripSize,           sym_size,                   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_move,             gensym ("delta"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_position,         gensym ("pos"),             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_dummy,            gensym ("color"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_labelPosition,    gensym ("label_pos"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_labelFont,        gensym ("label_font"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_panelSize,          gensym ("vis_size"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_getPosition,        gensym ("get_pos"),         A_NULL);
+    class_addMethod (c, (t_method)panel_gripSize,           sym_size,               A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_move,             sym_delta,              A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_position,         sym_pos,                A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_dummy,            sym_color,              A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelPosition,    sym_label_pos,          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelFont,        sym_label_font,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_panelSize,          sym_vis_size,           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_getPosition,        sym_get_pos,            A_NULL);
         
-    class_addCreator ((t_newmethod)panel_new, gensym ("my_canvas"), A_GIMME, A_NULL);
+    class_addCreator ((t_newmethod)panel_new, sym_my_canvas, A_GIMME, A_NULL);
         
     #endif
     

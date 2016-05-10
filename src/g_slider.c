@@ -636,8 +636,8 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_slider *x = (t_slider *)pd_new (slider_class);
     
-    if (s == sym_vslider)    { x->x_isVertical = 1; }
-    if (s == gensym ("vsl")) { x->x_isVertical = 1; }
+    if (s == sym_vslider) { x->x_isVertical = 1; }
+    if (s == sym_vsl)     { x->x_isVertical = 1; }
 
     {
     //
@@ -763,35 +763,35 @@ void slider_setup (void)
     class_addMethod (c, (t_method)slider_initialize,        sym_initialize,             A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)slider_dialog,            sym__iemdialog,             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)slider_size,              sym_size,                   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_move,             gensym ("move"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_position,         gensym ("position"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_labelFont,        gensym ("labelfont"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_labelPosition,    gensym ("labelposition"),   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_backgroundColor,  gensym ("backgroundcolor"), A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_foregroundColor,  gensym ("foregroundcolor"), A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_labelColor,       gensym ("labelcolor"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)slider_range,             gensym ("range"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_move,             sym_move,                   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_position,         sym_position,               A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelFont,        sym_labelfont,              A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelPosition,    sym_labelposition,          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_backgroundColor,  sym_backgroundcolor,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_foregroundColor,  sym_foregroundcolor,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelColor,       sym_labelcolor,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)slider_range,             sym_range,                  A_GIMME, A_NULL);
     class_addMethod (c, (t_method)slider_set,               sym_set,                    A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)slider_steady,            gensym ("steady"),          A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)slider_logarithmic,       gensym ("logarithmic"),     A_NULL);
+    class_addMethod (c, (t_method)slider_steady,            sym_steady,                 A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)slider_logarithmic,       sym_logarithmic,            A_NULL);
     class_addMethod (c, (t_method)slider_linear,            sym_linear,                 A_NULL);
     class_addMethod (c, (t_method)iemjump_send,             sym_send,                   A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)iemjump_receive,          gensym ("receive"),         A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)iemjump_label,            gensym ("label"),           A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemjump_receive,          sym_receive,                A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemjump_label,            sym_label,                  A_DEFSYMBOL, A_NULL);
     
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)slider_initialize,        gensym ("init"),            A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)iemjump_move,             gensym ("delta"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_position,         gensym ("pos"),             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_dummy,            gensym ("color"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_labelPosition,    gensym ("label_pos"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_labelFont,        gensym ("label_font"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)slider_logarithmic,       gensym ("log"),             A_NULL);
+    class_addMethod (c, (t_method)slider_initialize,        sym_init,                   A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)iemjump_move,             sym_delta,                  A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_position,         sym_pos,                    A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_dummy,            sym_color,                  A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelPosition,    sym_label_pos,              A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelFont,        sym_label_font,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)slider_logarithmic,       sym_log,                    A_NULL);
     class_addMethod (c, (t_method)slider_linear,            sym_lin,                    A_NULL);
     
-    class_addCreator ((t_newmethod)slider_new, gensym ("hsl"), A_GIMME, A_NULL);
-    class_addCreator ((t_newmethod)slider_new, gensym ("vsl"), A_GIMME, A_NULL);
+    class_addCreator ((t_newmethod)slider_new, sym_hsl, A_GIMME, A_NULL);
+    class_addCreator ((t_newmethod)slider_new, sym_vsl, A_GIMME, A_NULL);
     
     #endif
     
@@ -804,7 +804,7 @@ void slider_setup (void)
     slider_widgetBehavior.w_fnClick         = slider_behaviorClick;
     
     class_setWidgetBehavior (c, &slider_widgetBehavior);
-    class_setHelpName (c, gensym ("slider"));
+    class_setHelpName (c, sym_slider);
     class_setSaveFunction (c, slider_behaviorSave);
     class_setPropertiesFunction (c, slider_behaviorProperties);
     

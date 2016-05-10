@@ -33,7 +33,7 @@ static void sighip_ft1(t_sighip *x, t_float f);
 static void *sighip_new(t_float f)
 {
     t_sighip *x = (t_sighip *)pd_new(sighip_class);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym ("float"), gensym ("ft1"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym ("float"), sym_ft1);
     outlet_new(&x->x_obj, &s_signal);
     x->x_sr = 44100;
     x->x_ctl = &x->x_cspace;
@@ -137,7 +137,7 @@ void sighip_setup(void)
     class_addMethod(sighip_class, (t_method)sighip_dsp,
         sym_dsp, A_CANT, 0);
     class_addMethod(sighip_class, (t_method)sighip_ft1,
-        gensym ("ft1"), A_FLOAT, 0);
+        sym_ft1, A_FLOAT, 0);
     class_addMethod(sighip_class, (t_method)sighip_clear, sym_clear, 0);
 }
 
@@ -166,7 +166,7 @@ static void siglop_ft1(t_siglop *x, t_float f);
 static void *siglop_new(t_float f)
 {
     t_siglop *x = (t_siglop *)pd_new(siglop_class);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym ("float"), gensym ("ft1"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym ("float"), sym_ft1);
     outlet_new(&x->x_obj, &s_signal);
     x->x_sr = 44100;
     x->x_ctl = &x->x_cspace;
@@ -228,7 +228,7 @@ void siglop_setup(void)
     class_addMethod(siglop_class, (t_method)siglop_dsp,
         sym_dsp, A_CANT, 0);
     class_addMethod(siglop_class, (t_method)siglop_ft1,
-        gensym ("ft1"), A_FLOAT, 0);
+        sym_ft1, A_FLOAT, 0);
     class_addMethod(siglop_class, (t_method)siglop_clear, sym_clear, 0);
 }
 
@@ -261,7 +261,7 @@ static void sigbp_docoef(t_sigbp *x, t_float f, t_float q);
 static void *sigbp_new(t_float f, t_float q)
 {
     t_sigbp *x = (t_sigbp *)pd_new(sigbp_class);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym ("float"), gensym ("ft1"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym ("float"), sym_ft1);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym ("float"), gensym ("ft2"));
     outlet_new(&x->x_obj, &s_signal);
     x->x_sr = 44100;
@@ -363,7 +363,7 @@ void sigbp_setup(void)
     class_addMethod(sigbp_class, (t_method)sigbp_dsp,
         sym_dsp, A_CANT, 0);
     class_addMethod(sigbp_class, (t_method)sigbp_ft1,
-        gensym ("ft1"), A_FLOAT, 0);
+        sym_ft1, A_FLOAT, 0);
     class_addMethod(sigbp_class, (t_method)sigbp_ft2,
         gensym ("ft2"), A_FLOAT, 0);
     class_addMethod(sigbp_class, (t_method)sigbp_clear, sym_clear, 0);

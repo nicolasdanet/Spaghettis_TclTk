@@ -121,7 +121,7 @@ static void *delay_new(t_symbol *unitname, t_float f, t_float tempo)
     delay_ft1(x, f);
     x->x_clock = clock_new(x, (t_method)delay_tick);
     outlet_new(&x->x_obj, gensym ("bang"));
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym ("float"), gensym ("ft1"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym ("float"), sym_ft1);
     if (tempo != 0)
         delay_tempo(x, unitname, tempo);
     return (x);
@@ -137,7 +137,7 @@ static void delay_setup(void)
     class_addBang(delay_class, delay_bang);
     class_addMethod(delay_class, (t_method)delay_stop, gensym ("stop"), 0);
     class_addMethod(delay_class, (t_method)delay_ft1,
-        gensym ("ft1"), A_FLOAT, 0);
+        sym_ft1, A_FLOAT, 0);
     class_addMethod(delay_class, (t_method)delay_tempo,
         gensym ("tempo"), A_FLOAT, A_SYMBOL, 0);
     class_addMethod(delay_class, (t_method)delay_tempo,
@@ -210,7 +210,7 @@ static void *metro_new(t_symbol *unitname, t_float f, t_float tempo)
     x->x_hit = 0;
     x->x_clock = clock_new(x, (t_method)metro_tick);
     outlet_new(&x->x_obj, gensym ("bang"));
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym ("float"), gensym ("ft1"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym ("float"), sym_ft1);
     if (tempo != 0)
         metro_tempo(x, unitname, tempo);
     return (x);
@@ -223,7 +223,7 @@ static void metro_setup(void)
             A_DEFFLOAT, A_DEFFLOAT, A_DEFSYMBOL, 0);
     class_addBang(metro_class, metro_bang);
     class_addMethod(metro_class, (t_method)metro_stop, gensym ("stop"), 0);
-    class_addMethod(metro_class, (t_method)metro_ft1, gensym ("ft1"),
+    class_addMethod(metro_class, (t_method)metro_ft1, sym_ft1,
         A_FLOAT, 0);
     class_addMethod(metro_class, (t_method)metro_tempo,
         gensym ("tempo"), A_FLOAT, A_SYMBOL, 0);
@@ -333,7 +333,7 @@ static void *line_new(t_float f, t_float grain)
     x->x_targettime = x->x_prevtime = scheduler_getLogicalTime();
     x->x_grain = grain;
     outlet_new(&x->x_obj, gensym ("float"));
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym ("float"), gensym ("ft1"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym ("float"), sym_ft1);
     inlet_newFloat(&x->x_obj, &x->x_grain);
     return (x);
 }
@@ -343,7 +343,7 @@ static void line_setup(void)
     line_class = class_new(gensym ("line"), (t_newmethod)line_new,
         (t_method)line_free, sizeof(t_line), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
     class_addMethod(line_class, (t_method)line_ft1,
-        gensym ("ft1"), A_FLOAT, 0);
+        sym_ft1, A_FLOAT, 0);
     class_addMethod(line_class, (t_method)line_stop,
         gensym ("stop"), 0);
     class_addMethod(line_class, (t_method)line_set,

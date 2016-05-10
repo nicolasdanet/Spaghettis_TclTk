@@ -700,34 +700,34 @@ void radio_setup (void)
     class_addFloat (c, radio_float);
     class_addClick (c, radio_click);
     
-    class_addMethod (c, (t_method)radio_loadbang,           sym_loadbang,               A_NULL);
-    class_addMethod (c, (t_method)radio_initialize,         sym_initialize,             A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)radio_dialog,             sym__iemdialog,             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)radio_size,               sym_size,                   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_move,             gensym ("move"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_position,         gensym ("position"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_labelFont,        gensym ("labelfont"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_labelPosition,    gensym ("labelpostion"),    A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_backgroundColor,  gensym ("backgroundcolor"), A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_foregroundColor,  gensym ("foregroundcolor"), A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_labelColor,       gensym ("labelcolor"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)radio_set,                sym_set,                    A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)radio_buttonsNumber,      gensym ("buttonsnumber"),   A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)iemjump_send,             sym_send,                   A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)iemjump_receive,          gensym ("receive"),         A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)iemjump_label,            gensym ("label"),           A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)radio_loadbang,           sym_loadbang,           A_NULL);
+    class_addMethod (c, (t_method)radio_initialize,         sym_initialize,         A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)radio_dialog,             sym__iemdialog,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)radio_size,               sym_size,               A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_move,             sym_move,               A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_position,         sym_position,           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelFont,        sym_labelfont,          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelPosition,    sym_labelposition,      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_backgroundColor,  sym_backgroundcolor,    A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_foregroundColor,  sym_foregroundcolor,    A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelColor,       sym_labelcolor,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)radio_set,                sym_set,                A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)radio_buttonsNumber,      sym_buttonsnumber,      A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)iemjump_send,             sym_send,               A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemjump_receive,          sym_receive,            A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemjump_label,            sym_label,              A_DEFSYMBOL, A_NULL);
     
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)radio_initialize,         gensym ("init"),             A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)iemjump_move,             gensym ("delta"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_position,         gensym ("pos"),              A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_dummy,            gensym ("color"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_labelPosition,    gensym ("label_pos"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_labelFont,        gensym ("label_font"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)radio_buttonsNumber,      gensym ("number"),           A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)iemjump_dummy,            gensym ("single_change"),    A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_dummy,            gensym ("double_change"),    A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)radio_initialize,         sym_init,               A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)iemjump_move,             sym_delta,              A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_position,         sym_pos,                A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_dummy,            sym_color,              A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelPosition,    sym_label_pos,          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelFont,        sym_label_font,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)radio_buttonsNumber,      sym_number,             A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)iemjump_dummy,            sym_single_change,      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_dummy,            sym_double_change,      A_GIMME, A_NULL);
     
     #endif
     
@@ -740,7 +740,7 @@ void radio_setup (void)
     radio_widgetBehavior.w_fnClick          = radio_behaviorClick;
     
     class_setWidgetBehavior (c, &radio_widgetBehavior);
-    class_setHelpName (c, gensym ("radio"));
+    class_setHelpName (c, sym_radio);
     class_setSaveFunction (c, radio_behaviorSave);
     class_setPropertiesFunction (c, radio_behaviorProperties);
     

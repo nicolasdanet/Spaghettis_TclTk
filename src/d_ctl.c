@@ -738,7 +738,7 @@ static t_threshold_tilde *threshold_tilde_new(t_float hithresh,
     x->x_clock = clock_new(x, (t_method)threshold_tilde_tick);
     x->x_outlet1 = outlet_new(&x->x_obj, &s_bang);
     x->x_outlet2 = outlet_new(&x->x_obj, &s_bang);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, gensym ("ft1"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, sym_ft1);
     x->x_msecpertick = 0.;
     x->x_f = 0;
     threshold_tilde_set(x, hithresh, hideadtime, lothresh, lodeadtime);
@@ -833,7 +833,7 @@ static void threshold_tilde_setup( void)
     class_addMethod(threshold_tilde_class, (t_method)threshold_tilde_set,
         sym_set, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
     class_addMethod(threshold_tilde_class, (t_method)threshold_tilde_ft1,
-        gensym ("ft1"), A_FLOAT, 0);
+        sym_ft1, A_FLOAT, 0);
     class_addMethod(threshold_tilde_class, (t_method)threshold_tilde_dsp,
         sym_dsp, A_CANT, 0);
 }

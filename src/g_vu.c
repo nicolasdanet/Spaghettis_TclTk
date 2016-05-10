@@ -615,7 +615,7 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
     x->x_peakValue  = -101.0;
     x->x_rmsValue   = -101.0;
     
-    inlet_new (cast_object (x), cast_pd (x), &s_float, gensym ("ft1"));
+    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_ft1);
     
     x->x_outLeft  = outlet_new (cast_object (x), &s_float);
     x->x_outRight = outlet_new (cast_object (x), &s_float);
@@ -649,26 +649,26 @@ void vu_setup (void)
     class_addBang (c, vu_bang);
     class_addFloat (c, vu_float);
     
-    class_addMethod (c, (t_method)vu_ft1,                   gensym ("ft1"),             A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)vu_dialog,                sym__iemdialog,             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vu_size,                  sym_size,                   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_move,             gensym ("move"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_position,         gensym ("position"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_labelFont,        gensym ("labelfont"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_labelPosition,    gensym ("labelposition"),   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_backgroundColor,  gensym ("backgroundcolor"), A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_labelColor,       gensym ("labelcolor"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_receive,          gensym ("receive"),         A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)iemjump_label,            gensym ("label"),           A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)vu_ft1,                   sym_ft1,                A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)vu_dialog,                sym__iemdialog,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vu_size,                  sym_size,               A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_move,             sym_move,               A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_position,         sym_position,           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelFont,        sym_labelfont,          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelPosition,    sym_labelposition,      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_backgroundColor,  sym_backgroundcolor,    A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelColor,       sym_labelcolor,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_receive,          sym_receive,            A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemjump_label,            sym_label,              A_DEFSYMBOL, A_NULL);
     
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)iemjump_move,             gensym ("delta"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_position,         gensym ("pos"),             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_labelPosition,    gensym ("label_pos"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_labelFont,        gensym ("label_font"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_dummy,            gensym ("scale"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_dummy,            gensym ("color"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_move,             sym_delta,              A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_position,         sym_pos,                A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_dummy,            sym_color,              A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelPosition,    sym_label_pos,          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelFont,        sym_label_font,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_dummy,            sym_scale,              A_GIMME, A_NULL);
 
     #endif
     

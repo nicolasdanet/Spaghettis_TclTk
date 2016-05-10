@@ -890,7 +890,7 @@ void x_arithmetic_setup(void)
     class_addFloat(sqrt_class, (t_method)sqrt_float);
     class_setHelpName(sqrt_class, math_sym);
 
-    log_class = class_new(gensym ("log"), log_new, 0,
+    log_class = class_new (sym_log, log_new, 0,
         sizeof(t_object), 0, 0);
     class_addFloat(log_class, (t_method)log_float);    
     class_setHelpName(log_class, math_sym);
