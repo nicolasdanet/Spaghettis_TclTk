@@ -122,7 +122,7 @@ static void tabwrite_tilde_stop(t_tabwrite_tilde *x)
 
 static void tabwrite_tilde_setup(void)
 {
-    tabwrite_tilde_class = class_new(gensym ("tabwrite~"),
+    tabwrite_tilde_class = class_new(sym_tabwrite__tilde__,
         (t_newmethod)tabwrite_tilde_new, 0,
         sizeof(t_tabwrite_tilde), 0, A_DEFSYMBOL, 0);
     CLASS_SIGNAL(tabwrite_tilde_class, t_tabwrite_tilde, x_f);
@@ -256,7 +256,7 @@ static void tabplay_tilde_free(t_tabplay_tilde *x)
 
 static void tabplay_tilde_setup(void)
 {
-    tabplay_tilde_class = class_new(gensym ("tabplay~"),
+    tabplay_tilde_class = class_new(sym_tabplay__tilde__,
         (t_newmethod)tabplay_tilde_new, (t_method)tabplay_tilde_free,
         sizeof(t_tabplay_tilde), 0, A_DEFSYMBOL, 0);
     class_addMethod(tabplay_tilde_class, (t_method)tabplay_tilde_dsp,
@@ -355,7 +355,7 @@ static void tabread_tilde_free(t_tabread_tilde *x)
 
 static void tabread_tilde_setup(void)
 {
-    tabread_tilde_class = class_new(gensym ("tabread~"),
+    tabread_tilde_class = class_new(sym_tabread__tilde__,
         (t_newmethod)tabread_tilde_new, (t_method)tabread_tilde_free,
         sizeof(t_tabread_tilde), 0, A_DEFSYMBOL, 0);
     CLASS_SIGNAL(tabread_tilde_class, t_tabread_tilde, x_f);
@@ -487,7 +487,7 @@ static void tabread4_tilde_free(t_tabread4_tilde *x)
 
 static void tabread4_tilde_setup(void)
 {
-    tabread4_tilde_class = class_new(gensym ("tabread4~"),
+    tabread4_tilde_class = class_new(sym_tabread4__tilde__,
         (t_newmethod)tabread4_tilde_new, (t_method)tabread4_tilde_free,
         sizeof(t_tabread4_tilde), 0, A_DEFSYMBOL, 0);
     CLASS_SIGNAL(tabread4_tilde_class, t_tabread4_tilde, x_f);
@@ -669,7 +669,7 @@ static void tabosc4_tilde_dsp(t_tabosc4_tilde *x, t_signal **sp)
 
 static void tabosc4_tilde_setup(void)
 {
-    tabosc4_tilde_class = class_new(gensym ("tabosc4~"),
+    tabosc4_tilde_class = class_new(sym_tabosc4__tilde__,
         (t_newmethod)tabosc4_tilde_new, 0,
         sizeof(t_tabosc4_tilde), 0, A_DEFSYMBOL, 0);
     CLASS_SIGNAL(tabosc4_tilde_class, t_tabosc4_tilde, x_f);
@@ -769,7 +769,7 @@ static void tabsend_dsp(t_tabsend *x, t_signal **sp)
 
 static void tabsend_setup(void)
 {
-    tabsend_class = class_new(gensym ("tabsend~"), (t_newmethod)tabsend_new,
+    tabsend_class = class_new(sym_tabsend__tilde__, (t_newmethod)tabsend_new,
         0, sizeof(t_tabsend), 0, A_DEFSYMBOL, 0);
     CLASS_SIGNAL(tabsend_class, t_tabsend, x_f);
     class_addMethod(tabsend_class, (t_method)tabsend_dsp,
@@ -849,7 +849,7 @@ static void *tabreceive_new(t_symbol *s)
 
 static void tabreceive_setup(void)
 {
-    tabreceive_class = class_new(gensym ("tabreceive~"),
+    tabreceive_class = class_new(sym_tabreceive__tilde__,
         (t_newmethod)tabreceive_new, 0,
         sizeof(t_tabreceive), 0, A_DEFSYMBOL, 0);
     class_addMethod(tabreceive_class, (t_method)tabreceive_dsp,
@@ -902,7 +902,7 @@ static void *tabread_new(t_symbol *s)
 
 static void tabread_setup(void)
 {
-    tabread_class = class_new(gensym ("tabread"), (t_newmethod)tabread_new,
+    tabread_class = class_new(sym_tabread, (t_newmethod)tabread_new,
         0, sizeof(t_tabread), 0, A_DEFSYMBOL, 0);
     class_addFloat(tabread_class, (t_method)tabread_float);
     class_addMethod(tabread_class, (t_method)tabread_set, sym_set,
@@ -970,7 +970,7 @@ static void *tabread4_new(t_symbol *s)
 
 static void tabread4_setup(void)
 {
-    tabread4_class = class_new(gensym ("tabread4"), (t_newmethod)tabread4_new,
+    tabread4_class = class_new(sym_tabread4, (t_newmethod)tabread4_new,
         0, sizeof(t_tabread4), 0, A_DEFSYMBOL, 0);
     class_addFloat(tabread4_class, (t_method)tabread4_float);
     class_addMethod(tabread4_class, (t_method)tabread4_set, sym_set,
@@ -1026,7 +1026,7 @@ static void *tabwrite_new(t_symbol *s)
 
 void tabwrite_setup(void)
 {
-    tabwrite_class = class_new(gensym ("tabwrite"), (t_newmethod)tabwrite_new,
+    tabwrite_class = class_new(sym_tabwrite, (t_newmethod)tabwrite_new,
         0, sizeof(t_tabwrite), 0, A_DEFSYMBOL, 0);
     class_addFloat(tabwrite_class, (t_method)tabwrite_float);
     class_addMethod(tabwrite_class, (t_method)tabwrite_set, sym_set,

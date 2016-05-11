@@ -132,17 +132,17 @@ static void scalarplus_dsp(t_scalarplus *x, t_signal **sp)
 
 static void plus_setup(void)
 {
-    plus_class = class_new(gensym ("+~"), (t_newmethod)plus_new, 0,
+    plus_class = class_new(sym___plus____tilde__, (t_newmethod)plus_new, 0,
         sizeof(t_plus), 0, A_GIMME, 0);
     class_addMethod(plus_class, (t_method)plus_dsp, sym_dsp, A_CANT, 0);
     CLASS_SIGNAL(plus_class, t_plus, x_f);
-    class_setHelpName(plus_class, gensym ("max~"));
-    scalarplus_class = class_new(gensym ("+~"), 0, 0,
+    class_setHelpName(plus_class, sym_max__tilde__);
+    scalarplus_class = class_new(sym___plus____tilde__, 0, 0,
         sizeof(t_scalarplus), 0, 0);
     CLASS_SIGNAL(scalarplus_class, t_scalarplus, x_f);
     class_addMethod(scalarplus_class, (t_method)scalarplus_dsp,
         sym_dsp, A_CANT, 0);
-    class_setHelpName(scalarplus_class, gensym ("max~"));
+    class_setHelpName(scalarplus_class, sym_max__tilde__);
 }
 
 /* ----------------------------- minus ----------------------------- */
@@ -262,17 +262,17 @@ static void scalarminus_dsp(t_scalarminus *x, t_signal **sp)
 
 static void minus_setup(void)
 {
-    minus_class = class_new(gensym ("-~"), (t_newmethod)minus_new, 0,
+    minus_class = class_new(sym___minus____tilde__, (t_newmethod)minus_new, 0,
         sizeof(t_minus), 0, A_GIMME, 0);
     CLASS_SIGNAL(minus_class, t_minus, x_f);
     class_addMethod(minus_class, (t_method)minus_dsp, sym_dsp, A_CANT, 0);
-    class_setHelpName(minus_class, gensym ("max~"));
-    scalarminus_class = class_new(gensym ("-~"), 0, 0,
+    class_setHelpName(minus_class, sym_max__tilde__);
+    scalarminus_class = class_new(sym___minus____tilde__, 0, 0,
         sizeof(t_scalarminus), 0, 0);
     CLASS_SIGNAL(scalarminus_class, t_scalarminus, x_f);
     class_addMethod(scalarminus_class, (t_method)scalarminus_dsp,
         sym_dsp, A_CANT, 0);
-    class_setHelpName(scalarminus_class, gensym ("max~"));
+    class_setHelpName(scalarminus_class, sym_max__tilde__);
 }
 
 /* ----------------------------- times ----------------------------- */
@@ -393,17 +393,17 @@ static void scalartimes_dsp(t_scalartimes *x, t_signal **sp)
 
 static void times_setup(void)
 {
-    times_class = class_new(gensym ("*~"), (t_newmethod)times_new, 0,
+    times_class = class_new(sym___asterisk____tilde__, (t_newmethod)times_new, 0,
         sizeof(t_times), 0, A_GIMME, 0);
     CLASS_SIGNAL(times_class, t_times, x_f);
     class_addMethod(times_class, (t_method)times_dsp, sym_dsp, A_CANT, 0);
-    class_setHelpName(times_class, gensym ("max~"));
-    scalartimes_class = class_new(gensym ("*~"), 0, 0,
+    class_setHelpName(times_class, sym_max__tilde__);
+    scalartimes_class = class_new(sym___asterisk____tilde__, 0, 0,
         sizeof(t_scalartimes), 0, 0);
     CLASS_SIGNAL(scalartimes_class, t_scalartimes, x_f);
     class_addMethod(scalartimes_class, (t_method)scalartimes_dsp,
         sym_dsp, A_CANT, 0);
-    class_setHelpName(scalartimes_class, gensym ("max~"));
+    class_setHelpName(scalartimes_class, sym_max__tilde__);
 }
 
 /* ----------------------------- over ----------------------------- */
@@ -535,17 +535,17 @@ static void scalarover_dsp(t_scalarover *x, t_signal **sp)
 
 static void over_setup(void)
 {
-    over_class = class_new(gensym ("/~"), (t_newmethod)over_new, 0,
+    over_class = class_new(sym___slash____tilde__, (t_newmethod)over_new, 0,
         sizeof(t_over), 0, A_GIMME, 0);
     CLASS_SIGNAL(over_class, t_over, x_f);
     class_addMethod(over_class, (t_method)over_dsp, sym_dsp, A_CANT, 0);
-    class_setHelpName(over_class, gensym ("max~"));
-    scalarover_class = class_new(gensym ("/~"), 0, 0,
+    class_setHelpName(over_class, sym_max__tilde__);
+    scalarover_class = class_new(sym___slash____tilde__, 0, 0,
         sizeof(t_scalarover), 0, 0);
     CLASS_SIGNAL(scalarover_class, t_scalarover, x_f);
     class_addMethod(scalarover_class, (t_method)scalarover_dsp,
         sym_dsp, A_CANT, 0);
-    class_setHelpName(scalarover_class, gensym ("max~"));
+    class_setHelpName(scalarover_class, sym_max__tilde__);
 }
 
 /* ----------------------------- max ----------------------------- */
@@ -677,17 +677,17 @@ static void scalarmax_dsp(t_scalarmax *x, t_signal **sp)
 
 static void max_setup(void)
 {
-    max_class = class_new(gensym ("max~"), (t_newmethod)max_new, 0,
+    max_class = class_new(sym_max__tilde__, (t_newmethod)max_new, 0,
         sizeof(t_max), 0, A_GIMME, 0);
     CLASS_SIGNAL(max_class, t_max, x_f);
     class_addMethod(max_class, (t_method)max_dsp, sym_dsp, A_CANT, 0);
-    class_setHelpName(max_class, gensym ("max~"));
-    scalarmax_class = class_new(gensym ("max~"), 0, 0,
+    class_setHelpName(max_class, sym_max__tilde__);
+    scalarmax_class = class_new(sym_max__tilde__, 0, 0,
         sizeof(t_scalarmax), 0, 0);
     CLASS_SIGNAL(scalarmax_class, t_scalarmax, x_f);
     class_addMethod(scalarmax_class, (t_method)scalarmax_dsp,
         sym_dsp, A_CANT, 0);
-    class_setHelpName(scalarmax_class, gensym ("max~"));
+    class_setHelpName(scalarmax_class, sym_max__tilde__);
 }
 
 /* ----------------------------- min ----------------------------- */
@@ -819,17 +819,17 @@ static void scalarmin_dsp(t_scalarmin *x, t_signal **sp)
 
 static void min_setup(void)
 {
-    min_class = class_new(gensym ("min~"), (t_newmethod)min_new, 0,
+    min_class = class_new(sym_min__tilde__, (t_newmethod)min_new, 0,
         sizeof(t_min), 0, A_GIMME, 0);
     CLASS_SIGNAL(min_class, t_min, x_f);
     class_addMethod(min_class, (t_method)min_dsp, sym_dsp, A_CANT, 0);
-    class_setHelpName(min_class, gensym ("max~"));
-    scalarmin_class = class_new(gensym ("min~"), 0, 0,
+    class_setHelpName(min_class, sym_max__tilde__);
+    scalarmin_class = class_new(sym_min__tilde__, 0, 0,
         sizeof(t_scalarmin), 0, 0);
     CLASS_SIGNAL(scalarmin_class, t_scalarmin, x_f);
     class_addMethod(scalarmin_class, (t_method)scalarmin_dsp,
         sym_dsp, A_CANT, 0);
-    class_setHelpName(scalarmin_class, gensym ("max~"));
+    class_setHelpName(scalarmin_class, sym_max__tilde__);
 }
 
 /* ----------------------- global setup routine ---------------- */
