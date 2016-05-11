@@ -57,13 +57,13 @@ static void openpanel_free(t_openpanel *x)
 
 static void openpanel_setup(void)
 {
-    openpanel_class = class_new(gensym ("openpanel"),
+    openpanel_class = class_new(sym_openpanel,
         (t_newmethod)openpanel_new, (t_method)openpanel_free,
         sizeof(t_openpanel), 0, 0);
     class_addBang(openpanel_class, openpanel_bang);
     class_addSymbol(openpanel_class, openpanel_symbol);
     class_addMethod(openpanel_class, (t_method)openpanel_callback,
-        gensym ("callback"), A_SYMBOL, 0);
+        sym_callback, A_SYMBOL, 0);
 }
 
 /* -------------------------- savepanel ------------------------------ */
@@ -112,13 +112,13 @@ static void savepanel_free(t_savepanel *x)
 
 static void savepanel_setup(void)
 {
-    savepanel_class = class_new(gensym ("savepanel"),
+    savepanel_class = class_new(sym_savepanel,
         (t_newmethod)savepanel_new, (t_method)savepanel_free,
         sizeof(t_savepanel), 0, 0);
     class_addBang(savepanel_class, savepanel_bang);
     class_addSymbol(savepanel_class, savepanel_symbol);
     class_addMethod(savepanel_class, (t_method)savepanel_callback,
-        gensym ("callback"), A_SYMBOL, 0);
+        sym_callback, A_SYMBOL, 0);
 }
 
 /* ---------------------- key and its relatives ------------------ */
@@ -207,14 +207,14 @@ static void key_setup(void)
     class_addFloat(key_class, key_float);
     key_sym = sym__key;
 
-    keyup_class = class_new(gensym ("keyup"),
+    keyup_class = class_new(sym_keyup,
         (t_newmethod)keyup_new, (t_method)keyup_free,
         sizeof(t_keyup), CLASS_NOINLET, 0);
     class_addFloat(keyup_class, keyup_float);
     keyup_sym = sym__keyup;
     class_setHelpName(keyup_class, sym_key);
     
-    keyname_class = class_new(gensym ("keyname"),
+    keyname_class = class_new(sym_keyname,
         (t_newmethod)keyname_new, (t_method)keyname_free,
         sizeof(t_keyname), CLASS_NOINLET, 0);
     class_addList(keyname_class, keyname_list);

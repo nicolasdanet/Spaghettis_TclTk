@@ -617,7 +617,7 @@ static void *env_tilde_new(t_float fnpoints, t_float fperiod)
         buf[i] = (1. - cos((2 * 3.14159 * i) / npoints))/npoints;
     for (; i < npoints+INITVSTAKEN; i++) buf[i] = 0;
     x->x_clock = clock_new(x, (t_method)env_tilde_tick);
-    x->x_outlet = outlet_new(&x->x_obj, gensym ("float"));
+    x->x_outlet = outlet_new(&x->x_obj, sym_float);
     x->x_f = 0;
     x->x_allocforvs = INITVSTAKEN;
     return (x);

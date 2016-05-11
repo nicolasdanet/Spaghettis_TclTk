@@ -120,8 +120,8 @@ static void *delay_new(t_symbol *unitname, t_float f, t_float tempo)
     t_delay *x = (t_delay *)pd_new(delay_class);
     delay_ft1(x, f);
     x->x_clock = clock_new(x, (t_method)delay_tick);
-    outlet_new(&x->x_obj, gensym ("bang"));
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym ("float"), sym_ft1);
+    outlet_new(&x->x_obj, sym_bang);
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, sym_float, sym_ft1);
     if (tempo != 0)
         delay_tempo(x, unitname, tempo);
     return (x);
@@ -209,8 +209,8 @@ static void *metro_new(t_symbol *unitname, t_float f, t_float tempo)
     metro_ft1(x, f);
     x->x_hit = 0;
     x->x_clock = clock_new(x, (t_method)metro_tick);
-    outlet_new(&x->x_obj, gensym ("bang"));
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym ("float"), sym_ft1);
+    outlet_new(&x->x_obj, sym_bang);
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, sym_float, sym_ft1);
     if (tempo != 0)
         metro_tempo(x, unitname, tempo);
     return (x);
@@ -332,8 +332,8 @@ static void *line_new(t_float f, t_float grain)
     x->x_clock = clock_new(x, (t_method)line_tick);
     x->x_targettime = x->x_prevtime = scheduler_getLogicalTime();
     x->x_grain = grain;
-    outlet_new(&x->x_obj, gensym ("float"));
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym ("float"), sym_ft1);
+    outlet_new(&x->x_obj, sym_float);
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, sym_float, sym_ft1);
     inlet_newFloat(&x->x_obj, &x->x_grain);
     return (x);
 }
@@ -390,8 +390,8 @@ static void *timer_new(t_symbol *unitname, t_float tempo)
     x->x_unit = 1;
     x->x_samps = 0;
     timer_bang(x);
-    outlet_new(&x->x_obj, gensym ("float"));
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym ("bang"), gensym ("bang2"));
+    outlet_new(&x->x_obj, sym_float);
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, sym_bang, sym_bang2);
     if (tempo != 0)
         timer_tempo(x, unitname, tempo);
     return (x);
@@ -402,7 +402,7 @@ static void timer_setup(void)
     timer_class = class_new(gensym ("timer"), (t_newmethod)timer_new, 0,
         sizeof(t_timer), 0, A_DEFFLOAT, A_DEFSYMBOL, 0);
     class_addBang(timer_class, timer_bang);
-    class_addMethod(timer_class, (t_method)timer_bang2, gensym ("bang2"), 0);
+    class_addMethod(timer_class, (t_method)timer_bang2, sym_bang2, 0);
     class_addMethod(timer_class, (t_method)timer_tempo,
         gensym ("tempo"), A_FLOAT, A_SYMBOL, 0);
     class_addMethod(timer_class, (t_method)timer_tempo,

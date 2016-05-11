@@ -357,7 +357,7 @@ static void *sigvcf_new(t_float q)
 {
     t_sigvcf *x = (t_sigvcf *)pd_new(sigvcf_class);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym ("float"), sym_ft1);
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, sym_float, sym_ft1);
     outlet_new(&x->x_obj, sym_signal);
     outlet_new(&x->x_obj, sym_signal);
     x->x_ctl = &x->x_cspace;

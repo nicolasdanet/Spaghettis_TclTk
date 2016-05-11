@@ -49,9 +49,9 @@ static void pdint_send(t_pdint *x, t_symbol *s)
 
 void pdint_setup(void)
 {
-    pdint_class = class_new(gensym ("int"), (t_newmethod)pdint_new, 0,
+    pdint_class = class_new (sym_int, (t_newmethod)pdint_new, 0,
         sizeof(t_pdint), 0, A_DEFFLOAT, 0);
-    class_addCreator((t_newmethod)pdint_new, gensym ("i"), A_DEFFLOAT, 0);
+    class_addCreator((t_newmethod)pdint_new, sym_i, A_DEFFLOAT, 0);
     class_addMethod(pdint_class, (t_method)pdint_send, sym_send,
         A_SYMBOL, 0);
     class_addBang(pdint_class, pdint_bang);
@@ -105,7 +105,7 @@ static void pdfloat_send(t_pdfloat *x, t_symbol *s)
 
 void pdfloat_setup(void)
 {
-    pdfloat_class = class_new(gensym ("float"), (t_newmethod)pdfloat_new, 0,
+    pdfloat_class = class_new(sym_float, (t_newmethod)pdfloat_new, 0,
         sizeof(t_pdfloat), 0, A_FLOAT, 0);
     class_addCreator((t_newmethod)pdfloat_new2, sym_f, A_DEFFLOAT, 0);
     class_addMethod(pdfloat_class, (t_method)pdfloat_send, sym_send,
@@ -166,7 +166,7 @@ static void pdsymbol_list(t_pdsymbol *x, t_symbol *s, int ac, t_atom *av)
 
 void pdsymbol_setup(void)
 {
-    pdsymbol_class = class_new(gensym ("symbol"), (t_newmethod)pdsymbol_new, 0,
+    pdsymbol_class = class_new (sym_symbol, (t_newmethod)pdsymbol_new, 0,
         sizeof(t_pdsymbol), 0, A_SYMBOL, 0);
     class_addBang(pdsymbol_class, pdsymbol_bang);
     class_addSymbol(pdsymbol_class, pdsymbol_symbol);
@@ -201,9 +201,9 @@ static void bang_bang(t_bang *x)
 
 void bang_setup(void)
 {
-    bang_class = class_new(gensym ("bang"), (t_newmethod)bang_new, 0,
+    bang_class = class_new (sym_bang, (t_newmethod)bang_new, 0,
         sizeof(t_bang), 0, 0);
-    class_addCreator((t_newmethod)bang_new2, gensym ("b"), 0);
+    class_addCreator((t_newmethod)bang_new2, sym_b, 0);
     class_addBang(bang_class, bang_bang);
     class_addFloat(bang_class, bang_bang);
     class_addSymbol(bang_class, bang_bang);
@@ -264,7 +264,7 @@ static void send_setup(void)
 {
     send_class = class_new(sym_send, (t_newmethod)send_new, 0,
         sizeof(t_send), 0, A_DEFSYMBOL, 0);
-    class_addCreator((t_newmethod)send_new, gensym ("s"), A_DEFSYMBOL, 0);
+    class_addCreator((t_newmethod)send_new, sym_s, A_DEFSYMBOL, 0);
     class_addBang(send_class, send_bang);
     class_addFloat(send_class, send_float);
     class_addSymbol(send_class, send_symbol);
@@ -330,7 +330,7 @@ static void receive_setup(void)
 {
     receive_class = class_new(sym_receive, (t_newmethod)receive_new, 
         (t_method)receive_free, sizeof(t_receive), CLASS_NOINLET, A_DEFSYMBOL, 0);
-    class_addCreator((t_newmethod)receive_new, gensym ("r"), A_DEFSYMBOL, 0);
+    class_addCreator((t_newmethod)receive_new, sym_r, A_DEFSYMBOL, 0);
     class_addBang(receive_class, receive_bang);
     class_addFloat(receive_class, (t_method)receive_float);
     class_addSymbol(receive_class, receive_symbol);
@@ -479,7 +479,7 @@ void select_setup(void)
     class_addSymbol(sel2_class, sel2_symbol);
 
     class_addCreator((t_newmethod)select_new, sym_select,  A_GIMME, 0);
-    class_addCreator((t_newmethod)select_new, gensym ("sel"),  A_GIMME, 0);
+    class_addCreator((t_newmethod)select_new, sym_sel,  A_GIMME, 0);
 }
 
 /* -------------------------- route ------------------------------ */
@@ -635,7 +635,7 @@ static void *route_new(t_symbol *s, int argc, t_atom *argv)
 
 void route_setup(void)
 {
-    route_class = class_new(gensym ("route"), (t_newmethod)route_new,
+    route_class = class_new(sym_route, (t_newmethod)route_new,
         (t_method)route_free, sizeof(t_route), 0, A_GIMME, 0);
     class_addList(route_class, route_list);
     class_addAnything(route_class, route_anything);
@@ -811,7 +811,7 @@ static void pack_free(t_pack *x)
 
 static void pack_setup(void)
 {
-    pack_class = class_new(gensym ("pack"), (t_newmethod)pack_new,
+    pack_class = class_new(sym_pack, (t_newmethod)pack_new,
         (t_method)pack_free, sizeof(t_pack), 0, A_GIMME, 0);
     class_addBang(pack_class, pack_bang);
     class_addPointer(pack_class, pack_pointer);
@@ -923,7 +923,7 @@ static void unpack_free(t_unpack *x)
 
 static void unpack_setup(void)
 {
-    unpack_class = class_new(gensym ("unpack"), (t_newmethod)unpack_new,
+    unpack_class = class_new(sym_unpack, (t_newmethod)unpack_new,
         (t_method)unpack_free, sizeof(t_unpack), 0, A_GIMME, 0);
     class_addList(unpack_class, unpack_list);
     class_addAnything(unpack_class, unpack_anything);
@@ -1068,9 +1068,9 @@ static void trigger_free(t_trigger *x)
 
 static void trigger_setup(void)
 {
-    trigger_class = class_new(gensym ("trigger"), (t_newmethod)trigger_new,
+    trigger_class = class_new(sym_trigger, (t_newmethod)trigger_new,
         (t_method)trigger_free, sizeof(t_trigger), 0, A_GIMME, 0);
-    class_addCreator((t_newmethod)trigger_new, gensym ("t"), A_GIMME, 0);
+    class_addCreator((t_newmethod)trigger_new, sym_t, A_GIMME, 0);
     class_addList(trigger_class, trigger_list);
     class_addBang(trigger_class, trigger_bang);
     class_addPointer(trigger_class, trigger_pointer);
@@ -1129,7 +1129,7 @@ static void spigot_anything(t_spigot *x, t_symbol *s, int argc, t_atom *argv)
 
 static void spigot_setup(void)
 {
-    spigot_class = class_new(gensym ("spigot"), (t_newmethod)spigot_new, 0,
+    spigot_class = class_new(sym_spigot, (t_newmethod)spigot_new, 0,
         sizeof(t_spigot), 0, A_DEFFLOAT, 0);
     class_addBang(spigot_class, spigot_bang);
     class_addPointer(spigot_class, spigot_pointer);
@@ -1167,7 +1167,7 @@ static void moses_float(t_moses *x, t_float f)
 
 static void moses_setup(void)
 {
-    moses_class = class_new(gensym ("moses"), (t_newmethod)moses_new, 0,
+    moses_class = class_new(sym_moses, (t_newmethod)moses_new, 0,
         sizeof(t_moses), 0, A_DEFFLOAT, 0);
     class_addFloat(moses_class, moses_float);
 }
@@ -1186,7 +1186,7 @@ typedef struct _until
 static void *until_new(void)
 {
     t_until *x = (t_until *)pd_new(until_class);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym ("bang"), gensym ("bang2"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, sym_bang, sym_bang2);
     outlet_new(&x->x_obj, &s_bang);
     x->x_run = 0;
     return (x);
@@ -1217,11 +1217,11 @@ static void until_bang2(t_until *x)
 
 static void until_setup(void)
 {
-    until_class = class_new(gensym ("until"), (t_newmethod)until_new, 0,
+    until_class = class_new(sym_until, (t_newmethod)until_new, 0,
         sizeof(t_until), 0, 0);
     class_addBang(until_class, until_bang);
     class_addFloat(until_class, until_float);
-    class_addMethod(until_class, (t_method)until_bang2, gensym ("bang2"), 0);
+    class_addMethod(until_class, (t_method)until_bang2, sym_bang2, 0);
 }
 
 /* ----------------------- makefilename --------------------- */
@@ -1274,7 +1274,7 @@ static void *makefilename_new(t_symbol *s)
 {
     t_makefilename *x = (t_makefilename *)pd_new(makefilename_class);
     if (!s || !*s->s_name)
-        s = gensym ("file.%d");
+        s = sym_file__dot____percent__d;
     outlet_new(&x->x_obj, &s_symbol);
     x->x_format = s;
     x->x_accept = A_NULL;
@@ -1320,7 +1320,7 @@ static void makefilename_set(t_makefilename *x, t_symbol *s)
 
 static void makefilename_setup(void)
 {
-    makefilename_class = class_new(gensym ("makefilename"),
+    makefilename_class = class_new(sym_makefilename,
     (t_newmethod)makefilename_new, 0,
         sizeof(t_makefilename), 0, A_DEFSYMBOL, 0);
     class_addFloat(makefilename_class, makefilename_float);
@@ -1365,9 +1365,9 @@ static void swap_float(t_swap *x, t_float f)
 
 void swap_setup(void)
 {
-    swap_class = class_new(gensym ("swap"), (t_newmethod)swap_new, 0,
+    swap_class = class_new(sym_swap, (t_newmethod)swap_new, 0,
         sizeof(t_swap), 0, A_DEFFLOAT, 0);
-    class_addCreator((t_newmethod)swap_new, gensym ("fswap"), A_DEFFLOAT, 0);
+    class_addCreator((t_newmethod)swap_new, sym_fswap, A_DEFFLOAT, 0);
     class_addBang(swap_class, swap_bang);
     class_addFloat(swap_class, swap_float);
 }
@@ -1527,13 +1527,13 @@ static void value_ff(t_value *x)
 
 static void value_setup(void)
 {
-    value_class = class_new(gensym ("value"), (t_newmethod)value_new,
+    value_class = class_new(sym_value, (t_newmethod)value_new,
         (t_method)value_ff,
         sizeof(t_value), 0, A_DEFSYMBOL, 0);
-    class_addCreator((t_newmethod)value_new, gensym ("v"), A_DEFSYMBOL, 0);
+    class_addCreator((t_newmethod)value_new, sym_v, A_DEFSYMBOL, 0);
     class_addBang(value_class, value_bang);
     class_addFloat(value_class, value_float);
-    vcommon_class = class_new(gensym ("value"), 0, 0,
+    vcommon_class = class_new(sym_value, 0, 0,
         sizeof(t_vcommon), CLASS_PURE, 0);
     class_addFloat(vcommon_class, vcommon_float);
 }

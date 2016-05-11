@@ -1823,7 +1823,7 @@ void x_qlist_setup(void )
         sym_read, A_GIMME, 0);
     class_setSaveFunction(text_define_class, text_define_save);
     class_addBang(text_define_class, text_define_bang);
-    class_setHelpName(text_define_class, gensym ("text-object"));
+    class_setHelpName(text_define_class, gensym ("text"));
 
     class_addCreator((t_newmethod)text_new, sym_text, A_GIMME, 0);
 
@@ -1831,38 +1831,38 @@ void x_qlist_setup(void )
         (t_newmethod)text_get_new, (t_method)text_client_free,
             sizeof(t_text_get), 0, A_GIMME, 0);
     class_addFloat(text_get_class, text_get_float);
-    class_setHelpName(text_get_class, gensym ("text-object"));
+    class_setHelpName(text_get_class, gensym ("text"));
     
     text_set_class = class_new(gensym ("text set"),
         (t_newmethod)text_set_new, (t_method)text_client_free,
             sizeof(t_text_set), 0, A_GIMME, 0);
     class_addList(text_set_class, text_set_list);
-    class_setHelpName(text_set_class, gensym ("text-object"));
+    class_setHelpName(text_set_class, gensym ("text"));
     
     text_size_class = class_new(gensym ("text size"),
         (t_newmethod)text_size_new, (t_method)text_client_free,
             sizeof(t_text_size), 0, A_GIMME, 0);
     class_addBang(text_size_class, text_size_bang);
     class_addFloat(text_size_class, text_size_float);
-    class_setHelpName(text_size_class, gensym ("text-object"));
+    class_setHelpName(text_size_class, gensym ("text"));
 
     text_tolist_class = class_new(gensym ("text tolist"),
         (t_newmethod)text_tolist_new, (t_method)text_client_free,
             sizeof(t_text_tolist), 0, A_GIMME, 0);
     class_addBang(text_tolist_class, text_tolist_bang);
-    class_setHelpName(text_tolist_class, gensym ("text-object"));
+    class_setHelpName(text_tolist_class, gensym ("text"));
 
     text_fromlist_class = class_new(gensym ("text fromlist"),
         (t_newmethod)text_fromlist_new, (t_method)text_client_free,
             sizeof(t_text_fromlist), 0, A_GIMME, 0);
     class_addList(text_fromlist_class, text_fromlist_list);
-    class_setHelpName(text_fromlist_class, gensym ("text-object"));
+    class_setHelpName(text_fromlist_class, gensym ("text"));
  
     text_search_class = class_new(gensym ("text search"),
         (t_newmethod)text_search_new, (t_method)text_client_free,
             sizeof(t_text_search), 0, A_GIMME, 0);
     class_addList(text_search_class, text_search_list);
-    class_setHelpName(text_search_class, gensym ("text-object"));
+    class_setHelpName(text_search_class, gensym ("text"));
 
     text_sequence_class = class_new(gensym ("text sequence"),
         (t_newmethod)text_sequence_new, (t_method)text_sequence_free,
@@ -1882,7 +1882,7 @@ void x_qlist_setup(void )
     class_addMethod(text_sequence_class, (t_method)text_sequence_tempo, 
         gensym ("unit"), A_FLOAT, A_SYMBOL, 0);
     class_addList(text_sequence_class, text_sequence_list);
-    class_setHelpName(text_sequence_class, gensym ("text-object"));
+    class_setHelpName(text_sequence_class, gensym ("text"));
 
     qlist_class = class_new(gensym ("qlist"), (t_newmethod)qlist_new,
         (t_method)qlist_free, sizeof(t_qlist), 0, 0);

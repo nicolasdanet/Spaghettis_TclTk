@@ -162,7 +162,7 @@ static void alist_clone(t_alist *x, t_alist *y)
 
 static void alist_setup(void)
 {
-    alist_class = class_new(gensym ("list inlet"),
+    alist_class = class_new(sym_list__space__inlet,
         0, 0, sizeof(t_alist), 0, 0);
     class_addList(alist_class, alist_list);
     class_addAnything(alist_class, alist_anything);
@@ -242,7 +242,7 @@ static void list_append_free(t_list_append *x)
 
 static void list_append_setup(void)
 {
-    list_append_class = class_new(gensym ("list append"),
+    list_append_class = class_new(sym_list__space__append,
         (t_newmethod)list_append_new, (t_method)list_append_free,
         sizeof(t_list_append), 0, A_GIMME, 0);
     class_addList(list_append_class, list_append_list);
@@ -326,7 +326,7 @@ static void list_prepend_free(t_list_prepend *x)
 
 static void list_prepend_setup(void)
 {
-    list_prepend_class = class_new(gensym ("list prepend"),
+    list_prepend_class = class_new(sym_list__space__prepend,
         (t_newmethod)list_prepend_new, (t_method)list_prepend_free,
         sizeof(t_list_prepend), 0, A_GIMME, 0);
     class_addList(list_prepend_class, list_prepend_list);
@@ -385,7 +385,7 @@ static void list_split_anything(t_list_split *x, t_symbol *s,
 
 static void list_split_setup(void)
 {
-    list_split_class = class_new(gensym ("list split"),
+    list_split_class = class_new(sym_list__space__split,
         (t_newmethod)list_split_new, 0,
         sizeof(t_list_split), 0, A_DEFFLOAT, 0);
     class_addList(list_split_class, list_split_list);
@@ -426,7 +426,7 @@ static void list_trim_anything(t_list_trim *x, t_symbol *s,
 
 static void list_trim_setup(void)
 {
-    list_trim_class = class_new(gensym ("list trim"),
+    list_trim_class = class_new(sym_list__space__trim,
         (t_newmethod)list_trim_new, 0,
         sizeof(t_list_trim), 0, 0);
     class_addList(list_trim_class, list_trim_list);
@@ -464,7 +464,7 @@ static void list_length_anything(t_list_length *x, t_symbol *s,
 
 static void list_length_setup(void)
 {
-    list_length_class = class_new(gensym ("list length"),
+    list_length_class = class_new(sym_list__space__length,
         (t_newmethod)list_length_new, 0,
         sizeof(t_list_length), 0, 0);
     class_addList(list_length_class, list_length_list);
@@ -501,7 +501,7 @@ static void list_fromsymbol_symbol(t_list_fromsymbol *x, t_symbol *s)
 
 static void list_fromsymbol_setup(void)
 {
-    list_fromsymbol_class = class_new(gensym ("list fromsymbol"),
+    list_fromsymbol_class = class_new(sym_list__space__fromsymbol,
         (t_newmethod)list_fromsymbol_new, 0, sizeof(t_list_fromsymbol), 0, 0);
     class_addSymbol(list_fromsymbol_class, list_fromsymbol_symbol);
     class_setHelpName(list_fromsymbol_class, &s_list);
@@ -536,7 +536,7 @@ static void list_tosymbol_list(t_list_tosymbol *x, t_symbol *s,
 
 static void list_tosymbol_setup(void)
 {
-    list_tosymbol_class = class_new(gensym ("list tosymbol"),
+    list_tosymbol_class = class_new(sym_list__space__tosymbol,
         (t_newmethod)list_tosymbol_new, 0, sizeof(t_list_tosymbol), 0, 0);
     class_addList(list_tosymbol_class, list_tosymbol_list);
     class_setHelpName(list_tosymbol_class, &s_list);
@@ -553,17 +553,17 @@ static void *list_new(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
         t_symbol *s2 = argv[0].a_w.w_symbol;
         if (s2 == sym_append)
             pd_newest = list_append_new(s, argc-1, argv+1);
-        else if (s2 == gensym ("prepend"))
+        else if (s2 == sym_prepend)
             pd_newest = list_prepend_new(s, argc-1, argv+1);
-        else if (s2 == gensym ("split"))
+        else if (s2 == sym_split)
             pd_newest = list_split_new(atom_getFloatAtIndex(1, argc, argv));
-        else if (s2 == gensym ("trim"))
+        else if (s2 == sym_trim)
             pd_newest = list_trim_new();
-        else if (s2 == gensym ("length"))
+        else if (s2 == sym_length)
             pd_newest = list_length_new();
-        else if (s2 == gensym ("fromsymbol"))
+        else if (s2 == sym_fromsymbol)
             pd_newest = list_fromsymbol_new();
-        else if (s2 == gensym ("tosymbol"))
+        else if (s2 == sym_tosymbol)
             pd_newest = list_tosymbol_new();
         else 
         {
