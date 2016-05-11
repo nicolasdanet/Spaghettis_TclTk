@@ -133,7 +133,7 @@ static void tabwrite_tilde_setup(void)
     class_addMethod(tabwrite_tilde_class, (t_method)tabwrite_tilde_stop,
         sym_stop, 0);
     class_addMethod(tabwrite_tilde_class, (t_method)tabwrite_tilde_start,
-        gensym ("start"), A_DEFFLOAT, 0);
+        sym_start, A_DEFFLOAT, 0);
     class_addBang(tabwrite_tilde_class, tabwrite_tilde_bang);
 }
 

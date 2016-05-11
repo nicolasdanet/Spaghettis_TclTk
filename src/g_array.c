@@ -149,12 +149,12 @@ void garray_init( void)
         return;
     b = buffer_new();
     
-    canvas_setActiveFileNameAndDirectory (sym__float_template, sym___dot__);
+    canvas_setActiveFileNameAndDirectory (sym__float_template, sym___dot__); /* ??? */
     buffer_withStringUnzeroed(b, garray_floattemplatefile, strlen(garray_floattemplatefile));
     buffer_eval(b, &pd_canvasMaker, 0, 0);
     pd_vMessage(s__X.s_thing, sym__pop, "i", 0);
     
-    canvas_setActiveFileNameAndDirectory (sym__float_array_template, sym___dot__);
+    canvas_setActiveFileNameAndDirectory (sym__float_array_template, sym___dot__);  /* ??? */
     buffer_withStringUnzeroed(b, garray_arraytemplatefile, strlen(garray_arraytemplatefile));
     buffer_eval(b, &pd_canvasMaker, 0, 0);
     garray_arraytemplatecanvas = s__X.s_thing;
@@ -756,7 +756,7 @@ static void garray_save(t_gobj *z, t_buffer *b)
     t_garray *x = (t_garray *)z;
     t_array *array = garray_getarray(x);
     t_template *scalartemplate;
-    if (x->x_scalar->sc_template != sym_pd__dash__float__dash__array)
+    if (x->x_scalar->sc_template != sym_pd__dash__float__dash__array)   /* ??? */
     {
             /* LATER "save" the scalar as such */ 
         post_error ("can't save arrays of type %s yet", 

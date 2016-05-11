@@ -1274,7 +1274,7 @@ static void *makefilename_new(t_symbol *s)
 {
     t_makefilename *x = (t_makefilename *)pd_new(makefilename_class);
     if (!s || !*s->s_name)
-        s = sym_file__dot____percent__d;
+        s = sym_file__dot____percent__d;    /* ??? */
     outlet_new(&x->x_obj, &s_symbol);
     x->x_format = s;
     x->x_accept = A_NULL;

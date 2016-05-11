@@ -129,19 +129,19 @@ static void *delay_new(t_symbol *unitname, t_float f, t_float tempo)
 
 static void delay_setup(void)
 {
-    delay_class = class_new(gensym ("delay"), (t_newmethod)delay_new,
+    delay_class = class_new(sym_delay, (t_newmethod)delay_new,
         (t_method)delay_free, sizeof(t_delay), 0,
             A_DEFFLOAT, A_DEFFLOAT, A_DEFSYMBOL, 0);
-    class_addCreator((t_newmethod)delay_new, gensym ("del"),
+    class_addCreator((t_newmethod)delay_new, sym_del,
         A_DEFFLOAT, A_DEFFLOAT, A_DEFSYMBOL, 0);
     class_addBang(delay_class, delay_bang);
     class_addMethod(delay_class, (t_method)delay_stop, sym_stop, 0);
     class_addMethod(delay_class, (t_method)delay_ft1,
         sym_ft1, A_FLOAT, 0);
     class_addMethod(delay_class, (t_method)delay_tempo,
-        gensym ("tempo"), A_FLOAT, A_SYMBOL, 0);
+        sym_tempo, A_FLOAT, A_SYMBOL, 0); /* LEGACY !!! */
     class_addMethod(delay_class, (t_method)delay_tempo,
-        gensym ("unit"), A_FLOAT, A_SYMBOL, 0);
+        sym_unit, A_FLOAT, A_SYMBOL, 0);
     class_addFloat(delay_class, (t_method)delay_float);
 }
 
@@ -218,7 +218,7 @@ static void *metro_new(t_symbol *unitname, t_float f, t_float tempo)
 
 static void metro_setup(void)
 {
-    metro_class = class_new(gensym ("metro"), (t_newmethod)metro_new,
+    metro_class = class_new(sym_metro, (t_newmethod)metro_new,
         (t_method)metro_free, sizeof(t_metro), 0,
             A_DEFFLOAT, A_DEFFLOAT, A_DEFSYMBOL, 0);
     class_addBang(metro_class, metro_bang);
@@ -226,9 +226,9 @@ static void metro_setup(void)
     class_addMethod(metro_class, (t_method)metro_ft1, sym_ft1,
         A_FLOAT, 0);
     class_addMethod(metro_class, (t_method)metro_tempo,
-        gensym ("tempo"), A_FLOAT, A_SYMBOL, 0);
+        sym_tempo, A_FLOAT, A_SYMBOL, 0); /* LEGACY !!! */
     class_addMethod(metro_class, (t_method)metro_tempo,
-        gensym ("unit"), A_FLOAT, A_SYMBOL, 0);
+        sym_unit, A_FLOAT, A_SYMBOL, 0);
     class_addFloat(metro_class, (t_method)metro_float);
 }
 
@@ -340,7 +340,7 @@ static void *line_new(t_float f, t_float grain)
 
 static void line_setup(void)
 {
-    line_class = class_new(gensym ("line"), (t_newmethod)line_new,
+    line_class = class_new(sym_line, (t_newmethod)line_new,
         (t_method)line_free, sizeof(t_line), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
     class_addMethod(line_class, (t_method)line_ft1,
         sym_ft1, A_FLOAT, 0);
@@ -399,14 +399,14 @@ static void *timer_new(t_symbol *unitname, t_float tempo)
 
 static void timer_setup(void)
 {
-    timer_class = class_new(gensym ("timer"), (t_newmethod)timer_new, 0,
+    timer_class = class_new(sym_timer, (t_newmethod)timer_new, 0,
         sizeof(t_timer), 0, A_DEFFLOAT, A_DEFSYMBOL, 0);
     class_addBang(timer_class, timer_bang);
     class_addMethod(timer_class, (t_method)timer_bang2, sym_bang2, 0);
     class_addMethod(timer_class, (t_method)timer_tempo,
-        gensym ("tempo"), A_FLOAT, A_SYMBOL, 0);
+        sym_tempo, A_FLOAT, A_SYMBOL, 0); /* LEGACY !!! */
     class_addMethod(timer_class, (t_method)timer_tempo,
-        gensym ("unit"), A_FLOAT, A_SYMBOL, 0);
+        sym_unit, A_FLOAT, A_SYMBOL, 0);
 }
 
 
@@ -642,7 +642,7 @@ static void pipe_free(t_pipe *x)
 
 static void pipe_setup(void)
 {
-    pipe_class = class_new(gensym ("pipe"), 
+    pipe_class = class_new(sym_pipe, 
         (t_newmethod)pipe_new, (t_method)pipe_free,
         sizeof(t_pipe), 0, A_GIMME, 0);
     class_addList(pipe_class, pipe_list);
