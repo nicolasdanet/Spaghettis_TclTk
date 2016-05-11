@@ -205,7 +205,7 @@ void x_scalar_setup(void )
     class_addMethod(scalar_define_class, (t_method)canvas_close,
         sym_menuclose, A_DEFFLOAT, 0); /* LEGACY !!! */
     /*class_addMethod(scalar_define_class, (t_method)canvas_find_parent,
-        gensym ("findparent"), A_NULL);*/
+        gen_sym ("findparent"), A_NULL);*/
     class_addMethod(scalar_define_class, (t_method)canvas_menusave,
         sym_menusave, 0); /* LEGACY !!! */
     class_addMethod(scalar_define_class, (t_method)canvas_menusaveas,

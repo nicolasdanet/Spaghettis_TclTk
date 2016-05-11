@@ -85,7 +85,7 @@ static void random_seed(t_random *x, t_float f, t_float glob)
 
 static void random_setup(void)
 {
-    random_class = class_new(gensym ("random"), (t_newmethod)random_new, 0,
+    random_class = class_new(sym_random, (t_newmethod)random_new, 0,
         sizeof(t_random), 0, A_DEFFLOAT, 0);
     class_addBang(random_class, random_bang);
     class_addMethod(random_class, (t_method)random_seed,
@@ -147,7 +147,7 @@ static void namecanvas_free(t_namecanvas *x)
 
 static void namecanvas_setup(void)
 {
-    namecanvas_class = class_new(gensym ("namecanvas"),
+    namecanvas_class = class_new(sym_namecanvas,
         (t_newmethod)namecanvas_new, (t_method)namecanvas_free,
             sizeof(t_namecanvas), CLASS_NOINLET, A_DEFSYMBOL, 0);
 }
@@ -189,7 +189,7 @@ static void *serial_new(t_float fportno)
 
 static void serial_setup(void)
 {
-    serial_class = class_new(gensym ("serial"), (t_newmethod)serial_new, 0,
+    serial_class = class_new(sym_serial, (t_newmethod)serial_new, 0,
         sizeof(t_serial), 0, A_DEFFLOAT, 0);
     class_addFloat(serial_class, serial_float);
 }
@@ -272,7 +272,7 @@ static void *cputime_new(void)
 
 static void cputime_setup(void)
 {
-    cputime_class = class_new(gensym ("cputime"), (t_newmethod)cputime_new, 0,
+    cputime_class = class_new(sym_cputime, (t_newmethod)cputime_new, 0,
         sizeof(t_cputime), 0, 0);
     class_addBang(cputime_class, cputime_bang);
     class_addMethod(cputime_class, (t_method)cputime_bang2, sym_bang2, 0);
@@ -310,7 +310,7 @@ static void *realtime_new(void)
 
 static void realtime_setup(void)
 {
-    realtime_class = class_new(gensym ("realtime"), (t_newmethod)realtime_new, 0,
+    realtime_class = class_new(sym_realtime, (t_newmethod)realtime_new, 0,
         sizeof(t_realtime), 0, 0);
     class_addBang(realtime_class, realtime_bang);
     class_addMethod(realtime_class, (t_method)realtime_bang2, sym_bang2,
@@ -501,13 +501,13 @@ tooshort:
 static t_oscparse *oscparse_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_oscparse *x = (t_oscparse *)pd_new(oscparse_class);
-    outlet_new(&x->x_obj, gensym ("list"));
+    outlet_new(&x->x_obj, sym_list);
     return (x);
 }
 
 void oscparse_setup(void)
 {
-    oscparse_class = class_new(gensym ("oscparse"), (t_newmethod)oscparse_new,
+    oscparse_class = class_new(sym_oscparse, (t_newmethod)oscparse_new,
         0, sizeof(t_oscparse), 0, A_GIMME, 0);
     class_addList(oscparse_class, oscparse_list);
 }
@@ -686,7 +686,7 @@ static void oscformat_free(t_oscformat *x)
 static void *oscformat_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_oscformat *x = (t_oscformat *)pd_new(oscformat_class);
-    outlet_new(&x->x_obj, gensym ("list"));
+    outlet_new(&x->x_obj, sym_list);
     x->x_pathbuf = PD_MEMORY_GET(1);
     x->x_pathsize = 1;
     *x->x_pathbuf = 0;
@@ -705,12 +705,12 @@ static void *oscformat_new(t_symbol *s, int argc, t_atom *argv)
 
 void oscformat_setup(void)
 {
-    oscformat_class = class_new(gensym ("oscformat"), (t_newmethod)oscformat_new,
+    oscformat_class = class_new(sym_oscformat, (t_newmethod)oscformat_new,
         (t_method)oscformat_free, sizeof(t_oscformat), 0, A_GIMME, 0);
     class_addMethod(oscformat_class, (t_method)oscformat_set,
         sym_set, A_GIMME, 0);
     class_addMethod(oscformat_class, (t_method)oscformat_format,
-        gensym ("format"), A_DEFSYMBOL, 0);
+        sym_format, A_DEFSYMBOL, 0);
     class_addList(oscformat_class, oscformat_list);
 }
 

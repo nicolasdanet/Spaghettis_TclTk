@@ -324,7 +324,7 @@ static void netsend_free(t_netsend *x)
 
 static void netsend_setup(void)
 {
-    netsend_class = class_new(gensym ("netsend"), (t_newmethod)netsend_new,
+    netsend_class = class_new(sym_netsend, (t_newmethod)netsend_new,
         (t_method)netsend_free,
         sizeof(t_netsend), 0, A_GIMME, 0);
     class_addMethod(netsend_class, (t_method)netsend_connect,
@@ -549,11 +549,11 @@ static void *netreceive_new(t_symbol *s, int argc, t_atom *argv)
 
 static void netreceive_setup(void)
 {
-    netreceive_class = class_new(gensym ("netreceive"),
+    netreceive_class = class_new(sym_netreceive,
         (t_newmethod)netreceive_new, (t_method)netreceive_closeall,
         sizeof(t_netreceive), 0, A_GIMME, 0);
     class_addMethod(netreceive_class, (t_method)netreceive_listen,
-        gensym ("listen"), A_FLOAT, 0);
+        sym_listen, A_FLOAT, 0);
     class_addMethod(netreceive_class, (t_method)netreceive_send,
         sym_send, A_GIMME, 0);
 }
