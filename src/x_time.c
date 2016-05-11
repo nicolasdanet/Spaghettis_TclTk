@@ -135,7 +135,7 @@ static void delay_setup(void)
     class_addCreator((t_newmethod)delay_new, gensym ("del"),
         A_DEFFLOAT, A_DEFFLOAT, A_DEFSYMBOL, 0);
     class_addBang(delay_class, delay_bang);
-    class_addMethod(delay_class, (t_method)delay_stop, gensym ("stop"), 0);
+    class_addMethod(delay_class, (t_method)delay_stop, sym_stop, 0);
     class_addMethod(delay_class, (t_method)delay_ft1,
         sym_ft1, A_FLOAT, 0);
     class_addMethod(delay_class, (t_method)delay_tempo,
@@ -222,7 +222,7 @@ static void metro_setup(void)
         (t_method)metro_free, sizeof(t_metro), 0,
             A_DEFFLOAT, A_DEFFLOAT, A_DEFSYMBOL, 0);
     class_addBang(metro_class, metro_bang);
-    class_addMethod(metro_class, (t_method)metro_stop, gensym ("stop"), 0);
+    class_addMethod(metro_class, (t_method)metro_stop, sym_stop, 0);
     class_addMethod(metro_class, (t_method)metro_ft1, sym_ft1,
         A_FLOAT, 0);
     class_addMethod(metro_class, (t_method)metro_tempo,
@@ -345,7 +345,7 @@ static void line_setup(void)
     class_addMethod(line_class, (t_method)line_ft1,
         sym_ft1, A_FLOAT, 0);
     class_addMethod(line_class, (t_method)line_stop,
-        gensym ("stop"), 0);
+        sym_stop, 0);
     class_addMethod(line_class, (t_method)line_set,
         sym_set, A_FLOAT, 0);
     class_addFloat(line_class, (t_method)line_float);
@@ -646,7 +646,7 @@ static void pipe_setup(void)
         (t_newmethod)pipe_new, (t_method)pipe_free,
         sizeof(t_pipe), 0, A_GIMME, 0);
     class_addList(pipe_class, pipe_list);
-    class_addMethod(pipe_class, (t_method)pipe_flush, gensym ("flush"), 0);
+    class_addMethod(pipe_class, (t_method)pipe_flush, sym_flush, 0);
     class_addMethod(pipe_class, (t_method)pipe_clear, sym_clear, 0);
 }
 

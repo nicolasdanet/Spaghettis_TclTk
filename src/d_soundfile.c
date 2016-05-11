@@ -2150,7 +2150,7 @@ static void readsf_setup(void)
         (t_method)readsf_free, sizeof(t_readsf), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
     class_addFloat(readsf_class, (t_method)readsf_float);
     class_addMethod(readsf_class, (t_method)readsf_start, gensym ("start"), 0);
-    class_addMethod(readsf_class, (t_method)readsf_stop, gensym ("stop"), 0);
+    class_addMethod(readsf_class, (t_method)readsf_stop, sym_stop, 0);
     class_addMethod(readsf_class, (t_method)readsf_dsp,
         sym_dsp, A_CANT, 0);
     class_addMethod(readsf_class, (t_method)readsf_open, sym_open, 
@@ -2632,7 +2632,7 @@ static void writesf_setup(void)
     writesf_class = class_new(gensym ("writesf~"), (t_newmethod)writesf_new, 
         (t_method)writesf_free, sizeof(t_writesf), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
     class_addMethod(writesf_class, (t_method)writesf_start, gensym ("start"), 0);
-    class_addMethod(writesf_class, (t_method)writesf_stop, gensym ("stop"), 0);
+    class_addMethod(writesf_class, (t_method)writesf_stop, sym_stop, 0);
     class_addMethod(writesf_class, (t_method)writesf_dsp,
         sym_dsp, A_CANT, 0);
     class_addMethod(writesf_class, (t_method)writesf_open, sym_open, 

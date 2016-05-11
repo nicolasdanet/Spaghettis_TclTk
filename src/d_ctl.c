@@ -226,7 +226,7 @@ static void line_tilde_setup(void)
     class_addMethod(line_tilde_class, (t_method)line_tilde_dsp,
         sym_dsp, A_CANT, 0);
     class_addMethod(line_tilde_class, (t_method)line_tilde_stop,
-        gensym ("stop"), 0);
+        sym_stop, 0);
 }
 
 /* -------------------------- vline~ ------------------------------ */
@@ -421,7 +421,7 @@ static void vline_tilde_setup(void)
     class_addMethod(vline_tilde_class, (t_method)vline_tilde_dsp,
         sym_dsp, A_CANT, 0);
     class_addMethod(vline_tilde_class, (t_method)vline_tilde_stop,
-        gensym ("stop"), 0);
+        sym_stop, 0);
 }
 
 /* -------------------------- snapshot~ ------------------------------ */

@@ -131,7 +131,7 @@ static void tabwrite_tilde_setup(void)
     class_addMethod(tabwrite_tilde_class, (t_method)tabwrite_tilde_set,
         sym_set, A_SYMBOL, 0);
     class_addMethod(tabwrite_tilde_class, (t_method)tabwrite_tilde_stop,
-        gensym ("stop"), 0);
+        sym_stop, 0);
     class_addMethod(tabwrite_tilde_class, (t_method)tabwrite_tilde_start,
         gensym ("start"), A_DEFFLOAT, 0);
     class_addBang(tabwrite_tilde_class, tabwrite_tilde_bang);
@@ -262,7 +262,7 @@ static void tabplay_tilde_setup(void)
     class_addMethod(tabplay_tilde_class, (t_method)tabplay_tilde_dsp,
         sym_dsp, A_CANT, 0);
     class_addMethod(tabplay_tilde_class, (t_method)tabplay_tilde_stop,
-        gensym ("stop"), 0);
+        sym_stop, 0);
     class_addMethod(tabplay_tilde_class, (t_method)tabplay_tilde_set,
         sym_set, A_DEFSYMBOL, 0);
     class_addList(tabplay_tilde_class, tabplay_tilde_list);

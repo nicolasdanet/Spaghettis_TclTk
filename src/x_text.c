@@ -1874,7 +1874,7 @@ void x_qlist_setup(void )
     class_addMethod(text_sequence_class, (t_method)text_sequence_auto, 
         gensym ("auto"), 0);
     class_addMethod(text_sequence_class, (t_method)text_sequence_stop, 
-        gensym ("stop"), 0);
+        sym_stop, 0);
     class_addMethod(text_sequence_class, (t_method)text_sequence_args, 
         gensym ("args"), A_GIMME, 0);
     class_addMethod(text_sequence_class, (t_method)text_sequence_tempo, 
