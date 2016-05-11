@@ -131,7 +131,7 @@ static void sighip_clear(t_sighip *x, t_float q)
 
 void sighip_setup(void)
 {
-    sighip_class = class_new(gensym ("hip~"), (t_newmethod)sighip_new, 0,
+    sighip_class = class_new(sym_hip__tilde__, (t_newmethod)sighip_new, 0,
         sizeof(t_sighip), 0, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sighip_class, t_sighip, x_f);
     class_addMethod(sighip_class, (t_method)sighip_dsp,
@@ -222,7 +222,7 @@ static void siglop_dsp(t_siglop *x, t_signal **sp)
 
 void siglop_setup(void)
 {
-    siglop_class = class_new(gensym ("lop~"), (t_newmethod)siglop_new, 0,
+    siglop_class = class_new(sym_lop__tilde__, (t_newmethod)siglop_new, 0,
         sizeof(t_siglop), 0, A_DEFFLOAT, 0);
     CLASS_SIGNAL(siglop_class, t_siglop, x_f);
     class_addMethod(siglop_class, (t_method)siglop_dsp,
@@ -262,7 +262,7 @@ static void *sigbp_new(t_float f, t_float q)
 {
     t_sigbp *x = (t_sigbp *)pd_new(sigbp_class);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, sym_float, sym_ft1);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, sym_float, gensym ("ft2"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, sym_float, sym_ft2);
     outlet_new(&x->x_obj, &s_signal);
     x->x_sr = 44100;
     x->x_ctl = &x->x_cspace;
@@ -357,7 +357,7 @@ static void sigbp_dsp(t_sigbp *x, t_signal **sp)
 
 void sigbp_setup(void)
 {
-    sigbp_class = class_new(gensym ("bp~"), (t_newmethod)sigbp_new, 0,
+    sigbp_class = class_new(sym_bp__tilde__, (t_newmethod)sigbp_new, 0,
         sizeof(t_sigbp), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sigbp_class, t_sigbp, x_f);
     class_addMethod(sigbp_class, (t_method)sigbp_dsp,
@@ -365,7 +365,7 @@ void sigbp_setup(void)
     class_addMethod(sigbp_class, (t_method)sigbp_ft1,
         sym_ft1, A_FLOAT, 0);
     class_addMethod(sigbp_class, (t_method)sigbp_ft2,
-        gensym ("ft2"), A_FLOAT, 0);
+        sym_ft2, A_FLOAT, 0);
     class_addMethod(sigbp_class, (t_method)sigbp_clear, sym_clear, 0);
 }
 
@@ -484,7 +484,7 @@ static void sigbiquad_dsp(t_sigbiquad *x, t_signal **sp)
 
 void sigbiquad_setup(void)
 {
-    sigbiquad_class = class_new(gensym ("biquad~"), (t_newmethod)sigbiquad_new,
+    sigbiquad_class = class_new(sym_biquad__tilde__, (t_newmethod)sigbiquad_new,
         0, sizeof(t_sigbiquad), 0, A_GIMME, 0);
     CLASS_SIGNAL(sigbiquad_class, t_sigbiquad, x_f);
     class_addMethod(sigbiquad_class, (t_method)sigbiquad_dsp,
@@ -562,13 +562,13 @@ static void sigsamphold_set(t_sigsamphold *x, t_float f)
 
 void sigsamphold_setup(void)
 {
-    sigsamphold_class = class_new(gensym ("samphold~"),
+    sigsamphold_class = class_new(sym_samphold__tilde__,
         (t_newmethod)sigsamphold_new, 0, sizeof(t_sigsamphold), 0, 0);
     CLASS_SIGNAL(sigsamphold_class, t_sigsamphold, x_f);
     class_addMethod(sigsamphold_class, (t_method)sigsamphold_set,
         sym_set, A_DEFFLOAT, 0);
     class_addMethod(sigsamphold_class, (t_method)sigsamphold_reset,
-        gensym ("reset"), A_GIMME, 0);
+        sym_reset, A_GIMME, 0);
     class_addMethod(sigsamphold_class, (t_method)sigsamphold_dsp,
         sym_dsp, A_CANT, 0);
 }
@@ -635,7 +635,7 @@ static void sigrpole_set(t_sigrpole *x, t_float f)
 
 void sigrpole_setup(void)
 {
-    sigrpole_class = class_new(gensym ("rpole~"),
+    sigrpole_class = class_new(sym_rpole__tilde__,
         (t_newmethod)sigrpole_new, 0, sizeof(t_sigrpole), 0, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sigrpole_class, t_sigrpole, x_f);
     class_addMethod(sigrpole_class, (t_method)sigrpole_set,
@@ -707,7 +707,7 @@ static void sigrzero_set(t_sigrzero *x, t_float f)
 
 void sigrzero_setup(void)
 {
-    sigrzero_class = class_new(gensym ("rzero~"),
+    sigrzero_class = class_new(sym_rzero__tilde__,
         (t_newmethod)sigrzero_new, 0, sizeof(t_sigrzero), 0, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sigrzero_class, t_sigrzero, x_f);
     class_addMethod(sigrzero_class, (t_method)sigrzero_set,
@@ -779,7 +779,7 @@ static void sigrzero_rev_set(t_sigrzero_rev *x, t_float f)
 
 void sigrzero_rev_setup(void)
 {
-    sigrzero_rev_class = class_new(gensym ("rzero_rev~"),
+    sigrzero_rev_class = class_new(sym_rzero_rev__tilde__,
         (t_newmethod)sigrzero_rev_new, 0, sizeof(t_sigrzero_rev),
         0, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sigrzero_rev_class, t_sigrzero_rev, x_f);
@@ -872,7 +872,7 @@ static void sigcpole_set(t_sigcpole *x, t_float re, t_float im)
 
 void sigcpole_setup(void)
 {
-    sigcpole_class = class_new(gensym ("cpole~"),
+    sigcpole_class = class_new(sym_cpole__tilde__,
         (t_newmethod)sigcpole_new, 0, sizeof(t_sigcpole), 0, 
             A_DEFFLOAT, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sigcpole_class, t_sigcpole, x_f);
@@ -962,7 +962,7 @@ static void sigczero_set(t_sigczero *x, t_float re, t_float im)
 
 void sigczero_setup(void)
 {
-    sigczero_class = class_new(gensym ("czero~"),
+    sigczero_class = class_new(sym_czero__tilde__,
         (t_newmethod)sigczero_new, 0, sizeof(t_sigczero), 0, 
             A_DEFFLOAT, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sigczero_class, t_sigczero, x_f);
@@ -1054,7 +1054,7 @@ static void sigczero_rev_set(t_sigczero_rev *x, t_float re, t_float im)
 
 void sigczero_rev_setup(void)
 {
-    sigczero_rev_class = class_new(gensym ("czero_rev~"),
+    sigczero_rev_class = class_new(sym_czero_rev__tilde__,
         (t_newmethod)sigczero_rev_new, 0, sizeof(t_sigczero_rev), 0, 
             A_DEFFLOAT, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sigczero_rev_class, t_sigczero_rev, x_f);
