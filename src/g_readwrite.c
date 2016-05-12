@@ -310,6 +310,9 @@ void canvas_dataproperties(t_glist *x, t_scalar *sc, t_buffer *b)
     int ntotal, nnew, scindex;
     t_gobj *y, *y2 = 0, *newone, *oldone = 0;
     t_template *template;
+    
+    // glist_noselect(x); /* FIX. */
+    
     for (y = x->gl_graphics, ntotal = 0, scindex = -1; y; y = y->g_next)
     {
         if (y == &sc->sc_g)
@@ -346,10 +349,26 @@ void canvas_dataproperties(t_glist *x, t_scalar *sc, t_buffer *b)
             ((t_scalar *)oldone)->sc_template 
         && (template = template_findbyname(((t_scalar *)newone)->sc_template)))
     {
+    
+    
             /* copy new one to old one and deete new one */
         memcpy(&((t_scalar *)oldone)->sc_vector, &((t_scalar *)newone)->sc_vector,
             template->t_n * sizeof(t_word));
+            
+
+        
+        /* // FIX //
+        int i;
+        for (i = 0; i < template->t_n; i++)
+        {
+            t_word w = ((t_scalar *)newone)->sc_vec[i];
+            ((t_scalar *)newone)->sc_vec[i] = ((t_scalar *)newone)->sc_vec[i];
+            ((t_scalar *)newone)->sc_vec[i] = w;
+        }
+        */
+        
         pd_free(&newone->g_pd);
+        
         if (canvas_isVisible(x))
         {
             gobj_visibilityChanged(oldone, x, 0);

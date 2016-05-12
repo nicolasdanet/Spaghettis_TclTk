@@ -88,7 +88,7 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
 {
     t_object *o = NULL;
     
-    if (canvas_isGraphedOnParent (owner)) {
+    if (canvas_isDrawnOnParent (owner)) {
     //
     /* Is parent visible? */
     

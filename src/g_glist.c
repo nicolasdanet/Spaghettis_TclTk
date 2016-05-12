@@ -143,7 +143,7 @@ int canvas_isDirty (t_glist *glist)
     return (canvas_getRoot (glist)->gl_isDirty != 0);
 }
 
-int canvas_isGraphedOnParent (t_glist *glist)
+int canvas_isDrawnOnParent (t_glist *glist)
 {
     return (!canvas_canHaveWindow (glist) && glist->gl_parent);
 }
@@ -162,7 +162,8 @@ int canvas_hasEnvironment (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_glist *canvas_addGraph (t_glist *glist, t_symbol *name,
+t_glist *canvas_addGraph (t_glist *glist,
+    t_symbol *name,
     t_float indexStart,
     t_float valueUp,
     t_float indexEnd,
@@ -239,6 +240,38 @@ t_glist *canvas_addGraph (t_glist *glist, t_symbol *name,
     glist_add (glist, cast_gobj (x));
     
     return x;
+}
+
+void canvas_setAsGraphOnParent (t_glist *glist, int flags, int hasRectangle)
+{
+    int isGraphOnParent = (flags & 1);
+    int needToUpdate    = isGraphOnParent || (!isGraphOnParent && glist->gl_isGraphOnParent);
+    
+    glist->gl_hideText = !(!(flags & 2));
+    
+    if (needToUpdate) {
+        if (!glist->gl_isLoading && glist->gl_parent && canvas_isVisible (glist->gl_parent)) {
+            gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 0);
+        }
+    }
+    
+    if (!isGraphOnParent) { glist->gl_isGraphOnParent = 0; } 
+    else {
+        if (glist->gl_width <= 0)  { glist->gl_width  = GLIST_DEFAULT_WIDTH;  }
+        if (glist->gl_height <= 0) { glist->gl_height = GLIST_DEFAULT_HEIGHT; }
+
+        glist->gl_isGraphOnParent = 1;
+        glist->gl_hasRectangle = hasRectangle;
+        
+        if (hasRectangle && canvas_isVisible (glist)) { glist_redraw (glist); }
+    }
+    
+    if (needToUpdate) {
+        if (!glist->gl_isLoading && glist->gl_parent && canvas_isVisible (glist->gl_parent)) {
+            gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
+            canvas_updateLinesByObject (glist->gl_parent, cast_object (glist));
+        }
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

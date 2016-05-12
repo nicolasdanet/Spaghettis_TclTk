@@ -248,6 +248,8 @@ struct _glist {
     int                 gl_magic;
     int                 gl_width;
     int                 gl_height;
+    int                 gl_marginX;
+    int                 gl_marginY;
     t_float             gl_indexStart;
     t_float             gl_indexEnd;
     t_float             gl_valueUp;
@@ -256,8 +258,6 @@ struct _glist {
     int                 gl_windowTopLeftY;
     int                 gl_windowBottomRightX;
     int                 gl_windowBottomRightY;
-    int                 gl_marginX;
-    int                 gl_marginY;
     int                 gl_fontSize;
     t_tick              gl_tickX;
     t_tick              gl_tickY;
@@ -339,6 +339,7 @@ t_glist         *canvas_getView                         (t_glist *glist);
 
 t_symbol        *canvas_expandDollar                    (t_glist *glist, t_symbol *s);
 t_symbol        *canvas_makeBindSymbol                  (t_symbol *s);
+
 t_glist         *canvas_addGraph                        (t_glist *glist,
                                                             t_symbol *name,
                                                             t_float indexStart,
@@ -349,13 +350,15 @@ t_glist         *canvas_addGraph                        (t_glist *glist,
                                                             t_float topLeftY,
                                                             t_float bottomRightX,
                                                             t_float bottomRightY);
+                                                            
+void            canvas_setAsGraphOnParent               (t_glist *glist, int flags, int hasRectangle);
 
 int             canvas_isVisible                        (t_glist *glist);
 int             canvas_isRoot                           (t_glist *glist);
 int             canvas_isAbstraction                    (t_glist *glist);
 int             canvas_isSubpatch                       (t_glist *glist);
 int             canvas_isDirty                          (t_glist *glist);
-int             canvas_isGraphedOnParent                (t_glist *glist);
+int             canvas_isDrawnOnParent                  (t_glist *glist);
 int             canvas_canHaveWindow                    (t_glist *glist);
 int             canvas_hasEnvironment                   (t_glist *glist);
 
@@ -546,7 +549,6 @@ void canvas_objfor (t_glist *gl, t_object *x, int argc, t_atom *argv);
 void canvas_menusave (t_glist *x, float fdestroy);
 void canvas_menusaveas (t_glist *x, float fdestroy);
 void canvas_find_parent (t_glist *x);
-void canvas_setgraph (t_glist *x, int flag, int nogoprect);
 
 void glist_text(t_glist *x, t_symbol *s, int argc, t_atom *argv);
 void canvas_obj(t_glist *gl, t_symbol *s, int argc, t_atom *argv);

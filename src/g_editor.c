@@ -212,48 +212,6 @@ static void canvas_rightclick(t_glist *x, int xpos, int ypos, t_gobj *y)
 
 /* ----  editors -- perhaps this and "vis" should go to g_editor.c ------- */
 
-
-    /* set a canvas up as a graph-on-parent.  Set reasonable defaults for
-    any missing paramters and redraw things if necessary. */
-void canvas_setgraph(t_glist *x, int flag, int nogoprect)
-{
-    x->gl_hideText = !(!(flag&2));
-    
-    flag = (flag&1);
-    
-    if (!flag && x->gl_isGraphOnParent)
-    {
-        if (x->gl_parent && !x->gl_isLoading && canvas_isVisible(x->gl_parent))
-            gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 0);
-        x->gl_isGraphOnParent = 0;
-        if (x->gl_parent && !x->gl_isLoading && canvas_isVisible(x->gl_parent))
-        {
-            gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 1);
-            canvas_updateLinesByObject(x->gl_parent, &x->gl_obj);
-        }
-    }
-    else if (flag)
-    {
-        if (x->gl_width <= 0)
-            x->gl_width = GLIST_DEFAULT_WIDTH;
-
-        if (x->gl_height <= 0)
-            x->gl_height = GLIST_DEFAULT_HEIGHT;
-
-        if (x->gl_parent && !x->gl_isLoading && canvas_isVisible(x->gl_parent))
-            gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 0);
-        x->gl_isGraphOnParent = 1;
-        x->gl_hasRectangle = !nogoprect;
-        if (canvas_isVisible(x) && x->gl_hasRectangle)
-            glist_redraw(x);
-        if (x->gl_parent && !x->gl_isLoading && canvas_isVisible(x->gl_parent))
-        {
-            gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 1);
-            canvas_updateLinesByObject(x->gl_parent, &x->gl_obj);
-        }
-    }
-}
-
     /* tell GUI to create a properties dialog on the canvas.  We tell
     the user the negative of the "pixel" y scale to make it appear to grow
     naturally upward, whereas pixels grow downward. */
@@ -352,7 +310,7 @@ void canvas_donecanvasdialog(t_glist *x,
         }
     }
         /* LATER avoid doing 2 redraws here (possibly one inside setgraph) */
-    canvas_setgraph(x, graphme, 0);
+    canvas_setAsGraphOnParent (x, graphme, 1);
     canvas_dirty(x, 1);
     if (x->gl_haveWindow)
         canvas_redraw(x);

@@ -148,24 +148,19 @@ static void canvas_dosetbounds(t_glist *x, int x1, int y1, int x2, int y2)      
 
 static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    int graphOnParent;
-    
     glist->gl_indexStart    = atom_getFloatAtIndex (0, argc, argv);
     glist->gl_valueUp       = atom_getFloatAtIndex (1, argc, argv);
     glist->gl_indexEnd      = atom_getFloatAtIndex (2, argc, argv);
     glist->gl_valueDown     = atom_getFloatAtIndex (3, argc, argv);
     glist->gl_width         = (int)atom_getFloatAtIndex (4, argc, argv);
     glist->gl_height        = (int)atom_getFloatAtIndex (5, argc, argv);
-    graphOnParent           = (int)atom_getFloatAtIndex (6, argc, argv);
     
     if (argc >= 8) {
-    //
-    glist->gl_marginX       = (int)atom_getFloatAtIndex (7, argc, argv);
-    glist->gl_marginY       = (int)atom_getFloatAtIndex (8, argc, argv);
-    //
+        glist->gl_marginX   = (int)atom_getFloatAtIndex (7, argc, argv);
+        glist->gl_marginY   = (int)atom_getFloatAtIndex (8, argc, argv);
     }
     
-    canvas_setgraph (glist, graphOnParent, (argc < 8) ? 1 : 0);
+    canvas_setAsGraphOnParent (glist, (int)atom_getFloatAtIndex (6, argc, argv), (argc < 8) ? 0 : 1);
 }
 
 void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -194,14 +189,14 @@ static void canvas_graph (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     canvas_addGraph (glist, 
         atom_getSymbolAtIndex (0, argc, argv),
-        atom_getFloatAtIndex (1, argc, argv),
-        atom_getFloatAtIndex (2, argc, argv),
-        atom_getFloatAtIndex (3, argc, argv),
-        atom_getFloatAtIndex (4, argc, argv),
-        atom_getFloatAtIndex (5, argc, argv),
-        atom_getFloatAtIndex (6, argc, argv),
-        atom_getFloatAtIndex (7, argc, argv),
-        atom_getFloatAtIndex (8, argc, argv));
+        atom_getFloatAtIndex (1,  argc, argv),
+        atom_getFloatAtIndex (2,  argc, argv),
+        atom_getFloatAtIndex (3,  argc, argv),
+        atom_getFloatAtIndex (4,  argc, argv),
+        atom_getFloatAtIndex (5,  argc, argv),
+        atom_getFloatAtIndex (6,  argc, argv),
+        atom_getFloatAtIndex (7,  argc, argv),
+        atom_getFloatAtIndex (8,  argc, argv));
 }
 
 static void canvas_width (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -694,16 +689,16 @@ void canvas_setup (void)
     class_addMouseUp (c, canvas_mouseup);
     class_addBounds (c, canvas_setBounds);
 
-    class_addMethod (c, (t_method)canvas_coords,        sym_coords,     A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_restore,       sym_restore,    A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_obj,           sym_obj,        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_msg,           sym_msg,        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_floatatom,     sym_floatatom,  A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_symbolatom,    sym_symbolatom, A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)glist_text,           sym_text,       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_graph,         sym_graph,      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)glist_scalar,         sym_scalar,     A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_width,         sym_f,          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_coords,        sym_coords,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_restore,       sym_restore,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_obj,           sym_obj,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_msg,           sym_msg,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_floatatom,     sym_floatatom,      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_symbolatom,    sym_symbolatom,     A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)glist_text,           sym_text,           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_graph,         sym_graph,          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)glist_scalar,         sym_scalar,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_width,         sym_f,              A_GIMME, A_NULL);
     
     class_addMethod (c, (t_method)canvas_connect,
         sym_connect,
@@ -771,15 +766,15 @@ void canvas_setup (void)
    
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)canvas_open,          sym_menu__dash__open,   A_NULL);
-    class_addMethod (c, (t_method)canvas_close,         sym_menuclose,          A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_toggle,        sym_toggle,             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_vumeter,       sym_vumeter,            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_mycnv,         sym_mycnv,              A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_numbox,        sym_numbox,             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_visible,       sym_vis,                A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_open,      sym_menu__dash__open,   A_NULL);
+    class_addMethod (c, (t_method)canvas_close,     sym_menuclose,          A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_toggle,    sym_toggle,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_vumeter,   sym_vumeter,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_mycnv,     sym_mycnv,              A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_numbox,    sym_numbox,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_visible,   sym_vis,                A_FLOAT, A_NULL);
     
-    class_addCreator ((t_newmethod)subpatch_new,        sym_page,               A_DEFSYMBOL, A_NULL);
+    class_addCreator ((t_newmethod)subpatch_new,    sym_page,               A_DEFSYMBOL, A_NULL);
 
     #endif
         
