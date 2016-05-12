@@ -690,7 +690,7 @@ static void canvas_saveto(t_glist *x, t_buffer *b)
                 x->gl_indexStart, x->gl_valueUp,
                 x->gl_indexEnd, x->gl_valueDown,
                 (t_float)x->gl_width, (t_float)x->gl_height,
-                (t_float)((x->gl_hideText)?2.:1.),
+                (t_float)((x->gl_hideText)?3.:1.),
                 (t_float)x->gl_marginX, (t_float)x->gl_marginY); 
                     /* otherwise write in 0.38-compatible form */
         else buffer_vAppend(b, "ssfffffff;", sym___hash__X, sym_coords,

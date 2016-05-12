@@ -244,10 +244,11 @@ t_glist *canvas_addGraph (t_glist *glist,
 
 void canvas_setAsGraphOnParent (t_glist *glist, int flags, int hasRectangle)
 {
-    int isGraphOnParent = (flags & 1);
+    int isGraphOnParent = (flags != 0);         /* Consider any nonzero number for compatibility. */
+    int hideText        = (flags & 2) != 0;
     int needToUpdate    = isGraphOnParent || (!isGraphOnParent && glist->gl_isGraphOnParent);
     
-    glist->gl_hideText = !(!(flags & 2));
+    glist->gl_hideText  = hideText;
     
     if (needToUpdate) {
         if (!glist->gl_isLoading && glist->gl_parent && canvas_isVisible (glist->gl_parent)) {
