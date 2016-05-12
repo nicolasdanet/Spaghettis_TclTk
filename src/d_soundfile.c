@@ -1491,7 +1491,7 @@ static void soundfiler_write(t_soundfiler *x, t_symbol *s,
 
 static void soundfiler_setup(void)
 {
-    soundfiler_class = class_new(gensym ("soundfiler"), (t_newmethod)soundfiler_new, 
+    soundfiler_class = class_new(sym_soundfiler, (t_newmethod)soundfiler_new, 
         0, sizeof(t_soundfiler), 0, 0);
     class_addMethod(soundfiler_class, (t_method)soundfiler_read, sym_read, 
         A_GIMME, 0);
@@ -2146,7 +2146,7 @@ static void readsf_free(t_readsf *x)
 
 static void readsf_setup(void)
 {
-    readsf_class = class_new(gensym ("readsf~"), (t_newmethod)readsf_new, 
+    readsf_class = class_new(sym_readsf__tilde__, (t_newmethod)readsf_new, 
         (t_method)readsf_free, sizeof(t_readsf), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
     class_addFloat(readsf_class, (t_method)readsf_float);
     class_addMethod(readsf_class, (t_method)readsf_start, sym_start, 0);
@@ -2629,7 +2629,7 @@ static void writesf_free(t_writesf *x)
 
 static void writesf_setup(void)
 {
-    writesf_class = class_new(gensym ("writesf~"), (t_newmethod)writesf_new, 
+    writesf_class = class_new(sym_writesf__tilde__, (t_newmethod)writesf_new, 
         (t_method)writesf_free, sizeof(t_writesf), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
     class_addMethod(writesf_class, (t_method)writesf_start, sym_start, 0);
     class_addMethod(writesf_class, (t_method)writesf_stop, sym_stop, 0);

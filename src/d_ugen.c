@@ -285,9 +285,9 @@ static void block_dsp(t_block *x, t_signal **sp)
 
 void block_tilde_setup(void)
 {
-    block_class = class_new(gensym ("block~"), (t_newmethod)block_new, 0,
+    block_class = class_new(sym_block__tilde__, (t_newmethod)block_new, 0,
             sizeof(t_block), 0, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
-    class_addCreator((t_newmethod)switch_new, gensym ("switch~"),
+    class_addCreator((t_newmethod)switch_new, sym_switch__tilde__,
         A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
     class_addMethod(block_class, (t_method)block_set, sym_set, 
         A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
@@ -1166,7 +1166,7 @@ static void *samplerate_tilde_new(t_symbol *s)
 
 static void samplerate_tilde_setup(void)
 {
-    samplerate_tilde_class = class_new(gensym ("samplerate~"),
+    samplerate_tilde_class = class_new(sym_samplerate__tilde__,
         (t_newmethod)samplerate_tilde_new, 0, sizeof(t_samplerate), 0, 0);
     class_addBang(samplerate_tilde_class, samplerate_tilde_bang);
 }

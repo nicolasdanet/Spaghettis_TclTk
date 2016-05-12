@@ -117,7 +117,7 @@ static void phasor_ft1(t_phasor *x, t_float f)
 
 static void phasor_setup(void)
 {
-    phasor_class = class_new(gensym ("phasor~"), (t_newmethod)phasor_new, 0,
+    phasor_class = class_new(sym_phasor__tilde__, (t_newmethod)phasor_new, 0,
         sizeof(t_phasor), 0, A_DEFFLOAT, 0);
     CLASS_SIGNAL(phasor_class, t_phasor, x_f);
     class_addMethod(phasor_class, (t_method)phasor_dsp,
@@ -224,7 +224,7 @@ static void cos_maketable(void)
 
 static void cos_setup(void)
 {
-    cos_class = class_new(gensym ("cos~"), (t_newmethod)cos_new, 0,
+    cos_class = class_new(sym_cos__tilde__, (t_newmethod)cos_new, 0,
         sizeof(t_cos), 0, A_DEFFLOAT, 0);
     CLASS_SIGNAL(cos_class, t_cos, x_f);
     class_addMethod(cos_class, (t_method)cos_dsp, sym_dsp, A_CANT, 0);
@@ -324,7 +324,7 @@ static void osc_ft1(t_osc *x, t_float f)
 
 static void osc_setup(void)
 {    
-    osc_class = class_new(gensym ("osc~"), (t_newmethod)osc_new, 0,
+    osc_class = class_new(sym_osc__tilde__, (t_newmethod)osc_new, 0,
         sizeof(t_osc), 0, A_DEFFLOAT, 0);
     CLASS_SIGNAL(osc_class, t_osc, x_f);
     class_addMethod(osc_class, (t_method)osc_dsp, sym_dsp, A_CANT, 0);
@@ -448,7 +448,7 @@ static void sigvcf_dsp(t_sigvcf *x, t_signal **sp)
 
 void sigvcf_setup(void)
 {
-    sigvcf_class = class_new(gensym ("vcf~"), (t_newmethod)sigvcf_new, 0,
+    sigvcf_class = class_new(sym_vcf__tilde__, (t_newmethod)sigvcf_new, 0,
         sizeof(t_sigvcf), 0, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sigvcf_class, t_sigvcf, x_f);
     class_addMethod(sigvcf_class, (t_method)sigvcf_dsp,
@@ -498,7 +498,7 @@ static void noise_dsp(t_noise *x, t_signal **sp)
 
 static void noise_setup(void)
 {
-    noise_class = class_new(gensym ("noise~"), (t_newmethod)noise_new, 0,
+    noise_class = class_new(sym_noise__tilde__, (t_newmethod)noise_new, 0,
         sizeof(t_noise), 0, 0);
     class_addMethod(noise_class, (t_method)noise_dsp, sym_dsp, A_CANT, 0);
 }
