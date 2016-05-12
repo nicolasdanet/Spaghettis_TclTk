@@ -401,8 +401,8 @@ proc _forceVisible {top} {
     
     set canvasWidth($top)  [::ifNonZero $canvasWidth($top)  $canvasWidth(${top}.old)]
     set canvasHeight($top) [::ifNonZero $canvasHeight($top) $canvasHeight(${top}.old)]
-    set canvasWidth($top)  [::ifNonZero $canvasWidth($top)  85]
-    set canvasHeight($top) [::ifNonZero $canvasHeight($top) 60]
+    set canvasWidth($top)  [::ifNonZero $canvasWidth($top)  200]
+    set canvasHeight($top) [::ifNonZero $canvasHeight($top) 140]
 }
 
 # ------------------------------------------------------------------------------------------------------------

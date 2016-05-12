@@ -391,7 +391,7 @@ void canvas_getLastCoordinates (t_glist *glist, int *a, int *b)
 {
     if (canvas_lastCanvas == glist) { *a = canvas_lastCanvasX; *b = canvas_lastCanvasY; } 
     else {
-        *a = CANVAS_OBJECT_DEFAULT_X; *b = CANVAS_OBJECT_DEFAULT_Y;
+        *a = GLIST_DEFAULT_X; *b = GLIST_DEFAULT_Y;
     }
 }
 
