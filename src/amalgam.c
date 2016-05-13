@@ -58,7 +58,7 @@
 /* Graphics. */
 
 #include "g_gui.c"
-#include "g_glist.c"
+#include "g_base.c"
 #include "g_draw.c"
 #include "g_select.c"
 #include "g_editor.c"

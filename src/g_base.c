@@ -406,6 +406,49 @@ void canvas_setCursorType (t_glist *glist, int type)
     }
 }
 
+t_gobj *canvas_getHitObject (t_glist *glist, 
+    int positionX,
+    int positionY,
+    int *a,
+    int *b,
+    int *c,
+    int *d)
+{
+    t_gobj *y = NULL;
+    t_gobj *object = NULL;
+    
+    int x1, y1, x2, y2;
+    
+    if (glist->gl_editor && canvas_getNumberOfSelectedObjects (glist) > 1) {
+    //
+    t_selection *selection = NULL;
+    for (selection = glist->gl_editor->e_selectedObjects; selection; selection = selection->sel_next) {
+    //
+    if (gobj_hit (selection->sel_what, glist, positionX, positionY, &x1, &y1, &x2, &y2)) {
+        *a = x1; *b = y1; *c = x2; *d = y2; object = selection->sel_what; 
+    }
+    //
+    }
+    //
+    }
+    
+    if (!object) {
+    //
+    int t = -PD_INT_MAX;
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+        if (gobj_hit (y, glist, positionX, positionY, &x1, &y1, &x2, &y2)) {
+            if (x1 > t) {
+                *a = x1; *b = y1; *c = x2; *d = y2; object = y; t = x1;
+            }
+        }
+    }
+    //
+    }
+
+    return object;
+}
+
 void canvas_setLastCoordinates (t_glist *glist, int a, int b)
 {
     canvas_lastCanvas   = glist;

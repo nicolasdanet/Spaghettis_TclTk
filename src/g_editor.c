@@ -124,52 +124,9 @@ restore:
     canvas_dirty(x, 1);
 }
 
-    /* check if a point lies in a gobj.  */
-int canvas_hitbox(t_glist *x, t_gobj *y, int xpos, int ypos,
-    int *x1p, int *y1p, int *x2p, int *y2p)
-{
-    int x1, y1, x2, y2;
-    t_object *ob;
-    if (!gobj_isVisible(y, x))
-        return (0);
-    gobj_getRectangle(y, x, &x1, &y1, &x2, &y2);
-    if (xpos >= x1 && xpos <= x2 && ypos >= y1 && ypos <= y2)
-    {
-        *x1p = x1;
-        *y1p = y1;
-        *x2p = x2;
-        *y2p = y2;
-        return (1);
-    }
-    else return (0);
-}
-
-    /* find the last gobj, if any, containing the point. */
-static t_gobj *canvas_findhitbox(t_glist *x, int xpos, int ypos,
-    int *x1p, int *y1p, int *x2p, int *y2p)
-{
-    t_gobj *y, *rval = 0;
-    int x1, y1, x2, y2;
-    *x1p = -0x7fffffff;
-    for (y = x->gl_graphics; y; y = y->g_next)
-    {
-        if (canvas_hitbox(x, y, xpos, ypos, &x1, &y1, &x2, &y2)
-            && (x1 > *x1p))
-                *x1p = x1, *y1p = y1, *x2p = x2, *y2p = y2, rval = y; 
-    }
-        /* if there are at least two selected objects, we'd prefer
-        to find a selected one (never mind which) to the one we got. */
-    if (x->gl_editor && x->gl_editor->e_selectedObjects &&
-        x->gl_editor->e_selectedObjects->sel_next && !canvas_isObjectSelected(x, y))
-    {
-        t_selection *sel;
-        for (sel = x->gl_editor->e_selectedObjects; sel; sel = sel->sel_next)
-            if (canvas_hitbox(x, sel->sel_what, xpos, ypos, &x1, &y1, &x2, &y2))
-                *x1p = x1, *y1p = y1, *x2p = x2, *y2p = y2,
-                    rval = sel->sel_what; 
-    }
-    return (rval);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
     /* right-clicking on a canvas object pops up a menu. */
 static void canvas_rightclick(t_glist *x, int xpos, int ypos, t_gobj *y)
@@ -301,7 +258,7 @@ void canvas_done_popup(t_glist *x, t_float which, t_float xpos, t_float ypos)
     for (y = x->gl_graphics; y; y = y->g_next)
     {
         int x1, y1, x2, y2;
-        if (canvas_hitbox(x, y, xpos, ypos, &x1, &y1, &x2, &y2))
+        if (gobj_hit(y, x, xpos, ypos, &x1, &y1, &x2, &y2))
         {
             if (which == 0)     /* properties */
             {
@@ -397,7 +354,7 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
         for (y = x->gl_graphics; y; y = y->g_next)
         {
                 /* check if the object wants to be clicked */
-            if (canvas_hitbox(x, y, xpos, ypos, &x1, &y1, &x2, &y2)
+            if (gobj_hit(y, x, xpos, ypos, &x1, &y1, &x2, &y2)
                 && (clickreturned = gobj_click(y, x, xpos, ypos,
                     shiftmod, ((mod & EDITOR_MODIFIER_CTRL) && (!x->gl_isEditMode)) || altmod,
                         0, doit)))
@@ -412,7 +369,7 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
         return;
     }
         /* if not a runmode left click, fall here. */
-    if (y = canvas_findhitbox(x, xpos, ypos, &x1, &y1, &x2, &y2))
+    if (y = canvas_getHitObject(x, xpos, ypos, &x1, &y1, &x2, &y2))
     {
         t_object *ob = canvas_castToObjectIfBox(&y->g_pd);
             /* check you're in the rectangle */
@@ -606,8 +563,8 @@ void canvas_doconnect(t_glist *x, int xpos, int ypos, int which, int doit)
             x, x->gl_editor->e_previousX,
                 x->gl_editor->e_previousY, xpos, ypos);
 
-    if ((y1 = canvas_findhitbox(x, xwas, ywas, &x11, &y11, &x12, &y12))
-        && (y2 = canvas_findhitbox(x, xpos, ypos, &x21, &y21, &x22, &y22)))
+    if ((y1 = canvas_getHitObject(x, xwas, ywas, &x11, &y11, &x12, &y12))
+        && (y2 = canvas_getHitObject(x, xpos, ypos, &x21, &y21, &x22, &y22)))
     {
         t_object *ob1 = canvas_castToObjectIfBox(&y1->g_pd);
         t_object *ob2 = canvas_castToObjectIfBox(&y2->g_pd);
@@ -997,7 +954,7 @@ void canvas_motion(t_glist *x, t_float xpos, t_float ypos, t_float fmod)
     {
         int x11=0, y11=0, x12=0, y12=0; 
         t_gobj *y1;
-        if (y1 = canvas_findhitbox(x,
+        if (y1 = canvas_getHitObject(x,
             x->gl_editor->e_previousX, x->gl_editor->e_previousY,
                 &x11, &y11, &x12, &y12))
         {

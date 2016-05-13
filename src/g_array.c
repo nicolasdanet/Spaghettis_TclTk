@@ -644,7 +644,7 @@ void array_getcoordinate(t_glist *glist,
 static void array_getrect(t_array *array, t_glist *glist,
     int *xp1, int *yp1, int *xp2, int *yp2)
 {
-    t_float x1 = 0x7fffffff, y1 = 0x7fffffff, x2 = -0x7fffffff, y2 = -0x7fffffff;
+    t_float x1 = PD_INT_MAX, y1 = PD_INT_MAX, x2 = -PD_INT_MAX, y2 = -PD_INT_MAX;
     t_glist *elemtemplatecanvas;
     t_template *elemtemplate;
     int elemsize, yonset, wonset, xonset, i;

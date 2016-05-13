@@ -31,7 +31,7 @@ static void tabwrite_tilde_tick(t_tabwrite_tilde *x);
 static void *tabwrite_tilde_new(t_symbol *s)
 {
     t_tabwrite_tilde *x = (t_tabwrite_tilde *)pd_new(tabwrite_tilde_class);
-    x->x_phase = 0x7fffffff;
+    x->x_phase = PD_INT_MAX;
     x->x_arrayname = s;
     x->x_f = 0;
     return (x);
@@ -67,11 +67,11 @@ static t_int *tabwrite_tilde_perform(t_int *w)
         if (phase >= endphase)
         {
             tabwrite_tilde_redraw(x);
-            phase = 0x7fffffff;
+            phase = PD_INT_MAX;
         }
         x->x_phase = phase;
     }
-    else x->x_phase = 0x7fffffff;
+    else x->x_phase = PD_INT_MAX;
 bad:
     return (w+4);
 }
@@ -113,10 +113,10 @@ static void tabwrite_tilde_start(t_tabwrite_tilde *x, t_float f)
 
 static void tabwrite_tilde_stop(t_tabwrite_tilde *x)
 {
-    if (x->x_phase != 0x7fffffff)
+    if (x->x_phase != PD_INT_MAX)
     {
         tabwrite_tilde_redraw(x);
-        x->x_phase = 0x7fffffff;
+        x->x_phase = PD_INT_MAX;
     }
 }
 
@@ -159,7 +159,7 @@ static void *tabplay_tilde_new(t_symbol *s)
 {
     t_tabplay_tilde *x = (t_tabplay_tilde *)pd_new(tabplay_tilde_class);
     x->x_clock = clock_new(x, (t_method)tabplay_tilde_tick);
-    x->x_phase = 0x7fffffff;
+    x->x_phase = PD_INT_MAX;
     x->x_limit = 0;
     x->x_arrayname = s;
     outlet_new(&x->x_obj, &s_signal);
@@ -189,7 +189,7 @@ static t_int *tabplay_tilde_perform(t_int *w)
     if (phase >= endphase)
     {
         clock_delay(x->x_clock, 0);
-        x->x_phase = 0x7fffffff;
+        x->x_phase = PD_INT_MAX;
         while (n3--)
             *out++ = 0;
     }
@@ -233,7 +233,7 @@ static void tabplay_tilde_list(t_tabplay_tilde *x, t_symbol *s,
     long length = atom_getFloatAtIndex(1, argc, argv);
     if (start < 0) start = 0;
     if (length <= 0)
-        x->x_limit = 0x7fffffff;
+        x->x_limit = PD_INT_MAX;
     else
         x->x_limit = start + length;
     x->x_phase = start;
@@ -241,7 +241,7 @@ static void tabplay_tilde_list(t_tabplay_tilde *x, t_symbol *s,
 
 static void tabplay_tilde_stop(t_tabplay_tilde *x)
 {
-    x->x_phase = 0x7fffffff;
+    x->x_phase = PD_INT_MAX;
 }
 
 static void tabplay_tilde_tick(t_tabplay_tilde *x)

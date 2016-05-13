@@ -363,6 +363,14 @@ int             canvas_hasGraphOnParentTitle            (t_glist *glist);
 int             canvas_getFontSize                      (t_glist *glist);
 void            canvas_setCursorType                    (t_glist *glist, int type);
 
+t_gobj          *canvas_getHitObject                    (t_glist *glist, 
+                                                            int positionX, 
+                                                            int positionY,
+                                                            int *a, 
+                                                            int *b, 
+                                                            int *c, 
+                                                            int *d);
+    
 void            canvas_setLastCoordinates               (t_glist *glist, int a, int b);
 void            canvas_getLastCoordinates               (t_glist *glist, int *a, int *b);
 
@@ -405,6 +413,7 @@ void            canvas_selectLine                       (t_glist *glist,
                                                             
 void            canvas_deselectObject                   (t_glist *glist, t_gobj *y);
 void            canvas_deselectAll                      (t_glist *glist);
+int             canvas_getNumberOfSelectedObjects       (t_glist *glist);
 int             canvas_getNumberOfUnselectedObjects     (t_glist *glist);
 int             canvas_getIndexOfObjectAmongSelected    (t_glist *glist, t_gobj *y);
 int             canvas_getIndexOfObjectAmongUnselected  (t_glist *glist, t_gobj *y);
@@ -421,6 +430,7 @@ void            canvas_destroyEditorIfAny               (t_glist *glist);
 t_glist         *canvas_new                             (void *dummy, t_symbol *s, int argc, t_atom *argv);
 
 void            canvas_free                             (t_glist *glist);
+
 void            canvas_click                            (t_glist *glist,
                                                             t_float a,
                                                             t_float b,
@@ -499,7 +509,8 @@ void            dsp_resume                              (int oldState);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            gobj_getRectangle                       (t_gobj *x, t_glist *owner,
+void            gobj_getRectangle                       (t_gobj *x,
+                                                            t_glist *owner,
                                                             int *a,
                                                             int *b,
                                                             int *c,
@@ -509,8 +520,6 @@ void            gobj_displace                           (t_gobj *x, t_glist *own
 void            gobj_select                             (t_gobj *x, t_glist *owner, int state);
 void            gobj_activate                           (t_gobj *x, t_glist *owner, int state);
 void            gobj_delete                             (t_gobj *x, t_glist *owner);
-int             gobj_isVisible                          (t_gobj *x, t_glist *owner);
-void            gobj_visibilityChanged                  (t_gobj *x, t_glist *owner, int isVisible);
 int             gobj_click                              (t_gobj *x,
                                                             t_glist *owner,
                                                             int a,
@@ -521,6 +530,18 @@ int             gobj_click                              (t_gobj *x,
                                                             int k);
                                                         
 void            gobj_save                               (t_gobj *x, t_buffer *buffer);
+
+int             gobj_hit                                (t_gobj *x,
+                                                            t_glist *owner,
+                                                            int positionX,
+                                                            int positionY,
+                                                            int *a,
+                                                            int *b,
+                                                            int *c,
+                                                            int *d);
+                                                            
+int             gobj_isVisible                          (t_gobj *x, t_glist *owner);
+void            gobj_visibilityChanged                  (t_gobj *x, t_glist *owner, int isVisible);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -652,15 +673,6 @@ void     canvas_resortinlets            (t_glist *x);
 void     canvas_resortoutlets           (t_glist *x);
 
 int      canvas_istable                 (t_glist *x);
-
-int      canvas_hitbox                  (t_glist *x,
-                                            t_gobj *y,
-                                            int xpos,
-                                            int ypos,
-                                            int *x1p,
-                                            int *y1p,
-                                            int *x2p,
-                                            int *y2p);
 
 int      canvas_setdeleting             (t_glist *x, int flag);
 

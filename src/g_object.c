@@ -84,6 +84,37 @@ void gobj_save (t_gobj *x, t_buffer *buffer)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+int gobj_hit (t_gobj *x,
+    t_glist *owner, 
+    int positionX,
+    int positionY,
+    int *a,
+    int *b,
+    int *c,
+    int *d)
+{
+    if (gobj_isVisible (x, owner)) {
+    //
+    int x1, y1, x2, y2;
+        
+    gobj_getRectangle (x, owner, &x1, &y1, &x2, &y2);
+    
+    if (positionX >= x1 && positionX <= x2 && positionY >= y1 && positionY <= y2) {
+    //
+    *a = x1;
+    *b = y1;
+    *c = x2;
+    *d = y2;
+    
+    return 1;
+    //
+    }
+    //
+    }
+    
+    return 0;
+}
+
 int gobj_isVisible (t_gobj *x, t_glist *owner)
 {
     t_object *o = NULL;

@@ -1176,7 +1176,7 @@ static void *text_sequence_new(t_symbol *s, int argc, t_atom *argv)
     else inlet_newSymbol(&x->x_tc.tc_obj, &x->x_tc.tc_sym);
     x->x_argc = 0;
     x->x_argv = (t_atom *)PD_MEMORY_GET(0);
-    x->x_onset = 0x7fffffff;
+    x->x_onset = PD_INT_MAX;
     x->x_mainout = (!global ? outlet_new(&x->x_obj, &s_list) : 0);
     x->x_waitout = (global || x->x_waitsym || x->x_waitargc ?
         outlet_new(&x->x_obj, &s_list) : 0);
@@ -1204,7 +1204,7 @@ static void text_sequence_doit(t_text_sequence *x, int argc, t_atom *argv)
     if (x->x_onset >= n)
     {
     nosequence:
-        x->x_onset = 0x7fffffff;
+        x->x_onset = PD_INT_MAX;
         x->x_loop = x->x_auto = 0;
         outlet_bang(x->x_endout);
         return;
@@ -1249,7 +1249,7 @@ static void text_sequence_doit(t_text_sequence *x, int argc, t_atom *argv)
     nfield = i - onset;
     i += eatsemi;
     if (i >= n)
-        i = 0x7fffffff;
+        i = PD_INT_MAX;
     x->x_onset = i;
         /* generate output list, realizing dolar sign atoms.  Allocate one
         extra atom in case we want to prepend a symbol later */
@@ -1406,7 +1406,7 @@ static void text_sequence_line(t_text_sequence *x, t_float f)
     if (!text_nthline(n, vec, f, &start, &end))
     {
         post_error ("text sequence: line number %d out of range", (int)f);
-        x->x_onset = 0x7fffffff;
+        x->x_onset = PD_INT_MAX;
     }
     else x->x_onset = start;
     x->x_eaten = 0;
@@ -1508,7 +1508,7 @@ static void *qlist_new( void)
     x->x_clock = clock_new(x, (t_method)qlist_tick);
     outlet_new(&x->x_ob, &s_list);
     x->x_bangout = outlet_new(&x->x_ob, &s_bang);
-    x->x_onset = 0x7fffffff;
+    x->x_onset = PD_INT_MAX;
     x->x_tempo = 1;
     x->x_whenclockset = 0;
     x->x_clockdelay = 0;
@@ -1607,7 +1607,7 @@ static void qlist_donext(t_qlist *x, int drop, int automatic)
     }  /* while (1); never falls through */
 
 end:
-    x->x_onset = 0x7fffffff;
+    x->x_onset = PD_INT_MAX;
     x->x_whenclockset = 0;
     x->x_innext = 0;
     outlet_bang(x->x_bangout);
@@ -1673,7 +1673,7 @@ static void qlist_read(t_qlist *x, t_symbol *filename, t_symbol *format)
 
     if (buffer_read(x->x_binbuf, filename->s_name, x->x_canvas))
             post_error ("%s: read failed", filename->s_name);
-    x->x_onset = 0x7fffffff;
+    x->x_onset = PD_INT_MAX;
     x->x_rewound = 1;
 }
 
@@ -1729,7 +1729,7 @@ static void *textfile_new( void)
     textbuf_init(&x->x_textbuf);
     outlet_new(&x->x_ob, &s_list);
     x->x_bangout = outlet_new(&x->x_ob, &s_bang);
-    x->x_onset = 0x7fffffff;
+    x->x_onset = PD_INT_MAX;
     x->x_rewound = 0;
     x->x_tempo = 1;
     x->x_whenclockset = 0;
@@ -1762,7 +1762,7 @@ static void textfile_bang(t_qlist *x)
     }
     else
     {
-        x->x_onset = 0x7fffffff;
+        x->x_onset = PD_INT_MAX;
         outlet_bang(x->x_bangout);
     }
 }

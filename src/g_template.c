@@ -1047,12 +1047,12 @@ static void curve_getrect(t_gobj *z, t_glist *glist,
     t_curve *x = (t_curve *)z;
     int i, n = x->x_npoints;
     t_fielddescriptor *f = x->x_vec;
-    int x1 = 0x7fffffff, x2 = -0x7fffffff, y1 = 0x7fffffff, y2 = -0x7fffffff;
+    int x1 = PD_INT_MAX, x2 = -PD_INT_MAX, y1 = PD_INT_MAX, y2 = -PD_INT_MAX;
     if (!fielddesc_getfloat(&x->x_vis, template, data, 0) ||
         (x->x_flags & NOMOUSE))
     {
-        *xp1 = *yp1 = 0x7fffffff;
-        *xp2 = *yp2 = -0x7fffffff;
+        *xp1 = *yp1 = PD_INT_MAX;
+        *xp2 = *yp2 = -PD_INT_MAX;
         return;
     }
     for (i = 0, f = x->x_vec; i < n; i++, f += 2)
@@ -1244,7 +1244,7 @@ static int curve_click(t_gobj *z, t_glist *glist,
     t_curve *x = (t_curve *)z;
     int i, n = x->x_npoints;
     int bestn = -1;
-    int besterror = 0x7fffffff;
+    int besterror = PD_INT_MAX;
     t_fielddescriptor *f;
     if (!fielddesc_getfloat(&x->x_vis, template, data, 0))
         return (0);
@@ -1549,15 +1549,15 @@ static void plot_getrect(t_gobj *z, t_glist *glist,
     t_symbol *elemtemplatesym;
     t_float linewidth, xloc, xinc, yloc, style, xsum, yval, vis, scalarvis;
     t_array *array;
-    int x1 = 0x7fffffff, y1 = 0x7fffffff, x2 = -0x7fffffff, y2 = -0x7fffffff;
+    int x1 = PD_INT_MAX, y1 = PD_INT_MAX, x2 = -PD_INT_MAX, y2 = -PD_INT_MAX;
     int i;
     t_float xpix, ypix, wpix;
     t_fielddescriptor *xfielddesc, *yfielddesc, *wfielddesc;
         /* if we're the only plot in the glist claim the whole thing */
     if (glist->gl_graphics && !glist->gl_graphics->g_next)
     {
-        *xp1 = *yp1 = -0x7fffffff;
-        *xp2 = *yp2 = 0x7fffffff;
+        *xp1 = *yp1 = -PD_INT_MAX;
+        *xp2 = *yp2 = PD_INT_MAX;
         return;
     }
     if (!plot_readownertemplate(x, data, template, 
@@ -2465,8 +2465,8 @@ static void drawnumber_getrect(t_gobj *z, t_glist *glist,
 
     if (!fielddesc_getfloat(&x->x_vis, template, data, 0))
     {
-        *xp1 = *yp1 = 0x7fffffff;
-        *xp2 = *yp2 = -0x7fffffff;
+        *xp1 = *yp1 = PD_INT_MAX;
+        *xp2 = *yp2 = -PD_INT_MAX;
         return;
     }
     xloc = glist_xtopixels(glist,

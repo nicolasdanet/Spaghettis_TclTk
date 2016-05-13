@@ -53,7 +53,7 @@ static int makeseed(void)
 {
     static unsigned int random_nextseed = 1489853723;
     random_nextseed = random_nextseed * 435898247 + 938284287;
-    return (random_nextseed & 0x7fffffff);
+    return (random_nextseed & PD_INT_MAX);
 }
 
 static void *random_new(t_float f)
@@ -596,7 +596,7 @@ static void oscformat_list(t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
             msgindex += ROUNDUPTO4(strlen(argv[j].a_w.w_symbol->s_name) + 1);
         else if (typecode == 'b')
         {
-            int blobsize = 0x7fffffff, blobindex;
+            int blobsize = PD_INT_MAX, blobindex;
                 /* check if we have a nonnegative size field */ 
             if (argv[j].a_type == A_FLOAT &&
                 (int)(argv[j].a_w.w_float) >= 0)
@@ -647,7 +647,7 @@ static void oscformat_list(t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
             putstring(msg, &msgindex, argv[j].a_w.w_symbol->s_name);
         else if (typecode == 'b')
         {
-            int blobsize = 0x7fffffff, blobindex;
+            int blobsize = PD_INT_MAX, blobindex;
             if (argv[j].a_type == A_FLOAT &&
                 (int)(argv[j].a_w.w_float) >= 0)
                     blobsize = (int)(argv[j].a_w.w_float);

@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		370934821CC6887300827F75 /* g_dsp.c in Sources */ = {isa = PBXBuildFile; fileRef = 370934811CC6887300827F75 /* g_dsp.c */; };
 		370939451CC92BF300827F75 /* g_draw.c in Sources */ = {isa = PBXBuildFile; fileRef = 370939431CC92BF300827F75 /* g_draw.c */; };
-		370939461CC92BF300827F75 /* g_glist.c in Sources */ = {isa = PBXBuildFile; fileRef = 370939441CC92BF300827F75 /* g_glist.c */; };
+		370939461CC92BF300827F75 /* g_base.c in Sources */ = {isa = PBXBuildFile; fileRef = 370939441CC92BF300827F75 /* g_base.c */; };
 		3716554F1BA3452E00ABDE22 /* pa_allocation.c in Sources */ = {isa = PBXBuildFile; fileRef = 3716554E1BA3452E00ABDE22 /* pa_allocation.c */; };
 		371655511BA3453500ABDE22 /* pa_converters.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655501BA3453500ABDE22 /* pa_converters.c */; };
 		371655531BA3453E00ABDE22 /* pa_cpuload.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655521BA3453E00ABDE22 /* pa_cpuload.c */; };
@@ -188,7 +188,7 @@
 /* Begin PBXFileReference section */
 		370934811CC6887300827F75 /* g_dsp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_dsp.c; path = src/g_dsp.c; sourceTree = "<group>"; };
 		370939431CC92BF300827F75 /* g_draw.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_draw.c; path = src/g_draw.c; sourceTree = "<group>"; };
-		370939441CC92BF300827F75 /* g_glist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_glist.c; path = src/g_glist.c; sourceTree = "<group>"; };
+		370939441CC92BF300827F75 /* g_base.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_base.c; path = src/g_base.c; sourceTree = "<group>"; };
 		3716554E1BA3452E00ABDE22 /* pa_allocation.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_allocation.c; path = portaudio/src/common/pa_allocation.c; sourceTree = "<group>"; };
 		371655501BA3453500ABDE22 /* pa_converters.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_converters.c; path = portaudio/src/common/pa_converters.c; sourceTree = "<group>"; };
 		371655521BA3453E00ABDE22 /* pa_cpuload.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_cpuload.c; path = portaudio/src/common/pa_cpuload.c; sourceTree = "<group>"; };
@@ -742,7 +742,7 @@
 			children = (
 				378971C21C4F716700263434 /* g_canvas.h */,
 				378971C51C4F716700263434 /* g_gui.c */,
-				370939441CC92BF300827F75 /* g_glist.c */,
+				370939441CC92BF300827F75 /* g_base.c */,
 				370939431CC92BF300827F75 /* g_draw.c */,
 				379920471CD2649B00750527 /* g_select.c */,
 				378971C31C4F716700263434 /* g_editor.c */,
@@ -1044,7 +1044,7 @@
 				37F085691CC26E5C0070DEAC /* m_stack.c in Sources */,
 				370934821CC6887300827F75 /* g_dsp.c in Sources */,
 				370939451CC92BF300827F75 /* g_draw.c in Sources */,
-				370939461CC92BF300827F75 /* g_glist.c in Sources */,
+				370939461CC92BF300827F75 /* g_base.c in Sources */,
 				37BA30821CD1DB0F0091113F /* g_object.c in Sources */,
 				379920481CD2649B00750527 /* g_select.c in Sources */,
 				3791F2E21CDF064000F7481C /* m_symbols.c in Sources */,

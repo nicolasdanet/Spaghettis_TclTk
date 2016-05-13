@@ -226,7 +226,7 @@ int open_soundfile_via_fd(int fd, int headersize,
     long skipframes)
 {
     int format, nchannels, bigendian, bytespersamp, swap, sysrtn;
-    long bytelimit = 0x7fffffff;
+    long bytelimit = PD_INT_MAX;
     errno = 0;
     if (headersize >= 0) /* header detection overridden */
     {
@@ -284,7 +284,7 @@ int open_soundfile_via_fd(int fd, int headersize,
             else if (format == NS_FORMAT_FLOAT)
                 bytespersamp = 4;
             else goto badheader;
-            bytelimit = 0x7fffffff;
+            bytelimit = PD_INT_MAX;
         }
         else if (format == FORMAT_WAVE)     /* wave header */
         {
@@ -625,7 +625,7 @@ static int soundfiler_writeargparse(void *obj, int *p_argc, t_atom **p_argv,
     t_atom *argv = *p_argv;
     int bytespersamp = 2, bigendian = 0,
         endianness = -1, swap, filetype = -1, normalize = 0;
-    long onset = 0, nframes = 0x7fffffff;
+    long onset = 0, nframes = PD_INT_MAX;
     t_symbol *filesym;
     t_float rate = -1;
     
@@ -861,7 +861,7 @@ static void soundfile_finishwrite(void *obj, char *filename, int fd,
 {
     if (itemswritten < nframes) 
     {
-        if (nframes < 0x7fffffff)
+        if (nframes < PD_INT_MAX)
             post_error ("soundfiler_write: %ld out of %ld bytes written",
                 itemswritten, nframes);
             /* try to fix size fields in header */
@@ -1179,7 +1179,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
     int headersize = -1, channels = 0, bytespersamp = 0, bigendian = 0,
         resize = 0, i, j;
     long skipframes = 0, finalsize = 0, itemsleft,
-        maxsize = DEFMAXSIZE, itemsread = 0, bytelimit  = 0x7fffffff;
+        maxsize = DEFMAXSIZE, itemsread = 0, bytelimit  = PD_INT_MAX;
     int fd = -1;
     char endianness, *filename;
     t_garray *garrays[MAXSFCHANS];
@@ -1313,7 +1313,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
             }
         }
     }
-    if (!finalsize) finalsize = 0x7fffffff;
+    if (!finalsize) finalsize = PD_INT_MAX;
     if (finalsize > bytelimit / (channels * bytespersamp))
         finalsize = bytelimit / (channels * bytespersamp);
     fp = fdopen(fd, "rb");
@@ -1641,7 +1641,7 @@ static void *readsf_child_main(void *zz)
                 /* copy file stuff out of the data structure so we can
                 relinquish the mutex while we're in open_soundfile(). */
             long onsetframes = x->x_onsetframes;
-            long bytelimit = 0x7fffffff;
+            long bytelimit = PD_INT_MAX;
             int skipheaderbytes = x->x_skipheaderbytes;
             int bytespersample = x->x_bytespersample;
             int sfchannels = x->x_sfchannels;
@@ -2197,7 +2197,7 @@ static void *writesf_child_main(void *zz)
                 /* copy file stuff out of the data structure so we can
                 relinquish the mutex while we're in open_soundfile(). */
             long onsetframes = x->x_onsetframes;
-            long bytelimit = 0x7fffffff;
+            long bytelimit = PD_INT_MAX;
             int skipheaderbytes = x->x_skipheaderbytes;
             int bytespersample = x->x_bytespersample;
             int sfchannels = x->x_sfchannels;
@@ -2230,7 +2230,7 @@ static void *writesf_child_main(void *zz)
                 pthread_mutex_unlock(&x->x_mutex);
                 
                 soundfile_finishwrite(x, filename, fd,
-                    filetype, 0x7fffffff, itemswritten,
+                    filetype, PD_INT_MAX, itemswritten,
                     bytesperframe, swap);
                 close (fd);
 
@@ -2371,7 +2371,7 @@ static void *writesf_child_main(void *zz)
                 pthread_mutex_unlock(&x->x_mutex);
 
                 soundfile_finishwrite(x, filename, fd,
-                    filetype, 0x7fffffff, itemswritten,
+                    filetype, PD_INT_MAX, itemswritten,
                     bytesperframe, swap);
                 close (fd);
 
@@ -2537,7 +2537,7 @@ static void writesf_open(t_writesf *x, t_symbol *s, int argc, t_atom *argv)
         post("... [-big,-little] [-rate ####] filename");
         return;
     }
-    if (normalize || onset || (nframes != 0x7fffffff))
+    if (normalize || onset || (nframes != PD_INT_MAX))
         post_error ("normalize/onset/nframes argument to writesf~: ignored");
     if (argc)
         post_error ("extra argument(s) to writesf~: ignored");

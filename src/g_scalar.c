@@ -177,7 +177,7 @@ static void scalar_getrect(t_gobj *z, t_glist *owner,
     t_scalar *x = (t_scalar *)z;
     t_template *template = template_findbyname(x->sc_template);
     t_glist *templatecanvas = template_findcanvas(template);
-    int x1 = 0x7fffffff, x2 = -0x7fffffff, y1 = 0x7fffffff, y2 = -0x7fffffff;
+    int x1 = PD_INT_MAX, x2 = -PD_INT_MAX, y1 = PD_INT_MAX, y2 = -PD_INT_MAX;
     t_gobj *y;
     t_float basex, basey;
     scalar_getbasexy(x, &basex, &basey);
@@ -189,8 +189,8 @@ static void scalar_getrect(t_gobj *z, t_glist *owner,
     }
     else
     {
-        x1 = y1 = 0x7fffffff;
-        x2 = y2 = -0x7fffffff;
+        x1 = y1 = PD_INT_MAX;
+        x2 = y2 = -PD_INT_MAX;
         for (y = templatecanvas->gl_graphics; y; y = y->g_next)
         {
             t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));

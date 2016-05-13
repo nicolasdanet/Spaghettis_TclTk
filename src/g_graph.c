@@ -339,7 +339,7 @@ void canvas_resortinlets(t_glist *x)
     for (i = ninlets; i--;)
     {
         t_inlet *ip;
-        for (vp = vec, xmax = -0x7fffffff, maxp = 0, j = ninlets;
+        for (vp = vec, xmax = -PD_INT_MAX, maxp = 0, j = ninlets;
             j--; vp++)
         {
             int x1, y1, x2, y2;
@@ -411,7 +411,7 @@ void canvas_resortoutlets(t_glist *x)
     for (i = noutlets; i--;)
     {
         t_outlet *ip;
-        for (vp = vec, xmax = -0x7fffffff, maxp = 0, j = noutlets;
+        for (vp = vec, xmax = -PD_INT_MAX, maxp = 0, j = noutlets;
             j--; vp++)
         {
             int x1, y1, x2, y2;
@@ -878,7 +878,7 @@ static void graph_graphrect(t_gobj *z, t_glist *glist,
 static void graph_getrect(t_gobj *z, t_glist *glist,
     int *xp1, int *yp1, int *xp2, int *yp2)
 {
-    int x1 = 0x7fffffff, y1 = 0x7fffffff, x2 = -0x7fffffff, y2 = -0x7fffffff;
+    int x1 = PD_INT_MAX, y1 = PD_INT_MAX, x2 = -PD_INT_MAX, y2 = -PD_INT_MAX;
     t_glist *x = (t_glist *)z;
     if (x->gl_isGraphOnParent)
     {
@@ -1040,7 +1040,7 @@ static int graph_click(t_gobj *z, struct _glist *glist,
         {
             int x1, y1, x2, y2;
                 /* check if the object wants to be clicked */
-            if (canvas_hitbox(x, y, xpix, ypix, &x1, &y1, &x2, &y2)
+            if (gobj_hit(y, x, xpix, ypix, &x1, &y1, &x2, &y2)
                 &&  (clickreturned = gobj_click(y, x, xpix, ypix,
                     shift, alt, 0, doit)))
                         break;

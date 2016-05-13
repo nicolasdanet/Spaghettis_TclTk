@@ -224,6 +224,11 @@ void canvas_deselectAll (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+int canvas_getNumberOfSelectedObjects (t_glist *glist)
+{
+    return canvas_getIndexOfObjectAmongSelected (glist, NULL);
+}
+
 int canvas_getNumberOfUnselectedObjects (t_glist *glist)
 {
     return canvas_getIndexOfObjectAmongUnselected (glist, NULL);
