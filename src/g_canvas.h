@@ -100,6 +100,7 @@
 
 #define INLETS_OFFSET(width, i, n)      ((((width) - INLETS_WIDTH) * (i)) / (((n) == 1) ? 1 : ((n) - 1)))
 #define INLETS_MIDDLE(width, i, n)      INLETS_OFFSET (width, i, n) + ((INLETS_WIDTH - 1) / 2)
+#define INLETS_NEXTTO(y, x1, x2, n)     (((y - x1) * (n - 1) + ((x2 - x1) / 2)) / (x2 - x1))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -370,7 +371,18 @@ t_gobj          *canvas_getHitObject                    (t_glist *glist,
                                                             int *b, 
                                                             int *c, 
                                                             int *d);
-    
+
+int             canvas_hasConnection                    (t_glist *glist,
+                                                            t_object *objectOut,
+                                                            int m,
+                                                            t_object *objectIn,
+                                                            int n);
+                                                            
+void            canvas_makingConnection                 (t_glist *glist, 
+                                                            int positionX,
+                                                            int positionY,
+                                                            int create);
+                                                            
 void            canvas_setLastCoordinates               (t_glist *glist, int a, int b);
 void            canvas_getLastCoordinates               (t_glist *glist, int *a, int *b);
 
@@ -676,11 +688,7 @@ int      canvas_istable                 (t_glist *x);
 
 int      canvas_setdeleting             (t_glist *x, int flag);
 
-int      canvas_isconnected             (t_glist *x,
-                                            t_object *ob1,
-                                            int n1,
-                                            t_object *ob2,
-                                            int n2);
+
 
 void     canvas_selectinrect            (t_glist *x, int lox, int loy, int hix, int hiy);
 void     canvas_fattenforscalars        (t_glist *x, int *x1, int *y1, int *x2, int *y2);

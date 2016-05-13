@@ -439,7 +439,7 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
                         x->gl_editor->e_previousX = xpos;
                         x->gl_editor->e_previousY = ypos;
                         sys_vGui(
-                          ".x%lx.c create line %d %d %d %d -width %d -tags x\n",
+                          ".x%lx.c create line %d %d %d %d -width %d -tags TEMPORARY\n",
                                 x, xpos, ypos, xpos, ypos,
                                     (issignal ? 2 : 1));
                     }                                   
@@ -523,7 +523,7 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
     if (doit)
     {
         if (!shiftmod) canvas_deselectAll(x);
-        sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags x\n",
+        sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags TEMPORARY\n",
               x, xpos, ypos, xpos, ypos);
         x->gl_editor->e_previousX = xpos;
         x->gl_editor->e_previousY = ypos;
@@ -535,110 +535,6 @@ void canvas_mouse(t_glist *x, t_float xpos, t_float ypos,
     t_float which, t_float mod)
 {
     canvas_doclick(x, xpos, ypos, which, mod, 1);
-}
-
-int canvas_isconnected (t_glist *x, t_object *ob1, int n1,
-    t_object *ob2, int n2)
-{
-    t_linetraverser t;
-    t_outconnect *oc;
-    canvas_traverseLinesStart(&t, x);
-    while (oc = canvas_traverseLinesNext(&t))
-        if (t.tr_srcObject == ob1 && t.tr_srcIndexOfOutlet == n1 &&
-            t.tr_destObject == ob2 && t.tr_destIndexOfInlet == n2) 
-                return (1);
-    return (0);
-}
-
-void canvas_doconnect(t_glist *x, int xpos, int ypos, int which, int doit)
-{
-    int x11=0, y11=0, x12=0, y12=0;
-    t_gobj *y1;
-    int x21=0, y21=0, x22=0, y22=0;
-    t_gobj *y2;
-    int xwas = x->gl_editor->e_previousX,
-        ywas = x->gl_editor->e_previousY;
-    if (doit) sys_vGui(".x%lx.c delete x\n", x);
-    else sys_vGui(".x%lx.c coords x %d %d %d %d\n",
-            x, x->gl_editor->e_previousX,
-                x->gl_editor->e_previousY, xpos, ypos);
-
-    if ((y1 = canvas_getHitObject(x, xwas, ywas, &x11, &y11, &x12, &y12))
-        && (y2 = canvas_getHitObject(x, xpos, ypos, &x21, &y21, &x22, &y22)))
-    {
-        t_object *ob1 = canvas_castToObjectIfBox(&y1->g_pd);
-        t_object *ob2 = canvas_castToObjectIfBox(&y2->g_pd);
-        int noutlet1, ninlet2;
-        if (ob1 && ob2 && ob1 != ob2 &&
-            (noutlet1 = object_numberOfOutlets(ob1))
-            && (ninlet2 = object_numberOfInlets(ob2)))
-        {
-            int width1 = x12 - x11, closest1, hotspot1;
-            int width2 = x22 - x21, closest2, hotspot2;
-            int lx1, lx2, ly1, ly2;
-            t_outconnect *oc;
-
-            if (noutlet1 > 1)
-            {
-                closest1 = ((xwas-x11) * (noutlet1-1) + width1/2)/width1;
-                hotspot1 = x11 +
-                    (width1 - INLETS_WIDTH) * closest1 / (noutlet1-1);
-            }
-            else closest1 = 0, hotspot1 = x11;
-
-            if (ninlet2 > 1)
-            {
-                closest2 = ((xpos-x21) * (ninlet2-1) + width2/2)/width2;
-                hotspot2 = x21 +
-                    (width2 - INLETS_WIDTH) * closest2 / (ninlet2-1);
-            }
-            else closest2 = 0, hotspot2 = x21;
-
-            if (closest1 >= noutlet1)
-                closest1 = noutlet1 - 1;
-            if (closest2 >= ninlet2)
-                closest2 = ninlet2 - 1;
-
-            if (canvas_isconnected (x, ob1, closest1, ob2, closest2))
-            {
-                canvas_setCursorType(x, CURSOR_EDIT_NOTHING);
-                return;
-            }
-            if (object_isSignalOutlet(ob1, closest1) &&
-                !object_isSignalInlet(ob2, closest2))
-            {
-                if (doit)
-                    post_error ("can't connect signal outlet to control inlet");
-                canvas_setCursorType(x, CURSOR_EDIT_NOTHING);
-                return;
-            }
-            if (doit)
-            {
-                oc = object_connect(ob1, closest1, ob2, closest2);
-                lx1 = x11 + (noutlet1 > 1 ?
-                        ((x12-x11-INLETS_WIDTH) * closest1)/(noutlet1-1) : 0)
-                             + ((INLETS_WIDTH - 1) / 2);
-                ly1 = y12;
-                lx2 = x21 + (ninlet2 > 1 ?
-                        ((x22-x21-INLETS_WIDTH) * closest2)/(ninlet2-1) : 0)
-                            + ((INLETS_WIDTH - 1) / 2);
-                ly2 = y21;
-                sys_vGui(".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
-                    canvas_getView(x),
-                        lx1, ly1, lx2, ly2,
-                            (object_isSignalOutlet(ob1, closest1) ? 2 : 1), oc);
-                canvas_dirty(x, 1);
-                /*canvas_setundo(x, canvas_undo_connect,
-                    canvas_undo_set_connect(x, 
-                        canvas_getIndexOfObject(x, &ob1->te_g), closest1,
-                        canvas_getIndexOfObject(x, &ob2->te_g), closest2),
-                        "connect");*/
-            }
-            else canvas_setCursorType(x, CURSOR_EDIT_CONNECT);
-            return;
-        }
-    }
-    canvas_setCursorType(x, CURSOR_EDIT_NOTHING);
 }
 
 void canvas_selectinrect(t_glist *x, int lox, int loy, int hix, int hiy)
@@ -666,10 +562,10 @@ static void canvas_doregion(t_glist *x, int xpos, int ypos, int doit)
             loy = x->gl_editor->e_previousY, hiy = ypos;
         else hiy = x->gl_editor->e_previousY, loy = ypos;
         canvas_selectinrect(x, lox, loy, hix, hiy);
-        sys_vGui(".x%lx.c delete x\n", x);
+        sys_vGui(".x%lx.c delete TEMPORARY\n", x);
         x->gl_editor->e_onMotion = ACTION_NONE;
     }
-    else sys_vGui(".x%lx.c coords x %d %d %d %d\n",
+    else sys_vGui(".x%lx.c coords TEMPORARY %d %d %d %d\n",
             x, x->gl_editor->e_previousX,
                 x->gl_editor->e_previousY, xpos, ypos);
 }
@@ -690,7 +586,7 @@ void canvas_mouseup(t_glist *x,
     editor_mouseUpY = ypos;
 
     if (x->gl_editor->e_onMotion == ACTION_CONNECT)
-        canvas_doconnect(x, xpos, ypos, which, 1);
+        canvas_makingConnection (x, xpos, ypos, 1);
     else if (x->gl_editor->e_onMotion == ACTION_REGION)
         canvas_doregion(x, xpos, ypos, 1);
     else if (x->gl_editor->e_onMotion == ACTION_MOVE ||
@@ -932,7 +828,7 @@ void canvas_motion(t_glist *x, t_float xpos, t_float ypos, t_float fmod)
     else if (x->gl_editor->e_onMotion == ACTION_REGION)
         canvas_doregion(x, xpos, ypos, 0);
     else if (x->gl_editor->e_onMotion == ACTION_CONNECT)
-        canvas_doconnect(x, xpos, ypos, 0, 0);
+        canvas_makingConnection (x, xpos, ypos, 0);
     else if (x->gl_editor->e_onMotion == ACTION_PASS)
     {
         if (!x->gl_editor->e_fnMotion) { PD_BUG; }

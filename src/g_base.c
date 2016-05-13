@@ -381,6 +381,10 @@ int canvas_getFontSize (t_glist *glist)
     return glist->gl_fontSize;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void canvas_setCursorType (t_glist *glist, int type)
 {
     static t_glist *lastGlist = NULL;           /* Shared. */
@@ -419,13 +423,16 @@ t_gobj *canvas_getHitObject (t_glist *glist,
     
     int x1, y1, x2, y2;
     
+    *a = *b = *c = *d = 0;
+    
     if (glist->gl_editor && canvas_getNumberOfSelectedObjects (glist) > 1) {
     //
     t_selection *selection = NULL;
     for (selection = glist->gl_editor->e_selectedObjects; selection; selection = selection->sel_next) {
     //
     if (gobj_hit (selection->sel_what, glist, positionX, positionY, &x1, &y1, &x2, &y2)) {
-        *a = x1; *b = y1; *c = x2; *d = y2; object = selection->sel_what; 
+        *a = x1; *b = y1; *c = x2; *d = y2;
+        object = selection->sel_what; 
     }
     //
     }
@@ -439,7 +446,8 @@ t_gobj *canvas_getHitObject (t_glist *glist,
     for (y = glist->gl_graphics; y; y = y->g_next) {
         if (gobj_hit (y, glist, positionX, positionY, &x1, &y1, &x2, &y2)) {
             if (x1 > t) {
-                *a = x1; *b = y1; *c = x2; *d = y2; object = y; t = x1;
+                *a = x1; *b = y1; *c = x2; *d = y2;
+                object = y; t = x1;
             }
         }
     }
@@ -447,6 +455,104 @@ t_gobj *canvas_getHitObject (t_glist *glist,
     }
 
     return object;
+}
+
+int canvas_hasConnection (t_glist *glist, t_object *objectOut, int m, t_object *objectIn, int n)
+{
+    t_linetraverser t;
+    t_outconnect *connection = NULL;
+    
+    canvas_traverseLinesStart (&t, glist);
+    
+    while (connection = canvas_traverseLinesNext (&t)) {
+        if (t.tr_srcObject == objectOut && t.tr_destObject == objectIn) {
+            if (t.tr_srcIndexOfOutlet == m && t.tr_destIndexOfInlet == n) {
+                return 1;
+            }
+        }
+    }
+    
+    return 0;
+}
+
+void canvas_makingConnection (t_glist *glist, int positionX, int positionY, int create)
+{
+    int a, b, c, d;
+    int m, n, o, p;
+    
+    int previousX = glist->gl_editor->e_previousX;
+    int previousY = glist->gl_editor->e_previousY;
+    
+    t_gobj *y1 = canvas_getHitObject (glist, previousX, previousY, &a, &b, &c, &d);
+    t_gobj *y2 = canvas_getHitObject (glist, positionX, positionY, &m, &n, &o, &p);
+    
+    if (create) { sys_vGui (".x%lx.c delete TEMPORARY\n", glist); }
+    else {
+        sys_vGui (".x%lx.c coords TEMPORARY %d %d %d %d\n",
+                        glist,
+                        glist->gl_editor->e_previousX,
+                        glist->gl_editor->e_previousY,
+                        positionX,
+                        positionY);
+    }
+
+    if (y1 && y2) {
+    //
+    t_object *object1 = canvas_castToObjectIfBox (y1);
+    t_object *object2 = canvas_castToObjectIfBox (y2);
+    
+    if (object1 && object2 && object1 != object2) {
+    //
+    int numberOfOutlets = object_numberOfOutlets (object1);
+    int numberOfInlets  = object_numberOfInlets (object2);
+    
+    if (numberOfOutlets && numberOfInlets) {
+    //
+    int closest1 = INLETS_NEXTTO (previousX, a, c, numberOfOutlets);
+    int closest2 = INLETS_NEXTTO (positionX, m, o, numberOfInlets);
+    
+    PD_ASSERT (closest1 >= 0 && closest1 < numberOfOutlets);
+    PD_ASSERT (closest2 >= 0 && closest2 < numberOfInlets);
+
+    if (!canvas_hasConnection (glist, object1, closest1, object2, closest2)) {
+    //
+    if (object_isSignalOutlet (object1, closest1) && !object_isSignalInlet (object2, closest2)) {
+        if (create) { 
+            post_error (PD_TRANSLATE ("connection: can't connect signal outlet to control inlet")); // --
+        }
+    } else {
+    //
+    if (create) {
+        t_outconnect *connection = object_connect (object1, closest1, object2, closest2);
+        
+        sys_vGui (".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
+                        canvas_getView (glist),
+                        a + INLETS_MIDDLE ((c - a), closest1, numberOfOutlets),
+                        d,
+                        m + INLETS_MIDDLE ((o - m), closest2, numberOfInlets),
+                        n,
+                        (object_isSignalOutlet (object1, closest1) ? 2 : 1),
+                        connection);
+                        
+        canvas_dirty (glist, 1);
+        
+    } else { 
+        canvas_setCursorType (glist, CURSOR_EDIT_CONNECT);
+    }
+    
+    return;
+    //
+    }
+    //
+    }
+    //
+    }
+    //
+    }
+    //
+    }
+    
+    canvas_setCursorType (glist, CURSOR_EDIT_NOTHING);
 }
 
 void canvas_setLastCoordinates (t_glist *glist, int a, int b)
