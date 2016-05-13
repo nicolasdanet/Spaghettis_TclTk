@@ -68,21 +68,6 @@ static double               editor_mouseUpClickTime;    /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-static char *editor_cursors[] =                         /* Shared. */
-    {
-        "$::var(cursorRunNothing)",
-        "$::var(cursorRunClickMe)",
-        "$::var(cursorRunThicken)",
-        "$::var(cursorRunAddPoint)",
-        "$::var(cursorEditNothing)",
-        "$::var(cursorEditConnect)",
-        "$::var(cursorEditDisconnect)",
-        "$::var(cursorEditResize)"
-    };
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 static void canvas_doclear(t_glist *x)
@@ -139,20 +124,6 @@ restore:
     canvas_dirty(x, 1);
 }
 
-void canvas_setcursor(t_glist *x, unsigned int cursornum)
-{
-    static t_glist *xwas;
-    static unsigned int cursorwas;
-
-    cursornum = PD_CLAMP (cursornum, CURSOR_NOTHING, CURSOR_EDIT_RESIZE);
-    
-    if (xwas != x || cursorwas != cursornum)
-    {
-        sys_vGui(".x%lx configure -cursor %s\n", x, editor_cursors[cursornum]);
-        xwas = x;
-        cursorwas = cursornum;
-    }
-}
     /* check if a point lies in a gobj.  */
 int canvas_hitbox(t_glist *x, t_gobj *y, int xpos, int ypos,
     int *x1p, int *y1p, int *x2p, int *y2p)
@@ -435,8 +406,8 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
         if (!doit)
         {
             if (y)
-                canvas_setcursor(x, clickreturned);
-            else canvas_setcursor(x, CURSOR_NOTHING);
+                canvas_setCursorType(x, clickreturned);
+            else canvas_setCursorType(x, CURSOR_NOTHING);
         }
         return;
     }
@@ -491,7 +462,7 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
                     x->gl_editor->e_newX = xpos;
                     x->gl_editor->e_newY = ypos;
                 }                                   
-                else canvas_setcursor(x, CURSOR_EDIT_RESIZE);
+                else canvas_setCursorType(x, CURSOR_EDIT_RESIZE);
             }
                 /* look for an outlet */
             else if (ob && (noutlet = object_numberOfOutlets(ob)) && ypos >= y2-4)
@@ -515,11 +486,11 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
                                 x, xpos, ypos, xpos, ypos,
                                     (issignal ? 2 : 1));
                     }                                   
-                    else canvas_setcursor(x, CURSOR_EDIT_CONNECT);
+                    else canvas_setCursorType(x, CURSOR_EDIT_CONNECT);
                 }
                 else if (doit)
                     goto nooutletafterall;
-                else canvas_setcursor(x, CURSOR_EDIT_NOTHING);
+                else canvas_setCursorType(x, CURSOR_EDIT_NOTHING);
             }
                 /* not in an outlet; select and move */
             else if (doit)
@@ -547,7 +518,7 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
                     x->gl_editor->e_onMotion = ACTION_MOVE;
                 }
             }
-            else canvas_setcursor(x, CURSOR_EDIT_NOTHING);
+            else canvas_setCursorType(x, CURSOR_EDIT_NOTHING);
         }
         return;
     }
@@ -560,7 +531,7 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
         box, set cursor and return */
     if (runmode || rightclick)
     {
-        canvas_setcursor(x, CURSOR_NOTHING);
+        canvas_setCursorType(x, CURSOR_NOTHING);
         return;
     }
         /* having failed to find a box, we try lines now. */
@@ -587,11 +558,11 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
                     canvas_getIndexOfObject(glist2, &t.tr_srcObject->te_g), t.tr_srcIndexOfOutlet,
                     canvas_getIndexOfObject(glist2, &t.tr_destObject->te_g), t.tr_destIndexOfInlet);
             }
-            canvas_setcursor(x, CURSOR_EDIT_DISCONNECT);
+            canvas_setCursorType(x, CURSOR_EDIT_DISCONNECT);
             return;
         }
     }
-    canvas_setcursor(x, CURSOR_EDIT_NOTHING);
+    canvas_setCursorType(x, CURSOR_EDIT_NOTHING);
     if (doit)
     {
         if (!shiftmod) canvas_deselectAll(x);
@@ -673,7 +644,7 @@ void canvas_doconnect(t_glist *x, int xpos, int ypos, int which, int doit)
 
             if (canvas_isconnected (x, ob1, closest1, ob2, closest2))
             {
-                canvas_setcursor(x, CURSOR_EDIT_NOTHING);
+                canvas_setCursorType(x, CURSOR_EDIT_NOTHING);
                 return;
             }
             if (object_isSignalOutlet(ob1, closest1) &&
@@ -681,7 +652,7 @@ void canvas_doconnect(t_glist *x, int xpos, int ypos, int which, int doit)
             {
                 if (doit)
                     post_error ("can't connect signal outlet to control inlet");
-                canvas_setcursor(x, CURSOR_EDIT_NOTHING);
+                canvas_setCursorType(x, CURSOR_EDIT_NOTHING);
                 return;
             }
             if (doit)
@@ -706,11 +677,11 @@ void canvas_doconnect(t_glist *x, int xpos, int ypos, int which, int doit)
                         canvas_getIndexOfObject(x, &ob2->te_g), closest2),
                         "connect");*/
             }
-            else canvas_setcursor(x, CURSOR_EDIT_CONNECT);
+            else canvas_setCursorType(x, CURSOR_EDIT_CONNECT);
             return;
         }
     }
-    canvas_setcursor(x, CURSOR_EDIT_NOTHING);
+    canvas_setCursorType(x, CURSOR_EDIT_NOTHING);
 }
 
 void canvas_selectinrect(t_glist *x, int lox, int loy, int hix, int hiy)
@@ -969,7 +940,7 @@ void canvas_key(t_glist *x, t_symbol *s, int ac, t_atom *av)
         cursor to indicate how the click action changes */
     if (x && keynum == 0 && x->gl_isEditMode &&
         !strncmp(gotkeysym->s_name, "Control", 7))
-            canvas_setcursor(x, down ?
+            canvas_setCursorType(x, down ?
                 CURSOR_NOTHING :CURSOR_EDIT_NOTHING);
 }
 
@@ -1073,6 +1044,10 @@ void canvas_startmotion(t_glist *x)
     x->gl_editor->e_previousY = yval; 
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void canvas_stowconnections(t_glist *x)
 {
     t_gobj *selhead = 0, *seltail = 0, *nonhead = 0, *nontail = 0, *y, *y2;
@@ -1138,6 +1113,10 @@ void canvas_restoreconnections(t_glist *x)
     buffer_eval(x->gl_editor->e_buffer, 0, 0, 0);
     s__X.s_thing = boundx;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static t_buffer *canvas_docopy(t_glist *x)
 {

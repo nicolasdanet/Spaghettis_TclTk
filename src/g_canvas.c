@@ -327,7 +327,7 @@ void canvas_editmode (t_glist *glist, t_float f)
         if (canvas_isVisible (glist) && canvas_canHaveWindow (glist)) {
 
             t_gobj *g = NULL;
-            canvas_setcursor (glist, CURSOR_EDIT_NOTHING);
+            canvas_setCursorType (glist, CURSOR_EDIT_NOTHING);
             
             for (g = glist->gl_graphics; g; g = g->g_next) {
                 t_object *o = NULL;
@@ -343,7 +343,7 @@ void canvas_editmode (t_glist *glist, t_float f)
         canvas_deselectAll (glist);
         
         if (canvas_isVisible (glist) && canvas_canHaveWindow (glist)) {
-            canvas_setcursor (glist, CURSOR_NOTHING);
+            canvas_setCursorType (glist, CURSOR_NOTHING);
             sys_vGui (".x%lx.c delete COMMENTBAR\n", canvas_getView (glist));
         }
     }

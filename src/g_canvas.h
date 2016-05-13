@@ -85,14 +85,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define UNDO_FREE                       0
-#define UNDO_UNDO                       1
-#define UNDO_REDO                       2
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 #define SCALAR_REDRAW                   0
 #define SCALAR_DRAW                     1
 #define SCALAR_ERASE                    2
@@ -369,6 +361,7 @@ void            canvas_setName                          (t_glist *glist, t_symbo
 void            canvas_updateTitle                      (t_glist *glist);
 int             canvas_hasGraphOnParentTitle            (t_glist *glist);
 int             canvas_getFontSize                      (t_glist *glist);
+void            canvas_setCursorType                    (t_glist *glist, int type);
 
 void            canvas_setLastCoordinates               (t_glist *glist, int a, int b);
 void            canvas_getLastCoordinates               (t_glist *glist, int *a, int *b);
@@ -687,7 +680,6 @@ int      canvas_clicksub                (t_glist *x,
                                             int alt,
                                             int dbl,
                                             int b);
-void    canvas_setcursor                (t_glist *x, unsigned int cursornum);
 
 t_glist  *canvas_getglistonsuper        (void);
 

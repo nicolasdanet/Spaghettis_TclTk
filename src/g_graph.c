@@ -1048,8 +1048,8 @@ static int graph_click(t_gobj *z, struct _glist *glist,
         if (!doit)
         {
             if (y)
-                canvas_setcursor(canvas_getView(x), clickreturned);
-            else canvas_setcursor(canvas_getView(x), CURSOR_NOTHING);
+                canvas_setCursorType(canvas_getView(x), clickreturned);
+            else canvas_setCursorType(canvas_getView(x), CURSOR_NOTHING);
         }
         return (clickreturned); 
     }

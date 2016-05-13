@@ -143,15 +143,6 @@ proc getDefaultWeight {} {
 
 set var(appName)                "PureData"
 
-set var(cursorRunNothing)       "left_ptr"
-set var(cursorRunClickMe)       "hand2"
-set var(cursorRunThicken)       "crosshair"
-set var(cursorRunAddPoint)      "plus"
-set var(cursorEditNothing)      "left_ptr"
-set var(cursorEditConnect)      "circle"
-set var(cursorEditDisconnect)   "X_cursor"
-set var(cursorEditResize)       "crosshair"
-
 set var(filesExtensions)        ".pd .pdhelp"
 set var(filesOpenPended)        {}
 set var(filesTypes)             { {{Patch} {.pd}} {{Help} {.pdhelp}} }

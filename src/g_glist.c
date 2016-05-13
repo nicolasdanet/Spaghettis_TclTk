@@ -381,6 +381,31 @@ int canvas_getFontSize (t_glist *glist)
     return glist->gl_fontSize;
 }
 
+void canvas_setCursorType (t_glist *glist, int type)
+{
+    static t_glist *lastGlist = NULL;           /* Shared. */
+    static int lastType = CURSOR_NOTHING;       /* Shared. */
+    static char *cursors[] =                    /* Shared. */
+        {
+            "left_ptr",     // CURSOR_NOTHING
+            "hand2",        // CURSOR_CLICK
+            "crosshair",    // CURSOR_THICKEN
+            "plus",         // CURSOR_ADD
+            "left_ptr",     // CURSOR_EDIT_NOTHING
+            "circle",       // CURSOR_EDIT_CONNECT
+            "X_cursor",     // CURSOR_EDIT_DISCONNECT
+            "crosshair"     // CURSOR_EDIT_RESIZE
+        };
+    
+    type = PD_CLAMP (type, CURSOR_NOTHING, CURSOR_EDIT_RESIZE);
+    
+    if (lastGlist != glist || lastType != type) {
+        sys_vGui (".x%lx configure -cursor %s\n", glist, cursors[type]);
+        lastType  = type;
+        lastGlist = glist;
+    }
+}
+
 void canvas_setLastCoordinates (t_glist *glist, int a, int b)
 {
     canvas_lastCanvas   = glist;
