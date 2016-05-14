@@ -99,6 +99,23 @@ int canvas_isObjectSelected (t_glist *glist, t_gobj *y)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void canvas_selectObjectsInRectangle (t_glist *glist, int a, int b, int c, int d)
+{
+    t_gobj *y;
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+    //
+    int x1, y1, x2, y2;
+    
+    gobj_getRectangle (y, glist, &x1, &y1, &x2, &y2);
+    
+    if (c >= x1 && a <= x2 && d >= y1 && b <= y2 && !canvas_isObjectSelected (glist, y)) {
+        canvas_selectObject (glist, y);
+    }
+    //
+    }
+}
+
 void canvas_selectObject (t_glist *glist, t_gobj *y)
 {
     if (glist->gl_editor) {

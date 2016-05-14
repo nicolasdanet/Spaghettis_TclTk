@@ -383,6 +383,11 @@ void            canvas_makingConnection                 (t_glist *glist,
                                                             int positionY,
                                                             int create);
                                                             
+void            canvas_selectingByLasso                 (t_glist *glist, 
+                                                            int positionX,
+                                                            int positionY,
+                                                            int close);
+
 void            canvas_setLastCoordinates               (t_glist *glist, int a, int b);
 void            canvas_getLastCoordinates               (t_glist *glist, int *a, int *b);
 
@@ -413,8 +418,9 @@ void            canvas_redrawAllByTemplateByCanvas      (t_glist *glist, int act
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            canvas_removeSelectedLine               (t_glist *x);
+void            canvas_removeSelectedLine               (t_glist *glist);
 int             canvas_isObjectSelected                 (t_glist *glist, t_gobj *y);
+void            canvas_selectObjectsInRectangle         (t_glist *glist, int a, int b, int c, int d);
 void            canvas_selectObject                     (t_glist *glist, t_gobj *y);
 void            canvas_selectLine                       (t_glist *glist, 
                                                             t_outconnect *connection,
@@ -688,9 +694,6 @@ int      canvas_istable                 (t_glist *x);
 
 int      canvas_setdeleting             (t_glist *x, int flag);
 
-
-
-void     canvas_selectinrect            (t_glist *x, int lox, int loy, int hix, int hiy);
 void     canvas_fattenforscalars        (t_glist *x, int *x1, int *y1, int *x2, int *y2);
 void     canvas_visforscalars           (t_glist *x, t_glist *glist, int vis);
 int      canvas_clicksub                (t_glist *x,

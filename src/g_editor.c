@@ -537,39 +537,6 @@ void canvas_mouse(t_glist *x, t_float xpos, t_float ypos,
     canvas_doclick(x, xpos, ypos, which, mod, 1);
 }
 
-void canvas_selectinrect(t_glist *x, int lox, int loy, int hix, int hiy)
-{
-    t_gobj *y;
-    for (y = x->gl_graphics; y; y = y->g_next)
-    {
-        int x1, y1, x2, y2;
-        gobj_getRectangle(y, x, &x1, &y1, &x2, &y2);
-        if (hix >= x1 && lox <= x2 && hiy >= y1 && loy <= y2
-            && !canvas_isObjectSelected(x, y))
-                canvas_selectObject(x, y);
-    }
-}
-
-static void canvas_doregion(t_glist *x, int xpos, int ypos, int doit)
-{
-    if (doit)
-    {
-        int lox, loy, hix, hiy;
-        if (x->gl_editor->e_previousX < xpos)
-            lox = x->gl_editor->e_previousX, hix = xpos;
-        else hix = x->gl_editor->e_previousX, lox = xpos;
-        if (x->gl_editor->e_previousY < ypos)
-            loy = x->gl_editor->e_previousY, hiy = ypos;
-        else hiy = x->gl_editor->e_previousY, loy = ypos;
-        canvas_selectinrect(x, lox, loy, hix, hiy);
-        sys_vGui(".x%lx.c delete TEMPORARY\n", x);
-        x->gl_editor->e_onMotion = ACTION_NONE;
-    }
-    else sys_vGui(".x%lx.c coords TEMPORARY %d %d %d %d\n",
-            x, x->gl_editor->e_previousX,
-                x->gl_editor->e_previousY, xpos, ypos);
-}
-
 void canvas_mouseup(t_glist *x,
     t_float fxpos, t_float fypos, t_float fwhich)
 {
@@ -588,7 +555,7 @@ void canvas_mouseup(t_glist *x,
     if (x->gl_editor->e_onMotion == ACTION_CONNECT)
         canvas_makingConnection (x, xpos, ypos, 1);
     else if (x->gl_editor->e_onMotion == ACTION_REGION)
-        canvas_doregion(x, xpos, ypos, 1);
+        canvas_selectingByLasso(x, xpos, ypos, 1);
     else if (x->gl_editor->e_onMotion == ACTION_MOVE ||
         x->gl_editor->e_onMotion == ACTION_RESIZE)
     {
@@ -826,7 +793,7 @@ void canvas_motion(t_glist *x, t_float xpos, t_float ypos, t_float fmod)
         x->gl_editor->e_newY = ypos;
     }
     else if (x->gl_editor->e_onMotion == ACTION_REGION)
-        canvas_doregion(x, xpos, ypos, 0);
+        canvas_selectingByLasso(x, xpos, ypos, 0);
     else if (x->gl_editor->e_onMotion == ACTION_CONNECT)
         canvas_makingConnection (x, xpos, ypos, 0);
     else if (x->gl_editor->e_onMotion == ACTION_PASS)
