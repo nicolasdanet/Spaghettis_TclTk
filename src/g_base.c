@@ -164,9 +164,9 @@ int canvas_hasEnvironment (t_glist *glist)
 
 t_glist *canvas_addGraph (t_glist *glist,
     t_symbol *name,
-    t_float indexStart,
+    t_float valueStart,
     t_float valueUp,
-    t_float indexEnd,
+    t_float valueEnd,
     t_float valueDown,
     t_float topLeftX,
     t_float topLeftY,
@@ -194,10 +194,10 @@ t_glist *canvas_addGraph (t_glist *glist,
         if (!strncmp (s, "graph", 5) && (n = atoi (s + 5)) > graphCount) { graphCount = n; }
     }
 
-    if (indexStart >= indexEnd || valueUp == valueDown) {
+    if (valueStart >= valueEnd || valueUp == valueDown) {
     //
-    indexStart  = GLIST_DEFAULT_START;
-    indexEnd    = GLIST_DEFAULT_END;
+    valueStart  = GLIST_DEFAULT_START;
+    valueEnd    = GLIST_DEFAULT_END;
     valueUp     = GLIST_DEFAULT_UP;
     valueDown   = -valueUp;
     //
@@ -222,8 +222,8 @@ t_glist *canvas_addGraph (t_glist *glist,
     x->gl_magic                 = ++canvas_magic;
     x->gl_width                 = bottomRightX - topLeftX;
     x->gl_height                = bottomRightY - topLeftY;
-    x->gl_indexStart            = indexStart;
-    x->gl_indexEnd              = indexEnd;
+    x->gl_valueStart            = valueStart;
+    x->gl_valueEnd              = valueEnd;
     x->gl_valueUp               = valueUp;
     x->gl_valueDown             = valueDown;
     x->gl_windowTopLeftX        = 0;

@@ -236,8 +236,8 @@ struct _glist {
     int                 gl_height;
     int                 gl_marginX;
     int                 gl_marginY;
-    t_float             gl_indexStart;
-    t_float             gl_indexEnd;
+    t_float             gl_valueStart;
+    t_float             gl_valueEnd;
     t_float             gl_valueUp;
     t_float             gl_valueDown;
     int                 gl_windowTopLeftX;
@@ -328,9 +328,9 @@ t_symbol        *canvas_makeBindSymbol                  (t_symbol *s);
 
 t_glist         *canvas_addGraph                        (t_glist *glist,
                                                             t_symbol *name,
-                                                            t_float indexStart,
+                                                            t_float valueStart,
                                                             t_float valueUp,
-                                                            t_float indexEnd,
+                                                            t_float valueEnd,
                                                             t_float valueDown,
                                                             t_float topLeftX,
                                                             t_float topLeftY,
@@ -507,7 +507,6 @@ void            canvas_paste                            (t_glist *glist);
 void            canvas_duplicate                        (t_glist *glist);
 void            canvas_selectall                        (t_glist *glist);
 void            canvas_done_popup                       (t_glist *glist, t_float item, t_float a, t_float b);
-void            canvas_donecanvasdialog                 (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 
 void            canvas_properties                       (t_gobj *x, t_glist *glist);
 

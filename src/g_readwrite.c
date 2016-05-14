@@ -679,23 +679,23 @@ static void canvas_saveto(t_glist *x, t_buffer *b)
     }
         /* unless everything is the default (as in ordinary subpatches)
         print out a "coords" message to set up the coordinate systems */
-    if (x->gl_isGraphOnParent || x->gl_indexStart || x->gl_valueUp ||
-        x->gl_indexEnd != 1 ||  x->gl_valueDown != 1 || x->gl_width || x->gl_height)
+    if (x->gl_isGraphOnParent || x->gl_valueStart || x->gl_valueUp ||
+        x->gl_valueEnd != 1 ||  x->gl_valueDown != 1 || x->gl_width || x->gl_height)
     {
         if (x->gl_isGraphOnParent && x->gl_hasRectangle)
                 /* if we have a graph-on-parent rectangle, we're new style.
                 The format is arranged so
                 that old versions of Pd can at least do something with it. */
             buffer_vAppend(b, "ssfffffffff;", sym___hash__X, sym_coords,
-                x->gl_indexStart, x->gl_valueUp,
-                x->gl_indexEnd, x->gl_valueDown,
+                x->gl_valueStart, x->gl_valueUp,
+                x->gl_valueEnd, x->gl_valueDown,
                 (t_float)x->gl_width, (t_float)x->gl_height,
                 (t_float)((x->gl_hideText)?3.:1.),
                 (t_float)x->gl_marginX, (t_float)x->gl_marginY); 
                     /* otherwise write in 0.38-compatible form */
         else buffer_vAppend(b, "ssfffffff;", sym___hash__X, sym_coords,
-                x->gl_indexStart, x->gl_valueUp,
-                x->gl_indexEnd, x->gl_valueDown,
+                x->gl_valueStart, x->gl_valueUp,
+                x->gl_valueEnd, x->gl_valueDown,
                 (t_float)x->gl_width, (t_float)x->gl_height,
                 (t_float)x->gl_isGraphOnParent);
     }

@@ -137,86 +137,9 @@ static void canvas_rightclick(t_glist *x, int xpos, int ypos, t_gobj *y)
         x, xpos, ypos, canprop, canopen);
 }
 
-/* ----  editors -- perhaps this and "vis" should go to g_editor.c ------- */
-
-    /* called from the gui when "OK" is selected on the canvas properties
-        dialog. */
-void canvas_donecanvasdialog(t_glist *x,
-    t_symbol *s, int argc, t_atom *argv)
-{
-
-
-    t_float xperpix, yperpix, x1, y1, x2, y2, xpix, ypix, xmargin, ymargin; 
-    int graphme, redraw = 0;
-
-    xperpix = atom_getFloatAtIndex(0, argc, argv);
-    yperpix = atom_getFloatAtIndex(1, argc, argv);
-    graphme = (int)(atom_getFloatAtIndex(2, argc, argv));
-    x1 = atom_getFloatAtIndex(3, argc, argv);
-    y1 = atom_getFloatAtIndex(4, argc, argv);
-    x2 = atom_getFloatAtIndex(5, argc, argv);
-    y2 = atom_getFloatAtIndex(6, argc, argv);
-    xpix = atom_getFloatAtIndex(7, argc, argv);
-    ypix = atom_getFloatAtIndex(8, argc, argv);
-    xmargin = atom_getFloatAtIndex(9, argc, argv);
-    ymargin = atom_getFloatAtIndex(10, argc, argv);
-    
-    x->gl_width = xpix;
-    x->gl_height = ypix;
-    x->gl_marginX = xmargin;
-    x->gl_marginY = ymargin;
-
-    // yperpix = -yperpix;
-    if (xperpix == 0)
-        xperpix = 1;
-    if (yperpix == 0)
-        yperpix = 1;
-
-    if (graphme)
-    {
-        if (x1 != x2)
-            x->gl_indexStart = x1, x->gl_indexEnd = x2;
-        else x->gl_indexStart = 0, x->gl_indexEnd = 1;
-        if (y1 != y2)
-            x->gl_valueUp = y1, x->gl_valueDown = y2;
-        else x->gl_valueUp = 0, x->gl_valueDown = 1;
-    }
-    else
-    {
-        if (xperpix != glist_dpixtodx(x, 1) || yperpix != glist_dpixtody(x, 1))
-            redraw = 1;
-        if (xperpix > 0)
-        {
-            x->gl_indexStart = 0;
-            x->gl_indexEnd = xperpix;
-        }
-        else
-        {
-            x->gl_indexStart = -xperpix * (x->gl_windowBottomRightX - x->gl_windowTopLeftX);
-            x->gl_indexEnd = x->gl_indexStart + xperpix;
-        }
-        if (yperpix > 0)
-        {
-            x->gl_valueUp = 0;
-            x->gl_valueDown = yperpix;
-        }
-        else
-        {
-            x->gl_valueUp = -yperpix * (x->gl_windowBottomRightY - x->gl_windowTopLeftY);
-            x->gl_valueDown = x->gl_valueUp + yperpix;
-        }
-    }
-        /* LATER avoid doing 2 redraws here (possibly one inside setgraph) */
-    canvas_setAsGraphOnParent (x, graphme, 1);
-    canvas_dirty(x, 1);
-    if (x->gl_haveWindow)
-        canvas_redraw(x);
-    else if (canvas_isVisible(x->gl_parent))
-    {
-        gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 0);
-        gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 1);
-    }
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
     /* called from the gui when a popup menu comes back with "properties,"
         "open," or "help." */

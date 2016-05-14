@@ -32,10 +32,7 @@ extern t_pdinstance     *pd_this;
 
 void canvas_redraw (t_glist *glist)
 {
-    if (canvas_isVisible (glist)) {
-        canvas_map (glist, 0);
-        canvas_map (glist, 1);
-    }
+    if (canvas_isVisible (glist)) { canvas_map (glist, 0); canvas_map (glist, 1); }
 }
 
 void canvas_drawLines (t_glist *glist)

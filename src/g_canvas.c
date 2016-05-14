@@ -149,9 +149,9 @@ static void canvas_dosetbounds(t_glist *x, int x1, int y1, int x2, int y2)      
 
 static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    glist->gl_indexStart    = atom_getFloatAtIndex (0, argc, argv);
+    glist->gl_valueStart    = atom_getFloatAtIndex (0, argc, argv);
     glist->gl_valueUp       = atom_getFloatAtIndex (1, argc, argv);
-    glist->gl_indexEnd      = atom_getFloatAtIndex (2, argc, argv);
+    glist->gl_valueEnd      = atom_getFloatAtIndex (2, argc, argv);
     glist->gl_valueDown     = atom_getFloatAtIndex (3, argc, argv);
     glist->gl_width         = (int)atom_getFloatAtIndex (4, argc, argv);
     glist->gl_height        = (int)atom_getFloatAtIndex (5, argc, argv);
@@ -537,6 +537,65 @@ static void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void canvas_dialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    t_float scaleX  = atom_getFloatAtIndex (0, argc, argv);
+    t_float scaleY  = atom_getFloatAtIndex (1, argc, argv);
+    t_float start   = atom_getFloatAtIndex (3, argc, argv);
+    t_float up      = atom_getFloatAtIndex (4, argc, argv);
+    t_float end     = atom_getFloatAtIndex (5, argc, argv);
+    t_float down    = atom_getFloatAtIndex (6, argc, argv);
+    int flags       = (int)atom_getFloatAtIndex (2, argc,  argv);
+    int width       = (int)atom_getFloatAtIndex (7, argc,  argv);
+    int height      = (int)atom_getFloatAtIndex (8, argc,  argv);
+    int marginX     = (int)atom_getFloatAtIndex (9, argc,  argv);
+    int marginY     = (int)atom_getFloatAtIndex (10, argc, argv);
+    
+    PD_ASSERT (argc == 11);
+    
+    glist->gl_width     = width;
+    glist->gl_height    = height;
+    glist->gl_marginX   = marginX;
+    glist->gl_marginY   = marginY;
+
+    if (scaleX == 0.0) { scaleX = 1.0; }
+    if (scaleY == 0.0) { scaleY = 1.0; }
+
+    if (flags & 1) {    /* Graph on parent. */
+    
+        PD_ASSERT (start != end);
+        PD_ASSERT (up != down);
+        
+        glist->gl_valueStart    = start;
+        glist->gl_valueEnd      = end; 
+        glist->gl_valueUp       = up; 
+        glist->gl_valueDown     = down;
+        
+    } else {
+    
+        glist->gl_valueStart    = 0.0;
+        glist->gl_valueEnd      = PD_ABS (scaleX);
+        glist->gl_valueUp       = 0.0;
+        glist->gl_valueDown     = PD_ABS (scaleY);
+    }
+    
+    canvas_setAsGraphOnParent (glist, flags, 1);
+    
+    canvas_dirty (glist, 1);
+    
+    if (glist->gl_haveWindow) { canvas_redraw (glist); }
+    else {
+        if (canvas_isVisible (glist->gl_parent)) {
+            gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 0);
+            gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
+        }
+    }
+}
+
 void canvas_properties (t_gobj *x, t_glist *dummy)
 {
     t_gobj *y = NULL;
@@ -549,9 +608,9 @@ void canvas_properties (t_gobj *x, t_glist *dummy)
                                     0.,
                                     0.,
                                     g->gl_isGraphOnParent | (g->gl_hideText << 1),
-                                    g->gl_indexStart,
+                                    g->gl_valueStart,
                                     g->gl_valueUp,
-                                    g->gl_indexEnd,
+                                    g->gl_valueEnd,
                                     g->gl_valueDown, 
                                     g->gl_width,
                                     g->gl_height,
@@ -654,9 +713,9 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     topLeftX = PD_MAX (topLeftX, 0);
     topLeftY = PD_MAX (topLeftY, CANVAS_WINDOW_HEADER_HEIGHT);
         
-    x->gl_indexStart    = 0;
+    x->gl_valueStart    = 0;
     x->gl_valueUp       = 0.0;
-    x->gl_indexEnd      = 1;
+    x->gl_valueEnd      = 1;
     x->gl_valueDown     = 1.0;
     
     canvas_setBounds (x, topLeftX, topLeftY, topLeftX + width, topLeftY + height);
@@ -797,7 +856,7 @@ void canvas_setup (void)
         A_FLOAT,
         A_NULL);
         
-    class_addMethod (c, (t_method)canvas_donecanvasdialog,
+    class_addMethod (c, (t_method)canvas_dialog,
         sym__canvasdialog,
         A_GIMME,
         A_NULL);
