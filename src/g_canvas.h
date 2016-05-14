@@ -506,7 +506,6 @@ void            canvas_copy                             (t_glist *glist);
 void            canvas_paste                            (t_glist *glist);
 void            canvas_duplicate                        (t_glist *glist);
 void            canvas_selectall                        (t_glist *glist);
-void            canvas_done_popup                       (t_glist *glist, t_float item, t_float a, t_float b);
 
 void            canvas_properties                       (t_gobj *x, t_glist *glist);
 

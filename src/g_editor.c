@@ -141,61 +141,6 @@ static void canvas_rightclick(t_glist *x, int xpos, int ypos, t_gobj *y)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* called from the gui when a popup menu comes back with "properties,"
-        "open," or "help." */
-void canvas_done_popup(t_glist *x, t_float which, t_float xpos, t_float ypos)
-{
-    char pathbuf[PD_STRING], namebuf[PD_STRING];
-    t_gobj *y;
-    for (y = x->gl_graphics; y; y = y->g_next)
-    {
-        int x1, y1, x2, y2;
-        if (gobj_hit(y, x, xpos, ypos, &x1, &y1, &x2, &y2))
-        {
-            if (which == 0)     /* properties */
-            {
-                if (!class_hasPropertiesFunction (pd_class(&y->g_pd)))
-                    continue;
-                (*class_getPropertiesFunction (pd_class(&y->g_pd)))(y, x);
-                return;
-            }
-            else if (which == 1)    /* open */
-            {
-                if (!class_hasMethod (pd_class (&y->g_pd), sym_open))
-                    continue;
-                pd_vMessage(&y->g_pd, sym_open, "");
-                return;
-            }
-            else    /* help */
-            {
-                char *dir;
-                if (pd_class (y) == canvas_class && canvas_hasEnvironment (cast_glist (y)))
-                {
-                    t_object *ob = (t_object *)y;
-                    int ac = buffer_size(ob->te_buffer);
-                    t_atom *av = buffer_atoms(ob->te_buffer);
-                    if (ac < 1)
-                        return;
-                    atom_toString(av, namebuf, PD_STRING);
-                    dir = canvas_getEnvironment ((t_glist *)y)->ce_directory->s_name;
-                }
-                else
-                {
-                    strcpy(namebuf, class_getHelpName(pd_class(&y->g_pd)));
-                    dir = class_getExternalDirectory(pd_class(&y->g_pd));
-                }
-
-                file_openHelp (dir, namebuf);
-                return;
-            }
-        }
-    }
-    if (which == 0)
-        canvas_properties(&x->gl_obj.te_g, 0);
-    /*else if (which == 2)
-        file_openHelp("intro.pd", canvas_getDirectory((t_glist *)x)->s_name);*/
-}
-
     /* mouse click */
 void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
     int mod, int doit)

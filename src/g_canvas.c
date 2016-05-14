@@ -186,20 +186,6 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-static void canvas_graph (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
-{
-    canvas_addGraph (glist, 
-        atom_getSymbolAtIndex (0, argc, argv),
-        atom_getFloatAtIndex (1,  argc, argv),
-        atom_getFloatAtIndex (2,  argc, argv),
-        atom_getFloatAtIndex (3,  argc, argv),
-        atom_getFloatAtIndex (4,  argc, argv),
-        atom_getFloatAtIndex (5,  argc, argv),
-        atom_getFloatAtIndex (6,  argc, argv),
-        atom_getFloatAtIndex (7,  argc, argv),
-        atom_getFloatAtIndex (8,  argc, argv));
-}
-
 static void canvas_width (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     if (glist->gl_graphics) {
@@ -541,6 +527,57 @@ static void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void canvas_popupdialog (t_glist *glist, t_float action, t_float positionX, t_float positionY)
+{
+    t_gobj *y = NULL;
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+    //
+    int x1, y1, x2, y2;
+    
+    if (gobj_hit (y, glist, positionX, positionY, &x1, &y1, &x2, &y2)) {
+    //
+    if (action == 0) {                                                                  /* Properties. */
+        if (class_hasPropertiesFunction (pd_class (y))) {
+            (*class_getPropertiesFunction (pd_class (y))) (y, glist); return;
+        }
+    } 
+    if (action == 1) {                                                                  /* Open. */
+        if (class_hasMethod (pd_class (y), sym_open)) {
+            pd_vMessage (cast_pd (y), sym_open, ""); return;
+        }
+    }
+    if (action == 2) {                                                                  /* Help. */
+    //
+    char *directory = NULL;
+    char name[PD_STRING] = { 0 };
+    t_error err = PD_ERROR_NONE;
+    
+    if (pd_class (y) == canvas_class && canvas_hasEnvironment (cast_glist (y))) {
+        int argc = buffer_size (cast_object (y)->te_buffer);
+        t_atom *argv = buffer_atoms (cast_object (y)->te_buffer);
+        if (!(err = (argc < 1))) {
+            atom_toString (argv, name, PD_STRING);
+            directory = canvas_getEnvironment (cast_glist (y))->ce_directory->s_name;
+        }
+        
+    } else {
+        err = string_copy (name, PD_STRING, class_getHelpName (pd_class (y)));
+        directory = class_getExternalDirectory (pd_class (y));
+    }
+
+    if (!err) { file_openHelp (directory, name); }
+    return;
+    //
+    }
+    //
+    }
+    //
+    }
+    
+    if (action == 0) { canvas_properties (cast_gobj (glist), NULL); }
+}
+
 static void canvas_dialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     t_float scaleX  = atom_getFloatAtIndex (0, argc, argv);
@@ -800,7 +837,6 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_floatatom,     sym_floatatom,      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_symbolatom,    sym_symbolatom,     A_GIMME, A_NULL);
     class_addMethod (c, (t_method)glist_text,           sym_text,           A_GIMME, A_NULL);
-    // class_addMethod (c, (t_method)canvas_graph,         sym_graph,          A_GIMME, A_NULL);
     class_addMethod (c, (t_method)glist_scalar,         sym_scalar,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_width,         sym_f,              A_GIMME, A_NULL);
     
@@ -849,7 +885,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_dsp,           sym_dsp,            A_CANT, A_NULL);
     class_addMethod (c, (t_method)canvas_rename,        sym_rename,         A_GIMME, A_NULL);
     
-    class_addMethod (c, (t_method)canvas_done_popup,
+    class_addMethod (c, (t_method)canvas_popupdialog,
         sym__popupdialog,
         A_FLOAT,
         A_FLOAT,

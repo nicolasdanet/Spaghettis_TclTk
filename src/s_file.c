@@ -155,6 +155,10 @@ int file_openConsideringSearchPath (const char *directory,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* First consider the sibling files of the object. */
+/* Then look for in the application help folder. */
+/* And last in the defined seach path. */
+
 void file_openHelp (const char *directory, const char *name)
 {
     int f = -1;
@@ -170,7 +174,7 @@ void file_openHelp (const char *directory, const char *name)
         f = file_openConsideringSearchPath (help, name, PD_HELP, directoryResult, &nameResult, PD_STRING);
     }
     
-    if (f < 0) { post_error (PD_TRANSLATE ("help: couldn't find file for '%s'"), name); }
+    if (f < 0) { post_error (PD_TRANSLATE ("help: file not found for '%s'"), name); }
     else {
         close (f);
         buffer_openFile (NULL, gensym (nameResult), gensym (directoryResult));
