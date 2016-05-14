@@ -800,7 +800,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_floatatom,     sym_floatatom,      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_symbolatom,    sym_symbolatom,     A_GIMME, A_NULL);
     class_addMethod (c, (t_method)glist_text,           sym_text,           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_graph,         sym_graph,          A_GIMME, A_NULL);
+    // class_addMethod (c, (t_method)canvas_graph,         sym_graph,          A_GIMME, A_NULL);
     class_addMethod (c, (t_method)glist_scalar,         sym_scalar,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_width,         sym_f,              A_GIMME, A_NULL);
     
