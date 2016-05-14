@@ -26,13 +26,7 @@ extern t_widgetbehavior     text_widgetBehavior;
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_pd                 *pd_newest;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 extern t_class              *canvas_class;
-extern t_class              *vinlet_class;
-extern t_class              *voutlet_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -123,10 +117,6 @@ restore:
     canvas_dirty(x, 1);
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
     /* right-clicking on a canvas object pops up a menu. */
 static void canvas_rightclick(t_glist *x, int xpos, int ypos, t_gobj *y)
 {
@@ -136,10 +126,6 @@ static void canvas_rightclick(t_glist *x, int xpos, int ypos, t_gobj *y)
     sys_vGui("::ui_menu::showPopup .x%lx %d %d %d %d\n",
         x, xpos, ypos, canprop, canopen);
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
     /* mouse click */
 void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
@@ -368,6 +354,10 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void canvas_mouse(t_glist *x, t_float xpos, t_float ypos,
     t_float which, t_float mod)
 {
@@ -424,30 +414,6 @@ void canvas_mouseup(t_glist *x,
     }
 
     x->gl_editor->e_onMotion = ACTION_NONE;
-}
-
-    /* displace the selection by (dx, dy) pixels */
-static void canvas_displaceselection(t_glist *x, int dx, int dy)
-{
-    t_selection *y;
-    int resortin = 0, resortout = 0;
-    /*if (!canvas_undo_already_set_move)
-    {
-        // canvas_setundo(x, canvas_undo_move, canvas_undo_set_move(x, 1), "motion");
-        canvas_undo_already_set_move = 1;
-    }*/
-    for (y = x->gl_editor->e_selectedObjects; y; y = y->sel_next)
-    {
-        t_class *cl = pd_class(&y->sel_what->g_pd);
-        gobj_displace(y->sel_what, x, dx, dy);
-        if (cl == vinlet_class) resortin = 1;
-        else if (cl == voutlet_class) resortout = 1;
-    }
-    if (resortin) canvas_resortinlets(x);
-    if (resortout) canvas_resortoutlets(x);
-    sys_vGui("::ui_patch::updateScrollRegion .x%lx.c\n", x);
-    if (x->gl_editor->e_selectedObjects)
-        canvas_dirty(x, 1);
 }
 
     /* this routine is called whenever a key is pressed or released.  "x"
@@ -585,13 +551,13 @@ void canvas_key(t_glist *x, t_symbol *s, int ac, t_atom *av)
         }
                 /* check for arrow keys */
         else if (!strcmp(gotkeysym->s_name, "Up"))
-            canvas_displaceselection(x, 0, shift ? -10 : -1);
+            canvas_displaceSelected(x, 0, shift ? -10 : -1);
         else if (!strcmp(gotkeysym->s_name, "Down"))
-            canvas_displaceselection(x, 0, shift ? 10 : 1);
+            canvas_displaceSelected(x, 0, shift ? 10 : 1);
         else if (!strcmp(gotkeysym->s_name, "Left"))
-            canvas_displaceselection(x, shift ? -10 : -1, 0);
+            canvas_displaceSelected(x, shift ? -10 : -1, 0);
         else if (!strcmp(gotkeysym->s_name, "Right"))
-            canvas_displaceselection(x, shift ? 10 : 1, 0);
+            canvas_displaceSelected(x, shift ? 10 : 1, 0);
     }
         /* if control key goes up or down, and if we're in edit mode, change
         cursor to indicate how the click action changes */
@@ -603,7 +569,7 @@ void canvas_key(t_glist *x, t_symbol *s, int ac, t_atom *av)
 
 static void delay_move(t_glist *x)
 {
-    canvas_displaceselection(x, 
+    canvas_displaceSelected(x, 
        x->gl_editor->e_newX - x->gl_editor->e_previousX,
        x->gl_editor->e_newY - x->gl_editor->e_previousY);
     x->gl_editor->e_previousX = x->gl_editor->e_newX;

@@ -414,8 +414,9 @@ void            canvas_redrawAllByTemplateByCanvas      (t_glist *glist, int act
 #pragma mark -
 
 void            canvas_removeSelectedLine               (t_glist *glist);
-int             canvas_isObjectSelected                 (t_glist *glist, t_gobj *y);
+void            canvas_displaceSelected                 (t_glist *glist, int deltaX, int deltaY);
 
+int             canvas_isObjectSelected                 (t_glist *glist, t_gobj *y);
 void            canvas_selectingByLasso                 (t_glist *glist, 
                                                             int positionX,
                                                             int positionY,

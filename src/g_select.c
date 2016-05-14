@@ -18,6 +18,8 @@
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_class *canvas_class;
+extern t_class *vinlet_class;
+extern t_class *voutlet_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -75,6 +77,29 @@ void canvas_removeSelectedLine (t_glist *glist)
     canvas_dirty (glist, 1);
     //
     }
+}
+
+void canvas_displaceSelected (t_glist *glist, int deltaX, int deltaY)
+{
+    t_selection *y = NULL;
+    
+    int needToResortInlets  = 0;
+    int needToResortOutlets = 0;
+    int isDirty = 0;
+    
+    for (y = glist->gl_editor->e_selectedObjects; y; y = y->sel_next) {
+        gobj_displace (y->sel_what, glist, deltaX, deltaY);
+        if (pd_class (y->sel_what) == vinlet_class)  { needToResortInlets  = 1; }
+        if (pd_class (y->sel_what) == voutlet_class) { needToResortOutlets = 1; }
+        isDirty = 1;
+    }
+    
+    if (needToResortInlets)  { canvas_resortinlets (glist); }
+    if (needToResortOutlets) { canvas_resortoutlets(glist); }
+    
+    sys_vGui ("::ui_patch::updateScrollRegion .x%lx.c\n", glist);
+    
+    if (isDirty) { canvas_dirty (glist, 1); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
