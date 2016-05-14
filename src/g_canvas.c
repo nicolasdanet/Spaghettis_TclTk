@@ -18,6 +18,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_class  *text_class;
+extern t_class  *garray_class;
 extern t_glist  *editor_pasteCanvas;
 
 extern t_pd     pd_canvasMaker;
@@ -533,6 +534,50 @@ static void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         
     } else { 
         canvas_setName (glist, gensym (PD_NAME_SHORT), NULL);
+    }
+}
+
+void canvas_properties (t_gobj *x, t_glist *dummy)
+{
+    t_gobj *y = NULL;
+    t_glist *g = cast_glist (x);
+    t_error err = PD_ERROR_NONE;
+    char t[PD_STRING] = { 0 };
+    
+    if (g->gl_isGraphOnParent) {
+        err = string_sprintf (t, PD_STRING, "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
+                                    0.,
+                                    0.,
+                                    g->gl_isGraphOnParent | (g->gl_hideText << 1),
+                                    g->gl_indexStart,
+                                    g->gl_valueUp,
+                                    g->gl_indexEnd,
+                                    g->gl_valueDown, 
+                                    g->gl_width,
+                                    g->gl_height,
+                                    g->gl_marginX,
+                                    g->gl_marginY);
+    } else {
+        err = string_sprintf (t, PD_STRING, "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
+                                    glist_dpixtodx (g, 1),
+                                    glist_dpixtody (g, 1),
+                                    g->gl_isGraphOnParent | (g->gl_hideText << 1),
+                                    0.,
+                                    1.,
+                                    1.,
+                                   -1., 
+                                    g->gl_width, 
+                                    g->gl_height,
+                                    g->gl_marginX,
+                                    g->gl_marginY);
+    }
+    
+    PD_ASSERT (!err);
+    
+    guistub_new (cast_pd (g), g, t);
+
+    for (y = g->gl_graphics; y; y = y->g_next) {
+        if (pd_class (y) == garray_class) { garray_properties (cast_garray (y)); }
     }
 }
 

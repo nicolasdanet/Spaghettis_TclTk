@@ -383,11 +383,6 @@ void            canvas_makingConnection                 (t_glist *glist,
                                                             int positionY,
                                                             int create);
                                                             
-void            canvas_selectingByLasso                 (t_glist *glist, 
-                                                            int positionX,
-                                                            int positionY,
-                                                            int close);
-
 void            canvas_setLastCoordinates               (t_glist *glist, int a, int b);
 void            canvas_getLastCoordinates               (t_glist *glist, int *a, int *b);
 
@@ -420,6 +415,12 @@ void            canvas_redrawAllByTemplateByCanvas      (t_glist *glist, int act
 
 void            canvas_removeSelectedLine               (t_glist *glist);
 int             canvas_isObjectSelected                 (t_glist *glist, t_gobj *y);
+
+void            canvas_selectingByLasso                 (t_glist *glist, 
+                                                            int positionX,
+                                                            int positionY,
+                                                            int close);
+                                                            
 void            canvas_selectObjectsInRectangle         (t_glist *glist, int a, int b, int c, int d);
 void            canvas_selectObject                     (t_glist *glist, t_gobj *y);
 void            canvas_selectLine                       (t_glist *glist, 
@@ -507,7 +508,9 @@ void            canvas_duplicate                        (t_glist *glist);
 void            canvas_selectall                        (t_glist *glist);
 void            canvas_done_popup                       (t_glist *glist, t_float item, t_float a, t_float b);
 void            canvas_donecanvasdialog                 (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-                                            
+
+void            canvas_properties                       (t_gobj *x, t_glist *glist);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -569,7 +572,6 @@ void glist_readfrombinbuf (t_glist *x, t_buffer *b, char *filename, int selectem
 
 void canvas_dataproperties (t_glist *x, t_scalar *sc, t_buffer *b);
 
-void canvas_properties (t_gobj *z, t_glist *canvas);
 void canvas_objfor (t_glist *gl, t_object *x, int argc, t_atom *argv);
 void canvas_menusave (t_glist *x, float fdestroy);
 void canvas_menusaveas (t_glist *x, float fdestroy);

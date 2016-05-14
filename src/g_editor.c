@@ -31,7 +31,6 @@ extern t_pd                 *pd_newest;
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_class              *canvas_class;
-extern t_class              *garray_class;
 extern t_class              *vinlet_class;
 extern t_class              *voutlet_class;
 
@@ -139,36 +138,6 @@ static void canvas_rightclick(t_glist *x, int xpos, int ypos, t_gobj *y)
 }
 
 /* ----  editors -- perhaps this and "vis" should go to g_editor.c ------- */
-
-    /* tell GUI to create a properties dialog on the canvas.  We tell
-    the user the negative of the "pixel" y scale to make it appear to grow
-    naturally upward, whereas pixels grow downward. */
-void canvas_properties(t_gobj*z, t_glist*unused)
-{
-    t_glist *x = (t_glist*)z;
-    t_gobj *y;
-    char graphbuf[200];
-    if (x->gl_isGraphOnParent != 0)
-        sprintf(graphbuf,
-            "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
-                0., 0.,
-                x->gl_isGraphOnParent | (x->gl_hideText << 1),//1,
-                x->gl_indexStart, x->gl_valueUp, x->gl_indexEnd, x->gl_valueDown, 
-                (int)x->gl_width, (int)x->gl_height,
-                (int)x->gl_marginX, (int)x->gl_marginY);
-    else sprintf(graphbuf,
-            "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
-                glist_dpixtodx(x, 1), glist_dpixtody(x, 1),
-                (x->gl_hideText << 1),
-                0., 1., 1., -1., 
-                (int)x->gl_width, (int)x->gl_height,
-                (int)x->gl_marginX, (int)x->gl_marginY);
-    guistub_new(&x->gl_obj.te_g.g_pd, x, graphbuf);
-        /* if any arrays are in the graph, put out their dialogs too */
-    for (y = x->gl_graphics; y; y = y->g_next)
-        if (pd_class(&y->g_pd) == garray_class) 
-            garray_properties((t_garray *)y);
-}
 
     /* called from the gui when "OK" is selected on the canvas properties
         dialog. */

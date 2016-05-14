@@ -244,7 +244,7 @@ t_glist *canvas_addGraph (t_glist *glist,
 
 void canvas_setAsGraphOnParent (t_glist *glist, int flags, int hasRectangle)
 {
-    int isGraphOnParent = (flags != 0);         /* Consider any nonzero number for compatibility. */
+    int isGraphOnParent = (flags & 1) != 0;
     int hideText        = (flags & 2) != 0;
     int needToUpdate    = isGraphOnParent || (!isGraphOnParent && glist->gl_isGraphOnParent);
     
@@ -553,30 +553,6 @@ void canvas_makingConnection (t_glist *glist, int positionX, int positionY, int 
     }
     
     canvas_setCursorType (glist, CURSOR_EDIT_NOTHING);
-}
-
-void canvas_selectingByLasso (t_glist *glist, int positionX, int positionY, int close)
-{
-    if (close) {
-    
-        int a = PD_MIN (glist->gl_editor->e_previousX, positionX);
-        int c = PD_MAX (glist->gl_editor->e_previousX, positionX);
-        int b = PD_MIN (glist->gl_editor->e_previousY, positionY);
-        int d = PD_MAX (glist->gl_editor->e_previousY, positionY);
-
-        canvas_selectObjectsInRectangle (glist, a, b, c, d);
-        glist->gl_editor->e_onMotion = ACTION_NONE;
-        
-        sys_vGui (".x%lx.c delete TEMPORARY\n", glist);
-        
-    } else {
-        sys_vGui (".x%lx.c coords TEMPORARY %d %d %d %d\n",
-                        glist,
-                        glist->gl_editor->e_previousX,
-                        glist->gl_editor->e_previousY,
-                        positionX,
-                        positionY);
-    }
 }
 
 void canvas_setLastCoordinates (t_glist *glist, int a, int b)
