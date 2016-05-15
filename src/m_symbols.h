@@ -375,7 +375,6 @@ extern t_symbol *sym_sinesum;
 extern t_symbol *sym_size;
 extern t_symbol *sym_slider;
 extern t_symbol *sym_snapshot__tilde__;
-extern t_symbol *sym_sort;
 extern t_symbol *sym_soundfiler;
 extern t_symbol *sym_spigot;
 extern t_symbol *sym_split;

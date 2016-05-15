@@ -230,9 +230,9 @@ static void loader_closeExternal (t_handle handle)
 
 int loader_loadExternal (t_glist *glist, char *name)
 {
-    int k = dsp_suspend();
-    int done = loader_openExternal (glist, name);
-    dsp_resume (k);
+    int state = dsp_suspend();
+    int done  = loader_openExternal (glist, name);
+    dsp_resume (state);
     
     return done;
 }

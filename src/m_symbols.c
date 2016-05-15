@@ -370,7 +370,6 @@ t_symbol *sym_sinesum;
 t_symbol *sym_size;
 t_symbol *sym_slider;
 t_symbol *sym_snapshot__tilde__;
-t_symbol *sym_sort;
 t_symbol *sym_soundfiler;
 t_symbol *sym_spigot;
 t_symbol *sym_split;
@@ -848,7 +847,6 @@ void symbols_initialize (void)
     sym_size                                    = gensym ("size");
     sym_slider                                  = gensym ("slider");
     sym_snapshot__tilde__                       = gensym ("snapshot~");
-    sym_sort                                    = gensym ("sort");
     sym_soundfiler                              = gensym ("soundfiler");
     sym_spigot                                  = gensym ("spigot");
     sym_split                                   = gensym ("split");

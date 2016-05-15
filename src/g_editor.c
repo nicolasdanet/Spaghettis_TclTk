@@ -19,30 +19,23 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+extern t_class              *canvas_class;
 extern t_pd                 pd_canvasMaker;
 extern t_widgetbehavior     text_widgetBehavior;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pd                 *pd_newest;
-extern t_class              *canvas_class;
+t_glist                     *editor_pasteCanvas;            /* Shared. */
+int                         editor_pasteOnset;              /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_glist                     *editor_pasteCanvas;        /* Shared. */
-
-int                         editor_pasteOnset;          /* Shared. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-static t_buffer             *editor_buffer;             /* Shared. */
-
-static int                  editor_mouseUpX;            /* Shared. */
-static int                  editor_mouseUpY;            /* Shared. */
-static double               editor_mouseUpClickTime;    /* Shared. */
+static t_buffer             *editor_buffer;                 /* Shared. */
+static int                  editor_mouseUpX;                /* Shared. */
+static int                  editor_mouseUpY;                /* Shared. */
+static double               editor_mouseUpClickTime;        /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -62,6 +55,153 @@ static double               editor_mouseUpClickTime;    /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+void canvas_key(t_glist *x, t_symbol *s, int ac, t_atom *av)
+{
+    static t_symbol *keynumsym, *keyupsym, *keynamesym;
+    int keynum, fflag;
+    t_symbol *gotkeysym;
+        
+    int down, shift;
+
+    if (ac < 3)
+        return;
+
+    // canvas_undo_already_set_move = 0;
+    down = (atom_getFloat(av) != 0);  /* nonzero if it's a key down */
+    shift = (atom_getFloat(av+2) != 0);  /* nonzero if shift-ed */
+    if (av[1].a_type == A_SYMBOL) {
+        gotkeysym = av[1].a_w.w_symbol;
+        
+    } else if (av[1].a_type == A_FLOAT) {
+        int sz;
+        char buf[UTF8_MAXIMUM_BYTES + 1];
+        switch((int)(av[1].a_w.w_float))
+        {
+        case 8:  gotkeysym = sym_BackSpace; break;
+        case 9:  gotkeysym = sym_Tab; break;
+        case 10: gotkeysym = sym_Return; break;
+        case 27: gotkeysym = sym_Escape; break;
+        case 32: gotkeysym = sym_Space; break;
+        case 127:gotkeysym = sym_Delete; break;
+        default:
+        /*-- moo: assume keynum is a Unicode codepoint; encode as UTF-8 --*/
+            sz = u8_wc_toutf8 (buf, (UCS4_CODE_POINT)(av[1].a_w.w_float));
+            buf[sz] = 0;
+            gotkeysym = gensym (buf);
+        }
+    }
+    else gotkeysym = sym__dummy;
+    fflag = (av[0].a_type == A_FLOAT ? av[0].a_w.w_float : 0);
+    keynum = (av[1].a_type == A_FLOAT ? av[1].a_w.w_float : 0);
+    if (keynum == '\\' || keynum == '{' || keynum == '}')
+    {
+        post("keycode %d: dropped", (int)keynum);
+        return;
+    }
+#if 0
+    post("keynum %d, down %d", (int)keynum, down);
+#endif
+    if (keynum == '\r') keynum = '\n';
+    if (av[1].a_type == A_SYMBOL &&
+        !strcmp(av[1].a_w.w_symbol->s_name, "Return"))
+            keynum = '\n';
+    if (!keynumsym)
+    {
+        keynumsym  = sym__key;
+        keyupsym   = sym__keyup;
+        keynamesym = sym__keyname;
+    }
+#ifdef __APPLE__
+        if (keynum == 30 || keynum == 63232)
+            keynum = 0, gotkeysym = sym_Up;
+        else if (keynum == 31 || keynum == 63233)
+            keynum = 0, gotkeysym = sym_Down;
+        else if (keynum == 28 || keynum == 63234)
+            keynum = 0, gotkeysym = sym_Left;
+        else if (keynum == 29 || keynum == 63235)
+            keynum = 0, gotkeysym = sym_Right;
+        /*
+        else if (keynum == 63273)
+            keynum = 0, gotkeysym = gen_sym ("Home");
+        else if (keynum == 63275)
+            keynum = 0, gotkeysym = gen_sym ("End");
+        else if (keynum == 63276)
+            keynum = 0, gotkeysym = gen_sym ("Prior");
+        else if (keynum == 63277)
+            keynum = 0, gotkeysym = gen_sym ("Next");*/
+#endif
+    if (keynumsym->s_thing && down)
+        pd_float(keynumsym->s_thing, (t_float)keynum);
+    if (keyupsym->s_thing && !down)
+        pd_float(keyupsym->s_thing, (t_float)keynum);
+    if (keynamesym->s_thing)
+    {
+        t_atom at[2];
+        at[0] = av[0];
+        SET_FLOAT(at, down);
+        SET_SYMBOL(at+1, gotkeysym);
+        pd_list(keynamesym->s_thing, 2, at);
+    }
+    if (!x || !x->gl_editor)  /* if that 'invis'ed the window, we'd better stop. */
+        return;
+    if (x && down)
+    {
+        t_object *ob;
+            /* cancel any dragging action */
+        if (x->gl_editor->e_onMotion == ACTION_MOVE)
+            x->gl_editor->e_onMotion = ACTION_NONE;
+            /* if an object has "grabbed" keys just send them on */
+        if (x->gl_editor->e_grabbed
+            && x->gl_editor->e_fnKey && keynum)
+                (* x->gl_editor->e_fnKey)
+                    (x->gl_editor->e_grabbed, (t_float)keynum);
+            /* if a text editor is open send the key on, as long as
+            it is either "real" (has a key number) or else is an arrow key. */
+        else if (x->gl_editor->e_selectedText && (keynum
+            || !strcmp(gotkeysym->s_name, "Up")
+            || !strcmp(gotkeysym->s_name, "Down")
+            || !strcmp(gotkeysym->s_name, "Left")
+            || !strcmp(gotkeysym->s_name, "Right")))
+        {
+                /* send the key to the box's editor */
+            if (!x->gl_editor->e_isTextDirty)
+            {
+                // canvas_setundo(x, canvas_undo_cut, canvas_undo_set_cut(x, UCUT_TEXT), "typing");
+            }
+            rtext_key(x->gl_editor->e_selectedText,
+                (int)keynum, gotkeysym);
+            if (x->gl_editor->e_isTextDirty)
+                canvas_dirty(x, 1);
+        }
+            /* check for backspace or clear */
+        else if (keynum == 8 || keynum == 127)
+        {
+            if (x->gl_editor->e_isSelectedline)
+                canvas_removeSelectedLine(x);
+            else if (x->gl_editor->e_selectedObjects)
+            {
+                // canvas_setundo(x, canvas_undo_cut, canvas_undo_set_cut(x, UCUT_CLEAR), "clear");
+                canvas_removeSelectedObjects(x);
+            }
+        }
+                /* check for arrow keys */
+        else if (!strcmp(gotkeysym->s_name, "Up"))
+            canvas_displaceSelectedObjects(x, 0, shift ? -10 : -1);
+        else if (!strcmp(gotkeysym->s_name, "Down"))
+            canvas_displaceSelectedObjects(x, 0, shift ? 10 : 1);
+        else if (!strcmp(gotkeysym->s_name, "Left"))
+            canvas_displaceSelectedObjects(x, shift ? -10 : -1, 0);
+        else if (!strcmp(gotkeysym->s_name, "Right"))
+            canvas_displaceSelectedObjects(x, shift ? 10 : 1, 0);
+    }
+        /* if control key goes up or down, and if we're in edit mode, change
+        cursor to indicate how the click action changes */
+    if (x && keynum == 0 && x->gl_isEditMode &&
+        !strncmp(gotkeysym->s_name, "Control", 7))
+            canvas_setCursorType(x, down ?
+                CURSOR_NOTHING :CURSOR_EDIT_NOTHING);
+}
 
 void canvas_click (t_glist *glist, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
 {
@@ -145,64 +285,6 @@ void canvas_editmode (t_glist *glist, t_float f)
     }
     //
     }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void canvas_doclear(t_glist *x)
-{
-    t_gobj *y, *y2;
-    int dspstate;
-
-    dspstate = dsp_suspend();
-    if (x->gl_editor->e_isSelectedline)
-    {
-        canvas_disconnect(x, x->gl_editor->e_selectedLineIndexOfObjectOut,
-             x->gl_editor->e_selectedLineIndexOfOutlet,
-             x->gl_editor->e_selectedLineIndexOfObjectIn,
-             x->gl_editor->e_selectedLineIndexOfInlet);
-             
-        /* canvas_setundo(x, canvas_undo_disconnect,
-            canvas_undo_set_disconnect(x,
-                x->gl_editor->e_selectedLineIndexOfObjectOut,
-                x->gl_editor->e_selectedLineIndexOfOutlet,
-                x->gl_editor->e_selectedLineIndexOfObjectIn,
-                x->gl_editor->e_selectedLineIndexOfInlet),
-            "disconnect"); */
-    }
-        /* if text is selected, deselecting it might remake the
-        object. So we deselect it and hunt for a "new" object on
-        the glist to reselect. */
-    if (x->gl_editor->e_selectedText)
-    {
-        t_gobj *selwas = x->gl_editor->e_selectedObjects->sel_what;
-        pd_newest = 0;
-        canvas_deselectAll(x);
-        if (pd_newest)
-        {
-            for (y = x->gl_graphics; y; y = y->g_next)
-                if (&y->g_pd == pd_newest) canvas_selectObject(x, y);
-        }
-    }
-    while (1)   /* this is pretty wierd...  should rewrite it */
-    {
-        for (y = x->gl_graphics; y; y = y2)
-        {
-            y2 = y->g_next;
-            if (canvas_isObjectSelected(x, y))
-            {
-                glist_delete(x, y);
-                goto next;
-            }
-        }
-        goto restore;
-    next: ;
-    }
-restore:
-    dsp_resume(dspstate);
-    canvas_dirty(x, 1);
 }
 
     /* right-clicking on a canvas object pops up a menu. */
@@ -504,160 +586,9 @@ void canvas_mouseup(t_glist *x,
     x->gl_editor->e_onMotion = ACTION_NONE;
 }
 
-    /* this routine is called whenever a key is pressed or released.  "x"
-    may be zero if there's no current canvas.  The first argument is true or
-    false for down/up; the second one is either a symbolic key name (e.g.,
-    "Right" or an Ascii key number.  The third is the shift key. */
-void canvas_key(t_glist *x, t_symbol *s, int ac, t_atom *av)
-{
-    static t_symbol *keynumsym, *keyupsym, *keynamesym;
-    int keynum, fflag;
-    t_symbol *gotkeysym;
-        
-    int down, shift;
-
-    if (ac < 3)
-        return;
-
-    // canvas_undo_already_set_move = 0;
-    down = (atom_getFloat(av) != 0);  /* nonzero if it's a key down */
-    shift = (atom_getFloat(av+2) != 0);  /* nonzero if shift-ed */
-    if (av[1].a_type == A_SYMBOL) {
-        gotkeysym = av[1].a_w.w_symbol;
-        
-    } else if (av[1].a_type == A_FLOAT) {
-        int sz;
-        char buf[UTF8_MAXIMUM_BYTES + 1];
-        switch((int)(av[1].a_w.w_float))
-        {
-        case 8:  gotkeysym = sym_BackSpace; break;
-        case 9:  gotkeysym = sym_Tab; break;
-        case 10: gotkeysym = sym_Return; break;
-        case 27: gotkeysym = sym_Escape; break;
-        case 32: gotkeysym = sym_Space; break;
-        case 127:gotkeysym = sym_Delete; break;
-        default:
-        /*-- moo: assume keynum is a Unicode codepoint; encode as UTF-8 --*/
-            sz = u8_wc_toutf8 (buf, (UCS4_CODE_POINT)(av[1].a_w.w_float));
-            buf[sz] = 0;
-            gotkeysym = gensym (buf);
-        }
-    }
-    else gotkeysym = sym__dummy;
-    fflag = (av[0].a_type == A_FLOAT ? av[0].a_w.w_float : 0);
-    keynum = (av[1].a_type == A_FLOAT ? av[1].a_w.w_float : 0);
-    if (keynum == '\\' || keynum == '{' || keynum == '}')
-    {
-        post("keycode %d: dropped", (int)keynum);
-        return;
-    }
-#if 0
-    post("keynum %d, down %d", (int)keynum, down);
-#endif
-    if (keynum == '\r') keynum = '\n';
-    if (av[1].a_type == A_SYMBOL &&
-        !strcmp(av[1].a_w.w_symbol->s_name, "Return"))
-            keynum = '\n';
-    if (!keynumsym)
-    {
-        keynumsym  = sym__key;
-        keyupsym   = sym__keyup;
-        keynamesym = sym__keyname;
-    }
-#ifdef __APPLE__
-        if (keynum == 30 || keynum == 63232)
-            keynum = 0, gotkeysym = sym_Up;
-        else if (keynum == 31 || keynum == 63233)
-            keynum = 0, gotkeysym = sym_Down;
-        else if (keynum == 28 || keynum == 63234)
-            keynum = 0, gotkeysym = sym_Left;
-        else if (keynum == 29 || keynum == 63235)
-            keynum = 0, gotkeysym = sym_Right;
-        /*
-        else if (keynum == 63273)
-            keynum = 0, gotkeysym = gen_sym ("Home");
-        else if (keynum == 63275)
-            keynum = 0, gotkeysym = gen_sym ("End");
-        else if (keynum == 63276)
-            keynum = 0, gotkeysym = gen_sym ("Prior");
-        else if (keynum == 63277)
-            keynum = 0, gotkeysym = gen_sym ("Next");*/
-#endif
-    if (keynumsym->s_thing && down)
-        pd_float(keynumsym->s_thing, (t_float)keynum);
-    if (keyupsym->s_thing && !down)
-        pd_float(keyupsym->s_thing, (t_float)keynum);
-    if (keynamesym->s_thing)
-    {
-        t_atom at[2];
-        at[0] = av[0];
-        SET_FLOAT(at, down);
-        SET_SYMBOL(at+1, gotkeysym);
-        pd_list(keynamesym->s_thing, 2, at);
-    }
-    if (!x || !x->gl_editor)  /* if that 'invis'ed the window, we'd better stop. */
-        return;
-    if (x && down)
-    {
-        t_object *ob;
-            /* cancel any dragging action */
-        if (x->gl_editor->e_onMotion == ACTION_MOVE)
-            x->gl_editor->e_onMotion = ACTION_NONE;
-            /* if an object has "grabbed" keys just send them on */
-        if (x->gl_editor->e_grabbed
-            && x->gl_editor->e_fnKey && keynum)
-                (* x->gl_editor->e_fnKey)
-                    (x->gl_editor->e_grabbed, (t_float)keynum);
-            /* if a text editor is open send the key on, as long as
-            it is either "real" (has a key number) or else is an arrow key. */
-        else if (x->gl_editor->e_selectedText && (keynum
-            || !strcmp(gotkeysym->s_name, "Up")
-            || !strcmp(gotkeysym->s_name, "Down")
-            || !strcmp(gotkeysym->s_name, "Left")
-            || !strcmp(gotkeysym->s_name, "Right")))
-        {
-                /* send the key to the box's editor */
-            if (!x->gl_editor->e_isTextDirty)
-            {
-                // canvas_setundo(x, canvas_undo_cut, canvas_undo_set_cut(x, UCUT_TEXT), "typing");
-            }
-            rtext_key(x->gl_editor->e_selectedText,
-                (int)keynum, gotkeysym);
-            if (x->gl_editor->e_isTextDirty)
-                canvas_dirty(x, 1);
-        }
-            /* check for backspace or clear */
-        else if (keynum == 8 || keynum == 127)
-        {
-            if (x->gl_editor->e_isSelectedline)
-                canvas_removeSelectedLine(x);
-            else if (x->gl_editor->e_selectedObjects)
-            {
-                // canvas_setundo(x, canvas_undo_cut, canvas_undo_set_cut(x, UCUT_CLEAR), "clear");
-                canvas_doclear(x);
-            }
-        }
-                /* check for arrow keys */
-        else if (!strcmp(gotkeysym->s_name, "Up"))
-            canvas_displaceSelected(x, 0, shift ? -10 : -1);
-        else if (!strcmp(gotkeysym->s_name, "Down"))
-            canvas_displaceSelected(x, 0, shift ? 10 : 1);
-        else if (!strcmp(gotkeysym->s_name, "Left"))
-            canvas_displaceSelected(x, shift ? -10 : -1, 0);
-        else if (!strcmp(gotkeysym->s_name, "Right"))
-            canvas_displaceSelected(x, shift ? 10 : 1, 0);
-    }
-        /* if control key goes up or down, and if we're in edit mode, change
-        cursor to indicate how the click action changes */
-    if (x && keynum == 0 && x->gl_isEditMode &&
-        !strncmp(gotkeysym->s_name, "Control", 7))
-            canvas_setCursorType(x, down ?
-                CURSOR_NOTHING :CURSOR_EDIT_NOTHING);
-}
-
 static void delay_move(t_glist *x)
 {
-    canvas_displaceSelected(x, 
+    canvas_displaceSelectedObjects(x, 
        x->gl_editor->e_newX - x->gl_editor->e_previousX,
        x->gl_editor->e_newY - x->gl_editor->e_previousY);
     x->gl_editor->e_previousX = x->gl_editor->e_newX;
@@ -804,7 +735,7 @@ void canvas_cut (t_glist *x)
             !x->gl_editor->e_selectedObjects->sel_next)
         {
                 /* if the text is already empty, delete the box.  We
-                first clear 'textedfor' so that canvas_doclear later will
+                first clear 'textedfor' so that canvas_removeSelected later will
                 think the whole box was selected, not the text */
             x->gl_editor->e_selectedText = 0;
             goto deleteobj;
@@ -818,7 +749,7 @@ void canvas_cut (t_glist *x)
     deleteobj:      /* delete one or more objects */
         // canvas_setundo(x, canvas_undo_cut, canvas_undo_set_cut(x, UCUT_CUT), "cut");
         canvas_copy(x);
-        canvas_doclear(x);
+        canvas_removeSelectedObjects(x);
         sys_vGui("::ui_patch::updateScrollRegion .x%lx.c\n", x);
     }
 }

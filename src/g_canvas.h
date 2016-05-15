@@ -308,7 +308,6 @@ t_glist         *canvas_castToGlistChecked              (t_pd *x);
 #pragma mark -
 
 t_guiconnect    *guiconnect_new                         (t_pd *owner, t_symbol *bindTo);
-
 void            guiconnect_release                      (t_guiconnect *x, double timeOut);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -416,8 +415,9 @@ void            canvas_redrawAllByTemplateByCanvas      (t_glist *glist, int act
 
 void            canvas_restoreCachedLines               (t_glist *glist);
 
+void            canvas_removeSelectedObjects            (t_glist *glist);
 void            canvas_removeSelectedLine               (t_glist *glist);
-void            canvas_displaceSelected                 (t_glist *glist, int deltaX, int deltaY);
+void            canvas_displaceSelectedObjects          (t_glist *glist, int deltaX, int deltaY);
 
 int             canvas_isObjectSelected                 (t_glist *glist, t_gobj *y);
 void            canvas_selectingByLasso                 (t_glist *glist, 
