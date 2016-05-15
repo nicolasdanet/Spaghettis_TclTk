@@ -106,30 +106,31 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define GLIST_DEFAULT_X                         40
-#define GLIST_DEFAULT_Y                         40
-#define GLIST_DEFAULT_WIDTH                     200
-#define GLIST_DEFAULT_HEIGHT                    140
+#define GLIST_DEFAULT_X                 40
+#define GLIST_DEFAULT_Y                 40
+#define GLIST_DEFAULT_WIDTH             200
+#define GLIST_DEFAULT_HEIGHT            140
 
-#define GLIST_DEFAULT_START                     0
-#define GLIST_DEFAULT_END                       100
-#define GLIST_DEFAULT_UP                        1.0
+#define GLIST_DEFAULT_START             0.0
+#define GLIST_DEFAULT_UP                1.0
+#define GLIST_DEFAULT_END               100.0
+#define GLIST_DEFAULT_DOWN             -1.0
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 #ifdef __APPLE__
-    #define CANVAS_WINDOW_HEADER_HEIGHT         22
+    #define CANVAS_WINDOW_HEADER        22
 #else
-    #define CANVAS_WINDOW_HEADER_HEIGHT         50
+    #define CANVAS_WINDOW_HEADER        50
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define CANVAS_WINDOW_DEFAULT_WIDTH             450
-#define CANVAS_WINDOW_DEFAULT_HEIGHT            300
+#define CANVAS_WINDOW_DEFAULT_WIDTH     450
+#define CANVAS_WINDOW_DEFAULT_HEIGHT    300
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -482,13 +483,13 @@ void            canvas_mouseup                          (t_glist *glist,
                                                             t_float b,
                                                             t_float button);
 
-void            canvas_connect                          (t_glist *x,
+void            canvas_connect                          (t_glist *glist,
                                                             t_float indexOfObjectOut,
                                                             t_float indexOfOutlet,
                                                             t_float indexOfObjectIn,
                                                             t_float indexOfInlet);
 
-void            canvas_disconnect                       (t_glist *x,
+void            canvas_disconnect                       (t_glist *glist,
                                                             t_float indexOfObjectOut,
                                                             t_float indexOfOutlet,
                                                             t_float indexOfObjectIn,
@@ -516,7 +517,7 @@ void            canvas_properties                       (t_gobj *x, t_glist *gli
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            canvas_dsp                              (t_glist *x, t_signal **sp);
+void            canvas_dsp                              (t_glist *glist, t_signal **sp);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

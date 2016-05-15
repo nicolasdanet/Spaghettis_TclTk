@@ -199,7 +199,7 @@ t_glist *canvas_addGraph (t_glist *glist,
     valueStart  = GLIST_DEFAULT_START;
     valueEnd    = GLIST_DEFAULT_END;
     valueUp     = GLIST_DEFAULT_UP;
-    valueDown   = -valueUp;
+    valueDown   = GLIST_DEFAULT_DOWN;
     //
     }
     
@@ -227,9 +227,9 @@ t_glist *canvas_addGraph (t_glist *glist,
     x->gl_valueUp               = valueUp;
     x->gl_valueDown             = valueDown;
     x->gl_windowTopLeftX        = 0;
-    x->gl_windowTopLeftY        = CANVAS_WINDOW_HEADER_HEIGHT;
+    x->gl_windowTopLeftY        = CANVAS_WINDOW_HEADER;
     x->gl_windowBottomRightX    = CANVAS_WINDOW_DEFAULT_WIDTH;
-    x->gl_windowBottomRightY    = CANVAS_WINDOW_DEFAULT_HEIGHT + CANVAS_WINDOW_HEADER_HEIGHT;
+    x->gl_windowBottomRightY    = CANVAS_WINDOW_DEFAULT_HEIGHT + CANVAS_WINDOW_HEADER;
     x->gl_fontSize              = fontSize;
     x->gl_isGraphOnParent       = 1;
     x->gl_hasRectangle          = 0;

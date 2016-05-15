@@ -64,70 +64,75 @@ static void canvas_deselectLine (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_cacheLines (t_glist *x)
+static void canvas_cacheLines (t_glist *glist)
 {
-    t_gobj *selhead = 0, *seltail = 0, *nonhead = 0, *nontail = 0, *y, *y2;
+    t_gobj *selectedHead = NULL;
+    t_gobj *selectedTail = NULL;
+    t_gobj *unselectedHead = NULL;
+    t_gobj *unselectedTail = NULL;
+    t_gobj *y1 = NULL;
+    t_gobj *y2 = NULL;
     t_linetraverser t;
-    t_outconnect *oc;
-    if (!x->gl_editor) return;
-        /* split list to "selected" and "unselected" parts */ 
-    for (y = x->gl_graphics; y; y = y2)
-    {
-        y2 = y->g_next;
-        if (canvas_isObjectSelected(x, y))
-        {
-            if (seltail)
-            {
-                seltail->g_next = y;
-                seltail = y;
-                y->g_next = 0;
+    t_outconnect *connection;
+    
+    PD_ASSERT (glist->gl_editor);
+
+    /* Split selected object from uneselected ones and move it to the end. */
+    
+    for (y1 = glist->gl_graphics; y1; y1 = y2) {
+    
+        y2 = y1->g_next;
+        
+        if (canvas_isObjectSelected (glist, y1)) {
+            if (selectedTail) { selectedTail->g_next = y1; selectedTail = y1; y1->g_next = NULL; }
+            else {
+                selectedHead = selectedTail = y1; selectedTail->g_next = NULL;
             }
-            else
-            {
-                selhead = seltail = y;
-                seltail->g_next = 0;
-            }
-        }
-        else
-        {
-            if (nontail)
-            {
-                nontail->g_next = y;
-                nontail = y;
-                y->g_next = 0;
-            }
-            else
-            {
-                nonhead = nontail = y;
-                nontail->g_next = 0;
+        } else {
+            if (unselectedTail) { unselectedTail->g_next = y1; unselectedTail = y1; y1->g_next = NULL; }
+            else {
+                unselectedHead = unselectedTail = y1; unselectedTail->g_next = NULL;
             }
         }
     }
-        /* move the selected part to the end */
-    if (!nonhead) x->gl_graphics = selhead;
-    else x->gl_graphics = nonhead, nontail->g_next = selhead;
 
-        /* add connections to binbuf */
-    buffer_reset(x->gl_editor->e_buffer);
-    canvas_traverseLinesStart(&t, x);
-    while (oc = canvas_traverseLinesNext(&t))
-    {
-        int s1 = canvas_isObjectSelected(x, &t.tr_srcObject->te_g);
-        int s2 = canvas_isObjectSelected(x, &t.tr_destObject->te_g);
-        if (s1 != s2)
-            buffer_vAppend(x->gl_editor->e_buffer, "ssiiii;",
-                sym___hash__X, sym_connect,
-                    canvas_getIndexOfObject(x, &t.tr_srcObject->te_g), t.tr_srcIndexOfOutlet,
-                        canvas_getIndexOfObject(x, &t.tr_destObject->te_g), t.tr_destIndexOfInlet);
+    if (!unselectedHead) { glist->gl_graphics = selectedHead; }
+    else {
+        glist->gl_graphics = unselectedHead; unselectedTail->g_next = selectedHead; 
+    }
+
+    buffer_reset (glist->gl_editor->e_buffer);
+    
+    canvas_traverseLinesStart (&t, glist);
+    
+    while (connection = canvas_traverseLinesNext (&t)) {
+    //
+    int s1 = canvas_isObjectSelected (glist, cast_gobj (t.tr_srcObject));
+    int s2 = canvas_isObjectSelected (glist, cast_gobj (t.tr_destObject));
+    
+    if (s1 != s2) {
+    //
+    buffer_vAppend (glist->gl_editor->e_buffer, "ssiiii;",
+        sym___hash__X, 
+        sym_connect,
+        canvas_getIndexOfObject (glist, cast_gobj (t.tr_srcObject)),
+        t.tr_srcIndexOfOutlet,
+        canvas_getIndexOfObject (glist, cast_gobj (t.tr_destObject)),
+        t.tr_destIndexOfInlet);
+    //
+    }
+    //
     }
 }
 
-void canvas_restoreCachedLines (t_glist *x)
+void canvas_restoreCachedLines (t_glist *glist)
 {
-    t_pd *boundx = s__X.s_thing;
-    s__X.s_thing = &x->gl_obj.te_g.g_pd;
-    buffer_eval(x->gl_editor->e_buffer, 0, 0, 0);
-    s__X.s_thing = boundx;
+    t_pd *t = s__X.s_thing;
+    
+    s__X.s_thing = cast_pd (glist);
+    buffer_eval (glist->gl_editor->e_buffer, NULL, 0, NULL);
+    
+    s__X.s_thing = t;
 }
 
 // -----------------------------------------------------------------------------------------------------------
