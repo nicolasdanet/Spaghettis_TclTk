@@ -104,49 +104,6 @@ static void *subpatch_new (t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_click (t_glist *glist, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
-{
-    canvas_visible (glist, 1);
-}
-
-void canvas_setBounds (t_glist *x, t_float a, t_float b, t_float c, t_float d)
-{
-    x->gl_windowTopLeftX     = a;
-    x->gl_windowTopLeftY     = b;
-    x->gl_windowBottomRightX = c;
-    x->gl_windowBottomRightY = d;
-}
-
-/*
-static void canvas_dosetbounds(t_glist *x, int x1, int y1, int x2, int y2)          // --
-{
-    int heightwas = y2 - y1;
-    int heightchange = y2 - y1 - (x->gl_windowBottomRightY - x->gl_windowTopLef
-    if (x->gl_windowTopLeftX == x1 && x->gl_windowTopLeftY == y1 &&                 // --
-        x->gl_windowBottomRightX == x2 && x->gl_windowBottomRightY == y2)
-            return;
-    x->gl_windowTopLeftX = x1;
-    x->gl_windowTopLeftY = y1;
-    x->gl_windowBottomRightX = x2;
-    x->gl_windowBottomRightY = y2;
-    if (!canvas_isGraphOnParent(x) && (x->gl_valueDown < x->gl_valueUp))            // --
-    {
-        t_float diff = x->gl_valueUp - x->gl_valueDown;
-        t_gobj *y;
-        x->gl_valueUp = heightwas * diff;
-        x->gl_valueDown = x->gl_valueUp - diff;
-        for (y = x->gl_graphics; y; y = y->g_next)                                  // --
-            if (canvas_castToObjectIfBox(&y->g_pd))                                 // --
-                gobj_displace(y, x, 0, heightchange);                               // --
-        canvas_redraw(x);                                                           // --
-    }
-}
-*/
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     glist->gl_valueStart    = atom_getFloatAtIndex (0, argc, argv);
@@ -301,47 +258,6 @@ void canvas_disconnect (t_glist *glist,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_editmode (t_glist *glist, t_float f)
-{
-    int state = (int)(f != 0.0);
-     
-    if (glist->gl_isEditMode != state) {
-    //
-    glist->gl_isEditMode = state;
-    
-    if (state) {
-    
-        if (canvas_isVisible (glist) && canvas_canHaveWindow (glist)) {
-
-            t_gobj *g = NULL;
-            canvas_setCursorType (glist, CURSOR_EDIT_NOTHING);
-            
-            for (g = glist->gl_graphics; g; g = g->g_next) {
-                t_object *o = NULL;
-                if ((o = canvas_castToObjectIfBox (g)) && o->te_type == TYPE_TEXT) {
-                    t_boxtext *y = glist_findrtext (glist, o);
-                    text_drawborder (o, glist, rtext_gettag (y), rtext_width (y), rtext_height (y), 1);
-                }
-            }
-        }
-        
-    } else {
-    
-        canvas_deselectAll (glist);
-        
-        if (canvas_isVisible (glist) && canvas_canHaveWindow (glist)) {
-            canvas_setCursorType (glist, CURSOR_NOTHING);
-            sys_vGui (".x%lx.c delete COMMENTBAR\n", canvas_getView (glist));
-        }
-    }
-    
-    if (canvas_isVisible (glist)) {
-        sys_vGui ("::ui_patch::setEditMode .x%lx %d\n", canvas_getView (glist), glist->gl_isEditMode);
-    }
-    //
-    }
-}
-
 /* Messy ping-pong required in order to check saving sequentially. */
 
 void canvas_close (t_glist *glist, t_float f)
@@ -456,6 +372,10 @@ void canvas_visible (t_glist *glist, t_float f)
         }
     }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void canvas_map (t_glist *glist, t_float f)
 {

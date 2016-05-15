@@ -63,6 +63,94 @@ static double               editor_mouseUpClickTime;    /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void canvas_click (t_glist *glist, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
+{
+    canvas_visible (glist, 1);
+}
+
+void canvas_setBounds (t_glist *x, t_float a, t_float b, t_float c, t_float d)
+{
+    x->gl_windowTopLeftX     = a;
+    x->gl_windowTopLeftY     = b;
+    x->gl_windowBottomRightX = c;
+    x->gl_windowBottomRightY = d;
+}
+
+/*
+static void canvas_dosetbounds(t_glist *x, int x1, int y1, int x2, int y2)          // --
+{
+    int heightwas = y2 - y1;
+    int heightchange = y2 - y1 - (x->gl_windowBottomRightY - x->gl_windowTopLef
+    if (x->gl_windowTopLeftX == x1 && x->gl_windowTopLeftY == y1 &&                 // --
+        x->gl_windowBottomRightX == x2 && x->gl_windowBottomRightY == y2)
+            return;
+    x->gl_windowTopLeftX = x1;
+    x->gl_windowTopLeftY = y1;
+    x->gl_windowBottomRightX = x2;
+    x->gl_windowBottomRightY = y2;
+    if (!canvas_isGraphOnParent(x) && (x->gl_valueDown < x->gl_valueUp))            // --
+    {
+        t_float diff = x->gl_valueUp - x->gl_valueDown;
+        t_gobj *y;
+        x->gl_valueUp = heightwas * diff;
+        x->gl_valueDown = x->gl_valueUp - diff;
+        for (y = x->gl_graphics; y; y = y->g_next)                                  // --
+            if (canvas_castToObjectIfBox(&y->g_pd))                                 // --
+                gobj_displace(y, x, 0, heightchange);                               // --
+        canvas_redraw(x);                                                           // --
+    }
+}
+*/
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void canvas_editmode (t_glist *glist, t_float f)
+{
+    int state = (int)(f != 0.0);
+     
+    if (glist->gl_isEditMode != state) {
+    //
+    glist->gl_isEditMode = state;
+    
+    if (state) {
+    
+        if (canvas_isVisible (glist) && canvas_canHaveWindow (glist)) {
+
+            t_gobj *g = NULL;
+            canvas_setCursorType (glist, CURSOR_EDIT_NOTHING);
+            
+            for (g = glist->gl_graphics; g; g = g->g_next) {
+                t_object *o = NULL;
+                if ((o = canvas_castToObjectIfBox (g)) && o->te_type == TYPE_TEXT) {
+                    t_boxtext *y = glist_findrtext (glist, o);
+                    text_drawborder (o, glist, rtext_gettag (y), rtext_width (y), rtext_height (y), 1);
+                }
+            }
+        }
+        
+    } else {
+    
+        canvas_deselectAll (glist);
+        
+        if (canvas_isVisible (glist) && canvas_canHaveWindow (glist)) {
+            canvas_setCursorType (glist, CURSOR_NOTHING);
+            sys_vGui (".x%lx.c delete COMMENTBAR\n", canvas_getView (glist));
+        }
+    }
+    
+    if (canvas_isVisible (glist)) {
+        sys_vGui ("::ui_patch::setEditMode .x%lx %d\n", canvas_getView (glist), glist->gl_isEditMode);
+    }
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void canvas_doclear(t_glist *x)
 {
     t_gobj *y, *y2;
@@ -380,7 +468,7 @@ void canvas_mouseup(t_glist *x,
     editor_mouseUpY = ypos;
 
     if (x->gl_editor->e_onMotion == ACTION_CONNECT)
-        canvas_makingConnection (x, xpos, ypos, 1);
+        canvas_makingLine (x, xpos, ypos, 1);
     else if (x->gl_editor->e_onMotion == ACTION_REGION)
         canvas_selectingByLasso(x, xpos, ypos, 1);
     else if (x->gl_editor->e_onMotion == ACTION_MOVE ||
@@ -598,7 +686,7 @@ void canvas_motion(t_glist *x, t_float xpos, t_float ypos, t_float fmod)
     else if (x->gl_editor->e_onMotion == ACTION_REGION)
         canvas_selectingByLasso(x, xpos, ypos, 0);
     else if (x->gl_editor->e_onMotion == ACTION_CONNECT)
-        canvas_makingConnection (x, xpos, ypos, 0);
+        canvas_makingLine (x, xpos, ypos, 0);
     else if (x->gl_editor->e_onMotion == ACTION_PASS)
     {
         if (!x->gl_editor->e_fnMotion) { PD_BUG; }
@@ -654,87 +742,6 @@ void canvas_motion(t_glist *x, t_float xpos, t_float ypos, t_float fmod)
     else canvas_doclick(x, xpos, ypos, 0, mod, 0);
     
     //x->gl_editor->e_lastmoved = 1;
-}
-
-void canvas_startmotion(t_glist *x)
-{
-    int xval, yval;
-    if (!x->gl_editor) return;
-    canvas_getLastCoordinates(x, &xval, &yval);
-    if (xval == 0 && yval == 0) return;
-    x->gl_editor->e_onMotion = ACTION_MOVE;
-    x->gl_editor->e_previousX = xval;
-    x->gl_editor->e_previousY = yval; 
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void canvas_stowconnections(t_glist *x)
-{
-    t_gobj *selhead = 0, *seltail = 0, *nonhead = 0, *nontail = 0, *y, *y2;
-    t_linetraverser t;
-    t_outconnect *oc;
-    if (!x->gl_editor) return;
-        /* split list to "selected" and "unselected" parts */ 
-    for (y = x->gl_graphics; y; y = y2)
-    {
-        y2 = y->g_next;
-        if (canvas_isObjectSelected(x, y))
-        {
-            if (seltail)
-            {
-                seltail->g_next = y;
-                seltail = y;
-                y->g_next = 0;
-            }
-            else
-            {
-                selhead = seltail = y;
-                seltail->g_next = 0;
-            }
-        }
-        else
-        {
-            if (nontail)
-            {
-                nontail->g_next = y;
-                nontail = y;
-                y->g_next = 0;
-            }
-            else
-            {
-                nonhead = nontail = y;
-                nontail->g_next = 0;
-            }
-        }
-    }
-        /* move the selected part to the end */
-    if (!nonhead) x->gl_graphics = selhead;
-    else x->gl_graphics = nonhead, nontail->g_next = selhead;
-
-        /* add connections to binbuf */
-    buffer_reset(x->gl_editor->e_buffer);
-    canvas_traverseLinesStart(&t, x);
-    while (oc = canvas_traverseLinesNext(&t))
-    {
-        int s1 = canvas_isObjectSelected(x, &t.tr_srcObject->te_g);
-        int s2 = canvas_isObjectSelected(x, &t.tr_destObject->te_g);
-        if (s1 != s2)
-            buffer_vAppend(x->gl_editor->e_buffer, "ssiiii;",
-                sym___hash__X, sym_connect,
-                    canvas_getIndexOfObject(x, &t.tr_srcObject->te_g), t.tr_srcIndexOfOutlet,
-                        canvas_getIndexOfObject(x, &t.tr_destObject->te_g), t.tr_destIndexOfInlet);
-    }
-}
-
-void canvas_restoreconnections(t_glist *x)
-{
-    t_pd *boundx = s__X.s_thing;
-    s__X.s_thing = &x->gl_obj.te_g.g_pd;
-    buffer_eval(x->gl_editor->e_buffer, 0, 0, 0);
-    s__X.s_thing = boundx;
 }
 
 // -----------------------------------------------------------------------------------------------------------

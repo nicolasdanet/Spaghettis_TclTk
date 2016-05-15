@@ -457,7 +457,7 @@ t_gobj *canvas_getHitObject (t_glist *glist,
     return object;
 }
 
-int canvas_hasConnection (t_glist *glist, t_object *objectOut, int m, t_object *objectIn, int n)
+int canvas_hasLine (t_glist *glist, t_object *objectOut, int m, t_object *objectIn, int n)
 {
     t_linetraverser t;
     t_outconnect *connection = NULL;
@@ -475,7 +475,7 @@ int canvas_hasConnection (t_glist *glist, t_object *objectOut, int m, t_object *
     return 0;
 }
 
-void canvas_makingConnection (t_glist *glist, int positionX, int positionY, int create)
+void canvas_makingLine (t_glist *glist, int positionX, int positionY, int create)
 {
     int a, b, c, d;
     int m, n, o, p;
@@ -514,7 +514,7 @@ void canvas_makingConnection (t_glist *glist, int positionX, int positionY, int 
     PD_ASSERT (closest1 >= 0 && closest1 < numberOfOutlets);
     PD_ASSERT (closest2 >= 0 && closest2 < numberOfInlets);
 
-    if (!canvas_hasConnection (glist, object1, closest1, object2, closest2)) {
+    if (!canvas_hasLine (glist, object1, closest1, object2, closest2)) {
     //
     if (object_isSignalOutlet (object1, closest1) && !object_isSignalInlet (object2, closest2)) {
         if (create) { 

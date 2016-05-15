@@ -40,8 +40,6 @@ static void text_displace(t_gobj *z, t_glist *glist,
 static void text_getrect(t_gobj *z, t_glist *glist,
     int *xp1, int *yp1, int *xp2, int *yp2);
 
-void canvas_startmotion(t_glist *x);
-
 /* ----------------- the "text" object.  ------------------ */
 
     /* add a "text" object (comment) to a glist.  While this one goes for any
@@ -87,7 +85,7 @@ void glist_text(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
             and objects though since there's no text in them at menu
             creation. */
             /* gobj_activate(&x->te_g, gl, 1); */
-        canvas_startmotion(canvas_getView(gl));
+        //canvas_startmotion(canvas_getView(gl));
     }
 }
 
@@ -220,9 +218,11 @@ void canvas_obj(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         canvas_howputnew(gl, &connectme, &xpix, &ypix, &indx, &nobj);
         pd_vMessage(&gl->gl_obj.te_g.g_pd, sym_editmode, "i", 1);
         canvas_objtext(gl, xpix, ypix, 0, 1, b);
-        if (connectme)
+        if (connectme) {
             canvas_connect(gl, indx, 0, nobj, 0);
-        else canvas_startmotion(canvas_getView(gl));
+        } else {
+          // canvas_startmotion(canvas_getView(gl));
+        }
     }
 }
 
@@ -241,7 +241,7 @@ void canvas_iems(t_glist *gl, t_symbol *guiobjname)
     buffer_deserialize(b, 1, &at);
     canvas_getLastCoordinates(gl, &xpix, &ypix);
     canvas_objtext(gl, xpix, ypix, 0, 1, b);
-    canvas_startmotion(canvas_getView(gl));
+    // canvas_startmotion(canvas_getView(gl));
 }
 
 void canvas_bng(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
@@ -487,9 +487,11 @@ void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         canvas_deselectAll(gl);
         canvas_selectObject(gl, &x->m_text.te_g);
         gobj_activate(&x->m_text.te_g, gl, 1);
-        if (connectme)
+        if (connectme) {
             canvas_connect(gl, indx, 0, nobj, 0);
-        else canvas_startmotion(canvas_getView(gl));
+        } else {
+            // canvas_startmotion(canvas_getView(gl));
+        }
     }
 }
 
@@ -954,9 +956,11 @@ void canvas_atom(t_glist *gl, t_atomtype type,
         glist_add(gl, &x->a_text.te_g);
         canvas_deselectAll(gl);
         canvas_selectObject(gl, &x->a_text.te_g);
-        if (connectme)
+        if (connectme) {
             canvas_connect(gl, indx, 0, nobj, 0);
-        else canvas_startmotion(canvas_getView(gl));
+        } else { 
+           // canvas_startmotion(canvas_getView(gl));
+        }
     }
 }
 
@@ -1389,7 +1393,7 @@ void text_setto(t_object *x, t_glist *glist, char *buf, int bufsize)
             int xwas = x->te_xCoordinate, ywas = x->te_yCoordinate;
             glist_delete(glist, &x->te_g);
             canvas_objtext(glist, xwas, ywas, widthwas, 0, b);
-            canvas_restoreconnections(canvas_getView(glist));
+            canvas_restoreCachedLines (canvas_getView(glist));
                 /* if it's an abstraction loadbang it here */
             if (pd_newest && pd_class(pd_newest) == canvas_class)
                 canvas_loadbang((t_glist *)pd_newest);

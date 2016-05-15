@@ -24,7 +24,7 @@ extern t_class *voutlet_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int select_getIndexOfObject (t_glist *glist, t_gobj *y, int selected)
+static int canvas_getIndexOfObjectAmong (t_glist *glist, t_gobj *y, int selected)
 {
     t_gobj *t = NULL;
     int n = 0;
@@ -38,18 +38,18 @@ static int select_getIndexOfObject (t_glist *glist, t_gobj *y, int selected)
     return n;
 }
 
-static void select_deselectAllRecursive (t_gobj *g)
+static void canvas_deselectAllRecursive (t_gobj *g)
 {
     if (pd_class (g) == canvas_class) { 
     //
     t_gobj *o = NULL;
-    for (o = cast_glist (g)->gl_graphics; o; o = o->g_next) { select_deselectAllRecursive (o); }
+    for (o = cast_glist (g)->gl_graphics; o; o = o->g_next) { canvas_deselectAllRecursive (o); }
     canvas_deselectAll (cast_glist (g));
     //
     }
 }
 
-static void select_deselectLine (t_glist *glist)
+static void canvas_deselectLine (t_glist *glist)
 {
     PD_ASSERT (glist->gl_editor);
     
@@ -58,6 +58,76 @@ static void select_deselectLine (t_glist *glist)
     sys_vGui (".x%lx.c itemconfigure %lxLINE -fill black\n",
                 glist,
                 glist->gl_editor->e_selectedLineConnection);   
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void canvas_cacheLines (t_glist *x)
+{
+    t_gobj *selhead = 0, *seltail = 0, *nonhead = 0, *nontail = 0, *y, *y2;
+    t_linetraverser t;
+    t_outconnect *oc;
+    if (!x->gl_editor) return;
+        /* split list to "selected" and "unselected" parts */ 
+    for (y = x->gl_graphics; y; y = y2)
+    {
+        y2 = y->g_next;
+        if (canvas_isObjectSelected(x, y))
+        {
+            if (seltail)
+            {
+                seltail->g_next = y;
+                seltail = y;
+                y->g_next = 0;
+            }
+            else
+            {
+                selhead = seltail = y;
+                seltail->g_next = 0;
+            }
+        }
+        else
+        {
+            if (nontail)
+            {
+                nontail->g_next = y;
+                nontail = y;
+                y->g_next = 0;
+            }
+            else
+            {
+                nonhead = nontail = y;
+                nontail->g_next = 0;
+            }
+        }
+    }
+        /* move the selected part to the end */
+    if (!nonhead) x->gl_graphics = selhead;
+    else x->gl_graphics = nonhead, nontail->g_next = selhead;
+
+        /* add connections to binbuf */
+    buffer_reset(x->gl_editor->e_buffer);
+    canvas_traverseLinesStart(&t, x);
+    while (oc = canvas_traverseLinesNext(&t))
+    {
+        int s1 = canvas_isObjectSelected(x, &t.tr_srcObject->te_g);
+        int s2 = canvas_isObjectSelected(x, &t.tr_destObject->te_g);
+        if (s1 != s2)
+            buffer_vAppend(x->gl_editor->e_buffer, "ssiiii;",
+                sym___hash__X, sym_connect,
+                    canvas_getIndexOfObject(x, &t.tr_srcObject->te_g), t.tr_srcIndexOfOutlet,
+                        canvas_getIndexOfObject(x, &t.tr_destObject->te_g), t.tr_destIndexOfInlet);
+    }
+}
+
+void canvas_restoreCachedLines (t_glist *x)
+{
+    t_pd *boundx = s__X.s_thing;
+    s__X.s_thing = &x->gl_obj.te_g.g_pd;
+    buffer_eval(x->gl_editor->e_buffer, 0, 0, 0);
+    s__X.s_thing = boundx;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -104,7 +174,6 @@ void canvas_displaceSelected (t_glist *glist, int deltaX, int deltaY)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 int canvas_isObjectSelected (t_glist *glist, t_gobj *y)
 {
@@ -122,7 +191,6 @@ int canvas_isObjectSelected (t_glist *glist, t_gobj *y)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 void canvas_selectingByLasso (t_glist *glist, int positionX, int positionY, int close)
 {
@@ -171,7 +239,7 @@ void canvas_selectObject (t_glist *glist, t_gobj *y)
     //
     t_selection *selection = (t_selection *)PD_MEMORY_GET (sizeof (t_selection));
     
-    if (glist->gl_editor->e_isSelectedline) { select_deselectLine (glist); }
+    if (glist->gl_editor->e_isSelectedline) { canvas_deselectLine (glist); }
 
     PD_ASSERT (!canvas_isObjectSelected (glist, y));    /* Must NOT be already selected. */
     
@@ -231,8 +299,8 @@ void canvas_deselectObject (t_glist *glist, t_gobj *y)
         
             if (glist->gl_editor->e_isTextDirty) {
                 z = text;
-                canvas_stowconnections (canvas_getView (glist));
-                select_deselectAllRecursive (y);
+                canvas_cacheLines (canvas_getView (glist));
+                canvas_deselectAllRecursive (y);
             }
             
             gobj_activate (y, glist, 0);
@@ -281,7 +349,7 @@ void canvas_deselectAll (t_glist *glist)
         canvas_deselectObject (glist, glist->gl_editor->e_selectedObjects->sel_what);
     }
 
-    if (glist->gl_editor->e_isSelectedline) { select_deselectLine (glist); }
+    if (glist->gl_editor->e_isSelectedline) { canvas_deselectLine (glist); }
     //
     }
 }
@@ -302,12 +370,12 @@ int canvas_getNumberOfUnselectedObjects (t_glist *glist)
 
 int canvas_getIndexOfObjectAmongSelected (t_glist *glist, t_gobj *y)
 {
-    return select_getIndexOfObject (glist, y, 1);
+    return canvas_getIndexOfObjectAmong (glist, y, 1);
 }
 
 int canvas_getIndexOfObjectAmongUnselected (t_glist *glist, t_gobj *y)
 {
-    return select_getIndexOfObject (glist, y, 0);
+    return canvas_getIndexOfObjectAmong (glist, y, 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

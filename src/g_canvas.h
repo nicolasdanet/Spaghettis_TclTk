@@ -372,13 +372,13 @@ t_gobj          *canvas_getHitObject                    (t_glist *glist,
                                                             int *c, 
                                                             int *d);
 
-int             canvas_hasConnection                    (t_glist *glist,
+int             canvas_hasLine                          (t_glist *glist,
                                                             t_object *objectOut,
                                                             int m,
                                                             t_object *objectIn,
                                                             int n);
                                                             
-void            canvas_makingConnection                 (t_glist *glist, 
+void            canvas_makingLine                       (t_glist *glist, 
                                                             int positionX,
                                                             int positionY,
                                                             int create);
@@ -412,6 +412,8 @@ void            canvas_redrawAllByTemplateByCanvas      (t_glist *glist, int act
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+void            canvas_restoreCachedLines               (t_glist *glist);
 
 void            canvas_removeSelectedLine               (t_glist *glist);
 void            canvas_displaceSelected                 (t_glist *glist, int deltaX, int deltaY);
@@ -678,8 +680,6 @@ t_boxtext   *glist_findrtext    (t_glist *gl, t_object *who);
 #pragma mark -
 
 void     canvas_vistext                     (t_glist *x, t_object *y);
-void     canvas_stowconnections             (t_glist *x);
-void     canvas_restoreconnections          (t_glist *x);
 t_inlet  *canvas_addinlet                   (t_glist *x, t_pd *who, t_symbol *sym);
 void     canvas_rminlet                     (t_glist *x, t_inlet *ip);
 t_outlet *canvas_addoutlet                  (t_glist *x, t_pd *who, t_symbol *sym);
