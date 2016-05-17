@@ -449,6 +449,7 @@ t_symbol *sym_z;
 t_symbol *sym_BackSpace;
 t_symbol *sym_Delete;
 t_symbol *sym_Down;
+t_symbol *sym_Enter;
 t_symbol *sym_Escape;
 t_symbol *sym_Left;
 t_symbol *sym_Space;
@@ -926,6 +927,7 @@ void symbols_initialize (void)
     sym_BackSpace                               = gensym ("BackSpace");
     sym_Delete                                  = gensym ("Delete");
     sym_Down                                    = gensym ("Down");
+    sym_Enter                                   = gensym ("Enter");
     sym_Escape                                  = gensym ("Escape");
     sym_Left                                    = gensym ("Left");
     sym_Return                                  = gensym ("Return");

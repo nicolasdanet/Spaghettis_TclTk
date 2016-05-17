@@ -117,10 +117,8 @@ proc initialize {} {
     
     bind all <<RunDSP>>                     { .menubar.media    invoke "Run DSP"    }
     
-    bind all <KeyPress>                     { ::ui_bind::_key %W %K %A 1 0  }
-    bind all <KeyRelease>                   { ::ui_bind::_key %W %K %A 0 0  }
-    bind all <Shift-KeyPress>               { ::ui_bind::_key %W %K %A 1 1  }
-    bind all <Shift-KeyRelease>             { ::ui_bind::_key %W %K %A 0 1  }
+    bind all <KeyPress>                     { ::ui_bind::_key %W %K %A 1 }
+    bind all <KeyRelease>                   { ::ui_bind::_key %W %K %A 0 }
     
     bind all <<Quit>>                       { ::ui_interface::pdsend "pd _quit" }
 }
@@ -199,27 +197,37 @@ proc _mouseUp {c x y b} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _key {w keysym iso isPress isShift} {
+proc _key {w keysym iso isPress} {
 
     set k ""
     
     switch -- $keysym {
-        "BackSpace" { set k 8   }
-        "Tab"       { set k 9   }
-        "Return"    { set k 10  }
-        "Escape"    { set k 27  }
-        "Space"     { set k 32  }
-        "Delete"    { set k 127 }
-        "KP_Delete" { set k 127 }
+        "Alt_L"     { set k "Option"    }
+        "BackSpace" { set k "BackSpace" }
+        "Caps_Lock" { set k "CapsLock"  }
+        "Meta_L"    { set k "Command"   }
+        "Control_L" { set k "Control"   }
+        "Delete"    { set k "Delete"    }
+        "Down"      { set k "Down"      }
+        "Escape"    { set k "Escape"    }
+        "Left"      { set k "Left"      }
+        "KP_Delete" { set k "Delete"    }
+        "KP_Enter"  { set k "Enter"     }
+        "Return"    { set k "Return"    }
+        "Right"     { set k "Right"     }
+        "Shift_L"   { set k "Shift"     }
+        "Super_L"   { set k "Super"     }
+        "Tab"       { set k "Tab"       }
+        "Up"        { set k "Up"        } 
     }
-    
+
     if {$k eq ""} { set k [scan $iso %c] }
     
     set top [winfo toplevel $w]
     
     if {[winfo class $top] eq "PdPatch"} { set selector "$top" } else { set selector "pd" }
     
-    ::ui_interface::pdsend "$selector key $isPress $k $isShift" 
+    ::ui_interface::pdsend "$selector key $isPress $k" 
 }
 
 # ------------------------------------------------------------------------------------------------------------

@@ -454,6 +454,7 @@ extern t_symbol *sym_z;
 extern t_symbol *sym_BackSpace;
 extern t_symbol *sym_Delete;
 extern t_symbol *sym_Down;
+extern t_symbol *sym_Enter;
 extern t_symbol *sym_Escape;
 extern t_symbol *sym_Left;
 extern t_symbol *sym_Return;

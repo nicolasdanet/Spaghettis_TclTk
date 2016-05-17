@@ -401,6 +401,10 @@ int canvas_getNumberOfUnselectedObjects (t_glist *glist)
     return canvas_getIndexOfObjectAmongUnselected (glist, NULL);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 int canvas_getIndexOfObjectAmongSelected (t_glist *glist, t_gobj *y)
 {
     return canvas_getIndexOfObjectAmong (glist, y, 1);
