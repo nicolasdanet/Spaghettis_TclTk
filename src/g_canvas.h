@@ -302,7 +302,8 @@ struct _template {
 #pragma mark -
 
 t_glist         *canvas_castToGlistChecked              (t_pd *x);
-int             canvas_isObjectHasBox                   (t_object *x);
+
+int             canvas_objectIsBox                      (t_object *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

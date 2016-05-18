@@ -117,10 +117,10 @@ int gobj_hit (t_gobj *x,
 
 int gobj_isVisible (t_gobj *x, t_glist *owner)
 {
-    t_object *o = NULL;
-    
     if (canvas_isDrawnOnParent (owner)) {
     //
+    t_object *object = NULL;
+            
     /* Is parent visible? */
     
     if (!gobj_isVisible (cast_gobj (owner), owner->gl_parent)) { return 0; }
@@ -128,7 +128,7 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
     /* Falling outside the graph rectangle? */
     
     if (owner->gl_hasRectangle) {
-    
+            
         if (pd_class (x) == scalar_class || pd_class (x) == garray_class) { return 1; }
         else {
         //
@@ -145,22 +145,19 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
         //
         }
     }
+    
+    if (object = canvas_castToObjectIfPatchable (x)) {
+    //
+    if (canvas_objectIsBox (object)) {
+        if (!owner->gl_hasRectangle || object->te_type != TYPE_TEXT) {      /* Compatiblity with legacy. */
+            return 0; 
+        }
+    }
     //
     }
-    
-    if (o = canvas_castToObjectIfPatchable (x)) {     /* Boxes. */
-    //
-    int k = 0;
-    
-    k |= (owner->gl_haveWindow);
-    k |= (owner->gl_hasRectangle && o->te_type == TYPE_TEXT);
-    k |= (pd_class (o) != canvas_class && pd_class (o)->c_behavior != &text_widgetBehavior);
-    k |= (pd_class (o) == canvas_class && cast_glist (o)->gl_isGraphOnParent);
-    
-    return k;
     //
     }
-    
+
     return 1;
 }
 

@@ -82,7 +82,7 @@ t_glist *canvas_castToGlistChecked (t_pd *x)
     }
 }
 
-int canvas_isObjectHasBox (t_object *x)
+int canvas_objectIsBox (t_object *x)
 {
     return (pd_class (x)->c_behavior == &text_widgetBehavior)
         || (canvas_castToGlistChecked (cast_pd (x)) && !(cast_glist (x)->gl_isGraphOnParent));

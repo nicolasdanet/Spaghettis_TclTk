@@ -223,7 +223,7 @@ void canvas_motion (t_glist *glist, t_float positionX, t_float positionY, t_floa
             
             if (object) {
             //
-            if (canvas_isObjectHasBox (object)) {
+            if (canvas_objectIsBox (object)) {
                 int w = (positionX - a) / font_getHostFontWidth (canvas_getFontSize (glist));
                 object->te_width = PD_MAX (1, w);
                 gobj_visibilityChanged (y, glist, 0);
