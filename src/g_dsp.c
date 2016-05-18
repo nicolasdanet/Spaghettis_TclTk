@@ -49,7 +49,7 @@ static void canvas_dspPerform (t_glist *glist, int isTopLevel, t_signal **sp)
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
     //
-    t_object *o = canvas_castToObjectIfBox (y);
+    t_object *o = canvas_castToObjectIfPatchable (y);
     if (o && class_hasMethod (pd_class (y), sym_dsp)) { ugen_add (context, o); }
     //
     }

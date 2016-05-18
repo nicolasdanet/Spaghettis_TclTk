@@ -148,7 +148,7 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
     //
     }
     
-    if (o = canvas_castToObjectIfBox (x)) {     /* Boxes. */
+    if (o = canvas_castToObjectIfPatchable (x)) {     /* Boxes. */
     //
     int k = 0;
     

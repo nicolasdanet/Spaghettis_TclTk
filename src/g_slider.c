@@ -81,7 +81,7 @@ static t_class *slider_class;                       /* Shared. */
 
 static void slider_drawUpdateVertical (t_slider *x, t_glist *glist)
 {
-    if (canvas_isVisible (glist)) {
+    if (canvas_isMapped (glist)) {
     //
     t_glist *canvas = canvas_getView (glist);
     
@@ -101,7 +101,7 @@ static void slider_drawUpdateVertical (t_slider *x, t_glist *glist)
 
 static void slider_drawUpdateHorizontal (t_slider *x, t_glist *glist)
 {
-    if (canvas_isVisible (glist)) {
+    if (canvas_isMapped (glist)) {
     //
     t_glist *canvas = canvas_getView (glist);
     

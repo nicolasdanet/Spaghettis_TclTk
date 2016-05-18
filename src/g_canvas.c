@@ -154,11 +154,11 @@ static void canvas_width (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     for (g1 = glist->gl_graphics; g2 = g1->g_next; g1 = g2) { }
     
-    if (o = canvas_castToObjectIfBox (g1)) {
+    if (o = canvas_castToObjectIfPatchable (g1)) {
     //
     o->te_width = atom_getFloatAtIndex (0, argc, argv);
     
-    if (canvas_isVisible (glist)) {
+    if (canvas_isMapped (glist)) {
         gobj_visibilityChanged (g1, glist, 0);
         gobj_visibilityChanged (g1, glist, 1);
     }
@@ -178,8 +178,8 @@ void canvas_connect (t_glist *glist,
     
     t_gobj *src  = canvas_getObjectAtIndex (glist, k + (int)indexOfObjectOut);
     t_gobj *dest = canvas_getObjectAtIndex (glist, k + (int)indexOfObjectIn);
-    t_object *srcObject  = canvas_castToObjectIfBox (src);
-    t_object *destObject = canvas_castToObjectIfBox (dest);
+    t_object *srcObject  = canvas_castToObjectIfPatchable (src);
+    t_object *destObject = canvas_castToObjectIfPatchable (dest);
     
     if (srcObject && destObject) {
     //
@@ -203,7 +203,7 @@ void canvas_connect (t_glist *glist,
 
     if ((connection = object_connect (srcObject, m, destObject, n))) {
     //
-    if (canvas_isVisible (glist)) {
+    if (canvas_isMapped (glist)) {
     
         sys_vGui (".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
                         canvas_getView (glist),
@@ -295,7 +295,7 @@ static void canvas_open (t_glist *glist)
 {
     /* Opening a graph on parent in its own window. */
     
-    if (canvas_isVisible (glist) && !canvas_canHaveWindow (glist)) {
+    if (canvas_isMapped (glist) && !canvas_canHaveWindow (glist)) {
     //
     PD_ASSERT (glist->gl_parent);
     
@@ -358,14 +358,14 @@ void canvas_visible (t_glist *glist, t_float f)
             t_glist *t = NULL;
             
             canvas_deselectAll (glist);
-            if (canvas_isVisible (glist)) { canvas_map (glist, 0); }
+            if (canvas_isMapped (glist)) { canvas_map (glist, 0); }
             canvas_destroyEditorIfAny (glist);
             sys_vGui ("destroy .x%lx\n", glist);
             
             if (glist->gl_isGraphOnParent && (t = glist->gl_parent) && (!t->gl_isDeleting)) {
-                if (canvas_isVisible (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 0); }
+                if (canvas_isMapped (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 0); }
                 glist->gl_haveWindow = 0;
-                if (canvas_isVisible (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 1); }
+                if (canvas_isMapped (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 1); }
             } else {
                 glist->gl_haveWindow = 0;
             }
@@ -381,7 +381,7 @@ void canvas_map (t_glist *glist, t_float f)
 {
     int isMapped = (f != 0.0);
 
-    if (isMapped != canvas_isVisible (glist)) {
+    if (isMapped != canvas_isMapped (glist)) {
     //
     if (!isMapped) { sys_vGui (".x%lx.c delete all\n", glist); glist->gl_isMapped = 0; }
     else {
@@ -546,7 +546,7 @@ static void canvas_dialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     if (glist->gl_haveWindow) { canvas_redraw (glist); }
     else {
-        if (canvas_isVisible (glist->gl_parent)) {
+        if (canvas_isMapped (glist->gl_parent)) {
             gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 0);
             gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
         }

@@ -52,15 +52,15 @@ void glist_add(t_glist *x, t_gobj *y)
         for (y2 = x->gl_graphics; y2->g_next; y2 = y2->g_next);
         y2->g_next = y;
     }
-    if (x->gl_editor && (ob = canvas_castToObjectIfBox(&y->g_pd)))
+    if (x->gl_editor && (ob = canvas_castToObjectIfPatchable(&y->g_pd)))
         rtext_new(x, ob);
     if (x->gl_editor && x->gl_isGraphOnParent && !x->gl_hasRectangle
-        && canvas_castToObjectIfBox(&y->g_pd))
+        && canvas_castToObjectIfPatchable(&y->g_pd))
     {
         x->gl_hasRectangle = 1;
         canvas_drawGraphOnParentRectangle(x);
     }
-    if (canvas_isVisible(x))
+    if (canvas_isMapped(x))
         gobj_visibilityChanged(y, x, 1);
     if (class_hasDrawCommand(y->g_pd)) 
         canvas_redrawAllByTemplate(template_findbyname(canvas_makeBindSymbol(
@@ -103,7 +103,7 @@ void glist_delete(t_glist *x, t_gobj *y)
         if (pd_class(&y->g_pd) == canvas_class)
         {
             t_glist *gl = (t_glist *)y;
-            if (gl->gl_isGraphOnParent && canvas_isVisible(x))
+            if (gl->gl_isGraphOnParent && canvas_isMapped(x))
             {
                 char tag[80];
                 sprintf(tag, "graph%lx", (t_int)gl);
@@ -111,7 +111,7 @@ void glist_delete(t_glist *x, t_gobj *y)
             }
             else
             {
-                if (canvas_isVisible(x))
+                if (canvas_isMapped(x))
                     text_eraseborder(&gl->gl_obj, x,
                         rtext_gettag(glist_findrtext(x, &gl->gl_obj)));
             }
@@ -123,11 +123,11 @@ void glist_delete(t_glist *x, t_gobj *y)
         canvas_redrawAllByTemplate(template_findbyname(canvas_makeBindSymbol(
             canvas_getView(x)->gl_name)), SCALAR_ERASE);
     gobj_delete(y, x);
-    if (canvas_isVisible(canvas))
+    if (canvas_isMapped(canvas))
     {
         gobj_visibilityChanged(y, x, 0);
     }
-    if (x->gl_editor && (ob = canvas_castToObjectIfBox(&y->g_pd)))
+    if (x->gl_editor && (ob = canvas_castToObjectIfPatchable(&y->g_pd)))
         rtext = rtext_new(x, ob);
     if (x->gl_graphics == y) x->gl_graphics = y->g_next;
     else for (g = x->gl_graphics; g; g = g->g_next)
@@ -157,7 +157,7 @@ void glist_clear(t_glist *x)
     {
             /* to avoid unnecessary DSP resorting, we suspend DSP
             only if we hit a patchable object. */
-        if (!suspended && canvas_castToObjectIfBox(&y->g_pd) && class_hasMethod (pd_class (&y->g_pd), dspsym))
+        if (!suspended && canvas_castToObjectIfPatchable(&y->g_pd) && class_hasMethod (pd_class (&y->g_pd), dspsym))
         {
             dspstate = dsp_suspend();
             suspended = 1;
@@ -291,7 +291,7 @@ void glist_sort(t_glist *x)
 t_inlet *canvas_addinlet(t_glist *x, t_pd *who, t_symbol *s)
 {
     t_inlet *ip = inlet_new(&x->gl_obj, who, s, 0);
-    if (!x->gl_isLoading && x->gl_parent && canvas_isVisible(x->gl_parent))
+    if (!x->gl_isLoading && x->gl_parent && canvas_isMapped(x->gl_parent))
     {
         gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 0);
         gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 1);
@@ -304,7 +304,7 @@ t_inlet *canvas_addinlet(t_glist *x, t_pd *who, t_symbol *s)
 void canvas_rminlet(t_glist *x, t_inlet *ip)
 {
     t_glist *owner = x->gl_parent;
-    int redraw = (owner && canvas_isVisible(owner) && (!owner->gl_isDeleting)
+    int redraw = (owner && canvas_isMapped(owner) && (!owner->gl_isDeleting)
         && canvas_canHaveWindow(owner));
     
     if (owner) canvas_deleteLinesByInlets(owner, &x->gl_obj, ip, 0);
@@ -356,14 +356,14 @@ void canvas_resortinlets(t_glist *x)
         object_moveInletFirst(&x->gl_obj, ip);
     }
     PD_MEMORY_FREE(vec);
-    if (x->gl_parent && canvas_isVisible(x->gl_parent))
+    if (x->gl_parent && canvas_isMapped(x->gl_parent))
         canvas_updateLinesByObject(x->gl_parent, &x->gl_obj);
 }
 
 t_outlet *canvas_addoutlet(t_glist *x, t_pd *who, t_symbol *s)
 {
     t_outlet *op = outlet_new(&x->gl_obj, s);
-    if (!x->gl_isLoading && x->gl_parent && canvas_isVisible(x->gl_parent))
+    if (!x->gl_isLoading && x->gl_parent && canvas_isMapped(x->gl_parent))
     {
         gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 0);
         gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 1);
@@ -376,7 +376,7 @@ t_outlet *canvas_addoutlet(t_glist *x, t_pd *who, t_symbol *s)
 void canvas_rmoutlet(t_glist *x, t_outlet *op)
 {
     t_glist *owner = x->gl_parent;
-    int redraw = (owner && canvas_isVisible(owner) && (!owner->gl_isDeleting)
+    int redraw = (owner && canvas_isMapped(owner) && (!owner->gl_isDeleting)
         && canvas_canHaveWindow(owner));
     
     if (owner) canvas_deleteLinesByInlets(owner, &x->gl_obj, 0, op);
@@ -428,7 +428,7 @@ void canvas_resortoutlets(t_glist *x)
         object_moveOutletFirst(&x->gl_obj, ip);
     }
     PD_MEMORY_FREE(vec);
-    if (x->gl_parent && canvas_isVisible(x->gl_parent))
+    if (x->gl_parent && canvas_isMapped(x->gl_parent))
         canvas_updateLinesByObject(x->gl_parent, &x->gl_obj);
 }
 
@@ -633,7 +633,7 @@ int text_ypix(t_object *x, t_glist *glist)
     rectangle on the parent, you shouldn't have to redraw the window!  */
 void glist_redraw(t_glist *x)
 {  
-    if (canvas_isVisible(x))
+    if (canvas_isMapped(x))
     {
             /* LATER fix the graph_vis() code to handle both cases */
         if (canvas_canHaveWindow(x))
@@ -658,7 +658,7 @@ void glist_redraw(t_glist *x)
                 canvas_drawGraphOnParentRectangle(x);
             }
         }
-        if (x->gl_parent && canvas_isVisible(x->gl_parent))
+        if (x->gl_parent && canvas_isMapped(x->gl_parent))
         {
             graph_vis(&x->gl_obj.te_g, x->gl_parent, 0); 
             graph_vis(&x->gl_obj.te_g, x->gl_parent, 1);
@@ -910,7 +910,7 @@ static void graph_getrect(t_gobj *z, t_glist *glist,
                     box.  And ignore "text" objects which aren't shown on 
                     parent */
                 if (pd_class(&g->g_pd) == garray_class ||
-                    canvas_castToObjectIfBox(&g->g_pd))
+                    canvas_castToObjectIfPatchable(&g->g_pd))
                         continue;
                 gobj_getRectangle(g, x, &x21, &y21, &x22, &y22);
                 if (x22 > x2) 
@@ -972,7 +972,7 @@ static void graph_delete(t_gobj *z, t_glist *glist)
     t_gobj *y;
     while (y = x->gl_graphics)
         glist_delete(x, y);
-    if (canvas_isVisible(x))
+    if (canvas_isMapped(x))
         text_widgetBehavior.w_fnDelete(z, glist);
             /* if we have connections to the actual 'canvas' object, zap
             them as well (e.g., array or scalar objects that are implemented

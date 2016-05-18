@@ -295,7 +295,7 @@ static void ptrobj_vnext(t_ptrobj *x, t_float f)
         post_error ("ptrobj_next: stale pointer");
         return;
     }
-    if (wantselected && !canvas_isVisible(glist))
+    if (wantselected && !canvas_isMapped(glist))
     {
         post_error ("ptrobj_vnext: next-selected only works for a visible window");
         return;
@@ -1053,7 +1053,7 @@ static void setsize_float(t_setsize *x, t_float f)
 
     if (gs->gs_type == POINTER_GLIST)
     {
-        if (canvas_isVisible(gs->gs_un.gs_glist))
+        if (canvas_isMapped(gs->gs_un.gs_glist))
             gobj_visibilityChanged((t_gobj *)(gp->gp_un.gp_scalar), gs->gs_un.gs_glist, 0);  
     }
     else
@@ -1061,7 +1061,7 @@ static void setsize_float(t_setsize *x, t_float f)
         t_array *owner_array = gs->gs_un.gs_array;
         while (owner_array->a_gp.gp_stub->gs_type == POINTER_ARRAY)
             owner_array = owner_array->a_gp.gp_stub->gs_un.gs_array;
-        if (canvas_isVisible(owner_array->a_gp.gp_stub->gs_un.gs_glist))
+        if (canvas_isMapped(owner_array->a_gp.gp_stub->gs_un.gs_glist))
             gobj_visibilityChanged((t_gobj *)(owner_array->a_gp.gp_un.gp_scalar),
                 owner_array->a_gp.gp_stub->gs_un.gs_glist, 0);  
     }
@@ -1093,7 +1093,7 @@ static void setsize_float(t_setsize *x, t_float f)
     /* redraw again. */
     if (gs->gs_type == POINTER_GLIST)
     {
-        if (canvas_isVisible(gs->gs_un.gs_glist))
+        if (canvas_isMapped(gs->gs_un.gs_glist))
             gobj_visibilityChanged((t_gobj *)(gp->gp_un.gp_scalar), gs->gs_un.gs_glist, 1);  
     }
     else
@@ -1101,7 +1101,7 @@ static void setsize_float(t_setsize *x, t_float f)
         t_array *owner_array = gs->gs_un.gs_array;
         while (owner_array->a_gp.gp_stub->gs_type == POINTER_ARRAY)
             owner_array = owner_array->a_gp.gp_stub->gs_un.gs_array;
-        if (canvas_isVisible(owner_array->a_gp.gp_stub->gs_un.gs_glist))
+        if (canvas_isMapped(owner_array->a_gp.gp_stub->gs_un.gs_glist))
             gobj_visibilityChanged((t_gobj *)(owner_array->a_gp.gp_un.gp_scalar),
                 owner_array->a_gp.gp_stub->gs_un.gs_glist, 1);  
     }
@@ -1252,7 +1252,7 @@ static void append_float(t_append *x, t_float f)
         template_setfloat(template, vp->gv_sym, vec, vp->gv_f, 1);
     }
  
-    if (canvas_isVisible(canvas_getView(glist)))
+    if (canvas_isMapped(canvas_getView(glist)))
         gobj_visibilityChanged(&sc->sc_g, glist, 1);
     /*  scalar_redraw(sc, glist);  ... have to do 'vis' instead here because
     redraw assumes we're already visible??? ... */

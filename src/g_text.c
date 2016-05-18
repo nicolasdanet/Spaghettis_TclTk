@@ -72,7 +72,7 @@ void glist_text(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         pd_vMessage((t_pd *)canvas_getView(gl), sym_editmode, "i", 1);
         SET_SYMBOL(&at, sym_comment);
         canvas_deselectAll(gl);
-        canvas_getLastCoordinates(gl, &xpix, &ypix);
+        canvas_getLastMotionCoordinates(gl, &xpix, &ypix);
         x->te_xCoordinate = xpix-1;
         x->te_yCoordinate = ypix-1;
         buffer_deserialize(x->te_buffer, 1, &at);
@@ -111,7 +111,7 @@ static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width, int selec
     {
         if (!pd_newest)
             x = 0;
-        else if (!(x = canvas_castToObjectIfBox(pd_newest)))
+        else if (!(x = canvas_castToObjectIfPatchable(pd_newest)))
         {
             buffer_post(b);
             post_error ("... didn't return a patchable object");
@@ -183,7 +183,7 @@ static void canvas_howputnew(t_glist *x, int *connectp, int *xpixp, int *ypixp,
     }
     else
     {
-        canvas_getLastCoordinates(x, xpixp, ypixp);
+        canvas_getLastMotionCoordinates(x, xpixp, ypixp);
         *xpixp -= 3;
         *ypixp -= 3;
         canvas_deselectAll(x);
@@ -208,7 +208,7 @@ void canvas_obj(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
             (t_int)atom_getFloatAtIndex(1, argc, argv), 0, 0, b);
     }
         /* JMZ: don't go into interactive mode in a closed canvas */
-    else if (!canvas_isVisible(gl))
+    else if (!canvas_isMapped(gl))
         post("unable to create stub object in closed canvas!");
     else
     {
@@ -239,7 +239,7 @@ void canvas_iems(t_glist *gl, t_symbol *guiobjname)
     canvas_deselectAll(gl);
     SET_SYMBOL(&at, guiobjname);
     buffer_deserialize(b, 1, &at);
-    canvas_getLastCoordinates(gl, &xpix, &ypix);
+    canvas_getLastMotionCoordinates(gl, &xpix, &ypix);
     canvas_objtext(gl, xpix, ypix, 0, 1, b);
     // canvas_startmotion(canvas_getView(gl));
 }
@@ -432,7 +432,7 @@ static void message_click(t_message *x,
         t_float ctrl, t_float alt)
 {
     message_float(x, 0);
-    if (canvas_isVisible(x->m_glist))
+    if (canvas_isMapped(x->m_glist))
     {
         t_boxtext *y = glist_findrtext(x->m_glist, &x->m_text);
         sys_vGui(".x%lx.c itemconfigure %sR -width 5\n", 
@@ -443,7 +443,7 @@ static void message_click(t_message *x,
 
 static void message_tick(t_message *x)
 {
-    if (canvas_isVisible(x->m_glist))
+    if (canvas_isMapped(x->m_glist))
     {
         t_boxtext *y = glist_findrtext(x->m_glist, &x->m_text);
         sys_vGui(".x%lx.c itemconfigure %sR -width 1\n",
@@ -473,7 +473,7 @@ void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         if (argc > 2) buffer_deserialize(x->m_text.te_buffer, argc-2, argv+2);
         glist_add(gl, &x->m_text.te_g);
     }
-    else if (!canvas_isVisible(gl))
+    else if (!canvas_isMapped(gl))
         post("unable to create stub message in closed canvas!");
     else
     {
@@ -557,7 +557,7 @@ static void gatom_retext(t_gatom *x, int senditup)
 {
     buffer_reset(x->a_text.te_buffer);
     buffer_append(x->a_text.te_buffer, 1, &x->a_atom);
-    if (senditup && canvas_isVisible(x->a_glist))
+    if (senditup && canvas_isMapped(x->a_glist))
         interface_guiQueueAddIfNotAlreadyThere(x, x->a_glist, gatom_redraw);
 }
 
@@ -1047,7 +1047,7 @@ static void text_displace(t_gobj *z, t_glist *glist,
     t_object *x = (t_object *)z;
     x->te_xCoordinate += dx;
     x->te_yCoordinate += dy;
-    if (canvas_isVisible(glist))
+    if (canvas_isMapped(glist))
     {
         t_boxtext *y = glist_findrtext(glist, x);
         rtext_displace(y, dx, dy);
@@ -1062,7 +1062,7 @@ static void text_select(t_gobj *z, t_glist *glist, int state)
     t_object *x = (t_object *)z;
     t_boxtext *y = glist_findrtext(glist, x);
     rtext_select(y, state);
-    if (canvas_isVisible(glist) && gobj_isVisible(&x->te_g, glist))
+    if (canvas_isMapped(glist) && gobj_isVisible(&x->te_g, glist))
         sys_vGui(".x%lx.c itemconfigure %sR -fill %s\n", glist, 
             rtext_gettag(y), (state? "blue" : "black"));
 }
@@ -1340,7 +1340,7 @@ void text_drawborder(t_object *x, t_glist *glist,
     }
         /* draw inlets/outlets */
     
-    if (ob = canvas_castToObjectIfBox((t_pd *)x))
+    if (ob = canvas_castToObjectIfPatchable((t_pd *)x))
         glist_drawio(glist, ob, firsttime, tag, x1, y1, x2, y2);
 }
 

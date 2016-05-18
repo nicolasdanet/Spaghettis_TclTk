@@ -131,7 +131,7 @@ int canvas_readscalar(t_glist *x, int natoms, t_atom *vec,
     t_symbol *templatesym;
     t_scalar *sc;
     int nextmsg = *p_nextmsg;
-    int wasvis = canvas_isVisible(x);
+    int wasvis = canvas_isMapped(x);
 
     if (nextmsg >= natoms || vec[nextmsg].a_type != A_SYMBOL)
     {
@@ -265,7 +265,7 @@ static void glist_doread(t_glist *x, t_symbol *filename, t_symbol *format,
 {
     t_buffer *b = buffer_new();
     t_glist *canvas = canvas_getView(x);
-    int wasvis = canvas_isVisible(canvas);
+    int wasvis = canvas_isMapped(canvas);
     int cr = 0, natoms, nline, message, nextmsg = 0, i, j;
     t_atom *vec;
 
@@ -369,7 +369,7 @@ void canvas_dataproperties(t_glist *x, t_scalar *sc, t_buffer *b)
         
         pd_free(&newone->g_pd);
         
-        if (canvas_isVisible(x))
+        if (canvas_isMapped(x))
         {
             gobj_visibilityChanged(oldone, x, 0);
             gobj_visibilityChanged(oldone, x, 1);

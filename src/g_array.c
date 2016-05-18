@@ -84,7 +84,7 @@ void array_resize(t_array *x, int n)
 void array_resize_and_redraw(t_array *array, t_glist *glist, int n)
 {
     t_array *a2 = array;
-    int vis = canvas_isVisible(glist);
+    int vis = canvas_isMapped(glist);
     while (a2->a_gp.gp_stub->gs_type == POINTER_ARRAY)
         a2 = a2->a_gp.gp_stub->gs_un.gs_array;
     if (vis)
@@ -467,7 +467,7 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize,
                 /* redraw the whole glist, just so the name change shows up */
             if (x->x_glist->gl_haveWindow)
                 canvas_redraw(x->x_glist);
-            else if (canvas_isVisible(x->x_glist->gl_parent))
+            else if (canvas_isMapped(x->x_glist->gl_parent))
             {
                 gobj_visibilityChanged(&x->x_glist->gl_obj.te_g, x->x_glist->gl_parent, 0);
                 gobj_visibilityChanged(&x->x_glist->gl_obj.te_g, x->x_glist->gl_parent, 1);
@@ -800,7 +800,7 @@ void garray_usedindsp(t_garray *x)
 static void garray_doredraw(t_gobj *client, t_glist *glist)
 {
     t_garray *x = (t_garray *)client;
-    if (canvas_isVisible(x->x_glist) && gobj_isVisible(client, glist))
+    if (canvas_isMapped(x->x_glist) && gobj_isVisible(client, glist))
     {
         garray_vis(&x->x_gobj, x->x_glist, 0); 
         garray_vis(&x->x_gobj, x->x_glist, 1);
@@ -809,7 +809,7 @@ static void garray_doredraw(t_gobj *client, t_glist *glist)
 
 void garray_redraw(t_garray *x)
 {
-    if (canvas_isVisible(x->x_glist))
+    if (canvas_isMapped(x->x_glist))
         interface_guiQueueAddIfNotAlreadyThere(&x->x_gobj, x->x_glist, garray_doredraw);
     /* jsarlo { */
     /* this happens in garray_vis() when array is visible for

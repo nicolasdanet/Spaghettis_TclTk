@@ -43,7 +43,7 @@ static t_class *toggle_class;                       /* Shared. */
 
 void toggle_drawUpdate (t_toggle *x, t_glist *glist)
 {
-    if (canvas_isVisible (glist)) {
+    if (canvas_isMapped (glist)) {
     //
     t_glist *canvas = canvas_getView (glist);
     

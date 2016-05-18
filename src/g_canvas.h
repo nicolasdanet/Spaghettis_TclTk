@@ -295,13 +295,14 @@ struct _template {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define canvas_castToObjectIfBox(x)     (pd_class (x)->c_isBox ? (t_object *)(x) : NULL)
+#define canvas_castToObjectIfPatchable(x)   (pd_class (x)->c_isBox ? (t_object *)(x) : NULL)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 t_glist         *canvas_castToGlistChecked              (t_pd *x);
+int             canvas_isObjectHasBox                   (t_object *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -339,7 +340,7 @@ t_glist         *canvas_addGraph                        (t_glist *glist,
                                                             
 void            canvas_setAsGraphOnParent               (t_glist *glist, int flags, int hasRectangle);
 
-int             canvas_isVisible                        (t_glist *glist);
+int             canvas_isMapped                         (t_glist *glist);
 int             canvas_isRoot                           (t_glist *glist);
 int             canvas_isAbstraction                    (t_glist *glist);
 int             canvas_isSubpatch                       (t_glist *glist);
@@ -383,8 +384,8 @@ void            canvas_makingLine                       (t_glist *glist,
                                                             int positionY,
                                                             int create);
                                                             
-void            canvas_setLastCoordinates               (t_glist *glist, int a, int b);
-void            canvas_getLastCoordinates               (t_glist *glist, int *a, int *b);
+void            canvas_setLastMotionCoordinates         (t_glist *glist, int a, int b);
+void            canvas_getLastMotionCoordinates         (t_glist *glist, int *a, int *b);
 
 int             canvas_getIndexOfObject                 (t_glist *glist, t_gobj *object);
 t_gobj          *canvas_getObjectAtIndex                (t_glist *glist, int n);
@@ -468,8 +469,8 @@ void            canvas_setBounds                        (t_glist *glist,
                                                             t_float d);
 
 void            canvas_motion                           (t_glist *glist,
-                                                            t_float deltaX,
-                                                            t_float deltaY,
+                                                            t_float positionX,
+                                                            t_float positionY,
                                                             t_float modifier);
 
 void            canvas_mouse                            (t_glist *glist,

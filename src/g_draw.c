@@ -32,7 +32,7 @@ extern t_pdinstance     *pd_this;
 
 void canvas_redraw (t_glist *glist)
 {
-    if (canvas_isVisible (glist)) { canvas_map (glist, 0); canvas_map (glist, 1); }
+    if (canvas_isMapped (glist)) { canvas_map (glist, 0); canvas_map (glist, 1); }
 }
 
 void canvas_drawLines (t_glist *glist)
@@ -67,7 +67,7 @@ void canvas_updateLinesByObject (t_glist *glist, t_object *o)
     //
     if (t.tr_srcObject == o || t.tr_destObject == o) {
     //
-    if (canvas_isVisible (glist)) {
+    if (canvas_isMapped (glist)) {
     //
     sys_vGui (".x%lx.c coords %lxLINE %d %d %d %d\n",
                 canvas_getView (glist),
@@ -95,7 +95,7 @@ void canvas_deleteLinesByObject (t_glist *glist, t_object *o)
     //
     if (t.tr_srcObject == o || t.tr_destObject == o) {
     //
-    if (canvas_isVisible (glist)) {
+    if (canvas_isMapped (glist)) {
     //
     sys_vGui (".x%lx.c delete %lxLINE\n",
                 canvas_getView (glist),
@@ -124,7 +124,7 @@ void canvas_deleteLinesByInlets (t_glist *glist, t_object *o, t_inlet *inlet, t_
     
     if (m || n) {
     //
-    if (canvas_isVisible (glist)) {
+    if (canvas_isMapped (glist)) {
     //
     sys_vGui (".x%lx.c delete %lxLINE\n",
                 canvas_getView (glist),
@@ -175,7 +175,7 @@ static void canvas_redrawAllScalars (t_glist *glist, int action)
 {
     t_gobj *g = NULL;
     
-    int visible = canvas_isVisible (glist);
+    int visible = canvas_isMapped (glist);
     
     for (g = glist->gl_graphics; g; g = g->g_next) {
     //
@@ -228,7 +228,7 @@ void canvas_redrawAllByTemplateByCanvas (t_glist *glist, int action)
     
     for (g = glist->gl_graphics; g; g = g->g_next) {
     //
-    t_object *o = canvas_castToObjectIfBox (g);
+    t_object *o = canvas_castToObjectIfPatchable (g);
     
     if (o && o->te_type == TYPE_OBJECT && buffer_size (o->te_buffer) < 2) {
     //

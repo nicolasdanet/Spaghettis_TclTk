@@ -20,6 +20,7 @@
 
 extern t_class      *canvas_class;
 extern t_class      *array_define_class;
+extern t_class      *scalar_define_class;
 extern t_pd         *pd_newest;
 
 extern t_symbol     *canvas_fileName;
@@ -29,16 +30,18 @@ extern t_atom       *canvas_argv;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern int          canvas_argc;
-extern int          canvas_magic;
+extern t_widgetbehavior     text_widgetBehavior;
+
+extern int                  canvas_argc;
+extern int                  canvas_magic;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_glist      *canvas_lastCanvas;             /* Shared. */
+static t_glist              *canvas_lastCanvas;             /* Shared. */
 
-static int          canvas_lastCanvasX;             /* Shared. */
-static int          canvas_lastCanvasY;             /* Shared. */
+static int                  canvas_lastCanvasX;             /* Shared. */
+static int                  canvas_lastCanvasY;             /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -70,11 +73,19 @@ void canvas_newPatch (void *dummy, t_symbol *name, t_symbol *directory)
 
 t_glist *canvas_castToGlistChecked (t_pd *x)
 {
-    if (pd_class (x) == canvas_class || pd_class (x) == array_define_class) {
+    t_class *c = pd_class (x);
+    
+    if (c == canvas_class || c == array_define_class || c == scalar_define_class) {
         return cast_glist (x);
     } else {
         return NULL;
     }
+}
+
+int canvas_isObjectHasBox (t_object *x)
+{
+    return (pd_class (x)->c_behavior == &text_widgetBehavior)
+        || (canvas_castToGlistChecked (cast_pd (x)) && !(cast_glist (x)->gl_isGraphOnParent));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -114,7 +125,7 @@ t_glist *canvas_getView (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int canvas_isVisible (t_glist *glist)
+int canvas_isMapped (t_glist *glist)
 {
     return (!glist->gl_isLoading && canvas_getView (glist)->gl_isMapped);
 }
@@ -251,7 +262,7 @@ void canvas_setAsGraphOnParent (t_glist *glist, int flags, int hasRectangle)
     glist->gl_hideText  = hideText;
     
     if (needToUpdate) {
-        if (!glist->gl_isLoading && glist->gl_parent && canvas_isVisible (glist->gl_parent)) {
+        if (!glist->gl_isLoading && glist->gl_parent && canvas_isMapped (glist->gl_parent)) {
             gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 0);
         }
     }
@@ -264,11 +275,11 @@ void canvas_setAsGraphOnParent (t_glist *glist, int flags, int hasRectangle)
         glist->gl_isGraphOnParent = 1;
         glist->gl_hasRectangle = hasRectangle;
         
-        if (hasRectangle && canvas_isVisible (glist)) { glist_redraw (glist); }
+        if (hasRectangle && canvas_isMapped (glist)) { glist_redraw (glist); }
     }
     
     if (needToUpdate) {
-        if (!glist->gl_isLoading && glist->gl_parent && canvas_isVisible (glist->gl_parent)) {
+        if (!glist->gl_isLoading && glist->gl_parent && canvas_isMapped (glist->gl_parent)) {
             gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
             canvas_updateLinesByObject (glist->gl_parent, cast_object (glist));
         }
@@ -498,8 +509,8 @@ void canvas_makingLine (t_glist *glist, int positionX, int positionY, int create
 
     if (y1 && y2) {
     //
-    t_object *object1 = canvas_castToObjectIfBox (y1);
-    t_object *object2 = canvas_castToObjectIfBox (y2);
+    t_object *object1 = canvas_castToObjectIfPatchable (y1);
+    t_object *object2 = canvas_castToObjectIfPatchable (y2);
     
     if (object1 && object2 && object1 != object2) {
     //
@@ -555,14 +566,14 @@ void canvas_makingLine (t_glist *glist, int positionX, int positionY, int create
     canvas_setCursorType (glist, CURSOR_EDIT_NOTHING);
 }
 
-void canvas_setLastCoordinates (t_glist *glist, int a, int b)
+void canvas_setLastMotionCoordinates (t_glist *glist, int a, int b)
 {
     canvas_lastCanvas   = glist;
     canvas_lastCanvasX  = a;
     canvas_lastCanvasY  = b;
 }
 
-void canvas_getLastCoordinates (t_glist *glist, int *a, int *b)
+void canvas_getLastMotionCoordinates (t_glist *glist, int *a, int *b)
 {
     if (canvas_lastCanvas == glist) { *a = canvas_lastCanvasX; *b = canvas_lastCanvasY; } 
     else {
@@ -648,7 +659,7 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
     }
     
     for (; y; y = y->g_next) {
-        if ((o = canvas_castToObjectIfBox (y))) { break; }     /* Only box objects are considered. */
+        if ((o = canvas_castToObjectIfPatchable (y))) { break; }     /* Only box objects are considered. */
     }
     
     if (!o) { return NULL; }
@@ -657,7 +668,7 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
     t->tr_srcNumberOfOutlets = object_numberOfOutlets (o);
     n = 0;
     
-    if (canvas_isVisible (t->tr_owner)) {
+    if (canvas_isMapped (t->tr_owner)) {
     
         gobj_getRectangle (y, t->tr_owner,
             &t->tr_srcTopLeftX,
@@ -686,7 +697,7 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
     
     PD_ASSERT (t->tr_destNumberOfInlets);
     
-    if (canvas_isVisible (t->tr_owner)) {
+    if (canvas_isMapped (t->tr_owner)) {
 
         gobj_getRectangle (cast_gobj (t->tr_destObject), t->tr_owner,
             &t->tr_destTopLeftX,
