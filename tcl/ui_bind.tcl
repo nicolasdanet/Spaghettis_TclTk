@@ -76,6 +76,9 @@ proc initialize {} {
     event add <<ClickLeft2>>                <Shift-ButtonPress-1>
     event add <<ClickLeft3>>                <$mod-ButtonPress-1>
     event add <<ClickLeft4>>                <$opt-ButtonPress-1>
+    event add <<ClickLeft5>>                <Double-Button-1>
+    event add <<ClickDummy>>                <Triple-Button-1>
+    event add <<ClickDummy>>                <Quadruple-Button-1>
     event add <<PopupMenu>>                 <ButtonPress-2>
     event add <<PopupMenu>>                 <ButtonPress-3>
     event add <<ClickRelease>>              <ButtonRelease-1>
@@ -128,18 +131,21 @@ proc initialize {} {
 
 proc bindPatch {top} {
 
-    bind $top.c <<Motion1>>                 { ::ui_bind::_motion %W %x %y 0   }
-    bind $top.c <<Motion2>>                 { ::ui_bind::_motion %W %x %y 2   }
-    bind $top.c <<ClickLeft1>>              { ::ui_bind::_mouse %W %x %y %b 0 }
-    bind $top.c <<ClickLeft2>>              { ::ui_bind::_mouse %W %x %y %b 1 }
-    bind $top.c <<ClickLeft3>>              { ::ui_bind::_mouse %W %x %y %b 2 }
-    bind $top.c <<ClickLeft4>>              { ::ui_bind::_mouse %W %x %y %b 3 }
-    bind $top.c <<PopupMenu>>               { ::ui_bind::_mouse %W %x %y %b 8 }
-    bind $top.c <<ClickRelease>>            { ::ui_bind::_mouseUp %W %x %y %b }
+    bind $top.c <<Motion1>>                 { ::ui_bind::_motion %W %x %y 0    }
+    bind $top.c <<Motion2>>                 { ::ui_bind::_motion %W %x %y 2    }
+    bind $top.c <<ClickLeft1>>              { ::ui_bind::_mouse %W %x %y %b 0  }
+    bind $top.c <<ClickLeft2>>              { ::ui_bind::_mouse %W %x %y %b 1  }
+    bind $top.c <<ClickLeft3>>              { ::ui_bind::_mouse %W %x %y %b 2  }
+    bind $top.c <<ClickLeft4>>              { ::ui_bind::_mouse %W %x %y %b 4  }
+    bind $top.c <<ClickLeft5>>              { ::ui_bind::_mouse %W %x %y %b 16 }
+    bind $top.c <<PopupMenu>>               { ::ui_bind::_mouse %W %x %y %b 8  }
+
+    bind $top.c <<ClickDummy>>              { ::ui_interface::pdsend "pd _dummy" }
+    bind $top.c <<ClickRelease>>            { ::ui_bind::_mouseUp %W %x %y %b    }
     
-    bind $top.c <MouseWheel>                { ::ui_patch::scroll %W y %D      }
+    bind $top.c <MouseWheel>                { ::ui_patch::scroll %W y %D }
     bind $top.c <Destroy>                   { ::ui_patch::closed [winfo toplevel %W] }
-        
+    
     wm protocol $top WM_DELETE_WINDOW       "::ui_patch::willClose $top"
 }
 

@@ -33,24 +33,16 @@ int                         editor_pasteOnset;              /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 static t_buffer             *editor_buffer;                 /* Shared. */
-static int                  editor_mouseUpX;                /* Shared. */
-static int                  editor_mouseUpY;                /* Shared. */
-static double               editor_mouseUpClickTime;        /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 #define EDITOR_MODIFIER_NONE            0
 #define EDITOR_MODIFIER_SHIFT           1
-#define EDITOR_MODIFIER_CTRL            2
+#define EDITOR_MODIFIER_CTRL            2                   /* Command key on Mac OS X. */
 #define EDITOR_MODIFIER_ALT             4
 #define EDITOR_MODIFIER_RIGHT           8
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#define EDITOR_DBLCLICK_INTERVAL        0.25
+#define EDITOR_MODIFIER_DOUBLE          16
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -65,6 +57,241 @@ static void canvas_taskDisplace (t_glist *glist)
         
     glist->gl_editor->e_previousX = glist->gl_editor->e_newX;
     glist->gl_editor->e_previousY = glist->gl_editor->e_newY;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void canvas_performMouseClickRight (t_glist *x, int positionX, int positionY, t_gobj *object)
+{
+    int canProperties = (!object || (object && class_hasPropertiesFunction (pd_class (object))));
+    int canOpen = (object && class_hasMethod (pd_class (object), sym_open));
+    
+    sys_vGui ("::ui_menu::showPopup .x%lx %d %d %d %d\n",
+                    x, 
+                    positionX, 
+                    positionY, 
+                    canProperties, 
+                    canOpen);
+}
+
+static void canvas_performMouse (t_glist *glist, int positionX, int positionY, int modifier, int clicked)
+{
+    int hasShift        = (modifier & EDITOR_MODIFIER_SHIFT);
+    int hasOption       = (modifier & EDITOR_MODIFIER_ALT);
+    int isRightClick    = (modifier & EDITOR_MODIFIER_RIGHT);
+    int isDoubleClick   = (modifier & EDITOR_MODIFIER_DOUBLE);
+    int runMode         = (modifier & EDITOR_MODIFIER_CTRL);
+
+    if (!glist->gl_editor) { PD_BUG; return; }
+    
+    runMode |= (!glist->gl_isEditMode);
+    
+    if (clicked) {
+    //
+    if (glist->gl_editor->e_grabbed) {
+        if (glist->gl_editor->e_fnKey) { (*glist->gl_editor->e_fnKey) (glist->gl_editor->e_grabbed, 0); }
+        glist_grab (glist, NULL, NULL, NULL, 0, 0);
+        PD_ASSERT (!glist->gl_editor->e_grabbed);
+    }  
+          
+    glist->gl_editor->e_onMotion = ACTION_NONE;
+    //
+    }
+
+    if (glist->gl_editor->e_onMotion == ACTION_NONE) {
+    //
+    t_gobj *y = NULL;
+    int a, b, c, d;
+    
+    glist->gl_editor->e_previousX = positionX;
+    glist->gl_editor->e_previousY = positionY;
+
+    if (runMode && !isRightClick)
+    {
+        int clickreturned   = 0;
+            
+        for (y = glist->gl_graphics; y; y = y->g_next)
+        {
+                /* check if the object wants to be clicked */
+            if (gobj_hit(y, glist, positionX, positionY, &a, &b, &c, &d)
+                && (clickreturned = gobj_click(y, glist, positionX, positionY,
+                    hasShift, ((modifier & EDITOR_MODIFIER_CTRL) && (!glist->gl_isEditMode)) || hasOption,
+                        0, clicked)))
+                            break;
+        }
+        if (!clicked)
+        {
+            if (y)
+                canvas_setCursorType(glist, clickreturned);
+            else canvas_setCursorType(glist, CURSOR_NOTHING);
+        }
+        return;
+    }
+        /* if not a runmode left click, fall here. */
+    if (y = canvas_getHitObject(glist, positionX, positionY, &a, &b, &c, &d))
+    {
+        t_object *ob = canvas_castToObjectIfPatchable(&y->g_pd);
+            /* check you're in the rectangle */
+        ob = canvas_castToObjectIfPatchable(&y->g_pd);
+        if (isRightClick)
+            canvas_performMouseClickRight(glist, positionX, positionY, y);
+        else if (hasShift)
+        {
+            if (clicked)
+            {
+                t_boxtext *rt;
+                if (ob && (rt = glist->gl_editor->e_selectedText) &&
+                    rt == glist_findrtext(glist, ob))
+                {
+                    rtext_mouse(rt, positionX - a, positionY - b, BOX_TEXT_SHIFT);
+                    glist->gl_editor->e_onMotion = ACTION_DRAG;
+                    glist->gl_editor->e_previousX = a;
+                    glist->gl_editor->e_previousY = b;
+                }
+                else
+                {
+                    if (canvas_isObjectSelected(glist, y))
+                        canvas_deselectObject(glist, y);
+                    else canvas_selectObject(glist, y);
+                }
+            }
+        }
+        else
+        {
+            int noutlet;
+                /* resize?  only for "true" text boxes or canvases*/
+            if (ob && !glist->gl_editor->e_selectedObjects &&
+                (ob->te_g.g_pd->c_behavior == &text_widgetBehavior ||
+                    canvas_castToGlistChecked(&ob->te_g.g_pd)) &&
+                        positionX >= c-4 && positionY < d-4)
+            {
+                if (clicked)
+                {
+                    if (!canvas_isObjectSelected(glist, y))
+                    {
+                        canvas_deselectAll(glist);
+                        canvas_selectObject(glist, y);
+                    }
+                    glist->gl_editor->e_onMotion = ACTION_RESIZE;
+                    glist->gl_editor->e_previousX = a;
+                    glist->gl_editor->e_previousY = b;
+                    glist->gl_editor->e_newX = positionX;
+                    glist->gl_editor->e_newY = positionY;
+                }                                   
+                else canvas_setCursorType(glist, CURSOR_EDIT_RESIZE);
+            }
+                /* look for an outlet */
+            else if (ob && (noutlet = object_numberOfOutlets(ob)) && positionY >= d-4)
+            {
+                int width = c - a;
+                int nout1 = (noutlet > 1 ? noutlet - 1 : 1);
+                int closest = ((positionX-a) * (nout1) + width/2)/width;
+                int hotspot = a +
+                    (width - INLETS_WIDTH) * closest / (nout1);
+                if (closest < noutlet &&
+                    positionX >= (hotspot-1) && positionX <= hotspot + (INLETS_WIDTH+1))
+                {
+                    if (clicked)
+                    {
+                        int issignal = object_isSignalOutlet(ob, closest);
+                        glist->gl_editor->e_onMotion = ACTION_CONNECT;
+                        glist->gl_editor->e_previousX = positionX;
+                        glist->gl_editor->e_previousY = positionY;
+                        sys_vGui(
+                          ".x%lx.c create line %d %d %d %d -width %d -tags TEMPORARY\n",
+                                glist, positionX, positionY, positionX, positionY,
+                                    (issignal ? 2 : 1));
+                    }                                   
+                    else canvas_setCursorType(glist, CURSOR_EDIT_CONNECT);
+                }
+                else if (clicked)
+                    goto nooutletafterall;
+                else canvas_setCursorType(glist, CURSOR_EDIT_NOTHING);
+            }
+                /* not in an outlet; select and move */
+            else if (clicked)
+            {
+                t_boxtext *rt;
+                    /* check if the box is being text edited */
+            nooutletafterall:
+                if (ob && (rt = glist->gl_editor->e_selectedText) &&
+                    rt == glist_findrtext(glist, ob))
+                {
+                    rtext_mouse(rt, positionX - a, positionY - b,
+                        (isDoubleClick ? BOX_TEXT_DOUBLE : BOX_TEXT_DOWN));
+                    glist->gl_editor->e_onMotion = ACTION_DRAG;
+                    glist->gl_editor->e_previousX = a;
+                    glist->gl_editor->e_previousY = b;
+                }
+                else
+                {
+                        /* otherwise select and drag to displace */
+                    if (!canvas_isObjectSelected(glist, y))
+                    {
+                        canvas_deselectAll(glist);
+                        canvas_selectObject(glist, y);
+                    }
+                    glist->gl_editor->e_onMotion = ACTION_MOVE;
+                }
+            }
+            else canvas_setCursorType(glist, CURSOR_EDIT_NOTHING);
+        }
+        return;
+    }
+        /* if right click doesn't hit any boxes, call rightclick
+            routine anyway */
+    if (isRightClick)
+        canvas_performMouseClickRight(glist, positionX, positionY, 0);
+
+        /* if not an editing action, and if we didn't hit a
+        box, set cursor and return */
+    if (runMode || isRightClick)
+    {
+        canvas_setCursorType(glist, CURSOR_NOTHING);
+        return;
+    }
+        /* having failed to find a box, we try lines now. */
+    if (!runMode && !hasOption && !hasShift)
+    {
+        t_linetraverser t;
+        t_outconnect *oc;
+        t_float fx = positionX, fy = positionY;
+        t_glist *glist2 = canvas_getView(glist);
+        canvas_traverseLinesStart(&t, glist2);
+        while (oc = canvas_traverseLinesNext(&t))
+        {
+            t_float lx1 = t.tr_lineStartX, ly1 = t.tr_lineStartY,
+                lx2 = t.tr_lineEndX, ly2 = t.tr_lineEndY;
+            t_float area = (lx2 - lx1) * (fy - ly1) -
+                (ly2 - ly1) * (fx - lx1);
+            t_float dsquare = (lx2-lx1) * (lx2-lx1) + (ly2-ly1) * (ly2-ly1);
+            if (area * area >= 50 * dsquare) continue;
+            if ((lx2-lx1) * (fx-lx1) + (ly2-ly1) * (fy-ly1) < 0) continue;
+            if ((lx2-lx1) * (lx2-fx) + (ly2-ly1) * (ly2-fy) < 0) continue;
+            if (clicked)
+            {
+                canvas_selectLine(glist2, oc, 
+                    canvas_getIndexOfObject(glist2, &t.tr_srcObject->te_g), t.tr_srcIndexOfOutlet,
+                    canvas_getIndexOfObject(glist2, &t.tr_destObject->te_g), t.tr_destIndexOfInlet);
+            }
+            canvas_setCursorType(glist, CURSOR_EDIT_DISCONNECT);
+            return;
+        }
+    }
+    canvas_setCursorType(glist, CURSOR_EDIT_NOTHING);
+    if (clicked)
+    {
+        if (!hasShift) canvas_deselectAll(glist);
+        sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags TEMPORARY\n",
+              glist, positionX, positionY, positionX, positionY);
+        glist->gl_editor->e_previousX = positionX;
+        glist->gl_editor->e_previousY = positionY;
+        glist->gl_editor->e_onMotion = ACTION_REGION;
+    }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -134,8 +361,8 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
 
     /* Report keystrokes to bounded objects. */
     
-    if (sym__key->s_thing && isDown)    { pd_float (sym__key->s_thing,   (t_float)n); }
-    if (sym__keyup->s_thing && !isDown) { pd_float (sym__keyup->s_thing, (t_float)n); }
+    if (sym__key->s_thing && isDown)    { if (n) { pd_float (sym__key->s_thing,   (t_float)n); } }
+    if (sym__keyup->s_thing && !isDown) { if (n) { pd_float (sym__keyup->s_thing, (t_float)n); } }
     
     if (sym__keyname->s_thing) {
         t_atom a[2];
@@ -153,7 +380,7 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
     if (glist->gl_editor->e_onMotion == ACTION_MOVE) { glist->gl_editor->e_onMotion = ACTION_NONE; }
     
     if (glist->gl_editor->e_grabbed && glist->gl_editor->e_fnKey) {
-        (*glist->gl_editor->e_fnKey) (glist->gl_editor->e_grabbed, (t_float)n);
+        if (n) { (*glist->gl_editor->e_fnKey) (glist->gl_editor->e_grabbed, (t_float)n); }
         
     } else if (glist->gl_editor->e_selectedText) {
         if (n || isArrows) {
@@ -244,10 +471,15 @@ void canvas_motion (t_glist *glist, t_float positionX, t_float positionY, t_floa
         }
 
     } else {
-        canvas_doclick (glist, (int)positionX, (int)positionY, 0, (int)modifier, 0);
+        canvas_performMouse (glist, (int)positionX, (int)positionY, (int)modifier, 0);
     }
     //
     }
+}
+
+void canvas_mouse (t_glist *glist, t_float positionX, t_float positionY, t_float dummy, t_float modifier)
+{
+    canvas_performMouse (glist, (int)positionX, (int)positionY, (int)modifier, 1);
 }
 
 void canvas_setBounds (t_glist *glist, t_float a, t_float b, t_float c, t_float d)
@@ -333,253 +565,7 @@ void canvas_editmode (t_glist *glist, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* right-clicking on a canvas object pops up a menu. */
-static void canvas_rightclick(t_glist *x, int xpos, int ypos, t_gobj *y)
-{
-    int canprop, canopen;
-    canprop = (!y || (y && class_hasPropertiesFunction (pd_class(&y->g_pd))));
-    canopen = (y && class_hasMethod (pd_class (&y->g_pd), sym_open));
-    sys_vGui("::ui_menu::showPopup .x%lx %d %d %d %d\n",
-        x, xpos, ypos, canprop, canopen);
-}
-
-    /* mouse click */
-void canvas_doclick(t_glist *x, int xpos, int ypos, int which, int mod, int doit)
-{
-    t_gobj *y;
-    int shiftmod, runmode, altmod, doublemod = 0, rightclick;
-    int x1=0, y1=0, x2=0, y2=0, clickreturned = 0;
-    
-    if (!x->gl_editor)
-    {
-        PD_BUG;
-        return;
-    }
-    
-    shiftmod = (mod & EDITOR_MODIFIER_SHIFT);
-    runmode = ((mod & EDITOR_MODIFIER_CTRL) || (!x->gl_isEditMode));
-    altmod = (mod & EDITOR_MODIFIER_ALT);
-    rightclick = (mod & EDITOR_MODIFIER_RIGHT);
-
-    // canvas_undo_already_set_move = 0;
-
-            /* if keyboard was grabbed, notify grabber and cancel the grab */
-    if (doit && x->gl_editor->e_grabbed && x->gl_editor->e_fnKey)
-    {
-        (* x->gl_editor->e_fnKey) (x->gl_editor->e_grabbed, 0);
-        glist_grab(x, 0, 0, 0, 0, 0);
-    }
-
-    if (doit && !runmode && xpos == editor_mouseUpX && ypos == editor_mouseUpY &&
-        sys_getRealTimeInSeconds() - editor_mouseUpClickTime < EDITOR_DBLCLICK_INTERVAL)
-            doublemod = 1;
-    //x->gl_editor->e_lastmoved = 0;
-    if (doit)
-    {
-        x->gl_editor->e_grabbed = 0;
-        x->gl_editor->e_onMotion = ACTION_NONE;
-    }
-    /* post("click %d %d %d %d", xpos, ypos, which, mod); */
-    
-    if (x->gl_editor->e_onMotion != ACTION_NONE)
-        return;
-
-    x->gl_editor->e_previousX = xpos;
-    x->gl_editor->e_previousY = ypos;
-
-    if (runmode && !rightclick)
-    {
-        for (y = x->gl_graphics; y; y = y->g_next)
-        {
-                /* check if the object wants to be clicked */
-            if (gobj_hit(y, x, xpos, ypos, &x1, &y1, &x2, &y2)
-                && (clickreturned = gobj_click(y, x, xpos, ypos,
-                    shiftmod, ((mod & EDITOR_MODIFIER_CTRL) && (!x->gl_isEditMode)) || altmod,
-                        0, doit)))
-                            break;
-        }
-        if (!doit)
-        {
-            if (y)
-                canvas_setCursorType(x, clickreturned);
-            else canvas_setCursorType(x, CURSOR_NOTHING);
-        }
-        return;
-    }
-        /* if not a runmode left click, fall here. */
-    if (y = canvas_getHitObject(x, xpos, ypos, &x1, &y1, &x2, &y2))
-    {
-        t_object *ob = canvas_castToObjectIfPatchable(&y->g_pd);
-            /* check you're in the rectangle */
-        ob = canvas_castToObjectIfPatchable(&y->g_pd);
-        if (rightclick)
-            canvas_rightclick(x, xpos, ypos, y);
-        else if (shiftmod)
-        {
-            if (doit)
-            {
-                t_boxtext *rt;
-                if (ob && (rt = x->gl_editor->e_selectedText) &&
-                    rt == glist_findrtext(x, ob))
-                {
-                    rtext_mouse(rt, xpos - x1, ypos - y1, BOX_TEXT_SHIFT);
-                    x->gl_editor->e_onMotion = ACTION_DRAG;
-                    x->gl_editor->e_previousX = x1;
-                    x->gl_editor->e_previousY = y1;
-                }
-                else
-                {
-                    if (canvas_isObjectSelected(x, y))
-                        canvas_deselectObject(x, y);
-                    else canvas_selectObject(x, y);
-                }
-            }
-        }
-        else
-        {
-            int noutlet;
-                /* resize?  only for "true" text boxes or canvases*/
-            if (ob && !x->gl_editor->e_selectedObjects &&
-                (ob->te_g.g_pd->c_behavior == &text_widgetBehavior ||
-                    canvas_castToGlistChecked(&ob->te_g.g_pd)) &&
-                        xpos >= x2-4 && ypos < y2-4)
-            {
-                if (doit)
-                {
-                    if (!canvas_isObjectSelected(x, y))
-                    {
-                        canvas_deselectAll(x);
-                        canvas_selectObject(x, y);
-                    }
-                    x->gl_editor->e_onMotion = ACTION_RESIZE;
-                    x->gl_editor->e_previousX = x1;
-                    x->gl_editor->e_previousY = y1;
-                    x->gl_editor->e_newX = xpos;
-                    x->gl_editor->e_newY = ypos;
-                }                                   
-                else canvas_setCursorType(x, CURSOR_EDIT_RESIZE);
-            }
-                /* look for an outlet */
-            else if (ob && (noutlet = object_numberOfOutlets(ob)) && ypos >= y2-4)
-            {
-                int width = x2 - x1;
-                int nout1 = (noutlet > 1 ? noutlet - 1 : 1);
-                int closest = ((xpos-x1) * (nout1) + width/2)/width;
-                int hotspot = x1 +
-                    (width - INLETS_WIDTH) * closest / (nout1);
-                if (closest < noutlet &&
-                    xpos >= (hotspot-1) && xpos <= hotspot + (INLETS_WIDTH+1))
-                {
-                    if (doit)
-                    {
-                        int issignal = object_isSignalOutlet(ob, closest);
-                        x->gl_editor->e_onMotion = ACTION_CONNECT;
-                        x->gl_editor->e_previousX = xpos;
-                        x->gl_editor->e_previousY = ypos;
-                        sys_vGui(
-                          ".x%lx.c create line %d %d %d %d -width %d -tags TEMPORARY\n",
-                                x, xpos, ypos, xpos, ypos,
-                                    (issignal ? 2 : 1));
-                    }                                   
-                    else canvas_setCursorType(x, CURSOR_EDIT_CONNECT);
-                }
-                else if (doit)
-                    goto nooutletafterall;
-                else canvas_setCursorType(x, CURSOR_EDIT_NOTHING);
-            }
-                /* not in an outlet; select and move */
-            else if (doit)
-            {
-                t_boxtext *rt;
-                    /* check if the box is being text edited */
-            nooutletafterall:
-                if (ob && (rt = x->gl_editor->e_selectedText) &&
-                    rt == glist_findrtext(x, ob))
-                {
-                    rtext_mouse(rt, xpos - x1, ypos - y1,
-                        (doublemod ? BOX_TEXT_DOUBLE : BOX_TEXT_DOWN));
-                    x->gl_editor->e_onMotion = ACTION_DRAG;
-                    x->gl_editor->e_previousX = x1;
-                    x->gl_editor->e_previousY = y1;
-                }
-                else
-                {
-                        /* otherwise select and drag to displace */
-                    if (!canvas_isObjectSelected(x, y))
-                    {
-                        canvas_deselectAll(x);
-                        canvas_selectObject(x, y);
-                    }
-                    x->gl_editor->e_onMotion = ACTION_MOVE;
-                }
-            }
-            else canvas_setCursorType(x, CURSOR_EDIT_NOTHING);
-        }
-        return;
-    }
-        /* if right click doesn't hit any boxes, call rightclick
-            routine anyway */
-    if (rightclick)
-        canvas_rightclick(x, xpos, ypos, 0);
-
-        /* if not an editing action, and if we didn't hit a
-        box, set cursor and return */
-    if (runmode || rightclick)
-    {
-        canvas_setCursorType(x, CURSOR_NOTHING);
-        return;
-    }
-        /* having failed to find a box, we try lines now. */
-    if (!runmode && !altmod && !shiftmod)
-    {
-        t_linetraverser t;
-        t_outconnect *oc;
-        t_float fx = xpos, fy = ypos;
-        t_glist *glist2 = canvas_getView(x);
-        canvas_traverseLinesStart(&t, glist2);
-        while (oc = canvas_traverseLinesNext(&t))
-        {
-            t_float lx1 = t.tr_lineStartX, ly1 = t.tr_lineStartY,
-                lx2 = t.tr_lineEndX, ly2 = t.tr_lineEndY;
-            t_float area = (lx2 - lx1) * (fy - ly1) -
-                (ly2 - ly1) * (fx - lx1);
-            t_float dsquare = (lx2-lx1) * (lx2-lx1) + (ly2-ly1) * (ly2-ly1);
-            if (area * area >= 50 * dsquare) continue;
-            if ((lx2-lx1) * (fx-lx1) + (ly2-ly1) * (fy-ly1) < 0) continue;
-            if ((lx2-lx1) * (lx2-fx) + (ly2-ly1) * (ly2-fy) < 0) continue;
-            if (doit)
-            {
-                canvas_selectLine(glist2, oc, 
-                    canvas_getIndexOfObject(glist2, &t.tr_srcObject->te_g), t.tr_srcIndexOfOutlet,
-                    canvas_getIndexOfObject(glist2, &t.tr_destObject->te_g), t.tr_destIndexOfInlet);
-            }
-            canvas_setCursorType(x, CURSOR_EDIT_DISCONNECT);
-            return;
-        }
-    }
-    canvas_setCursorType(x, CURSOR_EDIT_NOTHING);
-    if (doit)
-    {
-        if (!shiftmod) canvas_deselectAll(x);
-        sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags TEMPORARY\n",
-              x, xpos, ypos, xpos, ypos);
-        x->gl_editor->e_previousX = xpos;
-        x->gl_editor->e_previousY = ypos;
-        x->gl_editor->e_onMotion = ACTION_REGION;
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void canvas_mouse(t_glist *x, t_float xpos, t_float ypos, t_float which, t_float mod)
-{
-    canvas_doclick (x, (int)xpos, (int)ypos, (int)which, (int)mod, 1);
-}
-
-void canvas_mouseup(t_glist *x,
-    t_float fxpos, t_float fypos, t_float fwhich)
+void canvas_mouseup(t_glist *x, t_float fxpos, t_float fypos, t_float fwhich)
 {
     int xpos = fxpos, ypos = fypos, which = fwhich;
     /* post("mouseup %d %d %d", xpos, ypos, which); */
@@ -588,10 +574,6 @@ void canvas_mouseup(t_glist *x,
         PD_BUG;
         return;
     }
-
-    editor_mouseUpClickTime = sys_getRealTimeInSeconds();
-    editor_mouseUpX = xpos;
-    editor_mouseUpY = ypos;
 
     if (x->gl_editor->e_onMotion == ACTION_CONNECT)
         canvas_makingLine (x, xpos, ypos, 1);
@@ -629,10 +611,6 @@ void canvas_mouseup(t_glist *x,
 
     x->gl_editor->e_onMotion = ACTION_NONE;
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 static t_buffer *canvas_docopy(t_glist *x)
 {
