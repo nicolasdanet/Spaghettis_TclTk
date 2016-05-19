@@ -526,7 +526,15 @@ static void dial_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b
     *d = *b + cast_iem (z)->iem_height;
 }
 
-static int dial_behaviorClick (t_gobj *z, t_glist *glist, int a, int b, int shift, int alt, int dbl, int k)
+static int dial_behaviorClick (t_gobj *z,
+    t_glist *glist,
+    int a,
+    int b,
+    int shift,
+    int ctrl,
+    int alt,
+    int dbl,
+    int k)
 {
     if (k) {
         t_dial *x = (t_dial *)z;

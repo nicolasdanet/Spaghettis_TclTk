@@ -336,7 +336,15 @@ static void toggle_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
     *d = *b + cast_iem (z)->iem_height;
 }
 
-static int toggle_behaviorClick (t_gobj *z, t_glist *glist, int a, int b, int shift, int alt, int dbl, int k)
+static int toggle_behaviorClick (t_gobj *z, 
+    t_glist *glist,
+    int a,
+    int b,
+    int shift,
+    int ctrl,
+    int alt,
+    int dbl,
+    int k)
 {
     if (k) { 
         toggle_click ((t_toggle *)z, (t_float)a, (t_float)b, (t_float)shift, (t_float)0, (t_float)alt); 

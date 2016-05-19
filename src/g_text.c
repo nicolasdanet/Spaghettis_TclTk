@@ -566,9 +566,18 @@ static void gatom_set(t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     t_atom oldatom = x->a_atom;
     int changed = 0;
     if (!argc) return;
-    if (x->a_atom.a_type == A_FLOAT)
+
+    /*if (x->a_atom.a_type == A_FLOAT)
         x->a_atom.a_w.w_float = atom_getFloat(argv),
-            changed = (x->a_atom.a_w.w_float != oldatom.a_w.w_float);
+            changed = (x->a_atom.a_w.w_float != oldatom.a_w.w_float);*/
+            
+    if (x->a_atom.a_type == A_FLOAT)
+    {
+        x->a_atom.a_w.w_float = atom_getFloat(argv);
+        changed = ((x->a_atom.a_w.w_float != oldatom.a_w.w_float));
+        if (isnan(x->a_atom.a_w.w_float) != isnan(oldatom.a_w.w_float))
+            changed = 1;
+    }
     else if (x->a_atom.a_type == A_SYMBOL)
         x->a_atom.a_w.w_symbol = atom_getSymbol(argv),
             changed = (x->a_atom.a_w.w_symbol != oldatom.a_w.w_symbol);
@@ -1107,7 +1116,7 @@ static void text_vis(t_gobj *z, t_glist *glist, int vis)
 }
 
 static int text_click(t_gobj *z, struct _glist *glist,
-    int xpix, int ypix, int shift, int alt, int dbl, int doit)
+    int xpix, int ypix, int shift, int ctrl, int alt, int dbl, int doit)
 {
     t_object *x = (t_object *)z;
     if (x->te_type == TYPE_OBJECT)
@@ -1204,7 +1213,7 @@ t_widgetbehavior text_widgetBehavior =      /* Shared. */
     text_activate,
     text_delete,
     text_vis,
-    text_click,
+    text_click
 };
 
 static t_widgetbehavior gatom_widgetbehavior =
@@ -1215,7 +1224,7 @@ static t_widgetbehavior gatom_widgetbehavior =
     text_activate,
     text_delete,
     gatom_vis,
-    text_click,
+    text_click
 };
 
 /* -------------------- the "text" class  ------------ */

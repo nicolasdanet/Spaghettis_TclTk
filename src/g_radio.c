@@ -507,7 +507,15 @@ static void radio_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *
     }
 }
 
-static int radio_behaviorClick (t_gobj *z, t_glist *glist, int a, int b, int shift, int alt, int dbl, int k)
+static int radio_behaviorClick (t_gobj *z, 
+    t_glist *glist,
+    int a,
+    int b,
+    int shift,
+    int ctrl,
+    int alt,
+    int dbl,
+    int k)
 {
     if (k) {
         radio_click ((t_radio *)z, (t_float)a, (t_float)b, (t_float)shift, (t_float)0, (t_float)alt);

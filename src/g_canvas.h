@@ -215,7 +215,7 @@ typedef struct _editor {
     int                 e_previousY;
     int                 e_newX;
     int                 e_newY;
-    int                 e_onMotion;
+    int                 e_action;
     int                 e_isTextDirty;
     int                 e_isSelectedline;
     } t_editor;
@@ -550,6 +550,7 @@ int             gobj_click                              (t_gobj *x,
                                                             int a,
                                                             int b,
                                                             int shift,
+                                                            int ctrl,
                                                             int alt,
                                                             int dbl,
                                                             int k);

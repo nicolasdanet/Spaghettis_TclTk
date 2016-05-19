@@ -186,8 +186,8 @@ void glist_grab(t_glist *x, t_gobj *y, t_motionfn motionfn,
 {
     t_glist *x2 = canvas_getView(x);
     if (motionfn)
-        x2->gl_editor->e_onMotion = ACTION_PASS;
-    else x2->gl_editor->e_onMotion = 0;
+        x2->gl_editor->e_action = ACTION_PASS;
+    else x2->gl_editor->e_action = 0;
     x2->gl_editor->e_grabbed = y;
     x2->gl_editor->e_fnMotion = motionfn;
     x2->gl_editor->e_fnKey = keyfn;
@@ -1024,14 +1024,14 @@ static void graph_motion(void *z, t_float dx, t_float dy)
 }
 
 static int graph_click(t_gobj *z, struct _glist *glist,
-    int xpix, int ypix, int shift, int alt, int dbl, int doit)
+    int xpix, int ypix, int shift, int ctrl, int alt, int dbl, int doit)
 {
     t_glist *x = (t_glist *)z;
     t_gobj *y;
     int clickreturned = 0;
     if (!x->gl_isGraphOnParent)
         return (text_widgetBehavior.w_fnClick(z, glist,
-            xpix, ypix, shift, alt, dbl, doit));
+            xpix, ypix, shift, ctrl, alt, dbl, doit));
     else if (x->gl_haveWindow)
         return (0);
     else
@@ -1042,7 +1042,7 @@ static int graph_click(t_gobj *z, struct _glist *glist,
                 /* check if the object wants to be clicked */
             if (gobj_hit(y, x, xpix, ypix, &x1, &y1, &x2, &y2)
                 &&  (clickreturned = gobj_click(y, x, xpix, ypix,
-                    shift, alt, 0, doit)))
+                    shift, ctrl, alt, 0, doit)))
                         break;
         }
         if (!doit)

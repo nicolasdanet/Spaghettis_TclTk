@@ -38,6 +38,7 @@ typedef int  (*t_clickfn)               (t_gobj *x,
                                             int a,
                                             int b,
                                             int shift,
+                                            int ctrl,
                                             int alt,
                                             int dbl,
                                             int k);

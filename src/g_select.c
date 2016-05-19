@@ -237,7 +237,7 @@ void canvas_selectingByLasso (t_glist *glist, int positionX, int positionY, int 
         int d = PD_MAX (glist->gl_editor->e_previousY, positionY);
 
         canvas_selectObjectsInRectangle (glist, a, b, c, d);
-        glist->gl_editor->e_onMotion = ACTION_NONE;
+        glist->gl_editor->e_action = ACTION_NONE;
         
         sys_vGui (".x%lx.c delete TEMPORARY\n", glist);
         

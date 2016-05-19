@@ -376,7 +376,7 @@ int scalar_doclick(t_word *data, t_template *template, t_scalar *sc,
 }
 
 static int scalar_click(t_gobj *z, struct _glist *owner,
-    int xpix, int ypix, int shift, int alt, int dbl, int doit)
+    int xpix, int ypix, int shift, int ctrl, int alt, int dbl, int doit)
 {
     t_scalar *x = (t_scalar *)z;
     t_template *template = template_findbyname(x->sc_template);

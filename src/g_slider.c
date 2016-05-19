@@ -543,7 +543,15 @@ static void slider_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
     *d = *b + cast_iem (z)->iem_height;
 }
 
-static int slider_behaviorClick (t_gobj *z, t_glist *glist, int a, int b, int shift, int alt, int dbl, int k)
+static int slider_behaviorClick (t_gobj *z,
+    t_glist *glist,
+    int a,
+    int b,
+    int shift,
+    int ctrl,
+    int alt,
+    int dbl,
+    int k)
 {
     if (k) {
         t_slider *x = (t_slider *)z;

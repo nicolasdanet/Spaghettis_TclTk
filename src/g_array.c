@@ -719,11 +719,11 @@ static void garray_vis(t_gobj *z, t_glist *glist, int vis)
 }
 
 static int garray_click(t_gobj *z, t_glist *glist,
-    int xpix, int ypix, int shift, int alt, int dbl, int doit)
+    int xpix, int ypix, int shift, int ctrl, int alt, int dbl, int doit)
 {
     t_garray *x = (t_garray *)z;
     return (gobj_click(&x->x_scalar->sc_g, glist,
-        xpix, ypix, shift, alt, dbl, doit));
+        xpix, ypix, shift, ctrl, alt, dbl, doit));
 }
 
 #define ARRAYWRITECHUNKSIZE 1000
