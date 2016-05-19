@@ -171,7 +171,6 @@ typedef struct _slider {
     int         x_position;
     int         x_isLogarithmic;
     int         x_isSteadyOnClick;
-    int         x_isAccurateMoving;
     double      x_minimum;
     double      x_maximum;
     t_float     x_floatValue;
@@ -182,7 +181,6 @@ typedef struct _dial {
     char        x_t[IEM_DIAL_BUFFER_LENGTH];
     int         x_position;
     int         x_isLogarithmic;
-    int         x_isAccurateMoving;
     int         x_digitsNumber;
     int         x_digitsFontSize;
     int         x_steps;

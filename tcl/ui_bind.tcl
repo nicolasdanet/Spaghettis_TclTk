@@ -71,7 +71,9 @@ proc initialize {} {
     event add <<RunDSP>>                    <$mod-Key-r>
     
     event add <<Motion1>>                   <Motion>
-    event add <<Motion2>>                   <$mod-Motion>
+    event add <<Motion2>>                   <Shift-Motion>
+    event add <<Motion3>>                   <$mod-Motion>
+    event add <<Motion4>>                   <$opt-Motion>
     event add <<ClickLeft1>>                <ButtonPress-1>
     event add <<ClickLeft2>>                <Shift-ButtonPress-1>
     event add <<ClickLeft3>>                <$mod-ButtonPress-1>
@@ -132,7 +134,9 @@ proc initialize {} {
 proc bindPatch {top} {
 
     bind $top.c <<Motion1>>                 { ::ui_bind::_motion %W %x %y 0    }
-    bind $top.c <<Motion2>>                 { ::ui_bind::_motion %W %x %y 2    }
+    bind $top.c <<Motion2>>                 { ::ui_bind::_motion %W %x %y 1    }
+    bind $top.c <<Motion3>>                 { ::ui_bind::_motion %W %x %y 2    }
+    bind $top.c <<Motion4>>                 { ::ui_bind::_motion %W %x %y 4    }
     bind $top.c <<ClickLeft1>>              { ::ui_bind::_mouse %W %x %y %b 0  }
     bind $top.c <<ClickLeft2>>              { ::ui_bind::_mouse %W %x %y %b 1  }
     bind $top.c <<ClickLeft3>>              { ::ui_bind::_mouse %W %x %y %b 2  }

@@ -412,8 +412,9 @@ static void slider_motion (t_slider *x, t_float deltaX, t_float deltaY, t_float 
     int old = x->x_position;
     int t = old;
     int numberOfSteps = slider_getNumberOfSteps (x);
+    int shift = (int)modifier & MODIFIER_SHIFT;
     
-    if (x->x_isAccurateMoving) { t += (int)(x->x_isVertical ? -deltaY : deltaX); }
+    if (shift) { t += (int)(x->x_isVertical ? -deltaY : deltaX); }
     else {
         t += (int)(x->x_isVertical ? -deltaY : deltaX) * IEM_SLIDER_STEPS_PER_PIXEL;
     }
@@ -543,8 +544,7 @@ static void slider_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
     *d = *b + cast_iem (z)->iem_height;
 }
 
-static int slider_behaviorClick (t_gobj *z,
-    t_glist *glist,
+static int slider_behaviorClick (t_gobj *z,t_glist *glist,
     int a,
     int b,
     int shift,
@@ -555,7 +555,6 @@ static int slider_behaviorClick (t_gobj *z,
 {
     if (k) {
         t_slider *x = (t_slider *)z;
-        x->x_isAccurateMoving = (shift != 0);
         slider_click (x, (t_float)a, (t_float)b, (t_float)shift, (t_float)0, (t_float)alt);
     }
     

@@ -358,8 +358,7 @@ static void bng_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b,
     *d = *b + cast_iem (z)->iem_height;
 }
 
-static int bng_behaviorClick (t_gobj *z, 
-    t_glist *glist,
+static int bng_behaviorClick (t_gobj *z, t_glist *glist,
     int a,
     int b,
     int shift,

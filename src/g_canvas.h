@@ -76,6 +76,17 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define MODIFIER_NONE                   0
+#define MODIFIER_SHIFT                  1
+#define MODIFIER_CTRL                   2                   /* Command key on Mac OS X. */
+#define MODIFIER_ALT                    4
+#define MODIFIER_RIGHT                  8
+#define MODIFIER_DOUBLE                 16
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #define BOX_TEXT_DOWN                   1
 #define BOX_TEXT_DRAG                   2
 #define BOX_TEXT_DOUBLE                 3

@@ -36,16 +36,6 @@ static t_buffer             *editor_buffer;                 /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-#define EDITOR_MODIFIER_NONE            0
-#define EDITOR_MODIFIER_SHIFT           1
-#define EDITOR_MODIFIER_CTRL            2                   /* Command key on Mac OS X. */
-#define EDITOR_MODIFIER_ALT             4
-#define EDITOR_MODIFIER_RIGHT           8
-#define EDITOR_MODIFIER_DOUBLE          16
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 static void canvas_taskDisplace (t_glist *glist)
@@ -89,10 +79,10 @@ static void canvas_performMouseClick (t_glist *glist, int positionX, int positio
         k = gobj_click (y, glist, 
                 positionX, 
                 positionY, 
-                (modifier & EDITOR_MODIFIER_SHIFT), 
-                (modifier & EDITOR_MODIFIER_CTRL), 
-                (modifier & EDITOR_MODIFIER_ALT), 
-                (modifier & EDITOR_MODIFIER_DOUBLE), 
+                (modifier & MODIFIER_SHIFT), 
+                (modifier & MODIFIER_CTRL), 
+                (modifier & MODIFIER_ALT), 
+                (modifier & MODIFIER_DOUBLE), 
                 clicked);
                 
         if (k) { break; }
@@ -122,11 +112,11 @@ static void canvas_performMouseResetGrabbed (t_glist *glist)
 
 static void canvas_performMouse (t_glist *glist, int positionX, int positionY, int modifier, int clicked)
 {
-    int hasShift        = (modifier & EDITOR_MODIFIER_SHIFT);
-    int hasCtrl         = (modifier & EDITOR_MODIFIER_CTRL);
-    int hasAlt          = (modifier & EDITOR_MODIFIER_ALT);
-    int isRightClick    = (modifier & EDITOR_MODIFIER_RIGHT);
-    int isDoubleClick   = (modifier & EDITOR_MODIFIER_DOUBLE);
+    int hasShift        = (modifier & MODIFIER_SHIFT);
+    int hasCtrl         = (modifier & MODIFIER_CTRL);
+    int hasAlt          = (modifier & MODIFIER_ALT);
+    int isRightClick    = (modifier & MODIFIER_RIGHT);
+    int isDoubleClick   = (modifier & MODIFIER_DOUBLE);
     
     if (!glist->gl_editor) { PD_BUG; return; }
     

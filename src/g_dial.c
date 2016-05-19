@@ -384,8 +384,9 @@ static void dial_motion (t_dial *x, t_float deltaX, t_float deltaY, t_float modi
     int old = x->x_position;
     int t = old;
     int k = (int)(-deltaY);
+    int shift = (int)modifier & MODIFIER_SHIFT;
     
-    if (!x->x_isAccurateMoving) { k *= PD_MAX (1, (int)(x->x_steps * 0.05)); }
+    if (!shift) { k *= PD_MAX (1, (int)(x->x_steps * 0.05)); }
     
     t += k;
     
@@ -526,8 +527,7 @@ static void dial_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b
     *d = *b + cast_iem (z)->iem_height;
 }
 
-static int dial_behaviorClick (t_gobj *z,
-    t_glist *glist,
+static int dial_behaviorClick (t_gobj *z, t_glist *glist,
     int a,
     int b,
     int shift,
@@ -538,7 +538,6 @@ static int dial_behaviorClick (t_gobj *z,
 {
     if (k) {
         t_dial *x = (t_dial *)z;
-        x->x_isAccurateMoving = (shift != 0);
         dial_click (x, (t_float)a, (t_float)b, (t_float)shift, (t_float)0, (t_float)alt);
     }
     

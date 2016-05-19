@@ -507,8 +507,7 @@ static void radio_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *
     }
 }
 
-static int radio_behaviorClick (t_gobj *z, 
-    t_glist *glist,
+static int radio_behaviorClick (t_gobj *z, t_glist *glist,
     int a,
     int b,
     int shift,
