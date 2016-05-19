@@ -36,6 +36,11 @@ static t_buffer             *editor_buffer;                 /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+#define EDITOR_HANDLE_SIZE      4
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 static void canvas_taskDisplace (t_glist *glist)
@@ -52,6 +57,18 @@ static void canvas_taskDisplace (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+static void canvas_performMouseResetGrabbed (t_glist *glist)
+{
+    if (glist->gl_editor->e_grabbed) {
+        if (glist->gl_editor->e_fnKey) { 
+            (*glist->gl_editor->e_fnKey) (glist->gl_editor->e_grabbed, 0); 
+        }
+        glist_grab (glist, NULL, NULL, NULL, 0, 0);
+    }
+    
+    PD_ASSERT (!glist->gl_editor->e_grabbed);
+}
 
 static void canvas_performMouseClickRight (t_glist *glist, int positionX, int positionY, t_gobj *object)
 {
@@ -98,16 +115,132 @@ static void canvas_performMouseClick (t_glist *glist, int positionX, int positio
     }
 }
 
-static void canvas_performMouseResetGrabbed (t_glist *glist)
+static int canvas_performMouseHitResizeZone (t_object *object,
+    int positionX,
+    int positionY,
+    int c,
+    int d)
 {
-    if (glist->gl_editor->e_grabbed) {
-        if (glist->gl_editor->e_fnKey) { 
-            (*glist->gl_editor->e_fnKey) (glist->gl_editor->e_grabbed, 0); 
+    int k = 0;
+    
+    if (canvas_objectIsBox (object) || canvas_castToGlistChecked (cast_pd (object))) {
+        if (positionX >= (c - EDITOR_HANDLE_SIZE) && positionY >= (d - EDITOR_HANDLE_SIZE)) {
+            k = 1;
         }
-        glist_grab (glist, NULL, NULL, NULL, 0, 0);
+    }
+     
+    return k;
+}
+
+static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY, int modifier, int clicked)
+{
+    int n, a, b, c, d;
+    
+    t_gobj *y = canvas_getHitObject (glist, positionX, positionY, &a, &b, &c, &d);
+        
+    if (!y) { return 0; }
+    else {
+    //
+    t_object *object = canvas_castToObjectIfPatchable (y);
+    
+    if (modifier & MODIFIER_RIGHT) {
+        canvas_performMouseClickRight (glist, positionX, positionY, y);
+    
+    } else if (modifier & MODIFIER_SHIFT) {
+    
+        if (clicked) {
+        //
+        t_boxtext *text = glist->gl_editor->e_selectedText;
+        
+        if (object && text && (text == glist_findrtext (glist, object))) {
+            rtext_mouse (text, positionX - a, positionY - b, BOX_TEXT_SHIFT);
+            glist->gl_editor->e_action = ACTION_DRAG;
+            glist->gl_editor->e_previousX = a;
+            glist->gl_editor->e_previousY = b;
+            
+        } else {
+            if (canvas_isObjectSelected (glist, y)) { canvas_deselectObject (glist, y); }
+            else { 
+                canvas_selectObject (glist, y);
+            }
+        }
+        //
+        }
+        
+    } else {
+          
+        if (object && canvas_performMouseHitResizeZone (object, positionX, positionY, c, d)) {
+        
+            if (!clicked) { canvas_setCursorType (glist, CURSOR_EDIT_RESIZE); }
+            else {
+                canvas_deselectAll (glist);
+                canvas_selectObject (glist, y);
+                
+                glist->gl_editor->e_action      = ACTION_RESIZE;
+                glist->gl_editor->e_previousX   = a;
+                glist->gl_editor->e_previousY   = b;
+                glist->gl_editor->e_newX        = positionX;
+                glist->gl_editor->e_newY        = positionY;
+            }  
+                                             
+        } else if (object && (n = object_numberOfOutlets(object)) && positionY >= d-4) {
+            int width = c - a;
+            int nout1 = (n > 1 ? n - 1 : 1);
+            int closest = ((positionX-a) * (nout1) + width/2)/width;
+            int hotspot = a +
+                (width - INLETS_WIDTH) * closest / (nout1);
+            if (closest < n &&
+                positionX >= (hotspot-1) && positionX <= hotspot + (INLETS_WIDTH+1))
+            {
+                if (clicked)
+                {
+                    int issignal = object_isSignalOutlet(object, closest);
+                    glist->gl_editor->e_action = ACTION_CONNECT;
+                    glist->gl_editor->e_previousX = positionX;
+                    glist->gl_editor->e_previousY = positionY;
+                    sys_vGui(
+                      ".x%lx.c create line %d %d %d %d -width %d -tags TEMPORARY\n",
+                            glist, positionX, positionY, positionX, positionY,
+                                (issignal ? 2 : 1));
+                }                                   
+                else canvas_setCursorType(glist, CURSOR_EDIT_CONNECT);
+            }
+            else if (clicked)
+                goto nooutletafterall;
+            else canvas_setCursorType(glist, CURSOR_EDIT_NOTHING);
+        }
+            /* not in an outlet; select and move */
+        else if (clicked)
+        {
+            t_boxtext *rt;
+                /* check if the box is being text edited */
+        nooutletafterall:
+            if (object && (rt = glist->gl_editor->e_selectedText) &&
+                rt == glist_findrtext(glist, object))
+            {
+                rtext_mouse(rt, positionX - a, positionY - b,
+                    ((modifier & MODIFIER_DOUBLE) ? BOX_TEXT_DOUBLE : BOX_TEXT_DOWN));
+                glist->gl_editor->e_action = ACTION_DRAG;
+                glist->gl_editor->e_previousX = a;
+                glist->gl_editor->e_previousY = b;
+            }
+            else
+            {
+                    /* otherwise select and drag to displace */
+                if (!canvas_isObjectSelected(glist, y))
+                {
+                    canvas_deselectAll(glist);
+                    canvas_selectObject(glist, y);
+                }
+                glist->gl_editor->e_action = ACTION_MOVE;
+            }
+        }
+        else canvas_setCursorType(glist, CURSOR_EDIT_NOTHING);
+    }
+    //
     }
     
-    PD_ASSERT (!glist->gl_editor->e_grabbed);
+    return 1;
 }
 
 static void canvas_performMouse (t_glist *glist, int positionX, int positionY, int modifier, int clicked)
@@ -116,11 +249,10 @@ static void canvas_performMouse (t_glist *glist, int positionX, int positionY, i
     int hasCtrl         = (modifier & MODIFIER_CTRL);
     int hasAlt          = (modifier & MODIFIER_ALT);
     int isRightClick    = (modifier & MODIFIER_RIGHT);
-    int isDoubleClick   = (modifier & MODIFIER_DOUBLE);
-    
-    if (!glist->gl_editor) { PD_BUG; return; }
     
     int isRunMode = hasCtrl || (!glist->gl_isEditMode);
+    
+    if (!glist->gl_editor) { PD_BUG; return; }
     
     if (clicked) { canvas_performMouseResetGrabbed (glist); glist->gl_editor->e_action = ACTION_NONE; }
 
@@ -130,126 +262,14 @@ static void canvas_performMouse (t_glist *glist, int positionX, int positionY, i
     glist->gl_editor->e_previousY = positionY;
 
     if (isRunMode && !isRightClick) {
-        canvas_performMouseClick (glist, positionX, positionY, modifier, clicked); return;
-    } else {
-    
-    t_gobj *y = NULL;
-    int a, b, c, d;
-        /* if not a runmode left click, fall here. */
-    if (y = canvas_getHitObject(glist, positionX, positionY, &a, &b, &c, &d))
-    {
-        t_object *ob = canvas_castToObjectIfPatchable(&y->g_pd);
-            /* check you're in the rectangle */
-        ob = canvas_castToObjectIfPatchable(&y->g_pd);
-        if (isRightClick)
-            canvas_performMouseClickRight(glist, positionX, positionY, y);
-        else if (hasShift)
-        {
-            if (clicked)
-            {
-                t_boxtext *rt;
-                if (ob && (rt = glist->gl_editor->e_selectedText) &&
-                    rt == glist_findrtext(glist, ob))
-                {
-                    rtext_mouse(rt, positionX - a, positionY - b, BOX_TEXT_SHIFT);
-                    glist->gl_editor->e_action = ACTION_DRAG;
-                    glist->gl_editor->e_previousX = a;
-                    glist->gl_editor->e_previousY = b;
-                }
-                else
-                {
-                    if (canvas_isObjectSelected(glist, y))
-                        canvas_deselectObject(glist, y);
-                    else canvas_selectObject(glist, y);
-                }
-            }
-        }
-        else
-        {
-            int noutlet;
-                /* resize?  only for "true" text boxes or canvases*/
-            if (ob && !glist->gl_editor->e_selectedObjects &&
-                (ob->te_g.g_pd->c_behavior == &text_widgetBehavior ||
-                    canvas_castToGlistChecked(&ob->te_g.g_pd)) &&
-                        positionX >= c-4 && positionY < d-4)
-            {
-                if (clicked)
-                {
-                    if (!canvas_isObjectSelected(glist, y))
-                    {
-                        canvas_deselectAll(glist);
-                        canvas_selectObject(glist, y);
-                    }
-                    glist->gl_editor->e_action = ACTION_RESIZE;
-                    glist->gl_editor->e_previousX = a;
-                    glist->gl_editor->e_previousY = b;
-                    glist->gl_editor->e_newX = positionX;
-                    glist->gl_editor->e_newY = positionY;
-                }                                   
-                else canvas_setCursorType(glist, CURSOR_EDIT_RESIZE);
-            }
-                /* look for an outlet */
-            else if (ob && (noutlet = object_numberOfOutlets(ob)) && positionY >= d-4)
-            {
-                int width = c - a;
-                int nout1 = (noutlet > 1 ? noutlet - 1 : 1);
-                int closest = ((positionX-a) * (nout1) + width/2)/width;
-                int hotspot = a +
-                    (width - INLETS_WIDTH) * closest / (nout1);
-                if (closest < noutlet &&
-                    positionX >= (hotspot-1) && positionX <= hotspot + (INLETS_WIDTH+1))
-                {
-                    if (clicked)
-                    {
-                        int issignal = object_isSignalOutlet(ob, closest);
-                        glist->gl_editor->e_action = ACTION_CONNECT;
-                        glist->gl_editor->e_previousX = positionX;
-                        glist->gl_editor->e_previousY = positionY;
-                        sys_vGui(
-                          ".x%lx.c create line %d %d %d %d -width %d -tags TEMPORARY\n",
-                                glist, positionX, positionY, positionX, positionY,
-                                    (issignal ? 2 : 1));
-                    }                                   
-                    else canvas_setCursorType(glist, CURSOR_EDIT_CONNECT);
-                }
-                else if (clicked)
-                    goto nooutletafterall;
-                else canvas_setCursorType(glist, CURSOR_EDIT_NOTHING);
-            }
-                /* not in an outlet; select and move */
-            else if (clicked)
-            {
-                t_boxtext *rt;
-                    /* check if the box is being text edited */
-            nooutletafterall:
-                if (ob && (rt = glist->gl_editor->e_selectedText) &&
-                    rt == glist_findrtext(glist, ob))
-                {
-                    rtext_mouse(rt, positionX - a, positionY - b,
-                        (isDoubleClick ? BOX_TEXT_DOUBLE : BOX_TEXT_DOWN));
-                    glist->gl_editor->e_action = ACTION_DRAG;
-                    glist->gl_editor->e_previousX = a;
-                    glist->gl_editor->e_previousY = b;
-                }
-                else
-                {
-                        /* otherwise select and drag to displace */
-                    if (!canvas_isObjectSelected(glist, y))
-                    {
-                        canvas_deselectAll(glist);
-                        canvas_selectObject(glist, y);
-                    }
-                    glist->gl_editor->e_action = ACTION_MOVE;
-                }
-            }
-            else canvas_setCursorType(glist, CURSOR_EDIT_NOTHING);
-        }
+        canvas_performMouseClick (glist, positionX, positionY, modifier, clicked);
         return;
     }
-    
+
+    if (canvas_performMouseHit (glist, positionX, positionY, modifier, clicked)) { 
+        return; 
     }
-        /* if right click doesn't hit any boxes, call rightclick
-            routine anyway */
+
     if (isRightClick)
         canvas_performMouseClickRight(glist, positionX, positionY, 0);
 
