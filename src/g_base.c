@@ -402,14 +402,14 @@ void canvas_setCursorType (t_glist *glist, int type)
     static int lastType = CURSOR_NOTHING;       /* Shared. */
     static char *cursors[] =                    /* Shared. */
         {
-            "left_ptr",     // CURSOR_NOTHING
-            "hand2",        // CURSOR_CLICK
-            "crosshair",    // CURSOR_THICKEN
-            "plus",         // CURSOR_ADD
-            "left_ptr",     // CURSOR_EDIT_NOTHING
-            "circle",       // CURSOR_EDIT_CONNECT
-            "X_cursor",     // CURSOR_EDIT_DISCONNECT
-            "crosshair"     // CURSOR_EDIT_RESIZE
+            "left_ptr",             // CURSOR_NOTHING
+            "hand2",                // CURSOR_CLICK
+            "crosshair",            // CURSOR_THICKEN
+            "plus",                 // CURSOR_ADD
+            "left_ptr",             // CURSOR_EDIT_NOTHING
+            "circle",               // CURSOR_EDIT_CONNECT
+            "X_cursor",             // CURSOR_EDIT_DISCONNECT
+            "sb_h_double_arrow"     // CURSOR_EDIT_RESIZE
         };
     
     type = PD_CLAMP (type, CURSOR_NOTHING, CURSOR_EDIT_RESIZE);
