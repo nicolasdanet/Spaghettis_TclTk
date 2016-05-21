@@ -227,7 +227,7 @@ int canvas_isObjectSelected (t_glist *glist, t_gobj *y)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_selectingByLasso (t_glist *glist, int positionX, int positionY, int close)
+static void canvas_selectingByLasso (t_glist *glist, int positionX, int positionY, int close)
 {
     if (close) {
     
@@ -250,6 +250,20 @@ void canvas_selectingByLasso (t_glist *glist, int positionX, int positionY, int 
                         positionY);
     }
 }
+
+void canvas_selectingByLassoStart (t_glist *glist, int positionX, int positionY)
+{
+    canvas_selectingByLasso (glist, positionX, positionY, 0);
+}
+
+void canvas_selectingByLassoEnd (t_glist *glist, int positionX, int positionY)
+{
+    canvas_selectingByLasso (glist, positionX, positionY, 1);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void canvas_selectObjectsInRectangle (t_glist *glist, int a, int b, int c, int d)
 {

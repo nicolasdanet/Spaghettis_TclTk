@@ -388,11 +388,6 @@ int             canvas_hasLine                          (t_glist *glist,
                                                             t_object *objectIn,
                                                             int n);
                                                             
-void            canvas_makingLine                       (t_glist *glist, 
-                                                            int positionX,
-                                                            int positionY,
-                                                            int create);
-                                                            
 void            canvas_setLastMotionCoordinates         (t_glist *glist, int a, int b);
 void            canvas_getLastMotionCoordinates         (t_glist *glist, int *a, int *b);
 
@@ -430,11 +425,9 @@ void            canvas_removeSelectedLine               (t_glist *glist);
 void            canvas_displaceSelectedObjects          (t_glist *glist, int deltaX, int deltaY);
 
 int             canvas_isObjectSelected                 (t_glist *glist, t_gobj *y);
-void            canvas_selectingByLasso                 (t_glist *glist, 
-                                                            int positionX,
-                                                            int positionY,
-                                                            int close);
-                                                            
+void            canvas_selectingByLassoStart            (t_glist *glist, int positionX, int positionY);
+void            canvas_selectingByLassoEnd              (t_glist *glist, int positionX, int positionY);
+
 void            canvas_selectObjectsInRectangle         (t_glist *glist, int a, int b, int c, int d);
 void            canvas_selectObject                     (t_glist *glist, t_gobj *y);
 void            canvas_selectObjectIfNotAlreadySelected (t_glist *glist, t_gobj *y);

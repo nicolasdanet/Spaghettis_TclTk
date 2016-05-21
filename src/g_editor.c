@@ -58,6 +58,100 @@ static void canvas_taskDisplace (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int create)
+{
+    int a, b, c, d;
+    int m, n, o, p;
+    
+    int previousX = glist->gl_editor->e_previousX;
+    int previousY = glist->gl_editor->e_previousY;
+    
+    t_gobj *y1 = canvas_getHitObject (glist, previousX, previousY, &a, &b, &c, &d);
+    t_gobj *y2 = canvas_getHitObject (glist, positionX, positionY, &m, &n, &o, &p);
+    
+    if (create) { sys_vGui (".x%lx.c delete TEMPORARY\n", glist); }
+    else {
+        sys_vGui (".x%lx.c coords TEMPORARY %d %d %d %d\n",
+                        glist,
+                        glist->gl_editor->e_previousX,
+                        glist->gl_editor->e_previousY,
+                        positionX,
+                        positionY);
+    }
+
+    if (y1 && y2) {
+    //
+    t_object *object1 = canvas_castToObjectIfPatchable (y1);
+    t_object *object2 = canvas_castToObjectIfPatchable (y2);
+    
+    if (object1 && object2 && object1 != object2) {
+    //
+    int numberOfOutlets = object_numberOfOutlets (object1);
+    int numberOfInlets  = object_numberOfInlets (object2);
+    
+    if (numberOfOutlets && numberOfInlets) {
+    //
+    int closest1 = INLETS_NEXTTO (previousX, a, c, numberOfOutlets);
+    int closest2 = INLETS_NEXTTO (positionX, m, o, numberOfInlets);
+    
+    PD_ASSERT (closest1 >= 0 && closest1 < numberOfOutlets);
+    PD_ASSERT (closest2 >= 0 && closest2 < numberOfInlets);
+
+    if (!canvas_hasLine (glist, object1, closest1, object2, closest2)) {
+    //
+    if (object_isSignalOutlet (object1, closest1) && !object_isSignalInlet (object2, closest2)) {
+        if (create) { 
+            post_error (PD_TRANSLATE ("connection: can't connect signal outlet to control inlet")); // --
+        }
+    } else {
+    //
+    if (create) {
+        t_outconnect *connection = object_connect (object1, closest1, object2, closest2);
+        
+        sys_vGui (".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
+                        canvas_getView (glist),
+                        a + INLETS_MIDDLE ((c - a), closest1, numberOfOutlets),
+                        d,
+                        m + INLETS_MIDDLE ((o - m), closest2, numberOfInlets),
+                        n,
+                        (object_isSignalOutlet (object1, closest1) ? 2 : 1),
+                        connection);
+                        
+        canvas_dirty (glist, 1);
+        
+    } else { 
+        canvas_setCursorType (glist, CURSOR_CONNECT);
+    }
+    
+    return;
+    //
+    }
+    //
+    }
+    //
+    }
+    //
+    }
+    //
+    }
+    
+    canvas_setCursorType (glist, CURSOR_NOTHING);
+}
+
+static void canvas_makeLineStart (t_glist *glist, int positionX, int positionY)
+{
+    canvas_makeLine (glist, positionX, positionY, 0);
+}
+
+static void canvas_makeLineEnd (t_glist *glist, int positionX, int positionY)
+{
+    canvas_makeLine (glist, positionX, positionY, 1);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void canvas_performMouseResetGrabbed (t_glist *glist)
 {
     if (glist->gl_editor->e_grabbed) {
@@ -296,7 +390,7 @@ static int canvas_performMouseLines (t_glist *glist, int positionX, int position
     return 0;
 }
 
-static void canvas_performMouseStartLasso (t_glist *glist, int positionX, int positionY, int modifier)
+static void canvas_performMouseLassoStart (t_glist *glist, int positionX, int positionY, int modifier)
 {
     if (!(modifier & MODIFIER_SHIFT)) { canvas_deselectAll (glist); }
     
@@ -340,7 +434,7 @@ static void canvas_performMouse (t_glist *glist, int positionX, int positionY, i
             else if (!isRunMode) {
                 if (!hasShift && canvas_performMouseLines (glist, positionX, positionY, clicked)) {
                 } else if (clicked) {
-                    canvas_performMouseStartLasso (glist, positionX, positionY, modifier);
+                    canvas_performMouseLassoStart (glist, positionX, positionY, modifier);
                 }
             }
             
@@ -478,10 +572,10 @@ void canvas_motion (t_glist *glist, t_float positionX, t_float positionY, t_floa
         glist->gl_editor->e_newY = positionY;
     
     } else if (action == ACTION_CONNECT) {
-        canvas_makingLine (glist, positionX, positionY, 0);
+        canvas_makeLineStart (glist, positionX, positionY);
         
     } else if (action == ACTION_REGION)  {
-        canvas_selectingByLasso (glist, positionX, positionY, 0);
+        canvas_selectingByLassoStart (glist, positionX, positionY);
         
     } else if (action == ACTION_PASS)    {
         PD_ASSERT (glist->gl_editor->e_fnMotion);
@@ -630,9 +724,9 @@ void canvas_mouseup(t_glist *x, t_float fxpos, t_float fypos, t_float fwhich)
     }
 
     if (x->gl_editor->e_action == ACTION_CONNECT)
-        canvas_makingLine (x, xpos, ypos, 1);
+        canvas_makeLineEnd (x, xpos, ypos);
     else if (x->gl_editor->e_action == ACTION_REGION)
-        canvas_selectingByLasso(x, xpos, ypos, 1);
+        canvas_selectingByLassoEnd (x, xpos, ypos);
     else if (x->gl_editor->e_action == ACTION_MOVE ||
         x->gl_editor->e_action == ACTION_RESIZE)
     {
