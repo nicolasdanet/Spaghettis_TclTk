@@ -482,7 +482,7 @@ void            canvas_mouse                            (t_glist *glist,
                                                             t_float button,
                                                             t_float modifier);
 
-void            canvas_mouseup                          (t_glist *glist,
+void            canvas_mouseUp                          (t_glist *glist,
                                                             t_float a,
                                                             t_float b,
                                                             t_float button);

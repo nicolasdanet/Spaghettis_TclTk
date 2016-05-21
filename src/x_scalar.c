@@ -194,7 +194,7 @@ void x_scalar_setup(void )
         sym_setbounds, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
     class_addMethod(scalar_define_class, (t_method)canvas_mouse, sym_mouse,
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addMethod(scalar_define_class, (t_method)canvas_mouseup, sym_mouseup,
+    class_addMethod(scalar_define_class, (t_method)canvas_mouseUp, sym_mouseup,
         A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
     class_addMethod(scalar_define_class, (t_method)canvas_key, sym_key,
         A_GIMME, A_NULL);

@@ -747,7 +747,7 @@ void canvas_setup (void)
     class_addClick (c, canvas_click);
     class_addMotion (c, canvas_motion);
     class_addMouse (c, canvas_mouse);
-    class_addMouseUp (c, canvas_mouseup);
+    class_addMouseUp (c, canvas_mouseUp);
     class_addBounds (c, canvas_setBounds);
 
     class_addMethod (c, (t_method)canvas_coords,        sym_coords,         A_GIMME, A_NULL);

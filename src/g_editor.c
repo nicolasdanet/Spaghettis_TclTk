@@ -152,6 +152,47 @@ static void canvas_makeLineEnd (t_glist *glist, int positionX, int positionY)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void canvas_motionResize (t_glist *glist, t_float positionX, t_float positionY)
+{
+    int a, b, c, d;
+        
+    t_gobj *y = canvas_getHitObject (glist, 
+                        glist->gl_editor->e_previousX, 
+                        glist->gl_editor->e_previousY,
+                        &a, &b, &c, &d);
+        
+    if (y) {
+    //
+    t_object *object = canvas_castToObjectIfPatchable (y);
+    
+    if (object) {
+    //
+    if (canvas_objectIsBox (object)) {
+        int w = (positionX - a) / font_getHostFontWidth (canvas_getFontSize (glist));
+        object->te_width = PD_MAX (1, w);
+        gobj_visibilityChanged (y, glist, 0);
+        canvas_updateLinesByObject (glist, object);
+        gobj_visibilityChanged (y, glist, 1);
+        
+    } else if (pd_class (object) == canvas_class) {
+        gobj_visibilityChanged (y, glist, 0);
+        cast_glist (object)->gl_width  += positionX - glist->gl_editor->e_newX;
+        cast_glist (object)->gl_height += positionY - glist->gl_editor->e_newY;
+        glist->gl_editor->e_newX = positionX;
+        glist->gl_editor->e_newY = positionY;
+        canvas_updateLinesByObject (glist, object);
+        gobj_visibilityChanged (y, glist, 1);
+    }
+    //
+    }
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void canvas_performMouseResetGrabbed (t_glist *glist)
 {
     if (glist->gl_editor->e_grabbed) {
@@ -416,7 +457,7 @@ static void canvas_performMouse (t_glist *glist, int positionX, int positionY, i
     int isRightClick = (modifier & MODIFIER_RIGHT);
     int isRunMode    = (modifier & MODIFIER_CTRL) || (!glist->gl_isEditMode);
     
-    if (!glist->gl_editor) { PD_BUG; return; }
+    PD_ASSERT (glist->gl_editor);
     
     if (clicked) { canvas_performMouseResetGrabbed (glist); glist->gl_editor->e_action = ACTION_NONE; }
 
@@ -462,8 +503,7 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
     /* Forbid following characters to avoid to mislead interpretation of scripts. */
     
     if (n == '{' || n == '}' || n == '\\') { 
-        post_error (PD_TRANSLATE ("key: keycode %d not allowed"), (int)n);
-        return; 
+        post_error (PD_TRANSLATE ("key: keycode %d not allowed"), (int)n); return; 
     }
 
     /* Parse special keys. */
@@ -529,17 +569,23 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
     if (glist->gl_editor->e_action == ACTION_MOVE) { glist->gl_editor->e_action = ACTION_NONE; }
     
     if (glist->gl_editor->e_grabbed && glist->gl_editor->e_fnKey) {
-        if (n) { (*glist->gl_editor->e_fnKey) (glist->gl_editor->e_grabbed, (t_float)n); }
+        if (n) { 
+            (*glist->gl_editor->e_fnKey) (glist->gl_editor->e_grabbed, (t_float)n); 
+        }
         
     } else if (glist->gl_editor->e_selectedText) {
         if (n || isArrows) {
             rtext_key (glist->gl_editor->e_selectedText, (int)n, s);
-            if (glist->gl_editor->e_isTextDirty) { canvas_dirty (glist, 1); }
+            if (glist->gl_editor->e_isTextDirty) { 
+                canvas_dirty (glist, 1); 
+            }
         }
         
     } else if (s == sym_Delete || s == sym_BackSpace) {
-        if (glist->gl_editor->e_isSelectedline)       { canvas_removeSelectedLine (glist);    }
-        else if (glist->gl_editor->e_selectedObjects) { canvas_removeSelectedObjects (glist); }
+        if (glist->gl_editor->e_isSelectedline) { canvas_removeSelectedLine (glist); }
+        else if (glist->gl_editor->e_selectedObjects) { 
+            canvas_removeSelectedObjects (glist); 
+        }
     }
     //
     }
@@ -554,12 +600,12 @@ void canvas_click (t_glist *glist, t_float a, t_float b, t_float shift, t_float 
 
 void canvas_motion (t_glist *glist, t_float positionX, t_float positionY, t_float modifier)
 { 
-    if (!glist->gl_editor) { PD_BUG; return; }
-    else {
+    PD_ASSERT (glist->gl_editor);
+    
+    {
     //
     int action = glist->gl_editor->e_action;
     
-    int a, b, c, d;
     int deltaX = positionX - glist->gl_editor->e_previousX;
     int deltaY = positionY - glist->gl_editor->e_previousY;
     
@@ -588,36 +634,7 @@ void canvas_motion (t_glist *glist, t_float positionX, t_float positionY, t_floa
         if (text) { rtext_mouse (text, deltaX, deltaY, BOX_TEXT_DRAG); }
                 
     } else if (action == ACTION_RESIZE)  {
-
-        t_gobj *y = canvas_getHitObject (glist, 
-                        glist->gl_editor->e_previousX, 
-                        glist->gl_editor->e_previousY,
-                        &a, &b, &c, &d);
-        
-        if (y) {
-            t_object *object = canvas_castToObjectIfPatchable (y);
-            
-            if (object) {
-            //
-            if (canvas_objectIsBox (object)) {
-                int w = (positionX - a) / font_getHostFontWidth (canvas_getFontSize (glist));
-                object->te_width = PD_MAX (1, w);
-                gobj_visibilityChanged (y, glist, 0);
-                canvas_updateLinesByObject (glist, object);
-                gobj_visibilityChanged (y, glist, 1);
-                
-            } else if (pd_class (object) == canvas_class) {
-                gobj_visibilityChanged (y, glist, 0);
-                cast_glist (object)->gl_width  += positionX - glist->gl_editor->e_newX;
-                cast_glist (object)->gl_height += positionY - glist->gl_editor->e_newY;
-                glist->gl_editor->e_newX = positionX;
-                glist->gl_editor->e_newY = positionY;
-                canvas_updateLinesByObject (glist, object);
-                gobj_visibilityChanged (y, glist, 1);
-            }
-            //
-            }
-        }
+        canvas_motionResize (glist, positionX, positionY);
 
     } else {
         canvas_performMouse (glist, (int)positionX, (int)positionY, (int)modifier, 0);
@@ -629,6 +646,27 @@ void canvas_motion (t_glist *glist, t_float positionX, t_float positionY, t_floa
 void canvas_mouse (t_glist *glist, t_float positionX, t_float positionY, t_float dummy, t_float modifier)
 {
     canvas_performMouse (glist, (int)positionX, (int)positionY, (int)modifier, 1);
+}
+
+void canvas_mouseUp (t_glist *glist, t_float positionX, t_float positionY, t_float dummy)
+{
+    PD_ASSERT (glist->gl_editor);
+
+    int action = glist->gl_editor->e_action;
+    
+    if (action == ACTION_CONNECT) {
+        canvas_makeLineEnd (glist, (int)positionX, (int)positionY);
+        
+    } else if (action == ACTION_REGION) {
+        canvas_selectingByLassoEnd (glist, (int)positionX, (int)positionY);
+        
+    } else if (action == ACTION_MOVE) {
+        if (canvas_getNumberOfSelectedObjects (glist) == 1) {
+            gobj_activate (glist->gl_editor->e_selectedObjects->sel_what, glist, 1);
+        }
+    }
+
+    glist->gl_editor->e_action = ACTION_NONE;
 }
 
 void canvas_setBounds (t_glist *glist, t_float a, t_float b, t_float c, t_float d)
@@ -712,53 +750,6 @@ void canvas_editmode (t_glist *glist, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-void canvas_mouseup(t_glist *x, t_float fxpos, t_float fypos, t_float fwhich)
-{
-    int xpos = fxpos, ypos = fypos, which = fwhich;
-    /* post("mouseup %d %d %d", xpos, ypos, which); */
-    if (!x->gl_editor)
-    {
-        PD_BUG;
-        return;
-    }
-
-    if (x->gl_editor->e_action == ACTION_CONNECT)
-        canvas_makeLineEnd (x, xpos, ypos);
-    else if (x->gl_editor->e_action == ACTION_REGION)
-        canvas_selectingByLassoEnd (x, xpos, ypos);
-    else if (x->gl_editor->e_action == ACTION_MOVE ||
-        x->gl_editor->e_action == ACTION_RESIZE)
-    {
-            /* after motion or resizing, if there's only one text item
-                selected, activate the text */
-        if (x->gl_editor->e_selectedObjects &&
-            !(x->gl_editor->e_selectedObjects->sel_next))
-        {
-            t_gobj *g = x->gl_editor->e_selectedObjects->sel_what;
-            t_glist *gl2;
-                /* first though, check we aren't an abstraction with a
-                dirty sub-patch that would be discarded if we edit this. */
-            /*
-            if (pd_class(&g->g_pd) == canvas_class &&
-                canvas_isAbstraction((t_glist *)g) &&
-                    (gl2 = canvas_findDirty((t_glist *)g)))
-            {
-                pd_vMessage(&gl2->gl_obj.te_g.g_pd, sym_open, "");
-                x->gl_editor->e_action = ACTION_NONE;
-                sys_vGui(
-"::ui_confirm::checkAction .x%lx { Discard changes to %s? } { ::ui_interface::pdsend .x%lx dirty 0 } { no }\n",
-                    canvas_getRoot(gl2),
-                        canvas_getRoot(gl2)->gl_name->s_name, gl2);
-                return;
-            }*/
-                /* OK, activate it */
-            gobj_activate(x->gl_editor->e_selectedObjects->sel_what, x, 1);
-        }
-    }
-
-    x->gl_editor->e_action = ACTION_NONE;
-}
 
 static t_buffer *canvas_docopy(t_glist *x)
 {
