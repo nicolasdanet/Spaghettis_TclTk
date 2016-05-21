@@ -109,7 +109,7 @@ static void canvas_performMouseClick (t_glist *glist, int positionX, int positio
     
     if (!clicked) {
         if (y && k) { canvas_setCursorType (glist, CURSOR_CLICK); }
-        else { 
+        else {
             canvas_setCursorType (glist, CURSOR_NOTHING);
         }
     }
@@ -158,60 +158,6 @@ static int canvas_performMouseHitOutlets (t_object *object,
     return -1;
 }
 
-static int canvas_performMouseHitLines (t_glist *glist, int positionX, int positionY, int clicked)
-{
-    t_glist *g = canvas_getView (glist);
-    t_outconnect *connection = NULL;
-    t_linetraverser t;
-        
-    canvas_traverseLinesStart (&t, g);
-    
-    while (connection = canvas_traverseLinesNext (&t)) {
-    //
-    t_float a = t.tr_lineStartX;
-    t_float b = t.tr_lineStartY;
-    t_float c = t.tr_lineEndX;
-    t_float d = t.tr_lineEndY;
-    
-    /*
-    t_float area    = (c - a) * (positionY - b) - (d - b) * (positionX - a);
-    t_float dsquare = (c - a) * (c - a) + (d - b) * (d - b);
-    if (area * area >= 50 * dsquare) continue;
-    if ((c - a) * (positionX - a) + (d - b) * (positionY - b) < 0) continue;
-    if ((c - a) * (c - positionX) + (d - b) * (d - positionY) < 0) continue;
-    */
-
-    if (positionX < PD_MIN (a, c)) { continue; }
-    if (positionX > PD_MAX (a, c)) { continue; }
-    if (positionY < PD_MIN (b, d)) { continue; }
-    if (positionY > PD_MAX (b, d)) { continue; }
-    
-    /* Area of the triangle. */
-    
-    t_float area = a * (positionY - d) + positionX * (d - b) + c * (b - positionY);
-    
-    /* Tolerance proportional to distance between line extremities. */
-    
-    t_float k = PD_MAX (PD_ABS (c - a), PD_ABS (d - b));    
-    
-    if (PD_ABS (area) < (k * EDITOR_HANDLE_SIZE)) {
-        if (clicked) {
-            canvas_selectLine (g, 
-                connection, 
-                canvas_getIndexOfObject (g, cast_gobj (t.tr_srcObject)), 
-                t.tr_srcIndexOfOutlet,
-                canvas_getIndexOfObject (g, cast_gobj (t.tr_destObject)), 
-                t.tr_destIndexOfInlet);
-        }
-        
-        return 1;
-    }
-    //
-    }
-    
-    return 0;
-}
-
 static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY, int modifier, int clicked)
 {
     int n, h, a, b, c, d;
@@ -251,7 +197,7 @@ static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY,
           
         if (canvas_performMouseHitResizeZone (object, positionX, positionY, c, d)) {
         
-            if (!clicked) { canvas_setCursorType (glist, CURSOR_EDIT_RESIZE); }
+            if (!clicked) { canvas_setCursorType (glist, CURSOR_RESIZE); }
             else {
                 canvas_selectObjectIfNotAlreadySelected (glist, y);
                 glist->gl_editor->e_action = ACTION_RESIZE;
@@ -263,7 +209,7 @@ static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY,
                                              
         } else if ((n = canvas_performMouseHitOutlets (object, positionX, positionY, a, c, d, &h)) != -1) {
             
-            if (!clicked) { canvas_setCursorType (glist, CURSOR_EDIT_CONNECT); }
+            if (!clicked) { canvas_setCursorType (glist, CURSOR_CONNECT); }
             else {
                 glist->gl_editor->e_action = ACTION_CONNECT;
                 glist->gl_editor->e_previousX = h;
@@ -295,7 +241,7 @@ static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY,
             }
             
         } else { 
-            canvas_setCursorType (glist, CURSOR_EDIT_NOTHING);
+            canvas_setCursorType (glist, CURSOR_NOTHING);
         }
     }
     //
@@ -304,17 +250,77 @@ static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY,
     return 1;
 }
 
+static int canvas_performMouseLines (t_glist *glist, int positionX, int positionY, int clicked)
+{
+    t_glist *g = canvas_getView (glist);
+    t_outconnect *connection = NULL;
+    t_linetraverser t;
+        
+    canvas_traverseLinesStart (&t, g);
+    
+    while (connection = canvas_traverseLinesNext (&t)) {
+    //
+    t_float a = t.tr_lineStartX;
+    t_float b = t.tr_lineStartY;
+    t_float c = t.tr_lineEndX;
+    t_float d = t.tr_lineEndY;
+
+    if (positionX < PD_MIN (a, c)) { continue; }
+    if (positionX > PD_MAX (a, c)) { continue; }
+    if (positionY < PD_MIN (b, d)) { continue; }
+    if (positionY > PD_MAX (b, d)) { continue; }
+    
+    /* Area of the triangle. */
+    
+    t_float area = a * (positionY - d) + positionX * (d - b) + c * (b - positionY);
+    
+    /* Tolerance proportional to distance between line extremities. */
+    
+    t_float k = PD_MAX (PD_ABS (c - a), PD_ABS (d - b));    
+    
+    if (PD_ABS (area) < (k * EDITOR_HANDLE_SIZE)) {
+        if (clicked) {
+            canvas_selectLine (g, 
+                connection, 
+                canvas_getIndexOfObject (g, cast_gobj (t.tr_srcObject)), 
+                t.tr_srcIndexOfOutlet,
+                canvas_getIndexOfObject (g, cast_gobj (t.tr_destObject)), 
+                t.tr_destIndexOfInlet);
+        }
+        
+        return 1;
+    }
+    //
+    }
+    
+    return 0;
+}
+
+static void canvas_performMouseStartLasso (t_glist *glist, int positionX, int positionY, int modifier)
+{
+    if (!(modifier & MODIFIER_SHIFT)) { canvas_deselectAll (glist); }
+    
+    sys_vGui (".x%lx.c create rectangle %d %d %d %d -tags TEMPORARY\n",
+                    glist,
+                    positionX,
+                    positionY,
+                    positionX,
+                    positionY);
+
+    glist->gl_editor->e_action = ACTION_REGION;
+    glist->gl_editor->e_previousX = positionX;
+    glist->gl_editor->e_previousY = positionY;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 static void canvas_performMouse (t_glist *glist, int positionX, int positionY, int modifier, int clicked)
 {
-    int hasShift        = (modifier & MODIFIER_SHIFT);
-    int hasCtrl         = (modifier & MODIFIER_CTRL);
-    int isRightClick    = (modifier & MODIFIER_RIGHT);
-    
-    int isRunMode       = hasCtrl || (!glist->gl_isEditMode);
+    int hasShift     = (modifier & MODIFIER_SHIFT);
+    int isRightClick = (modifier & MODIFIER_RIGHT);
+    int isRunMode    = (modifier & MODIFIER_CTRL) || (!glist->gl_isEditMode);
     
     if (!glist->gl_editor) { PD_BUG; return; }
     
@@ -327,32 +333,19 @@ static void canvas_performMouse (t_glist *glist, int positionX, int positionY, i
 
         if (isRunMode && !isRightClick) {
             canvas_performMouseClick (glist, positionX, positionY, modifier, clicked);
-            return;
-        }
-
-        if (canvas_performMouseHit (glist, positionX, positionY, modifier, clicked)) { 
-            return; 
-        }
-
-        if (isRightClick)    { canvas_performMouseClickRight (glist, NULL, positionX, positionY); }
-        else if (!isRunMode) {
+        } else if (canvas_performMouseHit (glist, positionX, positionY, modifier, clicked)) { 
+        } else {
         
-            if (!hasShift && canvas_performMouseHitLines (glist, positionX, positionY, clicked)) {
-                canvas_setCursorType (glist, CURSOR_EDIT_DISCONNECT);
-                return;
+            if (isRightClick)    { canvas_performMouseClickRight (glist, NULL, positionX, positionY); }
+            else if (!isRunMode) {
+                if (!hasShift && canvas_performMouseLines (glist, positionX, positionY, clicked)) {
+                } else if (clicked) {
+                    canvas_performMouseStartLasso (glist, positionX, positionY, modifier);
+                }
             }
             
-            if (clicked) {
-                if (!hasShift) canvas_deselectAll(glist);
-                sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags TEMPORARY\n",
-                      glist, positionX, positionY, positionX, positionY);
-                glist->gl_editor->e_previousX = positionX;
-                glist->gl_editor->e_previousY = positionY;
-                glist->gl_editor->e_action = ACTION_REGION;
-            }
+            canvas_setCursorType (glist, CURSOR_NOTHING);
         }
-        
-        canvas_setCursorType (glist, CURSOR_EDIT_NOTHING);
     }
 }
 
@@ -591,29 +584,28 @@ void canvas_editmode (t_glist *glist, t_float f)
     glist->gl_isEditMode = state;
     
     if (state) {
-    
-        if (canvas_isMapped (glist) && canvas_canHaveWindow (glist)) {
+    //
+    if (canvas_isMapped (glist) && canvas_canHaveWindow (glist)) {
 
-            t_gobj *g = NULL;
-            canvas_setCursorType (glist, CURSOR_EDIT_NOTHING);
-            
-            for (g = glist->gl_graphics; g; g = g->g_next) {
-                t_object *o = NULL;
-                if ((o = canvas_castToObjectIfPatchable (g)) && o->te_type == TYPE_TEXT) {
-                    t_boxtext *y = glist_findrtext (glist, o);
-                    text_drawborder (o, glist, rtext_gettag (y), rtext_width (y), rtext_height (y), 1);
-                }
+        t_gobj *g = NULL;
+        
+        for (g = glist->gl_graphics; g; g = g->g_next) {
+            t_object *o = NULL;
+            if ((o = canvas_castToObjectIfPatchable (g)) && o->te_type == TYPE_TEXT) {
+                t_boxtext *y = glist_findrtext (glist, o);
+                text_drawborder (o, glist, rtext_gettag (y), rtext_width (y), rtext_height (y), 1);
             }
         }
-        
+    }
+    //
     } else {
+    //
+    canvas_deselectAll (glist);
     
-        canvas_deselectAll (glist);
-        
-        if (canvas_isMapped (glist) && canvas_canHaveWindow (glist)) {
-            canvas_setCursorType (glist, CURSOR_NOTHING);
-            sys_vGui (".x%lx.c delete COMMENTBAR\n", canvas_getView (glist));
-        }
+    if (canvas_isMapped (glist) && canvas_canHaveWindow (glist)) {
+        sys_vGui (".x%lx.c delete COMMENTBAR\n", canvas_getView (glist));
+    }
+    //
     }
     
     if (canvas_isMapped (glist)) {

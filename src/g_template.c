@@ -2274,7 +2274,7 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
                     if (alt)
                     {
                         if (xpix < pxpix)
-                            return (CURSOR_EDIT_DISCONNECT);
+                            return (CURSOR_THICKEN /* CURSOR_EDIT_DISCONNECT */);
                         else return (CURSOR_ADD);
                     }
                     else return (array_motion_fatten ?

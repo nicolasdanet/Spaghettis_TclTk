@@ -66,11 +66,8 @@
 #define CURSOR_CLICK                    1
 #define CURSOR_THICKEN                  2
 #define CURSOR_ADD                      3
-
-#define CURSOR_EDIT_NOTHING             4
-#define CURSOR_EDIT_CONNECT             5
-#define CURSOR_EDIT_DISCONNECT          6
-#define CURSOR_EDIT_RESIZE              7
+#define CURSOR_CONNECT                  4
+#define CURSOR_RESIZE                   5
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

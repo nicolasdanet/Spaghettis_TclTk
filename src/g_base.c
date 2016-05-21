@@ -406,13 +406,11 @@ void canvas_setCursorType (t_glist *glist, int type)
             "hand2",                // CURSOR_CLICK
             "crosshair",            // CURSOR_THICKEN
             "plus",                 // CURSOR_ADD
-            "left_ptr",             // CURSOR_EDIT_NOTHING
-            "circle",               // CURSOR_EDIT_CONNECT
-            "X_cursor",             // CURSOR_EDIT_DISCONNECT
-            "sb_h_double_arrow"     // CURSOR_EDIT_RESIZE
+            "circle",               // CURSOR_CONNECT
+            "sb_h_double_arrow"     // CURSOR_RESIZE
         };
     
-    type = PD_CLAMP (type, CURSOR_NOTHING, CURSOR_EDIT_RESIZE);
+    type = PD_CLAMP (type, CURSOR_NOTHING, CURSOR_RESIZE);
     
     if (lastGlist != glist || lastType != type) {
         sys_vGui (".x%lx configure -cursor %s\n", glist, cursors[type]);
@@ -548,7 +546,7 @@ void canvas_makingLine (t_glist *glist, int positionX, int positionY, int create
         canvas_dirty (glist, 1);
         
     } else { 
-        canvas_setCursorType (glist, CURSOR_EDIT_CONNECT);
+        canvas_setCursorType (glist, CURSOR_CONNECT);
     }
     
     return;
@@ -563,7 +561,7 @@ void canvas_makingLine (t_glist *glist, int positionX, int positionY, int create
     //
     }
     
-    canvas_setCursorType (glist, CURSOR_EDIT_NOTHING);
+    canvas_setCursorType (glist, CURSOR_NOTHING);
 }
 
 void canvas_setLastMotionCoordinates (t_glist *glist, int a, int b)
