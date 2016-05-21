@@ -173,6 +173,7 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
         gobj_visibilityChanged (y, glist, 0);
         canvas_updateLinesByObject (glist, object);
         gobj_visibilityChanged (y, glist, 1);
+        canvas_dirty (glist, 1);
         
     } else if (pd_class (object) == canvas_class) {
         gobj_visibilityChanged (y, glist, 0);
@@ -182,6 +183,7 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
         glist->gl_editor->e_newY = positionY;
         canvas_updateLinesByObject (glist, object);
         gobj_visibilityChanged (y, glist, 1);
+        canvas_dirty (glist, 1);
     }
     //
     }
