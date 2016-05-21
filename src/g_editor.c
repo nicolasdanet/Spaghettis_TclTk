@@ -459,8 +459,6 @@ static void canvas_performMouse (t_glist *glist, int positionX, int positionY, i
     int isRightClick = (modifier & MODIFIER_RIGHT);
     int isRunMode    = (modifier & MODIFIER_CTRL) || (!glist->gl_isEditMode);
     
-    PD_ASSERT (glist->gl_editor);
-    
     if (clicked) { canvas_performMouseResetGrabbed (glist); glist->gl_editor->e_action = ACTION_NONE; }
 
     if (glist->gl_editor->e_action == ACTION_NONE) {
@@ -494,7 +492,7 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
 {
     if (argc > 1) { 
     //
-    int isDown = (atom_getFloat (argv + 0) != 0);
+    int k, isDown = (atom_getFloat (argv + 0) != 0);
     
     t_symbol *s = sym__dummy;
     
@@ -504,7 +502,11 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
     
     /* Forbid following characters to avoid to mislead interpretation of scripts. */
     
-    if (n == '{' || n == '}' || n == '\\') { 
+    k |= (n == '{');
+    k |= (n == '}');
+    k |= (n == '\\');
+    
+    if (k) {
         post_error (PD_TRANSLATE ("key: keycode %d not allowed"), (int)n); return; 
     }
 
@@ -602,9 +604,8 @@ void canvas_click (t_glist *glist, t_float a, t_float b, t_float shift, t_float 
 
 void canvas_motion (t_glist *glist, t_float positionX, t_float positionY, t_float modifier)
 { 
-    PD_ASSERT (glist->gl_editor);
-    
-    {
+    if (!glist->gl_editor) { return; }
+    else {
     //
     int action = glist->gl_editor->e_action;
     
@@ -647,13 +648,17 @@ void canvas_motion (t_glist *glist, t_float positionX, t_float positionY, t_floa
 
 void canvas_mouse (t_glist *glist, t_float positionX, t_float positionY, t_float modifier)
 {
-    canvas_performMouse (glist, (int)positionX, (int)positionY, (int)modifier, 1);
+    if (!glist->gl_editor) { return; } 
+    else {
+        canvas_performMouse (glist, (int)positionX, (int)positionY, (int)modifier, 1);
+    }
 }
 
 void canvas_mouseUp (t_glist *glist, t_float positionX, t_float positionY)
 {
-    PD_ASSERT (glist->gl_editor);
-
+    if (!glist->gl_editor) { return; }
+    else {
+    //
     int action = glist->gl_editor->e_action;
     
     if (action == ACTION_CONNECT) {
@@ -669,6 +674,8 @@ void canvas_mouseUp (t_glist *glist, t_float positionX, t_float positionY)
     }
 
     glist->gl_editor->e_action = ACTION_NONE;
+    //
+    }
 }
 
 void canvas_setBounds (t_glist *glist, t_float a, t_float b, t_float c, t_float d)
@@ -828,17 +835,6 @@ void canvas_cut (t_glist *x)
     }
 }
 
-static void glist_donewloadbangs(t_glist *x)
-{
-    if (x->gl_editor)
-    {
-        t_selection *sel;
-        for (sel = x->gl_editor->e_selectedObjects; sel; sel = sel->sel_next)
-            if (pd_class(&sel->sel_what->g_pd) == canvas_class)
-                canvas_loadbang((t_glist *)(&sel->sel_what->g_pd));
-    }
-}
-
 static void canvas_dopaste(t_glist *x, t_buffer *b)
 {
     t_gobj *newgobj, *last, *g2;
@@ -866,7 +862,12 @@ static void canvas_dopaste(t_glist *x, t_buffer *b)
     dsp_resume(dspstate);
     canvas_dirty(x, 1);
     sys_vGui("::ui_patch::updateScrollRegion .x%lx.c\n", x);
-    glist_donewloadbangs(x);
+    
+    t_selection *sel;
+    for (sel = x->gl_editor->e_selectedObjects; sel; sel = sel->sel_next)
+        if (pd_class(&sel->sel_what->g_pd) == canvas_class)
+            canvas_loadbang((t_glist *)(&sel->sel_what->g_pd));
+    
     asym->s_thing = bounda;
     s__X.s_thing = boundx;
     s__N.s_thing = boundn;

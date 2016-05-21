@@ -1438,8 +1438,10 @@ void g_text_setup(void)
     class_addList(message_class, message_list);
     class_addAnything(message_class, message_list);
 
-    class_addMethod(message_class, (t_method)message_click, sym_click,
-        A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
+    class_addClick (message_class, message_click);
+    /* class_addMethod(message_class, (t_method)message_click, sym_click,
+        A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0); */
+        
     class_addMethod(message_class, (t_method)message_set, sym_set,
         A_GIMME, 0);
     class_addMethod(message_class, (t_method)message_add, sym_add,
@@ -1471,8 +1473,10 @@ void g_text_setup(void)
     class_addList(gatom_class, gatom_list);
     class_addMethod(gatom_class, (t_method)gatom_set, sym_set,
         A_GIMME, 0);
-    class_addMethod(gatom_class, (t_method)gatom_click, sym_click,
-        A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
+    class_addClick (gatom_class, gatom_click);
+    
+    /* class_addMethod(gatom_class, (t_method)gatom_click, sym_click,
+        A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0); */
     class_addMethod(gatom_class, (t_method)gatom_param, sym_param,   /* LEGACY !!! */
         A_GIMME, 0);
     class_setWidgetBehavior(gatom_class, &gatom_widgetbehavior);

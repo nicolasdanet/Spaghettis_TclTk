@@ -184,8 +184,9 @@ void x_scalar_setup(void )
         
     class_addMethod(scalar_define_class, (t_method)canvas_restore,
         sym_restore, A_GIMME, 0);
-    class_addMethod(scalar_define_class, (t_method)canvas_click,
-        sym_click, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
+    class_addClick (scalar_define_class, canvas_click);
+    /*class_addMethod(scalar_define_class, (t_method)canvas_click,
+        sym_click, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0); */
     class_addMethod(scalar_define_class, (t_method)canvas_dsp,
         sym_dsp, A_CANT, 0);
     class_addMethod(scalar_define_class, (t_method)canvas_map,
