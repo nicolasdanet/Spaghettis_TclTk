@@ -70,7 +70,7 @@ static void canvas_performMouseResetGrabbed (t_glist *glist)
     PD_ASSERT (!glist->gl_editor->e_grabbed);
 }
 
-static void canvas_performMouseClickRight (t_glist *glist, int positionX, int positionY, t_gobj *object)
+static void canvas_performMouseClickRight (t_glist *glist, t_gobj *object, int positionX, int positionY)
 {
     int canProperties = (!object || (object && class_hasPropertiesFunction (pd_class (object))));
     int canOpen = (object && class_hasMethod (pd_class (object), sym_open));
@@ -158,6 +158,60 @@ static int canvas_performMouseHitOutlets (t_object *object,
     return -1;
 }
 
+static int canvas_performMouseHitLines (t_glist *glist, int positionX, int positionY, int clicked)
+{
+    t_glist *g = canvas_getView (glist);
+    t_outconnect *connection = NULL;
+    t_linetraverser t;
+        
+    canvas_traverseLinesStart (&t, g);
+    
+    while (connection = canvas_traverseLinesNext (&t)) {
+    //
+    t_float a = t.tr_lineStartX;
+    t_float b = t.tr_lineStartY;
+    t_float c = t.tr_lineEndX;
+    t_float d = t.tr_lineEndY;
+    
+    /*
+    t_float area    = (c - a) * (positionY - b) - (d - b) * (positionX - a);
+    t_float dsquare = (c - a) * (c - a) + (d - b) * (d - b);
+    if (area * area >= 50 * dsquare) continue;
+    if ((c - a) * (positionX - a) + (d - b) * (positionY - b) < 0) continue;
+    if ((c - a) * (c - positionX) + (d - b) * (d - positionY) < 0) continue;
+    */
+
+    if (positionX < PD_MIN (a, c)) { continue; }
+    if (positionX > PD_MAX (a, c)) { continue; }
+    if (positionY < PD_MIN (b, d)) { continue; }
+    if (positionY > PD_MAX (b, d)) { continue; }
+    
+    /* Area of the triangle. */
+    
+    t_float area = a * (positionY - d) + positionX * (d - b) + c * (b - positionY);
+    
+    /* Tolerance proportional to distance between line extremities. */
+    
+    t_float k = PD_MAX (PD_ABS (c - a), PD_ABS (d - b));    
+    
+    if (PD_ABS (area) < (k * EDITOR_HANDLE_SIZE)) {
+        if (clicked) {
+            canvas_selectLine (g, 
+                connection, 
+                canvas_getIndexOfObject (g, cast_gobj (t.tr_srcObject)), 
+                t.tr_srcIndexOfOutlet,
+                canvas_getIndexOfObject (g, cast_gobj (t.tr_destObject)), 
+                t.tr_destIndexOfInlet);
+        }
+        
+        return 1;
+    }
+    //
+    }
+    
+    return 0;
+}
+
 static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY, int modifier, int clicked)
 {
     int n, h, a, b, c, d;
@@ -170,7 +224,7 @@ static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY,
     t_object *object = canvas_castToObjectIfPatchable (y);
 
     if (modifier & MODIFIER_RIGHT) {
-        canvas_performMouseClickRight (glist, positionX, positionY, y);
+        canvas_performMouseClickRight (glist, y, positionX, positionY);
     
     } else if (modifier & MODIFIER_SHIFT) {
     
@@ -199,14 +253,12 @@ static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY,
         
             if (!clicked) { canvas_setCursorType (glist, CURSOR_EDIT_RESIZE); }
             else {
-                canvas_deselectAll (glist);
-                canvas_selectObject (glist, y);
-                
-                glist->gl_editor->e_action      = ACTION_RESIZE;
-                glist->gl_editor->e_previousX   = a;
-                glist->gl_editor->e_previousY   = b;
-                glist->gl_editor->e_newX        = positionX;
-                glist->gl_editor->e_newY        = positionY;
+                canvas_selectObjectIfNotAlreadySelected (glist, y);
+                glist->gl_editor->e_action = ACTION_RESIZE;
+                glist->gl_editor->e_previousX = a;
+                glist->gl_editor->e_previousY = b;
+                glist->gl_editor->e_newX = positionX;
+                glist->gl_editor->e_newY = positionY;
             }  
                                              
         } else if ((n = canvas_performMouseHitOutlets (object, positionX, positionY, a, c, d, &h)) != -1) {
@@ -227,28 +279,24 @@ static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY,
             }                                   
                 
         } else if (clicked) {
-            t_boxtext *rt;
-            if (object && (rt = glist->gl_editor->e_selectedText) &&
-                rt == glist_findrtext(glist, object))
-            {
-                rtext_mouse(rt, positionX - a, positionY - b,
-                    ((modifier & MODIFIER_DOUBLE) ? BOX_TEXT_DOUBLE : BOX_TEXT_DOWN));
+        
+            t_boxtext *text = glist->gl_editor->e_selectedText;
+            
+            if (object && text && (text == glist_findrtext (glist, object))) {
+                int flag = (modifier & MODIFIER_DOUBLE) ? BOX_TEXT_DOUBLE : BOX_TEXT_DOWN;
+                rtext_mouse (text, positionX - a, positionY - b, flag);
                 glist->gl_editor->e_action = ACTION_DRAG;
                 glist->gl_editor->e_previousX = a;
                 glist->gl_editor->e_previousY = b;
-            }
-            else
-            {
-                    /* otherwise select and drag to displace */
-                if (!canvas_isObjectSelected(glist, y))
-                {
-                    canvas_deselectAll(glist);
-                    canvas_selectObject(glist, y);
-                }
+                
+            } else {
+                canvas_selectObjectIfNotAlreadySelected (glist, y);
                 glist->gl_editor->e_action = ACTION_MOVE;
             }
+            
+        } else { 
+            canvas_setCursorType (glist, CURSOR_EDIT_NOTHING);
         }
-        else canvas_setCursorType(glist, CURSOR_EDIT_NOTHING);
     }
     //
     }
@@ -264,78 +312,47 @@ static void canvas_performMouse (t_glist *glist, int positionX, int positionY, i
 {
     int hasShift        = (modifier & MODIFIER_SHIFT);
     int hasCtrl         = (modifier & MODIFIER_CTRL);
-    int hasAlt          = (modifier & MODIFIER_ALT);
     int isRightClick    = (modifier & MODIFIER_RIGHT);
     
-    int isRunMode = hasCtrl || (!glist->gl_isEditMode);
+    int isRunMode       = hasCtrl || (!glist->gl_isEditMode);
     
     if (!glist->gl_editor) { PD_BUG; return; }
     
     if (clicked) { canvas_performMouseResetGrabbed (glist); glist->gl_editor->e_action = ACTION_NONE; }
 
     if (glist->gl_editor->e_action == ACTION_NONE) {
-    //
-    glist->gl_editor->e_previousX = positionX;
-    glist->gl_editor->e_previousY = positionY;
 
-    if (isRunMode && !isRightClick) {
-        canvas_performMouseClick (glist, positionX, positionY, modifier, clicked);
-        return;
-    }
-
-    if (canvas_performMouseHit (glist, positionX, positionY, modifier, clicked)) { 
-        return; 
-    }
-
-    if (isRightClick)
-        canvas_performMouseClickRight(glist, positionX, positionY, 0);
-
-        /* if not an editing action, and if we didn't hit a
-        box, set cursor and return */
-    if (isRunMode || isRightClick)
-    {
-        canvas_setCursorType(glist, CURSOR_NOTHING);
-        return;
-    }
-        /* having failed to find a box, we try lines now. */
-    if (!isRunMode && !hasAlt && !hasShift)
-    {
-        t_linetraverser t;
-        t_outconnect *oc;
-        t_float fx = positionX, fy = positionY;
-        t_glist *glist2 = canvas_getView(glist);
-        canvas_traverseLinesStart(&t, glist2);
-        while (oc = canvas_traverseLinesNext(&t))
-        {
-            t_float lx1 = t.tr_lineStartX, ly1 = t.tr_lineStartY,
-                lx2 = t.tr_lineEndX, ly2 = t.tr_lineEndY;
-            t_float area = (lx2 - lx1) * (fy - ly1) -
-                (ly2 - ly1) * (fx - lx1);
-            t_float dsquare = (lx2-lx1) * (lx2-lx1) + (ly2-ly1) * (ly2-ly1);
-            if (area * area >= 50 * dsquare) continue;
-            if ((lx2-lx1) * (fx-lx1) + (ly2-ly1) * (fy-ly1) < 0) continue;
-            if ((lx2-lx1) * (lx2-fx) + (ly2-ly1) * (ly2-fy) < 0) continue;
-            if (clicked)
-            {
-                canvas_selectLine(glist2, oc, 
-                    canvas_getIndexOfObject(glist2, &t.tr_srcObject->te_g), t.tr_srcIndexOfOutlet,
-                    canvas_getIndexOfObject(glist2, &t.tr_destObject->te_g), t.tr_destIndexOfInlet);
-            }
-            canvas_setCursorType(glist, CURSOR_EDIT_DISCONNECT);
-            return;
-        }
-    }
-    canvas_setCursorType(glist, CURSOR_EDIT_NOTHING);
-    if (clicked)
-    {
-        if (!hasShift) canvas_deselectAll(glist);
-        sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags TEMPORARY\n",
-              glist, positionX, positionY, positionX, positionY);
         glist->gl_editor->e_previousX = positionX;
         glist->gl_editor->e_previousY = positionY;
-        glist->gl_editor->e_action = ACTION_REGION;
-    }
-    //
+
+        if (isRunMode && !isRightClick) {
+            canvas_performMouseClick (glist, positionX, positionY, modifier, clicked);
+            return;
+        }
+
+        if (canvas_performMouseHit (glist, positionX, positionY, modifier, clicked)) { 
+            return; 
+        }
+
+        if (isRightClick)    { canvas_performMouseClickRight (glist, NULL, positionX, positionY); }
+        else if (!isRunMode) {
+        
+            if (!hasShift && canvas_performMouseHitLines (glist, positionX, positionY, clicked)) {
+                canvas_setCursorType (glist, CURSOR_EDIT_DISCONNECT);
+                return;
+            }
+            
+            if (clicked) {
+                if (!hasShift) canvas_deselectAll(glist);
+                sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags TEMPORARY\n",
+                      glist, positionX, positionY, positionX, positionY);
+                glist->gl_editor->e_previousX = positionX;
+                glist->gl_editor->e_previousY = positionY;
+                glist->gl_editor->e_action = ACTION_REGION;
+            }
+        }
+        
+        canvas_setCursorType (glist, CURSOR_EDIT_NOTHING);
     }
 }
 

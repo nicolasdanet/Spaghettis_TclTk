@@ -440,6 +440,7 @@ void            canvas_selectingByLasso                 (t_glist *glist,
                                                             
 void            canvas_selectObjectsInRectangle         (t_glist *glist, int a, int b, int c, int d);
 void            canvas_selectObject                     (t_glist *glist, t_gobj *y);
+void            canvas_selectObjectIfNotAlreadySelected (t_glist *glist, t_gobj *y);
 void            canvas_selectLine                       (t_glist *glist, 
                                                             t_outconnect *connection,
                                                             int indexOfObjectOut,

@@ -288,6 +288,14 @@ void canvas_selectObject (t_glist *glist, t_gobj *y)
     }
 }
 
+void canvas_selectObjectIfNotAlreadySelected (t_glist *glist, t_gobj *y)
+{
+    if (!canvas_isObjectSelected (glist, y)) {
+        canvas_deselectAll (glist);
+        canvas_selectObject (glist, y);
+    }
+}
+
 void canvas_selectLine (t_glist *glist,
     t_outconnect *connection,
     int indexOfObjectOut,
