@@ -840,10 +840,14 @@ void x_array_setup(void )
         sym__map, A_FLOAT, A_NULL);
     class_addMethod(array_define_class, (t_method)canvas_setBounds,
         sym_setbounds, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addMethod(array_define_class, (t_method)canvas_mouse, sym_mouse,
+    
+    class_addMouse (array_define_class, canvas_mouse);
+    class_addMouseUp (array_define_class, canvas_mouseUp);
+    
+    /*class_addMethod(array_define_class, (t_method)canvas_mouse, sym_mouse,
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
     class_addMethod(array_define_class, (t_method)canvas_mouseUp, sym_mouseup,
-        A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
+        A_FLOAT, A_FLOAT, A_FLOAT, A_NULL); */
     class_addMethod(array_define_class, (t_method)canvas_key, sym_key,
         A_GIMME, A_NULL);
     class_addMethod(array_define_class, (t_method)canvas_motion, sym_motion,

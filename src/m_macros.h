@@ -138,12 +138,10 @@ typedef void (*t_gotfn1)(void *x, void *arg1);
                                                 A_FLOAT, \
                                                 A_FLOAT, \
                                                 A_FLOAT, \
-                                                A_FLOAT, \
                                                 A_NULL);
                                                 
 #define class_addMouseUp(c, m)              class_addMethod ((c), (t_method)(m), \
                                                 sym_mouseup, \
-                                                A_FLOAT, \
                                                 A_FLOAT, \
                                                 A_FLOAT, \
                                                 A_NULL);

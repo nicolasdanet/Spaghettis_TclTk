@@ -643,12 +643,12 @@ void canvas_motion (t_glist *glist, t_float positionX, t_float positionY, t_floa
     }
 }
 
-void canvas_mouse (t_glist *glist, t_float positionX, t_float positionY, t_float dummy, t_float modifier)
+void canvas_mouse (t_glist *glist, t_float positionX, t_float positionY, t_float modifier)
 {
     canvas_performMouse (glist, (int)positionX, (int)positionY, (int)modifier, 1);
 }
 
-void canvas_mouseUp (t_glist *glist, t_float positionX, t_float positionY, t_float dummy)
+void canvas_mouseUp (t_glist *glist, t_float positionX, t_float positionY)
 {
     PD_ASSERT (glist->gl_editor);
 
