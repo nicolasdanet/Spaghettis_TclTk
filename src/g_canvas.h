@@ -511,7 +511,7 @@ void            canvas_cut                              (t_glist *glist);
 void            canvas_copy                             (t_glist *glist);
 void            canvas_paste                            (t_glist *glist);
 void            canvas_duplicate                        (t_glist *glist);
-void            canvas_selectall                        (t_glist *glist);
+void            canvas_selectAll                        (t_glist *glist);
 
 void            canvas_properties                       (t_gobj *x, t_glist *glist);
 

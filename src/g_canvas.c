@@ -19,10 +19,10 @@
 
 extern t_class  *text_class;
 extern t_class  *garray_class;
-extern t_glist  *editor_pasteCanvas;
+extern t_glist  *editor_canvasCurrentlyPastingOn;
 
 extern t_pd     pd_canvasMaker;
-extern int      editor_pasteOnset;
+extern int      editor_indexOffsetConnectingPastedObjects;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -174,7 +174,7 @@ void canvas_connect (t_glist *glist,
     t_float indexOfObjectIn,
     t_float indexOfOInlet)
 {
-    int k = (editor_pasteCanvas == glist) ? editor_pasteOnset : 0;
+    int k = (editor_canvasCurrentlyPastingOn == glist) ? editor_indexOffsetConnectingPastedObjects : 0;
     
     t_gobj *src  = canvas_getObjectAtIndex (glist, k + (int)indexOfObjectOut);
     t_gobj *dest = canvas_getObjectAtIndex (glist, k + (int)indexOfObjectIn);
@@ -799,7 +799,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_copy,          sym__copy,          A_NULL);
     class_addMethod (c, (t_method)canvas_paste,         sym__paste,         A_NULL);
     class_addMethod (c, (t_method)canvas_duplicate,     sym__duplicate,     A_NULL);
-    class_addMethod (c, (t_method)canvas_selectall,     sym__selectall,     A_NULL);
+    class_addMethod (c, (t_method)canvas_selectAll,     sym__selectall,     A_NULL);
     
     class_addMethod (c, (t_method)glist_clear,          sym_clear,          A_NULL);
     class_addMethod (c, (t_method)canvas_dsp,           sym_dsp,            A_CANT, A_NULL);

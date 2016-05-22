@@ -26,18 +26,24 @@ extern t_widgetbehavior     text_widgetBehavior;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_glist                     *editor_pasteCanvas;            /* Shared. */
-int                         editor_pasteOnset;              /* Shared. */
+t_glist                     *editor_canvasCurrentlyPastingOn;                   /* Shared. */
+int                         editor_indexOffsetConnectingPastedObjects;          /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_buffer             *editor_buffer;                 /* Shared. */
+static t_buffer             *editor_buffer;                                     /* Shared. */
+static int                  editor_pasteCount;                                  /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define EDITOR_HANDLE_SIZE      4
+#define EDITOR_GRIP_SIZE        4
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#define EDITOR_PASTE_OFFSET     20
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -256,7 +262,7 @@ static int canvas_performMouseHitResizeZone (t_object *object, int positionX, in
 {
     if (object) {
         if (canvas_objectIsBox (object) || canvas_castToGlistChecked (cast_pd (object))) {
-            if (positionX > (c - EDITOR_HANDLE_SIZE) && positionY < (d - EDITOR_HANDLE_SIZE)) {
+            if (positionX > (c - EDITOR_GRIP_SIZE) && positionY < (d - EDITOR_GRIP_SIZE)) {
                 return 1;
             }
         }
@@ -277,14 +283,14 @@ static int canvas_performMouseHitOutlets (t_object *object,
     //
     int numberOfOutlets = object_numberOfOutlets (object);
     
-    if (numberOfOutlets && (positionY >= d - EDITOR_HANDLE_SIZE)) {
+    if (numberOfOutlets && (positionY >= d - EDITOR_GRIP_SIZE)) {
     //
     int closest = INLETS_NEXTTO (positionX, a, c, numberOfOutlets);
     int hotspot = a + INLETS_MIDDLE ((c - a), closest, numberOfOutlets);
 
     PD_ASSERT (closest >= 0 && closest < numberOfOutlets);
     
-    if ((positionX > (hotspot - EDITOR_HANDLE_SIZE)) && (positionX < (hotspot + EDITOR_HANDLE_SIZE))) {
+    if ((positionX > (hotspot - EDITOR_GRIP_SIZE)) && (positionX < (hotspot + EDITOR_GRIP_SIZE))) {
         *h = hotspot; return closest;
     }
     //
@@ -306,10 +312,8 @@ static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY,
     //
     t_object *object = canvas_castToObjectIfPatchable (y);
 
-    if (modifier & MODIFIER_RIGHT) {
-        canvas_performMouseClickRight (glist, y, positionX, positionY);
-    
-    } else if (modifier & MODIFIER_SHIFT) {
+    if (modifier & MODIFIER_RIGHT) { canvas_performMouseClickRight (glist, y, positionX, positionY); }
+    else if (modifier & MODIFIER_SHIFT) {
     
         if (clicked) {
         //
@@ -415,7 +419,7 @@ static int canvas_performMouseLines (t_glist *glist, int positionX, int position
     
     t_float k = PD_MAX (PD_ABS (c - a), PD_ABS (d - b));    
     
-    if (PD_ABS (area) < (k * EDITOR_HANDLE_SIZE)) {
+    if (PD_ABS (area) < (k * EDITOR_GRIP_SIZE)) {
         if (clicked) {
             canvas_selectLine (g, 
                 connection, 
@@ -449,11 +453,7 @@ static void canvas_performMouseLassoStart (t_glist *glist, int positionX, int po
     glist->gl_editor->e_previousY = positionY;
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void canvas_performMouse (t_glist *glist, int positionX, int positionY, int modifier, int clicked)
+static void canvas_performMouse (t_glist *glist, int a, int b, int modifier, int clicked)
 {
     int hasShift     = (modifier & MODIFIER_SHIFT);
     int isRightClick = (modifier & MODIFIER_RIGHT);
@@ -463,25 +463,121 @@ static void canvas_performMouse (t_glist *glist, int positionX, int positionY, i
 
     if (glist->gl_editor->e_action == ACTION_NONE) {
 
-        glist->gl_editor->e_previousX = positionX;
-        glist->gl_editor->e_previousY = positionY;
+        glist->gl_editor->e_previousX = a;
+        glist->gl_editor->e_previousY = b;
 
-        if (isRunMode && !isRightClick) {
-            canvas_performMouseClick (glist, positionX, positionY, modifier, clicked);
-        } else if (canvas_performMouseHit (glist, positionX, positionY, modifier, clicked)) { 
-        } else {
+        if (isRunMode && !isRightClick) { canvas_performMouseClick (glist, a, b, modifier, clicked); }
+        else if (canvas_performMouseHit (glist, a, b, modifier, clicked)) { } 
+        else {
         
-            if (isRightClick)    { canvas_performMouseClickRight (glist, NULL, positionX, positionY); }
+            if (isRightClick)    { canvas_performMouseClickRight (glist, NULL, a, b); }
             else if (!isRunMode) {
-                if (!hasShift && canvas_performMouseLines (glist, positionX, positionY, clicked)) {
+                if (!hasShift && canvas_performMouseLines (glist, a, b, clicked)) {
                 } else if (clicked) {
-                    canvas_performMouseLassoStart (glist, positionX, positionY, modifier);
+                    canvas_performMouseLassoStart (glist, a, b, modifier);
                 }
             }
             
             canvas_setCursorType (glist, CURSOR_NOTHING);
         }
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void canvas_performCopy (t_glist *glist)
+{
+    if (glist->gl_editor->e_selectedObjects) {
+    //
+    t_buffer *b = buffer_new();
+
+    t_gobj *y = NULL;
+    t_outconnect *connection = NULL;
+    t_linetraverser t;
+    
+    editor_pasteCount = 0;
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+        if (canvas_isObjectSelected (glist, y)) { gobj_save (y, b); }
+    }
+    
+    canvas_traverseLinesStart (&t, glist);
+    
+    while (connection = canvas_traverseLinesNext (&t)) {
+    //
+    int m = canvas_isObjectSelected (glist, cast_gobj (t.tr_srcObject));
+    int n = canvas_isObjectSelected (glist, cast_gobj (t.tr_destObject));
+    
+    if (m &&n) {
+        buffer_vAppend (b, "ssiiii;", 
+            sym___hash__X, 
+            sym_connect,
+            canvas_getIndexOfObjectAmongSelected (glist, &t.tr_srcObject->te_g),
+            t.tr_srcIndexOfOutlet,
+            canvas_getIndexOfObjectAmongSelected (glist, &t.tr_destObject->te_g),
+            t.tr_destIndexOfInlet);
+    }
+    //
+    }
+    
+    buffer_free (editor_buffer); 
+    editor_buffer = b;
+    //
+    }
+}
+
+static void canvas_performPaste (t_glist *glist)
+{
+    t_gobj *y = NULL;
+    t_selection *s = NULL;
+    int numberOfObjectsAlreadyThere = 0;
+    int i = 0;
+    int n = EDITOR_PASTE_OFFSET * ++editor_pasteCount;
+    int state = dsp_suspend();
+    
+    t_pd *boundA = s__A.s_thing; 
+    t_pd *boundX = s__X.s_thing;
+    t_pd *boundN = s__N.s_thing;
+    
+    s__A.s_thing = NULL;
+    s__X.s_thing = cast_pd (glist);
+    s__N.s_thing = &pd_canvasMaker;
+
+    canvas_deselectAll (glist);
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) { numberOfObjectsAlreadyThere++; }
+
+    editor_canvasCurrentlyPastingOn = glist;
+    editor_indexOffsetConnectingPastedObjects = numberOfObjectsAlreadyThere;
+        
+    buffer_eval (editor_buffer, NULL, 0, NULL);
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+        if (i >= numberOfObjectsAlreadyThere) { canvas_selectObject (glist, y); }
+        i++;
+    }
+    
+    editor_canvasCurrentlyPastingOn = NULL;
+    
+    dsp_resume (state);
+    
+    s__A.s_thing = boundA;
+    s__X.s_thing = boundX;
+    s__N.s_thing = boundN;
+
+    for (s = glist->gl_editor->e_selectedObjects; s; s = s->sel_next) {
+        gobj_displace (s->sel_what, glist, n, n);
+    }
+    
+    for (s = glist->gl_editor->e_selectedObjects; s; s = s->sel_next) {
+        if (pd_class (s->sel_what) == canvas_class) { canvas_loadbang (cast_glist (s->sel_what)); }
+    }
+    
+    canvas_dirty (glist, 1);
+    
+    sys_vGui ("::ui_patch::updateScrollRegion .x%lx.c\n", glist);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -760,166 +856,81 @@ void canvas_editmode (t_glist *glist, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_buffer *canvas_docopy(t_glist *x)
+void canvas_cut (t_glist *glist)
 {
-    t_gobj *y;
-    t_linetraverser t;
-    t_outconnect *oc;
-    t_buffer *b = buffer_new();
-    for (y = x->gl_graphics; y; y = y->g_next)
-    {
-        if (canvas_isObjectSelected(x, y))
-            gobj_save(y, b);
+    if (!glist->gl_editor || !glist->gl_isEditMode) { return; }
+    else {
+    //
+    if (glist->gl_editor->e_isSelectedline)    { canvas_removeSelectedLine (glist); }
+    else if (glist->gl_editor->e_selectedText) {
+        canvas_copy (glist);
+        rtext_key (glist->gl_editor->e_selectedText, 127, &s_);
+        canvas_dirty (glist, 1);
+        
+    } else if (glist->gl_editor->e_selectedObjects) {
+        canvas_copy (glist);
+        canvas_removeSelectedObjects (glist);
+        sys_vGui ("::ui_patch::updateScrollRegion .x%lx.c\n", glist);
     }
-    canvas_traverseLinesStart(&t, x);
-    while (oc = canvas_traverseLinesNext(&t))
-    {
-        if (canvas_isObjectSelected(x, &t.tr_srcObject->te_g)
-            && canvas_isObjectSelected(x, &t.tr_destObject->te_g))
-        {
-            buffer_vAppend(b, "ssiiii;", sym___hash__X, sym_connect,
-                canvas_getIndexOfObjectAmongSelected(x, &t.tr_srcObject->te_g), t.tr_srcIndexOfOutlet,
-                canvas_getIndexOfObjectAmongSelected(x, &t.tr_destObject->te_g), t.tr_destIndexOfInlet);
-        }
-    }
-    return (b);
-}
-
-void canvas_copy (t_glist *x)
-{
-    if (!x->gl_editor || !x->gl_editor->e_selectedObjects)
-        return;
-    buffer_free(editor_buffer);
-    editor_buffer = canvas_docopy(x);
-    if (x->gl_editor->e_selectedText)
-    {
-        char *buf;
-        int bufsize;
-        rtext_getseltext(x->gl_editor->e_selectedText, &buf, &bufsize);
-        sys_gui("clipboard clear\n");
-        sys_vGui("clipboard append {%.*s}\n", bufsize, buf);
+    //
     }
 }
 
-void canvas_cut (t_glist *x)
+void canvas_copy (t_glist *glist)
 {
-    if (!x->gl_editor)  /* ignore if invisible */ 
-        return;
-    if (x->gl_editor && x->gl_editor->e_isSelectedline)   /* delete line */
-        canvas_removeSelectedLine(x);
-    else if (x->gl_editor->e_selectedText) /* delete selected text in a box */
-    {
-        char *buf;
-        int bufsize;
-        rtext_getseltext(x->gl_editor->e_selectedText, &buf, &bufsize);
-        if (!bufsize && x->gl_editor->e_selectedObjects &&
-            !x->gl_editor->e_selectedObjects->sel_next)
-        {
-                /* if the text is already empty, delete the box.  We
-                first clear 'textedfor' so that canvas_removeSelected later will
-                think the whole box was selected, not the text */
-            x->gl_editor->e_selectedText = 0;
-            goto deleteobj;
-        }
-        canvas_copy(x);
-        rtext_key(x->gl_editor->e_selectedText, 127, &s_);
-        canvas_dirty(x, 1);
+    if (!glist->gl_editor || !glist->gl_isEditMode) { return; }
+    else {
+    //
+    if (glist->gl_editor->e_selectedText) {
+        char *t = NULL;
+        int s = 0;
+        rtext_getseltext (glist->gl_editor->e_selectedText, &t, &s);
+        sys_gui ("clipboard clear\n");
+        sys_vGui ("clipboard append {%.*s}\n", s, t);   
+        
+    } else {
+        canvas_performCopy (glist);
     }
-    else if (x->gl_editor && x->gl_editor->e_selectedObjects)
-    {
-    deleteobj:      /* delete one or more objects */
-        // canvas_setundo(x, canvas_undo_cut, canvas_undo_set_cut(x, UCUT_CUT), "cut");
-        canvas_copy(x);
-        canvas_removeSelectedObjects(x);
-        sys_vGui("::ui_patch::updateScrollRegion .x%lx.c\n", x);
+    //
     }
 }
 
-static void canvas_dopaste(t_glist *x, t_buffer *b)
+void canvas_paste (t_glist *glist)
 {
-    t_gobj *newgobj, *last, *g2;
-    int dspstate = dsp_suspend(), nbox, count;
-    t_symbol *asym = sym___hash__A;
-        /* save and clear bindings to symbols #a, $N, $X; restore when done */
-    t_pd *boundx = s__X.s_thing, *bounda = asym->s_thing, 
-        *boundn = s__N.s_thing;
-    asym->s_thing = 0;
-    s__X.s_thing = &x->gl_obj.te_g.g_pd;
-    s__N.s_thing = &pd_canvasMaker;
-
-    canvas_editmode(x, 1.);
-    canvas_deselectAll(x);
-    for (g2 = x->gl_graphics, nbox = 0; g2; g2 = g2->g_next) nbox++;
-
-    editor_pasteOnset = nbox;
-    editor_pasteCanvas = x;
-
-    buffer_eval(b, 0, 0, 0);
-    for (g2 = x->gl_graphics, count = 0; g2; g2 = g2->g_next, count++)
-        if (count >= nbox)
-            canvas_selectObject(x, g2);
-    editor_pasteCanvas = 0;
-    dsp_resume(dspstate);
-    canvas_dirty(x, 1);
-    sys_vGui("::ui_patch::updateScrollRegion .x%lx.c\n", x);
-    
-    t_selection *sel;
-    for (sel = x->gl_editor->e_selectedObjects; sel; sel = sel->sel_next)
-        if (pd_class(&sel->sel_what->g_pd) == canvas_class)
-            canvas_loadbang((t_glist *)(&sel->sel_what->g_pd));
-    
-    asym->s_thing = bounda;
-    s__X.s_thing = boundx;
-    s__N.s_thing = boundn;
-}
-
-void canvas_paste(t_glist *x)
-{
-    if (!x->gl_editor)
-        return;
-    if (x->gl_editor->e_selectedText)
-    {
-        /* simulate keystrokes as if the copy buffer were typed in. */
+    if (!glist->gl_editor || !glist->gl_isEditMode) { return; }
+    else {
+    //
+    if (glist->gl_editor->e_selectedText) {
         // sys_vGui("::ui_object::pasteText .x%lx\n", x);
+    } else {
+        canvas_performPaste (glist);
     }
-    else
-    {
-        // canvas_setundo(x, canvas_undo_paste, canvas_undo_set_paste(x), "paste");
-        canvas_dopaste(x, editor_buffer);
-    }
-}
-
-void canvas_duplicate(t_glist *x)
-{
-    if (!x->gl_editor)
-        return;
-    if (x->gl_editor->e_action == ACTION_NONE && x->gl_editor->e_selectedObjects)
-    {
-        t_selection *y;
-        canvas_copy(x);
-        // canvas_setundo(x, canvas_undo_paste, canvas_undo_set_paste(x), "duplicate");
-        canvas_dopaste(x, editor_buffer);
-        for (y = x->gl_editor->e_selectedObjects; y; y = y->sel_next)
-            gobj_displace(y->sel_what, x,
-                10, 10);
-        canvas_dirty(x, 1);
+    //
     }
 }
 
-void canvas_selectall(t_glist *x)
+void canvas_duplicate (t_glist *glist)
 {
-    t_gobj *y;
-    if (!x->gl_editor)
-        return;
-    if (!x->gl_isEditMode)
-        canvas_editmode(x, 1);
-            /* if everyone is already selected deselect everyone */
-    if (!canvas_getNumberOfUnselectedObjects (x))
-        canvas_deselectAll(x);
-    else for (y = x->gl_graphics; y; y = y->g_next)
-    {
-        if (!canvas_isObjectSelected(x, y))
-            canvas_selectObject(x, y);
+    if (!glist->gl_editor || !glist->gl_isEditMode) { return; }
+    else {
+    //
+    canvas_copy (glist);
+    canvas_performPaste (glist);
+    //
+    }
+}
+
+void canvas_selectAll (t_glist *glist)
+{
+    if (!glist->gl_editor || !glist->gl_isEditMode) { return; }
+    else {
+    //
+    t_gobj *y = NULL;
+
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+        if (!canvas_isObjectSelected (glist, y)) { canvas_selectObject (glist, y); }
+    }
+    //
     }
 }
 
