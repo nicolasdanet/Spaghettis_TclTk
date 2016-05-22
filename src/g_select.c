@@ -52,8 +52,6 @@ static void canvas_deselectAllRecursive (t_gobj *g)
 
 static void canvas_deselectLine (t_glist *glist)
 {
-    PD_ASSERT (glist->gl_editor);
-    
     glist->gl_editor->e_isSelectedline = 0;
     
     sys_vGui (".x%lx.c itemconfigure %lxLINE -fill black\n",
@@ -72,8 +70,6 @@ static void canvas_cacheLines (t_glist *glist)
     t_linetraverser t;
     t_outconnect *connection;
     
-    PD_ASSERT (glist->gl_editor);
-
     /* Split selected object from uneselected ones and move it to the end. */
     
     for (y1 = glist->gl_graphics; y1; y1 = y2) {
@@ -284,8 +280,6 @@ void canvas_selectObjectsInRectangle (t_glist *glist, int a, int b, int c, int d
 
 void canvas_selectObject (t_glist *glist, t_gobj *y)
 {
-    if (glist->gl_editor) {
-    //
     t_selection *selection = (t_selection *)PD_MEMORY_GET (sizeof (t_selection));
     
     if (glist->gl_editor->e_isSelectedline) { canvas_deselectLine (glist); }
@@ -298,8 +292,6 @@ void canvas_selectObject (t_glist *glist, t_gobj *y)
     glist->gl_editor->e_selectedObjects = selection;
     
     gobj_select (y, glist, 1);
-    //
-    }
 }
 
 void canvas_selectObjectIfNotAlreadySelected (t_glist *glist, t_gobj *y)
@@ -317,8 +309,6 @@ void canvas_selectLine (t_glist *glist,
     int indexOfObjectIn,
     int indexOfInlet)
 {
-    if (glist->gl_editor) {
-    //
     canvas_deselectAll (glist);
         
     glist->gl_editor->e_isSelectedline                  = 1;
@@ -330,15 +320,11 @@ void canvas_selectLine (t_glist *glist,
     
     sys_vGui (".x%lx.c itemconfigure %lxLINE -fill blue\n",
                 glist,
-                glist->gl_editor->e_selectedLineConnection);
-    //
-    }    
+                glist->gl_editor->e_selectedLineConnection);  
 }
 
 void canvas_deselectObject (t_glist *glist, t_gobj *y)
 {
-    if (glist->gl_editor) {
-    //
     int dspSuspended = 0;
     
     t_boxtext *z = NULL;
@@ -392,21 +378,15 @@ void canvas_deselectObject (t_glist *glist, t_gobj *y)
     }
     
     if (dspSuspended) { dsp_resume (dspSuspended); }
-    //
-    }
 }
 
 void canvas_deselectAll (t_glist *glist)
 {
-    if (glist->gl_editor) {
-    //
     while (glist->gl_editor->e_selectedObjects) {
         canvas_deselectObject (glist, glist->gl_editor->e_selectedObjects->sel_what);
     }
 
     if (glist->gl_editor->e_isSelectedline) { canvas_deselectLine (glist); }
-    //
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

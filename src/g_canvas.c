@@ -701,7 +701,7 @@ void canvas_free (t_glist *glist)
     int dspstate = dsp_suspend();
     t_gobj *y = NULL;
         
-    canvas_deselectAll (glist);
+    if (glist->gl_editor) { canvas_deselectAll (glist); }
     
     while (y = glist->gl_graphics) { glist_delete (glist, y); }
     if (glist == canvas_getView (glist)) { canvas_visible (glist, 0); }
