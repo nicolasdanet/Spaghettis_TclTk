@@ -122,8 +122,8 @@ proc initialize {} {
     
     bind all <<RunDSP>>                     { .menubar.media    invoke "Run DSP"    }
     
-    bind all <KeyPress>                     { ::ui_bind::_key %W %K %A 1 }
-    bind all <KeyRelease>                   { ::ui_bind::_key %W %K %A 0 }
+    bind all <KeyPress>                     { ::ui_bind::key %W %K %A 1 }
+    bind all <KeyRelease>                   { ::ui_bind::key %W %K %A 0 }
     
     bind all <<Quit>>                       { ::ui_interface::pdsend "pd _quit" }
 }
@@ -207,7 +207,7 @@ proc _mouseUp {c x y} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _key {w keysym iso isPress} {
+proc key {w keysym iso isPress} {
 
     set k ""
     

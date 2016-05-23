@@ -415,7 +415,7 @@ static int canvas_performMouseLines (t_glist *glist, int positionX, int position
     
     t_float area = a * (positionY - d) + positionX * (d - b) + c * (b - positionY);
     
-    /* Tolerance proportional to distance between line extremities. */
+    /* Tolerance proportional to the distance between the line extremities. */
     
     t_float k = PD_MAX (PD_ABS (c - a), PD_ABS (d - b));    
     
@@ -901,7 +901,7 @@ void canvas_paste (t_glist *glist)
     else {
     //
     if (glist->gl_editor->e_selectedText) {
-        // sys_vGui("::ui_object::pasteText .x%lx\n", x);
+        sys_vGui ("::ui_object::pasteText .x%lx\n", glist);
     } else {
         canvas_performPaste (glist);
     }

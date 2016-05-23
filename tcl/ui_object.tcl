@@ -43,6 +43,17 @@ proc setEditing {top tag isEditing} {
     $top.c focus $tag
 }
 
+proc pasteText {top} {
+
+    # Fake typing the contents if any. 
+    
+    if {[catch { clipboard get } contents]} {
+        #
+    } else {
+        foreach c [split $contents ""] { ui_bind::key $top "" $c 1 }
+    }
+}
+
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
