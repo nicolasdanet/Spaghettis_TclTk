@@ -37,6 +37,13 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define IEM_DIAL_ANGULAR_RANGE      300
+#define IEM_DIAL_ANGULAR_OFFSET     (90 + ((360 - IEM_DIAL_ANGULAR_RANGE) / 2))
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #define IEM_DIAL_MAXIMUM_STEPS      (1024 * 1024)
 
 // -----------------------------------------------------------------------------------------------------------
@@ -77,9 +84,9 @@ static int dial_getNeedleColor (t_dial *x)
 
 static int dial_getNeedleAngle (t_dial *x)
 {
-    int k = (int)(((double)x->x_position / x->x_steps) * 360.0);
-    k = PD_CLAMP (k, 0, 359);
-    return -k;
+    int angle = (int)(((double)x->x_position / x->x_steps) * IEM_DIAL_ANGULAR_RANGE);
+    angle = PD_CLAMP (angle, 0, IEM_DIAL_ANGULAR_RANGE);
+    return (-angle -IEM_DIAL_ANGULAR_OFFSET);
 }
 
 static void dial_setString (t_dial *x)
@@ -100,7 +107,7 @@ static void dial_drawUpdate (t_dial *x, t_glist *glist)
     //
     dial_setString (x);
     
-    sys_vGui (".x%lx.c itemconfigure %lxNEEDLE -extent %d\n",
+    sys_vGui (".x%lx.c itemconfigure %lxNEEDLE -start %d\n",
                 canvas_getView (glist),
                 x,
                 dial_getNeedleAngle (x));
@@ -131,6 +138,13 @@ static void dial_drawMove (t_dial *x, t_glist *glist)
                 b,
                 a + width, 
                 b + x->x_gui.iem_height);
+    sys_vGui (".x%lx.c coords %lxARC %d %d %d %d\n",
+                canvas,
+                x,
+                a + 1 + (h / 2),
+                b + 1,
+                a - 1 + width - (h / 2),
+                b - 1 + x->x_gui.iem_height - h);
     sys_vGui (".x%lx.c coords %lxNEEDLE %d %d %d %d\n",
                 canvas,
                 x,
@@ -172,8 +186,23 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
                 x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorBackground,
                 x);
     sys_vGui (".x%lx.c create arc %d %d %d %d"
-                " -start -90"
+                " -start %d"
                 " -extent %d"
+                " -outline #%06x"
+                " -style arc"
+                " -tags %lxARC\n",
+                canvas,
+                a + 1 + (h / 2),
+                b + 1,
+                a - 1 + width - (h / 2),
+                b - 1 + x->x_gui.iem_height - h,
+                -IEM_DIAL_ANGULAR_OFFSET,
+                -IEM_DIAL_ANGULAR_RANGE,
+                dial_getNeedleColor (x),
+                x);
+    sys_vGui (".x%lx.c create arc %d %d %d %d"
+                " -start %d"
+                " -extent 0"
                 " -fill #%06x"
                 " -outline #%06x"
                 " -tags %lxNEEDLE\n",
@@ -234,6 +263,9 @@ static void dial_drawErase (t_dial* x, t_glist *glist)
     sys_vGui (".x%lx.c delete %lxBASE\n",
                 canvas,
                 x);
+    sys_vGui (".x%lx.c delete %lxARC\n",
+                canvas,
+                x);
     sys_vGui (".x%lx.c delete %lxNEEDLE\n",
                 canvas,
                 x);
@@ -253,6 +285,10 @@ static void dial_drawConfig (t_dial* x, t_glist *glist)
                 canvas,
                 x,
                 x->x_gui.iem_colorBackground);
+    sys_vGui (".x%lx.c itemconfigure %lxARC -outline #%06x\n",
+                canvas,
+                x,
+                dial_getNeedleColor (x));
     sys_vGui (".x%lx.c itemconfigure %lxNEEDLE -fill #%06x -outline #%06x\n",
                 canvas,
                 x,
