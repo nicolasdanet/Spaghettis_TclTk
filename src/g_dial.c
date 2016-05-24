@@ -74,7 +74,7 @@ static int dial_getWidth (t_dial *x)
     return PD_MAX (dial_getWidthDigits (x), x->x_gui.iem_height);
 }
 
-static int dial_getNeedleColor (t_dial *x)
+static int dial_getKnobColor (t_dial *x)
 {
     if (x->x_gui.iem_height < dial_getWidth (x)) { return x->x_gui.iem_colorBackground; }
     else {
@@ -82,12 +82,26 @@ static int dial_getNeedleColor (t_dial *x)
     }
 }
 
-static int dial_getNeedleAngle (t_dial *x)
+static double dial_getNeedleAngle (t_dial *x)
 {
-    int angle = (int)(((double)x->x_position / x->x_steps) * IEM_DIAL_ANGULAR_RANGE);
-    angle = PD_CLAMP (angle, 0, IEM_DIAL_ANGULAR_RANGE);
-    return (-angle -IEM_DIAL_ANGULAR_OFFSET);
+    int degrees    = (int)(((double)x->x_position / x->x_steps) * IEM_DIAL_ANGULAR_RANGE);
+    double radians = PD_TORADIANS (PD_CLAMP (degrees, 0, IEM_DIAL_ANGULAR_RANGE) + IEM_DIAL_ANGULAR_OFFSET);
+    return radians;
 }
+
+static int dial_getNeedleTopX (t_dial *x, int m, double distance)
+{
+    return (m + PD_MAX (distance, 1.0) * cos (dial_getNeedleAngle (x)));
+}
+
+static int dial_getNeedleTopY (t_dial *x, int n, double distance)
+{
+    return (n + PD_MAX (distance, 1.0) * sin (dial_getNeedleAngle (x)));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void dial_setString (t_dial *x)
 {
@@ -105,12 +119,24 @@ static void dial_drawUpdate (t_dial *x, t_glist *glist)
 {
     if (canvas_isMapped (glist)) {
     //
+    t_glist *canvas = canvas_getView (glist);
+    
+    int a = text_xpix (cast_object (x), glist);
+    int b = text_ypix (cast_object (x), glist);
+    int h = x->x_digitsFontSize;
+    int w = dial_getWidth (x);
+    int m = a + (w / 2);
+    int n = b + ((x->x_gui.iem_height - h) / 2);
+    
     dial_setString (x);
     
-    sys_vGui (".x%lx.c itemconfigure %lxNEEDLE -start %d\n",
-                canvas_getView (glist),
+    sys_vGui (".x%lx.c coords %lxNEEDLE %d %d %d %d\n",
+                canvas,
                 x,
-                dial_getNeedleAngle (x));
+                m,
+                n,
+                dial_getNeedleTopX (x, m, ((w - h) / 2.0) + 2),
+                dial_getNeedleTopY (x, n, ((w - h) / 2.0) + 2));
                 
     sys_vGui (".x%lx.c itemconfigure %lxNUMBER -fill #%06x -text {%s}\n",  // --
                 canvas_getView (glist),
@@ -125,37 +151,39 @@ static void dial_drawMove (t_dial *x, t_glist *glist)
 {
     t_glist *canvas = canvas_getView (glist);
     
-    int a     = text_xpix (cast_object (x), glist);
-    int b     = text_ypix (cast_object (x), glist);
-    int k     = x->x_gui.iem_height - (x->x_digitsFontSize / 2);
-    int h     = x->x_digitsFontSize;
-    int width = dial_getWidth (x);
+    int a = text_xpix (cast_object (x), glist);
+    int b = text_ypix (cast_object (x), glist);
+    int k = x->x_gui.iem_height - (x->x_digitsFontSize / 2);
+    int h = x->x_digitsFontSize;
+    int w = dial_getWidth (x);
+    int m = a + (w / 2);
+    int n = b + ((x->x_gui.iem_height - h) / 2);
     
     sys_vGui (".x%lx.c coords %lxBASE %d %d %d %d\n",
                 canvas,
                 x,
                 a, 
                 b,
-                a + width, 
+                a + w, 
                 b + x->x_gui.iem_height);
     sys_vGui (".x%lx.c coords %lxARC %d %d %d %d\n",
                 canvas,
                 x,
-                a + 1 + (h / 2),
-                b + 1,
-                a - 1 + width - (h / 2),
-                b - 1 + x->x_gui.iem_height - h);
+                a + 2 + (h / 2),
+                b + 2,
+                a - 2 + w - (h / 2),
+                b - 2 + x->x_gui.iem_height - h);
     sys_vGui (".x%lx.c coords %lxNEEDLE %d %d %d %d\n",
                 canvas,
                 x,
-                a + 1 + (h / 2),
-                b + 1,
-                a - 1 + width - (h / 2),
-                b - 1 + x->x_gui.iem_height - h);
+                m,
+                n,
+                dial_getNeedleTopX (x, m, ((w - h) / 2.0) + 2),
+                dial_getNeedleTopY (x, n, ((w - h) / 2.0) + 2));
     sys_vGui (".x%lx.c coords %lxNUMBER %d %d\n",
                 canvas,
                 x,
-                a + 1 + (width / 2),
+                a + 1 + (w / 2),
                 b + k);
     sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
                 canvas,
@@ -168,11 +196,13 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
 {
     t_glist *canvas = canvas_getView (glist);
     
-    int a     = text_xpix (cast_object (x), glist);
-    int b     = text_ypix (cast_object (x), glist);
-    int k     = x->x_gui.iem_height - (x->x_digitsFontSize / 2);
-    int h     = x->x_digitsFontSize;
-    int width = dial_getWidth (x);
+    int a = text_xpix (cast_object (x), glist);
+    int b = text_ypix (cast_object (x), glist);
+    int k = x->x_gui.iem_height - (x->x_digitsFontSize / 2);
+    int h = x->x_digitsFontSize;
+    int w = dial_getWidth (x);
+    int m = a + (w / 2);
+    int n = b + ((x->x_gui.iem_height - h) / 2);
     
     dial_setString (x);
     
@@ -180,40 +210,37 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
                 canvas,
                 a,
                 b,
-                a + width,
+                a + w,
                 b + x->x_gui.iem_height,
                 x->x_gui.iem_colorBackground,
                 x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorBackground,
                 x);
     sys_vGui (".x%lx.c create arc %d %d %d %d"
+                " -width 2"
                 " -start %d"
                 " -extent %d"
                 " -outline #%06x"
                 " -style arc"
                 " -tags %lxARC\n",
                 canvas,
-                a + 1 + (h / 2),
-                b + 1,
-                a - 1 + width - (h / 2),
-                b - 1 + x->x_gui.iem_height - h,
+                a + 2 + (h / 2),
+                b + 2,
+                a - 2 + w - (h / 2),
+                b - 2 + x->x_gui.iem_height - h,
                 -IEM_DIAL_ANGULAR_OFFSET,
                 -IEM_DIAL_ANGULAR_RANGE,
-                dial_getNeedleColor (x),
+                dial_getKnobColor (x),
                 x);
-    sys_vGui (".x%lx.c create arc %d %d %d %d"
-                " -start %d"
-                " -extent 0"
+    sys_vGui (".x%lx.c create line %d %d %d %d"
+                " -width 2"
                 " -fill #%06x"
-                " -outline #%06x"
                 " -tags %lxNEEDLE\n",
                 canvas,
-                a + 1 + (h / 2),
-                b + 1,
-                a - 1 + width - (h / 2),
-                b - 1 + x->x_gui.iem_height - h,
-                dial_getNeedleAngle (x),
-                x->x_gui.iem_colorBackground,
-                dial_getNeedleColor (x),
+                m,
+                n,
+                dial_getNeedleTopX (x, m, ((w - h) / 2.0) + 2),
+                dial_getNeedleTopY (x, n, ((w - h) / 2.0) + 2),
+                dial_getKnobColor (x),
                 x);
     sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
                 " -anchor center"
@@ -221,7 +248,7 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
                 " -fill #%06x"
                 " -tags %lxNUMBER\n",
                 canvas,
-                a + 1 + (width / 2),
+                a + 1 + (w / 2),
                 b + k,
                 x->x_t, 
                 x->x_digitsFontSize,
@@ -288,12 +315,11 @@ static void dial_drawConfig (t_dial* x, t_glist *glist)
     sys_vGui (".x%lx.c itemconfigure %lxARC -outline #%06x\n",
                 canvas,
                 x,
-                dial_getNeedleColor (x));
-    sys_vGui (".x%lx.c itemconfigure %lxNEEDLE -fill #%06x -outline #%06x\n",
+                dial_getKnobColor (x));
+    sys_vGui (".x%lx.c itemconfigure %lxNEEDLE -fill #%06x\n",
                 canvas,
                 x,
-                x->x_gui.iem_colorBackground, 
-                dial_getNeedleColor (x));
+                dial_getKnobColor (x));
     sys_vGui (".x%lx.c itemconfigure %lxNUMBER -font [::getFont %d] -fill #%06x\n",    // --
                 canvas,
                 x, 
