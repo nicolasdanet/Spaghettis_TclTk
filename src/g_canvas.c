@@ -805,10 +805,10 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_dsp,           sym_dsp,            A_CANT, A_NULL);
     class_addMethod (c, (t_method)canvas_rename,        sym_rename,         A_GIMME, A_NULL);
     
+    class_addMethod (c, (t_method)canvas_serialize,     sym__serialize,     A_CANT, A_NULL);
     class_addMethod (c, (t_method)canvas_save,          sym_save,           A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_saveAs,        sym_saveas,         A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_saveTo,        sym_saveto,         A_CANT, A_NULL);
-    
+
     class_addMethod (c, (t_method)canvas_saveToFile,
         sym_savetofile,
         A_SYMBOL,

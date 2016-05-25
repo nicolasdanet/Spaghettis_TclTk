@@ -681,115 +681,121 @@ static void canvas_savetemplatesto(t_glist *x, t_buffer *b, int wholething)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_save (t_glist *x, float fdestroy)
+void canvas_serialize (t_glist *glist, t_buffer *b)
 {
-    t_glist *x2 = canvas_getRoot(x);
-    char *name = x2->gl_name->s_name;
-    if (*name && strncmp(name, "Untitled", 8)
-            && (strlen(name) < 4 || strcmp(name + strlen(name)-4, ".pat")
-                || strcmp(name + strlen(name)-4, ".mxt")))
-    {
-        canvas_saveToFile(x2, x2->gl_name, canvas_getEnvironment (x2)->ce_directory, fdestroy);
-    }
-    else canvas_saveAs(x2, fdestroy);
-}
-
-void canvas_saveAs(t_glist *x, float fdestroy)
-{
-    t_glist *x2 = canvas_getRoot(x);
-    sys_vGui ("::ui_file::saveAs .x%lx {%s} {%s} %d\n", x2,
-        x2->gl_name->s_name, canvas_getEnvironment (x2)->ce_directory->s_name, (int)fdestroy);
-}
-
-void canvas_saveTo(t_glist *x, t_buffer *b)
-{
-    t_gobj *y;
+    t_gobj *y = NULL;
+    t_outconnect *connection = NULL;
     t_linetraverser t;
-    t_outconnect *oc;
-        /* subpatch */
-    if (canvas_isSubpatch (x))
-    {
-        /* have to go to original binbuf to find out how we were named. */
-        t_buffer *bz = buffer_new();
-        t_symbol *patchsym;
-        buffer_serialize(bz, x->gl_obj.te_buffer);
-        patchsym = atom_getSymbolAtIndex(1, buffer_size(bz), buffer_atoms(bz));
-        buffer_free(bz);
-        buffer_vAppend(b, "ssiiiisi;", sym___hash__N, sym_canvas,
-            (int)(x->gl_windowTopLeftX),
-            (int)(x->gl_windowTopLeftY),
-            (int)(x->gl_windowBottomRightX - x->gl_windowTopLeftX),
-            (int)(x->gl_windowBottomRightY - x->gl_windowTopLeftY),
-            (patchsym != &s_ ? patchsym : sym_subpatch),
-            x->gl_isMapped);
-    }
-        /* root or abstraction */
-    else 
-    {
-        buffer_vAppend(b, "ssiiiii;", sym___hash__N, sym_canvas,
-            (int)(x->gl_windowTopLeftX),
-            (int)(x->gl_windowTopLeftY),
-            (int)(x->gl_windowBottomRightX - x->gl_windowTopLeftX),
-            (int)(x->gl_windowBottomRightY - x->gl_windowTopLeftY),
-                (int)x->gl_fontSize);
-        // canvas_savedeclarationsto(x, b);
-    }
-    for (y = x->gl_graphics; y; y = y->g_next)
-        gobj_save(y, b);
 
-    canvas_traverseLinesStart(&t, x);
-    while (oc = canvas_traverseLinesNext(&t))
-    {
-        int srcno = canvas_getIndexOfObject(x, &t.tr_srcObject->te_g);
-        int sinkno = canvas_getIndexOfObject(x, &t.tr_destObject->te_g);
-        buffer_vAppend(b, "ssiiii;", sym___hash__X, sym_connect,
-            srcno, t.tr_srcIndexOfOutlet, sinkno, t.tr_destIndexOfInlet);
+    if (canvas_isSubpatch (glist)) {
+    
+        t_buffer *t = buffer_new();
+        t_symbol *s = NULL;
+        buffer_serialize (t, glist->gl_obj.te_buffer);
+        s = atom_getSymbolAtIndex (1, buffer_size (t), buffer_atoms (t));
+        buffer_free (t);
+        
+        buffer_vAppend (b, "ssiiiisi;", 
+            sym___hash__N, 
+            sym_canvas,
+            glist->gl_windowTopLeftX,
+            glist->gl_windowTopLeftY,
+            glist->gl_windowBottomRightX - glist->gl_windowTopLeftX,
+            glist->gl_windowBottomRightY - glist->gl_windowTopLeftY,
+            (s != &s_ ? s : sym_subpatch),
+            glist->gl_isMapped);
+            
+    } else {
+    
+        buffer_vAppend (b, "ssiiiii;", 
+            sym___hash__N,
+            sym_canvas,
+            glist->gl_windowTopLeftX,
+            glist->gl_windowTopLeftY,
+            glist->gl_windowBottomRightX - glist->gl_windowTopLeftX,
+            glist->gl_windowBottomRightY - glist->gl_windowTopLeftY,
+            glist->gl_fontSize);
+    }
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) { gobj_save (y, b); }
+
+    canvas_traverseLinesStart (&t, glist);
+    
+    while (connection = canvas_traverseLinesNext (&t)) {
+    
+        buffer_vAppend (b, "ssiiii;", 
+            sym___hash__X,
+            sym_connect,
+            canvas_getIndexOfObject (glist, cast_gobj (t.tr_srcObject)), 
+            t.tr_srcIndexOfOutlet, 
+            canvas_getIndexOfObject (glist, cast_gobj (t.tr_destObject)), 
+            t.tr_destIndexOfInlet);
     }
         /* unless everything is the default (as in ordinary subpatches)
         print out a "coords" message to set up the coordinate systems */
-    if (x->gl_isGraphOnParent || x->gl_valueStart || x->gl_valueUp ||
-        x->gl_valueEnd != 1 ||  x->gl_valueDown != 1 || x->gl_width || x->gl_height)
+    if (glist->gl_isGraphOnParent || glist->gl_valueStart || glist->gl_valueUp ||
+        glist->gl_valueEnd != 1 ||  glist->gl_valueDown != 1 || glist->gl_width || glist->gl_height)
     {
-        if (x->gl_isGraphOnParent && x->gl_hasRectangle)
+        if (glist->gl_isGraphOnParent && glist->gl_hasRectangle)
                 /* if we have a graph-on-parent rectangle, we're new style.
                 The format is arranged so
                 that old versions of Pd can at least do something with it. */
             buffer_vAppend(b, "ssfffffffff;", sym___hash__X, sym_coords,
-                x->gl_valueStart, x->gl_valueUp,
-                x->gl_valueEnd, x->gl_valueDown,
-                (t_float)x->gl_width, (t_float)x->gl_height,
-                (t_float)((x->gl_hideText)?3.:1.),
-                (t_float)x->gl_marginX, (t_float)x->gl_marginY); 
+                glist->gl_valueStart, glist->gl_valueUp,
+                glist->gl_valueEnd, glist->gl_valueDown,
+                (t_float)glist->gl_width, (t_float)glist->gl_height,
+                (t_float)((glist->gl_hideText)?3.:1.),
+                (t_float)glist->gl_marginX, (t_float)glist->gl_marginY); 
                     /* otherwise write in 0.38-compatible form */
         else buffer_vAppend(b, "ssfffffff;", sym___hash__X, sym_coords,
-                x->gl_valueStart, x->gl_valueUp,
-                x->gl_valueEnd, x->gl_valueDown,
-                (t_float)x->gl_width, (t_float)x->gl_height,
-                (t_float)x->gl_isGraphOnParent);
+                glist->gl_valueStart, glist->gl_valueUp,
+                glist->gl_valueEnd, glist->gl_valueDown,
+                (t_float)glist->gl_width, (t_float)glist->gl_height,
+                (t_float)glist->gl_isGraphOnParent);
     }
 }
 
-    /* save a "root" canvas to a file; cf. canvas_saveto() which saves the
-    body (and which is called recursively.) */
-void canvas_saveToFile(t_glist *x, t_symbol *filename, t_symbol *dir, float fdestroy)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void canvas_save (t_glist *glist, float destroy)
+{
+    t_glist *root = canvas_getRoot (glist);
+    
+    if (root->gl_name == &s_) { canvas_saveAs (root, destroy); }
+    else {
+        canvas_saveToFile (root, root->gl_name, canvas_getEnvironment (root)->ce_directory, destroy);
+    }
+}
+
+void canvas_saveAs (t_glist *glist, float destroy)
+{
+    t_glist *root = canvas_getRoot (glist);
+    
+    sys_vGui ("::ui_file::saveAs .x%lx {%s} {%s} %d\n",
+                root,
+                root->gl_name->s_name,
+                canvas_getEnvironment (root)->ce_directory->s_name, 
+                (int)destroy);
+}
+
+void canvas_saveToFile (t_glist *glist, t_symbol *name, t_symbol *directory, float destroy)
 {
     t_buffer *b = buffer_new();
-    canvas_savetemplatesto(x, b, 1);
-    canvas_saveTo(x, b);
-    if (buffer_write(b, filename->s_name, dir->s_name)) { /* sys_ouch */ }
+    
+    canvas_savetemplatesto (glist, b, 1);
+    canvas_serialize (glist, b);
+    
+    if (buffer_write (b, name->s_name, directory->s_name)) { PD_BUG; }
     else {
-            /* if not an abstraction, reset title bar and directory */ 
-        if (!x->gl_parent)
-        {
-            canvas_setName(x, filename, dir);
-            /* update window list in case Save As changed the window name */
-        }
-        post("saved to: %s/%s", dir->s_name, filename->s_name);
-        canvas_dirty(x, 0);
-        if (fdestroy != 0)
-            pd_vMessage (&x->gl_obj.te_g.g_pd, sym_close, "f", fdestroy);
+        if (!canvas_isAbstraction (glist)) { canvas_setName (glist, name, directory); }
+        post (PD_TRANSLATE ("file: saved to '%s/%s'"), directory->s_name, name->s_name);
+        canvas_dirty (glist, 0);
+        if (destroy != 0.0) { pd_vMessage (cast_pd (glist), sym_close, "f", 1.0); }
     }
-    buffer_free(b);
+    
+    buffer_free (b);
 }
 
 // -----------------------------------------------------------------------------------------------------------

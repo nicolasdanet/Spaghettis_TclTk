@@ -1157,12 +1157,12 @@ void text_save(t_gobj *z, t_buffer *b)
     {
             /* if we have a "saveto" method, and if we don't happen to be
             a canvas that's an abstraction, the saveto method does the work */
-        if (class_hasMethod (pd_class ((t_pd *)x), sym_saveto) &&
+        if (class_hasMethod (pd_class ((t_pd *)x), sym__serialize) &&
             !((pd_class((t_pd *)x) == canvas_class) && 
                 (canvas_isAbstraction ((t_glist *)x)
                     || canvas_istable((t_glist *)x))))
         {  
-            mess1((t_pd *)x, sym_saveto, b);
+            mess1((t_pd *)x, sym__serialize, b);
             buffer_vAppend(b, "ssii", sym___hash__X, sym_restore,
                 (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         }

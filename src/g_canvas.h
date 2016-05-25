@@ -517,13 +517,14 @@ void            canvas_read                             (t_glist *glist, t_symbo
 void            canvas_write                            (t_glist *glist, t_symbol *name, t_symbol *format);
 void            canvas_merge                            (t_glist *glist, t_symbol *name, t_symbol *format);
 
-void            canvas_save                             (t_glist *glist, float fdestroy);
-void            canvas_saveAs                           (t_glist *glist, float fdestroy);
-void            canvas_saveTo                           (t_glist *glist, t_buffer *b);
+void            canvas_save                             (t_glist *glist, float destroy);
+void            canvas_saveAs                           (t_glist *glist, float destroy);
 void            canvas_saveToFile                       (t_glist *glist, 
                                                             t_symbol *name,
                                                             t_symbol *directory, 
-                                                            float fdestroy);
+                                                            float destroy);
+
+void            canvas_serialize                        (t_glist *glist, t_buffer *b);
 
 void            canvas_properties                       (t_gobj *x, t_glist *glist);
 
