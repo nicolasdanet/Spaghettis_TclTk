@@ -9,23 +9,14 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* 
-Routines to read and write canvases to files:
-canvas_savetofile() writes a root canvas to a "pd" file.  (Reading "pd" files
-is done simply by passing the contents to the pd message interpreter.)
-Alternatively, the  glist_read() and glist_write() routines read and write
-"data" from and to files (reading reads into an existing canvas), using a
-file format as in the dialog window for data.
-*/
-
-#include <stdlib.h>
-#include <stdio.h>
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
 #include "g_canvas.h"
-#include <string.h>
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 extern t_class *scalar_class;
 extern t_class *canvas_class;
@@ -803,7 +794,7 @@ void canvas_menusave(t_glist *x, float fdestroy)
     else canvas_menusaveas(x2, fdestroy);
 }
 
-void g_readwrite_setup(void)
+void g_readwrite_setup (void)
 {
     class_addMethod(canvas_class, (t_method)glist_write,
         sym_write, A_SYMBOL, A_DEFSYMBOL, A_NULL);
@@ -822,4 +813,5 @@ void g_readwrite_setup(void)
         sym_menusaveas, A_DEFFLOAT, 0); /* LEGACY !!! */
 }
 
-
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
