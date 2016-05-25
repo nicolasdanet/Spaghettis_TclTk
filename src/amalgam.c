@@ -67,6 +67,8 @@
 #include "g_dsp.c"
 #include "g_object.c"
 
+#include "g_serialize.c"
+
 #include "g_iem.c"
 #include "g_bang.c"
 #include "g_toggle.c"

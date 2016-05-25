@@ -499,10 +499,6 @@ void            canvas_paste                            (t_glist *glist);
 void            canvas_duplicate                        (t_glist *glist);
 void            canvas_selectAll                        (t_glist *glist);
 
-void            canvas_read                             (t_glist *glist, t_symbol *name, t_symbol *format);
-void            canvas_write                            (t_glist *glist, t_symbol *name, t_symbol *format);
-void            canvas_merge                            (t_glist *glist, t_symbol *name, t_symbol *format);
-
 void            canvas_save                             (t_glist *glist, float destroy);
 void            canvas_saveAs                           (t_glist *glist, float destroy);
 void            canvas_saveToFile                       (t_glist *glist, 
@@ -513,21 +509,6 @@ void            canvas_saveToFile                       (t_glist *glist,
 void            canvas_serialize                        (t_glist *glist, t_buffer *b);
 
 void            canvas_properties                       (t_gobj *x, t_glist *glist);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void            canvas_writescalar                      (t_symbol *templatesym,
-                                                            t_word *w,
-                                                            t_buffer *b,
-                                                            int amarrayelement);
-                                                            
-int             canvas_readscalar                       (t_glist *x,
-                                                            int natoms,
-                                                            t_atom *vec,
-                                                            int *p_nextmsg,
-                                                            int selectit);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -582,6 +563,27 @@ int             gobj_hit                                (t_gobj *x,
                                                             
 int             gobj_isVisible                          (t_gobj *x, t_glist *owner);
 void            gobj_visibilityChanged                  (t_gobj *x, t_glist *owner, int isVisible);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void            canvas_writescalar                      (t_symbol *templatesym,
+                                                            t_word *w,
+                                                            t_buffer *b,
+                                                            int amarrayelement);
+                                                            
+int             canvas_readscalar                       (t_glist *x,
+                                                            int natoms,
+                                                            t_atom *vec,
+                                                            int *p_nextmsg,
+                                                            int selectit);
+
+void            canvas_serializeTemplates               (t_glist *glist, t_buffer *b);
+
+void            canvas_read                             (t_glist *glist, t_symbol *name, t_symbol *format);
+void            canvas_write                            (t_glist *glist, t_symbol *name, t_symbol *format);
+void            canvas_merge                            (t_glist *glist, t_symbol *name, t_symbol *format);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
