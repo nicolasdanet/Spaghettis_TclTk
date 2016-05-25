@@ -113,12 +113,15 @@ static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     glist->gl_width         = (int)atom_getFloatAtIndex (4, argc, argv);
     glist->gl_height        = (int)atom_getFloatAtIndex (5, argc, argv);
     
-    if (argc >= 8) {
-        glist->gl_marginX   = (int)atom_getFloatAtIndex (7, argc, argv);
-        glist->gl_marginY   = (int)atom_getFloatAtIndex (8, argc, argv);
-    }
+    /* Compatbility with legacy format. */
     
-    canvas_setAsGraphOnParent (glist, (int)atom_getFloatAtIndex (6, argc, argv), (argc < 8) ? 0 : 1);
+    if (argc < 8) { canvas_setAsGraphOnParent (glist, (int)atom_getFloatAtIndex (6, argc, argv), 0); }
+    else {
+        glist->gl_marginX = (int)atom_getFloatAtIndex (7, argc, argv);
+        glist->gl_marginY = (int)atom_getFloatAtIndex (8, argc, argv);
+        
+        canvas_setAsGraphOnParent (glist, (int)atom_getFloatAtIndex (6, argc, argv), 1);
+    }
 }
 
 void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -670,9 +673,9 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     topLeftX = PD_MAX (topLeftX, 0);
     topLeftY = PD_MAX (topLeftY, CANVAS_WINDOW_HEADER);
         
-    x->gl_valueStart    = 0;
+    x->gl_valueStart    = 0.0;
     x->gl_valueUp       = 0.0;
-    x->gl_valueEnd      = 1;
+    x->gl_valueEnd      = 1.0;
     x->gl_valueDown     = 1.0;
     
     canvas_setBounds (x, topLeftX, topLeftY, topLeftX + width, topLeftY + height);

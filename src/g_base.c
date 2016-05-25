@@ -18,6 +18,20 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#define BASE_DEFAULT_X          40
+#define BASE_DEFAULT_Y          40
+#define BASE_DEFAULT_WIDTH      200
+#define BASE_DEFAULT_HEIGHT     140
+
+#define BASE_DEFAULT_START      0.0
+#define BASE_DEFAULT_UP         1.0
+#define BASE_DEFAULT_END        100.0
+#define BASE_DEFAULT_DOWN      -1.0
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 extern t_class      *canvas_class;
 extern t_class      *array_define_class;
 extern t_class      *scalar_define_class;
@@ -207,19 +221,19 @@ t_glist *canvas_addGraph (t_glist *glist,
 
     if (valueStart >= valueEnd || valueUp == valueDown) {
     //
-    valueStart  = GLIST_DEFAULT_START;
-    valueEnd    = GLIST_DEFAULT_END;
-    valueUp     = GLIST_DEFAULT_UP;
-    valueDown   = GLIST_DEFAULT_DOWN;
+    valueStart  = BASE_DEFAULT_START;
+    valueEnd    = BASE_DEFAULT_END;
+    valueUp     = BASE_DEFAULT_UP;
+    valueDown   = BASE_DEFAULT_DOWN;
     //
     }
     
     if (topLeftX >= bottomRightX || topLeftY >= bottomRightY) {
     //
-    topLeftX     = GLIST_DEFAULT_X;
-    topLeftY     = GLIST_DEFAULT_Y;
-    bottomRightX = topLeftX + GLIST_DEFAULT_WIDTH;
-    bottomRightY = topLeftY + GLIST_DEFAULT_HEIGHT;
+    topLeftX     = BASE_DEFAULT_X;
+    topLeftY     = BASE_DEFAULT_Y;
+    bottomRightX = topLeftX + BASE_DEFAULT_WIDTH;
+    bottomRightY = topLeftY + BASE_DEFAULT_HEIGHT;
     //
     }
     
@@ -269,8 +283,8 @@ void canvas_setAsGraphOnParent (t_glist *glist, int flags, int hasRectangle)
     
     if (!isGraphOnParent) { glist->gl_isGraphOnParent = 0; } 
     else {
-        if (glist->gl_width <= 0)  { glist->gl_width  = GLIST_DEFAULT_WIDTH;  }
-        if (glist->gl_height <= 0) { glist->gl_height = GLIST_DEFAULT_HEIGHT; }
+        if (glist->gl_width <= 0)  { glist->gl_width  = BASE_DEFAULT_WIDTH;  }
+        if (glist->gl_height <= 0) { glist->gl_height = BASE_DEFAULT_HEIGHT; }
 
         glist->gl_isGraphOnParent = 1;
         glist->gl_hasRectangle = hasRectangle;
@@ -495,7 +509,7 @@ void canvas_getLastMotionCoordinates (t_glist *glist, int *a, int *b)
 {
     if (canvas_lastCanvas == glist) { *a = canvas_lastCanvasX; *b = canvas_lastCanvasY; } 
     else {
-        *a = GLIST_DEFAULT_X; *b = GLIST_DEFAULT_Y;
+        *a = BASE_DEFAULT_X; *b = BASE_DEFAULT_Y;
     }
 }
 

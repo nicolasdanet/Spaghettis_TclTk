@@ -686,7 +686,7 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
     t_gobj *y = NULL;
     t_outconnect *connection = NULL;
     t_linetraverser t;
-
+    
     if (canvas_isSubpatch (glist)) {
     
         t_buffer *t = buffer_new();
@@ -731,28 +731,19 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
             canvas_getIndexOfObject (glist, cast_gobj (t.tr_destObject)), 
             t.tr_destIndexOfInlet);
     }
-        /* unless everything is the default (as in ordinary subpatches)
-        print out a "coords" message to set up the coordinate systems */
-    if (glist->gl_isGraphOnParent || glist->gl_valueStart || glist->gl_valueUp ||
-        glist->gl_valueEnd != 1 ||  glist->gl_valueDown != 1 || glist->gl_width || glist->gl_height)
-    {
-        if (glist->gl_isGraphOnParent && glist->gl_hasRectangle)
-                /* if we have a graph-on-parent rectangle, we're new style.
-                The format is arranged so
-                that old versions of Pd can at least do something with it. */
-            buffer_vAppend(b, "ssfffffffff;", sym___hash__X, sym_coords,
-                glist->gl_valueStart, glist->gl_valueUp,
-                glist->gl_valueEnd, glist->gl_valueDown,
-                (t_float)glist->gl_width, (t_float)glist->gl_height,
-                (t_float)((glist->gl_hideText)?3.:1.),
-                (t_float)glist->gl_marginX, (t_float)glist->gl_marginY); 
-                    /* otherwise write in 0.38-compatible form */
-        else buffer_vAppend(b, "ssfffffff;", sym___hash__X, sym_coords,
-                glist->gl_valueStart, glist->gl_valueUp,
-                glist->gl_valueEnd, glist->gl_valueDown,
-                (t_float)glist->gl_width, (t_float)glist->gl_height,
-                (t_float)glist->gl_isGraphOnParent);
-    }
+
+    buffer_vAppend (b, "ssfffffffff;", 
+            sym___hash__X, 
+            sym_coords,
+            glist->gl_valueStart,
+            glist->gl_valueUp,
+            glist->gl_valueEnd,
+            glist->gl_valueDown,
+            (double)glist->gl_width, 
+            (double)glist->gl_height,
+            (double)((glist->gl_hideText ? 2 : 0) | (glist->gl_isGraphOnParent ? 1 : 0)),
+            (double)glist->gl_marginX,
+            (double)glist->gl_marginY);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -789,10 +780,11 @@ void canvas_saveToFile (t_glist *glist, t_symbol *name, t_symbol *directory, flo
     
     if (buffer_write (b, name->s_name, directory->s_name)) { PD_BUG; }
     else {
-        if (!canvas_isAbstraction (glist)) { canvas_setName (glist, name, directory); }
         post (PD_TRANSLATE ("file: saved to '%s/%s'"), directory->s_name, name->s_name);
         canvas_dirty (glist, 0);
-        if (destroy != 0.0) { pd_vMessage (cast_pd (glist), sym_close, "f", 1.0); }
+        if (destroy != 0.0) {
+            pd_vMessage (cast_pd (glist), sym_close, "f", 1.0); 
+        }
     }
     
     buffer_free (b);

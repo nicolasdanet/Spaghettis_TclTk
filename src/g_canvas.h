@@ -114,20 +114,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define GLIST_DEFAULT_X                 40
-#define GLIST_DEFAULT_Y                 40
-#define GLIST_DEFAULT_WIDTH             200
-#define GLIST_DEFAULT_HEIGHT            140
-
-#define GLIST_DEFAULT_START             0.0
-#define GLIST_DEFAULT_UP                1.0
-#define GLIST_DEFAULT_END               100.0
-#define GLIST_DEFAULT_DOWN             -1.0
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 #ifdef __APPLE__
     #define CANVAS_WINDOW_HEADER        22
 #else
