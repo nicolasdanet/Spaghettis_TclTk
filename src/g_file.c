@@ -21,13 +21,10 @@
 extern t_class *scalar_class;
 extern t_class *canvas_class;
 
-//static t_class *declare_class;
-//void canvas_savedeclarationsto(t_glist *x, t_buffer *b);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-    /* the following routines read "scalars" from a file into a canvas. */
-
-static int canvas_scanbinbuf(int natoms, t_atom *vec, int *p_indexout,
-    int *p_next)
+static int canvas_scanbinbuf(int natoms, t_atom *vec, int *p_indexout, int *p_next)
 {
     int i, j;
     int indexwas = *p_next;
@@ -42,11 +39,7 @@ static int canvas_scanbinbuf(int natoms, t_atom *vec, int *p_indexout,
     return (i - indexwas);
 }
 
-int canvas_readscalar(t_glist *x, int natoms, t_atom *vec,
-    int *p_nextmsg, int selectit);
-
-static void canvas_readerror(int natoms, t_atom *vec, int message, 
-    int nline, char *s)
+static void canvas_readerror (int natoms, t_atom *vec, int message, int nline, char *s)
 {
     post_error ("%s", s);
     post("line was:");
@@ -281,12 +274,12 @@ static void glist_doread(t_glist *x, t_symbol *filename, t_symbol *format,
     buffer_free(b);
 }
 
-void glist_read(t_glist *x, t_symbol *filename, t_symbol *format)
+void canvas_read(t_glist *x, t_symbol *filename, t_symbol *format)
 {
     glist_doread(x, filename, format, 1);
 }
 
-void glist_mergefile(t_glist *x, t_symbol *filename, t_symbol *format)
+void canvas_merge (t_glist *x, t_symbol *filename, t_symbol *format)
 {
     glist_doread(x, filename, format, 0);
 }
@@ -596,7 +589,7 @@ t_buffer *glist_writetobinbuf(t_glist *x, int wholething)
     return (b);
 }
 
-void glist_write(t_glist *x, t_symbol *filename, t_symbol *format)
+void canvas_write(t_glist *x, t_symbol *filename, t_symbol *format)
 {
     int cr = 0, i;
     t_buffer *b;
@@ -620,11 +613,95 @@ void glist_write(t_glist *x, t_symbol *filename, t_symbol *format)
     }
 }
 
-/* ------ routines to save and restore canvases (patches) recursively. ----*/
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-    /* save to a binbuf, called recursively; cf. canvas_savetofile() which
-    saves the document, and is only called on root canvases. */
-void canvas_saveto(t_glist *x, t_buffer *b)
+
+    /* call this recursively to collect all the template names for
+    a canvas or for the selection. */
+static void canvas_collecttemplatesfor(t_glist *x, int *ntemplatesp,
+    t_symbol ***templatevecp, int wholething)
+{
+    t_gobj *y;
+
+    for (y = x->gl_graphics; y; y = y->g_next)
+    {
+        if ((pd_class(&y->g_pd) == scalar_class) &&
+            (wholething || canvas_isObjectSelected(x, y)))
+                canvas_addtemplatesforscalar(((t_scalar *)y)->sc_template,
+                    ((t_scalar *)y)->sc_vector,  ntemplatesp, templatevecp);
+        else if ((pd_class(&y->g_pd) == canvas_class) &&
+            (wholething || canvas_isObjectSelected(x, y)))
+                canvas_collecttemplatesfor((t_glist *)y,
+                    ntemplatesp, templatevecp, 1);
+    }
+}
+
+    /* save the templates needed by a canvas to a binbuf. */
+static void canvas_savetemplatesto(t_glist *x, t_buffer *b, int wholething)
+{
+    t_symbol **templatevec = PD_MEMORY_GET(0);
+    int i, ntemplates = 0;
+    t_gobj *y;
+    canvas_collecttemplatesfor(x, &ntemplates, &templatevec, wholething);
+    for (i = 0; i < ntemplates; i++)
+    {
+        t_template *template = template_findbyname(templatevec[i]);
+        int j, m = template->t_n;
+        if (!template)
+        {
+            PD_BUG;
+            continue;
+        }
+            /* drop "pd-" prefix from template symbol to print */
+        buffer_vAppend(b, "sss", sym___hash__N, sym_struct,
+            gensym (templatevec[i]->s_name + 3));
+        for (j = 0; j < m; j++)
+        {
+            t_symbol *type;
+            switch (template->t_vec[j].ds_type)
+            {
+                case DATA_FLOAT: type = &s_float; break;
+                case DATA_SYMBOL: type = &s_symbol; break;
+                case DATA_ARRAY: type = sym_array; break;
+                case DATA_TEXT: type = sym_text; break;
+                default: type = &s_float; PD_BUG;
+            }
+            if (template->t_vec[j].ds_type == DATA_ARRAY)
+                buffer_vAppend(b, "sss", type, template->t_vec[j].ds_name,
+                    gensym (template->t_vec[j].ds_arraytemplate->s_name + 3));
+            else buffer_vAppend(b, "ss", type, template->t_vec[j].ds_name);
+        }
+        buffer_appendSemicolon(b);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void canvas_save (t_glist *x, float fdestroy)
+{
+    t_glist *x2 = canvas_getRoot(x);
+    char *name = x2->gl_name->s_name;
+    if (*name && strncmp(name, "Untitled", 8)
+            && (strlen(name) < 4 || strcmp(name + strlen(name)-4, ".pat")
+                || strcmp(name + strlen(name)-4, ".mxt")))
+    {
+        canvas_saveToFile(x2, x2->gl_name, canvas_getEnvironment (x2)->ce_directory, fdestroy);
+    }
+    else canvas_saveAs(x2, fdestroy);
+}
+
+void canvas_saveAs(t_glist *x, float fdestroy)
+{
+    t_glist *x2 = canvas_getRoot(x);
+    sys_vGui ("::ui_file::saveAs .x%lx {%s} {%s} %d\n", x2,
+        x2->gl_name->s_name, canvas_getEnvironment (x2)->ce_directory->s_name, (int)fdestroy);
+}
+
+void canvas_saveTo(t_glist *x, t_buffer *b)
 {
     t_gobj *y;
     t_linetraverser t;
@@ -692,72 +769,13 @@ void canvas_saveto(t_glist *x, t_buffer *b)
     }
 }
 
-    /* call this recursively to collect all the template names for
-    a canvas or for the selection. */
-static void canvas_collecttemplatesfor(t_glist *x, int *ntemplatesp,
-    t_symbol ***templatevecp, int wholething)
-{
-    t_gobj *y;
-
-    for (y = x->gl_graphics; y; y = y->g_next)
-    {
-        if ((pd_class(&y->g_pd) == scalar_class) &&
-            (wholething || canvas_isObjectSelected(x, y)))
-                canvas_addtemplatesforscalar(((t_scalar *)y)->sc_template,
-                    ((t_scalar *)y)->sc_vector,  ntemplatesp, templatevecp);
-        else if ((pd_class(&y->g_pd) == canvas_class) &&
-            (wholething || canvas_isObjectSelected(x, y)))
-                canvas_collecttemplatesfor((t_glist *)y,
-                    ntemplatesp, templatevecp, 1);
-    }
-}
-
-    /* save the templates needed by a canvas to a binbuf. */
-static void canvas_savetemplatesto(t_glist *x, t_buffer *b, int wholething)
-{
-    t_symbol **templatevec = PD_MEMORY_GET(0);
-    int i, ntemplates = 0;
-    t_gobj *y;
-    canvas_collecttemplatesfor(x, &ntemplates, &templatevec, wholething);
-    for (i = 0; i < ntemplates; i++)
-    {
-        t_template *template = template_findbyname(templatevec[i]);
-        int j, m = template->t_n;
-        if (!template)
-        {
-            PD_BUG;
-            continue;
-        }
-            /* drop "pd-" prefix from template symbol to print */
-        buffer_vAppend(b, "sss", sym___hash__N, sym_struct,
-            gensym (templatevec[i]->s_name + 3));
-        for (j = 0; j < m; j++)
-        {
-            t_symbol *type;
-            switch (template->t_vec[j].ds_type)
-            {
-                case DATA_FLOAT: type = &s_float; break;
-                case DATA_SYMBOL: type = &s_symbol; break;
-                case DATA_ARRAY: type = sym_array; break;
-                case DATA_TEXT: type = sym_text; break;
-                default: type = &s_float; PD_BUG;
-            }
-            if (template->t_vec[j].ds_type == DATA_ARRAY)
-                buffer_vAppend(b, "sss", type, template->t_vec[j].ds_name,
-                    gensym (template->t_vec[j].ds_arraytemplate->s_name + 3));
-            else buffer_vAppend(b, "ss", type, template->t_vec[j].ds_name);
-        }
-        buffer_appendSemicolon(b);
-    }
-}
-
     /* save a "root" canvas to a file; cf. canvas_saveto() which saves the
     body (and which is called recursively.) */
-void canvas_savetofile(t_glist *x, t_symbol *filename, t_symbol *dir, float fdestroy)
+void canvas_saveToFile(t_glist *x, t_symbol *filename, t_symbol *dir, float fdestroy)
 {
     t_buffer *b = buffer_new();
     canvas_savetemplatesto(x, b, 1);
-    canvas_saveto(x, b);
+    canvas_saveTo(x, b);
     if (buffer_write(b, filename->s_name, dir->s_name)) { /* sys_ouch */ }
     else {
             /* if not an abstraction, reset title bar and directory */ 
@@ -772,26 +790,6 @@ void canvas_savetofile(t_glist *x, t_symbol *filename, t_symbol *dir, float fdes
             pd_vMessage (&x->gl_obj.te_g.g_pd, sym_close, "f", fdestroy);
     }
     buffer_free(b);
-}
-
-void canvas_menusaveas(t_glist *x, float fdestroy)
-{
-    t_glist *x2 = canvas_getRoot(x);
-    sys_vGui ("::ui_file::saveAs .x%lx {%s} {%s} %d\n", x2,
-        x2->gl_name->s_name, canvas_getEnvironment (x2)->ce_directory->s_name, (int)fdestroy);
-}
-
-void canvas_menusave(t_glist *x, float fdestroy)
-{
-    t_glist *x2 = canvas_getRoot(x);
-    char *name = x2->gl_name->s_name;
-    if (*name && strncmp(name, "Untitled", 8)
-            && (strlen(name) < 4 || strcmp(name + strlen(name)-4, ".pat")
-                || strcmp(name + strlen(name)-4, ".mxt")))
-    {
-        canvas_savetofile(x2, x2->gl_name, canvas_getEnvironment (x2)->ce_directory, fdestroy);
-    }
-    else canvas_menusaveas(x2, fdestroy);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -62,10 +62,10 @@
 #include "g_draw.c"
 #include "g_select.c"
 #include "g_editor.c"
+#include "g_file.c"
 #include "g_canvas.c"
 #include "g_dsp.c"
 #include "g_object.c"
-#include "g_file.c"
 
 #include "g_iem.c"
 #include "g_bang.c"

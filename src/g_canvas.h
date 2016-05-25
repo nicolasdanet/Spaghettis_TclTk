@@ -513,14 +513,34 @@ void            canvas_paste                            (t_glist *glist);
 void            canvas_duplicate                        (t_glist *glist);
 void            canvas_selectAll                        (t_glist *glist);
 
-void            glist_write                             (t_glist *x, t_symbol *filename, t_symbol *format);
-void            canvas_saveto                           (t_glist *x, t_buffer *b);
-void            canvas_savetofile                       (t_glist *x, 
-                                                            t_symbol *filename,
-                                                            t_symbol *dir, 
+void            canvas_read                             (t_glist *glist, t_symbol *name, t_symbol *format);
+void            canvas_write                            (t_glist *glist, t_symbol *name, t_symbol *format);
+void            canvas_merge                            (t_glist *glist, t_symbol *name, t_symbol *format);
+
+void            canvas_save                             (t_glist *glist, float fdestroy);
+void            canvas_saveAs                           (t_glist *glist, float fdestroy);
+void            canvas_saveTo                           (t_glist *glist, t_buffer *b);
+void            canvas_saveToFile                       (t_glist *glist, 
+                                                            t_symbol *name,
+                                                            t_symbol *directory, 
                                                             float fdestroy);
 
 void            canvas_properties                       (t_gobj *x, t_glist *glist);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void            canvas_writescalar                      (t_symbol *templatesym,
+                                                            t_word *w,
+                                                            t_buffer *b,
+                                                            int amarrayelement);
+                                                            
+int             canvas_readscalar                       (t_glist *x,
+                                                            int natoms,
+                                                            t_atom *vec,
+                                                            int *p_nextmsg,
+                                                            int selectit);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -585,8 +605,7 @@ void glist_readfrombinbuf (t_glist *x, t_buffer *b, char *filename, int selectem
 void canvas_dataproperties (t_glist *x, t_scalar *sc, t_buffer *b);
 
 void canvas_objfor (t_glist *gl, t_object *x, int argc, t_atom *argv);
-void canvas_menusave (t_glist *x, float fdestroy);
-void canvas_menusaveas (t_glist *x, float fdestroy);
+
 void canvas_find_parent (t_glist *x);
 
 void glist_text(t_glist *x, t_symbol *s, int argc, t_atom *argv);
@@ -616,8 +635,7 @@ void     glist_delete           (t_glist *x, t_gobj *y);
 void     glist_retext           (t_glist *x, t_object *y);
 t_glist *glist_findgraph        (t_glist *x);
 void     glist_sort             (t_glist *canvas);
-void     glist_read             (t_glist *x, t_symbol *filename, t_symbol *format);
-void     glist_mergefile        (t_glist *x, t_symbol *filename, t_symbol *format);
+
 void     glist_grab             (t_glist *x,
                                     t_gobj *y,
                                     t_motionfn motionfn,
@@ -757,8 +775,6 @@ void     word_restore           (t_word *wp, t_template *tmpl, int argc, t_atom 
 void     word_free              (t_word *wp, t_template *tmpl);
 void     scalar_getbasexy       (t_scalar *x, t_float *basex, t_float *basey);
 void     scalar_redraw          (t_scalar *x, t_glist *glist);
-void     canvas_writescalar     (t_symbol *templatesym, t_word *w, t_buffer *b, int amarrayelement);
-int      canvas_readscalar      (t_glist *x, int natoms, t_atom *vec, int *p_nextmsg, int selectit);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

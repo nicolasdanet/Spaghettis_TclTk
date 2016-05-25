@@ -860,9 +860,9 @@ void x_array_setup(void )
         sym_menuclose, A_DEFFLOAT, 0); /* LEGACY !!! */
     /*class_addMethod(array_define_class, (t_method)canvas_find_parent,
         gen_sym ("findparent"), A_NULL)*/
-    class_addMethod(array_define_class, (t_method)canvas_menusave,
+    class_addMethod(array_define_class, (t_method)canvas_save,
         sym_menusave, 0); /* LEGACY !!! */
-    class_addMethod(array_define_class, (t_method)canvas_menusaveas,
+    class_addMethod(array_define_class, (t_method)canvas_saveAs,
         sym_menusaveas, 0); /* LEGACY !!! */
     
     class_addMethod(array_define_class, (t_method)array_define_send,
