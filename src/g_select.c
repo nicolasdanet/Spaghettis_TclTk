@@ -294,7 +294,7 @@ void canvas_selectObject (t_glist *glist, t_gobj *y)
     gobj_select (y, glist, 1);
 }
 
-void canvas_selectObjectIfNotAlreadySelected (t_glist *glist, t_gobj *y)
+void canvas_selectObjectIfNotSelected (t_glist *glist, t_gobj *y)
 {
     if (!canvas_isObjectSelected (glist, y)) {
         canvas_deselectAll (glist);

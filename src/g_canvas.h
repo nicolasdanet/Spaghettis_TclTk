@@ -430,7 +430,7 @@ void            canvas_selectingByLassoEnd              (t_glist *glist, int pos
 
 void            canvas_selectObjectsInRectangle         (t_glist *glist, int a, int b, int c, int d);
 void            canvas_selectObject                     (t_glist *glist, t_gobj *y);
-void            canvas_selectObjectIfNotAlreadySelected (t_glist *glist, t_gobj *y);
+void            canvas_selectObjectIfNotSelected        (t_glist *glist, t_gobj *y);
 void            canvas_selectLine                       (t_glist *glist, 
                                                             t_outconnect *connection,
                                                             int indexOfObjectOut,
@@ -512,6 +512,13 @@ void            canvas_copy                             (t_glist *glist);
 void            canvas_paste                            (t_glist *glist);
 void            canvas_duplicate                        (t_glist *glist);
 void            canvas_selectAll                        (t_glist *glist);
+
+void            glist_write                             (t_glist *x, t_symbol *filename, t_symbol *format);
+void            canvas_saveto                           (t_glist *x, t_buffer *b);
+void            canvas_savetofile                       (t_glist *x, 
+                                                            t_symbol *filename,
+                                                            t_symbol *dir, 
+                                                            float fdestroy);
 
 void            canvas_properties                       (t_gobj *x, t_glist *glist);
 

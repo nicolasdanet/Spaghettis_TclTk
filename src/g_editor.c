@@ -340,7 +340,7 @@ static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY,
         
             if (!clicked) { canvas_setCursorType (glist, CURSOR_RESIZE); }
             else {
-                canvas_selectObjectIfNotAlreadySelected (glist, y);
+                canvas_selectObjectIfNotSelected (glist, y);
                 glist->gl_editor->e_action = ACTION_RESIZE;
                 glist->gl_editor->e_previousX = a;
                 glist->gl_editor->e_previousY = b;
@@ -377,7 +377,7 @@ static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY,
                 glist->gl_editor->e_previousY = b;
                 
             } else {
-                canvas_selectObjectIfNotAlreadySelected (glist, y);
+                canvas_selectObjectIfNotSelected (glist, y);
                 glist->gl_editor->e_action = ACTION_MOVE;
             }
             

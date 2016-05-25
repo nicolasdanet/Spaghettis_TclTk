@@ -596,7 +596,7 @@ t_buffer *glist_writetobinbuf(t_glist *x, int wholething)
     return (b);
 }
 
-static void glist_write(t_glist *x, t_symbol *filename, t_symbol *format)
+void glist_write(t_glist *x, t_symbol *filename, t_symbol *format)
 {
     int cr = 0, i;
     t_buffer *b;
@@ -624,7 +624,7 @@ static void glist_write(t_glist *x, t_symbol *filename, t_symbol *format)
 
     /* save to a binbuf, called recursively; cf. canvas_savetofile() which
     saves the document, and is only called on root canvases. */
-static void canvas_saveto(t_glist *x, t_buffer *b)
+void canvas_saveto(t_glist *x, t_buffer *b)
 {
     t_gobj *y;
     t_linetraverser t;
@@ -753,7 +753,7 @@ static void canvas_savetemplatesto(t_glist *x, t_buffer *b, int wholething)
 
     /* save a "root" canvas to a file; cf. canvas_saveto() which saves the
     body (and which is called recursively.) */
-static void canvas_savetofile(t_glist *x, t_symbol *filename, t_symbol *dir, float fdestroy)
+void canvas_savetofile(t_glist *x, t_symbol *filename, t_symbol *dir, float fdestroy)
 {
     t_buffer *b = buffer_new();
     canvas_savetemplatesto(x, b, 1);
@@ -792,25 +792,6 @@ void canvas_menusave(t_glist *x, float fdestroy)
         canvas_savetofile(x2, x2->gl_name, canvas_getEnvironment (x2)->ce_directory, fdestroy);
     }
     else canvas_menusaveas(x2, fdestroy);
-}
-
-void g_readwrite_setup (void)
-{
-    class_addMethod(canvas_class, (t_method)glist_write,
-        sym_write, A_SYMBOL, A_DEFSYMBOL, A_NULL);
-    class_addMethod(canvas_class, (t_method)glist_read,
-        sym_read, A_SYMBOL, A_DEFSYMBOL, A_NULL);
-    class_addMethod(canvas_class, (t_method)glist_mergefile,
-        sym_mergefile, A_SYMBOL, A_DEFSYMBOL, A_NULL);
-    class_addMethod(canvas_class, (t_method)canvas_savetofile,
-        sym_savetofile, A_SYMBOL, A_SYMBOL, A_DEFFLOAT, 0);
-    class_addMethod(canvas_class, (t_method)canvas_saveto,
-        sym_saveto, A_CANT, 0);
-/* ------------------ from the menu ------------------------- */
-    class_addMethod(canvas_class, (t_method)canvas_menusave,
-        sym_menusave, A_DEFFLOAT, 0);   /* LEGACY !!! */
-    class_addMethod(canvas_class, (t_method)canvas_menusaveas,
-        sym_menusaveas, A_DEFFLOAT, 0); /* LEGACY !!! */
 }
 
 // -----------------------------------------------------------------------------------------------------------

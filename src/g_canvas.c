@@ -275,7 +275,7 @@ void canvas_close (t_glist *glist, t_float f)
         if (canvas_isDirty (glist)) {
             
             sys_vGui ("::ui_confirm::checkClose .x%lx"
-                            " { ::ui_interface::pdsend $top menusave 1 }"
+                            " { ::ui_interface::pdsend $top save 1 }"
                             " { ::ui_interface::pdsend $top close 1 }"
                             " {}\n",
                             glist);
@@ -805,6 +805,20 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_dsp,           sym_dsp,            A_CANT, A_NULL);
     class_addMethod (c, (t_method)canvas_rename,        sym_rename,         A_GIMME, A_NULL);
     
+    class_addMethod (c, (t_method)glist_write,          sym_write,          A_SYMBOL, A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)glist_read,           sym_read,           A_SYMBOL, A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)glist_mergefile,      sym_mergefile,      A_SYMBOL, A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)canvas_menusave,      sym_save,           A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_menusaveas,    sym_saveas,         A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_saveto,        sym_saveto,         A_CANT, A_NULL);
+        
+    class_addMethod (c, (t_method)canvas_savetofile,
+        sym_savetofile,
+        A_SYMBOL,
+        A_SYMBOL,
+        A_DEFFLOAT,
+        A_NULL);
+
     class_addMethod (c, (t_method)canvas_popupdialog,
         sym__popupdialog,
         A_FLOAT,
@@ -826,15 +840,17 @@ void canvas_setup (void)
    
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)canvas_open,      sym_menu__dash__open,   A_NULL);
-    class_addMethod (c, (t_method)canvas_close,     sym_menuclose,          A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_toggle,    sym_toggle,             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_vumeter,   sym_vumeter,            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_mycnv,     sym_mycnv,              A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_numbox,    sym_numbox,             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_visible,   sym_vis,                A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_open,          sym_menu__dash__open,   A_NULL);
+    class_addMethod (c, (t_method)canvas_close,         sym_menuclose,          A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_toggle,        sym_toggle,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_vumeter,       sym_vumeter,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_mycnv,         sym_mycnv,              A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_numbox,        sym_numbox,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_visible,       sym_vis,                A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_menusave,      sym_menusave,           A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_menusaveas,    sym_menusaveas,         A_DEFFLOAT, A_NULL);    
     
-    class_addCreator ((t_newmethod)subpatch_new,    sym_page,               A_DEFSYMBOL, A_NULL);
+    class_addCreator ((t_newmethod)subpatch_new,        sym_page,               A_DEFSYMBOL, A_NULL);
 
     #endif
         

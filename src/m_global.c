@@ -40,7 +40,7 @@ void global_shouldQuit (void *dummy)
     if (canvas_isDirty (g)) {
     //
     sys_vGui ("::ui_confirm::checkClose .x%lx"
-                    " { ::ui_interface::pdsend $top menusave 2 }"
+                    " { ::ui_interface::pdsend $top save 2 }"
                     " { ::ui_interface::pdsend $top close 2 }"
                     " {}\n",
                     g);

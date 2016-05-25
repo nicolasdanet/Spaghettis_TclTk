@@ -187,11 +187,11 @@ proc _file {m} {
     $m add command \
         -label [_ "Save"] \
         -accelerator "${accelerator}+S" \
-        -command { ::ui_menu::_handle menusave }
+        -command { ::ui_menu::_handle save }
     $m add command \
         -label [_ "Save As..."] \
         -accelerator "Shift+${accelerator}+S" \
-        -command { ::ui_menu::_handle menusaveas }
+        -command { ::ui_menu::_handle saveas }
     $m add separator
 
     $m add command \
