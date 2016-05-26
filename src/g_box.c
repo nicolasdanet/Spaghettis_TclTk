@@ -230,7 +230,7 @@ static void rtext_senditup(t_boxtext *x, int action, int *widthp, int *heightp,
         int maxindex_c = (inchars_c > widthlimit_c ? widthlimit_c : inchars_c);
         int maxindex_b = u8_offset(x->box_utf8 + inindex_b, maxindex_c);
         int eatchar = 1;
-        int foundit_b  = string_indexOfFirstOccurrence(x->box_utf8 + inindex_b, '\n', maxindex_b);
+        int foundit_b  = string_indexOfFirstOccurrenceUntil (x->box_utf8 + inindex_b, '\n', maxindex_b);
         int foundit_c;
         if (foundit_b < 0)
         {
@@ -240,7 +240,7 @@ static void rtext_senditup(t_boxtext *x, int action, int *widthp, int *heightp,
                     /* is there a space to break the line at?  OK if it's even
                     one byte past the end since in this context we know there's
                     more text */
-                foundit_b = string_indexOfLastOccurrence(x->box_utf8 + inindex_b, ' ', maxindex_b + 1);
+                foundit_b = string_indexOfFirstOccurrenceFrom(x->box_utf8 + inindex_b, ' ', maxindex_b + 1);
                 if (foundit_b < 0)
                 {
                     foundit_b = maxindex_b;
@@ -431,6 +431,10 @@ int rtext_height(t_boxtext *x)
     return (h);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void rtext_draw(t_boxtext *x)
 {
     int w = 0, h = 0, indx;
@@ -479,6 +483,10 @@ void rtext_activate(t_boxtext *x, int state)
     }
     rtext_senditup(x, BOX_UPDATE, &w, &h, &indx);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void rtext_key(t_boxtext *x, int keynum, t_symbol *keysym)
 {
@@ -601,31 +609,31 @@ void rtext_mouse(t_boxtext *x, int xval, int yval, int flag)
         int whereseparator, newseparator;
         x->box_draggedFrom = -1;
         whereseparator = 0;
-        if ((newseparator = string_indexOfLastOccurrence(x->box_utf8, ' ', indx)) > whereseparator)
+        if ((newseparator = string_indexOfFirstOccurrenceFrom(x->box_utf8, ' ', indx)) > whereseparator)
             whereseparator = newseparator+1;
-        if ((newseparator = string_indexOfLastOccurrence(x->box_utf8, '\n', indx)) > whereseparator)
+        if ((newseparator = string_indexOfFirstOccurrenceFrom(x->box_utf8, '\n', indx)) > whereseparator)
             whereseparator = newseparator+1;
-        if ((newseparator = string_indexOfLastOccurrence(x->box_utf8, ';', indx)) > whereseparator)
+        if ((newseparator = string_indexOfFirstOccurrenceFrom(x->box_utf8, ';', indx)) > whereseparator)
             whereseparator = newseparator+1;
-        if ((newseparator = string_indexOfLastOccurrence(x->box_utf8, ',', indx)) > whereseparator)
+        if ((newseparator = string_indexOfFirstOccurrenceFrom(x->box_utf8, ',', indx)) > whereseparator)
             whereseparator = newseparator+1;
         x->box_selectionStart = whereseparator;
         
         whereseparator = x->box_utf8Size - indx;
         if ((newseparator =
-            string_indexOfFirstOccurrence(x->box_utf8+indx, ' ', x->box_utf8Size - indx)) >= 0 &&
+            string_indexOfFirstOccurrenceUntil(x->box_utf8+indx, ' ', x->box_utf8Size - indx)) >= 0 &&
                 newseparator < whereseparator)
                     whereseparator = newseparator;
         if ((newseparator =
-            string_indexOfFirstOccurrence(x->box_utf8+indx, '\n', x->box_utf8Size - indx)) >= 0 &&
+            string_indexOfFirstOccurrenceUntil(x->box_utf8+indx, '\n', x->box_utf8Size - indx)) >= 0 &&
                 newseparator < whereseparator)
                     whereseparator = newseparator;
         if ((newseparator =
-            string_indexOfFirstOccurrence(x->box_utf8+indx, ';', x->box_utf8Size - indx)) >= 0 &&
+            string_indexOfFirstOccurrenceUntil(x->box_utf8+indx, ';', x->box_utf8Size - indx)) >= 0 &&
                 newseparator < whereseparator)
                     whereseparator = newseparator;
         if ((newseparator =
-            string_indexOfFirstOccurrence(x->box_utf8+indx, ',', x->box_utf8Size - indx)) >= 0 &&
+            string_indexOfFirstOccurrenceUntil(x->box_utf8+indx, ',', x->box_utf8Size - indx)) >= 0 &&
                 newseparator < whereseparator)
                     whereseparator = newseparator;
         x->box_selectionEnd = indx + whereseparator;
