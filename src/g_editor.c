@@ -901,7 +901,7 @@ void canvas_paste (t_glist *glist)
     else {
     //
     if (glist->gl_editor->e_selectedText) {
-        sys_vGui ("::ui_object::pasteText .x%lx\n", glist);
+        sys_vGui ("::ui_bind::pasteText .x%lx\n", glist);
     } else {
         canvas_performPaste (glist);
     }

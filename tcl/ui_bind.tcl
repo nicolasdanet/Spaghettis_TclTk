@@ -122,8 +122,8 @@ proc initialize {} {
     
     bind all <<RunDSP>>                     { .menubar.media    invoke "Run DSP"    }
     
-    bind all <KeyPress>                     { ::ui_bind::key %W %K %A 1 }
-    bind all <KeyRelease>                   { ::ui_bind::key %W %K %A 0 }
+    bind all <KeyPress>                     { ::ui_bind::_key %W %K %A 1 }
+    bind all <KeyRelease>                   { ::ui_bind::_key %W %K %A 0 }
     
     bind all <<Quit>>                       { ::ui_interface::pdsend "pd _quit" }
 }
@@ -151,6 +151,20 @@ proc bindPatch {top} {
     bind $top.c <Destroy>                   { ::ui_patch::closed [winfo toplevel %W] }
     
     wm protocol $top WM_DELETE_WINDOW       "::ui_patch::willClose $top"
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc pasteText {top} {
+
+    # Fake typing contents of the clipboard if any. 
+    
+    if {[catch { clipboard get } contents]} {
+        #
+    } else {
+        foreach c [split $contents ""] { ui_bind::_key $top "" $c 1 }
+    }
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -207,7 +221,7 @@ proc _mouseUp {c x y} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc key {w keysym iso isPress} {
+proc _key {w keysym iso isPress} {
 
     set k ""
     
