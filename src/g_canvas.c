@@ -225,7 +225,7 @@ void canvas_connect (t_glist *glist,
     //
     }
 
-    post_error (PD_TRANSLATE ("connection: failed in '%s'"), glist->gl_name->s_name);
+    post_error (PD_TRANSLATE ("connection: failed in %s"), glist->gl_name->s_name);
 }
 
 void canvas_disconnect (t_glist *glist,

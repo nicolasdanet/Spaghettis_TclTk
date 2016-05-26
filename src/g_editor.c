@@ -105,11 +105,8 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
 
     if (!canvas_hasLine (glist, object1, closest1, object2, closest2)) {
     //
-    if (object_isSignalOutlet (object1, closest1) && !object_isSignalInlet (object2, closest2)) {
-        if (create) { 
-            post_error (PD_TRANSLATE ("connection: can't connect signal outlet to control inlet")); // --
-        }
-    } else {
+    if (object_isSignalOutlet (object1, closest1) && !object_isSignalInlet (object2, closest2)) { }
+    else {
     //
     if (create) {
         t_outconnect *connection = object_connect (object1, closest1, object2, closest2);

@@ -86,7 +86,7 @@ proc openFile {filename} {
     }
     }
     
-    ::ui_console::post [format [_ "Opening '%s' failed."] $filename]
+    ::ui_console::post [format [_ "Opening %s failed."] $filename]
 }
 
 # ------------------------------------------------------------------------------------------------------------

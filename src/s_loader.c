@@ -115,7 +115,7 @@ static t_handle loader_openExternalNative (char *filepath, char* stub, t_symbol 
 
     handle = LoadLibrary (filepath);
     
-    if (!handle) { post_error (PD_TRANSLATE ("loader: invalid '%s' %s"), filepath, dlerror()); }    // --
+    if (!handle) { post_error (PD_TRANSLATE ("loader: invalid %s %s"), filepath, dlerror()); }    // --
     else {
         t_stub ctor = (t_stub)GetProcAddress (handle, stub);
     
@@ -136,7 +136,7 @@ static t_handle loader_openExternalNative (char *filepath, char* stub, t_symbol 
 {
     t_handle handle = dlopen (filepath, RTLD_NOW | RTLD_GLOBAL);
     
-    if (!handle) { post_error (PD_TRANSLATE ("loader: invalid '%s' %s"), filepath, dlerror()); }    // --
+    if (!handle) { post_error (PD_TRANSLATE ("loader: invalid %s %s"), filepath, dlerror()); }    // --
     else {
         t_stub ctor = (t_stub)dlsym (handle, stub);
         
