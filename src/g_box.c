@@ -60,6 +60,7 @@ struct _boxtext {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #define BOX_DEFAULT_WIDTH       60
 
@@ -120,9 +121,26 @@ void boxtext_free (t_boxtext *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_boxtext *boxtext_fetch (t_glist *glist, t_object *object)
+{
+    t_boxtext *x = NULL;
+    
+    canvas_createEditorIfNone (glist);
+    
+    for (x = glist->gl_editor->e_text; x && x->box_object != object; x = x->box_next) { }
+    
+    PD_ASSERT (x);
+    
+    return x;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 char *boxtext_getTag (t_boxtext *x)
 {
-    return (x->box_tag);
+    return x->box_tag;
 }
 
 void boxtext_getText (t_boxtext *x, char **p, int *size)
@@ -154,41 +172,6 @@ static t_symbol *boxtext_getObjectType (t_boxtext *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* LATER deal with tcl-significant characters */
-
-/* firstone(), lastone()
- *  + returns byte offset of (first|last) occurrence of 'c' in 's[0..n-1]', or
- *    -1 if none was found
- *  + 's' is a raw byte string
- *  + 'c' is a byte value
- *  + 'n' is the length (in bytes) of the prefix of 's' to be searched.
- *  + we could make these functions work on logical characters in utf8 strings,
- *    but we don't really need to...
- */
-static int firstone(char *s, int c, int n)
-{
-    char *s2 = s + n;
-    int i = 0;
-    while (s != s2)
-    {
-        if (*s == c) return (i);
-        i++;
-        s++;
-    }
-    return (-1);
-}
-
-static int lastone(char *s, int c, int n)
-{
-    char *s2 = s + n;
-    while (s2 != s)
-    {
-        s2--;
-        n--;
-        if (*s2 == c) return (n);
-    }
-    return (-1);
-}
 
     /* the following routine computes line breaks and carries out
     some action which could be:
@@ -247,7 +230,7 @@ static void rtext_senditup(t_boxtext *x, int action, int *widthp, int *heightp,
         int maxindex_c = (inchars_c > widthlimit_c ? widthlimit_c : inchars_c);
         int maxindex_b = u8_offset(x->box_utf8 + inindex_b, maxindex_c);
         int eatchar = 1;
-        int foundit_b  = firstone(x->box_utf8 + inindex_b, '\n', maxindex_b);
+        int foundit_b  = string_indexOfFirstOccurrence(x->box_utf8 + inindex_b, '\n', maxindex_b);
         int foundit_c;
         if (foundit_b < 0)
         {
@@ -257,7 +240,7 @@ static void rtext_senditup(t_boxtext *x, int action, int *widthp, int *heightp,
                     /* is there a space to break the line at?  OK if it's even
                     one byte past the end since in this context we know there's
                     more text */
-                foundit_b = lastone(x->box_utf8 + inindex_b, ' ', maxindex_b + 1);
+                foundit_b = string_indexOfLastOccurrence(x->box_utf8 + inindex_b, ' ', maxindex_b + 1);
                 if (foundit_b < 0)
                 {
                     foundit_b = maxindex_b;
@@ -430,17 +413,9 @@ void rtext_retext(t_boxtext *x)
     rtext_senditup(x, BOX_UPDATE, &w, &h, &indx);
 }
 
-/* find the rtext that goes with a text item */
-t_boxtext *glist_findrtext(t_glist *gl, t_object *who)
-{
-    t_boxtext *x;
-    if (!gl->gl_editor)
-        canvas_createEditorIfNone(gl);
-    for (x = gl->gl_editor->e_text; x && x->box_object != who; x = x->box_next)
-        ;
-    if (!x) { PD_BUG; }
-    return (x);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 int rtext_width(t_boxtext *x)
 {
@@ -626,31 +601,31 @@ void rtext_mouse(t_boxtext *x, int xval, int yval, int flag)
         int whereseparator, newseparator;
         x->box_draggedFrom = -1;
         whereseparator = 0;
-        if ((newseparator = lastone(x->box_utf8, ' ', indx)) > whereseparator)
+        if ((newseparator = string_indexOfLastOccurrence(x->box_utf8, ' ', indx)) > whereseparator)
             whereseparator = newseparator+1;
-        if ((newseparator = lastone(x->box_utf8, '\n', indx)) > whereseparator)
+        if ((newseparator = string_indexOfLastOccurrence(x->box_utf8, '\n', indx)) > whereseparator)
             whereseparator = newseparator+1;
-        if ((newseparator = lastone(x->box_utf8, ';', indx)) > whereseparator)
+        if ((newseparator = string_indexOfLastOccurrence(x->box_utf8, ';', indx)) > whereseparator)
             whereseparator = newseparator+1;
-        if ((newseparator = lastone(x->box_utf8, ',', indx)) > whereseparator)
+        if ((newseparator = string_indexOfLastOccurrence(x->box_utf8, ',', indx)) > whereseparator)
             whereseparator = newseparator+1;
         x->box_selectionStart = whereseparator;
         
         whereseparator = x->box_utf8Size - indx;
         if ((newseparator =
-            firstone(x->box_utf8+indx, ' ', x->box_utf8Size - indx)) >= 0 &&
+            string_indexOfFirstOccurrence(x->box_utf8+indx, ' ', x->box_utf8Size - indx)) >= 0 &&
                 newseparator < whereseparator)
                     whereseparator = newseparator;
         if ((newseparator =
-            firstone(x->box_utf8+indx, '\n', x->box_utf8Size - indx)) >= 0 &&
+            string_indexOfFirstOccurrence(x->box_utf8+indx, '\n', x->box_utf8Size - indx)) >= 0 &&
                 newseparator < whereseparator)
                     whereseparator = newseparator;
         if ((newseparator =
-            firstone(x->box_utf8+indx, ';', x->box_utf8Size - indx)) >= 0 &&
+            string_indexOfFirstOccurrence(x->box_utf8+indx, ';', x->box_utf8Size - indx)) >= 0 &&
                 newseparator < whereseparator)
                     whereseparator = newseparator;
         if ((newseparator =
-            firstone(x->box_utf8+indx, ',', x->box_utf8Size - indx)) >= 0 &&
+            string_indexOfFirstOccurrence(x->box_utf8+indx, ',', x->box_utf8Size - indx)) >= 0 &&
                 newseparator < whereseparator)
                     whereseparator = newseparator;
         x->box_selectionEnd = indx + whereseparator;

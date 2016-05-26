@@ -319,7 +319,7 @@ static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY,
         //
         t_boxtext *text = glist->gl_editor->e_selectedText;
         
-        if (object && text && (text == glist_findrtext (glist, object))) {
+        if (object && text && (text == boxtext_fetch (glist, object))) {
             rtext_mouse (text, positionX - a, positionY - b, BOX_TEXT_SHIFT);
             glist->gl_editor->e_action = ACTION_DRAG;
             glist->gl_editor->e_previousX = a;
@@ -369,7 +369,7 @@ static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY,
         
             t_boxtext *text = glist->gl_editor->e_selectedText;
             
-            if (object && text && (text == glist_findrtext (glist, object))) {
+            if (object && text && (text == boxtext_fetch (glist, object))) {
                 int flag = (modifier & MODIFIER_DOUBLE) ? BOX_TEXT_DOUBLE : BOX_TEXT_DOWN;
                 rtext_mouse (text, positionX - a, positionY - b, flag);
                 glist->gl_editor->e_action = ACTION_DRAG;
@@ -829,7 +829,7 @@ void canvas_editmode (t_glist *glist, t_float f)
         for (g = glist->gl_graphics; g; g = g->g_next) {
             t_object *o = NULL;
             if ((o = canvas_castToObjectIfPatchable (g)) && o->te_type == TYPE_TEXT) {
-                t_boxtext *y = glist_findrtext (glist, o);
+                t_boxtext *y = boxtext_fetch (glist, o);
                 text_drawborder (o, glist, boxtext_getTag (y), rtext_width (y), rtext_height (y), 1);
             }
         }

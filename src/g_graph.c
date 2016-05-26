@@ -113,7 +113,7 @@ void glist_delete(t_glist *x, t_gobj *y)
             {
                 if (canvas_isMapped(x))
                     text_eraseborder(&gl->gl_obj, x,
-                        boxtext_getTag(glist_findrtext(x, &gl->gl_obj)));
+                        boxtext_getTag(boxtext_fetch(x, &gl->gl_obj)));
             }
         }
     }
@@ -175,7 +175,7 @@ void glist_retext(t_glist *glist, t_object *y)
         /* check that we have built rtexts yet.  LATER need a better test. */
     if (glist->gl_editor && glist->gl_editor->e_text)
     {
-        t_boxtext *rt = glist_findrtext(glist, y);
+        t_boxtext *rt = boxtext_fetch(glist, y);
         if (rt)
             rtext_retext(rt);
     }
@@ -687,10 +687,10 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
     }
 
     if (vis && canvas_hasGraphOnParentTitle (x))
-        rtext_draw(glist_findrtext(parent_glist, &x->gl_obj));
+        rtext_draw(boxtext_fetch(parent_glist, &x->gl_obj));
     graph_getrect(gr, parent_glist, &x1, &y1, &x2, &y2);
     if (!vis)
-        rtext_erase(glist_findrtext(parent_glist, &x->gl_obj));
+        rtext_erase(boxtext_fetch(parent_glist, &x->gl_obj));
 
     sprintf(tag, "graph%lx", (t_int)x);
     if (vis)
@@ -949,7 +949,7 @@ static void graph_select(t_gobj *z, t_glist *glist, int state)
         text_widgetBehavior.w_fnSelect(z, glist, state);
     else
     {
-        t_boxtext *y = glist_findrtext(glist, &x->gl_obj);
+        t_boxtext *y = boxtext_fetch(glist, &x->gl_obj);
         if (canvas_hasGraphOnParentTitle (x))
             rtext_select(y, state);
         sys_vGui(".x%lx.c itemconfigure %sR -fill %s\n", glist, 

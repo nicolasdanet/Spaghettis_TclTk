@@ -94,6 +94,35 @@ t_error string_addSprintf (char *dest, size_t size, const char *format, ...)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+int string_indexOfFirstOccurrence (char *s, char c, size_t n)
+{
+    char *s2 = s + n;
+    int i = 0;
+    while (s != s2)
+    {
+        if (*s == c) return (i);
+        i++;
+        s++;
+    }
+    return (-1);
+}
+
+int string_indexOfLastOccurrence (char *s, char c, size_t n)
+{
+    char *s2 = s + n;
+    while (s2 != s)
+    {
+        s2--;
+        n--;
+        if (*s2 == c) return (n);
+    }
+    return (-1);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 /* A format to avoid slicing by the string parser. */
 
 t_symbol *utils_decode (t_symbol *s)

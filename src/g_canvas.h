@@ -569,9 +569,10 @@ void            gobj_visibilityChanged                  (t_gobj *x, t_glist *own
 #pragma mark -
 
 t_boxtext       *boxtext_new                            (t_glist *glist, t_object *object);
+t_boxtext       *boxtext_fetch                          (t_glist *glist, t_object *object);
 char            *boxtext_getTag                         (t_boxtext *x);
-void            boxtext_free                            (t_boxtext *x);
 
+void            boxtext_free                            (t_boxtext *x);
 void            boxtext_getText                         (t_boxtext *x, char **p, int *size);
 void            boxtext_getSelectedText                 (t_boxtext *x, char **p, int *size);
 
@@ -587,8 +588,6 @@ void            rtext_mouse         (t_boxtext *x, int xval, int yval, int flag)
 void            rtext_retext        (t_boxtext *x);
 int             rtext_width         (t_boxtext *x);
 int             rtext_height        (t_boxtext *x);
-
-t_boxtext       *glist_findrtext    (t_glist *gl, t_object *who);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

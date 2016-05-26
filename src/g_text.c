@@ -434,7 +434,7 @@ static void message_click(t_message *x,
     message_float(x, 0);
     if (canvas_isMapped(x->m_glist))
     {
-        t_boxtext *y = glist_findrtext(x->m_glist, &x->m_text);
+        t_boxtext *y = boxtext_fetch(x->m_glist, &x->m_text);
         sys_vGui(".x%lx.c itemconfigure %sR -width 5\n", 
             canvas_getView(x->m_glist), boxtext_getTag(y));
         clock_delay(x->m_clock, 120);
@@ -445,7 +445,7 @@ static void message_tick(t_message *x)
 {
     if (canvas_isMapped(x->m_glist))
     {
-        t_boxtext *y = glist_findrtext(x->m_glist, &x->m_text);
+        t_boxtext *y = boxtext_fetch(x->m_glist, &x->m_text);
         sys_vGui(".x%lx.c itemconfigure %sR -width 1\n",
             canvas_getView(x->m_glist), boxtext_getTag(y));
     }
@@ -1035,7 +1035,7 @@ static void text_getrect(t_gobj *z, t_glist *glist,
 
     else if (glist->gl_editor && glist->gl_editor->e_text)
     {
-        t_boxtext *y = glist_findrtext(glist, x);
+        t_boxtext *y = boxtext_fetch(glist, x);
         width = rtext_width(y);
         height = rtext_height(y) - (iscomment << 1);
     }
@@ -1059,7 +1059,7 @@ static void text_displace(t_gobj *z, t_glist *glist,
     x->te_yCoordinate += dy;
     if (canvas_isMapped(glist))
     {
-        t_boxtext *y = glist_findrtext(glist, x);
+        t_boxtext *y = boxtext_fetch(glist, x);
         rtext_displace(y, dx, dy);
         text_drawborder(x, glist, boxtext_getTag(y),
             rtext_width(y), rtext_height(y), 0);
@@ -1070,7 +1070,7 @@ static void text_displace(t_gobj *z, t_glist *glist,
 static void text_select(t_gobj *z, t_glist *glist, int state)
 {
     t_object *x = (t_object *)z;
-    t_boxtext *y = glist_findrtext(glist, x);
+    t_boxtext *y = boxtext_fetch(glist, x);
     rtext_select(y, state);
     if (canvas_isMapped(glist) && gobj_isVisible(&x->te_g, glist))
         sys_vGui(".x%lx.c itemconfigure %sR -fill %s\n", glist, 
@@ -1080,7 +1080,7 @@ static void text_select(t_gobj *z, t_glist *glist, int state)
 static void text_activate(t_gobj *z, t_glist *glist, int state)
 {
     t_object *x = (t_object *)z;
-    t_boxtext *y = glist_findrtext(glist, x);
+    t_boxtext *y = boxtext_fetch(glist, x);
     if (z->g_pd != gatom_class) rtext_activate(y, state);
 }
 
@@ -1097,7 +1097,7 @@ static void text_vis(t_gobj *z, t_glist *glist, int vis)
     {
         if (gobj_isVisible(&x->te_g, glist))
         {
-            t_boxtext *y = glist_findrtext(glist, x);
+            t_boxtext *y = boxtext_fetch(glist, x);
             if (x->te_type == TYPE_ATOM)
                 glist_retext(glist, x);
             text_drawborder(x, glist, boxtext_getTag(y),
@@ -1107,7 +1107,7 @@ static void text_vis(t_gobj *z, t_glist *glist, int vis)
     }
     else
     {
-        t_boxtext *y = glist_findrtext(glist, x);
+        t_boxtext *y = boxtext_fetch(glist, x);
         if (gobj_isVisible(&x->te_g, glist))
         {
             text_eraseborder(x, glist, boxtext_getTag(y));

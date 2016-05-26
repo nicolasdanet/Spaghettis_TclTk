@@ -336,7 +336,7 @@ void canvas_deselectObject (t_glist *glist, t_gobj *y)
     
     if (glist->gl_editor->e_selectedText) {
     
-        t_boxtext *text = glist_findrtext (glist, cast_object (y));
+        t_boxtext *text = boxtext_fetch (glist, cast_object (y));
         
         if (glist->gl_editor->e_selectedText == text) {
             if (glist->gl_editor->e_isTextDirty) {

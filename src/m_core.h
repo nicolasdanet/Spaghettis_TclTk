@@ -207,6 +207,9 @@ t_error     string_append                               (char *dest, size_t size
 t_error     string_sprintf                              (char *dest, size_t size, const char *format, ...);
 t_error     string_addSprintf                           (char *dest, size_t size, const char *format, ...);
 
+int         string_indexOfFirstOccurrence               (char *s, char c, size_t size);
+int         string_indexOfLastOccurrence                (char *s, char c, size_t size);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
