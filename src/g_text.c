@@ -1036,8 +1036,8 @@ static void text_getrect(t_gobj *z, t_glist *glist,
     else if (glist->gl_editor && glist->gl_editor->e_text)
     {
         t_boxtext *y = boxtext_fetch(glist, x);
-        width = rtext_width(y);
-        height = rtext_height(y) - (iscomment << 1);
+        width = boxtext_getWidth(y);
+        height = boxtext_getHeight(y) - (iscomment << 1);
     }
     else width = height = 10;
     x1 = text_xpix(x, glist);
@@ -1062,7 +1062,7 @@ static void text_displace(t_gobj *z, t_glist *glist,
         t_boxtext *y = boxtext_fetch(glist, x);
         rtext_displace(y, dx, dy);
         text_drawborder(x, glist, boxtext_getTag(y),
-            rtext_width(y), rtext_height(y), 0);
+            boxtext_getWidth(y), boxtext_getHeight(y), 0);
         canvas_updateLinesByObject(glist, x);
     }
 }
@@ -1101,7 +1101,7 @@ static void text_vis(t_gobj *z, t_glist *glist, int vis)
             if (x->te_type == TYPE_ATOM)
                 glist_retext(glist, x);
             text_drawborder(x, glist, boxtext_getTag(y),
-                rtext_width(y), rtext_height(y), 1);
+                boxtext_getWidth(y), boxtext_getHeight(y), 1);
             rtext_draw(y);
         }
     }

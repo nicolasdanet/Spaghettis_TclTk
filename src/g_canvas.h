@@ -571,23 +571,23 @@ void            gobj_visibilityChanged                  (t_gobj *x, t_glist *own
 t_boxtext       *boxtext_new                            (t_glist *glist, t_object *object);
 t_boxtext       *boxtext_fetch                          (t_glist *glist, t_object *object);
 char            *boxtext_getTag                         (t_boxtext *x);
+t_symbol        *boxtext_getTypeOfObject                (t_boxtext *x);
 
 void            boxtext_free                            (t_boxtext *x);
+int             boxtext_getWidth                        (t_boxtext *x);
+int             boxtext_getHeight                       (t_boxtext *x);
 void            boxtext_getText                         (t_boxtext *x, char **p, int *size);
 void            boxtext_getSelectedText                 (t_boxtext *x, char **p, int *size);
 
 void            rtext_draw          (t_boxtext *x);
 void            rtext_erase         (t_boxtext *x);
 t_boxtext       *rtext_remove       (t_boxtext *first, t_boxtext *x);
-int             rtext_height        (t_boxtext *x);
 void            rtext_displace      (t_boxtext *x, int dx, int dy);
 void            rtext_select        (t_boxtext *x, int state);
 void            rtext_activate      (t_boxtext *x, int state);
 void            rtext_key           (t_boxtext *x, int n, t_symbol *s);
 void            rtext_mouse         (t_boxtext *x, int xval, int yval, int flag);
 void            rtext_retext        (t_boxtext *x);
-int             rtext_width         (t_boxtext *x);
-int             rtext_height        (t_boxtext *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

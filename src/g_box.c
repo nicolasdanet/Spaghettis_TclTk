@@ -72,107 +72,6 @@ struct _boxtext {
 #define BOX_FIRST               1
 #define BOX_UPDATE              2
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_boxtext *boxtext_new (t_glist *glist, t_object *object)
-{
-    t_boxtext *x  = (t_boxtext *)PD_MEMORY_GET (sizeof (t_boxtext));
-
-    x->box_next   = glist->gl_editor->e_text;
-    x->box_object = object;
-    x->box_glist  = glist;
-
-    buffer_toStringUnzeroed (object->te_buffer, &x->box_utf8, &x->box_utf8Size);
-    
-    { 
-        t_glist *view = canvas_getView (glist);
-        t_error err   = string_sprintf (x->box_tag, BOX_TAG_SIZE, ".x%lx.t%lx", (t_int)view, (t_int)x);
-        PD_ASSERT (!err);
-    }
-    
-    glist->gl_editor->e_text = x;
-    
-    return x;
-}
-
-void boxtext_free (t_boxtext *x)
-{
-    if (x->box_glist->gl_editor->e_selectedText == x) {
-        x->box_glist->gl_editor->e_selectedText = NULL;
-    }
-    
-    if (x->box_glist->gl_editor->e_text == x) { x->box_glist->gl_editor->e_text = x->box_next; }
-    else {
-        t_boxtext *t = NULL;
-        for (t = x->box_glist->gl_editor->e_text; t; t = t->box_next) {
-            if (t->box_next == x) { 
-                t->box_next = x->box_next; break; 
-            }
-        }
-    }
-
-    PD_MEMORY_FREE (x->box_utf8);
-    PD_MEMORY_FREE (x);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_boxtext *boxtext_fetch (t_glist *glist, t_object *object)
-{
-    t_boxtext *x = NULL;
-    
-    canvas_createEditorIfNone (glist);
-    
-    for (x = glist->gl_editor->e_text; x && x->box_object != object; x = x->box_next) { }
-    
-    PD_ASSERT (x);
-    
-    return x;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-char *boxtext_getTag (t_boxtext *x)
-{
-    return x->box_tag;
-}
-
-void boxtext_getText (t_boxtext *x, char **p, int *size)
-{
-    *p    = x->box_utf8;
-    *size = x->box_utf8Size;
-}
-
-void boxtext_getSelectedText (t_boxtext *x, char **p, int *size)
-{
-    *p    = x->box_utf8 + x->box_selectionStart;
-    *size = x->box_selectionEnd - x->box_selectionStart;
-}
-
-static t_symbol *boxtext_getObjectType (t_boxtext *x)
-{
-    switch (x->box_object->te_type)  {
-    
-        case TYPE_TEXT      : return sym_text;
-        case TYPE_OBJECT    : return sym_obj;
-        case TYPE_MESSAGE   : return sym_msg;
-        case TYPE_ATOM      : return sym_atom;
-    }
-    
-    return &s_;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-
     /* the following routine computes line breaks and carries out
     some action which could be:
         BOX_FIRST - draw the box  for the first time
@@ -194,8 +93,11 @@ static t_symbol *boxtext_getObjectType (t_boxtext *x)
     *   the GUI)
     */
 
-static void rtext_senditup(t_boxtext *x, int action, int *widthp, int *heightp,
-    int *indexp)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void rtext_senditup (t_boxtext *x, int action, int *widthp, int *heightp, int *indexp)
 {
     t_float dispx, dispy;
     char smallbuf[200], *tempbuf;
@@ -317,7 +219,7 @@ static void rtext_senditup(t_boxtext *x, int action, int *widthp, int *heightp,
     if (action == BOX_FIRST)
     {
         sys_vGui("::ui_object::newText .x%lx.c {%s %s text} %f %f {%.*s} %d %s\n",
-            canvas, x->box_tag, boxtext_getObjectType(x)->s_name,
+            canvas, x->box_tag, boxtext_getTypeOfObject(x)->s_name,
             dispx + BOX_MARGIN_LEFT, dispy + BOX_MARGIN_TOP,
             outchars_b, tempbuf, font_getHostFontSize(font),
             (canvas_isObjectSelected(x->box_glist,
@@ -357,6 +259,128 @@ static void rtext_senditup(t_boxtext *x, int action, int *widthp, int *heightp,
     if (tempbuf != smallbuf)
         PD_MEMORY_FREE(tempbuf);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_boxtext *boxtext_new (t_glist *glist, t_object *object)
+{
+    t_boxtext *x  = (t_boxtext *)PD_MEMORY_GET (sizeof (t_boxtext));
+
+    x->box_next   = glist->gl_editor->e_text;
+    x->box_object = object;
+    x->box_glist  = glist;
+
+    buffer_toStringUnzeroed (object->te_buffer, &x->box_utf8, &x->box_utf8Size);
+    
+    { 
+        t_glist *view = canvas_getView (glist);
+        t_error err   = string_sprintf (x->box_tag, BOX_TAG_SIZE, ".x%lx.t%lx", (t_int)view, (t_int)x);
+        PD_ASSERT (!err);
+    }
+    
+    glist->gl_editor->e_text = x;
+    
+    return x;
+}
+
+void boxtext_free (t_boxtext *x)
+{
+    if (x->box_glist->gl_editor->e_selectedText == x) {
+        x->box_glist->gl_editor->e_selectedText = NULL;
+    }
+    
+    if (x->box_glist->gl_editor->e_text == x) { x->box_glist->gl_editor->e_text = x->box_next; }
+    else {
+        t_boxtext *t = NULL;
+        for (t = x->box_glist->gl_editor->e_text; t; t = t->box_next) {
+            if (t->box_next == x) { 
+                t->box_next = x->box_next; break; 
+            }
+        }
+    }
+
+    PD_MEMORY_FREE (x->box_utf8);
+    PD_MEMORY_FREE (x);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_boxtext *boxtext_fetch (t_glist *glist, t_object *object)
+{
+    t_boxtext *x = NULL;
+    
+    canvas_createEditorIfNone (glist);
+    
+    for (x = glist->gl_editor->e_text; x && x->box_object != object; x = x->box_next) { }
+    
+    PD_ASSERT (x);
+    
+    return x;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+char *boxtext_getTag (t_boxtext *x)
+{
+    return x->box_tag;
+}
+
+t_symbol *boxtext_getTypeOfObject (t_boxtext *x)
+{
+    switch (x->box_object->te_type)  {
+    
+        case TYPE_TEXT      : return sym_text;
+        case TYPE_OBJECT    : return sym_obj;
+        case TYPE_MESSAGE   : return sym_msg;
+        case TYPE_ATOM      : return sym_atom;
+    }
+    
+    return &s_;
+}
+
+int boxtext_getWidth (t_boxtext *x)
+{
+    int w = 0;
+    int h = 0;
+    int i;
+    
+    rtext_senditup (x, BOX_CHECK, &w, &h, &i);
+    
+    return w;
+}
+
+int boxtext_getHeight (t_boxtext *x)
+{
+    int w = 0;
+    int h = 0;
+    int i;
+    
+    rtext_senditup (x, BOX_CHECK, &w, &h, &i);
+    
+    return h;
+}
+
+void boxtext_getText (t_boxtext *x, char **p, int *size)
+{
+    *p    = x->box_utf8;
+    *size = x->box_utf8Size;
+}
+
+void boxtext_getSelectedText (t_boxtext *x, char **p, int *size)
+{
+    *p    = x->box_utf8 + x->box_selectionStart;
+    *size = x->box_selectionEnd - x->box_selectionStart;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void rtext_retext(t_boxtext *x)
 {
@@ -411,24 +435,6 @@ void rtext_retext(t_boxtext *x)
         x->box_utf8Size = bufsize;
     }
     rtext_senditup(x, BOX_UPDATE, &w, &h, &indx);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int rtext_width(t_boxtext *x)
-{
-    int w = 0, h = 0, indx;
-    rtext_senditup(x, BOX_CHECK, &w, &h, &indx);
-    return (w);
-}
-
-int rtext_height(t_boxtext *x)
-{
-    int w = 0, h = 0, indx;
-    rtext_senditup(x, BOX_CHECK, &w, &h, &indx);
-    return (h);
 }
 
 // -----------------------------------------------------------------------------------------------------------

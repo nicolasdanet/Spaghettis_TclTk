@@ -820,16 +820,17 @@ void canvas_editmode (t_glist *glist, t_float f)
     if (state) {
     //
     if (canvas_isMapped (glist) && canvas_canHaveWindow (glist)) {
-
-        t_gobj *g = NULL;
-        
-        for (g = glist->gl_graphics; g; g = g->g_next) {
-            t_object *o = NULL;
-            if ((o = canvas_castToObjectIfPatchable (g)) && o->te_type == TYPE_TEXT) {
-                t_boxtext *y = boxtext_fetch (glist, o);
-                text_drawborder (o, glist, boxtext_getTag (y), rtext_width (y), rtext_height (y), 1);
-            }
+    //
+    t_gobj *g = NULL;
+    
+    for (g = glist->gl_graphics; g; g = g->g_next) {
+        t_object *o = NULL;
+        if ((o = canvas_castToObjectIfPatchable (g)) && o->te_type == TYPE_TEXT) {
+            t_boxtext *y = boxtext_fetch (glist, o);
+            text_drawborder (o, glist, boxtext_getTag (y), boxtext_getWidth (y), boxtext_getHeight (y), 1);
         }
+    }
+    //
     }
     //
     } else {
