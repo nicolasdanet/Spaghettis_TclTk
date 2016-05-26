@@ -43,9 +43,12 @@ proc setEditing {top tag isEditing} {
     $top.c focus $tag
 }
 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 proc pasteText {top} {
 
-    # Fake typing the contents if any. 
+    # Fake typing contents of the clipboard if any. 
     
     if {[catch { clipboard get } contents]} {
         #

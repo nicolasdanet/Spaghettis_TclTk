@@ -53,7 +53,7 @@ void glist_add(t_glist *x, t_gobj *y)
         y2->g_next = y;
     }
     if (x->gl_editor && (ob = canvas_castToObjectIfPatchable(&y->g_pd)))
-        rtext_new(x, ob);
+        boxtext_new(x, ob);
     if (x->gl_editor && x->gl_isGraphOnParent && !x->gl_hasRectangle
         && canvas_castToObjectIfPatchable(&y->g_pd))
     {
@@ -113,7 +113,7 @@ void glist_delete(t_glist *x, t_gobj *y)
             {
                 if (canvas_isMapped(x))
                     text_eraseborder(&gl->gl_obj, x,
-                        rtext_gettag(glist_findrtext(x, &gl->gl_obj)));
+                        boxtext_getTag(glist_findrtext(x, &gl->gl_obj)));
             }
         }
     }
@@ -128,7 +128,7 @@ void glist_delete(t_glist *x, t_gobj *y)
         gobj_visibilityChanged(y, x, 0);
     }
     if (x->gl_editor && (ob = canvas_castToObjectIfPatchable(&y->g_pd)))
-        rtext = rtext_new(x, ob);
+        rtext = boxtext_new(x, ob);
     if (x->gl_graphics == y) x->gl_graphics = y->g_next;
     else for (g = x->gl_graphics; g; g = g->g_next)
         if (g->g_next == y)
@@ -138,7 +138,7 @@ void glist_delete(t_glist *x, t_gobj *y)
     }
     pd_free(&y->g_pd);
     if (rtext)
-        rtext_free(rtext);
+        boxtext_free (rtext);
     if (chkdsp) dsp_update();
     if (drawcommand)
         canvas_redrawAllByTemplate(template_findbyname(canvas_makeBindSymbol(
@@ -953,7 +953,7 @@ static void graph_select(t_gobj *z, t_glist *glist, int state)
         if (canvas_hasGraphOnParentTitle (x))
             rtext_select(y, state);
         sys_vGui(".x%lx.c itemconfigure %sR -fill %s\n", glist, 
-        rtext_gettag(y), (state? "blue" : "black"));
+        boxtext_getTag(y), (state? "blue" : "black"));
         sys_vGui(".x%lx.c itemconfigure graph%lx -fill %s\n",
             canvas_getView(glist), z, (state? "blue" : "black"));
     }

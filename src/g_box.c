@@ -37,8 +37,8 @@ extern t_class *canvas_class;
 
 struct _boxtext {
     struct _boxtext     *box_next;
-    t_object            *box_owner;
-    t_glist             *box_view;
+    t_object            *box_object;
+    t_glist             *box_glist;
     char                *box_utf8;
     int                 box_utf8Size;
     int                 box_selectionStart; 
@@ -60,6 +60,11 @@ struct _boxtext {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+#define BOX_DEFAULT_WIDTH       60
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 #define BOX_CHECK               0
@@ -70,72 +75,84 @@ struct _boxtext {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_boxtext *rtext_new(t_glist *glist, t_object *who)
+t_boxtext *boxtext_new (t_glist *glist, t_object *object)
 {
-    t_boxtext *x = (t_boxtext *)PD_MEMORY_GET(sizeof *x);
-    int w = 0, h = 0, indx;
-    x->box_owner = who;
-    x->box_view = glist;
-    x->box_next = glist->gl_editor->e_text;
-    x->box_selectionStart = x->box_selectionEnd = x->box_isActive =
-        x->box_width = x->box_height = 0;
-    buffer_toStringUnzeroed(who->te_buffer, &x->box_utf8, &x->box_utf8Size);
+    t_boxtext *x  = (t_boxtext *)PD_MEMORY_GET (sizeof (t_boxtext));
+
+    x->box_next   = glist->gl_editor->e_text;
+    x->box_object = object;
+    x->box_glist  = glist;
+
+    buffer_toStringUnzeroed (object->te_buffer, &x->box_utf8, &x->box_utf8Size);
+    
+    { 
+        t_glist *view = canvas_getView (glist);
+        t_error err   = string_sprintf (x->box_tag, BOX_TAG_SIZE, ".x%lx.t%lx", (t_int)view, (t_int)x);
+        PD_ASSERT (!err);
+    }
+    
     glist->gl_editor->e_text = x;
-    sprintf(x->box_tag, ".x%lx.t%lx", (t_int)canvas_getView(x->box_view),
-        (t_int)x);
-    return (x);
+    
+    return x;
 }
 
-void rtext_free(t_boxtext *x)
+void boxtext_free (t_boxtext *x)
 {
-    if (x->box_view->gl_editor->e_selectedText == x)
-        x->box_view->gl_editor->e_selectedText = 0;
-    if (x->box_view->gl_editor->e_text == x)
-        x->box_view->gl_editor->e_text = x->box_next;
-    else
-    {
-        t_boxtext *e2;
-        for (e2 = x->box_view->gl_editor->e_text; e2; e2 = e2->box_next)
-            if (e2->box_next == x)
-        {
-            e2->box_next = x->box_next;
-            break;
+    if (x->box_glist->gl_editor->e_selectedText == x) {
+        x->box_glist->gl_editor->e_selectedText = NULL;
+    }
+    
+    if (x->box_glist->gl_editor->e_text == x) { x->box_glist->gl_editor->e_text = x->box_next; }
+    else {
+        t_boxtext *t = NULL;
+        for (t = x->box_glist->gl_editor->e_text; t; t = t->box_next) {
+            if (t->box_next == x) { 
+                t->box_next = x->box_next; break; 
+            }
         }
     }
 
-    PD_MEMORY_FREE(x->box_utf8);
-    PD_MEMORY_FREE(x);
+    PD_MEMORY_FREE (x->box_utf8);
+    PD_MEMORY_FREE (x);
 }
 
-char *rtext_gettag(t_boxtext *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+char *boxtext_getTag (t_boxtext *x)
 {
     return (x->box_tag);
 }
 
-void rtext_gettext(t_boxtext *x, char **buf, int *bufsize)
+void boxtext_getText (t_boxtext *x, char **p, int *size)
 {
-    *buf = x->box_utf8;
-    *bufsize = x->box_utf8Size;
+    *p    = x->box_utf8;
+    *size = x->box_utf8Size;
 }
 
-void rtext_getseltext(t_boxtext *x, char **buf, int *bufsize)
+void boxtext_getSelectedText (t_boxtext *x, char **p, int *size)
 {
-    *buf = x->box_utf8 + x->box_selectionStart;
-    *bufsize = x->box_selectionEnd - x->box_selectionStart;
+    *p    = x->box_utf8 + x->box_selectionStart;
+    *size = x->box_selectionEnd - x->box_selectionStart;
 }
 
-/* convert t_object te_type symbol for use as a Tk tag */
-static t_symbol *rtext_gettype(t_boxtext *x)
+static t_symbol *boxtext_getObjectType (t_boxtext *x)
 {
-    switch (x->box_owner->te_type) 
-    {
-    case TYPE_TEXT: return sym_text;
-    case TYPE_OBJECT: return sym_obj;
-    case TYPE_MESSAGE: return sym_msg;
-    case TYPE_ATOM: return sym_atom;
+    switch (x->box_object->te_type)  {
+    
+        case TYPE_TEXT      : return sym_text;
+        case TYPE_OBJECT    : return sym_obj;
+        case TYPE_MESSAGE   : return sym_msg;
+        case TYPE_ATOM      : return sym_atom;
     }
-    return (&s_);
+    
+    return &s_;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* LATER deal with tcl-significant characters */
 
@@ -194,12 +211,6 @@ static int lastone(char *s, int c, int n)
     *   the GUI)
     */
 
-    /* LATER get this and sys_vGui to work together properly,
-        breaking up messages as needed.  As of now, there's
-        a limit of 1950 characters, imposed by sys_vGui(). */
-#define UPBUFSIZE 4000
-#define BOXWIDTH 60
-
 static void rtext_senditup(t_boxtext *x, int action, int *widthp, int *heightp,
     int *indexp)
 {
@@ -208,20 +219,20 @@ static void rtext_senditup(t_boxtext *x, int action, int *widthp, int *heightp,
     int outchars_b = 0, nlines = 0, ncolumns = 0,
         pixwide, pixhigh, font, fontwidth, fontheight, findx, findy;
     int reportedindex = 0;
-    t_glist *canvas = canvas_getView(x->box_view);
-    int widthspec_c = x->box_owner->te_width;
-    int widthlimit_c = (widthspec_c ? widthspec_c : BOXWIDTH);
+    t_glist *canvas = canvas_getView(x->box_glist);
+    int widthspec_c = x->box_object->te_width;
+    int widthlimit_c = (widthspec_c ? widthspec_c : BOX_DEFAULT_WIDTH);
     int inindex_b = 0;
     int inindex_c = 0;
     int selstart_b = 0, selend_b = 0;
     int box_utf8Size_c = u8_charnum(x->box_utf8, x->box_utf8Size);
         /* if we're a GOP (the new, "goprect" style) borrow the font size
         from the inside to preserve the spacing */
-    if (pd_class(&x->box_owner->te_g.g_pd) == canvas_class &&
-        ((t_glist *)(x->box_owner))->gl_isGraphOnParent &&
-        ((t_glist *)(x->box_owner))->gl_hasRectangle)
-            font =  canvas_getFontSize((t_glist *)(x->box_owner));
-    else font = canvas_getFontSize(x->box_view);
+    if (pd_class(&x->box_object->te_g.g_pd) == canvas_class &&
+        ((t_glist *)(x->box_object))->gl_isGraphOnParent &&
+        ((t_glist *)(x->box_object))->gl_hasRectangle)
+            font =  canvas_getFontSize((t_glist *)(x->box_object));
+    else font = canvas_getFontSize(x->box_glist);
     fontwidth = font_getHostFontWidth(font);
     fontheight = font_getHostFontHeight(font);
     findx = (*widthp + (fontwidth/2)) / fontwidth;
@@ -291,12 +302,12 @@ static void rtext_senditup(t_boxtext *x, int action, int *widthp, int *heightp,
     }
     if (!reportedindex)
         *indexp = outchars_b;
-    dispx = text_xpix(x->box_owner, x->box_view);
-    dispy = text_ypix(x->box_owner, x->box_view);
+    dispx = text_xpix(x->box_object, x->box_glist);
+    dispy = text_ypix(x->box_object, x->box_glist);
     if (nlines < 1) nlines = 1;
     if (!widthspec_c)
     {
-        while (ncolumns < (x->box_owner->te_type == TYPE_TEXT ? 1 : 3))
+        while (ncolumns < (x->box_object->te_type == TYPE_TEXT ? 1 : 3))
         {
             tempbuf[outchars_b++] = ' ';
             ncolumns++;
@@ -306,35 +317,35 @@ static void rtext_senditup(t_boxtext *x, int action, int *widthp, int *heightp,
     pixwide = ncolumns * fontwidth + (BOX_MARGIN_LEFT + BOX_MARGIN_RIGHT);
     pixhigh = nlines * fontheight + (BOX_MARGIN_TOP + BOX_MARGIN_BOTTOM);
 
-    if (action && x->box_owner->te_width && x->box_owner->te_type != TYPE_ATOM)
+    if (action && x->box_object->te_width && x->box_object->te_type != TYPE_ATOM)
     {
             /* if our width is specified but the "natural" width is the
             same as the specified width, set specified width to zero
             so future text editing will automatically change width.
             Except atoms whose content changes at runtime. */
-        int widthwas = x->box_owner->te_width, newwidth = 0, newheight = 0,
+        int widthwas = x->box_object->te_width, newwidth = 0, newheight = 0,
             newindex = 0;
-        x->box_owner->te_width = 0;
+        x->box_object->te_width = 0;
         rtext_senditup(x, 0, &newwidth, &newheight, &newindex);
         if (newwidth/fontwidth != widthwas)
-            x->box_owner->te_width = widthwas;
-        else x->box_owner->te_width = 0;
+            x->box_object->te_width = widthwas;
+        else x->box_object->te_width = 0;
     }
     if (action == BOX_FIRST)
     {
         sys_vGui("::ui_object::newText .x%lx.c {%s %s text} %f %f {%.*s} %d %s\n",
-            canvas, x->box_tag, rtext_gettype(x)->s_name,
+            canvas, x->box_tag, boxtext_getObjectType(x)->s_name,
             dispx + BOX_MARGIN_LEFT, dispy + BOX_MARGIN_TOP,
             outchars_b, tempbuf, font_getHostFontSize(font),
-            (canvas_isObjectSelected(x->box_view,
-                &x->box_view->gl_obj.te_g)? "blue" : "black"));
+            (canvas_isObjectSelected(x->box_glist,
+                &x->box_glist->gl_obj.te_g)? "blue" : "black"));
     }
     else if (action == BOX_UPDATE)
     {
         sys_vGui("::ui_object::setText .x%lx.c %s {%.*s}\n",
             canvas, x->box_tag, outchars_b, tempbuf);
         if (pixwide != x->box_width || pixhigh != x->box_height) 
-            text_drawborder(x->box_owner, x->box_view, x->box_tag,
+            text_drawborder(x->box_object, x->box_glist, x->box_tag,
                 pixwide, pixhigh, 0);
         if (x->box_isActive)
         {
@@ -367,7 +378,7 @@ static void rtext_senditup(t_boxtext *x, int action, int *widthp, int *heightp,
 void rtext_retext(t_boxtext *x)
 {
     int w = 0, h = 0, indx;
-    t_object *text = x->box_owner;
+    t_object *text = x->box_object;
     PD_MEMORY_FREE(x->box_utf8);
     buffer_toStringUnzeroed(text->te_buffer, &x->box_utf8, &x->box_utf8Size);
         /* special case: for number boxes, try to pare the number down
@@ -425,7 +436,7 @@ t_boxtext *glist_findrtext(t_glist *gl, t_object *who)
     t_boxtext *x;
     if (!gl->gl_editor)
         canvas_createEditorIfNone(gl);
-    for (x = gl->gl_editor->e_text; x && x->box_owner != who; x = x->box_next)
+    for (x = gl->gl_editor->e_text; x && x->box_object != who; x = x->box_next)
         ;
     if (!x) { PD_BUG; }
     return (x);
@@ -453,18 +464,18 @@ void rtext_draw(t_boxtext *x)
 
 void rtext_erase(t_boxtext *x)
 {
-    sys_vGui(".x%lx.c delete %s\n", canvas_getView(x->box_view), x->box_tag);
+    sys_vGui(".x%lx.c delete %s\n", canvas_getView(x->box_glist), x->box_tag);
 }
 
 void rtext_displace(t_boxtext *x, int dx, int dy)
 {
-    sys_vGui(".x%lx.c move %s %d %d\n", canvas_getView(x->box_view), 
+    sys_vGui(".x%lx.c move %s %d %d\n", canvas_getView(x->box_glist), 
         x->box_tag, dx, dy);
 }
 
 void rtext_select(t_boxtext *x, int state)
 {
-    t_glist *glist = x->box_view;
+    t_glist *glist = x->box_glist;
     t_glist *canvas = canvas_getView(glist);
     sys_vGui(".x%lx.c itemconfigure %s -fill %s\n", canvas, 
         x->box_tag, (state? "blue" : "black"));
@@ -473,7 +484,7 @@ void rtext_select(t_boxtext *x, int state)
 void rtext_activate(t_boxtext *x, int state)
 {
     int w = 0, h = 0, indx;
-    t_glist *glist = x->box_view;
+    t_glist *glist = x->box_glist;
     t_glist *canvas = canvas_getView(glist);
     if (state)
     {
@@ -559,7 +570,7 @@ be printable in whatever 8-bit character set we find ourselves. */
             x->box_selectionStart = x->box_selectionStart + ch_nbytes;
         }
         x->box_selectionEnd = x->box_selectionStart;
-        x->box_view->gl_editor->e_isTextDirty = 1;
+        x->box_glist->gl_editor->e_isTextDirty = 1;
     }
     else if (!strcmp(keysym->s_name, "Right"))
     {

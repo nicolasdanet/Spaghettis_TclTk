@@ -830,7 +830,7 @@ void canvas_editmode (t_glist *glist, t_float f)
             t_object *o = NULL;
             if ((o = canvas_castToObjectIfPatchable (g)) && o->te_type == TYPE_TEXT) {
                 t_boxtext *y = glist_findrtext (glist, o);
-                text_drawborder (o, glist, rtext_gettag (y), rtext_width (y), rtext_height (y), 1);
+                text_drawborder (o, glist, boxtext_getTag (y), rtext_width (y), rtext_height (y), 1);
             }
         }
     }
@@ -884,7 +884,7 @@ void canvas_copy (t_glist *glist)
     if (glist->gl_editor->e_selectedText) {
         char *t = NULL;
         int s = 0;
-        rtext_getseltext (glist->gl_editor->e_selectedText, &t, &s);
+        boxtext_getSelectedText (glist->gl_editor->e_selectedText, &t, &s);
         sys_gui ("clipboard clear\n");
         sys_vGui ("clipboard append {%.*s}\n", s, t);   
         
@@ -976,7 +976,7 @@ void canvas_createEditorIfNone (t_glist *glist)
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
         t_object *o = NULL;
-        if (o = canvas_castToObjectIfPatchable (y)) { rtext_new (glist, o); }
+        if (o = canvas_castToObjectIfPatchable (y)) { boxtext_new (glist, o); }
     }
     //
     }
@@ -989,7 +989,7 @@ void canvas_destroyEditorIfAny (t_glist *glist)
     t_boxtext *text = NULL;
     
     canvas_deselectAll (glist);
-    while (text = glist->gl_editor->e_text) { rtext_free (text); }
+    while (text = glist->gl_editor->e_text) { boxtext_free (text); }
     
     editor_free (glist->gl_editor);
     glist->gl_editor = NULL;

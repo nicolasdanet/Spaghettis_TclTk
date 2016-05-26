@@ -436,7 +436,7 @@ static void message_click(t_message *x,
     {
         t_boxtext *y = glist_findrtext(x->m_glist, &x->m_text);
         sys_vGui(".x%lx.c itemconfigure %sR -width 5\n", 
-            canvas_getView(x->m_glist), rtext_gettag(y));
+            canvas_getView(x->m_glist), boxtext_getTag(y));
         clock_delay(x->m_clock, 120);
     }
 }
@@ -447,7 +447,7 @@ static void message_tick(t_message *x)
     {
         t_boxtext *y = glist_findrtext(x->m_glist, &x->m_text);
         sys_vGui(".x%lx.c itemconfigure %sR -width 1\n",
-            canvas_getView(x->m_glist), rtext_gettag(y));
+            canvas_getView(x->m_glist), boxtext_getTag(y));
     }
 }
 
@@ -1061,7 +1061,7 @@ static void text_displace(t_gobj *z, t_glist *glist,
     {
         t_boxtext *y = glist_findrtext(glist, x);
         rtext_displace(y, dx, dy);
-        text_drawborder(x, glist, rtext_gettag(y),
+        text_drawborder(x, glist, boxtext_getTag(y),
             rtext_width(y), rtext_height(y), 0);
         canvas_updateLinesByObject(glist, x);
     }
@@ -1074,7 +1074,7 @@ static void text_select(t_gobj *z, t_glist *glist, int state)
     rtext_select(y, state);
     if (canvas_isMapped(glist) && gobj_isVisible(&x->te_g, glist))
         sys_vGui(".x%lx.c itemconfigure %sR -fill %s\n", glist, 
-            rtext_gettag(y), (state? "blue" : "black"));
+            boxtext_getTag(y), (state? "blue" : "black"));
 }
 
 static void text_activate(t_gobj *z, t_glist *glist, int state)
@@ -1100,7 +1100,7 @@ static void text_vis(t_gobj *z, t_glist *glist, int vis)
             t_boxtext *y = glist_findrtext(glist, x);
             if (x->te_type == TYPE_ATOM)
                 glist_retext(glist, x);
-            text_drawborder(x, glist, rtext_gettag(y),
+            text_drawborder(x, glist, boxtext_getTag(y),
                 rtext_width(y), rtext_height(y), 1);
             rtext_draw(y);
         }
@@ -1110,7 +1110,7 @@ static void text_vis(t_gobj *z, t_glist *glist, int vis)
         t_boxtext *y = glist_findrtext(glist, x);
         if (gobj_isVisible(&x->te_g, glist))
         {
-            text_eraseborder(x, glist, rtext_gettag(y));
+            text_eraseborder(x, glist, boxtext_getTag(y));
             rtext_erase(y);
         }
     }
