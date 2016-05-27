@@ -110,15 +110,19 @@ package require ui_text
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+# MUST be a monospaced font.
+
 proc getDefaultFamily {} {
     
     set fonts { "DejaVu Sans Mono" \
                 "Bitstream Vera Sans Mono" \
                 "Inconsolata" \
-                "Verdana" \
-                "Arial" \
+                "Consolas" \
+                "Menlo" \
+                "Terminus" \
+                "Droid Sans Mono" \
                 "Andale Mono" \
-                "Droid Sans Mono" }
+                "Monaco" }
               
     foreach family $fonts {
         if {[lsearch -exact -nocase [font families] $family] > -1} {

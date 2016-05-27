@@ -40,13 +40,13 @@ struct _boxtext {
     t_object            *box_object;
     t_glist             *box_glist;
     char                *box_utf8;
-    int                 box_utf8Size;
+    int                 box_utf8SizeInBytes;
     int                 box_selectionStart; 
     int                 box_selectionEnd;
     int                 box_draggedFrom;
     int                 box_isActive;
-    int                 box_width;
-    int                 box_height;
+    int                 box_widthInPixels;
+    int                 box_heightInPixels;
     char                box_tag[BOX_TAG_SIZE];
     };
 
@@ -72,77 +72,50 @@ struct _boxtext {
 #define BOX_FIRST               1
 #define BOX_UPDATE              2
 
-    /* the following routine computes line breaks and carries out
-    some action which could be:
-        BOX_FIRST - draw the box  for the first time
-        BOX_UPDATE - redraw the updated box
-        otherwise - don't draw, just calculate.
-    Called with *widthp and *heightp as coordinates of
-    a test point, the routine reports the index of the character found
-    there in *indexp.  *widthp and *heightp are set to the width and height
-    of the entire text in pixels.
-    */
-
-   /*-- moo: 
-    * + some variables from the original version have been renamed
-    * + variables with a "_b" suffix are raw byte strings, lengths, or offsets
-    * + variables with a "_c" suffix are logical character lengths or offsets
-    *   (assuming valid UTF-8 encoded byte string in x->box_utf8)
-    * + a fair amount of O(n) computations required to convert between raw byte
-    *   offsets (needed by the C side) and logical character offsets (needed by
-    *   the GUI)
-    */
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void rtext_senditup (t_boxtext *x, int action, int *widthp, int *heightp, int *indexp)
+static int boxtext_typeset (t_boxtext *x,
+    int positionX, 
+    int positionY,
+    int fontSize,
+    char *buffer,
+    int *selectionStart, 
+    int *selectionEnd, 
+    int *widthInPixels, 
+    int *heightInPixels, 
+    int *indexOfCaret)
 {
-    t_float dispx, dispy;
-    char smallbuf[200], *tempbuf;
-    int outchars_b = 0, nlines = 0, ncolumns = 0,
-        pixwide, pixhigh, font, fontwidth, fontheight, findx, findy;
-    int reportedindex = 0;
-    t_glist *canvas = canvas_getView(x->box_glist);
-    int widthspec_c = x->box_object->te_width;
-    int widthlimit_c = (widthspec_c ? widthspec_c : BOX_DEFAULT_WIDTH);
-    int inindex_b = 0;
-    int inindex_c = 0;
-    int selstart_b = 0, selend_b = 0;
-    int box_utf8Size_c = u8_charnum(x->box_utf8, x->box_utf8Size);
-        /* if we're a GOP (the new, "goprect" style) borrow the font size
-        from the inside to preserve the spacing */
-    if (pd_class(&x->box_object->te_g.g_pd) == canvas_class &&
-        ((t_glist *)(x->box_object))->gl_isGraphOnParent &&
-        ((t_glist *)(x->box_object))->gl_hasRectangle)
-            font =  canvas_getFontSize((t_glist *)(x->box_object));
-    else font = canvas_getFontSize(x->box_glist);
-    fontwidth = font_getHostFontWidth(font);
-    fontheight = font_getHostFontHeight(font);
-    findx = (*widthp + (fontwidth/2)) / fontwidth;
-    findy = *heightp / fontheight;
-    if (x->box_utf8Size >= 100)
-         tempbuf = (char *)PD_MEMORY_GET(2 * x->box_utf8Size + 1);
-    else tempbuf = smallbuf;
-    while (box_utf8Size_c - inindex_c > 0)
+    int bufferTailInBytes       = 0;
+    int numberOfLines           = 0;
+    int numberOfColumns         = 0;
+    int headInBytes             = 0;
+    int headInCharacters        = 0;
+    int widthInCharacters       = x->box_object->te_width;
+    int widthLimitInCharacters  = (widthInCharacters ? widthInCharacters : BOX_DEFAULT_WIDTH);
+    int numberOfCharacters      = u8_charnum (x->box_utf8, x->box_utf8SizeInBytes);
+    int fontWidth               = font_getHostFontWidth (fontSize);
+    int fontHeight              = font_getHostFontHeight (fontSize);
+    
+    while (numberOfCharacters - headInCharacters > 0)
     {
-        int inchars_b  = x->box_utf8Size - inindex_b;
-        int inchars_c  = box_utf8Size_c  - inindex_c;
-        int maxindex_c = (inchars_c > widthlimit_c ? widthlimit_c : inchars_c);
-        int maxindex_b = u8_offset(x->box_utf8 + inindex_b, maxindex_c);
+        int inchars_b  = x->box_utf8SizeInBytes - headInBytes;
+        int inchars_c  = numberOfCharacters  - headInCharacters;
+        int maxindex_c = (inchars_c > widthLimitInCharacters ? widthLimitInCharacters : inchars_c);
+        int maxindex_b = u8_offset(x->box_utf8 + headInBytes, maxindex_c);
         int eatchar = 1;
-        int foundit_b  = string_indexOfFirstOccurrenceUntil (x->box_utf8 + inindex_b, '\n', maxindex_b);
+        int foundit_b  = string_indexOfFirstOccurrenceUntil (x->box_utf8 + headInBytes, '\n', maxindex_b);
         int foundit_c;
         if (foundit_b < 0)
         {
                 /* too much text to fit in one line? */
-            if (inchars_c > widthlimit_c)
+            if (inchars_c > widthLimitInCharacters)
             {
                     /* is there a space to break the line at?  OK if it's even
                     one byte past the end since in this context we know there's
                     more text */
-                foundit_b = string_indexOfFirstOccurrenceFrom(x->box_utf8 + inindex_b, ' ', maxindex_b + 1);
+                foundit_b = string_indexOfFirstOccurrenceFrom(x->box_utf8 + headInBytes, ' ', maxindex_b + 1);
                 if (foundit_b < 0)
                 {
                     foundit_b = maxindex_b;
@@ -150,7 +123,7 @@ static void rtext_senditup (t_boxtext *x, int action, int *widthp, int *heightp,
                     eatchar = 0;
                 }
                 else
-                    foundit_c = u8_charnum(x->box_utf8 + inindex_b, foundit_b);
+                    foundit_c = u8_charnum(x->box_utf8 + headInBytes, foundit_b);
             }
             else
             {
@@ -160,104 +133,132 @@ static void rtext_senditup (t_boxtext *x, int action, int *widthp, int *heightp,
             }
         }
         else
-            foundit_c = u8_charnum(x->box_utf8 + inindex_b, foundit_b);
+            foundit_c = u8_charnum(x->box_utf8 + headInBytes, foundit_b);
 
-        if (nlines == findy)
+        if (numberOfLines == (positionY / fontHeight))
         {
-            int actualx = (findx < 0 ? 0 :
-                (findx > foundit_c ? foundit_c : findx));
-            *indexp = inindex_b + u8_offset(x->box_utf8 + inindex_b, actualx);
-            reportedindex = 1;
+            int findX = positionX / fontWidth;
+            int actualx = (findX < 0 ? 0 :
+                (findX > foundit_c ? foundit_c : findX));
+            *indexOfCaret = headInBytes + u8_offset(x->box_utf8 + headInBytes, actualx);
         }
-        strncpy(tempbuf+outchars_b, x->box_utf8 + inindex_b, foundit_b);
-        if (x->box_selectionStart >= inindex_b &&
-            x->box_selectionStart <= inindex_b + foundit_b + eatchar)
-                selstart_b = x->box_selectionStart + outchars_b - inindex_b;
-        if (x->box_selectionEnd >= inindex_b &&
-            x->box_selectionEnd <= inindex_b + foundit_b + eatchar)
-                selend_b = x->box_selectionEnd + outchars_b - inindex_b;
-        outchars_b += foundit_b;
-        inindex_b += (foundit_b + eatchar);
-        inindex_c += (foundit_c + eatchar);
-        if (inindex_b < x->box_utf8Size)
-            tempbuf[outchars_b++] = '\n';
-        if (foundit_c > ncolumns)
-            ncolumns = foundit_c;
-        nlines++;
+        strncpy(buffer+bufferTailInBytes, x->box_utf8 + headInBytes, foundit_b);
+        if (x->box_selectionStart >= headInBytes &&
+            x->box_selectionStart <= headInBytes + foundit_b + eatchar)
+                *selectionStart = x->box_selectionStart + bufferTailInBytes - headInBytes;
+        if (x->box_selectionEnd >= headInBytes &&
+            x->box_selectionEnd <= headInBytes + foundit_b + eatchar)
+                *selectionEnd = x->box_selectionEnd + bufferTailInBytes - headInBytes;
+        bufferTailInBytes += foundit_b;
+        headInBytes += (foundit_b + eatchar);
+        headInCharacters += (foundit_c + eatchar);
+        if (headInBytes < x->box_utf8SizeInBytes)
+            buffer[bufferTailInBytes++] = '\n';
+        if (foundit_c > numberOfColumns)
+            numberOfColumns = foundit_c;
+        numberOfLines++;
     }
-    if (!reportedindex)
-        *indexp = outchars_b;
-    dispx = text_xpix(x->box_object, x->box_glist);
-    dispy = text_ypix(x->box_object, x->box_glist);
-    if (nlines < 1) nlines = 1;
-    if (!widthspec_c)
+    
+    if (*indexOfCaret < 0) { *indexOfCaret = bufferTailInBytes; }
+        
+    if (numberOfLines < 1) numberOfLines = 1;
+    if (!widthInCharacters)
     {
-        while (ncolumns < (x->box_object->te_type == TYPE_TEXT ? 1 : 3))
+        while (numberOfColumns < (x->box_object->te_type == TYPE_TEXT ? 1 : 3))
         {
-            tempbuf[outchars_b++] = ' ';
-            ncolumns++;
+            buffer[bufferTailInBytes++] = ' ';
+            numberOfColumns++;
         }
     }
-    else ncolumns = widthspec_c;
-    pixwide = ncolumns * fontwidth + (BOX_MARGIN_LEFT + BOX_MARGIN_RIGHT);
-    pixhigh = nlines * fontheight + (BOX_MARGIN_TOP + BOX_MARGIN_BOTTOM);
+    else numberOfColumns = widthInCharacters;
+    
+    *widthInPixels = numberOfColumns * fontWidth + (BOX_MARGIN_LEFT + BOX_MARGIN_RIGHT);
+    *heightInPixels = numberOfLines * fontHeight + (BOX_MARGIN_TOP + BOX_MARGIN_BOTTOM);
 
+    return bufferTailInBytes;
+}
+
+static int boxtext_send (t_boxtext *x, int action, int positionX, int positionY)
+{
+    int isCanvas            = (pd_class (x->box_object) == canvas_class);
+    int fontSize            = canvas_getFontSize (isCanvas ? cast_glist (x->box_object) : x->box_glist);
+    int widthInPixels       = 0;
+    int heightInPixels      = 0;
+    int selectionStart      = 0;
+    int selectionEnd        = 0;
+    int indexOfCaret        = -1;
+    
+    char *buffer            = (char *)PD_MEMORY_GET ((2 * x->box_utf8SizeInBytes) + 1);
+    int bufferTailInBytes   = boxtext_typeset (x,
+                                        positionX, 
+                                        positionY,
+                                        fontSize,
+                                        buffer,
+                                        &selectionStart, 
+                                        &selectionEnd, 
+                                        &widthInPixels, 
+                                        &heightInPixels, 
+                                        &indexOfCaret);
+
+    t_glist *view = canvas_getView (x->box_glist);
+    
+    /*
     if (action && x->box_object->te_width && x->box_object->te_type != TYPE_ATOM)
     {
-            /* if our width is specified but the "natural" width is the
-            same as the specified width, set specified width to zero
-            so future text editing will automatically change width.
-            Except atoms whose content changes at runtime. */
         int widthwas = x->box_object->te_width, newwidth = 0, newheight = 0,
             newindex = 0;
         x->box_object->te_width = 0;
-        rtext_senditup(x, 0, &newwidth, &newheight, &newindex);
-        if (newwidth/fontwidth != widthwas)
+        boxtext_send(x, BOX_CHECK, 0, 0);
+        if (newwidth/fontWidth != widthwas)
             x->box_object->te_width = widthwas;
         else x->box_object->te_width = 0;
     }
+    */
+    
     if (action == BOX_FIRST)
     {
         sys_vGui("::ui_object::newText .x%lx.c {%s %s text} %f %f {%.*s} %d %s\n",
-            canvas, x->box_tag, boxtext_getTypeOfObject(x)->s_name,
-            dispx + BOX_MARGIN_LEFT, dispy + BOX_MARGIN_TOP,
-            outchars_b, tempbuf, font_getHostFontSize(font),
-            (canvas_isObjectSelected(x->box_glist,
+            view,
+            x->box_tag,
+            boxtext_getTypeOfObject(x)->s_name,
+            (double)text_xpix (x->box_object, x->box_glist) + BOX_MARGIN_LEFT, 
+            (double)text_ypix (x->box_object, x->box_glist) + BOX_MARGIN_TOP,
+            bufferTailInBytes, buffer, font_getHostFontSize (fontSize),
+            (canvas_isObjectSelected (x->box_glist,
                 &x->box_glist->gl_obj.te_g)? "blue" : "black"));
     }
     else if (action == BOX_UPDATE)
     {
         sys_vGui("::ui_object::setText .x%lx.c %s {%.*s}\n",
-            canvas, x->box_tag, outchars_b, tempbuf);
-        if (pixwide != x->box_width || pixhigh != x->box_height) 
+            view, x->box_tag, bufferTailInBytes, buffer);
+        if (widthInPixels != x->box_widthInPixels || heightInPixels != x->box_heightInPixels) 
             text_drawborder(x->box_object, x->box_glist, x->box_tag,
-                pixwide, pixhigh, 0);
+                widthInPixels, heightInPixels, 0);
         if (x->box_isActive)
         {
-            if (selend_b > selstart_b)
+            if (selectionEnd > selectionStart)
             {
-                sys_vGui(".x%lx.c select from %s %d\n", canvas, 
-                    x->box_tag, u8_charnum(x->box_utf8, selstart_b));
-                sys_vGui(".x%lx.c select to %s %d\n", canvas, 
-                    x->box_tag, u8_charnum(x->box_utf8, selend_b) - 1);
-                sys_vGui(".x%lx.c focus \"\"\n", canvas);        
+                sys_vGui(".x%lx.c select from %s %d\n", view, 
+                    x->box_tag, u8_charnum(x->box_utf8, selectionStart));
+                sys_vGui(".x%lx.c select to %s %d\n", view, 
+                    x->box_tag, u8_charnum(x->box_utf8, selectionEnd) - 1);
+                sys_vGui(".x%lx.c focus \"\"\n", view);        
             }
             else
             {
-                sys_vGui(".x%lx.c select clear\n", canvas);
-                sys_vGui(".x%lx.c icursor %s %d\n", canvas, x->box_tag,
-                    u8_charnum(x->box_utf8, selstart_b));
-                sys_vGui(".x%lx.c focus %s\n", canvas, x->box_tag);        
+                sys_vGui(".x%lx.c select clear\n", view);
+                sys_vGui(".x%lx.c icursor %s %d\n", view, x->box_tag,
+                    u8_charnum(x->box_utf8, selectionStart));
+                sys_vGui(".x%lx.c focus %s\n", view, x->box_tag);        
             }
         }
     }
-    x->box_width = pixwide;
-    x->box_height = pixhigh;
+    x->box_widthInPixels  = widthInPixels;
+    x->box_heightInPixels = heightInPixels;
     
-    *widthp = pixwide;
-    *heightp = pixhigh;
-    if (tempbuf != smallbuf)
-        PD_MEMORY_FREE(tempbuf);
+    PD_MEMORY_FREE (buffer);
+    
+    return indexOfCaret;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -272,7 +273,7 @@ t_boxtext *boxtext_new (t_glist *glist, t_object *object)
     x->box_object = object;
     x->box_glist  = glist;
 
-    buffer_toStringUnzeroed (object->te_buffer, &x->box_utf8, &x->box_utf8Size);
+    buffer_toStringUnzeroed (object->te_buffer, &x->box_utf8, &x->box_utf8SizeInBytes);
     
     { 
         t_glist *view = canvas_getView (glist);
@@ -346,30 +347,20 @@ t_symbol *boxtext_getTypeOfObject (t_boxtext *x)
 
 int boxtext_getWidth (t_boxtext *x)
 {
-    int w = 0;
-    int h = 0;
-    int i;
-    
-    rtext_senditup (x, BOX_CHECK, &w, &h, &i);
-    
-    return w;
+    boxtext_send (x, BOX_CHECK, 0, 0);
+    return x->box_widthInPixels;
 }
 
 int boxtext_getHeight (t_boxtext *x)
 {
-    int w = 0;
-    int h = 0;
-    int i;
-    
-    rtext_senditup (x, BOX_CHECK, &w, &h, &i);
-    
-    return h;
+    boxtext_send (x, BOX_CHECK, 0, 0);
+    return x->box_heightInPixels;
 }
 
 void boxtext_getText (t_boxtext *x, char **p, int *size)
 {
     *p    = x->box_utf8;
-    *size = x->box_utf8Size;
+    *size = x->box_utf8SizeInBytes;
 }
 
 void boxtext_getSelectedText (t_boxtext *x, char **p, int *size)
@@ -384,18 +375,18 @@ void boxtext_getSelectedText (t_boxtext *x, char **p, int *size)
 
 void rtext_retext(t_boxtext *x)
 {
-    int w = 0, h = 0, indx;
+
     t_object *text = x->box_object;
     PD_MEMORY_FREE(x->box_utf8);
-    buffer_toStringUnzeroed(text->te_buffer, &x->box_utf8, &x->box_utf8Size);
+    buffer_toStringUnzeroed(text->te_buffer, &x->box_utf8, &x->box_utf8SizeInBytes);
         /* special case: for number boxes, try to pare the number down
         to the specified width of the box. */
     if (text->te_width > 0 && text->te_type == TYPE_ATOM &&
-        x->box_utf8Size > text->te_width)
+        x->box_utf8SizeInBytes > text->te_width)
     {
         t_atom *atomp = buffer_atoms(text->te_buffer);
         int natom = buffer_size(text->te_buffer);
-        int bufsize = x->box_utf8Size;
+        int bufsize = x->box_utf8SizeInBytes;
         if (natom == 1 && atomp->a_type == A_FLOAT)
         {
                 /* try to reduce size by dropping decimal digits */
@@ -432,9 +423,10 @@ void rtext_retext(t_boxtext *x)
             bufsize = text->te_width;
         }
     done:
-        x->box_utf8Size = bufsize;
+        x->box_utf8SizeInBytes = bufsize;
     }
-    rtext_senditup(x, BOX_UPDATE, &w, &h, &indx);
+
+    boxtext_send(x, BOX_UPDATE, 0, 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -443,8 +435,7 @@ void rtext_retext(t_boxtext *x)
 
 void rtext_draw(t_boxtext *x)
 {
-    int w = 0, h = 0, indx;
-    rtext_senditup(x, BOX_FIRST, &w, &h, &indx);
+    boxtext_send(x, BOX_FIRST, 0, 0);
 }
 
 void rtext_erase(t_boxtext *x)
@@ -468,7 +459,6 @@ void rtext_select(t_boxtext *x, int state)
 
 void rtext_activate(t_boxtext *x, int state)
 {
-    int w = 0, h = 0, indx;
     t_glist *glist = x->box_glist;
     t_glist *canvas = canvas_getView(glist);
     if (state)
@@ -477,7 +467,7 @@ void rtext_activate(t_boxtext *x, int state)
         glist->gl_editor->e_selectedText = x;
         glist->gl_editor->e_isTextDirty = 0;
         x->box_draggedFrom = x->box_selectionStart = 0;
-        x->box_selectionEnd = x->box_utf8Size;
+        x->box_selectionEnd = x->box_utf8SizeInBytes;
         x->box_isActive = 1;
     }
     else
@@ -487,7 +477,8 @@ void rtext_activate(t_boxtext *x, int state)
             glist->gl_editor->e_selectedText = 0;
         x->box_isActive = 0;
     }
-    rtext_senditup(x, BOX_UPDATE, &w, &h, &indx);
+
+    boxtext_send(x, BOX_UPDATE, 0, 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -496,7 +487,7 @@ void rtext_activate(t_boxtext *x, int state)
 
 void rtext_key(t_boxtext *x, int keynum, t_symbol *keysym)
 {
-    int w = 0, h = 0, indx, i, newsize, ndel;
+    int i, newsize, ndel;
     char *s1, *s2;
     if (keynum)
     {
@@ -506,7 +497,7 @@ void rtext_key(t_boxtext *x, int keynum, t_symbol *keysym)
         {
                     /* LATER delete the box if all text is selected...
                     this causes reentrancy problems now. */
-            /* if ((!x->box_selectionStart) && (x->box_selectionEnd == x->box_utf8Size))
+            /* if ((!x->box_selectionStart) && (x->box_selectionEnd == x->box_utf8SizeInBytes))
             {
                 ....
             } */
@@ -515,16 +506,16 @@ void rtext_key(t_boxtext *x, int keynum, t_symbol *keysym)
         }
         else if (n == 127)      /* delete */
         {
-            if (x->box_selectionEnd < x->box_utf8Size && (x->box_selectionStart == x->box_selectionEnd))
+            if (x->box_selectionEnd < x->box_utf8SizeInBytes && (x->box_selectionStart == x->box_selectionEnd))
                 u8_inc(x->box_utf8, &x->box_selectionEnd);
         }
         
         ndel = x->box_selectionEnd - x->box_selectionStart;
-        for (i = x->box_selectionEnd; i < x->box_utf8Size; i++)
+        for (i = x->box_selectionEnd; i < x->box_utf8SizeInBytes; i++)
             x->box_utf8[i- ndel] = x->box_utf8[i];
-        newsize = x->box_utf8Size - ndel;
-        x->box_utf8 = PD_MEMORY_RESIZE(x->box_utf8, x->box_utf8Size, newsize);
-        x->box_utf8Size = newsize;
+        newsize = x->box_utf8SizeInBytes - ndel;
+        x->box_utf8 = PD_MEMORY_RESIZE(x->box_utf8, x->box_utf8SizeInBytes, newsize);
+        x->box_utf8SizeInBytes = newsize;
 
 /* at Guenter's suggestion, use 'n>31' to test wither a character might
 be printable in whatever 8-bit character set we find ourselves. */
@@ -537,23 +528,23 @@ be printable in whatever 8-bit character set we find ourselves. */
 */
         if (n == '\n' || (n > 31 && n < 127))
         {
-            newsize = x->box_utf8Size+1;
-            x->box_utf8 = PD_MEMORY_RESIZE(x->box_utf8, x->box_utf8Size, newsize);
-            for (i = x->box_utf8Size; i > x->box_selectionStart; i--)
+            newsize = x->box_utf8SizeInBytes+1;
+            x->box_utf8 = PD_MEMORY_RESIZE(x->box_utf8, x->box_utf8SizeInBytes, newsize);
+            for (i = x->box_utf8SizeInBytes; i > x->box_selectionStart; i--)
                 x->box_utf8[i] = x->box_utf8[i-1];
             x->box_utf8[x->box_selectionStart] = n;
-            x->box_utf8Size = newsize;
+            x->box_utf8SizeInBytes = newsize;
             x->box_selectionStart = x->box_selectionStart + 1;
         }
         /*--moo: check for unicode codepoints beyond 7-bit ASCII --*/
         else if (n > 127)
         {
             int ch_nbytes = u8_wc_nbytes(n);
-            newsize = x->box_utf8Size + ch_nbytes;
-            x->box_utf8 = PD_MEMORY_RESIZE(x->box_utf8, x->box_utf8Size, newsize);
+            newsize = x->box_utf8SizeInBytes + ch_nbytes;
+            x->box_utf8 = PD_MEMORY_RESIZE(x->box_utf8, x->box_utf8SizeInBytes, newsize);
             for (i = newsize-1; i > x->box_selectionStart; i--)
                 x->box_utf8[i] = x->box_utf8[i-ch_nbytes];
-            x->box_utf8Size = newsize;
+            x->box_utf8SizeInBytes = newsize;
             /*-- moo: assume canvas_key() has encoded keysym as UTF-8 */
             strncpy(x->box_utf8+x->box_selectionStart, keysym->s_name, ch_nbytes);
             x->box_selectionStart = x->box_selectionStart + ch_nbytes;
@@ -563,7 +554,7 @@ be printable in whatever 8-bit character set we find ourselves. */
     }
     else if (!strcmp(keysym->s_name, "Right"))
     {
-        if (x->box_selectionEnd == x->box_selectionStart && x->box_selectionStart < x->box_utf8Size)
+        if (x->box_selectionEnd == x->box_selectionStart && x->box_selectionStart < x->box_utf8SizeInBytes)
         {
             u8_inc(x->box_utf8, &x->box_selectionStart);
             x->box_selectionEnd = x->box_selectionStart;
@@ -592,20 +583,20 @@ be printable in whatever 8-bit character set we find ourselves. */
     }
     else if (!strcmp(keysym->s_name, "Down"))
     {
-        while (x->box_selectionEnd < x->box_utf8Size &&
+        while (x->box_selectionEnd < x->box_utf8SizeInBytes &&
             x->box_utf8[x->box_selectionEnd] != '\n')
             u8_inc(x->box_utf8, &x->box_selectionEnd);
-        if (x->box_selectionEnd < x->box_utf8Size)
+        if (x->box_selectionEnd < x->box_utf8SizeInBytes)
             u8_inc(x->box_utf8, &x->box_selectionEnd);
         x->box_selectionStart = x->box_selectionEnd;
     }
-    rtext_senditup(x, BOX_UPDATE, &w, &h, &indx);
+
+    boxtext_send(x, BOX_UPDATE, 0, 0);
 }
 
 void rtext_mouse(t_boxtext *x, int xval, int yval, int flag)
 {
-    int w = xval, h = yval, indx;
-    rtext_senditup(x, BOX_CHECK, &w, &h, &indx);
+    int indx = boxtext_send(x, BOX_CHECK, xval, yval);
     if (flag == BOX_TEXT_DOWN)
     {
         x->box_draggedFrom = x->box_selectionStart = x->box_selectionEnd = indx;
@@ -625,21 +616,21 @@ void rtext_mouse(t_boxtext *x, int xval, int yval, int flag)
             whereseparator = newseparator+1;
         x->box_selectionStart = whereseparator;
         
-        whereseparator = x->box_utf8Size - indx;
+        whereseparator = x->box_utf8SizeInBytes - indx;
         if ((newseparator =
-            string_indexOfFirstOccurrenceUntil(x->box_utf8+indx, ' ', x->box_utf8Size - indx)) >= 0 &&
+            string_indexOfFirstOccurrenceUntil(x->box_utf8+indx, ' ', x->box_utf8SizeInBytes - indx)) >= 0 &&
                 newseparator < whereseparator)
                     whereseparator = newseparator;
         if ((newseparator =
-            string_indexOfFirstOccurrenceUntil(x->box_utf8+indx, '\n', x->box_utf8Size - indx)) >= 0 &&
+            string_indexOfFirstOccurrenceUntil(x->box_utf8+indx, '\n', x->box_utf8SizeInBytes - indx)) >= 0 &&
                 newseparator < whereseparator)
                     whereseparator = newseparator;
         if ((newseparator =
-            string_indexOfFirstOccurrenceUntil(x->box_utf8+indx, ';', x->box_utf8Size - indx)) >= 0 &&
+            string_indexOfFirstOccurrenceUntil(x->box_utf8+indx, ';', x->box_utf8SizeInBytes - indx)) >= 0 &&
                 newseparator < whereseparator)
                     whereseparator = newseparator;
         if ((newseparator =
-            string_indexOfFirstOccurrenceUntil(x->box_utf8+indx, ',', x->box_utf8Size - indx)) >= 0 &&
+            string_indexOfFirstOccurrenceUntil(x->box_utf8+indx, ',', x->box_utf8SizeInBytes - indx)) >= 0 &&
                 newseparator < whereseparator)
                     whereseparator = newseparator;
         x->box_selectionEnd = indx + whereseparator;
@@ -658,7 +649,7 @@ void rtext_mouse(t_boxtext *x, int xval, int yval, int flag)
         x->box_selectionStart = (x->box_draggedFrom < indx ? x->box_draggedFrom : indx);
         x->box_selectionEnd = (x->box_draggedFrom > indx ? x->box_draggedFrom : indx);
     }
-    rtext_senditup(x, BOX_UPDATE, &w, &h, &indx);
+    boxtext_send(x, BOX_UPDATE, xval, yval);
 }
 
 // -----------------------------------------------------------------------------------------------------------
