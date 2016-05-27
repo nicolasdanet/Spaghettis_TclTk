@@ -62,15 +62,16 @@ struct _boxtext {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define BOX_DEFAULT_WIDTH       60
+#define BOX_CHECK               0
+#define BOX_FIRST               1
+#define BOX_UPDATE              2
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define BOX_CHECK               0
-#define BOX_FIRST               1
-#define BOX_UPDATE              2
+#define BOX_DEFAULT_LINE        60
+#define BOX_DEFAULT_WIDTH       3
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -87,95 +88,89 @@ static int boxtext_typeset (t_boxtext *x,
     int *heightInPixels, 
     int *indexOfCaret)
 {
-    int bufferTailInBytes       = 0;
-    int numberOfLines           = 0;
-    int numberOfColumns         = 0;
-    int headInBytes             = 0;
-    int headInCharacters        = 0;
+    int bufferPosition          = 0;
     int widthInCharacters       = x->box_object->te_width;
-    int widthLimitInCharacters  = (widthInCharacters ? widthInCharacters : BOX_DEFAULT_WIDTH);
     int numberOfCharacters      = u8_charnum (x->box_utf8, x->box_utf8SizeInBytes);
     int fontWidth               = font_getHostFontWidth (fontSize);
     int fontHeight              = font_getHostFontHeight (fontSize);
+    int lineLengthInCharacters  = (widthInCharacters ? widthInCharacters : BOX_DEFAULT_LINE);
     
-    while (numberOfCharacters - headInCharacters > 0)
-    {
-        int inchars_b  = x->box_utf8SizeInBytes - headInBytes;
-        int inchars_c  = numberOfCharacters  - headInCharacters;
-        int maxindex_c = (inchars_c > widthLimitInCharacters ? widthLimitInCharacters : inchars_c);
-        int maxindex_b = u8_offset(x->box_utf8 + headInBytes, maxindex_c);
-        int eatchar = 1;
-        int foundit_b  = string_indexOfFirstOccurrenceUntil (x->box_utf8 + headInBytes, '\n', maxindex_b);
-        int foundit_c;
-        if (foundit_b < 0)
-        {
-                /* too much text to fit in one line? */
-            if (inchars_c > widthLimitInCharacters)
-            {
-                    /* is there a space to break the line at?  OK if it's even
-                    one byte past the end since in this context we know there's
-                    more text */
-                foundit_b = string_indexOfFirstOccurrenceFrom(x->box_utf8 + headInBytes, ' ', maxindex_b + 1);
-                if (foundit_b < 0)
-                {
-                    foundit_b = maxindex_b;
-                    foundit_c = maxindex_c;
-                    eatchar = 0;
-                }
-                else
-                    foundit_c = u8_charnum(x->box_utf8 + headInBytes, foundit_b);
-            }
-            else
-            {
-                foundit_b = inchars_b;
-                foundit_c = inchars_c;
-                eatchar = 0;
-            }
-        }
-        else
-            foundit_c = u8_charnum(x->box_utf8 + headInBytes, foundit_b);
+    int numberOfLines           = 0;
+    int numberOfColumns         = 0;
+    int headInBytes             = 0;
+    int charactersThatRemains   = numberOfCharacters;
+        
+    while (charactersThatRemains > 0) { 
+    //
+    char *head = x->box_utf8 + headInBytes;
 
-        if (numberOfLines == (positionY / fontHeight))
-        {
-            int findX = positionX / fontWidth;
-            int actualx = (findX < 0 ? 0 :
-                (findX > foundit_c ? foundit_c : findX));
-            *indexOfCaret = headInBytes + u8_offset(x->box_utf8 + headInBytes, actualx);
+    int charactersToConsider    = PD_MIN (lineLengthInCharacters, charactersThatRemains);
+    int bytesToConsider         = u8_offset (head, charactersToConsider);
+    int charactersUntilWrap     = 0;
+    int bytesUntilWrap          = string_indexOfFirstOccurrenceUntil (head, '\n', bytesToConsider);
+    
+    int eatCharacter = 1;
+    
+    if (bytesUntilWrap >= 0) { charactersUntilWrap = u8_charnum (head, bytesUntilWrap); }
+    else {
+        if (charactersThatRemains > lineLengthInCharacters) {
+        
+            bytesUntilWrap = string_indexOfFirstOccurrenceFrom (head, ' ', bytesToConsider + 1);
+            if (bytesUntilWrap >= 0) { charactersUntilWrap = u8_charnum (head, bytesUntilWrap); }
+            else {
+                charactersUntilWrap = charactersToConsider;
+                bytesUntilWrap = bytesToConsider;
+                eatCharacter = 0;
+            }
+            
+        } else {
+            charactersUntilWrap = charactersThatRemains;
+            bytesUntilWrap = x->box_utf8SizeInBytes - headInBytes;
+            eatCharacter = 0;
         }
-        strncpy(buffer+bufferTailInBytes, x->box_utf8 + headInBytes, foundit_b);
-        if (x->box_selectionStart >= headInBytes &&
-            x->box_selectionStart <= headInBytes + foundit_b + eatchar)
-                *selectionStart = x->box_selectionStart + bufferTailInBytes - headInBytes;
-        if (x->box_selectionEnd >= headInBytes &&
-            x->box_selectionEnd <= headInBytes + foundit_b + eatchar)
-                *selectionEnd = x->box_selectionEnd + bufferTailInBytes - headInBytes;
-        bufferTailInBytes += foundit_b;
-        headInBytes += (foundit_b + eatchar);
-        headInCharacters += (foundit_c + eatchar);
-        if (headInBytes < x->box_utf8SizeInBytes)
-            buffer[bufferTailInBytes++] = '\n';
-        if (foundit_c > numberOfColumns)
-            numberOfColumns = foundit_c;
-        numberOfLines++;
+    }
+
+    if (numberOfLines == (positionY / fontHeight))
+    {
+        int findX = positionX / fontWidth;
+        int actualx = (findX < 0 ? 0 :
+            (findX > charactersUntilWrap ? charactersUntilWrap : findX));
+        *indexOfCaret = headInBytes + u8_offset (head, actualx);
     }
     
-    if (*indexOfCaret < 0) { *indexOfCaret = bufferTailInBytes; }
-        
-    if (numberOfLines < 1) numberOfLines = 1;
-    if (!widthInCharacters)
-    {
-        while (numberOfColumns < (x->box_object->te_type == TYPE_TEXT ? 1 : 3))
-        {
-            buffer[bufferTailInBytes++] = ' ';
+    strncpy(buffer+bufferPosition, head, bytesUntilWrap);
+    if (x->box_selectionStart >= headInBytes &&
+        x->box_selectionStart <= headInBytes + bytesUntilWrap + eatCharacter)
+            *selectionStart = x->box_selectionStart + bufferPosition - headInBytes;
+    if (x->box_selectionEnd >= headInBytes &&
+        x->box_selectionEnd <= headInBytes + bytesUntilWrap + eatCharacter)
+            *selectionEnd = x->box_selectionEnd + bufferPosition - headInBytes;
+    bufferPosition += bytesUntilWrap;
+    headInBytes += (bytesUntilWrap + eatCharacter);
+    charactersThatRemains -= (charactersUntilWrap + eatCharacter);
+    if (headInBytes < x->box_utf8SizeInBytes)
+        buffer[bufferPosition++] = '\n';
+    if (charactersUntilWrap > numberOfColumns)
+        numberOfColumns = charactersUntilWrap;
+    numberOfLines++;
+    //
+    }
+    
+    if (*indexOfCaret < 0) { *indexOfCaret = bufferPosition; }
+    if (numberOfLines < 1) { numberOfLines = 1; }
+    
+    if (widthInCharacters) { numberOfColumns = widthInCharacters; }
+    else {
+        while (numberOfColumns < BOX_DEFAULT_WIDTH) { 
+            buffer[bufferPosition++] = ' ';
             numberOfColumns++;
         }
     }
-    else numberOfColumns = widthInCharacters;
     
-    *widthInPixels = numberOfColumns * fontWidth + (BOX_MARGIN_LEFT + BOX_MARGIN_RIGHT);
-    *heightInPixels = numberOfLines * fontHeight + (BOX_MARGIN_TOP + BOX_MARGIN_BOTTOM);
+    *widthInPixels  = (BOX_MARGIN_LEFT + BOX_MARGIN_RIGHT) + (numberOfColumns * fontWidth);
+    *heightInPixels = (BOX_MARGIN_TOP + BOX_MARGIN_BOTTOM) + (numberOfLines * fontHeight);
 
-    return bufferTailInBytes;
+    return bufferPosition;
 }
 
 static int boxtext_send (t_boxtext *x, int action, int positionX, int positionY)
@@ -189,31 +184,18 @@ static int boxtext_send (t_boxtext *x, int action, int positionX, int positionY)
     int indexOfCaret        = -1;
     
     char *buffer            = (char *)PD_MEMORY_GET ((2 * x->box_utf8SizeInBytes) + 1);
-    int bufferTailInBytes   = boxtext_typeset (x,
-                                        positionX, 
-                                        positionY,
-                                        fontSize,
-                                        buffer,
-                                        &selectionStart, 
-                                        &selectionEnd, 
-                                        &widthInPixels, 
-                                        &heightInPixels, 
-                                        &indexOfCaret);
+    int bufferPosition      = boxtext_typeset (x,
+                                    positionX, 
+                                    positionY,
+                                    fontSize,
+                                    buffer,
+                                    &selectionStart, 
+                                    &selectionEnd, 
+                                    &widthInPixels, 
+                                    &heightInPixels, 
+                                    &indexOfCaret);
 
     t_glist *view = canvas_getView (x->box_glist);
-    
-    /*
-    if (action && x->box_object->te_width && x->box_object->te_type != TYPE_ATOM)
-    {
-        int widthwas = x->box_object->te_width, newwidth = 0, newheight = 0,
-            newindex = 0;
-        x->box_object->te_width = 0;
-        boxtext_send(x, BOX_CHECK, 0, 0);
-        if (newwidth/fontWidth != widthwas)
-            x->box_object->te_width = widthwas;
-        else x->box_object->te_width = 0;
-    }
-    */
     
     if (action == BOX_FIRST)
     {
@@ -223,14 +205,14 @@ static int boxtext_send (t_boxtext *x, int action, int positionX, int positionY)
             boxtext_getTypeOfObject(x)->s_name,
             (double)text_xpix (x->box_object, x->box_glist) + BOX_MARGIN_LEFT, 
             (double)text_ypix (x->box_object, x->box_glist) + BOX_MARGIN_TOP,
-            bufferTailInBytes, buffer, font_getHostFontSize (fontSize),
+            bufferPosition, buffer, font_getHostFontSize (fontSize),
             (canvas_isObjectSelected (x->box_glist,
                 &x->box_glist->gl_obj.te_g)? "blue" : "black"));
     }
     else if (action == BOX_UPDATE)
     {
         sys_vGui("::ui_object::setText .x%lx.c %s {%.*s}\n",
-            view, x->box_tag, bufferTailInBytes, buffer);
+            view, x->box_tag, bufferPosition, buffer);
         if (widthInPixels != x->box_widthInPixels || heightInPixels != x->box_heightInPixels) 
             text_drawborder(x->box_object, x->box_glist, x->box_tag,
                 widthInPixels, heightInPixels, 0);

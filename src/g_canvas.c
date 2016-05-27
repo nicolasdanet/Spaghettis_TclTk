@@ -159,7 +159,9 @@ static void canvas_width (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     if (o = canvas_castToObjectIfPatchable (g1)) {
     //
-    o->te_width = atom_getFloatAtIndex (0, argc, argv);
+    int w = atom_getFloatAtIndex (0, argc, argv);
+    
+    o->te_width = PD_MAX (1, w);
     
     if (canvas_isMapped (glist)) {
         gobj_visibilityChanged (g1, glist, 0);

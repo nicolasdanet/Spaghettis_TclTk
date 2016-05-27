@@ -523,7 +523,7 @@ typedef struct _text {
     t_outlet        *te_outlet;
     int             te_xCoordinate;
     int             te_yCoordinate;
-    int             te_width; 
+    int             te_width;                   /* Zero for undefined. */
     int             te_type;
     } t_text;
 
@@ -541,6 +541,7 @@ typedef void *(*t_newmethod)(void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #define PD_MEMORY_GET(n)                                sys_getMemory (n)
 #define PD_MEMORY_GET_COPY(src, n)                      sys_getMemoryCopy (src, n)
