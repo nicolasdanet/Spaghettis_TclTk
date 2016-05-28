@@ -235,7 +235,7 @@ proc initialize {} {
         set lorem [font measure $f "TheQuickBrownFoxJumpsOverTheLazyDog"]
         set ipsum [string length   "TheQuickBrownFoxJumpsOverTheLazyDog"]
         lappend measured $size 
-        lappend measured [expr {($lorem / $ipsum) + 1}]
+        lappend measured [expr {$lorem / $ipsum}]
         lappend measured [font metrics $f -linespace]
     }
 

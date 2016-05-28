@@ -200,7 +200,7 @@ static int boxtext_send (t_boxtext *x, int action, int positionX, int positionY)
     int heightInPixels      = 0;
     int selectionStart      = 0;
     int selectionEnd        = 0;
-    int bufferSize          = (2 * x->box_utf8SizeInBytes) + 1;
+    int bufferSize          = PD_MAX (BOX_DEFAULT_WIDTH, (2 * x->box_utf8SizeInBytes)) + 1;
     char *buffer            = (char *)PD_MEMORY_GET (bufferSize);
         
     int indexOfCaret        = boxtext_typeset (x,
