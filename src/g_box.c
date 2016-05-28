@@ -108,8 +108,9 @@ static int boxtext_typeset (t_boxtext *x,
     int bytesToConsider         = u8_offset (head, charactersToConsider);
     int charactersUntilWrap     = 0;
     int bytesUntilWrap          = string_indexOfFirstOccurrenceUntil (head, '\n', bytesToConsider);
+    int accumulatedOffset       = bufferPosition - headInBytes;
     
-    int eatCharacter = 1;
+    int eatCharacter = 1;       /* Remove the character used to wrap (i.e. space and new line). */
     
     if (bytesUntilWrap >= 0) { charactersUntilWrap = u8_charnum (head, bytesUntilWrap); }
     else {
@@ -130,28 +131,40 @@ static int boxtext_typeset (t_boxtext *x,
         }
     }
 
-    if (numberOfLines == (positionY / fontHeight))
-    {
-        int findX = positionX / fontWidth;
-        int actualx = (findX < 0 ? 0 :
-            (findX > charactersUntilWrap ? charactersUntilWrap : findX));
-        *indexOfCaret = headInBytes + u8_offset (head, actualx);
+    /* Locate the insertion point. */
+    
+    if (numberOfLines == (int)(positionY / fontHeight)) {
+        int k = (positionX / fontWidth) + 0.5;
+        *indexOfCaret = headInBytes + u8_offset (head, PD_CLAMP (k, 0, charactersUntilWrap));
     }
     
-    strncpy(buffer+bufferPosition, head, bytesUntilWrap);
-    if (x->box_selectionStart >= headInBytes &&
-        x->box_selectionStart <= headInBytes + bytesUntilWrap + eatCharacter)
-            *selectionStart = x->box_selectionStart + bufferPosition - headInBytes;
-    if (x->box_selectionEnd >= headInBytes &&
-        x->box_selectionEnd <= headInBytes + bytesUntilWrap + eatCharacter)
-            *selectionEnd = x->box_selectionEnd + bufferPosition - headInBytes;
-    bufferPosition += bytesUntilWrap;
-    headInBytes += (bytesUntilWrap + eatCharacter);
-    charactersThatRemains -= (charactersUntilWrap + eatCharacter);
-    if (headInBytes < x->box_utf8SizeInBytes)
-        buffer[bufferPosition++] = '\n';
-    if (charactersUntilWrap > numberOfColumns)
-        numberOfColumns = charactersUntilWrap;
+    /* Deplace selection according to insertion of new characters. */
+    
+    if (x->box_selectionStart >= headInBytes) {         
+        if (x->box_selectionStart <= headInBytes + bytesUntilWrap + eatCharacter) {
+            *selectionStart = accumulatedOffset + x->box_selectionStart;
+        }
+    }
+            
+    if (x->box_selectionEnd >= headInBytes) {
+        if (x->box_selectionEnd <= headInBytes + bytesUntilWrap + eatCharacter) {
+            *selectionEnd   = accumulatedOffset + x->box_selectionEnd;
+        }
+    }
+    
+    /* Append line and move next. */
+    
+    strncpy (buffer + bufferPosition, head, bytesUntilWrap);
+        
+    bufferPosition          += bytesUntilWrap;
+    headInBytes             += bytesUntilWrap;
+    headInBytes             += eatCharacter;
+    charactersThatRemains   -= charactersUntilWrap;
+    charactersThatRemains   -= eatCharacter;
+    
+    if (headInBytes < x->box_utf8SizeInBytes)  { buffer[bufferPosition++] = '\n'; }
+    if (charactersUntilWrap > numberOfColumns) { numberOfColumns = charactersUntilWrap; }
+        
     numberOfLines++;
     //
     }
@@ -159,7 +172,7 @@ static int boxtext_typeset (t_boxtext *x,
     if (*indexOfCaret < 0) { *indexOfCaret = bufferPosition; }
     if (numberOfLines < 1) { numberOfLines = 1; }
     
-    if (widthInCharacters) { numberOfColumns = widthInCharacters; }
+    if (widthInCharacters) { numberOfColumns = widthInCharacters; } 
     else {
         while (numberOfColumns < BOX_DEFAULT_WIDTH) { 
             buffer[bufferPosition++] = ' ';
