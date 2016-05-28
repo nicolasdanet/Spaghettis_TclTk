@@ -39,7 +39,7 @@ struct _boxtext {
     struct _boxtext     *box_next;
     t_object            *box_object;
     t_glist             *box_glist;
-    char                *box_utf8;
+    char                *box_utf8;                  /* Unzeroed string UTF-8 formatted. */
     int                 box_utf8SizeInBytes;
     int                 box_selectionStart; 
     int                 box_selectionEnd;
@@ -82,11 +82,11 @@ static int boxtext_typeset (t_boxtext *x,
     int positionY,
     int fontSize,
     char *buffer,
+    int bufferSize,
     int *selectionStart, 
     int *selectionEnd, 
     int *widthInPixels, 
-    int *heightInPixels, 
-    int *indexOfCaret)
+    int *heightInPixels)
 {
     int bufferPosition          = 0;
     int widthInCharacters       = x->box_object->te_width;
@@ -94,7 +94,8 @@ static int boxtext_typeset (t_boxtext *x,
     int fontWidth               = font_getHostFontWidth (fontSize);
     int fontHeight              = font_getHostFontHeight (fontSize);
     int lineLengthInCharacters  = (widthInCharacters ? widthInCharacters : BOX_DEFAULT_LINE);
-    
+    int indexOfCaret            = -1;
+        
     int numberOfLines           = 0;
     int numberOfColumns         = 0;
     int headInBytes             = 0;
@@ -134,11 +135,11 @@ static int boxtext_typeset (t_boxtext *x,
     /* Locate the insertion point. */
     
     if (numberOfLines == (int)(positionY / fontHeight)) {
-        int k = (positionX / fontWidth) + 0.5;
-        *indexOfCaret = headInBytes + u8_offset (head, PD_CLAMP (k, 0, charactersUntilWrap));
+        int k = (positionX + (fontWidth / 2)) / fontWidth;
+        indexOfCaret = headInBytes + u8_offset (head, PD_CLAMP (k, 0, charactersUntilWrap));
     }
     
-    /* Deplace selection according to insertion of new characters. */
+    /* Deplace selection points according to the insertion of new characters. */
     
     if (x->box_selectionStart >= headInBytes) {         
         if (x->box_selectionStart <= headInBytes + bytesUntilWrap + eatCharacter) {
@@ -152,7 +153,9 @@ static int boxtext_typeset (t_boxtext *x,
         }
     }
     
-    /* Append line and move next. */
+    /* Append line and continue next. */
+    
+    PD_ASSERT ((bufferPosition + bytesUntilWrap) < (bufferSize - 1));
     
     strncpy (buffer + bufferPosition, head, bytesUntilWrap);
         
@@ -169,12 +172,13 @@ static int boxtext_typeset (t_boxtext *x,
     //
     }
     
-    if (*indexOfCaret < 0) { *indexOfCaret = bufferPosition; }
+    if (indexOfCaret < 0)  { indexOfCaret = bufferPosition; }
     if (numberOfLines < 1) { numberOfLines = 1; }
     
     if (widthInCharacters) { numberOfColumns = widthInCharacters; } 
     else {
-        while (numberOfColumns < BOX_DEFAULT_WIDTH) { 
+        while (numberOfColumns < BOX_DEFAULT_WIDTH) {
+            PD_ASSERT (bufferPosition < bufferSize);
             buffer[bufferPosition++] = ' ';
             numberOfColumns++;
         }
@@ -182,8 +186,10 @@ static int boxtext_typeset (t_boxtext *x,
     
     *widthInPixels  = (BOX_MARGIN_LEFT + BOX_MARGIN_RIGHT) + (numberOfColumns * fontWidth);
     *heightInPixels = (BOX_MARGIN_TOP + BOX_MARGIN_BOTTOM) + (numberOfLines * fontHeight);
-
-    return bufferPosition;
+    
+    buffer[bufferPosition] = 0;
+    
+    return indexOfCaret;
 }
 
 static int boxtext_send (t_boxtext *x, int action, int positionX, int positionY)
@@ -194,38 +200,38 @@ static int boxtext_send (t_boxtext *x, int action, int positionX, int positionY)
     int heightInPixels      = 0;
     int selectionStart      = 0;
     int selectionEnd        = 0;
-    int indexOfCaret        = -1;
-    
-    char *buffer            = (char *)PD_MEMORY_GET ((2 * x->box_utf8SizeInBytes) + 1);
-    int bufferPosition      = boxtext_typeset (x,
-                                    positionX, 
-                                    positionY,
-                                    fontSize,
-                                    buffer,
-                                    &selectionStart, 
-                                    &selectionEnd, 
-                                    &widthInPixels, 
-                                    &heightInPixels, 
-                                    &indexOfCaret);
+    int bufferSize          = (2 * x->box_utf8SizeInBytes) + 1;
+    char *buffer            = (char *)PD_MEMORY_GET (bufferSize);
+        
+    int indexOfCaret        = boxtext_typeset (x,
+                                positionX, 
+                                positionY,
+                                fontSize,
+                                buffer,
+                                bufferSize,
+                                &selectionStart, 
+                                &selectionEnd, 
+                                &widthInPixels, 
+                                &heightInPixels);
 
     t_glist *view = canvas_getView (x->box_glist);
     
     if (action == BOX_FIRST)
     {
-        sys_vGui("::ui_object::newText .x%lx.c {%s %s text} %f %f {%.*s} %d %s\n",
+        sys_vGui("::ui_object::newText .x%lx.c {%s %s text} %f %f {%s} %d %s\n",
             view,
             x->box_tag,
             boxtext_getTypeOfObject(x)->s_name,
             (double)text_xpix (x->box_object, x->box_glist) + BOX_MARGIN_LEFT, 
             (double)text_ypix (x->box_object, x->box_glist) + BOX_MARGIN_TOP,
-            bufferPosition, buffer, font_getHostFontSize (fontSize),
+            buffer, font_getHostFontSize (fontSize),
             (canvas_isObjectSelected (x->box_glist,
                 &x->box_glist->gl_obj.te_g)? "blue" : "black"));
     }
     else if (action == BOX_UPDATE)
     {
-        sys_vGui("::ui_object::setText .x%lx.c %s {%.*s}\n",
-            view, x->box_tag, bufferPosition, buffer);
+        sys_vGui("::ui_object::setText .x%lx.c %s {%s}\n",
+            view, x->box_tag, buffer);
         if (widthInPixels != x->box_widthInPixels || heightInPixels != x->box_heightInPixels) 
             text_drawborder(x->box_object, x->box_glist, x->box_tag,
                 widthInPixels, heightInPixels, 0);
