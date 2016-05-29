@@ -1060,7 +1060,7 @@ static void text_displace(t_gobj *z, t_glist *glist,
     if (canvas_isMapped(glist))
     {
         t_boxtext *y = boxtext_fetch(glist, x);
-        rtext_displace(y, dx, dy);
+        boxtext_displace(y, dx, dy);
         text_drawborder(x, glist, boxtext_getTag(y),
             boxtext_getWidth(y), boxtext_getHeight(y), 0);
         canvas_updateLinesByObject(glist, x);
@@ -1071,7 +1071,7 @@ static void text_select(t_gobj *z, t_glist *glist, int state)
 {
     t_object *x = (t_object *)z;
     t_boxtext *y = boxtext_fetch(glist, x);
-    rtext_select(y, state);
+    boxtext_select(y, state);
     if (canvas_isMapped(glist) && gobj_isVisible(&x->te_g, glist))
         sys_vGui(".x%lx.c itemconfigure %sR -fill %s\n", glist, 
             boxtext_getTag(y), (state? "blue" : "black"));
@@ -1081,7 +1081,7 @@ static void text_activate(t_gobj *z, t_glist *glist, int state)
 {
     t_object *x = (t_object *)z;
     t_boxtext *y = boxtext_fetch(glist, x);
-    if (z->g_pd != gatom_class) rtext_activate(y, state);
+    if (z->g_pd != gatom_class) boxtext_activate (y, state);
 }
 
 static void text_delete(t_gobj *z, t_glist *glist)
@@ -1102,7 +1102,7 @@ static void text_vis(t_gobj *z, t_glist *glist, int vis)
                 glist_retext(glist, x);
             text_drawborder(x, glist, boxtext_getTag(y),
                 boxtext_getWidth(y), boxtext_getHeight(y), 1);
-            rtext_draw(y);
+            boxtext_draw(y);
         }
     }
     else
@@ -1111,7 +1111,7 @@ static void text_vis(t_gobj *z, t_glist *glist, int vis)
         if (gobj_isVisible(&x->te_g, glist))
         {
             text_eraseborder(x, glist, boxtext_getTag(y));
-            rtext_erase(y);
+            boxtext_erase(y);
         }
     }
 }

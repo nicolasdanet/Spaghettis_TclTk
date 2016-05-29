@@ -371,6 +371,66 @@ void boxtext_getSelectedText (t_boxtext *x, char **p, int *size)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void boxtext_draw (t_boxtext *x)
+{
+    boxtext_send (x, BOX_FIRST, 0, 0);
+}
+
+void boxtext_erase (t_boxtext *x)
+{
+    sys_vGui (".x%lx.c delete %s\n", 
+                    canvas_getView (x->box_glist), 
+                    x->box_tag);
+}
+
+void boxtext_displace (t_boxtext *x, int deltaX, int deltaY)
+{
+    sys_vGui (".x%lx.c move %s %d %d\n", 
+                    canvas_getView (x->box_glist), 
+                    x->box_tag, 
+                    deltaX, 
+                    deltaY);
+}
+
+void boxtext_select (t_boxtext *x, int state)
+{
+    sys_vGui (".x%lx.c itemconfigure %s -fill #%06x\n",
+                    canvas_getView (x->box_glist), 
+                    x->box_tag, 
+                    (state ? COLOR_SELECTED : COLOR_NORMAL));
+}
+
+void boxtext_activate (t_boxtext *x, int state)
+{
+    if (state) {
+    //
+    sys_vGui ("::ui_object::setEditing .x%lx %s 1\n", canvas_getView (x->box_glist), x->box_tag);
+                    
+    x->box_glist->gl_editor->e_selectedText = x;
+    x->box_glist->gl_editor->e_isTextDirty  = 0;
+    
+    x->box_draggedFrom      = 0;
+    x->box_selectionStart   = 0;
+    x->box_selectionEnd     = x->box_stringSizeInBytes;
+    x->box_isActive         = 1;
+    //
+    } else {
+    //
+    sys_vGui ("::ui_object::setEditing .x%lx {} 0\n", canvas_getView (x->box_glist));
+                    
+    if (x->box_glist->gl_editor->e_selectedText == x) { x->box_glist->gl_editor->e_selectedText = NULL; }
+    
+    x->box_isActive = 0;
+    //
+    }
+
+    boxtext_send (x, BOX_UPDATE, 0, 0);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void rtext_retext(t_boxtext *x)
 {
 
@@ -422,58 +482,6 @@ void rtext_retext(t_boxtext *x)
         }
     done:
         x->box_stringSizeInBytes = bufsize;
-    }
-
-    boxtext_send(x, BOX_UPDATE, 0, 0);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void rtext_draw(t_boxtext *x)
-{
-    boxtext_send(x, BOX_FIRST, 0, 0);
-}
-
-void rtext_erase(t_boxtext *x)
-{
-    sys_vGui(".x%lx.c delete %s\n", canvas_getView(x->box_glist), x->box_tag);
-}
-
-void rtext_displace(t_boxtext *x, int dx, int dy)
-{
-    sys_vGui(".x%lx.c move %s %d %d\n", canvas_getView(x->box_glist), 
-        x->box_tag, dx, dy);
-}
-
-void rtext_select(t_boxtext *x, int state)
-{
-    t_glist *glist = x->box_glist;
-    t_glist *canvas = canvas_getView(glist);
-    sys_vGui(".x%lx.c itemconfigure %s -fill %s\n", canvas, 
-        x->box_tag, (state? "blue" : "black"));
-}
-
-void rtext_activate(t_boxtext *x, int state)
-{
-    t_glist *glist = x->box_glist;
-    t_glist *canvas = canvas_getView(glist);
-    if (state)
-    {
-        sys_vGui("::ui_object::setEditing .x%lx %s 1\n", canvas, x->box_tag);
-        glist->gl_editor->e_selectedText = x;
-        glist->gl_editor->e_isTextDirty = 0;
-        x->box_draggedFrom = x->box_selectionStart = 0;
-        x->box_selectionEnd = x->box_stringSizeInBytes;
-        x->box_isActive = 1;
-    }
-    else
-    {
-        sys_vGui("::ui_object::setEditing .x%lx {} 0\n", canvas);
-        if (glist->gl_editor->e_selectedText == x)
-            glist->gl_editor->e_selectedText = 0;
-        x->box_isActive = 0;
     }
 
     boxtext_send(x, BOX_UPDATE, 0, 0);

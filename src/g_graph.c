@@ -687,10 +687,10 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
     }
 
     if (vis && canvas_hasGraphOnParentTitle (x))
-        rtext_draw(boxtext_fetch(parent_glist, &x->gl_obj));
+        boxtext_draw(boxtext_fetch(parent_glist, &x->gl_obj));
     graph_getrect(gr, parent_glist, &x1, &y1, &x2, &y2);
     if (!vis)
-        rtext_erase(boxtext_fetch(parent_glist, &x->gl_obj));
+        boxtext_erase(boxtext_fetch(parent_glist, &x->gl_obj));
 
     sprintf(tag, "graph%lx", (t_int)x);
     if (vis)
@@ -951,7 +951,7 @@ static void graph_select(t_gobj *z, t_glist *glist, int state)
     {
         t_boxtext *y = boxtext_fetch(glist, &x->gl_obj);
         if (canvas_hasGraphOnParentTitle (x))
-            rtext_select(y, state);
+            boxtext_select(y, state);
         sys_vGui(".x%lx.c itemconfigure %sR -fill %s\n", glist, 
         boxtext_getTag(y), (state? "blue" : "black"));
         sys_vGui(".x%lx.c itemconfigure graph%lx -fill %s\n",
