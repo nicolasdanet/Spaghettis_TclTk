@@ -177,7 +177,7 @@ void glist_retext(t_glist *glist, t_object *y)
     {
         t_boxtext *rt = boxtext_fetch(glist, y);
         if (rt)
-            rtext_retext(rt);
+            boxtext_update(rt);
     }
 }
 

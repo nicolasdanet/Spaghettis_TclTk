@@ -580,16 +580,17 @@ t_boxtext       *boxtext_fetch                          (t_glist *glist, t_objec
 char            *boxtext_getTag                         (t_boxtext *x);
 
 void            boxtext_free                            (t_boxtext *x);
+void            boxtext_update                          (t_boxtext *x);
 int             boxtext_getWidth                        (t_boxtext *x);
 int             boxtext_getHeight                       (t_boxtext *x);
 void            boxtext_getText                         (t_boxtext *x, char **p, int *size);
-void            boxtext_getSelectedText                 (t_boxtext *x, char **p, int *size);
+void            boxtext_getSelection                    (t_boxtext *x, char **p, int *size);
 void            boxtext_draw                            (t_boxtext *x);
 void            boxtext_erase                           (t_boxtext *x);
 void            boxtext_displace                        (t_boxtext *x, int deltaX, int deltaY);
 void            boxtext_select                          (t_boxtext *x, int state);
 void            boxtext_activate                        (t_boxtext *x, int state);
-void            rtext_retext        (t_boxtext *x);
+
 void            rtext_key           (t_boxtext *x, int n, t_symbol *s);
 void            rtext_mouse         (t_boxtext *x, int xval, int yval, int flag);
 

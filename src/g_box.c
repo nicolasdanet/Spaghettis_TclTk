@@ -77,6 +77,21 @@ struct _boxtext {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void boxtext_sendTypesetEllipsis (t_boxtext *x)
+{
+    t_object *o = x->box_object;
+    
+    if (o->te_type == TYPE_ATOM && o->te_width && x->box_stringSizeInBytes > o->te_width) {
+    //
+    int i, n = PD_MIN (o->te_width, 3);
+    PD_ASSERT (o->te_width > 0);
+    x->box_string = PD_MEMORY_RESIZE (x->box_string, x->box_stringSizeInBytes, n);
+    x->box_stringSizeInBytes = n;
+    for (i = 0; i < x->box_stringSizeInBytes; i++) { x->box_string[i] = '.'; }
+    //
+    }
+}
+
 static int boxtext_sendTypeset (t_boxtext *x,
     int positionX, 
     int positionY,
@@ -88,6 +103,10 @@ static int boxtext_sendTypeset (t_boxtext *x,
     int *widthInPixels, 
     int *heightInPixels)
 {
+    boxtext_sendTypesetEllipsis (x);
+    
+    {
+    //
     int bufferPosition          = 0;
     int widthInCharacters       = x->box_object->te_width;
     int numberOfCharacters      = u8_charnum (x->box_string, x->box_stringSizeInBytes);
@@ -189,6 +208,8 @@ static int boxtext_sendTypeset (t_boxtext *x,
     buffer[bufferPosition] = 0;
     
     return indexOfMouse;
+    //
+    }
 }
 
 static int boxtext_send (t_boxtext *x, int action, int positionX, int positionY)
@@ -334,6 +355,15 @@ t_boxtext *boxtext_fetch (t_glist *glist, t_object *object)
     return x;
 }
 
+void boxtext_update (t_boxtext *x)
+{
+    PD_MEMORY_FREE (x->box_string);
+    
+    buffer_toStringUnzeroed (x->box_object->te_buffer, &x->box_string, &x->box_stringSizeInBytes);
+    
+    boxtext_send (x, BOX_UPDATE, 0, 0);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -361,7 +391,7 @@ void boxtext_getText (t_boxtext *x, char **p, int *size)
     *size = x->box_stringSizeInBytes;
 }
 
-void boxtext_getSelectedText (t_boxtext *x, char **p, int *size)
+void boxtext_getSelection (t_boxtext *x, char **p, int *size)
 {
     *p    = x->box_string + x->box_selectionStart;
     *size = x->box_selectionEnd - x->box_selectionStart;
@@ -425,66 +455,6 @@ void boxtext_activate (t_boxtext *x, int state)
     }
 
     boxtext_send (x, BOX_UPDATE, 0, 0);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void rtext_retext(t_boxtext *x)
-{
-
-    t_object *text = x->box_object;
-    PD_MEMORY_FREE(x->box_string);
-    buffer_toStringUnzeroed(text->te_buffer, &x->box_string, &x->box_stringSizeInBytes);
-        /* special case: for number boxes, try to pare the number down
-        to the specified width of the box. */
-    if (text->te_width > 0 && text->te_type == TYPE_ATOM &&
-        x->box_stringSizeInBytes > text->te_width)
-    {
-        t_atom *atomp = buffer_atoms(text->te_buffer);
-        int natom = buffer_size(text->te_buffer);
-        int bufsize = x->box_stringSizeInBytes;
-        if (natom == 1 && atomp->a_type == A_FLOAT)
-        {
-                /* try to reduce size by dropping decimal digits */
-            int wantreduce = bufsize - text->te_width;
-            char *decimal = 0, *nextchar, *ebuf = x->box_string + bufsize,
-                *s1, *s2;
-            int ndecimals;
-            for (decimal = x->box_string; decimal < ebuf; decimal++)
-                if (*decimal == '.')
-                    break;
-            if (decimal >= ebuf)
-                goto giveup;
-            for (nextchar = decimal + 1; nextchar < ebuf; nextchar++)
-                if (*nextchar < '0' || *nextchar > '9')
-                    break;
-            if (nextchar - decimal - 1 < wantreduce)
-                goto giveup;
-            for (s1 = nextchar - wantreduce, s2 = s1 + wantreduce;
-                s2 < ebuf; s1++, s2++)
-                    *s1 = *s2;
-            x->box_string = PD_MEMORY_RESIZE(x->box_string, bufsize, text->te_width);
-            bufsize = text->te_width;
-            goto done;
-        giveup:
-                /* give up and bash it to "+" or "-" */
-            x->box_string[0] = (atomp->a_w.w_float < 0 ? '-' : '+');
-            x->box_string = PD_MEMORY_RESIZE(x->box_string, bufsize, 1);
-            bufsize = 1;
-        }
-        else if (bufsize > text->te_width)
-        {
-            x->box_string[text->te_width - 1] = '>';
-            x->box_string = PD_MEMORY_RESIZE(x->box_string, bufsize, text->te_width);
-            bufsize = text->te_width;
-        }
-    done:
-        x->box_stringSizeInBytes = bufsize;
-    }
-
-    boxtext_send(x, BOX_UPDATE, 0, 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
