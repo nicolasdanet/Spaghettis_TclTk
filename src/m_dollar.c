@@ -52,7 +52,7 @@ static int dollar_getDollarZero (void)
     }
 }
 
-static int dollar_expand (char *s, char *buf, int size, int argc, t_atom *argv)
+static int dollar_expand (char *s, char *buffer, int size, int argc, t_atom *argv)
 {
     int n = (int)atol (s);      /* Note that atol return zero for an invalid number. */
     char *ptr = s;
@@ -60,7 +60,7 @@ static int dollar_expand (char *s, char *buf, int size, int argc, t_atom *argv)
     int length = 0;
     t_error err = PD_ERROR_NONE;
     
-    *buf = 0;
+    *buffer = 0;
     
     c = *ptr;
     
@@ -74,17 +74,17 @@ static int dollar_expand (char *s, char *buf, int size, int argc, t_atom *argv)
     if (n < 0 || n > argc) { return 0; }
 
     if (ptr == s) {                                       
-        err = string_sprintf (buf, size, "$");                  /* Unsubstituted dollars are preserved. */
+        err = string_sprintf (buffer, size, "$");                  /* Unsubstituted dollars are preserved. */
         return 0;
 
     } else if (n == 0) {                                    
         t_atom a;
         SET_FLOAT (&a, dollar_getDollarZero());
-        err = atom_toString (&a, buf, size);
+        err = atom_toString (&a, buffer, size);
         PD_ASSERT (length == 1);
         
     } else {                                                
-        err = atom_toString (argv + (n - 1), buf, size);
+        err = atom_toString (argv + (n - 1), buffer, size);
     }
     
     return (err ? -1 : length);

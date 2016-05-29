@@ -39,8 +39,8 @@ struct _boxtext {
     struct _boxtext     *box_next;
     t_object            *box_object;
     t_glist             *box_glist;
-    char                *box_utf8;                  /* Unzeroed string UTF-8 formatted. */
-    int                 box_utf8SizeInBytes;
+    char                *box_string;                /* Unzeroed string UTF-8 formatted. */
+    int                 box_stringSizeInBytes;
     int                 box_selectionStart; 
     int                 box_selectionEnd;
     int                 box_draggedFrom;
@@ -90,7 +90,7 @@ static int boxtext_typeset (t_boxtext *x,
 {
     int bufferPosition          = 0;
     int widthInCharacters       = x->box_object->te_width;
-    int numberOfCharacters      = u8_charnum (x->box_utf8, x->box_utf8SizeInBytes);
+    int numberOfCharacters      = u8_charnum (x->box_string, x->box_stringSizeInBytes);
     int fontWidth               = font_getHostFontWidth (fontSize);
     int fontHeight              = font_getHostFontHeight (fontSize);
     int lineLengthInCharacters  = (widthInCharacters ? widthInCharacters : BOX_DEFAULT_LINE);
@@ -103,7 +103,7 @@ static int boxtext_typeset (t_boxtext *x,
         
     while (charactersThatRemains > 0) { 
     //
-    char *head = x->box_utf8 + headInBytes;
+    char *head = x->box_string + headInBytes;
 
     int charactersToConsider    = PD_MIN (lineLengthInCharacters, charactersThatRemains);
     int bytesToConsider         = u8_offset (head, charactersToConsider);
@@ -127,7 +127,7 @@ static int boxtext_typeset (t_boxtext *x,
             
         } else {
             charactersUntilWrap = charactersThatRemains;
-            bytesUntilWrap = x->box_utf8SizeInBytes - headInBytes;
+            bytesUntilWrap = x->box_stringSizeInBytes - headInBytes;
             eatCharacter = 0;
         }
     }
@@ -165,8 +165,8 @@ static int boxtext_typeset (t_boxtext *x,
     charactersThatRemains   -= charactersUntilWrap;
     charactersThatRemains   -= eatCharacter;
     
-    if (headInBytes < x->box_utf8SizeInBytes)  { buffer[bufferPosition++] = '\n'; }
-    if (charactersUntilWrap > numberOfColumns) { numberOfColumns = charactersUntilWrap; }
+    if (headInBytes < x->box_stringSizeInBytes) { buffer[bufferPosition++] = '\n'; }
+    if (charactersUntilWrap > numberOfColumns)  { numberOfColumns = charactersUntilWrap; }
         
     numberOfLines++;
     //
@@ -200,7 +200,7 @@ static int boxtext_send (t_boxtext *x, int action, int positionX, int positionY)
     int heightInPixels      = 0;
     int selectionStart      = 0;
     int selectionEnd        = 0;
-    int bufferSize          = PD_MAX (BOX_DEFAULT_WIDTH, (2 * x->box_utf8SizeInBytes)) + 1;
+    int bufferSize          = PD_MAX (BOX_DEFAULT_WIDTH, (2 * x->box_stringSizeInBytes)) + 1;
     char *buffer            = (char *)PD_MEMORY_GET (bufferSize);
         
     int indexOfCaret        = boxtext_typeset (x,
@@ -240,16 +240,16 @@ static int boxtext_send (t_boxtext *x, int action, int positionX, int positionY)
             if (selectionEnd > selectionStart)
             {
                 sys_vGui(".x%lx.c select from %s %d\n", view, 
-                    x->box_tag, u8_charnum(x->box_utf8, selectionStart));
+                    x->box_tag, u8_charnum(x->box_string, selectionStart));
                 sys_vGui(".x%lx.c select to %s %d\n", view, 
-                    x->box_tag, u8_charnum(x->box_utf8, selectionEnd) - 1);
+                    x->box_tag, u8_charnum(x->box_string, selectionEnd) - 1);
                 sys_vGui(".x%lx.c focus \"\"\n", view);        
             }
             else
             {
                 sys_vGui(".x%lx.c select clear\n", view);
                 sys_vGui(".x%lx.c icursor %s %d\n", view, x->box_tag,
-                    u8_charnum(x->box_utf8, selectionStart));
+                    u8_charnum(x->box_string, selectionStart));
                 sys_vGui(".x%lx.c focus %s\n", view, x->box_tag);        
             }
         }
@@ -274,7 +274,7 @@ t_boxtext *boxtext_new (t_glist *glist, t_object *object)
     x->box_object = object;
     x->box_glist  = glist;
 
-    buffer_toStringUnzeroed (object->te_buffer, &x->box_utf8, &x->box_utf8SizeInBytes);
+    buffer_toStringUnzeroed (object->te_buffer, &x->box_string, &x->box_stringSizeInBytes);
     
     { 
         t_glist *view = canvas_getView (glist);
@@ -303,7 +303,7 @@ void boxtext_free (t_boxtext *x)
         }
     }
 
-    PD_MEMORY_FREE (x->box_utf8);
+    PD_MEMORY_FREE (x->box_string);
     PD_MEMORY_FREE (x);
 }
 
@@ -360,13 +360,13 @@ int boxtext_getHeight (t_boxtext *x)
 
 void boxtext_getText (t_boxtext *x, char **p, int *size)
 {
-    *p    = x->box_utf8;
-    *size = x->box_utf8SizeInBytes;
+    *p    = x->box_string;
+    *size = x->box_stringSizeInBytes;
 }
 
 void boxtext_getSelectedText (t_boxtext *x, char **p, int *size)
 {
-    *p    = x->box_utf8 + x->box_selectionStart;
+    *p    = x->box_string + x->box_selectionStart;
     *size = x->box_selectionEnd - x->box_selectionStart;
 }
 
@@ -378,24 +378,24 @@ void rtext_retext(t_boxtext *x)
 {
 
     t_object *text = x->box_object;
-    PD_MEMORY_FREE(x->box_utf8);
-    buffer_toStringUnzeroed(text->te_buffer, &x->box_utf8, &x->box_utf8SizeInBytes);
+    PD_MEMORY_FREE(x->box_string);
+    buffer_toStringUnzeroed(text->te_buffer, &x->box_string, &x->box_stringSizeInBytes);
         /* special case: for number boxes, try to pare the number down
         to the specified width of the box. */
     if (text->te_width > 0 && text->te_type == TYPE_ATOM &&
-        x->box_utf8SizeInBytes > text->te_width)
+        x->box_stringSizeInBytes > text->te_width)
     {
         t_atom *atomp = buffer_atoms(text->te_buffer);
         int natom = buffer_size(text->te_buffer);
-        int bufsize = x->box_utf8SizeInBytes;
+        int bufsize = x->box_stringSizeInBytes;
         if (natom == 1 && atomp->a_type == A_FLOAT)
         {
                 /* try to reduce size by dropping decimal digits */
             int wantreduce = bufsize - text->te_width;
-            char *decimal = 0, *nextchar, *ebuf = x->box_utf8 + bufsize,
+            char *decimal = 0, *nextchar, *ebuf = x->box_string + bufsize,
                 *s1, *s2;
             int ndecimals;
-            for (decimal = x->box_utf8; decimal < ebuf; decimal++)
+            for (decimal = x->box_string; decimal < ebuf; decimal++)
                 if (*decimal == '.')
                     break;
             if (decimal >= ebuf)
@@ -408,23 +408,23 @@ void rtext_retext(t_boxtext *x)
             for (s1 = nextchar - wantreduce, s2 = s1 + wantreduce;
                 s2 < ebuf; s1++, s2++)
                     *s1 = *s2;
-            x->box_utf8 = PD_MEMORY_RESIZE(x->box_utf8, bufsize, text->te_width);
+            x->box_string = PD_MEMORY_RESIZE(x->box_string, bufsize, text->te_width);
             bufsize = text->te_width;
             goto done;
         giveup:
                 /* give up and bash it to "+" or "-" */
-            x->box_utf8[0] = (atomp->a_w.w_float < 0 ? '-' : '+');
-            x->box_utf8 = PD_MEMORY_RESIZE(x->box_utf8, bufsize, 1);
+            x->box_string[0] = (atomp->a_w.w_float < 0 ? '-' : '+');
+            x->box_string = PD_MEMORY_RESIZE(x->box_string, bufsize, 1);
             bufsize = 1;
         }
         else if (bufsize > text->te_width)
         {
-            x->box_utf8[text->te_width - 1] = '>';
-            x->box_utf8 = PD_MEMORY_RESIZE(x->box_utf8, bufsize, text->te_width);
+            x->box_string[text->te_width - 1] = '>';
+            x->box_string = PD_MEMORY_RESIZE(x->box_string, bufsize, text->te_width);
             bufsize = text->te_width;
         }
     done:
-        x->box_utf8SizeInBytes = bufsize;
+        x->box_stringSizeInBytes = bufsize;
     }
 
     boxtext_send(x, BOX_UPDATE, 0, 0);
@@ -468,7 +468,7 @@ void rtext_activate(t_boxtext *x, int state)
         glist->gl_editor->e_selectedText = x;
         glist->gl_editor->e_isTextDirty = 0;
         x->box_draggedFrom = x->box_selectionStart = 0;
-        x->box_selectionEnd = x->box_utf8SizeInBytes;
+        x->box_selectionEnd = x->box_stringSizeInBytes;
         x->box_isActive = 1;
     }
     else
@@ -498,25 +498,25 @@ void rtext_key(t_boxtext *x, int keynum, t_symbol *keysym)
         {
                     /* LATER delete the box if all text is selected...
                     this causes reentrancy problems now. */
-            /* if ((!x->box_selectionStart) && (x->box_selectionEnd == x->box_utf8SizeInBytes))
+            /* if ((!x->box_selectionStart) && (x->box_selectionEnd == x->box_stringSizeInBytes))
             {
                 ....
             } */
             if (x->box_selectionStart && (x->box_selectionStart == x->box_selectionEnd))
-                u8_dec(x->box_utf8, &x->box_selectionStart);
+                u8_dec(x->box_string, &x->box_selectionStart);
         }
         else if (n == 127)      /* delete */
         {
-            if (x->box_selectionEnd < x->box_utf8SizeInBytes && (x->box_selectionStart == x->box_selectionEnd))
-                u8_inc(x->box_utf8, &x->box_selectionEnd);
+            if (x->box_selectionEnd < x->box_stringSizeInBytes && (x->box_selectionStart == x->box_selectionEnd))
+                u8_inc(x->box_string, &x->box_selectionEnd);
         }
         
         ndel = x->box_selectionEnd - x->box_selectionStart;
-        for (i = x->box_selectionEnd; i < x->box_utf8SizeInBytes; i++)
-            x->box_utf8[i- ndel] = x->box_utf8[i];
-        newsize = x->box_utf8SizeInBytes - ndel;
-        x->box_utf8 = PD_MEMORY_RESIZE(x->box_utf8, x->box_utf8SizeInBytes, newsize);
-        x->box_utf8SizeInBytes = newsize;
+        for (i = x->box_selectionEnd; i < x->box_stringSizeInBytes; i++)
+            x->box_string[i- ndel] = x->box_string[i];
+        newsize = x->box_stringSizeInBytes - ndel;
+        x->box_string = PD_MEMORY_RESIZE(x->box_string, x->box_stringSizeInBytes, newsize);
+        x->box_stringSizeInBytes = newsize;
 
 /* at Guenter's suggestion, use 'n>31' to test wither a character might
 be printable in whatever 8-bit character set we find ourselves. */
@@ -529,25 +529,25 @@ be printable in whatever 8-bit character set we find ourselves. */
 */
         if (n == '\n' || (n > 31 && n < 127))
         {
-            newsize = x->box_utf8SizeInBytes+1;
-            x->box_utf8 = PD_MEMORY_RESIZE(x->box_utf8, x->box_utf8SizeInBytes, newsize);
-            for (i = x->box_utf8SizeInBytes; i > x->box_selectionStart; i--)
-                x->box_utf8[i] = x->box_utf8[i-1];
-            x->box_utf8[x->box_selectionStart] = n;
-            x->box_utf8SizeInBytes = newsize;
+            newsize = x->box_stringSizeInBytes+1;
+            x->box_string = PD_MEMORY_RESIZE(x->box_string, x->box_stringSizeInBytes, newsize);
+            for (i = x->box_stringSizeInBytes; i > x->box_selectionStart; i--)
+                x->box_string[i] = x->box_string[i-1];
+            x->box_string[x->box_selectionStart] = n;
+            x->box_stringSizeInBytes = newsize;
             x->box_selectionStart = x->box_selectionStart + 1;
         }
         /*--moo: check for unicode codepoints beyond 7-bit ASCII --*/
         else if (n > 127)
         {
             int ch_nbytes = u8_wc_nbytes(n);
-            newsize = x->box_utf8SizeInBytes + ch_nbytes;
-            x->box_utf8 = PD_MEMORY_RESIZE(x->box_utf8, x->box_utf8SizeInBytes, newsize);
+            newsize = x->box_stringSizeInBytes + ch_nbytes;
+            x->box_string = PD_MEMORY_RESIZE(x->box_string, x->box_stringSizeInBytes, newsize);
             for (i = newsize-1; i > x->box_selectionStart; i--)
-                x->box_utf8[i] = x->box_utf8[i-ch_nbytes];
-            x->box_utf8SizeInBytes = newsize;
+                x->box_string[i] = x->box_string[i-ch_nbytes];
+            x->box_stringSizeInBytes = newsize;
             /*-- moo: assume canvas_key() has encoded keysym as UTF-8 */
-            strncpy(x->box_utf8+x->box_selectionStart, keysym->s_name, ch_nbytes);
+            strncpy(x->box_string+x->box_selectionStart, keysym->s_name, ch_nbytes);
             x->box_selectionStart = x->box_selectionStart + ch_nbytes;
         }
         x->box_selectionEnd = x->box_selectionStart;
@@ -555,9 +555,9 @@ be printable in whatever 8-bit character set we find ourselves. */
     }
     else if (!strcmp(keysym->s_name, "Right"))
     {
-        if (x->box_selectionEnd == x->box_selectionStart && x->box_selectionStart < x->box_utf8SizeInBytes)
+        if (x->box_selectionEnd == x->box_selectionStart && x->box_selectionStart < x->box_stringSizeInBytes)
         {
-            u8_inc(x->box_utf8, &x->box_selectionStart);
+            u8_inc(x->box_string, &x->box_selectionStart);
             x->box_selectionEnd = x->box_selectionStart;
         }
         else
@@ -567,7 +567,7 @@ be printable in whatever 8-bit character set we find ourselves. */
     {
         if (x->box_selectionEnd == x->box_selectionStart && x->box_selectionStart > 0)
         {
-            u8_dec(x->box_utf8, &x->box_selectionStart);
+            u8_dec(x->box_string, &x->box_selectionStart);
             x->box_selectionEnd = x->box_selectionStart;
         }
         else
@@ -577,18 +577,18 @@ be printable in whatever 8-bit character set we find ourselves. */
     else if (!strcmp(keysym->s_name, "Up"))
     {
         if (x->box_selectionStart)
-            u8_dec(x->box_utf8, &x->box_selectionStart);
-        while (x->box_selectionStart > 0 && x->box_utf8[x->box_selectionStart] != '\n')
-            u8_dec(x->box_utf8, &x->box_selectionStart);
+            u8_dec(x->box_string, &x->box_selectionStart);
+        while (x->box_selectionStart > 0 && x->box_string[x->box_selectionStart] != '\n')
+            u8_dec(x->box_string, &x->box_selectionStart);
         x->box_selectionEnd = x->box_selectionStart;
     }
     else if (!strcmp(keysym->s_name, "Down"))
     {
-        while (x->box_selectionEnd < x->box_utf8SizeInBytes &&
-            x->box_utf8[x->box_selectionEnd] != '\n')
-            u8_inc(x->box_utf8, &x->box_selectionEnd);
-        if (x->box_selectionEnd < x->box_utf8SizeInBytes)
-            u8_inc(x->box_utf8, &x->box_selectionEnd);
+        while (x->box_selectionEnd < x->box_stringSizeInBytes &&
+            x->box_string[x->box_selectionEnd] != '\n')
+            u8_inc(x->box_string, &x->box_selectionEnd);
+        if (x->box_selectionEnd < x->box_stringSizeInBytes)
+            u8_inc(x->box_string, &x->box_selectionEnd);
         x->box_selectionStart = x->box_selectionEnd;
     }
 
@@ -607,31 +607,31 @@ void rtext_mouse(t_boxtext *x, int xval, int yval, int flag)
         int whereseparator, newseparator;
         x->box_draggedFrom = -1;
         whereseparator = 0;
-        if ((newseparator = string_indexOfFirstOccurrenceFrom(x->box_utf8, ' ', indx)) > whereseparator)
+        if ((newseparator = string_indexOfFirstOccurrenceFrom(x->box_string, ' ', indx)) > whereseparator)
             whereseparator = newseparator+1;
-        if ((newseparator = string_indexOfFirstOccurrenceFrom(x->box_utf8, '\n', indx)) > whereseparator)
+        if ((newseparator = string_indexOfFirstOccurrenceFrom(x->box_string, '\n', indx)) > whereseparator)
             whereseparator = newseparator+1;
-        if ((newseparator = string_indexOfFirstOccurrenceFrom(x->box_utf8, ';', indx)) > whereseparator)
+        if ((newseparator = string_indexOfFirstOccurrenceFrom(x->box_string, ';', indx)) > whereseparator)
             whereseparator = newseparator+1;
-        if ((newseparator = string_indexOfFirstOccurrenceFrom(x->box_utf8, ',', indx)) > whereseparator)
+        if ((newseparator = string_indexOfFirstOccurrenceFrom(x->box_string, ',', indx)) > whereseparator)
             whereseparator = newseparator+1;
         x->box_selectionStart = whereseparator;
         
-        whereseparator = x->box_utf8SizeInBytes - indx;
+        whereseparator = x->box_stringSizeInBytes - indx;
         if ((newseparator =
-            string_indexOfFirstOccurrenceUntil(x->box_utf8+indx, ' ', x->box_utf8SizeInBytes - indx)) >= 0 &&
+            string_indexOfFirstOccurrenceUntil(x->box_string+indx, ' ', x->box_stringSizeInBytes - indx)) >= 0 &&
                 newseparator < whereseparator)
                     whereseparator = newseparator;
         if ((newseparator =
-            string_indexOfFirstOccurrenceUntil(x->box_utf8+indx, '\n', x->box_utf8SizeInBytes - indx)) >= 0 &&
+            string_indexOfFirstOccurrenceUntil(x->box_string+indx, '\n', x->box_stringSizeInBytes - indx)) >= 0 &&
                 newseparator < whereseparator)
                     whereseparator = newseparator;
         if ((newseparator =
-            string_indexOfFirstOccurrenceUntil(x->box_utf8+indx, ';', x->box_utf8SizeInBytes - indx)) >= 0 &&
+            string_indexOfFirstOccurrenceUntil(x->box_string+indx, ';', x->box_stringSizeInBytes - indx)) >= 0 &&
                 newseparator < whereseparator)
                     whereseparator = newseparator;
         if ((newseparator =
-            string_indexOfFirstOccurrenceUntil(x->box_utf8+indx, ',', x->box_utf8SizeInBytes - indx)) >= 0 &&
+            string_indexOfFirstOccurrenceUntil(x->box_string+indx, ',', x->box_stringSizeInBytes - indx)) >= 0 &&
                 newseparator < whereseparator)
                     whereseparator = newseparator;
         x->box_selectionEnd = indx + whereseparator;

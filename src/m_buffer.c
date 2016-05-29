@@ -283,9 +283,9 @@ void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int preallocate
     else if (*text == ',') { SET_COMMA (a);     text++; }
     else {
         
-        char buf[PD_STRING + 1] = { 0 };
-        char *p = buf;
-        char *pBound = buf + PD_STRING;
+        char buffer[PD_STRING + 1] = { 0 };
+        char *p = buffer;
+        char *pBound = buffer + PD_STRING;
         
         int floatState = 0;
         int slash = 0;
@@ -309,16 +309,16 @@ void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int preallocate
         *p = 0;
 
         if (buffer_isValidState (floatState)) {
-            SET_FLOAT (a, atof (buf));
+            SET_FLOAT (a, atof (buffer));
                         
         } else if (dollar) {
-            if (dollar_isDollarNumber (buf)) { SET_DOLLAR (a, atoi (buf + 1)); }
+            if (dollar_isDollarNumber (buffer)) { SET_DOLLAR (a, atoi (buffer + 1)); }
             else { 
-                SET_DOLLARSYMBOL (a, gensym (buf));
+                SET_DOLLARSYMBOL (a, gensym (buffer));
             }
             
         } else {
-            SET_SYMBOL (a, gensym (buf));
+            SET_SYMBOL (a, gensym (buffer));
         }
     }
 
@@ -347,7 +347,7 @@ void buffer_withStringUnzeroed (t_buffer *x, char *s, int size)
 
 void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)
 {
-    char *buf = (char *)PD_MEMORY_GET (0);
+    char *buffer = (char *)PD_MEMORY_GET (0);
     int i, length = 0;
 
     for (i = 0; i < x->b_size; i++) {
@@ -361,42 +361,46 @@ void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)
     
     if (IS_SEMICOLON (a) || IS_COMMA (a)) {
     //
-    if (length && buf[length - 1] == ' ') { buf = PD_MEMORY_RESIZE (buf, length, length - 1); length--; }
+    if (length && buffer[length - 1] == ' ') { 
+        buffer = PD_MEMORY_RESIZE (buffer, length, length - 1); length--; 
+    }
     //
     }
     
     err = atom_toString (a, t, PD_STRING); PD_ASSERT (!err);
     n = strlen (t) + 1;
-    buf = PD_MEMORY_RESIZE (buf, length, length + n);
-    strcpy (buf + length, t);
+    buffer = PD_MEMORY_RESIZE (buffer, length, length + n);
+    strcpy (buffer + length, t);
     length += n;
     
-    if (IS_SEMICOLON (a)) { buf[length - 1] = '\n'; }
+    if (IS_SEMICOLON (a)) { buffer[length - 1] = '\n'; }
     else { 
-        buf[length - 1] = ' ';
+        buffer[length - 1] = ' ';
     }
     //
     }
     
     /* Remove ending whitespace. */
     
-    if (length && buf[length - 1] == ' ') { buf = PD_MEMORY_RESIZE (buf, length, length - 1); length--; }
+    if (length && buffer[length - 1] == ' ') { 
+        buffer = PD_MEMORY_RESIZE (buffer, length, length - 1); length--; 
+    }
     
-    *s = buf;
+    *s = buffer;
     *size = length;
 }
 
 void buffer_toString (t_buffer *x, char **s, int *size)
 {
-    char *buf = NULL;
+    char *buffer = NULL;
     int n, length = 0;
     
-    buffer_toStringUnzeroed (x, &buf, &length);
+    buffer_toStringUnzeroed (x, &buffer, &length);
     n = length + 1; 
-    buf = PD_MEMORY_RESIZE (buf, length, n); 
-    buf[n - 1] = 0;
+    buffer = PD_MEMORY_RESIZE (buffer, length, n); 
+    buffer[n - 1] = 0;
     
-    *s = buf; 
+    *s = buffer; 
     *size = n;
 }
 

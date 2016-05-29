@@ -766,7 +766,7 @@ PD_DLL void     dsp_add_zero        (t_sample *out, int n);
 
 PD_DLL void     dsp_add             (t_perform f, int n, ...);
 PD_DLL void     dsp_addv            (t_perform f, int n, t_int *vec);
-PD_DLL void     pd_fft              (t_float *buf, int npoints, int inverse);
+PD_DLL void     pd_fft              (t_float *buffer, int npoints, int inverse);
 PD_DLL int      ilog2               (int n);
 
 PD_DLL void     mayer_fht           (t_sample *fz, int n);

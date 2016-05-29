@@ -19,15 +19,15 @@
 
 void post (const char *fmt, ...)
 {
-    int t;
-    char buf[PD_STRING] = { 0 };
+    int k;
+    char t[PD_STRING] = { 0 };
     va_list ap;
     
     va_start (ap, fmt);
-    t = vsnprintf (buf, PD_STRING, fmt, ap);
+    k = vsnprintf (t, PD_STRING, fmt, ap);
     va_end (ap);
     
-    if (t >= 0 && t < PD_STRING) { sys_vGui ("::ui_console::post {%s}\n", buf); }   // --
+    if (k >= 0 && k < PD_STRING) { sys_vGui ("::ui_console::post {%s}\n", t); }   // --
     else {
         post_error (PD_TRANSLATE ("console: too many characters per line"));   // --
     }
@@ -35,17 +35,17 @@ void post (const char *fmt, ...)
 
 void post_error (const char *fmt, ...)
 {
-    int t;
-    char buf[PD_STRING] = { 0 };
+    int k;
+    char t[PD_STRING] = { 0 };
     va_list ap;
     
     va_start (ap, fmt);
-    t = vsnprintf (buf, PD_STRING, fmt, ap);
+    k = vsnprintf (t, PD_STRING, fmt, ap);
     va_end (ap);
     
-    PD_ASSERT (t >= 0 && t < PD_STRING);
+    PD_ASSERT (k >= 0 && k < PD_STRING);
 
-    sys_vGui ("::ui_console::error {%s}\n", buf);    // --
+    sys_vGui ("::ui_console::error {%s}\n", t);    // --
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -56,18 +56,18 @@ void post_error (const char *fmt, ...)
 
 void post_log (const char *fmt, ...)
 {
-    int t;
-    char buf[PD_STRING] = { 0 };
+    int k;
+    char t[PD_STRING] = { 0 };
     va_list ap;
     
     va_start (ap, fmt);
-    t = vsnprintf (buf, PD_STRING, fmt, ap);
+    k = vsnprintf (t, PD_STRING, fmt, ap);
     va_end (ap);
     
-    if (t >= 0 && t < PD_STRING) {
-        if (logger_isRunning()) { logger_appendStringNative (buf); }
+    if (k >= 0 && k < PD_STRING) {
+        if (logger_isRunning()) { logger_appendStringNative (t); }
         else {
-            post_syslog (buf);
+            post_syslog (t);
         }
     }
 }
