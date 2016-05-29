@@ -29,8 +29,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IEM_COLOR_NORMAL                0x000000        // Black.
-#define IEM_COLOR_SELECTED              0x0000ff        // Blue.
 #define IEM_COLOR_MASK                  0xffffff
 #define IEM_COLOR_BACKGROUND_DARK       0xcccccc        // Grey.
 #define IEM_COLOR_BACKGROUND_LIGHT      0xffffff        // White.

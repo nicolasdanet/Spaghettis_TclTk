@@ -282,14 +282,14 @@ void radio_drawSelect (t_radio *x, t_glist *glist)
                 canvas,
                 x,
                 i,
-                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : IEM_COLOR_NORMAL);
+                x->x_gui.iem_isSelected ? COLOR_SELECTED : COLOR_NORMAL);
     //
     }
 
     sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%06x\n",
                 canvas,
                 x, 
-                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel);
+                x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel);
 }
 
 void radio_drawErase (t_radio *x, t_glist *glist)
@@ -342,7 +342,7 @@ void radio_drawConfig (t_radio *x, t_glist *glist)
                 canvas, 
                 x, 
                 x->x_gui.iem_fontSize,
-                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel,
+                x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel,
                 (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "");
 }
 

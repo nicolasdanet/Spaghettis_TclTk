@@ -252,9 +252,9 @@ t_glist *canvas_addGraph (t_glist *glist,
     x->gl_valueUp               = valueUp;
     x->gl_valueDown             = valueDown;
     x->gl_windowTopLeftX        = 0;
-    x->gl_windowTopLeftY        = CANVAS_WINDOW_HEADER;
-    x->gl_windowBottomRightX    = CANVAS_WINDOW_DEFAULT_WIDTH;
-    x->gl_windowBottomRightY    = CANVAS_WINDOW_DEFAULT_HEIGHT + CANVAS_WINDOW_HEADER;
+    x->gl_windowTopLeftY        = WINDOW_HEADER;
+    x->gl_windowBottomRightX    = WINDOW_WIDTH;
+    x->gl_windowBottomRightY    = WINDOW_HEIGHT + WINDOW_HEADER;
     x->gl_fontSize              = fontSize;
     x->gl_isGraphOnParent       = 1;
     x->gl_hasRectangle          = 0;
@@ -642,7 +642,7 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
             int i = t->tr_srcIndexOfOutlet;
             int j = t->tr_srcNumberOfOutlets;
         
-            t->tr_lineStartX = t->tr_srcTopLeftX + INLETS_MIDDLE (w, i, j);
+            t->tr_lineStartX = t->tr_srcTopLeftX + INLET_MIDDLE (w, i, j);
             t->tr_lineStartY = t->tr_srcBottomRightY;
         }
         {
@@ -650,7 +650,7 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
             int i = t->tr_destIndexOfInlet;
             int j = t->tr_destNumberOfInlets;
         
-            t->tr_lineEndX = t->tr_destTopLeftX + INLETS_MIDDLE (w, i, j);
+            t->tr_lineEndX = t->tr_destTopLeftX + INLET_MIDDLE (w, i, j);
             t->tr_lineEndY = t->tr_destTopLeftY;
         }
         

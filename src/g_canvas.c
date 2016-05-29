@@ -86,9 +86,9 @@ static void *subpatch_new (t_symbol *s)
     if (s == &s_) { s = sym_subpatch; }
     
     SET_FLOAT  (a + 0, 0);
-    SET_FLOAT  (a + 1, CANVAS_WINDOW_HEADER);
-    SET_FLOAT  (a + 2, CANVAS_WINDOW_DEFAULT_WIDTH);
-    SET_FLOAT  (a + 3, CANVAS_WINDOW_DEFAULT_HEIGHT);
+    SET_FLOAT  (a + 1, WINDOW_HEADER);
+    SET_FLOAT  (a + 2, WINDOW_WIDTH);
+    SET_FLOAT  (a + 3, WINDOW_HEIGHT);
     SET_SYMBOL (a + 4, s);
     SET_FLOAT  (a + 5, 1);
     
@@ -613,10 +613,10 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     t_symbol *name  = &s_;
     
     int visible     = 0;
-    int width       = CANVAS_WINDOW_DEFAULT_WIDTH;
-    int height      = CANVAS_WINDOW_DEFAULT_HEIGHT;
+    int width       = WINDOW_WIDTH;
+    int height      = WINDOW_HEIGHT;
     int topLeftX    = 0;
-    int topLeftY    = CANVAS_WINDOW_HEADER;
+    int topLeftY    = WINDOW_HEADER;
     int fontSize    = (owner ? owner->gl_fontSize : font_getDefaultFontSize());
     
     /* Top. */
@@ -673,7 +673,7 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     }
 
     topLeftX = PD_MAX (topLeftX, 0);
-    topLeftY = PD_MAX (topLeftY, CANVAS_WINDOW_HEADER);
+    topLeftY = PD_MAX (topLeftY, WINDOW_HEADER);
         
     x->gl_valueStart    = 0.0;
     x->gl_valueUp       = 0.0;

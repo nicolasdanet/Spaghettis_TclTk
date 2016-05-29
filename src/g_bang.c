@@ -111,7 +111,7 @@ void bng_drawNew (t_bng *x, t_glist *glist)
                 a + x->x_gui.iem_width - 1,
                 b + x->x_gui.iem_height - 1,
                 x->x_flashed ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
-                IEM_COLOR_NORMAL,
+                COLOR_NORMAL,
                 x);
     sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
                 " -anchor w"                                                 
@@ -134,15 +134,15 @@ void bng_drawSelect (t_bng *x, t_glist *glist)
     sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
                 canvas,
                 x,
-                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : IEM_COLOR_NORMAL);
+                x->x_gui.iem_isSelected ? COLOR_SELECTED : COLOR_NORMAL);
     sys_vGui (".x%lx.c itemconfigure %lxBUTTON -outline #%06x\n",
                 canvas,
                 x,
-                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : IEM_COLOR_NORMAL);
+                x->x_gui.iem_isSelected ? COLOR_SELECTED : COLOR_NORMAL);
     sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%06x\n",
                 canvas,
                 x, 
-                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel);
+                x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel);
 }
 
 void bng_drawErase (t_bng *x, t_glist *glist)
@@ -176,7 +176,7 @@ void bng_drawConfig (t_bng *x, t_glist *glist)
                 canvas,
                 x,
                 x->x_gui.iem_fontSize,
-                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel,
+                x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel,
                 (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "");
 }
 

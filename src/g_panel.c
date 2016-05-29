@@ -120,7 +120,7 @@ void panel_drawSelect (t_panel* x, t_glist *glist)
     sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
                 canvas,
                 x,
-                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorBackground);
+                x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorBackground);
 }
 
 void panel_drawErase (t_panel* x, t_glist *glist)
@@ -150,7 +150,7 @@ void panel_drawConfig (t_panel* x, t_glist *glist)
     sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
                 canvas,
                 x,
-                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorBackground);
+                x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorBackground);
     sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",  // --
                 canvas,
                 x,

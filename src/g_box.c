@@ -94,8 +94,7 @@ static int boxtext_sendTypeset (t_boxtext *x,
     int fontWidth               = font_getHostFontWidth (fontSize);
     int fontHeight              = font_getHostFontHeight (fontSize);
     int lineLengthInCharacters  = (widthInCharacters ? widthInCharacters : BOX_DEFAULT_LINE);
-    int indexOfCaret            = -1;
-        
+    int indexOfMouse            = -1;
     int numberOfLines           = 0;
     int numberOfColumns         = 0;
     int headInBytes             = 0;
@@ -103,8 +102,8 @@ static int boxtext_sendTypeset (t_boxtext *x,
         
     while (charactersThatRemains > 0) { 
     //
-    char *head = x->box_string + headInBytes;
-
+    char *head                  = x->box_string + headInBytes;
+    
     int charactersToConsider    = PD_MIN (lineLengthInCharacters, charactersThatRemains);
     int bytesToConsider         = u8_offset (head, charactersToConsider);
     int charactersUntilWrap     = 0;
@@ -135,11 +134,11 @@ static int boxtext_sendTypeset (t_boxtext *x,
     /* Locate the insertion point. */
     
     if (numberOfLines == (int)(positionY / fontHeight)) {
-        int k = (positionX + (fontWidth / 2)) / fontWidth;
-        indexOfCaret = headInBytes + u8_offset (head, PD_CLAMP (k, 0, charactersUntilWrap));
+        int k = positionX / fontWidth;
+        indexOfMouse = headInBytes + u8_offset (head, PD_CLAMP (k, 0, charactersUntilWrap));
     }
     
-    /* Deplace selection points according to the insertion of new characters. */
+    /* Deplace selection points according new characters insertion. */
     
     if (x->box_selectionStart >= headInBytes) {         
         if (x->box_selectionStart <= headInBytes + bytesUntilWrap + eatCharacter) {
@@ -153,7 +152,7 @@ static int boxtext_sendTypeset (t_boxtext *x,
         }
     }
     
-    /* Append line and continue next. */
+    /* Append line to the buffer and continue next. */
     
     PD_ASSERT ((bufferPosition + bytesUntilWrap) < (bufferSize - 1));
     
@@ -172,7 +171,7 @@ static int boxtext_sendTypeset (t_boxtext *x,
     //
     }
     
-    if (indexOfCaret < 0)  { indexOfCaret = bufferPosition; }
+    if (indexOfMouse < 0)  { indexOfMouse = bufferPosition; }
     if (numberOfLines < 1) { numberOfLines = 1; }
     
     if (widthInCharacters) { numberOfColumns = widthInCharacters; } 
@@ -189,7 +188,7 @@ static int boxtext_sendTypeset (t_boxtext *x,
     
     buffer[bufferPosition] = 0;
     
-    return indexOfCaret;
+    return indexOfMouse;
 }
 
 static int boxtext_send (t_boxtext *x, int action, int positionX, int positionY)
@@ -203,7 +202,7 @@ static int boxtext_send (t_boxtext *x, int action, int positionX, int positionY)
     int bufferSize          = PD_MAX (BOX_DEFAULT_WIDTH, (2 * x->box_stringSizeInBytes)) + 1;
     char *buffer            = (char *)PD_MEMORY_GET (bufferSize);
         
-    int indexOfCaret        = boxtext_sendTypeset (x,
+    int indexOfMouse        = boxtext_sendTypeset (x,
                                     positionX, 
                                     positionY,
                                     fontSize,
@@ -215,51 +214,63 @@ static int boxtext_send (t_boxtext *x, int action, int positionX, int positionY)
                                     &heightInPixels);
 
     t_glist *view = canvas_getView (x->box_glist);
+    int isSelected = canvas_isObjectSelected (x->box_glist, cast_gobj (x->box_object));
     
-    if (action == BOX_FIRST)
-    {
-        sys_vGui("::ui_object::newText .x%lx.c {%s %s text} %f %f {%s} %d %s\n",
-            view,
-            x->box_tag,
-            boxtext_getTypeOfObject(x)->s_name,
-            (double)text_xpix (x->box_object, x->box_glist) + BOX_MARGIN_LEFT, 
-            (double)text_ypix (x->box_object, x->box_glist) + BOX_MARGIN_TOP,
-            buffer, font_getHostFontSize (fontSize),
-            (canvas_isObjectSelected (x->box_glist,
-                &x->box_glist->gl_obj.te_g)? "blue" : "black"));
-    }
-    else if (action == BOX_UPDATE)
-    {
-        sys_vGui("::ui_object::setText .x%lx.c %s {%s}\n",
-            view, x->box_tag, buffer);
-        if (widthInPixels != x->box_widthInPixels || heightInPixels != x->box_heightInPixels) 
-            text_drawborder(x->box_object, x->box_glist, x->box_tag,
-                widthInPixels, heightInPixels, 0);
-        if (x->box_isActive)
-        {
-            if (selectionEnd > selectionStart)
-            {
-                sys_vGui(".x%lx.c select from %s %d\n", view, 
-                    x->box_tag, u8_charnum(x->box_string, selectionStart));
-                sys_vGui(".x%lx.c select to %s %d\n", view, 
-                    x->box_tag, u8_charnum(x->box_string, selectionEnd) - 1);
-                sys_vGui(".x%lx.c focus \"\"\n", view);        
-            }
-            else
-            {
-                sys_vGui(".x%lx.c select clear\n", view);
-                sys_vGui(".x%lx.c icursor %s %d\n", view, x->box_tag,
-                    u8_charnum(x->box_string, selectionStart));
-                sys_vGui(".x%lx.c focus %s\n", view, x->box_tag);        
+    if (action == BOX_FIRST) {
+        sys_vGui ("::ui_object::newText .x%lx.c {%s %s text} %f %f {%s} %d #%06x\n",
+                        view,
+                        x->box_tag,
+                        boxtext_getTypeOfObject (x)->s_name,
+                        (double)text_xpix (x->box_object, x->box_glist) + BOX_MARGIN_LEFT, 
+                        (double)text_ypix (x->box_object, x->box_glist) + BOX_MARGIN_TOP,
+                        buffer, 
+                        font_getHostFontSize (fontSize),
+                        (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
+                
+    } else if (action == BOX_UPDATE) {
+        sys_vGui ("::ui_object::setText .x%lx.c %s {%s}\n",
+                    view,
+                    x->box_tag,
+                    buffer);
+                    
+        if (widthInPixels != x->box_widthInPixels || heightInPixels != x->box_heightInPixels) {
+            text_drawborder (x->box_object, x->box_glist, x->box_tag, widthInPixels, heightInPixels, 0);
+        }
+                
+        if (x->box_isActive) {
+        
+            if (selectionStart < selectionEnd) {
+                sys_vGui (".x%lx.c select from %s %d\n",
+                            view, 
+                            x->box_tag,
+                            u8_charnum (x->box_string, selectionStart));
+                sys_vGui (".x%lx.c select to %s %d\n",
+                            view, 
+                            x->box_tag,
+                            u8_charnum (x->box_string, selectionEnd) - 1);
+                sys_vGui (".x%lx.c focus \"\"\n",
+                            view);
+                
+            } else {
+                sys_vGui (".x%lx.c select clear\n",
+                            view);
+                sys_vGui (".x%lx.c icursor %s %d\n",
+                            view,
+                            x->box_tag,
+                            u8_charnum (x->box_string, selectionStart));
+                sys_vGui (".x%lx.c focus %s\n",
+                            view,
+                            x->box_tag);        
             }
         }
     }
+    
     x->box_widthInPixels  = widthInPixels;
     x->box_heightInPixels = heightInPixels;
     
     PD_MEMORY_FREE (buffer);
     
-    return indexOfCaret;
+    return indexOfMouse;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -597,12 +608,13 @@ be printable in whatever 8-bit character set we find ourselves. */
 
 void rtext_mouse(t_boxtext *x, int xval, int yval, int flag)
 {
-    int indx = boxtext_send(x, BOX_CHECK, xval, yval);
-    if (flag == BOX_TEXT_DOWN)
+    int indx = boxtext_send (x, BOX_CHECK, xval, yval);
+    
+    if (flag == BOXTEXT_DOWN)
     {
         x->box_draggedFrom = x->box_selectionStart = x->box_selectionEnd = indx;
     }
-    else if (flag == BOX_TEXT_DOUBLE)
+    else if (flag == BOXTEXT_DOUBLE)
     {
         int whereseparator, newseparator;
         x->box_draggedFrom = -1;
@@ -636,14 +648,14 @@ void rtext_mouse(t_boxtext *x, int xval, int yval, int flag)
                     whereseparator = newseparator;
         x->box_selectionEnd = indx + whereseparator;
     }
-    else if (flag == BOX_TEXT_SHIFT)
+    else if (flag == BOXTEXT_SHIFT)
     {
         if (indx * 2 > x->box_selectionStart + x->box_selectionEnd)
             x->box_draggedFrom = x->box_selectionStart, x->box_selectionEnd = indx;
         else
             x->box_draggedFrom = x->box_selectionEnd, x->box_selectionStart = indx;
     }
-    else if (flag == BOX_TEXT_DRAG)
+    else if (flag == BOXTEXT_DRAG)
     {
         if (x->box_draggedFrom < 0)
             return;

@@ -301,11 +301,11 @@ static void vu_drawSelect (t_vu* x, t_glist *glist)
     sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
                 canvas,
                 x,
-                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : IEM_COLOR_NORMAL);
+                x->x_gui.iem_isSelected ? COLOR_SELECTED : COLOR_NORMAL);
     sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%06x\n",
                 canvas,
                 x,
-                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel);
+                x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel);
 }
 
 static void vu_drawErase (t_vu* x, t_glist *glist)
@@ -360,7 +360,7 @@ static void vu_drawConfig (t_vu* x, t_glist *glist)
     sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",  // --
                 canvas,
                 x, x->x_gui.iem_fontSize,
-                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel,
+                x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel,
                 (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "");
 
     sys_vGui (".x%lx.c itemconfigure %lxCOVER -fill #%06x -outline #%06x\n",

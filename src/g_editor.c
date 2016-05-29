@@ -97,8 +97,8 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
     
     if (numberOfOutlets && numberOfInlets) {
     //
-    int closest1 = INLETS_NEXTTO (previousX, a, c, numberOfOutlets);
-    int closest2 = INLETS_NEXTTO (positionX, m, o, numberOfInlets);
+    int closest1 = INLET_NEXTTO (previousX, a, c, numberOfOutlets);
+    int closest2 = INLET_NEXTTO (positionX, m, o, numberOfInlets);
     
     PD_ASSERT (closest1 >= 0 && closest1 < numberOfOutlets);
     PD_ASSERT (closest2 >= 0 && closest2 < numberOfInlets);
@@ -113,9 +113,9 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
         
         sys_vGui (".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
                         canvas_getView (glist),
-                        a + INLETS_MIDDLE ((c - a), closest1, numberOfOutlets),
+                        a + INLET_MIDDLE ((c - a), closest1, numberOfOutlets),
                         d,
-                        m + INLETS_MIDDLE ((o - m), closest2, numberOfInlets),
+                        m + INLET_MIDDLE ((o - m), closest2, numberOfInlets),
                         n,
                         (object_isSignalOutlet (object1, closest1) ? 2 : 1),
                         connection);
@@ -282,8 +282,8 @@ static int canvas_performMouseHitOutlets (t_object *object,
     
     if (numberOfOutlets && (positionY >= d - EDITOR_GRIP_SIZE)) {
     //
-    int closest = INLETS_NEXTTO (positionX, a, c, numberOfOutlets);
-    int hotspot = a + INLETS_MIDDLE ((c - a), closest, numberOfOutlets);
+    int closest = INLET_NEXTTO (positionX, a, c, numberOfOutlets);
+    int hotspot = a + INLET_MIDDLE ((c - a), closest, numberOfOutlets);
 
     PD_ASSERT (closest >= 0 && closest < numberOfOutlets);
     
@@ -317,7 +317,7 @@ static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY,
         t_boxtext *text = glist->gl_editor->e_selectedText;
         
         if (object && text && (text == boxtext_fetch (glist, object))) {
-            rtext_mouse (text, positionX - a, positionY - b, BOX_TEXT_SHIFT);
+            rtext_mouse (text, positionX - a, positionY - b, BOXTEXT_SHIFT);
             glist->gl_editor->e_action = ACTION_DRAG;
             glist->gl_editor->e_previousX = a;
             glist->gl_editor->e_previousY = b;
@@ -367,7 +367,7 @@ static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY,
             t_boxtext *text = glist->gl_editor->e_selectedText;
             
             if (object && text && (text == boxtext_fetch (glist, object))) {
-                int flag = (modifier & MODIFIER_DOUBLE) ? BOX_TEXT_DOUBLE : BOX_TEXT_DOWN;
+                int flag = (modifier & MODIFIER_DOUBLE) ? BOXTEXT_DOUBLE : BOXTEXT_DOWN;
                 rtext_mouse (text, positionX - a, positionY - b, flag);
                 glist->gl_editor->e_action = ACTION_DRAG;
                 glist->gl_editor->e_previousX = a;
@@ -727,7 +727,7 @@ void canvas_motion (t_glist *glist, t_float positionX, t_float positionY, t_floa
         
     } else if (action == ACTION_DRAG)    {
         t_boxtext *text = glist->gl_editor->e_selectedText;
-        if (text) { rtext_mouse (text, deltaX, deltaY, BOX_TEXT_DRAG); }
+        if (text) { rtext_mouse (text, deltaX, deltaY, BOXTEXT_DRAG); }
                 
     } else if (action == ACTION_RESIZE)  {
         canvas_motionResize (glist, positionX, positionY);

@@ -218,12 +218,12 @@ static void slider_drawSelect (t_slider *x, t_glist *glist)
     sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n", 
                 canvas, 
                 x, 
-                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : IEM_COLOR_NORMAL);
+                x->x_gui.iem_isSelected ? COLOR_SELECTED : COLOR_NORMAL);
                 
     sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%06x\n", 
                 canvas, 
                 x, 
-                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel);
+                x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel);
 }
 
 static void slider_drawErase (t_slider *x, t_glist *glist)
@@ -257,7 +257,7 @@ static void slider_drawConfig (t_slider *x, t_glist *glist)
                 canvas,
                 x,
                 x->x_gui.iem_fontSize,
-                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel,
+                x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel,
                 (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "");
 }
 

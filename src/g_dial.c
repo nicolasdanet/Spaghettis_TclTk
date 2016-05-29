@@ -213,7 +213,7 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
                 a + w,
                 b + x->x_gui.iem_height,
                 x->x_gui.iem_colorBackground,
-                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorBackground,
+                x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorBackground,
                 x);
     sys_vGui (".x%lx.c create arc %d %d %d %d"
                 " -width 2"
@@ -275,12 +275,12 @@ static void dial_drawSelect (t_dial *x, t_glist *glist)
     sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
                 canvas,
                 x,
-                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorBackground);
+                x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorBackground);
                 
     sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%06x\n",
                 canvas,
                 x,
-                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel);
+                x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel);
 }
 
 static void dial_drawErase (t_dial* x, t_glist *glist)
@@ -329,7 +329,7 @@ static void dial_drawConfig (t_dial* x, t_glist *glist)
                 canvas,
                 x,
                 x->x_gui.iem_fontSize,
-                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel,
+                x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel,
                 (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "");
 }
 
