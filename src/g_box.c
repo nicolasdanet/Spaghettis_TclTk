@@ -77,7 +77,7 @@ struct _boxtext {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int boxtext_typeset (t_boxtext *x,
+static int boxtext_sendTypeset (t_boxtext *x,
     int positionX, 
     int positionY,
     int fontSize,
@@ -203,16 +203,16 @@ static int boxtext_send (t_boxtext *x, int action, int positionX, int positionY)
     int bufferSize          = PD_MAX (BOX_DEFAULT_WIDTH, (2 * x->box_stringSizeInBytes)) + 1;
     char *buffer            = (char *)PD_MEMORY_GET (bufferSize);
         
-    int indexOfCaret        = boxtext_typeset (x,
-                                positionX, 
-                                positionY,
-                                fontSize,
-                                buffer,
-                                bufferSize,
-                                &selectionStart, 
-                                &selectionEnd, 
-                                &widthInPixels, 
-                                &heightInPixels);
+    int indexOfCaret        = boxtext_sendTypeset (x,
+                                    positionX, 
+                                    positionY,
+                                    fontSize,
+                                    buffer,
+                                    bufferSize,
+                                    &selectionStart, 
+                                    &selectionEnd, 
+                                    &widthInPixels, 
+                                    &heightInPixels);
 
     t_glist *view = canvas_getView (x->box_glist);
     
