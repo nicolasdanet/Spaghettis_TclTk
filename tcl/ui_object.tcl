@@ -22,9 +22,9 @@ namespace eval ::ui_object:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc newText {c tags x y text fontSize color} {
+proc newText {c tag x y text fontSize color} {
     
-    $c create text $x $y    -tags $tags \
+    $c create text $x $y    -tags $tag \
                             -text $text \
                             -fill $color \
                             -anchor nw \

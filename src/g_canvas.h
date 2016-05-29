@@ -578,7 +578,6 @@ void            gobj_visibilityChanged                  (t_gobj *x, t_glist *own
 t_boxtext       *boxtext_new                            (t_glist *glist, t_object *object);
 t_boxtext       *boxtext_fetch                          (t_glist *glist, t_object *object);
 char            *boxtext_getTag                         (t_boxtext *x);
-t_symbol        *boxtext_getTypeOfObject                (t_boxtext *x);
 
 void            boxtext_free                            (t_boxtext *x);
 int             boxtext_getWidth                        (t_boxtext *x);

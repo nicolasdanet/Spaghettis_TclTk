@@ -217,10 +217,9 @@ static int boxtext_send (t_boxtext *x, int action, int positionX, int positionY)
     int isSelected = canvas_isObjectSelected (x->box_glist, cast_gobj (x->box_object));
     
     if (action == BOX_FIRST) {
-        sys_vGui ("::ui_object::newText .x%lx.c {%s %s text} %f %f {%s} %d #%06x\n",
+        sys_vGui ("::ui_object::newText .x%lx.c %s %f %f {%s} %d #%06x\n",
                         view,
                         x->box_tag,
-                        boxtext_getTypeOfObject (x)->s_name,
                         (double)text_xpix (x->box_object, x->box_glist) + BOX_MARGIN_LEFT, 
                         (double)text_ypix (x->box_object, x->box_glist) + BOX_MARGIN_TOP,
                         buffer, 
@@ -342,19 +341,6 @@ t_boxtext *boxtext_fetch (t_glist *glist, t_object *object)
 char *boxtext_getTag (t_boxtext *x)
 {
     return x->box_tag;
-}
-
-t_symbol *boxtext_getTypeOfObject (t_boxtext *x)
-{
-    switch (x->box_object->te_type)  {
-    
-        case TYPE_TEXT      : return sym_text;
-        case TYPE_OBJECT    : return sym_obj;
-        case TYPE_MESSAGE   : return sym_msg;
-        case TYPE_ATOM      : return sym_atom;
-    }
-    
-    return &s_;
 }
 
 int boxtext_getWidth (t_boxtext *x)
