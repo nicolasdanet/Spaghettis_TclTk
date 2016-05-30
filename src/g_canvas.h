@@ -591,8 +591,8 @@ void            boxtext_displace                        (t_boxtext *x, int delta
 void            boxtext_select                          (t_boxtext *x, int state);
 void            boxtext_activate                        (t_boxtext *x, int state);
 
+void            boxtext_mouse                           (t_boxtext *x, int a, int b, int flag);
 void            rtext_key           (t_boxtext *x, int n, t_symbol *s);
-void            rtext_mouse         (t_boxtext *x, int xval, int yval, int flag);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -317,7 +317,7 @@ static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY,
         t_boxtext *text = glist->gl_editor->e_selectedText;
         
         if (object && text && (text == boxtext_fetch (glist, object))) {
-            rtext_mouse (text, positionX - a, positionY - b, BOXTEXT_SHIFT);
+            boxtext_mouse (text, positionX - a, positionY - b, BOXTEXT_SHIFT);
             glist->gl_editor->e_action = ACTION_DRAG;
             glist->gl_editor->e_previousX = a;
             glist->gl_editor->e_previousY = b;
@@ -368,7 +368,7 @@ static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY,
             
             if (object && text && (text == boxtext_fetch (glist, object))) {
                 int flag = (modifier & MODIFIER_DOUBLE) ? BOXTEXT_DOUBLE : BOXTEXT_DOWN;
-                rtext_mouse (text, positionX - a, positionY - b, flag);
+                boxtext_mouse (text, positionX - a, positionY - b, flag);
                 glist->gl_editor->e_action = ACTION_DRAG;
                 glist->gl_editor->e_previousX = a;
                 glist->gl_editor->e_previousY = b;
@@ -727,7 +727,7 @@ void canvas_motion (t_glist *glist, t_float positionX, t_float positionY, t_floa
         
     } else if (action == ACTION_DRAG)    {
         t_boxtext *text = glist->gl_editor->e_selectedText;
-        if (text) { rtext_mouse (text, deltaX, deltaY, BOXTEXT_DRAG); }
+        if (text) { boxtext_mouse (text, deltaX, deltaY, BOXTEXT_DRAG); }
                 
     } else if (action == ACTION_RESIZE)  {
         canvas_motionResize (glist, positionX, positionY);

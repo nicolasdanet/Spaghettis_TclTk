@@ -93,8 +93,8 @@ static void boxtext_sendTypesetEllipsis (t_boxtext *x)
 }
 
 static int boxtext_sendTypeset (t_boxtext *x,
-    int positionX, 
-    int positionY,
+    int a, 
+    int b,
     int fontSize,
     char *buffer,
     int bufferSize,
@@ -126,7 +126,7 @@ static int boxtext_sendTypeset (t_boxtext *x,
     int charactersToConsider    = PD_MIN (lineLengthInCharacters, charactersThatRemains);
     int bytesToConsider         = u8_offset (head, charactersToConsider);
     int charactersUntilWrap     = 0;
-    int bytesUntilWrap          = string_indexOfFirstOccurrenceUntil (head, '\n', bytesToConsider);
+    int bytesUntilWrap          = string_indexOfFirstCharUntil (head, '\n', bytesToConsider);
     int accumulatedOffset       = bufferPosition - headInBytes;
     
     int eatCharacter = 1;       /* Remove the character used to wrap (i.e. space and new line). */
@@ -135,7 +135,7 @@ static int boxtext_sendTypeset (t_boxtext *x,
     else {
         if (charactersThatRemains > lineLengthInCharacters) {
         
-            bytesUntilWrap = string_indexOfFirstOccurrenceFrom (head, ' ', bytesToConsider + 1);
+            bytesUntilWrap = string_indexOfFirstCharFrom (head, ' ', bytesToConsider + 1);
             if (bytesUntilWrap >= 0) { charactersUntilWrap = u8_charnum (head, bytesUntilWrap); }
             else {
                 charactersUntilWrap = charactersToConsider;
@@ -152,9 +152,8 @@ static int boxtext_sendTypeset (t_boxtext *x,
 
     /* Locate the insertion point. */
     
-    if (numberOfLines == (int)(positionY / fontHeight)) {
-        int k = positionX / fontWidth;
-        indexOfMouse = headInBytes + u8_offset (head, PD_CLAMP (k, 0, charactersUntilWrap));
+    if (numberOfLines == (int)(b / fontHeight)) {
+        indexOfMouse = headInBytes + u8_offset (head, PD_CLAMP (a / fontWidth, 0, charactersUntilWrap));
     }
     
     /* Deplace selection points according new characters insertion. */
@@ -212,7 +211,7 @@ static int boxtext_sendTypeset (t_boxtext *x,
     }
 }
 
-static int boxtext_send (t_boxtext *x, int action, int positionX, int positionY)
+static int boxtext_send (t_boxtext *x, int action, int a, int b)
 {
     int isCanvas            = (pd_class (x->box_object) == canvas_class);
     int fontSize            = canvas_getFontSize (isCanvas ? cast_glist (x->box_object) : x->box_glist);
@@ -224,8 +223,8 @@ static int boxtext_send (t_boxtext *x, int action, int positionX, int positionY)
     char *buffer            = (char *)PD_MEMORY_GET (bufferSize);
         
     int indexOfMouse        = boxtext_sendTypeset (x,
-                                    positionX, 
-                                    positionY,
+                                    a, 
+                                    b,
                                     fontSize,
                                     buffer,
                                     bufferSize,
@@ -461,6 +460,39 @@ void boxtext_activate (t_boxtext *x, int state)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* Note that mouse position is relative to the origin of the object. */
+
+void boxtext_mouse (t_boxtext *x, int a, int b, int flag)
+{
+    int i = boxtext_send (x, BOX_CHECK, a, b);
+    
+    if (flag == BOXTEXT_DOWN) { x->box_draggedFrom = x->box_selectionStart = x->box_selectionEnd = i; } 
+    else if (flag == BOXTEXT_DOUBLE) {
+    
+        int k = x->box_stringSizeInBytes - i;
+        int m = string_indexOfFirstOccurrenceFrom (x->box_string, " ;,\n", i);
+        int n = string_indexOfFirstOccurrenceUntil (x->box_string + i, " ;,\n", k);
+        
+        x->box_draggedFrom      = -1;
+        x->box_selectionStart   = (m == -1) ? 0 : m + 1;
+        x->box_selectionEnd     = i + ((n == -1) ? k : n);
+        
+    } else if (flag == BOXTEXT_SHIFT) {
+        if (i * 2 > x->box_selectionStart + x->box_selectionEnd)
+            x->box_draggedFrom = x->box_selectionStart, x->box_selectionEnd = i;
+        else
+            x->box_draggedFrom = x->box_selectionEnd, x->box_selectionStart = i;
+    }
+    else if (flag == BOXTEXT_DRAG)
+    {
+        if (x->box_draggedFrom < 0)
+            return;
+        x->box_selectionStart = (x->box_draggedFrom < i ? x->box_draggedFrom : i);
+        x->box_selectionEnd = (x->box_draggedFrom > i ? x->box_draggedFrom : i);
+    }
+    boxtext_send(x, BOX_UPDATE, a, b);
+}
+
 void rtext_key(t_boxtext *x, int keynum, t_symbol *keysym)
 {
     int i, newsize, ndel;
@@ -568,65 +600,6 @@ be printable in whatever 8-bit character set we find ourselves. */
     }
 
     boxtext_send(x, BOX_UPDATE, 0, 0);
-}
-
-void rtext_mouse(t_boxtext *x, int xval, int yval, int flag)
-{
-    int indx = boxtext_send (x, BOX_CHECK, xval, yval);
-    
-    if (flag == BOXTEXT_DOWN)
-    {
-        x->box_draggedFrom = x->box_selectionStart = x->box_selectionEnd = indx;
-    }
-    else if (flag == BOXTEXT_DOUBLE)
-    {
-        int whereseparator, newseparator;
-        x->box_draggedFrom = -1;
-        whereseparator = 0;
-        if ((newseparator = string_indexOfFirstOccurrenceFrom(x->box_string, ' ', indx)) > whereseparator)
-            whereseparator = newseparator+1;
-        if ((newseparator = string_indexOfFirstOccurrenceFrom(x->box_string, '\n', indx)) > whereseparator)
-            whereseparator = newseparator+1;
-        if ((newseparator = string_indexOfFirstOccurrenceFrom(x->box_string, ';', indx)) > whereseparator)
-            whereseparator = newseparator+1;
-        if ((newseparator = string_indexOfFirstOccurrenceFrom(x->box_string, ',', indx)) > whereseparator)
-            whereseparator = newseparator+1;
-        x->box_selectionStart = whereseparator;
-        
-        whereseparator = x->box_stringSizeInBytes - indx;
-        if ((newseparator =
-            string_indexOfFirstOccurrenceUntil(x->box_string+indx, ' ', x->box_stringSizeInBytes - indx)) >= 0 &&
-                newseparator < whereseparator)
-                    whereseparator = newseparator;
-        if ((newseparator =
-            string_indexOfFirstOccurrenceUntil(x->box_string+indx, '\n', x->box_stringSizeInBytes - indx)) >= 0 &&
-                newseparator < whereseparator)
-                    whereseparator = newseparator;
-        if ((newseparator =
-            string_indexOfFirstOccurrenceUntil(x->box_string+indx, ';', x->box_stringSizeInBytes - indx)) >= 0 &&
-                newseparator < whereseparator)
-                    whereseparator = newseparator;
-        if ((newseparator =
-            string_indexOfFirstOccurrenceUntil(x->box_string+indx, ',', x->box_stringSizeInBytes - indx)) >= 0 &&
-                newseparator < whereseparator)
-                    whereseparator = newseparator;
-        x->box_selectionEnd = indx + whereseparator;
-    }
-    else if (flag == BOXTEXT_SHIFT)
-    {
-        if (indx * 2 > x->box_selectionStart + x->box_selectionEnd)
-            x->box_draggedFrom = x->box_selectionStart, x->box_selectionEnd = indx;
-        else
-            x->box_draggedFrom = x->box_selectionEnd, x->box_selectionStart = indx;
-    }
-    else if (flag == BOXTEXT_DRAG)
-    {
-        if (x->box_draggedFrom < 0)
-            return;
-        x->box_selectionStart = (x->box_draggedFrom < indx ? x->box_draggedFrom : indx);
-        x->box_selectionEnd = (x->box_draggedFrom > indx ? x->box_draggedFrom : indx);
-    }
-    boxtext_send(x, BOX_UPDATE, xval, yval);
 }
 
 // -----------------------------------------------------------------------------------------------------------
