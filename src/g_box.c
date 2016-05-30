@@ -237,7 +237,7 @@ static int boxtext_send (t_boxtext *x, int action, int a, int b)
     int isSelected = canvas_isObjectSelected (x->box_glist, cast_gobj (x->box_object));
     
     if (action == BOX_FIRST) {
-        sys_vGui ("::ui_object::newText .x%lx.c %s %f %f {%s} %d #%06x\n",
+        sys_vGui ("::ui_object::newText .x%lx.c %s %f %f {%s} %d #%06x\n",      // --
                         view,
                         x->box_tag,
                         (double)text_xpix (x->box_object, x->box_glist) + BOX_MARGIN_LEFT, 
@@ -247,7 +247,7 @@ static int boxtext_send (t_boxtext *x, int action, int a, int b)
                         (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
                 
     } else if (action == BOX_UPDATE) {
-        sys_vGui ("::ui_object::setText .x%lx.c %s {%s}\n",
+        sys_vGui ("::ui_object::setText .x%lx.c %s {%s}\n",     // --
                         view,
                         x->box_tag,
                         buffer);
@@ -445,7 +445,7 @@ void boxtext_activate (t_boxtext *x, int state)
     //
     } else {
     //
-    sys_vGui ("::ui_object::setEditing .x%lx {} 0\n", canvas_getView (x->box_glist));
+    sys_vGui ("::ui_object::setEditing .x%lx {} 0\n", canvas_getView (x->box_glist));   // --
                     
     if (x->box_glist->gl_editor->e_selectedText == x) { x->box_glist->gl_editor->e_selectedText = NULL; }
     
@@ -475,8 +475,8 @@ void boxtext_mouse (t_boxtext *x, int a, int b, int flag)
     } else if (flag == BOXTEXT_DOUBLE) {
 
         int k = x->box_stringSizeInBytes - i;
-        int m = string_indexOfFirstOccurrenceFrom (x->box_string, " ;,\n", i);
-        int n = string_indexOfFirstOccurrenceUntil (x->box_string + i, " ;,\n", k);
+        int m = string_indexOfFirstOccurrenceFrom (x->box_string, " ;,\n", i);          // --
+        int n = string_indexOfFirstOccurrenceUntil (x->box_string + i, " ;,\n", k);     // --
         
         x->box_draggedFrom    = -1;
         x->box_selectionStart = (m == -1) ? 0 : m + 1;
@@ -550,6 +550,8 @@ static int boxtext_keyDelete (t_boxtext *x, t_symbol *s)
         }
     }
     
+    if (s == sym_BackSpace || s == sym_Delete) {
+    //
     int toDelete = (x->box_selectionEnd - x->box_selectionStart);
 
     if (toDelete > 0) {
@@ -561,10 +563,39 @@ static int boxtext_keyDelete (t_boxtext *x, t_symbol *s)
     x->box_string = PD_MEMORY_RESIZE (x->box_string, oldSize, newSize);
     x->box_stringSizeInBytes = newSize;
     x->box_selectionEnd = x->box_selectionStart;
+    x->box_glist->gl_editor->e_isTextDirty = 1;
     //
     }
     
-    return (s == sym_BackSpace || s == sym_Delete);
+    return 1;
+    //
+    }
+    
+    return 0;
+}
+
+static void boxtext_keyASCII (t_boxtext *x, int n)
+{
+    int i;
+    int oldSize = x->box_stringSizeInBytes;
+    int newSize = x->box_stringSizeInBytes + 1;
+    x->box_string = PD_MEMORY_RESIZE (x->box_string, oldSize, newSize);
+    for (i = oldSize; i > x->box_selectionStart; i--) { x->box_string[i] = x->box_string[i - 1]; }
+    x->box_string[x->box_selectionStart] = n;
+    x->box_stringSizeInBytes = newSize;
+    x->box_selectionStart = x->box_selectionStart + 1;
+}
+
+static void boxtext_keyCodePoint (t_boxtext *x, int n, t_symbol *s)
+{
+    int i, k = u8_wc_nbytes (n);
+    int oldSize = x->box_stringSizeInBytes;
+    int newSize = x->box_stringSizeInBytes + k;
+    x->box_string = PD_MEMORY_RESIZE (x->box_string, oldSize, newSize);
+    for (i = newSize - 1; i > x->box_selectionStart; i--) { x->box_string[i] = x->box_string[i - k]; }
+    x->box_stringSizeInBytes = newSize;
+    strncpy (x->box_string + x->box_selectionStart, s->s_name, k);
+    x->box_selectionStart = x->box_selectionStart + k;
 }
 
 void boxtext_key (t_boxtext *x, int n, t_symbol *s)
@@ -574,45 +605,14 @@ void boxtext_key (t_boxtext *x, int n, t_symbol *s)
     if (boxtext_keyArrows (x, s)) { }
     else if (boxtext_keyDelete (x, s)) { }
     else {
+        if (s == sym_Return || s == sym_Enter)  { boxtext_keyASCII (x, '\n');     }
+        else if (n > 31 && n < 127)             { boxtext_keyASCII (x, n);        }
+        else if (n > 127)                       { boxtext_keyCodePoint (x, n, s); }
 
-/* at Guenter's suggestion, use 'n>31' to test wither a character might
-be printable in whatever 8-bit character set we find ourselves. */
-
-/*-- moo:
-... but test with "<" rather than "!=" in order to accomodate unicode
-codepoints for n (which we get since Tk is sending the "%A" substitution
-for bind <Key>), effectively reducing the coverage of this clause to 7
-bits.  Case n>127 is covered by the next clause.
-*/
-    int i;
-    int newsize;
-    
-    if (n == '\n' || (n > 31 && n < 127))
-    {
-        newsize = x->box_stringSizeInBytes+1;
-        x->box_string = PD_MEMORY_RESIZE(x->box_string, x->box_stringSizeInBytes, newsize);
-        for (i = x->box_stringSizeInBytes; i > x->box_selectionStart; i--)
-            x->box_string[i] = x->box_string[i-1];
-        x->box_string[x->box_selectionStart] = n;
-        x->box_stringSizeInBytes = newsize;
-        x->box_selectionStart = x->box_selectionStart + 1;
-    }
-    /*--moo: check for unicode codepoints beyond 7-bit ASCII --*/
-    else if (n > 127)
-    {
-        int ch_nbytes = u8_wc_nbytes(n);
-        newsize = x->box_stringSizeInBytes + ch_nbytes;
-        x->box_string = PD_MEMORY_RESIZE(x->box_string, x->box_stringSizeInBytes, newsize);
-        for (i = newsize-1; i > x->box_selectionStart; i--)
-            x->box_string[i] = x->box_string[i-ch_nbytes];
-        x->box_stringSizeInBytes = newsize;
-        /*-- moo: assume canvas_key() has encoded keysym as UTF-8 */
-        strncpy(x->box_string+x->box_selectionStart, s->s_name, ch_nbytes);
-        x->box_selectionStart = x->box_selectionStart + ch_nbytes;
-    }
-    x->box_selectionEnd = x->box_selectionStart;
-    x->box_glist->gl_editor->e_isTextDirty = 1;
-    
+        if (n) {
+            x->box_selectionEnd = x->box_selectionStart;
+            x->box_glist->gl_editor->e_isTextDirty = 1;
+        }
     }
 
     boxtext_send (x, BOX_UPDATE, 0, 0);
