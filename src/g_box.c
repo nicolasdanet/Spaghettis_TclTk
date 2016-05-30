@@ -466,31 +466,41 @@ void boxtext_mouse (t_boxtext *x, int a, int b, int flag)
 {
     int i = boxtext_send (x, BOX_CHECK, a, b);
     
-    if (flag == BOXTEXT_DOWN) { x->box_draggedFrom = x->box_selectionStart = x->box_selectionEnd = i; } 
-    else if (flag == BOXTEXT_DOUBLE) {
-    
+    if (flag == BOXTEXT_DOWN) { 
+
+        x->box_draggedFrom    = i;
+        x->box_selectionStart = i;
+        x->box_selectionEnd   = i;
+
+    } else if (flag == BOXTEXT_DOUBLE) {
+
         int k = x->box_stringSizeInBytes - i;
         int m = string_indexOfFirstOccurrenceFrom (x->box_string, " ;,\n", i);
         int n = string_indexOfFirstOccurrenceUntil (x->box_string + i, " ;,\n", k);
         
-        x->box_draggedFrom      = -1;
-        x->box_selectionStart   = (m == -1) ? 0 : m + 1;
-        x->box_selectionEnd     = i + ((n == -1) ? k : n);
-        
+        x->box_draggedFrom    = -1;
+        x->box_selectionStart = (m == -1) ? 0 : m + 1;
+        x->box_selectionEnd   = i + ((n == -1) ? k : n);
+
     } else if (flag == BOXTEXT_SHIFT) {
-        if (i * 2 > x->box_selectionStart + x->box_selectionEnd)
-            x->box_draggedFrom = x->box_selectionStart, x->box_selectionEnd = i;
-        else
-            x->box_draggedFrom = x->box_selectionEnd, x->box_selectionStart = i;
+
+        if (i > (x->box_selectionStart + x->box_selectionEnd) / 2) {
+            x->box_draggedFrom    = x->box_selectionStart;
+            x->box_selectionEnd   = i;
+        } else {
+            x->box_draggedFrom    = x->box_selectionEnd;
+            x->box_selectionStart = i;
+        }
+        
+    } else if (flag == BOXTEXT_DRAG) {
+
+        if (x->box_draggedFrom >= 0) {
+            x->box_selectionStart = (x->box_draggedFrom < i ? x->box_draggedFrom : i);
+            x->box_selectionEnd   = (x->box_draggedFrom > i ? x->box_draggedFrom : i);
+        }
     }
-    else if (flag == BOXTEXT_DRAG)
-    {
-        if (x->box_draggedFrom < 0)
-            return;
-        x->box_selectionStart = (x->box_draggedFrom < i ? x->box_draggedFrom : i);
-        x->box_selectionEnd = (x->box_draggedFrom > i ? x->box_draggedFrom : i);
-    }
-    boxtext_send(x, BOX_UPDATE, a, b);
+    
+    boxtext_send (x, BOX_UPDATE, a, b);
 }
 
 void rtext_key(t_boxtext *x, int keynum, t_symbol *keysym)
