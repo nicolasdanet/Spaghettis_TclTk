@@ -89,12 +89,12 @@ static void slider_drawUpdateVertical (t_slider *x, t_glist *glist)
     int k = text_ypix (cast_object (x), glist) + x->x_gui.iem_height - slider_stepsToPixels (x->x_position);
         
     sys_vGui (".x%lx.c coords %lxKNOB %d %d %d %d\n",
-                canvas, 
-                x, 
-                a + 1,
-                k,
-                a + x->x_gui.iem_width - IEM_SLIDER_PIXEL, 
-                k);
+                    canvas, 
+                    x, 
+                    a + 1,
+                    k,
+                    a + x->x_gui.iem_width - IEM_SLIDER_PIXEL, 
+                    k);
     //
     }
 }
@@ -109,12 +109,12 @@ static void slider_drawUpdateHorizontal (t_slider *x, t_glist *glist)
     int b = text_ypix (cast_object (x), glist);
         
     sys_vGui (".x%lx.c coords %lxKNOB %d %d %d %d\n",
-                canvas, 
-                x, 
-                k,
-                b + 1,
-                k, 
-                b + x->x_gui.iem_height - IEM_SLIDER_PIXEL);
+                    canvas, 
+                    x, 
+                    k,
+                    b + 1,
+                    k, 
+                    b + x->x_gui.iem_height - IEM_SLIDER_PIXEL);
     //
     }
 }
@@ -139,20 +139,20 @@ static void slider_drawMove (t_slider *x, t_glist *glist)
     int b = text_ypix (cast_object (x), glist);
 
     sys_vGui (".x%lx.c coords %lxBASE %d %d %d %d\n",
-                canvas,
-                x,
-                a, 
-                b,
-                a + x->x_gui.iem_width, 
-                b + x->x_gui.iem_height);
+                    canvas,
+                    x,
+                    a, 
+                    b,
+                    a + x->x_gui.iem_width, 
+                    b + x->x_gui.iem_height);
                 
     slider_drawUpdate (x, glist);
     
     sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
-                canvas,
-                x, 
-                a + x->x_gui.iem_labelX,
-                b + x->x_gui.iem_labelY);
+                    canvas,
+                    x, 
+                    a + x->x_gui.iem_labelX,
+                    b + x->x_gui.iem_labelY);
 }
 
 static void slider_drawNew (t_slider *x, t_glist *glist)
@@ -163,52 +163,52 @@ static void slider_drawNew (t_slider *x, t_glist *glist)
     int b = text_ypix (cast_object (x), glist);
     
     sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE\n",
-                canvas,
-                a, 
-                b,
-                a + x->x_gui.iem_width, 
-                b + x->x_gui.iem_height,
-                x->x_gui.iem_colorBackground,
-                x);
+                    canvas,
+                    a, 
+                    b,
+                    a + x->x_gui.iem_width, 
+                    b + x->x_gui.iem_height,
+                    x->x_gui.iem_colorBackground,
+                    x);
     
     if (x->x_isVertical) {
     //
     int k = b + x->x_gui.iem_height - slider_stepsToPixels (x->x_position);
     sys_vGui (".x%lx.c create line %d %d %d %d -width 3 -fill #%06x -tags %lxKNOB\n",
-                canvas,
-                a + 1,
-                k, 
-                a + x->x_gui.iem_width - IEM_SLIDER_PIXEL,
-                k,
-                x->x_gui.iem_colorForeground,
-                x);
+                    canvas,
+                    a + 1,
+                    k, 
+                    a + x->x_gui.iem_width - IEM_SLIDER_PIXEL,
+                    k,
+                    x->x_gui.iem_colorForeground,
+                    x);
     //
     } else {
     //
     int k = a + slider_stepsToPixels (x->x_position);
     sys_vGui (".x%lx.c create line %d %d %d %d -width 3 -fill #%06x -tags %lxKNOB\n",
-                canvas,
-                k,
-                b + 1, 
-                k,
-                b + x->x_gui.iem_height - IEM_SLIDER_PIXEL,
-                x->x_gui.iem_colorForeground,
-                x);
+                    canvas,
+                    k,
+                    b + 1, 
+                    k,
+                    b + x->x_gui.iem_height - IEM_SLIDER_PIXEL,
+                    x->x_gui.iem_colorForeground,
+                    x);
     //
     }
     
     sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
-                " -anchor w"
-                " -font [::getFont %d]"     // --
-                " -fill #%06x"
-                " -tags %lxLABEL\n",
-                canvas,
-                a + x->x_gui.iem_labelX,
-                b + x->x_gui.iem_labelY,
-                (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "",
-                x->x_gui.iem_fontSize,
-                x->x_gui.iem_colorLabel,
-                x);
+                    " -anchor w"
+                    " -font [::getFont %d]"     // --
+                    " -fill #%06x"
+                    " -tags %lxLABEL\n",
+                    canvas,
+                    a + x->x_gui.iem_labelX,
+                    b + x->x_gui.iem_labelY,
+                    (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "",
+                    x->x_gui.iem_fontSize,
+                    x->x_gui.iem_colorLabel,
+                    x);
 }
 
 static void slider_drawSelect (t_slider *x, t_glist *glist)
@@ -216,14 +216,14 @@ static void slider_drawSelect (t_slider *x, t_glist *glist)
     t_glist *canvas = canvas_getView (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n", 
-                canvas, 
-                x, 
-                x->x_gui.iem_isSelected ? COLOR_SELECTED : COLOR_NORMAL);
+                    canvas, 
+                    x, 
+                    x->x_gui.iem_isSelected ? COLOR_SELECTED : COLOR_NORMAL);
                 
     sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%06x\n", 
-                canvas, 
-                x, 
-                x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel);
+                    canvas, 
+                    x, 
+                    x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel);
 }
 
 static void slider_drawErase (t_slider *x, t_glist *glist)
@@ -231,14 +231,14 @@ static void slider_drawErase (t_slider *x, t_glist *glist)
     t_glist *canvas = canvas_getView (glist);
 
     sys_vGui (".x%lx.c delete %lxBASE\n",
-                canvas, 
-                x);
+                    canvas, 
+                    x);
     sys_vGui (".x%lx.c delete %lxKNOB\n",
-                canvas,
-                x);
+                    canvas,
+                    x);
     sys_vGui (".x%lx.c delete %lxLABEL\n",
-                canvas,
-                x);
+                    canvas,
+                    x);
 }
 
 static void slider_drawConfig (t_slider *x, t_glist *glist)
@@ -246,19 +246,19 @@ static void slider_drawConfig (t_slider *x, t_glist *glist)
     t_glist *canvas = canvas_getView (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%06x\n",
-                canvas,
-                x, 
-                x->x_gui.iem_colorBackground);
+                    canvas,
+                    x, 
+                    x->x_gui.iem_colorBackground);
     sys_vGui (".x%lx.c itemconfigure %lxKNOB -fill #%06x\n",
-                canvas,
-                x,
-                x->x_gui.iem_colorForeground);
+                    canvas,
+                    x,
+                    x->x_gui.iem_colorForeground);
     sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",  // --
-                canvas,
-                x,
-                x->x_gui.iem_fontSize,
-                x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel,
-                (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "");
+                    canvas,
+                    x,
+                    x->x_gui.iem_fontSize,
+                    x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel,
+                    (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "");
 }
 
 // -----------------------------------------------------------------------------------------------------------

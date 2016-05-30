@@ -354,12 +354,12 @@ static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY,
                 glist->gl_editor->e_previousY = d;
                 
                 sys_vGui (".x%lx.c create line %d %d %d %d -width %d -tags TEMPORARY\n",
-                            glist,
-                            h,
-                            d,
-                            h,
-                            d,
-                            (object_isSignalOutlet (object, n) ? 2 : 1));
+                                glist,
+                                h,
+                                d,
+                                h,
+                                d,
+                                (object_isSignalOutlet (object, n) ? 2 : 1));
             }                                   
                 
         } else if (clicked) {

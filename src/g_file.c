@@ -105,10 +105,10 @@ void canvas_saveAs (t_glist *glist, float destroy)
     t_glist *root = canvas_getRoot (glist);
     
     sys_vGui ("::ui_file::saveAs .x%lx {%s} {%s} %d\n",
-                root,
-                root->gl_name->s_name,
-                canvas_getEnvironment (root)->ce_directory->s_name, 
-                (int)destroy);
+                    root,
+                    root->gl_name->s_name,
+                    canvas_getEnvironment (root)->ce_directory->s_name, 
+                    (int)destroy);
 }
 
 void canvas_saveToFile (t_glist *glist, t_symbol *name, t_symbol *directory, float destroy)

@@ -276,9 +276,9 @@ void iemgui_setLabel (void *x, t_iem *iem, t_symbol *s)
 
     if (canvas_isMapped (iem->iem_owner)) {
         sys_vGui (".x%lx.c itemconfigure %lxLABEL -text {%s}\n",    // --
-            canvas_getView (iem->iem_owner),
-            x,
-            iem->iem_label != iemgui_empty() ? iem->iem_label->s_name : "");
+                        canvas_getView (iem->iem_owner),
+                        x,
+                        iem->iem_label != iemgui_empty() ? iem->iem_label->s_name : "");
     }
 }
 
@@ -291,10 +291,10 @@ void iemgui_setLabelPosition (void *x, t_iem *iem, t_symbol *s, int argc, t_atom
     
     if (canvas_isMapped (iem->iem_owner)) {
         sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
-            canvas_getView (iem->iem_owner),
-            x,
-            text_xpix (cast_object (x), iem->iem_owner) + iem->iem_labelX,
-            text_ypix (cast_object (x), iem->iem_owner) + iem->iem_labelY);
+                        canvas_getView (iem->iem_owner),
+                        x,
+                        text_xpix (cast_object (x), iem->iem_owner) + iem->iem_labelX,
+                        text_ypix (cast_object (x), iem->iem_owner) + iem->iem_labelY);
     }
     //
     }
@@ -309,9 +309,9 @@ void iemgui_setLabelFont (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *ar
     iem->iem_fontSize = f;
     if (canvas_isMapped (iem->iem_owner)) {
         sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d]\n",      // --
-            canvas_getView (iem->iem_owner), 
-            x,
-            iem->iem_fontSize);
+                        canvas_getView (iem->iem_owner), 
+                        x,
+                        iem->iem_fontSize);
     }
     //
     }

@@ -60,29 +60,29 @@ void radio_drawMoveVertical (t_radio *x, t_glist *glist)
     for (i = 0; i < n; i++, t += x->x_gui.iem_height) {
     //
     sys_vGui (".x%lx.c coords %lxBASE%d %d %d %d %d\n",
-                canvas,
-                x,
-                i,
-                a,
-                t,
-                a + x->x_gui.iem_width,
-                t + x->x_gui.iem_height);
+                    canvas,
+                    x,
+                    i,
+                    a,
+                    t,
+                    a + x->x_gui.iem_width,
+                    t + x->x_gui.iem_height);
     sys_vGui (".x%lx.c coords %lxBUTTON%d %d %d %d %d\n",
-                canvas, 
-                x, 
-                i, 
-                a + k,
-                t + k,
-                a + x->x_gui.iem_width - k,
-                t + x->x_gui.iem_height - k);
+                    canvas, 
+                    x, 
+                    i, 
+                    a + k,
+                    t + k,
+                    a + x->x_gui.iem_width - k,
+                    t + x->x_gui.iem_height - k);
     //
     }
     
     sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
-                canvas,
-                x, 
-                a + x->x_gui.iem_labelX, 
-                b + x->x_gui.iem_labelY);
+                    canvas,
+                    x, 
+                    a + x->x_gui.iem_labelX, 
+                    b + x->x_gui.iem_labelY);
 }
 
 void radio_drawNewVertical (t_radio *x, t_glist *glist)
@@ -99,39 +99,39 @@ void radio_drawNewVertical (t_radio *x, t_glist *glist)
     for (i = 0; i < n; i++, t += x->x_gui.iem_height) {
     //
     sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE%d\n",
-                canvas,
-                a,
-                t,
-                a + x->x_gui.iem_width,
-                t + x->x_gui.iem_height,
-                x->x_gui.iem_colorBackground,
-                x,
-                i);
+                    canvas,
+                    a,
+                    t,
+                    a + x->x_gui.iem_width,
+                    t + x->x_gui.iem_height,
+                    x->x_gui.iem_colorBackground,
+                    x,
+                    i);
     sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -outline #%06x -tags %lxBUTTON%d\n",
-                canvas,
-                a + k,
-                t + k,
-                a + x->x_gui.iem_width - k,
-                t + x->x_gui.iem_height - k,
-                (x->x_state == i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
-                (x->x_state == i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
-                x,
-                i);
+                    canvas,
+                    a + k,
+                    t + k,
+                    a + x->x_gui.iem_width - k,
+                    t + x->x_gui.iem_height - k,
+                    (x->x_state == i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
+                    (x->x_state == i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
+                    x,
+                    i);
     //
     }
     
     sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
-                " -anchor w"
-                " -font [::getFont %d]"     // --
-                " -fill #%06x"
-                " -tags %lxLABEL\n",
-                canvas,
-                a + x->x_gui.iem_labelX,
-                b + x->x_gui.iem_labelY,
-                (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "",
-                x->x_gui.iem_fontSize,
-                x->x_gui.iem_colorLabel,
-                x);
+                    " -anchor w"
+                    " -font [::getFont %d]"     // --
+                    " -fill #%06x"
+                    " -tags %lxLABEL\n",
+                    canvas,
+                    a + x->x_gui.iem_labelX,
+                    b + x->x_gui.iem_labelY,
+                    (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "",
+                    x->x_gui.iem_fontSize,
+                    x->x_gui.iem_colorLabel,
+                    x);
 
     x->x_stateDrawn = x->x_state;
 }
@@ -150,29 +150,29 @@ void radio_drawMoveHorizontal (t_radio *x, t_glist *glist)
     for (i = 0; i < n; i++, t += x->x_gui.iem_width) {
     //
     sys_vGui (".x%lx.c coords %lxBASE%d %d %d %d %d\n",
-                canvas, 
-                x, 
-                i,
-                t,
-                b,
-                t + x->x_gui.iem_width,
-                b + x->x_gui.iem_height);
+                    canvas, 
+                    x, 
+                    i,
+                    t,
+                    b,
+                    t + x->x_gui.iem_width,
+                    b + x->x_gui.iem_height);
     sys_vGui (".x%lx.c coords %lxBUTTON%d %d %d %d %d\n",
-                canvas, 
-                x, 
-                i, 
-                t + k, 
-                b + k, 
-                t + x->x_gui.iem_width - k, 
-                b + x->x_gui.iem_height - k);
+                    canvas, 
+                    x, 
+                    i, 
+                    t + k, 
+                    b + k, 
+                    t + x->x_gui.iem_width - k, 
+                    b + x->x_gui.iem_height - k);
     //
     }
     
     sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
-                canvas, 
-                x, 
-                a + x->x_gui.iem_labelX,
-                b + x->x_gui.iem_labelY);
+                    canvas, 
+                    x, 
+                    a + x->x_gui.iem_labelX,
+                    b + x->x_gui.iem_labelY);
 }
 
 void radio_drawNewHorizontal (t_radio *x, t_glist *glist)
@@ -189,39 +189,39 @@ void radio_drawNewHorizontal (t_radio *x, t_glist *glist)
     for (i = 0; i < n; i++, t += x->x_gui.iem_width) {
     //
     sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE%d\n",
-                canvas, 
-                t, 
-                b, 
-                t + x->x_gui.iem_width, 
-                b + x->x_gui.iem_height,
-                x->x_gui.iem_colorBackground,
-                x,
-                i);
+                    canvas, 
+                    t, 
+                    b, 
+                    t + x->x_gui.iem_width, 
+                    b + x->x_gui.iem_height,
+                    x->x_gui.iem_colorBackground,
+                    x,
+                    i);
     sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -outline #%06x -tags %lxBUTTON%d\n",
-                canvas,
-                t + k,
-                b + k,
-                t + x->x_gui.iem_width - k, 
-                b + x->x_gui.iem_height - k,
-                (x->x_state == i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
-                (x->x_state == i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
-                x,
-                i);
+                    canvas,
+                    t + k,
+                    b + k,
+                    t + x->x_gui.iem_width - k, 
+                    b + x->x_gui.iem_height - k,
+                    (x->x_state == i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
+                    (x->x_state == i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
+                    x,
+                    i);
     //
     }
     
     sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
-                " -anchor w"
-                " -font [::getFont %d]"     // --
-                " -fill #%06x"
-                " -tags %lxLABEL\n",
-                canvas,
-                a + x->x_gui.iem_labelX,
-                b + x->x_gui.iem_labelY,
-                (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "",
-                x->x_gui.iem_fontSize,
-                x->x_gui.iem_colorLabel,
-                x);
+                    " -anchor w"
+                    " -font [::getFont %d]"     // --
+                    " -fill #%06x"
+                    " -tags %lxLABEL\n",
+                    canvas,
+                    a + x->x_gui.iem_labelX,
+                    b + x->x_gui.iem_labelY,
+                    (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "",
+                    x->x_gui.iem_fontSize,
+                    x->x_gui.iem_colorLabel,
+                    x);
     
     x->x_stateDrawn = x->x_state;
 }
@@ -237,17 +237,17 @@ void radio_drawUpdate (t_radio *x, t_glist *glist)
     t_glist *canvas = canvas_getView (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBUTTON%d -fill #%06x -outline #%06x\n",
-                canvas, 
-                x, 
-                x->x_stateDrawn,
-                x->x_gui.iem_colorBackground,
-                x->x_gui.iem_colorBackground);
+                    canvas, 
+                    x, 
+                    x->x_stateDrawn,
+                    x->x_gui.iem_colorBackground,
+                    x->x_gui.iem_colorBackground);
     sys_vGui (".x%lx.c itemconfigure %lxBUTTON%d -fill #%06x -outline #%06x\n",
-                canvas, 
-                x, 
-                x->x_state,
-                x->x_gui.iem_colorForeground,
-                x->x_gui.iem_colorForeground);
+                    canvas, 
+                    x, 
+                    x->x_state,
+                    x->x_gui.iem_colorForeground,
+                    x->x_gui.iem_colorForeground);
                 
     x->x_stateDrawn = x->x_state;
     //
@@ -279,17 +279,17 @@ void radio_drawSelect (t_radio *x, t_glist *glist)
     for (i = 0; i < x->x_numberOfButtons; i++) {
     //
     sys_vGui (".x%lx.c itemconfigure %lxBASE%d -outline #%06x\n",
-                canvas,
-                x,
-                i,
-                x->x_gui.iem_isSelected ? COLOR_SELECTED : COLOR_NORMAL);
+                    canvas,
+                    x,
+                    i,
+                    x->x_gui.iem_isSelected ? COLOR_SELECTED : COLOR_NORMAL);
     //
     }
 
     sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%06x\n",
-                canvas,
-                x, 
-                x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel);
+                    canvas,
+                    x, 
+                    x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel);
 }
 
 void radio_drawErase (t_radio *x, t_glist *glist)
@@ -301,19 +301,19 @@ void radio_drawErase (t_radio *x, t_glist *glist)
     for (i = 0; i < x->x_numberOfButtons; i++) {
     //
     sys_vGui (".x%lx.c delete %lxBASE%d\n",
-                canvas,
-                x,
-                i);
+                    canvas,
+                    x,
+                    i);
     sys_vGui (".x%lx.c delete %lxBUTTON%d\n",
-                canvas,
-                x,
-                i);
+                    canvas,
+                    x,
+                    i);
     //
     }
     
     sys_vGui (".x%lx.c delete %lxLABEL\n",
-                canvas,
-                x);
+                    canvas,
+                    x);
 }
 
 void radio_drawConfig (t_radio *x, t_glist *glist)
@@ -325,25 +325,25 @@ void radio_drawConfig (t_radio *x, t_glist *glist)
     for (i = 0; i < x->x_numberOfButtons; i++) {
     //
     sys_vGui (".x%lx.c itemconfigure %lxBASE%d -fill #%06x\n", 
-                canvas,
-                x,
-                i,
-                x->x_gui.iem_colorBackground);
+                    canvas,
+                    x,
+                    i,
+                    x->x_gui.iem_colorBackground);
     sys_vGui (".x%lx.c itemconfigure %lxBUTTON%d -fill #%06x -outline #%06x\n",
-                canvas,
-                x,
-                i,
-                (x->x_state == i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
-                (x->x_state == i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
+                    canvas,
+                    x,
+                    i,
+                    (x->x_state == i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
+                    (x->x_state == i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
     //
     }
     
     sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",  // --
-                canvas, 
-                x, 
-                x->x_gui.iem_fontSize,
-                x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel,
-                (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "");
+                    canvas, 
+                    x, 
+                    x->x_gui.iem_fontSize,
+                    x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel,
+                    (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "");
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -248,9 +248,9 @@ static int boxtext_send (t_boxtext *x, int action, int a, int b)
                 
     } else if (action == BOX_UPDATE) {
         sys_vGui ("::ui_object::setText .x%lx.c %s {%s}\n",
-                    view,
-                    x->box_tag,
-                    buffer);
+                        view,
+                        x->box_tag,
+                        buffer);
                     
         if (widthInPixels != x->box_widthInPixels || heightInPixels != x->box_heightInPixels) {
             text_drawborder (x->box_object, x->box_glist, x->box_tag, widthInPixels, heightInPixels, 0);
@@ -260,26 +260,26 @@ static int boxtext_send (t_boxtext *x, int action, int a, int b)
         
             if (selectionStart < selectionEnd) {
                 sys_vGui (".x%lx.c select from %s %d\n",
-                            view, 
-                            x->box_tag,
-                            u8_charnum (x->box_string, selectionStart));
+                                view, 
+                                x->box_tag,
+                                u8_charnum (x->box_string, selectionStart));
                 sys_vGui (".x%lx.c select to %s %d\n",
-                            view, 
-                            x->box_tag,
-                            u8_charnum (x->box_string, selectionEnd) - 1);
+                                view, 
+                                x->box_tag,
+                                u8_charnum (x->box_string, selectionEnd) - 1);
                 sys_vGui (".x%lx.c focus \"\"\n",
-                            view);
+                                view);
                 
             } else {
                 sys_vGui (".x%lx.c select clear\n",
-                            view);
+                                view);
                 sys_vGui (".x%lx.c icursor %s %d\n",
-                            view,
-                            x->box_tag,
-                            u8_charnum (x->box_string, selectionStart));
+                                view,
+                                x->box_tag,
+                                u8_charnum (x->box_string, selectionStart));
                 sys_vGui (".x%lx.c focus %s\n",
-                            view,
-                            x->box_tag);        
+                                view,
+                                x->box_tag);        
             }
         }
     }

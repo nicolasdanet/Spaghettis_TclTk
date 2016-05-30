@@ -55,8 +55,8 @@ static void canvas_deselectLine (t_glist *glist)
     glist->gl_editor->e_isSelectedline = 0;
     
     sys_vGui (".x%lx.c itemconfigure %lxLINE -fill black\n",
-                glist,
-                glist->gl_editor->e_selectedLineConnection);   
+                    glist,
+                    glist->gl_editor->e_selectedLineConnection);   
 }
 
 static void canvas_cacheLines (t_glist *glist)
@@ -319,8 +319,8 @@ void canvas_selectLine (t_glist *glist,
     glist->gl_editor->e_selectedLineConnection          = connection;
     
     sys_vGui (".x%lx.c itemconfigure %lxLINE -fill blue\n",
-                glist,
-                glist->gl_editor->e_selectedLineConnection);  
+                    glist,
+                    glist->gl_editor->e_selectedLineConnection);  
 }
 
 void canvas_deselectObject (t_glist *glist, t_gobj *y)

@@ -45,13 +45,13 @@ void canvas_drawLines (t_glist *glist)
     while (connection = canvas_traverseLinesNext (&t)) {
     //
     sys_vGui (".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
-                canvas_getView (glist),
-                t.tr_lineStartX,
-                t.tr_lineStartY,
-                t.tr_lineEndX,
-                t.tr_lineEndY, 
-                (outlet_isSignal (t.tr_srcOutlet) ? 2 : 1),
-                connection);
+                    canvas_getView (glist),
+                    t.tr_lineStartX,
+                    t.tr_lineStartY,
+                    t.tr_lineEndX,
+                    t.tr_lineEndY, 
+                    (outlet_isSignal (t.tr_srcOutlet) ? 2 : 1),
+                    connection);
     //
     }
 }
@@ -70,12 +70,12 @@ void canvas_updateLinesByObject (t_glist *glist, t_object *o)
     if (canvas_isMapped (glist)) {
     //
     sys_vGui (".x%lx.c coords %lxLINE %d %d %d %d\n",
-                canvas_getView (glist),
-                connection,
-                t.tr_lineStartX,
-                t.tr_lineStartY,
-                t.tr_lineEndX,
-                t.tr_lineEndY);
+                    canvas_getView (glist),
+                    connection,
+                    t.tr_lineStartX,
+                    t.tr_lineStartY,
+                    t.tr_lineEndX,
+                    t.tr_lineEndY);
     //
     }
     //
@@ -98,8 +98,8 @@ void canvas_deleteLinesByObject (t_glist *glist, t_object *o)
     if (canvas_isMapped (glist)) {
     //
     sys_vGui (".x%lx.c delete %lxLINE\n",
-                canvas_getView (glist),
-                connection);
+                    canvas_getView (glist),
+                    connection);
     //
     }
 
@@ -127,8 +127,8 @@ void canvas_deleteLinesByInlets (t_glist *glist, t_object *o, t_inlet *inlet, t_
     if (canvas_isMapped (glist)) {
     //
     sys_vGui (".x%lx.c delete %lxLINE\n",
-                canvas_getView (glist),
-                connection);
+                    canvas_getView (glist),
+                    connection);
     //
     }
                 
@@ -147,19 +147,19 @@ void canvas_drawGraphOnParentRectangle (t_glist *glist)
     int d = glist->gl_marginY + glist->gl_height;
     
     sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d" 
-                " -fill " DRAW_GRAPH_ON_PARENT_COLOR
-                " -tags GOP\n",
-                canvas_getView (glist),
-                a,
-                b,
-                c,
-                b,
-                c,
-                d,
-                a,
-                d,
-                a,
-                b);
+                    " -fill " DRAW_GRAPH_ON_PARENT_COLOR
+                    " -tags GOP\n",
+                    canvas_getView (glist),
+                    a,
+                    b,
+                    c,
+                    b,
+                    c,
+                    d,
+                    a,
+                    d,
+                    a,
+                    b);
 }
 
 void canvas_deleteGraphOnParentRectangle (t_glist *glist)

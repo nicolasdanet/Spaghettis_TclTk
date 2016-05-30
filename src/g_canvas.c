@@ -344,12 +344,12 @@ void canvas_visible (t_glist *glist, t_float f)
         else {
             canvas_createEditorIfNone (glist);
             sys_vGui ("::ui_patch::create .x%lx %d %d +%d+%d %d\n",
-                        glist,
-                        (int)(glist->gl_windowBottomRightX - glist->gl_windowTopLeftX),
-                        (int)(glist->gl_windowBottomRightY - glist->gl_windowTopLeftY),
-                        (int)(glist->gl_windowTopLeftX),
-                        (int)(glist->gl_windowTopLeftY),
-                        glist->gl_isEditMode);
+                            glist,
+                            (int)(glist->gl_windowBottomRightX - glist->gl_windowTopLeftX),
+                            (int)(glist->gl_windowBottomRightY - glist->gl_windowTopLeftY),
+                            (int)(glist->gl_windowTopLeftX),
+                            (int)(glist->gl_windowTopLeftY),
+                            glist->gl_isEditMode);
                         
             canvas_updateTitle (glist);
             
