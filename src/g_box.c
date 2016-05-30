@@ -503,113 +503,119 @@ void boxtext_mouse (t_boxtext *x, int a, int b, int flag)
     boxtext_send (x, BOX_UPDATE, a, b);
 }
 
-void rtext_key(t_boxtext *x, int keynum, t_symbol *keysym)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static int boxtext_keyArrows (t_boxtext *x, t_symbol *s)
 {
-    int i, newsize, ndel;
-    char *s1, *s2;
-    if (keynum)
-    {
-        int n = keynum;
-        if (n == '\r') n = '\n';
-        if (n == '\b')  /* backspace */
-        {
-                    /* LATER delete the box if all text is selected...
-                    this causes reentrancy problems now. */
-            /* if ((!x->box_selectionStart) && (x->box_selectionEnd == x->box_stringSizeInBytes))
-            {
-                ....
-            } */
-            if (x->box_selectionStart && (x->box_selectionStart == x->box_selectionEnd))
-                u8_dec(x->box_string, &x->box_selectionStart);
-        }
-        else if (n == 127)      /* delete */
-        {
-            if (x->box_selectionEnd < x->box_stringSizeInBytes && (x->box_selectionStart == x->box_selectionEnd))
-                u8_inc(x->box_string, &x->box_selectionEnd);
+    if (s == sym_Right) {
+    
+        if (x->box_selectionEnd == x->box_selectionStart) {
+            if (x->box_selectionStart < x->box_stringSizeInBytes) {
+                u8_inc (x->box_string, &x->box_selectionStart);
+            }
+        }  
+        
+        x->box_selectionEnd = x->box_selectionStart; 
+        
+    } else if (s == sym_Left) {
+    
+        if (x->box_selectionEnd == x->box_selectionStart) {
+            if (x->box_selectionStart > 0) {
+                u8_dec (x->box_string, &x->box_selectionStart);
+            }
         }
         
-        ndel = x->box_selectionEnd - x->box_selectionStart;
-        for (i = x->box_selectionEnd; i < x->box_stringSizeInBytes; i++)
-            x->box_string[i- ndel] = x->box_string[i];
-        newsize = x->box_stringSizeInBytes - ndel;
-        x->box_string = PD_MEMORY_RESIZE(x->box_string, x->box_stringSizeInBytes, newsize);
-        x->box_stringSizeInBytes = newsize;
+         x->box_selectionEnd = x->box_selectionStart;
+    }
+    
+    return (s == sym_Right || s == sym_Left);
+}
+
+static int boxtext_keyDelete (t_boxtext *x, t_symbol *s)
+{
+    if (s == sym_BackSpace) {
+        if (x->box_selectionStart == x->box_selectionEnd) {
+            if (x->box_selectionStart > 0) { 
+                u8_dec (x->box_string, &x->box_selectionStart); 
+            }
+        }
+        
+    } else if (s == sym_Delete) {
+        if (x->box_selectionStart == x->box_selectionEnd) {
+            if (x->box_selectionEnd < x->box_stringSizeInBytes) {
+                u8_inc (x->box_string, &x->box_selectionEnd);
+            }
+        }
+    }
+    
+    int toDelete = (x->box_selectionEnd - x->box_selectionStart);
+
+    if (toDelete > 0) {
+    //
+    int oldSize = x->box_stringSizeInBytes;
+    int newSize = x->box_stringSizeInBytes - toDelete;
+    int i;
+    for (i = x->box_selectionEnd; i < oldSize; i++) { x->box_string[i - toDelete] = x->box_string[i]; }
+    x->box_string = PD_MEMORY_RESIZE (x->box_string, oldSize, newSize);
+    x->box_stringSizeInBytes = newSize;
+    x->box_selectionEnd = x->box_selectionStart;
+    //
+    }
+    
+    return (s == sym_BackSpace || s == sym_Delete);
+}
+
+void boxtext_key (t_boxtext *x, int n, t_symbol *s)
+{
+    PD_ASSERT (s);
+    
+    if (boxtext_keyArrows (x, s)) { }
+    else if (boxtext_keyDelete (x, s)) { }
+    else {
 
 /* at Guenter's suggestion, use 'n>31' to test wither a character might
 be printable in whatever 8-bit character set we find ourselves. */
 
 /*-- moo:
-  ... but test with "<" rather than "!=" in order to accomodate unicode
-  codepoints for n (which we get since Tk is sending the "%A" substitution
-  for bind <Key>), effectively reducing the coverage of this clause to 7
-  bits.  Case n>127 is covered by the next clause.
+... but test with "<" rather than "!=" in order to accomodate unicode
+codepoints for n (which we get since Tk is sending the "%A" substitution
+for bind <Key>), effectively reducing the coverage of this clause to 7
+bits.  Case n>127 is covered by the next clause.
 */
-        if (n == '\n' || (n > 31 && n < 127))
-        {
-            newsize = x->box_stringSizeInBytes+1;
-            x->box_string = PD_MEMORY_RESIZE(x->box_string, x->box_stringSizeInBytes, newsize);
-            for (i = x->box_stringSizeInBytes; i > x->box_selectionStart; i--)
-                x->box_string[i] = x->box_string[i-1];
-            x->box_string[x->box_selectionStart] = n;
-            x->box_stringSizeInBytes = newsize;
-            x->box_selectionStart = x->box_selectionStart + 1;
-        }
-        /*--moo: check for unicode codepoints beyond 7-bit ASCII --*/
-        else if (n > 127)
-        {
-            int ch_nbytes = u8_wc_nbytes(n);
-            newsize = x->box_stringSizeInBytes + ch_nbytes;
-            x->box_string = PD_MEMORY_RESIZE(x->box_string, x->box_stringSizeInBytes, newsize);
-            for (i = newsize-1; i > x->box_selectionStart; i--)
-                x->box_string[i] = x->box_string[i-ch_nbytes];
-            x->box_stringSizeInBytes = newsize;
-            /*-- moo: assume canvas_key() has encoded keysym as UTF-8 */
-            strncpy(x->box_string+x->box_selectionStart, keysym->s_name, ch_nbytes);
-            x->box_selectionStart = x->box_selectionStart + ch_nbytes;
-        }
-        x->box_selectionEnd = x->box_selectionStart;
-        x->box_glist->gl_editor->e_isTextDirty = 1;
-    }
-    else if (!strcmp(keysym->s_name, "Right"))
+    int i;
+    int newsize;
+    
+    if (n == '\n' || (n > 31 && n < 127))
     {
-        if (x->box_selectionEnd == x->box_selectionStart && x->box_selectionStart < x->box_stringSizeInBytes)
-        {
-            u8_inc(x->box_string, &x->box_selectionStart);
-            x->box_selectionEnd = x->box_selectionStart;
-        }
-        else
-            x->box_selectionStart = x->box_selectionEnd;
+        newsize = x->box_stringSizeInBytes+1;
+        x->box_string = PD_MEMORY_RESIZE(x->box_string, x->box_stringSizeInBytes, newsize);
+        for (i = x->box_stringSizeInBytes; i > x->box_selectionStart; i--)
+            x->box_string[i] = x->box_string[i-1];
+        x->box_string[x->box_selectionStart] = n;
+        x->box_stringSizeInBytes = newsize;
+        x->box_selectionStart = x->box_selectionStart + 1;
     }
-    else if (!strcmp(keysym->s_name, "Left"))
+    /*--moo: check for unicode codepoints beyond 7-bit ASCII --*/
+    else if (n > 127)
     {
-        if (x->box_selectionEnd == x->box_selectionStart && x->box_selectionStart > 0)
-        {
-            u8_dec(x->box_string, &x->box_selectionStart);
-            x->box_selectionEnd = x->box_selectionStart;
-        }
-        else
-            x->box_selectionEnd = x->box_selectionStart;
+        int ch_nbytes = u8_wc_nbytes(n);
+        newsize = x->box_stringSizeInBytes + ch_nbytes;
+        x->box_string = PD_MEMORY_RESIZE(x->box_string, x->box_stringSizeInBytes, newsize);
+        for (i = newsize-1; i > x->box_selectionStart; i--)
+            x->box_string[i] = x->box_string[i-ch_nbytes];
+        x->box_stringSizeInBytes = newsize;
+        /*-- moo: assume canvas_key() has encoded keysym as UTF-8 */
+        strncpy(x->box_string+x->box_selectionStart, s->s_name, ch_nbytes);
+        x->box_selectionStart = x->box_selectionStart + ch_nbytes;
     }
-        /* this should be improved...  life's too short */
-    else if (!strcmp(keysym->s_name, "Up"))
-    {
-        if (x->box_selectionStart)
-            u8_dec(x->box_string, &x->box_selectionStart);
-        while (x->box_selectionStart > 0 && x->box_string[x->box_selectionStart] != '\n')
-            u8_dec(x->box_string, &x->box_selectionStart);
-        x->box_selectionEnd = x->box_selectionStart;
-    }
-    else if (!strcmp(keysym->s_name, "Down"))
-    {
-        while (x->box_selectionEnd < x->box_stringSizeInBytes &&
-            x->box_string[x->box_selectionEnd] != '\n')
-            u8_inc(x->box_string, &x->box_selectionEnd);
-        if (x->box_selectionEnd < x->box_stringSizeInBytes)
-            u8_inc(x->box_string, &x->box_selectionEnd);
-        x->box_selectionStart = x->box_selectionEnd;
+    x->box_selectionEnd = x->box_selectionStart;
+    x->box_glist->gl_editor->e_isTextDirty = 1;
+    
     }
 
-    boxtext_send(x, BOX_UPDATE, 0, 0);
+    boxtext_send (x, BOX_UPDATE, 0, 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

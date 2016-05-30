@@ -661,8 +661,6 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
     
     if (glist && glist->gl_editor && isDown) {
     //
-    int isArrows = (s == sym_Up || s == sym_Down || s == sym_Left || s == sym_Right);
-
     if (glist->gl_editor->e_action == ACTION_MOVE) { glist->gl_editor->e_action = ACTION_NONE; }
     
     if (glist->gl_editor->e_grabbed && glist->gl_editor->e_fnKey) {
@@ -671,11 +669,9 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
         }
         
     } else if (glist->gl_editor->e_selectedText) {
-        if (n || isArrows) {
-            rtext_key (glist->gl_editor->e_selectedText, (int)n, s);
-            if (glist->gl_editor->e_isTextDirty) { 
-                canvas_dirty (glist, 1); 
-            }
+        boxtext_key (glist->gl_editor->e_selectedText, (int)n, s);
+        if (glist->gl_editor->e_isTextDirty) { 
+            canvas_dirty (glist, 1); 
         }
         
     } else if (s == sym_Delete || s == sym_BackSpace) {
@@ -862,7 +858,7 @@ void canvas_cut (t_glist *glist)
     if (glist->gl_editor->e_isSelectedline)    { canvas_removeSelectedLine (glist); }
     else if (glist->gl_editor->e_selectedText) {
         canvas_copy (glist);
-        rtext_key (glist->gl_editor->e_selectedText, 127, &s_);
+        boxtext_key (glist->gl_editor->e_selectedText, 127, sym_Delete);
         canvas_dirty (glist, 1);
         
     } else if (glist->gl_editor->e_selectedObjects) {
