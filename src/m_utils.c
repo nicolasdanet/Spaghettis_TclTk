@@ -94,6 +94,34 @@ t_error string_addSprintf (char *dest, size_t size, const char *format, ...)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static int string_indexOfFirstCharUntil (char *s, char c, size_t n)
+{
+    char *s2 = s + n;
+    
+    int i = 0;
+    
+    while (s != s2) {
+        if (*s == c) { return i; } 
+        i++; 
+        s++;
+    }
+    
+    return -1;
+}
+
+static int string_indexOfFirstCharFrom (char *s, char c, size_t n)
+{
+    char *s2 = s + n;
+    
+    while (s2 != s) { 
+        s2--;
+        n--;
+        if (*s2 == c) { return n; }
+    }
+    
+    return -1;
+}
+
 int string_indexOfFirstOccurrenceUntil (char *s, const char *c, size_t n)
 {
     int k = n;
@@ -120,34 +148,6 @@ int string_indexOfFirstOccurrenceFrom (char *s, const char *c, size_t n)
     }
     
     return k;
-}
-
-int string_indexOfFirstCharUntil (char *s, char c, size_t n)
-{
-    char *s2 = s + n;
-    
-    int i = 0;
-    
-    while (s != s2) {
-        if (*s == c) { return i; } 
-        i++; 
-        s++;
-    }
-    
-    return -1;
-}
-
-int string_indexOfFirstCharFrom (char *s, char c, size_t n)
-{
-    char *s2 = s + n;
-    
-    while (s2 != s) { 
-        s2--;
-        n--;
-        if (*s2 == c) { return n; }
-    }
-    
-    return -1;
 }
 
 // -----------------------------------------------------------------------------------------------------------

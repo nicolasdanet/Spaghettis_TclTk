@@ -209,8 +209,6 @@ t_error     string_addSprintf                           (char *dest, size_t size
 
 int         string_indexOfFirstOccurrenceUntil          (char *s, const char *c, size_t n);
 int         string_indexOfFirstOccurrenceFrom           (char *s, const char *c, size_t n);
-int         string_indexOfFirstCharUntil                (char *s, char c, size_t size);
-int         string_indexOfFirstCharFrom                 (char *s, char c, size_t size);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

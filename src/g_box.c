@@ -126,7 +126,7 @@ static int boxtext_sendTypeset (t_boxtext *x,
     int charactersToConsider    = PD_MIN (lineLengthInCharacters, charactersThatRemains);
     int bytesToConsider         = u8_offset (head, charactersToConsider);
     int charactersUntilWrap     = 0;
-    int bytesUntilWrap          = string_indexOfFirstCharUntil (head, '\n', bytesToConsider);
+    int bytesUntilWrap          = string_indexOfFirstOccurrenceUntil (head, "\n", bytesToConsider);
     int accumulatedOffset       = bufferPosition - headInBytes;
     
     int eatCharacter = 1;       /* Remove the character used to wrap (i.e. space and new line). */
@@ -135,7 +135,7 @@ static int boxtext_sendTypeset (t_boxtext *x,
     else {
         if (charactersThatRemains > lineLengthInCharacters) {
         
-            bytesUntilWrap = string_indexOfFirstCharFrom (head, ' ', bytesToConsider + 1);
+            bytesUntilWrap = string_indexOfFirstOccurrenceFrom (head, " ", bytesToConsider + 1);
             if (bytesUntilWrap >= 0) { charactersUntilWrap = u8_charnum (head, bytesUntilWrap); }
             else {
                 charactersUntilWrap = charactersToConsider;
