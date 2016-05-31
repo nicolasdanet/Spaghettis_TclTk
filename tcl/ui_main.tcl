@@ -93,6 +93,7 @@ package require ui_array
 package require ui_atom
 package require ui_audio
 package require ui_bind
+package require ui_box
 package require ui_canvas
 package require ui_confirm
 package require ui_console
@@ -102,7 +103,6 @@ package require ui_iem
 package require ui_interface
 package require ui_menu
 package require ui_midi
-package require ui_object
 package require ui_patch
 package require ui_path
 package require ui_text

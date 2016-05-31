@@ -262,7 +262,7 @@
 		3789718F1C4F712A00263434 /* ui_main.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.tcl; path = ui_main.tcl; sourceTree = "<group>"; };
 		378971901C4F712A00263434 /* ui_menu.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.tcl; path = ui_menu.tcl; sourceTree = "<group>"; };
 		378971911C4F712A00263434 /* ui_midi.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.tcl; path = ui_midi.tcl; sourceTree = "<group>"; };
-		378971921C4F712A00263434 /* ui_object.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.tcl; path = ui_object.tcl; sourceTree = "<group>"; };
+		378971921C4F712A00263434 /* ui_box.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.tcl; path = ui_box.tcl; sourceTree = "<group>"; };
 		378971931C4F712A00263434 /* ui_patch.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.tcl; path = ui_patch.tcl; sourceTree = "<group>"; };
 		378971941C4F712A00263434 /* ui_path.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.tcl; path = ui_path.tcl; sourceTree = "<group>"; };
 		378971951C4F712A00263434 /* ui_text.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.tcl; path = ui_text.tcl; sourceTree = "<group>"; };
@@ -687,7 +687,7 @@
 				378971891C4F712A00263434 /* ui_interface.tcl */,
 				378971881C4F712A00263434 /* ui_confirm.tcl */,
 				378971931C4F712A00263434 /* ui_patch.tcl */,
-				378971921C4F712A00263434 /* ui_object.tcl */,
+				378971921C4F712A00263434 /* ui_box.tcl */,
 				378971941C4F712A00263434 /* ui_path.tcl */,
 				378971911C4F712A00263434 /* ui_midi.tcl */,
 				378971851C4F712A00263434 /* ui_audio.tcl */,

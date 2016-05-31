@@ -7,6 +7,7 @@ package ifneeded ui_array 1.0           [list source [file join $dir ui_array.tc
 package ifneeded ui_atom 1.0            [list source [file join $dir ui_atom.tcl]]
 package ifneeded ui_audio 1.0           [list source [file join $dir ui_audio.tcl]]
 package ifneeded ui_bind 1.0            [list source [file join $dir ui_bind.tcl]]
+package ifneeded ui_box 1.0             [list source [file join $dir ui_box.tcl]]
 package ifneeded ui_canvas 1.0          [list source [file join $dir ui_canvas.tcl]]
 package ifneeded ui_confirm 1.0         [list source [file join $dir ui_confirm.tcl]]
 package ifneeded ui_console 1.0         [list source [file join $dir ui_console.tcl]]
@@ -18,7 +19,6 @@ package ifneeded ui_menu 1.0            [list source [file join $dir ui_menu.tcl
 package ifneeded ui_midi 1.0            [list source [file join $dir ui_midi.tcl]]
 package ifneeded ui_patch 1.0           [list source [file join $dir ui_patch.tcl]]
 package ifneeded ui_path 1.0            [list source [file join $dir ui_path.tcl]]
-package ifneeded ui_object 1.0          [list source [file join $dir ui_object.tcl]]
 package ifneeded ui_text 1.0            [list source [file join $dir ui_text.tcl]]
 
 # ------------------------------------------------------------------------------------------------------------

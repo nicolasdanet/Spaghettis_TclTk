@@ -250,7 +250,7 @@ static int boxtext_send (t_boxtext *x, int action, int a, int b)
         x->box_checked = 1;
         
     } else if (action == BOX_FIRST) {
-        sys_vGui ("::ui_object::newText .x%lx.c %s %f %f {%s} %d #%06x\n",      // --
+        sys_vGui ("::ui_box::newText .x%lx.c %s %f %f {%s} %d #%06x\n",      // --
                         view,
                         x->box_tag,
                         (double)text_xpix (x->box_object, x->box_glist) + BOX_MARGIN_LEFT, 
@@ -260,7 +260,7 @@ static int boxtext_send (t_boxtext *x, int action, int a, int b)
                         (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
                                 
     } else if (action == BOX_UPDATE) {
-        sys_vGui ("::ui_object::setText .x%lx.c %s {%s}\n",     // --
+        sys_vGui ("::ui_box::setText .x%lx.c %s {%s}\n",     // --
                         view,
                         x->box_tag,
                         buffer);
@@ -446,7 +446,7 @@ void boxtext_activate (t_boxtext *x, int state)
 {
     if (state) {
     //
-    sys_vGui ("::ui_object::setEditing .x%lx %s 1\n", canvas_getView (x->box_glist), x->box_tag);
+    sys_vGui ("::ui_box::setEditing .x%lx %s 1\n", canvas_getView (x->box_glist), x->box_tag);
                     
     x->box_glist->gl_editor->e_selectedText = x;
     x->box_glist->gl_editor->e_isTextDirty  = 0;
@@ -458,7 +458,7 @@ void boxtext_activate (t_boxtext *x, int state)
     //
     } else {
     //
-    sys_vGui ("::ui_object::setEditing .x%lx {} 0\n", canvas_getView (x->box_glist));   // --
+    sys_vGui ("::ui_box::setEditing .x%lx {} 0\n", canvas_getView (x->box_glist));   // --
                     
     if (x->box_glist->gl_editor->e_selectedText == x) { x->box_glist->gl_editor->e_selectedText = NULL; }
     
