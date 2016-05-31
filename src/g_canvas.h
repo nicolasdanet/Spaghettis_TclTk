@@ -581,6 +581,7 @@ char            *boxtext_getTag                         (t_boxtext *x);
 
 void            boxtext_free                            (t_boxtext *x);
 void            boxtext_update                          (t_boxtext *x);
+void            boxtext_dirty                           (t_boxtext *x);
 int             boxtext_getWidth                        (t_boxtext *x);
 int             boxtext_getHeight                       (t_boxtext *x);
 void            boxtext_getText                         (t_boxtext *x, char **p, int *size);

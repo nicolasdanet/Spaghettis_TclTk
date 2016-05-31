@@ -247,7 +247,7 @@ static int boxtext_send (t_boxtext *x, int action, int a, int b)
     }
         
     if (action == BOX_CHECK) {
-        x->box_checked = 1;                                 /* Needed only once at creation time. */
+        x->box_checked = 1;
         
     } else if (action == BOX_FIRST) {
         sys_vGui ("::ui_object::newText .x%lx.c %s %f %f {%s} %d #%06x\n",      // --
@@ -369,6 +369,11 @@ void boxtext_update (t_boxtext *x)
     buffer_toStringUnzeroed (x->box_object->te_buffer, &x->box_string, &x->box_stringSizeInBytes);
     
     boxtext_send (x, BOX_UPDATE, 0, 0);
+}
+
+void boxtext_dirty (t_boxtext *x)
+{
+    x->box_checked = 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------

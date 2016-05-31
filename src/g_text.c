@@ -1099,8 +1099,8 @@ static void text_vis(t_gobj *z, t_glist *glist, int vis)
             t_boxtext *y = boxtext_fetch(glist, x);
             if (x->te_type == TYPE_ATOM)
                 glist_retext(glist, x);
-            text_drawborder(x, glist, boxtext_getTag(y), 1);
             boxtext_draw(y);
+            text_drawborder(x, glist, boxtext_getTag(y), 1);
         }
     }
     else
@@ -1108,6 +1108,7 @@ static void text_vis(t_gobj *z, t_glist *glist, int vis)
         t_boxtext *y = boxtext_fetch(glist, x);
         if (gobj_isVisible(&x->te_g, glist))
         {
+            boxtext_dirty (y);
             text_eraseborder(x, glist, boxtext_getTag(y));
             boxtext_erase(y);
         }
