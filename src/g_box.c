@@ -108,28 +108,28 @@ static int boxtext_sendTypeset (t_boxtext *x,
     
     {
     //
-    int bufferPosition          = 0;
-    int widthInCharacters       = x->box_object->te_width;
-    int numberOfCharacters      = u8_charnum (x->box_string, x->box_stringSizeInBytes);
-    int fontWidth               = font_getHostFontWidth (fontSize);
-    int fontHeight              = font_getHostFontHeight (fontSize);
-    int lineLengthInCharacters  = (widthInCharacters ? widthInCharacters : BOX_DEFAULT_LINE);
-    int indexOfMouse            = -1;
-    int numberOfLines           = 0;
-    int numberOfColumns         = 0;
-    int headInBytes             = 0;
-    int charactersThatRemains   = numberOfCharacters;
+    int     bufferPosition          = 0;
+    int     widthInCharacters       = x->box_object->te_width;
+    int     numberOfCharacters      = u8_charnum (x->box_string, x->box_stringSizeInBytes);
+    double  fontWidth               = font_getHostFontWidth (fontSize);
+    double  fontHeight              = font_getHostFontHeight (fontSize);
+    int     lineLengthInCharacters  = (widthInCharacters ? widthInCharacters : BOX_DEFAULT_LINE);
+    int     indexOfMouse            = -1;
+    int     numberOfLines           = 0;
+    int     numberOfColumns         = 0;
+    int     headInBytes             = 0;
+    int     charactersThatRemains   = numberOfCharacters;
         
     while (charactersThatRemains > 0) { 
     //
-    char *head                  = x->box_string + headInBytes;
+    char *head                      = x->box_string + headInBytes;
     
-    int charactersToConsider    = PD_MIN (lineLengthInCharacters, charactersThatRemains);
-    int bytesToConsider         = u8_offset (head, charactersToConsider);
-    int charactersUntilWrap     = 0;
-    int bytesUntilWrap          = string_indexOfFirstOccurrenceUntil (head, "\n", bytesToConsider);
-    int accumulatedOffset       = bufferPosition - headInBytes;
-    
+    int charactersToConsider        = PD_MIN (lineLengthInCharacters, charactersThatRemains);
+    int bytesToConsider             = u8_offset (head, charactersToConsider);
+    int charactersUntilWrap         = 0;
+    int bytesUntilWrap              = string_indexOfFirstOccurrenceUntil (head, "\n", bytesToConsider);
+    int accumulatedOffset           = bufferPosition - headInBytes;
+        
     int eatCharacter = 1;       /* Remove the character used to wrap (i.e. space and new line). */
     
     if (bytesUntilWrap >= 0) { charactersUntilWrap = u8_charnum (head, bytesUntilWrap); }
@@ -203,8 +203,8 @@ static int boxtext_sendTypeset (t_boxtext *x,
         }
     }
     
-    *widthInPixels  = (BOX_MARGIN_LEFT + BOX_MARGIN_RIGHT) + (numberOfColumns * fontWidth);
-    *heightInPixels = (BOX_MARGIN_TOP + BOX_MARGIN_BOTTOM) + (numberOfLines * fontHeight);
+    *widthInPixels  = (int)((BOX_MARGIN_LEFT + BOX_MARGIN_RIGHT) + (numberOfColumns * fontWidth));
+    *heightInPixels = (int)((BOX_MARGIN_TOP + BOX_MARGIN_BOTTOM) + (numberOfLines * fontHeight));
     
     buffer[bufferPosition] = 0;
     
