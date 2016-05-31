@@ -47,6 +47,7 @@ struct _boxtext {
     int                 box_isActive;
     int                 box_widthInPixels;
     int                 box_heightInPixels;
+    int                 box_checked;
     char                box_tag[BOX_TAG_SIZE];
     };
 
@@ -235,8 +236,19 @@ static int boxtext_send (t_boxtext *x, int action, int a, int b)
 
     t_glist *view = canvas_getView (x->box_glist);
     int isSelected = canvas_isObjectSelected (x->box_glist, cast_gobj (x->box_object));
+        
+    int resized = 0;
     
-    if (action == BOX_FIRST) {
+    if (widthInPixels != x->box_widthInPixels || heightInPixels != x->box_heightInPixels) {
+        resized = 1;
+        x->box_widthInPixels  = widthInPixels;
+        x->box_heightInPixels = heightInPixels;
+    }
+        
+    if (action == BOX_CHECK) {
+        x->box_checked = 1;                                 /* Needed only once at creation time. */
+        
+    } else if (action == BOX_FIRST) {
         sys_vGui ("::ui_object::newText .x%lx.c %s %f %f {%s} %d #%06x\n",      // --
                         view,
                         x->box_tag,
@@ -245,16 +257,14 @@ static int boxtext_send (t_boxtext *x, int action, int a, int b)
                         buffer, 
                         font_getHostFontSize (fontSize),
                         (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
-                
+                                
     } else if (action == BOX_UPDATE) {
         sys_vGui ("::ui_object::setText .x%lx.c %s {%s}\n",     // --
                         view,
                         x->box_tag,
                         buffer);
                     
-        if (widthInPixels != x->box_widthInPixels || heightInPixels != x->box_heightInPixels) {
-            text_drawborder (x->box_object, x->box_glist, x->box_tag, widthInPixels, heightInPixels, 0);
-        }
+        if (resized) { text_drawborder (x->box_object, x->box_glist, x->box_tag, 0); }
                 
         if (x->box_isActive) {
         
@@ -283,10 +293,7 @@ static int boxtext_send (t_boxtext *x, int action, int a, int b)
             }
         }
     }
-    
-    x->box_widthInPixels  = widthInPixels;
-    x->box_heightInPixels = heightInPixels;
-    
+
     PD_MEMORY_FREE (buffer);
     
     return indexOfMouse;
@@ -374,13 +381,13 @@ char *boxtext_getTag (t_boxtext *x)
 
 int boxtext_getWidth (t_boxtext *x)
 {
-    boxtext_send (x, BOX_CHECK, 0, 0);
+    if (!x->box_checked) { boxtext_send (x, BOX_CHECK, 0, 0); }
     return x->box_widthInPixels;
 }
 
 int boxtext_getHeight (t_boxtext *x)
 {
-    boxtext_send (x, BOX_CHECK, 0, 0);
+    if (!x->box_checked) { boxtext_send (x, BOX_CHECK, 0, 0); }
     return x->box_heightInPixels;
 }
 
@@ -597,6 +604,10 @@ static void boxtext_keyCodePoint (t_boxtext *x, int n, t_symbol *s)
     strncpy (x->box_string + x->box_selectionStart, s->s_name, k);
     x->box_selectionStart = x->box_selectionStart + k;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void boxtext_key (t_boxtext *x, int n, t_symbol *s)
 {

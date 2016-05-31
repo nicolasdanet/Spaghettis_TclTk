@@ -1061,8 +1061,7 @@ static void text_displace(t_gobj *z, t_glist *glist,
     {
         t_boxtext *y = boxtext_fetch(glist, x);
         boxtext_displace(y, dx, dy);
-        text_drawborder(x, glist, boxtext_getTag(y),
-            boxtext_getWidth(y), boxtext_getHeight(y), 0);
+        text_drawborder(x, glist, boxtext_getTag(y), 0);
         canvas_updateLinesByObject(glist, x);
     }
 }
@@ -1100,8 +1099,7 @@ static void text_vis(t_gobj *z, t_glist *glist, int vis)
             t_boxtext *y = boxtext_fetch(glist, x);
             if (x->te_type == TYPE_ATOM)
                 glist_retext(glist, x);
-            text_drawborder(x, glist, boxtext_getTag(y),
-                boxtext_getWidth(y), boxtext_getHeight(y), 1);
+            text_drawborder(x, glist, boxtext_getTag(y), 1);
             boxtext_draw(y);
         }
     }
@@ -1279,13 +1277,14 @@ void glist_drawio(t_glist *glist, t_object *ob, int firsttime,
 }
 
 void text_drawborder(t_object *x, t_glist *glist,
-    char *tag, int width2, int height2, int firsttime)
+    char *tag, int firsttime)
 {
     t_object *ob;
     int x1, y1, x2, y2, width, height;
     text_getrect(&x->te_g, glist, &x1, &y1, &x2, &y2);
     width = x2 - x1;
     height = y2 - y1;
+    
     if (x->te_type == TYPE_OBJECT)
     {
         char *pattern = ((pd_class((t_pd *)x) == text_class) ? "-" : "\"\"");

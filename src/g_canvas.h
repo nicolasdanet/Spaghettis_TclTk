@@ -693,7 +693,7 @@ void     glist_eraseio          (t_glist *glist, t_object *ob, char *tag);
 
 void text_save          (t_gobj *z, t_buffer *b);
 void text_setto         (t_object *x, t_glist *glist, char *buf, int bufsize);
-void text_drawborder    (t_object *x, t_glist *glist, char *tag, int width, int height, int firsttime);
+void text_drawborder    (t_object *x, t_glist *glist, char *tag, int firsttime);
 void text_eraseborder   (t_object *x, t_glist *glist, char *tag);
 int  text_xcoord        (t_object *x, t_glist *glist);
 int  text_ycoord        (t_object *x, t_glist *glist);
