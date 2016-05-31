@@ -24,12 +24,12 @@
 #pragma mark -
 
 typedef struct _fontinfo {
-    int fi_size;
-    int fi_width;
-    int fi_height;
-    int fi_hostSize;
-    int fi_hostWidth;
-    int fi_hostHeight;
+    int     fi_size;
+    int     fi_requiredWidth;
+    int     fi_requiredHeight;
+    int     fi_hostSize;
+    double  fi_hostWidth;
+    double  fi_hostHeight;
     } t_fontinfo;
     
 // -----------------------------------------------------------------------------------------------------------
@@ -42,12 +42,12 @@ static t_fontsize font_defaultSize = 12;                /* Shared. */
 
 static t_fontinfo font_fontList[FONT_LIST_SIZE] =       /* Shared. */
     {
-        { 8,   6, 10,   8,   6, 10 }, 
-        { 10,  7, 13,   10,  7, 13 }, 
-        { 12,  9, 16,   12,  9, 16 },
-        { 16, 10, 21,   16, 10, 21 }, 
-        { 24, 15, 25,   24, 15, 25 }, 
-        { 36, 25, 45,   36, 25, 45 }
+        { 8,   6, 10,   8,   6.0, 10.0 }, 
+        { 10,  7, 13,   10,  7.0, 13.0 }, 
+        { 12,  9, 16,   12,  9.0, 16.0 },
+        { 16, 10, 21,   16, 10.0, 21.0 }, 
+        { 24, 15, 25,   24, 15.0, 25.0 }, 
+        { 36, 25, 45,   36, 25.0, 45.0 }
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -102,18 +102,18 @@ int font_getHostFontSize (t_fontsize fontSize)
     return PD_MAX (k, 1);
 }
 
-int font_getHostFontWidth (t_fontsize fontSize)
+double font_getHostFontWidth (t_fontsize fontSize)
 {
-    int k = font_getNearest (fontSize)->fi_hostWidth;
+    double k = font_getNearest (fontSize)->fi_hostWidth;
     
-    return PD_MAX (k, 1);
+    return PD_MAX (k, 1.0);
 }
 
-int font_getHostFontHeight (t_fontsize fontSize)
+double font_getHostFontHeight (t_fontsize fontSize)
 {
-    int k = font_getNearest (fontSize)->fi_hostHeight;
+    double k = font_getNearest (fontSize)->fi_hostHeight;
     
-    return PD_MAX (k, 1);
+    return PD_MAX (k, 1.0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -131,18 +131,18 @@ void font_withHostMeasured (void *dummy, t_symbol *s, int argc, t_atom *argv)
     for (i = 0; i < FONT_LIST_SIZE; i++) {
     //
     int best = 0;
-    int requiredWidth  = font_fontList[i].fi_width;
-    int requiredHeight = font_fontList[i].fi_height;
+    double requiredWidth  = font_fontList[i].fi_requiredWidth;
+    double requiredHeight = font_fontList[i].fi_requiredHeight;
     
     for (j = 0; j < n; j++) {
-        int w = (int)atom_getFloatAtIndex ((3 * j) + 1, argc, argv);
-        int h = (int)atom_getFloatAtIndex ((3 * j) + 2, argc, argv);
+        double w = atom_getFloatAtIndex ((3 * j) + 1, argc, argv);
+        double h = atom_getFloatAtIndex ((3 * j) + 2, argc, argv);
         if (w <= requiredWidth && h <= requiredHeight) { best = j; }
     }
     
     font_fontList[i].fi_hostSize   = (int)atom_getFloatAtIndex ((3 * best) + 0, argc, argv);
-    font_fontList[i].fi_hostWidth  = (int)atom_getFloatAtIndex ((3 * best) + 1, argc, argv);
-    font_fontList[i].fi_hostHeight = (int)atom_getFloatAtIndex ((3 * best) + 2, argc, argv);
+    font_fontList[i].fi_hostWidth  = atom_getFloatAtIndex ((3 * best) + 1, argc, argv);
+    font_fontList[i].fi_hostHeight = atom_getFloatAtIndex ((3 * best) + 2, argc, argv);
     //
     }
 }

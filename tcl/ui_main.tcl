@@ -231,10 +231,10 @@ proc initialize {} {
     foreach size $::var(fontSizes) {
         set f [::getFont $size]
         font create $f -family $::var(fontFamily) -weight $::var(fontWeight) -size [expr {-($size)}]
-        set lorem [font measure $f "TheQuickBrownFoxJumpsOverTheLazyDog"]
-        set ipsum [string length   "TheQuickBrownFoxJumpsOverTheLazyDog"]
+        set lorem [font measure $f "Bright vixens jump; dozy fowl quack."]
+        set ipsum [string length   "Bright vixens jump; dozy fowl quack."]
         lappend measured $size 
-        lappend measured [expr {$lorem / $ipsum}]
+        lappend measured [expr {$lorem / ($ipsum + 0.0)}]
         lappend measured [font metrics $f -linespace]
     }
 

@@ -842,7 +842,7 @@ static void gatom_getwherelabel(t_gatom *x, t_glist *glist, int *xp, int *yp)
     {
         *xp = x1 - 3 -
             strlen(canvas_expandDollar(x->a_glist, x->a_label)->s_name) *
-            font_getHostFontWidth(canvas_getFontSize(glist));
+            (int)font_getHostFontWidth(canvas_getFontSize(glist));
         *yp = y1 + 2;
     }
     else if (x->a_wherelabel == ATOM_LABELRIGHT)
@@ -853,7 +853,7 @@ static void gatom_getwherelabel(t_gatom *x, t_glist *glist, int *xp, int *yp)
     else if (x->a_wherelabel == ATOM_LABELUP)
     {
         *xp = x1 - 1;
-        *yp = y1 - 1 - font_getHostFontHeight(canvas_getFontSize(glist));;
+        *yp = y1 - 1 - (int)font_getHostFontHeight(canvas_getFontSize(glist));;
     }
     else
     {

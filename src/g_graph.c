@@ -740,7 +740,7 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
             if (g->g_pd == garray_class &&
                 !garray_getname((t_garray *)g, &arrayname))
         {
-            i -= font_getHostFontHeight(canvas_getFontSize(x));
+            i -= (int)font_getHostFontHeight(canvas_getFontSize(x));
             sys_vGui(".x%lx.c create text %d %d -text {%s} -anchor nw\
              -font [::getFont %d] -tags [list %s label graph]\n",
              (long)canvas_getView(x), x1, i, arrayname->s_name,

@@ -154,7 +154,8 @@ static int boxtext_sendTypeset (t_boxtext *x,
     /* Locate the insertion point. */
     
     if (numberOfLines == (int)(b / fontHeight)) {
-        indexOfMouse = headInBytes + u8_offset (head, PD_CLAMP (a / fontWidth, 0, charactersUntilWrap));
+        int k = (a / fontWidth) + 0.5;
+        indexOfMouse = headInBytes + u8_offset (head, PD_CLAMP (k, 0, charactersUntilWrap));
     }
     
     /* Deplace selection points according new characters insertion. */

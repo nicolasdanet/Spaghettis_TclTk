@@ -139,8 +139,8 @@ void        font_setDefaultFontSize                 (int size);
 t_fontsize  font_getDefaultFontSize                 (void);
 t_fontsize  font_getNearestValidFontSize            (int size);
 int         font_getHostFontSize                    (t_fontsize fontSize);
-int         font_getHostFontWidth                   (t_fontsize fontSize);
-int         font_getHostFontHeight                  (t_fontsize fontSize);
+double      font_getHostFontWidth                   (t_fontsize fontSize);
+double      font_getHostFontHeight                  (t_fontsize fontSize);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
