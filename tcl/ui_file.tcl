@@ -49,7 +49,9 @@ proc newPatch {} {
     variable untitledNumber
     variable directoryNew
     
-    ::ui_interface::pdsend "pd new $untitledName-$untitledNumber [::escaped $directoryNew]"
+    set tail [format "%d%s" $untitledNumber [lindex $::var(filesExtensions) 0]]
+    
+    ::ui_interface::pdsend "pd new $untitledName-$tail [::escaped $directoryNew]"
     
     incr untitledNumber 
 }
