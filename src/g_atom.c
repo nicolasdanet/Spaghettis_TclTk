@@ -68,15 +68,15 @@ static t_symbol *gatom_unescapit(t_symbol *s)
 static void gatom_redraw(t_gobj *client, t_glist *glist)
 {
     t_gatom *x = (t_gatom *)client;
-    glist_retext(x->a_glist, &x->a_text);
+    glist_retext(x->a_owner, &x->a_obj);
 }
 
 static void gatom_retext(t_gatom *x, int senditup)
 {
-    buffer_reset(x->a_text.te_buffer);
-    buffer_append(x->a_text.te_buffer, 1, &x->a_atom);
-    if (senditup && canvas_isMapped(x->a_glist))
-        interface_guiQueueAddIfNotAlreadyThere(x, x->a_glist, gatom_redraw);
+    buffer_reset(x->a_obj.te_buffer);
+    buffer_append(x->a_obj.te_buffer, 1, &x->a_atom);
+    if (senditup && canvas_isMapped(x->a_owner))
+        interface_guiQueueAddIfNotAlreadyThere(x, x->a_owner, gatom_redraw);
 }
 
 static void gatom_set(t_gatom *x, t_symbol *s, int argc, t_atom *argv)
@@ -102,33 +102,33 @@ static void gatom_set(t_gatom *x, t_symbol *s, int argc, t_atom *argv)
             changed = (x->a_atom.a_w.w_symbol != oldatom.a_w.w_symbol);
     if (changed)
         gatom_retext(x, 1);
-    x->a_buf[0] = 0;
+    x->a_string[0] = 0;
 }
 
 static void gatom_bang(t_gatom *x)
 {
     if (x->a_atom.a_type == A_FLOAT)
     {
-        if (x->a_text.te_outlet)
-            outlet_float(x->a_text.te_outlet, x->a_atom.a_w.w_float);
-        if (*x->a_expanded_to->s_name && x->a_expanded_to->s_thing)
+        if (x->a_obj.te_outlet)
+            outlet_float(x->a_obj.te_outlet, x->a_atom.a_w.w_float);
+        if (*x->a_send->s_name && x->a_send->s_thing)
         {
-            if (x->a_symto == x->a_symfrom)
+            if (x->a_unexpandedSend == x->a_unexpandedReceive)
                 post_error ("%s: atom with same send/receive name (infinite loop)",
-                        x->a_symto->s_name);
-            else pd_float(x->a_expanded_to->s_thing, x->a_atom.a_w.w_float);
+                        x->a_unexpandedSend->s_name);
+            else pd_float(x->a_send->s_thing, x->a_atom.a_w.w_float);
         }
     }
     else if (x->a_atom.a_type == A_SYMBOL)
     {
-        if (x->a_text.te_outlet)
-            outlet_symbol(x->a_text.te_outlet, x->a_atom.a_w.w_symbol);
-        if (*x->a_symto->s_name && x->a_expanded_to->s_thing)
+        if (x->a_obj.te_outlet)
+            outlet_symbol(x->a_obj.te_outlet, x->a_atom.a_w.w_symbol);
+        if (*x->a_unexpandedSend->s_name && x->a_send->s_thing)
         {
-            if (x->a_symto == x->a_symfrom)
+            if (x->a_unexpandedSend == x->a_unexpandedReceive)
                 post_error ("%s: atom with same send/receive name (infinite loop)",
-                        x->a_symto->s_name);
-            else pd_symbol(x->a_expanded_to->s_thing, x->a_atom.a_w.w_symbol);
+                        x->a_unexpandedSend->s_name);
+            else pd_symbol(x->a_send->s_thing, x->a_atom.a_w.w_symbol);
         }
     }
 }
@@ -143,12 +143,12 @@ static void gatom_float(t_gatom *x, t_float f)
 
 static void gatom_clipfloat(t_gatom *x, t_float f)
 {
-    if (x->a_draglo != 0 || x->a_draghi != 0)
+    if (x->a_lowRange != 0 || x->a_highRange != 0)
     {
-        if (f < x->a_draglo)
-            f = x->a_draglo;
-        if (f > x->a_draghi)
-            f = x->a_draghi;
+        if (f < x->a_lowRange)
+            f = x->a_lowRange;
+        if (f > x->a_highRange)
+            f = x->a_highRange;
     }
     gatom_float(x, f);
 }
@@ -180,7 +180,7 @@ static void gatom_motion(void *z, t_float dx, t_float dy, t_float modifier)
     if (dy == 0) return;
     if (x->a_atom.a_type == A_FLOAT)
     {
-        if (x->a_shift)
+        if ((int)modifier & MODIFIER_SHIFT)
         {
             double nval = x->a_atom.a_w.w_float - 0.01 * dy;
             double trunc = 0.01 * (floor(100. * nval + 0.5));
@@ -203,34 +203,34 @@ static void gatom_key(void *z, t_float f)
 {
     t_gatom *x = (t_gatom *)z;
     int c = f;
-    int len = strlen(x->a_buf);
+    int len = strlen(x->a_string);
     t_atom at;
-    char sbuf[ATOMBUFSIZE + 4];
+    char sbuf[ATOM_BUFFER_SIZE + 4];
     if (c == 0)
     {
         /* we're being notified that no more keys will come for this grab */
-        if (x->a_buf[0])
+        if (x->a_string[0])
             gatom_retext(x, 1);
         return;
     }
     else if (c == '\b')
     {
         if (len > 0)
-        x->a_buf[len-1] = 0;
+        x->a_string[len-1] = 0;
         goto redraw;
     }
     else if (c == '\n')
     {
         if (x->a_atom.a_type == A_FLOAT)
-            x->a_atom.a_w.w_float = atof(x->a_buf);
+            x->a_atom.a_w.w_float = atof(x->a_string);
         else if (x->a_atom.a_type == A_SYMBOL)
-            x->a_atom.a_w.w_symbol = gensym (x->a_buf);
+            x->a_atom.a_w.w_symbol = gensym (x->a_string);
         else { PD_BUG; }
         gatom_bang(x);
         gatom_retext(x, 1);
-        x->a_buf[0] = 0;
+        x->a_string[0] = 0;
     }
-    else if (len < (ATOMBUFSIZE-1))
+    else if (len < (ATOM_BUFFER_SIZE-1))
     {
             /* for numbers, only let reasonable characters through */
         if ((x->a_atom.a_type == A_SYMBOL) ||
@@ -238,20 +238,20 @@ static void gatom_key(void *z, t_float f)
                 || c == 'e' || c == 'E'))
         {
             /* the wchar could expand to up to 4 bytes, which
-             * which might overrun our a_buf;
+             * which might overrun our a_string;
              * therefore we first expand into a temporary buffer, 
-             * and only if the resulting utf8 string fits into a_buf
+             * and only if the resulting utf8 string fits into a_string
              * we apply it
              */
             char utf8[UTF8_MAXIMUM_BYTES];
             int utf8len = u8_wc_toutf8(utf8, c);
-            if((len+utf8len) < (ATOMBUFSIZE-1))
+            if((len+utf8len) < (ATOM_BUFFER_SIZE-1))
             {
                 int j=0;
                 for(j=0; j<utf8len; j++)
-                    x->a_buf[len+j] = utf8[j];
+                    x->a_string[len+j] = utf8[j];
                  
-                x->a_buf[len+utf8len] = 0;
+                x->a_string[len+utf8len] = 0;
             }
             goto redraw;
         }
@@ -259,16 +259,16 @@ static void gatom_key(void *z, t_float f)
     return;
 redraw:
         /* LATER figure out how to avoid creating all these symbols! */
-    sprintf(sbuf, "%s...", x->a_buf);
+    sprintf(sbuf, "%s...", x->a_string);
     SET_SYMBOL(&at, gensym (sbuf));
-    buffer_reset(x->a_text.te_buffer);
-    buffer_append(x->a_text.te_buffer, 1, &at);
-    glist_retext(x->a_glist, &x->a_text);
+    buffer_reset(x->a_obj.te_buffer);
+    buffer_append(x->a_obj.te_buffer, 1, &at);
+    glist_retext(x->a_owner, &x->a_obj);
 }
 
 void gatom_click(t_gatom *x, t_float xpos, t_float ypos, t_float shift, t_float ctrl, t_float alt)
 {
-    if (x->a_text.te_width == 1)
+    if (x->a_obj.te_width == 1)
     {
         if (x->a_atom.a_type == A_FLOAT)
             gatom_float(x, (x->a_atom.a_w.w_float == 0));
@@ -280,15 +280,14 @@ void gatom_click(t_gatom *x, t_float xpos, t_float ypos, t_float shift, t_float 
             if (x->a_atom.a_type != A_FLOAT) return;
             if (x->a_atom.a_w.w_float != 0)
             {
-                x->a_toggle = x->a_atom.a_w.w_float;
+                x->a_toggledValue = x->a_atom.a_w.w_float;
                 gatom_float(x, 0);
                 return;
             }
-            else gatom_float(x, x->a_toggle);
+            else gatom_float(x, x->a_toggledValue);
         }
-        x->a_shift = shift;
-        x->a_buf[0] = 0;
-        glist_grab(x->a_glist, &x->a_text.te_g, (t_motionfn)gatom_motion, gatom_key,
+        x->a_string[0] = 0;
+        glist_grab(x->a_owner, &x->a_obj.te_g, (t_motionfn)gatom_motion, gatom_key,
             xpos, ypos);
     }
 }
@@ -304,69 +303,69 @@ static void gatom_param(t_gatom *x, t_symbol *sel, int argc, t_atom *argv)
     t_symbol *label = gatom_unescapit(atom_getSymbolAtIndex(5, argc, argv));
     t_float wherelabel = atom_getFloatAtIndex(6, argc, argv);
 
-    gobj_visibilityChanged(&x->a_text.te_g, x->a_glist, 0);
-    if (!*symfrom->s_name && *x->a_symfrom->s_name)
-        inlet_new(&x->a_text, &x->a_text.te_g.g_pd, 0, 0);
-    else if (*symfrom->s_name && !*x->a_symfrom->s_name && x->a_text.te_inlet)
+    gobj_visibilityChanged(&x->a_obj.te_g, x->a_owner, 0);
+    if (!*symfrom->s_name && *x->a_unexpandedReceive->s_name)
+        inlet_new(&x->a_obj, &x->a_obj.te_g.g_pd, 0, 0);
+    else if (*symfrom->s_name && !*x->a_unexpandedReceive->s_name && x->a_obj.te_inlet)
     {
-        canvas_deleteLinesByInlets(x->a_glist, &x->a_text,
-            x->a_text.te_inlet, 0);
-        inlet_free(x->a_text.te_inlet);
+        canvas_deleteLinesByInlets(x->a_owner, &x->a_obj,
+            x->a_obj.te_inlet, 0);
+        inlet_free(x->a_obj.te_inlet);
     }
-    if (!*symto->s_name && *x->a_symto->s_name)
-        outlet_new(&x->a_text, 0);
-    else if (*symto->s_name && !*x->a_symto->s_name && x->a_text.te_outlet)
+    if (!*symto->s_name && *x->a_unexpandedSend->s_name)
+        outlet_new(&x->a_obj, 0);
+    else if (*symto->s_name && !*x->a_unexpandedSend->s_name && x->a_obj.te_outlet)
     {
-        canvas_deleteLinesByInlets(x->a_glist, &x->a_text,
-            0, x->a_text.te_outlet);
-        outlet_free(x->a_text.te_outlet);
+        canvas_deleteLinesByInlets(x->a_owner, &x->a_obj,
+            0, x->a_obj.te_outlet);
+        outlet_free(x->a_obj.te_outlet);
     }
     if (draglo >= draghi)
         draglo = draghi = 0;
-    x->a_draglo = draglo;
-    x->a_draghi = draghi;
+    x->a_lowRange = draglo;
+    x->a_highRange = draghi;
     if (width < 0)
         width = 4;
     else if (width > 80)
         width = 80;
-    x->a_text.te_width = width;
-    x->a_wherelabel = ((int)wherelabel & 3);
+    x->a_obj.te_width = width;
+    x->a_position = ((int)wherelabel & 3);
     x->a_label = label;
-    if (*x->a_symfrom->s_name)
-        pd_unbind(&x->a_text.te_g.g_pd,
-            canvas_expandDollar(x->a_glist, x->a_symfrom));
-    x->a_symfrom = symfrom;
-    if (*x->a_symfrom->s_name)
-        pd_bind(&x->a_text.te_g.g_pd,
-            canvas_expandDollar(x->a_glist, x->a_symfrom));
-    x->a_symto = symto;
-    x->a_expanded_to = canvas_expandDollar(x->a_glist, x->a_symto);
-    gobj_visibilityChanged(&x->a_text.te_g, x->a_glist, 1);
-    canvas_dirty(x->a_glist, 1);
+    if (*x->a_unexpandedReceive->s_name)
+        pd_unbind(&x->a_obj.te_g.g_pd,
+            canvas_expandDollar(x->a_owner, x->a_unexpandedReceive));
+    x->a_unexpandedReceive = symfrom;
+    if (*x->a_unexpandedReceive->s_name)
+        pd_bind(&x->a_obj.te_g.g_pd,
+            canvas_expandDollar(x->a_owner, x->a_unexpandedReceive));
+    x->a_unexpandedSend = symto;
+    x->a_send = canvas_expandDollar(x->a_owner, x->a_unexpandedSend);
+    gobj_visibilityChanged(&x->a_obj.te_g, x->a_owner, 1);
+    canvas_dirty(x->a_owner, 1);
 
-    /* glist_retext(x->a_glist, &x->a_text); */
+    /* glist_retext(x->a_owner, &x->a_obj); */
 }
 
     /* ---------------- gatom-specific widget functions --------------- */
 static void gatom_getwherelabel(t_gatom *x, t_glist *glist, int *xp, int *yp)
 {
     int x1, y1, x2, y2, width, height;
-    text_getrect(&x->a_text.te_g, glist, &x1, &y1, &x2, &y2);
+    text_getrect(&x->a_obj.te_g, glist, &x1, &y1, &x2, &y2);
     width = x2 - x1;
     height = y2 - y1;
-    if (x->a_wherelabel == ATOM_LABELLEFT)
+    if (x->a_position == ATOM_LABELLEFT)
     {
         *xp = x1 - 3 -
-            strlen(canvas_expandDollar(x->a_glist, x->a_label)->s_name) *
+            strlen(canvas_expandDollar(x->a_owner, x->a_label)->s_name) *
             (int)font_getHostFontWidth(canvas_getFontSize(glist));
         *yp = y1 + 2;
     }
-    else if (x->a_wherelabel == ATOM_LABELRIGHT)
+    else if (x->a_position == ATOM_LABELRIGHT)
     {
         *xp = x2 + 2;
         *yp = y1 + 2;
     }
-    else if (x->a_wherelabel == ATOM_LABELUP)
+    else if (x->a_position == ATOM_LABELUP)
     {
         *xp = x1 - 1;
         *yp = y1 - 1 - (int)font_getHostFontHeight(canvas_getFontSize(glist));;
@@ -399,7 +398,7 @@ void gatom_vis(t_gobj *z, t_glist *glist, int vis)
             sys_vGui("::ui_box::newText .x%lx.c {%lx.l label text} %f %f {%s} %d %s\n",
                 canvas_getView(glist), x,
                 (double)x1, (double)y1,
-                canvas_expandDollar(x->a_glist, x->a_label)->s_name,
+                canvas_expandDollar(x->a_owner, x->a_label)->s_name,
                 font_getHostFontSize(canvas_getFontSize(glist)),
                 "black");
         }
@@ -414,73 +413,73 @@ void canvas_atom(t_glist *gl, t_atomtype type,
 {
     t_gatom *x = (t_gatom *)pd_new(gatom_class);
     t_atom at;
-    x->a_text.te_width = 0;                        /* don't know it yet. */
-    x->a_text.te_type = TYPE_ATOM;
-    x->a_text.te_buffer = buffer_new();
-    x->a_glist = gl;
+    x->a_obj.te_width = 0;                        /* don't know it yet. */
+    x->a_obj.te_type = TYPE_ATOM;
+    x->a_obj.te_buffer = buffer_new();
+    x->a_owner = gl;
     x->a_atom.a_type = type;
-    x->a_toggle = 1;
-    x->a_draglo = 0;
-    x->a_draghi = 0;
-    x->a_wherelabel = 0;
+    x->a_toggledValue = 1;
+    x->a_lowRange = 0;
+    x->a_highRange = 0;
+    x->a_position = 0;
     x->a_label = &s_;
-    x->a_symfrom = &s_;
-    x->a_symto = x->a_expanded_to = &s_;
+    x->a_unexpandedReceive = &s_;
+    x->a_unexpandedSend = x->a_send = &s_;
     if (type == A_FLOAT)
     {
         x->a_atom.a_w.w_float = 0;
-        x->a_text.te_width = 5;
+        x->a_obj.te_width = 5;
         SET_FLOAT(&at, 0);
     }
     else
     {
         x->a_atom.a_w.w_symbol = &s_symbol;
-        x->a_text.te_width = 10;
+        x->a_obj.te_width = 10;
         SET_SYMBOL(&at, &s_symbol);
     }
-    buffer_append(x->a_text.te_buffer, 1, &at);
+    buffer_append(x->a_obj.te_buffer, 1, &at);
     if (argc > 1)
         /* create from file. x, y, width, low-range, high-range, flags,
             label, receive-name, send-name */
     {
-        x->a_text.te_xCoordinate = atom_getFloatAtIndex(0, argc, argv);
-        x->a_text.te_yCoordinate = atom_getFloatAtIndex(1, argc, argv);
-        x->a_text.te_width = (t_int)atom_getFloatAtIndex(2, argc, argv);
+        x->a_obj.te_xCoordinate = atom_getFloatAtIndex(0, argc, argv);
+        x->a_obj.te_yCoordinate = atom_getFloatAtIndex(1, argc, argv);
+        x->a_obj.te_width = (t_int)atom_getFloatAtIndex(2, argc, argv);
             /* sanity check because some very old patches have trash in this
             field... remove this in 2003 or so: */
-        if (x->a_text.te_width < 0 || x->a_text.te_width > 500)
-            x->a_text.te_width = 4;
-        x->a_draglo = atom_getFloatAtIndex(3, argc, argv);
-        x->a_draghi = atom_getFloatAtIndex(4, argc, argv);
-        x->a_wherelabel = (((int)atom_getFloatAtIndex(5, argc, argv)) & 3);
+        if (x->a_obj.te_width < 0 || x->a_obj.te_width > 500)
+            x->a_obj.te_width = 4;
+        x->a_lowRange = atom_getFloatAtIndex(3, argc, argv);
+        x->a_highRange = atom_getFloatAtIndex(4, argc, argv);
+        x->a_position = (((int)atom_getFloatAtIndex(5, argc, argv)) & 3);
         x->a_label = gatom_unescapit(atom_getSymbolAtIndex(6, argc, argv));
-        x->a_symfrom = gatom_unescapit(atom_getSymbolAtIndex(7, argc, argv));
-        if (*x->a_symfrom->s_name)
-            pd_bind(&x->a_text.te_g.g_pd,
-                canvas_expandDollar(x->a_glist, x->a_symfrom));
+        x->a_unexpandedReceive = gatom_unescapit(atom_getSymbolAtIndex(7, argc, argv));
+        if (*x->a_unexpandedReceive->s_name)
+            pd_bind(&x->a_obj.te_g.g_pd,
+                canvas_expandDollar(x->a_owner, x->a_unexpandedReceive));
 
-        x->a_symto = gatom_unescapit(atom_getSymbolAtIndex(8, argc, argv));
-        x->a_expanded_to = canvas_expandDollar(x->a_glist, x->a_symto);
-        if (x->a_symto == &s_)
-            outlet_new(&x->a_text,
+        x->a_unexpandedSend = gatom_unescapit(atom_getSymbolAtIndex(8, argc, argv));
+        x->a_send = canvas_expandDollar(x->a_owner, x->a_unexpandedSend);
+        if (x->a_unexpandedSend == &s_)
+            outlet_new(&x->a_obj,
                 x->a_atom.a_type == A_FLOAT ? &s_float: &s_symbol);
-        if (x->a_symfrom == &s_)
-            inlet_new(&x->a_text, &x->a_text.te_g.g_pd, 0, 0);
-        glist_add(gl, &x->a_text.te_g);
+        if (x->a_unexpandedReceive == &s_)
+            inlet_new(&x->a_obj, &x->a_obj.te_g.g_pd, 0, 0);
+        glist_add(gl, &x->a_obj.te_g);
     }
     else
     {
         int connectme, xpix, ypix, indx, nobj;
         canvas_howputnew(gl, &connectme, &xpix, &ypix, &indx, &nobj);
-        outlet_new(&x->a_text,
+        outlet_new(&x->a_obj,
             x->a_atom.a_type == A_FLOAT ? &s_float: &s_symbol);
-        inlet_new(&x->a_text, &x->a_text.te_g.g_pd, 0, 0);
+        inlet_new(&x->a_obj, &x->a_obj.te_g.g_pd, 0, 0);
         pd_vMessage(&gl->gl_obj.te_g.g_pd, sym_editmode, "i", 1);
-        x->a_text.te_xCoordinate = xpix;
-        x->a_text.te_yCoordinate = ypix;
-        glist_add(gl, &x->a_text.te_g);
+        x->a_obj.te_xCoordinate = xpix;
+        x->a_obj.te_yCoordinate = ypix;
+        glist_add(gl, &x->a_obj.te_g);
         canvas_deselectAll(gl);
-        canvas_selectObject(gl, &x->a_text.te_g);
+        canvas_selectObject(gl, &x->a_obj.te_g);
         if (connectme) {
             canvas_connect(gl, indx, 0, nobj, 0);
         } else { 
@@ -501,9 +500,9 @@ void canvas_symbolatom(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 
 static void gatom_free(t_gatom *x)
 {
-    if (*x->a_symfrom->s_name)
-        pd_unbind(&x->a_text.te_g.g_pd,
-            canvas_expandDollar(x->a_glist, x->a_symfrom));
+    if (*x->a_unexpandedReceive->s_name)
+        pd_unbind(&x->a_obj.te_g.g_pd,
+            canvas_expandDollar(x->a_owner, x->a_unexpandedReceive));
     guistub_destroyWithKey(x);
 }
 
@@ -512,12 +511,12 @@ static void gatom_properties(t_gobj *z, t_glist *owner)
     t_gatom *x = (t_gatom *)z;
     char buf[200];
     sprintf(buf, "::ui_atom::show %%s %d %g %g {%s} {%s} {%s} %d\n",
-        x->a_text.te_width, x->a_draglo, x->a_draghi,
-                gatom_escapit(x->a_symto)->s_name,
-                gatom_escapit(x->a_symfrom)->s_name,
+        x->a_obj.te_width, x->a_lowRange, x->a_highRange,
+                gatom_escapit(x->a_unexpandedSend)->s_name,
+                gatom_escapit(x->a_unexpandedReceive)->s_name,
                 gatom_escapit(x->a_label)->s_name, 
-                x->a_wherelabel);
-    guistub_new(&x->a_text.te_g.g_pd, x, buf);
+                x->a_position);
+    guistub_new(&x->a_obj.te_g.g_pd, x, buf);
 }
 
     /* this gets called when a message gets sent to an object whose creation

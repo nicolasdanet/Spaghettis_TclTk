@@ -29,7 +29,7 @@ extern t_class *canvas_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define BOX_TAG_SIZE    50
+#define BOX_BUFFER_SIZE         50
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ struct _boxtext {
     int                 box_widthInPixels;
     int                 box_heightInPixels;
     int                 box_checked;
-    char                box_tag[BOX_TAG_SIZE];
+    char                box_tag[BOX_BUFFER_SIZE];
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -316,7 +316,7 @@ t_boxtext *boxtext_new (t_glist *glist, t_object *object)
     
     { 
         t_glist *view = canvas_getView (glist);
-        t_error err   = string_sprintf (x->box_tag, BOX_TAG_SIZE, ".x%lx.t%lx", (t_int)view, (t_int)x);
+        t_error err   = string_sprintf (x->box_tag, BOX_BUFFER_SIZE, ".x%lx.t%lx", (t_int)view, (t_int)x);
         PD_ASSERT (!err);
     }
     

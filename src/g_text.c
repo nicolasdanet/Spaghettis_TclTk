@@ -205,13 +205,13 @@ void text_save(t_gobj *z, t_buffer *b)
         t_symbol *sel = (t == A_SYMBOL ? sym_symbolatom :
             (t == A_FLOAT ? sym_floatatom : sym_intatom));
         t_symbol *label = gatom_escapit(((t_gatom *)x)->a_label);
-        t_symbol *symfrom = gatom_escapit(((t_gatom *)x)->a_symfrom);
-        t_symbol *symto = gatom_escapit(((t_gatom *)x)->a_symto);
+        t_symbol *symfrom = gatom_escapit(((t_gatom *)x)->a_unexpandedReceive);
+        t_symbol *symto = gatom_escapit(((t_gatom *)x)->a_unexpandedSend);
         buffer_vAppend(b, "ssiiifffsss", sym___hash__X, sel,
             (int)x->te_xCoordinate, (int)x->te_yCoordinate, (int)x->te_width,
-            (double)((t_gatom *)x)->a_draglo,
-            (double)((t_gatom *)x)->a_draghi,
-            (double)((t_gatom *)x)->a_wherelabel,
+            (double)((t_gatom *)x)->a_lowRange,
+            (double)((t_gatom *)x)->a_highRange,
+            (double)((t_gatom *)x)->a_position,
             label, symfrom, symto);
     }           
     else        

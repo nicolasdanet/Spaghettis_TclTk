@@ -456,8 +456,8 @@ static void graph_xticks(t_glist *x,
     t_float point, t_float inc, t_float f)
 {
     x->gl_tickX.k_point = point;
-    x->gl_tickX.k_inc = inc;
-    x->gl_tickX.k_lperb = f;
+    x->gl_tickX.k_increment = inc;
+    x->gl_tickX.k_period = f;
     glist_redraw(x);
 }
 
@@ -465,8 +465,8 @@ static void graph_yticks(t_glist *x,
     t_float point, t_float inc, t_float f)
 {
     x->gl_tickY.k_point = point;
-    x->gl_tickY.k_inc = inc;
-    x->gl_tickY.k_lperb = f;
+    x->gl_tickY.k_increment = inc;
+    x->gl_tickY.k_period = f;
     glist_redraw(x);
 }
 
@@ -749,7 +749,7 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
         
             /* draw ticks on horizontal borders.  If lperb field is
             zero, this is disabled. */
-        if (x->gl_tickX.k_lperb)
+        if (x->gl_tickX.k_period)
         {
             t_float upix, lpix;
             if (y2 < y1)
@@ -757,9 +757,9 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
             else upix = y2, lpix = y1;
             for (i = 0, f = x->gl_tickX.k_point;
                 f < 0.99 * x->gl_valueEnd + 0.01*x->gl_valueStart; i++,
-                    f += x->gl_tickX.k_inc)
+                    f += x->gl_tickX.k_increment)
             {
-                int tickpix = (i % x->gl_tickX.k_lperb ? 2 : 4);
+                int tickpix = (i % x->gl_tickX.k_period ? 2 : 4);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
                     canvas_getView(x->gl_parent),
                     (int)glist_xtopixels(x, f), (int)upix,
@@ -769,11 +769,11 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
                     (int)glist_xtopixels(x, f), (int)lpix,
                     (int)glist_xtopixels(x, f), (int)lpix + tickpix, tag);
             }
-            for (i = 1, f = x->gl_tickX.k_point - x->gl_tickX.k_inc;
+            for (i = 1, f = x->gl_tickX.k_point - x->gl_tickX.k_increment;
                 f > 0.99 * x->gl_valueStart + 0.01*x->gl_valueEnd;
-                    i++, f -= x->gl_tickX.k_inc)
+                    i++, f -= x->gl_tickX.k_increment)
             {
-                int tickpix = (i % x->gl_tickX.k_lperb ? 2 : 4);
+                int tickpix = (i % x->gl_tickX.k_period ? 2 : 4);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
                     canvas_getView(x->gl_parent),
                     (int)glist_xtopixels(x, f), (int)upix,
@@ -786,7 +786,7 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
         }
 
             /* draw ticks in vertical borders*/
-        if (x->gl_tickY.k_lperb)
+        if (x->gl_tickY.k_period)
         {
             t_float ubound, lbound;
             if (x->gl_valueDown < x->gl_valueUp)
@@ -794,9 +794,9 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
             else ubound = x->gl_valueDown, lbound = x->gl_valueUp;
             for (i = 0, f = x->gl_tickY.k_point;
                 f < 0.99 * ubound + 0.01 * lbound;
-                    i++, f += x->gl_tickY.k_inc)
+                    i++, f += x->gl_tickY.k_increment)
             {
-                int tickpix = (i % x->gl_tickY.k_lperb ? 2 : 4);
+                int tickpix = (i % x->gl_tickY.k_period ? 2 : 4);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
                     canvas_getView(x->gl_parent),
                     x1, (int)glist_ytopixels(x, f), 
@@ -806,11 +806,11 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
                     x2, (int)glist_ytopixels(x, f), 
                     x2 - tickpix, (int)glist_ytopixels(x, f), tag);
             }
-            for (i = 1, f = x->gl_tickY.k_point - x->gl_tickY.k_inc;
+            for (i = 1, f = x->gl_tickY.k_point - x->gl_tickY.k_increment;
                 f > 0.99 * lbound + 0.01 * ubound;
-                    i++, f -= x->gl_tickY.k_inc)
+                    i++, f -= x->gl_tickY.k_increment)
             {
-                int tickpix = (i % x->gl_tickY.k_lperb ? 2 : 4);
+                int tickpix = (i % x->gl_tickY.k_period ? 2 : 4);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
                     canvas_getView(x->gl_parent),
                     x1, (int)glist_ytopixels(x, f), 

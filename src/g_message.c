@@ -42,28 +42,28 @@ static t_class *message_class, *messresponder_class;
 
 /* ---------------------- the "message" text item ------------------------ */
 
-static void messresponder_bang(t_messresponder *x)
+static void messresponder_bang(t_messageresponder *x)
 {
     outlet_bang(x->mr_outlet);
 }
 
-static void messresponder_float(t_messresponder *x, t_float f)
+static void messresponder_float(t_messageresponder *x, t_float f)
 {
     outlet_float(x->mr_outlet, f);
 }
 
-static void messresponder_symbol(t_messresponder *x, t_symbol *s)
+static void messresponder_symbol(t_messageresponder *x, t_symbol *s)
 {
     outlet_symbol(x->mr_outlet, s);
 }
 
-static void messresponder_list(t_messresponder *x, 
+static void messresponder_list(t_messageresponder *x, 
     t_symbol *s, int argc, t_atom *argv)
 {
     outlet_list(x->mr_outlet, s, argc, argv);
 }
 
-static void messresponder_anything(t_messresponder *x,
+static void messresponder_anything(t_messageresponder *x,
     t_symbol *s, int argc, t_atom *argv)
 {
     outlet_anything(x->mr_outlet, s, argc, argv);
@@ -71,54 +71,54 @@ static void messresponder_anything(t_messresponder *x,
 
 static void message_bang(t_message *x)
 {
-    buffer_eval(x->m_text.te_buffer, &x->m_messresponder.mr_pd, 0, 0);
+    buffer_eval(x->m_obj.te_buffer, &x->m_responder.mr_pd, 0, 0);
 }
 
 static void message_float(t_message *x, t_float f)
 {
     t_atom at;
     SET_FLOAT(&at, f);
-    buffer_eval(x->m_text.te_buffer, &x->m_messresponder.mr_pd, 1, &at);
+    buffer_eval(x->m_obj.te_buffer, &x->m_responder.mr_pd, 1, &at);
 }
 
 static void message_symbol(t_message *x, t_symbol *s)
 {
     t_atom at;
     SET_SYMBOL(&at, s);
-    buffer_eval(x->m_text.te_buffer, &x->m_messresponder.mr_pd, 1, &at);
+    buffer_eval(x->m_obj.te_buffer, &x->m_responder.mr_pd, 1, &at);
 }
 
 static void message_list(t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    buffer_eval(x->m_text.te_buffer, &x->m_messresponder.mr_pd, argc, argv);
+    buffer_eval(x->m_obj.te_buffer, &x->m_responder.mr_pd, argc, argv);
 }
 
 static void message_set(t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    buffer_reset(x->m_text.te_buffer);
-    buffer_append(x->m_text.te_buffer, argc, argv);
-    glist_retext(x->m_glist, &x->m_text);
+    buffer_reset(x->m_obj.te_buffer);
+    buffer_append(x->m_obj.te_buffer, argc, argv);
+    glist_retext(x->m_owner, &x->m_obj);
 }
 
 static void message_add2(t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    buffer_append(x->m_text.te_buffer, argc, argv);
-    glist_retext(x->m_glist, &x->m_text);
+    buffer_append(x->m_obj.te_buffer, argc, argv);
+    glist_retext(x->m_owner, &x->m_obj);
 }
 
 static void message_add(t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    buffer_append(x->m_text.te_buffer, argc, argv);
-    buffer_appendSemicolon(x->m_text.te_buffer);
-    glist_retext(x->m_glist, &x->m_text);
+    buffer_append(x->m_obj.te_buffer, argc, argv);
+    buffer_appendSemicolon(x->m_obj.te_buffer);
+    glist_retext(x->m_owner, &x->m_obj);
 }
 
 static void message_addcomma(t_message *x)
 {
     t_atom a;
     SET_COMMA(&a);
-    buffer_append(x->m_text.te_buffer, 1, &a);
-    glist_retext(x->m_glist, &x->m_text);
+    buffer_append(x->m_obj.te_buffer, 1, &a);
+    glist_retext(x->m_owner, &x->m_obj);
 }
 
 static void message_addsemi(t_message *x)
@@ -133,8 +133,8 @@ static void message_adddollar(t_message *x, t_float f)
     if (n < 0)
         n = 0;
     SET_DOLLAR(&a, n);
-    buffer_append(x->m_text.te_buffer, 1, &a);
-    glist_retext(x->m_glist, &x->m_text);
+    buffer_append(x->m_obj.te_buffer, 1, &a);
+    glist_retext(x->m_owner, &x->m_obj);
 }
 
 static void message_adddollsym(t_message *x, t_symbol *s)
@@ -145,29 +145,29 @@ static void message_adddollsym(t_message *x, t_symbol *s)
     strncpy(buf+1, s->s_name, PD_STRING-2);
     buf[PD_STRING-1] = 0;
     SET_DOLLARSYMBOL(&a, gensym (buf));
-    buffer_append(x->m_text.te_buffer, 1, &a);
-    glist_retext(x->m_glist, &x->m_text);
+    buffer_append(x->m_obj.te_buffer, 1, &a);
+    glist_retext(x->m_owner, &x->m_obj);
 }
 
 void message_click(t_message *x, t_float xpos, t_float ypos, t_float shift, t_float ctrl, t_float alt)
 {
     message_float(x, 0);
-    if (canvas_isMapped(x->m_glist))
+    if (canvas_isMapped(x->m_owner))
     {
-        t_boxtext *y = boxtext_fetch(x->m_glist, &x->m_text);
+        t_boxtext *y = boxtext_fetch(x->m_owner, &x->m_obj);
         sys_vGui(".x%lx.c itemconfigure %sR -width 5\n", 
-            canvas_getView(x->m_glist), boxtext_getTag(y));
+            canvas_getView(x->m_owner), boxtext_getTag(y));
         clock_delay(x->m_clock, 120);
     }
 }
 
 static void message_tick(t_message *x)
 {
-    if (canvas_isMapped(x->m_glist))
+    if (canvas_isMapped(x->m_owner))
     {
-        t_boxtext *y = boxtext_fetch(x->m_glist, &x->m_text);
+        t_boxtext *y = boxtext_fetch(x->m_owner, &x->m_obj);
         sys_vGui(".x%lx.c itemconfigure %sR -width 1\n",
-            canvas_getView(x->m_glist), boxtext_getTag(y));
+            canvas_getView(x->m_owner), boxtext_getTag(y));
     }
 }
 
@@ -179,19 +179,19 @@ static void message_free(t_message *x)
 void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
     t_message *x = (t_message *)pd_new(message_class);
-    x->m_messresponder.mr_pd = messresponder_class;
-    x->m_messresponder.mr_outlet = outlet_new(&x->m_text, &s_float);
-    x->m_text.te_width = 0;                             /* don't know it yet. */
-    x->m_text.te_type = TYPE_MESSAGE;
-    x->m_text.te_buffer = buffer_new();
-    x->m_glist = gl;
+    x->m_responder.mr_pd = messresponder_class;
+    x->m_responder.mr_outlet = outlet_new(&x->m_obj, &s_float);
+    x->m_obj.te_width = 0;                             /* don't know it yet. */
+    x->m_obj.te_type = TYPE_MESSAGE;
+    x->m_obj.te_buffer = buffer_new();
+    x->m_owner = gl;
     x->m_clock = clock_new(x, (t_method)message_tick);
     if (argc > 1)
     {
-        x->m_text.te_xCoordinate = atom_getFloatAtIndex(0, argc, argv);
-        x->m_text.te_yCoordinate = atom_getFloatAtIndex(1, argc, argv);
-        if (argc > 2) buffer_deserialize(x->m_text.te_buffer, argc-2, argv+2);
-        glist_add(gl, &x->m_text.te_g);
+        x->m_obj.te_xCoordinate = atom_getFloatAtIndex(0, argc, argv);
+        x->m_obj.te_yCoordinate = atom_getFloatAtIndex(1, argc, argv);
+        if (argc > 2) buffer_deserialize(x->m_obj.te_buffer, argc-2, argv+2);
+        glist_add(gl, &x->m_obj.te_g);
     }
     else if (!canvas_isMapped(gl))
         post("unable to create stub message in closed canvas!");
@@ -201,12 +201,12 @@ void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         canvas_howputnew(gl, &connectme, &xpix, &ypix, &indx, &nobj);
         
         pd_vMessage(&gl->gl_obj.te_g.g_pd, sym_editmode, "i", 1);
-        x->m_text.te_xCoordinate = xpix;
-        x->m_text.te_yCoordinate = ypix;
-        glist_add(gl, &x->m_text.te_g);
+        x->m_obj.te_xCoordinate = xpix;
+        x->m_obj.te_yCoordinate = ypix;
+        glist_add(gl, &x->m_obj.te_g);
         canvas_deselectAll(gl);
-        canvas_selectObject(gl, &x->m_text.te_g);
-        gobj_activate(&x->m_text.te_g, gl, 1);
+        canvas_selectObject(gl, &x->m_obj.te_g);
+        gobj_activate(&x->m_obj.te_g, gl, 1);
         if (connectme) {
             canvas_connect(gl, indx, 0, nobj, 0);
         } else {

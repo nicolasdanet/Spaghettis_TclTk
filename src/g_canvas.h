@@ -130,8 +130,8 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define COLOR_NORMAL                    0x000000        // Black.
-#define COLOR_SELECTED                  0x0000ff        // Blue.
+#define COLOR_NORMAL                    0x000000        /* Black. */
+#define COLOR_SELECTED                  0x0000ff        /* Blue. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -188,8 +188,8 @@ typedef struct _linetraverser {
     
 typedef struct _tick {
     t_float             k_point;
-    t_float             k_inc;
-    int                 k_lperb;
+    t_float             k_increment;
+    int                 k_period;
     } t_tick;
 
 typedef struct _selection {
@@ -225,7 +225,7 @@ typedef struct _editor {
 // -----------------------------------------------------------------------------------------------------------
 
 struct _glist {  
-    t_object            gl_obj;         /* MUST be the first. */
+    t_object            gl_obj;             /* MUST be the first. */
     t_gobj              *gl_graphics;
     t_gstub             *gl_stub;
     t_glist             *gl_parent;
@@ -264,39 +264,43 @@ struct _glist {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-typedef struct _messresponder
-{
-    t_pd mr_pd;
-    t_outlet *mr_outlet;
-} t_messresponder;
+#define ATOM_BUFFER_SIZE    40
 
-typedef struct _message
-{
-    t_object m_text;
-    t_messresponder m_messresponder;
-    t_glist *m_glist;
-    t_clock *m_clock;
-} t_message;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-#define ATOMBUFSIZE 40
+typedef struct _gatom {
+    t_object            a_obj;              /* MUST be the first. */
+    t_atom              a_atom;
+    t_float             a_lowRange;
+    t_float             a_highRange;
+    t_float             a_toggledValue;
+    t_glist             *a_owner;
+    t_symbol            *a_label;
+    t_symbol            *a_unexpandedSend;
+    t_symbol            *a_unexpandedReceive;
+    t_symbol            *a_send;
+    int                 a_position;
+    char                a_string[ATOM_BUFFER_SIZE];
+    } t_gatom;
 
-typedef struct _gatom
-{
-    t_object a_text;
-    t_atom a_atom;          /* this holds the value and the type */
-    t_glist *a_glist;       /* owning glist */
-    t_float a_toggle;       /* value to toggle to */
-    t_float a_draghi;       /* high end of drag range */
-    t_float a_draglo;       /* low end of drag range */
-    t_symbol *a_label;      /* symbol to show as label next to box */
-    t_symbol *a_symfrom;    /* "receive" name -- bind ourselvs to this */
-    t_symbol *a_symto;      /* "send" name -- send to this on output */
-    char a_buf[ATOMBUFSIZE];/* string buffer for typing */
-    char a_shift;           /* was shift key down when dragging started? */
-    char a_wherelabel;      /* 0-3 for left, right, above, below */
-    t_symbol *a_expanded_to; /* a_symto after $0, $1, ...  expansion */
-} t_gatom;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _messageresponder {
+    t_pd                mr_pd;              /* MUST be the first. */
+    t_outlet            *mr_outlet;
+    } t_messageresponder;
+
+typedef struct _message {
+    t_object            m_obj;              /* MUST be the first. */
+    t_messageresponder  m_responder;
+    t_glist             *m_owner;
+    t_clock             *m_clock;
+    } t_message;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -321,7 +325,7 @@ struct _array {
 // -----------------------------------------------------------------------------------------------------------
 
 struct _template {
-    t_pd                t_pdobj;        /* MUST be the first. */
+    t_pd                t_pdobj;            /* MUST be the first. */
     t_gtemplate         *t_list;  
     t_symbol            *t_sym;    
     int                 t_n;    
@@ -339,7 +343,6 @@ struct _template {
 #pragma mark -
 
 t_glist         *canvas_castToGlistChecked              (t_pd *x);
-
 int             canvas_objectIsBox                      (t_object *x);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -484,30 +487,35 @@ void            canvas_destroyEditorIfAny               (t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            canvas_objtext(t_glist *gl, int xpix, int ypix, int width, int selected, t_buffer *b);
-void            canvas_howputnew(t_glist *x, int *connectp, int *xpixp, int *ypixp, int *indexp, int *totalp);
+void            canvas_objtext                          (t_glist *glist, 
+                                                            int positionX, 
+                                                            int positionY, 
+                                                            int width, 
+                                                            int isSelected, 
+                                                            t_buffer *b);
+                                                            
+void            canvas_howputnew                        (t_glist *glist, int *, int *, int *, int *, int *);
 
-void            canvas_obj                              (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-void            canvas_msg                              (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-void            canvas_floatatom                        (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-void            canvas_symbolatom                       (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-void            canvas_text                             (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-void            canvas_scalar                           (t_glist *glist, t_symbol *classname, int argc, t_atom *argv);
-void            canvas_bng                              (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-void            canvas_toggle                           (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-void            canvas_vslider                          (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-void            canvas_hslider                          (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-void            canvas_hradio                           (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-void            canvas_vradio                           (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-void            canvas_vumeter                          (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-void            canvas_mycnv                            (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-void            canvas_numbox                           (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void            canvas_obj                              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_msg                              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_floatatom                        (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_symbolatom                       (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_text                             (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_scalar                           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_bng                              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_toggle                           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_vslider                          (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_hslider                          (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_hradio                           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_vradio                           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_vumeter                          (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_mycnv                            (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_numbox                           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 t_glist         *canvas_new                             (void *dummy, t_symbol *s, int argc, t_atom *argv);
-
 void            canvas_free                             (t_glist *glist);
 
 void            canvas_click                            (t_glist *glist,
@@ -573,7 +581,6 @@ void            canvas_saveToFile                       (t_glist *glist,
                                                             float destroy);
 
 void            canvas_serialize                        (t_glist *glist, t_buffer *b);
-
 void            canvas_properties                       (t_gobj *x, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -617,7 +624,6 @@ int             gobj_click                              (t_gobj *x,
                                                             int k);
                                                         
 void            gobj_save                               (t_gobj *x, t_buffer *buffer);
-
 int             gobj_hit                                (t_gobj *x,
                                                             t_glist *owner,
                                                             int positionX,
@@ -650,7 +656,6 @@ void            boxtext_erase                           (t_boxtext *x);
 void            boxtext_displace                        (t_boxtext *x, int deltaX, int deltaY);
 void            boxtext_select                          (t_boxtext *x, int state);
 void            boxtext_activate                        (t_boxtext *x, int state);
-
 void            boxtext_mouse                           (t_boxtext *x, int a, int b, int flag);
 void            boxtext_key                             (t_boxtext *x, int n, t_symbol *s);
 
@@ -658,7 +663,7 @@ void            boxtext_key                             (t_boxtext *x, int n, t_
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            message_click                           (t_message *x, t_float xpos, t_float ypos, t_float shift, t_float ctrl, t_float alt);
+void message_click(t_message *x, t_float xpos, t_float ypos, t_float shift, t_float ctrl, t_float alt);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
