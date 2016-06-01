@@ -67,6 +67,7 @@
 #include "g_dsp.c"
 #include "g_object.c"
 #include "g_box.c"
+#include "g_text.c"
 
 #include "g_serialize.c"
 

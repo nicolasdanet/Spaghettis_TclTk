@@ -115,7 +115,10 @@ proc saveAs {target filename directory destroy} {
     }
 }
 
-# Function called by the openpanel object.
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+# Function called by the [openpanel] object.
 
 proc openPanel {target directory} {
 
@@ -130,7 +133,7 @@ proc openPanel {target directory} {
     }
 }
 
-# Function called by the savepanel object.
+# Function called by the [savepanel] object.
 
 proc savePanel {target directory} {
 

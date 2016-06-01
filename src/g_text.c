@@ -7,24 +7,22 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+/* Changes by Thomas Musil IEM KUG Graz Austria 2001. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* changes by Thomas Musil IEM KUG Graz Austria 2001 */
-/* the methods for calling the gui-objects from menu are implemented */
-/* all changes are labeled with      iemlib      */
-
-#include <stdlib.h>
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
-
-#include "g_canvas.h"
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
-
 #include "s_utf8.h"
+#include "g_canvas.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 extern t_pd pd_objectMaker;
 extern t_class *canvas_class;
@@ -34,6 +32,10 @@ extern t_class *voutlet_class;
 t_class *text_class;
 static t_class *message_class;
 static t_class *gatom_class;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static void text_vis(t_gobj *z, t_glist *glist, int vis);
 static void text_displace(t_gobj *z, t_glist *glist,
     int dx, int dy);
@@ -1483,4 +1485,5 @@ void g_text_setup(void)
     class_setPropertiesFunction(gatom_class, gatom_properties);
 }
 
-
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
