@@ -140,9 +140,19 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 
     if (!(z = s__X.s_thing) || (pd_class (z) != canvas_class)) { PD_BUG; }
     else {
-        t_glist *g = cast_glist (z);
-        glist->gl_parent = g;
-        canvas_objfor (g, cast_object (glist), argc, argv);
+        t_glist *parent  = cast_glist (z);
+        t_object *object = cast_object (glist);
+        
+        glist->gl_parent        = parent;
+        object->te_width        = 0;                           
+        object->te_type         = TYPE_OBJECT;
+        object->te_buffer       = buffer_new();
+        object->te_xCoordinate  = atom_getFloatAtIndex (0, argc, argv);
+        object->te_yCoordinate  = atom_getFloatAtIndex (1, argc, argv);
+        
+        if (argc > 2) { buffer_deserialize (object->te_buffer, argc - 2, argv + 2); }
+        
+        glist_add (parent, cast_gobj (object));
     }
 }
 

@@ -293,17 +293,6 @@ void canvas_numbox(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 
 /* iemlib */
 
-void canvas_objfor(t_glist *gl, t_object *x, int argc, t_atom *argv)
-{
-    x->te_width = 0;                            /* don't know it yet. */
-    x->te_type = TYPE_OBJECT;
-    x->te_buffer = buffer_new();
-    x->te_xCoordinate = atom_getFloatAtIndex(0, argc, argv);
-    x->te_yCoordinate = atom_getFloatAtIndex(1, argc, argv);
-    if (argc > 2) buffer_deserialize(x->te_buffer, argc-2, argv+2);
-    glist_add(gl, &x->te_g);
-}
-
 /* ---------------------- the "message" text item ------------------------ */
 
 typedef struct _messresponder

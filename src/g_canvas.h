@@ -624,8 +624,6 @@ void glist_readfrombinbuf (t_glist *x, t_buffer *b, char *filename, int selectem
 
 void canvas_dataproperties (t_glist *x, t_scalar *sc, t_buffer *b);
 
-void canvas_objfor (t_glist *gl, t_object *x, int argc, t_atom *argv);
-
 void canvas_find_parent (t_glist *x);
 
 void glist_text(t_glist *x, t_symbol *s, int argc, t_atom *argv);
