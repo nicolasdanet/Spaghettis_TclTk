@@ -55,7 +55,7 @@ struct _boxtext {
 // -----------------------------------------------------------------------------------------------------------
 
 #define BOX_MARGIN_LEFT         2
-#define BOX_MARGIN_RIGHT        2
+#define BOX_MARGIN_RIGHT        5
 #define BOX_MARGIN_TOP          2
 #define BOX_MARGIN_BOTTOM       2
 
