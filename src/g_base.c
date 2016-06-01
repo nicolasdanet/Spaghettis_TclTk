@@ -32,20 +32,19 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-extern t_class      *canvas_class;
-extern t_class      *array_define_class;
-extern t_class      *scalar_define_class;
-extern t_pd         *pd_newest;
+extern t_class              *text_class;
+extern t_class              *canvas_class;
+extern t_class              *vinlet_class;
+extern t_class              *voutlet_class;
+extern t_class              *array_define_class;
+extern t_class              *scalar_define_class;
+extern t_pd                 *pd_newest;
+extern t_symbol             *canvas_fileName;
+extern t_symbol             *canvas_directory;
+extern t_atom               *canvas_argv;
 
-extern t_symbol     *canvas_fileName;
-extern t_symbol     *canvas_directory;
-extern t_atom       *canvas_argv;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
+extern t_pd                 pd_objectMaker;
 extern t_widgetbehavior     text_widgetBehavior;
-
 extern int                  canvas_argc;
 extern int                  canvas_magic;
 
@@ -265,6 +264,57 @@ t_glist *canvas_addGraph (t_glist *glist,
     glist_add (glist, cast_gobj (x));
     
     return x;
+}
+
+void canvas_makeTextObject (t_glist *glist, 
+    int positionX,
+    int positionY,
+    int width,
+    int isSelected,
+    t_buffer *b)
+{
+    pd_newest = NULL;
+    
+    stack_push (cast_pd (glist));
+    
+    {
+    //
+    t_environment *e = canvas_getEnvironment (canvas_getCurrent());
+    int argc = e->ce_argc;
+    t_atom *argv = e->ce_argv;
+    t_object *x = NULL;
+    
+    buffer_eval (b, &pd_objectMaker, argc, argv);
+
+    if (pd_newest) { x = canvas_castToObjectIfPatchable (pd_newest); }
+
+    if (!x) {
+        x = (t_object *)pd_new (text_class);    /* Create a dummy class. */
+        
+        if (buffer_size (b)) {
+            post_atoms (buffer_size (b), buffer_atoms (b)); post_error ("... couldn't create");
+        }
+    }
+
+    x->te_buffer        = b;
+    x->te_xCoordinate   = positionX;
+    x->te_yCoordinate   = positionY;
+    x->te_width         = width;
+    x->te_type          = TYPE_OBJECT;
+    
+    glist_add (glist, cast_gobj (x));
+    
+    if (isSelected) {
+        canvas_selectObject (glist, cast_gobj (x));
+        gobj_activate (cast_gobj (x), glist, 1);
+    }
+    
+    if (pd_class (x) == vinlet_class)  { canvas_resortinlets (canvas_getView (glist)); }
+    if (pd_class (x) == voutlet_class) { canvas_resortoutlets (canvas_getView (glist)); }
+    //
+    }
+    
+    stack_pop (cast_pd (glist));
 }
 
 void canvas_setAsGraphOnParent (t_glist *glist, int flags, int hasRectangle)

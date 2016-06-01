@@ -98,11 +98,6 @@ void buffer_append (t_buffer *x, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void buffer_post (t_buffer *x)
-{
-    post_atoms (x->b_size, x->b_vector);
-}
-
 void buffer_resize (t_buffer *x, int n)
 {
     PD_ASSERT (n >= 0);

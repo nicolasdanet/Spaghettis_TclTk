@@ -313,7 +313,6 @@ t_error     atom_toString                               (t_atom *a, char *s, int
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        buffer_post                                 (t_buffer *x);
 void        buffer_resize                               (t_buffer *x, int n);
 void        buffer_vAppend                              (t_buffer *x, char *fmt, ...);
 void        buffer_appendSemicolon                      (t_buffer *x);

@@ -17,70 +17,10 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_class  *text_class;
-extern t_class  *vinlet_class;
-extern t_class  *voutlet_class;
-extern t_pd     *pd_newest;
-
-extern t_pd     pd_objectMaker;
+extern t_class *text_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-void canvas_objtext(t_glist *gl, int xpix, int ypix, int width, int selected, t_buffer *b)
-{
-    t_object *x;
-    int argc;
-    t_atom *argv;
-    pd_newest = 0;
-    //canvas_setCurrent((t_glist *)gl);
-    stack_push (cast_pd (gl));  /* Must be before line below. !!!! */
-    t_environment *e = canvas_getEnvironment (canvas_getCurrent());
-    argc = e->ce_argc;
-    argv = e->ce_argv;
-    //canvas_getArguments(&argc, &argv);
-    
-    buffer_eval(b, &pd_objectMaker, argc, argv);
-    if (buffer_size(b))
-    {
-        if (!pd_newest)
-            x = 0;
-        else if (!(x = canvas_castToObjectIfPatchable(pd_newest)))
-        {
-            buffer_post(b);
-            post_error ("... didn't return a patchable object");
-        }
-    }
-    else x = 0;
-    if (!x)
-    {
-            /* LATER make the color reflect this */
-        x = (t_object *)pd_new(text_class);
-        if (buffer_size(b))
-        {
-            buffer_post(b);
-            post_error ("... couldn't create");
-        }
-    }
-    x->te_buffer = b;
-    x->te_xCoordinate = xpix;
-    x->te_yCoordinate = ypix;
-    x->te_width = width;
-    x->te_type = TYPE_OBJECT;
-    glist_add(gl, &x->te_g);
-    if (selected)
-    {
-            /* this is called if we've been created from the menu. */
-        canvas_selectObject(gl, &x->te_g);
-        gobj_activate(&x->te_g, gl, 1);
-    }
-    if (pd_class((t_pd *)x) == vinlet_class)
-        canvas_resortinlets(canvas_getView(gl));
-    if (pd_class((t_pd *)x) == voutlet_class)
-        canvas_resortoutlets(canvas_getView(gl));
-    //canvas_unsetCurrent((t_glist *)gl);
-    stack_pop (cast_pd (gl));
-}
 
     /* utility routine to figure out where to put a new text box from menu
     and whether to connect to it automatically */
@@ -137,7 +77,7 @@ static void canvas_iems(t_glist *gl, t_symbol *guiobjname)
     SET_SYMBOL(&at, guiobjname);
     buffer_deserialize(b, 1, &at);
     canvas_getLastMotionCoordinates(gl, &xpix, &ypix);
-    canvas_objtext(gl, xpix, ypix, 0, 1, b);
+    canvas_makeTextObject(gl, xpix, ypix, 0, 1, b);
     // canvas_startmotion(canvas_getView(gl));
 }
 
@@ -152,7 +92,7 @@ void canvas_obj(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
     {
         t_buffer *b = buffer_new();
         buffer_deserialize(b, argc-2, argv+2);
-        canvas_objtext(gl, (t_int)atom_getFloatAtIndex(0, argc, argv),
+        canvas_makeTextObject(gl, (t_int)atom_getFloatAtIndex(0, argc, argv),
             (t_int)atom_getFloatAtIndex(1, argc, argv), 0, 0, b);
     }
         /* JMZ: don't go into interactive mode in a closed canvas */
@@ -165,7 +105,7 @@ void canvas_obj(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         int connectme, xpix, ypix, indx, nobj;
         canvas_howputnew(gl, &connectme, &xpix, &ypix, &indx, &nobj);
         pd_vMessage(&gl->gl_obj.te_g.g_pd, sym_editmode, "i", 1);
-        canvas_objtext(gl, xpix, ypix, 0, 1, b);
+        canvas_makeTextObject(gl, xpix, ypix, 0, 1, b);
         if (connectme) {
             canvas_connect(gl, indx, 0, nobj, 0);
         } else {

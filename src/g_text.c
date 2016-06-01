@@ -423,7 +423,7 @@ void text_setto(t_object *x, t_glist *glist, char *buf, int bufsize)
         {
             int xwas = x->te_xCoordinate, ywas = x->te_yCoordinate;
             glist_delete(glist, &x->te_g);
-            canvas_objtext(glist, xwas, ywas, widthwas, 0, b);
+            canvas_makeTextObject(glist, xwas, ywas, widthwas, 0, b);
             canvas_restoreCachedLines (canvas_getView(glist));
                 /* if it's an abstraction loadbang it here */
             if (pd_newest && pd_class(pd_newest) == canvas_class)

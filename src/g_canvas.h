@@ -378,6 +378,13 @@ t_glist         *canvas_addGraph                        (t_glist *glist,
                                                             t_float topLeftY,
                                                             t_float bottomRightX,
                                                             t_float bottomRightY);
+
+void            canvas_makeTextObject                   (t_glist *glist, 
+                                                            int positionX, 
+                                                            int positionY, 
+                                                            int width, 
+                                                            int isSelected, 
+                                                            t_buffer *b);
                                                             
 void            canvas_setAsGraphOnParent               (t_glist *glist, int flags, int hasRectangle);
 
@@ -487,13 +494,6 @@ void            canvas_destroyEditorIfAny               (t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            canvas_objtext                          (t_glist *glist, 
-                                                            int positionX, 
-                                                            int positionY, 
-                                                            int width, 
-                                                            int isSelected, 
-                                                            t_buffer *b);
-                                                            
 void            canvas_howputnew                        (t_glist *glist, int *, int *, int *, int *, int *);
 
 void            canvas_obj                              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
