@@ -197,9 +197,14 @@ void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         post("unable to create stub message in closed canvas!");
     else
     {
-        int connectme, xpix, ypix, indx, nobj;
-        canvas_howputnew(gl, &connectme, &xpix, &ypix, &indx, &nobj);
+        int connectme = 0;
+        int xpix, ypix;
+        int indx = 0;
+        int nobj = 0;
         
+        canvas_getLastMotionCoordinates (gl, &xpix, &ypix);
+        canvas_deselectAll(gl);
+    
         pd_vMessage(&gl->gl_obj.te_g.g_pd, sym_editmode, "i", 1);
         x->m_obj.te_xCoordinate = xpix;
         x->m_obj.te_yCoordinate = ypix;
@@ -207,11 +212,12 @@ void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         canvas_deselectAll(gl);
         canvas_selectObject(gl, &x->m_obj.te_g);
         gobj_activate(&x->m_obj.te_g, gl, 1);
-        if (connectme) {
+        
+        /*if (connectme) {
             canvas_connect(gl, indx, 0, nobj, 0);
         } else {
             // canvas_startmotion(canvas_getView(gl));
-        }
+        }*/
     }
 }
 

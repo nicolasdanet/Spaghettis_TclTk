@@ -22,50 +22,6 @@ extern t_class *text_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-    /* utility routine to figure out where to put a new text box from menu
-    and whether to connect to it automatically */
-void canvas_howputnew(t_glist *x, int *connectp, int *xpixp, int *ypixp, int *indexp, int *totalp)
-{
-    int xpix, ypix, indx = 0, nobj = 0, n2, x1, x2, y1, y2;
-    int connectme = (x->gl_editor->e_selectedObjects &&
-        !x->gl_editor->e_selectedObjects->sel_next && 0 /*!sys_noautopatch*/);
-    if (connectme)
-    {
-        t_gobj *g, *selected = x->gl_editor->e_selectedObjects->sel_what;
-        for (g = x->gl_graphics, nobj = 0; g; g = g->g_next, nobj++)
-            if (g == selected)
-        {
-            gobj_getRectangle(g, x, &x1, &y1, &x2, &y2);
-            indx = nobj;
-            *xpixp = x1;
-            *ypixp = y2 + 5;
-        }
-        canvas_deselectAll(x);
-            /* search back for 'selected' and if it isn't on the list, 
-                plan just to connect from the last item on the list. */
-        for (g = x->gl_graphics, n2 = 0; g; g = g->g_next, n2++)
-        {
-            if (g == selected)
-            {
-                indx = n2;
-                break;
-            }
-            else if (!g->g_next)
-                indx = nobj-1;
-        }
-    }
-    else
-    {
-        canvas_getLastMotionCoordinates(x, xpixp, ypixp);
-        *xpixp -= 3;
-        *ypixp -= 3;
-        canvas_deselectAll(x);
-    }
-    *connectp = connectme;
-    *indexp = indx;
-    *totalp = nobj;
-}
-
 static void canvas_iems(t_glist *gl, t_symbol *guiobjname)
 {
     t_atom at;
@@ -102,15 +58,22 @@ void canvas_obj(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
     {
             /* interactively create new obect */
         t_buffer *b = buffer_new();
-        int connectme, xpix, ypix, indx, nobj;
-        canvas_howputnew(gl, &connectme, &xpix, &ypix, &indx, &nobj);
+        int connectme = 0;
+        int xpix, ypix;
+        int indx = 0;
+        int nobj = 0;
+        
+        canvas_getLastMotionCoordinates (gl, &xpix, &ypix);
+        canvas_deselectAll(gl);
+        
         pd_vMessage(&gl->gl_obj.te_g.g_pd, sym_editmode, "i", 1);
         canvas_makeTextObject(gl, xpix, ypix, 0, 1, b);
-        if (connectme) {
+        
+        /* if (connectme) {
             canvas_connect(gl, indx, 0, nobj, 0);
         } else {
           // canvas_startmotion(canvas_getView(gl));
-        }
+        } */
     }
 }
 

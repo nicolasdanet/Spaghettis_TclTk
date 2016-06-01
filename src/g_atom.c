@@ -469,8 +469,14 @@ void canvas_atom(t_glist *gl, t_atomtype type,
     }
     else
     {
-        int connectme, xpix, ypix, indx, nobj;
-        canvas_howputnew(gl, &connectme, &xpix, &ypix, &indx, &nobj);
+        int connectme = 0;
+        int xpix, ypix;
+        int indx = 0;
+        int nobj = 0;
+
+        canvas_getLastMotionCoordinates (gl, &xpix, &ypix);
+        canvas_deselectAll(gl);
+        
         outlet_new(&x->a_obj,
             x->a_atom.a_type == A_FLOAT ? &s_float: &s_symbol);
         inlet_new(&x->a_obj, &x->a_obj.te_g.g_pd, 0, 0);
@@ -480,11 +486,12 @@ void canvas_atom(t_glist *gl, t_atomtype type,
         glist_add(gl, &x->a_obj.te_g);
         canvas_deselectAll(gl);
         canvas_selectObject(gl, &x->a_obj.te_g);
-        if (connectme) {
+        
+        /*if (connectme) {
             canvas_connect(gl, indx, 0, nobj, 0);
         } else { 
            // canvas_startmotion(canvas_getView(gl));
-        }
+        }*/
     }
 }
 

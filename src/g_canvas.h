@@ -494,8 +494,6 @@ void            canvas_destroyEditorIfAny               (t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            canvas_howputnew                        (t_glist *glist, int *, int *, int *, int *, int *);
-
 void            canvas_obj                              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_msg                              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_floatatom                        (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
