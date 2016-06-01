@@ -19,10 +19,12 @@
 
 extern t_class  *text_class;
 extern t_class  *garray_class;
-extern t_glist  *editor_canvasCurrentlyPastingOn;
+extern t_class  *canvas_class;
+extern t_glist  *editor_pasteCurrentCanvas;
+
+extern int      editor_pasteOffsetWhileConnectingObjects;
 
 extern t_pd     pd_canvasMaker;
-extern int      editor_indexOffsetConnectingPastedObjects;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -189,7 +191,7 @@ void canvas_connect (t_glist *glist,
     t_float indexOfObjectIn,
     t_float indexOfOInlet)
 {
-    int k = (editor_canvasCurrentlyPastingOn == glist) ? editor_indexOffsetConnectingPastedObjects : 0;
+    int k = (editor_pasteCurrentCanvas == glist) ? editor_pasteOffsetWhileConnectingObjects : 0;
     
     t_gobj *src  = canvas_getObjectAtIndex (glist, k + (int)indexOfObjectOut);
     t_gobj *dest = canvas_getObjectAtIndex (glist, k + (int)indexOfObjectIn);
@@ -767,12 +769,6 @@ void canvas_setup (void)
 
     class_addMethod (c, (t_method)canvas_coords,        sym_coords,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_restore,       sym_restore,        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_obj,           sym_obj,            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_msg,           sym_msg,            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_floatatom,     sym_floatatom,      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_symbolatom,    sym_symbolatom,     A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)glist_text,           sym_text,           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)glist_scalar,         sym_scalar,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_width,         sym_f,              A_GIMME, A_NULL);
     
     class_addMethod (c, (t_method)canvas_connect,
@@ -790,7 +786,13 @@ void canvas_setup (void)
         A_FLOAT,
         A_FLOAT,
         A_NULL);
-     
+    
+    class_addMethod (c, (t_method)canvas_obj,           sym_obj,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_msg,           sym_msg,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_floatatom,     sym_floatatom,      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_symbolatom,    sym_symbolatom,     A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_text,          sym_text,           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_scalar,        sym_scalar,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_bng,           sym_bng,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_toggle,        sym_tgl,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_vslider,       sym_vslider,        A_GIMME, A_NULL);

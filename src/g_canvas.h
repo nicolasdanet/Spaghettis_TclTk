@@ -446,6 +446,29 @@ void            canvas_destroyEditorIfAny               (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void            canvas_objtext(t_glist *gl, int xpix, int ypix, int width, int selected, t_buffer *b);
+void            canvas_howputnew(t_glist *x, int *connectp, int *xpixp, int *ypixp, int *indexp, int *totalp);
+
+void            canvas_obj                              (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void            canvas_msg                              (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void            canvas_floatatom                        (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void            canvas_symbolatom                       (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void            canvas_text                             (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void            canvas_scalar                           (t_glist *glist, t_symbol *classname, int argc, t_atom *argv);
+void            canvas_bng                              (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void            canvas_toggle                           (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void            canvas_vslider                          (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void            canvas_hslider                          (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void            canvas_hradio                           (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void            canvas_vradio                           (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void            canvas_vumeter                          (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void            canvas_mycnv                            (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void            canvas_numbox                           (t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 t_glist         *canvas_new                             (void *dummy, t_symbol *s, int argc, t_atom *argv);
 
@@ -625,22 +648,6 @@ void glist_readfrombinbuf (t_glist *x, t_buffer *b, char *filename, int selectem
 void canvas_dataproperties (t_glist *x, t_scalar *sc, t_buffer *b);
 
 void canvas_find_parent (t_glist *x);
-
-void glist_text(t_glist *x, t_symbol *s, int argc, t_atom *argv);
-void canvas_obj(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-void canvas_bng(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-void canvas_toggle(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-void canvas_vslider(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-void canvas_hslider(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-void canvas_hradio(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-void canvas_vradio(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-void canvas_vumeter(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-void canvas_mycnv(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-void canvas_numbox(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-void canvas_floatatom(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-void canvas_symbolatom(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-void glist_scalar(t_glist *canvas, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

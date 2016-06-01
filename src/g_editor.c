@@ -26,8 +26,8 @@ extern t_widgetbehavior     text_widgetBehavior;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_glist                     *editor_canvasCurrentlyPastingOn;                   /* Shared. */
-int                         editor_indexOffsetConnectingPastedObjects;          /* Shared. */
+t_glist                     *editor_pasteCurrentCanvas;                         /* Shared. */
+int                         editor_pasteOffsetWhileConnectingObjects;           /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -546,8 +546,8 @@ static void canvas_performPaste (t_glist *glist)
     
     for (y = glist->gl_graphics; y; y = y->g_next) { numberOfObjectsAlreadyThere++; }
 
-    editor_canvasCurrentlyPastingOn = glist;
-    editor_indexOffsetConnectingPastedObjects = numberOfObjectsAlreadyThere;
+    editor_pasteCurrentCanvas = glist;
+    editor_pasteOffsetWhileConnectingObjects = numberOfObjectsAlreadyThere;
         
     buffer_eval (editor_buffer, NULL, 0, NULL);
     
@@ -556,7 +556,7 @@ static void canvas_performPaste (t_glist *glist)
         i++;
     }
     
-    editor_canvasCurrentlyPastingOn = NULL;
+    editor_pasteCurrentCanvas = NULL;
     
     dsp_resume (state);
     

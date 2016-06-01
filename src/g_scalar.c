@@ -140,8 +140,7 @@ t_scalar *scalar_new(t_glist *owner, t_symbol *templatesym)
     /* Pd method to create a new scalar, add it to a glist, and initialize
     it from the message arguments. */
 
-void glist_scalar(t_glist *glist,
-    t_symbol *classname, int argc, t_atom *argv)
+void canvas_scalar(t_glist *glist, t_symbol *classname, int argc, t_atom *argv)
 {
     t_symbol *templatesym =
         canvas_makeBindSymbol(atom_getSymbolAtIndex(0, argc, argv));
