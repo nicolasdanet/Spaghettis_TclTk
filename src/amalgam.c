@@ -69,10 +69,9 @@
 #include "g_object.c"
 #include "g_box.c"
 #include "g_message.c"
+#include "g_atom.c"
 #include "g_text.c"
-
 #include "g_serialize.c"
-
 #include "g_iem.c"
 #include "g_bang.c"
 #include "g_toggle.c"

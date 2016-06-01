@@ -279,6 +279,25 @@ typedef struct _message
     t_clock *m_clock;
 } t_message;
 
+#define ATOMBUFSIZE 40
+
+typedef struct _gatom
+{
+    t_object a_text;
+    t_atom a_atom;          /* this holds the value and the type */
+    t_glist *a_glist;       /* owning glist */
+    t_float a_toggle;       /* value to toggle to */
+    t_float a_draghi;       /* high end of drag range */
+    t_float a_draglo;       /* low end of drag range */
+    t_symbol *a_label;      /* symbol to show as label next to box */
+    t_symbol *a_symfrom;    /* "receive" name -- bind ourselvs to this */
+    t_symbol *a_symto;      /* "send" name -- send to this on output */
+    char a_buf[ATOMBUFSIZE];/* string buffer for typing */
+    char a_shift;           /* was shift key down when dragging started? */
+    char a_wherelabel;      /* 0-3 for left, right, above, below */
+    t_symbol *a_expanded_to; /* a_symto after $0, $1, ...  expansion */
+} t_gatom;
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
@@ -640,6 +659,28 @@ void            boxtext_key                             (t_boxtext *x, int n, t_
 #pragma mark -
 
 void            message_click                           (t_message *x, t_float xpos, t_float ypos, t_float shift, t_float ctrl, t_float alt);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void gatom_displace(t_gobj *z, t_glist *glist, int dx, int dy);
+void gatom_vis(t_gobj *z, t_glist *glist, int vis);
+t_symbol *gatom_escapit(t_symbol *s);
+void gatom_click(t_gatom *x, t_float xpos, t_float ypos, t_float shift, t_float ctrl, t_float alt);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void text_getrect(t_gobj *z, t_glist *glist, int *xp1, int *yp1, int *xp2, int *yp2);
+void text_displace(t_gobj *z, t_glist *glist, int dx, int dy);
+void text_select(t_gobj *z, t_glist *glist, int state);
+void text_activate(t_gobj *z, t_glist *glist, int state);
+void text_delete(t_gobj *z, t_glist *glist);
+void text_vis(t_gobj *z, t_glist *glist, int vis);
+int text_click(t_gobj *z, struct _glist *glist, int xpix, int ypix, int shift, int ctrl, int alt, int dbl, int doit);
+
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
