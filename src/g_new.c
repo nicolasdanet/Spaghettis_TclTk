@@ -69,45 +69,43 @@ void canvas_obj (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-void canvas_text (t_glist *gl, t_symbol *s, int argc, t_atom *argv)
+void canvas_text (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    t_object *x = (t_object *)pd_new(text_class);
-    t_atom at;
-    x->te_width = 0;                            /* don't know it yet. */
-    x->te_type = TYPE_TEXT;
+    t_object *x = (t_object *)pd_new (text_class);
+    
+    t_atom a; SET_SYMBOL (&a, sym_comment);
+            
+    x->te_width  = 0;
+    x->te_type   = TYPE_TEXT;
     x->te_buffer = buffer_new();
-    if (argc > 1)
-    {
-        x->te_xCoordinate = atom_getFloatAtIndex(0, argc, argv);
-        x->te_yCoordinate = atom_getFloatAtIndex(1, argc, argv);
-        if (argc > 2) buffer_deserialize(x->te_buffer, argc-2, argv+2);
-        else
-        {
-            SET_SYMBOL(&at, sym_comment);
-            buffer_deserialize(x->te_buffer, 1, &at);
+    
+    if (argc > 1) {                                                             /* File creation. */
+    
+        x->te_xCoordinate = atom_getFloatAtIndex (0, argc, argv);
+        x->te_yCoordinate = atom_getFloatAtIndex (1, argc, argv);
+        
+        if (argc > 2) { buffer_deserialize (x->te_buffer, argc - 2, argv + 2); }
+        else {
+            buffer_deserialize (x->te_buffer, 1, &a);
         }
-        glist_add(gl, &x->te_g);
-    }
-    else
-    {
-        int xpix, ypix;
-        pd_vMessage((t_pd *)canvas_getView(gl), sym_editmode, "i", 1);
-        SET_SYMBOL(&at, sym_comment);
-        canvas_deselectAll(gl);
-        canvas_getLastMotionCoordinates(gl, &xpix, &ypix);
-        x->te_xCoordinate = xpix-1;
-        x->te_yCoordinate = ypix-1;
-        buffer_deserialize(x->te_buffer, 1, &at);
-        glist_add(gl, &x->te_g);
-        canvas_deselectAll(gl);
-        canvas_selectObject(gl, &x->te_g);
-            /* it would be nice to "activate" here, but then the second,
-            "put-me-down" click changes the text selection, which is quite
-            irritating, so I took this back out.  It's OK in messages
-            and objects though since there's no text in them at menu
-            creation. */
-            /* gobj_activate(&x->te_g, gl, 1); */
-        //canvas_startmotion(canvas_getView(gl));
+        
+        glist_add (glist, cast_gobj (x));
+        
+    } else {                                                                    /* Interactive creation. */
+    
+        int positionX = 0;
+        int positionY = 0;
+
+        canvas_getLastMotionCoordinates (glist, &positionX, &positionY);
+        canvas_deselectAll (glist);
+                
+        x->te_xCoordinate = positionX;
+        x->te_yCoordinate = positionY;
+        
+        buffer_deserialize (x->te_buffer, 1, &a);
+        glist_add (glist, cast_gobj (x));
+        
+        canvas_selectObject (glist, cast_gobj (x));
     }
 }
 
