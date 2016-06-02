@@ -1534,7 +1534,7 @@ static void value_setup(void)
     class_addBang(value_class, value_bang);
     class_addFloat(value_class, value_float);
     vcommon_class = class_new(sym_value, 0, 0,
-        sizeof(t_vcommon), CLASS_PURE, 0);
+        sizeof(t_vcommon), CLASS_ABSTRACT, 0);
     class_addFloat(vcommon_class, vcommon_float);
 }
 

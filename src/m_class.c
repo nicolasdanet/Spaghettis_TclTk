@@ -185,8 +185,8 @@ t_class *class_new (t_symbol *s,
     t_atomtype *vp = arg;
     int count = 0;
     t_class *c = NULL;
-    int typeflag = flags & (CLASS_PURE | CLASS_GRAPHIC | CLASS_BOX);
-    if (!typeflag) { typeflag = CLASS_BOX; }
+    int type = flags & (CLASS_PURE | CLASS_GRAPHIC | CLASS_BOX);
+    if (!type) { type = CLASS_BOX; }
     
     *vp = type1;
 
@@ -219,13 +219,12 @@ t_class *class_new (t_symbol *s,
     c->c_methodSymbol       = class_defaultSymbol;
     c->c_methodList         = class_defaultList;
     c->c_methodAnything     = class_defaultAnything;
-    c->c_behavior           = (typeflag == CLASS_BOX ? &text_widgetBehavior : NULL);
+    c->c_behavior           = (type == CLASS_BOX ? &text_widgetBehavior : NULL);
     c->c_behaviorParent     = NULL;
-    c->c_fnSave             = (typeflag == CLASS_BOX ? text_save : class_defaultSave);
+    c->c_fnSave             = (type == CLASS_BOX ? text_save : class_defaultSave);
     c->c_fnProperties       = class_defaultProperties;
     c->c_signalOffset       = 0;
-    c->c_isGraphic          = (typeflag >= CLASS_GRAPHIC);
-    c->c_isBox              = (typeflag == CLASS_BOX);
+    c->c_isBox              = (type == CLASS_BOX);
     c->c_hasFirstInlet      = ((flags & CLASS_NOINLET) == 0);
     c->c_hasDrawCommand     = 0;
     c->c_size               = size;

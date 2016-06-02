@@ -219,7 +219,7 @@ void message_setup (void)
             NULL,
             (t_method)message_free,
             sizeof (t_message),
-            CLASS_BOX,
+            CLASS_DEFAULT,
             A_NULL);
     
     class_addBang (c, message_bang);
@@ -243,7 +243,7 @@ void message_setup (void)
     c = class_new (sym_messageresponder,
             NULL,
             NULL,
-            sizeof (t_object),
+            0,
             CLASS_PURE,
             A_NULL);
             

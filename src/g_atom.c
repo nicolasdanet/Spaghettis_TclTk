@@ -536,11 +536,11 @@ static void text_anything(t_object *x, t_symbol *s, int argc, t_atom *argv)
 void text_setup(void)
 {
     text_class = class_new (sym_text, 0, 0, sizeof(t_object),
-        CLASS_NOINLET | CLASS_BOX, 0);
+        CLASS_NOINLET | CLASS_DEFAULT, 0);
     class_addAnything(text_class, text_anything);
 
     gatom_class = class_new(sym_gatom, 0, (t_method)gatom_free,
-        sizeof(t_gatom), CLASS_NOINLET | CLASS_BOX, 0);
+        sizeof(t_gatom), CLASS_NOINLET | CLASS_DEFAULT, 0);
     class_addBang(gatom_class, gatom_bang);
     class_addFloat(gatom_class, gatom_float);
     class_addSymbol(gatom_class, gatom_symbol);

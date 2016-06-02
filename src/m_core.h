@@ -147,7 +147,6 @@ struct _class {
     t_savefn                c_fnSave;
     t_propertiesfn          c_fnProperties;
     int                     c_signalOffset;
-    char                    c_isGraphic;
     char                    c_isBox;
     char                    c_hasFirstInlet;
     char                    c_hasDrawCommand;
