@@ -1896,7 +1896,7 @@ void x_qlist_setup(void )
         A_GIMME, 0);
     class_addMethod(qlist_class, (t_method)qlist_add2, sym_add2, /* LEGACY !!! */
         A_GIMME, 0);
-    class_addMethod(qlist_class, (t_method)qlist_add, sym_append,
+    class_addMethod(qlist_class, (t_method)qlist_add, sym_append, /* LEGACY !!! */
         A_GIMME, 0);
     class_addMethod(qlist_class, (t_method)qlist_read, sym_read,
         A_SYMBOL, A_DEFSYMBOL, 0);
@@ -1925,7 +1925,7 @@ void x_qlist_setup(void )
         A_GIMME, 0);
     class_addMethod(textfile_class, (t_method)qlist_add2, sym_add2, /* LEGACY !!! */
         A_GIMME, 0);
-    class_addMethod(textfile_class, (t_method)qlist_add, sym_append,
+    class_addMethod(textfile_class, (t_method)qlist_add, sym_append, /* LEGACY !!! */
         A_GIMME, 0);
     class_addMethod(textfile_class, (t_method)qlist_read, sym_read, 
         A_SYMBOL, A_DEFSYMBOL, 0);

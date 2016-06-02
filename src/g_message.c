@@ -28,32 +28,34 @@ static t_class *messageresponder_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void messresponder_bang(t_messageresponder *x)
+static void messageresponder_bang (t_messageresponder *x)
 {
-    outlet_bang(x->mr_outlet);
+    outlet_bang (x->mr_outlet);
 }
 
-static void messresponder_float(t_messageresponder *x, t_float f)
+static void messageresponder_float (t_messageresponder *x, t_float f)
 {
-    outlet_float(x->mr_outlet, f);
+    outlet_float (x->mr_outlet, f);
 }
 
-static void messresponder_symbol(t_messageresponder *x, t_symbol *s)
+static void messageresponder_symbol (t_messageresponder *x, t_symbol *s)
 {
-    outlet_symbol(x->mr_outlet, s);
+    outlet_symbol (x->mr_outlet, s);
 }
 
-static void messresponder_list(t_messageresponder *x, 
-    t_symbol *s, int argc, t_atom *argv)
+static void messageresponder_list (t_messageresponder *x, t_symbol *s, int argc, t_atom *argv)
 {
-    outlet_list(x->mr_outlet, s, argc, argv);
+    outlet_list (x->mr_outlet, s, argc, argv);
 }
 
-static void messresponder_anything(t_messageresponder *x,
-    t_symbol *s, int argc, t_atom *argv)
+static void messageresponder_anything (t_messageresponder *x, t_symbol *s, int argc, t_atom *argv)
 {
-    outlet_anything(x->mr_outlet, s, argc, argv);
+    outlet_anything (x->mr_outlet, s, argc, argv);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void message_bang(t_message *x)
 {
@@ -230,14 +232,22 @@ void message_setup (void)
 
     class_addClick (c, message_click);
         
-    class_addMethod (c, (t_method)message_set,          sym_set,        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)message_add,          sym_add,        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)message_add2,         sym_add2,       A_GIMME, A_NULL);   /* LEGACY !!! */
-    class_addMethod (c, (t_method)message_addcomma,     sym_addcomma,   A_NULL);
-    class_addMethod (c, (t_method)message_addsemi,      sym_addsemi,    A_NULL);            /* LEGACY !!! */
-    class_addMethod (c, (t_method)message_adddollar,    sym_adddollar,  A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)message_adddollsym,   sym_adddollsym, A_SYMBOL, A_NULL);  /* LEGACY !!! */
+    class_addMethod (c, (t_method)message_set,          sym_set,                A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)message_add,          sym_add,                A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)message_add2,         sym_addword,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)message_addcomma,     sym_addcomma,           A_NULL);
+    class_addMethod (c, (t_method)message_addsemi,      sym_addsemicolon,       A_NULL);
+    class_addMethod (c, (t_method)message_adddollar,    sym_adddollar,          A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)message_adddollsym,   sym_adddollarsymbol,    A_SYMBOL, A_NULL);
 
+    #if PD_WITH_LEGACY
+    
+    class_addMethod (c, (t_method)message_add2,         sym_add2,               A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)message_addsemi,      sym_addsemi,            A_NULL);
+    class_addMethod (c, (t_method)message_adddollsym,   sym_adddollsym,         A_SYMBOL, A_NULL);
+        
+    #endif
+    
     message_class = c;
     
     c = class_new (sym_messageresponder,
@@ -247,11 +257,11 @@ void message_setup (void)
             CLASS_PURE,
             A_NULL);
             
-    class_addBang (c, messresponder_bang);
-    class_addFloat (c, messresponder_float);
-    class_addSymbol (c, messresponder_symbol);
-    class_addList (c, messresponder_list);
-    class_addAnything (c, messresponder_anything);
+    class_addBang (c, messageresponder_bang);
+    class_addFloat (c, messageresponder_float);
+    class_addSymbol (c, messageresponder_symbol);
+    class_addList (c, messageresponder_list);
+    class_addAnything (c, messageresponder_anything);
     
     messageresponder_class = c;
 }
