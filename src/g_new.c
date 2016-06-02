@@ -24,7 +24,7 @@ extern t_class *text_class;
 
 static void canvas_makeIemObject (t_glist *glist, t_symbol *name)
 {
-    if (canvas_isMapped (glist)) {      /* Interactive creation. */
+    if (canvas_isMapped (glist)) {                                              /* Interactive creation. */
     //
     t_buffer *b = buffer_new();
     int positionX = 0;
@@ -69,6 +69,11 @@ void canvas_obj (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
+void canvas_msg (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    message_make (glist, s, argc, argv);
+}
+
 void canvas_text (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     t_object *x = (t_object *)pd_new (text_class);
@@ -91,7 +96,7 @@ void canvas_text (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         
         glist_add (glist, cast_gobj (x));
         
-    } else {                                                                    /* Interactive creation. */
+    } else if (canvas_isMapped (glist)) {                                       /* Interactive creation. */
     
         int positionX = 0;
         int positionY = 0;

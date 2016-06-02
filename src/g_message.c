@@ -17,30 +17,16 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "s_system.h"
-#include "s_utf8.h"
 #include "g_canvas.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *message_class, *messresponder_class;
+static t_class *message_class;
+static t_class *messageresponder_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-/* ----------------- the "text" object.  ------------------ */
-
-    /* add a "text" object (comment) to a glist.  While this one goes for any
-    glist, the other 3 below are for canvases only.  (why?)  This is called
-    without args if invoked from the GUI; otherwise at least x and y
-    are provided.  */
-
-
-
-/* iemlib */
-
-/* ---------------------- the "message" text item ------------------------ */
 
 static void messresponder_bang(t_messageresponder *x)
 {
@@ -176,10 +162,10 @@ static void message_free(t_message *x)
     clock_free(x->m_clock);
 }
 
-void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
+void message_make (t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
     t_message *x = (t_message *)pd_new(message_class);
-    x->m_responder.mr_pd = messresponder_class;
+    x->m_responder.mr_pd = messageresponder_class;
     x->m_responder.mr_outlet = outlet_new(&x->m_obj, &s_float);
     x->m_obj.te_width = 0;                             /* don't know it yet. */
     x->m_obj.te_type = TYPE_MESSAGE;
@@ -221,41 +207,53 @@ void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-void message_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void message_setup (void)
 {
-    message_class = class_new(sym_message, 0, (t_method)message_free, sizeof(t_message), CLASS_BOX, 0);
-    class_addBang(message_class, message_bang);
-    class_addFloat(message_class, message_float);
-    class_addSymbol(message_class, message_symbol);
-    class_addList(message_class, message_list);
-    class_addAnything(message_class, message_list);
+    t_class *c = NULL;
+    
+    c = class_new (sym_message,
+            NULL,
+            (t_method)message_free,
+            sizeof (t_message),
+            CLASS_BOX,
+            A_NULL);
+    
+    class_addBang (c, message_bang);
+    class_addFloat (c, message_float);
+    class_addSymbol (c, message_symbol);
+    class_addList (c, message_list);
+    class_addAnything (c, message_list);
 
-    class_addClick (message_class, message_click);
-    /* class_addMethod(message_class, (t_method)message_click, sym_click,
-        A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0); */
+    class_addClick (c, message_click);
         
-    class_addMethod(message_class, (t_method)message_set, sym_set,
-        A_GIMME, 0);
-    class_addMethod(message_class, (t_method)message_add, sym_add,
-        A_GIMME, 0);
-    class_addMethod(message_class, (t_method)message_add2, sym_add2, /* LEGACY !!! */
-        A_GIMME, 0);
-    class_addMethod(message_class, (t_method)message_addcomma,
-        sym_addcomma, 0);
-    class_addMethod(message_class, (t_method)message_addsemi,
-        sym_addsemi, 0); /* LEGACY !!! */
-    class_addMethod(message_class, (t_method)message_adddollar,
-        sym_adddollar, A_FLOAT, 0);
-    class_addMethod(message_class, (t_method)message_adddollsym,
-        sym_adddollsym, A_SYMBOL, 0); /* LEGACY !!! */
+    class_addMethod (c, (t_method)message_set,          sym_set,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)message_add,          sym_add,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)message_add2,         sym_add2,       A_GIMME, A_NULL);   /* LEGACY !!! */
+    class_addMethod (c, (t_method)message_addcomma,     sym_addcomma,   A_NULL);
+    class_addMethod (c, (t_method)message_addsemi,      sym_addsemi,    A_NULL);            /* LEGACY !!! */
+    class_addMethod (c, (t_method)message_adddollar,    sym_adddollar,  A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)message_adddollsym,   sym_adddollsym, A_SYMBOL, A_NULL);  /* LEGACY !!! */
 
-    messresponder_class = class_new(sym_messresponder, 0, 0,
-        sizeof(t_object), CLASS_PURE, 0);
-    class_addBang(messresponder_class, messresponder_bang);
-    class_addFloat(messresponder_class, (t_method) messresponder_float);
-    class_addSymbol(messresponder_class, messresponder_symbol);
-    class_addList(messresponder_class, messresponder_list);
-    class_addAnything(messresponder_class, messresponder_anything);
+    message_class = c;
+    
+    c = class_new (sym_messageresponder,
+            NULL,
+            NULL,
+            sizeof (t_object),
+            CLASS_PURE,
+            A_NULL);
+            
+    class_addBang (c, messresponder_bang);
+    class_addFloat (c, messresponder_float);
+    class_addSymbol (c, messresponder_symbol);
+    class_addList (c, messresponder_list);
+    class_addAnything (c, messresponder_anything);
+    
+    messageresponder_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -263,7 +263,7 @@ extern t_symbol *sym_max;
 extern t_symbol *sym_max__tilde__;
 extern t_symbol *sym_merge;
 extern t_symbol *sym_message;
-extern t_symbol *sym_messresponder;
+extern t_symbol *sym_messageresponder;
 extern t_symbol *sym_metro;
 extern t_symbol *sym_midiclkin;
 extern t_symbol *sym_midiin;

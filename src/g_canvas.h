@@ -661,7 +661,14 @@ void            boxtext_key                             (t_boxtext *x, int n, t_
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void message_click(t_message *x, t_float xpos, t_float ypos, t_float shift, t_float ctrl, t_float alt);
+void            message_make                            (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+
+void            message_click                           (t_message *x, 
+                                                            t_float a,
+                                                            t_float b,
+                                                            t_float shift,
+                                                            t_float ctrl,
+                                                            t_float alt);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

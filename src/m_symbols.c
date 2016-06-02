@@ -258,7 +258,7 @@ t_symbol *sym_max;
 t_symbol *sym_max__tilde__;
 t_symbol *sym_merge;
 t_symbol *sym_message;
-t_symbol *sym_messresponder;
+t_symbol *sym_messageresponder;
 t_symbol *sym_metro;
 t_symbol *sym_midiclkin;
 t_symbol *sym_midiin;
@@ -739,7 +739,7 @@ void symbols_initialize (void)
     sym_max__tilde__                            = gensym ("max~");
     sym_merge                                   = gensym ("merge");
     sym_message                                 = gensym ("message");
-    sym_messresponder                           = gensym ("messresponder");
+    sym_messageresponder                        = gensym ("messageresponder");
     sym_metro                                   = gensym ("metro");
     sym_midiclkin                               = gensym ("midiclkin");
     sym_midiin                                  = gensym ("midiin");
