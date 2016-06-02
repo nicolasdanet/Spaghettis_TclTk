@@ -379,6 +379,7 @@ t_glist         *canvas_addGraph                        (t_glist *glist,
                                                             t_float bottomRightX,
                                                             t_float bottomRightY);
 
+void            canvas_makeIemObject                    (t_glist *glist, t_symbol *name);
 void            canvas_makeTextObject                   (t_glist *glist, 
                                                             int positionX, 
                                                             int positionY, 
@@ -501,14 +502,14 @@ void            canvas_symbolatom                       (t_glist *glist, t_symbo
 void            canvas_text                             (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_scalar                           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_bng                              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_toggle                           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_tgl                              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_vslider                          (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_hslider                          (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_hradio                           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_vradio                           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_vumeter                          (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_mycnv                            (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_numbox                           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_vu                               (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_cnv                              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_nbx                              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

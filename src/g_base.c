@@ -266,6 +266,20 @@ t_glist *canvas_addGraph (t_glist *glist,
     return x;
 }
 
+void canvas_makeIemObject (t_glist *glist, t_symbol *name)
+{
+    t_buffer *b = buffer_new();
+    t_atom a;
+    int positionX;
+    int positionY;
+    
+    canvas_getLastMotionCoordinates (glist, &positionX, &positionY);
+    canvas_deselectAll (glist);
+    SET_SYMBOL (&a, name);
+    buffer_deserialize (b, 1, &a);
+    canvas_makeTextObject (glist, positionX, positionY, 0, 1, b);
+}
+
 void canvas_makeTextObject (t_glist *glist, 
     int positionX,
     int positionY,
@@ -305,8 +319,10 @@ void canvas_makeTextObject (t_glist *glist,
     glist_add (glist, cast_gobj (x));
     
     if (isSelected) {
-        canvas_selectObject (glist, cast_gobj (x));
-        gobj_activate (cast_gobj (x), glist, 1);
+    //
+    canvas_selectObject (glist, cast_gobj (x));
+    gobj_activate (cast_gobj (x), glist, 1);
+    //
     }
     
     if (pd_class (x) == vinlet_class)  { canvas_resortinlets (canvas_getView (glist)); }

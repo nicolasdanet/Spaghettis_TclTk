@@ -794,14 +794,14 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_text,          sym_text,           A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_scalar,        sym_scalar,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_bng,           sym_bng,            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_toggle,        sym_tgl,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_tgl,           sym_tgl,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_vslider,       sym_vslider,        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_hslider,       sym_hslider,        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_hradio,        sym_hradio,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_vradio,        sym_vradio,         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_vumeter,       sym_vu,             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_mycnv,         sym_cnv,            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_numbox,        sym_nbx,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_vu,            sym_vu,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_cnv,           sym_cnv,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_nbx,           sym_nbx,            A_GIMME, A_NULL);
     
     class_addMethod (c, (t_method)canvas_editmode,      sym_editmode,       A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_close,         sym_close,          A_DEFFLOAT, A_NULL);
@@ -860,10 +860,10 @@ void canvas_setup (void)
     
     class_addMethod (c, (t_method)canvas_open,      sym_menu__dash__open,   A_NULL);
     class_addMethod (c, (t_method)canvas_close,     sym_menuclose,          A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_toggle,    sym_toggle,             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_vumeter,   sym_vumeter,            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_mycnv,     sym_mycnv,              A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_numbox,    sym_numbox,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_tgl,       sym_toggle,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_vu,        sym_vumeter,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_cnv,       sym_mycnv,              A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_nbx,       sym_numbox,             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_visible,   sym_vis,                A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_merge,     sym_mergefile,          A_SYMBOL, A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)canvas_save,      sym_menusave,           A_DEFFLOAT, A_NULL);

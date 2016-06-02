@@ -22,25 +22,6 @@ extern t_class *text_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void canvas_iems(t_glist *gl, t_symbol *guiobjname)
-{
-    t_atom at;
-    t_buffer *b = buffer_new();
-    int xpix, ypix;
-
-    pd_vMessage(&gl->gl_obj.te_g.g_pd, sym_editmode, "i", 1);
-    canvas_deselectAll(gl);
-    SET_SYMBOL(&at, guiobjname);
-    buffer_deserialize(b, 1, &at);
-    canvas_getLastMotionCoordinates(gl, &xpix, &ypix);
-    canvas_makeTextObject(gl, xpix, ypix, 0, 1, b);
-    // canvas_startmotion(canvas_getView(gl));
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void canvas_obj(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
     t_object *x;
@@ -119,61 +100,52 @@ void canvas_text (t_glist *gl, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-    /* object creation routine.  These are called without any arguments if
-    they're invoked from the gui; when pasting or restoring from a file, we
-    get at least x and y. */
-
-
-
-/* make an object box for an object that's already there. */
-
-/* iemlib */
-
-
-void canvas_bng(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
+void canvas_bng (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems (gl, sym_bng);
+    canvas_makeIemObject (glist, sym_bng);
 }
 
-void canvas_toggle(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
+void canvas_tgl (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems (gl, sym_tgl);
+    canvas_makeIemObject (glist, sym_tgl);
 }
 
-void canvas_vslider(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
+void canvas_vslider (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems(gl, sym_vslider);
+    canvas_makeIemObject (glist, sym_vslider);
 }
 
-void canvas_hslider(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
+void canvas_hslider (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems (gl, sym_hslider);
+    canvas_makeIemObject (glist, sym_hslider);
 }
 
-void canvas_hradio(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
+void canvas_hradio (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems (gl, sym_hradio);
+    canvas_makeIemObject (glist, sym_hradio);
 }
 
-void canvas_vradio(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
+void canvas_vradio (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems (gl, sym_vradio);
+    canvas_makeIemObject (glist, sym_vradio);
 }
 
-void canvas_vumeter(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
+void canvas_vu (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems (gl, sym_vu);
+    canvas_makeIemObject (glist, sym_vu);
 }
 
-void canvas_mycnv(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
+void canvas_cnv (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems (gl, sym_cnv);
+    canvas_makeIemObject (glist, sym_cnv);
 }
 
-void canvas_numbox(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
+void canvas_nbx (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems (gl, sym_nbx);
+    canvas_makeIemObject (glist, sym_nbx);
 }
 
 // -----------------------------------------------------------------------------------------------------------
