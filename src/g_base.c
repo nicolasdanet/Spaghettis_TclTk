@@ -266,20 +266,6 @@ t_glist *canvas_addGraph (t_glist *glist,
     return x;
 }
 
-void canvas_makeIemObject (t_glist *glist, t_symbol *name)
-{
-    t_buffer *b = buffer_new();
-    t_atom a;
-    int positionX;
-    int positionY;
-    
-    canvas_getLastMotionCoordinates (glist, &positionX, &positionY);
-    canvas_deselectAll (glist);
-    SET_SYMBOL (&a, name);
-    buffer_deserialize (b, 1, &a);
-    canvas_makeTextObject (glist, positionX, positionY, 0, 1, b);
-}
-
 void canvas_makeTextObject (t_glist *glist, 
     int positionX,
     int positionY,
@@ -303,11 +289,15 @@ void canvas_makeTextObject (t_glist *glist,
     if (pd_newest) { x = canvas_castToObjectIfPatchable (pd_newest); }
 
     if (!x) {
-        x = (t_object *)pd_new (text_class);    /* Create a dummy class. */
-        
-        if (buffer_size (b)) {
-            post_atoms (buffer_size (b), buffer_atoms (b)); post_error ("... couldn't create");
-        }
+    //
+    x = (t_object *)pd_new (text_class);    /* Create a dummy class. */
+    
+    if (buffer_size (b)) {                  /* Avoid unnecessary moanings. */
+    //
+    post_atoms (buffer_size (b), buffer_atoms (b)); post_error (PD_TRANSLATE ("... couldn't create"));
+    //
+    }
+    //
     }
 
     x->te_buffer        = b;

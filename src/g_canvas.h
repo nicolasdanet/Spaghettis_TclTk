@@ -379,7 +379,6 @@ t_glist         *canvas_addGraph                        (t_glist *glist,
                                                             t_float bottomRightX,
                                                             t_float bottomRightY);
 
-void            canvas_makeIemObject                    (t_glist *glist, t_symbol *name);
 void            canvas_makeTextObject                   (t_glist *glist, 
                                                             int positionX, 
                                                             int positionY, 

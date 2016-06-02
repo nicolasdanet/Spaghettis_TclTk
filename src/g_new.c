@@ -22,39 +22,50 @@ extern t_class *text_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void canvas_obj(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
+static void canvas_makeIemObject (t_glist *glist, t_symbol *name)
 {
-    t_object *x;
-    if (argc >= 2)
-    {
-        t_buffer *b = buffer_new();
-        buffer_deserialize(b, argc-2, argv+2);
-        canvas_makeTextObject(gl, (t_int)atom_getFloatAtIndex(0, argc, argv),
-            (t_int)atom_getFloatAtIndex(1, argc, argv), 0, 0, b);
+    if (canvas_isMapped (glist)) {      /* Interactive creation. */
+    //
+    t_buffer *b = buffer_new();
+    int positionX = 0;
+    int positionY = 0;
+    t_atom a;
+        
+    canvas_getLastMotionCoordinates (glist, &positionX, &positionY);
+    canvas_deselectAll (glist);
+    SET_SYMBOL (&a, name);
+    buffer_deserialize (b, 1, &a);
+    canvas_makeTextObject (glist, positionX, positionY, 0, 1, b);
+    //
     }
-        /* JMZ: don't go into interactive mode in a closed canvas */
-    else if (!canvas_isMapped(gl))
-        post("unable to create stub object in closed canvas!");
-    else
-    {
-            /* interactively create new obect */
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void canvas_obj (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    int positionX = 0;
+    int positionY = 0;
+    
+    if (argc >= 2) {                                                            /* File creation. */
+    
+        t_buffer *b = buffer_new();     /* Will be owned by the object. */
+            
+        positionX = (int)atom_getFloatAtIndex (0, argc, argv);
+        positionY = (int)atom_getFloatAtIndex (1, argc, argv);
+        
+        buffer_deserialize (b, argc - 2, argv + 2);
+        canvas_makeTextObject (glist, positionX, positionY, 0, 0, b);
+    
+    } else if (canvas_isMapped (glist)) {                                       /* Interactive creation. */
+        
         t_buffer *b = buffer_new();
-        int connectme = 0;
-        int xpix, ypix;
-        int indx = 0;
-        int nobj = 0;
-        
-        canvas_getLastMotionCoordinates (gl, &xpix, &ypix);
-        canvas_deselectAll(gl);
-        
-        pd_vMessage(&gl->gl_obj.te_g.g_pd, sym_editmode, "i", 1);
-        canvas_makeTextObject(gl, xpix, ypix, 0, 1, b);
-        
-        /* if (connectme) {
-            canvas_connect(gl, indx, 0, nobj, 0);
-        } else {
-          // canvas_startmotion(canvas_getView(gl));
-        } */
+            
+        canvas_getLastMotionCoordinates (glist, &positionX, &positionY);
+        canvas_deselectAll (glist);
+        canvas_makeTextObject (glist, positionX, positionY, 0, 1, b);
     }
 }
 
