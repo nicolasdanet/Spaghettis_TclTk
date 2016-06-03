@@ -129,7 +129,7 @@ static void instance_newAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     } else {
         t_pd *t = s__X.s_thing;
         canvas_setActiveArguments (argc, argv);
-        buffer_evalFile (gensym (name), gensym (directory));
+        buffer_fileEval (gensym (name), gensym (directory));
         if (s__X.s_thing && t != s__X.s_thing) { instance_popAbstraction (cast_glist (s__X.s_thing)); }
         else { 
             s__X.s_thing = t; 

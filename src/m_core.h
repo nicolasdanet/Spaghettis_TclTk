@@ -325,8 +325,8 @@ void        buffer_deserialize                          (t_buffer *x, int argc, 
 void        buffer_eval                                 (t_buffer *x, t_pd *object, int argc, t_atom *argv);
 t_error     buffer_read                                 (t_buffer *x, char *name, t_glist *glist);
 t_error     buffer_write                                (t_buffer *x, char *name, char *directory);
-t_error     buffer_evalFile                             (t_symbol *name, t_symbol *directory);
-void        buffer_openFile                             (void *dummy, t_symbol *name, t_symbol *directory);
+t_error     buffer_fileEval                             (t_symbol *name, t_symbol *directory);
+void        buffer_fileOpen                             (void *dummy, t_symbol *name, t_symbol *directory);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
