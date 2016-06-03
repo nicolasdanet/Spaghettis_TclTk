@@ -671,7 +671,7 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
         x->x_state = 0;
     }
 
-    outlet_new (cast_object (x), &s_list);
+    outlet_new (cast_object (x), &s_float);
     //
     }
     

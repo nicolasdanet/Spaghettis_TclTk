@@ -159,54 +159,53 @@ static void message_tick(t_message *x)
     }
 }
 
-static void message_free(t_message *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void message_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    clock_free(x->m_clock);
+    t_message *x = (t_message *)pd_new (message_class);
+    
+    x->m_obj.te_buffer          = buffer_new();
+    x->m_obj.te_width           = 0;
+    x->m_obj.te_type            = TYPE_MESSAGE;
+    x->m_responder.mr_pd        = messageresponder_class;
+    x->m_responder.mr_outlet    = outlet_new (cast_object (x), &s_anything);
+    x->m_owner                  = glist;
+    x->m_clock                  = clock_new (x, (t_method)message_tick);
+    
+    if (argc > 1) {                                                             /* File creation. */
+    
+        x->m_obj.te_xCoordinate = atom_getFloatAtIndex (0, argc, argv);
+        x->m_obj.te_yCoordinate = atom_getFloatAtIndex (1, argc, argv);
+        
+        if (argc > 2) {
+            buffer_deserialize (x->m_obj.te_buffer, argc - 2, argv + 2);
+        }
+        
+        glist_add (glist, cast_gobj (x));
+        
+    } else if (canvas_isMapped (glist)) {                                       /* Interactive creation. */
+
+        int positionX = 0;
+        int positionY = 0;
+        
+        canvas_getLastMotionCoordinates (glist, &positionX, &positionY);
+        canvas_deselectAll (glist);
+    
+        x->m_obj.te_xCoordinate = positionX;
+        x->m_obj.te_yCoordinate = positionY;
+        
+        glist_add (glist, cast_gobj (x));
+        canvas_selectObject (glist, cast_gobj (x));
+        gobj_activate (cast_gobj (x), glist, 1);
+    }
 }
 
-void message_make (t_glist *gl, t_symbol *s, int argc, t_atom *argv)
+static void message_free (t_message *x)
 {
-    t_message *x = (t_message *)pd_new(message_class);
-    x->m_responder.mr_pd = messageresponder_class;
-    x->m_responder.mr_outlet = outlet_new(&x->m_obj, &s_float);
-    x->m_obj.te_width = 0;                             /* don't know it yet. */
-    x->m_obj.te_type = TYPE_MESSAGE;
-    x->m_obj.te_buffer = buffer_new();
-    x->m_owner = gl;
-    x->m_clock = clock_new(x, (t_method)message_tick);
-    if (argc > 1)
-    {
-        x->m_obj.te_xCoordinate = atom_getFloatAtIndex(0, argc, argv);
-        x->m_obj.te_yCoordinate = atom_getFloatAtIndex(1, argc, argv);
-        if (argc > 2) buffer_deserialize(x->m_obj.te_buffer, argc-2, argv+2);
-        glist_add(gl, &x->m_obj.te_g);
-    }
-    else if (!canvas_isMapped(gl))
-        post("unable to create stub message in closed canvas!");
-    else
-    {
-        int connectme = 0;
-        int xpix, ypix;
-        int indx = 0;
-        int nobj = 0;
-        
-        canvas_getLastMotionCoordinates (gl, &xpix, &ypix);
-        canvas_deselectAll(gl);
-    
-        pd_vMessage(&gl->gl_obj.te_g.g_pd, sym_editmode, "i", 1);
-        x->m_obj.te_xCoordinate = xpix;
-        x->m_obj.te_yCoordinate = ypix;
-        glist_add(gl, &x->m_obj.te_g);
-        canvas_deselectAll(gl);
-        canvas_selectObject(gl, &x->m_obj.te_g);
-        gobj_activate(&x->m_obj.te_g, gl, 1);
-        
-        /*if (connectme) {
-            canvas_connect(gl, indx, 0, nobj, 0);
-        } else {
-            // canvas_startmotion(canvas_getView(gl));
-        }*/
-    }
+    clock_free (x->m_clock);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -71,7 +71,7 @@ void canvas_obj (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 
 void canvas_msg (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    message_make (glist, s, argc, argv);
+    message_makeObject (glist, s, argc, argv);
 }
 
 void canvas_text (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -109,7 +109,6 @@ void canvas_text (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         
         buffer_deserialize (x->te_buffer, 1, &a);
         glist_add (glist, cast_gobj (x));
-        
         canvas_selectObject (glist, cast_gobj (x));
     }
 }
