@@ -250,23 +250,23 @@ proc _object {m} {
     $m add command \
         -label [_ "Object"] \
         -accelerator "${accelerator}+1" \
-        -command { ::ui_menu::_handle "obj 0" } 
+        -command { ::ui_menu::_handle obj } 
     $m add command \
         -label [_ "Message"] \
         -accelerator "${accelerator}+2" \
-        -command { ::ui_menu::_handle "msg 0" }
+        -command { ::ui_menu::_handle msg }
     $m add command \
         -label [_ "Atom"] \
         -accelerator "${accelerator}+3" \
-        -command { ::ui_menu::_handle "floatatom 0" }
+        -command { ::ui_menu::_handle floatatom }
     $m add command \
         -label [_ "Symbol"] \
         -accelerator "${accelerator}+4" \
-        -command { ::ui_menu::_handle "symbolatom 0" }
+        -command { ::ui_menu::_handle symbolatom }
     $m add command \
         -label [_ "Comment"] \
         -accelerator "${accelerator}+5" \
-        -command { ::ui_menu::_handle "text 0" }
+        -command { ::ui_menu::_handle comment }
     $m add separator
     
     $m add command \
