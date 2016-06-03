@@ -65,7 +65,7 @@ void bindlist_initialize (void)
 {
     t_class *c = NULL;
     
-    c = class_new (sym_bindlist, NULL, NULL, sizeof (t_bindlist), CLASS_ABSTRACT, A_NULL);
+    c = class_new (sym_bindlist, NULL, NULL, sizeof (t_bindlist), CLASS_NOBOX, A_NULL);
     
     class_addBang (c, (t_method)bindlist_bang);
     class_addFloat (c, (t_method)bindlist_float);

@@ -150,6 +150,7 @@ struct _class {
     char                    c_isBox;
     char                    c_hasFirstInlet;
     char                    c_hasDrawCommand;
+    int                     c_type;
     size_t                  c_size;
     };
 

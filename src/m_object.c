@@ -436,10 +436,10 @@ void outlet_anything (t_outlet *x, t_symbol *s, int argc, t_atom *argv)
 
 void object_initialize (void)
 {
-    inlet_class         = class_new (sym_inlet, NULL, NULL, sizeof (t_inlet), CLASS_ABSTRACT, A_NULL);
-    pointerinlet_class  = class_new (sym_inlet, NULL, NULL, sizeof (t_inlet), CLASS_ABSTRACT, A_NULL);
-    floatinlet_class    = class_new (sym_inlet, NULL, NULL, sizeof (t_inlet), CLASS_ABSTRACT, A_NULL);
-    symbolinlet_class   = class_new (sym_inlet, NULL, NULL, sizeof (t_inlet), CLASS_ABSTRACT, A_NULL);
+    inlet_class         = class_new (sym_inlet, NULL, NULL, sizeof (t_inlet), CLASS_NOBOX, A_NULL);
+    pointerinlet_class  = class_new (sym_inlet, NULL, NULL, sizeof (t_inlet), CLASS_NOBOX, A_NULL);
+    floatinlet_class    = class_new (sym_inlet, NULL, NULL, sizeof (t_inlet), CLASS_NOBOX, A_NULL);
+    symbolinlet_class   = class_new (sym_inlet, NULL, NULL, sizeof (t_inlet), CLASS_NOBOX, A_NULL);
     
     class_addBang (inlet_class,             (t_method)inlet_forBang);
     class_addPointer (inlet_class,          (t_method)inlet_forPointer);

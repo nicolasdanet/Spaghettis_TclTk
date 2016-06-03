@@ -365,10 +365,11 @@
 #pragma mark -
 
 #define CLASS_DEFAULT           0
-#define CLASS_PURE              1
 #define CLASS_ABSTRACT          1
-#define CLASS_GRAPHIC           2
-#define CLASS_BOX               3
+#define CLASS_NOBOX             2
+#define CLASS_GRAPHIC           3
+#define CLASS_BOX               4
+
 #define CLASS_NOINLET           8
 
 // -----------------------------------------------------------------------------------------------------------

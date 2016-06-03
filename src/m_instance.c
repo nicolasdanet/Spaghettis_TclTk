@@ -150,8 +150,8 @@ void instance_initialize (void)
     
     PD_ASSERT (!pd_objectMaker);
     
-    pd_objectMaker = class_new (sym_objectmaker, NULL, NULL, 0, CLASS_PURE, A_NULL);
-    pd_canvasMaker = class_new (sym_canvasmaker, NULL, NULL, 0, CLASS_PURE, A_NULL);
+    pd_objectMaker = class_new (sym_objectmaker, NULL, NULL, 0, CLASS_ABSTRACT, A_NULL);
+    pd_canvasMaker = class_new (sym_canvasmaker, NULL, NULL, 0, CLASS_ABSTRACT, A_NULL);
     
     class_addAnything (pd_objectMaker, (t_method)instance_newAnything);
 }

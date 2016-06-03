@@ -545,7 +545,7 @@ void template_free(t_template *x)
 static void template_setup(void)
 {
     template_class = class_new(sym_template, 0, (t_method)template_free,
-        sizeof(t_template), CLASS_ABSTRACT, 0);
+        sizeof(t_template), CLASS_NOBOX, 0);
     class_addMethod(pd_canvasMaker, (t_method)template_usetemplate,
         sym_struct, A_GIMME, 0);
         

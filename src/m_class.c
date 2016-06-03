@@ -185,7 +185,7 @@ t_class *class_new (t_symbol *s,
     t_atomtype *vp = arg;
     int count = 0;
     t_class *c = NULL;
-    int type = flags & (CLASS_PURE | CLASS_GRAPHIC | CLASS_BOX);
+    int type = flags & (CLASS_ABSTRACT | CLASS_NOBOX | CLASS_GRAPHIC | CLASS_BOX);
     if (!type) { type = CLASS_BOX; }
     
     *vp = type1;
@@ -227,6 +227,7 @@ t_class *class_new (t_symbol *s,
     c->c_isBox              = (type == CLASS_BOX);
     c->c_hasFirstInlet      = ((flags & CLASS_NOINLET) == 0);
     c->c_hasDrawCommand     = 0;
+    c->c_type               = type;
     c->c_size               = size;
 
     return c;

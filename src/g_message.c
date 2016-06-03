@@ -253,7 +253,7 @@ void message_setup (void)
             NULL,
             NULL,
             0,
-            CLASS_PURE,
+            CLASS_ABSTRACT,
             A_NULL);
             
     class_addBang (c, messageresponder_bang);
