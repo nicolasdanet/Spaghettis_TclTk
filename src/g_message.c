@@ -62,100 +62,124 @@ static void message_bang (t_message *x)
     buffer_eval (cast_object (x)->te_buffer, cast_pd (&x->m_responder), 0, NULL);
 }
 
-static void message_float(t_message *x, t_float f)
+static void message_float (t_message *x, t_float f)
 {
-    t_atom at;
-    SET_FLOAT(&at, f);
-    buffer_eval(cast_object (x)->te_buffer, &x->m_responder.mr_pd, 1, &at);
+    t_atom a; SET_FLOAT (&a, f);
+    
+    buffer_eval (cast_object (x)->te_buffer, cast_pd (&x->m_responder), 1, &a);
 }
 
-static void message_symbol(t_message *x, t_symbol *s)
+static void message_symbol (t_message *x, t_symbol *s)
 {
-    t_atom at;
-    SET_SYMBOL(&at, s);
-    buffer_eval(cast_object (x)->te_buffer, &x->m_responder.mr_pd, 1, &at);
+    t_atom a; SET_SYMBOL (&a, s);
+    
+    buffer_eval (cast_object (x)->te_buffer, cast_pd (&x->m_responder), 1, &a);
 }
 
-static void message_list(t_message *x, t_symbol *s, int argc, t_atom *argv)
+static void message_list (t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    buffer_eval(cast_object (x)->te_buffer, &x->m_responder.mr_pd, argc, argv);
+    buffer_eval (cast_object (x)->te_buffer, cast_pd (&x->m_responder), argc, argv);
 }
 
-static void message_set(t_message *x, t_symbol *s, int argc, t_atom *argv)
-{
-    buffer_reset(cast_object (x)->te_buffer);
-    buffer_append(cast_object (x)->te_buffer, argc, argv);
-    glist_retext(x->m_owner, &x->m_obj);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void message_add2(t_message *x, t_symbol *s, int argc, t_atom *argv)
+void message_click (t_message *x, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
 {
-    buffer_append(cast_object (x)->te_buffer, argc, argv);
-    glist_retext(x->m_owner, &x->m_obj);
-}
+    message_float (x, 0);
+    
+    if (canvas_isMapped (x->m_owner)) {
+    //
+    t_boxtext *y = boxtext_fetch (x->m_owner, cast_object (x));
 
-static void message_add(t_message *x, t_symbol *s, int argc, t_atom *argv)
-{
-    buffer_append(cast_object (x)->te_buffer, argc, argv);
-    buffer_appendSemicolon(cast_object (x)->te_buffer);
-    glist_retext(x->m_owner, &x->m_obj);
-}
-
-static void message_addcomma(t_message *x)
-{
-    t_atom a;
-    SET_COMMA(&a);
-    buffer_append(cast_object (x)->te_buffer, 1, &a);
-    glist_retext(x->m_owner, &x->m_obj);
-}
-
-static void message_addsemi(t_message *x)
-{
-    message_add(x, 0, 0, 0);
-}
-
-static void message_adddollar(t_message *x, t_float f)
-{
-    t_atom a;
-    int n = f;
-    if (n < 0)
-        n = 0;
-    SET_DOLLAR(&a, n);
-    buffer_append(cast_object (x)->te_buffer, 1, &a);
-    glist_retext(x->m_owner, &x->m_obj);
-}
-
-static void message_adddollsym(t_message *x, t_symbol *s)
-{
-    t_atom a;
-    char buf[PD_STRING];
-    buf[0] = '$';
-    strncpy(buf+1, s->s_name, PD_STRING-2);
-    buf[PD_STRING-1] = 0;
-    SET_DOLLARSYMBOL(&a, gensym (buf));
-    buffer_append(cast_object (x)->te_buffer, 1, &a);
-    glist_retext(x->m_owner, &x->m_obj);
-}
-
-void message_click(t_message *x, t_float xpos, t_float ypos, t_float shift, t_float ctrl, t_float alt)
-{
-    message_float(x, 0);
-    if (canvas_isMapped(x->m_owner))
-    {
-        t_boxtext *y = boxtext_fetch(x->m_owner, &x->m_obj);
-        sys_vGui(".x%lx.c itemconfigure %sR -width 5\n", 
-            canvas_getView(x->m_owner), boxtext_getTag(y));
-        clock_delay(x->m_clock, 120);
+    sys_vGui (".x%lx.c itemconfigure %sR -width 5\n", 
+                    canvas_getView (x->m_owner), 
+                    boxtext_getTag (y));
+                    
+    clock_delay (x->m_clock, 120.0);
+    //
     }
 }
 
-static void message_tick(t_message *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void message_set (t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (canvas_isMapped(x->m_owner))
-    {
-        t_boxtext *y = boxtext_fetch(x->m_owner, &x->m_obj);
-        sys_vGui(".x%lx.c itemconfigure %sR -width 1\n",
-            canvas_getView(x->m_owner), boxtext_getTag(y));
+    buffer_reset (cast_object (x)->te_buffer);
+    buffer_append (cast_object (x)->te_buffer, argc, argv);
+    
+    glist_retext (x->m_owner, cast_object (x));
+}
+
+static void message_add (t_message *x, t_symbol *s, int argc, t_atom *argv)
+{
+    buffer_append (cast_object (x)->te_buffer, argc, argv);
+    buffer_appendSemicolon (cast_object (x)->te_buffer);
+    
+    glist_retext (x->m_owner, &x->m_obj);
+}
+
+static void message_addWord (t_message *x, t_symbol *s, int argc, t_atom *argv)
+{
+    buffer_append (cast_object (x)->te_buffer, argc, argv);
+    
+    glist_retext (x->m_owner, cast_object (x));
+}
+
+static void message_addComma (t_message *x)
+{
+    t_atom a; SET_COMMA (&a);
+    
+    buffer_append (cast_object (x)->te_buffer, 1, &a);
+    
+    glist_retext (x->m_owner, cast_object (x));
+}
+
+static void message_addSemicolon (t_message *x)
+{
+    message_add (x, NULL, 0, NULL);
+}
+
+static void message_addDollar (t_message *x, t_float f)
+{
+    int n = PD_MAX (0, (int)f);
+    t_atom a; SET_DOLLAR (&a, n);
+    
+    buffer_append (cast_object (x)->te_buffer, 1, &a);
+    
+    glist_retext (x->m_owner, cast_object (x));
+}
+
+static void message_addDollarSymbol (t_message *x, t_symbol *s)
+{
+    t_atom a;
+    
+    char t[PD_STRING] = { 0 };
+    string_sprintf (t, PD_STRING, "$%s", s->s_name);
+    SET_DOLLARSYMBOL (&a, gensym (t));
+
+    buffer_append (cast_object (x)->te_buffer, 1, &a);
+    
+    glist_retext (x->m_owner, cast_object (x));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void message_taskTick (t_message *x)
+{
+    if (canvas_isMapped (x->m_owner)) {
+    //
+    t_boxtext *y = boxtext_fetch (x->m_owner, cast_object (x));
+    
+    sys_vGui (".x%lx.c itemconfigure %sR -width 1\n",
+                    canvas_getView (x->m_owner),
+                    boxtext_getTag (y));
+    //
     }
 }
 
@@ -173,7 +197,7 @@ void message_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     x->m_responder.mr_pd        = messageresponder_class;
     x->m_responder.mr_outlet    = outlet_new (cast_object (x), &s_anything);
     x->m_owner                  = glist;
-    x->m_clock                  = clock_new (x, (t_method)message_tick);
+    x->m_clock                  = clock_new (x, (t_method)message_taskTick);
     
     if (argc > 1) {                                                             /* File creation. */
     
@@ -231,19 +255,19 @@ void message_setup (void)
 
     class_addClick (c, message_click);
         
-    class_addMethod (c, (t_method)message_set,          sym_set,                A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)message_add,          sym_add,                A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)message_add2,         sym_addword,            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)message_addcomma,     sym_addcomma,           A_NULL);
-    class_addMethod (c, (t_method)message_addsemi,      sym_addsemicolon,       A_NULL);
-    class_addMethod (c, (t_method)message_adddollar,    sym_adddollar,          A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)message_adddollsym,   sym_adddollarsymbol,    A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)message_set,              sym_set,                A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)message_add,              sym_add,                A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)message_addWord,          sym_addword,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)message_addComma,         sym_addcomma,           A_NULL);
+    class_addMethod (c, (t_method)message_addSemicolon,     sym_addsemicolon,       A_NULL);
+    class_addMethod (c, (t_method)message_addDollar,        sym_adddollar,          A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)message_addDollarSymbol,  sym_adddollarsymbol,    A_SYMBOL, A_NULL);
 
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)message_add2,         sym_add2,               A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)message_addsemi,      sym_addsemi,            A_NULL);
-    class_addMethod (c, (t_method)message_adddollsym,   sym_adddollsym,         A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)message_addWord,          sym_add2,               A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)message_addSemicolon,     sym_addsemi,            A_NULL);
+    class_addMethod (c, (t_method)message_addDollarSymbol,  sym_adddollsym,         A_SYMBOL, A_NULL);
         
     #endif
     
