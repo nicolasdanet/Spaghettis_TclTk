@@ -302,6 +302,7 @@ t_symbol *sym_outlet__tilde__;
 t_symbol *sym_pack;
 t_symbol *sym_pad;
 t_symbol *sym_panelsize;
+t_symbol *sym_parameter;
 t_symbol *sym_pd;
 t_symbol *sym_pd__dash__float__dash__array;
 t_symbol *sym_pd__dash__text;
@@ -786,6 +787,7 @@ void symbols_initialize (void)
     sym_pack                                    = gensym ("pack");
     sym_pad                                     = gensym ("pad");
     sym_panelsize                               = gensym ("panelsize");
+    sym_parameter                               = gensym ("parameter");
     sym_pd                                      = gensym ("pd");
     sym_pd__dash__float__dash__array            = gensym ("pd-float-array");
     sym_pd__dash__text                          = gensym ("pd-text");

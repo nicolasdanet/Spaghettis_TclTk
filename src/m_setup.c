@@ -53,6 +53,7 @@ void g_io_setup             (void);
 void g_scalar_setup         (void);
 void g_template_setup       (void);
 void message_setup          (void);
+void gatom_setup            (void);
 void text_setup             (void);
 void g_traversal_setup      (void);
 void x_acoustics_setup      (void);
@@ -110,6 +111,7 @@ void setup_initialize (void)
     g_scalar_setup();
     g_template_setup();
     message_setup();
+    gatom_setup();
     text_setup();
     g_traversal_setup();
     

@@ -25,9 +25,10 @@
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_class *canvas_class;
-extern t_class *text_class;
 extern t_class *gatom_class;
 extern t_pd *pd_newest;
+
+t_class *text_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -237,17 +238,6 @@ t_widgetbehavior text_widgetBehavior =      /* Shared. */
     text_click
 };
 
-t_widgetbehavior gatom_widgetbehavior =
-{
-    text_getrect,
-    gatom_displace,
-    text_select,
-    text_activate,
-    text_delete,
-    gatom_vis,
-    text_click
-};
-
 /* -------------------- the "text" class  ------------ */
 
 #ifdef __APPLE__
@@ -436,6 +426,20 @@ void text_setto(t_object *x, t_glist *glist, char *buf, int bufsize)
                 canvas_updatewindowlist();*/
     }
     else buffer_withStringUnzeroed(x->te_buffer, buf, bufsize);
+}
+
+    /* this gets called when a message gets sent to an object whose creation
+    failed, presumably because of loading a patch with a missing extern or
+    abstraction */
+static void text_anything(t_object *x, t_symbol *s, int argc, t_atom *argv)
+{
+}
+
+void text_setup(void)
+{
+    text_class = class_new (sym_text, 0, 0, sizeof(t_object),
+        CLASS_NOINLET | CLASS_DEFAULT, 0);
+    class_addAnything(text_class, text_anything);
 }
 
 // -----------------------------------------------------------------------------------------------------------

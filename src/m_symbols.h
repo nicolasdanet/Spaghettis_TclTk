@@ -307,6 +307,7 @@ extern t_symbol *sym_outlet__tilde__;
 extern t_symbol *sym_pack;
 extern t_symbol *sym_pad;
 extern t_symbol *sym_panelsize;
+extern t_symbol *sym_parameter;
 extern t_symbol *sym_pd;
 extern t_symbol *sym_pd__dash__float__dash__array;
 extern t_symbol *sym_pd__dash__text;

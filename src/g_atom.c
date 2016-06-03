@@ -24,19 +24,33 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_widgetbehavior gatom_widgetbehavior;
-
-t_class *text_class;
-t_class *gatom_class;
+t_class *gatom_class;                               /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static t_widgetbehavior gatom_widgetBehavior =      /* Shared. */
+{
+    text_getrect,
+    gatom_displace,
+    text_select,
+    text_activate,
+    text_delete,
+    gatom_vis,
+    text_click
+};
 
-#define ATOM_LABELLEFT 0
-#define ATOM_LABELRIGHT 1
-#define ATOM_LABELUP 2
-#define ATOM_LABELDOWN 3
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#define ATOM_LABEL_LEFT     0
+#define ATOM_LABEL_RIGHT    1
+#define ATOM_LABEL_UP       2
+#define ATOM_LABEL_DOWN     3
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
     /* prepend "-" as necessary to avoid empty strings, so we can
     use them in Pd messages.  A more complete solution would be
@@ -353,19 +367,19 @@ static void gatom_getwherelabel(t_gatom *x, t_glist *glist, int *xp, int *yp)
     text_getrect(&x->a_obj.te_g, glist, &x1, &y1, &x2, &y2);
     width = x2 - x1;
     height = y2 - y1;
-    if (x->a_position == ATOM_LABELLEFT)
+    if (x->a_position == ATOM_LABEL_LEFT)
     {
         *xp = x1 - 3 -
             strlen(canvas_expandDollar(x->a_owner, x->a_label)->s_name) *
             (int)font_getHostFontWidth(canvas_getFontSize(glist));
         *yp = y1 + 2;
     }
-    else if (x->a_position == ATOM_LABELRIGHT)
+    else if (x->a_position == ATOM_LABEL_RIGHT)
     {
         *xp = x2 + 2;
         *yp = y1 + 2;
     }
-    else if (x->a_position == ATOM_LABELUP)
+    else if (x->a_position == ATOM_LABEL_UP)
     {
         *xp = x1 - 1;
         *yp = y1 - 1 - (int)font_getHostFontHeight(canvas_getFontSize(glist));;
@@ -526,35 +540,41 @@ static void gatom_properties(t_gobj *z, t_glist *owner)
     guistub_new(&x->a_obj.te_g.g_pd, x, buf);
 }
 
-    /* this gets called when a message gets sent to an object whose creation
-    failed, presumably because of loading a patch with a missing extern or
-    abstraction */
-static void text_anything(t_object *x, t_symbol *s, int argc, t_atom *argv)
-{
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-void text_setup(void)
+void gatom_setup (void)
 {
-    text_class = class_new (sym_text, 0, 0, sizeof(t_object),
-        CLASS_NOINLET | CLASS_DEFAULT, 0);
-    class_addAnything(text_class, text_anything);
-
-    gatom_class = class_new(sym_gatom, 0, (t_method)gatom_free,
-        sizeof(t_gatom), CLASS_NOINLET | CLASS_DEFAULT, 0);
-    class_addBang(gatom_class, gatom_bang);
-    class_addFloat(gatom_class, gatom_float);
-    class_addSymbol(gatom_class, gatom_symbol);
-    class_addList(gatom_class, gatom_list);
-    class_addMethod(gatom_class, (t_method)gatom_set, sym_set,
-        A_GIMME, 0);
-    class_addClick (gatom_class, gatom_click);
+    t_class *c = NULL;
     
-    /* class_addMethod(gatom_class, (t_method)gatom_click, sym_click,
-        A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0); */
-    class_addMethod(gatom_class, (t_method)gatom_param, sym_param,   /* LEGACY !!! */
-        A_GIMME, 0);
-    class_setWidgetBehavior(gatom_class, &gatom_widgetbehavior);
-    class_setPropertiesFunction(gatom_class, gatom_properties);
+    c = class_new (sym_gatom,
+            NULL,
+            (t_method)gatom_free,
+            sizeof (t_gatom),
+            CLASS_DEFAULT | CLASS_NOINLET,
+            A_NULL);
+            
+    class_addBang (c, gatom_bang);
+    class_addFloat (c, gatom_float);
+    class_addSymbol (c, gatom_symbol);
+    class_addList (c, gatom_list);
+    
+    class_addClick (c, gatom_click);
+        
+    class_addMethod (c, (t_method)gatom_set,        sym_set,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)gatom_param,      sym_parameter,  A_GIMME, A_NULL);
+        
+    #if PD_WITH_LEGACY
+    
+    class_addMethod (c, (t_method)gatom_param,      sym_param,      A_GIMME, A_NULL);
+
+    #endif
+    
+    class_setWidgetBehavior (c, &gatom_widgetBehavior);
+    class_setPropertiesFunction (c, gatom_properties);
+    
+    gatom_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
