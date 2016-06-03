@@ -262,7 +262,7 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
                     canvas,
                     a + x->x_gui.iem_labelX,
                     b + x->x_gui.iem_labelY,
-                    (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "",
+                    (x->x_gui.iem_label != utils_empty()) ? x->x_gui.iem_label->s_name : "",
                     x->x_gui.iem_fontSize,
                     x->x_gui.iem_colorLabel,
                     x);
@@ -330,7 +330,7 @@ static void dial_drawConfig (t_dial* x, t_glist *glist)
                     x,
                     x->x_gui.iem_fontSize,
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel,
-                    (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "");
+                    (x->x_gui.iem_label != utils_empty()) ? x->x_gui.iem_label->s_name : "");
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -742,8 +742,8 @@ static void *dial_new (t_symbol *s, int argc, t_atom *argv)
     
     x->x_gui.iem_owner      = (t_glist *)canvas_getCurrent();
     x->x_gui.iem_draw       = (t_iemfn)dial_draw;
-    x->x_gui.iem_canSend    = (x->x_gui.iem_send == iemgui_empty()) ? 0 : 1;
-    x->x_gui.iem_canReceive = (x->x_gui.iem_receive == iemgui_empty()) ? 0 : 1;
+    x->x_gui.iem_canSend    = (x->x_gui.iem_send == utils_empty()) ? 0 : 1;
+    x->x_gui.iem_canReceive = (x->x_gui.iem_receive == utils_empty()) ? 0 : 1;
     x->x_gui.iem_width      = 0;
     x->x_gui.iem_height     = PD_MAX (height, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_labelX     = labelX;

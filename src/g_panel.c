@@ -107,7 +107,7 @@ void panel_drawNew (t_panel *x, t_glist *glist)
                     canvas,
                     a + x->x_gui.iem_labelX,
                     b + x->x_gui.iem_labelY,
-                    (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "",
+                    (x->x_gui.iem_label != utils_empty()) ? x->x_gui.iem_label->s_name : "",
                     x->x_gui.iem_fontSize,
                     x->x_gui.iem_colorLabel,
                     x);
@@ -156,7 +156,7 @@ void panel_drawConfig (t_panel* x, t_glist *glist)
                     x,
                     x->x_gui.iem_fontSize,
                     x->x_gui.iem_colorLabel,
-                    (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "");
+                    (x->x_gui.iem_label != utils_empty()) ? x->x_gui.iem_label->s_name : "");
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -296,11 +296,11 @@ static void panel_behaviorProperties (t_gobj *z, t_glist *owner)
     iemgui_serializeNames (&x->x_gui, &names);
     
     err = string_sprintf (t, PD_STRING, "::ui_iem::create %%s Panel"
-            " %d %d {Grip Size} 0 0 empty"          // --
-            " %d {Panel Width} %d {Panel Height}"   // --
-            " -1 empty empty"
+            " %d %d {Grip Size} 0 0 $::var(nil)"        // --
+            " %d {Panel Width} %d {Panel Height}"       // --
+            " -1 $::var(nil) $::var(nil)"               // --
             " -1"
-            " -1 -1 empty"
+            " -1 -1 $::var(nil)"                        // --
             " %s %s"
             " %s %d %d"
             " %d"
@@ -365,8 +365,8 @@ static void *panel_new (t_symbol *s, int argc, t_atom *argv)
 
     x->x_gui.iem_owner      = (t_glist *)canvas_getCurrent();
     x->x_gui.iem_draw       = (t_iemfn)panel_draw;
-    x->x_gui.iem_canSend    = (x->x_gui.iem_send == iemgui_empty()) ? 0 : 1;
-    x->x_gui.iem_canReceive = (x->x_gui.iem_receive == iemgui_empty()) ? 0 : 1;
+    x->x_gui.iem_canSend    = (x->x_gui.iem_send == utils_empty()) ? 0 : 1;
+    x->x_gui.iem_canReceive = (x->x_gui.iem_receive == utils_empty()) ? 0 : 1;
 
     x->x_gui.iem_width      = PD_MAX (gripSize, IEM_PANEL_MINIMUM_SIZE);
     x->x_gui.iem_height     = PD_MAX (gripSize, IEM_PANEL_MINIMUM_SIZE);

@@ -166,7 +166,7 @@ proc create {top type
         
     set row -1
     
-    if {$widthLabel ne "empty"}     {
+    if {$widthLabel ne $::var(nil)}     {
     
         ttk::label $top.f.properties.widthLabel         {*}[::styleLabel] \
                                                             -text [_ $widthLabel]
@@ -184,7 +184,7 @@ proc create {top type
         after idle "$top.f.properties.width selection range 0 end" 
     }
     
-    if {$heightLabel ne "empty"}    {
+    if {$heightLabel ne $::var(nil)}    {
     
         ttk::label $top.f.properties.heightLabel        {*}[::styleLabel] \
                                                             -text [_ $heightLabel]
@@ -198,7 +198,7 @@ proc create {top type
         bind $top.f.properties.height <Return>          { ::nextEntry %W }
     }
     
-    if {$option1Label ne "empty"}   {
+    if {$option1Label ne $::var(nil)}   {
     
         ttk::label $top.f.properties.option1Label       {*}[::styleLabel] \
                                                             -text [_ $option1Label]
@@ -212,7 +212,7 @@ proc create {top type
         bind  $top.f.properties.option1 <Return>        { ::nextEntry %W }
     }
     
-    if {$option2Label ne "empty"}   {
+    if {$option2Label ne $::var(nil)}   {
     
         ttk::label $top.f.properties.option2Label       {*}[::styleLabel] \
                                                             -text [_ $option2Label]
@@ -226,7 +226,7 @@ proc create {top type
         bind $top.f.properties.option2 <Return>         { ::nextEntry %W }
     }
     
-    if {$extraLabel ne "empty"}     {
+    if {$extraLabel ne $::var(nil)}     {
     
         ttk::label $top.f.properties.extraLabel         {*}[::styleLabel] \
                                                             -text [_ $extraLabel]
@@ -240,7 +240,7 @@ proc create {top type
         bind $top.f.properties.extra <Return>           { ::nextEntry %W }
     }
     
-    if {$loadbang != -1}            {
+    if {$loadbang != -1}    {
     
         ttk::label $top.f.properties.loadbangLabel      {*}[::styleLabel] \
                                                             -text [_ "Loadbang"]
@@ -252,9 +252,9 @@ proc create {top type
         grid $top.f.properties.loadbang                 -row $row       -column 2 -sticky ew
     }
     
-    if {$check != -1}               {
-    if {$check1 ne "empty"}         {
-    if {$check2 ne "empty"}         {
+    if {$check != -1}                   {
+    if {$check1 ne $::var(nil)}         {
+    if {$check2 ne $::var(nil)}         {
     
         set values [list [_ $check1] [_ $check2]]
         
@@ -522,7 +522,7 @@ proc _forceWidth {top} {
     variable iemWidthMinimum
     variable iemWidthLabel
 
-    if {$iemWidthLabel($top) ne "empty"} {
+    if {$iemWidthLabel($top) ne $::var(nil)} {
         set iemWidth($top) [::ifInteger $iemWidth($top) $iemWidth(${top}.old)]
         set iemWidth($top) [::tcl::mathfunc::max $iemWidth($top) $iemWidthMinimum($top)]
     }
@@ -534,7 +534,7 @@ proc _forceHeight {top} {
     variable iemHeightMinimum
     variable iemHeightLabel
 
-    if {$::ui_iem::iemHeightLabel($top) ne "empty"} {
+    if {$::ui_iem::iemHeightLabel($top) ne $::var(nil)} {
         set iemHeight($top) [::ifInteger $iemHeight($top) $iemHeight(${top}.old)]
         set iemHeight($top) [::tcl::mathfunc::max $iemHeight($top) $iemHeightMinimum($top)]
     }
@@ -546,7 +546,7 @@ proc _forceExtra {top} {
     variable iemExtraMaximum
     variable iemExtraLabel
 
-    if {$::ui_iem::iemExtraLabel($top) ne "empty"} {
+    if {$::ui_iem::iemExtraLabel($top) ne $::var(nil)} {
         set iemExtra($top) [::ifInteger $iemExtra($top) $iemExtra(${top}.old)]
         set iemExtra($top) [::tcl::mathfunc::max $iemExtra($top) 1]
         set iemExtra($top) [::tcl::mathfunc::min $iemExtra($top) $iemExtraMaximum($top)]

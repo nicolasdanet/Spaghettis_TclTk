@@ -215,6 +215,8 @@ int         string_indexOfFirstOccurrenceFrom           (char *s, const char *c,
 #pragma mark -
 
 t_symbol    *utils_decode                               (t_symbol *s);
+t_symbol    *utils_empty                                (void); 
+t_symbol    *utils_substituteIfEmpty                    (t_symbol *s);
 
 int         utils_isTokenEnd                            (char c);
 int         utils_isTokenEscape                         (char c);

@@ -147,7 +147,7 @@ void toggle_drawNew (t_toggle *x, t_glist *glist)
                     canvas,
                     a + x->x_gui.iem_labelX,
                     b + x->x_gui.iem_labelY,
-                    (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "",
+                    (x->x_gui.iem_label != utils_empty()) ? x->x_gui.iem_label->s_name : "",
                     x->x_gui.iem_fontSize,
                     x->x_gui.iem_colorLabel,
                     x);
@@ -206,7 +206,7 @@ void toggle_drawConfig (t_toggle *x, t_glist *glist)
                     x,
                     x->x_gui.iem_fontSize,
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel,
-                    (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "");
+                    (x->x_gui.iem_label != utils_empty()) ? x->x_gui.iem_label->s_name : "");
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -396,11 +396,11 @@ static void toggle_behaviorProperties (t_gobj *z, t_glist *owner)
     
     err = string_sprintf (t, PD_STRING,
             "::ui_iem::create %%s Toggle"
-            " %d %d Size 0 0 empty"
-            " %g {Non-Zero Value} 0 empty"  // --
-            " -1 empty empty"
+            " %d %d Size 0 0 $::var(nil)"           // --
+            " %g {Non-Zero Value} 0 $::var(nil)"    // --
+            " -1 $::var(nil) $::var(nil)"           // --
             " %d"
-            " -1 -1 empty"
+            " -1 -1 $::var(nil)"                    // --
             " %s %s"
             " %s %d %d"
             " %d"
@@ -468,8 +468,8 @@ static void *toggle_new (t_symbol *s, int argc, t_atom *argv)
     
     x->x_gui.iem_owner      = (t_glist *)canvas_getCurrent();
     x->x_gui.iem_draw       = (t_iemfn)toggle_draw;
-    x->x_gui.iem_canSend    = (x->x_gui.iem_send == iemgui_empty()) ? 0 : 1;
-    x->x_gui.iem_canReceive = (x->x_gui.iem_receive == iemgui_empty()) ? 0 : 1;
+    x->x_gui.iem_canSend    = (x->x_gui.iem_send == utils_empty()) ? 0 : 1;
+    x->x_gui.iem_canReceive = (x->x_gui.iem_receive == utils_empty()) ? 0 : 1;
     x->x_gui.iem_width      = PD_MAX (size, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height     = PD_MAX (size, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_labelX     = labelX;

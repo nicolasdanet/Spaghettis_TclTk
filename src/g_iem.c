@@ -32,22 +32,9 @@ extern t_class *panel_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_symbol *iemgui_empty (void)
-{
-    return sym_empty;
-}
-
-static t_symbol *iemgui_parseEmpty (t_symbol *s)
-{
-    if (s == &s_) { return iemgui_empty(); }
-    else { 
-        return s;
-    }
-}
-
 static t_symbol *iemgui_expandDollar (t_iem *iem, t_symbol *s)
 {
-    t_symbol *t = canvas_expandDollar (iem, s); return (t == NULL ? iemgui_empty() : t);
+    t_symbol *t = canvas_expandDollar (iem, s); return (t == NULL ? utils_empty() : t);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -124,7 +111,7 @@ static t_symbol *iemgui_fetchName (int i, t_atom *argv)
         string_sprintf (t, PD_STRING, "%d", (int)atom_getFloat (argv + i));
         return gensym (t);
     } else {
-        return iemgui_empty();
+        return utils_empty();
     }
 }
 
@@ -145,7 +132,7 @@ static void iemgui_fetchUnexpanded (t_iem *iem, t_symbol **s, int i, t_symbol *f
             if (!(err = atom_toString (buffer_atoms (b) + i, t, PD_STRING))) { *s = gensym (t); }
         }
         if (err) {
-            *s = (fallback ? fallback : iemgui_empty());
+            *s = (fallback ? fallback : utils_empty());
         }
     }
 }
@@ -211,9 +198,9 @@ int iemgui_serializeLoadbang (t_iem *iem)
 
 void iemgui_deserializeNamesByIndex (t_iem *iem, int i, t_atom *argv)
 {
-    iem->iem_send    = (argv ? iemgui_fetchName (i + 0, argv) : iemgui_empty());
-    iem->iem_receive = (argv ? iemgui_fetchName (i + 1, argv) : iemgui_empty());
-    iem->iem_label   = (argv ? iemgui_fetchName (i + 2, argv) : iemgui_empty());
+    iem->iem_send    = (argv ? iemgui_fetchName (i + 0, argv) : utils_empty());
+    iem->iem_receive = (argv ? iemgui_fetchName (i + 1, argv) : utils_empty());
+    iem->iem_label   = (argv ? iemgui_fetchName (i + 2, argv) : utils_empty());
     
     iem->iem_unexpandedSend    = NULL;
     iem->iem_unexpandedReceive = NULL;
@@ -250,27 +237,27 @@ void iemgui_checkSendReceiveLoop (t_iem *iem)
 
 void iemgui_setSend (void *x, t_iem *iem, t_symbol *s)
 {
-    t_symbol *t = dollar_fromHash (iemgui_parseEmpty (s));
+    t_symbol *t = dollar_fromHash (utils_substituteIfEmpty (s));
     iem->iem_unexpandedSend = t;
     iem->iem_send = iemgui_expandDollar (iem->iem_owner, t);
-    iem->iem_canSend = (s == iemgui_empty()) ? 0 : 1;
+    iem->iem_canSend = (s == utils_empty()) ? 0 : 1;
     iemgui_checkSendReceiveLoop (iem);
 }
 
 void iemgui_setReceive (void *x, t_iem *iem, t_symbol *s)
 {
-    t_symbol *t = dollar_fromHash (iemgui_parseEmpty (s));
+    t_symbol *t = dollar_fromHash (utils_substituteIfEmpty (s));
     if (iem->iem_canReceive) { pd_unbind (cast_pd (iem), iem->iem_receive); }
     iem->iem_unexpandedReceive = t;
     iem->iem_receive = iemgui_expandDollar (iem->iem_owner, t);
-    iem->iem_canReceive = (s == iemgui_empty()) ? 0 : 1;
+    iem->iem_canReceive = (s == utils_empty()) ? 0 : 1;
     if (iem->iem_canReceive) { pd_bind (cast_pd (iem), iem->iem_receive); }
     iemgui_checkSendReceiveLoop (iem);
 }
 
 void iemgui_setLabel (void *x, t_iem *iem, t_symbol *s)
 {
-    t_symbol *t = dollar_fromHash (iemgui_parseEmpty (s));
+    t_symbol *t = dollar_fromHash (utils_substituteIfEmpty (s));
     iem->iem_unexpandedLabel = t;
     iem->iem_label = iemgui_expandDollar (iem->iem_owner, t);
 
@@ -278,7 +265,7 @@ void iemgui_setLabel (void *x, t_iem *iem, t_symbol *s)
         sys_vGui (".x%lx.c itemconfigure %lxLABEL -text {%s}\n",    // --
                         canvas_getView (iem->iem_owner),
                         x,
-                        iem->iem_label != iemgui_empty() ? iem->iem_label->s_name : "");
+                        iem->iem_label != utils_empty() ? iem->iem_label->s_name : "");
     }
 }
 
@@ -509,8 +496,8 @@ void iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
     s2 = iemgui_expandDollar (iem->iem_owner, s2);
     s3 = iemgui_expandDollar (iem->iem_owner, s3);
     
-    if (s1 == iemgui_empty()) { canSend = 0;    }
-    if (s2 == iemgui_empty()) { canReceive = 0; }
+    if (s1 == utils_empty()) { canSend = 0;    }
+    if (s2 == utils_empty()) { canReceive = 0; }
     
     if (canReceive) {
         if (iem->iem_canReceive) { pd_unbind (cast_pd (iem), iem->iem_receive); }
