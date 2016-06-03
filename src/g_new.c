@@ -74,6 +74,16 @@ void canvas_msg (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     message_makeObject (glist, s, argc, argv);
 }
 
+void canvas_floatatom (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    gatom_makeObject (glist, A_FLOAT, s, argc, argv);
+}
+
+void canvas_symbolatom (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    gatom_makeObject (glist, A_SYMBOL, s, argc, argv);
+}
+
 void canvas_text (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     t_object *x = (t_object *)pd_new (text_class);

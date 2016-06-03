@@ -669,15 +669,29 @@ void            message_click                           (t_message *x,
                                                             t_float shift,
                                                             t_float ctrl,
                                                             t_float alt);
-
+                                                            
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void gatom_displace(t_gobj *z, t_glist *glist, int dx, int dy);
-void gatom_vis(t_gobj *z, t_glist *glist, int vis);
-t_symbol *gatom_escapit(t_symbol *s);
-void gatom_click(t_gatom *x, t_float xpos, t_float ypos, t_float shift, t_float ctrl, t_float alt);
+t_symbol        *gatom_escapit                          (t_symbol *s);
+
+void            gatom_makeObject                        (t_glist *glist, 
+                                                            t_atomtype type,
+                                                            t_symbol *s,
+                                                            int argc,
+                                                            t_atom *argv);
+
+void            gatom_click                             (t_gatom *x,
+                                                            t_float a,
+                                                            t_float b,
+                                                            t_float shift,
+                                                            t_float ctrl,
+                                                            t_float alt);
+
+
+void            gatom_displace                          (t_gobj *x, t_glist *glist, int deltaX, int deltaY);
+void            gatom_vis                               (t_gobj *x, t_glist *glist, int isVisible);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

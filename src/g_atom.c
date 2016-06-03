@@ -119,6 +119,10 @@ static void gatom_set(t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     x->a_string[0] = 0;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void gatom_bang(t_gatom *x)
 {
     if (x->a_atom.a_type == A_FLOAT)
@@ -422,8 +426,24 @@ void gatom_vis(t_gobj *z, t_glist *glist, int vis)
         interface_guiQueueRemove(x);
 }
 
-void canvas_atom(t_glist *gl, t_atomtype type,
-    t_symbol *s, int argc, t_atom *argv)
+static void gatom_properties(t_gobj *z, t_glist *owner)
+{
+    t_gatom *x = (t_gatom *)z;
+    char buf[200];
+    sprintf(buf, "::ui_atom::show %%s %d %g %g {%s} {%s} {%s} %d\n",
+        x->a_obj.te_width, x->a_lowRange, x->a_highRange,
+                gatom_escapit(x->a_unexpandedSend)->s_name,
+                gatom_escapit(x->a_unexpandedReceive)->s_name,
+                gatom_escapit(x->a_label)->s_name, 
+                x->a_position);
+    guistub_new(&x->a_obj.te_g.g_pd, x, buf);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void gatom_makeObject (t_glist *gl, t_atomtype type, t_symbol *s, int argc, t_atom *argv)
 {
     t_gatom *x = (t_gatom *)pd_new(gatom_class);
     t_atom at;
@@ -509,35 +529,12 @@ void canvas_atom(t_glist *gl, t_atomtype type,
     }
 }
 
-void canvas_floatatom(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
-{
-    canvas_atom(gl, A_FLOAT, s, argc, argv);
-}
-
-void canvas_symbolatom(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
-{
-    canvas_atom(gl, A_SYMBOL, s, argc, argv);
-}
-
 static void gatom_free(t_gatom *x)
 {
     if (*x->a_unexpandedReceive->s_name)
         pd_unbind(&x->a_obj.te_g.g_pd,
             canvas_expandDollar(x->a_owner, x->a_unexpandedReceive));
     guistub_destroyWithKey(x);
-}
-
-static void gatom_properties(t_gobj *z, t_glist *owner)
-{
-    t_gatom *x = (t_gatom *)z;
-    char buf[200];
-    sprintf(buf, "::ui_atom::show %%s %d %g %g {%s} {%s} {%s} %d\n",
-        x->a_obj.te_width, x->a_lowRange, x->a_highRange,
-                gatom_escapit(x->a_unexpandedSend)->s_name,
-                gatom_escapit(x->a_unexpandedReceive)->s_name,
-                gatom_escapit(x->a_label)->s_name, 
-                x->a_position);
-    guistub_new(&x->a_obj.te_g.g_pd, x, buf);
 }
 
 // -----------------------------------------------------------------------------------------------------------
