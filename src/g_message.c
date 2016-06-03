@@ -57,47 +57,47 @@ static void messageresponder_anything (t_messageresponder *x, t_symbol *s, int a
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void message_bang(t_message *x)
+static void message_bang (t_message *x)
 {
-    buffer_eval(x->m_obj.te_buffer, &x->m_responder.mr_pd, 0, 0);
+    buffer_eval (cast_object (x)->te_buffer, cast_pd (&x->m_responder), 0, NULL);
 }
 
 static void message_float(t_message *x, t_float f)
 {
     t_atom at;
     SET_FLOAT(&at, f);
-    buffer_eval(x->m_obj.te_buffer, &x->m_responder.mr_pd, 1, &at);
+    buffer_eval(cast_object (x)->te_buffer, &x->m_responder.mr_pd, 1, &at);
 }
 
 static void message_symbol(t_message *x, t_symbol *s)
 {
     t_atom at;
     SET_SYMBOL(&at, s);
-    buffer_eval(x->m_obj.te_buffer, &x->m_responder.mr_pd, 1, &at);
+    buffer_eval(cast_object (x)->te_buffer, &x->m_responder.mr_pd, 1, &at);
 }
 
 static void message_list(t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    buffer_eval(x->m_obj.te_buffer, &x->m_responder.mr_pd, argc, argv);
+    buffer_eval(cast_object (x)->te_buffer, &x->m_responder.mr_pd, argc, argv);
 }
 
 static void message_set(t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    buffer_reset(x->m_obj.te_buffer);
-    buffer_append(x->m_obj.te_buffer, argc, argv);
+    buffer_reset(cast_object (x)->te_buffer);
+    buffer_append(cast_object (x)->te_buffer, argc, argv);
     glist_retext(x->m_owner, &x->m_obj);
 }
 
 static void message_add2(t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    buffer_append(x->m_obj.te_buffer, argc, argv);
+    buffer_append(cast_object (x)->te_buffer, argc, argv);
     glist_retext(x->m_owner, &x->m_obj);
 }
 
 static void message_add(t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    buffer_append(x->m_obj.te_buffer, argc, argv);
-    buffer_appendSemicolon(x->m_obj.te_buffer);
+    buffer_append(cast_object (x)->te_buffer, argc, argv);
+    buffer_appendSemicolon(cast_object (x)->te_buffer);
     glist_retext(x->m_owner, &x->m_obj);
 }
 
@@ -105,7 +105,7 @@ static void message_addcomma(t_message *x)
 {
     t_atom a;
     SET_COMMA(&a);
-    buffer_append(x->m_obj.te_buffer, 1, &a);
+    buffer_append(cast_object (x)->te_buffer, 1, &a);
     glist_retext(x->m_owner, &x->m_obj);
 }
 
@@ -121,7 +121,7 @@ static void message_adddollar(t_message *x, t_float f)
     if (n < 0)
         n = 0;
     SET_DOLLAR(&a, n);
-    buffer_append(x->m_obj.te_buffer, 1, &a);
+    buffer_append(cast_object (x)->te_buffer, 1, &a);
     glist_retext(x->m_owner, &x->m_obj);
 }
 
@@ -133,7 +133,7 @@ static void message_adddollsym(t_message *x, t_symbol *s)
     strncpy(buf+1, s->s_name, PD_STRING-2);
     buf[PD_STRING-1] = 0;
     SET_DOLLARSYMBOL(&a, gensym (buf));
-    buffer_append(x->m_obj.te_buffer, 1, &a);
+    buffer_append(cast_object (x)->te_buffer, 1, &a);
     glist_retext(x->m_owner, &x->m_obj);
 }
 
@@ -167,9 +167,9 @@ void message_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     t_message *x = (t_message *)pd_new (message_class);
     
-    x->m_obj.te_buffer          = buffer_new();
-    x->m_obj.te_width           = 0;
-    x->m_obj.te_type            = TYPE_MESSAGE;
+    cast_object (x)->te_buffer  = buffer_new();
+    cast_object (x)->te_width   = 0;
+    cast_object (x)->te_type    = TYPE_MESSAGE;
     x->m_responder.mr_pd        = messageresponder_class;
     x->m_responder.mr_outlet    = outlet_new (cast_object (x), &s_anything);
     x->m_owner                  = glist;
@@ -177,11 +177,11 @@ void message_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     if (argc > 1) {                                                             /* File creation. */
     
-        x->m_obj.te_xCoordinate = atom_getFloatAtIndex (0, argc, argv);
-        x->m_obj.te_yCoordinate = atom_getFloatAtIndex (1, argc, argv);
+        cast_object (x)->te_xCoordinate = atom_getFloatAtIndex (0, argc, argv);
+        cast_object (x)->te_yCoordinate = atom_getFloatAtIndex (1, argc, argv);
         
         if (argc > 2) {
-            buffer_deserialize (x->m_obj.te_buffer, argc - 2, argv + 2);
+            buffer_deserialize (cast_object (x)->te_buffer, argc - 2, argv + 2);
         }
         
         glist_add (glist, cast_gobj (x));
@@ -194,8 +194,8 @@ void message_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         canvas_getLastMotionCoordinates (glist, &positionX, &positionY);
         canvas_deselectAll (glist);
     
-        x->m_obj.te_xCoordinate = positionX;
-        x->m_obj.te_yCoordinate = positionY;
+        cast_object (x)->te_xCoordinate = positionX;
+        cast_object (x)->te_yCoordinate = positionY;
         
         glist_add (glist, cast_gobj (x));
         canvas_selectObject (glist, cast_gobj (x));

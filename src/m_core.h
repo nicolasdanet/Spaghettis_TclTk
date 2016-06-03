@@ -322,7 +322,7 @@ void        buffer_toStringUnzeroed                     (t_buffer *x, char **s, 
 void        buffer_withStringUnzeroed                   (t_buffer *x, char *s, int size);
 void        buffer_serialize                            (t_buffer *x, t_buffer *y);
 void        buffer_deserialize                          (t_buffer *x, int argc, t_atom *argv);
-void        buffer_eval                                 (t_buffer *x, t_pd *target, int argc, t_atom *argv);
+void        buffer_eval                                 (t_buffer *x, t_pd *object, int argc, t_atom *argv);
 t_error     buffer_read                                 (t_buffer *x, char *name, t_glist *glist);
 t_error     buffer_write                                (t_buffer *x, char *name, char *directory);
 t_error     buffer_evalFile                             (t_symbol *name, t_symbol *directory);
