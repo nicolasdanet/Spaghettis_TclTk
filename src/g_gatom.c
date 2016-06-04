@@ -489,7 +489,7 @@ static void gatom_free (t_gatom *x)
 {
     if (x->a_receive != &s_) { pd_unbind (cast_pd (x), x->a_receive); }
     
-    guistub_destroyWithKey (x);
+    guistub_destroyWithKey ((void *)x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -514,7 +514,7 @@ void gatom_setup (void)
         
     class_addMethod (c, (t_method)gatom_set,    sym_set,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)gatom_param,  sym__gatomdialog,   A_GIMME, A_NULL);
-        
+
     class_setWidgetBehavior (c, &gatom_widgetBehavior);
     class_setPropertiesFunction (c, gatom_properties);
     

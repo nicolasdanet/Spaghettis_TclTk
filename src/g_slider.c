@@ -65,16 +65,27 @@ static inline int slider_stepsToPixels (int n)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void slider_set      (t_slider *x, t_float f);
-static void slider_motion   (t_slider *x, t_float deltaX, t_float deltaY, t_float modifier);
-
+static void slider_set                  (t_slider *, t_float );
+static void slider_motion               (t_slider *, t_float, t_float, t_float);
+static void slider_behaviorGetRectangle (t_gobj *, t_glist *, int *, int *, int *, int *);
+static int  slider_behaviorClick        (t_gobj *, t_glist *, int, int, int, int, int, int, int);
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_widgetbehavior slider_widgetBehavior;      /* Shared. */
+static t_class *slider_class;                           /* Shared. */
 
-static t_class *slider_class;                       /* Shared. */
+static t_widgetbehavior slider_widgetBehavior =         /* Shared. */
+    {
+        slider_behaviorGetRectangle,
+        iemgui_behaviorDisplace,
+        iemgui_behaviorSelected,
+        NULL,
+        iemgui_behaviorDeleted,
+        iemgui_behaviorVisible,
+        slider_behaviorClick
+    };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -544,7 +555,7 @@ static void slider_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
     *d = *b + cast_iem (z)->iem_height;
 }
 
-static int slider_behaviorClick (t_gobj *z,t_glist *glist,
+static int slider_behaviorClick (t_gobj *z, t_glist *glist,
     int a,
     int b,
     int shift,
@@ -801,15 +812,7 @@ void slider_setup (void)
     class_addCreator ((t_newmethod)slider_new, sym_vsl, A_GIMME, A_NULL);
     
     #endif
-    
-    slider_widgetBehavior.w_fnGetRectangle  = slider_behaviorGetRectangle;
-    slider_widgetBehavior.w_fnDisplace      = iemgui_behaviorDisplace;
-    slider_widgetBehavior.w_fnSelect        = iemgui_behaviorSelected;
-    slider_widgetBehavior.w_fnActivate      = NULL;
-    slider_widgetBehavior.w_fnDelete        = iemgui_behaviorDeleted;
-    slider_widgetBehavior.w_fnVisible       = iemgui_behaviorVisible;
-    slider_widgetBehavior.w_fnClick         = slider_behaviorClick;
-    
+
     class_setWidgetBehavior (c, &slider_widgetBehavior);
     class_setHelpName (c, sym_slider);
     class_setSaveFunction (c, slider_behaviorSave);

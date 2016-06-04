@@ -50,17 +50,28 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void dial_set    (t_dial *x, t_float f);
-static void dial_motion (t_dial *x, t_float deltaX, t_float deltaY, t_float modifier);
+static void dial_set                    (t_dial *, t_float);
+static void dial_motion                 (t_dial *, t_float, t_float, t_float);
+static void dial_behaviorGetRectangle   (t_gobj *, t_glist *, int *, int *, int *, int *);
+static int  dial_behaviorClick          (t_gobj *, t_glist *, int, int, int, int, int, int, int);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_widgetbehavior dial_widgetBehavior;        /* Shared. */
-
 static t_class *dial_class;                         /* Shared. */
 
+static t_widgetbehavior dial_widgetBehavior =       /* Shared. */
+    {
+        dial_behaviorGetRectangle,
+        iemgui_behaviorDisplace,
+        iemgui_behaviorSelected,
+        NULL,
+        iemgui_behaviorDeleted,
+        iemgui_behaviorVisible,
+        dial_behaviorClick,
+    };
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
@@ -835,17 +846,8 @@ void dial_setup (void)
     class_addCreator ((t_newmethod)dial_new, sym_my_numbox, A_GIMME, A_NULL);
     
     #endif
-    
-    dial_widgetBehavior.w_fnGetRectangle    = dial_behaviorGetRectangle;
-    dial_widgetBehavior.w_fnDisplace        = iemgui_behaviorDisplace;
-    dial_widgetBehavior.w_fnSelect          = iemgui_behaviorSelected;
-    dial_widgetBehavior.w_fnActivate        = NULL;
-    dial_widgetBehavior.w_fnDelete          = iemgui_behaviorDeleted;
-    dial_widgetBehavior.w_fnVisible         = iemgui_behaviorVisible;
-    dial_widgetBehavior.w_fnClick           = dial_behaviorClick;
-    
+
     class_setWidgetBehavior (c, &dial_widgetBehavior);
-    class_setHelpName (c, sym_nbx);
     class_setSaveFunction (c, dial_behaviorSave);
     class_setPropertiesFunction (c, dial_behaviorProperties);
     

@@ -206,7 +206,7 @@ void text_save(t_gobj *z, t_buffer *b)
         t_symbol *sel = (t == A_SYMBOL ? sym_symbolatom :
             (t == A_FLOAT ? sym_floatatom : sym_intatom));
         
-        t_symbol *label = dollar_toHash (utils_substituteIfEmpty (cast_gatom (x)->a_label, 1));
+        t_symbol *label = dollar_toHash (utils_substituteIfEmpty (cast_gatom (x)->a_unexpandedLabel, 1));
         t_symbol *symfrom = dollar_toHash (utils_substituteIfEmpty (cast_gatom (x)->a_unexpandedReceive, 1));
         t_symbol *symto = dollar_toHash (utils_substituteIfEmpty (cast_gatom (x)->a_unexpandedSend, 1));
         buffer_vAppend(b, "ssiiifffsss", sym___hash__X, sel,

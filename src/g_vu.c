@@ -125,9 +125,24 @@ static inline int vu_offsetWithStep (t_vu *x, int step)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_widgetbehavior vu_widgetBehavior;      /* Shared. */
+static void vu_behaviorGetRectangle (t_gobj *, t_glist *, int *, int *, int *, int *);
 
-static t_class *vu_class;                       /* Shared. */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static t_class *vu_class;                           /* Shared. */
+
+static t_widgetbehavior vu_widgetBehavior =         /* Shared. */
+    {
+        vu_behaviorGetRectangle,
+        iemgui_behaviorDisplace,
+        iemgui_behaviorSelected,
+        NULL,
+        iemgui_behaviorDeleted,
+        iemgui_behaviorVisible,
+        NULL
+    };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -672,16 +687,7 @@ void vu_setup (void)
 
     #endif
     
-    vu_widgetBehavior.w_fnGetRectangle  = vu_behaviorGetRectangle;
-    vu_widgetBehavior.w_fnDisplace      = iemgui_behaviorDisplace;
-    vu_widgetBehavior.w_fnSelect        = iemgui_behaviorSelected;
-    vu_widgetBehavior.w_fnActivate      = NULL;
-    vu_widgetBehavior.w_fnDelete        = iemgui_behaviorDeleted;
-    vu_widgetBehavior.w_fnVisible       = iemgui_behaviorVisible;
-    vu_widgetBehavior.w_fnClick         = NULL;
-    
     class_setWidgetBehavior (c, &vu_widgetBehavior);
-    class_setHelpName (c, sym_vu);
     class_setSaveFunction (c, vu_behaviorSave);
     class_setPropertiesFunction (c, vu_behaviorProperties);
     

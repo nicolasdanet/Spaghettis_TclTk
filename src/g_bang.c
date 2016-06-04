@@ -40,10 +40,26 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_widgetbehavior bng_widgetBehavior;     /* Shared. */
+static void bng_behaviorGetRectangle    (t_gobj *, t_glist *, int *, int *, int *, int *);
+static int  bng_behaviorClick           (t_gobj *, t_glist *, int, int, int, int, int, int, int);
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static t_class *bng_class;                      /* Shared. */
+static t_class *bng_class;                          /* Shared. */
 
+static t_widgetbehavior bng_widgetBehavior =        /* Shared. */
+    {
+        bng_behaviorGetRectangle,
+        iemgui_behaviorDisplace,
+        iemgui_behaviorSelected,
+        NULL,
+        iemgui_behaviorDeleted,
+        iemgui_behaviorVisible,
+        bng_behaviorClick
+    };
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
@@ -574,16 +590,7 @@ void bng_setup (void)
 
     #endif
     
-    bng_widgetBehavior.w_fnGetRectangle = bng_behaviorGetRectangle;
-    bng_widgetBehavior.w_fnDisplace     = iemgui_behaviorDisplace;
-    bng_widgetBehavior.w_fnSelect       = iemgui_behaviorSelected;
-    bng_widgetBehavior.w_fnActivate     = NULL;
-    bng_widgetBehavior.w_fnDelete       = iemgui_behaviorDeleted;
-    bng_widgetBehavior.w_fnVisible      = iemgui_behaviorVisible;
-    bng_widgetBehavior.w_fnClick        = bng_behaviorClick;
-    
     class_setWidgetBehavior (c, &bng_widgetBehavior);
-    class_setHelpName (c, sym_bng);
     class_setSaveFunction (c, bng_behaviorSave);
     class_setPropertiesFunction (c, bng_behaviorProperties);
     

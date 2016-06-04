@@ -33,14 +33,25 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void radio_buttonsNumber (t_radio *x, t_float numberOfButtons);
-
+static void radio_buttonsNumber         (t_radio *, t_float);
+static void radio_behaviorGetRectangle  (t_gobj *, t_glist *, int *, int *, int *, int *);
+static int  radio_behaviorClick         (t_gobj *, t_glist *, int, int, int, int, int, int, int);
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_widgetbehavior radio_widgetBehavior;       /* Shared. */
+static t_class *radio_class;                            /* Shared. */
 
-static t_class *radio_class;                        /* Shared. */
+static t_widgetbehavior radio_widgetBehavior =          /* Shared. */
+    {
+        radio_behaviorGetRectangle,
+        iemgui_behaviorDisplace,
+        iemgui_behaviorSelected,
+        NULL,
+        iemgui_behaviorDeleted,
+        iemgui_behaviorVisible,
+        radio_behaviorClick,
+    };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -737,14 +748,6 @@ void radio_setup (void)
     class_addMethod (c, (t_method)iemjump_dummy,            sym_double_change,      A_GIMME, A_NULL);
     
     #endif
-    
-    radio_widgetBehavior.w_fnGetRectangle   = radio_behaviorGetRectangle;
-    radio_widgetBehavior.w_fnDisplace       = iemgui_behaviorDisplace;
-    radio_widgetBehavior.w_fnSelect         = iemgui_behaviorSelected;
-    radio_widgetBehavior.w_fnActivate       = NULL;
-    radio_widgetBehavior.w_fnDelete         = iemgui_behaviorDeleted;
-    radio_widgetBehavior.w_fnVisible        = iemgui_behaviorVisible;
-    radio_widgetBehavior.w_fnClick          = radio_behaviorClick;
     
     class_setWidgetBehavior (c, &radio_widgetBehavior);
     class_setHelpName (c, sym_radio);

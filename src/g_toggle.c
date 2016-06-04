@@ -27,15 +27,26 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void toggle_set      (t_toggle *x, t_float f);
-static void toggle_nonZero  (t_toggle *x, t_float f);
-
+static void toggle_set                  (t_toggle *, t_float);
+static void toggle_nonZero              (t_toggle *, t_float);
+static void toggle_behaviorGetRectangle (t_gobj *, t_glist *, int *, int *, int *, int *);
+static int  toggle_behaviorClick        (t_gobj *, t_glist *, int, int, int, int, int, int, int);
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_widgetbehavior toggle_widgetBehavior;      /* Shared. */
+static t_class *toggle_class;                           /* Shared. */
 
-static t_class *toggle_class;                       /* Shared. */
+static t_widgetbehavior toggle_widgetBehavior =         /* Shared. */
+    {
+        toggle_behaviorGetRectangle,
+        iemgui_behaviorDisplace,
+        iemgui_behaviorSelected,
+        NULL,
+        iemgui_behaviorDeleted,
+        iemgui_behaviorVisible,
+        toggle_behaviorClick
+    };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -549,16 +560,7 @@ void toggle_setup (void)
         
     #endif
     
-    toggle_widgetBehavior.w_fnGetRectangle  = toggle_behaviorGetRectangle;
-    toggle_widgetBehavior.w_fnDisplace      = iemgui_behaviorDisplace;
-    toggle_widgetBehavior.w_fnSelect        = iemgui_behaviorSelected;
-    toggle_widgetBehavior.w_fnActivate      = NULL;
-    toggle_widgetBehavior.w_fnDelete        = iemgui_behaviorDeleted;
-    toggle_widgetBehavior.w_fnVisible       = iemgui_behaviorVisible;
-    toggle_widgetBehavior.w_fnClick         = toggle_behaviorClick;
-    
     class_setWidgetBehavior (c, &toggle_widgetBehavior);
-    class_setHelpName (c, sym_tgl);
     class_setSaveFunction (c, toggle_behaviorSave);
     class_setPropertiesFunction (c, toggle_behaviorProperties);
     

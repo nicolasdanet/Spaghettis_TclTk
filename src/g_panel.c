@@ -40,10 +40,25 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_class *panel_class;                               /* Shared. */
+static void panel_behaviorGetRectangle (t_gobj *, t_glist *, int *, int *, int *, int *);
 
-static t_widgetbehavior panel_widgetBehavior;       /* Shared. */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
+t_class *panel_class;                                   /* Shared. */
+
+static t_widgetbehavior panel_widgetBehavior =          /* Shared. */
+    {
+        panel_behaviorGetRectangle,
+        iemgui_behaviorDisplace,
+        iemgui_behaviorSelected,
+        NULL,
+        iemgui_behaviorDeleted,
+        iemgui_behaviorVisible,
+        NULL
+    };
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
@@ -439,16 +454,7 @@ void panel_setup (void)
         
     #endif
     
-    panel_widgetBehavior.w_fnGetRectangle   = panel_behaviorGetRectangle;
-    panel_widgetBehavior.w_fnDisplace       = iemgui_behaviorDisplace;
-    panel_widgetBehavior.w_fnSelect         = iemgui_behaviorSelected;
-    panel_widgetBehavior.w_fnActivate       = NULL;
-    panel_widgetBehavior.w_fnDelete         = iemgui_behaviorDeleted;
-    panel_widgetBehavior.w_fnVisible        = iemgui_behaviorVisible;
-    panel_widgetBehavior.w_fnClick          = NULL;
-    
     class_setWidgetBehavior (c, &panel_widgetBehavior);
-    class_setHelpName (c, sym_cnv);
     class_setSaveFunction (c, panel_behaviorSave);
     class_setPropertiesFunction (c, panel_behaviorProperties);
     
