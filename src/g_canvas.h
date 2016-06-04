@@ -674,8 +674,6 @@ void            message_click                           (t_message *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol        *gatom_escapit                          (t_symbol *s, int asDash);
-
 void            gatom_makeObject                        (t_glist *glist, 
                                                             t_atomtype type,
                                                             t_symbol *s,
@@ -688,7 +686,6 @@ void            gatom_click                             (t_gatom *x,
                                                             t_float shift,
                                                             t_float ctrl,
                                                             t_float alt);
-
 
 void            gatom_displace                          (t_gobj *x, t_glist *glist, int deltaX, int deltaY);
 void            gatom_vis                               (t_gobj *x, t_glist *glist, int isVisible);

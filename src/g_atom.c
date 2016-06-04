@@ -24,21 +24,21 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_class *gatom_class;                               /* Shared. */
+t_class *gatom_class;                                   /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_widgetbehavior gatom_widgetBehavior =      /* Shared. */
-{
-    text_getrect,
-    gatom_displace,
-    text_select,
-    text_activate,
-    text_delete,
-    gatom_vis,
-    text_click
-};
+static t_widgetbehavior gatom_widgetBehavior =          /* Shared. */
+    {
+        text_getrect,
+        gatom_displace,
+        text_select,
+        text_activate,
+        text_delete,
+        gatom_vis,
+        text_click
+    };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -52,23 +52,17 @@ static t_widgetbehavior gatom_widgetBehavior =      /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* prepend "-" as necessary to avoid empty strings, so we can
-    use them in Pd messages.  A more complete solution would be
-    to introduce some quoting mechanism; but then we'd be much more
-    complicated. */
-    
-t_symbol *gatom_escapit (t_symbol *s, int asDash)
-{
-    return (dollar_toHash (utils_substituteIfEmpty (s, asDash)));
-}
-
-static t_symbol *gatom_unescapit (t_symbol *s)
+static t_symbol *gatom_parse (t_symbol *s)
 {
     if (s == utils_empty() || s == utils_dash()) { return &s_; }
     else { 
         return (dollar_fromHash (s));
     }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void gatom_redraw(t_gobj *client, t_glist *glist)
 {
@@ -307,9 +301,9 @@ static void gatom_param(t_gatom *x, t_symbol *sel, int argc, t_atom *argv)
     t_float width = atom_getFloatAtIndex(0, argc, argv);
     t_float draglo = atom_getFloatAtIndex(1, argc, argv);
     t_float draghi = atom_getFloatAtIndex(2, argc, argv);
-    t_symbol *symto = gatom_unescapit(atom_getSymbolAtIndex(3, argc, argv));
-    t_symbol *symfrom = gatom_unescapit(atom_getSymbolAtIndex(4, argc, argv));
-    t_symbol *label = gatom_unescapit(atom_getSymbolAtIndex(5, argc, argv));
+    t_symbol *symto = gatom_parse(atom_getSymbolAtIndex(3, argc, argv));
+    t_symbol *symfrom = gatom_parse(atom_getSymbolAtIndex(4, argc, argv));
+    t_symbol *label = gatom_parse(atom_getSymbolAtIndex(5, argc, argv));
     t_float wherelabel = atom_getFloatAtIndex(6, argc, argv);
 
     gobj_visibilityChanged(&x->a_obj.te_g, x->a_owner, 0);
@@ -421,11 +415,15 @@ static void gatom_properties(t_gobj *z, t_glist *owner)
 {
     t_gatom *x = (t_gatom *)z;
     char buf[200];
+    
+    t_symbol *send      = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedSend, 0));
+    t_symbol *receive   = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedReceive, 0));
+    t_symbol *label     = dollar_toHash (utils_substituteIfEmpty (x->a_label, 0));
     sprintf(buf, "::ui_atom::show %%s %d %g %g {%s} {%s} {%s} %d\n",
         x->a_obj.te_width, x->a_lowRange, x->a_highRange,
-                gatom_escapit(x->a_unexpandedSend, 0)->s_name,
-                gatom_escapit(x->a_unexpandedReceive, 0)->s_name,
-                gatom_escapit(x->a_label, 0)->s_name, 
+                send->s_name,
+                receive->s_name,
+                label->s_name, 
                 x->a_position);
     guistub_new(&x->a_obj.te_g.g_pd, x, buf);
 }
@@ -477,13 +475,13 @@ void gatom_makeObject (t_glist *gl, t_atomtype type, t_symbol *s, int argc, t_at
         x->a_lowRange = atom_getFloatAtIndex(3, argc, argv);
         x->a_highRange = atom_getFloatAtIndex(4, argc, argv);
         x->a_position = (((int)atom_getFloatAtIndex(5, argc, argv)) & 3);
-        x->a_label = gatom_unescapit(atom_getSymbolAtIndex(6, argc, argv));
-        x->a_unexpandedReceive = gatom_unescapit(atom_getSymbolAtIndex(7, argc, argv));
+        x->a_label = gatom_parse(atom_getSymbolAtIndex(6, argc, argv));
+        x->a_unexpandedReceive = gatom_parse(atom_getSymbolAtIndex(7, argc, argv));
         if (*x->a_unexpandedReceive->s_name)
             pd_bind(&x->a_obj.te_g.g_pd,
                 canvas_expandDollar(x->a_owner, x->a_unexpandedReceive));
 
-        x->a_unexpandedSend = gatom_unescapit(atom_getSymbolAtIndex(8, argc, argv));
+        x->a_unexpandedSend = gatom_parse(atom_getSymbolAtIndex(8, argc, argv));
         x->a_send = canvas_expandDollar(x->a_owner, x->a_unexpandedSend);
         if (x->a_unexpandedSend == &s_)
             outlet_new(&x->a_obj,
@@ -551,7 +549,7 @@ void gatom_setup (void)
     class_addClick (c, gatom_click);
         
     class_addMethod (c, (t_method)gatom_set,        sym_set,            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)gatom_param,      sym__gatomdialog,  A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)gatom_param,      sym__gatomdialog,   A_GIMME, A_NULL);
         
     class_setWidgetBehavior (c, &gatom_widgetBehavior);
     class_setPropertiesFunction (c, gatom_properties);

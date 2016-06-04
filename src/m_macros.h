@@ -71,6 +71,7 @@
 #define cast_gobj(x)        ((t_gobj *)(x))
 #define cast_glist(x)       ((t_glist *)(x))
 #define cast_inlet(x)       ((t_inlet *)(x))
+#define cast_gatom(x)       ((t_gatom *)(x))
 #define cast_garray(x)      ((t_garray *)(x))
 #define cast_scalar(x)      ((t_scalar *)(x))
 #define cast_object(x)      ((t_object *)(x))
