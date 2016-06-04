@@ -43,10 +43,18 @@ static t_widgetbehavior gatom_widgetBehavior =          /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define ATOM_LABEL_LEFT     0
-#define ATOM_LABEL_RIGHT    1
-#define ATOM_LABEL_UP       2
-#define ATOM_LABEL_DOWN     3
+#define ATOM_LABEL_LEFT         0
+#define ATOM_LABEL_RIGHT        1
+#define ATOM_LABEL_UP           2
+#define ATOM_LABEL_DOWN         3
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define ATOM_WIDTH_FLOAT        5
+#define ATOM_WIDTH_SYMBOL       10
+#define ATOM_WIDTH_MAXIMUM      80
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -112,8 +120,8 @@ static void gatom_bang(t_gatom *x)
 {
     if (x->a_atom.a_type == A_FLOAT)
     {
-        if (x->a_obj.te_outlet)
-            outlet_float(x->a_obj.te_outlet, x->a_atom.a_w.w_float);
+        outlet_float(x->a_obj.te_outlet, x->a_atom.a_w.w_float);
+        
         if (*x->a_send->s_name && x->a_send->s_thing)
         {
             if (x->a_unexpandedSend == x->a_unexpandedReceive)
@@ -124,8 +132,8 @@ static void gatom_bang(t_gatom *x)
     }
     else if (x->a_atom.a_type == A_SYMBOL)
     {
-        if (x->a_obj.te_outlet)
-            outlet_symbol(x->a_obj.te_outlet, x->a_atom.a_w.w_symbol);
+        outlet_symbol(x->a_obj.te_outlet, x->a_atom.a_w.w_symbol);
+        
         if (*x->a_unexpandedSend->s_name && x->a_send->s_thing)
         {
             if (x->a_unexpandedSend == x->a_unexpandedReceive)
@@ -162,19 +170,6 @@ static void gatom_symbol(t_gatom *x, t_symbol *s)
     SET_SYMBOL(&at, s);
     gatom_set(x, 0, 1, &at);
     gatom_bang(x);
-}
-
-    /* We need a list method because, since there's both an "inlet" and a
-    "nofirstin" flag, the standard list behavior gets confused. */
-static void gatom_list(t_gatom *x, t_symbol *s, int argc, t_atom *argv)
-{
-    if (!argc)
-        gatom_bang(x);
-    else if (argv->a_type == A_FLOAT)
-        gatom_float(x, argv->a_w.w_float);
-    else if (argv->a_type == A_SYMBOL)
-        gatom_symbol(x, argv->a_w.w_symbol);
-    else { post_error ("gatom_list: need float or symbol"); }
 }
 
 static void gatom_motion(void *z, t_float dx, t_float dy, t_float modifier)
@@ -307,33 +302,15 @@ static void gatom_param(t_gatom *x, t_symbol *sel, int argc, t_atom *argv)
     t_float wherelabel = atom_getFloatAtIndex(6, argc, argv);
 
     gobj_visibilityChanged(&x->a_obj.te_g, x->a_owner, 0);
-    if (!*symfrom->s_name && *x->a_unexpandedReceive->s_name)
-        inlet_new(&x->a_obj, &x->a_obj.te_g.g_pd, 0, 0);
-    else if (*symfrom->s_name && !*x->a_unexpandedReceive->s_name && x->a_obj.te_inlet)
-    {
-        canvas_deleteLinesByInlets(x->a_owner, &x->a_obj,
-            x->a_obj.te_inlet, 0);
-        inlet_free(x->a_obj.te_inlet);
-    }
-    if (!*symto->s_name && *x->a_unexpandedSend->s_name)
-        outlet_new(&x->a_obj, 0);
-    else if (*symto->s_name && !*x->a_unexpandedSend->s_name && x->a_obj.te_outlet)
-    {
-        canvas_deleteLinesByInlets(x->a_owner, &x->a_obj,
-            0, x->a_obj.te_outlet);
-        outlet_free(x->a_obj.te_outlet);
-    }
+
     if (draglo >= draghi)
         draglo = draghi = 0;
     x->a_lowRange = draglo;
     x->a_highRange = draghi;
-    if (width < 0)
-        width = 4;
-    else if (width > 80)
-        width = 80;
-    x->a_obj.te_width = width;
+
+    x->a_obj.te_width = PD_CLAMP (width, 0, ATOM_WIDTH_MAXIMUM);
     x->a_position = ((int)wherelabel & 3);
-    x->a_label = label;
+    x->a_unexpandedLabel = label;
     if (*x->a_unexpandedReceive->s_name)
         pd_unbind(&x->a_obj.te_g.g_pd,
             canvas_expandDollar(x->a_owner, x->a_unexpandedReceive));
@@ -359,7 +336,7 @@ static void gatom_getwherelabel(t_gatom *x, t_glist *glist, int *xp, int *yp)
     if (x->a_position == ATOM_LABEL_LEFT)
     {
         *xp = x1 - 3 -
-            strlen(canvas_expandDollar(x->a_owner, x->a_label)->s_name) *
+            strlen(canvas_expandDollar(x->a_owner, x->a_unexpandedLabel)->s_name) *
             (int)font_getHostFontWidth(canvas_getFontSize(glist));
         *yp = y1 + 2;
     }
@@ -392,7 +369,7 @@ void gatom_vis(t_gobj *z, t_glist *glist, int vis)
 {
     t_gatom *x = (t_gatom*)z;
     text_vis(z, glist, vis);
-    if (*x->a_label->s_name)
+    if (*x->a_unexpandedLabel->s_name)
     {
         if (vis)
         {
@@ -401,7 +378,7 @@ void gatom_vis(t_gobj *z, t_glist *glist, int vis)
             sys_vGui("::ui_box::newText .x%lx.c {%lx.l label text} %f %f {%s} %d %s\n",
                 canvas_getView(glist), x,
                 (double)x1, (double)y1,
-                canvas_expandDollar(x->a_owner, x->a_label)->s_name,
+                canvas_expandDollar(x->a_owner, x->a_unexpandedLabel)->s_name,
                 font_getHostFontSize(canvas_getFontSize(glist)),
                 "black");
         }
@@ -418,7 +395,7 @@ static void gatom_properties(t_gobj *z, t_glist *owner)
     
     t_symbol *send      = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedSend, 0));
     t_symbol *receive   = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedReceive, 0));
-    t_symbol *label     = dollar_toHash (utils_substituteIfEmpty (x->a_label, 0));
+    t_symbol *label     = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedLabel, 0));
     sprintf(buf, "::ui_atom::show %%s %d %g %g {%s} {%s} {%s} %d\n",
         x->a_obj.te_width, x->a_lowRange, x->a_highRange,
                 send->s_name,
@@ -432,98 +409,87 @@ static void gatom_properties(t_gobj *z, t_glist *owner)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void gatom_makeObject (t_glist *gl, t_atomtype type, t_symbol *s, int argc, t_atom *argv)
+void gatom_makeObject (t_glist *glist, t_atomtype type, t_symbol *s, int argc, t_atom *argv)
 {
-    t_gatom *x = (t_gatom *)pd_new(gatom_class);
-    t_atom at;
-    x->a_obj.te_width = 0;                        /* don't know it yet. */
-    x->a_obj.te_type = TYPE_ATOM;
-    x->a_obj.te_buffer = buffer_new();
-    x->a_owner = gl;
-    x->a_atom.a_type = type;
-    x->a_toggledValue = 1;
-    x->a_lowRange = 0;
-    x->a_highRange = 0;
-    x->a_position = 0;
-    x->a_label = &s_;
-    x->a_unexpandedReceive = &s_;
-    x->a_unexpandedSend = x->a_send = &s_;
-    if (type == A_FLOAT)
-    {
-        x->a_atom.a_w.w_float = 0;
-        x->a_obj.te_width = 5;
-        SET_FLOAT(&at, 0);
-    }
-    else
-    {
-        x->a_atom.a_w.w_symbol = &s_symbol;
-        x->a_obj.te_width = 10;
-        SET_SYMBOL(&at, &s_symbol);
-    }
-    buffer_append(x->a_obj.te_buffer, 1, &at);
-    if (argc > 1)
-        /* create from file. x, y, width, low-range, high-range, flags,
-            label, receive-name, send-name */
-    {
-        x->a_obj.te_xCoordinate = atom_getFloatAtIndex(0, argc, argv);
-        x->a_obj.te_yCoordinate = atom_getFloatAtIndex(1, argc, argv);
-        x->a_obj.te_width = (t_int)atom_getFloatAtIndex(2, argc, argv);
-            /* sanity check because some very old patches have trash in this
-            field... remove this in 2003 or so: */
-        if (x->a_obj.te_width < 0 || x->a_obj.te_width > 500)
-            x->a_obj.te_width = 4;
-        x->a_lowRange = atom_getFloatAtIndex(3, argc, argv);
-        x->a_highRange = atom_getFloatAtIndex(4, argc, argv);
-        x->a_position = (((int)atom_getFloatAtIndex(5, argc, argv)) & 3);
-        x->a_label = gatom_parse(atom_getSymbolAtIndex(6, argc, argv));
-        x->a_unexpandedReceive = gatom_parse(atom_getSymbolAtIndex(7, argc, argv));
-        if (*x->a_unexpandedReceive->s_name)
-            pd_bind(&x->a_obj.te_g.g_pd,
-                canvas_expandDollar(x->a_owner, x->a_unexpandedReceive));
-
-        x->a_unexpandedSend = gatom_parse(atom_getSymbolAtIndex(8, argc, argv));
-        x->a_send = canvas_expandDollar(x->a_owner, x->a_unexpandedSend);
-        if (x->a_unexpandedSend == &s_)
-            outlet_new(&x->a_obj,
-                x->a_atom.a_type == A_FLOAT ? &s_float: &s_symbol);
-        if (x->a_unexpandedReceive == &s_)
-            inlet_new(&x->a_obj, &x->a_obj.te_g.g_pd, 0, 0);
-        glist_add(gl, &x->a_obj.te_g);
-    }
-    else
-    {
-        int connectme = 0;
-        int xpix, ypix;
-        int indx = 0;
-        int nobj = 0;
-
-        canvas_getLastMotionCoordinates (gl, &xpix, &ypix);
-        canvas_deselectAll(gl);
+    t_gatom *x = (t_gatom *)pd_new (gatom_class);
+    
+    cast_object (x)->te_buffer  = buffer_new();
+    cast_object (x)->te_width   = (type == A_FLOAT) ? ATOM_WIDTH_FLOAT : ATOM_WIDTH_SYMBOL;
+    cast_object (x)->te_type    = TYPE_ATOM;
+    x->a_owner                  = glist;
+    x->a_atom.a_type            = type;
+    x->a_lowRange               = 0;
+    x->a_highRange              = 0;
+    x->a_toggledValue           = 1;
+    x->a_send                   = &s_;
+    x->a_receive                = &s_;
+    x->a_label                  = &s_;
+    x->a_unexpandedSend         = &s_;
+    x->a_unexpandedReceive      = &s_;
+    x->a_unexpandedLabel        = &s_;
+    x->a_position               = 0;
         
-        outlet_new(&x->a_obj,
-            x->a_atom.a_type == A_FLOAT ? &s_float: &s_symbol);
-        inlet_new(&x->a_obj, &x->a_obj.te_g.g_pd, 0, 0);
-        pd_vMessage(&gl->gl_obj.te_g.g_pd, sym_editmode, "i", 1);
-        x->a_obj.te_xCoordinate = xpix;
-        x->a_obj.te_yCoordinate = ypix;
-        glist_add(gl, &x->a_obj.te_g);
-        canvas_deselectAll(gl);
-        canvas_selectObject(gl, &x->a_obj.te_g);
+    if (type == A_FLOAT) {
+        t_atom a;
+        SET_FLOAT (&x->a_atom, 0);
+        SET_FLOAT (&a, 0);
+        buffer_append (cast_object (x)->te_buffer, 1, &a);
         
-        /*if (connectme) {
-            canvas_connect(gl, indx, 0, nobj, 0);
-        } else { 
-           // canvas_startmotion(canvas_getView(gl));
-        }*/
+    } else {
+        t_atom a;
+        SET_SYMBOL (&x->a_atom, &s_symbol);
+        SET_SYMBOL (&a, &s_symbol);
+        buffer_append (cast_object (x)->te_buffer, 1, &a);
+    }
+    
+    if (argc > 1) {                                                             /* File creation. */
+    
+        int width    = (int)atom_getFloatAtIndex (2, argc, argv);
+        int position = (int)atom_getFloatAtIndex (5, argc, argv);
+        
+        cast_object (x)->te_xCoordinate     = atom_getFloatAtIndex (0, argc, argv);
+        cast_object (x)->te_yCoordinate     = atom_getFloatAtIndex (1, argc, argv);
+        cast_object (x)->te_width           = PD_CLAMP (width, 0, ATOM_WIDTH_MAXIMUM);
+        x->a_lowRange                       = atom_getFloatAtIndex (3, argc, argv);
+        x->a_highRange                      = atom_getFloatAtIndex (4, argc, argv);
+        x->a_position                       = PD_CLAMP (position, ATOM_LABEL_LEFT, ATOM_LABEL_DOWN);
+        x->a_unexpandedLabel                = gatom_parse (atom_getSymbolAtIndex (6, argc, argv));
+        x->a_unexpandedReceive              = gatom_parse (atom_getSymbolAtIndex (7, argc, argv));
+        x->a_unexpandedSend                 = gatom_parse (atom_getSymbolAtIndex (8, argc, argv));
+        x->a_send                           = canvas_expandDollar (x->a_owner, x->a_unexpandedSend);
+        x->a_receive                        = canvas_expandDollar (x->a_owner, x->a_unexpandedReceive);
+        x->a_label                          = canvas_expandDollar (x->a_owner, x->a_unexpandedLabel);
+                
+        if (x->a_receive != &s_) { pd_bind (cast_pd (x), x->a_receive); }
+
+        outlet_new (cast_object (x), IS_FLOAT (&x->a_atom) ? &s_float : &s_symbol);
+        
+        glist_add (glist, cast_gobj (x));
+        
+    } else {                                                                    /* Interactive creation. */
+    
+        int positionX = 0;
+        int positionY = 0;
+
+        canvas_getLastMotionCoordinates (glist, &positionX, &positionY);
+        canvas_deselectAll(glist);
+        
+        cast_object (x)->te_xCoordinate = positionX;
+        cast_object (x)->te_yCoordinate = positionY;
+        
+        outlet_new (cast_object (x), IS_FLOAT (&x->a_atom) ? &s_float : &s_symbol);
+                
+        glist_add (glist, cast_gobj (x));
+        
+        canvas_selectObject (glist, cast_gobj (x));
     }
 }
 
-static void gatom_free(t_gatom *x)
+static void gatom_free (t_gatom *x)
 {
-    if (*x->a_unexpandedReceive->s_name)
-        pd_unbind(&x->a_obj.te_g.g_pd,
-            canvas_expandDollar(x->a_owner, x->a_unexpandedReceive));
-    guistub_destroyWithKey(x);
+    if (x->a_receive != &s_) { pd_unbind (cast_pd (x), x->a_receive); }
+    
+    guistub_destroyWithKey (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -538,18 +504,16 @@ void gatom_setup (void)
             NULL,
             (t_method)gatom_free,
             sizeof (t_gatom),
-            CLASS_DEFAULT | CLASS_NOINLET,
+            CLASS_DEFAULT,
             A_NULL);
             
     class_addBang (c, gatom_bang);
     class_addFloat (c, gatom_float);
     class_addSymbol (c, gatom_symbol);
-    class_addList (c, gatom_list);
-    
     class_addClick (c, gatom_click);
         
-    class_addMethod (c, (t_method)gatom_set,        sym_set,            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)gatom_param,      sym__gatomdialog,   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)gatom_set,    sym_set,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)gatom_param,  sym__gatomdialog,   A_GIMME, A_NULL);
         
     class_setWidgetBehavior (c, &gatom_widgetBehavior);
     class_setPropertiesFunction (c, gatom_properties);

@@ -279,10 +279,12 @@ typedef struct _gatom {
     t_float             a_highRange;
     t_float             a_toggledValue;
     t_glist             *a_owner;
+    t_symbol            *a_send;
+    t_symbol            *a_receive;
     t_symbol            *a_label;
     t_symbol            *a_unexpandedSend;
     t_symbol            *a_unexpandedReceive;
-    t_symbol            *a_send;
+    t_symbol            *a_unexpandedLabel;
     int                 a_position;
     char                a_string[ATOM_BUFFER_SIZE];
     } t_gatom;
