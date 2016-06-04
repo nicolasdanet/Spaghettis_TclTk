@@ -331,7 +331,7 @@ static void scalar_vis(t_gobj *z, t_glist *owner, int vis)
     interface_guiQueueRemove(x);
 }
 
-static void scalar_doredraw(t_gobj *client, t_glist *glist)
+static void scalar_drawJob(t_gobj *client, t_glist *glist)
 {
     scalar_vis(client, glist, 0);
     scalar_vis(client, glist, 1);
@@ -340,7 +340,7 @@ static void scalar_doredraw(t_gobj *client, t_glist *glist)
 void scalar_redraw(t_scalar *x, t_glist *glist)
 {
     if (canvas_isMapped(glist))
-        interface_guiQueueAddIfNotAlreadyThere(x, glist, scalar_doredraw);
+        interface_guiQueueAddIfNotAlreadyThere(x, glist, scalar_drawJob);
 }
 
 extern void template_notifyforscalar(t_template *template, t_glist *owner,

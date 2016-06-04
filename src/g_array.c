@@ -797,7 +797,7 @@ void garray_usedindsp(t_garray *x)
     x->x_usedindsp = 1;
 }
 
-static void garray_doredraw(t_gobj *client, t_glist *glist)
+static void garray_drawJob(t_gobj *client, t_glist *glist)
 {
     t_garray *x = (t_garray *)client;
     if (canvas_isMapped(x->x_glist) && gobj_isVisible(client, glist))
@@ -810,7 +810,7 @@ static void garray_doredraw(t_gobj *client, t_glist *glist)
 void garray_redraw(t_garray *x)
 {
     if (canvas_isMapped(x->x_glist))
-        interface_guiQueueAddIfNotAlreadyThere(&x->x_gobj, x->x_glist, garray_doredraw);
+        interface_guiQueueAddIfNotAlreadyThere(&x->x_gobj, x->x_glist, garray_drawJob);
     /* jsarlo { */
     /* this happens in garray_vis() when array is visible for
        performance reasons */

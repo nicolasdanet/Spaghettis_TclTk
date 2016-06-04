@@ -225,7 +225,7 @@ typedef struct _editor {
 // -----------------------------------------------------------------------------------------------------------
 
 struct _glist {  
-    t_object            gl_obj;             /* MUST be the first. */
+    t_object            gl_obj;                 /* MUST be the first. */
     t_gobj              *gl_graphics;
     t_gstub             *gl_stub;
     t_glist             *gl_parent;
@@ -273,7 +273,7 @@ struct _glist {
 #pragma mark -
 
 typedef struct _gatom {
-    t_object            a_obj;              /* MUST be the first. */
+    t_object            a_obj;                  /* MUST be the first. */
     t_atom              a_atom;
     t_float             a_lowRange;
     t_float             a_highRange;
@@ -293,12 +293,12 @@ typedef struct _gatom {
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _messageresponder {
-    t_pd                mr_pd;              /* MUST be the first. */
+    t_pd                mr_pd;                  /* MUST be the first. */
     t_outlet            *mr_outlet;
     } t_messageresponder;
 
 typedef struct _message {
-    t_object            m_obj;              /* MUST be the first. */
+    t_object            m_obj;                  /* MUST be the first. */
     t_messageresponder  m_responder;
     t_glist             *m_owner;
     t_clock             *m_clock;
@@ -516,6 +516,7 @@ void            canvas_nbx                              (t_glist *glist, t_symbo
 // -----------------------------------------------------------------------------------------------------------
 
 t_glist         *canvas_new                             (void *dummy, t_symbol *s, int argc, t_atom *argv);
+
 void            canvas_free                             (t_glist *glist);
 
 void            canvas_click                            (t_glist *glist,
@@ -689,9 +690,6 @@ void            gatom_click                             (t_gatom *x,
                                                             t_float ctrl,
                                                             t_float alt);
 
-void            gatom_displace                          (t_gobj *x, t_glist *glist, int deltaX, int deltaY);
-void            gatom_vis                               (t_gobj *x, t_glist *glist, int isVisible);
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -703,7 +701,6 @@ void text_activate(t_gobj *z, t_glist *glist, int state);
 void text_delete(t_gobj *z, t_glist *glist);
 void text_vis(t_gobj *z, t_glist *glist, int vis);
 int text_click(t_gobj *z, struct _glist *glist, int xpix, int ypix, int shift, int ctrl, int alt, int dbl, int doit);
-
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
