@@ -30,9 +30,9 @@ static t_symbol *class_defaultExternalDirectory = &s_;          /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void class_defaultFloat      (t_pd *x, t_float f);
-static void class_defaultList       (t_pd *x, t_symbol *s, int argc, t_atom *argv);
-static void class_defaultAnything   (t_pd *x, t_symbol *s, int argc, t_atom *argv);
+static void class_defaultFloat      (t_pd *, t_float);
+static void class_defaultList       (t_pd *, t_symbol *, int, t_atom *);
+static void class_defaultAnything   (t_pd *, t_symbol *, int, t_atom *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
