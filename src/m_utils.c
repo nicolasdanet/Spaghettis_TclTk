@@ -207,14 +207,19 @@ t_symbol *utils_decode (t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_symbol *utils_dash (void)
+{
+    return sym___dash__;
+}
+
 t_symbol *utils_empty (void)
 {
     return sym_empty;
 }
 
-t_symbol *utils_substituteIfEmpty (t_symbol *s)
+t_symbol *utils_substituteIfEmpty (t_symbol *s, int asDash)
 {
-    if (s == &s_) { return utils_empty(); }
+    if (s == &s_) { return (asDash ? utils_dash() : utils_empty()); }
     else { 
         return s;
     }

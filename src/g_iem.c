@@ -237,7 +237,7 @@ void iemgui_checkSendReceiveLoop (t_iem *iem)
 
 void iemgui_setSend (void *x, t_iem *iem, t_symbol *s)
 {
-    t_symbol *t = dollar_fromHash (utils_substituteIfEmpty (s));
+    t_symbol *t = dollar_fromHash (utils_substituteIfEmpty (s, 0));
     iem->iem_unexpandedSend = t;
     iem->iem_send = iemgui_expandDollar (iem->iem_owner, t);
     iem->iem_canSend = (s == utils_empty()) ? 0 : 1;
@@ -246,7 +246,7 @@ void iemgui_setSend (void *x, t_iem *iem, t_symbol *s)
 
 void iemgui_setReceive (void *x, t_iem *iem, t_symbol *s)
 {
-    t_symbol *t = dollar_fromHash (utils_substituteIfEmpty (s));
+    t_symbol *t = dollar_fromHash (utils_substituteIfEmpty (s, 0));
     if (iem->iem_canReceive) { pd_unbind (cast_pd (iem), iem->iem_receive); }
     iem->iem_unexpandedReceive = t;
     iem->iem_receive = iemgui_expandDollar (iem->iem_owner, t);
@@ -257,7 +257,7 @@ void iemgui_setReceive (void *x, t_iem *iem, t_symbol *s)
 
 void iemgui_setLabel (void *x, t_iem *iem, t_symbol *s)
 {
-    t_symbol *t = dollar_fromHash (utils_substituteIfEmpty (s));
+    t_symbol *t = dollar_fromHash (utils_substituteIfEmpty (s, 0));
     iem->iem_unexpandedLabel = t;
     iem->iem_label = iemgui_expandDollar (iem->iem_owner, t);
 

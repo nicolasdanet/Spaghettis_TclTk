@@ -70,9 +70,9 @@ proc _create {top width low high send receive name position} {
     set atomWidth($top)         $width
     set atomLow($top)           $low
     set atomHigh($top)          $high
-    set atomSend($top)          [::parseDash $send]
-    set atomReceive($top)       [::parseDash $receive]
-    set atomName($top)          [::parseDash $name]
+    set atomSend($top)          [::hashToDollar [::parseEmpty $send]]
+    set atomReceive($top)       [::hashToDollar [::parseEmpty $receive]]
+    set atomName($top)          [::hashToDollar [::parseEmpty $name]]
     set atomPosition($top)      $position
     
     set atomWidth(${top}.old)   $width
@@ -206,13 +206,13 @@ proc _apply {top} {
         
     ::ui_atom::_forceValues $top
     
-    ::ui_interface::pdsend "$top param \
+    ::ui_interface::pdsend "$top _gatomdialog \
             $atomWidth($top) \
             $atomLow($top) \
             $atomHigh($top) \
-            [::sanitized [::withDash $atomSend($top)]] \
-            [::sanitized [::withDash $atomReceive($top)]] \
-            [::sanitized [::withDash $atomName($top)]] \
+            [::sanitized [::dollarToHash [::withEmpty $atomSend($top)]]] \
+            [::sanitized [::dollarToHash [::withEmpty $atomReceive($top)]]] \
+            [::sanitized [::dollarToHash [::withEmpty $atomName($top)]]] \
             $atomPosition($top)"
     
 }

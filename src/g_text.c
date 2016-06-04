@@ -205,9 +205,9 @@ void text_save(t_gobj *z, t_buffer *b)
         t_atomtype t = ((t_gatom *)x)->a_atom.a_type;
         t_symbol *sel = (t == A_SYMBOL ? sym_symbolatom :
             (t == A_FLOAT ? sym_floatatom : sym_intatom));
-        t_symbol *label = gatom_escapit(((t_gatom *)x)->a_label);
-        t_symbol *symfrom = gatom_escapit(((t_gatom *)x)->a_unexpandedReceive);
-        t_symbol *symto = gatom_escapit(((t_gatom *)x)->a_unexpandedSend);
+        t_symbol *label = gatom_escapit(((t_gatom *)x)->a_label, 1);
+        t_symbol *symfrom = gatom_escapit(((t_gatom *)x)->a_unexpandedReceive, 1);
+        t_symbol *symto = gatom_escapit(((t_gatom *)x)->a_unexpandedSend, 1);
         buffer_vAppend(b, "ssiiifffsss", sym___hash__X, sel,
             (int)x->te_xCoordinate, (int)x->te_yCoordinate, (int)x->te_width,
             (double)((t_gatom *)x)->a_lowRange,

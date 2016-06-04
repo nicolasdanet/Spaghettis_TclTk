@@ -89,24 +89,6 @@ proc withEmpty  {x} { if {$x eq ""} { return $::var(nil) } else { return $x } }
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc parseDash  {x} {
-
-    if {[string equal -length 1 $x "-"]} { return [string replace $x 0 0 ""] }
-    
-    return [::hashToDollar $x]
-}
-
-proc withDash   {x} {
-
-    if {$x eq ""} { return "-" }
-    if {[string equal -length 1 $x "-"]} { return [string replace $x 0 0 "--"] }
-    
-    return [::dollarToHash $x]
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
 proc hashToDollar {x} { return [string map {"#" "$"} $x] }
 proc dollarToHash {x} { return [string map {"$" "#"} $x] }    
 

@@ -674,7 +674,7 @@ void            message_click                           (t_message *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol        *gatom_escapit                          (t_symbol *s);
+t_symbol        *gatom_escapit                          (t_symbol *s, int asDash);
 
 void            gatom_makeObject                        (t_glist *glist, 
                                                             t_atomtype type,

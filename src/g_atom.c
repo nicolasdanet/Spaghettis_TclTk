@@ -56,27 +56,18 @@ static t_widgetbehavior gatom_widgetBehavior =      /* Shared. */
     use them in Pd messages.  A more complete solution would be
     to introduce some quoting mechanism; but then we'd be much more
     complicated. */
-t_symbol *gatom_escapit(t_symbol *s)
+    
+t_symbol *gatom_escapit (t_symbol *s, int asDash)
 {
-    if (!*s->s_name)
-        return (sym___dash__);
-    else if (*s->s_name == '-')
-    {
-        char shmo[100];
-        shmo[0] = '-';
-        strncpy(shmo+1, s->s_name, 99);
-        shmo[99] = 0;
-        return (gensym (shmo));
-    }
-    else return (dollar_toHash(s));
+    return (dollar_toHash (utils_substituteIfEmpty (s, asDash)));
 }
 
-    /* undo previous operation: strip leading "-" if found. */
-static t_symbol *gatom_unescapit(t_symbol *s)
+static t_symbol *gatom_unescapit (t_symbol *s)
 {
-    if (*s->s_name == '-')
-        return (gensym (s->s_name+1));
-    else return (dollar_fromHash(s));
+    if (s == utils_empty() || s == utils_dash()) { return &s_; }
+    else { 
+        return (dollar_fromHash (s));
+    }
 }
 
 static void gatom_redraw(t_gobj *client, t_glist *glist)
@@ -432,9 +423,9 @@ static void gatom_properties(t_gobj *z, t_glist *owner)
     char buf[200];
     sprintf(buf, "::ui_atom::show %%s %d %g %g {%s} {%s} {%s} %d\n",
         x->a_obj.te_width, x->a_lowRange, x->a_highRange,
-                gatom_escapit(x->a_unexpandedSend)->s_name,
-                gatom_escapit(x->a_unexpandedReceive)->s_name,
-                gatom_escapit(x->a_label)->s_name, 
+                gatom_escapit(x->a_unexpandedSend, 0)->s_name,
+                gatom_escapit(x->a_unexpandedReceive, 0)->s_name,
+                gatom_escapit(x->a_label, 0)->s_name, 
                 x->a_position);
     guistub_new(&x->a_obj.te_g.g_pd, x, buf);
 }
@@ -559,15 +550,9 @@ void gatom_setup (void)
     
     class_addClick (c, gatom_click);
         
-    class_addMethod (c, (t_method)gatom_set,        sym_set,        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)gatom_param,      sym_parameter,  A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)gatom_set,        sym_set,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)gatom_param,      sym__gatomdialog,  A_GIMME, A_NULL);
         
-    #if PD_WITH_LEGACY
-    
-    class_addMethod (c, (t_method)gatom_param,      sym_param,      A_GIMME, A_NULL);
-
-    #endif
-    
     class_setWidgetBehavior (c, &gatom_widgetBehavior);
     class_setPropertiesFunction (c, gatom_properties);
     
