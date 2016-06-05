@@ -93,7 +93,7 @@ void message_click (t_message *x, t_float a, t_float b, t_float shift, t_float c
     //
     t_boxtext *y = boxtext_fetch (x->m_owner, cast_object (x));
 
-    sys_vGui (".x%lx.c itemconfigure %sR -width 5\n", 
+    sys_vGui (".x%lx.c itemconfigure %sBORDER -width 5\n", 
                     canvas_getView (x->m_owner), 
                     boxtext_getTag (y));
                     
@@ -176,7 +176,7 @@ static void message_taskTick (t_message *x)
     //
     t_boxtext *y = boxtext_fetch (x->m_owner, cast_object (x));
     
-    sys_vGui (".x%lx.c itemconfigure %sR -width 1\n",
+    sys_vGui (".x%lx.c itemconfigure %sBORDER -width 1\n",
                     canvas_getView (x->m_owner),
                     boxtext_getTag (y));
     //

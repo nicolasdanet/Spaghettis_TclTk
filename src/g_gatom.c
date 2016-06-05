@@ -382,7 +382,7 @@ static void gatom_behaviorDisplace (t_gobj *z, t_glist *glist, int deltaX, int d
     
     text_displace (z, glist, deltaX, deltaY);
     
-    sys_vGui (".x%lx.c move %lx.l %d %d\n", 
+    sys_vGui (".x%lx.c move %lxLABEL %d %d\n", 
                     canvas_getView (glist), 
                     x,
                     deltaX,
@@ -397,14 +397,14 @@ static void gatom_behaviorVisible (t_gobj *z, t_glist *glist, int isVisible)
     
     if (x->a_label != &s_) {
     //
-    if (!isVisible) { sys_vGui (".x%lx.c delete %lx.l\n", canvas_getView (glist), x); }
+    if (!isVisible) { sys_vGui (".x%lx.c delete %lxLABEL\n", canvas_getView (glist), x); }
     else { 
         int positionX = 0;
         int positionY = 0;
         
         gatom_getPostion (x, glist, &positionX, &positionY);
         
-        sys_vGui ("::ui_box::newText .x%lx.c {%lx.l label text} %f %f {%s} %d #%06x\n",
+        sys_vGui ("::ui_box::newText .x%lx.c %lxLABEL %f %f {%s} %d #%06x\n",
                         canvas_getView (glist),
                         x,
                         (double)positionX,

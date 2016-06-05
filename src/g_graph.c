@@ -952,7 +952,7 @@ static void graph_select(t_gobj *z, t_glist *glist, int state)
         t_boxtext *y = boxtext_fetch(glist, &x->gl_obj);
         if (canvas_hasGraphOnParentTitle (x))
             boxtext_select(y, state);
-        sys_vGui(".x%lx.c itemconfigure %sR -fill %s\n", glist, 
+        sys_vGui(".x%lx.c itemconfigure %sBORDER -fill %s\n", glist, 
         boxtext_getTag(y), (state? "blue" : "black"));
         sys_vGui(".x%lx.c itemconfigure graph%lx -fill %s\n",
             canvas_getView(glist), z, (state? "blue" : "black"));

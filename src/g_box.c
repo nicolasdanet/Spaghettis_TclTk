@@ -314,10 +314,12 @@ t_boxtext *boxtext_new (t_glist *glist, t_object *object)
 
     buffer_toStringUnzeroed (object->te_buffer, &x->box_string, &x->box_stringSizeInBytes);
     
-    { 
-        t_glist *view = canvas_getView (glist);
-        t_error err   = string_sprintf (x->box_tag, BOX_BUFFER_SIZE, ".x%lx.t%lx", (t_int)view, (t_int)x);
-        PD_ASSERT (!err);
+    {
+    //
+    t_glist *view = canvas_getView (glist);
+    t_error err   = string_sprintf (x->box_tag, BOX_BUFFER_SIZE, ".x%lx.%lxBOXTEXT", (t_int)view, (t_int)x);
+    PD_ASSERT (!err);
+    //
     }
     
     glist->gl_editor->e_text = x;

@@ -95,7 +95,7 @@ void text_select(t_gobj *z, t_glist *glist, int state)
     t_boxtext *y = boxtext_fetch(glist, x);
     boxtext_select(y, state);
     if (canvas_isMapped(glist) && gobj_isVisible(&x->te_g, glist))
-        sys_vGui(".x%lx.c itemconfigure %sR -fill %s\n", glist, 
+        sys_vGui(".x%lx.c itemconfigure %sBORDER -fill %s\n", glist, 
             boxtext_getTag(y), (state? "blue" : "black"));
 }
 
@@ -303,16 +303,16 @@ void text_drawborder(t_object *x, t_glist *glist,
         char *pattern = ((pd_class((t_pd *)x) == text_class) ? "-" : "\"\"");
         if (firsttime)
             sys_vGui(".x%lx.c create line\
- %d %d %d %d %d %d %d %d %d %d -dash %s -tags [list %sR obj]\n",
+ %d %d %d %d %d %d %d %d %d %d -dash %s -tags [list %sBORDER obj]\n",
                 canvas_getView(glist),
                     x1, y1,  x2, y1,  x2, y2,  x1, y2,  x1, y1,  pattern, tag);
         else
         {
-            sys_vGui(".x%lx.c coords %sR\
+            sys_vGui(".x%lx.c coords %sBORDER\
  %d %d %d %d %d %d %d %d %d %d\n",
                 canvas_getView(glist), tag,
                     x1, y1,  x2, y1,  x2, y2,  x1, y2,  x1, y1);
-            sys_vGui(".x%lx.c itemconfigure %sR -dash %s\n",
+            sys_vGui(".x%lx.c itemconfigure %sBORDER -dash %s\n",
                 canvas_getView(glist), tag, pattern);
         }
     }
@@ -320,13 +320,13 @@ void text_drawborder(t_object *x, t_glist *glist,
     {
         if (firsttime)
             sys_vGui(".x%lx.c create line\
- %d %d %d %d %d %d %d %d %d %d %d %d %d %d -tags [list %sR msg]\n",
+ %d %d %d %d %d %d %d %d %d %d %d %d %d %d -tags [list %sBORDER msg]\n",
                 canvas_getView(glist),
                 x1, y1,  x2+4, y1,  x2, y1+4,  x2, y2-4,  x2+4, y2,
                 x1, y2,  x1, y1,
                     tag);
         else
-            sys_vGui(".x%lx.c coords %sR\
+            sys_vGui(".x%lx.c coords %sBORDER\
  %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
                 canvas_getView(glist), tag,
                 x1, y1,  x2+4, y1,  x2, y1+4,  x2, y2-4,  x2+4, y2,
@@ -336,12 +336,12 @@ void text_drawborder(t_object *x, t_glist *glist,
     {
         if (firsttime)
             sys_vGui(".x%lx.c create line\
- %d %d %d %d %d %d %d %d %d %d %d %d -tags [list %sR atom]\n",
+ %d %d %d %d %d %d %d %d %d %d %d %d -tags [list %sBORDER atom]\n",
                 canvas_getView(glist),
                 x1, y1,  x2-4, y1,  x2, y1+4,  x2, y2,  x1, y2,  x1, y1,
                     tag);
         else
-            sys_vGui(".x%lx.c coords %sR\
+            sys_vGui(".x%lx.c coords %sBORDER\
  %d %d %d %d %d %d %d %d %d %d %d %d\n",
                 canvas_getView(glist), tag,
                 x1, y1,  x2-4, y1,  x2, y1+4,  x2, y2,  x1, y2,  x1, y1);
@@ -353,11 +353,11 @@ void text_drawborder(t_object *x, t_glist *glist,
     {
         if (firsttime)
             sys_vGui(".x%lx.c create line\
- %d %d %d %d -tags [list %sR COMMENTBAR]\n",
+ %d %d %d %d -tags [list %sBORDER COMMENTBAR]\n",
                 canvas_getView(glist),
                 x2, y1,  x2, y2, tag);
         else
-            sys_vGui(".x%lx.c coords %sR %d %d %d %d\n",
+            sys_vGui(".x%lx.c coords %sBORDER %d %d %d %d\n",
                 canvas_getView(glist), tag, x2, y1,  x2, y2);
     }
         /* draw inlets/outlets */
@@ -382,7 +382,7 @@ void glist_eraseio(t_glist *glist, t_object *ob, char *tag)
 void text_eraseborder(t_object *x, t_glist *glist, char *tag)
 {
     if (x->te_type == TYPE_TEXT && !glist->gl_isEditMode) return;
-    sys_vGui(".x%lx.c delete %sR\n",
+    sys_vGui(".x%lx.c delete %sBORDER\n",
         canvas_getView(glist), tag);
     glist_eraseio(glist, x, tag);
 }
