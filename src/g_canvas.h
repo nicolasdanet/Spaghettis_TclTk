@@ -285,6 +285,7 @@ typedef struct _gatom {
     t_symbol            *a_unexpandedSend;
     t_symbol            *a_unexpandedReceive;
     t_symbol            *a_unexpandedLabel;
+    int                 a_isSelected;
     t_fontsize          a_fontSize;
     int                 a_position;
     char                a_string[ATOM_BUFFER_SIZE];

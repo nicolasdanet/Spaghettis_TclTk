@@ -209,8 +209,7 @@ void gatom_click(t_gatom *x, t_float xpos, t_float ypos, t_float shift, t_float 
             else gatom_float(x, x->a_toggledValue);
         }
         x->a_string[0] = 0;
-        glist_grab(x->a_owner, &x->a_obj.te_g, (t_motionfn)gatom_motion, gatom_key,
-            xpos, ypos);
+        glist_grab(x->a_owner, &x->a_obj.te_g, (t_motionfn)gatom_motion, gatom_key, xpos, ypos);
     }
 }
 
@@ -240,45 +239,41 @@ static void gatom_set(t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     x->a_string[0] = 0;
 }
 
+static void gatom_dialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_float width       = atom_getFloatAtIndex (0, argc, argv);
+    t_float lowRange    = atom_getFloatAtIndex (1, argc, argv);
+    t_float highRange   = atom_getFloatAtIndex (2, argc, argv);
+    t_symbol *send      = gatom_parse (atom_getSymbolAtIndex (3, argc, argv));
+    t_symbol *receive   = gatom_parse (atom_getSymbolAtIndex (4, argc, argv));
+    t_symbol *label     = gatom_parse (atom_getSymbolAtIndex (5, argc, argv));
+    int position        = (int)atom_getFloatAtIndex (6, argc, argv);
+
+    gobj_visibilityChanged (cast_gobj (x), x->a_owner, 0);
+
+    if (x->a_receive != &s_) { pd_unbind (cast_pd (x), x->a_receive); }
+        
+    cast_object (x)->te_width   = PD_CLAMP (width, 0, ATOM_WIDTH_MAXIMUM);
+    x->a_lowRange               = PD_MIN (lowRange, highRange);
+    x->a_highRange              = PD_MAX (lowRange, highRange);
+    x->a_position               = PD_CLAMP (position, ATOM_LABEL_LEFT, ATOM_LABEL_DOWN);
+    x->a_unexpandedSend         = send;
+    x->a_unexpandedReceive      = receive;
+    x->a_unexpandedLabel        = label;
+    x->a_send                   = canvas_expandDollar (x->a_owner, x->a_unexpandedSend);
+    x->a_receive                = canvas_expandDollar (x->a_owner, x->a_unexpandedReceive);
+    x->a_label                  = canvas_expandDollar (x->a_owner, x->a_unexpandedLabel);
+    
+    if (x->a_receive != &s_) { pd_bind (cast_pd (x), x->a_receive); }
+    
+    gobj_visibilityChanged (cast_gobj (x), x->a_owner, 1); 
+       
+    canvas_dirty (x->a_owner, 1);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-    /* message back from dialog window */
-static void gatom_param(t_gatom *x, t_symbol *sel, int argc, t_atom *argv)
-{
-    t_float width = atom_getFloatAtIndex(0, argc, argv);
-    t_float draglo = atom_getFloatAtIndex(1, argc, argv);
-    t_float draghi = atom_getFloatAtIndex(2, argc, argv);
-    t_symbol *symto = gatom_parse(atom_getSymbolAtIndex(3, argc, argv));
-    t_symbol *symfrom = gatom_parse(atom_getSymbolAtIndex(4, argc, argv));
-    t_symbol *label = gatom_parse(atom_getSymbolAtIndex(5, argc, argv));
-    t_float wherelabel = atom_getFloatAtIndex(6, argc, argv);
-
-    gobj_visibilityChanged(&x->a_obj.te_g, x->a_owner, 0);
-
-    if (draglo >= draghi)
-        draglo = draghi = 0;
-    x->a_lowRange = draglo;
-    x->a_highRange = draghi;
-
-    x->a_obj.te_width = PD_CLAMP (width, 0, ATOM_WIDTH_MAXIMUM);
-    x->a_position = ((int)wherelabel & 3);
-    x->a_unexpandedLabel = label;
-    if (*x->a_unexpandedReceive->s_name)
-        pd_unbind(&x->a_obj.te_g.g_pd,
-            canvas_expandDollar(x->a_owner, x->a_unexpandedReceive));
-    x->a_unexpandedReceive = symfrom;
-    if (*x->a_unexpandedReceive->s_name)
-        pd_bind(&x->a_obj.te_g.g_pd,
-            canvas_expandDollar(x->a_owner, x->a_unexpandedReceive));
-    x->a_unexpandedSend = symto;
-    x->a_send = canvas_expandDollar(x->a_owner, x->a_unexpandedSend);
-    gobj_visibilityChanged(&x->a_obj.te_g, x->a_owner, 1);
-    canvas_dirty(x->a_owner, 1);
-
-    /* glist_retext(x->a_owner, &x->a_obj); */
-}
 
 static void gatom_motion(void *z, t_float dx, t_float dy, t_float modifier)
 {
@@ -404,14 +399,14 @@ static void gatom_behaviorVisible (t_gobj *z, t_glist *glist, int isVisible)
         
         gatom_getPostion (x, glist, &positionX, &positionY);
         
-        sys_vGui ("::ui_box::newText .x%lx.c %lxLABEL %f %f {%s} %d #%06x\n",
+        sys_vGui ("::ui_box::newText .x%lx.c %lxLABEL %d %d {%s} %d #%06x\n",
                         canvas_getView (glist),
                         x,
-                        (double)positionX,
-                        (double)positionY,
+                        positionX,
+                        positionY,
                         x->a_label->s_name,
                         font_getHostFontSize (x->a_fontSize),
-                        COLOR_NORMAL);
+                        x->a_isSelected ? COLOR_SELECTED : COLOR_NORMAL);
     }
     //
     }
@@ -553,7 +548,7 @@ void gatom_setup (void)
     class_addClick (c, gatom_click);
         
     class_addMethod (c, (t_method)gatom_set,    sym_set,            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)gatom_param,  sym__gatomdialog,   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)gatom_dialog, sym__gatomdialog,   A_GIMME, A_NULL);
 
     class_setWidgetBehavior (c, &gatom_widgetBehavior);
     class_setPropertiesFunction (c, gatom_behaviorProperties);
