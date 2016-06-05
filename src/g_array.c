@@ -716,6 +716,7 @@ static void garray_vis(t_gobj *z, t_glist *glist, int vis)
 {
     t_garray *x = (t_garray *)z;
     gobj_visibilityChanged(&x->x_scalar->sc_g, glist, vis);
+    // interface_guiQueueRemove
 }
 
 static int garray_click(t_gobj *z, t_glist *glist,

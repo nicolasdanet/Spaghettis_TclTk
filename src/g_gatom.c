@@ -24,12 +24,12 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void gatom_float     (t_gatom *, t_float);
-static void gatom_set       (t_gatom *, t_symbol *, int, t_atom *);
-static void gatom_motion    (void *, t_float, t_float, t_float);
-static void gatom_key       (void *, t_float);
-static void gatom_displace  (t_gobj *, t_glist *, int, int);
-static void gatom_vis       (t_gobj *, t_glist *, int);
+static void gatom_float             (t_gatom *, t_float);
+static void gatom_set               (t_gatom *, t_symbol *, int, t_atom *);
+static void gatom_motion            (void *, t_float, t_float, t_float);
+static void gatom_key               (void *, t_float);
+static void gatom_behaviorDisplace  (t_gobj *, t_glist *, int, int);
+static void gatom_behaviorVisible   (t_gobj *, t_glist *, int);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -43,11 +43,11 @@ t_class *gatom_class;                                   /* Shared. */
 static t_widgetbehavior gatom_widgetBehavior =          /* Shared. */
     {
         text_getrect,
-        gatom_displace,
+        gatom_behaviorDisplace,
         text_select,
         text_activate,
         text_delete,
-        gatom_vis,
+        gatom_behaviorVisible,
         text_click
     };
 
@@ -71,11 +71,13 @@ static t_widgetbehavior gatom_widgetBehavior =          /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void gatom_drawJob (t_gobj *client, t_glist *glist)
+static void gatom_drawJob (t_gobj *z, t_glist *glist)
 {
+    t_gatom *x = cast_gatom (z);
+    
     if (canvas_isMapped (glist)) {
     //
-    glist_retext (cast_gatom (client)->a_owner, cast_object (client));
+    glist_retext (x->a_owner, cast_object (x));
     //
     }
 }
@@ -115,10 +117,13 @@ static void gatom_getPostion (t_gatom *x, t_glist *glist, int *positionX, int *p
 {
     int a, b, c, d;
     
+    double width = font_getHostFontWidth (x->a_fontSize);
+    double height = font_getHostFontHeight (x->a_fontSize);
+    
     text_getrect (cast_gobj (x), glist, &a, &b, &c, &d);
     
     if (x->a_position == ATOM_LABEL_LEFT) {
-        *positionX = a - 3 - (int)(strlen (x->a_label->s_name) * x->a_hostFontWidth);
+        *positionX = a - 3 - (int)(strlen (x->a_label->s_name) * width);
         *positionY = b + 2;
         
     } else if (x->a_position == ATOM_LABEL_RIGHT) {
@@ -127,7 +132,7 @@ static void gatom_getPostion (t_gatom *x, t_glist *glist, int *positionX, int *p
         
     } else if (x->a_position == ATOM_LABEL_UP) {
         *positionX = a;
-        *positionY = b - 3 - (int)x->a_hostFontHeight;
+        *positionY = b - 3 - (int)height;
         
     } else {
         *positionX = a;
@@ -371,52 +376,72 @@ redraw:
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void gatom_displace(t_gobj *z, t_glist *glist, int dx, int dy)
+static void gatom_behaviorDisplace (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
 {
-    t_gatom *x = (t_gatom*)z;
-    text_displace(z, glist, dx, dy);
-    sys_vGui(".x%lx.c move %lx.l %d %d\n", canvas_getView(glist), 
-        x, dx, dy);
+    t_gatom *x = cast_gatom (z);
+    
+    text_displace (z, glist, deltaX, deltaY);
+    
+    sys_vGui (".x%lx.c move %lx.l %d %d\n", 
+                    canvas_getView (glist), 
+                    x,
+                    deltaX,
+                    deltaY);
 }
 
-static void gatom_vis(t_gobj *z, t_glist *glist, int vis)
+static void gatom_behaviorVisible (t_gobj *z, t_glist *glist, int isVisible)
 {
-    t_gatom *x = (t_gatom*)z;
-    text_vis(z, glist, vis);
-    if (*x->a_unexpandedLabel->s_name)
-    {
-        if (vis)
-        {
-            int x1, y1;
-            gatom_getPostion(x, glist, &x1, &y1);
-            sys_vGui("::ui_box::newText .x%lx.c {%lx.l label text} %f %f {%s} %d %s\n",
-                canvas_getView(glist), x,
-                (double)x1, (double)y1,
-                canvas_expandDollar(x->a_owner, x->a_unexpandedLabel)->s_name,
-                font_getHostFontSize (x->a_fontSize),
-                "black");
-        }
-        else sys_vGui(".x%lx.c delete %lx.l\n", canvas_getView(glist), x);
+    t_gatom *x = cast_gatom (z);
+    
+    text_vis (z, glist, isVisible);
+    
+    if (x->a_label != &s_) {
+    //
+    if (!isVisible) { sys_vGui (".x%lx.c delete %lx.l\n", canvas_getView (glist), x); }
+    else { 
+        int positionX = 0;
+        int positionY = 0;
+        
+        gatom_getPostion (x, glist, &positionX, &positionY);
+        
+        sys_vGui ("::ui_box::newText .x%lx.c {%lx.l label text} %f %f {%s} %d #%06x\n",
+                        canvas_getView (glist),
+                        x,
+                        (double)positionX,
+                        (double)positionY,
+                        x->a_label->s_name,
+                        font_getHostFontSize (x->a_fontSize),
+                        COLOR_NORMAL);
     }
-    if (!vis)
-        interface_guiQueueRemove(x);
+    //
+    }
+    
+    if (!isVisible) { interface_guiQueueRemove (x); }
 }
 
-static void gatom_properties(t_gobj *z, t_glist *owner)
+static void gatom_behaviorProperties (t_gobj *z, t_glist *owner)
 {
     t_gatom *x = (t_gatom *)z;
-    char buf[200];
+    t_error err = PD_ERROR_NONE;
+    char t[PD_STRING] = { 0 };
     
-    t_symbol *send      = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedSend, 0));
-    t_symbol *receive   = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedReceive, 0));
-    t_symbol *label     = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedLabel, 0));
-    sprintf(buf, "::ui_atom::show %%s %d %g %g {%s} {%s} {%s} %d\n",
-        x->a_obj.te_width, x->a_lowRange, x->a_highRange,
-                send->s_name,
-                receive->s_name,
-                label->s_name, 
-                x->a_position);
-    guistub_new(&x->a_obj.te_g.g_pd, x, buf);
+    t_symbol *send    = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedSend, 0));
+    t_symbol *receive = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedReceive, 0));
+    t_symbol *label   = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedLabel, 0));
+    
+    err = string_sprintf (t, PD_STRING, 
+            "::ui_atom::show %%s %d %g %g {%s} {%s} {%s} %d\n",     // --
+            cast_object (x)->te_width,
+            x->a_lowRange,
+            x->a_highRange,
+            send->s_name,
+            receive->s_name,
+            label->s_name, 
+            x->a_position);
+    
+    PD_ASSERT (!err);
+    
+    guistub_new (cast_pd (x), (void *)x, t);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -442,8 +467,6 @@ void gatom_makeObject (t_glist *glist, t_atomtype type, t_symbol *s, int argc, t
     x->a_unexpandedReceive      = &s_;
     x->a_unexpandedLabel        = &s_;
     x->a_fontSize               = canvas_getFontSize (x->a_owner);
-    x->a_hostFontWidth          = font_getHostFontWidth (x->a_fontSize);
-    x->a_hostFontHeight         = font_getHostFontHeight (x->a_fontSize);
     x->a_position               = ATOM_LABEL_RIGHT;
         
     if (type == A_FLOAT) {
@@ -533,7 +556,7 @@ void gatom_setup (void)
     class_addMethod (c, (t_method)gatom_param,  sym__gatomdialog,   A_GIMME, A_NULL);
 
     class_setWidgetBehavior (c, &gatom_widgetBehavior);
-    class_setPropertiesFunction (c, gatom_properties);
+    class_setPropertiesFunction (c, gatom_behaviorProperties);
     
     gatom_class = c;
 }
