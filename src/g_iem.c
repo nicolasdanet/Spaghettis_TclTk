@@ -298,7 +298,7 @@ void iemgui_setLabelFont (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *ar
         sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d]\n",      // --
                         canvas_getView (iem->iem_owner), 
                         x,
-                        iem->iem_fontSize);
+                        font_getHostFontSize (iem->iem_fontSize));
     }
     //
     }

@@ -152,7 +152,7 @@ set var(filesTypes)             { {{Patch} {.pd}} {{Help} {.pdhelp}} }
 
 set var(fontFamily)             [::getDefaultFamily]
 set var(fontWeight)             [::getDefaultWeight]
-set var(fontSizes)              "8 9 10 11 12 14 16 18 20 24 36"
+set var(fontSizes)              "6 8 9 10 11 12 14 16 18 20 24 36"
 
 set var(isPath)                 0
 set var(isInitialized)          0

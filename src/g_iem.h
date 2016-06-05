@@ -121,7 +121,7 @@ typedef struct _iem {
     int         iem_height;
     int         iem_labelX;
     int         iem_labelY;
-    int         iem_fontSize;
+    t_fontsize  iem_fontSize;
     int         iem_colorBackground;
     int         iem_colorForeground;
     int         iem_colorLabel;

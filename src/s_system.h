@@ -116,12 +116,6 @@ typedef struct _pathlist {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef int t_fontsize;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 t_pathlist  *pathlist_newAppend                     (t_pathlist *x, const char *s);
 t_pathlist  *pathlist_newAppendEncoded              (t_pathlist *x, t_symbol *s);
 char        *pathlist_getFileAtIndex                (t_pathlist *x, int n);

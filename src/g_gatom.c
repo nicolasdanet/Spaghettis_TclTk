@@ -111,26 +111,26 @@ static void gatom_setFloat (t_gatom *x, t_float f)
     gatom_float (x, f);
 }
 
-static void gatom_getLabelPostion (t_gatom *x, t_glist *glist, int *positionX, int *positionY)
+static void gatom_getPostion (t_gatom *x, t_glist *glist, int *positionX, int *positionY)
 {
     int a, b, c, d;
     
     text_getrect (cast_gobj (x), glist, &a, &b, &c, &d);
     
     if (x->a_position == ATOM_LABEL_LEFT) {
-        *positionX = a - 3 - (int)(strlen (x->a_label->s_name) * x->a_fontWidth);
+        *positionX = a - 3 - (int)(strlen (x->a_label->s_name) * x->a_hostFontWidth);
         *positionY = b + 2;
         
     } else if (x->a_position == ATOM_LABEL_RIGHT) {
-        *positionX = c + 2;
+        *positionX = c + 3;
         *positionY = b + 2;
         
     } else if (x->a_position == ATOM_LABEL_UP) {
-        *positionX = a - 1;
-        *positionY = b - 1 - (int)x->a_fontHeight;
+        *positionX = a;
+        *positionY = b - 3 - (int)x->a_hostFontHeight;
         
     } else {
-        *positionX = a - 1;
+        *positionX = a;
         *positionY = d + 3;
     }
 }
@@ -388,12 +388,12 @@ static void gatom_vis(t_gobj *z, t_glist *glist, int vis)
         if (vis)
         {
             int x1, y1;
-            gatom_getLabelPostion(x, glist, &x1, &y1);
+            gatom_getPostion(x, glist, &x1, &y1);
             sys_vGui("::ui_box::newText .x%lx.c {%lx.l label text} %f %f {%s} %d %s\n",
                 canvas_getView(glist), x,
                 (double)x1, (double)y1,
                 canvas_expandDollar(x->a_owner, x->a_unexpandedLabel)->s_name,
-                x->a_fontSize,
+                font_getHostFontSize (x->a_fontSize),
                 "black");
         }
         else sys_vGui(".x%lx.c delete %lx.l\n", canvas_getView(glist), x);
@@ -441,9 +441,9 @@ void gatom_makeObject (t_glist *glist, t_atomtype type, t_symbol *s, int argc, t
     x->a_unexpandedSend         = &s_;
     x->a_unexpandedReceive      = &s_;
     x->a_unexpandedLabel        = &s_;
-    x->a_fontSize               = font_getHostFontSize (canvas_getFontSize (x->a_owner));
-    x->a_fontWidth              = font_getHostFontWidth (canvas_getFontSize (x->a_owner));
-    x->a_fontHeight             = font_getHostFontHeight (canvas_getFontSize (x->a_owner));
+    x->a_fontSize               = canvas_getFontSize (x->a_owner);
+    x->a_hostFontWidth          = font_getHostFontWidth (x->a_fontSize);
+    x->a_hostFontHeight         = font_getHostFontHeight (x->a_fontSize);
     x->a_position               = ATOM_LABEL_RIGHT;
         
     if (type == A_FLOAT) {

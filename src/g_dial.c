@@ -21,6 +21,7 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
+#include "s_system.h"
 #include "g_canvas.h"
 #include "g_iem.h"
 
@@ -274,7 +275,7 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
                     a + x->x_gui.iem_labelX,
                     b + x->x_gui.iem_labelY,
                     (x->x_gui.iem_label != utils_empty()) ? x->x_gui.iem_label->s_name : "",
-                    x->x_gui.iem_fontSize,
+                    font_getHostFontSize (x->x_gui.iem_fontSize),
                     x->x_gui.iem_colorLabel,
                     x);
 }
@@ -339,7 +340,7 @@ static void dial_drawConfig (t_dial* x, t_glist *glist)
     sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",  // --
                     canvas,
                     x,
-                    x->x_gui.iem_fontSize,
+                    font_getHostFontSize (x->x_gui.iem_fontSize),
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel,
                     (x->x_gui.iem_label != utils_empty()) ? x->x_gui.iem_label->s_name : "");
 }
