@@ -73,8 +73,11 @@ static t_widgetbehavior gatom_widgetBehavior =          /* Shared. */
 
 static void gatom_drawJob (t_gobj *client, t_glist *glist)
 {
-    t_gatom *x = (t_gatom *)client;
-    glist_retext(x->a_owner, &x->a_obj);
+    if (canvas_isMapped (glist)) {
+    //
+    glist_retext (cast_gatom (client)->a_owner, cast_object (client));
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -89,53 +92,46 @@ static t_symbol *gatom_parse (t_symbol *s)
     }
 }
 
-static void gatom_retext(t_gatom *x, int senditup)
+static void gatom_update (t_gatom *x)
 {
-    buffer_reset(x->a_obj.te_buffer);
-    buffer_append(x->a_obj.te_buffer, 1, &x->a_atom);
-    if (senditup && canvas_isMapped(x->a_owner))
-        interface_guiQueueAddIfNotAlreadyThere(x, x->a_owner, gatom_drawJob);
+    buffer_reset (cast_object (x)->te_buffer);
+    buffer_append (cast_object (x)->te_buffer, 1, &x->a_atom);
+    
+    if (canvas_isMapped (x->a_owner)) { 
+    //
+    interface_guiQueueAddIfNotAlreadyThere (x, x->a_owner, gatom_drawJob);
+    //
+    }
 }
 
-static void gatom_clipfloat(t_gatom *x, t_float f)
+static void gatom_setFloat (t_gatom *x, t_float f)
 {
-    if (x->a_lowRange != 0 || x->a_highRange != 0)
-    {
-        if (f < x->a_lowRange)
-            f = x->a_lowRange;
-        if (f > x->a_highRange)
-            f = x->a_highRange;
-    }
-    gatom_float(x, f);
+    if (x->a_lowRange != 0.0 || x->a_highRange != 0.0) { f = PD_CLAMP (f, x->a_lowRange, x->a_highRange); }
+    
+    gatom_float (x, f);
 }
 
-static void gatom_getwherelabel(t_gatom *x, t_glist *glist, int *xp, int *yp)
+static void gatom_getLabelPostion (t_gatom *x, t_glist *glist, int *positionX, int *positionY)
 {
-    int x1, y1, x2, y2, width, height;
-    text_getrect(&x->a_obj.te_g, glist, &x1, &y1, &x2, &y2);
-    width = x2 - x1;
-    height = y2 - y1;
-    if (x->a_position == ATOM_LABEL_LEFT)
-    {
-        *xp = x1 - 3 -
-            strlen(canvas_expandDollar(x->a_owner, x->a_unexpandedLabel)->s_name) *
-            (int)font_getHostFontWidth(canvas_getFontSize(glist));
-        *yp = y1 + 2;
-    }
-    else if (x->a_position == ATOM_LABEL_RIGHT)
-    {
-        *xp = x2 + 2;
-        *yp = y1 + 2;
-    }
-    else if (x->a_position == ATOM_LABEL_UP)
-    {
-        *xp = x1 - 1;
-        *yp = y1 - 1 - (int)font_getHostFontHeight(canvas_getFontSize(glist));;
-    }
-    else
-    {
-        *xp = x1 - 1;
-        *yp = y2 + 3;
+    int a, b, c, d;
+    
+    text_getrect (cast_gobj (x), glist, &a, &b, &c, &d);
+    
+    if (x->a_position == ATOM_LABEL_LEFT) {
+        *positionX = a - 3 - (int)(strlen (x->a_label->s_name) * x->a_fontWidth);
+        *positionY = b + 2;
+        
+    } else if (x->a_position == ATOM_LABEL_RIGHT) {
+        *positionX = c + 2;
+        *positionY = b + 2;
+        
+    } else if (x->a_position == ATOM_LABEL_UP) {
+        *positionX = a - 1;
+        *positionY = b - 1 - (int)x->a_fontHeight;
+        
+    } else {
+        *positionX = a - 1;
+        *positionY = d + 3;
     }
 }
 
@@ -235,7 +231,7 @@ static void gatom_set(t_gatom *x, t_symbol *s, int argc, t_atom *argv)
         x->a_atom.a_w.w_symbol = atom_getSymbol(argv),
             changed = (x->a_atom.a_w.w_symbol != oldatom.a_w.w_symbol);
     if (changed)
-        gatom_retext(x, 1);
+        gatom_update(x);
     x->a_string[0] = 0;
 }
 
@@ -290,7 +286,7 @@ static void gatom_motion(void *z, t_float dx, t_float dy, t_float modifier)
             double nval = x->a_atom.a_w.w_float - 0.01 * dy;
             double trunc = 0.01 * (floor(100. * nval + 0.5));
             if (trunc < nval + 0.0001 && trunc > nval - 0.0001) nval = trunc;
-            gatom_clipfloat(x, nval);
+            gatom_setFloat(x, nval);
         }
         else
         {
@@ -299,7 +295,7 @@ static void gatom_motion(void *z, t_float dx, t_float dy, t_float modifier)
             if (trunc < nval + 0.0001 && trunc > nval - 0.0001) nval = trunc;
             trunc = floor(nval + 0.5);
             if (trunc < nval + 0.001 && trunc > nval - 0.001) nval = trunc;
-            gatom_clipfloat(x, nval);
+            gatom_setFloat(x, nval);
         }
     }
 }
@@ -315,7 +311,7 @@ static void gatom_key(void *z, t_float f)
     {
         /* we're being notified that no more keys will come for this grab */
         if (x->a_string[0])
-            gatom_retext(x, 1);
+            gatom_update(x);
         return;
     }
     else if (c == '\b')
@@ -332,7 +328,7 @@ static void gatom_key(void *z, t_float f)
             x->a_atom.a_w.w_symbol = gensym (x->a_string);
         else { PD_BUG; }
         gatom_bang(x);
-        gatom_retext(x, 1);
+        gatom_update(x);
         x->a_string[0] = 0;
     }
     else if (len < (ATOM_BUFFER_SIZE-1))
@@ -392,12 +388,12 @@ static void gatom_vis(t_gobj *z, t_glist *glist, int vis)
         if (vis)
         {
             int x1, y1;
-            gatom_getwherelabel(x, glist, &x1, &y1);
+            gatom_getLabelPostion(x, glist, &x1, &y1);
             sys_vGui("::ui_box::newText .x%lx.c {%lx.l label text} %f %f {%s} %d %s\n",
                 canvas_getView(glist), x,
                 (double)x1, (double)y1,
                 canvas_expandDollar(x->a_owner, x->a_unexpandedLabel)->s_name,
-                font_getHostFontSize(canvas_getFontSize(glist)),
+                x->a_fontSize,
                 "black");
         }
         else sys_vGui(".x%lx.c delete %lx.l\n", canvas_getView(glist), x);
@@ -445,7 +441,10 @@ void gatom_makeObject (t_glist *glist, t_atomtype type, t_symbol *s, int argc, t
     x->a_unexpandedSend         = &s_;
     x->a_unexpandedReceive      = &s_;
     x->a_unexpandedLabel        = &s_;
-    x->a_position               = 0;
+    x->a_fontSize               = font_getHostFontSize (canvas_getFontSize (x->a_owner));
+    x->a_fontWidth              = font_getHostFontWidth (canvas_getFontSize (x->a_owner));
+    x->a_fontHeight             = font_getHostFontHeight (canvas_getFontSize (x->a_owner));
+    x->a_position               = ATOM_LABEL_RIGHT;
         
     if (type == A_FLOAT) {
         t_atom a;
