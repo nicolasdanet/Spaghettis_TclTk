@@ -27,7 +27,6 @@
 static void gatom_float             (t_gatom *, t_float);
 static void gatom_set               (t_gatom *, t_symbol *, int, t_atom *);
 static void gatom_motion            (void *, t_float, t_float, t_float);
-static void gatom_key               (void *, t_float);
 static void gatom_behaviorDisplace  (t_gobj *, t_glist *, int, int);
 static void gatom_behaviorVisible   (t_gobj *, t_glist *, int);
 
@@ -209,7 +208,7 @@ void gatom_click(t_gatom *x, t_float xpos, t_float ypos, t_float shift, t_float 
             else gatom_float(x, x->a_toggledValue);
         }
         x->a_string[0] = 0;
-        glist_grab(x->a_owner, &x->a_obj.te_g, (t_motionfn)gatom_motion, gatom_key, xpos, ypos);
+        glist_grab(x->a_owner, &x->a_obj.te_g, (t_motionfn)gatom_motion, xpos, ypos);
     }
 }
 
@@ -275,96 +274,22 @@ static void gatom_dialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void gatom_motion(void *z, t_float dx, t_float dy, t_float modifier)
+static void gatom_motion (void *z, t_float deltaX, t_float deltaY, t_float modifier)
 {
-    t_gatom *x = (t_gatom *)z;
-    if (dy == 0) return;
-    if (x->a_atom.a_type == A_FLOAT)
-    {
-        if ((int)modifier & MODIFIER_SHIFT)
-        {
-            double nval = x->a_atom.a_w.w_float - 0.01 * dy;
-            double trunc = 0.01 * (floor(100. * nval + 0.5));
-            if (trunc < nval + 0.0001 && trunc > nval - 0.0001) nval = trunc;
-            gatom_setFloat(x, nval);
-        }
-        else
-        {
-            double nval = x->a_atom.a_w.w_float - dy;
-            double trunc = 0.01 * (floor(100. * nval + 0.5));
-            if (trunc < nval + 0.0001 && trunc > nval - 0.0001) nval = trunc;
-            trunc = floor(nval + 0.5);
-            if (trunc < nval + 0.001 && trunc > nval - 0.001) nval = trunc;
-            gatom_setFloat(x, nval);
-        }
+    t_gatom *x = cast_gatom (z);
+    
+    if ((deltaY != 0.0) && (x->a_atom.a_type == A_FLOAT)) { 
+    //
+    double f = GET_FLOAT (&x->a_atom);
+    
+    if ((int)modifier & MODIFIER_SHIFT) { f -= 0.01 * deltaY; }
+    else {
+        f -= deltaY;
     }
-}
-
-static void gatom_key(void *z, t_float f)
-{
-    t_gatom *x = (t_gatom *)z;
-    int c = f;
-    int len = strlen(x->a_string);
-    t_atom at;
-    char sbuf[ATOM_BUFFER_SIZE + 4];
-    if (c == 0)
-    {
-        /* we're being notified that no more keys will come for this grab */
-        if (x->a_string[0])
-            gatom_update(x);
-        return;
+    
+    gatom_setFloat (x, f);
+    //
     }
-    else if (c == '\b')
-    {
-        if (len > 0)
-        x->a_string[len-1] = 0;
-        goto redraw;
-    }
-    else if (c == '\n')
-    {
-        if (x->a_atom.a_type == A_FLOAT)
-            x->a_atom.a_w.w_float = atof(x->a_string);
-        else if (x->a_atom.a_type == A_SYMBOL)
-            x->a_atom.a_w.w_symbol = gensym (x->a_string);
-        else { PD_BUG; }
-        gatom_bang(x);
-        gatom_update(x);
-        x->a_string[0] = 0;
-    }
-    else if (len < (ATOM_BUFFER_SIZE-1))
-    {
-            /* for numbers, only let reasonable characters through */
-        if ((x->a_atom.a_type == A_SYMBOL) ||
-            (c >= '0' && c <= '9' || c == '.' || c == '-'
-                || c == 'e' || c == 'E'))
-        {
-            /* the wchar could expand to up to 4 bytes, which
-             * which might overrun our a_string;
-             * therefore we first expand into a temporary buffer, 
-             * and only if the resulting utf8 string fits into a_string
-             * we apply it
-             */
-            char utf8[UTF8_MAXIMUM_BYTES];
-            int utf8len = u8_wc_toutf8(utf8, c);
-            if((len+utf8len) < (ATOM_BUFFER_SIZE-1))
-            {
-                int j=0;
-                for(j=0; j<utf8len; j++)
-                    x->a_string[len+j] = utf8[j];
-                 
-                x->a_string[len+utf8len] = 0;
-            }
-            goto redraw;
-        }
-    }
-    return;
-redraw:
-        /* LATER figure out how to avoid creating all these symbols! */
-    sprintf(sbuf, "%s...", x->a_string);
-    SET_SYMBOL(&at, gensym (sbuf));
-    buffer_reset(x->a_obj.te_buffer);
-    buffer_append(x->a_obj.te_buffer, 1, &at);
-    glist_retext(x->a_owner, &x->a_obj);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -416,7 +341,7 @@ static void gatom_behaviorVisible (t_gobj *z, t_glist *glist, int isVisible)
 
 static void gatom_behaviorProperties (t_gobj *z, t_glist *owner)
 {
-    t_gatom *x = (t_gatom *)z;
+    t_gatom *x = cast_gatom (z);
     t_error err = PD_ERROR_NONE;
     char t[PD_STRING] = { 0 };
     

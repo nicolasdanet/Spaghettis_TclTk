@@ -1292,7 +1292,7 @@ static int curve_click(t_gobj *z, t_glist *glist,
                 curve_motion_scalar);
         else gpointer_setarray(&curve_motion_gpointer,
                 curve_motion_array, curve_motion_wp);
-        glist_grab(glist, z, (t_motionfn)curve_motion, 0, xpix, ypix);
+        glist_grab(glist, z, (t_motionfn)curve_motion, xpix, ypix);
     }
     return (1);
 }
@@ -2126,7 +2126,7 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
                 fielddesc_setcoord(yfield, elemtemplate,
                     (t_word *)(((char *)array->a_vec) + elemsize * xval),
                         glist_pixelstoy(glist, ypix), 1);
-                glist_grab(glist, 0, (t_motionfn)array_motion, 0, xpix, ypix);
+                glist_grab(glist, 0, (t_motionfn)array_motion, xpix, ypix);
                 if (array_motion_scalar)
                     scalar_redraw(array_motion_scalar, array_motion_glist);
                 if (array_motion_array)
@@ -2269,7 +2269,7 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
                             array_motion_yfield = 0;
                             array_motion_ycumulative = 0;
                         }
-                        glist_grab(glist, 0, (t_motionfn)array_motion, 0, xpix, ypix);
+                        glist_grab(glist, 0, (t_motionfn)array_motion, xpix, ypix);
                     }
                     if (alt)
                     {
@@ -2583,7 +2583,8 @@ static void drawnumber_motion(void *z, t_float dx, t_float dy, t_float modifier)
         array_redraw(drawnumber_motion_array, drawnumber_motion_glist);
 }
 
-static void drawnumber_key(void *z, t_float fkey)
+/*
+static void drawnumber_key(void *z, t_keycode fkey)
 {
     t_drawnumber *x = (t_drawnumber *)z;
     int key = fkey;
@@ -2598,7 +2599,6 @@ static void drawnumber_key(void *z, t_float fkey)
         return;
     if (drawnumber_motion_type == DATA_SYMBOL)
     {
-            /* key entry for a symbol field */
         if (drawnumber_motion_firstkey)
             sbuf[0] = 0;
         else strncpy(sbuf, template_getsymbol(drawnumber_motion_template,
@@ -2618,7 +2618,6 @@ static void drawnumber_key(void *z, t_float fkey)
     }
     else if (drawnumber_motion_type == DATA_FLOAT)
     {
-            /* key entry for a numeric field.  This is just a stopgap. */
         double newf;
         if (drawnumber_motion_firstkey)
             sbuf[0] = 0;
@@ -2650,6 +2649,7 @@ static void drawnumber_key(void *z, t_float fkey)
     }
     else post("typing at text fields not yet implemented");
 }
+*/
 
 static int drawnumber_click(t_gobj *z, t_glist *glist, 
     t_word *data, t_template *template, t_scalar *sc, t_array *ap,
@@ -2681,8 +2681,7 @@ static int drawnumber_click(t_gobj *z, t_glist *glist,
                     drawnumber_motion_glist, drawnumber_motion_scalar);
             else gpointer_setarray(&drawnumber_motion_gpointer,
                     drawnumber_motion_array, drawnumber_motion_wp);
-            glist_grab(glist, z, (t_motionfn)drawnumber_motion, drawnumber_key,
-                xpix, ypix);
+            glist_grab(glist, z, (t_motionfn)drawnumber_motion, xpix, ypix);
         }
         return (1);
     }

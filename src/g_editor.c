@@ -200,12 +200,7 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
 
 static void canvas_performMouseResetGrabbed (t_glist *glist)
 {
-    if (glist->gl_editor->e_grabbed) {
-        if (glist->gl_editor->e_fnKey) { 
-            (*glist->gl_editor->e_fnKey) (glist->gl_editor->e_grabbed, 0); 
-        }
-        glist_grab (glist, NULL, NULL, NULL, 0, 0);
-    }
+    if (glist->gl_editor->e_grabbed) { glist_grab (glist, NULL, NULL, 0, 0); }
     
     PD_ASSERT (!glist->gl_editor->e_grabbed);
 }
@@ -663,13 +658,8 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
     //
     if (glist->gl_editor->e_action == ACTION_MOVE) { glist->gl_editor->e_action = ACTION_NONE; }
     
-    if (glist->gl_editor->e_grabbed && glist->gl_editor->e_fnKey) {
-        if (n) { 
-            (*glist->gl_editor->e_fnKey) (glist->gl_editor->e_grabbed, (t_float)n); 
-        }
-        
-    } else if (glist->gl_editor->e_selectedText) {
-        boxtext_key (glist->gl_editor->e_selectedText, (int)n, s);
+    if (glist->gl_editor->e_selectedText) {
+        boxtext_key (glist->gl_editor->e_selectedText, (t_keycode)n, s);
         if (glist->gl_editor->e_isTextDirty) { 
             canvas_dirty (glist, 1); 
         }
@@ -858,7 +848,7 @@ void canvas_cut (t_glist *glist)
     if (glist->gl_editor->e_isSelectedline)    { canvas_removeSelectedLine (glist); }
     else if (glist->gl_editor->e_selectedText) {
         canvas_copy (glist);
-        boxtext_key (glist->gl_editor->e_selectedText, 127, sym_Delete);
+        boxtext_key (glist->gl_editor->e_selectedText, (t_keycode)127, sym_Delete);
         canvas_dirty (glist, 1);
         
     } else if (glist->gl_editor->e_selectedObjects) {
@@ -997,6 +987,8 @@ void canvas_destroyEditorIfAny (t_glist *glist)
 
 void editor_initialize (void)
 {
+    PD_ASSERT (sizeof (t_keycode) == sizeof (UCS4_CODE_POINT));
+    
     editor_buffer = buffer_new();
 }
 

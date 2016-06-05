@@ -589,19 +589,19 @@ static int boxtext_keyDelete (t_boxtext *x, t_symbol *s)
     return 0;
 }
 
-static void boxtext_keyASCII (t_boxtext *x, int n)
+static void boxtext_keyASCII (t_boxtext *x, t_keycode n)
 {
     int i;
     int oldSize = x->box_stringSizeInBytes;
     int newSize = x->box_stringSizeInBytes + 1;
     x->box_string = PD_MEMORY_RESIZE (x->box_string, oldSize, newSize);
     for (i = oldSize; i > x->box_selectionStart; i--) { x->box_string[i] = x->box_string[i - 1]; }
-    x->box_string[x->box_selectionStart] = n;
+    x->box_string[x->box_selectionStart] = (char)n;
     x->box_stringSizeInBytes = newSize;
     x->box_selectionStart = x->box_selectionStart + 1;
 }
 
-static void boxtext_keyCodePoint (t_boxtext *x, int n, t_symbol *s)
+static void boxtext_keyCodePoint (t_boxtext *x, t_keycode n, t_symbol *s)
 {
     int i, k = u8_wc_nbytes (n);
     int oldSize = x->box_stringSizeInBytes;
@@ -617,7 +617,7 @@ static void boxtext_keyCodePoint (t_boxtext *x, int n, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void boxtext_key (t_boxtext *x, int n, t_symbol *s)
+void boxtext_key (t_boxtext *x, t_keycode n, t_symbol *s)
 {
     PD_ASSERT (s);
     

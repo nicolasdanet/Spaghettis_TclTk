@@ -211,7 +211,6 @@ typedef struct _editor {
     int                 e_selectedLineIndexOfObjectIn;
     int                 e_selectedLineIndexOfInlet;
     t_motionfn          e_fnMotion;
-    t_keyfn             e_fnKey;
     int                 e_previousX;
     int                 e_previousY;
     int                 e_newX;
@@ -660,7 +659,7 @@ void            boxtext_displace                        (t_boxtext *x, int delta
 void            boxtext_select                          (t_boxtext *x, int state);
 void            boxtext_activate                        (t_boxtext *x, int state);
 void            boxtext_mouse                           (t_boxtext *x, int a, int b, int flag);
-void            boxtext_key                             (t_boxtext *x, int n, t_symbol *s);
+void            boxtext_key                             (t_boxtext *x, t_keycode n, t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -750,7 +749,6 @@ void     glist_sort             (t_glist *canvas);
 void     glist_grab             (t_glist *x,
                                     t_gobj *y,
                                     t_motionfn motionfn,
-                                    t_keyfn keyfn,
                                     int xpos,
                                     int ypos);
 

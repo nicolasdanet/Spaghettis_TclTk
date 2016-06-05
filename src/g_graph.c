@@ -181,8 +181,7 @@ void glist_retext(t_glist *glist, t_object *y)
     }
 }
 
-void glist_grab(t_glist *x, t_gobj *y, t_motionfn motionfn,
-    t_keyfn keyfn, int xpos, int ypos)
+void glist_grab(t_glist *x, t_gobj *y, t_motionfn motionfn, int xpos, int ypos)
 {
     t_glist *x2 = canvas_getView(x);
     if (motionfn)
@@ -190,7 +189,6 @@ void glist_grab(t_glist *x, t_gobj *y, t_motionfn motionfn,
     else x2->gl_editor->e_action = 0;
     x2->gl_editor->e_grabbed = y;
     x2->gl_editor->e_fnMotion = motionfn;
-    x2->gl_editor->e_fnKey = keyfn;
     x2->gl_editor->e_previousX = xpos;
     x2->gl_editor->e_previousY = ypos;
 }
