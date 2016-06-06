@@ -236,27 +236,27 @@ t_glist *canvas_addGraph (t_glist *glist,
     //
     }
     
-    x->gl_obj.te_buffer         = buffer_new();
-    x->gl_obj.te_xCoordinate    = topLeftX;
-    x->gl_obj.te_yCoordinate    = topLeftY;
-    x->gl_obj.te_type           = TYPE_OBJECT;
-    x->gl_stub                  = gstub_new (x, NULL);
-    x->gl_parent                = glist;
-    x->gl_name                  = name;
-    x->gl_magic                 = ++canvas_magic;
-    x->gl_width                 = bottomRightX - topLeftX;
-    x->gl_height                = bottomRightY - topLeftY;
-    x->gl_valueStart            = valueStart;
-    x->gl_valueEnd              = valueEnd;
-    x->gl_valueUp               = valueUp;
-    x->gl_valueDown             = valueDown;
-    x->gl_windowTopLeftX        = 0;
-    x->gl_windowTopLeftY        = WINDOW_HEADER;
-    x->gl_windowBottomRightX    = WINDOW_WIDTH;
-    x->gl_windowBottomRightY    = WINDOW_HEIGHT + WINDOW_HEADER;
-    x->gl_fontSize              = fontSize;
-    x->gl_isGraphOnParent       = 1;
-    x->gl_hasRectangle          = 0;
+    cast_object (x)->te_buffer          = buffer_new();
+    cast_object (x)->te_xCoordinate     = topLeftX;
+    cast_object (x)->te_yCoordinate     = topLeftY;
+    cast_object (x)->te_type            = TYPE_OBJECT;
+    x->gl_stub                          = gstub_new (x, NULL);
+    x->gl_parent                        = glist;
+    x->gl_name                          = name;
+    x->gl_magic                         = ++canvas_magic;
+    x->gl_width                         = bottomRightX - topLeftX;
+    x->gl_height                        = bottomRightY - topLeftY;
+    x->gl_valueStart                    = valueStart;
+    x->gl_valueEnd                      = valueEnd;
+    x->gl_valueUp                       = valueUp;
+    x->gl_valueDown                     = valueDown;
+    x->gl_windowTopLeftX                = 0;
+    x->gl_windowTopLeftY                = WINDOW_HEADER;
+    x->gl_windowBottomRightX            = WINDOW_WIDTH;
+    x->gl_windowBottomRightY            = WINDOW_HEIGHT + WINDOW_HEADER;
+    x->gl_fontSize                      = fontSize;
+    x->gl_isGraphOnParent               = 1;
+    x->gl_hasRectangle                  = 0;
     
     canvas_bind (x);
     buffer_vAppend (cast_object (x)->te_buffer, "s", sym_graph);

@@ -125,7 +125,7 @@ static void iemgui_fetchUnexpanded (t_iem *iem, t_symbol **s, int i, t_symbol *f
 {
     if (!*s) {
         t_error err = PD_ERROR;
-        t_buffer *b = iem->iem_obj.te_buffer;
+        t_buffer *b = cast_object (iem)->te_buffer;
         if (i < buffer_size (b)) {
             char t[PD_STRING] = { 0 };
             PD_ASSERT (i >= 0);

@@ -265,18 +265,14 @@ struct _glist {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define ATOM_BUFFER_SIZE    40
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 typedef struct _gatom {
     t_object            a_obj;                  /* MUST be the first. */
     t_atom              a_atom;
     t_float             a_lowRange;
     t_float             a_highRange;
-    t_float             a_toggledValue;
+    t_fontsize          a_fontSize;
+    int                 a_position;
+    int                 a_isSelected;
     t_glist             *a_owner;
     t_symbol            *a_send;
     t_symbol            *a_receive;
@@ -284,10 +280,6 @@ typedef struct _gatom {
     t_symbol            *a_unexpandedSend;
     t_symbol            *a_unexpandedReceive;
     t_symbol            *a_unexpandedLabel;
-    int                 a_isSelected;
-    t_fontsize          a_fontSize;
-    int                 a_position;
-    char                a_string[ATOM_BUFFER_SIZE];
     } t_gatom;
 
 // -----------------------------------------------------------------------------------------------------------

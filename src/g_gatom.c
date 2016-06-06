@@ -143,99 +143,65 @@ static void gatom_getPostion (t_gatom *x, t_glist *glist, int *positionX, int *p
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void gatom_bang(t_gatom *x)
+static void gatom_bang (t_gatom *x)
 {
-    if (x->a_atom.a_type == A_FLOAT)
-    {
-        outlet_float(x->a_obj.te_outlet, x->a_atom.a_w.w_float);
-        
-        if (*x->a_send->s_name && x->a_send->s_thing)
-        {
-            if (x->a_unexpandedSend == x->a_unexpandedReceive)
-                post_error ("%s: atom with same send/receive name (infinite loop)",
-                        x->a_unexpandedSend->s_name);
-            else pd_float(x->a_send->s_thing, x->a_atom.a_w.w_float);
-        }
-    }
-    else if (x->a_atom.a_type == A_SYMBOL)
-    {
-        outlet_symbol(x->a_obj.te_outlet, x->a_atom.a_w.w_symbol);
-        
-        if (*x->a_unexpandedSend->s_name && x->a_send->s_thing)
-        {
-            if (x->a_unexpandedSend == x->a_unexpandedReceive)
-                post_error ("%s: atom with same send/receive name (infinite loop)",
-                        x->a_unexpandedSend->s_name);
-            else pd_symbol(x->a_send->s_thing, x->a_atom.a_w.w_symbol);
-        }
-    }
-}
-
-static void gatom_float(t_gatom *x, t_float f)
-{
-    t_atom at;
-    SET_FLOAT(&at, f);
-    gatom_set(x, 0, 1, &at);
-    gatom_bang(x);
-}
-
-static void gatom_symbol(t_gatom *x, t_symbol *s)
-{
-    t_atom at;
-    SET_SYMBOL(&at, s);
-    gatom_set(x, 0, 1, &at);
-    gatom_bang(x);
-}
-
-void gatom_click(t_gatom *x, t_float xpos, t_float ypos, t_float shift, t_float ctrl, t_float alt)
-{
-    if (x->a_obj.te_width == 1)
-    {
-        if (x->a_atom.a_type == A_FLOAT)
-            gatom_float(x, (x->a_atom.a_w.w_float == 0));
-    }
-    else
-    {
-        if (alt)
-        {
-            if (x->a_atom.a_type != A_FLOAT) return;
-            if (x->a_atom.a_w.w_float != 0)
-            {
-                x->a_toggledValue = x->a_atom.a_w.w_float;
-                gatom_float(x, 0);
-                return;
-            }
-            else gatom_float(x, x->a_toggledValue);
-        }
-        x->a_string[0] = 0;
-        glist_grab(x->a_owner, &x->a_obj.te_g, (t_motionfn)gatom_motion, xpos, ypos);
-    }
-}
-
-static void gatom_set(t_gatom *x, t_symbol *s, int argc, t_atom *argv)
-{
-    t_atom oldatom = x->a_atom;
-    int changed = 0;
-    if (!argc) return;
-
-    /*
-    if (x->a_atom.a_type == A_FLOAT)
-    {
-        x->a_atom.a_w.w_float = atom_getFloat(argv);
-        changed = ((x->a_atom.a_w.w_float != oldatom.a_w.w_float));
-        if (isnan(x->a_atom.a_w.w_float) != isnan(oldatom.a_w.w_float))
-            changed = 1;
-    }*/
+    if (IS_FLOAT (&x->a_atom)) {
     
-    if (x->a_atom.a_type == A_FLOAT)
-        x->a_atom.a_w.w_float = atom_getFloat(argv),
-            changed = (x->a_atom.a_w.w_float != oldatom.a_w.w_float);
-    else if (x->a_atom.a_type == A_SYMBOL)
-        x->a_atom.a_w.w_symbol = atom_getSymbol(argv),
-            changed = (x->a_atom.a_w.w_symbol != oldatom.a_w.w_symbol);
-    if (changed)
-        gatom_update(x);
-    x->a_string[0] = 0;
+        outlet_float (cast_object (x)->te_outlet, GET_FLOAT (&x->a_atom));
+        
+        if (x->a_send != &s_ && x->a_send->s_thing) {
+            if (x->a_send != x->a_receive) { pd_float (x->a_send->s_thing, GET_FLOAT (&x->a_atom)); }
+            else {
+                post_error (PD_TRANSLATE ("gatom: send/receive loop %s"), x->a_unexpandedSend->s_name);
+            }
+        }
+        
+    } else {
+    
+        outlet_symbol (cast_object (x)->te_outlet, GET_SYMBOL (&x->a_atom));
+        
+        if (x->a_send != &s_ && x->a_send->s_thing) {
+            if (x->a_send != x->a_receive) { pd_symbol (x->a_send->s_thing, GET_SYMBOL (&x->a_atom)); }
+            else {
+                post_error (PD_TRANSLATE ("gatom: send/receive loop %s"), x->a_unexpandedSend->s_name);
+            }
+        }
+    }
+}
+
+static void gatom_float (t_gatom *x, t_float f)
+{
+    t_atom a;
+    SET_FLOAT (&a, f);
+    gatom_set (x, NULL, 1, &a);
+    gatom_bang (x);
+}
+
+static void gatom_symbol (t_gatom *x, t_symbol *s)
+{
+    t_atom a;
+    SET_SYMBOL (&a, s);
+    gatom_set (x, NULL, 1, &a);
+    gatom_bang (x);
+}
+
+void gatom_click (t_gatom *x, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
+{
+    glist_grab (x->a_owner, cast_gobj (x), (t_motionfn)gatom_motion, a, b);
+}
+
+static void gatom_set (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc) {
+    //
+    if (IS_FLOAT (&x->a_atom)) { SET_FLOAT (&x->a_atom, atom_getFloat (argv)); }
+    else {
+        SET_SYMBOL (&x->a_atom, atom_getSymbol (argv));
+    }
+
+    gatom_update (x);
+    //
+    }
 }
 
 static void gatom_dialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
@@ -278,7 +244,7 @@ static void gatom_motion (void *z, t_float deltaX, t_float deltaY, t_float modif
 {
     t_gatom *x = cast_gatom (z);
     
-    if ((deltaY != 0.0) && (x->a_atom.a_type == A_FLOAT)) { 
+    if ((deltaY != 0.0) && IS_FLOAT (&x->a_atom)) { 
     //
     double f = GET_FLOAT (&x->a_atom);
     
@@ -376,19 +342,19 @@ void gatom_makeObject (t_glist *glist, t_atomtype type, t_symbol *s, int argc, t
     cast_object (x)->te_width   = (type == A_FLOAT) ? ATOM_WIDTH_FLOAT : ATOM_WIDTH_SYMBOL;
     cast_object (x)->te_type    = TYPE_ATOM;
     x->a_owner                  = glist;
-    x->a_atom.a_type            = type;
     x->a_lowRange               = 0;
     x->a_highRange              = 0;
-    x->a_toggledValue           = 1;
+    x->a_fontSize               = canvas_getFontSize (x->a_owner);
+    x->a_position               = ATOM_LABEL_RIGHT;
     x->a_send                   = &s_;
     x->a_receive                = &s_;
     x->a_label                  = &s_;
     x->a_unexpandedSend         = &s_;
     x->a_unexpandedReceive      = &s_;
     x->a_unexpandedLabel        = &s_;
-    x->a_fontSize               = canvas_getFontSize (x->a_owner);
-    x->a_position               = ATOM_LABEL_RIGHT;
-        
+    
+    PD_ASSERT (type == A_FLOAT || type == A_SYMBOL);
+    
     if (type == A_FLOAT) {
         t_atom a;
         SET_FLOAT (&x->a_atom, 0);
