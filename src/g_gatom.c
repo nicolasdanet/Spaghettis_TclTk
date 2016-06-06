@@ -305,7 +305,7 @@ static void gatom_behaviorVisible (t_gobj *z, t_glist *glist, int isVisible)
     if (!isVisible) { interface_guiQueueRemove (x); }
 }
 
-static void gatom_behaviorProperties (t_gobj *z, t_glist *owner)
+static void gatom_functionProperties (t_gobj *z, t_glist *owner)
 {
     t_gatom *x = cast_gatom (z);
     t_error err = PD_ERROR_NONE;
@@ -442,7 +442,7 @@ void gatom_setup (void)
     class_addMethod (c, (t_method)gatom_dialog, sym__gatomdialog,   A_GIMME, A_NULL);
 
     class_setWidgetBehavior (c, &gatom_widgetBehavior);
-    class_setPropertiesFunction (c, gatom_behaviorProperties);
+    class_setPropertiesFunction (c, gatom_functionProperties);
     
     gatom_class = c;
 }

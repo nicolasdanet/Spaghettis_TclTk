@@ -573,7 +573,7 @@ static int slider_behaviorClick (t_gobj *z, t_glist *glist,
     return 1;
 }
 
-static void slider_behaviorSave (t_gobj *z, t_buffer *b)
+static void slider_functionSave (t_gobj *z, t_buffer *b)
 {
     t_slider *x = (t_slider *)z;
     
@@ -610,7 +610,7 @@ static void slider_behaviorSave (t_gobj *z, t_buffer *b)
     buffer_vAppend (b, ";");
 }
 
-static void slider_behaviorProperties (t_gobj *z, t_glist *owner)
+static void slider_functionProperties (t_gobj *z, t_glist *owner)
 {
     t_slider *x = (t_slider *)z;
     t_error err = PD_ERROR_NONE;
@@ -816,8 +816,8 @@ void slider_setup (void)
 
     class_setWidgetBehavior (c, &slider_widgetBehavior);
     class_setHelpName (c, sym_slider);
-    class_setSaveFunction (c, slider_behaviorSave);
-    class_setPropertiesFunction (c, slider_behaviorProperties);
+    class_setSaveFunction (c, slider_functionSave);
+    class_setPropertiesFunction (c, slider_functionProperties);
     
     slider_class = c;
 }

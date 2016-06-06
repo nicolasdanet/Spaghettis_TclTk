@@ -535,7 +535,7 @@ static int radio_behaviorClick (t_gobj *z, t_glist *glist,
     return 1;
 }
 
-static void radio_behaviorSave (t_gobj *z, t_buffer *b)
+static void radio_functionSave (t_gobj *z, t_buffer *b)
 {
     t_radio *x = (t_radio *)z;
     
@@ -569,7 +569,7 @@ static void radio_behaviorSave (t_gobj *z, t_buffer *b)
     buffer_vAppend (b, ";");
 }
 
-static void radio_behaviorProperties (t_gobj *z, t_glist *owner)
+static void radio_functionProperties (t_gobj *z, t_glist *owner)
 {
     t_radio *x = (t_radio *)z;
     t_error err = PD_ERROR_NONE;
@@ -752,8 +752,8 @@ void radio_setup (void)
     
     class_setWidgetBehavior (c, &radio_widgetBehavior);
     class_setHelpName (c, sym_radio);
-    class_setSaveFunction (c, radio_behaviorSave);
-    class_setPropertiesFunction (c, radio_behaviorProperties);
+    class_setSaveFunction (c, radio_functionSave);
+    class_setPropertiesFunction (c, radio_functionProperties);
     
     radio_class = c;
 }

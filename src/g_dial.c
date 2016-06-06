@@ -618,7 +618,7 @@ static int dial_behaviorClick (t_gobj *z, t_glist *glist,
     return 1;
 }
 
-static void dial_behaviorSave (t_gobj *z, t_buffer *b)
+static void dial_functionSave (t_gobj *z, t_buffer *b)
 {
     t_dial *x = (t_dial *)z;
     
@@ -655,7 +655,7 @@ static void dial_behaviorSave (t_gobj *z, t_buffer *b)
     buffer_vAppend (b, ";");
 }
 
-static void dial_behaviorProperties (t_gobj *z, t_glist *owner)
+static void dial_functionProperties (t_gobj *z, t_glist *owner)
 {
     t_dial *x = (t_dial *)z;
     t_error err = PD_ERROR_NONE;
@@ -849,8 +849,8 @@ void dial_setup (void)
     #endif
 
     class_setWidgetBehavior (c, &dial_widgetBehavior);
-    class_setSaveFunction (c, dial_behaviorSave);
-    class_setPropertiesFunction (c, dial_behaviorProperties);
+    class_setSaveFunction (c, dial_functionSave);
+    class_setPropertiesFunction (c, dial_functionProperties);
     
     dial_class = c;
 }

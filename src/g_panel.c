@@ -271,7 +271,7 @@ static void panel_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *
     *d = *b + x->x_panelHeight;
 }
 
-static void panel_behaviorSave (t_gobj *z, t_buffer *b)
+static void panel_functionSave (t_gobj *z, t_buffer *b)
 {
     t_panel *x = (t_panel *)z;
     t_error err = PD_ERROR_NONE;
@@ -302,7 +302,7 @@ static void panel_behaviorSave (t_gobj *z, t_buffer *b)
     buffer_vAppend (b, ";");
 }
 
-static void panel_behaviorProperties (t_gobj *z, t_glist *owner)
+static void panel_functionProperties (t_gobj *z, t_glist *owner)
 {
     t_panel *x = (t_panel *)z;
     t_error err = PD_ERROR_NONE;
@@ -456,8 +456,8 @@ void panel_setup (void)
     #endif
     
     class_setWidgetBehavior (c, &panel_widgetBehavior);
-    class_setSaveFunction (c, panel_behaviorSave);
-    class_setPropertiesFunction (c, panel_behaviorProperties);
+    class_setSaveFunction (c, panel_functionSave);
+    class_setPropertiesFunction (c, panel_functionProperties);
     
     panel_class = c;
 }

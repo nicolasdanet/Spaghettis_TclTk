@@ -503,7 +503,7 @@ static void vu_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, 
     *d = *b + cast_iem (z)->iem_height;
 }
 
-static void vu_behaviorSave (t_gobj *z, t_buffer *b)
+static void vu_functionSave (t_gobj *z, t_buffer *b)
 {
     t_vu *x = (t_vu *)z;
     
@@ -534,7 +534,7 @@ static void vu_behaviorSave (t_gobj *z, t_buffer *b)
     buffer_vAppend (b, ";");
 }
 
-static void vu_behaviorProperties (t_gobj *z, t_glist *owner)
+static void vu_functionProperties (t_gobj *z, t_glist *owner)
 {
     t_vu *x = (t_vu *)z;
     t_error err = PD_ERROR_NONE;
@@ -690,8 +690,8 @@ void vu_setup (void)
     #endif
     
     class_setWidgetBehavior (c, &vu_widgetBehavior);
-    class_setSaveFunction (c, vu_behaviorSave);
-    class_setPropertiesFunction (c, vu_behaviorProperties);
+    class_setSaveFunction (c, vu_functionSave);
+    class_setPropertiesFunction (c, vu_functionProperties);
     
     vu_class = c;
 }

@@ -364,7 +364,7 @@ static int toggle_behaviorClick (t_gobj *z, t_glist *glist,
     return 1;
 }
 
-static void toggle_behaviorSave (t_gobj *z, t_buffer *b)
+static void toggle_functionSave (t_gobj *z, t_buffer *b)
 {
     t_toggle *x = (t_toggle *)z;
     
@@ -397,7 +397,7 @@ static void toggle_behaviorSave (t_gobj *z, t_buffer *b)
     buffer_vAppend (b, ";");
 }
 
-static void toggle_behaviorProperties (t_gobj *z, t_glist *owner)
+static void toggle_functionProperties (t_gobj *z, t_glist *owner)
 {
     t_toggle *x = (t_toggle *)z;
     t_error err = PD_ERROR_NONE;
@@ -562,8 +562,8 @@ void toggle_setup (void)
     #endif
     
     class_setWidgetBehavior (c, &toggle_widgetBehavior);
-    class_setSaveFunction (c, toggle_behaviorSave);
-    class_setPropertiesFunction (c, toggle_behaviorProperties);
+    class_setSaveFunction (c, toggle_functionSave);
+    class_setPropertiesFunction (c, toggle_functionProperties);
     
     toggle_class = c;
 }

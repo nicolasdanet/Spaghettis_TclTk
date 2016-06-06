@@ -391,7 +391,7 @@ static int bng_behaviorClick (t_gobj *z, t_glist *glist,
     return 1;
 }
 
-static void bng_behaviorSave (t_gobj *z, t_buffer *b)
+static void bng_functionSave (t_gobj *z, t_buffer *b)
 {
     t_bng *x = (t_bng *)z;
     
@@ -424,7 +424,7 @@ static void bng_behaviorSave (t_gobj *z, t_buffer *b)
     buffer_vAppend (b, ";");
 }
 
-static void bng_behaviorProperties (t_gobj *z, t_glist *owner)
+static void bng_functionProperties (t_gobj *z, t_glist *owner)
 {
     t_bng *x = (t_bng *)z;
     t_error err = PD_ERROR_NONE;
@@ -592,8 +592,8 @@ void bng_setup (void)
     #endif
     
     class_setWidgetBehavior (c, &bng_widgetBehavior);
-    class_setSaveFunction (c, bng_behaviorSave);
-    class_setPropertiesFunction (c, bng_behaviorProperties);
+    class_setSaveFunction (c, bng_functionSave);
+    class_setPropertiesFunction (c, bng_functionProperties);
     
     bng_class = c;
 }
