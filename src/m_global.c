@@ -33,17 +33,17 @@ t_class *global_object;     /* Shared. */
 
 void global_shouldQuit (void *dummy)
 {
-    t_glist *g = NULL;
+    t_glist *glist = NULL;
     
-    for (g = pd_this->pd_roots; g; g = g->gl_next) {
+    for (glist = pd_this->pd_roots; glist; glist = glist->gl_next) {
     //
-    if (canvas_isDirty (g)) {
+    if (canvas_isDirty (glist)) {
     //
     sys_vGui ("::ui_confirm::checkClose .x%lx"
                     " { ::ui_interface::pdsend $top save 2 }"
                     " { ::ui_interface::pdsend $top close 2 }"
                     " {}\n",
-                    g);
+                    glist);
     return;
     //
     }

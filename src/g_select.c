@@ -55,7 +55,7 @@ static void canvas_deselectLine (t_glist *glist)
     glist->gl_editor->e_isSelectedline = 0;
     
     sys_vGui (".x%lx.c itemconfigure %lxLINE -fill black\n",
-                    glist,
+                    canvas_getView (glist),
                     glist->gl_editor->e_selectedLineConnection);   
 }
 
@@ -194,9 +194,9 @@ void canvas_displaceSelectedObjects (t_glist *glist, int deltaX, int deltaY)
     }
     
     if (needToResortInlets)  { canvas_resortinlets (glist); }
-    if (needToResortOutlets) { canvas_resortoutlets(glist); }
+    if (needToResortOutlets) { canvas_resortoutlets (glist); }
     
-    sys_vGui ("::ui_patch::updateScrollRegion .x%lx.c\n", glist);
+    sys_vGui ("::ui_patch::updateScrollRegion .x%lx.c\n", canvas_getView (glist));
     
     if (isDirty) { canvas_dirty (glist, 1); }
 }
@@ -235,11 +235,11 @@ static void canvas_selectingByLasso (t_glist *glist, int positionX, int position
         canvas_selectObjectsInRectangle (glist, a, b, c, d);
         glist->gl_editor->e_action = ACTION_NONE;
         
-        sys_vGui (".x%lx.c delete TEMPORARY\n", glist);
+        sys_vGui (".x%lx.c delete TEMPORARY\n", canvas_getView (glist));
         
     } else {
         sys_vGui (".x%lx.c coords TEMPORARY %d %d %d %d\n",
-                        glist,
+                        canvas_getView (glist),
                         glist->gl_editor->e_previousX,
                         glist->gl_editor->e_previousY,
                         positionX,
@@ -319,7 +319,7 @@ void canvas_selectLine (t_glist *glist,
     glist->gl_editor->e_selectedLineConnection          = connection;
     
     sys_vGui (".x%lx.c itemconfigure %lxLINE -fill blue\n",
-                    glist,
+                    canvas_getView (glist),
                     glist->gl_editor->e_selectedLineConnection);  
 }
 

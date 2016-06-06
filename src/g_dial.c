@@ -151,7 +151,7 @@ static void dial_drawUpdate (t_dial *x, t_glist *glist)
                     dial_getNeedleTopY (x, n, ((w - h) / 2.0) + 2));
                 
     sys_vGui (".x%lx.c itemconfigure %lxNUMBER -fill #%06x -text {%s}\n",  // --
-                    canvas_getView (glist),
+                    canvas,
                     x,
                     x->x_gui.iem_colorForeground,
                     x->x_t);

@@ -75,10 +75,10 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
     t_gobj *y1 = canvas_getHitObject (glist, previousX, previousY, &a, &b, &c, &d);
     t_gobj *y2 = canvas_getHitObject (glist, positionX, positionY, &m, &n, &o, &p);
     
-    if (create) { sys_vGui (".x%lx.c delete TEMPORARY\n", glist); }
+    if (create) { sys_vGui (".x%lx.c delete TEMPORARY\n", canvas_getView (glist)); }
     else {
         sys_vGui (".x%lx.c coords TEMPORARY %d %d %d %d\n",
-                        glist,
+                        canvas_getView (glist),
                         glist->gl_editor->e_previousX,
                         glist->gl_editor->e_previousY,
                         positionX,
@@ -349,7 +349,7 @@ static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY,
                 glist->gl_editor->e_previousY = d;
                 
                 sys_vGui (".x%lx.c create line %d %d %d %d -width %d -tags TEMPORARY\n",
-                                glist,
+                                canvas_getView (glist),
                                 h,
                                 d,
                                 h,
@@ -385,11 +385,11 @@ static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY,
 
 static int canvas_performMouseLines (t_glist *glist, int positionX, int positionY, int clicked)
 {
-    t_glist *g = canvas_getView (glist);
+    t_glist *canvas = canvas_getView (glist);
     t_outconnect *connection = NULL;
     t_linetraverser t;
         
-    canvas_traverseLinesStart (&t, g);
+    canvas_traverseLinesStart (&t, canvas);
     
     while (connection = canvas_traverseLinesNext (&t)) {
     //
@@ -413,11 +413,11 @@ static int canvas_performMouseLines (t_glist *glist, int positionX, int position
     
     if (PD_ABS (area) < (k * EDITOR_GRIP_SIZE)) {
         if (clicked) {
-            canvas_selectLine (g, 
+            canvas_selectLine (canvas, 
                 connection, 
-                canvas_getIndexOfObject (g, cast_gobj (t.tr_srcObject)), 
+                canvas_getIndexOfObject (canvas, cast_gobj (t.tr_srcObject)), 
                 t.tr_srcIndexOfOutlet,
-                canvas_getIndexOfObject (g, cast_gobj (t.tr_destObject)), 
+                canvas_getIndexOfObject (canvas, cast_gobj (t.tr_destObject)), 
                 t.tr_destIndexOfInlet);
         }
         
@@ -434,7 +434,7 @@ static void canvas_performMouseLassoStart (t_glist *glist, int positionX, int po
     if (!(modifier & MODIFIER_SHIFT)) { canvas_deselectAll (glist); }
     
     sys_vGui (".x%lx.c create rectangle %d %d %d %d -tags TEMPORARY\n",
-                    glist,
+                    canvas_getView (glist),
                     positionX,
                     positionY,
                     positionX,
@@ -569,7 +569,7 @@ static void canvas_performPaste (t_glist *glist)
     
     canvas_dirty (glist, 1);
     
-    sys_vGui ("::ui_patch::updateScrollRegion .x%lx.c\n", glist);
+    sys_vGui ("::ui_patch::updateScrollRegion .x%lx.c\n", canvas_getView (glist));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -830,7 +830,7 @@ void canvas_editmode (t_glist *glist, t_float f)
     }
     
     if (canvas_isMapped (glist)) {
-        sys_vGui ("::ui_patch::setEditMode .x%lx %d\n", canvas_getView (glist), glist->gl_isEditMode);
+        sys_vGui ("::ui_patch::setEditMode .x%lx %d\n", glist, glist->gl_isEditMode);
     }
     //
     }
@@ -854,7 +854,7 @@ void canvas_cut (t_glist *glist)
     } else if (glist->gl_editor->e_selectedObjects) {
         canvas_copy (glist);
         canvas_removeSelectedObjects (glist);
-        sys_vGui ("::ui_patch::updateScrollRegion .x%lx.c\n", glist);
+        sys_vGui ("::ui_patch::updateScrollRegion .x%lx.c\n", canvas_getView (glist));
     }
     //
     }

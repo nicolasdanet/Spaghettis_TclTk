@@ -18,15 +18,15 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define BASE_DEFAULT_X          40
-#define BASE_DEFAULT_Y          40
-#define BASE_DEFAULT_WIDTH      200
-#define BASE_DEFAULT_HEIGHT     140
+#define BASE_DEFAULT_X              40
+#define BASE_DEFAULT_Y              40
+#define BASE_DEFAULT_WIDTH          200
+#define BASE_DEFAULT_HEIGHT         140
 
-#define BASE_DEFAULT_START      0.0
-#define BASE_DEFAULT_UP         1.0
-#define BASE_DEFAULT_END        100.0
-#define BASE_DEFAULT_DOWN      -1.0
+#define BASE_DEFAULT_START          0.0
+#define BASE_DEFAULT_UP             1.0
+#define BASE_DEFAULT_END            100.0
+#define BASE_DEFAULT_DOWN          -1.0
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

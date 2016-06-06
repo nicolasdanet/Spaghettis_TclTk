@@ -262,7 +262,7 @@ void canvas_disconnect (t_glist *glist,
     int n = (canvas_getIndexOfObject (glist, cast_gobj (t.tr_destObject)) == indexOfObjectIn);
 
     if (m && n) {
-        sys_vGui (".x%lx.c delete %lxLINE\n", glist, connection);
+        sys_vGui (".x%lx.c delete %lxLINE\n", canvas_getView (glist), connection);
         object_disconnect (t.tr_srcObject, t.tr_srcIndexOfOutlet, t.tr_destObject, t.tr_destIndexOfInlet);
         break;
     }
@@ -401,7 +401,7 @@ void canvas_map (t_glist *glist, t_float f)
 
     if (isMapped != canvas_isMapped (glist)) {
     //
-    if (!isMapped) { sys_vGui (".x%lx.c delete all\n", glist); glist->gl_isMapped = 0; }
+    if (!isMapped) { sys_vGui (".x%lx.c delete all\n", canvas_getView (glist)); glist->gl_isMapped = 0; }
     else {
     
         t_gobj *y = NULL;
@@ -421,7 +421,7 @@ void canvas_map (t_glist *glist, t_float f)
             canvas_drawGraphOnParentRectangle (glist);
         }
         
-        sys_vGui ("::ui_patch::updateScrollRegion .x%lx.c\n", glist);
+        sys_vGui ("::ui_patch::updateScrollRegion .x%lx.c\n", canvas_getView (glist));
     }
     //
     }

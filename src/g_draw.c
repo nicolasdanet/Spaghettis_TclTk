@@ -164,7 +164,7 @@ void canvas_drawGraphOnParentRectangle (t_glist *glist)
 
 void canvas_deleteGraphOnParentRectangle (t_glist *glist)
 {
-    sys_vGui (".x%lx.c delete GOP\n",  canvas_getView (glist));
+    sys_vGui (".x%lx.c delete GOP\n", canvas_getView (glist));
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -235,8 +235,8 @@ static int boxtext_send (t_boxtext *x, int action, int a, int b)
                                     &widthInPixels, 
                                     &heightInPixels);
 
-    t_glist *view = canvas_getView (x->box_glist);
-    int isSelected = canvas_isObjectSelected (x->box_glist, cast_gobj (x->box_object));
+    t_glist *canvas = canvas_getView (x->box_glist);
+    int isSelected  = canvas_isObjectSelected (x->box_glist, cast_gobj (x->box_object));
         
     int resized = 0;
     
@@ -251,7 +251,7 @@ static int boxtext_send (t_boxtext *x, int action, int a, int b)
         
     } else if (action == BOX_FIRST) {
         sys_vGui ("::ui_box::newText .x%lx.c %s %f %f {%s} %d #%06x\n",      // --
-                        view,
+                        canvas,
                         x->box_tag,
                         (double)text_xpix (x->box_object, x->box_glist) + BOX_MARGIN_LEFT, 
                         (double)text_ypix (x->box_object, x->box_glist) + BOX_MARGIN_TOP,
@@ -261,7 +261,7 @@ static int boxtext_send (t_boxtext *x, int action, int a, int b)
                                 
     } else if (action == BOX_UPDATE) {
         sys_vGui ("::ui_box::setText .x%lx.c %s {%s}\n",     // --
-                        view,
+                        canvas,
                         x->box_tag,
                         buffer);
                     
@@ -271,25 +271,25 @@ static int boxtext_send (t_boxtext *x, int action, int a, int b)
         
             if (selectionStart < selectionEnd) {
                 sys_vGui (".x%lx.c select from %s %d\n",
-                                view, 
+                                canvas, 
                                 x->box_tag,
                                 u8_charnum (x->box_string, selectionStart));
                 sys_vGui (".x%lx.c select to %s %d\n",
-                                view, 
+                                canvas, 
                                 x->box_tag,
                                 u8_charnum (x->box_string, selectionEnd) - 1);
                 sys_vGui (".x%lx.c focus \"\"\n",
-                                view);
+                                canvas);
                 
             } else {
                 sys_vGui (".x%lx.c select clear\n",
-                                view);
+                                canvas);
                 sys_vGui (".x%lx.c icursor %s %d\n",
-                                view,
+                                canvas,
                                 x->box_tag,
                                 u8_charnum (x->box_string, selectionStart));
                 sys_vGui (".x%lx.c focus %s\n",
-                                view,
+                                canvas,
                                 x->box_tag);        
             }
         }
@@ -338,8 +338,8 @@ t_boxtext *boxtext_new (t_glist *glist, t_object *object)
     
     {
     //
-    t_glist *view = canvas_getView (glist);
-    t_error err   = string_sprintf (x->box_tag, BOX_BUFFER_SIZE, ".x%lx.%lxBOXTEXT", (t_int)view, (t_int)x);
+    t_glist *canvas = canvas_getView (glist);
+    t_error err = string_sprintf (x->box_tag, BOX_BUFFER_SIZE, ".x%lx.%lxBOXTEXT", (t_int)canvas, (t_int)x);
     PD_ASSERT (!err);
     //
     }
@@ -470,7 +470,7 @@ void boxtext_activate (t_boxtext *x, int state)
 {
     if (state) {
     //
-    sys_vGui ("::ui_box::setEditing .x%lx %s 1\n", canvas_getView (x->box_glist), x->box_tag);
+    sys_vGui ("::ui_box::setEditing .x%lx %s 1\n", x->box_glist, x->box_tag);
                     
     x->box_glist->gl_editor->e_selectedText = x;
     x->box_glist->gl_editor->e_isTextDirty  = 0;
@@ -482,7 +482,7 @@ void boxtext_activate (t_boxtext *x, int state)
     //
     } else {
     //
-    sys_vGui ("::ui_box::setEditing .x%lx {} 0\n", canvas_getView (x->box_glist));   // --
+    sys_vGui ("::ui_box::setEditing .x%lx {} 0\n", x->box_glist);   // --
                     
     if (x->box_glist->gl_editor->e_selectedText == x) { x->box_glist->gl_editor->e_selectedText = NULL; }
     
