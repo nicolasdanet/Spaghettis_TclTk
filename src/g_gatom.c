@@ -70,6 +70,12 @@ static t_widgetbehavior gatom_widgetBehavior =          /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define ATOM_DIALOG_SIZE        8
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void gatom_drawJob (t_gobj *z, t_glist *glist)
 {
     t_gatom *x = cast_gatom (z);
@@ -152,7 +158,7 @@ static void gatom_bang (t_gatom *x)
         if (x->a_send != &s_ && x->a_send->s_thing) {
             if (x->a_send != x->a_receive) { pd_float (x->a_send->s_thing, GET_FLOAT (&x->a_atom)); }
             else {
-                post_error (PD_TRANSLATE ("gatom: send/receive loop %s"), x->a_unexpandedSend->s_name);
+                post_error (PD_TRANSLATE ("gatom: send/receive loop %s"), x->a_unexpandedSend->s_name); // --
             }
         }
         
@@ -163,7 +169,7 @@ static void gatom_bang (t_gatom *x)
         if (x->a_send != &s_ && x->a_send->s_thing) {
             if (x->a_send != x->a_receive) { pd_symbol (x->a_send->s_thing, GET_SYMBOL (&x->a_atom)); }
             else {
-                post_error (PD_TRANSLATE ("gatom: send/receive loop %s"), x->a_unexpandedSend->s_name);
+                post_error (PD_TRANSLATE ("gatom: send/receive loop %s"), x->a_unexpandedSend->s_name); // --
             }
         }
     }
@@ -187,7 +193,9 @@ static void gatom_symbol (t_gatom *x, t_symbol *s)
 
 void gatom_click (t_gatom *x, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
 {
-    glist_grab (x->a_owner, cast_gobj (x), (t_motionfn)gatom_motion, a, b);
+    if (IS_FLOAT (&x->a_atom)) { glist_grab (x->a_owner, cast_gobj (x), (t_motionfn)gatom_motion, a, b); }
+    
+    gatom_bang (x);
 }
 
 static void gatom_set (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
@@ -206,13 +214,15 @@ static void gatom_set (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
 
 static void gatom_dialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
 {
+    if (argc == ATOM_DIALOG_SIZE) {
+    //
     t_float width       = atom_getFloatAtIndex (0, argc, argv);
     t_float lowRange    = atom_getFloatAtIndex (1, argc, argv);
     t_float highRange   = atom_getFloatAtIndex (2, argc, argv);
-    t_symbol *send      = gatom_parse (atom_getSymbolAtIndex (3, argc, argv));
-    t_symbol *receive   = gatom_parse (atom_getSymbolAtIndex (4, argc, argv));
-    t_symbol *label     = gatom_parse (atom_getSymbolAtIndex (5, argc, argv));
-    int position        = (int)atom_getFloatAtIndex (6, argc, argv);
+    t_symbol *send      = gatom_parse (atom_getSymbolAtIndex (4, argc, argv));
+    t_symbol *receive   = gatom_parse (atom_getSymbolAtIndex (5, argc, argv));
+    t_symbol *label     = gatom_parse (atom_getSymbolAtIndex (6, argc, argv));
+    int position        = (int)atom_getFloatAtIndex (7, argc, argv);
 
     gobj_visibilityChanged (cast_gobj (x), x->a_owner, 0);
 
@@ -231,9 +241,13 @@ static void gatom_dialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     
     if (x->a_receive != &s_) { pd_bind (cast_pd (x), x->a_receive); }
     
-    gobj_visibilityChanged (cast_gobj (x), x->a_owner, 1); 
-       
+    gatom_set (x, NULL, 1, argv + 3);
+
+    gobj_visibilityChanged (cast_gobj (x), x->a_owner, 1);
+    
     canvas_dirty (x->a_owner, 1);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -244,7 +258,9 @@ static void gatom_motion (void *z, t_float deltaX, t_float deltaY, t_float modif
 {
     t_gatom *x = cast_gatom (z);
     
-    if ((deltaY != 0.0) && IS_FLOAT (&x->a_atom)) { 
+    PD_ASSERT (IS_FLOAT (&x->a_atom));
+    
+    if (deltaY != 0.0) { 
     //
     double f = GET_FLOAT (&x->a_atom);
     
@@ -290,7 +306,7 @@ static void gatom_behaviorVisible (t_gobj *z, t_glist *glist, int isVisible)
         
         gatom_getPostion (x, glist, &positionX, &positionY);
         
-        sys_vGui ("::ui_box::newText .x%lx.c %lxLABEL %d %d {%s} %d #%06x\n",
+        sys_vGui ("::ui_box::newText .x%lx.c %lxLABEL %d %d {%s} %d #%06x\n",   // --
                         canvas_getView (glist),
                         x,
                         positionX,
@@ -315,15 +331,34 @@ static void gatom_functionProperties (t_gobj *z, t_glist *owner)
     t_symbol *receive = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedReceive, 0));
     t_symbol *label   = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedLabel, 0));
     
-    err = string_sprintf (t, PD_STRING, 
-            "::ui_atom::show %%s %d %g %g {%s} {%s} {%s} %d\n",     // --
-            cast_object (x)->te_width,
-            x->a_lowRange,
-            x->a_highRange,
-            send->s_name,
-            receive->s_name,
-            label->s_name, 
-            x->a_position);
+    if (IS_FLOAT (&x->a_atom)) {
+    
+        err = string_sprintf (t, PD_STRING, 
+                "::ui_atom::show %%s %d %g %g %s %g {%s} {%s} {%s} %d\n",       // --
+                cast_object (x)->te_width,
+                x->a_lowRange,
+                x->a_highRange,
+                sym_floatatom->s_name,
+                GET_FLOAT (&x->a_atom),
+                send->s_name,
+                receive->s_name,
+                label->s_name, 
+                x->a_position);
+            
+    } else {
+    
+        err = string_sprintf (t, PD_STRING, 
+                "::ui_atom::show %%s %d %g %g %s {%s} {%s} {%s} {%s} %d\n",     // --
+                cast_object (x)->te_width,
+                x->a_lowRange,
+                x->a_highRange,
+                sym_symbolatom->s_name,
+                GET_SYMBOL (&x->a_atom)->s_name,
+                send->s_name,
+                receive->s_name,
+                label->s_name, 
+                x->a_position);
+    }
     
     PD_ASSERT (!err);
     
@@ -398,7 +433,7 @@ void gatom_makeObject (t_glist *glist, t_atomtype type, t_symbol *s, int argc, t
         int positionY = 0;
 
         canvas_getLastMotionCoordinates (glist, &positionX, &positionY);
-        canvas_deselectAll(glist);
+        canvas_deselectAll (glist);
         
         cast_object (x)->te_xCoordinate = positionX;
         cast_object (x)->te_yCoordinate = positionY;

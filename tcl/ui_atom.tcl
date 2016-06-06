@@ -25,6 +25,8 @@ namespace eval ::ui_atom:: {
 variable  atomWidth
 variable  atomLow
 variable  atomHigh
+variable  atomType
+variable  atomValue
 variable  atomSend
 variable  atomReceive
 variable  atomName
@@ -33,6 +35,8 @@ variable  atomPosition
 array set atomWidth     {}
 array set atomLow       {}
 array set atomHigh      {}
+array set atomType      {}
+array set atomValue     {}
 array set atomSend      {}
 array set atomReceive   {}
 array set atomName      {}
@@ -41,19 +45,21 @@ array set atomPosition  {}
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc show {top width low high send receive name position} {
+proc show {top width low high type value send receive name position} {
 
-    ::ui_atom::_create $top $width $low $high $send $receive $name $position
+    ::ui_atom::_create $top $width $low $high $type $value $send $receive $name $position
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _create {top width low high send receive name position} {
+proc _create {top width low high type value send receive name position} {
     
     variable atomWidth
     variable atomLow
     variable atomHigh
+    variable atomType
+    variable atomValue
     variable atomSend
     variable atomReceive
     variable atomName
@@ -70,6 +76,8 @@ proc _create {top width low high send receive name position} {
     set atomWidth($top)         $width
     set atomLow($top)           $low
     set atomHigh($top)          $high
+    set atomType($top)          $type
+    set atomValue($top)         $value
     set atomSend($top)          [::hashToDollar [::parseEmpty $send]]
     set atomReceive($top)       [::hashToDollar [::parseEmpty $receive]]
     set atomName($top)          [::hashToDollar [::parseEmpty $name]]
@@ -78,8 +86,9 @@ proc _create {top width low high send receive name position} {
     set atomWidth(${top}.old)   $width
     set atomLow(${top}.old)     $low
     set atomHigh(${top}.old)    $high
+    set atomValue(${top}.old)   $value
 
-    set values {"Left" "Right" "Top" "Bottom"}
+    set positions {"Left" "Right" "Top" "Bottom"}
      
     ttk::frame      $top.f                          {*}[::styleFrame]
     ttk::labelframe $top.f.properties               {*}[::styleLabelFrame]  -text [_ "Properties"]
@@ -90,11 +99,17 @@ proc _create {top width low high send receive name position} {
     pack $top.f.label                               {*}[::packCategoryNext]
     
     ttk::label $top.f.properties.widthLabel         {*}[::styleLabel] \
-                                                        -text [_ "Digits"]
+                                                        -text [_ "Width"]
     ttk::entry $top.f.properties.width              {*}[::styleEntryNumber] \
                                                         -textvariable ::ui_atom::atomWidth($top) \
                                                         -width $::width(small)
     
+    ttk::label $top.f.properties.valueLabel         {*}[::styleLabel] \
+                                                        -text [_ "Value"]
+    ttk::entry $top.f.properties.value              {*}[::styleEntryNumber] \
+                                                        -textvariable ::ui_atom::atomValue($top) \
+                                                        -width $::width(small)
+                                                        
     ttk::label $top.f.properties.lowLabel           {*}[::styleLabel] \
                                                         -text [_ "Value Low"]
     ttk::entry $top.f.properties.low                {*}[::styleEntryNumber] \
@@ -106,7 +121,7 @@ proc _create {top width low high send receive name position} {
     ttk::entry $top.f.properties.high               {*}[::styleEntryNumber] \
                                                         -textvariable ::ui_atom::atomHigh($top) \
                                                         -width $::width(small)
-    
+                                                        
     ttk::label $top.f.label.nameLabel               {*}[::styleLabel] \
                                                         -text [_ "Name"]
     ttk::entry $top.f.label.name                    {*}[::styleEntry] \
@@ -116,8 +131,8 @@ proc _create {top width low high send receive name position} {
     ttk::label $top.f.label.positionLabel           {*}[::styleLabel] \
                                                         -text [_ "Position"]
                                                         
-    ::createMenuByIndex $top.f.label.position       $values ::ui_atom::atomPosition($top) \
-                                                        -width [::measure $values]
+    ::createMenuByIndex $top.f.label.position       $positions ::ui_atom::atomPosition($top) \
+                                                        -width [::measure $positions]
     
     ttk::label $top.f.label.sendLabel               {*}[::styleLabel] \
                                                         -text [_ "Send"]
@@ -131,12 +146,20 @@ proc _create {top width low high send receive name position} {
                                                         -textvariable ::ui_atom::atomReceive($top) \
                                                         -width $::width(large)
 
+    if {$type eq "symbolatom"} {
+    
+        $top.f.properties.low                       state disabled
+        $top.f.properties.high                      state disabled
+    }
+    
     grid $top.f.properties.widthLabel               -row 0 -column 0 -sticky ew
     grid $top.f.properties.width                    -row 0 -column 1 -sticky ew
-    grid $top.f.properties.lowLabel                 -row 1 -column 0 -sticky ew
-    grid $top.f.properties.low                      -row 1 -column 1 -sticky ew
-    grid $top.f.properties.highLabel                -row 2 -column 0 -sticky ew
-    grid $top.f.properties.high                     -row 2 -column 1 -sticky ew
+    grid $top.f.properties.valueLabel               -row 1 -column 0 -sticky ew
+    grid $top.f.properties.value                    -row 1 -column 1 -sticky ew
+    grid $top.f.properties.lowLabel                 -row 2 -column 0 -sticky ew
+    grid $top.f.properties.low                      -row 2 -column 1 -sticky ew
+    grid $top.f.properties.highLabel                -row 3 -column 0 -sticky ew
+    grid $top.f.properties.high                     -row 3 -column 1 -sticky ew
     
     grid $top.f.label.nameLabel                     -row 0 -column 0 -sticky ew
     grid $top.f.label.name                          -row 0 -column 1 -sticky ew
@@ -151,6 +174,7 @@ proc _create {top width low high send receive name position} {
     grid columnconfigure $top.f.label       0 -weight 1
     
     bind  $top.f.properties.width   <Return> { ::nextEntry %W }
+    bind  $top.f.properties.value   <Return> { ::nextEntry %W }
     bind  $top.f.properties.low     <Return> { ::nextEntry %W }
     bind  $top.f.properties.high    <Return> { ::nextEntry %W }
     bind  $top.f.label.name         <Return> { ::nextEntry %W }
@@ -169,6 +193,8 @@ proc closed {top} {
     variable atomWidth
     variable atomLow
     variable atomHigh
+    variable atomType
+    variable atomValue
     variable atomSend
     variable atomReceive
     variable atomName
@@ -179,6 +205,8 @@ proc closed {top} {
     unset atomWidth($top)
     unset atomLow($top)
     unset atomHigh($top)
+    unset atomType($top)
+    unset atomValue($top)
     unset atomSend($top)
     unset atomReceive($top)
     unset atomName($top)
@@ -187,6 +215,7 @@ proc closed {top} {
     unset atomWidth(${top}.old)
     unset atomLow(${top}.old)
     unset atomHigh(${top}.old)
+    unset atomValue(${top}.old)
 
     ::cancel $top
 }
@@ -199,6 +228,8 @@ proc _apply {top} {
     variable atomWidth
     variable atomLow
     variable atomHigh
+    variable atomType
+    variable atomValue
     variable atomSend
     variable atomReceive
     variable atomName
@@ -210,11 +241,11 @@ proc _apply {top} {
             $atomWidth($top) \
             $atomLow($top) \
             $atomHigh($top) \
+            $atomValue($top) \
             [::sanitized [::dollarToHash [::withEmpty $atomSend($top)]]] \
             [::sanitized [::dollarToHash [::withEmpty $atomReceive($top)]]] \
             [::sanitized [::dollarToHash [::withEmpty $atomName($top)]]] \
             $atomPosition($top)"
-    
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -225,10 +256,24 @@ proc _forceValues {top} {
     variable atomWidth
     variable atomLow
     variable atomHigh
+    variable atomType
+    variable atomValue
+    
+    if {$atomType($top) eq "floatatom"} {
+     
+    set atomValue($top) [::ifNumber     $atomValue($top) $atomValue(${top}.old)]
+    
+    }
+    
+    if {$atomType($top) eq "symbolatom"} {
+     
+    set atomValue($top) [::ifNotNumber  $atomValue($top) $atomValue(${top}.old)]
+    
+    }
     
     set atomWidth($top) [::ifInteger $atomWidth($top) $atomWidth(${top}.old)]
-    set atomLow($top)   [::ifInteger $atomLow($top)   $atomLow(${top}.old)]
-    set atomHigh($top)  [::ifInteger $atomHigh($top)  $atomHigh(${top}.old)]
+    set atomLow($top)   [::ifNumber  $atomLow($top)   $atomLow(${top}.old)]
+    set atomHigh($top)  [::ifNumber  $atomHigh($top)  $atomHigh(${top}.old)]
     
     set min [::tcl::mathfunc::min $atomLow($top) $atomHigh($top)]
     set max [::tcl::mathfunc::max $atomLow($top) $atomHigh($top)]

@@ -105,7 +105,12 @@ proc ifNumber  {new old} {
     if {[string is double -strict $new]}  { return $new } else { return $old }
 }
 
-proc ifNonZero {new old} {
+proc ifNotNumber {new old} {
+
+    if {[string is double -strict $new]}  { return $old } else { return $new }
+}
+
+proc ifNotZero {new old} {
 
     if {$new != 0.0} { return $new } else { return $old }
 }

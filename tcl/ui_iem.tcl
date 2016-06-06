@@ -572,7 +572,7 @@ proc _forceOptions {top} {
         }
         "Toggle"        {
             set iemOption1($top) [::ifNumber  $iemOption1($top) $iemOption1(${top}.old)]
-            set iemOption1($top) [::ifNonZero $iemOption1($top) $iemOption1(${top}.old)]
+            set iemOption1($top) [::ifNotZero $iemOption1($top) $iemOption1(${top}.old)]
         }
         "Panel"         {
             set iemOption1($top) [::ifInteger $iemOption1($top) $iemOption1(${top}.old)]

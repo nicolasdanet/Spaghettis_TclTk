@@ -350,12 +350,12 @@ proc _forceScales {top} {
     variable canvasScaleY
     
     set canvasScaleX($top) [::ifNumber  $canvasScaleX($top) $canvasScaleX(${top}.old)]
-    set canvasScaleX($top) [::ifNonZero $canvasScaleX($top) $canvasScaleX(${top}.old)]
-    set canvasScaleX($top) [::ifNonZero $canvasScaleX($top) 1.0)]
+    set canvasScaleX($top) [::ifNotZero $canvasScaleX($top) $canvasScaleX(${top}.old)]
+    set canvasScaleX($top) [::ifNotZero $canvasScaleX($top) 1.0)]
     
     set canvasScaleY($top) [::ifNumber  $canvasScaleY($top) $canvasScaleY(${top}.old)]
-    set canvasScaleY($top) [::ifNonZero $canvasScaleY($top) $canvasScaleY(${top}.old)]
-    set canvasScaleY($top) [::ifNonZero $canvasScaleY($top) 1.0)]
+    set canvasScaleY($top) [::ifNotZero $canvasScaleY($top) $canvasScaleY(${top}.old)]
+    set canvasScaleY($top) [::ifNotZero $canvasScaleY($top) 1.0)]
 }
 
 proc _forceLimits {top} {
@@ -399,10 +399,10 @@ proc _forceVisible {top} {
     set canvasX($top)      [::tcl::mathfunc::max $canvasX($top)      0]
     set canvasY($top)      [::tcl::mathfunc::max $canvasY($top)      0]
     
-    set canvasWidth($top)  [::ifNonZero $canvasWidth($top)  $canvasWidth(${top}.old)]
-    set canvasHeight($top) [::ifNonZero $canvasHeight($top) $canvasHeight(${top}.old)]
-    set canvasWidth($top)  [::ifNonZero $canvasWidth($top)  200]
-    set canvasHeight($top) [::ifNonZero $canvasHeight($top) 140]
+    set canvasWidth($top)  [::ifNotZero $canvasWidth($top)  $canvasWidth(${top}.old)]
+    set canvasHeight($top) [::ifNotZero $canvasHeight($top) $canvasHeight(${top}.old)]
+    set canvasWidth($top)  [::ifNotZero $canvasWidth($top)  200]
+    set canvasHeight($top) [::ifNotZero $canvasHeight($top) 140]
 }
 
 # ------------------------------------------------------------------------------------------------------------
