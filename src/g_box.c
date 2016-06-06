@@ -304,6 +304,28 @@ static int boxtext_send (t_boxtext *x, int action, int a, int b)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void boxtext_delete (t_boxtext *x)
+{
+    int toDelete = (x->box_selectionEnd - x->box_selectionStart);
+
+    if (toDelete > 0) {
+    //
+    int oldSize = x->box_stringSizeInBytes;
+    int newSize = x->box_stringSizeInBytes - toDelete;
+    int i;
+    for (i = x->box_selectionEnd; i < oldSize; i++) { x->box_string[i - toDelete] = x->box_string[i]; }
+    x->box_string = PD_MEMORY_RESIZE (x->box_string, oldSize, newSize);
+    x->box_stringSizeInBytes = newSize;
+    x->box_selectionEnd = x->box_selectionStart;
+    x->box_glist->gl_editor->e_isTextDirty = 1;
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_boxtext *boxtext_new (t_glist *glist, t_object *object)
 {
     t_boxtext *x  = (t_boxtext *)PD_MEMORY_GET (sizeof (t_boxtext));
@@ -550,14 +572,14 @@ static int boxtext_keyArrows (t_boxtext *x, t_symbol *s)
 
 static int boxtext_keyDelete (t_boxtext *x, t_symbol *s)
 {
-    if (s == sym_BackSpace) {
+    if (s == sym_BackSpace) {                                           /* Backward. */
         if (x->box_selectionStart == x->box_selectionEnd) {
             if (x->box_selectionStart > 0) { 
                 u8_dec (x->box_string, &x->box_selectionStart); 
             }
         }
         
-    } else if (s == sym_Delete) {
+    } else if (s == sym_Delete) {                                       /* Forward. */
         if (x->box_selectionStart == x->box_selectionEnd) {
             if (x->box_selectionEnd < x->box_stringSizeInBytes) {
                 u8_inc (x->box_string, &x->box_selectionEnd);
@@ -565,32 +587,18 @@ static int boxtext_keyDelete (t_boxtext *x, t_symbol *s)
         }
     }
     
-    if (s == sym_BackSpace || s == sym_Delete) {
-    //
-    int toDelete = (x->box_selectionEnd - x->box_selectionStart);
-
-    if (toDelete > 0) {
-    //
-    int oldSize = x->box_stringSizeInBytes;
-    int newSize = x->box_stringSizeInBytes - toDelete;
-    int i;
-    for (i = x->box_selectionEnd; i < oldSize; i++) { x->box_string[i - toDelete] = x->box_string[i]; }
-    x->box_string = PD_MEMORY_RESIZE (x->box_string, oldSize, newSize);
-    x->box_stringSizeInBytes = newSize;
-    x->box_selectionEnd = x->box_selectionStart;
-    x->box_glist->gl_editor->e_isTextDirty = 1;
-    //
+    if (s == sym_BackSpace || s == sym_Delete) { boxtext_delete (x); return 1; }
+    else {
+        return 0;
     }
-    
-    return 1;
-    //
-    }
-    
-    return 0;
 }
 
 static void boxtext_keyASCII (t_boxtext *x, t_keycode n)
 {
+    boxtext_delete (x);
+    
+    {
+    //
     int i;
     int oldSize = x->box_stringSizeInBytes;
     int newSize = x->box_stringSizeInBytes + 1;
@@ -599,10 +607,16 @@ static void boxtext_keyASCII (t_boxtext *x, t_keycode n)
     x->box_string[x->box_selectionStart] = (char)n;
     x->box_stringSizeInBytes = newSize;
     x->box_selectionStart = x->box_selectionStart + 1;
+    //
+    }
 }
 
 static void boxtext_keyCodePoint (t_boxtext *x, t_keycode n, t_symbol *s)
 {
+    boxtext_delete (x);
+    
+    {
+    //
     int i, k = u8_wc_nbytes (n);
     int oldSize = x->box_stringSizeInBytes;
     int newSize = x->box_stringSizeInBytes + k;
@@ -611,6 +625,8 @@ static void boxtext_keyCodePoint (t_boxtext *x, t_keycode n, t_symbol *s)
     x->box_stringSizeInBytes = newSize;
     strncpy (x->box_string + x->box_selectionStart, s->s_name, k);
     x->box_selectionStart = x->box_selectionStart + k;
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
