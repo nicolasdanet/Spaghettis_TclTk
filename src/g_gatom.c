@@ -106,7 +106,7 @@ static void gatom_update (t_gatom *x)
     
     if (canvas_isMapped (x->a_owner)) { 
     //
-    interface_guiQueueAddIfNotAlreadyThere (x, x->a_owner, gatom_drawJob);
+    interface_guiQueueAddIfNotAlreadyThere ((void *)x, x->a_owner, gatom_drawJob);
     //
     }
 }
@@ -318,7 +318,7 @@ static void gatom_behaviorVisible (t_gobj *z, t_glist *glist, int isVisible)
     //
     }
     
-    if (!isVisible) { interface_guiQueueRemove (x); }
+    if (!isVisible) { interface_guiQueueRemove ((void *)x); }
 }
 
 static void gatom_functionProperties (t_gobj *z, t_glist *owner)

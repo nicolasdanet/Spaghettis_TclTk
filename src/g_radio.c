@@ -242,8 +242,10 @@ void radio_drawNewHorizontal (t_radio *x, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void radio_drawUpdate (t_radio *x, t_glist *glist)
+void radio_drawJob (t_gobj *z, t_glist *glist)
 {
+    t_radio *x = (t_radio *)z;
+    
     if (canvas_isMapped (glist)) {
     //
     t_glist *canvas = canvas_getView (glist);
@@ -264,6 +266,15 @@ void radio_drawUpdate (t_radio *x, t_glist *glist)
     x->x_stateDrawn = x->x_state;
     //
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void radio_drawUpdate (t_radio *x, t_glist *glist)
+{
+    interface_guiQueueAddIfNotAlreadyThere ((void *)x, glist, radio_drawJob);
 }
 
 void radio_drawMove (t_radio *x, t_glist *glist)

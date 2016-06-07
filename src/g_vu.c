@@ -148,8 +148,10 @@ static t_widgetbehavior vu_widgetBehavior =         /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void vu_drawUpdate (t_vu *x, t_glist *glist)
+static void vu_drawJob (t_gobj *z, t_glist *glist)
 {
+    t_vu *x = (t_vu *)z;
+    
     if (canvas_isMapped (glist)) {
     //
     t_glist *canvas = canvas_getView (glist);
@@ -201,6 +203,15 @@ static void vu_drawUpdate (t_vu *x, t_glist *glist)
     }
     //
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void vu_drawUpdate (t_vu *x, t_glist *glist)
+{
+    interface_guiQueueAddIfNotAlreadyThere ((void *)x, glist, vu_drawJob);
 }
 
 static void vu_drawMove (t_vu *x, t_glist *glist)

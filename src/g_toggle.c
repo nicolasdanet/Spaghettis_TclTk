@@ -53,8 +53,10 @@ static t_widgetbehavior toggle_widgetBehavior =         /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void toggle_drawUpdate (t_toggle *x, t_glist *glist)
+void toggle_drawJob (t_gobj *z, t_glist *glist)
 {
+    t_toggle *x = (t_toggle *)z;
+    
     if (canvas_isMapped (glist)) {
     //
     t_glist *canvas = canvas_getView (glist);
@@ -69,6 +71,15 @@ void toggle_drawUpdate (t_toggle *x, t_glist *glist)
                     (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
     //
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void toggle_drawUpdate (t_toggle *x, t_glist *glist)
+{
+    interface_guiQueueAddIfNotAlreadyThere ((void *)x, glist, toggle_drawJob);
 }
 
 void toggle_drawMove (t_toggle *x, t_glist *glist)

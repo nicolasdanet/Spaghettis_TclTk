@@ -332,7 +332,7 @@ void canvas_setAsGraphOnParent (t_glist *glist, int flags, int hasRectangle)
     glist->gl_hideText  = hideText;
     
     if (needToUpdate) {
-        if (!glist->gl_isLoading && glist->gl_parent && canvas_isMapped (glist->gl_parent)) {
+        if (glist->gl_parent && canvas_isMapped (glist->gl_parent)) {
             gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 0);
         }
     }
@@ -349,7 +349,7 @@ void canvas_setAsGraphOnParent (t_glist *glist, int flags, int hasRectangle)
     }
     
     if (needToUpdate) {
-        if (!glist->gl_isLoading && glist->gl_parent && canvas_isMapped (glist->gl_parent)) {
+        if (glist->gl_parent && canvas_isMapped (glist->gl_parent)) {
             gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
             canvas_updateLinesByObject (glist->gl_parent, cast_object (glist));
         }

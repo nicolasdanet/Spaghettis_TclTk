@@ -127,8 +127,10 @@ static void dial_setString (t_dial *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void dial_drawUpdate (t_dial *x, t_glist *glist)
+static void dial_drawJob (t_gobj *z, t_glist *glist)
 {
+    t_dial *x = (t_dial *)z;
+    
     if (canvas_isMapped (glist)) {
     //
     t_glist *canvas = canvas_getView (glist);
@@ -157,6 +159,15 @@ static void dial_drawUpdate (t_dial *x, t_glist *glist)
                     x->x_t);
     //
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void dial_drawUpdate (t_dial *x, t_glist *glist)
+{
+    interface_guiQueueAddIfNotAlreadyThere ((void *)x, glist, dial_drawJob);
 }
 
 static void dial_drawMove (t_dial *x, t_glist *glist)

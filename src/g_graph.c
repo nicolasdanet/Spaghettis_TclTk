@@ -289,7 +289,7 @@ void glist_sort(t_glist *x)
 t_inlet *canvas_addinlet(t_glist *x, t_pd *who, t_symbol *s)
 {
     t_inlet *ip = inlet_new(&x->gl_obj, who, s, 0);
-    if (!x->gl_isLoading && x->gl_parent && canvas_isMapped(x->gl_parent))
+    if (x->gl_parent && canvas_isMapped(x->gl_parent))
     {
         gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 0);
         gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 1);
@@ -361,7 +361,7 @@ void canvas_resortinlets(t_glist *x)
 t_outlet *canvas_addoutlet(t_glist *x, t_pd *who, t_symbol *s)
 {
     t_outlet *op = outlet_new(&x->gl_obj, s);
-    if (!x->gl_isLoading && x->gl_parent && canvas_isMapped(x->gl_parent))
+    if (x->gl_parent && canvas_isMapped(x->gl_parent))
     {
         gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 0);
         gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 1);

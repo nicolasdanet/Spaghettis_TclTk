@@ -60,12 +60,14 @@ static t_widgetbehavior bng_widgetBehavior =        /* Shared. */
         iemgui_behaviorVisible,
         bng_behaviorClick
     };
-    
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void bng_drawUpdate (t_bng *x, t_glist *glist)
+static void bng_drawJob (t_gobj *z, t_glist *glist)
 {
+    t_bng *x = (t_bng *)z;
+    
     if (canvas_isMapped (glist)) {
     //
     t_glist *canvas = canvas_getView (glist);
@@ -76,6 +78,15 @@ void bng_drawUpdate (t_bng *x, t_glist *glist)
                     x->x_flashed ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
     //
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void bng_drawUpdate (t_bng *x, t_glist *glist)
+{
+    interface_guiQueueAddIfNotAlreadyThere ((void *)x, glist, bng_drawJob);
 }
 
 void bng_drawMove (t_bng *x, t_glist *glist)
