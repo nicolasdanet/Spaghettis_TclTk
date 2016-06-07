@@ -106,6 +106,15 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#if PD_APPLE
+    #define INLET_HEIGHT                2
+#else
+    #define INLET_HEIGHT                1
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 #define INLET_OFFSET(width, i, n)       ((((width) - INLET_WIDTH) * (i)) / (((n) == 1) ? 1 : ((n) - 1)))
 #define INLET_MIDDLE(width, i, n)       INLET_OFFSET (width, i, n) + ((INLET_WIDTH - 1) / 2)
 #define INLET_NEXTTO(y, x1, x2, n)      (((y - x1) * (n - 1) + ((x2 - x1) / 2)) / (x2 - x1))
@@ -687,13 +696,27 @@ void            gatom_click                             (t_gatom *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void text_getrect(t_gobj *z, t_glist *glist, int *xp1, int *yp1, int *xp2, int *yp2);
-void text_displace(t_gobj *z, t_glist *glist, int dx, int dy);
-void text_select(t_gobj *z, t_glist *glist, int state);
-void text_activate(t_gobj *z, t_glist *glist, int state);
-void text_delete(t_gobj *z, t_glist *glist);
-void text_vis(t_gobj *z, t_glist *glist, int vis);
-int text_click(t_gobj *z, struct _glist *glist, int xpix, int ypix, int shift, int ctrl, int alt, int dbl, int doit);
+void            text_getrect                            (t_gobj *x,
+                                                            t_glist *glist,
+                                                            int *a,
+                                                            int *b,
+                                                            int *c,
+                                                            int *d);
+                                                            
+void            text_displace                           (t_gobj *x, t_glist *glist, int deltaX, int deltaY);
+void            text_select                             (t_gobj *x, t_glist *glist, int isSelected);
+void            text_activate                           (t_gobj *x, t_glist *glist, int isActive);
+void            text_delete                             (t_gobj *x, t_glist *glist);
+void            text_vis                                (t_gobj *x, t_glist *glist, int isVisible);
+int             text_click                              (t_gobj *x,
+                                                            t_glist *glist,
+                                                            int a,
+                                                            int b,
+                                                            int shift,
+                                                            int ctrl,
+                                                            int alt,
+                                                            int dbl,
+                                                            int k);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -721,9 +744,7 @@ void            canvas_merge                            (t_glist *glist, t_symbo
 #pragma mark -
 
 void glist_readfrombinbuf (t_glist *x, t_buffer *b, char *filename, int selectem);
-
 void canvas_dataproperties (t_glist *x, t_scalar *sc, t_buffer *b);
-
 void canvas_find_parent (t_glist *x);
 
 // -----------------------------------------------------------------------------------------------------------

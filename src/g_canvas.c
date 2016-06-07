@@ -205,7 +205,7 @@ void canvas_connect (t_glist *glist,
     int n = (int)indexOfOInlet;
     t_outconnect *connection = NULL;
     
-    /* Creates dummy outlets and inlets mainly in case of failure at object creation. */
+    /* Creates dummy outlets and inlets (failure at object creation). */
     
     if (pd_class (srcObject) == text_class && srcObject->te_type == TYPE_OBJECT) {
         while (m >= object_numberOfOutlets (srcObject)) {

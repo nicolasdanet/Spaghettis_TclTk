@@ -24,11 +24,28 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_class *canvas_class;
-extern t_class *gatom_class;
-extern t_pd *pd_newest;
+extern t_class  *canvas_class;
+extern t_class  *gatom_class;
+extern t_pd     *pd_newest;
 
-t_class *text_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+t_class *text_class;                                /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+t_widgetbehavior text_widgetBehavior =              /* Shared. */
+    {
+        text_getrect,
+        text_displace,
+        text_select,
+        text_activate,
+        text_delete,
+        text_vis,
+        text_click
+    };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -227,26 +244,6 @@ void text_save(t_gobj *z, t_buffer *b)
     buffer_vAppend(b, ";");
 }
 
-    /* this one is for everyone but "gatoms"; it's imposed in m_class.c */
-t_widgetbehavior text_widgetBehavior =      /* Shared. */
-{
-    text_getrect,
-    text_displace,
-    text_select,
-    text_activate,
-    text_delete,
-    text_vis,
-    text_click
-};
-
-/* -------------------- the "text" class  ------------ */
-
-#ifdef __APPLE__
-#define EXTRAPIX 2
-#else
-#define EXTRAPIX 1
-#endif
-
     /* draw inlets and outlets for a text object or for a graph. */
 void glist_drawio(t_glist *glist, t_object *ob, int firsttime,
     char *tag, int x1, int y1, int x2, int y2)
@@ -279,13 +276,13 @@ void glist_drawio(t_glist *glist, t_object *ob, int firsttime,
 -tags [list %si%d inlet]\n",
                 canvas_getView(glist),
                 onset, y1,
-                onset + INLET_WIDTH, y1 + EXTRAPIX,
+                onset + INLET_WIDTH, y1 + INLET_HEIGHT,
                 tag, i);
         else
             sys_vGui(".x%lx.c coords %si%d %d %d %d %d\n",
                 canvas_getView(glist), tag, i,
                 onset, y1,
-                onset + INLET_WIDTH, y1 + EXTRAPIX);
+                onset + INLET_WIDTH, y1 + INLET_HEIGHT);
     }
 }
 
@@ -429,18 +426,28 @@ void text_setto(t_object *x, t_glist *glist, char *buf, int bufsize)
     else buffer_withStringUnzeroed(x->te_buffer, buf, bufsize);
 }
 
-    /* this gets called when a message gets sent to an object whose creation
-    failed, presumably because of loading a patch with a missing extern or
-    abstraction */
-static void text_anything(t_object *x, t_symbol *s, int argc, t_atom *argv)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void text_anything (t_object *x, t_symbol *s, int argc, t_atom *argv)
 {
 }
 
-void text_setup(void)
+void text_setup (void)
 {
-    text_class = class_new (sym_text, 0, 0, sizeof(t_object),
-        CLASS_NOINLET | CLASS_DEFAULT, 0);
-    class_addAnything(text_class, text_anything);
+    t_class *c = NULL;
+    
+    c = class_new (sym_text, 
+            NULL,
+            NULL, 
+            sizeof (t_object),
+            CLASS_DEFAULT | CLASS_NOINLET,
+            A_NULL);
+        
+    class_addAnything (c, text_anything);
+    
+    text_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -47,7 +47,7 @@ PD_STUB void helloRoot_setup (t_symbol *s)
     
     hello_class = class_new (gensym ("helloRoot"), hello_new, NULL, sizeof (t_hello), flags, A_NULL);
     
-    post ("My name is '%s'", s->s_name);        /* Absolute path of the external. */
+    post ("My name is %s", s->s_name);          /* Absolute path of the external. */
 }
 
 // -----------------------------------------------------------------------------------------------------------
