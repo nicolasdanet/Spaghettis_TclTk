@@ -36,7 +36,7 @@ t_class *text_class;
 void text_getrect(t_gobj *z, t_glist *glist, int *xp1, int *yp1, int *xp2, int *yp2)
 {
     t_object *x = (t_object *)z;
-    int width, height, iscomment = (x->te_type == TYPE_TEXT);
+    int width, height, iscomment = (x->te_type == TYPE_COMMENT);
     t_float x1, y1, x2, y2;
 
         /* for number boxes, we know width and height a priori, and should
@@ -349,7 +349,7 @@ void text_drawborder(t_object *x, t_glist *glist,
         /* for comments, just draw a bar on RHS if unlocked; when a visible
         canvas is unlocked we have to call this anew on all comments, and when
         locked we erase them all via the annoying "COMMENTBAR" tag. */
-    else if (x->te_type == TYPE_TEXT && glist->gl_isEditMode)
+    else if (x->te_type == TYPE_COMMENT && glist->gl_isEditMode)
     {
         if (firsttime)
             sys_vGui(".x%lx.c create line\
@@ -381,7 +381,7 @@ void glist_eraseio(t_glist *glist, t_object *ob, char *tag)
 
 void text_eraseborder(t_object *x, t_glist *glist, char *tag)
 {
-    if (x->te_type == TYPE_TEXT && !glist->gl_isEditMode) return;
+    if (x->te_type == TYPE_COMMENT && !glist->gl_isEditMode) return;
     sys_vGui(".x%lx.c delete %sBORDER\n",
         canvas_getView(glist), tag);
     glist_eraseio(glist, x, tag);

@@ -16,7 +16,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define TYPE_TEXT                       0
+#define TYPE_COMMENT                    0
 #define TYPE_OBJECT                     1
 #define TYPE_MESSAGE                    2
 #define TYPE_ATOM                       3

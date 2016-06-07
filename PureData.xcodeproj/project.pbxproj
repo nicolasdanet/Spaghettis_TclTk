@@ -720,8 +720,8 @@
 		37961C251CAD85DB00859402 /* Libs */ = {
 			isa = PBXGroup;
 			children = (
-				371655471BA3451000ABDE22 /* PortAudio */,
 				371655871BA3461600ABDE22 /* PortMidi */,
+				371655471BA3451000ABDE22 /* PortAudio */,
 			);
 			name = Libs;
 			sourceTree = "<group>";

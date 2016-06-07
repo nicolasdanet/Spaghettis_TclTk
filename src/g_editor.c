@@ -811,7 +811,7 @@ void canvas_editmode (t_glist *glist, t_float f)
     
     for (g = glist->gl_graphics; g; g = g->g_next) {
         t_object *o = NULL;
-        if ((o = canvas_castToObjectIfPatchable (g)) && o->te_type == TYPE_TEXT) {
+        if ((o = canvas_castToObjectIfPatchable (g)) && o->te_type == TYPE_COMMENT) {
             t_boxtext *y = boxtext_fetch (glist, o);
             text_drawborder (o, glist, boxtext_getTag (y), 1);
         }

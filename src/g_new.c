@@ -91,7 +91,7 @@ void canvas_text (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     t_atom a; SET_SYMBOL (&a, sym_comment);
             
     x->te_width  = 0;
-    x->te_type   = TYPE_TEXT;
+    x->te_type   = TYPE_COMMENT;
     x->te_buffer = buffer_new();
     
     if (argc > 1) {                                                             /* File creation. */

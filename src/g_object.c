@@ -149,7 +149,7 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
     if (object = canvas_castToObjectIfPatchable (x)) {
     //
     if (canvas_objectIsBox (object)) {
-        if (!owner->gl_hasRectangle || object->te_type != TYPE_TEXT) {      /* Compatiblity with legacy. */
+        if (!owner->gl_hasRectangle || object->te_type != TYPE_COMMENT) {   /* Compatiblity with legacy. */
             return 0; 
         }
     }
