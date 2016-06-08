@@ -657,7 +657,7 @@ void            boxtext_getSelection                    (t_boxtext *x, char **p,
 void            boxtext_draw                            (t_boxtext *x);
 void            boxtext_erase                           (t_boxtext *x);
 void            boxtext_displace                        (t_boxtext *x, int deltaX, int deltaY);
-void            boxtext_select                          (t_boxtext *x, int state);
+void            boxtext_select                          (t_boxtext *x, int isSelected);
 void            boxtext_activate                        (t_boxtext *x, int state);
 void            boxtext_mouse                           (t_boxtext *x, int a, int b, int flag);
 void            boxtext_key                             (t_boxtext *x, t_keycode n, t_symbol *s);
@@ -703,8 +703,8 @@ void            text_behaviorGetRectangle               (t_gobj *x,
                                                             int *c,
                                                             int *d);
                                                             
-void            text_displace                           (t_gobj *x, t_glist *glist, int deltaX, int deltaY);
-void            text_select                             (t_gobj *x, t_glist *glist, int isSelected);
+void            text_behaviorDisplace                   (t_gobj *x, t_glist *glist, int deltaX, int deltaY);
+void            text_behaviorSelect                     (t_gobj *x, t_glist *glist, int isSelected);
 void            text_activate                           (t_gobj *x, t_glist *glist, int isActive);
 void            text_delete                             (t_gobj *x, t_glist *glist);
 void            text_vis                                (t_gobj *x, t_glist *glist, int isVisible);

@@ -458,12 +458,12 @@ void boxtext_displace (t_boxtext *x, int deltaX, int deltaY)
                     deltaY);
 }
 
-void boxtext_select (t_boxtext *x, int state)
+void boxtext_select (t_boxtext *x, int isSelected)
 {
     sys_vGui (".x%lx.c itemconfigure %s -fill #%06x\n",
                     canvas_getView (x->box_glist), 
                     x->box_tag, 
-                    (state ? COLOR_SELECTED : COLOR_NORMAL));
+                    (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
 }
 
 void boxtext_activate (t_boxtext *x, int state)

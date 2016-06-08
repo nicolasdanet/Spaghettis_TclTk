@@ -28,6 +28,7 @@ static void gatom_float             (t_gatom *, t_float);
 static void gatom_set               (t_gatom *, t_symbol *, int, t_atom *);
 static void gatom_motion            (void *, t_float, t_float, t_float);
 static void gatom_behaviorDisplace  (t_gobj *, t_glist *, int, int);
+static void gatom_behaviorSelect    (t_gobj *, t_glist *, int);
 static void gatom_behaviorVisible   (t_gobj *, t_glist *, int);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -43,7 +44,7 @@ static t_widgetbehavior gatom_widgetBehavior =          /* Shared. */
     {
         text_behaviorGetRectangle,
         gatom_behaviorDisplace,
-        text_select,
+        gatom_behaviorSelect,
         text_activate,
         text_delete,
         gatom_behaviorVisible,
@@ -282,13 +283,27 @@ static void gatom_behaviorDisplace (t_gobj *z, t_glist *glist, int deltaX, int d
 {
     t_gatom *x = cast_gatom (z);
     
-    text_displace (z, glist, deltaX, deltaY);
+    text_behaviorDisplace (z, glist, deltaX, deltaY);
     
     sys_vGui (".x%lx.c move %lxLABEL %d %d\n", 
                     canvas_getView (glist), 
                     x,
                     deltaX,
                     deltaY);
+}
+
+static void gatom_behaviorSelect (t_gobj *z, t_glist *glist, int isSelected)
+{
+    t_gatom *x = cast_gatom (z);
+    
+    text_behaviorSelect (z, glist, isSelected);
+    
+    x->a_isSelected = isSelected;
+    
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%06x\n", 
+                    canvas_getView (glist), 
+                    x,
+                    (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
 }
 
 static void gatom_behaviorVisible (t_gobj *z, t_glist *glist, int isVisible)

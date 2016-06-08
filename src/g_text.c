@@ -39,8 +39,8 @@ t_class *text_class;                                /* Shared. */
 t_widgetbehavior text_widgetBehavior =              /* Shared. */
     {
         text_behaviorGetRectangle,
-        text_displace,
-        text_select,
+        text_behaviorDisplace,
+        text_behaviorSelect,
         text_activate,
         text_delete,
         text_vis,
@@ -64,28 +64,43 @@ void text_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *
     *d = *b + h;
 }
 
-void text_displace(t_gobj *z, t_glist *glist, int dx, int dy)
+void text_behaviorDisplace (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
 {
-    t_object *x = (t_object *)z;
-    x->te_xCoordinate += dx;
-    x->te_yCoordinate += dy;
-    if (canvas_isMapped(glist))
-    {
-        t_boxtext *y = boxtext_fetch(glist, x);
-        boxtext_displace(y, dx, dy);
-        text_drawborder(x, glist, boxtext_getTag(y), 0);
-        canvas_updateLinesByObject(glist, x);
+    t_object *x = cast_object (z);
+    
+    x->te_xCoordinate += deltaX;
+    x->te_yCoordinate += deltaY;
+    
+    if (canvas_isMapped (glist)) {
+    //
+    t_boxtext *text = boxtext_fetch (glist, x);
+    boxtext_displace (text, deltaX, deltaY);
+    text_drawborder (x, glist, boxtext_getTag (text), 0);
+    canvas_updateLinesByObject (glist, x);
+    //
     }
 }
 
-void text_select(t_gobj *z, t_glist *glist, int state)
+void text_behaviorSelect (t_gobj *z, t_glist *glist, int isSelected)
 {
-    t_object *x = (t_object *)z;
-    t_boxtext *y = boxtext_fetch(glist, x);
-    boxtext_select(y, state);
-    if (canvas_isMapped(glist) && gobj_isVisible(&x->te_g, glist))
-        sys_vGui(".x%lx.c itemconfigure %sBORDER -fill %s\n", glist, 
-            boxtext_getTag(y), (state? "blue" : "black"));
+    t_object *x = cast_object (z);
+
+    if (canvas_isMapped (glist)) {
+    //
+    t_boxtext *text = boxtext_fetch (glist, x);
+    
+    boxtext_select (text, isSelected);
+    
+    if (gobj_isVisible (z, glist)) {
+    //
+    sys_vGui (".x%lx.c itemconfigure %sBORDER -fill #%06x\n",
+                    glist, 
+                    boxtext_getTag (text),
+                    (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
+    //
+    }
+    //
+    }
 }
 
 void text_activate(t_gobj *z, t_glist *glist, int state)
@@ -160,6 +175,10 @@ int text_click(t_gobj *z, struct _glist *glist, int xpix, int ypix, int shift, i
     else return (0);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void text_save(t_gobj *z, t_buffer *b)
 {
     t_object *x = (t_object *)z;
@@ -215,6 +234,10 @@ void text_save(t_gobj *z, t_buffer *b)
         buffer_vAppend(b, ",si", sym_f, (int)x->te_width);
     buffer_vAppend(b, ";");
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
     /* draw inlets and outlets for a text object or for a graph. */
 void glist_drawio(t_glist *glist, t_object *ob, int firsttime,
@@ -355,6 +378,10 @@ void text_eraseborder(t_object *x, t_glist *glist, char *tag)
         canvas_getView(glist), tag);
     glist_eraseio(glist, x, tag);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
     /* change text; if TYPE_OBJECT, remake it.  */
 void text_setto(t_object *x, t_glist *glist, char *buf, int bufsize)
