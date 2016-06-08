@@ -69,7 +69,7 @@ static inline int slider_stepsToPixels (int n)
 static void slider_set                  (t_slider *, t_float );
 static void slider_motion               (t_slider *, t_float, t_float, t_float);
 static void slider_behaviorGetRectangle (t_gobj *, t_glist *, int *, int *, int *, int *);
-static int  slider_behaviorClick        (t_gobj *, t_glist *, int, int, int, int, int, int, int);
+static int  slider_behaviorClicked      (t_gobj *, t_glist *, int, int, int, int, int, int, int);
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -80,12 +80,12 @@ static t_class *slider_class;                           /* Shared. */
 static t_widgetbehavior slider_widgetBehavior =         /* Shared. */
     {
         slider_behaviorGetRectangle,
-        iemgui_behaviorDisplace,
+        iemgui_behaviorDisplaced,
         iemgui_behaviorSelected,
         NULL,
         iemgui_behaviorDeleted,
-        iemgui_behaviorVisible,
-        slider_behaviorClick
+        iemgui_behaviorVisibilityChanged,
+        slider_behaviorClicked
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -567,7 +567,7 @@ static void slider_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
     *d = *b + cast_iem (z)->iem_height;
 }
 
-static int slider_behaviorClick (t_gobj *z, t_glist *glist,
+static int slider_behaviorClicked (t_gobj *z, t_glist *glist,
     int a,
     int b,
     int shift,

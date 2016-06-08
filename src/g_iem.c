@@ -425,7 +425,7 @@ void iemjump_dummy (void *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void iemgui_behaviorDisplace (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
+void iemgui_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
 {
     t_iem *x = cast_iem (z);
 
@@ -446,7 +446,7 @@ void iemgui_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
     (*x->iem_draw) ((void *)z, glist, IEM_DRAW_SELECT);
 }
 
-void iemgui_behaviorVisible (t_gobj *z, t_glist *glist, int isVisible)
+void iemgui_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
 {
     t_iem *x = cast_iem (z);
 

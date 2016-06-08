@@ -24,12 +24,12 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void gatom_float             (t_gatom *, t_float);
-static void gatom_set               (t_gatom *, t_symbol *, int, t_atom *);
-static void gatom_motion            (void *, t_float, t_float, t_float);
-static void gatom_behaviorDisplace  (t_gobj *, t_glist *, int, int);
-static void gatom_behaviorSelect    (t_gobj *, t_glist *, int);
-static void gatom_behaviorVisible   (t_gobj *, t_glist *, int);
+static void gatom_float                     (t_gatom *, t_float);
+static void gatom_set                       (t_gatom *, t_symbol *, int, t_atom *);
+static void gatom_motion                    (void *, t_float, t_float, t_float);
+static void gatom_behaviorDisplaced         (t_gobj *, t_glist *, int, int);
+static void gatom_behaviorSelected          (t_gobj *, t_glist *, int);
+static void gatom_behaviorVisibilityChanged (t_gobj *, t_glist *, int);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -43,12 +43,12 @@ t_class *gatom_class;                                   /* Shared. */
 static t_widgetbehavior gatom_widgetBehavior =          /* Shared. */
     {
         text_behaviorGetRectangle,
-        gatom_behaviorDisplace,
-        gatom_behaviorSelect,
+        gatom_behaviorDisplaced,
+        gatom_behaviorSelected,
         NULL,
-        text_delete,
-        gatom_behaviorVisible,
-        text_click
+        text_behaviorDeleted,
+        gatom_behaviorVisibilityChanged,
+        text_behaviorClicked
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -279,11 +279,11 @@ static void gatom_motion (void *z, t_float deltaX, t_float deltaY, t_float modif
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void gatom_behaviorDisplace (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
+static void gatom_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
 {
     t_gatom *x = cast_gatom (z);
     
-    text_behaviorDisplace (z, glist, deltaX, deltaY);
+    text_behaviorDisplaced (z, glist, deltaX, deltaY);
     
     sys_vGui (".x%lx.c move %lxLABEL %d %d\n", 
                     canvas_getView (glist), 
@@ -292,11 +292,11 @@ static void gatom_behaviorDisplace (t_gobj *z, t_glist *glist, int deltaX, int d
                     deltaY);
 }
 
-static void gatom_behaviorSelect (t_gobj *z, t_glist *glist, int isSelected)
+static void gatom_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
 {
     t_gatom *x = cast_gatom (z);
     
-    text_behaviorSelect (z, glist, isSelected);
+    text_behaviorSelected (z, glist, isSelected);
     
     x->a_isSelected = isSelected;
     
@@ -306,11 +306,11 @@ static void gatom_behaviorSelect (t_gobj *z, t_glist *glist, int isSelected)
                     (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
 }
 
-static void gatom_behaviorVisible (t_gobj *z, t_glist *glist, int isVisible)
+static void gatom_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
 {
     t_gatom *x = cast_gatom (z);
     
-    text_vis (z, glist, isVisible);
+    text_behaviorVisibilityChanged (z, glist, isVisible);
     
     if (x->a_label != &s_) {
     //

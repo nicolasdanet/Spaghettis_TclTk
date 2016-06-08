@@ -321,7 +321,7 @@ static void scalar_vis(t_gobj *z, t_glist *owner, int vis)
     {
         t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
         if (!wb) continue;
-        (*wb->w_fnParentVisible)(y, owner, x->sc_vector, template, basex, basey, vis);
+        (*wb->w_fnParentVisibilityChanged)(y, owner, x->sc_vector, template, basex, basey, vis);
     }
     if (canvas_isObjectSelected(owner, &x->sc_g))
     {
@@ -366,7 +366,7 @@ int scalar_doclick(t_word *data, t_template *template, t_scalar *sc,
     {
         t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
         if (!wb) continue;
-        if (hit = (*wb->w_fnParentClick)(y, owner,
+        if (hit = (*wb->w_fnParentClicked)(y, owner,
             data, template, sc, ap, basex + xloc, basey + yloc,
             xpix, ypix, shift, alt, dbl, doit))
                 return (hit);

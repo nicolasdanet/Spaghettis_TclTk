@@ -52,11 +52,11 @@ t_class *panel_class;                                   /* Shared. */
 static t_widgetbehavior panel_widgetBehavior =          /* Shared. */
     {
         panel_behaviorGetRectangle,
-        iemgui_behaviorDisplace,
+        iemgui_behaviorDisplaced,
         iemgui_behaviorSelected,
         NULL,
         iemgui_behaviorDeleted,
-        iemgui_behaviorVisible,
+        iemgui_behaviorVisibilityChanged,
         NULL
     };
     

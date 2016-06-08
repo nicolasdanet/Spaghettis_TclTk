@@ -627,8 +627,8 @@
 			isa = PBXGroup;
 			children = (
 				379AE2E01C9E7B4600250ADD /* Canvas */,
-				379AE2E41C9E7B8200250ADD /* Scalar */,
 				379AE2DA1C9E7A9700250ADD /* IEM */,
+				379AE2E41C9E7B8200250ADD /* Scalar */,
 			);
 			name = Graphics;
 			sourceTree = "<group>";

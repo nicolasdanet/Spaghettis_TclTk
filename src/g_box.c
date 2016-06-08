@@ -44,7 +44,7 @@ struct _boxtext {
     int                 box_selectionStart; 
     int                 box_selectionEnd;
     int                 box_draggedFrom;
-    int                 box_isActive;
+    int                 box_isActivated;
     int                 box_widthInPixels;
     int                 box_heightInPixels;
     int                 box_checked;
@@ -267,7 +267,7 @@ static int boxtext_send (t_boxtext *x, int action, int a, int b)
                     
         if (resized) { text_drawborder (x->box_object, x->box_glist, x->box_tag, 0); }
                 
-        if (x->box_isActive) {
+        if (x->box_isActivated) {
         
             if (selectionStart < selectionEnd) {
                 sys_vGui (".x%lx.c select from %s %d\n",
@@ -386,13 +386,11 @@ t_boxtext *boxtext_fetch (t_glist *glist, t_object *object)
     return x;
 }
 
-void boxtext_update (t_boxtext *x)
+void boxtext_restore (t_boxtext *x)
 {
     PD_MEMORY_FREE (x->box_string);
     
     buffer_toStringUnzeroed (x->box_object->te_buffer, &x->box_string, &x->box_stringSizeInBytes);
-    
-    boxtext_send (x, BOX_UPDATE, 0, 0);
 }
 
 void boxtext_dirty (t_boxtext *x)
@@ -439,7 +437,14 @@ void boxtext_getSelection (t_boxtext *x, char **p, int *size)
 
 void boxtext_draw (t_boxtext *x)
 {
+    if (x->box_object->te_type == TYPE_ATOM) { boxtext_restore (x); }
+    
     boxtext_send (x, BOX_FIRST, 0, 0);
+}
+
+void boxtext_update (t_boxtext *x)
+{
+    boxtext_send (x, BOX_UPDATE, 0, 0);
 }
 
 void boxtext_erase (t_boxtext *x)
@@ -478,7 +483,7 @@ void boxtext_activate (t_boxtext *x, int state)
     x->box_draggedFrom      = 0;
     x->box_selectionStart   = 0;
     x->box_selectionEnd     = x->box_stringSizeInBytes;
-    x->box_isActive         = 1;
+    x->box_isActivated      = 1;
     //
     } else {
     //
@@ -486,7 +491,7 @@ void boxtext_activate (t_boxtext *x, int state)
                     
     if (x->box_glist->gl_editor->e_selectedText == x) { x->box_glist->gl_editor->e_selectedText = NULL; }
     
-    x->box_isActive = 0;
+    x->box_isActivated = 0;
     //
     }
 

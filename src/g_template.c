@@ -1899,7 +1899,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                 {
                     t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
                     if (!wb) continue;
-                    (*wb->w_fnParentVisible)(y, glist,
+                    (*wb->w_fnParentVisibilityChanged)(y, glist,
                         (t_word *)(elem + elemsize * i),
                             elemtemplate, usexloc, useyloc, tovis);
                 }
@@ -1919,7 +1919,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                 {
                     t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
                     if (!wb) continue;
-                    (*wb->w_fnParentVisible)(y, glist,
+                    (*wb->w_fnParentVisibilityChanged)(y, glist,
                         (t_word *)(elem + elemsize * i), elemtemplate,
                             0, 0, 0);
                 }

@@ -39,12 +39,12 @@ t_class *text_class;                                /* Shared. */
 t_widgetbehavior text_widgetBehavior =              /* Shared. */
     {
         text_behaviorGetRectangle,
-        text_behaviorDisplace,
-        text_behaviorSelect,
-        text_behaviorActivate,
-        text_delete,
-        text_vis,
-        text_click
+        text_behaviorDisplaced,
+        text_behaviorSelected,
+        text_behaviorActivated,
+        text_behaviorDeleted,
+        text_behaviorVisibilityChanged,
+        text_behaviorClicked
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -64,7 +64,7 @@ void text_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *
     *d = *b + h;
 }
 
-void text_behaviorDisplace (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
+void text_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
 {
     t_object *x = cast_object (z);
     
@@ -81,7 +81,7 @@ void text_behaviorDisplace (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
     }
 }
 
-void text_behaviorSelect (t_gobj *z, t_glist *glist, int isSelected)
+void text_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
 {
     t_object *x = cast_object (z);
 
@@ -103,44 +103,38 @@ void text_behaviorSelect (t_gobj *z, t_glist *glist, int isSelected)
     }
 }
 
-void text_behaviorActivate (t_gobj *z, t_glist *glist, int isActive)
+void text_behaviorActivated (t_gobj *z, t_glist *glist, int isActivated)
 {
-    boxtext_activate (boxtext_fetch (glist, cast_object (z)), isActive);
+    boxtext_activate (boxtext_fetch (glist, cast_object (z)), isActivated);
 }
 
-void text_delete(t_gobj *z, t_glist *glist)
+void text_behaviorDeleted (t_gobj *z, t_glist *glist)
 {
-    t_object *x = (t_object *)z;
-        canvas_deleteLinesByObject(glist, x);
+    canvas_deleteLinesByObject (glist, cast_object (z));
 }
 
-void text_vis(t_gobj *z, t_glist *glist, int vis)
+void text_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
 {
-    t_object *x = (t_object *)z;
-    if (vis)
-    {
-        if (gobj_isVisible(&x->te_g, glist))
-        {
-            t_boxtext *y = boxtext_fetch(glist, x);
-            if (x->te_type == TYPE_ATOM)
-                glist_retext(glist, x);
-            boxtext_draw(y);
-            text_drawborder(x, glist, boxtext_getTag(y), 1);
-        }
+    t_object *x = cast_object (z);
+    
+    if (gobj_isVisible (z, glist)) {
+    //
+    t_boxtext *text = boxtext_fetch (glist, x);
+    
+    if (isVisible) {
+        boxtext_draw (text);
+        text_drawborder (x, glist, boxtext_getTag (text), 1);
+
+    } else {
+        // boxtext_dirty (text);
+        text_eraseborder (x, glist, boxtext_getTag (text));
+        boxtext_erase (text);
     }
-    else
-    {
-        t_boxtext *y = boxtext_fetch(glist, x);
-        if (gobj_isVisible(&x->te_g, glist))
-        {
-            boxtext_dirty (y);
-            text_eraseborder(x, glist, boxtext_getTag(y));
-            boxtext_erase(y);
-        }
+    //
     }
 }
 
-int text_click(t_gobj *z, struct _glist *glist, int xpix, int ypix, int shift, int ctrl, int alt, int dbl, int doit)
+int text_behaviorClicked (t_gobj *z, struct _glist *glist, int xpix, int ypix, int shift, int ctrl, int alt, int dbl, int doit)
 {
     t_object *x = (t_object *)z;
     if (x->te_type == TYPE_OBJECT)

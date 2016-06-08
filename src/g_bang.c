@@ -42,7 +42,7 @@
 #pragma mark -
 
 static void bng_behaviorGetRectangle    (t_gobj *, t_glist *, int *, int *, int *, int *);
-static int  bng_behaviorClick           (t_gobj *, t_glist *, int, int, int, int, int, int, int);
+static int  bng_behaviorClicked         (t_gobj *, t_glist *, int, int, int, int, int, int, int);
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -53,12 +53,12 @@ static t_class *bng_class;                          /* Shared. */
 static t_widgetbehavior bng_widgetBehavior =        /* Shared. */
     {
         bng_behaviorGetRectangle,
-        iemgui_behaviorDisplace,
+        iemgui_behaviorDisplaced,
         iemgui_behaviorSelected,
         NULL,
         iemgui_behaviorDeleted,
-        iemgui_behaviorVisible,
-        bng_behaviorClick
+        iemgui_behaviorVisibilityChanged,
+        bng_behaviorClicked
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -386,7 +386,7 @@ static void bng_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b,
     *d = *b + cast_iem (z)->iem_height;
 }
 
-static int bng_behaviorClick (t_gobj *z, t_glist *glist,
+static int bng_behaviorClicked (t_gobj *z, t_glist *glist,
     int a,
     int b,
     int shift,

@@ -30,7 +30,7 @@ typedef void (*t_displacefn)            (t_gobj *x, t_glist *glist, int deltaX, 
 typedef void (*t_selectfn)              (t_gobj *x, t_glist *glist, int state);
 typedef void (*t_activatefn)            (t_gobj *x, t_glist *glist, int state);
 typedef void (*t_deletefn)              (t_gobj *x, t_glist *glist);
-typedef void (*t_visiblefn)             (t_gobj *x, t_glist *glist, int flag);
+typedef void (*t_visibilityfn)          (t_gobj *x, t_glist *glist, int flag);
 typedef int  (*t_clickfn)               (t_gobj *x,
                                             t_glist *glist,
                                             int a,
@@ -65,7 +65,7 @@ typedef void (*t_parentactivatefn)      (t_gobj *x, t_glist *glist, t_word *data
                                             t_float baseX,
                                             t_float baseY,
                                             int state);
-typedef void (*t_parentvisiblefn)       (t_gobj *x, t_glist *glist, t_word *data, t_template *t,
+typedef void (*t_parentvisibilityfn)    (t_gobj *x, t_glist *glist, t_word *data, t_template *t,
                                             t_float baseX,
                                             t_float baseY,
                                             int flag);
@@ -86,21 +86,21 @@ typedef int  (*t_parentclickfn)         (t_gobj *x, t_glist *glist, t_word *data
 
 struct _widgetbehavior {
     t_getrectanglefn                w_fnGetRectangle;
-    t_displacefn                    w_fnDisplace;
-    t_selectfn                      w_fnSelect;
-    t_activatefn                    w_fnActivate;
-    t_deletefn                      w_fnDelete;
-    t_visiblefn                     w_fnVisible;
-    t_clickfn                       w_fnClick;
+    t_displacefn                    w_fnDisplaced;
+    t_selectfn                      w_fnSelected;
+    t_activatefn                    w_fnActivated;
+    t_deletefn                      w_fnDeleted;
+    t_visibilityfn                  w_fnVisibilityChanged;
+    t_clickfn                       w_fnClicked;
     };
     
 struct _parentwidgetbehavior {
     t_parentgetrectanglefn          w_fnParentGetRectangle;
-    t_parentdisplacefn              w_fnParentDisplace;
-    t_parentselectfn                w_fnParentSelect;
-    t_parentactivatefn              w_fnParentActivate;
-    t_parentvisiblefn               w_fnParentVisible;
-    t_parentclickfn                 w_fnParentClick;
+    t_parentdisplacefn              w_fnParentDisplaced;
+    t_parentselectfn                w_fnParentSelected;
+    t_parentactivatefn              w_fnParentActivated;
+    t_parentvisibilityfn            w_fnParentVisibilityChanged;
+    t_parentclickfn                 w_fnParentClicked;
     };
 
 // -----------------------------------------------------------------------------------------------------------

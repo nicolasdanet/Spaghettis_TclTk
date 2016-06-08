@@ -38,36 +38,36 @@ void gobj_getRectangle (t_gobj *x, t_glist *owner, int *a, int *b, int *c, int *
 
 void gobj_displace (t_gobj *x, t_glist *owner, int deltaX, int deltaY)
 {
-    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnDisplace) {
-        (*(pd_class (x)->c_behavior->w_fnDisplace)) (x, owner, deltaX, deltaY);
+    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnDisplaced) {
+        (*(pd_class (x)->c_behavior->w_fnDisplaced)) (x, owner, deltaX, deltaY);
     }
 }
 
 void gobj_select (t_gobj *x, t_glist *owner, int isSelected)
 {
-    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnSelect) {
-        (*(pd_class (x)->c_behavior->w_fnSelect)) (x, owner, isSelected);
+    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnSelected) {
+        (*(pd_class (x)->c_behavior->w_fnSelected)) (x, owner, isSelected);
     }
 }
 
-void gobj_activate (t_gobj *x, t_glist *owner, int isActive)
+void gobj_activate (t_gobj *x, t_glist *owner, int isActivated)
 {
-    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnActivate) {
-        (*(pd_class (x)->c_behavior->w_fnActivate)) (x, owner, isActive);
+    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnActivated) {
+        (*(pd_class (x)->c_behavior->w_fnActivated)) (x, owner, isActivated);
     }
 }
 
 void gobj_delete (t_gobj *x, t_glist *owner)
 {
-    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnDelete) {
-        (*(pd_class (x)->c_behavior->w_fnDelete)) (x, owner);
+    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnDeleted) {
+        (*(pd_class (x)->c_behavior->w_fnDeleted)) (x, owner);
     }
 }
 
 int gobj_click (t_gobj *x, t_glist *owner, int a, int b, int shift, int ctrl, int alt, int dbl, int k)
 {
-    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnClick) {
-        return ((*(pd_class (x)->c_behavior->w_fnClick)) (x, owner, a, b, shift, ctrl, alt, dbl, k));
+    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnClicked) {
+        return ((*(pd_class (x)->c_behavior->w_fnClicked)) (x, owner, a, b, shift, ctrl, alt, dbl, k));
     } else {
         return 0;
     }
@@ -164,9 +164,9 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
 
 void gobj_visibilityChanged (t_gobj *x, t_glist *owner, int isVisible)
 {
-    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnVisible) {
+    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnVisibilityChanged) {
         if (gobj_isVisible (x, owner)) {
-            (*(pd_class (x)->c_behavior->w_fnVisible)) (x, owner, isVisible);
+            (*(pd_class (x)->c_behavior->w_fnVisibilityChanged)) (x, owner, isVisible);
         }
     }
 }

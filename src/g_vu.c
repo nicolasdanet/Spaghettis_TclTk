@@ -137,11 +137,11 @@ static t_class *vu_class;                           /* Shared. */
 static t_widgetbehavior vu_widgetBehavior =         /* Shared. */
     {
         vu_behaviorGetRectangle,
-        iemgui_behaviorDisplace,
+        iemgui_behaviorDisplaced,
         iemgui_behaviorSelected,
         NULL,
         iemgui_behaviorDeleted,
-        iemgui_behaviorVisible,
+        iemgui_behaviorVisibilityChanged,
         NULL
     };
 

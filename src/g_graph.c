@@ -171,13 +171,12 @@ void glist_clear(t_glist *x)
 
 void glist_retext(t_glist *glist, t_object *y)
 {
-    t_glist *c = canvas_getView(glist);
+    //t_glist *c = canvas_getView(glist);
         /* check that we have built rtexts yet.  LATER need a better test. */
     if (glist->gl_editor && glist->gl_editor->e_text)
     {
         t_boxtext *rt = boxtext_fetch(glist, y);
-        if (rt)
-            boxtext_update(rt);
+        if (rt) { boxtext_restore (rt); boxtext_update (rt); }
     }
 }
 
@@ -680,7 +679,7 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
         /* ordinary subpatches: just act like a text object */
     if (!x->gl_isGraphOnParent)
     {
-        text_widgetBehavior.w_fnVisible(gr, parent_glist, vis);
+        text_widgetBehavior.w_fnVisibilityChanged(gr, parent_glist, vis);
         return;
     }
 
@@ -930,7 +929,7 @@ static void graph_displace(t_gobj *z, t_glist *glist, int dx, int dy)
 {
     t_glist *x = (t_glist *)z;
     if (!x->gl_isGraphOnParent)
-        text_widgetBehavior.w_fnDisplace(z, glist, dx, dy);
+        text_widgetBehavior.w_fnDisplaced(z, glist, dx, dy);
     else
     {
         x->gl_obj.te_xCoordinate += dx;
@@ -944,7 +943,7 @@ static void graph_select(t_gobj *z, t_glist *glist, int state)
 {
     t_glist *x = (t_glist *)z;
     if (!x->gl_isGraphOnParent)
-        text_widgetBehavior.w_fnSelect(z, glist, state);
+        text_widgetBehavior.w_fnSelected(z, glist, state);
     else
     {
         t_boxtext *y = boxtext_fetch(glist, &x->gl_obj);
@@ -961,7 +960,7 @@ static void graph_activate(t_gobj *z, t_glist *glist, int state)
 {
     t_glist *x = (t_glist *)z;
     if (canvas_hasGraphOnParentTitle(x))
-        text_widgetBehavior.w_fnActivate(z, glist, state);
+        text_widgetBehavior.w_fnActivated(z, glist, state);
 }
 
 static void graph_delete(t_gobj *z, t_glist *glist)
@@ -971,7 +970,7 @@ static void graph_delete(t_gobj *z, t_glist *glist)
     while (y = x->gl_graphics)
         glist_delete(x, y);
     if (canvas_isMapped(x))
-        text_widgetBehavior.w_fnDelete(z, glist);
+        text_widgetBehavior.w_fnDeleted(z, glist);
             /* if we have connections to the actual 'canvas' object, zap
             them as well (e.g., array or scalar objects that are implemented
             as canvases with "real" inlets).  Connections to ordinary canvas
@@ -1028,7 +1027,7 @@ static int graph_click(t_gobj *z, struct _glist *glist,
     t_gobj *y;
     int clickreturned = 0;
     if (!x->gl_isGraphOnParent)
-        return (text_widgetBehavior.w_fnClick(z, glist,
+        return (text_widgetBehavior.w_fnClicked(z, glist,
             xpix, ypix, shift, ctrl, alt, dbl, doit));
     else if (x->gl_haveWindow)
         return (0);

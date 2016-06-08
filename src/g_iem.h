@@ -233,9 +233,9 @@ void        iemgui_checkSendReceiveLoop         (t_iem *iem);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        iemgui_behaviorDisplace             (t_gobj *z, t_glist *glist, int deltaX, int deltaY);
+void        iemgui_behaviorDisplaced            (t_gobj *z, t_glist *glist, int deltaX, int deltaY);
 void        iemgui_behaviorSelected             (t_gobj *z, t_glist *glist, int isSelected);
-void        iemgui_behaviorVisible              (t_gobj *z, t_glist *glist, int isVisible);
+void        iemgui_behaviorVisibilityChanged    (t_gobj *z, t_glist *glist, int isVisible);
 void        iemgui_behaviorDeleted              (t_gobj *z, t_glist *glist);
 
 void        iemgui_serialize                    (t_iem *iem, t_iemnames *n, t_iemcolors *c);
