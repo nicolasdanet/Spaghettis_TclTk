@@ -812,8 +812,8 @@ void canvas_editmode (t_glist *glist, t_float f)
     for (g = glist->gl_graphics; g; g = g->g_next) {
         t_object *o = NULL;
         if ((o = canvas_castToObjectIfPatchable (g)) && o->te_type == TYPE_COMMENT) {
-            t_boxtext *y = boxtext_fetch (glist, o);
-            text_drawborder (o, glist, boxtext_getTag (y), 1);
+            t_boxtext *text = boxtext_fetch (glist, o);
+            text_drawborder (o, glist, boxtext_getTag (text), 1);
         }
     }
     //
@@ -955,7 +955,7 @@ void canvas_createEditorIfNone (t_glist *glist)
     if (!glist->gl_editor) {
     //
     t_gobj *y = NULL;
-    
+            
     glist->gl_editor = editor_new (glist);
     
     for (y = glist->gl_graphics; y; y = y->g_next) {

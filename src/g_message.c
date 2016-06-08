@@ -91,11 +91,11 @@ void message_click (t_message *x, t_float a, t_float b, t_float shift, t_float c
     
     if (canvas_isMapped (x->m_owner)) {
     //
-    t_boxtext *y = boxtext_fetch (x->m_owner, cast_object (x));
+    t_boxtext *text = boxtext_fetch (x->m_owner, cast_object (x));
 
     sys_vGui (".x%lx.c itemconfigure %sBORDER -width 5\n", 
                     canvas_getView (x->m_owner), 
-                    boxtext_getTag (y));
+                    boxtext_getTag (text));
                     
     clock_delay (x->m_clock, 120.0);
     //
@@ -174,11 +174,11 @@ static void message_taskTick (t_message *x)
 {
     if (canvas_isMapped (x->m_owner)) {
     //
-    t_boxtext *y = boxtext_fetch (x->m_owner, cast_object (x));
+    t_boxtext *text = boxtext_fetch (x->m_owner, cast_object (x));
     
     sys_vGui (".x%lx.c itemconfigure %sBORDER -width 1\n",
                     canvas_getView (x->m_owner),
-                    boxtext_getTag (y));
+                    boxtext_getTag (text));
     //
     }
 }

@@ -696,7 +696,7 @@ void            gatom_click                             (t_gatom *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            text_getrect                            (t_gobj *x,
+void            text_behaviorGetRectangle               (t_gobj *x,
                                                             t_glist *glist,
                                                             int *a,
                                                             int *b,

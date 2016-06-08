@@ -321,7 +321,7 @@ static void canvas_open (t_glist *glist)
     
     canvas_destroyEditorIfAny (glist);
 
-    glist->gl_haveWindow = 1;   /* Note that it modify how things are drawn below. */
+    glist->gl_haveWindow = 1;   /* Note that it modifies how things are drawn below. */
     
     gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
     //
@@ -356,6 +356,7 @@ void canvas_visible (t_glist *glist, t_float f)
         if (glist->gl_editor && glist->gl_haveWindow) { sys_vGui ("::bringToFront .x%lx\n", glist); }
         else {
             canvas_createEditorIfNone (glist);
+            
             sys_vGui ("::ui_patch::create .x%lx %d %d +%d+%d %d\n",
                             glist,
                             (int)(glist->gl_windowBottomRightX - glist->gl_windowTopLeftX),

@@ -38,7 +38,7 @@ t_class *text_class;                                /* Shared. */
 
 t_widgetbehavior text_widgetBehavior =              /* Shared. */
     {
-        text_getrect,
+        text_behaviorGetRectangle,
         text_displace,
         text_select,
         text_activate,
@@ -50,46 +50,18 @@ t_widgetbehavior text_widgetBehavior =              /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void text_getrect(t_gobj *z, t_glist *glist, int *xp1, int *yp1, int *xp2, int *yp2)
+void text_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
 {
-    t_object *x = (t_object *)z;
-    int width, height, iscomment = (x->te_type == TYPE_COMMENT);
-    t_float x1, y1, x2, y2;
-
-        /* for number boxes, we know width and height a priori, and should
-        report them here so that graphs can get swelled to fit. */
+    t_object *x = cast_object (z);
+    t_boxtext *text = boxtext_fetch (glist, x);
     
-    if (x->te_type == TYPE_ATOM && x->te_width > 0)
-    {
-        int font = canvas_getFontSize(glist);
-        int fontwidth = font_getHostFontWidth(font), fontheight = font_getHostFontHeight(font);
-        width = (x->te_width > 0 ? x->te_width : 6) * fontwidth + 2;
-        height = fontheight + 1; /* borrowed from TMARGIN, etc, in g_rtext.c */
-    }
-        /* if we're invisible we don't know our size so we just lie about
-        it.  This is called on invisible boxes to establish order of inlets
-        and possibly other reasons.
-           To find out if the box is visible we can't just check the "vis"
-        flag because we might be within the vis() routine and not have set
-        that yet.  So we check directly whether the "rtext" list has been
-        built.  LATER reconsider when "vis" flag should be on and off? */
-
-    else if (glist->gl_editor && glist->gl_editor->e_text)
-    {
-        t_boxtext *y = boxtext_fetch(glist, x);
-        width = boxtext_getWidth(y);
-        height = boxtext_getHeight(y) - (iscomment << 1);
-    }
-    else width = height = 10;
-    x1 = text_xpix(x, glist);
-    y1 = text_ypix(x, glist);
-    x2 = x1 + width;
-    y2 = y1 + height;
-    y1 += iscomment;
-    *xp1 = x1;
-    *yp1 = y1;
-    *xp2 = x2;
-    *yp2 = y2;
+    int w = boxtext_getWidth (text);
+    int h = boxtext_getHeight (text);
+    
+    *a = text_xpix (x, glist);
+    *b = text_ypix (x, glist);
+    *c = *a + w;
+    *d = *b + h;
 }
 
 void text_displace(t_gobj *z, t_glist *glist, int dx, int dy)
@@ -291,7 +263,7 @@ void text_drawborder(t_object *x, t_glist *glist,
 {
     t_object *ob;
     int x1, y1, x2, y2, width, height;
-    text_getrect(&x->te_g, glist, &x1, &y1, &x2, &y2);
+    text_behaviorGetRectangle(&x->te_g, glist, &x1, &y1, &x2, &y2);
     width = x2 - x1;
     height = y2 - y1;
     

@@ -41,7 +41,7 @@ t_class *gatom_class;                                   /* Shared. */
 
 static t_widgetbehavior gatom_widgetBehavior =          /* Shared. */
     {
-        text_getrect,
+        text_behaviorGetRectangle,
         gatom_behaviorDisplace,
         text_select,
         text_activate,
@@ -125,7 +125,7 @@ static void gatom_getPostion (t_gatom *x, t_glist *glist, int *positionX, int *p
     double width = font_getHostFontWidth (x->a_fontSize);
     double height = font_getHostFontHeight (x->a_fontSize);
     
-    text_getrect (cast_gobj (x), glist, &a, &b, &c, &d);
+    text_behaviorGetRectangle (cast_gobj (x), glist, &a, &b, &c, &d);
     
     if (x->a_position == ATOM_LABEL_LEFT) {
         *positionX = a - 3 - (int)(strlen (x->a_label->s_name) * width);

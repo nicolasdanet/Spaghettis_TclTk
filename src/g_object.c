@@ -140,7 +140,7 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
         if (b > d) { int t = b; b = d; d = t; }
         
         gobj_getRectangle (x, owner, &e, &f, &g, &h);
-
+        
         if (e < a || e > c || g < a || g > c || f < b || f > d || h < b || h > d) { return 0; }
         //
         }
@@ -149,9 +149,10 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
     if (object = canvas_castToObjectIfPatchable (x)) {
     //
     if (canvas_objectIsBox (object)) {
-        if (!owner->gl_hasRectangle || object->te_type != TYPE_COMMENT) {   /* Compatiblity with legacy. */
-            return 0; 
-        }
+    // 
+    if (object->te_type != TYPE_COMMENT)            { return 0; }
+    if (PD_WITH_LEGACY && !owner->gl_hasRectangle)  { return 0; }
+    //
     }
     //
     }
