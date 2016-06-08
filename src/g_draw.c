@@ -146,7 +146,8 @@ void canvas_drawGraphOnParentRectangle (t_glist *glist)
     int c = glist->gl_marginX + glist->gl_width;
     int d = glist->gl_marginY + glist->gl_height;
     
-    sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d" 
+    sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d"
+                    " -dash {2 4}"
                     " -fill " DRAW_GRAPH_ON_PARENT_COLOR
                     " -tags GOP\n",
                     canvas_getView (glist),
