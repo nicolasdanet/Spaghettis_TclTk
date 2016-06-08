@@ -43,17 +43,17 @@ void gobj_displace (t_gobj *x, t_glist *owner, int deltaX, int deltaY)
     }
 }
 
-void gobj_select (t_gobj *x, t_glist *owner, int state)
+void gobj_select (t_gobj *x, t_glist *owner, int isSelected)
 {
     if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnSelect) {
-        (*(pd_class (x)->c_behavior->w_fnSelect)) (x, owner, state);
+        (*(pd_class (x)->c_behavior->w_fnSelect)) (x, owner, isSelected);
     }
 }
 
-void gobj_activate (t_gobj *x, t_glist *owner, int state)
+void gobj_activate (t_gobj *x, t_glist *owner, int isActive)
 {
     if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnActivate) {
-        (*(pd_class (x)->c_behavior->w_fnActivate)) (x, owner, state);
+        (*(pd_class (x)->c_behavior->w_fnActivate)) (x, owner, isActive);
     }
 }
 

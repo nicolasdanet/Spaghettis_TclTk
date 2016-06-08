@@ -613,8 +613,8 @@ void            gobj_getRectangle                       (t_gobj *x,
                                                             int *d);
                                                             
 void            gobj_displace                           (t_gobj *x, t_glist *owner, int deltaX, int deltaY);
-void            gobj_select                             (t_gobj *x, t_glist *owner, int state);
-void            gobj_activate                           (t_gobj *x, t_glist *owner, int state);
+void            gobj_select                             (t_gobj *x, t_glist *owner, int isSelected);
+void            gobj_activate                           (t_gobj *x, t_glist *owner, int isActive);
 void            gobj_delete                             (t_gobj *x, t_glist *owner);
 int             gobj_click                              (t_gobj *x,
                                                             t_glist *owner,
@@ -705,7 +705,7 @@ void            text_behaviorGetRectangle               (t_gobj *x,
                                                             
 void            text_behaviorDisplace                   (t_gobj *x, t_glist *glist, int deltaX, int deltaY);
 void            text_behaviorSelect                     (t_gobj *x, t_glist *glist, int isSelected);
-void            text_activate                           (t_gobj *x, t_glist *glist, int isActive);
+void            text_behaviorActivate                   (t_gobj *x, t_glist *glist, int isActive);
 void            text_delete                             (t_gobj *x, t_glist *glist);
 void            text_vis                                (t_gobj *x, t_glist *glist, int isVisible);
 int             text_click                              (t_gobj *x,

@@ -41,7 +41,7 @@ t_widgetbehavior text_widgetBehavior =              /* Shared. */
         text_behaviorGetRectangle,
         text_behaviorDisplace,
         text_behaviorSelect,
-        text_activate,
+        text_behaviorActivate,
         text_delete,
         text_vis,
         text_click
@@ -103,11 +103,9 @@ void text_behaviorSelect (t_gobj *z, t_glist *glist, int isSelected)
     }
 }
 
-void text_activate(t_gobj *z, t_glist *glist, int state)
+void text_behaviorActivate (t_gobj *z, t_glist *glist, int isActive)
 {
-    t_object *x = (t_object *)z;
-    t_boxtext *y = boxtext_fetch(glist, x);
-    if (z->g_pd != gatom_class) boxtext_activate (y, state);
+    boxtext_activate (boxtext_fetch (glist, cast_object (z)), isActive);
 }
 
 void text_delete(t_gobj *z, t_glist *glist)

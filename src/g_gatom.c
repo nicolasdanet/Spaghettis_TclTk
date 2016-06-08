@@ -45,7 +45,7 @@ static t_widgetbehavior gatom_widgetBehavior =          /* Shared. */
         text_behaviorGetRectangle,
         gatom_behaviorDisplace,
         gatom_behaviorSelect,
-        text_activate,
+        NULL,
         text_delete,
         gatom_behaviorVisible,
         text_click
