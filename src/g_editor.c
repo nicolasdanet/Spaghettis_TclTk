@@ -218,7 +218,7 @@ static void canvas_performMouseClickRight (t_glist *glist, t_gobj *object, int p
                     canOpen);
 }
 
-static void canvas_performMouseClick (t_glist *glist, int positionX, int positionY, int modifier,int clicked)
+static void canvas_performMouseClick (t_glist *glist, int positionX, int positionY, int modifier, int clicked)
 {
     t_gobj *y = NULL;
     

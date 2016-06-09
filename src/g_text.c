@@ -126,7 +126,6 @@ void text_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
         text_drawborder (x, glist, boxtext_getTag (text), 1);
 
     } else {
-        // boxtext_dirty (text);
         text_eraseborder (x, glist, boxtext_getTag (text));
         boxtext_erase (text);
     }
@@ -134,37 +133,42 @@ void text_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
     }
 }
 
-int text_behaviorClicked (t_gobj *z, struct _glist *glist, int xpix, int ypix, int shift, int ctrl, int alt, int dbl, int doit)
+int text_behaviorClicked (t_gobj *z,
+    t_glist *glist,
+    int a,
+    int b,
+    int shift,
+    int ctrl,
+    int alt,
+    int dbl,
+    int clicked)
 {
-    t_object *x = (t_object *)z;
-    if (x->te_type == TYPE_OBJECT)
-    {
-        t_symbol *clicksym = sym_click;
-        if (class_hasMethod (pd_class ((t_pd *)x), clicksym))
-        {
-            if (doit)
-                pd_vMessage((t_pd *)x, clicksym, "fffff",
-                    (double)xpix, (double)ypix,
-                        (double)shift, (double)0, (double)alt);
-            return (1);
+    t_object *x = cast_object (z);
+    
+    t_float f1 = (t_float)a;
+    t_float f2 = (t_float)b;
+    t_float f3 = (t_float)shift;
+    t_float f4 = (t_float)ctrl;
+    t_float f5 = (t_float)alt;
+    
+    if (x->te_type == TYPE_OBJECT) {
+        if (class_hasMethod (pd_class (x), sym_click)) {
+        //
+        if (clicked) { pd_vMessage (cast_pd (x), sym_click, "fffff", f1, f2, f3, f4, f5); }
+        return 1;
+        //
         }
-        else return (0);
+        
+    } else if (x->te_type == TYPE_ATOM) {
+        if (clicked) { gatom_click (cast_gatom (x), f1, f2, f3, f4, f5); }
+        return 1;
+        
+    } else if (x->te_type == TYPE_MESSAGE) {
+        if (clicked) { message_click ((t_message *)x, f1, f2, f3, f4, f5); }
+        return 1;
     }
-    else if (x->te_type == TYPE_ATOM)
-    {
-        if (doit)
-            gatom_click((t_gatom *)x, (t_float)xpix, (t_float)ypix,
-                (t_float)shift, (t_float)0, (t_float)alt);
-        return (1);
-    }
-    else if (x->te_type == TYPE_MESSAGE)
-    {
-        if (doit)
-            message_click((t_message *)x, (t_float)xpix, (t_float)ypix,
-                (t_float)shift, (t_float)0, (t_float)alt);
-        return (1);
-    }
-    else return (0);
+    
+    return 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------

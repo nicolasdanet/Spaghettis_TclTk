@@ -574,9 +574,9 @@ static int slider_behaviorClicked (t_gobj *z, t_glist *glist,
     int ctrl,
     int alt,
     int dbl,
-    int k)
+    int clicked)
 {
-    if (k) {
+    if (clicked) {
         t_slider *x = (t_slider *)z;
         slider_click (x, (t_float)a, (t_float)b, (t_float)shift, (t_float)0, (t_float)alt);
     }
