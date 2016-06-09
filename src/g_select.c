@@ -323,6 +323,8 @@ void canvas_selectLine (t_glist *glist,
                     glist->gl_editor->e_selectedLineConnection);  
 }
 
+/* Note that deselecting an object with active text might recreate it. */
+
 void canvas_deselectObject (t_glist *glist, t_gobj *y)
 {
     int dspSuspended = 0;
@@ -332,7 +334,7 @@ void canvas_deselectObject (t_glist *glist, t_gobj *y)
     t_selection *selection1 = NULL;
     t_selection *selection2 = NULL;
 
-    PD_ASSERT (canvas_isObjectSelected (glist, y));     /* Must be already selected. */
+    PD_ASSERT (canvas_isObjectSelected (glist, y));         /* Must be already selected. */
     
     if (glist->gl_editor->e_selectedText) {
     
@@ -374,7 +376,7 @@ void canvas_deselectObject (t_glist *glist, t_gobj *y)
         boxtext_getText (z, &t, &size);
         text_setto (cast_object (y), glist, t, size);
         canvas_updateLinesByObject (glist, cast_object (y));
-        glist->gl_editor->e_selectedText = 0;
+        glist->gl_editor->e_selectedText = NULL;
     }
     
     if (dspSuspended) { dsp_resume (dspSuspended); }
@@ -382,11 +384,15 @@ void canvas_deselectObject (t_glist *glist, t_gobj *y)
 
 void canvas_deselectAll (t_glist *glist)
 {
+    if (glist->gl_editor) {         /* Required for newly recreated subpatch for instance. */
+    //
     while (glist->gl_editor->e_selectedObjects) {
         canvas_deselectObject (glist, glist->gl_editor->e_selectedObjects->sel_what);
     }
 
     if (glist->gl_editor->e_isSelectedline) { canvas_deselectLine (glist); }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

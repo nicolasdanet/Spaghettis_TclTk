@@ -173,7 +173,7 @@ void glist_retext(t_glist *glist, t_object *y)
 {
     //t_glist *c = canvas_getView(glist);
         /* check that we have built rtexts yet.  LATER need a better test. */
-    if (glist->gl_editor && glist->gl_editor->e_text)
+    if (glist->gl_editor && glist->gl_editor->e_boxtexts)
     {
         t_boxtext *rt = boxtext_fetch(glist, y);
         if (rt) { boxtext_restore (rt); boxtext_update (rt); }

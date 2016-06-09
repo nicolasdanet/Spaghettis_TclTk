@@ -330,7 +330,7 @@ t_boxtext *boxtext_new (t_glist *glist, t_object *object)
 {
     t_boxtext *x  = (t_boxtext *)PD_MEMORY_GET (sizeof (t_boxtext));
 
-    x->box_next   = glist->gl_editor->e_text;
+    x->box_next   = glist->gl_editor->e_boxtexts;
     x->box_object = object;
     x->box_glist  = glist;
 
@@ -344,7 +344,7 @@ t_boxtext *boxtext_new (t_glist *glist, t_object *object)
     //
     }
     
-    glist->gl_editor->e_text = x;
+    glist->gl_editor->e_boxtexts = x;
     
     return x;
 }
@@ -355,10 +355,10 @@ void boxtext_free (t_boxtext *x)
         x->box_glist->gl_editor->e_selectedText = NULL;
     }
     
-    if (x->box_glist->gl_editor->e_text == x) { x->box_glist->gl_editor->e_text = x->box_next; }
+    if (x->box_glist->gl_editor->e_boxtexts == x) { x->box_glist->gl_editor->e_boxtexts = x->box_next; }
     else {
         t_boxtext *t = NULL;
-        for (t = x->box_glist->gl_editor->e_text; t; t = t->box_next) {
+        for (t = x->box_glist->gl_editor->e_boxtexts; t; t = t->box_next) {
             if (t->box_next == x) { 
                 t->box_next = x->box_next; break; 
             }
@@ -379,7 +379,7 @@ t_boxtext *boxtext_fetch (t_glist *glist, t_object *object)
     
     canvas_createEditorIfNone (glist);
     
-    for (x = glist->gl_editor->e_text; x && x->box_object != object; x = x->box_next) { }
+    for (x = glist->gl_editor->e_boxtexts; x && x->box_object != object; x = x->box_next) { }
     
     PD_ASSERT (x);
     

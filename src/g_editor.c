@@ -973,7 +973,7 @@ void canvas_destroyEditorIfAny (t_glist *glist)
     t_boxtext *text = NULL;
     
     canvas_deselectAll (glist);
-    while (text = glist->gl_editor->e_text) { boxtext_free (text); }
+    while (text = glist->gl_editor->e_boxtexts) { boxtext_free (text); }
     
     editor_free (glist->gl_editor);
     glist->gl_editor = NULL;
