@@ -69,16 +69,6 @@ static void *table_new(t_symbol *s, t_float f)
     return (table_donew(s, f, 0, 500, 300));
 }
 
-    /* return true if the "canvas" object is a "table". */
-int canvas_istable(t_glist *x)
-{
-    t_atom *argv = (x->gl_obj.te_buffer? buffer_atoms(x->gl_obj.te_buffer):0);
-    int argc = (x->gl_obj.te_buffer? buffer_size(x->gl_obj.te_buffer) : 0);
-    int istable = (argc && argv[0].a_type == A_SYMBOL &&
-        argv[0].a_w.w_symbol == sym_table);
-    return (istable);
-}
-
 t_class *array_define_class;
 
 static void array_define_yrange(t_glist *x, t_float ylo, t_float yhi)

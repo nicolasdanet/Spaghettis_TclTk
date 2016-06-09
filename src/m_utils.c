@@ -16,6 +16,21 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_symbol *utils_getFirstAtomOfBufferAsSymbol (t_object *x)
+{
+    int argc     = (x->te_buffer ? buffer_size (x->te_buffer) : 0);
+    t_atom *argv = (x->te_buffer ? buffer_atoms (x->te_buffer) : NULL);
+    
+    if (argc && IS_SYMBOL (argv)) { return GET_SYMBOL (argv); }
+    else {
+        return &s_;
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 /* A format to avoid slicing by the string parser. */
 
 t_symbol *utils_decode (t_symbol *s)

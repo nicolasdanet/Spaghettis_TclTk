@@ -718,6 +718,9 @@ int             text_behaviorClicked                    (t_gobj *x,
                                                             int dbl,
                                                             int clicked);
 
+void            text_save                               (t_gobj *x, t_buffer *b);
+void            text_setto                              (t_object *x, t_glist *glist, char *s, int size);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -738,6 +741,18 @@ void            canvas_serializeTemplates               (t_glist *glist, t_buffe
 void            canvas_read                             (t_glist *glist, t_symbol *name, t_symbol *format);
 void            canvas_write                            (t_glist *glist, t_symbol *name, t_symbol *format);
 void            canvas_merge                            (t_glist *glist, t_symbol *name, t_symbol *format);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void text_drawborder    (t_object *x, t_glist *glist, char *tag, int firsttime);
+void text_eraseborder   (t_object *x, t_glist *glist, char *tag);
+
+int  text_xcoord        (t_object *x, t_glist *glist);
+int  text_ycoord        (t_object *x, t_glist *glist);
+int  text_xpix          (t_object *x, t_glist *glist);
+int  text_ypix          (t_object *x, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -794,19 +809,6 @@ void     glist_eraseio          (t_glist *glist, t_object *ob, char *tag);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void text_save          (t_gobj *z, t_buffer *b);
-void text_setto         (t_object *x, t_glist *glist, char *buf, int bufsize);
-void text_drawborder    (t_object *x, t_glist *glist, char *tag, int firsttime);
-void text_eraseborder   (t_object *x, t_glist *glist, char *tag);
-int  text_xcoord        (t_object *x, t_glist *glist);
-int  text_ycoord        (t_object *x, t_glist *glist);
-int  text_xpix          (t_object *x, t_glist *glist);
-int  text_ypix          (t_object *x, t_glist *glist);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void     canvas_vistext                     (t_glist *x, t_object *y);
 t_inlet  *canvas_addinlet                   (t_glist *x, t_pd *who, t_symbol *sym);
 void     canvas_rminlet                     (t_glist *x, t_inlet *ip);
@@ -818,8 +820,6 @@ void     canvas_setusedastemplate           (t_glist *x);
 int      canvas_getfont                     (t_glist *x);
 void     canvas_resortinlets            (t_glist *x);
 void     canvas_resortoutlets           (t_glist *x);
-
-int      canvas_istable                 (t_glist *x);
 
 int      canvas_setdeleting             (t_glist *x, int flag);
 

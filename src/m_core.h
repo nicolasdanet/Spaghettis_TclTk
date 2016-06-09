@@ -212,6 +212,8 @@ int         string_indexOfFirstOccurrenceFrom           (char *s, const char *c,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_symbol    *utils_getFirstAtomOfBufferAsSymbol         (t_object *x);
+
 t_symbol    *utils_decode                               (t_symbol *s);
 t_symbol    *utils_dash                                 (void);
 t_symbol    *utils_empty                                (void); 

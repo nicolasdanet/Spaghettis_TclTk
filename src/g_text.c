@@ -175,18 +175,33 @@ int text_behaviorClicked (t_gobj *z,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void text_save(t_gobj *z, t_buffer *b)
+static int text_isSerializable (t_object *x)
 {
-    t_object *x = (t_object *)z;
-    if (x->te_type == TYPE_OBJECT)
-    {
-            /* if we have a "saveto" method, and if we don't happen to be
-            a canvas that's an abstraction, the saveto method does the work */
-        if (class_hasMethod (pd_class ((t_pd *)x), sym__serialize) &&
-            !((pd_class((t_pd *)x) == canvas_class) && 
-                (canvas_isAbstraction ((t_glist *)x)
-                    || canvas_istable((t_glist *)x))))
-        {  
+    int k = class_hasMethod (pd_class (x), sym__serialize);
+    
+    /* Is it an abstraction or a table object? */
+    
+    if (k && (pd_class (x) == canvas_class)) {          
+        if (canvas_isAbstraction (cast_glist (x))) { return 0; }
+        else {                                                             
+            if (utils_getFirstAtomOfBufferAsSymbol (x) == sym_table) { return 0; }
+        }
+    }
+        
+    return k;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void text_save (t_gobj *z, t_buffer *b)
+{
+    t_object *x = cast_object (z);
+    
+    if (x->te_type == TYPE_OBJECT) {
+    
+        if (text_isSerializable (x)) {  
             mess1((t_pd *)x, sym__serialize, b);
             buffer_vAppend(b, "ssii", sym___hash__X, sym_restore,
                 (int)x->te_xCoordinate, (int)x->te_yCoordinate);
@@ -197,9 +212,8 @@ void text_save(t_gobj *z, t_buffer *b)
                 (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         }
         buffer_serialize(b, x->te_buffer);
-    }
-    else if (x->te_type == TYPE_MESSAGE)
-    {
+        
+    } else if (x->te_type == TYPE_MESSAGE) {
         buffer_vAppend(b, "ssii", sym___hash__X, sym_msg,
             (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         buffer_serialize(b, x->te_buffer);

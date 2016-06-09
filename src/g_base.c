@@ -446,13 +446,11 @@ t_symbol *canvas_makeBindSymbol (t_symbol *s)
 int canvas_hasGraphOnParentTitle (t_glist *glist)
 {
     if (glist->gl_hideText) { return 0; }
-    else {
-    //
-    int argc     = (cast_object (glist)->te_buffer ? buffer_size (cast_object (glist)->te_buffer)  : 0);
-    t_atom *argv = (cast_object (glist)->te_buffer ? buffer_atoms (cast_object (glist)->te_buffer) : NULL);
-    return !(argc && IS_SYMBOL (argv) && GET_SYMBOL (argv) == sym_graph);
-    //
+    else { 
+        if (utils_getFirstAtomOfBufferAsSymbol (cast_object (glist)) == sym_graph) { return 0; }
     }
+    
+    return 1;
 }
 
 int canvas_getFontSize (t_glist *glist)
