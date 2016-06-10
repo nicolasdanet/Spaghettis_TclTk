@@ -514,7 +514,7 @@ static void canvas_popupdialog (t_glist *glist, t_float action, t_float position
     //
     }
     
-    if (action == 0) { canvas_properties (cast_gobj (glist), NULL); }
+    if (action == 0) { canvas_functionProperties (cast_gobj (glist), NULL); }
 }
 
 static void canvas_dialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -572,7 +572,42 @@ static void canvas_dialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-void canvas_properties (t_gobj *x, t_glist *dummy)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void canvas_functionSave (t_gobj *x, t_buffer *b)
+{
+    int needToSaveContents = 1;
+    
+    if (canvas_isAbstraction (cast_glist (x))) { needToSaveContents = 0; }
+    else {                                                             
+        if (utils_getFirstAtomOfBufferAsSymbol (cast_object (x)) == sym_table) { needToSaveContents = 0; }
+    }
+
+    if (needToSaveContents) { 
+        canvas_serialize (cast_glist (x), b);
+        buffer_vAppend (b, "ssii",
+            sym___hash__X,
+            sym_restore,
+            cast_object (x)->te_xCoordinate,
+            cast_object (x)->te_yCoordinate);
+    } else {
+        buffer_vAppend (b, "ssii",
+            sym___hash__X,
+            sym_obj,
+            cast_object (x)->te_xCoordinate,
+            cast_object (x)->te_yCoordinate);
+    }
+    
+    buffer_serialize (b, cast_object (x)->te_buffer);
+    
+    if (cast_object (x)->te_width) { buffer_vAppend (b, ",si", sym_f, cast_object (x)->te_width); }
+    
+    buffer_vAppend (b, ";");
+}
+
+void canvas_functionProperties (t_gobj *x, t_glist *dummy)
 {
     t_gobj *y = NULL;
     t_glist *g = cast_glist (x);
@@ -824,7 +859,6 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_dsp,           sym_dsp,            A_CANT, A_NULL);
     class_addMethod (c, (t_method)canvas_rename,        sym_rename,         A_GIMME, A_NULL);
     
-    class_addMethod (c, (t_method)canvas_serialize,     sym__serialize,     A_CANT, A_NULL);
     class_addMethod (c, (t_method)canvas_save,          sym_save,           A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_saveAs,        sym_saveas,         A_DEFFLOAT, A_NULL);
 
@@ -875,8 +909,9 @@ void canvas_setup (void)
     class_addCreator ((t_newmethod)subpatch_new,    sym_page,               A_DEFSYMBOL, A_NULL);
 
     #endif
-        
-    class_setPropertiesFunction (c, canvas_properties);
+    
+    class_setSaveFunction (c, canvas_functionSave);
+    class_setPropertiesFunction (c, canvas_functionProperties);
 
     canvas_class = c;
 }

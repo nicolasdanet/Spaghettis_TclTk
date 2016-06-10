@@ -772,8 +772,8 @@
 				377899A41CFED7B60056BE61 /* g_message.c */,
 				377899DC1CFEDB5B0056BE61 /* g_gatom.c */,
 				378971D11C4F716700263434 /* g_text.c */,
-				378971BF1C4F716700263434 /* g_array.c */,
 				378971C41C4F716700263434 /* g_graph.c */,
+				378971BF1C4F716700263434 /* g_array.c */,
 				378971CA1C4F716700263434 /* g_io.c */,
 			);
 			name = Canvas;

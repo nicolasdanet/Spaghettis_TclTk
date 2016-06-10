@@ -101,7 +101,6 @@ extern t_symbol *sym__popupdialog;
 extern t_symbol *sym__quit;
 extern t_symbol *sym__savepreferences;
 extern t_symbol *sym__selectall;
-extern t_symbol *sym__serialize;
 extern t_symbol *sym__signoff;
 extern t_symbol *sym__sysexin;
 extern t_symbol *sym__text_template;

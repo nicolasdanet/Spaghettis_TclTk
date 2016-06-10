@@ -584,7 +584,9 @@ void            canvas_saveToFile                       (t_glist *glist,
                                                             float destroy);
 
 void            canvas_serialize                        (t_glist *glist, t_buffer *b);
-void            canvas_properties                       (t_gobj *x, t_glist *glist);
+
+void            canvas_functionSave                     (t_gobj *x, t_buffer *b);
+void            canvas_functionProperties               (t_gobj *x, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

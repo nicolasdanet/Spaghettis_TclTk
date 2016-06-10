@@ -96,7 +96,6 @@ t_symbol *sym__popupdialog;
 t_symbol *sym__quit;
 t_symbol *sym__savepreferences;
 t_symbol *sym__selectall;
-t_symbol *sym__serialize;
 t_symbol *sym__signoff;
 t_symbol *sym__sysexin;
 t_symbol *sym__text_template;
@@ -580,7 +579,6 @@ void symbols_initialize (void)
     sym__quit                                   = gensym ("_quit");
     sym__savepreferences                        = gensym ("_savepreferences");
     sym__selectall                              = gensym ("_selectall");
-    sym__serialize                              = gensym ("_serialize");
     sym__signoff                                = gensym ("_signoff");
     sym__sysexin                                = gensym ("_sysexin");
     sym__text_template                          = gensym ("_text_template");
