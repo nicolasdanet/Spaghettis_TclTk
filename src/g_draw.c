@@ -153,7 +153,7 @@ static void canvas_drawBoxObject (t_glist *glist,
     int c,
     int d)
 {
-    char *pattern = (pd_class (o) == text_class) ? "{6 4}" : "{}";      /* Dashes for badly created boxes? */
+    char *pattern = (pd_class (o) == text_class) ? "{6 4}" : "{}";  // --
     
     if (create) {
         sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d"
@@ -170,7 +170,7 @@ static void canvas_drawBoxObject (t_glist *glist,
                         d,  
                         a, 
                         b,  
-                        pattern,
+                        pattern,        /* Dashes for badly created boxes? */
                         tag);
     } else {
         sys_vGui (".x%lx.c coords %sBORDER %d %d %d %d %d %d %d %d %d %d\n",
@@ -301,7 +301,7 @@ static void canvas_drawBoxComment (t_glist *glist,
     //
     if (create) {
         sys_vGui (".x%lx.c create line %d %d %d %d"
-                        " -tags [list %sBORDER COMMENTBAR]\n",
+                        " -tags [list %sBORDER COMMENTBAR]\n",  // --
                         canvas_getView (glist),
                         c,
                         b,
@@ -409,25 +409,24 @@ void canvas_drawInletsAndOutlets (t_glist *glist,
     }
 }
 
-void canvas_eraseBox(t_glist *glist, t_object *x, char *tag)
+void canvas_eraseBox (t_glist *glist, t_object *o, char *tag)
 {
-    if (x->te_type == TYPE_COMMENT && !glist->gl_isEditMode) return;
-    sys_vGui(".x%lx.c delete %sBORDER\n",
-        canvas_getView(glist), tag);
-    canvas_eraseInletsAndOutlets(glist, x, tag);
+    if (o->te_type != TYPE_COMMENT || glist->gl_isEditMode) {
+    //
+    sys_vGui (".x%lx.c delete %sBORDER\n", canvas_getView (glist), tag); 
+    canvas_eraseInletsAndOutlets (glist, o, tag);
+    //
+    }
 }
 
-void canvas_eraseInletsAndOutlets(t_glist *glist, t_object *ob, char *tag)
+void canvas_eraseInletsAndOutlets (t_glist *glist, t_object *o, char *tag)
 {
-    int i, n;
-    n = object_numberOfOutlets(ob);
-    for (i = 0; i < n; i++)
-        sys_vGui(".x%lx.c delete %sOUTLET%d\n",
-            canvas_getView(glist), tag, i);
-    n = object_numberOfInlets(ob);
-    for (i = 0; i < n; i++)
-        sys_vGui(".x%lx.c delete %sINLET%d\n",
-            canvas_getView(glist), tag, i);
+    int i;
+    int m = object_numberOfInlets (o);
+    int n = object_numberOfOutlets (o);
+    
+    for (i = 0; i < m; i++) { sys_vGui (".x%lx.c delete %sINLET%d\n",  canvas_getView (glist), tag, i); }
+    for (i = 0; i < n; i++) { sys_vGui (".x%lx.c delete %sOUTLET%d\n", canvas_getView (glist), tag, i); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -442,7 +441,7 @@ void canvas_drawGraphOnParentRectangle (t_glist *glist)
     int d = glist->gl_marginY + glist->gl_height;
     
     sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d"
-                    " -dash {2 4}"
+                    " -dash {2 4}"  // --
                     " -fill " DRAW_GRAPH_ON_PARENT_COLOR
                     " -tags GOP\n",
                     canvas_getView (glist),
