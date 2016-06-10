@@ -265,7 +265,7 @@ static int boxtext_send (t_boxtext *x, int action, int a, int b)
                         x->box_tag,
                         buffer);
                     
-        if (resized) { canvas_drawBordersOfBox (x->box_glist, x->box_object, x->box_tag, 0); }
+        if (resized) { canvas_drawBox (x->box_glist, x->box_object, x->box_tag, 0); }
                 
         if (x->box_isActivated) {
         

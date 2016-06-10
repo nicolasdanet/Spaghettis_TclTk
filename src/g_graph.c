@@ -112,7 +112,7 @@ void glist_delete(t_glist *x, t_gobj *y)
             else
             {
                 if (canvas_isMapped(x))
-                    canvas_eraseBordersOfBox(x, &gl->gl_obj,
+                    canvas_eraseBox(x, &gl->gl_obj,
                         boxtext_getTag(boxtext_fetch(x, &gl->gl_obj)));
             }
         }

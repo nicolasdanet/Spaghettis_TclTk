@@ -813,7 +813,7 @@ void canvas_editmode (t_glist *glist, t_float f)
         t_object *o = NULL;
         if ((o = canvas_castToObjectIfPatchable (g)) && o->te_type == TYPE_COMMENT) {
             t_boxtext *text = boxtext_fetch (glist, o);
-            canvas_drawBordersOfBox (glist, o, boxtext_getTag (text), 1);
+            canvas_drawBox (glist, o, boxtext_getTag (text), 1);
         }
     }
     //

@@ -144,6 +144,205 @@ void canvas_deleteLinesByInlets (t_glist *glist, t_object *o, t_inlet *inlet, t_
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void canvas_drawBoxObject (t_glist *glist,
+    t_object *o,
+    char *tag,
+    int create,
+    int a,
+    int b,
+    int c,
+    int d)
+{
+    char *pattern = (pd_class (o) == text_class) ? "{6 4}" : "{}";      /* Dashes for badly created boxes? */
+    
+    if (create) {
+        sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d"
+                        " -dash %s"
+                        " -tags %sBORDER\n",
+                        canvas_getView (glist),
+                        a,
+                        b,
+                        c,
+                        b, 
+                        c, 
+                        d, 
+                        a, 
+                        d,  
+                        a, 
+                        b,  
+                        pattern,
+                        tag);
+    } else {
+        sys_vGui (".x%lx.c coords %sBORDER %d %d %d %d %d %d %d %d %d %d\n",
+                        canvas_getView (glist),
+                        tag,
+                        a,
+                        b,
+                        c,
+                        b,
+                        c,
+                        d,
+                        a,
+                        d,
+                        a,
+                        b);
+        sys_vGui (".x%lx.c itemconfigure %sBORDER -dash %s\n",
+                        canvas_getView (glist),
+                        tag,
+                        pattern);
+    }
+}
+
+static void canvas_drawBoxMessage (t_glist *glist,
+    t_object *o,
+    char *tag,
+    int create,
+    int a,
+    int b,
+    int c,
+    int d)
+{
+    if (create) {
+        sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d %d %d %d %d"
+                        " -tags %sBORDER\n",
+                        canvas_getView (glist),
+                        a,
+                        b,
+                        c + 4,
+                        b,
+                        c,
+                        b + 4,
+                        c,
+                        d - 4,
+                        c + 4,
+                        d,
+                        a,
+                        d,
+                        a,
+                        b,
+                        tag);
+                    
+    } else {
+        sys_vGui (".x%lx.c coords %sBORDER %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
+                        canvas_getView (glist),
+                        tag,
+                        a,
+                        b,
+                        c + 4,
+                        b,
+                        c,
+                        b + 4,
+                        c,
+                        d - 4,
+                        c + 4,
+                        d,
+                        a,
+                        d,
+                        a,
+                        b);
+    }
+}
+
+static void canvas_drawBoxAtom (t_glist *glist,
+    t_object *o,
+    char *tag,
+    int create,
+    int a,
+    int b,
+    int c,
+    int d)
+{
+    if (create) {
+        sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d %d %d"
+                        " -tags %sBORDER\n",
+                        canvas_getView (glist),
+                        a,
+                        b,
+                        c - 4,
+                        b,
+                        c,
+                        b + 4,
+                        c,
+                        d,
+                        a,
+                        d,
+                        a,
+                        b,
+                        tag);
+    } else {
+        sys_vGui (".x%lx.c coords %sBORDER %d %d %d %d %d %d %d %d %d %d %d %d\n",
+                        canvas_getView (glist),
+                        tag,
+                        a,
+                        b,
+                        c - 4,
+                        b,
+                        c,
+                        b + 4,
+                        c,
+                        d,
+                        a,
+                        d,
+                        a,
+                        b);
+    }
+}
+
+static void canvas_drawBoxComment (t_glist *glist,
+    t_object *o,
+    char *tag,
+    int create,
+    int a,
+    int b,
+    int c,
+    int d)
+{
+    if (glist->gl_isEditMode) {
+    //
+    if (create) {
+        sys_vGui (".x%lx.c create line %d %d %d %d"
+                        " -tags [list %sBORDER COMMENTBAR]\n",
+                        canvas_getView (glist),
+                        c,
+                        b,
+                        c,
+                        d,
+                        tag);
+    } else {
+        sys_vGui (".x%lx.c coords %sBORDER %d %d %d %d\n",
+                        canvas_getView (glist),
+                        tag,
+                        c,
+                        b,
+                        c,
+                        d);
+    }
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void canvas_drawBox (t_glist *glist, t_object *o, char *tag, int create)
+{
+    int a, b, c, d;
+    
+    text_behaviorGetRectangle (cast_gobj (o), glist, &a, &b, &c, &d);
+
+    if (o->te_type == TYPE_OBJECT)          { canvas_drawBoxObject (glist, o, tag, create, a, b, c, d);  }
+    else if (o->te_type == TYPE_MESSAGE)    { canvas_drawBoxMessage (glist, o, tag, create, a, b, c, d); }
+    else if (o->te_type == TYPE_ATOM)       { canvas_drawBoxAtom (glist, o, tag, create, a, b, c, d);    }
+    else if (o->te_type == TYPE_COMMENT)    { canvas_drawBoxComment (glist, o, tag, create, a, b, c, d); }
+
+    if (canvas_castToObjectIfPatchable (o)) {
+    // 
+    canvas_drawInletsAndOutlets (glist, o, tag, create, a, b, c, d); 
+    //
+    }
+}
+
 void canvas_drawInletsAndOutlets (t_glist *glist,
     t_object *o,
     char *tag,
@@ -210,81 +409,12 @@ void canvas_drawInletsAndOutlets (t_glist *glist,
     }
 }
 
-void canvas_drawBordersOfBox(t_glist *glist, t_object *x,
-    char *tag, int firsttime)
+void canvas_eraseBox(t_glist *glist, t_object *x, char *tag)
 {
-    t_object *ob;
-    int x1, y1, x2, y2, width, height;
-    text_behaviorGetRectangle(&x->te_g, glist, &x1, &y1, &x2, &y2);
-    width = x2 - x1;
-    height = y2 - y1;
-    
-    if (x->te_type == TYPE_OBJECT)
-    {
-        char *pattern = ((pd_class((t_pd *)x) == text_class) ? "-" : "\"\"");
-        if (firsttime)
-            sys_vGui(".x%lx.c create line\
- %d %d %d %d %d %d %d %d %d %d -dash %s -tags [list %sBORDER obj]\n",
-                canvas_getView(glist),
-                    x1, y1,  x2, y1,  x2, y2,  x1, y2,  x1, y1,  pattern, tag);
-        else
-        {
-            sys_vGui(".x%lx.c coords %sBORDER\
- %d %d %d %d %d %d %d %d %d %d\n",
-                canvas_getView(glist), tag,
-                    x1, y1,  x2, y1,  x2, y2,  x1, y2,  x1, y1);
-            sys_vGui(".x%lx.c itemconfigure %sBORDER -dash %s\n",
-                canvas_getView(glist), tag, pattern);
-        }
-    }
-    else if (x->te_type == TYPE_MESSAGE)
-    {
-        if (firsttime)
-            sys_vGui(".x%lx.c create line\
- %d %d %d %d %d %d %d %d %d %d %d %d %d %d -tags [list %sBORDER msg]\n",
-                canvas_getView(glist),
-                x1, y1,  x2+4, y1,  x2, y1+4,  x2, y2-4,  x2+4, y2,
-                x1, y2,  x1, y1,
-                    tag);
-        else
-            sys_vGui(".x%lx.c coords %sBORDER\
- %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
-                canvas_getView(glist), tag,
-                x1, y1,  x2+4, y1,  x2, y1+4,  x2, y2-4,  x2+4, y2,
-                x1, y2,  x1, y1);
-    }
-    else if (x->te_type == TYPE_ATOM)
-    {
-        if (firsttime)
-            sys_vGui(".x%lx.c create line\
- %d %d %d %d %d %d %d %d %d %d %d %d -tags [list %sBORDER atom]\n",
-                canvas_getView(glist),
-                x1, y1,  x2-4, y1,  x2, y1+4,  x2, y2,  x1, y2,  x1, y1,
-                    tag);
-        else
-            sys_vGui(".x%lx.c coords %sBORDER\
- %d %d %d %d %d %d %d %d %d %d %d %d\n",
-                canvas_getView(glist), tag,
-                x1, y1,  x2-4, y1,  x2, y1+4,  x2, y2,  x1, y2,  x1, y1);
-    }
-        /* for comments, just draw a bar on RHS if unlocked; when a visible
-        canvas is unlocked we have to call this anew on all comments, and when
-        locked we erase them all via the annoying "COMMENTBAR" tag. */
-    else if (x->te_type == TYPE_COMMENT && glist->gl_isEditMode)
-    {
-        if (firsttime)
-            sys_vGui(".x%lx.c create line\
- %d %d %d %d -tags [list %sBORDER COMMENTBAR]\n",
-                canvas_getView(glist),
-                x2, y1,  x2, y2, tag);
-        else
-            sys_vGui(".x%lx.c coords %sBORDER %d %d %d %d\n",
-                canvas_getView(glist), tag, x2, y1,  x2, y2);
-    }
-        /* draw inlets/outlets */
-    
-    if (ob = canvas_castToObjectIfPatchable((t_pd *)x))
-        canvas_drawInletsAndOutlets(glist, ob, tag, firsttime, x1, y1, x2, y2);
+    if (x->te_type == TYPE_COMMENT && !glist->gl_isEditMode) return;
+    sys_vGui(".x%lx.c delete %sBORDER\n",
+        canvas_getView(glist), tag);
+    canvas_eraseInletsAndOutlets(glist, x, tag);
 }
 
 void canvas_eraseInletsAndOutlets(t_glist *glist, t_object *ob, char *tag)
@@ -298,14 +428,6 @@ void canvas_eraseInletsAndOutlets(t_glist *glist, t_object *ob, char *tag)
     for (i = 0; i < n; i++)
         sys_vGui(".x%lx.c delete %sINLET%d\n",
             canvas_getView(glist), tag, i);
-}
-
-void canvas_eraseBordersOfBox(t_glist *glist, t_object *x, char *tag)
-{
-    if (x->te_type == TYPE_COMMENT && !glist->gl_isEditMode) return;
-    sys_vGui(".x%lx.c delete %sBORDER\n",
-        canvas_getView(glist), tag);
-    canvas_eraseInletsAndOutlets(glist, x, tag);
 }
 
 // -----------------------------------------------------------------------------------------------------------

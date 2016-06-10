@@ -74,7 +74,7 @@ void text_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
     //
     t_boxtext *text = boxtext_fetch (glist, x);
     boxtext_displace (text, deltaX, deltaY);
-    canvas_drawBordersOfBox (glist, x, boxtext_getTag (text), 0);
+    canvas_drawBox (glist, x, boxtext_getTag (text), 0);
     canvas_updateLinesByObject (glist, x);
     //
     }
@@ -122,10 +122,10 @@ void text_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
     
     if (isVisible) {
         boxtext_draw (text);
-        canvas_drawBordersOfBox (glist, x, boxtext_getTag (text), 1);
+        canvas_drawBox (glist, x, boxtext_getTag (text), 1);
 
     } else {
-        canvas_eraseBordersOfBox (glist, x, boxtext_getTag (text));
+        canvas_eraseBox (glist, x, boxtext_getTag (text));
         boxtext_erase (text);
     }
     //
