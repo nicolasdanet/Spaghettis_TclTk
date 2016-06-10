@@ -336,6 +336,32 @@ static void gatom_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVi
     if (!isVisible) { interface_guiQueueRemove ((void *)x); }
 }
 
+static void gatom_functionSave (t_gobj *z, t_buffer *b)
+{
+    t_gatom  *x         = cast_gatom (z);
+    t_symbol *type      = (IS_SYMBOL (&x->a_atom) ? sym_symbolatom : sym_floatatom);
+    t_symbol *label     = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedLabel, 1));
+    t_symbol *receive   = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedReceive, 1));
+    t_symbol *send      = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedSend, 1));
+    
+    buffer_vAppend (b, "ssiiifffsss",
+        sym___hash__X,
+        type,
+        cast_object (x)->te_xCoordinate,
+        cast_object (x)->te_yCoordinate,
+        cast_object (x)->te_width,
+        (double)x->a_lowRange,
+        (double)x->a_highRange,
+        (double)x->a_position,
+        label,
+        receive,
+        send);
+
+    if (cast_object (x)->te_width) { buffer_vAppend (b, ",si", sym_f, cast_object (x)->te_width); }
+    
+    buffer_vAppend (b, ";");
+}
+
 static void gatom_functionProperties (t_gobj *z, t_glist *owner)
 {
     t_gatom *x = cast_gatom (z);
@@ -492,6 +518,7 @@ void gatom_setup (void)
     class_addMethod (c, (t_method)gatom_dialog, sym__gatomdialog,   A_GIMME, A_NULL);
 
     class_setWidgetBehavior (c, &gatom_widgetBehavior);
+    class_setSaveFunction (c, gatom_functionSave);
     class_setPropertiesFunction (c, gatom_functionProperties);
     
     gatom_class = c;

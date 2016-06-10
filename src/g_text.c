@@ -179,41 +179,24 @@ void text_save (t_gobj *z, t_buffer *b)
 {
     t_object *x = cast_object (z);
     
-    if (x->te_type == TYPE_OBJECT) {
-    
-        buffer_vAppend(b, "ssii", sym___hash__X, sym_obj, (int)x->te_xCoordinate, (int)x->te_yCoordinate);
-        buffer_serialize(b, x->te_buffer);
+    if (x->te_type == TYPE_COMMENT) {
+        buffer_vAppend (b, "ssii", sym___hash__X, sym_text, x->te_xCoordinate, x->te_yCoordinate);
+        
+    } else if (x->te_type == TYPE_OBJECT) {
+        buffer_vAppend (b, "ssii", sym___hash__X, sym_obj,  x->te_xCoordinate, x->te_yCoordinate);
         
     } else if (x->te_type == TYPE_MESSAGE) {
-        buffer_vAppend(b, "ssii", sym___hash__X, sym_msg,
-            (int)x->te_xCoordinate, (int)x->te_yCoordinate);
-        buffer_serialize(b, x->te_buffer);
-    }
-    else if (x->te_type == TYPE_ATOM)
-    {
-        t_atomtype t = ((t_gatom *)x)->a_atom.a_type;
-        t_symbol *sel = (t == A_SYMBOL ? sym_symbolatom :
-            (t == A_FLOAT ? sym_floatatom : sym_intatom));
+        buffer_vAppend (b, "ssii", sym___hash__X, sym_msg,  x->te_xCoordinate, x->te_yCoordinate);
         
-        t_symbol *label = dollar_toHash (utils_substituteIfEmpty (cast_gatom (x)->a_unexpandedLabel, 1));
-        t_symbol *symfrom = dollar_toHash (utils_substituteIfEmpty (cast_gatom (x)->a_unexpandedReceive, 1));
-        t_symbol *symto = dollar_toHash (utils_substituteIfEmpty (cast_gatom (x)->a_unexpandedSend, 1));
-        buffer_vAppend(b, "ssiiifffsss", sym___hash__X, sel,
-            (int)x->te_xCoordinate, (int)x->te_yCoordinate, (int)x->te_width,
-            (double)((t_gatom *)x)->a_lowRange,
-            (double)((t_gatom *)x)->a_highRange,
-            (double)((t_gatom *)x)->a_position,
-            label, symfrom, symto);
-    }           
-    else        
-    {
-        buffer_vAppend(b, "ssii", sym___hash__X, sym_text,
-            (int)x->te_xCoordinate, (int)x->te_yCoordinate);
-        buffer_serialize(b, x->te_buffer);
+    } else { 
+        PD_BUG;
     }
-    if (x->te_width)
-        buffer_vAppend(b, ",si", sym_f, (int)x->te_width);
-    buffer_vAppend(b, ";");
+    
+    buffer_serialize (b, x->te_buffer);
+    
+    if (x->te_width) { buffer_vAppend (b, ",si", sym_f, x->te_width); }
+    
+    buffer_vAppend (b, ";");
 }
 
 // -----------------------------------------------------------------------------------------------------------

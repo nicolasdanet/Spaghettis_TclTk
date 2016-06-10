@@ -44,6 +44,12 @@ int             canvas_magic = 10000;                       /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static void canvas_functionProperties   (t_gobj *, t_glist *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void canvas_loadbangAbstractions (t_glist *glist)
 {
     t_gobj *y = NULL;
@@ -576,7 +582,7 @@ static void canvas_dialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_functionSave (t_gobj *x, t_buffer *b)
+static void canvas_functionSave (t_gobj *x, t_buffer *b)
 {
     int needToSaveContents = 1;
     
@@ -607,7 +613,7 @@ void canvas_functionSave (t_gobj *x, t_buffer *b)
     buffer_vAppend (b, ";");
 }
 
-void canvas_functionProperties (t_gobj *x, t_glist *dummy)
+static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
 {
     t_gobj *y = NULL;
     t_glist *g = cast_glist (x);

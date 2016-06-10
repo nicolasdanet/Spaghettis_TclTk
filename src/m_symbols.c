@@ -227,7 +227,6 @@ t_symbol *sym_initialize;
 t_symbol *sym_inlet;
 t_symbol *sym_inlet__tilde__;
 t_symbol *sym_int;
-t_symbol *sym_intatom;
 t_symbol *sym_key;
 t_symbol *sym_keyname;
 t_symbol *sym_keyup;
@@ -710,7 +709,6 @@ void symbols_initialize (void)
     sym_inlet                                   = gensym ("inlet");
     sym_inlet__tilde__                          = gensym ("inlet~");
     sym_int                                     = gensym ("int");
-    sym_intatom                                 = gensym ("intatom");
     sym_key                                     = gensym ("key");
     sym_keyname                                 = gensym ("keyname");
     sym_keyup                                   = gensym ("keyup");

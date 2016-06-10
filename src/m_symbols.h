@@ -232,7 +232,6 @@ extern t_symbol *sym_initialize;
 extern t_symbol *sym_inlet;
 extern t_symbol *sym_inlet__tilde__;
 extern t_symbol *sym_int;
-extern t_symbol *sym_intatom;
 extern t_symbol *sym_key;
 extern t_symbol *sym_keyname;
 extern t_symbol *sym_keyup;
