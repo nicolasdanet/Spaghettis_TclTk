@@ -144,45 +144,69 @@ void canvas_deleteLinesByInlets (t_glist *glist, t_object *o, t_inlet *inlet, t_
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* draw inlets and outlets for a text object or for a graph. */
-void canvas_drawInletsAndOutlets(t_glist *glist, t_object *ob,
-    char *tag, int firsttime, int x1, int y1, int x2, int y2)
+void canvas_drawInletsAndOutlets (t_glist *glist,
+    t_object *o,
+    char *tag,
+    int create,
+    int a,
+    int b,
+    int c,
+    int d)
 {
-    int n = object_numberOfOutlets(ob), nplus = (n == 1 ? 1 : n-1), i;
-    int width = x2 - x1;
-    for (i = 0; i < n; i++)
-    {
-        int onset = x1 + (width - INLET_WIDTH) * i / nplus;
-        if (firsttime)
-            sys_vGui(".x%lx.c create rectangle %d %d %d %d \
--tags [list %so%d outlet]\n",
-                canvas_getView(glist),
-                onset, y2 - 1,
-                onset + INLET_WIDTH, y2,
-                tag, i);
-        else
-            sys_vGui(".x%lx.c coords %so%d %d %d %d %d\n",
-                canvas_getView(glist), tag, i,
-                onset, y2 - 1,
-                onset + INLET_WIDTH, y2);
+    int i;
+    int m = object_numberOfInlets (o);
+    int n = object_numberOfOutlets (o);
+    
+    for (i = 0; i < m; i++) {
+    //
+    int offset = a + INLET_OFFSET ((c - a), i, m);
+    
+    if (create) {
+        sys_vGui (".x%lx.c create rectangle %d %d %d %d -tags %sINLET%d\n",
+                        canvas_getView (glist),
+                        offset,
+                        b,
+                        offset + INLET_WIDTH,
+                        b + INLET_HEIGHT,
+                        tag,
+                        i);
+    } else {
+        sys_vGui (".x%lx.c coords %sINLET%d %d %d %d %d\n",
+                        canvas_getView (glist),
+                        tag,
+                        i,
+                        offset,
+                        b,
+                        offset + INLET_WIDTH,
+                        b + INLET_HEIGHT);
     }
-    n = object_numberOfInlets(ob);
-    nplus = (n == 1 ? 1 : n-1);
-    for (i = 0; i < n; i++)
-    {
-        int onset = x1 + (width - INLET_WIDTH) * i / nplus;
-        if (firsttime)
-            sys_vGui(".x%lx.c create rectangle %d %d %d %d \
--tags [list %si%d inlet]\n",
-                canvas_getView(glist),
-                onset, y1,
-                onset + INLET_WIDTH, y1 + INLET_HEIGHT,
-                tag, i);
-        else
-            sys_vGui(".x%lx.c coords %si%d %d %d %d %d\n",
-                canvas_getView(glist), tag, i,
-                onset, y1,
-                onset + INLET_WIDTH, y1 + INLET_HEIGHT);
+    //
+    }
+    
+    for (i = 0; i < n; i++) {
+    //
+    int offset = a + INLET_OFFSET ((c - a), i, n);
+    
+    if (create) {
+        sys_vGui (".x%lx.c create rectangle %d %d %d %d -tags %sOUTLET%d\n",
+                        canvas_getView (glist),
+                        offset,
+                        d - INLET_HEIGHT,
+                        offset + INLET_WIDTH,
+                        d,
+                        tag,
+                        i);
+    } else {
+        sys_vGui (".x%lx.c coords %sOUTLET%d %d %d %d %d\n",
+                        canvas_getView (glist),
+                        tag,
+                        i,
+                        offset,
+                        d - INLET_HEIGHT,
+                        offset + INLET_WIDTH,
+                        d);
+    }
+    //
     }
 }
 
@@ -268,11 +292,11 @@ void canvas_eraseInletsAndOutlets(t_glist *glist, t_object *ob, char *tag)
     int i, n;
     n = object_numberOfOutlets(ob);
     for (i = 0; i < n; i++)
-        sys_vGui(".x%lx.c delete %so%d\n",
+        sys_vGui(".x%lx.c delete %sOUTLET%d\n",
             canvas_getView(glist), tag, i);
     n = object_numberOfInlets(ob);
     for (i = 0; i < n; i++)
-        sys_vGui(".x%lx.c delete %si%d\n",
+        sys_vGui(".x%lx.c delete %sINLET%d\n",
             canvas_getView(glist), tag, i);
 }
 
