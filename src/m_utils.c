@@ -16,15 +16,22 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol *utils_getFirstAtomOfBufferAsSymbol (t_object *x)
+t_symbol *utils_getFirstAtomOfObjectAsSymbol (t_object *x)
 {
-    int argc     = (x->te_buffer ? buffer_size (x->te_buffer) : 0);
-    t_atom *argv = (x->te_buffer ? buffer_atoms (x->te_buffer) : NULL);
-    
+    return utils_getFirstAtomOfBufferAsSymbol (x->te_buffer);
+}
+
+t_symbol *utils_getFirstAtomOfBufferAsSymbol (t_buffer *x)
+{
+    if (x != NULL) {
+    //
+    int argc = buffer_size (x);
+    t_atom *argv = buffer_atoms (x);
     if (argc && IS_SYMBOL (argv)) { return GET_SYMBOL (argv); }
-    else {
-        return &s_;
+    //
     }
+    
+    return NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------

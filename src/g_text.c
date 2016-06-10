@@ -193,7 +193,7 @@ void text_functionSave (t_gobj *z, t_buffer *b)
     
     buffer_serialize (b, x->te_buffer);
     
-    if (x->te_width) { buffer_vAppend (b, ",si", sym_f, x->te_width); }
+    if (x->te_width) { buffer_vAppend (b, ",si", sym_f, x->te_width); }     // --
     
     buffer_vAppend (b, ";");
 }
@@ -202,46 +202,41 @@ void text_functionSave (t_gobj *z, t_buffer *b)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* change text; if TYPE_OBJECT, remake it.  */
-void text_setto(t_object *x, t_glist *glist, char *buf, int bufsize)
+void text_set (t_object *x, t_glist *glist, char *s, int size)
 {
-    if (x->te_type == TYPE_OBJECT)
+    if (x->te_type != TYPE_OBJECT) { buffer_withStringUnzeroed (x->te_buffer, s, size); }
+    else {
+    //
+    t_buffer *t = buffer_new();
+    buffer_withStringUnzeroed (t, s, size);
+    
     {
-        t_buffer *b = buffer_new();
-        int natom1, natom2, widthwas = x->te_width;
-        t_atom *vec1, *vec2;
-        buffer_withStringUnzeroed(b, buf, bufsize);
-        natom1 = buffer_size(x->te_buffer);
-        vec1 = buffer_atoms(x->te_buffer);
-        natom2 = buffer_size(b);
-        vec2 = buffer_atoms(b);
-            /* special case: if  pd args change just pass the message on. */
-        if (natom1 >= 1 && natom2 >= 1 && vec1[0].a_type == A_SYMBOL
-            && !strcmp(vec1[0].a_w.w_symbol->s_name, "pd") &&
-             vec2[0].a_type == A_SYMBOL
-            && !strcmp(vec2[0].a_w.w_symbol->s_name, "pd"))
-        {
-            pd_message((t_pd *)x, sym_rename, natom2-1, vec2+1);
-            buffer_free(x->te_buffer);
-            x->te_buffer = b;
+    //
+    int m = (utils_getFirstAtomOfObjectAsSymbol (x) == sym_pd);
+    int n = (utils_getFirstAtomOfBufferAsSymbol (t) == sym_pd);
+    
+    if (m && n) {
+        pd_message (cast_pd (x), sym_rename, buffer_size (t) - 1, buffer_atoms (t) + 1);
+        buffer_free (x->te_buffer);
+        x->te_buffer = t;
+        
+    } else {
+        int w = x->te_width;
+        int a = x->te_xCoordinate;
+        int b = x->te_yCoordinate;
+        
+        glist_delete (glist, cast_gobj (x));
+        canvas_makeTextObject (glist, a, b, w, 0, t);
+        canvas_restoreCachedLines (canvas_getView (glist));
+        
+        if (pd_newest) {
+            if (pd_class (pd_newest) == canvas_class) { canvas_loadbang (cast_glist (pd_newest)); }
         }
-        else  /* normally, just destroy the old one and make a new one. */
-        {
-            int xwas = x->te_xCoordinate, ywas = x->te_yCoordinate;
-            glist_delete(glist, &x->te_g);
-            canvas_makeTextObject(glist, xwas, ywas, widthwas, 0, b);
-            canvas_restoreCachedLines (canvas_getView(glist));
-                /* if it's an abstraction loadbang it here */
-            if (pd_newest && pd_class(pd_newest) == canvas_class)
-                canvas_loadbang((t_glist *)pd_newest);
-        }
-            /* if we made a new "pd" or changed a window name,
-                update window list */
-        /*if (natom2 >= 1  && vec2[0].a_type == A_SYMBOL
-            && !strcmp(vec2[0].a_w.w_symbol->s_name, "pd"))
-                canvas_updatewindowlist();*/
     }
-    else buffer_withStringUnzeroed(x->te_buffer, buf, bufsize);
+    //
+    }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

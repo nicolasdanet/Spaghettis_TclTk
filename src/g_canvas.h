@@ -731,7 +731,7 @@ int             text_behaviorClicked                    (t_gobj *x,
                                                             int clicked);
 
 void            text_functionSave                       (t_gobj *x, t_buffer *b);
-void            text_setto                              (t_object *x, t_glist *glist, char *s, int size);
+void            text_set                                (t_object *x, t_glist *glist, char *s, int size);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

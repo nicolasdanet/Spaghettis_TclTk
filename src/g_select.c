@@ -323,7 +323,7 @@ void canvas_selectLine (t_glist *glist,
                     glist->gl_editor->e_selectedLineConnection);  
 }
 
-/* Note that deselecting an object with active text might recreate it. */
+/* Note that deselecting an object with its text active might recreate it. */
 
 void canvas_deselectObject (t_glist *glist, t_gobj *y)
 {
@@ -374,7 +374,7 @@ void canvas_deselectObject (t_glist *glist, t_gobj *y)
         char *t = NULL;
         int size;
         boxtext_getText (z, &t, &size);
-        text_setto (cast_object (y), glist, t, size);
+        text_set (cast_object (y), glist, t, size);
         canvas_updateLinesByObject (glist, cast_object (y));
         glist->gl_editor->e_selectedText = NULL;
     }

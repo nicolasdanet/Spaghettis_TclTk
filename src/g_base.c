@@ -447,7 +447,7 @@ int canvas_hasGraphOnParentTitle (t_glist *glist)
 {
     if (glist->gl_hideText) { return 0; }
     else { 
-        if (utils_getFirstAtomOfBufferAsSymbol (cast_object (glist)) == sym_graph) { return 0; }
+        if (utils_getFirstAtomOfObjectAsSymbol (cast_object (glist)) == sym_graph) { return 0; }
     }
     
     return 1;
