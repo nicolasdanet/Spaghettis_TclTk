@@ -107,12 +107,12 @@ void glist_delete(t_glist *x, t_gobj *y)
             {
                 char tag[80];
                 sprintf(tag, "graph%lx", (t_int)gl);
-                glist_eraseio(x, &gl->gl_obj, tag);
+                canvas_eraseInletsAndOutlets(x, &gl->gl_obj, tag);
             }
             else
             {
                 if (canvas_isMapped(x))
-                    text_eraseborder(&gl->gl_obj, x,
+                    canvas_eraseBordersOfBox(x, &gl->gl_obj,
                         boxtext_getTag(boxtext_fetch(x, &gl->gl_obj)));
             }
         }
@@ -691,9 +691,9 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
 
     sprintf(tag, "graph%lx", (t_int)x);
     if (vis)
-        glist_drawio(parent_glist, &x->gl_obj, 1,
-            tag, x1, y1, x2, y2);
-    else glist_eraseio(parent_glist, &x->gl_obj, tag);
+        canvas_drawInletsAndOutlets(parent_glist, &x->gl_obj,
+            tag, 1, x1, y1, x2, y2);
+    else canvas_eraseInletsAndOutlets(parent_glist, &x->gl_obj, tag);
         /* if we look like a graph but have been moved to a toplevel,
         just show the bounding rectangle */
     if (x->gl_haveWindow)

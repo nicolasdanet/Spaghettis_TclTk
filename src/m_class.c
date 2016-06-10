@@ -221,7 +221,7 @@ t_class *class_new (t_symbol *s,
     c->c_methodAnything     = class_defaultAnything;
     c->c_behavior           = (type == CLASS_BOX ? &text_widgetBehavior : NULL);
     c->c_behaviorParent     = NULL;
-    c->c_fnSave             = (type == CLASS_BOX ? text_save : class_defaultSave);
+    c->c_fnSave             = (type == CLASS_BOX ? text_functionSave : class_defaultSave);
     c->c_fnProperties       = class_defaultProperties;
     c->c_signalOffset       = 0;
     c->c_isBox              = (type == CLASS_BOX);

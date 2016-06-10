@@ -24,6 +24,7 @@
 
 extern t_class          *canvas_class;
 extern t_class          *scalar_class;
+extern t_class          *text_class;
 extern t_pdinstance     *pd_this;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -138,6 +139,154 @@ void canvas_deleteLinesByInlets (t_glist *glist, t_object *o, t_inlet *inlet, t_
     //
     }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+    /* draw inlets and outlets for a text object or for a graph. */
+void canvas_drawInletsAndOutlets(t_glist *glist, t_object *ob,
+    char *tag, int firsttime, int x1, int y1, int x2, int y2)
+{
+    int n = object_numberOfOutlets(ob), nplus = (n == 1 ? 1 : n-1), i;
+    int width = x2 - x1;
+    for (i = 0; i < n; i++)
+    {
+        int onset = x1 + (width - INLET_WIDTH) * i / nplus;
+        if (firsttime)
+            sys_vGui(".x%lx.c create rectangle %d %d %d %d \
+-tags [list %so%d outlet]\n",
+                canvas_getView(glist),
+                onset, y2 - 1,
+                onset + INLET_WIDTH, y2,
+                tag, i);
+        else
+            sys_vGui(".x%lx.c coords %so%d %d %d %d %d\n",
+                canvas_getView(glist), tag, i,
+                onset, y2 - 1,
+                onset + INLET_WIDTH, y2);
+    }
+    n = object_numberOfInlets(ob);
+    nplus = (n == 1 ? 1 : n-1);
+    for (i = 0; i < n; i++)
+    {
+        int onset = x1 + (width - INLET_WIDTH) * i / nplus;
+        if (firsttime)
+            sys_vGui(".x%lx.c create rectangle %d %d %d %d \
+-tags [list %si%d inlet]\n",
+                canvas_getView(glist),
+                onset, y1,
+                onset + INLET_WIDTH, y1 + INLET_HEIGHT,
+                tag, i);
+        else
+            sys_vGui(".x%lx.c coords %si%d %d %d %d %d\n",
+                canvas_getView(glist), tag, i,
+                onset, y1,
+                onset + INLET_WIDTH, y1 + INLET_HEIGHT);
+    }
+}
+
+void canvas_drawBordersOfBox(t_glist *glist, t_object *x,
+    char *tag, int firsttime)
+{
+    t_object *ob;
+    int x1, y1, x2, y2, width, height;
+    text_behaviorGetRectangle(&x->te_g, glist, &x1, &y1, &x2, &y2);
+    width = x2 - x1;
+    height = y2 - y1;
+    
+    if (x->te_type == TYPE_OBJECT)
+    {
+        char *pattern = ((pd_class((t_pd *)x) == text_class) ? "-" : "\"\"");
+        if (firsttime)
+            sys_vGui(".x%lx.c create line\
+ %d %d %d %d %d %d %d %d %d %d -dash %s -tags [list %sBORDER obj]\n",
+                canvas_getView(glist),
+                    x1, y1,  x2, y1,  x2, y2,  x1, y2,  x1, y1,  pattern, tag);
+        else
+        {
+            sys_vGui(".x%lx.c coords %sBORDER\
+ %d %d %d %d %d %d %d %d %d %d\n",
+                canvas_getView(glist), tag,
+                    x1, y1,  x2, y1,  x2, y2,  x1, y2,  x1, y1);
+            sys_vGui(".x%lx.c itemconfigure %sBORDER -dash %s\n",
+                canvas_getView(glist), tag, pattern);
+        }
+    }
+    else if (x->te_type == TYPE_MESSAGE)
+    {
+        if (firsttime)
+            sys_vGui(".x%lx.c create line\
+ %d %d %d %d %d %d %d %d %d %d %d %d %d %d -tags [list %sBORDER msg]\n",
+                canvas_getView(glist),
+                x1, y1,  x2+4, y1,  x2, y1+4,  x2, y2-4,  x2+4, y2,
+                x1, y2,  x1, y1,
+                    tag);
+        else
+            sys_vGui(".x%lx.c coords %sBORDER\
+ %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
+                canvas_getView(glist), tag,
+                x1, y1,  x2+4, y1,  x2, y1+4,  x2, y2-4,  x2+4, y2,
+                x1, y2,  x1, y1);
+    }
+    else if (x->te_type == TYPE_ATOM)
+    {
+        if (firsttime)
+            sys_vGui(".x%lx.c create line\
+ %d %d %d %d %d %d %d %d %d %d %d %d -tags [list %sBORDER atom]\n",
+                canvas_getView(glist),
+                x1, y1,  x2-4, y1,  x2, y1+4,  x2, y2,  x1, y2,  x1, y1,
+                    tag);
+        else
+            sys_vGui(".x%lx.c coords %sBORDER\
+ %d %d %d %d %d %d %d %d %d %d %d %d\n",
+                canvas_getView(glist), tag,
+                x1, y1,  x2-4, y1,  x2, y1+4,  x2, y2,  x1, y2,  x1, y1);
+    }
+        /* for comments, just draw a bar on RHS if unlocked; when a visible
+        canvas is unlocked we have to call this anew on all comments, and when
+        locked we erase them all via the annoying "COMMENTBAR" tag. */
+    else if (x->te_type == TYPE_COMMENT && glist->gl_isEditMode)
+    {
+        if (firsttime)
+            sys_vGui(".x%lx.c create line\
+ %d %d %d %d -tags [list %sBORDER COMMENTBAR]\n",
+                canvas_getView(glist),
+                x2, y1,  x2, y2, tag);
+        else
+            sys_vGui(".x%lx.c coords %sBORDER %d %d %d %d\n",
+                canvas_getView(glist), tag, x2, y1,  x2, y2);
+    }
+        /* draw inlets/outlets */
+    
+    if (ob = canvas_castToObjectIfPatchable((t_pd *)x))
+        canvas_drawInletsAndOutlets(glist, ob, tag, firsttime, x1, y1, x2, y2);
+}
+
+void canvas_eraseInletsAndOutlets(t_glist *glist, t_object *ob, char *tag)
+{
+    int i, n;
+    n = object_numberOfOutlets(ob);
+    for (i = 0; i < n; i++)
+        sys_vGui(".x%lx.c delete %so%d\n",
+            canvas_getView(glist), tag, i);
+    n = object_numberOfInlets(ob);
+    for (i = 0; i < n; i++)
+        sys_vGui(".x%lx.c delete %si%d\n",
+            canvas_getView(glist), tag, i);
+}
+
+void canvas_eraseBordersOfBox(t_glist *glist, t_object *x, char *tag)
+{
+    if (x->te_type == TYPE_COMMENT && !glist->gl_isEditMode) return;
+    sys_vGui(".x%lx.c delete %sBORDER\n",
+        canvas_getView(glist), tag);
+    canvas_eraseInletsAndOutlets(glist, x, tag);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void canvas_drawGraphOnParentRectangle (t_glist *glist)
 {

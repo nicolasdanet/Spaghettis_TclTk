@@ -452,10 +452,23 @@ void            canvas_deleteLinesByInlets              (t_glist *glist,
                                                             t_inlet  *inlet,
                                                             t_outlet *outlet);
 
+void            canvas_drawInletsAndOutlets             (t_glist *x,
+                                                            t_object *o,
+                                                            char *tag,
+                                                            int create,
+                                                            int a,
+                                                            int b,
+                                                            int c,
+                                                            int d);
+
+void            canvas_drawBordersOfBox                 (t_glist *glist, t_object *o, char *tag, int create);
+void            canvas_eraseInletsAndOutlets            (t_glist *glist, t_object *o, char *tag);
+void            canvas_eraseBordersOfBox                (t_glist *glist, t_object *o, char *tag);
+
 void            canvas_drawGraphOnParentRectangle       (t_glist *glist);
 void            canvas_deleteGraphOnParentRectangle     (t_glist *glist);
-void            canvas_redrawAllByTemplate              (t_template *dummy, int action);
 void            canvas_redrawAllByTemplateByCanvas      (t_glist *glist, int action);
+void            canvas_redrawAllByTemplate              (t_template *dummy, int action);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -717,7 +730,7 @@ int             text_behaviorClicked                    (t_gobj *x,
                                                             int dbl,
                                                             int clicked);
 
-void            text_save                               (t_gobj *x, t_buffer *b);
+void            text_functionSave                       (t_gobj *x, t_buffer *b);
 void            text_setto                              (t_object *x, t_glist *glist, char *s, int size);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -744,9 +757,6 @@ void            canvas_merge                            (t_glist *glist, t_symbo
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-void text_drawborder    (t_object *x, t_glist *glist, char *tag, int firsttime);
-void text_eraseborder   (t_object *x, t_glist *glist, char *tag);
 
 int  text_xcoord        (t_object *x, t_glist *glist);
 int  text_ycoord        (t_object *x, t_glist *glist);
@@ -793,16 +803,7 @@ void     glist_arraydialog      (t_glist *parent,
 
 t_buffer *glist_writetobinbuf   (t_glist *x, int wholething);
 void     glist_redraw           (t_glist *x);
-void     glist_drawio           (t_glist *x,
-                                    t_object *ob,
-                                    int firsttime,
-                                    char *tag,
-                                    int x1,
-                                    int y1,
-                                    int x2,
-                                    int y2);
 
-void     glist_eraseio          (t_glist *glist, t_object *ob, char *tag);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

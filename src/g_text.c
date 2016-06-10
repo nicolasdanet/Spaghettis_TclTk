@@ -25,7 +25,6 @@
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_class  *canvas_class;
-extern t_class  *gatom_class;
 extern t_pd     *pd_newest;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -75,7 +74,7 @@ void text_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
     //
     t_boxtext *text = boxtext_fetch (glist, x);
     boxtext_displace (text, deltaX, deltaY);
-    text_drawborder (x, glist, boxtext_getTag (text), 0);
+    canvas_drawBordersOfBox (glist, x, boxtext_getTag (text), 0);
     canvas_updateLinesByObject (glist, x);
     //
     }
@@ -123,10 +122,10 @@ void text_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
     
     if (isVisible) {
         boxtext_draw (text);
-        text_drawborder (x, glist, boxtext_getTag (text), 1);
+        canvas_drawBordersOfBox (glist, x, boxtext_getTag (text), 1);
 
     } else {
-        text_eraseborder (x, glist, boxtext_getTag (text));
+        canvas_eraseBordersOfBox (glist, x, boxtext_getTag (text));
         boxtext_erase (text);
     }
     //
@@ -175,7 +174,7 @@ int text_behaviorClicked (t_gobj *z,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void text_save (t_gobj *z, t_buffer *b)
+void text_functionSave (t_gobj *z, t_buffer *b)
 {
     t_object *x = cast_object (z);
     
@@ -197,150 +196,6 @@ void text_save (t_gobj *z, t_buffer *b)
     if (x->te_width) { buffer_vAppend (b, ",si", sym_f, x->te_width); }
     
     buffer_vAppend (b, ";");
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-    /* draw inlets and outlets for a text object or for a graph. */
-void glist_drawio(t_glist *glist, t_object *ob, int firsttime,
-    char *tag, int x1, int y1, int x2, int y2)
-{
-    int n = object_numberOfOutlets(ob), nplus = (n == 1 ? 1 : n-1), i;
-    int width = x2 - x1;
-    for (i = 0; i < n; i++)
-    {
-        int onset = x1 + (width - INLET_WIDTH) * i / nplus;
-        if (firsttime)
-            sys_vGui(".x%lx.c create rectangle %d %d %d %d \
--tags [list %so%d outlet]\n",
-                canvas_getView(glist),
-                onset, y2 - 1,
-                onset + INLET_WIDTH, y2,
-                tag, i);
-        else
-            sys_vGui(".x%lx.c coords %so%d %d %d %d %d\n",
-                canvas_getView(glist), tag, i,
-                onset, y2 - 1,
-                onset + INLET_WIDTH, y2);
-    }
-    n = object_numberOfInlets(ob);
-    nplus = (n == 1 ? 1 : n-1);
-    for (i = 0; i < n; i++)
-    {
-        int onset = x1 + (width - INLET_WIDTH) * i / nplus;
-        if (firsttime)
-            sys_vGui(".x%lx.c create rectangle %d %d %d %d \
--tags [list %si%d inlet]\n",
-                canvas_getView(glist),
-                onset, y1,
-                onset + INLET_WIDTH, y1 + INLET_HEIGHT,
-                tag, i);
-        else
-            sys_vGui(".x%lx.c coords %si%d %d %d %d %d\n",
-                canvas_getView(glist), tag, i,
-                onset, y1,
-                onset + INLET_WIDTH, y1 + INLET_HEIGHT);
-    }
-}
-
-void text_drawborder(t_object *x, t_glist *glist,
-    char *tag, int firsttime)
-{
-    t_object *ob;
-    int x1, y1, x2, y2, width, height;
-    text_behaviorGetRectangle(&x->te_g, glist, &x1, &y1, &x2, &y2);
-    width = x2 - x1;
-    height = y2 - y1;
-    
-    if (x->te_type == TYPE_OBJECT)
-    {
-        char *pattern = ((pd_class((t_pd *)x) == text_class) ? "-" : "\"\"");
-        if (firsttime)
-            sys_vGui(".x%lx.c create line\
- %d %d %d %d %d %d %d %d %d %d -dash %s -tags [list %sBORDER obj]\n",
-                canvas_getView(glist),
-                    x1, y1,  x2, y1,  x2, y2,  x1, y2,  x1, y1,  pattern, tag);
-        else
-        {
-            sys_vGui(".x%lx.c coords %sBORDER\
- %d %d %d %d %d %d %d %d %d %d\n",
-                canvas_getView(glist), tag,
-                    x1, y1,  x2, y1,  x2, y2,  x1, y2,  x1, y1);
-            sys_vGui(".x%lx.c itemconfigure %sBORDER -dash %s\n",
-                canvas_getView(glist), tag, pattern);
-        }
-    }
-    else if (x->te_type == TYPE_MESSAGE)
-    {
-        if (firsttime)
-            sys_vGui(".x%lx.c create line\
- %d %d %d %d %d %d %d %d %d %d %d %d %d %d -tags [list %sBORDER msg]\n",
-                canvas_getView(glist),
-                x1, y1,  x2+4, y1,  x2, y1+4,  x2, y2-4,  x2+4, y2,
-                x1, y2,  x1, y1,
-                    tag);
-        else
-            sys_vGui(".x%lx.c coords %sBORDER\
- %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
-                canvas_getView(glist), tag,
-                x1, y1,  x2+4, y1,  x2, y1+4,  x2, y2-4,  x2+4, y2,
-                x1, y2,  x1, y1);
-    }
-    else if (x->te_type == TYPE_ATOM)
-    {
-        if (firsttime)
-            sys_vGui(".x%lx.c create line\
- %d %d %d %d %d %d %d %d %d %d %d %d -tags [list %sBORDER atom]\n",
-                canvas_getView(glist),
-                x1, y1,  x2-4, y1,  x2, y1+4,  x2, y2,  x1, y2,  x1, y1,
-                    tag);
-        else
-            sys_vGui(".x%lx.c coords %sBORDER\
- %d %d %d %d %d %d %d %d %d %d %d %d\n",
-                canvas_getView(glist), tag,
-                x1, y1,  x2-4, y1,  x2, y1+4,  x2, y2,  x1, y2,  x1, y1);
-    }
-        /* for comments, just draw a bar on RHS if unlocked; when a visible
-        canvas is unlocked we have to call this anew on all comments, and when
-        locked we erase them all via the annoying "COMMENTBAR" tag. */
-    else if (x->te_type == TYPE_COMMENT && glist->gl_isEditMode)
-    {
-        if (firsttime)
-            sys_vGui(".x%lx.c create line\
- %d %d %d %d -tags [list %sBORDER COMMENTBAR]\n",
-                canvas_getView(glist),
-                x2, y1,  x2, y2, tag);
-        else
-            sys_vGui(".x%lx.c coords %sBORDER %d %d %d %d\n",
-                canvas_getView(glist), tag, x2, y1,  x2, y2);
-    }
-        /* draw inlets/outlets */
-    
-    if (ob = canvas_castToObjectIfPatchable((t_pd *)x))
-        glist_drawio(glist, ob, firsttime, tag, x1, y1, x2, y2);
-}
-
-void glist_eraseio(t_glist *glist, t_object *ob, char *tag)
-{
-    int i, n;
-    n = object_numberOfOutlets(ob);
-    for (i = 0; i < n; i++)
-        sys_vGui(".x%lx.c delete %so%d\n",
-            canvas_getView(glist), tag, i);
-    n = object_numberOfInlets(ob);
-    for (i = 0; i < n; i++)
-        sys_vGui(".x%lx.c delete %si%d\n",
-            canvas_getView(glist), tag, i);
-}
-
-void text_eraseborder(t_object *x, t_glist *glist, char *tag)
-{
-    if (x->te_type == TYPE_COMMENT && !glist->gl_isEditMode) return;
-    sys_vGui(".x%lx.c delete %sBORDER\n",
-        canvas_getView(glist), tag);
-    glist_eraseio(glist, x, tag);
 }
 
 // -----------------------------------------------------------------------------------------------------------
