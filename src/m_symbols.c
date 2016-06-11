@@ -60,6 +60,7 @@ t_symbol *sym___plus____tilde__;
 t_symbol *sym___semicolon__;
 t_symbol *sym___slash__;
 t_symbol *sym___slash____tilde__;
+t_symbol *sym__array;
 t_symbol *sym__arraydialog;
 t_symbol *sym__audiodialog;
 t_symbol *sym__audioproperties;
@@ -542,6 +543,7 @@ void symbols_initialize (void)
     sym___semicolon__                           = gensym (";");
     sym___slash__                               = gensym ("/");
     sym___slash____tilde__                      = gensym ("/~");
+    sym__array                                  = gensym ("_array");
     sym__arraydialog                            = gensym ("_arraydialog");
     sym__audiodialog                            = gensym ("_audiodialog");
     sym__audioproperties                        = gensym ("_audioproperties");

@@ -40,7 +40,6 @@ void loader_release         (void);
 
 void g_array_setup          (void);
 void canvas_setup           (void);
-void g_graph_setup          (void);
 void guiconnect_setup       (void);
 void bng_setup              (void);
 void toggle_setup           (void);
@@ -98,7 +97,6 @@ void setup_initialize (void)
     
     g_array_setup();
     canvas_setup();
-    g_graph_setup();
     guiconnect_setup();
     bng_setup();
     toggle_setup();

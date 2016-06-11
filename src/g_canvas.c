@@ -25,7 +25,11 @@ extern t_glist  *editor_pasteCurrentCanvas;
 
 extern int      editor_pasteOffsetWhileConnectingObjects;
 
-extern t_pd     pd_canvasMaker;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+extern t_pd                 pd_canvasMaker;
+extern t_widgetbehavior     graph_widgetbehavior;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -472,7 +476,7 @@ static void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_popupdialog (t_glist *glist, t_float action, t_float positionX, t_float positionY)
+static void canvas_popupDialog (t_glist *glist, t_float action, t_float positionX, t_float positionY)
 {
     t_gobj *y = NULL;
     
@@ -808,8 +812,15 @@ void canvas_setup (void)
     class_addMotion (c, canvas_motion);
     class_addMouse (c, canvas_mouse);
     class_addMouseUp (c, canvas_mouseUp);
-    class_addBounds (c, canvas_setBounds);
 
+    class_addMethod (c, (t_method)canvas_setBounds,
+        sym_setbounds,
+        A_FLOAT,
+        A_FLOAT,
+        A_FLOAT, 
+        A_FLOAT,
+        A_NULL);
+                                                
     class_addMethod (c, (t_method)canvas_coords,        sym_coords,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_restore,       sym_restore,        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_width,         sym_f,              A_GIMME, A_NULL);
@@ -845,7 +856,8 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_vu,            sym_vu,             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_cnv,           sym_cnv,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_nbx,           sym_nbx,            A_GIMME, A_NULL);
-    
+    class_addMethod (c, (t_method)canvas_menuarray,     sym__array,         A_NULL);
+        
     class_addMethod (c, (t_method)canvas_editmode,      sym_editmode,       A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_close,         sym_close,          A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_open,          sym_open,           A_NULL);
@@ -879,7 +891,37 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_read,          sym_read,           A_SYMBOL, A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)canvas_merge,         sym_merge,          A_SYMBOL, A_DEFSYMBOL, A_NULL);
     
-    class_addMethod (c, (t_method)canvas_popupdialog,
+    class_addMethod (c, (t_method)graph_bounds,
+        sym_bounds,
+        A_FLOAT,
+        A_FLOAT,
+        A_FLOAT,
+        A_FLOAT,
+        A_NULL);
+        
+    class_addMethod (c, (t_method)graph_xticks,
+        sym_xticks,
+        A_FLOAT,
+        A_FLOAT,
+        A_FLOAT,
+        A_NULL);
+        
+    class_addMethod (c, (t_method)graph_yticks, 
+        sym_yticks,
+        A_FLOAT,
+        A_FLOAT,
+        A_FLOAT,
+        A_NULL);
+        
+    class_addMethod (c, (t_method)graph_array,
+        sym_array,
+        A_SYMBOL,
+        A_FLOAT,
+        A_SYMBOL,
+        A_DEFFLOAT,
+        A_NULL);
+        
+    class_addMethod (c, (t_method)canvas_popupDialog,
         sym__popupdialog,
         A_FLOAT,
         A_FLOAT,
@@ -911,11 +953,13 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_merge,     sym_mergefile,          A_SYMBOL, A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)canvas_save,      sym_menusave,           A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_saveAs,    sym_menusaveas,         A_DEFFLOAT, A_NULL);    
-    
+    class_addMethod (c, (t_method)canvas_menuarray, sym_menuarray,          A_NULL);
+
     class_addCreator ((t_newmethod)subpatch_new,    sym_page,               A_DEFSYMBOL, A_NULL);
 
     #endif
     
+    class_setWidgetBehavior (c, &graph_widgetbehavior);
     class_setSaveFunction (c, canvas_functionSave);
     class_setPropertiesFunction (c, canvas_functionProperties);
 

@@ -541,12 +541,6 @@ void            canvas_click                            (t_glist *glist,
                                                             t_float ctrl,
                                                             t_float alt);
 
-void            canvas_setBounds                        (t_glist *glist,
-                                                            t_float a,
-                                                            t_float b,
-                                                            t_float c,
-                                                            t_float d);
-
 void            canvas_motion                           (t_glist *glist,
                                                             t_float positionX,
                                                             t_float positionY,
@@ -561,6 +555,12 @@ void            canvas_mouseUp                          (t_glist *glist,
                                                             t_float a,
                                                             t_float b);
 
+void            canvas_setBounds                        (t_glist *glist,
+                                                            t_float a,
+                                                            t_float b,
+                                                            t_float c,
+                                                            t_float d);
+                                                            
 void            canvas_connect                          (t_glist *glist,
                                                             t_float indexOfObjectOut,
                                                             t_float indexOfOutlet,
@@ -732,6 +732,15 @@ int             text_behaviorClicked                    (t_gobj *x,
 
 void            text_functionSave                       (t_gobj *x, t_buffer *b);
 void            text_set                                (t_object *x, t_glist *glist, char *s, int size);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void            graph_bounds                            (t_glist *x, t_float x1, t_float y1, t_float x2, t_float y2);
+void            graph_xticks                            (t_glist *x, t_float point, t_float inc, t_float f);
+void            graph_yticks                            (t_glist *x, t_float point, t_float inc, t_float f);
+void            canvas_menuarray                        (t_glist *canvas);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

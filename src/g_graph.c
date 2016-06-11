@@ -432,8 +432,7 @@ void canvas_resortoutlets(t_glist *x)
 /* ----------calculating coordinates and controlling appearance --------- */
 
 
-static void graph_bounds(t_glist *x, t_float x1, t_float y1,
-    t_float x2, t_float y2)
+void graph_bounds(t_glist *x, t_float x1, t_float y1, t_float x2, t_float y2)
 {
     x->gl_valueStart = x1;
     x->gl_valueEnd = x2;
@@ -449,8 +448,7 @@ static void graph_bounds(t_glist *x, t_float x1, t_float y1,
     glist_redraw(x);
 }
 
-static void graph_xticks(t_glist *x,
-    t_float point, t_float inc, t_float f)
+void graph_xticks(t_glist *x, t_float point, t_float inc, t_float f)
 {
     x->gl_tickX.k_point = point;
     x->gl_tickX.k_increment = inc;
@@ -458,8 +456,7 @@ static void graph_xticks(t_glist *x,
     glist_redraw(x);
 }
 
-static void graph_yticks(t_glist *x,
-    t_float point, t_float inc, t_float f)
+void graph_yticks (t_glist *x, t_float point, t_float inc, t_float f)
 {
     x->gl_tickY.k_point = point;
     x->gl_tickY.k_increment = inc;
@@ -1073,34 +1070,6 @@ t_glist *glist_findgraph(t_glist *x)
         if (pd_class(&z->g_pd) == canvas_class && ((t_glist *)z)->gl_isGraphOnParent)
             y = z;
     return ((t_glist *)y);
-}
-
-extern void canvas_menuarray(t_glist *canvas);
-
-void g_graph_setup_class (t_class *c)
-{
-    class_setWidgetBehavior(c, &graph_widgetbehavior);
-    class_addMethod(c, (t_method)graph_bounds, sym_bounds,
-        A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addMethod(c, (t_method)graph_xticks, sym_xticks,
-        A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    /* class_addMethod(c, (t_method)graph_xlabel, gen_sym ("xlabel"),
-        A_GIMME, 0); */
-    class_addMethod(c, (t_method)graph_yticks, sym_yticks,
-        A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    /* class_addMethod(c, (t_method)graph_ylabel, gen_sym ("ylabel"),
-        A_GIMME, 0); */
-    class_addMethod(c, (t_method)graph_array, sym_array,
-        A_SYMBOL, A_FLOAT, A_SYMBOL, A_DEFFLOAT, A_NULL);
-    class_addMethod(c, (t_method)canvas_menuarray,
-        sym_menuarray, A_NULL); /* LEGACY !!! */
-    /* class_addMethod(c, (t_method)glist_sort,
-        sym_sort, A_NULL); */
-}
-
-void g_graph_setup( void)
-{
-    g_graph_setup_class (canvas_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -284,7 +284,7 @@ proc _object {m} {
     $m add command \
         -label [_ "Array"] \
         -accelerator "${accelerator}+9" \
-        -command { ::ui_menu::_handle menuarray }
+        -command { ::ui_menu::_handle _array }
     $m add separator
     
     $m add command \

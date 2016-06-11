@@ -65,6 +65,7 @@ extern t_symbol *sym___plus____tilde__;
 extern t_symbol *sym___semicolon__;
 extern t_symbol *sym___slash__;
 extern t_symbol *sym___slash____tilde__;
+extern t_symbol *sym__array;
 extern t_symbol *sym__arraydialog;
 extern t_symbol *sym__audiodialog;
 extern t_symbol *sym__audioproperties;
