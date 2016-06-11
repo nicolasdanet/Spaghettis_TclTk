@@ -167,7 +167,7 @@
 #endif
 
 #ifndef PD_WITH_LOGGER
-#define PD_WITH_LOGGER          0           /* Debug to logger. */
+#define PD_WITH_LOGGER          0           /* Debug with wait-free logger. */
 #endif
 
 #ifndef PD_WITH_ALLOCA
