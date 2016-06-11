@@ -9,37 +9,37 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* This file deals with the behavior of glists as either "text objects" or
-"graphs" inside another glist.  LATER move the inlet/outlet code of g_canvas.c 
-to this file... */
-
-#include <stdlib.h>
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-
 #include "g_canvas.h"
-#include "s_system.h"    /* for font_getHostFontSize */
-#include <stdio.h>
-#include <string.h>
+#include "s_system.h"
 
-extern t_class *garray_class;
-extern t_class *scalar_class;
-extern int canvas_magic;
-extern t_class *canvas_class;
-extern t_class *vinlet_class;
-extern t_class *voutlet_class;
-extern t_widgetbehavior text_widgetBehavior;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-/* ---------------------- forward definitions ----------------- */
+extern t_class  *garray_class;
+extern t_class  *scalar_class;
+extern t_class  *canvas_class;
+extern t_class  *vinlet_class;
+extern t_class  *voutlet_class;
 
-static void graph_vis(t_gobj *gr, t_glist *unused_glist, int vis);
-static void graph_graphrect(t_gobj *z, t_glist *glist,
-    int *xp1, int *yp1, int *xp2, int *yp2);
-static void graph_getrect(t_gobj *z, t_glist *glist,
-    int *xp1, int *yp1, int *xp2, int *yp2);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-/* -------------------- maintaining the list -------------------- */
+extern int                  canvas_magic;
+extern t_widgetbehavior     text_widgetBehavior;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static void graph_vis       (t_gobj *, t_glist *, int);
+static void graph_graphrect (t_gobj *, t_glist *, int *, int *, int *, int *);
+static void graph_getrect   (t_gobj *, t_glist *, int *, int *, int *, int *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void glist_add(t_glist *x, t_gobj *y)
 {
@@ -1077,7 +1077,7 @@ t_glist *glist_findgraph(t_glist *x)
 
 extern void canvas_menuarray(t_glist *canvas);
 
-void g_graph_setup_class(t_class *c)
+void g_graph_setup_class (t_class *c)
 {
     class_setWidgetBehavior(c, &graph_widgetbehavior);
     class_addMethod(c, (t_method)graph_bounds, sym_bounds,
@@ -1100,6 +1100,8 @@ void g_graph_setup_class(t_class *c)
 
 void g_graph_setup( void)
 {
-    g_graph_setup_class(canvas_class);
+    g_graph_setup_class (canvas_class);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

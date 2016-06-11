@@ -67,6 +67,7 @@
 #include "g_editor.c"
 #include "g_file.c"
 #include "g_new.c"
+#include "g_graph.c"
 #include "g_canvas.c"
 #include "g_dsp.c"
 #include "g_object.c"
