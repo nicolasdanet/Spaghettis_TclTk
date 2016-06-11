@@ -90,7 +90,7 @@ void post_log (const char *fmt, ...)
     va_end (ap);
     
     if (k >= 0 && k < PD_STRING) {
-        if (logger_isRunning()) { logger_appendStringNative (t); }
+        if (PD_WITH_LOGGER && logger_isRunning()) { logger_appendStringNative (t); }
         else {
             post_syslog (t);
         }

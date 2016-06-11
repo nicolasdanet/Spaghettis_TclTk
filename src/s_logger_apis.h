@@ -23,7 +23,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#if PD_WITH_DEBUG
+#if ( PD_WITH_DEBUG && PD_WITH_LOGGER ) 
     #define PD_LOG(s)   logger_appendStringNative (s)
 #else
     #define PD_LOG(s)

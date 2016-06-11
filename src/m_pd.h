@@ -166,6 +166,10 @@
 #define PD_WITH_DEBUG           0           /* Debug mode. */
 #endif
 
+#ifndef PD_WITH_LOGGER
+#define PD_WITH_LOGGER          0           /* Debug to logger. */
+#endif
+
 #ifndef PD_WITH_ALLOCA
 #define PD_WITH_ALLOCA          1           /* Message passing uses alloca function. */
 #endif
