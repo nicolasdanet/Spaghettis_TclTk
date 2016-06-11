@@ -260,8 +260,8 @@ struct _glist {
     char                gl_isMapped;
     char                gl_isDirty;
     char                gl_isLoading;
-    char                gl_isEditMode;
     char                gl_isDeleting;
+    char                gl_isEditMode;
     char                gl_isGraphOnParent;
     char                gl_hasRectangle;
     char                gl_hideText;
@@ -529,6 +529,15 @@ void            canvas_nbx                              (t_glist *glist, t_symbo
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void            graph_bounds                            (t_glist *x, t_float x1, t_float y1, t_float x2, t_float y2);
+void            graph_xticks                            (t_glist *x, t_float point, t_float inc, t_float f);
+void            graph_yticks                            (t_glist *x, t_float point, t_float inc, t_float f);
+void            canvas_menuarray                        (t_glist *canvas);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 t_glist         *canvas_new                             (void *dummy, t_symbol *s, int argc, t_atom *argv);
 
@@ -737,15 +746,6 @@ void            text_set                                (t_object *x, t_glist *g
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            graph_bounds                            (t_glist *x, t_float x1, t_float y1, t_float x2, t_float y2);
-void            graph_xticks                            (t_glist *x, t_float point, t_float inc, t_float f);
-void            graph_yticks                            (t_glist *x, t_float point, t_float inc, t_float f);
-void            canvas_menuarray                        (t_glist *canvas);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void            canvas_writescalar                      (t_symbol *templatesym,
                                                             t_word *w,
                                                             t_buffer *b,
@@ -766,6 +766,10 @@ void            canvas_merge                            (t_glist *glist, t_symbo
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+t_outlet *voutlet_getit(t_pd *x);
+t_inlet *vinlet_getit(t_pd *x);
+int garray_getname(t_garray *x, t_symbol **namep);
 
 int  text_xcoord        (t_object *x, t_glist *glist);
 int  text_ycoord        (t_object *x, t_glist *glist);
@@ -789,8 +793,6 @@ void     glist_add              (t_glist *x, t_gobj *g);
 void     glist_clear            (t_glist *x);
 void     glist_delete           (t_glist *x, t_gobj *y);
 void     glist_retext           (t_glist *x, t_object *y);
-t_glist *glist_findgraph        (t_glist *x);
-void     glist_sort             (t_glist *canvas);
 
 void     glist_grab             (t_glist *x,
                                     t_gobj *y,

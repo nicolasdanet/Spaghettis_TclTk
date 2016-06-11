@@ -33,9 +33,28 @@ extern t_widgetbehavior     text_widgetBehavior;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void graph_vis       (t_gobj *, t_glist *, int);
 static void graph_graphrect (t_gobj *, t_glist *, int *, int *, int *, int *);
 static void graph_getrect   (t_gobj *, t_glist *, int *, int *, int *, int *);
+static void graph_displace  (t_gobj *, t_glist *, int, int);
+static void graph_select    (t_gobj *, t_glist *, int);
+static void graph_activate  (t_gobj *, t_glist *, int);
+static void graph_delete    (t_gobj *, t_glist *);
+static void graph_vis       (t_gobj *, t_glist *, int);
+static int  graph_click     (t_gobj *, t_glist *, int, int, int, int, int, int, int);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+t_widgetbehavior canvas_widgetbehavior =
+    {
+        graph_getrect,
+        graph_displace,
+        graph_select,
+        graph_activate,
+        graph_delete,
+        graph_vis,
+        graph_click,
+    };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -78,6 +97,7 @@ int canvas_setdeleting(t_glist *x, int flag)
 }
 
     /* delete an object from a glist and free it */
+    
 void glist_delete(t_glist *x, t_gobj *y)
 {
     t_gobj *g;
@@ -192,96 +212,6 @@ void glist_grab(t_glist *x, t_gobj *y, t_motionfn motionfn, int xpos, int ypos)
     x2->gl_editor->e_previousY = ypos;
 }
 
-static t_float gobj_getxforsort(t_gobj *g)
-{
-    if (pd_class(&g->g_pd) == scalar_class)
-    {
-        t_float x1, y1;
-        scalar_getbasexy((t_scalar *)g, &x1, &y1);
-        return(x1);
-    }
-    else return (0);
-}
-
-static t_gobj *glist_merge(t_glist *x, t_gobj *g1, t_gobj *g2)
-{
-    t_gobj *g = 0, *g9 = 0;
-    t_float f1 = 0, f2 = 0;
-    if (g1)
-        f1 = gobj_getxforsort(g1);
-    if (g2)
-        f2 = gobj_getxforsort(g2);
-    while (1)
-    {
-        if (g1)
-        {
-            if (g2)
-            {
-                if (f1 <= f2)
-                    goto put1;
-                else goto put2;
-            }
-            else goto put1;     
-        }
-        else if (g2)
-            goto put2;
-        else break;
-    put1:
-        if (g9)
-            g9->g_next = g1, g9 = g1;
-        else g9 = g = g1;
-        if (g1 = g1->g_next)
-            f1 = gobj_getxforsort(g1);
-        g9->g_next = 0;
-        continue;
-    put2:
-        if (g9)
-            g9->g_next = g2, g9 = g2;
-        else g9 = g = g2;
-        if (g2 = g2->g_next)
-            f2 = gobj_getxforsort(g2);
-        g9->g_next = 0;
-        continue;
-    }
-    return (g);
-}
-
-static t_gobj *glist_dosort(t_glist *x,
-    t_gobj *g, int nitems)
-{
-    if (nitems < 2)
-        return (g);
-    else
-    {
-        int n1 = nitems/2, n2 = nitems - n1, i;
-        t_gobj *g2, *g3;
-        for (g2 = g, i = n1-1; i--; g2 = g2->g_next)
-            ;
-        g3 = g2->g_next;
-        g2->g_next = 0;
-        g = glist_dosort(x, g, n1);
-        g3 = glist_dosort(x, g3, n2);
-        return (glist_merge(x, g, g3));
-    }
-}
-
-void glist_sort(t_glist *x)
-{
-    int nitems = 0, foo = 0;
-    t_float lastx = -1e37;
-    t_gobj *g;
-    for (g = x->gl_graphics; g; g = g->g_next)
-    {
-        t_float x1 = gobj_getxforsort(g);
-        if (x1 < lastx)
-            foo = 1;
-        lastx = x1;
-        nitems++;
-    }
-    if (foo)
-        x->gl_graphics = glist_dosort(x, x->gl_graphics, nitems);
-}
-
 /* --------------- inlets and outlets  ----------- */
 
 
@@ -314,9 +244,6 @@ void canvas_rminlet(t_glist *x, t_inlet *ip)
         canvas_updateLinesByObject(x->gl_parent, &x->gl_obj);
     }
 }
-
-extern t_inlet *vinlet_getit(t_pd *x);
-
 
 void canvas_resortinlets(t_glist *x)
 {
@@ -387,8 +314,6 @@ void canvas_rmoutlet(t_glist *x, t_outlet *op)
         canvas_updateLinesByObject(x->gl_parent, &x->gl_obj);
     }
 }
-
-extern t_outlet *voutlet_getit(t_pd *x);
 
 void canvas_resortoutlets(t_glist *x)
 {
@@ -662,7 +587,7 @@ void glist_redraw(t_glist *x)
 
 /* --------------------------- widget behavior  ------------------- */
 
-int garray_getname(t_garray *x, t_symbol **namep);
+
 
 
     /* Note that some code in here would also be useful for drawing
@@ -1017,8 +942,7 @@ static void graph_motion(void *z, t_float dx, t_float dy)
     garray_redraw(a);
 }
 
-static int graph_click(t_gobj *z, struct _glist *glist,
-    int xpix, int ypix, int shift, int ctrl, int alt, int dbl, int doit)
+static int graph_click(t_gobj *z, t_glist *glist, int xpix, int ypix, int shift, int ctrl, int alt, int dbl, int doit)
 {
     t_glist *x = (t_glist *)z;
     t_gobj *y;
@@ -1047,29 +971,6 @@ static int graph_click(t_gobj *z, struct _glist *glist,
         }
         return (clickreturned); 
     }
-}
-
-t_widgetbehavior graph_widgetbehavior =
-{
-    graph_getrect,
-    graph_displace,
-    graph_select,
-    graph_activate,
-    graph_delete,
-    graph_vis,
-    graph_click,
-};
-
-    /* find the graph most recently added to this glist;
-        if none exists, return 0. */
-
-t_glist *glist_findgraph(t_glist *x)
-{
-    t_gobj *y = 0, *z;
-    for (z = x->gl_graphics; z; z = z->g_next)
-        if (pd_class(&z->g_pd) == canvas_class && ((t_glist *)z)->gl_isGraphOnParent)
-            y = z;
-    return ((t_glist *)y);
 }
 
 // -----------------------------------------------------------------------------------------------------------
