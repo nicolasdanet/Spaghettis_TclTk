@@ -19,15 +19,13 @@
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_class  *garray_class;
-extern t_class  *canvas_class;
 extern t_class  *vinlet_class;
 extern t_class  *voutlet_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern int                  canvas_magic;
-extern t_widgetbehavior     text_widgetBehavior;
+extern t_widgetbehavior text_widgetBehavior;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -59,87 +57,6 @@ t_widgetbehavior canvas_widgetbehavior =
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* this is to protect against a hairy problem in which deleting
-    a sub-canvas might delete an inlet on a box, after the box had
-    been invisible-ized, so that we have to protect against redrawing it! */
-int canvas_setdeleting(t_glist *x, int flag)
-{
-    int ret = x->gl_isDeleting;
-    x->gl_isDeleting = flag;
-    return (ret);
-}
-
-    /* delete an object from a glist and free it */
-    
-void glist_delete(t_glist *x, t_gobj *y)
-{
-    t_gobj *g;
-    t_object *ob;
-    int chkdsp = class_hasMethod (pd_class (&y->g_pd), sym_dsp);
-    t_glist *canvas = canvas_getView(x);
-    t_boxtext *rtext = 0;
-    int drawcommand = class_hasDrawCommand(y->g_pd);
-    int wasdeleting;
-    
-    wasdeleting = canvas_setdeleting(canvas, 1);
-    if (x->gl_editor)
-    {
-        if (x->gl_editor->e_grabbed == y) x->gl_editor->e_grabbed = 0;
-        if (canvas_isObjectSelected(x, y)) canvas_deselectObject(x, y);
-
-            /* HACK -- we had phantom outlets not getting erased on the
-            screen because the canvas_setdeleting() mechanism is too
-            crude.  LATER carefully set up rules for when the rtexts
-            should exist, so that they stay around until all the
-            steps of becoming invisible are done.  In the meantime, just
-            zap the inlets and outlets here... */
-        if (pd_class(&y->g_pd) == canvas_class)
-        {
-            t_glist *gl = (t_glist *)y;
-            if (gl->gl_isGraphOnParent && canvas_isMapped(x))
-            {
-                char tag[80];
-                sprintf(tag, "graph%lx", (t_int)gl);
-                canvas_eraseInletsAndOutlets(x, &gl->gl_obj, tag);
-            }
-            else
-            {
-                if (canvas_isMapped(x))
-                    canvas_eraseBox(x, &gl->gl_obj,
-                        boxtext_getTag(boxtext_fetch(x, &gl->gl_obj)));
-            }
-        }
-    }
-        /* if we're a drawing command, erase all scalars now, before deleting
-        it; we'll redraw them once it's deleted below. */
-    if (drawcommand)
-        canvas_paintAllScalarsByTemplate(template_findbyname(canvas_makeBindSymbol(
-            canvas_getView(x)->gl_name)), SCALAR_ERASE);
-    gobj_delete(y, x);
-    if (canvas_isMapped(canvas))
-    {
-        gobj_visibilityChanged(y, x, 0);
-    }
-    if (x->gl_editor && (ob = canvas_castToObjectIfPatchable(&y->g_pd)))
-        rtext = boxtext_new(x, ob);
-    if (x->gl_graphics == y) x->gl_graphics = y->g_next;
-    else for (g = x->gl_graphics; g; g = g->g_next)
-        if (g->g_next == y)
-    {
-        g->g_next = y->g_next;
-        break;
-    }
-    pd_free(&y->g_pd);
-    if (rtext)
-        boxtext_free (rtext);
-    if (chkdsp) dsp_update();
-    if (drawcommand)
-        canvas_paintAllScalarsByTemplate(template_findbyname(canvas_makeBindSymbol(
-            canvas_getView(x)->gl_name)), SCALAR_DRAW);
-    canvas_setdeleting(canvas, wasdeleting);
-    x->gl_magic = ++canvas_magic;
-}
-
     /* remove every object from a glist.  Experimental. */
 void glist_clear(t_glist *x)
 {
@@ -156,7 +73,7 @@ void glist_clear(t_glist *x)
             suspended = 1;
         }
             /* here's the real deletion. */
-        glist_delete(x, y);
+        canvas_removeObject(x, y);
     }
     if (suspended)
         dsp_resume(dspstate);
@@ -867,7 +784,7 @@ static void graph_delete(t_gobj *z, t_glist *glist)
     t_glist *x = (t_glist *)z;
     t_gobj *y;
     while (y = x->gl_graphics)
-        glist_delete(x, y);
+        canvas_removeObject(x, y);
     if (canvas_isMapped(x))
         text_widgetBehavior.w_fnDeleted(z, glist);
             /* if we have connections to the actual 'canvas' object, zap

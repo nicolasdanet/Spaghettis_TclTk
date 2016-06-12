@@ -362,7 +362,7 @@ void canvas_dataproperties(t_glist *x, t_scalar *sc, t_buffer *b)
     else
     {
             /* delete old one; put new one where the old one was on glist */
-        glist_delete(x, oldone);
+        canvas_removeObject(x, oldone);
         if (scindex > 0)
         {
             for (y = x->gl_graphics, nnew = 1; y;

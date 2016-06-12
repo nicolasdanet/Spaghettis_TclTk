@@ -383,8 +383,6 @@ t_glist         *canvas_addGraph                        (t_glist *glist,
                                                             t_float bottomRightX,
                                                             t_float bottomRightY);
 
-void            canvas_addObject                        (t_glist *glist, t_gobj *y);
-
 void            canvas_makeTextObject                   (t_glist *glist, 
                                                             int positionX, 
                                                             int positionY, 
@@ -392,6 +390,9 @@ void            canvas_makeTextObject                   (t_glist *glist,
                                                             int isSelected, 
                                                             t_buffer *b);
                                                             
+void            canvas_addObject                        (t_glist *glist, t_gobj *y);
+void            canvas_removeObject                     (t_glist *glist, t_gobj *y);
+
 void            canvas_setAsGraphOnParent               (t_glist *glist, int flags, int hasRectangle);
 
 int             canvas_isMapped                         (t_glist *glist);
@@ -796,7 +797,6 @@ void canvas_find_parent (t_glist *x);
 #pragma mark -
 
 void     glist_clear            (t_glist *x);
-void     glist_delete           (t_glist *x, t_gobj *y);
 void     glist_retext           (t_glist *x, t_object *y);
 
 void     glist_grab             (t_glist *x,
@@ -836,8 +836,6 @@ void     canvas_setusedastemplate           (t_glist *x);
 int      canvas_getfont                     (t_glist *x);
 void     canvas_resortinlets            (t_glist *x);
 void     canvas_resortoutlets           (t_glist *x);
-
-int      canvas_setdeleting             (t_glist *x, int flag);
 
 void     canvas_fattenforscalars        (t_glist *x, int *x1, int *y1, int *x2, int *y2);
 void     canvas_visforscalars           (t_glist *x, t_glist *glist, int vis);

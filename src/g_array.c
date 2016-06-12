@@ -428,7 +428,7 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize,
     if (0) // deleteit
     {
         int wasused = x->x_usedindsp;
-        glist_delete(x->x_glist, &x->x_gobj);
+        canvas_removeObject(x->x_glist, &x->x_gobj);
         if (wasused)
             dsp_update();
     }

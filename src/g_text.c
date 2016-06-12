@@ -225,7 +225,7 @@ void text_set (t_object *x, t_glist *glist, char *s, int size)
         int a = x->te_xCoordinate;
         int b = x->te_yCoordinate;
         
-        glist_delete (glist, cast_gobj (x));
+        canvas_removeObject (glist, cast_gobj (x));
         canvas_makeTextObject (glist, a, b, w, 0, t);
         canvas_restoreCachedLines (canvas_getView (glist));
         

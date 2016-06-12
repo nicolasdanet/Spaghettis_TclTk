@@ -266,25 +266,101 @@ t_glist *canvas_addGraph (t_glist *glist,
     return x;
 }
 
-void canvas_addObject (t_glist *x, t_gobj *y)
+void canvas_addObject (t_glist *glist, t_gobj *y)
 {
     t_object *object = NULL;
     
     y->g_next = NULL;
     
-    if (!x->gl_graphics) { x->gl_graphics = y; }
+    if (!glist->gl_graphics) { glist->gl_graphics = y; }
     else {
-        t_gobj *t = NULL; for (t = x->gl_graphics; t->g_next; t = t->g_next) { }
+        t_gobj *t = NULL; for (t = glist->gl_graphics; t->g_next; t = t->g_next) { }
         t->g_next = y;
     }
     
-    if (x->gl_editor && (object = canvas_castToObjectIfPatchable (y))) { boxtext_new (x, object); }
-    if (canvas_isMapped (x)) { gobj_visibilityChanged (y, x, 1); }
+    if (glist->gl_editor && (object = canvas_castToObjectIfPatchable (y))) { boxtext_new (glist, object); }
+    if (canvas_isMapped (glist)) { gobj_visibilityChanged (y, glist, 1); }
     
     if (class_hasDrawCommand (pd_class (y))) {
-        t_symbol *bound = canvas_makeBindSymbol (canvas_getView (x)->gl_name);
+        t_symbol *bound = canvas_makeBindSymbol (canvas_getView (glist)->gl_name);
         canvas_paintAllScalarsByTemplate (template_findbyname (bound), SCALAR_REDRAW);
     }
+}
+
+static int canvas_setdeleting (t_glist *x, int flag)
+{
+    int ret = x->gl_isDeleting;
+    x->gl_isDeleting = flag;
+    return (ret);
+}
+
+void canvas_removeObject (t_glist *glist, t_gobj *y)
+{
+    t_gobj *g;
+    t_object *ob;
+    int chkdsp = class_hasMethod (pd_class (&y->g_pd), sym_dsp);
+    t_glist *canvas = canvas_getView(glist);
+    t_boxtext *rtext = 0;
+    int drawcommand = class_hasDrawCommand(y->g_pd);
+    int wasdeleting;
+    
+    wasdeleting = canvas_setdeleting(canvas, 1);
+    if (glist->gl_editor)
+    {
+        if (glist->gl_editor->e_grabbed == y) glist->gl_editor->e_grabbed = 0;
+        if (canvas_isObjectSelected(glist, y)) canvas_deselectObject(glist, y);
+
+            /* HACK -- we had phantom outlets not getting erased on the
+            screen because the canvas_setdeleting() mechanism is too
+            crude.  LATER carefully set up rules for when the rtexts
+            should exist, so that they stay around until all the
+            steps of becoming invisible are done.  In the meantime, just
+            zap the inlets and outlets here... */
+        if (pd_class(&y->g_pd) == canvas_class)
+        {
+            t_glist *gl = (t_glist *)y;
+            if (gl->gl_isGraphOnParent && canvas_isMapped(glist))
+            {
+                char tag[80];
+                sprintf(tag, "graph%lx", (t_int)gl);
+                canvas_eraseInletsAndOutlets(glist, &gl->gl_obj, tag);
+            }
+            else
+            {
+                if (canvas_isMapped(glist))
+                    canvas_eraseBox(glist, &gl->gl_obj,
+                        boxtext_getTag(boxtext_fetch(glist, &gl->gl_obj)));
+            }
+        }
+    }
+        /* if we're a drawing command, erase all scalars now, before deleting
+        it; we'll redraw them once it's deleted below. */
+    if (drawcommand)
+        canvas_paintAllScalarsByTemplate(template_findbyname(canvas_makeBindSymbol(
+            canvas_getView(glist)->gl_name)), SCALAR_ERASE);
+    gobj_delete(y, glist);
+    if (canvas_isMapped(canvas))
+    {
+        gobj_visibilityChanged(y, glist, 0);
+    }
+    if (glist->gl_editor && (ob = canvas_castToObjectIfPatchable(&y->g_pd)))
+        rtext = boxtext_new(glist, ob);
+    if (glist->gl_graphics == y) glist->gl_graphics = y->g_next;
+    else for (g = glist->gl_graphics; g; g = g->g_next)
+        if (g->g_next == y)
+    {
+        g->g_next = y->g_next;
+        break;
+    }
+    pd_free(&y->g_pd);
+    if (rtext)
+        boxtext_free (rtext);
+    if (chkdsp) dsp_update();
+    if (drawcommand)
+        canvas_paintAllScalarsByTemplate(template_findbyname(canvas_makeBindSymbol(
+            canvas_getView(glist)->gl_name)), SCALAR_DRAW);
+    canvas_setdeleting(canvas, wasdeleting);
+    glist->gl_magic = ++canvas_magic;
 }
 
 void canvas_makeTextObject (t_glist *glist, 
