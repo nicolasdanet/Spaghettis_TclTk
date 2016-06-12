@@ -269,8 +269,9 @@ t_glist *canvas_addGraph (t_glist *glist,
 void canvas_addObject (t_glist *glist, t_gobj *y)
 {
     t_object *object = NULL;
-    
     t_glist *canvas = canvas_getView (glist);
+    
+    int needToPaintScalars = class_hasDrawCommand (pd_class (y));
     
     y->g_next = NULL;
     
@@ -283,7 +284,7 @@ void canvas_addObject (t_glist *glist, t_gobj *y)
     if (glist->gl_editor && (object = canvas_castToObjectIfPatchable (y))) { boxtext_new (glist, object); }
     if (canvas_isMapped (canvas)) { gobj_visibilityChanged (y, glist, 1); }
     
-    if (class_hasDrawCommand (pd_class (y))) {
+    if (needToPaintScalars) {
         t_symbol *bound = canvas_makeBindSymbol (canvas->gl_name);
         canvas_paintAllScalarsByTemplate (template_findbyname (bound), SCALAR_REDRAW);
     }
@@ -291,14 +292,13 @@ void canvas_addObject (t_glist *glist, t_gobj *y)
 
 void canvas_removeObject (t_glist *glist, t_gobj *y)
 {
-    t_gobj *t = NULL;
     t_object *object = NULL;
     t_boxtext *text = NULL;
     
     t_glist *canvas = canvas_getView (glist);
         
     int needToUpdateDSPChain = class_hasMethod (pd_class (y), sym_dsp);
-    int needToPaintScalars   = class_hasDrawCommand(y->g_pd);
+    int needToPaintScalars   = class_hasDrawCommand (pd_class (y));
     int deletingState        = canvas->gl_isDeleting;
     
     canvas->gl_isDeleting = 1;
@@ -319,32 +319,38 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     }
     //
     }
-        /* if we're a drawing command, erase all scalars now, before deleting
-        it; we'll redraw them once it's deleted below. */
-    if (needToPaintScalars)
-        canvas_paintAllScalarsByTemplate(template_findbyname(canvas_makeBindSymbol(
-            canvas_getView(glist)->gl_name)), SCALAR_ERASE);
-    gobj_delete(y, glist);
-    if (canvas_isMapped(canvas))
-    {
-        gobj_visibilityChanged(y, glist, 0);
+
+    if (needToPaintScalars) {
+        t_symbol *bound = canvas_makeBindSymbol (canvas->gl_name);
+        canvas_paintAllScalarsByTemplate (template_findbyname (bound), SCALAR_ERASE);
     }
-    if (glist->gl_editor && (object = canvas_castToObjectIfPatchable(&y->g_pd)))
-        text = boxtext_new(glist, object);
-    if (glist->gl_graphics == y) glist->gl_graphics = y->g_next;
-    else for (t = glist->gl_graphics; t; t = t->g_next)
-        if (t->g_next == y)
-    {
-        t->g_next = y->g_next;
-        break;
+    
+    gobj_delete (y, glist);
+    
+    if (canvas_isMapped (canvas)) { gobj_visibilityChanged (y, glist, 0); }
+    
+    if (glist->gl_editor && (object = canvas_castToObjectIfPatchable(&y->g_pd))) {
+        text = boxtext_new (glist, object);
     }
-    pd_free(&y->g_pd);
-    if (text)
-        boxtext_free (text);
-    if (needToUpdateDSPChain) dsp_update();
-    if (needToPaintScalars)
-        canvas_paintAllScalarsByTemplate(template_findbyname(canvas_makeBindSymbol(
-            canvas_getView(glist)->gl_name)), SCALAR_DRAW);
+    
+    if (glist->gl_graphics == y) { glist->gl_graphics = y->g_next; }
+    else {
+        t_gobj *t = NULL;
+        for (t = glist->gl_graphics; t; t = t->g_next) {
+            if (t->g_next == y) { t->g_next = y->g_next; break; }
+        }
+    }
+    
+    pd_free (cast_pd (y));
+    
+    if (text) { boxtext_free (text); }
+        
+    if (needToUpdateDSPChain) { dsp_update(); }
+    
+    if (needToPaintScalars)   {
+        t_symbol *bound = canvas_makeBindSymbol (canvas->gl_name);
+        canvas_paintAllScalarsByTemplate (template_findbyname (bound), SCALAR_DRAW);
+    }
     
     canvas->gl_isDeleting = deletingState;
     
