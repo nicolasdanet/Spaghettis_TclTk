@@ -287,13 +287,6 @@ void canvas_addObject (t_glist *glist, t_gobj *y)
     }
 }
 
-static int canvas_setdeleting (t_glist *x, int flag)
-{
-    int ret = x->gl_isDeleting;
-    x->gl_isDeleting = flag;
-    return (ret);
-}
-
 void canvas_removeObject (t_glist *glist, t_gobj *y)
 {
     t_gobj *g;
@@ -302,9 +295,10 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     t_glist *canvas = canvas_getView(glist);
     t_boxtext *rtext = 0;
     int drawcommand = class_hasDrawCommand(y->g_pd);
-    int wasdeleting;
+    int wasdeleting = canvas->gl_isDeleting;
     
-    wasdeleting = canvas_setdeleting(canvas, 1);
+    canvas->gl_isDeleting = 1;
+        
     if (glist->gl_editor)
     {
         if (glist->gl_editor->e_grabbed == y) glist->gl_editor->e_grabbed = 0;
@@ -359,7 +353,9 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     if (drawcommand)
         canvas_paintAllScalarsByTemplate(template_findbyname(canvas_makeBindSymbol(
             canvas_getView(glist)->gl_name)), SCALAR_DRAW);
-    canvas_setdeleting(canvas, wasdeleting);
+    
+    canvas->gl_isDeleting = wasdeleting;
+    
     glist->gl_magic = ++canvas_magic;
 }
 
