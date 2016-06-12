@@ -145,7 +145,7 @@ int canvas_readscalar(t_glist *x, int natoms, t_atom *vec,
             /* temporarily lie about vis flag while this is built */
         canvas_getView(x)->gl_isMapped = 0;
     }
-    glist_add(x, &sc->sc_g);
+    canvas_addObject (x, &sc->sc_g);
     
     nline = canvas_scanbinbuf(natoms, vec, &message, p_nextmsg);
     glist_readatoms(x, natoms, vec, p_nextmsg, templatesym, sc->sc_vector, 

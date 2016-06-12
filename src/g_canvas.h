@@ -383,6 +383,8 @@ t_glist         *canvas_addGraph                        (t_glist *glist,
                                                             t_float bottomRightX,
                                                             t_float bottomRightY);
 
+void            canvas_addObject                        (t_glist *glist, t_gobj *y);
+
 void            canvas_makeTextObject                   (t_glist *glist, 
                                                             int positionX, 
                                                             int positionY, 
@@ -434,7 +436,7 @@ int             canvas_hasLine                          (t_glist *glist,
 void            canvas_setLastMotionCoordinates         (t_glist *glist, int a, int b);
 void            canvas_getLastMotionCoordinates         (t_glist *glist, int *a, int *b);
 
-int             canvas_getIndexOfObject                 (t_glist *glist, t_gobj *object);
+int             canvas_getIndexOfObject                 (t_glist *glist, t_gobj *y);
 t_gobj          *canvas_getObjectAtIndex                (t_glist *glist, int n);
 
 void            canvas_traverseLinesStart               (t_linetraverser *t, t_glist *glist);
@@ -788,8 +790,6 @@ void canvas_find_parent (t_glist *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_glist  *glist_new             (void);
-void     glist_add              (t_glist *x, t_gobj *g);
 void     glist_clear            (t_glist *x);
 void     glist_delete           (t_glist *x, t_gobj *y);
 void     glist_retext           (t_glist *x, t_object *y);

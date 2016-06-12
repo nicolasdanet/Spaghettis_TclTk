@@ -19,7 +19,6 @@
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_class  *garray_class;
-extern t_class  *scalar_class;
 extern t_class  *canvas_class;
 extern t_class  *vinlet_class;
 extern t_class  *voutlet_class;
@@ -59,32 +58,6 @@ t_widgetbehavior canvas_widgetbehavior =
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-void glist_add(t_glist *x, t_gobj *y)
-{
-    t_object *ob;
-    y->g_next = 0;
-    if (!x->gl_graphics) x->gl_graphics = y;
-    else
-    {
-        t_gobj *y2;
-        for (y2 = x->gl_graphics; y2->g_next; y2 = y2->g_next);
-        y2->g_next = y;
-    }
-    if (x->gl_editor && (ob = canvas_castToObjectIfPatchable(&y->g_pd)))
-        boxtext_new(x, ob);
-    if (x->gl_editor && x->gl_isGraphOnParent && !x->gl_hasRectangle
-        && canvas_castToObjectIfPatchable(&y->g_pd))
-    {
-        x->gl_hasRectangle = 1;
-        canvas_drawGraphOnParentRectangle(x);
-    }
-    if (canvas_isMapped(x))
-        gobj_visibilityChanged(y, x, 1);
-    if (class_hasDrawCommand(y->g_pd)) 
-        canvas_redrawAllByTemplate(template_findbyname(canvas_makeBindSymbol(
-            canvas_getView(x)->gl_name)), SCALAR_REDRAW);
-}
 
     /* this is to protect against a hairy problem in which deleting
     a sub-canvas might delete an inlet on a box, after the box had
@@ -212,8 +185,9 @@ void glist_grab(t_glist *x, t_gobj *y, t_motionfn motionfn, int xpos, int ypos)
     x2->gl_editor->e_previousY = ypos;
 }
 
-/* --------------- inlets and outlets  ----------- */
-
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 t_inlet *canvas_addinlet(t_glist *x, t_pd *who, t_symbol *s)
 {
@@ -354,8 +328,9 @@ void canvas_resortoutlets(t_glist *x)
         canvas_updateLinesByObject(x->gl_parent, &x->gl_obj);
 }
 
-/* ----------calculating coordinates and controlling appearance --------- */
-
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void graph_bounds(t_glist *x, t_float x1, t_float y1, t_float x2, t_float y2)
 {
@@ -423,9 +398,10 @@ static void graph_ylabel(t_glist *x, t_symbol *s, int argc, t_atom *argv)
 }
 */
 
-/****** routines to convert pixels to X or Y value and vice versa ******/
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-    /* convert an x pixel value to an x coordinate value */
 t_float glist_pixelstox(t_glist *x, t_float xpix)
 {
         /* if we appear as a text box on parent, our range in our
@@ -546,6 +522,10 @@ int text_ypix(t_object *x, t_glist *glist)
                 x->te_yCoordinate / (glist->gl_windowBottomRightY - glist->gl_windowTopLeftY)));
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
     /* redraw all the items in a glist.  We construe this to mean
     redrawing in its own window and on parent, as needed in each case.
     This is too conservative -- for instance, when you draw an "open"
@@ -585,13 +565,10 @@ void glist_redraw(t_glist *x)
     }
 }
 
-/* --------------------------- widget behavior  ------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-
-
-
-    /* Note that some code in here would also be useful for drawing
-    graph decorations in toplevels... */
 static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
 {
     t_glist *x = (t_glist *)gr;

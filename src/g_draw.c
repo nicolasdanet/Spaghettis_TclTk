@@ -468,26 +468,29 @@ void canvas_deleteGraphOnParentRectangle (t_glist *glist)
 
 static void canvas_redrawAllScalars (t_glist *glist, int action)
 {
-    t_gobj *g = NULL;
+    t_gobj *y = NULL;
     
     int visible = canvas_isMapped (glist);
     
-    for (g = glist->gl_graphics; g; g = g->g_next) {
+    for (y = glist->gl_graphics; y; y = y->g_next) {
     //
-    if (visible && pd_class (g) == scalar_class) {
+    if (visible && pd_class (y) == scalar_class) {
     //
     switch (action) {
-        case SCALAR_REDRAW  : scalar_redraw (cast_scalar (g), glist);   break;
-        case SCALAR_DRAW    : gobj_visibilityChanged (g, glist, 1);     break;
-        case SCALAR_ERASE   : gobj_visibilityChanged (g, glist, 0);     break;
+        case SCALAR_REDRAW  : scalar_redraw (cast_scalar (y), glist);   break;
+        case SCALAR_DRAW    : gobj_visibilityChanged (y, glist, 1);     break;
+        case SCALAR_ERASE   : gobj_visibilityChanged (y, glist, 0);     break;
     }
     //
     } 
 
-    if (pd_class (g) == canvas_class) { canvas_redrawAllScalars (cast_glist (g), action); }
+    if (pd_class (y) == canvas_class) { canvas_redrawAllScalars (cast_glist (y), action); }
     //
     }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 /* Note that the functions below are experimentals. */
 /* The template argument are not used and everything is redrawn instead. */
@@ -502,9 +505,6 @@ void canvas_redrawAllByTemplate (t_template *dummy, int action)
     //
     }
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 
 void canvas_redrawAllByTemplateByCanvas (t_glist *glist, int action)
 {

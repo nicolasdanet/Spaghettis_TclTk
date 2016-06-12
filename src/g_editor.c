@@ -205,10 +205,10 @@ static void canvas_performMouseResetGrabbed (t_glist *glist)
     PD_ASSERT (!glist->gl_editor->e_grabbed);
 }
 
-static void canvas_performMouseClickRight (t_glist *glist, t_gobj *object, int positionX, int positionY)
+static void canvas_performMouseClickRight (t_glist *glist, t_gobj *y, int positionX, int positionY)
 {
-    int canProperties = (!object || (object && class_hasPropertiesFunction (pd_class (object))));
-    int canOpen = (object && class_hasMethod (pd_class (object), sym_open));
+    int canProperties = (!y || (y && class_hasPropertiesFunction (pd_class (y))));
+    int canOpen = (y && class_hasMethod (pd_class (y), sym_open));
     
     sys_vGui ("::ui_menu::showPopup .x%lx %d %d %d %d\n",
                     glist, 
@@ -807,11 +807,11 @@ void canvas_editmode (t_glist *glist, t_float f)
     //
     if (canvas_isMapped (glist) && canvas_canHaveWindow (glist)) {
     //
-    t_gobj *g = NULL;
+    t_gobj *y = NULL;
     
-    for (g = glist->gl_graphics; g; g = g->g_next) {
+    for (y = glist->gl_graphics; y; y = y->g_next) {
         t_object *o = NULL;
-        if ((o = canvas_castToObjectIfPatchable (g)) && o->te_type == TYPE_COMMENT) {
+        if ((o = canvas_castToObjectIfPatchable (y)) && o->te_type == TYPE_COMMENT) {
             t_boxtext *text = boxtext_fetch (glist, o);
             canvas_drawBox (glist, o, boxtext_getTag (text), 1);
         }

@@ -466,7 +466,7 @@ void gatom_makeObject (t_glist *glist, t_atomtype type, t_symbol *s, int argc, t
 
         outlet_new (cast_object (x), IS_FLOAT (&x->a_atom) ? &s_float : &s_symbol);
         
-        glist_add (glist, cast_gobj (x));
+        canvas_addObject (glist, cast_gobj (x));
         
     } else {                                                                    /* Interactive creation. */
     
@@ -481,7 +481,7 @@ void gatom_makeObject (t_glist *glist, t_atomtype type, t_symbol *s, int argc, t
         
         outlet_new (cast_object (x), IS_FLOAT (&x->a_atom) ? &s_float : &s_symbol);
                 
-        glist_add (glist, cast_gobj (x));
+        canvas_addObject (glist, cast_gobj (x));
         
         canvas_selectObject (glist, cast_gobj (x));
     }

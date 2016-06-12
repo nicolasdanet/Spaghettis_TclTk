@@ -188,7 +188,7 @@ static t_garray *graph_scalar(t_glist *gl, t_symbol *s, t_symbol *templatesym,
     x->x_usedindsp = 0;
     x->x_saveit = saveit;
     x->x_listviewing = 0;
-    glist_add(gl, &x->x_gobj);
+    canvas_addObject (gl, &x->x_gobj);
     x->x_glist = gl;
     return (x);
 }

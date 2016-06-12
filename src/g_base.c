@@ -261,9 +261,30 @@ t_glist *canvas_addGraph (t_glist *glist,
     canvas_bind (x);
     buffer_vAppend (cast_object (x)->te_buffer, "s", sym_graph);
     if (!createdFromMenu) { stack_push (cast_pd (x)); }
-    glist_add (glist, cast_gobj (x));
+    canvas_addObject (glist, cast_gobj (x));
     
     return x;
+}
+
+void canvas_addObject (t_glist *x, t_gobj *y)
+{
+    t_object *object = NULL;
+    
+    y->g_next = NULL;
+    
+    if (!x->gl_graphics) { x->gl_graphics = y; }
+    else {
+        t_gobj *t = NULL; for (t = x->gl_graphics; t->g_next; t = t->g_next) { }
+        t->g_next = y;
+    }
+    
+    if (x->gl_editor && (object = canvas_castToObjectIfPatchable (y))) { boxtext_new (x, object); }
+    if (canvas_isMapped (x)) { gobj_visibilityChanged (y, x, 1); }
+    
+    if (class_hasDrawCommand (pd_class (y))) {
+        t_symbol *bound = canvas_makeBindSymbol (canvas_getView (x)->gl_name);
+        canvas_redrawAllByTemplate (template_findbyname (bound), SCALAR_REDRAW);
+    }
 }
 
 void canvas_makeTextObject (t_glist *glist, 
@@ -306,7 +327,7 @@ void canvas_makeTextObject (t_glist *glist,
     x->te_width         = width;
     x->te_type          = TYPE_OBJECT;
     
-    glist_add (glist, cast_gobj (x));
+    canvas_addObject (glist, cast_gobj (x));
     
     if (isSelected) {
     //
@@ -589,11 +610,11 @@ void canvas_unbind (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int canvas_getIndexOfObject (t_glist *glist, t_gobj *object)
+int canvas_getIndexOfObject (t_glist *glist, t_gobj *y)
 {
     t_gobj *t = NULL;
     int n = 0;
-    for (t = glist->gl_graphics; t && t != object; t = t->g_next) { n++; }
+    for (t = glist->gl_graphics; t && t != y; t = t->g_next) { n++; }
     return n;
 }
 

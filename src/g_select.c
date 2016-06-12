@@ -39,13 +39,13 @@ static int canvas_getIndexOfObjectAmong (t_glist *glist, t_gobj *y, int selected
     return n;
 }
 
-static void canvas_deselectAllRecursive (t_gobj *g)
+static void canvas_deselectAllRecursive (t_gobj *y)
 {
-    if (pd_class (g) == canvas_class) { 
+    if (pd_class (y) == canvas_class) { 
     //
     t_gobj *o = NULL;
-    for (o = cast_glist (g)->gl_graphics; o; o = o->g_next) { canvas_deselectAllRecursive (o); }
-    canvas_deselectAll (cast_glist (g));
+    for (o = cast_glist (y)->gl_graphics; o; o = o->g_next) { canvas_deselectAllRecursive (o); }
+    canvas_deselectAll (cast_glist (y));
     //
     }
 }

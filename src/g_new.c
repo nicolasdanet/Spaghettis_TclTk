@@ -104,7 +104,7 @@ void canvas_text (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
             buffer_deserialize (x->te_buffer, 1, &a);
         }
         
-        glist_add (glist, cast_gobj (x));
+        canvas_addObject (glist, cast_gobj (x));
         
     } else if (canvas_isMapped (glist)) {                                       /* Interactive creation. */
     
@@ -118,7 +118,7 @@ void canvas_text (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         x->te_yCoordinate = positionY;
         
         buffer_deserialize (x->te_buffer, 1, &a);
-        glist_add (glist, cast_gobj (x));
+        canvas_addObject (glist, cast_gobj (x));
         canvas_selectObject (glist, cast_gobj (x));
     }
 }
