@@ -506,10 +506,11 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
         boxtext_erase(boxtext_fetch(parent_glist, &x->gl_obj));
 
     sprintf(tag, "graph%lx", (t_int)x);
+    /*
     if (vis)
         canvas_drawInletsAndOutlets(parent_glist, &x->gl_obj,
             tag, 1, x1, y1, x2, y2);
-    else canvas_eraseInletsAndOutlets(parent_glist, &x->gl_obj, tag);
+    else canvas_eraseInletsAndOutlets(parent_glist, &x->gl_obj, tag); */
         /* if we look like a graph but have been moved to a toplevel,
         just show the bounding rectangle */
     if (x->gl_haveWindow)

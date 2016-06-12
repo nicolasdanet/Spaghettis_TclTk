@@ -270,6 +270,8 @@ void canvas_addObject (t_glist *glist, t_gobj *y)
 {
     t_object *object = NULL;
     
+    t_glist *canvas = canvas_getView (glist);
+    
     y->g_next = NULL;
     
     if (!glist->gl_graphics) { glist->gl_graphics = y; }
@@ -279,57 +281,47 @@ void canvas_addObject (t_glist *glist, t_gobj *y)
     }
     
     if (glist->gl_editor && (object = canvas_castToObjectIfPatchable (y))) { boxtext_new (glist, object); }
-    if (canvas_isMapped (glist)) { gobj_visibilityChanged (y, glist, 1); }
+    if (canvas_isMapped (canvas)) { gobj_visibilityChanged (y, glist, 1); }
     
     if (class_hasDrawCommand (pd_class (y))) {
-        t_symbol *bound = canvas_makeBindSymbol (canvas_getView (glist)->gl_name);
+        t_symbol *bound = canvas_makeBindSymbol (canvas->gl_name);
         canvas_paintAllScalarsByTemplate (template_findbyname (bound), SCALAR_REDRAW);
     }
 }
 
 void canvas_removeObject (t_glist *glist, t_gobj *y)
 {
-    t_gobj *g;
-    t_object *ob;
-    int chkdsp = class_hasMethod (pd_class (&y->g_pd), sym_dsp);
-    t_glist *canvas = canvas_getView(glist);
-    t_boxtext *rtext = 0;
-    int drawcommand = class_hasDrawCommand(y->g_pd);
-    int wasdeleting = canvas->gl_isDeleting;
+    t_gobj *t = NULL;
+    t_object *object = NULL;
+    t_boxtext *text = NULL;
+    
+    t_glist *canvas = canvas_getView (glist);
+        
+    int needToUpdateDSPChain = class_hasMethod (pd_class (y), sym_dsp);
+    int needToPaintScalars   = class_hasDrawCommand(y->g_pd);
+    int deletingState        = canvas->gl_isDeleting;
     
     canvas->gl_isDeleting = 1;
         
-    if (glist->gl_editor)
-    {
-        if (glist->gl_editor->e_grabbed == y) glist->gl_editor->e_grabbed = 0;
-        if (canvas_isObjectSelected(glist, y)) canvas_deselectObject(glist, y);
+    if (glist->gl_editor) {
+    //
+    if (glist->gl_editor->e_grabbed == y)   { glist->gl_editor->e_grabbed = NULL; }
+    if (canvas_isObjectSelected (glist, y)) { canvas_deselectObject (glist, y);   }
 
-            /* HACK -- we had phantom outlets not getting erased on the
-            screen because the canvas_setdeleting() mechanism is too
-            crude.  LATER carefully set up rules for when the rtexts
-            should exist, so that they stay around until all the
-            steps of becoming invisible are done.  In the meantime, just
-            zap the inlets and outlets here... */
-        if (pd_class(&y->g_pd) == canvas_class)
-        {
-            t_glist *gl = (t_glist *)y;
-            if (gl->gl_isGraphOnParent && canvas_isMapped(glist))
-            {
-                char tag[80];
-                sprintf(tag, "graph%lx", (t_int)gl);
-                canvas_eraseInletsAndOutlets(glist, &gl->gl_obj, tag);
-            }
-            else
-            {
-                if (canvas_isMapped(glist))
-                    canvas_eraseBox(glist, &gl->gl_obj,
-                        boxtext_getTag(boxtext_fetch(glist, &gl->gl_obj)));
-            }
-        }
+    if (pd_class (y) == canvas_class) {
+    //
+    if (!cast_glist (y)->gl_isGraphOnParent && canvas_isMapped (canvas)) {
+    //
+    canvas_eraseBox (glist, y, boxtext_getTag (boxtext_fetch (glist, y)));
+    //
+    }
+    //
+    }
+    //
     }
         /* if we're a drawing command, erase all scalars now, before deleting
         it; we'll redraw them once it's deleted below. */
-    if (drawcommand)
+    if (needToPaintScalars)
         canvas_paintAllScalarsByTemplate(template_findbyname(canvas_makeBindSymbol(
             canvas_getView(glist)->gl_name)), SCALAR_ERASE);
     gobj_delete(y, glist);
@@ -337,24 +329,24 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     {
         gobj_visibilityChanged(y, glist, 0);
     }
-    if (glist->gl_editor && (ob = canvas_castToObjectIfPatchable(&y->g_pd)))
-        rtext = boxtext_new(glist, ob);
+    if (glist->gl_editor && (object = canvas_castToObjectIfPatchable(&y->g_pd)))
+        text = boxtext_new(glist, object);
     if (glist->gl_graphics == y) glist->gl_graphics = y->g_next;
-    else for (g = glist->gl_graphics; g; g = g->g_next)
-        if (g->g_next == y)
+    else for (t = glist->gl_graphics; t; t = t->g_next)
+        if (t->g_next == y)
     {
-        g->g_next = y->g_next;
+        t->g_next = y->g_next;
         break;
     }
     pd_free(&y->g_pd);
-    if (rtext)
-        boxtext_free (rtext);
-    if (chkdsp) dsp_update();
-    if (drawcommand)
+    if (text)
+        boxtext_free (text);
+    if (needToUpdateDSPChain) dsp_update();
+    if (needToPaintScalars)
         canvas_paintAllScalarsByTemplate(template_findbyname(canvas_makeBindSymbol(
             canvas_getView(glist)->gl_name)), SCALAR_DRAW);
     
-    canvas->gl_isDeleting = wasdeleting;
+    canvas->gl_isDeleting = deletingState;
     
     glist->gl_magic = ++canvas_magic;
 }

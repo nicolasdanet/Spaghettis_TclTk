@@ -455,17 +455,7 @@ void            canvas_deleteLinesByInlets              (t_glist *glist,
                                                             t_inlet  *inlet,
                                                             t_outlet *outlet);
 
-void            canvas_drawInletsAndOutlets             (t_glist *x,
-                                                            t_object *o,
-                                                            char *tag,
-                                                            int create,
-                                                            int a,
-                                                            int b,
-                                                            int c,
-                                                            int d);
-
 void            canvas_drawBox                          (t_glist *glist, t_object *o, char *tag, int create);
-void            canvas_eraseInletsAndOutlets            (t_glist *glist, t_object *o, char *tag);
 void            canvas_eraseBox                         (t_glist *glist, t_object *o, char *tag);
 
 void            canvas_drawGraphOnParentRectangle       (t_glist *glist);

@@ -322,25 +322,7 @@ static void canvas_drawBoxComment (t_glist *glist,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_drawBox (t_glist *glist, t_object *o, char *tag, int create)
-{
-    int a, b, c, d;
-    
-    text_behaviorGetRectangle (cast_gobj (o), glist, &a, &b, &c, &d);
-
-    if (o->te_type == TYPE_OBJECT)          { canvas_drawBoxObject (glist, o, tag, create, a, b, c, d);  }
-    else if (o->te_type == TYPE_MESSAGE)    { canvas_drawBoxMessage (glist, o, tag, create, a, b, c, d); }
-    else if (o->te_type == TYPE_ATOM)       { canvas_drawBoxAtom (glist, o, tag, create, a, b, c, d);    }
-    else if (o->te_type == TYPE_COMMENT)    { canvas_drawBoxComment (glist, o, tag, create, a, b, c, d); }
-
-    if (canvas_castToObjectIfPatchable (o)) {
-    // 
-    canvas_drawInletsAndOutlets (glist, o, tag, create, a, b, c, d); 
-    //
-    }
-}
-
-void canvas_drawInletsAndOutlets (t_glist *glist,
+static void canvas_drawInletsAndOutlets (t_glist *glist,
     t_object *o,
     char *tag,
     int create,
@@ -406,6 +388,34 @@ void canvas_drawInletsAndOutlets (t_glist *glist,
     }
 }
 
+void canvas_drawBox (t_glist *glist, t_object *o, char *tag, int create)
+{
+    int a, b, c, d;
+    
+    text_behaviorGetRectangle (cast_gobj (o), glist, &a, &b, &c, &d);
+
+    if (o->te_type == TYPE_OBJECT)          { canvas_drawBoxObject (glist, o, tag, create, a, b, c, d);  }
+    else if (o->te_type == TYPE_MESSAGE)    { canvas_drawBoxMessage (glist, o, tag, create, a, b, c, d); }
+    else if (o->te_type == TYPE_ATOM)       { canvas_drawBoxAtom (glist, o, tag, create, a, b, c, d);    }
+    else if (o->te_type == TYPE_COMMENT)    { canvas_drawBoxComment (glist, o, tag, create, a, b, c, d); }
+
+    if (canvas_castToObjectIfPatchable (o)) {
+    // 
+    canvas_drawInletsAndOutlets (glist, o, tag, create, a, b, c, d); 
+    //
+    }
+}
+
+static void canvas_eraseInletsAndOutlets (t_glist *glist, t_object *o, char *tag)
+{
+    int i;
+    int m = object_numberOfInlets (o);
+    int n = object_numberOfOutlets (o);
+    
+    for (i = 0; i < m; i++) { sys_vGui (".x%lx.c delete %sINLET%d\n",  canvas_getView (glist), tag, i); }
+    for (i = 0; i < n; i++) { sys_vGui (".x%lx.c delete %sOUTLET%d\n", canvas_getView (glist), tag, i); }
+}
+
 void canvas_eraseBox (t_glist *glist, t_object *o, char *tag)
 {
     if (o->te_type != TYPE_COMMENT || glist->gl_isEditMode) {
@@ -414,16 +424,6 @@ void canvas_eraseBox (t_glist *glist, t_object *o, char *tag)
     canvas_eraseInletsAndOutlets (glist, o, tag);
     //
     }
-}
-
-void canvas_eraseInletsAndOutlets (t_glist *glist, t_object *o, char *tag)
-{
-    int i;
-    int m = object_numberOfInlets (o);
-    int n = object_numberOfOutlets (o);
-    
-    for (i = 0; i < m; i++) { sys_vGui (".x%lx.c delete %sINLET%d\n",  canvas_getView (glist), tag, i); }
-    for (i = 0; i < n; i++) { sys_vGui (".x%lx.c delete %sOUTLET%d\n", canvas_getView (glist), tag, i); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
