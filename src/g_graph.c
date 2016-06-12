@@ -113,7 +113,7 @@ void glist_delete(t_glist *x, t_gobj *y)
         /* if we're a drawing command, erase all scalars now, before deleting
         it; we'll redraw them once it's deleted below. */
     if (drawcommand)
-        canvas_redrawAllByTemplate(template_findbyname(canvas_makeBindSymbol(
+        canvas_paintAllScalarsByTemplate(template_findbyname(canvas_makeBindSymbol(
             canvas_getView(x)->gl_name)), SCALAR_ERASE);
     gobj_delete(y, x);
     if (canvas_isMapped(canvas))
@@ -134,7 +134,7 @@ void glist_delete(t_glist *x, t_gobj *y)
         boxtext_free (rtext);
     if (chkdsp) dsp_update();
     if (drawcommand)
-        canvas_redrawAllByTemplate(template_findbyname(canvas_makeBindSymbol(
+        canvas_paintAllScalarsByTemplate(template_findbyname(canvas_makeBindSymbol(
             canvas_getView(x)->gl_name)), SCALAR_DRAW);
     canvas_setdeleting(canvas, wasdeleting);
     x->gl_magic = ++canvas_magic;

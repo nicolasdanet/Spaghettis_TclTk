@@ -283,7 +283,7 @@ void canvas_addObject (t_glist *x, t_gobj *y)
     
     if (class_hasDrawCommand (pd_class (y))) {
         t_symbol *bound = canvas_makeBindSymbol (canvas_getView (x)->gl_name);
-        canvas_redrawAllByTemplate (template_findbyname (bound), SCALAR_REDRAW);
+        canvas_paintAllScalarsByTemplate (template_findbyname (bound), SCALAR_REDRAW);
     }
 }
 

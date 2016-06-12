@@ -75,7 +75,7 @@
 #include "g_message.c"
 #include "g_gatom.c"
 #include "g_text.c"
-#include "g_serialize.c"
+
 #include "g_iem.c"
 #include "g_bang.c"
 #include "g_toggle.c"
@@ -84,6 +84,9 @@
 #include "g_dial.c"
 #include "g_vu.c"
 #include "g_panel.c"
+
+#include "g_paint.c"
+#include "g_serialize.c"
 
 /* Control. */
 

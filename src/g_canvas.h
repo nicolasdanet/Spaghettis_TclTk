@@ -469,8 +469,6 @@ void            canvas_eraseBox                         (t_glist *glist, t_objec
 
 void            canvas_drawGraphOnParentRectangle       (t_glist *glist);
 void            canvas_deleteGraphOnParentRectangle     (t_glist *glist);
-void            canvas_redrawAllByTemplateByCanvas      (t_glist *glist, int action);
-void            canvas_redrawAllByTemplate              (t_template *dummy, int action);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -743,6 +741,13 @@ int             text_behaviorClicked                    (t_gobj *x,
 
 void            text_functionSave                       (t_gobj *x, t_buffer *b);
 void            text_set                                (t_object *x, t_glist *glist, char *s, int size);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void            canvas_paintAllScalarsByView            (t_glist *glist, int action);
+void            canvas_paintAllScalarsByTemplate        (t_template *dummy, int action);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
