@@ -269,7 +269,7 @@ t_glist *canvas_addGraph (t_glist *glist,
 void canvas_addObject (t_glist *glist, t_gobj *y)
 {
     t_object *object = NULL;
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas  = canvas_getView (glist);
     
     int needToPaintScalars = class_hasDrawCommand (pd_class (y));
     
@@ -292,10 +292,9 @@ void canvas_addObject (t_glist *glist, t_gobj *y)
 
 void canvas_removeObject (t_glist *glist, t_gobj *y)
 {
+    t_boxtext *text  = NULL;
     t_object *object = NULL;
-    t_boxtext *text = NULL;
-    
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas  = canvas_getView (glist);
         
     int needToUpdateDSPChain = class_hasMethod (pd_class (y), sym_dsp);
     int needToPaintScalars   = class_hasDrawCommand (pd_class (y));
@@ -312,7 +311,7 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     //
     if (!cast_glist (y)->gl_isGraphOnParent && canvas_isMapped (canvas)) {
     //
-    canvas_eraseBox (glist, y, boxtext_getTag (boxtext_fetch (glist, y)));
+    canvas_eraseBox (glist, cast_object (y), boxtext_getTag (boxtext_fetch (glist, cast_object (y))));
     //
     }
     //
@@ -329,10 +328,6 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     
     if (canvas_isMapped (canvas)) { gobj_visibilityChanged (y, glist, 0); }
     
-    if (glist->gl_editor && (object = canvas_castToObjectIfPatchable(&y->g_pd))) {
-        text = boxtext_new (glist, object);
-    }
-    
     if (glist->gl_graphics == y) { glist->gl_graphics = y->g_next; }
     else {
         t_gobj *t = NULL;
@@ -341,10 +336,14 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
         }
     }
     
-    pd_free (cast_pd (y));
+    if (glist->gl_editor && (object = canvas_castToObjectIfPatchable (y))) {
+        text = boxtext_fetch (glist, object);
+    }
     
+    pd_free (cast_pd (y));
+
     if (text) { boxtext_free (text); }
-        
+    
     if (needToUpdateDSPChain) { dsp_update(); }
     
     if (needToPaintScalars)   {
