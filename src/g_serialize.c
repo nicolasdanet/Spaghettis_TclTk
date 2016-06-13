@@ -267,7 +267,7 @@ static void glist_doread(t_glist *x, t_symbol *filename, t_symbol *format,
     if (wasvis)
         canvas_visible(canvas, 0);
     if (clearme)
-        glist_clear(x);
+        canvas_clear(x);
     glist_readfrombinbuf(x, b, filename->s_name, 0);
     if (wasvis)
         canvas_visible(canvas, 1);

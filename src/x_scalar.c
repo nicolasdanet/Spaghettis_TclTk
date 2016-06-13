@@ -124,7 +124,7 @@ static void scalar_define_set(t_glist *x, t_symbol *s, int argc, t_atom *argv)
         t_buffer *b = buffer_new();
         int nextmsg = 0, natoms;
         t_atom *vec;
-        glist_clear(x);
+        canvas_clear(x);
         buffer_deserialize(b, argc, argv);
         natoms = buffer_size(b);
         vec = buffer_atoms(b);

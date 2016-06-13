@@ -873,7 +873,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_duplicate,     sym__duplicate,     A_NULL);
     class_addMethod (c, (t_method)canvas_selectAll,     sym__selectall,     A_NULL);
     
-    class_addMethod (c, (t_method)glist_clear,          sym_clear,          A_NULL);
+    class_addMethod (c, (t_method)canvas_clear,         sym_clear,          A_NULL);
     class_addMethod (c, (t_method)canvas_dsp,           sym_dsp,            A_CANT, A_NULL);
     class_addMethod (c, (t_method)canvas_rename,        sym_rename,         A_GIMME, A_NULL);
     

@@ -356,6 +356,28 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     glist->gl_magic = ++canvas_magic;
 }
 
+void canvas_clear (t_glist *glist)
+{
+    int dspState = 0;
+    int dspSuspended = 0;
+    t_gobj *y = NULL;
+        
+    while (y = glist->gl_graphics) {
+    //
+    if (!dspSuspended) {
+        if (canvas_castToObjectIfPatchable (y) && class_hasMethod (pd_class (y), sym_dsp)) {
+            dspState = dsp_suspend();
+            dspSuspended = 1;
+        }
+    }
+
+    canvas_removeObject (glist, y);
+    //
+    }
+    
+    if (dspSuspended) { dsp_resume (dspState); }
+}
+
 void canvas_makeTextObject (t_glist *glist, 
     int positionX,
     int positionY,

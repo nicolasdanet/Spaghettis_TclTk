@@ -57,28 +57,6 @@ t_widgetbehavior canvas_widgetbehavior =
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* remove every object from a glist.  Experimental. */
-void glist_clear(t_glist *x)
-{
-    t_gobj *y, *y2;
-    int dspstate = 0, suspended = 0;
-    t_symbol *dspsym = sym_dsp;
-    while (y = x->gl_graphics)
-    {
-            /* to avoid unnecessary DSP resorting, we suspend DSP
-            only if we hit a patchable object. */
-        if (!suspended && canvas_castToObjectIfPatchable(&y->g_pd) && class_hasMethod (pd_class (&y->g_pd), dspsym))
-        {
-            dspstate = dsp_suspend();
-            suspended = 1;
-        }
-            /* here's the real deletion. */
-        canvas_removeObject(x, y);
-    }
-    if (suspended)
-        dsp_resume(dspstate);
-}
-
 void glist_retext(t_glist *glist, t_object *y)
 {
     //t_glist *c = canvas_getView(glist);

@@ -392,6 +392,7 @@ void            canvas_makeTextObject                   (t_glist *glist,
                                                             
 void            canvas_addObject                        (t_glist *glist, t_gobj *y);
 void            canvas_removeObject                     (t_glist *glist, t_gobj *y);
+void            canvas_clear                            (t_glist *glist);
 
 void            canvas_setAsGraphOnParent               (t_glist *glist, int flags, int hasRectangle);
 
@@ -786,7 +787,6 @@ void canvas_find_parent (t_glist *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void     glist_clear            (t_glist *x);
 void     glist_retext           (t_glist *x, t_object *y);
 
 void     glist_grab             (t_glist *x,
