@@ -425,3 +425,22 @@ int canvas_getIndexOfObjectAmongUnselected (t_glist *glist, t_gobj *y)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void canvas_setMotionFunction (t_glist *glist, t_gobj *y, t_motionfn callback, int a, int b)
+{
+    t_glist *canvas = canvas_getView (glist);
+    
+    if (callback) { canvas->gl_editor->e_action = ACTION_PASS; }
+    else { 
+        canvas->gl_editor->e_action = ACTION_NONE;
+    }
+    
+    canvas->gl_editor->e_grabbed    = y;
+    canvas->gl_editor->e_fnMotion   = callback;
+    canvas->gl_editor->e_previousX  = a;
+    canvas->gl_editor->e_previousY  = b;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

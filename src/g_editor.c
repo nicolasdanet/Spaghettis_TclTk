@@ -200,7 +200,7 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
 
 static void canvas_performMouseResetGrabbed (t_glist *glist)
 {
-    if (glist->gl_editor->e_grabbed) { glist_grab (glist, NULL, NULL, 0, 0); }
+    if (glist->gl_editor->e_grabbed) { canvas_setMotionFunction (glist, NULL, NULL, 0, 0); }
     
     PD_ASSERT (!glist->gl_editor->e_grabbed);
 }

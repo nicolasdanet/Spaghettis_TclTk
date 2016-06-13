@@ -493,6 +493,12 @@ int             canvas_getNumberOfUnselectedObjects     (t_glist *glist);
 int             canvas_getIndexOfObjectAmongSelected    (t_glist *glist, t_gobj *y);
 int             canvas_getIndexOfObjectAmongUnselected  (t_glist *glist, t_gobj *y);
 
+void            canvas_setMotionFunction                (t_glist *glist,
+                                                            t_gobj *y,
+                                                            t_motionfn callback,
+                                                            int a,
+                                                            int b);
+                                    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
@@ -788,12 +794,6 @@ void canvas_find_parent (t_glist *x);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-void     glist_grab             (t_glist *x,
-                                    t_gobj *y,
-                                    t_motionfn motionfn,
-                                    int xpos,
-                                    int ypos);
 
 t_float  glist_pixelstox        (t_glist *x, t_float xpix);
 t_float  glist_pixelstoy        (t_glist *x, t_float ypix);

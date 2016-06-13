@@ -609,7 +609,7 @@ static void text_get_float(t_text_get *x, t_float f)
     }
 }
 
-/* --------- text_set object - replace all or part of nth line ----------- */
+
 typedef struct _text_set
 {
     t_text_client x_tc;

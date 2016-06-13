@@ -57,22 +57,6 @@ t_widgetbehavior canvas_widgetbehavior =
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void glist_grab(t_glist *x, t_gobj *y, t_motionfn motionfn, int xpos, int ypos)
-{
-    t_glist *x2 = canvas_getView(x);
-    if (motionfn)
-        x2->gl_editor->e_action = ACTION_PASS;
-    else x2->gl_editor->e_action = 0;
-    x2->gl_editor->e_grabbed = y;
-    x2->gl_editor->e_fnMotion = motionfn;
-    x2->gl_editor->e_previousX = xpos;
-    x2->gl_editor->e_previousY = ypos;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 t_inlet *canvas_addinlet(t_glist *x, t_pd *who, t_symbol *s)
 {
     t_inlet *ip = inlet_new(&x->gl_obj, who, s, 0);

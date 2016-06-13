@@ -194,7 +194,11 @@ static void gatom_symbol (t_gatom *x, t_symbol *s)
 
 void gatom_click (t_gatom *x, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
 {
-    if (IS_FLOAT (&x->a_atom)) { glist_grab (x->a_owner, cast_gobj (x), (t_motionfn)gatom_motion, a, b); }
+    if (IS_FLOAT (&x->a_atom)) {
+    //
+    canvas_setMotionFunction (x->a_owner, cast_gobj (x), (t_motionfn)gatom_motion, a, b);
+    //
+    }
     
     gatom_bang (x);
 }
