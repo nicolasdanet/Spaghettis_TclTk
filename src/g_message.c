@@ -111,7 +111,7 @@ static void message_set (t_message *x, t_symbol *s, int argc, t_atom *argv)
     buffer_reset (cast_object (x)->te_buffer);
     buffer_append (cast_object (x)->te_buffer, argc, argv);
     
-    glist_retext (x->m_owner, cast_object (x));
+    boxtext_retext (x->m_owner, cast_object (x));
 }
 
 static void message_add (t_message *x, t_symbol *s, int argc, t_atom *argv)
@@ -119,14 +119,14 @@ static void message_add (t_message *x, t_symbol *s, int argc, t_atom *argv)
     buffer_append (cast_object (x)->te_buffer, argc, argv);
     buffer_appendSemicolon (cast_object (x)->te_buffer);
     
-    glist_retext (x->m_owner, &x->m_obj);
+    boxtext_retext (x->m_owner, &x->m_obj);
 }
 
 static void message_addWord (t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
     buffer_append (cast_object (x)->te_buffer, argc, argv);
     
-    glist_retext (x->m_owner, cast_object (x));
+    boxtext_retext (x->m_owner, cast_object (x));
 }
 
 static void message_addComma (t_message *x)
@@ -135,7 +135,7 @@ static void message_addComma (t_message *x)
     
     buffer_append (cast_object (x)->te_buffer, 1, &a);
     
-    glist_retext (x->m_owner, cast_object (x));
+    boxtext_retext (x->m_owner, cast_object (x));
 }
 
 static void message_addSemicolon (t_message *x)
@@ -150,7 +150,7 @@ static void message_addDollar (t_message *x, t_float f)
     
     buffer_append (cast_object (x)->te_buffer, 1, &a);
     
-    glist_retext (x->m_owner, cast_object (x));
+    boxtext_retext (x->m_owner, cast_object (x));
 }
 
 static void message_addDollarSymbol (t_message *x, t_symbol *s)
@@ -163,7 +163,7 @@ static void message_addDollarSymbol (t_message *x, t_symbol *s)
 
     buffer_append (cast_object (x)->te_buffer, 1, &a);
     
-    glist_retext (x->m_owner, cast_object (x));
+    boxtext_retext (x->m_owner, cast_object (x));
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -83,7 +83,7 @@ static void gatom_drawJob (t_gobj *z, t_glist *glist)
     
     if (canvas_isMapped (glist)) {
     //
-    glist_retext (x->a_owner, cast_object (x));
+    boxtext_retext (x->a_owner, cast_object (x));
     //
     }
 }

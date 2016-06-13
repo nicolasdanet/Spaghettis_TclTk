@@ -57,17 +57,6 @@ t_widgetbehavior canvas_widgetbehavior =
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void glist_retext(t_glist *glist, t_object *y)
-{
-    //t_glist *c = canvas_getView(glist);
-        /* check that we have built rtexts yet.  LATER need a better test. */
-    if (glist->gl_editor && glist->gl_editor->e_boxtexts)
-    {
-        t_boxtext *rt = boxtext_fetch(glist, y);
-        if (rt) { boxtext_restore (rt); boxtext_update (rt); }
-    }
-}
-
 void glist_grab(t_glist *x, t_gobj *y, t_motionfn motionfn, int xpos, int ypos)
 {
     t_glist *x2 = canvas_getView(x);

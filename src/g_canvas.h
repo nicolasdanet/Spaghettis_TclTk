@@ -660,6 +660,8 @@ t_boxtext       *boxtext_new                            (t_glist *glist, t_objec
 t_boxtext       *boxtext_fetch                          (t_glist *glist, t_object *object);
 char            *boxtext_getTag                         (t_boxtext *x);
 
+void            boxtext_retext                          (t_glist *glist, t_object *object);
+
 void            boxtext_free                            (t_boxtext *x);
 void            boxtext_restore                         (t_boxtext *x);
 int             boxtext_getWidth                        (t_boxtext *x);
@@ -786,8 +788,6 @@ void canvas_find_parent (t_glist *x);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-void     glist_retext           (t_glist *x, t_object *y);
 
 void     glist_grab             (t_glist *x,
                                     t_gobj *y,

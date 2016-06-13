@@ -386,6 +386,17 @@ t_boxtext *boxtext_fetch (t_glist *glist, t_object *object)
     return x;
 }
 
+void boxtext_retext (t_glist *glist, t_object *object)
+{
+    t_boxtext *text = boxtext_fetch (glist, object);
+    
+    PD_ASSERT (text);
+    
+    if (text) {
+        boxtext_restore (text); if (canvas_isMapped (glist)) { boxtext_update (text);  }
+    }
+}
+
 void boxtext_restore (t_boxtext *x)
 {
     PD_MEMORY_FREE (x->box_string);
