@@ -30,7 +30,6 @@ extern t_widgetbehavior text_widgetBehavior;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void graph_graphrect (t_gobj *, t_glist *, int *, int *, int *, int *);
 static void graph_getrect   (t_gobj *, t_glist *, int *, int *, int *, int *);
 static void graph_displace  (t_gobj *, t_glist *, int, int);
 static void graph_select    (t_gobj *, t_glist *, int);
@@ -57,61 +56,110 @@ t_widgetbehavior canvas_widgetbehavior =
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_inlet *canvas_addInlet (t_glist *x, t_pd *who, t_symbol *s)
+t_inlet *canvas_addInlet (t_glist *glist, t_pd *owner, t_symbol *s)
 {
-    t_inlet *ip = inlet_new(&x->gl_obj, who, s, 0);
-    if (!x->gl_isLoading && x->gl_parent && canvas_isMapped(x->gl_parent))
-    {
-        gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 0);
-        gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 1);
-        canvas_updateLinesByObject(x->gl_parent, &x->gl_obj);
+    t_inlet *inlet = inlet_new (cast_object (glist), owner, s, NULL);
+    
+    if (!glist->gl_isLoading) {
+    
+        if (glist->gl_parent && canvas_isMapped (glist->gl_parent)) {
+            gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 0);
+            gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
+            canvas_updateLinesByObject (glist->gl_parent, cast_object (glist));
+        }
+    
+        canvas_resortInlets (glist);
     }
-    if (!x->gl_isLoading) canvas_resortInlets(x);
-    return (ip);
+    
+    return inlet;
 }
 
-void canvas_removeInlet (t_glist *x, t_inlet *ip)
+t_outlet *canvas_addOutlet (t_glist *glist, t_pd *dummy, t_symbol *s)
 {
-    t_glist *owner = x->gl_parent;
-    int redraw = (owner && canvas_isMapped(owner) && (!owner->gl_isDeleting)
-        && canvas_canHaveWindow(owner));
+    t_outlet *outlet = outlet_new (cast_object (glist), s);
     
-    if (owner) canvas_deleteLinesByInlets(owner, &x->gl_obj, ip, 0);
-    if (redraw)
-        gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 0);
-    inlet_free(ip);
-    if (redraw)
-    {
-        gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 1);
-        canvas_updateLinesByObject(x->gl_parent, &x->gl_obj);
+    if (!glist->gl_isLoading) {
+    
+        if (glist->gl_parent && canvas_isMapped (glist->gl_parent)) {
+            gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 0);
+            gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
+            canvas_updateLinesByObject (glist->gl_parent, cast_object (glist));
+        }
+        
+        canvas_resortOutlets (glist);
     }
+    
+    return outlet;
 }
 
-void canvas_resortInlets(t_glist *x)
+void canvas_removeInlet (t_glist *glist, t_inlet *inlet)
 {
-    int ninlets = 0, i, j, xmax;
-    t_gobj *y, **vec, **vp, **maxp;
+    t_glist *owner = glist->gl_parent;
     
-    for (ninlets = 0, y = x->gl_graphics; y; y = y->g_next)
-        if (pd_class(&y->g_pd) == vinlet_class) ninlets++;
+    int redraw = (owner && !owner->gl_isDeleting && canvas_isMapped (owner) && canvas_canHaveWindow (owner));
+    
+    if (owner)  { canvas_deleteLinesByInlets (owner, cast_object (glist), inlet, NULL); }
+    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), owner, 0); }
+        
+    inlet_free (inlet);
+    
+    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), owner, 1); }
+    if (owner)  { canvas_updateLinesByObject (owner, cast_object (glist)); }
+}
 
-    if (ninlets < 2) return;
+void canvas_removeOutlet (t_glist *glist, t_outlet *outlet)
+{
+    t_glist *owner = glist->gl_parent;
     
-    vec = (t_gobj **)PD_MEMORY_GET(ninlets * sizeof(*vec));
+    int redraw = (owner && !owner->gl_isDeleting && canvas_isMapped (owner) && canvas_canHaveWindow (owner));
     
-    for (y = x->gl_graphics, vp = vec; y; y = y->g_next)
+    if (owner)  { canvas_deleteLinesByInlets (owner, cast_object (glist), NULL, outlet); }
+    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), owner, 0); }
+
+    outlet_free (outlet);
+    
+    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), owner, 1); }
+    if (owner)  { canvas_updateLinesByObject (owner, cast_object (glist)); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void canvas_resortInlets (t_glist *glist)
+{
+    int numberOfInlets = 0;
+    t_gobj *y = NULL;
+        
+    int i;
+    int j;
+    int xmax;
+
+    t_gobj **vec = NULL;
+    t_gobj **vp = NULL;
+    t_gobj **maxp = NULL;
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) { 
+        if (pd_class (y) == vinlet_class) { numberOfInlets++; }
+    }
+
+    if (numberOfInlets < 2) return;
+    
+    vec = (t_gobj **)PD_MEMORY_GET(numberOfInlets * sizeof(*vec));
+    
+    for (y = glist->gl_graphics, vp = vec; y; y = y->g_next)
         if (pd_class(&y->g_pd) == vinlet_class) *vp++ = y;
     
-    for (i = ninlets; i--;)
+    for (i = numberOfInlets; i--;)
     {
         t_inlet *ip;
-        for (vp = vec, xmax = -PD_INT_MAX, maxp = 0, j = ninlets;
+        for (vp = vec, xmax = -PD_INT_MAX, maxp = 0, j = numberOfInlets;
             j--; vp++)
         {
             int x1, y1, x2, y2;
             t_gobj *g = *vp;
             if (!g) continue;
-            gobj_getRectangle(g, x, &x1, &y1, &x2, &y2);
+            gobj_getRectangle(g, glist, &x1, &y1, &x2, &y2);
             if (x1 > xmax) xmax = x1, maxp = vp;
         }
         if (!maxp) break;
@@ -119,42 +167,11 @@ void canvas_resortInlets(t_glist *x)
         *maxp = 0;
         ip = vinlet_getit(&y->g_pd);
         
-        object_moveInletFirst(&x->gl_obj, ip);
+        object_moveInletFirst(&glist->gl_obj, ip);
     }
     PD_MEMORY_FREE(vec);
-    if (x->gl_parent && canvas_isMapped(x->gl_parent))
-        canvas_updateLinesByObject(x->gl_parent, &x->gl_obj);
-}
-
-t_outlet *canvas_addOutlet (t_glist *x, t_pd *who, t_symbol *s)
-{
-    t_outlet *op = outlet_new(&x->gl_obj, s);
-    if (!x->gl_isLoading && x->gl_parent && canvas_isMapped(x->gl_parent))
-    {
-        gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 0);
-        gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 1);
-        canvas_updateLinesByObject(x->gl_parent, &x->gl_obj);
-    }
-    if (!x->gl_isLoading) canvas_resortOutlets(x);
-    return (op);
-}
-
-void canvas_removeOutlet (t_glist *x, t_outlet *op)
-{
-    t_glist *owner = x->gl_parent;
-    int redraw = (owner && canvas_isMapped(owner) && (!owner->gl_isDeleting)
-        && canvas_canHaveWindow(owner));
-    
-    if (owner) canvas_deleteLinesByInlets(owner, &x->gl_obj, 0, op);
-    if (redraw)
-        gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 0);
-
-    outlet_free(op);
-    if (redraw)
-    {
-        gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 1);
-        canvas_updateLinesByObject(x->gl_parent, &x->gl_obj);
-    }
+    if (glist->gl_parent && canvas_isMapped(glist->gl_parent))
+        canvas_updateLinesByObject(glist->gl_parent, &glist->gl_obj);
 }
 
 void canvas_resortOutlets(t_glist *x)
@@ -265,6 +282,29 @@ static void graph_ylabel(t_glist *x, t_symbol *s, int argc, t_atom *argv)
     glist_redraw(x);
 }
 */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+    /* get the graph's rectangle, not counting extra swelling for controls
+    to keep them inside the graph.  This is the "logical" pixel size. */
+
+static void graph_graphrect(t_gobj *z, t_glist *glist,
+    int *xp1, int *yp1, int *xp2, int *yp2)
+{
+    t_glist *x = (t_glist *)z;
+    int x1 = text_xpix(&x->gl_obj, glist);
+    int y1 = text_ypix(&x->gl_obj, glist);
+    int x2, y2;
+    x2 = x1 + x->gl_width;
+    y2 = y1 + x->gl_height;
+
+    *xp1 = x1;
+    *yp1 = y1;
+    *xp2 = x2;
+    *yp2 = y2;
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -617,25 +657,6 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
         for (g = x->gl_graphics; g; g = g->g_next)
             gobj_visibilityChanged(g, x, 0);
     }
-}
-
-    /* get the graph's rectangle, not counting extra swelling for controls
-    to keep them inside the graph.  This is the "logical" pixel size. */
-
-static void graph_graphrect(t_gobj *z, t_glist *glist,
-    int *xp1, int *yp1, int *xp2, int *yp2)
-{
-    t_glist *x = (t_glist *)z;
-    int x1 = text_xpix(&x->gl_obj, glist);
-    int y1 = text_ypix(&x->gl_obj, glist);
-    int x2, y2;
-    x2 = x1 + x->gl_width;
-    y2 = y1 + x->gl_height;
-
-    *xp1 = x1;
-    *yp1 = y1;
-    *xp2 = x2;
-    *yp2 = y2;
 }
 
     /* get the rectangle, enlarged to contain all the "contents" --
