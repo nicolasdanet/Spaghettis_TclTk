@@ -193,8 +193,8 @@ void canvas_displaceSelectedObjects (t_glist *glist, int deltaX, int deltaY)
         isDirty = 1;
     }
     
-    if (needToResortInlets)  { canvas_resortinlets (glist); }
-    if (needToResortOutlets) { canvas_resortoutlets (glist); }
+    if (needToResortInlets)  { canvas_resortInlets (glist); }
+    if (needToResortOutlets) { canvas_resortOutlets (glist); }
     
     sys_vGui ("::ui_patch::updateScrollRegion .x%lx.c\n", canvas_getView (glist));
     

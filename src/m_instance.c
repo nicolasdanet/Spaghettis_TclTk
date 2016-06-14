@@ -94,8 +94,8 @@ static void instance_popAbstraction (t_glist *glist)
     
     glist->gl_isLoading = 0;
     
-    canvas_resortinlets (glist);
-    canvas_resortoutlets (glist);
+    canvas_resortInlets (glist);
+    canvas_resortOutlets (glist);
 }
 
 static void instance_newAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)

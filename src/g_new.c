@@ -44,7 +44,7 @@ static void canvas_makeIemObject (t_glist *glist, t_symbol *name)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_obj (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+void canvas_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     int positionX = 0;
     int positionY = 0;
@@ -69,22 +69,22 @@ void canvas_obj (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-void canvas_msg (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+void canvas_makeMessage (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     message_makeObject (glist, s, argc, argv);
 }
 
-void canvas_floatatom (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+void canvas_makeFloatAtom (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     gatom_makeObject (glist, A_FLOAT, s, argc, argv);
 }
 
-void canvas_symbolatom (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+void canvas_makeSymbolAtom (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     gatom_makeObject (glist, A_SYMBOL, s, argc, argv);
 }
 
-void canvas_text (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+void canvas_makeComment (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     t_object *x = (t_object *)pd_new (text_class);
     
@@ -126,47 +126,47 @@ void canvas_text (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void canvas_bng (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+void canvas_makeBang (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     canvas_makeIemObject (glist, sym_bng);
 }
 
-void canvas_tgl (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+void canvas_makeToggle (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     canvas_makeIemObject (glist, sym_tgl);
 }
 
-void canvas_vslider (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+void canvas_makeVerticalSlider (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     canvas_makeIemObject (glist, sym_vslider);
 }
 
-void canvas_hslider (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+void canvas_makeHorizontalSlider (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     canvas_makeIemObject (glist, sym_hslider);
 }
 
-void canvas_hradio (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+void canvas_makeHorizontalRadio (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     canvas_makeIemObject (glist, sym_hradio);
 }
 
-void canvas_vradio (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+void canvas_makeVerticalRadio (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     canvas_makeIemObject (glist, sym_vradio);
 }
 
-void canvas_vu (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+void canvas_makeVu (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     canvas_makeIemObject (glist, sym_vu);
 }
 
-void canvas_cnv (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+void canvas_makePanel (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     canvas_makeIemObject (glist, sym_cnv);
 }
 
-void canvas_nbx (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+void canvas_makeDial (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     canvas_makeIemObject (glist, sym_nbx);
 }

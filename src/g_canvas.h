@@ -509,30 +509,45 @@ void            canvas_destroyEditorIfAny               (t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            canvas_obj                              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_msg                              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_floatatom                        (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_symbolatom                       (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_text                             (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_scalar                           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_bng                              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_tgl                              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_vslider                          (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_hslider                          (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_hradio                           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_vradio                           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_vu                               (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_cnv                              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_nbx                              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_makeObject                       (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_makeMessage                      (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_makeFloatAtom                    (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_makeSymbolAtom                   (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_makeComment                      (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_makeScalar                       (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_makeBang                         (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_makeToggle                       (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_makeVerticalSlider               (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_makeHorizontalSlider             (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_makeHorizontalRadio              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_makeVerticalRadio                (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_makeVu                           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_makePanel                        (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_makeDial                         (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            graph_bounds                            (t_glist *x, t_float x1, t_float y1, t_float x2, t_float y2);
-void            graph_xticks                            (t_glist *x, t_float point, t_float inc, t_float f);
-void            graph_yticks                            (t_glist *x, t_float point, t_float inc, t_float f);
-void            canvas_menuarray                        (t_glist *canvas);
+t_inlet         *canvas_addInlet                        (t_glist *glist, t_pd *owner, t_symbol *s);
+t_outlet        *canvas_addOutlet                       (t_glist *glist, t_pd *owner, t_symbol *s);
+
+void            canvas_removeInlet                      (t_glist *glist, t_inlet *inlet);
+void            canvas_removeOutlet                     (t_glist *glist, t_outlet *outlet);
+
+void            canvas_resortInlets                     (t_glist *glist);
+void            canvas_resortOutlets                    (t_glist *glist);
+
+void            graph_bounds                            (t_glist *glist,
+                                                            t_float a,
+                                                            t_float b,
+                                                            t_float c,
+                                                            t_float d);
+                                                            
+void            graph_ticksX                            (t_glist *glist, t_float pt, t_float i, t_float f);
+void            graph_ticksY                            (t_glist *glist, t_float pt, t_float i, t_float f);
+
+void            canvas_menuarray                        (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -810,22 +825,16 @@ void     glist_arraydialog      (t_glist *parent,
 t_buffer *glist_writetobinbuf   (t_glist *x, int wholething);
 void     glist_redraw           (t_glist *x);
 
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 void     canvas_vistext                     (t_glist *x, t_object *y);
-t_inlet  *canvas_addinlet                   (t_glist *x, t_pd *who, t_symbol *sym);
-void     canvas_rminlet                     (t_glist *x, t_inlet *ip);
-t_outlet *canvas_addoutlet                  (t_glist *x, t_pd *who, t_symbol *sym);
-void     canvas_rmoutlet                    (t_glist *x, t_outlet *op);
+
 void     canvas_zapallfortemplate           (t_glist *tmpl);
 void     canvas_setusedastemplate           (t_glist *x);
 
 int      canvas_getfont                     (t_glist *x);
-void     canvas_resortinlets            (t_glist *x);
-void     canvas_resortoutlets           (t_glist *x);
 
 void     canvas_fattenforscalars        (t_glist *x, int *x1, int *y1, int *x2, int *y2);
 void     canvas_visforscalars           (t_glist *x, t_glist *glist, int vis);

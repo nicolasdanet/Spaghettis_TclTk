@@ -57,7 +57,7 @@ t_widgetbehavior canvas_widgetbehavior =
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_inlet *canvas_addinlet(t_glist *x, t_pd *who, t_symbol *s)
+t_inlet *canvas_addInlet (t_glist *x, t_pd *who, t_symbol *s)
 {
     t_inlet *ip = inlet_new(&x->gl_obj, who, s, 0);
     if (!x->gl_isLoading && x->gl_parent && canvas_isMapped(x->gl_parent))
@@ -66,11 +66,11 @@ t_inlet *canvas_addinlet(t_glist *x, t_pd *who, t_symbol *s)
         gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 1);
         canvas_updateLinesByObject(x->gl_parent, &x->gl_obj);
     }
-    if (!x->gl_isLoading) canvas_resortinlets(x);
+    if (!x->gl_isLoading) canvas_resortInlets(x);
     return (ip);
 }
 
-void canvas_rminlet(t_glist *x, t_inlet *ip)
+void canvas_removeInlet (t_glist *x, t_inlet *ip)
 {
     t_glist *owner = x->gl_parent;
     int redraw = (owner && canvas_isMapped(owner) && (!owner->gl_isDeleting)
@@ -87,7 +87,7 @@ void canvas_rminlet(t_glist *x, t_inlet *ip)
     }
 }
 
-void canvas_resortinlets(t_glist *x)
+void canvas_resortInlets(t_glist *x)
 {
     int ninlets = 0, i, j, xmax;
     t_gobj *y, **vec, **vp, **maxp;
@@ -126,7 +126,7 @@ void canvas_resortinlets(t_glist *x)
         canvas_updateLinesByObject(x->gl_parent, &x->gl_obj);
 }
 
-t_outlet *canvas_addoutlet(t_glist *x, t_pd *who, t_symbol *s)
+t_outlet *canvas_addOutlet (t_glist *x, t_pd *who, t_symbol *s)
 {
     t_outlet *op = outlet_new(&x->gl_obj, s);
     if (!x->gl_isLoading && x->gl_parent && canvas_isMapped(x->gl_parent))
@@ -135,11 +135,11 @@ t_outlet *canvas_addoutlet(t_glist *x, t_pd *who, t_symbol *s)
         gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 1);
         canvas_updateLinesByObject(x->gl_parent, &x->gl_obj);
     }
-    if (!x->gl_isLoading) canvas_resortoutlets(x);
+    if (!x->gl_isLoading) canvas_resortOutlets(x);
     return (op);
 }
 
-void canvas_rmoutlet(t_glist *x, t_outlet *op)
+void canvas_removeOutlet (t_glist *x, t_outlet *op)
 {
     t_glist *owner = x->gl_parent;
     int redraw = (owner && canvas_isMapped(owner) && (!owner->gl_isDeleting)
@@ -157,7 +157,7 @@ void canvas_rmoutlet(t_glist *x, t_outlet *op)
     }
 }
 
-void canvas_resortoutlets(t_glist *x)
+void canvas_resortOutlets(t_glist *x)
 {
     int noutlets = 0, i, j, xmax;
     t_gobj *y, **vec, **vp, **maxp;
@@ -216,7 +216,7 @@ void graph_bounds(t_glist *x, t_float x1, t_float y1, t_float x2, t_float y2)
     glist_redraw(x);
 }
 
-void graph_xticks(t_glist *x, t_float point, t_float inc, t_float f)
+void graph_ticksX(t_glist *x, t_float point, t_float inc, t_float f)
 {
     x->gl_tickX.k_point = point;
     x->gl_tickX.k_increment = inc;
@@ -224,7 +224,7 @@ void graph_xticks(t_glist *x, t_float point, t_float inc, t_float f)
     glist_redraw(x);
 }
 
-void graph_yticks (t_glist *x, t_float point, t_float inc, t_float f)
+void graph_ticksY (t_glist *x, t_float point, t_float inc, t_float f)
 {
     x->gl_tickY.k_point = point;
     x->gl_tickY.k_increment = inc;
