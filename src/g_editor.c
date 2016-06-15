@@ -757,7 +757,7 @@ void canvas_mouseUp (t_glist *glist, t_float positionX, t_float positionY)
     }
 }
 
-void canvas_setBounds (t_glist *glist, t_float a, t_float b, t_float c, t_float d)
+void canvas_window (t_glist *glist, t_float a, t_float b, t_float c, t_float d)
 {
     glist->gl_windowTopLeftX     = a;
     glist->gl_windowTopLeftY     = b;

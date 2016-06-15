@@ -740,7 +740,7 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     x->gl_valueEnd      = 1.0;
     x->gl_valueDown     = 1.0;
     
-    canvas_setBounds (x, topLeftX, topLeftY, topLeftX + width, topLeftY + height);
+    canvas_window (x, topLeftX, topLeftY, topLeftX + width, topLeftY + height);
     canvas_bind (x);
     
     x->gl_fontSize      = font_getNearestValidFontSize (fontSize);
@@ -814,8 +814,8 @@ void canvas_setup (void)
     class_addMouse (c, canvas_mouse);
     class_addMouseUp (c, canvas_mouseUp);
 
-    class_addMethod (c, (t_method)canvas_setBounds,
-        sym_setbounds,
+    class_addMethod (c, (t_method)canvas_window,
+        sym_window,
         A_FLOAT,
         A_FLOAT,
         A_FLOAT, 

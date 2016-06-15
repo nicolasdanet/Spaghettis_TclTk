@@ -830,8 +830,8 @@ void x_array_setup(void )
         sym_dsp, A_CANT, 0);
     class_addMethod(array_define_class, (t_method)canvas_map,
         sym__map, A_FLOAT, A_NULL);
-    class_addMethod(array_define_class, (t_method)canvas_setBounds,
-        sym_setbounds, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
+    class_addMethod(array_define_class, (t_method)canvas_window,
+        sym_setbounds, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL); /* LEGACY !!! */
     
     class_addMouse (array_define_class, canvas_mouse);
     class_addMouseUp (array_define_class, canvas_mouseUp);

@@ -264,7 +264,7 @@ proc _resized {top width height x y} {
     if {$width > 1 && $height > 1} { 
     
         ::ui_patch::updateScrollRegion $top.c
-        ::ui_interface::pdsend "$top setbounds $x $y [expr {$x + $width}] [expr {$y + $height}]"
+        ::ui_interface::pdsend "$top window $x $y [expr {$x + $width}] [expr {$y + $height}]"
     }
 }
 

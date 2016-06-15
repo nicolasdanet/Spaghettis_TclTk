@@ -191,7 +191,7 @@ void x_scalar_setup(void )
         sym_dsp, A_CANT, 0);
     class_addMethod(scalar_define_class, (t_method)canvas_map,
         sym__map, A_FLOAT, A_NULL);
-    class_addMethod(scalar_define_class, (t_method)canvas_setBounds,
+    class_addMethod(scalar_define_class, (t_method)canvas_window,    /* LEGACY !!! */
         sym_setbounds, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
     
     class_addMouse (scalar_define_class, canvas_mouse);

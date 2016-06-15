@@ -577,7 +577,7 @@ void            canvas_mouseUp                          (t_glist *glist,
                                                             t_float a,
                                                             t_float b);
 
-void            canvas_setBounds                        (t_glist *glist,
+void            canvas_window                           (t_glist *glist,
                                                             t_float a,
                                                             t_float b,
                                                             t_float c,

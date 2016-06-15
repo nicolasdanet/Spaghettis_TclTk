@@ -232,7 +232,7 @@ void canvas_resortOutlets (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void graph_bounds(t_glist *x, t_float x1, t_float y1, t_float x2, t_float y2)
+void graph_bounds (t_glist *x, t_float x1, t_float y1, t_float x2, t_float y2)
 {
     x->gl_valueStart = x1;
     x->gl_valueEnd = x2;
