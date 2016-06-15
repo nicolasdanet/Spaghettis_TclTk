@@ -247,55 +247,27 @@ void canvas_bounds (t_glist *glist, t_float a, t_float b, t_float c, t_float d)
     }
 }
 
-void graph_ticksX(t_glist *x, t_float point, t_float inc, t_float f)
-{
-    x->gl_tickX.k_point = point;
-    x->gl_tickX.k_increment = inc;
-    x->gl_tickX.k_period = f;
-    glist_redraw(x);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-void graph_ticksY (t_glist *x, t_float point, t_float inc, t_float f)
+void graph_ticksX (t_glist *glist, t_float pt, t_float i, t_float f)
 {
-    x->gl_tickY.k_point = point;
-    x->gl_tickY.k_increment = inc;
-    x->gl_tickY.k_period = f;
-    glist_redraw(x);
-}
-
-/*
-static void graph_xlabel(t_glist *x, t_symbol *s, int argc, t_atom *argv)
-{
-    int i;
-    if (argc < 1) post_error ("graph_xlabel: no y value given");
-    else
-    {
-        x->gl_xlabely = atom_getFloat(argv);
-        argv++; argc--;
-        x->gl_xlabel = (t_symbol **)PD_MEMORY_RESIZE(x->gl_xlabel, 
-            x->gl_nxlabels * sizeof (t_symbol *), argc * sizeof (t_symbol *));
-        x->gl_nxlabels = argc;
-        for (i = 0; i < argc; i++) x->gl_xlabel[i] = atom_gensym(&argv[i]);
-    }
-    glist_redraw(x);
-}
+    glist->gl_tickX.k_point     = pt;
+    glist->gl_tickX.k_increment = i;
+    glist->gl_tickX.k_period    = f;
     
-static void graph_ylabel(t_glist *x, t_symbol *s, int argc, t_atom *argv)
-{
-    int i;
-    if (argc < 1) post_error ("graph_ylabel: no x value given");
-    else
-    {
-        x->gl_ylabelx = atom_getFloat(argv);
-        argv++; argc--;
-        x->gl_ylabel = (t_symbol **)PD_MEMORY_RESIZE(x->gl_ylabel, 
-            x->gl_nylabels * sizeof (t_symbol *), argc * sizeof (t_symbol *));
-        x->gl_nylabels = argc;
-        for (i = 0; i < argc; i++) x->gl_ylabel[i] = atom_gensym(&argv[i]);
-    }
-    glist_redraw(x);
+    glist_redraw (glist);
 }
-*/
+
+void graph_ticksY (t_glist *glist, t_float pt, t_float i, t_float f)
+{
+    glist->gl_tickY.k_point     = pt;
+    glist->gl_tickY.k_increment = i;
+    glist->gl_tickY.k_period    = f;
+    
+    glist_redraw (glist);
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
