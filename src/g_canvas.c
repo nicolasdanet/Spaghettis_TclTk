@@ -906,7 +906,7 @@ void canvas_setup (void)
         A_DEFSYMBOL,
         A_NULL);
     
-    class_addMethod (c, (t_method)graph_bounds,
+    class_addMethod (c, (t_method)canvas_bounds,
         sym_bounds,
         A_FLOAT,
         A_FLOAT,

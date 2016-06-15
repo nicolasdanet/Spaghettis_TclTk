@@ -232,20 +232,19 @@ void canvas_resortOutlets (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void graph_bounds (t_glist *x, t_float x1, t_float y1, t_float x2, t_float y2)
+void canvas_bounds (t_glist *glist, t_float a, t_float b, t_float c, t_float d)
 {
-    x->gl_valueStart = x1;
-    x->gl_valueEnd = x2;
-    x->gl_valueUp = y1;
-    x->gl_valueDown = y2;
-    if (x->gl_valueEnd == x->gl_valueStart ||
-        x->gl_valueDown == x->gl_valueUp)
-    {
-        post_error ("graph: empty bounds rectangle");
-        x1 = y1 = 0;
-        x2 = y2 = 1;
+    if ((a == b) || (c == d)) { post_error (PD_TRANSLATE ("graph: invalid bounds")); }
+    else {
+    //
+    glist->gl_valueStart = a;
+    glist->gl_valueEnd   = c;
+    glist->gl_valueUp    = b;
+    glist->gl_valueDown  = d;
+        
+    glist_redraw (glist);
+    //
     }
-    glist_redraw(x);
 }
 
 void graph_ticksX(t_glist *x, t_float point, t_float inc, t_float f)

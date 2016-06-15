@@ -250,13 +250,13 @@ struct _glist {
     t_float             gl_valueEnd;
     t_float             gl_valueUp;
     t_float             gl_valueDown;
+    t_tick              gl_tickX;
+    t_tick              gl_tickY;
     int                 gl_windowTopLeftX;
     int                 gl_windowTopLeftY;
     int                 gl_windowBottomRightX;
     int                 gl_windowBottomRightY;
     int                 gl_fontSize;
-    t_tick              gl_tickX;
-    t_tick              gl_tickY;
     char                gl_isMapped;
     char                gl_isDirty;
     char                gl_isLoading;
@@ -538,7 +538,7 @@ void            canvas_removeOutlet                     (t_glist *glist, t_outle
 void            canvas_resortInlets                     (t_glist *glist);
 void            canvas_resortOutlets                    (t_glist *glist);
 
-void            graph_bounds                            (t_glist *glist,
+void            canvas_bounds                           (t_glist *glist,
                                                             t_float a,
                                                             t_float b,
                                                             t_float c,
