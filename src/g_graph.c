@@ -122,95 +122,110 @@ void canvas_removeOutlet (t_glist *glist, t_outlet *outlet)
     if (owner)  { canvas_updateLinesByObject (owner, cast_object (glist)); }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void canvas_resortInlets (t_glist *glist)
 {
     int numberOfInlets = 0;
     t_gobj *y = NULL;
-        
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+    // 
+    if (pd_class (y) == vinlet_class) { numberOfInlets++; }
+    //
+    }
+
+    if (numberOfInlets > 1) {
+    //
     int i;
-    int j;
-    int xmax;
-
-    t_gobj **vec = NULL;
-    t_gobj **vp = NULL;
-    t_gobj **maxp = NULL;
-    
-    for (y = glist->gl_graphics; y; y = y->g_next) { 
-        if (pd_class (y) == vinlet_class) { numberOfInlets++; }
-    }
-
-    if (numberOfInlets < 2) return;
-    
-    vec = (t_gobj **)PD_MEMORY_GET(numberOfInlets * sizeof(*vec));
-    
-    for (y = glist->gl_graphics, vp = vec; y; y = y->g_next)
-        if (pd_class(&y->g_pd) == vinlet_class) *vp++ = y;
-    
-    for (i = numberOfInlets; i--;)
-    {
-        t_inlet *ip;
-        for (vp = vec, xmax = -PD_INT_MAX, maxp = 0, j = numberOfInlets;
-            j--; vp++)
-        {
-            int x1, y1, x2, y2;
-            t_gobj *g = *vp;
-            if (!g) continue;
-            gobj_getRectangle(g, glist, &x1, &y1, &x2, &y2);
-            if (x1 > xmax) xmax = x1, maxp = vp;
-        }
-        if (!maxp) break;
-        y = *maxp;
-        *maxp = 0;
-        ip = vinlet_getit(&y->g_pd);
+    t_gobj **inlets = (t_gobj **)PD_MEMORY_GET (numberOfInlets * sizeof (t_gobj *));
+    t_gobj **t = inlets;
         
-        object_moveInletFirst(&glist->gl_obj, ip);
+    for (y = glist->gl_graphics; y; y = y->g_next) { if (pd_class (y) == vinlet_class) { *t++ = y; } }
+    
+    /* Take the most right inlet and put it first. */
+    /* Remove it from the list. */
+    /* Do it again. */
+    
+    for (i = numberOfInlets; i > 0; i--) {
+    //
+    int j = numberOfInlets;
+    int maximumX = -PD_INT_MAX;
+    t_gobj **mostRightObject = NULL;
+    
+    for (t = inlets; j--; t++) {
+        if (*t) {
+            int a, b, c, d;
+            gobj_getRectangle (*t, glist, &a, &b, &c, &d);
+            if (a > maximumX) { maximumX = a; mostRightObject = t; }
+        }
     }
-    PD_MEMORY_FREE(vec);
-    if (glist->gl_parent && canvas_isMapped(glist->gl_parent))
-        canvas_updateLinesByObject(glist->gl_parent, &glist->gl_obj);
+    
+    if (mostRightObject) {
+        object_moveInletFirst (cast_object (glist), vinlet_getit (cast_pd (*mostRightObject)));
+        *mostRightObject = NULL;
+    }
+    //
+    }
+    
+    PD_MEMORY_FREE (inlets);
+    
+    if (glist->gl_parent && canvas_isMapped (glist->gl_parent)) {
+        canvas_updateLinesByObject (glist->gl_parent, cast_object (glist));
+    }
+    //
+    }
 }
 
-void canvas_resortOutlets(t_glist *x)
+void canvas_resortOutlets (t_glist *glist)
 {
-    int noutlets = 0, i, j, xmax;
-    t_gobj *y, **vec, **vp, **maxp;
+    int numberOfOutlets = 0;
+    t_gobj *y = NULL;
     
-    for (noutlets = 0, y = x->gl_graphics; y; y = y->g_next)
-        if (pd_class(&y->g_pd) == voutlet_class) noutlets++;
-
-    if (noutlets < 2) return;
-    
-    vec = (t_gobj **)PD_MEMORY_GET(noutlets * sizeof(*vec));
-    
-    for (y = x->gl_graphics, vp = vec; y; y = y->g_next)
-        if (pd_class(&y->g_pd) == voutlet_class) *vp++ = y;
-    
-    for (i = noutlets; i--;)
-    {
-        t_outlet *ip;
-        for (vp = vec, xmax = -PD_INT_MAX, maxp = 0, j = noutlets;
-            j--; vp++)
-        {
-            int x1, y1, x2, y2;
-            t_gobj *g = *vp;
-            if (!g) continue;
-            gobj_getRectangle(g, x, &x1, &y1, &x2, &y2);
-            if (x1 > xmax) xmax = x1, maxp = vp;
-        }
-        if (!maxp) break;
-        y = *maxp;
-        *maxp = 0;
-        ip = voutlet_getit(&y->g_pd);
-        
-        object_moveOutletFirst(&x->gl_obj, ip);
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+    //
+    if (pd_class (y) == voutlet_class) { numberOfOutlets++; }
+    //
     }
-    PD_MEMORY_FREE(vec);
-    if (x->gl_parent && canvas_isMapped(x->gl_parent))
-        canvas_updateLinesByObject(x->gl_parent, &x->gl_obj);
+
+    if (numberOfOutlets > 1) {
+    //
+    int i;
+    t_gobj **outlets = (t_gobj **)PD_MEMORY_GET (numberOfOutlets * sizeof (t_gobj *));
+    t_gobj **t = outlets;
+        
+    for (y = glist->gl_graphics; y; y = y->g_next) { if (pd_class (y) == voutlet_class) { *t++ = y; } }
+    
+    /* Take the most right outlet and put it first. */
+    /* Remove it from the list. */
+    /* Do it again. */
+    
+    for (i = numberOfOutlets; i > 0; i--) {
+    //
+    int j = numberOfOutlets;
+    int maximumX = -PD_INT_MAX;
+    t_gobj **mostRightObject = NULL;
+    
+    for (t = outlets; j--; t++) {
+        if (*t) {
+            int a, b, c, d;
+            gobj_getRectangle (*t, glist, &a, &b, &c, &d);
+            if (a > maximumX) { maximumX = a; mostRightObject = t; }
+        }
+    }
+    
+    if (mostRightObject) {
+        object_moveOutletFirst (cast_object (glist), voutlet_getit (cast_pd (*mostRightObject)));
+        *mostRightObject = NULL;
+    }
+    //
+    }
+    
+    PD_MEMORY_FREE (outlets);
+    
+    if (glist->gl_parent && canvas_isMapped (glist->gl_parent)) {
+        canvas_updateLinesByObject (glist->gl_parent, cast_object (glist));
+    }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
