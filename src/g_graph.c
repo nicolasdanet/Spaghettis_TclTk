@@ -18,6 +18,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+extern t_class  *canvas_class;
 extern t_class  *garray_class;
 extern t_class  *vinlet_class;
 extern t_class  *voutlet_class;
@@ -273,30 +274,28 @@ void graph_ticksY (t_glist *glist, t_float pt, t_float i, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* get the graph's rectangle, not counting extra swelling for controls
-    to keep them inside the graph.  This is the "logical" pixel size. */
-
-static void graph_graphrect(t_gobj *z, t_glist *glist,
-    int *xp1, int *yp1, int *xp2, int *yp2)
+static void canvas_getGraphOnParentRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
 {
-    t_glist *x = (t_glist *)z;
-    int x1 = text_xpix(&x->gl_obj, glist);
-    int y1 = text_ypix(&x->gl_obj, glist);
-    int x2, y2;
-    x2 = x1 + x->gl_width;
-    y2 = y1 + x->gl_height;
+    t_glist *x = cast_glist (z);
+    
+    PD_ASSERT (pd_class (z) == canvas_class);
+    
+    int x1 = text_xpix (cast_object (x), glist);
+    int y1 = text_ypix (cast_object (x), glist);
+    int x2 = x1 + x->gl_width;
+    int y2 = y1 + x->gl_height;
 
-    *xp1 = x1;
-    *yp1 = y1;
-    *xp2 = x2;
-    *yp2 = y2;
+    *a = x1;
+    *b = y1;
+    *c = x2;
+    *d = y2;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_float glist_pixelstox(t_glist *x, t_float xpix)
+t_float glist_pixelstox (t_glist *x, t_float xpix)
 {
         /* if we appear as a text box on parent, our range in our
         coordinates (x1, etc.) specifies the coordinate range
@@ -317,7 +316,7 @@ t_float glist_pixelstox(t_glist *x, t_float xpix)
     {
         int x1, y1, x2, y2;
         if (!x->gl_parent) { PD_BUG; }       
-        graph_graphrect(&x->gl_obj.te_g, x->gl_parent, &x1, &y1, &x2, &y2);
+        canvas_getGraphOnParentRectangle(&x->gl_obj.te_g, x->gl_parent, &x1, &y1, &x2, &y2);
         return (x->gl_valueStart + (x->gl_valueEnd - x->gl_valueStart) * 
             (xpix - x1) / (x2 - x1));
     }
@@ -334,7 +333,7 @@ t_float glist_pixelstoy(t_glist *x, t_float ypix)
     {
         int x1, y1, x2, y2;
         if (!x->gl_parent) { PD_BUG; }
-        graph_graphrect(&x->gl_obj.te_g, x->gl_parent, &x1, &y1, &x2, &y2);
+        canvas_getGraphOnParentRectangle(&x->gl_obj.te_g, x->gl_parent, &x1, &y1, &x2, &y2);
         return (x->gl_valueUp + (x->gl_valueDown - x->gl_valueUp) * 
             (ypix - y1) / (y2 - y1));
     }
@@ -352,7 +351,7 @@ t_float glist_xtopixels(t_glist *x, t_float xval)
     {
         int x1, y1, x2, y2;
         if (!x->gl_parent) { PD_BUG; }
-        graph_graphrect(&x->gl_obj.te_g, x->gl_parent, &x1, &y1, &x2, &y2);
+        canvas_getGraphOnParentRectangle(&x->gl_obj.te_g, x->gl_parent, &x1, &y1, &x2, &y2);
         return (x1 + (x2 - x1) * (xval - x->gl_valueStart) / (x->gl_valueEnd - x->gl_valueStart));
     }
 }
@@ -368,7 +367,7 @@ t_float glist_ytopixels(t_glist *x, t_float yval)
     {
         int x1, y1, x2, y2;
         if (!x->gl_parent) { PD_BUG; }
-        graph_graphrect(&x->gl_obj.te_g, x->gl_parent, &x1, &y1, &x2, &y2);
+        canvas_getGraphOnParentRectangle(&x->gl_obj.te_g, x->gl_parent, &x1, &y1, &x2, &y2);
         return (y1 + (y2 - y1) * (yval - x->gl_valueUp) / (x->gl_valueDown - x->gl_valueUp));
     }
 }
@@ -386,13 +385,18 @@ t_float glist_dpixtody(t_glist *x, t_float dypix)
     return (dypix * (glist_pixelstoy(x, 1) - glist_pixelstoy(x, 0)));
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
     /* get the window location in pixels of a "text" object.  The
     object's x and y positions are in pixels when the glist they're
     in is toplevel.  Otherwise, if it's a new-style graph-on-parent
     (so gl_hasRectangle is set) we use the offset into the framing subrectangle
     as an offset into the parent rectangle.  Finally, it might be an old,
     proportional-style GOP.  In this case we do a coordinate transformation. */
-int text_xpix(t_object *x, t_glist *glist)
+    
+int text_xpix (t_object *x, t_glist *glist)
 {
     if (canvas_canHaveWindow (glist))
         return (x->te_xCoordinate);
@@ -404,7 +408,7 @@ int text_xpix(t_object *x, t_glist *glist)
                 x->te_xCoordinate / (glist->gl_windowBottomRightX - glist->gl_windowTopLeftX)));
 }
 
-int text_ypix(t_object *x, t_glist *glist)
+int text_ypix (t_object *x, t_glist *glist)
 {
     if (canvas_canHaveWindow (glist))
         return (x->te_yCoordinate);
@@ -659,7 +663,7 @@ static void graph_getrect(t_gobj *z, t_glist *glist,
         t_object *ob;
         int x21, y21, x22, y22;
 
-        graph_graphrect(z, glist, &x1, &y1, &x2, &y2);
+        canvas_getGraphOnParentRectangle(z, glist, &x1, &y1, &x2, &y2);
         if (canvas_hasGraphOnParentTitle(x))
         {
             text_widgetBehavior.w_fnGetRectangle(z, glist, &x21, &y21, &x22, &y22);

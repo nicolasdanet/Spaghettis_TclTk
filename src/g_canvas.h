@@ -547,7 +547,12 @@ void            canvas_bounds                           (t_glist *glist,
 void            graph_ticksX                            (t_glist *glist, t_float pt, t_float i, t_float f);
 void            graph_ticksY                            (t_glist *glist, t_float pt, t_float i, t_float f);
 
-void            canvas_menuarray                        (t_glist *glist);
+t_float         glist_pixelstox                         (t_glist *glist, t_float xpix);
+t_float         glist_pixelstoy                         (t_glist *glist, t_float ypix);
+t_float         glist_xtopixels                         (t_glist *glist, t_float xval);
+t_float         glist_ytopixels                         (t_glist *glist, t_float yval);
+t_float         glist_dpixtodx                          (t_glist *glist, t_float dxpix);
+t_float         glist_dpixtody                          (t_glist *glist, t_float dypix);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -789,6 +794,7 @@ void            canvas_merge                            (t_glist *glist, t_symbo
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void canvas_menuarray (t_glist *glist);
 t_outlet *voutlet_getit(t_pd *x);
 t_inlet *vinlet_getit(t_pd *x);
 int garray_getname(t_garray *x, t_symbol **namep);
@@ -809,13 +815,6 @@ void canvas_find_parent (t_glist *x);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-t_float  glist_pixelstox        (t_glist *x, t_float xpix);
-t_float  glist_pixelstoy        (t_glist *x, t_float ypix);
-t_float  glist_xtopixels        (t_glist *x, t_float xval);
-t_float  glist_ytopixels        (t_glist *x, t_float yval);
-t_float  glist_dpixtodx         (t_glist *x, t_float dxpix);
-t_float  glist_dpixtody         (t_glist *x, t_float dypix);
 
 void     glist_arraydialog      (t_glist *parent,
                                     t_symbol *name,
