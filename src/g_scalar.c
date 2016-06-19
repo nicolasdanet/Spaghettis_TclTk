@@ -183,8 +183,8 @@ static void scalar_getrect(t_gobj *z, t_glist *owner,
         /* if someone deleted the template canvas, we're just a point */
     if (!templatecanvas)
     {
-        x1 = x2 = glist_xtopixels(owner, basex);
-        y1 = y2 = glist_ytopixels(owner, basey);
+        x1 = x2 = canvas_valueToPositionX(owner, basex);
+        y1 = y2 = canvas_valueToPositionY(owner, basey);
     }
     else
     {
@@ -270,11 +270,11 @@ static void scalar_displace(t_gobj *z, t_glist *glist, int dx, int dy)
     if (goty && (ytype != DATA_FLOAT))
         goty = 0;
     if (gotx)
-        *(t_float *)(((char *)(x->sc_vector)) + xonset) +=
-            dx * (glist_pixelstox(glist, 1) - glist_pixelstox(glist, 0));
+        *(t_float *)(((char *)(x->sc_vector)) + xonset) += glist_dpixtodx (glist, dx);
+            // dx * (canvas_positionToValueX(glist, 1) - canvas_positionToValueX(glist, 0));
     if (goty)
-        *(t_float *)(((char *)(x->sc_vector)) + yonset) +=
-            dy * (glist_pixelstoy(glist, 1) - glist_pixelstoy(glist, 0));
+        *(t_float *)(((char *)(x->sc_vector)) + yonset) += glist_dpixtody (glist, dy);
+            // dy * (canvas_positionToValueY(glist, 1) - canvas_positionToValueY(glist, 0));
     gpointer_init(&gp);
     gpointer_setglist(&gp, glist, x);
     SET_POINTER(&at[0], &gp);
@@ -308,8 +308,8 @@ static void scalar_vis(t_gobj *z, t_glist *owner, int vis)
     {
         if (vis)
         {
-            int x1 = glist_xtopixels(owner, basex);
-            int y1 = glist_ytopixels(owner, basey);
+            int x1 = canvas_valueToPositionX(owner, basex);
+            int y1 = canvas_valueToPositionY(owner, basey);
             sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags scalar%lx\n",
                 canvas_getView(owner), x1-1, y1-1, x1+1, y1+1, x);
         }

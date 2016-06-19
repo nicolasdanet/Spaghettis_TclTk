@@ -1057,9 +1057,9 @@ static void curve_getrect(t_gobj *z, t_glist *glist,
     }
     for (i = 0, f = x->x_vec; i < n; i++, f += 2)
     {
-        int xloc = glist_xtopixels(glist,
+        int xloc = canvas_valueToPositionX(glist,
             basex + fielddesc_getcoord(f, template, data, 0));
-        int yloc = glist_ytopixels(glist,
+        int yloc = canvas_valueToPositionY(glist,
             basey + fielddesc_getcoord(f+1, template, data, 0));
         if (xloc < x1) x1 = xloc;
         if (xloc > x2) x2 = xloc;
@@ -1149,9 +1149,9 @@ static void curve_vis(t_gobj *z, t_glist *glist,
                 have to allocate memory here. */
             for (i = 0, f = x->x_vec; i < n; i++, f += 2)
             {
-                pix[2*i] = glist_xtopixels(glist,
+                pix[2*i] = canvas_valueToPositionX(glist,
                     basex + fielddesc_getcoord(f, template, data, 1));
-                pix[2*i+1] = glist_ytopixels(glist,
+                pix[2*i+1] = canvas_valueToPositionY(glist,
                     basey + fielddesc_getcoord(f+1, template, data, 1));
             }
             if (width < 1) width = 1;
@@ -1251,9 +1251,9 @@ static int curve_click(t_gobj *z, t_glist *glist,
     for (i = 0, f = x->x_vec; i < n; i++, f += 2)
     {
         int xval = fielddesc_getcoord(f, template, data, 0),
-            xloc = glist_xtopixels(glist, basex + xval);
+            xloc = canvas_valueToPositionX(glist, basex + xval);
         int yval = fielddesc_getcoord(f+1, template, data, 0),
-            yloc = glist_ytopixels(glist, basey + yval);
+            yloc = canvas_valueToPositionY(glist, basey + yval);
         int xerr = xloc - xpix, yerr = yloc - ypix;
         if (!f->fd_var && !(f+1)->fd_var)
             continue;
@@ -1275,10 +1275,10 @@ static int curve_click(t_gobj *z, t_glist *glist,
         return (0);
     if (doit)
     {
-        curve_motion_xper = glist_pixelstox(glist, 1)
-            - glist_pixelstox(glist, 0);
-        curve_motion_yper = glist_pixelstoy(glist, 1)
-            - glist_pixelstoy(glist, 0);
+        curve_motion_xper = canvas_positionToValueX(glist, 1)
+            - canvas_positionToValueX(glist, 0);
+        curve_motion_yper = canvas_positionToValueY(glist, 1)
+            - canvas_positionToValueY(glist, 0);
         curve_motion_xcumulative = 0;
         curve_motion_ycumulative = 0;
         curve_motion_glist = glist;
@@ -1702,7 +1702,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                 {
                     usexloc = basex + xloc +
                         *(t_float *)((elem + elemsize * i) + xonset);
-                    ixpix = glist_xtopixels(glist, 
+                    ixpix = canvas_valueToPositionX(glist, 
                         fielddesc_cvttocoord(xfielddesc, usexloc));
                     inextx = ixpix + 2;
                 }
@@ -1710,9 +1710,9 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                 {
                     usexloc = xsum;
                     xsum += xinc;
-                    ixpix = glist_xtopixels(glist,
+                    ixpix = canvas_valueToPositionX(glist,
                         fielddesc_cvttocoord(xfielddesc, usexloc));
-                    inextx = glist_xtopixels(glist,
+                    inextx = canvas_valueToPositionX(glist,
                         fielddesc_cvttocoord(xfielddesc, xsum));
                 }
 
@@ -1729,9 +1729,9 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                     sys_vGui(".x%lx.c create rectangle %d %d %d %d \
 -fill black -width 0  -tags [list plot%lx array]\n",
                         canvas_getView(glist),
-                        ixpix, (int)glist_ytopixels(glist, 
+                        ixpix, (int)canvas_valueToPositionY(glist, 
                             basey + fielddesc_cvttocoord(yfielddesc, minyval)),
-                        inextx, (int)(glist_ytopixels(glist, 
+                        inextx, (int)(canvas_valueToPositionY(glist, 
                             basey + fielddesc_cvttocoord(yfielddesc, maxyval))
                                 + linewidth), data);
                     ndrawn++;
@@ -1769,13 +1769,13 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                     yval = CLIP(yval);
                     wval = *(t_float *)((elem + elemsize * i) + wonset);
                     wval = CLIP(wval);
-                    xpix = glist_xtopixels(glist,
+                    xpix = canvas_valueToPositionX(glist,
                         basex + fielddesc_cvttocoord(xfielddesc, usexloc));
                     ixpix = xpix + 0.5;
                     if (xonset >= 0 || ixpix != lastpixel)
                     {
                         sys_vGui("%d %f \\\n", ixpix,
-                            glist_ytopixels(glist,
+                            canvas_valueToPositionY(glist,
                                 basey + fielddesc_cvttocoord(yfielddesc, 
                                     yloc + yval) -
                                         fielddesc_cvttocoord(wfielddesc,wval)));
@@ -1798,12 +1798,12 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                     yval = CLIP(yval);
                     wval = *(t_float *)((elem + elemsize * i) + wonset);
                     wval = CLIP(wval);
-                    xpix = glist_xtopixels(glist,
+                    xpix = canvas_valueToPositionX(glist,
                         basex + fielddesc_cvttocoord(xfielddesc, usexloc));
                     ixpix = xpix + 0.5;
                     if (xonset >= 0 || ixpix != lastpixel)
                     {
-                        sys_vGui("%d %f \\\n", ixpix, glist_ytopixels(glist,
+                        sys_vGui("%d %f \\\n", ixpix, canvas_valueToPositionY(glist,
                             basey + yloc + fielddesc_cvttocoord(yfielddesc,
                                 yval) +
                                     fielddesc_cvttocoord(wfielddesc, wval)));
@@ -1816,11 +1816,11 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                     There should be at least two already. */
                 if (ndrawn < 4)
                 {
-                    sys_vGui("%d %f \\\n", ixpix + 10, glist_ytopixels(glist,
+                    sys_vGui("%d %f \\\n", ixpix + 10, canvas_valueToPositionY(glist,
                         basey + yloc + fielddesc_cvttocoord(yfielddesc,
                             yval) +
                                 fielddesc_cvttocoord(wfielddesc, wval)));
-                    sys_vGui("%d %f \\\n", ixpix + 10, glist_ytopixels(glist,
+                    sys_vGui("%d %f \\\n", ixpix + 10, canvas_valueToPositionY(glist,
                         basey + yloc + fielddesc_cvttocoord(yfielddesc,
                             yval) -
                                 fielddesc_cvttocoord(wfielddesc, wval)));
@@ -1850,13 +1850,13 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                         yval = *(t_float *)((elem + elemsize * i) + yonset);
                     else yval = 0;
                     yval = CLIP(yval);
-                    xpix = glist_xtopixels(glist,
+                    xpix = canvas_valueToPositionX(glist,
                         basex + fielddesc_cvttocoord(xfielddesc, usexloc));
                     ixpix = xpix + 0.5;
                     if (xonset >= 0 || ixpix != lastpixel)
                     {
                         sys_vGui("%d %f \\\n", ixpix,
-                            glist_ytopixels(glist,
+                            canvas_valueToPositionY(glist,
                                 basey + yloc + fielddesc_cvttocoord(yfielddesc,
                                     yval)));
                         ndrawn++;
@@ -1867,7 +1867,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                     /* TK will complain if there aren't at least 2 points... */
                 if (ndrawn == 0) sys_vGui("0 0 0 0 \\\n");
                 else if (ndrawn == 1) sys_vGui("%d %f \\\n", ixpix + 10,
-                    glist_ytopixels(glist, basey + yloc + 
+                    canvas_valueToPositionY(glist, basey + yloc + 
                         fielddesc_cvttocoord(yfielddesc, yval)));
 
                 sys_vGui("-width %f\\\n", linewidth);
@@ -2108,13 +2108,13 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
             && !glist->gl_graphics->g_next &&
                 elemsize == sizeof(t_word))
         {
-            int xval = glist_pixelstox(glist, xpix);
+            int xval = canvas_positionToValueX(glist, xpix);
             if (xval < 0)
                 xval = 0;
             else if (xval >= array->a_n)
                 xval = array->a_n - 1;
             array_motion_yfield = yfield;
-            array_motion_ycumulative = glist_pixelstoy(glist, ypix);
+            array_motion_ycumulative = canvas_positionToValueY(glist, ypix);
             array_motion_fatten = 0;
             array_motion_xfield = 0;
             array_motion_xcumulative = 0;
@@ -2125,7 +2125,7 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
             {
                 fielddesc_setcoord(yfield, elemtemplate,
                     (t_word *)(((char *)array->a_vec) + elemsize * xval),
-                        glist_pixelstoy(glist, ypix), 1);
+                        canvas_positionToValueY(glist, ypix), 1);
                 canvas_setMotionFunction(glist, 0, (t_motionfn)array_motion, xpix, ypix);
                 if (array_motion_scalar)
                     scalar_redraw(array_motion_scalar, array_motion_glist);
@@ -2469,9 +2469,9 @@ static void drawnumber_getrect(t_gobj *z, t_glist *glist,
         *xp2 = *yp2 = -PD_INT_MAX;
         return;
     }
-    xloc = glist_xtopixels(glist,
+    xloc = canvas_valueToPositionX(glist,
         basex + fielddesc_getcoord(&x->x_xloc, template, data, 0));
-    yloc = glist_ytopixels(glist,
+    yloc = canvas_valueToPositionY(glist,
         basey + fielddesc_getcoord(&x->x_yloc, template, data, 0));
     font = canvas_getFontSize(glist);
     fontwidth = font_getHostFontWidth(font);
@@ -2528,9 +2528,9 @@ static void drawnumber_vis(t_gobj *z, t_glist *glist,
     if (vis)
     {
         t_atom at;
-        int xloc = glist_xtopixels(glist,
+        int xloc = canvas_valueToPositionX(glist,
             basex + fielddesc_getcoord(&x->x_xloc, template, data, 0));
-        int yloc = glist_ytopixels(glist,
+        int yloc = canvas_valueToPositionY(glist,
             basey + fielddesc_getcoord(&x->x_yloc, template, data, 0));
         char colorstring[20], buf[DRAWNUMBER_BUFSIZE];
         numbertocolor(fielddesc_getfloat(&x->x_color, template, data, 1),

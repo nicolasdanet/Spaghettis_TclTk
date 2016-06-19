@@ -914,14 +914,14 @@ void canvas_setup (void)
         A_FLOAT,
         A_NULL);
         
-    class_addMethod (c, (t_method)graph_ticksX,
+    class_addMethod (c, (t_method)canvas_ticksX,
         sym_xticks,
         A_FLOAT,
         A_FLOAT,
         A_FLOAT,
         A_NULL);
         
-    class_addMethod (c, (t_method)graph_ticksY, 
+    class_addMethod (c, (t_method)canvas_ticksY, 
         sym_yticks,
         A_FLOAT,
         A_FLOAT,

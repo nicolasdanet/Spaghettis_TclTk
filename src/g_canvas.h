@@ -544,13 +544,14 @@ void            canvas_bounds                           (t_glist *glist,
                                                             t_float c,
                                                             t_float d);
                                                             
-void            graph_ticksX                            (t_glist *glist, t_float pt, t_float i, t_float f);
-void            graph_ticksY                            (t_glist *glist, t_float pt, t_float i, t_float f);
+void            canvas_ticksX                           (t_glist *glist, t_float pt, t_float i, t_float f);
+void            canvas_ticksY                           (t_glist *glist, t_float pt, t_float i, t_float f);
 
-t_float         glist_pixelstox                         (t_glist *glist, t_float xpix);
-t_float         glist_pixelstoy                         (t_glist *glist, t_float ypix);
-t_float         glist_xtopixels                         (t_glist *glist, t_float xval);
-t_float         glist_ytopixels                         (t_glist *glist, t_float yval);
+t_float         canvas_valueToPositionX                 (t_glist *glist, t_float f);
+t_float         canvas_valueToPositionY                 (t_glist *glist, t_float f);
+t_float         canvas_positionToValueX                 (t_glist *glist, t_float f);
+t_float         canvas_positionToValueY                 (t_glist *glist, t_float f);
+
 t_float         glist_dpixtodx                          (t_glist *glist, t_float dxpix);
 t_float         glist_dpixtody                          (t_glist *glist, t_float dypix);
 

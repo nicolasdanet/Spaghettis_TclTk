@@ -621,20 +621,20 @@ void array_getcoordinate(t_glist *glist,
     if (yonset >= 0)
         yval = *(t_float *)(elem + yonset);
     else yval = 0;
-    ypix = glist_ytopixels(glist, basey +
+    ypix = canvas_valueToPositionY(glist, basey +
         fielddesc_cvttocoord(yfielddesc, yval));
     if (wonset >= 0)
     {
             /* found "w" field which controls linewidth. */
         t_float wval = *(t_float *)(elem + wonset);
-        wpix = glist_ytopixels(glist, basey + 
+        wpix = canvas_valueToPositionY(glist, basey + 
             fielddesc_cvttocoord(yfielddesc, yval) +
                 fielddesc_cvttocoord(wfielddesc, wval)) - ypix;
         if (wpix < 0)
             wpix = -wpix;
     }
     else wpix = 1;
-    *xp = glist_xtopixels(glist, basex +
+    *xp = canvas_valueToPositionX(glist, basex +
         fielddesc_cvttocoord(xfielddesc, xval));
     *yp = ypix;
     *wp = wpix;

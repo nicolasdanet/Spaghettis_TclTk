@@ -252,7 +252,7 @@ void canvas_bounds (t_glist *glist, t_float a, t_float b, t_float c, t_float d)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void graph_ticksX (t_glist *glist, t_float pt, t_float i, t_float f)
+void canvas_ticksX (t_glist *glist, t_float pt, t_float i, t_float f)
 {
     glist->gl_tickX.k_point     = pt;
     glist->gl_tickX.k_increment = i;
@@ -261,7 +261,7 @@ void graph_ticksX (t_glist *glist, t_float pt, t_float i, t_float f)
     glist_redraw (glist);
 }
 
-void graph_ticksY (t_glist *glist, t_float pt, t_float i, t_float f)
+void canvas_ticksY (t_glist *glist, t_float pt, t_float i, t_float f)
 {
     glist->gl_tickY.k_point     = pt;
     glist->gl_tickY.k_increment = i;
@@ -295,52 +295,49 @@ static void canvas_getGraphOnParentRectangle (t_gobj *z, t_glist *glist, int *a,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_float glist_pixelstox (t_glist *x, t_float xpix)
+t_float canvas_positionToValueX (t_glist *glist, t_float f)
 {
-        /* if we appear as a text box on parent, our range in our
-        coordinates (x1, etc.) specifies the coordinate range
-        of a one-pixel square at top left of the window. */
-    if (!x->gl_isGraphOnParent)
-        return (x->gl_valueStart + (x->gl_valueEnd - x->gl_valueStart) * xpix);
-
-        /* if we're a graph when shown on parent, but own our own
-        window right now, our range in our coordinates (x1, etc.) is spread
-        over the visible window size, given by screenx1, etc. */  
-    else if (x->gl_isGraphOnParent && x->gl_haveWindow)
-        return (x->gl_valueStart + (x->gl_valueEnd - x->gl_valueStart) * 
-            (xpix) / (x->gl_windowBottomRightX - x->gl_windowTopLeftX));
-
-        /* otherwise, we appear in a graph within a parent glist,
-         so get our screen rectangle on parent and transform. */
-    else 
-    {
-        int x1, y1, x2, y2;
-        if (!x->gl_parent) { PD_BUG; }       
-        canvas_getGraphOnParentRectangle(&x->gl_obj.te_g, x->gl_parent, &x1, &y1, &x2, &y2);
-        return (x->gl_valueStart + (x->gl_valueEnd - x->gl_valueStart) * 
-            (xpix - x1) / (x2 - x1));
+    t_float range = glist->gl_valueEnd - glist->gl_valueStart;
+    t_float v = 0.0;
+        
+    if (!glist->gl_isGraphOnParent) { v = f; }      /* Scalars. */
+    else {
+        if (glist->gl_haveWindow)   { v = f / (glist->gl_windowBottomRightX - glist->gl_windowTopLeftX); }
+        else {
+            int a, b, c, d;
+            canvas_getGraphOnParentRectangle (cast_gobj (glist), glist->gl_parent, &a, &b, &c, &d);
+            v = (f - a) / (c - a);
+        }
     }
+
+    PD_ASSERT (v >= 0.0);
+    PD_ASSERT (v <= 1.0);
+    
+    return (glist->gl_valueStart + (range * v));
 }
 
-t_float glist_pixelstoy(t_glist *x, t_float ypix)
+t_float canvas_positionToValueY (t_glist *glist, t_float f)
 {
-    if (!x->gl_isGraphOnParent)
-        return (x->gl_valueUp + (x->gl_valueDown - x->gl_valueUp) * ypix);
-    else if (x->gl_isGraphOnParent && x->gl_haveWindow)
-        return (x->gl_valueUp + (x->gl_valueDown - x->gl_valueUp) * 
-                (ypix) / (x->gl_windowBottomRightY - x->gl_windowTopLeftY));
-    else 
-    {
-        int x1, y1, x2, y2;
-        if (!x->gl_parent) { PD_BUG; }
-        canvas_getGraphOnParentRectangle(&x->gl_obj.te_g, x->gl_parent, &x1, &y1, &x2, &y2);
-        return (x->gl_valueUp + (x->gl_valueDown - x->gl_valueUp) * 
-            (ypix - y1) / (y2 - y1));
+    t_float range = glist->gl_valueDown - glist->gl_valueUp;
+    t_float v = 0.0;
+        
+    if (!glist->gl_isGraphOnParent) { v = f; }      /* Scalars. */
+    else {
+        if (glist->gl_haveWindow)   { v = f / (glist->gl_windowBottomRightY - glist->gl_windowTopLeftY); }
+        else {
+            int a, b, c, d;
+            canvas_getGraphOnParentRectangle (cast_gobj (glist), glist->gl_parent, &a, &b, &c, &d);
+            v = (f - b) / (d - b);
+        }
     }
+
+    PD_ASSERT (v >= 0.0);
+    PD_ASSERT (v <= 1.0);
+    
+    return (glist->gl_valueUp + (range * v));
 }
 
-    /* convert an x coordinate value to an x pixel location in window */
-t_float glist_xtopixels(t_glist *x, t_float xval)
+t_float canvas_valueToPositionX (t_glist *x, t_float xval)
 {
     if (!x->gl_isGraphOnParent)
         return ((xval - x->gl_valueStart) / (x->gl_valueEnd - x->gl_valueStart));
@@ -356,7 +353,7 @@ t_float glist_xtopixels(t_glist *x, t_float xval)
     }
 }
 
-t_float glist_ytopixels(t_glist *x, t_float yval)
+t_float canvas_valueToPositionY(t_glist *x, t_float yval)
 {
     if (!x->gl_isGraphOnParent)
         return ((yval - x->gl_valueUp) / (x->gl_valueDown - x->gl_valueUp));
@@ -372,17 +369,21 @@ t_float glist_ytopixels(t_glist *x, t_float yval)
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
     /* convert an X screen distance to an X coordinate increment.
       This is terribly inefficient;
       but probably not a big enough CPU hog to warrant optimizing. */
 t_float glist_dpixtodx(t_glist *x, t_float dxpix)
 { 
-    return (dxpix * (glist_pixelstox(x, 1) - glist_pixelstox(x, 0)));
+    return (dxpix * (canvas_positionToValueX(x, 1) - canvas_positionToValueX(x, 0)));
 }
 
 t_float glist_dpixtody(t_glist *x, t_float dypix)
 {
-    return (dypix * (glist_pixelstoy(x, 1) - glist_pixelstoy(x, 0)));
+    return (dypix * (canvas_positionToValueY(x, 1) - canvas_positionToValueY(x, 0)));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -401,9 +402,9 @@ int text_xpix (t_object *x, t_glist *glist)
     if (canvas_canHaveWindow (glist))
         return (x->te_xCoordinate);
     else if (glist->gl_hasRectangle)
-        return (glist_xtopixels(glist, glist->gl_valueStart) +
+        return (canvas_valueToPositionX(glist, glist->gl_valueStart) +
             x->te_xCoordinate - glist->gl_marginX);
-    else return (glist_xtopixels(glist, 
+    else return (canvas_valueToPositionX(glist, 
             glist->gl_valueStart + (glist->gl_valueEnd - glist->gl_valueStart) * 
                 x->te_xCoordinate / (glist->gl_windowBottomRightX - glist->gl_windowTopLeftX)));
 }
@@ -413,9 +414,9 @@ int text_ypix (t_object *x, t_glist *glist)
     if (canvas_canHaveWindow (glist))
         return (x->te_yCoordinate);
     else if (glist->gl_hasRectangle)
-        return (glist_ytopixels(glist, glist->gl_valueUp) +
+        return (canvas_valueToPositionY(glist, glist->gl_valueUp) +
             x->te_yCoordinate - glist->gl_marginY);
-    else return (glist_ytopixels(glist, 
+    else return (canvas_valueToPositionY(glist, 
             glist->gl_valueUp + (glist->gl_valueDown - glist->gl_valueUp) * 
                 x->te_yCoordinate / (glist->gl_windowBottomRightY - glist->gl_windowTopLeftY)));
 }
@@ -557,12 +558,12 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
                 int tickpix = (i % x->gl_tickX.k_period ? 2 : 4);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
                     canvas_getView(x->gl_parent),
-                    (int)glist_xtopixels(x, f), (int)upix,
-                    (int)glist_xtopixels(x, f), (int)upix - tickpix, tag);
+                    (int)canvas_valueToPositionX(x, f), (int)upix,
+                    (int)canvas_valueToPositionX(x, f), (int)upix - tickpix, tag);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
                     canvas_getView(x->gl_parent),
-                    (int)glist_xtopixels(x, f), (int)lpix,
-                    (int)glist_xtopixels(x, f), (int)lpix + tickpix, tag);
+                    (int)canvas_valueToPositionX(x, f), (int)lpix,
+                    (int)canvas_valueToPositionX(x, f), (int)lpix + tickpix, tag);
             }
             for (i = 1, f = x->gl_tickX.k_point - x->gl_tickX.k_increment;
                 f > 0.99 * x->gl_valueStart + 0.01*x->gl_valueEnd;
@@ -571,12 +572,12 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
                 int tickpix = (i % x->gl_tickX.k_period ? 2 : 4);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
                     canvas_getView(x->gl_parent),
-                    (int)glist_xtopixels(x, f), (int)upix,
-                    (int)glist_xtopixels(x, f), (int)upix - tickpix, tag);
+                    (int)canvas_valueToPositionX(x, f), (int)upix,
+                    (int)canvas_valueToPositionX(x, f), (int)upix - tickpix, tag);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
                     canvas_getView(x->gl_parent),
-                    (int)glist_xtopixels(x, f), (int)lpix,
-                    (int)glist_xtopixels(x, f), (int)lpix + tickpix, tag);
+                    (int)canvas_valueToPositionX(x, f), (int)lpix,
+                    (int)canvas_valueToPositionX(x, f), (int)lpix + tickpix, tag);
             }
         }
 
@@ -594,12 +595,12 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
                 int tickpix = (i % x->gl_tickY.k_period ? 2 : 4);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
                     canvas_getView(x->gl_parent),
-                    x1, (int)glist_ytopixels(x, f), 
-                    x1 + tickpix, (int)glist_ytopixels(x, f), tag);
+                    x1, (int)canvas_valueToPositionY(x, f), 
+                    x1 + tickpix, (int)canvas_valueToPositionY(x, f), tag);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
                     canvas_getView(x->gl_parent),
-                    x2, (int)glist_ytopixels(x, f), 
-                    x2 - tickpix, (int)glist_ytopixels(x, f), tag);
+                    x2, (int)canvas_valueToPositionY(x, f), 
+                    x2 - tickpix, (int)canvas_valueToPositionY(x, f), tag);
             }
             for (i = 1, f = x->gl_tickY.k_point - x->gl_tickY.k_increment;
                 f > 0.99 * lbound + 0.01 * ubound;
@@ -608,12 +609,12 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
                 int tickpix = (i % x->gl_tickY.k_period ? 2 : 4);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
                     canvas_getView(x->gl_parent),
-                    x1, (int)glist_ytopixels(x, f), 
-                    x1 + tickpix, (int)glist_ytopixels(x, f), tag);
+                    x1, (int)canvas_valueToPositionY(x, f), 
+                    x1 + tickpix, (int)canvas_valueToPositionY(x, f), tag);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
                     canvas_getView(x->gl_parent),
-                    x2, (int)glist_ytopixels(x, f), 
-                    x2 - tickpix, (int)glist_ytopixels(x, f), tag);
+                    x2, (int)canvas_valueToPositionY(x, f), 
+                    x2 - tickpix, (int)canvas_valueToPositionY(x, f), tag);
             }
         }
         /*
@@ -621,8 +622,8 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
             sys_vGui(".x%lx.c create text\
  %d %d -text {%s} -font [::getFont %d] -anchor %s -tags [list %s label graph]\n",
                 canvas_getView(x),
-                (int)glist_xtopixels(x, atof(x->gl_xlabel[i]->s_name)),
-                (int)glist_ytopixels(x, x->gl_xlabely),
+                (int)canvas_valueToPositionX(x, atof(x->gl_xlabel[i]->s_name)),
+                (int)canvas_valueToPositionY(x, x->gl_xlabely),
                 x->gl_xlabel[i]->s_name,
                      canvas_getFontSize(x), xlabelanchor, tag);
 
@@ -631,8 +632,8 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
             sys_vGui(".x%lx.c create text\
  %d %d -text {%s} -font [::getFont %d] -anchor %s -tags [list %s label graph]\n",
                 canvas_getView(x),
-                (int)glist_xtopixels(x, x->gl_ylabelx),
-                (int)glist_ytopixels(x, atof(x->gl_ylabel[i]->s_name)),
+                (int)canvas_valueToPositionX(x, x->gl_ylabelx),
+                (int)canvas_valueToPositionY(x, atof(x->gl_ylabel[i]->s_name)),
                 x->gl_ylabel[i]->s_name,
                 canvas_getFontSize(x), ylabelanchor, tag);
         */
@@ -764,12 +765,12 @@ static void graph_motion(void *z, t_float dx, t_float dy)
     t_glist *x = (t_glist *)z;
     t_float newxpix = graph_lastxpix + dx, newypix = graph_lastypix + dy;
     t_garray *a = (t_garray *)(x->gl_graphics);
-    int oldx = 0.5 + glist_pixelstox(x, graph_lastxpix);
-    int newx = 0.5 + glist_pixelstox(x, newxpix);
+    int oldx = 0.5 + canvas_positionToValueX(x, graph_lastxpix);
+    int newx = 0.5 + canvas_positionToValueX(x, newxpix);
     t_word *vec;
     int nelem, i;
-    t_float oldy = glist_pixelstoy(x, graph_lastypix);
-    t_float newy = glist_pixelstoy(x, newypix);
+    t_float oldy = canvas_positionToValueY(x, graph_lastypix);
+    t_float newy = canvas_positionToValueY(x, newypix);
     graph_lastxpix = newxpix;
     graph_lastypix = newypix;
         /* verify that the array is OK */
