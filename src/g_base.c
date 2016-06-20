@@ -459,7 +459,7 @@ void canvas_setAsGraphOnParent (t_glist *glist, int flags, int hasRectangle)
         glist->gl_isGraphOnParent = 1;
         glist->gl_hasRectangle = hasRectangle;
         
-        if (hasRectangle && canvas_isMapped (glist)) { glist_redraw (glist); }
+        if (hasRectangle) { canvas_redrawGraphOnParent (glist); }
     }
     
     if (needToUpdate) {

@@ -276,7 +276,7 @@ static void garray_fittograph(t_garray *x, int n, int style)
             t_atom a;
             SET_FLOAT(&a, n-1);
             gl->gl_xlabel[1] = atom_gensym(&a);
-            glist_redraw(gl);
+            canvas_redrawGraphOnParent(gl);
         }*/
             /* close any dialogs that might have the wrong info now... */
         guistub_destroyWithKey(gl);

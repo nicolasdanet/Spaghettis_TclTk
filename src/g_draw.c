@@ -33,6 +33,10 @@ void canvas_redraw (t_glist *glist)
     if (canvas_isMapped (glist)) { canvas_map (glist, 0); canvas_map (glist, 1); }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void canvas_drawLines (t_glist *glist)
 {
     t_outconnect *connection = NULL;

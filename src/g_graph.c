@@ -243,7 +243,7 @@ void canvas_bounds (t_glist *glist, t_float a, t_float b, t_float c, t_float d)
     glist->gl_valueTop      = b;
     glist->gl_valueBottom   = d;
         
-    glist_redraw (glist);
+    canvas_redrawGraphOnParent (glist);
     //
     }
 }
@@ -258,7 +258,7 @@ void canvas_ticksX (t_glist *glist, t_float pt, t_float i, t_float f)
     glist->gl_tickX.k_increment = i;
     glist->gl_tickX.k_period    = f;
     
-    glist_redraw (glist);
+    canvas_redrawGraphOnParent (glist);
 }
 
 void canvas_ticksY (t_glist *glist, t_float pt, t_float i, t_float f)
@@ -267,7 +267,7 @@ void canvas_ticksY (t_glist *glist, t_float pt, t_float i, t_float f)
     glist->gl_tickY.k_increment = i;
     glist->gl_tickY.k_period    = f;
     
-    glist_redraw (glist);
+    canvas_redrawGraphOnParent (glist);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -385,42 +385,44 @@ t_float canvas_deltaPositionToValueY (t_glist *glist, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* redraw all the items in a glist.  We construe this to mean
-    redrawing in its own window and on parent, as needed in each case.
-    This is too conservative -- for instance, when you draw an "open"
-    rectangle on the parent, you shouldn't have to redraw the window!  */
-void glist_redraw(t_glist *x)
+void canvas_redrawGraphOnParent (t_glist *glist)
 {  
-    if (canvas_isMapped(x))
-    {
-            /* LATER fix the graph_vis() code to handle both cases */
-        if (canvas_canHaveWindow(x))
-        {
-            t_gobj *g;
-            t_linetraverser t;
-            t_outconnect *oc;
-            for (g = x->gl_graphics; g; g = g->g_next)
-            {
-                gobj_visibilityChanged(g, x, 0);
-                gobj_visibilityChanged(g, x, 1);
-            }
-                /* redraw all the lines */
-            canvas_traverseLinesStart(&t, x);
-            while (oc = canvas_traverseLinesNext(&t))
-                sys_vGui(".x%lx.c coords %lxLINE %d %d %d %d\n",
-                    canvas_getView(x), oc,
-                        t.tr_lineStartX, t.tr_lineStartY, t.tr_lineEndX, t.tr_lineEndY);
-            canvas_deleteGraphOnParentRectangle(x);
-            if (x->gl_hasRectangle)
-            {
-                canvas_drawGraphOnParentRectangle(x);
-            }
-        }
-        if (x->gl_parent && canvas_isMapped(x->gl_parent))
-        {
-            graph_vis(&x->gl_obj.te_g, x->gl_parent, 0); 
-            graph_vis(&x->gl_obj.te_g, x->gl_parent, 1);
-        }
+    if (canvas_isMapped (glist)) {
+    //
+    if (canvas_canHaveWindow (glist)) {
+    //
+    t_gobj *y = NULL;
+    t_linetraverser t;
+    t_outconnect *connection = NULL;
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+        gobj_visibilityChanged (y, glist, 0);
+        gobj_visibilityChanged (y, glist, 1);
+    }
+
+    canvas_traverseLinesStart (&t, glist);
+    
+    while (connection = canvas_traverseLinesNext (&t)) {
+        sys_vGui (".x%lx.c coords %lxLINE %d %d %d %d\n",
+                        canvas_getView (glist),
+                        connection,
+                        t.tr_lineStartX,
+                        t.tr_lineStartY,
+                        t.tr_lineEndX,
+                        t.tr_lineEndY);
+    }
+    
+    canvas_deleteGraphOnParentRectangle (glist);
+    
+    if (glist->gl_hasRectangle) { canvas_drawGraphOnParentRectangle (glist); }
+    //
+    }
+    
+    if (glist->gl_parent && canvas_isMapped (glist->gl_parent)) {
+        graph_vis (cast_gobj (glist), glist->gl_parent, 0); 
+        graph_vis (cast_gobj (glist), glist->gl_parent, 1);
+    }
+    //
     }
 }
 
@@ -674,7 +676,7 @@ static void graph_displace(t_gobj *z, t_glist *glist, int dx, int dy)
     {
         x->gl_obj.te_xCoordinate += dx;
         x->gl_obj.te_yCoordinate += dy;
-        glist_redraw(x);
+        canvas_redrawGraphOnParent (x);
         canvas_updateLinesByObject(glist, &x->gl_obj);
     }
 }

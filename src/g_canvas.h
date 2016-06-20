@@ -448,6 +448,7 @@ t_outconnect    *canvas_traverseLinesNext               (t_linetraverser *t);
 // -----------------------------------------------------------------------------------------------------------
 
 void            canvas_redraw                           (t_glist *glist);
+void            canvas_redrawGraphOnParent              (t_glist *glist);
 void            canvas_drawLines                        (t_glist *glist);
 void            canvas_updateLinesByObject              (t_glist *glist, t_object *o);
 void            canvas_deleteLinesByObject              (t_glist *glist, t_object *o);
@@ -821,7 +822,6 @@ void     glist_arraydialog      (t_glist *parent,
                                     t_float saveit);
 
 t_buffer *glist_writetobinbuf   (t_glist *x, int wholething);
-void     glist_redraw           (t_glist *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
