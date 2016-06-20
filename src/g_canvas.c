@@ -640,8 +640,8 @@ static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
                                     g->gl_marginY);
     } else {
         err = string_sprintf (t, PD_STRING, "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
-                                    glist_dpixtodx (g, 1),
-                                    glist_dpixtody (g, 1),
+                                    canvas_deltaPositionToValueX (g, 1.0),
+                                    canvas_deltaPositionToValueY (g, 1.0),
                                     g->gl_isGraphOnParent | (g->gl_hideText << 1),
                                     0.,
                                     1.,

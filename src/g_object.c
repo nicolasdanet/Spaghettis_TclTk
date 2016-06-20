@@ -150,8 +150,7 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
     //
     if (canvas_objectIsBox (object)) {
     // 
-    if (object->te_type != TYPE_COMMENT)            { return 0; }
-    if (PD_WITH_LEGACY && !owner->gl_hasRectangle)  { return 0; }
+    if (object->te_type != TYPE_COMMENT) { return 0; }
     //
     }
     //

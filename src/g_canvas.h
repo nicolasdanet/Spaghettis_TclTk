@@ -552,8 +552,8 @@ t_float         canvas_valueToPositionY                 (t_glist *glist, t_float
 t_float         canvas_positionToValueX                 (t_glist *glist, t_float f);
 t_float         canvas_positionToValueY                 (t_glist *glist, t_float f);
 
-t_float         glist_dpixtodx                          (t_glist *glist, t_float dxpix);
-t_float         glist_dpixtody                          (t_glist *glist, t_float dypix);
+t_float         canvas_deltaPositionToValueX            (t_glist *glist, t_float f);
+t_float         canvas_deltaPositionToValueY            (t_glist *glist, t_float f);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -761,7 +761,10 @@ int             text_behaviorClicked                    (t_gobj *x,
                                                             int clicked);
 
 void            text_functionSave                       (t_gobj *x, t_buffer *b);
+
 void            text_set                                (t_object *x, t_glist *glist, char *s, int size);
+int             text_getPositionX                       (t_object *x, t_glist *glist);
+int             text_getPositionY                       (t_object *x, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -799,11 +802,6 @@ void canvas_menuarray (t_glist *glist);
 t_outlet *voutlet_getit(t_pd *x);
 t_inlet *vinlet_getit(t_pd *x);
 int garray_getname(t_garray *x, t_symbol **namep);
-
-int  text_xcoord        (t_object *x, t_glist *glist);
-int  text_ycoord        (t_object *x, t_glist *glist);
-int  text_xpix          (t_object *x, t_glist *glist);
-int  text_ypix          (t_object *x, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

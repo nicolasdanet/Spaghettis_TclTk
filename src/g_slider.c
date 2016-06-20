@@ -97,8 +97,8 @@ static void slider_drawUpdateVertical (t_slider *x, t_glist *glist)
     //
     t_glist *canvas = canvas_getView (glist);
     
-    int a = text_xpix (cast_object (x), glist);
-    int k = text_ypix (cast_object (x), glist) + x->x_gui.iem_height - slider_stepsToPixels (x->x_position);
+    int a = text_getPositionX (cast_object (x), glist);
+    int k = text_getPositionY (cast_object (x), glist) + x->x_gui.iem_height - slider_stepsToPixels (x->x_position);
         
     sys_vGui (".x%lx.c coords %lxKNOB %d %d %d %d\n",
                     canvas, 
@@ -117,8 +117,8 @@ static void slider_drawUpdateHorizontal (t_slider *x, t_glist *glist)
     //
     t_glist *canvas = canvas_getView (glist);
     
-    int k = text_xpix (cast_object (x), glist) + slider_stepsToPixels (x->x_position);
-    int b = text_ypix (cast_object (x), glist);
+    int k = text_getPositionX (cast_object (x), glist) + slider_stepsToPixels (x->x_position);
+    int b = text_getPositionY (cast_object (x), glist);
         
     sys_vGui (".x%lx.c coords %lxKNOB %d %d %d %d\n",
                     canvas, 
@@ -158,8 +158,8 @@ static void slider_drawMove (t_slider *x, t_glist *glist)
 {
     t_glist *canvas = canvas_getView (glist);
     
-    int a = text_xpix (cast_object (x), glist);
-    int b = text_ypix (cast_object (x), glist);
+    int a = text_getPositionX (cast_object (x), glist);
+    int b = text_getPositionY (cast_object (x), glist);
 
     sys_vGui (".x%lx.c coords %lxBASE %d %d %d %d\n",
                     canvas,
@@ -182,8 +182,8 @@ static void slider_drawNew (t_slider *x, t_glist *glist)
 {
     t_glist *canvas = canvas_getView (glist);
     
-    int a = text_xpix (cast_object (x), glist);
-    int b = text_ypix (cast_object (x), glist);
+    int a = text_getPositionX (cast_object (x), glist);
+    int b = text_getPositionY (cast_object (x), glist);
     
     sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE\n",
                     canvas,
@@ -411,9 +411,9 @@ static void slider_click (t_slider *x, t_float a, t_float b, t_float shift, t_fl
     t_float t;
     
     if (x->x_isVertical) {
-        t = text_ypix (cast_object (x), x->x_gui.iem_owner) + x->x_gui.iem_height - b;
+        t = text_getPositionY (cast_object (x), x->x_gui.iem_owner) + x->x_gui.iem_height - b;
     } else {
-        t = a - text_xpix (cast_object (x), x->x_gui.iem_owner);
+        t = a - text_getPositionX (cast_object (x), x->x_gui.iem_owner);
     }
     
     t *= IEM_SLIDER_STEPS_PER_PIXEL;
@@ -561,8 +561,8 @@ static void slider_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
 {
     t_slider *x = (t_slider *)z;
     
-    *a = text_xpix (cast_object (z), glist);
-    *b = text_ypix (cast_object (z), glist);
+    *a = text_getPositionX (cast_object (z), glist);
+    *b = text_getPositionY (cast_object (z), glist);
     *c = *a + cast_iem (z)->iem_width;
     *d = *b + cast_iem (z)->iem_height;
 }

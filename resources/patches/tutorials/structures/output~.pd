@@ -1,4 +1,4 @@
-#N canvas 0 0 757 616 12;
+#N canvas 101 59 757 616 12;
 #X obj 516 522 t b;
 #X obj 516 469 f;
 #X obj 516 547 f;
@@ -17,7 +17,7 @@
 #X text 301 496 test if less than 1 -->;
 #X text 267 523 if true convert to bang -->;
 #X text 100 96 <-- convert from dB to linear units;
-#X floatatom 278 221 3 0 100 0 dB - -;
+#X floatatom 278 221 3 0 100 0 dB - -, f 3;
 #X obj 516 449 bng 15 250 50 0 empty empty mute -38 7 0 12 -262144
 -1 -1;
 #X text 118 126 <-- make a ramp to avoid clicks or zipper noise;
@@ -63,4 +63,4 @@ patch.;
 #X connect 28 0 6 0;
 #X connect 34 0 11 1;
 #X connect 35 0 22 1;
-#X coords 0 0 1 1 65 55 1;
+#X coords 0 0 1 1 65 55 1 10 10;

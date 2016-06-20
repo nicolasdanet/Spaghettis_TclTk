@@ -280,8 +280,8 @@ static void canvas_getGraphOnParentRectangle (t_gobj *z, t_glist *glist, int *a,
     
     PD_ASSERT (pd_class (z) == canvas_class);
     
-    int x1 = text_xpix (cast_object (x), glist);
-    int y1 = text_ypix (cast_object (x), glist);
+    int x1 = text_getPositionX (cast_object (x), glist);
+    int y1 = text_getPositionY (cast_object (x), glist);
     int x2 = x1 + x->gl_width;
     int y2 = y1 + x->gl_height;
 
@@ -310,9 +310,6 @@ t_float canvas_positionToValueX (t_glist *glist, t_float f)
         }
     }
 
-    PD_ASSERT (v >= 0.0);
-    PD_ASSERT (v <= 1.0);
-    
     return (glist->gl_valueStart + (range * v));
 }
 
@@ -330,95 +327,58 @@ t_float canvas_positionToValueY (t_glist *glist, t_float f)
             v = (f - b) / (d - b);
         }
     }
-
-    PD_ASSERT (v >= 0.0);
-    PD_ASSERT (v <= 1.0);
     
     return (glist->gl_valueUp + (range * v));
 }
 
-t_float canvas_valueToPositionX (t_glist *x, t_float xval)
+t_float canvas_valueToPositionX (t_glist *glist, t_float f)
 {
-    if (!x->gl_isGraphOnParent)
-        return ((xval - x->gl_valueStart) / (x->gl_valueEnd - x->gl_valueStart));
-    else if (x->gl_isGraphOnParent && x->gl_haveWindow)
-        return (x->gl_windowBottomRightX - x->gl_windowTopLeftX) * 
-            (xval - x->gl_valueStart) / (x->gl_valueEnd - x->gl_valueStart);
-    else
-    {
-        int x1, y1, x2, y2;
-        if (!x->gl_parent) { PD_BUG; }
-        canvas_getGraphOnParentRectangle(&x->gl_obj.te_g, x->gl_parent, &x1, &y1, &x2, &y2);
-        return (x1 + (x2 - x1) * (xval - x->gl_valueStart) / (x->gl_valueEnd - x->gl_valueStart));
-    }
-}
-
-t_float canvas_valueToPositionY(t_glist *x, t_float yval)
-{
-    if (!x->gl_isGraphOnParent)
-        return ((yval - x->gl_valueUp) / (x->gl_valueDown - x->gl_valueUp));
-    else if (x->gl_isGraphOnParent && x->gl_haveWindow)
-        return (x->gl_windowBottomRightY - x->gl_windowTopLeftY) * 
-                (yval - x->gl_valueUp) / (x->gl_valueDown - x->gl_valueUp);
-    else 
-    {
-        int x1, y1, x2, y2;
-        if (!x->gl_parent) { PD_BUG; }
-        canvas_getGraphOnParentRectangle(&x->gl_obj.te_g, x->gl_parent, &x1, &y1, &x2, &y2);
-        return (y1 + (y2 - y1) * (yval - x->gl_valueUp) / (x->gl_valueDown - x->gl_valueUp));
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-    /* convert an X screen distance to an X coordinate increment.
-      This is terribly inefficient;
-      but probably not a big enough CPU hog to warrant optimizing. */
-t_float glist_dpixtodx(t_glist *x, t_float dxpix)
-{ 
-    return (dxpix * (canvas_positionToValueX(x, 1) - canvas_positionToValueX(x, 0)));
-}
-
-t_float glist_dpixtody(t_glist *x, t_float dypix)
-{
-    return (dypix * (canvas_positionToValueY(x, 1) - canvas_positionToValueY(x, 0)));
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-    /* get the window location in pixels of a "text" object.  The
-    object's x and y positions are in pixels when the glist they're
-    in is toplevel.  Otherwise, if it's a new-style graph-on-parent
-    (so gl_hasRectangle is set) we use the offset into the framing subrectangle
-    as an offset into the parent rectangle.  Finally, it might be an old,
-    proportional-style GOP.  In this case we do a coordinate transformation. */
+    t_float range = glist->gl_valueEnd - glist->gl_valueStart;
+    t_float v = 1.0;
+    t_float x = 0.0;
     
-int text_xpix (t_object *x, t_glist *glist)
-{
-    if (canvas_canHaveWindow (glist))
-        return (x->te_xCoordinate);
-    else if (glist->gl_hasRectangle)
-        return (canvas_valueToPositionX(glist, glist->gl_valueStart) +
-            x->te_xCoordinate - glist->gl_marginX);
-    else return (canvas_valueToPositionX(glist, 
-            glist->gl_valueStart + (glist->gl_valueEnd - glist->gl_valueStart) * 
-                x->te_xCoordinate / (glist->gl_windowBottomRightX - glist->gl_windowTopLeftX)));
+    if (!glist->gl_isGraphOnParent) { }             /* Scalars. */
+    else {
+        if (glist->gl_haveWindow)   { v = glist->gl_windowBottomRightX - glist->gl_windowTopLeftX; }
+        else {
+            int a, b, c, d;
+            canvas_getGraphOnParentRectangle (cast_gobj (glist), glist->gl_parent, &a, &b, &c, &d);
+            x = a;
+            v = c - a;
+        }
+    }
+    
+    return (x + (v * ((f - glist->gl_valueStart) / range)));
 }
 
-int text_ypix (t_object *x, t_glist *glist)
+t_float canvas_valueToPositionY (t_glist *glist, t_float f)
 {
-    if (canvas_canHaveWindow (glist))
-        return (x->te_yCoordinate);
-    else if (glist->gl_hasRectangle)
-        return (canvas_valueToPositionY(glist, glist->gl_valueUp) +
-            x->te_yCoordinate - glist->gl_marginY);
-    else return (canvas_valueToPositionY(glist, 
-            glist->gl_valueUp + (glist->gl_valueDown - glist->gl_valueUp) * 
-                x->te_yCoordinate / (glist->gl_windowBottomRightY - glist->gl_windowTopLeftY)));
+    t_float range = glist->gl_valueDown - glist->gl_valueUp;
+    t_float v = 1.0;
+    t_float x = 0.0;
+    
+    if (!glist->gl_isGraphOnParent) { }             /* Scalars. */
+    else {
+        if (glist->gl_haveWindow)   { v = glist->gl_windowBottomRightY - glist->gl_windowTopLeftY; }
+        else {
+            int a, b, c, d;
+            canvas_getGraphOnParentRectangle (cast_gobj (glist), glist->gl_parent, &a, &b, &c, &d);
+            x = b;
+            v = d - b;
+        }
+    }
+    
+    return (x + (v * ((f - glist->gl_valueUp) / range)));
+}
+
+t_float canvas_deltaPositionToValueX (t_glist *glist, t_float f)
+{ 
+    return (f * (canvas_positionToValueX (glist, 1.0) - canvas_positionToValueX (glist, 0.0)));
+}
+
+t_float canvas_deltaPositionToValueY (t_glist *glist, t_float f)
+{
+    return (f * (canvas_positionToValueY (glist, 1.0) - canvas_positionToValueY (glist, 0.0)));
 }
 
 // -----------------------------------------------------------------------------------------------------------

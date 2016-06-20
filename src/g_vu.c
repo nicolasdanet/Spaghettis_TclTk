@@ -156,8 +156,8 @@ static void vu_drawJob (t_gobj *z, t_glist *glist)
     //
     t_glist *canvas = canvas_getView (glist);
 
-    int a = text_xpix (cast_object (x), glist);
-    int b = text_ypix (cast_object (x), glist);
+    int a = text_getPositionX (cast_object (x), glist);
+    int b = text_getPositionY (cast_object (x), glist);
     int h = vu_offsetWithStep (x, x->x_rms) + (x->x_thickness / 2);
     
     sys_vGui (".x%lx.c coords %lxCOVER %d %d %d %d\n",
@@ -218,8 +218,8 @@ static void vu_drawMove (t_vu *x, t_glist *glist)
 {
     t_glist *canvas = canvas_getView (glist);
 
-    int a = text_xpix (cast_object (x), glist);
-    int b = text_ypix (cast_object (x), glist);
+    int a = text_getPositionX (cast_object (x), glist);
+    int b = text_getPositionY (cast_object (x), glist);
     int h, i;
 
     sys_vGui (".x%lx.c coords %lxBASE %d %d %d %d\n",
@@ -258,8 +258,8 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
 {
     t_glist *canvas = canvas_getView (glist);
 
-    int a = text_xpix (cast_object (x), glist);
-    int b = text_ypix (cast_object (x), glist);
+    int a = text_getPositionX (cast_object (x), glist);
+    int b = text_getPositionY (cast_object (x), glist);
     int h, i;
 
     sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE\n",
@@ -508,8 +508,8 @@ static void vu_size (t_vu *x, t_symbol *s, int argc, t_atom *argv)
 
 static void vu_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
 {
-    *a = text_xpix (cast_object (z), glist);
-    *b = text_ypix (cast_object (z), glist);
+    *a = text_getPositionX (cast_object (z), glist);
+    *b = text_getPositionY (cast_object (z), glist);
     *c = *a + cast_iem (z)->iem_width;
     *d = *b + cast_iem (z)->iem_height;
 }

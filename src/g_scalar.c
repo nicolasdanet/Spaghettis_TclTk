@@ -270,10 +270,10 @@ static void scalar_displace(t_gobj *z, t_glist *glist, int dx, int dy)
     if (goty && (ytype != DATA_FLOAT))
         goty = 0;
     if (gotx)
-        *(t_float *)(((char *)(x->sc_vector)) + xonset) += glist_dpixtodx (glist, dx);
+        *(t_float *)(((char *)(x->sc_vector)) + xonset) += canvas_deltaPositionToValueX (glist, dx);
             // dx * (canvas_positionToValueX(glist, 1) - canvas_positionToValueX(glist, 0));
     if (goty)
-        *(t_float *)(((char *)(x->sc_vector)) + yonset) += glist_dpixtody (glist, dy);
+        *(t_float *)(((char *)(x->sc_vector)) + yonset) += canvas_deltaPositionToValueY (glist, dy);
             // dy * (canvas_positionToValueY(glist, 1) - canvas_positionToValueY(glist, 0));
     gpointer_init(&gp);
     gpointer_setglist(&gp, glist, x);
