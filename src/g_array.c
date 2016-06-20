@@ -265,9 +265,9 @@ static void garray_fittograph(t_garray *x, int n, int style)
     if (gl->gl_graphics == &x->x_gobj && !x->x_gobj.g_next)
     {
         pd_vMessage(&gl->gl_obj.te_g.g_pd, sym_bounds, "ffff",
-            0., gl->gl_valueUp, (double)
+            0., gl->gl_valueTop, (double)
                 (style == PLOT_POINTS || n == 1 ? n : n-1),
-                    gl->gl_valueDown);
+                    gl->gl_valueBottom);
         
             /* hack - if the xlabels seem to want to be from 0 to table size-1,
             update the second label */
@@ -464,7 +464,7 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize,
             x->x_realname = canvas_expandDollar(x->x_glist, argname);
             pd_bind(&x->x_gobj.g_pd, x->x_realname);
                 /* redraw the whole glist, just so the name change shows up */
-            if (x->x_glist->gl_haveWindow)
+            if (x->x_glist->gl_hasWindow)
                 canvas_redraw(x->x_glist);
             else if (canvas_isMapped(x->x_glist->gl_parent))
             {

@@ -120,19 +120,19 @@ static void *subpatch_new (t_symbol *s)
 
 static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    glist->gl_valueStart    = atom_getFloatAtIndex (0, argc, argv);
-    glist->gl_valueUp       = atom_getFloatAtIndex (1, argc, argv);
-    glist->gl_valueEnd      = atom_getFloatAtIndex (2, argc, argv);
-    glist->gl_valueDown     = atom_getFloatAtIndex (3, argc, argv);
-    glist->gl_width         = (int)atom_getFloatAtIndex (4, argc, argv);
-    glist->gl_height        = (int)atom_getFloatAtIndex (5, argc, argv);
+    glist->gl_valueLeft     = atom_getFloatAtIndex (0, argc, argv);
+    glist->gl_valueTop      = atom_getFloatAtIndex (1, argc, argv);
+    glist->gl_valueRight    = atom_getFloatAtIndex (2, argc, argv);
+    glist->gl_valueBottom   = atom_getFloatAtIndex (3, argc, argv);
+    glist->gl_graphWidth    = (int)atom_getFloatAtIndex (4, argc, argv);
+    glist->gl_graphHeight   = (int)atom_getFloatAtIndex (5, argc, argv);
     
     /* Compatbility with legacy format. */
     
     if (argc < 8) { canvas_setAsGraphOnParent (glist, (int)atom_getFloatAtIndex (6, argc, argv), 0); }
     else {
-        glist->gl_marginX = (int)atom_getFloatAtIndex (7, argc, argv);
-        glist->gl_marginY = (int)atom_getFloatAtIndex (8, argc, argv);
+        glist->gl_graphMarginLeft = (int)atom_getFloatAtIndex (7, argc, argv);
+        glist->gl_graphMarginTop  = (int)atom_getFloatAtIndex (8, argc, argv);
         
         canvas_setAsGraphOnParent (glist, (int)atom_getFloatAtIndex (6, argc, argv), 1);
     }
@@ -332,7 +332,7 @@ static void canvas_open (t_glist *glist)
     
     canvas_destroyEditorIfAny (glist);
 
-    glist->gl_haveWindow = 1;   /* Note that it modifies how things are drawn below. */
+    glist->gl_hasWindow = 1;    /* Note that it modifies how things are drawn below. */
     
     gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
     //
@@ -354,7 +354,7 @@ void canvas_dirty (t_glist *glist, t_float f)
     t_glist *y = canvas_getRoot (glist);
         
     if (y->gl_isDirty != isDirty) { 
-        y->gl_isDirty = isDirty; if (y->gl_haveWindow) { canvas_updateTitle (y); }
+        y->gl_isDirty = isDirty; if (y->gl_hasWindow) { canvas_updateTitle (y); }
     }
 }
 
@@ -364,7 +364,7 @@ void canvas_visible (t_glist *glist, t_float f)
     
     if (isVisible) {
 
-        if (glist->gl_editor && glist->gl_haveWindow) { sys_vGui ("::bringToFront .x%lx\n", glist); }
+        if (glist->gl_editor && glist->gl_hasWindow) { sys_vGui ("::bringToFront .x%lx\n", glist); }
         else {
             canvas_createEditorIfNone (glist);
             
@@ -378,12 +378,12 @@ void canvas_visible (t_glist *glist, t_float f)
                         
             canvas_updateTitle (glist);
             
-            glist->gl_haveWindow = 1;
+            glist->gl_hasWindow = 1;
         }
         
     } else {
 
-        if (!glist->gl_haveWindow) { canvas_destroyEditorIfAny (glist); }
+        if (!glist->gl_hasWindow) { canvas_destroyEditorIfAny (glist); }
         else {
             t_glist *t = NULL;
             
@@ -394,10 +394,10 @@ void canvas_visible (t_glist *glist, t_float f)
             
             if (glist->gl_isGraphOnParent && (t = glist->gl_parent) && (!t->gl_isDeleting)) {
                 if (canvas_isMapped (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 0); }
-                glist->gl_haveWindow = 0;
+                glist->gl_hasWindow = 0;
                 if (canvas_isMapped (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 1); }
             } else {
-                glist->gl_haveWindow = 0;
+                glist->gl_hasWindow = 0;
             }
         }
     }
@@ -419,7 +419,7 @@ void canvas_map (t_glist *glist, t_float f)
         t_gobj *y = NULL;
         t_selection *selection = NULL;
         
-        if (!glist->gl_haveWindow) { PD_BUG; canvas_visible (glist, 1); }
+        if (!glist->gl_hasWindow) { PD_BUG; canvas_visible (glist, 1); }
         for (y = glist->gl_graphics; y; y = y->g_next) { gobj_visibilityChanged (y, glist, 1); }
         for (selection = glist->gl_editor->e_selectedObjects; selection; selection = selection->sel_next) {
             gobj_select (selection->sel_what, glist, 1);
@@ -544,10 +544,10 @@ static void canvas_dialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     PD_ASSERT (argc == 11);
     
-    glist->gl_width     = width;
-    glist->gl_height    = height;
-    glist->gl_marginX   = marginX;
-    glist->gl_marginY   = marginY;
+    glist->gl_graphWidth        = width;
+    glist->gl_graphHeight       = height;
+    glist->gl_graphMarginLeft   = marginX;
+    glist->gl_graphMarginTop    = marginY;
 
     if (scaleX == 0.0) { scaleX = 1.0; }
     if (scaleY == 0.0) { scaleY = 1.0; }
@@ -557,24 +557,24 @@ static void canvas_dialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         PD_ASSERT (start != end);
         PD_ASSERT (up != down);
         
-        glist->gl_valueStart    = start;
-        glist->gl_valueEnd      = end; 
-        glist->gl_valueUp       = up; 
-        glist->gl_valueDown     = down;
+        glist->gl_valueLeft     = start;
+        glist->gl_valueRight    = end; 
+        glist->gl_valueTop      = up; 
+        glist->gl_valueBottom   = down;
         
     } else {
     
-        glist->gl_valueStart    = 0.0;
-        glist->gl_valueEnd      = PD_ABS (scaleX);
-        glist->gl_valueUp       = 0.0;
-        glist->gl_valueDown     = PD_ABS (scaleY);
+        glist->gl_valueLeft     = 0.0;
+        glist->gl_valueRight    = PD_ABS (scaleX);
+        glist->gl_valueTop      = 0.0;
+        glist->gl_valueBottom   = PD_ABS (scaleY);
     }
     
     canvas_setAsGraphOnParent (glist, flags, 1);
     
     canvas_dirty (glist, 1);
     
-    if (glist->gl_haveWindow) { canvas_redraw (glist); }
+    if (glist->gl_hasWindow) { canvas_redraw (glist); }
     else {
         if (canvas_isMapped (glist->gl_parent)) {
             gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 0);
@@ -630,14 +630,14 @@ static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
                                     0.,
                                     0.,
                                     g->gl_isGraphOnParent | (g->gl_hideText << 1),
-                                    g->gl_valueStart,
-                                    g->gl_valueUp,
-                                    g->gl_valueEnd,
-                                    g->gl_valueDown, 
-                                    g->gl_width,
-                                    g->gl_height,
-                                    g->gl_marginX,
-                                    g->gl_marginY);
+                                    g->gl_valueLeft,
+                                    g->gl_valueTop,
+                                    g->gl_valueRight,
+                                    g->gl_valueBottom, 
+                                    g->gl_graphWidth,
+                                    g->gl_graphHeight,
+                                    g->gl_graphMarginLeft,
+                                    g->gl_graphMarginTop);
     } else {
         err = string_sprintf (t, PD_STRING, "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
                                     canvas_deltaPositionToValueX (g, 1.0),
@@ -647,10 +647,10 @@ static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
                                     1.,
                                     1.,
                                    -1., 
-                                    g->gl_width, 
-                                    g->gl_height,
-                                    g->gl_marginX,
-                                    g->gl_marginY);
+                                    g->gl_graphWidth, 
+                                    g->gl_graphHeight,
+                                    g->gl_graphMarginLeft,
+                                    g->gl_graphMarginTop);
     }
     
     PD_ASSERT (!err);
@@ -735,10 +735,10 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     topLeftX = PD_MAX (topLeftX, 0);
     topLeftY = PD_MAX (topLeftY, WINDOW_HEADER);
         
-    x->gl_valueStart    = 0.0;
-    x->gl_valueUp       = 0.0;
-    x->gl_valueEnd      = 1.0;
-    x->gl_valueDown     = 1.0;
+    x->gl_valueLeft     = 0.0;
+    x->gl_valueTop      = 0.0;
+    x->gl_valueRight    = 1.0;
+    x->gl_valueBottom   = 1.0;
     
     canvas_window (x, topLeftX, topLeftY, topLeftX + width, topLeftY + height);
     canvas_bind (x);

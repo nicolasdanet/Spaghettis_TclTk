@@ -73,15 +73,15 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
         buffer_vAppend (b, "ssfffffffff;", 
             sym___hash__X, 
             sym_coords,
-            glist->gl_valueStart,
-            glist->gl_valueUp,
-            glist->gl_valueEnd,
-            glist->gl_valueDown,
-            (double)glist->gl_width, 
-            (double)glist->gl_height,
+            glist->gl_valueLeft,
+            glist->gl_valueTop,
+            glist->gl_valueRight,
+            glist->gl_valueBottom,
+            (double)glist->gl_graphWidth, 
+            (double)glist->gl_graphHeight,
             (double)((glist->gl_hideText ? 2 : 0) | (glist->gl_isGraphOnParent ? 1 : 0)),
-            (double)glist->gl_marginX,
-            (double)glist->gl_marginY);
+            (double)glist->gl_graphMarginLeft,
+            (double)glist->gl_graphMarginTop);
     }
 }
 

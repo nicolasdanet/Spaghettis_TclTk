@@ -180,8 +180,8 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
         
     } else if (pd_class (object) == canvas_class) {
         gobj_visibilityChanged (y, glist, 0);
-        cast_glist (object)->gl_width  += positionX - glist->gl_editor->e_newX;
-        cast_glist (object)->gl_height += positionY - glist->gl_editor->e_newY;
+        cast_glist (object)->gl_graphWidth  += positionX - glist->gl_editor->e_newX;
+        cast_glist (object)->gl_graphHeight += positionY - glist->gl_editor->e_newY;
         glist->gl_editor->e_newX = positionX;
         glist->gl_editor->e_newY = positionY;
         canvas_updateLinesByObject (glist, object);
@@ -777,12 +777,12 @@ static void canvas_dosetbounds(t_glist *x, int x1, int y1, int x2, int y2)      
     x->gl_windowTopLeftY = y1;
     x->gl_windowBottomRightX = x2;
     x->gl_windowBottomRightY = y2;
-    if (!canvas_isGraphOnParent(x) && (x->gl_valueDown < x->gl_valueUp))            // --
+    if (!canvas_isGraphOnParent(x) && (x->gl_valueBottom < x->gl_valueTop))            // --
     {
-        t_float diff = x->gl_valueUp - x->gl_valueDown;
+        t_float diff = x->gl_valueTop - x->gl_valueBottom;
         t_gobj *y;
-        x->gl_valueUp = heightwas * diff;
-        x->gl_valueDown = x->gl_valueUp - diff;
+        x->gl_valueTop = heightwas * diff;
+        x->gl_valueBottom = x->gl_valueTop - diff;
         for (y = x->gl_graphics; y; y = y->g_next)                                  // --
             if (canvas_castToObjectIfPatchable(&y->g_pd))                           // --
                 gobj_displace(y, x, 0, heightchange);                               // --

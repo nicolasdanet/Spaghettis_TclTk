@@ -174,7 +174,7 @@ int canvas_isDrawnOnParent (t_glist *glist)
 
 int canvas_canHaveWindow (t_glist *glist)
 {
-    return (glist->gl_haveWindow || !glist->gl_isGraphOnParent);
+    return (glist->gl_hasWindow || !glist->gl_isGraphOnParent);
 }
 
 int canvas_hasEnvironment (t_glist *glist)
@@ -244,12 +244,14 @@ t_glist *canvas_addGraph (t_glist *glist,
     x->gl_parent                        = glist;
     x->gl_name                          = name;
     x->gl_magic                         = ++canvas_magic;
-    x->gl_width                         = bottomRightX - topLeftX;
-    x->gl_height                        = bottomRightY - topLeftY;
-    x->gl_valueStart                    = valueStart;
-    x->gl_valueEnd                      = valueEnd;
-    x->gl_valueUp                       = valueUp;
-    x->gl_valueDown                     = valueDown;
+    x->gl_graphWidth                    = bottomRightX - topLeftX;
+    x->gl_graphHeight                   = bottomRightY - topLeftY;
+    x->gl_graphMarginLeft               = 0;
+    x->gl_graphMarginTop                = 0;
+    x->gl_valueLeft                     = valueStart;
+    x->gl_valueRight                    = valueEnd;
+    x->gl_valueTop                      = valueUp;
+    x->gl_valueBottom                   = valueDown;
     x->gl_windowTopLeftX                = 0;
     x->gl_windowTopLeftY                = WINDOW_HEADER;
     x->gl_windowBottomRightX            = WINDOW_WIDTH;
@@ -451,8 +453,8 @@ void canvas_setAsGraphOnParent (t_glist *glist, int flags, int hasRectangle)
     
     if (!isGraphOnParent) { glist->gl_isGraphOnParent = 0; } 
     else {
-        if (glist->gl_width <= 0)  { glist->gl_width  = BASE_DEFAULT_WIDTH;  }
-        if (glist->gl_height <= 0) { glist->gl_height = BASE_DEFAULT_HEIGHT; }
+        if (glist->gl_graphWidth <= 0)  { glist->gl_graphWidth  = BASE_DEFAULT_WIDTH;  }
+        if (glist->gl_graphHeight <= 0) { glist->gl_graphHeight = BASE_DEFAULT_HEIGHT; }
 
         glist->gl_isGraphOnParent = 1;
         glist->gl_hasRectangle = hasRectangle;
@@ -530,7 +532,7 @@ void canvas_setName (t_glist *glist, t_symbol *name, t_symbol *directory)
     glist->gl_name = name;
     canvas_bind (glist);
     
-    if (glist->gl_haveWindow) { canvas_updateTitle (glist); }
+    if (glist->gl_hasWindow) { canvas_updateTitle (glist); }
     if (directory && directory != &s_) {
         canvas_getEnvironment (glist)->ce_directory = directory; 
     }

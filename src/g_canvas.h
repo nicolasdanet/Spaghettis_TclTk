@@ -242,16 +242,16 @@ struct _glist {
     t_symbol            *gl_name;
     t_editor            *gl_editor;
     int                 gl_magic;
-    int                 gl_width;
-    int                 gl_height;
-    int                 gl_marginX;
-    int                 gl_marginY;
-    t_float             gl_valueStart;
-    t_float             gl_valueEnd;
-    t_float             gl_valueUp;
-    t_float             gl_valueDown;
     t_tick              gl_tickX;
     t_tick              gl_tickY;
+    int                 gl_graphWidth;
+    int                 gl_graphHeight;
+    int                 gl_graphMarginLeft;
+    int                 gl_graphMarginTop;
+    t_float             gl_valueLeft;
+    t_float             gl_valueRight;
+    t_float             gl_valueTop;
+    t_float             gl_valueBottom;
     int                 gl_windowTopLeftX;
     int                 gl_windowTopLeftY;
     int                 gl_windowBottomRightX;
@@ -266,7 +266,7 @@ struct _glist {
     char                gl_hasRectangle;
     char                gl_hideText;
     char                gl_saveScalar;
-    char                gl_haveWindow;
+    char                gl_hasWindow;
     char                gl_willBeVisible;
     };
 

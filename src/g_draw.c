@@ -432,10 +432,10 @@ void canvas_eraseBox (t_glist *glist, t_object *o, char *tag)
 
 void canvas_drawGraphOnParentRectangle (t_glist *glist)
 {
-    int a = glist->gl_marginX;
-    int b = glist->gl_marginY;
-    int c = glist->gl_marginX + glist->gl_width;
-    int d = glist->gl_marginY + glist->gl_height;
+    int a = glist->gl_graphMarginLeft;
+    int b = glist->gl_graphMarginTop;
+    int c = glist->gl_graphMarginLeft + glist->gl_graphWidth;
+    int d = glist->gl_graphMarginTop + glist->gl_graphHeight;
     
     sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d"
                     " -dash {2 4}"  // --

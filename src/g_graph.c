@@ -238,10 +238,10 @@ void canvas_bounds (t_glist *glist, t_float a, t_float b, t_float c, t_float d)
     if ((a == b) || (c == d)) { post_error (PD_TRANSLATE ("graph: invalid bounds")); }
     else {
     //
-    glist->gl_valueStart = a;
-    glist->gl_valueEnd   = c;
-    glist->gl_valueUp    = b;
-    glist->gl_valueDown  = d;
+    glist->gl_valueLeft     = a;
+    glist->gl_valueRight    = c;
+    glist->gl_valueTop      = b;
+    glist->gl_valueBottom   = d;
         
     glist_redraw (glist);
     //
@@ -282,8 +282,8 @@ static void canvas_getGraphOnParentRectangle (t_gobj *z, t_glist *glist, int *a,
     
     int x1 = text_getPositionX (cast_object (x), glist);
     int y1 = text_getPositionY (cast_object (x), glist);
-    int x2 = x1 + x->gl_width;
-    int y2 = y1 + x->gl_height;
+    int x2 = x1 + x->gl_graphWidth;
+    int y2 = y1 + x->gl_graphHeight;
 
     *a = x1;
     *b = y1;
@@ -297,12 +297,12 @@ static void canvas_getGraphOnParentRectangle (t_gobj *z, t_glist *glist, int *a,
 
 t_float canvas_positionToValueX (t_glist *glist, t_float f)
 {
-    t_float range = glist->gl_valueEnd - glist->gl_valueStart;
+    t_float range = glist->gl_valueRight - glist->gl_valueLeft;
     t_float v = 0.0;
         
     if (!glist->gl_isGraphOnParent) { v = f; }      /* Scalars. */
     else {
-        if (glist->gl_haveWindow)   { v = f / (glist->gl_windowBottomRightX - glist->gl_windowTopLeftX); }
+        if (glist->gl_hasWindow)    { v = f / (glist->gl_windowBottomRightX - glist->gl_windowTopLeftX); }
         else {
             int a, b, c, d;
             canvas_getGraphOnParentRectangle (cast_gobj (glist), glist->gl_parent, &a, &b, &c, &d);
@@ -310,17 +310,17 @@ t_float canvas_positionToValueX (t_glist *glist, t_float f)
         }
     }
 
-    return (glist->gl_valueStart + (range * v));
+    return (glist->gl_valueLeft + (range * v));
 }
 
 t_float canvas_positionToValueY (t_glist *glist, t_float f)
 {
-    t_float range = glist->gl_valueDown - glist->gl_valueUp;
+    t_float range = glist->gl_valueBottom - glist->gl_valueTop;
     t_float v = 0.0;
         
     if (!glist->gl_isGraphOnParent) { v = f; }      /* Scalars. */
     else {
-        if (glist->gl_haveWindow)   { v = f / (glist->gl_windowBottomRightY - glist->gl_windowTopLeftY); }
+        if (glist->gl_hasWindow)    { v = f / (glist->gl_windowBottomRightY - glist->gl_windowTopLeftY); }
         else {
             int a, b, c, d;
             canvas_getGraphOnParentRectangle (cast_gobj (glist), glist->gl_parent, &a, &b, &c, &d);
@@ -328,18 +328,18 @@ t_float canvas_positionToValueY (t_glist *glist, t_float f)
         }
     }
     
-    return (glist->gl_valueUp + (range * v));
+    return (glist->gl_valueTop + (range * v));
 }
 
 t_float canvas_valueToPositionX (t_glist *glist, t_float f)
 {
-    t_float range = glist->gl_valueEnd - glist->gl_valueStart;
+    t_float range = glist->gl_valueRight - glist->gl_valueLeft;
     t_float v = 1.0;
     t_float x = 0.0;
     
     if (!glist->gl_isGraphOnParent) { }             /* Scalars. */
     else {
-        if (glist->gl_haveWindow)   { v = glist->gl_windowBottomRightX - glist->gl_windowTopLeftX; }
+        if (glist->gl_hasWindow)    { v = glist->gl_windowBottomRightX - glist->gl_windowTopLeftX; }
         else {
             int a, b, c, d;
             canvas_getGraphOnParentRectangle (cast_gobj (glist), glist->gl_parent, &a, &b, &c, &d);
@@ -348,18 +348,18 @@ t_float canvas_valueToPositionX (t_glist *glist, t_float f)
         }
     }
     
-    return (x + (v * ((f - glist->gl_valueStart) / range)));
+    return (x + (v * ((f - glist->gl_valueLeft) / range)));
 }
 
 t_float canvas_valueToPositionY (t_glist *glist, t_float f)
 {
-    t_float range = glist->gl_valueDown - glist->gl_valueUp;
+    t_float range = glist->gl_valueBottom - glist->gl_valueTop;
     t_float v = 1.0;
     t_float x = 0.0;
     
     if (!glist->gl_isGraphOnParent) { }             /* Scalars. */
     else {
-        if (glist->gl_haveWindow)   { v = glist->gl_windowBottomRightY - glist->gl_windowTopLeftY; }
+        if (glist->gl_hasWindow)    { v = glist->gl_windowBottomRightY - glist->gl_windowTopLeftY; }
         else {
             int a, b, c, d;
             canvas_getGraphOnParentRectangle (cast_gobj (glist), glist->gl_parent, &a, &b, &c, &d);
@@ -368,7 +368,7 @@ t_float canvas_valueToPositionY (t_glist *glist, t_float f)
         }
     }
     
-    return (x + (v * ((f - glist->gl_valueUp) / range)));
+    return (x + (v * ((f - glist->gl_valueTop) / range)));
 }
 
 t_float canvas_deltaPositionToValueX (t_glist *glist, t_float f)
@@ -455,7 +455,7 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
     else canvas_eraseInletsAndOutlets(parent_glist, &x->gl_obj, tag); */
         /* if we look like a graph but have been moved to a toplevel,
         just show the bounding rectangle */
-    if (x->gl_haveWindow)
+    if (x->gl_hasWindow)
     {
         if (vis)
         {
@@ -480,9 +480,9 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
         t_symbol *arrayname;
         t_garray *ga;
         /* char *ylabelanchor =
-            (x->gl_ylabelx > 0.5*(x->gl_valueStart + x->gl_valueEnd) ? "w" : "e");
+            (x->gl_ylabelx > 0.5*(x->gl_valueLeft + x->gl_valueRight) ? "w" : "e");
         char *xlabelanchor =
-            (x->gl_xlabely > 0.5*(x->gl_valueUp + x->gl_valueDown) ? "s" : "n"); */
+            (x->gl_xlabely > 0.5*(x->gl_valueTop + x->gl_valueBottom) ? "s" : "n"); */
             
             /* draw a rectangle around the graph */
         sys_vGui(".x%lx.c create line\
@@ -512,7 +512,7 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
                 upix = y1, lpix = y2;
             else upix = y2, lpix = y1;
             for (i = 0, f = x->gl_tickX.k_point;
-                f < 0.99 * x->gl_valueEnd + 0.01*x->gl_valueStart; i++,
+                f < 0.99 * x->gl_valueRight + 0.01*x->gl_valueLeft; i++,
                     f += x->gl_tickX.k_increment)
             {
                 int tickpix = (i % x->gl_tickX.k_period ? 2 : 4);
@@ -526,7 +526,7 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
                     (int)canvas_valueToPositionX(x, f), (int)lpix + tickpix, tag);
             }
             for (i = 1, f = x->gl_tickX.k_point - x->gl_tickX.k_increment;
-                f > 0.99 * x->gl_valueStart + 0.01*x->gl_valueEnd;
+                f > 0.99 * x->gl_valueLeft + 0.01*x->gl_valueRight;
                     i++, f -= x->gl_tickX.k_increment)
             {
                 int tickpix = (i % x->gl_tickX.k_period ? 2 : 4);
@@ -545,9 +545,9 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
         if (x->gl_tickY.k_period)
         {
             t_float ubound, lbound;
-            if (x->gl_valueDown < x->gl_valueUp)
-                ubound = x->gl_valueUp, lbound = x->gl_valueDown;
-            else ubound = x->gl_valueDown, lbound = x->gl_valueUp;
+            if (x->gl_valueBottom < x->gl_valueTop)
+                ubound = x->gl_valueTop, lbound = x->gl_valueBottom;
+            else ubound = x->gl_valueBottom, lbound = x->gl_valueTop;
             for (i = 0, f = x->gl_tickY.k_point;
                 f < 0.99 * ubound + 0.01 * lbound;
                     i++, f += x->gl_tickY.k_increment)
@@ -639,8 +639,8 @@ static void graph_getrect(t_gobj *z, t_glist *glist,
             to the old (0.37) graph-on-parent behavior. */
             /* lie about whether we have our own window to affect gobj_getRectangle
             calls below.  */
-            hadwindow = x->gl_haveWindow;
-            x->gl_haveWindow = 0;
+            hadwindow = x->gl_hasWindow;
+            x->gl_hasWindow = 0;
             for (g = x->gl_graphics; g; g = g->g_next)
             {
                     /* don't do this for arrays, just let them hang outside the
@@ -655,7 +655,7 @@ static void graph_getrect(t_gobj *z, t_glist *glist,
                 if (y22 > y2) 
                     y2 = y22;
             }
-            x->gl_haveWindow = hadwindow;
+            x->gl_hasWindow = hadwindow;
         }
     }
     else text_widgetBehavior.w_fnGetRectangle(z, glist, &x1, &y1, &x2, &y2);
@@ -768,7 +768,7 @@ static int graph_click(t_gobj *z, t_glist *glist, int xpix, int ypix, int shift,
     if (!x->gl_isGraphOnParent)
         return (text_widgetBehavior.w_fnClicked(z, glist,
             xpix, ypix, shift, ctrl, alt, dbl, doit));
-    else if (x->gl_haveWindow)
+    else if (x->gl_hasWindow)
         return (0);
     else
     {
