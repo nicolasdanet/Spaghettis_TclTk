@@ -127,23 +127,20 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
     
     /* Falling outside the graph rectangle? */
     
-    if (owner->gl_hasRectangle) {
-            
-        if (pd_class (x) == scalar_class || pd_class (x) == garray_class) { return 1; }
-        else {
-        //
-        int a, b, c, d, e, f, g, h;
-            
-        gobj_getRectangle (cast_gobj (owner), owner->gl_parent, &a, &b, &c, &d);
+    if (pd_class (x) == scalar_class || pd_class (x) == garray_class) { return 1; }
+    else {
+    //
+    int a, b, c, d, e, f, g, h;
         
-        if (a > c) { int t = a; a = c; c = t; }
-        if (b > d) { int t = b; b = d; d = t; }
-        
-        gobj_getRectangle (x, owner, &e, &f, &g, &h);
-        
-        if (e < a || e > c || g < a || g > c || f < b || f > d || h < b || h > d) { return 0; }
-        //
-        }
+    gobj_getRectangle (cast_gobj (owner), owner->gl_parent, &a, &b, &c, &d);
+    
+    if (a > c) { int t = a; a = c; c = t; }
+    if (b > d) { int t = b; b = d; d = t; }
+    
+    gobj_getRectangle (x, owner, &e, &f, &g, &h);
+    
+    if (e < a || e > c || g < a || g > c || f < b || f > d || h < b || h > d) { return 0; }
+    //
     }
     
     if (object = canvas_castToObjectIfPatchable (x)) {

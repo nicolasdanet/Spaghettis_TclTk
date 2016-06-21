@@ -120,22 +120,18 @@ static void *subpatch_new (t_symbol *s)
 
 static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    glist->gl_valueLeft     = atom_getFloatAtIndex (0, argc, argv);
-    glist->gl_valueTop      = atom_getFloatAtIndex (1, argc, argv);
-    glist->gl_valueRight    = atom_getFloatAtIndex (2, argc, argv);
-    glist->gl_valueBottom   = atom_getFloatAtIndex (3, argc, argv);
-    glist->gl_graphWidth    = (int)atom_getFloatAtIndex (4, argc, argv);
-    glist->gl_graphHeight   = (int)atom_getFloatAtIndex (5, argc, argv);
+    glist->gl_valueLeft         = atom_getFloatAtIndex (0, argc, argv);
+    glist->gl_valueTop          = atom_getFloatAtIndex (1, argc, argv);
+    glist->gl_valueRight        = atom_getFloatAtIndex (2, argc, argv);
+    glist->gl_valueBottom       = atom_getFloatAtIndex (3, argc, argv);
+    glist->gl_graphWidth        = (int)atom_getFloatAtIndex (4, argc, argv);
+    glist->gl_graphHeight       = (int)atom_getFloatAtIndex (5, argc, argv);
+    glist->gl_graphMarginLeft   = (int)atom_getFloatAtIndex (7, argc, argv);
+    glist->gl_graphMarginTop    = (int)atom_getFloatAtIndex (8, argc, argv);
     
-    /* Compatbility with legacy format. */
-    
-    if (argc < 8) { canvas_setAsGraphOnParent (glist, (int)atom_getFloatAtIndex (6, argc, argv), 0); }
-    else {
-        glist->gl_graphMarginLeft = (int)atom_getFloatAtIndex (7, argc, argv);
-        glist->gl_graphMarginTop  = (int)atom_getFloatAtIndex (8, argc, argv);
+    PD_ASSERT (argc == 9);
         
-        canvas_setAsGraphOnParent (glist, (int)atom_getFloatAtIndex (6, argc, argv), 1);
-    }
+    canvas_setAsGraphOnParent (glist, (int)atom_getFloatAtIndex (6, argc, argv));
 }
 
 void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -429,9 +425,7 @@ void canvas_map (t_glist *glist, t_float f)
         
         canvas_drawLines (glist);
         
-        if (glist->gl_isGraphOnParent && glist->gl_hasRectangle) {
-            canvas_drawGraphOnParentRectangle (glist);
-        }
+        if (glist->gl_isGraphOnParent) { canvas_drawGraphOnParentRectangle (glist); }
         
         sys_vGui ("::ui_patch::updateScrollRegion .x%lx.c\n", canvas_getView (glist));
     }
@@ -570,7 +564,7 @@ static void canvas_dialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         glist->gl_valueBottom   = PD_ABS (scaleY);
     }
     
-    canvas_setAsGraphOnParent (glist, flags, 1);
+    canvas_setAsGraphOnParent (glist, flags);
     
     canvas_dirty (glist, 1);
     
@@ -745,7 +739,6 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     
     x->gl_fontSize      = font_getNearestValidFontSize (fontSize);
     x->gl_isLoading     = 1;
-    x->gl_hasRectangle  = 0;
 
     if (visible && s__X.s_thing && (pd_class (s__X.s_thing) == canvas_class)) {
         t_glist *g = canvas_getRoot (cast_glist (s__X.s_thing));

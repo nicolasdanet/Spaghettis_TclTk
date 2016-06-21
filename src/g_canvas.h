@@ -263,7 +263,6 @@ struct _glist {
     char                gl_isDeleting;
     char                gl_isEditMode;
     char                gl_isGraphOnParent;
-    char                gl_hasRectangle;
     char                gl_hideText;
     char                gl_saveScalar;
     char                gl_hasWindow;
@@ -394,7 +393,7 @@ void            canvas_addObject                        (t_glist *glist, t_gobj 
 void            canvas_removeObject                     (t_glist *glist, t_gobj *y);
 void            canvas_clear                            (t_glist *glist);
 
-void            canvas_setAsGraphOnParent               (t_glist *glist, int flags, int hasRectangle);
+void            canvas_setAsGraphOnParent               (t_glist *glist, int flags);
 
 int             canvas_isMapped                         (t_glist *glist);
 int             canvas_isRoot                           (t_glist *glist);

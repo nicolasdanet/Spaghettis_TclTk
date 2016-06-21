@@ -258,7 +258,6 @@ t_glist *canvas_addGraph (t_glist *glist,
     x->gl_windowBottomRightY            = WINDOW_HEIGHT + WINDOW_HEADER;
     x->gl_fontSize                      = fontSize;
     x->gl_isGraphOnParent               = 1;
-    x->gl_hasRectangle                  = 0;
     
     canvas_bind (x);
     buffer_vAppend (cast_object (x)->te_buffer, "s", sym_graph);
@@ -437,7 +436,7 @@ void canvas_makeTextObject (t_glist *glist,
     stack_pop (cast_pd (glist));
 }
 
-void canvas_setAsGraphOnParent (t_glist *glist, int flags, int hasRectangle)
+void canvas_setAsGraphOnParent (t_glist *glist, int flags)
 {
     int isGraphOnParent = (flags & 1) != 0;
     int hideText        = (flags & 2) != 0;
@@ -455,11 +454,10 @@ void canvas_setAsGraphOnParent (t_glist *glist, int flags, int hasRectangle)
     else {
         if (glist->gl_graphWidth <= 0)  { glist->gl_graphWidth  = BASE_DEFAULT_WIDTH;  }
         if (glist->gl_graphHeight <= 0) { glist->gl_graphHeight = BASE_DEFAULT_HEIGHT; }
-
-        glist->gl_isGraphOnParent = 1;
-        glist->gl_hasRectangle = hasRectangle;
         
-        if (hasRectangle) { canvas_redrawGraphOnParent (glist); }
+        glist->gl_isGraphOnParent = 1;
+        
+        canvas_redrawGraphOnParent (glist);
     }
     
     if (needToUpdate) {

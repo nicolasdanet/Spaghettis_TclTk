@@ -395,6 +395,8 @@ void canvas_redrawGraphOnParent (t_glist *glist)
     t_linetraverser t;
     t_outconnect *connection = NULL;
     
+    canvas_deleteGraphOnParentRectangle (glist);
+    
     for (y = glist->gl_graphics; y; y = y->g_next) {
         gobj_visibilityChanged (y, glist, 0);
         gobj_visibilityChanged (y, glist, 1);
@@ -412,9 +414,7 @@ void canvas_redrawGraphOnParent (t_glist *glist)
                         t.tr_lineEndY);
     }
     
-    canvas_deleteGraphOnParentRectangle (glist);
-    
-    if (glist->gl_hasRectangle) { canvas_drawGraphOnParentRectangle (glist); }
+    canvas_drawGraphOnParentRectangle (glist);
     //
     }
     
@@ -437,10 +437,7 @@ static void canvas_behaviorGetRectangle (t_gobj *z,
     int *c,
     int *d)
 {
-    int x1 = PD_INT_MAX;
-    int y1 = PD_INT_MAX;
-    int x2 = -x1;
-    int y2 = -y1;
+    int x1, y1, x2, y2;
 
     t_glist *x = cast_glist (z);
     

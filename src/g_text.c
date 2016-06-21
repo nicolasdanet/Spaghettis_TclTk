@@ -245,9 +245,8 @@ int text_getPositionX (t_object *x, t_glist *glist)
 {
     if (canvas_canHaveWindow (glist)) { return x->te_xCoordinate; }
     else {
-        PD_ASSERT (glist->gl_hasRectangle);
-        int n = canvas_valueToPositionX (glist, glist->gl_valueLeft);
-        return (n + x->te_xCoordinate - glist->gl_graphMarginLeft);
+        int n = canvas_valueToPositionX (glist, glist->gl_valueLeft) - glist->gl_graphMarginLeft;
+        return (n + x->te_xCoordinate);
     }
 }
 
@@ -255,9 +254,8 @@ int text_getPositionY (t_object *x, t_glist *glist)
 {
     if (canvas_canHaveWindow (glist)) { return x->te_yCoordinate; }
     else {
-        PD_ASSERT (glist->gl_hasRectangle);
-        int n = canvas_valueToPositionY (glist, glist->gl_valueTop);
-        return (n + x->te_yCoordinate - glist->gl_graphMarginTop);
+        int n = canvas_valueToPositionY (glist, glist->gl_valueTop) - glist->gl_graphMarginTop;
+        return (n + x->te_yCoordinate);
     }
 }
 
