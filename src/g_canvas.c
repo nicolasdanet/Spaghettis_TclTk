@@ -129,8 +129,6 @@ static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     glist->gl_graphMarginLeft   = (int)atom_getFloatAtIndex (7, argc, argv);
     glist->gl_graphMarginTop    = (int)atom_getFloatAtIndex (8, argc, argv);
     
-    PD_ASSERT (argc == 9);
-        
     canvas_setAsGraphOnParent (glist, (int)atom_getFloatAtIndex (6, argc, argv));
 }
 

@@ -452,14 +452,12 @@ void canvas_setAsGraphOnParent (t_glist *glist, int flags)
     
     if (!isGraphOnParent) { glist->gl_isGraphOnParent = 0; } 
     else {
-        if (glist->gl_graphWidth <= 0)  { glist->gl_graphWidth  = BASE_DEFAULT_WIDTH;  }
-        if (glist->gl_graphHeight <= 0) { glist->gl_graphHeight = BASE_DEFAULT_HEIGHT; }
-        
         glist->gl_isGraphOnParent = 1;
-        
-        canvas_redrawGraphOnParent (glist);
     }
     
+    if (glist->gl_graphWidth <= 0)  { glist->gl_graphWidth  = BASE_DEFAULT_WIDTH;  }
+    if (glist->gl_graphHeight <= 0) { glist->gl_graphHeight = BASE_DEFAULT_HEIGHT; }
+        
     if (needToUpdate) {
         if (!glist->gl_isLoading && glist->gl_parent && canvas_isMapped (glist->gl_parent)) {
             gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
