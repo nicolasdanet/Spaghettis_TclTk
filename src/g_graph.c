@@ -430,59 +430,29 @@ void canvas_redrawGraphOnParent (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* get the rectangle, enlarged to contain all the "contents" --
-    meaning their formal bounds rectangles. */
-static void canvas_behaviorGetRectangle (t_gobj *z, t_glist *glist,
-    int *xp1, int *yp1, int *xp2, int *yp2)
+static void canvas_behaviorGetRectangle (t_gobj *z,
+    t_glist *glist,
+    int *a,
+    int *b,
+    int *c,
+    int *d)
 {
-    int x1 = PD_INT_MAX, y1 = PD_INT_MAX, x2 = -PD_INT_MAX, y2 = -PD_INT_MAX;
-    t_glist *x = (t_glist *)z;
-    if (x->gl_isGraphOnParent)
-    {
-        int hadwindow;
-        t_gobj *g;
-        t_object *ob;
-        int x21, y21, x22, y22;
+    int x1 = PD_INT_MAX;
+    int y1 = PD_INT_MAX;
+    int x2 = -x1;
+    int y2 = -y1;
 
-        canvas_getGraphOnParentRectangle(z, glist, &x1, &y1, &x2, &y2);
-        if (canvas_hasGraphOnParentTitle(x))
-        {
-            text_widgetBehavior.w_fnGetRectangle(z, glist, &x21, &y21, &x22, &y22);
-            if (x22 > x2) 
-                x2 = x22;
-            if (y22 > y2) 
-                y2 = y22;
-        }
-        if (!x->gl_hasRectangle)
-        {
-            /* expand the rectangle to fit in text objects; this applies only
-            to the old (0.37) graph-on-parent behavior. */
-            /* lie about whether we have our own window to affect gobj_getRectangle
-            calls below.  */
-            hadwindow = x->gl_hasWindow;
-            x->gl_hasWindow = 0;
-            for (g = x->gl_graphics; g; g = g->g_next)
-            {
-                    /* don't do this for arrays, just let them hang outside the
-                    box.  And ignore "text" objects which aren't shown on 
-                    parent */
-                if (pd_class(&g->g_pd) == garray_class ||
-                    canvas_castToObjectIfPatchable(&g->g_pd))
-                        continue;
-                gobj_getRectangle(g, x, &x21, &y21, &x22, &y22);
-                if (x22 > x2) 
-                    x2 = x22;
-                if (y22 > y2) 
-                    y2 = y22;
-            }
-            x->gl_hasWindow = hadwindow;
-        }
+    t_glist *x = cast_glist (z);
+    
+    if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnGetRectangle (z, glist, &x1, &y1, &x2, &y2); }
+    else {
+        canvas_getGraphOnParentRectangle (z, glist, &x1, &y1, &x2, &y2);
     }
-    else text_widgetBehavior.w_fnGetRectangle(z, glist, &x1, &y1, &x2, &y2);
-    *xp1 = x1;
-    *yp1 = y1;
-    *xp2 = x2;
-    *yp2 = y2;
+    
+    *a = x1;
+    *b = y1;
+    *c = x2;
+    *d = y2;
 }
 
 static void canvas_behaviorDisplaced (t_gobj *z, t_glist *glist, int dx, int dy)
