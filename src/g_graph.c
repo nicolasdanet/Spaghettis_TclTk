@@ -382,7 +382,7 @@ t_float canvas_valueToPositionX (t_glist *glist, t_float f)
     t_float v = 1.0;
     t_float x = 0.0;
     
-    if (!glist->gl_isGraphOnParent) { }             /* Scalars. */
+    if (!glist->gl_isGraphOnParent) { }     /* Scalars. */
     else {
         if (glist->gl_hasWindow)    { v = glist->gl_windowBottomRightX - glist->gl_windowTopLeftX; }
         else {
@@ -402,7 +402,7 @@ t_float canvas_valueToPositionY (t_glist *glist, t_float f)
     t_float v = 1.0;
     t_float x = 0.0;
     
-    if (!glist->gl_isGraphOnParent) { }             /* Scalars. */
+    if (!glist->gl_isGraphOnParent) { }     /* Scalars. */
     else {
         if (glist->gl_hasWindow)    { v = glist->gl_windowBottomRightY - glist->gl_windowTopLeftY; }
         else {
@@ -452,34 +452,38 @@ static void canvas_behaviorGetRectangle (t_gobj *z,
     *d = y2;
 }
 
-static void canvas_behaviorDisplaced (t_gobj *z, t_glist *glist, int dx, int dy)
+static void canvas_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
 {
-    t_glist *x = (t_glist *)z;
-    if (!x->gl_isGraphOnParent)
-        text_widgetBehavior.w_fnDisplaced(z, glist, dx, dy);
-    else
-    {
-        x->gl_obj.te_xCoordinate += dx;
-        x->gl_obj.te_yCoordinate += dy;
+    t_glist *x = cast_glist (z);
+    
+    if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnDisplaced (z, glist, deltaX, deltaY); }
+    else {
+        cast_object (z)->te_xCoordinate += deltaX;
+        cast_object (z)->te_yCoordinate += deltaY;
         canvas_redrawGraphOnParent (x);
-        canvas_updateLinesByObject(glist, &x->gl_obj);
+        canvas_updateLinesByObject (glist, cast_object (z));
     }
 }
 
-static void canvas_behaviorSelected (t_gobj *z, t_glist *glist, int state)
+static void canvas_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
 {
-    t_glist *x = (t_glist *)z;
-    if (!x->gl_isGraphOnParent)
-        text_widgetBehavior.w_fnSelected(z, glist, state);
-    else
-    {
-        t_boxtext *y = boxtext_fetch(glist, &x->gl_obj);
-        if (canvas_hasGraphOnParentTitle (x))
-            boxtext_select(y, state);
-        sys_vGui(".x%lx.c itemconfigure %sBORDER -fill %s\n", glist, 
-        boxtext_getTag(y), (state? "blue" : "black"));
-        sys_vGui(".x%lx.c itemconfigure graph%lx -fill %s\n",
-            canvas_getView(glist), z, (state? "blue" : "black"));
+    t_glist *x = cast_glist (z);
+    
+    if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnSelected (z, glist, isSelected); }
+    else {
+        t_boxtext *y = boxtext_fetch (glist, cast_object (z));
+        
+        if (canvas_hasGraphOnParentTitle (x)) { boxtext_select (y, isSelected); }
+        
+        sys_vGui (".x%lx.c itemconfigure %sBORDER -fill #%06x\n",
+                        canvas_getView (glist), 
+                        boxtext_getTag (y),
+                        (isSelected? COLOR_SELECTED : COLOR_NORMAL));
+                        
+        sys_vGui (".x%lx.c itemconfigure GRAPH%lx -fill #%06x\n",
+                        canvas_getView (glist),
+                        z,
+                        (isSelected? COLOR_SELECTED : COLOR_NORMAL));
     }
 }
 
@@ -524,7 +528,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *gr, t_glist *parent_glist,
     if (!vis)
         boxtext_erase(boxtext_fetch(parent_glist, &x->gl_obj));
 
-    sprintf(tag, "graph%lx", (t_int)x);
+    sprintf(tag, "GRAPH%lx", (t_int)x);
     /*
     if (vis)
         canvas_drawInletsAndOutlets(parent_glist, &x->gl_obj,
