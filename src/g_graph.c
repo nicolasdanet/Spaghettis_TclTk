@@ -472,17 +472,11 @@ static void canvas_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
     if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnSelected (z, glist, isSelected); }
     else {
         t_boxtext *y = boxtext_fetch (glist, cast_object (z));
-        
         if (canvas_hasGraphOnParentTitle (x)) { boxtext_select (y, isSelected); }
-        
-        sys_vGui (".x%lx.c itemconfigure %sBORDER -fill #%06x\n",
-                        canvas_getView (glist), 
-                        boxtext_getTag (y),
-                        (isSelected? COLOR_SELECTED : COLOR_NORMAL));
-                        
+
         sys_vGui (".x%lx.c itemconfigure GRAPH%lx -fill #%06x\n",
                         canvas_getView (glist),
-                        z,
+                        (t_int)x,
                         (isSelected? COLOR_SELECTED : COLOR_NORMAL));
     }
 }
