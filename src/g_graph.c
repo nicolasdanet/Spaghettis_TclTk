@@ -31,26 +31,26 @@ extern t_widgetbehavior text_widgetBehavior;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void graph_getrect   (t_gobj *, t_glist *, int *, int *, int *, int *);
-static void graph_displace  (t_gobj *, t_glist *, int, int);
-static void graph_select    (t_gobj *, t_glist *, int);
-static void graph_activate  (t_gobj *, t_glist *, int);
-static void graph_delete    (t_gobj *, t_glist *);
-static void graph_vis       (t_gobj *, t_glist *, int);
-static int  graph_click     (t_gobj *, t_glist *, int, int, int, int, int, int, int);
+static void canvas_behaviorGetRectangle         (t_gobj *, t_glist *, int *, int *, int *, int *);
+static void canvas_behaviorDisplaced            (t_gobj *, t_glist *, int, int);
+static void canvas_behaviorSelected             (t_gobj *, t_glist *, int);
+static void canvas_behaviorActivated            (t_gobj *, t_glist *, int);
+static void canvas_behaviorDeleted              (t_gobj *, t_glist *);
+static void canvas_behaviorVisibilityChanged    (t_gobj *, t_glist *, int);
+static int  canvas_behaviorClicked              (t_gobj *, t_glist *, int, int, int, int, int, int, int);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 t_widgetbehavior canvas_widgetbehavior =
     {
-        graph_getrect,
-        graph_displace,
-        graph_select,
-        graph_activate,
-        graph_delete,
-        graph_vis,
-        graph_click,
+        canvas_behaviorGetRectangle,
+        canvas_behaviorDisplaced,
+        canvas_behaviorSelected,
+        canvas_behaviorActivated,
+        canvas_behaviorDeleted,
+        canvas_behaviorVisibilityChanged,
+        canvas_behaviorClicked,
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -419,8 +419,8 @@ void canvas_redrawGraphOnParent (t_glist *glist)
     }
     
     if (glist->gl_parent && canvas_isMapped (glist->gl_parent)) {
-        graph_vis (cast_gobj (glist), glist->gl_parent, 0); 
-        graph_vis (cast_gobj (glist), glist->gl_parent, 1);
+        canvas_behaviorVisibilityChanged (cast_gobj (glist), glist->gl_parent, 0); 
+        canvas_behaviorVisibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
     }
     //
     }
@@ -430,7 +430,115 @@ void canvas_redrawGraphOnParent (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
+    /* get the rectangle, enlarged to contain all the "contents" --
+    meaning their formal bounds rectangles. */
+static void canvas_behaviorGetRectangle (t_gobj *z, t_glist *glist,
+    int *xp1, int *yp1, int *xp2, int *yp2)
+{
+    int x1 = PD_INT_MAX, y1 = PD_INT_MAX, x2 = -PD_INT_MAX, y2 = -PD_INT_MAX;
+    t_glist *x = (t_glist *)z;
+    if (x->gl_isGraphOnParent)
+    {
+        int hadwindow;
+        t_gobj *g;
+        t_object *ob;
+        int x21, y21, x22, y22;
+
+        canvas_getGraphOnParentRectangle(z, glist, &x1, &y1, &x2, &y2);
+        if (canvas_hasGraphOnParentTitle(x))
+        {
+            text_widgetBehavior.w_fnGetRectangle(z, glist, &x21, &y21, &x22, &y22);
+            if (x22 > x2) 
+                x2 = x22;
+            if (y22 > y2) 
+                y2 = y22;
+        }
+        if (!x->gl_hasRectangle)
+        {
+            /* expand the rectangle to fit in text objects; this applies only
+            to the old (0.37) graph-on-parent behavior. */
+            /* lie about whether we have our own window to affect gobj_getRectangle
+            calls below.  */
+            hadwindow = x->gl_hasWindow;
+            x->gl_hasWindow = 0;
+            for (g = x->gl_graphics; g; g = g->g_next)
+            {
+                    /* don't do this for arrays, just let them hang outside the
+                    box.  And ignore "text" objects which aren't shown on 
+                    parent */
+                if (pd_class(&g->g_pd) == garray_class ||
+                    canvas_castToObjectIfPatchable(&g->g_pd))
+                        continue;
+                gobj_getRectangle(g, x, &x21, &y21, &x22, &y22);
+                if (x22 > x2) 
+                    x2 = x22;
+                if (y22 > y2) 
+                    y2 = y22;
+            }
+            x->gl_hasWindow = hadwindow;
+        }
+    }
+    else text_widgetBehavior.w_fnGetRectangle(z, glist, &x1, &y1, &x2, &y2);
+    *xp1 = x1;
+    *yp1 = y1;
+    *xp2 = x2;
+    *yp2 = y2;
+}
+
+static void canvas_behaviorDisplaced (t_gobj *z, t_glist *glist, int dx, int dy)
+{
+    t_glist *x = (t_glist *)z;
+    if (!x->gl_isGraphOnParent)
+        text_widgetBehavior.w_fnDisplaced(z, glist, dx, dy);
+    else
+    {
+        x->gl_obj.te_xCoordinate += dx;
+        x->gl_obj.te_yCoordinate += dy;
+        canvas_redrawGraphOnParent (x);
+        canvas_updateLinesByObject(glist, &x->gl_obj);
+    }
+}
+
+static void canvas_behaviorSelected (t_gobj *z, t_glist *glist, int state)
+{
+    t_glist *x = (t_glist *)z;
+    if (!x->gl_isGraphOnParent)
+        text_widgetBehavior.w_fnSelected(z, glist, state);
+    else
+    {
+        t_boxtext *y = boxtext_fetch(glist, &x->gl_obj);
+        if (canvas_hasGraphOnParentTitle (x))
+            boxtext_select(y, state);
+        sys_vGui(".x%lx.c itemconfigure %sBORDER -fill %s\n", glist, 
+        boxtext_getTag(y), (state? "blue" : "black"));
+        sys_vGui(".x%lx.c itemconfigure graph%lx -fill %s\n",
+            canvas_getView(glist), z, (state? "blue" : "black"));
+    }
+}
+
+static void canvas_behaviorActivated (t_gobj *z, t_glist *glist, int state)
+{
+    t_glist *x = (t_glist *)z;
+    if (canvas_hasGraphOnParentTitle(x))
+        text_widgetBehavior.w_fnActivated(z, glist, state);
+}
+
+static void canvas_behaviorDeleted (t_gobj *z, t_glist *glist)
+{
+    t_glist *x = (t_glist *)z;
+    t_gobj *y;
+    while (y = x->gl_graphics)
+        canvas_removeObject(x, y);
+    if (canvas_isMapped(x))
+        text_widgetBehavior.w_fnDeleted(z, glist);
+            /* if we have connections to the actual 'canvas' object, zap
+            them as well (e.g., array or scalar objects that are implemented
+            as canvases with "real" inlets).  Connections to ordinary canvas
+            in/outlets already got zapped when we cleared the contents above */
+    canvas_deleteLinesByObject(glist, &x->gl_obj);
+}
+
+static void canvas_behaviorVisibilityChanged (t_gobj *gr, t_glist *parent_glist, int vis)
 {
     t_glist *x = (t_glist *)gr;
     char tag[50];
@@ -445,7 +553,7 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
 
     if (vis && canvas_hasGraphOnParentTitle (x))
         boxtext_draw(boxtext_fetch(parent_glist, &x->gl_obj));
-    graph_getrect(gr, parent_glist, &x1, &y1, &x2, &y2);
+    canvas_behaviorGetRectangle(gr, parent_glist, &x1, &y1, &x2, &y2);
     if (!vis)
         boxtext_erase(boxtext_fetch(parent_glist, &x->gl_obj));
 
@@ -612,157 +720,7 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
     }
 }
 
-    /* get the rectangle, enlarged to contain all the "contents" --
-    meaning their formal bounds rectangles. */
-static void graph_getrect(t_gobj *z, t_glist *glist,
-    int *xp1, int *yp1, int *xp2, int *yp2)
-{
-    int x1 = PD_INT_MAX, y1 = PD_INT_MAX, x2 = -PD_INT_MAX, y2 = -PD_INT_MAX;
-    t_glist *x = (t_glist *)z;
-    if (x->gl_isGraphOnParent)
-    {
-        int hadwindow;
-        t_gobj *g;
-        t_object *ob;
-        int x21, y21, x22, y22;
-
-        canvas_getGraphOnParentRectangle(z, glist, &x1, &y1, &x2, &y2);
-        if (canvas_hasGraphOnParentTitle(x))
-        {
-            text_widgetBehavior.w_fnGetRectangle(z, glist, &x21, &y21, &x22, &y22);
-            if (x22 > x2) 
-                x2 = x22;
-            if (y22 > y2) 
-                y2 = y22;
-        }
-        if (!x->gl_hasRectangle)
-        {
-            /* expand the rectangle to fit in text objects; this applies only
-            to the old (0.37) graph-on-parent behavior. */
-            /* lie about whether we have our own window to affect gobj_getRectangle
-            calls below.  */
-            hadwindow = x->gl_hasWindow;
-            x->gl_hasWindow = 0;
-            for (g = x->gl_graphics; g; g = g->g_next)
-            {
-                    /* don't do this for arrays, just let them hang outside the
-                    box.  And ignore "text" objects which aren't shown on 
-                    parent */
-                if (pd_class(&g->g_pd) == garray_class ||
-                    canvas_castToObjectIfPatchable(&g->g_pd))
-                        continue;
-                gobj_getRectangle(g, x, &x21, &y21, &x22, &y22);
-                if (x22 > x2) 
-                    x2 = x22;
-                if (y22 > y2) 
-                    y2 = y22;
-            }
-            x->gl_hasWindow = hadwindow;
-        }
-    }
-    else text_widgetBehavior.w_fnGetRectangle(z, glist, &x1, &y1, &x2, &y2);
-    *xp1 = x1;
-    *yp1 = y1;
-    *xp2 = x2;
-    *yp2 = y2;
-}
-
-static void graph_displace(t_gobj *z, t_glist *glist, int dx, int dy)
-{
-    t_glist *x = (t_glist *)z;
-    if (!x->gl_isGraphOnParent)
-        text_widgetBehavior.w_fnDisplaced(z, glist, dx, dy);
-    else
-    {
-        x->gl_obj.te_xCoordinate += dx;
-        x->gl_obj.te_yCoordinate += dy;
-        canvas_redrawGraphOnParent (x);
-        canvas_updateLinesByObject(glist, &x->gl_obj);
-    }
-}
-
-static void graph_select(t_gobj *z, t_glist *glist, int state)
-{
-    t_glist *x = (t_glist *)z;
-    if (!x->gl_isGraphOnParent)
-        text_widgetBehavior.w_fnSelected(z, glist, state);
-    else
-    {
-        t_boxtext *y = boxtext_fetch(glist, &x->gl_obj);
-        if (canvas_hasGraphOnParentTitle (x))
-            boxtext_select(y, state);
-        sys_vGui(".x%lx.c itemconfigure %sBORDER -fill %s\n", glist, 
-        boxtext_getTag(y), (state? "blue" : "black"));
-        sys_vGui(".x%lx.c itemconfigure graph%lx -fill %s\n",
-            canvas_getView(glist), z, (state? "blue" : "black"));
-    }
-}
-
-static void graph_activate(t_gobj *z, t_glist *glist, int state)
-{
-    t_glist *x = (t_glist *)z;
-    if (canvas_hasGraphOnParentTitle(x))
-        text_widgetBehavior.w_fnActivated(z, glist, state);
-}
-
-static void graph_delete(t_gobj *z, t_glist *glist)
-{
-    t_glist *x = (t_glist *)z;
-    t_gobj *y;
-    while (y = x->gl_graphics)
-        canvas_removeObject(x, y);
-    if (canvas_isMapped(x))
-        text_widgetBehavior.w_fnDeleted(z, glist);
-            /* if we have connections to the actual 'canvas' object, zap
-            them as well (e.g., array or scalar objects that are implemented
-            as canvases with "real" inlets).  Connections to ordinary canvas
-            in/outlets already got zapped when we cleared the contents above */
-    canvas_deleteLinesByObject(glist, &x->gl_obj);
-}
-
-static t_float graph_lastxpix, graph_lastypix;
-
-static void graph_motion(void *z, t_float dx, t_float dy)
-{
-    t_glist *x = (t_glist *)z;
-    t_float newxpix = graph_lastxpix + dx, newypix = graph_lastypix + dy;
-    t_garray *a = (t_garray *)(x->gl_graphics);
-    int oldx = 0.5 + canvas_positionToValueX(x, graph_lastxpix);
-    int newx = 0.5 + canvas_positionToValueX(x, newxpix);
-    t_word *vec;
-    int nelem, i;
-    t_float oldy = canvas_positionToValueY(x, graph_lastypix);
-    t_float newy = canvas_positionToValueY(x, newypix);
-    graph_lastxpix = newxpix;
-    graph_lastypix = newypix;
-        /* verify that the array is OK */
-    if (!a || pd_class((t_pd *)a) != garray_class)
-        return;
-    if (!garray_getfloatwords(a, &nelem, &vec))
-        return;
-    if (oldx < 0) oldx = 0;
-    if (oldx >= nelem)
-        oldx = nelem - 1;
-    if (newx < 0) newx = 0;
-    if (newx >= nelem)
-        newx = nelem - 1;
-    if (oldx < newx - 1)
-    {
-        for (i = oldx + 1; i <= newx; i++)
-            vec[i].w_float = newy + (oldy - newy) *
-                ((t_float)(newx - i))/(t_float)(newx - oldx);
-    }
-    else if (oldx > newx + 1)
-    {
-        for (i = oldx - 1; i >= newx; i--)
-            vec[i].w_float = newy + (oldy - newy) *
-                ((t_float)(newx - i))/(t_float)(newx - oldx);
-    }
-    else vec[newx].w_float = newy;
-    garray_redraw(a);
-}
-
-static int graph_click(t_gobj *z, t_glist *glist, int xpix, int ypix, int shift, int ctrl, int alt, int dbl, int doit)
+static int canvas_behaviorClicked (t_gobj *z, t_glist *glist, int xpix, int ypix, int shift, int ctrl, int alt, int dbl, int doit)
 {
     t_glist *x = (t_glist *)z;
     t_gobj *y;
