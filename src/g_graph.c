@@ -471,8 +471,9 @@ static void canvas_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
     
     if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnSelected (z, glist, isSelected); }
     else {
-        t_boxtext *y = boxtext_fetch (glist, cast_object (z));
-        if (canvas_hasGraphOnParentTitle (x)) { boxtext_select (y, isSelected); }
+        if (canvas_hasGraphOnParentTitle (x)) { 
+            text_widgetBehavior.w_fnSelected (z, glist, isSelected);
+        }
 
         sys_vGui (".x%lx.c itemconfigure GRAPH%lx -fill #%06x\n",
                         canvas_getView (glist),
@@ -481,26 +482,30 @@ static void canvas_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
     }
 }
 
-static void canvas_behaviorActivated (t_gobj *z, t_glist *glist, int state)
+static void canvas_behaviorActivated (t_gobj *z, t_glist *glist, int isActivated)
 {
-    t_glist *x = (t_glist *)z;
-    if (canvas_hasGraphOnParentTitle(x))
-        text_widgetBehavior.w_fnActivated(z, glist, state);
+    t_glist *x = cast_glist (z);
+    
+    if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnActivated (z, glist, isActivated); }
+    else {
+        if (canvas_hasGraphOnParentTitle (x)) { 
+            text_widgetBehavior.w_fnActivated (z, glist, isActivated);
+        }
+    }
 }
 
 static void canvas_behaviorDeleted (t_gobj *z, t_glist *glist)
 {
-    t_glist *x = (t_glist *)z;
-    t_gobj *y;
-    while (y = x->gl_graphics)
-        canvas_removeObject(x, y);
-    if (canvas_isMapped(x))
-        text_widgetBehavior.w_fnDeleted(z, glist);
-            /* if we have connections to the actual 'canvas' object, zap
-            them as well (e.g., array or scalar objects that are implemented
-            as canvases with "real" inlets).  Connections to ordinary canvas
-            in/outlets already got zapped when we cleared the contents above */
-    canvas_deleteLinesByObject(glist, &x->gl_obj);
+    t_glist *x = cast_glist (z);
+    
+    t_gobj *y = NULL;
+    
+    while (y = x->gl_graphics)  { canvas_removeObject (x, y); }
+    
+    if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnDeleted (z, glist); }
+    else {
+        canvas_deleteLinesByObject (glist, cast_object (z));
+    }
 }
 
 static void canvas_behaviorVisibilityChanged (t_gobj *gr, t_glist *parent_glist, int vis)
