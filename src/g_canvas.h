@@ -255,10 +255,11 @@ struct _glist {
     char                gl_isLoading;
     char                gl_isDeleting;
     char                gl_isEditMode;
+    char                gl_isSelected;
     char                gl_isGraphOnParent;
+    char                gl_hasWindow;
     char                gl_hideText;
     char                gl_saveScalar;
-    char                gl_hasWindow;
     char                gl_willBeVisible;
     };
 

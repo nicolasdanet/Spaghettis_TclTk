@@ -447,6 +447,8 @@ static void canvas_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
 {
     t_glist *x = cast_glist (z);
     
+    x->gl_isSelected = (isSelected != 0);
+    
     if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnSelected (z, glist, isSelected); }
     else {
         if (canvas_hasGraphOnParentTitle (x)) { 
@@ -456,7 +458,7 @@ static void canvas_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
         sys_vGui (".x%lx.c itemconfigure GRAPH%lx -fill #%06x\n",
                         canvas_getView (glist),
                         (t_int)x,
-                        (isSelected? COLOR_SELECTED : COLOR_NORMAL));
+                        (x->gl_isSelected ? COLOR_SELECTED : COLOR_NORMAL));
     }
 }
 
@@ -549,7 +551,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                         y1,
                         x1,
                         y1,
-                        COLOR_NORMAL,
+                        (x->gl_isSelected ? COLOR_SELECTED : COLOR_NORMAL),
                         tag);
         
         for (y = x->gl_graphics; y; y = y->g_next) {
@@ -566,7 +568,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                         y1 - (int)font_getHostFontHeight (canvas_getFontSize (x)),
                         s->s_name,
                         font_getHostFontSize (canvas_getFontSize (x)),
-                        COLOR_NORMAL,
+                        (x->gl_isSelected ? COLOR_SELECTED : COLOR_NORMAL),
                         tag);
         //
         }
