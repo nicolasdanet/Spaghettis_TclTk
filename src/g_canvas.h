@@ -139,6 +139,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define COLOR_MASKED                    0xdddddd        /* Grey. */
 #define COLOR_NORMAL                    0x000000        /* Black. */
 #define COLOR_SELECTED                  0x0000ff        /* Blue. */
 
@@ -195,12 +196,6 @@ typedef struct _linetraverser {
     int                 tr_lineEndY;
     } t_linetraverser;
     
-typedef struct _tick {
-    t_float             k_point;
-    t_float             k_increment;
-    int                 k_period;
-    } t_tick;
-
 typedef struct _selection {
     t_gobj              *sel_what;
     struct _selection   *sel_next;
@@ -242,8 +237,6 @@ struct _glist {
     t_symbol            *gl_name;
     t_editor            *gl_editor;
     int                 gl_magic;
-    t_tick              gl_tickX;
-    t_tick              gl_tickY;
     int                 gl_graphWidth;
     int                 gl_graphHeight;
     int                 gl_graphMarginLeft;
@@ -543,9 +536,6 @@ void            canvas_bounds                           (t_glist *glist,
                                                             t_float c,
                                                             t_float d);
                                                             
-void            canvas_ticksX                           (t_glist *glist, t_float pt, t_float i, t_float f);
-void            canvas_ticksY                           (t_glist *glist, t_float pt, t_float i, t_float f);
-
 t_float         canvas_valueToPositionX                 (t_glist *glist, t_float f);
 t_float         canvas_valueToPositionY                 (t_glist *glist, t_float f);
 t_float         canvas_positionToValueX                 (t_glist *glist, t_float f);

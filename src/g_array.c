@@ -1073,13 +1073,13 @@ static void garray_bounds(t_garray *x, t_float x1, t_float y1,
 static void garray_xticks(t_garray *x,
     t_float point, t_float inc, t_float f)
 {
-    pd_vMessage(&x->x_glist->gl_obj.te_g.g_pd, sym_xticks, "fff", point, inc, f);
+    // pd_vMessage(&x->x_glist->gl_obj.te_g.g_pd, sym_xticks, "fff", point, inc, f);
 }
 
 static void garray_yticks(t_garray *x,
     t_float point, t_float inc, t_float f)
 {
-    pd_vMessage(&x->x_glist->gl_obj.te_g.g_pd, sym_yticks, "fff", point, inc, f);
+    // pd_vMessage(&x->x_glist->gl_obj.te_g.g_pd, sym_yticks, "fff", point, inc, f);
 }
 
 /*
@@ -1220,12 +1220,12 @@ void g_array_setup(void)
     class_addList(garray_class, garray_list);
     class_addMethod(garray_class, (t_method)garray_bounds, sym_bounds,
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addMethod(garray_class, (t_method)garray_xticks, sym_xticks,
-        A_FLOAT, A_FLOAT, A_FLOAT, 0);
+    /* class_addMethod(garray_class, (t_method)garray_xticks, sym_xticks,
+        A_FLOAT, A_FLOAT, A_FLOAT, 0); */
     /*class_addMethod(garray_class, (t_method)garray_xlabel, gen_sym ("xlabel"),
         A_GIMME, 0);*/
-    class_addMethod(garray_class, (t_method)garray_yticks, sym_yticks,
-        A_FLOAT, A_FLOAT, A_FLOAT, 0);
+    /* class_addMethod(garray_class, (t_method)garray_yticks, sym_yticks,
+        A_FLOAT, A_FLOAT, A_FLOAT, 0); */
     /*class_addMethod(garray_class, (t_method)garray_ylabel, gen_sym ("ylabel"),
         A_GIMME, 0);*/
     class_addMethod(garray_class, (t_method)garray_rename, sym_rename,

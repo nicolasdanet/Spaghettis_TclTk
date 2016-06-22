@@ -297,28 +297,6 @@ void canvas_bounds (t_glist *glist, t_float a, t_float b, t_float c, t_float d)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_ticksX (t_glist *glist, t_float pt, t_float i, t_float f)
-{
-    glist->gl_tickX.k_point     = pt;
-    glist->gl_tickX.k_increment = i;
-    glist->gl_tickX.k_period    = f;
-    
-    canvas_redrawGraphOnParent (glist);
-}
-
-void canvas_ticksY (t_glist *glist, t_float pt, t_float i, t_float f)
-{
-    glist->gl_tickY.k_point     = pt;
-    glist->gl_tickY.k_increment = i;
-    glist->gl_tickY.k_period    = f;
-    
-    canvas_redrawGraphOnParent (glist);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void canvas_getGraphOnParentRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
 {
     t_glist *x = cast_glist (z);
@@ -508,185 +486,104 @@ static void canvas_behaviorDeleted (t_gobj *z, t_glist *glist)
     }
 }
 
-static void canvas_behaviorVisibilityChanged (t_gobj *gr, t_glist *parent_glist, int vis)
+static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
 {
-    t_glist *x = (t_glist *)gr;
-    char tag[50];
-    t_gobj *g;
+    t_glist *x = cast_glist (z);
+
+    if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnVisibilityChanged (z, glist, isVisible); }
+    else {
+    //
+    char tag[PD_STRING] = { 0 };
+    t_error err = string_sprintf (tag, PD_STRING, "GRAPH%lx", (t_int)x);
     int x1, y1, x2, y2;
-        /* ordinary subpatches: just act like a text object */
-    if (!x->gl_isGraphOnParent)
-    {
-        text_widgetBehavior.w_fnVisibilityChanged(gr, parent_glist, vis);
-        return;
-    }
-
-    if (vis && canvas_hasGraphOnParentTitle (x))
-        boxtext_draw(boxtext_fetch(parent_glist, &x->gl_obj));
-    canvas_behaviorGetRectangle(gr, parent_glist, &x1, &y1, &x2, &y2);
-    if (!vis)
-        boxtext_erase(boxtext_fetch(parent_glist, &x->gl_obj));
-
-    sprintf(tag, "GRAPH%lx", (t_int)x);
-    /*
-    if (vis)
-        canvas_drawInletsAndOutlets(parent_glist, &x->gl_obj,
-            tag, 1, x1, y1, x2, y2);
-    else canvas_eraseInletsAndOutlets(parent_glist, &x->gl_obj, tag); */
-        /* if we look like a graph but have been moved to a toplevel,
-        just show the bounding rectangle */
-    if (x->gl_hasWindow)
-    {
-        if (vis)
-        {
-            sys_vGui(".x%lx.c create polygon\
- %d %d %d %d %d %d %d %d %d %d -tags [list %s graph] -fill #c0c0c0\n",
-                canvas_getView(x->gl_parent),
-                x1, y1, x1, y2, x2, y2, x2, y1, x1, y1, tag);
-        }
-        else
-        {
-            sys_vGui(".x%lx.c delete %s\n",
-                canvas_getView(x->gl_parent), tag);
-        }
-        return;
-    }
-        /* otherwise draw (or erase) us as a graph inside another glist. */
-    if (vis)
-    {
-        int i;
-        t_float f;
-        t_gobj *g;
-        t_symbol *arrayname;
-        t_garray *ga;
-        /* char *ylabelanchor =
-            (x->gl_ylabelx > 0.5*(x->gl_valueLeft + x->gl_valueRight) ? "w" : "e");
-        char *xlabelanchor =
-            (x->gl_xlabely > 0.5*(x->gl_valueTop + x->gl_valueBottom) ? "s" : "n"); */
-            
-            /* draw a rectangle around the graph */
-        sys_vGui(".x%lx.c create line\
-            %d %d %d %d %d %d %d %d %d %d -tags [list %s graph]\n",
-            canvas_getView(x->gl_parent),
-            x1, y1, x1, y2, x2, y2, x2, y1, x1, y1, tag);
-        
-            /* if there's just one "garray" in the graph, write its name
-                along the top */
-        for (i = (y1 < y2 ? y1 : y2)-1, g = x->gl_graphics; g; g = g->g_next)
-            if (g->g_pd == garray_class &&
-                !garray_getname((t_garray *)g, &arrayname))
-        {
-            i -= (int)font_getHostFontHeight(canvas_getFontSize(x));
-            sys_vGui(".x%lx.c create text %d %d -text {%s} -anchor nw\
-             -font [::getFont %d] -tags [list %s label graph]\n",
-             (long)canvas_getView(x), x1, i, arrayname->s_name,
-                font_getHostFontSize(canvas_getFontSize(x)), tag);
-        }
-        
-            /* draw ticks on horizontal borders.  If lperb field is
-            zero, this is disabled. */
-        if (x->gl_tickX.k_period)
-        {
-            t_float upix, lpix;
-            if (y2 < y1)
-                upix = y1, lpix = y2;
-            else upix = y2, lpix = y1;
-            for (i = 0, f = x->gl_tickX.k_point;
-                f < 0.99 * x->gl_valueRight + 0.01*x->gl_valueLeft; i++,
-                    f += x->gl_tickX.k_increment)
-            {
-                int tickpix = (i % x->gl_tickX.k_period ? 2 : 4);
-                sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
-                    canvas_getView(x->gl_parent),
-                    (int)canvas_valueToPositionX(x, f), (int)upix,
-                    (int)canvas_valueToPositionX(x, f), (int)upix - tickpix, tag);
-                sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
-                    canvas_getView(x->gl_parent),
-                    (int)canvas_valueToPositionX(x, f), (int)lpix,
-                    (int)canvas_valueToPositionX(x, f), (int)lpix + tickpix, tag);
-            }
-            for (i = 1, f = x->gl_tickX.k_point - x->gl_tickX.k_increment;
-                f > 0.99 * x->gl_valueLeft + 0.01*x->gl_valueRight;
-                    i++, f -= x->gl_tickX.k_increment)
-            {
-                int tickpix = (i % x->gl_tickX.k_period ? 2 : 4);
-                sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
-                    canvas_getView(x->gl_parent),
-                    (int)canvas_valueToPositionX(x, f), (int)upix,
-                    (int)canvas_valueToPositionX(x, f), (int)upix - tickpix, tag);
-                sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
-                    canvas_getView(x->gl_parent),
-                    (int)canvas_valueToPositionX(x, f), (int)lpix,
-                    (int)canvas_valueToPositionX(x, f), (int)lpix + tickpix, tag);
-            }
-        }
-
-            /* draw ticks in vertical borders*/
-        if (x->gl_tickY.k_period)
-        {
-            t_float ubound, lbound;
-            if (x->gl_valueBottom < x->gl_valueTop)
-                ubound = x->gl_valueTop, lbound = x->gl_valueBottom;
-            else ubound = x->gl_valueBottom, lbound = x->gl_valueTop;
-            for (i = 0, f = x->gl_tickY.k_point;
-                f < 0.99 * ubound + 0.01 * lbound;
-                    i++, f += x->gl_tickY.k_increment)
-            {
-                int tickpix = (i % x->gl_tickY.k_period ? 2 : 4);
-                sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
-                    canvas_getView(x->gl_parent),
-                    x1, (int)canvas_valueToPositionY(x, f), 
-                    x1 + tickpix, (int)canvas_valueToPositionY(x, f), tag);
-                sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
-                    canvas_getView(x->gl_parent),
-                    x2, (int)canvas_valueToPositionY(x, f), 
-                    x2 - tickpix, (int)canvas_valueToPositionY(x, f), tag);
-            }
-            for (i = 1, f = x->gl_tickY.k_point - x->gl_tickY.k_increment;
-                f > 0.99 * lbound + 0.01 * ubound;
-                    i++, f -= x->gl_tickY.k_increment)
-            {
-                int tickpix = (i % x->gl_tickY.k_period ? 2 : 4);
-                sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
-                    canvas_getView(x->gl_parent),
-                    x1, (int)canvas_valueToPositionY(x, f), 
-                    x1 + tickpix, (int)canvas_valueToPositionY(x, f), tag);
-                sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
-                    canvas_getView(x->gl_parent),
-                    x2, (int)canvas_valueToPositionY(x, f), 
-                    x2 - tickpix, (int)canvas_valueToPositionY(x, f), tag);
-            }
-        }
-        /*
-        for (i = 0; i < x->gl_nxlabels; i++)
-            sys_vGui(".x%lx.c create text\
- %d %d -text {%s} -font [::getFont %d] -anchor %s -tags [list %s label graph]\n",
-                canvas_getView(x),
-                (int)canvas_valueToPositionX(x, atof(x->gl_xlabel[i]->s_name)),
-                (int)canvas_valueToPositionY(x, x->gl_xlabely),
-                x->gl_xlabel[i]->s_name,
-                     canvas_getFontSize(x), xlabelanchor, tag);
-
     
-        for (i = 0; i < x->gl_nylabels; i++)
-            sys_vGui(".x%lx.c create text\
- %d %d -text {%s} -font [::getFont %d] -anchor %s -tags [list %s label graph]\n",
-                canvas_getView(x),
-                (int)canvas_valueToPositionX(x, x->gl_ylabelx),
-                (int)canvas_valueToPositionY(x, atof(x->gl_ylabel[i]->s_name)),
-                x->gl_ylabel[i]->s_name,
-                canvas_getFontSize(x), ylabelanchor, tag);
-        */
-            /* draw contents of graph as glist */
-        for (g = x->gl_graphics; g; g = g->g_next)
-            gobj_visibilityChanged(g, x, 1);
+    canvas_behaviorGetRectangle (z, glist, &x1, &y1, &x2, &y2);
+    
+    PD_ASSERT (!err);
+        
+    if (x->gl_hasWindow) {
+    //
+    if (isVisible) {
+        sys_vGui (".x%lx.c create polygon %d %d %d %d %d %d %d %d %d %d"
+                        " -tags %s"
+                        " -fill #%06x\n",
+                        canvas_getView (x->gl_parent),
+                        x1,
+                        y1,
+                        x1,
+                        y2,
+                        x2,
+                        y2,
+                        x2,
+                        y1,
+                        x1,
+                        y1,
+                        tag, 
+                        COLOR_MASKED);
+    } else {
+        sys_vGui (".x%lx.c delete %s\n",
+                        canvas_getView (x->gl_parent),
+                        tag);
     }
-    else
-    {
-        sys_vGui(".x%lx.c delete %s\n",
-            canvas_getView(x->gl_parent), tag);
-        for (g = x->gl_graphics; g; g = g->g_next)
-            gobj_visibilityChanged(g, x, 0);
+    //
+    } else {
+    //
+    t_gobj *y = NULL;
+    t_symbol *s = NULL;
+                
+    if (isVisible) {
+    
+        if (canvas_hasGraphOnParentTitle (x)) { boxtext_draw (boxtext_fetch (glist, cast_object (z))); }
+
+        sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d"
+                        " -tags %s\n",
+                        canvas_getView (x->gl_parent),
+                        x1,
+                        y1,
+                        x1,
+                        y2,
+                        x2,
+                        y2,
+                        x2,
+                        y1,
+                        x1,
+                        y1,
+                        tag);
+        
+        for (y = x->gl_graphics; y; y = y->g_next) {
+        //
+        if (pd_class (y) == garray_class && !garray_getname (cast_garray (y), &s)) {
+        //
+        sys_vGui (".x%lx.c create text %d %d -text {%s}"
+                        " -anchor nw"
+                        " -font [::getFont %d]"
+                        " -tags %s\n",
+                        canvas_getView (x),
+                        x1,
+                        y1 - (int)font_getHostFontHeight (canvas_getFontSize (x)),
+                        s->s_name,
+                        font_getHostFontSize (canvas_getFontSize (x)),
+                        tag);
+        //
+        }
+        //
+        }
+        
+        for (y = x->gl_graphics; y; y = y->g_next) { gobj_visibilityChanged (y, x, 1); }
+            
+    } else {
+    
+        if (canvas_hasGraphOnParentTitle (x)) { boxtext_erase (boxtext_fetch (glist, cast_object (z))); }
+        
+        sys_vGui (".x%lx.c delete %s\n",
+                    canvas_getView (x->gl_parent),
+                    tag);
+                    
+        for (y = x->gl_graphics; y; y = y->g_next) { gobj_visibilityChanged (y, x, 0); }
+    }
+    //
+    }
+    //
     }
 }
 
