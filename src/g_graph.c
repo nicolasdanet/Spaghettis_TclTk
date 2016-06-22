@@ -558,7 +558,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                         " -anchor nw"
                         " -font [::getFont %d]"
                         " -tags %s\n",
-                        canvas_getView (x),
+                        canvas_getView (x->gl_parent),
                         x1,
                         y1 - (int)font_getHostFontHeight (canvas_getFontSize (x)),
                         s->s_name,
