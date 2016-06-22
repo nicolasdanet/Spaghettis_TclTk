@@ -280,7 +280,7 @@ void canvas_resortOutlets (t_glist *glist)
 
 void canvas_bounds (t_glist *glist, t_float a, t_float b, t_float c, t_float d)
 {
-    if ((a == b) || (c == d)) { post_error (PD_TRANSLATE ("graph: invalid bounds")); }
+    if ((a == b) || (c == d)) { post_error (PD_TRANSLATE ("graph: invalid bounds")); }  // --
     else {
     //
     glist->gl_valueLeft     = a;
@@ -505,8 +505,8 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     //
     if (isVisible) {
         sys_vGui (".x%lx.c create polygon %d %d %d %d %d %d %d %d %d %d"
-                        " -tags %s"
-                        " -fill #%06x\n",
+                        " -fill #%06x"
+                        " -tags %s\n",
                         canvas_getView (x->gl_parent),
                         x1,
                         y1,
@@ -518,8 +518,8 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                         y1,
                         x1,
                         y1,
-                        tag, 
-                        COLOR_MASKED);
+                        COLOR_MASKED,
+                        tag);
     } else {
         sys_vGui (".x%lx.c delete %s\n",
                         canvas_getView (x->gl_parent),
@@ -536,6 +536,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
         if (canvas_hasGraphOnParentTitle (x)) { boxtext_draw (boxtext_fetch (glist, cast_object (z))); }
 
         sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d"
+                        " -fill #%06x"
                         " -tags %s\n",
                         canvas_getView (x->gl_parent),
                         x1,
@@ -548,21 +549,24 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                         y1,
                         x1,
                         y1,
+                        COLOR_NORMAL,
                         tag);
         
         for (y = x->gl_graphics; y; y = y->g_next) {
         //
         if (pd_class (y) == garray_class && !garray_getname (cast_garray (y), &s)) {
         //
-        sys_vGui (".x%lx.c create text %d %d -text {%s}"
+        sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
                         " -anchor nw"
-                        " -font [::getFont %d]"
+                        " -font [::getFont %d]"             // --
+                        " -fill #%06x"
                         " -tags %s\n",
                         canvas_getView (x->gl_parent),
                         x1,
                         y1 - (int)font_getHostFontHeight (canvas_getFontSize (x)),
                         s->s_name,
                         font_getHostFontSize (canvas_getFontSize (x)),
+                        COLOR_NORMAL,
                         tag);
         //
         }
@@ -587,34 +591,41 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     }
 }
 
-static int canvas_behaviorClicked (t_gobj *z, t_glist *glist, int xpix, int ypix, int shift, int ctrl, int alt, int dbl, int doit)
+static int canvas_behaviorClicked (t_gobj *z,
+    t_glist *glist,
+    int a,
+    int b,
+    int shift,
+    int ctrl,
+    int alt,
+    int dbl,
+    int clicked)
 {
-    t_glist *x = (t_glist *)z;
-    t_gobj *y;
-    int clickreturned = 0;
-    if (!x->gl_isGraphOnParent)
-        return (text_widgetBehavior.w_fnClicked(z, glist,
-            xpix, ypix, shift, ctrl, alt, dbl, doit));
-    else if (x->gl_hasWindow)
-        return (0);
-    else
-    {
-        for (y = x->gl_graphics; y; y = y->g_next)
-        {
+    t_glist *x = cast_glist (z);
+
+    if (!x->gl_isGraphOnParent) {
+        return (text_widgetBehavior.w_fnClicked (z, glist, a, b, shift, ctrl, alt, dbl, clicked));
+        
+    } else {
+    //
+    if (x->gl_hasWindow) { return 0; }
+    else {
+        int k = 0;
+        
+        t_gobj *y = NULL;
+            
+        for (y = x->gl_graphics; y; y = y->g_next) {
             int x1, y1, x2, y2;
-                /* check if the object wants to be clicked */
-            if (gobj_hit(y, x, xpix, ypix, &x1, &y1, &x2, &y2)
-                &&  (clickreturned = gobj_click(y, x, xpix, ypix,
-                    shift, ctrl, alt, 0, doit)))
-                        break;
+            if (gobj_hit (y, x, a, b, &x1, &y1, &x2, &y2)) {
+                if (k = gobj_click (y, x, a, b, shift, ctrl, alt, 0, clicked)) {
+                    break;
+                }
+            }
         }
-        if (!doit)
-        {
-            if (y)
-                canvas_setCursorType(canvas_getView(x), clickreturned);
-            else canvas_setCursorType(canvas_getView(x), CURSOR_NOTHING);
-        }
-        return (clickreturned); 
+
+        return k; 
+    }
+    //
     }
 }
 
