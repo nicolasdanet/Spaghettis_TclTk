@@ -422,7 +422,7 @@ static void canvas_eraseInletsAndOutlets (t_glist *glist, t_object *o, char *tag
 
 void canvas_eraseBox (t_glist *glist, t_object *o, char *tag)
 {
-    if (o->te_type != TYPE_COMMENT || glist->gl_isEditMode) {
+    if (o->te_type != TYPE_COMMENT || glist->gl_isEditMode) {   /* Comments have borders only in edit mode. */
     //
     sys_vGui (".x%lx.c delete %sBORDER\n", canvas_getView (glist), tag); 
     canvas_eraseInletsAndOutlets (glist, o, tag);

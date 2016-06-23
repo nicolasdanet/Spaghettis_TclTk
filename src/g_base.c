@@ -307,29 +307,19 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     //
     if (glist->gl_editor->e_grabbed == y)   { glist->gl_editor->e_grabbed = NULL; }
     if (canvas_isObjectSelected (glist, y)) { canvas_deselectObject (glist, y);   }
-
-    if (pd_class (y) == canvas_class) {
-    //
-    if (!cast_glist (y)->gl_isGraphOnParent && canvas_isMapped (canvas)) {
-    //
-    canvas_eraseBox (glist, cast_object (y), boxtext_getTag (boxtext_fetch (glist, cast_object (y))));
     //
     }
-    //
-    }
-    //
-    }
-
+    
     if (needToPaintScalars) {
         t_symbol *bound = canvas_makeBindSymbol (canvas->gl_name);
         canvas_paintAllScalarsByTemplate (template_findbyname (bound), SCALAR_ERASE);
     }
     
-    gobj_delete (y, glist);
-    
     if (canvas_isMapped (canvas)) { gobj_visibilityChanged (y, glist, 0); }
     
-    if (glist->gl_graphics == y) { glist->gl_graphics = y->g_next; }
+    gobj_delete (y, glist);
+    
+    if (glist->gl_graphics == y)  { glist->gl_graphics = y->g_next; }
     else {
         t_gobj *t = NULL;
         for (t = glist->gl_graphics; t; t = t->g_next) {
@@ -346,7 +336,6 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     if (text) { boxtext_free (text); }
     
     if (needToUpdateDSPChain) { dsp_update(); }
-    
     if (needToPaintScalars)   {
         t_symbol *bound = canvas_makeBindSymbol (canvas->gl_name);
         canvas_paintAllScalarsByTemplate (template_findbyname (bound), SCALAR_DRAW);

@@ -42,7 +42,7 @@ static int  canvas_behaviorClicked              (t_gobj *, t_glist *, int, int, 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_widgetbehavior canvas_widgetbehavior =
+t_widgetbehavior canvas_widgetbehavior =        /* Shared. */
     {
         canvas_behaviorGetRectangle,
         canvas_behaviorDisplaced,
