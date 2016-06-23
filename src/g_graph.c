@@ -454,11 +454,11 @@ static void canvas_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
         if (canvas_hasGraphOnParentTitle (x)) { 
             text_widgetBehavior.w_fnSelected (z, glist, isSelected);
         }
-
+        
         sys_vGui (".x%lx.c itemconfigure GRAPH%lx -fill #%06x\n",
                         canvas_getView (glist),
                         (t_int)x,
-                        (x->gl_isSelected ? COLOR_SELECTED : COLOR_NORMAL));
+                        x->gl_hasWindow ? COLOR_MASKED : (x->gl_isSelected ? COLOR_SELECTED : COLOR_NORMAL));
     }
 }
 
