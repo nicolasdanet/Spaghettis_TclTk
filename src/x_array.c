@@ -826,6 +826,8 @@ void x_array_setup(void )
     class_addMethod(array_define_class, (t_method)canvas_map,
         sym__map, A_FLOAT, A_NULL);
     class_addMethod(array_define_class, (t_method)canvas_window,
+        sym_window, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
+    class_addMethod(array_define_class, (t_method)canvas_window,
         sym_setbounds, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL); /* LEGACY !!! */
     
     class_addMouse (array_define_class, canvas_mouse);
