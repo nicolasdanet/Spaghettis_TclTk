@@ -534,7 +534,9 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     t_symbol *s = NULL;
                 
     if (isVisible) {
-    
+        
+        int i = 0;
+        
         if (canvas_hasGraphOnParentTitle (x)) { boxtext_draw (boxtext_fetch (glist, cast_object (z))); }
 
         sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d"
@@ -565,7 +567,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                         " -tags %s\n",
                         canvas_getView (x->gl_parent),
                         x1,
-                        y1 - (int)font_getHostFontHeight (canvas_getFontSize (x)),
+                        y1 - ++i * (int)font_getHostFontHeight (canvas_getFontSize (x)),
                         s->s_name,
                         font_getHostFontSize (canvas_getFontSize (x)),
                         (x->gl_isSelected ? COLOR_SELECTED : COLOR_NORMAL),
