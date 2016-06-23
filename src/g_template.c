@@ -67,7 +67,7 @@ static int dataslot_matches(t_dataslot *ds1, t_dataslot *ds2,
     return ((!nametoo || ds1->ds_name == ds2->ds_name) &&
         ds1->ds_type == ds2->ds_type &&
             (ds1->ds_type != DATA_ARRAY ||
-                ds1->ds_arraytemplate == ds2->ds_arraytemplate));
+                ds1->ds_template == ds2->ds_template));
 }
 
 /* -- templates, the active ingredient in gtemplates defined below. ------- */
@@ -75,8 +75,8 @@ static int dataslot_matches(t_dataslot *ds1, t_dataslot *ds2,
 t_template *template_new(t_symbol *templatesym, int argc, t_atom *argv)
 {
     t_template *x = (t_template *)pd_new(template_class);
-    x->t_n = 0;
-    x->t_vec = (t_dataslot *)PD_MEMORY_GET(0);
+    x->tpl_size = 0;
+    x->tpl_vector = (t_dataslot *)PD_MEMORY_GET(0);
     while (argc > 0)
     {
         int newtype, oldn, newn;
@@ -110,22 +110,22 @@ t_template *template_new(t_symbol *templatesym, int argc, t_atom *argv)
             post_error ("%s: no such type", newtypesym->s_name);
             goto bad;
         }
-        newn = (oldn = x->t_n) + 1;
-        x->t_vec = (t_dataslot *)PD_MEMORY_RESIZE(x->t_vec,
-            oldn * sizeof(*x->t_vec), newn * sizeof(*x->t_vec));
-        x->t_n = newn;
-        x->t_vec[oldn].ds_type = newtype;
-        x->t_vec[oldn].ds_name = newname;
-        x->t_vec[oldn].ds_arraytemplate = newarraytemplate;
+        newn = (oldn = x->tpl_size) + 1;
+        x->tpl_vector = (t_dataslot *)PD_MEMORY_RESIZE(x->tpl_vector,
+            oldn * sizeof(*x->tpl_vector), newn * sizeof(*x->tpl_vector));
+        x->tpl_size = newn;
+        x->tpl_vector[oldn].ds_type = newtype;
+        x->tpl_vector[oldn].ds_name = newname;
+        x->tpl_vector[oldn].ds_template = newarraytemplate;
     bad: 
         argc -= 2; argv += 2;
     }
     if (*templatesym->s_name)
     {
-        x->t_sym = templatesym;
-        pd_bind(&x->t_pdobj, x->t_sym);
+        x->tpl_symbol = templatesym;
+        pd_bind(&x->tpl_pd, x->tpl_symbol);
     }
-    else x->t_sym = templatesym;
+    else x->tpl_symbol = templatesym;
     return (x);
 }
 
@@ -139,13 +139,13 @@ int template_find_field(t_template *x, t_symbol *name, int *p_onset,
         PD_BUG;
         return (0);
     }
-    n = x->t_n;
+    n = x->tpl_size;
     for (i = 0; i < n; i++)
-        if (x->t_vec[i].ds_name == name)
+        if (x->tpl_vector[i].ds_name == name)
     {
         *p_onset = i * sizeof(t_word);
-        *p_type = x->t_vec[i].ds_type;
-        *p_arraytype = x->t_vec[i].ds_arraytemplate;
+        *p_type = x->tpl_vector[i].ds_type;
+        *p_arraytype = x->tpl_vector[i].ds_template;
         return (1);
     }
     return (0);
@@ -162,10 +162,10 @@ t_float template_getfloat(t_template *x, t_symbol *fieldname, t_word *wp,
         if (type == DATA_FLOAT)
             val = *(t_float *)(((char *)wp) + onset);
         else if (loud) post_error ("%s.%s: not a number",
-            x->t_sym->s_name, fieldname->s_name);
+            x->tpl_symbol->s_name, fieldname->s_name);
     }
     else if (loud) post_error ("%s.%s: no such field",
-        x->t_sym->s_name, fieldname->s_name);
+        x->tpl_symbol->s_name, fieldname->s_name);
     return (val);
 }
 
@@ -179,10 +179,10 @@ void template_setfloat(t_template *x, t_symbol *fieldname, t_word *wp,
         if (type == DATA_FLOAT)
             *(t_float *)(((char *)wp) + onset) = f;
         else if (loud) post_error ("%s.%s: not a number",
-            x->t_sym->s_name, fieldname->s_name);
+            x->tpl_symbol->s_name, fieldname->s_name);
     }
     else if (loud) post_error ("%s.%s: no such field",
-        x->t_sym->s_name, fieldname->s_name);
+        x->tpl_symbol->s_name, fieldname->s_name);
 }
 
 t_symbol *template_getsymbol(t_template *x, t_symbol *fieldname, t_word *wp,
@@ -196,10 +196,10 @@ t_symbol *template_getsymbol(t_template *x, t_symbol *fieldname, t_word *wp,
         if (type == DATA_SYMBOL)
             val = *(t_symbol **)(((char *)wp) + onset);
         else if (loud) post_error ("%s.%s: not a symbol",
-            x->t_sym->s_name, fieldname->s_name);
+            x->tpl_symbol->s_name, fieldname->s_name);
     }
     else if (loud) post_error ("%s.%s: no such field",
-        x->t_sym->s_name, fieldname->s_name);
+        x->tpl_symbol->s_name, fieldname->s_name);
     return (val);
 }
 
@@ -213,10 +213,10 @@ void template_setsymbol(t_template *x, t_symbol *fieldname, t_word *wp,
         if (type == DATA_SYMBOL)
             *(t_symbol **)(((char *)wp) + onset) = s;
         else if (loud) post_error ("%s.%s: not a symbol",
-            x->t_sym->s_name, fieldname->s_name);
+            x->tpl_symbol->s_name, fieldname->s_name);
     }
     else if (loud) post_error ("%s.%s: no such field",
-        x->t_sym->s_name, fieldname->s_name);
+        x->tpl_symbol->s_name, fieldname->s_name);
 }
 
     /* stringent check to see if a "saved" template, x2, matches the current
@@ -225,17 +225,17 @@ void template_setsymbol(t_template *x, t_symbol *fieldname, t_word *wp,
 int template_match(t_template *x1, t_template *x2)
 {
     int i;
-    if (x1->t_n < x2->t_n)
+    if (x1->tpl_size < x2->tpl_size)
         return (0);
-    for (i = x2->t_n; i < x1->t_n; i++)
+    for (i = x2->tpl_size; i < x1->tpl_size; i++)
     {
-        if (x1->t_vec[i].ds_type == DATA_ARRAY)
+        if (x1->tpl_vector[i].ds_type == DATA_ARRAY)
                 return (0);
     }
-    if (x2->t_n > x1->t_n)
+    if (x2->tpl_size > x1->tpl_size)
         post("add elements...");
-    for (i = 0; i < x2->t_n; i++)
-        if (!dataslot_matches(&x1->t_vec[i], &x2->t_vec[i], 1))
+    for (i = 0; i < x2->tpl_size; i++)
+        if (!dataslot_matches(&x1->tpl_vector[i], &x2->tpl_vector[i], 1))
             return (0);
     return (1);
 }
@@ -253,7 +253,7 @@ elements might still be old ones.)
 static void template_conformwords(t_template *tfrom, t_template *tto,
     int *conformaction, t_word *wfrom, t_word *wto)
 {
-    int nfrom = tfrom->t_n, nto = tto->t_n, i;
+    int nfrom = tfrom->tpl_size, nto = tto->tpl_size, i;
     for (i = 0; i < nto; i++)
     {
         if (conformaction[i] >= 0)
@@ -273,18 +273,18 @@ static t_scalar *template_conformscalar(t_template *tfrom, t_template *tto,
 {
     t_scalar *x;
     t_gpointer gp;
-    int nto = tto->t_n, nfrom = tfrom->t_n, i;
+    int nto = tto->tpl_size, nfrom = tfrom->tpl_size, i;
     t_template *scalartemplate;
     /* post("conform scalar"); */
         /* possibly replace the scalar */
-    if (scfrom->sc_template == tfrom->t_sym)
+    if (scfrom->sc_template == tfrom->tpl_symbol)
     {
             /* see scalar_new() for comment about the gpointer. */
         gpointer_init(&gp);
         x = (t_scalar *)PD_MEMORY_GET(sizeof(t_scalar) +
-            (tto->t_n - 1) * sizeof(*x->sc_vector));
+            (tto->tpl_size - 1) * sizeof(*x->sc_vector));
         x->sc_g.g_pd = scalar_class;
-        x->sc_template = tfrom->t_sym;
+        x->sc_template = tfrom->tpl_symbol;
         gpointer_setglist(&gp, glist, x);
             /* Here we initialize to the new template, but array and list
             elements will still belong to old template. */
@@ -322,9 +322,9 @@ static t_scalar *template_conformscalar(t_template *tfrom, t_template *tto,
         scalartemplate = template_findbyname(x->sc_template);
     }
         /* convert all array elements */
-    for (i = 0; i < scalartemplate->t_n; i++)
+    for (i = 0; i < scalartemplate->tpl_size; i++)
     {
-        t_dataslot *ds = scalartemplate->t_vec + i;
+        t_dataslot *ds = scalartemplate->tpl_vector + i;
         if (ds->ds_type == DATA_ARRAY)
         {
             template_conformarray(tfrom, tto, conformaction, 
@@ -340,34 +340,34 @@ static void template_conformarray(t_template *tfrom, t_template *tto,
 {
     int i, j;
     t_template *scalartemplate = 0;
-    if (a->a_templatesym == tfrom->t_sym)
+    if (a->a_template == tfrom->tpl_symbol)
     {
         /* the array elements must all be conformed */
-        int oldelemsize = sizeof(t_word) * tfrom->t_n,
-            newelemsize = sizeof(t_word) * tto->t_n;
-        char *newarray = PD_MEMORY_GET(newelemsize * a->a_n);
-        char *oldarray = a->a_vec;
-        if (a->a_elemsize != oldelemsize) { PD_BUG; }
-        for (i = 0; i < a->a_n; i++)
+        int oldelemsize = sizeof(t_word) * tfrom->tpl_size,
+            newelemsize = sizeof(t_word) * tto->tpl_size;
+        char *newarray = PD_MEMORY_GET(newelemsize * a->a_size);
+        char *oldarray = a->a_vector;
+        if (a->a_elementSize != oldelemsize) { PD_BUG; }
+        for (i = 0; i < a->a_size; i++)
         {
             t_word *wp = (t_word *)(newarray + newelemsize * i);
-            word_init(wp, tto, &a->a_gp);
+            word_init(wp, tto, &a->a_gpointer);
             template_conformwords(tfrom, tto, conformaction,
                 (t_word *)(oldarray + oldelemsize * i), wp);
             word_free((t_word *)(oldarray + oldelemsize * i), tfrom);
         }
         scalartemplate = tto;
-        a->a_vec = newarray;
+        a->a_vector = newarray;
         PD_MEMORY_FREE(oldarray);
     }
-    else scalartemplate = template_findbyname(a->a_templatesym);
+    else scalartemplate = template_findbyname(a->a_template);
         /* convert all arrays and sublist fields in each element of the array */
-    for (i = 0; i < a->a_n; i++)
+    for (i = 0; i < a->a_size; i++)
     {
-        t_word *wp = (t_word *)(a->a_vec + sizeof(t_word) * a->a_n * i);
-        for (j = 0; j < scalartemplate->t_n; j++)
+        t_word *wp = (t_word *)(a->a_vector + sizeof(t_word) * a->a_size * i);
+        for (j = 0; j < scalartemplate->tpl_size; j++)
         {
-            t_dataslot *ds = scalartemplate->t_vec + j;
+            t_dataslot *ds = scalartemplate->tpl_vector + j;
             if (ds->ds_type == DATA_ARRAY)
             {
                 template_conformarray(tfrom, tto, conformaction, 
@@ -405,7 +405,7 @@ static void template_conformglist(t_template *tfrom, t_template *tto,
     /* globally conform all scalars from one template to another */ 
 void template_conform(t_template *tfrom, t_template *tto)
 {
-    int nto = tto->t_n, nfrom = tfrom->t_n, i, j,
+    int nto = tto->tpl_size, nfrom = tfrom->tpl_size, i, j,
         *conformaction = (int *)PD_MEMORY_GET(sizeof(int) * nto),
         *conformedfrom = (int *)PD_MEMORY_GET(sizeof(int) * nfrom), doit = 0;
     for (i = 0; i < nto; i++)
@@ -414,10 +414,10 @@ void template_conform(t_template *tfrom, t_template *tto)
         conformedfrom[i] = 0;
     for (i = 0; i < nto; i++)
     {
-        t_dataslot *dataslot = &tto->t_vec[i];
+        t_dataslot *dataslot = &tto->tpl_vector[i];
         for (j = 0; j < nfrom; j++)
         {
-            t_dataslot *dataslot2 = &tfrom->t_vec[j];
+            t_dataslot *dataslot2 = &tfrom->tpl_vector[j];
             if (dataslot_matches(dataslot, dataslot2, 1))
             {
                 conformaction[i] = j;
@@ -428,10 +428,10 @@ void template_conform(t_template *tfrom, t_template *tto)
     for (i = 0; i < nto; i++)
         if (conformaction[i] < 0)
     {
-        t_dataslot *dataslot = &tto->t_vec[i];
+        t_dataslot *dataslot = &tto->tpl_vector[i];
         for (j = 0; j < nfrom; j++)
             if (!conformedfrom[j] &&
-                dataslot_matches(dataslot, &tfrom->t_vec[j], 0))
+                dataslot_matches(dataslot, &tfrom->tpl_vector[j], 0))
         {
             conformaction[i] = j;
             conformedfrom[j] = 1;
@@ -462,16 +462,16 @@ t_glist *template_findcanvas(t_template *template)
 {
     t_gtemplate *gt;
     if (!template) { PD_BUG; }
-    if (!(gt = template->t_list))
+    if (!(gt = template->tpl_list))
         return (0);
     return (gt->x_owner);
-    /* return ((t_glist *)pd_findByClass(template->t_sym, canvas_class)); */
+    /* return ((t_glist *)pd_findByClass(template->tpl_symbol, canvas_class)); */
 }
 
 void template_notify(t_template *template, t_symbol *s, int argc, t_atom *argv)
 {
-    if (template->t_list)
-        outlet_anything(template->t_list->x_obj.te_outlet, s, argc, argv);
+    if (template->tpl_list)
+        outlet_anything(template->tpl_list->x_obj.te_outlet, s, argc, argv);
 }
 
     /* bash the first of (argv) with a pointer to a scalar, and send on
@@ -512,7 +512,7 @@ static void *template_usetemplate(void *dummy, t_symbol *s,
         if (!template_match(x, y))
         {
                 /* Are there "struct" objects upholding this template? */
-            if (x->t_list)
+            if (x->tpl_list)
             {
                     /* don't know what to do here! */
                 post_error ("%s: template mismatch",
@@ -522,12 +522,12 @@ static void *template_usetemplate(void *dummy, t_symbol *s,
             {
                     /* conform everyone to the new template */
                 template_conform(x, y);
-                pd_free(&x->t_pdobj);
+                pd_free(&x->tpl_pd);
                 y2 = template_new(templatesym, argc, argv);
-                y2->t_list = 0;
+                y2->tpl_list = 0;
             }
         }
-        pd_free(&y->t_pdobj);
+        pd_free(&y->tpl_pd);
     }
         /* otherwise, just make one. */
     else template_new(templatesym, argc, argv);
@@ -537,9 +537,9 @@ static void *template_usetemplate(void *dummy, t_symbol *s,
     /* here we assume someone has already cleaned up all instances of this. */
 void template_free(t_template *x)
 {
-    if (*x->t_sym->s_name)
-        pd_unbind(&x->t_pdobj, x->t_sym);
-    PD_MEMORY_FREE(x->t_vec);
+    if (*x->tpl_symbol->s_name)
+        pd_unbind(&x->tpl_pd, x->tpl_symbol);
+    PD_MEMORY_FREE(x->tpl_vector);
 }
 
 static void template_setup(void)
@@ -580,10 +580,10 @@ static void *gtemplate_donew(t_symbol *sym, int argc, t_atom *argv)
             /* if it's already got a "struct" object we
             just tack this one to the end of the list and leave it
             there. */
-        if (t->t_list)
+        if (t->tpl_list)
         {
             t_gtemplate *x2, *x3;
-            for (x2 = x->x_template->t_list; x3 = x2->x_next; x2 = x3)
+            for (x2 = x->x_template->tpl_list; x3 = x2->x_next; x2 = x3)
                 ;
             x2->x_next = x;
             post("template %s: warning: already exists.", sym->s_name);
@@ -600,11 +600,11 @@ static void *gtemplate_donew(t_symbol *sym, int argc, t_atom *argv)
             {
                     /* conform everyone to the new template */
                 template_conform(t, y);
-                pd_free(&t->t_pdobj);
+                pd_free(&t->tpl_pd);
                 t = template_new(sym, argc, argv);
             }
-            pd_free(&y->t_pdobj);
-            t->t_list = x;
+            pd_free(&y->tpl_pd);
+            t->tpl_list = x;
             canvas_paintAllScalarsByTemplate(t, SCALAR_DRAW);
         }
     }
@@ -612,7 +612,7 @@ static void *gtemplate_donew(t_symbol *sym, int argc, t_atom *argv)
     {
             /* otherwise make a new one and we're the only struct on it. */
         x->x_template = t = template_new(sym, argc, argv);
-        t->t_list = x;
+        t->tpl_list = x;
     }
     outlet_new(&x->x_obj, 0);
     return (x);
@@ -653,7 +653,7 @@ static void gtemplate_free(t_gtemplate *x)
         /* get off the template's list */
     t_template *t = x->x_template;
     t_gtemplate *y;
-    if (x == t->t_list)
+    if (x == t->tpl_list)
     {
         canvas_paintAllScalarsByTemplate(t, SCALAR_ERASE);
         if (x->x_next)
@@ -664,20 +664,20 @@ static void gtemplate_free(t_gtemplate *x)
             t_template *z = template_new(&s_,
                 x->x_next->x_argc, x->x_next->x_argv);
             template_conform(t, z);
-            pd_free(&t->t_pdobj);
-            pd_free(&z->t_pdobj);
+            pd_free(&t->tpl_pd);
+            pd_free(&z->tpl_pd);
             z = template_new(x->x_sym, x->x_next->x_argc, x->x_next->x_argv);
-            z->t_list = x->x_next;
-            for (y = z->t_list; y ; y = y->x_next)
+            z->tpl_list = x->x_next;
+            for (y = z->tpl_list; y ; y = y->x_next)
                 y->x_template = z;
         }
-        else t->t_list = 0;
+        else t->tpl_list = 0;
         canvas_paintAllScalarsByTemplate(t, SCALAR_DRAW);
     }
     else
     {
         t_gtemplate *x2, *x3;
-        for (x2 = t->t_list; x3 = x2->x_next; x2 = x3)
+        for (x2 = t->tpl_list; x3 = x2->x_next; x2 = x3)
         {
             if (x == x3)
             {
@@ -1508,7 +1508,7 @@ int array_getfields(t_symbol *elemtemplatesym,
         post_error ("plot: %s: no canvas for this template", elemtemplatesym->s_name);
         return (-1);
     }
-    elemsize = elemtemplate->t_n * sizeof(t_word);
+    elemsize = elemtemplate->tpl_size * sizeof(t_word);
     if (yfielddesc && yfielddesc->fd_var)
         varname = yfielddesc->fd_un.fd_varsym;
     else varname = sym_y;
@@ -1570,13 +1570,13 @@ static void plot_getrect(t_gobj *z, t_glist *glist,
                 &xonset, &yonset, &wonset))
     {
             /* if it has more than 2000 points, just check 1000 of them. */
-        int incr = (array->a_n <= 2000 ? 1 : array->a_n / 1000);
-        for (i = 0, xsum = 0; i < array->a_n; i += incr)
+        int incr = (array->a_size <= 2000 ? 1 : array->a_size / 1000);
+        for (i = 0, xsum = 0; i < array->a_size; i += incr)
         {
             t_float usexloc, useyloc;
             t_gobj *y;
                 /* get the coords of the point proper */
-            array_getcoordinate(glist, (char *)(array->a_vec) + i * elemsize,
+            array_getcoordinate(glist, (char *)(array->a_vector) + i * elemsize,
                 xonset, yonset, wonset, i, basex + xloc, basey + yloc, xinc,
                 xfielddesc, yfielddesc, wfielddesc, &xpix, &ypix, &wpix);
             if (xpix < x1)
@@ -1593,11 +1593,11 @@ static void plot_getrect(t_gobj *z, t_glist *glist,
                     /* check also the drawing instructions for the scalar */ 
                 if (xonset >= 0)
                     usexloc = basex + xloc + fielddesc_cvttocoord(xfielddesc, 
-                        *(t_float *)(((char *)(array->a_vec) + elemsize * i)
+                        *(t_float *)(((char *)(array->a_vector) + elemsize * i)
                             + xonset));
                 else usexloc = basex + xsum, xsum += xinc;
                 if (yonset >= 0)
-                    yval = *(t_float *)(((char *)(array->a_vec) + elemsize * i)
+                    yval = *(t_float *)(((char *)(array->a_vector) + elemsize * i)
                         + yonset);
                 else yval = 0;
                 useyloc = basey + yloc + fielddesc_cvttocoord(yfielddesc, yval);
@@ -1607,7 +1607,7 @@ static void plot_getrect(t_gobj *z, t_glist *glist,
                     t_parentwidgetbehavior *wb = class_getParentWidget(pd_class (&y->g_pd));
                     if (!wb) continue;
                     (*wb->w_fnParentGetRectangle)(y, glist,
-                        (t_word *)((char *)(array->a_vec) + elemsize * i),
+                        (t_word *)((char *)(array->a_vector) + elemsize * i),
                             elemtemplate, usexloc, useyloc, 
                                 &xx1, &yy1, &xx2, &yy2);
                     if (xx1 < x1)
@@ -1684,8 +1684,8 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                 &elemtemplate, &elemsize, xfielddesc, yfielddesc, wfielddesc,
                 &xonset, &yonset, &wonset))
                     return;
-    nelem = array->a_n;
-    elem = (char *)array->a_vec;
+    nelem = array->a_size;
+    elem = (char *)array->a_vector;
 
     if (tovis)
     {
@@ -2054,21 +2054,21 @@ static int array_doclick_element(t_array *array, t_glist *glist,
             &xonset, &yonset, &wonset))
                 return (0);
         /* if it has more than 2000 points, just check 300 of them. */
-    if (array->a_n < 2000)
+    if (array->a_size < 2000)
         incr = 1;
-    else incr = array->a_n / 300;
-    for (i = 0, xsum = 0; i < array->a_n; i += incr)
+    else incr = array->a_size / 300;
+    for (i = 0, xsum = 0; i < array->a_size; i += incr)
     {
         t_float usexloc, useyloc;
         if (xonset >= 0)
             usexloc = xloc + fielddesc_cvttocoord(xfield, 
-                *(t_float *)(((char *)(array->a_vec) + elemsize * i) + xonset));
+                *(t_float *)(((char *)(array->a_vector) + elemsize * i) + xonset));
         else usexloc = xloc + xsum, xsum += xinc;
         useyloc = yloc + (yonset >= 0 ? fielddesc_cvttocoord(yfield,
-            *(t_float *)(((char *)(array->a_vec) + elemsize * i) + yonset)) : 0);
+            *(t_float *)(((char *)(array->a_vector) + elemsize * i) + yonset)) : 0);
         
         if (hit = scalar_doclick(
-            (t_word *)((char *)(array->a_vec) + i * elemsize),
+            (t_word *)((char *)(array->a_vector) + i * elemsize),
             elemtemplate, 0, array,
             glist, usexloc, useyloc,
             xpix, ypix, shift, alt, dbl, doit))
@@ -2093,7 +2093,7 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
     {
         t_float best = 100;
             /* if it has more than 2000 points, just check 1000 of them. */
-        int incr = (array->a_n <= 2000 ? 1 : array->a_n / 1000);
+        int incr = (array->a_size <= 2000 ? 1 : array->a_size / 1000);
         array_motion_elemsize = elemsize;
         array_motion_glist = glist;
         array_motion_scalar = sc;
@@ -2111,20 +2111,20 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
             int xval = canvas_positionToValueX(glist, xpix);
             if (xval < 0)
                 xval = 0;
-            else if (xval >= array->a_n)
-                xval = array->a_n - 1;
+            else if (xval >= array->a_size)
+                xval = array->a_size - 1;
             array_motion_yfield = yfield;
             array_motion_ycumulative = canvas_positionToValueY(glist, ypix);
             array_motion_fatten = 0;
             array_motion_xfield = 0;
             array_motion_xcumulative = 0;
             array_motion_lastx = array_motion_initx = xval;
-            array_motion_npoints = array->a_n;
-            array_motion_wp = (t_word *)((char *)array->a_vec);
+            array_motion_npoints = array->a_size;
+            array_motion_wp = (t_word *)((char *)array->a_vector);
             if (doit)
             {
                 fielddesc_setcoord(yfield, elemtemplate,
-                    (t_word *)(((char *)array->a_vec) + elemsize * xval),
+                    (t_word *)(((char *)array->a_vector) + elemsize * xval),
                         canvas_positionToValueY(glist, ypix), 1);
                 canvas_setMotionFunction(glist, 0, (t_motionfn)array_motion, xpix, ypix);
                 if (array_motion_scalar)
@@ -2135,11 +2135,11 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
         }
         else
         {
-            for (i = 0; i < array->a_n; i += incr)
+            for (i = 0; i < array->a_size; i += incr)
             {
                 t_float pxpix, pypix, pwpix, dx, dy;
                 array_getcoordinate(glist,
-                    (char *)(array->a_vec) + i * elemsize,
+                    (char *)(array->a_vector) + i * elemsize,
                     xonset, yonset, wonset, i, xloc, yloc, xinc,
                     xfield, yfield, wfield, &pxpix, &pypix, &pwpix);
                 if (pwpix < 4)
@@ -2174,10 +2174,10 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
                 else return (0);
             }
             best += 0.001;  /* add truncation error margin */
-            for (i = 0; i < array->a_n; i += incr)
+            for (i = 0; i < array->a_size; i += incr)
             {
                 t_float pxpix, pypix, pwpix, dx, dy, dy2, dy3;
-                array_getcoordinate(glist, (char *)(array->a_vec) + i * elemsize,
+                array_getcoordinate(glist, (char *)(array->a_vector) + i * elemsize,
                     xonset, yonset, wonset, i, xloc, yloc, xinc,
                     xfield, yfield, wfield, &pxpix, &pypix, &pwpix);
                 if (pwpix < 4)
@@ -2205,25 +2205,25 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
                     else array_motion_fatten = 1;
                     if (doit)
                     {
-                        char *elem = (char *)array->a_vec;
+                        char *elem = (char *)array->a_vector;
                         if (alt && xpix < pxpix) /* delete a point */
                         {
-                            if (array->a_n <= 1)
+                            if (array->a_size <= 1)
                                 return (0);
-                            memmove((char *)(array->a_vec) + elemsize * i, 
-                                (char *)(array->a_vec) + elemsize * (i+1),
-                                    (array->a_n - 1 - i) * elemsize);
-                            array_resize_and_redraw(array, glist, array->a_n - 1);
+                            memmove((char *)(array->a_vector) + elemsize * i, 
+                                (char *)(array->a_vector) + elemsize * (i+1),
+                                    (array->a_size - 1 - i) * elemsize);
+                            array_resize_and_redraw(array, glist, array->a_size - 1);
                             return (0);
                         }
                         else if (alt)
                         {
                             /* add a point (after the clicked-on one) */
-                            array_resize_and_redraw(array, glist, array->a_n + 1);
-                            elem = (char *)array->a_vec;
+                            array_resize_and_redraw(array, glist, array->a_size + 1);
+                            elem = (char *)array->a_vector;
                             memmove(elem + elemsize * (i+1), 
                                 elem + elemsize * i,
-                                    (array->a_n - i - 1) * elemsize);
+                                    (array->a_size - i - 1) * elemsize);
                             i++;
                         }
                         if (xonset >= 0)
@@ -2234,7 +2234,7 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
                                     (t_word *)(elem + i * elemsize), 1);
                                 array_motion_wp = (t_word *)(elem + i * elemsize);
                             if (shift)
-                                array_motion_npoints = array->a_n - i;
+                                array_motion_npoints = array->a_size - i;
                             else array_motion_npoints = 1;
                         }
                         else
@@ -2242,7 +2242,7 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
                             array_motion_xfield = 0;
                             array_motion_xcumulative = 0;
                             array_motion_wp = (t_word *)elem;
-                            array_motion_npoints = array->a_n;
+                            array_motion_npoints = array->a_size;
 
                             array_motion_initx = i;
                             array_motion_lastx = i;

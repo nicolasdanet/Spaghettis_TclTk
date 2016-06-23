@@ -61,15 +61,15 @@ static void glist_readatoms(t_glist *x, int natoms, t_atom *vec,
         return;
     }
     word_restore(w, template, argc, argv);
-    n = template->t_n;
+    n = template->tpl_size;
     for (i = 0; i < n; i++)
     {
-        if (template->t_vec[i].ds_type == DATA_ARRAY)
+        if (template->tpl_vector[i].ds_type == DATA_ARRAY)
         {
             int j;
             t_array *a = w[i].w_array;
-            int elemsize = a->a_elemsize, nitems = 0;
-            t_symbol *arraytemplatesym = template->t_vec[i].ds_arraytemplate;
+            int elemsize = a->a_elementSize, nitems = 0;
+            t_symbol *arraytemplatesym = template->tpl_vector[i].ds_template;
             t_template *arraytemplate =
                 template_findbyname(arraytemplatesym);
             if (!arraytemplate)
@@ -84,14 +84,14 @@ static void glist_readatoms(t_glist *x, int natoms, t_atom *vec,
                 if (!nline)
                     break;
                 array_resize(a, nitems + 1);
-                element = (t_word *)(((char *)a->a_vec) +
+                element = (t_word *)(((char *)a->a_vector) +
                     nitems * elemsize);
                 glist_readatoms(x, natoms, vec, p_nextmsg, arraytemplatesym,
                     element, nline, vec + message);
                 nitems++;
             }
         }
-        else if (template->t_vec[i].ds_type == DATA_TEXT)
+        else if (template->tpl_vector[i].ds_type == DATA_TEXT)
         {
             t_buffer *z = buffer_new();
             int first = *p_nextmsg, last;
@@ -337,13 +337,13 @@ void canvas_dataproperties(t_glist *x, t_scalar *sc, t_buffer *b)
     
             /* copy new one to old one and deete new one */
         memcpy(&((t_scalar *)oldone)->sc_vector, &((t_scalar *)newone)->sc_vector,
-            template->t_n * sizeof(t_word));
+            template->tpl_size * sizeof(t_word));
             
 
         
         /* // FIX //
         int i;
-        for (i = 0; i < template->t_n; i++)
+        for (i = 0; i < template->tpl_size; i++)
         {
             t_word w = ((t_scalar *)newone)->sc_vec[i];
             ((t_scalar *)newone)->sc_vec[i] = ((t_scalar *)newone)->sc_vec[i];
@@ -430,7 +430,7 @@ void canvas_writescalar(t_symbol *templatesym, t_word *w, t_buffer *b,
     t_dataslot *ds;
     t_template *template = template_findbyname(templatesym);
     t_atom *a = (t_atom *)PD_MEMORY_GET(0);
-    int i, n = template->t_n, natom = 0;
+    int i, n = template->tpl_size, natom = 0;
     if (!amarrayelement)
     {
         t_atom templatename;
@@ -441,12 +441,12 @@ void canvas_writescalar(t_symbol *templatesym, t_word *w, t_buffer *b,
         /* write the atoms (floats and symbols) */
     for (i = 0; i < n; i++)
     {
-        if (template->t_vec[i].ds_type == DATA_FLOAT ||
-            template->t_vec[i].ds_type == DATA_SYMBOL)
+        if (template->tpl_vector[i].ds_type == DATA_FLOAT ||
+            template->tpl_vector[i].ds_type == DATA_SYMBOL)
         {
             a = (t_atom *)PD_MEMORY_RESIZE(a,
                 natom * sizeof(*a), (natom + 1) * sizeof (*a));
-            if (template->t_vec[i].ds_type == DATA_FLOAT)
+            if (template->tpl_vector[i].ds_type == DATA_FLOAT)
                 SET_FLOAT(a + natom, w[i].w_float);
             else SET_SYMBOL(a + natom,  w[i].w_symbol);
             natom++;
@@ -460,18 +460,18 @@ void canvas_writescalar(t_symbol *templatesym, t_word *w, t_buffer *b,
     PD_MEMORY_FREE(a);
     for (i = 0; i < n; i++)
     {
-        if (template->t_vec[i].ds_type == DATA_ARRAY)
+        if (template->tpl_vector[i].ds_type == DATA_ARRAY)
         {
             int j;
             t_array *a = w[i].w_array;
-            int elemsize = a->a_elemsize, nitems = a->a_n;
-            t_symbol *arraytemplatesym = template->t_vec[i].ds_arraytemplate;
+            int elemsize = a->a_elementSize, nitems = a->a_size;
+            t_symbol *arraytemplatesym = template->tpl_vector[i].ds_template;
             for (j = 0; j < nitems; j++)
                 canvas_writescalar(arraytemplatesym,
-                    (t_word *)(((char *)a->a_vec) + elemsize * j), b, 1);
+                    (t_word *)(((char *)a->a_vector) + elemsize * j), b, 1);
             buffer_appendSemicolon(b);
         }
-        else if (template->t_vec[i].ds_type == DATA_TEXT)
+        else if (template->tpl_vector[i].ds_type == DATA_TEXT)
             binbuf_savetext(w[i].w_buffer, b);
     }
 }
@@ -501,18 +501,18 @@ static void canvas_addtemplatesforscalar(t_symbol *templatesym,
     t_template *template = template_findbyname(templatesym);
     canvas_doaddtemplate(templatesym, p_ntemplates, p_templatevec);
     if (!template) { PD_BUG; }
-    else for (ds = template->t_vec, i = template->t_n; i--; ds++, w++)
+    else for (ds = template->tpl_vector, i = template->tpl_size; i--; ds++, w++)
     {
         if (ds->ds_type == DATA_ARRAY)
         {
             int j;
             t_array *a = w->w_array;
-            int elemsize = a->a_elemsize, nitems = a->a_n;
-            t_symbol *arraytemplatesym = ds->ds_arraytemplate;
+            int elemsize = a->a_elementSize, nitems = a->a_size;
+            t_symbol *arraytemplatesym = ds->ds_template;
             canvas_doaddtemplate(arraytemplatesym, p_ntemplates, p_templatevec);
             for (j = 0; j < nitems; j++)
                 canvas_addtemplatesforscalar(arraytemplatesym,
-                    (t_word *)(((char *)a->a_vec) + elemsize * j), 
+                    (t_word *)(((char *)a->a_vector) + elemsize * j), 
                         p_ntemplates, p_templatevec);
         }
     }
@@ -553,14 +553,14 @@ t_buffer *glist_writetobinbuf(t_glist *x, int wholething)
     for (i = 0; i < ntemplates; i++)
     {
         t_template *template = template_findbyname(templatevec[i]);
-        int j, m = template->t_n;
+        int j, m = template->tpl_size;
             /* drop "pd-" prefix from template symbol to print it: */
         buffer_vAppend(b, "ss;", sym_template,
             gensym (templatevec[i]->s_name + 3));
         for (j = 0; j < m; j++)
         {
             t_symbol *type;
-            switch (template->t_vec[j].ds_type)
+            switch (template->tpl_vector[j].ds_type)
             {
                 case DATA_FLOAT: type = &s_float; break;
                 case DATA_SYMBOL: type = &s_symbol; break;
@@ -568,10 +568,10 @@ t_buffer *glist_writetobinbuf(t_glist *x, int wholething)
                 case DATA_TEXT: type = &s_list; break;
                 default: type = &s_float; PD_BUG;
             }
-            if (template->t_vec[j].ds_type == DATA_ARRAY)
-                buffer_vAppend(b, "sss;", type, template->t_vec[j].ds_name,
-                    gensym (template->t_vec[j].ds_arraytemplate->s_name + 3));
-            else buffer_vAppend(b, "ss;", type, template->t_vec[j].ds_name);
+            if (template->tpl_vector[j].ds_type == DATA_ARRAY)
+                buffer_vAppend(b, "sss;", type, template->tpl_vector[j].ds_name,
+                    gensym (template->tpl_vector[j].ds_template->s_name + 3));
+            else buffer_vAppend(b, "ss;", type, template->tpl_vector[j].ds_name);
         }
         buffer_appendSemicolon(b);
     }
@@ -642,7 +642,7 @@ void canvas_serializeTemplates (t_glist *glist, t_buffer *b)
     for (i = 0; i < n; i++) {
     //
     t_template *template = template_findbyname(v[i]);
-    int j, m = template->t_n;
+    int j, m = template->tpl_size;
     if (!template)
     {
         PD_BUG;
@@ -654,7 +654,7 @@ void canvas_serializeTemplates (t_glist *glist, t_buffer *b)
     for (j = 0; j < m; j++)
     {
         t_symbol *type;
-        switch (template->t_vec[j].ds_type)
+        switch (template->tpl_vector[j].ds_type)
         {
             case DATA_FLOAT: type = &s_float; break;
             case DATA_SYMBOL: type = &s_symbol; break;
@@ -662,10 +662,10 @@ void canvas_serializeTemplates (t_glist *glist, t_buffer *b)
             case DATA_TEXT: type = sym_text; break;
             default: type = &s_float; PD_BUG;
         }
-        if (template->t_vec[j].ds_type == DATA_ARRAY)
-            buffer_vAppend(b, "sss", type, template->t_vec[j].ds_name,
-                gensym (template->t_vec[j].ds_arraytemplate->s_name + 3));
-        else buffer_vAppend(b, "ss", type, template->t_vec[j].ds_name);
+        if (template->tpl_vector[j].ds_type == DATA_ARRAY)
+            buffer_vAppend(b, "sss", type, template->tpl_vector[j].ds_name,
+                gensym (template->tpl_vector[j].ds_template->s_name + 3));
+        else buffer_vAppend(b, "ss", type, template->tpl_vector[j].ds_name);
     }
     buffer_appendSemicolon(b);
     //

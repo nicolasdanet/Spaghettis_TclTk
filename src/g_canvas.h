@@ -302,31 +302,31 @@ typedef struct _message {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _dataslot {
-    int                 ds_type;
-    t_symbol            *ds_name;
-    t_symbol            *ds_arraytemplate;
-    } t_dataslot;
-
 struct _array {
-    int                 a_n;
-    int                 a_elemsize;
-    char                *a_vec;
-    t_symbol            *a_templatesym;
+    int                 a_size;
+    int                 a_elementSize;
+    char                *a_vector;
+    t_symbol            *a_template;
     int                 a_valid;
-    t_gpointer          a_gp;
+    t_gpointer          a_gpointer;
     t_gstub             *a_stub;
     };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+typedef struct _dataslot {
+    int                 ds_type;
+    t_symbol            *ds_name;
+    t_symbol            *ds_template;
+    } t_dataslot;
+
 struct _template {
-    t_pd                t_pdobj;            /* MUST be the first. */
-    t_gtemplate         *t_list;  
-    t_symbol            *t_sym;    
-    int                 t_n;    
-    t_dataslot          *t_vec;  
+    t_pd                tpl_pd;            /* MUST be the first. */
+    t_gtemplate         *tpl_list;  
+    t_symbol            *tpl_symbol;    
+    int                 tpl_size;    
+    t_dataslot          *tpl_vector;  
     };
     
 // -----------------------------------------------------------------------------------------------------------
@@ -706,23 +706,6 @@ void            message_click                           (t_message *x,
                                                             t_float shift,
                                                             t_float ctrl,
                                                             t_float alt);
-                                                            
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void            gatom_makeObject                        (t_glist *glist, 
-                                                            t_atomtype type,
-                                                            t_symbol *s,
-                                                            int argc,
-                                                            t_atom *argv);
-
-void            gatom_click                             (t_gatom *x,
-                                                            t_float a,
-                                                            t_float b,
-                                                            t_float shift,
-                                                            t_float ctrl,
-                                                            t_float alt);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -755,6 +738,23 @@ void            text_functionSave                       (t_gobj *x, t_buffer *b)
 void            text_set                                (t_object *x, t_glist *glist, char *s, int size);
 int             text_getPositionX                       (t_object *x, t_glist *glist);
 int             text_getPositionY                       (t_object *x, t_glist *glist);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void            gatom_makeObject                        (t_glist *glist, 
+                                                            t_atomtype type,
+                                                            t_symbol *s,
+                                                            int argc,
+                                                            t_atom *argv);
+
+void            gatom_click                             (t_gatom *x,
+                                                            t_float a,
+                                                            t_float b,
+                                                            t_float shift,
+                                                            t_float ctrl,
+                                                            t_float alt);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -849,7 +849,6 @@ t_garray     *graph_array               (t_glist *gl,
 
 void        garray_init                 (void);
 
-t_array      *array_new                 (t_symbol *templatesym, t_gpointer *parent);
 void         array_resize               (t_array *x, int n);
 void         array_free                 (t_array *x);
 void         array_redraw               (t_array *a, t_glist *glist);

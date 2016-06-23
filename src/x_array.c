@@ -76,7 +76,7 @@ static void array_define_yrange(t_glist *x, t_float ylo, t_float yhi)
     t_glist *gl = (x->gl_graphics ? canvas_castToGlistChecked(&x->gl_graphics->g_pd) : 0);
     if (gl && gl->gl_graphics && pd_class(&gl->gl_graphics->g_pd) == garray_class)
     {
-        int n = garray_getarray((t_garray *)gl->gl_graphics)->a_n;
+        int n = garray_getarray((t_garray *)gl->gl_graphics)->a_size;
         pd_vMessage(&x->gl_graphics->g_pd, sym_bounds,
             "ffff", 0., yhi, (double)(n == 1 ? n : n-1), ylo);
     }
@@ -275,9 +275,9 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
         else
         {
             t_array *owner_array = gs->gs_un.gs_array;
-            while (owner_array->a_gp.gp_stub->gs_type == POINTER_ARRAY)
-                owner_array = owner_array->a_gp.gp_stub->gs_un.gs_array;
-            *glist = owner_array->a_gp.gp_stub->gs_un.gs_glist;
+            while (owner_array->a_gpointer.gp_stub->gs_type == POINTER_ARRAY)
+                owner_array = owner_array->a_gpointer.gp_stub->gs_un.gs_array;
+            *glist = owner_array->a_gpointer.gp_stub->gs_un.gs_glist;
         }
         return (*(t_array **)(((char *)vec) + onset));
     }
@@ -355,7 +355,7 @@ static void array_size_bang(t_array_size *x)
     t_glist *glist;
     t_array *a = array_client_getbuf(&x->x_tc, &glist);
     if (a)
-        outlet_float(x->x_outlet, a->a_n);
+        outlet_float(x->x_outlet, a->a_size);
 }
 
 static void array_size_float(t_array_size *x, t_float f)
@@ -493,29 +493,29 @@ static int array_rangeop_getrange(t_array_rangeop *x,
     t_template *template;
     if (!a)
         return (0);
-    template = template_findbyname(a->a_templatesym);
+    template = template_findbyname(a->a_template);
     if (!template_find_field(template, x->x_elemfield, &fieldonset,
         &type, &arraytype) || type != DATA_FLOAT)
     {
         post_error ("can't find field %s in struct %s",
-            x->x_elemfield->s_name, a->a_templatesym->s_name);
+            x->x_elemfield->s_name, a->a_template->s_name);
         return (0);
     }
-    stride = a->a_elemsize;
+    stride = a->a_elementSize;
     arrayonset = x->x_onset;
     if (arrayonset < 0)
         arrayonset = 0;
-    else if (arrayonset > a->a_n)
-        arrayonset = a->a_n;
+    else if (arrayonset > a->a_size)
+        arrayonset = a->a_size;
     if (x->x_n < 0)
-        nitem = a->a_n - arrayonset;
+        nitem = a->a_size - arrayonset;
     else
     {
         nitem = x->x_n;
-        if (nitem + arrayonset > a->a_n)
-            nitem = a->a_n - arrayonset;
+        if (nitem + arrayonset > a->a_size)
+            nitem = a->a_size - arrayonset;
     }
-    *firstitemp = a->a_vec+(fieldonset+arrayonset*stride);
+    *firstitemp = a->a_vector+(fieldonset+arrayonset*stride);
     *nitemp = nitem;
     *stridep = stride;
     *arrayonsetp = arrayonset;

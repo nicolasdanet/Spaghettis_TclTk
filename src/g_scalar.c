@@ -26,10 +26,34 @@ can contain numbers, sublists, and arrays.
 
 t_class *scalar_class; /* Shared. */
 
+/* Pure arrays have no a priori graphical capabilities.
+They are instantiated by "garrays" below or can be elements of other
+scalars (g_scalar.c); their graphical behavior is defined accordingly. */
+
+static t_array *array_new(t_symbol *templatesym, t_gpointer *parent)
+{
+    t_array *x = (t_array *)PD_MEMORY_GET(sizeof (*x));
+    t_template *template;
+    t_gpointer *gp;
+    template = template_findbyname(templatesym);
+    x->a_template = templatesym;
+    x->a_size = 1;
+    x->a_elementSize = sizeof(t_word) * template->tpl_size;
+    x->a_vector = (char *)PD_MEMORY_GET(x->a_elementSize);
+        /* note here we blithely copy a gpointer instead of "setting" a
+        new one; this gpointer isn't accounted for and needn't be since
+        we'll be deleted before the thing pointed to gets deleted anyway;
+        see array_free. */
+    x->a_gpointer = *parent;
+    x->a_stub = gstub_new(0, x);
+    word_init((t_word *)(x->a_vector), template, parent);
+    return (x);
+}
+
 void word_init(t_word *wp, t_template *template, t_gpointer *gp)
 {
-    int i, nitems = template->t_n;
-    t_dataslot *datatypes = template->t_vec;
+    int i, nitems = template->tpl_size;
+    t_dataslot *datatypes = template->tpl_vector;
     for (i = 0; i < nitems; i++, datatypes++, wp++)
     {
         int type = datatypes->ds_type;
@@ -38,7 +62,7 @@ void word_init(t_word *wp, t_template *template, t_gpointer *gp)
         else if (type == DATA_SYMBOL)
             wp->w_symbol = &s_symbol;
         else if (type == DATA_ARRAY)
-            wp->w_array = array_new(datatypes->ds_arraytemplate, gp);
+            wp->w_array = array_new(datatypes->ds_template, gp);
         else if (type == DATA_TEXT)
             wp->w_buffer = buffer_new();
     }
@@ -47,8 +71,8 @@ void word_init(t_word *wp, t_template *template, t_gpointer *gp)
 void word_restore(t_word *wp, t_template *template,
     int argc, t_atom *argv)
 {
-    int i, nitems = template->t_n;
-    t_dataslot *datatypes = template->t_vec;
+    int i, nitems = template->tpl_size;
+    t_dataslot *datatypes = template->tpl_vector;
     for (i = 0; i < nitems; i++, datatypes++, wp++)
     {
         int type = datatypes->ds_type;
@@ -83,7 +107,7 @@ void word_free(t_word *wp, t_template *template)
 {
     int i;
     t_dataslot *dt;
-    for (dt = template->t_vec, i = 0; i < template->t_n; i++, dt++)
+    for (dt = template->tpl_vector, i = 0; i < template->tpl_size; i++, dt++)
     {
         if (dt->ds_type == DATA_ARRAY)
             array_free(wp[i].w_array);
@@ -94,15 +118,15 @@ void word_free(t_word *wp, t_template *template)
 
 static int template_cancreate(t_template *template)
 {
-    int i, type, nitems = template->t_n;
-    t_dataslot *datatypes = template->t_vec;
+    int i, type, nitems = template->tpl_size;
+    t_dataslot *datatypes = template->tpl_vector;
     t_template *elemtemplate;
     for (i = 0; i < nitems; i++, datatypes++)
         if (datatypes->ds_type == DATA_ARRAY &&
-            (!(elemtemplate = template_findbyname(datatypes->ds_arraytemplate))
+            (!(elemtemplate = template_findbyname(datatypes->ds_template))
                 || !template_cancreate(elemtemplate)))
     {
-        post_error ("%s: no such template", datatypes->ds_arraytemplate->s_name);
+        post_error ("%s: no such template", datatypes->ds_template->s_name);
         return (0);
     }
     return (1);
@@ -129,7 +153,7 @@ t_scalar *scalar_new(t_glist *owner, t_symbol *templatesym)
     if (!template_cancreate(template))
         return (0);
     x = (t_scalar *)PD_MEMORY_GET(sizeof(t_scalar) +
-        (template->t_n - 1) * sizeof(*x->sc_vector));
+        (template->tpl_size - 1) * sizeof(*x->sc_vector));
     x->sc_g.g_pd = scalar_class;
     x->sc_template = templatesym;
     gpointer_setglist(&gp, owner, x);

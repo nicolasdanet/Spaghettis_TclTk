@@ -118,7 +118,7 @@ static t_symbol *gpointer_gettemplatesym(const t_gpointer *gp)
     else
     {
         t_array *a = gs->gs_un.gs_array;
-        return (a->a_templatesym);
+        return (a->a_template);
     }
 }
 
@@ -359,9 +359,9 @@ static void ptrobj_sendwindow(t_ptrobj *x, t_symbol *s, int argc, t_atom *argv)
     else
     {
         t_array *owner_array = gs->gs_un.gs_array;
-        while (owner_array->a_gp.gp_stub->gs_type == POINTER_ARRAY)
-            owner_array = owner_array->a_gp.gp_stub->gs_un.gs_array;
-        glist = owner_array->a_gp.gp_stub->gs_un.gs_glist;  
+        while (owner_array->a_gpointer.gp_stub->gs_type == POINTER_ARRAY)
+            owner_array = owner_array->a_gpointer.gp_stub->gs_un.gs_array;
+        glist = owner_array->a_gpointer.gp_stub->gs_un.gs_glist;  
     }
     canvas = (t_pd *)canvas_getView(glist);
     if (argc && argv->a_type == A_SYMBOL)
@@ -563,10 +563,10 @@ static void get_pointer(t_get *x, t_gpointer *gp)
                 outlet_symbol(vp->gv_outlet,
                     *(t_symbol **)(((char *)vec) + onset));
             else post_error ("get: %s.%s is not a number or symbol",
-                    template->t_sym->s_name, vp->gv_sym->s_name);
+                    template->tpl_symbol->s_name, vp->gv_sym->s_name);
         }
         else post_error ("get: %s.%s: no such field",
-            template->t_sym->s_name, vp->gv_sym->s_name);
+            template->tpl_symbol->s_name, vp->gv_sym->s_name);
     }
 }
 
@@ -706,10 +706,10 @@ static void set_bang(t_set *x)
     else
     {
         t_array *owner_array = gs->gs_un.gs_array;
-        while (owner_array->a_gp.gp_stub->gs_type == POINTER_ARRAY)
-            owner_array = owner_array->a_gp.gp_stub->gs_un.gs_array;
-        scalar_redraw(owner_array->a_gp.gp_un.gp_scalar,
-            owner_array->a_gp.gp_stub->gs_un.gs_glist);  
+        while (owner_array->a_gpointer.gp_stub->gs_type == POINTER_ARRAY)
+            owner_array = owner_array->a_gpointer.gp_stub->gs_un.gs_array;
+        scalar_redraw(owner_array->a_gpointer.gp_un.gp_scalar,
+            owner_array->a_gpointer.gp_stub->gs_un.gs_glist);  
     }
 }
 
@@ -838,16 +838,16 @@ static void elem_float(t_elem *x, t_float f)
         return;
     }
 
-    elemsize = elemtemplate->t_n * sizeof(t_word);
+    elemsize = elemtemplate->tpl_size * sizeof(t_word);
 
     array = *(t_array **)(((char *)w) + onset);
 
-    nitems = array->a_n;
+    nitems = array->a_size;
     if (indx < 0) indx = 0;
     if (indx >= nitems) indx = nitems-1;
 
     gpointer_setarray(&x->x_gp, array, 
-        (t_word *)((char *)(array->a_vec) + indx * elemsize));
+        (t_word *)((char *)(array->a_vector) + indx * elemsize));
     outlet_pointer(x->x_obj.te_outlet, &x->x_gp);
 }
 
@@ -937,7 +937,7 @@ static void getsize_pointer(t_getsize *x, t_gpointer *gp)
     else w = gp->gp_un.gp_scalar->sc_vector;
     
     array = *(t_array **)(((char *)w) + onset);
-    outlet_float(x->x_obj.te_outlet, (t_float)(array->a_n));
+    outlet_float(x->x_obj.te_outlet, (t_float)(array->a_size));
 }
 
 static void getsize_setup(void)
@@ -1035,13 +1035,13 @@ static void setsize_float(t_setsize *x, t_float f)
         return;
     }
 
-    elemsize = elemtemplate->t_n * sizeof(t_word);
+    elemsize = elemtemplate->tpl_size * sizeof(t_word);
 
     array = *(t_array **)(((char *)w) + onset);
 
-    if (elemsize != array->a_elemsize) { PD_BUG; }
+    if (elemsize != array->a_elementSize) { PD_BUG; }
 
-    nitems = array->a_n;
+    nitems = array->a_size;
     if (newsize < 1) newsize = 1;
     if (newsize == nitems) return;
     
@@ -1059,31 +1059,31 @@ static void setsize_float(t_setsize *x, t_float f)
     else
     {
         t_array *owner_array = gs->gs_un.gs_array;
-        while (owner_array->a_gp.gp_stub->gs_type == POINTER_ARRAY)
-            owner_array = owner_array->a_gp.gp_stub->gs_un.gs_array;
-        if (canvas_isMapped(owner_array->a_gp.gp_stub->gs_un.gs_glist))
-            gobj_visibilityChanged((t_gobj *)(owner_array->a_gp.gp_un.gp_scalar),
-                owner_array->a_gp.gp_stub->gs_un.gs_glist, 0);  
+        while (owner_array->a_gpointer.gp_stub->gs_type == POINTER_ARRAY)
+            owner_array = owner_array->a_gpointer.gp_stub->gs_un.gs_array;
+        if (canvas_isMapped(owner_array->a_gpointer.gp_stub->gs_un.gs_glist))
+            gobj_visibilityChanged((t_gobj *)(owner_array->a_gpointer.gp_un.gp_scalar),
+                owner_array->a_gpointer.gp_stub->gs_un.gs_glist, 0);  
     }
         /* if shrinking, free the scalars that will disappear */
     if (newsize < nitems)
     {
         char *elem;
         int count;       
-        for (elem = ((char *)array->a_vec) + newsize * elemsize,
+        for (elem = ((char *)array->a_vector) + newsize * elemsize,
             count = nitems - newsize; count--; elem += elemsize)
                 word_free((t_word *)elem, elemtemplate);
     }
         /* resize the array  */
-    array->a_vec = (char *)PD_MEMORY_RESIZE(array->a_vec,
+    array->a_vector = (char *)PD_MEMORY_RESIZE(array->a_vector,
         elemsize * nitems, elemsize * newsize);
-    array->a_n = newsize;
+    array->a_size = newsize;
         /* if growing, initialize new scalars */
     if (newsize > nitems)
     {
         char *elem;
         int count;       
-        for (elem = ((char *)array->a_vec) + nitems * elemsize,
+        for (elem = ((char *)array->a_vector) + nitems * elemsize,
             count = newsize - nitems; count--; elem += elemsize)
                 word_init((t_word *)elem, elemtemplate, gp);
     }
@@ -1099,11 +1099,11 @@ static void setsize_float(t_setsize *x, t_float f)
     else
     {
         t_array *owner_array = gs->gs_un.gs_array;
-        while (owner_array->a_gp.gp_stub->gs_type == POINTER_ARRAY)
-            owner_array = owner_array->a_gp.gp_stub->gs_un.gs_array;
-        if (canvas_isMapped(owner_array->a_gp.gp_stub->gs_un.gs_glist))
-            gobj_visibilityChanged((t_gobj *)(owner_array->a_gp.gp_un.gp_scalar),
-                owner_array->a_gp.gp_stub->gs_un.gs_glist, 1);  
+        while (owner_array->a_gpointer.gp_stub->gs_type == POINTER_ARRAY)
+            owner_array = owner_array->a_gpointer.gp_stub->gs_un.gs_array;
+        if (canvas_isMapped(owner_array->a_gpointer.gp_stub->gs_un.gs_glist))
+            gobj_visibilityChanged((t_gobj *)(owner_array->a_gpointer.gp_un.gp_scalar),
+                owner_array->a_gpointer.gp_stub->gs_un.gs_glist, 1);  
     }
 }
 
