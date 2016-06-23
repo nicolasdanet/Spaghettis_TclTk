@@ -416,7 +416,7 @@ void canvas_map (t_glist *glist, t_float f)
         if (!glist->gl_hasWindow) { PD_BUG; canvas_visible (glist, 1); }
         for (y = glist->gl_graphics; y; y = y->g_next) { gobj_visibilityChanged (y, glist, 1); }
         for (selection = glist->gl_editor->e_selectedObjects; selection; selection = selection->sel_next) {
-            gobj_select (selection->sel_what, glist, 1);
+            gobj_selected (selection->sel_what, glist, 1);
         }
 
         glist->gl_isMapped = 1;

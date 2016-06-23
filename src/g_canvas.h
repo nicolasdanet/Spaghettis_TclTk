@@ -642,11 +642,12 @@ void            gobj_getRectangle                       (t_gobj *x,
                                                             int *c,
                                                             int *d);
                                                             
-void            gobj_displace                           (t_gobj *x, t_glist *owner, int deltaX, int deltaY);
-void            gobj_select                             (t_gobj *x, t_glist *owner, int isSelected);
-void            gobj_activate                           (t_gobj *x, t_glist *owner, int isActivated);
-void            gobj_delete                             (t_gobj *x, t_glist *owner);
-int             gobj_click                              (t_gobj *x,
+void            gobj_displaced                          (t_gobj *x, t_glist *owner, int deltaX, int deltaY);
+void            gobj_selected                           (t_gobj *x, t_glist *owner, int isSelected);
+void            gobj_activated                          (t_gobj *x, t_glist *owner, int isActivated);
+void            gobj_deleted                            (t_gobj *x, t_glist *owner);
+void            gobj_visibilityChanged                  (t_gobj *x, t_glist *owner, int isVisible);
+int             gobj_clicked                            (t_gobj *x,
                                                             t_glist *owner,
                                                             int a,
                                                             int b,
@@ -667,7 +668,6 @@ int             gobj_hit                                (t_gobj *x,
                                                             int *d);
                                                             
 int             gobj_isVisible                          (t_gobj *x, t_glist *owner);
-void            gobj_visibilityChanged                  (t_gobj *x, t_glist *owner, int isVisible);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

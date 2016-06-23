@@ -228,7 +228,7 @@ static void canvas_performMouseClick (t_glist *glist, int positionX, int positio
     //
     if (gobj_hit (y, glist, positionX, positionY, &a, &b, &c, &d)) {
     
-        k = gobj_click (y, glist, 
+        k = gobj_clicked (y, glist, 
                 positionX, 
                 positionY, 
                 (modifier & MODIFIER_SHIFT), 
@@ -560,7 +560,7 @@ static void canvas_performPaste (t_glist *glist)
     s__N.s_thing = boundN;
 
     for (s = glist->gl_editor->e_selectedObjects; s; s = s->sel_next) {
-        gobj_displace (s->sel_what, glist, n, n);
+        gobj_displaced (s->sel_what, glist, n, n);
     }
     
     for (s = glist->gl_editor->e_selectedObjects; s; s = s->sel_next) {
@@ -748,7 +748,7 @@ void canvas_mouseUp (t_glist *glist, t_float positionX, t_float positionY)
         
     } else if (action == ACTION_MOVE) {
         if (canvas_getNumberOfSelectedObjects (glist) == 1) {
-            gobj_activate (glist->gl_editor->e_selectedObjects->sel_what, glist, 1);
+            gobj_activated (glist->gl_editor->e_selectedObjects->sel_what, glist, 1);
         }
     }
 
@@ -785,7 +785,7 @@ static void canvas_dosetbounds(t_glist *x, int x1, int y1, int x2, int y2)      
         x->gl_valueBottom = x->gl_valueTop - diff;
         for (y = x->gl_graphics; y; y = y->g_next)                                  // --
             if (canvas_castToObjectIfPatchable(&y->g_pd))                           // --
-                gobj_displace(y, x, 0, heightchange);                               // --
+                gobj_displaced(y, x, 0, heightchange);                               // --
         canvas_redraw(x);                                                           // --
     }
 }

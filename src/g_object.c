@@ -36,35 +36,35 @@ void gobj_getRectangle (t_gobj *x, t_glist *owner, int *a, int *b, int *c, int *
     }
 }
 
-void gobj_displace (t_gobj *x, t_glist *owner, int deltaX, int deltaY)
+void gobj_displaced (t_gobj *x, t_glist *owner, int deltaX, int deltaY)
 {
     if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnDisplaced) {
         (*(pd_class (x)->c_behavior->w_fnDisplaced)) (x, owner, deltaX, deltaY);
     }
 }
 
-void gobj_select (t_gobj *x, t_glist *owner, int isSelected)
+void gobj_selected (t_gobj *x, t_glist *owner, int isSelected)
 {
     if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnSelected) {
         (*(pd_class (x)->c_behavior->w_fnSelected)) (x, owner, isSelected);
     }
 }
 
-void gobj_activate (t_gobj *x, t_glist *owner, int isActivated)
+void gobj_activated (t_gobj *x, t_glist *owner, int isActivated)
 {
     if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnActivated) {
         (*(pd_class (x)->c_behavior->w_fnActivated)) (x, owner, isActivated);
     }
 }
 
-void gobj_delete (t_gobj *x, t_glist *owner)
+void gobj_deleted (t_gobj *x, t_glist *owner)
 {
     if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnDeleted) {
         (*(pd_class (x)->c_behavior->w_fnDeleted)) (x, owner);
     }
 }
 
-int gobj_click (t_gobj *x, t_glist *owner, int a, int b, int shift, int ctrl, int alt, int dbl, int clicked)
+int gobj_clicked (t_gobj *x, t_glist *owner, int a, int b, int shift, int ctrl, int alt, int dbl, int clicked)
 {
     if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnClicked) {
         return ((*(pd_class (x)->c_behavior->w_fnClicked)) (x, owner, a, b, shift, ctrl, alt, dbl, clicked));

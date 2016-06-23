@@ -317,7 +317,7 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     
     if (canvas_isMapped (canvas)) { gobj_visibilityChanged (y, glist, 0); }
     
-    gobj_delete (y, glist);
+    gobj_deleted (y, glist);
     
     if (glist->gl_graphics == y)  { glist->gl_graphics = y->g_next; }
     else {
@@ -413,7 +413,7 @@ void canvas_makeTextObject (t_glist *glist,
     if (isSelected) {
     //
     canvas_selectObject (glist, cast_gobj (x));
-    gobj_activate (cast_gobj (x), glist, 1);
+    gobj_activated (cast_gobj (x), glist, 1);
     //
     }
     

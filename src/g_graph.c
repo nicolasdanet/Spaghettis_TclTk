@@ -594,7 +594,7 @@ static int canvas_behaviorClicked (t_gobj *z,
         for (y = x->gl_graphics; y; y = y->g_next) {
             int x1, y1, x2, y2;
             if (gobj_hit (y, x, a, b, &x1, &y1, &x2, &y2)) {
-                if (k = gobj_click (y, x, a, b, shift, ctrl, alt, 0, clicked)) {
+                if (k = gobj_clicked (y, x, a, b, shift, ctrl, alt, 0, clicked)) {
                     break;
                 }
             }

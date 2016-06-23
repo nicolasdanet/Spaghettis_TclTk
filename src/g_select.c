@@ -187,7 +187,7 @@ void canvas_displaceSelectedObjects (t_glist *glist, int deltaX, int deltaY)
     int isDirty = 0;
     
     for (y = glist->gl_editor->e_selectedObjects; y; y = y->sel_next) {
-        gobj_displace (y->sel_what, glist, deltaX, deltaY);
+        gobj_displaced (y->sel_what, glist, deltaX, deltaY);
         if (pd_class (y->sel_what) == vinlet_class)  { needToResortInlets  = 1; }
         if (pd_class (y->sel_what) == voutlet_class) { needToResortOutlets = 1; }
         isDirty = 1;
@@ -291,7 +291,7 @@ void canvas_selectObject (t_glist *glist, t_gobj *y)
     
     glist->gl_editor->e_selectedObjects = selection;
     
-    gobj_select (y, glist, 1);
+    gobj_selected (y, glist, 1);
 }
 
 void canvas_selectObjectIfNotSelected (t_glist *glist, t_gobj *y)
@@ -346,7 +346,7 @@ void canvas_deselectObject (t_glist *glist, t_gobj *y)
                 canvas_cacheLines (canvas_getView (glist));
                 canvas_deselectAllRecursive (y);
             }
-            gobj_activate (y, glist, 0);
+            gobj_activated (y, glist, 0);
         }
         
         if (class_hasMethod (pd_class (y), sym_dsp)) { dspSuspended = dsp_suspend(); }
@@ -356,14 +356,14 @@ void canvas_deselectObject (t_glist *glist, t_gobj *y)
     
     if (selection1->sel_what == y) {
         glist->gl_editor->e_selectedObjects = glist->gl_editor->e_selectedObjects->sel_next;
-        gobj_select (y, glist, 0);
+        gobj_selected (y, glist, 0);
         PD_MEMORY_FREE (selection1);
         
     } else {
         for (; selection2 = selection1->sel_next; selection1 = selection2) {
             if (selection2->sel_what == y) {
                 selection1->sel_next = selection2->sel_next;
-                gobj_select (y, glist, 0);
+                gobj_selected (y, glist, 0);
                 PD_MEMORY_FREE (selection2);
                 break;
             }
