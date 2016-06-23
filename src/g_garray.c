@@ -18,88 +18,30 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern int      canvas_magic;
-extern t_pd     pd_canvasMaker;
+extern t_pd pd_canvasMaker;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-/* --------- "pure" arrays with scalars for elements. --------------- */
-
-/* jsarlo { */
-void garray_arrayviewlist_close(t_garray *x);
-/* } jsarlo */
-
-void array_resize(t_array *x, int n)
-{
-    int elemsize, oldn;
-    t_gpointer *gp;
-    t_template *template = template_findbyname(x->a_template);
-    if (n < 1)
-        n = 1;
-    oldn = x->a_size;
-    elemsize = sizeof(t_word) * template->tpl_size;
-
-    x->a_vector = (char *)PD_MEMORY_RESIZE(x->a_vector, oldn * elemsize, n * elemsize);
-    x->a_size = n;
-    if (n > oldn)
-    {
-        char *cp = x->a_vector + elemsize * oldn;
-        int i = n - oldn;
-        for (; i--; cp += elemsize)
-        {
-            t_word *wp = (t_word *)cp;
-            word_init(wp, template, &x->a_gpointer);
-        }
-    }
-    x->a_valid = ++canvas_magic;
-}
-
-void array_resize_and_redraw(t_array *array, t_glist *glist, int n)
-{
-    t_array *a2 = array;
-    int vis = canvas_isMapped(glist);
-    while (a2->a_gpointer.gp_stub->gs_type == POINTER_ARRAY)
-        a2 = a2->a_gpointer.gp_stub->gs_un.gs_array;
-    if (vis)
-        gobj_visibilityChanged(&a2->a_gpointer.gp_un.gp_scalar->sc_g, glist, 0);
-    array_resize(array, n);
-    if (vis)
-        gobj_visibilityChanged(&a2->a_gpointer.gp_un.gp_scalar->sc_g, glist, 1);
-}
-
-void word_free(t_word *wp, t_template *template);
-
-void array_free(t_array *x)
-{
-    int i;
-    t_template *scalartemplate = template_findbyname(x->a_template);
-    gstub_cutoff(x->a_stub);
-    for (i = 0; i < x->a_size; i++)
-    {
-        t_word *wp = (t_word *)(x->a_vector + x->a_elementSize * i);
-        word_free(wp, scalartemplate);
-    }
-    PD_MEMORY_FREE(x->a_vector);
-    PD_MEMORY_FREE(x);
-}
-
-/* --------------------- graphical arrays (garrays) ------------------- */
 
 t_class *garray_class;      /* Shared. */
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 struct _garray
 {
-    t_gobj x_gobj;
-    t_scalar *x_scalar;     /* scalar "containing" the array */
-    t_glist *x_glist;       /* containing glist */
-    t_symbol *x_name;       /* unexpanded name (possibly with leading '$') */
-    t_symbol *x_realname;   /* expanded name (symbol we're bound to) */
-    char x_usedindsp;       /* true if some DSP routine is using this */
-    char x_saveit;          /* true if we should save this with parent */
-    char x_listviewing;     /* true if list view window is open */
-    char x_hidename;        /* don't print name above graph */
+    t_gobj      x_gobj;
+    t_scalar    *x_scalar;
+    t_glist     *x_glist;
+    t_symbol    *x_unexpandedName;
+    t_symbol    *x_name;
+    char        x_isUsedInDSP;
+    char        x_saveWithParent;
+    char        x_hideName;
 };
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 static t_pd *garray_arraytemplatecanvas;
 static char garray_arraytemplatefile[] = "\
@@ -156,12 +98,11 @@ static t_garray *graph_scalar(t_glist *gl, t_symbol *s, t_symbol *templatesym,
         return (0);  
     x = (t_garray *)pd_new(garray_class);
     x->x_scalar = scalar_new(gl, templatesym);
-    x->x_name = s;
-    x->x_realname = canvas_expandDollar(gl, s);
-    pd_bind(&x->x_gobj.g_pd, x->x_realname);
-    x->x_usedindsp = 0;
-    x->x_saveit = saveit;
-    x->x_listviewing = 0;
+    x->x_unexpandedName = s;
+    x->x_name = canvas_expandDollar(gl, s);
+    pd_bind(&x->x_gobj.g_pd, x->x_name);
+    x->x_isUsedInDSP = 0;
+    x->x_saveWithParent = saveit;
     canvas_addObject (gl, &x->x_gobj);
     x->x_glist = gl;
     return (x);
@@ -214,8 +155,8 @@ static t_array *garray_getarray_floatonly(t_garray *x,
     /* get the array's name.  Return nonzero if it should be hidden */
 int garray_getname(t_garray *x, t_symbol **namep)
 {
-    *namep = x->x_name;
-    return (x->x_hidename);
+    *namep = x->x_unexpandedName;
+    return (x->x_hideName);
 }
 
     /* get a garray's containing glist */
@@ -308,7 +249,7 @@ t_garray *graph_array(t_glist *gl, t_symbol *s, t_symbol *templateargsym,
     }
     saveit = ((flags & 1) != 0);
     x = graph_scalar(gl, s, templatesym, saveit);
-    x->x_hidename = ((flags & 8) >> 3);
+    x->x_hideName = ((flags & 8) >> 3);
 
     if (n <= 0)
         n = 100;
@@ -366,7 +307,7 @@ void garray_properties(t_garray *x)
         properly; right now we just detect a leading '$' and escape
         it.  There should be a systematic way of doing this. */
     sprintf(cmdbuf, "::ui_array::show %%s %s %d %d\n",
-            dollar_toHash(x->x_name)->s_name, a->a_size, x->x_saveit + 
+            dollar_toHash(x->x_unexpandedName)->s_name, a->a_size, x->x_saveWithParent + 
             2 * filestyle);
     guistub_new(&x->x_gobj.g_pd, x, cmdbuf);
 }
@@ -401,7 +342,7 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize,
             sym_style, x->x_scalar->sc_vector, 1);
     if (0) // deleteit
     {
-        int wasused = x->x_usedindsp;
+        int wasused = x->x_isUsedInDSP;
         canvas_removeObject(x->x_glist, &x->x_gobj);
         if (wasused)
             dsp_update();
@@ -425,18 +366,12 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize,
                 x->x_scalar->sc_template->s_name);
             return;
         }
-        if (argname != x->x_name)
+        if (argname != x->x_unexpandedName)
         {
-            /* jsarlo { */
-            if (x->x_listviewing)
-            {
-              // garray_arrayviewlist_close(x);
-            }
-            /* } jsarlo */
-            x->x_name = argname;
-            pd_unbind(&x->x_gobj.g_pd, x->x_realname);
-            x->x_realname = canvas_expandDollar(x->x_glist, argname);
-            pd_bind(&x->x_gobj.g_pd, x->x_realname);
+            x->x_unexpandedName = argname;
+            pd_unbind(&x->x_gobj.g_pd, x->x_name);
+            x->x_name = canvas_expandDollar(x->x_glist, argname);
+            pd_bind(&x->x_gobj.g_pd, x->x_name);
                 /* redraw the whole glist, just so the name change shows up */
             if (x->x_glist->gl_hasWindow)
                 canvas_redraw(x->x_glist);
@@ -478,10 +413,9 @@ void garray_arrayviewlist_new(t_garray *x)
         //
         post_error ("error in garray_arrayviewlist_new()");
     }
-    x->x_listviewing = 1;
     sprintf(cmdbuf,
             "::ui_array::pdtk_array_listview_new %%s %s %d\n",
-            x->x_realname->s_name,
+            x->x_name->s_name,
             0);
     guistub_new(&x->x_gobj.g_pd, x, cmdbuf);
     for (i = 0; i < ARRAYPAGESIZE && i < a->a_size; i++)
@@ -489,7 +423,7 @@ void garray_arrayviewlist_new(t_garray *x)
         yval = *(t_float *)(a->a_vector +
                elemsize * i + yonset);
         sys_vGui(".%sArrayWindow.lb insert %d {%d) %g}\n",
-                 x->x_realname->s_name,
+                 x->x_name->s_name,
                  i,
                  i,
                  yval);
@@ -516,17 +450,17 @@ void garray_arrayviewlist_fillpage(t_garray *x,
     if (page < 0) {
       page = 0;
       sys_vGui("::ui_array::pdtk_array_listview_setpage %s %d\n",
-               x->x_realname->s_name,
+               x->x_name->s_name,
                (int)page);
     }
     else if ((page * ARRAYPAGESIZE) >= a->a_size) {
       page = (int)(((int)a->a_size - 1)/ (int)ARRAYPAGESIZE);
       sys_vGui("::ui_array::pdtk_array_listview_setpage %s %d\n",
-               x->x_realname->s_name,
+               x->x_name->s_name,
                (int)page);
     }
     sys_vGui(".%sArrayWindow.lb delete 0 %d\n",
-             x->x_realname->s_name,
+             x->x_name->s_name,
              ARRAYPAGESIZE - 1);
     for (i = page * ARRAYPAGESIZE;
          (i < (page + 1) * ARRAYPAGESIZE && i < a->a_size);
@@ -535,22 +469,16 @@ void garray_arrayviewlist_fillpage(t_garray *x,
         yval = *(t_float *)(a->a_vector + \
                elemsize * i + yonset);
         sys_vGui(".%sArrayWindow.lb insert %d {%d) %g}\n",
-                 x->x_realname->s_name,
+                 x->x_name->s_name,
                  i % ARRAYPAGESIZE,
                  i,
                  yval);
     }
     sys_vGui(".%sArrayWindow.lb yview %d\n",
-             x->x_realname->s_name,
+             x->x_name->s_name,
              topItem);*/
 }
 
-void garray_arrayviewlist_close(t_garray *x)
-{
-    x->x_listviewing = 0;
-    /*sys_vGui("::ui_array::pdtk_array_listview_closeWindow %s\n",
-             x->x_realname->s_name);*/
-}
 /* } jsarlo */
 #endif
 
@@ -558,105 +486,14 @@ static void garray_free(t_garray *x)
 {
     t_pd *x2;
         interface_guiQueueRemove(&x->x_gobj);
-    /* jsarlo { */
-        if (x->x_listviewing)
-    {
-        // garray_arrayviewlist_close(x);
-    }
-    /* } jsarlo */
+
     guistub_destroyWithKey(x);
-    pd_unbind(&x->x_gobj.g_pd, x->x_realname);
+    pd_unbind(&x->x_gobj.g_pd, x->x_name);
         /* just in case we're still bound to #A from loading... */
     while (x2 = pd_findByClass (sym___hash__A, garray_class))
         pd_unbind(x2, sym___hash__A);
     pd_free(&x->x_scalar->sc_g.g_pd);
 }
-
-/* ------------- code used by both array and plot widget functions ---- */
-
-void array_redraw(t_array *a, t_glist *glist)
-{
-    while (a->a_gpointer.gp_stub->gs_type == POINTER_ARRAY)
-        a = a->a_gpointer.gp_stub->gs_un.gs_array;
-    scalar_redraw(a->a_gpointer.gp_un.gp_scalar, glist);
-}
-
-    /* routine to get screen coordinates of a point in an array */
-void array_getcoordinate(t_glist *glist,
-    char *elem, int xonset, int yonset, int wonset, int indx,
-    t_float basex, t_float basey, t_float xinc,
-    t_fielddescriptor *xfielddesc, t_fielddescriptor *yfielddesc, t_fielddescriptor *wfielddesc,
-    t_float *xp, t_float *yp, t_float *wp)
-{
-    t_float xval, yval, ypix, wpix;
-    if (xonset >= 0)
-        xval = *(t_float *)(elem + xonset);
-    else xval = indx * xinc;
-    if (yonset >= 0)
-        yval = *(t_float *)(elem + yonset);
-    else yval = 0;
-    ypix = canvas_valueToPositionY(glist, basey +
-        fielddesc_cvttocoord(yfielddesc, yval));
-    if (wonset >= 0)
-    {
-            /* found "w" field which controls linewidth. */
-        t_float wval = *(t_float *)(elem + wonset);
-        wpix = canvas_valueToPositionY(glist, basey + 
-            fielddesc_cvttocoord(yfielddesc, yval) +
-                fielddesc_cvttocoord(wfielddesc, wval)) - ypix;
-        if (wpix < 0)
-            wpix = -wpix;
-    }
-    else wpix = 1;
-    *xp = canvas_valueToPositionX(glist, basex +
-        fielddesc_cvttocoord(xfielddesc, xval));
-    *yp = ypix;
-    *wp = wpix;
-}
-
-static void array_getrect(t_array *array, t_glist *glist,
-    int *xp1, int *yp1, int *xp2, int *yp2)
-{
-    t_float x1 = PD_INT_MAX, y1 = PD_INT_MAX, x2 = -PD_INT_MAX, y2 = -PD_INT_MAX;
-    t_glist *elemtemplatecanvas;
-    t_template *elemtemplate;
-    int elemsize, yonset, wonset, xonset, i;
-
-    if (!array_getfields(array->a_template, &elemtemplatecanvas,
-        &elemtemplate, &elemsize, 0, 0, 0, &xonset, &yonset, &wonset))
-    {
-        int incr;
-            /* if it has more than 2000 points, just check 300 of them. */
-        if (array->a_size < 2000)
-            incr = 1;
-        else incr = array->a_size / 300;
-        for (i = 0; i < array->a_size; i += incr)
-        {
-            t_float pxpix, pypix, pwpix, dx, dy;
-            array_getcoordinate(glist, (char *)(array->a_vector) +
-                i * elemsize,
-                xonset, yonset, wonset, i, 0, 0, 1,
-                0, 0, 0,
-                &pxpix, &pypix, &pwpix);
-            if (pwpix < 2)
-                pwpix = 2;
-            if (pxpix < x1)
-                x1 = pxpix;
-            if (pxpix > x2)
-                x2 = pxpix;
-            if (pypix - pwpix < y1)
-                y1 = pypix - pwpix;
-            if (pypix + pwpix > y2)
-                y2 = pypix + pwpix;
-        }
-    }
-    *xp1 = x1;
-    *yp1 = y1;
-    *xp2 = x2;
-    *yp2 = y2;
-}
-
-/* -------------------- widget behavior for garray ------------ */
 
 static void garray_getrect(t_gobj *z, t_glist *glist,
     int *xp1, int *yp1, int *xp2, int *yp2)
@@ -704,7 +541,7 @@ static int garray_click(t_gobj *z, t_glist *glist,
 
 void garray_savecontentsto(t_garray *x, t_buffer *b)
 {
-    if (x->x_saveit)
+    if (x->x_saveWithParent)
     {
         t_array *array = garray_getarray(x);
         int n = array->a_size, n2 = 0;
@@ -748,8 +585,8 @@ static void garray_save(t_gobj *z, t_buffer *b)
     filestyle = (style == PLOT_POINTS ? 1 : 
         (style == PLOT_POLYGONS ? 0 : style)); 
     buffer_vAppend(b, "sssisi;", sym___hash__X, sym_array,
-        x->x_name, array->a_size, &s_float,
-            x->x_saveit + 2 * filestyle + 8*x->x_hidename);
+        x->x_unexpandedName, array->a_size, &s_float,
+            x->x_saveWithParent + 2 * filestyle + 8*x->x_hideName);
     garray_savecontentsto(x, b);
 }
 
@@ -768,7 +605,7 @@ t_widgetbehavior garray_widgetbehavior =
 
 void garray_usedindsp(t_garray *x)
 {
-    x->x_usedindsp = 1;
+    x->x_isUsedInDSP = 1;
 }
 
 static void garray_drawJob(t_gobj *client, t_glist *glist)
@@ -792,7 +629,7 @@ void garray_redraw(t_garray *x)
     //{
       /* if (x->x_listviewing)
         sys_vGui("::ui_array::pdtk_array_listview_fillpage %s\n",
-                 x->x_realname->s_name);*/
+                 x->x_name->s_name);*/
     //}
     /* } jsarlo */
 }
@@ -830,12 +667,12 @@ int garray_getfloatwords(t_garray *x, int *size, t_word **vec)
     t_array *a = garray_getarray_floatonly(x, &yonset, &elemsize);
     if (!a)
     {
-        post_error ("%s: needs floating-point 'y' field", x->x_realname->s_name);
+        post_error ("%s: needs floating-point 'y' field", x->x_name->s_name);
         return (0);
     }
     else if (elemsize != sizeof(t_word))
     {
-        post_error ("%s: has more than one field", x->x_realname->s_name);
+        post_error ("%s: has more than one field", x->x_name->s_name);
         return (0);
     }
     *size = garray_npoints(x);
@@ -854,7 +691,7 @@ int garray_getfloatarray(t_garray *x, int *size, t_float **vec)
         else
             patchname = x->x_glist->gl_name;
         post_error ("An operation on the array '%s' in the patch '%s'",
-              x->x_name->s_name, patchname->s_name);
+              x->x_unexpandedName->s_name, patchname->s_name);
         post_error ("failed since it uses garray_getfloatarray while running 64-bit!");
     }
     return (garray_getfloatwords(x, size, (t_word **)vec));
@@ -863,10 +700,10 @@ int garray_getfloatarray(t_garray *x, int *size, t_float **vec)
     /* set the "saveit" flag */
 void garray_setsaveit(t_garray *x, int saveit)
 {
-    if (x->x_saveit && !saveit)
+    if (x->x_saveWithParent && !saveit)
         post("warning: array %s: clearing save-in-patch flag",
-            x->x_name->s_name);
-    x->x_saveit = saveit;
+            x->x_unexpandedName->s_name);
+    x->x_saveWithParent = saveit;
 }
 
 /*------------------- Pd messages ------------------------ */
@@ -875,7 +712,7 @@ static void garray_const(t_garray *x, t_float g)
     int yonset, i, elemsize;
     t_array *array = garray_getarray_floatonly(x, &yonset, &elemsize);
     if (!array)
-        post_error ("%s: needs floating-point 'y' field", x->x_realname->s_name);
+        post_error ("%s: needs floating-point 'y' field", x->x_name->s_name);
     else for (i = 0; i < array->a_size; i++)
         *((t_float *)((char *)array->a_vector
             + elemsize * i) + yonset) = g;
@@ -891,7 +728,7 @@ static void garray_dofo(t_garray *x, long npoints, t_float dcval,
     t_array *array = garray_getarray_floatonly(x, &yonset, &elemsize);
     if (!array)
     {
-        post_error ("%s: needs floating-point 'y' field", x->x_realname->s_name);
+        post_error ("%s: needs floating-point 'y' field", x->x_name->s_name);
         return;
     }
     if (npoints == 0)
@@ -924,7 +761,7 @@ static void garray_sinesum(t_garray *x, t_symbol *s, int argc, t_atom *argv)
     if (argc < 2)
     {
         post_error ("sinesum: %s: need number of points and partial strengths",
-            x->x_realname->s_name);
+            x->x_name->s_name);
         return;
     }
 
@@ -948,7 +785,7 @@ static void garray_cosinesum(t_garray *x, t_symbol *s, int argc, t_atom *argv)
     if (argc < 2)
     {
         post_error ("sinesum: %s: need number of points and partial strengths",
-            x->x_realname->s_name);
+            x->x_name->s_name);
         return;
     }
 
@@ -972,7 +809,7 @@ static void garray_normalize(t_garray *x, t_float f)
     t_array *array = garray_getarray_floatonly(x, &yonset, &elemsize);
     if (!array)
     {
-        post_error ("%s: needs floating-point 'y' field", x->x_realname->s_name);
+        post_error ("%s: needs floating-point 'y' field", x->x_name->s_name);
         return;
     }
 
@@ -1007,7 +844,7 @@ static void garray_list(t_garray *x, t_symbol *s, int argc, t_atom *argv)
     t_array *array = garray_getarray_floatonly(x, &yonset, &elemsize);
     if (!array)
     {
-        post_error ("%s: needs floating-point 'y' field", x->x_realname->s_name);
+        post_error ("%s: needs floating-point 'y' field", x->x_name->s_name);
         return;
     }
     if (argc < 2) return;
@@ -1069,14 +906,8 @@ static void garray_ylabel(t_garray *x, t_symbol *s, int argc, t_atom *argv)
     /* change the name of a garray. */
 static void garray_rename(t_garray *x, t_symbol *s)
 {
-    /* jsarlo { */
-    if (x->x_listviewing)
-    {
-        /*garray_arrayviewlist_close(x);*/
-    }
-    /* } jsarlo */
-    pd_unbind(&x->x_gobj.g_pd, x->x_realname);
-    pd_bind(&x->x_gobj.g_pd, x->x_realname = x->x_name = s);
+    pd_unbind(&x->x_gobj.g_pd, x->x_name);
+    pd_bind(&x->x_gobj.g_pd, x->x_name = x->x_unexpandedName = s);
     garray_redraw(x);
 }
 
@@ -1089,7 +920,7 @@ static void garray_read(t_garray *x, t_symbol *filename)
     t_array *array = garray_getarray_floatonly(x, &yonset, &elemsize);
     if (!array)
     {
-        post_error ("%s: needs floating-point 'y' field", x->x_realname->s_name);
+        post_error ("%s: needs floating-point 'y' field", x->x_name->s_name);
         return;
     }
     nelem = array->a_size;
@@ -1126,7 +957,7 @@ static void garray_write(t_garray *x, t_symbol *filename)
     t_array *array = garray_getarray_floatonly(x, &yonset, &elemsize);
     if (!array)
     {
-        post_error ("%s: needs floating-point 'y' field", x->x_realname->s_name);
+        post_error ("%s: needs floating-point 'y' field", x->x_name->s_name);
         return;
     }
     canvas_makeFilePath(canvas_getView(x->x_glist), filename->s_name,
@@ -1167,7 +998,7 @@ void garray_resize_long(t_garray *x, long n)
         template_findbyname(x->x_scalar->sc_template),
             sym_style, x->x_scalar->sc_vector, 1));
     array_resize_and_redraw(array, x->x_glist, n);
-    if (x->x_usedindsp)
+    if (x->x_isUsedInDSP)
         dsp_update();
 }
 
@@ -1181,7 +1012,7 @@ static void garray_print(t_garray *x)
 {
     t_array *array = garray_getarray(x);
     post("garray %s: template %s, length %d",
-        x->x_realname->s_name, array->a_template->s_name, array->a_size);
+        x->x_name->s_name, array->a_template->s_name, array->a_size);
 }
 
 void g_array_setup(void)
@@ -1220,14 +1051,7 @@ void g_array_setup(void)
         sym_normalize, A_DEFFLOAT, 0);
     class_addMethod(garray_class, (t_method)garray_arraydialog,
         sym__arraydialog, A_SYMBOL, A_FLOAT, A_FLOAT, A_NULL);
-/* jsarlo { */
-    /*class_addMethod(garray_class, (t_method)garray_arrayviewlist_new,
-        gen_sym ("arrayviewlistnew"), A_NULL);
-    class_addMethod(garray_class, (t_method)garray_arrayviewlist_fillpage,
-        gen_sym ("arrayviewlistfillpage"), A_FLOAT, A_DEFFLOAT, A_NULL);
-    class_addMethod(garray_class, (t_method)garray_arrayviewlist_close,
-      gen_sym ("arrayviewclose"), A_NULL);*/
-/* } jsarlo */
+
     class_setSaveFunction(garray_class, garray_save);
 }
 
