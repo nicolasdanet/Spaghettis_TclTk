@@ -57,51 +57,6 @@ t_widgetbehavior canvas_widgetbehavior =        /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_redrawGraphOnParent (t_glist *glist)
-{  
-    if (canvas_isMapped (glist)) {
-    //
-    if (canvas_canHaveWindow (glist)) {
-    //
-    t_gobj *y = NULL;
-    t_linetraverser t;
-    t_outconnect *connection = NULL;
-    
-    canvas_deleteGraphOnParentRectangle (glist);
-    
-    for (y = glist->gl_graphics; y; y = y->g_next) {
-        gobj_visibilityChanged (y, glist, 0);
-        gobj_visibilityChanged (y, glist, 1);
-    }
-
-    canvas_traverseLinesStart (&t, glist);
-    
-    while (connection = canvas_traverseLinesNext (&t)) {
-        sys_vGui (".x%lx.c coords %lxLINE %d %d %d %d\n",
-                        canvas_getView (glist),
-                        connection,
-                        t.tr_lineStartX,
-                        t.tr_lineStartY,
-                        t.tr_lineEndX,
-                        t.tr_lineEndY);
-    }
-    
-    canvas_drawGraphOnParentRectangle (glist);
-    //
-    }
-    
-    if (glist->gl_parent && canvas_isMapped (glist->gl_parent)) {
-        canvas_behaviorVisibilityChanged (cast_gobj (glist), glist->gl_parent, 0); 
-        canvas_behaviorVisibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
-    }
-    //
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 t_inlet *canvas_addInlet (t_glist *glist, t_pd *owner, t_symbol *s)
 {
     t_inlet *inlet = inlet_new (cast_object (glist), owner, s, NULL);
@@ -278,6 +233,24 @@ void canvas_resortOutlets (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void canvas_redrawGraphOnParent (t_glist *glist)
+{  
+    if (canvas_isMapped (glist)) {
+    //
+    if (canvas_canHaveWindow (glist)) { canvas_redraw (glist); }
+    
+    if (glist->gl_parent && canvas_isMapped (glist->gl_parent)) {
+        canvas_behaviorVisibilityChanged (cast_gobj (glist), glist->gl_parent, 0); 
+        canvas_behaviorVisibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
+    }
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void canvas_bounds (t_glist *glist, t_float a, t_float b, t_float c, t_float d)
 {
     if ((a == b) || (c == d)) { post_error (PD_TRANSLATE ("graph: invalid bounds")); }  // --
@@ -287,7 +260,7 @@ void canvas_bounds (t_glist *glist, t_float a, t_float b, t_float c, t_float d)
     glist->gl_valueRight    = c;
     glist->gl_valueTop      = b;
     glist->gl_valueBottom   = d;
-        
+    
     canvas_redrawGraphOnParent (glist);
     //
     }
