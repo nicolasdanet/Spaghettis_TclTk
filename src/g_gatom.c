@@ -40,6 +40,26 @@ t_class *gatom_class;                                   /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+struct _gatom {
+    t_object        a_obj;                          /* MUST be the first. */
+    t_atom          a_atom;
+    t_float         a_lowRange;
+    t_float         a_highRange;
+    t_fontsize      a_fontSize;
+    int             a_position;
+    int             a_isSelected;
+    t_glist         *a_owner;
+    t_symbol        *a_send;
+    t_symbol        *a_receive;
+    t_symbol        *a_label;
+    t_symbol        *a_unexpandedSend;
+    t_symbol        *a_unexpandedReceive;
+    t_symbol        *a_unexpandedLabel;
+    };
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static t_widgetbehavior gatom_widgetBehavior =          /* Shared. */
     {
         text_behaviorGetRectangle,

@@ -147,22 +147,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-struct _gtemplate;
-struct _guiconnect;
-struct _environment;
-struct _fielddescriptor;
-struct _boxtext;
-
-#define t_gtemplate                     struct _gtemplate
-#define t_guiconnect                    struct _guiconnect
-#define t_environment                   struct _environment
-#define t_fielddescriptor               struct _fielddescriptor
-#define t_boxtext                       struct _boxtext
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 struct _environment {
     int                 ce_dollarZeroValue;
     int                 ce_argc;
@@ -262,42 +246,6 @@ struct _glist {
     char                gl_saveScalar;
     char                gl_willBeVisible;
     };
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-typedef struct _gatom {
-    t_object            a_obj;                  /* MUST be the first. */
-    t_atom              a_atom;
-    t_float             a_lowRange;
-    t_float             a_highRange;
-    t_fontsize          a_fontSize;
-    int                 a_position;
-    int                 a_isSelected;
-    t_glist             *a_owner;
-    t_symbol            *a_send;
-    t_symbol            *a_receive;
-    t_symbol            *a_label;
-    t_symbol            *a_unexpandedSend;
-    t_symbol            *a_unexpandedReceive;
-    t_symbol            *a_unexpandedLabel;
-    } t_gatom;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-typedef struct _messageresponder {
-    t_pd                mr_pd;                  /* MUST be the first. */
-    t_outlet            *mr_outlet;
-    } t_messageresponder;
-
-typedef struct _message {
-    t_object            m_obj;                  /* MUST be the first. */
-    t_messageresponder  m_responder;
-    t_glist             *m_owner;
-    t_clock             *m_clock;
-    } t_message;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

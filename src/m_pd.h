@@ -428,9 +428,16 @@ struct _glist;
 struct _template;
 struct _widgetbehavior;
 struct _parentwidgetbehavior;
+struct _message;
 struct _garray;
+struct _gatom;
 struct _pdinstance;
 struct _dspcontext;
+struct _gtemplate;
+struct _guiconnect;
+struct _environment;
+struct _fielddescriptor;
+struct _boxtext;
 
 #define t_array                 struct _array
 #define t_class                 struct _class
@@ -442,12 +449,20 @@ struct _dspcontext;
 #define t_template              struct _template
 #define t_widgetbehavior        struct _widgetbehavior
 #define t_parentwidgetbehavior  struct _parentwidgetbehavior
+#define t_message               struct _message
 #define t_garray                struct _garray
+#define t_gatom                 struct _gatom
 #define t_pdinstance            struct _pdinstance
 #define t_dspcontext            struct _dspcontext
+#define t_gtemplate             struct _gtemplate
+#define t_guiconnect            struct _guiconnect
+#define t_environment           struct _environment
+#define t_fielddescriptor       struct _fielddescriptor
+#define t_boxtext               struct _boxtext
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 typedef struct _gstub {
     union {

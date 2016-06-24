@@ -119,9 +119,9 @@ typedef void (*t_pointermethod)     (t_pd *x, t_gpointer *gp);
 #pragma mark -
 
 typedef struct _entry {
-    t_symbol    *me_name;
-    t_method    me_method;
-    t_atomtype  me_arguments[PD_ARGUMENTS + 1];
+    t_symbol                *me_name;
+    t_method                me_method;
+    t_atomtype              me_arguments[PD_ARGUMENTS + 1];
     } t_entry;
     
 // -----------------------------------------------------------------------------------------------------------
@@ -170,13 +170,13 @@ struct _pdinstance {
 #pragma mark -
 
 typedef struct _bindelement {
-    t_pd                *e_what;                        /* MUST be the first. */
-    struct _bindelement *e_next;
+    t_pd                    *e_what;                    /* MUST be the first. */
+    struct _bindelement     *e_next;
     } t_bindelement;
 
 typedef struct _bindlist {
-    t_pd                b_pd;                           /* MUST be the first. */
-    t_bindelement       *b_list;
+    t_pd                    b_pd;                       /* MUST be the first. */
+    t_bindelement           *b_list;
     } t_bindlist;
 
 // -----------------------------------------------------------------------------------------------------------

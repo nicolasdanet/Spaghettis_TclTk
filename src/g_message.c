@@ -22,6 +22,22 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+typedef struct _messageresponder {
+    t_pd                mr_pd;                  /* MUST be the first. */
+    t_outlet            *mr_outlet;
+    } t_messageresponder;
+
+struct _message {
+    t_object            m_obj;                          /* MUST be the first. */
+    t_messageresponder  m_responder;
+    t_glist             *m_owner;
+    t_clock             *m_clock;
+    };
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static t_class *message_class;                          /* Shared. */
 static t_class *messageresponder_class;                 /* Shared. */
 
