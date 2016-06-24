@@ -38,7 +38,7 @@ void loader_release         (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void g_array_setup          (void);
+void garray_setup           (void);
 void canvas_setup           (void);
 void guiconnect_setup       (void);
 void bng_setup              (void);
@@ -95,7 +95,7 @@ void setup_initialize (void)
     global_initialize();
     editor_initialize();
     
-    g_array_setup();
+    garray_setup();
     canvas_setup();
     guiconnect_setup();
     bng_setup();

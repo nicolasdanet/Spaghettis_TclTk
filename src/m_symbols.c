@@ -155,6 +155,7 @@ t_symbol *sym_cnv;
 t_symbol *sym_color;
 t_symbol *sym_comment;
 t_symbol *sym_connect;
+t_symbol *sym_constant;
 t_symbol *sym_coords;
 t_symbol *sym_cos;
 t_symbol *sym_cos__tilde__;
@@ -637,6 +638,7 @@ void symbols_initialize (void)
     sym_color                                   = gensym ("color");
     sym_comment                                 = gensym ("comment");
     sym_connect                                 = gensym ("connect");
+    sym_constant                                = gensym ("constant");
     sym_coords                                  = gensym ("coords");
     sym_cos                                     = gensym ("cos");
     sym_cos__tilde__                            = gensym ("cos~");

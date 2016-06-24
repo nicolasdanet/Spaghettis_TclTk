@@ -18,6 +18,18 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static void garray_getrect  (t_gobj *, t_glist *, int *, int *, int *, int *);
+static void garray_displace (t_gobj *, t_glist *, int, int);
+static void garray_select   (t_gobj *, t_glist *, int);
+static void garray_activate (t_gobj *, t_glist *, int);
+static void garray_delete   (t_gobj *, t_glist *);
+static void garray_vis      (t_gobj *, t_glist *, int);
+static int  garray_click    (t_gobj *, t_glist *, int, int, int, int, int, int, int);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 extern t_pd pd_canvasMaker;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -42,16 +54,30 @@ struct _garray {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static t_widgetbehavior garray_widgetBehavior = 
+    {
+        garray_getrect,
+        garray_displace,
+        garray_select,
+        garray_activate,
+        garray_delete,
+        garray_vis,
+        garray_click,
+    };
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 /* Create invisible, built-in canvases to supply templates for floats and float-arrays. */
 
 void garray_initialize (void)
 {
-    static char arrayTemplateFile[] = 
+    static char *arrayTemplateFile = 
         "canvas 0 0 458 153 10;\n"
         "#X obj 43 31 struct float-array array z float float style float linewidth float color;\n"
         "#X obj 43 70 plot z color linewidth 0 0 1 style;\n";
         
-    static char floatTemplateFile[] = 
+    static char *floatTemplateFile = 
         "canvas 0 0 458 153 10;\n"
         "#X obj 39 26 struct float float y;\n";
 
@@ -69,7 +95,7 @@ void garray_initialize (void)
 
     canvas_setActiveFileNameAndDirectory (&s_, &s_);
     
-    buffer_free(b);  
+    buffer_free (b);  
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -491,8 +517,11 @@ static void garray_free(t_garray *x)
     pd_free(&x->x_scalar->sc_g.g_pd);
 }
 
-static void garray_getrect(t_gobj *z, t_glist *glist,
-    int *xp1, int *yp1, int *xp2, int *yp2)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void garray_getrect(t_gobj *z, t_glist *glist, int *xp1, int *yp1, int *xp2, int *yp2)
 {
     t_garray *x = (t_garray *)z;
     gobj_getRectangle(&x->x_scalar->sc_g, glist, xp1, yp1, xp2, yp2);
@@ -525,13 +554,16 @@ static void garray_vis(t_gobj *z, t_glist *glist, int vis)
     // interface_guiQueueRemove
 }
 
-static int garray_click(t_gobj *z, t_glist *glist,
-    int xpix, int ypix, int shift, int ctrl, int alt, int dbl, int doit)
+static int garray_click(t_gobj *z, t_glist *glist, int xpix, int ypix, int shift, int ctrl, int alt, int dbl, int doit)
 {
     t_garray *x = (t_garray *)z;
     return (gobj_clicked(&x->x_scalar->sc_g, glist,
         xpix, ypix, shift, ctrl, alt, dbl, doit));
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #define ARRAYWRITECHUNKSIZE 1000
 
@@ -585,17 +617,6 @@ static void garray_save(t_gobj *z, t_buffer *b)
             x->x_saveWithParent + 2 * filestyle + 8*x->x_hideName);
     garray_savecontentsto(x, b);
 }
-
-t_widgetbehavior garray_widgetbehavior =
-{
-    garray_getrect,
-    garray_displace,
-    garray_select,
-    garray_activate,
-    garray_delete,
-    garray_vis,
-    garray_click,
-};
 
 /* ----------------------- public functions -------------------- */
 
@@ -1011,44 +1032,58 @@ static void garray_print(t_garray *x)
         x->x_name->s_name, array->a_template->s_name, array->a_size);
 }
 
-void g_array_setup(void)
-{
-    garray_class = class_new(sym_array, 0, (t_method)garray_free,
-        sizeof(t_garray), CLASS_GRAPHIC, 0);
-    class_setWidgetBehavior(garray_class, &garray_widgetbehavior);
-    class_addMethod(garray_class, (t_method)garray_const, sym_const,    /* LEGACY !!! */
-        A_DEFFLOAT, A_NULL);
-    class_addList(garray_class, garray_list);
-    class_addMethod(garray_class, (t_method)garray_bounds, sym_bounds,
-        A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    /* class_addMethod(garray_class, (t_method)garray_xticks, sym_xticks,
-        A_FLOAT, A_FLOAT, A_FLOAT, 0); */
-    /*class_addMethod(garray_class, (t_method)garray_xlabel, gen_sym ("xlabel"),
-        A_GIMME, 0);*/
-    /* class_addMethod(garray_class, (t_method)garray_yticks, sym_yticks,
-        A_FLOAT, A_FLOAT, A_FLOAT, 0); */
-    /*class_addMethod(garray_class, (t_method)garray_ylabel, gen_sym ("ylabel"),
-        A_GIMME, 0);*/
-    class_addMethod(garray_class, (t_method)garray_rename, sym_rename,
-        A_SYMBOL, 0);
-    class_addMethod(garray_class, (t_method)garray_read, sym_read,
-        A_SYMBOL, A_NULL);
-    class_addMethod(garray_class, (t_method)garray_write, sym_write,
-        A_SYMBOL, A_NULL);
-    class_addMethod(garray_class, (t_method)garray_resize, sym_resize,
-        A_FLOAT, A_NULL);
-    class_addMethod(garray_class, (t_method)garray_print, sym_print,
-        A_NULL);
-    class_addMethod(garray_class, (t_method)garray_sinesum, sym_sinesum,
-        A_GIMME, 0);
-    class_addMethod(garray_class, (t_method)garray_cosinesum,
-        sym_cosinesum, A_GIMME, 0);
-    class_addMethod(garray_class, (t_method)garray_normalize,
-        sym_normalize, A_DEFFLOAT, 0);
-    class_addMethod(garray_class, (t_method)garray_arraydialog,
-        sym__arraydialog, A_SYMBOL, A_FLOAT, A_FLOAT, A_NULL);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-    class_setSaveFunction(garray_class, garray_save);
+void garray_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_array,
+        NULL,
+        (t_method)garray_free,
+        sizeof (t_garray),
+        CLASS_GRAPHIC,
+        A_NULL);
+        
+    class_addList (c, garray_list);
+    
+    class_addMethod (c, (t_method)garray_const,         sym_constant,       A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)garray_normalize,     sym_normalize,      A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)garray_rename,        sym_rename,         A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)garray_read,          sym_read,           A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)garray_write,         sym_write,          A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)garray_resize,        sym_resize,         A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)garray_print,         sym_print,          A_NULL);
+    class_addMethod (c, (t_method)garray_sinesum,       sym_sinesum,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)garray_cosinesum,     sym_cosinesum,      A_GIMME, A_NULL);
+
+    class_addMethod (c, (t_method)garray_arraydialog,
+        sym__arraydialog,
+        A_SYMBOL,
+        A_FLOAT,
+        A_FLOAT,
+        A_NULL);
+
+    class_addMethod (c, (t_method)garray_bounds,
+        sym_bounds,
+        A_FLOAT,
+        A_FLOAT,
+        A_FLOAT,
+        A_FLOAT,
+        A_NULL);
+        
+    #if PD_WITH_LEGACY
+    
+    class_addMethod (c, (t_method)garray_const, sym_const, A_DEFFLOAT, A_NULL);
+    
+    #endif
+    
+    class_setWidgetBehavior (c, &garray_widgetBehavior);
+    class_setSaveFunction (c, garray_save);
+    
+    garray_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
