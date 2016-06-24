@@ -46,30 +46,29 @@ struct _garray {
 
 void garray_initialize (void)
 {
-    static char arrayTemplateFile[] = "\
-canvas 0 0 458 153 10;\n\
-#X obj 43 31 struct float-array array z float float style\n\
-float linewidth float color;\n\
-#X obj 43 70 plot z color linewidth 0 0 1 style;\n\
-";
-static char floatTemplateFile[] = "\
-canvas 0 0 458 153 10;\n\
-#X obj 39 26 struct float float y;\n\
-";
+    static char arrayTemplateFile[] = 
+        "canvas 0 0 458 153 10;\n"
+        "#X obj 43 31 struct float-array array z float float style float linewidth float color;\n"
+        "#X obj 43 70 plot z color linewidth 0 0 1 style;\n";
+        
+    static char floatTemplateFile[] = 
+        "canvas 0 0 458 153 10;\n"
+        "#X obj 39 26 struct float float y;\n";
 
     t_buffer *b = buffer_new();
     
-    canvas_setActiveFileNameAndDirectory (sym__float_template, sym___dot__); /* ??? */
-    buffer_withStringUnzeroed(b, floatTemplateFile, strlen(floatTemplateFile));
-    buffer_eval(b, &pd_canvasMaker, 0, 0);
-    pd_vMessage(s__X.s_thing, sym__pop, "i", 0);
+    canvas_setActiveFileNameAndDirectory (sym__floattemplate, sym___dot__);
+    buffer_withStringUnzeroed (b, floatTemplateFile, strlen (floatTemplateFile));
+    buffer_eval (b, &pd_canvasMaker, 0, NULL);
+    pd_vMessage (s__X.s_thing, sym__pop, "i", 0);
     
-    canvas_setActiveFileNameAndDirectory (sym__float_array_template, sym___dot__);  /* ??? */
-    buffer_withStringUnzeroed(b, arrayTemplateFile, strlen(arrayTemplateFile));
-    buffer_eval(b, &pd_canvasMaker, 0, 0);
-    pd_vMessage(s__X.s_thing, sym__pop, "i", 0);
+    canvas_setActiveFileNameAndDirectory (sym__floatarraytemplate, sym___dot__);
+    buffer_withStringUnzeroed (b, arrayTemplateFile, strlen (arrayTemplateFile));
+    buffer_eval (b, &pd_canvasMaker, 0, NULL);
+    pd_vMessage (s__X.s_thing, sym__pop, "i", 0);
 
     canvas_setActiveFileNameAndDirectory (&s_, &s_);
+    
     buffer_free(b);  
 }
 
