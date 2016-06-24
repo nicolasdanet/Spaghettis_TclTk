@@ -81,27 +81,27 @@ typedef void (*t_clockfn)       (void *owner);
 #pragma mark -
 
 struct _clock {
-    double          c_systime;      /* Negative for unset clocks. */
-    double          c_unit;         /* A positive value is in ticks, negative for number of samples. */
-    t_clockfn       c_fn;
-    void            *c_owner;
-    struct _clock   *c_next;
+    double              c_systime;      /* Negative for unset clocks. */
+    double              c_unit;         /* A positive value is in ticks, negative for number of samples. */
+    t_clockfn           c_fn;
+    void                *c_owner;
+    struct _clock       *c_next;
     };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _receiver {
-    void            *r_owner;
-    t_buffer        *r_message;
-    char            *r_inRaw;
-    int             r_inHead;
-    int             r_inTail;
-    int             r_fd;
-    int             r_isUdp;
-    int             r_isClosed;
-    t_notifyfn      r_fnNotify;
-    t_receivefn     r_fnReceive;
+    void                *r_owner;
+    t_buffer            *r_message;
+    char                *r_inRaw;
+    int                 r_inHead;
+    int                 r_inTail;
+    int                 r_fd;
+    int                 r_isUdp;
+    int                 r_isClosed;
+    t_notifyfn          r_fnNotify;
+    t_receivefn         r_fnReceive;
     } t_receiver;
 
 // -----------------------------------------------------------------------------------------------------------

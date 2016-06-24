@@ -41,7 +41,7 @@ t_class *gatom_class;                                   /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 struct _gatom {
-    t_object        a_obj;                          /* MUST be the first. */
+    t_object        a_obj;                              /* MUST be the first. */
     t_atom          a_atom;
     t_float         a_lowRange;
     t_float         a_highRange;

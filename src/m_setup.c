@@ -142,7 +142,7 @@ void setup_initialize (void)
     d_soundfile_setup();
     d_ugen_setup();
     
-    garray_init();
+    garray_initialize();
     loader_initialize();
 }
 

@@ -23,13 +23,12 @@ extern t_pd pd_canvasMaker;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_class *garray_class;      /* Shared. */
+t_class *garray_class;                  /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-struct _garray
-{
+struct _garray {
     t_gobj      x_gobj;
     t_scalar    *x_scalar;
     t_glist     *x_glist;
@@ -38,47 +37,45 @@ struct _garray
     char        x_isUsedInDSP;
     char        x_saveWithParent;
     char        x_hideName;
-};
+    };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_pd *garray_arraytemplatecanvas;
-static char garray_arraytemplatefile[] = "\
+/* Create invisible, built-in canvases to supply templates for floats and float-arrays. */
+
+void garray_initialize (void)
+{
+    static char arrayTemplateFile[] = "\
 canvas 0 0 458 153 10;\n\
 #X obj 43 31 struct float-array array z float float style\n\
 float linewidth float color;\n\
 #X obj 43 70 plot z color linewidth 0 0 1 style;\n\
 ";
-static char garray_floattemplatefile[] = "\
+static char floatTemplateFile[] = "\
 canvas 0 0 458 153 10;\n\
 #X obj 39 26 struct float float y;\n\
 ";
 
-/* create invisible, built-in canvases to supply templates for floats
-and float-arrays. */
-
-void garray_init( void)
-{
-    t_buffer *b;
-    if (garray_arraytemplatecanvas)
-        return;
-    b = buffer_new();
+    t_buffer *b = buffer_new();
     
     canvas_setActiveFileNameAndDirectory (sym__float_template, sym___dot__); /* ??? */
-    buffer_withStringUnzeroed(b, garray_floattemplatefile, strlen(garray_floattemplatefile));
+    buffer_withStringUnzeroed(b, floatTemplateFile, strlen(floatTemplateFile));
     buffer_eval(b, &pd_canvasMaker, 0, 0);
     pd_vMessage(s__X.s_thing, sym__pop, "i", 0);
     
     canvas_setActiveFileNameAndDirectory (sym__float_array_template, sym___dot__);  /* ??? */
-    buffer_withStringUnzeroed(b, garray_arraytemplatefile, strlen(garray_arraytemplatefile));
+    buffer_withStringUnzeroed(b, arrayTemplateFile, strlen(arrayTemplateFile));
     buffer_eval(b, &pd_canvasMaker, 0, 0);
-    garray_arraytemplatecanvas = s__X.s_thing;
     pd_vMessage(s__X.s_thing, sym__pop, "i", 0);
 
     canvas_setActiveFileNameAndDirectory (&s_, &s_);
     buffer_free(b);  
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* create a new scalar attached to a symbol.  Used to make floating-point
 arrays (the scalar will be of type "float-array").  Currently this is

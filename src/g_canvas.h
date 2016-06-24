@@ -708,6 +708,12 @@ void            gatom_click                             (t_gatom *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void            garray_initialize                       (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void            canvas_paintAllScalarsByView            (t_glist *glist, int action);
 void            canvas_paintAllScalarsByTemplate        (t_template *dummy, int action);
 
@@ -795,7 +801,7 @@ t_garray     *graph_array               (t_glist *gl,
                                             t_float f,
                                             t_float saveit);
 
-void        garray_init                 (void);
+
 
 void         array_resize               (t_array *x, int n);
 void         array_free                 (t_array *x);
