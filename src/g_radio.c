@@ -451,31 +451,6 @@ static void radio_initialize (t_radio *x, t_float f)
     x->x_gui.iem_loadbang = (f != 0.0);
 }
 
-static void radio_dialog (t_radio *x, t_symbol *s, int argc, t_atom *argv)
-{
-    if (argc == IEM_DIALOG_SIZE) {
-    //
-    int size            = (int)atom_getFloatAtIndex (0, argc, argv);
-    int changed         = (int)atom_getFloatAtIndex (4, argc, argv);
-    int numberOfButtons = (int)atom_getFloatAtIndex (6, argc, argv);
-
-    x->x_gui.iem_width  = PD_MAX (size, IEM_MINIMUM_WIDTH);
-    x->x_gui.iem_height = PD_MAX (size, IEM_MINIMUM_WIDTH);
-    
-    iemgui_fromDialog (&x->x_gui, argc, argv);
-    
-    numberOfButtons = PD_CLAMP (numberOfButtons, 1, IEM_MAXIMUM_BUTTONS);
-    
-    x->x_changed = (changed != 0);
-
-    if (x->x_numberOfButtons != numberOfButtons) { radio_buttonsNumber (x, (t_float)numberOfButtons); } 
-    else {
-        iemgui_boxChanged ((void *)x, &x->x_gui);
-    }
-    //
-    }
-}
-
 static void radio_size (t_radio *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc) {
@@ -612,6 +587,31 @@ static void radio_functionProperties (t_gobj *z, t_glist *owner)
     PD_ASSERT (!err);
     
     guistub_new (cast_pd (x), (void *)x, t);
+}
+
+static void radio_dialog (t_radio *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc == IEM_DIALOG_SIZE) {
+    //
+    int size            = (int)atom_getFloatAtIndex (0, argc, argv);
+    int changed         = (int)atom_getFloatAtIndex (4, argc, argv);
+    int numberOfButtons = (int)atom_getFloatAtIndex (6, argc, argv);
+
+    x->x_gui.iem_width  = PD_MAX (size, IEM_MINIMUM_WIDTH);
+    x->x_gui.iem_height = PD_MAX (size, IEM_MINIMUM_WIDTH);
+    
+    iemgui_fromDialog (&x->x_gui, argc, argv);
+    
+    numberOfButtons = PD_CLAMP (numberOfButtons, 1, IEM_MAXIMUM_BUTTONS);
+    
+    x->x_changed = (changed != 0);
+
+    if (x->x_numberOfButtons != numberOfButtons) { radio_buttonsNumber (x, (t_float)numberOfButtons); } 
+    else {
+        iemgui_boxChanged ((void *)x, &x->x_gui);
+    }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -237,44 +237,6 @@ static void gatom_set (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-static void gatom_dialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
-{
-    if (argc == ATOM_DIALOG_SIZE) {
-    //
-    t_float width       = atom_getFloatAtIndex (0, argc, argv);
-    t_float lowRange    = atom_getFloatAtIndex (1, argc, argv);
-    t_float highRange   = atom_getFloatAtIndex (2, argc, argv);
-    t_symbol *send      = gatom_parse (atom_getSymbolAtIndex (4, argc, argv));
-    t_symbol *receive   = gatom_parse (atom_getSymbolAtIndex (5, argc, argv));
-    t_symbol *label     = gatom_parse (atom_getSymbolAtIndex (6, argc, argv));
-    int position        = (int)atom_getFloatAtIndex (7, argc, argv);
-
-    gobj_visibilityChanged (cast_gobj (x), x->a_owner, 0);
-
-    if (x->a_receive != &s_) { pd_unbind (cast_pd (x), x->a_receive); }
-        
-    cast_object (x)->te_width   = PD_CLAMP (width, 0, ATOM_WIDTH_MAXIMUM);
-    x->a_lowRange               = PD_MIN (lowRange, highRange);
-    x->a_highRange              = PD_MAX (lowRange, highRange);
-    x->a_position               = PD_CLAMP (position, ATOM_LABEL_LEFT, ATOM_LABEL_DOWN);
-    x->a_unexpandedSend         = send;
-    x->a_unexpandedReceive      = receive;
-    x->a_unexpandedLabel        = label;
-    x->a_send                   = canvas_expandDollar (x->a_owner, x->a_unexpandedSend);
-    x->a_receive                = canvas_expandDollar (x->a_owner, x->a_unexpandedReceive);
-    x->a_label                  = canvas_expandDollar (x->a_owner, x->a_unexpandedLabel);
-    
-    if (x->a_receive != &s_) { pd_bind (cast_pd (x), x->a_receive); }
-    
-    gatom_set (x, NULL, 1, argv + 3);
-
-    gobj_visibilityChanged (cast_gobj (x), x->a_owner, 1);
-    
-    canvas_dirty (x->a_owner, 1);
-    //
-    }
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -428,6 +390,44 @@ static void gatom_functionProperties (t_gobj *z, t_glist *owner)
     PD_ASSERT (!err);
     
     guistub_new (cast_pd (x), (void *)x, t);
+}
+
+static void gatom_dialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc == ATOM_DIALOG_SIZE) {
+    //
+    t_float width       = atom_getFloatAtIndex (0, argc, argv);
+    t_float lowRange    = atom_getFloatAtIndex (1, argc, argv);
+    t_float highRange   = atom_getFloatAtIndex (2, argc, argv);
+    t_symbol *send      = gatom_parse (atom_getSymbolAtIndex (4, argc, argv));
+    t_symbol *receive   = gatom_parse (atom_getSymbolAtIndex (5, argc, argv));
+    t_symbol *label     = gatom_parse (atom_getSymbolAtIndex (6, argc, argv));
+    int position        = (int)atom_getFloatAtIndex (7, argc, argv);
+
+    gobj_visibilityChanged (cast_gobj (x), x->a_owner, 0);
+
+    if (x->a_receive != &s_) { pd_unbind (cast_pd (x), x->a_receive); }
+        
+    cast_object (x)->te_width   = PD_CLAMP (width, 0, ATOM_WIDTH_MAXIMUM);
+    x->a_lowRange               = PD_MIN (lowRange, highRange);
+    x->a_highRange              = PD_MAX (lowRange, highRange);
+    x->a_position               = PD_CLAMP (position, ATOM_LABEL_LEFT, ATOM_LABEL_DOWN);
+    x->a_unexpandedSend         = send;
+    x->a_unexpandedReceive      = receive;
+    x->a_unexpandedLabel        = label;
+    x->a_send                   = canvas_expandDollar (x->a_owner, x->a_unexpandedSend);
+    x->a_receive                = canvas_expandDollar (x->a_owner, x->a_unexpandedReceive);
+    x->a_label                  = canvas_expandDollar (x->a_owner, x->a_unexpandedLabel);
+    
+    if (x->a_receive != &s_) { pd_bind (cast_pd (x), x->a_receive); }
+    
+    gatom_set (x, NULL, 1, argv + 3);
+
+    gobj_visibilityChanged (cast_gobj (x), x->a_owner, 1);
+    
+    canvas_dirty (x->a_owner, 1);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

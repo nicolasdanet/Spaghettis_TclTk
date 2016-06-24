@@ -470,26 +470,6 @@ static void vu_ft1 (t_vu *x, t_float peak)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void vu_dialog (t_vu *x, t_symbol *s, int argc, t_atom *argv)
-{
-    if (argc == IEM_DIALOG_SIZE) {
-    //
-    int width     = (int)atom_getFloatAtIndex (0, argc, argv);
-    int thickness = (int)atom_getFloatAtIndex (1, argc, argv);
-    
-    iemgui_fromDialog (&x->x_gui, argc, argv);
-    
-    x->x_gui.iem_canSend = 0;    /* Force values that could be misguidedly set. */
-    
-    x->x_gui.iem_width = PD_MAX (width, IEM_MINIMUM_WIDTH);
-    
-    vu_setHeight (x, (thickness + 1) * IEM_VUMETER_STEPS);
-    
-    iemgui_boxChanged ((void *)x, &x->x_gui);
-    //
-    }
-}
-
 static void vu_size (t_vu *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc) {
@@ -576,6 +556,26 @@ static void vu_functionProperties (t_gobj *z, t_glist *owner)
     PD_ASSERT (!err);
     
     guistub_new (cast_pd (x), (void *)x, t);
+}
+
+static void vu_dialog (t_vu *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc == IEM_DIALOG_SIZE) {
+    //
+    int width     = (int)atom_getFloatAtIndex (0, argc, argv);
+    int thickness = (int)atom_getFloatAtIndex (1, argc, argv);
+    
+    iemgui_fromDialog (&x->x_gui, argc, argv);
+    
+    x->x_gui.iem_canSend = 0;    /* Force values that could be misguidedly set. */
+    
+    x->x_gui.iem_width = PD_MAX (width, IEM_MINIMUM_WIDTH);
+    
+    vu_setHeight (x, (thickness + 1) * IEM_VUMETER_STEPS);
+    
+    iemgui_boxChanged ((void *)x, &x->x_gui);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -49,12 +49,6 @@ int             canvas_magic = 10000;                       /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_functionProperties   (t_gobj *, t_glist *);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void canvas_loadbangAbstractions (t_glist *glist)
 {
     t_gobj *y = NULL;
@@ -469,6 +463,85 @@ static void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void canvas_functionSave (t_gobj *x, t_buffer *b)
+{
+    int needToSaveContents = 1;
+    
+    if (canvas_isAbstraction (cast_glist (x))) { needToSaveContents = 0; }
+    else {                                                             
+        if (utils_getFirstAtomOfObjectAsSymbol (cast_object (x)) == sym_table) { needToSaveContents = 0; }
+    }
+
+    if (needToSaveContents) { 
+        canvas_serialize (cast_glist (x), b);
+        buffer_vAppend (b, "ssii",
+            sym___hash__X,
+            sym_restore,
+            cast_object (x)->te_xCoordinate,
+            cast_object (x)->te_yCoordinate);
+    } else {
+        buffer_vAppend (b, "ssii",
+            sym___hash__X,
+            sym_obj,
+            cast_object (x)->te_xCoordinate,
+            cast_object (x)->te_yCoordinate);
+    }
+    
+    buffer_serialize (b, cast_object (x)->te_buffer);
+    
+    if (cast_object (x)->te_width) { buffer_vAppend (b, ",si", sym_f, cast_object (x)->te_width); }
+    
+    buffer_vAppend (b, ";");
+}
+
+static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
+{
+    t_gobj *y = NULL;
+    t_glist *g = cast_glist (x);
+    t_error err = PD_ERROR_NONE;
+    char t[PD_STRING] = { 0 };
+    
+    if (g->gl_isGraphOnParent) {
+        err = string_sprintf (t, PD_STRING, "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
+                                    0.,
+                                    0.,
+                                    g->gl_isGraphOnParent | (g->gl_hideText << 1),
+                                    g->gl_valueLeft,
+                                    g->gl_valueTop,
+                                    g->gl_valueRight,
+                                    g->gl_valueBottom, 
+                                    g->gl_graphWidth,
+                                    g->gl_graphHeight,
+                                    g->gl_graphMarginLeft,
+                                    g->gl_graphMarginTop);
+    } else {
+        err = string_sprintf (t, PD_STRING, "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
+                                    canvas_deltaPositionToValueX (g, 1.0),
+                                    canvas_deltaPositionToValueY (g, 1.0),
+                                    g->gl_isGraphOnParent | (g->gl_hideText << 1),
+                                    0.,
+                                    1.,
+                                    1.,
+                                   -1., 
+                                    g->gl_graphWidth, 
+                                    g->gl_graphHeight,
+                                    g->gl_graphMarginLeft,
+                                    g->gl_graphMarginTop);
+    }
+    
+    PD_ASSERT (!err);
+    
+    guistub_new (cast_pd (g), g, t);
+
+    for (y = g->gl_graphics; y; y = y->g_next) {
+        if (pd_class (y) == garray_class) { garray_properties (cast_garray (y)); }
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void canvas_popupDialog (t_glist *glist, t_float action, t_float positionX, t_float positionY)
 {
     t_gobj *y = NULL;
@@ -572,85 +645,6 @@ static void canvas_dialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
             gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 0);
             gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
         }
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void canvas_functionSave (t_gobj *x, t_buffer *b)
-{
-    int needToSaveContents = 1;
-    
-    if (canvas_isAbstraction (cast_glist (x))) { needToSaveContents = 0; }
-    else {                                                             
-        if (utils_getFirstAtomOfObjectAsSymbol (cast_object (x)) == sym_table) { needToSaveContents = 0; }
-    }
-
-    if (needToSaveContents) { 
-        canvas_serialize (cast_glist (x), b);
-        buffer_vAppend (b, "ssii",
-            sym___hash__X,
-            sym_restore,
-            cast_object (x)->te_xCoordinate,
-            cast_object (x)->te_yCoordinate);
-    } else {
-        buffer_vAppend (b, "ssii",
-            sym___hash__X,
-            sym_obj,
-            cast_object (x)->te_xCoordinate,
-            cast_object (x)->te_yCoordinate);
-    }
-    
-    buffer_serialize (b, cast_object (x)->te_buffer);
-    
-    if (cast_object (x)->te_width) { buffer_vAppend (b, ",si", sym_f, cast_object (x)->te_width); }
-    
-    buffer_vAppend (b, ";");
-}
-
-static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
-{
-    t_gobj *y = NULL;
-    t_glist *g = cast_glist (x);
-    t_error err = PD_ERROR_NONE;
-    char t[PD_STRING] = { 0 };
-    
-    if (g->gl_isGraphOnParent) {
-        err = string_sprintf (t, PD_STRING, "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
-                                    0.,
-                                    0.,
-                                    g->gl_isGraphOnParent | (g->gl_hideText << 1),
-                                    g->gl_valueLeft,
-                                    g->gl_valueTop,
-                                    g->gl_valueRight,
-                                    g->gl_valueBottom, 
-                                    g->gl_graphWidth,
-                                    g->gl_graphHeight,
-                                    g->gl_graphMarginLeft,
-                                    g->gl_graphMarginTop);
-    } else {
-        err = string_sprintf (t, PD_STRING, "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
-                                    canvas_deltaPositionToValueX (g, 1.0),
-                                    canvas_deltaPositionToValueY (g, 1.0),
-                                    g->gl_isGraphOnParent | (g->gl_hideText << 1),
-                                    0.,
-                                    1.,
-                                    1.,
-                                   -1., 
-                                    g->gl_graphWidth, 
-                                    g->gl_graphHeight,
-                                    g->gl_graphMarginLeft,
-                                    g->gl_graphMarginTop);
-    }
-    
-    PD_ASSERT (!err);
-    
-    guistub_new (cast_pd (g), g, t);
-
-    for (y = g->gl_graphics; y; y = y->g_next) {
-        if (pd_class (y) == garray_class) { garray_properties (cast_garray (y)); }
     }
 }
 

@@ -499,38 +499,6 @@ static void dial_initialize (t_dial *x, t_float f)
     x->x_gui.iem_loadbang = (f != 0.0);
 }
 
-static void dial_dialog (t_dial *x, t_symbol *s, int argc, t_atom *argv)
-{
-    if (argc == IEM_DIALOG_SIZE) {
-    //
-    int digits          = (int)atom_getFloatAtIndex (0, argc, argv);
-    int height          = (int)atom_getFloatAtIndex (1, argc, argv);
-    double minimum      = (double)atom_getFloatAtIndex (2, argc, argv);
-    double maximum      = (double)atom_getFloatAtIndex (3, argc, argv);
-    int isLogarithmic   = (int)atom_getFloatAtIndex (4, argc, argv);
-    int steps           = (int)atom_getFloatAtIndex (6, argc, argv);
-    
-    iemgui_fromDialog (&x->x_gui, argc, argv);
-    
-    x->x_gui.iem_height = PD_MAX (height, IEM_MINIMUM_HEIGHT);
-    x->x_isLogarithmic  = (isLogarithmic != 0);
-    x->x_digitsNumber   = PD_CLAMP (digits, 1, IEM_DIAL_BUFFER_LENGTH - 1);
-    x->x_steps          = PD_MAX (steps, 1);
-    x->x_position       = PD_MIN (x->x_position, x->x_steps);
-    
-    dial_setRange (x, minimum, maximum);
-    
-    x->x_floatValue = dial_getValue (x);
-        
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_CONFIG);
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_MOVE);
-    
-    canvas_updateLinesByObject (x->x_gui.iem_owner, cast_object (x));
-    //
-    }
-}
-
 static void dial_size (t_dial *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc) {
@@ -699,6 +667,38 @@ static void dial_functionProperties (t_gobj *z, t_glist *owner)
     PD_ASSERT (!err);
     
     guistub_new (cast_pd (x), (void *)x, t);
+}
+
+static void dial_dialog (t_dial *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc == IEM_DIALOG_SIZE) {
+    //
+    int digits          = (int)atom_getFloatAtIndex (0, argc, argv);
+    int height          = (int)atom_getFloatAtIndex (1, argc, argv);
+    double minimum      = (double)atom_getFloatAtIndex (2, argc, argv);
+    double maximum      = (double)atom_getFloatAtIndex (3, argc, argv);
+    int isLogarithmic   = (int)atom_getFloatAtIndex (4, argc, argv);
+    int steps           = (int)atom_getFloatAtIndex (6, argc, argv);
+    
+    iemgui_fromDialog (&x->x_gui, argc, argv);
+    
+    x->x_gui.iem_height = PD_MAX (height, IEM_MINIMUM_HEIGHT);
+    x->x_isLogarithmic  = (isLogarithmic != 0);
+    x->x_digitsNumber   = PD_CLAMP (digits, 1, IEM_DIAL_BUFFER_LENGTH - 1);
+    x->x_steps          = PD_MAX (steps, 1);
+    x->x_position       = PD_MIN (x->x_position, x->x_steps);
+    
+    dial_setRange (x, minimum, maximum);
+    
+    x->x_floatValue = dial_getValue (x);
+        
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_CONFIG);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_MOVE);
+    
+    canvas_updateLinesByObject (x->x_gui.iem_owner, cast_object (x));
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

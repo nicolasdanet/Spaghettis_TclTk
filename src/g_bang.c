@@ -315,26 +315,6 @@ static void bng_initialize (t_bng *x, t_float f)
     x->x_gui.iem_loadbang = (f != 0.0);
 }
 
-static void bng_dialog (t_bng *x, t_symbol *s, int argc, t_atom *argv)
-{
-    if (argc == IEM_DIALOG_SIZE) {
-    //
-    int size        = (int)atom_getFloatAtIndex (0, argc, argv);
-    int flashHold   = (int)atom_getFloatAtIndex (2, argc, argv);
-    int flashBreak  = (int)atom_getFloatAtIndex (3, argc, argv);
-    
-    iemgui_fromDialog (&x->x_gui, argc, argv);
-
-    x->x_gui.iem_width  = PD_MAX (size, IEM_MINIMUM_WIDTH);
-    x->x_gui.iem_height = PD_MAX (size, IEM_MINIMUM_WIDTH);
-    
-    bng_setFlashTimes (x, flashBreak, flashHold);
-    
-    iemgui_boxChanged ((void *)x, &x->x_gui);
-    //
-    }
-}
-
 static void bng_size (t_bng *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc) {
@@ -467,6 +447,26 @@ static void bng_functionProperties (t_gobj *z, t_glist *owner)
     PD_ASSERT (!err);
     
     guistub_new (cast_pd (x), (void *)x, t);
+}
+
+static void bng_dialog (t_bng *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc == IEM_DIALOG_SIZE) {
+    //
+    int size        = (int)atom_getFloatAtIndex (0, argc, argv);
+    int flashHold   = (int)atom_getFloatAtIndex (2, argc, argv);
+    int flashBreak  = (int)atom_getFloatAtIndex (3, argc, argv);
+    
+    iemgui_fromDialog (&x->x_gui, argc, argv);
+
+    x->x_gui.iem_width  = PD_MAX (size, IEM_MINIMUM_WIDTH);
+    x->x_gui.iem_height = PD_MAX (size, IEM_MINIMUM_WIDTH);
+    
+    bng_setFlashTimes (x, flashBreak, flashHold);
+    
+    iemgui_boxChanged ((void *)x, &x->x_gui);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

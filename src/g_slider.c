@@ -77,6 +77,9 @@ static int  slider_behaviorClicked      (t_gobj *, t_glist *, int, int, int, int
 
 static t_class *slider_class;                           /* Shared. */
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static t_widgetbehavior slider_widgetBehavior =         /* Shared. */
     {
         slider_behaviorGetRectangle,
@@ -466,33 +469,6 @@ static void slider_initialize (t_slider *x, t_float f)
     x->x_gui.iem_loadbang = (f != 0.0);
 }
 
-static void slider_dialog (t_slider *x, t_symbol *s, int argc, t_atom *argv)
-{
-    if (argc == IEM_DIALOG_SIZE) {
-    //
-    int width         = (int)atom_getFloatAtIndex (0, argc, argv);
-    int height        = (int)atom_getFloatAtIndex (1, argc, argv);
-    double minimum    = (double)atom_getFloatAtIndex (2, argc, argv);
-    double maximum    = (double)atom_getFloatAtIndex (3, argc, argv);
-    int isLogarithmic = (int)atom_getFloatAtIndex (4, argc, argv);
-    int isSteady      = (int)atom_getFloatAtIndex (16, argc, argv);
-
-    iemgui_fromDialog (&x->x_gui, argc, argv);
-    
-    x->x_isLogarithmic   = (isLogarithmic != 0);
-    x->x_isSteadyOnClick = (isSteady != 0);
-    
-    slider_setHeight (x, height);               /* Must be set at last. */
-    slider_setWidth (x, width);                 /* Ditto. */
-    slider_setRange (x, minimum, maximum);      /* Ditto. */
-    
-    x->x_floatValue = slider_getValue (x);
-    
-    iemgui_boxChanged ((void *)x, &x->x_gui);
-    //
-    }
-}
-
 static void slider_size (t_slider *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc) {
@@ -656,6 +632,33 @@ static void slider_functionProperties (t_gobj *z, t_glist *owner)
     PD_ASSERT (!err);
     
     guistub_new (cast_pd (x), (void *)x, t);
+}
+
+static void slider_dialog (t_slider *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc == IEM_DIALOG_SIZE) {
+    //
+    int width         = (int)atom_getFloatAtIndex (0, argc, argv);
+    int height        = (int)atom_getFloatAtIndex (1, argc, argv);
+    double minimum    = (double)atom_getFloatAtIndex (2, argc, argv);
+    double maximum    = (double)atom_getFloatAtIndex (3, argc, argv);
+    int isLogarithmic = (int)atom_getFloatAtIndex (4, argc, argv);
+    int isSteady      = (int)atom_getFloatAtIndex (16, argc, argv);
+
+    iemgui_fromDialog (&x->x_gui, argc, argv);
+    
+    x->x_isLogarithmic   = (isLogarithmic != 0);
+    x->x_isSteadyOnClick = (isSteady != 0);
+    
+    slider_setHeight (x, height);               /* Must be set at last. */
+    slider_setWidth (x, width);                 /* Ditto. */
+    slider_setRange (x, minimum, maximum);      /* Ditto. */
+    
+    x->x_floatValue = slider_getValue (x);
+    
+    iemgui_boxChanged ((void *)x, &x->x_gui);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

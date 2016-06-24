@@ -194,27 +194,6 @@ void panel_draw (t_panel *x, t_glist *glist, int mode)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void panel_dialog (t_panel *x, t_symbol *s, int argc, t_atom *argv)
-{
-    if (argc == IEM_DIALOG_SIZE) {
-    //
-    int gripSize    = (int)atom_getFloatAtIndex (0, argc, argv);
-    int panelWidth  = (int)atom_getFloatAtIndex (2, argc, argv);
-    int panelHeight = (int)atom_getFloatAtIndex (3, argc, argv);
-    
-    iemgui_fromDialog (&x->x_gui, argc, argv);
-
-    x->x_gui.iem_width  = PD_MAX (gripSize,    IEM_PANEL_MINIMUM_SIZE);
-    x->x_gui.iem_height = PD_MAX (gripSize,    IEM_PANEL_MINIMUM_SIZE);
-    x->x_panelWidth     = PD_MAX (panelWidth,  IEM_PANEL_MINIMUM_SIZE);
-    x->x_panelHeight    = PD_MAX (panelHeight, IEM_PANEL_MINIMUM_SIZE);
-    
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_CONFIG);
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_MOVE);
-    //
-    }
-}
-
 static void panel_gripSize (t_panel *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc) {
@@ -332,6 +311,27 @@ static void panel_functionProperties (t_gobj *z, t_glist *owner)
     PD_ASSERT (!err);
     
     guistub_new (cast_pd (x), (void *)x, t);
+}
+
+static void panel_dialog (t_panel *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc == IEM_DIALOG_SIZE) {
+    //
+    int gripSize    = (int)atom_getFloatAtIndex (0, argc, argv);
+    int panelWidth  = (int)atom_getFloatAtIndex (2, argc, argv);
+    int panelHeight = (int)atom_getFloatAtIndex (3, argc, argv);
+    
+    iemgui_fromDialog (&x->x_gui, argc, argv);
+
+    x->x_gui.iem_width  = PD_MAX (gripSize,    IEM_PANEL_MINIMUM_SIZE);
+    x->x_gui.iem_height = PD_MAX (gripSize,    IEM_PANEL_MINIMUM_SIZE);
+    x->x_panelWidth     = PD_MAX (panelWidth,  IEM_PANEL_MINIMUM_SIZE);
+    x->x_panelHeight    = PD_MAX (panelHeight, IEM_PANEL_MINIMUM_SIZE);
+    
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_CONFIG);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_MOVE);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

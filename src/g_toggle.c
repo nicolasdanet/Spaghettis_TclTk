@@ -298,29 +298,6 @@ static void toggle_initialize (t_toggle *x, t_float f)
     x->x_gui.iem_loadbang = (f != 0.0);
 }
 
-static void toggle_dialog (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
-{
-    if (argc == IEM_DIALOG_SIZE) {
-    //
-    int size = (int)atom_getFloatAtIndex (0, argc, argv);
-    t_float nonZero = atom_getFloatAtIndex (2, argc, argv);
-    
-    x->x_gui.iem_width  = PD_MAX (size, IEM_MINIMUM_WIDTH);
-    x->x_gui.iem_height = PD_MAX (size, IEM_MINIMUM_WIDTH);
-    
-    iemgui_fromDialog (&x->x_gui, argc, argv);
-        
-    toggle_nonZero (x, nonZero);
-    
-    if (x->x_state != 0.0) { 
-        toggle_set (x, x->x_nonZero); 
-    }
-    
-    iemgui_boxChanged ((void *)x, &x->x_gui);
-    //
-    }
-}
-
 static void toggle_size (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc) {
@@ -440,6 +417,29 @@ static void toggle_functionProperties (t_gobj *z, t_glist *owner)
     PD_ASSERT (!err);
     
     guistub_new (cast_pd (x), (void *)x, t);
+}
+
+static void toggle_dialog (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc == IEM_DIALOG_SIZE) {
+    //
+    int size = (int)atom_getFloatAtIndex (0, argc, argv);
+    t_float nonZero = atom_getFloatAtIndex (2, argc, argv);
+    
+    x->x_gui.iem_width  = PD_MAX (size, IEM_MINIMUM_WIDTH);
+    x->x_gui.iem_height = PD_MAX (size, IEM_MINIMUM_WIDTH);
+    
+    iemgui_fromDialog (&x->x_gui, argc, argv);
+        
+    toggle_nonZero (x, nonZero);
+    
+    if (x->x_state != 0.0) { 
+        toggle_set (x, x->x_nonZero); 
+    }
+    
+    iemgui_boxChanged ((void *)x, &x->x_gui);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
