@@ -274,7 +274,7 @@ void canvas_disconnect (t_glist *glist,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_promptArray (t_glist *glist)
+static void canvas_requireArray (t_glist *glist)
 {
     int i = 1;
     t_error err = PD_ERROR_NONE;
@@ -565,7 +565,7 @@ static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_popupDialog (t_glist *glist, t_float action, t_float positionX, t_float positionY)
+static void canvas_fromPopupDialog (t_glist *glist, t_float action, t_float positionX, t_float positionY)
 {
     t_gobj *y = NULL;
     
@@ -616,7 +616,7 @@ static void canvas_popupDialog (t_glist *glist, t_float action, t_float position
     if (action == 0) { canvas_functionProperties (cast_gobj (glist), NULL); }
 }
 
-static void canvas_dialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     t_float scaleX  = atom_getFloatAtIndex (0, argc, argv);
     t_float scaleY  = atom_getFloatAtIndex (1, argc, argv);
@@ -874,7 +874,7 @@ void canvas_setup (void)
         A_DEFFLOAT,
         A_NULL);
     
-    class_addMethod (c, (t_method)canvas_promptArray,           sym__array,         A_NULL);
+    class_addMethod (c, (t_method)canvas_requireArray,          sym__array,         A_NULL);
         
     class_addMethod (c, (t_method)canvas_editmode,              sym_editmode,       A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_close,                 sym_close,          A_DEFFLOAT, A_NULL);
@@ -938,14 +938,14 @@ void canvas_setup (void)
         A_FLOAT,
         A_NULL);
         
-    class_addMethod (c, (t_method)canvas_popupDialog,
+    class_addMethod (c, (t_method)canvas_fromPopupDialog,
         sym__popupdialog,
         A_FLOAT,
         A_FLOAT,
         A_FLOAT,
         A_NULL);
         
-    class_addMethod (c, (t_method)canvas_dialog,
+    class_addMethod (c, (t_method)canvas_fromDialog,
         sym__canvasdialog,
         A_GIMME,
         A_NULL);
@@ -963,7 +963,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_merge,         sym_mergefile,         A_SYMBOL, A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)canvas_save,          sym_menusave,          A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_saveAs,        sym_menusaveas,        A_DEFFLOAT, A_NULL);    
-    class_addMethod (c, (t_method)canvas_promptArray,   sym_menuarray,         A_NULL);
+    class_addMethod (c, (t_method)canvas_requireArray,  sym_menuarray,         A_NULL);
 
     class_addCreator ((t_newmethod)subpatch_new,        sym_page,              A_DEFSYMBOL, A_NULL);
 

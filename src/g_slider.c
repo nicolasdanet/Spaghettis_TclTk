@@ -634,7 +634,7 @@ static void slider_functionProperties (t_gobj *z, t_glist *owner)
     guistub_new (cast_pd (x), (void *)x, t);
 }
 
-static void slider_dialog (t_slider *x, t_symbol *s, int argc, t_atom *argv)
+static void slider_fromDialog (t_slider *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc == IEM_DIALOG_SIZE) {
     //
@@ -794,7 +794,7 @@ void slider_setup (void)
     
     class_addMethod (c, (t_method)slider_loadbang,          sym_loadbang,               A_NULL);
     class_addMethod (c, (t_method)slider_initialize,        sym_initialize,             A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)slider_dialog,            sym__iemdialog,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)slider_fromDialog,        sym__iemdialog,             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)slider_size,              sym_size,                   A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_move,             sym_move,                   A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_position,         sym_position,               A_GIMME, A_NULL);

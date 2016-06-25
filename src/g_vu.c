@@ -558,7 +558,7 @@ static void vu_functionProperties (t_gobj *z, t_glist *owner)
     guistub_new (cast_pd (x), (void *)x, t);
 }
 
-static void vu_dialog (t_vu *x, t_symbol *s, int argc, t_atom *argv)
+static void vu_fromDialog (t_vu *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc == IEM_DIALOG_SIZE) {
     //
@@ -678,7 +678,7 @@ void vu_setup (void)
     class_addFloat (c, vu_float);
     
     class_addMethod (c, (t_method)vu_ft1,                   sym_ft1,                A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)vu_dialog,                sym__iemdialog,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vu_fromDialog,            sym__iemdialog,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)vu_size,                  sym_size,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_move,             sym_move,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_position,         sym_position,           A_GIMME, A_NULL);

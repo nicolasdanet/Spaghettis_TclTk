@@ -392,7 +392,7 @@ static void gatom_functionProperties (t_gobj *z, t_glist *owner)
     guistub_new (cast_pd (x), (void *)x, t);
 }
 
-static void gatom_dialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
+static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc == ATOM_DIALOG_SIZE) {
     //
@@ -538,8 +538,8 @@ void gatom_setup (void)
     class_addSymbol (c, gatom_symbol);
     class_addClick (c, gatom_click);
         
-    class_addMethod (c, (t_method)gatom_set,    sym_set,            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)gatom_dialog, sym__gatomdialog,   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)gatom_set,        sym_set,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)gatom_fromDialog, sym__gatomdialog,   A_GIMME, A_NULL);
 
     class_setWidgetBehavior (c, &gatom_widgetBehavior);
     class_setSaveFunction (c, gatom_functionSave);

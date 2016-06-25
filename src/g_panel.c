@@ -313,7 +313,7 @@ static void panel_functionProperties (t_gobj *z, t_glist *owner)
     guistub_new (cast_pd (x), (void *)x, t);
 }
 
-static void panel_dialog (t_panel *x, t_symbol *s, int argc, t_atom *argv)
+static void panel_fromDialog (t_panel *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc == IEM_DIALOG_SIZE) {
     //
@@ -426,7 +426,7 @@ void panel_setup (void)
         A_GIMME,
         A_NULL);
         
-    class_addMethod (c, (t_method)panel_dialog,             sym__iemdialog,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_fromDialog,         sym__iemdialog,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)panel_gripSize,           sym_gripsize,           A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_move,             sym_move,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_position,         sym_position,           A_GIMME, A_NULL);

@@ -419,7 +419,7 @@ static void toggle_functionProperties (t_gobj *z, t_glist *owner)
     guistub_new (cast_pd (x), (void *)x, t);
 }
 
-static void toggle_dialog (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
+static void toggle_fromDialog (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc == IEM_DIALOG_SIZE) {
     //
@@ -544,7 +544,7 @@ void toggle_setup (void)
     
     class_addMethod (c, (t_method)toggle_loadbang,          sym_loadbang,           A_NULL);
     class_addMethod (c, (t_method)toggle_initialize,        sym_initialize,         A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)toggle_dialog,            sym__iemdialog,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)toggle_fromDialog,        sym__iemdialog,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)toggle_size,              sym_size,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_move,             sym_move,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_position,         sym_position,           A_GIMME, A_NULL);
