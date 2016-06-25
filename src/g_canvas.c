@@ -874,8 +874,15 @@ void canvas_setup (void)
         A_DEFFLOAT,
         A_NULL);
     
-    class_addMethod (c, (t_method)canvas_requireArray,          sym__array,         A_NULL);
+    class_addMethod (c, (t_method)canvas_makeGraphWithArray,
+        sym__arraydialog,
+        A_SYMBOL,
+        A_FLOAT,
+        A_FLOAT,
+        A_NULL);
         
+    class_addMethod (c, (t_method)canvas_requireArray,          sym__array,         A_NULL);
+
     class_addMethod (c, (t_method)canvas_editmode,              sym_editmode,       A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_close,                 sym_close,          A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_open,                  sym_open,           A_NULL);
@@ -927,13 +934,6 @@ void canvas_setup (void)
         sym_bounds,
         A_FLOAT,
         A_FLOAT,
-        A_FLOAT,
-        A_FLOAT,
-        A_NULL);
-        
-    class_addMethod (c, (t_method)glist_arraydialog,
-        sym__arraydialog,
-        A_SYMBOL,
         A_FLOAT,
         A_FLOAT,
         A_NULL);

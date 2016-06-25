@@ -713,25 +713,8 @@ void garray_properties(t_garray *x)
     guistub_new(&x->x_gobj.g_pd, x, cmdbuf);
 }
 
-    /* this is called back from the dialog window to create a garray. 
-    The otherflag requests that we find an existing graph to put it in. */
-void glist_arraydialog(t_glist *parent, t_symbol *name, t_float size,
-    t_float fflags)
-{
-    t_glist *gl;
-    t_garray *a;
-    int flags = fflags;
-    if (size < 1)
-        size = 1;
-        
-    gl = canvas_addGraph(parent, &s_, 0, 1, size, -1, 0, 0, 0, 0);
-    a = garray_makeObject(gl, dollar_fromHash(name), &s_float, size, flags);
-    canvas_dirty(parent, 1);
-}
-
     /* this is called from the properties dialog window for an existing array */
-void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize,
-    t_float fflags)
+void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize, t_float fflags)
 {
     int flags = fflags;
     int saveit = ((flags & 1) != 0);
@@ -803,7 +786,7 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_garray *graph_scalar (t_glist *gl, t_symbol *s, t_symbol *templatesym, int saveit)
+static t_garray *garray_makeScalar (t_glist *gl, t_symbol *s, t_symbol *templatesym, int saveit)
 {
     int i, zz;
     t_garray *x;
@@ -869,7 +852,7 @@ t_garray *garray_makeObject (t_glist *gl, t_symbol *s, t_symbol *templateargsym,
         return (0);
     }
     saveit = ((flags & 1) != 0);
-    x = graph_scalar(gl, s, templatesym, saveit);
+    x = garray_makeScalar(gl, s, templatesym, saveit);
     x->x_hideName = ((flags & 8) >> 3);
 
     if (n <= 0)

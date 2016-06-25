@@ -450,6 +450,11 @@ void            canvas_destroyEditorIfAny               (t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void            canvas_makeGraphWithArray               (t_glist *glist,
+                                                            t_symbol *name,
+                                                            t_float size,
+                                                            t_float flags);
+                                                            
 void            canvas_makeArray                        (t_glist *glist,
                                                             t_symbol *s,
                                                             t_symbol *templateName,
@@ -769,11 +774,6 @@ void canvas_find_parent (t_glist *x);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-void     glist_arraydialog      (t_glist *parent,
-                                    t_symbol *name,
-                                    t_float size,
-                                    t_float saveit);
 
 t_buffer *glist_writetobinbuf   (t_glist *x, int wholething);
 

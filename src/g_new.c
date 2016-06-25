@@ -44,10 +44,21 @@ static void canvas_makeIemObject (t_glist *glist, t_symbol *name)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void canvas_makeGraphWithArray (t_glist *glist, t_symbol *name, t_float size, t_float flags)
+{
+    t_glist *g = canvas_addGraph (glist, &s_, 0, 1, PD_MAX (1, size), -1, 0, 0, 0, 0);
+    garray_makeObject (g, dollar_fromHash (name), &s_float, PD_MAX (1, size), (int)flags);
+    canvas_dirty (glist, 1);
+}
+
 void canvas_makeArray (t_glist *glist, t_symbol *s, t_symbol *templateName, t_float size, t_float flags)
 {
     garray_makeObject (glist, s, templateName, size, flags);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void canvas_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
