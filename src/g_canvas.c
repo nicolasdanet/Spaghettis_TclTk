@@ -47,7 +47,6 @@ int             canvas_magic = 10000;                       /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 static void canvas_loadbangAbstractions (t_glist *glist)
 {
@@ -269,6 +268,30 @@ void canvas_disconnect (t_glist *glist,
     }
     //
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void canvas_promptArray (t_glist *glist)
+{
+    int i = 1;
+    t_error err = PD_ERROR_NONE;
+    char t[PD_STRING] = { 0 };
+    
+    while (!err) {
+        err = string_sprintf (t, PD_STRING, "array%d", i);
+        if (!pd_findByClass (gensym (t), garray_class)) { break; }
+        i++;
+        PD_ABORT (i < 0);
+    }
+    
+    err |= string_sprintf (t, PD_STRING, "::ui_array::show %%s array%d 100 3\n", i);
+    
+    PD_ASSERT (!err);
+    
+    guistub_new (cast_pd (glist), (void *)glist, t);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -842,7 +865,6 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_makeVu,                sym_vu,             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makePanel,             sym_cnv,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeDial,              sym_nbx,            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_menuarray,             sym__array,         A_NULL);
     
     class_addMethod (c, (t_method)canvas_makeArray,
         sym_array,
@@ -851,6 +873,8 @@ void canvas_setup (void)
         A_SYMBOL,
         A_DEFFLOAT,
         A_NULL);
+    
+    class_addMethod (c, (t_method)canvas_promptArray,           sym__array,         A_NULL);
         
     class_addMethod (c, (t_method)canvas_editmode,              sym_editmode,       A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_close,                 sym_close,          A_DEFFLOAT, A_NULL);
@@ -939,7 +963,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_merge,         sym_mergefile,         A_SYMBOL, A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)canvas_save,          sym_menusave,          A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_saveAs,        sym_menusaveas,        A_DEFFLOAT, A_NULL);    
-    class_addMethod (c, (t_method)canvas_menuarray,     sym_menuarray,         A_NULL);
+    class_addMethod (c, (t_method)canvas_promptArray,   sym_menuarray,         A_NULL);
 
     class_addCreator ((t_newmethod)subpatch_new,        sym_page,              A_DEFSYMBOL, A_NULL);
 

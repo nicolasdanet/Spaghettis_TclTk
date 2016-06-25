@@ -894,22 +894,6 @@ t_garray *garray_makeObject (t_glist *gl, t_symbol *s, t_symbol *templateargsym,
     return (x);
 }
 
-    /* called from array menu item to create a new one */
-void canvas_menuarray (t_glist *canvas)
-{
-    t_glist *x = (t_glist *)canvas;
-    int gcount;
-    char cmdbuf[200], arraybuf[80];
-    for (gcount = 1; gcount < 1000; gcount++)
-    {
-        sprintf(arraybuf, "array%d", gcount);
-        if (!pd_findByClass(gensym (arraybuf), garray_class))
-            break;
-    }
-    sprintf(cmdbuf, "::ui_array::show %%s array%d 100 3\n", gcount);
-    guistub_new(&x->gl_obj.te_g.g_pd, x, cmdbuf);
-}
-
 static void garray_free (t_garray *x)
 {
     interface_guiQueueRemove (cast_gobj (x));
@@ -920,7 +904,7 @@ static void garray_free (t_garray *x)
     
     {   /* Just in case we're still bound to #A from loading... */
         t_pd *t = NULL;
-        while (t = pd_findByClass (sym___hash__A, garray_class)) { pd_unbind (t, sym___hash__A); PD_BUG; }
+        while (t = pd_findByClass (sym___hash__A, garray_class)) { pd_unbind (t, sym___hash__A); }
     }
     
     pd_free (cast_pd (x->x_scalar));

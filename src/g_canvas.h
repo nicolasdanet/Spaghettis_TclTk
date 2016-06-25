@@ -754,7 +754,6 @@ void            canvas_merge                            (t_glist *glist, t_symbo
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_menuarray (t_glist *glist);
 t_outlet *voutlet_getit(t_pd *x);
 t_inlet *vinlet_getit(t_pd *x);
 int garray_getname(t_garray *x, t_symbol **namep);
