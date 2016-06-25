@@ -145,10 +145,38 @@ t_array *garray_getArray (t_garray *x)
     t_symbol *zArrayType = NULL;
     
     err |= !(template_find_field (template, sym_z, &zOnset, &zType, &zArrayType));
-    err |= !(template_findbyname (zArrayType));
     err |= (zType != DATA_ARRAY);
     
     if (!err) { return (x->x_scalar->sc_vector[zOnset].w_array); }
+    //
+    }
+    
+    PD_BUG;
+    
+    return NULL;
+}
+
+static t_array *garray_getArrayCheckedFloat (t_garray *x, int *y, int *size)
+{
+    t_array    *a = garray_getArray (x);
+    t_template *template = template_findbyname (a->a_template);
+    
+    if (template) {
+    //
+    t_error err = PD_ERROR_NONE;
+    
+    int yOnset = 0;
+    int yType  = -1;
+    t_symbol *yArrayType = NULL;
+    
+    err |= !(template_find_field (template, sym_y, &yOnset, &yType, &yArrayType));
+    err |= (yType != DATA_FLOAT);
+
+    if (!err) {
+        *y = yOnset;
+        *size = a->a_elementSize;
+        return a;
+    }
     //
     }
     
@@ -161,21 +189,6 @@ t_array *garray_getArray (t_garray *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* get the "array" structure and furthermore check it's float */
-static t_array *garray_getarray_floatonly(t_garray *x,
-    int *yonsetp, int *elemsizep)
-{
-    t_array *a = garray_getArray(x);
-    int yonset, type;
-    t_symbol *arraytype;
-    t_template *template = template_findbyname(a->a_template);
-    if (!template_find_field(template, sym_y, &yonset,
-        &type, &arraytype) || type != DATA_FLOAT)
-            return (0);
-    *yonsetp = yonset;
-    *elemsizep = a->a_elementSize;
-    return (a);
-}
 
     /* get the array's name.  Return nonzero if it should be hidden */
 int garray_getname(t_garray *x, t_symbol **namep)
@@ -257,7 +270,7 @@ static char *garray_vec(t_garray *x) /* get the contents */
 int garray_getfloatwords(t_garray *x, int *size, t_word **vec)
 {
     int yonset, type, elemsize;
-    t_array *a = garray_getarray_floatonly(x, &yonset, &elemsize);
+    t_array *a = garray_getArrayCheckedFloat(x, &yonset, &elemsize);
     if (!a)
     {
         post_error ("%s: needs floating-point 'y' field", x->x_name->s_name);
@@ -307,7 +320,7 @@ void garray_setsaveit(t_garray *x, int saveit)
 static void garray_const(t_garray *x, t_float g)
 {
     int yonset, i, elemsize;
-    t_array *array = garray_getarray_floatonly(x, &yonset, &elemsize);
+    t_array *array = garray_getArrayCheckedFloat(x, &yonset, &elemsize);
     if (!array)
         post_error ("%s: needs floating-point 'y' field", x->x_name->s_name);
     else for (i = 0; i < array->a_size; i++)
@@ -322,7 +335,7 @@ static void garray_dofo(t_garray *x, long npoints, t_float dcval,
 {
     double phase, phaseincr, fj;
     int yonset, i, j, elemsize;
-    t_array *array = garray_getarray_floatonly(x, &yonset, &elemsize);
+    t_array *array = garray_getArrayCheckedFloat(x, &yonset, &elemsize);
     if (!array)
     {
         post_error ("%s: needs floating-point 'y' field", x->x_name->s_name);
@@ -403,7 +416,7 @@ static void garray_normalize(t_garray *x, t_float f)
     int type, i;
     double maxv, renormer;
     int yonset, elemsize;
-    t_array *array = garray_getarray_floatonly(x, &yonset, &elemsize);
+    t_array *array = garray_getArrayCheckedFloat(x, &yonset, &elemsize);
     if (!array)
     {
         post_error ("%s: needs floating-point 'y' field", x->x_name->s_name);
@@ -438,7 +451,7 @@ static void garray_list(t_garray *x, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
     int yonset, elemsize;
-    t_array *array = garray_getarray_floatonly(x, &yonset, &elemsize);
+    t_array *array = garray_getArrayCheckedFloat(x, &yonset, &elemsize);
     if (!array)
     {
         post_error ("%s: needs floating-point 'y' field", x->x_name->s_name);
@@ -491,7 +504,7 @@ static void garray_read(t_garray *x, t_symbol *filename)
     FILE *fd;
     char buf[PD_STRING], *bufptr;
     int yonset, elemsize;
-    t_array *array = garray_getarray_floatonly(x, &yonset, &elemsize);
+    t_array *array = garray_getArrayCheckedFloat(x, &yonset, &elemsize);
     if (!array)
     {
         post_error ("%s: needs floating-point 'y' field", x->x_name->s_name);
@@ -528,7 +541,7 @@ static void garray_write(t_garray *x, t_symbol *filename)
     FILE *fd;
     char buf[PD_STRING];
     int yonset, elemsize, i;
-    t_array *array = garray_getarray_floatonly(x, &yonset, &elemsize);
+    t_array *array = garray_getArrayCheckedFloat(x, &yonset, &elemsize);
     if (!array)
     {
         post_error ("%s: needs floating-point 'y' field", x->x_name->s_name);
@@ -794,13 +807,13 @@ static t_garray *garray_makeObjectWithScalar (t_glist *glist,
 {
     t_garray *x = (t_garray *)pd_new (garray_class);
     
-    x->x_scalar             = scalar_new (glist, templateName);
-    x->x_owner              = glist;
-    x->x_unexpandedName     = name;
-    x->x_name               = canvas_expandDollar (glist, name);
-    x->x_isUsedInDSP        = 0;
-    x->x_saveWithParent     = save;
-    x->x_hideName           = hide;
+    x->x_scalar         = scalar_new (glist, templateName);
+    x->x_owner          = glist;
+    x->x_unexpandedName = name;
+    x->x_name           = canvas_expandDollar (glist, name);
+    x->x_isUsedInDSP    = 0;
+    x->x_saveWithParent = save;
+    x->x_hideName       = hide;
     
     pd_bind (cast_pd (x), x->x_name);
     canvas_addObject (glist, cast_gobj (x));
