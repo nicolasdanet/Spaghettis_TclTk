@@ -722,7 +722,7 @@ void            gatom_click                             (t_gatom *x,
 void            garray_initialize                       (void);
 
 t_garray        *garray_makeObject                      (t_glist *glist,
-                                                            t_symbol *s,
+                                                            t_symbol *name,
                                                             t_symbol *templateName,
                                                             t_float size,
                                                             t_float flags);

@@ -24,6 +24,7 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void garray_getrect      (t_gobj *, t_glist *, int *, int *, int *, int *);
 static void garray_displace     (t_gobj *, t_glist *, int, int);
@@ -50,7 +51,7 @@ t_class *garray_class;                  /* Shared. */
 struct _garray {
     t_gobj      x_gobj;
     t_scalar    *x_scalar;
-    t_glist     *x_glist;
+    t_glist     *x_owner;
     t_symbol    *x_unexpandedName;
     t_symbol    *x_name;
     char        x_isUsedInDSP;
@@ -114,7 +115,7 @@ void garray_initialize (void)
 static void garray_fittograph(t_garray *x, int n, int style)
 {
     t_array *array = garray_getarray(x);
-    t_glist *gl = x->x_glist;
+    t_glist *gl = x->x_owner;
     if (gl->gl_graphics == &x->x_gobj && !x->x_gobj.g_next)
     {
         pd_vMessage(&gl->gl_obj.te_g.g_pd, sym_bounds, "ffff",
@@ -194,7 +195,7 @@ int garray_getname(t_garray *x, t_symbol **namep)
     /* get a garray's containing glist */
 t_glist *garray_getglist(t_garray *x)
 {
-    return (x->x_glist);
+    return (x->x_owner);
 }
 
     /* get a garray's associated scalar */
@@ -211,17 +212,17 @@ void garray_usedindsp(t_garray *x)
 static void garray_drawJob(t_gobj *client, t_glist *glist)
 {
     t_garray *x = (t_garray *)client;
-    if (canvas_isMapped(x->x_glist) && gobj_isVisible(client, glist))
+    if (canvas_isMapped(x->x_owner) && gobj_isVisible(client, glist))
     {
-        garray_vis(&x->x_gobj, x->x_glist, 0); 
-        garray_vis(&x->x_gobj, x->x_glist, 1);
+        garray_vis(&x->x_gobj, x->x_owner, 0); 
+        garray_vis(&x->x_gobj, x->x_owner, 1);
     }
 }
 
 void garray_redraw(t_garray *x)
 {
-    if (canvas_isMapped(x->x_glist))
-        interface_guiQueueAddIfNotAlreadyThere(&x->x_gobj, x->x_glist, garray_drawJob);
+    if (canvas_isMapped(x->x_owner))
+        interface_guiQueueAddIfNotAlreadyThere(&x->x_gobj, x->x_owner, garray_drawJob);
     /* jsarlo { */
     /* this happens in garray_vis() when array is visible for
        performance reasons */
@@ -286,10 +287,10 @@ int garray_getfloatarray(t_garray *x, int *size, t_float **vec)
     if (sizeof(t_word) != sizeof(t_float))
     {
         t_symbol *patchname;
-        if (x->x_glist->gl_parent)
-            patchname = x->x_glist->gl_parent->gl_name;
+        if (x->x_owner->gl_parent)
+            patchname = x->x_owner->gl_parent->gl_name;
         else
-            patchname = x->x_glist->gl_name;
+            patchname = x->x_owner->gl_name;
         post_error ("An operation on the array '%s' in the patch '%s'",
               x->x_unexpandedName->s_name, patchname->s_name);
         post_error ("failed since it uses garray_getfloatarray while running 64-bit!");
@@ -481,7 +482,7 @@ static void garray_list(t_garray *x, t_symbol *s, int argc, t_atom *argv)
 static void garray_bounds(t_garray *x, t_float x1, t_float y1,
     t_float x2, t_float y2)
 {
-    pd_vMessage(&x->x_glist->gl_obj.te_g.g_pd, sym_bounds, "ffff", x1, y1, x2, y2);
+    pd_vMessage(&x->x_owner->gl_obj.te_g.g_pd, sym_bounds, "ffff", x1, y1, x2, y2);
 }
 
     /* change the name of a garray. */
@@ -505,7 +506,7 @@ static void garray_read(t_garray *x, t_symbol *filename)
         return;
     }
     nelem = array->a_size;
-    if ((filedesc = canvas_openFile(canvas_getView(x->x_glist),
+    if ((filedesc = canvas_openFile(canvas_getView(x->x_owner),
             filename->s_name, "", buf, &bufptr, PD_STRING)) < 0 
                 || !(fd = fdopen(filedesc, "r")))
     {
@@ -541,7 +542,7 @@ static void garray_write(t_garray *x, t_symbol *filename)
         post_error ("%s: needs floating-point 'y' field", x->x_name->s_name);
         return;
     }
-    canvas_makeFilePath(canvas_getView(x->x_glist), filename->s_name,
+    canvas_makeFilePath(canvas_getView(x->x_owner), filename->s_name,
         buf, PD_STRING);
     if (!(fd = file_openWrite(buf)))
     {
@@ -572,13 +573,13 @@ int garray_ambigendian(void)
 void garray_resize_long(t_garray *x, long n)
 {
     t_array *array = garray_getarray(x);
-    t_glist *gl = x->x_glist;
+    t_glist *gl = x->x_owner;
     if (n < 1)
         n = 1;
     garray_fittograph(x, n, template_getfloat(
         template_findbyname(x->x_scalar->sc_template),
             sym_style, x->x_scalar->sc_vector, 1));
-    array_resize_and_redraw(array, x->x_glist, n);
+    array_resize_and_redraw(array, x->x_owner, n);
     if (x->x_isUsedInDSP)
         dsp_update();
 }
@@ -734,7 +735,7 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize, t_float ffla
     if (0) // deleteit
     {
         int wasused = x->x_isUsedInDSP;
-        canvas_removeObject(x->x_glist, &x->x_gobj);
+        canvas_removeObject(x->x_owner, &x->x_gobj);
         if (wasused)
             dsp_update();
     }
@@ -761,15 +762,15 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize, t_float ffla
         {
             x->x_unexpandedName = argname;
             pd_unbind(&x->x_gobj.g_pd, x->x_name);
-            x->x_name = canvas_expandDollar(x->x_glist, argname);
+            x->x_name = canvas_expandDollar(x->x_owner, argname);
             pd_bind(&x->x_gobj.g_pd, x->x_name);
                 /* redraw the whole glist, just so the name change shows up */
-            if (x->x_glist->gl_hasWindow)
-                canvas_redraw(x->x_glist);
-            else if (canvas_isMapped(x->x_glist->gl_parent))
+            if (x->x_owner->gl_hasWindow)
+                canvas_redraw(x->x_owner);
+            else if (canvas_isMapped(x->x_owner->gl_parent))
             {
-                gobj_visibilityChanged(&x->x_glist->gl_obj.te_g, x->x_glist->gl_parent, 0);
-                gobj_visibilityChanged(&x->x_glist->gl_obj.te_g, x->x_glist->gl_parent, 1);
+                gobj_visibilityChanged(&x->x_owner->gl_obj.te_g, x->x_owner->gl_parent, 0);
+                gobj_visibilityChanged(&x->x_owner->gl_obj.te_g, x->x_owner->gl_parent, 1);
             }
             dsp_update();
         }
@@ -785,7 +786,7 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize, t_float ffla
 
         garray_setsaveit(x, (saveit != 0));
         garray_redraw(x);
-        canvas_dirty(x->x_glist, 1);
+        canvas_dirty(x->x_owner, 1);
     }
 }
 
@@ -793,30 +794,30 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize, t_float ffla
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_garray *garray_makeScalar (t_glist *gl, t_symbol *s, t_symbol *templatesym, int saveit)
+static t_garray *garray_makeObjectWithScalar (t_glist *glist,
+    t_symbol *name,
+    t_symbol *templateName,
+    int save, 
+    int hide)
 {
-    int i, zz;
-    t_garray *x;
-    t_pd *x2;
-    t_template *template;
-    char *str;
-    t_gpointer gp;
-    if (!template_findbyname(templatesym))
-        return (0);  
-    x = (t_garray *)pd_new(garray_class);
-    x->x_scalar = scalar_new(gl, templatesym);
-    x->x_unexpandedName = s;
-    x->x_name = canvas_expandDollar(gl, s);
-    pd_bind(&x->x_gobj.g_pd, x->x_name);
-    x->x_isUsedInDSP = 0;
-    x->x_saveWithParent = saveit;
-    canvas_addObject (gl, &x->x_gobj);
-    x->x_glist = gl;
-    return (x);
+    t_garray *x = (t_garray *)pd_new (garray_class);
+    
+    x->x_scalar             = scalar_new (glist, templateName);
+    x->x_owner              = glist;
+    x->x_unexpandedName     = name;
+    x->x_name               = canvas_expandDollar (glist, name);
+    x->x_isUsedInDSP        = 0;
+    x->x_saveWithParent     = save;
+    x->x_hideName           = hide;
+    
+    pd_bind (cast_pd (x), x->x_name);
+    canvas_addObject (glist, cast_gobj (x));
+    
+    return x;
 }
 
 t_garray *garray_makeObject (t_glist *glist,
-    t_symbol *s,
+    t_symbol *name,
     t_symbol *templateName,
     t_float size,
     t_float flags)
@@ -843,12 +844,11 @@ t_garray *garray_makeObject (t_glist *glist,
     if (!err) {
     //
     int save = (((int)flags & GARRAY_FLAG_SAVE) != 0);
-    int plot = PD_CLAMP ((((int)flags & GARRAY_FLAG_PLOT) >> 1), PLOT_POLYGONS, PLOT_CURVES);
-    int hide = ((((int)flags & GARRAY_FLAG_HIDE) >> 3) != 0);
-        
-    x = garray_makeScalar (glist, s, sym_pd__dash__float__dash__array, save);
+    int hide = (((int)flags & GARRAY_FLAG_HIDE) != 0);
     
-    x->x_hideName = hide;
+    int plot = PD_CLAMP ((((int)flags & GARRAY_FLAG_PLOT) >> 1), PLOT_POLYGONS, PLOT_CURVES);
+
+    x = garray_makeObjectWithScalar (glist, name, sym_pd__dash__float__dash__array, save, hide);
 
     array_resize (x->x_scalar->sc_vector[zOnset].w_array, PD_MAX (1, size));
 
@@ -874,16 +874,17 @@ t_garray *garray_makeObject (t_glist *glist,
 
 static void garray_free (t_garray *x)
 {
+    t_pd *t = NULL;
+    
     interface_guiQueueRemove (cast_gobj (x));
 
     guistub_destroyWithKey (x);
     
     pd_unbind (cast_pd (x), x->x_name);
     
-    {   /* Just in case we're still bound to #A from loading... */
-        t_pd *t = NULL;
-        while (t = pd_findByClass (sym___hash__A, garray_class)) { pd_unbind (t, sym___hash__A); }
-    }
+    /* Just in case we're still bound to #A from above. */
+    
+    while (t = pd_findByClass (sym___hash__A, garray_class)) { pd_unbind (t, sym___hash__A); }
     
     pd_free (cast_pd (x->x_scalar));
 }
