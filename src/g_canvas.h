@@ -450,6 +450,12 @@ void            canvas_destroyEditorIfAny               (t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void            canvas_makeArray                        (t_glist *glist,
+                                                            t_symbol *s,
+                                                            t_symbol *templateName,
+                                                            t_float size,
+                                                            t_float flags);
+                                                            
 void            canvas_makeObject                       (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_makeMessage                      (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_makeFloatAtom                    (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
@@ -710,6 +716,12 @@ void            gatom_click                             (t_gatom *x,
 
 void            garray_initialize                       (void);
 
+t_garray        *garray_makeObject                      (t_glist *glist,
+                                                            t_symbol *s,
+                                                            t_symbol *templateName,
+                                                            t_float size,
+                                                            t_float flags);
+                                            
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -795,11 +807,7 @@ t_glist  *canvas_getglistonsuper        (void);
 
 void         garray_properties       (t_garray *x);
 t_template   *garray_template           (t_garray *x);
-t_garray     *graph_array               (t_glist *gl,
-                                            t_symbol *s,
-                                            t_symbol *tmpl,
-                                            t_float f,
-                                            t_float saveit);
+
 
 
 

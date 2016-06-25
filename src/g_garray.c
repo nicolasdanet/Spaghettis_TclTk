@@ -72,15 +72,15 @@ static t_widgetbehavior garray_widgetBehavior =
 
 void garray_initialize (void)
 {
-    static char *arrayTemplateFile = 
-        "canvas 0 0 458 153 10;\n"
-        "#X obj 43 31 struct float-array array z float float style float linewidth float color;\n"
-        "#X obj 43 70 plot z color linewidth 0 0 1 style;\n";
-        
     static char *floatTemplateFile = 
         "canvas 0 0 458 153 10;\n"
         "#X obj 39 26 struct float float y;\n";
 
+    static char *floatArrayTemplateFile = 
+        "canvas 0 0 458 153 10;\n"
+        "#X obj 43 31 struct float-array array z float float style float linewidth float color;\n"
+        "#X obj 43 70 plot z color linewidth 0 0 1 style;\n";
+        
     t_buffer *b = buffer_new();
     
     canvas_setActiveFileNameAndDirectory (sym__floattemplate, sym___dot__);
@@ -89,7 +89,7 @@ void garray_initialize (void)
     pd_vMessage (s__X.s_thing, sym__pop, "i", 0);
     
     canvas_setActiveFileNameAndDirectory (sym__floatarraytemplate, sym___dot__);
-    buffer_withStringUnzeroed (b, arrayTemplateFile, strlen (arrayTemplateFile));
+    buffer_withStringUnzeroed (b, floatArrayTemplateFile, strlen (floatArrayTemplateFile));
     buffer_eval (b, &pd_canvasMaker, 0, NULL);
     pd_vMessage (s__X.s_thing, sym__pop, "i", 0);
 
@@ -102,27 +102,36 @@ void garray_initialize (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_garray *graph_scalar (t_glist *gl, t_symbol *s, t_symbol *templatesym, int saveit)
+        /* if there is one garray in a graph, reset the graph's coordinates
+            to fit a new size and style for the garray */
+static void garray_fittograph(t_garray *x, int n, int style)
 {
-    int i, zz;
-    t_garray *x;
-    t_pd *x2;
-    t_template *template;
-    char *str;
-    t_gpointer gp;
-    if (!template_findbyname(templatesym))
-        return (0);  
-    x = (t_garray *)pd_new(garray_class);
-    x->x_scalar = scalar_new(gl, templatesym);
-    x->x_unexpandedName = s;
-    x->x_name = canvas_expandDollar(gl, s);
-    pd_bind(&x->x_gobj.g_pd, x->x_name);
-    x->x_isUsedInDSP = 0;
-    x->x_saveWithParent = saveit;
-    canvas_addObject (gl, &x->x_gobj);
-    x->x_glist = gl;
-    return (x);
+    t_array *array = garray_getarray(x);
+    t_glist *gl = x->x_glist;
+    if (gl->gl_graphics == &x->x_gobj && !x->x_gobj.g_next)
+    {
+        pd_vMessage(&gl->gl_obj.te_g.g_pd, sym_bounds, "ffff",
+            0., gl->gl_valueTop, (double)
+                (style == PLOT_POINTS || n == 1 ? n : n-1),
+                    gl->gl_valueBottom);
+        
+            /* hack - if the xlabels seem to want to be from 0 to table size-1,
+            update the second label */
+        /*if (gl->gl_nxlabels == 2 && !strcmp(gl->gl_xlabel[0]->s_name, "0"))
+        {
+            t_atom a;
+            SET_FLOAT(&a, n-1);
+            gl->gl_xlabel[1] = atom_gensym(&a);
+            canvas_redrawGraphOnParent(gl);
+        }*/
+            /* close any dialogs that might have the wrong info now... */
+        guistub_destroyWithKey(gl);
+    }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
     /* get a garray's "array" structure. */
 t_array *garray_getarray(t_garray *x)
@@ -186,125 +195,6 @@ t_scalar *garray_getscalar(t_garray *x)
 {
     return (x->x_scalar);
 }
-
-        /* if there is one garray in a graph, reset the graph's coordinates
-            to fit a new size and style for the garray */
-static void garray_fittograph(t_garray *x, int n, int style)
-{
-    t_array *array = garray_getarray(x);
-    t_glist *gl = x->x_glist;
-    if (gl->gl_graphics == &x->x_gobj && !x->x_gobj.g_next)
-    {
-        pd_vMessage(&gl->gl_obj.te_g.g_pd, sym_bounds, "ffff",
-            0., gl->gl_valueTop, (double)
-                (style == PLOT_POINTS || n == 1 ? n : n-1),
-                    gl->gl_valueBottom);
-        
-            /* hack - if the xlabels seem to want to be from 0 to table size-1,
-            update the second label */
-        /*if (gl->gl_nxlabels == 2 && !strcmp(gl->gl_xlabel[0]->s_name, "0"))
-        {
-            t_atom a;
-            SET_FLOAT(&a, n-1);
-            gl->gl_xlabel[1] = atom_gensym(&a);
-            canvas_redrawGraphOnParent(gl);
-        }*/
-            /* close any dialogs that might have the wrong info now... */
-        guistub_destroyWithKey(gl);
-    }
-}
-
-t_garray *graph_array(t_glist *gl, t_symbol *s, t_symbol *templateargsym,
-    t_float fsize, t_float fflags)
-{
-    int n = fsize, i, zz, nwords, zonset, ztype, saveit;
-    t_symbol *zarraytype, *asym = sym___hash__A;
-    t_garray *x;
-    t_pd *x2;
-    t_template *template, *ztemplate;
-    t_symbol *templatesym;
-    char *str;
-    int flags = fflags;
-    t_gpointer gp;
-    int filestyle = ((flags & 6) >> 1);
-    int style = (filestyle == 0 ? PLOT_POLYGONS :
-        (filestyle == 1 ? PLOT_POINTS : filestyle));
-    if (templateargsym != &s_float)
-    {
-        post_error ("array %s: only 'float' type understood", templateargsym->s_name);
-        return (0);
-    }
-    templatesym = sym_pd__dash__float__dash__array;
-    template = template_findbyname(templatesym);
-    if (!template)
-    {
-        post_error ("array: couldn't find template %s", templatesym->s_name);
-        return (0);
-    }
-    if (!template_find_field(template, sym_z, 
-        &zonset, &ztype, &zarraytype))
-    {
-        post_error ("array: template %s has no 'z' field", templatesym->s_name);
-        return (0);
-    }
-    if (ztype != DATA_ARRAY)
-    {
-        post_error ("array: template %s, 'z' field is not an array",
-            templatesym->s_name);
-        return (0);
-    }
-    if (!(ztemplate = template_findbyname(zarraytype)))
-    {
-        post_error ("array: no template of type %s", zarraytype->s_name);
-        return (0);
-    }
-    saveit = ((flags & 1) != 0);
-    x = graph_scalar(gl, s, templatesym, saveit);
-    x->x_hideName = ((flags & 8) >> 3);
-
-    if (n <= 0)
-        n = 100;
-    array_resize(x->x_scalar->sc_vector[zonset].w_array, n);
-
-    template_setfloat(template, sym_style, x->x_scalar->sc_vector,
-        style, 1);
-    template_setfloat(template, sym_linewidth, x->x_scalar->sc_vector, 
-        ((style == PLOT_POINTS) ? 2 : 1), 1);
-
-           /* bashily unbind #A -- this would create garbage if #A were
-           multiply bound but we believe in this context it's at most
-           bound to whichever textobj or array was created most recently */
-    asym->s_thing = 0;
-        /* and now bind #A to us to receive following messages in the
-        saved file or copy buffer */
-    pd_bind(&x->x_gobj.g_pd, asym); 
-
-    garray_redraw(x);
-    dsp_update();
-    return (x);
-}
-
-    /* called from array menu item to create a new one */
-void canvas_menuarray(t_glist *canvas)
-{
-    t_glist *x = (t_glist *)canvas;
-    int gcount;
-    char cmdbuf[200], arraybuf[80];
-    for (gcount = 1; gcount < 1000; gcount++)
-    {
-        sprintf(arraybuf, "array%d", gcount);
-        if (!pd_findByClass(gensym (arraybuf), garray_class))
-            break;
-    }
-    sprintf(cmdbuf, "::ui_array::show %%s array%d 100 3\n", gcount);
-    guistub_new(&x->gl_obj.te_g.g_pd, x, cmdbuf);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-/* ----------------------- public functions -------------------- */
 
 void garray_usedindsp(t_garray *x)
 {
@@ -835,7 +725,7 @@ void glist_arraydialog(t_glist *parent, t_symbol *name, t_float size,
         size = 1;
         
     gl = canvas_addGraph(parent, &s_, 0, 1, size, -1, 0, 0, 0, 0);
-    a = graph_array(gl, dollar_fromHash(name), &s_float, size, flags);
+    a = garray_makeObject(gl, dollar_fromHash(name), &s_float, size, flags);
     canvas_dirty(parent, 1);
 }
 
@@ -912,6 +802,113 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize,
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+static t_garray *graph_scalar (t_glist *gl, t_symbol *s, t_symbol *templatesym, int saveit)
+{
+    int i, zz;
+    t_garray *x;
+    t_pd *x2;
+    t_template *template;
+    char *str;
+    t_gpointer gp;
+    if (!template_findbyname(templatesym))
+        return (0);  
+    x = (t_garray *)pd_new(garray_class);
+    x->x_scalar = scalar_new(gl, templatesym);
+    x->x_unexpandedName = s;
+    x->x_name = canvas_expandDollar(gl, s);
+    pd_bind(&x->x_gobj.g_pd, x->x_name);
+    x->x_isUsedInDSP = 0;
+    x->x_saveWithParent = saveit;
+    canvas_addObject (gl, &x->x_gobj);
+    x->x_glist = gl;
+    return (x);
+}
+
+t_garray *garray_makeObject (t_glist *gl, t_symbol *s, t_symbol *templateargsym, t_float fsize, t_float fflags)
+{
+    int n = fsize, i, zz, nwords, zonset, ztype, saveit;
+    t_symbol *zarraytype, *asym = sym___hash__A;
+    t_garray *x;
+    t_pd *x2;
+    t_template *template, *ztemplate;
+    t_symbol *templatesym;
+    char *str;
+    int flags = fflags;
+    t_gpointer gp;
+    int filestyle = ((flags & 6) >> 1);
+    int style = (filestyle == 0 ? PLOT_POLYGONS :
+        (filestyle == 1 ? PLOT_POINTS : filestyle));
+    if (templateargsym != &s_float)
+    {
+        post_error ("array %s: only 'float' type understood", templateargsym->s_name);
+        return (0);
+    }
+    templatesym = sym_pd__dash__float__dash__array;
+    template = template_findbyname(templatesym);
+    if (!template)
+    {
+        post_error ("array: couldn't find template %s", templatesym->s_name);
+        return (0);
+    }
+    if (!template_find_field(template, sym_z, 
+        &zonset, &ztype, &zarraytype))
+    {
+        post_error ("array: template %s has no 'z' field", templatesym->s_name);
+        return (0);
+    }
+    if (ztype != DATA_ARRAY)
+    {
+        post_error ("array: template %s, 'z' field is not an array",
+            templatesym->s_name);
+        return (0);
+    }
+    if (!(ztemplate = template_findbyname(zarraytype)))
+    {
+        post_error ("array: no template of type %s", zarraytype->s_name);
+        return (0);
+    }
+    saveit = ((flags & 1) != 0);
+    x = graph_scalar(gl, s, templatesym, saveit);
+    x->x_hideName = ((flags & 8) >> 3);
+
+    if (n <= 0)
+        n = 100;
+    array_resize(x->x_scalar->sc_vector[zonset].w_array, n);
+
+    template_setfloat(template, sym_style, x->x_scalar->sc_vector,
+        style, 1);
+    template_setfloat(template, sym_linewidth, x->x_scalar->sc_vector, 
+        ((style == PLOT_POINTS) ? 2 : 1), 1);
+
+           /* bashily unbind #A -- this would create garbage if #A were
+           multiply bound but we believe in this context it's at most
+           bound to whichever textobj or array was created most recently */
+    asym->s_thing = 0;
+        /* and now bind #A to us to receive following messages in the
+        saved file or copy buffer */
+    pd_bind(&x->x_gobj.g_pd, asym); 
+
+    garray_redraw(x);
+    dsp_update();
+    return (x);
+}
+
+    /* called from array menu item to create a new one */
+void canvas_menuarray (t_glist *canvas)
+{
+    t_glist *x = (t_glist *)canvas;
+    int gcount;
+    char cmdbuf[200], arraybuf[80];
+    for (gcount = 1; gcount < 1000; gcount++)
+    {
+        sprintf(arraybuf, "array%d", gcount);
+        if (!pd_findByClass(gensym (arraybuf), garray_class))
+            break;
+    }
+    sprintf(cmdbuf, "::ui_array::show %%s array%d 100 3\n", gcount);
+    guistub_new(&x->gl_obj.te_g.g_pd, x, cmdbuf);
+}
 
 static void garray_free (t_garray *x)
 {

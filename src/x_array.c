@@ -55,7 +55,7 @@ static void *table_donew(t_symbol *s, int size, int flags,
     gl = canvas_addGraph((t_glist*)x, &s_, 0, -1, (size > 1 ? size-1 : 1), 1,
         50, ypix+50, xpix+50, 50);
 
-    graph_array(gl, s, &s_float, size, flags);
+    garray_makeObject(gl, s, &s_float, size, flags);
 
     pd_newest = &x->gl_obj.te_g.g_pd;     /* mimic action of canvas_pop() */
     stack_pop(&x->gl_obj.te_g.g_pd);

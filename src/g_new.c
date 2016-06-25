@@ -44,6 +44,11 @@ static void canvas_makeIemObject (t_glist *glist, t_symbol *name)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void canvas_makeArray (t_glist *glist, t_symbol *s, t_symbol *templateName, t_float size, t_float flags)
+{
+    garray_makeObject (glist, s, templateName, size, flags);
+}
+
 void canvas_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     int positionX = 0;
