@@ -9,6 +9,7 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
+#include "g_canvas.h"
 
 extern t_class *garray_class;
 

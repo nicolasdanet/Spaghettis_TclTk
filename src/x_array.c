@@ -76,7 +76,7 @@ static void array_define_yrange(t_glist *x, t_float ylo, t_float yhi)
     t_glist *gl = (x->gl_graphics ? canvas_castToGlistChecked(&x->gl_graphics->g_pd) : 0);
     if (gl && gl->gl_graphics && pd_class(&gl->gl_graphics->g_pd) == garray_class)
     {
-        int n = garray_getarray((t_garray *)gl->gl_graphics)->a_size;
+        int n = garray_getArray((t_garray *)gl->gl_graphics)->a_size;
         pd_vMessage(&x->gl_graphics->g_pd, sym_bounds,
             "ffff", 0., yhi, (double)(n == 1 ? n : n-1), ylo);
     }
@@ -227,7 +227,7 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
         if (y)
         {
             *glist = garray_getglist(y);
-            return (garray_getarray(y));
+            return (garray_getArray(y));
         }
         else
         {

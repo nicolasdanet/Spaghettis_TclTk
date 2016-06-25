@@ -735,21 +735,6 @@ PD_DLL int          gpointer_check              (const t_gpointer *gp, int heado
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-PD_DLL int          garray_getfloatarray        (t_garray *x, int *size, t_float **vec);
-PD_DLL int          garray_getfloatwords        (t_garray *x, int *size, t_word **vec);
-PD_DLL void         garray_redraw               (t_garray *x);
-PD_DLL int          garray_npoints              (t_garray *x);
-PD_DLL char         *garray_vec                 (t_garray *x);
-PD_DLL void         garray_resize               (t_garray *x, t_float f);
-PD_DLL void         garray_resize_long          (t_garray *x, long n);
-PD_DLL void         garray_usedindsp            (t_garray *x);
-PD_DLL void         garray_setsaveit            (t_garray *x, int saveit);
-PD_DLL t_glist      *garray_getglist            (t_garray *x);
-PD_DLL t_array      *garray_getarray            (t_garray *x);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 PD_DLL t_float      *value_get                  (t_symbol *s);
 PD_DLL void         value_release               (t_symbol *s);
 PD_DLL int          value_getfloat              (t_symbol *s, t_float *f);

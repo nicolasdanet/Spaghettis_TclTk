@@ -382,7 +382,7 @@ static void template_conformarray(t_template *tfrom, t_template *tto,
     glists recursively.
     We don't handle redrawing here; this is to be filled in LATER... */
 
-t_array *garray_getarray(t_garray *x);
+t_array *garray_getArray(t_garray *x);
 
 static void template_conformglist(t_template *tfrom, t_template *tto,
     t_glist *glist,  int *conformaction)
@@ -398,7 +398,7 @@ static void template_conformglist(t_template *tfrom, t_template *tto,
             template_conformglist(tfrom, tto, (t_glist *)g, conformaction);
         else if (pd_class(&g->g_pd) == garray_class)
             template_conformarray(tfrom, tto, conformaction,
-                garray_getarray((t_garray *)g));
+                garray_getArray((t_garray *)g));
     }
 }
 

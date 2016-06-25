@@ -110,30 +110,21 @@ void garray_initialize (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-        /* if there is one garray in a graph, reset the graph's coordinates
-            to fit a new size and style for the garray */
-static void garray_fittograph(t_garray *x, int n, int style)
+static void garray_fitToGraph (t_garray *x, int size, int style)
 {
-    t_array *array = garray_getarray(x);
-    t_glist *gl = x->x_owner;
-    if (gl->gl_graphics == &x->x_gobj && !x->x_gobj.g_next)
-    {
-        pd_vMessage(&gl->gl_obj.te_g.g_pd, sym_bounds, "ffff",
-            0., gl->gl_valueTop, (double)
-                (style == PLOT_POINTS || n == 1 ? n : n-1),
-                    gl->gl_valueBottom);
-        
-            /* hack - if the xlabels seem to want to be from 0 to table size-1,
-            update the second label */
-        /*if (gl->gl_nxlabels == 2 && !strcmp(gl->gl_xlabel[0]->s_name, "0"))
-        {
-            t_atom a;
-            SET_FLOAT(&a, n-1);
-            gl->gl_xlabel[1] = atom_gensym(&a);
-            canvas_redrawGraphOnParent(gl);
-        }*/
-            /* close any dialogs that might have the wrong info now... */
-        guistub_destroyWithKey(gl);
+    t_array *array = garray_getArray (x);
+    t_glist *glist = x->x_owner;
+    
+    if (glist->gl_graphics == cast_gobj (x) && !cast_gobj (x)->g_next) {
+    //
+    pd_vMessage (cast_pd (glist), sym_bounds, "ffff",
+        0.0,
+        glist->gl_valueTop,
+        (double)((style == PLOT_POINTS || size == 1) ? size : size - 1),
+        glist->gl_valueBottom);
+    
+    guistub_destroyWithKey ((void *)glist);
+    //
     }
 }
 
@@ -141,39 +132,40 @@ static void garray_fittograph(t_garray *x, int n, int style)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* get a garray's "array" structure. */
-t_array *garray_getarray(t_garray *x)
+t_array *garray_getArray (t_garray *x)
 {
-    int nwords, zonset, ztype;
-    t_symbol *zarraytype;
-    t_scalar *sc = x->x_scalar;
-    t_symbol *templatesym = sc->sc_template;
-    t_template *template = template_findbyname(templatesym);
-    if (!template)
-    {
-        post_error ("array: couldn't find template %s", templatesym->s_name);
-        return (0);
+    t_template *template = template_findbyname (x->x_scalar->sc_template);
+    
+    if (template) {
+    //
+    t_error err = PD_ERROR_NONE;
+    
+    int zOnset = 0;
+    int zType  = -1;
+    t_symbol *zArrayType = NULL;
+    
+    err |= !(template_find_field (template, sym_z, &zOnset, &zType, &zArrayType));
+    err |= !(template_findbyname (zArrayType));
+    err |= (zType != DATA_ARRAY);
+    
+    if (!err) { return (x->x_scalar->sc_vector[zOnset].w_array); }
+    //
     }
-    if (!template_find_field(template, sym_z, 
-        &zonset, &ztype, &zarraytype))
-    {
-        post_error ("array: template %s has no 'z' field", templatesym->s_name);
-        return (0);
-    }
-    if (ztype != DATA_ARRAY)
-    {
-        post_error ("array: template %s, 'z' field is not an array",
-            templatesym->s_name);
-        return (0);
-    }
-    return (sc->sc_vector[zonset].w_array);
+    
+    PD_BUG;
+    
+    return NULL;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
     /* get the "array" structure and furthermore check it's float */
 static t_array *garray_getarray_floatonly(t_garray *x,
     int *yonsetp, int *elemsizep)
 {
-    t_array *a = garray_getarray(x);
+    t_array *a = garray_getArray(x);
     int yonset, type;
     t_symbol *arraytype;
     t_template *template = template_findbyname(a->a_template);
@@ -240,22 +232,22 @@ void garray_redraw(t_garray *x)
    when it's time to free or resize it.  */
 t_template *garray_template(t_garray *x)
 {
-    t_array *array = garray_getarray(x);
+    t_array *array = garray_getArray(x);
     t_template *template = 
         (array ? template_findbyname(array->a_template) : 0);
     if (!template) { PD_BUG; }
     return (template);
 }
 
-int garray_npoints(t_garray *x) /* get the length */
+static int garray_npoints(t_garray *x) /* get the length */
 {
-    t_array *array = garray_getarray(x);
+    t_array *array = garray_getArray(x);
     return (array->a_size);
 }
 
-char *garray_vec(t_garray *x) /* get the contents */
+static char *garray_vec(t_garray *x) /* get the contents */
 {
-    t_array *array = garray_getarray(x);
+    t_array *array = garray_getArray(x);
     return ((char *)(array->a_vector));
 }
 
@@ -282,7 +274,7 @@ int garray_getfloatwords(t_garray *x, int *size, t_word **vec)
 }
     /* older, non-64-bit safe version, supplied for older externs */
 
-int garray_getfloatarray(t_garray *x, int *size, t_float **vec)
+static int garray_getfloatarray(t_garray *x, int *size, t_float **vec)
 {
     if (sizeof(t_word) != sizeof(t_float))
     {
@@ -572,11 +564,11 @@ int garray_ambigendian(void)
 
 void garray_resize_long(t_garray *x, long n)
 {
-    t_array *array = garray_getarray(x);
+    t_array *array = garray_getArray(x);
     t_glist *gl = x->x_owner;
     if (n < 1)
         n = 1;
-    garray_fittograph(x, n, template_getfloat(
+    garray_fitToGraph(x, n, template_getfloat(
         template_findbyname(x->x_scalar->sc_template),
             sym_style, x->x_scalar->sc_vector, 1));
     array_resize_and_redraw(array, x->x_owner, n);
@@ -592,7 +584,7 @@ void garray_resize(t_garray *x, t_float f)
 
 static void garray_print(t_garray *x)
 {
-    t_array *array = garray_getarray(x);
+    t_array *array = garray_getArray(x);
     post("garray %s: template %s, length %d",
         x->x_name->s_name, array->a_template->s_name, array->a_size);
 }
@@ -651,7 +643,7 @@ void garray_savecontentsto(t_garray *x, t_buffer *b)
     
     if (x->x_saveWithParent)
     {
-        t_array *array = garray_getarray(x);
+        t_array *array = garray_getArray(x);
         int n = array->a_size, n2 = 0;
         if (n > 200000)
             post("warning: I'm saving an array with %d points!\n", n);
@@ -673,7 +665,7 @@ static void garray_save(t_gobj *z, t_buffer *b)
 {
     int style, filestyle;
     t_garray *x = (t_garray *)z;
-    t_array *array = garray_getarray(x);
+    t_array *array = garray_getArray(x);
     t_template *scalartemplate;
     if (x->x_scalar->sc_template != sym_pd__dash__float__dash__array)   /* ??? */
     {
@@ -702,7 +694,7 @@ static void garray_save(t_gobj *z, t_buffer *b)
 void garray_properties(t_garray *x)
 {
     char cmdbuf[200];
-    t_array *a = garray_getarray(x);
+    t_array *a = garray_getArray(x);
     t_scalar *sc = x->x_scalar;
     int style = template_getfloat(template_findbyname(sc->sc_template),
         sym_style, x->x_scalar->sc_vector, 1);
@@ -711,7 +703,7 @@ void garray_properties(t_garray *x)
 
     if (!a)
         return;
-    guistub_destroyWithKey(x);
+    guistub_destroyWithKey ((void *)x);
         /* create dialog window.  LATER fix this to escape '$'
         properly; right now we just detect a leading '$' and escape
         it.  There should be a systematic way of doing this. */
@@ -745,7 +737,7 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize, t_float ffla
         int styleonset, styletype;
         t_symbol *stylearraytype;
         t_symbol *argname = dollar_fromHash(name);
-        t_array *a = garray_getarray(x);
+        t_array *a = garray_getArray(x);
         t_template *scalartemplate;
         if (!a)
         {
@@ -780,7 +772,7 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize, t_float ffla
         if (size != a->a_size)
             garray_resize_long(x, size);
         else if (style != stylewas)
-            garray_fittograph(x, size, style);
+            garray_fitToGraph(x, size, style);
         template_setfloat(scalartemplate, sym_style,
             x->x_scalar->sc_vector, (t_float)style, 0);
 
@@ -878,7 +870,7 @@ static void garray_free (t_garray *x)
     
     interface_guiQueueRemove (cast_gobj (x));
 
-    guistub_destroyWithKey (x);
+    guistub_destroyWithKey ((void *)x);
     
     pd_unbind (cast_pd (x), x->x_name);
     
