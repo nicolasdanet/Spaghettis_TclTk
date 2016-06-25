@@ -18,13 +18,20 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void garray_getrect  (t_gobj *, t_glist *, int *, int *, int *, int *);
-static void garray_displace (t_gobj *, t_glist *, int, int);
-static void garray_select   (t_gobj *, t_glist *, int);
-static void garray_activate (t_gobj *, t_glist *, int);
-static void garray_delete   (t_gobj *, t_glist *);
-static void garray_vis      (t_gobj *, t_glist *, int);
-static int  garray_click    (t_gobj *, t_glist *, int, int, int, int, int, int, int);
+#define GARRAY_FLAG_SAVE        (1)
+#define GARRAY_FLAG_PLOT        (2 + 4)
+#define GARRAY_FLAG_HIDE        (8)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static void garray_getrect      (t_gobj *, t_glist *, int *, int *, int *, int *);
+static void garray_displace     (t_gobj *, t_glist *, int, int);
+static void garray_select       (t_gobj *, t_glist *, int);
+static void garray_activate     (t_gobj *, t_glist *, int);
+static void garray_delete       (t_gobj *, t_glist *);
+static void garray_vis          (t_gobj *, t_glist *, int);
+static int  garray_click        (t_gobj *, t_glist *, int, int, int, int, int, int, int);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -808,73 +815,61 @@ static t_garray *garray_makeScalar (t_glist *gl, t_symbol *s, t_symbol *template
     return (x);
 }
 
-t_garray *garray_makeObject (t_glist *gl, t_symbol *s, t_symbol *templateargsym, t_float fsize, t_float fflags)
+t_garray *garray_makeObject (t_glist *glist,
+    t_symbol *s,
+    t_symbol *templateName,
+    t_float size,
+    t_float flags)
 {
-    int n = fsize, i, zz, nwords, zonset, ztype, saveit;
-    t_symbol *zarraytype, *asym = sym___hash__A;
-    t_garray *x;
-    t_pd *x2;
-    t_template *template, *ztemplate;
-    t_symbol *templatesym;
-    char *str;
-    int flags = fflags;
-    t_gpointer gp;
-    int filestyle = ((flags & 6) >> 1);
-    int style = (filestyle == 0 ? PLOT_POLYGONS :
-        (filestyle == 1 ? PLOT_POINTS : filestyle));
-    if (templateargsym != &s_float)
-    {
-        post_error ("array %s: only 'float' type understood", templateargsym->s_name);
-        return (0);
-    }
-    templatesym = sym_pd__dash__float__dash__array;
-    template = template_findbyname(templatesym);
-    if (!template)
-    {
-        post_error ("array: couldn't find template %s", templatesym->s_name);
-        return (0);
-    }
-    if (!template_find_field(template, sym_z, 
-        &zonset, &ztype, &zarraytype))
-    {
-        post_error ("array: template %s has no 'z' field", templatesym->s_name);
-        return (0);
-    }
-    if (ztype != DATA_ARRAY)
-    {
-        post_error ("array: template %s, 'z' field is not an array",
-            templatesym->s_name);
-        return (0);
-    }
-    if (!(ztemplate = template_findbyname(zarraytype)))
-    {
-        post_error ("array: no template of type %s", zarraytype->s_name);
-        return (0);
-    }
-    saveit = ((flags & 1) != 0);
-    x = garray_makeScalar(gl, s, templatesym, saveit);
-    x->x_hideName = ((flags & 8) >> 3);
+    t_garray *x = NULL;
 
-    if (n <= 0)
-        n = 100;
-    array_resize(x->x_scalar->sc_vector[zonset].w_array, n);
+    if (templateName != &s_float) { PD_BUG; }
+    else {
+    //
+    t_template *template = template_findbyname (sym_pd__dash__float__dash__array);
+    
+    if (template) {
+    //
+    t_error err = PD_ERROR_NONE;
+    
+    int zOnset = 0;
+    int zType  = -1;
+    t_symbol *zArrayType = NULL;
 
-    template_setfloat(template, sym_style, x->x_scalar->sc_vector,
-        style, 1);
-    template_setfloat(template, sym_linewidth, x->x_scalar->sc_vector, 
-        ((style == PLOT_POINTS) ? 2 : 1), 1);
+    err |= !(template_find_field (template, sym_z, &zOnset, &zType, &zArrayType));
+    err |= !(template_findbyname (zArrayType));
+    err |= (zType != DATA_ARRAY);
+    
+    if (!err) {
+    //
+    int save = (((int)flags & GARRAY_FLAG_SAVE) != 0);
+    int plot = PD_CLAMP ((((int)flags & GARRAY_FLAG_PLOT) >> 1), PLOT_POLYGONS, PLOT_CURVES);
+    int hide = ((((int)flags & GARRAY_FLAG_HIDE) >> 3) != 0);
+        
+    x = garray_makeScalar (glist, s, sym_pd__dash__float__dash__array, save);
+    
+    x->x_hideName = hide;
 
-           /* bashily unbind #A -- this would create garbage if #A were
-           multiply bound but we believe in this context it's at most
-           bound to whichever textobj or array was created most recently */
-    asym->s_thing = 0;
-        /* and now bind #A to us to receive following messages in the
-        saved file or copy buffer */
-    pd_bind(&x->x_gobj.g_pd, asym); 
+    array_resize (x->x_scalar->sc_vector[zOnset].w_array, PD_MAX (1, size));
 
-    garray_redraw(x);
+    template_setfloat (template, sym_style, x->x_scalar->sc_vector, plot, 1);
+    template_setfloat (template, sym_linewidth, x->x_scalar->sc_vector, 1, 1);
+
+    sym___hash__A->s_thing = NULL;
+    pd_bind (cast_pd (x), sym___hash__A); 
+
+    garray_redraw (x);
     dsp_update();
-    return (x);
+    //
+    }
+    //
+    }
+    //
+    }
+    
+    PD_ASSERT (x != NULL);
+    
+    return x;
 }
 
 static void garray_free (t_garray *x)
