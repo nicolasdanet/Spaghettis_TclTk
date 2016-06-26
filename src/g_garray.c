@@ -261,7 +261,38 @@ void garray_redraw (t_garray *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/*------------------- Pd messages ------------------------ */
+static void garray_list (t_garray *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc > 1) { 
+    //
+    int yOnset;
+    int elementSize;
+    int i, j = atom_getFloat (argv);
+    
+    t_array *array = garray_getArrayCheckedFloat (x, &yOnset, &elementSize);
+    
+    PD_ASSERT (array != NULL);
+    
+    argc--;
+    argv++;
+
+    if (j < 0) { argc += j; argv -= j; j = 0; }
+    
+    if (j + argc > array->a_size) { argc = array->a_size - j; }
+    
+    if (argc > 0) {
+    //
+    for (i = 0; i < argc; i++) {
+        *((t_float *)(array->a_vector + (elementSize * (i + j))) + yOnset) = atom_getFloat (argv + i);
+    }
+    
+    garray_redraw (x);
+    //
+    }
+    //
+    }
+}
+
 static void garray_const(t_garray *x, t_float g)
 {
     int yonset, i, elemsize;
@@ -271,6 +302,40 @@ static void garray_const(t_garray *x, t_float g)
     else for (i = 0; i < array->a_size; i++)
         *((t_float *)((char *)array->a_vector
             + elemsize * i) + yonset) = g;
+    garray_redraw(x);
+}
+
+static void garray_normalize(t_garray *x, t_float f)
+{
+    int type, i;
+    double maxv, renormer;
+    int yonset, elemsize;
+    t_array *array = garray_getArrayCheckedFloat(x, &yonset, &elemsize);
+    if (!array)
+    {
+        post_error ("%s: needs floating-point 'y' field", x->x_name->s_name);
+        return;
+    }
+
+    if (f <= 0)
+        f = 1;
+
+    for (i = 0, maxv = 0; i < array->a_size; i++)
+    {
+        double v = *((t_float *)(array->a_vector + elemsize * i)
+            + yonset);
+        if (v > maxv)
+            maxv = v;
+        if (-v > maxv)
+            maxv = -v;
+    }
+    if (maxv > 0)
+    {
+        renormer = f / maxv;
+        for (i = 0; i < array->a_size; i++)
+            *((t_float *)(array->a_vector + elemsize * i) + yonset)
+                *= renormer;
+    }
     garray_redraw(x);
 }
 
@@ -354,85 +419,6 @@ static void garray_cosinesum(t_garray *x, t_symbol *s, int argc, t_atom *argv)
         svec[i] = atom_getFloatAtIndex(i, argc, argv);
     garray_dofo(x, npoints, 0, argc, svec, 0);
     PD_MEMORY_FREE(svec);
-}
-
-static void garray_normalize(t_garray *x, t_float f)
-{
-    int type, i;
-    double maxv, renormer;
-    int yonset, elemsize;
-    t_array *array = garray_getArrayCheckedFloat(x, &yonset, &elemsize);
-    if (!array)
-    {
-        post_error ("%s: needs floating-point 'y' field", x->x_name->s_name);
-        return;
-    }
-
-    if (f <= 0)
-        f = 1;
-
-    for (i = 0, maxv = 0; i < array->a_size; i++)
-    {
-        double v = *((t_float *)(array->a_vector + elemsize * i)
-            + yonset);
-        if (v > maxv)
-            maxv = v;
-        if (-v > maxv)
-            maxv = -v;
-    }
-    if (maxv > 0)
-    {
-        renormer = f / maxv;
-        for (i = 0; i < array->a_size; i++)
-            *((t_float *)(array->a_vector + elemsize * i) + yonset)
-                *= renormer;
-    }
-    garray_redraw(x);
-}
-
-    /* list -- the first value is an index; subsequent values are put in
-    the "y" slot of the array.  This generalizes Max's "table", sort of. */
-static void garray_list(t_garray *x, t_symbol *s, int argc, t_atom *argv)
-{
-    int i;
-    int yonset, elemsize;
-    t_array *array = garray_getArrayCheckedFloat(x, &yonset, &elemsize);
-    if (!array)
-    {
-        post_error ("%s: needs floating-point 'y' field", x->x_name->s_name);
-        return;
-    }
-    if (argc < 2) return;
-    else
-    {
-        int firstindex = atom_getFloat(argv);
-        argc--;
-        argv++;
-            /* drop negative x values */
-        if (firstindex < 0)
-        {
-            argc += firstindex;
-            argv -= firstindex;
-            firstindex = 0;
-            if (argc <= 0) return;
-        }
-        if (argc + firstindex > array->a_size)
-        {
-            argc = array->a_size - firstindex;
-            if (argc <= 0) return;
-        }
-        for (i = 0; i < argc; i++)
-            *((t_float *)(array->a_vector + elemsize * (i + firstindex)) + yonset)
-                = atom_getFloat(argv + i);
-    }
-    garray_redraw(x);
-}
-
-    /* forward a "bounds" message to the owning graph */
-static void garray_bounds(t_garray *x, t_float x1, t_float y1,
-    t_float x2, t_float y2)
-{
-    pd_vMessage(&x->x_owner->gl_obj.te_g.g_pd, sym_bounds, "ffff", x1, y1, x2, y2);
 }
 
     /* change the name of a garray. */
@@ -545,6 +531,13 @@ static void garray_print(t_garray *x)
     t_array *array = garray_getArray(x);
     post("garray %s: template %s, length %d",
         x->x_name->s_name, array->a_template->s_name, array->a_size);
+}
+
+    /* forward a "bounds" message to the owning graph */
+static void garray_bounds(t_garray *x, t_float x1, t_float y1,
+    t_float x2, t_float y2)
+{
+    pd_vMessage(&x->x_owner->gl_obj.te_g.g_pd, sym_bounds, "ffff", x1, y1, x2, y2);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -858,25 +851,25 @@ void garray_setup (void)
     
     class_addMethod (c, (t_method)garray_const,         sym_constant,       A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)garray_normalize,     sym_normalize,      A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)garray_sinesum,       sym_sinesum,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)garray_cosinesum,     sym_cosinesum,      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)garray_rename,        sym_rename,         A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)garray_read,          sym_read,           A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)garray_write,         sym_write,          A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)garray_resize,        sym_resize,         A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)garray_print,         sym_print,          A_NULL);
-    class_addMethod (c, (t_method)garray_sinesum,       sym_sinesum,        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)garray_cosinesum,     sym_cosinesum,      A_GIMME, A_NULL);
-
-    class_addMethod (c, (t_method)garray_arraydialog,
-        sym__arraydialog,
-        A_SYMBOL,
-        A_FLOAT,
-        A_FLOAT,
-        A_NULL);
 
     class_addMethod (c, (t_method)garray_bounds,
         sym_bounds,
         A_FLOAT,
         A_FLOAT,
+        A_FLOAT,
+        A_FLOAT,
+        A_NULL);
+        
+    class_addMethod (c, (t_method)garray_arraydialog,
+        sym__arraydialog,
+        A_SYMBOL,
         A_FLOAT,
         A_FLOAT,
         A_NULL);
