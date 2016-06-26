@@ -76,6 +76,16 @@ static t_widgetbehavior garray_widgetBehavior =             /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#define GARRAY_FETCH    int yOnset; \
+                        int elementSize; \
+                        t_array *array = garray_getArrayCheckedFloat (x, &yOnset, &elementSize); \
+                        PD_ASSERT (array != NULL);
+                        
+#define GARRAY_AT(n)    *((t_float *)(array->a_vector + (elementSize * (n))) + yOnset)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 /* Create invisible, built-in canvases to supply templates for floats and float-arrays. */
 
 void garray_initialize (void)
@@ -144,7 +154,7 @@ static void garray_fitToGraph (t_garray *x, int size, int style)
     }
 }
 
-static t_array *garray_getArrayCheckedFloat (t_garray *x, int *y, int *elementSize)
+static t_array *garray_getArrayCheckedFloat (t_garray *x, int *onset, int *elementSize)
 {
     t_array    *a = garray_getArray (x);
     t_template *template = template_findbyname (a->a_template);
@@ -161,7 +171,7 @@ static t_array *garray_getArrayCheckedFloat (t_garray *x, int *y, int *elementSi
     err |= (yType != DATA_FLOAT);
 
     if (!err) {
-        *y = yOnset;
+        *onset = yOnset;
         *elementSize = a->a_elementSize;
         return a;
     }
@@ -216,14 +226,17 @@ t_scalar *garray_getScalar (t_garray *x)
     return x->x_scalar;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 int garray_getFloats (t_garray *x, int *size, t_word **w)
 {
-    int yOnset;
-    int elementSize;
+    GARRAY_FETCH;
     
-    t_array *a = garray_getArrayCheckedFloat (x, &yOnset, &elementSize);
-    
-    if (a && (elementSize == sizeof (t_word))) { *size = a->a_size; *w = (t_word *)a->a_vector; return 1; }
+    if (array && (elementSize == sizeof (t_word))) { 
+        *size = array->a_size; *w = (t_word *)array->a_vector; return 1; 
+    }
     
     PD_BUG;
     
@@ -265,13 +278,9 @@ static void garray_list (t_garray *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc > 1) { 
     //
-    int yOnset;
-    int elementSize;
     int i, j = atom_getFloat (argv);
     
-    t_array *array = garray_getArrayCheckedFloat (x, &yOnset, &elementSize);
-    
-    PD_ASSERT (array != NULL);
+    GARRAY_FETCH;
     
     argc--;
     argv++;
@@ -282,9 +291,7 @@ static void garray_list (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     
     if (argc > 0) {
     //
-    for (i = 0; i < argc; i++) {
-        *((t_float *)(array->a_vector + (elementSize * (i + j))) + yOnset) = atom_getFloat (argv + i);
-    }
+    for (i = 0; i < argc; i++) { GARRAY_AT (i + j) = atom_getFloat (argv + i); }
     
     garray_redraw (x);
     //
@@ -293,16 +300,15 @@ static void garray_list (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-static void garray_const(t_garray *x, t_float g)
+static void garray_constant (t_garray *x, t_float f)
 {
-    int yonset, i, elemsize;
-    t_array *array = garray_getArrayCheckedFloat(x, &yonset, &elemsize);
-    if (!array)
-        post_error ("%s: needs floating-point 'y' field", x->x_name->s_name);
-    else for (i = 0; i < array->a_size; i++)
-        *((t_float *)((char *)array->a_vector
-            + elemsize * i) + yonset) = g;
-    garray_redraw(x);
+    int i;
+    
+    GARRAY_FETCH;
+
+    for (i = 0; i < array->a_size; i++) { GARRAY_AT (i) = f; }
+    
+    garray_redraw (x);
 }
 
 static void garray_normalize(t_garray *x, t_float f)
@@ -849,7 +855,7 @@ void garray_setup (void)
         
     class_addList (c, garray_list);
     
-    class_addMethod (c, (t_method)garray_const,         sym_constant,       A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)garray_constant,      sym_constant,       A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)garray_normalize,     sym_normalize,      A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)garray_sinesum,       sym_sinesum,        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)garray_cosinesum,     sym_cosinesum,      A_GIMME, A_NULL);
@@ -876,7 +882,7 @@ void garray_setup (void)
         
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)garray_const, sym_const, A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)garray_constant, sym_const, A_DEFFLOAT, A_NULL);
     
     #endif
     
