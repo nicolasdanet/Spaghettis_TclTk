@@ -531,7 +531,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
         
         for (y = x->gl_graphics; y; y = y->g_next) {
         //
-        if (pd_class (y) == garray_class && !garray_getname (cast_garray (y), &s)) {
+        if (pd_class (y) == garray_class && !garray_getName (cast_garray (y), &s)) {
         //
         sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
                         " -anchor nw"

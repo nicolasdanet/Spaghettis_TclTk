@@ -1252,7 +1252,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
             post_error ("%s: no such table", argv[i].a_w.w_symbol->s_name);
             goto done;
         }
-        else if (!garray_getfloatwords(garrays[i], &vecsize, 
+        else if (!garray_getFloats(garrays[i], &vecsize, 
                 &vecs[i]))
             post_error ("%s: bad template for tabwrite",
                 argv[i].a_w.w_symbol->s_name);
@@ -1302,8 +1302,8 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
 
             garray_resize_long(garrays[i], finalsize);
                 /* for sanity's sake let's clear the save-in-patch flag here */
-            garray_setsaveit(garrays[i], 0);
-            garray_getfloatwords(garrays[i], &vecsize, 
+            garray_setSaveWithParent(garrays[i], 0);
+            garray_getFloats(garrays[i], &vecsize, 
                 &vecs[i]);
                 /* if the resize failed, garray_resize reported the error */
             if (vecsize != framesinfile)
@@ -1335,7 +1335,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
     for (i = 0; i < argc; i++)
     {
         int nzero, vecsize;
-        garray_getfloatwords(garrays[i], &vecsize, &vecs[i]);
+        garray_getFloats(garrays[i], &vecsize, &vecs[i]);
         for (j = itemsread; j < vecsize; j++)
             vecs[i][j].w_float = 0;
     }
@@ -1344,7 +1344,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
     {
         int vecsize;
         t_word *foo;
-        garray_getfloatwords(garrays[i], &vecsize, &foo);
+        garray_getFloats(garrays[i], &vecsize, &foo);
         for (j = 0; j < vecsize; j++)
             foo[j].w_float = 0;
     }
@@ -1403,7 +1403,7 @@ long soundfiler_dowrite(void *obj, t_glist *canvas,
             post_error ("%s: no such table", argv[i].a_w.w_symbol->s_name);
             goto fail;
         }
-        else if (!garray_getfloatwords(garrays[i], &vecsize, &vecs[i]))
+        else if (!garray_getFloats(garrays[i], &vecsize, &vecs[i]))
             post_error ("%s: bad template for tabwrite",
                 argv[i].a_w.w_symbol->s_name);
         if (nframes > vecsize - onset)

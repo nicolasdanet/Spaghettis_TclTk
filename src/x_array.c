@@ -163,7 +163,7 @@ void array_define_save(t_gobj *z, t_buffer *bb)
     object_saveWidth(&x->gl_obj, bb);
 }
 
-t_scalar *garray_getscalar(t_garray *x);
+
 
     /* send a pointer to the scalar that owns this array to
     whomever is bound to the given symbol */
@@ -177,7 +177,7 @@ static void array_define_send(t_glist *x, t_symbol *s)
         t_gpointer gp;
         gpointer_init(&gp);
         gpointer_setglist(&gp, gl,
-            garray_getscalar((t_garray *)gl->gl_graphics));
+            garray_getScalar((t_garray *)gl->gl_graphics));
         pd_pointer(s->s_thing, &gp);
         gpointer_unset(&gp);
     }
@@ -226,7 +226,7 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
         t_garray *y = (t_garray *)pd_findByClass(x->tc_sym, garray_class);
         if (y)
         {
-            *glist = garray_getglist(y);
+            *glist = garray_getOwner(y);
             return (garray_getArray(y));
         }
         else

@@ -110,6 +110,22 @@ void garray_initialize (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void garray_drawJob (t_gobj *z, t_glist *glist)
+{
+    t_garray *x = cast_garray (z);
+    
+    if (canvas_isMapped (x->x_owner) && gobj_isVisible (z, glist)) {
+    //
+    garray_vis (z, x->x_owner, 0); 
+    garray_vis (z, x->x_owner, 1);
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void garray_fitToGraph (t_garray *x, int size, int style)
 {
     t_array *array = garray_getArray (x);
@@ -126,34 +142,6 @@ static void garray_fitToGraph (t_garray *x, int size, int style)
     guistub_destroyWithKey ((void *)glist);
     //
     }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_array *garray_getArray (t_garray *x)
-{
-    t_template *template = template_findbyname (x->x_scalar->sc_template);
-    
-    if (template) {
-    //
-    t_error err = PD_ERROR_NONE;
-    
-    int zOnset = 0;
-    int zType  = -1;
-    t_symbol *zArrayType = NULL;
-    
-    err |= !(template_find_field (template, sym_z, &zOnset, &zType, &zArrayType));
-    err |= (zType != DATA_ARRAY);
-    
-    if (!err) { return (x->x_scalar->sc_vector[zOnset].w_array); }
-    //
-    }
-    
-    PD_BUG;
-    
-    return NULL;
 }
 
 static t_array *garray_getArrayCheckedFloat (t_garray *x, int *y, int *size)
@@ -189,68 +177,71 @@ static t_array *garray_getArrayCheckedFloat (t_garray *x, int *y, int *size)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-
-    /* get the array's name.  Return nonzero if it should be hidden */
-int garray_getname(t_garray *x, t_symbol **namep)
+t_array *garray_getArray (t_garray *x)
 {
-    *namep = x->x_unexpandedName;
-    return (x->x_hideName);
+    t_template *template = template_findbyname (x->x_scalar->sc_template);
+    
+    if (template) {
+    //
+    t_error err = PD_ERROR_NONE;
+    
+    int zOnset = 0;
+    int zType  = -1;
+    t_symbol *zArrayType = NULL;
+    
+    err |= !(template_find_field (template, sym_z, &zOnset, &zType, &zArrayType));
+    err |= (zType != DATA_ARRAY);
+    
+    if (!err) { return (x->x_scalar->sc_vector[zOnset].w_array); }
+    //
+    }
+    
+    PD_BUG;
+    
+    return NULL;
 }
 
-    /* get a garray's containing glist */
-t_glist *garray_getglist(t_garray *x)
+int garray_getName (t_garray *x, t_symbol **s)
 {
-    return (x->x_owner);
+    *s = x->x_unexpandedName; return x->x_hideName;
 }
 
-    /* get a garray's associated scalar */
-t_scalar *garray_getscalar(t_garray *x)
+t_glist *garray_getOwner (t_garray *x)
 {
-    return (x->x_scalar);
+    return x->x_owner;
 }
 
-void garray_usedindsp(t_garray *x)
+t_scalar *garray_getScalar (t_garray *x)
+{
+    return x->x_scalar;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void garray_setAsUsedInDSP (t_garray *x)
 {
     x->x_isUsedInDSP = 1;
 }
 
-static void garray_drawJob(t_gobj *client, t_glist *glist)
+void garray_setSaveWithParent (t_garray *x, int savedWithParent)
 {
-    t_garray *x = (t_garray *)client;
-    if (canvas_isMapped(x->x_owner) && gobj_isVisible(client, glist))
-    {
-        garray_vis(&x->x_gobj, x->x_owner, 0); 
-        garray_vis(&x->x_gobj, x->x_owner, 1);
+    x->x_saveWithParent = savedWithParent;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void garray_redraw (t_garray *x)
+{
+    if (canvas_isMapped (x->x_owner)) {
+        interface_guiQueueAddIfNotAlreadyThere (cast_gobj (x), x->x_owner, garray_drawJob);
     }
 }
-
-void garray_redraw(t_garray *x)
-{
-    if (canvas_isMapped(x->x_owner))
-        interface_guiQueueAddIfNotAlreadyThere(&x->x_gobj, x->x_owner, garray_drawJob);
-    /* jsarlo { */
-    /* this happens in garray_vis() when array is visible for
-       performance reasons */
-    //else
-    //{
-      /* if (x->x_listviewing)
-        sys_vGui("::ui_array::pdtk_array_listview_fillpage %s\n",
-                 x->x_name->s_name);*/
-    //}
-    /* } jsarlo */
-}
-
-   /* This functiopn gets the template of an array; if we can't figure
-   out what template an array's elements belong to we're in grave trouble
-   when it's time to free or resize it.  */
-t_template *garray_template(t_garray *x)
-{
-    t_array *array = garray_getArray(x);
-    t_template *template = 
-        (array ? template_findbyname(array->a_template) : 0);
-    if (!template) { PD_BUG; }
-    return (template);
-}
+    /* routine that checks if we're just an array of floats and if
+    so returns the goods */
 
 static int garray_npoints(t_garray *x) /* get the length */
 {
@@ -264,10 +255,7 @@ static char *garray_vec(t_garray *x) /* get the contents */
     return ((char *)(array->a_vector));
 }
 
-    /* routine that checks if we're just an array of floats and if
-    so returns the goods */
-
-int garray_getfloatwords(t_garray *x, int *size, t_word **vec)
+int garray_getFloats(t_garray *x, int *size, t_word **vec)
 {
     int yonset, type, elemsize;
     t_array *a = garray_getArrayCheckedFloat(x, &yonset, &elemsize);
@@ -284,32 +272,6 @@ int garray_getfloatwords(t_garray *x, int *size, t_word **vec)
     *size = garray_npoints(x);
     *vec =  (t_word *)garray_vec(x);
     return (1);
-}
-    /* older, non-64-bit safe version, supplied for older externs */
-
-static int garray_getfloatarray(t_garray *x, int *size, t_float **vec)
-{
-    if (sizeof(t_word) != sizeof(t_float))
-    {
-        t_symbol *patchname;
-        if (x->x_owner->gl_parent)
-            patchname = x->x_owner->gl_parent->gl_name;
-        else
-            patchname = x->x_owner->gl_name;
-        post_error ("An operation on the array '%s' in the patch '%s'",
-              x->x_unexpandedName->s_name, patchname->s_name);
-        post_error ("failed since it uses garray_getfloatarray while running 64-bit!");
-    }
-    return (garray_getfloatwords(x, size, (t_word **)vec));
-}
-
-    /* set the "saveit" flag */
-void garray_setsaveit(t_garray *x, int saveit)
-{
-    if (x->x_saveWithParent && !saveit)
-        post("warning: array %s: clearing save-in-patch flag",
-            x->x_unexpandedName->s_name);
-    x->x_saveWithParent = saveit;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -789,7 +751,7 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize, t_float ffla
         template_setfloat(scalartemplate, sym_style,
             x->x_scalar->sc_vector, (t_float)style, 0);
 
-        garray_setsaveit(x, (saveit != 0));
+        garray_setSaveWithParent(x, (saveit != 0));
         garray_redraw(x);
         canvas_dirty(x->x_owner, 1);
     }

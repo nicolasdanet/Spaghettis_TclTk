@@ -722,6 +722,19 @@ void            gatom_click                             (t_gatom *x,
 void            garray_initialize                       (void);
 
 t_array         *garray_getArray                        (t_garray *x);
+t_glist         *garray_getOwner                        (t_garray *x);
+t_scalar        *garray_getScalar                       (t_garray *x);
+
+int             garray_getName                          (t_garray *x, t_symbol **s);
+int             garray_getFloats                        (t_garray *x, int *size, t_word **vec);
+
+void            garray_setAsUsedInDSP                   (t_garray *x);
+void            garray_setSaveWithParent                (t_garray *x, int savedWithParent);
+void            garray_redraw                           (t_garray *x);
+void            garray_resize                           (t_garray *x, t_float f);
+void            garray_resize_long                      (t_garray *x, long n);
+void            garray_properties                       (t_garray *x);
+
 t_garray        *garray_makeObject                      (t_glist *glist,
                                                             t_symbol *name,
                                                             t_symbol *templateName,
@@ -762,19 +775,6 @@ void            canvas_merge                            (t_glist *glist, t_symbo
 
 t_outlet *voutlet_getit(t_pd *x);
 t_inlet *vinlet_getit(t_pd *x);
-
-int garray_getname(t_garray *x, t_symbol **namep);
-
-int          garray_getfloatwords        (t_garray *x, int *size, t_word **vec);
-void         garray_redraw               (t_garray *x);
-
-void         garray_resize               (t_garray *x, t_float f);
-void         garray_resize_long          (t_garray *x, long n);
-void         garray_usedindsp            (t_garray *x);
-void         garray_setsaveit            (t_garray *x, int saveit);
-t_glist      *garray_getglist            (t_garray *x);
-void         garray_properties       (t_garray *x);
-t_template   *garray_template           (t_garray *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
