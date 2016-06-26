@@ -43,7 +43,7 @@ extern t_pd pd_canvasMaker;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_class *garray_class;                  /* Shared. */
+t_class *garray_class;                                      /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -62,7 +62,7 @@ struct _garray {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_widgetbehavior garray_widgetBehavior = 
+static t_widgetbehavior garray_widgetBehavior =             /* Shared. */
     {
         garray_getrect,
         garray_displace,
@@ -144,7 +144,7 @@ static void garray_fitToGraph (t_garray *x, int size, int style)
     }
 }
 
-static t_array *garray_getArrayCheckedFloat (t_garray *x, int *y, int *size)
+static t_array *garray_getArrayCheckedFloat (t_garray *x, int *y, int *elementSize)
 {
     t_array    *a = garray_getArray (x);
     t_template *template = template_findbyname (a->a_template);
@@ -162,7 +162,7 @@ static t_array *garray_getArrayCheckedFloat (t_garray *x, int *y, int *size)
 
     if (!err) {
         *y = yOnset;
-        *size = a->a_elementSize;
+        *elementSize = a->a_elementSize;
         return a;
     }
     //
@@ -216,6 +216,20 @@ t_scalar *garray_getScalar (t_garray *x)
     return x->x_scalar;
 }
 
+int garray_getFloats (t_garray *x, int *size, t_word **w)
+{
+    int yOnset;
+    int elementSize;
+    
+    t_array *a = garray_getArrayCheckedFloat (x, &yOnset, &elementSize);
+    
+    if (a && (elementSize == sizeof (t_word))) { *size = a->a_size; *w = (t_word *)a->a_vector; return 1; }
+    
+    PD_BUG;
+    
+    return 0;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -237,41 +251,10 @@ void garray_setSaveWithParent (t_garray *x, int savedWithParent)
 void garray_redraw (t_garray *x)
 {
     if (canvas_isMapped (x->x_owner)) {
-        interface_guiQueueAddIfNotAlreadyThere (cast_gobj (x), x->x_owner, garray_drawJob);
+    //
+    interface_guiQueueAddIfNotAlreadyThere (cast_gobj (x), x->x_owner, garray_drawJob);
+    //
     }
-}
-    /* routine that checks if we're just an array of floats and if
-    so returns the goods */
-
-static int garray_npoints(t_garray *x) /* get the length */
-{
-    t_array *array = garray_getArray(x);
-    return (array->a_size);
-}
-
-static char *garray_vec(t_garray *x) /* get the contents */
-{
-    t_array *array = garray_getArray(x);
-    return ((char *)(array->a_vector));
-}
-
-int garray_getFloats(t_garray *x, int *size, t_word **vec)
-{
-    int yonset, type, elemsize;
-    t_array *a = garray_getArrayCheckedFloat(x, &yonset, &elemsize);
-    if (!a)
-    {
-        post_error ("%s: needs floating-point 'y' field", x->x_name->s_name);
-        return (0);
-    }
-    else if (elemsize != sizeof(t_word))
-    {
-        post_error ("%s: has more than one field", x->x_name->s_name);
-        return (0);
-    }
-    *size = garray_npoints(x);
-    *vec =  (t_word *)garray_vec(x);
-    return (1);
 }
 
 // -----------------------------------------------------------------------------------------------------------
