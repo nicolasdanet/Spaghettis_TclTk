@@ -47,7 +47,7 @@ static void sighip_ft1(t_sighip *x, t_float f)
 {
     if (f < 0) f = 0;
     x->x_hz = f;
-    x->x_ctl->c_coef = 1 - f * (2 * 3.14159) / x->x_sr;
+    x->x_ctl->c_coef = 1 - f * (2 * PD_PI) / x->x_sr;
     if (x->x_ctl->c_coef < 0)
         x->x_ctl->c_coef = 0;
     else if (x->x_ctl->c_coef > 1)
@@ -180,7 +180,7 @@ static void siglop_ft1(t_siglop *x, t_float f)
 {
     if (f < 0) f = 0;
     x->x_hz = f;
-    x->x_ctl->c_coef = f * (2 * 3.14159) / x->x_sr;
+    x->x_ctl->c_coef = f * (2 * PD_PI) / x->x_sr;
     if (x->x_ctl->c_coef > 1)
         x->x_ctl->c_coef = 1;
     else if (x->x_ctl->c_coef < 0)
@@ -275,7 +275,7 @@ static void *sigbp_new(t_float f, t_float q)
 
 static t_float sigbp_qcos(t_float f)
 {
-    if (f >= -(0.5f*3.14159f) && f <= 0.5f*3.14159f)
+    if (f >= -(0.5f*PD_PI) && f <= 0.5f*PD_PI)
     {
         t_float g = f*f;
         return (((g*g*g * (-1.0f/720.0f) + g*g*(1.0f/24.0f)) - g*0.5) + 1);
@@ -290,7 +290,7 @@ static void sigbp_docoef(t_sigbp *x, t_float f, t_float q)
     if (q < 0) q = 0;
     x->x_freq = f;
     x->x_q = q;
-    omega = f * (2.0f * 3.14159f) / x->x_sr;
+    omega = f * (2.0f * PD_PI) / x->x_sr;
     if (q < 0.001) oneminusr = 1.0f;
     else oneminusr = omega/q;
     if (oneminusr > 1.0f) oneminusr = 1.0f;

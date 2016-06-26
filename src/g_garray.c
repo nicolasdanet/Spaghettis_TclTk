@@ -85,6 +85,7 @@ static t_widgetbehavior garray_widgetBehavior =             /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* Create invisible, built-in canvases to supply templates for floats and float-arrays. */
 
@@ -181,6 +182,49 @@ static t_array *garray_getArrayCheckedFloat (t_garray *x, int *onset, int *eleme
     PD_BUG;
     
     return NULL;
+}
+
+static void garray_sumOfFourierComponents (t_garray *x,
+    long numberOfPoints,
+    t_float dcValue,
+    int numberOfSineWaves,
+    t_float *valuesOfSineWaves,
+    int isSine)
+{
+    double phase, phaseIncrement;
+    int i;
+    
+    GARRAY_FETCH;
+    
+    numberOfPoints = (numberOfPoints <= 0) ? 512 : numberOfPoints;
+    
+    if (!PD_ISPOWER2 (numberOfPoints)) { numberOfPoints = PD_NEXTPOWER2 (numberOfPoints); }
+    
+    garray_resize_long (x, numberOfPoints + 3);
+    
+    phaseIncrement = 2.0 * PD_PI / numberOfPoints;
+    
+    for (i = 0, phase = -phaseIncrement; i < array->a_size; i++, phase += phaseIncrement) {
+    //
+    int j;
+    double fj;
+    double sum = dcValue;
+    
+    if (isSine) {
+        for (j = 0, fj = phase; j < numberOfSineWaves; j++, fj += phase) { 
+            sum += valuesOfSineWaves[j] * sin (fj);
+        }
+    } else {
+        for (j = 0, fj = 0; j < numberOfSineWaves; j++, fj += phase) {
+            sum += valuesOfSineWaves[j] * cos (fj);
+        }
+    }
+    
+    GARRAY_AT (i) = sum;
+    //
+    }
+    
+    garray_redraw (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -311,72 +355,26 @@ static void garray_constant (t_garray *x, t_float f)
     garray_redraw (x);
 }
 
-static void garray_normalize(t_garray *x, t_float f)
+static void garray_normalize (t_garray *x, t_float f)
 {
-    int type, i;
-    double maxv, renormer;
-    int yonset, elemsize;
-    t_array *array = garray_getArrayCheckedFloat(x, &yonset, &elemsize);
-    if (!array)
-    {
-        post_error ("%s: needs floating-point 'y' field", x->x_name->s_name);
-        return;
-    }
+    int i;
+    double maximum  = 0.0;
+    
+    GARRAY_FETCH;
 
-    if (f <= 0)
-        f = 1;
+    if (f <= 0.0) { f = 1.0; }
 
-    for (i = 0, maxv = 0; i < array->a_size; i++)
-    {
-        double v = *((t_float *)(array->a_vector + elemsize * i)
-            + yonset);
-        if (v > maxv)
-            maxv = v;
-        if (-v > maxv)
-            maxv = -v;
+    for (i = 0; i < array->a_size; i++) {
+        double t = GARRAY_AT (i);
+        if (PD_ABS (t) > maximum) { maximum = PD_ABS (t); }
     }
-    if (maxv > 0)
-    {
-        renormer = f / maxv;
-        for (i = 0; i < array->a_size; i++)
-            *((t_float *)(array->a_vector + elemsize * i) + yonset)
-                *= renormer;
+    
+    if (maximum > 0.0) {
+        double k = f / maximum;
+        for (i = 0; i < array->a_size; i++) { GARRAY_AT (i) *= k; }
     }
-    garray_redraw(x);
-}
-
-    /* sum of Fourier components; called from routines below */
-static void garray_dofo(t_garray *x, long npoints, t_float dcval,
-    int nsin, t_float *vsin, int sineflag)
-{
-    double phase, phaseincr, fj;
-    int yonset, i, j, elemsize;
-    t_array *array = garray_getArrayCheckedFloat(x, &yonset, &elemsize);
-    if (!array)
-    {
-        post_error ("%s: needs floating-point 'y' field", x->x_name->s_name);
-        return;
-    }
-    if (npoints == 0)
-        npoints = 512;  /* dunno what a good default would be... */
-    if (npoints != (1 << ilog2(npoints)))
-        post("%s: rounnding to %d points", array->a_template->s_name,
-            (npoints = (1<<ilog2(npoints))));
-    garray_resize_long(x, npoints + 3);
-    phaseincr = 2. * 3.14159 / npoints;
-    for (i = 0, phase = -phaseincr; i < array->a_size; i++, phase += phaseincr)
-    {
-        double sum = dcval;
-        if (sineflag)
-            for (j = 0, fj = phase; j < nsin; j++, fj += phase)
-                sum += vsin[j] * sin(fj);
-        else
-            for (j = 0, fj = 0; j < nsin; j++, fj += phase)
-                sum += vsin[j] * cos(fj);
-        *((t_float *)((array->a_vector + elemsize * i)) + yonset)
-            = sum;
-    }
-    garray_redraw(x);
+    
+    garray_redraw (x);
 }
 
 static void garray_sinesum(t_garray *x, t_symbol *s, int argc, t_atom *argv)
@@ -399,7 +397,7 @@ static void garray_sinesum(t_garray *x, t_symbol *s, int argc, t_atom *argv)
     
     for (i = 0; i < argc; i++)
         svec[i] = atom_getFloatAtIndex(i, argc, argv);
-    garray_dofo(x, npoints, 0, argc, svec, 1);
+    garray_sumOfFourierComponents(x, npoints, 0, argc, svec, 1);
     PD_MEMORY_FREE(svec);
 }
 
@@ -423,7 +421,7 @@ static void garray_cosinesum(t_garray *x, t_symbol *s, int argc, t_atom *argv)
 
     for (i = 0; i < argc; i++)
         svec[i] = atom_getFloatAtIndex(i, argc, argv);
-    garray_dofo(x, npoints, 0, argc, svec, 0);
+    garray_sumOfFourierComponents(x, npoints, 0, argc, svec, 0);
     PD_MEMORY_FREE(svec);
 }
 

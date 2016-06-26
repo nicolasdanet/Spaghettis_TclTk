@@ -206,7 +206,7 @@ static void cos_dsp(t_cos *x, t_signal **sp)
 static void cos_maketable(void)
 {
     int i;
-    float *fp, phase, phsinc = (2. * 3.14159) / COSTABSIZE;
+    float *fp, phase, phsinc = (2. * PD_PI) / COSTABSIZE;
     union tabfudge tf;
     
     if (cos_table) return;
