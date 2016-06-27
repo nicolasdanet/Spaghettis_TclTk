@@ -148,8 +148,6 @@ static void *array_define_new(t_symbol *s, int argc, t_atom *argv)
     return (x);
 }
 
-void garray_savecontentsto(t_garray *x, t_buffer *b);
-
 void array_define_save(t_gobj *z, t_buffer *bb)
 {
     t_glist *x = (t_glist *)z;
@@ -159,7 +157,7 @@ void array_define_save(t_gobj *z, t_buffer *bb)
     buffer_serialize(bb, x->gl_obj.te_buffer);
     buffer_appendSemicolon(bb);
 
-    garray_savecontentsto((t_garray *)gl->gl_graphics, bb);
+    garray_saveContentsToBuffer ((t_garray *)gl->gl_graphics, bb);
     object_saveWidth(&x->gl_obj, bb);
 }
 

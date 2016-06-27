@@ -26,6 +26,12 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define GARRAY_MAXIMUM_CHUNK    1000
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void garray_behaviorGetRectangle         (t_gobj *, t_glist *, int *, int *, int *, int *);
 static void garray_behaviorDisplaced            (t_gobj *, t_glist *, int, int);
 static void garray_behaviorSelected             (t_gobj *, t_glist *, int);
@@ -145,7 +151,6 @@ static void garray_drawJob (t_gobj *z, t_glist *glist)
 
 static void garray_fitToGraph (t_garray *x, int size, int style)
 {
-    t_array *array = garray_getArray (x);
     t_glist *glist = x->x_owner;
     
     if (glist->gl_graphics == cast_gobj (x) && !cast_gobj (x)->g_next) {
@@ -157,6 +162,41 @@ static void garray_fitToGraph (t_garray *x, int size, int style)
         glist->gl_valueBottom);
     
     guistub_destroyWithKey ((void *)glist);
+    //
+    }
+}
+
+void garray_resizeWithInteger (t_garray *x, long n)
+{
+    t_template *template = template_findbyname (x->x_scalar->sc_template);
+    int style = template_getfloat (template, sym_style, x->x_scalar->sc_vector, 1);
+    
+    garray_fitToGraph (x, PD_MAX (1, n), style);    
+    array_resize_and_redraw (garray_getArray (x), x->x_owner, PD_MAX (1, n));
+    
+    if (x->x_isUsedInDSP) { dsp_update(); }
+}
+
+void garray_saveContentsToBuffer (t_garray *x, t_buffer *b)
+{
+    if (x->x_saveWithParent) {
+    //
+    t_array *array = garray_getArray (x);
+    int n = 0;
+
+    while (n < array->a_size) {
+    //
+    int i, chunk = array->a_size - n;
+    
+    if (chunk > GARRAY_MAXIMUM_CHUNK) { chunk = GARRAY_MAXIMUM_CHUNK; }
+    
+    buffer_vAppend (b, "si", sym___hash__A, n);
+    for (i = 0; i < chunk; i++) { buffer_vAppend (b, "f", ((t_word *)(array->a_vector))[n+i].w_float); }
+    buffer_vAppend (b, ";");
+        
+    n += chunk;
+    //
+    }
     //
     }
 }
@@ -224,21 +264,13 @@ static void garray_setWithSineWaves (t_garray *x, t_symbol *s, int argc, t_atom 
     }
 }
 
-void garray_resizeWithInteger (t_garray *x, long n)
-{
-    t_array *array = garray_getArray (x);
-    t_template *template = template_findbyname (x->x_scalar->sc_template);
-    int style = template_getfloat (template, sym_style, x->x_scalar->sc_vector, 1);
-    
-    garray_fitToGraph (x, PD_MAX (1, n), style);    
-    array_resize_and_redraw (array, x->x_owner, PD_MAX (1, n));
-    
-    if (x->x_isUsedInDSP) { dsp_update(); }
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static t_array *garray_getArrayCheckedFloat (t_garray *x, int *onset, int *elementSize)
 {
-    t_array    *a = garray_getArray (x);
+    t_array *a = garray_getArray (x);
     t_template *template = template_findbyname (a->a_template);
     
     if (template) {
@@ -263,6 +295,19 @@ static t_array *garray_getArrayCheckedFloat (t_garray *x, int *onset, int *eleme
     PD_BUG;
     
     return NULL;
+}
+
+int garray_getFloats (t_garray *x, int *size, t_word **w)
+{
+    GARRAY_FETCH;
+    
+    if (array && (elementSize == sizeof (t_word))) { 
+        *size = array->a_size; *w = (t_word *)array->a_vector; return 1; 
+    }
+    
+    PD_BUG;
+    
+    return 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -291,19 +336,6 @@ t_array *garray_getArray (t_garray *x)
     PD_BUG;
     
     return NULL;
-}
-
-int garray_getFloats (t_garray *x, int *size, t_word **w)
-{
-    GARRAY_FETCH;
-    
-    if (array && (elementSize == sizeof (t_word))) { 
-        *size = array->a_size; *w = (t_word *)array->a_vector; return 1; 
-    }
-    
-    PD_BUG;
-    
-    return 0;
 }
 
 int garray_getName (t_garray *x, t_symbol **s)
@@ -550,37 +582,13 @@ static int garray_behaviorClicked (t_gobj *z,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void garray_savecontentsto(t_garray *x, t_buffer *b)
-{
-    int ARRAYWRITECHUNKSIZE = 1000;
-    
-    if (x->x_saveWithParent)
-    {
-        t_array *array = garray_getArray(x);
-        int n = array->a_size, n2 = 0;
-        if (n > 200000)
-            post("warning: I'm saving an array with %d points!\n", n);
-        while (n2 < n)
-        {
-            int chunk = n - n2, i;
-            if (chunk > ARRAYWRITECHUNKSIZE)
-                chunk = ARRAYWRITECHUNKSIZE;
-            buffer_vAppend(b, "si", sym___hash__A, n2);
-            for (i = 0; i < chunk; i++)
-                buffer_vAppend(b, "f", ((t_word *)(array->a_vector))[n2+i].w_float);
-            buffer_vAppend(b, ";");
-            n2 += chunk;
-        }
-    }
-}
-
-static void garray_save(t_gobj *z, t_buffer *b)
+static void garray_functionSave (t_gobj *z, t_buffer *b)
 {
     int style, filestyle;
     t_garray *x = (t_garray *)z;
     t_array *array = garray_getArray(x);
     t_template *scalartemplate;
-    if (x->x_scalar->sc_template != sym_pd__dash__float__dash__array)   /* ??? */
+    if (x->x_scalar->sc_template != sym_pd__dash__float__dash__array)
     {
             /* LATER "save" the scalar as such */ 
         post_error ("can't save arrays of type %s yet", 
@@ -600,7 +608,7 @@ static void garray_save(t_gobj *z, t_buffer *b)
     buffer_vAppend(b, "sssisi;", sym___hash__X, sym_array,
         x->x_unexpandedName, array->a_size, &s_float,
             x->x_saveWithParent + 2 * filestyle + 8*x->x_hideName);
-    garray_savecontentsto(x, b);
+    garray_saveContentsToBuffer (x, b);
 }
 
     /* called from graph_dialog to set properties */
@@ -842,7 +850,7 @@ void garray_setup (void)
     #endif
     
     class_setWidgetBehavior (c, &garray_widgetBehavior);
-    class_setSaveFunction (c, garray_save);
+    class_setSaveFunction (c, garray_functionSave);
     
     garray_class = c;
 }

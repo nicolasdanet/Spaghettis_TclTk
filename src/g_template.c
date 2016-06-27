@@ -382,8 +382,6 @@ static void template_conformarray(t_template *tfrom, t_template *tto,
     glists recursively.
     We don't handle redrawing here; this is to be filled in LATER... */
 
-t_array *garray_getArray(t_garray *x);
-
 static void template_conformglist(t_template *tfrom, t_template *tto,
     t_glist *glist,  int *conformaction)
 {

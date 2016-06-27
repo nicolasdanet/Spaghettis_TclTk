@@ -721,25 +721,25 @@ void            gatom_click                             (t_gatom *x,
 
 void            garray_initialize                       (void);
 
+t_garray        *garray_makeObject                      (t_glist *glist,
+                                                            t_symbol *name,
+                                                            t_symbol *templateName,
+                                                            t_float size,
+                                                            t_float flags);
+                                                            
 t_array         *garray_getArray                        (t_garray *x);
 t_glist         *garray_getOwner                        (t_garray *x);
 t_scalar        *garray_getScalar                       (t_garray *x);
 
 int             garray_getName                          (t_garray *x, t_symbol **s);
 int             garray_getFloats                        (t_garray *x, int *size, t_word **w);
-
 void            garray_setAsUsedInDSP                   (t_garray *x);
 void            garray_setSaveWithParent                (t_garray *x, int savedWithParent);
 void            garray_redraw                           (t_garray *x);
 void            garray_resizeWithInteger                (t_garray *x, long n);
+void            garray_saveContentsToBuffer             (t_garray *x, t_buffer *b);
 void            garray_properties                       (t_garray *x);
 
-t_garray        *garray_makeObject                      (t_glist *glist,
-                                                            t_symbol *name,
-                                                            t_symbol *templateName,
-                                                            t_float size,
-                                                            t_float flags);
-                                            
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -899,7 +899,7 @@ t_symbol     *template_getsymbol    (t_template *x, t_symbol *fieldname, t_word 
 void         template_setsymbol     (t_template *x, t_symbol *fieldname, t_word *wp, t_symbol *s, int loud);
 
 t_float      fielddesc_getcoord     (t_fielddescriptor *f, t_template *tmpl, t_word *wp, int loud);
-void         fielddesc_setcoord     (t_fielddescriptor *f, t_template *tmpl, t_word *wp, t_float pix, int loud);
+void fielddesc_setcoord     (t_fielddescriptor *f, t_template *tmpl, t_word *wp, t_float pix, int loud);
 t_float      fielddesc_cvttocoord   (t_fielddescriptor *f, t_float val);
 t_float      fielddesc_cvtfromcoord (t_fielddescriptor *f, t_float coord);
 
