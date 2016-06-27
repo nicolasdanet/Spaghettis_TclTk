@@ -181,9 +181,10 @@ void garray_saveContentsToBuffer (t_garray *x, t_buffer *b)
 {
     if (x->x_saveWithParent) {
     //
-    t_array *array = garray_getArray (x);
     int n = 0;
 
+    GARRAY_FETCH;
+    
     while (n < array->a_size) {
     //
     int i, chunk = array->a_size - n;
@@ -191,7 +192,7 @@ void garray_saveContentsToBuffer (t_garray *x, t_buffer *b)
     if (chunk > GARRAY_MAXIMUM_CHUNK) { chunk = GARRAY_MAXIMUM_CHUNK; }
     
     buffer_vAppend (b, "si", sym___hash__A, n);
-    for (i = 0; i < chunk; i++) { buffer_vAppend (b, "f", ((t_word *)(array->a_vector))[n+i].w_float); }
+    for (i = 0; i < chunk; i++) { buffer_vAppend (b, "f", GARRAY_AT (n + i)); }
     buffer_vAppend (b, ";");
         
     n += chunk;
