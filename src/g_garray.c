@@ -26,13 +26,13 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void garray_getrect      (t_gobj *, t_glist *, int *, int *, int *, int *);
-static void garray_displace     (t_gobj *, t_glist *, int, int);
-static void garray_select       (t_gobj *, t_glist *, int);
-static void garray_activate     (t_gobj *, t_glist *, int);
-static void garray_delete       (t_gobj *, t_glist *);
-static void garray_vis          (t_gobj *, t_glist *, int);
-static int  garray_click        (t_gobj *, t_glist *, int, int, int, int, int, int, int);
+static void garray_behaviorGetRectangle         (t_gobj *, t_glist *, int *, int *, int *, int *);
+static void garray_behaviorDisplaced            (t_gobj *, t_glist *, int, int);
+static void garray_behaviorSelected             (t_gobj *, t_glist *, int);
+static void garray_behaviorActivated            (t_gobj *, t_glist *, int);
+static void garray_behaviorDeleted              (t_gobj *, t_glist *);
+static void garray_behaviorVisibilityChanged    (t_gobj *, t_glist *, int);
+static int  garray_behaviorClicked              (t_gobj *, t_glist *, int, int, int, int, int, int, int);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -64,13 +64,13 @@ struct _garray {
 
 static t_widgetbehavior garray_widgetBehavior =             /* Shared. */
     {
-        garray_getrect,
-        garray_displace,
-        garray_select,
-        garray_activate,
-        garray_delete,
-        garray_vis,
-        garray_click,
+        garray_behaviorGetRectangle,
+        garray_behaviorDisplaced,
+        garray_behaviorSelected,
+        garray_behaviorActivated,
+        garray_behaviorDeleted,
+        garray_behaviorVisibilityChanged,
+        garray_behaviorClicked,
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -133,8 +133,8 @@ static void garray_drawJob (t_gobj *z, t_glist *glist)
     
     if (canvas_isMapped (x->x_owner) && gobj_isVisible (z, glist)) {
     //
-    garray_vis (z, x->x_owner, 0); 
-    garray_vis (z, x->x_owner, 1);
+    garray_behaviorVisibilityChanged (z, x->x_owner, 0); 
+    garray_behaviorVisibilityChanged (z, x->x_owner, 1);
     //
     }
 }
@@ -236,10 +236,6 @@ void garray_resizeWithInteger (t_garray *x, long n)
     if (x->x_isUsedInDSP) { dsp_update(); }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static t_array *garray_getArrayCheckedFloat (t_garray *x, int *onset, int *elementSize)
 {
     t_array    *a = garray_getArray (x);
@@ -268,6 +264,10 @@ static t_array *garray_getArrayCheckedFloat (t_garray *x, int *onset, int *eleme
     
     return NULL;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 t_array *garray_getArray (t_garray *x)
 {
@@ -501,44 +501,49 @@ static void garray_bounds (t_garray *x, t_float a, t_float b, t_float c, t_float
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void garray_getrect(t_gobj *z, t_glist *glist, int *xp1, int *yp1, int *xp2, int *yp2)
+static void garray_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
 {
-    t_garray *x = (t_garray *)z;
-    gobj_getRectangle(&x->x_scalar->sc_g, glist, xp1, yp1, xp2, yp2);
+    t_garray *x = cast_garray (z);
+    
+    gobj_getRectangle (cast_gobj (x->x_scalar), glist, a, b, c, d);
 }
 
-static void garray_displace(t_gobj *z, t_glist *glist, int dx, int dy)
-{
-    /* refuse */
-}
-
-static void garray_select(t_gobj *z, t_glist *glist, int state)
-{
-    t_garray *x = (t_garray *)z;
-    /* fill in later */
-}
-
-static void garray_activate(t_gobj *z, t_glist *glist, int state)
+static void garray_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
 {
 }
 
-static void garray_delete(t_gobj *z, t_glist *glist)
+static void garray_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
 {
-    /* nothing to do */
 }
 
-static void garray_vis(t_gobj *z, t_glist *glist, int vis)
+static void garray_behaviorActivated (t_gobj *z, t_glist *glist, int isActivated)
 {
-    t_garray *x = (t_garray *)z;
-    gobj_visibilityChanged(&x->x_scalar->sc_g, glist, vis);
-    // interface_guiQueueRemove
 }
 
-static int garray_click(t_gobj *z, t_glist *glist, int xpix, int ypix, int shift, int ctrl, int alt, int dbl, int doit)
+static void garray_behaviorDeleted (t_gobj *z, t_glist *glist)
 {
-    t_garray *x = (t_garray *)z;
-    return (gobj_clicked(&x->x_scalar->sc_g, glist,
-        xpix, ypix, shift, ctrl, alt, dbl, doit));
+}
+
+static void garray_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
+{
+    t_garray *x = cast_garray (z);
+    
+    gobj_visibilityChanged (cast_gobj (x->x_scalar), glist, isVisible);
+}
+
+static int garray_behaviorClicked (t_gobj *z,
+    t_glist *glist,
+    int a,
+    int b,
+    int shift,
+    int ctrl,
+    int alt,
+    int dbl,
+    int clicked)
+{
+    t_garray *x = cast_garray (z);
+    
+    return (gobj_clicked (cast_gobj (x->x_scalar), glist, a, b, shift, ctrl, alt, dbl, clicked));
 }
 
 // -----------------------------------------------------------------------------------------------------------
