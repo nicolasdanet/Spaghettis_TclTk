@@ -184,10 +184,9 @@ static t_array *garray_getArrayCheckedFloat (t_garray *x, int *onset, int *eleme
     return NULL;
 }
 
-static void garray_sumOfFourierComponents (t_garray *x,
+static void garray_setWithSumOfFourierComponents (t_garray *x,
     long numberOfPoints,
-    t_float dcValue,
-    int numberOfSineWaves,
+    int  numberOfSineWaves,
     t_float *valuesOfSineWaves,
     int isSine)
 {
@@ -208,7 +207,7 @@ static void garray_sumOfFourierComponents (t_garray *x,
     //
     int j;
     double fj;
-    double sum = dcValue;
+    double sum = 0.0;
     
     if (isSine) {
         for (j = 0, fj = phase; j < numberOfSineWaves; j++, fj += phase) { 
@@ -225,6 +224,27 @@ static void garray_sumOfFourierComponents (t_garray *x,
     }
     
     garray_redraw (x);
+}
+
+static void garray_setWithSineWaves (t_garray *x, t_symbol *s, int argc, t_atom *argv, int isSine)
+{    
+    if (argc > 1) {
+    //
+    t_float *t = NULL;
+    int i;
+    long numberOfPoints = atom_getFloatAtIndex (0, argc, argv);
+    
+    argv++, argc--;
+    
+    t = (t_float *)PD_MEMORY_GET (sizeof (t_float) * argc);
+    
+    for (i = 0; i < argc; i++) { t[i] = atom_getFloatAtIndex (i, argc, argv); }
+    
+    garray_setWithSumOfFourierComponents (x, numberOfPoints, argc, t, isSine);
+    
+    PD_MEMORY_FREE (t);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -377,55 +397,16 @@ static void garray_normalize (t_garray *x, t_float f)
     garray_redraw (x);
 }
 
-static void garray_sinesum(t_garray *x, t_symbol *s, int argc, t_atom *argv)
+static void garray_sinesum (t_garray *x, t_symbol *s, int argc, t_atom *argv)
 {    
-    t_float *svec;
-    long npoints;
-    int i;
-    if (argc < 2)
-    {
-        post_error ("sinesum: %s: need number of points and partial strengths",
-            x->x_name->s_name);
-        return;
-    }
-
-    npoints = atom_getFloatAtIndex(0, argc, argv);
-    argv++, argc--;
-    
-    svec = (t_float *)PD_MEMORY_GET(sizeof(t_float) * argc);
-    if (!svec) return;
-    
-    for (i = 0; i < argc; i++)
-        svec[i] = atom_getFloatAtIndex(i, argc, argv);
-    garray_sumOfFourierComponents(x, npoints, 0, argc, svec, 1);
-    PD_MEMORY_FREE(svec);
+    garray_setWithSineWaves (x, s, argc, argv, 1);
 }
 
-static void garray_cosinesum(t_garray *x, t_symbol *s, int argc, t_atom *argv)
-{
-    t_float *svec;
-    long npoints;
-    int i;
-    if (argc < 2)
-    {
-        post_error ("sinesum: %s: need number of points and partial strengths",
-            x->x_name->s_name);
-        return;
-    }
-
-    npoints = atom_getFloatAtIndex(0, argc, argv);
-    argv++, argc--;
-    
-    svec = (t_float *)PD_MEMORY_GET(sizeof(t_float) * argc);
-    if (!svec) return;
-
-    for (i = 0; i < argc; i++)
-        svec[i] = atom_getFloatAtIndex(i, argc, argv);
-    garray_sumOfFourierComponents(x, npoints, 0, argc, svec, 0);
-    PD_MEMORY_FREE(svec);
+static void garray_cosinesum (t_garray *x, t_symbol *s, int argc, t_atom *argv)
+{    
+    garray_setWithSineWaves (x, s, argc, argv, 0);
 }
 
-    /* change the name of a garray. */
 static void garray_rename(t_garray *x, t_symbol *s)
 {
     pd_unbind(&x->x_gobj.g_pd, x->x_name);
