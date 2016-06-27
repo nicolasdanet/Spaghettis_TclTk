@@ -87,6 +87,12 @@ static t_widgetbehavior garray_widgetBehavior =             /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static t_array *garray_getArrayCheckedFloat (t_garray *, int *, int *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 /* Create invisible, built-in canvases to supply templates for floats and float-arrays. */
 
 void garray_initialize (void)
@@ -155,35 +161,6 @@ static void garray_fitToGraph (t_garray *x, int size, int style)
     }
 }
 
-static t_array *garray_getArrayCheckedFloat (t_garray *x, int *onset, int *elementSize)
-{
-    t_array    *a = garray_getArray (x);
-    t_template *template = template_findbyname (a->a_template);
-    
-    if (template) {
-    //
-    t_error err = PD_ERROR_NONE;
-    
-    int yOnset = 0;
-    int yType  = -1;
-    t_symbol *yArrayType = NULL;
-    
-    err |= !(template_find_field (template, sym_y, &yOnset, &yType, &yArrayType));
-    err |= (yType != DATA_FLOAT);
-
-    if (!err) {
-        *onset = yOnset;
-        *elementSize = a->a_elementSize;
-        return a;
-    }
-    //
-    }
-    
-    PD_BUG;
-    
-    return NULL;
-}
-
 static void garray_setWithSumOfFourierComponents (t_garray *x,
     long numberOfPoints,
     int  numberOfSineWaves,
@@ -201,7 +178,7 @@ static void garray_setWithSumOfFourierComponents (t_garray *x,
     
     garray_resize_long (x, numberOfPoints + 3);
     
-    phaseIncrement = 2.0 * PD_PI / numberOfPoints;
+    phaseIncrement = 2.0 * (double)PD_PI / numberOfPoints;
     
     for (i = 0, phase = -phaseIncrement; i < array->a_size; i++, phase += phaseIncrement) {
     //
@@ -211,11 +188,11 @@ static void garray_setWithSumOfFourierComponents (t_garray *x,
     
     if (isSine) {
         for (j = 0, fj = phase; j < numberOfSineWaves; j++, fj += phase) { 
-            sum += valuesOfSineWaves[j] * sin (fj);
+            sum += (double)valuesOfSineWaves[j] * sin (fj);
         }
     } else {
         for (j = 0, fj = 0; j < numberOfSineWaves; j++, fj += phase) {
-            sum += valuesOfSineWaves[j] * cos (fj);
+            sum += (double)valuesOfSineWaves[j] * cos (fj);
         }
     }
     
@@ -251,6 +228,35 @@ static void garray_setWithSineWaves (t_garray *x, t_symbol *s, int argc, t_atom 
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static t_array *garray_getArrayCheckedFloat (t_garray *x, int *onset, int *elementSize)
+{
+    t_array    *a = garray_getArray (x);
+    t_template *template = template_findbyname (a->a_template);
+    
+    if (template) {
+    //
+    t_error err = PD_ERROR_NONE;
+    
+    int yOnset = 0;
+    int yType  = -1;
+    t_symbol *yArrayType = NULL;
+    
+    err |= !(template_find_field (template, sym_y, &yOnset, &yType, &yArrayType));
+    err |= (yType != DATA_FLOAT);
+
+    if (!err) {
+        *onset = yOnset;
+        *elementSize = a->a_elementSize;
+        return a;
+    }
+    //
+    }
+    
+    PD_BUG;
+    
+    return NULL;
+}
+
 t_array *garray_getArray (t_garray *x)
 {
     t_template *template = template_findbyname (x->x_scalar->sc_template);
@@ -274,6 +280,10 @@ t_array *garray_getArray (t_garray *x)
     
     return NULL;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 int garray_getName (t_garray *x, t_symbol **s)
 {
@@ -407,88 +417,70 @@ static void garray_cosinesum (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     garray_setWithSineWaves (x, s, argc, argv, 0);
 }
 
-static void garray_rename(t_garray *x, t_symbol *s)
+static void garray_rename (t_garray *x, t_symbol *s)
 {
-    pd_unbind(&x->x_gobj.g_pd, x->x_name);
-    pd_bind(&x->x_gobj.g_pd, x->x_name = x->x_unexpandedName = s);
-    garray_redraw(x);
+    pd_unbind (cast_pd (x), x->x_name);
+    x->x_unexpandedName = s;
+    x->x_name = s;
+    pd_bind (cast_pd (x), x->x_name);
+    garray_redraw (x);
 }
 
-static void garray_read(t_garray *x, t_symbol *filename)
+static void garray_read (t_garray *x, t_symbol *name)
 {
-    int nelem, filedesc, i;
-    FILE *fd;
-    char buf[PD_STRING], *bufptr;
-    int yonset, elemsize;
-    t_array *array = garray_getArrayCheckedFloat(x, &yonset, &elemsize);
-    if (!array)
-    {
-        post_error ("%s: needs floating-point 'y' field", x->x_name->s_name);
-        return;
+    t_error err = PD_ERROR_NONE;
+    char *p = NULL;
+    char t[PD_STRING] = { 0 }; 
+    int f = canvas_openFile (canvas_getView (x->x_owner), name->s_name, "", t, &p, PD_STRING);
+    
+    if (!(err |= (f < 0))) {
+    //
+    FILE *file = fdopen (f, "r");
+    
+    if (!(err |= (file == NULL))) {
+    //
+    int i;
+        
+    GARRAY_FETCH;
+
+    for (i = 0; i < array->a_size; i++) {
+        double v = 0.0; if (!fscanf (file, "%lf", &v)) { break; } else { GARRAY_AT (i) = v; }
     }
-    nelem = array->a_size;
-    if ((filedesc = canvas_openFile(canvas_getView(x->x_owner),
-            filename->s_name, "", buf, &bufptr, PD_STRING)) < 0 
-                || !(fd = fdopen(filedesc, "r")))
-    {
-        post_error ("%s: can't open", filename->s_name);
-        return;
+    
+    while (i < array->a_size) { GARRAY_AT (i) = 0.0; i++; }
+    
+    fclose (file);
+    
+    garray_redraw (x);
+    //
     }
-    for (i = 0; i < nelem; i++)
-    {
-        double f;
-        if (!fscanf(fd, "%lf", &f))
-        {
-            post("%s: read %d elements into table of size %d",
-                filename->s_name, i, nelem);
-            break;
-        }
-        else *((t_float *)(array->a_vector + elemsize * i) + yonset) = f;
+    //
     }
-    while (i < nelem)
-        *((t_float *)(array->a_vector +
-            elemsize * i) + yonset) = 0, i++;
-    fclose(fd);
-    garray_redraw(x);
+    
+    if (err) { post_error (PD_TRANSLATE ("%s: can't open"), name->s_name); }    // --
 }
 
-static void garray_write(t_garray *x, t_symbol *filename)
+static void garray_write (t_garray *x, t_symbol *name)
 {
-    FILE *fd;
-    char buf[PD_STRING];
-    int yonset, elemsize, i;
-    t_array *array = garray_getArrayCheckedFloat(x, &yonset, &elemsize);
-    if (!array)
-    {
-        post_error ("%s: needs floating-point 'y' field", x->x_name->s_name);
-        return;
+    char t[PD_STRING] = { 0 };
+    FILE *file = NULL;
+        
+    canvas_makeFilePath (canvas_getView (x->x_owner), name->s_name, t, PD_STRING);
+    
+    if (!(file = file_openWrite (t))) { post_error (PD_TRANSLATE ("%s: can't create"), t); }    // --
+    else {
+    //
+    int i;
+    
+    GARRAY_FETCH;
+    
+    for (i = 0; i < array->a_size; i++) {
+        if (fprintf (file, "%g\n", GARRAY_AT (i)) < 1) { PD_BUG; break; }
     }
-    canvas_makeFilePath(canvas_getView(x->x_owner), filename->s_name,
-        buf, PD_STRING);
-    if (!(fd = file_openWrite(buf)))
-    {
-        post_error ("%s: can't create", buf);
-        return;
+    
+    fclose (file);
+    //
     }
-    for (i = 0; i < array->a_size; i++)
-    {
-        if (fprintf(fd, "%g\n",
-            *(t_float *)(((array->a_vector + sizeof(t_word) * i)) + yonset)) < 1)
-        {
-            post("%s: write error", filename->s_name);
-            break;
-        }
-    }
-    fclose(fd);
-}
-
-
-    /* this should be renamed and moved... */
-int garray_ambigendian(void)
-{
-    unsigned short s = 1;
-    unsigned char c = *(char *)(&s);
-    return (c==0);
 }
 
 void garray_resize_long(t_garray *x, long n)

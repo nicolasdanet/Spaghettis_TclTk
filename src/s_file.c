@@ -157,7 +157,7 @@ int file_openConsideringSearchPath (const char *directory,
 
 /* First consider the sibling files of the object. */
 /* Then look for in the application help folder. */
-/* And last in the defined seach path. */
+/* And last in the defined search path. */
 
 void file_openHelp (const char *directory, const char *name)
 {

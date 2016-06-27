@@ -167,7 +167,12 @@ typedef struct _aiff
 address on our architecture (big-endianness.).  It's 1 for Motorola,
 0 for Intel: */
 
-extern int garray_ambigendian(void);
+static int garray_ambigendian(void)
+{
+    unsigned short s = 1;
+    unsigned char c = *(char *)(&s);
+    return (c==0);
+}
 
 /* byte swappers */
 
