@@ -171,8 +171,10 @@ void garray_resizeWithInteger (t_garray *x, long n)
     t_template *template = template_findbyname (x->x_scalar->sc_template);
     int style = template_getfloat (template, sym_style, x->x_scalar->sc_vector, 1);
     
+    GARRAY_FETCH;
+    
     garray_fitToGraph (x, PD_MAX (1, n), style);    
-    array_resize_and_redraw (garray_getArray (x), x->x_owner, PD_MAX (1, n));
+    array_resize_and_redraw (array, x->x_owner, PD_MAX (1, n));
     
     if (x->x_isUsedInDSP) { dsp_update(); }
 }
