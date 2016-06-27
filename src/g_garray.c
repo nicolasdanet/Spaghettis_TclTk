@@ -176,7 +176,7 @@ static void garray_setWithSumOfFourierComponents (t_garray *x,
     
     if (!PD_ISPOWER2 (numberOfPoints)) { numberOfPoints = PD_NEXTPOWER2 (numberOfPoints); }
     
-    garray_resize_long (x, numberOfPoints + 3);
+    garray_resizeWithInteger (x, numberOfPoints + 3);
     
     phaseIncrement = 2.0 * (double)PD_PI / numberOfPoints;
     
@@ -222,6 +222,18 @@ static void garray_setWithSineWaves (t_garray *x, t_symbol *s, int argc, t_atom 
     PD_MEMORY_FREE (t);
     //
     }
+}
+
+void garray_resizeWithInteger (t_garray *x, long n)
+{
+    t_array *array = garray_getArray (x);
+    t_template *template = template_findbyname (x->x_scalar->sc_template);
+    int style = template_getfloat (template, sym_style, x->x_scalar->sc_vector, 1);
+    
+    garray_fitToGraph (x, PD_MAX (1, n), style);    
+    array_resize_and_redraw (array, x->x_owner, PD_MAX (1, n));
+    
+    if (x->x_isUsedInDSP) { dsp_update(); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -281,9 +293,18 @@ t_array *garray_getArray (t_garray *x)
     return NULL;
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+int garray_getFloats (t_garray *x, int *size, t_word **w)
+{
+    GARRAY_FETCH;
+    
+    if (array && (elementSize == sizeof (t_word))) { 
+        *size = array->a_size; *w = (t_word *)array->a_vector; return 1; 
+    }
+    
+    PD_BUG;
+    
+    return 0;
+}
 
 int garray_getName (t_garray *x, t_symbol **s)
 {
@@ -298,23 +319,6 @@ t_glist *garray_getOwner (t_garray *x)
 t_scalar *garray_getScalar (t_garray *x)
 {
     return x->x_scalar;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int garray_getFloats (t_garray *x, int *size, t_word **w)
-{
-    GARRAY_FETCH;
-    
-    if (array && (elementSize == sizeof (t_word))) { 
-        *size = array->a_size; *w = (t_word *)array->a_vector; return 1; 
-    }
-    
-    PD_BUG;
-    
-    return 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -483,38 +487,14 @@ static void garray_write (t_garray *x, t_symbol *name)
     }
 }
 
-void garray_resize_long(t_garray *x, long n)
+static void garray_resize (t_garray *x, t_float f)
 {
-    t_array *array = garray_getArray(x);
-    t_glist *gl = x->x_owner;
-    if (n < 1)
-        n = 1;
-    garray_fitToGraph(x, n, template_getfloat(
-        template_findbyname(x->x_scalar->sc_template),
-            sym_style, x->x_scalar->sc_vector, 1));
-    array_resize_and_redraw(array, x->x_owner, n);
-    if (x->x_isUsedInDSP)
-        dsp_update();
+    garray_resizeWithInteger (x, (long)f);
 }
 
-    /* float version to use as Pd method */
-void garray_resize(t_garray *x, t_float f)
+static void garray_bounds (t_garray *x, t_float a, t_float b, t_float c, t_float d)
 {
-    garray_resize_long(x, f);
-}
-
-static void garray_print(t_garray *x)
-{
-    t_array *array = garray_getArray(x);
-    post("garray %s: template %s, length %d",
-        x->x_name->s_name, array->a_template->s_name, array->a_size);
-}
-
-    /* forward a "bounds" message to the owning graph */
-static void garray_bounds(t_garray *x, t_float x1, t_float y1,
-    t_float x2, t_float y2)
-{
-    pd_vMessage(&x->x_owner->gl_obj.te_g.g_pd, sym_bounds, "ffff", x1, y1, x2, y2);
+    pd_vMessage (cast_pd (x->x_owner), sym_bounds, "ffff", a, b, c, d);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -698,7 +678,7 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize, t_float ffla
         if (size < 1)
             size = 1;
         if (size != a->a_size)
-            garray_resize_long(x, size);
+            garray_resizeWithInteger (x, size);
         else if (style != stylewas)
             garray_fitToGraph(x, size, style);
         template_setfloat(scalartemplate, sym_style,
@@ -834,7 +814,6 @@ void garray_setup (void)
     class_addMethod (c, (t_method)garray_read,          sym_read,           A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)garray_write,         sym_write,          A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)garray_resize,        sym_resize,         A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)garray_print,         sym_print,          A_NULL);
 
     class_addMethod (c, (t_method)garray_bounds,
         sym_bounds,

@@ -1305,7 +1305,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
         {
             int vecsize;
 
-            garray_resize_long(garrays[i], finalsize);
+            garray_resizeWithInteger (garrays[i], finalsize);
                 /* for sanity's sake let's clear the save-in-patch flag here */
             garray_setSaveWithParent(garrays[i], 0);
             garray_getFloats(garrays[i], &vecsize, 

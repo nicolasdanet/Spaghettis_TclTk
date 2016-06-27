@@ -370,9 +370,8 @@ static void array_size_float(t_array_size *x, t_float f)
               should have a return slot for the garray if any?  */
         if (x->x_tc.tc_sym)
         {
-            t_garray *y = (t_garray *)pd_findByClass(x->x_tc.tc_sym,
-                garray_class);
-            garray_resize(y, f);
+            t_garray *y = (t_garray *)pd_findByClass(x->x_tc.tc_sym, garray_class);
+            garray_resizeWithInteger (y, (long)f);
         }
         else
         {
