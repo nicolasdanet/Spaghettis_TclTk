@@ -557,7 +557,7 @@ static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
     guistub_new (cast_pd (g), g, t);
 
     for (y = g->gl_graphics; y; y = y->g_next) {
-        if (pd_class (y) == garray_class) { garray_properties (cast_garray (y)); }
+        if (pd_class (y) == garray_class) { garray_functionProperties (cast_garray (y)); }
     }
 }
 
@@ -790,7 +790,7 @@ void canvas_free (t_glist *glist)
     dsp_resume (dspstate);
     
     gstub_cutoff (glist->gl_stub);
-    guistub_destroyWithKey (glist);
+    guistub_destroyWithKey ((void *)glist);
     
     if (!glist->gl_parent) { instance_removeFromRoots (glist); }
 }

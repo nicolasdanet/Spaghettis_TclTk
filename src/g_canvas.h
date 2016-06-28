@@ -738,7 +738,7 @@ void            garray_setSaveWithParent                (t_garray *x, int savedW
 void            garray_redraw                           (t_garray *x);
 void            garray_resizeWithInteger                (t_garray *x, long n);
 void            garray_saveContentsToBuffer             (t_garray *x, t_buffer *b);
-void            garray_properties                       (t_garray *x);
+void            garray_functionProperties               (t_garray *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

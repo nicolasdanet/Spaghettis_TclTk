@@ -160,8 +160,6 @@ static void garray_fitToGraph (t_garray *x, int size, int style)
         glist->gl_valueTop,
         (double)((style == PLOT_POINTS || size == 1) ? size : size - 1),
         glist->gl_valueBottom);
-    
-    guistub_destroyWithKey ((void *)glist);
     //
     }
 }
@@ -588,7 +586,6 @@ static int garray_behaviorClicked (t_gobj *z,
 static void garray_functionSave (t_gobj *z, t_buffer *b)
 {
     t_garray *x = cast_garray (z);
-        
     t_template *template = template_findbyname (x->x_scalar->sc_template);
     
     if (!template) { PD_BUG; }
@@ -612,27 +609,31 @@ static void garray_functionSave (t_gobj *z, t_buffer *b)
     }
 }
 
-    /* called from graph_dialog to set properties */
-void garray_properties(t_garray *x)
+void garray_functionProperties (t_garray *x)
 {
-    char cmdbuf[200];
-    t_array *a = garray_getArray(x);
-    t_scalar *sc = x->x_scalar;
-    int style = template_getfloat(template_findbyname(sc->sc_template),
-        sym_style, x->x_scalar->sc_vector, 1);
-    int filestyle = (style == 0 ? PLOT_POLYGONS :
-        (style == 1 ? PLOT_POINTS : style));
-
-    if (!a)
-        return;
-    guistub_destroyWithKey ((void *)x);
-        /* create dialog window.  LATER fix this to escape '$'
-        properly; right now we just detect a leading '$' and escape
-        it.  There should be a systematic way of doing this. */
-    sprintf(cmdbuf, "::ui_array::show %%s %s %d %d\n",
-            dollar_toHash(x->x_unexpandedName)->s_name, a->a_size, x->x_saveWithParent + 
-            2 * filestyle);
-    guistub_new(&x->x_gobj.g_pd, x, cmdbuf);
+    t_template *template = template_findbyname (x->x_scalar->sc_template);
+    
+    if (!template) { PD_BUG; }
+    else {
+    //
+    char t[PD_STRING] = { 0 };
+    t_error err = PD_ERROR_NONE;
+    int style = template_getfloat (template, sym_style, x->x_scalar->sc_vector, 1);
+    int flags = x->x_saveWithParent + (2 * style);
+    
+    GARRAY_FETCH;
+    
+    err |= string_sprintf (t, PD_STRING,
+                "::ui_array::show %%s %s %d %d\n",              // --
+                dollar_toHash (x->x_unexpandedName)->s_name, 
+                array->a_size,
+                flags);
+    
+    PD_ASSERT (!err);
+    
+    guistub_new (cast_pd (x), (void *)x, t);
+    //
+    }
 }
 
     /* this is called from the properties dialog window for an existing array */
