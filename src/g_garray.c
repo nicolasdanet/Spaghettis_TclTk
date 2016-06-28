@@ -164,12 +164,14 @@ static void garray_fitToGraph (t_garray *x, int size, int style)
     }
 }
 
-void garray_resizeWithInteger (t_garray *x, long n)
+void garray_resizeWithInteger (t_garray *x, int n)
 {
     t_template *template = template_findbyname (x->x_scalar->sc_template);
     int style = template_getfloat (template, sym_style, x->x_scalar->sc_vector, 1);
     
     GARRAY_FETCH;
+    
+    PD_ASSERT (n > 0);
     
     garray_fitToGraph (x, PD_MAX (1, n), style);    
     array_resize_and_redraw (array, x->x_owner, PD_MAX (1, n));
@@ -203,8 +205,8 @@ void garray_saveContentsToBuffer (t_garray *x, t_buffer *b)
 }
 
 static void garray_setWithSumOfFourierComponents (t_garray *x,
-    long numberOfPoints,
-    int  numberOfSineWaves,
+    int numberOfPoints,
+    int numberOfSineWaves,
     t_float *valuesOfSineWaves,
     int isSine)
 {
@@ -214,8 +216,9 @@ static void garray_setWithSumOfFourierComponents (t_garray *x,
     GARRAY_FETCH;
     
     numberOfPoints = (numberOfPoints <= 0) ? 512 : numberOfPoints;
+    numberOfPoints = PD_MIN (numberOfPoints, 1 << 30);
     
-    if (!PD_ISPOWER2 (numberOfPoints)) { numberOfPoints = PD_NEXTPOWER2 (numberOfPoints); }
+    if (!PD_ISPOWER2 (numberOfPoints)) { numberOfPoints = (int)PD_NEXTPOWER2 (numberOfPoints); }
     
     garray_resizeWithInteger (x, numberOfPoints + 3);
     
@@ -250,7 +253,7 @@ static void garray_setWithSineWaves (t_garray *x, t_symbol *s, int argc, t_atom 
     //
     t_float *t = NULL;
     int i;
-    long numberOfPoints = atom_getFloatAtIndex (0, argc, argv);
+    int numberOfPoints = atom_getFloatAtIndex (0, argc, argv);
     
     argv++, argc--;
     
@@ -544,7 +547,7 @@ static void garray_write (t_garray *x, t_symbol *name)
 
 static void garray_resize (t_garray *x, t_float f)
 {
-    garray_resizeWithInteger (x, (long)f);
+    garray_resizeWithInteger (x, PD_MAX (1, (int)f));
 }
 
 static void garray_bounds (t_garray *x, t_float a, t_float b, t_float c, t_float d)
