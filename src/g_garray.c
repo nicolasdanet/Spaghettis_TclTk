@@ -265,6 +265,28 @@ static void garray_setWithSineWaves (t_garray *x, t_symbol *s, int argc, t_atom 
     }
 }
 
+static t_garray *garray_makeObjectWithScalar (t_glist *glist,
+    t_symbol *name,
+    t_symbol *templateName,
+    int save, 
+    int hide)
+{
+    t_garray *x = (t_garray *)pd_new (garray_class);
+    
+    x->x_scalar         = scalar_new (glist, templateName);
+    x->x_owner          = glist;
+    x->x_unexpandedName = name;
+    x->x_name           = canvas_expandDollar (glist, name);
+    x->x_isUsedInDSP    = 0;
+    x->x_saveWithParent = save;
+    x->x_hideName       = hide;
+    
+    pd_bind (cast_pd (x), x->x_name);
+    canvas_addObject (glist, cast_gobj (x));
+    
+    return x;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -636,100 +658,57 @@ void garray_functionProperties (t_garray *x)
     }
 }
 
-    /* this is called from the properties dialog window for an existing array */
-void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize, t_float fflags)
+void garray_fromDialog (t_garray *x, t_symbol *name, t_float size, t_float flags)
 {
-    int flags = fflags;
-    int saveit = ((flags & 1) != 0);
-    int filestyle = ((flags & 6) >> 1);
-    int style = (filestyle == 0 ? PLOT_POLYGONS :
-        (filestyle == 1 ? PLOT_POINTS : filestyle));
-    t_float stylewas = template_getfloat(
-        template_findbyname(x->x_scalar->sc_template),
-            sym_style, x->x_scalar->sc_vector, 1);
-    if (0) // deleteit
-    {
-        int wasused = x->x_isUsedInDSP;
-        canvas_removeObject(x->x_owner, &x->x_gobj);
-        if (wasused)
-            dsp_update();
-    }
-    else
-    {
-        long size;
-        int styleonset, styletype;
-        t_symbol *stylearraytype;
-        t_symbol *argname = dollar_fromHash(name);
-        t_array *a = garray_getArray(x);
-        t_template *scalartemplate;
-        if (!a)
-        {
-            post_error ("can't find array\n");
-            return;
-        }
-        if (!(scalartemplate = template_findbyname(x->x_scalar->sc_template)))
-        {
-            post_error ("array: no template of type %s",
-                x->x_scalar->sc_template->s_name);
-            return;
-        }
-        if (argname != x->x_unexpandedName)
-        {
-            x->x_unexpandedName = argname;
-            pd_unbind(&x->x_gobj.g_pd, x->x_name);
-            x->x_name = canvas_expandDollar(x->x_owner, argname);
-            pd_bind(&x->x_gobj.g_pd, x->x_name);
-                /* redraw the whole glist, just so the name change shows up */
-            if (x->x_owner->gl_hasWindow)
-                canvas_redraw(x->x_owner);
-            else if (canvas_isMapped(x->x_owner->gl_parent))
-            {
-                gobj_visibilityChanged(&x->x_owner->gl_obj.te_g, x->x_owner->gl_parent, 0);
-                gobj_visibilityChanged(&x->x_owner->gl_obj.te_g, x->x_owner->gl_parent, 1);
-            }
-            dsp_update();
-        }
-        size = fsize;
-        if (size < 1)
-            size = 1;
-        if (size != a->a_size)
-            garray_resizeWithInteger (x, size);
-        else if (style != stylewas)
-            garray_fitToGraph(x, size, style);
-        template_setfloat(scalartemplate, sym_style,
-            x->x_scalar->sc_vector, (t_float)style, 0);
+    t_template *template = template_findbyname (x->x_scalar->sc_template);
+    
+    if (!template) { PD_BUG; }
+    else {
+    //
+    t_symbol *newName   = dollar_fromHash (name);
+    int newSize         = PD_MAX (1.0, size);
+    int save            = (((int)flags & 1) != 0);
+    int newStyle        = (((int)flags & 6) >> 1);
+    int oldStyle        = (int)template_getfloat (template, sym_style, x->x_scalar->sc_vector, 1);
+    
+    PD_ASSERT (newSize > 0);
+    
+    GARRAY_FETCH;
+    
+    if (newName != x->x_unexpandedName) {
+    //
+    x->x_unexpandedName = newName;
+    pd_unbind (cast_pd (x), x->x_name);
+    x->x_name = canvas_expandDollar (x->x_owner, newName);
+    pd_bind (cast_pd (x), x->x_name);
 
-        garray_setSaveWithParent(x, (saveit != 0));
-        garray_redraw(x);
-        canvas_dirty(x->x_owner, 1);
+    if (x->x_owner->gl_hasWindow) { canvas_redraw (x->x_owner); }
+    else if (canvas_isMapped (x->x_owner->gl_parent)) {
+        gobj_visibilityChanged (cast_gobj (x->x_owner), x->x_owner->gl_parent, 0);
+        gobj_visibilityChanged (cast_gobj (x->x_owner), x->x_owner->gl_parent, 1);
+    }
+    
+    dsp_update();
+    //
+    }
+
+    if (newSize != array->a_size) { garray_resizeWithInteger (x, newSize); }
+    
+    if (newStyle != oldStyle) {
+        template_setfloat (template, sym_style, x->x_scalar->sc_vector, (t_float)newStyle, 0);
+        garray_fitToGraph (x, newSize, newStyle); 
+    }
+
+    garray_setSaveWithParent (x, save);
+    garray_redraw (x);
+    canvas_dirty (x->x_owner, 1);
+    //
     }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-static t_garray *garray_makeObjectWithScalar (t_glist *glist,
-    t_symbol *name,
-    t_symbol *templateName,
-    int save, 
-    int hide)
-{
-    t_garray *x = (t_garray *)pd_new (garray_class);
-    
-    x->x_scalar         = scalar_new (glist, templateName);
-    x->x_owner          = glist;
-    x->x_unexpandedName = name;
-    x->x_name           = canvas_expandDollar (glist, name);
-    x->x_isUsedInDSP    = 0;
-    x->x_saveWithParent = save;
-    x->x_hideName       = hide;
-    
-    pd_bind (cast_pd (x), x->x_name);
-    canvas_addObject (glist, cast_gobj (x));
-    
-    return x;
-}
 
 t_garray *garray_makeObject (t_glist *glist,
     t_symbol *name,
@@ -838,7 +817,7 @@ void garray_setup (void)
         A_FLOAT,
         A_NULL);
         
-    class_addMethod (c, (t_method)garray_arraydialog,
+    class_addMethod (c, (t_method)garray_fromDialog,
         sym__arraydialog,
         A_SYMBOL,
         A_FLOAT,
