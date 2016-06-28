@@ -156,7 +156,7 @@ static void jack_fetchClientNames (void)
     //
     int i, n = 0;
     
-    regex_t e; regcomp (&e, "^[^:]*", REG_EXTENDED);    // --
+    regex_t e; regcomp (&e, "^[^:]*", REG_EXTENDED);
 
     for (i = 0; ports[i] != NULL && n < JACK_MAXIMUM_CLIENTS; i++) {
     //
@@ -165,7 +165,7 @@ static void jack_fetchClientNames (void)
     regmatch_t info;
     char t[PD_STRING] = { 0 };
     
-    // -- Parse "clientname:portname" syntax (i.e. "system:playback_1" to "system").
+    /* Parse "clientname:portname" syntax (i.e. "system:playback_1" to "system"). */
     
     regexec (&e, ports[i], 1, &info, 0);
     size = PD_MIN (info.rm_eo - info.rm_so, PD_STRING - 1);
@@ -210,7 +210,7 @@ static void jack_connectAllPortsToFirstClient (void)
     const char **ports;
     char t[PD_STRING] = { 0 };
 
-    string_sprintf (t, PD_STRING, "%s:.*", jack_clientNames[0]);    // --
+    string_sprintf (t, PD_STRING, "%s:.*", jack_clientNames[0]);
 
     ports = jack_get_ports (jack_client, t, NULL, JackPortIsOutput);
     
@@ -277,7 +277,7 @@ t_error audio_openNative (int sampleRate,
     #if PD_APPLE    /* Jackmp linked as a weak framework. */
         
     if (!jack_client_open) {
-        post_error (PD_TRANSLATE ("audio: can't find JACK framework")); return PD_ERROR;    // --
+        post_error (PD_TRANSLATE ("audio: can't find JACK framework")); return PD_ERROR;
     }
     
     #endif
@@ -324,7 +324,7 @@ t_error audio_openNative (int sampleRate,
     string_sprintf (t, PD_STRING, "input_%d", i + 1);
     jack_portsIn[i] = jack_port_register (jack_client, t, JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
     if (!jack_portsIn[i]) {
-        post_error (PD_TRANSLATE ("audio: JACK can only register %d input ports"), i);  // --
+        post_error (PD_TRANSLATE ("audio: JACK can only register %d input ports"), i);
         break;
     }
     //
@@ -338,7 +338,7 @@ t_error audio_openNative (int sampleRate,
     string_sprintf (t, PD_STRING, "output_%d", i + 1);
     jack_portsOut[i] = jack_port_register (jack_client, t, JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
     if (!jack_portsOut[i]) {
-        post_error (PD_TRANSLATE ("audio: JACK can only register %d output ports"), i); // --
+        post_error (PD_TRANSLATE ("audio: JACK can only register %d output ports"), i);
         break;  
     }
     //

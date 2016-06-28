@@ -30,7 +30,7 @@ typedef t_pd *(*t_newgimme) (t_symbol *s, int argc, t_atom *argv);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef void (*t_method0) (                                                 MESSAGE_FLOATS);    // --
+typedef void (*t_method0) (                                                 MESSAGE_FLOATS);
 typedef void (*t_method1) (t_int,                                           MESSAGE_FLOATS);
 typedef void (*t_method2) (t_int, t_int,                                    MESSAGE_FLOATS);
 typedef void (*t_method3) (t_int, t_int, t_int,                             MESSAGE_FLOATS);
@@ -38,7 +38,7 @@ typedef void (*t_method4) (t_int, t_int, t_int, t_int,                      MESS
 typedef void (*t_method5) (t_int, t_int, t_int, t_int, t_int,               MESSAGE_FLOATS);
 typedef void (*t_method6) (t_int, t_int, t_int, t_int, t_int, t_int,        MESSAGE_FLOATS);
 
-typedef t_pd *(*t_newmethod0) (                                             MESSAGE_FLOATS);    // --
+typedef t_pd *(*t_newmethod0) (                                             MESSAGE_FLOATS);
 typedef t_pd *(*t_newmethod1) (t_int,                                       MESSAGE_FLOATS);
 typedef t_pd *(*t_newmethod2) (t_int, t_int,                                MESSAGE_FLOATS);
 typedef t_pd *(*t_newmethod3) (t_int, t_int, t_int,                         MESSAGE_FLOATS);
@@ -411,7 +411,7 @@ void pd_message (t_pd *x, t_symbol *s, int argc, t_atom *argv)
         }
     }
 
-    post_error (PD_TRANSLATE ("%s: bad arguments for method %s"), class_getName (c), s->s_name);  // --
+    post_error (PD_TRANSLATE ("%s: bad arguments for method %s"), class_getName (c), s->s_name);
 }
 
 // -----------------------------------------------------------------------------------------------------------

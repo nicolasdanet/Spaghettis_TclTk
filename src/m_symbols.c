@@ -515,25 +515,25 @@ t_symbol *sym_vumeter;
 void symbols_initialize (void)
 { 
     sym___ampersand__                           = gensym ("&");
-    sym___ampersand____ampersand__              = gensym ("&&");    // --
+    sym___ampersand____ampersand__              = gensym ("&&");
     sym___asterisk__                            = gensym ("*");
     sym___asterisk____tilde__                   = gensym ("*~");
-    sym___bar__                                 = gensym ("|");     // --
-    sym___bar____bar__                          = gensym ("||");    // --
+    sym___bar__                                 = gensym ("|");
+    sym___bar____bar__                          = gensym ("||");
     sym___comma__                               = gensym (",");
     sym___dash__                                = gensym ("-");
     sym___dot__                                 = gensym (".");
-    sym___equals____equals__                    = gensym ("==");    // --
-    sym___exclamation____equals__               = gensym ("!=");    // --
+    sym___equals____equals__                    = gensym ("==");
+    sym___exclamation____equals__               = gensym ("!=");
     sym___greater__                             = gensym (">");
-    sym___greater____equals__                   = gensym (">=");    // --
+    sym___greater____equals__                   = gensym (">=");
     sym___greater____greater__                  = gensym (">>");
     sym___hash__A                               = gensym ("#A");
     sym___hash__N                               = gensym ("#N");
     sym___hash__X                               = gensym ("#X");
     sym___less__                                = gensym ("<");
-    sym___less____equals__                      = gensym ("<=");    // --
-    sym___less____less__                        = gensym ("<<");    // --
+    sym___less____equals__                      = gensym ("<=");
+    sym___less____less__                        = gensym ("<<");
     sym___minus__                               = gensym ("-");
     sym___minus____tilde__                      = gensym ("-~");
     sym___parenthesis__pointer__parenthesis__   = gensym ("(pointer)");

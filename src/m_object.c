@@ -77,12 +77,12 @@ static void inlet_forList (t_inlet *, t_symbol *, int, t_atom *);
 
 static void object_errorUnexpected (t_inlet *x, t_symbol *s)
 {
-    post_error (PD_TRANSLATE ("inlet: unexpected %s"), s->s_name);    // --
+    post_error (PD_TRANSLATE ("inlet: unexpected %s"), s->s_name);
 }
 
 static void object_errorStackOverflow (t_outlet *x)
 {
-    post_error (PD_TRANSLATE ("inlet: stack overflow"));    // --
+    post_error (PD_TRANSLATE ("inlet: stack overflow"));
 }
 
 // -----------------------------------------------------------------------------------------------------------

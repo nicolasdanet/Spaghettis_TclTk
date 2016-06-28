@@ -253,7 +253,7 @@ static void canvas_redrawGraphOnParent (t_glist *glist)
 
 void canvas_bounds (t_glist *glist, t_float a, t_float b, t_float c, t_float d)
 {
-    if ((a == b) || (c == d)) { post_error (PD_TRANSLATE ("graph: invalid bounds")); }  // --
+    if ((a == b) || (c == d)) { post_error (PD_TRANSLATE ("graph: invalid bounds")); }
     else {
     //
     glist->gl_valueLeft     = a;
@@ -533,9 +533,9 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
         //
         if (pd_class (y) == garray_class && !garray_getName (cast_garray (y), &s)) {
         //
-        sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
+        sys_vGui (".x%lx.c create text %d %d -text {%s}"
                         " -anchor nw"
-                        " -font [::getFont %d]"             // --
+                        " -font [::getFont %d]"
                         " -fill #%06x"
                         " -tags %s\n",
                         canvas_getView (x->gl_parent),

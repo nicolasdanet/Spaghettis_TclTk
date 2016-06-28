@@ -152,7 +152,7 @@ static void scheduler_pollStuck (int init)
             audio_close();
             scheduler_setAudioMode (SCHEDULER_AUDIO_NONE);
             if (!scheduler_quit) { scheduler_quit = SCHEDULER_RESTART; }
-            post_error (PD_TRANSLATE ("audio: I/O stuck"));     // --
+            post_error (PD_TRANSLATE ("audio: I/O stuck"));
         }
     }
 }

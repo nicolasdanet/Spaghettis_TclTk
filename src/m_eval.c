@@ -139,9 +139,9 @@ void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
         }
         
         if (s == NULL || !(object = s->s_thing)) {
-            if (!s) { post_error (PD_TRANSLATE ("$: invalid expansion")); }  // --
+            if (!s) { post_error (PD_TRANSLATE ("$: invalid expansion")); }
             else {
-                post_error (PD_TRANSLATE ("%s: no such object"), s->s_name);    // --
+                post_error (PD_TRANSLATE ("%s: no such object"), s->s_name);
             }
             do { size--; v++; } while (size && !IS_SEMICOLON (v));
             
@@ -199,7 +199,7 @@ t_error buffer_read (t_buffer *x, char *name, t_glist *glist)
     
     err = (f < 0);
     
-    if (err) { post_error (PD_TRANSLATE ("%s: can't open"), name); }    // --
+    if (err) { post_error (PD_TRANSLATE ("%s: can't open"), name); }
     else {
         close (f);
         err = buffer_fromFile (x, filepath, directory);
@@ -257,7 +257,7 @@ t_error buffer_fileEval (t_symbol *name, t_symbol *directory)
     
     err = buffer_fromFile (t, name->s_name, directory->s_name);
     
-    if (err) { post_error (PD_TRANSLATE ("%s: fails to read"), name->s_name); }     // --
+    if (err) { post_error (PD_TRANSLATE ("%s: fails to read"), name->s_name); }
     else {
     //
     t_pd *boundA = s__A.s_thing;

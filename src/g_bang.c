@@ -141,9 +141,9 @@ void bng_drawNew (t_bng *x, t_glist *glist)
                     x->x_flashed ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
                     COLOR_NORMAL,
                     x);
-    sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
+    sys_vGui (".x%lx.c create text %d %d -text {%s}"
                     " -anchor w"                                                 
-                    " -font [::getFont %d]"                 // --
+                    " -font [::getFont %d]"
                     " -fill #%06x"
                     " -tags %lxLABEL\n",
                     canvas, 
@@ -200,7 +200,7 @@ void bng_drawConfig (t_bng *x, t_glist *glist)
                     canvas,
                     x,
                     x->x_flashed ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",  // --
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",
                     canvas,
                     x,
                     font_getHostFontSize (x->x_gui.iem_fontSize),
@@ -426,11 +426,11 @@ static void bng_functionProperties (t_gobj *z, t_glist *owner)
     
     err = string_sprintf (t, PD_STRING,
             "::ui_iem::create %%s Bang"
-            " %d %d Size 0 0 $::var(nil)"           // --
-            " %d {Flash Break} %d {Flash Hold}"     // --
-            " -1 $::var(nil) $::var(nil)"           // --
+            " %d %d Size 0 0 $::var(nil)"
+            " %d {Flash Break} %d {Flash Hold}"
+            " -1 $::var(nil) $::var(nil)"
             " %d"
-            " -1 -1 $::var(nil)"                    // --
+            " -1 -1 $::var(nil)"
             " %s %s"
             " %s %d %d"
             " %d"
@@ -484,7 +484,7 @@ static void *bng_new (t_symbol *s, int argc, t_atom *argv)
     int labelY          = IEM_DEFAULT_LABELY_NEXT;
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
     
-    if (argc == 14                                              // --
+    if (argc == 14
             && IS_FLOAT (argv)                                  // Size.
             && IS_FLOAT (argv + 1)                              // Flash hold.
             && IS_FLOAT (argv + 2)                              // Flash break.

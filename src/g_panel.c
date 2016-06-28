@@ -115,9 +115,9 @@ void panel_drawNew (t_panel *x, t_glist *glist)
                     b + x->x_gui.iem_height,
                     x->x_gui.iem_colorBackground,
                     x);
-    sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
+    sys_vGui (".x%lx.c create text %d %d -text {%s}"
                     " -anchor w"
-                    " -font [::getFont %d]"     // --
+                    " -font [::getFont %d]"
                     " -fill #%06x"
                     " -tags %lxLABEL\n",
                     canvas,
@@ -167,7 +167,7 @@ void panel_drawConfig (t_panel* x, t_glist *glist)
                     canvas,
                     x,
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",  // --
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",
                     canvas,
                     x,
                     font_getHostFontSize (x->x_gui.iem_fontSize),
@@ -291,11 +291,11 @@ static void panel_functionProperties (t_gobj *z, t_glist *owner)
     iemgui_serializeNames (&x->x_gui, &names);
     
     err = string_sprintf (t, PD_STRING, "::ui_iem::create %%s Panel"
-            " %d %d {Grip Size} 0 0 $::var(nil)"        // --
-            " %d {Panel Width} %d {Panel Height}"       // --
-            " -1 $::var(nil) $::var(nil)"               // --
+            " %d %d {Grip Size} 0 0 $::var(nil)"
+            " %d {Panel Width} %d {Panel Height}"
+            " -1 $::var(nil) $::var(nil)"
             " -1"
-            " -1 -1 $::var(nil)"                        // --
+            " -1 -1 $::var(nil)"
             " %s %s"
             " %s %d %d"
             " %d"
@@ -349,7 +349,7 @@ static void *panel_new (t_symbol *s, int argc, t_atom *argv)
     int labelY          = IEM_DEFAULT_LABELY_TOP;
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
         
-    if (argc >= 12                                                              // --
+    if (argc >= 12
             && IS_FLOAT (argv + 0)                                              // Grip width.
             && IS_FLOAT (argv + 1)                                              // Panel width.
             && IS_FLOAT (argv + 2)                                              // Panel Height.

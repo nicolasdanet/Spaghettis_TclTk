@@ -516,7 +516,7 @@ static void garray_read (t_garray *x, t_symbol *name)
     //
     }
     
-    if (err) { post_error (PD_TRANSLATE ("%s: can't open"), name->s_name); }    // --
+    if (err) { post_error (PD_TRANSLATE ("%s: can't open"), name->s_name); }
 }
 
 static void garray_write (t_garray *x, t_symbol *name)
@@ -526,7 +526,7 @@ static void garray_write (t_garray *x, t_symbol *name)
         
     canvas_makeFilePath (canvas_getView (x->x_owner), name->s_name, t, PD_STRING);
     
-    if (!(file = file_openWrite (t))) { post_error (PD_TRANSLATE ("%s: can't create"), t); }    // --
+    if (!(file = file_openWrite (t))) { post_error (PD_TRANSLATE ("%s: can't create"), t); }
     else {
     //
     int i;
@@ -646,7 +646,7 @@ void garray_functionProperties (t_garray *x)
     GARRAY_FETCH;
     
     err |= string_sprintf (t, PD_STRING,
-                "::ui_array::show %%s %s %d %d\n",              // --
+                "::ui_array::show %%s %s %d %d\n",
                 dollar_toHash (x->x_unexpandedName)->s_name, 
                 array->a_size,
                 flags);

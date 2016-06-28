@@ -192,14 +192,14 @@ static t_error midi_requireDialogInitialize (void)
     char t2[PD_STRING] = { 0 };
     int k;
     
-    err |= string_copy (t1, PD_STRING, "set ::ui_midi::midiIn [list {none}");                   // --
-    err |= string_copy (t2, PD_STRING, "set ::ui_midi::midiOut [list {none}");                  // --
+    err |= string_copy (t1, PD_STRING, "set ::ui_midi::midiIn [list {none}");
+    err |= string_copy (t2, PD_STRING, "set ::ui_midi::midiOut [list {none}");
     
     for (k = 0; k < m; k++) {
-        err |= string_addSprintf (t1, PD_STRING, " {%s}", i + (k * MAXIMUM_DESCRIPTION));       // --
+        err |= string_addSprintf (t1, PD_STRING, " {%s}", i + (k * MAXIMUM_DESCRIPTION));
     }
     for (k = 0; k < n; k++) {
-        err |= string_addSprintf (t2, PD_STRING, " {%s}", o + (k * MAXIMUM_DESCRIPTION));       // --
+        err |= string_addSprintf (t2, PD_STRING, " {%s}", o + (k * MAXIMUM_DESCRIPTION));
     }
     
     err |= string_add (t1, PD_STRING, "]\n");
@@ -251,7 +251,7 @@ void midi_requireDialog (void *dummy)
     int o8 = (n > 7 && o[7] >= 0 ? o[7] + MIDI_SOMETHING : 0);
 
     err = string_sprintf (t, PD_STRING,
-        "::ui_midi::show %%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",  // --
+        "::ui_midi::show %%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
             i1,
             i2,
             i3,

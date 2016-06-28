@@ -179,7 +179,7 @@ static void gatom_bang (t_gatom *x)
         if (x->a_send != &s_ && x->a_send->s_thing) {
             if (x->a_send != x->a_receive) { pd_float (x->a_send->s_thing, GET_FLOAT (&x->a_atom)); }
             else {
-                post_error (PD_TRANSLATE ("gatom: send/receive loop %s"), x->a_unexpandedSend->s_name); // --
+                post_error (PD_TRANSLATE ("gatom: send/receive loop %s"), x->a_unexpandedSend->s_name);
             }
         }
         
@@ -190,7 +190,7 @@ static void gatom_bang (t_gatom *x)
         if (x->a_send != &s_ && x->a_send->s_thing) {
             if (x->a_send != x->a_receive) { pd_symbol (x->a_send->s_thing, GET_SYMBOL (&x->a_atom)); }
             else {
-                post_error (PD_TRANSLATE ("gatom: send/receive loop %s"), x->a_unexpandedSend->s_name); // --
+                post_error (PD_TRANSLATE ("gatom: send/receive loop %s"), x->a_unexpandedSend->s_name);
             }
         }
     }
@@ -307,7 +307,7 @@ static void gatom_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVi
         
         gatom_getPostion (x, glist, &positionX, &positionY);
         
-        sys_vGui ("::ui_box::newText .x%lx.c %lxLABEL %d %d {%s} %d #%06x\n",   // --
+        sys_vGui ("::ui_box::newText .x%lx.c %lxLABEL %d %d {%s} %d #%06x\n",
                         canvas_getView (glist),
                         x,
                         positionX,
@@ -361,7 +361,7 @@ static void gatom_functionProperties (t_gobj *z, t_glist *owner)
     if (IS_FLOAT (&x->a_atom)) {
     
         err = string_sprintf (t, PD_STRING, 
-                "::ui_atom::show %%s %d %g %g %s %g {%s} {%s} {%s} %d\n",       // --
+                "::ui_atom::show %%s %d %g %g %s %g {%s} {%s} {%s} %d\n",
                 cast_object (x)->te_width,
                 x->a_lowRange,
                 x->a_highRange,
@@ -375,7 +375,7 @@ static void gatom_functionProperties (t_gobj *z, t_glist *owner)
     } else {
     
         err = string_sprintf (t, PD_STRING, 
-                "::ui_atom::show %%s %d %g %g %s {%s} {%s} {%s} {%s} %d\n",     // --
+                "::ui_atom::show %%s %d %g %g %s {%s} {%s} {%s} {%s} %d\n",
                 cast_object (x)->te_width,
                 x->a_lowRange,
                 x->a_highRange,

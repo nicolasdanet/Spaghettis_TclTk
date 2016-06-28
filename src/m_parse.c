@@ -57,7 +57,7 @@ static int buffer_isValidCharacter (char c)
 
 static int buffer_isValidState (int floatState)
 {
-    return (floatState == FLOAT_STATE_INTEGER_DIGIT // --
+    return (floatState == FLOAT_STATE_INTEGER_DIGIT
             || floatState == FLOAT_STATE_DOT
             || floatState == FLOAT_STATE_FRACTIONAL_DIGIT
             || floatState == FLOAT_STATE_EXPONENTIAL_DIGIT);

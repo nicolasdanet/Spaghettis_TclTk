@@ -132,9 +132,9 @@ void radio_drawNewVertical (t_radio *x, t_glist *glist)
     //
     }
     
-    sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
+    sys_vGui (".x%lx.c create text %d %d -text {%s}"
                     " -anchor w"
-                    " -font [::getFont %d]"     // --
+                    " -font [::getFont %d]"
                     " -fill #%06x"
                     " -tags %lxLABEL\n",
                     canvas,
@@ -222,9 +222,9 @@ void radio_drawNewHorizontal (t_radio *x, t_glist *glist)
     //
     }
     
-    sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
+    sys_vGui (".x%lx.c create text %d %d -text {%s}"
                     " -anchor w"
-                    " -font [::getFont %d]"     // --
+                    " -font [::getFont %d]"
                     " -fill #%06x"
                     " -tags %lxLABEL\n",
                     canvas,
@@ -361,7 +361,7 @@ void radio_drawConfig (t_radio *x, t_glist *glist)
     //
     }
     
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",  // --
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",
                     canvas, 
                     x, 
                     font_getHostFontSize (x->x_gui.iem_fontSize),
@@ -565,12 +565,12 @@ static void radio_functionProperties (t_gobj *z, t_glist *owner)
     iemgui_serializeNames (&x->x_gui, &names);
 
     err = string_sprintf (t, PD_STRING,
-            "::ui_iem::create %%s {Radio Button}"   // --
-            " %d %d Size 0 0 $::var(nil)"           // --
-            " 0 $::var(nil) 0 $::var(nil)"          // --
-            " -1 $::var(nil) $::var(nil)"           // --
+            "::ui_iem::create %%s {Radio Button}"
+            " %d %d Size 0 0 $::var(nil)"
+            " 0 $::var(nil) 0 $::var(nil)"
+            " -1 $::var(nil) $::var(nil)"
             " %d"
-            " %d 256 {Number Of Buttons}"           // --
+            " %d 256 {Number Of Buttons}"
             " %s %s"
             " %s %d %d"
             " %d"
@@ -635,7 +635,7 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
     int numberOfButtons = IEM_RADIO_DEFAULT_BUTTONS;
     t_float floatValue  = 0.0;
     
-    if (argc == 15                                                  // --
+    if (argc == 15
             && IS_FLOAT (argv + 0)                                  // Size.
             && IS_FLOAT (argv + 1)                                  // Dummy.
             && IS_FLOAT (argv + 2)                                  // Loadbang.

@@ -223,9 +223,9 @@ static void slider_drawNew (t_slider *x, t_glist *glist)
     //
     }
     
-    sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
+    sys_vGui (".x%lx.c create text %d %d -text {%s}"
                     " -anchor w"
-                    " -font [::getFont %d]"     // --
+                    " -font [::getFont %d]"
                     " -fill #%06x"
                     " -tags %lxLABEL\n",
                     canvas,
@@ -279,7 +279,7 @@ static void slider_drawConfig (t_slider *x, t_glist *glist)
                     canvas,
                     x,
                     x->x_gui.iem_colorForeground);
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",  // --
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",
                     canvas,
                     x,
                     font_getHostFontSize (x->x_gui.iem_fontSize),
@@ -355,7 +355,7 @@ static void slider_setRange (t_slider *x, double minimum, double maximum)
     
     if (err) { 
         x->x_isLogarithmic = 0;
-        post_error (PD_TRANSLATE ("slider: invalid range"));   // --
+        post_error (PD_TRANSLATE ("slider: invalid range"));
     } else {
         x->x_minimum = minimum;
         x->x_maximum = maximum;
@@ -607,12 +607,12 @@ static void slider_functionProperties (t_gobj *z, t_glist *owner)
     iemgui_serializeNames (&x->x_gui, &names);
 
     err = string_sprintf (t, PD_STRING, "::ui_iem::create %%s Slider"
-            " %d %d {Slider Width} %d %d {Slider Height}"               // --
-            " %g {Value %s}"                                            // --
-            " %g {Value %s}"                                            // --
+            " %d %d {Slider Width} %d %d {Slider Height}"
+            " %g {Value %s}"
+            " %g {Value %s}"
             " %d Linear Logarithmic"
             " %d"
-            " -1 -1 $::var(nil)"                                        // --
+            " -1 -1 $::var(nil)"
             " %s %s"
             " %s %d %d"
             " %d"
@@ -685,7 +685,7 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     double maximum      = (double)(x->x_isVertical ? (height - 1) : (width - 1));
     t_float position    = 0.0;
 
-    if (argc >= 17                                                      // --
+    if (argc >= 17
             && IS_FLOAT (argv + 0)                                      // Width.
             && IS_FLOAT (argv + 1)                                      // Height.
             && IS_FLOAT (argv + 2)                                      // Range minimum.

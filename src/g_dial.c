@@ -152,7 +152,7 @@ static void dial_drawJob (t_gobj *z, t_glist *glist)
                     dial_getNeedleTopX (x, m, ((w - h) / 2.0) + 2),
                     dial_getNeedleTopY (x, n, ((w - h) / 2.0) + 2));
                 
-    sys_vGui (".x%lx.c itemconfigure %lxNUMBER -fill #%06x -text {%s}\n",  // --
+    sys_vGui (".x%lx.c itemconfigure %lxNUMBER -fill #%06x -text {%s}\n",
                     canvas,
                     x,
                     x->x_gui.iem_colorForeground,
@@ -265,9 +265,9 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
                     dial_getNeedleTopY (x, n, ((w - h) / 2.0) + 2),
                     dial_getKnobColor (x),
                     x);
-    sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
+    sys_vGui (".x%lx.c create text %d %d -text {%s}"
                     " -anchor center"
-                    " -font [::getFont %d]" // --
+                    " -font [::getFont %d]"
                     " -fill #%06x"
                     " -tags %lxNUMBER\n",
                     canvas,
@@ -277,9 +277,9 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
                     x->x_digitsFontSize,
                     x->x_gui.iem_colorForeground,
                     x);
-    sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
+    sys_vGui (".x%lx.c create text %d %d -text {%s}"
                     " -anchor w"
-                    " -font [::getFont %d]" // --
+                    " -font [::getFont %d]"
                     " -fill #%06x"
                     " -tags %lxLABEL\n",
                     canvas,
@@ -343,12 +343,12 @@ static void dial_drawConfig (t_dial* x, t_glist *glist)
                     canvas,
                     x,
                     dial_getKnobColor (x));
-    sys_vGui (".x%lx.c itemconfigure %lxNUMBER -font [::getFont %d] -fill #%06x\n",    // --
+    sys_vGui (".x%lx.c itemconfigure %lxNUMBER -font [::getFont %d] -fill #%06x\n",
                     canvas,
                     x, 
                     x->x_digitsFontSize,
                     x->x_gui.iem_colorForeground);
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",  // --
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",
                     canvas,
                     x,
                     font_getHostFontSize (x->x_gui.iem_fontSize),
@@ -417,7 +417,7 @@ static void dial_setRange (t_dial *x, double minimum, double maximum)
     
     if (err) { 
         x->x_isLogarithmic = 0;
-        post_error (PD_TRANSLATE ("dial: invalid range"));   // --
+        post_error (PD_TRANSLATE ("dial: invalid range"));
         
     } else {
         x->x_minimum = minimum;
@@ -645,10 +645,10 @@ static void dial_functionProperties (t_gobj *z, t_glist *owner)
 
     err = string_sprintf (t, PD_STRING, "::ui_iem::create %%s Dial"
             " %d %d Digits %d %d Size"
-            " %g {Value Low} %g {Value High}"   // --
+            " %g {Value Low} %g {Value High}"
             " %d Linear Logarithmic"
             " %d"
-            " %d %d {Steps}"    // --
+            " %d %d {Steps}"
             " %s %s"
             " %s %d %d"
             " %d"
@@ -720,7 +720,7 @@ static void *dial_new (t_symbol *s, int argc, t_atom *argv)
     double maximum      = IEM_DIAL_DEFAULT_MAXIMUM;
     double value        = IEM_DIAL_DEFAULT_MINIMUM;
     
-    if (argc >= 17                                                              // --
+    if (argc >= 17
             && IS_FLOAT (argv + 0)                                              // Number of digits.
             && IS_FLOAT (argv + 1)                                              // Height.
             && IS_FLOAT (argv + 2)                                              // Range minimum.

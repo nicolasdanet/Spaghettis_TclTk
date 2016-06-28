@@ -90,7 +90,7 @@ static t_error main_parseArguments (int argc, char **argv)
     }
 
     if (err) {
-        fprintf (stderr, "Usage: pd [ --version ] [ -port port ]\n");    // --
+        fprintf (stderr, "Usage: pd [ --version ] [ -port port ]\n");
     }
     
     return err;
