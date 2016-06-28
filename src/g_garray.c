@@ -587,31 +587,29 @@ static int garray_behaviorClicked (t_gobj *z,
 
 static void garray_functionSave (t_gobj *z, t_buffer *b)
 {
-    int style, filestyle;
-    t_garray *x = (t_garray *)z;
-    t_array *array = garray_getArray(x);
-    t_template *scalartemplate;
-    if (x->x_scalar->sc_template != sym_pd__dash__float__dash__array)
-    {
-            /* LATER "save" the scalar as such */ 
-        post_error ("can't save arrays of type %s yet", 
-            x->x_scalar->sc_template->s_name);
-        return;
-    }
-    if (!(scalartemplate = template_findbyname(x->x_scalar->sc_template)))
-    {
-        post_error ("array: no template of type %s",
-            x->x_scalar->sc_template->s_name);
-        return;
-    }
-    style = template_getfloat(scalartemplate, sym_style,
-            x->x_scalar->sc_vector, 0);    
-    filestyle = (style == PLOT_POINTS ? 1 : 
-        (style == PLOT_POLYGONS ? 0 : style)); 
-    buffer_vAppend(b, "sssisi;", sym___hash__X, sym_array,
-        x->x_unexpandedName, array->a_size, &s_float,
-            x->x_saveWithParent + 2 * filestyle + 8*x->x_hideName);
+    t_garray *x = cast_garray (z);
+        
+    t_template *template = template_findbyname (x->x_scalar->sc_template);
+    
+    if (!template) { PD_BUG; }
+    else {
+    //
+    int style = template_getfloat (template, sym_style, x->x_scalar->sc_vector, 0);    
+    int flags = x->x_saveWithParent + (2 * style) + (8 * x->x_hideName);
+    
+    GARRAY_FETCH;
+        
+    buffer_vAppend (b, "sssisi;",
+        sym___hash__X,
+        sym_array,
+        x->x_unexpandedName,
+        array->a_size,
+        &s_float,
+        flags);
+        
     garray_saveContentsToBuffer (x, b);
+    //
+    }
 }
 
     /* called from graph_dialog to set properties */
