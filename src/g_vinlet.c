@@ -28,10 +28,10 @@ typedef struct _vinlet {
     t_inlet         *x_inlet;
     t_signal        *x_directSignal;
     t_float         *x_fill;
-    t_float         *x_read;
     int             x_bufferSize;
     t_float         *x_buffer;
     t_float         *x_bufferEnd;
+    t_float         *x_bufferRead;
     int             x_hopSize;
     t_resample      x_resampling;
     } t_vinlet;
@@ -49,75 +49,76 @@ t_inlet *vinlet_getInlet (t_pd *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void vinlet_bang(t_vinlet *x)
+static void vinlet_bang (t_vinlet *x)
 {
-    outlet_bang(x->x_obj.te_outlet);
+    outlet_bang (cast_object (x)->te_outlet);
 }
 
-static void vinlet_pointer(t_vinlet *x, t_gpointer *gp)
+static void vinlet_pointer (t_vinlet *x, t_gpointer *gp)
 {
-    outlet_pointer(x->x_obj.te_outlet, gp);
+    outlet_pointer (cast_object (x)->te_outlet, gp);
 }
 
 static void vinlet_float(t_vinlet *x, t_float f)
 {
-    outlet_float(x->x_obj.te_outlet, f);
+    outlet_float (cast_object (x)->te_outlet, f);
 }
 
-static void vinlet_symbol(t_vinlet *x, t_symbol *s)
+static void vinlet_symbol (t_vinlet *x, t_symbol *s)
 {
-    outlet_symbol(x->x_obj.te_outlet, s);
+    outlet_symbol (cast_object (x)->te_outlet, s);
 }
 
-static void vinlet_list(t_vinlet *x, t_symbol *s, int argc, t_atom *argv)
+static void vinlet_list (t_vinlet *x, t_symbol *s, int argc, t_atom *argv)
 {
-    outlet_list(x->x_obj.te_outlet, s, argc, argv);
+    outlet_list (cast_object (x)->te_outlet, s, argc, argv);
 }
 
-static void vinlet_anything(t_vinlet *x, t_symbol *s, int argc, t_atom *argv)
+static void vinlet_anything (t_vinlet *x, t_symbol *s, int argc, t_atom *argv)
 {
-    outlet_anything(x->x_obj.te_outlet, s, argc, argv);
+    outlet_anything (cast_object (x)->te_outlet, s, argc, argv);
 }
 
-/* ------------------------- signal inlet -------------------------- */
-int vinlet_issignal(t_vinlet *x)
-{
-    return (x->x_buffer != 0);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-t_int *vinlet_perform(t_int *w)
+t_int *vinlet_perform (t_int *w)
 {
-    t_vinlet *x = (t_vinlet *)(w[1]);
+    t_vinlet *x  = (t_vinlet *)(w[1]);
     t_float *out = (t_float *)(w[2]);
-    int n = (int)(w[3]);
-    t_float *in = x->x_read;
+    int n        = (int)(w[3]);
+    
+    t_float *in  = x->x_bufferRead;
 
-    while (n--) *out++ = *in++;
-    if (in == x->x_bufferEnd) in = x->x_buffer;
-    x->x_read = in;
-    return (w+4);
+    while (n--) { *out++ = *in++; }
+    if (in == x->x_bufferEnd) { in = x->x_buffer; }
+    
+    x->x_bufferRead = in;
+    
+    return (w + 4);
 }
 
-static void vinlet_dsp(t_vinlet *x, t_signal **sp)
+static void vinlet_dsp (t_vinlet *x, t_signal **sp)
 {
-    t_signal *outsig;
-        /* no buffer means we're not a signal inlet */
-    if (!x->x_buffer)
-        return;
-    outsig = sp[0];
-    if (x->x_directSignal)
-    {
-        signal_setborrowed(sp[0], x->x_directSignal);
+    if (x->x_buffer) {
+    //
+    t_signal *out = sp[0];
+            
+    if (x->x_directSignal) { signal_setborrowed (out, x->x_directSignal); }
+    else {
+        dsp_add (vinlet_perform, 3, x, out->s_vector, out->s_vectorSize);
+        x->x_bufferRead = x->x_buffer;
     }
-    else
-    {
-        dsp_add(vinlet_perform, 3, x, outsig->s_vector, outsig->s_vectorSize);
-        x->x_read = x->x_buffer;
+    //
     }
 }
 
-    /* prolog code: loads buffer from parent patch */
-t_int *vinlet_doprolog(t_int *w)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static t_int *vinlet_doprolog(t_int *w)
 {
     t_vinlet *x = (t_vinlet *)(w[1]);
     t_float *in = (t_float *)(w[2]);
@@ -159,7 +160,7 @@ void vinlet_dspprolog(struct _vinlet *x, t_signal **parentsigs,
 
             /* the prolog code counts from 0 to period-1; the
             phase is backed up by one so that AFTER the prolog code
-            runs, the "x_fill" phase is in sync with the "x_read" phase. */
+            runs, the "x_fill" phase is in sync with the "x_bufferRead" phase. */
         prologphase = (phase - 1) & (period - 1);
         if (parentsigs)
         {

@@ -319,7 +319,7 @@ void dsp_add(t_perform f, int n, ...)
     pd_this->pd_dspChainSize = newsize;
 }
 
-    /* at Guenter's suggestion, here's a vectorized version */
+/*
 void dsp_addv(t_perform f, int n, t_int *vec)
 {
     int newsize = pd_this->pd_dspChainSize + n+1, i;
@@ -332,7 +332,7 @@ void dsp_addv(t_perform f, int n, t_int *vec)
     pd_this->pd_dspChain[newsize-1] = (t_int)dsp_done;
     pd_this->pd_dspChainSize = newsize;
 }
-
+*/
 void ugen_tick(void)
 {
     if (pd_this->pd_dspChain)
