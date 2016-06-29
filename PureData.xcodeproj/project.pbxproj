@@ -35,6 +35,8 @@
 		371655951BA3466000ABDE22 /* pmutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655941BA3466000ABDE22 /* pmutil.c */; };
 		371655971BA3466600ABDE22 /* portmidi.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655961BA3466600ABDE22 /* portmidi.c */; };
 		371655991BA3467500ABDE22 /* ptmacosx_cf.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655981BA3467500ABDE22 /* ptmacosx_cf.c */; };
+		3720EBB61D239650001675BD /* g_vinlet.c in Sources */ = {isa = PBXBuildFile; fileRef = 3720EBB41D239650001675BD /* g_vinlet.c */; };
+		3720EBB71D239650001675BD /* g_voutlet.c in Sources */ = {isa = PBXBuildFile; fileRef = 3720EBB51D239650001675BD /* g_voutlet.c */; };
 		3722C5301C4F91EB00D2BF6F /* u_pdreceive.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972031C4F716700263434 /* u_pdreceive.c */; };
 		3722C5311C4F91F500D2BF6F /* u_pdsend.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972041C4F716700263434 /* u_pdsend.c */; };
 		3722C5321C4F91FC00D2BF6F /* u_watchdog.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972051C4F716700263434 /* u_watchdog.c */; };
@@ -68,7 +70,6 @@
 		378972281C4F716800263434 /* g_gui.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C51C4F716700263434 /* g_gui.c */; };
 		3789722A1C4F716800263434 /* g_slider.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C71C4F716700263434 /* g_slider.c */; };
 		3789722B1C4F716800263434 /* g_iem.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C81C4F716700263434 /* g_iem.c */; };
-		3789722C1C4F716800263434 /* g_io.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CA1C4F716700263434 /* g_io.c */; };
 		3789722D1C4F716800263434 /* g_panel.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CB1C4F716700263434 /* g_panel.c */; };
 		3789722E1C4F716800263434 /* g_dial.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CC1C4F716700263434 /* g_dial.c */; };
 		3789722F1C4F716800263434 /* g_file.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CD1C4F716700263434 /* g_file.c */; };
@@ -222,6 +223,8 @@
 		371655941BA3466000ABDE22 /* pmutil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pmutil.c; path = portmidi/pm_common/pmutil.c; sourceTree = "<group>"; };
 		371655961BA3466600ABDE22 /* portmidi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = portmidi.c; path = portmidi/pm_common/portmidi.c; sourceTree = "<group>"; };
 		371655981BA3467500ABDE22 /* ptmacosx_cf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ptmacosx_cf.c; path = portmidi/porttime/ptmacosx_cf.c; sourceTree = "<group>"; };
+		3720EBB41D239650001675BD /* g_vinlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_vinlet.c; path = src/g_vinlet.c; sourceTree = "<group>"; };
+		3720EBB51D239650001675BD /* g_voutlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_voutlet.c; path = src/g_voutlet.c; sourceTree = "<group>"; };
 		373690A31C84854B00A332BD /* portmidi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = portmidi.h; path = portmidi/pm_common/portmidi.h; sourceTree = "<group>"; };
 		373690A41C84858000A332BD /* porttime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = porttime.h; path = portmidi/porttime/porttime.h; sourceTree = "<group>"; };
 		373690AA1C8485C000A332BD /* pminternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pminternal.h; path = portmidi/pm_common/pminternal.h; sourceTree = "<group>"; };
@@ -305,7 +308,6 @@
 		378971C71C4F716700263434 /* g_slider.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_slider.c; path = src/g_slider.c; sourceTree = "<group>"; };
 		378971C81C4F716700263434 /* g_iem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_iem.c; path = src/g_iem.c; sourceTree = "<group>"; };
 		378971C91C4F716700263434 /* g_iem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_iem.h; path = src/g_iem.h; sourceTree = "<group>"; };
-		378971CA1C4F716700263434 /* g_io.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_io.c; path = src/g_io.c; sourceTree = "<group>"; };
 		378971CB1C4F716700263434 /* g_panel.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_panel.c; path = src/g_panel.c; sourceTree = "<group>"; };
 		378971CC1C4F716700263434 /* g_dial.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_dial.c; path = src/g_dial.c; sourceTree = "<group>"; };
 		378971CD1C4F716700263434 /* g_file.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_file.c; path = src/g_file.c; sourceTree = "<group>"; };
@@ -776,7 +778,8 @@
 				378971D11C4F716700263434 /* g_text.c */,
 				377899DC1CFEDB5B0056BE61 /* g_gatom.c */,
 				378971BF1C4F716700263434 /* g_garray.c */,
-				378971CA1C4F716700263434 /* g_io.c */,
+				3720EBB41D239650001675BD /* g_vinlet.c */,
+				3720EBB51D239650001675BD /* g_voutlet.c */,
 			);
 			name = Canvas;
 			sourceTree = "<group>";
@@ -1003,7 +1006,6 @@
 				378972281C4F716800263434 /* g_gui.c in Sources */,
 				3789722A1C4F716800263434 /* g_slider.c in Sources */,
 				3789722B1C4F716800263434 /* g_iem.c in Sources */,
-				3789722C1C4F716800263434 /* g_io.c in Sources */,
 				3789722D1C4F716800263434 /* g_panel.c in Sources */,
 				3789722E1C4F716800263434 /* g_dial.c in Sources */,
 				3789722F1C4F716800263434 /* g_file.c in Sources */,
@@ -1080,6 +1082,8 @@
 				3709BE591D01726800D9B48C /* m_parse.c in Sources */,
 				37A7BBF31D030B45000C7AB5 /* m_string.c in Sources */,
 				371430B11D0D46BC00E68D11 /* g_paint.c in Sources */,
+				3720EBB61D239650001675BD /* g_vinlet.c in Sources */,
+				3720EBB71D239650001675BD /* g_voutlet.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
