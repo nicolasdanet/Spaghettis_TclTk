@@ -99,7 +99,7 @@ static t_widgetbehavior gatom_widgetBehavior =          /* Shared. */
 
 static void gatom_drawJob (t_gobj *z, t_glist *glist)
 {
-    t_gatom *x = cast_gatom (z);
+    t_gatom *x = (t_gatom *)z;
     
     if (canvas_isMapped (glist)) {
     //
@@ -243,7 +243,7 @@ static void gatom_set (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
 
 static void gatom_motion (void *z, t_float deltaX, t_float deltaY, t_float modifier)
 {
-    t_gatom *x = cast_gatom (z);
+    t_gatom *x = (t_gatom *)z;
     
     PD_ASSERT (IS_FLOAT (&x->a_atom));
     
@@ -267,7 +267,7 @@ static void gatom_motion (void *z, t_float deltaX, t_float deltaY, t_float modif
 
 static void gatom_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
 {
-    t_gatom *x = cast_gatom (z);
+    t_gatom *x = (t_gatom *)z;
     
     text_behaviorDisplaced (z, glist, deltaX, deltaY);
     
@@ -280,7 +280,7 @@ static void gatom_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int 
 
 static void gatom_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
 {
-    t_gatom *x = cast_gatom (z);
+    t_gatom *x = (t_gatom *)z;
     
     text_behaviorSelected (z, glist, isSelected);
     
@@ -294,7 +294,7 @@ static void gatom_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
 
 static void gatom_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
 {
-    t_gatom *x = cast_gatom (z);
+    t_gatom *x = (t_gatom *)z;
     
     text_behaviorVisibilityChanged (z, glist, isVisible);
     
@@ -324,7 +324,8 @@ static void gatom_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVi
 
 static void gatom_functionSave (t_gobj *z, t_buffer *b)
 {
-    t_gatom  *x         = cast_gatom (z);
+    t_gatom *x = (t_gatom *)z;
+    
     t_symbol *type      = (IS_SYMBOL (&x->a_atom) ? sym_symbolatom : sym_floatatom);
     t_symbol *label     = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedLabel, 1));
     t_symbol *receive   = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedReceive, 1));
@@ -350,7 +351,7 @@ static void gatom_functionSave (t_gobj *z, t_buffer *b)
 
 static void gatom_functionProperties (t_gobj *z, t_glist *owner)
 {
-    t_gatom *x = cast_gatom (z);
+    t_gatom *x  = (t_gatom *)z;
     t_error err = PD_ERROR_NONE;
     char t[PD_STRING] = { 0 };
     

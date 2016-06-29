@@ -40,16 +40,14 @@ typedef struct _vinlet {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *vinlet_new(t_symbol *s)
+t_inlet *vinlet_getInlet (t_pd *x)
 {
-    t_vinlet *x = (t_vinlet *)pd_new(vinlet_class);
-    x->x_owner = canvas_getCurrent();
-    x->x_inlet = canvas_addInlet (x->x_owner, &x->x_obj.te_g.g_pd, 0);
-    x->x_signalSize = 0;
-    x->x_signal = 0;
-    outlet_new(&x->x_obj, 0);
-    return (x);
+    PD_ASSERT (pd_class (x) == vinlet_class); return (((t_vinlet *)x)->x_inlet);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void vinlet_bang(t_vinlet *x)
 {
@@ -79,20 +77,6 @@ static void vinlet_list(t_vinlet *x, t_symbol *s, int argc, t_atom *argv)
 static void vinlet_anything(t_vinlet *x, t_symbol *s, int argc, t_atom *argv)
 {
     outlet_anything(x->x_obj.te_outlet, s, argc, argv);
-}
-
-static void vinlet_free(t_vinlet *x)
-{
-    canvas_removeInlet (x->x_owner, x->x_inlet);
-    if (x->x_signal)
-        PD_MEMORY_FREE(x->x_signal);
-    resample_free(&x->x_resampling);
-}
-
-t_inlet *vinlet_getit(t_pd *x)
-{
-    if (pd_class(x) != vinlet_class) { PD_BUG; }
-    return (((t_vinlet *)x)->x_inlet);
 }
 
 /* ------------------------- signal inlet -------------------------- */
@@ -237,7 +221,11 @@ void vinlet_dspprolog(struct _vinlet *x, t_signal **parentsigs,
     }
 }
 
-static void *vinlet_newsig(t_symbol *s)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *vinlet_newSignal (t_symbol *s)
 {
     t_vinlet *x = (t_vinlet *)pd_new(vinlet_class);
     x->x_owner = canvas_getCurrent();
@@ -266,24 +254,55 @@ static void *vinlet_newsig(t_symbol *s)
     return (x);
 }
 
+static void *vinlet_new(t_symbol *s)
+{
+    t_vinlet *x = (t_vinlet *)pd_new(vinlet_class);
+    x->x_owner = canvas_getCurrent();
+    x->x_inlet = canvas_addInlet (x->x_owner, &x->x_obj.te_g.g_pd, 0);
+    x->x_signalSize = 0;
+    x->x_signal = 0;
+    outlet_new(&x->x_obj, 0);
+    return (x);
+}
+
+static void vinlet_free(t_vinlet *x)
+{
+    canvas_removeInlet (x->x_owner, x->x_inlet);
+    if (x->x_signal)
+        PD_MEMORY_FREE(x->x_signal);
+    resample_free(&x->x_resampling);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 void vinlet_setup (void)
 {
-    vinlet_class = class_new (sym_inlet, (t_newmethod)vinlet_new,
-        (t_method)vinlet_free, sizeof(t_vinlet), CLASS_NOINLET, A_DEFSYMBOL, 0);
-    class_addCreator((t_newmethod)vinlet_newsig, sym_inlet__tilde__, A_DEFSYMBOL, 0);
-    class_addBang(vinlet_class, vinlet_bang);
-    class_addPointer(vinlet_class, vinlet_pointer);
-    class_addFloat(vinlet_class, vinlet_float);
-    class_addSymbol(vinlet_class, vinlet_symbol);
-    class_addList(vinlet_class, vinlet_list);
-    class_addAnything(vinlet_class, vinlet_anything);
-    class_addMethod(vinlet_class, (t_method)vinlet_dsp, 
-        sym_dsp, A_CANT, 0);
-    class_setHelpName(vinlet_class, sym_pd);
+    t_class *c = NULL;
+    
+    c = class_new (sym_inlet,
+            (t_newmethod)vinlet_new,
+            (t_method)vinlet_free,
+            sizeof (t_vinlet),
+            CLASS_DEFAULT | CLASS_NOINLET,
+            A_DEFSYMBOL,
+            A_NULL);
+            
+    class_addCreator ((t_newmethod)vinlet_newSignal, sym_inlet__tilde__, A_DEFSYMBOL, A_NULL);
+    
+    class_addBang (c, vinlet_bang);
+    class_addPointer (c, vinlet_pointer);
+    class_addFloat (c, vinlet_float);
+    class_addSymbol (c, vinlet_symbol);
+    class_addList (c, vinlet_list);
+    class_addAnything (c, vinlet_anything);
+    
+    class_addMethod (c, (t_method)vinlet_dsp, sym_dsp, A_CANT, A_NULL);
+    
+    class_setHelpName (c, sym_pd);
+    
+    vinlet_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

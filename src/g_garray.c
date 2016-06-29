@@ -135,7 +135,7 @@ void garray_initialize (void)
 
 static void garray_drawJob (t_gobj *z, t_glist *glist)
 {
-    t_garray *x = cast_garray (z);
+    t_garray *x = (t_garray *)z;
     
     if (canvas_isMapped (x->x_owner) && gobj_isVisible (z, glist)) {
     //
@@ -561,7 +561,7 @@ static void garray_bounds (t_garray *x, t_float a, t_float b, t_float c, t_float
 
 static void garray_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
 {
-    t_garray *x = cast_garray (z);
+    t_garray *x = (t_garray *)z;
     
     gobj_getRectangle (cast_gobj (x->x_scalar), glist, a, b, c, d);
 }
@@ -584,7 +584,7 @@ static void garray_behaviorDeleted (t_gobj *z, t_glist *glist)
 
 static void garray_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
 {
-    t_garray *x = cast_garray (z);
+    t_garray *x = (t_garray *)z;
     
     gobj_visibilityChanged (cast_gobj (x->x_scalar), glist, isVisible);
 }
@@ -599,7 +599,7 @@ static int garray_behaviorClicked (t_gobj *z,
     int dbl,
     int clicked)
 {
-    t_garray *x = cast_garray (z);
+    t_garray *x = (t_garray *)z;
     
     return (gobj_clicked (cast_gobj (x->x_scalar), glist, a, b, shift, ctrl, alt, dbl, clicked));
 }
@@ -610,7 +610,7 @@ static int garray_behaviorClicked (t_gobj *z,
 
 static void garray_functionSave (t_gobj *z, t_buffer *b)
 {
-    t_garray *x = cast_garray (z);
+    t_garray *x = (t_garray *)z;
     t_template *template = template_findbyname (x->x_scalar->sc_template);
     
     if (!template) { PD_BUG; }

@@ -101,7 +101,7 @@ static void voutlet_free(t_voutlet *x)
     resample_free(&x->x_updown);
 }
 
-t_outlet *voutlet_getit(t_pd *x)
+t_outlet *voutlet_getOutlet(t_pd *x)
 {
     if (pd_class(x) != voutlet_class) { PD_BUG; }
     return (((t_voutlet *)x)->x_parentoutlet);

@@ -157,7 +157,7 @@ int text_behaviorClicked (t_gobj *z,
         }
         
     } else if (x->te_type == TYPE_ATOM) {
-        if (clicked) { gatom_click (cast_gatom (x), f1, f2, f3, f4, f5); }
+        if (clicked) { gatom_click ((t_gatom *)x, f1, f2, f3, f4, f5); }
         return 1;
         
     } else if (x->te_type == TYPE_MESSAGE) {
