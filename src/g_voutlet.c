@@ -311,18 +311,7 @@ static void *voutlet_newsig(t_symbol *s)
     x->x_endbuf = x->x_buf = (t_sample *)PD_MEMORY_GET(0);
     x->x_bufsize = 0;
 
-    resample_init(&x->x_updown);
-
-    /* this should be though over: 
-     * it might prove hard to provide consistency between labeled up- & downsampling methods
-     * maybe indeces would be better...
-     *
-     * up till now we provide several upsampling methods and 1 single downsampling method (no filtering !)
-     */
-    if (s == sym_hold)x->x_updown.r_type=1;        /* up: sample and hold */
-    else if (s == sym_linear)x->x_updown.r_type=2; /* up: linear interpolation */
-    else if (s == sym_pad)x->x_updown.r_type=0;    /* up: zero pad */
-    else x->x_updown.r_type=3;                           /* up: zero-padding; down: ignore samples inbetween */
+    resample_init(&x->x_updown, s);
 
     return (x);
 }

@@ -813,7 +813,7 @@ typedef struct _resample {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_DLL void         resample_init               (t_resample *x);
+PD_DLL void         resample_init               (t_resample *x, t_symbol *type);
 PD_DLL void         resample_free               (t_resample *x);
 
 PD_DLL void         resample_dsp                (t_resample *x,

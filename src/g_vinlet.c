@@ -29,9 +29,9 @@ typedef struct _vinlet {
     t_signal        *x_directSignal;
     t_float         *x_fill;
     t_float         *x_read;
-    int             x_signalSize;
-    t_float         *x_signal;
-    t_float         *x_signalEnd;
+    int             x_bufferSize;
+    t_float         *x_buffer;
+    t_float         *x_bufferEnd;
     int             x_hopSize;
     t_resample      x_resampling;
     } t_vinlet;
@@ -82,7 +82,7 @@ static void vinlet_anything(t_vinlet *x, t_symbol *s, int argc, t_atom *argv)
 /* ------------------------- signal inlet -------------------------- */
 int vinlet_issignal(t_vinlet *x)
 {
-    return (x->x_signal != 0);
+    return (x->x_buffer != 0);
 }
 
 t_int *vinlet_perform(t_int *w)
@@ -93,7 +93,7 @@ t_int *vinlet_perform(t_int *w)
     t_float *in = x->x_read;
 
     while (n--) *out++ = *in++;
-    if (in == x->x_signalEnd) in = x->x_signal;
+    if (in == x->x_bufferEnd) in = x->x_buffer;
     x->x_read = in;
     return (w+4);
 }
@@ -102,7 +102,7 @@ static void vinlet_dsp(t_vinlet *x, t_signal **sp)
 {
     t_signal *outsig;
         /* no buffer means we're not a signal inlet */
-    if (!x->x_signal)
+    if (!x->x_buffer)
         return;
     outsig = sp[0];
     if (x->x_directSignal)
@@ -112,7 +112,7 @@ static void vinlet_dsp(t_vinlet *x, t_signal **sp)
     else
     {
         dsp_add(vinlet_perform, 3, x, outsig->s_vector, outsig->s_vectorSize);
-        x->x_read = x->x_signal;
+        x->x_read = x->x_buffer;
     }
 }
 
@@ -123,10 +123,10 @@ t_int *vinlet_doprolog(t_int *w)
     t_float *in = (t_float *)(w[2]);
     int n = (int)(w[3]);
     t_float *out = x->x_fill;
-    if (out == x->x_signalEnd)
+    if (out == x->x_bufferEnd)
     {
-      t_float *f1 = x->x_signal, *f2 = x->x_signal + x->x_hopSize;
-        int nshift = x->x_signalSize - x->x_hopSize;
+      t_float *f1 = x->x_buffer, *f2 = x->x_buffer + x->x_hopSize;
+        int nshift = x->x_bufferSize - x->x_hopSize;
         out -= x->x_hopSize;
         while (nshift--) *f1++ = *f2++;
     }
@@ -143,7 +143,7 @@ void vinlet_dspprolog(struct _vinlet *x, t_signal **parentsigs,
 {
     t_signal *insig, *outsig;
         /* no buffer means we're not a signal inlet */
-    if (!x->x_signal)
+    if (!x->x_buffer)
         return;
     x->x_resampling.r_downSample = downsample;
     x->x_resampling.r_upSample   = upsample;
@@ -155,7 +155,7 @@ void vinlet_dspprolog(struct _vinlet *x, t_signal **parentsigs,
         int parentvecsize, bufsize, oldbufsize, prologphase;
         int re_parentvecsize; /* resampled parentvectorsize */
             /* this should never happen: */
-        if (!x->x_signal) return;
+        if (!x->x_buffer) return;
 
             /* the prolog code counts from 0 to period-1; the
             phase is backed up by one so that AFTER the prolog code
@@ -176,21 +176,21 @@ void vinlet_dspprolog(struct _vinlet *x, t_signal **parentsigs,
 
         bufsize = re_parentvecsize;
         if (bufsize < myvecsize) bufsize = myvecsize;
-        if (bufsize != (oldbufsize = x->x_signalSize))
+        if (bufsize != (oldbufsize = x->x_bufferSize))
         {
-            t_float *buf = x->x_signal;
+            t_float *buf = x->x_buffer;
             PD_MEMORY_FREE(buf);
             buf = (t_float *)PD_MEMORY_GET(bufsize * sizeof(*buf));
             memset((char *)buf, 0, bufsize * sizeof(*buf));
-            x->x_signalSize = bufsize;
-            x->x_signalEnd = buf + bufsize;
-            x->x_signal = buf;
+            x->x_bufferSize = bufsize;
+            x->x_bufferEnd = buf + bufsize;
+            x->x_buffer = buf;
         }
         if (parentsigs)
         {
             x->x_hopSize = period * re_parentvecsize;
 
-            x->x_fill = x->x_signalEnd -
+            x->x_fill = x->x_bufferEnd -
               (x->x_hopSize - prologphase * re_parentvecsize);
 
             if (upsample * downsample == 1)
@@ -210,7 +210,7 @@ void vinlet_dspprolog(struct _vinlet *x, t_signal **parentsigs,
             if (!insig->s_count)
                 signal_makereusable(insig);
         }
-        else memset((char *)(x->x_signal), 0, bufsize * sizeof(*x->x_signal));
+        else memset((char *)(x->x_buffer), 0, bufsize * sizeof(*x->x_buffer));
         x->x_directSignal = 0;
     }
     else
@@ -227,50 +227,43 @@ void vinlet_dspprolog(struct _vinlet *x, t_signal **parentsigs,
 
 static void *vinlet_newSignal (t_symbol *s)
 {
-    t_vinlet *x = (t_vinlet *)pd_new(vinlet_class);
-    x->x_owner = canvas_getCurrent();
-    x->x_inlet = canvas_addInlet (x->x_owner, &x->x_obj.te_g.g_pd, &s_signal);
-    x->x_signalEnd = x->x_signal = (t_float *)PD_MEMORY_GET(0);
-    x->x_signalSize = 0;
-    x->x_directSignal = 0;
-    outlet_new(&x->x_obj, &s_signal);
+    t_vinlet *x = (t_vinlet *)pd_new (vinlet_class);
+    
+    x->x_owner          = canvas_getCurrent();
+    x->x_inlet          = canvas_addInlet (x->x_owner, cast_pd (x), &s_signal);
+    x->x_buffer         = (t_float *)PD_MEMORY_GET (0);
+    x->x_bufferEnd      = x->x_buffer;
+    x->x_bufferSize     = 0;
+    x->x_directSignal   = NULL;
+    
+    outlet_new (cast_object (x), &s_signal);
+    
+    resample_init (&x->x_resampling, s);
 
-    resample_init(&x->x_resampling);
-
-    /* this should be though over: 
-     * it might prove hard to provide consistency between labeled up- & downsampling methods
-     * maybe indeces would be better...
-     *
-     * up till now we provide several upsampling methods and 1 single downsampling method (no filtering !)
-     */
-    if (s == sym_hold)
-        x->x_resampling.r_type=1;       /* up: sample and hold */
-    else if (s == sym_linear)
-        x->x_resampling.r_type=2;       /* up: linear interpolation */
-    else if (s == sym_pad)
-        x->x_resampling.r_type=0;       /* up: zero-padding */
-    else x->x_resampling.r_type=3;      /* sample/hold unless version<0.44 */
-
-    return (x);
+    return x;
 }
 
-static void *vinlet_new(t_symbol *s)
+static void *vinlet_new (t_symbol *s)
 {
-    t_vinlet *x = (t_vinlet *)pd_new(vinlet_class);
-    x->x_owner = canvas_getCurrent();
-    x->x_inlet = canvas_addInlet (x->x_owner, &x->x_obj.te_g.g_pd, 0);
-    x->x_signalSize = 0;
-    x->x_signal = 0;
-    outlet_new(&x->x_obj, 0);
-    return (x);
+    t_vinlet *x = (t_vinlet *)pd_new (vinlet_class);
+    
+    x->x_owner      = canvas_getCurrent();
+    x->x_inlet      = canvas_addInlet (x->x_owner, cast_pd (x), NULL);
+    x->x_bufferSize = 0;
+    x->x_buffer     = NULL;
+    
+    outlet_new (cast_object (x), &s_anything);
+    
+    return x;
 }
 
-static void vinlet_free(t_vinlet *x)
+static void vinlet_free (t_vinlet *x)
 {
     canvas_removeInlet (x->x_owner, x->x_inlet);
-    if (x->x_signal)
-        PD_MEMORY_FREE(x->x_signal);
-    resample_free(&x->x_resampling);
+    
+    if (x->x_buffer) { PD_MEMORY_FREE (x->x_buffer); }
+    
+    resample_free (&x->x_resampling);
 }
 
 // -----------------------------------------------------------------------------------------------------------
