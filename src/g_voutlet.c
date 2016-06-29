@@ -25,8 +25,7 @@ life elsewhere. */
 #include "m_macros.h"
 #include "g_canvas.h"
 #include <string.h>
-void signal_setborrowed(t_signal *sig, t_signal *sig2);
-void signal_makereusable(t_signal *sig);
+
 
 /* ------------------------- voutlet -------------------------- */
 

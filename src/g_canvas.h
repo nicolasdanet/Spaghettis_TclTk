@@ -779,6 +779,9 @@ t_inlet *vinlet_getit(t_pd *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void signal_setborrowed(t_signal *sig, t_signal *sig2);
+void signal_makereusable(t_signal *sig);
+
 void glist_readfrombinbuf (t_glist *x, t_buffer *b, char *filename, int selectem);
 void canvas_dataproperties (t_glist *x, t_scalar *sc, t_buffer *b);
 void canvas_find_parent (t_glist *x);
