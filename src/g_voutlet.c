@@ -34,17 +34,16 @@ typedef struct _voutlet {
     t_sample    *x_bufferWrite;
     int         x_hopSize;
     t_resample  x_resampling;
-    char        x_justCopyOut;
+    char        x_copyOut;
     } t_voutlet;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_outlet *voutlet_getOutlet(t_pd *x)
+t_outlet *voutlet_getOutlet (t_pd *x)
 {
-    if (pd_class(x) != voutlet_class) { PD_BUG; }
-    return (((t_voutlet *)x)->x_outlet);
+    PD_ASSERT (pd_class(x) == voutlet_class); return (((t_voutlet *)x)->x_outlet);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -152,7 +151,7 @@ void voutlet_dspprolog(struct _voutlet *x, t_signal **parentsigs,
         return;
     x->x_resampling.r_downSample=downsample;
     x->x_resampling.r_upSample=upsample;
-    x->x_justCopyOut = (switched && !reblock);
+    x->x_copyOut = (switched && !reblock);
     if (reblock)
     {
         x->x_directSignal = 0;
@@ -170,7 +169,7 @@ static void voutlet_dsp(t_voutlet *x, t_signal **sp)
     t_signal *insig;
     if (!x->x_buffer) return;
     insig = sp[0];
-    if (x->x_justCopyOut)
+    if (x->x_copyOut)
         dsp_add_copy(insig->s_vector, x->x_directSignal->s_vector, insig->s_blockSize);
     else if (x->x_directSignal)
     {
@@ -270,38 +269,44 @@ void voutlet_dspepilog(struct _voutlet *x, t_signal **parentsigs,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *voutlet_newsig(t_symbol *s)
+static void *voutlet_newSignal (t_symbol *s)
 {
-    t_voutlet *x = (t_voutlet *)pd_new(voutlet_class);
-    x->x_owner = canvas_getCurrent();
-    x->x_outlet = canvas_addOutlet (x->x_owner,
-        &x->x_obj.te_g.g_pd, &s_signal);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
-    x->x_bufferEnd = x->x_buffer = (t_sample *)PD_MEMORY_GET(0);
+    t_voutlet *x = (t_voutlet *)pd_new (voutlet_class);
+    
+    x->x_owner      = canvas_getCurrent();
+    x->x_outlet     = canvas_addOutlet (x->x_owner, cast_pd (x), &s_signal);
+    x->x_buffer     = (t_sample *)PD_MEMORY_GET (0);
+    x->x_bufferEnd  = x->x_buffer;
     x->x_bufferSize = 0;
+    
+    inlet_new (cast_object (x), cast_pd (x), &s_signal, &s_signal);
 
-    resample_init(&x->x_resampling, s);
+    resample_init (&x->x_resampling, s);
 
-    return (x);
+    return x;
 }
 
-static void *voutlet_new(t_symbol *s)
+static void *voutlet_new (t_symbol *s)
 {
-    t_voutlet *x = (t_voutlet *)pd_new(voutlet_class);
-    x->x_owner = canvas_getCurrent();
-    x->x_outlet = canvas_addOutlet (x->x_owner, &x->x_obj.te_g.g_pd, 0);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, 0, 0);
+    t_voutlet *x = (t_voutlet *)pd_new (voutlet_class);
+    
+    x->x_owner      = canvas_getCurrent();
+    x->x_outlet     = canvas_addOutlet (x->x_owner, cast_pd (x), &s_anything);
     x->x_bufferSize = 0;
-    x->x_buffer = 0;
-    return (x);
+    x->x_buffer     = NULL;
+    
+    inlet_new (cast_object (x), cast_pd (x), NULL, NULL);
+
+    return x;
 }
 
-static void voutlet_free(t_voutlet *x)
+static void voutlet_free (t_voutlet *x)
 {
     canvas_removeOutlet (x->x_owner, x->x_outlet);
-    if (x->x_buffer)
-        PD_MEMORY_FREE(x->x_buffer);
-    resample_free(&x->x_resampling);
+    
+    if (x->x_buffer) { PD_MEMORY_FREE (x->x_buffer); }
+    
+    resample_free (&x->x_resampling);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -310,18 +315,30 @@ static void voutlet_free(t_voutlet *x)
 
 void voutlet_setup(void)
 {
-    voutlet_class = class_new(sym_outlet, (t_newmethod)voutlet_new,
-        (t_method)voutlet_free, sizeof(t_voutlet), CLASS_NOINLET, A_DEFSYMBOL, 0);
-    class_addCreator((t_newmethod)voutlet_newsig, sym_outlet__tilde__, A_DEFSYMBOL, 0);
-    class_addBang(voutlet_class, voutlet_bang);
-    class_addPointer(voutlet_class, voutlet_pointer);
-    class_addFloat(voutlet_class, (t_method)voutlet_float);
-    class_addSymbol(voutlet_class, voutlet_symbol);
-    class_addList(voutlet_class, voutlet_list);
-    class_addAnything(voutlet_class, voutlet_anything);
-    class_addMethod(voutlet_class, (t_method)voutlet_dsp, 
-        sym_dsp, A_CANT, 0);
-    class_setHelpName(voutlet_class, sym_pd);
+    t_class *c = NULL;
+    
+    c = class_new (sym_outlet,
+            (t_newmethod)voutlet_new,
+            (t_method)voutlet_free,
+            sizeof (t_voutlet),
+            CLASS_DEFAULT | CLASS_NOINLET,
+            A_DEFSYMBOL,
+            A_NULL);
+            
+    class_addCreator ((t_newmethod)voutlet_newSignal, sym_outlet__tilde__, A_DEFSYMBOL, A_NULL);
+    
+    class_addBang (c, voutlet_bang);
+    class_addPointer (c, voutlet_pointer);
+    class_addFloat (c, voutlet_float);
+    class_addSymbol (c, voutlet_symbol);
+    class_addList (c, voutlet_list);
+    class_addAnything (c, voutlet_anything);
+    
+    class_addMethod (c, (t_method)voutlet_dsp, sym_dsp, A_CANT, A_NULL);
+    
+    class_setHelpName (c, sym_pd);
+    
+    voutlet_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
