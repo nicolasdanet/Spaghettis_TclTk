@@ -27,10 +27,10 @@ typedef struct _vinlet {
     t_glist         *x_owner;
     t_inlet         *x_inlet;
     t_signal        *x_directSignal;
-    t_float         *x_fill;
     int             x_bufferSize;
     t_float         *x_buffer;
     t_float         *x_bufferEnd;
+    t_float         *x_bufferWrite;
     t_float         *x_bufferRead;
     int             x_hopSize;
     t_resample      x_resampling;
@@ -59,7 +59,7 @@ static void vinlet_pointer (t_vinlet *x, t_gpointer *gp)
     outlet_pointer (cast_object (x)->te_outlet, gp);
 }
 
-static void vinlet_float(t_vinlet *x, t_float f)
+static void vinlet_float (t_vinlet *x, t_float f)
 {
     outlet_float (cast_object (x)->te_outlet, f);
 }
@@ -99,23 +99,27 @@ t_int *vinlet_perform (t_int *w)
     return (w + 4);
 }
 
-static t_int *vinlet_prolog(t_int *w)
+static t_int *vinlet_prolog (t_int *w)
 {
-    t_vinlet *x = (t_vinlet *)(w[1]);
-    t_float *in = (t_float *)(w[2]);
-    int n = (int)(w[3]);
-    t_float *out = x->x_fill;
-    if (out == x->x_bufferEnd)
-    {
-      t_float *f1 = x->x_buffer, *f2 = x->x_buffer + x->x_hopSize;
-        int nshift = x->x_bufferSize - x->x_hopSize;
+    t_vinlet *x  = (t_vinlet *)(w[1]);
+    t_float *in  = (t_float *)(w[2]);
+    int n        = (int)(w[3]);
+    
+    t_float *out = x->x_bufferWrite;
+    
+    if (out == x->x_bufferEnd) {
+        t_float *f1 = x->x_buffer;
+        t_float *f2 = x->x_buffer + x->x_hopSize;
+        int shift   = x->x_bufferSize - x->x_hopSize;
         out -= x->x_hopSize;
-        while (nshift--) *f1++ = *f2++;
+        while (shift--) { *f1++ = *f2++; }
     }
 
-    while (n--) *out++ = *in++;
-    x->x_fill = out;
-    return (w+4);
+    while (n--) { *out++ = *in++; }
+    
+    x->x_bufferWrite = out;
+    
+    return (w + 4);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -158,23 +162,23 @@ void vinlet_dspProlog (struct _vinlet *x,
     else {
     //
     t_signal *signalIn = NULL;
-    int prologPhase;
+    
     int newBufferSize;
     int oldBufferSize;
     int parentVectorSize;
     int parentVectorSizeResampled;
 
-    prologPhase = (phase - 1) & (period - 1);
+    int prologPhase = (phase - 1) & (period - 1);
     
     if (parentSignals) {
-        signalIn = parentSignals[object_getIndexOfSignalInlet (x->x_inlet)];
-        parentVectorSize = signalIn->s_vectorSize;
-        parentVectorSizeResampled = parentVectorSize * upSample / downSample;
+        signalIn                    = parentSignals[object_getIndexOfSignalInlet (x->x_inlet)];
+        parentVectorSize            = signalIn->s_vectorSize;
+        parentVectorSizeResampled   = parentVectorSize * upSample / downSample;
         
     } else {
-        signalIn = NULL;
-        parentVectorSize = 1;
-        parentVectorSizeResampled = 1;
+        signalIn                    = NULL;
+        parentVectorSize            = 1;
+        parentVectorSizeResampled   = 1;
     }
 
     newBufferSize = parentVectorSizeResampled;
@@ -194,7 +198,7 @@ void vinlet_dspProlog (struct _vinlet *x,
     else {
     //
     x->x_hopSize = period * parentVectorSizeResampled;
-    x->x_fill    = x->x_bufferEnd - (x->x_hopSize - prologPhase * parentVectorSizeResampled);
+    x->x_bufferWrite = x->x_bufferEnd - (x->x_hopSize - prologPhase * parentVectorSizeResampled);
 
     if (upSample * downSample == 1) {
         dsp_add (vinlet_prolog, 3, x, signalIn->s_vector, parentVectorSizeResampled);
