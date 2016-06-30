@@ -204,7 +204,6 @@ void vinlet_dspProlog (struct _vinlet *x,
         dsp_add (vinlet_prolog, 3, x, signalIn->s_vector, parentVectorSizeResampled);
         
     } else {
-    
         resamplefrom_dsp (&x->x_resampling, 
             signalIn->s_vector,
             parentVectorSize,

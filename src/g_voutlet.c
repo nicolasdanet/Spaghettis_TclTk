@@ -50,41 +50,40 @@ t_outlet *voutlet_getOutlet (t_pd *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void voutlet_bang(t_voutlet *x)
+static void voutlet_bang (t_voutlet *x)
 {
-    outlet_bang(x->x_outlet);
+    outlet_bang (x->x_outlet);
 }
 
-static void voutlet_pointer(t_voutlet *x, t_gpointer *gp)
+static void voutlet_pointer (t_voutlet *x, t_gpointer *gp)
 {
-    outlet_pointer(x->x_outlet, gp);
+    outlet_pointer (x->x_outlet, gp);
 }
 
-static void voutlet_float(t_voutlet *x, t_float f)
+static void voutlet_float (t_voutlet *x, t_float f)
 {
-    outlet_float(x->x_outlet, f);
+    outlet_float (x->x_outlet, f);
 }
 
-static void voutlet_symbol(t_voutlet *x, t_symbol *s)
+static void voutlet_symbol (t_voutlet *x, t_symbol *s)
 {
-    outlet_symbol(x->x_outlet, s);
+    outlet_symbol (x->x_outlet, s);
 }
 
-static void voutlet_list(t_voutlet *x, t_symbol *s, int argc, t_atom *argv)
+static void voutlet_list (t_voutlet *x, t_symbol *s, int argc, t_atom *argv)
 {
-    outlet_list(x->x_outlet, s, argc, argv);
+    outlet_list (x->x_outlet, s, argc, argv);
 }
 
-static void voutlet_anything(t_voutlet *x, t_symbol *s, int argc, t_atom *argv)
+static void voutlet_anything (t_voutlet *x, t_symbol *s, int argc, t_atom *argv)
 {
-    outlet_anything(x->x_outlet, s, argc, argv);
+    outlet_anything (x->x_outlet, s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* LATER optimize for non-overlapped case where the "+=" isn't needed */
 t_int *voutlet_perform(t_int *w)
 {
     t_voutlet *x = (t_voutlet *)(w[1]);
