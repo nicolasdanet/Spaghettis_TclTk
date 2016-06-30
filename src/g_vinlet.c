@@ -99,26 +99,7 @@ t_int *vinlet_perform (t_int *w)
     return (w + 4);
 }
 
-static void vinlet_dsp (t_vinlet *x, t_signal **sp)
-{
-    if (x->x_buffer) {
-    //
-    t_signal *out = sp[0];
-            
-    if (x->x_directSignal) { signal_setborrowed (out, x->x_directSignal); }
-    else {
-        dsp_add (vinlet_perform, 3, x, out->s_vector, out->s_vectorSize);
-        x->x_bufferRead = x->x_buffer;
-    }
-    //
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static t_int *vinlet_doprolog(t_int *w)
+static t_int *vinlet_prolog(t_int *w)
 {
     t_vinlet *x = (t_vinlet *)(w[1]);
     t_float *in = (t_float *)(w[2]);
@@ -137,88 +118,108 @@ static t_int *vinlet_doprolog(t_int *w)
     return (w+4);
 }
 
-        /* set up prolog DSP code  */
-void vinlet_dspprolog(struct _vinlet *x, t_signal **parentsigs,
-    int myvecsize, int calcsize, int phase, int period, int frequency,
-    int downsample, int upsample,  int reblock, int switched)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void vinlet_dsp (t_vinlet *x, t_signal **sp)
 {
-    t_signal *insig, *outsig;
-        /* no buffer means we're not a signal inlet */
-    if (!x->x_buffer)
-        return;
-    x->x_resampling.r_downSample = downsample;
-    x->x_resampling.r_upSample   = upsample;
-
-        /* if the "reblock" flag is set, arrange to copy data in from the
-        parent. */
-    if (reblock)
-    {
-        int parentvecsize, bufsize, oldbufsize, prologphase;
-        int re_parentvecsize; /* resampled parentvectorsize */
-            /* this should never happen: */
-        if (!x->x_buffer) return;
-
-            /* the prolog code counts from 0 to period-1; the
-            phase is backed up by one so that AFTER the prolog code
-            runs, the "x_fill" phase is in sync with the "x_bufferRead" phase. */
-        prologphase = (phase - 1) & (period - 1);
-        if (parentsigs)
-        {
-            insig = parentsigs[object_getIndexOfSignalInlet(x->x_inlet)];
-            parentvecsize = insig->s_vectorSize;
-            re_parentvecsize = parentvecsize * upsample / downsample;
-        }
-        else
-        {
-            insig = 0;
-            parentvecsize = 1;
-            re_parentvecsize = 1;
-        }
-
-        bufsize = re_parentvecsize;
-        if (bufsize < myvecsize) bufsize = myvecsize;
-        if (bufsize != (oldbufsize = x->x_bufferSize))
-        {
-            t_float *buf = x->x_buffer;
-            PD_MEMORY_FREE(buf);
-            buf = (t_float *)PD_MEMORY_GET(bufsize * sizeof(*buf));
-            memset((char *)buf, 0, bufsize * sizeof(*buf));
-            x->x_bufferSize = bufsize;
-            x->x_bufferEnd = buf + bufsize;
-            x->x_buffer = buf;
-        }
-        if (parentsigs)
-        {
-            x->x_hopSize = period * re_parentvecsize;
-
-            x->x_fill = x->x_bufferEnd -
-              (x->x_hopSize - prologphase * re_parentvecsize);
-
-            if (upsample * downsample == 1)
-                    dsp_add(vinlet_doprolog, 3, x, insig->s_vector,
-                        re_parentvecsize);
-            else {
-              int method = (x->x_resampling.r_type == 3?
-                (0 ? 0 : 1) : x->x_resampling.r_type);
-              resamplefrom_dsp(&x->x_resampling, insig->s_vector, parentvecsize,
-                re_parentvecsize, method);
-              dsp_add(vinlet_doprolog, 3, x, x->x_resampling.r_vector,
-                re_parentvecsize);
-        }
-
-            /* if the input signal's reference count is zero, we have
-               to free it here because we didn't in ugen_doit(). */
-            if (!insig->s_count)
-                signal_makereusable(insig);
-        }
-        else memset((char *)(x->x_buffer), 0, bufsize * sizeof(*x->x_buffer));
-        x->x_directSignal = 0;
+    if (x->x_buffer) {      /* No buffer means we're not a signal inlet. */
+    //
+    t_signal *out = sp[0];
+            
+    if (x->x_directSignal) { signal_setborrowed (out, x->x_directSignal); }
+    else {
+        dsp_add (vinlet_perform, 3, x, out->s_vector, out->s_vectorSize);
+        x->x_bufferRead = x->x_buffer;
     }
-    else
-    {
-            /* no reblocking; in this case our output signal is "borrowed"
-            and merely needs to be pointed to the real one. */
-        x->x_directSignal = parentsigs[object_getIndexOfSignalInlet(x->x_inlet)];
+    //
+    }
+}
+
+void vinlet_dspProlog (struct _vinlet *x,
+    t_signal **parentSignals,
+    int vectorSize,
+    int size,
+    int phase,
+    int period,
+    int frequency,
+    int downSample,
+    int upSample,
+    int reblock,
+    int switched)
+{
+    if (x->x_buffer) {      /* No buffer means we're not a signal inlet. */
+    //
+    x->x_resampling.r_downSample = downSample;
+    x->x_resampling.r_upSample   = upSample;
+
+    if (!reblock) { x->x_directSignal = parentSignals[object_getIndexOfSignalInlet (x->x_inlet)]; }
+    else {
+    //
+    t_signal *signalIn = NULL;
+    int prologPhase;
+    int newBufferSize;
+    int oldBufferSize;
+    int parentVectorSize;
+    int parentVectorSizeResampled;
+
+    prologPhase = (phase - 1) & (period - 1);
+    
+    if (parentSignals) {
+        signalIn = parentSignals[object_getIndexOfSignalInlet (x->x_inlet)];
+        parentVectorSize = signalIn->s_vectorSize;
+        parentVectorSizeResampled = parentVectorSize * upSample / downSample;
+        
+    } else {
+        signalIn = NULL;
+        parentVectorSize = 1;
+        parentVectorSizeResampled = 1;
+    }
+
+    newBufferSize = parentVectorSizeResampled;
+    
+    if (newBufferSize < vectorSize) { newBufferSize = vectorSize; }
+    if (newBufferSize != (oldBufferSize = x->x_bufferSize)) {
+        t_float *t = x->x_buffer;
+        PD_MEMORY_FREE (t);
+        t = (t_float *)PD_MEMORY_GET (newBufferSize * sizeof (t_float));
+        memset ((char *)t, 0, newBufferSize * sizeof (t_float));
+        x->x_bufferSize = newBufferSize;
+        x->x_bufferEnd  = t + newBufferSize;
+        x->x_buffer     = t;
+    }
+    
+    if (!parentSignals) { memset ((char *)x->x_buffer, 0, newBufferSize * sizeof (t_float)); }
+    else {
+    //
+    x->x_hopSize = period * parentVectorSizeResampled;
+    x->x_fill    = x->x_bufferEnd - (x->x_hopSize - prologPhase * parentVectorSizeResampled);
+
+    if (upSample * downSample == 1) {
+        dsp_add (vinlet_prolog, 3, x, signalIn->s_vector, parentVectorSizeResampled);
+        
+    } else {
+    
+        resamplefrom_dsp (&x->x_resampling, 
+            signalIn->s_vector,
+            parentVectorSize,
+            parentVectorSizeResampled,
+            (x->x_resampling.r_type == 3) ? 0 : x->x_resampling.r_type);
+            
+        dsp_add (vinlet_prolog, 3, x, x->x_resampling.r_vector, parentVectorSizeResampled);
+    }
+
+    /* Free signal with a zero reference count. */
+        
+    if (!signalIn->s_count) { signal_makereusable (signalIn); }
+    //
+    }
+    
+    x->x_directSignal = NULL;
+    //
+    }
+    //
     }
 }
 

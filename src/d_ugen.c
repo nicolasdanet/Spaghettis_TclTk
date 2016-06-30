@@ -31,9 +31,6 @@ static int ugen_loud;
 struct _vinlet;
 struct _voutlet;
 
-void vinlet_dspprolog(struct _vinlet *x, t_signal **parentsigs,
-    int myvecsize, int calcsize, int phase, int period, int frequency,
-    int downsample, int upsample,  int reblock, int switched);
 void voutlet_dspprolog(struct _voutlet *x, t_signal **parentsigs,
     int myvecsize, int calcsize, int phase, int period, int frequency,
     int downsample, int upsample, int reblock, int switched);
@@ -982,7 +979,7 @@ void ugen_done_graph(t_dspcontext *dc)
         if (outsigs) outsigs += dc->dc_ninlets;
 
         if (pd_class(zz) == vinlet_class)
-            vinlet_dspprolog((struct _vinlet *)zz, 
+            vinlet_dspProlog((struct _vinlet *)zz, 
                 dc->dc_iosigs, vecsize, calcsize, dsp_phase, period, frequency,
                     downsample, upsample, reblock, switched);
         else if (pd_class(zz) == voutlet_class)
