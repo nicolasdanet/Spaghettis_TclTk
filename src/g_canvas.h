@@ -770,6 +770,30 @@ void            vinlet_dspProlog                        (struct _vinlet *x,
 
 t_outlet        *voutlet_getOutlet                      (t_pd *x);
 
+void            voutlet_dspProlog                       (struct _voutlet *x,
+                                                            t_signal **parentSignals,
+                                                            int vectorSize,
+                                                            int size,
+                                                            int phase,
+                                                            int period,
+                                                            int frequency,
+                                                            int downSample,
+                                                            int upSample,
+                                                            int reblock,
+                                                            int switched);
+                                                            
+void            voutlet_dspEpilog                       (struct _voutlet *x,
+                                                            t_signal **parentSignals,
+                                                            int vectorSize,
+                                                            int size,
+                                                            int phase,
+                                                            int period,
+                                                            int frequency,
+                                                            int downSample,
+                                                            int upSample,
+                                                            int reblock,
+                                                            int switched);
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

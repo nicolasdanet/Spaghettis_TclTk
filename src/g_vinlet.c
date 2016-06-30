@@ -99,7 +99,7 @@ t_int *vinlet_perform (t_int *w)
     return (w + 4);
 }
 
-static t_int *vinlet_prolog (t_int *w)
+static t_int *vinlet_performProlog (t_int *w)
 {
     t_vinlet *x   = (t_vinlet *)(w[1]);
     t_sample *in  = (t_sample *)(w[2]);
@@ -201,7 +201,7 @@ void vinlet_dspProlog (struct _vinlet *x,
     x->x_bufferWrite = x->x_bufferEnd - (x->x_hopSize - prologPhase * parentVectorSizeResampled);
 
     if (upSample * downSample == 1) {
-        dsp_add (vinlet_prolog, 3, x, signalIn->s_vector, parentVectorSizeResampled);
+        dsp_add (vinlet_performProlog, 3, x, signalIn->s_vector, parentVectorSizeResampled);
         
     } else {
         resamplefrom_dsp (&x->x_resampling, 
@@ -210,7 +210,7 @@ void vinlet_dspProlog (struct _vinlet *x,
             parentVectorSizeResampled,
             (x->x_resampling.r_type == 3) ? 0 : x->x_resampling.r_type);
             
-        dsp_add (vinlet_prolog, 3, x, x->x_resampling.r_vector, parentVectorSizeResampled);
+        dsp_add (vinlet_performProlog, 3, x, x->x_resampling.r_vector, parentVectorSizeResampled);
     }
 
     /* Free signal with a zero reference count. */

@@ -31,13 +31,6 @@ static int ugen_loud;
 struct _vinlet;
 struct _voutlet;
 
-void voutlet_dspprolog(struct _voutlet *x, t_signal **parentsigs,
-    int myvecsize, int calcsize, int phase, int period, int frequency,
-    int downsample, int upsample, int reblock, int switched);
-void voutlet_dspepilog(struct _voutlet *x, t_signal **parentsigs,
-    int myvecsize, int calcsize, int phase, int period, int frequency,
-    int downsample, int upsample, int reblock, int switched);
-
 t_int *zero_perform(t_int *w)   /* zero out a vector */
 {
     t_sample *out = (t_sample *)(w[1]);
@@ -983,7 +976,7 @@ void ugen_done_graph(t_dspcontext *dc)
                 dc->dc_iosigs, vecsize, calcsize, dsp_phase, period, frequency,
                     downsample, upsample, reblock, switched);
         else if (pd_class(zz) == voutlet_class)
-            voutlet_dspprolog((struct _voutlet *)zz, 
+            voutlet_dspProlog((struct _voutlet *)zz, 
                 outsigs, vecsize, calcsize, dsp_phase, period, frequency,
                     downsample, upsample, reblock, switched);
     }    
@@ -1057,7 +1050,7 @@ void ugen_done_graph(t_dspcontext *dc)
         {
             t_signal **iosigs = dc->dc_iosigs;
             if (iosigs) iosigs += dc->dc_ninlets;
-            voutlet_dspepilog((struct _voutlet *)zz, 
+            voutlet_dspEpilog((struct _voutlet *)zz, 
                 iosigs, vecsize, calcsize, dsp_phase, period, frequency,
                     downsample, upsample, reblock, switched);
         }

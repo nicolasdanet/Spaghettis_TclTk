@@ -30,7 +30,7 @@ typedef struct _voutlet {
     int         x_bufferSize;
     t_sample    *x_buffer;
     t_sample    *x_bufferEnd;
-    t_sample    *x_bufferEmpty;
+    t_sample    *x_bufferRead;
     t_sample    *x_bufferWrite;
     int         x_hopSize;
     t_resample  x_resampling;
@@ -100,36 +100,39 @@ t_int *voutlet_perform (t_int *w)
     return (w + 4);
 }
 
-    /* epilog code for blocking: write buffer to parent patch */
-static t_int *voutlet_doepilog(t_int *w)
+static t_int *voutlet_performEpilog (t_int *w)
 {
-    t_voutlet *x = (t_voutlet *)(w[1]);
+    t_voutlet *x  = (t_voutlet *)(w[1]);
     t_sample *out = (t_sample *)(w[2]);
+    int n         = (int)(w[3]);
+    
+    t_sample *in  = x->x_bufferRead;
+    
+    if (x->x_resampling.r_downSample != x->x_resampling.r_upSample) { out = x->x_resampling.r_vector; }
 
-    int n = (int)(w[3]);
-    t_sample *in = x->x_bufferEmpty;
-    if (x->x_resampling.r_downSample != x->x_resampling.r_upSample)
-        out = x->x_resampling.r_vector;
-
-    for (; n--; in++) *out++ = *in, *in = 0;
-    if (in == x->x_bufferEnd) in = x->x_buffer;
-    x->x_bufferEmpty = in;
-    return (w+4);
+    while (n--) { *out = *in; *in = 0.0; out++; in++; }
+    if (in == x->x_bufferEnd) { in = x->x_buffer; }
+    
+    x->x_bufferRead = in;
+    
+    return (w + 4);
 }
 
-static t_int *voutlet_doepilog_resampling(t_int *w)
+static t_int *voutlet_performEpilogWithResampling (t_int *w)
 {
-    t_voutlet *x = (t_voutlet *)(w[1]);
-    int n = (int)(w[2]);
-    t_sample *in  = x->x_bufferEmpty;
+    t_voutlet *x  = (t_voutlet *)(w[1]);
+    int n         = (int)(w[2]);
+    
+    t_sample *in  = x->x_bufferRead;
     t_sample *out = x->x_resampling.r_vector;
 
-    for (; n--; in++) *out++ = *in, *in = 0;
-    if (in == x->x_bufferEnd) in = x->x_buffer;
-    x->x_bufferEmpty = in;
-    return (w+3);
+    while (n--) { *out = *in; *in = 0.0; out++; in++; }
+    if (in == x->x_bufferEnd) { in = x->x_buffer; }
+    
+    x->x_bufferRead = in;
+    
+    return (w + 3);
 }
-
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -157,7 +160,7 @@ static void voutlet_dsp(t_voutlet *x, t_signal **sp)
         parent, which, if "reblock" is false, will want to refer
         back to whatever we see on our input during the "dsp" method
         called later.  */
-void voutlet_dspprolog(struct _voutlet *x, t_signal **parentsigs,
+void voutlet_dspProlog(struct _voutlet *x, t_signal **parentsigs,
     int myvecsize, int calcsize, int phase, int period, int frequency,
     int downsample, int upsample, int reblock, int switched)
 {
@@ -182,7 +185,7 @@ void voutlet_dspprolog(struct _voutlet *x, t_signal **parentsigs,
         /* set up epilog DSP code.  If we're reblocking, this is the
         time to copy the samples out to the containing object's outlets.
         If we aren't reblocking, there's nothing to do here.  */
-void voutlet_dspepilog(struct _voutlet *x, t_signal **parentsigs,
+void voutlet_dspEpilog(struct _voutlet *x, t_signal **parentsigs,
     int myvecsize, int calcsize, int phase, int period, int frequency,
     int downsample, int upsample, int reblock, int switched)
 {
@@ -234,15 +237,14 @@ void voutlet_dspepilog(struct _voutlet *x, t_signal **parentsigs,
         if (parentsigs)
         {
             /* set epilog pointer and schedule it */
-            x->x_bufferEmpty = x->x_buffer + re_parentvecsize * epilogphase;
+            x->x_bufferRead = x->x_buffer + re_parentvecsize * epilogphase;
             if (upsample * downsample == 1)
-                dsp_add(voutlet_doepilog, 3, x, outsig->s_vector,
-                    re_parentvecsize);
+                dsp_add(voutlet_performEpilog, 3, x, outsig->s_vector, re_parentvecsize);
             else
             {
                 int method = (x->x_resampling.r_type == 3?
                     (0 ? 0 : 1) : x->x_resampling.r_type);
-                dsp_add(voutlet_doepilog_resampling, 2, x, re_parentvecsize);
+                dsp_add(voutlet_performEpilogWithResampling, 2, x, re_parentvecsize);
                 resampleto_dsp(&x->x_resampling, outsig->s_vector, re_parentvecsize,
                     parentvecsize, method);
             }
