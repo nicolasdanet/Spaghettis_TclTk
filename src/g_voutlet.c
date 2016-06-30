@@ -84,22 +84,20 @@ static void voutlet_anything (t_voutlet *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_int *voutlet_perform(t_int *w)
+t_int *voutlet_perform (t_int *w)
 {
-    t_voutlet *x = (t_voutlet *)(w[1]);
-    t_float *in = (t_float *)(w[2]);
-    int n = (int)(w[3]);
-    t_sample *out = x->x_bufferWrite, *outwas = out;
+    t_voutlet *x  = (t_voutlet *)(w[1]);
+    t_sample *in  = (t_sample *)(w[2]);
+    int n         = (int)(w[3]);
+    
+    t_sample *out  = x->x_bufferWrite;
+    t_sample *next = out + x->x_hopSize;
 
-    while (n--)
-    {
-        *out++ += *in++;
-        if (out == x->x_bufferEnd) out = x->x_buffer;
-    }
-    outwas += x->x_hopSize;
-    if (outwas >= x->x_bufferEnd) outwas = x->x_buffer;
-    x->x_bufferWrite = outwas;
-    return (w+4);
+    while (n--) { *out++ += *in++; if (out == x->x_bufferEnd) { out = x->x_buffer; } }
+    
+    x->x_bufferWrite = (next >= x->x_bufferEnd) ? x->x_buffer : next;
+    
+    return (w + 4);
 }
 
     /* epilog code for blocking: write buffer to parent patch */
@@ -137,6 +135,24 @@ static t_int *voutlet_doepilog_resampling(t_int *w)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void voutlet_dsp(t_voutlet *x, t_signal **sp)
+{
+    t_signal *insig;
+    if (!x->x_buffer) return;
+    insig = sp[0];
+    if (x->x_copyOut)
+        dsp_add_copy(insig->s_vector, x->x_directSignal->s_vector, insig->s_blockSize);
+    else if (x->x_directSignal)
+    {
+            /* if we're just going to make the signal available on the
+            parent patch, hand it off to the parent signal. */
+        /* this is done elsewhere--> sp[0]->s_count++; */
+        signal_setborrowed(x->x_directSignal, sp[0]);
+    }
+    else
+        dsp_add(voutlet_perform, 3, x, insig->s_vector, insig->s_blockSize);
+}
+
         /* prolog for outlets -- store pointer to the outlet on the
         parent, which, if "reblock" is false, will want to refer
         back to whatever we see on our input during the "dsp" method
@@ -161,24 +177,6 @@ void voutlet_dspprolog(struct _voutlet *x, t_signal **parentsigs,
         x->x_directSignal =
             parentsigs[object_getIndexOfSignalOutlet(x->x_outlet)];
     }
-}
-
-static void voutlet_dsp(t_voutlet *x, t_signal **sp)
-{
-    t_signal *insig;
-    if (!x->x_buffer) return;
-    insig = sp[0];
-    if (x->x_copyOut)
-        dsp_add_copy(insig->s_vector, x->x_directSignal->s_vector, insig->s_blockSize);
-    else if (x->x_directSignal)
-    {
-            /* if we're just going to make the signal available on the
-            parent patch, hand it off to the parent signal. */
-        /* this is done elsewhere--> sp[0]->s_count++; */
-        signal_setborrowed(x->x_directSignal, sp[0]);
-    }
-    else
-        dsp_add(voutlet_perform, 3, x, insig->s_vector, insig->s_blockSize);
 }
 
         /* set up epilog DSP code.  If we're reblocking, this is the
