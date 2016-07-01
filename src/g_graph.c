@@ -255,14 +255,12 @@ void canvas_bounds (t_glist *glist, t_float a, t_float b, t_float c, t_float d)
 {
     if ((a == b) || (c == d)) { post_error (PD_TRANSLATE ("graph: invalid bounds")); }
     else {
-    //
-    glist->gl_valueLeft     = a;
-    glist->gl_valueRight    = c;
-    glist->gl_valueTop      = b;
-    glist->gl_valueBottom   = d;
+        glist->gl_valueLeft   = a;
+        glist->gl_valueRight  = c;
+        glist->gl_valueTop    = b;
+        glist->gl_valueBottom = d;
     
-    canvas_redrawGraphOnParent (glist);
-    //
+        canvas_redrawGraphOnParent (glist);
     }
 }
 

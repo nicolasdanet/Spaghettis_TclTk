@@ -145,11 +145,7 @@ static void garray_drawJob (t_gobj *z, t_glist *glist)
     }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void garray_fitToGraph (t_garray *x, int size, int style)
+void garray_updateGraphBounds (t_garray *x, int size, int style)
 {
     t_glist *glist = x->x_owner;
     
@@ -173,7 +169,7 @@ void garray_resizeWithInteger (t_garray *x, int n)
     
     PD_ASSERT (n > 0);
     
-    garray_fitToGraph (x, PD_MAX (1, n), style);    
+    garray_updateGraphBounds (x, PD_MAX (1, n), style);    
     array_resize_and_redraw (array, x->x_owner, PD_MAX (1, n));
     
     if (x->x_isUsedInDSP) { dsp_update(); }
@@ -203,6 +199,10 @@ void garray_saveContentsToBuffer (t_garray *x, t_buffer *b)
     //
     }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void garray_setWithSumOfFourierComponents (t_garray *x,
     int numberOfPoints,
@@ -699,7 +699,7 @@ void garray_fromDialog (t_garray *x, t_symbol *name, t_float size, t_float flags
     
     if (newStyle != oldStyle) {
         template_setfloat (template, sym_style, x->x_scalar->sc_vector, (t_float)newStyle, 0);
-        garray_fitToGraph (x, newSize, newStyle); 
+        garray_updateGraphBounds (x, newSize, newStyle); 
     }
 
     garray_setSaveWithParent (x, save);
