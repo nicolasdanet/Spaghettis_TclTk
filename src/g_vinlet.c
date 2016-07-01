@@ -128,7 +128,7 @@ static t_int *vinlet_performProlog (t_int *w)
 
 static void vinlet_dsp (t_vinlet *x, t_signal **sp)
 {
-    if (x->x_buffer) {      /* No buffer means we're not a signal inlet. */
+    if (x->x_buffer) {
     //
     t_signal *out = sp[0];
             
@@ -153,7 +153,7 @@ void vinlet_dspProlog (struct _vinlet *x,
     int reblock,
     int switched)
 {
-    if (x->x_buffer) {      /* No buffer means we're not a signal inlet. */
+    if (x->x_buffer) {
     //
     x->x_resampling.r_downSample = downSample;
     x->x_resampling.r_upSample   = upSample;

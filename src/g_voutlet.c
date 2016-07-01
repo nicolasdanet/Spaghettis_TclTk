@@ -43,7 +43,7 @@ typedef struct _voutlet {
 
 t_outlet *voutlet_getOutlet (t_pd *x)
 {
-    PD_ASSERT (pd_class(x) == voutlet_class); return (((t_voutlet *)x)->x_outlet);
+    PD_ASSERT (pd_class (x) == voutlet_class); return (((t_voutlet *)x)->x_outlet);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -93,7 +93,7 @@ t_int *voutlet_perform (t_int *w)
     t_sample *out  = x->x_bufferWrite;
     t_sample *next = out + x->x_hopSize;
 
-    while (n--) { *out++ += *in++; if (out == x->x_bufferEnd) { out = x->x_buffer; } }
+    while (n--) { *out += *in; out++; in++; if (out == x->x_bufferEnd) { out = x->x_buffer; } }
     
     x->x_bufferWrite = (next >= x->x_bufferEnd) ? x->x_buffer : next;
     
@@ -138,129 +138,143 @@ static t_int *voutlet_performEpilogWithResampling (t_int *w)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void voutlet_dsp(t_voutlet *x, t_signal **sp)
+static void voutlet_dsp (t_voutlet *x, t_signal **sp)
 {
-    t_signal *insig;
-    if (!x->x_buffer) return;
-    insig = sp[0];
-    if (x->x_copyOut)
-        dsp_add_copy(insig->s_vector, x->x_directSignal->s_vector, insig->s_blockSize);
-    else if (x->x_directSignal)
-    {
-            /* if we're just going to make the signal available on the
-            parent patch, hand it off to the parent signal. */
-        /* this is done elsewhere--> sp[0]->s_count++; */
-        signal_setborrowed(x->x_directSignal, sp[0]);
+    if (x->x_buffer) {
+    //
+    t_signal *in = sp[0];
+    
+    if (x->x_copyOut) { dsp_add_copy (in->s_vector, x->x_directSignal->s_vector, in->s_blockSize); }
+    else if (x->x_directSignal) { signal_setborrowed (x->x_directSignal, in); }
+    else {
+        dsp_add (voutlet_perform, 3, x, in->s_vector, in->s_blockSize);
     }
-    else
-        dsp_add(voutlet_perform, 3, x, insig->s_vector, insig->s_blockSize);
+    //
+    }
 }
 
-        /* prolog for outlets -- store pointer to the outlet on the
-        parent, which, if "reblock" is false, will want to refer
-        back to whatever we see on our input during the "dsp" method
-        called later.  */
-void voutlet_dspProlog(struct _voutlet *x, t_signal **parentsigs,
-    int myvecsize, int calcsize, int phase, int period, int frequency,
-    int downsample, int upsample, int reblock, int switched)
+void voutlet_dspProlog (struct _voutlet *x,
+    t_signal **parentSignals,
+    int vectorSize,
+    int size,
+    int phase,
+    int period,
+    int frequency,
+    int downSample,
+    int upSample,
+    int reblock,
+    int switched)
 {
-        /* no buffer means we're not a signal outlet */
-    if (!x->x_buffer)
-        return;
-    x->x_resampling.r_downSample=downsample;
-    x->x_resampling.r_upSample=upsample;
+    if (x->x_buffer) {
+    //
+    x->x_resampling.r_downSample = downSample;
+    x->x_resampling.r_upSample   = upSample;
+    
     x->x_copyOut = (switched && !reblock);
-    if (reblock)
-    {
-        x->x_directSignal = 0;
+    
+    if (reblock) { x->x_directSignal = NULL; }
+    else {
+        PD_ASSERT (parentSignals);
+        x->x_directSignal = parentSignals[object_getIndexOfSignalOutlet (x->x_outlet)];
     }
-    else
-    {
-        if (!parentsigs) { PD_BUG; }
-        x->x_directSignal =
-            parentsigs[object_getIndexOfSignalOutlet(x->x_outlet)];
+    //
     }
 }
 
-        /* set up epilog DSP code.  If we're reblocking, this is the
-        time to copy the samples out to the containing object's outlets.
-        If we aren't reblocking, there's nothing to do here.  */
-void voutlet_dspEpilog(struct _voutlet *x, t_signal **parentsigs,
-    int myvecsize, int calcsize, int phase, int period, int frequency,
-    int downsample, int upsample, int reblock, int switched)
+void voutlet_dspEpilog (struct _voutlet *x,
+    t_signal **parentSignals,
+    int vectorSize,
+    int size,
+    int phase,
+    int period,
+    int frequency,
+    int downSample,
+    int upSample,
+    int reblock,
+    int switched)
 {
-    if (!x->x_buffer) return;  /* this shouldn't be necesssary... */
-    x->x_resampling.r_downSample=downsample;
-    x->x_resampling.r_upSample=upsample;
-    if (reblock)
-    {
-        t_signal *insig, *outsig;
-        int parentvecsize, bufsize, oldbufsize;
-        int re_parentvecsize;
-        int bigperiod, epilogphase, blockphase;
-        if (parentsigs)
-        {
-            outsig = parentsigs[object_getIndexOfSignalOutlet(x->x_outlet)];
-            parentvecsize = outsig->s_vectorSize;
-            re_parentvecsize = parentvecsize * upsample / downsample;
-        }
-        else
-        {
-            outsig = 0;
-            parentvecsize = 1;
-            re_parentvecsize = 1;
-        }
-        bigperiod = myvecsize/re_parentvecsize;
-        if (!bigperiod) bigperiod = 1;
-        epilogphase = phase & (bigperiod - 1);
-        blockphase = (phase + period - 1) & (bigperiod - 1) & (- period);
-        bufsize = re_parentvecsize;
-        if (bufsize < myvecsize) bufsize = myvecsize;
-        if (bufsize != (oldbufsize = x->x_bufferSize))
-        {
-            t_sample *buf = x->x_buffer;
-            PD_MEMORY_FREE(buf);
-            buf = (t_sample *)PD_MEMORY_GET(bufsize * sizeof(*buf));
-            memset((char *)buf, 0, bufsize * sizeof(*buf));
-            x->x_bufferSize = bufsize;
-            x->x_bufferEnd = buf + bufsize;
-            x->x_buffer = buf;
-        }
-        if (re_parentvecsize * period > bufsize) { PD_BUG; }
-        x->x_bufferWrite = x->x_buffer + re_parentvecsize * blockphase;
-        if (x->x_bufferWrite == x->x_bufferEnd) x->x_bufferWrite = x->x_buffer;
-        if (period == 1 && frequency > 1)
-            x->x_hopSize = re_parentvecsize / frequency;
-        else x->x_hopSize = period * re_parentvecsize;
-        /* post("phase %d, block %d, parent %d", phase & 63,
-            parentvecsize * blockphase, parentvecsize * epilogphase); */
-        if (parentsigs)
-        {
-            /* set epilog pointer and schedule it */
-            x->x_bufferRead = x->x_buffer + re_parentvecsize * epilogphase;
-            if (upsample * downsample == 1)
-                dsp_add(voutlet_performEpilog, 3, x, outsig->s_vector, re_parentvecsize);
-            else
-            {
-                int method = (x->x_resampling.r_type == 3?
-                    (0 ? 0 : 1) : x->x_resampling.r_type);
-                dsp_add(voutlet_performEpilogWithResampling, 2, x, re_parentvecsize);
-                resampleto_dsp(&x->x_resampling, outsig->s_vector, re_parentvecsize,
-                    parentvecsize, method);
-            }
+    if (x->x_buffer) {
+    //
+    t_signal *out = NULL;
+        
+    x->x_resampling.r_downSample = downSample;
+    x->x_resampling.r_upSample   = upSample;
+    
+    if (reblock) {
+    //
+    int parentVectorSize;
+    int parentVectorSizeResampled;
+    int newBufferSize;
+    int oldBufferSize;
+    int newPeriod;
+    int epilogPhase;
+    int blockPhase;
+    
+    if (parentSignals) {
+        out                         = parentSignals[object_getIndexOfSignalOutlet (x->x_outlet)];
+        parentVectorSize            = out->s_vectorSize;
+        parentVectorSizeResampled   = parentVectorSize * upSample / downSample;
+    } else {
+        out                         = NULL;
+        parentVectorSize            = 1;
+        parentVectorSizeResampled   = 1;
+    }
+    
+    newPeriod       = vectorSize / parentVectorSizeResampled;
+    newPeriod       = PD_MAX (1, newPeriod);
+    epilogPhase     = phase & (newPeriod - 1);
+    blockPhase      = (phase + period - 1) & (newPeriod - 1) & (-period);
+    newBufferSize   = parentVectorSizeResampled;
+    
+    if (newBufferSize < vectorSize) { newBufferSize = vectorSize; }
+    if (newBufferSize != (oldBufferSize = x->x_bufferSize)) {
+        t_sample *t = x->x_buffer;
+        PD_MEMORY_FREE (t);
+        t = (t_sample *)PD_MEMORY_GET (newBufferSize * sizeof (t_sample));
+        memset ((char *)t, 0, newBufferSize * sizeof (t_sample));
+        x->x_bufferSize = newBufferSize;
+        x->x_bufferEnd  = t + newBufferSize;
+        x->x_buffer     = t;
+    }
+    
+    PD_ASSERT (parentVectorSizeResampled * period <= newBufferSize);
+    
+    x->x_bufferWrite = x->x_buffer + parentVectorSizeResampled * blockPhase;
+    
+    if (x->x_bufferWrite == x->x_bufferEnd) { x->x_bufferWrite = x->x_buffer; }
+    
+    if (period == 1 && frequency > 1) { x->x_hopSize = parentVectorSizeResampled / frequency; }
+    else { 
+        x->x_hopSize = period * parentVectorSizeResampled;
+    }
+
+    if (parentSignals) {
+    
+        x->x_bufferRead = x->x_buffer + parentVectorSizeResampled * epilogPhase;
+        
+        if (upSample * downSample == 1) { 
+            dsp_add (voutlet_performEpilog, 3, x, out->s_vector, parentVectorSizeResampled);
+            
+        } else {
+            dsp_add (voutlet_performEpilogWithResampling, 2, x, parentVectorSizeResampled);
+            
+            resampleto_dsp (&x->x_resampling,
+                out->s_vector,
+                parentVectorSizeResampled,
+                parentVectorSize,
+                (x->x_resampling.r_type == 3) ? 1 : x->x_resampling.r_type);
         }
     }
-        /* if we aren't blocked but we are switched, the epilog code just
-        copies zeros to the output.  In this case the blocking code actually
-        jumps over the epilog if the block is running. */
-    else if (switched)
-    {
-        if (parentsigs)
-        {
-            t_signal *outsig =
-                parentsigs[object_getIndexOfSignalOutlet(x->x_outlet)];
-            dsp_add_zero(outsig->s_vector, outsig->s_blockSize);
-        }
+    //
+    } else if (switched) {
+    //
+    if (parentSignals) {
+        out = parentSignals[object_getIndexOfSignalOutlet (x->x_outlet)];
+        dsp_add_zero (out->s_vector, out->s_blockSize);
+    }
+    //
+    }
+    //
     }
 }
 
@@ -312,7 +326,7 @@ static void voutlet_free (t_voutlet *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void voutlet_setup(void)
+void voutlet_setup (void)
 {
     t_class *c = NULL;
     
