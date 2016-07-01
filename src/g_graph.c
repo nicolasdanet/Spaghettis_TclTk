@@ -477,6 +477,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     if (x->gl_hasWindow) {
     //
     if (isVisible) {
+        
         sys_vGui (".x%lx.c create polygon %d %d %d %d %d %d %d %d %d %d"
                         " -fill #%06x"
                         " -tags %s\n",
@@ -494,6 +495,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                         COLOR_MASKED,
                         tag);
     } else {
+                
         sys_vGui (".x%lx.c delete %s\n",
                         canvas_getView (x->gl_parent),
                         tag);

@@ -436,6 +436,8 @@ void canvas_eraseBox (t_glist *glist, t_object *o, char *tag)
 
 void canvas_drawGraphOnParentRectangle (t_glist *glist)
 {
+    if (glist->gl_isGraphOnParent && glist->gl_hasWindow) {
+    //
     int a = glist->gl_graphMarginLeft;
     int b = glist->gl_graphMarginTop;
     int c = glist->gl_graphMarginLeft + glist->gl_graphWidth;
@@ -444,7 +446,7 @@ void canvas_drawGraphOnParentRectangle (t_glist *glist)
     sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d"
                     " -dash {2 4}"
                     " -fill " DRAW_GRAPH_ON_PARENT_COLOR
-                    " -tags GOP\n",
+                    " -tags RECTANGLE\n",
                     canvas_getView (glist),
                     a,
                     b,
@@ -456,11 +458,15 @@ void canvas_drawGraphOnParentRectangle (t_glist *glist)
                     d,
                     a,
                     b);
+    }
 }
 
-void canvas_deleteGraphOnParentRectangle (t_glist *glist)
+void canvas_updateGraphOnParentRectangle (t_glist *glist)
 {
-    sys_vGui (".x%lx.c delete GOP\n", canvas_getView (glist));
+    if (glist->gl_isGraphOnParent && glist->gl_hasWindow) {
+        sys_vGui (".x%lx.c delete RECTANGLE\n", canvas_getView (glist));
+        canvas_drawGraphOnParentRectangle (glist);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

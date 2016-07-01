@@ -407,7 +407,7 @@ void            canvas_drawBox                          (t_glist *glist, t_objec
 void            canvas_eraseBox                         (t_glist *glist, t_object *o, char *tag);
 
 void            canvas_drawGraphOnParentRectangle       (t_glist *glist);
-void            canvas_deleteGraphOnParentRectangle     (t_glist *glist);
+void            canvas_updateGraphOnParentRectangle     (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

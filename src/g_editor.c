@@ -162,7 +162,10 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
     t_gobj *y = canvas_getHitObject (glist, 
                         glist->gl_editor->e_previousX, 
                         glist->gl_editor->e_previousY,
-                        &a, &b, &c, &d);
+                        &a,
+                        &b,
+                        &c,
+                        &d);
         
     if (y) {
     //
@@ -186,6 +189,7 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
         glist->gl_editor->e_newY = positionY;
         canvas_updateLinesByObject (glist, object);
         gobj_visibilityChanged (y, glist, 1);
+        canvas_updateGraphOnParentRectangle (cast_glist (object));
         canvas_dirty (glist, 1);
     }
     //
