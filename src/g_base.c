@@ -124,6 +124,8 @@ t_environment *canvas_getEnvironment (t_glist *glist)
     
     while (!glist->gl_environment) { glist = glist->gl_parent; PD_ASSERT (glist); }
     
+    PD_ASSERT (canvas_isRoot (glist));
+    
     return glist->gl_environment;
 }
 
@@ -167,12 +169,7 @@ int canvas_isDirty (t_glist *glist)
     return (canvas_getRoot (glist)->gl_isDirty != 0);
 }
 
-int canvas_isDrawnOnParent (t_glist *glist)
-{
-    return (!canvas_canHaveWindow (glist) && glist->gl_parent);
-}
-
-int canvas_canHaveWindow (t_glist *glist)
+int canvas_canHaveWindow (t_glist *glist)       /* Either a top window or a graph-on-parent forced. */
 {
     return (glist->gl_hasWindow || !glist->gl_isGraphOnParent);
 }

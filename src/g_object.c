@@ -117,7 +117,7 @@ int gobj_hit (t_gobj *x,
 
 int gobj_isVisible (t_gobj *x, t_glist *owner)
 {
-    if (canvas_isDrawnOnParent (owner)) {
+    if (owner->gl_parent && !canvas_canHaveWindow (owner)) {
     //
     t_object *object = NULL;
             
