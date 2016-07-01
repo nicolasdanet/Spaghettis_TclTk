@@ -174,11 +174,6 @@ int canvas_canHaveWindow (t_glist *glist)       /* Either a top window or a grap
     return (glist->gl_hasWindow || !glist->gl_isGraphOnParent);
 }
 
-int canvas_hasEnvironment (t_glist *glist)
-{
-    return (glist->gl_environment != NULL);
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

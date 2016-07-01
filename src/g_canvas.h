@@ -342,14 +342,13 @@ void            canvas_removeObject                     (t_glist *glist, t_gobj 
 void            canvas_clear                            (t_glist *glist);
 
 void            canvas_setAsGraphOnParent               (t_glist *glist, int flags);
+int             canvas_canHaveWindow                    (t_glist *glist);
 
 int             canvas_isMapped                         (t_glist *glist);
 int             canvas_isRoot                           (t_glist *glist);
 int             canvas_isAbstraction                    (t_glist *glist);
 int             canvas_isSubpatch                       (t_glist *glist);
 int             canvas_isDirty                          (t_glist *glist);
-int             canvas_canHaveWindow                    (t_glist *glist);
-int             canvas_hasEnvironment                   (t_glist *glist);
 
 int             canvas_openFile                         (t_glist *glist,
                                                             const char *name,

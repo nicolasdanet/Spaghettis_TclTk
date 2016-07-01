@@ -590,7 +590,7 @@ static void canvas_fromPopupDialog (t_glist *glist, t_float action, t_float posi
     char name[PD_STRING] = { 0 };
     t_error err = PD_ERROR_NONE;
     
-    if (pd_class (y) == canvas_class && canvas_hasEnvironment (cast_glist (y))) {
+    if (pd_class (y) == canvas_class && canvas_isRoot (cast_glist (y))) {
         int argc = buffer_size (cast_object (y)->te_buffer);
         t_atom *argv = buffer_atoms (cast_object (y)->te_buffer);
         if (!(err = (argc < 1))) {
@@ -604,6 +604,7 @@ static void canvas_fromPopupDialog (t_glist *glist, t_float action, t_float posi
     }
 
     if (!err) { file_openHelp (directory, name); }
+    
     return;
     //
     }
