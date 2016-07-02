@@ -458,7 +458,7 @@ static void scalar_drawJob(t_gobj *client, t_glist *glist)
 void scalar_redraw(t_scalar *x, t_glist *glist)
 {
     if (canvas_isMapped(glist))
-        interface_guiQueueAddIfNotAlreadyThere(x, glist, scalar_drawJob);
+        interface_guiQueueAddIfNotAlreadyThere ((void *)x, glist, scalar_drawJob);
 }
 
 extern void template_notifyforscalar(t_template *template, t_glist *owner,

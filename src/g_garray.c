@@ -401,7 +401,7 @@ void garray_redraw (t_garray *x)
 {
     if (canvas_isMapped (x->x_owner)) {
     //
-    interface_guiQueueAddIfNotAlreadyThere (cast_gobj (x), x->x_owner, garray_drawJob);
+    interface_guiQueueAddIfNotAlreadyThere ((void *)x, x->x_owner, garray_drawJob);
     //
     }
 }

@@ -572,8 +572,7 @@ static void canvas_performPaste (t_glist *glist)
     }
     
     canvas_dirty (glist, 1);
-    
-    sys_vGui ("::ui_patch::updateScrollRegion .x%lx.c\n", canvas_getView (glist));
+    canvas_updateScrollRegion (glist);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -858,7 +857,7 @@ void canvas_cut (t_glist *glist)
     } else if (glist->gl_editor->e_selectedObjects) {
         canvas_copy (glist);
         canvas_removeSelectedObjects (glist);
-        sys_vGui ("::ui_patch::updateScrollRegion .x%lx.c\n", canvas_getView (glist));
+        canvas_updateScrollRegion (glist);
     }
     //
     }

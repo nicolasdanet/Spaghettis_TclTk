@@ -440,8 +440,7 @@ void canvas_map (t_glist *glist, t_float f)
         
         canvas_drawLines (glist);
         canvas_drawGraphOnParentRectangle (glist);
-        
-        sys_vGui ("::ui_patch::updateScrollRegion .x%lx.c\n", canvas_getView (glist));
+        canvas_updateScrollRegion (glist);
     }
     //
     }

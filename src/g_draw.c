@@ -33,6 +33,11 @@ void canvas_redraw (t_glist *glist)
     if (canvas_isMapped (glist)) { canvas_map (glist, 0); canvas_map (glist, 1); }
 }
 
+void canvas_updateScrollRegion (t_glist *glist)
+{
+    sys_vGui ("::ui_patch::updateScrollRegion .x%lx.c\n", canvas_getView (glist));
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
