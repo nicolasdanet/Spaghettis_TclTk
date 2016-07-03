@@ -423,13 +423,13 @@ void canvas_setAsGraphOnParent (t_glist *glist, int flags)
     int hideText        = (flags & 2) != 0;
     int needToUpdate    = isGraphOnParent || (!isGraphOnParent && glist->gl_isGraphOnParent);
     
-    glist->gl_hideText  = hideText;
-    
     if (needToUpdate) {
         if (!glist->gl_isLoading && glist->gl_parent && canvas_isMapped (glist->gl_parent)) {
             gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 0);
         }
     }
+    
+    glist->gl_hideText = hideText;
     
     if (!isGraphOnParent) { glist->gl_isGraphOnParent = 0; } 
     else {
@@ -532,16 +532,6 @@ t_symbol *canvas_makeBindSymbol (t_symbol *s)
     err = string_sprintf (t, PD_STRING, "pd-%s", s->s_name);
     PD_ASSERT (!err);
     return (gensym (t));
-}
-
-int canvas_hasGraphOnParentTitle (t_glist *glist)
-{
-    if (glist->gl_hideText) { return 0; }
-    else { 
-        if (utils_getFirstAtomOfObjectAsSymbol (cast_object (glist)) == sym_graph) { return 0; }
-    }
-    
-    return 1;
 }
 
 int canvas_getFontSize (t_glist *glist)

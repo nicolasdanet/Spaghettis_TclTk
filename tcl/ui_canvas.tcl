@@ -25,7 +25,6 @@ namespace eval ::ui_canvas:: {
 variable  canvasScaleX
 variable  canvasScaleY
 variable  canvasVisible
-variable  canvasHide
 variable  canvasStart
 variable  canvasUp
 variable  canvasEnd
@@ -38,7 +37,6 @@ variable  canvasY
 array set canvasScaleX  {}
 array set canvasScaleY  {}
 array set canvasVisible {}
-array set canvasHide    {}
 array set canvasStart   {}
 array set canvasUp      {}
 array set canvasEnd     {}
@@ -64,7 +62,6 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
     variable canvasScaleX
     variable canvasScaleY
     variable canvasVisible
-    variable canvasHide
     variable canvasStart
     variable canvasUp
     variable canvasEnd
@@ -84,6 +81,7 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
     
     set canvasScaleX($top)          $scaleX
     set canvasScaleY($top)          $scaleY
+    set canvasVisible($top)         $flags
     set canvasStart($top)           $start
     set canvasUp($top)              $up
     set canvasEnd($top)             $end
@@ -103,25 +101,6 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
     set canvasHeight(${top}.old)    $height
     set canvasX(${top}.old)         $x
     set canvasY(${top}.old)         $y
-    
-    switch -- $flags {
-        "0" {
-            set canvasVisible($top) 0
-            set canvasHide($top)    0
-        } 
-        "1" {
-            set canvasVisible($top) 1
-            set canvasHide($top)    0
-        } 
-        "2" {
-            set canvasVisible($top) 0
-            set canvasHide($top)    1
-        } 
-        "3" {
-            set canvasVisible($top) 1
-            set canvasHide($top)    1
-        }
-    }
     
     ::ui_canvas::_forceVisible $top
     
@@ -165,12 +144,6 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
                                                     -variable ::ui_canvas::canvasVisible($top) \
                                                     -takefocus 0 \
                                                     -command "::ui_canvas::_setVisible $top"
-    
-    ttk::label $top.f.onParent.hideLabel        {*}[::styleLabel] \
-                                                    -text [_ "Hide Title"]
-    ttk::checkbutton $top.f.onParent.hide       {*}[::styleCheckButton] \
-                                                    -variable ::ui_canvas::canvasHide($top) \
-                                                    -takefocus 0
 
     ttk::label $top.f.onParent.xLabel           {*}[::styleLabel] \
                                                     -text [_ "View X"]
@@ -219,16 +192,14 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
     
     grid $top.f.onParent.visibleLabel           -row 0 -column 0 -sticky ew
     grid $top.f.onParent.visible                -row 0 -column 1 -sticky ew
-    grid $top.f.onParent.hideLabel              -row 1 -column 0 -sticky ew
-    grid $top.f.onParent.hide                   -row 1 -column 1 -sticky ew
-    grid $top.f.onParent.xLabel                 -row 2 -column 0 -sticky ew
-    grid $top.f.onParent.x                      -row 2 -column 1 -sticky ew
-    grid $top.f.onParent.yLabel                 -row 3 -column 0 -sticky ew
-    grid $top.f.onParent.y                      -row 3 -column 1 -sticky ew
-    grid $top.f.onParent.widthLabel             -row 4 -column 0 -sticky ew
-    grid $top.f.onParent.width                  -row 4 -column 1 -sticky ew
-    grid $top.f.onParent.heightLabel            -row 5 -column 0 -sticky ew
-    grid $top.f.onParent.height                 -row 5 -column 1 -sticky ew
+    grid $top.f.onParent.xLabel                 -row 1 -column 0 -sticky ew
+    grid $top.f.onParent.x                      -row 1 -column 1 -sticky ew
+    grid $top.f.onParent.yLabel                 -row 2 -column 0 -sticky ew
+    grid $top.f.onParent.y                      -row 2 -column 1 -sticky ew
+    grid $top.f.onParent.widthLabel             -row 3 -column 0 -sticky ew
+    grid $top.f.onParent.width                  -row 3 -column 1 -sticky ew
+    grid $top.f.onParent.heightLabel            -row 4 -column 0 -sticky ew
+    grid $top.f.onParent.height                 -row 4 -column 1 -sticky ew
     
     grid $top.f.graph.scaleXLabel               -row 0 -column 0 -sticky ew
     grid $top.f.graph.scaleX                    -row 0 -column 1 -sticky ew
@@ -266,7 +237,6 @@ proc closed {top} {
     variable canvasScaleX
     variable canvasScaleY
     variable canvasVisible
-    variable canvasHide
     variable canvasStart
     variable canvasUp
     variable canvasEnd
@@ -281,7 +251,6 @@ proc closed {top} {
     unset canvasScaleX($top)
     unset canvasScaleY($top)
     unset canvasVisible($top)
-    unset canvasHide($top)
     unset canvasStart($top)
     unset canvasUp($top)
     unset canvasEnd($top)
@@ -313,7 +282,6 @@ proc _apply {top} {
     variable canvasScaleX
     variable canvasScaleY
     variable canvasVisible
-    variable canvasHide
     variable canvasStart
     variable canvasUp
     variable canvasEnd
@@ -330,7 +298,7 @@ proc _apply {top} {
     ::ui_interface::pdsend "$top _canvasdialog \
             $canvasScaleX($top) \
             $canvasScaleY($top) \
-            [expr {$canvasVisible($top) + 2 * $canvasHide($top)}] \
+            $canvasVisible($top) \
             $canvasStart($top) \
             $canvasUp($top) \
             $canvasEnd($top) \
@@ -416,7 +384,6 @@ proc _setVisible {top} {
     
     if {$canvasVisible($top)} { set state "!disabled" }
     
-    $top.f.onParent.hide    state $state
     $top.f.onParent.x       state $state
     $top.f.onParent.y       state $state
     $top.f.onParent.width   state $state

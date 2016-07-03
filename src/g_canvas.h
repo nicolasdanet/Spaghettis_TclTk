@@ -242,7 +242,7 @@ struct _glist {
     char                gl_isSelected;
     char                gl_isGraphOnParent;
     char                gl_hasWindow;
-    char                gl_hideText;
+    char                gl_hideText;            /* Unused but kept for compatibility. */
     char                gl_saveScalar;
     char                gl_willBeVisible;
     };
@@ -362,7 +362,6 @@ void            canvas_unbind                           (t_glist *glist);
 t_error         canvas_makeFilePath                     (t_glist *glist, char *name, char *dest, size_t size);
 void            canvas_setName                          (t_glist *glist, t_symbol *name, t_symbol *directory);
 void            canvas_updateTitle                      (t_glist *glist);
-int             canvas_hasGraphOnParentTitle            (t_glist *glist);
 int             canvas_getFontSize                      (t_glist *glist);
 void            canvas_setCursorType                    (t_glist *glist, int type);
 

@@ -422,10 +422,6 @@ static void canvas_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
     
     if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnSelected (z, glist, isSelected); }
     else {
-        if (canvas_hasGraphOnParentTitle (x)) { 
-            text_widgetBehavior.w_fnSelected (z, glist, isSelected);
-        }
-        
         sys_vGui (".x%lx.c itemconfigure GRAPH%lx -fill #%06x\n",
                         canvas_getView (glist),
                         (t_int)x,
@@ -438,11 +434,6 @@ static void canvas_behaviorActivated (t_gobj *z, t_glist *glist, int isActivated
     t_glist *x = cast_glist (z);
     
     if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnActivated (z, glist, isActivated); }
-    else {
-        if (canvas_hasGraphOnParentTitle (x)) { 
-            text_widgetBehavior.w_fnActivated (z, glist, isActivated);
-        }
-    }
 }
 
 static void canvas_behaviorDeleted (t_gobj *z, t_glist *glist)
@@ -509,8 +500,6 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     if (isVisible) {
         
         int i = 0;
-        
-        if (canvas_hasGraphOnParentTitle (x)) { boxtext_draw (boxtext_fetch (glist, cast_object (z))); }
 
         sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d"
                         " -fill #%06x"
@@ -554,8 +543,6 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
             
     } else {
     
-        if (canvas_hasGraphOnParentTitle (x)) { boxtext_erase (boxtext_fetch (glist, cast_object (z))); }
-        
         sys_vGui (".x%lx.c delete %s\n",
                     canvas_getView (x->gl_parent),
                     tag);
