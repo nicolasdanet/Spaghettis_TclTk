@@ -213,7 +213,9 @@ static void canvas_performMouseClickRight (t_glist *glist, t_gobj *y, int positi
 {
     int canProperties = (!y || (y && class_hasPropertiesFunction (pd_class (y))));
     int canOpen = (y && class_hasMethod (pd_class (y), sym_open));
-     
+    
+    canvas_deselectAll (glist);
+    
     sys_vGui ("::ui_menu::showPopup .x%lx %d %d %d %d\n",
                     glist, 
                     positionX, 
