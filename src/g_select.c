@@ -195,9 +195,7 @@ void canvas_displaceSelectedObjects (t_glist *glist, int deltaX, int deltaY)
     
     if (needToResortInlets)  { canvas_resortInlets (glist); }
     if (needToResortOutlets) { canvas_resortOutlets (glist); }
-    
-    canvas_updateScrollRegion (glist);
-    
+        
     if (isDirty) { canvas_dirty (glist, 1); }
 }
 

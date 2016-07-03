@@ -393,7 +393,6 @@ t_outconnect    *canvas_traverseLinesNext               (t_linetraverser *t);
 // -----------------------------------------------------------------------------------------------------------
 
 void            canvas_redraw                           (t_glist *glist);
-void            canvas_updateScrollRegion               (t_glist *glist);
 void            canvas_drawLines                        (t_glist *glist);
 void            canvas_updateLinesByObject              (t_glist *glist, t_object *o);
 void            canvas_deleteLinesByObject              (t_glist *glist, t_object *o);

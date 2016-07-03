@@ -440,7 +440,6 @@ void canvas_map (t_glist *glist, t_float f)
         
         canvas_drawLines (glist);
         canvas_drawGraphOnParentRectangle (glist);
-        canvas_updateScrollRegion (glist);
     }
     //
     }

@@ -213,7 +213,7 @@ static void canvas_performMouseClickRight (t_glist *glist, t_gobj *y, int positi
 {
     int canProperties = (!y || (y && class_hasPropertiesFunction (pd_class (y))));
     int canOpen = (y && class_hasMethod (pd_class (y), sym_open));
-    
+     
     sys_vGui ("::ui_menu::showPopup .x%lx %d %d %d %d\n",
                     glist, 
                     positionX, 
@@ -572,7 +572,6 @@ static void canvas_performPaste (t_glist *glist)
     }
     
     canvas_dirty (glist, 1);
-    canvas_updateScrollRegion (glist);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -857,7 +856,6 @@ void canvas_cut (t_glist *glist)
     } else if (glist->gl_editor->e_selectedObjects) {
         canvas_copy (glist);
         canvas_removeSelectedObjects (glist);
-        canvas_updateScrollRegion (glist);
     }
     //
     }

@@ -148,6 +148,7 @@ proc bindPatch {top} {
     bind $top.c <<ClickDummy>>              { ::ui_interface::pdsend "pd _dummy" }
     
     bind $top.c <MouseWheel>                { ::ui_patch::scroll %W y %D }
+    bind $top.c <Shift-MouseWheel>          { ::ui_patch::scroll %W x %D }
     bind $top.c <Destroy>                   { ::ui_patch::closed [winfo toplevel %W] }
     
     wm protocol $top WM_DELETE_WINDOW       "::ui_patch::willClose $top"
@@ -263,7 +264,6 @@ proc _resized {top width height x y} {
     
     if {$width > 1 && $height > 1} { 
     
-        ::ui_patch::updateScrollRegion $top.c
         ::ui_interface::pdsend "$top window $x $y [expr {$x + $width}] [expr {$y + $height}]"
     }
 }
