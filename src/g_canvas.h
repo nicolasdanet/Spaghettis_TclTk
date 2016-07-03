@@ -430,8 +430,9 @@ void            canvas_selectLine                       (t_glist *glist,
                                                             int indexOfObjectIn,
                                                             int indexOfInlet);
                                                             
-void            canvas_deselectObject                   (t_glist *glist, t_gobj *y);
-void            canvas_deselectAll                      (t_glist *glist);
+int             canvas_deselectObject                   (t_glist *glist, t_gobj *y);
+int             canvas_deselectObjectIfSelected         (t_glist *glist, t_gobj *y);
+int             canvas_deselectAll                      (t_glist *glist);
 int             canvas_getNumberOfSelectedObjects       (t_glist *glist);
 int             canvas_getNumberOfUnselectedObjects     (t_glist *glist);
 int             canvas_getIndexOfObjectAmongSelected    (t_glist *glist, t_gobj *y);

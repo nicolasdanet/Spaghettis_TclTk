@@ -322,8 +322,9 @@ void canvas_selectLine (t_glist *glist,
 }
 
 /* Note that deselecting an object with its text active might recreate it. */
+/* Return 1 if an object has been recreated. */
 
-void canvas_deselectObject (t_glist *glist, t_gobj *y)
+int canvas_deselectObject (t_glist *glist, t_gobj *y)
 {
     int dspSuspended = 0;
     
@@ -378,19 +379,32 @@ void canvas_deselectObject (t_glist *glist, t_gobj *y)
     }
     
     if (dspSuspended) { dsp_resume (dspSuspended); }
+    
+    if (z) { return 1; } else { return 0; }
 }
 
-void canvas_deselectAll (t_glist *glist)
+int canvas_deselectObjectIfSelected (t_glist *glist, t_gobj *y)
 {
+    if (canvas_isObjectSelected (glist, y)) { return canvas_deselectObject (glist, y); }
+    
+    return 0;
+}
+
+int canvas_deselectAll (t_glist *glist)
+{
+    int k = 0;
+    
     if (glist->gl_editor) {         /* Required for newly recreated subpatch for instance. */
     //
     while (glist->gl_editor->e_selectedObjects) {
-        canvas_deselectObject (glist, glist->gl_editor->e_selectedObjects->sel_what);
+        k |= canvas_deselectObject (glist, glist->gl_editor->e_selectedObjects->sel_what);
     }
 
     if (glist->gl_editor->e_isSelectedline) { canvas_deselectLine (glist); }
     //
     }
+    
+    return k;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -616,6 +616,16 @@ static void canvas_fromPopupDialog (t_glist *glist, t_float action, t_float posi
 
 static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
+    t_error err = PD_ERROR_NONE;
+    
+    if (glist->gl_parent) {
+        err = canvas_deselectObjectIfSelected (glist->gl_parent, cast_gobj (glist));
+    }
+    
+    PD_ASSERT (argc == 11);
+        
+    if (!err) {
+    //
     t_float scaleX  = atom_getFloatAtIndex (0, argc, argv);
     t_float scaleY  = atom_getFloatAtIndex (1, argc, argv);
     t_float start   = atom_getFloatAtIndex (3, argc, argv);
@@ -627,8 +637,6 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
     int height      = (int)atom_getFloatAtIndex (8, argc,  argv);
     int marginX     = (int)atom_getFloatAtIndex (9, argc,  argv);
     int marginY     = (int)atom_getFloatAtIndex (10, argc, argv);
-    
-    PD_ASSERT (argc == 11);
     
     glist->gl_graphWidth        = width;
     glist->gl_graphHeight       = height;
@@ -666,6 +674,8 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
             gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 0);
             gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
         }
+    }
+    //
     }
 }
 
