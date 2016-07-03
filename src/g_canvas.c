@@ -699,8 +699,9 @@ t_glist *canvas_newGraph (t_glist *glist,
     static int graphCount = 0;              /* Shared. */
 
     t_glist *x = (t_glist *)pd_new (canvas_class);
-    int fontSize = (canvas_getCurrent() ? canvas_getCurrent()->gl_fontSize : font_getDefaultFontSize());
+    
     char t[PD_STRING] = { 0 };
+    int fontSize = (canvas_getCurrent() ? canvas_getCurrent()->gl_fontSize : font_getDefaultFontSize());
     
     if (valueStart >= valueEnd || valueUp == valueDown) {
     //
@@ -720,7 +721,7 @@ t_glist *canvas_newGraph (t_glist *glist,
     //
     }
     
-    string_sprintf (t, PD_STRING, "graph%d", ++graphCount);
+    string_sprintf (t, PD_STRING, PD_GRAPH "%d", ++graphCount);
         
     cast_object (x)->te_buffer          = buffer_new();
     cast_object (x)->te_xCoordinate     = topLeftX;
@@ -788,11 +789,12 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
         visible     = (int)atom_getFloatAtIndex (5, argc, argv);
     }
 
-    x->gl_obj.te_type   = TYPE_OBJECT;
-    x->gl_stub          = gstub_new (x, NULL);
-    x->gl_parent        = owner;
-    x->gl_name          = (name != &s_ ? name : (canvas_fileName ? canvas_fileName : gensym (PD_NAME_SHORT)));
-    x->gl_magic         = ++canvas_magic;
+    cast_object (x)->te_type = TYPE_OBJECT;
+    
+    x->gl_stub      = gstub_new (x, NULL);
+    x->gl_parent    = owner;
+    x->gl_name      = (name != &s_ ? name : (canvas_fileName ? canvas_fileName : gensym (PD_NAME_SHORT)));
+    x->gl_magic     = ++canvas_magic;
     
     if (!owner) { instance_addToRoots (x); }
     
