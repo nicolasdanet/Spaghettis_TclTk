@@ -68,7 +68,7 @@ void guistub_destroyWithKey (void *key)
     
     for (y = guistub_list; y; y = y->x_next) {
         if (y->x_key == key) {
-            sys_vGui ("destroy .guistub%lx\n", (t_int)y);
+            sys_vGui ("destroy " PD_GUISTUB "%lx\n", (t_int)y);
             y->x_owner = NULL;
             guistub_removeFromList (y);
             pd_free (cast_pd (y));
@@ -108,6 +108,7 @@ static void guistub_signoff (t_guistub *x)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* < http://stackoverflow.com/questions/1860159/how-to-escape-the-sign-in-cs-printf > */
 
@@ -122,7 +123,7 @@ void guistub_new (t_pd *owner, void *key, const char *cmd)
     guistub_destroyWithKey (key);                   /* Destroy already allocated stub with an equal key. */
     
     x = (t_guistub *)pd_new (guistub_class);
-    string_sprintf (name, PD_STRING, ".guistub%lx", (t_int)x);
+    string_sprintf (name, PD_STRING, PD_GUISTUB "%lx", (t_int)x);
     s = gensym (name);
     
     x->x_owner  = owner;

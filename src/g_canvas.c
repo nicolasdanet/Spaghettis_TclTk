@@ -619,6 +619,9 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
     t_error err = PD_ERROR_NONE;
     
     if (glist->gl_parent) {
+        
+        /* Activated text box triggering recreation. */
+        
         err = canvas_deselectObjectIfSelected (glist->gl_parent, cast_gobj (glist));
     }
     
