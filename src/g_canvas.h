@@ -521,7 +521,6 @@ t_float         canvas_deltaPositionToValueY            (t_glist *glist, t_float
 // -----------------------------------------------------------------------------------------------------------
 
 t_glist         *canvas_newGraph                        (t_glist *glist,
-                                                            t_symbol *name,
                                                             t_float valueStart,
                                                             t_float valueUp,
                                                             t_float valueEnd,

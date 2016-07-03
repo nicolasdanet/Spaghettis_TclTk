@@ -47,7 +47,7 @@ static void canvas_makeIemObject (t_glist *glist, t_symbol *name)
 void canvas_makeGraphWithArray (t_glist *glist, t_symbol *name, t_float size, t_float flags)
 {
     t_float n = PD_MAX (1.0, size);
-    t_glist *g = canvas_newGraph (glist, &s_, 0, 1, n, -1, 0, 0, 0, 0);
+    t_glist *g = canvas_newGraph (glist, 0.0, 1.0, n, -1.0, 0.0, 0.0, 0.0, 0.0);
     t_garray *a = garray_makeObject (g, dollar_fromHash (name), &s_float, n, (int)flags);
     garray_updateGraphBounds (a, (int)n, (((int)flags & 6) >> 1));
     canvas_dirty (glist, 1);

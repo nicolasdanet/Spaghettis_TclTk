@@ -687,7 +687,6 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
 #pragma mark -
 
 t_glist *canvas_newGraph (t_glist *glist,
-    t_symbol *name,
     t_float valueStart,
     t_float valueUp,
     t_float valueEnd,
@@ -697,27 +696,12 @@ t_glist *canvas_newGraph (t_glist *glist,
     t_float bottomRightX,
     t_float bottomRightY)
 {
-    static int graphCount = 0;      /* Shared. */
+    static int graphCount = 0;              /* Shared. */
 
-    int createdFromMenu = 0;
     t_glist *x = (t_glist *)pd_new (canvas_class);
-    
     int fontSize = (canvas_getCurrent() ? canvas_getCurrent()->gl_fontSize : font_getDefaultFontSize());
+    char t[PD_STRING] = { 0 };
     
-    PD_ASSERT (name);
-    
-    if (name == &s_) {
-        char n[PD_STRING] = { 0 };
-        string_sprintf (n, PD_STRING, "graph%d", ++graphCount);
-        name = gensym (n);
-        createdFromMenu = 1;
-        
-    } else {
-        char *s = name->s_name;
-        int n;
-        if (!strncmp (s, "graph", 5) && (n = atoi (s + 5)) > graphCount) { graphCount = n; }
-    }
-
     if (valueStart >= valueEnd || valueUp == valueDown) {
     //
     valueStart  = CANVAS_DEFAULT_START;
@@ -736,13 +720,15 @@ t_glist *canvas_newGraph (t_glist *glist,
     //
     }
     
+    string_sprintf (t, PD_STRING, "graph%d", ++graphCount);
+        
     cast_object (x)->te_buffer          = buffer_new();
     cast_object (x)->te_xCoordinate     = topLeftX;
     cast_object (x)->te_yCoordinate     = topLeftY;
     cast_object (x)->te_type            = TYPE_OBJECT;
     x->gl_stub                          = gstub_new (x, NULL);
     x->gl_parent                        = glist;
-    x->gl_name                          = name;
+    x->gl_name                          = gensym (t);
     x->gl_magic                         = ++canvas_magic;
     x->gl_graphWidth                    = bottomRightX - topLeftX;
     x->gl_graphHeight                   = bottomRightY - topLeftY;
@@ -761,7 +747,6 @@ t_glist *canvas_newGraph (t_glist *glist,
     
     canvas_bind (x);
     buffer_vAppend (cast_object (x)->te_buffer, "s", sym_graph);
-    if (!createdFromMenu) { stack_push (cast_pd (x)); }
     canvas_addObject (glist, cast_gobj (x));
     
     return x;
