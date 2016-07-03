@@ -147,7 +147,21 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define PD_GUISTUB      ".guistub"
+#define PD_GUISTUB                      ".guistub"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define CANVAS_DEFAULT_X                40
+#define CANVAS_DEFAULT_Y                40
+#define CANVAS_DEFAULT_WIDTH            200
+#define CANVAS_DEFAULT_HEIGHT           140
+
+#define CANVAS_DEFAULT_START            0.0
+#define CANVAS_DEFAULT_UP               1.0
+#define CANVAS_DEFAULT_END              100.0
+#define CANVAS_DEFAULT_DOWN            -1.0
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -324,17 +338,6 @@ t_glist         *canvas_getView                         (t_glist *glist);
 
 t_symbol        *canvas_expandDollar                    (t_glist *glist, t_symbol *s);
 t_symbol        *canvas_makeBindSymbol                  (t_symbol *s);
-
-t_glist         *canvas_addGraph                        (t_glist *glist,
-                                                            t_symbol *name,
-                                                            t_float valueStart,
-                                                            t_float valueUp,
-                                                            t_float valueEnd,
-                                                            t_float valueDown,
-                                                            t_float topLeftX,
-                                                            t_float topLeftY,
-                                                            t_float bottomRightX,
-                                                            t_float bottomRightY);
 
 void            canvas_makeTextObject                   (t_glist *glist, 
                                                             int positionX, 
@@ -517,6 +520,17 @@ t_float         canvas_deltaPositionToValueY            (t_glist *glist, t_float
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+t_glist         *canvas_newGraph                        (t_glist *glist,
+                                                            t_symbol *name,
+                                                            t_float valueStart,
+                                                            t_float valueUp,
+                                                            t_float valueEnd,
+                                                            t_float valueDown,
+                                                            t_float topLeftX,
+                                                            t_float topLeftY,
+                                                            t_float bottomRightX,
+                                                            t_float bottomRightY);
+                                                            
 t_glist         *canvas_new                             (void *dummy, t_symbol *s, int argc, t_atom *argv);
 
 void            canvas_free                             (t_glist *glist);

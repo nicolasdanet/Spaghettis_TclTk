@@ -17,19 +17,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-#define BASE_DEFAULT_X              40
-#define BASE_DEFAULT_Y              40
-#define BASE_DEFAULT_WIDTH          200
-#define BASE_DEFAULT_HEIGHT         140
-
-#define BASE_DEFAULT_START          0.0
-#define BASE_DEFAULT_UP             1.0
-#define BASE_DEFAULT_END            100.0
-#define BASE_DEFAULT_DOWN          -1.0
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 extern t_class              *text_class;
@@ -177,87 +164,6 @@ int canvas_canHaveWindow (t_glist *glist)       /* Either a top window or a grap
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-t_glist *canvas_addGraph (t_glist *glist,
-    t_symbol *name,
-    t_float valueStart,
-    t_float valueUp,
-    t_float valueEnd,
-    t_float valueDown,
-    t_float topLeftX,
-    t_float topLeftY,
-    t_float bottomRightX,
-    t_float bottomRightY)
-{
-    static int graphCount = 0;      /* Shared. */
-
-    int createdFromMenu = 0;
-    t_glist *x = (t_glist *)pd_new (canvas_class);
-    
-    int fontSize = (canvas_getCurrent() ? canvas_getCurrent()->gl_fontSize : font_getDefaultFontSize());
-    
-    PD_ASSERT (name);
-    
-    if (name == &s_) {
-        char n[PD_STRING] = { 0 };
-        string_sprintf (n, PD_STRING, "graph%d", ++graphCount);
-        name = gensym (n);
-        createdFromMenu = 1;
-        
-    } else {
-        char *s = name->s_name;
-        int n;
-        if (!strncmp (s, "graph", 5) && (n = atoi (s + 5)) > graphCount) { graphCount = n; }
-    }
-
-    if (valueStart >= valueEnd || valueUp == valueDown) {
-    //
-    valueStart  = BASE_DEFAULT_START;
-    valueEnd    = BASE_DEFAULT_END;
-    valueUp     = BASE_DEFAULT_UP;
-    valueDown   = BASE_DEFAULT_DOWN;
-    //
-    }
-    
-    if (topLeftX >= bottomRightX || topLeftY >= bottomRightY) {
-    //
-    topLeftX     = BASE_DEFAULT_X;
-    topLeftY     = BASE_DEFAULT_Y;
-    bottomRightX = topLeftX + BASE_DEFAULT_WIDTH;
-    bottomRightY = topLeftY + BASE_DEFAULT_HEIGHT;
-    //
-    }
-    
-    cast_object (x)->te_buffer          = buffer_new();
-    cast_object (x)->te_xCoordinate     = topLeftX;
-    cast_object (x)->te_yCoordinate     = topLeftY;
-    cast_object (x)->te_type            = TYPE_OBJECT;
-    x->gl_stub                          = gstub_new (x, NULL);
-    x->gl_parent                        = glist;
-    x->gl_name                          = name;
-    x->gl_magic                         = ++canvas_magic;
-    x->gl_graphWidth                    = bottomRightX - topLeftX;
-    x->gl_graphHeight                   = bottomRightY - topLeftY;
-    x->gl_graphMarginLeft               = 0;
-    x->gl_graphMarginTop                = 0;
-    x->gl_valueLeft                     = valueStart;
-    x->gl_valueRight                    = valueEnd;
-    x->gl_valueTop                      = valueUp;
-    x->gl_valueBottom                   = valueDown;
-    x->gl_windowTopLeftX                = 0;
-    x->gl_windowTopLeftY                = WINDOW_HEADER;
-    x->gl_windowBottomRightX            = WINDOW_WIDTH;
-    x->gl_windowBottomRightY            = WINDOW_HEIGHT + WINDOW_HEADER;
-    x->gl_fontSize                      = fontSize;
-    x->gl_isGraphOnParent               = 1;
-    
-    canvas_bind (x);
-    buffer_vAppend (cast_object (x)->te_buffer, "s", sym_graph);
-    if (!createdFromMenu) { stack_push (cast_pd (x)); }
-    canvas_addObject (glist, cast_gobj (x));
-    
-    return x;
-}
 
 void canvas_addObject (t_glist *glist, t_gobj *y)
 {
@@ -436,8 +342,8 @@ void canvas_setAsGraphOnParent (t_glist *glist, int flags)
         glist->gl_isGraphOnParent = 1;
     }
     
-    if (glist->gl_graphWidth <= 0)  { glist->gl_graphWidth  = BASE_DEFAULT_WIDTH;  }
-    if (glist->gl_graphHeight <= 0) { glist->gl_graphHeight = BASE_DEFAULT_HEIGHT; }
+    if (glist->gl_graphWidth <= 0)  { glist->gl_graphWidth  = CANVAS_DEFAULT_WIDTH;  }
+    if (glist->gl_graphHeight <= 0) { glist->gl_graphHeight = CANVAS_DEFAULT_HEIGHT; }
         
     if (needToUpdate) {
         if (!glist->gl_isLoading && glist->gl_parent && canvas_isMapped (glist->gl_parent)) {
@@ -644,7 +550,7 @@ void canvas_getLastMotionCoordinates (t_glist *glist, int *a, int *b)
 {
     if (canvas_lastCanvas == glist) { *a = canvas_lastCanvasX; *b = canvas_lastCanvasY; } 
     else {
-        *a = BASE_DEFAULT_X; *b = BASE_DEFAULT_Y;
+        *a = CANVAS_DEFAULT_X; *b = CANVAS_DEFAULT_Y;
     }
 }
 
