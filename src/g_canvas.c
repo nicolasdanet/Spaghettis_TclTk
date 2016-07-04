@@ -686,6 +686,8 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* Create a graph on parent fit for arrays. */
+
 t_glist *canvas_newGraph (t_glist *glist,
     t_float valueStart,
     t_float valueUp,
@@ -705,19 +707,19 @@ t_glist *canvas_newGraph (t_glist *glist,
     
     if (valueStart >= valueEnd || valueUp == valueDown) {
     //
-    valueStart  = CANVAS_DEFAULT_START;
-    valueEnd    = CANVAS_DEFAULT_END;
-    valueUp     = CANVAS_DEFAULT_UP;
-    valueDown   = CANVAS_DEFAULT_DOWN;
+    valueStart  = GRAPH_DEFAULT_START;
+    valueEnd    = GRAPH_DEFAULT_END;
+    valueUp     = GRAPH_DEFAULT_UP;
+    valueDown   = GRAPH_DEFAULT_DOWN;
     //
     }
     
     if (topLeftX >= bottomRightX || topLeftY >= bottomRightY) {
     //
-    topLeftX     = CANVAS_DEFAULT_X;
-    topLeftY     = CANVAS_DEFAULT_Y;
-    bottomRightX = topLeftX + CANVAS_DEFAULT_WIDTH;
-    bottomRightY = topLeftY + CANVAS_DEFAULT_HEIGHT;
+    topLeftX     = GRAPH_DEFAULT_X;
+    topLeftY     = GRAPH_DEFAULT_Y;
+    bottomRightX = topLeftX + GRAPH_DEFAULT_WIDTH;
+    bottomRightY = topLeftY + GRAPH_DEFAULT_HEIGHT;
     //
     }
     

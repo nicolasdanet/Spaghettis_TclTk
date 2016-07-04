@@ -154,15 +154,15 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define CANVAS_DEFAULT_X                40
-#define CANVAS_DEFAULT_Y                40
-#define CANVAS_DEFAULT_WIDTH            200
-#define CANVAS_DEFAULT_HEIGHT           140
+#define GRAPH_DEFAULT_X                 40
+#define GRAPH_DEFAULT_Y                 40
+#define GRAPH_DEFAULT_WIDTH             200
+#define GRAPH_DEFAULT_HEIGHT            140
 
-#define CANVAS_DEFAULT_START            0.0
-#define CANVAS_DEFAULT_UP               1.0
-#define CANVAS_DEFAULT_END              100.0
-#define CANVAS_DEFAULT_DOWN            -1.0
+#define GRAPH_DEFAULT_START             0.0
+#define GRAPH_DEFAULT_UP                1.0
+#define GRAPH_DEFAULT_END               100.0
+#define GRAPH_DEFAULT_DOWN             -1.0
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -342,8 +342,8 @@ void canvas_setAsGraphOnParent (t_glist *glist, int flags)
         glist->gl_isGraphOnParent = 1;
     }
     
-    if (glist->gl_graphWidth <= 0)  { glist->gl_graphWidth  = CANVAS_DEFAULT_WIDTH;  }
-    if (glist->gl_graphHeight <= 0) { glist->gl_graphHeight = CANVAS_DEFAULT_HEIGHT; }
+    if (glist->gl_graphWidth <= 0)  { glist->gl_graphWidth  = GRAPH_DEFAULT_WIDTH;  }
+    if (glist->gl_graphHeight <= 0) { glist->gl_graphHeight = GRAPH_DEFAULT_HEIGHT; }
         
     if (needToUpdate) {
         if (!glist->gl_isLoading && glist->gl_parent && canvas_isMapped (glist->gl_parent)) {
@@ -550,7 +550,7 @@ void canvas_getLastMotionCoordinates (t_glist *glist, int *a, int *b)
 {
     if (canvas_lastCanvas == glist) { *a = canvas_lastCanvasX; *b = canvas_lastCanvasY; } 
     else {
-        *a = CANVAS_DEFAULT_X; *b = CANVAS_DEFAULT_Y;
+        *a = GRAPH_DEFAULT_X; *b = GRAPH_DEFAULT_Y;
     }
 }
 
