@@ -359,6 +359,7 @@ int             canvas_isRoot                           (t_glist *glist);
 int             canvas_isAbstraction                    (t_glist *glist);
 int             canvas_isSubpatch                       (t_glist *glist);
 int             canvas_isDirty                          (t_glist *glist);
+int             canvas_isGraph                          (t_glist *glist);
 
 int             canvas_openFile                         (t_glist *glist,
                                                             const char *name,

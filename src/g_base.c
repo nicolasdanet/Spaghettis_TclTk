@@ -155,7 +155,16 @@ int canvas_isDirty (t_glist *glist)
     return (canvas_getRoot (glist)->gl_isDirty != 0);
 }
 
-int canvas_canHaveWindow (t_glist *glist)       /* Either a top window or a graph-on-parent forced. */
+/* A graph-on-parent that contains an array of numbers. */
+
+int canvas_isGraph (t_glist *glist)
+{
+    return (utils_getFirstAtomOfObjectAsSymbol (cast_object (glist)) == sym_graph);
+}
+
+/* Either a top window a subpacth or a graph-on-parent forced. */
+
+int canvas_canHaveWindow (t_glist *glist)
 {
     return (glist->gl_hasWindow || !glist->gl_isGraphOnParent);
 }

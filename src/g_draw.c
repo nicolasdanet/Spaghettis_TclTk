@@ -438,6 +438,8 @@ void canvas_drawGraphOnParentRectangle (t_glist *glist)
 {
     if (glist->gl_isGraphOnParent && glist->gl_hasWindow) {
     //
+    if (!canvas_isGraph (glist)) {
+    //
     int a = glist->gl_graphMarginLeft;
     int b = glist->gl_graphMarginTop;
     int c = glist->gl_graphMarginLeft + glist->gl_graphWidth;
@@ -459,13 +461,19 @@ void canvas_drawGraphOnParentRectangle (t_glist *glist)
                     a,
                     b);
     }
+    //
+    }
 }
 
 void canvas_updateGraphOnParentRectangle (t_glist *glist)
 {
     if (glist->gl_isGraphOnParent && glist->gl_hasWindow) {
+    //
+    if (!canvas_isGraph (glist)) {
         sys_vGui (".x%lx.c delete RECTANGLE\n", canvas_getView (glist));
         canvas_drawGraphOnParentRectangle (glist);
+    }
+    //
     }
 }
 
