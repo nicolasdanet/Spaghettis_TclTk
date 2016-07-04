@@ -370,7 +370,7 @@ int             canvas_openFile                         (t_glist *glist,
 void            canvas_bind                             (t_glist *glist);
 void            canvas_unbind                           (t_glist *glist);
 t_error         canvas_makeFilePath                     (t_glist *glist, char *name, char *dest, size_t size);
-void            canvas_setName                          (t_glist *glist, t_symbol *name, t_symbol *directory);
+void            canvas_setName                          (t_glist *glist, t_symbol *name);
 void            canvas_updateTitle                      (t_glist *glist);
 int             canvas_getFontSize                      (t_glist *glist);
 void            canvas_setCursorType                    (t_glist *glist, int type);

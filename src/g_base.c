@@ -17,7 +17,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 extern t_class              *text_class;
 extern t_class              *canvas_class;
@@ -409,16 +408,13 @@ t_error canvas_makeFilePath (t_glist *glist, char *name, char *dest, size_t size
     return err;
 }
 
-void canvas_setName (t_glist *glist, t_symbol *name, t_symbol *directory)
+void canvas_setName (t_glist *glist, t_symbol *name)
 {
     canvas_unbind (glist);
     glist->gl_name = name;
     canvas_bind (glist);
     
     if (glist->gl_hasWindow) { canvas_updateTitle (glist); }
-    if (directory && directory != &s_) {
-        canvas_getEnvironment (glist)->ce_directory = directory; 
-    }
 }
 
 void canvas_updateTitle (t_glist *glist)

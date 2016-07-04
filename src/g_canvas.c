@@ -133,7 +133,7 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     //
     t_environment *e = canvas_getEnvironment (canvas_getCurrent());
     t_symbol *name = dollar_expandDollarSymbol (GET_SYMBOL (argv + 3), e->ce_argc, e->ce_argv);
-    canvas_setName (glist, name, NULL);
+    canvas_setName (glist, name);
     //
     }
     
@@ -463,19 +463,19 @@ void canvas_pop (t_glist *glist, t_float f)
 
 static void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc && IS_SYMBOL (argv)) { canvas_setName (glist, GET_SYMBOL (argv), NULL); }
+    if (argc && IS_SYMBOL (argv)) { canvas_setName (glist, GET_SYMBOL (argv)); }
     else if (argc && IS_DOLLARSYMBOL (argv)) {
     
         t_environment *e = canvas_getEnvironment (glist);
         stack_push (cast_pd (glist));
         {
             t_symbol *name = dollar_expandDollarSymbol (GET_DOLLARSYMBOL (argv), e->ce_argc, e->ce_argv);
-            canvas_setName (glist, name, NULL); 
+            canvas_setName (glist, name); 
         }
         stack_pop (cast_pd (glist));
         
     } else { 
-        canvas_setName (glist, gensym (PD_NAME_SHORT), NULL);
+        canvas_setName (glist, gensym (PD_NAME_SHORT));
     }
 }
 
