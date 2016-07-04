@@ -265,7 +265,7 @@ struct _glist {
     char                gl_hasWindow;
     char                gl_hideText;            /* Unused but kept for compatibility. */
     char                gl_saveScalar;
-    char                gl_willBeVisible;
+    char                gl_openedAtLoad;
     };
 
 // -----------------------------------------------------------------------------------------------------------

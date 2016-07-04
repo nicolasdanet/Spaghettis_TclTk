@@ -137,7 +137,7 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     //
     }
     
-    canvas_pop (glist, glist->gl_willBeVisible);
+    canvas_pop (glist, glist->gl_openedAtLoad);
 
     if (!(z = s__X.s_thing) || (pd_class (z) != canvas_class)) { PD_BUG; }
     else {
@@ -749,7 +749,9 @@ t_glist *canvas_newGraph (t_glist *glist,
     x->gl_isGraphOnParent               = 1;
     
     canvas_bind (x);
+    
     buffer_vAppend (cast_object (x)->te_buffer, "s", sym_graph);
+    
     canvas_addObject (glist, cast_gobj (x));
     
     return x;
@@ -791,6 +793,9 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
         visible     = (int)atom_getFloatAtIndex (5, argc, argv);
     }
 
+    topLeftX = PD_MAX (topLeftX, 0);
+    topLeftY = PD_MAX (topLeftY, WINDOW_HEADER);
+    
     cast_object (x)->te_type = TYPE_OBJECT;
     
     x->gl_stub      = gstub_new (x, NULL);
@@ -803,7 +808,7 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     if (canvas_directory == &s_) { x->gl_environment = NULL; }
     else {
     //
-    static int dollarZero = 1000;   /* Shared. */
+    static int dollarZero = 1000;       /* Shared. */
     
     x->gl_environment = (t_environment *)PD_MEMORY_GET (sizeof (t_environment));
 
@@ -816,35 +821,27 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     x->gl_environment->ce_argv              = canvas_argv;
     x->gl_environment->ce_dollarZeroValue   = dollarZero++;
 
-    canvas_directory = &s_;
-    canvas_argc      = 0;
-    canvas_argv      = NULL;
+    canvas_directory    = &s_;
+    canvas_argc         = 0;
+    canvas_argv         = NULL;
     //
     }
 
-    topLeftX = PD_MAX (topLeftX, 0);
-    topLeftY = PD_MAX (topLeftY, WINDOW_HEADER);
-        
-    x->gl_valueLeft     = 0.0;
-    x->gl_valueTop      = 0.0;
-    x->gl_valueRight    = 1.0;
-    x->gl_valueBottom   = 1.0;
+    x->gl_valueLeft             = 0.0;
+    x->gl_valueTop              = 0.0;
+    x->gl_valueRight            = 1.0;
+    x->gl_valueBottom           = 1.0;
+    x->gl_windowTopLeftX        = topLeftX;
+    x->gl_windowTopLeftY        = topLeftY;
+    x->gl_windowBottomRightX    = topLeftX + width;
+    x->gl_windowBottomRightY    = topLeftY + height;
+    x->gl_fontSize              = font_getNearestValidFontSize (fontSize);
+    x->gl_isLoading             = 1;
+    x->gl_isEditMode            = 0;
+    x->gl_openedAtLoad          = visible;
     
-    canvas_window (x, topLeftX, topLeftY, topLeftX + width, topLeftY + height);
     canvas_bind (x);
     
-    x->gl_fontSize      = font_getNearestValidFontSize (fontSize);
-    x->gl_isLoading     = 1;
-
-    if (visible && s__X.s_thing && (pd_class (s__X.s_thing) == canvas_class)) {
-        t_glist *g = canvas_getRoot (cast_glist (s__X.s_thing));
-        PD_ASSERT (g);
-        if (canvas_isAbstraction (g)) { visible = 0; }
-    }
-    
-    x->gl_isEditMode    = 0;
-    x->gl_willBeVisible = visible;
-        
     stack_push (cast_pd (x));
     
     return x;
