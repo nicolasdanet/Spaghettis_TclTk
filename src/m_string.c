@@ -94,6 +94,19 @@ t_error string_addSprintf (char *dest, size_t size, const char *format, ...)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+int string_containsAtStart (const char *s, const char *isContained)
+{
+    size_t n = strlen (isContained);
+    
+    if (strlen (s) >= n) { return (strncmp (s, isContained, n) == 0); }
+    
+    return 0;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static int string_indexOfFirstCharUntil (char *s, char c, size_t n)
 {
     char *s2 = s + n;

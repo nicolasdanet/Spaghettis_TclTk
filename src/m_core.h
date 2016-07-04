@@ -205,6 +205,8 @@ t_error     string_append                               (char *dest, size_t size
 t_error     string_sprintf                              (char *dest, size_t size, const char *format, ...);
 t_error     string_addSprintf                           (char *dest, size_t size, const char *format, ...);
 
+int         string_containsAtStart                      (const char *s, const char *isContained);
+
 int         string_indexOfFirstOccurrenceUntil          (char *s, const char *c, size_t n);
 int         string_indexOfFirstOccurrenceFrom           (char *s, const char *c, size_t n);
 
@@ -269,21 +271,21 @@ t_propertiesfn           class_getPropertiesFunction    (t_class *c);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            object_list                             (t_object *x, t_symbol *s, int argc, t_atom *argv);
-void            object_saveWidth                        (t_object *x, t_buffer *b);
-int             object_numberOfInlets                   (t_object *x);
-int             object_numberOfOutlets                  (t_object *x);
-int             object_numberOfSignalInlets             (t_object *x);
-int             object_numberOfSignalOutlets            (t_object *x);
-int             object_indexOfSignalInlet               (t_object *x, int m);
-int             object_indexOfSignalOutlet              (t_object *x, int m);
-int             object_isSignalInlet                    (t_object *x, int m);
-int             object_isSignalOutlet                   (t_object *x, int m);
-int             object_getIndexOfSignalInlet            (t_inlet *x);
-int             object_getIndexOfSignalOutlet           (t_outlet *x);
-void            object_moveInletFirst                   (t_object *x, t_inlet *i);
-void            object_moveOutletFirst                  (t_object *x, t_outlet *i);
-void            object_disconnect                       (t_object *src, int m, t_object *dest, int n);
+void        object_list                                 (t_object *x, t_symbol *s, int argc, t_atom *argv);
+void        object_saveWidth                            (t_object *x, t_buffer *b);
+int         object_numberOfInlets                       (t_object *x);
+int         object_numberOfOutlets                      (t_object *x);
+int         object_numberOfSignalInlets                 (t_object *x);
+int         object_numberOfSignalOutlets                (t_object *x);
+int         object_indexOfSignalInlet                   (t_object *x, int m);
+int         object_indexOfSignalOutlet                  (t_object *x, int m);
+int         object_isSignalInlet                        (t_object *x, int m);
+int         object_isSignalOutlet                       (t_object *x, int m);
+int         object_getIndexOfSignalInlet                (t_inlet *x);
+int         object_getIndexOfSignalOutlet               (t_outlet *x);
+void        object_moveInletFirst                       (t_object *x, t_inlet *i);
+void        object_moveOutletFirst                      (t_object *x, t_outlet *i);
+void        object_disconnect                           (t_object *src, int m, t_object *dest, int n);
 
 t_outconnect    *object_connect                         (t_object *src, int m, t_object *dest, int n);
 t_outconnect    *object_traverseOutletStart             (t_object *x, t_outlet **ptr, int n);
@@ -292,7 +294,7 @@ t_outconnect    *object_traverseOutletNext              (t_outconnect *last,
                                                             t_inlet **ptr,
                                                             int *n);
 
-t_float         *object_getSignalValueAtIndex           (t_object *x, int m);
+t_float     *object_getSignalValueAtIndex               (t_object *x, int m);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
