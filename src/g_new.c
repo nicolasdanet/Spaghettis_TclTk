@@ -50,7 +50,6 @@ void canvas_makeGraphWithArray (t_glist *glist, t_symbol *name, t_float size, t_
     int positionX = 0;
     int positionY = 0;
     t_glist *g = NULL;
-    t_garray *array = NULL;
     
     PD_ASSERT (name);
     
@@ -66,9 +65,7 @@ void canvas_makeGraphWithArray (t_glist *glist, t_symbol *name, t_float size, t_
             (t_float)positionX + GRAPH_DEFAULT_WIDTH,
             (t_float)positionY + GRAPH_DEFAULT_HEIGHT);
     
-    array = garray_makeObject (g, dollar_fromHash (name), &s_float, n, (int)flags);
-    garray_updateGraphBounds (array, (int)n, (((int)flags & 6) >> 1));
-    
+    garray_makeObject (g, dollar_fromHash (name), &s_float, n, (int)flags);
     canvas_dirty (glist, 1);
 }
 

@@ -145,11 +145,23 @@ static void garray_drawJob (t_gobj *z, t_glist *glist)
     }
 }
 
-void garray_updateGraphBounds (t_garray *x, int size, int style)
+static int garray_isSingle (t_garray *x)        /* Legacy patches might contain several arrays. */
 {
     t_glist *glist = x->x_owner;
     
-    if (glist->gl_graphics == cast_gobj (x) && !cast_gobj (x)->g_next) {
+    if (glist->gl_graphics == cast_gobj (x) && !cast_gobj (x)->g_next) { return 1; }
+    else {
+        return 0;
+    }
+}
+
+static void garray_updateGraphBounds (t_garray *x, int size, int style)
+{
+    if (garray_isSingle (x)) {
+    //
+    t_glist *glist = x->x_owner;
+    
+    if (!glist->gl_isLoading) {
     //
     pd_vMessage (cast_pd (glist), sym_bounds, "ffff",
         0.0,
@@ -158,6 +170,13 @@ void garray_updateGraphBounds (t_garray *x, int size, int style)
         glist->gl_valueBottom);
     //
     }
+    //
+    }
+}
+
+static void garray_updateGraphName (t_garray *x)
+{
+    if (garray_isSingle (x)) { canvas_setName (x->x_owner, x->x_name); }
 }
 
 void garray_resizeWithInteger (t_garray *x, int n)
@@ -742,12 +761,12 @@ t_garray *garray_makeObject (t_glist *glist,
     //
     int save = (((int)flags & GARRAY_FLAG_SAVE) != 0);
     int hide = (((int)flags & GARRAY_FLAG_HIDE) != 0);
-    
     int plot = PD_CLAMP ((((int)flags & GARRAY_FLAG_PLOT) >> 1), PLOT_POLYGONS, PLOT_CURVES);
-
+    int n    = (int)PD_MAX (1.0, size);
+    
     x = garray_makeObjectWithScalar (glist, name, sym_pd__dash__float__dash__array, save, hide);
 
-    array_resize (x->x_scalar->sc_vector[zOnset].w_array, PD_MAX (1, size));
+    array_resize (x->x_scalar->sc_vector[zOnset].w_array, n);
 
     template_setfloat (template, sym_style, x->x_scalar->sc_vector, plot, 1);
     template_setfloat (template, sym_linewidth, x->x_scalar->sc_vector, 1, 1);
@@ -756,6 +775,8 @@ t_garray *garray_makeObject (t_glist *glist,
     pd_bind (cast_pd (x), sym___hash__A); 
 
     garray_redraw (x);
+    garray_updateGraphBounds (x, n, plot);
+    garray_updateGraphName (x);
     dsp_update();
     //
     }
