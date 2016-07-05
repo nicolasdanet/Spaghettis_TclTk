@@ -495,7 +495,6 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     } else {
     //
     t_gobj *y = NULL;
-    t_symbol *s = NULL;
                 
     if (isVisible) {
         
@@ -520,7 +519,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
         
         for (y = x->gl_graphics; y; y = y->g_next) {
         //
-        if (pd_class (y) == garray_class && !garray_getName ((t_garray *)y, &s)) {
+        if (pd_class (y) == garray_class) {
         //
         sys_vGui (".x%lx.c create text %d %d -text {%s}"
                         " -anchor nw"
@@ -530,7 +529,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                         canvas_getView (x->gl_parent),
                         x1,
                         y1 - ++i * (int)font_getHostFontHeight (canvas_getFontSize (x)),
-                        s->s_name,
+                        garray_getName ((t_garray *)y)->s_name,
                         font_getHostFontSize (canvas_getFontSize (x)),
                         (x->gl_isSelected ? COLOR_SELECTED : COLOR_NORMAL),
                         tag);

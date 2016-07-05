@@ -62,7 +62,7 @@ struct _garray {
     t_symbol    *x_name;
     char        x_isUsedInDSP;
     char        x_saveWithParent;
-    char        x_hideName;
+    char        x_hideName;                                 /* Unused but kept for compatibility. */
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -364,9 +364,9 @@ t_array *garray_getArray (t_garray *x)
     return NULL;
 }
 
-int garray_getName (t_garray *x, t_symbol **s)
+t_symbol *garray_getName (t_garray *x)
 {
-    *s = x->x_unexpandedName; return x->x_hideName;
+    return x->x_name;
 }
 
 t_glist *garray_getOwner (t_garray *x)
@@ -483,7 +483,7 @@ static void garray_rename (t_garray *x, t_symbol *s)
 {
     pd_unbind (cast_pd (x), x->x_name);
     x->x_unexpandedName = s;
-    x->x_name = s;
+    x->x_name = canvas_expandDollar (x->x_owner, s);
     pd_bind (cast_pd (x), x->x_name);
     garray_redraw (x);
 }

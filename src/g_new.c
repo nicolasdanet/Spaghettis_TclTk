@@ -52,6 +52,8 @@ void canvas_makeGraphWithArray (t_glist *glist, t_symbol *name, t_float size, t_
     t_glist *g = NULL;
     t_garray *array = NULL;
     
+    PD_ASSERT (name);
+    
     canvas_getLastMotionCoordinates (glist, &positionX, &positionY);
         
     g = canvas_newGraph (glist, 
@@ -66,6 +68,7 @@ void canvas_makeGraphWithArray (t_glist *glist, t_symbol *name, t_float size, t_
     
     array = garray_makeObject (g, dollar_fromHash (name), &s_float, n, (int)flags);
     garray_updateGraphBounds (array, (int)n, (((int)flags & 6) >> 1));
+    
     canvas_dirty (glist, 1);
 }
 

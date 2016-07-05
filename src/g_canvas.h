@@ -147,7 +147,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define PD_GRAPH                        "graph"
+#define PD_GRAPH                        "_graph"
 #define PD_GUISTUB                      ".guistub"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -755,8 +755,8 @@ t_garray        *garray_makeObject                      (t_glist *glist,
 t_array         *garray_getArray                        (t_garray *x);
 t_glist         *garray_getOwner                        (t_garray *x);
 t_scalar        *garray_getScalar                       (t_garray *x);
+t_symbol        *garray_getName                         (t_garray *x);
 
-int             garray_getName                          (t_garray *x, t_symbol **s);
 int             garray_getFloats                        (t_garray *x, int *size, t_word **w);
 void            garray_setAsUsedInDSP                   (t_garray *x);
 void            garray_setSaveWithParent                (t_garray *x, int savedWithParent);
