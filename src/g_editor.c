@@ -767,6 +767,8 @@ void canvas_window (t_glist *glist, t_float a, t_float b, t_float c, t_float d)
     glist->gl_windowTopLeftY     = b;
     glist->gl_windowBottomRightX = c;
     glist->gl_windowBottomRightY = d;
+    
+    if (canvas_canHaveWindow (glist) && canvas_isGraph (glist)) { canvas_redraw (glist); }
 }
 
 /*
