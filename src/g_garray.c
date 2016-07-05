@@ -176,7 +176,7 @@ static void garray_updateGraphBounds (t_garray *x, int size, int style)
 
 static void garray_updateGraphName (t_garray *x)
 {
-    if (garray_isSingle (x)) { canvas_setName (x->x_owner, x->x_name); }
+    canvas_redrawGraphOnParent (x->x_owner); canvas_setName (x->x_owner, x->x_name);
 }
 
 void garray_resizeWithInteger (t_garray *x, int n)
@@ -505,6 +505,7 @@ static void garray_rename (t_garray *x, t_symbol *s)
     x->x_name = canvas_expandDollar (x->x_owner, s);
     pd_bind (cast_pd (x), x->x_name);
     garray_redraw (x);
+    garray_updateGraphName (x);
 }
 
 static void garray_read (t_garray *x, t_symbol *name)
@@ -704,12 +705,7 @@ void garray_fromDialog (t_garray *x, t_symbol *name, t_float size, t_float flags
     x->x_name = canvas_expandDollar (x->x_owner, newName);
     pd_bind (cast_pd (x), x->x_name);
 
-    if (x->x_owner->gl_hasWindow) { canvas_redraw (x->x_owner); }
-    else if (canvas_isMapped (x->x_owner->gl_parent)) {
-        gobj_visibilityChanged (cast_gobj (x->x_owner), x->x_owner->gl_parent, 0);
-        gobj_visibilityChanged (cast_gobj (x->x_owner), x->x_owner->gl_parent, 1);
-    }
-    
+    garray_updateGraphName (x);
     dsp_update();
     //
     }

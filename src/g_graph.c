@@ -233,7 +233,7 @@ void canvas_resortOutlets (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_redrawGraphOnParent (t_glist *glist)
+void canvas_redrawGraphOnParent (t_glist *glist)
 {  
     if (canvas_isMapped (glist)) {
     //
