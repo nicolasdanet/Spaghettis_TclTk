@@ -771,32 +771,6 @@ void canvas_window (t_glist *glist, t_float a, t_float b, t_float c, t_float d)
     if (canvas_canHaveWindow (glist) && canvas_isGraph (glist)) { canvas_redraw (glist); }
 }
 
-/*
-static void canvas_dosetbounds(t_glist *x, int x1, int y1, int x2, int y2)
-{
-    int heightwas = y2 - y1;
-    int heightchange = y2 - y1 - (x->gl_windowBottomRightY - x->gl_windowTopLef
-    if (x->gl_windowTopLeftX == x1 && x->gl_windowTopLeftY == y1 &&
-        x->gl_windowBottomRightX == x2 && x->gl_windowBottomRightY == y2)
-            return;
-    x->gl_windowTopLeftX = x1;
-    x->gl_windowTopLeftY = y1;
-    x->gl_windowBottomRightX = x2;
-    x->gl_windowBottomRightY = y2;
-    if (!canvas_isGraphOnParent(x) && (x->gl_valueBottom < x->gl_valueTop))
-    {
-        t_float diff = x->gl_valueTop - x->gl_valueBottom;
-        t_gobj *y;
-        x->gl_valueTop = heightwas * diff;
-        x->gl_valueBottom = x->gl_valueTop - diff;
-        for (y = x->gl_graphics; y; y = y->g_next)
-            if (canvas_castToObjectIfPatchable(&y->g_pd)) 
-                gobj_displaced(y, x, 0, heightchange);
-        canvas_redraw(x);
-    }
-}
-*/
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

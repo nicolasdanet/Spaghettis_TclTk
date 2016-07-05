@@ -28,6 +28,13 @@ variable mod "Control"
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+# Filter annoying mouse interactions resizing windows. 
+
+variable isResizing 0
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 proc initialize {} {
     
     variable opt
@@ -203,20 +210,36 @@ proc _focusIn {top} {
 
 proc _motion {c x y m} {
 
+    variable isResizing
+    
     set top [winfo toplevel $c]
     ::ui_interface::pdsend "$top motion [$c canvasx $x] [$c canvasy $y] $m"
+    
+    set isResizing 0
 }
 
 proc _mouse {c x y f} {
 
-    set top [winfo toplevel $c]
-    ::ui_interface::pdsend "$top mouse [$c canvasx $x] [$c canvasy $y] $f"
+    variable isResizing
+    
+    if {$isResizing == 0} {
+    
+        set top [winfo toplevel $c]
+        ::ui_interface::pdsend "$top mouse [$c canvasx $x] [$c canvasy $y] $f"
+    }
 }
 
 proc _mouseUp {c x y} {
 
-    set top [winfo toplevel $c]
-    ::ui_interface::pdsend "$top mouseup [$c canvasx $x] [$c canvasy $y]"
+    variable isResizing
+    
+    if {$isResizing == 0} {
+    
+        set top [winfo toplevel $c]
+        ::ui_interface::pdsend "$top mouseup [$c canvasx $x] [$c canvasy $y]"
+    }
+    
+    set isResizing 0
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -260,10 +283,14 @@ proc _key {w keysym iso isPress} {
 
 proc _resized {top width height x y} {
 
+    variable isResizing
+    
     # Conditional below aims to filter annoying bad values generated at initialization time.
     
     if {$width > 1 && $height > 1} { 
     
+        set isResizing 1
+        
         ::ui_interface::pdsend "$top window $x $y [expr {$x + $width}] [expr {$y + $height}]"
     }
 }
