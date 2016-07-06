@@ -34,144 +34,6 @@ sublist - get a pointer into a list which is an element of another scalar
 extern t_class *scalar_class;
 extern t_class *canvas_class;
 
-/* ------------- gstubs and gpointers - safe pointing --------------- */
-
-/* create a gstub which is "owned" by a glist (gl) or an array ("a"). */
-
-t_gstub *gstub_new(t_glist *gl, t_array *a)
-{
-    t_gstub *gs = PD_MEMORY_GET(sizeof(*gs));
-    if (gl)
-    {
-        gs->gs_type = POINTER_GLIST;
-        gs->gs_un.gs_glist = gl;
-    }
-    else
-    {
-        gs->gs_type = POINTER_ARRAY;
-        gs->gs_un.gs_array = a;
-    }
-    gs->gs_count = 0;
-    return (gs);
-}
-
-/* when a "gpointer" is set to point to this stub (so we can later chase
-down the owner) we increase a reference count.  The following routine is called
-whenever a gpointer is unset from pointing here.  If the owner is
-gone and the refcount goes to zero, we can free the gstub safely. */
-
-static void gstub_dis(t_gstub *gs)
-{
-    int refcount = --gs->gs_count;
-    if ((!refcount) && gs->gs_type == POINTER_NONE)
-        PD_MEMORY_FREE(gs);
-    else if (refcount < 0) { PD_BUG; }
-}
-
-/* this routing is called by the owner to inform the gstub that it is
-being deleted.  If no gpointers are pointing here, we can free the gstub;
-otherwise we wait for the last gstub_dis() to free it. */
-
-void gstub_cutoff(t_gstub *gs)
-{
-    gs->gs_type = POINTER_NONE;
-    if (gs->gs_count < 0) { PD_BUG; }
-    if (!gs->gs_count) PD_MEMORY_FREE(gs);
-}
-
-/* call this to verify that a pointer is fresh, i.e., that it either
-points to real data or to the head of a list, and that in either case
-the object hasn't disappeared since this pointer was generated. 
-Unless "headok" is set,  the routine also fails for the head of a list. */
-
-int gpointer_check(const t_gpointer *gp, int headok)
-{
-    t_gstub *gs = gp->gp_stub;
-    if (!gs) return (0);
-    if (gs->gs_type == POINTER_ARRAY)
-    {
-        if (gs->gs_un.gs_array->a_valid != gp->gp_valid) return (0);
-        else return (1);
-    }
-    else if (gs->gs_type == POINTER_GLIST)
-    {
-        if (!headok && !gp->gp_un.gp_scalar) return (0);
-        else if (gs->gs_un.gs_glist->gl_magic != gp->gp_valid) return (0);
-        else return (1);
-    }
-    else return (0);
-}
-
-/* get the template for the object pointer to.  Assumes we've already checked
-freshness. */
-
-static t_symbol *gpointer_gettemplatesym(const t_gpointer *gp)
-{
-    t_gstub *gs = gp->gp_stub;
-    if (gs->gs_type == POINTER_GLIST)
-    {
-        t_scalar *sc = gp->gp_un.gp_scalar;
-        if (sc)
-            return (sc->sc_template);
-        else return (0);
-    }
-    else
-    {
-        t_array *a = gs->gs_un.gs_array;
-        return (a->a_template);
-    }
-}
-
-    /* copy a pointer to another, assuming the second one hasn't yet been
-    initialized.  New gpointers should be initialized either by this
-    routine or by gpointer_init below. */
-void gpointer_copy(const t_gpointer *gpfrom, t_gpointer *gpto)
-{
-    *gpto = *gpfrom;
-    if (gpto->gp_stub)
-        gpto->gp_stub->gs_count++;
-    else { PD_BUG; }
-}
-
-    /* clear a gpointer that was previously set, releasing the associted
-    gstub if this was the last reference to it. */
-void gpointer_unset(t_gpointer *gp)
-{
-    t_gstub *gs;
-    if (gs = gp->gp_stub)
-    {
-        gstub_dis(gs);
-        gp->gp_stub = 0;
-    }
-}
-
-void gpointer_setglist(t_gpointer *gp, t_glist *glist, t_scalar *x)
-{
-    t_gstub *gs;
-    if (gs = gp->gp_stub) gstub_dis(gs);
-    gp->gp_stub = gs = glist->gl_stub;
-    gp->gp_valid = glist->gl_magic;
-    gp->gp_un.gp_scalar = x;
-    gs->gs_count++;
-}
-
-void gpointer_setarray(t_gpointer *gp, t_array *array, t_word *w)
-{
-    t_gstub *gs;
-    if (gs = gp->gp_stub) gstub_dis(gs);
-    gp->gp_stub = gs = array->a_stub;
-    gp->gp_valid = array->a_valid;
-    gp->gp_un.gp_w = w;
-    gs->gs_count++;
-}
-
-void gpointer_init(t_gpointer *gp)
-{
-    gp->gp_stub = 0;
-    gp->gp_valid = 0;
-    gp->gp_un.gp_scalar = 0;
-}
-
 /*********  random utility function to find a binbuf in a datum */
 
 t_buffer *pointertobinbuf(t_pd *x, t_gpointer *gp, t_symbol *s,
@@ -290,7 +152,7 @@ static void ptrobj_vnext(t_ptrobj *x, t_float f)
         return;
     }
     glist = gs->gs_un.gs_glist;
-    if (glist->gl_magic != gp->gp_valid)
+    if (glist->gl_magic != gp->gp_magic)
     {
         post_error ("ptrobj_next: stale pointer");
         return;
@@ -1218,7 +1080,7 @@ static void append_float(t_append *x, t_float f)
         return;
     }
     glist = gs->gs_un.gs_glist;
-    if (glist->gl_magic != gp->gp_valid)
+    if (glist->gl_magic != gp->gp_magic)
     {
         post_error ("append: stale pointer");
         return;

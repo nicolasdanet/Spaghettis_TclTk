@@ -818,7 +818,9 @@ void            voutlet_dspEpilog                       (struct _voutlet *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_array         *array_new                              (t_symbol *templatesym, t_gpointer *parent);
+t_symbol        *gpointer_gettemplatesym                (const t_gpointer *gp);
+
+t_array         *array_new                              (t_symbol *templateName, t_gpointer *parent);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -902,6 +904,7 @@ void         array_resize_and_redraw    (t_array *array, t_glist *glist, int n);
 #pragma mark -
 
 t_gstub  *gstub_new             (t_glist *gl, t_array *a);
+void    gstub_dis               (t_gstub *gs);
 void     gstub_cutoff           (t_gstub *gs);
 void     gpointer_setglist      (t_gpointer *gp, t_glist *glist, t_scalar *x);
 void     gpointer_setarray      (t_gpointer *gp, t_array *array, t_word *w);

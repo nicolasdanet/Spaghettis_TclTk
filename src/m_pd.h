@@ -479,7 +479,7 @@ typedef struct _gpointer {
         struct _scalar  *gp_scalar;
         union word      *gp_w;
     } gp_un;
-    int     gp_valid;
+    int     gp_magic;
     t_gstub *gp_stub;
     } t_gpointer;
     
