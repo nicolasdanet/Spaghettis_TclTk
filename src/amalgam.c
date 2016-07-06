@@ -79,6 +79,7 @@
 #include "g_garray.c"
 #include "g_vinlet.c"
 #include "g_voutlet.c"
+
 #include "g_iem.c"
 #include "g_bang.c"
 #include "g_toggle.c"
@@ -87,6 +88,8 @@
 #include "g_dial.c"
 #include "g_vu.c"
 #include "g_panel.c"
+
+#include "g_scalar.c"
 #include "g_paint.c"
 #include "g_serialize.c"
 

@@ -791,9 +791,9 @@
 			isa = PBXGroup;
 			children = (
 				378971CF1C4F716700263434 /* g_scalar.c */,
-				371430B01D0D46BC00E68D11 /* g_paint.c */,
 				378971D01C4F716700263434 /* g_template.c */,
 				378971D31C4F716700263434 /* g_traversal.c */,
+				371430B01D0D46BC00E68D11 /* g_paint.c */,
 				374A76321CF5FA81001A57EB /* g_serialize.c */,
 			);
 			name = Scalar;
