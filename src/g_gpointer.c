@@ -17,9 +17,9 @@
 #include "m_macros.h"
 #include "g_canvas.h"
 
-t_gpointermaster *gstub_new(t_glist *gl, t_array *a)
+t_gmaster *gstub_new(t_glist *gl, t_array *a)
 {
-    t_gpointermaster *gs = PD_MEMORY_GET(sizeof(*gs));
+    t_gmaster *gs = PD_MEMORY_GET(sizeof(*gs));
     if (gl)
     {
         gs->gm_type = POINTER_GLIST;
@@ -39,7 +39,7 @@ down the owner) we increase a reference count.  The following routine is called
 whenever a gpointer is unset from pointing here.  If the owner is
 gone and the refcount goes to zero, we can free the gstub safely. */
 
-void gstub_dis(t_gpointermaster *gs)
+void gstub_dis(t_gmaster *gs)
 {
     int refcount = --gs->gm_count;
     if ((!refcount) && gs->gm_type == POINTER_NONE)
@@ -51,7 +51,7 @@ void gstub_dis(t_gpointermaster *gs)
 being deleted.  If no gpointers are pointing here, we can free the gstub;
 otherwise we wait for the last gstub_dis() to free it. */
 
-void gstub_cutoff(t_gpointermaster *gs)
+void gstub_cutoff(t_gmaster *gs)
 {
     gs->gm_type = POINTER_NONE;
     if (gs->gm_count < 0) { PD_BUG; }
@@ -69,7 +69,7 @@ Unless "headok" is set,  the routine also fails for the head of a list. */
 
 int gpointer_check(const t_gpointer *gp, int headok)
 {
-    t_gpointermaster *gs = gp->gp_master;
+    t_gmaster *gs = gp->gp_master;
     if (!gs) return (0);
     if (gs->gm_type == POINTER_ARRAY)
     {
@@ -90,7 +90,7 @@ freshness. */
 
 t_symbol *gpointer_gettemplatesym (const t_gpointer *gp)
 {
-    t_gpointermaster *gs = gp->gp_master;
+    t_gmaster *gs = gp->gp_master;
     if (gs->gm_type == POINTER_GLIST)
     {
         t_scalar *sc = gp->gp_un.gp_scalar;
@@ -120,7 +120,7 @@ void gpointer_copy(const t_gpointer *gpfrom, t_gpointer *gpto)
     gstub if this was the last reference to it. */
 void gpointer_unset(t_gpointer *gp)
 {
-    t_gpointermaster *gs;
+    t_gmaster *gs;
     if (gs = gp->gp_master)
     {
         gstub_dis(gs);
@@ -130,7 +130,7 @@ void gpointer_unset(t_gpointer *gp)
 
 void gpointer_setglist(t_gpointer *gp, t_glist *glist, t_scalar *x)
 {
-    t_gpointermaster *gs;
+    t_gmaster *gs;
     if (gs = gp->gp_master) gstub_dis(gs);
     gp->gp_master = gs = glist->gl_master;
     gp->gp_magic = glist->gl_magic;
@@ -140,7 +140,7 @@ void gpointer_setglist(t_gpointer *gp, t_glist *glist, t_scalar *x)
 
 void gpointer_setarray(t_gpointer *gp, t_array *array, t_word *w)
 {
-    t_gpointermaster *gs;
+    t_gmaster *gs;
     if (gs = gp->gp_master) gstub_dis(gs);
     gp->gp_master = gs = array->a_master;
     gp->gp_magic = array->a_valid;

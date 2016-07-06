@@ -238,7 +238,7 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
     else if (x->tc_struct)   /* by pointer */
     {
         t_template *template = template_findbyname(x->tc_struct);
-        t_gpointermaster *gs = x->tc_gp.gp_master;
+        t_gmaster *gs = x->tc_gp.gp_master;
         t_word *vec; 
         int onset, type;
         t_symbol *arraytype;

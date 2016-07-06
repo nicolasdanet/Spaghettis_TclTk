@@ -235,7 +235,7 @@ typedef struct _editor {
 struct _glist {  
     t_object            gl_obj;                 /* MUST be the first. */
     t_gobj              *gl_graphics;
-    t_gpointermaster    *gl_master;
+    t_gmaster           *gl_master;
     t_glist             *gl_parent;
     t_glist             *gl_next;
     t_environment       *gl_environment;
@@ -270,13 +270,35 @@ struct _glist {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+struct _gmaster {
+    union {
+        t_glist         *gm_glist;
+        t_array         *gm_array;
+    } gs_un;
+    int                 gm_type;
+    int                 gm_count;
+    };
+
+struct _gpointer {
+    union {   
+        struct _scalar  *gp_scalar;
+        union word      *gp_w;
+    } gp_un;
+    t_gmaster           *gp_master;
+    int                 gp_magic;
+    };
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 struct _array {
     int                 a_size;
     int                 a_elementSize;
     char                *a_vector;
     t_symbol            *a_template;
-    t_gpointermaster    *a_master;
+    t_gmaster           *a_master;
     int                 a_valid;
     t_gpointer          a_gpointer;
     };
@@ -903,9 +925,9 @@ void         array_resize_and_redraw    (t_array *array, t_glist *glist, int n);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_gpointermaster  *gstub_new             (t_glist *gl, t_array *a);
-void    gstub_dis               (t_gpointermaster *gs);
-void     gstub_cutoff           (t_gpointermaster *gs);
+t_gmaster  *gstub_new             (t_glist *gl, t_array *a);
+void    gstub_dis               (t_gmaster *gs);
+void     gstub_cutoff           (t_gmaster *gs);
 void     gpointer_setglist      (t_gpointer *gp, t_glist *glist, t_scalar *x);
 void     gpointer_setarray      (t_gpointer *gp, t_array *array, t_word *w);
 

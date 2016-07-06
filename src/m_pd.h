@@ -419,70 +419,51 @@ typedef int                     t_fontsize;
 #pragma mark -
 
 struct _array;
+struct _boxtext;
 struct _class;
-struct _outlet;
-struct _inlet;
-struct _buffer;
 struct _clock;
-struct _outconnect;
-struct _glist;
-struct _template;
-struct _widgetbehavior;
-struct _parentwidgetbehavior;
-struct _message;
-struct _garray;
-struct _gatom;
-struct _pdinstance;
 struct _dspcontext;
-struct _gtemplate;
-struct _guiconnect;
 struct _environment;
 struct _fielddescriptor;
-struct _boxtext;
+struct _garray;
+struct _gatom;
+struct _glist;
+struct _gmaster;
+struct _gpointer;
+struct _gtemplate;
+struct _guiconnect;
+struct _inlet;
+struct _message;
+struct _outconnect;
+struct _outlet;
+struct _parentwidgetbehavior;
+struct _pdinstance;
+struct _template;
+struct _widgetbehavior;
 
-#define t_array                 struct _array
-#define t_class                 struct _class
-#define t_outlet                struct _outlet
-#define t_inlet                 struct _inlet
-#define t_clock                 struct _clock
-#define t_outconnect            struct _outconnect
-#define t_glist                 struct _glist
-#define t_template              struct _template
-#define t_widgetbehavior        struct _widgetbehavior
-#define t_parentwidgetbehavior  struct _parentwidgetbehavior
-#define t_message               struct _message
-#define t_garray                struct _garray
-#define t_gatom                 struct _gatom
-#define t_pdinstance            struct _pdinstance
-#define t_dspcontext            struct _dspcontext
-#define t_gtemplate             struct _gtemplate
-#define t_guiconnect            struct _guiconnect
-#define t_environment           struct _environment
-#define t_fielddescriptor       struct _fielddescriptor
-#define t_boxtext               struct _boxtext
+#define t_array                     struct _array
+#define t_boxtext                   struct _boxtext
+#define t_class                     struct _class
+#define t_clock                     struct _clock
+#define t_dspcontext                struct _dspcontext
+#define t_environment               struct _environment
+#define t_fielddescriptor           struct _fielddescriptor
+#define t_garray                    struct _garray
+#define t_gatom                     struct _gatom
+#define t_glist                     struct _glist
+#define t_gmaster                   struct _gmaster
+#define t_gpointer                  struct _gpointer
+#define t_gtemplate                 struct _gtemplate
+#define t_guiconnect                struct _guiconnect
+#define t_inlet                     struct _inlet
+#define t_message                   struct _message
+#define t_outconnect                struct _outconnect
+#define t_outlet                    struct _outlet
+#define t_parentwidgetbehavior      struct _parentwidgetbehavior
+#define t_pdinstance                struct _pdinstance
+#define t_template                  struct _template
+#define t_widgetbehavior            struct _widgetbehavior
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-typedef struct _gpointermaster {
-    union {
-        t_glist         *gm_glist;
-        t_array         *gm_array;
-    } gs_un;
-    int                 gm_type;
-    int                 gm_count;
-    } t_gpointermaster;
-
-typedef struct _gpointer {
-    union {   
-        struct _scalar  *gp_scalar;
-        union word      *gp_w;
-    } gp_un;
-    t_gpointermaster    *gp_master;
-    int                 gp_magic;
-    } t_gpointer;
-    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
@@ -494,6 +475,8 @@ typedef struct _symbol {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+struct _buffer;
 
 typedef union word {
     t_float         w_float;
