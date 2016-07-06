@@ -75,8 +75,8 @@ static int dataslot_matches(t_dataslot *ds1, t_dataslot *ds2,
 t_template *template_new(t_symbol *templatesym, int argc, t_atom *argv)
 {
     t_template *x = (t_template *)pd_new(template_class);
-    x->tpl_size = 0;
-    x->tpl_vector = (t_dataslot *)PD_MEMORY_GET(0);
+    x->tp_size = 0;
+    x->tp_vector = (t_dataslot *)PD_MEMORY_GET(0);
     while (argc > 0)
     {
         int newtype, oldn, newn;
@@ -110,22 +110,22 @@ t_template *template_new(t_symbol *templatesym, int argc, t_atom *argv)
             post_error ("%s: no such type", newtypesym->s_name);
             goto bad;
         }
-        newn = (oldn = x->tpl_size) + 1;
-        x->tpl_vector = (t_dataslot *)PD_MEMORY_RESIZE(x->tpl_vector,
-            oldn * sizeof(*x->tpl_vector), newn * sizeof(*x->tpl_vector));
-        x->tpl_size = newn;
-        x->tpl_vector[oldn].ds_type = newtype;
-        x->tpl_vector[oldn].ds_name = newname;
-        x->tpl_vector[oldn].ds_template = newarraytemplate;
+        newn = (oldn = x->tp_size) + 1;
+        x->tp_vector = (t_dataslot *)PD_MEMORY_RESIZE(x->tp_vector,
+            oldn * sizeof(*x->tp_vector), newn * sizeof(*x->tp_vector));
+        x->tp_size = newn;
+        x->tp_vector[oldn].ds_type = newtype;
+        x->tp_vector[oldn].ds_name = newname;
+        x->tp_vector[oldn].ds_template = newarraytemplate;
     bad: 
         argc -= 2; argv += 2;
     }
     if (*templatesym->s_name)
     {
-        x->tpl_symbol = templatesym;
-        pd_bind(&x->tpl_pd, x->tpl_symbol);
+        x->tp_symbol = templatesym;
+        pd_bind(&x->tp_pd, x->tp_symbol);
     }
-    else x->tpl_symbol = templatesym;
+    else x->tp_symbol = templatesym;
     return (x);
 }
 
@@ -139,13 +139,13 @@ int template_find_field(t_template *x, t_symbol *name, int *p_onset,
         PD_BUG;
         return (0);
     }
-    n = x->tpl_size;
+    n = x->tp_size;
     for (i = 0; i < n; i++)
-        if (x->tpl_vector[i].ds_name == name)
+        if (x->tp_vector[i].ds_name == name)
     {
         *p_onset = i * sizeof(t_word);
-        *p_type = x->tpl_vector[i].ds_type;
-        *p_arraytype = x->tpl_vector[i].ds_template;
+        *p_type = x->tp_vector[i].ds_type;
+        *p_arraytype = x->tp_vector[i].ds_template;
         return (1);
     }
     return (0);
@@ -162,10 +162,10 @@ t_float template_getfloat(t_template *x, t_symbol *fieldname, t_word *wp,
         if (type == DATA_FLOAT)
             val = *(t_float *)(((char *)wp) + onset);
         else if (loud) post_error ("%s.%s: not a number",
-            x->tpl_symbol->s_name, fieldname->s_name);
+            x->tp_symbol->s_name, fieldname->s_name);
     }
     else if (loud) post_error ("%s.%s: no such field",
-        x->tpl_symbol->s_name, fieldname->s_name);
+        x->tp_symbol->s_name, fieldname->s_name);
     return (val);
 }
 
@@ -179,10 +179,10 @@ void template_setfloat(t_template *x, t_symbol *fieldname, t_word *wp,
         if (type == DATA_FLOAT)
             *(t_float *)(((char *)wp) + onset) = f;
         else if (loud) post_error ("%s.%s: not a number",
-            x->tpl_symbol->s_name, fieldname->s_name);
+            x->tp_symbol->s_name, fieldname->s_name);
     }
     else if (loud) post_error ("%s.%s: no such field",
-        x->tpl_symbol->s_name, fieldname->s_name);
+        x->tp_symbol->s_name, fieldname->s_name);
 }
 
 t_symbol *template_getsymbol(t_template *x, t_symbol *fieldname, t_word *wp,
@@ -196,10 +196,10 @@ t_symbol *template_getsymbol(t_template *x, t_symbol *fieldname, t_word *wp,
         if (type == DATA_SYMBOL)
             val = *(t_symbol **)(((char *)wp) + onset);
         else if (loud) post_error ("%s.%s: not a symbol",
-            x->tpl_symbol->s_name, fieldname->s_name);
+            x->tp_symbol->s_name, fieldname->s_name);
     }
     else if (loud) post_error ("%s.%s: no such field",
-        x->tpl_symbol->s_name, fieldname->s_name);
+        x->tp_symbol->s_name, fieldname->s_name);
     return (val);
 }
 
@@ -213,10 +213,10 @@ void template_setsymbol(t_template *x, t_symbol *fieldname, t_word *wp,
         if (type == DATA_SYMBOL)
             *(t_symbol **)(((char *)wp) + onset) = s;
         else if (loud) post_error ("%s.%s: not a symbol",
-            x->tpl_symbol->s_name, fieldname->s_name);
+            x->tp_symbol->s_name, fieldname->s_name);
     }
     else if (loud) post_error ("%s.%s: no such field",
-        x->tpl_symbol->s_name, fieldname->s_name);
+        x->tp_symbol->s_name, fieldname->s_name);
 }
 
     /* stringent check to see if a "saved" template, x2, matches the current
@@ -225,17 +225,17 @@ void template_setsymbol(t_template *x, t_symbol *fieldname, t_word *wp,
 int template_match(t_template *x1, t_template *x2)
 {
     int i;
-    if (x1->tpl_size < x2->tpl_size)
+    if (x1->tp_size < x2->tp_size)
         return (0);
-    for (i = x2->tpl_size; i < x1->tpl_size; i++)
+    for (i = x2->tp_size; i < x1->tp_size; i++)
     {
-        if (x1->tpl_vector[i].ds_type == DATA_ARRAY)
+        if (x1->tp_vector[i].ds_type == DATA_ARRAY)
                 return (0);
     }
-    if (x2->tpl_size > x1->tpl_size)
+    if (x2->tp_size > x1->tp_size)
         post("add elements...");
-    for (i = 0; i < x2->tpl_size; i++)
-        if (!dataslot_matches(&x1->tpl_vector[i], &x2->tpl_vector[i], 1))
+    for (i = 0; i < x2->tp_size; i++)
+        if (!dataslot_matches(&x1->tp_vector[i], &x2->tp_vector[i], 1))
             return (0);
     return (1);
 }
@@ -253,7 +253,7 @@ elements might still be old ones.)
 static void template_conformwords(t_template *tfrom, t_template *tto,
     int *conformaction, t_word *wfrom, t_word *wto)
 {
-    int nfrom = tfrom->tpl_size, nto = tto->tpl_size, i;
+    int nfrom = tfrom->tp_size, nto = tto->tp_size, i;
     for (i = 0; i < nto; i++)
     {
         if (conformaction[i] >= 0)
@@ -273,18 +273,18 @@ static t_scalar *template_conformscalar(t_template *tfrom, t_template *tto,
 {
     t_scalar *x;
     t_gpointer gp;
-    int nto = tto->tpl_size, nfrom = tfrom->tpl_size, i;
+    int nto = tto->tp_size, nfrom = tfrom->tp_size, i;
     t_template *scalartemplate;
     /* post("conform scalar"); */
         /* possibly replace the scalar */
-    if (scfrom->sc_template == tfrom->tpl_symbol)
+    if (scfrom->sc_template == tfrom->tp_symbol)
     {
             /* see scalar_new() for comment about the gpointer. */
         gpointer_init(&gp);
         x = (t_scalar *)PD_MEMORY_GET(sizeof(t_scalar) +
-            (tto->tpl_size - 1) * sizeof(*x->sc_vector));
+            (tto->tp_size - 1) * sizeof(*x->sc_vector));
         x->sc_g.g_pd = scalar_class;
-        x->sc_template = tfrom->tpl_symbol;
+        x->sc_template = tfrom->tp_symbol;
         gpointer_setglist(&gp, glist, x);
             /* Here we initialize to the new template, but array and list
             elements will still belong to old template. */
@@ -322,9 +322,9 @@ static t_scalar *template_conformscalar(t_template *tfrom, t_template *tto,
         scalartemplate = template_findbyname(x->sc_template);
     }
         /* convert all array elements */
-    for (i = 0; i < scalartemplate->tpl_size; i++)
+    for (i = 0; i < scalartemplate->tp_size; i++)
     {
-        t_dataslot *ds = scalartemplate->tpl_vector + i;
+        t_dataslot *ds = scalartemplate->tp_vector + i;
         if (ds->ds_type == DATA_ARRAY)
         {
             template_conformarray(tfrom, tto, conformaction, 
@@ -340,11 +340,11 @@ static void template_conformarray(t_template *tfrom, t_template *tto,
 {
     int i, j;
     t_template *scalartemplate = 0;
-    if (a->a_template == tfrom->tpl_symbol)
+    if (a->a_template == tfrom->tp_symbol)
     {
         /* the array elements must all be conformed */
-        int oldelemsize = sizeof(t_word) * tfrom->tpl_size,
-            newelemsize = sizeof(t_word) * tto->tpl_size;
+        int oldelemsize = sizeof(t_word) * tfrom->tp_size,
+            newelemsize = sizeof(t_word) * tto->tp_size;
         char *newarray = PD_MEMORY_GET(newelemsize * a->a_size);
         char *oldarray = a->a_vector;
         if (a->a_elementSize != oldelemsize) { PD_BUG; }
@@ -365,9 +365,9 @@ static void template_conformarray(t_template *tfrom, t_template *tto,
     for (i = 0; i < a->a_size; i++)
     {
         t_word *wp = (t_word *)(a->a_vector + sizeof(t_word) * a->a_size * i);
-        for (j = 0; j < scalartemplate->tpl_size; j++)
+        for (j = 0; j < scalartemplate->tp_size; j++)
         {
-            t_dataslot *ds = scalartemplate->tpl_vector + j;
+            t_dataslot *ds = scalartemplate->tp_vector + j;
             if (ds->ds_type == DATA_ARRAY)
             {
                 template_conformarray(tfrom, tto, conformaction, 
@@ -403,7 +403,7 @@ static void template_conformglist(t_template *tfrom, t_template *tto,
     /* globally conform all scalars from one template to another */ 
 void template_conform(t_template *tfrom, t_template *tto)
 {
-    int nto = tto->tpl_size, nfrom = tfrom->tpl_size, i, j,
+    int nto = tto->tp_size, nfrom = tfrom->tp_size, i, j,
         *conformaction = (int *)PD_MEMORY_GET(sizeof(int) * nto),
         *conformedfrom = (int *)PD_MEMORY_GET(sizeof(int) * nfrom), doit = 0;
     for (i = 0; i < nto; i++)
@@ -412,10 +412,10 @@ void template_conform(t_template *tfrom, t_template *tto)
         conformedfrom[i] = 0;
     for (i = 0; i < nto; i++)
     {
-        t_dataslot *dataslot = &tto->tpl_vector[i];
+        t_dataslot *dataslot = &tto->tp_vector[i];
         for (j = 0; j < nfrom; j++)
         {
-            t_dataslot *dataslot2 = &tfrom->tpl_vector[j];
+            t_dataslot *dataslot2 = &tfrom->tp_vector[j];
             if (dataslot_matches(dataslot, dataslot2, 1))
             {
                 conformaction[i] = j;
@@ -426,10 +426,10 @@ void template_conform(t_template *tfrom, t_template *tto)
     for (i = 0; i < nto; i++)
         if (conformaction[i] < 0)
     {
-        t_dataslot *dataslot = &tto->tpl_vector[i];
+        t_dataslot *dataslot = &tto->tp_vector[i];
         for (j = 0; j < nfrom; j++)
             if (!conformedfrom[j] &&
-                dataslot_matches(dataslot, &tfrom->tpl_vector[j], 0))
+                dataslot_matches(dataslot, &tfrom->tp_vector[j], 0))
         {
             conformaction[i] = j;
             conformedfrom[j] = 1;
@@ -460,16 +460,16 @@ t_glist *template_findcanvas(t_template *template)
 {
     t_gtemplate *gt;
     if (!template) { PD_BUG; }
-    if (!(gt = template->tpl_list))
+    if (!(gt = template->tp_list))
         return (0);
     return (gt->x_owner);
-    /* return ((t_glist *)pd_findByClass(template->tpl_symbol, canvas_class)); */
+    /* return ((t_glist *)pd_findByClass(template->tp_symbol, canvas_class)); */
 }
 
 void template_notify(t_template *template, t_symbol *s, int argc, t_atom *argv)
 {
-    if (template->tpl_list)
-        outlet_anything(template->tpl_list->x_obj.te_outlet, s, argc, argv);
+    if (template->tp_list)
+        outlet_anything(template->tp_list->x_obj.te_outlet, s, argc, argv);
 }
 
     /* bash the first of (argv) with a pointer to a scalar, and send on
@@ -510,7 +510,7 @@ static void *template_usetemplate(void *dummy, t_symbol *s,
         if (!template_match(x, y))
         {
                 /* Are there "struct" objects upholding this template? */
-            if (x->tpl_list)
+            if (x->tp_list)
             {
                     /* don't know what to do here! */
                 post_error ("%s: template mismatch",
@@ -520,12 +520,12 @@ static void *template_usetemplate(void *dummy, t_symbol *s,
             {
                     /* conform everyone to the new template */
                 template_conform(x, y);
-                pd_free(&x->tpl_pd);
+                pd_free(&x->tp_pd);
                 y2 = template_new(templatesym, argc, argv);
-                y2->tpl_list = 0;
+                y2->tp_list = 0;
             }
         }
-        pd_free(&y->tpl_pd);
+        pd_free(&y->tp_pd);
     }
         /* otherwise, just make one. */
     else template_new(templatesym, argc, argv);
@@ -535,9 +535,9 @@ static void *template_usetemplate(void *dummy, t_symbol *s,
     /* here we assume someone has already cleaned up all instances of this. */
 void template_free(t_template *x)
 {
-    if (*x->tpl_symbol->s_name)
-        pd_unbind(&x->tpl_pd, x->tpl_symbol);
-    PD_MEMORY_FREE(x->tpl_vector);
+    if (*x->tp_symbol->s_name)
+        pd_unbind(&x->tp_pd, x->tp_symbol);
+    PD_MEMORY_FREE(x->tp_vector);
 }
 
 static void template_setup(void)
@@ -578,10 +578,10 @@ static void *gtemplate_donew(t_symbol *sym, int argc, t_atom *argv)
             /* if it's already got a "struct" object we
             just tack this one to the end of the list and leave it
             there. */
-        if (t->tpl_list)
+        if (t->tp_list)
         {
             t_gtemplate *x2, *x3;
-            for (x2 = x->x_template->tpl_list; x3 = x2->x_next; x2 = x3)
+            for (x2 = x->x_template->tp_list; x3 = x2->x_next; x2 = x3)
                 ;
             x2->x_next = x;
             post("template %s: warning: already exists.", sym->s_name);
@@ -598,11 +598,11 @@ static void *gtemplate_donew(t_symbol *sym, int argc, t_atom *argv)
             {
                     /* conform everyone to the new template */
                 template_conform(t, y);
-                pd_free(&t->tpl_pd);
+                pd_free(&t->tp_pd);
                 t = template_new(sym, argc, argv);
             }
-            pd_free(&y->tpl_pd);
-            t->tpl_list = x;
+            pd_free(&y->tp_pd);
+            t->tp_list = x;
             canvas_paintAllScalarsByTemplate(t, SCALAR_DRAW);
         }
     }
@@ -610,7 +610,7 @@ static void *gtemplate_donew(t_symbol *sym, int argc, t_atom *argv)
     {
             /* otherwise make a new one and we're the only struct on it. */
         x->x_template = t = template_new(sym, argc, argv);
-        t->tpl_list = x;
+        t->tp_list = x;
     }
     outlet_new(&x->x_obj, 0);
     return (x);
@@ -651,7 +651,7 @@ static void gtemplate_free(t_gtemplate *x)
         /* get off the template's list */
     t_template *t = x->x_template;
     t_gtemplate *y;
-    if (x == t->tpl_list)
+    if (x == t->tp_list)
     {
         canvas_paintAllScalarsByTemplate(t, SCALAR_ERASE);
         if (x->x_next)
@@ -662,20 +662,20 @@ static void gtemplate_free(t_gtemplate *x)
             t_template *z = template_new(&s_,
                 x->x_next->x_argc, x->x_next->x_argv);
             template_conform(t, z);
-            pd_free(&t->tpl_pd);
-            pd_free(&z->tpl_pd);
+            pd_free(&t->tp_pd);
+            pd_free(&z->tp_pd);
             z = template_new(x->x_sym, x->x_next->x_argc, x->x_next->x_argv);
-            z->tpl_list = x->x_next;
-            for (y = z->tpl_list; y ; y = y->x_next)
+            z->tp_list = x->x_next;
+            for (y = z->tp_list; y ; y = y->x_next)
                 y->x_template = z;
         }
-        else t->tpl_list = 0;
+        else t->tp_list = 0;
         canvas_paintAllScalarsByTemplate(t, SCALAR_DRAW);
     }
     else
     {
         t_gtemplate *x2, *x3;
-        for (x2 = t->tpl_list; x3 = x2->x_next; x2 = x3)
+        for (x2 = t->tp_list; x3 = x2->x_next; x2 = x3)
         {
             if (x == x3)
             {
@@ -1506,7 +1506,7 @@ int array_getfields(t_symbol *elemtemplatesym,
         post_error ("plot: %s: no canvas for this template", elemtemplatesym->s_name);
         return (-1);
     }
-    elemsize = elemtemplate->tpl_size * sizeof(t_word);
+    elemsize = elemtemplate->tp_size * sizeof(t_word);
     if (yfielddesc && yfielddesc->fd_var)
         varname = yfielddesc->fd_un.fd_varsym;
     else varname = sym_y;

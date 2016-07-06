@@ -20,8 +20,8 @@
 
 void word_init(t_word *wp, t_template *template, t_gpointer *gp)
 {
-    int i, nitems = template->tpl_size;
-    t_dataslot *datatypes = template->tpl_vector;
+    int i, nitems = template->tp_size;
+    t_dataslot *datatypes = template->tp_vector;
     for (i = 0; i < nitems; i++, datatypes++, wp++)
     {
         int type = datatypes->ds_type;
@@ -39,8 +39,8 @@ void word_init(t_word *wp, t_template *template, t_gpointer *gp)
 void word_restore(t_word *wp, t_template *template,
     int argc, t_atom *argv)
 {
-    int i, nitems = template->tpl_size;
-    t_dataslot *datatypes = template->tpl_vector;
+    int i, nitems = template->tp_size;
+    t_dataslot *datatypes = template->tp_vector;
     for (i = 0; i < nitems; i++, datatypes++, wp++)
     {
         int type = datatypes->ds_type;
@@ -75,7 +75,7 @@ void word_free(t_word *wp, t_template *template)
 {
     int i;
     t_dataslot *dt;
-    for (dt = template->tpl_vector, i = 0; i < template->tpl_size; i++, dt++)
+    for (dt = template->tp_vector, i = 0; i < template->tp_size; i++, dt++)
     {
         if (dt->ds_type == DATA_ARRAY)
             array_free(wp[i].w_array);

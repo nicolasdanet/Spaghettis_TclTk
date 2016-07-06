@@ -465,22 +465,22 @@ struct _boxtext;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef struct _gstub {
+typedef struct _gpointermaster {
     union {
-        t_glist *gs_glist;
-        t_array *gs_array;
+        t_glist         *gm_glist;
+        t_array         *gm_array;
     } gs_un;
-    int gs_type;
-    int gs_count;
-    } t_gstub;
+    int                 gm_type;
+    int                 gm_count;
+    } t_gpointermaster;
 
 typedef struct _gpointer {
     union {   
         struct _scalar  *gp_scalar;
         union word      *gp_w;
     } gp_un;
-    int     gp_magic;
-    t_gstub *gp_stub;
+    t_gpointermaster    *gp_master;
+    int                 gp_magic;
     } t_gpointer;
     
 // -----------------------------------------------------------------------------------------------------------

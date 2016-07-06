@@ -182,7 +182,7 @@ static void pointerinlet_forPointer (t_inlet *x, t_gpointer *gp)
 {
     gpointer_unset (x->i_un.i_pointer); 
     *(x->i_un.i_pointer) = *gp;
-    if (gp->gp_stub) { gp->gp_stub->gs_count++; }
+    if (gp->gp_master) { gp->gp_master->gm_count++; }
 }
 
 // -----------------------------------------------------------------------------------------------------------

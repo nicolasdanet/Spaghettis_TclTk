@@ -30,8 +30,8 @@ t_class *scalar_class;                  /* Shared. */
 
 static int template_cancreate(t_template *template)
 {
-    int i, type, nitems = template->tpl_size;
-    t_dataslot *datatypes = template->tpl_vector;
+    int i, type, nitems = template->tp_size;
+    t_dataslot *datatypes = template->tp_vector;
     t_template *elemtemplate;
     for (i = 0; i < nitems; i++, datatypes++)
         if (datatypes->ds_type == DATA_ARRAY &&
@@ -65,7 +65,7 @@ t_scalar *scalar_new(t_glist *owner, t_symbol *templatesym)
     if (!template_cancreate(template))
         return (0);
     x = (t_scalar *)PD_MEMORY_GET(sizeof(t_scalar) +
-        (template->tpl_size - 1) * sizeof(*x->sc_vector));
+        (template->tp_size - 1) * sizeof(*x->sc_vector));
     x->sc_g.g_pd = scalar_class;
     x->sc_template = templatesym;
     gpointer_setglist(&gp, owner, x);

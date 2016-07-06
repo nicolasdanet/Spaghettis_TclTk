@@ -238,7 +238,7 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
     else if (x->tc_struct)   /* by pointer */
     {
         t_template *template = template_findbyname(x->tc_struct);
-        t_gstub *gs = x->tc_gp.gp_stub;
+        t_gpointermaster *gs = x->tc_gp.gp_master;
         t_word *vec; 
         int onset, type;
         t_symbol *arraytype;
@@ -252,7 +252,7 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
             post_error ("array: stale or empty pointer");
             return (0);
         }
-        if (gs->gs_type == POINTER_ARRAY)
+        if (gs->gm_type == POINTER_ARRAY)
             vec = x->tc_gp.gp_un.gp_w;
         else vec = x->tc_gp.gp_un.gp_scalar->sc_vector;
 
@@ -268,14 +268,14 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
                 x->tc_field->s_name);
             return (0);
         }
-        if (gs->gs_type == POINTER_GLIST)
-            *glist = gs->gs_un.gs_glist;
+        if (gs->gm_type == POINTER_GLIST)
+            *glist = gs->gs_un.gm_glist;
         else
         {
-            t_array *owner_array = gs->gs_un.gs_array;
-            while (owner_array->a_gpointer.gp_stub->gs_type == POINTER_ARRAY)
-                owner_array = owner_array->a_gpointer.gp_stub->gs_un.gs_array;
-            *glist = owner_array->a_gpointer.gp_stub->gs_un.gs_glist;
+            t_array *owner_array = gs->gs_un.gm_array;
+            while (owner_array->a_gpointer.gp_master->gm_type == POINTER_ARRAY)
+                owner_array = owner_array->a_gpointer.gp_master->gs_un.gm_array;
+            *glist = owner_array->a_gpointer.gp_master->gs_un.gm_glist;
         }
         return (*(t_array **)(((char *)vec) + onset));
     }

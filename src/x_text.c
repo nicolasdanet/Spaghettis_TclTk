@@ -293,7 +293,7 @@ static void text_define_frompointer(t_text_define *x, t_gpointer *gp,
         gp, s, "text_frompointer");
     if (b)
     {
-        t_gstub *gs = gp->gp_stub;
+        t_gpointermaster *gs = gp->gp_master;
         buffer_reset(x->x_textbuf.b_binbuf);
         buffer_append(x->x_textbuf.b_binbuf, buffer_size(b), buffer_atoms(b));
     } 
@@ -305,19 +305,19 @@ static void text_define_topointer(t_text_define *x, t_gpointer *gp, t_symbol *s)
         gp, s, "text_topointer");
     if (b)
     {
-        t_gstub *gs = gp->gp_stub;
+        t_gpointermaster *gs = gp->gp_master;
         buffer_reset(b);
         buffer_append(b, buffer_size(x->x_textbuf.b_binbuf),
             buffer_atoms(x->x_textbuf.b_binbuf));
-        if (gs->gs_type == POINTER_GLIST)
-            scalar_redraw(gp->gp_un.gp_scalar, gs->gs_un.gs_glist);  
+        if (gs->gm_type == POINTER_GLIST)
+            scalar_redraw(gp->gp_un.gp_scalar, gs->gs_un.gm_glist);  
         else
         {
-            t_array *owner_array = gs->gs_un.gs_array;
-            while (owner_array->a_gpointer.gp_stub->gs_type == POINTER_ARRAY)
-                owner_array = owner_array->a_gpointer.gp_stub->gs_un.gs_array;
+            t_array *owner_array = gs->gs_un.gm_array;
+            while (owner_array->a_gpointer.gp_master->gm_type == POINTER_ARRAY)
+                owner_array = owner_array->a_gpointer.gp_master->gs_un.gm_array;
             scalar_redraw(owner_array->a_gpointer.gp_un.gp_scalar,
-                owner_array->a_gpointer.gp_stub->gs_un.gs_glist);  
+                owner_array->a_gpointer.gp_master->gs_un.gm_glist);  
         }
     } 
 }
@@ -428,7 +428,7 @@ static t_buffer *text_client_getbuf(t_text_client *x)
     else if (x->tc_struct)   /* by pointer */
     {
         t_template *template = template_findbyname(x->tc_struct);
-        t_gstub *gs = x->tc_gp.gp_stub;
+        t_gpointermaster *gs = x->tc_gp.gp_master;
         t_word *vec; 
         int onset, type;
         t_symbol *arraytype;
@@ -442,7 +442,7 @@ static t_buffer *text_client_getbuf(t_text_client *x)
             post_error ("text: stale or empty pointer");
             return (0);
         }
-        if (gs->gs_type == POINTER_ARRAY)
+        if (gs->gm_type == POINTER_ARRAY)
             vec = x->tc_gp.gp_un.gp_w;
         else vec = x->tc_gp.gp_un.gp_scalar->sc_vector;
 
@@ -475,7 +475,7 @@ static  void text_client_senditup(t_text_client *x)
     else if (x->tc_struct)   /* by pointer */
     {
         t_template *template = template_findbyname(x->tc_struct);
-        t_gstub *gs = x->tc_gp.gp_stub;
+        t_gpointermaster *gs = x->tc_gp.gp_master;
         if (!template)
         {
             post_error ("text: couldn't find struct %s", x->tc_struct->s_name);
@@ -486,15 +486,15 @@ static  void text_client_senditup(t_text_client *x)
             post_error ("text: stale or empty pointer");
             return;
         }
-        if (gs->gs_type == POINTER_GLIST)
-            scalar_redraw(x->tc_gp.gp_un.gp_scalar, gs->gs_un.gs_glist);  
+        if (gs->gm_type == POINTER_GLIST)
+            scalar_redraw(x->tc_gp.gp_un.gp_scalar, gs->gs_un.gm_glist);  
         else
         {
-            t_array *owner_array = gs->gs_un.gs_array;
-            while (owner_array->a_gpointer.gp_stub->gs_type == POINTER_ARRAY)
-                owner_array = owner_array->a_gpointer.gp_stub->gs_un.gs_array;
+            t_array *owner_array = gs->gs_un.gm_array;
+            while (owner_array->a_gpointer.gp_master->gm_type == POINTER_ARRAY)
+                owner_array = owner_array->a_gpointer.gp_master->gs_un.gm_array;
             scalar_redraw(owner_array->a_gpointer.gp_un.gp_scalar,
-                owner_array->a_gpointer.gp_stub->gs_un.gs_glist);  
+                owner_array->a_gpointer.gp_master->gs_un.gm_glist);  
         }
     }
 }

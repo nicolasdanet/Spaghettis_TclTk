@@ -43,7 +43,7 @@ t_buffer *pointertobinbuf(t_pd *x, t_gpointer *gp, t_symbol *s,
     t_template *template;
     int onset, type;
     t_buffer *b;
-    t_gstub *gs = gp->gp_stub;
+    t_gpointermaster *gs = gp->gp_master;
     t_word *vec;
     if (!templatesym)
     {
@@ -68,7 +68,7 @@ t_buffer *pointertobinbuf(t_pd *x, t_gpointer *gp, t_symbol *s,
             templatesym->s_name, s->s_name);
         return (0);
     }
-    if (gs->gs_type == POINTER_ARRAY)
+    if (gs->gm_type == POINTER_ARRAY)
         vec = gp->gp_un.gp_w;
     else vec = gp->gp_un.gp_scalar->sc_vector;
     return (vec[onset].w_buffer);
@@ -137,7 +137,7 @@ static void ptrobj_vnext(t_ptrobj *x, t_float f)
 {
     t_gobj *gobj;
     t_gpointer *gp = &x->x_gp;
-    t_gstub *gs = gp->gp_stub;
+    t_gpointermaster *gs = gp->gp_master;
     t_glist *glist;
     int wantselected = (f != 0);
 
@@ -146,12 +146,12 @@ static void ptrobj_vnext(t_ptrobj *x, t_float f)
         post_error ("ptrobj_next: no current pointer");
         return;
     }
-    if (gs->gs_type != POINTER_GLIST)
+    if (gs->gm_type != POINTER_GLIST)
     {
         post_error ("ptrobj_next: lists only, not arrays");
         return;
     }
-    glist = gs->gs_un.gs_glist;
+    glist = gs->gs_un.gm_glist;
     if (glist->gl_magic != gp->gp_magic)
     {
         post_error ("ptrobj_next: stale pointer");
@@ -209,21 +209,21 @@ static void ptrobj_sendwindow(t_ptrobj *x, t_symbol *s, int argc, t_atom *argv)
     t_typedout *to;
     t_glist *glist;
     t_pd *canvas;
-    t_gstub *gs;
+    t_gpointermaster *gs;
     if (!gpointer_check(&x->x_gp, 1))
     {
         post_error ("send-window: empty pointer");
         return;
     }
-    gs = x->x_gp.gp_stub;
-    if (gs->gs_type == POINTER_GLIST)
-        glist = gs->gs_un.gs_glist;  
+    gs = x->x_gp.gp_master;
+    if (gs->gm_type == POINTER_GLIST)
+        glist = gs->gs_un.gm_glist;  
     else
     {
-        t_array *owner_array = gs->gs_un.gs_array;
-        while (owner_array->a_gpointer.gp_stub->gs_type == POINTER_ARRAY)
-            owner_array = owner_array->a_gpointer.gp_stub->gs_un.gs_array;
-        glist = owner_array->a_gpointer.gp_stub->gs_un.gs_glist;  
+        t_array *owner_array = gs->gs_un.gm_array;
+        while (owner_array->a_gpointer.gp_master->gm_type == POINTER_ARRAY)
+            owner_array = owner_array->a_gpointer.gp_master->gs_un.gm_array;
+        glist = owner_array->a_gpointer.gp_master->gs_un.gm_glist;  
     }
     canvas = (t_pd *)canvas_getView(glist);
     if (argc && argv->a_type == A_SYMBOL)
@@ -281,19 +281,19 @@ static void ptrobj_rewind(t_ptrobj *x)
     t_typedout *to;
     t_glist *glist;
     t_pd *canvas;
-    t_gstub *gs;
+    t_gpointermaster *gs;
     if (!gpointer_check(&x->x_gp, 1))
     {
         post_error ("pointer_rewind: empty pointer");
         return;
     }
-    gs = x->x_gp.gp_stub;
-    if (gs->gs_type != POINTER_GLIST)
+    gs = x->x_gp.gp_master;
+    if (gs->gm_type != POINTER_GLIST)
     {
         post_error ("pointer_rewind: sorry, unavailable for arrays");
         return;
     }
-    glist = gs->gs_un.gs_glist;  
+    glist = gs->gs_un.gm_glist;  
     gpointer_setglist(&x->x_gp, glist, 0);
     ptrobj_bang(x);
 }
@@ -386,7 +386,7 @@ static void get_pointer(t_get *x, t_gpointer *gp)
     int nitems = x->x_nout, i;
     t_symbol *templatesym;
     t_template *template;
-    t_gstub *gs = gp->gp_stub;
+    t_gpointermaster *gs = gp->gp_master;
     t_word *vec; 
     t_getvariable *vp;
 
@@ -410,7 +410,7 @@ static void get_pointer(t_get *x, t_gpointer *gp)
         post_error ("get: couldn't find template %s", templatesym->s_name);
         return;
     }
-    if (gs->gs_type == POINTER_ARRAY) vec = gp->gp_un.gp_w;
+    if (gs->gm_type == POINTER_ARRAY) vec = gp->gp_un.gp_w;
     else vec = gp->gp_un.gp_scalar->sc_vector;
     for (i = nitems - 1, vp = x->x_variables + i; i >= 0; i--, vp--)
     {
@@ -425,10 +425,10 @@ static void get_pointer(t_get *x, t_gpointer *gp)
                 outlet_symbol(vp->gv_outlet,
                     *(t_symbol **)(((char *)vec) + onset));
             else post_error ("get: %s.%s is not a number or symbol",
-                    template->tpl_symbol->s_name, vp->gv_sym->s_name);
+                    template->tp_symbol->s_name, vp->gv_sym->s_name);
         }
         else post_error ("get: %s.%s: no such field",
-            template->tpl_symbol->s_name, vp->gv_sym->s_name);
+            template->tp_symbol->s_name, vp->gv_sym->s_name);
     }
 }
 
@@ -531,7 +531,7 @@ static void set_bang(t_set *x)
     t_template *template;
     t_setvariable *vp;
     t_gpointer *gp = &x->x_gp;
-    t_gstub *gs = gp->gp_stub;
+    t_gpointermaster *gs = gp->gp_master;
     t_word *vec;
     if (!gpointer_check(gp, 0))
     {
@@ -555,7 +555,7 @@ static void set_bang(t_set *x)
     }
     if (!nitems)
         return;
-    if (gs->gs_type == POINTER_ARRAY)
+    if (gs->gm_type == POINTER_ARRAY)
         vec = gp->gp_un.gp_w;
     else vec = gp->gp_un.gp_scalar->sc_vector;
     if (x->x_issymbol)
@@ -563,15 +563,15 @@ static void set_bang(t_set *x)
             template_setsymbol(template, vp->gv_sym, vec, vp->gv_w.w_symbol, 1);
     else for (i = 0, vp = x->x_variables; i < nitems; i++, vp++)
         template_setfloat(template, vp->gv_sym, vec, vp->gv_w.w_float, 1);
-    if (gs->gs_type == POINTER_GLIST)
-        scalar_redraw(gp->gp_un.gp_scalar, gs->gs_un.gs_glist);  
+    if (gs->gm_type == POINTER_GLIST)
+        scalar_redraw(gp->gp_un.gp_scalar, gs->gs_un.gm_glist);  
     else
     {
-        t_array *owner_array = gs->gs_un.gs_array;
-        while (owner_array->a_gpointer.gp_stub->gs_type == POINTER_ARRAY)
-            owner_array = owner_array->a_gpointer.gp_stub->gs_un.gs_array;
+        t_array *owner_array = gs->gs_un.gm_array;
+        while (owner_array->a_gpointer.gp_master->gm_type == POINTER_ARRAY)
+            owner_array = owner_array->a_gpointer.gp_master->gs_un.gm_array;
         scalar_redraw(owner_array->a_gpointer.gp_un.gp_scalar,
-            owner_array->a_gpointer.gp_stub->gs_un.gs_glist);  
+            owner_array->a_gpointer.gp_master->gs_un.gm_glist);  
     }
 }
 
@@ -675,7 +675,7 @@ static void elem_float(t_elem *x, t_float f)
         post_error ("elem: couldn't find template %s", templatesym->s_name);
         return;
     }
-    if (gparent->gp_stub->gs_type == POINTER_ARRAY) w = gparent->gp_un.gp_w;
+    if (gparent->gp_master->gm_type == POINTER_ARRAY) w = gparent->gp_un.gp_w;
     else w = gparent->gp_un.gp_scalar->sc_vector;
     if (!template)
     {
@@ -700,7 +700,7 @@ static void elem_float(t_elem *x, t_float f)
         return;
     }
 
-    elemsize = elemtemplate->tpl_size * sizeof(t_word);
+    elemsize = elemtemplate->tp_size * sizeof(t_word);
 
     array = *(t_array **)(((char *)w) + onset);
 
@@ -762,7 +762,7 @@ static void getsize_pointer(t_getsize *x, t_gpointer *gp)
     t_word *w;
     t_array *array;
     int elemsize;
-    t_gstub *gs = gp->gp_stub;
+    t_gpointermaster *gs = gp->gp_master;
     if (!gpointer_check(gp, 0))
     {
         post_error ("getsize: stale or empty pointer");
@@ -795,7 +795,7 @@ static void getsize_pointer(t_getsize *x, t_gpointer *gp)
         post_error ("getsize: field %s not of type array", fieldsym->s_name);
         return;
     }
-    if (gs->gs_type == POINTER_ARRAY) w = gp->gp_un.gp_w;
+    if (gs->gm_type == POINTER_ARRAY) w = gp->gp_un.gp_w;
     else w = gp->gp_un.gp_scalar->sc_vector;
     
     array = *(t_array **)(((char *)w) + onset);
@@ -853,7 +853,7 @@ static void setsize_float(t_setsize *x, t_float f)
     int elemsize;
     int newsize = f;
     t_gpointer *gp = &x->x_gp;
-    t_gstub *gs = gp->gp_stub;
+    t_gpointermaster *gs = gp->gp_master;
     if (!gpointer_check(&x->x_gp, 0))
     {
         post_error ("setsize: empty pointer");
@@ -887,7 +887,7 @@ static void setsize_float(t_setsize *x, t_float f)
         post_error ("setsize: field %s not of type array", fieldsym->s_name);
         return;
     }
-    if (gs->gs_type == POINTER_ARRAY) w = gp->gp_un.gp_w;
+    if (gs->gm_type == POINTER_ARRAY) w = gp->gp_un.gp_w;
     else w = gp->gp_un.gp_scalar->sc_vector;
 
     if (!(elemtemplate = template_findbyname(elemtemplatesym)))
@@ -897,7 +897,7 @@ static void setsize_float(t_setsize *x, t_float f)
         return;
     }
 
-    elemsize = elemtemplate->tpl_size * sizeof(t_word);
+    elemsize = elemtemplate->tp_size * sizeof(t_word);
 
     array = *(t_array **)(((char *)w) + onset);
 
@@ -913,19 +913,19 @@ static void setsize_float(t_setsize *x, t_float f)
         When graphics updates become queueable this may fall apart... */
 
 
-    if (gs->gs_type == POINTER_GLIST)
+    if (gs->gm_type == POINTER_GLIST)
     {
-        if (canvas_isMapped(gs->gs_un.gs_glist))
-            gobj_visibilityChanged((t_gobj *)(gp->gp_un.gp_scalar), gs->gs_un.gs_glist, 0);  
+        if (canvas_isMapped(gs->gs_un.gm_glist))
+            gobj_visibilityChanged((t_gobj *)(gp->gp_un.gp_scalar), gs->gs_un.gm_glist, 0);  
     }
     else
     {
-        t_array *owner_array = gs->gs_un.gs_array;
-        while (owner_array->a_gpointer.gp_stub->gs_type == POINTER_ARRAY)
-            owner_array = owner_array->a_gpointer.gp_stub->gs_un.gs_array;
-        if (canvas_isMapped(owner_array->a_gpointer.gp_stub->gs_un.gs_glist))
+        t_array *owner_array = gs->gs_un.gm_array;
+        while (owner_array->a_gpointer.gp_master->gm_type == POINTER_ARRAY)
+            owner_array = owner_array->a_gpointer.gp_master->gs_un.gm_array;
+        if (canvas_isMapped(owner_array->a_gpointer.gp_master->gs_un.gm_glist))
             gobj_visibilityChanged((t_gobj *)(owner_array->a_gpointer.gp_un.gp_scalar),
-                owner_array->a_gpointer.gp_stub->gs_un.gs_glist, 0);  
+                owner_array->a_gpointer.gp_master->gs_un.gm_glist, 0);  
     }
         /* if shrinking, free the scalars that will disappear */
     if (newsize < nitems)
@@ -953,19 +953,19 @@ static void setsize_float(t_setsize *x, t_float f)
     array->a_valid++;
 
     /* redraw again. */
-    if (gs->gs_type == POINTER_GLIST)
+    if (gs->gm_type == POINTER_GLIST)
     {
-        if (canvas_isMapped(gs->gs_un.gs_glist))
-            gobj_visibilityChanged((t_gobj *)(gp->gp_un.gp_scalar), gs->gs_un.gs_glist, 1);  
+        if (canvas_isMapped(gs->gs_un.gm_glist))
+            gobj_visibilityChanged((t_gobj *)(gp->gp_un.gp_scalar), gs->gs_un.gm_glist, 1);  
     }
     else
     {
-        t_array *owner_array = gs->gs_un.gs_array;
-        while (owner_array->a_gpointer.gp_stub->gs_type == POINTER_ARRAY)
-            owner_array = owner_array->a_gpointer.gp_stub->gs_un.gs_array;
-        if (canvas_isMapped(owner_array->a_gpointer.gp_stub->gs_un.gs_glist))
+        t_array *owner_array = gs->gs_un.gm_array;
+        while (owner_array->a_gpointer.gp_master->gm_type == POINTER_ARRAY)
+            owner_array = owner_array->a_gpointer.gp_master->gs_un.gm_array;
+        if (canvas_isMapped(owner_array->a_gpointer.gp_master->gs_un.gm_glist))
             gobj_visibilityChanged((t_gobj *)(owner_array->a_gpointer.gp_un.gp_scalar),
-                owner_array->a_gpointer.gp_stub->gs_un.gs_glist, 1);  
+                owner_array->a_gpointer.gp_master->gs_un.gm_glist, 1);  
     }
 }
 
@@ -1053,7 +1053,7 @@ static void append_float(t_append *x, t_float f)
     t_template *template;
     t_appendvariable *vp;
     t_gpointer *gp = &x->x_gp;
-    t_gstub *gs = gp->gp_stub;
+    t_gpointermaster *gs = gp->gp_master;
     t_word *vec;
     t_scalar *sc, *oldsc;
     t_glist *glist;
@@ -1074,12 +1074,12 @@ static void append_float(t_append *x, t_float f)
         post_error ("append: no current pointer");
         return;
     }
-    if (gs->gs_type != POINTER_GLIST)
+    if (gs->gm_type != POINTER_GLIST)
     {
         post_error ("append: lists only, not arrays");
         return;
     }
-    glist = gs->gs_un.gs_glist;
+    glist = gs->gs_un.gm_glist;
     if (glist->gl_magic != gp->gp_magic)
     {
         post_error ("append: stale pointer");

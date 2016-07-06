@@ -596,7 +596,7 @@ static void pipe_list(t_pipe *x, t_symbol *s, int ac, t_atom *av)
             else
             {
                 *gp = *(ap->a_w.w_gpointer);
-                if (gp->gp_stub) gp->gp_stub->gs_count++;
+                if (gp->gp_master) gp->gp_master->gm_count++;
             }
             gp++;
         }
@@ -606,7 +606,7 @@ static void pipe_list(t_pipe *x, t_symbol *s, int ac, t_atom *av)
     {
         if (p->p_atom.a_type == A_POINTER)
         {
-            if (gp->gp_stub) gp->gp_stub->gs_count++;
+            if (gp->gp_master) gp->gp_master->gm_count++;
             w->w_gpointer = gp2;
             *gp2++ = *gp++;
         }
