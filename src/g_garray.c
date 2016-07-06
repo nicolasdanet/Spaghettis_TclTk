@@ -145,6 +145,10 @@ static void garray_drawJob (t_gobj *z, t_glist *glist)
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static int garray_isSingle (t_garray *x)        /* Legacy patches might contain several arrays. */
 {
     t_glist *glist = x->x_owner;
@@ -620,8 +624,10 @@ static int garray_behaviorClicked (t_gobj *z,
     int clicked)
 {
     t_garray *x = (t_garray *)z;
+
+    if (clicked) { gobj_clicked (cast_gobj (x->x_scalar), glist, a, b, shift, ctrl, alt, dbl, clicked); }
     
-    return (gobj_clicked (cast_gobj (x->x_scalar), glist, a, b, shift, ctrl, alt, dbl, clicked));
+    return 1;
 }
 
 // -----------------------------------------------------------------------------------------------------------
