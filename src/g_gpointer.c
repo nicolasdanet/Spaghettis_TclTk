@@ -130,17 +130,18 @@ void gpointer_copy (const t_gpointer *src, t_gpointer *dest)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int gpointer_isValid (const t_gpointer *gp, int headPointerIsValid)
+int gpointer_isValid (const t_gpointer *gp, int nullPointerIsValid)
 {
     t_gmaster *master = gp->gp_master;
     
     if (master) {
     //
     if (master->gm_type == POINTER_ARRAY) {
+        if (!nullPointerIsValid && !gp->gp_un.gp_w)                     { PD_BUG; return 0; }
         if (master->gm_un.gm_array->a_identifier == gp->gp_identifier)  { return 1; }
         
     } else if (master->gm_type == POINTER_GLIST) {
-        if (!headPointerIsValid && !gp->gp_un.gp_scalar)                { return 0; }
+        if (!nullPointerIsValid && !gp->gp_un.gp_scalar)                { return 0; }
         if (master->gm_un.gm_glist->gl_identifier == gp->gp_identifier) { return 1; }
         
     } else {
