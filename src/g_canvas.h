@@ -845,6 +845,10 @@ t_gmaster       *gpointer_masterCreateWithArray         (t_array *array);
 
 void            gpointer_masterRelease                  (t_gmaster *master);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void            gpointer_initialize                     (t_gpointer *gp);
 void            gpointer_setScalar                      (t_gpointer *gp, t_glist *owner, t_scalar *scalar);
 void            gpointer_setWord                        (t_gpointer *gp, t_array *owner, t_word *w);

@@ -591,13 +591,11 @@ static void pipe_list(t_pipe *x, t_symbol *s, int ac, t_atom *av)
         case A_FLOAT: p->p_atom.a_w.w_float = atom_getFloat(ap); break;
         case A_SYMBOL: p->p_atom.a_w.w_symbol = atom_getSymbol(ap); break;
         case A_POINTER:
-            gpointer_unset(gp);
-            if (ap->a_type != A_POINTER)
+            if (ap->a_type != A_POINTER) {
+                gpointer_unset (gp);
                 post_error ("pipe: bad pointer");
-            else
-            {
-                *gp = *(ap->a_w.w_gpointer);
-                if (gp->gp_master) gp->gp_master->gm_count++;
+            } else {
+                gpointer_copy (ap->a_w.w_gpointer, gp);
             }
             gp++;
         }
@@ -607,7 +605,7 @@ static void pipe_list(t_pipe *x, t_symbol *s, int ac, t_atom *av)
     {
         if (p->p_atom.a_type == A_POINTER)
         {
-            if (gp->gp_master) gp->gp_master->gm_count++;
+            if (gp->gp_master) { gp->gp_master->gm_count++; }   /* ??? Encapsulate gm_count. */
             w->w_gpointer = gp2;
             *gp2++ = *gp++;
         }

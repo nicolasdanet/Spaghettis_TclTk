@@ -180,9 +180,7 @@ static void symbolinlet_forSymbol (t_inlet *x, t_symbol *s)
 
 static void pointerinlet_forPointer (t_inlet *x, t_gpointer *gp)
 {
-    gpointer_unset (x->i_un.i_pointer); 
-    *(x->i_un.i_pointer) = *gp;
-    if (gp->gp_master) { gp->gp_master->gm_count++; }
+    gpointer_copy (gp, x->i_un.i_pointer);
 }
 
 // -----------------------------------------------------------------------------------------------------------

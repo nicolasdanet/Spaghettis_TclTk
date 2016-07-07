@@ -117,15 +117,13 @@ void gpointer_unset (t_gpointer *gp)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* copy a pointer to another, assuming the second one hasn't yet been
-    initialized.  New gpointers should be initialized either by this
-    routine or by gpointer_initialize below. */
-void gpointer_copy(const t_gpointer *gpfrom, t_gpointer *gpto)
+void gpointer_copy (const t_gpointer *src, t_gpointer *dest)
 {
-    *gpto = *gpfrom;
-    if (gpto->gp_master)
-        gpto->gp_master->gm_count++;
-    else { PD_BUG; }
+    gpointer_unset (dest);
+    
+    *dest = *src;
+    
+    if (dest->gp_master) { gpointer_incrementMaster (dest->gp_master); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
