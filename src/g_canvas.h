@@ -857,7 +857,7 @@ void            gpointer_unset                          (t_gpointer *gp);
 void            gpointer_copy                           (const t_gpointer *src, t_gpointer *dest);
 int             gpointer_isValid                        (const t_gpointer *gp, int nullPointerIsValid);
 
-t_symbol        *gpointer_gettemplatesym                (const t_gpointer *gp);
+t_symbol        *gpointer_getTemplate                   (const t_gpointer *gp);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

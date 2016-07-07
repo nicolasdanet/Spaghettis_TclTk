@@ -113,23 +113,6 @@ void gpointer_unset (t_gpointer *gp)
     gpointer_initialize (gp);
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void gpointer_copy (const t_gpointer *src, t_gpointer *dest)
-{
-    gpointer_unset (dest);
-    
-    *dest = *src;
-    
-    if (dest->gp_master) { gpointer_incrementMaster (dest->gp_master); }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 int gpointer_isValid (const t_gpointer *gp, int nullPointerIsValid)
 {
     t_gmaster *master = gp->gp_master;
@@ -153,24 +136,38 @@ int gpointer_isValid (const t_gpointer *gp, int nullPointerIsValid)
     return 0;
 }
 
-/* get the template for the object pointer to.  Assumes we've already checked
-freshness. */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-t_symbol *gpointer_gettemplatesym (const t_gpointer *gp)
+void gpointer_copy (const t_gpointer *src, t_gpointer *dest)
 {
-    t_gmaster *gs = gp->gp_master;
-    if (gs->gm_type == POINTER_GLIST)
-    {
-        t_scalar *sc = gp->gp_un.gp_scalar;
-        if (sc)
-            return (sc->sc_template);
-        else return (0);
+    gpointer_unset (dest);
+    
+    *dest = *src;
+    
+    if (dest->gp_master) { gpointer_incrementMaster (dest->gp_master); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_symbol *gpointer_getTemplate (const t_gpointer *gp)
+{
+    t_symbol *s = NULL;
+    t_gmaster *master = gp->gp_master;
+    
+    PD_ASSERT (gpointer_isValid (gp, 1));
+    
+    if (master->gm_type == POINTER_GLIST) {
+        if (gp->gp_un.gp_scalar) { s = gp->gp_un.gp_scalar->sc_template; }
+        
+    } else {
+        s = master->gm_un.gm_array->a_template;
     }
-    else
-    {
-        t_array *a = gs->gm_un.gm_array;
-        return (a->a_template);
-    }
+    
+    return s;
 }
 
 // -----------------------------------------------------------------------------------------------------------
