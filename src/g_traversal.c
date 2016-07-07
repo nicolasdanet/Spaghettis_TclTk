@@ -152,7 +152,7 @@ static void ptrobj_vnext(t_ptrobj *x, t_float f)
         return;
     }
     glist = gs->gm_un.gm_glist;
-    if (glist->gl_magic != gp->gp_magic)
+    if (glist->gl_identifier != gp->gp_identifier)
     {
         post_error ("ptrobj_next: stale pointer");
         return;
@@ -950,7 +950,7 @@ static void setsize_float(t_setsize *x, t_float f)
                 word_init((t_word *)elem, elemtemplate, gp);
     }
         /* invalidate all gpointers into the array */
-    array->a_magic++;
+    array->a_identifier++;
 
     /* redraw again. */
     if (gs->gm_type == POINTER_GLIST)
@@ -1080,7 +1080,7 @@ static void append_float(t_append *x, t_float f)
         return;
     }
     glist = gs->gm_un.gm_glist;
-    if (glist->gl_magic != gp->gp_magic)
+    if (glist->gl_identifier != gp->gp_identifier)
     {
         post_error ("append: stale pointer");
         return;

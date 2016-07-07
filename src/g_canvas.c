@@ -43,7 +43,7 @@ t_atom          *canvas_argv;                               /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 int             canvas_argc;                                /* Shared. */
-int             canvas_magic = 10000;                       /* Shared. */
+int             canvas_identifier = 10000;                  /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -732,7 +732,7 @@ t_glist *canvas_newGraph (t_glist *glist,
     x->gl_master                        = gpointer_masterCreateWithGlist (x);
     x->gl_parent                        = glist;
     x->gl_name                          = gensym (t);
-    x->gl_magic                         = ++canvas_magic;
+    x->gl_identifier                    = ++canvas_identifier;
     x->gl_graphWidth                    = bottomRightX - topLeftX;
     x->gl_graphHeight                   = bottomRightY - topLeftY;
     x->gl_graphMarginLeft               = 0;
@@ -798,10 +798,10 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     
     cast_object (x)->te_type = TYPE_OBJECT;
     
-    x->gl_master    = gpointer_masterCreateWithGlist (x);
-    x->gl_parent    = owner;
-    x->gl_name      = (name != &s_ ? name : (canvas_fileName ? canvas_fileName : gensym (PD_NAME_SHORT)));
-    x->gl_magic     = ++canvas_magic;
+    x->gl_master        = gpointer_masterCreateWithGlist (x);
+    x->gl_parent        = owner;
+    x->gl_name          = (name != &s_ ? name : (canvas_fileName ? canvas_fileName : gensym (PD_NAME_SHORT)));
+    x->gl_identifier    = ++canvas_identifier;
     
     if (!owner) { instance_addToRoots (x); }
     

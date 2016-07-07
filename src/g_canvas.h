@@ -241,7 +241,7 @@ struct _glist {
     t_environment       *gl_environment;
     t_symbol            *gl_name;
     t_editor            *gl_editor;
-    int                 gl_magic;
+    int                 gl_identifier;
     int                 gl_graphWidth;
     int                 gl_graphHeight;
     int                 gl_graphMarginLeft;
@@ -287,7 +287,7 @@ struct _gpointer {
         union word      *gp_w;
     } gp_un;
     t_gmaster           *gp_master;
-    int                 gp_magic;
+    int                 gp_identifier;
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -299,7 +299,7 @@ struct _array {
     char                *a_vector;
     t_symbol            *a_template;
     t_gmaster           *a_master;
-    int                 a_magic;
+    int                 a_identifier;
     t_gpointer          a_gpointer;
     };
 

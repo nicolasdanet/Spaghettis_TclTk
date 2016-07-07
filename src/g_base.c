@@ -32,7 +32,7 @@ extern t_atom               *canvas_argv;
 extern t_pd                 pd_objectMaker;
 extern t_widgetbehavior     text_widgetBehavior;
 extern int                  canvas_argc;
-extern int                  canvas_magic;
+extern int                  canvas_identifier;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -249,7 +249,7 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     
     canvas->gl_isDeleting = deletingState;
     
-    glist->gl_magic = ++canvas_magic;
+    glist->gl_identifier = ++canvas_identifier;
 }
 
 void canvas_clear (t_glist *glist)
