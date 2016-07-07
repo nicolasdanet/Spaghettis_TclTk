@@ -709,15 +709,6 @@ PD_DLL void         post_syslog                 (const char *s);
                                        
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-PD_DLL void         gpointer_init               (t_gpointer *gp);
-PD_DLL void         gpointer_copy               (const t_gpointer *gpfrom, t_gpointer *gpto);
-PD_DLL void         gpointer_unset              (t_gpointer *gp);
-PD_DLL int          gpointer_check              (const t_gpointer *gp, int headok);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 
 PD_DLL t_float      *value_get                  (t_symbol *s);
 PD_DLL void         value_release               (t_symbol *s);

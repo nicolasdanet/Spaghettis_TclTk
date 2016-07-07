@@ -262,7 +262,7 @@ static void *text_define_new(t_symbol *s, int argc, t_atom *argv)
     buffer_free(x->x_scalar->sc_vector[2].w_buffer); 
     x->x_scalar->sc_vector[2].w_buffer = x->x_binbuf;
     x->x_out = outlet_new(&x->x_ob, &s_pointer);
-    gpointer_init(&x->x_gp);
+    gpointer_initialize(&x->x_gp);
     x->x_canvas = canvas_getCurrent();
            /* bashily unbind #A -- this would create garbage if #A were
            multiply bound but we believe in this context it's at most
@@ -325,7 +325,7 @@ static void text_define_topointer(t_text_define *x, t_gpointer *gp, t_symbol *s)
     /* bang: output a pointer to a struct containing this text */
 void text_define_bang(t_text_define *x)
 {
-    gpointer_setglist(&x->x_gp, x->x_canvas, x->x_scalar);
+    gpointer_setScalar(&x->x_gp, x->x_canvas, x->x_scalar);
     outlet_pointer(x->x_out, &x->x_gp);
 }
 
@@ -379,7 +379,7 @@ static void text_client_argparse(t_text_client *x, int *argcp, t_atom **argvp,
     int argc = *argcp;
     t_atom *argv = *argvp;
     x->tc_sym = x->tc_struct = x->tc_field = 0;
-    gpointer_init(&x->tc_gp);
+    gpointer_initialize(&x->tc_gp);
     while (argc && argv->a_type == A_SYMBOL &&
         *argv->a_w.w_symbol->s_name == '-')
     {

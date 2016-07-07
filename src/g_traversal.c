@@ -112,7 +112,7 @@ static void *ptrobj_new(t_symbol *classname, int argc, t_atom *argv)
     t_ptrobj *x = (t_ptrobj *)pd_new(ptrobj_class);
     t_typedout *to;
     int n;
-    gpointer_init(&x->x_gp);
+    gpointer_initialize(&x->x_gp);
     x->x_typedout = to = (t_typedout *)PD_MEMORY_GET(argc * sizeof (*to));
     x->x_ntypedout = n = argc;
     for (; n--; to++)
@@ -129,7 +129,7 @@ static void *ptrobj_new(t_symbol *classname, int argc, t_atom *argv)
 static void ptrobj_traverse(t_ptrobj *x, t_symbol *s)
 {
     t_glist *glist = (t_glist *)pd_findByClass(s, canvas_class);
-    if (glist) gpointer_setglist(&x->x_gp, glist, 0);
+    if (glist) gpointer_setScalar(&x->x_gp, glist, 0);
     else { post_error (x, "pointer: list '%s' not found", s->s_name); }
 }
 
@@ -294,7 +294,7 @@ static void ptrobj_rewind(t_ptrobj *x)
         return;
     }
     glist = gs->gm_un.gm_glist;  
-    gpointer_setglist(&x->x_gp, glist, 0);
+    gpointer_setScalar(&x->x_gp, glist, 0);
     ptrobj_bang(x);
 }
 
@@ -505,7 +505,7 @@ static void *set_new(t_symbol *why, int argc, t_atom *argv)
         }
     }
     inlet_newPointer(&x->x_obj, &x->x_gp);
-    gpointer_init(&x->x_gp);
+    gpointer_initialize(&x->x_gp);
     return (x);
 }
 
@@ -630,8 +630,8 @@ static void *elem_new(t_symbol *templatesym, t_symbol *fieldsym)
     t_elem *x = (t_elem *)pd_new(elem_class);
     x->x_templatesym = template_getbindsym(templatesym);
     x->x_fieldsym = fieldsym;
-    gpointer_init(&x->x_gp);
-    gpointer_init(&x->x_gparent);
+    gpointer_initialize(&x->x_gp);
+    gpointer_initialize(&x->x_gparent);
     inlet_newPointer(&x->x_obj, &x->x_gparent);
     outlet_new(&x->x_obj, &s_pointer);
     return (x);
@@ -708,7 +708,7 @@ static void elem_float(t_elem *x, t_float f)
     if (indx < 0) indx = 0;
     if (indx >= nitems) indx = nitems-1;
 
-    gpointer_setarray(&x->x_gp, array, 
+    gpointer_setWord(&x->x_gp, array, 
         (t_word *)((char *)(array->a_vector) + indx * elemsize));
     outlet_pointer(x->x_obj.te_outlet, &x->x_gp);
 }
@@ -829,7 +829,7 @@ static void *setsize_new(t_symbol *templatesym, t_symbol *fieldsym,
     t_setsize *x = (t_setsize *)pd_new(setsize_class);
     x->x_templatesym = template_getbindsym(templatesym);
     x->x_fieldsym = fieldsym;
-    gpointer_init(&x->x_gp);
+    gpointer_initialize(&x->x_gp);
     
     inlet_newPointer(&x->x_obj, &x->x_gp);
     return (x);
@@ -1030,7 +1030,7 @@ static void *append_new(t_symbol *why, int argc, t_atom *argv)
     }
     inlet_newPointer(&x->x_obj, &x->x_gp);
     outlet_new(&x->x_obj, &s_pointer);
-    gpointer_init(&x->x_gp);
+    gpointer_initialize(&x->x_gp);
     return (x);
 }
 

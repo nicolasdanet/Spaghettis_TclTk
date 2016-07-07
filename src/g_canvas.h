@@ -845,7 +845,19 @@ t_gmaster       *gpointer_masterCreateWithArray         (t_array *array);
 
 void            gpointer_masterRelease                  (t_gmaster *master);
 
+void            gpointer_initialize                     (t_gpointer *gp);
+void            gpointer_setScalar                      (t_gpointer *gp, t_glist *owner, t_scalar *scalar);
+void            gpointer_setWord                        (t_gpointer *gp, t_array *owner, t_word *w);
+void            gpointer_unset                          (t_gpointer *gp);
+
+void            gpointer_copy                           (const t_gpointer *src, t_gpointer *dest);
+int             gpointer_check                          (const t_gpointer *gp, int headok);
+
 t_symbol        *gpointer_gettemplatesym                (const t_gpointer *gp);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 t_array         *array_new                              (t_symbol *templateName, t_gpointer *parent);
 
@@ -925,13 +937,6 @@ void         array_resize               (t_array *x, int n);
 void         array_free                 (t_array *x);
 void         array_redraw               (t_array *a, t_glist *glist);
 void         array_resize_and_redraw    (t_array *array, t_glist *glist, int n);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void     gpointer_setglist      (t_gpointer *gp, t_glist *glist, t_scalar *x);
-void     gpointer_setarray      (t_gpointer *gp, t_array *array, t_word *w);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

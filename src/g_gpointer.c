@@ -59,6 +59,11 @@ void gpointer_masterRelease (t_gmaster *master)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void gpointer_incrementMaster (t_gmaster *master)
+{
+    master->gm_count++;
+}
+
 static void gpointer_decrementMaster (t_gmaster *master)
 {
     int count = --master->gm_count;
@@ -66,6 +71,61 @@ static void gpointer_decrementMaster (t_gmaster *master)
     PD_ASSERT (count >= 0);
     
     if (count == 0 && master->gm_type == POINTER_NONE) { PD_MEMORY_FREE (master); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void gpointer_initialize (t_gpointer *gp)
+{
+    gp->gp_un.gp_scalar = NULL;
+    gp->gp_master       = NULL;
+    gp->gp_magic        = 0;
+}
+
+void gpointer_setScalar (t_gpointer *gp, t_glist *glist, t_scalar *scalar)
+{
+    if (gp->gp_master) { gpointer_decrementMaster (gp->gp_master); }
+    
+    gp->gp_un.gp_scalar = scalar;
+    gp->gp_master       = glist->gl_master;
+    gp->gp_magic        = glist->gl_magic;
+
+    gpointer_incrementMaster (gp->gp_master);
+}
+
+void gpointer_setWord (t_gpointer *gp, t_array *array, t_word *w)
+{
+    if (gp->gp_master) { gpointer_decrementMaster (gp->gp_master); }
+    
+    gp->gp_un.gp_w      = w;
+    gp->gp_master       = array->a_master;
+    gp->gp_magic        = array->a_magic;
+
+    gpointer_incrementMaster (gp->gp_master);
+}
+
+void gpointer_unset (t_gpointer *gp)
+{
+    if (gp->gp_master) { gpointer_decrementMaster (gp->gp_master); }
+    
+    gpointer_initialize (gp);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+    /* copy a pointer to another, assuming the second one hasn't yet been
+    initialized.  New gpointers should be initialized either by this
+    routine or by gpointer_initialize below. */
+void gpointer_copy(const t_gpointer *gpfrom, t_gpointer *gpto)
+{
+    *gpto = *gpfrom;
+    if (gpto->gp_master)
+        gpto->gp_master->gm_count++;
+    else { PD_BUG; }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -113,56 +173,6 @@ t_symbol *gpointer_gettemplatesym (const t_gpointer *gp)
         t_array *a = gs->gm_un.gm_array;
         return (a->a_template);
     }
-}
-
-    /* copy a pointer to another, assuming the second one hasn't yet been
-    initialized.  New gpointers should be initialized either by this
-    routine or by gpointer_init below. */
-void gpointer_copy(const t_gpointer *gpfrom, t_gpointer *gpto)
-{
-    *gpto = *gpfrom;
-    if (gpto->gp_master)
-        gpto->gp_master->gm_count++;
-    else { PD_BUG; }
-}
-
-    /* clear a gpointer that was previously set, releasing the associted
-    gstub if this was the last reference to it. */
-void gpointer_unset(t_gpointer *gp)
-{
-    t_gmaster *gs;
-    if (gs = gp->gp_master)
-    {
-        gpointer_decrementMaster(gs);
-        gp->gp_master = 0;
-    }
-}
-
-void gpointer_setglist(t_gpointer *gp, t_glist *glist, t_scalar *x)
-{
-    t_gmaster *gs;
-    if (gs = gp->gp_master) gpointer_decrementMaster(gs);
-    gp->gp_master = gs = glist->gl_master;
-    gp->gp_magic = glist->gl_magic;
-    gp->gp_un.gp_scalar = x;
-    gs->gm_count++;
-}
-
-void gpointer_setarray(t_gpointer *gp, t_array *array, t_word *w)
-{
-    t_gmaster *gs;
-    if (gs = gp->gp_master) gpointer_decrementMaster(gs);
-    gp->gp_master = gs = array->a_master;
-    gp->gp_magic = array->a_magic;
-    gp->gp_un.gp_w = w;
-    gs->gm_count++;
-}
-
-void gpointer_init(t_gpointer *gp)
-{
-    gp->gp_master = 0;
-    gp->gp_magic = 0;
-    gp->gp_un.gp_scalar = 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------

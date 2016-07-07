@@ -280,12 +280,12 @@ static t_scalar *template_conformscalar(t_template *tfrom, t_template *tto,
     if (scfrom->sc_template == tfrom->tp_symbol)
     {
             /* see scalar_new() for comment about the gpointer. */
-        gpointer_init(&gp);
+        gpointer_initialize(&gp);
         x = (t_scalar *)PD_MEMORY_GET(sizeof(t_scalar) +
             (tto->tp_size - 1) * sizeof(*x->sc_vector));
         x->sc_g.g_pd = scalar_class;
         x->sc_template = tfrom->tp_symbol;
-        gpointer_setglist(&gp, glist, x);
+        gpointer_setScalar(&gp, glist, x);
             /* Here we initialize to the new template, but array and list
             elements will still belong to old template. */
         word_init(x->sc_vector, tto, &gp);
@@ -478,8 +478,8 @@ void template_notifyforscalar(t_template *template, t_glist *owner,
     t_scalar *sc, t_symbol *s, int argc, t_atom *argv)
 {
     t_gpointer gp;
-    gpointer_init(&gp);
-    gpointer_setglist(&gp, owner, sc);
+    gpointer_initialize(&gp);
+    gpointer_setScalar(&gp, owner, sc);
     SET_POINTER(argv, &gp);
     template_notify(template, s, argc, argv);
     gpointer_unset(&gp);
@@ -1286,9 +1286,9 @@ static int curve_click(t_gobj *z, t_glist *glist,
         curve_motion_field = 2*bestn;
         curve_motion_template = template;
         if (curve_motion_scalar)
-            gpointer_setglist(&curve_motion_gpointer, curve_motion_glist,
+            gpointer_setScalar(&curve_motion_gpointer, curve_motion_glist,
                 curve_motion_scalar);
-        else gpointer_setarray(&curve_motion_gpointer,
+        else gpointer_setWord(&curve_motion_gpointer,
                 curve_motion_array, curve_motion_wp);
         canvas_setMotionFunction(glist, z, (t_motionfn)curve_motion, xpix, ypix);
     }
@@ -2675,9 +2675,9 @@ static int drawnumber_click(t_gobj *z, t_glist *glist,
                 template_getfloat(template, x->x_fieldname, data, 0);
             drawnumber_motion_type = type;
             if (drawnumber_motion_scalar)
-                gpointer_setglist(&drawnumber_motion_gpointer, 
+                gpointer_setScalar(&drawnumber_motion_gpointer, 
                     drawnumber_motion_glist, drawnumber_motion_scalar);
-            else gpointer_setarray(&drawnumber_motion_gpointer,
+            else gpointer_setWord(&drawnumber_motion_gpointer,
                     drawnumber_motion_array, drawnumber_motion_wp);
             canvas_setMotionFunction(glist, z, (t_motionfn)drawnumber_motion, xpix, ypix);
         }
