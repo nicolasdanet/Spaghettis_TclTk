@@ -729,7 +729,7 @@ t_glist *canvas_newGraph (t_glist *glist,
     cast_object (x)->te_xCoordinate     = topLeftX;
     cast_object (x)->te_yCoordinate     = topLeftY;
     cast_object (x)->te_type            = TYPE_OBJECT;
-    x->gl_master                        = gstub_new (x, NULL);
+    x->gl_master                        = gpointer_masterCreateWithGlist (x);
     x->gl_parent                        = glist;
     x->gl_name                          = gensym (t);
     x->gl_magic                         = ++canvas_magic;
@@ -798,7 +798,7 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     
     cast_object (x)->te_type = TYPE_OBJECT;
     
-    x->gl_master    = gstub_new (x, NULL);
+    x->gl_master    = gpointer_masterCreateWithGlist (x);
     x->gl_parent    = owner;
     x->gl_name      = (name != &s_ ? name : (canvas_fileName ? canvas_fileName : gensym (PD_NAME_SHORT)));
     x->gl_magic     = ++canvas_magic;
@@ -867,7 +867,7 @@ void canvas_free (t_glist *glist)
     
     dsp_resume (dspstate);
     
-    gstub_cutoff (glist->gl_master);
+    gpointer_masterRelease (glist->gl_master);
     guistub_destroyWithKey ((void *)glist);
     
     if (!glist->gl_parent) { instance_removeFromRoots (glist); }

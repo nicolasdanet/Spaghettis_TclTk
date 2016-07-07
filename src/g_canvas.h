@@ -276,7 +276,7 @@ struct _gmaster {
     union {
         t_glist         *gm_glist;
         t_array         *gm_array;
-    } gs_un;
+    } gm_un;
     int                 gm_type;
     int                 gm_count;
     };
@@ -299,7 +299,7 @@ struct _array {
     char                *a_vector;
     t_symbol            *a_template;
     t_gmaster           *a_master;
-    int                 a_valid;
+    int                 a_magic;
     t_gpointer          a_gpointer;
     };
 
@@ -840,6 +840,11 @@ void            voutlet_dspEpilog                       (struct _voutlet *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_gmaster       *gpointer_masterCreateWithGlist         (t_glist *glist);
+t_gmaster       *gpointer_masterCreateWithArray         (t_array *array);
+
+void            gpointer_masterRelease                  (t_gmaster *master);
+
 t_symbol        *gpointer_gettemplatesym                (const t_gpointer *gp);
 
 t_array         *array_new                              (t_symbol *templateName, t_gpointer *parent);
@@ -925,9 +930,6 @@ void         array_resize_and_redraw    (t_array *array, t_glist *glist, int n);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_gmaster  *gstub_new             (t_glist *gl, t_array *a);
-void    gstub_dis               (t_gmaster *gs);
-void     gstub_cutoff           (t_gmaster *gs);
 void     gpointer_setglist      (t_gpointer *gp, t_glist *glist, t_scalar *x);
 void     gpointer_setarray      (t_gpointer *gp, t_array *array, t_word *w);
 

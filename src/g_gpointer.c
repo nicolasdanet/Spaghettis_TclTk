@@ -9,53 +9,63 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>      /* for read/write to files */
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
 #include "g_canvas.h"
 
-t_gmaster *gstub_new(t_glist *gl, t_array *a)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* Weak pointer machinery. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+t_gmaster *gpointer_masterCreateWithGlist (t_glist *glist)
 {
-    t_gmaster *gs = PD_MEMORY_GET(sizeof(*gs));
-    if (gl)
-    {
-        gs->gm_type = POINTER_GLIST;
-        gs->gs_un.gm_glist = gl;
-    }
-    else
-    {
-        gs->gm_type = POINTER_ARRAY;
-        gs->gs_un.gm_array = a;
-    }
-    gs->gm_count = 0;
-    return (gs);
+    t_gmaster *master = PD_MEMORY_GET (sizeof (t_gmaster));
+    
+    PD_ASSERT (glist);
+    
+    master->gm_type         = POINTER_GLIST;
+    master->gm_un.gm_glist  = glist;
+    master->gm_count        = 0;
+    
+    return master;
 }
 
-/* when a "gpointer" is set to point to this stub (so we can later chase
-down the owner) we increase a reference count.  The following routine is called
-whenever a gpointer is unset from pointing here.  If the owner is
-gone and the refcount goes to zero, we can free the gstub safely. */
-
-void gstub_dis(t_gmaster *gs)
+t_gmaster *gpointer_masterCreateWithArray (t_array *array)
 {
-    int refcount = --gs->gm_count;
-    if ((!refcount) && gs->gm_type == POINTER_NONE)
-        PD_MEMORY_FREE(gs);
-    else if (refcount < 0) { PD_BUG; }
+    t_gmaster *master = PD_MEMORY_GET (sizeof (t_gmaster));
+    
+    PD_ASSERT (array);
+    
+    master->gm_type         = POINTER_ARRAY;
+    master->gm_un.gm_array  = array;
+    master->gm_count        = 0;
+    
+    return master;
 }
 
-/* this routing is called by the owner to inform the gstub that it is
-being deleted.  If no gpointers are pointing here, we can free the gstub;
-otherwise we wait for the last gstub_dis() to free it. */
-
-void gstub_cutoff(t_gmaster *gs)
+void gpointer_masterRelease (t_gmaster *master)
 {
-    gs->gm_type = POINTER_NONE;
-    if (gs->gm_count < 0) { PD_BUG; }
-    if (!gs->gm_count) PD_MEMORY_FREE(gs);
+    PD_ASSERT (master->gm_count >= 0);
+    
+    master->gm_type = POINTER_NONE; if (master->gm_count == 0) { PD_MEMORY_FREE (master); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void gpointer_decrementMaster (t_gmaster *master)
+{
+    int count = --master->gm_count;
+    
+    PD_ASSERT (count >= 0);
+    
+    if (count == 0 && master->gm_type == POINTER_NONE) { PD_MEMORY_FREE (master); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -73,13 +83,13 @@ int gpointer_check(const t_gpointer *gp, int headok)
     if (!gs) return (0);
     if (gs->gm_type == POINTER_ARRAY)
     {
-        if (gs->gs_un.gm_array->a_valid != gp->gp_magic) return (0);
+        if (gs->gm_un.gm_array->a_magic != gp->gp_magic) return (0);
         else return (1);
     }
     else if (gs->gm_type == POINTER_GLIST)
     {
         if (!headok && !gp->gp_un.gp_scalar) return (0);
-        else if (gs->gs_un.gm_glist->gl_magic != gp->gp_magic) return (0);
+        else if (gs->gm_un.gm_glist->gl_magic != gp->gp_magic) return (0);
         else return (1);
     }
     else return (0);
@@ -100,7 +110,7 @@ t_symbol *gpointer_gettemplatesym (const t_gpointer *gp)
     }
     else
     {
-        t_array *a = gs->gs_un.gm_array;
+        t_array *a = gs->gm_un.gm_array;
         return (a->a_template);
     }
 }
@@ -123,7 +133,7 @@ void gpointer_unset(t_gpointer *gp)
     t_gmaster *gs;
     if (gs = gp->gp_master)
     {
-        gstub_dis(gs);
+        gpointer_decrementMaster(gs);
         gp->gp_master = 0;
     }
 }
@@ -131,7 +141,7 @@ void gpointer_unset(t_gpointer *gp)
 void gpointer_setglist(t_gpointer *gp, t_glist *glist, t_scalar *x)
 {
     t_gmaster *gs;
-    if (gs = gp->gp_master) gstub_dis(gs);
+    if (gs = gp->gp_master) gpointer_decrementMaster(gs);
     gp->gp_master = gs = glist->gl_master;
     gp->gp_magic = glist->gl_magic;
     gp->gp_un.gp_scalar = x;
@@ -141,9 +151,9 @@ void gpointer_setglist(t_gpointer *gp, t_glist *glist, t_scalar *x)
 void gpointer_setarray(t_gpointer *gp, t_array *array, t_word *w)
 {
     t_gmaster *gs;
-    if (gs = gp->gp_master) gstub_dis(gs);
+    if (gs = gp->gp_master) gpointer_decrementMaster(gs);
     gp->gp_master = gs = array->a_master;
-    gp->gp_magic = array->a_valid;
+    gp->gp_magic = array->a_magic;
     gp->gp_un.gp_w = w;
     gs->gm_count++;
 }

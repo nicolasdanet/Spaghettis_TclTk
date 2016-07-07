@@ -42,7 +42,7 @@ t_array *array_new (t_symbol *templatesym, t_gpointer *parent)
         we'll be deleted before the thing pointed to gets deleted anyway;
         see array_free. */
     x->a_gpointer = *parent;
-    x->a_master = gstub_new (NULL, x);
+    x->a_master = gpointer_masterCreateWithArray (x);
     word_init((t_word *)(x->a_vector), template, parent);
     return (x);
 }
@@ -50,7 +50,7 @@ t_array *array_new (t_symbol *templatesym, t_gpointer *parent)
 void array_redraw(t_array *a, t_glist *glist)
 {
     while (a->a_gpointer.gp_master->gm_type == POINTER_ARRAY)
-        a = a->a_gpointer.gp_master->gs_un.gm_array;
+        a = a->a_gpointer.gp_master->gm_un.gm_array;
     scalar_redraw(a->a_gpointer.gp_un.gp_scalar, glist);
 }
 
@@ -109,7 +109,7 @@ void array_resize(t_array *x, int n)
             word_init(wp, template, &x->a_gpointer);
         }
     }
-    x->a_valid = ++canvas_magic;
+    x->a_magic = ++canvas_magic;
 }
 
 void array_resize_and_redraw(t_array *array, t_glist *glist, int n)
@@ -117,7 +117,7 @@ void array_resize_and_redraw(t_array *array, t_glist *glist, int n)
     t_array *a2 = array;
     int vis = canvas_isMapped(glist);
     while (a2->a_gpointer.gp_master->gm_type == POINTER_ARRAY)
-        a2 = a2->a_gpointer.gp_master->gs_un.gm_array;
+        a2 = a2->a_gpointer.gp_master->gm_un.gm_array;
     if (vis)
         gobj_visibilityChanged(&a2->a_gpointer.gp_un.gp_scalar->sc_g, glist, 0);
     array_resize(array, n);
@@ -129,7 +129,7 @@ void array_free(t_array *x)
 {
     int i;
     t_template *scalartemplate = template_findbyname(x->a_template);
-    gstub_cutoff(x->a_master);
+    gpointer_masterRelease (x->a_master);
     for (i = 0; i < x->a_size; i++)
     {
         t_word *wp = (t_word *)(x->a_vector + x->a_elementSize * i);

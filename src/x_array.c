@@ -269,13 +269,13 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
             return (0);
         }
         if (gs->gm_type == POINTER_GLIST)
-            *glist = gs->gs_un.gm_glist;
+            *glist = gs->gm_un.gm_glist;
         else
         {
-            t_array *owner_array = gs->gs_un.gm_array;
+            t_array *owner_array = gs->gm_un.gm_array;
             while (owner_array->a_gpointer.gp_master->gm_type == POINTER_ARRAY)
-                owner_array = owner_array->a_gpointer.gp_master->gs_un.gm_array;
-            *glist = owner_array->a_gpointer.gp_master->gs_un.gm_glist;
+                owner_array = owner_array->a_gpointer.gp_master->gm_un.gm_array;
+            *glist = owner_array->a_gpointer.gp_master->gm_un.gm_glist;
         }
         return (*(t_array **)(((char *)vec) + onset));
     }

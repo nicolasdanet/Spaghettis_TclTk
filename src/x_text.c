@@ -310,14 +310,14 @@ static void text_define_topointer(t_text_define *x, t_gpointer *gp, t_symbol *s)
         buffer_append(b, buffer_size(x->x_textbuf.b_binbuf),
             buffer_atoms(x->x_textbuf.b_binbuf));
         if (gs->gm_type == POINTER_GLIST)
-            scalar_redraw(gp->gp_un.gp_scalar, gs->gs_un.gm_glist);  
+            scalar_redraw(gp->gp_un.gp_scalar, gs->gm_un.gm_glist);  
         else
         {
-            t_array *owner_array = gs->gs_un.gm_array;
+            t_array *owner_array = gs->gm_un.gm_array;
             while (owner_array->a_gpointer.gp_master->gm_type == POINTER_ARRAY)
-                owner_array = owner_array->a_gpointer.gp_master->gs_un.gm_array;
+                owner_array = owner_array->a_gpointer.gp_master->gm_un.gm_array;
             scalar_redraw(owner_array->a_gpointer.gp_un.gp_scalar,
-                owner_array->a_gpointer.gp_master->gs_un.gm_glist);  
+                owner_array->a_gpointer.gp_master->gm_un.gm_glist);  
         }
     } 
 }
@@ -487,14 +487,14 @@ static  void text_client_senditup(t_text_client *x)
             return;
         }
         if (gs->gm_type == POINTER_GLIST)
-            scalar_redraw(x->tc_gp.gp_un.gp_scalar, gs->gs_un.gm_glist);  
+            scalar_redraw(x->tc_gp.gp_un.gp_scalar, gs->gm_un.gm_glist);  
         else
         {
-            t_array *owner_array = gs->gs_un.gm_array;
+            t_array *owner_array = gs->gm_un.gm_array;
             while (owner_array->a_gpointer.gp_master->gm_type == POINTER_ARRAY)
-                owner_array = owner_array->a_gpointer.gp_master->gs_un.gm_array;
+                owner_array = owner_array->a_gpointer.gp_master->gm_un.gm_array;
             scalar_redraw(owner_array->a_gpointer.gp_un.gp_scalar,
-                owner_array->a_gpointer.gp_master->gs_un.gm_glist);  
+                owner_array->a_gpointer.gp_master->gm_un.gm_glist);  
         }
     }
 }
