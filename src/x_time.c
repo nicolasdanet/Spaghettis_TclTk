@@ -557,7 +557,7 @@ static void hang_tick(t_hang *h)
         case A_FLOAT: outlet_float(p->p_outlet, w->w_float); break;
         case A_SYMBOL: outlet_symbol(p->p_outlet, w->w_symbol); break;
         case A_POINTER:
-            if (gpointer_check(w->w_gpointer, 1))
+            if (gpointer_isValid(w->w_gpointer, 1))
                 outlet_pointer(p->p_outlet, w->w_gpointer);
             else post_error ("pipe: stale pointer");
             break;

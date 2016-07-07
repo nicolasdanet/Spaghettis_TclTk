@@ -130,27 +130,23 @@ void gpointer_copy (const t_gpointer *src, t_gpointer *dest)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* call this to verify that a pointer is fresh, i.e., that it either
-points to real data or to the head of a list, and that in either case
-the object hasn't disappeared since this pointer was generated. 
-Unless "headok" is set,  the routine also fails for the head of a list. */
-
-int gpointer_check(const t_gpointer *gp, int headok)
+int gpointer_isValid (const t_gpointer *gp, int headPointerIsValid)
 {
-    t_gmaster *gs = gp->gp_master;
-    if (!gs) return (0);
-    if (gs->gm_type == POINTER_ARRAY)
-    {
-        if (gs->gm_un.gm_array->a_magic != gp->gp_magic) return (0);
-        else return (1);
+    t_gmaster *master = gp->gp_master;
+    
+    if (master) {
+    //
+    if (master->gm_type == POINTER_ARRAY) {
+        if (master->gm_un.gm_array->a_magic == gp->gp_magic)    { return 1; }
+        
+    } else if (master->gm_type == POINTER_GLIST) {
+        if (!headPointerIsValid && !gp->gp_un.gp_scalar)        { return 0; }
+        if (master->gm_un.gm_glist->gl_magic == gp->gp_magic)   { return 1; }
     }
-    else if (gs->gm_type == POINTER_GLIST)
-    {
-        if (!headok && !gp->gp_un.gp_scalar) return (0);
-        else if (gs->gm_un.gm_glist->gl_magic != gp->gp_magic) return (0);
-        else return (1);
+    //
     }
-    else return (0);
+    
+    return 0;
 }
 
 /* get the template for the object pointer to.  Assumes we've already checked

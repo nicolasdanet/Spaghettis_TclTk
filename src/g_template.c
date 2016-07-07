@@ -1205,7 +1205,7 @@ static void curve_motion(void *z, t_float dx, t_float dy, t_float modifier)
     t_curve *x = (t_curve *)z;
     t_fielddescriptor *f = x->x_vec + curve_motion_field;
     t_atom at;
-    if (!gpointer_check(&curve_motion_gpointer, 0))
+    if (!gpointer_isValid(&curve_motion_gpointer, 0))
     {
         post("curve_motion: scalar disappeared");
         return;
@@ -2557,7 +2557,7 @@ static void drawnumber_motion(void *z, t_float dx, t_float dy, t_float modifier)
 {
     t_drawnumber *x = (t_drawnumber *)z;
     t_atom at;
-    if (!gpointer_check(&drawnumber_motion_gpointer, 0))
+    if (!gpointer_isValid(&drawnumber_motion_gpointer, 0))
     {
         post("drawnumber_motion: scalar disappeared");
         return;
@@ -2588,7 +2588,7 @@ static void drawnumber_key(void *z, t_keycode fkey)
     int key = fkey;
     char sbuf[PD_STRING];
     t_atom at;
-    if (!gpointer_check(&drawnumber_motion_gpointer, 0))
+    if (!gpointer_isValid(&drawnumber_motion_gpointer, 0))
     {
         post("drawnumber_motion: scalar disappeared");
         return;
