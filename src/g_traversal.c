@@ -268,7 +268,7 @@ static void ptrobj_bang(t_ptrobj *x)
 
 static void ptrobj_pointer(t_ptrobj *x, t_gpointer *gp)
 {
-    gpointer_unset(&x->x_gp);
+    //gpointer_unset(&x->x_gp);
     gpointer_copy(gp, &x->x_gp);
     ptrobj_bang(x);
 }

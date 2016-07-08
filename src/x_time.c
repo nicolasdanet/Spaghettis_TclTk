@@ -605,7 +605,7 @@ static void pipe_list(t_pipe *x, t_symbol *s, int ac, t_atom *av)
     {
         if (p->p_atom.a_type == A_POINTER)
         {
-            if (gp->gp_master) { gp->gp_master->gm_count++; }   /* ??? Encapsulate gm_count. */
+            if (gp->gp_master) { gpointer_masterIncrement (gp->gp_master); }
             w->w_gpointer = gp2;
             *gp2++ = *gp++;
         }

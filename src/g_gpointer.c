@@ -55,16 +55,12 @@ void gpointer_masterRelease (t_gmaster *master)
     master->gm_type = POINTER_NONE; if (master->gm_count == 0) { PD_MEMORY_FREE (master); }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void gpointer_incrementMaster (t_gmaster *master)
+void gpointer_masterIncrement (t_gmaster *master)
 {
     master->gm_count++;
 }
 
-static void gpointer_decrementMaster (t_gmaster *master)
+void gpointer_masterDecrement (t_gmaster *master)
 {
     int count = --master->gm_count;
     
@@ -86,29 +82,33 @@ void gpointer_init (t_gpointer *gp)
 
 void gpointer_setScalar (t_gpointer *gp, t_glist *glist, t_scalar *scalar)
 {
-    if (gp->gp_master) { gpointer_decrementMaster (gp->gp_master); }
+    if (gp->gp_master) { gpointer_masterDecrement (gp->gp_master); }
+    
+    gpointer_init (gp);
     
     gp->gp_un.gp_scalar = scalar;
     gp->gp_master       = glist->gl_master;
     gp->gp_identifier   = glist->gl_identifier;
 
-    gpointer_incrementMaster (gp->gp_master);
+    gpointer_masterIncrement (gp->gp_master);
 }
 
 void gpointer_setWord (t_gpointer *gp, t_array *array, t_word *w)
 {
-    if (gp->gp_master) { gpointer_decrementMaster (gp->gp_master); }
+    if (gp->gp_master) { gpointer_masterDecrement (gp->gp_master); }
+    
+    gpointer_init (gp);
     
     gp->gp_un.gp_w      = w;
     gp->gp_master       = array->a_master;
     gp->gp_identifier   = array->a_identifier;
 
-    gpointer_incrementMaster (gp->gp_master);
+    gpointer_masterIncrement (gp->gp_master);
 }
 
 void gpointer_unset (t_gpointer *gp)
 {
-    if (gp->gp_master) { gpointer_decrementMaster (gp->gp_master); }
+    if (gp->gp_master) { gpointer_masterDecrement (gp->gp_master); }
     
     gpointer_init (gp);
 }
@@ -146,7 +146,7 @@ void gpointer_copy (t_gpointer *src, t_gpointer *dest)
     
     *dest = *src;
     
-    if (dest->gp_master) { gpointer_incrementMaster (dest->gp_master); }
+    if (dest->gp_master) { gpointer_masterIncrement (dest->gp_master); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

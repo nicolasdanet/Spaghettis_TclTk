@@ -844,6 +844,8 @@ t_gmaster       *gpointer_masterCreateWithGlist         (t_glist *glist);
 t_gmaster       *gpointer_masterCreateWithArray         (t_array *array);
 
 void            gpointer_masterRelease                  (t_gmaster *master);
+void            gpointer_masterIncrement                (t_gmaster *master);
+void            gpointer_masterDecrement                (t_gmaster *master);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
