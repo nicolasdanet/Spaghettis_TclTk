@@ -272,14 +272,14 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
             return (0);
         }
         if (gpointer_isScalar (&x->tc_gp)) {
-            *glist = x->tc_gp.gp_master->gm_un.gm_glist;
+            *glist = gpointer_getParentGlist (&x->tc_gp);
         } else {
-            t_array *owner_array = x->tc_gp.gp_master->gm_un.gm_array;
+            t_array *owner_array = gpointer_getParentArray (&x->tc_gp);
             /* array_getTop ?*/
             while (gpointer_isWord (owner_array)) {
-                owner_array = owner_array->a_gpointer.gp_master->gm_un.gm_array;
+                owner_array = gpointer_getParentArray (&owner_array->a_gpointer);
             }
-            *glist = owner_array->a_gpointer.gp_master->gm_un.gm_glist;
+            *glist = gpointer_getParentGlist (&owner_array->a_gpointer);
         }
         return (*(t_array **)(((char *)vec) + onset));
     }

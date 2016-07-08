@@ -309,15 +309,15 @@ static void text_define_topointer(t_text_define *x, t_gpointer *gp, t_symbol *s)
         buffer_append(b, buffer_size(x->x_textbuf.b_binbuf),
             buffer_atoms(x->x_textbuf.b_binbuf));
         if (gpointer_isScalar (gp)) {
-            scalar_redraw(gp->gp_un.gp_scalar, gp->gp_master->gm_un.gm_glist);  
+            scalar_redraw(gp->gp_un.gp_scalar, gpointer_getParentGlist (gp));  
         } else {
-            t_array *owner_array = gp->gp_master->gm_un.gm_array;
+            t_array *owner_array = gpointer_getParentArray (gp);
             /* array_getTop ?*/
             while (gpointer_isWord (owner_array)) {
-                owner_array = owner_array->a_gpointer.gp_master->gm_un.gm_array;
+                owner_array = gpointer_getParentArray (&owner_array->a_gpointer);
             }
             scalar_redraw(owner_array->a_gpointer.gp_un.gp_scalar,
-                owner_array->a_gpointer.gp_master->gm_un.gm_glist);  
+                gpointer_getParentGlist (&owner_array->a_gpointer));  
         }
     } 
 }
@@ -489,15 +489,15 @@ static  void text_client_senditup(t_text_client *x)
             return;
         }
         if (gpointer_isScalar (&x->tc_gp)) {
-            scalar_redraw(x->tc_gp.gp_un.gp_scalar, x->tc_gp.gp_master->gm_un.gm_glist);  
+            scalar_redraw(x->tc_gp.gp_un.gp_scalar, gpointer_getParentGlist (&x->tc_gp));
         } else {
-            t_array *owner_array = x->tc_gp.gp_master->gm_un.gm_array;
+            t_array *owner_array = gpointer_getParentArray (&x->tc_gp);
             /* array_getTop ?*/
             while (gpointer_isWord (owner_array)) {
-                owner_array = owner_array->a_gpointer.gp_master->gm_un.gm_array;
+                owner_array = gpointer_getParentArray (&owner_array->a_gpointer);
             }
             scalar_redraw(owner_array->a_gpointer.gp_un.gp_scalar,
-                owner_array->a_gpointer.gp_master->gm_un.gm_glist);  
+                gpointer_getParentGlist (&owner_array->a_gpointer));  
         }
     }
 }

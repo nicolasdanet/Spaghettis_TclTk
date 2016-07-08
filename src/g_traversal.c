@@ -152,7 +152,7 @@ static void ptrobj_vnext(t_ptrobj *x, t_float f)
         post_error ("ptrobj_next: lists only, not arrays");
         return;
     }
-    glist = gp->gp_master->gm_un.gm_glist;
+    glist = gpointer_getParentGlist (gp);
     if (glist->gl_identifier != gp->gp_identifier)
     {
         post_error ("ptrobj_next: stale pointer");
@@ -218,13 +218,13 @@ static void ptrobj_sendwindow(t_ptrobj *x, t_symbol *s, int argc, t_atom *argv)
     }
     //gs = x->x_gp.gp_master;
     if (gpointer_isScalar (&x->x_gp)) {
-        glist = x->x_gp.gp_master->gm_un.gm_glist;  
+        glist = gpointer_getParentGlist (&x->x_gp);
     } else {
-        t_array *owner_array = x->x_gp.gp_master->gm_un.gm_array;
+        t_array *owner_array = gpointer_getParentArray (&x->x_gp);
         while (gpointer_isWord (&owner_array->a_gpointer)) {    /* array_getTop ?*/
-            owner_array = owner_array->a_gpointer.gp_master->gm_un.gm_array;
+            owner_array = gpointer_getParentArray (&owner_array->a_gpointer);
         }
-        glist = owner_array->a_gpointer.gp_master->gm_un.gm_glist;  
+        glist = gpointer_getParentGlist (&owner_array->a_gpointer);
     }
     canvas = (t_pd *)canvas_getView(glist);
     if (argc && argv->a_type == A_SYMBOL)
@@ -293,7 +293,7 @@ static void ptrobj_rewind(t_ptrobj *x)
         post_error ("pointer_rewind: sorry, unavailable for arrays");
         return;
     }
-    glist = x->x_gp.gp_master->gm_un.gm_glist;  
+    glist = gpointer_getParentGlist (&x->x_gp);
     gpointer_setScalar(&x->x_gp, glist, 0);
     ptrobj_bang(x);
 }
@@ -568,15 +568,15 @@ static void set_bang(t_set *x)
     else for (i = 0, vp = x->x_variables; i < nitems; i++, vp++)
         template_setfloat(template, vp->gv_sym, vec, vp->gv_w.w_float, 1);
     if (gpointer_isScalar (gp)) {
-        scalar_redraw(gp->gp_un.gp_scalar, gp->gp_master->gm_un.gm_glist);  
+        scalar_redraw(gp->gp_un.gp_scalar, gpointer_getParentGlist (gp));  
     } else {
-        t_array *owner_array = gp->gp_master->gm_un.gm_array;
+        t_array *owner_array = gpointer_getParentArray (gp);
         /* array_getTop ?*/
         while (gpointer_isWord (owner_array)) {
-            owner_array = owner_array->a_gpointer.gp_master->gm_un.gm_array;
+            owner_array = gpointer_getParentArray (&owner_array->a_gpointer);
         }
-        scalar_redraw(owner_array->a_gpointer.gp_un.gp_scalar,
-            owner_array->a_gpointer.gp_master->gm_un.gm_glist);  
+        scalar_redraw (owner_array->a_gpointer.gp_un.gp_scalar,
+            gpointer_getParentGlist (&owner_array->a_gpointer));  
     }
 }
 
@@ -924,18 +924,19 @@ static void setsize_float(t_setsize *x, t_float f)
         When graphics updates become queueable this may fall apart... */
 
     if (gpointer_isScalar (gp)) {
-        if (canvas_isMapped(gp->gp_master->gm_un.gm_glist)) {
-            gobj_visibilityChanged((t_gobj *)(gp->gp_un.gp_scalar), gp->gp_master->gm_un.gm_glist, 0); 
+        if (canvas_isMapped (gpointer_getParentGlist (gp))) {
+            gobj_visibilityChanged((t_gobj *)(gp->gp_un.gp_scalar), gpointer_getParentGlist (gp), 0); 
         }
     } else {
-        t_array *owner_array = gp->gp_master->gm_un.gm_array;
+        t_array *owner_array = gpointer_getParentArray (gp);
         /* array_getTop ?*/
         while (gpointer_isWord (owner_array)) {
-            owner_array = owner_array->a_gpointer.gp_master->gm_un.gm_array;
+            owner_array = gpointer_getParentArray (&owner_array->a_gpointer);
         }
-        if (canvas_isMapped(owner_array->a_gpointer.gp_master->gm_un.gm_glist))
+        if (canvas_isMapped(gpointer_getParentGlist (&owner_array->a_gpointer))) {
             gobj_visibilityChanged((t_gobj *)(owner_array->a_gpointer.gp_un.gp_scalar),
-                owner_array->a_gpointer.gp_master->gm_un.gm_glist, 0);  
+                gpointer_getParentGlist (&owner_array->a_gpointer), 0); 
+        }
     }
         /* if shrinking, free the scalars that will disappear */
     if (newsize < nitems)
@@ -964,18 +965,19 @@ static void setsize_float(t_setsize *x, t_float f)
 
     /* redraw again. */
     if (gpointer_isScalar (gp)) {
-        if (canvas_isMapped(gp->gp_master->gm_un.gm_glist)) {
-            gobj_visibilityChanged((t_gobj *)(gp->gp_un.gp_scalar), gp->gp_master->gm_un.gm_glist, 1);  
+        if (canvas_isMapped(gpointer_getParentGlist (gp))) {
+            gobj_visibilityChanged((t_gobj *)(gp->gp_un.gp_scalar), gpointer_getParentGlist (gp), 1);  
         }
     } else {
-        t_array *owner_array = gp->gp_master->gm_un.gm_array;
+        t_array *owner_array = gpointer_getParentArray (gp);
         /* array_getTop ?*/
         while (gpointer_isWord (owner_array)) {
-            owner_array = owner_array->a_gpointer.gp_master->gm_un.gm_array;
+            owner_array = gpointer_getParentArray (&owner_array->a_gpointer);
         }
-        if (canvas_isMapped(owner_array->a_gpointer.gp_master->gm_un.gm_glist))
+        if (canvas_isMapped(gpointer_getParentGlist (&owner_array->a_gpointer))) {
             gobj_visibilityChanged((t_gobj *)(owner_array->a_gpointer.gp_un.gp_scalar),
-                owner_array->a_gpointer.gp_master->gm_un.gm_glist, 1);  
+                gpointer_getParentGlist (&owner_array->a_gpointer), 1);  
+        }
     }
 }
 
@@ -1088,7 +1090,7 @@ static void append_float(t_append *x, t_float f)
         post_error ("append: lists only, not arrays");
         return;
     }
-    glist = gp->gp_master->gm_un.gm_glist;
+    glist = gpointer_getParentGlist (gp);
     if (glist->gl_identifier != gp->gp_identifier)
     {
         post_error ("append: stale pointer");

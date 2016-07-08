@@ -272,15 +272,6 @@ struct _glist {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-struct _gmaster {
-    union {
-        t_glist         *gm_glist;
-        t_array         *gm_array;
-    } gm_un;
-    int                 gm_type;
-    int                 gm_count;
-    };
-
 struct _gpointer {
     union {   
         struct _scalar  *gp_scalar;
@@ -861,6 +852,8 @@ void            gpointer_copy                           (t_gpointer *src, t_gpoi
 int             gpointer_isScalar                       (t_gpointer *gp);
 int             gpointer_isWord                         (t_gpointer *gp);
 
+t_array         *gpointer_getParentArray                (t_gpointer *gp);
+t_glist         *gpointer_getParentGlist                (t_gpointer *gp);
 t_symbol        *gpointer_getTemplate                   (t_gpointer *gp);
 
 // -----------------------------------------------------------------------------------------------------------

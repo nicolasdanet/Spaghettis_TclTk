@@ -22,6 +22,18 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+struct _gmaster {
+    union {
+        t_glist     *gm_glist;
+        t_array     *gm_array;
+    } gm_un;
+    int             gm_type;
+    int             gm_count;
+    };
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 t_gmaster *gpointer_masterCreateWithGlist (t_glist *glist)
 {
     t_gmaster *master = PD_MEMORY_GET (sizeof (t_gmaster));
@@ -161,6 +173,20 @@ int gpointer_isScalar (t_gpointer *gp)
 int gpointer_isWord (t_gpointer *gp)
 {
     return (gp->gp_master->gm_type == POINTER_ARRAY);
+}
+
+t_array *gpointer_getParentArray (t_gpointer *gp)
+{
+    PD_ASSERT (gp->gp_master->gm_type == POINTER_ARRAY);
+    
+    return (gp->gp_master->gm_un.gm_array);
+}
+
+t_glist *gpointer_getParentGlist (t_gpointer *gp)
+{
+    PD_ASSERT (gp->gp_master->gm_type == POINTER_GLIST);
+    
+    return (gp->gp_master->gm_un.gm_glist);
 }
 
 // -----------------------------------------------------------------------------------------------------------
