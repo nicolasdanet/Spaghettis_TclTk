@@ -173,7 +173,7 @@ static void array_define_send(t_glist *x, t_symbol *s)
     else if (gl && gl->gl_graphics && pd_class(&gl->gl_graphics->g_pd) == garray_class)
     {
         t_gpointer gp;
-        gpointer_initialize(&gp);
+        gpointer_init(&gp);
         gpointer_setScalar(&gp, gl,
             garray_getScalar((t_garray *)gl->gl_graphics));
         pd_pointer(s->s_thing, &gp);
@@ -238,7 +238,7 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
     else if (x->tc_struct)   /* by pointer */
     {
         t_template *template = template_findbyname(x->tc_struct);
-        t_gmaster *gs = x->tc_gp.gp_master;
+        //t_gmaster *gs = x->tc_gp.gp_master;
         t_word *vec; 
         int onset, type;
         t_symbol *arraytype;
@@ -252,9 +252,12 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
             post_error ("array: stale or empty pointer");
             return (0);
         }
-        if (gs->gm_type == POINTER_ARRAY)
+        
+        if (gpointer_isWord (&x->tc_gp)) {
             vec = x->tc_gp.gp_un.gp_w;
-        else vec = x->tc_gp.gp_un.gp_scalar->sc_vector;
+        } else {
+            vec = x->tc_gp.gp_un.gp_scalar->sc_vector;
+        }
 
         if (!template_find_field(template,
             x->tc_field, &onset, &type, &arraytype))
@@ -268,13 +271,14 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
                 x->tc_field->s_name);
             return (0);
         }
-        if (gs->gm_type == POINTER_GLIST)
-            *glist = gs->gm_un.gm_glist;
-        else
-        {
-            t_array *owner_array = gs->gm_un.gm_array;
-            while (owner_array->a_gpointer.gp_master->gm_type == POINTER_ARRAY)
+        if (gpointer_isScalar (&x->tc_gp)) {
+            *glist = x->tc_gp.gp_master->gm_un.gm_glist;
+        } else {
+            t_array *owner_array = x->tc_gp.gp_master->gm_un.gm_array;
+            /* array_getTop ?*/
+            while (gpointer_isWord (owner_array)) {
                 owner_array = owner_array->a_gpointer.gp_master->gm_un.gm_array;
+            }
             *glist = owner_array->a_gpointer.gp_master->gm_un.gm_glist;
         }
         return (*(t_array **)(((char *)vec) + onset));
@@ -307,7 +311,7 @@ static void *array_size_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_array_size *x = (t_array_size *)pd_new(array_size_class);
     x->x_sym = x->x_struct = x->x_field = 0;
-    gpointer_initialize(&x->x_gp);
+    gpointer_init(&x->x_gp);
     while (argc && argv->a_type == A_SYMBOL &&
         *argv->a_w.w_symbol->s_name == '-')
     {
@@ -410,7 +414,7 @@ static void *array_rangeop_new(t_class *class,
     t_atom *argv = *argvp;
     t_array_rangeop *x = (t_array_rangeop *)pd_new(class);
     x->x_sym = x->x_struct = x->x_field = 0;
-    gpointer_initialize(&x->x_gp);
+    gpointer_init(&x->x_gp);
     x->x_elemtemplate = &s_;
     x->x_elemfield = sym_y; 
     x->x_onset = 0;

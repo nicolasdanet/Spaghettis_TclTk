@@ -55,7 +55,7 @@ t_scalar *scalar_new(t_glist *owner, t_symbol *templatesym)
     t_scalar *x;
     t_template *template;
     t_gpointer gp;
-    gpointer_initialize(&gp);
+    gpointer_init(&gp);
     template = template_findbyname(templatesym);
     if (!template)
     {
@@ -175,7 +175,7 @@ static void scalar_select(t_gobj *z, t_glist *owner, int state)
     t_symbol *templatesym = x->sc_template;
     t_atom at;
     t_gpointer gp;
-    gpointer_initialize(&gp);
+    gpointer_init(&gp);
     gpointer_setScalar(&gp, owner, x);
     SET_POINTER(&at, &gp);
     if (tmpl = template_findbyname(templatesym))
@@ -211,7 +211,7 @@ static void scalar_displace(t_gobj *z, t_glist *glist, int dx, int dy)
     if (goty)
         *(t_float *)(((char *)(x->sc_vector)) + yonset) += canvas_deltaPositionToValueY (glist, dy);
             // dy * (canvas_positionToValueY(glist, 1) - canvas_positionToValueY(glist, 0));
-    gpointer_initialize(&gp);
+    gpointer_init(&gp);
     gpointer_setScalar(&gp, glist, x);
     SET_POINTER(&at[0], &gp);
     SET_FLOAT(&at[1], (t_float)dx);

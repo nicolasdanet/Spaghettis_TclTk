@@ -701,7 +701,7 @@ static void *pack_new(t_symbol *s, int argc, t_atom *argv)
             {
                 vp->a_type = A_POINTER;
                 vp->a_w.w_gpointer = gp;
-                gpointer_initialize(gp);
+                gpointer_init(gp);
                 if (i) inlet_newPointer(&x->x_obj, gp);
                 gp++;
             }

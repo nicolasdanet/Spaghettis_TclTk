@@ -77,7 +77,7 @@ static void gpointer_decrementMaster (t_gmaster *master)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void gpointer_initialize (t_gpointer *gp)
+void gpointer_init (t_gpointer *gp)
 {
     gp->gp_un.gp_scalar = NULL;
     gp->gp_master       = NULL;
@@ -110,10 +110,10 @@ void gpointer_unset (t_gpointer *gp)
 {
     if (gp->gp_master) { gpointer_decrementMaster (gp->gp_master); }
     
-    gpointer_initialize (gp);
+    gpointer_init (gp);
 }
 
-int gpointer_isValid (const t_gpointer *gp, int nullPointerIsValid)
+int gpointer_isValid (t_gpointer *gp, int nullPointerIsValid)
 {
     t_gmaster *master = gp->gp_master;
     
@@ -140,7 +140,7 @@ int gpointer_isValid (const t_gpointer *gp, int nullPointerIsValid)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void gpointer_copy (const t_gpointer *src, t_gpointer *dest)
+void gpointer_copy (t_gpointer *src, t_gpointer *dest)
 {
     gpointer_unset (dest);
     
@@ -153,7 +153,21 @@ void gpointer_copy (const t_gpointer *src, t_gpointer *dest)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol *gpointer_getTemplate (const t_gpointer *gp)
+int gpointer_isScalar (t_gpointer *gp)
+{
+    return (gp->gp_master->gm_type == POINTER_GLIST);
+}
+
+int gpointer_isWord (t_gpointer *gp)
+{
+    return (gp->gp_master->gm_type == POINTER_ARRAY);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_symbol *gpointer_getTemplate (t_gpointer *gp)
 {
     t_symbol *s = NULL;
     t_gmaster *master = gp->gp_master;

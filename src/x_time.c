@@ -500,7 +500,7 @@ static void *pipe_new(t_symbol *s, int argc, t_atom *argv)
             {
                 vp->p_atom.a_type = A_POINTER;
                 vp->p_atom.a_w.w_gpointer = gp;
-                gpointer_initialize(gp);
+                gpointer_init(gp);
                 vp->p_outlet = outlet_new(&x->x_obj, &s_pointer);
                 if (i) inlet_newPointer(&x->x_obj, gp);
                 gp++;

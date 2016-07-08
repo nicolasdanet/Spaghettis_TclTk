@@ -849,15 +849,17 @@ void            gpointer_masterRelease                  (t_gmaster *master);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            gpointer_initialize                     (t_gpointer *gp);
+void            gpointer_init                           (t_gpointer *gp);
 void            gpointer_setScalar                      (t_gpointer *gp, t_glist *owner, t_scalar *scalar);
 void            gpointer_setWord                        (t_gpointer *gp, t_array *owner, t_word *w);
 void            gpointer_unset                          (t_gpointer *gp);
+int             gpointer_isValid                        (t_gpointer *gp, int nullPointerIsValid);
 
-void            gpointer_copy                           (const t_gpointer *src, t_gpointer *dest);
-int             gpointer_isValid                        (const t_gpointer *gp, int nullPointerIsValid);
+void            gpointer_copy                           (t_gpointer *src, t_gpointer *dest);
+int             gpointer_isScalar                       (t_gpointer *gp);
+int             gpointer_isWord                         (t_gpointer *gp);
 
-t_symbol        *gpointer_getTemplate                   (const t_gpointer *gp);
+t_symbol        *gpointer_getTemplate                   (t_gpointer *gp);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

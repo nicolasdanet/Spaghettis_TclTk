@@ -49,8 +49,9 @@ t_array *array_new (t_symbol *templatesym, t_gpointer *parent)
 
 void array_redraw(t_array *a, t_glist *glist)
 {
-    while (a->a_gpointer.gp_master->gm_type == POINTER_ARRAY)
+    while (gpointer_isWord (&a->a_gpointer)) {               /* array_getTop ? */
         a = a->a_gpointer.gp_master->gm_un.gm_array;
+    }
     scalar_redraw(a->a_gpointer.gp_un.gp_scalar, glist);
 }
 
@@ -116,8 +117,9 @@ void array_resize_and_redraw(t_array *array, t_glist *glist, int n)
 {
     t_array *a2 = array;
     int vis = canvas_isMapped(glist);
-    while (a2->a_gpointer.gp_master->gm_type == POINTER_ARRAY)
+    while (gpointer_isWord (&a2->a_gpointer)) {              /* array_getTop ? */
         a2 = a2->a_gpointer.gp_master->gm_un.gm_array;
+    }
     if (vis)
         gobj_visibilityChanged(&a2->a_gpointer.gp_un.gp_scalar->sc_g, glist, 0);
     array_resize(array, n);

@@ -262,7 +262,7 @@ static void *text_define_new(t_symbol *s, int argc, t_atom *argv)
     buffer_free(x->x_scalar->sc_vector[2].w_buffer); 
     x->x_scalar->sc_vector[2].w_buffer = x->x_binbuf;
     x->x_out = outlet_new(&x->x_ob, &s_pointer);
-    gpointer_initialize(&x->x_gp);
+    gpointer_init(&x->x_gp);
     x->x_canvas = canvas_getCurrent();
            /* bashily unbind #A -- this would create garbage if #A were
            multiply bound but we believe in this context it's at most
@@ -301,21 +301,21 @@ static void text_define_frompointer(t_text_define *x, t_gpointer *gp,
 
 static void text_define_topointer(t_text_define *x, t_gpointer *gp, t_symbol *s)
 {
-    t_buffer *b = pointertobinbuf(&x->x_textbuf.b_ob.te_g.g_pd,
-        gp, s, "text_topointer");
+    t_buffer *b = pointertobinbuf(&x->x_textbuf.b_ob.te_g.g_pd, gp, s, "text_topointer");
     if (b)
     {
-        t_gmaster *gs = gp->gp_master;
+        //t_gmaster *gs = gp->gp_master;
         buffer_reset(b);
         buffer_append(b, buffer_size(x->x_textbuf.b_binbuf),
             buffer_atoms(x->x_textbuf.b_binbuf));
-        if (gs->gm_type == POINTER_GLIST)
-            scalar_redraw(gp->gp_un.gp_scalar, gs->gm_un.gm_glist);  
-        else
-        {
-            t_array *owner_array = gs->gm_un.gm_array;
-            while (owner_array->a_gpointer.gp_master->gm_type == POINTER_ARRAY)
+        if (gpointer_isScalar (gp)) {
+            scalar_redraw(gp->gp_un.gp_scalar, gp->gp_master->gm_un.gm_glist);  
+        } else {
+            t_array *owner_array = gp->gp_master->gm_un.gm_array;
+            /* array_getTop ?*/
+            while (gpointer_isWord (owner_array)) {
                 owner_array = owner_array->a_gpointer.gp_master->gm_un.gm_array;
+            }
             scalar_redraw(owner_array->a_gpointer.gp_un.gp_scalar,
                 owner_array->a_gpointer.gp_master->gm_un.gm_glist);  
         }
@@ -379,7 +379,7 @@ static void text_client_argparse(t_text_client *x, int *argcp, t_atom **argvp,
     int argc = *argcp;
     t_atom *argv = *argvp;
     x->tc_sym = x->tc_struct = x->tc_field = 0;
-    gpointer_initialize(&x->tc_gp);
+    gpointer_init(&x->tc_gp);
     while (argc && argv->a_type == A_SYMBOL &&
         *argv->a_w.w_symbol->s_name == '-')
     {
@@ -428,7 +428,7 @@ static t_buffer *text_client_getbuf(t_text_client *x)
     else if (x->tc_struct)   /* by pointer */
     {
         t_template *template = template_findbyname(x->tc_struct);
-        t_gmaster *gs = x->tc_gp.gp_master;
+        //t_gmaster *gs = x->tc_gp.gp_master;
         t_word *vec; 
         int onset, type;
         t_symbol *arraytype;
@@ -442,9 +442,11 @@ static t_buffer *text_client_getbuf(t_text_client *x)
             post_error ("text: stale or empty pointer");
             return (0);
         }
-        if (gs->gm_type == POINTER_ARRAY)
+        if (gpointer_isWord (&x->tc_gp)) {
             vec = x->tc_gp.gp_un.gp_w;
-        else vec = x->tc_gp.gp_un.gp_scalar->sc_vector;
+        } else {
+            vec = x->tc_gp.gp_un.gp_scalar->sc_vector;
+        }
 
         if (!template_find_field(template,
             x->tc_field, &onset, &type, &arraytype))
@@ -475,7 +477,7 @@ static  void text_client_senditup(t_text_client *x)
     else if (x->tc_struct)   /* by pointer */
     {
         t_template *template = template_findbyname(x->tc_struct);
-        t_gmaster *gs = x->tc_gp.gp_master;
+        //t_gmaster *gs = x->tc_gp.gp_master;
         if (!template)
         {
             post_error ("text: couldn't find struct %s", x->tc_struct->s_name);
@@ -486,13 +488,14 @@ static  void text_client_senditup(t_text_client *x)
             post_error ("text: stale or empty pointer");
             return;
         }
-        if (gs->gm_type == POINTER_GLIST)
-            scalar_redraw(x->tc_gp.gp_un.gp_scalar, gs->gm_un.gm_glist);  
-        else
-        {
-            t_array *owner_array = gs->gm_un.gm_array;
-            while (owner_array->a_gpointer.gp_master->gm_type == POINTER_ARRAY)
+        if (gpointer_isScalar (&x->tc_gp)) {
+            scalar_redraw(x->tc_gp.gp_un.gp_scalar, x->tc_gp.gp_master->gm_un.gm_glist);  
+        } else {
+            t_array *owner_array = x->tc_gp.gp_master->gm_un.gm_array;
+            /* array_getTop ?*/
+            while (gpointer_isWord (owner_array)) {
                 owner_array = owner_array->a_gpointer.gp_master->gm_un.gm_array;
+            }
             scalar_redraw(owner_array->a_gpointer.gp_un.gp_scalar,
                 owner_array->a_gpointer.gp_master->gm_un.gm_glist);  
         }

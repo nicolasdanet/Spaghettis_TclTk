@@ -280,7 +280,7 @@ static t_scalar *template_conformscalar(t_template *tfrom, t_template *tto,
     if (scfrom->sc_template == tfrom->tp_symbol)
     {
             /* see scalar_new() for comment about the gpointer. */
-        gpointer_initialize(&gp);
+        gpointer_init(&gp);
         x = (t_scalar *)PD_MEMORY_GET(sizeof(t_scalar) +
             (tto->tp_size - 1) * sizeof(*x->sc_vector));
         x->sc_g.g_pd = scalar_class;
@@ -478,7 +478,7 @@ void template_notifyforscalar(t_template *template, t_glist *owner,
     t_scalar *sc, t_symbol *s, int argc, t_atom *argv)
 {
     t_gpointer gp;
-    gpointer_initialize(&gp);
+    gpointer_init(&gp);
     gpointer_setScalar(&gp, owner, sc);
     SET_POINTER(argv, &gp);
     template_notify(template, s, argc, argv);
