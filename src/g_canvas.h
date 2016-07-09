@@ -835,8 +835,6 @@ t_gmaster       *gpointer_masterCreateWithGlist         (t_glist *glist);
 t_gmaster       *gpointer_masterCreateWithArray         (t_array *array);
 
 void            gpointer_masterRelease                  (t_gmaster *master);
-void            gpointer_masterIncrement                (t_gmaster *master);
-void            gpointer_masterDecrement                (t_gmaster *master);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -846,11 +844,13 @@ void            gpointer_init                           (t_gpointer *gp);
 void            gpointer_setScalar                      (t_gpointer *gp, t_glist *owner, t_scalar *scalar);
 void            gpointer_setWord                        (t_gpointer *gp, t_array *owner, t_word *w);
 void            gpointer_unset                          (t_gpointer *gp);
+void            gpointer_retain                         (t_gpointer *gp);
 int             gpointer_isValid                        (t_gpointer *gp, int nullPointerIsValid);
-
+int             gpointer_isSet                          (t_gpointer *gp);
 void            gpointer_copy                           (t_gpointer *src, t_gpointer *dest);
 int             gpointer_isScalar                       (t_gpointer *gp);
 int             gpointer_isWord                         (t_gpointer *gp);
+int             gpointer_getIdentifier                  (t_gpointer *gp);
 
 t_array         *gpointer_getParentArray                (t_gpointer *gp);
 t_glist         *gpointer_getParentGlist                (t_gpointer *gp);

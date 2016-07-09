@@ -67,12 +67,12 @@ void gpointer_masterRelease (t_gmaster *master)
     master->gm_type = POINTER_NONE; if (master->gm_count == 0) { PD_MEMORY_FREE (master); }
 }
 
-void gpointer_masterIncrement (t_gmaster *master)
+static void gpointer_masterIncrement (t_gmaster *master)
 {
     master->gm_count++;
 }
 
-void gpointer_masterDecrement (t_gmaster *master)
+static void gpointer_masterDecrement (t_gmaster *master)
 {
     int count = --master->gm_count;
     
@@ -125,12 +125,25 @@ void gpointer_unset (t_gpointer *gp)
     gpointer_init (gp);
 }
 
+void gpointer_retain (t_gpointer *gp)
+{
+    if (gp->gp_master) { gpointer_masterIncrement (gp->gp_master); }
+    else {
+        PD_BUG;
+    }
+}
+
+int gpointer_isSet (t_gpointer *gp)
+{
+    return (gp->gp_master != NULL);
+}
+
 int gpointer_isValid (t_gpointer *gp, int nullPointerIsValid)
 {
+    if (gpointer_isSet (gp)) {
+    //
     t_gmaster *master = gp->gp_master;
     
-    if (master) {
-    //
     if (master->gm_type == POINTER_ARRAY) {
         if (!nullPointerIsValid && !gp->gp_un.gp_w)                     { PD_BUG; return 0; }
         if (master->gm_un.gm_array->a_identifier == gp->gp_identifier)  { return 1; }
@@ -173,6 +186,11 @@ int gpointer_isScalar (t_gpointer *gp)
 int gpointer_isWord (t_gpointer *gp)
 {
     return (gp->gp_master->gm_type == POINTER_ARRAY);
+}
+
+int gpointer_getIdentifier (t_gpointer *gp)
+{
+    return (gp->gp_identifier);
 }
 
 t_array *gpointer_getParentArray (t_gpointer *gp)

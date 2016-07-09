@@ -293,7 +293,6 @@ static void text_define_frompointer(t_text_define *x, t_gpointer *gp,
         gp, s, "text_frompointer");
     if (b)
     {
-        t_gmaster *gs = gp->gp_master;
         buffer_reset(x->x_textbuf.b_binbuf);
         buffer_append(x->x_textbuf.b_binbuf, buffer_size(b), buffer_atoms(b));
     } 
@@ -304,7 +303,6 @@ static void text_define_topointer(t_text_define *x, t_gpointer *gp, t_symbol *s)
     t_buffer *b = pointertobinbuf(&x->x_textbuf.b_ob.te_g.g_pd, gp, s, "text_topointer");
     if (b)
     {
-        //t_gmaster *gs = gp->gp_master;
         buffer_reset(b);
         buffer_append(b, buffer_size(x->x_textbuf.b_binbuf),
             buffer_atoms(x->x_textbuf.b_binbuf));
@@ -428,7 +426,6 @@ static t_buffer *text_client_getbuf(t_text_client *x)
     else if (x->tc_struct)   /* by pointer */
     {
         t_template *template = template_findbyname(x->tc_struct);
-        //t_gmaster *gs = x->tc_gp.gp_master;
         t_word *vec; 
         int onset, type;
         t_symbol *arraytype;
@@ -477,7 +474,6 @@ static  void text_client_senditup(t_text_client *x)
     else if (x->tc_struct)   /* by pointer */
     {
         t_template *template = template_findbyname(x->tc_struct);
-        //t_gmaster *gs = x->tc_gp.gp_master;
         if (!template)
         {
             post_error ("text: couldn't find struct %s", x->tc_struct->s_name);

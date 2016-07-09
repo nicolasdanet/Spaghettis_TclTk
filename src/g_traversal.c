@@ -43,7 +43,6 @@ t_buffer *pointertobinbuf(t_pd *x, t_gpointer *gp, t_symbol *s,
     t_template *template;
     int onset, type;
     t_buffer *b;
-    //t_gmaster *gs = gp->gp_master;
     t_word *vec;
     if (!templatesym)
     {
@@ -139,11 +138,10 @@ static void ptrobj_vnext(t_ptrobj *x, t_float f)
 {
     t_gobj *gobj;
     t_gpointer *gp = &x->x_gp;
-    //t_gmaster *gs = gp->gp_master;
     t_glist *glist;
     int wantselected = (f != 0);
 
-    if (!gp->gp_master)
+    if (!gpointer_isSet (gp))
     {
         post_error ("ptrobj_next: no current pointer");
         return;
@@ -153,7 +151,7 @@ static void ptrobj_vnext(t_ptrobj *x, t_float f)
         return;
     }
     glist = gpointer_getParentGlist (gp);
-    if (glist->gl_identifier != gp->gp_identifier)
+    if (glist->gl_identifier != gpointer_getIdentifier (gp))
     {
         post_error ("ptrobj_next: stale pointer");
         return;
@@ -210,13 +208,11 @@ static void ptrobj_sendwindow(t_ptrobj *x, t_symbol *s, int argc, t_atom *argv)
     t_typedout *to;
     t_glist *glist;
     t_pd *canvas;
-    //t_gmaster *gs;
     if (!gpointer_isValid(&x->x_gp, 1))
     {
         post_error ("send-window: empty pointer");
         return;
     }
-    //gs = x->x_gp.gp_master;
     if (gpointer_isScalar (&x->x_gp)) {
         glist = gpointer_getParentGlist (&x->x_gp);
     } else {
@@ -386,7 +382,6 @@ static void get_pointer(t_get *x, t_gpointer *gp)
     int nitems = x->x_nout, i;
     t_symbol *templatesym;
     t_template *template;
-    //t_gmaster *gs = gp->gp_master;
     t_word *vec; 
     t_getvariable *vp;
 
@@ -533,7 +528,6 @@ static void set_bang(t_set *x)
     t_template *template;
     t_setvariable *vp;
     t_gpointer *gp = &x->x_gp;
-    // t_gmaster *gs = gp->gp_master;
     t_word *vec;
     if (!gpointer_isValid(gp, 0))
     {
@@ -769,7 +763,6 @@ static void getsize_pointer(t_getsize *x, t_gpointer *gp)
     t_word *w;
     t_array *array;
     int elemsize;
-    //t_gmaster *gs = gp->gp_master;
     if (!gpointer_isValid(gp, 0))
     {
         post_error ("getsize: stale or empty pointer");
@@ -862,7 +855,6 @@ static void setsize_float(t_setsize *x, t_float f)
     int elemsize;
     int newsize = f;
     t_gpointer *gp = &x->x_gp;
-    //t_gmaster *gs = gp->gp_master;
     if (!gpointer_isValid(&x->x_gp, 0))
     {
         post_error ("setsize: empty pointer");
@@ -1065,7 +1057,6 @@ static void append_float(t_append *x, t_float f)
     t_template *template;
     t_appendvariable *vp;
     t_gpointer *gp = &x->x_gp;
-    //t_gmaster *gs = gp->gp_master;
     t_word *vec;
     t_scalar *sc, *oldsc;
     t_glist *glist;
@@ -1081,7 +1072,7 @@ static void append_float(t_append *x, t_float f)
         post_error ("append: couldn't find template %s", templatesym->s_name);
         return;
     }
-    if (!gp->gp_master)
+    if (!gpointer_isSet (gp))
     {
         post_error ("append: no current pointer");
         return;
@@ -1091,7 +1082,7 @@ static void append_float(t_append *x, t_float f)
         return;
     }
     glist = gpointer_getParentGlist (gp);
-    if (glist->gl_identifier != gp->gp_identifier)
+    if (glist->gl_identifier != gpointer_getIdentifier (gp))
     {
         post_error ("append: stale pointer");
         return;
