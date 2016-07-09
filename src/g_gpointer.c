@@ -118,6 +118,15 @@ void gpointer_setAsWordType (t_gpointer *gp, t_array *array, t_word *w)
     gpointer_masterIncrement (gp->gp_master);
 }
 
+void gpointer_setByCopy (t_gpointer *gp, t_gpointer *toSet)
+{
+    gpointer_unset (toSet);
+    
+    *toSet = *gp;
+    
+    if (toSet->gp_master) { gpointer_masterIncrement (toSet->gp_master); }
+}
+
 void gpointer_unset (t_gpointer *gp)
 {
     if (gp->gp_master) { gpointer_masterDecrement (gp->gp_master); }
@@ -159,19 +168,6 @@ int gpointer_isValid (t_gpointer *gp, int nullPointerIsValid)
     }
     
     return 0;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void gpointer_setByCopy (t_gpointer *src, t_gpointer *dest)
-{
-    gpointer_unset (dest);
-    
-    *dest = *src;
-    
-    if (dest->gp_master) { gpointer_masterIncrement (dest->gp_master); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

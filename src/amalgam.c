@@ -89,10 +89,10 @@
 #include "g_vu.c"
 #include "g_panel.c"
 
-#include "g_gpointer.c"
-#include "g_array.c"
 #include "g_word.c"
 #include "g_scalar.c"
+#include "g_gpointer.c"
+#include "g_array.c"
 #include "g_paint.c"
 #include "g_serialize.c"
 

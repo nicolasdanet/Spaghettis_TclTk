@@ -796,10 +796,10 @@
 		379AE2E41C9E7B8200250ADD /* Scalar */ = {
 			isa = PBXGroup;
 			children = (
-				37ED6A501D2D038B007EC73D /* g_gpointer.c */,
-				37ED6A041D2CFD00007EC73D /* g_array.c */,
 				37ED6A051D2CFD00007EC73D /* g_word.c */,
 				378971CF1C4F716700263434 /* g_scalar.c */,
+				37ED6A501D2D038B007EC73D /* g_gpointer.c */,
+				37ED6A041D2CFD00007EC73D /* g_array.c */,
 				378971D01C4F716700263434 /* g_template.c */,
 				378971D31C4F716700263434 /* g_traversal.c */,
 				371430B01D0D46BC00E68D11 /* g_paint.c */,

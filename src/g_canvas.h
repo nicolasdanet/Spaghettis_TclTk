@@ -831,6 +831,14 @@ void            voutlet_dspEpilog                       (struct _voutlet *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void            word_init                               (t_word *w, t_template *tmpl, t_gpointer *gp);
+void            word_restore                            (t_word *w, t_template *tmpl, int argc, t_atom *argv);
+void            word_free                               (t_word *w, t_template *tmpl);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_gmaster       *gpointer_masterCreateWithGlist         (t_glist *glist);
 t_gmaster       *gpointer_masterCreateWithArray         (t_array *array);
 
@@ -843,13 +851,12 @@ void            gpointer_masterRelease                  (t_gmaster *master);
 void            gpointer_init                           (t_gpointer *gp);
 void            gpointer_setAsScalarType                (t_gpointer *gp, t_glist *owner, t_scalar *scalar);
 void            gpointer_setAsWordType                  (t_gpointer *gp, t_array *owner, t_word *w);
-void            gpointer_setByCopy                      (t_gpointer *src, t_gpointer *dest);
+void            gpointer_setByCopy                      (t_gpointer *gp, t_gpointer *toSet);
 void            gpointer_unset                          (t_gpointer *gp);
 int             gpointer_getIdentifier                  (t_gpointer *gp);
 void            gpointer_retain                         (t_gpointer *gp);
 int             gpointer_isSet                          (t_gpointer *gp);
 int             gpointer_isValid                        (t_gpointer *gp, int nullPointerIsValid);
-
 int             gpointer_isScalar                       (t_gpointer *gp);
 int             gpointer_isWord                         (t_gpointer *gp);
 
@@ -857,7 +864,6 @@ t_scalar        *gpointer_getScalar                     (t_gpointer *gp);
 t_word          *gpointer_getWord                       (t_gpointer *gp);
 t_glist         *gpointer_getParentGlist                (t_gpointer *gp);
 t_array         *gpointer_getParentArray                (t_gpointer *gp);
-
 t_word          *gpointer_getData                       (t_gpointer *gp);
 t_symbol        *gpointer_getTemplate                   (t_gpointer *gp);
 
@@ -949,9 +955,7 @@ void         array_resize_and_redraw    (t_array *array, t_glist *glist, int n);
 #pragma mark -
 
 t_scalar *scalar_new            (t_glist *owner, t_symbol *templatesym);
-void     word_init              (t_word *wp, t_template *tmpl, t_gpointer *gp);
-void     word_restore           (t_word *wp, t_template *tmpl, int argc, t_atom *argv);
-void     word_free              (t_word *wp, t_template *tmpl);
+
 void     scalar_getbasexy       (t_scalar *x, t_float *basex, t_float *basey);
 void     scalar_redraw          (t_scalar *x, t_glist *glist);
 
