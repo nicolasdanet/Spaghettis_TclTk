@@ -841,19 +841,24 @@ void            gpointer_masterRelease                  (t_gmaster *master);
 #pragma mark -
 
 void            gpointer_init                           (t_gpointer *gp);
-void            gpointer_setScalar                      (t_gpointer *gp, t_glist *owner, t_scalar *scalar);
-void            gpointer_setWord                        (t_gpointer *gp, t_array *owner, t_word *w);
+void            gpointer_setAsScalarType                (t_gpointer *gp, t_glist *owner, t_scalar *scalar);
+void            gpointer_setAsWordType                  (t_gpointer *gp, t_array *owner, t_word *w);
+void            gpointer_setByCopy                      (t_gpointer *src, t_gpointer *dest);
 void            gpointer_unset                          (t_gpointer *gp);
+int             gpointer_getIdentifier                  (t_gpointer *gp);
 void            gpointer_retain                         (t_gpointer *gp);
-int             gpointer_isValid                        (t_gpointer *gp, int nullPointerIsValid);
 int             gpointer_isSet                          (t_gpointer *gp);
-void            gpointer_copy                           (t_gpointer *src, t_gpointer *dest);
+int             gpointer_isValid                        (t_gpointer *gp, int nullPointerIsValid);
+
 int             gpointer_isScalar                       (t_gpointer *gp);
 int             gpointer_isWord                         (t_gpointer *gp);
-int             gpointer_getIdentifier                  (t_gpointer *gp);
 
-t_array         *gpointer_getParentArray                (t_gpointer *gp);
+t_scalar        *gpointer_getScalar                     (t_gpointer *gp);
+t_word          *gpointer_getWord                       (t_gpointer *gp);
 t_glist         *gpointer_getParentGlist                (t_gpointer *gp);
+t_array         *gpointer_getParentArray                (t_gpointer *gp);
+
+t_word          *gpointer_getData                       (t_gpointer *gp);
 t_symbol        *gpointer_getTemplate                   (t_gpointer *gp);
 
 // -----------------------------------------------------------------------------------------------------------

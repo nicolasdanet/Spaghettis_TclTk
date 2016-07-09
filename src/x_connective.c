@@ -755,7 +755,7 @@ static void pack_pointer(t_pack *x, t_gpointer *gp)
 {
     if (x->x_vec->a_type == A_POINTER)
     {
-        gpointer_copy (gp, x->x_gpointer);
+        gpointer_setByCopy (gp, x->x_gpointer);
         pack_bang(x);
     }
     else post_error ("pack_pointer: wrong type");

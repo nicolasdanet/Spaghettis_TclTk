@@ -100,7 +100,7 @@ static void alist_list(t_alist *x, t_symbol *s, int argc, t_atom *argv)
         if (x->l_vec[i].l_a.a_type == A_POINTER)
         {
             x->l_npointer++;
-            gpointer_copy(x->l_vec[i].l_a.a_w.w_gpointer, &x->l_vec[i].l_p);
+            gpointer_setByCopy(x->l_vec[i].l_a.a_w.w_gpointer, &x->l_vec[i].l_p);
             x->l_vec[i].l_a.a_w.w_gpointer = &x->l_vec[i].l_p;
         }
     }
@@ -125,7 +125,7 @@ static void alist_anything(t_alist *x, t_symbol *s, int argc, t_atom *argv)
         if (x->l_vec[i+1].l_a.a_type == A_POINTER)
         {
             x->l_npointer++;            
-            gpointer_copy(x->l_vec[i+1].l_a.a_w.w_gpointer, &x->l_vec[i+1].l_p);
+            gpointer_setByCopy(x->l_vec[i+1].l_a.a_w.w_gpointer, &x->l_vec[i+1].l_p);
             x->l_vec[i+1].l_a.a_w.w_gpointer = &x->l_vec[i+1].l_p;
         }
     }
@@ -155,7 +155,7 @@ static void alist_clone(t_alist *x, t_alist *y)
         y->l_vec[i].l_a = x->l_vec[i].l_a;
         if (y->l_vec[i].l_a.a_type == A_POINTER)
         {
-            gpointer_copy(y->l_vec[i].l_a.a_w.w_gpointer, &y->l_vec[i].l_p);
+            gpointer_setByCopy(y->l_vec[i].l_a.a_w.w_gpointer, &y->l_vec[i].l_p);
             y->l_vec[i].l_a.a_w.w_gpointer = &y->l_vec[i].l_p;
         }
     }

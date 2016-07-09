@@ -92,7 +92,7 @@ void gpointer_init (t_gpointer *gp)
     gp->gp_identifier   = 0;
 }
 
-void gpointer_setScalar (t_gpointer *gp, t_glist *glist, t_scalar *scalar)
+void gpointer_setAsScalarType (t_gpointer *gp, t_glist *glist, t_scalar *scalar)
 {
     if (gp->gp_master) { gpointer_masterDecrement (gp->gp_master); }
     
@@ -105,7 +105,7 @@ void gpointer_setScalar (t_gpointer *gp, t_glist *glist, t_scalar *scalar)
     gpointer_masterIncrement (gp->gp_master);
 }
 
-void gpointer_setWord (t_gpointer *gp, t_array *array, t_word *w)
+void gpointer_setAsWordType (t_gpointer *gp, t_array *array, t_word *w)
 {
     if (gp->gp_master) { gpointer_masterDecrement (gp->gp_master); }
     
@@ -145,7 +145,7 @@ int gpointer_isValid (t_gpointer *gp, int nullPointerIsValid)
     t_gmaster *master = gp->gp_master;
     
     if (master->gm_type == POINTER_ARRAY) {
-        if (!nullPointerIsValid && !gp->gp_un.gp_w)                     { PD_BUG; return 0; }
+        if (!nullPointerIsValid && !gp->gp_un.gp_w)                     { return 0; }
         if (master->gm_un.gm_array->a_identifier == gp->gp_identifier)  { return 1; }
         
     } else if (master->gm_type == POINTER_GLIST) {
@@ -165,7 +165,7 @@ int gpointer_isValid (t_gpointer *gp, int nullPointerIsValid)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void gpointer_copy (t_gpointer *src, t_gpointer *dest)
+void gpointer_setByCopy (t_gpointer *src, t_gpointer *dest)
 {
     gpointer_unset (dest);
     
@@ -188,16 +188,23 @@ int gpointer_isWord (t_gpointer *gp)
     return (gp->gp_master->gm_type == POINTER_ARRAY);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 int gpointer_getIdentifier (t_gpointer *gp)
 {
     return (gp->gp_identifier);
 }
 
-t_array *gpointer_getParentArray (t_gpointer *gp)
+t_scalar *gpointer_getScalar (t_gpointer *gp)
 {
-    PD_ASSERT (gp->gp_master->gm_type == POINTER_ARRAY);
-    
-    return (gp->gp_master->gm_un.gm_array);
+    PD_ASSERT (gpointer_isScalar (gp)); return (gp->gp_un.gp_scalar);
+}
+
+t_word *gpointer_getWord (t_gpointer *gp)
+{
+    PD_ASSERT (gpointer_isWord (gp)); return (gp->gp_un.gp_w);
 }
 
 t_glist *gpointer_getParentGlist (t_gpointer *gp)
@@ -207,9 +214,24 @@ t_glist *gpointer_getParentGlist (t_gpointer *gp)
     return (gp->gp_master->gm_un.gm_glist);
 }
 
+t_array *gpointer_getParentArray (t_gpointer *gp)
+{
+    PD_ASSERT (gp->gp_master->gm_type == POINTER_ARRAY);
+    
+    return (gp->gp_master->gm_un.gm_array);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+t_word *gpointer_getData (t_gpointer *gp)
+{
+    if (gpointer_isWord (gp)) { return gpointer_getWord (gp); } 
+    else {
+        PD_ASSERT (gpointer_isScalar (gp)); return (gp->gp_un.gp_scalar->sc_vector);
+    }
+}
 
 t_symbol *gpointer_getTemplate (t_gpointer *gp)
 {

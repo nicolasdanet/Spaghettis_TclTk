@@ -174,7 +174,7 @@ static void array_define_send(t_glist *x, t_symbol *s)
     {
         t_gpointer gp;
         gpointer_init(&gp);
-        gpointer_setScalar(&gp, gl,
+        gpointer_setAsScalarType(&gp, gl,
             garray_getScalar((t_garray *)gl->gl_graphics));
         pd_pointer(s->s_thing, &gp);
         gpointer_unset(&gp);
@@ -251,12 +251,7 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
             post_error ("array: stale or empty pointer");
             return (0);
         }
-        
-        if (gpointer_isWord (&x->tc_gp)) {
-            vec = x->tc_gp.gp_un.gp_w;
-        } else {
-            vec = x->tc_gp.gp_un.gp_scalar->sc_vector;
-        }
+        vec = gpointer_getData (&x->tc_gp);
 
         if (!template_find_field(template,
             x->tc_field, &onset, &type, &arraytype))

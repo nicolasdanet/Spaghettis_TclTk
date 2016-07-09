@@ -595,7 +595,7 @@ static void pipe_list(t_pipe *x, t_symbol *s, int ac, t_atom *av)
                 gpointer_unset (gp);
                 post_error ("pipe: bad pointer");
             } else {
-                gpointer_copy (ap->a_w.w_gpointer, gp);
+                gpointer_setByCopy (ap->a_w.w_gpointer, gp);
             }
             gp++;
         }

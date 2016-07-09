@@ -53,7 +53,7 @@ void array_redraw(t_array *a, t_glist *glist)
         a = gpointer_getParentArray (&a->a_gpointer);
     }
     
-    scalar_redraw(a->a_gpointer.gp_un.gp_scalar, glist);
+    scalar_redraw (gpointer_getScalar (&a->a_gpointer), glist);
 }
 
     /* routine to get screen coordinates of a point in an array */
@@ -121,11 +121,15 @@ void array_resize_and_redraw(t_array *array, t_glist *glist, int n)
     while (gpointer_isWord (&a2->a_gpointer)) {              /* array_getTop ? */
         a2 = gpointer_getParentArray (&a2->a_gpointer);
     }
-    if (vis)
-        gobj_visibilityChanged(&a2->a_gpointer.gp_un.gp_scalar->sc_g, glist, 0);
+    if (vis) {
+        t_scalar *scalar = gpointer_getScalar (&a2->a_gpointer);
+        gobj_visibilityChanged (cast_gobj (scalar), glist, 0);
+    }
     array_resize(array, n);
-    if (vis)
-        gobj_visibilityChanged(&a2->a_gpointer.gp_un.gp_scalar->sc_g, glist, 1);
+    if (vis) {
+        t_scalar *scalar = gpointer_getScalar (&a2->a_gpointer);
+        gobj_visibilityChanged (cast_gobj (scalar), glist, 1);
+    }
 }
 
 void array_free(t_array *x)
