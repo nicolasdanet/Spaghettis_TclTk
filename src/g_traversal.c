@@ -146,12 +146,14 @@ static void ptrobj_vnext(t_ptrobj *x, t_float f)
         post_error ("ptrobj_next: lists only, not arrays");
         return;
     }
+    
     glist = gpointer_getParentGlist (gp);
-    if (glist->gl_identifier != gpointer_getIdentifier (gp))
+    if (glist->gl_identifier != gpointer_getIdentifier (gp))    /* isValid ? */
     {
         post_error ("ptrobj_next: stale pointer");
         return;
     }
+    
     if (wantselected && !canvas_isMapped(glist))
     {
         post_error ("ptrobj_vnext: next-selected only works for a visible window");
@@ -174,7 +176,8 @@ static void ptrobj_vnext(t_ptrobj *x, t_float f)
         t_scalar *sc = (t_scalar *)gobj;
         t_symbol *templatesym = sc->sc_template;
 
-        gp->gp_un.gp_scalar = sc; 
+        gpointer_setAsScalarType (gp, glist, sc);
+        // gp->gp_un.gp_scalar = sc; 
         for (n = x->x_ntypedout, to = x->x_typedout; n--; to++)
         {
             if (to->to_type == templatesym)
@@ -1067,12 +1070,14 @@ static void append_float(t_append *x, t_float f)
         post_error ("append: lists only, not arrays");
         return;
     }
+    
     glist = gpointer_getParentGlist (gp);
-    if (glist->gl_identifier != gpointer_getIdentifier (gp))
+    if (glist->gl_identifier != gpointer_getIdentifier (gp))    /* isValid? */
     {
         post_error ("append: stale pointer");
         return;
     }
+    
     if (!nitems) return;
     x->x_variables[0].gv_f = f;
 
@@ -1096,7 +1101,8 @@ static void append_float(t_append *x, t_float f)
         glist->gl_graphics = &sc->sc_g;
     }
 
-    gp->gp_un.gp_scalar = sc;
+    gpointer_setAsScalarType (gp, glist, sc);
+    //gp->gp_un.gp_scalar = sc;
     vec = sc->sc_vector;
     for (i = 0, vp = x->x_variables; i < nitems; i++, vp++)
     {
