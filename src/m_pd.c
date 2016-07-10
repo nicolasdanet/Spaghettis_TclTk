@@ -27,6 +27,7 @@ t_pd *pd_new (t_class *c)
     
     PD_ASSERT (c != NULL);
     PD_ASSERT (c->c_type != CLASS_ABSTRACT);
+    PD_ASSERT (c->c_size > 0);
 
     x = (t_pd *)PD_MEMORY_GET (c->c_size);
     

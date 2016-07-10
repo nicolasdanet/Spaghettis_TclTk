@@ -319,7 +319,7 @@ static int scalar_click(t_gobj *z, struct _glist *owner,
         owner, 0, 0, xpix, ypix, shift, alt, dbl, doit));
 }
 
-static void scalar_save(t_gobj *z, t_buffer *b)
+static void scalar_functionSave(t_gobj *z, t_buffer *b)
 {
     t_scalar *x = (t_scalar *)z;
     t_buffer *b2 = buffer_new();
@@ -332,7 +332,7 @@ static void scalar_save(t_gobj *z, t_buffer *b)
     buffer_free(b2);
 }
 
-static void scalar_properties(t_gobj *z, struct _glist *owner)
+static void scalar_functionProperties(t_gobj *z, struct _glist *owner)
 {
     t_scalar *x = (t_scalar *)z;
     char *buf, buf2[80];
@@ -352,7 +352,7 @@ static void scalar_properties(t_gobj *z, struct _glist *owner)
     PD_MEMORY_FREE(buf);
 }
 
-static t_widgetbehavior scalar_widgetbehavior =
+static t_widgetbehavior scalar_widgetBehavior =
 {
     scalar_getrect,
     scalar_displace,
@@ -381,18 +381,26 @@ static void scalar_free(t_scalar *x)
     PD_MEMORY_FREE(x);
 }
 
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void g_scalar_setup(void)
+void scalar_setup (void)
 {
-    scalar_class = class_new(sym_scalar, 0, (t_method)scalar_free, 0,
-        CLASS_GRAPHIC, 0);
-    class_setWidgetBehavior(scalar_class, &scalar_widgetbehavior);
-    class_setSaveFunction(scalar_class, scalar_save);
-    class_setPropertiesFunction(scalar_class, scalar_properties);
+    t_class *c = NULL;
+    
+    c = class_new (sym_scalar,
+        NULL,
+        (t_method)scalar_free,
+        0,
+        CLASS_GRAPHIC,
+        A_NULL);
+        
+    class_setWidgetBehavior (c, &scalar_widgetBehavior);
+    class_setSaveFunction (c, scalar_functionSave);
+    class_setPropertiesFunction (c, scalar_functionProperties);
+    
+    scalar_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

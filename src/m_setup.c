@@ -50,7 +50,7 @@ void vu_setup               (void);
 void panel_setup            (void);
 void vinlet_setup           (void);
 void voutlet_setup          (void);
-void g_scalar_setup         (void);
+void scalar_setup           (void);
 void g_template_setup       (void);
 void message_setup          (void);
 void gatom_setup            (void);
@@ -108,7 +108,7 @@ void setup_initialize (void)
     panel_setup();
     vinlet_setup();
     voutlet_setup();
-    g_scalar_setup();
+    scalar_setup();
     g_template_setup();
     message_setup();
     gatom_setup();

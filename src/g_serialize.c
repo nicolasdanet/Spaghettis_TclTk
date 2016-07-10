@@ -285,7 +285,7 @@ void canvas_merge (t_glist *x, t_symbol *filename, t_symbol *format)
 }
 
     /* read text from a "properties" window, called from a guistub set
-    up in scalar_properties().  We try to restore the object; if successful
+    up in scalar_functionProperties().  We try to restore the object; if successful
     we either copy the data from the new scalar to the old one in place
     (if their templates match) or else delete the old scalar and put the new
     thing in its place on the list. */
