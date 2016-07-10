@@ -110,35 +110,6 @@ static void scalar_drawselectrect(t_scalar *x, t_glist *glist, int state)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* Pd method to create a new scalar, add it to a glist, and initialize
-    it from the message arguments. */
-
-void canvas_makeScalar(t_glist *glist, t_symbol *classname, int argc, t_atom *argv)
-{
-    t_symbol *templatesym =
-        canvas_makeBindSymbol(atom_getSymbolAtIndex(0, argc, argv));
-    t_buffer *b;
-    int natoms, nextmsg = 0;
-    t_atom *vec;
-    if (!template_findbyname(templatesym))
-    {
-        post_error ("%s: no such template",
-            atom_getSymbolAtIndex(0, argc, argv)->s_name);
-        return;
-    }
-
-    b = buffer_new();
-    buffer_deserialize(b, argc, argv);
-    natoms = buffer_size(b);
-    vec = buffer_atoms(b);
-    canvas_readscalar(glist, natoms, vec, &nextmsg, 0);
-    buffer_free(b);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void scalar_redraw (t_scalar *x, t_glist *glist)
 {
     if (canvas_isMapped(glist))

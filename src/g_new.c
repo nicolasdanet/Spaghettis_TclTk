@@ -157,6 +157,32 @@ void canvas_makeComment (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
+void canvas_makeScalar (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    t_symbol *templateName = atom_getSymbolAtIndex (0, argc, argv);
+    
+    if (templateName != &s_) {
+    //
+    t_symbol *templateIdentifier = canvas_makeBindSymbol (templateName);
+    
+    if (template_findbyname (templateIdentifier)) {
+    //
+    t_buffer *t = buffer_new();
+    int n = 0;
+    
+    buffer_deserialize (t, argc, argv);
+    canvas_readscalar (glist, buffer_size (t), buffer_atoms (t), &n, 0);
+    buffer_free (t);
+    
+    return;
+    //
+    }
+    
+    post_error (PD_TRANSLATE ("%s: no such template"), templateName->s_name);
+    //
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 

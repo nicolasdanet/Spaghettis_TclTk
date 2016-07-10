@@ -72,37 +72,3 @@ void canvas_paintAllScalarsByView (t_glist *glist, int action)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-/*
-
-void canvas_paintAllScalarsByView (t_glist *glist, int action)
-{
-    t_gobj   *g = NULL;
-    t_symbol *s = sym_struct;
-    
-    for (g = glist->gl_graphics; g; g = g->g_next) {
-    //
-    t_object *o = canvas_castToObjectIfPatchable (g);
-    
-    if (o && o->te_type == TYPE_OBJECT && buffer_size (o->te_buffer) < 2) {
-    //
-    t_atom *argv = buffer_atoms (o->te_buffer);
-    
-    if (IS_SYMBOL (argv) && IS_SYMBOL (argv + 1)) {
-        if (GET_SYMBOL (argv) == s) {
-            t_template *t = template_findbyname (GET_SYMBOL (argv + 1));
-            canvas_paintAllScalarsByTemplate (t, action);
-        }
-    }
-    //
-    }
-    //
-    }
-    
-    canvas_paintAllScalarsByTemplate (NULL, action);
-}
-
-*/
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
