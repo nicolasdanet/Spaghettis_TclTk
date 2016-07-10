@@ -141,6 +141,15 @@ int utils_isAlphanumericOrUnderscore (char c)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_unique utils_unique (void)
+{
+    static t_unique unique = 10000;     /* Shared. */
+    
+    unique++;
+    
+    return (unique == 0 ? ++unique : unique);        
+}
+
 t_error utils_version (char *dest, size_t size)
 {
     t_error err = string_sprintf (dest, size, "%s %s / %s / %s", 

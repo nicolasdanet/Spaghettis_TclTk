@@ -32,7 +32,6 @@ extern t_atom               *canvas_argv;
 extern t_pd                 pd_objectMaker;
 extern t_widgetbehavior     text_widgetBehavior;
 extern int                  canvas_argc;
-extern int                  canvas_uniqueIdentifier;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -249,7 +248,7 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     
     canvas->gl_isDeleting = deletingState;
     
-    glist->gl_uniqueIdentifier = ++canvas_uniqueIdentifier;
+    glist->gl_uniqueIdentifier = utils_unique();
 }
 
 void canvas_clear (t_glist *glist)

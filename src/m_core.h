@@ -226,6 +226,7 @@ int         utils_isTokenEnd                            (char c);
 int         utils_isTokenEscape                         (char c);
 int         utils_isTokenWhitespace                     (char c);
 int         utils_isAlphanumericOrUnderscore            (char c);
+t_unique    utils_unique                                (void);
 t_error     utils_version                               (char *dest, size_t size);
 
 // -----------------------------------------------------------------------------------------------------------

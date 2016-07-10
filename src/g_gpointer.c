@@ -188,7 +188,7 @@ int gpointer_isWord (t_gpointer *gp)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int gpointer_getUniqueIdentifier (t_gpointer *gp)
+t_unique gpointer_getUniqueIdentifier (t_gpointer *gp)
 {
     return (gp->gp_uniqueIdentifier);
 }

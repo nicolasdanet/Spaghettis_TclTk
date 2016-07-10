@@ -18,23 +18,18 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern int canvas_uniqueIdentifier;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 t_class *scalar_class;                  /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void scalar_behaviorGetRectangle (t_gobj *, t_glist *, int *, int *, int *, int *);
-static void scalar_behaviorDisplaced (t_gobj *, t_glist *, int, int);
-static void scalar_behaviorSelected (t_gobj *, t_glist *, int);
-static void scalar_behaviorActivated (t_gobj *, t_glist *, int);
-static void scalar_behaviorDeleted (t_gobj *, t_glist *);
-static void scalar_behaviorVisibilityChanged (t_gobj *, t_glist *, int);
-static int  scalar_behaviorClicked (t_gobj *, t_glist *, int, int, int, int, int, int, int);
+static void scalar_behaviorGetRectangle         (t_gobj *, t_glist *, int *, int *, int *, int *);
+static void scalar_behaviorDisplaced            (t_gobj *, t_glist *, int, int);
+static void scalar_behaviorSelected             (t_gobj *, t_glist *, int);
+static void scalar_behaviorActivated            (t_gobj *, t_glist *, int);
+static void scalar_behaviorDeleted              (t_gobj *, t_glist *);
+static void scalar_behaviorVisibilityChanged    (t_gobj *, t_glist *, int);
+static int  scalar_behaviorClicked              (t_gobj *, t_glist *, int, int, int, int, int, int, int);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

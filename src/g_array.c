@@ -18,11 +18,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern int canvas_uniqueIdentifier;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 /* Pure arrays have no a priori graphical capabilities.
 They are instantiated by "garrays" below or can be elements of other
 scalars (g_scalar.c); their graphical behavior is defined accordingly. */
@@ -111,7 +106,7 @@ void array_resize(t_array *x, int n)
             word_init(wp, template, &x->a_gpointer);
         }
     }
-    x->a_uniqueIdentifier = ++canvas_uniqueIdentifier;
+    x->a_uniqueIdentifier = utils_unique();
 }
 
 void array_resize_and_redraw(t_array *array, t_glist *glist, int n)

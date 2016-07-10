@@ -39,11 +39,7 @@ t_symbol        *canvas_fileName  = &s_;                    /* Shared. */
 t_symbol        *canvas_directory = &s_;                    /* Shared. */
 t_atom          *canvas_argv;                               /* Shared. */
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 int             canvas_argc;                                /* Shared. */
-int             canvas_uniqueIdentifier = 10000;            /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -732,7 +728,7 @@ t_glist *canvas_newGraph (t_glist *glist,
     x->gl_master                        = gpointer_masterCreateWithGlist (x);
     x->gl_parent                        = glist;
     x->gl_name                          = gensym (t);
-    x->gl_uniqueIdentifier              = ++canvas_uniqueIdentifier;
+    x->gl_uniqueIdentifier              = utils_unique();
     x->gl_graphWidth                    = bottomRightX - topLeftX;
     x->gl_graphHeight                   = bottomRightY - topLeftY;
     x->gl_graphMarginLeft               = 0;
@@ -802,7 +798,7 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     x->gl_parent = owner;
     x->gl_name   = (name != &s_ ? name : (canvas_fileName ? canvas_fileName : gensym (PD_NAME_SHORT)));
     
-    x->gl_uniqueIdentifier = ++canvas_uniqueIdentifier;
+    x->gl_uniqueIdentifier = utils_unique();
     
     if (!owner) { instance_addToRoots (x); }
     
