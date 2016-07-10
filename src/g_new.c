@@ -69,9 +69,9 @@ void canvas_makeGraphWithArray (t_glist *glist, t_symbol *name, t_float size, t_
     canvas_dirty (glist, 1);
 }
 
-void canvas_makeArray (t_glist *glist, t_symbol *s, t_symbol *templateName, t_float size, t_float flags)
+void canvas_makeArray (t_glist *glist, t_symbol *s, t_symbol *type, t_float size, t_float flags)
 {
-    garray_makeObject (glist, s, templateName, size, flags);
+    garray_makeObject (glist, s, type, size, flags);
 }
 
 // -----------------------------------------------------------------------------------------------------------

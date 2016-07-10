@@ -2026,11 +2026,6 @@ static void array_motion(void *z, t_float dx, t_float dy, t_float modifier)
         array_redraw(array_motion_array, array_motion_glist);
 }
 
-int scalar_doclick(t_word *data, t_template *template, t_scalar *sc,
-    t_array *ap, struct _glist *owner,
-    t_float xloc, t_float yloc, int xpix, int ypix,
-    int shift, int alt, int dbl, int doit);
-
     /* try clicking on an element of the array as a scalar (if clicking
     on the trace of the array failed) */
 static int array_doclick_element(t_array *array, t_glist *glist,

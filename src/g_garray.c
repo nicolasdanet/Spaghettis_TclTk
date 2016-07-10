@@ -293,13 +293,13 @@ static void garray_setWithSineWaves (t_garray *x, t_symbol *s, int argc, t_atom 
 
 static t_garray *garray_makeObjectWithScalar (t_glist *glist,
     t_symbol *name,
-    t_symbol *templateName,
+    t_symbol *templateIdentifier,
     int save, 
     int hide)
 {
     t_garray *x = (t_garray *)pd_new (garray_class);
     
-    x->x_scalar         = scalar_new (glist, templateName);
+    x->x_scalar         = scalar_new (glist, templateIdentifier);
     x->x_owner          = glist;
     x->x_unexpandedName = name;
     x->x_name           = canvas_expandDollar (glist, name);
@@ -734,15 +734,11 @@ void garray_fromDialog (t_garray *x, t_symbol *name, t_float size, t_float flags
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_garray *garray_makeObject (t_glist *glist,
-    t_symbol *name,
-    t_symbol *templateName,
-    t_float size,
-    t_float flags)
+t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_symbol *type, t_float size, t_float flags)
 {
     t_garray *x = NULL;
 
-    if (templateName != &s_float) { PD_BUG; }
+    if (type != &s_float) { PD_BUG; }
     else {
     //
     t_template *template = template_findbyname (sym_pd__dash__float__dash__array);

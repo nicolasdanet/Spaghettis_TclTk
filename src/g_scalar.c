@@ -28,7 +28,50 @@ t_class *scalar_class;                  /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int template_cancreate(t_template *template)
+static void scalar_behaviorGetRectangle (t_gobj *, t_glist *, int *, int *, int *, int *);
+static void scalar_behaviorDisplaced (t_gobj *, t_glist *, int, int);
+static void scalar_behaviorSelected (t_gobj *, t_glist *, int);
+static void scalar_behaviorActivated (t_gobj *, t_glist *, int);
+static void scalar_behaviorDeleted (t_gobj *, t_glist *);
+static void scalar_behaviorVisibilityChanged (t_gobj *, t_glist *, int);
+static int  scalar_behaviorClicked (t_gobj *, t_glist *, int, int, int, int, int, int, int);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static t_widgetbehavior scalar_widgetBehavior =
+    {
+        scalar_behaviorGetRectangle,
+        scalar_behaviorDisplaced,
+        scalar_behaviorSelected,
+        scalar_behaviorActivated,
+        scalar_behaviorDeleted,
+        scalar_behaviorVisibilityChanged,
+        scalar_behaviorClicked,
+    };
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static void scalar_drawJob(t_gobj *client, t_glist *glist)
+{
+    scalar_behaviorVisibilityChanged(client, glist, 0);
+    scalar_behaviorVisibilityChanged(client, glist, 1);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void scalar_getbasexy(t_scalar *x, t_float *basex, t_float *basey)
+{
+    t_template *template = template_findbyname(x->sc_template);
+    *basex = template_getfloat(template, sym_x, x->sc_vector, 0);
+    *basey = template_getfloat(template, sym_y, x->sc_vector, 0);
+}
+
+static int template_cancreate (t_template *template)
 {
     int i, type, nitems = template->tp_size;
     t_dataslot *datatypes = template->tp_vector;
@@ -44,34 +87,28 @@ static int template_cancreate(t_template *template)
     return (1);
 }
 
-    /* make a new scalar and add to the glist.  We create a "gp" here which
-    will be used for array items to point back here.  This gp doesn't do
-    reference counting or "validation" updates though; the parent won't go away
-    without the contained arrays going away too.  The "gp" is copied out
-    by value in the word_init() routine so we can throw our copy away. */
-
-t_scalar *scalar_new(t_glist *owner, t_symbol *templatesym)
+static void scalar_drawselectrect(t_scalar *x, t_glist *glist, int state)
 {
-    t_scalar *x;
-    t_template *template;
-    t_gpointer gp;
-    gpointer_init(&gp);
-    template = template_findbyname(templatesym);
-    if (!template)
+    if (state)
     {
-        post_error ("scalar: couldn't find template %s", templatesym->s_name);
-        return (0);
+        int x1, y1, x2, y2;
+       
+        scalar_behaviorGetRectangle(&x->sc_g, glist, &x1, &y1, &x2, &y2);
+        x1--; x2++; y1--; y2++;
+        sys_vGui(".x%lx.c create line %d %d %d %d %d %d %d %d %d %d \
+            -width 0 -fill blue -tags select%lx\n",
+                canvas_getView(glist), x1, y1, x1, y2, x2, y2, x2, y1, x1, y1,
+                x);
     }
-    if (!template_cancreate(template))
-        return (0);
-    x = (t_scalar *)PD_MEMORY_GET(sizeof(t_scalar) +
-        (template->tp_size - 1) * sizeof(*x->sc_vector));
-    x->sc_g.g_pd = scalar_class;
-    x->sc_template = templatesym;
-    gpointer_setAsScalarType(&gp, owner, x);
-    word_init(x->sc_vector, template, &gp);
-    return (x);
+    else
+    {
+        sys_vGui(".x%lx.c delete select%lx\n", canvas_getView(glist), x);
+    }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
     /* Pd method to create a new scalar, add it to a glist, and initialize
     it from the message arguments. */
@@ -98,16 +135,53 @@ void canvas_makeScalar(t_glist *glist, t_symbol *classname, int argc, t_atom *ar
     buffer_free(b);
 }
 
-/* -------------------- widget behavior for scalar ------------ */
-void scalar_getbasexy(t_scalar *x, t_float *basex, t_float *basey)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void scalar_redraw (t_scalar *x, t_glist *glist)
 {
-    t_template *template = template_findbyname(x->sc_template);
-    *basex = template_getfloat(template, sym_x, x->sc_vector, 0);
-    *basey = template_getfloat(template, sym_y, x->sc_vector, 0);
+    if (canvas_isMapped(glist))
+        interface_guiQueueAddIfNotAlreadyThere ((void *)x, glist, scalar_drawJob);
 }
 
-static void scalar_getrect(t_gobj *z, t_glist *owner,
-    int *xp1, int *yp1, int *xp2, int *yp2)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int scalar_doclick(t_word *data, t_template *template, t_scalar *sc,
+    t_array *ap, struct _glist *owner,
+    t_float xloc, t_float yloc, int xpix, int ypix,
+    int shift, int alt, int dbl, int doit)
+{
+    int hit = 0;
+    t_glist *templatecanvas = template_findcanvas(template);
+    t_gobj *y;
+    t_atom at[2];
+    t_float basex = template_getfloat(template, sym_x, data, 0);
+    t_float basey = template_getfloat(template, sym_y, data, 0);
+    SET_FLOAT(at, basex + xloc);
+    SET_FLOAT(at+1, basey + yloc);
+    if (doit)
+        template_notifyforscalar(template, owner, 
+            sc, sym_click, 2, at);
+    for (y = templatecanvas->gl_graphics; y; y = y->g_next)
+    {
+        t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
+        if (!wb) continue;
+        if (hit = (*wb->w_fnParentClicked)(y, owner,
+            data, template, sc, ap, basex + xloc, basey + yloc,
+            xpix, ypix, shift, alt, dbl, doit))
+                return (hit);
+    }
+    return (0);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void scalar_behaviorGetRectangle(t_gobj *z, t_glist *owner, int *xp1, int *yp1, int *xp2, int *yp2)
 {
     t_scalar *x = (t_scalar *)z;
     t_template *template = template_findbyname(x->sc_template);
@@ -149,43 +223,7 @@ static void scalar_getrect(t_gobj *z, t_glist *owner,
     *yp2 = y2; 
 }
 
-static void scalar_drawselectrect(t_scalar *x, t_glist *glist, int state)
-{
-    if (state)
-    {
-        int x1, y1, x2, y2;
-       
-        scalar_getrect(&x->sc_g, glist, &x1, &y1, &x2, &y2);
-        x1--; x2++; y1--; y2++;
-        sys_vGui(".x%lx.c create line %d %d %d %d %d %d %d %d %d %d \
-            -width 0 -fill blue -tags select%lx\n",
-                canvas_getView(glist), x1, y1, x1, y2, x2, y2, x2, y1, x1, y1,
-                x);
-    }
-    else
-    {
-        sys_vGui(".x%lx.c delete select%lx\n", canvas_getView(glist), x);
-    }
-}
-
-static void scalar_select(t_gobj *z, t_glist *owner, int state)
-{
-    t_scalar *x = (t_scalar *)z;
-    t_template *tmpl;
-    t_symbol *templatesym = x->sc_template;
-    t_atom at;
-    t_gpointer gp;
-    gpointer_init(&gp);
-    gpointer_setAsScalarType(&gp, owner, x);
-    SET_POINTER(&at, &gp);
-    if (tmpl = template_findbyname(templatesym))
-        template_notify(tmpl, (state ? sym_select : sym_deselect),
-            1, &at);
-    gpointer_unset(&gp);
-    scalar_drawselectrect(x, owner, state);
-}
-
-static void scalar_displace(t_gobj *z, t_glist *glist, int dx, int dy)
+static void scalar_behaviorDisplaced(t_gobj *z, t_glist *glist, int dx, int dy)
 {
     t_scalar *x = (t_scalar *)z;
     t_symbol *templatesym = x->sc_template;
@@ -220,18 +258,35 @@ static void scalar_displace(t_gobj *z, t_glist *glist, int dx, int dy)
     scalar_redraw(x, glist);
 }
 
-static void scalar_activate(t_gobj *z, t_glist *owner, int state)
+static void scalar_behaviorSelected (t_gobj *z, t_glist *owner, int state)
 {
-    /* post("scalar_activate %d", state); */
+    t_scalar *x = (t_scalar *)z;
+    t_template *tmpl;
+    t_symbol *templatesym = x->sc_template;
+    t_atom at;
+    t_gpointer gp;
+    gpointer_init(&gp);
+    gpointer_setAsScalarType(&gp, owner, x);
+    SET_POINTER(&at, &gp);
+    if (tmpl = template_findbyname(templatesym))
+        template_notify(tmpl, (state ? sym_select : sym_deselect),
+            1, &at);
+    gpointer_unset(&gp);
+    scalar_drawselectrect(x, owner, state);
+}
+
+static void scalar_behaviorActivated(t_gobj *z, t_glist *owner, int state)
+{
+    /* post("scalar_behaviorActivated %d", state); */
     /* later */
 }
 
-static void scalar_delete(t_gobj *z, t_glist *glist)
+static void scalar_behaviorDeleted(t_gobj *z, t_glist *glist)
 {
     /* nothing to do */
 }
 
-static void scalar_vis(t_gobj *z, t_glist *owner, int vis)
+static void scalar_behaviorVisibilityChanged(t_gobj *z, t_glist *owner, int vis)
 {
     t_scalar *x = (t_scalar *)z;
     t_template *template = template_findbyname(x->sc_template);
@@ -267,51 +322,7 @@ static void scalar_vis(t_gobj *z, t_glist *owner, int vis)
     interface_guiQueueRemove(x);
 }
 
-static void scalar_drawJob(t_gobj *client, t_glist *glist)
-{
-    scalar_vis(client, glist, 0);
-    scalar_vis(client, glist, 1);
-}
-
-void scalar_redraw(t_scalar *x, t_glist *glist)
-{
-    if (canvas_isMapped(glist))
-        interface_guiQueueAddIfNotAlreadyThere ((void *)x, glist, scalar_drawJob);
-}
-
-extern void template_notifyforscalar(t_template *template, t_glist *owner,
-    t_scalar *sc, t_symbol *s, int argc, t_atom *argv);
-
-int scalar_doclick(t_word *data, t_template *template, t_scalar *sc,
-    t_array *ap, struct _glist *owner,
-    t_float xloc, t_float yloc, int xpix, int ypix,
-    int shift, int alt, int dbl, int doit)
-{
-    int hit = 0;
-    t_glist *templatecanvas = template_findcanvas(template);
-    t_gobj *y;
-    t_atom at[2];
-    t_float basex = template_getfloat(template, sym_x, data, 0);
-    t_float basey = template_getfloat(template, sym_y, data, 0);
-    SET_FLOAT(at, basex + xloc);
-    SET_FLOAT(at+1, basey + yloc);
-    if (doit)
-        template_notifyforscalar(template, owner, 
-            sc, sym_click, 2, at);
-    for (y = templatecanvas->gl_graphics; y; y = y->g_next)
-    {
-        t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
-        if (!wb) continue;
-        if (hit = (*wb->w_fnParentClicked)(y, owner,
-            data, template, sc, ap, basex + xloc, basey + yloc,
-            xpix, ypix, shift, alt, dbl, doit))
-                return (hit);
-    }
-    return (0);
-}
-
-static int scalar_click(t_gobj *z, struct _glist *owner,
-    int xpix, int ypix, int shift, int ctrl, int alt, int dbl, int doit)
+static int scalar_behaviorClicked (t_gobj *z, struct _glist *owner, int xpix, int ypix, int shift, int ctrl, int alt, int dbl, int doit)
 {
     t_scalar *x = (t_scalar *)z;
     t_template *template = template_findbyname(x->sc_template);
@@ -352,16 +363,38 @@ static void scalar_functionProperties(t_gobj *z, struct _glist *owner)
     PD_MEMORY_FREE(buf);
 }
 
-static t_widgetbehavior scalar_widgetBehavior =
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+    /* make a new scalar and add to the glist.  We create a "gp" here which
+    will be used for array items to point back here.  This gp doesn't do
+    reference counting or "validation" updates though; the parent won't go away
+    without the contained arrays going away too.  The "gp" is copied out
+    by value in the word_init() routine so we can throw our copy away. */
+
+t_scalar *scalar_new(t_glist *owner, t_symbol *templatesym)
 {
-    scalar_getrect,
-    scalar_displace,
-    scalar_select,
-    scalar_activate,
-    scalar_delete,
-    scalar_vis,
-    scalar_click,
-};
+    t_scalar *x;
+    t_template *template;
+    t_gpointer gp;
+    gpointer_init(&gp);
+    template = template_findbyname(templatesym);
+    if (!template)
+    {
+        post_error ("scalar: couldn't find template %s", templatesym->s_name);
+        return (0);
+    }
+    if (!template_cancreate(template))
+        return (0);
+    x = (t_scalar *)PD_MEMORY_GET(sizeof(t_scalar) +
+        (template->tp_size - 1) * sizeof(*x->sc_vector));
+    x->sc_g.g_pd = scalar_class;
+    x->sc_template = templatesym;
+    gpointer_setAsScalarType(&gp, owner, x);
+    word_init(x->sc_vector, template, &gp);
+    return (x);
+}
 
 static void scalar_free(t_scalar *x)
 {

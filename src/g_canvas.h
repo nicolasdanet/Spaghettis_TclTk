@@ -486,7 +486,7 @@ void            canvas_makeGraphWithArray               (t_glist *glist,
                                                             
 void            canvas_makeArray                        (t_glist *glist,
                                                             t_symbol *s,
-                                                            t_symbol *templateName,
+                                                            t_symbol *type,
                                                             t_float size,
                                                             t_float flags);
                                                             
@@ -762,7 +762,7 @@ void            garray_initialize                       (void);
 
 t_garray        *garray_makeObject                      (t_glist *glist,
                                                             t_symbol *name,
-                                                            t_symbol *templateName,
+                                                            t_symbol *type,
                                                             t_float size,
                                                             t_float flags);
                                                             
@@ -839,6 +839,27 @@ void            word_free                               (t_word *w, t_template *
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_scalar        *scalar_new                             (t_glist *owner, t_symbol *templateIdentifier);
+
+void            scalar_redraw                           (t_scalar *x, t_glist *glist);
+int             scalar_doclick                          (t_word *data,
+                                                            t_template *template,
+                                                            t_scalar *sc,
+                                                            t_array *ap,
+                                                            struct _glist *owner,
+                                                            t_float xloc,
+                                                            t_float yloc,
+                                                            int xpix,
+                                                            int ypix,
+                                                            int shift,
+                                                            int alt,
+                                                            int dbl,
+                                                            int doit);
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_gmaster       *gpointer_masterCreateWithGlist         (t_glist *glist);
 t_gmaster       *gpointer_masterCreateWithArray         (t_array *array);
 
@@ -846,7 +867,6 @@ void            gpointer_masterRelease                  (t_gmaster *master);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 void            gpointer_init                           (t_gpointer *gp);
 void            gpointer_setAsScalarType                (t_gpointer *gp, t_glist *owner, t_scalar *scalar);
@@ -871,7 +891,7 @@ t_symbol        *gpointer_getTemplate                   (t_gpointer *gp);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_array         *array_new                              (t_symbol *templateName, t_gpointer *parent);
+t_array         *array_new                              (t_symbol *templateIdentifier, t_gpointer *parent);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -905,6 +925,13 @@ void            canvas_merge                            (t_glist *glist, t_symbo
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void template_notifyforscalar (t_template *tmpl, 
+        t_glist *owner,
+        t_scalar *sc,
+        t_symbol *s,
+        int argc,
+        t_atom *argv);
+    
 void signal_setborrowed(t_signal *sig, t_signal *sig2);
 void signal_makereusable(t_signal *sig);
 
@@ -949,15 +976,6 @@ void         array_resize               (t_array *x, int n);
 void         array_free                 (t_array *x);
 void         array_redraw               (t_array *a, t_glist *glist);
 void         array_resize_and_redraw    (t_array *array, t_glist *glist, int n);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_scalar *scalar_new            (t_glist *owner, t_symbol *templatesym);
-
-void     scalar_getbasexy       (t_scalar *x, t_float *basex, t_float *basey);
-void     scalar_redraw          (t_scalar *x, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
