@@ -69,7 +69,7 @@ static void glist_readatoms(t_glist *x, int natoms, t_atom *vec,
             int j;
             t_array *a = w[i].w_array;
             int elemsize = a->a_elementSize, nitems = 0;
-            t_symbol *arraytemplatesym = template->tp_vector[i].ds_template;
+            t_symbol *arraytemplatesym = template->tp_vector[i].ds_templateIdentifier;
             t_template *arraytemplate =
                 template_findbyname(arraytemplatesym);
             if (!arraytemplate)
@@ -329,9 +329,9 @@ void canvas_dataproperties(t_glist *x, t_scalar *sc, t_buffer *b)
         post_error ("couldn't update properties (perhaps a format problem?)");
     else if (!oldone) { PD_BUG; }
     else if (newone->g_pd == scalar_class && oldone->g_pd == scalar_class
-        && ((t_scalar *)newone)->sc_template ==
-            ((t_scalar *)oldone)->sc_template 
-        && (template = template_findbyname(((t_scalar *)newone)->sc_template)))
+        && ((t_scalar *)newone)->sc_templateIdentifier ==
+            ((t_scalar *)oldone)->sc_templateIdentifier 
+        && (template = template_findbyname(((t_scalar *)newone)->sc_templateIdentifier)))
     {
     
     
@@ -465,7 +465,7 @@ void canvas_writescalar(t_symbol *templatesym, t_word *w, t_buffer *b,
             int j;
             t_array *a = w[i].w_array;
             int elemsize = a->a_elementSize, nitems = a->a_size;
-            t_symbol *arraytemplatesym = template->tp_vector[i].ds_template;
+            t_symbol *arraytemplatesym = template->tp_vector[i].ds_templateIdentifier;
             for (j = 0; j < nitems; j++)
                 canvas_writescalar(arraytemplatesym,
                     (t_word *)(((char *)a->a_vector) + elemsize * j), b, 1);
@@ -482,7 +482,7 @@ static void glist_writelist(t_gobj *y, t_buffer *b)
     {
         if (pd_class(&y->g_pd) == scalar_class)
         {
-            canvas_writescalar(((t_scalar *)y)->sc_template,
+            canvas_writescalar(((t_scalar *)y)->sc_templateIdentifier,
                 ((t_scalar *)y)->sc_vector, b, 0);
         }
     }
@@ -508,7 +508,7 @@ static void canvas_addtemplatesforscalar(t_symbol *templatesym,
             int j;
             t_array *a = w->w_array;
             int elemsize = a->a_elementSize, nitems = a->a_size;
-            t_symbol *arraytemplatesym = ds->ds_template;
+            t_symbol *arraytemplatesym = ds->ds_templateIdentifier;
             canvas_doaddtemplate(arraytemplatesym, p_ntemplates, p_templatevec);
             for (j = 0; j < nitems; j++)
                 canvas_addtemplatesforscalar(arraytemplatesym,
@@ -525,7 +525,7 @@ static void canvas_addtemplatesforlist(t_gobj *y,
     {
         if (pd_class(&y->g_pd) == scalar_class)
         {
-            canvas_addtemplatesforscalar(((t_scalar *)y)->sc_template,
+            canvas_addtemplatesforscalar(((t_scalar *)y)->sc_templateIdentifier,
                 ((t_scalar *)y)->sc_vector, p_ntemplates, p_templatevec);
         }
     }
@@ -545,7 +545,7 @@ t_buffer *glist_writetobinbuf(t_glist *x, int wholething)
         if ((pd_class(&y->g_pd) == scalar_class) &&
             (wholething || canvas_isObjectSelected(x, y)))
         {
-            canvas_addtemplatesforscalar(((t_scalar *)y)->sc_template,
+            canvas_addtemplatesforscalar(((t_scalar *)y)->sc_templateIdentifier,
                 ((t_scalar *)y)->sc_vector,  &ntemplates, &templatevec);
         }
     }
@@ -570,7 +570,7 @@ t_buffer *glist_writetobinbuf(t_glist *x, int wholething)
             }
             if (template->tp_vector[j].ds_type == DATA_ARRAY)
                 buffer_vAppend(b, "sss;", type, template->tp_vector[j].ds_name,
-                    gensym (template->tp_vector[j].ds_template->s_name + 3));
+                    gensym (template->tp_vector[j].ds_templateIdentifier->s_name + 3));
             else buffer_vAppend(b, "ss;", type, template->tp_vector[j].ds_name);
         }
         buffer_appendSemicolon(b);
@@ -582,7 +582,7 @@ t_buffer *glist_writetobinbuf(t_glist *x, int wholething)
         if ((pd_class(&y->g_pd) == scalar_class) &&
             (wholething || canvas_isObjectSelected(x, y)))
         {
-            canvas_writescalar(((t_scalar *)y)->sc_template,
+            canvas_writescalar(((t_scalar *)y)->sc_templateIdentifier,
                 ((t_scalar *)y)->sc_vector,  b, 0);
         }
     }
@@ -624,7 +624,7 @@ static void canvas_findTemplates (t_glist *glist, int *n, t_symbol ***v)
     for (y = glist->gl_graphics; y; y = y->g_next) {
     //
     if (pd_class (y) == scalar_class) {
-        canvas_addtemplatesforscalar (cast_scalar (y)->sc_template, cast_scalar (y)->sc_vector, n, v);
+        canvas_addtemplatesforscalar (cast_scalar (y)->sc_templateIdentifier, cast_scalar (y)->sc_vector, n, v);
     } else if (pd_class (y) == canvas_class) {
         canvas_findTemplates (cast_glist (y), n, v);
     }
@@ -664,7 +664,7 @@ void canvas_serializeTemplates (t_glist *glist, t_buffer *b)
         }
         if (template->tp_vector[j].ds_type == DATA_ARRAY)
             buffer_vAppend(b, "sss", type, template->tp_vector[j].ds_name,
-                gensym (template->tp_vector[j].ds_template->s_name + 3));
+                gensym (template->tp_vector[j].ds_templateIdentifier->s_name + 3));
         else buffer_vAppend(b, "ss", type, template->tp_vector[j].ds_name);
     }
     buffer_appendSemicolon(b);

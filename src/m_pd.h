@@ -529,7 +529,7 @@ typedef struct _gobj {
 
 typedef struct _scalar {
     t_gobj          sc_g;                       /* MUST be the first. */
-    t_symbol        *sc_template;
+    t_symbol        *sc_templateIdentifier;
     t_word          sc_vector[1];               /* Indeterminate size array (see above link). */
     } t_scalar;
 

@@ -241,7 +241,7 @@ struct _glist {
     t_environment       *gl_environment;
     t_symbol            *gl_name;
     t_editor            *gl_editor;
-    int                 gl_identifier;
+    int                 gl_uniqueIdentifier;
     int                 gl_graphWidth;
     int                 gl_graphHeight;
     int                 gl_graphMarginLeft;
@@ -278,7 +278,7 @@ struct _gpointer {
         union word      *gp_w;
     } gp_un;
     t_gmaster           *gp_master;
-    int                 gp_identifier;
+    int                 gp_uniqueIdentifier;
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -288,9 +288,9 @@ struct _array {
     int                 a_size;
     int                 a_elementSize;
     char                *a_vector;
-    t_symbol            *a_template;
+    t_symbol            *a_templateIdentifier;
     t_gmaster           *a_master;
-    int                 a_identifier;
+    int                 a_uniqueIdentifier;
     t_gpointer          a_gpointer;
     };
 
@@ -300,7 +300,7 @@ struct _array {
 typedef struct _dataslot {
     int                 ds_type;
     t_symbol            *ds_name;
-    t_symbol            *ds_template;
+    t_symbol            *ds_templateIdentifier;
     } t_dataslot;
 
 struct _template {
@@ -873,7 +873,7 @@ void            gpointer_setAsScalarType                (t_gpointer *gp, t_glist
 void            gpointer_setAsWordType                  (t_gpointer *gp, t_array *owner, t_word *w);
 void            gpointer_setByCopy                      (t_gpointer *gp, t_gpointer *toSet);
 void            gpointer_unset                          (t_gpointer *gp);
-int             gpointer_getIdentifier                  (t_gpointer *gp);
+int             gpointer_getUniqueIdentifier            (t_gpointer *gp);
 void            gpointer_retain                         (t_gpointer *gp);
 int             gpointer_isSet                          (t_gpointer *gp);
 int             gpointer_isValid                        (t_gpointer *gp, int nullPointerIsValid);
@@ -885,7 +885,7 @@ t_word          *gpointer_getWord                       (t_gpointer *gp);
 t_glist         *gpointer_getParentGlist                (t_gpointer *gp);
 t_array         *gpointer_getParentArray                (t_gpointer *gp);
 t_word          *gpointer_getData                       (t_gpointer *gp);
-t_symbol        *gpointer_getTemplate                   (t_gpointer *gp);
+t_symbol        *gpointer_getTemplateIdentifier         (t_gpointer *gp);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -18,7 +18,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern int canvas_identifier;
+extern int canvas_uniqueIdentifier;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -33,7 +33,7 @@ t_array *array_new (t_symbol *templatesym, t_gpointer *parent)
     t_template *template;
     t_gpointer *gp;
     template = template_findbyname(templatesym);
-    x->a_template = templatesym;
+    x->a_templateIdentifier = templatesym;
     x->a_size = 1;
     x->a_elementSize = sizeof(t_word) * template->tp_size;
     x->a_vector = (char *)PD_MEMORY_GET(x->a_elementSize);
@@ -93,7 +93,7 @@ void array_resize(t_array *x, int n)
 {
     int elemsize, oldn;
     t_gpointer *gp;
-    t_template *template = template_findbyname(x->a_template);
+    t_template *template = template_findbyname(x->a_templateIdentifier);
     if (n < 1)
         n = 1;
     oldn = x->a_size;
@@ -111,7 +111,7 @@ void array_resize(t_array *x, int n)
             word_init(wp, template, &x->a_gpointer);
         }
     }
-    x->a_identifier = ++canvas_identifier;
+    x->a_uniqueIdentifier = ++canvas_uniqueIdentifier;
 }
 
 void array_resize_and_redraw(t_array *array, t_glist *glist, int n)
@@ -135,7 +135,7 @@ void array_resize_and_redraw(t_array *array, t_glist *glist, int n)
 void array_free(t_array *x)
 {
     int i;
-    t_template *scalartemplate = template_findbyname(x->a_template);
+    t_template *scalartemplate = template_findbyname(x->a_templateIdentifier);
     gpointer_masterRelease (x->a_master);
     for (i = 0; i < x->a_size; i++)
     {

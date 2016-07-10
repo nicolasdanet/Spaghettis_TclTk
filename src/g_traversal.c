@@ -39,7 +39,7 @@ extern t_class *canvas_class;
 t_buffer *pointertobinbuf(t_pd *x, t_gpointer *gp, t_symbol *s,
     const char *fname)
 {
-    t_symbol *templatesym = gpointer_getTemplate(gp), *arraytype;
+    t_symbol *templatesym = gpointer_getTemplateIdentifier(gp), *arraytype;
     t_template *template;
     int onset, type;
     t_buffer *b;
@@ -148,7 +148,7 @@ static void ptrobj_vnext(t_ptrobj *x, t_float f)
     }
     
     glist = gpointer_getParentGlist (gp);
-    if (glist->gl_identifier != gpointer_getIdentifier (gp))    /* isValid ? */
+    if (glist->gl_uniqueIdentifier != gpointer_getUniqueIdentifier (gp))    /* isValid ? */
     {
         post_error ("ptrobj_next: stale pointer");
         return;
@@ -174,7 +174,7 @@ static void ptrobj_vnext(t_ptrobj *x, t_float f)
         t_typedout *to;
         int n;
         t_scalar *sc = (t_scalar *)gobj;
-        t_symbol *templatesym = sc->sc_template;
+        t_symbol *templatesym = sc->sc_templateIdentifier;
 
         gpointer_setAsScalarType (gp, glist, sc);
         // gp->gp_un.gp_scalar = sc; 
@@ -250,7 +250,7 @@ static void ptrobj_bang(t_ptrobj *x)
         post_error ("pointer_bang: empty pointer");
         return;
     }
-    templatesym = gpointer_getTemplate(&x->x_gp);
+    templatesym = gpointer_getTemplateIdentifier(&x->x_gp);
     for (n = x->x_ntypedout, to = x->x_typedout; n--; to++)
     {
         if (to->to_type == templatesym)
@@ -393,14 +393,14 @@ static void get_pointer(t_get *x, t_gpointer *gp)
     }
     if (*x->x_templatesym->s_name)
     {
-        if ((templatesym = x->x_templatesym) != gpointer_getTemplate(gp))
+        if ((templatesym = x->x_templatesym) != gpointer_getTemplateIdentifier(gp))
         {
             post_error ("get %s: got wrong template (%s)",
-                templatesym->s_name, gpointer_getTemplate(gp)->s_name);
+                templatesym->s_name, gpointer_getTemplateIdentifier(gp)->s_name);
             return;
         } 
     }
-    else templatesym = gpointer_getTemplate(gp);
+    else templatesym = gpointer_getTemplateIdentifier(gp);
     if (!(template = template_findbyname(templatesym)))
     {
         post_error ("get: couldn't find template %s", templatesym->s_name);
@@ -534,14 +534,14 @@ static void set_bang(t_set *x)
     }
     if (*x->x_templatesym->s_name)
     {
-        if ((templatesym = x->x_templatesym) != gpointer_getTemplate(gp))
+        if ((templatesym = x->x_templatesym) != gpointer_getTemplateIdentifier(gp))
         {
             post_error ("set %s: got wrong template (%s)",
-                templatesym->s_name, gpointer_getTemplate(gp)->s_name);
+                templatesym->s_name, gpointer_getTemplateIdentifier(gp)->s_name);
             return;
         } 
     }
-    else templatesym = gpointer_getTemplate(gp);
+    else templatesym = gpointer_getTemplateIdentifier(gp);
     if (!(template = template_findbyname(templatesym)))
     {
         post_error ("set: couldn't find template %s", templatesym->s_name);
@@ -655,14 +655,14 @@ static void elem_float(t_elem *x, t_float f)
     if (*x->x_templatesym->s_name)
     {
         if ((templatesym = x->x_templatesym) !=
-            gpointer_getTemplate(gparent))
+            gpointer_getTemplateIdentifier(gparent))
         {
             post_error ("elem %s: got wrong template (%s)",
-                templatesym->s_name, gpointer_getTemplate(gparent)->s_name);
+                templatesym->s_name, gpointer_getTemplateIdentifier(gparent)->s_name);
             return;
         } 
     }
-    else templatesym = gpointer_getTemplate(gparent);
+    else templatesym = gpointer_getTemplateIdentifier(gparent);
     if (!(template = template_findbyname(templatesym)))
     {
         post_error ("elem: couldn't find template %s", templatesym->s_name);
@@ -762,14 +762,14 @@ static void getsize_pointer(t_getsize *x, t_gpointer *gp)
     if (*x->x_templatesym->s_name)
     {
         if ((templatesym = x->x_templatesym) !=
-            gpointer_getTemplate(gp))
+            gpointer_getTemplateIdentifier(gp))
         {
             post_error ("elem %s: got wrong template (%s)",
-                templatesym->s_name, gpointer_getTemplate(gp)->s_name);
+                templatesym->s_name, gpointer_getTemplateIdentifier(gp)->s_name);
             return;
         } 
     }
-    else templatesym = gpointer_getTemplate(gp);
+    else templatesym = gpointer_getTemplateIdentifier(gp);
     if (!(template = template_findbyname(templatesym)))
     {
         post_error ("elem: couldn't find template %s", templatesym->s_name);
@@ -850,14 +850,14 @@ static void setsize_float(t_setsize *x, t_float f)
     if (*x->x_templatesym->s_name)
     {
         if ((templatesym = x->x_templatesym) !=
-            gpointer_getTemplate(gp))
+            gpointer_getTemplateIdentifier(gp))
         {
             post_error ("elem %s: got wrong template (%s)",
-                templatesym->s_name, gpointer_getTemplate(gp)->s_name);
+                templatesym->s_name, gpointer_getTemplateIdentifier(gp)->s_name);
             return;
         } 
     }
-    else templatesym = gpointer_getTemplate(gp);
+    else templatesym = gpointer_getTemplateIdentifier(gp);
     if (!(template = template_findbyname(templatesym)))
     {
         post_error ("elem: couldn't find template %s", templatesym->s_name);
@@ -940,7 +940,7 @@ static void setsize_float(t_setsize *x, t_float f)
                 word_init((t_word *)elem, elemtemplate, gp);
     }
         /* invalidate all gpointers into the array */
-    array->a_identifier++;
+    array->a_uniqueIdentifier++;
 
     /* redraw again. */
     if (gpointer_isScalar (gp)) {
@@ -1072,7 +1072,7 @@ static void append_float(t_append *x, t_float f)
     }
     
     glist = gpointer_getParentGlist (gp);
-    if (glist->gl_identifier != gpointer_getIdentifier (gp))    /* isValid? */
+    if (glist->gl_uniqueIdentifier != gpointer_getUniqueIdentifier (gp))    /* isValid? */
     {
         post_error ("append: stale pointer");
         return;

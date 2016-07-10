@@ -148,7 +148,7 @@ static void scalar_define_save(t_gobj *z, t_buffer *bb)
         t_buffer *b2 = buffer_new();
         t_scalar *sc = (t_scalar *)(x->gl_graphics);
         buffer_vAppend(bb, "ss", sym___hash__A, sym_set);
-        canvas_writescalar(sc->sc_template, sc->sc_vector, b2, 0);
+        canvas_writescalar(sc->sc_templateIdentifier, sc->sc_vector, b2, 0);
         buffer_serialize(bb, b2);
         buffer_appendSemicolon(bb);
         buffer_free(b2);

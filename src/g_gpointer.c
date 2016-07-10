@@ -87,9 +87,9 @@ static void gpointer_masterDecrement (t_gmaster *master)
 
 void gpointer_init (t_gpointer *gp)
 {
-    gp->gp_un.gp_scalar = NULL;
-    gp->gp_master       = NULL;
-    gp->gp_identifier   = 0;
+    gp->gp_un.gp_scalar     = NULL;
+    gp->gp_master           = NULL;
+    gp->gp_uniqueIdentifier = 0;
 }
 
 void gpointer_setAsScalarType (t_gpointer *gp, t_glist *glist, t_scalar *scalar)
@@ -98,9 +98,9 @@ void gpointer_setAsScalarType (t_gpointer *gp, t_glist *glist, t_scalar *scalar)
     
     gpointer_init (gp);
     
-    gp->gp_un.gp_scalar = scalar;
-    gp->gp_master       = glist->gl_master;
-    gp->gp_identifier   = glist->gl_identifier;
+    gp->gp_un.gp_scalar     = scalar;
+    gp->gp_master           = glist->gl_master;
+    gp->gp_uniqueIdentifier = glist->gl_uniqueIdentifier;
 
     gpointer_masterIncrement (gp->gp_master);
 }
@@ -111,9 +111,9 @@ void gpointer_setAsWordType (t_gpointer *gp, t_array *array, t_word *w)
     
     gpointer_init (gp);
     
-    gp->gp_un.gp_w      = w;
-    gp->gp_master       = array->a_master;
-    gp->gp_identifier   = array->a_identifier;
+    gp->gp_un.gp_w          = w;
+    gp->gp_master           = array->a_master;
+    gp->gp_uniqueIdentifier = array->a_uniqueIdentifier;
 
     gpointer_masterIncrement (gp->gp_master);
 }
@@ -154,12 +154,12 @@ int gpointer_isValid (t_gpointer *gp, int nullPointerIsValid)
     t_gmaster *master = gp->gp_master;
     
     if (master->gm_type == POINTER_ARRAY) {
-        if (!nullPointerIsValid && !gp->gp_un.gp_w)                     { return 0; }
-        if (master->gm_un.gm_array->a_identifier == gp->gp_identifier)  { return 1; }
+        if (!nullPointerIsValid && !gp->gp_un.gp_w) { return 0; }
+        if (master->gm_un.gm_array->a_uniqueIdentifier == gp->gp_uniqueIdentifier)  { return 1; }
         
     } else if (master->gm_type == POINTER_GLIST) {
-        if (!nullPointerIsValid && !gp->gp_un.gp_scalar)                { return 0; }
-        if (master->gm_un.gm_glist->gl_identifier == gp->gp_identifier) { return 1; }
+        if (!nullPointerIsValid && !gp->gp_un.gp_scalar) { return 0; }
+        if (master->gm_un.gm_glist->gl_uniqueIdentifier == gp->gp_uniqueIdentifier) { return 1; }
         
     } else {
         PD_ASSERT (master->gm_type == POINTER_NONE);
@@ -188,9 +188,9 @@ int gpointer_isWord (t_gpointer *gp)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int gpointer_getIdentifier (t_gpointer *gp)
+int gpointer_getUniqueIdentifier (t_gpointer *gp)
 {
-    return (gp->gp_identifier);
+    return (gp->gp_uniqueIdentifier);
 }
 
 t_scalar *gpointer_getScalar (t_gpointer *gp)
@@ -229,7 +229,7 @@ t_word *gpointer_getData (t_gpointer *gp)
     }
 }
 
-t_symbol *gpointer_getTemplate (t_gpointer *gp)
+t_symbol *gpointer_getTemplateIdentifier (t_gpointer *gp)
 {
     t_symbol *s = NULL;
     t_gmaster *master = gp->gp_master;
@@ -237,10 +237,10 @@ t_symbol *gpointer_getTemplate (t_gpointer *gp)
     PD_ASSERT (gpointer_isValid (gp, 1));
     
     if (master->gm_type == POINTER_GLIST) {
-        if (gp->gp_un.gp_scalar) { s = gp->gp_un.gp_scalar->sc_template; }
+        if (gp->gp_un.gp_scalar) { s = gp->gp_un.gp_scalar->sc_templateIdentifier; }
         
     } else {
-        s = master->gm_un.gm_array->a_template;
+        s = master->gm_un.gm_array->a_templateIdentifier;
     }
     
     return s;

@@ -27,10 +27,10 @@ void word_init (t_word *w, t_template *tmpl, t_gpointer *gp)
     int type = v->ds_type;
     
     switch (type) {
-        case DATA_FLOAT  : w->w_float  = 0.0;                            break;
-        case DATA_SYMBOL : w->w_symbol = &s_symbol;                      break;
-        case DATA_TEXT   : w->w_buffer = buffer_new();                   break;
-        case DATA_ARRAY  : w->w_array  = array_new (v->ds_template, gp); break;
+        case DATA_FLOAT  : w->w_float  = 0.0;                                       break;
+        case DATA_SYMBOL : w->w_symbol = &s_symbol;                                 break;
+        case DATA_TEXT   : w->w_buffer = buffer_new();                              break;
+        case DATA_ARRAY  : w->w_array  = array_new (v->ds_templateIdentifier, gp);  break;
     }
     //
     }

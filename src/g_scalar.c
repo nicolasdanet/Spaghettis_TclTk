@@ -18,7 +18,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern int canvas_identifier;
+extern int canvas_uniqueIdentifier;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -66,7 +66,7 @@ static void scalar_drawJob(t_gobj *client, t_glist *glist)
 
 static void scalar_getbasexy(t_scalar *x, t_float *basex, t_float *basey)
 {
-    t_template *template = template_findbyname(x->sc_template);
+    t_template *template = template_findbyname(x->sc_templateIdentifier);
     *basex = template_getfloat(template, sym_x, x->sc_vector, 0);
     *basey = template_getfloat(template, sym_y, x->sc_vector, 0);
 }
@@ -78,10 +78,10 @@ static int template_cancreate (t_template *template)
     t_template *elemtemplate;
     for (i = 0; i < nitems; i++, datatypes++)
         if (datatypes->ds_type == DATA_ARRAY &&
-            (!(elemtemplate = template_findbyname(datatypes->ds_template))
+            (!(elemtemplate = template_findbyname(datatypes->ds_templateIdentifier))
                 || !template_cancreate(elemtemplate)))
     {
-        post_error ("%s: no such template", datatypes->ds_template->s_name);
+        post_error ("%s: no such template", datatypes->ds_templateIdentifier->s_name);
         return (0);
     }
     return (1);
@@ -155,7 +155,7 @@ int scalar_doclick(t_word *data, t_template *template, t_scalar *sc,
 static void scalar_behaviorGetRectangle(t_gobj *z, t_glist *owner, int *xp1, int *yp1, int *xp2, int *yp2)
 {
     t_scalar *x = (t_scalar *)z;
-    t_template *template = template_findbyname(x->sc_template);
+    t_template *template = template_findbyname(x->sc_templateIdentifier);
     t_glist *templatecanvas = template_findcanvas(template);
     int x1 = PD_INT_MAX, x2 = -PD_INT_MAX, y1 = PD_INT_MAX, y2 = -PD_INT_MAX;
     t_gobj *y;
@@ -197,7 +197,7 @@ static void scalar_behaviorGetRectangle(t_gobj *z, t_glist *owner, int *xp1, int
 static void scalar_behaviorDisplaced(t_gobj *z, t_glist *glist, int dx, int dy)
 {
     t_scalar *x = (t_scalar *)z;
-    t_symbol *templatesym = x->sc_template;
+    t_symbol *templatesym = x->sc_templateIdentifier;
     t_template *template = template_findbyname(templatesym);
     t_symbol *zz;
     t_atom at[3];
@@ -233,7 +233,7 @@ static void scalar_behaviorSelected (t_gobj *z, t_glist *owner, int state)
 {
     t_scalar *x = (t_scalar *)z;
     t_template *tmpl;
-    t_symbol *templatesym = x->sc_template;
+    t_symbol *templatesym = x->sc_templateIdentifier;
     t_atom at;
     t_gpointer gp;
     gpointer_init(&gp);
@@ -260,7 +260,7 @@ static void scalar_behaviorDeleted(t_gobj *z, t_glist *glist)
 static void scalar_behaviorVisibilityChanged(t_gobj *z, t_glist *owner, int vis)
 {
     t_scalar *x = (t_scalar *)z;
-    t_template *template = template_findbyname(x->sc_template);
+    t_template *template = template_findbyname(x->sc_templateIdentifier);
     t_glist *templatecanvas = template_findcanvas(template);
     t_gobj *y;
     t_float basex, basey;
@@ -296,7 +296,7 @@ static void scalar_behaviorVisibilityChanged(t_gobj *z, t_glist *owner, int vis)
 static int scalar_behaviorClicked (t_gobj *z, struct _glist *owner, int xpix, int ypix, int shift, int ctrl, int alt, int dbl, int doit)
 {
     t_scalar *x = (t_scalar *)z;
-    t_template *template = template_findbyname(x->sc_template);
+    t_template *template = template_findbyname(x->sc_templateIdentifier);
     return (scalar_doclick(x->sc_vector, template, x, 0,
         owner, 0, 0, xpix, ypix, shift, alt, dbl, doit));
 }
@@ -307,7 +307,7 @@ static void scalar_functionSave(t_gobj *z, t_buffer *b)
     t_buffer *b2 = buffer_new();
     t_atom a, *argv;
     int i, argc;
-    canvas_writescalar(x->sc_template, x->sc_vector, b2, 0);
+    canvas_writescalar(x->sc_templateIdentifier, x->sc_vector, b2, 0);
     buffer_vAppend(b, "ss", sym___hash__X, sym_scalar);
     buffer_serialize(b, b2);
     buffer_appendSemicolon(b);
@@ -361,7 +361,7 @@ t_scalar *scalar_new(t_glist *owner, t_symbol *templatesym)
     x = (t_scalar *)PD_MEMORY_GET(sizeof(t_scalar) +
         (template->tp_size - 1) * sizeof(*x->sc_vector));
     x->sc_g.g_pd = scalar_class;
-    x->sc_template = templatesym;
+    x->sc_templateIdentifier = templatesym;
     gpointer_setAsScalarType(&gp, owner, x);
     word_init(x->sc_vector, template, &gp);
     return (x);
@@ -371,7 +371,7 @@ static void scalar_free(t_scalar *x)
 {
     int i;
     t_dataslot *datatypes, *dt;
-    t_symbol *templatesym = x->sc_template;
+    t_symbol *templatesym = x->sc_templateIdentifier;
     t_template *template = template_findbyname(templatesym);
     if (!template)
     {

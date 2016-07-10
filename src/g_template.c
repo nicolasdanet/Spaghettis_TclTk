@@ -67,7 +67,7 @@ static int dataslot_matches(t_dataslot *ds1, t_dataslot *ds2,
     return ((!nametoo || ds1->ds_name == ds2->ds_name) &&
         ds1->ds_type == ds2->ds_type &&
             (ds1->ds_type != DATA_ARRAY ||
-                ds1->ds_template == ds2->ds_template));
+                ds1->ds_templateIdentifier == ds2->ds_templateIdentifier));
 }
 
 /* -- templates, the active ingredient in gtemplates defined below. ------- */
@@ -116,7 +116,7 @@ t_template *template_new(t_symbol *templatesym, int argc, t_atom *argv)
         x->tp_size = newn;
         x->tp_vector[oldn].ds_type = newtype;
         x->tp_vector[oldn].ds_name = newname;
-        x->tp_vector[oldn].ds_template = newarraytemplate;
+        x->tp_vector[oldn].ds_templateIdentifier = newarraytemplate;
     bad: 
         argc -= 2; argv += 2;
     }
@@ -145,7 +145,7 @@ int template_find_field(t_template *x, t_symbol *name, int *p_onset,
     {
         *p_onset = i * sizeof(t_word);
         *p_type = x->tp_vector[i].ds_type;
-        *p_arraytype = x->tp_vector[i].ds_template;
+        *p_arraytype = x->tp_vector[i].ds_templateIdentifier;
         return (1);
     }
     return (0);
@@ -277,14 +277,14 @@ static t_scalar *template_conformscalar(t_template *tfrom, t_template *tto,
     t_template *scalartemplate;
     /* post("conform scalar"); */
         /* possibly replace the scalar */
-    if (scfrom->sc_template == tfrom->tp_symbol)
+    if (scfrom->sc_templateIdentifier == tfrom->tp_symbol)
     {
             /* see scalar_new() for comment about the gpointer. */
         gpointer_init(&gp);
         x = (t_scalar *)PD_MEMORY_GET(sizeof(t_scalar) +
             (tto->tp_size - 1) * sizeof(*x->sc_vector));
         x->sc_g.g_pd = scalar_class;
-        x->sc_template = tfrom->tp_symbol;
+        x->sc_templateIdentifier = tfrom->tp_symbol;
         gpointer_setAsScalarType(&gp, glist, x);
             /* Here we initialize to the new template, but array and list
             elements will still belong to old template. */
@@ -319,7 +319,7 @@ static t_scalar *template_conformscalar(t_template *tfrom, t_template *tto,
     else
     {
         x = scfrom;
-        scalartemplate = template_findbyname(x->sc_template);
+        scalartemplate = template_findbyname(x->sc_templateIdentifier);
     }
         /* convert all array elements */
     for (i = 0; i < scalartemplate->tp_size; i++)
@@ -340,7 +340,7 @@ static void template_conformarray(t_template *tfrom, t_template *tto,
 {
     int i, j;
     t_template *scalartemplate = 0;
-    if (a->a_template == tfrom->tp_symbol)
+    if (a->a_templateIdentifier == tfrom->tp_symbol)
     {
         /* the array elements must all be conformed */
         int oldelemsize = sizeof(t_word) * tfrom->tp_size,
@@ -360,7 +360,7 @@ static void template_conformarray(t_template *tfrom, t_template *tto,
         a->a_vector = newarray;
         PD_MEMORY_FREE(oldarray);
     }
-    else scalartemplate = template_findbyname(a->a_template);
+    else scalartemplate = template_findbyname(a->a_templateIdentifier);
         /* convert all arrays and sublist fields in each element of the array */
     for (i = 0; i < a->a_size; i++)
     {

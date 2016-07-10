@@ -488,12 +488,12 @@ static int array_rangeop_getrange(t_array_rangeop *x,
     t_template *template;
     if (!a)
         return (0);
-    template = template_findbyname(a->a_template);
+    template = template_findbyname(a->a_templateIdentifier);
     if (!template_find_field(template, x->x_elemfield, &fieldonset,
         &type, &arraytype) || type != DATA_FLOAT)
     {
         post_error ("can't find field %s in struct %s",
-            x->x_elemfield->s_name, a->a_template->s_name);
+            x->x_elemfield->s_name, a->a_templateIdentifier->s_name);
         return (0);
     }
     stride = a->a_elementSize;
