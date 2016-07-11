@@ -18,6 +18,12 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#define SCALAR_SELECT_MARGIN            5
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_class *scalar_class;                  /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -95,22 +101,40 @@ static t_float scalar_getCoordinateY (t_scalar *x)
     return template_getfloat (template_findbyname (x->sc_templateIdentifier), sym_y, x->sc_vector);
 }
 
-static void scalar_drawselectrect(t_scalar *x, t_glist *glist, int state)
+static void scalar_drawSelectRectangle (t_scalar *x, t_glist *glist, int isSelected)
 {
-    if (state)
-    {
-        int x1, y1, x2, y2;
+    if (isSelected) {
+    
+        int a, b, c, d;
        
-        scalar_behaviorGetRectangle(&x->sc_g, glist, &x1, &y1, &x2, &y2);
-        x1--; x2++; y1--; y2++;
-        sys_vGui(".x%lx.c create line %d %d %d %d %d %d %d %d %d %d \
-            -width 0 -fill blue -tags select%lx\n",
-                canvas_getView(glist), x1, y1, x1, y2, x2, y2, x2, y1, x1, y1,
-                x);
-    }
-    else
-    {
-        sys_vGui(".x%lx.c delete select%lx\n", canvas_getView(glist), x);
+        scalar_behaviorGetRectangle (cast_gobj (x), glist, &a, &b, &c, &d);
+        
+        a -= SCALAR_SELECT_MARGIN;
+        b -= SCALAR_SELECT_MARGIN;
+        c += SCALAR_SELECT_MARGIN;
+        d += SCALAR_SELECT_MARGIN;
+        
+        sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d"
+                        " -width 0"
+                        " -fill #%06x"
+                        " -dash {2 4}"
+                        " -tags HANDLE%lx\n",
+                        canvas_getView (glist),
+                        a,
+                        b,
+                        a,
+                        d,
+                        c,
+                        d,
+                        c,
+                        b,
+                        a,
+                        b,
+                        COLOR_SELECTED,
+                        x);
+                
+    } else {
+        sys_vGui (".x%lx.c delete HANDLE%lx\n", canvas_getView (glist), x);
     }
 }
 
@@ -251,7 +275,7 @@ static void scalar_behaviorSelected (t_gobj *z, t_glist *owner, int state)
         template_notify(tmpl, (state ? sym_select : sym_deselect),
             1, &at);
     gpointer_unset(&gp);
-    scalar_drawselectrect(x, owner, state);
+    scalar_drawSelectRectangle(x, owner, state);
 }
 
 static void scalar_behaviorActivated(t_gobj *z, t_glist *owner, int state)
@@ -295,8 +319,8 @@ static void scalar_behaviorVisibilityChanged(t_gobj *z, t_glist *owner, int vis)
     }
     if (canvas_isObjectSelected(owner, &x->sc_g))
     {
-        scalar_drawselectrect(x, owner, 0);
-        scalar_drawselectrect(x, owner, 1);
+        scalar_drawSelectRectangle(x, owner, 0);
+        scalar_drawSelectRectangle(x, owner, 1);
     }
     interface_guiQueueRemove(x);
 }
@@ -308,6 +332,10 @@ static int scalar_behaviorClicked (t_gobj *z, struct _glist *owner, int xpix, in
     return (scalar_doclick(x->sc_vector, template, x, 0,
         owner, 0, 0, xpix, ypix, shift, alt, dbl, doit));
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void scalar_functionSave(t_gobj *z, t_buffer *b)
 {
