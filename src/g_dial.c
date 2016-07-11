@@ -51,6 +51,12 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define IEM_DIAL_SELECT_MARGIN      5
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void dial_set                    (t_dial *, t_float);
 static void dial_motion                 (t_dial *, t_float, t_float, t_float);
 static void dial_behaviorGetRectangle   (t_gobj *, t_glist *, int *, int *, int *, int *);
@@ -185,10 +191,10 @@ static void dial_drawMove (t_dial *x, t_glist *glist)
     sys_vGui (".x%lx.c coords %lxBASE %d %d %d %d\n",
                     canvas,
                     x,
-                    a, 
-                    b,
-                    a + w, 
-                    b + x->x_gui.iem_height);
+                    a - IEM_DIAL_SELECT_MARGIN, 
+                    b - IEM_DIAL_SELECT_MARGIN,
+                    a + IEM_DIAL_SELECT_MARGIN + w, 
+                    b + IEM_DIAL_SELECT_MARGIN + x->x_gui.iem_height);
     sys_vGui (".x%lx.c coords %lxARC %d %d %d %d\n",
                     canvas,
                     x,
@@ -229,12 +235,16 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
     
     dial_setString (x);
     
-    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -outline #%06x -tags %lxBASE\n",
+    sys_vGui (".x%lx.c create rectangle %d %d %d %d"
+                    " -fill #%06x"
+                    " -outline #%06x"
+                    " -dash {2 4}"
+                    " -tags %lxBASE\n",
                     canvas,
-                    a,
-                    b,
-                    a + w,
-                    b + x->x_gui.iem_height,
+                    a - IEM_DIAL_SELECT_MARGIN,
+                    b - IEM_DIAL_SELECT_MARGIN,
+                    a + IEM_DIAL_SELECT_MARGIN + w ,
+                    b + IEM_DIAL_SELECT_MARGIN + x->x_gui.iem_height,
                     x->x_gui.iem_colorBackground,
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorBackground,
                     x);
