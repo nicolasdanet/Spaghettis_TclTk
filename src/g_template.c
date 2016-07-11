@@ -2058,12 +2058,22 @@ static int array_doclick_element(t_array *array, t_glist *glist,
         useyloc = yloc + (yonset >= 0 ? fielddesc_cvttocoord(yfield,
             *(t_float *)(((char *)(array->a_vector) + elemsize * i) + yonset)) : 0);
         
-        if (hit = scalar_doclick(
+        if (hit = scalar_performClick(
             (t_word *)((char *)(array->a_vector) + i * elemsize),
-            elemtemplate, 0, array,
-            glist, usexloc, useyloc,
-            xpix, ypix, shift, alt, dbl, doit))
+            elemtemplate,
+            0,
+            array,
+            glist,
+            usexloc,
+            useyloc,
+            xpix,
+            ypix,
+            shift,
+            alt,
+            dbl,
+            doit)) {
                 return (hit);
+            }
     }
     return (0);
 }

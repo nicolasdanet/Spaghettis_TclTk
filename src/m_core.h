@@ -27,10 +27,10 @@ typedef void (*t_motionfn)              (void *z, t_float deltaX, t_float deltaY
 
 typedef void (*t_getrectanglefn)        (t_gobj *x, t_glist *glist, int *a, int *b, int *c, int *d);
 typedef void (*t_displacedfn)           (t_gobj *x, t_glist *glist, int deltaX, int deltaY);
-typedef void (*t_selectedfn)            (t_gobj *x, t_glist *glist, int state);
-typedef void (*t_activatedfn)           (t_gobj *x, t_glist *glist, int state);
+typedef void (*t_selectedfn)            (t_gobj *x, t_glist *glist, int isSelected);
+typedef void (*t_activatedfn)           (t_gobj *x, t_glist *glist, int isActivated);
 typedef void (*t_deletedfn)             (t_gobj *x, t_glist *glist);
-typedef void (*t_visibilityfn)          (t_gobj *x, t_glist *glist, int flag);
+typedef void (*t_visibilityfn)          (t_gobj *x, t_glist *glist, int isVisible);
 typedef int  (*t_clickedfn)             (t_gobj *x,
                                             t_glist *glist,
                                             int a,
@@ -45,35 +45,35 @@ typedef int  (*t_clickedfn)             (t_gobj *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef void (*t_parentgetrectanglefn)  (t_gobj *x, t_glist *glist, t_word *data, t_template *t,
-                                            t_float baseX,
-                                            t_float baseY,
+typedef void (*t_parentgetrectanglefn)  (t_gobj *x, t_glist *glist, t_word *w, t_template *tmpl,
+                                            t_float positionX,
+                                            t_float positionY,
                                             int *a,
                                             int *b,
                                             int *c,
                                             int *d);
-typedef void (*t_parentdisplacedfn)     (t_gobj *x, t_glist *glist, t_word *data, t_template *t,
-                                            t_float baseX,
-                                            t_float baseY,
+typedef void (*t_parentdisplacedfn)     (t_gobj *x, t_glist *glist, t_word *w, t_template *tmpl,
+                                            t_float positionX,
+                                            t_float positionY,
                                             int deltaX, 
                                             int deltaY);
-typedef void (*t_parentselectedfn)      (t_gobj *x, t_glist *glist, t_word *data, t_template *t,
-                                            t_float baseX,
-                                            t_float baseY,
+typedef void (*t_parentselectedfn)      (t_gobj *x, t_glist *glist, t_word *w, t_template *tmpl,
+                                            t_float positionX,
+                                            t_float positionY,
                                             int state);
-typedef void (*t_parentactivatedfn)     (t_gobj *x, t_glist *glist, t_word *data, t_template *t,
-                                            t_float baseX,
-                                            t_float baseY,
+typedef void (*t_parentactivatedfn)     (t_gobj *x, t_glist *glist, t_word *w, t_template *tmpl,
+                                            t_float positionX,
+                                            t_float positionY,
                                             int state);
-typedef void (*t_parentvisibilityfn)    (t_gobj *x, t_glist *glist, t_word *data, t_template *t,
-                                            t_float baseX,
-                                            t_float baseY,
+typedef void (*t_parentvisibilityfn)    (t_gobj *x, t_glist *glist, t_word *w, t_template *tmpl,
+                                            t_float positionX,
+                                            t_float positionY,
                                             int flag);
-typedef int  (*t_parentclickedfn)       (t_gobj *x, t_glist *glist, t_word *data, t_template *t,
+typedef int  (*t_parentclickedfn)       (t_gobj *x, t_glist *glist, t_word *w, t_template *tmpl,
                                             t_scalar *scalar,
                                             t_array  *array,
-                                            t_float baseX,
-                                            t_float baseY,
+                                            t_float positionX,
+                                            t_float positionY,
                                             int a,
                                             int b,
                                             int shift,

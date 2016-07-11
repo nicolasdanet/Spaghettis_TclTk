@@ -851,19 +851,19 @@ void            word_free                               (t_word *w, t_template *
 t_scalar        *scalar_new                             (t_glist *owner, t_symbol *templateIdentifier);
 
 void            scalar_redraw                           (t_scalar *x, t_glist *glist);
-int             scalar_doclick                          (t_word *data,
-                                                            t_template *template,
-                                                            t_scalar *sc,
-                                                            t_array *ap,
-                                                            struct _glist *owner,
-                                                            t_float xloc,
-                                                            t_float yloc,
-                                                            int xpix,
-                                                            int ypix,
+int             scalar_performClick                     (t_word *w,
+                                                            t_template *tmpl,
+                                                            t_scalar *scalar,
+                                                            t_array *array,
+                                                            t_glist *glist,
+                                                            t_float offsetX,
+                                                            t_float offestY,
+                                                            int a,
+                                                            int b,
                                                             int shift,
                                                             int alt,
                                                             int dbl,
-                                                            int doit);
+                                                            int clicked);
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

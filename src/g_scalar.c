@@ -144,40 +144,72 @@ static void scalar_drawSelectRectangle (t_scalar *x, t_glist *glist, int isSelec
 
 void scalar_redraw (t_scalar *x, t_glist *glist)
 {
-    if (canvas_isMapped(glist))
-        interface_guiQueueAddIfNotAlreadyThere ((void *)x, glist, scalar_drawJob);
+    if (canvas_isMapped (glist)) {
+    //
+    interface_guiQueueAddIfNotAlreadyThere ((void *)x, glist, scalar_drawJob);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int scalar_doclick(t_word *data, t_template *template, t_scalar *sc,
-    t_array *ap, struct _glist *owner,
-    t_float xloc, t_float yloc, int xpix, int ypix,
-    int shift, int alt, int dbl, int doit)
+int scalar_performClick (t_word *w,
+    t_template *template,
+    t_scalar *scalar,
+    t_array *array,
+    t_glist *glist,
+    t_float offsetX,
+    t_float offsetY,
+    int a,
+    int b,
+    int shift,
+    int alt,
+    int dbl,
+    int clicked)
 {
-    int hit = 0;
-    t_glist *templatecanvas = template_findcanvas(template);
-    t_gobj *y;
-    t_atom at[2];
-    t_float basex = template_getfloat(template, sym_x, data);
-    t_float basey = template_getfloat(template, sym_y, data);
-    SET_FLOAT(at, basex + xloc);
-    SET_FLOAT(at+1, basey + yloc);
-    if (doit)
-        template_notifyforscalar(template, owner, 
-            sc, sym_click, 2, at);
-    for (y = templatecanvas->gl_graphics; y; y = y->g_next)
-    {
-        t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
-        if (!wb) continue;
-        if (hit = (*wb->w_fnParentClicked)(y, owner,
-            data, template, sc, ap, basex + xloc, basey + yloc,
-            xpix, ypix, shift, alt, dbl, doit))
-                return (hit);
+    t_glist *view = template_findcanvas (template);
+    t_float baseX = template_getfloat (template, sym_x, w);
+    t_float baseY = template_getfloat (template, sym_y, w);
+    t_gobj *y = NULL;
+        
+    if (clicked) {
+    //
+    t_atom t[2];
+    SET_FLOAT (t + 0, baseX + offsetX);
+    SET_FLOAT (t + 1, baseY + offsetY);
+    template_notifyforscalar (template, glist, scalar, sym_click, 2, t);
+    //
     }
-    return (0);
+            
+    for (y = view->gl_graphics; y; y = y->g_next) {
+    //
+    t_parentwidgetbehavior *behavior = class_getParentWidget (pd_class (y));
+    if (behavior) { 
+        int k = (*behavior->w_fnParentClicked) (y, 
+                    glist,
+                    w,
+                    template,
+                    scalar,
+                    array,
+                    baseX + offsetX,
+                    baseY + offsetY,
+                    a,
+                    b,
+                    shift,
+                    alt,
+                    dbl,
+                    clicked);
+                    
+        if (k) {
+            return k;
+        }
+    }
+    //
+    }
+    
+    return 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -186,7 +218,7 @@ int scalar_doclick(t_word *data, t_template *template, t_scalar *sc,
 
 static void scalar_behaviorGetRectangle(t_gobj *z, t_glist *owner, int *xp1, int *yp1, int *xp2, int *yp2)
 {
-    t_scalar *x = (t_scalar *)z;
+    t_scalar *x = cast_scalar (z);
     t_template *template = template_findbyname(x->sc_templateIdentifier);
     t_glist *templatecanvas = template_findcanvas(template);
     int x1 = PD_INT_MAX, x2 = -PD_INT_MAX, y1 = PD_INT_MAX, y2 = -PD_INT_MAX;
@@ -229,7 +261,7 @@ static void scalar_behaviorGetRectangle(t_gobj *z, t_glist *owner, int *xp1, int
 
 static void scalar_behaviorDisplaced(t_gobj *z, t_glist *glist, int dx, int dy)
 {
-    t_scalar *x = (t_scalar *)z;
+    t_scalar *x = cast_scalar (z);
     t_symbol *templatesym = x->sc_templateIdentifier;
     t_template *template = template_findbyname(templatesym);
     t_symbol *zz;
@@ -264,7 +296,7 @@ static void scalar_behaviorDisplaced(t_gobj *z, t_glist *glist, int dx, int dy)
 
 static void scalar_behaviorSelected (t_gobj *z, t_glist *owner, int state)
 {
-    t_scalar *x = (t_scalar *)z;
+    t_scalar *x = cast_scalar (z);
     t_template *tmpl;
     t_symbol *templatesym = x->sc_templateIdentifier;
     t_atom at;
@@ -291,7 +323,7 @@ static void scalar_behaviorDeleted(t_gobj *z, t_glist *glist)
 
 static void scalar_behaviorVisibilityChanged(t_gobj *z, t_glist *owner, int vis)
 {
-    t_scalar *x = (t_scalar *)z;
+    t_scalar *x = cast_scalar (z);
     t_template *template = template_findbyname(x->sc_templateIdentifier);
     t_glist *templatecanvas = template_findcanvas(template);
     t_gobj *y;
@@ -325,12 +357,32 @@ static void scalar_behaviorVisibilityChanged(t_gobj *z, t_glist *owner, int vis)
     interface_guiQueueRemove(x);
 }
 
-static int scalar_behaviorClicked (t_gobj *z, struct _glist *owner, int xpix, int ypix, int shift, int ctrl, int alt, int dbl, int doit)
+static int scalar_behaviorClicked (t_gobj *z,
+    t_glist *glist,
+    int a,
+    int b,
+    int shift,
+    int ctrl,
+    int alt,
+    int dbl,
+    int clicked)
 {
-    t_scalar *x = (t_scalar *)z;
-    t_template *template = template_findbyname(x->sc_templateIdentifier);
-    return (scalar_doclick(x->sc_vector, template, x, 0,
-        owner, 0, 0, xpix, ypix, shift, alt, dbl, doit));
+    t_scalar *x = cast_scalar (z);
+    
+    int k = scalar_performClick (x->sc_vector, template_findbyname (x->sc_templateIdentifier),
+                x,
+                NULL,
+                glist,
+                0.0,
+                0.0,
+                a,
+                b,
+                shift,
+                alt,
+                dbl,
+                clicked);
+    
+    return k;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -339,7 +391,7 @@ static int scalar_behaviorClicked (t_gobj *z, struct _glist *owner, int xpix, in
 
 static void scalar_functionSave(t_gobj *z, t_buffer *b)
 {
-    t_scalar *x = (t_scalar *)z;
+    t_scalar *x = cast_scalar (z);
     t_buffer *b2 = buffer_new();
     t_atom a, *argv;
     int i, argc;
@@ -352,7 +404,7 @@ static void scalar_functionSave(t_gobj *z, t_buffer *b)
 
 static void scalar_functionProperties(t_gobj *z, struct _glist *owner)
 {
-    t_scalar *x = (t_scalar *)z;
+    t_scalar *x = cast_scalar (z);
     char *buf, buf2[80];
     int bufsize;
     t_buffer *b;
@@ -383,13 +435,18 @@ t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
     if (!scalar_isTemplateExistRecursive (template)) { PD_BUG; }
     else {
     //
+    {
+        size_t extraForArrayOfWords = (template->tp_size - 1) * sizeof (t_word);
+        x = (t_scalar *)PD_MEMORY_GET (sizeof (t_scalar) + extraForArrayOfWords); 
+        pd_class (x) = scalar_class;
+    }
+    
     t_gpointer gp = GPOINTER_INIT;
     
-    size_t extraForArrayOfWords = (template->tp_size - 1) * sizeof (t_word);
-    x = (t_scalar *)PD_MEMORY_GET (sizeof (t_scalar) + extraForArrayOfWords); 
-    pd_class (x) = scalar_class;
-    
     x->sc_templateIdentifier = templateIdentifier;
+    
+    /* Note that ownership of the gpointer is grabbed in later call. */
+    /* Thus it doesn't need to be released at the end of the function. */
     
     gpointer_setAsScalarType (&gp, owner, x); word_init (x->sc_vector, template, &gp);
     //
