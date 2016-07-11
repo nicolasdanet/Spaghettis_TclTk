@@ -605,9 +605,13 @@ static void pipe_list(t_pipe *x, t_symbol *s, int ac, t_atom *av)
     {
         if (p->p_atom.a_type == A_POINTER)
         {
+            // gpointer_setByCopy ?
             gpointer_retain (gp);
+            gpointer_rawCopy (gp, gp2);
+            
             w->w_gpointer = gp2;
-            *gp2++ = *gp++; /* ??? */
+            gp++;
+            gp2++;
         }
         else *w = p->p_atom.a_w;
     }

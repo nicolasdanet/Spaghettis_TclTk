@@ -321,6 +321,12 @@ struct _voutlet;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define GPOINTER_INIT   { NULL, NULL, 0UL }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #define canvas_castToObjectIfPatchable(x)   (pd_class (x)->c_isBox ? (t_object *)(x) : NULL)
 
 // -----------------------------------------------------------------------------------------------------------
@@ -874,11 +880,13 @@ void            gpointer_setAsWordType                  (t_gpointer *gp, t_array
 void            gpointer_setByCopy                      (t_gpointer *gp, t_gpointer *toSet);
 void            gpointer_unset                          (t_gpointer *gp);
 t_unique        gpointer_getUniqueIdentifier            (t_gpointer *gp);
-void            gpointer_retain                         (t_gpointer *gp);
 int             gpointer_isSet                          (t_gpointer *gp);
 int             gpointer_isValid                        (t_gpointer *gp, int nullPointerIsValid);
 int             gpointer_isScalar                       (t_gpointer *gp);
 int             gpointer_isWord                         (t_gpointer *gp);
+
+void            gpointer_retain                         (t_gpointer *gp);
+void            gpointer_rawCopy                        (t_gpointer *src, t_gpointer *dest);
 
 t_scalar        *gpointer_getScalar                     (t_gpointer *gp);
 t_word          *gpointer_getWord                       (t_gpointer *gp);

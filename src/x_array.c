@@ -172,7 +172,7 @@ static void array_define_send(t_glist *x, t_symbol *s)
         post_error ("array_define_send: %s: no such object", s->s_name);
     else if (gl && gl->gl_graphics && pd_class(&gl->gl_graphics->g_pd) == garray_class)
     {
-        t_gpointer gp; gpointer_init(&gp);
+        t_gpointer gp = GPOINTER_INIT;
         gpointer_setAsScalarType(&gp, gl,
             garray_getScalar((t_garray *)gl->gl_graphics));
         pd_pointer(s->s_thing, &gp);

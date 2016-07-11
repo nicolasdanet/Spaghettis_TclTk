@@ -272,7 +272,7 @@ static t_scalar *template_conformscalar(t_template *tfrom, t_template *tto,
     int *conformaction, t_glist *glist, t_scalar *scfrom)
 {
     t_scalar *x;
-    t_gpointer gp; gpointer_init (&gp);
+    t_gpointer gp = GPOINTER_INIT;
     int nto = tto->tp_size, nfrom = tfrom->tp_size, i;
     t_template *scalartemplate;
     /* post("conform scalar"); */
@@ -477,7 +477,7 @@ void template_notify(t_template *template, t_symbol *s, int argc, t_atom *argv)
 void template_notifyforscalar(t_template *template, t_glist *owner,
     t_scalar *sc, t_symbol *s, int argc, t_atom *argv)
 {
-    t_gpointer gp; gpointer_init(&gp);
+    t_gpointer gp = GPOINTER_INIT;
     gpointer_setAsScalarType(&gp, owner, sc);
     SET_POINTER(argv, &gp);
     template_notify(template, s, argc, argv);

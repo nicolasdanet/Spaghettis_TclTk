@@ -196,7 +196,7 @@ static void scalar_behaviorDisplaced(t_gobj *z, t_glist *glist, int dx, int dy)
     t_template *template = template_findbyname(templatesym);
     t_symbol *zz;
     t_atom at[3];
-    t_gpointer gp; gpointer_init (&gp);
+    t_gpointer gp = GPOINTER_INIT;
     int xonset, yonset, xtype, ytype, gotx, goty;
     if (!template)
     {
@@ -230,7 +230,7 @@ static void scalar_behaviorSelected (t_gobj *z, t_glist *owner, int state)
     t_template *tmpl;
     t_symbol *templatesym = x->sc_templateIdentifier;
     t_atom at;
-    t_gpointer gp; gpointer_init(&gp);
+    t_gpointer gp = GPOINTER_INIT;
     gpointer_setAsScalarType(&gp, owner, x);
     SET_POINTER(&at, &gp);
     if (tmpl = template_findbyname(templatesym))
@@ -342,7 +342,7 @@ t_scalar *scalar_new(t_glist *owner, t_symbol *templatesym)
 {
     t_scalar *x;
     t_template *template;
-    t_gpointer gp; gpointer_init(&gp);
+    t_gpointer gp = GPOINTER_INIT;
     template = template_findbyname(templatesym);
     if (!template)
     {

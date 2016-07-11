@@ -130,14 +130,6 @@ void gpointer_unset (t_gpointer *gp)
     gpointer_init (gp);
 }
 
-void gpointer_retain (t_gpointer *gp)
-{
-    if (gp->gp_master) { gpointer_masterIncrement (gp->gp_master); }
-    else {
-        PD_BUG;
-    }
-}
-
 int gpointer_isSet (t_gpointer *gp)
 {
     return (gp->gp_master != NULL);
@@ -164,6 +156,23 @@ int gpointer_isValid (t_gpointer *gp, int nullPointerIsValid)
     }
     
     return 0;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void gpointer_retain (t_gpointer *gp)
+{
+    if (gp->gp_master) { gpointer_masterIncrement (gp->gp_master); }
+    else {
+        PD_BUG;
+    }
+}
+
+void gpointer_rawCopy (t_gpointer *src, t_gpointer *dest)
+{
+    *dest = *src;
 }
 
 // -----------------------------------------------------------------------------------------------------------
