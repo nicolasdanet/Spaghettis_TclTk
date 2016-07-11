@@ -63,6 +63,9 @@ void word_restore (t_word *w, t_template *tmpl, int argc, t_atom *argv)
 
 void word_free (t_word *w, t_template *tmpl)
 {
+    if (!tmpl) { PD_BUG; }
+    else {
+    //
     int i;
     t_dataslot *v = tmpl->tp_vector;
     
@@ -70,6 +73,8 @@ void word_free (t_word *w, t_template *tmpl)
         if (v->ds_type == DATA_ARRAY) { array_free (w[i].w_array); }
         else if (v->ds_type == DATA_TEXT) { buffer_free (w[i].w_buffer); }
         v++;
+    }
+    //
     }
 }
 

@@ -59,13 +59,6 @@ static void scalar_drawJob(t_gobj *client, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void scalar_getbasexy(t_scalar *x, t_float *basex, t_float *basey)
-{
-    t_template *template = template_findbyname(x->sc_templateIdentifier);
-    *basex = template_getfloat(template, sym_x, x->sc_vector, 0);
-    *basey = template_getfloat(template, sym_y, x->sc_vector, 0);
-}
-
 static int template_cancreate (t_template *template)
 {
     int i, type, nitems = template->tp_size;
@@ -80,6 +73,13 @@ static int template_cancreate (t_template *template)
         return (0);
     }
     return (1);
+}
+
+static void scalar_getbasexy(t_scalar *x, t_float *basex, t_float *basey)
+{
+    t_template *template = template_findbyname(x->sc_templateIdentifier);
+    *basex = template_getfloat(template, sym_x, x->sc_vector, 0);
+    *basey = template_getfloat(template, sym_y, x->sc_vector, 0);
 }
 
 static void scalar_drawselectrect(t_scalar *x, t_glist *glist, int state)
@@ -332,50 +332,40 @@ static void scalar_functionProperties(t_gobj *z, struct _glist *owner)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* make a new scalar and add to the glist.  We create a "gp" here which
-    will be used for array items to point back here.  This gp doesn't do
-    reference counting or "validation" updates though; the parent won't go away
-    without the contained arrays going away too.  The "gp" is copied out
-    by value in the word_init() routine so we can throw our copy away. */
-
-t_scalar *scalar_new(t_glist *owner, t_symbol *templatesym)
+t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
 {
-    t_scalar *x;
-    t_template *template;
+    t_scalar *x = NULL;
+    
+    t_template *template = template_findbyname (templateIdentifier);
+
+    if (!template) { PD_BUG; }
+    else {
+    //
+    if (template_cancreate (template)) {
+    //
     t_gpointer gp = GPOINTER_INIT;
-    template = template_findbyname(templatesym);
-    if (!template)
-    {
-        post_error ("scalar: couldn't find template %s", templatesym->s_name);
-        return (0);
+    
+    size_t extraForArrayOfWords = (template->tp_size - 1) * sizeof (t_word);
+    x = (t_scalar *)PD_MEMORY_GET (sizeof (t_scalar) + extraForArrayOfWords); 
+    pd_class (x) = scalar_class;
+    
+    x->sc_templateIdentifier = templateIdentifier;
+    
+    gpointer_setAsScalarType (&gp, owner, x); word_init (x->sc_vector, template, &gp);
+    //
     }
-    if (!template_cancreate(template))
-        return (0);
-    x = (t_scalar *)PD_MEMORY_GET(sizeof(t_scalar) +
-        (template->tp_size - 1) * sizeof(*x->sc_vector));
-    x->sc_g.g_pd = scalar_class;
-    x->sc_templateIdentifier = templatesym;
-    gpointer_setAsScalarType(&gp, owner, x);
-    word_init(x->sc_vector, template, &gp);
-    return (x);
+    //
+    }
+    
+    return x;
 }
 
-static void scalar_free(t_scalar *x)
+static void scalar_free (t_scalar *x)
 {
-    int i;
-    t_dataslot *datatypes, *dt;
-    t_symbol *templatesym = x->sc_templateIdentifier;
-    t_template *template = template_findbyname(templatesym);
-    if (!template)
-    {
-        post_error ("scalar: couldn't find template %s", templatesym->s_name);
-        return;
-    }
-    word_free(x->sc_vector, template);
+    word_free (x->sc_vector, template_findbyname (x->sc_templateIdentifier));
     guistub_destroyWithKey ((void *)x);
-        /* the "size" field in the class is zero, so Pd doesn't try to free
-        us automatically (see pd_free()) */
-    PD_MEMORY_FREE(x);
+
+    PD_MEMORY_FREE (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
