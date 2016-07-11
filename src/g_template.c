@@ -151,8 +151,7 @@ int template_find_field(t_template *x, t_symbol *name, int *p_onset,
     return (0);
 }
 
-t_float template_getfloat(t_template *x, t_symbol *fieldname, t_word *wp,
-    int loud)
+t_float template_getfloat(t_template *x, t_symbol *fieldname, t_word *wp)
 {
     int onset, type;
     t_symbol *arraytype;
@@ -161,10 +160,10 @@ t_float template_getfloat(t_template *x, t_symbol *fieldname, t_word *wp,
     {
         if (type == DATA_FLOAT)
             val = *(t_float *)(((char *)wp) + onset);
-        else if (loud) post_error ("%s.%s: not a number",
+        else if (0 /* loud */) post_error ("%s.%s: not a number",
             x->tp_symbol->s_name, fieldname->s_name);
     }
-    else if (loud) post_error ("%s.%s: no such field",
+    else if (0 /* loud */) post_error ("%s.%s: no such field",
         x->tp_symbol->s_name, fieldname->s_name);
     return (val);
 }
@@ -837,7 +836,7 @@ static t_float fielddesc_getfloat(t_fielddescriptor *f, t_template *template,
     if (f->fd_type == A_FLOAT)
     {
         if (f->fd_var)
-            return (template_getfloat(template, f->fd_un.fd_varsym, wp, loud));
+            return (template_getfloat(template, f->fd_un.fd_varsym, wp));
         else return (f->fd_un.fd_float);
     }
     else
@@ -876,7 +875,7 @@ t_float fielddesc_getcoord(t_fielddescriptor *f, t_template *template,
         if (f->fd_var)
         {
             t_float val = template_getfloat(template,
-                f->fd_un.fd_varsym, wp, loud);
+                f->fd_un.fd_varsym, wp);
             return (fielddesc_cvttocoord(f, val));
         }
         else return (f->fd_un.fd_float);
@@ -2666,7 +2665,7 @@ static int drawnumber_click(t_gobj *z, t_glist *glist,
             drawnumber_motion_array = ap;
             drawnumber_motion_firstkey = 1;
             drawnumber_motion_ycumulative =
-                template_getfloat(template, x->x_fieldname, data, 0);
+                template_getfloat(template, x->x_fieldname, data);
             drawnumber_motion_type = type;
             if (drawnumber_motion_scalar)
                 gpointer_setAsScalarType(&drawnumber_motion_gpointer, 

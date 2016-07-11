@@ -85,11 +85,14 @@ static int scalar_isTemplateExistRecursive (t_template *template)
     return 1;
 }
 
-static void scalar_getbasexy(t_scalar *x, t_float *basex, t_float *basey)
+static t_float scalar_getCoordinateX (t_scalar *x)
 {
-    t_template *template = template_findbyname(x->sc_templateIdentifier);
-    *basex = template_getfloat(template, sym_x, x->sc_vector, 0);
-    *basey = template_getfloat(template, sym_y, x->sc_vector, 0);
+    return template_getfloat (template_findbyname (x->sc_templateIdentifier), sym_x, x->sc_vector);
+}
+
+static t_float scalar_getCoordinateY (t_scalar *x)
+{
+    return template_getfloat (template_findbyname (x->sc_templateIdentifier), sym_y, x->sc_vector);
 }
 
 static void scalar_drawselectrect(t_scalar *x, t_glist *glist, int state)
@@ -134,8 +137,8 @@ int scalar_doclick(t_word *data, t_template *template, t_scalar *sc,
     t_glist *templatecanvas = template_findcanvas(template);
     t_gobj *y;
     t_atom at[2];
-    t_float basex = template_getfloat(template, sym_x, data, 0);
-    t_float basey = template_getfloat(template, sym_y, data, 0);
+    t_float basex = template_getfloat(template, sym_x, data);
+    t_float basey = template_getfloat(template, sym_y, data);
     SET_FLOAT(at, basex + xloc);
     SET_FLOAT(at+1, basey + yloc);
     if (doit)
@@ -164,8 +167,9 @@ static void scalar_behaviorGetRectangle(t_gobj *z, t_glist *owner, int *xp1, int
     t_glist *templatecanvas = template_findcanvas(template);
     int x1 = PD_INT_MAX, x2 = -PD_INT_MAX, y1 = PD_INT_MAX, y2 = -PD_INT_MAX;
     t_gobj *y;
-    t_float basex, basey;
-    scalar_getbasexy(x, &basex, &basey);
+    t_float basex = scalar_getCoordinateX (x);
+    t_float basey = scalar_getCoordinateY (x);
+
         /* if someone deleted the template canvas, we're just a point */
     if (!templatecanvas)
     {
@@ -267,8 +271,8 @@ static void scalar_behaviorVisibilityChanged(t_gobj *z, t_glist *owner, int vis)
     t_template *template = template_findbyname(x->sc_templateIdentifier);
     t_glist *templatecanvas = template_findcanvas(template);
     t_gobj *y;
-    t_float basex, basey;
-    scalar_getbasexy(x, &basex, &basey);
+    t_float basex = scalar_getCoordinateX (x);
+    t_float basey = scalar_getCoordinateY (x);
         /* if we don't know how to draw it, make a small rectangle */
     if (!templatecanvas)
     {
