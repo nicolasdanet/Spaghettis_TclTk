@@ -49,30 +49,40 @@ static t_widgetbehavior scalar_widgetBehavior =
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void scalar_drawJob(t_gobj *client, t_glist *glist)
+static void scalar_drawJob (t_gobj *z, t_glist *glist)
 {
-    scalar_behaviorVisibilityChanged(client, glist, 0);
-    scalar_behaviorVisibilityChanged(client, glist, 1);
+    scalar_behaviorVisibilityChanged (z, glist, 0);
+    scalar_behaviorVisibilityChanged (z, glist, 1);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int template_cancreate (t_template *template)
+static int scalar_isTemplateExistRecursive (t_template *template)
 {
-    int i, type, nitems = template->tp_size;
-    t_dataslot *datatypes = template->tp_vector;
-    t_template *elemtemplate;
-    for (i = 0; i < nitems; i++, datatypes++)
-        if (datatypes->ds_type == DATA_ARRAY &&
-            (!(elemtemplate = template_findbyname(datatypes->ds_templateIdentifier))
-                || !template_cancreate(elemtemplate)))
-    {
-        post_error ("%s: no such template", datatypes->ds_templateIdentifier->s_name);
-        return (0);
+    if (!template) { return 0; }
+    else {
+    //
+    int i, size = template->tp_size;
+    t_dataslot *v = template->tp_vector;
+    
+    for (i = 0; i < size; i++, v++) {
+    //
+    if (v->ds_type == DATA_ARRAY) {
+    //
+    t_template *elementTemplate = template_findbyname (v->ds_templateIdentifier);
+    if (!elementTemplate || !scalar_isTemplateExistRecursive (elementTemplate)) {
+        return 0;
     }
-    return (1);
+    //
+    }
+    //
+    }
+    //
+    }
+    
+    return 1;
 }
 
 static void scalar_getbasexy(t_scalar *x, t_float *basex, t_float *basey)
@@ -338,10 +348,8 @@ t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
     
     t_template *template = template_findbyname (templateIdentifier);
 
-    if (!template) { PD_BUG; }
+    if (!scalar_isTemplateExistRecursive (template)) { PD_BUG; }
     else {
-    //
-    if (template_cancreate (template)) {
     //
     t_gpointer gp = GPOINTER_INIT;
     
@@ -352,8 +360,6 @@ t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
     x->sc_templateIdentifier = templateIdentifier;
     
     gpointer_setAsScalarType (&gp, owner, x); word_init (x->sc_vector, template, &gp);
-    //
-    }
     //
     }
     

@@ -233,7 +233,7 @@ typedef struct _editor {
 // -----------------------------------------------------------------------------------------------------------
 
 struct _glist {  
-    t_object            gl_obj;                 /* MUST be the first. */
+    t_object            gl_obj;                     /* MUST be the first. */
     t_gobj              *gl_graphics;
     t_gmaster           *gl_master;
     t_glist             *gl_parent;
@@ -263,7 +263,7 @@ struct _glist {
     char                gl_isSelected;
     char                gl_isGraphOnParent;
     char                gl_hasWindow;
-    char                gl_hideText;            /* Unused but kept for compatibility. */
+    char                gl_hideText;                /* Unused but kept for compatibility. */
     char                gl_saveScalar;
     char                gl_openedAtLoad;
     };
@@ -303,8 +303,11 @@ typedef struct _dataslot {
     t_symbol            *ds_templateIdentifier;
     } t_dataslot;
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 struct _template {
-    t_pd                tp_pd;            /* MUST be the first. */
+    t_pd                tp_pd;                      /* MUST be the first. */
     int                 tp_size;    
     t_dataslot          *tp_vector;  
     t_gtemplate         *tp_list;  
