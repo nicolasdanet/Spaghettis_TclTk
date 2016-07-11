@@ -369,11 +369,11 @@ void outlet_bang (t_outlet *x)
 void outlet_pointer (t_outlet *x, t_gpointer *gp)
 {
     t_outconnect *oc = NULL;
-    t_gpointer gpointer;
+    t_gpointer gpointer; gpointer_init (&gpointer);
     
     if (++object_stackCount >= OBJECT_MAXIMUM_ITERATION)  { object_errorStackOverflow (x); }
     else {
-        gpointer = *gp;
+        gpointer = *gp;  /* ??? */
         for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_pointer (oc->oc_to, &gpointer); }
     }
     

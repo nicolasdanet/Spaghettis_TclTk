@@ -607,7 +607,7 @@ static void pipe_list(t_pipe *x, t_symbol *s, int ac, t_atom *av)
         {
             gpointer_retain (gp);
             w->w_gpointer = gp2;
-            *gp2++ = *gp++;
+            *gp2++ = *gp++; /* ??? */
         }
         else *w = p->p_atom.a_w;
     }

@@ -94,9 +94,7 @@ void gpointer_init (t_gpointer *gp)
 
 void gpointer_setAsScalarType (t_gpointer *gp, t_glist *glist, t_scalar *scalar)
 {
-    if (gp->gp_master) { gpointer_masterDecrement (gp->gp_master); }
-    
-    gpointer_init (gp);
+    gpointer_unset (gp);
     
     gp->gp_un.gp_scalar     = scalar;
     gp->gp_master           = glist->gl_master;
@@ -107,9 +105,7 @@ void gpointer_setAsScalarType (t_gpointer *gp, t_glist *glist, t_scalar *scalar)
 
 void gpointer_setAsWordType (t_gpointer *gp, t_array *array, t_word *w)
 {
-    if (gp->gp_master) { gpointer_masterDecrement (gp->gp_master); }
-    
-    gpointer_init (gp);
+    gpointer_unset (gp);
     
     gp->gp_un.gp_w          = w;
     gp->gp_master           = array->a_master;
