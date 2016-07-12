@@ -138,6 +138,30 @@ static void scalar_drawSelectRectangle (t_scalar *x, t_glist *glist, int isSelec
     }
 }
 
+static void scalar_notifyClicked (t_scalar *x, 
+    t_glist *glist,
+    t_template *template,
+    t_float positionX,
+    t_float positionY)
+{
+    t_atom t[3];
+    SET_FLOAT (t + 1, positionX);
+    SET_FLOAT (t + 2, positionY);
+    template_notifyforscalar (template, glist, x, sym_click, 3, t);
+}
+    
+static void scalar_notifyDisplaced (t_scalar *x, 
+    t_glist *glist,
+    t_template *template,
+    t_float deltaX,
+    t_float deltaY)
+{
+    t_atom t[3];
+    SET_FLOAT (t + 1, deltaX);
+    SET_FLOAT (t + 2, deltaY);
+    template_notifyforscalar (template, glist, x, sym_displace, 3, t);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -174,18 +198,12 @@ int scalar_performClick (t_word *w,
     t_float baseY = template_getfloat (template, sym_y, w);
     t_gobj *y = NULL;
         
-    if (clicked) {
-    //
-    t_atom t[2];
-    SET_FLOAT (t + 0, baseX + offsetX);
-    SET_FLOAT (t + 1, baseY + offsetY);
-    template_notifyforscalar (template, glist, scalar, sym_click, 2, t);
-    //
-    }
+    if (clicked) { scalar_notifyClicked (scalar, glist, template, baseX + offsetX, baseY + offsetY); }
             
     for (y = view->gl_graphics; y; y = y->g_next) {
     //
     t_parentwidgetbehavior *behavior = class_getParentWidget (pd_class (y));
+    
     if (behavior) { 
         int k = (*behavior->w_fnParentClicked) (y, 
                     glist,
@@ -226,6 +244,8 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
     int y2 = 0;
     
     t_template *template = template_findbyname (x->sc_templateIdentifier);
+    
+    PD_ASSERT (template);
     
     t_glist *view = template_findcanvas (template);
     t_float baseX = scalar_getCoordinateX (x);
@@ -281,39 +301,36 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
     *d = y2; 
 }
 
-static void scalar_behaviorDisplaced(t_gobj *z, t_glist *glist, int dx, int dy)
+static void scalar_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
 {
     t_scalar *x = cast_scalar (z);
-    t_symbol *templatesym = x->sc_templateIdentifier;
-    t_template *template = template_findbyname(templatesym);
-    t_symbol *zz;
-    t_atom at[3];
-    t_gpointer gp = GPOINTER_INIT;
-    int xonset, yonset, xtype, ytype, gotx, goty;
-    if (!template)
-    {
-        post_error ("scalar: couldn't find template %s", templatesym->s_name);
-        return;
+    
+    t_template *template = template_findbyname (x->sc_templateIdentifier);
+    
+    if (!template) { PD_BUG; }
+    else {
+    //
+    int onsetX, onsetY, typeX, typeY;
+    t_symbol *s = NULL;
+        
+    int hasFieldX = template_find_field (template, sym_x, &onsetX, &typeX, &s);
+    int hasFieldY = template_find_field (template, sym_y, &onsetY, &typeY, &s);
+        
+    if (hasFieldX && (typeX != DATA_FLOAT)) { hasFieldX = 0; }
+    if (hasFieldY && (typeY != DATA_FLOAT)) { hasFieldY = 0; }
+        
+    if (hasFieldX) {
+        *(t_float *)(((char *)(x->sc_vector)) + onsetX) += canvas_deltaPositionToValueX (glist, deltaX);
     }
-    gotx = template_find_field(template, sym_x, &xonset, &xtype, &zz);
-    if (gotx && (xtype != DATA_FLOAT))
-        gotx = 0;
-    goty = template_find_field(template, sym_y, &yonset, &ytype, &zz);
-    if (goty && (ytype != DATA_FLOAT))
-        goty = 0;
-    if (gotx)
-        *(t_float *)(((char *)(x->sc_vector)) + xonset) += canvas_deltaPositionToValueX (glist, dx);
-            // dx * (canvas_positionToValueX(glist, 1) - canvas_positionToValueX(glist, 0));
-    if (goty)
-        *(t_float *)(((char *)(x->sc_vector)) + yonset) += canvas_deltaPositionToValueY (glist, dy);
-            // dy * (canvas_positionToValueY(glist, 1) - canvas_positionToValueY(glist, 0));
-    gpointer_init(&gp);
-    gpointer_setAsScalarType(&gp, glist, x);
-    SET_POINTER(&at[0], &gp);
-    SET_FLOAT(&at[1], (t_float)dx);
-    SET_FLOAT(&at[2], (t_float)dy);
-    template_notify(template, sym_displace, 2, at);
-    scalar_redraw(x, glist);
+    
+    if (hasFieldY) {
+        *(t_float *)(((char *)(x->sc_vector)) + onsetY) += canvas_deltaPositionToValueY (glist, deltaY);
+    }
+    
+    scalar_notifyDisplaced (x, glist, template, (t_float)deltaX, (t_float)deltaY);
+    scalar_redraw (x, glist);
+    //
+    }
 }
 
 static void scalar_behaviorSelected (t_gobj *z, t_glist *owner, int state)
