@@ -369,7 +369,8 @@ void        sys_vGui                                    (char *format, ...);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        guistub_new                                 (t_pd *owner, void *key, const char *cmd);
+t_error     guistub_new                                 (t_pd *owner, void *key, const char *cmd);
+void        guistub_add                                 (const char *cmd);
 void        guistub_destroyWithKey                      (void *key);
 
 // -----------------------------------------------------------------------------------------------------------

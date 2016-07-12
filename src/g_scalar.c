@@ -24,7 +24,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define SCALAR_WRONG_SIZE               5
+#define SCALAR_WRONG_SIZE               20
 #define SCALAR_WRONG_COLOR              0xdddddd        /* Grey. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -470,37 +470,45 @@ static int scalar_behaviorClicked (t_gobj *z,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void scalar_functionSave(t_gobj *z, t_buffer *b)
+static void scalar_functionSave (t_gobj *z, t_buffer *b)
 {
     t_scalar *x = cast_scalar (z);
-    t_buffer *b2 = buffer_new();
-    t_atom a, *argv;
-    int i, argc;
-    canvas_writescalar(x->sc_templateIdentifier, x->sc_vector, b2, 0);
-    buffer_vAppend(b, "ss", sym___hash__X, sym_scalar);
-    buffer_serialize(b, b2);
-    buffer_appendSemicolon(b);
-    buffer_free(b2);
+    t_buffer *t = buffer_new();
+   
+    canvas_writescalar (x->sc_templateIdentifier, x->sc_vector, t, 0);
+    
+    buffer_vAppend (b, "ss", sym___hash__X, sym_scalar);
+    buffer_serialize (b, t);
+    buffer_appendSemicolon (b);
+    
+    buffer_free (t);
 }
 
-static void scalar_functionProperties(t_gobj *z, struct _glist *owner)
+static void scalar_functionProperties (t_gobj *z, t_glist *glist)
 {
     t_scalar *x = cast_scalar (z);
-    char *buf, buf2[80];
-    int bufsize;
-    t_buffer *b;
-    canvas_deselectAll(owner);
-    canvas_selectObject(owner, z);
-    b = glist_writetobinbuf(owner, 0);
-    buffer_toStringUnzeroed(b, &buf, &bufsize);
-    buffer_free(b);
-    buf = PD_MEMORY_RESIZE(buf, bufsize, bufsize+1);
-    buf[bufsize] = 0;
-    sprintf(buf2, "::ui_data::show %%s {");
-    guistub_new((t_pd *)owner, x, buf2);
-    sys_gui(buf);
-    sys_gui("}\n");
-    PD_MEMORY_FREE(buf);
+    
+    char cmd[PD_STRING] = { 0 };
+    t_error err = PD_ERROR_NONE;
+    
+    canvas_deselectAll (glist);
+    canvas_selectObject (glist, z);
+
+    err = string_sprintf (cmd, PD_STRING, "::ui_data::show %%s {");
+    
+    if (!err && !(err = guistub_new (cast_pd (glist), (void *)x, cmd))) {
+
+        int n; char *s = NULL;
+        t_buffer *t = glist_writetobinbuf (glist, 0);
+        
+        buffer_toString (t, &s, &n);
+        guistub_add (s);
+        guistub_add ("}\n");
+        
+        buffer_free (t);
+        PD_MEMORY_FREE (s);
+
+    } else { PD_BUG; }
 }
 
 // -----------------------------------------------------------------------------------------------------------

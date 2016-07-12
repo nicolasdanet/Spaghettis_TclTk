@@ -112,7 +112,7 @@ static void guistub_signoff (t_guistub *x)
 
 /* < http://stackoverflow.com/questions/1860159/how-to-escape-the-sign-in-cs-printf > */
 
-void guistub_new (t_pd *owner, void *key, const char *cmd)
+t_error guistub_new (t_pd *owner, void *key, const char *cmd)
 {
     t_symbol *s  = NULL;
     t_guistub *x = NULL;
@@ -137,11 +137,12 @@ void guistub_new (t_pd *owner, void *key, const char *cmd)
         
     {
     //
+    t_error err = PD_ERROR_NONE;
+    
     char *afterFirstSubstitution = strchr (cmd, '%') + 2;
 
-    if (afterFirstSubstitution == NULL) { PD_BUG; }
+    if (afterFirstSubstitution == NULL) { PD_BUG; err = PD_ERROR; }
     else {
-        t_error err = PD_ERROR_NONE;
         char t[PD_STRING] = { 0 };
         char m[GUISTUB_STRING] = { 0 };
             
@@ -153,8 +154,15 @@ void guistub_new (t_pd *owner, void *key, const char *cmd)
         
         sys_gui (m); 
     }
+    
+    return err;
     //
     }
+}
+
+void guistub_add (const char *cmd)
+{
+    sys_gui (cmd);
 }
 
 static void guistub_free (t_guistub *x)

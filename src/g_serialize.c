@@ -289,6 +289,7 @@ void canvas_merge (t_glist *x, t_symbol *filename, t_symbol *format)
     we either copy the data from the new scalar to the old one in place
     (if their templates match) or else delete the old scalar and put the new
     thing in its place on the list. */
+    
 void canvas_dataproperties(t_glist *x, t_scalar *sc, t_buffer *b)
 {
     int ntotal, nnew, scindex;
