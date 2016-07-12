@@ -216,47 +216,69 @@ int scalar_performClick (t_word *w,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void scalar_behaviorGetRectangle(t_gobj *z, t_glist *owner, int *xp1, int *yp1, int *xp2, int *yp2)
+static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
 {
     t_scalar *x = cast_scalar (z);
-    t_template *template = template_findbyname(x->sc_templateIdentifier);
-    t_glist *templatecanvas = template_findcanvas(template);
-    int x1 = PD_INT_MAX, x2 = -PD_INT_MAX, y1 = PD_INT_MAX, y2 = -PD_INT_MAX;
-    t_gobj *y;
-    t_float basex = scalar_getCoordinateX (x);
-    t_float basey = scalar_getCoordinateY (x);
+    
+    int x1 = 0;
+    int y1 = 0;
+    int x2 = 0;
+    int y2 = 0;
+    
+    t_template *template = template_findbyname (x->sc_templateIdentifier);
+    
+    t_glist *view = template_findcanvas (template);
+    t_float baseX = scalar_getCoordinateX (x);
+    t_float baseY = scalar_getCoordinateY (x);
 
-        /* if someone deleted the template canvas, we're just a point */
-    if (!templatecanvas)
-    {
-        x1 = x2 = canvas_valueToPositionX(owner, basex);
-        y1 = y2 = canvas_valueToPositionY(owner, basey);
-    }
-    else
-    {
-        x1 = y1 = PD_INT_MAX;
-        x2 = y2 = -PD_INT_MAX;
-        for (y = templatecanvas->gl_graphics; y; y = y->g_next)
-        {
-            t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
-            int nx1, ny1, nx2, ny2;
-            if (!wb) continue;
-            (*wb->w_fnParentGetRectangle)(y, owner,
-                x->sc_vector, template, basex, basey,
-                &nx1, &ny1, &nx2, &ny2);
-            if (nx1 < x1) x1 = nx1;
-            if (ny1 < y1) y1 = ny1;
-            if (nx2 > x2) x2 = nx2;
-            if (ny2 > y2) y2 = ny2;
+    if (!view) {
+    
+        PD_ASSERT (!template);
+        
+        x1 = x2 = canvas_valueToPositionX (glist, baseX);
+        y1 = y2 = canvas_valueToPositionY (glist, baseY);
+        
+    } else {
+    
+        t_gobj *y = NULL;
+        
+        x1 += PD_INT_MAX;
+        y1 += PD_INT_MAX;
+        x2 -= PD_INT_MAX;
+        y2 -= PD_INT_MAX;
+        
+        for (y = view->gl_graphics; y; y = y->g_next) {
+        //
+        t_parentwidgetbehavior *behavior = class_getParentWidget (pd_class (y));
+        
+        if (behavior) {
+        //
+        int e, f, g, h;
+        
+        (*behavior->w_fnParentGetRectangle) (y,
+            glist,
+            x->sc_vector,
+            template,
+            baseX,
+            baseY,
+            &e,
+            &f,
+            &g,
+            &h);
+            
+        x1 = PD_MIN (x1, e); y1 = PD_MIN (y1, f); x2 = PD_MAX (x2, g); y2 = PD_MAX (y2, h);
+        //
         }
-        if (x2 < x1 || y2 < y1)
-            x1 = y1 = x2 = y2 = 0;
+        //
+        }
+        
+        if (x2 < x1 || y2 < y1) { x1 = y1 = x2 = y2 = 0; PD_BUG; }
     }
-    /* post("scalar x1 %d y1 %d x2 %d y2 %d", x1, y1, x2, y2); */
-    *xp1 = x1;
-    *yp1 = y1;
-    *xp2 = x2;
-    *yp2 = y2; 
+
+    *a = x1;
+    *b = y1;
+    *c = x2;
+    *d = y2; 
 }
 
 static void scalar_behaviorDisplaced(t_gobj *z, t_glist *glist, int dx, int dy)
@@ -310,15 +332,12 @@ static void scalar_behaviorSelected (t_gobj *z, t_glist *owner, int state)
     scalar_drawSelectRectangle(x, owner, state);
 }
 
-static void scalar_behaviorActivated(t_gobj *z, t_glist *owner, int state)
+static void scalar_behaviorActivated (t_gobj *z, t_glist *glist, int isActivated)
 {
-    /* post("scalar_behaviorActivated %d", state); */
-    /* later */
 }
 
-static void scalar_behaviorDeleted(t_gobj *z, t_glist *glist)
+static void scalar_behaviorDeleted (t_gobj *z, t_glist *glist)
 {
-    /* nothing to do */
 }
 
 static void scalar_behaviorVisibilityChanged(t_gobj *z, t_glist *owner, int vis)
