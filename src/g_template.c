@@ -465,7 +465,7 @@ t_glist *template_findcanvas(t_template *template)
     /* return ((t_glist *)pd_findByClass(template->tp_symbol, canvas_class)); */
 }
 
-void template_notify(t_template *template, t_symbol *s, int argc, t_atom *argv)
+static void template_notify(t_template *template, t_symbol *s, int argc, t_atom *argv)
 {
     if (template->tp_list)
         outlet_anything(template->tp_list->x_obj.te_outlet, s, argc, argv);

@@ -24,7 +24,14 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_class *scalar_class;                  /* Shared. */
+#define SCALAR_WRONG_SIZE               5
+#define SCALAR_WRONG_COLOR              0xdddddd        /* Grey. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_class *scalar_class;                                  /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -41,7 +48,7 @@ static int  scalar_behaviorClicked              (t_gobj *, t_glist *, int, int, 
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_widgetbehavior scalar_widgetBehavior =
+static t_widgetbehavior scalar_widgetBehavior =         /* Shared. */
     {
         scalar_behaviorGetRectangle,
         scalar_behaviorDisplaced,
@@ -144,7 +151,7 @@ static void scalar_notifyClicked (t_scalar *x,
     t_float positionX,
     t_float positionY)
 {
-    t_atom t[3];
+    t_atom t[3];                                    /* First atom filled by function next. */
     SET_FLOAT (t + 1, positionX);
     SET_FLOAT (t + 2, positionY);
     template_notifyforscalar (template, glist, x, sym_click, 3, t);
@@ -156,10 +163,23 @@ static void scalar_notifyDisplaced (t_scalar *x,
     t_float deltaX,
     t_float deltaY)
 {
-    t_atom t[3];
+    t_atom t[3];                                    /* First atom filled by function next. */
     SET_FLOAT (t + 1, deltaX);
     SET_FLOAT (t + 2, deltaY);
     template_notifyforscalar (template, glist, x, sym_displace, 3, t);
+}
+
+static void scalar_notifySelected (t_scalar *x, 
+    t_glist *glist,
+    t_template *template,
+    int isSelected)
+{
+    t_atom t;                                       /* Atom filled by function next. */
+    
+    if (isSelected) { template_notifyforscalar (template, glist, x, sym_select, 1, &t); } 
+    else {
+        template_notifyforscalar (template, glist, x, sym_deselect, 1, &t);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -194,6 +214,9 @@ int scalar_performClick (t_word *w,
     int clicked)
 {
     t_glist *view = template_findcanvas (template);
+    
+    if (view) {
+    //
     t_float baseX = template_getfloat (template, sym_x, w);
     t_float baseY = template_getfloat (template, sym_y, w);
     t_gobj *y = NULL;
@@ -226,6 +249,8 @@ int scalar_performClick (t_word *w,
     }
     //
     }
+    //
+    }
     
     return 0;
 }
@@ -253,10 +278,10 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
 
     if (!view) {
     
-        PD_ASSERT (!template);
-        
-        x1 = x2 = canvas_valueToPositionX (glist, baseX);
-        y1 = y2 = canvas_valueToPositionY (glist, baseY);
+        x1 = canvas_valueToPositionX (glist, baseX);
+        y1 = canvas_valueToPositionY (glist, baseY);
+        x2 = x1 + SCALAR_WRONG_SIZE;
+        y2 = y1 + SCALAR_WRONG_SIZE;
         
     } else {
     
@@ -333,20 +358,17 @@ static void scalar_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int
     }
 }
 
-static void scalar_behaviorSelected (t_gobj *z, t_glist *owner, int state)
+static void scalar_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
 {
     t_scalar *x = cast_scalar (z);
-    t_template *tmpl;
-    t_symbol *templatesym = x->sc_templateIdentifier;
-    t_atom at;
-    t_gpointer gp = GPOINTER_INIT;
-    gpointer_setAsScalarType(&gp, owner, x);
-    SET_POINTER(&at, &gp);
-    if (tmpl = template_findbyname(templatesym))
-        template_notify(tmpl, (state ? sym_select : sym_deselect),
-            1, &at);
-    gpointer_unset(&gp);
-    scalar_drawSelectRectangle(x, owner, state);
+    
+    t_template *template = template_findbyname (x->sc_templateIdentifier);
+    
+    if (!template) { PD_BUG; }
+    else {
+        scalar_notifySelected (x, glist, template, isSelected);
+        scalar_drawSelectRectangle (x, glist, isSelected);
+    }
 }
 
 static void scalar_behaviorActivated (t_gobj *z, t_glist *glist, int isActivated)
@@ -357,40 +379,63 @@ static void scalar_behaviorDeleted (t_gobj *z, t_glist *glist)
 {
 }
 
-static void scalar_behaviorVisibilityChanged(t_gobj *z, t_glist *owner, int vis)
+static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
 {
     t_scalar *x = cast_scalar (z);
-    t_template *template = template_findbyname(x->sc_templateIdentifier);
-    t_glist *templatecanvas = template_findcanvas(template);
-    t_gobj *y;
-    t_float basex = scalar_getCoordinateX (x);
-    t_float basey = scalar_getCoordinateY (x);
-        /* if we don't know how to draw it, make a small rectangle */
-    if (!templatecanvas)
-    {
-        if (vis)
-        {
-            int x1 = canvas_valueToPositionX(owner, basex);
-            int y1 = canvas_valueToPositionY(owner, basey);
-            sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags scalar%lx\n",
-                canvas_getView(owner), x1-1, y1-1, x1+1, y1+1, x);
-        }
-        else sys_vGui(".x%lx.c delete scalar%lx\n", canvas_getView(owner), x);
-        return;
-    }
+    
+    t_template *template = template_findbyname (x->sc_templateIdentifier);
+    
+    PD_ASSERT (template);
+    
+    t_glist *view = template_findcanvas (template);
+    t_float baseX = scalar_getCoordinateX (x);
+    t_float baseY = scalar_getCoordinateY (x);
 
-    for (y = templatecanvas->gl_graphics; y; y = y->g_next)
-    {
-        t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
-        if (!wb) continue;
-        (*wb->w_fnParentVisibilityChanged)(y, owner, x->sc_vector, template, basex, basey, vis);
+    if (!view) {
+        
+        if (isVisible) {
+        
+            int a = canvas_valueToPositionX (glist, baseX);
+            int b = canvas_valueToPositionY (glist, baseY);
+            
+            sys_vGui (".x%lx.c create rectangle %d %d %d %d"
+                            " -outline #%06x"
+                            " -tags SCALAR%lx\n",
+                            canvas_getView (glist),
+                            a,
+                            b,
+                            a + SCALAR_WRONG_SIZE,
+                            b + SCALAR_WRONG_SIZE,
+                            SCALAR_WRONG_COLOR,
+                            x);
+        } else {
+            sys_vGui (".x%lx.c delete SCALAR%lx\n", canvas_getView (glist), x);
+        }
+        
+    } else {
+    
+        t_gobj *y = NULL;
+        
+        for (y = view->gl_graphics; y; y = y->g_next) {
+        
+            t_parentwidgetbehavior *behavior = class_getParentWidget (pd_class (y));
+            
+            if (behavior) {
+                (*behavior->w_fnParentVisibilityChanged) (y, 
+                    glist,
+                    x->sc_vector,
+                    template,
+                    baseX,
+                    baseY,
+                    isVisible);
+            }
+        }
     }
-    if (canvas_isObjectSelected(owner, &x->sc_g))
-    {
-        scalar_drawSelectRectangle(x, owner, 0);
-        scalar_drawSelectRectangle(x, owner, 1);
+    
+    if (canvas_isObjectSelected (glist, cast_gobj (x))) {
+        scalar_drawSelectRectangle (x, glist, 0);
+        scalar_drawSelectRectangle (x, glist, 1);
     }
-    interface_guiQueueRemove(x);
 }
 
 static int scalar_behaviorClicked (t_gobj *z,

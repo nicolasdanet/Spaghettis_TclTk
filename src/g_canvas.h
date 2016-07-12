@@ -1039,7 +1039,6 @@ void         template_setsymbol     (t_template *x, t_symbol *fieldname, t_word 
 t_template   *gtemplate_get         (t_gtemplate *x);
 t_template   *template_findbyname   (t_symbol *s);
 t_glist      *template_findcanvas   (t_template *tmpl);
-void         template_notify        (t_template *tmpl, t_symbol *s, int argc, t_atom *argv);
 void         template_setfloat      (t_template *x, t_symbol *fieldname, t_word *wp, t_float f, int loud);
 t_symbol     *template_getsymbol    (t_template *x, t_symbol *fieldname, t_word *wp, int loud);
 void         template_setsymbol     (t_template *x, t_symbol *fieldname, t_word *wp, t_symbol *s, int loud);
