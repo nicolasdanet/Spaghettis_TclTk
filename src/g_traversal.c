@@ -29,7 +29,7 @@ sublist - get a pointer into a list which is an element of another scalar
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "g_canvas.h"
+#include "g_graphics.h"
 
 extern t_class *scalar_class;
 extern t_class *canvas_class;
@@ -1112,7 +1112,7 @@ static void append_float(t_append *x, t_float f)
     if (canvas_isMapped(canvas_getView(glist)))
         gobj_visibilityChanged(&sc->sc_g, glist, 1);
     /*  scalar_redraw(sc, glist);  ... have to do 'vis' instead here because
-    redraw assumes we're already visible??? ... */
+    redraw assumes we're already visible... */
 
     outlet_pointer(x->x_obj.te_outlet, gp);
 }

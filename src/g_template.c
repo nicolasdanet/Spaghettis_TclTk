@@ -17,7 +17,7 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"    /* for font_getHostFontSize */
-#include "g_canvas.h"
+#include "g_graphics.h"
 
 extern t_class *garray_class;
 extern t_class *scalar_class;
@@ -58,7 +58,7 @@ static t_class *gtemplate_class;
 static t_class *template_class;
 
 /* there's a pre-defined "float" template.  LATER should we bind this
-to a symbol such as "pd-float"??? */
+to a symbol such as "pd-float" */
 
     /* return true if two dataslot definitions match */
 static int dataslot_matches(t_dataslot *ds1, t_dataslot *ds2,
@@ -289,6 +289,7 @@ static t_scalar *template_conformscalar(t_template *tfrom, t_template *tto,
             elements will still belong to old template. */
         word_init(x->sc_vector, tto, &gp);
 
+        // gpointer_unset?
         template_conformwords(tfrom, tto, conformaction,
             scfrom->sc_vector, x->sc_vector);
             
@@ -1477,7 +1478,7 @@ static int plot_readownertemplate(t_plot *x,
 
     /* get everything else you could possibly need about a plot,
     either for plot's own purposes or for plotting a "garray" */
-int array_getfields(t_symbol *elemtemplatesym,
+static int array_getfields(t_symbol *elemtemplatesym,
     t_glist **elemtemplatecanvasp,
     t_template **elemtemplatep, int *elemsizep,
     t_fielddescriptor *xfielddesc, t_fielddescriptor *yfielddesc, t_fielddescriptor *wfielddesc, 

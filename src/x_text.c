@@ -9,7 +9,7 @@ moment it also defines "text" but it may later be better to split this off. */
 #include "m_core.h"
 #include "m_macros.h"
 #include "m_alloca.h"
-#include "g_canvas.h"    /* just for canvas_getFontSize, bother */
+#include "g_graphics.h"    /* just for canvas_getFontSize, bother */
 #include "s_system.h"    /* just for font_getHostFontSize, phooey */
 #include <string.h>
 #include <stdio.h>
@@ -258,7 +258,7 @@ static void *text_define_new(t_symbol *s, int argc, t_atom *argv)
     }
     textbuf_init(&x->x_textbuf);
         /* set up a scalar and a pointer to it that we can output */
-    x->x_scalar = scalar_new(canvas_getCurrent(), sym_pd__dash__text); /* ??? */
+    x->x_scalar = scalar_new(canvas_getCurrent(), sym_pd__dash__text);
     buffer_free(x->x_scalar->sc_vector[2].w_buffer); 
     x->x_scalar->sc_vector[2].w_buffer = x->x_binbuf;
     x->x_out = outlet_new(&x->x_ob, &s_pointer);
@@ -721,7 +721,7 @@ static void text_set_list(t_text_set *x,
     for (i = 0; i < argc; i++)
     {
         if (argv[i].a_type == A_POINTER)
-            SET_SYMBOL(&vec[start+i], sym___parenthesis__pointer__parenthesis__); /* ??? */
+            SET_SYMBOL(&vec[start+i], sym___parenthesis__pointer__parenthesis__);
         else vec[start+i] = argv[i];
     }
     text_client_senditup(&x->x_tc);
@@ -1787,7 +1787,7 @@ static void text_template_init( void)
         return;
     b = buffer_new();
     
-    canvas_setActiveFileNameAndDirectory (sym__text_template, sym___dot__); /* ??? */
+    canvas_setActiveFileNameAndDirectory (sym__text_template, sym___dot__);
     buffer_withStringUnzeroed(b, text_templatefile, strlen(text_templatefile));
     buffer_eval(b, &pd_canvasMaker, 0, 0);
     pd_vMessage(s__X.s_thing, sym__pop, "i", 0);

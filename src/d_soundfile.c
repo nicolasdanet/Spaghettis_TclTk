@@ -29,7 +29,7 @@ objects use Posix-like threads.  */
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
-#include "g_canvas.h"
+#include "g_graphics.h"
 
 extern t_class *garray_class;
 
@@ -2245,7 +2245,7 @@ static void *writesf_child_main(void *zz)
 #ifdef DEBUG_SOUNDFILE
                 {
                     char s[1000];
-                    sprintf(s, "bug??? ditched %d\n", itemswritten);
+                    sprintf(s, "bug ditched %d\n", itemswritten);
                     pute(s);
                 }
 #endif  

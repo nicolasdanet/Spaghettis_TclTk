@@ -305,7 +305,7 @@
 		378971BF1C4F716700263434 /* g_garray.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_garray.c; path = src/g_garray.c; sourceTree = "<group>"; };
 		378971C01C4F716700263434 /* g_bang.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_bang.c; path = src/g_bang.c; sourceTree = "<group>"; };
 		378971C11C4F716700263434 /* g_canvas.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_canvas.c; path = src/g_canvas.c; sourceTree = "<group>"; };
-		378971C21C4F716700263434 /* g_canvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_canvas.h; path = src/g_canvas.h; sourceTree = "<group>"; };
+		378971C21C4F716700263434 /* g_graphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_graphics.h; path = src/g_graphics.h; sourceTree = "<group>"; };
 		378971C31C4F716700263434 /* g_editor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_editor.c; path = src/g_editor.c; sourceTree = "<group>"; };
 		378971C41C4F716700263434 /* g_graph.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_graph.c; path = src/g_graph.c; sourceTree = "<group>"; };
 		378971C71C4F716700263434 /* g_slider.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_slider.c; path = src/g_slider.c; sourceTree = "<group>"; };
@@ -638,6 +638,7 @@
 		3722C5351C4F924900D2BF6F /* Graphics */ = {
 			isa = PBXGroup;
 			children = (
+				378971C21C4F716700263434 /* g_graphics.h */,
 				379AE2E01C9E7B4600250ADD /* Canvas */,
 				379AE2DA1C9E7A9700250ADD /* IEM */,
 				379AE2E41C9E7B8200250ADD /* Scalar */,
@@ -769,7 +770,6 @@
 		379AE2E01C9E7B4600250ADD /* Canvas */ = {
 			isa = PBXGroup;
 			children = (
-				378971C21C4F716700263434 /* g_canvas.h */,
 				37DFBC5C1D2937BA00FCDEEE /* g_guistub.c */,
 				37DFBC5B1D2937BA00FCDEEE /* g_guiconnect.c */,
 				370939441CC92BF300827F75 /* g_base.c */,
@@ -798,8 +798,8 @@
 			children = (
 				37ED6A051D2CFD00007EC73D /* g_word.c */,
 				378971CF1C4F716700263434 /* g_scalar.c */,
-				37ED6A501D2D038B007EC73D /* g_gpointer.c */,
 				37ED6A041D2CFD00007EC73D /* g_array.c */,
+				37ED6A501D2D038B007EC73D /* g_gpointer.c */,
 				378971D01C4F716700263434 /* g_template.c */,
 				378971D31C4F716700263434 /* g_traversal.c */,
 				371430B01D0D46BC00E68D11 /* g_paint.c */,

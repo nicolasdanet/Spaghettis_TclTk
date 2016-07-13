@@ -13,7 +13,7 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
-#include "g_canvas.h"
+#include "g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -534,10 +534,7 @@ t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
     
     x->sc_templateIdentifier = templateIdentifier;
     
-    /* Note that ownership of the gpointer is grabbed in later call. */
-    /* Thus it doesn't need to be released at the end of the function. */
-    
-    gpointer_setAsScalarType (&gp, owner, x); word_init (x->sc_vector, template, &gp);
+    gpointer_setAsScalarType (&gp, owner, x); word_init (x->sc_vector, template, &gp);  /* ??? */
     //
     }
     

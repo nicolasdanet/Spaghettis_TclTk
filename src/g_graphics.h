@@ -9,8 +9,8 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#ifndef __g_canvas_h_
-#define __g_canvas_h_
+#ifndef __g_graphics_h_
+#define __g_graphics_h_
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -864,7 +864,33 @@ int             scalar_performClick                     (t_word *w,
                                                             int alt,
                                                             int dbl,
                                                             int clicked);
-    
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_array         *array_new                              (t_symbol *templateIdentifier, t_gpointer *parent);
+
+void            array_free                              (t_array *x);
+void            array_resize                            (t_array *x, int n);
+void            array_redraw                            (t_array *a, t_glist *glist);
+void            array_resize_and_redraw                 (t_array *array, t_glist *glist, int n);
+void            array_getcoordinate                     (t_glist *glist,
+                                                            char *elem,
+                                                            int xonset,
+                                                            int yonset,
+                                                            int wonset,
+                                                            int indx,
+                                                            t_float basex,
+                                                            t_float basey,
+                                                            t_float xinc,
+                                                            t_fielddescriptor *xfielddesc,
+                                                            t_fielddescriptor *yfielddesc,
+                                                            t_fielddescriptor *wfielddesc,
+                                                            t_float *xp,
+                                                            t_float *yp,
+                                                            t_float *wp);
+                                    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -897,12 +923,6 @@ t_glist         *gpointer_getParentGlist                (t_gpointer *gp);
 t_array         *gpointer_getParentArray                (t_gpointer *gp);
 t_word          *gpointer_getData                       (t_gpointer *gp);
 t_symbol        *gpointer_getTemplateIdentifier         (t_gpointer *gp);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_array         *array_new                              (t_symbol *templateIdentifier, t_gpointer *parent);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -983,46 +1003,6 @@ t_glist  *canvas_getglistonsuper        (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void         array_resize               (t_array *x, int n);
-void         array_free                 (t_array *x);
-void         array_redraw               (t_array *a, t_glist *glist);
-void         array_resize_and_redraw    (t_array *array, t_glist *glist, int n);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void array_getcoordinate        (t_glist *glist,
-                                    char *elem,
-                                    int xonset,
-                                    int yonset,
-                                    int wonset,
-                                    int indx,
-                                    t_float basex,
-                                    t_float basey,
-                                    t_float xinc,
-                                    t_fielddescriptor *xfielddesc,
-                                    t_fielddescriptor *yfielddesc,
-                                    t_fielddescriptor *wfielddesc,
-                                    t_float *xp,
-                                    t_float *yp,
-                                    t_float *wp);
-
-int array_getfields             (t_symbol *elemtemplatesym,
-                                    t_glist **elemtemplatecanvasp,
-                                    t_template **elemtemplatep,
-                                    int *elemsizep,
-                                    t_fielddescriptor *xfielddesc,
-                                    t_fielddescriptor *yfielddesc,
-                                    t_fielddescriptor *wfielddesc, 
-                                    int *xonsetp,
-                                    int *yonsetp, 
-                                    int *wonsetp);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 t_template   *template_new          (t_symbol *sym, int argc, t_atom *argv);
 void         template_free          (t_template *x);
 int          template_match         (t_template *x1, t_template *x2);
@@ -1051,4 +1031,4 @@ t_float      fielddesc_cvtfromcoord (t_fielddescriptor *f, t_float coord);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#endif // __g_canvas_h_
+#endif // __g_graphics_h_

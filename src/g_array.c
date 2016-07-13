@@ -12,15 +12,10 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "s_system.h"
-#include "g_canvas.h"
+#include "g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-/* Pure arrays have no a priori graphical capabilities.
-They are instantiated by "garrays" below or can be elements of other
-scalars (g_scalar.c); their graphical behavior is defined accordingly. */
 
 t_array *array_new (t_symbol *templatesym, t_gpointer *parent)
 {
@@ -41,6 +36,23 @@ t_array *array_new (t_symbol *templatesym, t_gpointer *parent)
     word_init((t_word *)(x->a_vector), template, parent);
     return (x);
 }
+
+void array_free(t_array *x)
+{
+    int i;
+    t_template *scalartemplate = template_findbyname(x->a_templateIdentifier);
+    gpointer_masterRelease (x->a_master);
+    for (i = 0; i < x->a_size; i++)
+    {
+        t_word *wp = (t_word *)(x->a_vector + x->a_elementSize * i);
+        word_free(wp, scalartemplate);
+    }
+    PD_MEMORY_FREE(x->a_vector);
+    PD_MEMORY_FREE(x);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 void array_redraw(t_array *a, t_glist *glist)
 {
@@ -125,20 +137,6 @@ void array_resize_and_redraw(t_array *array, t_glist *glist, int n)
         t_scalar *scalar = gpointer_getScalar (&a2->a_gpointer);
         gobj_visibilityChanged (cast_gobj (scalar), glist, 1);
     }
-}
-
-void array_free(t_array *x)
-{
-    int i;
-    t_template *scalartemplate = template_findbyname(x->a_templateIdentifier);
-    gpointer_masterRelease (x->a_master);
-    for (i = 0; i < x->a_size; i++)
-    {
-        t_word *wp = (t_word *)(x->a_vector + x->a_elementSize * i);
-        word_free(wp, scalartemplate);
-    }
-    PD_MEMORY_FREE(x->a_vector);
-    PD_MEMORY_FREE(x);
 }
 
 // -----------------------------------------------------------------------------------------------------------

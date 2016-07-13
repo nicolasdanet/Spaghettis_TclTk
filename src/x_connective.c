@@ -7,7 +7,7 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "g_canvas.h"
+#include "g_graphics.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -153,7 +153,7 @@ static void pdsymbol_anything(t_pdsymbol *x, t_symbol *s, int ac, t_atom *av)
     bang the symbol and if it starts with a symbol, we output that.
     Otherwise it's not clear what we should do so we just go for the
     "anything" method.  LATER figure out if there are other places where
-    empty lists aren't equivalent to "bang"???  Should Pd's message passer
+    empty lists aren't equivalent to "bang"  Should Pd's message passer
     always check and call the more specific method, or should it be the 
     object's responsibility?  Dunno... */
 static void pdsymbol_list(t_pdsymbol *x, t_symbol *s, int ac, t_atom *av)
@@ -1273,7 +1273,7 @@ static void *makefilename_new(t_symbol *s)
 {
     t_makefilename *x = (t_makefilename *)pd_new(makefilename_class);
     if (!s || !*s->s_name)
-        s = sym_file__dot____percent__d;    /* ??? */
+        s = sym_file__dot____percent__d;
     outlet_new(&x->x_obj, &s_symbol);
     x->x_format = s;
     x->x_accept = A_NULL;

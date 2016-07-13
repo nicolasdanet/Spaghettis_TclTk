@@ -11,7 +11,7 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "g_canvas.h"
+#include "g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -373,7 +373,7 @@ void outlet_pointer (t_outlet *x, t_gpointer *gp)
     
     if (++object_stackCount >= OBJECT_MAXIMUM_ITERATION)  { object_errorStackOverflow (x); }
     else {
-        gpointer_rawCopy (gp, &gpointer);   /* Temporary cached copy on the stack. */
+        gpointer_rawCopy (gp, &gpointer);   /* Temporary copy cached on the stack. */
         for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_pointer (oc->oc_to, &gpointer); }
     }
     
