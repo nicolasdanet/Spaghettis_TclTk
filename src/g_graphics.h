@@ -291,7 +291,7 @@ struct _array {
     t_symbol            *a_templateIdentifier;
     t_gmaster           *a_master;
     t_unique            a_uniqueIdentifier;
-    t_gpointer          a_gpointer;
+    t_gpointer          a_parent;
     };
 
 // -----------------------------------------------------------------------------------------------------------

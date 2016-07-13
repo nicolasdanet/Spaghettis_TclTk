@@ -17,38 +17,43 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_array *array_new (t_symbol *templatesym, t_gpointer *parent)
+t_array *array_new (t_symbol *templateIdentifier, t_gpointer *parent)
 {
-    t_array *x = (t_array *)PD_MEMORY_GET(sizeof (*x));
-    t_template *template;
-    t_gpointer *gp;
-    template = template_findbyname(templatesym);
-    x->a_templateIdentifier = templatesym;
-    x->a_size = 1;
-    x->a_elementSize = sizeof(t_word) * template->tp_size;
-    x->a_vector = (char *)PD_MEMORY_GET(x->a_elementSize);
-        /* note here we blithely copy a gpointer instead of "setting" a
-        new one; this gpointer isn't accounted for and needn't be since
-        we'll be deleted before the thing pointed to gets deleted anyway;
-        see array_free. */
-    x->a_gpointer = *parent;
-    x->a_master = gpointer_masterCreateWithArray (x);
-    word_init((t_word *)(x->a_vector), template, parent);
-    return (x);
+    t_array *x = (t_array *)PD_MEMORY_GET (sizeof (t_array));
+    
+    t_template *template = template_findbyname (templateIdentifier);
+
+    PD_ASSERT (template);
+    
+    x->a_size               = 1;
+    x->a_elementSize        = sizeof (t_word) * template->tp_size;
+    x->a_vector             = (char *)PD_MEMORY_GET (x->a_elementSize);
+    x->a_templateIdentifier = templateIdentifier;
+    x->a_master             = gpointer_masterCreateWithArray (x);
+    x->a_uniqueIdentifier   = utils_unique();
+    x->a_parent             = *parent;                                  /* ??? */
+
+    word_init ((t_word *)(x->a_vector), template, parent);
+    
+    return x;
 }
 
-void array_free(t_array *x)
+void array_free (t_array *x)
 {
+    t_template *template = template_findbyname (x->a_templateIdentifier);
     int i;
-    t_template *scalartemplate = template_findbyname(x->a_templateIdentifier);
+        
+    PD_ASSERT (template);
+    
     gpointer_masterRelease (x->a_master);
-    for (i = 0; i < x->a_size; i++)
-    {
-        t_word *wp = (t_word *)(x->a_vector + x->a_elementSize * i);
-        word_free(wp, scalartemplate);
+    
+    for (i = 0; i < x->a_size; i++) {
+        t_word *w = (t_word *)(x->a_vector + (x->a_elementSize * i));
+        word_free (w, template);
     }
-    PD_MEMORY_FREE(x->a_vector);
-    PD_MEMORY_FREE(x);
+    
+    PD_MEMORY_FREE (x->a_vector);
+    PD_MEMORY_FREE (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -56,12 +61,16 @@ void array_free(t_array *x)
 
 void array_redraw(t_array *a, t_glist *glist)
 {
-    while (gpointer_isWord (&a->a_gpointer)) {               /* array_getTop ? */
-        a = gpointer_getParentArray (&a->a_gpointer);
+    while (gpointer_isWord (&a->a_parent)) {               /* array_getTop ? */
+        a = gpointer_getParentArray (&a->a_parent);
     }
     
-    scalar_redraw (gpointer_getScalar (&a->a_gpointer), glist);
+    scalar_redraw (gpointer_getScalar (&a->a_parent), glist);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
     /* routine to get screen coordinates of a point in an array */
 void array_getcoordinate(t_glist *glist,
@@ -115,7 +124,7 @@ void array_resize(t_array *x, int n)
         for (; i--; cp += elemsize)
         {
             t_word *wp = (t_word *)cp;
-            word_init(wp, template, &x->a_gpointer);
+            word_init(wp, template, &x->a_parent);
         }
     }
     x->a_uniqueIdentifier = utils_unique();
@@ -125,16 +134,16 @@ void array_resize_and_redraw(t_array *array, t_glist *glist, int n)
 {
     t_array *a2 = array;
     int vis = canvas_isMapped(glist);
-    while (gpointer_isWord (&a2->a_gpointer)) {              /* array_getTop ? */
-        a2 = gpointer_getParentArray (&a2->a_gpointer);
+    while (gpointer_isWord (&a2->a_parent)) {              /* array_getTop ? */
+        a2 = gpointer_getParentArray (&a2->a_parent);
     }
     if (vis) {
-        t_scalar *scalar = gpointer_getScalar (&a2->a_gpointer);
+        t_scalar *scalar = gpointer_getScalar (&a2->a_parent);
         gobj_visibilityChanged (cast_gobj (scalar), glist, 0);
     }
     array_resize(array, n);
     if (vis) {
-        t_scalar *scalar = gpointer_getScalar (&a2->a_gpointer);
+        t_scalar *scalar = gpointer_getScalar (&a2->a_parent);
         gobj_visibilityChanged (cast_gobj (scalar), glist, 1);
     }
 }

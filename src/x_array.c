@@ -270,9 +270,9 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
             t_array *owner_array = gpointer_getParentArray (&x->tc_gp);
             /* array_getTop ?*/
             while (gpointer_isWord (owner_array)) {
-                owner_array = gpointer_getParentArray (&owner_array->a_gpointer);
+                owner_array = gpointer_getParentArray (&owner_array->a_parent);
             }
-            *glist = gpointer_getParentGlist (&owner_array->a_gpointer);
+            *glist = gpointer_getParentGlist (&owner_array->a_parent);
         }
         return (*(t_array **)(((char *)vec) + onset));
     }

@@ -351,7 +351,7 @@ static void template_conformarray(t_template *tfrom, t_template *tto,
         for (i = 0; i < a->a_size; i++)
         {
             t_word *wp = (t_word *)(newarray + newelemsize * i);
-            word_init(wp, tto, &a->a_gpointer);
+            word_init(wp, tto, &a->a_parent);
             template_conformwords(tfrom, tto, conformaction,
                 (t_word *)(oldarray + oldelemsize * i), wp);
             word_free((t_word *)(oldarray + oldelemsize * i), tfrom);
