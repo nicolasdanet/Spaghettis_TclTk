@@ -883,18 +883,8 @@ static void setsize_float(t_setsize *x, t_float f)
         array we have to search back until we get to a scalar to erase.
         When graphics updates become queueable this may fall apart... */
 
-    if (gpointer_isScalar (gp)) {
-        if (canvas_isMapped (gpointer_getParentGlist (gp))) {
-            t_scalar *scalar = gpointer_getScalar (gp);
-            gobj_visibilityChanged(cast_gobj (scalar), gpointer_getParentGlist (gp), 0); 
-        }
-    } else {
-        if (canvas_isMapped(gpointer_getParentGlist (array_getTopParentArray (gp)))) {
-            t_scalar *scalar = gpointer_getScalar (array_getTopParentArray (gp));
-            gobj_visibilityChanged(cast_gobj (scalar),
-                gpointer_getParentGlist (array_getTopParentArray (gp)), 0); 
-        }
-    }
+    scalar_setVisibility (gp, 0);
+
         /* if shrinking, free the scalars that will disappear */
     if (newsize < nitems)
     {
@@ -920,19 +910,7 @@ static void setsize_float(t_setsize *x, t_float f)
         /* invalidate all gpointers into the array */
     array->a_uniqueIdentifier++;
 
-    /* redraw again. */
-    if (gpointer_isScalar (gp)) {
-        if (canvas_isMapped(gpointer_getParentGlist (gp))) {
-            t_scalar *scalar = gpointer_getScalar (gp);
-            gobj_visibilityChanged(cast_gobj (scalar), gpointer_getParentGlist (gp), 1);  
-        }
-    } else {
-        if (canvas_isMapped(gpointer_getParentGlist (array_getTopParentArray (gp)))) {
-            t_scalar *scalar = gpointer_getScalar (array_getTopParentArray (gp));
-            gobj_visibilityChanged(cast_gobj (scalar),
-                gpointer_getParentGlist (array_getTopParentArray (gp)), 1);  
-        }
-    }
+    scalar_setVisibility (gp, 1);
 }
 
 static void setsize_free(t_setsize *x)

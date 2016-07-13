@@ -209,20 +209,23 @@ void scalar_redrawByPointer (t_gpointer *gp)
     scalar_redraw (scalar, glist);
 }
 
-/*
-    if (gpointer_isScalar (gp)) {
-        if (canvas_isMapped (gpointer_getParentGlist (gp))) {
-            t_scalar *scalar = gpointer_getScalar (gp);
-            gobj_visibilityChanged(cast_gobj (scalar), gpointer_getParentGlist (gp), 0); 
-        }
-    } else {
-        if (canvas_isMapped(gpointer_getParentGlist (array_getTopParentArray (gp)))) {
-            t_scalar *scalar = gpointer_getScalar (array_getTopParentArray (gp));
-            gobj_visibilityChanged(cast_gobj (scalar),
-                gpointer_getParentGlist (array_getTopParentArray (gp)), 0); 
-        }
+void scalar_setVisibility (t_gpointer *gp, int isVisible)
+{
+    t_glist *glist = gpointer_getView (gp);
+    
+    if (canvas_isMapped (glist)) {
+    //
+    t_scalar *scalar = NULL;
+        
+    if (gpointer_isScalar (gp)) { scalar = gpointer_getScalar (gp); }
+    else {
+        scalar = gpointer_getScalar (array_getTopParentArray (gp));
     }
-*/
+    
+    scalar_behaviorVisibilityChanged (cast_gobj (scalar), glist, isVisible); 
+    //
+    }
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

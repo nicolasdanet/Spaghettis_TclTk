@@ -852,6 +852,7 @@ t_scalar        *scalar_new                             (t_glist *owner, t_symbo
 
 void            scalar_redraw                           (t_scalar *x, t_glist *glist);
 void            scalar_redrawByPointer                  (t_gpointer *gp);
+void            scalar_setVisibility                    (t_gpointer *gp, int isVisible);
 
 int             scalar_performClick                     (t_word *w,
                                                             t_template *tmpl,
