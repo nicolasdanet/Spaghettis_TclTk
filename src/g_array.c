@@ -17,6 +17,28 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static t_array *array_getTop (t_array *x)
+{
+    t_array *a = x;
+    
+    PD_ASSERT (a);
+    
+    while (gpointer_isWord (&a->a_parent)) { a = gpointer_getParentArray (&a->a_parent); }
+    
+    return a;
+}
+
+static t_gpointer *array_getTopParent (t_array *x)
+{
+    t_array *a = array_getTop (x);
+    
+    return &a->a_parent;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_array *array_new (t_symbol *templateIdentifier, t_gpointer *parent)
 {
     t_array *x = (t_array *)PD_MEMORY_GET (sizeof (t_array));
@@ -58,14 +80,19 @@ void array_free (t_array *x)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-void array_redraw(t_array *a, t_glist *glist)
+t_gpointer *array_getTopParentArray (t_gpointer *gp)
 {
-    while (gpointer_isWord (&a->a_parent)) {               /* array_getTop ? */
-        a = gpointer_getParentArray (&a->a_parent);
-    }
-    
-    scalar_redraw (gpointer_getScalar (&a->a_parent), glist);
+    return (array_getTopParent (gpointer_getParentArray (gp)));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void array_redraw (t_array *x, t_glist *glist)
+{
+    scalar_redraw (gpointer_getScalar (array_getTopParent (x)), glist);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -132,11 +159,8 @@ void array_resize(t_array *x, int n)
 
 void array_resize_and_redraw(t_array *array, t_glist *glist, int n)
 {
-    t_array *a2 = array;
+    t_array *a2 = array_getTop (array);
     int vis = canvas_isMapped(glist);
-    while (gpointer_isWord (&a2->a_parent)) {              /* array_getTop ? */
-        a2 = gpointer_getParentArray (&a2->a_parent);
-    }
     if (vis) {
         t_scalar *scalar = gpointer_getScalar (&a2->a_parent);
         gobj_visibilityChanged (cast_gobj (scalar), glist, 0);

@@ -309,13 +309,8 @@ static void text_define_topointer(t_text_define *x, t_gpointer *gp, t_symbol *s)
         if (gpointer_isScalar (gp)) {
             scalar_redraw (gpointer_getScalar (gp), gpointer_getParentGlist (gp));  
         } else {
-            t_array *owner_array = gpointer_getParentArray (gp);
-            /* array_getTop ?*/
-            while (gpointer_isWord (owner_array)) {
-                owner_array = gpointer_getParentArray (&owner_array->a_parent);
-            }
-            scalar_redraw(gpointer_getScalar (&owner_array->a_parent),
-                gpointer_getParentGlist (&owner_array->a_parent));  
+            scalar_redraw(gpointer_getScalar (array_getTopParentArray (gp)),
+                gpointer_getParentGlist (array_getTopParentArray (gp)));  
         }
     } 
 }
@@ -483,13 +478,8 @@ static  void text_client_senditup(t_text_client *x)
         if (gpointer_isScalar (&x->tc_gp)) {
             scalar_redraw(gpointer_getScalar (&x->tc_gp), gpointer_getParentGlist (&x->tc_gp));
         } else {
-            t_array *owner_array = gpointer_getParentArray (&x->tc_gp);
-            /* array_getTop ?*/
-            while (gpointer_isWord (owner_array)) {
-                owner_array = gpointer_getParentArray (&owner_array->a_parent);
-            }
-            scalar_redraw(gpointer_getScalar (&owner_array->a_parent),
-                gpointer_getParentGlist (&owner_array->a_parent));  
+            scalar_redraw(gpointer_getScalar (array_getTopParentArray (&x->tc_gp)),
+                gpointer_getParentGlist (array_getTopParentArray (&x->tc_gp)));  
         }
     }
 }

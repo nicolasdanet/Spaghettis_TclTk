@@ -267,12 +267,7 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
         if (gpointer_isScalar (&x->tc_gp)) {
             *glist = gpointer_getParentGlist (&x->tc_gp);
         } else {
-            t_array *owner_array = gpointer_getParentArray (&x->tc_gp);
-            /* array_getTop ?*/
-            while (gpointer_isWord (owner_array)) {
-                owner_array = gpointer_getParentArray (&owner_array->a_parent);
-            }
-            *glist = gpointer_getParentGlist (&owner_array->a_parent);
+            *glist = gpointer_getParentGlist (array_getTopParentArray (&x->tc_gp));
         }
         return (*(t_array **)(((char *)vec) + onset));
     }
