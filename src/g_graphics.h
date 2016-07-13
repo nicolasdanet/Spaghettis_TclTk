@@ -851,6 +851,8 @@ void            word_free                               (t_word *w, t_template *
 t_scalar        *scalar_new                             (t_glist *owner, t_symbol *templateIdentifier);
 
 void            scalar_redraw                           (t_scalar *x, t_glist *glist);
+void            scalar_redrawByPointer                  (t_gpointer *gp);
+
 int             scalar_performClick                     (t_word *w,
                                                             t_template *tmpl,
                                                             t_scalar *scalar,
@@ -922,6 +924,8 @@ t_scalar        *gpointer_getScalar                     (t_gpointer *gp);
 t_word          *gpointer_getWord                       (t_gpointer *gp);
 t_glist         *gpointer_getParentGlist                (t_gpointer *gp);
 t_array         *gpointer_getParentArray                (t_gpointer *gp);
+
+t_glist         *gpointer_getView                       (t_gpointer *gp);
 t_word          *gpointer_getData                       (t_gpointer *gp);
 t_symbol        *gpointer_getTemplateIdentifier         (t_gpointer *gp);
 

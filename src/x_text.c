@@ -306,12 +306,7 @@ static void text_define_topointer(t_text_define *x, t_gpointer *gp, t_symbol *s)
         buffer_reset(b);
         buffer_append(b, buffer_size(x->x_textbuf.b_binbuf),
             buffer_atoms(x->x_textbuf.b_binbuf));
-        if (gpointer_isScalar (gp)) {
-            scalar_redraw (gpointer_getScalar (gp), gpointer_getParentGlist (gp));  
-        } else {
-            scalar_redraw(gpointer_getScalar (array_getTopParentArray (gp)),
-                gpointer_getParentGlist (array_getTopParentArray (gp)));  
-        }
+        scalar_redrawByPointer (gp);
     } 
 }
 
@@ -475,12 +470,7 @@ static  void text_client_senditup(t_text_client *x)
             post_error ("text: stale or empty pointer");
             return;
         }
-        if (gpointer_isScalar (&x->tc_gp)) {
-            scalar_redraw(gpointer_getScalar (&x->tc_gp), gpointer_getParentGlist (&x->tc_gp));
-        } else {
-            scalar_redraw(gpointer_getScalar (array_getTopParentArray (&x->tc_gp)),
-                gpointer_getParentGlist (array_getTopParentArray (&x->tc_gp)));  
-        }
+        scalar_redrawByPointer (&x->tc_gp);
     }
 }
 

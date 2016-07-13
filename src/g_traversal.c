@@ -214,11 +214,8 @@ static void ptrobj_sendwindow(t_ptrobj *x, t_symbol *s, int argc, t_atom *argv)
         post_error ("send-window: empty pointer");
         return;
     }
-    if (gpointer_isScalar (&x->x_gp)) {
-        glist = gpointer_getParentGlist (&x->x_gp);
-    } else {
-        glist = gpointer_getParentGlist (array_getTopParentArray (&x->x_gp));
-    }
+    
+    glist = gpointer_getView (&x->x_gp);
     canvas = (t_pd *)canvas_getView(glist);
     if (argc && argv->a_type == A_SYMBOL)
         pd_message(canvas, argv->a_w.w_symbol, argc-1, argv+1);
@@ -551,12 +548,7 @@ static void set_bang(t_set *x)
             template_setsymbol(template, vp->gv_sym, vec, vp->gv_w.w_symbol, 1);
     else for (i = 0, vp = x->x_variables; i < nitems; i++, vp++)
         template_setfloat(template, vp->gv_sym, vec, vp->gv_w.w_float, 1);
-    if (gpointer_isScalar (gp)) {
-        scalar_redraw(gpointer_getScalar (gp), gpointer_getParentGlist (gp));  
-    } else {
-        scalar_redraw (gpointer_getScalar (array_getTopParentArray (gp)),
-            gpointer_getParentGlist (array_getTopParentArray (gp)));  
-    }
+    scalar_redrawByPointer (gp);
 }
 
 static void set_float(t_set *x, t_float f)

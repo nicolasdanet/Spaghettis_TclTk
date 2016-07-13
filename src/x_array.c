@@ -264,11 +264,8 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
                 x->tc_field->s_name);
             return (0);
         }
-        if (gpointer_isScalar (&x->tc_gp)) {
-            *glist = gpointer_getParentGlist (&x->tc_gp);
-        } else {
-            *glist = gpointer_getParentGlist (array_getTopParentArray (&x->tc_gp));
-        }
+        *glist = gpointer_getView (&x->tc_gp);
+
         return (*(t_array **)(((char *)vec) + onset));
     }
     else return (0);    /* shouldn't happen */

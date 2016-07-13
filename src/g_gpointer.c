@@ -234,6 +234,14 @@ t_word *gpointer_getData (t_gpointer *gp)
     }
 }
 
+t_glist *gpointer_getView (t_gpointer *gp)
+{
+    if (gpointer_isScalar (gp)) { return gpointer_getParentGlist (gp); }
+    else {
+        PD_ASSERT (gpointer_isWord (gp)); return (gpointer_getParentGlist (array_getTopParentArray (gp)));
+    }
+}
+
 t_symbol *gpointer_getTemplateIdentifier (t_gpointer *gp)
 {
     t_symbol *s = NULL;
