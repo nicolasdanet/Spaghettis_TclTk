@@ -60,6 +60,42 @@ static t_class *template_class;
 /* there's a pre-defined "float" template.  LATER should we bind this
 to a symbol such as "pd-float" */
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void array_getcoordinate (t_glist *glist,
+    char *elem, int xonset, int yonset, int wonset, int indx,
+    t_float basex, t_float basey, t_float xinc,
+    t_fielddescriptor *xfielddesc, t_fielddescriptor *yfielddesc, t_fielddescriptor *wfielddesc,
+    t_float *xp, t_float *yp, t_float *wp)
+{
+    t_float xval, yval, ypix, wpix;
+    if (xonset >= 0)
+        xval = *(t_float *)(elem + xonset);
+    else xval = indx * xinc;
+    if (yonset >= 0)
+        yval = *(t_float *)(elem + yonset);
+    else yval = 0;
+    ypix = canvas_valueToPositionY(glist, basey +
+        fielddesc_cvttocoord(yfielddesc, yval));
+    if (wonset >= 0)
+    {
+            /* found "w" field which controls linewidth. */
+        t_float wval = *(t_float *)(elem + wonset);
+        wpix = canvas_valueToPositionY(glist, basey + 
+            fielddesc_cvttocoord(yfielddesc, yval) +
+                fielddesc_cvttocoord(wfielddesc, wval)) - ypix;
+        if (wpix < 0)
+            wpix = -wpix;
+    }
+    else wpix = 1;
+    *xp = canvas_valueToPositionX(glist, basex +
+        fielddesc_cvttocoord(xfielddesc, xval));
+    *yp = ypix;
+    *wp = wpix;
+}
+
     /* return true if two dataslot definitions match */
 static int dataslot_matches(t_dataslot *ds1, t_dataslot *ds2,
     int nametoo)

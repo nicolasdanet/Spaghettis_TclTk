@@ -879,22 +879,7 @@ void            array_free                              (t_array *x);
 void            array_resize                            (t_array *x, int n);
 void            array_redraw                            (t_array *x, t_glist *glist);
 void            array_resizeAndRedraw                   (t_array *x, t_glist *glist, int n);
-void            array_getcoordinate                     (t_glist *glist,
-                                                            char *elem,
-                                                            int xonset,
-                                                            int yonset,
-                                                            int wonset,
-                                                            int indx,
-                                                            t_float basex,
-                                                            t_float basey,
-                                                            t_float xinc,
-                                                            t_fielddescriptor *xfielddesc,
-                                                            t_fielddescriptor *yfielddesc,
-                                                            t_fielddescriptor *wfielddesc,
-                                                            t_float *xp,
-                                                            t_float *yp,
-                                                            t_float *wp);
-                                    
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
