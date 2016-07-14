@@ -91,8 +91,9 @@
 
 #include "g_word.c"
 #include "g_scalar.c"
-#include "g_gpointer.c"
 #include "g_array.c"
+#include "g_gpointer.c"
+#include "g_template.c"
 #include "g_paint.c"
 #include "g_serialize.c"
 

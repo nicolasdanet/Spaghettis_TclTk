@@ -9,10 +9,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
@@ -574,7 +570,7 @@ void template_free(t_template *x)
     PD_MEMORY_FREE(x->tp_vector);
 }
 
-static void template_setup(void)
+void template_setup(void)
 {
     template_class = class_new(sym_template, 0, (t_method)template_free,
         sizeof(t_template), CLASS_NOBOX, 0);
@@ -582,6 +578,10 @@ static void template_setup(void)
         sym_struct, A_GIMME, 0);
         
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* ---------------- gtemplates.  One per canvas. ----------- */
 
@@ -721,7 +721,7 @@ static void gtemplate_free(t_gtemplate *x)
     PD_MEMORY_FREE(x->x_argv);
 }
 
-static void gtemplate_setup(void)
+void gtemplate_setup(void)
 {
     gtemplate_class = class_new (sym_struct,
         (t_newmethod)gtemplate_new, (t_method)gtemplate_free,
@@ -729,6 +729,10 @@ static void gtemplate_setup(void)
     class_addCreator((t_newmethod)gtemplate_new_old, sym_template,
         A_GIMME, 0);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* ---------------  FIELD DESCRIPTORS ---------------------- */
 
@@ -979,6 +983,10 @@ void fielddesc_setcoord(t_fielddescriptor *f, t_template *template,
             post_error ("attempt to set constant or symbolic data field to a number");
     }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* ---------------- curves and polygons (joined segments) ---------------- */
 
@@ -1344,7 +1352,7 @@ static void curve_free(t_curve *x)
     PD_MEMORY_FREE(x->x_vec);
 }
 
-static void curve_setup(void)
+void curve_setup(void)
 {
     curve_class = class_new(sym_drawpolygon, (t_newmethod)curve_new,
         (t_method)curve_free, sizeof(t_curve), 0, A_GIMME, 0);
@@ -1358,6 +1366,10 @@ static void curve_setup(void)
     class_setParentWidgetBehavior(curve_class, &curve_widgetbehavior);
     class_addFloat(curve_class, curve_float);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* --------- plots for showing arrays --------------- */
 
@@ -2358,7 +2370,7 @@ t_parentwidgetbehavior plot_widgetbehavior =
     plot_click,
 };
 
-static void plot_setup(void)
+void plot_setup(void)
 {
     plot_class = class_new(sym_plot, (t_newmethod)plot_new, 0,
         sizeof(t_plot), 0, A_GIMME, 0);
@@ -2366,6 +2378,10 @@ static void plot_setup(void)
     class_addFloat(plot_class, plot_float);
     class_setParentWidgetBehavior(plot_class, &plot_widgetbehavior);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* ---------------- drawnumber: draw a number (or symbol) ---------------- */
 
@@ -2739,7 +2755,7 @@ static void drawnumber_free(t_drawnumber *x)
 {
 }
 
-static void drawnumber_setup(void)
+void drawnumber_setup(void)
 {
     drawnumber_class = class_new(sym_drawtext,
         (t_newmethod)drawnumber_new, (t_method)drawnumber_free,
@@ -2753,14 +2769,5 @@ static void drawnumber_setup(void)
     class_setParentWidgetBehavior(drawnumber_class, &drawnumber_widgetbehavior);
 }
 
-/* ---------------------- setup function ---------------------------- */
-
-void g_template_setup(void)
-{
-    template_setup();
-    gtemplate_setup();
-    curve_setup();
-    plot_setup();
-    drawnumber_setup();
-}
-
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
