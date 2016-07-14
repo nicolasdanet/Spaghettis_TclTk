@@ -101,15 +101,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define FIELD_NONE                      0
-#define FIELD_FLOAT                     1
-#define FIELD_SYMBOL                    2
-#define FIELD_ARRAY                     3
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 #define INLET_WIDTH                     7
 
 // -----------------------------------------------------------------------------------------------------------
@@ -320,12 +311,15 @@ struct _fielddescriptor {
         t_symbol        *fd_symbol;
         t_symbol        *fd_varsym;
     } fd_un;
-    float               fd_v1;
-    float               fd_v2;
-    float               fd_screen1;
-    float               fd_screen2;
-    float               fd_quantum;
+    t_float             fd_v1;
+    t_float             fd_v2;
+    t_float             fd_screen1;
+    t_float             fd_screen2;
+    t_float             fd_quantum;
 };
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 struct _template {
     t_pd                tp_pd;                      /* MUST be the first. */
@@ -940,6 +934,30 @@ t_symbol        *gpointer_getTemplateIdentifier         (t_gpointer *gp);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void            fielddesc_setfloat_const                (t_fielddescriptor *fd, t_float f);
+void            fielddesc_setsymbol_const               (t_fielddescriptor *fd, t_symbol *s);
+void            fielddesc_setfloat_var                  (t_fielddescriptor *fd, t_symbol *s);
+void            fielddesc_setfloatarg                   (t_fielddescriptor *fd, int argc, t_atom *argv);
+void            fielddesc_setsymbolarg                  (t_fielddescriptor *fd, int argc, t_atom *argv);
+void            fielddesc_setarrayarg                   (t_fielddescriptor *fd, int argc, t_atom *argv);
+t_float         fielddesc_cvttocoord                    (t_fielddescriptor *fd, t_float val);
+t_float         fielddesc_cvtfromcoord                  (t_fielddescriptor *fd, t_float coord);
+
+t_float         fielddesc_getcoord                      (t_fielddescriptor *fd,
+                                                            t_template *tmpl,
+                                                            t_word *w,
+                                                            int loud);
+                                                            
+void            fielddesc_setcoord                      (t_fielddescriptor *fd,
+                                                            t_template *tmpl,
+                                                            t_word *w,
+                                                            t_float pix,
+                                                            int loud);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void            canvas_paintAllScalarsByView            (t_glist *glist, int action);
 void            canvas_paintAllScalarsByTemplate        (t_template *dummy, int action);
 
@@ -1036,18 +1054,6 @@ t_glist      *template_findcanvas   (t_template *tmpl);
 void         template_setfloat      (t_template *x, t_symbol *fieldname, t_word *wp, t_float f, int loud);
 t_symbol     *template_getsymbol    (t_template *x, t_symbol *fieldname, t_word *wp, int loud);
 void         template_setsymbol     (t_template *x, t_symbol *fieldname, t_word *wp, t_symbol *s, int loud);
-
-
-void fielddesc_setfloat_const(t_fielddescriptor *fd, t_float f);
-void fielddesc_setsymbol_const(t_fielddescriptor *fd, t_symbol *s);
-void fielddesc_setfloat_var(t_fielddescriptor *fd, t_symbol *s);
-void fielddesc_setfloatarg(t_fielddescriptor *fd, int argc, t_atom *argv);
-void fielddesc_setsymbolarg(t_fielddescriptor *fd, int argc, t_atom *argv);
-void fielddesc_setarrayarg(t_fielddescriptor *fd, int argc, t_atom *argv);
-t_float      fielddesc_getcoord     (t_fielddescriptor *f, t_template *tmpl, t_word *wp, int loud);
-void fielddesc_setcoord     (t_fielddescriptor *f, t_template *tmpl, t_word *wp, t_float pix, int loud);
-t_float      fielddesc_cvttocoord   (t_fielddescriptor *f, t_float val);
-t_float      fielddesc_cvtfromcoord (t_fielddescriptor *f, t_float coord);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -79,7 +79,7 @@ static void *drawnumber_new(t_symbol *classsym, int argc, t_atom *argv)
 void drawnumber_float(t_drawnumber *x, t_float f)
 {
     int viswas;
-    if (x->x_vis.fd_type != FIELD_FLOAT || x->x_vis.fd_var)
+    if (x->x_vis.fd_type != DATA_FLOAT || x->x_vis.fd_var)
     {
         post_error ("global vis/invis for a template with variable visibility");
         return;

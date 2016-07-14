@@ -110,7 +110,7 @@ static void *plot_new(t_symbol *classsym, int argc, t_atom *argv)
 void plot_float(t_plot *x, t_float f)
 {
     int viswas;
-    if (x->x_vis.fd_type != FIELD_FLOAT || x->x_vis.fd_var)
+    if (x->x_vis.fd_type != DATA_FLOAT || x->x_vis.fd_var)
     {
         post_error ("global vis/invis for a template with variable visibility");
         return;
@@ -141,7 +141,7 @@ static int plot_readownertemplate(t_plot *x,
     t_array *array;
 
         /* find the data and verify it's an array */
-    if (x->x_data.fd_type != FIELD_ARRAY || !x->x_data.fd_var)
+    if (x->x_data.fd_type != DATA_ARRAY || !x->x_data.fd_var)
     {
         post_error ("plot: needs an array field");
         return (-1);
