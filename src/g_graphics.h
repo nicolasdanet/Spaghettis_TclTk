@@ -101,6 +101,15 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define FIELD_NONE                      0
+#define FIELD_FLOAT                     1
+#define FIELD_SYMBOL                    2
+#define FIELD_ARRAY                     3
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #define INLET_WIDTH                     7
 
 // -----------------------------------------------------------------------------------------------------------
@@ -303,37 +312,30 @@ typedef struct _dataslot {
     t_symbol            *ds_templateIdentifier;
     } t_dataslot;
 
-struct _fielddescriptor
-{
-    char fd_type;       /* LATER consider removing this? */
-    char fd_var;
-    union
-    {
-        t_float fd_float;       /* the field is a constant float */
-        t_symbol *fd_symbol;    /* the field is a constant symbol */
-        t_symbol *fd_varsym;    /* the field is variable and this is the name */
+struct _fielddescriptor {
+    char                fd_type;
+    char                fd_var;
+    union {
+        t_float         fd_float;
+        t_symbol        *fd_symbol;
+        t_symbol        *fd_varsym;
     } fd_un;
-    float fd_v1;        /* min and max values */
-    float fd_v2;
-    float fd_screen1;   /* min and max screen values */
-    float fd_screen2;
-    float fd_quantum;   /* quantization in value */ 
+    float               fd_v1;
+    float               fd_v2;
+    float               fd_screen1;
+    float               fd_screen2;
+    float               fd_quantum;
 };
-
-#define CLOSED 1
-#define BEZ 2
-#define NOMOUSE 4
-#define A_ARRAY 55      /* LATER decide whether to enshrine this in m_pd.h */
 
 struct _gtemplate
 {
-    t_object x_obj;
-    t_template *x_template;
-    t_glist *x_owner;
-    t_symbol *x_sym;
-    struct _gtemplate *x_next;
-    int x_argc;
-    t_atom *x_argv;
+    t_object            x_obj;                      /* MUST be the first. */
+    t_template          *x_template;
+    t_glist             *x_owner;
+    t_symbol            *x_sym;
+    struct _gtemplate   *x_next;
+    int                 x_argc;
+    t_atom              *x_argv;
 };
 
 struct _template {

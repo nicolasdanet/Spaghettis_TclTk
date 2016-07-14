@@ -12,18 +12,10 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "s_system.h"    /* for font_getHostFontSize */
 #include "g_graphics.h"
 
-extern t_class *garray_class;
-extern t_class *scalar_class;
-extern t_pd pd_canvasMaker;
-extern t_class *canvas_class;
-extern t_pdinstance *pd_this;
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 /* ---------------  FIELD DESCRIPTORS ---------------------- */
 
@@ -35,7 +27,7 @@ every single time we draw the object.
 
 void fielddesc_setfloat_const(t_fielddescriptor *fd, t_float f)
 {
-    fd->fd_type = A_FLOAT;
+    fd->fd_type = FIELD_FLOAT;
     fd->fd_var = 0;
     fd->fd_un.fd_float = f;
     fd->fd_v1 = fd->fd_v2 = fd->fd_screen1 = fd->fd_screen2 =
@@ -44,7 +36,7 @@ void fielddesc_setfloat_const(t_fielddescriptor *fd, t_float f)
 
 void fielddesc_setsymbol_const(t_fielddescriptor *fd, t_symbol *s)
 {
-    fd->fd_type = A_SYMBOL;
+    fd->fd_type = FIELD_SYMBOL;
     fd->fd_var = 0;
     fd->fd_un.fd_symbol = s;
     fd->fd_v1 = fd->fd_v2 = fd->fd_screen1 = fd->fd_screen2 =
@@ -55,7 +47,7 @@ void fielddesc_setfloat_var(t_fielddescriptor *fd, t_symbol *s)
 {
     char *s1, *s2, *s3, strbuf[PD_STRING];
     int i;
-    fd->fd_type = A_FLOAT;
+    fd->fd_type = FIELD_FLOAT;
     fd->fd_var = 1;
     if (!(s1 = strchr(s->s_name, '(')) || !(s2 = strchr(s->s_name, ')'))
         || (s1 > s2))
@@ -116,7 +108,7 @@ void fielddesc_setsymbolarg(t_fielddescriptor *fd, int argc, t_atom *argv)
         if (argc <= 0) fielddesc_setsymbol_const(fd, &s_);
         else if (argv->a_type == A_SYMBOL)
         {
-            fd->fd_type = A_SYMBOL;
+            fd->fd_type = FIELD_SYMBOL;
             fd->fd_var = 1;
             fd->fd_un.fd_varsym = argv->a_w.w_symbol;
             fd->fd_v1 = fd->fd_v2 = fd->fd_screen1 = fd->fd_screen2 =
@@ -130,7 +122,7 @@ void fielddesc_setarrayarg(t_fielddescriptor *fd, int argc, t_atom *argv)
         if (argc <= 0) fielddesc_setfloat_const(fd, 0);
         else if (argv->a_type == A_SYMBOL)
         {
-            fd->fd_type = A_ARRAY;
+            fd->fd_type = FIELD_ARRAY;
             fd->fd_var = 1;
             fd->fd_un.fd_varsym = argv->a_w.w_symbol;
         }
@@ -142,7 +134,7 @@ void fielddesc_setarrayarg(t_fielddescriptor *fd, int argc, t_atom *argv)
 t_float fielddesc_getfloat(t_fielddescriptor *f, t_template *template,
     t_word *wp, int loud)
 {
-    if (f->fd_type == A_FLOAT)
+    if (f->fd_type == FIELD_FLOAT)
     {
         if (f->fd_var)
             return (template_getfloat(template, f->fd_un.fd_varsym, wp));
@@ -179,7 +171,7 @@ t_float fielddesc_cvttocoord(t_fielddescriptor *f, t_float val)
 t_float fielddesc_getcoord(t_fielddescriptor *f, t_template *template,
     t_word *wp, int loud)
 {
-    if (f->fd_type == A_FLOAT)
+    if (f->fd_type == FIELD_FLOAT)
     {
         if (f->fd_var)
         {
@@ -200,7 +192,7 @@ t_float fielddesc_getcoord(t_fielddescriptor *f, t_template *template,
 static t_symbol *fielddesc_getsymbol(t_fielddescriptor *f, t_template *template,
     t_word *wp, int loud)
 {
-    if (f->fd_type == A_SYMBOL)
+    if (f->fd_type == FIELD_SYMBOL)
     {
         if (f->fd_var)
             return(template_getsymbol(template, f->fd_un.fd_varsym, wp, loud));
@@ -240,7 +232,7 @@ t_float fielddesc_cvtfromcoord(t_fielddescriptor *f, t_float coord)
 void fielddesc_setcoord(t_fielddescriptor *f, t_template *template,
     t_word *wp, t_float coord, int loud)
 {
-    if (f->fd_type == A_FLOAT && f->fd_var)
+    if (f->fd_type == FIELD_FLOAT && f->fd_var)
     {
         t_float val = fielddesc_cvtfromcoord(f, coord);
         template_setfloat(template,

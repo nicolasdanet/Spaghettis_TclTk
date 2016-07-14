@@ -12,18 +12,10 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "s_system.h"    /* for font_getHostFontSize */
 #include "g_graphics.h"
 
-extern t_class *garray_class;
-extern t_class *scalar_class;
-extern t_pd pd_canvasMaker;
-extern t_class *canvas_class;
-extern t_pdinstance *pd_this;
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 static t_class *gtemplate_class;
 

@@ -12,16 +12,8 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "s_system.h"    /* for font_getHostFontSize */
+#include "s_system.h"
 #include "g_graphics.h"
-
-extern t_class *garray_class;
-extern t_class *scalar_class;
-extern t_pd pd_canvasMaker;
-extern t_class *canvas_class;
-extern t_pdinstance *pd_this;
-
-
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -87,7 +79,7 @@ static void *drawnumber_new(t_symbol *classsym, int argc, t_atom *argv)
 void drawnumber_float(t_drawnumber *x, t_float f)
 {
     int viswas;
-    if (x->x_vis.fd_type != A_FLOAT || x->x_vis.fd_var)
+    if (x->x_vis.fd_type != FIELD_FLOAT || x->x_vis.fd_var)
     {
         post_error ("global vis/invis for a template with variable visibility");
         return;

@@ -12,14 +12,7 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "s_system.h"    /* for font_getHostFontSize */
 #include "g_graphics.h"
-
-extern t_class *garray_class;
-extern t_class *scalar_class;
-extern t_pd pd_canvasMaker;
-extern t_class *canvas_class;
-extern t_pdinstance *pd_this;
 
 /* ---------------- curves and polygons (joined segments) ---------------- */
 
@@ -31,10 +24,14 @@ be attached to fields in the template.
 
 t_class *curve_class;
 
+#define CURVE_CLOSED    1
+#define CURVE_BEZIER    2
+#define CURVE_NO_MOUSE  4
+
 typedef struct _curve
 {
     t_object x_obj;
-    int x_flags;            /* CLOSED and/or BEZ and/or NOMOUSE */
+    int x_flags;
     t_fielddescriptor x_fillcolor;
     t_fielddescriptor x_outlinecolor;
     t_fielddescriptor x_width;
@@ -55,10 +52,10 @@ static void *curve_new(t_symbol *classsym, int argc, t_atom *argv)
     if (classname[0] == 'f')
     {
         classname += 6;
-        flags |= CLOSED;
+        flags |= CURVE_CLOSED;
     }
     else classname += 4;
-    if (classname[0] == 'c') flags |= BEZ;
+    if (classname[0] == 'c') flags |= CURVE_BEZIER;
     fielddesc_setfloat_const(&x->x_vis, 1);
     while (1)
     {
@@ -70,13 +67,13 @@ static void *curve_new(t_symbol *classsym, int argc, t_atom *argv)
         }
         else if (!strcmp(firstarg->s_name, "-x"))
         {
-            flags |= NOMOUSE;
+            flags |= CURVE_NO_MOUSE;
             argc -= 1; argv += 1;
         }
         else break;
     }
     x->x_flags = flags;
-    if ((flags & CLOSED) && argc)
+    if ((flags & CURVE_CLOSED) && argc)
         fielddesc_setfloatarg(&x->x_fillcolor, argc--, argv++);
     else fielddesc_setfloat_const(&x->x_fillcolor, 0); 
     if (argc) fielddesc_setfloatarg(&x->x_outlinecolor, argc--, argv++);
@@ -97,7 +94,7 @@ static void *curve_new(t_symbol *classsym, int argc, t_atom *argv)
 void curve_float(t_curve *x, t_float f)
 {
     int viswas;
-    if (x->x_vis.fd_type != A_FLOAT || x->x_vis.fd_var)
+    if (x->x_vis.fd_type != FIELD_FLOAT || x->x_vis.fd_var)
     {
         post_error ("global vis/invis for a template with variable visibility");
         return;
@@ -122,7 +119,7 @@ static void curve_getrect(t_gobj *z, t_glist *glist,
     t_fielddescriptor *f = x->x_vec;
     int x1 = PD_INT_MAX, x2 = -PD_INT_MAX, y1 = PD_INT_MAX, y2 = -PD_INT_MAX;
     if (!fielddesc_getfloat(&x->x_vis, template, data, 0) ||
-        (x->x_flags & NOMOUSE))
+        (x->x_flags & CURVE_NO_MOUSE))
     {
         *xp1 = *yp1 = PD_INT_MAX;
         *xp2 = *yp2 = -PD_INT_MAX;
@@ -210,7 +207,7 @@ static void curve_vis(t_gobj *z, t_glist *glist,
     {
         if (n > 1)
         {
-            int flags = x->x_flags, closed = (flags & CLOSED);
+            int flags = x->x_flags, closed = (flags & CURVE_CLOSED);
             t_float width = fielddesc_getfloat(&x->x_width, template, data, 1);
             char outline[20], fill[20];
             int pix[200];
@@ -231,7 +228,7 @@ static void curve_vis(t_gobj *z, t_glist *glist,
             numbertocolor(
                 fielddesc_getfloat(&x->x_outlinecolor, template, data, 1),
                 outline);
-            if (flags & CLOSED)
+            if (flags & CURVE_CLOSED)
             {
                 numbertocolor(
                     fielddesc_getfloat(&x->x_fillcolor, template, data, 1),
@@ -243,10 +240,10 @@ static void curve_vis(t_gobj *z, t_glist *glist,
             for (i = 0; i < n; i++)
                 sys_vGui("%d %d\\\n", pix[2*i], pix[2*i+1]);
             sys_vGui("-width %f\\\n", width);
-            if (flags & CLOSED) sys_vGui("-fill %s -outline %s\\\n",
+            if (flags & CURVE_CLOSED) sys_vGui("-fill %s -outline %s\\\n",
                 fill, outline);
             else sys_vGui("-fill %s\\\n", outline);
-            if (flags & BEZ) sys_vGui("-smooth 1\\\n");
+            if (flags & CURVE_BEZIER) sys_vGui("-smooth 1\\\n");
             sys_vGui("-tags curve%lx\n", data);
         }
         else post("warning: curves need at least two points to be graphed");
