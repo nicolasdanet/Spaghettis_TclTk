@@ -320,7 +320,21 @@ struct _fielddescriptor
     float fd_quantum;   /* quantization in value */ 
 };
 
+#define CLOSED 1
+#define BEZ 2
+#define NOMOUSE 4
 #define A_ARRAY 55      /* LATER decide whether to enshrine this in m_pd.h */
+
+struct _gtemplate
+{
+    t_object x_obj;
+    t_template *x_template;
+    t_glist *x_owner;
+    t_symbol *x_sym;
+    struct _gtemplate *x_next;
+    int x_argc;
+    t_atom *x_argv;
+};
 
 struct _template {
     t_pd                tp_pd;                      /* MUST be the first. */
