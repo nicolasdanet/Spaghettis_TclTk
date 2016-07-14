@@ -19,6 +19,17 @@
 
 static t_class *gtemplate_class;
 
+struct _gtemplate
+{
+    t_object            x_obj;                      /* MUST be the first. */
+    t_template          *x_template;
+    t_glist             *x_owner;
+    t_symbol            *x_sym;
+    struct _gtemplate   *x_next;
+    int                 x_argc;
+    t_atom              *x_argv;
+};
+
 /* ---------------- gtemplates.  One per canvas. ----------- */
 
 /* "Struct": an object that searches for, and if necessary creates, 
@@ -26,6 +37,33 @@ a template (above).  Other objects in the canvas then can give drawing
 instructions for the template.  The template doesn't go away when the
 "struct" is deleted, so that you can replace it with
 another one to add new fields, for example. */
+
+t_glist *template_findcanvas(t_template *template)
+{
+    t_gtemplate *gt;
+    if (!template) { PD_BUG; }
+    if (!(gt = template->tp_list))
+        return (0);
+    return (gt->x_owner);
+    /* return ((t_glist *)pd_findByClass(template->tp_symbol, canvas_class)); */
+}
+
+static void template_notify(t_template *template, t_symbol *s, int argc, t_atom *argv)
+{
+    if (template->tp_list)
+        outlet_anything(template->tp_list->x_obj.te_outlet, s, argc, argv);
+}
+
+    /* bash the first of (argv) with a pointer to a scalar, and send on
+    to template as a notification message */
+void template_notifyforscalar(t_template *template, t_glist *owner, t_scalar *sc, t_symbol *s, int argc, t_atom *argv)
+{
+    t_gpointer gp = GPOINTER_INIT;
+    gpointer_setAsScalarType(&gp, owner, sc);
+    SET_POINTER(argv, &gp);
+    template_notify(template, s, argc, argv);
+    gpointer_unset(&gp);
+}
 
 static void *gtemplate_donew(t_symbol *sym, int argc, t_atom *argv)
 {

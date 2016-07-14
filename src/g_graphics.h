@@ -327,17 +327,6 @@ struct _fielddescriptor {
     float               fd_quantum;
 };
 
-struct _gtemplate
-{
-    t_object            x_obj;                      /* MUST be the first. */
-    t_template          *x_template;
-    t_glist             *x_owner;
-    t_symbol            *x_sym;
-    struct _gtemplate   *x_next;
-    int                 x_argc;
-    t_atom              *x_argv;
-};
-
 struct _template {
     t_pd                tp_pd;                      /* MUST be the first. */
     int                 tp_size;    
