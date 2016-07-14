@@ -303,8 +303,24 @@ typedef struct _dataslot {
     t_symbol            *ds_templateIdentifier;
     } t_dataslot;
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
+struct _fielddescriptor
+{
+    char fd_type;       /* LATER consider removing this? */
+    char fd_var;
+    union
+    {
+        t_float fd_float;       /* the field is a constant float */
+        t_symbol *fd_symbol;    /* the field is a constant symbol */
+        t_symbol *fd_varsym;    /* the field is variable and this is the name */
+    } fd_un;
+    float fd_v1;        /* min and max values */
+    float fd_v2;
+    float fd_screen1;   /* min and max screen values */
+    float fd_screen2;
+    float fd_quantum;   /* quantization in value */ 
+};
+
+#define A_ARRAY 55      /* LATER decide whether to enshrine this in m_pd.h */
 
 struct _template {
     t_pd                tp_pd;                      /* MUST be the first. */
@@ -994,6 +1010,8 @@ t_glist  *canvas_getglistonsuper        (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void numbertocolor(int n, char *s);
+
 t_template   *template_new          (t_symbol *sym, int argc, t_atom *argv);
 void         template_free          (t_template *x);
 int          template_match         (t_template *x1, t_template *x2);
@@ -1014,6 +1032,13 @@ void         template_setfloat      (t_template *x, t_symbol *fieldname, t_word 
 t_symbol     *template_getsymbol    (t_template *x, t_symbol *fieldname, t_word *wp, int loud);
 void         template_setsymbol     (t_template *x, t_symbol *fieldname, t_word *wp, t_symbol *s, int loud);
 
+
+void fielddesc_setfloat_const(t_fielddescriptor *fd, t_float f);
+void fielddesc_setsymbol_const(t_fielddescriptor *fd, t_symbol *s);
+void fielddesc_setfloat_var(t_fielddescriptor *fd, t_symbol *s);
+void fielddesc_setfloatarg(t_fielddescriptor *fd, int argc, t_atom *argv);
+void fielddesc_setsymbolarg(t_fielddescriptor *fd, int argc, t_atom *argv);
+void fielddesc_setarrayarg(t_fielddescriptor *fd, int argc, t_atom *argv);
 t_float      fielddesc_getcoord     (t_fielddescriptor *f, t_template *tmpl, t_word *wp, int loud);
 void fielddesc_setcoord     (t_fielddescriptor *f, t_template *tmpl, t_word *wp, t_float pix, int loud);
 t_float      fielddesc_cvttocoord   (t_fielddescriptor *f, t_float val);
