@@ -2214,13 +2214,13 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
                             memmove((char *)(array->a_vector) + elemsize * i, 
                                 (char *)(array->a_vector) + elemsize * (i+1),
                                     (array->a_size - 1 - i) * elemsize);
-                            array_resize_and_redraw(array, glist, array->a_size - 1);
+                            array_resizeAndRedraw(array, glist, array->a_size - 1);
                             return (0);
                         }
                         else if (alt)
                         {
                             /* add a point (after the clicked-on one) */
-                            array_resize_and_redraw(array, glist, array->a_size + 1);
+                            array_resizeAndRedraw(array, glist, array->a_size + 1);
                             elem = (char *)array->a_vector;
                             memmove(elem + elemsize * (i+1), 
                                 elem + elemsize * i,

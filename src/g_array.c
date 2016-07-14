@@ -89,18 +89,57 @@ t_gpointer *array_getTopParentArray (t_gpointer *gp)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void array_resize (t_array *x, int n)
+{
+    t_template *template = template_findbyname (x->a_templateIdentifier);
+    
+    PD_ASSERT (template);
+    
+    int elementSize = sizeof (t_word) * template->tp_size;
+    int oldSize = x->a_size;
+    int newSize = PD_MAX (1, n);
+
+    x->a_vector = (char *)PD_MEMORY_RESIZE (x->a_vector, oldSize * elementSize, newSize * elementSize);
+    x->a_size   = n;
+    
+    if (newSize > oldSize) {
+            
+        char *t = x->a_vector + (elementSize * oldSize);
+        int i   = newSize - oldSize;
+        
+        for (; i--; t += elementSize) { word_init ((t_word *)t, template, &x->a_parent); }
+    }
+    
+    x->a_uniqueIdentifier = utils_unique();                 /* Invalidate all current pointers. */
+}
 
 void array_redraw (t_array *x, t_glist *glist)
 {
     scalar_redraw (gpointer_getScalar (array_getTopParent (x)), glist);
 }
 
+void array_resizeAndRedraw (t_array *array, t_glist *glist, int n)
+{
+    if (canvas_isMapped (glist)) {
+        t_scalar *scalar = gpointer_getScalar (array_getTopParent (array));
+        gobj_visibilityChanged (cast_gobj (scalar), glist, 0);
+    }
+    
+    array_resize (array, n);
+    
+    if (canvas_isMapped (glist)) {
+        t_scalar *scalar = gpointer_getScalar (array_getTopParent (array));
+        gobj_visibilityChanged (cast_gobj (scalar), glist, 1);
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* routine to get screen coordinates of a point in an array */
-void array_getcoordinate(t_glist *glist,
+void array_getcoordinate (t_glist *glist,
     char *elem, int xonset, int yonset, int wonset, int indx,
     t_float basex, t_float basey, t_float xinc,
     t_fielddescriptor *xfielddesc, t_fielddescriptor *yfielddesc, t_fielddescriptor *wfielddesc,
@@ -130,46 +169,6 @@ void array_getcoordinate(t_glist *glist,
         fielddesc_cvttocoord(xfielddesc, xval));
     *yp = ypix;
     *wp = wpix;
-}
-
-void array_resize(t_array *x, int n)
-{
-    int elemsize, oldn;
-    t_gpointer *gp;
-    t_template *template = template_findbyname(x->a_templateIdentifier);
-    if (n < 1)
-        n = 1;
-    oldn = x->a_size;
-    elemsize = sizeof(t_word) * template->tp_size;
-
-    x->a_vector = (char *)PD_MEMORY_RESIZE(x->a_vector, oldn * elemsize, n * elemsize);
-    x->a_size = n;
-    if (n > oldn)
-    {
-        char *cp = x->a_vector + elemsize * oldn;
-        int i = n - oldn;
-        for (; i--; cp += elemsize)
-        {
-            t_word *wp = (t_word *)cp;
-            word_init(wp, template, &x->a_parent);
-        }
-    }
-    x->a_uniqueIdentifier = utils_unique();
-}
-
-void array_resize_and_redraw(t_array *array, t_glist *glist, int n)
-{
-    t_array *a2 = array_getTop (array);
-    int vis = canvas_isMapped(glist);
-    if (vis) {
-        t_scalar *scalar = gpointer_getScalar (&a2->a_parent);
-        gobj_visibilityChanged (cast_gobj (scalar), glist, 0);
-    }
-    array_resize(array, n);
-    if (vis) {
-        t_scalar *scalar = gpointer_getScalar (&a2->a_parent);
-        gobj_visibilityChanged (cast_gobj (scalar), glist, 1);
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

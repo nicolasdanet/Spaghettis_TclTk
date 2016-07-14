@@ -193,7 +193,7 @@ void garray_resizeWithInteger (t_garray *x, int n)
     PD_ASSERT (n > 0);
     
     garray_updateGraphBounds (x, PD_MAX (1, n), style);    
-    array_resize_and_redraw (array, x->x_owner, PD_MAX (1, n));
+    array_resizeAndRedraw (array, x->x_owner, PD_MAX (1, n));
     
     if (x->x_isUsedInDSP) { dsp_update(); }
 }

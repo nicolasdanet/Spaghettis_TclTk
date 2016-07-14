@@ -365,7 +365,7 @@ static void array_size_float(t_array_size *x, t_float f)
             int n = f;
             if (n < 1)
                 n = 1;
-             array_resize_and_redraw(a, glist, n);
+             array_resizeAndRedraw(a, glist, n);
         }
     }
 }

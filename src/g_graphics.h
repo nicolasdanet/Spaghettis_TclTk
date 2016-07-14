@@ -878,7 +878,7 @@ t_gpointer      *array_getTopParentArray                (t_gpointer *gp);
 void            array_free                              (t_array *x);
 void            array_resize                            (t_array *x, int n);
 void            array_redraw                            (t_array *x, t_glist *glist);
-void            array_resize_and_redraw                 (t_array *x, t_glist *glist, int n);
+void            array_resizeAndRedraw                   (t_array *x, t_glist *glist, int n);
 void            array_getcoordinate                     (t_glist *glist,
                                                             char *elem,
                                                             int xonset,
