@@ -8,7 +8,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Kind of attribute collection. */
+/* Untyped attribute. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -22,7 +22,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void field_setAsConstantFloat (t_fielddescriptor *fd, t_float f)
+void field_setAsFloatConstant (t_fielddescriptor *fd, t_float f)
 {
     fd->fd_type         = DATA_FLOAT;
     fd->fd_isVariable   = 0;
@@ -34,61 +34,7 @@ void field_setAsConstantFloat (t_fielddescriptor *fd, t_float f)
     fd->fd_quantum      = 0.0;
 }
 
-void field_setAsConstantSymbol (t_fielddescriptor *fd, t_symbol *s)
-{
-    fd->fd_type         = DATA_SYMBOL;
-    fd->fd_isVariable   = 0;
-    fd->fd_un.fd_symbol = s;
-    fd->fd_v1           = 0.0;
-    fd->fd_v2           = 0.0;
-    fd->fd_screen1      = 0.0;
-    fd->fd_screen2      = 0.0;
-    fd->fd_quantum      = 0.0;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void fielddesc_setfloatarg (t_fielddescriptor *fd, int argc, t_atom *argv)
-{
-        if (argc <= 0) field_setAsConstantFloat(fd, 0);
-        else if (argv->a_type == A_SYMBOL)
-            fielddesc_setfloat_var(fd, argv->a_w.w_symbol);
-        else field_setAsConstantFloat(fd, argv->a_w.w_float);
-}
-
-void fielddesc_setsymbolarg(t_fielddescriptor *fd, int argc, t_atom *argv)
-{
-        if (argc <= 0) field_setAsConstantSymbol(fd, &s_);
-        else if (argv->a_type == A_SYMBOL)
-        {
-            fd->fd_type = DATA_SYMBOL;
-            fd->fd_isVariable = 1;
-            fd->fd_un.fd_varsym = argv->a_w.w_symbol;
-            fd->fd_v1 = fd->fd_v2 = fd->fd_screen1 = fd->fd_screen2 =
-                fd->fd_quantum = 0;
-        }
-        else field_setAsConstantSymbol(fd, &s_);
-}
-
-void fielddesc_setarrayarg(t_fielddescriptor *fd, int argc, t_atom *argv)
-{
-        if (argc <= 0) field_setAsConstantFloat(fd, 0);
-        else if (argv->a_type == A_SYMBOL)
-        {
-            fd->fd_type = DATA_ARRAY;
-            fd->fd_isVariable = 1;
-            fd->fd_un.fd_varsym = argv->a_w.w_symbol;
-        }
-        else field_setAsConstantFloat(fd, argv->a_w.w_float);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void fielddesc_setfloat_var(t_fielddescriptor *fd, t_symbol *s)
+void field_setAsFloatVariable(t_fielddescriptor *fd, t_symbol *s)
 {
     char *s1, *s2, *s3, strbuf[PD_STRING];
     int i;
@@ -97,7 +43,7 @@ void fielddesc_setfloat_var(t_fielddescriptor *fd, t_symbol *s)
     if (!(s1 = strchr(s->s_name, '(')) || !(s2 = strchr(s->s_name, ')'))
         || (s1 > s2))
     {
-        fd->fd_un.fd_varsym = s;
+        fd->fd_un.fd_varname = s;
         fd->fd_v1 = fd->fd_v2 = fd->fd_screen1 = fd->fd_screen2 =
             fd->fd_quantum = 0;
     }
@@ -109,7 +55,7 @@ void fielddesc_setfloat_var(t_fielddescriptor *fd, t_symbol *s)
             cpy = PD_STRING-5;
         strncpy(strbuf, s->s_name, cpy);
         strbuf[cpy] = 0;
-        fd->fd_un.fd_varsym = gensym (strbuf);
+        fd->fd_un.fd_varname = gensym (strbuf);
         got = sscanf(s1, "(%lf:%lf)(%lf:%lf)(%lf)",
             &v1, &v2, &screen1, &screen2,
                 &quantum);
@@ -140,6 +86,31 @@ void fielddesc_setfloat_var(t_fielddescriptor *fd, t_symbol *s)
     }
 }
 
+void field_setAsFloat (t_fielddescriptor *fd, int argc, t_atom *argv)
+{
+    if (argc <= 0) { field_setAsFloatConstant (fd, 0.0); }
+    else {
+        if (IS_SYMBOL (argv)) { field_setAsFloatVariable (fd, GET_SYMBOL (argv)); }
+        else {
+            field_setAsFloatConstant (fd, atom_getFloatAtIndex (0, argc, argv));
+        }
+    }
+}
+
+void field_setAsArray (t_fielddescriptor *fd, int argc, t_atom *argv)
+{
+    if (argc <= 0) { field_setAsFloatConstant (fd, 0.0); }
+    else {
+        if (IS_SYMBOL (argv)) {
+            fd->fd_type             = DATA_ARRAY;
+            fd->fd_isVariable       = 1;
+            fd->fd_un.fd_varname    = GET_SYMBOL (argv);
+        } else { 
+            field_setAsFloatConstant (fd, atom_getFloatAtIndex (0, argc, argv));
+        }
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -152,7 +123,7 @@ t_float fielddesc_getfloat(t_fielddescriptor *f, t_template *template,
     if (f->fd_type == DATA_FLOAT)
     {
         if (f->fd_isVariable)
-            return (template_getfloat(template, f->fd_un.fd_varsym, wp));
+            return (template_getfloat(template, f->fd_un.fd_varname, wp));
         else return (f->fd_un.fd_float);
     }
     else
@@ -191,7 +162,7 @@ t_float fielddesc_getcoord(t_fielddescriptor *f, t_template *template,
         if (f->fd_isVariable)
         {
             t_float val = template_getfloat(template,
-                f->fd_un.fd_varsym, wp);
+                f->fd_un.fd_varname, wp);
             return (fielddesc_cvttocoord(f, val));
         }
         else return (f->fd_un.fd_float);
@@ -201,23 +172,6 @@ t_float fielddesc_getcoord(t_fielddescriptor *f, t_template *template,
         if (loud)
             post_error ("symbolic data field used as number");
         return (0);
-    }
-}
-
-static t_symbol *fielddesc_getsymbol(t_fielddescriptor *f, t_template *template,
-    t_word *wp, int loud)
-{
-    if (f->fd_type == DATA_SYMBOL)
-    {
-        if (f->fd_isVariable)
-            return(template_getsymbol(template, f->fd_un.fd_varsym, wp, loud));
-        else return (f->fd_un.fd_symbol);
-    }
-    else
-    {
-        if (loud)
-            post_error ("numeric data field used as symbol");
-        return (&s_);
     }
 }
 
@@ -251,7 +205,7 @@ void fielddesc_setcoord(t_fielddescriptor *f, t_template *template,
     {
         t_float val = fielddesc_cvtfromcoord(f, coord);
         template_setfloat(template,
-                f->fd_un.fd_varsym, wp, val, loud);
+                f->fd_un.fd_varname, wp, val, loud);
     }
     else
     {

@@ -48,12 +48,12 @@ static void *plot_new(t_symbol *classsym, int argc, t_atom *argv)
     int defstyle = PLOT_POLYGONS;
     x->x_canvas = canvas_getCurrent();
 
-    fielddesc_setfloat_var(&x->x_xpoints, sym_x);
-    fielddesc_setfloat_var(&x->x_ypoints, sym_y);
-    fielddesc_setfloat_var(&x->x_wpoints, sym_w);
+    field_setAsFloatVariable(&x->x_xpoints, sym_x);
+    field_setAsFloatVariable(&x->x_ypoints, sym_y);
+    field_setAsFloatVariable(&x->x_wpoints, sym_w);
     
-    field_setAsConstantFloat(&x->x_vis, 1);
-    field_setAsConstantFloat(&x->x_scalarvis, 1);
+    field_setAsFloatConstant(&x->x_vis, 1);
+    field_setAsFloatConstant(&x->x_scalarvis, 1);
     while (1)
     {
         t_symbol *firstarg = atom_getSymbolAtIndex(0, argc, argv);
@@ -65,45 +65,45 @@ static void *plot_new(t_symbol *classsym, int argc, t_atom *argv)
         }
         else if (!strcmp(firstarg->s_name, "-v") && argc > 1)
         {
-            fielddesc_setfloatarg(&x->x_vis, 1, argv+1);
+            field_setAsFloat(&x->x_vis, 1, argv+1);
             argc -= 2; argv += 2;
         }
         else if (!strcmp(firstarg->s_name, "-vs") && argc > 1)
         {
-            fielddesc_setfloatarg(&x->x_scalarvis, 1, argv+1);
+            field_setAsFloat(&x->x_scalarvis, 1, argv+1);
             argc -= 2; argv += 2;
         }
         else if (!strcmp(firstarg->s_name, "-x") && argc > 1)
         {
-            fielddesc_setfloatarg(&x->x_xpoints, 1, argv+1);
+            field_setAsFloat(&x->x_xpoints, 1, argv+1);
             argc -= 2; argv += 2;
         }
         else if (!strcmp(firstarg->s_name, "-y") && argc > 1)
         {
-            fielddesc_setfloatarg(&x->x_ypoints, 1, argv+1);
+            field_setAsFloat(&x->x_ypoints, 1, argv+1);
             argc -= 2; argv += 2;
         }
         else if (!strcmp(firstarg->s_name, "-w") && argc > 1)
         {
-            fielddesc_setfloatarg(&x->x_wpoints, 1, argv+1);
+            field_setAsFloat(&x->x_wpoints, 1, argv+1);
             argc -= 2; argv += 2;
         }
         else break;
     }
-    if (argc) fielddesc_setarrayarg(&x->x_data, argc--, argv++);
-    else field_setAsConstantFloat(&x->x_data, 1);
-    if (argc) fielddesc_setfloatarg(&x->x_outlinecolor, argc--, argv++);
-    else field_setAsConstantFloat(&x->x_outlinecolor, 0);
-    if (argc) fielddesc_setfloatarg(&x->x_width, argc--, argv++);
-    else field_setAsConstantFloat(&x->x_width, 1);
-    if (argc) fielddesc_setfloatarg(&x->x_xloc, argc--, argv++);
-    else field_setAsConstantFloat(&x->x_xloc, 1);
-    if (argc) fielddesc_setfloatarg(&x->x_yloc, argc--, argv++);
-    else field_setAsConstantFloat(&x->x_yloc, 1);
-    if (argc) fielddesc_setfloatarg(&x->x_xinc, argc--, argv++);
-    else field_setAsConstantFloat(&x->x_xinc, 1);
-    if (argc) fielddesc_setfloatarg(&x->x_style, argc--, argv++);
-    else field_setAsConstantFloat(&x->x_style, defstyle);
+    if (argc) field_setAsArray (&x->x_data, argc--, argv++);
+    else field_setAsFloatConstant(&x->x_data, 1);
+    if (argc) field_setAsFloat(&x->x_outlinecolor, argc--, argv++);
+    else field_setAsFloatConstant(&x->x_outlinecolor, 0);
+    if (argc) field_setAsFloat(&x->x_width, argc--, argv++);
+    else field_setAsFloatConstant(&x->x_width, 1);
+    if (argc) field_setAsFloat(&x->x_xloc, argc--, argv++);
+    else field_setAsFloatConstant(&x->x_xloc, 1);
+    if (argc) field_setAsFloat(&x->x_yloc, argc--, argv++);
+    else field_setAsFloatConstant(&x->x_yloc, 1);
+    if (argc) field_setAsFloat(&x->x_xinc, argc--, argv++);
+    else field_setAsFloatConstant(&x->x_xinc, 1);
+    if (argc) field_setAsFloat(&x->x_style, argc--, argv++);
+    else field_setAsFloatConstant(&x->x_style, defstyle);
     return (x);
 }
 
@@ -120,7 +120,7 @@ void plot_float(t_plot *x, t_float f)
     if ((f != 0 && viswas) || (f == 0 && !viswas))
         return;
     canvas_paintAllScalarsByView(x->x_canvas, SCALAR_ERASE);
-    field_setAsConstantFloat(&x->x_vis, (f != 0));
+    field_setAsFloatConstant(&x->x_vis, (f != 0));
     canvas_paintAllScalarsByView(x->x_canvas, SCALAR_DRAW);
 }
 
@@ -146,15 +146,15 @@ static int plot_readownertemplate(t_plot *x,
         post_error ("plot: needs an array field");
         return (-1);
     }
-    if (!template_find_field(ownertemplate, x->x_data.fd_un.fd_varsym,
+    if (!template_find_field(ownertemplate, x->x_data.fd_un.fd_varname,
         &arrayonset, &type, &elemtemplatesym))
     {
-        post_error ("plot: %s: no such field", x->x_data.fd_un.fd_varsym->s_name);
+        post_error ("plot: %s: no such field", x->x_data.fd_un.fd_varname->s_name);
         return (-1);
     }
     if (type != DATA_ARRAY)
     {
-        post_error ("plot: %s: not an array", x->x_data.fd_un.fd_varsym->s_name);
+        post_error ("plot: %s: not an array", x->x_data.fd_un.fd_varname->s_name);
         return (-1);
     }
     array = *(t_array **)(((char *)data) + arrayonset);
@@ -203,19 +203,19 @@ static int array_getfields(t_symbol *elemtemplatesym,
     }
     elemsize = elemtemplate->tp_size * sizeof(t_word);
     if (yfielddesc && yfielddesc->fd_isVariable)
-        varname = yfielddesc->fd_un.fd_varsym;
+        varname = yfielddesc->fd_un.fd_varname;
     else varname = sym_y;
     if (!template_find_field(elemtemplate, varname, &yonset, &type, &dummy)
         || type != DATA_FLOAT)    
             yonset = -1;
     if (xfielddesc && xfielddesc->fd_isVariable)
-        varname = xfielddesc->fd_un.fd_varsym;
+        varname = xfielddesc->fd_un.fd_varname;
     else varname = sym_x;
     if (!template_find_field(elemtemplate, varname, &xonset, &type, &dummy)
         || type != DATA_FLOAT) 
             xonset = -1;
     if (wfielddesc && wfielddesc->fd_isVariable)
-        varname = wfielddesc->fd_un.fd_varsym;
+        varname = wfielddesc->fd_un.fd_varname;
     else varname = sym_w;
     if (!template_find_field(elemtemplate, varname, &wonset, &type, &dummy)
         || type != DATA_FLOAT) 

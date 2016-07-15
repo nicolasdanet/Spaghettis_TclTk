@@ -46,29 +46,29 @@ static void *drawnumber_new(t_symbol *classsym, int argc, t_atom *argv)
     t_drawnumber *x = (t_drawnumber *)pd_new(drawnumber_class);
     char *classname = classsym->s_name;
 
-    field_setAsConstantFloat(&x->x_vis, 1);
+    field_setAsFloatConstant(&x->x_vis, 1);
     x->x_canvas = canvas_getCurrent();
     while (1)
     {
         t_symbol *firstarg = atom_getSymbolAtIndex(0, argc, argv);
         if (!strcmp(firstarg->s_name, "-v") && argc > 1)
         {
-            fielddesc_setfloatarg(&x->x_vis, 1, argv+1);
+            field_setAsFloat(&x->x_vis, 1, argv+1);
             argc -= 2; argv += 2;
         }
         else break;
     }
         /* next argument is name of field to draw - we don't know its type yet
-        but fielddesc_setfloatarg() will do fine here. */
+        but field_setAsFloat() will do fine here. */
     x->x_fieldname = atom_getSymbolAtIndex(0, argc, argv);
     if (argc)
         argc--, argv++;
-    if (argc) fielddesc_setfloatarg(&x->x_xloc, argc--, argv++);
-    else field_setAsConstantFloat(&x->x_xloc, 0);
-    if (argc) fielddesc_setfloatarg(&x->x_yloc, argc--, argv++);
-    else field_setAsConstantFloat(&x->x_yloc, 0);
-    if (argc) fielddesc_setfloatarg(&x->x_color, argc--, argv++);
-    else field_setAsConstantFloat(&x->x_color, 1);
+    if (argc) field_setAsFloat(&x->x_xloc, argc--, argv++);
+    else field_setAsFloatConstant(&x->x_xloc, 0);
+    if (argc) field_setAsFloat(&x->x_yloc, argc--, argv++);
+    else field_setAsFloatConstant(&x->x_yloc, 0);
+    if (argc) field_setAsFloat(&x->x_color, argc--, argv++);
+    else field_setAsFloatConstant(&x->x_color, 1);
     if (argc)
         x->x_label = atom_getSymbolAtIndex(0, argc, argv);
     else x->x_label = &s_;
@@ -89,7 +89,7 @@ void drawnumber_float(t_drawnumber *x, t_float f)
     if ((f != 0 && viswas) || (f == 0 && !viswas))
         return;
     canvas_paintAllScalarsByView(x->x_canvas, SCALAR_ERASE);
-    field_setAsConstantFloat(&x->x_vis, (f != 0));
+    field_setAsFloatConstant(&x->x_vis, (f != 0));
     canvas_paintAllScalarsByView(x->x_canvas, SCALAR_DRAW);
 }
 

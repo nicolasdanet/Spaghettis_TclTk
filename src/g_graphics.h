@@ -308,8 +308,7 @@ struct _fielddescriptor {
     char                fd_isVariable;
     union {
         t_float         fd_float;
-        t_symbol        *fd_symbol;
-        t_symbol        *fd_varsym;
+        t_symbol        *fd_varname;
     } fd_un;
     t_float             fd_v1;
     t_float             fd_v2;
@@ -934,12 +933,11 @@ t_symbol        *gpointer_getTemplateIdentifier         (t_gpointer *gp);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            field_setAsConstantFloat                (t_fielddescriptor *fd, t_float f);
-void            field_setAsConstantSymbol               (t_fielddescriptor *fd, t_symbol *s);
-void            fielddesc_setfloat_var                  (t_fielddescriptor *fd, t_symbol *s);
-void            fielddesc_setfloatarg                   (t_fielddescriptor *fd, int argc, t_atom *argv);
-void            fielddesc_setsymbolarg                  (t_fielddescriptor *fd, int argc, t_atom *argv);
-void            fielddesc_setarrayarg                   (t_fielddescriptor *fd, int argc, t_atom *argv);
+void            field_setAsFloatConstant                (t_fielddescriptor *fd, t_float f);
+void            field_setAsFloatVariable                (t_fielddescriptor *fd, t_symbol *s);
+void            field_setAsFloat                        (t_fielddescriptor *fd, int argc, t_atom *argv);
+void            field_setAsArray                        (t_fielddescriptor *fd, int argc, t_atom *argv);
+
 t_float         fielddesc_cvttocoord                    (t_fielddescriptor *fd, t_float val);
 t_float         fielddesc_cvtfromcoord                  (t_fielddescriptor *fd, t_float coord);
 

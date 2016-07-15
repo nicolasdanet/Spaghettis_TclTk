@@ -56,13 +56,13 @@ static void *curve_new(t_symbol *classsym, int argc, t_atom *argv)
     }
     else classname += 4;
     if (classname[0] == 'c') flags |= CURVE_BEZIER;
-    field_setAsConstantFloat(&x->x_vis, 1);
+    field_setAsFloatConstant(&x->x_vis, 1);
     while (1)
     {
         t_symbol *firstarg = atom_getSymbolAtIndex(0, argc, argv);
         if (!strcmp(firstarg->s_name, "-v") && argc > 1)
         {
-            fielddesc_setfloatarg(&x->x_vis, 1, argv+1);
+            field_setAsFloat(&x->x_vis, 1, argv+1);
             argc -= 2; argv += 2;
         }
         else if (!strcmp(firstarg->s_name, "-x"))
@@ -74,19 +74,19 @@ static void *curve_new(t_symbol *classsym, int argc, t_atom *argv)
     }
     x->x_flags = flags;
     if ((flags & CURVE_CLOSED) && argc)
-        fielddesc_setfloatarg(&x->x_fillcolor, argc--, argv++);
-    else field_setAsConstantFloat(&x->x_fillcolor, 0); 
-    if (argc) fielddesc_setfloatarg(&x->x_outlinecolor, argc--, argv++);
-    else field_setAsConstantFloat(&x->x_outlinecolor, 0);
-    if (argc) fielddesc_setfloatarg(&x->x_width, argc--, argv++);
-    else field_setAsConstantFloat(&x->x_width, 1);
+        field_setAsFloat(&x->x_fillcolor, argc--, argv++);
+    else field_setAsFloatConstant(&x->x_fillcolor, 0); 
+    if (argc) field_setAsFloat(&x->x_outlinecolor, argc--, argv++);
+    else field_setAsFloatConstant(&x->x_outlinecolor, 0);
+    if (argc) field_setAsFloat(&x->x_width, argc--, argv++);
+    else field_setAsFloatConstant(&x->x_width, 1);
     if (argc < 0) argc = 0;
     nxy =  (argc + (argc & 1));
     x->x_npoints = (nxy>>1);
     x->x_vec = (t_fielddescriptor *)PD_MEMORY_GET(nxy * sizeof(t_fielddescriptor));
     for (i = 0, fd = x->x_vec; i < argc; i++, fd++, argv++)
-        fielddesc_setfloatarg(fd, 1, argv);
-    if (argc & 1) field_setAsConstantFloat(fd, 0);
+        field_setAsFloat(fd, 1, argv);
+    if (argc & 1) field_setAsFloatConstant(fd, 0);
 
     return (x);
 }
@@ -104,7 +104,7 @@ void curve_float(t_curve *x, t_float f)
     if ((f != 0 && viswas) || (f == 0 && !viswas))
         return;
     canvas_paintAllScalarsByView(x->x_canvas, SCALAR_ERASE);
-    field_setAsConstantFloat(&x->x_vis, (f != 0));
+    field_setAsFloatConstant(&x->x_vis, (f != 0));
     canvas_paintAllScalarsByView(x->x_canvas, SCALAR_DRAW);
 }
 
