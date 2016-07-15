@@ -46,7 +46,7 @@ static void *drawnumber_new(t_symbol *classsym, int argc, t_atom *argv)
     t_drawnumber *x = (t_drawnumber *)pd_new(drawnumber_class);
     char *classname = classsym->s_name;
 
-    fielddesc_setfloat_const(&x->x_vis, 1);
+    field_setAsConstantFloat(&x->x_vis, 1);
     x->x_canvas = canvas_getCurrent();
     while (1)
     {
@@ -64,11 +64,11 @@ static void *drawnumber_new(t_symbol *classsym, int argc, t_atom *argv)
     if (argc)
         argc--, argv++;
     if (argc) fielddesc_setfloatarg(&x->x_xloc, argc--, argv++);
-    else fielddesc_setfloat_const(&x->x_xloc, 0);
+    else field_setAsConstantFloat(&x->x_xloc, 0);
     if (argc) fielddesc_setfloatarg(&x->x_yloc, argc--, argv++);
-    else fielddesc_setfloat_const(&x->x_yloc, 0);
+    else field_setAsConstantFloat(&x->x_yloc, 0);
     if (argc) fielddesc_setfloatarg(&x->x_color, argc--, argv++);
-    else fielddesc_setfloat_const(&x->x_color, 1);
+    else field_setAsConstantFloat(&x->x_color, 1);
     if (argc)
         x->x_label = atom_getSymbolAtIndex(0, argc, argv);
     else x->x_label = &s_;
@@ -79,7 +79,7 @@ static void *drawnumber_new(t_symbol *classsym, int argc, t_atom *argv)
 void drawnumber_float(t_drawnumber *x, t_float f)
 {
     int viswas;
-    if (x->x_vis.fd_type != DATA_FLOAT || x->x_vis.fd_var)
+    if (x->x_vis.fd_type != DATA_FLOAT || x->x_vis.fd_isVariable)
     {
         post_error ("global vis/invis for a template with variable visibility");
         return;
@@ -89,7 +89,7 @@ void drawnumber_float(t_drawnumber *x, t_float f)
     if ((f != 0 && viswas) || (f == 0 && !viswas))
         return;
     canvas_paintAllScalarsByView(x->x_canvas, SCALAR_ERASE);
-    fielddesc_setfloat_const(&x->x_vis, (f != 0));
+    field_setAsConstantFloat(&x->x_vis, (f != 0));
     canvas_paintAllScalarsByView(x->x_canvas, SCALAR_DRAW);
 }
 

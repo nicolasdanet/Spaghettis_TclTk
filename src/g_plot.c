@@ -52,8 +52,8 @@ static void *plot_new(t_symbol *classsym, int argc, t_atom *argv)
     fielddesc_setfloat_var(&x->x_ypoints, sym_y);
     fielddesc_setfloat_var(&x->x_wpoints, sym_w);
     
-    fielddesc_setfloat_const(&x->x_vis, 1);
-    fielddesc_setfloat_const(&x->x_scalarvis, 1);
+    field_setAsConstantFloat(&x->x_vis, 1);
+    field_setAsConstantFloat(&x->x_scalarvis, 1);
     while (1)
     {
         t_symbol *firstarg = atom_getSymbolAtIndex(0, argc, argv);
@@ -91,26 +91,26 @@ static void *plot_new(t_symbol *classsym, int argc, t_atom *argv)
         else break;
     }
     if (argc) fielddesc_setarrayarg(&x->x_data, argc--, argv++);
-    else fielddesc_setfloat_const(&x->x_data, 1);
+    else field_setAsConstantFloat(&x->x_data, 1);
     if (argc) fielddesc_setfloatarg(&x->x_outlinecolor, argc--, argv++);
-    else fielddesc_setfloat_const(&x->x_outlinecolor, 0);
+    else field_setAsConstantFloat(&x->x_outlinecolor, 0);
     if (argc) fielddesc_setfloatarg(&x->x_width, argc--, argv++);
-    else fielddesc_setfloat_const(&x->x_width, 1);
+    else field_setAsConstantFloat(&x->x_width, 1);
     if (argc) fielddesc_setfloatarg(&x->x_xloc, argc--, argv++);
-    else fielddesc_setfloat_const(&x->x_xloc, 1);
+    else field_setAsConstantFloat(&x->x_xloc, 1);
     if (argc) fielddesc_setfloatarg(&x->x_yloc, argc--, argv++);
-    else fielddesc_setfloat_const(&x->x_yloc, 1);
+    else field_setAsConstantFloat(&x->x_yloc, 1);
     if (argc) fielddesc_setfloatarg(&x->x_xinc, argc--, argv++);
-    else fielddesc_setfloat_const(&x->x_xinc, 1);
+    else field_setAsConstantFloat(&x->x_xinc, 1);
     if (argc) fielddesc_setfloatarg(&x->x_style, argc--, argv++);
-    else fielddesc_setfloat_const(&x->x_style, defstyle);
+    else field_setAsConstantFloat(&x->x_style, defstyle);
     return (x);
 }
 
 void plot_float(t_plot *x, t_float f)
 {
     int viswas;
-    if (x->x_vis.fd_type != DATA_FLOAT || x->x_vis.fd_var)
+    if (x->x_vis.fd_type != DATA_FLOAT || x->x_vis.fd_isVariable)
     {
         post_error ("global vis/invis for a template with variable visibility");
         return;
@@ -120,7 +120,7 @@ void plot_float(t_plot *x, t_float f)
     if ((f != 0 && viswas) || (f == 0 && !viswas))
         return;
     canvas_paintAllScalarsByView(x->x_canvas, SCALAR_ERASE);
-    fielddesc_setfloat_const(&x->x_vis, (f != 0));
+    field_setAsConstantFloat(&x->x_vis, (f != 0));
     canvas_paintAllScalarsByView(x->x_canvas, SCALAR_DRAW);
 }
 
@@ -141,7 +141,7 @@ static int plot_readownertemplate(t_plot *x,
     t_array *array;
 
         /* find the data and verify it's an array */
-    if (x->x_data.fd_type != DATA_ARRAY || !x->x_data.fd_var)
+    if (x->x_data.fd_type != DATA_ARRAY || !x->x_data.fd_isVariable)
     {
         post_error ("plot: needs an array field");
         return (-1);
@@ -202,19 +202,19 @@ static int array_getfields(t_symbol *elemtemplatesym,
         return (-1);
     }
     elemsize = elemtemplate->tp_size * sizeof(t_word);
-    if (yfielddesc && yfielddesc->fd_var)
+    if (yfielddesc && yfielddesc->fd_isVariable)
         varname = yfielddesc->fd_un.fd_varsym;
     else varname = sym_y;
     if (!template_find_field(elemtemplate, varname, &yonset, &type, &dummy)
         || type != DATA_FLOAT)    
             yonset = -1;
-    if (xfielddesc && xfielddesc->fd_var)
+    if (xfielddesc && xfielddesc->fd_isVariable)
         varname = xfielddesc->fd_un.fd_varsym;
     else varname = sym_x;
     if (!template_find_field(elemtemplate, varname, &xonset, &type, &dummy)
         || type != DATA_FLOAT) 
             xonset = -1;
-    if (wfielddesc && wfielddesc->fd_var)
+    if (wfielddesc && wfielddesc->fd_isVariable)
         varname = wfielddesc->fd_un.fd_varsym;
     else varname = sym_w;
     if (!template_find_field(elemtemplate, varname, &wonset, &type, &dummy)

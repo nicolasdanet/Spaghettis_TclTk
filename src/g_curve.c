@@ -56,7 +56,7 @@ static void *curve_new(t_symbol *classsym, int argc, t_atom *argv)
     }
     else classname += 4;
     if (classname[0] == 'c') flags |= CURVE_BEZIER;
-    fielddesc_setfloat_const(&x->x_vis, 1);
+    field_setAsConstantFloat(&x->x_vis, 1);
     while (1)
     {
         t_symbol *firstarg = atom_getSymbolAtIndex(0, argc, argv);
@@ -75,18 +75,18 @@ static void *curve_new(t_symbol *classsym, int argc, t_atom *argv)
     x->x_flags = flags;
     if ((flags & CURVE_CLOSED) && argc)
         fielddesc_setfloatarg(&x->x_fillcolor, argc--, argv++);
-    else fielddesc_setfloat_const(&x->x_fillcolor, 0); 
+    else field_setAsConstantFloat(&x->x_fillcolor, 0); 
     if (argc) fielddesc_setfloatarg(&x->x_outlinecolor, argc--, argv++);
-    else fielddesc_setfloat_const(&x->x_outlinecolor, 0);
+    else field_setAsConstantFloat(&x->x_outlinecolor, 0);
     if (argc) fielddesc_setfloatarg(&x->x_width, argc--, argv++);
-    else fielddesc_setfloat_const(&x->x_width, 1);
+    else field_setAsConstantFloat(&x->x_width, 1);
     if (argc < 0) argc = 0;
     nxy =  (argc + (argc & 1));
     x->x_npoints = (nxy>>1);
     x->x_vec = (t_fielddescriptor *)PD_MEMORY_GET(nxy * sizeof(t_fielddescriptor));
     for (i = 0, fd = x->x_vec; i < argc; i++, fd++, argv++)
         fielddesc_setfloatarg(fd, 1, argv);
-    if (argc & 1) fielddesc_setfloat_const(fd, 0);
+    if (argc & 1) field_setAsConstantFloat(fd, 0);
 
     return (x);
 }
@@ -94,7 +94,7 @@ static void *curve_new(t_symbol *classsym, int argc, t_atom *argv)
 void curve_float(t_curve *x, t_float f)
 {
     int viswas;
-    if (x->x_vis.fd_type != DATA_FLOAT || x->x_vis.fd_var)
+    if (x->x_vis.fd_type != DATA_FLOAT || x->x_vis.fd_isVariable)
     {
         post_error ("global vis/invis for a template with variable visibility");
         return;
@@ -104,7 +104,7 @@ void curve_float(t_curve *x, t_float f)
     if ((f != 0 && viswas) || (f == 0 && !viswas))
         return;
     canvas_paintAllScalarsByView(x->x_canvas, SCALAR_ERASE);
-    fielddesc_setfloat_const(&x->x_vis, (f != 0));
+    field_setAsConstantFloat(&x->x_vis, (f != 0));
     canvas_paintAllScalarsByView(x->x_canvas, SCALAR_DRAW);
 }
 
@@ -284,13 +284,13 @@ static void curve_motion(void *z, t_float dx, t_float dy, t_float modifier)
     }
     curve_motion_xcumulative += dx;
     curve_motion_ycumulative += dy;
-    if (f->fd_var && (dx != 0))
+    if (f->fd_isVariable && (dx != 0))
     {
         fielddesc_setcoord(f, curve_motion_template, curve_motion_wp,
             curve_motion_xbase + curve_motion_xcumulative * curve_motion_xper,
                 1); 
     }
-    if ((f+1)->fd_var && (dy != 0))
+    if ((f+1)->fd_isVariable && (dy != 0))
     {
         fielddesc_setcoord(f+1, curve_motion_template, curve_motion_wp,
             curve_motion_ybase + curve_motion_ycumulative * curve_motion_yper,
@@ -325,7 +325,7 @@ static int curve_click(t_gobj *z, t_glist *glist,
         int yval = fielddesc_getcoord(f+1, template, data, 0),
             yloc = canvas_valueToPositionY(glist, basey + yval);
         int xerr = xloc - xpix, yerr = yloc - ypix;
-        if (!f->fd_var && !(f+1)->fd_var)
+        if (!f->fd_isVariable && !(f+1)->fd_isVariable)
             continue;
         if (xerr < 0)
             xerr = -xerr;

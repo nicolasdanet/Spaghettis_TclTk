@@ -305,7 +305,7 @@ typedef struct _dataslot {
 
 struct _fielddescriptor {
     char                fd_type;
-    char                fd_var;
+    char                fd_isVariable;
     union {
         t_float         fd_float;
         t_symbol        *fd_symbol;
@@ -934,8 +934,8 @@ t_symbol        *gpointer_getTemplateIdentifier         (t_gpointer *gp);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            fielddesc_setfloat_const                (t_fielddescriptor *fd, t_float f);
-void            fielddesc_setsymbol_const               (t_fielddescriptor *fd, t_symbol *s);
+void            field_setAsConstantFloat                (t_fielddescriptor *fd, t_float f);
+void            field_setAsConstantSymbol               (t_fielddescriptor *fd, t_symbol *s);
 void            fielddesc_setfloat_var                  (t_fielddescriptor *fd, t_symbol *s);
 void            fielddesc_setfloatarg                   (t_fielddescriptor *fd, int argc, t_atom *argv);
 void            fielddesc_setsymbolarg                  (t_fielddescriptor *fd, int argc, t_atom *argv);
