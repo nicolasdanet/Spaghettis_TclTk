@@ -130,65 +130,37 @@ void field_setAsArray (t_fielddescriptor *fd, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_float fielddesc_getfloat(t_fielddescriptor *f, t_template *template, t_word *wp, int loud)
+t_float field_getFloat (t_fielddescriptor *f, t_template *tmpl, t_word *w)
 {
-    if (f->fd_type == DATA_FLOAT)
-    {
-        if (f->fd_isVariable)
-            return (template_getfloat(template, f->fd_un.fd_varname, wp));
-        else return (f->fd_un.fd_float);
-    }
-    else
-    {
-        if (loud)
-            post_error ("symbolic data field used as number");
-        return (0);
-    }
-}
-
-    /* convert a variable's value to a screen coordinate via its fielddesc */
-t_float fielddesc_cvttocoord(t_fielddescriptor *f, t_float val)
-{
-    t_float coord, pix, extreme, div;
-    if (f->fd_v2 == f->fd_v1)
-        return (val);
-    div = (f->fd_screen2 - f->fd_screen1)/(f->fd_v2 - f->fd_v1);
-    coord = f->fd_screen1 + (val - f->fd_v1) * div;
-    extreme = (f->fd_screen1 < f->fd_screen2 ?
-        f->fd_screen1 : f->fd_screen2);
-    if (coord < extreme)
-        coord = extreme;
-    extreme = (f->fd_screen1 > f->fd_screen2 ? 
-        f->fd_screen1 : f->fd_screen2);
-    if (coord > extreme)
-        coord = extreme;
-    return (coord);
-}
-
-    /* read a variable via fielddesc and convert to screen coordinate */
-t_float fielddesc_getcoord(t_fielddescriptor *f, t_template *template,
-    t_word *wp, int loud)
-{
-    if (f->fd_type == DATA_FLOAT)
-    {
-        if (f->fd_isVariable)
-        {
-            t_float val = template_getfloat(template,
-                f->fd_un.fd_varname, wp);
-            return (fielddesc_cvttocoord(f, val));
+    if (f->fd_type == DATA_FLOAT) {
+        if (f->fd_isVariable) { return (template_getfloat (tmpl, f->fd_un.fd_varname, w)); }
+        else {
+            return (f->fd_un.fd_float);
         }
-        else return (f->fd_un.fd_float);
     }
-    else
-    {
-        if (loud)
-            post_error ("symbolic data field used as number");
-        return (0);
+
+    return 0.0;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_float field_convertValueToPosition (t_fielddescriptor *fd, t_float v)
+{
+    if (fd->fd_v2 == fd->fd_v1) { return v; }
+    else {
+        t_float m = PD_MIN (fd->fd_screen1, fd->fd_screen2);
+        t_float n = PD_MAX (fd->fd_screen1, fd->fd_screen2);
+        t_float d = (fd->fd_screen2 - fd->fd_screen1) / (fd->fd_v2 - fd->fd_v1);
+        t_float k = (fd->fd_screen1 + ((v - fd->fd_v1) * d));
+        
+        return (PD_CLAMP (k, m, n));
     }
 }
 
     /* convert from a screen coordinate to a variable value */
-t_float fielddesc_cvtfromcoord(t_fielddescriptor *f, t_float coord)
+static t_float fielddesc_cvtfromcoord(t_fielddescriptor *f, t_float coord)
 {
     t_float val;
     if (f->fd_screen2 == f->fd_screen1)
@@ -223,6 +195,28 @@ void fielddesc_setcoord(t_fielddescriptor *f, t_template *template,
     {
         if (loud)
             post_error ("attempt to set constant or symbolic data field to a number");
+    }
+}
+
+    /* read a variable via fielddesc and convert to screen coordinate */
+t_float fielddesc_getcoord(t_fielddescriptor *f, t_template *template,
+    t_word *wp, int loud)
+{
+    if (f->fd_type == DATA_FLOAT)
+    {
+        if (f->fd_isVariable)
+        {
+            t_float val = template_getfloat(template,
+                f->fd_un.fd_varname, wp);
+            return (field_convertValueToPosition(f, val));
+        }
+        else return (f->fd_un.fd_float);
+    }
+    else
+    {
+        if (loud)
+            post_error ("symbolic data field used as number");
+        return (0);
     }
 }
 

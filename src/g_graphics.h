@@ -938,8 +938,8 @@ void            field_setAsFloatVariable                (t_fielddescriptor *fd, 
 void            field_setAsFloat                        (t_fielddescriptor *fd, int argc, t_atom *argv);
 void            field_setAsArray                        (t_fielddescriptor *fd, int argc, t_atom *argv);
 
-t_float         fielddesc_cvttocoord                    (t_fielddescriptor *fd, t_float val);
-t_float         fielddesc_cvtfromcoord                  (t_fielddescriptor *fd, t_float coord);
+t_float         field_getFloat                          (t_fielddescriptor *f, t_template *tmpl, t_word *w);
+t_float         field_convertValueToPosition            (t_fielddescriptor *fd, t_float v);
 
 t_float         fielddesc_getcoord                      (t_fielddescriptor *fd,
                                                             t_template *tmpl,

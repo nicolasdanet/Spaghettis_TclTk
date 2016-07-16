@@ -58,20 +58,20 @@ void array_getcoordinate (t_glist *glist,
         yval = *(t_float *)(elem + yonset);
     else yval = 0;
     ypix = canvas_valueToPositionY(glist, basey +
-        fielddesc_cvttocoord(yfielddesc, yval));
+        field_convertValueToPosition(yfielddesc, yval));
     if (wonset >= 0)
     {
             /* found "w" field which controls linewidth. */
         t_float wval = *(t_float *)(elem + wonset);
         wpix = canvas_valueToPositionY(glist, basey + 
-            fielddesc_cvttocoord(yfielddesc, yval) +
-                fielddesc_cvttocoord(wfielddesc, wval)) - ypix;
+            field_convertValueToPosition(yfielddesc, yval) +
+                field_convertValueToPosition(wfielddesc, wval)) - ypix;
         if (wpix < 0)
             wpix = -wpix;
     }
     else wpix = 1;
     *xp = canvas_valueToPositionX(glist, basex +
-        fielddesc_cvttocoord(xfielddesc, xval));
+        field_convertValueToPosition(xfielddesc, xval));
     *yp = ypix;
     *wp = wpix;
 }

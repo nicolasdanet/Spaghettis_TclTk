@@ -158,13 +158,13 @@ static int plot_readownertemplate(t_plot *x,
         return (-1);
     }
     array = *(t_array **)(((char *)data) + arrayonset);
-    *linewidthp = fielddesc_getfloat(&x->x_width, ownertemplate, data, 1);
-    *xlocp = fielddesc_getfloat(&x->x_xloc, ownertemplate, data, 1);
-    *xincp = fielddesc_getfloat(&x->x_xinc, ownertemplate, data, 1);
-    *ylocp = fielddesc_getfloat(&x->x_yloc, ownertemplate, data, 1);
-    *stylep = fielddesc_getfloat(&x->x_style, ownertemplate, data, 1);
-    *visp = fielddesc_getfloat(&x->x_vis, ownertemplate, data, 1);
-    *scalarvisp = fielddesc_getfloat(&x->x_scalarvis, ownertemplate, data, 1);
+    *linewidthp = field_getFloat(&x->x_width, ownertemplate, data);
+    *xlocp = field_getFloat(&x->x_xloc, ownertemplate, data);
+    *xincp = field_getFloat(&x->x_xinc, ownertemplate, data);
+    *ylocp = field_getFloat(&x->x_yloc, ownertemplate, data);
+    *stylep = field_getFloat(&x->x_style, ownertemplate, data);
+    *visp = field_getFloat(&x->x_vis, ownertemplate, data);
+    *scalarvisp = field_getFloat(&x->x_scalarvis, ownertemplate, data);
     *elemtemplatesymp = elemtemplatesym;
     *arrayp = array;
     *xfield = &x->x_xpoints;
@@ -285,7 +285,7 @@ static void plot_getrect(t_gobj *z, t_glist *glist,
             {
                     /* check also the drawing instructions for the scalar */ 
                 if (xonset >= 0)
-                    usexloc = basex + xloc + fielddesc_cvttocoord(xfielddesc, 
+                    usexloc = basex + xloc + field_convertValueToPosition(xfielddesc, 
                         *(t_float *)(((char *)(array->a_vector) + elemsize * i)
                             + xonset));
                 else usexloc = basex + xsum, xsum += xinc;
@@ -293,7 +293,7 @@ static void plot_getrect(t_gobj *z, t_glist *glist,
                     yval = *(t_float *)(((char *)(array->a_vector) + elemsize * i)
                         + yonset);
                 else yval = 0;
-                useyloc = basey + yloc + fielddesc_cvttocoord(yfielddesc, yval);
+                useyloc = basey + yloc + field_convertValueToPosition(yfielddesc, yval);
                 for (y = elemtemplatecanvas->gl_graphics; y; y = y->g_next)
                 {
                     int xx1, xx2, yy1, yy2;
@@ -396,7 +396,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                     usexloc = basex + xloc +
                         *(t_float *)((elem + elemsize * i) + xonset);
                     ixpix = canvas_valueToPositionX(glist, 
-                        fielddesc_cvttocoord(xfielddesc, usexloc));
+                        field_convertValueToPosition(xfielddesc, usexloc));
                     inextx = ixpix + 2;
                 }
                 else
@@ -404,9 +404,9 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                     usexloc = xsum;
                     xsum += xinc;
                     ixpix = canvas_valueToPositionX(glist,
-                        fielddesc_cvttocoord(xfielddesc, usexloc));
+                        field_convertValueToPosition(xfielddesc, usexloc));
                     inextx = canvas_valueToPositionX(glist,
-                        fielddesc_cvttocoord(xfielddesc, xsum));
+                        field_convertValueToPosition(xfielddesc, xsum));
                 }
 
                 if (yonset >= 0)
@@ -423,9 +423,9 @@ static void plot_vis(t_gobj *z, t_glist *glist,
 -fill black -width 0  -tags [list plot%lx array]\n",
                         canvas_getView(glist),
                         ixpix, (int)canvas_valueToPositionY(glist, 
-                            basey + fielddesc_cvttocoord(yfielddesc, minyval)),
+                            basey + field_convertValueToPosition(yfielddesc, minyval)),
                         inextx, (int)(canvas_valueToPositionY(glist, 
-                            basey + fielddesc_cvttocoord(yfielddesc, maxyval))
+                            basey + field_convertValueToPosition(yfielddesc, maxyval))
                                 + linewidth), data);
                     ndrawn++;
                     minyval = 1e20;
@@ -441,8 +441,8 @@ static void plot_vis(t_gobj *z, t_glist *glist,
             t_float yval = 0, wval = 0, xpix;
             int ixpix = 0;
                 /* draw the trace */
-            numbertocolor(fielddesc_getfloat(&x->x_outlinecolor, template,
-                data, 1), outline);
+            numbertocolor(field_getFloat(&x->x_outlinecolor, template,
+                data), outline);
             if (wonset >= 0)
             {
                     /* found "w" field which controls linewidth.  The trace is
@@ -463,15 +463,15 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                     wval = *(t_float *)((elem + elemsize * i) + wonset);
                     wval = CLIP(wval);
                     xpix = canvas_valueToPositionX(glist,
-                        basex + fielddesc_cvttocoord(xfielddesc, usexloc));
+                        basex + field_convertValueToPosition(xfielddesc, usexloc));
                     ixpix = xpix + 0.5;
                     if (xonset >= 0 || ixpix != lastpixel)
                     {
                         sys_vGui("%d %f \\\n", ixpix,
                             canvas_valueToPositionY(glist,
-                                basey + fielddesc_cvttocoord(yfielddesc, 
+                                basey + field_convertValueToPosition(yfielddesc, 
                                     yloc + yval) -
-                                        fielddesc_cvttocoord(wfielddesc,wval)));
+                                        field_convertValueToPosition(wfielddesc,wval)));
                         ndrawn++;
                     }
                     lastpixel = ixpix;
@@ -492,14 +492,14 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                     wval = *(t_float *)((elem + elemsize * i) + wonset);
                     wval = CLIP(wval);
                     xpix = canvas_valueToPositionX(glist,
-                        basex + fielddesc_cvttocoord(xfielddesc, usexloc));
+                        basex + field_convertValueToPosition(xfielddesc, usexloc));
                     ixpix = xpix + 0.5;
                     if (xonset >= 0 || ixpix != lastpixel)
                     {
                         sys_vGui("%d %f \\\n", ixpix, canvas_valueToPositionY(glist,
-                            basey + yloc + fielddesc_cvttocoord(yfielddesc,
+                            basey + yloc + field_convertValueToPosition(yfielddesc,
                                 yval) +
-                                    fielddesc_cvttocoord(wfielddesc, wval)));
+                                    field_convertValueToPosition(wfielddesc, wval)));
                         ndrawn++;
                     }
                     lastpixel = ixpix;
@@ -510,13 +510,13 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                 if (ndrawn < 4)
                 {
                     sys_vGui("%d %f \\\n", ixpix + 10, canvas_valueToPositionY(glist,
-                        basey + yloc + fielddesc_cvttocoord(yfielddesc,
+                        basey + yloc + field_convertValueToPosition(yfielddesc,
                             yval) +
-                                fielddesc_cvttocoord(wfielddesc, wval)));
+                                field_convertValueToPosition(wfielddesc, wval)));
                     sys_vGui("%d %f \\\n", ixpix + 10, canvas_valueToPositionY(glist,
-                        basey + yloc + fielddesc_cvttocoord(yfielddesc,
+                        basey + yloc + field_convertValueToPosition(yfielddesc,
                             yval) -
-                                fielddesc_cvttocoord(wfielddesc, wval)));
+                                field_convertValueToPosition(wfielddesc, wval)));
                 }
             ouch:
                 sys_vGui(" -width 1 -fill %s -outline %s\\\n",
@@ -544,13 +544,13 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                     else yval = 0;
                     yval = CLIP(yval);
                     xpix = canvas_valueToPositionX(glist,
-                        basex + fielddesc_cvttocoord(xfielddesc, usexloc));
+                        basex + field_convertValueToPosition(xfielddesc, usexloc));
                     ixpix = xpix + 0.5;
                     if (xonset >= 0 || ixpix != lastpixel)
                     {
                         sys_vGui("%d %f \\\n", ixpix,
                             canvas_valueToPositionY(glist,
-                                basey + yloc + fielddesc_cvttocoord(yfielddesc,
+                                basey + yloc + field_convertValueToPosition(yfielddesc,
                                     yval)));
                         ndrawn++;
                     }
@@ -561,7 +561,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                 if (ndrawn == 0) sys_vGui("0 0 0 0 \\\n");
                 else if (ndrawn == 1) sys_vGui("%d %f \\\n", ixpix + 10,
                     canvas_valueToPositionY(glist, basey + yloc + 
-                        fielddesc_cvttocoord(yfielddesc, yval)));
+                        field_convertValueToPosition(yfielddesc, yval)));
 
                 sys_vGui("-width %f\\\n", linewidth);
                 sys_vGui("-fill %s\\\n", outline);
@@ -587,7 +587,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                     yval = *(t_float *)((elem + elemsize * i) + yonset);
                 else yval = 0;
                 useyloc = basey + yloc +
-                    fielddesc_cvttocoord(yfielddesc, yval);
+                    field_convertValueToPosition(yfielddesc, yval);
                 for (y = elemtemplatecanvas->gl_graphics; y; y = y->g_next)
                 {
                     t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
@@ -749,10 +749,10 @@ static int array_doclick_element(t_array *array, t_glist *glist,
     {
         t_float usexloc, useyloc;
         if (xonset >= 0)
-            usexloc = xloc + fielddesc_cvttocoord(xfield, 
+            usexloc = xloc + field_convertValueToPosition(xfield, 
                 *(t_float *)(((char *)(array->a_vector) + elemsize * i) + xonset));
         else usexloc = xloc + xsum, xsum += xinc;
-        useyloc = yloc + (yonset >= 0 ? fielddesc_cvttocoord(yfield,
+        useyloc = yloc + (yonset >= 0 ? field_convertValueToPosition(yfield,
             *(t_float *)(((char *)(array->a_vector) + elemsize * i) + yonset)) : 0);
         
         if (hit = scalar_performClick(

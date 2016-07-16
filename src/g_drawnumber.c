@@ -152,7 +152,7 @@ static void drawnumber_getrect(t_gobj *z, t_glist *glist,
     int xloc, yloc, font, fontwidth, fontheight, bufsize, width, height;
     char buf[DRAWNUMBER_BUFSIZE], *startline, *newline;
 
-    if (!fielddesc_getfloat(&x->x_vis, template, data, 0))
+    if (!field_getFloat(&x->x_vis, template, data))
     {
         *xp1 = *yp1 = PD_INT_MAX;
         *xp2 = *yp2 = -PD_INT_MAX;
@@ -212,7 +212,7 @@ static void drawnumber_vis(t_gobj *z, t_glist *glist,
     t_drawnumber *x = (t_drawnumber *)z;
     
         /* see comment in plot_vis() */
-    if (vis && !fielddesc_getfloat(&x->x_vis, template, data, 0))
+    if (vis && !field_getFloat(&x->x_vis, template, data))
         return;
     if (vis)
     {
@@ -222,7 +222,7 @@ static void drawnumber_vis(t_gobj *z, t_glist *glist,
         int yloc = canvas_valueToPositionY(glist,
             basey + fielddesc_getcoord(&x->x_yloc, template, data, 0));
         char colorstring[20], buf[DRAWNUMBER_BUFSIZE];
-        numbertocolor(fielddesc_getfloat(&x->x_color, template, data, 1),
+        numbertocolor(field_getFloat(&x->x_color, template, data),
             colorstring);
         drawnumber_getbuf(x, data, template, buf);
         sys_vGui(".x%lx.c create text %d %d -anchor nw -fill %s -text {%s}",
