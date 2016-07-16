@@ -938,11 +938,15 @@ void            field_setAsFloatVariable                (t_fielddescriptor *fd, 
 void            field_setAsFloat                        (t_fielddescriptor *fd, int argc, t_atom *argv);
 void            field_setAsArray                        (t_fielddescriptor *fd, int argc, t_atom *argv);
 
+int             field_isFloat                           (t_fielddescriptor *fd);
+int             field_isArray                           (t_fielddescriptor *fd);
+int             field_isVariable                        (t_fielddescriptor *fd);
+int             field_isFloatConstant                   (t_fielddescriptor *fd);
+
 t_float         field_getFloat                          (t_fielddescriptor *fd, t_template *tmpl, t_word *w);
 t_float         field_convertValueToPosition            (t_fielddescriptor *fd, t_float v);
 
 t_float         field_getPosition                       (t_fielddescriptor *fd, t_template *tmpl, t_word *w);
-                                                            
 void            field_setPosition                       (t_fielddescriptor *fd,
                                                             t_template *tmpl,
                                                             t_word *w,

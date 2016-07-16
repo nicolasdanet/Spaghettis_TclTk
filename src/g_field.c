@@ -130,12 +130,36 @@ void field_setAsArray (t_fielddescriptor *fd, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_float field_getFloat (t_fielddescriptor *f, t_template *tmpl, t_word *w)
+int field_isFloat (t_fielddescriptor *fd)
 {
-    if (f->fd_type == DATA_FLOAT) {
-        if (f->fd_isVariable) { return (template_getfloat (tmpl, f->fd_un.fd_varname, w)); }
+    return (fd->fd_type == DATA_FLOAT);
+}
+
+int field_isArray (t_fielddescriptor *fd)
+{
+    return (fd->fd_type == DATA_ARRAY);
+}
+
+int field_isVariable (t_fielddescriptor *fd)
+{
+    return (fd->fd_isVariable != 0);
+}
+
+int field_isFloatConstant (t_fielddescriptor *fd)
+{
+    return (field_isFloat (fd) && !field_isVariable (fd));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_float field_getFloat (t_fielddescriptor *fd, t_template *tmpl, t_word *w)
+{
+    if (fd->fd_type == DATA_FLOAT) {
+        if (fd->fd_isVariable) { return (template_getfloat (tmpl, fd->fd_un.fd_varname, w)); }
         else {
-            return (f->fd_un.fd_float);
+            return (fd->fd_un.fd_float);
         }
     }
 
@@ -150,6 +174,9 @@ t_float field_getFloat (t_fielddescriptor *f, t_template *tmpl, t_word *w)
 
 t_float field_convertValueToPosition (t_fielddescriptor *fd, t_float v)
 {
+    PD_ASSERT (field_isFloat (fd));
+    PD_ASSERT (field_isVariable (fd));
+    
     if (fd->fd_v2 == fd->fd_v1) { return v; }
     else {
         t_float m = PD_MIN (fd->fd_screen1, fd->fd_screen2);
@@ -163,6 +190,9 @@ t_float field_convertValueToPosition (t_fielddescriptor *fd, t_float v)
 
 static t_float field_convertPositionToValue (t_fielddescriptor *fd, t_float k)
 {
+    PD_ASSERT (field_isFloat (fd));
+    PD_ASSERT (field_isVariable (fd));
+    
     if (fd->fd_screen2 == fd->fd_screen1) { return k; }
     else {
         t_float m = PD_MIN (fd->fd_v1, fd->fd_v2);

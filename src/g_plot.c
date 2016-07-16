@@ -110,7 +110,7 @@ static void *plot_new(t_symbol *classsym, int argc, t_atom *argv)
 void plot_float(t_plot *x, t_float f)
 {
     int viswas;
-    if (x->x_vis.fd_type != DATA_FLOAT || x->x_vis.fd_isVariable)
+    if (!field_isFloatConstant (&x->x_vis))
     {
         post_error ("global vis/invis for a template with variable visibility");
         return;
@@ -140,8 +140,7 @@ static int plot_readownertemplate(t_plot *x,
     t_symbol *elemtemplatesym;
     t_array *array;
 
-        /* find the data and verify it's an array */
-    if (x->x_data.fd_type != DATA_ARRAY || !x->x_data.fd_isVariable)
+    if (!field_isArray (&x->x_data))
     {
         post_error ("plot: needs an array field");
         return (-1);
@@ -202,19 +201,19 @@ static int array_getfields(t_symbol *elemtemplatesym,
         return (-1);
     }
     elemsize = elemtemplate->tp_size * sizeof(t_word);
-    if (yfielddesc && yfielddesc->fd_isVariable)
+    if (yfielddesc && field_isVariable (yfielddesc))
         varname = yfielddesc->fd_un.fd_varname;
     else varname = sym_y;
     if (!template_find_field(elemtemplate, varname, &yonset, &type, &dummy)
         || type != DATA_FLOAT)    
             yonset = -1;
-    if (xfielddesc && xfielddesc->fd_isVariable)
+    if (xfielddesc && field_isVariable (xfielddesc))
         varname = xfielddesc->fd_un.fd_varname;
     else varname = sym_x;
     if (!template_find_field(elemtemplate, varname, &xonset, &type, &dummy)
         || type != DATA_FLOAT) 
             xonset = -1;
-    if (wfielddesc && wfielddesc->fd_isVariable)
+    if (wfielddesc && field_isVariable (wfielddesc))
         varname = wfielddesc->fd_un.fd_varname;
     else varname = sym_w;
     if (!template_find_field(elemtemplate, varname, &wonset, &type, &dummy)

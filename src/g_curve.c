@@ -94,7 +94,7 @@ static void *curve_new(t_symbol *classsym, int argc, t_atom *argv)
 void curve_float(t_curve *x, t_float f)
 {
     int viswas;
-    if (x->x_vis.fd_type != DATA_FLOAT || x->x_vis.fd_isVariable)
+    if (!field_isFloatConstant (&x->x_vis))
     {
         post_error ("global vis/invis for a template with variable visibility");
         return;
@@ -284,12 +284,12 @@ static void curve_motion(void *z, t_float dx, t_float dy, t_float modifier)
     }
     curve_motion_xcumulative += dx;
     curve_motion_ycumulative += dy;
-    if (f->fd_isVariable && (dx != 0))
+    if (field_isVariable (f) && (dx != 0))
     {
         field_setPosition(f, curve_motion_template, curve_motion_wp,
             curve_motion_xbase + curve_motion_xcumulative * curve_motion_xper); 
     }
-    if ((f+1)->fd_isVariable && (dy != 0))
+    if (field_isVariable (f+1) && (dy != 0))
     {
         field_setPosition(f+1, curve_motion_template, curve_motion_wp,
             curve_motion_ybase + curve_motion_ycumulative * curve_motion_yper); 
@@ -323,7 +323,7 @@ static int curve_click(t_gobj *z, t_glist *glist,
         int yval = field_getPosition(f+1, template, data),
             yloc = canvas_valueToPositionY(glist, basey + yval);
         int xerr = xloc - xpix, yerr = yloc - ypix;
-        if (!f->fd_isVariable && !(f+1)->fd_isVariable)
+        if (!field_isVariable (f) && !field_isVariable (f+1))
             continue;
         if (xerr < 0)
             xerr = -xerr;
