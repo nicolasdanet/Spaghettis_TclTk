@@ -657,13 +657,13 @@ static void array_motion(void *z, t_float dx, t_float dy, t_float modifier)
         {
             t_word *thisword = (t_word *)(((char *)array_motion_wp) +
                 i * array_motion_elemsize);
-            t_float xwas = fielddesc_getcoord(array_motion_xfield, 
-                array_motion_template, thisword, 1);
+            t_float xwas = field_getPosition(array_motion_xfield, 
+                array_motion_template, thisword);
             t_float ywas = (array_motion_yfield ?
-                fielddesc_getcoord(array_motion_yfield, 
-                    array_motion_template, thisword, 1) : 0);
-            fielddesc_setcoord(array_motion_xfield,
-                array_motion_template, thisword, xwas + dx, 1);
+                field_getPosition(array_motion_yfield, 
+                    array_motion_template, thisword) : 0);
+            field_setPosition(array_motion_xfield,
+                array_motion_template, thisword, xwas + dx);
             if (array_motion_yfield)
             {
                 if (array_motion_fatten)
@@ -673,15 +673,15 @@ static void array_motion(void *z, t_float dx, t_float dy, t_float modifier)
                         t_float newy = ywas + dy * array_motion_yperpix;
                         if (newy < 0)
                             newy = 0;
-                        fielddesc_setcoord(array_motion_yfield,
-                            array_motion_template, thisword, newy, 1);
+                        field_setPosition(array_motion_yfield,
+                            array_motion_template, thisword, newy);
                     }
                 }
                 else
                 {
-                    fielddesc_setcoord(array_motion_yfield,
+                    field_setPosition(array_motion_yfield,
                         array_motion_template, thisword,
-                            ywas + dy * array_motion_yperpix, 1);
+                            ywas + dy * array_motion_yperpix);
                 }
             }
         }
@@ -692,11 +692,10 @@ static void array_motion(void *z, t_float dx, t_float dy, t_float modifier)
         int thisx = array_motion_initx + array_motion_xcumulative + 0.5, x2;
         int increment, i, nchange;
         t_float newy = array_motion_ycumulative,
-            oldy = fielddesc_getcoord(array_motion_yfield,
+            oldy = field_getPosition(array_motion_yfield,
                 array_motion_template,
                     (t_word *)(((char *)array_motion_wp) +
-                        array_motion_elemsize * array_motion_lastx),
-                            1);
+                        array_motion_elemsize * array_motion_lastx));
         t_float ydiff = newy - oldy;
         if (thisx < 0) thisx = 0;
         else if (thisx >= array_motion_npoints)
@@ -706,10 +705,10 @@ static void array_motion(void *z, t_float dx, t_float dy, t_float modifier)
 
         for (i = 0, x2 = thisx; i < nchange; i++, x2 += increment)
         {
-            fielddesc_setcoord(array_motion_yfield,
+            field_setPosition(array_motion_yfield,
                 array_motion_template,
                     (t_word *)(((char *)array_motion_wp) +
-                        array_motion_elemsize * x2), newy, 1);
+                        array_motion_elemsize * x2), newy);
             if (nchange > 1)
                 newy -= ydiff * (1./(nchange - 1));
          }
@@ -821,9 +820,9 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
             array_motion_wp = (t_word *)((char *)array->a_vector);
             if (doit)
             {
-                fielddesc_setcoord(yfield, elemtemplate,
+                field_setPosition(yfield, elemtemplate,
                     (t_word *)(((char *)array->a_vector) + elemsize * xval),
-                        canvas_positionToValueY(glist, ypix), 1);
+                        canvas_positionToValueY(glist, ypix));
                 canvas_setMotionFunction(glist, 0, (t_motionfn)array_motion, xpix, ypix);
                 if (array_motion_scalar)
                     scalar_redraw(array_motion_scalar, array_motion_glist);
@@ -928,8 +927,8 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
                         {
                             array_motion_xfield = xfield;
                             array_motion_xcumulative = 
-                                fielddesc_getcoord(xfield, array_motion_template,
-                                    (t_word *)(elem + i * elemsize), 1);
+                                field_getPosition(xfield, array_motion_template,
+                                    (t_word *)(elem + i * elemsize));
                                 array_motion_wp = (t_word *)(elem + i * elemsize);
                             if (shift)
                                 array_motion_npoints = array->a_size - i;
@@ -950,16 +949,16 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
                         {
                             array_motion_yfield = wfield;
                             array_motion_ycumulative = 
-                                fielddesc_getcoord(wfield, array_motion_template,
-                                    (t_word *)(elem + i * elemsize), 1);
+                                field_getPosition(wfield, array_motion_template,
+                                    (t_word *)(elem + i * elemsize));
                             array_motion_yperpix *= -array_motion_fatten;
                         }
                         else if (yonset >= 0)
                         {
                             array_motion_yfield = yfield;
                             array_motion_ycumulative = 
-                                fielddesc_getcoord(yfield, array_motion_template,
-                                    (t_word *)(elem + i * elemsize), 1);
+                                field_getPosition(yfield, array_motion_template,
+                                    (t_word *)(elem + i * elemsize));
                                 /* *(t_float *)((elem + elemsize * i) + yonset); */
                         }
                         else

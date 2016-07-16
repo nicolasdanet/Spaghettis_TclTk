@@ -139,6 +139,8 @@ t_float field_getFloat (t_fielddescriptor *f, t_template *tmpl, t_word *w)
         }
     }
 
+    PD_BUG;
+    
     return 0.0;
 }
 
@@ -159,64 +161,46 @@ t_float field_convertValueToPosition (t_fielddescriptor *fd, t_float v)
     }
 }
 
-    /* convert from a screen coordinate to a variable value */
-static t_float fielddesc_cvtfromcoord(t_fielddescriptor *f, t_float coord)
+static t_float field_convertPositionToValue (t_fielddescriptor *fd, t_float k)
 {
-    t_float val;
-    if (f->fd_screen2 == f->fd_screen1)
-        val = coord;
-    else
-    {
-        t_float div = (f->fd_v2 - f->fd_v1)/(f->fd_screen2 - f->fd_screen1);
-        t_float extreme;
-        val = f->fd_v1 + (coord - f->fd_screen1) * div;
-        if (f->fd_quantum != 0)
-            val = ((int)((val/f->fd_quantum) + 0.5)) *  f->fd_quantum;
-        extreme = (f->fd_v1 < f->fd_v2 ?
-            f->fd_v1 : f->fd_v2);
-        if (val < extreme) val = extreme;
-        extreme = (f->fd_v1 > f->fd_v2 ?
-            f->fd_v1 : f->fd_v2);
-        if (val > extreme) val = extreme;
-    }
-    return (val);
- }
-
-void fielddesc_setcoord(t_fielddescriptor *f, t_template *template,
-    t_word *wp, t_float coord, int loud)
-{
-    if (f->fd_type == DATA_FLOAT && f->fd_isVariable)
-    {
-        t_float val = fielddesc_cvtfromcoord(f, coord);
-        template_setfloat(template,
-                f->fd_un.fd_varname, wp, val, loud);
-    }
-    else
-    {
-        if (loud)
-            post_error ("attempt to set constant or symbolic data field to a number");
+    if (fd->fd_screen2 == fd->fd_screen1) { return k; }
+    else {
+        t_float m = PD_MIN (fd->fd_v1, fd->fd_v2);
+        t_float n = PD_MAX (fd->fd_v1, fd->fd_v2);
+        t_float d = (fd->fd_v2 - fd->fd_v1) / (fd->fd_screen2 - fd->fd_screen1);
+        t_float v = (fd->fd_v1 + ((k - fd->fd_screen1) * d));
+        
+        if (fd->fd_quantum != 0.0) { v = ((int)((v / fd->fd_quantum) + 0.5)) * fd->fd_quantum; }
+        
+        return (PD_CLAMP (v, m, n));
     }
 }
 
-    /* read a variable via fielddesc and convert to screen coordinate */
-t_float fielddesc_getcoord(t_fielddescriptor *f, t_template *template,
-    t_word *wp, int loud)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_float field_getPosition (t_fielddescriptor *fd, t_template *tmpl, t_word *w)
 {
-    if (f->fd_type == DATA_FLOAT)
-    {
-        if (f->fd_isVariable)
-        {
-            t_float val = template_getfloat(template,
-                f->fd_un.fd_varname, wp);
-            return (field_convertValueToPosition(f, val));
+    if (fd->fd_type == DATA_FLOAT) {
+        if (fd->fd_isVariable) {
+            return (field_convertValueToPosition (fd, template_getfloat (tmpl, fd->fd_un.fd_varname, w)));
+        } else {
+            return (fd->fd_un.fd_float);
         }
-        else return (f->fd_un.fd_float);
     }
-    else
-    {
-        if (loud)
-            post_error ("symbolic data field used as number");
-        return (0);
+
+    PD_BUG; 
+    
+    return 0.0;
+}
+
+void field_setPosition (t_fielddescriptor *fd, t_template *tmpl, t_word *w, t_float position)
+{
+    if (fd->fd_type == DATA_FLOAT && fd->fd_isVariable) {
+        template_setfloat (tmpl, fd->fd_un.fd_varname, w, field_convertPositionToValue (fd, position), 0);
+    } else {
+        PD_BUG;
     }
 }
 
