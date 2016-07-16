@@ -115,7 +115,8 @@ void plot_float(t_plot *x, t_float f)
         post_error ("global vis/invis for a template with variable visibility");
         return;
     }
-    viswas = (x->x_vis.fd_un.fd_float != 0);
+
+    viswas = (field_getFloatConstant (&x->x_vis) != 0);
     
     if ((f != 0 && viswas) || (f == 0 && !viswas))
         return;
@@ -145,15 +146,15 @@ static int plot_readownertemplate(t_plot *x,
         post_error ("plot: needs an array field");
         return (-1);
     }
-    if (!template_find_field(ownertemplate, x->x_data.fd_un.fd_varname,
+    if (!template_find_field(ownertemplate, field_getVarname (&x->x_data),
         &arrayonset, &type, &elemtemplatesym))
     {
-        post_error ("plot: %s: no such field", x->x_data.fd_un.fd_varname->s_name);
+        post_error ("plot: %s: no such field", field_getVarname (&x->x_data)->s_name);
         return (-1);
     }
     if (type != DATA_ARRAY)
     {
-        post_error ("plot: %s: not an array", x->x_data.fd_un.fd_varname->s_name);
+        post_error ("plot: %s: not an array", field_getVarname (&x->x_data)->s_name);
         return (-1);
     }
     array = *(t_array **)(((char *)data) + arrayonset);
@@ -202,19 +203,19 @@ static int array_getfields(t_symbol *elemtemplatesym,
     }
     elemsize = elemtemplate->tp_size * sizeof(t_word);
     if (yfielddesc && field_isVariable (yfielddesc))
-        varname = yfielddesc->fd_un.fd_varname;
+        varname = field_getVarname (yfielddesc);
     else varname = sym_y;
     if (!template_find_field(elemtemplate, varname, &yonset, &type, &dummy)
         || type != DATA_FLOAT)    
             yonset = -1;
     if (xfielddesc && field_isVariable (xfielddesc))
-        varname = xfielddesc->fd_un.fd_varname;
+        varname = field_getVarname (xfielddesc);
     else varname = sym_x;
     if (!template_find_field(elemtemplate, varname, &xonset, &type, &dummy)
         || type != DATA_FLOAT) 
             xonset = -1;
     if (wfielddesc && field_isVariable (wfielddesc))
-        varname = wfielddesc->fd_un.fd_varname;
+        varname = field_getVarname (wfielddesc);
     else varname = sym_w;
     if (!template_find_field(elemtemplate, varname, &wonset, &type, &dummy)
         || type != DATA_FLOAT) 

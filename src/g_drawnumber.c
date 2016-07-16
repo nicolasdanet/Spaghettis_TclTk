@@ -84,7 +84,7 @@ void drawnumber_float(t_drawnumber *x, t_float f)
         post_error ("global vis/invis for a template with variable visibility");
         return;
     }
-    viswas = (x->x_vis.fd_un.fd_float != 0);
+    viswas = (field_getFloatConstant (&x->x_vis) != 0);
     
     if ((f != 0 && viswas) || (f == 0 && !viswas))
         return;

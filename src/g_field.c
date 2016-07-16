@@ -135,6 +135,11 @@ int field_isFloat (t_fielddescriptor *fd)
     return (fd->fd_type == DATA_FLOAT);
 }
 
+int field_isFloatConstant (t_fielddescriptor *fd)
+{
+    return (field_isFloat (fd) && !field_isVariable (fd));
+}
+
 int field_isArray (t_fielddescriptor *fd)
 {
     return (fd->fd_type == DATA_ARRAY);
@@ -145,11 +150,6 @@ int field_isVariable (t_fielddescriptor *fd)
     return (fd->fd_isVariable != 0);
 }
 
-int field_isFloatConstant (t_fielddescriptor *fd)
-{
-    return (field_isFloat (fd) && !field_isVariable (fd));
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -157,15 +157,31 @@ int field_isFloatConstant (t_fielddescriptor *fd)
 t_float field_getFloat (t_fielddescriptor *fd, t_template *tmpl, t_word *w)
 {
     if (fd->fd_type == DATA_FLOAT) {
-        if (fd->fd_isVariable) { return (template_getfloat (tmpl, fd->fd_un.fd_varname, w)); }
-        else {
-            return (fd->fd_un.fd_float);
-        }
+    //
+    if (fd->fd_isVariable) { return (template_getfloat (tmpl, fd->fd_un.fd_varname, w)); }
+    else {
+        return (fd->fd_un.fd_float);
+    }
+    //
     }
 
     PD_BUG;
     
     return 0.0;
+}
+
+t_float field_getFloatConstant (t_fielddescriptor *fd)
+{
+    PD_ASSERT (field_isFloatConstant (fd));
+    
+    return fd->fd_un.fd_float;
+}
+
+t_symbol *field_getVarname (t_fielddescriptor *fd)
+{
+    PD_ASSERT (field_isVariable (fd));
+    
+    return fd->fd_un.fd_varname;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -213,11 +229,13 @@ static t_float field_convertPositionToValue (t_fielddescriptor *fd, t_float k)
 t_float field_getPosition (t_fielddescriptor *fd, t_template *tmpl, t_word *w)
 {
     if (fd->fd_type == DATA_FLOAT) {
-        if (fd->fd_isVariable) {
-            return (field_convertValueToPosition (fd, template_getfloat (tmpl, fd->fd_un.fd_varname, w)));
-        } else {
-            return (fd->fd_un.fd_float);
-        }
+    //
+    if (fd->fd_isVariable) {
+        return (field_convertValueToPosition (fd, template_getfloat (tmpl, fd->fd_un.fd_varname, w)));
+    } else {
+        return (fd->fd_un.fd_float);
+    }
+    //
     }
 
     PD_BUG; 
@@ -227,8 +245,14 @@ t_float field_getPosition (t_fielddescriptor *fd, t_template *tmpl, t_word *w)
 
 void field_setPosition (t_fielddescriptor *fd, t_template *tmpl, t_word *w, t_float position)
 {
-    if (fd->fd_type == DATA_FLOAT && fd->fd_isVariable) {
+    if (fd->fd_type == DATA_FLOAT) {
+    //
+    if (fd->fd_isVariable) {
         template_setfloat (tmpl, fd->fd_un.fd_varname, w, field_convertPositionToValue (fd, position), 0);
+    } else {
+        fd->fd_un.fd_float = position;
+    }
+    //
     } else {
         PD_BUG;
     }
