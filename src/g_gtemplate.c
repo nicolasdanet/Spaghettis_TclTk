@@ -45,7 +45,7 @@ t_glist *template_findcanvas(t_template *template)
     if (!(gt = template->tp_list))
         return (0);
     return (gt->x_owner);
-    /* return ((t_glist *)pd_findByClass(template->tp_symbol, canvas_class)); */
+    /* return ((t_glist *)pd_findByClass(template->tp_templateIdentifier, canvas_class)); */
 }
 
 static void template_notify(t_template *template, t_symbol *s, int argc, t_atom *argv)

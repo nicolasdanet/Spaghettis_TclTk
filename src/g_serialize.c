@@ -570,9 +570,9 @@ t_buffer *glist_writetobinbuf(t_glist *x, int wholething)
                 default: type = &s_float; PD_BUG;
             }
             if (template->tp_vector[j].ds_type == DATA_ARRAY)
-                buffer_vAppend(b, "sss;", type, template->tp_vector[j].ds_name,
+                buffer_vAppend(b, "sss;", type, template->tp_vector[j].ds_fieldName,
                     gensym (template->tp_vector[j].ds_templateIdentifier->s_name + 3));
-            else buffer_vAppend(b, "ss;", type, template->tp_vector[j].ds_name);
+            else buffer_vAppend(b, "ss;", type, template->tp_vector[j].ds_fieldName);
         }
         buffer_appendSemicolon(b);
     }
@@ -664,9 +664,9 @@ void canvas_serializeTemplates (t_glist *glist, t_buffer *b)
             default: type = &s_float; PD_BUG;
         }
         if (template->tp_vector[j].ds_type == DATA_ARRAY)
-            buffer_vAppend(b, "sss", type, template->tp_vector[j].ds_name,
+            buffer_vAppend(b, "sss", type, template->tp_vector[j].ds_fieldName,
                 gensym (template->tp_vector[j].ds_templateIdentifier->s_name + 3));
-        else buffer_vAppend(b, "ss", type, template->tp_vector[j].ds_name);
+        else buffer_vAppend(b, "ss", type, template->tp_vector[j].ds_fieldName);
     }
     buffer_appendSemicolon(b);
     //

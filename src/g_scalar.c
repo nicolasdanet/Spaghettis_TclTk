@@ -72,13 +72,13 @@ static void scalar_drawJob (t_gobj *z, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int scalar_isTemplateExistRecursive (t_template *template)
+static int scalar_isTemplateExistRecursive (t_template *tmpl)
 {
-    if (!template) { return 0; }
+    if (!tmpl) { return 0; }
     else {
     //
-    int i, size = template->tp_size;
-    t_dataslot *v = template->tp_vector;
+    int i, size = tmpl->tp_size;
+    t_dataslot *v = tmpl->tp_vector;
     
     for (i = 0; i < size; i++, v++) {
     //

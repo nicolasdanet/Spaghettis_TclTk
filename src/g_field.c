@@ -35,7 +35,7 @@ static t_error field_setAsFloatVariableParsed (t_fielddescriptor *fd,
     double a, b, c, d, e;
     int k;
         
-    fd->fd_un.fd_varname = gensym (t);
+    fd->fd_un.fd_variableName = gensym (t);
     
     k = sscanf (firstOpeningParenthesis, "(%lf:%lf)(%lf:%lf)(%lf)", &a, &b, &c, &d, &e);
             
@@ -92,12 +92,12 @@ void field_setAsFloatVariable (t_fielddescriptor *fd, t_symbol *s)
     
     if (parse && !field_setAsFloatVariableParsed (fd, s, firstOpeningParenthesis)) { }
     else {
-        fd->fd_un.fd_varname    = s;
-        fd->fd_v1               = 0.0;
-        fd->fd_v2               = 0.0;
-        fd->fd_screen1          = 0.0;
-        fd->fd_screen2          = 0.0; 
-        fd->fd_quantum          = 0.0;
+        fd->fd_un.fd_variableName   = s;
+        fd->fd_v1                   = 0.0;
+        fd->fd_v2                   = 0.0;
+        fd->fd_screen1              = 0.0;
+        fd->fd_screen2              = 0.0; 
+        fd->fd_quantum              = 0.0;
     }
 }
 
@@ -117,9 +117,9 @@ void field_setAsArray (t_fielddescriptor *fd, int argc, t_atom *argv)
     if (argc <= 0) { field_setAsFloatConstant (fd, 0.0); }
     else {
         if (IS_SYMBOL (argv)) {
-            fd->fd_type             = DATA_ARRAY;
-            fd->fd_isVariable       = 1;
-            fd->fd_un.fd_varname    = GET_SYMBOL (argv);
+            fd->fd_type                 = DATA_ARRAY;
+            fd->fd_isVariable           = 1;
+            fd->fd_un.fd_variableName   = GET_SYMBOL (argv);
         } else { 
             field_setAsFloatConstant (fd, atom_getFloatAtIndex (0, argc, argv));
         }
@@ -158,7 +158,7 @@ t_float field_getFloat (t_fielddescriptor *fd, t_template *tmpl, t_word *w)
 {
     if (fd->fd_type == DATA_FLOAT) {
     //
-    if (fd->fd_isVariable) { return (template_getfloat (tmpl, fd->fd_un.fd_varname, w)); }
+    if (fd->fd_isVariable) { return (template_getfloat (tmpl, fd->fd_un.fd_variableName, w)); }
     else {
         return (fd->fd_un.fd_float);
     }
@@ -177,11 +177,11 @@ t_float field_getFloatConstant (t_fielddescriptor *fd)
     return fd->fd_un.fd_float;
 }
 
-t_symbol *field_getVarname (t_fielddescriptor *fd)
+t_symbol *field_getVariableName (t_fielddescriptor *fd)
 {
     PD_ASSERT (field_isVariable (fd));
     
-    return fd->fd_un.fd_varname;
+    return fd->fd_un.fd_variableName;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -231,7 +231,7 @@ t_float field_getFloatAsPosition (t_fielddescriptor *fd, t_template *tmpl, t_wor
     if (fd->fd_type == DATA_FLOAT) {
     //
     if (fd->fd_isVariable) {
-        return (field_convertValueToPosition (fd, template_getfloat (tmpl, fd->fd_un.fd_varname, w)));
+        return (field_convertValueToPosition (fd, template_getfloat (tmpl, fd->fd_un.fd_variableName, w)));
     } else {
         return (fd->fd_un.fd_float);
     }
@@ -248,7 +248,7 @@ void field_setFloatAsPosition (t_fielddescriptor *fd, t_template *tmpl, t_word *
     if (fd->fd_type == DATA_FLOAT) {
     //
     if (fd->fd_isVariable) {
-        template_setfloat (tmpl, fd->fd_un.fd_varname, w, field_convertPositionToValue (fd, position));
+        template_setfloat (tmpl, fd->fd_un.fd_variableName, w, field_convertPositionToValue (fd, position));
     } else {
         fd->fd_un.fd_float = position;
     }

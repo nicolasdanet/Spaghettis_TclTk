@@ -413,10 +413,10 @@ static void get_pointer(t_get *x, t_gpointer *gp)
                 outlet_symbol(vp->gv_outlet,
                     *(t_symbol **)(((char *)vec) + onset));
             else post_error ("get: %s.%s is not a number or symbol",
-                    template->tp_symbol->s_name, vp->gv_sym->s_name);
+                    template->tp_templateIdentifier->s_name, vp->gv_sym->s_name);
         }
         else post_error ("get: %s.%s: no such field",
-            template->tp_symbol->s_name, vp->gv_sym->s_name);
+            template->tp_templateIdentifier->s_name, vp->gv_sym->s_name);
     }
 }
 

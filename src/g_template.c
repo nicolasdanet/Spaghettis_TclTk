@@ -46,7 +46,7 @@ static void template_conformglist (t_template *, t_template *, t_glist *, int *)
 static int dataslot_matches(t_dataslot *ds1, t_dataslot *ds2,
     int nametoo)
 {
-    return ((!nametoo || ds1->ds_name == ds2->ds_name) &&
+    return ((!nametoo || ds1->ds_fieldName == ds2->ds_fieldName) &&
         ds1->ds_type == ds2->ds_type &&
             (ds1->ds_type != DATA_ARRAY ||
                 ds1->ds_templateIdentifier == ds2->ds_templateIdentifier));
@@ -68,7 +68,7 @@ int template_find_field(t_template *x, t_symbol *name, int *p_onset,
     }
     n = x->tp_size;
     for (i = 0; i < n; i++)
-        if (x->tp_vector[i].ds_name == name)
+        if (x->tp_vector[i].ds_fieldName == name)
     {
         *p_onset = i * sizeof(t_word);
         *p_type = x->tp_vector[i].ds_type;
@@ -88,10 +88,10 @@ t_float template_getfloat(t_template *x, t_symbol *fieldname, t_word *wp)
         if (type == DATA_FLOAT)
             val = *(t_float *)(((char *)wp) + onset);
         else if (0 /* loud */) post_error ("%s.%s: not a number",
-            x->tp_symbol->s_name, fieldname->s_name);
+            x->tp_templateIdentifier->s_name, fieldname->s_name);
     }
     else if (0 /* loud */) post_error ("%s.%s: no such field",
-        x->tp_symbol->s_name, fieldname->s_name);
+        x->tp_templateIdentifier->s_name, fieldname->s_name);
     return (val);
 }
 
@@ -104,10 +104,10 @@ void template_setfloat(t_template *x, t_symbol *fieldname, t_word *wp, t_float f
         if (type == DATA_FLOAT)
             *(t_float *)(((char *)wp) + onset) = f;
         else if (0 /* loud */) post_error ("%s.%s: not a number",
-            x->tp_symbol->s_name, fieldname->s_name);
+            x->tp_templateIdentifier->s_name, fieldname->s_name);
     }
     else if (0 /* loud */) post_error ("%s.%s: no such field",
-        x->tp_symbol->s_name, fieldname->s_name);
+        x->tp_templateIdentifier->s_name, fieldname->s_name);
 }
 
 t_symbol *template_getsymbol(t_template *x, t_symbol *fieldname, t_word *wp)
@@ -120,10 +120,10 @@ t_symbol *template_getsymbol(t_template *x, t_symbol *fieldname, t_word *wp)
         if (type == DATA_SYMBOL)
             val = *(t_symbol **)(((char *)wp) + onset);
         else if (0 /* loud */) post_error ("%s.%s: not a symbol",
-            x->tp_symbol->s_name, fieldname->s_name);
+            x->tp_templateIdentifier->s_name, fieldname->s_name);
     }
     else if (0 /* loud */) post_error ("%s.%s: no such field",
-        x->tp_symbol->s_name, fieldname->s_name);
+        x->tp_templateIdentifier->s_name, fieldname->s_name);
     return (val);
 }
 
@@ -136,10 +136,10 @@ void template_setsymbol(t_template *x, t_symbol *fieldname, t_word *wp, t_symbol
         if (type == DATA_SYMBOL)
             *(t_symbol **)(((char *)wp) + onset) = s;
         else if (0 /* loud */) post_error ("%s.%s: not a symbol",
-            x->tp_symbol->s_name, fieldname->s_name);
+            x->tp_templateIdentifier->s_name, fieldname->s_name);
     }
     else if (0 /* loud */) post_error ("%s.%s: no such field",
-        x->tp_symbol->s_name, fieldname->s_name);
+        x->tp_templateIdentifier->s_name, fieldname->s_name);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -204,14 +204,14 @@ static t_scalar *template_conformscalar(t_template *tfrom, t_template *tto,
     t_template *scalartemplate;
     /* post("conform scalar"); */
         /* possibly replace the scalar */
-    if (scfrom->sc_templateIdentifier == tfrom->tp_symbol)
+    if (scfrom->sc_templateIdentifier == tfrom->tp_templateIdentifier)
     {
             /* see scalar_new() for comment about the gpointer. */
         gpointer_init(&gp);
         x = (t_scalar *)PD_MEMORY_GET(sizeof(t_scalar) +
             (tto->tp_size - 1) * sizeof(*x->sc_vector));
         x->sc_g.g_pd = scalar_class;
-        x->sc_templateIdentifier = tfrom->tp_symbol;
+        x->sc_templateIdentifier = tfrom->tp_templateIdentifier;
         gpointer_setAsScalarType(&gp, glist, x);
             /* Here we initialize to the new template, but array and list
             elements will still belong to old template. */
@@ -268,7 +268,7 @@ static void template_conformarray(t_template *tfrom, t_template *tto,
 {
     int i, j;
     t_template *scalartemplate = 0;
-    if (a->a_templateIdentifier == tfrom->tp_symbol)
+    if (a->a_templateIdentifier == tfrom->tp_templateIdentifier)
     {
         /* the array elements must all be conformed */
         int oldelemsize = sizeof(t_word) * tfrom->tp_size,
@@ -482,25 +482,26 @@ t_template *template_new(t_symbol *templatesym, int argc, t_atom *argv)
             oldn * sizeof(*x->tp_vector), newn * sizeof(*x->tp_vector));
         x->tp_size = newn;
         x->tp_vector[oldn].ds_type = newtype;
-        x->tp_vector[oldn].ds_name = newname;
+        x->tp_vector[oldn].ds_fieldName = newname;
         x->tp_vector[oldn].ds_templateIdentifier = newarraytemplate;
     bad: 
         argc -= 2; argv += 2;
     }
     if (*templatesym->s_name)
     {
-        x->tp_symbol = templatesym;
-        pd_bind(&x->tp_pd, x->tp_symbol);
+        x->tp_templateIdentifier = templatesym;
+        pd_bind(&x->tp_pd, x->tp_templateIdentifier);
     }
-    else x->tp_symbol = templatesym;
+    else x->tp_templateIdentifier = templatesym;
     return (x);
 }
 
-    /* here we assume someone has already cleaned up all instances of this. */
-void template_free(t_template *x)
+void template_free (t_template *x)
 {
-    if (*x->tp_symbol->s_name)
-        pd_unbind(&x->tp_pd, x->tp_symbol);
+    if (*x->tp_templateIdentifier->s_name) { 
+        pd_unbind (&x->tp_pd, x->tp_templateIdentifier);
+    }
+    
     PD_MEMORY_FREE(x->tp_vector);
 }
 
@@ -510,11 +511,18 @@ void template_free(t_template *x)
 
 void template_setup (void)
 {
-    template_class = class_new(sym_template, 0, (t_method)template_free,
-        sizeof(t_template), CLASS_NOBOX, 0);
+    t_class *c = NULL;
+    
+    c = class_new (sym_template,
+        NULL, 
+        (t_method)template_free,
+        sizeof (t_template),
+        CLASS_NOBOX,
+        A_NULL);
+    
+    class_addMethod (pd_canvasMaker, (t_method)template_usetemplate, sym_struct, A_GIMME, A_NULL);
         
-    class_addMethod (pd_canvasMaker, (t_method)template_usetemplate,
-        sym_struct, A_GIMME, 0);
+    template_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

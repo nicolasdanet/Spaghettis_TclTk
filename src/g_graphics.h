@@ -302,7 +302,7 @@ struct _fielddescriptor {
     char                fd_isVariable;
     union {
         t_float         fd_float;
-        t_symbol        *fd_varname;
+        t_symbol        *fd_variableName;
     } fd_un;
     t_float             fd_v1;
     t_float             fd_v2;
@@ -316,7 +316,7 @@ struct _fielddescriptor {
 
 typedef struct _dataslot {
     int                 ds_type;
-    t_symbol            *ds_name;
+    t_symbol            *ds_fieldName;
     t_symbol            *ds_templateIdentifier;
     } t_dataslot;
 
@@ -328,7 +328,7 @@ struct _template {
     int                 tp_size;    
     t_dataslot          *tp_vector;  
     t_gtemplate         *tp_list;  
-    t_symbol            *tp_symbol;    
+    t_symbol            *tp_templateIdentifier;    
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -984,7 +984,7 @@ int             field_isFloatConstant                   (t_fielddescriptor *fd);
 int             field_isArray                           (t_fielddescriptor *fd);
 int             field_isVariable                        (t_fielddescriptor *fd);
 
-t_symbol        *field_getVarname                       (t_fielddescriptor *fd);
+t_symbol        *field_getVariableName                  (t_fielddescriptor *fd);
 
 t_float         field_getFloat                          (t_fielddescriptor *fd, t_template *tmpl, t_word *w);
 t_float         field_getFloatConstant                  (t_fielddescriptor *fd);
