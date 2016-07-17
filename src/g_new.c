@@ -163,7 +163,7 @@ void canvas_makeScalar (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     if (templateName != &s_) {
     //
-    t_symbol *templateIdentifier = canvas_makeBindSymbol (templateName);
+    t_symbol *templateIdentifier = utils_makeBindSymbol (templateName);
     
     if (template_findbyname (templateIdentifier)) {
     //

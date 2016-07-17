@@ -67,14 +67,14 @@ static void *scalar_define_new(t_symbol *s, int argc, t_atom *argv)
     x->gl_parent = z;
     x->gl_saveScalar = 0;
         /* put a scalar in it */
-    template = template_findbyname(canvas_makeBindSymbol(templatesym));
+    template = template_findbyname(utils_makeBindSymbol(templatesym));
     if (!template)
     {
         post_error ("scalar define: couldn't find template %s",
             templatesym->s_name);
         goto noscalar;
     }
-    sc = scalar_new(x, canvas_makeBindSymbol(templatesym));
+    sc = scalar_new(x, utils_makeBindSymbol(templatesym));
     if (!sc)
     {
         post_error ("%s: couldn't create scalar", templatesym->s_name);

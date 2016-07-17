@@ -377,7 +377,6 @@ t_environment   *canvas_getEnvironment                  (t_glist *glist);
 t_glist         *canvas_getView                         (t_glist *glist);
 
 t_symbol        *canvas_expandDollar                    (t_glist *glist, t_symbol *s);
-t_symbol        *canvas_makeBindSymbol                  (t_symbol *s);
 
 void            canvas_makeTextObject                   (t_glist *glist, 
                                                             int positionX, 

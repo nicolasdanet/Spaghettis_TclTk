@@ -741,7 +741,7 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_symbol *type, t_f
     if (type != &s_float) { PD_BUG; }
     else {
     //
-    t_template *template = template_findbyname (sym_pd__dash__float__dash__array);
+    t_template *template = template_findbyname (sym___TEMPLATE__float__dash__array);
     
     if (template) {
     //
@@ -762,7 +762,7 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_symbol *type, t_f
     int plot = PD_CLAMP ((((int)flags & GARRAY_FLAG_PLOT) >> 1), PLOT_POLYGONS, PLOT_CURVES);
     int n    = (int)PD_MAX (1.0, size);
     
-    x = garray_makeObjectWithScalar (glist, name, sym_pd__dash__float__dash__array, save, hide);
+    x = garray_makeObjectWithScalar (glist, name, sym___TEMPLATE__float__dash__array, save, hide);
 
     array_resize (x->x_scalar->sc_vector[zOnset].w_array, n);
 

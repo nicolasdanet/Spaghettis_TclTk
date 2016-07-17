@@ -31,6 +31,8 @@ t_symbol s_         = { ""          , NULL, NULL };         /* Shared. */
 
 /* Shared. */
 
+t_symbol *sym___TEMPLATE__float__dash__array;
+t_symbol *sym___TEMPLATE__text;
 t_symbol *sym___ampersand__;
 t_symbol *sym___ampersand____ampersand__;
 t_symbol *sym___asterisk__;
@@ -99,7 +101,7 @@ t_symbol *sym__savepreferences;
 t_symbol *sym__selectall;
 t_symbol *sym__signoff;
 t_symbol *sym__sysexin;
-t_symbol *sym__text_template;
+t_symbol *sym__texttemplate;
 t_symbol *sym__touchin;
 t_symbol *sym__watchdog;
 t_symbol *sym_abs;
@@ -304,8 +306,6 @@ t_symbol *sym_pack;
 t_symbol *sym_pad;
 t_symbol *sym_panelsize;
 t_symbol *sym_pd;
-t_symbol *sym_pd__dash__float__dash__array;
-t_symbol *sym_pd__dash__text;
 t_symbol *sym_phasor__tilde__;
 t_symbol *sym_pipe;
 t_symbol *sym_pgmin;
@@ -514,6 +514,8 @@ t_symbol *sym_vumeter;
 
 void symbols_initialize (void)
 { 
+    sym___TEMPLATE__float__dash__array          = utils_makeBindSymbol (gensym ("float-array"));
+    sym___TEMPLATE__text                        = utils_makeBindSymbol (gensym ("text"));
     sym___ampersand__                           = gensym ("&");
     sym___ampersand____ampersand__              = gensym ("&&");
     sym___asterisk__                            = gensym ("*");
@@ -582,7 +584,7 @@ void symbols_initialize (void)
     sym__selectall                              = gensym ("_selectall");
     sym__signoff                                = gensym ("_signoff");
     sym__sysexin                                = gensym ("_sysexin");
-    sym__text_template                          = gensym ("_text_template");
+    sym__texttemplate                           = gensym ("_texttemplate");
     sym__touchin                                = gensym ("_touchin");
     sym__watchdog                               = gensym ("_watchdog");
     sym_abs                                     = gensym ("abs");
@@ -787,8 +789,6 @@ void symbols_initialize (void)
     sym_pad                                     = gensym ("pad");
     sym_panelsize                               = gensym ("panelsize");
     sym_pd                                      = gensym ("pd");
-    sym_pd__dash__float__dash__array            = gensym ("pd-float-array");
-    sym_pd__dash__text                          = gensym ("pd-text");
     sym_phasor__tilde__                         = gensym ("phasor~");
     sym_pipe                                    = gensym ("pipe");
     sym_pgmin                                   = gensym ("pgmin");

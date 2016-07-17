@@ -36,6 +36,8 @@ extern t_symbol s_;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+extern t_symbol *sym___TEMPLATE__float__dash__array;
+extern t_symbol *sym___TEMPLATE__text;
 extern t_symbol *sym___ampersand__;
 extern t_symbol *sym___ampersand____ampersand__;
 extern t_symbol *sym___asterisk__;
@@ -104,7 +106,7 @@ extern t_symbol *sym__savepreferences;
 extern t_symbol *sym__selectall;
 extern t_symbol *sym__signoff;
 extern t_symbol *sym__sysexin;
-extern t_symbol *sym__text_template;
+extern t_symbol *sym__texttemplate;
 extern t_symbol *sym__touchin;
 extern t_symbol *sym__watchdog;
 extern t_symbol *sym_abs;
@@ -309,8 +311,6 @@ extern t_symbol *sym_pack;
 extern t_symbol *sym_pad;
 extern t_symbol *sym_panelsize;
 extern t_symbol *sym_pd;
-extern t_symbol *sym_pd__dash__float__dash__array;
-extern t_symbol *sym_pd__dash__text;
 extern t_symbol *sym_phasor__tilde__;
 extern t_symbol *sym_pipe;
 extern t_symbol *sym_pgmin;

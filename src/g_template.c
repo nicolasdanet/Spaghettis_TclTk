@@ -400,7 +400,7 @@ static void *template_usetemplate(void *dummy, t_symbol *s,
 {
     t_template *x;
     t_symbol *templatesym =
-        canvas_makeBindSymbol(atom_getSymbolAtIndex(0, argc, argv));
+        utils_makeBindSymbol(atom_getSymbolAtIndex(0, argc, argv));
     if (!argc)
         return (0);
     argc--; argv++;
@@ -467,7 +467,7 @@ t_template *template_new(t_symbol *templatesym, int argc, t_atom *argv)
                 post_error ("array lacks element template or name");
                 goto bad;
             }
-            newarraytemplate = canvas_makeBindSymbol(argv[2].a_w.w_symbol);
+            newarraytemplate = utils_makeBindSymbol(argv[2].a_w.w_symbol);
             newtype = DATA_ARRAY;
             argc--;
             argv++;

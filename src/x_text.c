@@ -258,7 +258,7 @@ static void *text_define_new(t_symbol *s, int argc, t_atom *argv)
     }
     textbuf_init(&x->x_textbuf);
         /* set up a scalar and a pointer to it that we can output */
-    x->x_scalar = scalar_new(canvas_getCurrent(), sym_pd__dash__text);
+    x->x_scalar = scalar_new(canvas_getCurrent(), sym___TEMPLATE__text);
     buffer_free(x->x_scalar->sc_vector[2].w_buffer); 
     x->x_scalar->sc_vector[2].w_buffer = x->x_binbuf;
     x->x_out = outlet_new(&x->x_ob, &s_pointer);
@@ -374,7 +374,7 @@ static void text_client_argparse(t_text_client *x, int *argcp, t_atom **argvp,
         if (!strcmp(argv->a_w.w_symbol->s_name, "-s") &&
             argc >= 3 && argv[1].a_type == A_SYMBOL && argv[2].a_type == A_SYMBOL)
         {
-            x->tc_struct = canvas_makeBindSymbol(argv[1].a_w.w_symbol);
+            x->tc_struct = utils_makeBindSymbol(argv[1].a_w.w_symbol);
             x->tc_field = argv[2].a_w.w_symbol;
             argc -= 2; argv += 2;
         }
@@ -1767,8 +1767,8 @@ static void text_template_init( void)
         return;
     b = buffer_new();
     
-    canvas_setActiveFileNameAndDirectory (sym__text_template, sym___dot__);
-    buffer_withStringUnzeroed(b, text_templatefile, strlen(text_templatefile));
+    canvas_setActiveFileNameAndDirectory (sym__texttemplate, sym___dot__);
+    buffer_withStringUnzeroed(b, text_templatefile, strlen (text_templatefile));
     buffer_eval(b, &pd_canvasMaker, 0, 0);
     pd_vMessage(s__X.s_thing, sym__pop, "i", 0);
     

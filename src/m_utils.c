@@ -113,6 +113,20 @@ t_symbol *utils_substituteIfEmpty (t_symbol *s, int asDash)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_symbol *utils_makeBindSymbol (t_symbol *s)
+{
+    t_error err = PD_ERROR_NONE;
+    char t[PD_STRING] = { 0 };
+    PD_ASSERT (s);
+    err = string_sprintf (t, PD_STRING, "pd-%s", s->s_name);
+    PD_ASSERT (!err);
+    return (gensym (t));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 int utils_isTokenEnd (char c) 
 {
     return (c == ',' || c == ';');

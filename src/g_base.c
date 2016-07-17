@@ -191,7 +191,7 @@ void canvas_addObject (t_glist *glist, t_gobj *y)
     if (canvas_isMapped (canvas)) { gobj_visibilityChanged (y, glist, 1); }
     
     if (needToPaintScalars) {
-        t_symbol *bound = canvas_makeBindSymbol (canvas->gl_name);
+        t_symbol *bound = utils_makeBindSymbol (canvas->gl_name);
         canvas_paintAllScalarsByTemplate (template_findbyname (bound), SCALAR_REDRAW);
     }
 }
@@ -216,7 +216,7 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     }
     
     if (needToPaintScalars) {
-        t_symbol *bound = canvas_makeBindSymbol (canvas->gl_name);
+        t_symbol *bound = utils_makeBindSymbol (canvas->gl_name);
         canvas_paintAllScalarsByTemplate (template_findbyname (bound), SCALAR_ERASE);
     }
     
@@ -242,7 +242,7 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     
     if (needToUpdateDSPChain) { dsp_update(); }
     if (needToPaintScalars)   {
-        t_symbol *bound = canvas_makeBindSymbol (canvas->gl_name);
+        t_symbol *bound = utils_makeBindSymbol (canvas->gl_name);
         canvas_paintAllScalarsByTemplate (template_findbyname (bound), SCALAR_DRAW);
     }
     
@@ -434,16 +434,6 @@ void canvas_updateTitle (t_glist *glist)
                     glist->gl_isDirty);
 }
 
-t_symbol *canvas_makeBindSymbol (t_symbol *s)
-{
-    t_error err = PD_ERROR_NONE;
-    char t[PD_STRING] = { 0 };
-    PD_ASSERT (s);
-    err = string_sprintf (t, PD_STRING, "pd-%s", s->s_name);
-    PD_ASSERT (!err);
-    return (gensym (t));
-}
-
 int canvas_getFontSize (t_glist *glist)
 {
     while (!glist->gl_environment) { if (!(glist = glist->gl_parent)) { PD_BUG; } }
@@ -565,14 +555,14 @@ void canvas_getLastMotionCoordinates (t_glist *glist, int *a, int *b)
 void canvas_bind (t_glist *glist)
 {
     if (strcmp (glist->gl_name->s_name, PD_NAME_SHORT)) {
-        pd_bind (cast_pd (glist), canvas_makeBindSymbol (glist->gl_name));
+        pd_bind (cast_pd (glist), utils_makeBindSymbol (glist->gl_name));
     }
 }
 
 void canvas_unbind (t_glist *glist)
 {
     if (strcmp (glist->gl_name->s_name, PD_NAME_SHORT)) {
-        pd_unbind (cast_pd (glist), canvas_makeBindSymbol (glist->gl_name));
+        pd_unbind (cast_pd (glist), utils_makeBindSymbol (glist->gl_name));
     }
 }
 
