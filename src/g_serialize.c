@@ -555,7 +555,7 @@ t_buffer *glist_writetobinbuf(t_glist *x, int wholething)
     {
         t_template *template = template_findbyname(templatevec[i]);
         int j, m = template->tp_size;
-            /* drop "pd-" prefix from template symbol to print it: */
+            /* drop UTILS_BIND prefix from template symbol to print it: */
         buffer_vAppend(b, "ss;", sym_template,
             gensym (templatevec[i]->s_name + 3));
         for (j = 0; j < m; j++)
@@ -649,7 +649,7 @@ void canvas_serializeTemplates (t_glist *glist, t_buffer *b)
         PD_BUG;
         continue;
     }
-        /* drop "pd-" prefix from template symbol to print */
+        /* drop UTILS_BIND prefix from template symbol to print */
     buffer_vAppend(b, "sss", sym___hash__N, sym_struct,
         gensym (v[i]->s_name + 3));
     for (j = 0; j < m; j++)

@@ -16,6 +16,12 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define UTILS_BIND  "pd-"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_symbol *utils_getFirstAtomOfObjectAsSymbol (t_object *x)
 {
     return utils_getFirstAtomOfBufferAsSymbol (x->te_buffer);
@@ -118,7 +124,7 @@ t_symbol *utils_makeBindSymbol (t_symbol *s)
     t_error err = PD_ERROR_NONE;
     char t[PD_STRING] = { 0 };
     PD_ASSERT (s);
-    err = string_sprintf (t, PD_STRING, "pd-%s", s->s_name);
+    err = string_sprintf (t, PD_STRING, UTILS_BIND "%s", s->s_name);
     PD_ASSERT (!err);
     return (gensym (t));
 }
