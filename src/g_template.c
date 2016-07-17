@@ -439,70 +439,84 @@ static void *template_usetemplate(void *dummy, t_symbol *s,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_template *template_new(t_symbol *templatesym, int argc, t_atom *argv)
+static void template_newParse (t_template *x, int argc, t_atom *argv)
 {
-    t_template *x = (t_template *)pd_new(template_class);
-    x->tp_size = 0;
-    x->tp_vector = (t_dataslot *)PD_MEMORY_GET(0);
-    while (argc > 0)
-    {
-        int newtype, oldn, newn;
-        t_symbol *newname, *newarraytemplate = &s_, *newtypesym;
-        if (argc < 2 || argv[0].a_type != A_SYMBOL ||
-            argv[1].a_type != A_SYMBOL)
-                goto bad;
-        newtypesym = argv[0].a_w.w_symbol;
-        newname = argv[1].a_w.w_symbol;
-        if (newtypesym == &s_float)
-            newtype = DATA_FLOAT;
-        else if (newtypesym == &s_symbol)
-            newtype = DATA_SYMBOL;
-                /* "list" is old name.. accepted here but never saved as such */
-        else if (newtypesym == sym_text || newtypesym == &s_list)
-            newtype = DATA_TEXT;
-        else if (newtypesym == sym_array)
-        {
-            if (argc < 3 || argv[2].a_type != A_SYMBOL)
-            {
-                post_error ("array lacks element template or name");
-                goto bad;
+    while (argc > 0) {
+
+        if ((argc >= 2) && IS_SYMBOL (argv + 0) && IS_SYMBOL (argv + 1)) {
+        //
+        t_symbol *type               = GET_SYMBOL (argv + 0);
+        t_symbol *fieldName          = GET_SYMBOL (argv + 1);
+        t_symbol *templateIdentifier = &s_;
+        
+        int k = -1;
+        
+        #if PD_WITH_LEGACY
+        
+        if (type == sym_list) { type = sym_text; }
+            
+        #endif
+        
+        if (type == sym_float)       { k = DATA_FLOAT;  }
+        else if (type == sym_symbol) { k = DATA_SYMBOL; }
+        else if (type == sym_text)   { k = DATA_TEXT;   }
+        else if (type == sym_array)  {
+            if (argc >= 3 && IS_SYMBOL (argv + 2)) {
+                templateIdentifier = utils_makeBindSymbol (GET_SYMBOL (argv + 2));
+                k = DATA_ARRAY;
+                argc--;
+                argv++;
             }
-            newarraytemplate = utils_makeBindSymbol(argv[2].a_w.w_symbol);
-            newtype = DATA_ARRAY;
-            argc--;
-            argv++;
         }
-        else
-        {
-            post_error ("%s: no such type", newtypesym->s_name);
-            goto bad;
+        
+        if (k < 0) { PD_BUG; }
+        else {
+        //
+        int oldSize = x->tp_size;
+        int newSize = x->tp_size + 1;
+        size_t m = oldSize * sizeof (t_dataslot);
+        size_t n = newSize * sizeof (t_dataslot);
+        
+        x->tp_vector = (t_dataslot *)PD_MEMORY_RESIZE (x->tp_vector, m, n);
+        x->tp_size   = newSize;
+        
+        x->tp_vector[newSize - 1].ds_type               = k;
+        x->tp_vector[newSize - 1].ds_fieldName          = fieldName;
+        x->tp_vector[newSize - 1].ds_templateIdentifier = templateIdentifier;
+        //
         }
-        newn = (oldn = x->tp_size) + 1;
-        x->tp_vector = (t_dataslot *)PD_MEMORY_RESIZE(x->tp_vector,
-            oldn * sizeof(*x->tp_vector), newn * sizeof(*x->tp_vector));
-        x->tp_size = newn;
-        x->tp_vector[oldn].ds_type = newtype;
-        x->tp_vector[oldn].ds_fieldName = newname;
-        x->tp_vector[oldn].ds_templateIdentifier = newarraytemplate;
-    bad: 
-        argc -= 2; argv += 2;
+        //
+        }
+
+    argc -= 2;
+    argv += 2;
+    //
     }
-    if (*templatesym->s_name)
-    {
-        x->tp_templateIdentifier = templatesym;
-        pd_bind(&x->tp_pd, x->tp_templateIdentifier);
-    }
-    else x->tp_templateIdentifier = templatesym;
-    return (x);
+}
+    
+t_template *template_new (t_symbol *templateIdentifier, int argc, t_atom *argv)
+{
+    t_template *x = (t_template *)pd_new (template_class);
+    
+    PD_ASSERT (templateIdentifier);
+    
+    x->tp_size               = 0;
+    x->tp_vector             = (t_dataslot *)PD_MEMORY_GET (0);
+    x->tp_list               = NULL;
+    x->tp_templateIdentifier = templateIdentifier;
+    
+    template_newParse (x, argc, argv);
+    
+    if (x->tp_templateIdentifier != &s_) { pd_bind (cast_pd (x), x->tp_templateIdentifier); }
+
+    return x;
 }
 
 void template_free (t_template *x)
 {
-    if (*x->tp_templateIdentifier->s_name) { 
-        pd_unbind (&x->tp_pd, x->tp_templateIdentifier);
-    }
+    if (x->tp_templateIdentifier != &s_) { pd_unbind (cast_pd (x), x->tp_templateIdentifier); }
     
-    PD_MEMORY_FREE(x->tp_vector);
+    PD_MEMORY_FREE (x->tp_vector);
 }
 
 // -----------------------------------------------------------------------------------------------------------

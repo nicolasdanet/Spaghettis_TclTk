@@ -941,23 +941,23 @@ t_template      *template_new                           (t_symbol *templateIdent
                                                             
 t_template      *template_findbyname                    (t_symbol *templateIdentifier);
 
-void            template_free                           (t_template *tmpl);
+void            template_free                           (t_template *x);
 int             template_match                          (t_template *tmpl1, t_template *tmpl2);
 
-int             template_find_field                     (t_template *tmpl,
+int             template_find_field                     (t_template *x,
                                                             t_symbol *fieldName,
                                                             int *p_onset,
                                                             int *p_type,
                                                             t_symbol **p_arraytype);
 
-t_float         template_getfloat                       (t_template *tmpl, t_symbol *fieldName, t_word *w);
-void            template_setfloat                       (t_template *tmpl,
+t_float         template_getfloat                       (t_template *x, t_symbol *fieldName, t_word *w);
+void            template_setfloat                       (t_template *x,
                                                             t_symbol *fieldName,
                                                             t_word *w,
                                                             t_float f);
                                                             
-t_symbol        *template_getsymbol                     (t_template *tmpl, t_symbol *fieldName, t_word *w);
-void            template_setsymbol                      (t_template *tmpl,
+t_symbol        *template_getsymbol                     (t_template *x, t_symbol *fieldName, t_word *w);
+void            template_setsymbol                      (t_template *x,
                                                             t_symbol *fieldName,
                                                             t_word *w,
                                                             t_symbol *s);
