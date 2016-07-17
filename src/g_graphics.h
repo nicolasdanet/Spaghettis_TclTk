@@ -297,12 +297,6 @@ struct _array {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _dataslot {
-    int                 ds_type;
-    t_symbol            *ds_name;
-    t_symbol            *ds_templateIdentifier;
-    } t_dataslot;
-
 struct _fielddescriptor {
     char                fd_type;
     char                fd_isVariable;
@@ -316,6 +310,15 @@ struct _fielddescriptor {
     t_float             fd_screen2;
     t_float             fd_quantum;
 };
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _dataslot {
+    int                 ds_type;
+    t_symbol            *ds_name;
+    t_symbol            *ds_templateIdentifier;
+    } t_dataslot;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -933,6 +936,44 @@ t_symbol        *gpointer_getTemplateIdentifier         (t_gpointer *gp);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_template      *template_new                           (t_symbol *templateIdentifier,
+                                                            int argc,
+                                                            t_atom *argv);
+                                                            
+t_template      *template_findbyname                    (t_symbol *templateIdentifier);
+
+void            template_free                           (t_template *tmpl);
+int             template_match                          (t_template *tmpl1, t_template *tmpl2);
+
+int             template_find_field                     (t_template *tmpl,
+                                                            t_symbol *fieldName,
+                                                            int *p_onset,
+                                                            int *p_type,
+                                                            t_symbol **p_arraytype);
+
+t_float         template_getfloat                       (t_template *tmpl, t_symbol *fieldName, t_word *w);
+void            template_setfloat                       (t_template *tmpl,
+                                                            t_symbol *fieldName,
+                                                            t_word *w,
+                                                            t_float f);
+                                                            
+t_symbol        *template_getsymbol                     (t_template *tmpl, t_symbol *fieldName, t_word *w);
+void            template_setsymbol                      (t_template *tmpl,
+                                                            t_symbol *fieldName,
+                                                            t_word *w,
+                                                            t_symbol *s);
+                                                            
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_template      *gtemplate_get                          (t_gtemplate *x);
+t_glist         *template_findcanvas                    (t_template *tmpl);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void            field_setAsFloatConstant                (t_fielddescriptor *fd, t_float f);
 void            field_setAsFloatVariable                (t_fielddescriptor *fd, t_symbol *s);
 void            field_setAsFloat                        (t_fielddescriptor *fd, int argc, t_atom *argv);
@@ -950,8 +991,8 @@ t_float         field_getFloatConstant                  (t_fielddescriptor *fd);
 
 t_float         field_convertValueToPosition            (t_fielddescriptor *fd, t_float v);
 
-t_float         field_getPosition                       (t_fielddescriptor *fd, t_template *tmpl, t_word *w);
-void            field_setPosition                       (t_fielddescriptor *fd,
+t_float         field_getFloatAsPosition                (t_fielddescriptor *fd, t_template *tmpl, t_word *w);
+void            field_setFloatAsPosition                (t_fielddescriptor *fd,
                                                             t_template *tmpl,
                                                             t_word *w,
                                                             t_float position);
@@ -1036,26 +1077,6 @@ t_glist  *canvas_getglistonsuper        (void);
 #pragma mark -
 
 void numbertocolor(int n, char *s);
-
-t_template   *template_new          (t_symbol *sym, int argc, t_atom *argv);
-void         template_free          (t_template *x);
-int          template_match         (t_template *x1, t_template *x2);
-int          template_find_field    (t_template *x,
-                                        t_symbol *name,
-                                        int *p_onset,
-                                        int *p_type,
-                                        t_symbol **p_arraytype);
-
-t_float      template_getfloat      (t_template *x, t_symbol *fieldname, t_word *wp);
-void         template_setfloat      (t_template *x, t_symbol *fieldname, t_word *wp, t_float f, int loud);
-t_symbol     *template_getsymbol    (t_template *x, t_symbol *fieldname, t_word *wp, int loud);
-void         template_setsymbol     (t_template *x, t_symbol *fieldname, t_word *wp, t_symbol *s, int loud);
-t_template   *gtemplate_get         (t_gtemplate *x);
-t_template   *template_findbyname   (t_symbol *s);
-t_glist      *template_findcanvas   (t_template *tmpl);
-void         template_setfloat      (t_template *x, t_symbol *fieldname, t_word *wp, t_float f, int loud);
-t_symbol     *template_getsymbol    (t_template *x, t_symbol *fieldname, t_word *wp, int loud);
-void         template_setsymbol     (t_template *x, t_symbol *fieldname, t_word *wp, t_symbol *s, int loud);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

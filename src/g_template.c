@@ -14,67 +14,33 @@
 #include "m_macros.h"
 #include "g_graphics.h"
 
-extern t_class *garray_class;
-extern t_class *scalar_class;
-extern t_pd pd_canvasMaker;
-extern t_class *canvas_class;
-extern t_pdinstance *pd_this;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-/*
-This file contains text objects you would put in a canvas to define a
-template.  Templates describe objects of type "array" (g_array.c) and
-"scalar" (g_scalar.c).
-*/
+extern t_class          *garray_class;
+extern t_class          *scalar_class;
+extern t_class          *canvas_class;
+extern t_pdinstance     *pd_this;
 
-/* ---------------- forward definitions ---------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static void template_conformarray(t_template *tfrom, t_template *tto,
-    int *conformaction, t_array *a);
-static void template_conformglist(t_template *tfrom, t_template *tto,
-    t_glist *glist,  int *conformaction);
+extern t_pd             pd_canvasMaker;
 
-/* ---------------------- storage ------------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static t_class *template_class;
+static t_class          *template_class;            /* Shared. */
 
-/* there's a pre-defined "float" template.  LATER should we bind this
-to a symbol such as "pd-float" */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static void template_conformarray (t_template *, t_template *, int *, t_array *);
+static void template_conformglist (t_template *, t_template *, t_glist *, int *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-void array_getcoordinate (t_glist *glist,
-    char *elem, int xonset, int yonset, int wonset, int indx,
-    t_float basex, t_float basey, t_float xinc,
-    t_fielddescriptor *xfielddesc, t_fielddescriptor *yfielddesc, t_fielddescriptor *wfielddesc,
-    t_float *xp, t_float *yp, t_float *wp)
-{
-    t_float xval, yval, ypix, wpix;
-    if (xonset >= 0)
-        xval = *(t_float *)(elem + xonset);
-    else xval = indx * xinc;
-    if (yonset >= 0)
-        yval = *(t_float *)(elem + yonset);
-    else yval = 0;
-    ypix = canvas_valueToPositionY(glist, basey +
-        field_convertValueToPosition(yfielddesc, yval));
-    if (wonset >= 0)
-    {
-            /* found "w" field which controls linewidth. */
-        t_float wval = *(t_float *)(elem + wonset);
-        wpix = canvas_valueToPositionY(glist, basey + 
-            field_convertValueToPosition(yfielddesc, yval) +
-                field_convertValueToPosition(wfielddesc, wval)) - ypix;
-        if (wpix < 0)
-            wpix = -wpix;
-    }
-    else wpix = 1;
-    *xp = canvas_valueToPositionX(glist, basex +
-        field_convertValueToPosition(xfielddesc, xval));
-    *yp = ypix;
-    *wp = wpix;
-}
 
     /* return true if two dataslot definitions match */
 static int dataslot_matches(t_dataslot *ds1, t_dataslot *ds2,
@@ -86,64 +52,9 @@ static int dataslot_matches(t_dataslot *ds1, t_dataslot *ds2,
                 ds1->ds_templateIdentifier == ds2->ds_templateIdentifier));
 }
 
-/* -- templates, the active ingredient in gtemplates defined below. ------- */
-
-t_template *template_new(t_symbol *templatesym, int argc, t_atom *argv)
-{
-    t_template *x = (t_template *)pd_new(template_class);
-    x->tp_size = 0;
-    x->tp_vector = (t_dataslot *)PD_MEMORY_GET(0);
-    while (argc > 0)
-    {
-        int newtype, oldn, newn;
-        t_symbol *newname, *newarraytemplate = &s_, *newtypesym;
-        if (argc < 2 || argv[0].a_type != A_SYMBOL ||
-            argv[1].a_type != A_SYMBOL)
-                goto bad;
-        newtypesym = argv[0].a_w.w_symbol;
-        newname = argv[1].a_w.w_symbol;
-        if (newtypesym == &s_float)
-            newtype = DATA_FLOAT;
-        else if (newtypesym == &s_symbol)
-            newtype = DATA_SYMBOL;
-                /* "list" is old name.. accepted here but never saved as such */
-        else if (newtypesym == sym_text || newtypesym == &s_list)
-            newtype = DATA_TEXT;
-        else if (newtypesym == sym_array)
-        {
-            if (argc < 3 || argv[2].a_type != A_SYMBOL)
-            {
-                post_error ("array lacks element template or name");
-                goto bad;
-            }
-            newarraytemplate = canvas_makeBindSymbol(argv[2].a_w.w_symbol);
-            newtype = DATA_ARRAY;
-            argc--;
-            argv++;
-        }
-        else
-        {
-            post_error ("%s: no such type", newtypesym->s_name);
-            goto bad;
-        }
-        newn = (oldn = x->tp_size) + 1;
-        x->tp_vector = (t_dataslot *)PD_MEMORY_RESIZE(x->tp_vector,
-            oldn * sizeof(*x->tp_vector), newn * sizeof(*x->tp_vector));
-        x->tp_size = newn;
-        x->tp_vector[oldn].ds_type = newtype;
-        x->tp_vector[oldn].ds_name = newname;
-        x->tp_vector[oldn].ds_templateIdentifier = newarraytemplate;
-    bad: 
-        argc -= 2; argv += 2;
-    }
-    if (*templatesym->s_name)
-    {
-        x->tp_symbol = templatesym;
-        pd_bind(&x->tp_pd, x->tp_symbol);
-    }
-    else x->tp_symbol = templatesym;
-    return (x);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 int template_find_field(t_template *x, t_symbol *name, int *p_onset,
     int *p_type, t_symbol **p_arraytype)
@@ -184,8 +95,7 @@ t_float template_getfloat(t_template *x, t_symbol *fieldname, t_word *wp)
     return (val);
 }
 
-void template_setfloat(t_template *x, t_symbol *fieldname, t_word *wp, 
-    t_float f, int loud)
+void template_setfloat(t_template *x, t_symbol *fieldname, t_word *wp, t_float f)
 {
     int onset, type;
     t_symbol *arraytype;
@@ -193,15 +103,14 @@ void template_setfloat(t_template *x, t_symbol *fieldname, t_word *wp,
      {
         if (type == DATA_FLOAT)
             *(t_float *)(((char *)wp) + onset) = f;
-        else if (loud) post_error ("%s.%s: not a number",
+        else if (0 /* loud */) post_error ("%s.%s: not a number",
             x->tp_symbol->s_name, fieldname->s_name);
     }
-    else if (loud) post_error ("%s.%s: no such field",
+    else if (0 /* loud */) post_error ("%s.%s: no such field",
         x->tp_symbol->s_name, fieldname->s_name);
 }
 
-t_symbol *template_getsymbol(t_template *x, t_symbol *fieldname, t_word *wp,
-    int loud)
+t_symbol *template_getsymbol(t_template *x, t_symbol *fieldname, t_word *wp)
 {
     int onset, type;
     t_symbol *arraytype;
@@ -210,16 +119,15 @@ t_symbol *template_getsymbol(t_template *x, t_symbol *fieldname, t_word *wp,
     {
         if (type == DATA_SYMBOL)
             val = *(t_symbol **)(((char *)wp) + onset);
-        else if (loud) post_error ("%s.%s: not a symbol",
+        else if (0 /* loud */) post_error ("%s.%s: not a symbol",
             x->tp_symbol->s_name, fieldname->s_name);
     }
-    else if (loud) post_error ("%s.%s: no such field",
+    else if (0 /* loud */) post_error ("%s.%s: no such field",
         x->tp_symbol->s_name, fieldname->s_name);
     return (val);
 }
 
-void template_setsymbol(t_template *x, t_symbol *fieldname, t_word *wp, 
-    t_symbol *s, int loud)
+void template_setsymbol(t_template *x, t_symbol *fieldname, t_word *wp, t_symbol *s)
 {
     int onset, type;
     t_symbol *arraytype;
@@ -227,12 +135,16 @@ void template_setsymbol(t_template *x, t_symbol *fieldname, t_word *wp,
      {
         if (type == DATA_SYMBOL)
             *(t_symbol **)(((char *)wp) + onset) = s;
-        else if (loud) post_error ("%s.%s: not a symbol",
+        else if (0 /* loud */) post_error ("%s.%s: not a symbol",
             x->tp_symbol->s_name, fieldname->s_name);
     }
-    else if (loud) post_error ("%s.%s: no such field",
+    else if (0 /* loud */) post_error ("%s.%s: no such field",
         x->tp_symbol->s_name, fieldname->s_name);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
     /* stringent check to see if a "saved" template, x2, matches the current
         one (x1).  It's OK if x1 has additional scalar elements but not (yet)
@@ -467,6 +379,10 @@ void template_conform(t_template *tfrom, t_template *tto)
     PD_MEMORY_FREE(conformedfrom);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_template *template_findbyname(t_symbol *s)
 {
     return ((t_template *)pd_findByClass(s, template_class));
@@ -519,6 +435,67 @@ static void *template_usetemplate(void *dummy, t_symbol *s,
     return (0);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_template *template_new(t_symbol *templatesym, int argc, t_atom *argv)
+{
+    t_template *x = (t_template *)pd_new(template_class);
+    x->tp_size = 0;
+    x->tp_vector = (t_dataslot *)PD_MEMORY_GET(0);
+    while (argc > 0)
+    {
+        int newtype, oldn, newn;
+        t_symbol *newname, *newarraytemplate = &s_, *newtypesym;
+        if (argc < 2 || argv[0].a_type != A_SYMBOL ||
+            argv[1].a_type != A_SYMBOL)
+                goto bad;
+        newtypesym = argv[0].a_w.w_symbol;
+        newname = argv[1].a_w.w_symbol;
+        if (newtypesym == &s_float)
+            newtype = DATA_FLOAT;
+        else if (newtypesym == &s_symbol)
+            newtype = DATA_SYMBOL;
+                /* "list" is old name.. accepted here but never saved as such */
+        else if (newtypesym == sym_text || newtypesym == &s_list)
+            newtype = DATA_TEXT;
+        else if (newtypesym == sym_array)
+        {
+            if (argc < 3 || argv[2].a_type != A_SYMBOL)
+            {
+                post_error ("array lacks element template or name");
+                goto bad;
+            }
+            newarraytemplate = canvas_makeBindSymbol(argv[2].a_w.w_symbol);
+            newtype = DATA_ARRAY;
+            argc--;
+            argv++;
+        }
+        else
+        {
+            post_error ("%s: no such type", newtypesym->s_name);
+            goto bad;
+        }
+        newn = (oldn = x->tp_size) + 1;
+        x->tp_vector = (t_dataslot *)PD_MEMORY_RESIZE(x->tp_vector,
+            oldn * sizeof(*x->tp_vector), newn * sizeof(*x->tp_vector));
+        x->tp_size = newn;
+        x->tp_vector[oldn].ds_type = newtype;
+        x->tp_vector[oldn].ds_name = newname;
+        x->tp_vector[oldn].ds_templateIdentifier = newarraytemplate;
+    bad: 
+        argc -= 2; argv += 2;
+    }
+    if (*templatesym->s_name)
+    {
+        x->tp_symbol = templatesym;
+        pd_bind(&x->tp_pd, x->tp_symbol);
+    }
+    else x->tp_symbol = templatesym;
+    return (x);
+}
+
     /* here we assume someone has already cleaned up all instances of this. */
 void template_free(t_template *x)
 {
@@ -527,13 +504,17 @@ void template_free(t_template *x)
     PD_MEMORY_FREE(x->tp_vector);
 }
 
-void template_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void template_setup (void)
 {
     template_class = class_new(sym_template, 0, (t_method)template_free,
         sizeof(t_template), CLASS_NOBOX, 0);
-    class_addMethod(pd_canvasMaker, (t_method)template_usetemplate,
-        sym_struct, A_GIMME, 0);
         
+    class_addMethod (pd_canvasMaker, (t_method)template_usetemplate,
+        sym_struct, A_GIMME, 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

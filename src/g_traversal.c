@@ -545,9 +545,9 @@ static void set_bang(t_set *x)
     vec = gpointer_getData (gp);
     if (x->x_issymbol)
         for (i = 0, vp = x->x_variables; i < nitems; i++, vp++)
-            template_setsymbol(template, vp->gv_sym, vec, vp->gv_w.w_symbol, 1);
+            template_setsymbol(template, vp->gv_sym, vec, vp->gv_w.w_symbol);
     else for (i = 0, vp = x->x_variables; i < nitems; i++, vp++)
-        template_setfloat(template, vp->gv_sym, vec, vp->gv_w.w_float, 1);
+        template_setfloat(template, vp->gv_sym, vec, vp->gv_w.w_float);
     scalar_redrawByPointer (gp);
 }
 
@@ -1057,7 +1057,7 @@ static void append_float(t_append *x, t_float f)
     vec = sc->sc_vector;
     for (i = 0, vp = x->x_variables; i < nitems; i++, vp++)
     {
-        template_setfloat(template, vp->gv_sym, vec, vp->gv_f, 1);
+        template_setfloat(template, vp->gv_sym, vec, vp->gv_f);
     }
  
     if (canvas_isMapped(canvas_getView(glist)))

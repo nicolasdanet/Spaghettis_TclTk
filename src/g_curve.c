@@ -129,9 +129,9 @@ static void curve_getrect(t_gobj *z, t_glist *glist,
     for (i = 0, f = x->x_vec; i < n; i++, f += 2)
     {
         int xloc = canvas_valueToPositionX(glist,
-            basex + field_getPosition(f, template, data));
+            basex + field_getFloatAsPosition(f, template, data));
         int yloc = canvas_valueToPositionY(glist,
-            basey + field_getPosition(f+1, template, data));
+            basey + field_getFloatAsPosition(f+1, template, data));
         if (xloc < x1) x1 = xloc;
         if (xloc > x2) x2 = xloc;
         if (yloc < y1) y1 = yloc;
@@ -221,9 +221,9 @@ static void curve_vis(t_gobj *z, t_glist *glist,
             for (i = 0, f = x->x_vec; i < n; i++, f += 2)
             {
                 pix[2*i] = canvas_valueToPositionX(glist,
-                    basex + field_getPosition(f, template, data));
+                    basex + field_getFloatAsPosition(f, template, data));
                 pix[2*i+1] = canvas_valueToPositionY(glist,
-                    basey + field_getPosition(f+1, template, data));
+                    basey + field_getFloatAsPosition(f+1, template, data));
             }
             if (width < 1) width = 1;
             numbertocolor(
@@ -287,12 +287,12 @@ static void curve_motion(void *z, t_float dx, t_float dy, t_float modifier)
     curve_motion_ycumulative += dy;
     if (field_isVariable (f) && (dx != 0))
     {
-        field_setPosition(f, curve_motion_template, curve_motion_wp,
+        field_setFloatAsPosition(f, curve_motion_template, curve_motion_wp,
             curve_motion_xbase + curve_motion_xcumulative * curve_motion_xper); 
     }
     if (field_isVariable (f+1) && (dy != 0))
     {
-        field_setPosition(f+1, curve_motion_template, curve_motion_wp,
+        field_setFloatAsPosition(f+1, curve_motion_template, curve_motion_wp,
             curve_motion_ybase + curve_motion_ycumulative * curve_motion_yper); 
     }
         /* LATER figure out what to do to notify for an array? */
@@ -319,9 +319,9 @@ static int curve_click(t_gobj *z, t_glist *glist,
         return (0);
     for (i = 0, f = x->x_vec; i < n; i++, f += 2)
     {
-        int xval = field_getPosition(f, template, data),
+        int xval = field_getFloatAsPosition(f, template, data),
             xloc = canvas_valueToPositionX(glist, basex + xval);
-        int yval = field_getPosition(f+1, template, data),
+        int yval = field_getFloatAsPosition(f+1, template, data),
             yloc = canvas_valueToPositionY(glist, basey + yval);
         int xerr = xloc - xpix, yerr = yloc - ypix;
         if (!field_isVariable (f) && !field_isVariable (f+1))

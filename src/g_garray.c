@@ -719,7 +719,7 @@ void garray_fromDialog (t_garray *x, t_symbol *name, t_float size, t_float flags
     if (newSize != array->a_size) { garray_resizeWithInteger (x, newSize); }
     
     if (newStyle != oldStyle) {
-        template_setfloat (template, sym_style, x->x_scalar->sc_vector, (t_float)newStyle, 0);
+        template_setfloat (template, sym_style, x->x_scalar->sc_vector, (t_float)newStyle);
         garray_updateGraphBounds (x, newSize, newStyle); 
     }
 
@@ -766,8 +766,8 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_symbol *type, t_f
 
     array_resize (x->x_scalar->sc_vector[zOnset].w_array, n);
 
-    template_setfloat (template, sym_style, x->x_scalar->sc_vector, plot, 1);
-    template_setfloat (template, sym_linewidth, x->x_scalar->sc_vector, 1, 1);
+    template_setfloat (template, sym_style, x->x_scalar->sc_vector, plot);
+    template_setfloat (template, sym_linewidth, x->x_scalar->sc_vector, 1);
 
     sym___hash__A->s_thing = NULL;
     pd_bind (cast_pd (x), sym___hash__A); 

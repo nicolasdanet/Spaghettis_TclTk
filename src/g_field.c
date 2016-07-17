@@ -226,7 +226,7 @@ static t_float field_convertPositionToValue (t_fielddescriptor *fd, t_float k)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_float field_getPosition (t_fielddescriptor *fd, t_template *tmpl, t_word *w)
+t_float field_getFloatAsPosition (t_fielddescriptor *fd, t_template *tmpl, t_word *w)
 {
     if (fd->fd_type == DATA_FLOAT) {
     //
@@ -243,12 +243,12 @@ t_float field_getPosition (t_fielddescriptor *fd, t_template *tmpl, t_word *w)
     return 0.0;
 }
 
-void field_setPosition (t_fielddescriptor *fd, t_template *tmpl, t_word *w, t_float position)
+void field_setFloatAsPosition (t_fielddescriptor *fd, t_template *tmpl, t_word *w, t_float position)
 {
     if (fd->fd_type == DATA_FLOAT) {
     //
     if (fd->fd_isVariable) {
-        template_setfloat (tmpl, fd->fd_un.fd_varname, w, field_convertPositionToValue (fd, position), 0);
+        template_setfloat (tmpl, fd->fd_un.fd_varname, w, field_convertPositionToValue (fd, position));
     } else {
         fd->fd_un.fd_float = position;
     }

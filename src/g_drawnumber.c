@@ -159,9 +159,9 @@ static void drawnumber_getrect(t_gobj *z, t_glist *glist,
         return;
     }
     xloc = canvas_valueToPositionX(glist,
-        basex + field_getPosition(&x->x_xloc, template, data));
+        basex + field_getFloatAsPosition(&x->x_xloc, template, data));
     yloc = canvas_valueToPositionY(glist,
-        basey + field_getPosition(&x->x_yloc, template, data));
+        basey + field_getFloatAsPosition(&x->x_yloc, template, data));
     font = canvas_getFontSize(glist);
     fontwidth = font_getHostFontWidth(font);
         fontheight = font_getHostFontHeight(font);
@@ -218,9 +218,9 @@ static void drawnumber_vis(t_gobj *z, t_glist *glist,
     {
         t_atom at;
         int xloc = canvas_valueToPositionX(glist,
-            basex + field_getPosition(&x->x_xloc, template, data));
+            basex + field_getFloatAsPosition(&x->x_xloc, template, data));
         int yloc = canvas_valueToPositionY(glist,
-            basey + field_getPosition(&x->x_yloc, template, data));
+            basey + field_getFloatAsPosition(&x->x_yloc, template, data));
         char colorstring[20], buf[DRAWNUMBER_BUFSIZE];
         numbertocolor(field_getFloat(&x->x_color, template, data),
             colorstring);
@@ -259,8 +259,7 @@ static void drawnumber_motion(void *z, t_float dx, t_float dy, t_float modifier)
     template_setfloat(drawnumber_motion_template,
         x->x_fieldname,
             drawnumber_motion_wp, 
-            drawnumber_motion_ycumulative,
-                1);
+            drawnumber_motion_ycumulative);
     if (drawnumber_motion_scalar)
         template_notifyforscalar(drawnumber_motion_template,
             drawnumber_motion_glist, drawnumber_motion_scalar,
