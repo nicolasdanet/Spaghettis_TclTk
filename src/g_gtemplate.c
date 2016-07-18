@@ -17,6 +17,17 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+extern t_class          *garray_class;
+extern t_class          *scalar_class;
+extern t_class          *canvas_class;
+extern t_pdinstance     *pd_this;
+
+static void template_conformarray (t_template *, t_template *, int *, t_array *);
+static void template_conformglist (t_template *, t_template *, t_glist *, int *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static t_class *gtemplate_class;
 
 struct _gtemplate
@@ -37,6 +48,254 @@ a template (above).  Other objects in the canvas then can give drawing
 instructions for the template.  The template doesn't go away when the
 "struct" is deleted, so that you can replace it with
 another one to add new fields, for example. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+    /* return true if two dataslot definitions match */
+static int dataslot_matches(t_dataslot *ds1, t_dataslot *ds2,
+    int nametoo)
+{
+    return ((!nametoo || ds1->ds_fieldName == ds2->ds_fieldName) &&
+        ds1->ds_type == ds2->ds_type &&
+            (ds1->ds_type != DATA_ARRAY ||
+                ds1->ds_templateIdentifier == ds2->ds_templateIdentifier));
+}
+
+    /* stringent check to see if a "saved" template, x2, matches the current
+        one (x1).  It's OK if x1 has additional scalar elements but not (yet)
+        arrays.  This is used for reading in "data files". */
+int template_match(t_template *x1, t_template *x2)
+{
+    int i;
+    if (x1->tp_size < x2->tp_size)
+        return (0);
+    for (i = x2->tp_size; i < x1->tp_size; i++)
+    {
+        if (x1->tp_vector[i].ds_type == DATA_ARRAY)
+                return (0);
+    }
+    if (x2->tp_size > x1->tp_size)
+        post("add elements...");
+    for (i = 0; i < x2->tp_size; i++)
+        if (!dataslot_matches(&x1->tp_vector[i], &x2->tp_vector[i], 1))
+            return (0);
+    return (1);
+}
+
+
+/* --------------- CONFORMING TO CHANGES IN A TEMPLATE ------------ */
+
+/* the following routines handle updating scalars to agree with changes
+in their template.  The old template is assumed to be the "installed" one
+so we can delete old items; but making new ones we have to avoid scalar_new
+which would make an old one whereas we will want a new one (but whose array
+elements might still be old ones.)
+    LATER deal with graphics updates too... */
+
+    /* conform the word vector of a scalar to the new template */    
+static void template_conformwords(t_template *tfrom, t_template *tto,
+    int *conformaction, t_word *wfrom, t_word *wto)
+{
+    int nfrom = tfrom->tp_size, nto = tto->tp_size, i;
+    for (i = 0; i < nto; i++)
+    {
+        if (conformaction[i] >= 0)
+        {
+                /* we swap the two, in case it's an array or list, so that
+                when "wfrom" is deleted the old one gets cleaned up. */
+            t_word wwas = wto[i];
+            wto[i] = wfrom[conformaction[i]];
+            wfrom[conformaction[i]] = wwas;
+        }
+    }
+}
+
+    /* conform a scalar, recursively conforming arrays  */
+static t_scalar *template_conformscalar(t_template *tfrom, t_template *tto,
+    int *conformaction, t_glist *glist, t_scalar *scfrom)
+{
+    t_scalar *x;
+    t_gpointer gp = GPOINTER_INIT;
+    int nto = tto->tp_size, nfrom = tfrom->tp_size, i;
+    t_template *scalartemplate;
+    /* post("conform scalar"); */
+        /* possibly replace the scalar */
+    if (scfrom->sc_templateIdentifier == tfrom->tp_templateIdentifier)
+    {
+            /* see scalar_new() for comment about the gpointer. */
+        gpointer_init(&gp);
+        x = (t_scalar *)PD_MEMORY_GET(sizeof(t_scalar) +
+            (tto->tp_size - 1) * sizeof(*x->sc_vector));
+        x->sc_g.g_pd = scalar_class;
+        x->sc_templateIdentifier = tfrom->tp_templateIdentifier;
+        gpointer_setAsScalarType(&gp, glist, x);
+            /* Here we initialize to the new template, but array and list
+            elements will still belong to old template. */
+        word_init(x->sc_vector, tto, &gp);
+
+        // gpointer_unset?
+        template_conformwords(tfrom, tto, conformaction,
+            scfrom->sc_vector, x->sc_vector);
+            
+            /* replace the old one with the new one in the list */
+        if (glist->gl_graphics == &scfrom->sc_g)
+        {
+            glist->gl_graphics = &x->sc_g;
+            x->sc_g.g_next = scfrom->sc_g.g_next;
+        }
+        else
+        {
+            t_gobj *y, *y2;
+            for (y = glist->gl_graphics; y2 = y->g_next; y = y2)
+                if (y2 == &scfrom->sc_g)
+            {
+                x->sc_g.g_next = y2->g_next;
+                y->g_next = &x->sc_g;
+                goto nobug;
+            }
+            PD_BUG;
+        nobug: ;
+        }
+            /* burn the old one */
+        pd_free(&scfrom->sc_g.g_pd);
+        scalartemplate = tto;
+    }
+    else
+    {
+        x = scfrom;
+        scalartemplate = template_findbyname(x->sc_templateIdentifier);
+    }
+        /* convert all array elements */
+    for (i = 0; i < scalartemplate->tp_size; i++)
+    {
+        t_dataslot *ds = scalartemplate->tp_vector + i;
+        if (ds->ds_type == DATA_ARRAY)
+        {
+            template_conformarray(tfrom, tto, conformaction, 
+                x->sc_vector[i].w_array);
+        }
+    }
+    return (x);
+}
+
+    /* conform an array, recursively conforming sublists and arrays  */
+static void template_conformarray(t_template *tfrom, t_template *tto,
+    int *conformaction, t_array *a)
+{
+    int i, j;
+    t_template *scalartemplate = 0;
+    if (a->a_templateIdentifier == tfrom->tp_templateIdentifier)
+    {
+        /* the array elements must all be conformed */
+        int oldelemsize = sizeof(t_word) * tfrom->tp_size,
+            newelemsize = sizeof(t_word) * tto->tp_size;
+        char *newarray = PD_MEMORY_GET(newelemsize * a->a_size);
+        char *oldarray = a->a_vector;
+        if (a->a_elementSize != oldelemsize) { PD_BUG; }
+        for (i = 0; i < a->a_size; i++)
+        {
+            t_word *wp = (t_word *)(newarray + newelemsize * i);
+            word_init(wp, tto, &a->a_parent);
+            template_conformwords(tfrom, tto, conformaction,
+                (t_word *)(oldarray + oldelemsize * i), wp);
+            word_free((t_word *)(oldarray + oldelemsize * i), tfrom);
+        }
+        scalartemplate = tto;
+        a->a_vector = newarray;
+        PD_MEMORY_FREE(oldarray);
+    }
+    else scalartemplate = template_findbyname(a->a_templateIdentifier);
+        /* convert all arrays and sublist fields in each element of the array */
+    for (i = 0; i < a->a_size; i++)
+    {
+        t_word *wp = (t_word *)(a->a_vector + sizeof(t_word) * a->a_size * i);
+        for (j = 0; j < scalartemplate->tp_size; j++)
+        {
+            t_dataslot *ds = scalartemplate->tp_vector + j;
+            if (ds->ds_type == DATA_ARRAY)
+            {
+                template_conformarray(tfrom, tto, conformaction, 
+                    wp[j].w_array);
+            }
+        }
+    }
+}
+
+    /* this routine searches for every scalar in the glist that belongs
+    to the "from" template and makes it belong to the "to" template.  Descend
+    glists recursively.
+    We don't handle redrawing here; this is to be filled in LATER... */
+
+static void template_conformglist(t_template *tfrom, t_template *tto,
+    t_glist *glist,  int *conformaction)
+{
+    t_gobj *g;
+    /* post("conform glist %s", glist->gl_name->s_name); */
+    for (g = glist->gl_graphics; g; g = g->g_next)
+    {
+        if (pd_class(&g->g_pd) == scalar_class)
+            g = &template_conformscalar(tfrom, tto, conformaction,
+                glist, (t_scalar *)g)->sc_g;
+        else if (pd_class(&g->g_pd) == canvas_class)
+            template_conformglist(tfrom, tto, (t_glist *)g, conformaction);
+        else if (pd_class(&g->g_pd) == garray_class)
+            template_conformarray(tfrom, tto, conformaction,
+                garray_getArray((t_garray *)g));
+    }
+}
+
+    /* globally conform all scalars from one template to another */ 
+void template_conform(t_template *tfrom, t_template *tto)
+{
+    int nto = tto->tp_size, nfrom = tfrom->tp_size, i, j,
+        *conformaction = (int *)PD_MEMORY_GET(sizeof(int) * nto),
+        *conformedfrom = (int *)PD_MEMORY_GET(sizeof(int) * nfrom), doit = 0;
+    for (i = 0; i < nto; i++)
+        conformaction[i] = -1;
+    for (i = 0; i < nfrom; i++)
+        conformedfrom[i] = 0;
+    for (i = 0; i < nto; i++)
+    {
+        t_dataslot *dataslot = &tto->tp_vector[i];
+        for (j = 0; j < nfrom; j++)
+        {
+            t_dataslot *dataslot2 = &tfrom->tp_vector[j];
+            if (dataslot_matches(dataslot, dataslot2, 1))
+            {
+                conformaction[i] = j;
+                conformedfrom[j] = 1;
+            }
+        }
+    }
+    for (i = 0; i < nto; i++)
+        if (conformaction[i] < 0)
+    {
+        t_dataslot *dataslot = &tto->tp_vector[i];
+        for (j = 0; j < nfrom; j++)
+            if (!conformedfrom[j] &&
+                dataslot_matches(dataslot, &tfrom->tp_vector[j], 0))
+        {
+            conformaction[i] = j;
+            conformedfrom[j] = 1;
+        }
+    }
+    if (nto != nfrom)
+        doit = 1;
+    else for (i = 0; i < nto; i++)
+        if (conformaction[i] != i)
+            doit = 1;
+
+    if (doit)
+    {
+        t_glist *gl;
+        for (gl = pd_this->pd_roots; gl; gl = gl->gl_next)
+            template_conformglist(tfrom, tto, gl, conformaction);
+    }
+    PD_MEMORY_FREE(conformaction);
+    PD_MEMORY_FREE(conformedfrom);
+}
 
 t_glist *template_findcanvas(t_template *template)
 {
