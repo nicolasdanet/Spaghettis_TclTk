@@ -943,13 +943,13 @@ t_template      *template_findByIdentifier              (t_symbol *templateIdent
 
 void            template_free                           (t_template *x);
 int             template_exist                          (t_template *x);
-int             template_match                          (t_template *tmpl1, t_template *tmpl2);
+int             template_equals                         (t_template *tmpl1, t_template *tmpl2);
 
-int             template_find_field                     (t_template *x,
+int             template_findField                      (t_template *x,
                                                             t_symbol *fieldName,
-                                                            int *p_onset,
-                                                            int *p_type,
-                                                            t_symbol **p_arraytype);
+                                                            int *onset,
+                                                            int *type,
+                                                            t_symbol **templateIdentifier);
 
 t_float         template_getfloat                       (t_template *x, t_symbol *fieldName, t_word *w);
 void            template_setfloat                       (t_template *x,

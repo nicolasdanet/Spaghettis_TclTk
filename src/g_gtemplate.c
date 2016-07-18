@@ -66,7 +66,7 @@ static int dataslot_matches(t_dataslot *ds1, t_dataslot *ds2,
     /* stringent check to see if a "saved" template, x2, matches the current
         one (x1).  It's OK if x1 has additional scalar elements but not (yet)
         arrays.  This is used for reading in "data files". */
-int template_match(t_template *x1, t_template *x2)
+int template_equals(t_template *x1, t_template *x2)
 {
     int i;
     if (x1->tp_size < x2->tp_size)
@@ -83,7 +83,6 @@ int template_match(t_template *x1, t_template *x2)
             return (0);
     return (1);
 }
-
 
 /* --------------- CONFORMING TO CHANGES IN A TEMPLATE ------------ */
 
@@ -361,7 +360,7 @@ static void *gtemplate_donew(t_symbol *sym, int argc, t_atom *argv)
             canvas_paintAllScalarsByTemplate(t, SCALAR_ERASE);
                 /* Unless the new template is different from the old one,
                 there's nothing to do.  */
-            if (!template_match(t, y))
+            if (!template_equals(t, y))
             {
                     /* conform everyone to the new template */
                 template_conform(t, y);

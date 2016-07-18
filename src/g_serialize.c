@@ -229,7 +229,7 @@ void glist_readfrombinbuf(t_glist *x, t_buffer *b, char *filename, int selectem)
         }
         newtemplate = template_new(templatesym, ntemplateargs, templateargs);
         PD_MEMORY_FREE(templateargs);
-        if (!template_match(existtemplate, newtemplate))
+        if (!template_equals(existtemplate, newtemplate))
         {
             post_error ("%s: template doesn't match current one",
                 templatesym->s_name);

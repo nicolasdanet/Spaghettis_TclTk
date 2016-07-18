@@ -252,7 +252,7 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
         }
         vec = gpointer_getData (&x->tc_gp);
 
-        if (!template_find_field(template,
+        if (!template_findField(template,
             x->tc_field, &onset, &type, &arraytype))
         {
             post_error ("array: no field named %s", x->tc_field->s_name);
@@ -480,7 +480,7 @@ static int array_rangeop_getrange(t_array_rangeop *x,
     if (!a)
         return (0);
     template = template_findByIdentifier(a->a_templateIdentifier);
-    if (!template_find_field(template, x->x_elemfield, &fieldonset,
+    if (!template_findField(template, x->x_elemfield, &fieldonset,
         &type, &arraytype) || type != DATA_FLOAT)
     {
         post_error ("can't find field %s in struct %s",

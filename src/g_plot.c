@@ -178,7 +178,7 @@ static int plot_readownertemplate(t_plot *x,
         post_error ("plot: needs an array field");
         return (-1);
     }
-    if (!template_find_field(ownertemplate, field_getVariableName (&x->x_data),
+    if (!template_findField(ownertemplate, field_getVariableName (&x->x_data),
         &arrayonset, &type, &elemtemplatesym))
     {
         post_error ("plot: %s: no such field", field_getVariableName (&x->x_data)->s_name);
@@ -237,19 +237,19 @@ static int array_getfields(t_symbol *elemtemplatesym,
     if (yfielddesc && field_isVariable (yfielddesc))
         varname = field_getVariableName (yfielddesc);
     else varname = sym_y;
-    if (!template_find_field(elemtemplate, varname, &yonset, &type, &dummy)
+    if (!template_findField(elemtemplate, varname, &yonset, &type, &dummy)
         || type != DATA_FLOAT)    
             yonset = -1;
     if (xfielddesc && field_isVariable (xfielddesc))
         varname = field_getVariableName (xfielddesc);
     else varname = sym_x;
-    if (!template_find_field(elemtemplate, varname, &xonset, &type, &dummy)
+    if (!template_findField(elemtemplate, varname, &xonset, &type, &dummy)
         || type != DATA_FLOAT) 
             xonset = -1;
     if (wfielddesc && field_isVariable (wfielddesc))
         varname = field_getVariableName (wfielddesc);
     else varname = sym_w;
-    if (!template_find_field(elemtemplate, varname, &wonset, &type, &dummy)
+    if (!template_findField(elemtemplate, varname, &wonset, &type, &dummy)
         || type != DATA_FLOAT) 
             wonset = -1;
 

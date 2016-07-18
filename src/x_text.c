@@ -431,7 +431,7 @@ static t_buffer *text_client_getbuf(t_text_client *x)
         }
         vec = gpointer_getData (&x->tc_gp);
 
-        if (!template_find_field(template,
+        if (!template_findField(template,
             x->tc_field, &onset, &type, &arraytype))
         {
             post_error ("text: no field named %s", x->tc_field->s_name);

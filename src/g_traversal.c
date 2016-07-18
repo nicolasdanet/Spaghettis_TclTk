@@ -63,7 +63,7 @@ t_buffer *pointertobinbuf(t_pd *x, t_gpointer *gp, t_symbol *s,
             templatesym->s_name);
         return (0);
     }
-    if (!template_find_field(template, s, &onset, &type, &arraytype))
+    if (!template_findField(template, s, &onset, &type, &arraytype))
     {
         post_error ("%s: %s.%s: no such field", fname,
             templatesym->s_name, s->s_name);
@@ -399,7 +399,7 @@ static void get_pointer(t_get *x, t_gpointer *gp)
     {
         int onset, type;
         t_symbol *arraytype;
-        if (template_find_field(template, vp->gv_sym, &onset, &type, &arraytype))
+        if (template_findField(template, vp->gv_sym, &onset, &type, &arraytype))
         {
             if (type == DATA_FLOAT)
                 outlet_float(vp->gv_outlet,
@@ -652,7 +652,7 @@ static void elem_float(t_elem *x, t_float f)
         post_error ("element: couldn't find template %s", templatesym->s_name);
         return;
     }
-    if (!template_find_field(template, fieldsym,
+    if (!template_findField(template, fieldsym,
         &onset, &type, &elemtemplatesym))
     {
         post_error ("element: couldn't find array field %s", fieldsym->s_name);
@@ -753,7 +753,7 @@ static void getsize_pointer(t_getsize *x, t_gpointer *gp)
         post_error ("elem: couldn't find template %s", templatesym->s_name);
         return;
     }
-    if (!template_find_field(template, fieldsym,
+    if (!template_findField(template, fieldsym,
         &onset, &type, &elemtemplatesym))
     {
         post_error ("getsize: couldn't find array field %s", fieldsym->s_name);
@@ -842,7 +842,7 @@ static void setsize_float(t_setsize *x, t_float f)
         return;
     }
 
-    if (!template_find_field(template, fieldsym,
+    if (!template_findField(template, fieldsym,
         &onset, &type, &elemtemplatesym))
     {
         post_error ("setsize: couldn't find array field %s", fieldsym->s_name);

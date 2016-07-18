@@ -344,8 +344,8 @@ static void scalar_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int
     int onsetX, onsetY, typeX, typeY;
     t_symbol *s = NULL;
         
-    int hasFieldX = template_find_field (template, sym_x, &onsetX, &typeX, &s);
-    int hasFieldY = template_find_field (template, sym_y, &onsetY, &typeY, &s);
+    int hasFieldX = template_findField (template, sym_x, &onsetX, &typeX, &s);
+    int hasFieldY = template_findField (template, sym_y, &onsetY, &typeY, &s);
         
     if (hasFieldX && (typeX != DATA_FLOAT)) { hasFieldX = 0; }
     if (hasFieldY && (typeY != DATA_FLOAT)) { hasFieldY = 0; }

@@ -100,7 +100,7 @@ static int drawnumber_gettype(t_drawnumber *x, t_word *data,
 {
     int type;
     t_symbol *arraytype;
-    if (template_find_field(template, x->x_fieldname, onsetp, &type,
+    if (template_findField(template, x->x_fieldname, onsetp, &type,
         &arraytype) && type != DATA_ARRAY)
             return (type);
     else return (-1);

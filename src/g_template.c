@@ -57,34 +57,42 @@ int template_exist (t_template *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int template_find_field(t_template *x, t_symbol *name, int *p_onset,
-    int *p_type, t_symbol **p_arraytype)
+int template_findField (t_template *x, t_symbol *name, int *onset, int *type, t_symbol **templateIdentifier)
 {
-    t_template *t;
-    int i, n;
-    if (!x)
-    {
-        PD_BUG;
-        return (0);
+    PD_ASSERT (x);
+    
+    if (x) {
+    //
+    int i;
+    
+    for (i = 0; i < x->tp_size; i++) {
+    //
+    if (x->tp_vector[i].ds_fieldName == name) {
+    
+        *onset              = i * sizeof (t_word);
+        *type               = x->tp_vector[i].ds_type;
+        *templateIdentifier = x->tp_vector[i].ds_templateIdentifier;
+        
+        return 1;
     }
-    n = x->tp_size;
-    for (i = 0; i < n; i++)
-        if (x->tp_vector[i].ds_fieldName == name)
-    {
-        *p_onset = i * sizeof(t_word);
-        *p_type = x->tp_vector[i].ds_type;
-        *p_arraytype = x->tp_vector[i].ds_templateIdentifier;
-        return (1);
+    //
     }
-    return (0);
+    //
+    }
+    
+    return 0;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 t_float template_getfloat(t_template *x, t_symbol *fieldname, t_word *wp)
 {
     int onset, type;
     t_symbol *arraytype;
     t_float val = 0;
-    if (template_find_field(x, fieldname, &onset, &type, &arraytype))
+    if (template_findField(x, fieldname, &onset, &type, &arraytype))
     {
         if (type == DATA_FLOAT)
             val = *(t_float *)(((char *)wp) + onset);
@@ -100,7 +108,7 @@ void template_setfloat(t_template *x, t_symbol *fieldname, t_word *wp, t_float f
 {
     int onset, type;
     t_symbol *arraytype;
-    if (template_find_field(x, fieldname, &onset, &type, &arraytype))
+    if (template_findField(x, fieldname, &onset, &type, &arraytype))
      {
         if (type == DATA_FLOAT)
             *(t_float *)(((char *)wp) + onset) = f;
@@ -116,7 +124,7 @@ t_symbol *template_getsymbol(t_template *x, t_symbol *fieldname, t_word *wp)
     int onset, type;
     t_symbol *arraytype;
     t_symbol *val = &s_;
-    if (template_find_field(x, fieldname, &onset, &type, &arraytype))
+    if (template_findField(x, fieldname, &onset, &type, &arraytype))
     {
         if (type == DATA_SYMBOL)
             val = *(t_symbol **)(((char *)wp) + onset);
@@ -132,7 +140,7 @@ void template_setsymbol(t_template *x, t_symbol *fieldname, t_word *wp, t_symbol
 {
     int onset, type;
     t_symbol *arraytype;
-    if (template_find_field(x, fieldname, &onset, &type, &arraytype))
+    if (template_findField(x, fieldname, &onset, &type, &arraytype))
      {
         if (type == DATA_SYMBOL)
             *(t_symbol **)(((char *)wp) + onset) = s;
@@ -151,10 +159,6 @@ t_template *template_findByIdentifier (t_symbol *s)
 {
     return ((t_template *)pd_findByClass (s, template_class));
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 static void template_create (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {

@@ -330,7 +330,7 @@ static t_array *garray_getArrayCheckedFloat (t_garray *x, int *onset, int *eleme
     int yType  = -1;
     t_symbol *yArrayType = NULL;
     
-    err |= !(template_find_field (template, sym_y, &yOnset, &yType, &yArrayType));
+    err |= !(template_findField (template, sym_y, &yOnset, &yType, &yArrayType));
     err |= (yType != DATA_FLOAT);
 
     if (!err) {
@@ -375,7 +375,7 @@ t_array *garray_getArray (t_garray *x)
     int zType  = -1;
     t_symbol *zArrayType = NULL;
     
-    err |= !(template_find_field (template, sym_z, &zOnset, &zType, &zArrayType));
+    err |= !(template_findField (template, sym_z, &zOnset, &zType, &zArrayType));
     err |= (zType != DATA_ARRAY);
     
     if (!err) { return (x->x_scalar->sc_vector[zOnset].w_array); }
@@ -751,7 +751,7 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_symbol *type, t_f
     int zType  = -1;
     t_symbol *zArrayType = NULL;
 
-    err |= !(template_find_field (template, sym_z, &zOnset, &zType, &zArrayType));
+    err |= !(template_findField (template, sym_z, &zOnset, &zType, &zArrayType));
     err |= !(template_findByIdentifier (zArrayType));
     err |= (zType != DATA_ARRAY);
     
