@@ -57,7 +57,11 @@ int template_exist (t_template *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int template_findField (t_template *x, t_symbol *name, int *onset, int *type, t_symbol **templateIdentifier)
+int template_findField (t_template *x,
+    t_symbol *fieldName,
+    int *onset,
+    int *type,
+    t_symbol **templateIdentifier)
 {
     PD_ASSERT (x);
     
@@ -67,7 +71,7 @@ int template_findField (t_template *x, t_symbol *name, int *onset, int *type, t_
     
     for (i = 0; i < x->tp_size; i++) {
     //
-    if (x->tp_vector[i].ds_fieldName == name) {
+    if (x->tp_vector[i].ds_fieldName == fieldName) {
     
         *onset              = i * sizeof (t_word);
         *type               = x->tp_vector[i].ds_type;
@@ -87,7 +91,7 @@ int template_findField (t_template *x, t_symbol *name, int *onset, int *type, t_
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int template_getRaw (t_template *x, t_symbol *name, int *index, int *type, t_symbol **templateIdentifier)
+int template_getRaw (t_template *x, t_symbol *fieldName, int *index, int *type, t_symbol **templateIdentifier)
 {
     PD_ASSERT (x);
     
@@ -97,7 +101,7 @@ int template_getRaw (t_template *x, t_symbol *name, int *index, int *type, t_sym
     
     for (i = 0; i < x->tp_size; i++) {
     //
-    if (x->tp_vector[i].ds_fieldName == name) {
+    if (x->tp_vector[i].ds_fieldName == fieldName) {
     
         *index              = i;
         *type               = x->tp_vector[i].ds_type;
@@ -117,13 +121,57 @@ int template_getRaw (t_template *x, t_symbol *name, int *index, int *type, t_sym
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+int template_contains (t_template *x, t_symbol *fieldName)
+{
+    int i, t; t_symbol *dummy = NULL;
+    
+    return (template_getRaw (x, fieldName, &i, &t, &dummy));
+}
+
+int template_getIndex (t_template *x, t_symbol *fieldName)
+{
+    int i, t; t_symbol *dummy = NULL;
+    
+    if (template_getRaw (x, fieldName, &i, &t, &dummy)) { return i; }
+    else {
+        return -1;
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int template_isFloat (t_template *x, t_symbol *fieldName)
+{
+    int i, type; t_symbol *dummy = NULL;
+    
+    if (template_getRaw (x, fieldName, &i, &type, &dummy)) { return (type == DATA_FLOAT); }
+    
+    return 0;
+}
+
+int template_isSymbol (t_template *x, t_symbol *fieldName)
+{
+    int i, type; t_symbol *dummy = NULL;
+    
+    if (template_getRaw (x, fieldName, &i, &type, &dummy)) { return (type == DATA_SYMBOL); }
+    
+    return 0;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_float template_getFloat (t_template *x, t_symbol *fieldName, t_word *w)
 {
-    int i, type;
-    t_symbol *dummy = NULL;
+    int i, type; t_symbol *dummy = NULL;
     
     if (template_getRaw (x, fieldName, &i, &type, &dummy)) {
-        if (type == DATA_FLOAT) { return *(t_float *)(w + i); }
+        if (type == DATA_FLOAT) {
+            return *(t_float *)(w + i);
+        }
     }
 
     return 0.0;
@@ -131,21 +179,25 @@ t_float template_getFloat (t_template *x, t_symbol *fieldName, t_word *w)
 
 void template_setFloat (t_template *x, t_symbol *fieldName, t_word *w, t_float f)
 {
-    int i, type;
-    t_symbol *dummy = NULL;
+    int i, type; t_symbol *dummy = NULL;
+    
+    PD_ASSERT (template_isFloat (x, fieldName));
     
     if (template_getRaw (x, fieldName, &i, &type, &dummy)) {
-        if (type == DATA_FLOAT) { *(t_float *)(w + i) = f; }
+        if (type == DATA_FLOAT) { 
+            *(t_float *)(w + i) = f; 
+        }
     }
 }
 
 t_symbol *template_getSymbol (t_template *x, t_symbol *fieldName, t_word *w)
 {
-    int i, type;
-    t_symbol *dummy = NULL;
+    int i, type; t_symbol *dummy = NULL;
     
     if (template_getRaw (x, fieldName, &i, &type, &dummy)) {
-        if (type == DATA_SYMBOL) { return *(t_symbol **)(w + i); }
+        if (type == DATA_SYMBOL) {
+            return *(t_symbol **)(w + i);
+        }
     }
 
     return &s_;
@@ -156,8 +208,12 @@ void template_setSymbol (t_template *x, t_symbol *fieldName, t_word *w, t_symbol
     int i, type;
     t_symbol *dummy = NULL;
     
+    PD_ASSERT (template_isSymbol (x, fieldName));
+    
     if (template_findField (x, fieldName, &i, &type, &dummy)) {
-        if (type == DATA_SYMBOL) { *(t_symbol **)(w + i) = s; }
+        if (type == DATA_SYMBOL) { 
+            *(t_symbol **)(w + i) = s;
+        }
     }
 }
 

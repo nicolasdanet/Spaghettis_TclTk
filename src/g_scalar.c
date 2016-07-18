@@ -341,21 +341,20 @@ static void scalar_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int
     if (!template) { PD_BUG; }
     else {
     //
-    int onsetX, onsetY, typeX, typeY;
-    t_symbol *s = NULL;
-        
-    int hasFieldX = template_findField (template, sym_x, &onsetX, &typeX, &s);
-    int hasFieldY = template_findField (template, sym_y, &onsetY, &typeY, &s);
-        
-    if (hasFieldX && (typeX != DATA_FLOAT)) { hasFieldX = 0; }
-    if (hasFieldY && (typeY != DATA_FLOAT)) { hasFieldY = 0; }
-        
-    if (hasFieldX) {
-        *(t_float *)(((char *)(x->sc_vector)) + onsetX) += canvas_deltaPositionToValueX (glist, deltaX);
+    if (template_isFloat (template, sym_x)) {
+    //
+    t_float f = template_getFloat (template, sym_x, x->sc_vector);
+    f += canvas_deltaPositionToValueX (glist, deltaX);
+    template_setFloat (template, sym_x, x->sc_vector, f);
+    //
     }
     
-    if (hasFieldY) {
-        *(t_float *)(((char *)(x->sc_vector)) + onsetY) += canvas_deltaPositionToValueY (glist, deltaY);
+    if (template_isFloat (template, sym_y)) {
+    //
+    t_float f = template_getFloat (template, sym_y, x->sc_vector);
+    f += canvas_deltaPositionToValueY (glist, deltaY);
+    template_setFloat (template, sym_y, x->sc_vector, f);
+    //
     }
     
     scalar_notifyDisplaced (x, glist, template, (t_float)deltaX, (t_float)deltaY);

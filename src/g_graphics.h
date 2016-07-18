@@ -935,12 +935,11 @@ t_symbol        *gpointer_getTemplateIdentifier         (t_gpointer *gp);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_template      *template_findByIdentifier              (t_symbol *templateIdentifier);
 t_template      *template_new                           (t_symbol *templateIdentifier,
                                                             int argc,
                                                             t_atom *argv);
                                                             
-t_template      *template_findByIdentifier              (t_symbol *templateIdentifier);
-
 void            template_free                           (t_template *x);
 int             template_exist                          (t_template *x);
 int             template_equals                         (t_template *tmpl1, t_template *tmpl2);
@@ -950,13 +949,19 @@ int             template_findField                      (t_template *x,
                                                             int *onset,
                                                             int *type,
                                                             t_symbol **templateIdentifier);
-                                                            
+
 int             template_getRaw                         (t_template *x,
                                                             t_symbol *fieldName,
                                                             int *index,
                                                             int *type,
                                                             t_symbol **templateIdentifier);
-                                                            
+
+int             template_contains                       (t_template *x, t_symbol *fieldName);
+int             template_getIndex                       (t_template *x, t_symbol *fieldName);
+
+int             template_isFloat                        (t_template *x, t_symbol *fieldName);
+int             template_isSymbol                       (t_template *x, t_symbol *fieldName);
+
 t_float         template_getFloat                       (t_template *x, t_symbol *fieldName, t_word *w);
 void            template_setFloat                       (t_template *x,
                                                             t_symbol *fieldName,
