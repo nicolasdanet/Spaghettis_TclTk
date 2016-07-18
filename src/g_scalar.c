@@ -74,12 +74,12 @@ static void scalar_drawJob (t_gobj *z, t_glist *glist)
 
 static t_float scalar_getCoordinateX (t_scalar *x)
 {
-    return template_getfloat (template_findByIdentifier (x->sc_templateIdentifier), sym_x, x->sc_vector);
+    return template_getFloat (template_findByIdentifier (x->sc_templateIdentifier), sym_x, x->sc_vector);
 }
 
 static t_float scalar_getCoordinateY (t_scalar *x)
 {
-    return template_getfloat (template_findByIdentifier (x->sc_templateIdentifier), sym_y, x->sc_vector);
+    return template_getFloat (template_findByIdentifier (x->sc_templateIdentifier), sym_y, x->sc_vector);
 }
 
 static void scalar_drawSelectRectangle (t_scalar *x, t_glist *glist, int isSelected)
@@ -223,8 +223,8 @@ int scalar_performClick (t_word *w,
     
     if (view) {
     //
-    t_float baseX = template_getfloat (template, sym_x, w);
-    t_float baseY = template_getfloat (template, sym_y, w);
+    t_float baseX = template_getFloat (template, sym_x, w);
+    t_float baseY = template_getFloat (template, sym_y, w);
     t_gobj *y = NULL;
         
     if (clicked) { scalar_notifyClicked (scalar, glist, template, baseX + offsetX, baseY + offsetY); }

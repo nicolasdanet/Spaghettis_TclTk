@@ -950,15 +950,21 @@ int             template_findField                      (t_template *x,
                                                             int *onset,
                                                             int *type,
                                                             t_symbol **templateIdentifier);
-
-t_float         template_getfloat                       (t_template *x, t_symbol *fieldName, t_word *w);
-void            template_setfloat                       (t_template *x,
+                                                            
+int             template_getRaw                         (t_template *x,
+                                                            t_symbol *fieldName,
+                                                            int *index,
+                                                            int *type,
+                                                            t_symbol **templateIdentifier);
+                                                            
+t_float         template_getFloat                       (t_template *x, t_symbol *fieldName, t_word *w);
+void            template_setFloat                       (t_template *x,
                                                             t_symbol *fieldName,
                                                             t_word *w,
                                                             t_float f);
                                                             
-t_symbol        *template_getsymbol                     (t_template *x, t_symbol *fieldName, t_word *w);
-void            template_setsymbol                      (t_template *x,
+t_symbol        *template_getSymbol                     (t_template *x, t_symbol *fieldName, t_word *w);
+void            template_setSymbol                      (t_template *x,
                                                             t_symbol *fieldName,
                                                             t_word *w,
                                                             t_symbol *s);

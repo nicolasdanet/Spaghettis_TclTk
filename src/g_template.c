@@ -87,68 +87,78 @@ int template_findField (t_template *x, t_symbol *name, int *onset, int *type, t_
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_float template_getfloat(t_template *x, t_symbol *fieldname, t_word *wp)
+int template_getRaw (t_template *x, t_symbol *name, int *index, int *type, t_symbol **templateIdentifier)
 {
-    int onset, type;
-    t_symbol *arraytype;
-    t_float val = 0;
-    if (template_findField(x, fieldname, &onset, &type, &arraytype))
-    {
-        if (type == DATA_FLOAT)
-            val = *(t_float *)(((char *)wp) + onset);
-        else if (0 /* loud */) post_error ("%s.%s: not a number",
-            x->tp_templateIdentifier->s_name, fieldname->s_name);
+    PD_ASSERT (x);
+    
+    if (x) {
+    //
+    int i;
+    
+    for (i = 0; i < x->tp_size; i++) {
+    //
+    if (x->tp_vector[i].ds_fieldName == name) {
+    
+        *index              = i;
+        *type               = x->tp_vector[i].ds_type;
+        *templateIdentifier = x->tp_vector[i].ds_templateIdentifier;
+        
+        return 1;
     }
-    else if (0 /* loud */) post_error ("%s.%s: no such field",
-        x->tp_templateIdentifier->s_name, fieldname->s_name);
-    return (val);
+    //
+    }
+    //
+    }
+    
+    return 0;
 }
 
-void template_setfloat(t_template *x, t_symbol *fieldname, t_word *wp, t_float f)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_float template_getFloat (t_template *x, t_symbol *fieldName, t_word *w)
 {
-    int onset, type;
-    t_symbol *arraytype;
-    if (template_findField(x, fieldname, &onset, &type, &arraytype))
-     {
-        if (type == DATA_FLOAT)
-            *(t_float *)(((char *)wp) + onset) = f;
-        else if (0 /* loud */) post_error ("%s.%s: not a number",
-            x->tp_templateIdentifier->s_name, fieldname->s_name);
+    int i, type;
+    t_symbol *dummy = NULL;
+    
+    if (template_getRaw (x, fieldName, &i, &type, &dummy)) {
+        if (type == DATA_FLOAT) { return *(t_float *)(w + i); }
     }
-    else if (0 /* loud */) post_error ("%s.%s: no such field",
-        x->tp_templateIdentifier->s_name, fieldname->s_name);
+
+    return 0.0;
 }
 
-t_symbol *template_getsymbol(t_template *x, t_symbol *fieldname, t_word *wp)
+void template_setFloat (t_template *x, t_symbol *fieldName, t_word *w, t_float f)
 {
-    int onset, type;
-    t_symbol *arraytype;
-    t_symbol *val = &s_;
-    if (template_findField(x, fieldname, &onset, &type, &arraytype))
-    {
-        if (type == DATA_SYMBOL)
-            val = *(t_symbol **)(((char *)wp) + onset);
-        else if (0 /* loud */) post_error ("%s.%s: not a symbol",
-            x->tp_templateIdentifier->s_name, fieldname->s_name);
+    int i, type;
+    t_symbol *dummy = NULL;
+    
+    if (template_getRaw (x, fieldName, &i, &type, &dummy)) {
+        if (type == DATA_FLOAT) { *(t_float *)(w + i) = f; }
     }
-    else if (0 /* loud */) post_error ("%s.%s: no such field",
-        x->tp_templateIdentifier->s_name, fieldname->s_name);
-    return (val);
 }
 
-void template_setsymbol(t_template *x, t_symbol *fieldname, t_word *wp, t_symbol *s)
+t_symbol *template_getSymbol (t_template *x, t_symbol *fieldName, t_word *w)
 {
-    int onset, type;
-    t_symbol *arraytype;
-    if (template_findField(x, fieldname, &onset, &type, &arraytype))
-     {
-        if (type == DATA_SYMBOL)
-            *(t_symbol **)(((char *)wp) + onset) = s;
-        else if (0 /* loud */) post_error ("%s.%s: not a symbol",
-            x->tp_templateIdentifier->s_name, fieldname->s_name);
+    int i, type;
+    t_symbol *dummy = NULL;
+    
+    if (template_getRaw (x, fieldName, &i, &type, &dummy)) {
+        if (type == DATA_SYMBOL) { return *(t_symbol **)(w + i); }
     }
-    else if (0 /* loud */) post_error ("%s.%s: no such field",
-        x->tp_templateIdentifier->s_name, fieldname->s_name);
+
+    return &s_;
+}
+
+void template_setSymbol (t_template *x, t_symbol *fieldName, t_word *w, t_symbol *s)
+{
+    int i, type;
+    t_symbol *dummy = NULL;
+    
+    if (template_findField (x, fieldName, &i, &type, &dummy)) {
+        if (type == DATA_SYMBOL) { *(t_symbol **)(w + i) = s; }
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

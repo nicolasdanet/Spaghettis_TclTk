@@ -186,7 +186,7 @@ static void garray_updateGraphName (t_garray *x)
 void garray_resizeWithInteger (t_garray *x, int n)
 {
     t_template *template = template_findByIdentifier (x->x_scalar->sc_templateIdentifier);
-    int style = template_getfloat (template, sym_style, x->x_scalar->sc_vector);
+    int style = template_getFloat (template, sym_style, x->x_scalar->sc_vector);
     
     GARRAY_FETCH;
     
@@ -642,7 +642,7 @@ static void garray_functionSave (t_gobj *z, t_buffer *b)
     if (!template) { PD_BUG; }
     else {
     //
-    int style = template_getfloat (template, sym_style, x->x_scalar->sc_vector);    
+    int style = template_getFloat (template, sym_style, x->x_scalar->sc_vector);    
     int flags = x->x_saveWithParent + (2 * style) + (8 * x->x_hideName);
     
     GARRAY_FETCH;
@@ -669,7 +669,7 @@ void garray_functionProperties (t_garray *x)
     //
     char t[PD_STRING] = { 0 };
     t_error err = PD_ERROR_NONE;
-    int style = template_getfloat (template, sym_style, x->x_scalar->sc_vector);
+    int style = template_getFloat (template, sym_style, x->x_scalar->sc_vector);
     int flags = x->x_saveWithParent + (2 * style);
     
     GARRAY_FETCH;
@@ -698,7 +698,7 @@ void garray_fromDialog (t_garray *x, t_symbol *name, t_float size, t_float flags
     int newSize         = PD_MAX (1.0, size);
     int save            = (((int)flags & 1) != 0);
     int newStyle        = (((int)flags & 6) >> 1);
-    int oldStyle        = (int)template_getfloat (template, sym_style, x->x_scalar->sc_vector);
+    int oldStyle        = (int)template_getFloat (template, sym_style, x->x_scalar->sc_vector);
     
     PD_ASSERT (newSize > 0);
     
@@ -719,7 +719,7 @@ void garray_fromDialog (t_garray *x, t_symbol *name, t_float size, t_float flags
     if (newSize != array->a_size) { garray_resizeWithInteger (x, newSize); }
     
     if (newStyle != oldStyle) {
-        template_setfloat (template, sym_style, x->x_scalar->sc_vector, (t_float)newStyle);
+        template_setFloat (template, sym_style, x->x_scalar->sc_vector, (t_float)newStyle);
         garray_updateGraphBounds (x, newSize, newStyle); 
     }
 
@@ -766,8 +766,8 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_symbol *type, t_f
 
     array_resize (x->x_scalar->sc_vector[zOnset].w_array, n);
 
-    template_setfloat (template, sym_style, x->x_scalar->sc_vector, plot);
-    template_setfloat (template, sym_linewidth, x->x_scalar->sc_vector, 1);
+    template_setFloat (template, sym_style, x->x_scalar->sc_vector, plot);
+    template_setFloat (template, sym_linewidth, x->x_scalar->sc_vector, 1);
 
     sym___hash__A->s_thing = NULL;
     pd_bind (cast_pd (x), sym___hash__A); 
