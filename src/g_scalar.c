@@ -72,40 +72,14 @@ static void scalar_drawJob (t_gobj *z, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int scalar_isTemplateExistRecursive (t_template *tmpl)
-{
-    if (!tmpl) { return 0; }
-    else {
-    //
-    int i, size = tmpl->tp_size;
-    t_dataslot *v = tmpl->tp_vector;
-    
-    for (i = 0; i < size; i++, v++) {
-    //
-    if (v->ds_type == DATA_ARRAY) {
-    //
-    t_template *elementTemplate = template_findbyname (v->ds_templateIdentifier);
-    if (!elementTemplate || !scalar_isTemplateExistRecursive (elementTemplate)) {
-        return 0;
-    }
-    //
-    }
-    //
-    }
-    //
-    }
-    
-    return 1;
-}
-
 static t_float scalar_getCoordinateX (t_scalar *x)
 {
-    return template_getfloat (template_findbyname (x->sc_templateIdentifier), sym_x, x->sc_vector);
+    return template_getfloat (template_findByIdentifier (x->sc_templateIdentifier), sym_x, x->sc_vector);
 }
 
 static t_float scalar_getCoordinateY (t_scalar *x)
 {
-    return template_getfloat (template_findbyname (x->sc_templateIdentifier), sym_y, x->sc_vector);
+    return template_getfloat (template_findByIdentifier (x->sc_templateIdentifier), sym_y, x->sc_vector);
 }
 
 static void scalar_drawSelectRectangle (t_scalar *x, t_glist *glist, int isSelected)
@@ -300,7 +274,7 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
     int x2 = 0;
     int y2 = 0;
     
-    t_template *template = template_findbyname (x->sc_templateIdentifier);
+    t_template *template = template_findByIdentifier (x->sc_templateIdentifier);
     
     PD_ASSERT (template);
     
@@ -362,7 +336,7 @@ static void scalar_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int
 {
     t_scalar *x = cast_scalar (z);
     
-    t_template *template = template_findbyname (x->sc_templateIdentifier);
+    t_template *template = template_findByIdentifier (x->sc_templateIdentifier);
     
     if (!template) { PD_BUG; }
     else {
@@ -394,7 +368,7 @@ static void scalar_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
 {
     t_scalar *x = cast_scalar (z);
     
-    t_template *template = template_findbyname (x->sc_templateIdentifier);
+    t_template *template = template_findByIdentifier (x->sc_templateIdentifier);
     
     if (!template) { PD_BUG; }
     else {
@@ -415,7 +389,7 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
 {
     t_scalar *x = cast_scalar (z);
     
-    t_template *template = template_findbyname (x->sc_templateIdentifier);
+    t_template *template = template_findByIdentifier (x->sc_templateIdentifier);
     
     PD_ASSERT (template);
     
@@ -482,7 +456,7 @@ static int scalar_behaviorClicked (t_gobj *z,
 {
     t_scalar *x = cast_scalar (z);
     
-    int k = scalar_performClick (x->sc_vector, template_findbyname (x->sc_templateIdentifier),
+    int k = scalar_performClick (x->sc_vector, template_findByIdentifier (x->sc_templateIdentifier),
                 x,
                 NULL,
                 glist,
@@ -551,9 +525,9 @@ t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
 {
     t_scalar *x = NULL;
     
-    t_template *template = template_findbyname (templateIdentifier);
+    t_template *template = template_findByIdentifier (templateIdentifier);
 
-    if (!scalar_isTemplateExistRecursive (template)) { PD_BUG; }
+    if (!template_exist (template)) { PD_BUG; }
     else {
     //
     {
@@ -575,7 +549,7 @@ t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
 
 static void scalar_free (t_scalar *x)
 {
-    word_free (x->sc_vector, template_findbyname (x->sc_templateIdentifier));
+    word_free (x->sc_vector, template_findByIdentifier (x->sc_templateIdentifier));
     guistub_destroyWithKey ((void *)x);
 
     PD_MEMORY_FREE (x);

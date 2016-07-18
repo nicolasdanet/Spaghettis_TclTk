@@ -53,7 +53,7 @@ static void glist_readatoms(t_glist *x, int natoms, t_atom *vec,
 {
     int message, nline, n, i;
 
-    t_template *template = template_findbyname(templatesym);
+    t_template *template = template_findByIdentifier(templatesym);
     if (!template)
     {
         post_error ("%s: no such template", templatesym->s_name);
@@ -71,7 +71,7 @@ static void glist_readatoms(t_glist *x, int natoms, t_atom *vec,
             int elemsize = a->a_elementSize, nitems = 0;
             t_symbol *arraytemplatesym = template->tp_vector[i].ds_templateIdentifier;
             t_template *arraytemplate =
-                template_findbyname(arraytemplatesym);
+                template_findByIdentifier(arraytemplatesym);
             if (!arraytemplate)
             {
                 post_error ("%s: no such template", arraytemplatesym->s_name);
@@ -127,7 +127,7 @@ int canvas_readscalar(t_glist *x, int natoms, t_atom *vec,
     templatesym = utils_makeBindSymbol(vec[nextmsg].a_w.w_symbol);
     *p_nextmsg = nextmsg + 1;
     
-    if (!(template = template_findbyname(templatesym)))
+    if (!(template = template_findByIdentifier(templatesym)))
     {
         post_error ("canvas_read: %s: no such template", templatesym->s_name);
         *p_nextmsg = natoms;
@@ -220,7 +220,7 @@ void glist_readfrombinbuf(t_glist *x, t_buffer *b, char *filename, int selectem)
                 templateargs[ntemplateargs + 2] = vec[message + 2];
             ntemplateargs = newnargs;
         }
-        if (!(existtemplate = template_findbyname(templatesym)))
+        if (!(existtemplate = template_findByIdentifier(templatesym)))
         {
             post_error ("%s: template not found in current patch",
                 templatesym->s_name);
@@ -332,7 +332,7 @@ void canvas_dataproperties(t_glist *x, t_scalar *sc, t_buffer *b)
     else if (newone->g_pd == scalar_class && oldone->g_pd == scalar_class
         && ((t_scalar *)newone)->sc_templateIdentifier ==
             ((t_scalar *)oldone)->sc_templateIdentifier 
-        && (template = template_findbyname(((t_scalar *)newone)->sc_templateIdentifier)))
+        && (template = template_findByIdentifier(((t_scalar *)newone)->sc_templateIdentifier)))
     {
     
     
@@ -429,7 +429,7 @@ void canvas_writescalar(t_symbol *templatesym, t_word *w, t_buffer *b,
     int amarrayelement)
 {
     t_dataslot *ds;
-    t_template *template = template_findbyname(templatesym);
+    t_template *template = template_findByIdentifier(templatesym);
     t_atom *a = (t_atom *)PD_MEMORY_GET(0);
     int i, n = template->tp_size, natom = 0;
     if (!amarrayelement)
@@ -499,7 +499,7 @@ static void canvas_addtemplatesforscalar(t_symbol *templatesym,
 {
     t_dataslot *ds;
     int i;
-    t_template *template = template_findbyname(templatesym);
+    t_template *template = template_findByIdentifier(templatesym);
     canvas_doaddtemplate(templatesym, p_ntemplates, p_templatevec);
     if (!template) { PD_BUG; }
     else for (ds = template->tp_vector, i = template->tp_size; i--; ds++, w++)
@@ -553,7 +553,7 @@ t_buffer *glist_writetobinbuf(t_glist *x, int wholething)
     buffer_vAppend(b, "s;", sym_data);
     for (i = 0; i < ntemplates; i++)
     {
-        t_template *template = template_findbyname(templatevec[i]);
+        t_template *template = template_findByIdentifier(templatevec[i]);
         int j, m = template->tp_size;
             /* drop UTILS_BIND prefix from template symbol to print it: */
         buffer_vAppend(b, "ss;", sym_template,
@@ -642,7 +642,7 @@ void canvas_serializeTemplates (t_glist *glist, t_buffer *b)
     
     for (i = 0; i < n; i++) {
     //
-    t_template *template = template_findbyname(v[i]);
+    t_template *template = template_findByIdentifier(v[i]);
     int j, m = template->tp_size;
     if (!template)
     {

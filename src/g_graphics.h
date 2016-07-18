@@ -939,9 +939,10 @@ t_template      *template_new                           (t_symbol *templateIdent
                                                             int argc,
                                                             t_atom *argv);
                                                             
-t_template      *template_findbyname                    (t_symbol *templateIdentifier);
+t_template      *template_findByIdentifier              (t_symbol *templateIdentifier);
 
 void            template_free                           (t_template *x);
+int             template_exist                          (t_template *x);
 int             template_match                          (t_template *tmpl1, t_template *tmpl2);
 
 int             template_find_field                     (t_template *x,

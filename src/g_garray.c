@@ -185,7 +185,7 @@ static void garray_updateGraphName (t_garray *x)
 
 void garray_resizeWithInteger (t_garray *x, int n)
 {
-    t_template *template = template_findbyname (x->x_scalar->sc_templateIdentifier);
+    t_template *template = template_findByIdentifier (x->x_scalar->sc_templateIdentifier);
     int style = template_getfloat (template, sym_style, x->x_scalar->sc_vector);
     
     GARRAY_FETCH;
@@ -320,7 +320,7 @@ static t_garray *garray_makeObjectWithScalar (t_glist *glist,
 static t_array *garray_getArrayCheckedFloat (t_garray *x, int *onset, int *elementSize)
 {
     t_array *a = garray_getArray (x);
-    t_template *template = template_findbyname (a->a_templateIdentifier);
+    t_template *template = template_findByIdentifier (a->a_templateIdentifier);
     
     if (template) {
     //
@@ -365,7 +365,7 @@ int garray_getFloats (t_garray *x, int *size, t_word **w)
 
 t_array *garray_getArray (t_garray *x)
 {
-    t_template *template = template_findbyname (x->x_scalar->sc_templateIdentifier);
+    t_template *template = template_findByIdentifier (x->x_scalar->sc_templateIdentifier);
     
     if (template) {
     //
@@ -637,7 +637,7 @@ static int garray_behaviorClicked (t_gobj *z,
 static void garray_functionSave (t_gobj *z, t_buffer *b)
 {
     t_garray *x = (t_garray *)z;
-    t_template *template = template_findbyname (x->x_scalar->sc_templateIdentifier);
+    t_template *template = template_findByIdentifier (x->x_scalar->sc_templateIdentifier);
     
     if (!template) { PD_BUG; }
     else {
@@ -662,7 +662,7 @@ static void garray_functionSave (t_gobj *z, t_buffer *b)
 
 void garray_functionProperties (t_garray *x)
 {
-    t_template *template = template_findbyname (x->x_scalar->sc_templateIdentifier);
+    t_template *template = template_findByIdentifier (x->x_scalar->sc_templateIdentifier);
     
     if (!template) { PD_BUG; }
     else {
@@ -689,7 +689,7 @@ void garray_functionProperties (t_garray *x)
 
 void garray_fromDialog (t_garray *x, t_symbol *name, t_float size, t_float flags)
 {
-    t_template *template = template_findbyname (x->x_scalar->sc_templateIdentifier);
+    t_template *template = template_findByIdentifier (x->x_scalar->sc_templateIdentifier);
     
     if (!template) { PD_BUG; }
     else {
@@ -741,7 +741,7 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_symbol *type, t_f
     if (type != &s_float) { PD_BUG; }
     else {
     //
-    t_template *template = template_findbyname (sym___TEMPLATE__float__dash__array);
+    t_template *template = template_findByIdentifier (sym___TEMPLATE__float__dash__array);
     
     if (template) {
     //
@@ -752,7 +752,7 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_symbol *type, t_f
     t_symbol *zArrayType = NULL;
 
     err |= !(template_find_field (template, sym_z, &zOnset, &zType, &zArrayType));
-    err |= !(template_findbyname (zArrayType));
+    err |= !(template_findByIdentifier (zArrayType));
     err |= (zType != DATA_ARRAY);
     
     if (!err) {

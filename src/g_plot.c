@@ -219,10 +219,10 @@ static int array_getfields(t_symbol *elemtemplatesym,
     t_glist *elemtemplatecanvas = 0;
 
         /* the "float" template is special in not having to have a canvas;
-        template_findbyname is hardwired to return a predefined 
+        template_findByIdentifier is hardwired to return a predefined 
         template. */
 
-    if (!(elemtemplate =  template_findbyname(elemtemplatesym)))
+    if (!(elemtemplate =  template_findByIdentifier(elemtemplatesym)))
     {
         post_error ("plot: %s: no such template", elemtemplatesym->s_name);
         return (-1);

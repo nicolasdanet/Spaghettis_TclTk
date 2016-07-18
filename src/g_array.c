@@ -43,7 +43,7 @@ t_array *array_new (t_symbol *templateIdentifier, t_gpointer *parent)
 {
     t_array *x = (t_array *)PD_MEMORY_GET (sizeof (t_array));
     
-    t_template *template = template_findbyname (templateIdentifier);
+    t_template *template = template_findByIdentifier (templateIdentifier);
 
     PD_ASSERT (template);
     
@@ -62,7 +62,7 @@ t_array *array_new (t_symbol *templateIdentifier, t_gpointer *parent)
 
 void array_free (t_array *x)
 {
-    t_template *template = template_findbyname (x->a_templateIdentifier);
+    t_template *template = template_findByIdentifier (x->a_templateIdentifier);
     int i;
         
     PD_ASSERT (template);
@@ -93,7 +93,7 @@ t_gpointer *array_getTopParentArray (t_gpointer *gp)
 
 void array_resize (t_array *x, int n)
 {
-    t_template *template = template_findbyname (x->a_templateIdentifier);
+    t_template *template = template_findByIdentifier (x->a_templateIdentifier);
     
     PD_ASSERT (template);
     

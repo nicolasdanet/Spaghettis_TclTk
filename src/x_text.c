@@ -415,7 +415,7 @@ static t_buffer *text_client_getbuf(t_text_client *x)
     }
     else if (x->tc_struct)   /* by pointer */
     {
-        t_template *template = template_findbyname(x->tc_struct);
+        t_template *template = template_findByIdentifier(x->tc_struct);
         t_word *vec; 
         int onset, type;
         t_symbol *arraytype;
@@ -459,7 +459,7 @@ static  void text_client_senditup(t_text_client *x)
     }
     else if (x->tc_struct)   /* by pointer */
     {
-        t_template *template = template_findbyname(x->tc_struct);
+        t_template *template = template_findByIdentifier(x->tc_struct);
         if (!template)
         {
             post_error ("text: couldn't find struct %s", x->tc_struct->s_name);

@@ -57,7 +57,7 @@ t_buffer *pointertobinbuf(t_pd *x, t_gpointer *gp, t_symbol *s,
         post_error ("%s: bad pointer", fname);
         return (0);
     }
-    if (!(template = template_findbyname(templatesym)))
+    if (!(template = template_findByIdentifier(templatesym)))
     {
         post_error ("%s: couldn't find template %s", fname,
             templatesym->s_name);
@@ -389,7 +389,7 @@ static void get_pointer(t_get *x, t_gpointer *gp)
         } 
     }
     else templatesym = gpointer_getTemplateIdentifier(gp);
-    if (!(template = template_findbyname(templatesym)))
+    if (!(template = template_findByIdentifier(templatesym)))
     {
         post_error ("get: couldn't find template %s", templatesym->s_name);
         return;
@@ -530,7 +530,7 @@ static void set_bang(t_set *x)
         } 
     }
     else templatesym = gpointer_getTemplateIdentifier(gp);
-    if (!(template = template_findbyname(templatesym)))
+    if (!(template = template_findByIdentifier(templatesym)))
     {
         post_error ("set: couldn't find template %s", templatesym->s_name);
         return;
@@ -641,7 +641,7 @@ static void elem_float(t_elem *x, t_float f)
         } 
     }
     else templatesym = gpointer_getTemplateIdentifier(gparent);
-    if (!(template = template_findbyname(templatesym)))
+    if (!(template = template_findByIdentifier(templatesym)))
     {
         post_error ("elem: couldn't find template %s", templatesym->s_name);
         return;
@@ -663,7 +663,7 @@ static void elem_float(t_elem *x, t_float f)
         post_error ("element: field %s not of type array", fieldsym->s_name);
         return;
     }
-    if (!(elemtemplate = template_findbyname(elemtemplatesym)))
+    if (!(elemtemplate = template_findByIdentifier(elemtemplatesym)))
     {
         post_error ("element: couldn't find field template %s",
             elemtemplatesym->s_name);
@@ -748,7 +748,7 @@ static void getsize_pointer(t_getsize *x, t_gpointer *gp)
         } 
     }
     else templatesym = gpointer_getTemplateIdentifier(gp);
-    if (!(template = template_findbyname(templatesym)))
+    if (!(template = template_findByIdentifier(templatesym)))
     {
         post_error ("elem: couldn't find template %s", templatesym->s_name);
         return;
@@ -836,7 +836,7 @@ static void setsize_float(t_setsize *x, t_float f)
         } 
     }
     else templatesym = gpointer_getTemplateIdentifier(gp);
-    if (!(template = template_findbyname(templatesym)))
+    if (!(template = template_findByIdentifier(templatesym)))
     {
         post_error ("elem: couldn't find template %s", templatesym->s_name);
         return;
@@ -856,7 +856,7 @@ static void setsize_float(t_setsize *x, t_float f)
     
     w = gpointer_getData (gp);
 
-    if (!(elemtemplate = template_findbyname(elemtemplatesym)))
+    if (!(elemtemplate = template_findByIdentifier(elemtemplatesym)))
     {
         post_error ("element: couldn't find field template %s",
             elemtemplatesym->s_name);
@@ -1001,7 +1001,7 @@ static void append_float(t_append *x, t_float f)
         post_error ("append: no template supplied");
         return;
     }
-    template = template_findbyname(templatesym);
+    template = template_findByIdentifier(templatesym);
     if (!template)
     {
         post_error ("append: couldn't find template %s", templatesym->s_name);

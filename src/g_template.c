@@ -17,15 +17,45 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pd             pd_canvasMaker;
+extern t_pd     pd_canvasMaker;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class          *template_class;            /* Shared. */
+static t_class  *template_class;                    /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+int template_exist (t_template *x)
+{
+    if (!x) { return 0; }
+    else {
+    //
+    int i, size = x->tp_size;
+    t_dataslot *v = x->tp_vector;
+    
+    for (i = 0; i < size; i++, v++) {
+    //
+    if (v->ds_type == DATA_ARRAY) {
+    //
+    t_template *elementTemplate = template_findByIdentifier (v->ds_templateIdentifier);
+    if (!elementTemplate || !template_exist (elementTemplate)) {
+        return 0;
+    }
+    //
+    }
+    //
+    }
+    //
+    }
+    
+    return 1;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 int template_find_field(t_template *x, t_symbol *name, int *p_onset,
     int *p_type, t_symbol **p_arraytype)
@@ -117,7 +147,7 @@ void template_setsymbol(t_template *x, t_symbol *fieldname, t_word *wp, t_symbol
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_template *template_findbyname (t_symbol *s)
+t_template *template_findByIdentifier (t_symbol *s)
 {
     return ((t_template *)pd_findByClass (s, template_class));
 }
@@ -131,13 +161,13 @@ static void template_create (void *dummy, t_symbol *s, int argc, t_atom *argv)
     if (argc && IS_SYMBOL (argv)) {
     //
     t_symbol *templateIdentifier = utils_makeBindSymbol (atom_getSymbolAtIndex (0, argc, argv));
-    t_template *x = template_findbyname (templateIdentifier);
     
     argc--;
     argv++;
     
-    if (x == NULL) { template_new (templateIdentifier, argc, argv); }
-    else {
+    if (template_findByIdentifier (templateIdentifier) == NULL) { 
+        template_new (templateIdentifier, argc, argv);
+    } else {
         PD_BUG;
     }
     //

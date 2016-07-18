@@ -236,7 +236,7 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
     }
     else if (x->tc_struct)   /* by pointer */
     {
-        t_template *template = template_findbyname(x->tc_struct);
+        t_template *template = template_findByIdentifier(x->tc_struct);
         t_word *vec; 
         int onset, type;
         t_symbol *arraytype;
@@ -479,7 +479,7 @@ static int array_rangeop_getrange(t_array_rangeop *x,
     t_template *template;
     if (!a)
         return (0);
-    template = template_findbyname(a->a_templateIdentifier);
+    template = template_findByIdentifier(a->a_templateIdentifier);
     if (!template_find_field(template, x->x_elemfield, &fieldonset,
         &type, &arraytype) || type != DATA_FLOAT)
     {

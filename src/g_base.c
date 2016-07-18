@@ -192,7 +192,7 @@ void canvas_addObject (t_glist *glist, t_gobj *y)
     
     if (needToPaintScalars) {
         t_symbol *bound = utils_makeBindSymbol (canvas->gl_name);
-        canvas_paintAllScalarsByTemplate (template_findbyname (bound), SCALAR_REDRAW);
+        canvas_paintAllScalarsByTemplate (template_findByIdentifier (bound), SCALAR_REDRAW);
     }
 }
 
@@ -217,7 +217,7 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     
     if (needToPaintScalars) {
         t_symbol *bound = utils_makeBindSymbol (canvas->gl_name);
-        canvas_paintAllScalarsByTemplate (template_findbyname (bound), SCALAR_ERASE);
+        canvas_paintAllScalarsByTemplate (template_findByIdentifier (bound), SCALAR_ERASE);
     }
     
     if (canvas_isMapped (canvas)) { gobj_visibilityChanged (y, glist, 0); }
@@ -243,7 +243,7 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     if (needToUpdateDSPChain) { dsp_update(); }
     if (needToPaintScalars)   {
         t_symbol *bound = utils_makeBindSymbol (canvas->gl_name);
-        canvas_paintAllScalarsByTemplate (template_findbyname (bound), SCALAR_DRAW);
+        canvas_paintAllScalarsByTemplate (template_findByIdentifier (bound), SCALAR_DRAW);
     }
     
     canvas->gl_isDeleting = deletingState;

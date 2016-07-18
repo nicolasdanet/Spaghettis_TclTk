@@ -165,7 +165,7 @@ static t_scalar *template_conformscalar(t_template *tfrom, t_template *tto,
     else
     {
         x = scfrom;
-        scalartemplate = template_findbyname(x->sc_templateIdentifier);
+        scalartemplate = template_findByIdentifier(x->sc_templateIdentifier);
     }
         /* convert all array elements */
     for (i = 0; i < scalartemplate->tp_size; i++)
@@ -206,7 +206,7 @@ static void template_conformarray(t_template *tfrom, t_template *tto,
         a->a_vector = newarray;
         PD_MEMORY_FREE(oldarray);
     }
-    else scalartemplate = template_findbyname(a->a_templateIdentifier);
+    else scalartemplate = template_findByIdentifier(a->a_templateIdentifier);
         /* convert all arrays and sublist fields in each element of the array */
     for (i = 0; i < a->a_size; i++)
     {
@@ -327,7 +327,7 @@ void template_notifyforscalar(t_template *template, t_glist *owner, t_scalar *sc
 static void *gtemplate_donew(t_symbol *sym, int argc, t_atom *argv)
 {
     t_gtemplate *x = (t_gtemplate *)pd_new(gtemplate_class);
-    t_template *t = template_findbyname(sym);
+    t_template *t = template_findByIdentifier(sym);
     int i;
     t_symbol *sx = sym_x;
     x->x_owner = canvas_getCurrent();
