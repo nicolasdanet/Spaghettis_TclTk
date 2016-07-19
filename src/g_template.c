@@ -77,7 +77,7 @@ int template_findField (t_template *x,
     //
     if (x->tp_vector[i].ds_fieldName == fieldName) {
     
-        *onset              = i * sizeof (t_word);
+        *onset              = i * ARRAY_WORD;
         *type               = x->tp_vector[i].ds_type;
         *templateIdentifier = x->tp_vector[i].ds_templateIdentifier;
         

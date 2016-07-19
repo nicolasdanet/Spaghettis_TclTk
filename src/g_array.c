@@ -48,7 +48,7 @@ t_array *array_new (t_symbol *templateIdentifier, t_gpointer *parent)
     PD_ASSERT (template);
     
     x->a_size               = 1;
-    x->a_elementSize        = sizeof (t_word) * template->tp_size;
+    x->a_elementSize        = ARRAY_WORD * template->tp_size;
     x->a_vector             = (char *)PD_MEMORY_GET (x->a_elementSize);
     x->a_templateIdentifier = templateIdentifier;
     x->a_master             = gpointer_masterCreateWithArray (x);
@@ -97,7 +97,7 @@ void array_resize (t_array *x, int n)
     
     PD_ASSERT (template);
     
-    int elementSize = sizeof (t_word) * template->tp_size;
+    int elementSize = ARRAY_WORD * template->tp_size;
     int oldSize = x->a_size;
     int newSize = PD_MAX (1, n);
 
