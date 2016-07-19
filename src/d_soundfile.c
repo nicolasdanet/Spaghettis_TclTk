@@ -1257,7 +1257,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
             post_error ("%s: no such table", argv[i].a_w.w_symbol->s_name);
             goto done;
         }
-        else if (!garray_getFloats(garrays[i], &vecsize, 
+        else if (!garray_getData(garrays[i], &vecsize,  /* Always true now !!! */
                 &vecs[i]))
             post_error ("%s: bad template for tabwrite",
                 argv[i].a_w.w_symbol->s_name);
@@ -1309,7 +1309,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
             
                 /* for sanity's sake let's clear the save-in-patch flag here */
             garray_setSaveWithParent(garrays[i], 0);
-            garray_getFloats(garrays[i], &vecsize, 
+            garray_getData(garrays[i], &vecsize, 
                 &vecs[i]);
                 /* if the resize failed, garray_resize reported the error */
             if (vecsize != framesinfile)
@@ -1333,7 +1333,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
         if (nitems <= 0) break;
         soundfile_xferin_float(channels, argc, (t_float **)vecs, itemsread,
             (unsigned char *)sampbuf, nitems, bytespersamp, bigendian,
-                sizeof(t_word)/sizeof(t_sample));
+                ARRAY_WORD/sizeof(t_sample));
         itemsread += nitems;
     }
         /* zero out remaining elements of vectors */
@@ -1341,7 +1341,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
     for (i = 0; i < argc; i++)
     {
         int nzero, vecsize;
-        garray_getFloats(garrays[i], &vecsize, &vecs[i]);
+        garray_getData(garrays[i], &vecsize, &vecs[i]);
         for (j = itemsread; j < vecsize; j++)
             vecs[i][j].w_float = 0;
     }
@@ -1350,7 +1350,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
     {
         int vecsize;
         t_word *foo;
-        garray_getFloats(garrays[i], &vecsize, &foo);
+        garray_getData(garrays[i], &vecsize, &foo);
         for (j = 0; j < vecsize; j++)
             foo[j].w_float = 0;
     }
@@ -1409,7 +1409,7 @@ long soundfiler_dowrite(void *obj, t_glist *canvas,
             post_error ("%s: no such table", argv[i].a_w.w_symbol->s_name);
             goto fail;
         }
-        else if (!garray_getFloats(garrays[i], &vecsize, &vecs[i]))
+        else if (!garray_getData(garrays[i], &vecsize, &vecs[i])) /* Always true now !!! */
             post_error ("%s: bad template for tabwrite",
                 argv[i].a_w.w_symbol->s_name);
         if (nframes > vecsize - onset)
@@ -1457,7 +1457,7 @@ long soundfiler_dowrite(void *obj, t_glist *canvas,
         thiswrite = (thiswrite > bufframes ? bufframes : thiswrite);
         soundfile_xferout_float(argc, (t_float **)vecs, (unsigned char *)sampbuf,
             thiswrite, onset, bytespersamp, bigendian, normfactor,
-                 sizeof(t_word)/sizeof(t_sample));
+                 ARRAY_WORD/sizeof(t_sample));
         nbytes = write(fd, sampbuf, nchannels * bytespersamp * thiswrite);
         if (nbytes < nchannels * bytespersamp * thiswrite)
         {
@@ -1467,7 +1467,7 @@ long soundfiler_dowrite(void *obj, t_glist *canvas,
             break;
         }
         itemswritten += thiswrite;
-        onset += thiswrite * (sizeof(t_word)/sizeof(float));
+        onset += thiswrite * (ARRAY_WORD/sizeof(float));
     }
     if (fd >= 0)
     {

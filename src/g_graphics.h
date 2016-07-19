@@ -802,7 +802,7 @@ t_glist         *garray_getOwner                        (t_garray *x);
 t_scalar        *garray_getScalar                       (t_garray *x);
 t_symbol        *garray_getName                         (t_garray *x);
 
-int             garray_getFloats                        (t_garray *x, int *size, t_word **w);
+int             garray_getData                          (t_garray *x, int *size, t_word **w);
 void            garray_setAsUsedInDSP                   (t_garray *x);
 void            garray_setSaveWithParent                (t_garray *x, int savedWithParent);
 void            garray_redraw                           (t_garray *x);

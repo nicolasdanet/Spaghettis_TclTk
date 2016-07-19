@@ -233,7 +233,7 @@ static int array_getfields(t_symbol *elemtemplatesym,
         post_error ("plot: %s: no canvas for this template", elemtemplatesym->s_name);
         return (-1);
     }
-    elemsize = elemtemplate->tp_size * sizeof(t_word);
+    elemsize = elemtemplate->tp_size * ARRAY_WORD;
     if (yfielddesc && field_isVariable (yfielddesc))
         varname = field_getVariableName (yfielddesc);
     else varname = sym_y;
@@ -835,7 +835,7 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
             call "motion" later. */
         if (glist->gl_graphics && pd_class(&glist->gl_graphics->g_pd) == garray_class
             && !glist->gl_graphics->g_next &&
-                elemsize == sizeof(t_word))
+                elemsize == ARRAY_WORD)
         {
             int xval = canvas_positionToValueX(glist, xpix);
             if (xval < 0)

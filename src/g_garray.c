@@ -82,17 +82,7 @@ static t_widgetbehavior garray_widgetBehavior =             /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define GARRAY_FETCH    int index; \
-                        int elementSize; \
-                        t_array *array = garray_getArrayRaw (x, &index, &elementSize); \
-                        
-#define GARRAY_AT(n)    *((t_float *)(array->a_vector + (elementSize * (n))) + (index * ARRAY_WORD))
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static t_array *garray_getArrayRaw (t_garray *, int *, int *);
+#define GARRAY_AT(n)    *((t_float *)(array->a_vector + (ARRAY_WORD * (n))))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -125,7 +115,30 @@ void garray_initialize (void)
 
     canvas_setActiveFileNameAndDirectory (&s_, &s_);
     
-    buffer_free (b);  
+    buffer_free (b);
+}
+
+static void garray_check (t_garray *x)
+{
+    t_array *array = NULL; t_template *template = NULL;
+    
+    // struct float-array array z float
+        
+    template = template_findByIdentifier (x->x_scalar->sc_templateIdentifier);
+    
+    PD_ASSERT (template);
+    PD_ASSERT (template_isArrayValid (template, sym_z));
+    
+    array = template_getArray (template, sym_z, x->x_scalar->sc_vector);
+    
+    // struct float float y
+     
+    template = template_findByIdentifier (array->a_templateIdentifier);
+    
+    PD_ASSERT (template);
+    PD_ASSERT (template_isFloat (template, sym_y));
+    PD_ASSERT (template_getIndex (template, sym_y) == 0);           /* Just one field. */
+    PD_ASSERT (array->a_elementSize == ARRAY_WORD);                 /* Just one field. */
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -186,10 +199,7 @@ void garray_resizeWithInteger (t_garray *x, int n)
 {
     t_template *template = template_findByIdentifier (x->x_scalar->sc_templateIdentifier);
     int style = template_getFloat (template, sym_style, x->x_scalar->sc_vector);
-    
-    PD_ASSERT (template);
-    
-    GARRAY_FETCH;
+    t_array *array = garray_getArray (x);
     
     PD_ASSERT (n > 0);
     
@@ -204,8 +214,7 @@ void garray_saveContentsToBuffer (t_garray *x, t_buffer *b)
     if (x->x_saveWithParent) {
     //
     int n = 0;
-
-    GARRAY_FETCH;
+    t_array *array = garray_getArray (x);
     
     while (n < array->a_size) {
     //
@@ -236,8 +245,7 @@ static void garray_setWithSumOfFourierComponents (t_garray *x,
 {
     double phase, phaseIncrement;
     int i;
-    
-    GARRAY_FETCH;
+    t_array *array = garray_getArray (x);
     
     numberOfPoints = (numberOfPoints <= 0) ? 512 : numberOfPoints;
     numberOfPoints = PD_MIN (numberOfPoints, 1 << 30);
@@ -298,53 +306,24 @@ static void garray_setWithSineWaves (t_garray *x, t_symbol *s, int argc, t_atom 
 
 t_array *garray_getArray (t_garray *x)
 {
-    // struct float-array array z float 
-    
     t_template *template = template_findByIdentifier (x->x_scalar->sc_templateIdentifier);
     
-    PD_ASSERT (template);
-    PD_ASSERT (template_isArrayValid (template, sym_z));
+    #if PD_WITH_DEBUG
     
-    return (template_getArray (template, sym_z, x->x_scalar->sc_vector));
+    garray_check (x);
+    
+    #endif
+    
+    return template_getArray (template, sym_z, x->x_scalar->sc_vector);
 }
 
-static t_array *garray_getArrayRaw (t_garray *x, int *index, int *elementSize)
+int garray_getData (t_garray *x, int *size, t_word **w)
 {
-    t_array *a = garray_getArray (x);
+    t_array *array = garray_getArray (x);
     
-    // struct float float y
-     
-    t_template *template = template_findByIdentifier (a->a_templateIdentifier);
+    *size = array->a_size; *w = (t_word *)array->a_vector;
     
-    PD_ASSERT (template);
-    PD_ASSERT (template_isFloat (template, sym_y));
-    PD_ASSERT (template_getIndex (template, sym_y) == 0);   /* Unique field. */
-    PD_ASSERT (a->a_elementSize == ARRAY_WORD);             /* Ditto. */
-    
-    // *index       = template_getIndex (template, sym_y);
-    // *elementSize = a->a_elementSize;
-    
-    *index       = 0;
-    *elementSize = ARRAY_WORD;
-    
-    return a;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int garray_getFloats (t_garray *x, int *size, t_word **w)
-{
-    GARRAY_FETCH;
-    
-    if (array && (elementSize == ARRAY_WORD)) { 
-        *size = array->a_size; *w = (t_word *)array->a_vector; return 1; 
-    }
-    
-    PD_BUG;
-    
-    return 0;
+    return 1; 
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -402,8 +381,7 @@ static void garray_list (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     if (argc > 1) { 
     //
     int i, j = atom_getFloat (argv);
-    
-    GARRAY_FETCH;
+    t_array *array = garray_getArray (x);
     
     argc--;
     argv++;
@@ -426,8 +404,7 @@ static void garray_list (t_garray *x, t_symbol *s, int argc, t_atom *argv)
 static void garray_constant (t_garray *x, t_float f)
 {
     int i;
-    
-    GARRAY_FETCH;
+    t_array *array = garray_getArray (x);
 
     for (i = 0; i < array->a_size; i++) { GARRAY_AT (i) = f; }
     
@@ -438,8 +415,7 @@ static void garray_normalize (t_garray *x, t_float f)
 {
     int i;
     double maximum  = 0.0;
-    
-    GARRAY_FETCH;
+    t_array *array = garray_getArray (x);
 
     if (f <= 0.0) { f = 1.0; }
 
@@ -490,8 +466,7 @@ static void garray_read (t_garray *x, t_symbol *name)
     if (!(err |= (file == NULL))) {
     //
     int i;
-        
-    GARRAY_FETCH;
+    t_array *array = garray_getArray (x);
 
     for (i = 0; i < array->a_size; i++) {
         double v = 0.0; if (!fscanf (file, "%lf", &v)) { break; } else { GARRAY_AT (i) = v; }
@@ -521,8 +496,7 @@ static void garray_write (t_garray *x, t_symbol *name)
     else {
     //
     int i;
-    
-    GARRAY_FETCH;
+    t_array *array = garray_getArray (x);
     
     for (i = 0; i < array->a_size; i++) {
         if (fprintf (file, "%g\n", GARRAY_AT (i)) < 1) { PD_BUG; break; }
@@ -604,10 +578,7 @@ static void garray_functionSave (t_gobj *z, t_buffer *b)
     t_template *template = template_findByIdentifier (x->x_scalar->sc_templateIdentifier);
     int style = template_getFloat (template, sym_style, x->x_scalar->sc_vector);    
     int flags = x->x_saveWithParent + (2 * style) + (8 * x->x_hideName);
-    
-    PD_ASSERT (template);
-    
-    GARRAY_FETCH;
+    t_array *array = garray_getArray (x);
         
     buffer_vAppend (b, "sssisi;",
         sym___hash__X,
@@ -627,10 +598,7 @@ void garray_functionProperties (t_garray *x)
     t_error err = PD_ERROR_NONE;
     int style = template_getFloat (template, sym_style, x->x_scalar->sc_vector);
     int flags = x->x_saveWithParent + (2 * style);
-    
-    PD_ASSERT (template);
-    
-    GARRAY_FETCH;
+    t_array *array = garray_getArray (x);
     
     err |= string_sprintf (t, PD_STRING,
                 "::ui_array::show %%s %s %d %d\n",
@@ -651,11 +619,10 @@ void garray_fromDialog (t_garray *x, t_symbol *name, t_float size, t_float flags
     int save             = (((int)flags & 1) != 0);
     int newStyle         = (((int)flags & 6) >> 1);
     int oldStyle         = (int)template_getFloat (template, sym_style, x->x_scalar->sc_vector);
-    
-    PD_ASSERT (template);
+
     PD_ASSERT (newSize > 0);
     
-    GARRAY_FETCH;
+    t_array *array = garray_getArray (x);
     
     if (newName != x->x_unexpandedName) {
     //

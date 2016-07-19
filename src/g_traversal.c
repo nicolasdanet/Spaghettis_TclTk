@@ -670,7 +670,7 @@ static void elem_float(t_elem *x, t_float f)
         return;
     }
 
-    elemsize = elemtemplate->tp_size * sizeof(t_word);
+    elemsize = elemtemplate->tp_size * ARRAY_WORD;
 
     array = *(t_array **)(((char *)w) + onset);
 
@@ -863,7 +863,7 @@ static void setsize_float(t_setsize *x, t_float f)
         return;
     }
 
-    elemsize = elemtemplate->tp_size * sizeof(t_word);
+    elemsize = elemtemplate->tp_size * ARRAY_WORD;
 
     array = *(t_array **)(((char *)w) + onset);
 

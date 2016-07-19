@@ -188,8 +188,8 @@ static void template_conformarray(t_template *tfrom, t_template *tto,
     if (a->a_templateIdentifier == tfrom->tp_templateIdentifier)
     {
         /* the array elements must all be conformed */
-        int oldelemsize = sizeof(t_word) * tfrom->tp_size,
-            newelemsize = sizeof(t_word) * tto->tp_size;
+        int oldelemsize = ARRAY_WORD * tfrom->tp_size,
+            newelemsize = ARRAY_WORD * tto->tp_size;
         char *newarray = PD_MEMORY_GET(newelemsize * a->a_size);
         char *oldarray = a->a_vector;
         if (a->a_elementSize != oldelemsize) { PD_BUG; }
@@ -209,7 +209,7 @@ static void template_conformarray(t_template *tfrom, t_template *tto,
         /* convert all arrays and sublist fields in each element of the array */
     for (i = 0; i < a->a_size; i++)
     {
-        t_word *wp = (t_word *)(a->a_vector + sizeof(t_word) * a->a_size * i);
+        t_word *wp = (t_word *)(a->a_vector + ARRAY_WORD * a->a_size * i);
         for (j = 0; j < scalartemplate->tp_size; j++)
         {
             t_dataslot *ds = scalartemplate->tp_vector + j;

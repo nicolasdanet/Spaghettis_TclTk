@@ -338,7 +338,7 @@ void canvas_dataproperties(t_glist *x, t_scalar *sc, t_buffer *b)
     
             /* copy new one to old one and deete new one */
         memcpy(&((t_scalar *)oldone)->sc_vector, &((t_scalar *)newone)->sc_vector,
-            template->tp_size * sizeof(t_word));
+            template->tp_size * ARRAY_WORD);
             
 
         
