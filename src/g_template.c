@@ -247,6 +247,19 @@ void template_setSymbol (t_template *x, t_symbol *fieldName, t_word *w, t_symbol
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void template_anything (t_template *x, t_symbol *s, int argc, t_atom *argv)
+{
+    #if PD_WITH_DEBUG
+    
+    post ("My name is %s.", utils_stripBindSymbol (x->tp_templateIdentifier)->s_name);
+    
+    #endif
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_template *template_findByIdentifier (t_symbol *s)
 {
     return ((t_template *)pd_findByClass (s, template_class));
@@ -354,10 +367,6 @@ void template_free (t_template *x)
     PD_MEMORY_FREE (x->tp_vector);
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void template_setup (void)
 {
     t_class *c = NULL;
@@ -369,8 +378,10 @@ void template_setup (void)
         CLASS_NOBOX,
         A_NULL);
     
-    class_addMethod (pd_canvasMaker, (t_method)template_create, sym_struct, A_GIMME, A_NULL);
+    class_addAnything (c, template_anything);
         
+    class_addMethod (pd_canvasMaker, (t_method)template_create, sym_struct, A_GIMME, A_NULL);
+    
     template_class = c;
 }
 

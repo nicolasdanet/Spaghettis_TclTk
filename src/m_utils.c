@@ -129,6 +129,13 @@ t_symbol *utils_makeBindSymbol (t_symbol *s)
     return (gensym (t));
 }
 
+t_symbol *utils_stripBindSymbol (t_symbol *s)
+{
+    if (string_containsAtStart (s->s_name, UTILS_BIND)) { return gensym (s->s_name + strlen (UTILS_BIND)); }
+    
+    return s;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
