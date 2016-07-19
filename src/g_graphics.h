@@ -961,7 +961,7 @@ int             template_getIndex                       (t_template *x, t_symbol
 
 int             template_isFloat                        (t_template *x, t_symbol *fieldName);
 int             template_isSymbol                       (t_template *x, t_symbol *fieldName);
-int             template_isArrayValid                   (t_template *x, t_symbol *fieldName);
+int             template_isArrayAndValid                (t_template *x, t_symbol *fieldName);
 
 t_float         template_getFloat                       (t_template *x, t_symbol *fieldName, t_word *w);
 void            template_setFloat                       (t_template *x,

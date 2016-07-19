@@ -127,7 +127,7 @@ static void garray_check (t_garray *x)
     template = template_findByIdentifier (x->x_scalar->sc_templateIdentifier);
     
     PD_ASSERT (template);
-    PD_ASSERT (template_isArrayValid (template, sym_z));
+    PD_ASSERT (template_isArrayAndValid (template, sym_z));
     
     array = template_getArray (template, sym_z, x->x_scalar->sc_vector);
     
@@ -686,7 +686,7 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_symbol *type, t_f
     
     PD_ASSERT (template);
     
-    if (template_isArrayValid (template, sym_z)) {
+    if (template_isArrayAndValid (template, sym_z)) {
     //
     int save = (((int)flags & GARRAY_FLAG_SAVE) != 0);
     int hide = (((int)flags & GARRAY_FLAG_HIDE) != 0);

@@ -160,7 +160,7 @@ int template_isSymbol (t_template *x, t_symbol *fieldName)
     return 0;
 }
 
-int template_isArrayValid (t_template *x, t_symbol *fieldName)
+int template_isArrayAndValid (t_template *x, t_symbol *fieldName)
 {
     int i, type; t_symbol *templateIdentifier = NULL;
     
@@ -236,7 +236,7 @@ void template_setSymbol (t_template *x, t_symbol *fieldName, t_word *w, t_symbol
     
     PD_ASSERT (template_isSymbol (x, fieldName));
     
-    if (template_findField (x, fieldName, &i, &type, &dummy)) {
+    if (template_getRaw (x, fieldName, &i, &type, &dummy)) {
         if (type == DATA_SYMBOL) { 
             *(t_symbol **)(w + i) = s;
         }
@@ -366,6 +366,10 @@ void template_free (t_template *x)
     
     PD_MEMORY_FREE (x->tp_vector);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void template_setup (void)
 {
