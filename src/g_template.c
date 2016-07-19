@@ -27,30 +27,34 @@ static t_class  *template_class;                    /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-int template_exist (t_template *x)
+static int template_getRaw (t_template *x,
+    t_symbol *fieldName,
+    int *index,
+    int *type,
+    t_symbol **templateIdentifier)
 {
-    if (!x) { return 0; }
-    else {
-    //
-    int i, size = x->tp_size;
-    t_dataslot *v = x->tp_vector;
+    PD_ASSERT (x);
     
-    for (i = 0; i < size; i++, v++) {
+    if (x) {
     //
-    if (v->ds_type == DATA_ARRAY) {
+    int i;
+    
+    for (i = 0; i < x->tp_size; i++) {
     //
-    t_template *elementTemplate = template_findByIdentifier (v->ds_templateIdentifier);
-    if (!elementTemplate || !template_exist (elementTemplate)) {
-        return 0;
-    }
-    //
+    if (x->tp_vector[i].ds_fieldName == fieldName) {
+    
+        *index              = i;
+        *type               = x->tp_vector[i].ds_type;
+        *templateIdentifier = x->tp_vector[i].ds_templateIdentifier;
+        
+        return 1;
     }
     //
     }
     //
     }
     
-    return 1;
+    return 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -91,35 +95,31 @@ int template_findField (t_template *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int template_getRaw (t_template *x, t_symbol *fieldName, int *index, int *type, t_symbol **templateIdentifier)
+int template_existRecursive (t_template *x)
 {
-    PD_ASSERT (x);
-    
-    if (x) {
+    if (!x) { return 0; }
+    else {
     //
-    int i;
+    int i, size = x->tp_size;
+    t_dataslot *v = x->tp_vector;
     
-    for (i = 0; i < x->tp_size; i++) {
+    for (i = 0; i < size; i++, v++) {
     //
-    if (x->tp_vector[i].ds_fieldName == fieldName) {
-    
-        *index              = i;
-        *type               = x->tp_vector[i].ds_type;
-        *templateIdentifier = x->tp_vector[i].ds_templateIdentifier;
-        
-        return 1;
+    if (v->ds_type == DATA_ARRAY) {
+    //
+    t_template *elementTemplate = template_findByIdentifier (v->ds_templateIdentifier);
+    if (!elementTemplate || !template_existRecursive (elementTemplate)) {
+        return 0;
     }
     //
     }
     //
     }
+    //
+    }
     
-    return 0;
+    return 1;
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 int template_contains (t_template *x, t_symbol *fieldName)
 {
@@ -160,6 +160,19 @@ int template_isSymbol (t_template *x, t_symbol *fieldName)
     return 0;
 }
 
+int template_isArrayValid (t_template *x, t_symbol *fieldName)
+{
+    int i, type; t_symbol *templateIdentifier = NULL;
+    
+    if (template_getRaw (x, fieldName, &i, &type, &templateIdentifier)) { 
+        if (type == DATA_ARRAY) {
+            return (template_findByIdentifier (templateIdentifier) != NULL);
+        }
+    }
+    
+    return 0;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -188,6 +201,19 @@ void template_setFloat (t_template *x, t_symbol *fieldName, t_word *w, t_float f
             *(t_float *)(w + i) = f; 
         }
     }
+}
+
+t_array *template_getArray (t_template *x, t_symbol *fieldName, t_word *w)
+{
+    int i, type; t_symbol *dummy = NULL;
+    
+    if (template_getRaw (x, fieldName, &i, &type, &dummy)) {
+        if (type == DATA_ARRAY) {
+            return *(t_array **)(w + i);
+        }
+    }
+
+    return &s_;
 }
 
 t_symbol *template_getSymbol (t_template *x, t_symbol *fieldName, t_word *w)

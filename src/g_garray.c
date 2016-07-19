@@ -291,28 +291,6 @@ static void garray_setWithSineWaves (t_garray *x, t_symbol *s, int argc, t_atom 
     }
 }
 
-static t_garray *garray_makeObjectWithScalar (t_glist *glist,
-    t_symbol *name,
-    t_symbol *templateIdentifier,
-    int save, 
-    int hide)
-{
-    t_garray *x = (t_garray *)pd_new (garray_class);
-    
-    x->x_scalar         = scalar_new (glist, templateIdentifier);
-    x->x_owner          = glist;
-    x->x_unexpandedName = name;
-    x->x_name           = canvas_expandDollar (glist, name);
-    x->x_isUsedInDSP    = 0;
-    x->x_saveWithParent = save;
-    x->x_hideName       = hide;
-    
-    pd_bind (cast_pd (x), x->x_name);
-    canvas_addObject (glist, cast_gobj (x));
-    
-    return x;
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -734,6 +712,29 @@ void garray_fromDialog (t_garray *x, t_symbol *name, t_float size, t_float flags
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static t_garray *garray_makeObjectWithScalar (t_glist *glist,
+    t_symbol *name,
+    t_symbol *templateIdentifier,
+    int save, 
+    int hide)
+{
+    t_garray *x = (t_garray *)pd_new (garray_class);
+    
+    x->x_scalar         = scalar_new (glist, templateIdentifier);
+    x->x_owner          = glist;
+    x->x_unexpandedName = name;
+    x->x_name           = canvas_expandDollar (glist, name);
+    x->x_isUsedInDSP    = 0;
+    x->x_saveWithParent = save;
+    x->x_hideName       = hide;
+    
+    pd_bind (cast_pd (x), x->x_name);
+    
+    canvas_addObject (glist, cast_gobj (x));
+    
+    return x;
+}
+
 t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_symbol *type, t_float size, t_float flags)
 {
     t_garray *x = NULL;
@@ -745,17 +746,7 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_symbol *type, t_f
     
     if (template) {
     //
-    t_error err = PD_ERROR_NONE;
-    
-    int zOnset = 0;
-    int zType  = -1;
-    t_symbol *zArrayType = NULL;
-
-    err |= !(template_findField (template, sym_z, &zOnset, &zType, &zArrayType));
-    err |= !(template_findByIdentifier (zArrayType));
-    err |= (zType != DATA_ARRAY);
-    
-    if (!err) {
+    if (template_isArrayValid (template, sym_z)) {
     //
     int save = (((int)flags & GARRAY_FLAG_SAVE) != 0);
     int hide = (((int)flags & GARRAY_FLAG_HIDE) != 0);
@@ -764,7 +755,7 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_symbol *type, t_f
     
     x = garray_makeObjectWithScalar (glist, name, sym___TEMPLATE__float__dash__array, save, hide);
 
-    array_resize (x->x_scalar->sc_vector[zOnset].w_array, n);
+    array_resize (template_getArray (template, sym_z, x->x_scalar->sc_vector), n);
 
     template_setFloat (template, sym_style, x->x_scalar->sc_vector, plot);
     template_setFloat (template, sym_linewidth, x->x_scalar->sc_vector, 1);

@@ -941,7 +941,7 @@ t_template      *template_new                           (t_symbol *templateIdent
                                                             t_atom *argv);
                                                             
 void            template_free                           (t_template *x);
-int             template_exist                          (t_template *x);
+int             template_existRecursive                 (t_template *x);
 int             template_equals                         (t_template *tmpl1, t_template *tmpl2);
 
 int             template_findField                      (t_template *x,
@@ -950,24 +950,20 @@ int             template_findField                      (t_template *x,
                                                             int *type,
                                                             t_symbol **templateIdentifier);
 
-int             template_getRaw                         (t_template *x,
-                                                            t_symbol *fieldName,
-                                                            int *index,
-                                                            int *type,
-                                                            t_symbol **templateIdentifier);
-
 int             template_contains                       (t_template *x, t_symbol *fieldName);
 int             template_getIndex                       (t_template *x, t_symbol *fieldName);
 
 int             template_isFloat                        (t_template *x, t_symbol *fieldName);
 int             template_isSymbol                       (t_template *x, t_symbol *fieldName);
+int             template_isArrayValid                   (t_template *x, t_symbol *fieldName);
 
 t_float         template_getFloat                       (t_template *x, t_symbol *fieldName, t_word *w);
 void            template_setFloat                       (t_template *x,
                                                             t_symbol *fieldName,
                                                             t_word *w,
                                                             t_float f);
-                                                            
+
+t_array         *template_getArray                      (t_template *x, t_symbol *fieldName, t_word *w);
 t_symbol        *template_getSymbol                     (t_template *x, t_symbol *fieldName, t_word *w);
 void            template_setSymbol                      (t_template *x,
                                                             t_symbol *fieldName,

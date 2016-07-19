@@ -526,7 +526,7 @@ t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
     
     t_template *template = template_findByIdentifier (templateIdentifier);
 
-    if (!template_exist (template)) { PD_BUG; }
+    if (!template_existRecursive (template)) { PD_BUG; }
     else {
     //
     {

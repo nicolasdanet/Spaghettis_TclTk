@@ -120,6 +120,10 @@ void array_redraw (t_array *x, t_glist *glist)
     scalar_redraw (gpointer_getScalar (array_getTopParent (x)), glist);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void array_resizeAndRedraw (t_array *array, t_glist *glist, int n)
 {
     if (canvas_isMapped (glist)) {
