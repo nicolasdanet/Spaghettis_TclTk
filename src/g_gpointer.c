@@ -230,7 +230,7 @@ t_word *gpointer_getData (t_gpointer *gp)
 {
     if (gpointer_isWord (gp)) { return gpointer_getWord (gp); } 
     else {
-        PD_ASSERT (gpointer_isScalar (gp)); return (gp->gp_un.gp_scalar->sc_vector);
+        PD_ASSERT (gpointer_isScalar (gp)); return (scalar_getData (gp->gp_un.gp_scalar));
     }
 }
 
@@ -250,7 +250,7 @@ t_symbol *gpointer_getTemplateIdentifier (t_gpointer *gp)
     PD_ASSERT (gpointer_isValid (gp, 1));
     
     if (master->gm_type == POINTER_GLIST) {
-        if (gp->gp_un.gp_scalar) { s = gp->gp_un.gp_scalar->sc_templateIdentifier; }
+        if (gp->gp_un.gp_scalar) { s = scalar_getTemplateIdentifier (gp->gp_un.gp_scalar); }
         
     } else {
         s = master->gm_un.gm_array->a_templateIdentifier;

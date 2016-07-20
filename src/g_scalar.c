@@ -520,6 +520,20 @@ static void scalar_functionProperties (t_gobj *z, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_word *scalar_getData (t_scalar *x)
+{
+    return x->sc_vector;
+}
+
+t_symbol *scalar_getTemplateIdentifier (t_scalar *x)
+{
+    return x->sc_templateIdentifier;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
 {
     t_scalar *x = NULL;

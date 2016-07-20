@@ -871,6 +871,8 @@ void            word_free                               (t_word *w, t_template *
 #pragma mark -
 
 t_scalar        *scalar_new                             (t_glist *owner, t_symbol *templateIdentifier);
+t_word          *scalar_getData                         (t_scalar *x);
+t_symbol        *scalar_getTemplateIdentifier           (t_scalar *x);
 
 void            scalar_redraw                           (t_scalar *x, t_glist *glist);
 void            scalar_redrawByPointer                  (t_gpointer *gp);

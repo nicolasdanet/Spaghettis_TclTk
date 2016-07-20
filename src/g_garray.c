@@ -124,12 +124,12 @@ static void garray_check (t_garray *x)
     
     // struct float-array array z float
         
-    template = template_findByIdentifier (x->x_scalar->sc_templateIdentifier);
+    template = template_findByIdentifier (scalar_getTemplateIdentifier (x->x_scalar));
     
     PD_ASSERT (template);
     PD_ASSERT (template_isArrayAndValid (template, sym_z));
     
-    array = template_getArray (template, sym_z, x->x_scalar->sc_vector);
+    array = template_getArray (template, sym_z, scalar_getData (x->x_scalar));
     
     // struct float float y
      
@@ -197,8 +197,8 @@ static void garray_updateGraphName (t_garray *x)
 
 void garray_resizeWithInteger (t_garray *x, int n)
 {
-    t_template *template = template_findByIdentifier (x->x_scalar->sc_templateIdentifier);
-    int style = template_getFloat (template, sym_style, x->x_scalar->sc_vector);
+    t_template *template = template_findByIdentifier (scalar_getTemplateIdentifier (x->x_scalar));
+    int style = template_getFloat (template, sym_style, scalar_getData (x->x_scalar));
     t_array *array = garray_getArray (x);
     
     PD_ASSERT (n > 0);
@@ -306,7 +306,7 @@ static void garray_setWithSineWaves (t_garray *x, t_symbol *s, int argc, t_atom 
 
 t_array *garray_getArray (t_garray *x)
 {
-    t_template *template = template_findByIdentifier (x->x_scalar->sc_templateIdentifier);
+    t_template *template = template_findByIdentifier (scalar_getTemplateIdentifier (x->x_scalar));
     
     #if PD_WITH_DEBUG
     
@@ -314,7 +314,7 @@ t_array *garray_getArray (t_garray *x)
     
     #endif
     
-    return template_getArray (template, sym_z, x->x_scalar->sc_vector);
+    return template_getArray (template, sym_z, scalar_getData (x->x_scalar));
 }
 
 int garray_getData (t_garray *x, int *size, t_word **w)
@@ -575,8 +575,8 @@ static int garray_behaviorClicked (t_gobj *z,
 static void garray_functionSave (t_gobj *z, t_buffer *b)
 {
     t_garray *x = (t_garray *)z;
-    t_template *template = template_findByIdentifier (x->x_scalar->sc_templateIdentifier);
-    int style = template_getFloat (template, sym_style, x->x_scalar->sc_vector);    
+    t_template *template = template_findByIdentifier (scalar_getTemplateIdentifier (x->x_scalar));
+    int style = template_getFloat (template, sym_style, scalar_getData (x->x_scalar));    
     int flags = x->x_saveWithParent + (2 * style) + (8 * x->x_hideName);
     t_array *array = garray_getArray (x);
         
@@ -593,10 +593,10 @@ static void garray_functionSave (t_gobj *z, t_buffer *b)
 
 void garray_functionProperties (t_garray *x)
 {
-    t_template *template = template_findByIdentifier (x->x_scalar->sc_templateIdentifier);
+    t_template *template = template_findByIdentifier (scalar_getTemplateIdentifier (x->x_scalar));
     char t[PD_STRING] = { 0 };
     t_error err = PD_ERROR_NONE;
-    int style = template_getFloat (template, sym_style, x->x_scalar->sc_vector);
+    int style = template_getFloat (template, sym_style, scalar_getData (x->x_scalar));
     int flags = x->x_saveWithParent + (2 * style);
     t_array *array = garray_getArray (x);
     
@@ -613,12 +613,12 @@ void garray_functionProperties (t_garray *x)
 
 void garray_fromDialog (t_garray *x, t_symbol *name, t_float size, t_float flags)
 {
-    t_template *template = template_findByIdentifier (x->x_scalar->sc_templateIdentifier);
+    t_template *template = template_findByIdentifier (scalar_getTemplateIdentifier (x->x_scalar));
     t_symbol *newName    = dollar_fromHash (name);
     int newSize          = PD_MAX (1.0, size);
     int save             = (((int)flags & 1) != 0);
     int newStyle         = (((int)flags & 6) >> 1);
-    int oldStyle         = (int)template_getFloat (template, sym_style, x->x_scalar->sc_vector);
+    int oldStyle         = (int)template_getFloat (template, sym_style, scalar_getData (x->x_scalar));
 
     PD_ASSERT (newSize > 0);
     
@@ -639,7 +639,7 @@ void garray_fromDialog (t_garray *x, t_symbol *name, t_float size, t_float flags
     if (newSize != array->a_size) { garray_resizeWithInteger (x, newSize); }
     
     if (newStyle != oldStyle) {
-        template_setFloat (template, sym_style, x->x_scalar->sc_vector, (t_float)newStyle);
+        template_setFloat (template, sym_style, scalar_getData (x->x_scalar), (t_float)newStyle);
         garray_updateGraphBounds (x, newSize, newStyle); 
     }
 
@@ -695,10 +695,10 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_symbol *type, t_f
     
     x = garray_makeObjectWithScalar (glist, name, sym___TEMPLATE__float__dash__array, save, hide);
 
-    array_resize (template_getArray (template, sym_z, x->x_scalar->sc_vector), n);
+    array_resize (template_getArray (template, sym_z, scalar_getData (x->x_scalar)), n);
 
-    template_setFloat (template, sym_style, x->x_scalar->sc_vector, plot);
-    template_setFloat (template, sym_linewidth, x->x_scalar->sc_vector, 1);
+    template_setFloat (template, sym_style, scalar_getData (x->x_scalar), plot);
+    template_setFloat (template, sym_linewidth, scalar_getData (x->x_scalar), 1);
 
     sym___hash__A->s_thing = NULL;
     pd_bind (cast_pd (x), sym___hash__A); 
