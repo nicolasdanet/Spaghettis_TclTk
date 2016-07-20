@@ -192,7 +192,7 @@ static void template_conformarray(t_template *tfrom, t_template *tto,
             newelemsize = ARRAY_WORD * tto->tp_size;
         char *newarray = PD_MEMORY_GET(newelemsize * a->a_size);
         char *oldarray = a->a_vector;
-        if (a->a_elementSize != oldelemsize) { PD_BUG; }
+        if (a->a_stride != oldelemsize) { PD_BUG; }
         for (i = 0; i < a->a_size; i++)
         {
             t_word *wp = (t_word *)(newarray + newelemsize * i);

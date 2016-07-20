@@ -487,7 +487,7 @@ static int array_rangeop_getrange(t_array_rangeop *x,
             x->x_elemfield->s_name, a->a_templateIdentifier->s_name);
         return (0);
     }
-    stride = a->a_elementSize;
+    stride = a->a_stride;
     arrayonset = x->x_onset;
     if (arrayonset < 0)
         arrayonset = 0;

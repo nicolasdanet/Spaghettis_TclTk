@@ -68,7 +68,7 @@ static void glist_readatoms(t_glist *x, int natoms, t_atom *vec,
         {
             int j;
             t_array *a = w[i].w_array;
-            int elemsize = a->a_elementSize, nitems = 0;
+            int elemsize = a->a_stride, nitems = 0;
             t_symbol *arraytemplatesym = template->tp_vector[i].ds_templateIdentifier;
             t_template *arraytemplate =
                 template_findByIdentifier(arraytemplatesym);
@@ -465,7 +465,7 @@ void canvas_writescalar(t_symbol *templatesym, t_word *w, t_buffer *b,
         {
             int j;
             t_array *a = w[i].w_array;
-            int elemsize = a->a_elementSize, nitems = a->a_size;
+            int elemsize = a->a_stride, nitems = a->a_size;
             t_symbol *arraytemplatesym = template->tp_vector[i].ds_templateIdentifier;
             for (j = 0; j < nitems; j++)
                 canvas_writescalar(arraytemplatesym,
@@ -508,7 +508,7 @@ static void canvas_addtemplatesforscalar(t_symbol *templatesym,
         {
             int j;
             t_array *a = w->w_array;
-            int elemsize = a->a_elementSize, nitems = a->a_size;
+            int elemsize = a->a_stride, nitems = a->a_size;
             t_symbol *arraytemplatesym = ds->ds_templateIdentifier;
             canvas_doaddtemplate(arraytemplatesym, p_ntemplates, p_templatevec);
             for (j = 0; j < nitems; j++)

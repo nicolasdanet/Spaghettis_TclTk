@@ -48,8 +48,8 @@ t_array *array_new (t_symbol *templateIdentifier, t_gpointer *parent)
     PD_ASSERT (template);
     
     x->a_size               = 1;
-    x->a_elementSize        = ARRAY_WORD * template->tp_size;
-    x->a_vector             = (char *)PD_MEMORY_GET (x->a_elementSize);
+    x->a_stride             = ARRAY_WORD * template->tp_size;
+    x->a_vector             = (char *)PD_MEMORY_GET (x->a_stride);
     x->a_templateIdentifier = templateIdentifier;
     x->a_master             = gpointer_masterCreateWithArray (x);
     x->a_uniqueIdentifier   = utils_unique();
@@ -70,12 +70,36 @@ void array_free (t_array *x)
     gpointer_masterRelease (x->a_master);
     
     for (i = 0; i < x->a_size; i++) {
-        t_word *w = (t_word *)(x->a_vector + (x->a_elementSize * i));
+        t_word *w = (t_word *)(x->a_vector + (x->a_stride * i));
         word_free (w, template);
     }
     
     PD_MEMORY_FREE (x->a_vector);
     PD_MEMORY_FREE (x);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_word *array_getData (t_array *x)
+{
+    return (t_word *)x->a_vector;
+}
+
+t_symbol *array_getTemplateIdentifier (t_array *x)
+{
+    return x->a_templateIdentifier;
+}
+
+int array_getSize (t_array *x)
+{
+    return x->a_size;
+}
+
+int array_getElementSize (t_array *x)
+{
+    return (x->a_stride / ARRAY_WORD); 
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -867,7 +867,7 @@ static void setsize_float(t_setsize *x, t_float f)
 
     array = *(t_array **)(((char *)w) + onset);
 
-    if (elemsize != array->a_elementSize) { PD_BUG; }
+    if (elemsize != array->a_stride) { PD_BUG; }
 
     nitems = array->a_size;
     if (newsize < 1) newsize = 1;
@@ -903,7 +903,7 @@ static void setsize_float(t_setsize *x, t_float f)
                 word_init((t_word *)elem, elemtemplate, gp);
     }
         /* invalidate all gpointers into the array */
-    array->a_uniqueIdentifier++;
+    array->a_uniqueIdentifier++;    /* Encapsulate. */
 
     scalar_setVisibility (gp, 1);
 }

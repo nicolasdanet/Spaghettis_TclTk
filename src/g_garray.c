@@ -133,12 +133,12 @@ static void garray_check (t_garray *x)
     
     // struct float float y
      
-    template = template_findByIdentifier (array->a_templateIdentifier);
+    template = template_findByIdentifier (array_getTemplateIdentifier (array));
     
     PD_ASSERT (template);
     PD_ASSERT (template_isFloat (template, sym_y));
     PD_ASSERT (template_getIndex (template, sym_y) == 0);           /* Just one field. */
-    PD_ASSERT (array->a_elementSize == ARRAY_WORD);                 /* Just one field. */
+    PD_ASSERT (array_getElementSize (array) == 1);                  /* Just one field. */
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -216,9 +216,9 @@ void garray_saveContentsToBuffer (t_garray *x, t_buffer *b)
     int n = 0;
     t_array *array = garray_getArray (x);
     
-    while (n < array->a_size) {
+    while (n < array_getSize (array)) {
     //
-    int i, chunk = array->a_size - n;
+    int i, chunk = array_getSize (array) - n;
     
     if (chunk > GARRAY_MAXIMUM_CHUNK) { chunk = GARRAY_MAXIMUM_CHUNK; }
     
@@ -256,7 +256,7 @@ static void garray_setWithSumOfFourierComponents (t_garray *x,
     
     phaseIncrement = 2.0 * (double)PD_PI / numberOfPoints;
     
-    for (i = 0, phase = -phaseIncrement; i < array->a_size; i++, phase += phaseIncrement) {
+    for (i = 0, phase = -phaseIncrement; i < array_getSize (array); i++, phase += phaseIncrement) {
     //
     int j;
     double fj;
@@ -321,7 +321,7 @@ int garray_getData (t_garray *x, int *size, t_word **w)
 {
     t_array *array = garray_getArray (x);
     
-    *size = array->a_size; *w = (t_word *)array->a_vector;
+    *size = array_getSize (array); *w = array_getData (array);
     
     return 1; 
 }
@@ -388,7 +388,7 @@ static void garray_list (t_garray *x, t_symbol *s, int argc, t_atom *argv)
 
     if (j < 0) { argc += j; argv -= j; j = 0; }
     
-    if (j + argc > array->a_size) { argc = array->a_size - j; }
+    if (j + argc > array_getSize (array)) { argc = array_getSize (array) - j; }
     
     if (argc > 0) {
     //
@@ -406,7 +406,7 @@ static void garray_constant (t_garray *x, t_float f)
     int i;
     t_array *array = garray_getArray (x);
 
-    for (i = 0; i < array->a_size; i++) { GARRAY_AT (i) = f; }
+    for (i = 0; i < array_getSize (array); i++) { GARRAY_AT (i) = f; }
     
     garray_redraw (x);
 }
@@ -419,14 +419,14 @@ static void garray_normalize (t_garray *x, t_float f)
 
     if (f <= 0.0) { f = 1.0; }
 
-    for (i = 0; i < array->a_size; i++) {
+    for (i = 0; i < array_getSize (array); i++) {
         double t = GARRAY_AT (i);
         if (PD_ABS (t) > maximum) { maximum = PD_ABS (t); }
     }
     
     if (maximum > 0.0) {
         double k = f / maximum;
-        for (i = 0; i < array->a_size; i++) { GARRAY_AT (i) *= k; }
+        for (i = 0; i < array_getSize (array); i++) { GARRAY_AT (i) *= k; }
     }
     
     garray_redraw (x);
@@ -468,11 +468,11 @@ static void garray_read (t_garray *x, t_symbol *name)
     int i;
     t_array *array = garray_getArray (x);
 
-    for (i = 0; i < array->a_size; i++) {
+    for (i = 0; i < array_getSize (array); i++) {
         double v = 0.0; if (!fscanf (file, "%lf", &v)) { break; } else { GARRAY_AT (i) = v; }
     }
     
-    while (i < array->a_size) { GARRAY_AT (i) = 0.0; i++; }
+    while (i < array_getSize (array)) { GARRAY_AT (i) = 0.0; i++; }
     
     fclose (file);
     
@@ -498,7 +498,7 @@ static void garray_write (t_garray *x, t_symbol *name)
     int i;
     t_array *array = garray_getArray (x);
     
-    for (i = 0; i < array->a_size; i++) {
+    for (i = 0; i < array_getSize (array); i++) {
         if (fprintf (file, "%g\n", GARRAY_AT (i)) < 1) { PD_BUG; break; }
     }
     
@@ -584,7 +584,7 @@ static void garray_functionSave (t_gobj *z, t_buffer *b)
         sym___hash__X,
         sym_array,
         x->x_unexpandedName,
-        array->a_size,
+        array_getSize (array),
         &s_float,
         flags);
         
@@ -603,7 +603,7 @@ void garray_functionProperties (t_garray *x)
     err |= string_sprintf (t, PD_STRING,
                 "::ui_array::show %%s %s %d %d\n",
                 dollar_toHash (x->x_unexpandedName)->s_name, 
-                array->a_size,
+                array_getSize (array),
                 flags);
     
     PD_ASSERT (!err);
@@ -636,7 +636,7 @@ void garray_fromDialog (t_garray *x, t_symbol *name, t_float size, t_float flags
     //
     }
 
-    if (newSize != array->a_size) { garray_resizeWithInteger (x, newSize); }
+    if (newSize != array_getSize (array)) { garray_resizeWithInteger (x, newSize); }
     
     if (newStyle != oldStyle) {
         template_setFloat (template, sym_style, scalar_getData (x->x_scalar), (t_float)newStyle);

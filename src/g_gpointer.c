@@ -253,7 +253,7 @@ t_symbol *gpointer_getTemplateIdentifier (t_gpointer *gp)
         if (gp->gp_un.gp_scalar) { s = scalar_getTemplateIdentifier (gp->gp_un.gp_scalar); }
         
     } else {
-        s = master->gm_un.gm_array->a_templateIdentifier;
+        s = array_getTemplateIdentifier (master->gm_un.gm_array);
     }
     
     return s;
