@@ -28,7 +28,10 @@ LDFLAGS = -lm
 
 .PHONY: all
 
-all: $(EXTERNALS)/hello $(EXTERNALS)/helloRoot $(EXTERNALS)/helloRelease
+all:    $(EXTERNALS)/hello \
+		$(EXTERNALS)/helloRoot \
+		$(EXTERNALS)/helloRelease \
+		$(EXTERNALS)/helloBad
 
 $(EXTERNALS):
 	@test -d $(EXTERNALS) || mkdir -p $(EXTERNALS)
@@ -44,3 +47,7 @@ $(EXTERNALS)/helloRoot: helloRoot.c | $(EXTERNALS)
 $(EXTERNALS)/helloRelease: helloRelease.c | $(EXTERNALS)
 	@echo "Build helloRelease ..."
 	@$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $(EXTERNALS)/helloRelease$(EXTENSION) helloRelease.c
+
+$(EXTERNALS)/helloBad: helloBad.c | $(EXTERNALS)
+	@echo "Build helloBad ..."
+	@$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $(EXTERNALS)/helloBad$(EXTENSION) helloBad.c

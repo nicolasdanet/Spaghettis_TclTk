@@ -13,32 +13,19 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Clean up your room. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#if PD_WINDOWS
-    #error "For now GCC only!"
-#endif
+/* Manage failure at creation time. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 typedef struct _hello {
-    t_object    ob_;
+    t_object    ob_;                            /* MUST be the first. */
     } t_hello;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-void hello_initialize   (void) __attribute__ ((constructor));
-void hello_release      (void) __attribute__ ((destructor));
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 
 static t_class *hello_class;
 
@@ -46,37 +33,41 @@ static t_class *hello_class;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void hello_initialize (void) 
-{
-    post_log ("'- Clean up your room!'");       /* Before the first instantiation. */
-}
-
-void hello_release (void) 
-{
-    post_log ("'- Tomorrow?'");                 /* While application quitting. */
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void *hello_new (void)
 {
-    return pd_new (hello_class);
+    t_hello *x = (t_hello *)pd_new (hello_class);
+
+    t_error err = PD_ERROR_NONE;
+    
+    err |= PD_ERROR;
+    
+    if (err) { 
+        pd_free ((t_pd *)x); x = NULL;
+    }
+    
+    return x;
+}
+
+static void hello_free (t_hello *x)
+{
+    post ("Clean your room, now!");
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_STUB void helloRelease_setup (t_symbol *s)
+PD_STUB void helloBad_setup (t_symbol *s)
 {
-    int flags = CLASS_BOX | CLASS_NOINLET;
-    
     t_class *c = NULL;
     
-    c = class_new (gensym ("helloRelease"), (t_newmethod)hello_new, NULL, sizeof (t_hello), flags, A_NULL);
-    
+    c = class_new (gensym ("helloBad"),
+            (t_newmethod)hello_new,
+            (t_method)hello_free,
+            sizeof (t_hello),
+            CLASS_BOX,
+            A_NULL); 
+        
     hello_class = c;
 }
 

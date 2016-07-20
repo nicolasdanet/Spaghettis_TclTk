@@ -32,7 +32,7 @@ static t_class *hello_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void hello_bang (t_hello *x)
+static void hello_bang (t_hello *x)
 {
     post ("Hello world!");
 }
@@ -41,7 +41,7 @@ void hello_bang (t_hello *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void *hello_new (void)
+static void *hello_new (void)
 {
     t_hello *x = (t_hello *)pd_new (hello_class);
 
@@ -58,7 +58,7 @@ PD_STUB void hello_setup (t_symbol *s)       /* MUST be the name of the file wit
     
     /* MUST contains (at least) a class with the file name. */
     
-    c = class_new (gensym ("hello"), hello_new, NULL, sizeof (t_hello), CLASS_BOX, A_NULL); 
+    c = class_new (gensym ("hello"), (t_newmethod)hello_new, NULL, sizeof (t_hello), CLASS_BOX, A_NULL); 
     
     class_addBang (c, (t_method)hello_bang); 
     
