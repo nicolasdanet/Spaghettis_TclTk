@@ -21,8 +21,8 @@ WARNINGS = -Wall -Wextra -Wshadow -Wno-unused-parameter -Wno-unknown-pragmas
 # Flags.
 
 CPPFLAGS = -I$(PUREDATA)
-CFLAGS = -Os -fvisibility=hidden -shared -fpic $(WARNINGS) $(ARCH)
-LDFLAGS = -lm
+CFLAGS   = -Os -fvisibility=hidden -shared -fpic $(WARNINGS) $(ARCH)
+LDFLAGS  = -lm
 
 # Targets.
 
