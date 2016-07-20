@@ -22,13 +22,13 @@ extern t_class          *scalar_class;
 extern t_class          *canvas_class;
 extern t_pdinstance     *pd_this;
 
-static void template_conformarray (t_template *, t_template *, int *, t_array *);
-static void template_conformglist (t_template *, t_template *, t_glist *, int *);
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *gtemplate_class;
+static t_class          *gtemplate_class;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 struct _gtemplate
 {
@@ -41,13 +41,11 @@ struct _gtemplate
     t_atom              *x_argv;
 };
 
-/* ---------------- gtemplates.  One per canvas. ----------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-/* "Struct": an object that searches for, and if necessary creates, 
-a template (above).  Other objects in the canvas then can give drawing
-instructions for the template.  The template doesn't go away when the
-"struct" is deleted, so that you can replace it with
-another one to add new fields, for example. */
+static void template_conformarray (t_template *, t_template *, int *, t_array *);
+static void template_conformglist (t_template *, t_template *, t_glist *, int *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -83,6 +81,10 @@ int template_equals(t_template *x1, t_template *x2)
             return (0);
     return (1);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* --------------- CONFORMING TO CHANGES IN A TEMPLATE ------------ */
 
@@ -296,6 +298,10 @@ void template_conform(t_template *tfrom, t_template *tto)
     PD_MEMORY_FREE(conformedfrom);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_glist *template_findcanvas(t_template *template)
 {
     t_gtemplate *gt;
@@ -305,6 +311,10 @@ t_glist *template_findcanvas(t_template *template)
     return (gt->x_owner);
     /* return ((t_glist *)pd_findByClass(template->tp_templateIdentifier, canvas_class)); */
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void template_notify(t_template *template, t_symbol *s, int argc, t_atom *argv)
 {
@@ -323,93 +333,78 @@ void template_notifyforscalar(t_template *template, t_glist *owner, t_scalar *sc
     gpointer_unset(&gp);
 }
 
-static void *gtemplate_donew(t_symbol *sym, int argc, t_atom *argv)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *gtemplate_create (t_symbol *templateIdentifier, int argc, t_atom *argv)
 {
-    t_gtemplate *x = (t_gtemplate *)pd_new(gtemplate_class);
-    t_template *t = template_findByIdentifier(sym);
+    t_template *template = template_findByIdentifier (templateIdentifier);
+    
+    t_gtemplate *x = (t_gtemplate *)pd_new (gtemplate_class);
+        
     int i;
     t_symbol *sx = sym_x;
     x->x_owner = canvas_getCurrent();
     x->x_next = 0;
-    x->x_sym = sym;
+    x->x_sym = templateIdentifier;
     x->x_argc = argc;
     x->x_argv = (t_atom *)PD_MEMORY_GET(argc * sizeof(t_atom));
     for (i = 0; i < argc; i++)
         x->x_argv[i] = argv[i];
 
         /* already have a template by this name? */
-    if (t)
+    if (template)
     {
-        x->x_template = t;
+        x->x_template = template;
             /* if it's already got a "struct" object we
             just tack this one to the end of the list and leave it
             there. */
-        if (t->tp_list)
+        if (template->tp_list)
         {
             t_gtemplate *x2, *x3;
             for (x2 = x->x_template->tp_list; x3 = x2->x_next; x2 = x3)
                 ;
             x2->x_next = x;
-            post("template %s: warning: already exists.", sym->s_name);
+            post("template %s: warning: already exists.", templateIdentifier->s_name);
         }
         else
         {
                 /* if there's none, we just replace the template with
                 our own and conform it. */
             t_template *y = template_new(&s_, argc, argv);
-            canvas_paintAllScalarsByTemplate(t, SCALAR_ERASE);
+            canvas_paintAllScalarsByTemplate(template, SCALAR_ERASE);
                 /* Unless the new template is different from the old one,
                 there's nothing to do.  */
-            if (!template_equals(t, y))
+            if (!template_equals(template, y))
             {
                     /* conform everyone to the new template */
-                template_conform(t, y);
-                pd_free(&t->tp_pd);
-                t = template_new(sym, argc, argv);
+                template_conform(template, y);
+                pd_free(&template->tp_pd);
+                template = template_new(templateIdentifier, argc, argv);
             }
             pd_free(&y->tp_pd);
-            t->tp_list = x;
-            canvas_paintAllScalarsByTemplate(t, SCALAR_DRAW);
+            template->tp_list = x;
+            canvas_paintAllScalarsByTemplate(template, SCALAR_DRAW);
         }
     }
     else
     {
             /* otherwise make a new one and we're the only struct on it. */
-        x->x_template = t = template_new(sym, argc, argv);
-        t->tp_list = x;
+        x->x_template = template = template_new(templateIdentifier, argc, argv);
+        template->tp_list = x;
     }
     outlet_new(&x->x_obj, 0);
     return (x);
 }
 
-static void *gtemplate_new(t_symbol *s, int argc, t_atom *argv)
+static void *gtemplate_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_symbol *sym = atom_getSymbolAtIndex(0, argc, argv);
-    if (argc >= 1)
-        argc--; argv++;
-    if (sym->s_name[0] == '-')
-        post("warning: struct '%s' initial '-' may confuse get/set, etc.",
-            sym->s_name);  
-    return (gtemplate_donew(utils_makeBindSymbol(sym), argc, argv));
-}
-
-    /* old version (0.34) -- delete 2003 or so */
-static void *gtemplate_new_old(t_symbol *s, int argc, t_atom *argv)
-{
-    t_symbol *sym = utils_makeBindSymbol(canvas_getCurrent()->gl_name);
-    static int warned;
-    if (!warned)
-    {
-        post("warning -- 'template' (%s) is obsolete; replace with 'struct'",
-            sym->s_name);
-        warned = 1;
-    }
-    return (gtemplate_donew(sym, argc, argv));
-}
-
-t_template *gtemplate_get(t_gtemplate *x)
-{
-    return (x->x_template);
+    t_symbol *templateIdentifier = utils_makeBindSymbol (atom_getSymbolAtIndex (0, argc, argv));
+    
+    if (argc >= 1) { argc--; argv++; }
+            
+    return (gtemplate_create (templateIdentifier, argc, argv));
 }
 
 static void gtemplate_free(t_gtemplate *x)
@@ -453,13 +448,23 @@ static void gtemplate_free(t_gtemplate *x)
     PD_MEMORY_FREE(x->x_argv);
 }
 
-void gtemplate_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void gtemplate_setup (void)
 {
-    gtemplate_class = class_new (sym_struct,
-        (t_newmethod)gtemplate_new, (t_method)gtemplate_free,
-        sizeof(t_gtemplate), CLASS_NOINLET, A_GIMME, 0);
-    class_addCreator((t_newmethod)gtemplate_new_old, sym_template,
-        A_GIMME, 0);
+    t_class *c = NULL;
+    
+    c = class_new (sym_struct,
+            (t_newmethod)gtemplate_new,
+            (t_method)gtemplate_free,
+            sizeof (t_gtemplate),
+            CLASS_DEFAULT | CLASS_NOINLET,
+            A_GIMME,
+            A_NULL);
+                
+    gtemplate_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
