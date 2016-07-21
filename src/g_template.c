@@ -350,7 +350,7 @@ t_template *template_new (t_symbol *templateIdentifier, int argc, t_atom *argv)
     
     x->tp_size               = 0;
     x->tp_vector             = (t_dataslot *)PD_MEMORY_GET (0);
-    x->tp_list               = NULL;
+    x->tp_owner              = NULL;
     x->tp_templateIdentifier = templateIdentifier;
     
     template_newParse (x, argc, argv);

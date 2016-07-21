@@ -23,6 +23,41 @@ extern t_class *canvas_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+    /* return true if two dataslot definitions match */
+static int dataslot_matches(t_dataslot *ds1, t_dataslot *ds2,
+    int nametoo)
+{
+    return ((!nametoo || ds1->ds_fieldName == ds2->ds_fieldName) &&
+        ds1->ds_type == ds2->ds_type &&
+            (ds1->ds_type != DATA_ARRAY ||
+                ds1->ds_templateIdentifier == ds2->ds_templateIdentifier));
+}
+
+    /* stringent check to see if a "saved" template, x2, matches the current
+        one (x1).  It's OK if x1 has additional scalar elements but not (yet)
+        arrays.  This is used for reading in "data files". */
+static int template_equals(t_template *x1, t_template *x2)
+{
+    int i;
+    if (x1->tp_size < x2->tp_size)
+        return (0);
+    for (i = x2->tp_size; i < x1->tp_size; i++)
+    {
+        if (x1->tp_vector[i].ds_type == DATA_ARRAY)
+                return (0);
+    }
+    if (x2->tp_size > x1->tp_size)
+        post("add elements...");
+    for (i = 0; i < x2->tp_size; i++)
+        if (!dataslot_matches(&x1->tp_vector[i], &x2->tp_vector[i], 1))
+            return (0);
+    return (1);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 static int canvas_scanbinbuf(int natoms, t_atom *vec, int *p_indexout, int *p_next)
 {

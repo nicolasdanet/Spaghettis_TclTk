@@ -326,9 +326,9 @@ typedef struct _dataslot {
 struct _template {
     t_pd                tp_pd;                      /* MUST be the first. */
     int                 tp_size;    
-    t_dataslot          *tp_vector;  
-    t_gtemplate         *tp_list;  
-    t_symbol            *tp_templateIdentifier;    
+    t_dataslot          *tp_vector;   
+    t_symbol            *tp_templateIdentifier; 
+    t_gtemplate         *tp_owner;   
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -955,7 +955,6 @@ t_template      *template_new                           (t_symbol *templateIdent
                                                             
 void            template_free                           (t_template *x);
 int             template_existRecursive                 (t_template *x);
-int             template_equals                         (t_template *tmpl1, t_template *tmpl2);
 
 int             template_findField                      (t_template *x,
                                                             t_symbol *fieldName,
