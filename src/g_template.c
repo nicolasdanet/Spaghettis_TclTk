@@ -28,40 +28,6 @@ static t_class  *template_class;                    /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int template_getRaw (t_template *x,
-    t_symbol *fieldName,
-    int *index,
-    int *type,
-    t_symbol **templateIdentifier)
-{
-    PD_ASSERT (x);
-    
-    if (x) {
-    //
-    int i;
-    
-    for (i = 0; i < x->tp_size; i++) {
-    //
-    if (x->tp_vector[i].ds_fieldName == fieldName) {
-    
-        *index              = i;
-        *type               = x->tp_vector[i].ds_type;
-        *templateIdentifier = x->tp_vector[i].ds_templateIdentifier;
-        
-        return 1;
-    }
-    //
-    }
-    //
-    }
-    
-    return 0;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 int template_getSize (t_template *x)
 {
     return x->tp_size;
@@ -71,6 +37,10 @@ t_dataslot *template_getData (t_template *x)
 {
     return x->tp_vector;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 int template_hasInstance (t_template *x)
 {
@@ -123,6 +93,15 @@ void template_notify (t_template *x,
     gpointer_unset (&gp);
     
     ATOMS_FREEA (a, n);
+}
+
+static void template_anything (t_template *x, t_symbol *s, int argc, t_atom *argv)
+{
+    #if PD_WITH_DEBUG
+    
+    post ("My name is %s.", utils_stripBindSymbol (x->tp_templateIdentifier)->s_name);
+    
+    #endif
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -206,6 +185,36 @@ int template_getIndexOfField (t_template *x, t_symbol *fieldName)
     }
 }
 
+int template_getRaw (t_template *x,
+    t_symbol *fieldName,
+    int *index,
+    int *type,
+    t_symbol **templateIdentifier)
+{
+    PD_ASSERT (x);
+    
+    if (x) {
+    //
+    int i;
+    
+    for (i = 0; i < x->tp_size; i++) {
+    //
+    if (x->tp_vector[i].ds_fieldName == fieldName) {
+    
+        *index              = i;
+        *type               = x->tp_vector[i].ds_type;
+        *templateIdentifier = x->tp_vector[i].ds_templateIdentifier;
+        
+        return 1;
+    }
+    //
+    }
+    //
+    }
+    
+    return 0;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -239,89 +248,6 @@ int template_fieldIsArrayAndValid (t_template *x, t_symbol *fieldName)
     }
     
     return 0;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_float template_getFloat (t_template *x, t_symbol *fieldName, t_word *w)
-{
-    int i, type; t_symbol *dummy = NULL;
-    
-    if (template_getRaw (x, fieldName, &i, &type, &dummy)) {
-        if (type == DATA_FLOAT) {
-            return *(t_float *)(w + i);
-        }
-    }
-
-    return 0.0;
-}
-
-void template_setFloat (t_template *x, t_symbol *fieldName, t_word *w, t_float f)
-{
-    int i, type; t_symbol *dummy = NULL;
-    
-    PD_ASSERT (template_fieldIsFloat (x, fieldName));
-    
-    if (template_getRaw (x, fieldName, &i, &type, &dummy)) {
-        if (type == DATA_FLOAT) { 
-            *(t_float *)(w + i) = f; 
-        }
-    }
-}
-
-t_array *template_getArray (t_template *x, t_symbol *fieldName, t_word *w)
-{
-    int i, type; t_symbol *dummy = NULL;
-    
-    if (template_getRaw (x, fieldName, &i, &type, &dummy)) {
-        if (type == DATA_ARRAY) {
-            return *(t_array **)(w + i);
-        }
-    }
-
-    return &s_;
-}
-
-t_symbol *template_getSymbol (t_template *x, t_symbol *fieldName, t_word *w)
-{
-    int i, type; t_symbol *dummy = NULL;
-    
-    if (template_getRaw (x, fieldName, &i, &type, &dummy)) {
-        if (type == DATA_SYMBOL) {
-            return *(t_symbol **)(w + i);
-        }
-    }
-
-    return &s_;
-}
-
-void template_setSymbol (t_template *x, t_symbol *fieldName, t_word *w, t_symbol *s)
-{
-    int i, type;
-    t_symbol *dummy = NULL;
-    
-    PD_ASSERT (template_fieldIsSymbol (x, fieldName));
-    
-    if (template_getRaw (x, fieldName, &i, &type, &dummy)) {
-        if (type == DATA_SYMBOL) { 
-            *(t_symbol **)(w + i) = s;
-        }
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void template_anything (t_template *x, t_symbol *s, int argc, t_atom *argv)
-{
-    #if PD_WITH_DEBUG
-    
-    post ("My name is %s.", utils_stripBindSymbol (x->tp_templateIdentifier)->s_name);
-    
-    #endif
 }
 
 // -----------------------------------------------------------------------------------------------------------

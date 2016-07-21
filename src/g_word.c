@@ -80,3 +80,73 @@ void word_free (t_word *w, t_template *tmpl)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_float word_getFloat (t_template *x, t_symbol *fieldName, t_word *w)
+{
+    int i, type; t_symbol *dummy = NULL;
+    
+    if (template_getRaw (x, fieldName, &i, &type, &dummy)) {
+        if (type == DATA_FLOAT) {
+            return *(t_float *)(w + i);
+        }
+    }
+
+    return 0.0;
+}
+
+void word_setFloat (t_template *x, t_symbol *fieldName, t_word *w, t_float f)
+{
+    int i, type; t_symbol *dummy = NULL;
+    
+    PD_ASSERT (template_fieldIsFloat (x, fieldName));
+    
+    if (template_getRaw (x, fieldName, &i, &type, &dummy)) {
+        if (type == DATA_FLOAT) { 
+            *(t_float *)(w + i) = f; 
+        }
+    }
+}
+
+t_array *word_getArray (t_template *x, t_symbol *fieldName, t_word *w)
+{
+    int i, type; t_symbol *dummy = NULL;
+    
+    if (template_getRaw (x, fieldName, &i, &type, &dummy)) {
+        if (type == DATA_ARRAY) {
+            return *(t_array **)(w + i);
+        }
+    }
+
+    return &s_;
+}
+
+t_symbol *word_getSymbol (t_template *x, t_symbol *fieldName, t_word *w)
+{
+    int i, type; t_symbol *dummy = NULL;
+    
+    if (template_getRaw (x, fieldName, &i, &type, &dummy)) {
+        if (type == DATA_SYMBOL) {
+            return *(t_symbol **)(w + i);
+        }
+    }
+
+    return &s_;
+}
+
+void word_setSymbol (t_template *x, t_symbol *fieldName, t_word *w, t_symbol *s)
+{
+    int i, type;
+    t_symbol *dummy = NULL;
+    
+    PD_ASSERT (template_fieldIsSymbol (x, fieldName));
+    
+    if (template_getRaw (x, fieldName, &i, &type, &dummy)) {
+        if (type == DATA_SYMBOL) { 
+            *(t_symbol **)(w + i) = s;
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

@@ -74,12 +74,12 @@ static void scalar_drawJob (t_gobj *z, t_glist *glist)
 
 static t_float scalar_getCoordinateX (t_scalar *x)
 {
-    return template_getFloat (template_findByIdentifier (x->sc_templateIdentifier), sym_x, x->sc_vector);
+    return word_getFloat (template_findByIdentifier (x->sc_templateIdentifier), sym_x, x->sc_vector);
 }
 
 static t_float scalar_getCoordinateY (t_scalar *x)
 {
-    return template_getFloat (template_findByIdentifier (x->sc_templateIdentifier), sym_y, x->sc_vector);
+    return word_getFloat (template_findByIdentifier (x->sc_templateIdentifier), sym_y, x->sc_vector);
 }
 
 static void scalar_drawSelectRectangle (t_scalar *x, t_glist *glist, int isSelected)
@@ -221,8 +221,8 @@ int scalar_performClick (t_word *w,
     
     if (view) {
     //
-    t_float baseX = template_getFloat (template, sym_x, w);
-    t_float baseY = template_getFloat (template, sym_y, w);
+    t_float baseX = word_getFloat (template, sym_x, w);
+    t_float baseY = word_getFloat (template, sym_y, w);
     t_gobj *y = NULL;
         
     if (clicked) { scalar_notifyClicked (scalar, glist, template, baseX + offsetX, baseY + offsetY); }
@@ -341,17 +341,17 @@ static void scalar_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int
     //
     if (template_fieldIsFloat (template, sym_x)) {
     //
-    t_float f = template_getFloat (template, sym_x, x->sc_vector);
+    t_float f = word_getFloat (template, sym_x, x->sc_vector);
     f += canvas_deltaPositionToValueX (glist, deltaX);
-    template_setFloat (template, sym_x, x->sc_vector, f);
+    word_setFloat (template, sym_x, x->sc_vector, f);
     //
     }
     
     if (template_fieldIsFloat (template, sym_y)) {
     //
-    t_float f = template_getFloat (template, sym_y, x->sc_vector);
+    t_float f = word_getFloat (template, sym_y, x->sc_vector);
     f += canvas_deltaPositionToValueY (glist, deltaY);
-    template_setFloat (template, sym_y, x->sc_vector, f);
+    word_setFloat (template, sym_y, x->sc_vector, f);
     //
     }
     

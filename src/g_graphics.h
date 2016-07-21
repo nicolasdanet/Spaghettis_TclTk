@@ -866,6 +866,21 @@ void            word_init                               (t_word *w, t_template *
 void            word_restore                            (t_word *w, t_template *tmpl, int argc, t_atom *argv);
 void            word_free                               (t_word *w, t_template *tmpl);
 
+t_array         *word_getArray                          (t_template *x, t_symbol *fieldName, t_word *w);
+t_symbol        *word_getSymbol                         (t_template *x, t_symbol *fieldName, t_word *w);
+
+t_float         word_getFloat                           (t_template *x, t_symbol *fieldName, t_word *w);
+
+void            word_setFloat                           (t_template *x,
+                                                            t_symbol *fieldName,
+                                                            t_word *w,
+                                                            t_float f);
+
+void            word_setSymbol                          (t_template *x,
+                                                            t_symbol *fieldName,
+                                                            t_word *w,
+                                                            t_symbol *s);
+                                                            
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -970,7 +985,7 @@ void            template_notify                         (t_template *x,
 
 void            template_free                           (t_template *x);
 int             template_isValid                        (t_template *x);
-
+    
 int             template_findField                      (t_template *x,
                                                             t_symbol *fieldName,
                                                             int *onset,
@@ -979,26 +994,15 @@ int             template_findField                      (t_template *x,
 
 int             template_hasField                       (t_template *x, t_symbol *fieldName);
 int             template_getIndexOfField                (t_template *x, t_symbol *fieldName);
-
+int             template_getRaw                         (t_template *x,
+                                                            t_symbol *fieldName,
+                                                            int *index,
+                                                            int *type,
+                                                            t_symbol **templateIdentifier);
+                                                            
 int             template_fieldIsFloat                   (t_template *x, t_symbol *fieldName);
 int             template_fieldIsSymbol                  (t_template *x, t_symbol *fieldName);
 int             template_fieldIsArrayAndValid           (t_template *x, t_symbol *fieldName);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-t_float         template_getFloat                       (t_template *x, t_symbol *fieldName, t_word *w);
-void            template_setFloat                       (t_template *x,
-                                                            t_symbol *fieldName,
-                                                            t_word *w,
-                                                            t_float f);
-
-t_array         *template_getArray                      (t_template *x, t_symbol *fieldName, t_word *w);
-t_symbol        *template_getSymbol                     (t_template *x, t_symbol *fieldName, t_word *w);
-void            template_setSymbol                      (t_template *x,
-                                                            t_symbol *fieldName,
-                                                            t_word *w,
-                                                            t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

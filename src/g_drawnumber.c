@@ -256,7 +256,7 @@ static void drawnumber_motion(void *z, t_float dx, t_float dy, t_float modifier)
     if (drawnumber_motion_type != DATA_FLOAT)
         return;
     drawnumber_motion_ycumulative -= dy;
-    template_setFloat(drawnumber_motion_template,
+    word_setFloat(drawnumber_motion_template,
         x->x_fieldname,
             drawnumber_motion_wp, 
             drawnumber_motion_ycumulative);
@@ -294,7 +294,7 @@ static int drawnumber_click(t_gobj *z, t_glist *glist,
             drawnumber_motion_array = ap;
             drawnumber_motion_firstkey = 1;
             drawnumber_motion_ycumulative =
-                template_getFloat(template, x->x_fieldname, data);
+                word_getFloat(template, x->x_fieldname, data);
             drawnumber_motion_type = type;
             if (drawnumber_motion_scalar)
                 gpointer_setAsScalarType(&drawnumber_motion_gpointer, 

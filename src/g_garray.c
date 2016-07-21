@@ -129,7 +129,7 @@ static void garray_check (t_garray *x)
     PD_ASSERT (template);
     PD_ASSERT (template_fieldIsArrayAndValid (template, sym_z));
     
-    array = template_getArray (template, sym_z, scalar_getData (x->x_scalar));
+    array = word_getArray (template, sym_z, scalar_getData (x->x_scalar));
     
     // struct float float y
      
@@ -137,6 +137,7 @@ static void garray_check (t_garray *x)
     
     PD_ASSERT (template);
     PD_ASSERT (template_fieldIsFloat (template, sym_y));
+    PD_ASSERT (template_getSize (template) == 1);                   /* Just one field. */
     PD_ASSERT (template_getIndexOfField (template, sym_y) == 0);    /* Just one field. */
     PD_ASSERT (array_getElementSize (array) == 1);                  /* Just one field. */
 }
@@ -198,7 +199,7 @@ static void garray_updateGraphName (t_garray *x)
 void garray_resizeWithInteger (t_garray *x, int n)
 {
     t_template *template = template_findByIdentifier (scalar_getTemplateIdentifier (x->x_scalar));
-    int style = template_getFloat (template, sym_style, scalar_getData (x->x_scalar));
+    int style = word_getFloat (template, sym_style, scalar_getData (x->x_scalar));
     t_array *array = garray_getArray (x);
     
     PD_ASSERT (n > 0);
@@ -314,7 +315,7 @@ t_array *garray_getArray (t_garray *x)
     
     #endif
     
-    return template_getArray (template, sym_z, scalar_getData (x->x_scalar));
+    return word_getArray (template, sym_z, scalar_getData (x->x_scalar));
 }
 
 int garray_getData (t_garray *x, int *size, t_word **w)
@@ -576,7 +577,7 @@ static void garray_functionSave (t_gobj *z, t_buffer *b)
 {
     t_garray *x = (t_garray *)z;
     t_template *template = template_findByIdentifier (scalar_getTemplateIdentifier (x->x_scalar));
-    int style = template_getFloat (template, sym_style, scalar_getData (x->x_scalar));    
+    int style = word_getFloat (template, sym_style, scalar_getData (x->x_scalar));    
     int flags = x->x_saveWithParent + (2 * style) + (8 * x->x_hideName);
     t_array *array = garray_getArray (x);
         
@@ -596,7 +597,7 @@ void garray_functionProperties (t_garray *x)
     t_template *template = template_findByIdentifier (scalar_getTemplateIdentifier (x->x_scalar));
     char t[PD_STRING] = { 0 };
     t_error err = PD_ERROR_NONE;
-    int style = template_getFloat (template, sym_style, scalar_getData (x->x_scalar));
+    int style = word_getFloat (template, sym_style, scalar_getData (x->x_scalar));
     int flags = x->x_saveWithParent + (2 * style);
     t_array *array = garray_getArray (x);
     
@@ -618,7 +619,7 @@ void garray_fromDialog (t_garray *x, t_symbol *name, t_float size, t_float flags
     int newSize          = PD_MAX (1.0, size);
     int save             = (((int)flags & 1) != 0);
     int newStyle         = (((int)flags & 6) >> 1);
-    int oldStyle         = (int)template_getFloat (template, sym_style, scalar_getData (x->x_scalar));
+    int oldStyle         = (int)word_getFloat (template, sym_style, scalar_getData (x->x_scalar));
 
     PD_ASSERT (newSize > 0);
     
@@ -639,7 +640,7 @@ void garray_fromDialog (t_garray *x, t_symbol *name, t_float size, t_float flags
     if (newSize != array_getSize (array)) { garray_resizeWithInteger (x, newSize); }
     
     if (newStyle != oldStyle) {
-        template_setFloat (template, sym_style, scalar_getData (x->x_scalar), (t_float)newStyle);
+        word_setFloat (template, sym_style, scalar_getData (x->x_scalar), (t_float)newStyle);
         garray_updateGraphBounds (x, newSize, newStyle); 
     }
 
@@ -695,10 +696,10 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_symbol *type, t_f
     
     x = garray_makeObjectWithScalar (glist, name, sym___TEMPLATE__float__dash__array, save, hide);
 
-    array_resize (template_getArray (template, sym_z, scalar_getData (x->x_scalar)), n);
+    array_resize (word_getArray (template, sym_z, scalar_getData (x->x_scalar)), n);
 
-    template_setFloat (template, sym_style, scalar_getData (x->x_scalar), plot);
-    template_setFloat (template, sym_linewidth, scalar_getData (x->x_scalar), 1);
+    word_setFloat (template, sym_style, scalar_getData (x->x_scalar), plot);
+    word_setFloat (template, sym_linewidth, scalar_getData (x->x_scalar), 1);
 
     sym___hash__A->s_thing = NULL;
     pd_bind (cast_pd (x), sym___hash__A); 
