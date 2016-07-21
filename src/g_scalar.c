@@ -125,10 +125,10 @@ static void scalar_notifyClicked (t_scalar *x,
     t_float positionX,
     t_float positionY)
 {
-    t_atom t[3];                                    /* First atom filled by function next. */
-    SET_FLOAT (t + 1, positionX);
-    SET_FLOAT (t + 2, positionY);
-    template_notifyforscalar (template, glist, x, sym_click, 3, t);
+    t_atom t[2];
+    SET_FLOAT (t + 0, positionX);
+    SET_FLOAT (t + 1, positionY);
+    template_notifyForScalar (template, glist, x, sym_click, 2, t);
 }
     
 static void scalar_notifyDisplaced (t_scalar *x, 
@@ -137,10 +137,10 @@ static void scalar_notifyDisplaced (t_scalar *x,
     t_float deltaX,
     t_float deltaY)
 {
-    t_atom t[3];                                    /* First atom filled by function next. */
-    SET_FLOAT (t + 1, deltaX);
-    SET_FLOAT (t + 2, deltaY);
-    template_notifyforscalar (template, glist, x, sym_displace, 3, t);
+    t_atom t[2];
+    SET_FLOAT (t + 0, deltaX);
+    SET_FLOAT (t + 1, deltaY);
+    template_notifyForScalar (template, glist, x, sym_displace, 2, t);
 }
 
 static void scalar_notifySelected (t_scalar *x, 
@@ -148,11 +148,9 @@ static void scalar_notifySelected (t_scalar *x,
     t_template *template,
     int isSelected)
 {
-    t_atom t;                                       /* Atom filled by function next. */
-    
-    if (isSelected) { template_notifyforscalar (template, glist, x, sym_select, 1, &t); } 
+    if (isSelected) { template_notifyForScalar (template, glist, x, sym_select, 0, NULL); } 
     else {
-        template_notifyforscalar (template, glist, x, sym_deselect, 1, &t);
+        template_notifyForScalar (template, glist, x, sym_deselect, 0, NULL);
     }
 }
 

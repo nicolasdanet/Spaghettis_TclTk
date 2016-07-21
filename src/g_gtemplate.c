@@ -38,7 +38,6 @@ struct _gtemplate {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 t_glist *template_findcanvas(t_template *template)
 {
@@ -54,19 +53,9 @@ t_glist *template_findcanvas(t_template *template)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void template_notify(t_template *template, t_symbol *s, int argc, t_atom *argv)
+void gtemplate_notify (t_gtemplate *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (template->tp_owner)
-        outlet_anything(template->tp_owner->x_obj.te_outlet, s, argc, argv);
-}
-
-void template_notifyforscalar (t_template *template, t_glist *owner, t_scalar *sc, t_symbol *s, int argc, t_atom *argv)
-{
-    t_gpointer gp = GPOINTER_INIT;
-    gpointer_setAsScalarType(&gp, owner, sc);
-    SET_POINTER(argv, &gp);
-    template_notify(template, s, argc, argv);
-    gpointer_unset(&gp);
+    outlet_anything (cast_object (x)->te_outlet, s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------

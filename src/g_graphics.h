@@ -956,6 +956,13 @@ t_template      *template_new                           (t_symbol *templateIdent
 void            template_free                           (t_template *x);
 int             template_existRecursive                 (t_template *x);
 
+void            template_notifyForScalar                (t_template *x, 
+                                                            t_glist *owner,
+                                                            t_scalar *scalar,
+                                                            t_symbol *s,
+                                                            int argc,
+                                                            t_atom *argv);
+        
 int             template_findField                      (t_template *x,
                                                             t_symbol *fieldName,
                                                             int *onset,
@@ -981,7 +988,13 @@ void            template_setSymbol                      (t_template *x,
                                                             t_symbol *fieldName,
                                                             t_word *w,
                                                             t_symbol *s);
-                                                            
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void            gtemplate_notify                        (t_gtemplate *x, t_symbol *s, int argc, t_atom *argv);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -1047,13 +1060,6 @@ void            canvas_merge                            (t_glist *glist, t_symbo
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void template_notifyforscalar (t_template *tmpl, 
-        t_glist *owner,
-        t_scalar *sc,
-        t_symbol *s,
-        int argc,
-        t_atom *argv);
-    
 void signal_setborrowed(t_signal *sig, t_signal *sig2);
 void signal_makereusable(t_signal *sig);
 

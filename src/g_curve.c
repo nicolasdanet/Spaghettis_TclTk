@@ -277,7 +277,7 @@ static void curve_motion(void *z, t_float dx, t_float dy, t_float modifier)
 {
     t_curve *x = (t_curve *)z;
     t_fielddescriptor *f = x->x_vec + curve_motion_field;
-    t_atom at;
+    //t_atom at;
     if (!gpointer_isValid(&curve_motion_gpointer, 0))
     {
         post("curve_motion: scalar disappeared");
@@ -297,8 +297,8 @@ static void curve_motion(void *z, t_float dx, t_float dy, t_float modifier)
     }
         /* LATER figure out what to do to notify for an array? */
     if (curve_motion_scalar)
-        template_notifyforscalar(curve_motion_template, curve_motion_glist, 
-            curve_motion_scalar, sym_change, 1, &at);
+        template_notifyForScalar(curve_motion_template, curve_motion_glist, 
+            curve_motion_scalar, sym_change, 0, NULL);
     if (curve_motion_scalar)
         scalar_redraw(curve_motion_scalar, curve_motion_glist);
     if (curve_motion_array)

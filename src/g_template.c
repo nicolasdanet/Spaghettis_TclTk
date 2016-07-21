@@ -12,6 +12,7 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
+#include "m_alloca.h"
 #include "g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -60,6 +61,28 @@ static int template_getRaw (t_template *x,
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+void template_notifyForScalar (t_template *x,
+    t_glist *owner,
+    t_scalar *scalar,
+    t_symbol *s,
+    int argc,
+    t_atom *argv)
+{
+    t_atom *a = NULL;
+    int i, n = argc + 1;
+    t_gpointer gp = GPOINTER_INIT;
+    
+    ATOMS_ALLOCA (a, n);
+    
+    gpointer_setAsScalarType (&gp, owner, scalar);
+    SET_POINTER (a, &gp);
+    for (i = 0; i < argc; i++) { *(a + i + 1) = *(argv + i); }
+    if (x->tp_owner) { gtemplate_notify (x->tp_owner, s, n, a); }
+    gpointer_unset (&gp);
+    
+    ATOMS_FREEA (a, n);
+}
 
 int template_findField (t_template *x,
     t_symbol *fieldName,

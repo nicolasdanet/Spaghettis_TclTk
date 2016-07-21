@@ -247,7 +247,7 @@ static int drawnumber_motion_firstkey;
 static void drawnumber_motion(void *z, t_float dx, t_float dy, t_float modifier)
 {
     t_drawnumber *x = (t_drawnumber *)z;
-    t_atom at;
+    // t_atom at;
     if (!gpointer_isValid(&drawnumber_motion_gpointer, 0))
     {
         post("drawnumber_motion: scalar disappeared");
@@ -261,9 +261,9 @@ static void drawnumber_motion(void *z, t_float dx, t_float dy, t_float modifier)
             drawnumber_motion_wp, 
             drawnumber_motion_ycumulative);
     if (drawnumber_motion_scalar)
-        template_notifyforscalar(drawnumber_motion_template,
+        template_notifyForScalar(drawnumber_motion_template,
             drawnumber_motion_glist, drawnumber_motion_scalar,
-                sym_change, 1, &at);
+                sym_change, 0, NULL);
 
     if (drawnumber_motion_scalar)
         scalar_redraw(drawnumber_motion_scalar, drawnumber_motion_glist);
