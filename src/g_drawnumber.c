@@ -261,7 +261,7 @@ static void drawnumber_motion(void *z, t_float dx, t_float dy, t_float modifier)
             drawnumber_motion_wp, 
             drawnumber_motion_ycumulative);
     if (drawnumber_motion_scalar)
-        template_notifyForScalar(drawnumber_motion_template,
+        template_notifyInstance(drawnumber_motion_template,
             drawnumber_motion_glist, drawnumber_motion_scalar,
                 sym_change, 0, NULL);
 

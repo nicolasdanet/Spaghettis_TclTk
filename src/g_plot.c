@@ -228,7 +228,7 @@ static int array_getfields(t_symbol *elemtemplatesym,
         return (-1);
     }
     if (!((elemtemplatesym == &s_float) ||
-        (elemtemplatecanvas = template_findcanvas(elemtemplate))))
+        (elemtemplatecanvas = template_getInstanceView (elemtemplate))))
     {
         post_error ("plot: %s: no canvas for this template", elemtemplatesym->s_name);
         return (-1);

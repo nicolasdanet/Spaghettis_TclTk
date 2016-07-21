@@ -128,7 +128,7 @@ static void scalar_notifyClicked (t_scalar *x,
     t_atom t[2];
     SET_FLOAT (t + 0, positionX);
     SET_FLOAT (t + 1, positionY);
-    template_notifyForScalar (template, glist, x, sym_click, 2, t);
+    template_notifyInstance (template, glist, x, sym_click, 2, t);
 }
     
 static void scalar_notifyDisplaced (t_scalar *x, 
@@ -140,7 +140,7 @@ static void scalar_notifyDisplaced (t_scalar *x,
     t_atom t[2];
     SET_FLOAT (t + 0, deltaX);
     SET_FLOAT (t + 1, deltaY);
-    template_notifyForScalar (template, glist, x, sym_displace, 2, t);
+    template_notifyInstance (template, glist, x, sym_displace, 2, t);
 }
 
 static void scalar_notifySelected (t_scalar *x, 
@@ -148,9 +148,9 @@ static void scalar_notifySelected (t_scalar *x,
     t_template *template,
     int isSelected)
 {
-    if (isSelected) { template_notifyForScalar (template, glist, x, sym_select, 0, NULL); } 
+    if (isSelected) { template_notifyInstance (template, glist, x, sym_select, 0, NULL); } 
     else {
-        template_notifyForScalar (template, glist, x, sym_deselect, 0, NULL);
+        template_notifyInstance (template, glist, x, sym_deselect, 0, NULL);
     }
 }
 
@@ -217,7 +217,7 @@ int scalar_performClick (t_word *w,
     int dbl,
     int clicked)
 {
-    t_glist *view = template_findcanvas (template);
+    t_glist *view = template_getInstanceView (template);
     
     if (view) {
     //
@@ -276,7 +276,7 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
     
     PD_ASSERT (template);
     
-    t_glist *view = template_findcanvas (template);
+    t_glist *view = template_getInstanceView (template);
     t_float baseX = scalar_getCoordinateX (x);
     t_float baseY = scalar_getCoordinateY (x);
 
@@ -390,7 +390,7 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     
     PD_ASSERT (template);
     
-    t_glist *view = template_findcanvas (template);
+    t_glist *view = template_getInstanceView (template);
     t_float baseX = scalar_getCoordinateX (x);
     t_float baseY = scalar_getCoordinateY (x);
 

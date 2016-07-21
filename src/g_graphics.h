@@ -953,16 +953,18 @@ t_template      *template_new                           (t_symbol *templateIdent
                                                             int argc,
                                                             t_atom *argv);
                                                             
-void            template_free                           (t_template *x);
-int             template_existRecursive                 (t_template *x);
+t_glist         *template_getInstanceView               (t_template *x);
 
-void            template_notifyForScalar                (t_template *x, 
+void            template_notifyInstance                 (t_template *x, 
                                                             t_glist *owner,
                                                             t_scalar *scalar,
                                                             t_symbol *s,
                                                             int argc,
                                                             t_atom *argv);
-        
+                                                                                                                    
+void            template_free                           (t_template *x);
+int             template_existRecursive                 (t_template *x);
+
 int             template_findField                      (t_template *x,
                                                             t_symbol *fieldName,
                                                             int *onset,
@@ -975,6 +977,9 @@ int             template_getIndex                       (t_template *x, t_symbol
 int             template_isFloat                        (t_template *x, t_symbol *fieldName);
 int             template_isSymbol                       (t_template *x, t_symbol *fieldName);
 int             template_isArrayAndValid                (t_template *x, t_symbol *fieldName);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 t_float         template_getFloat                       (t_template *x, t_symbol *fieldName, t_word *w);
 void            template_setFloat                       (t_template *x,
@@ -993,13 +998,9 @@ void            template_setSymbol                      (t_template *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_glist         *gtemplate_getView                      (t_gtemplate *x);
+
 void            gtemplate_notify                        (t_gtemplate *x, t_symbol *s, int argc, t_atom *argv);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_glist         *template_findcanvas                    (t_template *tmpl);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -1017,10 +1018,13 @@ int             field_isVariable                        (t_fielddescriptor *fd);
 
 t_symbol        *field_getVariableName                  (t_fielddescriptor *fd);
 
+t_float         field_convertValueToPosition            (t_fielddescriptor *fd, t_float v);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 t_float         field_getFloat                          (t_fielddescriptor *fd, t_template *tmpl, t_word *w);
 t_float         field_getFloatConstant                  (t_fielddescriptor *fd);
-
-t_float         field_convertValueToPosition            (t_fielddescriptor *fd, t_float v);
 
 t_float         field_getFloatAsPosition                (t_fielddescriptor *fd, t_template *tmpl, t_word *w);
 void            field_setFloatAsPosition                (t_fielddescriptor *fd,

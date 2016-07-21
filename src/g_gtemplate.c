@@ -38,20 +38,12 @@ struct _gtemplate {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-t_glist *template_findcanvas(t_template *template)
-{
-    t_gtemplate *gt;
-    if (!template) { PD_BUG; }
-    if (!(gt = template->tp_owner))
-        return (0);
-    return (gt->x_owner);
-    /* return ((t_glist *)pd_findByClass(template->tp_templateIdentifier, canvas_class)); */
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+t_glist *gtemplate_getView (t_gtemplate *x)
+{
+    return x->x_owner;
+}
 
 void gtemplate_notify (t_gtemplate *x, t_symbol *s, int argc, t_atom *argv)
 {

@@ -62,7 +62,17 @@ static int template_getRaw (t_template *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void template_notifyForScalar (t_template *x,
+t_glist *template_getInstanceView (t_template *x)
+{
+    PD_ASSERT (x);
+    
+    if (!x->tp_owner) { return NULL; }
+    else { 
+        return gtemplate_getView (x->tp_owner);
+    }
+}
+
+void template_notifyInstance (t_template *x,
     t_glist *owner,
     t_scalar *scalar,
     t_symbol *s,
@@ -83,6 +93,10 @@ void template_notifyForScalar (t_template *x,
     
     ATOMS_FREEA (a, n);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 int template_findField (t_template *x,
     t_symbol *fieldName,
