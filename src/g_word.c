@@ -19,8 +19,8 @@
 
 void word_init (t_word *w, t_template *tmpl, t_gpointer *gp)
 {
-    int i, size = tmpl->tp_size;
-    t_dataslot *v = tmpl->tp_vector;
+    int i, size = template_getSize (tmpl);
+    t_dataslot *v = template_getData (tmpl);
     
     for (i = 0; i < size; i++, v++, w++) {
     //
@@ -38,8 +38,8 @@ void word_init (t_word *w, t_template *tmpl, t_gpointer *gp)
 
 void word_restore (t_word *w, t_template *tmpl, int argc, t_atom *argv)
 {
-    int i, size = tmpl->tp_size;
-    t_dataslot *v = tmpl->tp_vector;
+    int i, size = template_getSize (tmpl);
+    t_dataslot *v = template_getData (tmpl);
     
     for (i = 0; i < size; i++, v++, w++) {
     //
@@ -67,9 +67,9 @@ void word_free (t_word *w, t_template *tmpl)
     else {
     //
     int i;
-    t_dataslot *v = tmpl->tp_vector;
+    t_dataslot *v = template_getData (tmpl);
     
-    for (i = 0; i < tmpl->tp_size; i++) {
+    for (i = 0; i < template_getSize (tmpl); i++) {
         if (v->ds_type == DATA_ARRAY) { array_free (w[i].w_array); }
         else if (v->ds_type == DATA_TEXT) { buffer_free (w[i].w_buffer); }
         v++;

@@ -328,7 +328,7 @@ struct _template {
     int                 tp_size;    
     t_dataslot          *tp_vector;   
     t_symbol            *tp_templateIdentifier; 
-    t_gtemplate         *tp_owner;   
+    t_gtemplate         *tp_instance;               /* For now, only one instance is allowed. */
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -952,18 +952,24 @@ t_template      *template_findByIdentifier              (t_symbol *templateIdent
 t_template      *template_new                           (t_symbol *templateIdentifier,
                                                             int argc,
                                                             t_atom *argv);
-                                                            
-t_glist         *template_getInstanceView               (t_template *x);
 
-void            template_notifyInstance                 (t_template *x, 
+int             template_getSize                        (t_template *x);
+t_dataslot      *template_getData                       (t_template *x);
+t_glist         *template_getFirstInstanceView          (t_template *x);
+
+int             template_hasInstance                    (t_template *x);
+void            template_registerInstance               (t_template *x, t_gtemplate *o);
+void            template_unregisterInstance             (t_template *x, t_gtemplate *o);
+
+void            template_notify                         (t_template *x, 
                                                             t_glist *owner,
                                                             t_scalar *scalar,
                                                             t_symbol *s,
                                                             int argc,
                                                             t_atom *argv);
-                                                                                                                    
+
 void            template_free                           (t_template *x);
-int             template_existRecursive                 (t_template *x);
+int             template_isValid                        (t_template *x);
 
 int             template_findField                      (t_template *x,
                                                             t_symbol *fieldName,
@@ -971,12 +977,12 @@ int             template_findField                      (t_template *x,
                                                             int *type,
                                                             t_symbol **templateIdentifier);
 
-int             template_contains                       (t_template *x, t_symbol *fieldName);
-int             template_getIndex                       (t_template *x, t_symbol *fieldName);
+int             template_hasField                       (t_template *x, t_symbol *fieldName);
+int             template_getIndexOfField                (t_template *x, t_symbol *fieldName);
 
-int             template_isFloat                        (t_template *x, t_symbol *fieldName);
-int             template_isSymbol                       (t_template *x, t_symbol *fieldName);
-int             template_isArrayAndValid                (t_template *x, t_symbol *fieldName);
+int             template_fieldIsFloat                   (t_template *x, t_symbol *fieldName);
+int             template_fieldIsSymbol                  (t_template *x, t_symbol *fieldName);
+int             template_fieldIsArrayAndValid           (t_template *x, t_symbol *fieldName);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

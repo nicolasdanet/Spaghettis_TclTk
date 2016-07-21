@@ -127,7 +127,7 @@ static void garray_check (t_garray *x)
     template = template_findByIdentifier (scalar_getTemplateIdentifier (x->x_scalar));
     
     PD_ASSERT (template);
-    PD_ASSERT (template_isArrayAndValid (template, sym_z));
+    PD_ASSERT (template_fieldIsArrayAndValid (template, sym_z));
     
     array = template_getArray (template, sym_z, scalar_getData (x->x_scalar));
     
@@ -136,8 +136,8 @@ static void garray_check (t_garray *x)
     template = template_findByIdentifier (array_getTemplateIdentifier (array));
     
     PD_ASSERT (template);
-    PD_ASSERT (template_isFloat (template, sym_y));
-    PD_ASSERT (template_getIndex (template, sym_y) == 0);           /* Just one field. */
+    PD_ASSERT (template_fieldIsFloat (template, sym_y));
+    PD_ASSERT (template_getIndexOfField (template, sym_y) == 0);    /* Just one field. */
     PD_ASSERT (array_getElementSize (array) == 1);                  /* Just one field. */
 }
 
@@ -686,7 +686,7 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_symbol *type, t_f
     
     PD_ASSERT (template);
     
-    if (template_isArrayAndValid (template, sym_z)) {
+    if (template_fieldIsArrayAndValid (template, sym_z)) {
     //
     int save = (((int)flags & GARRAY_FLAG_SAVE) != 0);
     int hide = (((int)flags & GARRAY_FLAG_HIDE) != 0);

@@ -128,7 +128,7 @@ static void scalar_notifyClicked (t_scalar *x,
     t_atom t[2];
     SET_FLOAT (t + 0, positionX);
     SET_FLOAT (t + 1, positionY);
-    template_notifyInstance (template, glist, x, sym_click, 2, t);
+    template_notify (template, glist, x, sym_click, 2, t);
 }
     
 static void scalar_notifyDisplaced (t_scalar *x, 
@@ -140,7 +140,7 @@ static void scalar_notifyDisplaced (t_scalar *x,
     t_atom t[2];
     SET_FLOAT (t + 0, deltaX);
     SET_FLOAT (t + 1, deltaY);
-    template_notifyInstance (template, glist, x, sym_displace, 2, t);
+    template_notify (template, glist, x, sym_displace, 2, t);
 }
 
 static void scalar_notifySelected (t_scalar *x, 
@@ -148,9 +148,9 @@ static void scalar_notifySelected (t_scalar *x,
     t_template *template,
     int isSelected)
 {
-    if (isSelected) { template_notifyInstance (template, glist, x, sym_select, 0, NULL); } 
+    if (isSelected) { template_notify (template, glist, x, sym_select, 0, NULL); } 
     else {
-        template_notifyInstance (template, glist, x, sym_deselect, 0, NULL);
+        template_notify (template, glist, x, sym_deselect, 0, NULL);
     }
 }
 
@@ -217,7 +217,7 @@ int scalar_performClick (t_word *w,
     int dbl,
     int clicked)
 {
-    t_glist *view = template_getInstanceView (template);
+    t_glist *view = template_getFirstInstanceView (template);
     
     if (view) {
     //
@@ -276,7 +276,7 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
     
     PD_ASSERT (template);
     
-    t_glist *view = template_getInstanceView (template);
+    t_glist *view = template_getFirstInstanceView (template);
     t_float baseX = scalar_getCoordinateX (x);
     t_float baseY = scalar_getCoordinateY (x);
 
@@ -339,7 +339,7 @@ static void scalar_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int
     if (!template) { PD_BUG; }
     else {
     //
-    if (template_isFloat (template, sym_x)) {
+    if (template_fieldIsFloat (template, sym_x)) {
     //
     t_float f = template_getFloat (template, sym_x, x->sc_vector);
     f += canvas_deltaPositionToValueX (glist, deltaX);
@@ -347,7 +347,7 @@ static void scalar_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int
     //
     }
     
-    if (template_isFloat (template, sym_y)) {
+    if (template_fieldIsFloat (template, sym_y)) {
     //
     t_float f = template_getFloat (template, sym_y, x->sc_vector);
     f += canvas_deltaPositionToValueY (glist, deltaY);
@@ -390,7 +390,7 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     
     PD_ASSERT (template);
     
-    t_glist *view = template_getInstanceView (template);
+    t_glist *view = template_getFirstInstanceView (template);
     t_float baseX = scalar_getCoordinateX (x);
     t_float baseY = scalar_getCoordinateY (x);
 
@@ -538,11 +538,11 @@ t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
     
     t_template *template = template_findByIdentifier (templateIdentifier);
 
-    if (!template_existRecursive (template)) { PD_BUG; }
+    if (!template_isValid (template)) { PD_BUG; }
     else {
     //
     {
-        size_t extraForArrayOfWords = (template->tp_size - 1) * sizeof (t_word);
+        size_t extraForArrayOfWords = (template_getSize (template) - 1) * sizeof (t_word);
         x = (t_scalar *)PD_MEMORY_GET (sizeof (t_scalar) + extraForArrayOfWords); 
         pd_class (x) = scalar_class;
     }

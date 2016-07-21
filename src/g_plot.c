@@ -228,12 +228,12 @@ static int array_getfields(t_symbol *elemtemplatesym,
         return (-1);
     }
     if (!((elemtemplatesym == &s_float) ||
-        (elemtemplatecanvas = template_getInstanceView (elemtemplate))))
+        (elemtemplatecanvas = template_getFirstInstanceView (elemtemplate))))
     {
         post_error ("plot: %s: no canvas for this template", elemtemplatesym->s_name);
         return (-1);
     }
-    elemsize = elemtemplate->tp_size * ARRAY_WORD;
+    elemsize = template_getSize (elemtemplate) * ARRAY_WORD;
     if (yfielddesc && field_isVariable (yfielddesc))
         varname = field_getVariableName (yfielddesc);
     else varname = sym_y;

@@ -401,17 +401,18 @@ static void get_pointer(t_get *x, t_gpointer *gp)
         t_symbol *arraytype;
         if (template_findField(template, vp->gv_sym, &onset, &type, &arraytype))
         {
-            if (type == DATA_FLOAT)
+            if (type == DATA_FLOAT) {
                 outlet_float(vp->gv_outlet,
                     *(t_float *)(((char *)vec) + onset));
-            else if (type == DATA_SYMBOL)
+            } else if (type == DATA_SYMBOL) {
                 outlet_symbol(vp->gv_outlet,
                     *(t_symbol **)(((char *)vec) + onset));
-            else post_error ("get: %s.%s is not a number or symbol",
-                    template->tp_templateIdentifier->s_name, vp->gv_sym->s_name);
+            } else {
+                // post_error ("get: %s.%s is not a number or symbol", template->tp_templateIdentifier->s_name, vp->gv_sym->s_name);
+            }
+        } else {
+            // post_error ("get: %s.%s: no such field", template->tp_templateIdentifier->s_name, vp->gv_sym->s_name);
         }
-        else post_error ("get: %s.%s: no such field",
-            template->tp_templateIdentifier->s_name, vp->gv_sym->s_name);
     }
 }
 
@@ -670,7 +671,7 @@ static void elem_float(t_elem *x, t_float f)
         return;
     }
 
-    elemsize = elemtemplate->tp_size * ARRAY_WORD;
+    elemsize = template_getSize (elemtemplate) * ARRAY_WORD;
 
     array = *(t_array **)(((char *)w) + onset);
 
@@ -863,7 +864,7 @@ static void setsize_float(t_setsize *x, t_float f)
         return;
     }
 
-    elemsize = elemtemplate->tp_size * ARRAY_WORD;
+    elemsize = template_getSize (elemtemplate) * ARRAY_WORD;
 
     array = *(t_array **)(((char *)w) + onset);
 

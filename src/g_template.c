@@ -62,17 +62,48 @@ static int template_getRaw (t_template *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_glist *template_getInstanceView (t_template *x)
+int template_getSize (t_template *x)
+{
+    return x->tp_size;
+}
+
+t_dataslot *template_getData (t_template *x)
+{
+    return x->tp_vector;
+}
+
+int template_hasInstance (t_template *x)
+{
+    return (x->tp_instance != NULL);
+}
+
+void template_registerInstance (t_template *x, t_gtemplate *o)
+{
+    canvas_paintAllScalarsByTemplate (x, SCALAR_ERASE);
+    x->tp_instance = o;
+    canvas_paintAllScalarsByTemplate (x, SCALAR_DRAW);
+}
+
+void template_unregisterInstance (t_template *x, t_gtemplate *o)
+{
+    template_registerInstance (x, NULL);
+}
+
+t_glist *template_getFirstInstanceView (t_template *x)
 {
     PD_ASSERT (x);
     
-    if (!x->tp_owner) { return NULL; }
+    if (!x->tp_instance) { return NULL; }
     else { 
-        return gtemplate_getView (x->tp_owner);
+        return gtemplate_getView (x->tp_instance);
     }
 }
 
-void template_notifyInstance (t_template *x,
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void template_notify (t_template *x,
     t_glist *owner,
     t_scalar *scalar,
     t_symbol *s,
@@ -88,7 +119,7 @@ void template_notifyInstance (t_template *x,
     gpointer_setAsScalarType (&gp, owner, scalar);
     SET_POINTER (a, &gp);
     for (i = 0; i < argc; i++) { *(a + i + 1) = *(argv + i); }
-    if (x->tp_owner) { gtemplate_notify (x->tp_owner, s, n, a); }
+    if (x->tp_instance) { gtemplate_notify (x->tp_instance, s, n, a); }
     gpointer_unset (&gp);
     
     ATOMS_FREEA (a, n);
@@ -132,7 +163,7 @@ int template_findField (t_template *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int template_existRecursive (t_template *x)
+int template_isValid (t_template *x)
 {
     if (!x) { return 0; }
     else {
@@ -145,7 +176,7 @@ int template_existRecursive (t_template *x)
     if (v->ds_type == DATA_ARRAY) {
     //
     t_template *elementTemplate = template_findByIdentifier (v->ds_templateIdentifier);
-    if (!elementTemplate || !template_existRecursive (elementTemplate)) {
+    if (!elementTemplate || !template_isValid (elementTemplate)) {
         return 0;
     }
     //
@@ -158,14 +189,14 @@ int template_existRecursive (t_template *x)
     return 1;
 }
 
-int template_contains (t_template *x, t_symbol *fieldName)
+int template_hasField (t_template *x, t_symbol *fieldName)
 {
     int i, t; t_symbol *dummy = NULL;
     
     return (template_getRaw (x, fieldName, &i, &t, &dummy));
 }
 
-int template_getIndex (t_template *x, t_symbol *fieldName)
+int template_getIndexOfField (t_template *x, t_symbol *fieldName)
 {
     int i, t; t_symbol *dummy = NULL;
     
@@ -179,7 +210,7 @@ int template_getIndex (t_template *x, t_symbol *fieldName)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int template_isFloat (t_template *x, t_symbol *fieldName)
+int template_fieldIsFloat (t_template *x, t_symbol *fieldName)
 {
     int i, type; t_symbol *dummy = NULL;
     
@@ -188,7 +219,7 @@ int template_isFloat (t_template *x, t_symbol *fieldName)
     return 0;
 }
 
-int template_isSymbol (t_template *x, t_symbol *fieldName)
+int template_fieldIsSymbol (t_template *x, t_symbol *fieldName)
 {
     int i, type; t_symbol *dummy = NULL;
     
@@ -197,7 +228,7 @@ int template_isSymbol (t_template *x, t_symbol *fieldName)
     return 0;
 }
 
-int template_isArrayAndValid (t_template *x, t_symbol *fieldName)
+int template_fieldIsArrayAndValid (t_template *x, t_symbol *fieldName)
 {
     int i, type; t_symbol *templateIdentifier = NULL;
     
@@ -231,7 +262,7 @@ void template_setFloat (t_template *x, t_symbol *fieldName, t_word *w, t_float f
 {
     int i, type; t_symbol *dummy = NULL;
     
-    PD_ASSERT (template_isFloat (x, fieldName));
+    PD_ASSERT (template_fieldIsFloat (x, fieldName));
     
     if (template_getRaw (x, fieldName, &i, &type, &dummy)) {
         if (type == DATA_FLOAT) { 
@@ -271,7 +302,7 @@ void template_setSymbol (t_template *x, t_symbol *fieldName, t_word *w, t_symbol
     int i, type;
     t_symbol *dummy = NULL;
     
-    PD_ASSERT (template_isSymbol (x, fieldName));
+    PD_ASSERT (template_fieldIsSymbol (x, fieldName));
     
     if (template_getRaw (x, fieldName, &i, &type, &dummy)) {
         if (type == DATA_SYMBOL) { 
@@ -387,9 +418,9 @@ t_template *template_new (t_symbol *templateIdentifier, int argc, t_atom *argv)
     
     x->tp_size               = 0;
     x->tp_vector             = (t_dataslot *)PD_MEMORY_GET (0);
-    x->tp_owner              = NULL;
     x->tp_templateIdentifier = templateIdentifier;
-    
+    x->tp_instance           = NULL;
+        
     template_newParse (x, argc, argv);
     
     pd_bind (cast_pd (x), x->tp_templateIdentifier);

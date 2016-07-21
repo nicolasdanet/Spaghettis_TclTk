@@ -297,7 +297,7 @@ static void curve_motion(void *z, t_float dx, t_float dy, t_float modifier)
     }
         /* LATER figure out what to do to notify for an array? */
     if (curve_motion_scalar)
-        template_notifyInstance(curve_motion_template, curve_motion_glist, 
+        template_notify(curve_motion_template, curve_motion_glist, 
             curve_motion_scalar, sym_change, 0, NULL);
     if (curve_motion_scalar)
         scalar_redraw(curve_motion_scalar, curve_motion_glist);
