@@ -63,29 +63,46 @@ static void *gtemplate_newInstance (t_template *template, int argc, t_atom *argv
     return x;
 }
 
+static void *gtemplate_newEmpty (void)
+{
+    t_gtemplate *x = (t_gtemplate *)pd_new (gtemplate_class);
+    
+    x->x_template  = NULL;
+    x->x_owner     = canvas_getCurrent();
+
+    outlet_new (cast_object (x), &s_anything);
+    
+    return x;
+}
+
 static void *gtemplate_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_symbol *templateIdentifier = utils_makeBindSymbol (atom_getSymbolAtIndex (0, argc, argv));
+    t_symbol *name = atom_getSymbolAtIndex (0, argc, argv);
+    
+    if (name == &s_) { return (gtemplate_newEmpty ());}
+    else {
+    //
+    t_symbol *templateIdentifier = utils_makeBindSymbol (name);
     
     /* For now forbid multiple instantiation. */
     
     t_template *template = template_findByIdentifier (templateIdentifier);
     
     if (template && template_hasInstance (template)) { 
-        post_error (PD_TRANSLATE ("struct: %s already exists"), templateIdentifier->s_name); 
-        return NULL;
+        post_error (PD_TRANSLATE ("struct: %s already exists"), name->s_name); return NULL;
 
     } else {
         if (argc >= 1) { argc--; argv++; }
         if (!template) { template = template_new (templateIdentifier, argc, argv); }
-        
         return (gtemplate_newInstance (template, argc, argv));
+    }
+    //
     }
 }
 
 static void gtemplate_free (t_gtemplate *x)
 {
-    template_unregisterInstance (x->x_template, x);
+    if (x->x_template) { template_unregisterInstance (x->x_template, x); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

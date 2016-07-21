@@ -416,6 +416,10 @@ t_template *template_new (t_symbol *templateIdentifier, int argc, t_atom *argv)
     
     PD_ASSERT (templateIdentifier);
     
+    /* Empty template should be managed appropriately elsewhere. */
+    
+    PD_ASSERT (utils_stripBindSymbol (templateIdentifier) != &s_); 
+        
     x->tp_size               = 0;
     x->tp_vector             = (t_dataslot *)PD_MEMORY_GET (0);
     x->tp_templateIdentifier = templateIdentifier;
