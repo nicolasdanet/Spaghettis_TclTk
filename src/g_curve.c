@@ -287,12 +287,18 @@ static void curve_motion(void *z, t_float dx, t_float dy, t_float modifier)
     curve_motion_ycumulative += dy;
     if (field_isVariable (f) && (dx != 0))
     {
-        word_setFloatByFieldAsPosition(f, curve_motion_template, curve_motion_wp,
+        word_setFloatByFieldAsPosition(
+            curve_motion_wp,
+            curve_motion_template,
+            f,
             curve_motion_xbase + curve_motion_xcumulative * curve_motion_xper); 
     }
     if (field_isVariable (f+1) && (dy != 0))
     {
-        word_setFloatByFieldAsPosition(f+1, curve_motion_template, curve_motion_wp,
+        word_setFloatByFieldAsPosition(
+            curve_motion_wp,
+            curve_motion_template,
+            f+1,
             curve_motion_ybase + curve_motion_ycumulative * curve_motion_yper); 
     }
         /* LATER figure out what to do to notify for an array? */

@@ -699,8 +699,11 @@ static void array_motion(void *z, t_float dx, t_float dy, t_float modifier)
                     thisword, 
                     array_motion_template,
                     array_motion_yfield) : 0);
-            word_setFloatByFieldAsPosition(array_motion_xfield,
-                array_motion_template, thisword, xwas + dx);
+            word_setFloatByFieldAsPosition(
+                thisword,
+                array_motion_template,
+                array_motion_xfield,
+                xwas + dx);
             if (array_motion_yfield)
             {
                 if (array_motion_fatten)
@@ -710,15 +713,20 @@ static void array_motion(void *z, t_float dx, t_float dy, t_float modifier)
                         t_float newy = ywas + dy * array_motion_yperpix;
                         if (newy < 0)
                             newy = 0;
-                        word_setFloatByFieldAsPosition(array_motion_yfield,
-                            array_motion_template, thisword, newy);
+                        word_setFloatByFieldAsPosition(
+                            thisword,
+                            array_motion_template,
+                            array_motion_yfield,
+                            newy);
                     }
                 }
                 else
                 {
-                    word_setFloatByFieldAsPosition(array_motion_yfield,
-                        array_motion_template, thisword,
-                            ywas + dy * array_motion_yperpix);
+                    word_setFloatByFieldAsPosition(
+                        thisword,
+                        array_motion_template,
+                        array_motion_yfield,
+                        ywas + dy * array_motion_yperpix);
                 }
             }
         }
@@ -742,10 +750,11 @@ static void array_motion(void *z, t_float dx, t_float dy, t_float modifier)
 
         for (i = 0, x2 = thisx; i < nchange; i++, x2 += increment)
         {
-            word_setFloatByFieldAsPosition(array_motion_yfield,
+            word_setFloatByFieldAsPosition(
+                (t_word *)(((char *)array_motion_wp) + array_motion_elemsize * x2),
                 array_motion_template,
-                    (t_word *)(((char *)array_motion_wp) +
-                        array_motion_elemsize * x2), newy);
+                array_motion_yfield,
+                newy);
             if (nchange > 1)
                 newy -= ydiff * (1./(nchange - 1));
          }
@@ -857,9 +866,11 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
             array_motion_wp = (t_word *)((char *)array->a_vector);
             if (doit)
             {
-                word_setFloatByFieldAsPosition(yfield, elemtemplate,
+                word_setFloatByFieldAsPosition(
                     (t_word *)(((char *)array->a_vector) + elemsize * xval),
-                        canvas_positionToValueY(glist, ypix));
+                    elemtemplate,
+                    yfield,
+                    canvas_positionToValueY(glist, ypix));
                 canvas_setMotionFunction(glist, 0, (t_motionfn)array_motion, xpix, ypix);
                 if (array_motion_scalar)
                     scalar_redraw(array_motion_scalar, array_motion_glist);

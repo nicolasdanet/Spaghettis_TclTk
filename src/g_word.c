@@ -197,7 +197,7 @@ t_float word_getFloatByFieldAsPosition (t_word *w, t_template *tmpl, t_fielddesc
     return 0.0;
 }
 
-void word_setFloatByFieldAsPosition (t_fielddescriptor *fd, t_template *tmpl, t_word *w, t_float position)
+void word_setFloatByFieldAsPosition (t_word *w, t_template *tmpl, t_fielddescriptor *fd, t_float position)
 {
     if (fd->fd_type == DATA_FLOAT) {
     //
