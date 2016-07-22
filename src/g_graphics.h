@@ -880,6 +880,14 @@ void            word_setSymbol                          (t_template *x,
                                                             t_symbol *fieldName,
                                                             t_word *w,
                                                             t_symbol *s);
+
+
+t_float         word_getFloatByField                    (t_fielddescriptor *fd, t_template *tmpl, t_word *w);
+t_float         word_getFloatByFieldAsPosition          (t_fielddescriptor *fd, t_template *tmpl, t_word *w);
+void            word_setFloatByFieldAsPosition          (t_fielddescriptor *fd,
+                                                            t_template *tmpl,
+                                                            t_word *w,
+                                                            t_float position);
                                                             
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -1026,21 +1034,11 @@ int             field_isFloatConstant                   (t_fielddescriptor *fd);
 int             field_isArray                           (t_fielddescriptor *fd);
 int             field_isVariable                        (t_fielddescriptor *fd);
 
+t_float         field_getFloatConstant                  (t_fielddescriptor *fd);
 t_symbol        *field_getVariableName                  (t_fielddescriptor *fd);
 
 t_float         field_convertValueToPosition            (t_fielddescriptor *fd, t_float v);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-t_float         field_getFloat                          (t_fielddescriptor *fd, t_template *tmpl, t_word *w);
-t_float         field_getFloatConstant                  (t_fielddescriptor *fd);
-
-t_float         field_getFloatAsPosition                (t_fielddescriptor *fd, t_template *tmpl, t_word *w);
-void            field_setFloatAsPosition                (t_fielddescriptor *fd,
-                                                            t_template *tmpl,
-                                                            t_word *w,
-                                                            t_float position);
+t_float         field_convertPositionToValue            (t_fielddescriptor *fd, t_float v);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

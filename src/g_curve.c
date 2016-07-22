@@ -119,7 +119,7 @@ static void curve_getrect(t_gobj *z, t_glist *glist,
     int i, n = x->x_npoints;
     t_fielddescriptor *f = x->x_vec;
     int x1 = PD_INT_MAX, x2 = -PD_INT_MAX, y1 = PD_INT_MAX, y2 = -PD_INT_MAX;
-    if (!field_getFloat(&x->x_vis, template, data) ||
+    if (!word_getFloatByField(&x->x_vis, template, data) ||
         (x->x_flags & CURVE_NO_MOUSE))
     {
         *xp1 = *yp1 = PD_INT_MAX;
@@ -129,9 +129,9 @@ static void curve_getrect(t_gobj *z, t_glist *glist,
     for (i = 0, f = x->x_vec; i < n; i++, f += 2)
     {
         int xloc = canvas_valueToPositionX(glist,
-            basex + field_getFloatAsPosition(f, template, data));
+            basex + word_getFloatByFieldAsPosition(f, template, data));
         int yloc = canvas_valueToPositionY(glist,
-            basey + field_getFloatAsPosition(f+1, template, data));
+            basey + word_getFloatByFieldAsPosition(f+1, template, data));
         if (xloc < x1) x1 = xloc;
         if (xloc > x2) x2 = xloc;
         if (yloc < y1) y1 = yloc;
@@ -202,14 +202,14 @@ static void curve_vis(t_gobj *z, t_glist *glist,
     t_fielddescriptor *f = x->x_vec;
     
         /* see comment in plot_vis() */
-    if (vis && !field_getFloat(&x->x_vis, template, data))
+    if (vis && !word_getFloatByField(&x->x_vis, template, data))
         return;
     if (vis)
     {
         if (n > 1)
         {
             int flags = x->x_flags, closed = (flags & CURVE_CLOSED);
-            t_float width = field_getFloat(&x->x_width, template, data);
+            t_float width = word_getFloatByField(&x->x_width, template, data);
             char outline[20], fill[20];
             int pix[200];
             if (n > 100)
@@ -221,18 +221,18 @@ static void curve_vis(t_gobj *z, t_glist *glist,
             for (i = 0, f = x->x_vec; i < n; i++, f += 2)
             {
                 pix[2*i] = canvas_valueToPositionX(glist,
-                    basex + field_getFloatAsPosition(f, template, data));
+                    basex + word_getFloatByFieldAsPosition(f, template, data));
                 pix[2*i+1] = canvas_valueToPositionY(glist,
-                    basey + field_getFloatAsPosition(f+1, template, data));
+                    basey + word_getFloatByFieldAsPosition(f+1, template, data));
             }
             if (width < 1) width = 1;
             numbertocolor(
-                field_getFloat(&x->x_outlinecolor, template, data),
+                word_getFloatByField(&x->x_outlinecolor, template, data),
                 outline);
             if (flags & CURVE_CLOSED)
             {
                 numbertocolor(
-                    field_getFloat(&x->x_fillcolor, template, data),
+                    word_getFloatByField(&x->x_fillcolor, template, data),
                     fill);
                 sys_vGui(".x%lx.c create polygon\\\n",
                     canvas_getView(glist));
@@ -287,12 +287,12 @@ static void curve_motion(void *z, t_float dx, t_float dy, t_float modifier)
     curve_motion_ycumulative += dy;
     if (field_isVariable (f) && (dx != 0))
     {
-        field_setFloatAsPosition(f, curve_motion_template, curve_motion_wp,
+        word_setFloatByFieldAsPosition(f, curve_motion_template, curve_motion_wp,
             curve_motion_xbase + curve_motion_xcumulative * curve_motion_xper); 
     }
     if (field_isVariable (f+1) && (dy != 0))
     {
-        field_setFloatAsPosition(f+1, curve_motion_template, curve_motion_wp,
+        word_setFloatByFieldAsPosition(f+1, curve_motion_template, curve_motion_wp,
             curve_motion_ybase + curve_motion_ycumulative * curve_motion_yper); 
     }
         /* LATER figure out what to do to notify for an array? */
@@ -315,13 +315,13 @@ static int curve_click(t_gobj *z, t_glist *glist,
     int bestn = -1;
     int besterror = PD_INT_MAX;
     t_fielddescriptor *f;
-    if (!field_getFloat(&x->x_vis, template, data))
+    if (!word_getFloatByField(&x->x_vis, template, data))
         return (0);
     for (i = 0, f = x->x_vec; i < n; i++, f += 2)
     {
-        int xval = field_getFloatAsPosition(f, template, data),
+        int xval = word_getFloatByFieldAsPosition(f, template, data),
             xloc = canvas_valueToPositionX(glist, basex + xval);
-        int yval = field_getFloatAsPosition(f+1, template, data),
+        int yval = word_getFloatByFieldAsPosition(f+1, template, data),
             yloc = canvas_valueToPositionY(glist, basey + yval);
         int xerr = xloc - xpix, yerr = yloc - ypix;
         if (!field_isVariable (f) && !field_isVariable (f+1))

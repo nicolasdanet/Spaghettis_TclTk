@@ -152,16 +152,16 @@ static void drawnumber_getrect(t_gobj *z, t_glist *glist,
     int xloc, yloc, font, fontwidth, fontheight, bufsize, width, height;
     char buf[DRAWNUMBER_BUFSIZE], *startline, *newline;
 
-    if (!field_getFloat(&x->x_vis, template, data))
+    if (!word_getFloatByField(&x->x_vis, template, data))
     {
         *xp1 = *yp1 = PD_INT_MAX;
         *xp2 = *yp2 = -PD_INT_MAX;
         return;
     }
     xloc = canvas_valueToPositionX(glist,
-        basex + field_getFloatAsPosition(&x->x_xloc, template, data));
+        basex + word_getFloatByFieldAsPosition(&x->x_xloc, template, data));
     yloc = canvas_valueToPositionY(glist,
-        basey + field_getFloatAsPosition(&x->x_yloc, template, data));
+        basey + word_getFloatByFieldAsPosition(&x->x_yloc, template, data));
     font = canvas_getFontSize(glist);
     fontwidth = font_getHostFontWidth(font);
         fontheight = font_getHostFontHeight(font);
@@ -212,17 +212,17 @@ static void drawnumber_vis(t_gobj *z, t_glist *glist,
     t_drawnumber *x = (t_drawnumber *)z;
     
         /* see comment in plot_vis() */
-    if (vis && !field_getFloat(&x->x_vis, template, data))
+    if (vis && !word_getFloatByField(&x->x_vis, template, data))
         return;
     if (vis)
     {
         t_atom at;
         int xloc = canvas_valueToPositionX(glist,
-            basex + field_getFloatAsPosition(&x->x_xloc, template, data));
+            basex + word_getFloatByFieldAsPosition(&x->x_xloc, template, data));
         int yloc = canvas_valueToPositionY(glist,
-            basey + field_getFloatAsPosition(&x->x_yloc, template, data));
+            basey + word_getFloatByFieldAsPosition(&x->x_yloc, template, data));
         char colorstring[20], buf[DRAWNUMBER_BUFSIZE];
-        numbertocolor(field_getFloat(&x->x_color, template, data),
+        numbertocolor(word_getFloatByField(&x->x_color, template, data),
             colorstring);
         drawnumber_getbuf(x, data, template, buf);
         sys_vGui(".x%lx.c create text %d %d -anchor nw -fill %s -text {%s}",

@@ -154,22 +154,6 @@ int field_isVariable (t_fielddescriptor *fd)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_float field_getFloat (t_fielddescriptor *fd, t_template *tmpl, t_word *w)
-{
-    if (fd->fd_type == DATA_FLOAT) {
-    //
-    if (fd->fd_isVariable) { return (word_getFloat (tmpl, fd->fd_un.fd_variableName, w)); }
-    else {
-        return (fd->fd_un.fd_float);
-    }
-    //
-    }
-
-    PD_BUG;
-    
-    return 0.0;
-}
-
 t_float field_getFloatConstant (t_fielddescriptor *fd)
 {
     PD_ASSERT (field_isFloatConstant (fd));
@@ -204,7 +188,7 @@ t_float field_convertValueToPosition (t_fielddescriptor *fd, t_float v)
     }
 }
 
-static t_float field_convertPositionToValue (t_fielddescriptor *fd, t_float k)
+t_float field_convertPositionToValue (t_fielddescriptor *fd, t_float k)
 {
     PD_ASSERT (field_isFloat (fd));
     PD_ASSERT (field_isVariable (fd));
@@ -219,42 +203,6 @@ static t_float field_convertPositionToValue (t_fielddescriptor *fd, t_float k)
         if (fd->fd_quantum != 0.0) { v = ((int)((v / fd->fd_quantum) + 0.5)) * fd->fd_quantum; }
         
         return (PD_CLAMP (v, m, n));
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_float field_getFloatAsPosition (t_fielddescriptor *fd, t_template *tmpl, t_word *w)
-{
-    if (fd->fd_type == DATA_FLOAT) {
-    //
-    if (fd->fd_isVariable) {
-        return (field_convertValueToPosition (fd, word_getFloat (tmpl, fd->fd_un.fd_variableName, w)));
-    } else {
-        return (fd->fd_un.fd_float);
-    }
-    //
-    }
-
-    PD_BUG; 
-    
-    return 0.0;
-}
-
-void field_setFloatAsPosition (t_fielddescriptor *fd, t_template *tmpl, t_word *w, t_float position)
-{
-    if (fd->fd_type == DATA_FLOAT) {
-    //
-    if (fd->fd_isVariable) {
-        word_setFloat (tmpl, fd->fd_un.fd_variableName, w, field_convertPositionToValue (fd, position));
-    } else {
-        fd->fd_un.fd_float = position;
-    }
-    //
-    } else {
-        PD_BUG;
     }
 }
 

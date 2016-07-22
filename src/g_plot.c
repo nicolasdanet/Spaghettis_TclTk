@@ -190,13 +190,13 @@ static int plot_readownertemplate(t_plot *x,
         return (-1);
     }
     array = *(t_array **)(((char *)data) + arrayonset);
-    *linewidthp = field_getFloat(&x->x_width, ownertemplate, data);
-    *xlocp = field_getFloat(&x->x_xloc, ownertemplate, data);
-    *xincp = field_getFloat(&x->x_xinc, ownertemplate, data);
-    *ylocp = field_getFloat(&x->x_yloc, ownertemplate, data);
-    *stylep = field_getFloat(&x->x_style, ownertemplate, data);
-    *visp = field_getFloat(&x->x_vis, ownertemplate, data);
-    *scalarvisp = field_getFloat(&x->x_scalarvis, ownertemplate, data);
+    *linewidthp = word_getFloatByField(&x->x_width, ownertemplate, data);
+    *xlocp = word_getFloatByField(&x->x_xloc, ownertemplate, data);
+    *xincp = word_getFloatByField(&x->x_xinc, ownertemplate, data);
+    *ylocp = word_getFloatByField(&x->x_yloc, ownertemplate, data);
+    *stylep = word_getFloatByField(&x->x_style, ownertemplate, data);
+    *visp = word_getFloatByField(&x->x_vis, ownertemplate, data);
+    *scalarvisp = word_getFloatByField(&x->x_scalarvis, ownertemplate, data);
     *elemtemplatesymp = elemtemplatesym;
     *arrayp = array;
     *xfield = &x->x_xpoints;
@@ -473,7 +473,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
             t_float yval = 0, wval = 0, xpix;
             int ixpix = 0;
                 /* draw the trace */
-            numbertocolor(field_getFloat(&x->x_outlinecolor, template,
+            numbertocolor(word_getFloatByField(&x->x_outlinecolor, template,
                 data), outline);
             if (wonset >= 0)
             {
@@ -689,12 +689,12 @@ static void array_motion(void *z, t_float dx, t_float dy, t_float modifier)
         {
             t_word *thisword = (t_word *)(((char *)array_motion_wp) +
                 i * array_motion_elemsize);
-            t_float xwas = field_getFloatAsPosition(array_motion_xfield, 
+            t_float xwas = word_getFloatByFieldAsPosition(array_motion_xfield, 
                 array_motion_template, thisword);
             t_float ywas = (array_motion_yfield ?
-                field_getFloatAsPosition(array_motion_yfield, 
+                word_getFloatByFieldAsPosition(array_motion_yfield, 
                     array_motion_template, thisword) : 0);
-            field_setFloatAsPosition(array_motion_xfield,
+            word_setFloatByFieldAsPosition(array_motion_xfield,
                 array_motion_template, thisword, xwas + dx);
             if (array_motion_yfield)
             {
@@ -705,13 +705,13 @@ static void array_motion(void *z, t_float dx, t_float dy, t_float modifier)
                         t_float newy = ywas + dy * array_motion_yperpix;
                         if (newy < 0)
                             newy = 0;
-                        field_setFloatAsPosition(array_motion_yfield,
+                        word_setFloatByFieldAsPosition(array_motion_yfield,
                             array_motion_template, thisword, newy);
                     }
                 }
                 else
                 {
-                    field_setFloatAsPosition(array_motion_yfield,
+                    word_setFloatByFieldAsPosition(array_motion_yfield,
                         array_motion_template, thisword,
                             ywas + dy * array_motion_yperpix);
                 }
@@ -724,7 +724,7 @@ static void array_motion(void *z, t_float dx, t_float dy, t_float modifier)
         int thisx = array_motion_initx + array_motion_xcumulative + 0.5, x2;
         int increment, i, nchange;
         t_float newy = array_motion_ycumulative,
-            oldy = field_getFloatAsPosition(array_motion_yfield,
+            oldy = word_getFloatByFieldAsPosition(array_motion_yfield,
                 array_motion_template,
                     (t_word *)(((char *)array_motion_wp) +
                         array_motion_elemsize * array_motion_lastx));
@@ -737,7 +737,7 @@ static void array_motion(void *z, t_float dx, t_float dy, t_float modifier)
 
         for (i = 0, x2 = thisx; i < nchange; i++, x2 += increment)
         {
-            field_setFloatAsPosition(array_motion_yfield,
+            word_setFloatByFieldAsPosition(array_motion_yfield,
                 array_motion_template,
                     (t_word *)(((char *)array_motion_wp) +
                         array_motion_elemsize * x2), newy);
@@ -852,7 +852,7 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
             array_motion_wp = (t_word *)((char *)array->a_vector);
             if (doit)
             {
-                field_setFloatAsPosition(yfield, elemtemplate,
+                word_setFloatByFieldAsPosition(yfield, elemtemplate,
                     (t_word *)(((char *)array->a_vector) + elemsize * xval),
                         canvas_positionToValueY(glist, ypix));
                 canvas_setMotionFunction(glist, 0, (t_motionfn)array_motion, xpix, ypix);
@@ -959,7 +959,7 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
                         {
                             array_motion_xfield = xfield;
                             array_motion_xcumulative = 
-                                field_getFloatAsPosition(xfield, array_motion_template,
+                                word_getFloatByFieldAsPosition(xfield, array_motion_template,
                                     (t_word *)(elem + i * elemsize));
                                 array_motion_wp = (t_word *)(elem + i * elemsize);
                             if (shift)
@@ -981,7 +981,7 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
                         {
                             array_motion_yfield = wfield;
                             array_motion_ycumulative = 
-                                field_getFloatAsPosition(wfield, array_motion_template,
+                                word_getFloatByFieldAsPosition(wfield, array_motion_template,
                                     (t_word *)(elem + i * elemsize));
                             array_motion_yperpix *= -array_motion_fatten;
                         }
@@ -989,7 +989,7 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
                         {
                             array_motion_yfield = yfield;
                             array_motion_ycumulative = 
-                                field_getFloatAsPosition(yfield, array_motion_template,
+                                word_getFloatByFieldAsPosition(yfield, array_motion_template,
                                     (t_word *)(elem + i * elemsize));
                                 /* *(t_float *)((elem + elemsize * i) + yonset); */
                         }
