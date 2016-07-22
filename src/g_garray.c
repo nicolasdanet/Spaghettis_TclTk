@@ -129,7 +129,7 @@ static void garray_check (t_garray *x)
     PD_ASSERT (template);
     PD_ASSERT (template_fieldIsArrayAndValid (template, sym_z));
     
-    array = word_getArray (template, sym_z, scalar_getData (x->x_scalar));
+    array = word_getArray (scalar_getData (x->x_scalar), template, sym_z);
     
     // struct float float y
      
@@ -315,7 +315,7 @@ t_array *garray_getArray (t_garray *x)
     
     #endif
     
-    return word_getArray (template, sym_z, scalar_getData (x->x_scalar));
+    return word_getArray (scalar_getData (x->x_scalar), template, sym_z);
 }
 
 int garray_getData (t_garray *x, int *size, t_word **w)
@@ -696,7 +696,7 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_symbol *type, t_f
     
     x = garray_makeObjectWithScalar (glist, name, sym___TEMPLATE__float__dash__array, save, hide);
 
-    array_resize (word_getArray (template, sym_z, scalar_getData (x->x_scalar)), n);
+    array_resize (word_getArray (scalar_getData (x->x_scalar), template, sym_z), n);
 
     word_setFloat (template, sym_style, scalar_getData (x->x_scalar), plot);
     word_setFloat (template, sym_linewidth, scalar_getData (x->x_scalar), 1);
