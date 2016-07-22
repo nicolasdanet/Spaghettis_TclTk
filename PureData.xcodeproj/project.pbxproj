@@ -244,6 +244,8 @@
 		373D6CC91C610AAF00106641 /* m_bindlist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_bindlist.c; path = src/m_bindlist.c; sourceTree = "<group>"; };
 		373F78241C7E097A0083D316 /* s_audioAPI.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_audioAPI.c; path = src/s_audioAPI.c; sourceTree = "<group>"; };
 		374A76321CF5FA81001A57EB /* g_serialize.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_serialize.c; path = src/g_serialize.c; sourceTree = "<group>"; };
+		37702F321D41E7FE00AE3FE2 /* g_scalar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_scalar.h; path = src/g_scalar.h; sourceTree = "<group>"; };
+		37702F511D41EA3300AE3FE2 /* g_canvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_canvas.h; path = src/g_canvas.h; sourceTree = "<group>"; };
 		3770FAA51CB1036A007C7E66 /* g_radio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_radio.c; path = src/g_radio.c; sourceTree = "<group>"; };
 		377899481CFED1B10056BE61 /* g_new.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_new.c; path = src/g_new.c; sourceTree = "<group>"; };
 		377899A41CFED7B60056BE61 /* g_message.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_message.c; path = src/g_message.c; sourceTree = "<group>"; };
@@ -780,6 +782,7 @@
 		379AE2E01C9E7B4600250ADD /* Canvas */ = {
 			isa = PBXGroup;
 			children = (
+				37702F511D41EA3300AE3FE2 /* g_canvas.h */,
 				37DFBC5C1D2937BA00FCDEEE /* g_guistub.c */,
 				37DFBC5B1D2937BA00FCDEEE /* g_guiconnect.c */,
 				370939441CC92BF300827F75 /* g_base.c */,
@@ -806,6 +809,7 @@
 		379AE2E41C9E7B8200250ADD /* Scalar */ = {
 			isa = PBXGroup;
 			children = (
+				37702F321D41E7FE00AE3FE2 /* g_scalar.h */,
 				37ED6A051D2CFD00007EC73D /* g_word.c */,
 				378971CF1C4F716700263434 /* g_scalar.c */,
 				37ED6A041D2CFD00007EC73D /* g_array.c */,
