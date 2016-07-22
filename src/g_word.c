@@ -82,7 +82,7 @@ void word_free (t_word *w, t_template *tmpl)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_float word_getFloat (t_template *tmpl, t_symbol *fieldName, t_word *w)
+t_float word_getFloat (t_word *w, t_template *tmpl, t_symbol *fieldName)
 {
     int i, type; t_symbol *dummy = NULL;
     
@@ -95,7 +95,7 @@ t_float word_getFloat (t_template *tmpl, t_symbol *fieldName, t_word *w)
     return 0.0;
 }
 
-void word_setFloat (t_template *tmpl, t_symbol *fieldName, t_word *w, t_float f)
+void word_setFloat (t_word *w, t_template *tmpl, t_symbol *fieldName, t_float f)
 {
     int i, type; t_symbol *dummy = NULL;
     
@@ -129,7 +129,7 @@ t_array *word_getArray (t_word *w, t_template *tmpl, t_symbol *fieldName)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol *word_getSymbol (t_template *tmpl, t_symbol *fieldName, t_word *w)
+t_symbol *word_getSymbol (t_word *w, t_template *tmpl, t_symbol *fieldName)
 {
     int i, type; t_symbol *dummy = NULL;
     
@@ -142,7 +142,7 @@ t_symbol *word_getSymbol (t_template *tmpl, t_symbol *fieldName, t_word *w)
     return &s_;
 }
 
-void word_setSymbol (t_template *tmpl, t_symbol *fieldName, t_word *w, t_symbol *s)
+void word_setSymbol (t_word *w, t_template *tmpl, t_symbol *fieldName, t_symbol *s)
 {
     int i, type;
     t_symbol *dummy = NULL;
@@ -164,7 +164,7 @@ t_float word_getFloatByField (t_fielddescriptor *fd, t_template *tmpl, t_word *w
 {
     if (fd->fd_type == DATA_FLOAT) {
     //
-    if (fd->fd_isVariable) { return (word_getFloat (tmpl, fd->fd_un.fd_variableName, w)); }
+    if (fd->fd_isVariable) { return (word_getFloat (w, tmpl, fd->fd_un.fd_variableName)); }
     else {
         return (fd->fd_un.fd_float);
     }
@@ -185,7 +185,7 @@ t_float word_getFloatByFieldAsPosition (t_fielddescriptor *fd, t_template *tmpl,
     if (fd->fd_type == DATA_FLOAT) {
     //
     if (fd->fd_isVariable) {
-        return (field_convertValueToPosition (fd, word_getFloat (tmpl, fd->fd_un.fd_variableName, w)));
+        return (field_convertValueToPosition (fd, word_getFloat (w, tmpl, fd->fd_un.fd_variableName)));
     } else {
         return (fd->fd_un.fd_float);
     }
@@ -202,7 +202,7 @@ void word_setFloatByFieldAsPosition (t_fielddescriptor *fd, t_template *tmpl, t_
     if (fd->fd_type == DATA_FLOAT) {
     //
     if (fd->fd_isVariable) {
-        word_setFloat (tmpl, fd->fd_un.fd_variableName, w, field_convertPositionToValue (fd, position));
+        word_setFloat (w, tmpl, fd->fd_un.fd_variableName, field_convertPositionToValue (fd, position));
     } else {
         fd->fd_un.fd_float = position;
     }

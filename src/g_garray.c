@@ -199,7 +199,7 @@ static void garray_updateGraphName (t_garray *x)
 void garray_resizeWithInteger (t_garray *x, int n)
 {
     t_template *template = template_findByIdentifier (scalar_getTemplateIdentifier (x->x_scalar));
-    int style = word_getFloat (template, sym_style, scalar_getData (x->x_scalar));
+    int style = word_getFloat (scalar_getData (x->x_scalar), template, sym_style);
     t_array *array = garray_getArray (x);
     
     PD_ASSERT (n > 0);
@@ -577,7 +577,7 @@ static void garray_functionSave (t_gobj *z, t_buffer *b)
 {
     t_garray *x = (t_garray *)z;
     t_template *template = template_findByIdentifier (scalar_getTemplateIdentifier (x->x_scalar));
-    int style = word_getFloat (template, sym_style, scalar_getData (x->x_scalar));    
+    int style = word_getFloat (scalar_getData (x->x_scalar), template, sym_style);    
     int flags = x->x_saveWithParent + (2 * style) + (8 * x->x_hideName);
     t_array *array = garray_getArray (x);
         
@@ -597,7 +597,7 @@ void garray_functionProperties (t_garray *x)
     t_template *template = template_findByIdentifier (scalar_getTemplateIdentifier (x->x_scalar));
     char t[PD_STRING] = { 0 };
     t_error err = PD_ERROR_NONE;
-    int style = word_getFloat (template, sym_style, scalar_getData (x->x_scalar));
+    int style = word_getFloat (scalar_getData (x->x_scalar), template, sym_style);
     int flags = x->x_saveWithParent + (2 * style);
     t_array *array = garray_getArray (x);
     
@@ -619,7 +619,7 @@ void garray_fromDialog (t_garray *x, t_symbol *name, t_float size, t_float flags
     int newSize          = PD_MAX (1.0, size);
     int save             = (((int)flags & 1) != 0);
     int newStyle         = (((int)flags & 6) >> 1);
-    int oldStyle         = (int)word_getFloat (template, sym_style, scalar_getData (x->x_scalar));
+    int oldStyle         = (int)word_getFloat (scalar_getData (x->x_scalar), template, sym_style);
 
     PD_ASSERT (newSize > 0);
     
@@ -640,7 +640,7 @@ void garray_fromDialog (t_garray *x, t_symbol *name, t_float size, t_float flags
     if (newSize != array_getSize (array)) { garray_resizeWithInteger (x, newSize); }
     
     if (newStyle != oldStyle) {
-        word_setFloat (template, sym_style, scalar_getData (x->x_scalar), (t_float)newStyle);
+        word_setFloat (scalar_getData (x->x_scalar), template, sym_style, (t_float)newStyle);
         garray_updateGraphBounds (x, newSize, newStyle); 
     }
 
@@ -698,8 +698,8 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_symbol *type, t_f
 
     array_resize (word_getArray (scalar_getData (x->x_scalar), template, sym_z), n);
 
-    word_setFloat (template, sym_style, scalar_getData (x->x_scalar), plot);
-    word_setFloat (template, sym_linewidth, scalar_getData (x->x_scalar), 1);
+    word_setFloat (scalar_getData (x->x_scalar), template, sym_style, plot);
+    word_setFloat (scalar_getData (x->x_scalar), template, sym_linewidth, 1);
 
     sym___hash__A->s_thing = NULL;
     pd_bind (cast_pd (x), sym___hash__A); 

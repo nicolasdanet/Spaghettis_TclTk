@@ -129,20 +129,19 @@ void            word_restore                            (t_word *w, t_template *
 void            word_free                               (t_word *w, t_template *tmpl);
 
 t_array         *word_getArray                          (t_word *w, t_template *tmpl, t_symbol *fieldName);
-t_symbol        *word_getSymbol                         (t_template *tmpl, t_symbol *fieldName, t_word *w);
+t_symbol        *word_getSymbol                         (t_word *w, t_template *tmpl, t_symbol *fieldName);
 
-t_float         word_getFloat                           (t_template *tmpl, t_symbol *fieldName, t_word *w);
+t_float         word_getFloat                           (t_word *w, t_template *tmpl, t_symbol *fieldName);
 
-void            word_setFloat                           (t_template *tmpl,
+void            word_setFloat                           (t_word *w, 
+                                                            t_template *tmpl,
                                                             t_symbol *fieldName,
-                                                            t_word *w,
                                                             t_float f);
 
-void            word_setSymbol                          (t_template *tmpl,
+void            word_setSymbol                          (t_word *w,
+                                                            t_template *tmpl,
                                                             t_symbol *fieldName,
-                                                            t_word *w,
                                                             t_symbol *s);
-
 
 t_float         word_getFloatByField                    (t_fielddescriptor *fd, t_template *tmpl, t_word *w);
 t_float         word_getFloatByFieldAsPosition          (t_fielddescriptor *fd, t_template *tmpl, t_word *w);
