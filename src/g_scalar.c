@@ -72,16 +72,6 @@ static void scalar_drawJob (t_gobj *z, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_float scalar_getCoordinateX (t_scalar *x)
-{
-    return word_getFloat (x->sc_vector, template_findByIdentifier (x->sc_templateIdentifier), sym_x);
-}
-
-static t_float scalar_getCoordinateY (t_scalar *x)
-{
-    return word_getFloat (x->sc_vector, template_findByIdentifier (x->sc_templateIdentifier), sym_y);
-}
-
 static void scalar_drawSelectRectangle (t_scalar *x, t_glist *glist, int isSelected)
 {
     if (isSelected) {
@@ -277,8 +267,8 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
     PD_ASSERT (template);
     
     t_glist *view = template_getFirstInstanceView (template);
-    t_float baseX = scalar_getCoordinateX (x);
-    t_float baseY = scalar_getCoordinateY (x);
+    t_float baseX = scalar_getFloat (x, sym_x);
+    t_float baseY = scalar_getFloat (x, sym_y);
 
     if (!view) {
     
@@ -391,8 +381,8 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     PD_ASSERT (template);
     
     t_glist *view = template_getFirstInstanceView (template);
-    t_float baseX = scalar_getCoordinateX (x);
-    t_float baseY = scalar_getCoordinateY (x);
+    t_float baseX = scalar_getFloat (x, sym_x);
+    t_float baseY = scalar_getFloat (x, sym_y);
 
     if (!view) {
         
@@ -526,6 +516,21 @@ t_word *scalar_getData (t_scalar *x)
 t_symbol *scalar_getTemplateIdentifier (t_scalar *x)
 {
     return x->sc_templateIdentifier;
+}
+
+t_array *scalar_getArray (t_scalar *x, t_symbol *fieldName)
+{
+    return word_getArray (x->sc_vector, template_findByIdentifier (x->sc_templateIdentifier), fieldName);
+}
+
+t_float scalar_getFloat (t_scalar *x, t_symbol *fieldName)
+{
+    return word_getFloat (x->sc_vector, template_findByIdentifier (x->sc_templateIdentifier), fieldName);
+}
+
+void scalar_setFloat (t_scalar *x, t_symbol *fieldName, t_float f)
+{
+    word_setFloat (x->sc_vector, template_findByIdentifier (x->sc_templateIdentifier), fieldName, f);  
 }
 
 // -----------------------------------------------------------------------------------------------------------

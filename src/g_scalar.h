@@ -132,7 +132,6 @@ t_array         *word_getArray                          (t_word *w, t_template *
 t_symbol        *word_getSymbol                         (t_word *w, t_template *tmpl, t_symbol *fieldName);
 
 t_float         word_getFloat                           (t_word *w, t_template *tmpl, t_symbol *fieldName);
-
 void            word_setFloat                           (t_word *w, 
                                                             t_template *tmpl,
                                                             t_symbol *fieldName,
@@ -157,6 +156,10 @@ void            word_setFloatByFieldAsPosition          (t_word *w,
 t_scalar        *scalar_new                             (t_glist *owner, t_symbol *templateIdentifier);
 t_word          *scalar_getData                         (t_scalar *x);
 t_symbol        *scalar_getTemplateIdentifier           (t_scalar *x);
+t_array         *scalar_getArray                        (t_scalar *x, t_symbol *fieldName);
+
+t_float         scalar_getFloat                         (t_scalar *x, t_symbol *fieldName);
+void            scalar_setFloat                         (t_scalar *x, t_symbol *fieldName, t_float f);
 
 void            scalar_redraw                           (t_scalar *x, t_glist *glist);
 void            scalar_redrawByPointer                  (t_gpointer *gp);

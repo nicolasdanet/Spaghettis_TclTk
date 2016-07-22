@@ -129,7 +129,7 @@ static void garray_check (t_garray *x)
     PD_ASSERT (template);
     PD_ASSERT (template_fieldIsArrayAndValid (template, sym_z));
     
-    array = word_getArray (scalar_getData (x->x_scalar), template, sym_z);
+    array = scalar_getArray (x->x_scalar, sym_z);
     
     // struct float float y
      
@@ -198,8 +198,7 @@ static void garray_updateGraphName (t_garray *x)
 
 void garray_resizeWithInteger (t_garray *x, int n)
 {
-    t_template *template = template_findByIdentifier (scalar_getTemplateIdentifier (x->x_scalar));
-    int style = word_getFloat (scalar_getData (x->x_scalar), template, sym_style);
+    int style = scalar_getFloat (x->x_scalar, sym_style);
     t_array *array = garray_getArray (x);
     
     PD_ASSERT (n > 0);
@@ -307,15 +306,13 @@ static void garray_setWithSineWaves (t_garray *x, t_symbol *s, int argc, t_atom 
 
 t_array *garray_getArray (t_garray *x)
 {
-    t_template *template = template_findByIdentifier (scalar_getTemplateIdentifier (x->x_scalar));
-    
     #if PD_WITH_DEBUG
     
     garray_check (x);
     
     #endif
     
-    return word_getArray (scalar_getData (x->x_scalar), template, sym_z);
+    return scalar_getArray (x->x_scalar, sym_z);
 }
 
 int garray_getData (t_garray *x, int *size, t_word **w)
@@ -576,8 +573,7 @@ static int garray_behaviorClicked (t_gobj *z,
 static void garray_functionSave (t_gobj *z, t_buffer *b)
 {
     t_garray *x = (t_garray *)z;
-    t_template *template = template_findByIdentifier (scalar_getTemplateIdentifier (x->x_scalar));
-    int style = word_getFloat (scalar_getData (x->x_scalar), template, sym_style);    
+    int style = scalar_getFloat (x->x_scalar, sym_style);    
     int flags = x->x_saveWithParent + (2 * style) + (8 * x->x_hideName);
     t_array *array = garray_getArray (x);
         
@@ -594,10 +590,9 @@ static void garray_functionSave (t_gobj *z, t_buffer *b)
 
 void garray_functionProperties (t_garray *x)
 {
-    t_template *template = template_findByIdentifier (scalar_getTemplateIdentifier (x->x_scalar));
     char t[PD_STRING] = { 0 };
     t_error err = PD_ERROR_NONE;
-    int style = word_getFloat (scalar_getData (x->x_scalar), template, sym_style);
+    int style = scalar_getFloat (x->x_scalar, sym_style);
     int flags = x->x_saveWithParent + (2 * style);
     t_array *array = garray_getArray (x);
     
@@ -614,12 +609,11 @@ void garray_functionProperties (t_garray *x)
 
 void garray_fromDialog (t_garray *x, t_symbol *name, t_float size, t_float flags)
 {
-    t_template *template = template_findByIdentifier (scalar_getTemplateIdentifier (x->x_scalar));
     t_symbol *newName    = dollar_fromHash (name);
     int newSize          = PD_MAX (1.0, size);
     int save             = (((int)flags & 1) != 0);
     int newStyle         = (((int)flags & 6) >> 1);
-    int oldStyle         = (int)word_getFloat (scalar_getData (x->x_scalar), template, sym_style);
+    int oldStyle         = (int)scalar_getFloat (x->x_scalar, sym_style);
 
     PD_ASSERT (newSize > 0);
     
@@ -640,7 +634,7 @@ void garray_fromDialog (t_garray *x, t_symbol *name, t_float size, t_float flags
     if (newSize != array_getSize (array)) { garray_resizeWithInteger (x, newSize); }
     
     if (newStyle != oldStyle) {
-        word_setFloat (scalar_getData (x->x_scalar), template, sym_style, (t_float)newStyle);
+        scalar_setFloat (x->x_scalar, sym_style, (t_float)newStyle);
         garray_updateGraphBounds (x, newSize, newStyle); 
     }
 
@@ -689,23 +683,23 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_symbol *type, t_f
     
     if (template_fieldIsArrayAndValid (template, sym_z)) {
     //
-    int save = (((int)flags & GARRAY_FLAG_SAVE) != 0);
-    int hide = (((int)flags & GARRAY_FLAG_HIDE) != 0);
-    int plot = PD_CLAMP ((((int)flags & GARRAY_FLAG_PLOT) >> 1), PLOT_POLYGONS, PLOT_CURVES);
-    int n    = (int)PD_MAX (1.0, size);
+    int save  = (((int)flags & GARRAY_FLAG_SAVE) != 0);
+    int hide  = (((int)flags & GARRAY_FLAG_HIDE) != 0);
+    int style = PD_CLAMP ((((int)flags & GARRAY_FLAG_PLOT) >> 1), PLOT_POLYGONS, PLOT_CURVES);
+    int n     = (int)PD_MAX (1.0, size);
     
     x = garray_makeObjectWithScalar (glist, name, sym___TEMPLATE__float__dash__array, save, hide);
 
-    array_resize (word_getArray (scalar_getData (x->x_scalar), template, sym_z), n);
+    array_resize (scalar_getArray (x->x_scalar, sym_z), n);
 
-    word_setFloat (scalar_getData (x->x_scalar), template, sym_style, plot);
-    word_setFloat (scalar_getData (x->x_scalar), template, sym_linewidth, 1);
+    scalar_setFloat (x->x_scalar, sym_style, style);
+    scalar_setFloat (x->x_scalar, sym_linewidth, 1);
 
     sym___hash__A->s_thing = NULL;
     pd_bind (cast_pd (x), sym___hash__A); 
 
     garray_redraw (x);
-    garray_updateGraphBounds (x, n, plot);
+    garray_updateGraphBounds (x, n, style);
     garray_updateGraphName (x);
     dsp_update();
     //
