@@ -143,7 +143,7 @@ void            word_setSymbol                          (t_word *w,
                                                             t_symbol *fieldName,
                                                             t_symbol *s);
 
-t_float         word_getFloatByField                    (t_fielddescriptor *fd, t_template *tmpl, t_word *w);
+t_float         word_getFloatByField                    (t_word *w, t_template *tmpl, t_fielddescriptor *fd);
 t_float         word_getFloatByFieldAsPosition          (t_fielddescriptor *fd, t_template *tmpl, t_word *w);
 void            word_setFloatByFieldAsPosition          (t_fielddescriptor *fd,
                                                             t_template *tmpl,

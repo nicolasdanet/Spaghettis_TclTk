@@ -190,13 +190,13 @@ static int plot_readownertemplate(t_plot *x,
         return (-1);
     }
     array = *(t_array **)(((char *)data) + arrayonset);
-    *linewidthp = word_getFloatByField(&x->x_width, ownertemplate, data);
-    *xlocp = word_getFloatByField(&x->x_xloc, ownertemplate, data);
-    *xincp = word_getFloatByField(&x->x_xinc, ownertemplate, data);
-    *ylocp = word_getFloatByField(&x->x_yloc, ownertemplate, data);
-    *stylep = word_getFloatByField(&x->x_style, ownertemplate, data);
-    *visp = word_getFloatByField(&x->x_vis, ownertemplate, data);
-    *scalarvisp = word_getFloatByField(&x->x_scalarvis, ownertemplate, data);
+    *linewidthp = word_getFloatByField(data, ownertemplate, &x->x_width);
+    *xlocp = word_getFloatByField(data, ownertemplate, &x->x_xloc);
+    *xincp = word_getFloatByField(data, ownertemplate, &x->x_xinc);
+    *ylocp = word_getFloatByField(data, ownertemplate, &x->x_yloc);
+    *stylep = word_getFloatByField(data, ownertemplate, &x->x_style);
+    *visp = word_getFloatByField(data, ownertemplate, &x->x_vis);
+    *scalarvisp = word_getFloatByField(data, ownertemplate, &x->x_scalarvis);
     *elemtemplatesymp = elemtemplatesym;
     *arrayp = array;
     *xfield = &x->x_xpoints;
@@ -473,8 +473,9 @@ static void plot_vis(t_gobj *z, t_glist *glist,
             t_float yval = 0, wval = 0, xpix;
             int ixpix = 0;
                 /* draw the trace */
-            numbertocolor(word_getFloatByField(&x->x_outlinecolor, template,
-                data), outline);
+            numbertocolor(word_getFloatByField(data, 
+                template, 
+                &x->x_outlinecolor), outline);
             if (wonset >= 0)
             {
                     /* found "w" field which controls linewidth.  The trace is

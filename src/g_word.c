@@ -160,7 +160,7 @@ void word_setSymbol (t_word *w, t_template *tmpl, t_symbol *fieldName, t_symbol 
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_float word_getFloatByField (t_fielddescriptor *fd, t_template *tmpl, t_word *w)
+t_float word_getFloatByField (t_word *w, t_template *tmpl, t_fielddescriptor *fd)
 {
     if (fd->fd_type == DATA_FLOAT) {
     //

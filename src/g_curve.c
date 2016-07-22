@@ -119,7 +119,7 @@ static void curve_getrect(t_gobj *z, t_glist *glist,
     int i, n = x->x_npoints;
     t_fielddescriptor *f = x->x_vec;
     int x1 = PD_INT_MAX, x2 = -PD_INT_MAX, y1 = PD_INT_MAX, y2 = -PD_INT_MAX;
-    if (!word_getFloatByField(&x->x_vis, template, data) ||
+    if (!word_getFloatByField(data, template, &x->x_vis) ||
         (x->x_flags & CURVE_NO_MOUSE))
     {
         *xp1 = *yp1 = PD_INT_MAX;
@@ -202,14 +202,14 @@ static void curve_vis(t_gobj *z, t_glist *glist,
     t_fielddescriptor *f = x->x_vec;
     
         /* see comment in plot_vis() */
-    if (vis && !word_getFloatByField(&x->x_vis, template, data))
+    if (vis && !word_getFloatByField(data, template, &x->x_vis))
         return;
     if (vis)
     {
         if (n > 1)
         {
             int flags = x->x_flags, closed = (flags & CURVE_CLOSED);
-            t_float width = word_getFloatByField(&x->x_width, template, data);
+            t_float width = word_getFloatByField(data, template, &x->x_width);
             char outline[20], fill[20];
             int pix[200];
             if (n > 100)
@@ -227,12 +227,12 @@ static void curve_vis(t_gobj *z, t_glist *glist,
             }
             if (width < 1) width = 1;
             numbertocolor(
-                word_getFloatByField(&x->x_outlinecolor, template, data),
+                word_getFloatByField(data, template, &x->x_outlinecolor),
                 outline);
             if (flags & CURVE_CLOSED)
             {
                 numbertocolor(
-                    word_getFloatByField(&x->x_fillcolor, template, data),
+                    word_getFloatByField(data, template, &x->x_fillcolor),
                     fill);
                 sys_vGui(".x%lx.c create polygon\\\n",
                     canvas_getView(glist));
@@ -315,7 +315,7 @@ static int curve_click(t_gobj *z, t_glist *glist,
     int bestn = -1;
     int besterror = PD_INT_MAX;
     t_fielddescriptor *f;
-    if (!word_getFloatByField(&x->x_vis, template, data))
+    if (!word_getFloatByField(data, template, &x->x_vis))
         return (0);
     for (i = 0, f = x->x_vec; i < n; i++, f += 2)
     {
