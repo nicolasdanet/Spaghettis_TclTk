@@ -180,7 +180,7 @@ t_float word_getFloatByField (t_word *w, t_template *tmpl, t_fielddescriptor *fd
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_float word_getFloatByFieldAsPosition (t_fielddescriptor *fd, t_template *tmpl, t_word *w)
+t_float word_getFloatByFieldAsPosition (t_word *w, t_template *tmpl, t_fielddescriptor *fd)
 {
     if (fd->fd_type == DATA_FLOAT) {
     //

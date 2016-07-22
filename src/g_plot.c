@@ -690,11 +690,15 @@ static void array_motion(void *z, t_float dx, t_float dy, t_float modifier)
         {
             t_word *thisword = (t_word *)(((char *)array_motion_wp) +
                 i * array_motion_elemsize);
-            t_float xwas = word_getFloatByFieldAsPosition(array_motion_xfield, 
-                array_motion_template, thisword);
+            t_float xwas = word_getFloatByFieldAsPosition(
+                thisword,
+                array_motion_template,
+                array_motion_xfield);
             t_float ywas = (array_motion_yfield ?
-                word_getFloatByFieldAsPosition(array_motion_yfield, 
-                    array_motion_template, thisword) : 0);
+                word_getFloatByFieldAsPosition(
+                    thisword, 
+                    array_motion_template,
+                    array_motion_yfield) : 0);
             word_setFloatByFieldAsPosition(array_motion_xfield,
                 array_motion_template, thisword, xwas + dx);
             if (array_motion_yfield)
@@ -725,10 +729,10 @@ static void array_motion(void *z, t_float dx, t_float dy, t_float modifier)
         int thisx = array_motion_initx + array_motion_xcumulative + 0.5, x2;
         int increment, i, nchange;
         t_float newy = array_motion_ycumulative,
-            oldy = word_getFloatByFieldAsPosition(array_motion_yfield,
+            oldy = word_getFloatByFieldAsPosition(
+                (t_word *)(((char *)array_motion_wp) + array_motion_elemsize * array_motion_lastx),
                 array_motion_template,
-                    (t_word *)(((char *)array_motion_wp) +
-                        array_motion_elemsize * array_motion_lastx));
+                array_motion_yfield);
         t_float ydiff = newy - oldy;
         if (thisx < 0) thisx = 0;
         else if (thisx >= array_motion_npoints)
@@ -960,8 +964,10 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
                         {
                             array_motion_xfield = xfield;
                             array_motion_xcumulative = 
-                                word_getFloatByFieldAsPosition(xfield, array_motion_template,
-                                    (t_word *)(elem + i * elemsize));
+                                word_getFloatByFieldAsPosition(
+                                    (t_word *)(elem + i * elemsize),
+                                    array_motion_template,
+                                    xfield);
                                 array_motion_wp = (t_word *)(elem + i * elemsize);
                             if (shift)
                                 array_motion_npoints = array->a_size - i;
@@ -982,16 +988,20 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
                         {
                             array_motion_yfield = wfield;
                             array_motion_ycumulative = 
-                                word_getFloatByFieldAsPosition(wfield, array_motion_template,
-                                    (t_word *)(elem + i * elemsize));
+                                word_getFloatByFieldAsPosition(
+                                    (t_word *)(elem + i * elemsize),
+                                    array_motion_template,
+                                    wfield);
                             array_motion_yperpix *= -array_motion_fatten;
                         }
                         else if (yonset >= 0)
                         {
                             array_motion_yfield = yfield;
                             array_motion_ycumulative = 
-                                word_getFloatByFieldAsPosition(yfield, array_motion_template,
-                                    (t_word *)(elem + i * elemsize));
+                                word_getFloatByFieldAsPosition(
+                                    (t_word *)(elem + i * elemsize),
+                                    array_motion_template,
+                                    yfield);
                                 /* *(t_float *)((elem + elemsize * i) + yonset); */
                         }
                         else

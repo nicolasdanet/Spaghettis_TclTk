@@ -159,9 +159,9 @@ static void drawnumber_getrect(t_gobj *z, t_glist *glist,
         return;
     }
     xloc = canvas_valueToPositionX(glist,
-        basex + word_getFloatByFieldAsPosition(&x->x_xloc, template, data));
+        basex + word_getFloatByFieldAsPosition(data, template, &x->x_xloc));
     yloc = canvas_valueToPositionY(glist,
-        basey + word_getFloatByFieldAsPosition(&x->x_yloc, template, data));
+        basey + word_getFloatByFieldAsPosition(data, template, &x->x_yloc));
     font = canvas_getFontSize(glist);
     fontwidth = font_getHostFontWidth(font);
         fontheight = font_getHostFontHeight(font);
@@ -218,9 +218,9 @@ static void drawnumber_vis(t_gobj *z, t_glist *glist,
     {
         t_atom at;
         int xloc = canvas_valueToPositionX(glist,
-            basex + word_getFloatByFieldAsPosition(&x->x_xloc, template, data));
+            basex + word_getFloatByFieldAsPosition(data, template, &x->x_xloc));
         int yloc = canvas_valueToPositionY(glist,
-            basey + word_getFloatByFieldAsPosition(&x->x_yloc, template, data));
+            basey + word_getFloatByFieldAsPosition(data, template, &x->x_yloc));
         char colorstring[20], buf[DRAWNUMBER_BUFSIZE];
         numbertocolor(word_getFloatByField(data, template, &x->x_color),
             colorstring);

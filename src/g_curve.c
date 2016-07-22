@@ -129,9 +129,9 @@ static void curve_getrect(t_gobj *z, t_glist *glist,
     for (i = 0, f = x->x_vec; i < n; i++, f += 2)
     {
         int xloc = canvas_valueToPositionX(glist,
-            basex + word_getFloatByFieldAsPosition(f, template, data));
+            basex + word_getFloatByFieldAsPosition (data, template, f));
         int yloc = canvas_valueToPositionY(glist,
-            basey + word_getFloatByFieldAsPosition(f+1, template, data));
+            basey + word_getFloatByFieldAsPosition(data, template, f+1));
         if (xloc < x1) x1 = xloc;
         if (xloc > x2) x2 = xloc;
         if (yloc < y1) y1 = yloc;
@@ -221,9 +221,9 @@ static void curve_vis(t_gobj *z, t_glist *glist,
             for (i = 0, f = x->x_vec; i < n; i++, f += 2)
             {
                 pix[2*i] = canvas_valueToPositionX(glist,
-                    basex + word_getFloatByFieldAsPosition(f, template, data));
+                    basex + word_getFloatByFieldAsPosition(data, template, f));
                 pix[2*i+1] = canvas_valueToPositionY(glist,
-                    basey + word_getFloatByFieldAsPosition(f+1, template, data));
+                    basey + word_getFloatByFieldAsPosition(data, template, f+1));
             }
             if (width < 1) width = 1;
             numbertocolor(
@@ -319,9 +319,9 @@ static int curve_click(t_gobj *z, t_glist *glist,
         return (0);
     for (i = 0, f = x->x_vec; i < n; i++, f += 2)
     {
-        int xval = word_getFloatByFieldAsPosition(f, template, data),
+        int xval = word_getFloatByFieldAsPosition(data, template, f),
             xloc = canvas_valueToPositionX(glist, basex + xval);
-        int yval = word_getFloatByFieldAsPosition(f+1, template, data),
+        int yval = word_getFloatByFieldAsPosition(data, template, f+1),
             yloc = canvas_valueToPositionY(glist, basey + yval);
         int xerr = xloc - xpix, yerr = yloc - ypix;
         if (!field_isVariable (f) && !field_isVariable (f+1))
