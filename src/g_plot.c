@@ -473,9 +473,8 @@ static void plot_vis(t_gobj *z, t_glist *glist,
             t_float yval = 0, wval = 0, xpix;
             int ixpix = 0;
                 /* draw the trace */
-            numbertocolor(word_getFloatByField(data, 
-                template, 
-                &x->x_outlinecolor), outline);
+            color_toEncodedString(outline, 20,
+                color_withDigits (word_getFloatByField (data, template, &x->x_outlinecolor)));
             if (wonset >= 0)
             {
                     /* found "w" field which controls linewidth.  The trace is

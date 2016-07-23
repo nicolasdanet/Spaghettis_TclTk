@@ -258,14 +258,12 @@ static void curve_vis (t_gobj *z, t_glist *glist,
                     basey + word_getFloatByFieldAsPosition(data, template, f+1));
             }
             if (width < 1) width = 1;
-            numbertocolor(
-                word_getFloatByField(data, template, &x->x_outlinecolor),
-                outline);
+            color_toEncodedString(outline, 20,
+                color_withDigits (word_getFloatByField(data, template, &x->x_outlinecolor)));
             if (flags & CURVE_CLOSED)
             {
-                numbertocolor(
-                    word_getFloatByField(data, template, &x->x_fillcolor),
-                    fill);
+                color_toEncodedString(fill, 20,
+                    color_withDigits (word_getFloatByField(data, template, &x->x_fillcolor)));
                 sys_vGui(".x%lx.c create polygon\\\n",
                     canvas_getView(glist));
             }

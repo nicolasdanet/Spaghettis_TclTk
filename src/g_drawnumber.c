@@ -222,8 +222,8 @@ static void drawnumber_vis(t_gobj *z, t_glist *glist,
         int yloc = canvas_valueToPositionY(glist,
             basey + word_getFloatByFieldAsPosition(data, template, &x->x_yloc));
         char colorstring[20], buf[DRAWNUMBER_BUFSIZE];
-        numbertocolor(word_getFloatByField(data, template, &x->x_color),
-            colorstring);
+        color_toEncodedString(colorstring, 20,
+            color_withDigits (word_getFloatByField(data, template, &x->x_color)));
         drawnumber_getbuf(x, data, template, buf);
         sys_vGui(".x%lx.c create text %d %d -anchor nw -fill %s -text {%s}",
                 canvas_getView(glist), xloc, yloc, colorstring, buf);

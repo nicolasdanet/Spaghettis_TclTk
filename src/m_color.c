@@ -22,6 +22,15 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static unsigned int color_digitTo8BitsComponent (int n)
+{
+    unsigned int c = PD_CLAMP (n, 0, 8); return PD_MIN ((c << 5), 255);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_color color_checked (t_color color)
 {
     return (color & COLOR_MASK);
@@ -41,12 +50,19 @@ t_color color_withRGB (int argc, t_atom *argv)
     g = PD_CLAMP (g, 0, 255);
     b = PD_CLAMP (b, 0, 255);
         
-    return (int)(COLOR_MASK & ((r << 16) | (g << 8) | b));
+    return (t_color)(COLOR_MASK & ((r << 16) | (g << 8) | b));
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+t_color color_withDigits (int c)
+{
+    int n = PD_CLAMP (c, 0, 999);
+    
+    unsigned int r = color_digitTo8BitsComponent (n / 100);
+    unsigned int g = color_digitTo8BitsComponent ((n / 10) % 10);
+    unsigned int b = color_digitTo8BitsComponent (n % 10);
+    
+    return (t_color)(COLOR_MASK & ((r << 16) | (g << 8) | b));
+}
 
 t_color color_withEncodedSymbol (t_symbol *s)
 {
@@ -55,33 +71,20 @@ t_color color_withEncodedSymbol (t_symbol *s)
     return 0;
 }
 
-t_symbol *color_toEncodedSymbol (t_color color)
-{
-    char t[PD_STRING] = { 0 }; string_sprintf (t, PD_STRING, "#%06x", color);
-    
-    return gensym (t);
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int rangecolor (int n)    /* 0 to 9 in 5 steps */
+t_symbol *color_toEncodedSymbol (t_color color)
 {
-    int n2 = (n == 9 ? 8 : n);               /* 0 to 8 */
-    int ret = (n2 << 5);        /* 0 to 256 in 9 steps */
-    if (ret > 255) ret = 255;
-    return (ret);
+    char t[PD_STRING] = { 0 }; color_toEncodedString (t, PD_STRING, color);
+    
+    return gensym (t);
 }
 
-void numbertocolor (int n, char *s)
+t_error color_toEncodedString (char *dest, size_t size, t_color color)
 {
-    int red, blue, green;
-    if (n < 0) n = 0;
-    red = n / 100;
-    blue = ((n / 10) % 10);
-    green = n % 10;
-    sprintf (s, "#%2.2x%2.2x%2.2x", rangecolor(red), rangecolor(blue), rangecolor(green));
+    return string_sprintf (dest, size, "#%06x", color_checked (color));
 }
 
 // -----------------------------------------------------------------------------------------------------------
