@@ -79,7 +79,7 @@ static void *gtemplate_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_symbol *name = atom_getSymbolAtIndex (0, argc, argv);
     
-    if (name == &s_) { return (gtemplate_newEmpty ());}
+    if (name == &s_) { return (gtemplate_newEmpty()); }
     else {
     //
     t_symbol *templateIdentifier = utils_makeBindSymbol (name);

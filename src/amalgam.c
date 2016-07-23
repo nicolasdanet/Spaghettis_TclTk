@@ -96,9 +96,10 @@
 #include "g_field.c"
 #include "g_template.c"
 #include "g_gtemplate.c"
-#include "g_curve.c"
+#include "g_drawpolygon.c"
 #include "g_plot.c"
 #include "g_drawnumber.c"
+#include "g_traversal.c"
 #include "g_paint.c"
 #include "g_serialize.c"
 
