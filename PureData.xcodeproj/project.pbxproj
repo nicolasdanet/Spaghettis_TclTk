@@ -12,6 +12,7 @@
 		370939461CC92BF300827F75 /* g_base.c in Sources */ = {isa = PBXBuildFile; fileRef = 370939441CC92BF300827F75 /* g_base.c */; };
 		3709BE1E1D016C9400D9B48C /* m_eval.c in Sources */ = {isa = PBXBuildFile; fileRef = 3709BE1D1D016C9400D9B48C /* m_eval.c */; };
 		3709BE591D01726800D9B48C /* m_parse.c in Sources */ = {isa = PBXBuildFile; fileRef = 3709BE581D01726800D9B48C /* m_parse.c */; };
+		37128AF81D43640300EFB4FC /* m_color.c in Sources */ = {isa = PBXBuildFile; fileRef = 37128AF71D43640300EFB4FC /* m_color.c */; };
 		371430B11D0D46BC00E68D11 /* g_paint.c in Sources */ = {isa = PBXBuildFile; fileRef = 371430B01D0D46BC00E68D11 /* g_paint.c */; };
 		3716554F1BA3452E00ABDE22 /* pa_allocation.c in Sources */ = {isa = PBXBuildFile; fileRef = 3716554E1BA3452E00ABDE22 /* pa_allocation.c */; };
 		371655511BA3453500ABDE22 /* pa_converters.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655501BA3453500ABDE22 /* pa_converters.c */; };
@@ -209,6 +210,8 @@
 		370939441CC92BF300827F75 /* g_base.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_base.c; path = src/g_base.c; sourceTree = "<group>"; };
 		3709BE1D1D016C9400D9B48C /* m_eval.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_eval.c; path = src/m_eval.c; sourceTree = "<group>"; };
 		3709BE581D01726800D9B48C /* m_parse.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_parse.c; path = src/m_parse.c; sourceTree = "<group>"; };
+		37128AF71D43640300EFB4FC /* m_color.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_color.c; path = src/m_color.c; sourceTree = "<group>"; };
+		37128B5F1D43691300EFB4FC /* m_color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_color.h; path = src/m_color.h; sourceTree = "<group>"; };
 		371430B01D0D46BC00E68D11 /* g_paint.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_paint.c; path = src/g_paint.c; sourceTree = "<group>"; };
 		3716554E1BA3452E00ABDE22 /* pa_allocation.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_allocation.c; path = portaudio/src/common/pa_allocation.c; sourceTree = "<group>"; };
 		371655501BA3453500ABDE22 /* pa_converters.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_converters.c; path = portaudio/src/common/pa_converters.c; sourceTree = "<group>"; };
@@ -593,6 +596,7 @@
 				378971E31C4F716700263434 /* m_core.h */,
 				378971DD1C4F716700263434 /* m_macros.h */,
 				378971D71C4F716700263434 /* m_alloca.h */,
+				37128B5F1D43691300EFB4FC /* m_color.h */,
 				3791F2E11CDF064000F7481C /* m_symbols.h */,
 				3791F2E01CDF064000F7481C /* m_symbols.c */,
 				37F182091C70DBF8003D1A3A /* m_instance.c */,
@@ -609,6 +613,7 @@
 				378971DC1C4F716700263434 /* m_global.c */,
 				37A7BBF21D030B45000C7AB5 /* m_string.c */,
 				378971E61C4F716700263434 /* m_utils.c */,
+				37128AF71D43640300EFB4FC /* m_color.c */,
 				378971DB1C4F716700263434 /* m_dollar.c */,
 				373D6CC91C610AAF00106641 /* m_bindlist.c */,
 			);
@@ -1124,6 +1129,7 @@
 				379C1BB01D37954000C4D92C /* g_drawpolygon.c in Sources */,
 				379C1BCB1D37961E00C4D92C /* g_field.c in Sources */,
 				379C1BE01D3796B800C4D92C /* g_gtemplate.c in Sources */,
+				37128AF81D43640300EFB4FC /* m_color.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

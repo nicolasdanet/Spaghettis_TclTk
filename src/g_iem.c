@@ -40,26 +40,6 @@ static t_symbol *iemgui_expandDollar (t_iem *iem, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int iemgui_colorRGB (int argc, t_atom *argv)
-{
-    unsigned int r = (unsigned int)atom_getFloatAtIndex (0, argc, argv);
-    unsigned int g = (unsigned int)atom_getFloatAtIndex (1, argc, argv);
-    unsigned int b = (unsigned int)atom_getFloatAtIndex (2, argc, argv);
-    
-    r = PD_CLAMP (r, 0, 255);
-    g = PD_CLAMP (g, 0, 255);
-    b = PD_CLAMP (b, 0, 255);
-        
-    return (int)(IEM_COLOR_MASK & ((r << 16) | (g << 8) | b));
-}
-
-static t_symbol *iemgui_colorEncode (int color)
-{
-    char t[PD_STRING] = { 0 };
-    string_sprintf (t, PD_STRING, "#%06x", color);
-    return gensym (t);
-}
-
 /* Ensure compatibility with the original serialization format. */
 /* By the way legacy predefined colors are not supported. */
 /* Only the 6 MSB are kept for each component. */
@@ -68,11 +48,11 @@ static t_symbol *iemgui_colorEncode (int color)
 // RRRRRR..GGGGGG..BBBBBB..
 // RRRRRRGGGGGGBBBBBB
 
-static int iemgui_colorDecodeFromInteger (int color)
+static t_color iemgui_colorDecodeFromInteger (int color)
 {
     PD_ASSERT (color < 0);
     
-    int n = 0;
+    t_color n = 0;
     
     color = (-1 -color);
     
@@ -83,13 +63,10 @@ static int iemgui_colorDecodeFromInteger (int color)
     return n;
 }
 
-static int iemgui_colorDecode (t_atom *a)
+static t_color iemgui_colorDecode (t_atom *a)
 {
     if (IS_FLOAT (a))  { return iemgui_colorDecodeFromInteger ((int)GET_FLOAT (a)); }
-    if (IS_SYMBOL (a)) {
-        t_symbol *s = atom_getSymbol (a);
-        if (s->s_name[0] == '#') { return strtol (s->s_name + 1, NULL, 16); }
-    }
+    if (IS_SYMBOL (a)) { return color_withEncodedSymbol (atom_getSymbol (a)); }
     
     PD_BUG;
     
@@ -155,19 +132,19 @@ static void iemgui_fetchUnexpandedNames (t_iem *iem, t_iemnames *s)
 
 void iemgui_serializeColors (t_iem *iem, t_iemcolors *c)
 {
-    c->c_symColorBackground = iemgui_colorEncode (iem->iem_colorBackground);
-    c->c_symColorForeground = iemgui_colorEncode (iem->iem_colorForeground);
-    c->c_symColorLabel      = iemgui_colorEncode (iem->iem_colorLabel);
+    c->c_symColorBackground = color_toEncodedSymbol (iem->iem_colorBackground);
+    c->c_symColorForeground = color_toEncodedSymbol (iem->iem_colorForeground);
+    c->c_symColorLabel      = color_toEncodedSymbol (iem->iem_colorLabel);
 }
 
 void iemgui_deserializeColors (t_iem *iem, t_atom *background, t_atom *foreground, t_atom *label)
 {
-    iem->iem_colorForeground = IEM_COLOR_FOREGROUND;
-    iem->iem_colorLabel      = IEM_COLOR_LABEL;
+    iem->iem_colorForeground = COLOR_IEM_FOREGROUND;
+    iem->iem_colorLabel      = COLOR_IEM_LABEL;
     
-    if (pd_class (iem) == panel_class) { iem->iem_colorBackground = IEM_COLOR_BACKGROUND_DARK; }
+    if (pd_class (iem) == panel_class) { iem->iem_colorBackground = COLOR_IEM_BACKGROUND_DARK; }
     else {
-        iem->iem_colorBackground = IEM_COLOR_BACKGROUND_LIGHT;
+        iem->iem_colorBackground = COLOR_IEM_BACKGROUND_LIGHT;
     }
     
     if (background) { iem->iem_colorBackground = iemgui_colorDecode (background); }
@@ -305,21 +282,21 @@ void iemgui_setLabelFont (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *ar
 
 void iemgui_setBackgroundColor (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
 {
-    iem->iem_colorBackground = iemgui_colorRGB (argc, argv);
+    iem->iem_colorBackground = color_withRGB (argc, argv);
     
     if (canvas_isMapped (iem->iem_owner)) { (*iem->iem_draw) (x, iem->iem_owner, IEM_DRAW_CONFIG); }
 }
 
 void iemgui_setForegroundColor (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
 {
-    iem->iem_colorForeground = iemgui_colorRGB (argc, argv);
+    iem->iem_colorForeground = color_withRGB (argc, argv);
     
     if (canvas_isMapped (iem->iem_owner)) { (*iem->iem_draw) (x, iem->iem_owner, IEM_DRAW_CONFIG); }
 }
 
 void iemgui_setLabelColor (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
 {
-    iem->iem_colorLabel = iemgui_colorRGB (argc, argv);
+    iem->iem_colorLabel = color_withRGB (argc, argv);
     
     if (canvas_isMapped (iem->iem_owner)) { (*iem->iem_draw) (x, iem->iem_owner, IEM_DRAW_CONFIG); }
 }
@@ -477,9 +454,9 @@ void iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
     int labelX                  = (int)atom_getFloatAtIndex (10, argc, argv);
     int labelY                  = (int)atom_getFloatAtIndex (11, argc, argv);
     int fontSize                = (int)atom_getFloatAtIndex (12, argc, argv);
-    int backgroundColor         = (int)atom_getFloatAtIndex (13, argc, argv);
-    int foregroundColor         = (int)atom_getFloatAtIndex (14, argc, argv);
-    int labelColor              = (int)atom_getFloatAtIndex (15, argc, argv);
+    t_color backgroundColor     = (int)atom_getFloatAtIndex (13, argc, argv);
+    t_color foregroundColor     = (int)atom_getFloatAtIndex (14, argc, argv);
+    t_color labelColor          = (int)atom_getFloatAtIndex (15, argc, argv);
     int canSend                 = 1;
     int canReceive              = 1;
 
@@ -510,9 +487,9 @@ void iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
     iem->iem_labelX             = labelX;
     iem->iem_labelY             = labelY;
     iem->iem_fontSize           = PD_MAX (fontSize, IEM_MINIMUM_FONTSIZE);
-    iem->iem_colorForeground    = IEM_COLOR_MASK & foregroundColor;
-    iem->iem_colorBackground    = IEM_COLOR_MASK & backgroundColor;
-    iem->iem_colorLabel         = IEM_COLOR_MASK & labelColor;
+    iem->iem_colorForeground    = color_checked (foregroundColor);
+    iem->iem_colorBackground    = color_checked (backgroundColor);
+    iem->iem_colorLabel         = color_checked (labelColor);
     iem->iem_send               = s1;
     iem->iem_label              = s3;
     

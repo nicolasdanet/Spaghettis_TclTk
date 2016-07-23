@@ -29,16 +29,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IEM_COLOR_MASK                  0xffffff
-#define IEM_COLOR_BACKGROUND_DARK       0xcccccc        // Grey.
-#define IEM_COLOR_BACKGROUND_LIGHT      0xffffff        // White.
-#define IEM_COLOR_FOREGROUND            0x000000
-#define IEM_COLOR_LABEL                 0x000000
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 #define IEM_DEFAULT_SIZE                15
 #define IEM_DEFAULT_FONTSIZE            10
 
@@ -122,9 +112,9 @@ typedef struct _iem {
     int         iem_labelX;
     int         iem_labelY;
     t_fontsize  iem_fontSize;
-    int         iem_colorBackground;
-    int         iem_colorForeground;
-    int         iem_colorLabel;
+    t_color     iem_colorBackground;
+    t_color     iem_colorForeground;
+    t_color     iem_colorLabel;
     int         iem_cacheIndex;
     t_symbol    *iem_send;
     t_symbol    *iem_receive;

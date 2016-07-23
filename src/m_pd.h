@@ -396,6 +396,7 @@ typedef float                   t_sample;
 #pragma mark -
 
 typedef int                     t_error;
+typedef int                     t_color;
 typedef int                     t_fontsize;
 typedef unsigned long           t_unique;
 

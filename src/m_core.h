@@ -206,7 +206,6 @@ t_error     string_sprintf                              (char *dest, size_t size
 t_error     string_addSprintf                           (char *dest, size_t size, const char *format, ...);
 
 int         string_containsAtStart                      (const char *s, const char *isContained);
-void        numbertocolor                               (int n, char *s);
 
 int         string_indexOfFirstOccurrenceUntil          (char *s, const char *c, size_t n);
 int         string_indexOfFirstOccurrenceFrom           (char *s, const char *c, size_t n);
@@ -380,6 +379,7 @@ void        guistub_destroyWithKey                      (void *key);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#include "m_color.h"
 #include "m_symbols.h"
 
 // -----------------------------------------------------------------------------------------------------------
