@@ -14,82 +14,99 @@
 #include "m_macros.h"
 #include "g_graphics.h"
 
-/* ---------------- curves and polygons (joined segments) ---------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-/*
-curves belong to templates and describe how the data in the template are to
-be drawn.  The coordinates of the curve (and other display features) can
-be attached to fields in the template.
-*/
+#define CURVE_CLOSED        1
+#define CURVE_BEZIER        2
+#define CURVE_NO_MOUSE      4
 
-t_class *curve_class;
+static int curve_motion_field;
+static t_float curve_motion_xcumulative;
+static t_float curve_motion_xbase;
+static t_float curve_motion_xper;
+static t_float curve_motion_ycumulative;
+static t_float curve_motion_ybase;
+static t_float curve_motion_yper;
+static t_glist *curve_motion_glist;
+static t_scalar *curve_motion_scalar;
+static t_array *curve_motion_array;
+static t_word *curve_motion_wp;
+static t_template *curve_motion_template;
+static t_gpointer curve_motion_gpointer;
 
-#define CURVE_CLOSED    1
-#define CURVE_BEZIER    2
-#define CURVE_NO_MOUSE  4
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct _curve
-{
-    t_object x_obj;
-    int x_flags;
-    t_fielddescriptor x_fillcolor;
-    t_fielddescriptor x_outlinecolor;
-    t_fielddescriptor x_width;
-    t_fielddescriptor x_vis;
-    int x_npoints;
-    t_fielddescriptor *x_vec;
-    t_glist *x_canvas;
-} t_curve;
+static t_class *curve_class;        /* Shared. */
 
-static void *curve_new(t_symbol *classsym, int argc, t_atom *argv)
-{
-    t_curve *x = (t_curve *)pd_new(curve_class);
-    char *classname = classsym->s_name;
-    int flags = 0;
-    int nxy, i;
-    t_fielddescriptor *fd;
-    x->x_canvas = canvas_getCurrent();
-    if (classname[0] == 'f')
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+typedef struct _curve {
+    t_object            x_obj;
+    int                 x_flags;
+    t_fielddescriptor   x_fillcolor;
+    t_fielddescriptor   x_outlinecolor;
+    t_fielddescriptor   x_width;
+    t_fielddescriptor   x_vis;
+    int                 x_npoints;
+    t_fielddescriptor   *x_vec;
+    t_glist             *x_canvas;
+    } t_curve;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void curve_getrect   (t_gobj *, t_glist *, t_word *, t_template *, t_float, t_float,
+                                int *,
+                                int *,
+                                int *,
+                                int *);
+
+static void curve_displace  (t_gobj *, t_glist *, t_word *, t_template *, t_float, t_float,
+                                int,
+                                int);
+
+static void curve_select    (t_gobj *, t_glist *, t_word *, t_template *, t_float, t_float,
+                                int);
+
+static void curve_activate  (t_gobj *, t_glist *, t_word *, t_template *, t_float, t_float,
+                                int);
+
+static void curve_vis       (t_gobj *, t_glist *, t_word *, t_template *, t_float, t_float,
+                                int);
+
+static int curve_click      (t_gobj *, t_glist *, t_word *, t_template *, 
+                                t_scalar *,
+                                t_array *,
+                                t_float,
+                                t_float,
+                                int,
+                                int,
+                                int,
+                                int,
+                                int,
+                                int);
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+t_parentwidgetbehavior curve_parentWidgetBehavior =
     {
-        classname += 6;
-        flags |= CURVE_CLOSED;
-    }
-    else classname += 4;
-    if (classname[0] == 'c') flags |= CURVE_BEZIER;
-    field_setAsFloatConstant(&x->x_vis, 1);
-    while (1)
-    {
-        t_symbol *firstarg = atom_getSymbolAtIndex(0, argc, argv);
-        if (!strcmp(firstarg->s_name, "-v") && argc > 1)
-        {
-            field_setAsFloat(&x->x_vis, 1, argv+1);
-            argc -= 2; argv += 2;
-        }
-        else if (!strcmp(firstarg->s_name, "-x"))
-        {
-            flags |= CURVE_NO_MOUSE;
-            argc -= 1; argv += 1;
-        }
-        else break;
-    }
-    x->x_flags = flags;
-    if ((flags & CURVE_CLOSED) && argc)
-        field_setAsFloat(&x->x_fillcolor, argc--, argv++);
-    else field_setAsFloatConstant(&x->x_fillcolor, 0); 
-    if (argc) field_setAsFloat(&x->x_outlinecolor, argc--, argv++);
-    else field_setAsFloatConstant(&x->x_outlinecolor, 0);
-    if (argc) field_setAsFloat(&x->x_width, argc--, argv++);
-    else field_setAsFloatConstant(&x->x_width, 1);
-    if (argc < 0) argc = 0;
-    nxy =  (argc + (argc & 1));
-    x->x_npoints = (nxy>>1);
-    x->x_vec = (t_fielddescriptor *)PD_MEMORY_GET(nxy * sizeof(t_fielddescriptor));
-    for (i = 0, fd = x->x_vec; i < argc; i++, fd++, argv++)
-        field_setAsFloat(fd, 1, argv);
-    if (argc & 1) field_setAsFloatConstant(fd, 0);
+        curve_getrect,
+        curve_displace,
+        curve_select,
+        curve_activate,
+        curve_vis,
+        curve_click,
+    };
 
-    return (x);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void curve_float(t_curve *x, t_float f)
 {
@@ -109,7 +126,51 @@ void curve_float(t_curve *x, t_float f)
     canvas_paintAllScalarsByView(x->x_canvas, SCALAR_DRAW);
 }
 
-/* -------------------- widget behavior for curve ------------ */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void curve_motion(void *z, t_float dx, t_float dy, t_float modifier)
+{
+    t_curve *x = (t_curve *)z;
+    t_fielddescriptor *f = x->x_vec + curve_motion_field;
+    //t_atom at;
+    if (!gpointer_isValid(&curve_motion_gpointer, 0))
+    {
+        post("curve_motion: scalar disappeared");
+        return;
+    }
+    curve_motion_xcumulative += dx;
+    curve_motion_ycumulative += dy;
+    if (field_isVariable (f) && (dx != 0))
+    {
+        word_setFloatByFieldAsPosition(
+            curve_motion_wp,
+            curve_motion_template,
+            f,
+            curve_motion_xbase + curve_motion_xcumulative * curve_motion_xper); 
+    }
+    if (field_isVariable (f+1) && (dy != 0))
+    {
+        word_setFloatByFieldAsPosition(
+            curve_motion_wp,
+            curve_motion_template,
+            f+1,
+            curve_motion_ybase + curve_motion_ycumulative * curve_motion_yper); 
+    }
+        /* LATER figure out what to do to notify for an array? */
+    if (curve_motion_scalar)
+        template_notify(curve_motion_template, curve_motion_glist, 
+            curve_motion_scalar, sym_change, 0, NULL);
+    if (curve_motion_scalar)
+        scalar_redraw(curve_motion_scalar, curve_motion_glist);
+    if (curve_motion_array)
+        array_redraw(curve_motion_array, curve_motion_glist);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void curve_getrect(t_gobj *z, t_glist *glist,
     t_word *data, t_template *template, t_float basex, t_float basey,
@@ -164,36 +225,7 @@ static void curve_activate(t_gobj *z, t_glist *glist,
     /* fill in later */
 }
 
-#if 0
-static int rangecolor(int n)    /* 0 to 9 in 5 steps */
-{
-    int n2 = n/2;               /* 0 to 4 */
-    int ret = (n2 << 6);        /* 0 to 256 in 5 steps */
-    if (ret > 255) ret = 255;
-    return (ret);
-}
-#endif
-
-static int rangecolor(int n)    /* 0 to 9 in 5 steps */
-{
-    int n2 = (n == 9 ? 8 : n);               /* 0 to 8 */
-    int ret = (n2 << 5);        /* 0 to 256 in 9 steps */
-    if (ret > 255) ret = 255;
-    return (ret);
-}
-
-void numbertocolor(int n, char *s)
-{
-    int red, blue, green;
-    if (n < 0) n = 0;
-    red = n / 100;
-    blue = ((n / 10) % 10);
-    green = n % 10;
-    sprintf(s, "#%2.2x%2.2x%2.2x", rangecolor(red), rangecolor(blue),
-        rangecolor(green));
-}
-
-static void curve_vis(t_gobj *z, t_glist *glist, 
+static void curve_vis (t_gobj *z, t_glist *glist, 
     t_word *data, t_template *template, t_float basex, t_float basey,
     int vis)
 {
@@ -254,61 +286,6 @@ static void curve_vis(t_gobj *z, t_glist *glist,
         if (n > 1) sys_vGui(".x%lx.c delete curve%lx\n",
             canvas_getView(glist), data);      
     }
-}
-
-static int curve_motion_field;
-static t_float curve_motion_xcumulative;
-static t_float curve_motion_xbase;
-static t_float curve_motion_xper;
-static t_float curve_motion_ycumulative;
-static t_float curve_motion_ybase;
-static t_float curve_motion_yper;
-static t_glist *curve_motion_glist;
-static t_scalar *curve_motion_scalar;
-static t_array *curve_motion_array;
-static t_word *curve_motion_wp;
-static t_template *curve_motion_template;
-static t_gpointer curve_motion_gpointer;
-
-    /* LATER protect against the template changing or the scalar disappearing
-    probably by attaching a gpointer here ... */
-
-static void curve_motion(void *z, t_float dx, t_float dy, t_float modifier)
-{
-    t_curve *x = (t_curve *)z;
-    t_fielddescriptor *f = x->x_vec + curve_motion_field;
-    //t_atom at;
-    if (!gpointer_isValid(&curve_motion_gpointer, 0))
-    {
-        post("curve_motion: scalar disappeared");
-        return;
-    }
-    curve_motion_xcumulative += dx;
-    curve_motion_ycumulative += dy;
-    if (field_isVariable (f) && (dx != 0))
-    {
-        word_setFloatByFieldAsPosition(
-            curve_motion_wp,
-            curve_motion_template,
-            f,
-            curve_motion_xbase + curve_motion_xcumulative * curve_motion_xper); 
-    }
-    if (field_isVariable (f+1) && (dy != 0))
-    {
-        word_setFloatByFieldAsPosition(
-            curve_motion_wp,
-            curve_motion_template,
-            f+1,
-            curve_motion_ybase + curve_motion_ycumulative * curve_motion_yper); 
-    }
-        /* LATER figure out what to do to notify for an array? */
-    if (curve_motion_scalar)
-        template_notify(curve_motion_template, curve_motion_glist, 
-            curve_motion_scalar, sym_change, 0, NULL);
-    if (curve_motion_scalar)
-        scalar_redraw(curve_motion_scalar, curve_motion_glist);
-    if (curve_motion_array)
-        array_redraw(curve_motion_array, curve_motion_glist);
 }
 
 static int curve_click(t_gobj *z, t_glist *glist, 
@@ -372,20 +349,68 @@ static int curve_click(t_gobj *z, t_glist *glist,
     return (1);
 }
 
-t_parentwidgetbehavior curve_widgetbehavior =
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *curve_new(t_symbol *classsym, int argc, t_atom *argv)
 {
-    curve_getrect,
-    curve_displace,
-    curve_select,
-    curve_activate,
-    curve_vis,
-    curve_click,
-};
+    t_curve *x = (t_curve *)pd_new(curve_class);
+    char *classname = classsym->s_name;
+    int flags = 0;
+    int nxy, i;
+    t_fielddescriptor *fd;
+    x->x_canvas = canvas_getCurrent();
+    if (classname[0] == 'f')
+    {
+        classname += 6;
+        flags |= CURVE_CLOSED;
+    }
+    else classname += 4;
+    if (classname[0] == 'c') flags |= CURVE_BEZIER;
+    field_setAsFloatConstant(&x->x_vis, 1);
+    while (1)
+    {
+        t_symbol *firstarg = atom_getSymbolAtIndex(0, argc, argv);
+        if (!strcmp(firstarg->s_name, "-v") && argc > 1)
+        {
+            field_setAsFloat(&x->x_vis, 1, argv+1);
+            argc -= 2; argv += 2;
+        }
+        else if (!strcmp(firstarg->s_name, "-x"))
+        {
+            flags |= CURVE_NO_MOUSE;
+            argc -= 1; argv += 1;
+        }
+        else break;
+    }
+    x->x_flags = flags;
+    if ((flags & CURVE_CLOSED) && argc)
+        field_setAsFloat(&x->x_fillcolor, argc--, argv++);
+    else field_setAsFloatConstant(&x->x_fillcolor, 0); 
+    if (argc) field_setAsFloat(&x->x_outlinecolor, argc--, argv++);
+    else field_setAsFloatConstant(&x->x_outlinecolor, 0);
+    if (argc) field_setAsFloat(&x->x_width, argc--, argv++);
+    else field_setAsFloatConstant(&x->x_width, 1);
+    if (argc < 0) argc = 0;
+    nxy =  (argc + (argc & 1));
+    x->x_npoints = (nxy>>1);
+    x->x_vec = (t_fielddescriptor *)PD_MEMORY_GET(nxy * sizeof(t_fielddescriptor));
+    for (i = 0, fd = x->x_vec; i < argc; i++, fd++, argv++)
+        field_setAsFloat(fd, 1, argv);
+    if (argc & 1) field_setAsFloatConstant(fd, 0);
+
+    return (x);
+}
 
 static void curve_free(t_curve *x)
 {
     PD_MEMORY_FREE(x->x_vec);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void curve_setup(void)
 {
@@ -398,7 +423,7 @@ void curve_setup(void)
         A_GIMME, 0);
     class_addCreator((t_newmethod)curve_new, sym_filledcurve,
         A_GIMME, 0);
-    class_setParentWidgetBehavior(curve_class, &curve_widgetbehavior);
+    class_setParentWidgetBehavior(curve_class, &curve_parentWidgetBehavior);
     class_addFloat(curve_class, curve_float);
 }
 

@@ -107,6 +107,29 @@ int string_containsAtStart (const char *s, const char *isContained)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static int rangecolor(int n)    /* 0 to 9 in 5 steps */
+{
+    int n2 = (n == 9 ? 8 : n);               /* 0 to 8 */
+    int ret = (n2 << 5);        /* 0 to 256 in 9 steps */
+    if (ret > 255) ret = 255;
+    return (ret);
+}
+
+void numbertocolor(int n, char *s)
+{
+    int red, blue, green;
+    if (n < 0) n = 0;
+    red = n / 100;
+    blue = ((n / 10) % 10);
+    green = n % 10;
+    sprintf(s, "#%2.2x%2.2x%2.2x", rangecolor(red), rangecolor(blue),
+        rangecolor(green));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static int string_indexOfFirstCharUntil (char *s, char c, size_t n)
 {
     char *s2 = s + n;
