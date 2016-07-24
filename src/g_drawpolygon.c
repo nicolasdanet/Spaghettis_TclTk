@@ -67,22 +67,19 @@ typedef struct _drawpolygon {
 
 void drawpolygon_float (t_drawpolygon *x, t_float f)
 {
-    int viswas;
+    if (field_isFloatConstant (&x->x_isVisible)) {
+    //
+    int k = (f != 0.0);
     
-    if (!field_isFloatConstant (&x->x_isVisible))
-    {
-        post_error ("global vis/invis for a template with variable visibility");
-        return;
-    }
-    
-    viswas = (field_getFloatConstant (&x->x_isVisible) != 0);
-    
-    if ((f != 0 && viswas) || (f == 0 && !viswas))
-        return;
-        
+    if (k != (int)(field_getFloatConstant (&x->x_isVisible))) {
+    //
     paint_scalarsEraseAll();
-    field_setAsFloatConstant(&x->x_isVisible, (f != 0));
+    field_setAsFloatConstant (&x->x_isVisible, (t_float)k);
     paint_scalarsDrawAll();
+    //
+    }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -364,9 +361,7 @@ static void *drawpolygon_new (t_symbol *s, int argc, t_atom *argv)
     x->x_size           = x->x_numberOfPoints * 2;
     x->x_coordinates    = (t_fielddescriptor *)PD_MEMORY_GET (x->x_size * sizeof (t_fielddescriptor));
     
-    for (i = 0; i < x->x_size; i++) {
-        field_setAsFloat (x->x_coordinates + i, 1, argv + i);
-    }
+    for (i = 0; i < x->x_size; i++) { field_setAsFloat (x->x_coordinates + i, 1, argv + i); }
 
     return x;
 }
