@@ -23,8 +23,17 @@ extern t_pdinstance     *pd_this;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void canvas_redrawAllScalars (t_glist *glist, int action)
+#define PAINT_REDRAW    0
+#define PAINT_DRAW      1
+#define PAINT_ERASE     2
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void paint_performAllRecursive (t_glist *glist, int action)
 {
     t_gobj *y = NULL;
     
@@ -35,14 +44,25 @@ static void canvas_redrawAllScalars (t_glist *glist, int action)
     if (visible && pd_class (y) == scalar_class) {
     //
     switch (action) {
-        case SCALAR_REDRAW  : scalar_redraw (cast_scalar (y), glist);   break;
-        case SCALAR_DRAW    : gobj_visibilityChanged (y, glist, 1);     break;
-        case SCALAR_ERASE   : gobj_visibilityChanged (y, glist, 0);     break;
+        case PAINT_REDRAW   : scalar_redraw (cast_scalar (y), glist);   break;
+        case PAINT_DRAW     : gobj_visibilityChanged (y, glist, 1);     break;
+        case PAINT_ERASE    : gobj_visibilityChanged (y, glist, 0);     break;
     }
     //
     } 
 
-    if (pd_class (y) == canvas_class) { canvas_redrawAllScalars (cast_glist (y), action); }
+    if (pd_class (y) == canvas_class) { paint_performAllRecursive (cast_glist (y), action); }
+    //
+    }
+}
+
+static void paint_performAll (int action)
+{
+    t_glist *glist = NULL;
+
+    for (glist = pd_this->pd_roots; glist; glist = glist->gl_next) {
+    //
+    paint_performAllRecursive (glist, action);
     //
     }
 }
@@ -51,23 +71,19 @@ static void canvas_redrawAllScalars (t_glist *glist, int action)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Note that the functions below are experimentals. */
-/* The template argument are not used and everything is redrawn instead. */
-
-void canvas_paintAllScalarsByTemplate (t_template *dummy, int action)
+void paint_scalarsEraseAll (void)
 {
-    t_glist *glist = NULL;
-
-    for (glist = pd_this->pd_roots; glist; glist = glist->gl_next) {
-    //
-    canvas_redrawAllScalars (glist, action);
-    //
-    }
+    paint_performAll (PAINT_ERASE);
 }
 
-void canvas_paintAllScalarsByView (t_glist *glist, int action)
+void paint_scalarsDrawAll (void)
 {
-    canvas_paintAllScalarsByTemplate (NULL, action);
+    paint_performAll (PAINT_DRAW);
+}
+
+void paint_scalarsRedrawAll (void)
+{
+    paint_performAll (PAINT_REDRAW);
 }
 
 // -----------------------------------------------------------------------------------------------------------

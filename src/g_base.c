@@ -190,10 +190,7 @@ void canvas_addObject (t_glist *glist, t_gobj *y)
     if (glist->gl_editor && (object = canvas_castToObjectIfPatchable (y))) { boxtext_new (glist, object); }
     if (canvas_isMapped (canvas)) { gobj_visibilityChanged (y, glist, 1); }
     
-    if (needToPaintScalars) {
-        t_symbol *bound = utils_makeBindSymbol (canvas->gl_name);
-        canvas_paintAllScalarsByTemplate (template_findByIdentifier (bound), SCALAR_REDRAW);
-    }
+    if (needToPaintScalars) { paint_scalarsRedrawAll(); }
 }
 
 void canvas_removeObject (t_glist *glist, t_gobj *y)
@@ -215,10 +212,7 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     //
     }
     
-    if (needToPaintScalars) {
-        t_symbol *bound = utils_makeBindSymbol (canvas->gl_name);
-        canvas_paintAllScalarsByTemplate (template_findByIdentifier (bound), SCALAR_ERASE);
-    }
+    if (needToPaintScalars) { paint_scalarsEraseAll(); }
     
     if (canvas_isMapped (canvas)) { gobj_visibilityChanged (y, glist, 0); }
     
@@ -241,14 +235,11 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     if (text) { boxtext_free (text); }
     
     if (needToUpdateDSPChain) { dsp_update(); }
-    if (needToPaintScalars)   {
-        t_symbol *bound = utils_makeBindSymbol (canvas->gl_name);
-        canvas_paintAllScalarsByTemplate (template_findByIdentifier (bound), SCALAR_DRAW);
-    }
+    if (needToPaintScalars)   { paint_scalarsDrawAll(); }
     
     canvas->gl_isDeleting = deletingState;
     
-    glist->gl_uniqueIdentifier = utils_unique();
+    glist->gl_uniqueIdentifier = utils_unique();        /* Invalidate pointers. */
 }
 
 void canvas_clear (t_glist *glist)

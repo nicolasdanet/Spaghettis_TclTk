@@ -59,7 +59,6 @@ typedef struct _drawpolygon {
     int                 x_numberOfPoints;
     int                 x_size;
     t_fielddescriptor   *x_coordinates;
-    t_glist             *x_owner;
     } t_drawpolygon;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -81,9 +80,9 @@ void drawpolygon_float (t_drawpolygon *x, t_float f)
     if ((f != 0 && viswas) || (f == 0 && !viswas))
         return;
         
-    canvas_paintAllScalarsByView(x->x_owner, SCALAR_ERASE);
+    paint_scalarsEraseAll();
     field_setAsFloatConstant(&x->x_isVisible, (f != 0));
-    canvas_paintAllScalarsByView(x->x_owner, SCALAR_DRAW);
+    paint_scalarsDrawAll();
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -338,8 +337,6 @@ static void *drawpolygon_new (t_symbol *s, int argc, t_atom *argv)
     field_setAsFloatConstant (&x->x_colorOutline, 0.0);
     field_setAsFloatConstant (&x->x_width, 1.0);
     field_setAsFloatConstant (&x->x_isVisible, 1.0);
-        
-    x->x_owner = canvas_getCurrent();
     
     while (argc > 0) {
     //

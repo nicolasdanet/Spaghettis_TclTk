@@ -49,9 +49,9 @@ int template_hasInstance (t_template *x)
 
 void template_registerInstance (t_template *x, t_gtemplate *o)
 {
-    canvas_paintAllScalarsByTemplate (x, SCALAR_ERASE);
+    paint_scalarsEraseAll();
     x->tp_instance = o;
-    canvas_paintAllScalarsByTemplate (x, SCALAR_DRAW);
+    paint_scalarsDrawAll();
 }
 
 void template_unregisterInstance (t_template *x, t_gtemplate *o)

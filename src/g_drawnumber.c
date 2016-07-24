@@ -38,7 +38,6 @@ typedef struct _drawnumber
     t_fielddescriptor x_color;
     t_fielddescriptor x_vis;
     t_symbol *x_label;
-    t_glist *x_canvas;
 } t_drawnumber;
 
 static void *drawnumber_new(t_symbol *classsym, int argc, t_atom *argv)
@@ -47,7 +46,7 @@ static void *drawnumber_new(t_symbol *classsym, int argc, t_atom *argv)
     char *classname = classsym->s_name;
 
     field_setAsFloatConstant(&x->x_vis, 1);
-    x->x_canvas = canvas_getCurrent();
+    
     while (1)
     {
         t_symbol *firstarg = atom_getSymbolAtIndex(0, argc, argv);
@@ -88,9 +87,9 @@ void drawnumber_float(t_drawnumber *x, t_float f)
     
     if ((f != 0 && viswas) || (f == 0 && !viswas))
         return;
-    canvas_paintAllScalarsByView(x->x_canvas, SCALAR_ERASE);
+    paint_scalarsEraseAll();
     field_setAsFloatConstant(&x->x_vis, (f != 0));
-    canvas_paintAllScalarsByView(x->x_canvas, SCALAR_DRAW);
+    paint_scalarsDrawAll();
 }
 
 /* -------------------- widget behavior for drawnumber ------------ */

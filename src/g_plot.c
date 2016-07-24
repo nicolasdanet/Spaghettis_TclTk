@@ -27,7 +27,6 @@ t_class *plot_class;
 typedef struct _plot
 {
     t_object x_obj;
-    t_glist *x_canvas;
     t_fielddescriptor x_outlinecolor;
     t_fielddescriptor x_width;
     t_fielddescriptor x_xloc;
@@ -78,7 +77,6 @@ static void *plot_new(t_symbol *classsym, int argc, t_atom *argv)
 {
     t_plot *x = (t_plot *)pd_new(plot_class);
     int defstyle = PLOT_POLYGONS;
-    x->x_canvas = canvas_getCurrent();
 
     field_setAsFloatVariable(&x->x_xpoints, sym_x);
     field_setAsFloatVariable(&x->x_ypoints, sym_y);
@@ -152,9 +150,9 @@ void plot_float(t_plot *x, t_float f)
     
     if ((f != 0 && viswas) || (f == 0 && !viswas))
         return;
-    canvas_paintAllScalarsByView(x->x_canvas, SCALAR_ERASE);
+    paint_scalarsEraseAll();
     field_setAsFloatConstant(&x->x_vis, (f != 0));
-    canvas_paintAllScalarsByView(x->x_canvas, SCALAR_DRAW);
+    paint_scalarsDrawAll();
 }
 
 /* -------------------- widget behavior for plot ------------ */

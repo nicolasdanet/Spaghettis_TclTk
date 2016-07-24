@@ -879,7 +879,7 @@ static void setsize_float(t_setsize *x, t_float f)
         array we have to search back until we get to a scalar to erase.
         When graphics updates become queueable this may fall apart... */
 
-    scalar_setVisibility (gp, 0);
+    scalar_setVisibilityByPointer (gp, 0);
 
         /* if shrinking, free the scalars that will disappear */
     if (newsize < nitems)
@@ -906,7 +906,7 @@ static void setsize_float(t_setsize *x, t_float f)
         /* invalidate all gpointers into the array */
     array->a_uniqueIdentifier++;    /* Encapsulate. */
 
-    scalar_setVisibility (gp, 1);
+    scalar_setVisibilityByPointer (gp, 1);
 }
 
 static void setsize_free(t_setsize *x)

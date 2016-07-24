@@ -41,14 +41,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define SCALAR_REDRAW                   0
-#define SCALAR_DRAW                     1
-#define SCALAR_ERASE                    2
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 struct _gpointer {
     union {   
         struct _scalar  *gp_scalar;
@@ -163,7 +155,7 @@ void            scalar_setFloat                         (t_scalar *x, t_symbol *
 
 void            scalar_redraw                           (t_scalar *x, t_glist *glist);
 void            scalar_redrawByPointer                  (t_gpointer *gp);
-void            scalar_setVisibility                    (t_gpointer *gp, int isVisible);
+void            scalar_setVisibilityByPointer           (t_gpointer *gp, int isVisible);
 
 int             scalar_performClick                     (t_word *w,
                                                             t_template *tmpl,
@@ -308,8 +300,9 @@ t_float         field_convertPositionToValue            (t_fielddescriptor *fd, 
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            canvas_paintAllScalarsByView            (t_glist *glist, int action);
-void            canvas_paintAllScalarsByTemplate        (t_template *dummy, int action);
+void            paint_scalarsEraseAll                   (void);
+void            paint_scalarsDrawAll                    (void);
+void            paint_scalarsRedrawAll                  (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

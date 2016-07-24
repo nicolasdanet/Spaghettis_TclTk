@@ -283,7 +283,7 @@
 #if PD_WINDOWS
     #define PD_STUB             __declspec(dllexport)
 #else
-    #define PD_STUB             __attribute__((visibility("default")))
+    #define PD_STUB             __attribute__((visibility ("default")))
 #endif
 
 // -----------------------------------------------------------------------------------------------------------

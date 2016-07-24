@@ -171,7 +171,7 @@ void scalar_redrawByPointer (t_gpointer *gp)
     scalar_redraw (scalar, glist);
 }
 
-void scalar_setVisibility (t_gpointer *gp, int isVisible)
+void scalar_setVisibilityByPointer (t_gpointer *gp, int isVisible)
 {
     t_glist *glist = gpointer_getView (gp);
     
