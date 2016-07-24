@@ -59,6 +59,7 @@ proc _create {top name size flags} {
     wm geometry  $top [::rightNextTo $::var(windowFocused)]
     
     set arrayName($top)         [::dollarToHash $name]
+    set arrayName(${top}.old)   [::dollarToHash $name]
     set arraySize($top)         $size
     set arraySize(${top}.old)   $size
     set arraySave($top)         [expr {$flags & 1}]
@@ -158,8 +159,10 @@ proc _apply {top} {
 
 proc _forceSize {top} {
 
+    variable arrayName
     variable arraySize
-    
+
+    set arrayName($top) [::ifNotNumber $arrayName($top) $arrayName(${top}.old)]
     set arraySize($top) [::ifInteger $arraySize($top) $arraySize(${top}.old)]
     set arraySize($top) [::tcl::mathfunc::max $arraySize($top) 1]
 }
