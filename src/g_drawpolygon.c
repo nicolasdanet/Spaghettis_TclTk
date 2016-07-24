@@ -17,6 +17,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#define DRAWPOLYGON_NONE            0
 #define DRAWPOLYGON_CLOSED          1
 #define DRAWPOLYGON_BEZIER          2
 #define DRAWPOLYGON_NO_MOUSE        4
@@ -56,7 +57,8 @@ typedef struct _drawpolygon {
     t_fielddescriptor   x_width;
     t_fielddescriptor   x_isVisible;
     int                 x_numberOfPoints;
-    t_fielddescriptor   *x_fieldsForPoints;
+    int                 x_size;
+    t_fielddescriptor   *x_coordinates;
     t_glist             *x_owner;
     } t_drawpolygon;
 
@@ -64,7 +66,7 @@ typedef struct _drawpolygon {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void curve_float(t_drawpolygon *x, t_float f)
+void drawpolygon_float (t_drawpolygon *x, t_float f)
 {
     int viswas;
     if (!field_isFloatConstant (&x->x_isVisible))
@@ -85,14 +87,14 @@ void curve_float(t_drawpolygon *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void curve_motion(void *z, t_float dx, t_float dy, t_float modifier)
+static void drawpolygon_motion (void *z, t_float dx, t_float dy, t_float modifier)
 {
     t_drawpolygon *x = (t_drawpolygon *)z;
-    t_fielddescriptor *f = x->x_fieldsForPoints + drawpolygon_motionField;
+    t_fielddescriptor *f = x->x_coordinates + drawpolygon_motionField;
     //t_atom at;
     if (!gpointer_isValid(&drawpolygon_motionPointer, 0))
     {
-        post("curve_motion: scalar disappeared");
+        post("drawpolygon_motion: scalar disappeared");
         return;
     }
     drawpolygon_motionCumulativeX += dx;
@@ -133,7 +135,7 @@ static void drawpolygon_behaviorGetRectangle(t_gobj *z, t_glist *glist,
 {
     t_drawpolygon *x = (t_drawpolygon *)z;
     int i, n = x->x_numberOfPoints;
-    t_fielddescriptor *f = x->x_fieldsForPoints;
+    t_fielddescriptor *f = x->x_coordinates;
     int x1 = PD_INT_MAX, x2 = -PD_INT_MAX, y1 = PD_INT_MAX, y2 = -PD_INT_MAX;
     if (!word_getFloatByField(data, template, &x->x_isVisible) ||
         (x->x_flags & DRAWPOLYGON_NO_MOUSE))
@@ -142,7 +144,7 @@ static void drawpolygon_behaviorGetRectangle(t_gobj *z, t_glist *glist,
         *xp2 = *yp2 = -PD_INT_MAX;
         return;
     }
-    for (i = 0, f = x->x_fieldsForPoints; i < n; i++, f += 2)
+    for (i = 0, f = x->x_coordinates; i < n; i++, f += 2)
     {
         int xloc = canvas_valueToPositionX(glist,
             basex + word_getFloatByFieldAsPosition (data, template, f));
@@ -186,7 +188,7 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z, t_glist *glist,
 {
     t_drawpolygon *x = (t_drawpolygon *)z;
     int i, n = x->x_numberOfPoints;
-    t_fielddescriptor *f = x->x_fieldsForPoints;
+    t_fielddescriptor *f = x->x_coordinates;
     
         /* see comment in plot_vis() */
     if (vis && !word_getFloatByField(data, template, &x->x_isVisible))
@@ -205,7 +207,7 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z, t_glist *glist,
                 out the TK message so that "error" printout won't be
                 interspersed with it.  Only show up to 100 points so we don't
                 have to allocate memory here. */
-            for (i = 0, f = x->x_fieldsForPoints; i < n; i++, f += 2)
+            for (i = 0, f = x->x_coordinates; i < n; i++, f += 2)
             {
                 pix[2*i] = canvas_valueToPositionX(glist,
                     basex + word_getFloatByFieldAsPosition(data, template, f));
@@ -253,7 +255,7 @@ static int drawpolygon_behaviorClicked(t_gobj *z, t_glist *glist,
     t_fielddescriptor *f;
     if (!word_getFloatByField(data, template, &x->x_isVisible))
         return (0);
-    for (i = 0, f = x->x_fieldsForPoints; i < n; i++, f += 2)
+    for (i = 0, f = x->x_coordinates; i < n; i++, f += 2)
     {
         int xval = word_getFloatByFieldAsPosition(data, template, f),
             xloc = canvas_valueToPositionX(glist, basex + xval);
@@ -297,7 +299,7 @@ static int drawpolygon_behaviorClicked(t_gobj *z, t_glist *glist,
                 drawpolygon_motionScalar);
         else gpointer_setAsWord(&drawpolygon_motionPointer,
                 drawpolygon_motionArray, drawpolygon_motionData);
-        canvas_setMotionFunction(glist, z, (t_motionfn)curve_motion, xpix, ypix);
+        canvas_setMotionFunction(glist, z, (t_motionfn)drawpolygon_motion, xpix, ypix);
     }
     return (1);
 }
@@ -305,7 +307,7 @@ static int drawpolygon_behaviorClicked(t_gobj *z, t_glist *glist,
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_parentwidgetbehavior curve_parentWidgetBehavior =
+t_parentwidgetbehavior drawpolygon_parentWidgetBehavior =
     {
         drawpolygon_behaviorGetRectangle,
         drawpolygon_behaviorDisplaced,
@@ -319,84 +321,85 @@ t_parentwidgetbehavior curve_parentWidgetBehavior =
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *curve_new(t_symbol *classsym, int argc, t_atom *argv)
+static void *drawpolygon_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_drawpolygon *x = (t_drawpolygon *)pd_new(drawpolygon_class);
-    char *classname = classsym->s_name;
-    int flags = 0;
-    int nxy, i;
-    t_fielddescriptor *fd;
-    x->x_owner = canvas_getCurrent();
-    if (classname[0] == 'f')
-    {
-        classname += 6;
-        flags |= DRAWPOLYGON_CLOSED;
-    }
-    else classname += 4;
-    if (classname[0] == 'c') flags |= DRAWPOLYGON_BEZIER;
-    field_setAsFloatConstant(&x->x_isVisible, 1);
-    while (1)
-    {
-        t_symbol *firstarg = atom_getSymbolAtIndex(0, argc, argv);
-        if (!strcmp(firstarg->s_name, "-v") && argc > 1)
-        {
-            field_setAsFloat(&x->x_isVisible, 1, argv+1);
-            argc -= 2; argv += 2;
-        }
-        else if (!strcmp(firstarg->s_name, "-x"))
-        {
-            flags |= DRAWPOLYGON_NO_MOUSE;
-            argc -= 1; argv += 1;
-        }
-        else break;
-    }
-    x->x_flags = flags;
-    if ((flags & DRAWPOLYGON_CLOSED) && argc)
-        field_setAsFloat(&x->x_colorFill, argc--, argv++);
-    else field_setAsFloatConstant(&x->x_colorFill, 0); 
-    if (argc) field_setAsFloat(&x->x_colorOutline, argc--, argv++);
-    else field_setAsFloatConstant(&x->x_colorOutline, 0);
-    if (argc) field_setAsFloat(&x->x_width, argc--, argv++);
-    else field_setAsFloatConstant(&x->x_width, 1);
-    if (argc < 0) argc = 0;
-    nxy =  (argc + (argc & 1));
-    x->x_numberOfPoints = (nxy>>1);
-    x->x_fieldsForPoints = (t_fielddescriptor *)PD_MEMORY_GET(nxy * sizeof(t_fielddescriptor));
-    for (i = 0, fd = x->x_fieldsForPoints; i < argc; i++, fd++, argv++)
-        field_setAsFloat(fd, 1, argv);
-    if (argc & 1) field_setAsFloatConstant(fd, 0);
+    int i;
+        
+    t_drawpolygon *x = (t_drawpolygon *)pd_new (drawpolygon_class);
 
-    return (x);
+    x->x_flags = DRAWPOLYGON_NONE;
+    
+    if (s == sym_filledcurve || s == sym_filledpolygon) { x->x_flags |= DRAWPOLYGON_CLOSED; }
+    if (s == sym_filledcurve || s == sym_drawcurve)     { x->x_flags |= DRAWPOLYGON_BEZIER; }
+    
+    field_setAsFloatConstant (&x->x_colorFill, 0.0);
+    field_setAsFloatConstant (&x->x_colorOutline, 0.0);
+    field_setAsFloatConstant (&x->x_width, 1.0);
+    field_setAsFloatConstant (&x->x_isVisible, 1.0);
+        
+    x->x_owner = canvas_getCurrent();
+    
+    while (argc > 0) {
+    //
+    t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
+    
+    if (argc > 1 && t == gensym ("-v")) {
+        field_setAsFloat (&x->x_isVisible, 1, argv + 1);
+        argc -= 2; argv += 2;
+        
+    } else if (t == gensym ("-x")) {
+        x->x_flags |= DRAWPOLYGON_NO_MOUSE;
+        argc -= 1; argv += 1;
+        
+    } else { break; }
+    //
+    }
+    
+    if (argc && (x->x_flags & DRAWPOLYGON_CLOSED)) { field_setAsFloat (&x->x_colorFill, argc--, argv++); }
+    if (argc) { field_setAsFloat (&x->x_colorOutline, argc--, argv++); }
+    if (argc) { field_setAsFloat (&x->x_width, argc--, argv++); }
+
+    argc = PD_MAX (0, argc);
+    
+    x->x_numberOfPoints = argc / 2;
+    x->x_size           = x->x_numberOfPoints * 2;
+    x->x_coordinates    = (t_fielddescriptor *)PD_MEMORY_GET (x->x_size * sizeof (t_fielddescriptor));
+    
+    for (i = 0; i < x->x_size; i++) {
+        field_setAsFloat (x->x_coordinates + i, 1, argv + i);
+    }
+
+    return x;
 }
 
-static void curve_free(t_drawpolygon *x)
+static void drawpolygon_free (t_drawpolygon *x)
 {
-    PD_MEMORY_FREE(x->x_fieldsForPoints);
+    PD_MEMORY_FREE (x->x_coordinates);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void curve_setup (void)
+void drawpolygon_setup (void)
 {
     t_class *c = NULL;
     
     c = class_new (sym_drawpolygon,
-            (t_newmethod)curve_new,
-            (t_method)curve_free,
+            (t_newmethod)drawpolygon_new,
+            (t_method)drawpolygon_free,
             sizeof (t_drawpolygon),
             CLASS_DEFAULT,
             A_GIMME,
             A_NULL);
             
-    class_addCreator ((t_newmethod)curve_new, sym_drawcurve,        A_GIMME, A_NULL);
-    class_addCreator ((t_newmethod)curve_new, sym_filledpolygon,    A_GIMME, A_NULL);
-    class_addCreator ((t_newmethod)curve_new, sym_filledcurve,      A_GIMME, A_NULL);
+    class_addCreator ((t_newmethod)drawpolygon_new, sym_drawcurve,      A_GIMME, A_NULL);
+    class_addCreator ((t_newmethod)drawpolygon_new, sym_filledpolygon,  A_GIMME, A_NULL);
+    class_addCreator ((t_newmethod)drawpolygon_new, sym_filledcurve,    A_GIMME, A_NULL);
     
-    class_addFloat (c, curve_float);
+    class_addFloat (c, drawpolygon_float);
         
-    class_setParentWidgetBehavior (c, &curve_parentWidgetBehavior);
+    class_setParentWidgetBehavior (c, &drawpolygon_parentWidgetBehavior);
     
     drawpolygon_class = c;
 }

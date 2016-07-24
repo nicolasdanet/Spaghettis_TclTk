@@ -53,7 +53,7 @@ void voutlet_setup          (void);
 void scalar_setup           (void);
 void template_setup         (void);
 void gtemplate_setup        (void);
-void curve_setup            (void);
+void drawpolygon_setup      (void);
 void plot_setup             (void);
 void drawnumber_setup       (void);
 void message_setup          (void);
@@ -115,7 +115,7 @@ void setup_initialize (void)
     scalar_setup();
     template_setup();
     gtemplate_setup();
-    curve_setup();
+    drawpolygon_setup();
     plot_setup();
     drawnumber_setup();
     message_setup();
