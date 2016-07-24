@@ -327,7 +327,6 @@ void drawnumber_setup(void)
     drawnumber_class = class_new(sym_drawtext,
         (t_newmethod)drawnumber_new, (t_method)drawnumber_free,
         sizeof(t_drawnumber), 0, A_GIMME, 0);
-    class_setDrawCommand(drawnumber_class);
     class_addFloat(drawnumber_class, drawnumber_float);
     class_addCreator((t_newmethod)drawnumber_new, sym_drawsymbol,
         A_GIMME, 0);

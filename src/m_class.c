@@ -226,7 +226,6 @@ t_class *class_new (t_symbol *s,
     c->c_signalOffset       = 0;
     c->c_isBox              = (type == CLASS_BOX);
     c->c_hasFirstInlet      = ((flags & CLASS_NOINLET) == 0);
-    c->c_hasDrawCommand     = 0;
     c->c_type               = type;
     c->c_size               = size;
 
@@ -402,7 +401,7 @@ int class_hasBang (t_class *c)
 
 int class_hasDrawCommand (t_class *c)
 {
-    return c->c_hasDrawCommand;
+    return (c->c_behaviorParent != NULL);
 }
 
 int class_hasPropertiesFunction (t_class *c)
@@ -427,11 +426,6 @@ void class_setWidgetBehavior (t_class *c, t_widgetbehavior *w)
 void class_setParentWidgetBehavior (t_class *c, t_parentwidgetbehavior *pw)
 {
     c->c_behaviorParent = pw;
-}
-
-void class_setDrawCommand (t_class *c)
-{
-    c->c_hasDrawCommand = 1;
 }
 
 void class_setSaveFunction (t_class *c, t_savefn f)

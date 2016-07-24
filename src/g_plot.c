@@ -1075,7 +1075,6 @@ void plot_setup(void)
 {
     plot_class = class_new(sym_plot, (t_newmethod)plot_new, 0,
         sizeof(t_plot), 0, A_GIMME, 0);
-    class_setDrawCommand(plot_class);
     class_addFloat(plot_class, plot_float);
     class_setParentWidgetBehavior(plot_class, &plot_widgetbehavior);
 }

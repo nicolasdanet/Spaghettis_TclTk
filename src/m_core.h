@@ -147,7 +147,6 @@ struct _class {
     int                     c_signalOffset;
     char                    c_isBox;
     char                    c_hasFirstInlet;
-    char                    c_hasDrawCommand;
     int                     c_type;
     size_t                  c_size;
     };
@@ -256,7 +255,6 @@ int         class_hasDrawCommand                        (t_class *c);
 int         class_hasPropertiesFunction                 (t_class *c); 
 void        class_setWidgetBehavior                     (t_class *c, t_widgetbehavior *w);
 void        class_setParentWidgetBehavior               (t_class *c, t_parentwidgetbehavior *w);
-void        class_setDrawCommand                        (t_class *c);
 void        class_setHelpName                           (t_class *c, t_symbol *s);
 void        class_setPropertiesFunction                 (t_class *c, t_propertiesfn f);
 void        class_setSaveFunction                       (t_class *c, t_savefn f);
