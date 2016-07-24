@@ -69,6 +69,7 @@ typedef struct _drawpolygon {
 void drawpolygon_float (t_drawpolygon *x, t_float f)
 {
     int viswas;
+    
     if (!field_isFloatConstant (&x->x_isVisible))
     {
         post_error ("global vis/invis for a template with variable visibility");
@@ -79,6 +80,7 @@ void drawpolygon_float (t_drawpolygon *x, t_float f)
     
     if ((f != 0 && viswas) || (f == 0 && !viswas))
         return;
+        
     canvas_paintAllScalarsByView(x->x_owner, SCALAR_ERASE);
     field_setAsFloatConstant(&x->x_isVisible, (f != 0));
     canvas_paintAllScalarsByView(x->x_owner, SCALAR_DRAW);
@@ -343,11 +345,11 @@ static void *drawpolygon_new (t_symbol *s, int argc, t_atom *argv)
     //
     t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
     
-    if (argc > 1 && t == gensym ("-v")) {
+    if (argc > 1 && (t == sym___dash__v || t == sym___dash__visible)) {
         field_setAsFloat (&x->x_isVisible, 1, argv + 1);
         argc -= 2; argv += 2;
         
-    } else if (t == gensym ("-x")) {
+    } else if (t == sym___dash__x || t == sym___dash__inhibit) {
         x->x_flags |= DRAWPOLYGON_NO_MOUSE;
         argc -= 1; argv += 1;
         
