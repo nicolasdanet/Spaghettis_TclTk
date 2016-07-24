@@ -86,7 +86,7 @@ void template_notify (t_template *x,
     
     ATOMS_ALLOCA (a, n);
     
-    gpointer_setAsScalarType (&gp, owner, scalar);
+    gpointer_setAsScalar (&gp, owner, scalar);
     SET_POINTER (a, &gp);
     for (i = 0; i < argc; i++) { *(a + i + 1) = *(argv + i); }
     if (x->tp_instance) { gtemplate_notify (x->tp_instance, s, n, a); }

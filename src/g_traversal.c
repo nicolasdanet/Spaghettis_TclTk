@@ -121,7 +121,7 @@ static void *ptrobj_new(t_symbol *classname, int argc, t_atom *argv)
 static void ptrobj_traverse(t_ptrobj *x, t_symbol *s)
 {
     t_glist *glist = (t_glist *)pd_findByClass(s, canvas_class);
-    if (glist) gpointer_setAsScalarType(&x->x_gp, glist, 0);
+    if (glist) gpointer_setAsScalar(&x->x_gp, glist, 0);
     else { post_error (x, "pointer: list '%s' not found", s->s_name); }
 }
 
@@ -171,7 +171,7 @@ static void ptrobj_vnext(t_ptrobj *x, t_float f)
         t_scalar *sc = (t_scalar *)gobj;
         t_symbol *templatesym = sc->sc_templateIdentifier;
 
-        gpointer_setAsScalarType (gp, glist, sc);
+        gpointer_setAsScalar (gp, glist, sc);
         // gp->gp_un.gp_scalar = sc; 
         for (n = x->x_ntypedout, to = x->x_typedout; n--; to++)
         {
@@ -279,7 +279,7 @@ static void ptrobj_rewind(t_ptrobj *x)
         return;
     }
     glist = gpointer_getParentGlist (&x->x_gp);
-    gpointer_setAsScalarType(&x->x_gp, glist, 0);
+    gpointer_setAsScalar(&x->x_gp, glist, 0);
     ptrobj_bang(x);
 }
 
@@ -679,7 +679,7 @@ static void elem_float(t_elem *x, t_float f)
     if (indx < 0) indx = 0;
     if (indx >= nitems) indx = nitems-1;
 
-    gpointer_setAsWordType(&x->x_gp, array, 
+    gpointer_setAsWord(&x->x_gp, array, 
         (t_word *)((char *)(array->a_vector) + indx * elemsize));
     outlet_pointer(x->x_obj.te_outlet, &x->x_gp);
 }
@@ -1048,7 +1048,7 @@ static void append_float(t_append *x, t_float f)
         glist->gl_graphics = &sc->sc_g;
     }
 
-    gpointer_setAsScalarType (gp, glist, sc);
+    gpointer_setAsScalar (gp, glist, sc);
     //gp->gp_un.gp_scalar = sc;
     vec = sc->sc_vector;
     for (i = 0, vp = x->x_variables; i < nitems; i++, vp++)

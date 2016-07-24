@@ -92,7 +92,7 @@ void gpointer_init (t_gpointer *gp)
     gp->gp_uniqueIdentifier = 0;
 }
 
-void gpointer_setAsScalarType (t_gpointer *gp, t_glist *glist, t_scalar *scalar)
+void gpointer_setAsScalar (t_gpointer *gp, t_glist *glist, t_scalar *scalar)
 {
     gpointer_unset (gp);
     
@@ -103,7 +103,7 @@ void gpointer_setAsScalarType (t_gpointer *gp, t_glist *glist, t_scalar *scalar)
     gpointer_masterIncrement (gp->gp_master);
 }
 
-void gpointer_setAsWordType (t_gpointer *gp, t_array *array, t_word *w)
+void gpointer_setAsWord (t_gpointer *gp, t_array *array, t_word *w)
 {
     gpointer_unset (gp);
     

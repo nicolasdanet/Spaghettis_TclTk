@@ -209,8 +209,8 @@ void            gpointer_masterRelease                  (t_gmaster *master);
 // -----------------------------------------------------------------------------------------------------------
 
 void            gpointer_init                           (t_gpointer *gp);
-void            gpointer_setAsScalarType                (t_gpointer *gp, t_glist *owner, t_scalar *scalar);
-void            gpointer_setAsWordType                  (t_gpointer *gp, t_array *owner, t_word *w);
+void            gpointer_setAsScalar                    (t_gpointer *gp, t_glist *owner, t_scalar *scalar);
+void            gpointer_setAsWord                      (t_gpointer *gp, t_array *owner, t_word *w);
 void            gpointer_setByCopy                      (t_gpointer *gp, t_gpointer *toSet);
 void            gpointer_unset                          (t_gpointer *gp);
 t_unique        gpointer_getUniqueIdentifier            (t_gpointer *gp);

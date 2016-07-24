@@ -556,7 +556,9 @@ t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
     
     x->sc_templateIdentifier = templateIdentifier;
     
-    gpointer_setAsScalarType (&gp, owner, x); word_init (x->sc_vector, template, &gp);  /* ??? */
+    gpointer_setAsScalar (&gp, owner, x);
+    word_init (x->sc_vector, template, &gp);
+    gpointer_unset (&gp);
     //
     }
     

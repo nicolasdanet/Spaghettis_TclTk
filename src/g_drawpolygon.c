@@ -338,9 +338,9 @@ static int curve_click(t_gobj *z, t_glist *glist,
         curve_motion_field = 2*bestn;
         curve_motion_template = template;
         if (curve_motion_scalar)
-            gpointer_setAsScalarType(&curve_motion_gpointer, curve_motion_glist,
+            gpointer_setAsScalar(&curve_motion_gpointer, curve_motion_glist,
                 curve_motion_scalar);
-        else gpointer_setAsWordType(&curve_motion_gpointer,
+        else gpointer_setAsWord(&curve_motion_gpointer,
                 curve_motion_array, curve_motion_wp);
         canvas_setMotionFunction(glist, z, (t_motionfn)curve_motion, xpix, ypix);
     }

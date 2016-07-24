@@ -108,7 +108,7 @@ static void scalar_define_send(t_glist *x, t_symbol *s)
     else if (x->gl_graphics && pd_class(&x->gl_graphics->g_pd) == scalar_class)
     {
         t_gpointer gp = GPOINTER_INIT;
-        gpointer_setAsScalarType(&gp, x, (t_scalar *)&x->gl_graphics->g_pd);
+        gpointer_setAsScalar(&gp, x, (t_scalar *)&x->gl_graphics->g_pd);
         pd_pointer(s->s_thing, &gp);
         gpointer_unset(&gp);
     }

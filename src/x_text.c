@@ -313,7 +313,7 @@ static void text_define_topointer(t_text_define *x, t_gpointer *gp, t_symbol *s)
     /* bang: output a pointer to a struct containing this text */
 void text_define_bang(t_text_define *x)
 {
-    gpointer_setAsScalarType(&x->x_gp, x->x_canvas, x->x_scalar);
+    gpointer_setAsScalar(&x->x_gp, x->x_canvas, x->x_scalar);
     outlet_pointer(x->x_out, &x->x_gp);
 }
 

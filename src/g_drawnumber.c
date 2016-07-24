@@ -297,9 +297,9 @@ static int drawnumber_click(t_gobj *z, t_glist *glist,
                 word_getFloat(data, template, x->x_fieldname);
             drawnumber_motion_type = type;
             if (drawnumber_motion_scalar)
-                gpointer_setAsScalarType(&drawnumber_motion_gpointer, 
+                gpointer_setAsScalar(&drawnumber_motion_gpointer, 
                     drawnumber_motion_glist, drawnumber_motion_scalar);
-            else gpointer_setAsWordType(&drawnumber_motion_gpointer,
+            else gpointer_setAsWord(&drawnumber_motion_gpointer,
                     drawnumber_motion_array, drawnumber_motion_wp);
             canvas_setMotionFunction(glist, z, (t_motionfn)drawnumber_motion, xpix, ypix);
         }

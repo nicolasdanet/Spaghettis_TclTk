@@ -53,7 +53,8 @@ t_array *array_new (t_symbol *templateIdentifier, t_gpointer *parent)
     x->a_templateIdentifier = templateIdentifier;
     x->a_master             = gpointer_masterCreateWithArray (x);
     x->a_uniqueIdentifier   = utils_unique();
-    x->a_parent             = *parent;                                  /* ??? */
+    
+    gpointer_setByCopy (parent, &x->a_parent);
 
     word_init ((t_word *)(x->a_vector), template, parent);
     
@@ -67,6 +68,7 @@ void array_free (t_array *x)
         
     PD_ASSERT (template);
     
+    gpointer_unset (&x->a_parent);
     gpointer_masterRelease (x->a_master);
     
     for (i = 0; i < x->a_size; i++) {
