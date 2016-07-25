@@ -127,36 +127,49 @@ static void drawpolygon_motion (void *z, t_float dx, t_float dy, t_float modifie
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void drawpolygon_behaviorGetRectangle(t_gobj *z, t_glist *glist,
-    t_word *data, t_template *template, t_float basex, t_float basey,
-    int *xp1, int *yp1, int *xp2, int *yp2)
+static void drawpolygon_behaviorGetRectangle (t_gobj *z,
+    t_glist *glist,
+    t_word *w,
+    t_template *tmpl,
+    t_float baseX,
+    t_float baseY,
+    int *a,
+    int *b,
+    int *c,
+    int *d)
 {
     t_drawpolygon *x = (t_drawpolygon *)z;
-    int i, n = x->x_numberOfPoints;
-    t_fielddescriptor *f = x->x_coordinates;
-    int x1 = PD_INT_MAX, x2 = -PD_INT_MAX, y1 = PD_INT_MAX, y2 = -PD_INT_MAX;
-    if (!word_getFloatByField(data, template, &x->x_isVisible) ||
-        (x->x_flags & DRAWPOLYGON_NO_MOUSE))
-    {
-        *xp1 = *yp1 = PD_INT_MAX;
-        *xp2 = *yp2 = -PD_INT_MAX;
-        return;
+    
+    int x1 = PD_INT_MAX;
+    int y1 = PD_INT_MAX;
+    int x2 = -x1;
+    int y2 = -y1;
+    
+    int isVisible = (int)word_getFloatByField (w, tmpl, &x->x_isVisible);
+    
+    if (isVisible && !(x->x_flags & DRAWPOLYGON_NO_MOUSE)) {
+    //
+    int i;
+    t_fielddescriptor *fd = x->x_coordinates;
+    
+    for (i = 0; i < x->x_size; i += 2) {
+    // 
+    int m = canvas_valueToPositionX (glist, baseX + word_getFloatByFieldAsPosition (w, tmpl, fd + i));
+    int n = canvas_valueToPositionY (glist, baseY + word_getFloatByFieldAsPosition (w, tmpl, fd + i + 1));
+    
+    x1 = PD_MIN (m, x1);
+    x2 = PD_MAX (m, x2);
+    y1 = PD_MIN (n, y1);
+    y2 = PD_MAX (n, y2);
+    //
     }
-    for (i = 0, f = x->x_coordinates; i < n; i++, f += 2)
-    {
-        int xloc = canvas_valueToPositionX(glist,
-            basex + word_getFloatByFieldAsPosition (data, template, f));
-        int yloc = canvas_valueToPositionY(glist,
-            basey + word_getFloatByFieldAsPosition(data, template, f+1));
-        if (xloc < x1) x1 = xloc;
-        if (xloc > x2) x2 = xloc;
-        if (yloc < y1) y1 = yloc;
-        if (yloc > y2) y2 = yloc;
+    //
     }
-    *xp1 = x1;
-    *yp1 = y1;
-    *xp2 = x2;
-    *yp2 = y2; 
+    
+    *a = x1;
+    *b = y1;
+    *c = x2;
+    *d = y2; 
 }
 
 static void drawpolygon_behaviorDisplaced(t_gobj *z, t_glist *glist,

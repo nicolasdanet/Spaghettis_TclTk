@@ -311,7 +311,7 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
         //
         }
         
-        if (x2 < x1 || y2 < y1) { x1 = y1 = x2 = y2 = 0; PD_BUG; }
+        if (x2 < x1 || y2 < y1) { x1 = y1 = x2 = y2 = 0; }
     }
 
     *a = x1;
