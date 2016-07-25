@@ -352,27 +352,6 @@ static void plot_getrect(t_gobj *z, t_glist *glist,
     *yp2 = y2;
 }
 
-static void plot_displace(t_gobj *z, t_glist *glist,
-    t_word *data, t_template *template, t_float basex, t_float basey,
-    int dx, int dy)
-{
-        /* not yet */
-}
-
-static void plot_select(t_gobj *z, t_glist *glist,
-    t_word *data, t_template *template, t_float basex, t_float basey,
-    int state)
-{
-    /* not yet */
-}
-
-static void plot_activate(t_gobj *z, t_glist *glist,
-    t_word *data, t_template *template, t_float basex, t_float basey,
-    int state)
-{
-        /* not yet */
-}
-
 #define CLIP(x) ((x) < 1e20 && (x) > -1e20 ? x : 0)
 
 static void plot_vis(t_gobj *z, t_glist *glist, 
@@ -1062,9 +1041,6 @@ static int plot_click(t_gobj *z, t_glist *glist,
 t_parentwidgetbehavior plot_widgetbehavior =
 {
     plot_getrect,
-    plot_displace,
-    plot_select,
-    plot_activate,
     plot_vis,
     plot_click,
 };

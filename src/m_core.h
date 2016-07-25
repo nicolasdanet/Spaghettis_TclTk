@@ -52,19 +52,6 @@ typedef void (*t_parentgetrectanglefn)  (t_gobj *x, t_glist *glist, t_word *w, t
                                             int *b,
                                             int *c,
                                             int *d);
-typedef void (*t_parentdisplacedfn)     (t_gobj *x, t_glist *glist, t_word *w, t_template *tmpl,
-                                            t_float baseX,
-                                            t_float baseY,
-                                            int deltaX, 
-                                            int deltaY);
-typedef void (*t_parentselectedfn)      (t_gobj *x, t_glist *glist, t_word *w, t_template *tmpl,
-                                            t_float baseX,
-                                            t_float baseY,
-                                            int state);
-typedef void (*t_parentactivatedfn)     (t_gobj *x, t_glist *glist, t_word *w, t_template *tmpl,
-                                            t_float baseX,
-                                            t_float baseY,
-                                            int state);
 typedef void (*t_parentvisibilityfn)    (t_gobj *x, t_glist *glist, t_word *w, t_template *tmpl,
                                             t_float baseX,
                                             t_float baseY,
@@ -96,9 +83,6 @@ struct _widgetbehavior {
     
 struct _parentwidgetbehavior {
     t_parentgetrectanglefn          w_fnParentGetRectangle;
-    t_parentdisplacedfn             w_fnParentDisplaced;
-    t_parentselectedfn              w_fnParentSelected;
-    t_parentactivatedfn             w_fnParentActivated;
     t_parentvisibilityfn            w_fnParentVisibilityChanged;
     t_parentclickedfn               w_fnParentClicked;
     };
@@ -267,7 +251,7 @@ char        *class_getExternalDirectory                 (t_class *c);
 // -----------------------------------------------------------------------------------------------------------
 
 t_parentwidgetbehavior  *class_getParentWidget          (t_class *c);
-t_propertiesfn           class_getPropertiesFunction    (t_class *c);
+t_propertiesfn          class_getPropertiesFunction     (t_class *c);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

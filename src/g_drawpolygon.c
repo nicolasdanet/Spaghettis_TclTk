@@ -172,27 +172,6 @@ static void drawpolygon_behaviorGetRectangle (t_gobj *z,
     *d = y2; 
 }
 
-static void drawpolygon_behaviorDisplaced(t_gobj *z, t_glist *glist,
-    t_word *data, t_template *template, t_float basex, t_float basey,
-    int dx, int dy)
-{
-    /* refuse */
-}
-
-static void drawpolygon_behaviorSelected(t_gobj *z, t_glist *glist,
-    t_word *data, t_template *template, t_float basex, t_float basey,
-    int state)
-{
-    /* fill in later */
-}
-
-static void drawpolygon_behaviorActivated(t_gobj *z, t_glist *glist,
-    t_word *data, t_template *template, t_float basex, t_float basey,
-    int state)
-{
-    /* fill in later */
-}
-
 static void drawpolygon_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, 
     t_word *data, t_template *template, t_float basex, t_float basey,
     int vis)
@@ -321,9 +300,6 @@ static int drawpolygon_behaviorClicked(t_gobj *z, t_glist *glist,
 t_parentwidgetbehavior drawpolygon_parentWidgetBehavior =
     {
         drawpolygon_behaviorGetRectangle,
-        drawpolygon_behaviorDisplaced,
-        drawpolygon_behaviorSelected,
-        drawpolygon_behaviorActivated,
         drawpolygon_behaviorVisibilityChanged,
         drawpolygon_behaviorClicked,
     };

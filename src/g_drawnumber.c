@@ -182,28 +182,6 @@ static void drawnumber_getrect(t_gobj *z, t_glist *glist,
     *yp2 = yloc + fontheight * height;
 }
 
-static void drawnumber_displace(t_gobj *z, t_glist *glist,
-    t_word *data, t_template *template, t_float basex, t_float basey,
-    int dx, int dy)
-{
-    /* refuse */
-}
-
-static void drawnumber_select(t_gobj *z, t_glist *glist,
-    t_word *data, t_template *template, t_float basex, t_float basey,
-    int state)
-{
-    post("drawnumber_select %d", state);
-    /* fill in later */
-}
-
-static void drawnumber_activate(t_gobj *z, t_glist *glist,
-    t_word *data, t_template *template, t_float basex, t_float basey,
-    int state)
-{
-    post("drawnumber_activate %d", state);
-}
-
 static void drawnumber_vis(t_gobj *z, t_glist *glist, 
     t_word *data, t_template *template, t_float basex, t_float basey,
     int vis)
@@ -310,9 +288,6 @@ static int drawnumber_click(t_gobj *z, t_glist *glist,
 t_parentwidgetbehavior drawnumber_widgetbehavior =
 {
     drawnumber_getrect,
-    drawnumber_displace,
-    drawnumber_select,
-    drawnumber_activate,
     drawnumber_vis,
     drawnumber_click,
 };
