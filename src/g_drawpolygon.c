@@ -24,6 +24,12 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define DRAWPOLYGON_BUFFER_SIZE     4096
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 static int          drawpolygon_motionField;            /* Shared. */
 static t_float      drawpolygon_motionCumulativeX;      /* Shared. */
@@ -32,7 +38,7 @@ static t_float      drawpolygon_motionBaseX;            /* Shared. */
 static t_float      drawpolygon_motionBaseY;            /* Shared. */
 static t_float      drawpolygon_motionStepX;            /* Shared. */
 static t_float      drawpolygon_motionStepY;            /* Shared. */
-static t_gpointer   drawpolygon_motionPointer;          /* Shared. */   /* ??? */
+static t_gpointer   drawpolygon_motionPointer;          /* Shared. */
 
 static t_glist      *drawpolygon_motionView;            /* Shared. */
 static t_scalar     *drawpolygon_motionScalar;          /* Shared. */
@@ -145,9 +151,9 @@ static void drawpolygon_behaviorGetRectangle (t_gobj *z,
     int x2 = -x1;
     int y2 = -y1;
     
-    int isVisible = (int)word_getFloatByField (w, tmpl, &x->x_isVisible);
+    int visibleField = (int)word_getFloatByField (w, tmpl, &x->x_isVisible);
     
-    if (isVisible && !(x->x_flags & DRAWPOLYGON_NO_MOUSE)) {
+    if (visibleField && !(x->x_flags & DRAWPOLYGON_NO_MOUSE)) {
     //
     int i;
     t_fielddescriptor *fd = x->x_coordinates;
@@ -172,64 +178,78 @@ static void drawpolygon_behaviorGetRectangle (t_gobj *z,
     *d = y2; 
 }
 
-static void drawpolygon_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, 
-    t_word *data, t_template *template, t_float basex, t_float basey,
-    int vis)
+static void drawpolygon_behaviorVisibilityChanged (t_gobj *z, 
+    t_glist *glist, 
+    t_word *w,
+    t_template *tmpl,
+    t_float baseX,
+    t_float baseY,
+    int isVisible)
 {
     t_drawpolygon *x = (t_drawpolygon *)z;
-    int i, n = x->x_numberOfPoints;
-    t_fielddescriptor *f = x->x_coordinates;
     
-        /* see comment in plot_vis() */
-    if (vis && !word_getFloatByField(data, template, &x->x_isVisible))
-        return;
-    if (vis)
-    {
-        if (n > 1)
-        {
-            int flags = x->x_flags, closed = (flags & DRAWPOLYGON_CLOSED);
-            t_float width = word_getFloatByField(data, template, &x->x_width);
-            char outline[20], fill[20];
-            int pix[200];
-            if (n > 100)
-                n = 100;
-                /* calculate the pixel values before we start printing
-                out the TK message so that "error" printout won't be
-                interspersed with it.  Only show up to 100 points so we don't
-                have to allocate memory here. */
-            for (i = 0, f = x->x_coordinates; i < n; i++, f += 2)
-            {
-                pix[2*i] = canvas_valueToPositionX(glist,
-                    basex + word_getFloatByFieldAsPosition(data, template, f));
-                pix[2*i+1] = canvas_valueToPositionY(glist,
-                    basey + word_getFloatByFieldAsPosition(data, template, f+1));
-            }
-            if (width < 1) width = 1;
-            color_toEncodedString(outline, 20,
-                color_withDigits (word_getFloatByField(data, template, &x->x_colorOutline)));
-            if (flags & DRAWPOLYGON_CLOSED)
-            {
-                color_toEncodedString(fill, 20,
-                    color_withDigits (word_getFloatByField(data, template, &x->x_colorFill)));
-                sys_vGui(".x%lx.c create polygon\\\n",
-                    canvas_getView(glist));
-            }
-            else sys_vGui(".x%lx.c create line\\\n", canvas_getView(glist));
-            for (i = 0; i < n; i++)
-                sys_vGui("%d %d\\\n", pix[2*i], pix[2*i+1]);
-            sys_vGui("-width %f\\\n", width);
-            if (flags & DRAWPOLYGON_CLOSED) sys_vGui("-fill %s -outline %s\\\n",
-                fill, outline);
-            else sys_vGui("-fill %s\\\n", outline);
-            if (flags & DRAWPOLYGON_BEZIER) sys_vGui("-smooth 1\\\n");
-            sys_vGui("-tags curve%lx\n", data);
-        }
-        else post("warning: curves need at least two points to be graphed");
+    int visibleField = (int)word_getFloatByField (w, tmpl, &x->x_isVisible);
+    
+    if (!isVisible || visibleField) {
+    //
+    int i, n = x->x_numberOfPoints;
+    
+    if (n > 1) {
+    //
+    if (!isVisible) { sys_vGui (".x%lx.c delete CURVE%lx\n", canvas_getView (glist), w); }
+    else {
+    //
+    t_float width        = word_getFloatByField (w, tmpl, &x->x_width);
+    t_float colorFill    = word_getFloatByField (w, tmpl, &x->x_colorFill);
+    t_float colorOutline = word_getFloatByField (w, tmpl, &x->x_colorOutline);
+    t_symbol *filled     = color_toEncodedSymbol (color_withDigits ((int)colorFill));
+    t_symbol *outlined   = color_toEncodedSymbol (color_withDigits ((int)colorOutline));
+    
+    t_fielddescriptor *fd = x->x_coordinates;
+    t_error err = PD_ERROR_NONE;
+    char t[DRAWPOLYGON_BUFFER_SIZE] = { 0 };
+    int i;
+    
+    t_glist *view = canvas_getView (glist);
+    
+    if (x->x_flags & DRAWPOLYGON_CLOSED) {
+        err |= string_sprintf (t, DRAWPOLYGON_BUFFER_SIZE,      ".x%lx.c create polygon", view);
+    } else {
+        err |= string_sprintf (t, DRAWPOLYGON_BUFFER_SIZE,      ".x%lx.c create line", view);
     }
-    else
-    {
-        if (n > 1) sys_vGui(".x%lx.c delete curve%lx\n",
-            canvas_getView(glist), data);      
+    
+    for (i = 0; i < x->x_size; i += 2) {
+    //
+    int a = canvas_valueToPositionX (glist, baseX + word_getFloatByFieldAsPosition (w, tmpl, fd + i));
+    int b = canvas_valueToPositionY (glist, baseY + word_getFloatByFieldAsPosition (w, tmpl, fd + i + 1));
+        
+    err |= string_addSprintf (t, DRAWPOLYGON_BUFFER_SIZE,       " %d %d", a, b);
+    //
+    }
+    
+    if (x->x_flags & DRAWPOLYGON_BEZIER) {
+        err |= string_add (t, DRAWPOLYGON_BUFFER_SIZE,          " -smooth 1");
+    }
+        
+    if (x->x_flags & DRAWPOLYGON_CLOSED)  {
+        err |= string_addSprintf (t, DRAWPOLYGON_BUFFER_SIZE,   " -fill %s", filled->s_name);
+        err |= string_addSprintf (t, DRAWPOLYGON_BUFFER_SIZE,   " -outline %s", outlined->s_name);
+    } else {
+        err |= string_addSprintf (t, DRAWPOLYGON_BUFFER_SIZE,   " -fill %s", outlined->s_name);
+    }
+
+    err |= string_addSprintf (t, DRAWPOLYGON_BUFFER_SIZE,       " -width %f", PD_MAX (width, 1.0));
+    err |= string_addSprintf (t, DRAWPOLYGON_BUFFER_SIZE,       " -tags CURVE%lx\n", w);
+    
+    if (!err) { sys_gui (t); }
+    else {
+        PD_BUG;
+    }
+    //
+    }
+    //
+    }
+    //
     }
 }
 
