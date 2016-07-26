@@ -254,6 +254,20 @@ int template_fieldIsArrayAndValid (t_template *x, t_symbol *fieldName)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_symbol *template_makeIdentifierWithWildcard (t_symbol *s)
+{
+    PD_ASSERT (s);
+    
+    if (s == &s_ || s == sym___dash__) { return &s_; }
+    else { 
+        return (utils_makeBindSymbol (s));
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_template *template_findByIdentifier (t_symbol *s)
 {
     return ((t_template *)pd_findByClass (s, template_class));

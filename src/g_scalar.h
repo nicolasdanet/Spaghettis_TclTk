@@ -228,6 +228,8 @@ t_symbol        *gpointer_getTemplateIdentifier         (t_gpointer *gp);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_symbol        *template_makeIdentifierWithWildcard    (t_symbol *s);
+
 t_template      *template_findByIdentifier              (t_symbol *templateIdentifier);
 t_template      *template_new                           (t_symbol *templateIdentifier,
                                                             int argc,

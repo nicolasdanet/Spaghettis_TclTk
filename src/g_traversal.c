@@ -9,38 +9,19 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* This file defines Text objects which traverse data contained in scalars
-and arrays:
-
-pointer - point to an object belonging to a template
-get -     get numeric fields
-set -     change numeric fields
-element - get an array element
-getsize - get the size of an array
-setsize - change the size of an array
-append -  add an element to a list
-sublist - get a pointer into a list which is an element of another scalar
-
-*/
-
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>      /* for read/write to files */
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
 #include "g_graphics.h"
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 extern t_class *scalar_class;
 extern t_class *canvas_class;
 
-static t_symbol *traversal_getTemplateIdentifier (t_symbol *s)
-{
-    if (!*s->s_name || !strcmp (s->s_name, "-")) { return (&s_); }
-    else { 
-        return (utils_makeBindSymbol (s));
-    }
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 /*********  random utility function to find a binbuf in a datum */
 
@@ -110,7 +91,7 @@ static void *ptrobj_new(t_symbol *classname, int argc, t_atom *argv)
     for (; n--; to++)
     {
         to->to_outlet = outlet_new(&x->x_obj, &s_pointer);
-        to->to_type = traversal_getTemplateIdentifier(atom_getSymbol(argv++));
+        to->to_type = template_makeIdentifierWithWildcard(atom_getSymbol(argv++));
     }
     x->x_otherout = outlet_new(&x->x_obj, &s_pointer);
     x->x_bangout = outlet_new(&x->x_obj, &s_bang);
@@ -333,7 +314,7 @@ static void *get_new(t_symbol *why, int argc, t_atom *argv)
     t_atom at, *varvec;
     t_getvariable *sp;
 
-    x->x_templatesym = traversal_getTemplateIdentifier(atom_getSymbolAtIndex(0, argc, argv));
+    x->x_templatesym = template_makeIdentifierWithWildcard(atom_getSymbolAtIndex(0, argc, argv));
     if (argc < 2)
     {
         varcount = 1;
@@ -361,7 +342,7 @@ static void get_set(t_get *x, t_symbol *templatesym, t_symbol *field)
         post_error ("get: cannot set multiple fields.");
     else
     {
-        x->x_templatesym = traversal_getTemplateIdentifier(templatesym); 
+        x->x_templatesym = template_makeIdentifierWithWildcard(templatesym); 
         x->x_variables->gv_sym = field;
     }
 }
@@ -464,7 +445,7 @@ static void *set_new(t_symbol *why, int argc, t_atom *argv)
         argv++;
     }
     else x->x_issymbol = 0;
-    x->x_templatesym = traversal_getTemplateIdentifier(atom_getSymbolAtIndex(0, argc, argv));
+    x->x_templatesym = template_makeIdentifierWithWildcard(atom_getSymbolAtIndex(0, argc, argv));
     if (argc < 2)
     {
         varcount = 1;
@@ -499,7 +480,7 @@ static void set_set(t_set *x, t_symbol *templatesym, t_symbol *field)
         post_error ("set: cannot set multiple fields.");
     else
     {
-       x->x_templatesym = traversal_getTemplateIdentifier(templatesym); 
+       x->x_templatesym = template_makeIdentifierWithWildcard(templatesym); 
        x->x_variables->gv_sym = field;
        if (x->x_issymbol)
            x->x_variables->gv_w.w_symbol = &s_;
@@ -600,7 +581,7 @@ typedef struct _elem
 static void *elem_new(t_symbol *templatesym, t_symbol *fieldsym)
 {
     t_elem *x = (t_elem *)pd_new(elem_class);
-    x->x_templatesym = traversal_getTemplateIdentifier(templatesym);
+    x->x_templatesym = template_makeIdentifierWithWildcard(templatesym);
     x->x_fieldsym = fieldsym;
     gpointer_init(&x->x_gp);
     gpointer_init(&x->x_gparent);
@@ -611,7 +592,7 @@ static void *elem_new(t_symbol *templatesym, t_symbol *fieldsym)
 
 static void elem_set(t_elem *x, t_symbol *templatesym, t_symbol *fieldsym)
 {
-    x->x_templatesym = traversal_getTemplateIdentifier(templatesym);
+    x->x_templatesym = template_makeIdentifierWithWildcard(templatesym);
     x->x_fieldsym = fieldsym;
 }
 
@@ -713,7 +694,7 @@ typedef struct _getsize
 static void *getsize_new(t_symbol *templatesym, t_symbol *fieldsym)
 {
     t_getsize *x = (t_getsize *)pd_new(getsize_class);
-    x->x_templatesym = traversal_getTemplateIdentifier(templatesym);
+    x->x_templatesym = template_makeIdentifierWithWildcard(templatesym);
     x->x_fieldsym = fieldsym;
     outlet_new(&x->x_obj, &s_float);
     return (x);
@@ -721,7 +702,7 @@ static void *getsize_new(t_symbol *templatesym, t_symbol *fieldsym)
 
 static void getsize_set(t_getsize *x, t_symbol *templatesym, t_symbol *fieldsym)
 {
-    x->x_templatesym = traversal_getTemplateIdentifier(templatesym);
+    x->x_templatesym = template_makeIdentifierWithWildcard(templatesym);
     x->x_fieldsym = fieldsym;
 }
 
@@ -795,7 +776,7 @@ static void *setsize_new(t_symbol *templatesym, t_symbol *fieldsym,
     t_float newsize)
 {
     t_setsize *x = (t_setsize *)pd_new(setsize_class);
-    x->x_templatesym = traversal_getTemplateIdentifier(templatesym);
+    x->x_templatesym = template_makeIdentifierWithWildcard(templatesym);
     x->x_fieldsym = fieldsym;
     gpointer_init(&x->x_gp);
     
@@ -805,7 +786,7 @@ static void *setsize_new(t_symbol *templatesym, t_symbol *fieldsym,
 
 static void setsize_set(t_setsize *x, t_symbol *templatesym, t_symbol *fieldsym)
 {
-    x->x_templatesym = traversal_getTemplateIdentifier(templatesym);
+    x->x_templatesym = template_makeIdentifierWithWildcard(templatesym);
     x->x_fieldsym = fieldsym;
 }
 
@@ -951,7 +932,7 @@ static void *append_new(t_symbol *why, int argc, t_atom *argv)
     t_atom at, *varvec;
     t_appendvariable *sp;
 
-    x->x_templatesym = traversal_getTemplateIdentifier(atom_getSymbolAtIndex(0, argc, argv));
+    x->x_templatesym = template_makeIdentifierWithWildcard(atom_getSymbolAtIndex(0, argc, argv));
     if (argc < 2)
     {
         varcount = 1;
@@ -980,7 +961,7 @@ static void append_set(t_append *x, t_symbol *templatesym, t_symbol *field)
         post_error ("set: cannot set multiple fields.");
     else
     {
-       x->x_templatesym = traversal_getTemplateIdentifier(templatesym); 
+       x->x_templatesym = template_makeIdentifierWithWildcard(templatesym); 
        x->x_variables->gv_sym = field;
        x->x_variables->gv_f = 0;
     }

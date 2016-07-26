@@ -821,11 +821,11 @@
 				37ED6A501D2D038B007EC73D /* g_gpointer.c */,
 				378971D01C4F716700263434 /* g_template.c */,
 				379C1BDF1D3796B800C4D92C /* g_gtemplate.c */,
+				378971D31C4F716700263434 /* g_traversal.c */,
 				379C1BCA1D37961E00C4D92C /* g_field.c */,
 				379C1BAF1D37954000C4D92C /* g_drawpolygon.c */,
 				379C1B711D37934500C4D92C /* g_plot.c */,
 				379C1B3F1D3790C200C4D92C /* g_drawnumber.c */,
-				378971D31C4F716700263434 /* g_traversal.c */,
 				371430B01D0D46BC00E68D11 /* g_paint.c */,
 				374A76321CF5FA81001A57EB /* g_serialize.c */,
 			);
