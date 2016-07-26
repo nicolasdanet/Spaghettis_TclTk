@@ -63,7 +63,7 @@ void drawnumber_setup       (void);
 void message_setup          (void);
 void gatom_setup            (void);
 void text_setup             (void);
-void ptrobj_setup           (void);
+void pointer_setup          (void);
 void get_setup              (void);
 void set_setup              (void);
 void elem_setup             (void);
@@ -132,7 +132,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     message_setup();
     gatom_setup();
     text_setup();
-    ptrobj_setup();
+    pointer_setup();
     get_setup();
     set_setup();
     elem_setup();

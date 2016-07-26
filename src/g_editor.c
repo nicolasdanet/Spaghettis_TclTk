@@ -592,7 +592,7 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
     
     UCS4_CODE_POINT n = IS_FLOAT (argv + 1) ? (UCS4_CODE_POINT)(GET_FLOAT (argv + 1)) : 0;
     
-    /* Forbid following characters to avoid to mislead interpretation of scripts. */
+    /* Forbid following characters to avoid mislead interpretations at script level. */
     
     k |= (n == '{');
     k |= (n == '}');
