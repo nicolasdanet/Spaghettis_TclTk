@@ -97,6 +97,8 @@
 #include "g_template.c"
 #include "g_gtemplate.c"
 #include "g_traversal.c"
+#include "g_getsize.c"
+#include "g_setsize.c"
 #include "g_append.c"
 #include "g_field.c"
 #include "g_drawpolygon.c"

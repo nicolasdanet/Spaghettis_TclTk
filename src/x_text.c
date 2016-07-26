@@ -280,9 +280,43 @@ static void text_define_clear(t_text_define *x)
     textbuf_senditup(&x->x_textbuf);
 }
 
-    /* from g_traversal.c - maybe put in a header? */
+/*********  random utility function to find a binbuf in a datum */
+
 t_buffer *pointertobinbuf(t_pd *x, t_gpointer *gp, t_symbol *s,
-    const char *fname);
+    const char *fname)
+{
+    t_symbol *templatesym = gpointer_getTemplateIdentifier(gp), *arraytype;
+    t_template *template;
+    int onset, type;
+    t_buffer *b;
+    t_word *vec;
+    if (!templatesym)
+    {
+        post_error ("%s: bad pointer", fname);
+        return (0);
+    }
+    if (!(template = template_findByIdentifier(templatesym)))
+    {
+        post_error ("%s: couldn't find template %s", fname,
+            templatesym->s_name);
+        return (0);
+    }
+    if (!template_findField(template, s, &onset, &type, &arraytype))
+    {
+        post_error ("%s: %s.%s: no such field", fname,
+            templatesym->s_name, s->s_name);
+        return (0);
+    }
+    if (type != DATA_TEXT)
+    {
+        post_error ("%s: %s.%s: not a list", fname,
+            templatesym->s_name, s->s_name);
+        return (0);
+    }
+    vec = gpointer_getData (gp);
+    return (vec[onset].w_buffer);
+}
+
 
     /* these are unused; they copy text from this object to and from a text
         field in a scalar. */
