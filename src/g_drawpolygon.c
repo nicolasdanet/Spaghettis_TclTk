@@ -72,6 +72,19 @@ typedef struct _drawpolygon {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void drawpolygon_initialize (void)
+{
+}
+
+void drawpolygon_release (void)
+{
+    if (gpointer_isSet (&drawpolygon_pointer)) { gpointer_unset (&drawpolygon_pointer); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void drawpolygon_float (t_drawpolygon *x, t_float f)
 {
     if (field_isFloatConstant (&x->x_isVisible)) {

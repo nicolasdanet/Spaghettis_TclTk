@@ -675,8 +675,6 @@ void            gatom_click                             (t_gatom *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            garray_initialize                       (void);
-
 t_garray        *garray_makeObject                      (t_glist *glist,
                                                             t_symbol *name,
                                                             t_symbol *type,

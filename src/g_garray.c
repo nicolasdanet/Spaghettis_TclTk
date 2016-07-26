@@ -118,6 +118,10 @@ void garray_initialize (void)
     buffer_free (b);
 }
 
+void garray_release (void)
+{
+}
+
 static void garray_check (t_garray *x)
 {
     t_array *array = NULL; t_template *template = NULL;

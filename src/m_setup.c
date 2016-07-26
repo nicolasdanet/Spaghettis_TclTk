@@ -21,6 +21,8 @@ void object_initialize      (void);
 void bindlist_initialize    (void);
 void global_initialize      (void);
 void editor_initialize      (void);
+void drawpolygon_initialize (void);
+void garray_initialize      (void);
 void loader_initialize      (void);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -32,6 +34,8 @@ void object_release         (void);
 void bindlist_release       (void);
 void global_release         (void);
 void editor_release         (void);
+void drawpolygon_release    (void);
+void garray_release         (void);
 void loader_release         (void);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -92,13 +96,14 @@ void d_ugen_setup           (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void setup_initialize (void)
+void setup_initialize (void)        /* Note that order of calls below may be critical. */
 {
     interface_initialize();
     object_initialize();
     bindlist_initialize();
     global_initialize();
     editor_initialize();
+    drawpolygon_initialize();
     
     garray_setup();
     canvas_setup();
@@ -122,7 +127,6 @@ void setup_initialize (void)
     gatom_setup();
     text_setup();
     g_traversal_setup();
-    
     x_acoustics_setup();
     x_interface_setup();
     x_connective_setup();
@@ -137,7 +141,6 @@ void setup_initialize (void)
     x_gui_setup();
     x_list_setup();
     x_scalar_setup();
-    
     d_arithmetic_setup();
     d_array_setup();
     d_ctl_setup();
@@ -159,6 +162,9 @@ void setup_initialize (void)
 void setup_release (void)
 {
     loader_release();
+    garray_release();
+    
+    drawpolygon_release();
     editor_release();
     global_release();
     bindlist_release();
