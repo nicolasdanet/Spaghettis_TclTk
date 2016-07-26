@@ -367,12 +367,22 @@ t_float canvas_valueToPositionY (t_glist *glist, t_float f)
 
 t_float canvas_deltaPositionToValueX (t_glist *glist, t_float f)
 { 
-    return (f * (canvas_positionToValueX (glist, 1.0) - canvas_positionToValueX (glist, 0.0)));
+    return (f * canvas_stepX (glist));
 }
 
 t_float canvas_deltaPositionToValueY (t_glist *glist, t_float f)
 {
-    return (f * (canvas_positionToValueY (glist, 1.0) - canvas_positionToValueY (glist, 0.0)));
+    return (f * canvas_stepY (glist));
+}
+
+t_float canvas_stepX (t_glist *glist)
+{
+    return (canvas_positionToValueX (glist, 1.0) - canvas_positionToValueX (glist, 0.0));
+}
+
+t_float canvas_stepY (t_glist *glist)
+{
+    return (canvas_positionToValueY (glist, 1.0) - canvas_positionToValueY (glist, 0.0));
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -447,6 +447,8 @@ t_float         canvas_positionToValueY                 (t_glist *glist, t_float
 
 t_float         canvas_deltaPositionToValueX            (t_glist *glist, t_float f);
 t_float         canvas_deltaPositionToValueY            (t_glist *glist, t_float f);
+t_float         canvas_stepX                            (t_glist *glist);
+t_float         canvas_stepY                            (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

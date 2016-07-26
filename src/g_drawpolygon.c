@@ -26,6 +26,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define DRAWPOLYGON_HANDLE_SIZE     6
 #define DRAWPOLYGON_BUFFER_SIZE     4096
 
 // -----------------------------------------------------------------------------------------------------------
@@ -34,8 +35,8 @@
 static int          drawpolygon_motionField;            /* Shared. */
 static t_float      drawpolygon_motionCumulativeX;      /* Shared. */
 static t_float      drawpolygon_motionCumulativeY;      /* Shared. */
-static t_float      drawpolygon_motionBaseX;            /* Shared. */
-static t_float      drawpolygon_motionBaseY;            /* Shared. */
+static t_float      drawpolygon_motionCoordinateX;      /* Shared. */
+static t_float      drawpolygon_motionCoordinateY;      /* Shared. */
 static t_float      drawpolygon_motionStepX;            /* Shared. */
 static t_float      drawpolygon_motionStepY;            /* Shared. */
 static t_gpointer   drawpolygon_motionPointer;          /* Shared. */
@@ -109,7 +110,7 @@ static void drawpolygon_motion (void *z, t_float dx, t_float dy, t_float modifie
             drawpolygon_motionData,
             drawpolygon_motionTemplate,
             f,
-            drawpolygon_motionBaseX + drawpolygon_motionCumulativeX * drawpolygon_motionStepX); 
+            drawpolygon_motionCoordinateX + drawpolygon_motionCumulativeX * drawpolygon_motionStepX); 
     }
     if (field_isVariable (f+1) && (dy != 0))
     {
@@ -117,7 +118,7 @@ static void drawpolygon_motion (void *z, t_float dx, t_float dy, t_float modifie
             drawpolygon_motionData,
             drawpolygon_motionTemplate,
             f+1,
-            drawpolygon_motionBaseY + drawpolygon_motionCumulativeY * drawpolygon_motionStepY); 
+            drawpolygon_motionCoordinateY + drawpolygon_motionCumulativeY * drawpolygon_motionStepY); 
     }
         /* LATER figure out what to do to notify for an array? */
     if (drawpolygon_motionScalar)
@@ -253,65 +254,86 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     }
 }
 
-static int drawpolygon_behaviorClicked(t_gobj *z, t_glist *glist, 
-    t_word *data, t_template *template, t_scalar *sc, t_array *ap,
-    t_float basex, t_float basey,
-    int xpix, int ypix, int shift, int alt, int dbl, int doit)
+static int drawpolygon_behaviorClicked (t_gobj *z,
+    t_glist *glist, 
+    t_word *w,
+    t_template *tmpl,
+    t_scalar *scalar,
+    t_array *array,
+    t_float baseX,
+    t_float baseY,
+    int a,
+    int b,
+    int shift,
+    int alt,
+    int dbl,
+    int clicked)
 {
     t_drawpolygon *x = (t_drawpolygon *)z;
-    int i, n = x->x_numberOfPoints;
-    int bestn = -1;
-    int besterror = PD_INT_MAX;
-    t_fielddescriptor *f;
-    if (!word_getFloatByField(data, template, &x->x_isVisible))
-        return (0);
-    for (i = 0, f = x->x_coordinates; i < n; i++, f += 2)
-    {
-        int xval = word_getFloatByFieldAsPosition(data, template, f),
-            xloc = canvas_valueToPositionX(glist, basex + xval);
-        int yval = word_getFloatByFieldAsPosition(data, template, f+1),
-            yloc = canvas_valueToPositionY(glist, basey + yval);
-        int xerr = xloc - xpix, yerr = yloc - ypix;
-        if (!field_isVariable (f) && !field_isVariable (f+1))
-            continue;
-        if (xerr < 0)
-            xerr = -xerr;
-        if (yerr < 0)
-            yerr = -yerr;
-        if (yerr > xerr)
-            xerr = yerr;
-        if (xerr < besterror)
-        {
-            drawpolygon_motionBaseX = xval;
-            drawpolygon_motionBaseY = yval;
-            besterror = xerr;
-            bestn = i;
+    
+    int visibleField = (int)word_getFloatByField (w, tmpl, &x->x_isVisible);
+    
+    if (visibleField) {
+    //
+    int i;
+    int bestField = -1;
+    int bestError = PD_INT_MAX;
+    
+    t_fielddescriptor *fd = x->x_coordinates;
+
+    for (i = 0; i < x->x_size; i += 2) {
+    //
+    if (field_isVariable (fd + i) || field_isVariable (fd + i + 1)) {
+    //
+    int valueX    = word_getFloatByFieldAsPosition (w, tmpl, fd + i);
+    int valueY    = word_getFloatByFieldAsPosition (w, tmpl, fd + i + 1);
+    int positionX = canvas_valueToPositionX (glist, baseX + valueX);
+    int positionY = canvas_valueToPositionY (glist, baseY + valueY);
+    int errorX    = PD_ABS (positionX - a);
+    int errorY    = PD_ABS (positionY - b);
+    int error     = PD_MAX (errorX, errorY);
+
+    if (error < bestError) {
+        drawpolygon_motionCoordinateX = valueX;
+        drawpolygon_motionCoordinateY = valueY;
+        bestError = error;
+        bestField = i;
+    }
+    //
+    }
+    //
+    }
+    
+    if (bestError <= DRAWPOLYGON_HANDLE_SIZE) {
+    
+        if (clicked) {
+        
+            drawpolygon_motionStepX         = canvas_stepX (glist);
+            drawpolygon_motionStepY         = canvas_stepY (glist);
+            drawpolygon_motionCumulativeX   = 0.0;
+            drawpolygon_motionCumulativeY   = 0.0;
+            drawpolygon_motionView          = glist;
+            drawpolygon_motionScalar        = scalar;
+            drawpolygon_motionArray         = array;
+            drawpolygon_motionData          = w;
+            drawpolygon_motionField         = bestField;
+            drawpolygon_motionTemplate      = tmpl;
+            
+            if (drawpolygon_motionScalar) {
+                gpointer_setAsScalar (&drawpolygon_motionPointer, glist, scalar);
+            } else {
+                gpointer_setAsWord (&drawpolygon_motionPointer, array, w);
+            }
+            
+            canvas_setMotionFunction (glist, z, (t_motionfn)drawpolygon_motion, a, b);
         }
+    
+        return 1;
     }
-    if (besterror > 6)
-        return (0);
-    if (doit)
-    {
-        drawpolygon_motionStepX = canvas_positionToValueX(glist, 1)
-            - canvas_positionToValueX(glist, 0);
-        drawpolygon_motionStepY = canvas_positionToValueY(glist, 1)
-            - canvas_positionToValueY(glist, 0);
-        drawpolygon_motionCumulativeX = 0;
-        drawpolygon_motionCumulativeY = 0;
-        drawpolygon_motionView = glist;
-        drawpolygon_motionScalar = sc;
-        drawpolygon_motionArray = ap;
-        drawpolygon_motionData = data;
-        drawpolygon_motionField = 2*bestn;
-        drawpolygon_motionTemplate = template;
-        if (drawpolygon_motionScalar)
-            gpointer_setAsScalar(&drawpolygon_motionPointer, drawpolygon_motionView,
-                drawpolygon_motionScalar);
-        else gpointer_setAsWord(&drawpolygon_motionPointer,
-                drawpolygon_motionArray, drawpolygon_motionData);
-        canvas_setMotionFunction(glist, z, (t_motionfn)drawpolygon_motion, xpix, ypix);
+    //
     }
-    return (1);
+    
+    return 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -345,19 +367,18 @@ static void *drawpolygon_new (t_symbol *s, int argc, t_atom *argv)
     field_setAsFloatConstant (&x->x_isVisible, 1.0);
     
     while (argc > 0) {
-    //
-    t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
-    
-    if (argc > 1 && (t == sym___dash__v || t == sym___dash__visible)) {
-        field_setAsFloat (&x->x_isVisible, 1, argv + 1);
-        argc -= 2; argv += 2;
+
+        t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
         
-    } else if (t == sym___dash__x || t == sym___dash__inhibit) {
-        x->x_flags |= DRAWPOLYGON_NO_MOUSE;
-        argc -= 1; argv += 1;
-        
-    } else { break; }
-    //
+        if (argc > 1 && (t == sym___dash__v || t == sym___dash__visible)) {
+            field_setAsFloat (&x->x_isVisible, 1, argv + 1);
+            argc -= 2; argv += 2;
+            
+        } else if (t == sym___dash__x || t == sym___dash__inhibit) {
+            x->x_flags |= DRAWPOLYGON_NO_MOUSE;
+            argc -= 1; argv += 1;
+            
+        } else { break; }
     }
     
     if (argc && (x->x_flags & DRAWPOLYGON_CLOSED)) { field_setAsFloat (&x->x_colorFill, argc--, argv++); }
