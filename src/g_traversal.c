@@ -204,7 +204,7 @@ static void ptrobj_sendwindow(t_ptrobj *x, t_symbol *s, int argc, t_atom *argv)
     t_typedout *to;
     t_glist *glist;
     t_pd *canvas;
-    if (!gpointer_isValid(&x->x_gp, 1))
+    if (!gpointer_isValidOrHead (&x->x_gp))
     {
         post_error ("send-window: empty pointer");
         return;
@@ -223,7 +223,7 @@ static void ptrobj_send(t_ptrobj *x, t_symbol *s)
 {
     if (!s->s_thing)
         post_error ("%s: no such object", s->s_name);
-    else if (!gpointer_isValid(&x->x_gp, 1))
+    else if (!gpointer_isValidOrHead (&x->x_gp))
         post_error ("pointer_send: empty pointer");
     else pd_pointer(s->s_thing, &x->x_gp);
 }
@@ -233,7 +233,7 @@ static void ptrobj_bang(t_ptrobj *x)
     t_symbol *templatesym;
     int n;
     t_typedout *to;
-    if (!gpointer_isValid(&x->x_gp, 1))
+    if (!gpointer_isValidOrHead(&x->x_gp))
     {
         post_error ("pointer_bang: empty pointer");
         return;
@@ -268,7 +268,7 @@ static void ptrobj_rewind(t_ptrobj *x)
     t_glist *glist;
     t_pd *canvas;
     //t_gmaster *gs;
-    if (!gpointer_isValid(&x->x_gp, 1))
+    if (!gpointer_isValidOrHead(&x->x_gp))
     {
         post_error ("pointer_rewind: empty pointer");
         return;
@@ -374,7 +374,7 @@ static void get_pointer(t_get *x, t_gpointer *gp)
     t_word *vec; 
     t_getvariable *vp;
 
-    if (!gpointer_isValid(gp, 0))
+    if (!gpointer_isValid(gp))
     {
         post_error ("get: stale or empty pointer");
         return;
@@ -516,7 +516,7 @@ static void set_bang(t_set *x)
     t_setvariable *vp;
     t_gpointer *gp = &x->x_gp;
     t_word *vec;
-    if (!gpointer_isValid(gp, 0))
+    if (!gpointer_isValid(gp))
     {
         post_error ("set: empty pointer");
         return;
@@ -626,7 +626,7 @@ static void elem_float(t_elem *x, t_float f)
     t_array *array;
     int elemsize, type;
     
-    if (!gpointer_isValid(gparent, 0))
+    if (!gpointer_isValid(gparent))
     {
         post_error ("element: empty pointer");
         return;
@@ -733,7 +733,7 @@ static void getsize_pointer(t_getsize *x, t_gpointer *gp)
     t_word *w;
     t_array *array;
     int elemsize;
-    if (!gpointer_isValid(gp, 0))
+    if (!gpointer_isValid(gp))
     {
         post_error ("getsize: stale or empty pointer");
         return;
@@ -821,7 +821,7 @@ static void setsize_float(t_setsize *x, t_float f)
     int elemsize;
     int newsize = f;
     t_gpointer *gp = &x->x_gp;
-    if (!gpointer_isValid(&x->x_gp, 0))
+    if (!gpointer_isValid(&x->x_gp))
     {
         post_error ("setsize: empty pointer");
         return;

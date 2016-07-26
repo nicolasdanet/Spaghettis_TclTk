@@ -424,7 +424,7 @@ static t_buffer *text_client_getbuf(t_text_client *x)
             post_error ("text: couldn't find struct %s", x->tc_struct->s_name);
             return (0);
         }
-        if (!gpointer_isValid(&x->tc_gp, 0))
+        if (!gpointer_isValid(&x->tc_gp))
         {
             post_error ("text: stale or empty pointer");
             return (0);
@@ -465,7 +465,7 @@ static  void text_client_senditup(t_text_client *x)
             post_error ("text: couldn't find struct %s", x->tc_struct->s_name);
             return;
         }
-        if (!gpointer_isValid(&x->tc_gp, 0))
+        if (!gpointer_isValid(&x->tc_gp))
         {
             post_error ("text: stale or empty pointer");
             return;

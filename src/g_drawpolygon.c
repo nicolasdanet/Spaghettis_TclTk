@@ -109,7 +109,7 @@ static void drawpolygon_motion (void *z, t_float deltaX, t_float deltaY, t_float
 {
     t_drawpolygon *x = (t_drawpolygon *)z;
 
-    if (gpointer_isValid (&drawpolygon_pointer, 0)) {
+    if (gpointer_isValid (&drawpolygon_pointer)) {
     //
     t_fielddescriptor *fd = x->x_coordinates + drawpolygon_field;
         

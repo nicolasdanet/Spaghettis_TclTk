@@ -225,7 +225,7 @@ static void drawnumber_motion(void *z, t_float dx, t_float dy, t_float modifier)
 {
     t_drawnumber *x = (t_drawnumber *)z;
     // t_atom at;
-    if (!gpointer_isValid(&drawnumber_motion_gpointer, 0))
+    if (!gpointer_isValid(&drawnumber_motion_gpointer))
     {
         post("drawnumber_motion: scalar disappeared");
         return;

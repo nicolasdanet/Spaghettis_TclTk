@@ -85,6 +85,33 @@ static void gpointer_masterDecrement (t_gmaster *master)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static int gpointer_isValidRaw (t_gpointer *gp, int nullPointerIsValid)
+{
+    if (gpointer_isSet (gp)) {
+    //
+    t_gmaster *master = gp->gp_master;
+    
+    if (master->gm_type == POINTER_ARRAY) {
+        if (!nullPointerIsValid && !gp->gp_un.gp_w) { return 0; }
+        if (master->gm_un.gm_array->a_uniqueIdentifier == gp->gp_uniqueIdentifier)  { return 1; }
+        
+    } else if (master->gm_type == POINTER_GLIST) {
+        if (!nullPointerIsValid && !gp->gp_un.gp_scalar) { return 0; }
+        if (master->gm_un.gm_glist->gl_uniqueIdentifier == gp->gp_uniqueIdentifier) { return 1; }
+        
+    } else {
+        PD_ASSERT (master->gm_type == POINTER_NONE);
+    }
+    //
+    }
+    
+    return 0;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void gpointer_init (t_gpointer *gp)
 {
     gp->gp_un.gp_scalar     = NULL;
@@ -135,27 +162,14 @@ int gpointer_isSet (t_gpointer *gp)
     return (gp->gp_master != NULL);
 }
 
-int gpointer_isValid (t_gpointer *gp, int nullPointerIsValid)
+int gpointer_isValid (t_gpointer *gp)
 {
-    if (gpointer_isSet (gp)) {
-    //
-    t_gmaster *master = gp->gp_master;
-    
-    if (master->gm_type == POINTER_ARRAY) {
-        if (!nullPointerIsValid && !gp->gp_un.gp_w) { return 0; }
-        if (master->gm_un.gm_array->a_uniqueIdentifier == gp->gp_uniqueIdentifier)  { return 1; }
-        
-    } else if (master->gm_type == POINTER_GLIST) {
-        if (!nullPointerIsValid && !gp->gp_un.gp_scalar) { return 0; }
-        if (master->gm_un.gm_glist->gl_uniqueIdentifier == gp->gp_uniqueIdentifier) { return 1; }
-        
-    } else {
-        PD_ASSERT (master->gm_type == POINTER_NONE);
-    }
-    //
-    }
-    
-    return 0;
+    return gpointer_isValidRaw (gp, 0); 
+}
+
+int gpointer_isValidOrHead (t_gpointer *gp)
+{
+    return gpointer_isValidRaw (gp, 1); 
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -247,7 +261,7 @@ t_symbol *gpointer_getTemplateIdentifier (t_gpointer *gp)
     t_symbol *s = NULL;
     t_gmaster *master = gp->gp_master;
     
-    PD_ASSERT (gpointer_isValid (gp, 1));
+    PD_ASSERT (gpointer_isValidOrHead (gp));
     
     if (master->gm_type == POINTER_GLIST) {
         if (gp->gp_un.gp_scalar) { s = scalar_getTemplateIdentifier (gp->gp_un.gp_scalar); }

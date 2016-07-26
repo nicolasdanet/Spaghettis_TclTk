@@ -245,7 +245,7 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
             post_error ("array: couldn't find struct %s", x->tc_struct->s_name);
             return (0);
         }
-        if (!gpointer_isValid(&x->tc_gp, 0))
+        if (!gpointer_isValid(&x->tc_gp))
         {
             post_error ("array: stale or empty pointer");
             return (0);
