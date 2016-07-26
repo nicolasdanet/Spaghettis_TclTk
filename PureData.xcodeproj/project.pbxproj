@@ -144,7 +144,7 @@
 		379C1B721D37934500C4D92C /* g_plot.c in Sources */ = {isa = PBXBuildFile; fileRef = 379C1B711D37934500C4D92C /* g_plot.c */; };
 		379C1BB01D37954000C4D92C /* g_drawpolygon.c in Sources */ = {isa = PBXBuildFile; fileRef = 379C1BAF1D37954000C4D92C /* g_drawpolygon.c */; };
 		379C1BCB1D37961E00C4D92C /* g_field.c in Sources */ = {isa = PBXBuildFile; fileRef = 379C1BCA1D37961E00C4D92C /* g_field.c */; };
-		379C1BE01D3796B800C4D92C /* g_gtemplate.c in Sources */ = {isa = PBXBuildFile; fileRef = 379C1BDF1D3796B800C4D92C /* g_gtemplate.c */; };
+		379C1BE01D3796B800C4D92C /* g_struct.c in Sources */ = {isa = PBXBuildFile; fileRef = 379C1BDF1D3796B800C4D92C /* g_struct.c */; };
 		37A402681C77524D00001FD3 /* s_midiAPI.c in Sources */ = {isa = PBXBuildFile; fileRef = 37A402671C77524D00001FD3 /* s_midiAPI.c */; };
 		37A7BBF31D030B45000C7AB5 /* m_string.c in Sources */ = {isa = PBXBuildFile; fileRef = 37A7BBF21D030B45000C7AB5 /* m_string.c */; };
 		37BA30821CD1DB0F0091113F /* g_object.c in Sources */ = {isa = PBXBuildFile; fileRef = 37BA30811CD1DB0F0091113F /* g_object.c */; };
@@ -404,7 +404,7 @@
 		379C1B711D37934500C4D92C /* g_plot.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_plot.c; path = src/g_plot.c; sourceTree = "<group>"; };
 		379C1BAF1D37954000C4D92C /* g_drawpolygon.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_drawpolygon.c; path = src/g_drawpolygon.c; sourceTree = "<group>"; };
 		379C1BCA1D37961E00C4D92C /* g_field.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_field.c; path = src/g_field.c; sourceTree = "<group>"; };
-		379C1BDF1D3796B800C4D92C /* g_gtemplate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_gtemplate.c; path = src/g_gtemplate.c; sourceTree = "<group>"; };
+		379C1BDF1D3796B800C4D92C /* g_struct.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_struct.c; path = src/g_struct.c; sourceTree = "<group>"; };
 		379E8AAF1C9156D50081E7D3 /* s_midi_apis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = s_midi_apis.h; path = src/s_midi_apis.h; sourceTree = "<group>"; };
 		379E8AB01C9156E50081E7D3 /* s_audio_apis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = s_audio_apis.h; path = src/s_audio_apis.h; sourceTree = "<group>"; };
 		37A402671C77524D00001FD3 /* s_midiAPI.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_midiAPI.c; path = src/s_midiAPI.c; sourceTree = "<group>"; };
@@ -832,7 +832,7 @@
 				37ED6A041D2CFD00007EC73D /* g_array.c */,
 				37ED6A501D2D038B007EC73D /* g_gpointer.c */,
 				378971D01C4F716700263434 /* g_template.c */,
-				379C1BDF1D3796B800C4D92C /* g_gtemplate.c */,
+				379C1BDF1D3796B800C4D92C /* g_struct.c */,
 				378971D31C4F716700263434 /* g_pointer.c */,
 				37D643751D4796C700071C3C /* g_get.c */,
 				37D643531D4795ED00071C3C /* g_set.c */,
@@ -1146,7 +1146,7 @@
 				379C1B721D37934500C4D92C /* g_plot.c in Sources */,
 				379C1BB01D37954000C4D92C /* g_drawpolygon.c in Sources */,
 				379C1BCB1D37961E00C4D92C /* g_field.c in Sources */,
-				379C1BE01D3796B800C4D92C /* g_gtemplate.c in Sources */,
+				379C1BE01D3796B800C4D92C /* g_struct.c in Sources */,
 				37128AF81D43640300EFB4FC /* m_color.c in Sources */,
 				37D642BC1D47924100071C3C /* g_append.c in Sources */,
 				37D642F31D4793A800071C3C /* g_setsize.c in Sources */,

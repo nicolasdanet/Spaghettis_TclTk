@@ -97,7 +97,7 @@ struct _template {
     int                 tp_size;    
     t_dataslot          *tp_vector;   
     t_symbol            *tp_templateIdentifier; 
-    t_gtemplate         *tp_instance;               /* For now, only one instance is allowed. */
+    t_struct            *tp_instance;               /* For now, only one instance is allowed. */
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -240,8 +240,8 @@ t_dataslot      *template_getData                       (t_template *x);
 t_glist         *template_getFirstInstanceView          (t_template *x);
 
 int             template_hasInstance                    (t_template *x);
-void            template_registerInstance               (t_template *x, t_gtemplate *o);
-void            template_unregisterInstance             (t_template *x, t_gtemplate *o);
+void            template_registerInstance               (t_template *x, t_struct *o);
+void            template_unregisterInstance             (t_template *x, t_struct *o);
 
 void            template_notify                         (t_template *x, 
                                                             t_glist *owner,
@@ -275,9 +275,9 @@ int             template_fieldIsArrayAndValid           (t_template *x, t_symbol
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_glist         *gtemplate_getView                      (t_gtemplate *x);
+t_glist         *struct_getView                         (t_struct *x);
 
-void            gtemplate_notify                        (t_gtemplate *x, t_symbol *s, int argc, t_atom *argv);
+void            struct_notify                           (t_struct *x, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

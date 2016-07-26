@@ -432,7 +432,6 @@ struct _gatom;
 struct _glist;
 struct _gmaster;
 struct _gpointer;
-struct _gtemplate;
 struct _guiconnect;
 struct _inlet;
 struct _message;
@@ -440,6 +439,7 @@ struct _outconnect;
 struct _outlet;
 struct _parentwidgetbehavior;
 struct _pdinstance;
+struct _struct;
 struct _template;
 struct _widgetbehavior;
 
@@ -455,7 +455,6 @@ struct _widgetbehavior;
 #define t_glist                     struct _glist
 #define t_gmaster                   struct _gmaster
 #define t_gpointer                  struct _gpointer
-#define t_gtemplate                 struct _gtemplate
 #define t_guiconnect                struct _guiconnect
 #define t_inlet                     struct _inlet
 #define t_message                   struct _message
@@ -463,6 +462,7 @@ struct _widgetbehavior;
 #define t_outlet                    struct _outlet
 #define t_parentwidgetbehavior      struct _parentwidgetbehavior
 #define t_pdinstance                struct _pdinstance
+#define t_struct                    struct _struct
 #define t_template                  struct _template
 #define t_widgetbehavior            struct _widgetbehavior
 

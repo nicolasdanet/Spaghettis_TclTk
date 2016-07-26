@@ -47,14 +47,14 @@ int template_hasInstance (t_template *x)
     return (x->tp_instance != NULL);
 }
 
-void template_registerInstance (t_template *x, t_gtemplate *o)
+void template_registerInstance (t_template *x, t_struct *o)
 {
     paint_scalarsEraseAll();
     x->tp_instance = o;
     paint_scalarsDrawAll();
 }
 
-void template_unregisterInstance (t_template *x, t_gtemplate *o)
+void template_unregisterInstance (t_template *x, t_struct *o)
 {
     template_registerInstance (x, NULL);
 }
@@ -65,7 +65,7 @@ t_glist *template_getFirstInstanceView (t_template *x)
     
     if (!x->tp_instance) { return NULL; }
     else { 
-        return gtemplate_getView (x->tp_instance);
+        return struct_getView (x->tp_instance);
     }
 }
 
@@ -89,7 +89,7 @@ void template_notify (t_template *x,
     gpointer_setAsScalar (&gp, owner, scalar);
     SET_POINTER (a, &gp);
     for (i = 0; i < argc; i++) { *(a + i + 1) = *(argv + i); }
-    if (x->tp_instance) { gtemplate_notify (x->tp_instance, s, n, a); }
+    if (x->tp_instance) { struct_notify (x->tp_instance, s, n, a); }
     gpointer_unset (&gp);
     
     ATOMS_FREEA (a, n);

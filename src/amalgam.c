@@ -95,7 +95,7 @@
 #include "g_array.c"
 #include "g_gpointer.c"
 #include "g_template.c"
-#include "g_gtemplate.c"
+#include "g_struct.c"
 #include "g_pointer.c"
 #include "g_get.c"
 #include "g_set.c"

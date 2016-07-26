@@ -17,12 +17,12 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class  *gtemplate_class;               /* Shared. */
+static t_class  *struct_class;                  /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-struct _gtemplate {
+struct _struct {
     t_object    x_obj;                          /* MUST be the first. */
     t_template  *x_template;
     t_glist     *x_owner;
@@ -31,7 +31,7 @@ struct _gtemplate {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void gtemplate_notify (t_gtemplate *x, t_symbol *s, int argc, t_atom *argv)
+void struct_notify (t_struct *x, t_symbol *s, int argc, t_atom *argv)
 {
     outlet_anything (cast_object (x)->te_outlet, s, argc, argv);
 }
@@ -40,7 +40,7 @@ void gtemplate_notify (t_gtemplate *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_glist *gtemplate_getView (t_gtemplate *x)
+t_glist *struct_getView (t_struct *x)
 {
     return x->x_owner;
 }
@@ -49,9 +49,9 @@ t_glist *gtemplate_getView (t_gtemplate *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *gtemplate_newInstance (t_template *template, int argc, t_atom *argv)
+static void *struct_newInstance (t_template *template, int argc, t_atom *argv)
 {
-    t_gtemplate *x = (t_gtemplate *)pd_new (gtemplate_class);
+    t_struct *x = (t_struct *)pd_new (struct_class);
     
     x->x_template  = template;
     x->x_owner     = canvas_getCurrent();
@@ -63,9 +63,9 @@ static void *gtemplate_newInstance (t_template *template, int argc, t_atom *argv
     return x;
 }
 
-static void *gtemplate_newEmpty (void)
+static void *struct_newEmpty (void)
 {
-    t_gtemplate *x = (t_gtemplate *)pd_new (gtemplate_class);
+    t_struct *x = (t_struct *)pd_new (struct_class);
     
     x->x_template  = NULL;
     x->x_owner     = canvas_getCurrent();
@@ -75,11 +75,11 @@ static void *gtemplate_newEmpty (void)
     return x;
 }
 
-static void *gtemplate_new (t_symbol *s, int argc, t_atom *argv)
+static void *struct_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_symbol *name = atom_getSymbolAtIndex (0, argc, argv);
     
-    if (name == &s_) { return (gtemplate_newEmpty()); }
+    if (name == &s_) { return (struct_newEmpty()); }
     else {
     //
     t_symbol *templateIdentifier = utils_makeBindSymbol (name);
@@ -94,13 +94,13 @@ static void *gtemplate_new (t_symbol *s, int argc, t_atom *argv)
     } else {
         if (argc >= 1) { argc--; argv++; }
         if (!template) { template = template_new (templateIdentifier, argc, argv); }
-        return (gtemplate_newInstance (template, argc, argv));
+        return (struct_newInstance (template, argc, argv));
     }
     //
     }
 }
 
-static void gtemplate_free (t_gtemplate *x)
+static void struct_free (t_struct *x)
 {
     if (x->x_template) { template_unregisterInstance (x->x_template, x); }
 }
@@ -109,19 +109,19 @@ static void gtemplate_free (t_gtemplate *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void gtemplate_setup (void)
+void struct_setup (void)
 {
     t_class *c = NULL;
     
     c = class_new (sym_struct,
-            (t_newmethod)gtemplate_new,
-            (t_method)gtemplate_free,
-            sizeof (t_gtemplate),
+            (t_newmethod)struct_new,
+            (t_method)struct_free,
+            sizeof (t_struct),
             CLASS_DEFAULT | CLASS_NOINLET,
             A_GIMME,
             A_NULL);
                 
-    gtemplate_class = c;
+    struct_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

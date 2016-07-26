@@ -56,7 +56,7 @@ void vinlet_setup           (void);
 void voutlet_setup          (void);
 void scalar_setup           (void);
 void template_setup         (void);
-void gtemplate_setup        (void);
+void struct_setup           (void);
 void drawpolygon_setup      (void);
 void plot_setup             (void);
 void drawnumber_setup       (void);
@@ -125,7 +125,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     voutlet_setup();
     scalar_setup();
     template_setup();
-    gtemplate_setup();
+    struct_setup();
     drawpolygon_setup();
     plot_setup();
     drawnumber_setup();
