@@ -818,8 +818,8 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
         array_motion_scalar = sc;
         array_motion_array = ap;
         array_motion_template = elemtemplate;
-        array_motion_xperpix = canvas_deltaPositionToValueX (glist, 1.0);
-        array_motion_yperpix = canvas_deltaPositionToValueY (glist, 1.0);
+        array_motion_xperpix = canvas_stepX (glist);
+        array_motion_yperpix = canvas_stepY (glist);
             /* if we're a garray, the only one here, and if we appear to have
             only a 'y' field, click always succeeds and furthermore we'll
             call "motion" later. */

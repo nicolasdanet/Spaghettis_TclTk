@@ -32,20 +32,20 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int          drawpolygon_motionField;            /* Shared. */
-static t_float      drawpolygon_motionCumulativeX;      /* Shared. */
-static t_float      drawpolygon_motionCumulativeY;      /* Shared. */
-static t_float      drawpolygon_motionCoordinateX;      /* Shared. */
-static t_float      drawpolygon_motionCoordinateY;      /* Shared. */
-static t_float      drawpolygon_motionStepX;            /* Shared. */
-static t_float      drawpolygon_motionStepY;            /* Shared. */
-static t_gpointer   drawpolygon_motionPointer;          /* Shared. */
+static int          drawpolygon_field;                  /* Shared. */
+static t_float      drawpolygon_cumulativeX;            /* Shared. */
+static t_float      drawpolygon_cumulativeY;            /* Shared. */
+static t_float      drawpolygon_coordinateX;            /* Shared. */
+static t_float      drawpolygon_coordinateY;            /* Shared. */
+static t_float      drawpolygon_stepX;                  /* Shared. */
+static t_float      drawpolygon_stepY;                  /* Shared. */
+static t_gpointer   drawpolygon_pointer;                /* Shared. */
 
-static t_glist      *drawpolygon_motionView;            /* Shared. */
-static t_scalar     *drawpolygon_motionScalar;          /* Shared. */
-static t_array      *drawpolygon_motionArray;           /* Shared. */
-static t_word       *drawpolygon_motionData;            /* Shared. */
-static t_template   *drawpolygon_motionTemplate;        /* Shared. */
+static t_glist      *drawpolygon_view;                  /* Shared. */
+static t_scalar     *drawpolygon_scalar;                /* Shared. */
+static t_array      *drawpolygon_array;                 /* Shared. */
+static t_word       *drawpolygon_data;                  /* Shared. */
+static t_template   *drawpolygon_template;              /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -92,42 +92,38 @@ void drawpolygon_float (t_drawpolygon *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void drawpolygon_motion (void *z, t_float dx, t_float dy, t_float modifier)
+static void drawpolygon_motion (void *z, t_float deltaX, t_float deltaY, t_float modifier)
 {
     t_drawpolygon *x = (t_drawpolygon *)z;
-    t_fielddescriptor *f = x->x_coordinates + drawpolygon_motionField;
-    //t_atom at;
-    if (!gpointer_isValid(&drawpolygon_motionPointer, 0))
-    {
-        post("drawpolygon_motion: scalar disappeared");
-        return;
+
+    if (gpointer_isValid (&drawpolygon_pointer, 0)) {
+    //
+    t_fielddescriptor *fd = x->x_coordinates + drawpolygon_field;
+        
+    drawpolygon_cumulativeX += deltaX;
+    drawpolygon_cumulativeY += deltaY;
+    
+    t_float positionX = drawpolygon_coordinateX + (drawpolygon_cumulativeX * drawpolygon_stepX);
+    t_float positionY = drawpolygon_coordinateY + (drawpolygon_cumulativeY * drawpolygon_stepY);
+    
+    if (field_isVariable (fd + 0)) {
+        word_setFloatByFieldAsPosition (drawpolygon_data, drawpolygon_template, fd + 0, positionX); 
     }
-    drawpolygon_motionCumulativeX += dx;
-    drawpolygon_motionCumulativeY += dy;
-    if (field_isVariable (f) && (dx != 0))
-    {
-        word_setFloatByFieldAsPosition(
-            drawpolygon_motionData,
-            drawpolygon_motionTemplate,
-            f,
-            drawpolygon_motionCoordinateX + drawpolygon_motionCumulativeX * drawpolygon_motionStepX); 
+    
+    if (field_isVariable (fd + 1)) {
+        word_setFloatByFieldAsPosition (drawpolygon_data, drawpolygon_template, fd + 1, positionY);
     }
-    if (field_isVariable (f+1) && (dy != 0))
-    {
-        word_setFloatByFieldAsPosition(
-            drawpolygon_motionData,
-            drawpolygon_motionTemplate,
-            f+1,
-            drawpolygon_motionCoordinateY + drawpolygon_motionCumulativeY * drawpolygon_motionStepY); 
+    
+    if (drawpolygon_scalar) {
+        template_notify (drawpolygon_template, drawpolygon_view, drawpolygon_scalar, sym_change, 0, NULL);
+        scalar_redraw (drawpolygon_scalar, drawpolygon_view);
     }
-        /* LATER figure out what to do to notify for an array? */
-    if (drawpolygon_motionScalar)
-        template_notify(drawpolygon_motionTemplate, drawpolygon_motionView, 
-            drawpolygon_motionScalar, sym_change, 0, NULL);
-    if (drawpolygon_motionScalar)
-        scalar_redraw(drawpolygon_motionScalar, drawpolygon_motionView);
-    if (drawpolygon_motionArray)
-        array_redraw(drawpolygon_motionArray, drawpolygon_motionView);
+    
+    if (drawpolygon_array) { 
+        array_redraw (drawpolygon_array, drawpolygon_view);
+    }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -294,8 +290,8 @@ static int drawpolygon_behaviorClicked (t_gobj *z,
     int error     = PD_MAX (errorX, errorY);
 
     if (error < bestError) {
-        drawpolygon_motionCoordinateX = valueX;
-        drawpolygon_motionCoordinateY = valueY;
+        drawpolygon_coordinateX = valueX;
+        drawpolygon_coordinateY = valueY;
         bestError = error;
         bestField = i;
     }
@@ -308,21 +304,21 @@ static int drawpolygon_behaviorClicked (t_gobj *z,
     
         if (clicked) {
         
-            drawpolygon_motionStepX         = canvas_stepX (glist);
-            drawpolygon_motionStepY         = canvas_stepY (glist);
-            drawpolygon_motionCumulativeX   = 0.0;
-            drawpolygon_motionCumulativeY   = 0.0;
-            drawpolygon_motionView          = glist;
-            drawpolygon_motionScalar        = scalar;
-            drawpolygon_motionArray         = array;
-            drawpolygon_motionData          = w;
-            drawpolygon_motionField         = bestField;
-            drawpolygon_motionTemplate      = tmpl;
+            drawpolygon_stepX       = canvas_stepX (glist);
+            drawpolygon_stepY       = canvas_stepY (glist);
+            drawpolygon_cumulativeX = 0.0;
+            drawpolygon_cumulativeY = 0.0;
+            drawpolygon_view        = glist;
+            drawpolygon_scalar      = scalar;
+            drawpolygon_array       = array;
+            drawpolygon_data        = w;
+            drawpolygon_field       = bestField;
+            drawpolygon_template    = tmpl;
             
-            if (drawpolygon_motionScalar) {
-                gpointer_setAsScalar (&drawpolygon_motionPointer, glist, scalar);
+            if (scalar) {
+                gpointer_setAsScalar (&drawpolygon_pointer, glist, scalar);
             } else {
-                gpointer_setAsWord (&drawpolygon_motionPointer, array, w);
+                gpointer_setAsWord (&drawpolygon_pointer, array, w);
             }
             
             canvas_setMotionFunction (glist, z, (t_motionfn)drawpolygon_motion, a, b);

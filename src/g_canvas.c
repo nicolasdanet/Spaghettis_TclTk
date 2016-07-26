@@ -532,8 +532,8 @@ static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
                                     g->gl_graphMarginTop);
     } else {
         err = string_sprintf (t, PD_STRING, "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
-                                    canvas_deltaPositionToValueX (g, 1.0),
-                                    canvas_deltaPositionToValueY (g, 1.0),
+                                    canvas_stepX (g),
+                                    canvas_stepY (g),
                                     g->gl_isGraphOnParent,
                                     0.,
                                     1.,
