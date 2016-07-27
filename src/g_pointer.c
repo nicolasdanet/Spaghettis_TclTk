@@ -48,7 +48,7 @@ typedef struct _ptrobj {
 
 static void pointer_error (void)
 {
-    post_error (PD_TRANSLATE ("pointer: empty pointer"));
+    post_error (PD_TRANSLATE ("pointer: empty or invalid pointer"));
 } 
 
 // -----------------------------------------------------------------------------------------------------------
@@ -57,7 +57,7 @@ static void pointer_error (void)
 
 static void pointer_bang (t_pointer *x)
 {
-    if (!gpointer_isValidOrHead (&x->x_gpointer)) { pointer_error(); }
+    if (!gpointer_isValidNullAllowed (&x->x_gpointer)) { pointer_error(); }
     else {
     //
     int i;
@@ -89,28 +89,29 @@ static void pointer_pointer (t_pointer *x, t_gpointer *gp)
 
 static void pointer_sendwindow (t_pointer *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (!gpointer_isValidOrHead (&x->x_gpointer)) { pointer_error(); }
+    if (!gpointer_isValidNullAllowed (&x->x_gpointer)) { pointer_error(); }
     else if (argc && IS_SYMBOL (argv)) {
         t_glist *view = canvas_getView (gpointer_getView (&x->x_gpointer));
         pd_message (cast_pd (view), GET_SYMBOL (argv), argc - 1, argv + 1);
     }
 }
 
-
-    /* send the pointer to the named object */
-static void pointer_send(t_pointer *x, t_symbol *s)
+static void pointer_send (t_pointer *x, t_symbol *s)
 {
-    if (!s->s_thing)
-        post_error ("%s: no such object", s->s_name);
-    else if (!gpointer_isValidOrHead (&x->x_gpointer))
-        post_error ("pointer_send: empty pointer");
-    else pd_pointer(s->s_thing, &x->x_gpointer);
+    if (!gpointer_isValidNullAllowed (&x->x_gpointer)) { pointer_error(); }
+    else {
+        if (!s->s_thing) { post_error (PD_TRANSLATE ("%s: no such object"), s->s_name); }
+        else {
+            pd_pointer (s->s_thing, &x->x_gpointer);
+        }
+    }
 }
 
-static void pointer_traverse(t_pointer *x, t_symbol *s)
+static void pointer_traverse (t_pointer *x, t_symbol *s)
 {
-    t_glist *glist = (t_glist *)pd_findByClass(s, canvas_class);
-    if (glist) gpointer_setAsScalar(&x->x_gpointer, glist, 0);
+    t_glist *glist = (t_glist *)pd_findByClass (s, canvas_class);
+    
+    if (glist) { gpointer_setAsScalar (&x->x_gpointer, glist, 0); }
     else { post_error (x, "pointer: list '%s' not found", s->s_name); }
 }
 
@@ -123,7 +124,7 @@ static void pointer_rewind(t_pointer *x)
     t_glist *glist;
     t_pd *canvas;
     //t_gmaster *gs;
-    if (!gpointer_isValidOrHead(&x->x_gpointer))
+    if (!gpointer_isValidNullAllowed(&x->x_gpointer))
     {
         post_error ("pointer_rewind: empty pointer");
         return;

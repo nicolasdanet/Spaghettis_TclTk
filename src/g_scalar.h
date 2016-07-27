@@ -199,8 +199,9 @@ void            gpointer_setByCopy                      (t_gpointer *gp, t_gpoin
 void            gpointer_unset                          (t_gpointer *gp);
 t_unique        gpointer_getUniqueIdentifier            (t_gpointer *gp);
 int             gpointer_isSet                          (t_gpointer *gp);
+int             gpointer_isNull                         (t_gpointer *gp);
 int             gpointer_isValid                        (t_gpointer *gp);
-int             gpointer_isValidOrHead                  (t_gpointer *gp);
+int             gpointer_isValidNullAllowed             (t_gpointer *gp);
 int             gpointer_isScalar                       (t_gpointer *gp);
 int             gpointer_isWord                         (t_gpointer *gp);
 

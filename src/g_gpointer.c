@@ -97,18 +97,21 @@ static int gpointer_isValidRaw (t_gpointer *gp, int nullPointerIsValid)
 {
     if (gpointer_isSet (gp)) {
     //
+    if (!nullPointerIsValid && gpointer_isNull (gp)) { return 0; }
+    else {
+    //
     t_gmaster *master = gp->gp_master;
-    
+        
     if (master->gm_type == GPOINTER_ARRAY) {
-        if (!nullPointerIsValid && !gp->gp_un.gp_w) { return 0; }
         if (master->gm_un.gm_array->a_uniqueIdentifier == gp->gp_uniqueIdentifier)  { return 1; }
         
     } else if (master->gm_type == GPOINTER_GLIST) {
-        if (!nullPointerIsValid && !gp->gp_un.gp_scalar) { return 0; }
         if (master->gm_un.gm_glist->gl_uniqueIdentifier == gp->gp_uniqueIdentifier) { return 1; }
         
     } else {
         PD_ASSERT (master->gm_type == GPOINTER_NONE);
+    }
+    //
     }
     //
     }
@@ -170,12 +173,17 @@ int gpointer_isSet (t_gpointer *gp)
     return (gp->gp_master != NULL);
 }
 
+int gpointer_isNull (t_gpointer *gp)
+{
+    return (gp->gp_un.gp_scalar == NULL);
+}
+
 int gpointer_isValid (t_gpointer *gp)
 {
     return gpointer_isValidRaw (gp, 0); 
 }
 
-int gpointer_isValidOrHead (t_gpointer *gp)
+int gpointer_isValidNullAllowed (t_gpointer *gp)
 {
     return gpointer_isValidRaw (gp, 1); 
 }
@@ -250,10 +258,10 @@ t_array *gpointer_getParentArray (t_gpointer *gp)
 
 t_word *gpointer_getData (t_gpointer *gp)
 {
-    if (gpointer_isWord (gp)) { return gpointer_getWord (gp); } 
-    else {
-        PD_ASSERT (gpointer_isScalar (gp)); return (scalar_getData (gp->gp_un.gp_scalar));
-    }
+    if (gpointer_isWord (gp))       { return gpointer_getWord (gp); } 
+    else if (!gpointer_isNull (gp)) { return (scalar_getData (gpointer_getScalar (gp))); }
+    
+    return NULL;
 }
 
 t_glist *gpointer_getView (t_gpointer *gp)
@@ -266,19 +274,18 @@ t_glist *gpointer_getView (t_gpointer *gp)
 
 t_symbol *gpointer_getTemplateIdentifier (t_gpointer *gp)
 {
-    t_symbol *s = NULL;
     t_gmaster *master = gp->gp_master;
     
-    PD_ASSERT (gpointer_isValidOrHead (gp));
+    PD_ASSERT (gpointer_isValidNullAllowed (gp));
     
     if (master->gm_type == GPOINTER_GLIST) {
-        if (gp->gp_un.gp_scalar) { s = scalar_getTemplateIdentifier (gp->gp_un.gp_scalar); }
+        if (!gpointer_isNull (gp)) { return (scalar_getTemplateIdentifier (gpointer_getScalar (gp))); }
         
     } else {
-        s = array_getTemplateIdentifier (master->gm_un.gm_array);
+        return (array_getTemplateIdentifier (master->gm_un.gm_array));
     }
     
-    return s;
+    return NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------

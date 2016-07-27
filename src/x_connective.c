@@ -724,7 +724,7 @@ static void pack_bang(t_pack *x)
     t_gpointer *gp;
     t_atom *outvec;
     for (i = x->x_nptr, gp = x->x_gpointer; i--; gp++)
-        if (!gpointer_isValidOrHead(gp))
+        if (!gpointer_isValidNullAllowed(gp))
     {
         post_error ("pack: stale pointer");
         return;
