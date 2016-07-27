@@ -51,6 +51,15 @@ static void pointer_error (void)
     post_error (PD_TRANSLATE ("pointer: empty or invalid pointer"));
 } 
 
+static int pointer_nextSkip (t_gobj *z, t_glist *glist, int wantSelected)
+{
+    if (pd_class (z) != scalar_class) { return 1; }
+    else if (wantSelected && !canvas_isObjectSelected (glist, z)) { return 1; }
+    else {
+        return 0;
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -111,102 +120,70 @@ static void pointer_traverse (t_pointer *x, t_symbol *s)
 {
     t_glist *glist = (t_glist *)pd_findByClass (s, canvas_class);
     
-    if (glist) { gpointer_setAsScalar (&x->x_gpointer, glist, 0); }
-    else { post_error (x, "pointer: list '%s' not found", s->s_name); }
+    if (glist) { gpointer_setAsScalar (&x->x_gpointer, glist, NULL); }
+    else { 
+        pointer_error();
+    }
 }
 
-static void pointer_rewind(t_pointer *x)
+static void pointer_rewind (t_pointer *x)
 {
-    t_scalar *sc;
-    t_symbol *templatesym;
-    int n;
-    t_typedout *to;
-    t_glist *glist;
-    t_pd *canvas;
-    //t_gmaster *gs;
-    if (!gpointer_isValidNullAllowed(&x->x_gpointer))
-    {
-        post_error ("pointer_rewind: empty pointer");
-        return;
+    if (!gpointer_isValidNullAllowed (&x->x_gpointer)) { pointer_error(); }
+    else {
+    //
+    if (gpointer_isScalar (&x->x_gpointer)) {
+        gpointer_setAsScalar (&x->x_gpointer, gpointer_getParentGlist (&x->x_gpointer), NULL);
     }
-
-    if (!gpointer_isScalar (&x->x_gpointer)) {
-        post_error ("pointer_rewind: sorry, unavailable for arrays");
-        return;
+    //
     }
-    glist = gpointer_getParentGlist (&x->x_gpointer);
-    gpointer_setAsScalar(&x->x_gpointer, glist, 0);
-    pointer_bang(x);
 }
 
-static void pointer_vnext(t_pointer *x, t_float f)
+static void pointer_nextSelected (t_pointer *x, t_float f)
 {
-    t_gobj *gobj;
-    t_gpointer *gp = &x->x_gpointer;
-    t_glist *glist;
-    int wantselected = (f != 0);
+    int wantSelected = (f != 0.0);
+    
+    if (gpointer_isValidNullAllowed (&x->x_gpointer) && gpointer_isScalar (&x->x_gpointer)) {
+    //
+    t_glist *glist = gpointer_getParentGlist (&x->x_gpointer);
 
-    if (!gpointer_isSet (gp))
-    {
-        post_error ("pointer_next: no current pointer");
-        return;
-    }
-    if (!gpointer_isScalar (gp)) {
-        post_error ("pointer_next: lists only, not arrays");
-        return;
-    }
+    if (!wantSelected || canvas_isMapped (glist)) {
+    //
+    t_gobj *z = cast_gobj (gpointer_getScalar (&x->x_gpointer));
     
-    glist = gpointer_getParentGlist (gp);
-    if (glist->gl_uniqueIdentifier != gpointer_getUniqueIdentifier (gp))    /* isValid ? */
-    {
-        post_error ("pointer_next: stale pointer");
-        return;
+    if (!z) { z = glist->gl_graphics; }
+    else { 
+        z = z->g_next;
     }
     
-    if (wantselected && !canvas_isMapped(glist))
-    {
-        post_error ("pointer_vnext: next-selected only works for a visible window");
-        return;
-    }
+    while (z && pointer_nextSkip (z, glist, wantSelected)) { z = z->g_next; }
     
-    t_scalar *scalar = gpointer_getScalar (gp);
-    gobj = cast_gobj (scalar);
-    
-    if (!gobj) gobj = glist->gl_graphics;
-    else gobj = gobj->g_next;
-    while (gobj && ((pd_class(&gobj->g_pd) != scalar_class) ||
-        (wantselected && !canvas_isObjectSelected(glist, gobj))))
-            gobj = gobj->g_next;
-    
-    if (gobj)
-    {
-        t_typedout *to;
-        int n;
-        t_scalar *sc = (t_scalar *)gobj;
-        t_symbol *templatesym = sc->sc_templateIdentifier;
+    if (!z) { gpointer_unset (&x->x_gpointer); outlet_bang (x->x_outletBang); }
+    else {
+        int i;
+        t_symbol *templateIdentifier = scalar_getTemplateIdentifier (cast_scalar (z));
+        
+        gpointer_setAsScalar (&x->x_gpointer, glist, cast_scalar (z));
 
-        gpointer_setAsScalar (gp, glist, sc);
-        // gp->gp_un.gp_scalar = sc; 
-        for (n = x->x_outletTypedSize, to = x->x_outletTyped; n--; to++)
-        {
-            if (to->to_type == templatesym)
-            {
-                outlet_pointer(to->to_outlet, &x->x_gpointer);
-                return;
+        for (i = 0; i < x->x_outletTypedSize; i++) {
+            if (x->x_outletTyped[i].to_type == templateIdentifier) {
+                outlet_pointer (x->x_outletTyped[i].to_outlet, &x->x_gpointer); return;
             }
         }
-        outlet_pointer(x->x_outletOther, &x->x_gpointer);
+        
+        outlet_pointer (x->x_outletOther, &x->x_gpointer);
     }
-    else
-    {
-        gpointer_unset(gp);
-        outlet_bang(x->x_outletBang);
+    
+    return;
     }
+    //
+    }
+    
+    pointer_error();
 }
 
-static void pointer_next(t_pointer *x)
+static void pointer_next (t_pointer *x)
 {
-    pointer_vnext(x, 0);
+    pointer_nextSelected (x, 0.0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -267,11 +244,11 @@ void pointer_setup (void)
     class_addMethod (c, (t_method)pointer_traverse,     sym_traverse,               A_SYMBOL, A_NULL); 
     class_addMethod (c, (t_method)pointer_rewind,       sym_rewind,                 A_NULL); 
     class_addMethod (c, (t_method)pointer_next,         sym_next,                   A_NULL);
-    class_addMethod (c, (t_method)pointer_vnext,        sym_nextselected,           A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)pointer_nextSelected, sym_nextselected,           A_DEFFLOAT, A_NULL);
     
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)pointer_vnext,        sym_vnext,                  A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)pointer_nextSelected, sym_vnext,                  A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)pointer_sendwindow,   sym_send__dash__window,     A_GIMME, A_NULL); 
     
     #endif
