@@ -254,7 +254,7 @@ int template_fieldIsArrayAndValid (t_template *x, t_symbol *fieldName)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol *template_makeIdentifierWithWildcard (t_symbol *s)
+t_symbol *template_makeBindSymbolWithWildcard (t_symbol *s)
 {
     PD_ASSERT (s);
     

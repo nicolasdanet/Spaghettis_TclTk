@@ -35,11 +35,11 @@ typedef struct {
 
 typedef struct _ptrobj {
     t_object    x_obj;
-    t_gpointer  x_gp;
-    int         x_ntypedout;
-    t_typedout  *x_typedout;
-    t_outlet    *x_otherout;
-    t_outlet    *x_bangout;
+    t_gpointer  x_gpointer;
+    int         x_outletTypedSize;
+    t_typedout  *x_outletTyped;
+    t_outlet    *x_outletOther;
+    t_outlet    *x_outletBang;
     } t_pointer;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -51,28 +51,28 @@ static void pointer_bang(t_pointer *x)
     t_symbol *templatesym;
     int n;
     t_typedout *to;
-    if (!gpointer_isValidOrHead(&x->x_gp))
+    if (!gpointer_isValidOrHead(&x->x_gpointer))
     {
         post_error ("pointer_bang: empty pointer");
         return;
     }
-    templatesym = gpointer_getTemplateIdentifier(&x->x_gp);
-    for (n = x->x_ntypedout, to = x->x_typedout; n--; to++)
+    templatesym = gpointer_getTemplateIdentifier(&x->x_gpointer);
+    for (n = x->x_outletTypedSize, to = x->x_outletTyped; n--; to++)
     {
         if (to->to_type == templatesym)
         {
-            outlet_pointer(to->to_outlet, &x->x_gp);
+            outlet_pointer(to->to_outlet, &x->x_gpointer);
             return;
         }
     }
-    outlet_pointer(x->x_otherout, &x->x_gp);
+    outlet_pointer(x->x_outletOther, &x->x_gpointer);
 }
 
 
-static void pointer_pointer(t_pointer *x, t_gpointer *gp)
+static void pointer_pointer (t_pointer *x, t_gpointer *gp)
 {
-    //gpointer_unset(&x->x_gp);
-    gpointer_setByCopy(gp, &x->x_gp);
+    //gpointer_unset(&x->x_gpointer);
+    gpointer_setByCopy(gp, &x->x_gpointer);
     pointer_bang(x);
 }
 
@@ -89,13 +89,13 @@ static void pointer_sendwindow(t_pointer *x, t_symbol *s, int argc, t_atom *argv
     t_typedout *to;
     t_glist *glist;
     t_pd *canvas;
-    if (!gpointer_isValidOrHead (&x->x_gp))
+    if (!gpointer_isValidOrHead (&x->x_gpointer))
     {
         post_error ("send-window: empty pointer");
         return;
     }
     
-    glist = gpointer_getView (&x->x_gp);
+    glist = gpointer_getView (&x->x_gpointer);
     canvas = (t_pd *)canvas_getView(glist);
     if (argc && argv->a_type == A_SYMBOL)
         pd_message(canvas, argv->a_w.w_symbol, argc-1, argv+1);
@@ -108,15 +108,15 @@ static void pointer_send(t_pointer *x, t_symbol *s)
 {
     if (!s->s_thing)
         post_error ("%s: no such object", s->s_name);
-    else if (!gpointer_isValidOrHead (&x->x_gp))
+    else if (!gpointer_isValidOrHead (&x->x_gpointer))
         post_error ("pointer_send: empty pointer");
-    else pd_pointer(s->s_thing, &x->x_gp);
+    else pd_pointer(s->s_thing, &x->x_gpointer);
 }
 
 static void pointer_traverse(t_pointer *x, t_symbol *s)
 {
     t_glist *glist = (t_glist *)pd_findByClass(s, canvas_class);
-    if (glist) gpointer_setAsScalar(&x->x_gp, glist, 0);
+    if (glist) gpointer_setAsScalar(&x->x_gpointer, glist, 0);
     else { post_error (x, "pointer: list '%s' not found", s->s_name); }
 }
 
@@ -129,25 +129,25 @@ static void pointer_rewind(t_pointer *x)
     t_glist *glist;
     t_pd *canvas;
     //t_gmaster *gs;
-    if (!gpointer_isValidOrHead(&x->x_gp))
+    if (!gpointer_isValidOrHead(&x->x_gpointer))
     {
         post_error ("pointer_rewind: empty pointer");
         return;
     }
 
-    if (!gpointer_isScalar (&x->x_gp)) {
+    if (!gpointer_isScalar (&x->x_gpointer)) {
         post_error ("pointer_rewind: sorry, unavailable for arrays");
         return;
     }
-    glist = gpointer_getParentGlist (&x->x_gp);
-    gpointer_setAsScalar(&x->x_gp, glist, 0);
+    glist = gpointer_getParentGlist (&x->x_gpointer);
+    gpointer_setAsScalar(&x->x_gpointer, glist, 0);
     pointer_bang(x);
 }
 
 static void pointer_vnext(t_pointer *x, t_float f)
 {
     t_gobj *gobj;
-    t_gpointer *gp = &x->x_gp;
+    t_gpointer *gp = &x->x_gpointer;
     t_glist *glist;
     int wantselected = (f != 0);
 
@@ -192,20 +192,20 @@ static void pointer_vnext(t_pointer *x, t_float f)
 
         gpointer_setAsScalar (gp, glist, sc);
         // gp->gp_un.gp_scalar = sc; 
-        for (n = x->x_ntypedout, to = x->x_typedout; n--; to++)
+        for (n = x->x_outletTypedSize, to = x->x_outletTyped; n--; to++)
         {
             if (to->to_type == templatesym)
             {
-                outlet_pointer(to->to_outlet, &x->x_gp);
+                outlet_pointer(to->to_outlet, &x->x_gpointer);
                 return;
             }
         }
-        outlet_pointer(x->x_otherout, &x->x_gp);
+        outlet_pointer(x->x_outletOther, &x->x_gpointer);
     }
     else
     {
         gpointer_unset(gp);
-        outlet_bang(x->x_bangout);
+        outlet_bang(x->x_outletBang);
     }
 }
 
@@ -218,29 +218,34 @@ static void pointer_next(t_pointer *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *pointer_new (t_symbol *classname, int argc, t_atom *argv)
+static void *pointer_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_pointer *x = (t_pointer *)pd_new(pointer_class);
-    t_typedout *to;
-    int n;
-    gpointer_init(&x->x_gp);
-    x->x_typedout = to = (t_typedout *)PD_MEMORY_GET(argc * sizeof (*to));
-    x->x_ntypedout = n = argc;
-    for (; n--; to++)
-    {
-        to->to_outlet = outlet_new(&x->x_obj, &s_pointer);
-        to->to_type = template_makeIdentifierWithWildcard(atom_getSymbol(argv++));
+    t_pointer *x = (t_pointer *)pd_new (pointer_class);
+    int i, n = argc;
+    
+    gpointer_init (&x->x_gpointer);
+    
+    x->x_outletTypedSize = n;
+    x->x_outletTyped     = (t_typedout *)PD_MEMORY_GET (n * sizeof (t_typedout));
+    
+    for (i = 0; i < n; i++) {
+        x->x_outletTyped[i].to_type   = template_makeBindSymbolWithWildcard (atom_getSymbol (argv + i));
+        x->x_outletTyped[i].to_outlet = outlet_new (cast_object (x), &s_pointer);
     }
-    x->x_otherout = outlet_new(&x->x_obj, &s_pointer);
-    x->x_bangout = outlet_new(&x->x_obj, &s_bang);
-    inlet_newPointer(&x->x_obj, &x->x_gp);
-    return (x);
+    
+    x->x_outletOther = outlet_new (cast_object (x), &s_pointer);
+    x->x_outletBang  = outlet_new (cast_object (x), &s_bang);
+    
+    inlet_newPointer (cast_object (x), &x->x_gpointer);
+    
+    return x;
 }
 
-static void pointer_free(t_pointer *x)
+static void pointer_free (t_pointer *x)
 {
-    PD_MEMORY_FREE(x->x_typedout);
-    gpointer_unset(&x->x_gp);
+    PD_MEMORY_FREE (x->x_outletTyped);
+    
+    gpointer_unset (&x->x_gpointer);
 }
 
 // -----------------------------------------------------------------------------------------------------------

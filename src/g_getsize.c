@@ -30,7 +30,7 @@ typedef struct _getsize
 static void *getsize_new(t_symbol *templatesym, t_symbol *fieldsym)
 {
     t_getsize *x = (t_getsize *)pd_new(getsize_class);
-    x->x_templatesym = template_makeIdentifierWithWildcard(templatesym);
+    x->x_templatesym = template_makeBindSymbolWithWildcard(templatesym);
     x->x_fieldsym = fieldsym;
     outlet_new(&x->x_obj, &s_float);
     return (x);
@@ -38,7 +38,7 @@ static void *getsize_new(t_symbol *templatesym, t_symbol *fieldsym)
 
 static void getsize_set(t_getsize *x, t_symbol *templatesym, t_symbol *fieldsym)
 {
-    x->x_templatesym = template_makeIdentifierWithWildcard(templatesym);
+    x->x_templatesym = template_makeBindSymbolWithWildcard(templatesym);
     x->x_fieldsym = fieldsym;
 }
 

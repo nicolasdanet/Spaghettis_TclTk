@@ -31,7 +31,7 @@ static void *setsize_new(t_symbol *templatesym, t_symbol *fieldsym,
     t_float newsize)
 {
     t_setsize *x = (t_setsize *)pd_new(setsize_class);
-    x->x_templatesym = template_makeIdentifierWithWildcard(templatesym);
+    x->x_templatesym = template_makeBindSymbolWithWildcard(templatesym);
     x->x_fieldsym = fieldsym;
     gpointer_init(&x->x_gp);
     
@@ -41,7 +41,7 @@ static void *setsize_new(t_symbol *templatesym, t_symbol *fieldsym,
 
 static void setsize_set(t_setsize *x, t_symbol *templatesym, t_symbol *fieldsym)
 {
-    x->x_templatesym = template_makeIdentifierWithWildcard(templatesym);
+    x->x_templatesym = template_makeBindSymbolWithWildcard(templatesym);
     x->x_fieldsym = fieldsym;
 }
 

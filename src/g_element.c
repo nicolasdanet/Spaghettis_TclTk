@@ -31,7 +31,7 @@ typedef struct _elem
 static void *elem_new(t_symbol *templatesym, t_symbol *fieldsym)
 {
     t_elem *x = (t_elem *)pd_new(elem_class);
-    x->x_templatesym = template_makeIdentifierWithWildcard(templatesym);
+    x->x_templatesym = template_makeBindSymbolWithWildcard(templatesym);
     x->x_fieldsym = fieldsym;
     gpointer_init(&x->x_gp);
     gpointer_init(&x->x_gparent);
@@ -42,7 +42,7 @@ static void *elem_new(t_symbol *templatesym, t_symbol *fieldsym)
 
 static void elem_set(t_elem *x, t_symbol *templatesym, t_symbol *fieldsym)
 {
-    x->x_templatesym = template_makeIdentifierWithWildcard(templatesym);
+    x->x_templatesym = template_makeBindSymbolWithWildcard(templatesym);
     x->x_fieldsym = fieldsym;
 }
 

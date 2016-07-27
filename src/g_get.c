@@ -40,7 +40,7 @@ static void *get_new(t_symbol *why, int argc, t_atom *argv)
     t_atom at, *varvec;
     t_getvariable *sp;
 
-    x->x_templatesym = template_makeIdentifierWithWildcard(atom_getSymbolAtIndex(0, argc, argv));
+    x->x_templatesym = template_makeBindSymbolWithWildcard(atom_getSymbolAtIndex(0, argc, argv));
     if (argc < 2)
     {
         varcount = 1;
@@ -68,7 +68,7 @@ static void get_set(t_get *x, t_symbol *templatesym, t_symbol *field)
         post_error ("get: cannot set multiple fields.");
     else
     {
-        x->x_templatesym = template_makeIdentifierWithWildcard(templatesym); 
+        x->x_templatesym = template_makeBindSymbolWithWildcard(templatesym); 
         x->x_variables->gv_sym = field;
     }
 }
