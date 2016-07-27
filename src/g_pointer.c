@@ -46,60 +46,54 @@ typedef struct _ptrobj {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void pointer_bang(t_pointer *x)
+static void pointer_error (void)
 {
-    t_symbol *templatesym;
-    int n;
-    t_typedout *to;
-    if (!gpointer_isValidOrHead(&x->x_gpointer))
-    {
-        post_error ("pointer_bang: empty pointer");
-        return;
-    }
-    templatesym = gpointer_getTemplateIdentifier(&x->x_gpointer);
-    for (n = x->x_outletTypedSize, to = x->x_outletTyped; n--; to++)
-    {
-        if (to->to_type == templatesym)
-        {
-            outlet_pointer(to->to_outlet, &x->x_gpointer);
+    post_error (PD_TRANSLATE ("pointer: empty pointer"));
+} 
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void pointer_bang (t_pointer *x)
+{
+    if (!gpointer_isValidOrHead (&x->x_gpointer)) { pointer_error(); }
+    else {
+    //
+    int i;
+    t_symbol *templateIdentifier = gpointer_getTemplateIdentifier (&x->x_gpointer);
+        
+    for (i = 0; i < x->x_outletTypedSize; i++) {
+        if (x->x_outletTyped[i].to_type == templateIdentifier) {
+            outlet_pointer (x->x_outletTyped[i].to_outlet, &x->x_gpointer);
             return;
         }
     }
-    outlet_pointer(x->x_outletOther, &x->x_gpointer);
+    
+    outlet_pointer (x->x_outletOther, &x->x_gpointer);
+    //
+    } 
 }
 
 
 static void pointer_pointer (t_pointer *x, t_gpointer *gp)
 {
-    //gpointer_unset(&x->x_gpointer);
-    gpointer_setByCopy(gp, &x->x_gpointer);
-    pointer_bang(x);
+    gpointer_setByCopy (gp, &x->x_gpointer);
+    
+    pointer_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* send a message to the window containing the object pointed to */
-static void pointer_sendwindow(t_pointer *x, t_symbol *s, int argc, t_atom *argv)
+static void pointer_sendwindow (t_pointer *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_scalar *sc;
-    t_symbol *templatesym;
-    int n;
-    t_typedout *to;
-    t_glist *glist;
-    t_pd *canvas;
-    if (!gpointer_isValidOrHead (&x->x_gpointer))
-    {
-        post_error ("send-window: empty pointer");
-        return;
+    if (!gpointer_isValidOrHead (&x->x_gpointer)) { pointer_error(); }
+    else if (argc && IS_SYMBOL (argv)) {
+        t_glist *view = canvas_getView (gpointer_getView (&x->x_gpointer));
+        pd_message (cast_pd (view), GET_SYMBOL (argv), argc - 1, argv + 1);
     }
-    
-    glist = gpointer_getView (&x->x_gpointer);
-    canvas = (t_pd *)canvas_getView(glist);
-    if (argc && argv->a_type == A_SYMBOL)
-        pd_message(canvas, argv->a_w.w_symbol, argc-1, argv+1);
-    else { post_error ("send-window: no message?"); }
 }
 
 

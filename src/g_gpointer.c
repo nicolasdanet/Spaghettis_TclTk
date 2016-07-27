@@ -22,6 +22,14 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#define GPOINTER_NONE   0
+#define GPOINTER_GLIST  1
+#define GPOINTER_ARRAY  2
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 struct _gmaster {
     union {
         t_glist     *gm_glist;
@@ -40,7 +48,7 @@ t_gmaster *gpointer_masterCreateWithGlist (t_glist *glist)
     
     PD_ASSERT (glist);
     
-    master->gm_type         = POINTER_GLIST;
+    master->gm_type         = GPOINTER_GLIST;
     master->gm_un.gm_glist  = glist;
     master->gm_count        = 0;
     
@@ -53,7 +61,7 @@ t_gmaster *gpointer_masterCreateWithArray (t_array *array)
     
     PD_ASSERT (array);
     
-    master->gm_type         = POINTER_ARRAY;
+    master->gm_type         = GPOINTER_ARRAY;
     master->gm_un.gm_array  = array;
     master->gm_count        = 0;
     
@@ -64,7 +72,7 @@ void gpointer_masterRelease (t_gmaster *master)
 {
     PD_ASSERT (master->gm_count >= 0);
     
-    master->gm_type = POINTER_NONE; if (master->gm_count == 0) { PD_MEMORY_FREE (master); }
+    master->gm_type = GPOINTER_NONE; if (master->gm_count == 0) { PD_MEMORY_FREE (master); }
 }
 
 static void gpointer_masterIncrement (t_gmaster *master)
@@ -78,7 +86,7 @@ static void gpointer_masterDecrement (t_gmaster *master)
     
     PD_ASSERT (count >= 0);
     
-    if (count == 0 && master->gm_type == POINTER_NONE) { PD_MEMORY_FREE (master); }
+    if (count == 0 && master->gm_type == GPOINTER_NONE) { PD_MEMORY_FREE (master); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -91,16 +99,16 @@ static int gpointer_isValidRaw (t_gpointer *gp, int nullPointerIsValid)
     //
     t_gmaster *master = gp->gp_master;
     
-    if (master->gm_type == POINTER_ARRAY) {
+    if (master->gm_type == GPOINTER_ARRAY) {
         if (!nullPointerIsValid && !gp->gp_un.gp_w) { return 0; }
         if (master->gm_un.gm_array->a_uniqueIdentifier == gp->gp_uniqueIdentifier)  { return 1; }
         
-    } else if (master->gm_type == POINTER_GLIST) {
+    } else if (master->gm_type == GPOINTER_GLIST) {
         if (!nullPointerIsValid && !gp->gp_un.gp_scalar) { return 0; }
         if (master->gm_un.gm_glist->gl_uniqueIdentifier == gp->gp_uniqueIdentifier) { return 1; }
         
     } else {
-        PD_ASSERT (master->gm_type == POINTER_NONE);
+        PD_ASSERT (master->gm_type == GPOINTER_NONE);
     }
     //
     }
@@ -195,12 +203,12 @@ void gpointer_rawCopy (t_gpointer *src, t_gpointer *dest)
 
 int gpointer_isScalar (t_gpointer *gp)
 {
-    return (gp->gp_master->gm_type == POINTER_GLIST);
+    return (gp->gp_master->gm_type == GPOINTER_GLIST);
 }
 
 int gpointer_isWord (t_gpointer *gp)
 {
-    return (gp->gp_master->gm_type == POINTER_ARRAY);
+    return (gp->gp_master->gm_type == GPOINTER_ARRAY);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -224,14 +232,14 @@ t_word *gpointer_getWord (t_gpointer *gp)
 
 t_glist *gpointer_getParentGlist (t_gpointer *gp)
 {
-    PD_ASSERT (gp->gp_master->gm_type == POINTER_GLIST);
+    PD_ASSERT (gp->gp_master->gm_type == GPOINTER_GLIST);
     
     return (gp->gp_master->gm_un.gm_glist);
 }
 
 t_array *gpointer_getParentArray (t_gpointer *gp)
 {
-    PD_ASSERT (gp->gp_master->gm_type == POINTER_ARRAY);
+    PD_ASSERT (gp->gp_master->gm_type == GPOINTER_ARRAY);
     
     return (gp->gp_master->gm_un.gm_array);
 }
@@ -263,7 +271,7 @@ t_symbol *gpointer_getTemplateIdentifier (t_gpointer *gp)
     
     PD_ASSERT (gpointer_isValidOrHead (gp));
     
-    if (master->gm_type == POINTER_GLIST) {
+    if (master->gm_type == GPOINTER_GLIST) {
         if (gp->gp_un.gp_scalar) { s = scalar_getTemplateIdentifier (gp->gp_un.gp_scalar); }
         
     } else {
