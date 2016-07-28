@@ -120,11 +120,11 @@ static void drawpolygon_motion (void *z, t_float deltaX, t_float deltaY, t_float
     t_float positionY = drawpolygon_coordinateY + (drawpolygon_cumulativeY * drawpolygon_stepY);
     
     if (field_isVariable (fd + 0)) {
-        word_setFloatByFieldAsPosition (drawpolygon_data, drawpolygon_template, fd + 0, positionX); 
+        word_setFloatByDescriptorAsPosition (drawpolygon_data, drawpolygon_template, fd + 0, positionX); 
     }
     
     if (field_isVariable (fd + 1)) {
-        word_setFloatByFieldAsPosition (drawpolygon_data, drawpolygon_template, fd + 1, positionY);
+        word_setFloatByDescriptorAsPosition (drawpolygon_data, drawpolygon_template, fd + 1, positionY);
     }
     
     if (drawpolygon_scalar) {
@@ -161,7 +161,7 @@ static void drawpolygon_behaviorGetRectangle (t_gobj *z,
     int x2 = -x1;
     int y2 = -y1;
     
-    int visibleField = (int)word_getFloatByField (w, tmpl, &x->x_isVisible);
+    int visibleField = (int)word_getFloatByDescriptor (w, tmpl, &x->x_isVisible);
     
     if (visibleField && !(x->x_flags & DRAWPOLYGON_NO_MOUSE)) {
     //
@@ -169,9 +169,11 @@ static void drawpolygon_behaviorGetRectangle (t_gobj *z,
     t_fielddescriptor *fd = x->x_coordinates;
     
     for (i = 0; i < x->x_size; i += 2) {
-    // 
-    int m = canvas_valueToPositionX (glist, baseX + word_getFloatByFieldAsPosition (w, tmpl, fd + i));
-    int n = canvas_valueToPositionY (glist, baseY + word_getFloatByFieldAsPosition (w, tmpl, fd + i + 1));
+    //
+    int m, n;
+    
+    m = canvas_valueToPositionX (glist, baseX + word_getFloatByDescriptorAsPosition (w, tmpl, fd + i));
+    n = canvas_valueToPositionY (glist, baseY + word_getFloatByDescriptorAsPosition (w, tmpl, fd + i + 1));
     
     x1 = PD_MIN (m, x1);
     x2 = PD_MAX (m, x2);
@@ -198,7 +200,7 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
 {
     t_drawpolygon *x = (t_drawpolygon *)z;
     
-    int visibleField = (int)word_getFloatByField (w, tmpl, &x->x_isVisible);
+    int visibleField = (int)word_getFloatByDescriptor (w, tmpl, &x->x_isVisible);
     
     if (!isVisible || visibleField) {
     //
@@ -209,9 +211,9 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     if (!isVisible) { sys_vGui (".x%lx.c delete CURVE%lx\n", canvas_getView (glist), w); }
     else {
     //
-    t_float width        = word_getFloatByField (w, tmpl, &x->x_width);
-    t_float colorFill    = word_getFloatByField (w, tmpl, &x->x_colorFill);
-    t_float colorOutline = word_getFloatByField (w, tmpl, &x->x_colorOutline);
+    t_float width        = word_getFloatByDescriptor (w, tmpl, &x->x_width);
+    t_float colorFill    = word_getFloatByDescriptor (w, tmpl, &x->x_colorFill);
+    t_float colorOutline = word_getFloatByDescriptor (w, tmpl, &x->x_colorOutline);
     t_symbol *filled     = color_toEncodedSymbol (color_withDigits ((int)colorFill));
     t_symbol *outlined   = color_toEncodedSymbol (color_withDigits ((int)colorOutline));
     
@@ -230,8 +232,10 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     
     for (i = 0; i < x->x_size; i += 2) {
     //
-    int a = canvas_valueToPositionX (glist, baseX + word_getFloatByFieldAsPosition (w, tmpl, fd + i));
-    int b = canvas_valueToPositionY (glist, baseY + word_getFloatByFieldAsPosition (w, tmpl, fd + i + 1));
+    int a, b;
+    
+    a = canvas_valueToPositionX (glist, baseX + word_getFloatByDescriptorAsPosition (w, tmpl, fd + i));
+    b = canvas_valueToPositionY (glist, baseY + word_getFloatByDescriptorAsPosition (w, tmpl, fd + i + 1));
         
     err |= string_addSprintf (t, DRAWPOLYGON_BUFFER_SIZE,       " %d %d", a, b);
     //
@@ -280,7 +284,7 @@ static int drawpolygon_behaviorClicked (t_gobj *z,
 {
     t_drawpolygon *x = (t_drawpolygon *)z;
     
-    int visibleField = (int)word_getFloatByField (w, tmpl, &x->x_isVisible);
+    int visibleField = (int)word_getFloatByDescriptor (w, tmpl, &x->x_isVisible);
     
     if (visibleField) {
     //
@@ -294,8 +298,8 @@ static int drawpolygon_behaviorClicked (t_gobj *z,
     //
     if (field_isVariable (fd + i) || field_isVariable (fd + i + 1)) {
     //
-    int valueX    = word_getFloatByFieldAsPosition (w, tmpl, fd + i);
-    int valueY    = word_getFloatByFieldAsPosition (w, tmpl, fd + i + 1);
+    int valueX    = word_getFloatByDescriptorAsPosition (w, tmpl, fd + i);
+    int valueY    = word_getFloatByDescriptorAsPosition (w, tmpl, fd + i + 1);
     int positionX = canvas_valueToPositionX (glist, baseX + valueX);
     int positionY = canvas_valueToPositionY (glist, baseY + valueY);
     int errorX    = PD_ABS (positionX - a);

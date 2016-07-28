@@ -151,16 +151,16 @@ static void drawnumber_getrect(t_gobj *z, t_glist *glist,
     int xloc, yloc, font, fontwidth, fontheight, bufsize, width, height;
     char buf[DRAWNUMBER_BUFSIZE], *startline, *newline;
 
-    if (!word_getFloatByField(data, template, &x->x_vis))
+    if (!word_getFloatByDescriptor(data, template, &x->x_vis))
     {
         *xp1 = *yp1 = PD_INT_MAX;
         *xp2 = *yp2 = -PD_INT_MAX;
         return;
     }
     xloc = canvas_valueToPositionX(glist,
-        basex + word_getFloatByFieldAsPosition(data, template, &x->x_xloc));
+        basex + word_getFloatByDescriptorAsPosition(data, template, &x->x_xloc));
     yloc = canvas_valueToPositionY(glist,
-        basey + word_getFloatByFieldAsPosition(data, template, &x->x_yloc));
+        basey + word_getFloatByDescriptorAsPosition(data, template, &x->x_yloc));
     font = canvas_getFontSize(glist);
     fontwidth = font_getHostFontWidth(font);
         fontheight = font_getHostFontHeight(font);
@@ -189,18 +189,18 @@ static void drawnumber_vis(t_gobj *z, t_glist *glist,
     t_drawnumber *x = (t_drawnumber *)z;
     
         /* see comment in plot_vis() */
-    if (vis && !word_getFloatByField(data, template, &x->x_vis))
+    if (vis && !word_getFloatByDescriptor(data, template, &x->x_vis))
         return;
     if (vis)
     {
         t_atom at;
         int xloc = canvas_valueToPositionX(glist,
-            basex + word_getFloatByFieldAsPosition(data, template, &x->x_xloc));
+            basex + word_getFloatByDescriptorAsPosition(data, template, &x->x_xloc));
         int yloc = canvas_valueToPositionY(glist,
-            basey + word_getFloatByFieldAsPosition(data, template, &x->x_yloc));
+            basey + word_getFloatByDescriptorAsPosition(data, template, &x->x_yloc));
         char colorstring[20], buf[DRAWNUMBER_BUFSIZE];
         color_toEncodedString(colorstring, 20,
-            color_withDigits (word_getFloatByField(data, template, &x->x_color)));
+            color_withDigits (word_getFloatByDescriptor(data, template, &x->x_color)));
         drawnumber_getbuf(x, data, template, buf);
         sys_vGui(".x%lx.c create text %d %d -anchor nw -fill %s -text {%s}",
                 canvas_getView(glist), xloc, yloc, colorstring, buf);

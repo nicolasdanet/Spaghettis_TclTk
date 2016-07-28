@@ -160,7 +160,7 @@ void word_setSymbol (t_word *w, t_template *tmpl, t_symbol *fieldName, t_symbol 
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_float word_getFloatByField (t_word *w, t_template *tmpl, t_fielddescriptor *fd)
+t_float word_getFloatByDescriptor (t_word *w, t_template *tmpl, t_fielddescriptor *fd)
 {
     if (fd->fd_type == DATA_FLOAT) {
     //
@@ -180,7 +180,7 @@ t_float word_getFloatByField (t_word *w, t_template *tmpl, t_fielddescriptor *fd
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_float word_getFloatByFieldAsPosition (t_word *w, t_template *tmpl, t_fielddescriptor *fd)
+t_float word_getFloatByDescriptorAsPosition (t_word *w, t_template *tmpl, t_fielddescriptor *fd)
 {
     if (fd->fd_type == DATA_FLOAT) {
     //
@@ -197,7 +197,10 @@ t_float word_getFloatByFieldAsPosition (t_word *w, t_template *tmpl, t_fielddesc
     return 0.0;
 }
 
-void word_setFloatByFieldAsPosition (t_word *w, t_template *tmpl, t_fielddescriptor *fd, t_float position)
+void word_setFloatByDescriptorAsPosition (t_word *w,
+    t_template *tmpl,
+    t_fielddescriptor *fd,
+    t_float position)
 {
     if (fd->fd_type == DATA_FLOAT) {
     //
