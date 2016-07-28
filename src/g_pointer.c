@@ -46,11 +46,6 @@ typedef struct _ptrobj {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void pointer_error (void)
-{
-    post_error (PD_TRANSLATE ("pointer: empty or invalid pointer"));
-} 
-
 static int pointer_nextSkip (t_gobj *z, t_glist *glist, int wantSelected)
 {
     if (pd_class (z) != scalar_class) { return 1; }
@@ -59,6 +54,15 @@ static int pointer_nextSkip (t_gobj *z, t_glist *glist, int wantSelected)
         return 0;
     }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void pointer_error (void)
+{
+    post_error (PD_TRANSLATE ("pointer: empty or invalid pointer"));
+} 
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

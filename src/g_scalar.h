@@ -276,6 +276,12 @@ void            struct_notify                           (t_struct *x, t_symbol *
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void            pointer_error                           (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void            field_setAsFloatConstant                (t_fielddescriptor *fd, t_float f);
 void            field_setAsFloatVariable                (t_fielddescriptor *fd, t_symbol *s);
 void            field_setAsFloat                        (t_fielddescriptor *fd, int argc, t_atom *argv);
