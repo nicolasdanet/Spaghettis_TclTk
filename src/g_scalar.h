@@ -216,6 +216,7 @@ t_array         *gpointer_getParentArray                (t_gpointer *gp);
 t_glist         *gpointer_getView                       (t_gpointer *gp);
 t_word          *gpointer_getData                       (t_gpointer *gp);
 t_symbol        *gpointer_getTemplateIdentifier         (t_gpointer *gp);
+t_template      *gpointer_getTemplate                   (t_gpointer *gp);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -120,6 +120,12 @@ static void pointer_send (t_pointer *x, t_symbol *s)
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* Note that functions below do not make sense for non scalars. */
+
 static void pointer_traverse (t_pointer *x, t_symbol *s)
 {
     t_glist *glist = (t_glist *)pd_findByClass (s, canvas_class);
@@ -132,13 +138,10 @@ static void pointer_traverse (t_pointer *x, t_symbol *s)
 
 static void pointer_rewind (t_pointer *x)
 {
-    if (!gpointer_isValidNullAllowed (&x->x_gpointer)) { pointer_error(); }
-    else {
-    //
-    if (gpointer_isScalar (&x->x_gpointer)) {
+    if (gpointer_isValidNullAllowed (&x->x_gpointer) && gpointer_isScalar (&x->x_gpointer)) {
         gpointer_setAsScalar (&x->x_gpointer, gpointer_getParentGlist (&x->x_gpointer), NULL);
-    }
-    //
+    } else {
+        pointer_error();
     }
 }
 

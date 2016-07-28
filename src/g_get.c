@@ -51,7 +51,7 @@ static void get_pointer (t_get *x, t_gpointer *gp)
 
     if (templateIdentifier == gpointer_getTemplateIdentifier (gp)) {
     //
-    t_template *template = template_findByIdentifier (templateIdentifier);
+    t_template *template = gpointer_getTemplate (gp);
     
     if (!template) { PD_BUG; }
     else {

@@ -130,6 +130,8 @@ void gpointer_init (t_gpointer *gp)
     gp->gp_uniqueIdentifier = 0;
 }
 
+/* Point to a scalar. */
+
 void gpointer_setAsScalar (t_gpointer *gp, t_glist *glist, t_scalar *scalar)
 {
     gpointer_unset (gp);
@@ -140,6 +142,8 @@ void gpointer_setAsScalar (t_gpointer *gp, t_glist *glist, t_scalar *scalar)
 
     gpointer_masterIncrement (gp->gp_master);
 }
+
+/* Point to an element (i.e. a chunk of t_word) from an array. */
 
 void gpointer_setAsWord (t_gpointer *gp, t_array *array, t_word *w)
 {
@@ -285,7 +289,12 @@ t_symbol *gpointer_getTemplateIdentifier (t_gpointer *gp)
         return (array_getTemplateIdentifier (master->gm_un.gm_array));
     }
     
-    return NULL;
+    return &s_;
+}
+
+t_template *gpointer_getTemplate (t_gpointer *gp)
+{
+    return (template_findByIdentifier (gpointer_getTemplateIdentifier (gp)));
 }
 
 // -----------------------------------------------------------------------------------------------------------
