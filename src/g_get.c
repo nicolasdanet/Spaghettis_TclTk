@@ -51,9 +51,7 @@ static void get_pointer (t_get *x, t_gpointer *gp)
 
     if (templateIdentifier == gpointer_getTemplateIdentifier (gp)) {
     //
-    t_template *template = gpointer_getTemplate (gp);
-    
-    if (!template) { PD_BUG; }
+    if (!gpointer_getTemplate (gp)) { PD_BUG; }
     else {
     //
     int i;
@@ -62,12 +60,9 @@ static void get_pointer (t_get *x, t_gpointer *gp)
         t_outlet *o = x->x_fields[i].gv_outlet;
         t_symbol *s = x->x_fields[i].gv_fieldName;
         
-        if (template_hasField (template, s)) {
-            if (template_fieldIsFloat (template, s)) {
-                outlet_float (o, word_getFloat (gpointer_getData (gp), template, s));
-            } else if (template_fieldIsSymbol (template, s)) {
-                outlet_symbol (o, word_getSymbol (gpointer_getData (gp), template, s));
-            }
+        if (gpointer_hasField (gp, s)) {
+            if (gpointer_fieldIsFloat (gp, s))       { outlet_float (o, gpointer_getFloat (gp, s)); }
+            else if (gpointer_fieldIsSymbol (gp, s)) { outlet_symbol (o, gpointer_getSymbol (gp, s)); }
         }
     }
     //

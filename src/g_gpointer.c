@@ -299,3 +299,56 @@ t_template *gpointer_getTemplate (t_gpointer *gp)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int gpointer_hasField (t_gpointer *gp, t_symbol *fieldName)
+{
+    t_template *template = gpointer_getTemplate (gp);
+    
+    PD_ASSERT (template);
+    
+    return (template_hasField (template, fieldName));
+}
+
+int gpointer_fieldIsFloat (t_gpointer *gp, t_symbol *fieldName)
+{
+    t_template *template = gpointer_getTemplate (gp);
+    
+    PD_ASSERT (template);
+    
+    return (template_fieldIsFloat (template, fieldName));
+}
+
+int gpointer_fieldIsSymbol (t_gpointer *gp, t_symbol *fieldName)
+{
+    t_template *template = gpointer_getTemplate (gp);
+    
+    PD_ASSERT (template);
+    
+    return (template_fieldIsSymbol (template, fieldName));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_float gpointer_getFloat (t_gpointer *gp, t_symbol *fieldName)
+{
+    t_template *template = gpointer_getTemplate (gp);
+    
+    PD_ASSERT (template);
+    
+    return word_getFloat (gpointer_getData (gp), template, fieldName);
+}
+
+t_symbol *gpointer_getSymbol (t_gpointer *gp, t_symbol *fieldName)
+{
+    t_template *template = gpointer_getTemplate (gp);
+    
+    PD_ASSERT (template);
+    
+    return word_getSymbol (gpointer_getData (gp), template, fieldName);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

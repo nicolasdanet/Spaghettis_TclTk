@@ -89,7 +89,7 @@ struct _template {
     int                 tp_size;    
     t_dataslot          *tp_vector;   
     t_symbol            *tp_templateIdentifier; 
-    t_struct            *tp_instance;               /* For now, only one instance is allowed. */
+    t_struct            *tp_instance;                   /* For now, only one instance is allowed. */
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -217,6 +217,12 @@ t_glist         *gpointer_getView                       (t_gpointer *gp);
 t_word          *gpointer_getData                       (t_gpointer *gp);
 t_symbol        *gpointer_getTemplateIdentifier         (t_gpointer *gp);
 t_template      *gpointer_getTemplate                   (t_gpointer *gp);
+
+int             gpointer_hasField                       (t_gpointer *gp, t_symbol *fieldName);
+int             gpointer_fieldIsFloat                   (t_gpointer *gp, t_symbol *fieldName);
+int             gpointer_fieldIsSymbol                  (t_gpointer *gp, t_symbol *fieldName);
+t_float         gpointer_getFloat                       (t_gpointer *gp, t_symbol *fieldName);
+t_symbol        *gpointer_getSymbol                     (t_gpointer *gp, t_symbol *fieldName);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
