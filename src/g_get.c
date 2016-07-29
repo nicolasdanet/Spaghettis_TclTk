@@ -28,7 +28,7 @@ typedef struct _getvariable {
     } t_getvariable;
 
 typedef struct _get {
-    t_object        x_obj;
+    t_object        x_obj;                  /* Must be the first. */
     int             x_fieldsSize;
     t_getvariable   *x_fields;
     t_symbol        *x_templateIdentifier;

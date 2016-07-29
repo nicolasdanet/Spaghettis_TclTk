@@ -34,7 +34,7 @@ typedef struct {
     } t_typedout;
 
 typedef struct _ptrobj {
-    t_object    x_obj;
+    t_object    x_obj;                  /* Must be the first. */
     t_gpointer  x_gpointer;
     int         x_outletTypedSize;
     t_typedout  *x_outletTyped;

@@ -42,6 +42,7 @@ t_symbol *sym___bar____bar__;
 t_symbol *sym___comma__;
 t_symbol *sym___dash__;
 t_symbol *sym___dash__inhibit;
+t_symbol *sym___dash__symbol;
 t_symbol *sym___dash__v;
 t_symbol *sym___dash__visible;
 t_symbol *sym___dash__x;
@@ -531,6 +532,7 @@ void symbols_initialize (void)
     sym___comma__                               = gensym (",");
     sym___dash__                                = gensym ("-");
     sym___dash__inhibit                         = gensym ("-inhibit");
+    sym___dash__symbol                          = gensym ("-symbol");
     sym___dash__v                               = gensym ("-v");
     sym___dash__visible                         = gensym ("-visible");
     sym___dash__x                               = gensym ("-x");

@@ -17,98 +17,45 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *set_class;
+static t_class  *set_class;                 /* Shared. */
 
-typedef struct _setvariable
-{
-    t_symbol *gv_sym;
-    union word gv_w;
-} t_setvariable;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct _set
-{
-    t_object x_obj;
-    t_gpointer x_gp;
-    t_symbol *x_templatesym;
-    int x_nin;
-    int x_issymbol;
-    t_setvariable *x_variables;
-} t_set;
+typedef struct _setvariable {
+    t_symbol        *gv_fieldName;
+    union word      gv_w;
+    } t_setvariable;
 
-static void *set_new(t_symbol *why, int argc, t_atom *argv)
-{
-    t_set *x = (t_set *)pd_new(set_class);
-    int i, varcount;
-    t_setvariable *sp;
-    t_atom at, *varvec;
-    if (argc && (argv[0].a_type == A_SYMBOL) &&
-        !strcmp(argv[0].a_w.w_symbol->s_name, "-symbol"))
-    {
-        x->x_issymbol = 1;
-        argc--;
-        argv++;
-    }
-    else x->x_issymbol = 0;
-    x->x_templatesym = template_makeBindSymbolWithWildcard(atom_getSymbolAtIndex(0, argc, argv));
-    if (argc < 2)
-    {
-        varcount = 1;
-        varvec = &at;
-        SET_SYMBOL(&at, &s_);
-    }
-    else varcount = argc - 1, varvec = argv + 1;
-    x->x_variables
-        = (t_setvariable *)PD_MEMORY_GET(varcount * sizeof (*x->x_variables));
-    x->x_nin = varcount;
-    for (i = 0, sp = x->x_variables; i < varcount; i++, sp++)
-    {
-        sp->gv_sym = atom_getSymbolAtIndex(i, varcount, varvec);
-        if (x->x_issymbol)
-            sp->gv_w.w_symbol = &s_;
-        else sp->gv_w.w_float = 0;
-        if (i)
-        {
-            if (x->x_issymbol)
-                inlet_newSymbol(&x->x_obj, &sp->gv_w.w_symbol);
-            else inlet_newFloat(&x->x_obj, &sp->gv_w.w_float);
-        }
-    }
-    inlet_newPointer(&x->x_obj, &x->x_gp);
-    gpointer_init(&x->x_gp);
-    return (x);
-}
+typedef struct _set {
+    t_object        x_obj;                  /* Must be the first. */
+    t_gpointer      x_gpointer;
+    int             x_asSymbol;
+    int             x_fieldsSize;
+    t_setvariable   *x_fields;
+    t_symbol        *x_templateIdentifier;
+    } t_set;
 
-static void set_set(t_set *x, t_symbol *templatesym, t_symbol *field)
-{
-    if (x->x_nin != 1)
-        post_error ("set: cannot set multiple fields.");
-    else
-    {
-       x->x_templatesym = template_makeBindSymbolWithWildcard(templatesym); 
-       x->x_variables->gv_sym = field;
-       if (x->x_issymbol)
-           x->x_variables->gv_w.w_symbol = &s_;
-       else
-           x->x_variables->gv_w.w_float = 0;
-    }
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void set_bang(t_set *x)
 {
-    int nitems = x->x_nin, i;
+    int nitems = x->x_fieldsSize, i;
     t_symbol *templatesym;
     t_template *template;
     t_setvariable *vp;
-    t_gpointer *gp = &x->x_gp;
+    t_gpointer *gp = &x->x_gpointer;
     t_word *vec;
     if (!gpointer_isValid(gp))
     {
         post_error ("set: empty pointer");
         return;
     }
-    if (*x->x_templatesym->s_name)
+    if (*x->x_templateIdentifier->s_name)
     {
-        if ((templatesym = x->x_templatesym) != gpointer_getTemplateIdentifier(gp))
+        if ((templatesym = x->x_templateIdentifier) != gpointer_getTemplateIdentifier(gp))
         {
             post_error ("set %s: got wrong template (%s)",
                 templatesym->s_name, gpointer_getTemplateIdentifier(gp)->s_name);
@@ -124,19 +71,19 @@ static void set_bang(t_set *x)
     if (!nitems)
         return;
     vec = gpointer_getData (gp);
-    if (x->x_issymbol)
-        for (i = 0, vp = x->x_variables; i < nitems; i++, vp++)
-            word_setSymbol(vec, template, vp->gv_sym, vp->gv_w.w_symbol);
-    else for (i = 0, vp = x->x_variables; i < nitems; i++, vp++)
-        word_setFloat(vec, template, vp->gv_sym, vp->gv_w.w_float);
+    if (x->x_asSymbol)
+        for (i = 0, vp = x->x_fields; i < nitems; i++, vp++)
+            word_setSymbol(vec, template, vp->gv_fieldName, vp->gv_w.w_symbol);
+    else for (i = 0, vp = x->x_fields; i < nitems; i++, vp++)
+        word_setFloat(vec, template, vp->gv_fieldName, vp->gv_w.w_float);
     scalar_redrawByPointer (gp);
 }
 
 static void set_float(t_set *x, t_float f)
 {
-    if (x->x_nin && !x->x_issymbol)
+    if (x->x_fieldsSize && !x->x_asSymbol)
     {
-        x->x_variables[0].gv_w.w_float = f;
+        x->x_fields[0].gv_w.w_float = f;
         set_bang(x);
     }
     else post_error ("type mismatch or no field specified");
@@ -144,29 +91,107 @@ static void set_float(t_set *x, t_float f)
 
 static void set_symbol(t_set *x, t_symbol *s)
 {
-    if (x->x_nin && x->x_issymbol)
+    if (x->x_fieldsSize && x->x_asSymbol)
     {
-        x->x_variables[0].gv_w.w_symbol = s;
+        x->x_fields[0].gv_w.w_symbol = s;
         set_bang(x);
     }
     else post_error ("type mismatch or no field specified");
 }
 
-static void set_free(t_set *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void set_set(t_set *x, t_symbol *templatesym, t_symbol *field)
 {
-    PD_MEMORY_FREE(x->x_variables);
-    gpointer_unset(&x->x_gp);
+    if (x->x_fieldsSize != 1)
+        post_error ("set: cannot set multiple fields.");
+    else
+    {
+       x->x_templateIdentifier = template_makeBindSymbolWithWildcard(templatesym); 
+       x->x_fields->gv_fieldName = field;
+       if (x->x_asSymbol)
+           x->x_fields->gv_w.w_symbol = &s_;
+       else
+           x->x_fields->gv_w.w_float = 0;
+    }
 }
 
-void set_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *set_new (t_symbol *why, int argc, t_atom *argv)
 {
-    set_class = class_new(sym_set, (t_newmethod)set_new,
-        (t_method)set_free, sizeof(t_set), 0, A_GIMME, 0);
-    class_addFloat(set_class, set_float); 
-    class_addSymbol(set_class, set_symbol); 
-    class_addBang(set_class, set_bang); 
-    class_addMethod(set_class, (t_method)set_set, sym_set,
-        A_SYMBOL, A_SYMBOL, 0); 
+    t_set *x = (t_set *)pd_new (set_class);
+    
+    x->x_asSymbol = 0;
+    
+    if (argc && IS_SYMBOL (argv) && GET_SYMBOL (argv) == sym___dash__symbol) {
+        x->x_asSymbol = 1;
+        argc--;
+        argv++;
+    }
+    
+    x->x_fieldsSize         = PD_MAX (1, argc - 1);
+    x->x_fields             = (t_setvariable *)PD_MEMORY_GET (x->x_fieldsSize * sizeof (t_setvariable));
+    x->x_templateIdentifier = template_makeBindSymbolWithWildcard (atom_getSymbolAtIndex (0, argc, argv));
+    
+    if (x->x_asSymbol) {
+        int i;
+        for (i = 0; i < x->x_fieldsSize; i++) {
+            x->x_fields[i].gv_fieldName  = atom_getSymbolAtIndex (i + 1, argc, argv);
+            x->x_fields[i].gv_w.w_symbol = &s_;
+            if (i) { inlet_newSymbol (cast_object (x), &x->x_fields[i].gv_w.w_symbol); }
+        }
+        
+    } else {
+        int i;
+        for (i = 0; i < x->x_fieldsSize; i++) {
+            x->x_fields[i].gv_fieldName  = atom_getSymbolAtIndex (i + 1, argc, argv);
+            x->x_fields[i].gv_w.w_float  = 0.0;
+            if (i) { inlet_newFloat (cast_object (x), &x->x_fields[i].gv_w.w_float); }
+        }
+    }
+    
+    gpointer_init (&x->x_gpointer);
+        
+    inlet_newPointer (&x->x_obj, &x->x_gpointer);
+    
+    return x;
+}
+
+static void set_free (t_set *x)
+{
+    PD_MEMORY_FREE (x->x_fields);
+    
+    gpointer_unset (&x->x_gpointer);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void set_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_set,
+            (t_newmethod)set_new,
+            (t_method)set_free,
+            sizeof (t_set),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+    
+    class_addBang (c, set_bang); 
+    class_addFloat (c, set_float); 
+    class_addSymbol (c, set_symbol); 
+
+    class_addMethod (c, (t_method)set_set, sym_set, A_SYMBOL, A_SYMBOL, A_NULL); 
+    
+    set_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
