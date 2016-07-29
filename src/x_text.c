@@ -340,7 +340,7 @@ static void text_define_topointer(t_text_define *x, t_gpointer *gp, t_symbol *s)
         buffer_reset(b);
         buffer_append(b, buffer_size(x->x_textbuf.b_binbuf),
             buffer_atoms(x->x_textbuf.b_binbuf));
-        scalar_redrawByPointer (gp);
+        gpointer_redraw (gp);
     } 
 }
 
@@ -504,7 +504,7 @@ static  void text_client_senditup(t_text_client *x)
             post_error ("text: stale or empty pointer");
             return;
         }
-        scalar_redrawByPointer (&x->tc_gp);
+        gpointer_redraw (&x->tc_gp);
     }
 }
 

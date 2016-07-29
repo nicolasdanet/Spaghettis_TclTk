@@ -82,7 +82,7 @@ static void set_bang (t_set *x)
     //
     }
     
-    scalar_redrawByPointer (&x->x_gpointer);
+    gpointer_redraw (&x->x_gpointer);
     //
     }
     //

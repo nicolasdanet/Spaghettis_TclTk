@@ -301,6 +301,42 @@ t_template *gpointer_getTemplate (t_gpointer *gp)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void gpointer_redraw (t_gpointer *gp)
+{
+    t_glist *glist = gpointer_getView (gp);
+    
+    t_scalar *scalar = NULL;
+        
+    if (gpointer_isScalar (gp)) { scalar = gpointer_getScalar (gp); }
+    else {
+        scalar = gpointer_getScalar (array_getTopParentArray (gp));
+    }
+    
+    scalar_redraw (scalar, glist);
+}
+
+void gpointer_setVisibility (t_gpointer *gp, int isVisible)
+{
+    t_glist *glist = gpointer_getView (gp);
+    
+    if (canvas_isMapped (glist)) {
+    //
+    t_scalar *scalar = NULL;
+        
+    if (gpointer_isScalar (gp)) { scalar = gpointer_getScalar (gp); }
+    else {
+        scalar = gpointer_getScalar (array_getTopParentArray (gp));
+    }
+    
+    gobj_visibilityChanged (cast_gobj (scalar), glist, isVisible); 
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 int gpointer_hasField (t_gpointer *gp, t_symbol *fieldName)
 {
     t_template *template = gpointer_getTemplate (gp);

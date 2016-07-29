@@ -116,15 +116,15 @@ t_array         *word_getArray                          (t_word *w, t_template *
 t_symbol        *word_getSymbol                         (t_word *w, t_template *tmpl, t_symbol *fieldName);
 
 t_float         word_getFloat                           (t_word *w, t_template *tmpl, t_symbol *fieldName);
-void            word_setFloat                           (t_word *w, 
-                                                            t_template *tmpl,
-                                                            t_symbol *fieldName,
-                                                            t_float f);
-
 void            word_setSymbol                          (t_word *w,
                                                             t_template *tmpl,
                                                             t_symbol *fieldName,
                                                             t_symbol *s);
+                                                            
+void            word_setFloat                           (t_word *w, 
+                                                            t_template *tmpl,
+                                                            t_symbol *fieldName,
+                                                            t_float f);
 
 t_float         word_getFloatByDescriptor               (t_word *w, t_template *tmpl, t_fielddescriptor *fd);
 t_float         word_getFloatByDescriptorAsPosition     (t_word *w, t_template *tmpl, t_fielddescriptor *fd);
@@ -146,8 +146,6 @@ t_float         scalar_getFloat                         (t_scalar *x, t_symbol *
 void            scalar_setFloat                         (t_scalar *x, t_symbol *fieldName, t_float f);
 
 void            scalar_redraw                           (t_scalar *x, t_glist *glist);
-void            scalar_redrawByPointer                  (t_gpointer *gp);
-void            scalar_setVisibilityByPointer           (t_gpointer *gp, int isVisible);
 
 int             scalar_performClick                     (t_word *w,
                                                             t_template *tmpl,
@@ -214,14 +212,17 @@ t_word          *gpointer_getWord                       (t_gpointer *gp);
 t_glist         *gpointer_getParentGlist                (t_gpointer *gp);
 t_array         *gpointer_getParentArray                (t_gpointer *gp);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_glist         *gpointer_getView                       (t_gpointer *gp);
 t_word          *gpointer_getData                       (t_gpointer *gp);
 t_symbol        *gpointer_getTemplateIdentifier         (t_gpointer *gp);
 t_template      *gpointer_getTemplate                   (t_gpointer *gp);
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+void            gpointer_redraw                         (t_gpointer *gp);
+void            gpointer_setVisibility                  (t_gpointer *gp, int isVisible);
 
 int             gpointer_hasField                       (t_gpointer *gp, t_symbol *fieldName);
 int             gpointer_fieldIsFloat                   (t_gpointer *gp, t_symbol *fieldName);

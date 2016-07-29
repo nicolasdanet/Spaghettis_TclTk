@@ -157,38 +157,6 @@ void scalar_redraw (t_scalar *x, t_glist *glist)
     }
 }
 
-void scalar_redrawByPointer (t_gpointer *gp)
-{
-    t_glist *glist = gpointer_getView (gp);
-    
-    t_scalar *scalar = NULL;
-        
-    if (gpointer_isScalar (gp)) { scalar = gpointer_getScalar (gp); }
-    else {
-        scalar = gpointer_getScalar (array_getTopParentArray (gp));
-    }
-    
-    scalar_redraw (scalar, glist);
-}
-
-void scalar_setVisibilityByPointer (t_gpointer *gp, int isVisible)
-{
-    t_glist *glist = gpointer_getView (gp);
-    
-    if (canvas_isMapped (glist)) {
-    //
-    t_scalar *scalar = NULL;
-        
-    if (gpointer_isScalar (gp)) { scalar = gpointer_getScalar (gp); }
-    else {
-        scalar = gpointer_getScalar (array_getTopParentArray (gp));
-    }
-    
-    scalar_behaviorVisibilityChanged (cast_gobj (scalar), glist, isVisible); 
-    //
-    }
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
