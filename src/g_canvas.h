@@ -261,12 +261,15 @@ void            canvas_newPatch                         (void *dummy, t_symbol *
 void            canvas_setActiveFileNameAndDirectory    (t_symbol *name, t_symbol *directory);
 void            canvas_setActiveArguments               (int argc, t_atom *argv);
 
+t_symbol        *canvas_expandDollar                    (t_glist *glist, t_symbol *s);
+
 t_glist         *canvas_getCurrent                      (void);
 t_glist         *canvas_getRoot                         (t_glist *glist);
 t_environment   *canvas_getEnvironment                  (t_glist *glist);
 t_glist         *canvas_getView                         (t_glist *glist);
+t_symbol        *canvas_getName                         (t_glist *glist);
 
-t_symbol        *canvas_expandDollar                    (t_glist *glist, t_symbol *s);
+void            canvas_setName                          (t_glist *glist, t_symbol *name);
 
 void            canvas_makeTextObject                   (t_glist *glist, 
                                                             int positionX, 
@@ -299,7 +302,6 @@ int             canvas_openFile                         (t_glist *glist,
 void            canvas_bind                             (t_glist *glist);
 void            canvas_unbind                           (t_glist *glist);
 t_error         canvas_makeFilePath                     (t_glist *glist, char *name, char *dest, size_t size);
-void            canvas_setName                          (t_glist *glist, t_symbol *name);
 void            canvas_updateTitle                      (t_glist *glist);
 int             canvas_getFontSize                      (t_glist *glist);
 void            canvas_setCursorType                    (t_glist *glist, int type);

@@ -25,6 +25,7 @@ extern t_class              *voutlet_class;
 extern t_class              *array_define_class;
 extern t_class              *scalar_define_class;
 extern t_pd                 *pd_newest;
+extern t_pdinstance         *pd_this;
 extern t_symbol             *canvas_fileName;
 extern t_symbol             *canvas_directory;
 extern t_atom               *canvas_argv;
@@ -119,6 +120,11 @@ t_glist *canvas_getView (t_glist *glist)
     while (glist->gl_parent && !canvas_canHaveWindow (glist)) { glist = glist->gl_parent; }
     
     return glist;
+}
+
+t_symbol *canvas_getName (t_glist *glist)
+{
+    return glist->gl_name;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -686,6 +692,29 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
     }
     
     return connection;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void canvas_initialize (void)
+{
+}
+
+void canvas_release (void)      /* Close remaining (i.e. NOT dirty) and invisible patches. */
+{    
+    while (1) {
+    //
+    t_glist *glist = pd_this->pd_roots;
+    
+    if (glist == NULL) { break; }
+    else {
+        pd_free (cast_pd (glist));
+        if (glist == pd_this->pd_roots) { PD_BUG; break; }
+    }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -30,6 +30,7 @@ t_class *global_object;     /* Shared. */
 
 /* Messy ping-pong required in order to check saving sequentially. */
 /* Furthermore it avoids the application to quit before responding. */
+/* Note that patches not dirty are closed later. */
 
 void global_shouldQuit (void *dummy)
 {

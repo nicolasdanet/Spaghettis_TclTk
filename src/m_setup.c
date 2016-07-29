@@ -22,6 +22,7 @@ void bindlist_initialize    (void);
 void global_initialize      (void);
 void editor_initialize      (void);
 void drawpolygon_initialize (void);
+void canvas_initialize      (void);
 void garray_initialize      (void);
 void loader_initialize      (void);
 
@@ -35,6 +36,7 @@ void bindlist_release       (void);
 void global_release         (void);
 void editor_release         (void);
 void drawpolygon_release    (void);
+void canvas_release         (void);
 void garray_release         (void);
 void loader_release         (void);
 
@@ -167,6 +169,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     d_soundfile_setup();
     d_ugen_setup();
     
+    canvas_initialize();
     garray_initialize();
     loader_initialize();
 }
@@ -175,6 +178,7 @@ void setup_release (void)
 {
     loader_release();
     garray_release();
+    canvas_release();
     
     drawpolygon_release();
     editor_release();
