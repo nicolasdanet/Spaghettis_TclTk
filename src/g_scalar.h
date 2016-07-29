@@ -191,6 +191,7 @@ void            gpointer_masterRelease                  (t_gmaster *master);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void            gpointer_init                           (t_gpointer *gp);
 void            gpointer_setAsScalar                    (t_gpointer *gp, t_glist *owner, t_scalar *scalar);
@@ -218,11 +219,19 @@ t_word          *gpointer_getData                       (t_gpointer *gp);
 t_symbol        *gpointer_getTemplateIdentifier         (t_gpointer *gp);
 t_template      *gpointer_getTemplate                   (t_gpointer *gp);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 int             gpointer_hasField                       (t_gpointer *gp, t_symbol *fieldName);
 int             gpointer_fieldIsFloat                   (t_gpointer *gp, t_symbol *fieldName);
 int             gpointer_fieldIsSymbol                  (t_gpointer *gp, t_symbol *fieldName);
+
 t_float         gpointer_getFloat                       (t_gpointer *gp, t_symbol *fieldName);
 t_symbol        *gpointer_getSymbol                     (t_gpointer *gp, t_symbol *fieldName);
+
+void            gpointer_setFloat                       (t_gpointer *gp, t_symbol *fieldName, t_float f);
+void            gpointer_setSymbol                      (t_gpointer *gp, t_symbol *fieldName, t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -283,7 +292,7 @@ void            struct_notify                           (t_struct *x, t_symbol *
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            pointer_error                           (void);
+void            pointer_error                           (t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

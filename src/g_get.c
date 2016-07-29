@@ -40,12 +40,12 @@ typedef struct _get {
 
 static void get_pointer (t_get *x, t_gpointer *gp)
 {
-    if (!gpointer_isValid (gp)) { pointer_error(); }
+    if (!gpointer_isValid (gp)) { pointer_error (sym_get); }
     else {
     //
     t_symbol *templateIdentifier = x->x_templateIdentifier;
     
-    if (templateIdentifier == &s_) {                                        /* Wildcard. */
+    if (templateIdentifier == &s_) {                                                /* Wildcard. */
         templateIdentifier = gpointer_getTemplateIdentifier (gp);
     }
 

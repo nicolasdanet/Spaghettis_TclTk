@@ -350,5 +350,23 @@ t_symbol *gpointer_getSymbol (t_gpointer *gp, t_symbol *fieldName)
     return word_getSymbol (gpointer_getData (gp), template, fieldName);
 }
 
+void gpointer_setFloat (t_gpointer *gp, t_symbol *fieldName, t_float f)
+{
+    t_template *template = gpointer_getTemplate (gp);
+    
+    PD_ASSERT (template);
+    
+    word_setFloat (gpointer_getData (gp), template, fieldName, f);
+}
+
+void gpointer_setSymbol (t_gpointer *gp, t_symbol *fieldName, t_symbol *s)
+{
+    t_template *template = gpointer_getTemplate (gp);
+    
+    PD_ASSERT (template);
+    
+    word_setSymbol (gpointer_getData (gp), template, fieldName, s);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

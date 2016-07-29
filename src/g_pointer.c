@@ -59,9 +59,9 @@ static int pointer_nextSkip (t_gobj *z, t_glist *glist, int wantSelected)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void pointer_error (void)
+void pointer_error (t_symbol *s)
 {
-    post_error (PD_TRANSLATE ("pointer: empty or invalid pointer"));
+    post_error (PD_TRANSLATE ("%s: empty or invalid pointer"), s->s_name);
 } 
 
 // -----------------------------------------------------------------------------------------------------------
@@ -70,7 +70,7 @@ void pointer_error (void)
 
 static void pointer_bang (t_pointer *x)
 {
-    if (!gpointer_isValidNullAllowed (&x->x_gpointer)) { pointer_error(); }
+    if (!gpointer_isValidNullAllowed (&x->x_gpointer)) { pointer_error (sym_pointer); }
     else {
     //
     int i;
@@ -102,7 +102,7 @@ static void pointer_pointer (t_pointer *x, t_gpointer *gp)
 
 static void pointer_sendwindow (t_pointer *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (!gpointer_isValidNullAllowed (&x->x_gpointer)) { pointer_error(); }
+    if (!gpointer_isValidNullAllowed (&x->x_gpointer)) { pointer_error (sym_pointer); }
     else if (argc && IS_SYMBOL (argv)) {
         t_glist *view = canvas_getView (gpointer_getView (&x->x_gpointer));
         pd_message (cast_pd (view), GET_SYMBOL (argv), argc - 1, argv + 1);
@@ -111,7 +111,7 @@ static void pointer_sendwindow (t_pointer *x, t_symbol *s, int argc, t_atom *arg
 
 static void pointer_send (t_pointer *x, t_symbol *s)
 {
-    if (!gpointer_isValidNullAllowed (&x->x_gpointer)) { pointer_error(); }
+    if (!gpointer_isValidNullAllowed (&x->x_gpointer)) { pointer_error (sym_pointer); }
     else {
         if (!s->s_thing) { post_error (PD_TRANSLATE ("%s: no such object"), s->s_name); }
         else {
@@ -132,7 +132,7 @@ static void pointer_traverse (t_pointer *x, t_symbol *s)
     
     if (glist) { gpointer_setAsScalar (&x->x_gpointer, glist, NULL); }
     else { 
-        pointer_error();
+        pointer_error (sym_pointer);
     }
 }
 
@@ -141,7 +141,7 @@ static void pointer_rewind (t_pointer *x)
     if (gpointer_isValidNullAllowed (&x->x_gpointer) && gpointer_isScalar (&x->x_gpointer)) {
         gpointer_setAsScalar (&x->x_gpointer, gpointer_getParentGlist (&x->x_gpointer), NULL);
     } else {
-        pointer_error();
+        pointer_error (sym_pointer);
     }
 }
 
@@ -185,7 +185,7 @@ static void pointer_nextSelected (t_pointer *x, t_float f)
     //
     }
     
-    pointer_error();
+    pointer_error (sym_pointer);
 }
 
 static void pointer_next (t_pointer *x)

@@ -40,81 +40,94 @@ typedef struct _set {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void set_bang(t_set *x)
+static void set_error (void)
 {
-    int nitems = x->x_fieldsSize, i;
-    t_symbol *templatesym;
-    t_template *template;
-    t_setvariable *vp;
-    t_gpointer *gp = &x->x_gpointer;
-    t_word *vec;
-    if (!gpointer_isValid(gp))
-    {
-        post_error ("set: empty pointer");
-        return;
-    }
-    if (*x->x_templateIdentifier->s_name)
-    {
-        if ((templatesym = x->x_templateIdentifier) != gpointer_getTemplateIdentifier(gp))
-        {
-            post_error ("set %s: got wrong template (%s)",
-                templatesym->s_name, gpointer_getTemplateIdentifier(gp)->s_name);
-            return;
-        } 
-    }
-    else templatesym = gpointer_getTemplateIdentifier(gp);
-    if (!(template = template_findByIdentifier(templatesym)))
-    {
-        post_error ("set: couldn't find template %s", templatesym->s_name);
-        return;
-    }
-    if (!nitems)
-        return;
-    vec = gpointer_getData (gp);
-    if (x->x_asSymbol)
-        for (i = 0, vp = x->x_fields; i < nitems; i++, vp++)
-            word_setSymbol(vec, template, vp->gv_fieldName, vp->gv_w.w_symbol);
-    else for (i = 0, vp = x->x_fields; i < nitems; i++, vp++)
-        word_setFloat(vec, template, vp->gv_fieldName, vp->gv_w.w_float);
-    scalar_redrawByPointer (gp);
-}
-
-static void set_float(t_set *x, t_float f)
-{
-    if (x->x_fieldsSize && !x->x_asSymbol)
-    {
-        x->x_fields[0].gv_w.w_float = f;
-        set_bang(x);
-    }
-    else post_error ("type mismatch or no field specified");
-}
-
-static void set_symbol(t_set *x, t_symbol *s)
-{
-    if (x->x_fieldsSize && x->x_asSymbol)
-    {
-        x->x_fields[0].gv_w.w_symbol = s;
-        set_bang(x);
-    }
-    else post_error ("type mismatch or no field specified");
+    post_error (PD_TRANSLATE ("set: type mismatch or no field specified"));
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void set_set(t_set *x, t_symbol *templatesym, t_symbol *field)
+static void set_bang (t_set *x)
 {
-    if (x->x_fieldsSize != 1)
-        post_error ("set: cannot set multiple fields.");
-    else
-    {
-       x->x_templateIdentifier = template_makeBindSymbolWithWildcard(templatesym); 
-       x->x_fields->gv_fieldName = field;
-       if (x->x_asSymbol)
-           x->x_fields->gv_w.w_symbol = &s_;
-       else
-           x->x_fields->gv_w.w_float = 0;
+    if (!gpointer_isValid (&x->x_gpointer)) { pointer_error (sym_set); }
+    else {
+    //
+    t_symbol *templateIdentifier = x->x_templateIdentifier;
+    
+    if (templateIdentifier == &s_) {                                                    /* Wildcard. */
+        templateIdentifier = gpointer_getTemplateIdentifier (&x->x_gpointer);
+    }
+    
+    if (templateIdentifier == gpointer_getTemplateIdentifier (&x->x_gpointer)) {
+    //
+    if (!gpointer_getTemplate (&x->x_gpointer)) { PD_BUG; }
+    else {
+    //
+    int i;
+    
+    for (i = 0; i < x->x_fieldsSize; i++) {
+    //
+    t_symbol *s = x->x_fields[i].gv_fieldName;
+    
+    if (gpointer_hasField (&x->x_gpointer, s)) {
+        if (x->x_asSymbol && gpointer_fieldIsSymbol (&x->x_gpointer, s)) {
+            gpointer_setSymbol (&x->x_gpointer, s, x->x_fields[i].gv_w.w_symbol);
+        }
+        if (!x->x_asSymbol && gpointer_fieldIsFloat (&x->x_gpointer, s)) {
+            gpointer_setFloat (&x->x_gpointer, s, x->x_fields[i].gv_w.w_float);
+        }
+    }
+    //
+    }
+    
+    scalar_redrawByPointer (&x->x_gpointer);
+    //
+    }
+    //
+    }
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static void set_float (t_set *x, t_float f)
+{
+    if (!x->x_fieldsSize || x->x_asSymbol) { set_error(); }
+    else {
+        x->x_fields[0].gv_w.w_float = f;
+        set_bang (x);
+    }
+}
+
+static void set_symbol (t_set *x, t_symbol *s)
+{
+    if (!x->x_fieldsSize || !x->x_asSymbol) { set_error(); }
+    else {
+        x->x_fields[0].gv_w.w_symbol = s; 
+        set_bang (x);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void set_set (t_set *x, t_symbol *templateIdentifier, t_symbol *fieldName)
+{
+    if (x->x_fieldsSize != 1) { post_error (PD_TRANSLATE ("set: cannot set multiple fields")); }
+    else {
+        x->x_templateIdentifier     = template_makeBindSymbolWithWildcard (templateIdentifier); 
+        x->x_fields[0].gv_fieldName = fieldName;
+       
+        if (x->x_asSymbol) {
+            x->x_fields[0].gv_w.w_symbol = &s_;
+        } else {
+            x->x_fields[0].gv_w.w_float  = 0.0;
+        }
     }
 }
 
