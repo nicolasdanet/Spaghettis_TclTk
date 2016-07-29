@@ -306,8 +306,10 @@ void canvas_close (t_glist *glist, t_float f)
     if (glist->gl_parent) { canvas_visible (glist, 0); }    /* Hide subpatches and abstractions. */
     else {
     //
-    if (k == 1) { pd_free (cast_pd (glist)); }              /* Has been saved right before. */
-    else {
+    if (k == 1 || k == 3) {                                                 /* Has been saved right before. */
+        pd_free (cast_pd (glist)); if (k == 3) { global_shouldQuit (NULL); }  
+        
+    } else {
         if (canvas_isDirty (glist)) {
             
             sys_vGui ("::ui_confirm::checkClose .x%lx"

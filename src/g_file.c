@@ -122,7 +122,7 @@ void canvas_saveToFile (t_glist *glist, t_symbol *name, t_symbol *directory, flo
         post (PD_TRANSLATE ("file: saved to %s/%s"), directory->s_name, name->s_name);
         canvas_dirty (glist, 0);
         if (destroy != 0.0) {
-            pd_vMessage (cast_pd (glist), sym_close, "f", 1.0); 
+            pd_vMessage (cast_pd (glist), sym_close, "f", (destroy == 2.0 ? 3.0 : 1.0)); 
         }
     }
     
