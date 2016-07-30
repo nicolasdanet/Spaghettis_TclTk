@@ -77,19 +77,19 @@ static void *struct_newEmpty (void)
 
 static void *struct_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_symbol *name = atom_getSymbolAtIndex (0, argc, argv);
+    t_symbol *templateName = atom_getSymbolAtIndex (0, argc, argv);
     
-    if (name == &s_) { return (struct_newEmpty()); }
+    if (templateName == &s_) { return (struct_newEmpty()); }
     else {
     //
-    t_symbol *templateIdentifier = utils_makeBindSymbol (name);
+    t_symbol *templateIdentifier = utils_makeBindSymbol (templateName);
     
     /* For now forbid multiple instantiation. */
     
     t_template *template = template_findByIdentifier (templateIdentifier);
     
     if (template && template_hasInstance (template)) { 
-        post_error (PD_TRANSLATE ("struct: %s already exists"), name->s_name); return NULL;
+        post_error (PD_TRANSLATE ("struct: %s already exists"), templateName->s_name); return NULL;
 
     } else {
         if (argc >= 1) { argc--; argv++; }
