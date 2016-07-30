@@ -51,19 +51,7 @@ static void set_error (void)
 
 static void set_bang (t_set *x)
 {
-    if (!gpointer_isValid (&x->x_gpointer)) { pointer_error (sym_set); }
-    else {
-    //
-    t_symbol *templateIdentifier = x->x_templateIdentifier;
-    
-    if (templateIdentifier == &s_) {                                                    /* Wildcard. */
-        templateIdentifier = gpointer_getTemplateIdentifier (&x->x_gpointer);
-    }
-    
-    if (templateIdentifier != gpointer_getTemplateIdentifier (&x->x_gpointer)) { pointer_error (sym_set); }
-    else {
-    //
-    if (!gpointer_getTemplate (&x->x_gpointer)) { PD_BUG; }
+    if (!gpointer_isValidInstanceOf (&x->x_gpointer, x->x_templateIdentifier)) { pointer_error (sym_set); }
     else {
     //
     int i;
@@ -84,10 +72,6 @@ static void set_bang (t_set *x)
     }
     
     gpointer_redraw (&x->x_gpointer);
-    //
-    }
-    //
-    }
     //
     }
 }
@@ -121,7 +105,7 @@ static void set_set (t_set *x, t_symbol *templateName, t_symbol *fieldName)
 {
     if (x->x_fieldsSize != 1) { post_error (PD_TRANSLATE ("set: cannot set multiple fields")); }
     else {
-        x->x_templateIdentifier     = template_makeBindSymbolWithWildcard (templateName); 
+        x->x_templateIdentifier     = template_makeTemplateIdentifier (templateName); 
         x->x_fields[0].gv_fieldName = fieldName;
        
         if (x->x_asSymbol) {
@@ -150,7 +134,7 @@ static void *set_new (t_symbol *s, int argc, t_atom *argv)
     
     x->x_fieldsSize         = PD_MAX (1, argc - 1);
     x->x_fields             = (t_setvariable *)PD_MEMORY_GET (x->x_fieldsSize * sizeof (t_setvariable));
-    x->x_templateIdentifier = template_makeBindSymbolWithWildcard (atom_getSymbolAtIndex (0, argc, argv));
+    x->x_templateIdentifier = template_makeTemplateIdentifier (atom_getSymbolAtIndex (0, argc, argv));
     
     if (x->x_asSymbol) {
         int i;

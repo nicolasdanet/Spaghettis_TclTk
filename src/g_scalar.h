@@ -222,6 +222,8 @@ t_word          *gpointer_getData                       (t_gpointer *gp);
 t_symbol        *gpointer_getTemplateIdentifier         (t_gpointer *gp);
 t_template      *gpointer_getTemplate                   (t_gpointer *gp);
 
+int             gpointer_isInstanceOf                   (t_gpointer *gp, t_symbol *templateIdentifier);
+int             gpointer_isValidInstanceOf              (t_gpointer *gp, t_symbol *templateIdentifier);
 void            gpointer_redraw                         (t_gpointer *gp);
 void            gpointer_setVisibility                  (t_gpointer *gp, int isVisible);
 
@@ -241,7 +243,8 @@ void            gpointer_setSymbol                      (t_gpointer *gp, t_symbo
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol        *template_makeBindSymbolWithWildcard    (t_symbol *s);
+t_symbol        *template_makeTemplateIdentifier        (t_symbol *s);
+t_symbol        *template_getWildcard                   (void);
 
 t_template      *template_findByIdentifier              (t_symbol *templateIdentifier);
 t_template      *template_new                           (t_symbol *templateIdentifier,

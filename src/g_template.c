@@ -254,14 +254,19 @@ int template_fieldIsArrayAndValid (t_template *x, t_symbol *fieldName)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol *template_makeBindSymbolWithWildcard (t_symbol *s)
+t_symbol *template_makeTemplateIdentifier (t_symbol *s)
 {
     PD_ASSERT (s);
     
-    if (s == &s_ || s == sym___dash__) { return &s_; }
+    if (s == &s_ || s == sym___dash__) { return template_getWildcard(); }
     else { 
         return (utils_makeBindSymbol (s));
     }
+}
+
+t_symbol *template_getWildcard (void)
+{
+    return &s_;
 }
 
 // -----------------------------------------------------------------------------------------------------------

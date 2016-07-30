@@ -34,19 +34,7 @@ typedef struct _getsize {
 
 static void getsize_pointer (t_getsize *x, t_gpointer *gp)
 {
-    if (!gpointer_isValid (gp)) { pointer_error (sym_getsize); }
-    else {
-    //
-    t_symbol *templateIdentifier = x->x_templateIdentifier;
-    
-    if (templateIdentifier == &s_) {                                    /* Wildcard. */
-        templateIdentifier = gpointer_getTemplateIdentifier (gp);
-    }
-    
-    if (templateIdentifier != gpointer_getTemplateIdentifier (gp)) { pointer_error (sym_getsize); }
-    else {
-    //
-    if (!gpointer_getTemplate (gp)) { PD_BUG; }
+    if (!gpointer_isValidInstanceOf (gp, x->x_templateIdentifier)) { pointer_error (sym_getsize); }
     else {
     //
     if (gpointer_hasField (gp, x->x_fieldName)) {
@@ -57,15 +45,11 @@ static void getsize_pointer (t_getsize *x, t_gpointer *gp)
     }
     //
     }
-    //
-    }
-    //
-    }
 }
 
 static void getsize_set (t_getsize *x, t_symbol *templateName, t_symbol *fieldName)
 {
-    x->x_templateIdentifier = template_makeBindSymbolWithWildcard (templateName);
+    x->x_templateIdentifier = template_makeTemplateIdentifier (templateName);
     x->x_fieldName          = fieldName;
 }
 
@@ -77,7 +61,7 @@ static void *getsize_new (t_symbol *templateName, t_symbol *fieldName)
 {
     t_getsize *x = (t_getsize *)pd_new (getsize_class);
     
-    x->x_templateIdentifier = template_makeBindSymbolWithWildcard (templateName);
+    x->x_templateIdentifier = template_makeTemplateIdentifier (templateName);
     x->x_fieldName          = fieldName;
     
     outlet_new (cast_object (x), &s_float);

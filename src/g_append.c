@@ -41,7 +41,7 @@ static void *append_new(t_symbol *why, int argc, t_atom *argv)
     t_atom at, *varvec;
     t_appendvariable *sp;
 
-    x->x_templatesym = template_makeBindSymbolWithWildcard(atom_getSymbolAtIndex(0, argc, argv));
+    x->x_templatesym = template_makeTemplateIdentifier(atom_getSymbolAtIndex(0, argc, argv));
     if (argc < 2)
     {
         varcount = 1;
@@ -70,7 +70,7 @@ static void append_set(t_append *x, t_symbol *templatesym, t_symbol *field)
         post_error ("set: cannot set multiple fields.");
     else
     {
-       x->x_templatesym = template_makeBindSymbolWithWildcard(templatesym); 
+       x->x_templatesym = template_makeTemplateIdentifier(templatesym); 
        x->x_variables->gv_sym = field;
        x->x_variables->gv_f = 0;
     }

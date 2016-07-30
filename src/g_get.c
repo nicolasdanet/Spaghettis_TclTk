@@ -40,19 +40,7 @@ typedef struct _get {
 
 static void get_pointer (t_get *x, t_gpointer *gp)
 {
-    if (!gpointer_isValid (gp)) { pointer_error (sym_get); }
-    else {
-    //
-    t_symbol *templateIdentifier = x->x_templateIdentifier;
-    
-    if (templateIdentifier == &s_) {                                                /* Wildcard. */
-        templateIdentifier = gpointer_getTemplateIdentifier (gp);
-    }
-
-    if (templateIdentifier != gpointer_getTemplateIdentifier (gp)) { pointer_error (sym_get); }
-    else {
-    //
-    if (!gpointer_getTemplate (gp)) { PD_BUG; }
+    if (!gpointer_isValidInstanceOf (gp, x->x_templateIdentifier)) { pointer_error (sym_get); }
     else {
     //
     int i;
@@ -62,13 +50,9 @@ static void get_pointer (t_get *x, t_gpointer *gp)
         t_symbol *s = x->x_fields[i].gv_fieldName;
         
         if (gpointer_hasField (gp, s)) {
-            if (gpointer_fieldIsFloat (gp, s))       { outlet_float (o, gpointer_getFloat (gp, s)); }
+            if (gpointer_fieldIsFloat (gp, s))       { outlet_float (o, gpointer_getFloat (gp, s));   }
             else if (gpointer_fieldIsSymbol (gp, s)) { outlet_symbol (o, gpointer_getSymbol (gp, s)); }
         }
-    }
-    //
-    }
-    //
     }
     //
     }
@@ -78,7 +62,7 @@ static void get_set (t_get *x, t_symbol *templateName, t_symbol *fieldName)
 {
     if (x->x_fieldsSize != 1) { post_error (PD_TRANSLATE ("get: cannot set multiple fields")); }
     else {
-        x->x_templateIdentifier     = template_makeBindSymbolWithWildcard (templateName); 
+        x->x_templateIdentifier     = template_makeTemplateIdentifier (templateName); 
         x->x_fields[0].gv_fieldName = fieldName;
     }
 }
@@ -94,7 +78,7 @@ static void *get_new (t_symbol *s, int argc, t_atom *argv)
 
     x->x_fieldsSize         = PD_MAX (1, argc - 1);
     x->x_fields             = (t_getvariable *)PD_MEMORY_GET (x->x_fieldsSize * sizeof (t_getvariable));
-    x->x_templateIdentifier = template_makeBindSymbolWithWildcard (atom_getSymbolAtIndex (0, argc, argv));
+    x->x_templateIdentifier = template_makeTemplateIdentifier (atom_getSymbolAtIndex (0, argc, argv));
     
     for (i = 0; i < x->x_fieldsSize; i++) {
         x->x_fields[i].gv_fieldName = atom_getSymbolAtIndex (i + 1, argc, argv);

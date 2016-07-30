@@ -297,6 +297,23 @@ t_template *gpointer_getTemplate (t_gpointer *gp)
     return (template_findByIdentifier (gpointer_getTemplateIdentifier (gp)));
 }
 
+int gpointer_isInstanceOf (t_gpointer *gp, t_symbol *templateIdentifier)
+{
+    if (templateIdentifier == template_getWildcard())               { return 1; }
+    if (templateIdentifier == gpointer_getTemplateIdentifier (gp))  { return 1; }
+    
+    return 0;
+}
+
+int gpointer_isValidInstanceOf (t_gpointer *gp, t_symbol *templateIdentifier)
+{
+    if (!gpointer_isValid (gp))                             { return 0; }
+    if (!gpointer_isInstanceOf (gp, templateIdentifier))    { return 0; }
+    if (!gpointer_getTemplate (gp))                         { return 0; }
+    
+    return 1;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

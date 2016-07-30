@@ -208,7 +208,7 @@ static void *pointer_new (t_symbol *s, int argc, t_atom *argv)
     x->x_outletTyped     = (t_typedout *)PD_MEMORY_GET (n * sizeof (t_typedout));
     
     for (i = 0; i < n; i++) {
-        x->x_outletTyped[i].to_type   = template_makeBindSymbolWithWildcard (atom_getSymbol (argv + i));
+        x->x_outletTyped[i].to_type   = template_makeTemplateIdentifier (atom_getSymbol (argv + i));
         x->x_outletTyped[i].to_outlet = outlet_new (cast_object (x), &s_pointer);
     }
     
