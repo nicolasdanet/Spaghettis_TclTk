@@ -169,6 +169,7 @@ t_array         *array_new                              (t_symbol *templateIdent
 t_gpointer      *array_getTopParentArray                (t_gpointer *gp);
 t_symbol        *array_getTemplateIdentifier            (t_array *x);
 t_word          *array_getData                          (t_array *x);
+t_word          *array_getElementAtIndex                (t_array *x, int n);
 
 int             array_getSize                           (t_array *x);
 int             array_getElementSize                    (t_array *x);
@@ -227,9 +228,11 @@ void            gpointer_setVisibility                  (t_gpointer *gp, int isV
 int             gpointer_hasField                       (t_gpointer *gp, t_symbol *fieldName);
 int             gpointer_fieldIsFloat                   (t_gpointer *gp, t_symbol *fieldName);
 int             gpointer_fieldIsSymbol                  (t_gpointer *gp, t_symbol *fieldName);
+int             gpointer_fieldIsArrayAndValid           (t_gpointer *gp, t_symbol *fieldName);
 
 t_float         gpointer_getFloat                       (t_gpointer *gp, t_symbol *fieldName);
 t_symbol        *gpointer_getSymbol                     (t_gpointer *gp, t_symbol *fieldName);
+t_array         *gpointer_getArray                      (t_gpointer *gp, t_symbol *fieldName);
 
 void            gpointer_setFloat                       (t_gpointer *gp, t_symbol *fieldName, t_float f);
 void            gpointer_setSymbol                      (t_gpointer *gp, t_symbol *fieldName, t_symbol *s);

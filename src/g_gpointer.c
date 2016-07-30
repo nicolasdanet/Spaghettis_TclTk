@@ -364,6 +364,15 @@ int gpointer_fieldIsSymbol (t_gpointer *gp, t_symbol *fieldName)
     return (template_fieldIsSymbol (template, fieldName));
 }
 
+int gpointer_fieldIsArrayAndValid (t_gpointer *gp, t_symbol *fieldName)
+{
+    t_template *template = gpointer_getTemplate (gp);
+    
+    PD_ASSERT (template);
+    
+    return (template_fieldIsArrayAndValid (template, fieldName));
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -384,6 +393,15 @@ t_symbol *gpointer_getSymbol (t_gpointer *gp, t_symbol *fieldName)
     PD_ASSERT (template);
     
     return word_getSymbol (gpointer_getData (gp), template, fieldName);
+}
+
+t_array *gpointer_getArray (t_gpointer *gp, t_symbol *fieldName)
+{
+    t_template *template = gpointer_getTemplate (gp);
+    
+    PD_ASSERT (template);
+    
+    return word_getArray (gpointer_getData (gp), template, fieldName);
 }
 
 void gpointer_setFloat (t_gpointer *gp, t_symbol *fieldName, t_float f)

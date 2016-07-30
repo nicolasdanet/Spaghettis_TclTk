@@ -89,6 +89,13 @@ t_word *array_getData (t_array *x)
     return (t_word *)x->a_vector;
 }
 
+t_word *array_getElementAtIndex (t_array *x, int n)
+{
+    int offset = array_getElementSize (x) * PD_CLAMP (n, 0, x->a_size - 1);
+        
+    return (array_getData (x) + offset);
+}
+
 t_symbol *array_getTemplateIdentifier (t_array *x)
 {
     return x->a_templateIdentifier;
@@ -138,7 +145,7 @@ void array_resize (t_array *x, int n)
         for (; i--; t += elementSize) { word_init ((t_word *)t, template, &x->a_parent); }
     }
     
-    x->a_uniqueIdentifier = utils_unique();                 /* Invalidate all current pointers. */
+    x->a_uniqueIdentifier = utils_unique();                 /* Invalidate all existent pointers. */
 }
 
 void array_redraw (t_array *x, t_glist *glist)

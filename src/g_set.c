@@ -60,7 +60,8 @@ static void set_bang (t_set *x)
         templateIdentifier = gpointer_getTemplateIdentifier (&x->x_gpointer);
     }
     
-    if (templateIdentifier == gpointer_getTemplateIdentifier (&x->x_gpointer)) {
+    if (templateIdentifier != gpointer_getTemplateIdentifier (&x->x_gpointer)) { pointer_error (sym_set); }
+    else {
     //
     if (!gpointer_getTemplate (&x->x_gpointer)) { PD_BUG; }
     else {

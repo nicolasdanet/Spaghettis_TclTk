@@ -49,7 +49,8 @@ static void get_pointer (t_get *x, t_gpointer *gp)
         templateIdentifier = gpointer_getTemplateIdentifier (gp);
     }
 
-    if (templateIdentifier == gpointer_getTemplateIdentifier (gp)) {
+    if (templateIdentifier != gpointer_getTemplateIdentifier (gp)) { pointer_error (sym_get); }
+    else {
     //
     if (!gpointer_getTemplate (gp)) { PD_BUG; }
     else {
