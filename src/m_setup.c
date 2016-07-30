@@ -68,7 +68,7 @@ void text_setup             (void);
 void pointer_setup          (void);
 void get_setup              (void);
 void set_setup              (void);
-void elem_setup             (void);
+void element_setup          (void);
 void getsize_setup          (void);
 void setsize_setup          (void);
 void append_setup           (void);
@@ -137,7 +137,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     pointer_setup();
     get_setup();
     set_setup();
-    elem_setup();
+    element_setup();
     getsize_setup();
     setsize_setup();
     append_setup();
