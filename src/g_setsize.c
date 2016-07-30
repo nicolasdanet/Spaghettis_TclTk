@@ -17,38 +17,26 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *setsize_class;
+static t_class  *setsize_class;                     /* Shared. */
 
-typedef struct _setsize
-{
-    t_object x_obj;
-    t_symbol *x_templatesym;
-    t_symbol *x_fieldsym;
-    t_gpointer x_gp;
-} t_setsize;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static void *setsize_new(t_symbol *templatesym, t_symbol *fieldsym,
-    t_float newsize)
-{
-    t_setsize *x = (t_setsize *)pd_new(setsize_class);
-    x->x_templatesym = template_makeTemplateIdentifier(templatesym);
-    x->x_fieldsym = fieldsym;
-    gpointer_init(&x->x_gp);
-    
-    inlet_newPointer(&x->x_obj, &x->x_gp);
-    return (x);
-}
+typedef struct _setsize {
+    t_object    x_obj;                              /* Must be the first. */
+    t_gpointer  x_gpointer;
+    t_symbol    *x_templateIdentifier;
+    t_symbol    *x_fieldName;
+    } t_setsize;
 
-static void setsize_set(t_setsize *x, t_symbol *templatesym, t_symbol *fieldsym)
-{
-    x->x_templatesym = template_makeTemplateIdentifier(templatesym);
-    x->x_fieldsym = fieldsym;
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void setsize_float(t_setsize *x, t_float f)
+static void setsize_float (t_setsize *x, t_float f)
 {
     int nitems, onset, type;
-    t_symbol *templatesym, *fieldsym = x->x_fieldsym, *elemtemplatesym;
+    t_symbol *templatesym, *fieldsym = x->x_fieldName, *elemtemplatesym;
     t_template *template;
     t_template *elemtemplate;
     t_word *w;
@@ -56,15 +44,15 @@ static void setsize_float(t_setsize *x, t_float f)
     t_array *array;
     int elemsize;
     int newsize = f;
-    t_gpointer *gp = &x->x_gp;
-    if (!gpointer_isValid(&x->x_gp))
+    t_gpointer *gp = &x->x_gpointer;
+    if (!gpointer_isValid(&x->x_gpointer))
     {
         post_error ("setsize: empty pointer");
         return;
     }
-    if (*x->x_templatesym->s_name)
+    if (*x->x_templateIdentifier->s_name)
     {
-        if ((templatesym = x->x_templatesym) !=
+        if ((templatesym = x->x_templateIdentifier) !=
             gpointer_getTemplateIdentifier(gp))
         {
             post_error ("elem %s: got wrong template (%s)",
@@ -145,20 +133,57 @@ static void setsize_float(t_setsize *x, t_float f)
     gpointer_setVisibility (gp, 1);
 }
 
-static void setsize_free(t_setsize *x)
+static void setsize_set (t_setsize *x, t_symbol *templateName, t_symbol *fieldName)
 {
-    gpointer_unset(&x->x_gp);
+    x->x_templateIdentifier = template_makeTemplateIdentifier (templateName);
+    x->x_fieldName          = fieldName;
 }
 
-void setsize_setup(void)
-{
-    setsize_class = class_new (sym_setsize, (t_newmethod)setsize_new,
-        (t_method)setsize_free, sizeof(t_setsize), 0,
-        A_DEFSYMBOL, A_DEFSYMBOL, A_DEFFLOAT, 0);
-    class_addFloat(setsize_class, setsize_float);
-    class_addMethod(setsize_class, (t_method)setsize_set, sym_set,
-        A_SYMBOL, A_SYMBOL, 0); 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
+static void *setsize_new (t_symbol *templateName, t_symbol *fieldName)
+{
+    t_setsize *x = (t_setsize *)pd_new (setsize_class);
+    
+    gpointer_init (&x->x_gpointer);
+        
+    x->x_templateIdentifier = template_makeTemplateIdentifier (templateName);
+    x->x_fieldName          = fieldName;
+    
+    inlet_newPointer (cast_object (x), &x->x_gpointer);
+    
+    return x;
+}
+
+static void setsize_free (t_setsize *x)
+{
+    gpointer_unset (&x->x_gpointer);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void setsize_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_setsize,
+            (t_newmethod)setsize_new,
+            (t_method)setsize_free,
+            sizeof (t_setsize),
+            CLASS_DEFAULT,
+            A_DEFSYMBOL,
+            A_DEFSYMBOL,
+            A_NULL);
+            
+    class_addFloat (c, setsize_float);
+    
+    class_addMethod (c, (t_method)setsize_set, sym_set, A_SYMBOL, A_SYMBOL, A_NULL); 
+    
+    setsize_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
