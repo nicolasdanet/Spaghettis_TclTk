@@ -37,7 +37,7 @@ typedef struct _element {
 static void element_float (t_element *x, t_float f)
 {
     if (!gpointer_isValid (&x->x_gpointer)) { pointer_error (sym_element); }
-    else  {
+    else {
     //
     t_symbol *templateIdentifier = x->x_templateIdentifier;
     

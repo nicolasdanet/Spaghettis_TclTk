@@ -32,49 +32,35 @@ typedef struct _getsize {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void getsize_pointer(t_getsize *x, t_gpointer *gp)
+static void getsize_pointer (t_getsize *x, t_gpointer *gp)
 {
-    int nitems, onset, type;
-    t_symbol *templatesym, *fieldsym = x->x_fieldName, *elemtemplatesym;
-    t_template *template;
-    t_word *w;
-    t_array *array;
-    int elemsize;
-    if (!gpointer_isValid(gp))
-    {
-        post_error ("getsize: stale or empty pointer");
-        return;
+    if (!gpointer_isValid (gp)) { pointer_error (sym_getsize); }
+    else {
+    //
+    t_symbol *templateIdentifier = x->x_templateIdentifier;
+    
+    if (templateIdentifier == &s_) {                                    /* Wildcard. */
+        templateIdentifier = gpointer_getTemplateIdentifier (gp);
     }
-    if (*x->x_templateIdentifier->s_name)
-    {
-        if ((templatesym = x->x_templateIdentifier) !=
-            gpointer_getTemplateIdentifier(gp))
-        {
-            post_error ("elem %s: got wrong template (%s)",
-                templatesym->s_name, gpointer_getTemplateIdentifier(gp)->s_name);
-            return;
-        } 
+    
+    if (templateIdentifier != gpointer_getTemplateIdentifier (gp)) { pointer_error (sym_getsize); }
+    else {
+    //
+    if (!gpointer_getTemplate (gp)) { PD_BUG; }
+    else {
+    //
+    if (gpointer_hasField (gp, x->x_fieldName)) {
+        if (gpointer_fieldIsArrayAndValid (gp, x->x_fieldName)) {
+            t_float size = (t_float)array_getSize (gpointer_getArray (gp, x->x_fieldName));
+            outlet_float (cast_object (x)->te_outlet, size);
+        }
     }
-    else templatesym = gpointer_getTemplateIdentifier(gp);
-    if (!(template = template_findByIdentifier(templatesym)))
-    {
-        post_error ("elem: couldn't find template %s", templatesym->s_name);
-        return;
+    //
     }
-    if (!template_findField(template, fieldsym,
-        &onset, &type, &elemtemplatesym))
-    {
-        post_error ("getsize: couldn't find array field %s", fieldsym->s_name);
-        return;
+    //
     }
-    if (type != DATA_ARRAY)
-    {
-        post_error ("getsize: field %s not of type array", fieldsym->s_name);
-        return;
+    //
     }
-    w = gpointer_getData (gp);
-    array = *(t_array **)(((char *)w) + onset);
-    outlet_float(x->x_obj.te_outlet, (t_float)(array->a_size));
 }
 
 static void getsize_set (t_getsize *x, t_symbol *templateName, t_symbol *fieldName)
