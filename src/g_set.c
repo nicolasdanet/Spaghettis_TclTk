@@ -117,11 +117,11 @@ static void set_symbol (t_set *x, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void set_set (t_set *x, t_symbol *templateIdentifier, t_symbol *fieldName)
+static void set_set (t_set *x, t_symbol *templateName, t_symbol *fieldName)
 {
     if (x->x_fieldsSize != 1) { post_error (PD_TRANSLATE ("set: cannot set multiple fields")); }
     else {
-        x->x_templateIdentifier     = template_makeBindSymbolWithWildcard (templateIdentifier); 
+        x->x_templateIdentifier     = template_makeBindSymbolWithWildcard (templateName); 
         x->x_fields[0].gv_fieldName = fieldName;
        
         if (x->x_asSymbol) {
@@ -136,7 +136,7 @@ static void set_set (t_set *x, t_symbol *templateIdentifier, t_symbol *fieldName
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *set_new (t_symbol *why, int argc, t_atom *argv)
+static void *set_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_set *x = (t_set *)pd_new (set_class);
     

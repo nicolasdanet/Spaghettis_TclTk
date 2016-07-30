@@ -74,11 +74,11 @@ static void get_pointer (t_get *x, t_gpointer *gp)
     }
 }
 
-static void get_set (t_get *x, t_symbol *templateIdentifier, t_symbol *fieldName)
+static void get_set (t_get *x, t_symbol *templateName, t_symbol *fieldName)
 {
     if (x->x_fieldsSize != 1) { post_error (PD_TRANSLATE ("get: cannot set multiple fields")); }
     else {
-        x->x_templateIdentifier     = template_makeBindSymbolWithWildcard (templateIdentifier); 
+        x->x_templateIdentifier     = template_makeBindSymbolWithWildcard (templateName); 
         x->x_fields[0].gv_fieldName = fieldName;
     }
 }

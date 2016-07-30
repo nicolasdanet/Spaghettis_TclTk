@@ -16,36 +16,26 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+static t_class  *getsize_class;             /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _getsize {
+    t_object    x_obj;                      /* Must be the first. */
+    t_symbol    *x_templateIdentifier;
+    t_symbol    *x_fieldName;
+    } t_getsize;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-static t_class *getsize_class;
-
-typedef struct _getsize
-{
-    t_object x_obj;
-    t_symbol *x_templatesym;
-    t_symbol *x_fieldsym;
-} t_getsize;
-
-static void *getsize_new(t_symbol *templatesym, t_symbol *fieldsym)
-{
-    t_getsize *x = (t_getsize *)pd_new(getsize_class);
-    x->x_templatesym = template_makeBindSymbolWithWildcard(templatesym);
-    x->x_fieldsym = fieldsym;
-    outlet_new(&x->x_obj, &s_float);
-    return (x);
-}
-
-static void getsize_set(t_getsize *x, t_symbol *templatesym, t_symbol *fieldsym)
-{
-    x->x_templatesym = template_makeBindSymbolWithWildcard(templatesym);
-    x->x_fieldsym = fieldsym;
-}
 
 static void getsize_pointer(t_getsize *x, t_gpointer *gp)
 {
     int nitems, onset, type;
-    t_symbol *templatesym, *fieldsym = x->x_fieldsym, *elemtemplatesym;
+    t_symbol *templatesym, *fieldsym = x->x_fieldName, *elemtemplatesym;
     t_template *template;
     t_word *w;
     t_array *array;
@@ -55,9 +45,9 @@ static void getsize_pointer(t_getsize *x, t_gpointer *gp)
         post_error ("getsize: stale or empty pointer");
         return;
     }
-    if (*x->x_templatesym->s_name)
+    if (*x->x_templateIdentifier->s_name)
     {
-        if ((templatesym = x->x_templatesym) !=
+        if ((templatesym = x->x_templateIdentifier) !=
             gpointer_getTemplateIdentifier(gp))
         {
             post_error ("elem %s: got wrong template (%s)",
@@ -87,13 +77,50 @@ static void getsize_pointer(t_getsize *x, t_gpointer *gp)
     outlet_float(x->x_obj.te_outlet, (t_float)(array->a_size));
 }
 
-void getsize_setup(void)
+static void getsize_set (t_getsize *x, t_symbol *templateName, t_symbol *fieldName)
 {
-    getsize_class = class_new(sym_getsize, (t_newmethod)getsize_new, 0,
-        sizeof(t_getsize), 0, A_DEFSYMBOL, A_DEFSYMBOL, 0);
-    class_addPointer(getsize_class, getsize_pointer); 
-    class_addMethod(getsize_class, (t_method)getsize_set, sym_set,
-        A_SYMBOL, A_SYMBOL, 0); 
+    x->x_templateIdentifier = template_makeBindSymbolWithWildcard (templateName);
+    x->x_fieldName          = fieldName;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *getsize_new (t_symbol *templateName, t_symbol *fieldName)
+{
+    t_getsize *x = (t_getsize *)pd_new (getsize_class);
+    
+    x->x_templateIdentifier = template_makeBindSymbolWithWildcard (templateName);
+    x->x_fieldName          = fieldName;
+    
+    outlet_new (cast_object (x), &s_float);
+    
+    return x;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void getsize_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_getsize,
+            (t_newmethod)getsize_new,
+            NULL,
+            sizeof (t_getsize),
+            CLASS_DEFAULT,
+            A_DEFSYMBOL,
+            A_DEFSYMBOL,
+            A_NULL);
+            
+    class_addPointer (c, getsize_pointer);
+    
+    class_addMethod (c, (t_method)getsize_set, sym_set, A_SYMBOL, A_SYMBOL, A_NULL);
+    
+    getsize_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

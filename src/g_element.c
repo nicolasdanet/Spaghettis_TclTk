@@ -17,13 +17,13 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class  *element_class;             /* Shared. */
+static t_class  *element_class;                 /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _element {
-    t_object        x_obj;
+    t_object        x_obj;                      /* Must be the first. */
     t_gpointer      x_gpointerWord;
     t_gpointer      x_gpointer;
     t_symbol        *x_templateIdentifier;
@@ -68,13 +68,9 @@ static void element_float (t_element *x, t_float f)
     }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void element_set (t_element *x, t_symbol *templateIdentifier, t_symbol *fieldName)
+static void element_set (t_element *x, t_symbol *templateName, t_symbol *fieldName)
 {
-    x->x_templateIdentifier = template_makeBindSymbolWithWildcard (templateIdentifier);
+    x->x_templateIdentifier = template_makeBindSymbolWithWildcard (templateName);
     x->x_fieldName          = fieldName;
 }
 
@@ -82,14 +78,14 @@ static void element_set (t_element *x, t_symbol *templateIdentifier, t_symbol *f
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *element_new (t_symbol *templateIdentifier, t_symbol *fieldName)
+static void *element_new (t_symbol *templateName, t_symbol *fieldName)
 {
     t_element *x = (t_element *)pd_new (element_class);
     
     gpointer_init (&x->x_gpointerWord);
     gpointer_init (&x->x_gpointer);
     
-    x->x_templateIdentifier = template_makeBindSymbolWithWildcard (templateIdentifier);
+    x->x_templateIdentifier = template_makeBindSymbolWithWildcard (templateName);
     x->x_fieldName          = fieldName;
     
     inlet_newPointer (cast_object (x), &x->x_gpointer);
