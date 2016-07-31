@@ -178,10 +178,23 @@ int canvas_canHaveWindow (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void canvas_addScalarNext (t_glist *glist, t_scalar *first, t_scalar *next)
+{
+    if (first != NULL) {
+        cast_gobj (next)->g_next  = cast_gobj (first)->g_next;
+        cast_gobj (first)->g_next = cast_gobj (next);
+        
+    } else {
+        cast_gobj (next)->g_next  = glist->gl_graphics;
+        glist->gl_graphics        = cast_gobj (next);
+    }
+
+    if (canvas_isMapped (canvas_getView (glist))) { gobj_visibilityChanged (cast_gobj (next), glist, 1); }
+}
+
 void canvas_addObject (t_glist *glist, t_gobj *y)
 {
     t_object *object = NULL;
-    t_glist *canvas  = canvas_getView (glist);
     
     int needToPaintScalars = class_hasDrawCommand (pd_class (y));
     
@@ -194,7 +207,7 @@ void canvas_addObject (t_glist *glist, t_gobj *y)
     }
     
     if (glist->gl_editor && (object = canvas_castToObjectIfPatchable (y))) { boxtext_new (glist, object); }
-    if (canvas_isMapped (canvas)) { gobj_visibilityChanged (y, glist, 1); }
+    if (canvas_isMapped (canvas_getView (glist))) { gobj_visibilityChanged (y, glist, 1); }
     
     if (needToPaintScalars) { paint_scalarsRedrawAll(); }
 }

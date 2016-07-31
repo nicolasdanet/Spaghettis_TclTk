@@ -277,7 +277,8 @@ void            canvas_makeTextObject                   (t_glist *glist,
                                                             int width, 
                                                             int isSelected, 
                                                             t_buffer *b);
-                                                            
+
+void            canvas_addScalarNext                    (t_glist *glist, t_scalar *first, t_scalar *next);
 void            canvas_addObject                        (t_glist *glist, t_gobj *y);
 void            canvas_removeObject                     (t_glist *glist, t_gobj *y);
 void            canvas_clear                            (t_glist *glist);

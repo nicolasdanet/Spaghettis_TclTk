@@ -39,82 +39,43 @@ typedef struct _append {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void append_float(t_append *x, t_float f)
+static void append_float (t_append *x, t_float f)
 {
-    int nitems = x->x_fieldsSize, i;
-    t_symbol *templatesym = x->x_templateIdentifier;
-    t_template *template;
-    t_appendvariable *vp;
-    t_gpointer *gp = &x->x_gpointer;
-    t_word *vec;
-    t_scalar *sc, *oldsc;
-    t_glist *glist;
+    t_template *template = template_findByIdentifier (x->x_templateIdentifier);
     
-    if (!templatesym->s_name)
-    {
-        post_error ("append: no template supplied");
-        return;
-    }
-    template = template_findByIdentifier(templatesym);
-    if (!template)
-    {
-        post_error ("append: couldn't find template %s", templatesym->s_name);
-        return;
-    }
-    if (!gpointer_isSet (gp))
-    {
-        post_error ("append: no current pointer");
-        return;
-    }
-    if (!gpointer_isScalar (gp)) {
-        post_error ("append: lists only, not arrays");
-        return;
-    }
+    if (!template) { post_error (PD_TRANSLATE ("append: couldn't find template")); }
+    else {
+    //
+    if (!gpointer_isValidNullAllowed (&x->x_gpointer) || !gpointer_isScalar (&x->x_gpointer)) {
+        pointer_error (sym_append); 
+        
+    } else {
+    //
+    t_scalar *scalar = scalar_new (gpointer_getView (&x->x_gpointer), x->x_templateIdentifier);
     
-    glist = gpointer_getParentGlist (gp);
-    if (glist->gl_uniqueIdentifier != gpointer_getUniqueIdentifier (gp))    /* isValid? */
-    {
-        post_error ("append: stale pointer");
-        return;
-    }
+    if (!scalar) { PD_BUG; }
+    else {
+    //
+    int i;
     
-    if (!nitems) return;
     x->x_fields[0].gv_f = f;
-
-    sc = scalar_new(glist, templatesym);
-    if (!sc)
-    {
-        post_error ("%s: couldn't create scalar", templatesym->s_name);
-        return;
+        
+    for (i = 0; i < x->x_fieldsSize; i++) {
+        if (scalar_fieldIsFloat (scalar, x->x_fields[i].gv_fieldName)) {
+            scalar_setFloat (scalar, x->x_fields[i].gv_fieldName, x->x_fields[i].gv_f);
+        }
     }
     
-    oldsc = gpointer_getScalar (gp);
+    canvas_addScalarNext (gpointer_getView (&x->x_gpointer), gpointer_getScalar (&x->x_gpointer), scalar);
     
-    if (oldsc)
-    {
-        sc->sc_g.g_next = oldsc->sc_g.g_next;
-        oldsc->sc_g.g_next = &sc->sc_g;
+    gpointer_setAsScalar (&x->x_gpointer, gpointer_getView (&x->x_gpointer), scalar);
+    outlet_pointer (cast_object (x)->te_outlet, &x->x_gpointer);
+    //
     }
-    else
-    {
-        sc->sc_g.g_next = glist->gl_graphics;
-        glist->gl_graphics = &sc->sc_g;
+    //
     }
-
-    gpointer_setAsScalar (gp, glist, sc);
-    //gp->gp_un.gp_scalar = sc;
-    vec = sc->sc_vector;
-    for (i = 0, vp = x->x_fields; i < nitems; i++, vp++)
-    {
-        word_setFloat(vec, template, vp->gv_fieldName, vp->gv_f);
+    //
     }
- 
-    if (canvas_isMapped(canvas_getView(glist)))
-        gobj_visibilityChanged(&sc->sc_g, glist, 1);
-    /*  scalar_redraw(sc, glist);  ... have to do 'vis' instead here because
-    redraw assumes we're already visible... */
-
-    outlet_pointer(x->x_obj.te_outlet, gp);
 }
 
 static void append_set (t_append *x, t_symbol *templateName, t_symbol *fieldName)

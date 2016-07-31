@@ -142,6 +142,7 @@ t_word          *scalar_getData                         (t_scalar *x);
 t_symbol        *scalar_getTemplateIdentifier           (t_scalar *x);
 t_array         *scalar_getArray                        (t_scalar *x, t_symbol *fieldName);
 
+int             scalar_fieldIsFloat                     (t_scalar *x, t_symbol *fieldName);
 t_float         scalar_getFloat                         (t_scalar *x, t_symbol *fieldName);
 void            scalar_setFloat                         (t_scalar *x, t_symbol *fieldName, t_float f);
 

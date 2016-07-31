@@ -108,10 +108,6 @@ void word_setFloat (t_word *w, t_template *tmpl, t_symbol *fieldName, t_float f)
     }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 t_array *word_getArray (t_word *w, t_template *tmpl, t_symbol *fieldName)
 {
     int i, type; t_symbol *dummy = NULL;
@@ -175,10 +171,6 @@ t_float word_getFloatByDescriptor (t_word *w, t_template *tmpl, t_fielddescripto
     
     return 0.0;
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 t_float word_getFloatByDescriptorAsPosition (t_word *w, t_template *tmpl, t_fielddescriptor *fd)
 {
