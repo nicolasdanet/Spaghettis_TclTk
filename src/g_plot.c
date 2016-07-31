@@ -50,18 +50,17 @@ static t_template           *plot_template;             /* Shared. */
 
 typedef struct _plot {
     t_object            x_obj;                          /* Must be the first. */
+    t_fielddescriptor   x_array;
     t_fielddescriptor   x_colorOutline;
     t_fielddescriptor   x_width;
     t_fielddescriptor   x_positionX;
     t_fielddescriptor   x_positionY;
     t_fielddescriptor   x_incrementX;
     t_fielddescriptor   x_style;
-    t_fielddescriptor   x_array;
     t_fielddescriptor   x_fieldX;
     t_fielddescriptor   x_fieldY;
     t_fielddescriptor   x_fieldW;
     t_fielddescriptor   x_isVisible;
-    t_fielddescriptor   x_isScalarsVisible;
     } t_plot;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -151,7 +150,7 @@ static int plot_readownertemplate(t_plot *x,
     *ylocp = word_getFloatByDescriptor(data, ownertemplate, &x->x_positionY);
     *stylep = word_getFloatByDescriptor(data, ownertemplate, &x->x_style);
     *visp = word_getFloatByDescriptor(data, ownertemplate, &x->x_isVisible);
-    *scalarvisp = word_getFloatByDescriptor(data, ownertemplate, &x->x_isScalarsVisible);
+    *scalarvisp = 1.0;
     *elemtemplatesymp = elemtemplatesym;
     *arrayp = array;
     *xfield = &x->x_fieldX;
@@ -367,7 +366,7 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
             }
             if (best > 8)
             {
-                if (scalarvis != 0)
+                if (1)
                     return (array_doclick_element(array, glist, sc, ap,
                         elemtemplatesym, linewidth, xloc, xinc, yloc,
                             xfield, yfield, wfield,
@@ -657,7 +656,7 @@ static void plot_behaviorGetRectangle(t_gobj *z, t_glist *glist,
             if (ypix + wpix > y2)
                 y2 = ypix + wpix;
             
-            if (scalarvis != 0)
+            if (1)
             {
                     /* check also the drawing instructions for the scalar */ 
                 if (xonset >= 0)
@@ -926,7 +925,7 @@ static void plot_behaviorVisibilityChanged(t_gobj *z, t_glist *glist,
             /* We're done with the outline; now draw all the points.
             This code is inefficient since the template has to be
             searched for drawing instructions for every last point. */
-        if (scalarvis != 0)
+        if (1)
         {
             for (xsum = xloc, i = 0; i < nelem; i++)
             {
@@ -955,7 +954,7 @@ static void plot_behaviorVisibilityChanged(t_gobj *z, t_glist *glist,
     else
     {
             /* un-draw the individual points */
-        if (scalarvis != 0)
+        if (1)
         {
             int i;
             for (i = 0; i < nelem; i++)
@@ -1016,68 +1015,58 @@ t_parentwidgetbehavior plot_widgetBehavior =
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *plot_new(t_symbol *classsym, int argc, t_atom *argv)
+static void *plot_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_plot *x = (t_plot *)pd_new(plot_class);
-    int defstyle = PLOT_POLYGONS;
-
-    field_setAsFloatVariable(&x->x_fieldX, sym_x);
-    field_setAsFloatVariable(&x->x_fieldY, sym_y);
-    field_setAsFloatVariable(&x->x_fieldW, sym_w);
+    t_plot *x = (t_plot *)pd_new (plot_class);
     
-    field_setAsFloatConstant(&x->x_isVisible, 1);
-    field_setAsFloatConstant(&x->x_isScalarsVisible, 1);
-    while (1)
-    {
-        t_symbol *firstarg = atom_getSymbolAtIndex(0, argc, argv);
-        if (!strcmp(firstarg->s_name, "curve") ||
-            !strcmp(firstarg->s_name, "-c"))
-        {
-            defstyle = PLOT_CURVES;
-            argc--, argv++;
-        }
-        else if (!strcmp(firstarg->s_name, "-v") && argc > 1)
-        {
-            field_setAsFloat(&x->x_isVisible, 1, argv+1);
+    field_setAsFloatConstant (&x->x_array,          1.0);
+    field_setAsFloatConstant (&x->x_colorOutline,   0.0);
+    field_setAsFloatConstant (&x->x_width,          1.0);
+    field_setAsFloatConstant (&x->x_positionX,      1.0);
+    field_setAsFloatConstant (&x->x_positionY,      1.0);
+    field_setAsFloatConstant (&x->x_incrementX,     1.0);
+    field_setAsFloatConstant (&x->x_style,          (t_float)PLOT_POLYGONS);
+    field_setAsFloatConstant (&x->x_isVisible,      1.0);
+    field_setAsFloatVariable (&x->x_fieldX,         sym_x);
+    field_setAsFloatVariable (&x->x_fieldY,         sym_y);
+    field_setAsFloatVariable (&x->x_fieldW,         sym_w);
+    
+    while (argc > 0) {
+
+        t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
+        
+        if (t == sym_curve || t == sym___dash__c || t == sym___dash__curve) {
+            field_setAsFloatConstant (&x->x_style, (t_float)PLOT_CURVES);
+            argc -= 1; argv += 1;
+            
+        } else if (argc > 1 && (t == sym___dash__v || t == sym___dash__visible)) {
+            field_setAsFloat (&x->x_isVisible, 1, argv + 1);
             argc -= 2; argv += 2;
-        }
-        else if (!strcmp(firstarg->s_name, "-vs") && argc > 1)
-        {
-            field_setAsFloat(&x->x_isScalarsVisible, 1, argv+1);
+            
+        } else if (argc > 1 && t == sym___dash__x) {
+            field_setAsFloat (&x->x_fieldX, 1, argv + 1);
             argc -= 2; argv += 2;
-        }
-        else if (!strcmp(firstarg->s_name, "-x") && argc > 1)
-        {
-            field_setAsFloat(&x->x_fieldX, 1, argv+1);
+            
+        } else if (argc > 1 && t == sym___dash__y) {
+            field_setAsFloat (&x->x_fieldY, 1, argv + 1);
             argc -= 2; argv += 2;
-        }
-        else if (!strcmp(firstarg->s_name, "-y") && argc > 1)
-        {
-            field_setAsFloat(&x->x_fieldY, 1, argv+1);
+            
+        } else if (argc > 1 && t == sym___dash__w) {
+            field_setAsFloat (&x->x_fieldW, 1, argv + 1);
             argc -= 2; argv += 2;
-        }
-        else if (!strcmp(firstarg->s_name, "-w") && argc > 1)
-        {
-            field_setAsFloat(&x->x_fieldW, 1, argv+1);
-            argc -= 2; argv += 2;
-        }
-        else break;
+            
+        } else { break; }
     }
-    if (argc) field_setAsArray (&x->x_array, argc--, argv++);
-    else field_setAsFloatConstant(&x->x_array, 1);
-    if (argc) field_setAsFloat(&x->x_colorOutline, argc--, argv++);
-    else field_setAsFloatConstant(&x->x_colorOutline, 0);
-    if (argc) field_setAsFloat(&x->x_width, argc--, argv++);
-    else field_setAsFloatConstant(&x->x_width, 1);
-    if (argc) field_setAsFloat(&x->x_positionX, argc--, argv++);
-    else field_setAsFloatConstant(&x->x_positionX, 1);
-    if (argc) field_setAsFloat(&x->x_positionY, argc--, argv++);
-    else field_setAsFloatConstant(&x->x_positionY, 1);
-    if (argc) field_setAsFloat(&x->x_incrementX, argc--, argv++);
-    else field_setAsFloatConstant(&x->x_incrementX, 1);
-    if (argc) field_setAsFloat(&x->x_style, argc--, argv++);
-    else field_setAsFloatConstant(&x->x_style, defstyle);
-    return (x);
+    
+    if (argc) { field_setAsArray (&x->x_array,          argc--, argv++); }
+    if (argc) { field_setAsFloat (&x->x_colorOutline,   argc--, argv++); }
+    if (argc) { field_setAsFloat (&x->x_width,          argc--, argv++); }
+    if (argc) { field_setAsFloat (&x->x_positionX,      argc--, argv++); }
+    if (argc) { field_setAsFloat (&x->x_positionY,      argc--, argv++); }
+    if (argc) { field_setAsFloat (&x->x_incrementX,     argc--, argv++); }
+    if (argc) { field_setAsFloat (&x->x_style,          argc--, argv++); }
+
+    return x;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -178,6 +178,7 @@ t_symbol *sym_cpole__tilde__;
 t_symbol *sym_cputime;
 t_symbol *sym_ctlin;
 t_symbol *sym_ctlout;
+t_symbol *sym_curve;
 t_symbol *sym_czero__tilde__;
 t_symbol *sym_czero_rev__tilde__;
 t_symbol *sym_dac__tilde__;
@@ -675,6 +676,7 @@ void symbols_initialize (void)
     sym_cputime                                 = gensym ("cputime");
     sym_ctlin                                   = gensym ("ctlin");
     sym_ctlout                                  = gensym ("ctlout");
+    sym_curve                                   = gensym ("curve");
     sym_czero__tilde__                          = gensym ("czero~");
     sym_czero_rev__tilde__                      = gensym ("czero_rev~");
     sym_dac__tilde__                            = gensym ("dac~");

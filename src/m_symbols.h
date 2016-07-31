@@ -183,6 +183,7 @@ extern t_symbol *sym_cpole__tilde__;
 extern t_symbol *sym_cputime;
 extern t_symbol *sym_ctlin;
 extern t_symbol *sym_ctlout;
+extern t_symbol *sym_curve;
 extern t_symbol *sym_czero__tilde__;
 extern t_symbol *sym_czero_rev__tilde__;
 extern t_symbol *sym_dac__tilde__;
