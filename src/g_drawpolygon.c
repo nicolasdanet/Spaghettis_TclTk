@@ -374,7 +374,7 @@ static void *drawpolygon_new (t_symbol *s, int argc, t_atom *argv)
             field_setAsFloat (&x->x_isVisible, 1, argv + 1);
             argc -= 2; argv += 2;
             
-        } else if (t == sym___dash__x || t == sym___dash__inhibit) {
+        } else if (t == sym___dash__i || t == sym___dash__inhibit) {
             x->x_flags |= DRAWPOLYGON_NO_MOUSE;
             argc -= 1; argv += 1;
             

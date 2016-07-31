@@ -74,13 +74,12 @@ static void plot_motion (void *, t_float, t_float, t_float);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define PLOT_MIN       -1e20
 #define PLOT_MAX        1e20
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define PLOT_CLIP(x)    (((x) > PLOT_MIN && (x) < PLOT_MAX) ? (x) : 0)
+#define PLOT_CLIP(x)    (((x) > -PLOT_MAX && (x) < PLOT_MAX) ? (x) : 0)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -608,7 +607,7 @@ static void plot_motion(void *z, t_float dx, t_float dy, t_float modifier)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void plot_getrect(t_gobj *z, t_glist *glist,
+static void plot_behaviorGetRectangle(t_gobj *z, t_glist *glist,
     t_word *data, t_template *template, t_float basex, t_float basey,
     int *xp1, int *yp1, int *xp2, int *yp2)
 {
@@ -699,7 +698,7 @@ static void plot_getrect(t_gobj *z, t_glist *glist,
     *yp2 = y2;
 }
 
-static void plot_vis(t_gobj *z, t_glist *glist, 
+static void plot_behaviorVisibilityChanged(t_gobj *z, t_glist *glist, 
     t_word *data, t_template *template, t_float basex, t_float basey,
     int tovis)
 {
@@ -738,7 +737,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
     {
         if (style == PLOT_POINTS)
         {
-            t_float minyval = PLOT_MAX, maxyval = PLOT_MIN;
+            t_float minyval = PLOT_MAX, maxyval = -PLOT_MAX;
             int ndrawn = 0;
             for (xsum = basex + xloc, i = 0; i < nelem; i++)
             {
@@ -783,7 +782,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                                 + linewidth), data);
                     ndrawn++;
                     minyval = PLOT_MAX;
-                    maxyval = PLOT_MIN;
+                    maxyval = -PLOT_MAX;
                 }
                 if (ndrawn > 2000 || ixpix >= 3000) break;
             }
@@ -978,7 +977,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
     }
 }
 
-static int plot_click(t_gobj *z, t_glist *glist, 
+static int plot_behaviorClicked(t_gobj *z, t_glist *glist, 
     t_word *data, t_template *template, t_scalar *sc, t_array *ap,
     t_float basex, t_float basey,
     int xpix, int ypix, int shift, int alt, int dbl, int doit)
@@ -1006,11 +1005,11 @@ static int plot_click(t_gobj *z, t_glist *glist,
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_parentwidgetbehavior plot_widgetbehavior =
+t_parentwidgetbehavior plot_widgetBehavior =
     {
-        plot_getrect,
-        plot_vis,
-        plot_click,
+        plot_behaviorGetRectangle,
+        plot_behaviorVisibilityChanged,
+        plot_behaviorClicked,
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -1087,10 +1086,21 @@ static void *plot_new(t_symbol *classsym, int argc, t_atom *argv)
 
 void plot_setup (void)
 {
-    plot_class = class_new(sym_plot, (t_newmethod)plot_new, 0,
-        sizeof(t_plot), 0, A_GIMME, 0);
-    class_addFloat(plot_class, plot_float);
-    class_setParentWidgetBehavior(plot_class, &plot_widgetbehavior);
+    t_class *c = NULL;
+    
+    c = class_new (sym_plot,
+            (t_newmethod)plot_new,
+            NULL,
+            sizeof (t_plot),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+            
+    class_addFloat (c, plot_float);
+    
+    class_setParentWidgetBehavior (c, &plot_widgetBehavior);
+    
+    plot_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

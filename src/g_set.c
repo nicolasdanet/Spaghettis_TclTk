@@ -126,10 +126,13 @@ static void *set_new (t_symbol *s, int argc, t_atom *argv)
     
     x->x_asSymbol = 0;
     
-    if (argc && IS_SYMBOL (argv) && GET_SYMBOL (argv) == sym___dash__symbol) {
-        x->x_asSymbol = 1;
-        argc--;
-        argv++;
+    if (argc && IS_SYMBOL (argv)) {
+        t_symbol *t = GET_SYMBOL (argv);
+        if (t == sym___dash__s || t == sym___dash__symbol) {
+            x->x_asSymbol = 1;
+            argc--;
+            argv++;
+        }
     }
     
     x->x_fieldsSize         = PD_MAX (1, argc - 1);
