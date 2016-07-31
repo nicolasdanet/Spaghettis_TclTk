@@ -22,46 +22,46 @@ extern t_class  *garray_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class  *plot_class;                        /* Shared. */
+static t_class  *plot_class;                            /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_float array_motion_xcumulative;
-static t_float array_motion_ycumulative;
-static t_fielddescriptor *array_motion_xfield;
-static t_fielddescriptor *array_motion_yfield;
-static t_glist *array_motion_glist;
-static t_scalar *array_motion_scalar;
-static t_array *array_motion_array;
-static t_word *array_motion_wp;
-static t_template *array_motion_template;
-static int array_motion_npoints;
-static int array_motion_elemsize;
-static int array_motion_altkey;
-static t_float array_motion_initx;
-static t_float array_motion_xperpix;
-static t_float array_motion_yperpix;
-static int array_motion_lastx;
-static int array_motion_fatten;
+static t_float              plot_cumulativeX;           /* Shared. */
+static t_float              plot_cumulativeY;           /* Shared. */
+static t_float              plot_stepX;                 /* Shared. */
+static t_float              plot_stepY;                 /* Shared. */
+static int                  plot_currentX;              /* Shared. */
+static int                  plot_previousX;             /* Shared. */
+static int                  plot_numberOfPoints;        /* Shared. */
+static int                  plot_elementSize;           /* Shared. */
+static int                  plot_fatten;                /* Shared. */
+
+static t_fielddescriptor    *plot_fieldX;               /* Shared. */
+static t_fielddescriptor    *plot_fieldY;               /* Shared. */
+static t_glist              *plot_glist;                /* Shared. */
+static t_scalar             *plot_scalar;               /* Shared. */
+static t_array              *plot_array;                /* Shared. */
+static t_word               *plot_data;                 /* Shared. */
+static t_template           *plot_template;             /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _plot {
-    t_object            x_obj;                      /* Must be the first. */
-    t_fielddescriptor   x_outlinecolor;
+    t_object            x_obj;                          /* Must be the first. */
+    t_fielddescriptor   x_colorOutline;
     t_fielddescriptor   x_width;
-    t_fielddescriptor   x_xloc;
-    t_fielddescriptor   x_yloc;
-    t_fielddescriptor   x_xinc;
+    t_fielddescriptor   x_positionX;
+    t_fielddescriptor   x_positionY;
+    t_fielddescriptor   x_incrementX;
     t_fielddescriptor   x_style;
-    t_fielddescriptor   x_data;
-    t_fielddescriptor   x_xpoints;
-    t_fielddescriptor   x_ypoints;
-    t_fielddescriptor   x_wpoints;
-    t_fielddescriptor   x_vis;
-    t_fielddescriptor   x_scalarvis;
+    t_fielddescriptor   x_array;
+    t_fielddescriptor   x_fieldX;
+    t_fielddescriptor   x_fieldY;
+    t_fielddescriptor   x_fieldW;
+    t_fielddescriptor   x_isVisible;
+    t_fielddescriptor   x_isScalarsVisible;
     } t_plot;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -74,7 +74,13 @@ static void plot_motion (void *, t_float, t_float, t_float);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define CLIP(x) ((x) < 1e20 && (x) > -1e20 ? x : 0)
+#define PLOT_MIN       -1e20
+#define PLOT_MAX        1e20
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#define PLOT_CLIP(x)    (((x) > PLOT_MIN && (x) < PLOT_MAX) ? (x) : 0)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -123,35 +129,35 @@ static int plot_readownertemplate(t_plot *x,
     t_symbol *elemtemplatesym;
     t_array *array;
 
-    if (!field_isArray (&x->x_data))
+    if (!field_isArray (&x->x_array))
     {
         post_error ("plot: needs an array field");
         return (-1);
     }
-    if (!template_findField(ownertemplate, field_getVariableName (&x->x_data),
+    if (!template_findField(ownertemplate, field_getVariableName (&x->x_array),
         &arrayonset, &type, &elemtemplatesym))
     {
-        post_error ("plot: %s: no such field", field_getVariableName (&x->x_data)->s_name);
+        post_error ("plot: %s: no such field", field_getVariableName (&x->x_array)->s_name);
         return (-1);
     }
     if (type != DATA_ARRAY)
     {
-        post_error ("plot: %s: not an array", field_getVariableName (&x->x_data)->s_name);
+        post_error ("plot: %s: not an array", field_getVariableName (&x->x_array)->s_name);
         return (-1);
     }
     array = *(t_array **)(((char *)data) + arrayonset);
     *linewidthp = word_getFloatByDescriptor(data, ownertemplate, &x->x_width);
-    *xlocp = word_getFloatByDescriptor(data, ownertemplate, &x->x_xloc);
-    *xincp = word_getFloatByDescriptor(data, ownertemplate, &x->x_xinc);
-    *ylocp = word_getFloatByDescriptor(data, ownertemplate, &x->x_yloc);
+    *xlocp = word_getFloatByDescriptor(data, ownertemplate, &x->x_positionX);
+    *xincp = word_getFloatByDescriptor(data, ownertemplate, &x->x_incrementX);
+    *ylocp = word_getFloatByDescriptor(data, ownertemplate, &x->x_positionY);
     *stylep = word_getFloatByDescriptor(data, ownertemplate, &x->x_style);
-    *visp = word_getFloatByDescriptor(data, ownertemplate, &x->x_vis);
-    *scalarvisp = word_getFloatByDescriptor(data, ownertemplate, &x->x_scalarvis);
+    *visp = word_getFloatByDescriptor(data, ownertemplate, &x->x_isVisible);
+    *scalarvisp = word_getFloatByDescriptor(data, ownertemplate, &x->x_isScalarsVisible);
     *elemtemplatesymp = elemtemplatesym;
     *arrayp = array;
-    *xfield = &x->x_xpoints;
-    *yfield = &x->x_ypoints;
-    *wfield = &x->x_wpoints;
+    *xfield = &x->x_fieldX;
+    *yfield = &x->x_fieldY;
+    *wfield = &x->x_fieldW;
     return (0);
 }
 
@@ -288,13 +294,13 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
         t_float best = 100;
             /* if it has more than 2000 points, just check 1000 of them. */
         int incr = (array->a_size <= 2000 ? 1 : array->a_size / 1000);
-        array_motion_elemsize = elemsize;
-        array_motion_glist = glist;
-        array_motion_scalar = sc;
-        array_motion_array = ap;
-        array_motion_template = elemtemplate;
-        array_motion_xperpix = canvas_stepX (glist);
-        array_motion_yperpix = canvas_stepY (glist);
+        plot_elementSize = elemsize;
+        plot_glist = glist;
+        plot_scalar = sc;
+        plot_array = ap;
+        plot_template = elemtemplate;
+        plot_stepX = canvas_stepX (glist);
+        plot_stepY = canvas_stepY (glist);
             /* if we're a garray, the only one here, and if we appear to have
             only a 'y' field, click always succeeds and furthermore we'll
             call "motion" later. */
@@ -307,14 +313,14 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
                 xval = 0;
             else if (xval >= array->a_size)
                 xval = array->a_size - 1;
-            array_motion_yfield = yfield;
-            array_motion_ycumulative = canvas_positionToValueY(glist, ypix);
-            array_motion_fatten = 0;
-            array_motion_xfield = 0;
-            array_motion_xcumulative = 0;
-            array_motion_lastx = array_motion_initx = xval;
-            array_motion_npoints = array->a_size;
-            array_motion_wp = (t_word *)((char *)array->a_vector);
+            plot_fieldY = yfield;
+            plot_cumulativeY = canvas_positionToValueY(glist, ypix);
+            plot_fatten = 0;
+            plot_fieldX = 0;
+            plot_cumulativeX = 0;
+            plot_previousX = plot_currentX = xval;
+            plot_numberOfPoints = array->a_size;
+            plot_data = (t_word *)((char *)array->a_vector);
             if (doit)
             {
                 word_setFloatByDescriptorAsPosition(
@@ -323,10 +329,10 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
                     yfield,
                     canvas_positionToValueY(glist, ypix));
                 canvas_setMotionFunction(glist, 0, (t_motionfn)plot_motion, xpix, ypix);
-                if (array_motion_scalar)
-                    scalar_redraw(array_motion_scalar, array_motion_glist);
-                if (array_motion_array)
-                    array_redraw(array_motion_array, array_motion_glist);
+                if (plot_scalar)
+                    scalar_redraw(plot_scalar, plot_glist);
+                if (plot_array)
+                    array_redraw(plot_array, plot_glist);
             }
         }
         else
@@ -395,10 +401,10 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
                 if (dx + dy <= best || dx + dy2 <= best || dx + dy3 <= best)
                 {
                     if (dy < dy2 && dy < dy3)
-                        array_motion_fatten = 0;
+                        plot_fatten = 0;
                     else if (dy2 < dy3)
-                        array_motion_fatten = -1;
-                    else array_motion_fatten = 1;
+                        plot_fatten = -1;
+                    else plot_fatten = 1;
                     if (doit)
                     {
                         char *elem = (char *)array->a_vector;
@@ -424,52 +430,52 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
                         }
                         if (xonset >= 0)
                         {
-                            array_motion_xfield = xfield;
-                            array_motion_xcumulative = 
+                            plot_fieldX = xfield;
+                            plot_cumulativeX = 
                                 word_getFloatByDescriptorAsPosition(
                                     (t_word *)(elem + i * elemsize),
-                                    array_motion_template,
+                                    plot_template,
                                     xfield);
-                                array_motion_wp = (t_word *)(elem + i * elemsize);
+                                plot_data = (t_word *)(elem + i * elemsize);
                             if (shift)
-                                array_motion_npoints = array->a_size - i;
-                            else array_motion_npoints = 1;
+                                plot_numberOfPoints = array->a_size - i;
+                            else plot_numberOfPoints = 1;
                         }
                         else
                         {
-                            array_motion_xfield = 0;
-                            array_motion_xcumulative = 0;
-                            array_motion_wp = (t_word *)elem;
-                            array_motion_npoints = array->a_size;
+                            plot_fieldX = 0;
+                            plot_cumulativeX = 0;
+                            plot_data = (t_word *)elem;
+                            plot_numberOfPoints = array->a_size;
 
-                            array_motion_initx = i;
-                            array_motion_lastx = i;
-                            array_motion_xperpix *= (xinc == 0 ? 1 : 1./xinc);
+                            plot_currentX = i;
+                            plot_previousX = i;
+                            plot_stepX *= (xinc == 0 ? 1 : 1./xinc);
                         }
-                        if (array_motion_fatten)
+                        if (plot_fatten)
                         {
-                            array_motion_yfield = wfield;
-                            array_motion_ycumulative = 
+                            plot_fieldY = wfield;
+                            plot_cumulativeY = 
                                 word_getFloatByDescriptorAsPosition(
                                     (t_word *)(elem + i * elemsize),
-                                    array_motion_template,
+                                    plot_template,
                                     wfield);
-                            array_motion_yperpix *= -array_motion_fatten;
+                            plot_stepY *= -plot_fatten;
                         }
                         else if (yonset >= 0)
                         {
-                            array_motion_yfield = yfield;
-                            array_motion_ycumulative = 
+                            plot_fieldY = yfield;
+                            plot_cumulativeY = 
                                 word_getFloatByDescriptorAsPosition(
                                     (t_word *)(elem + i * elemsize),
-                                    array_motion_template,
+                                    plot_template,
                                     yfield);
                                 /* *(t_float *)((elem + elemsize * i) + yonset); */
                         }
                         else
                         {
-                            array_motion_yfield = 0;
-                            array_motion_ycumulative = 0;
+                            plot_fieldY = 0;
+                            plot_cumulativeY = 0;
                         }
                         canvas_setMotionFunction(glist, 0, (t_motionfn)plot_motion, xpix, ypix);
                     }
@@ -479,7 +485,7 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
                             return (CURSOR_THICKEN /* CURSOR_EDIT_DISCONNECT */);
                         else return (CURSOR_ADD);
                     }
-                    else return (array_motion_fatten ?
+                    else return (plot_fatten ?
                         CURSOR_THICKEN : CURSOR_CLICK);
                 }
             }   
@@ -495,60 +501,60 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
 void plot_float(t_plot *x, t_float f)
 {
     int viswas;
-    if (!field_isFloatConstant (&x->x_vis))
+    if (!field_isFloatConstant (&x->x_isVisible))
     {
         post_error ("global vis/invis for a template with variable visibility");
         return;
     }
 
-    viswas = (field_getFloatConstant (&x->x_vis) != 0);
+    viswas = (field_getFloatConstant (&x->x_isVisible) != 0);
     
     if ((f != 0 && viswas) || (f == 0 && !viswas))
         return;
     paint_scalarsEraseAll();
-    field_setAsFloatConstant(&x->x_vis, (f != 0));
+    field_setAsFloatConstant(&x->x_isVisible, (f != 0));
     paint_scalarsDrawAll();
 }
 
 static void plot_motion(void *z, t_float dx, t_float dy, t_float modifier)
 {
-    array_motion_xcumulative += dx * array_motion_xperpix;
-    array_motion_ycumulative += dy * array_motion_yperpix;
-    if (array_motion_xfield)
+    plot_cumulativeX += dx * plot_stepX;
+    plot_cumulativeY += dy * plot_stepY;
+    if (plot_fieldX)
     {
             /* it's an x, y plot */
         int i;
-        for (i = 0; i < array_motion_npoints; i++)
+        for (i = 0; i < plot_numberOfPoints; i++)
         {
-            t_word *thisword = (t_word *)(((char *)array_motion_wp) +
-                i * array_motion_elemsize);
+            t_word *thisword = (t_word *)(((char *)plot_data) +
+                i * plot_elementSize);
             t_float xwas = word_getFloatByDescriptorAsPosition(
                 thisword,
-                array_motion_template,
-                array_motion_xfield);
-            t_float ywas = (array_motion_yfield ?
+                plot_template,
+                plot_fieldX);
+            t_float ywas = (plot_fieldY ?
                 word_getFloatByDescriptorAsPosition(
                     thisword, 
-                    array_motion_template,
-                    array_motion_yfield) : 0);
+                    plot_template,
+                    plot_fieldY) : 0);
             word_setFloatByDescriptorAsPosition(
                 thisword,
-                array_motion_template,
-                array_motion_xfield,
+                plot_template,
+                plot_fieldX,
                 xwas + dx);
-            if (array_motion_yfield)
+            if (plot_fieldY)
             {
-                if (array_motion_fatten)
+                if (plot_fatten)
                 {
                     if (i == 0)
                     {
-                        t_float newy = ywas + dy * array_motion_yperpix;
+                        t_float newy = ywas + dy * plot_stepY;
                         if (newy < 0)
                             newy = 0;
                         word_setFloatByDescriptorAsPosition(
                             thisword,
-                            array_motion_template,
-                            array_motion_yfield,
+                            plot_template,
+                            plot_fieldY,
                             newy);
                     }
                 }
@@ -556,46 +562,46 @@ static void plot_motion(void *z, t_float dx, t_float dy, t_float modifier)
                 {
                     word_setFloatByDescriptorAsPosition(
                         thisword,
-                        array_motion_template,
-                        array_motion_yfield,
-                        ywas + dy * array_motion_yperpix);
+                        plot_template,
+                        plot_fieldY,
+                        ywas + dy * plot_stepY);
                 }
             }
         }
     }
-    else if (array_motion_yfield)
+    else if (plot_fieldY)
     {
             /* a y-only plot. */
-        int thisx = array_motion_initx + array_motion_xcumulative + 0.5, x2;
+        int thisx = plot_currentX + plot_cumulativeX + 0.5, x2;
         int increment, i, nchange;
-        t_float newy = array_motion_ycumulative,
+        t_float newy = plot_cumulativeY,
             oldy = word_getFloatByDescriptorAsPosition(
-                (t_word *)(((char *)array_motion_wp) + array_motion_elemsize * array_motion_lastx),
-                array_motion_template,
-                array_motion_yfield);
+                (t_word *)(((char *)plot_data) + plot_elementSize * plot_previousX),
+                plot_template,
+                plot_fieldY);
         t_float ydiff = newy - oldy;
         if (thisx < 0) thisx = 0;
-        else if (thisx >= array_motion_npoints)
-            thisx = array_motion_npoints - 1;
-        increment = (thisx > array_motion_lastx ? -1 : 1);
-        nchange = 1 + increment * (array_motion_lastx - thisx);
+        else if (thisx >= plot_numberOfPoints)
+            thisx = plot_numberOfPoints - 1;
+        increment = (thisx > plot_previousX ? -1 : 1);
+        nchange = 1 + increment * (plot_previousX - thisx);
 
         for (i = 0, x2 = thisx; i < nchange; i++, x2 += increment)
         {
             word_setFloatByDescriptorAsPosition(
-                (t_word *)(((char *)array_motion_wp) + array_motion_elemsize * x2),
-                array_motion_template,
-                array_motion_yfield,
+                (t_word *)(((char *)plot_data) + plot_elementSize * x2),
+                plot_template,
+                plot_fieldY,
                 newy);
             if (nchange > 1)
                 newy -= ydiff * (1./(nchange - 1));
          }
-         array_motion_lastx = thisx;
+         plot_previousX = thisx;
     }
-    if (array_motion_scalar)
-        scalar_redraw(array_motion_scalar, array_motion_glist);
-    if (array_motion_array)
-        array_redraw(array_motion_array, array_motion_glist);
+    if (plot_scalar)
+        scalar_redraw(plot_scalar, plot_glist);
+    if (plot_array)
+        array_redraw(plot_array, plot_glist);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -732,7 +738,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
     {
         if (style == PLOT_POINTS)
         {
-            t_float minyval = 1e20, maxyval = -1e20;
+            t_float minyval = PLOT_MAX, maxyval = PLOT_MIN;
             int ndrawn = 0;
             for (xsum = basex + xloc, i = 0; i < nelem; i++)
             {
@@ -760,7 +766,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                 if (yonset >= 0)
                     yval = yloc + *(t_float *)((elem + elemsize * i) + yonset);
                 else yval = 0;
-                yval = CLIP(yval);
+                yval = PLOT_CLIP(yval);
                 if (yval < minyval)
                     minyval = yval;
                 if (yval > maxyval)
@@ -776,8 +782,8 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                             basey + field_convertValueToPosition(yfielddesc, maxyval))
                                 + linewidth), data);
                     ndrawn++;
-                    minyval = 1e20;
-                    maxyval = -1e20;
+                    minyval = PLOT_MAX;
+                    maxyval = PLOT_MIN;
                 }
                 if (ndrawn > 2000 || ixpix >= 3000) break;
             }
@@ -790,7 +796,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
             int ixpix = 0;
                 /* draw the trace */
             color_toEncodedString(outline, 20,
-                color_withDigits (word_getFloatByDescriptor (data, template, &x->x_outlinecolor)));
+                color_withDigits (word_getFloatByDescriptor (data, template, &x->x_colorOutline)));
             if (wonset >= 0)
             {
                     /* found "w" field which controls linewidth.  The trace is
@@ -807,9 +813,9 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                     if (yonset >= 0)
                         yval = *(t_float *)((elem + elemsize * i) + yonset);
                     else yval = 0;
-                    yval = CLIP(yval);
+                    yval = PLOT_CLIP(yval);
                     wval = *(t_float *)((elem + elemsize * i) + wonset);
-                    wval = CLIP(wval);
+                    wval = PLOT_CLIP(wval);
                     xpix = canvas_valueToPositionX(glist,
                         basex + field_convertValueToPosition(xfielddesc, usexloc));
                     ixpix = xpix + 0.5;
@@ -836,9 +842,9 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                     if (yonset >= 0)
                         yval = *(t_float *)((elem + elemsize * i) + yonset);
                     else yval = 0;
-                    yval = CLIP(yval);
+                    yval = PLOT_CLIP(yval);
                     wval = *(t_float *)((elem + elemsize * i) + wonset);
-                    wval = CLIP(wval);
+                    wval = PLOT_CLIP(wval);
                     xpix = canvas_valueToPositionX(glist,
                         basex + field_convertValueToPosition(xfielddesc, usexloc));
                     ixpix = xpix + 0.5;
@@ -890,7 +896,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                     if (yonset >= 0)
                         yval = *(t_float *)((elem + elemsize * i) + yonset);
                     else yval = 0;
-                    yval = CLIP(yval);
+                    yval = PLOT_CLIP(yval);
                     xpix = canvas_valueToPositionX(glist,
                         basex + field_convertValueToPosition(xfielddesc, usexloc));
                     ixpix = xpix + 0.5;
@@ -1016,12 +1022,12 @@ static void *plot_new(t_symbol *classsym, int argc, t_atom *argv)
     t_plot *x = (t_plot *)pd_new(plot_class);
     int defstyle = PLOT_POLYGONS;
 
-    field_setAsFloatVariable(&x->x_xpoints, sym_x);
-    field_setAsFloatVariable(&x->x_ypoints, sym_y);
-    field_setAsFloatVariable(&x->x_wpoints, sym_w);
+    field_setAsFloatVariable(&x->x_fieldX, sym_x);
+    field_setAsFloatVariable(&x->x_fieldY, sym_y);
+    field_setAsFloatVariable(&x->x_fieldW, sym_w);
     
-    field_setAsFloatConstant(&x->x_vis, 1);
-    field_setAsFloatConstant(&x->x_scalarvis, 1);
+    field_setAsFloatConstant(&x->x_isVisible, 1);
+    field_setAsFloatConstant(&x->x_isScalarsVisible, 1);
     while (1)
     {
         t_symbol *firstarg = atom_getSymbolAtIndex(0, argc, argv);
@@ -1033,43 +1039,43 @@ static void *plot_new(t_symbol *classsym, int argc, t_atom *argv)
         }
         else if (!strcmp(firstarg->s_name, "-v") && argc > 1)
         {
-            field_setAsFloat(&x->x_vis, 1, argv+1);
+            field_setAsFloat(&x->x_isVisible, 1, argv+1);
             argc -= 2; argv += 2;
         }
         else if (!strcmp(firstarg->s_name, "-vs") && argc > 1)
         {
-            field_setAsFloat(&x->x_scalarvis, 1, argv+1);
+            field_setAsFloat(&x->x_isScalarsVisible, 1, argv+1);
             argc -= 2; argv += 2;
         }
         else if (!strcmp(firstarg->s_name, "-x") && argc > 1)
         {
-            field_setAsFloat(&x->x_xpoints, 1, argv+1);
+            field_setAsFloat(&x->x_fieldX, 1, argv+1);
             argc -= 2; argv += 2;
         }
         else if (!strcmp(firstarg->s_name, "-y") && argc > 1)
         {
-            field_setAsFloat(&x->x_ypoints, 1, argv+1);
+            field_setAsFloat(&x->x_fieldY, 1, argv+1);
             argc -= 2; argv += 2;
         }
         else if (!strcmp(firstarg->s_name, "-w") && argc > 1)
         {
-            field_setAsFloat(&x->x_wpoints, 1, argv+1);
+            field_setAsFloat(&x->x_fieldW, 1, argv+1);
             argc -= 2; argv += 2;
         }
         else break;
     }
-    if (argc) field_setAsArray (&x->x_data, argc--, argv++);
-    else field_setAsFloatConstant(&x->x_data, 1);
-    if (argc) field_setAsFloat(&x->x_outlinecolor, argc--, argv++);
-    else field_setAsFloatConstant(&x->x_outlinecolor, 0);
+    if (argc) field_setAsArray (&x->x_array, argc--, argv++);
+    else field_setAsFloatConstant(&x->x_array, 1);
+    if (argc) field_setAsFloat(&x->x_colorOutline, argc--, argv++);
+    else field_setAsFloatConstant(&x->x_colorOutline, 0);
     if (argc) field_setAsFloat(&x->x_width, argc--, argv++);
     else field_setAsFloatConstant(&x->x_width, 1);
-    if (argc) field_setAsFloat(&x->x_xloc, argc--, argv++);
-    else field_setAsFloatConstant(&x->x_xloc, 1);
-    if (argc) field_setAsFloat(&x->x_yloc, argc--, argv++);
-    else field_setAsFloatConstant(&x->x_yloc, 1);
-    if (argc) field_setAsFloat(&x->x_xinc, argc--, argv++);
-    else field_setAsFloatConstant(&x->x_xinc, 1);
+    if (argc) field_setAsFloat(&x->x_positionX, argc--, argv++);
+    else field_setAsFloatConstant(&x->x_positionX, 1);
+    if (argc) field_setAsFloat(&x->x_positionY, argc--, argv++);
+    else field_setAsFloatConstant(&x->x_positionY, 1);
+    if (argc) field_setAsFloat(&x->x_incrementX, argc--, argv++);
+    else field_setAsFloatConstant(&x->x_incrementX, 1);
     if (argc) field_setAsFloat(&x->x_style, argc--, argv++);
     else field_setAsFloatConstant(&x->x_style, defstyle);
     return (x);
