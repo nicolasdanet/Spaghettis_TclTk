@@ -57,7 +57,7 @@ static t_class      *drawpolygon_class;                 /* Shared. */
 #pragma mark -
 
 typedef struct _drawpolygon {
-    t_object            x_obj;
+    t_object            x_obj;                          /* Must be the first. */
     int                 x_flags;
     t_fielddescriptor   x_colorFill;
     t_fielddescriptor   x_colorOutline;
@@ -67,19 +67,6 @@ typedef struct _drawpolygon {
     int                 x_size;
     t_fielddescriptor   *x_coordinates;
     } t_drawpolygon;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void drawpolygon_initialize (void)
-{
-}
-
-void drawpolygon_release (void)
-{
-    if (gpointer_isSet (&drawpolygon_pointer)) { gpointer_unset (&drawpolygon_pointer); }
-}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -439,6 +426,19 @@ void drawpolygon_setup (void)
     class_setParentWidgetBehavior (c, &drawpolygon_parentWidgetBehavior);
     
     drawpolygon_class = c;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void drawpolygon_initialize (void)
+{
+}
+
+void drawpolygon_release (void)
+{
+    if (gpointer_isSet (&drawpolygon_pointer)) { gpointer_unset (&drawpolygon_pointer); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
