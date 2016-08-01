@@ -168,22 +168,12 @@ static void garray_drawJob (t_gobj *z, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int garray_isSingle (t_garray *x)        /* Legacy patches might contain several arrays. */
-{
-    t_glist *glist = x->x_owner;
-    
-    if (glist->gl_graphics == cast_gobj (x) && !cast_gobj (x)->g_next) { return 1; }
-    else {
-        return 0;
-    }
-}
-
 static void garray_updateGraphBounds (t_garray *x, int size, int style)
 {
-    if (garray_isSingle (x)) {
-    //
     t_glist *glist = x->x_owner;
-    
+        
+    if (garray_isSingle (glist)) {
+    //
     if (!glist->gl_isLoading) {
     //
     pd_vMessage (cast_pd (glist), sym_bounds, "ffff",
@@ -374,6 +364,15 @@ void garray_redraw (t_garray *x)
     interface_guiQueueAddIfNotAlreadyThere ((void *)x, x->x_owner, garray_drawJob);
     //
     }
+}
+
+int garray_isSingle (t_glist *glist)       /* Legacy patches might contain several arrays. */
+{
+    if (glist->gl_graphics && !glist->gl_graphics->g_next) {
+        if (pd_class (glist->gl_graphics) == garray_class) { return 1; }
+    }
+    
+    return 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
