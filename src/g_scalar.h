@@ -169,11 +169,14 @@ int             scalar_performClick                     (t_word *w,
 t_array         *array_new                              (t_symbol *templateIdentifier, t_gpointer *parent);
 t_gpointer      *array_getTopParentArray                (t_gpointer *gp);
 t_symbol        *array_getTemplateIdentifier            (t_array *x);
+t_template      *array_getTemplate                      (t_array *x);
 t_word          *array_getData                          (t_array *x);
 t_word          *array_getElementAtIndex                (t_array *x, int n);
+t_word          *array_getFieldInElementAtIndex         (t_array *x, int n, t_symbol *fieldName);
 
 int             array_getSize                           (t_array *x);
 int             array_getElementSize                    (t_array *x);
+t_float         array_getFloatInElementAtIndex          (t_array *x, int n, t_symbol *fieldName);
 
 void            array_free                              (t_array *x);
 void            array_resize                            (t_array *x, int n);

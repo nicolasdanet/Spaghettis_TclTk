@@ -84,9 +84,8 @@ static void plot_motion (void *, t_float, t_float, t_float);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_error plot_fetch (t_plot *x, t_word *w, t_template *tmpl, 
+static t_error plot_fetchScalarFields (t_plot *x, t_word *w, t_template *tmpl, 
     t_array **array,
-    t_symbol **arrayIdentifier,
     t_float *width,
     t_float *positionX,
     t_float *positionY,
@@ -99,19 +98,17 @@ static t_error plot_fetch (t_plot *x, t_word *w, t_template *tmpl,
     t_symbol *s = field_getVariableName (&x->x_array);
     
     if (template_hasField (tmpl, s) && template_fieldIsArrayAndValid (tmpl, s)) {
-
-        t_array *t = word_getArray (w, tmpl, s);
+    //
+    *array      = word_getArray (w, tmpl, s);
+    *width      = word_getFloatByDescriptor (w, tmpl, &x->x_width);
+    *positionX  = word_getFloatByDescriptor (w, tmpl, &x->x_positionX);
+    *positionY  = word_getFloatByDescriptor (w, tmpl, &x->x_positionY);
+    *incrementX = word_getFloatByDescriptor (w, tmpl, &x->x_incrementX);
+    *style      = word_getFloatByDescriptor (w, tmpl, &x->x_style);
+    *isVisible  = word_getFloatByDescriptor (w, tmpl, &x->x_isVisible);
     
-        *arrayIdentifier    = array_getTemplateIdentifier (t);
-        *array              = t;
-        *width              = word_getFloatByDescriptor (w, tmpl, &x->x_width);
-        *positionX          = word_getFloatByDescriptor (w, tmpl, &x->x_positionX);
-        *incrementX         = word_getFloatByDescriptor (w, tmpl, &x->x_incrementX);
-        *positionY          = word_getFloatByDescriptor (w, tmpl, &x->x_positionY);
-        *style              = word_getFloatByDescriptor (w, tmpl, &x->x_style);
-        *isVisible          = word_getFloatByDescriptor (w, tmpl, &x->x_isVisible);
-        
-        return PD_ERROR_NONE;
+    return PD_ERROR_NONE;
+    //
     }
     //
     }
@@ -121,12 +118,150 @@ static t_error plot_fetch (t_plot *x, t_word *w, t_template *tmpl,
     return PD_ERROR;
 }
 
-static void array_getcoordinate (t_glist *glist,
+static t_error plot_fetchElementFieldNames (t_plot *x, t_array *array,
+    t_symbol **fieldX,
+    t_symbol **fieldY,
+    t_symbol **fieldW)
+{
+    t_template *t = array_getTemplate (array);
+    
+    if (field_isVariable (&x->x_fieldX)) { *fieldX = field_getVariableName (&x->x_fieldX); }
+    else { *fieldX = sym_x; }
+    
+    if (field_isVariable (&x->x_fieldY)) { *fieldY = field_getVariableName (&x->x_fieldY); }
+    else { *fieldY = sym_y; }
+
+    if (field_isVariable (&x->x_fieldW)) { *fieldW = field_getVariableName (&x->x_fieldW); }
+    else { *fieldW = sym_w; }
+    
+    if (!template_fieldIsFloat (t, *fieldX)) { *fieldX = NULL; }
+    if (!template_fieldIsFloat (t, *fieldY)) { *fieldY = NULL; }
+    if (!template_fieldIsFloat (t, *fieldW)) { *fieldW = NULL; }
+    
+    return PD_ERROR_NONE;
+}
+
+static int plot_getStep (t_array *array)
+{
+    int size = array_getSize (array); return (size <= 1000 ? 1 : (int)sqrt ((double)size));
+}
+
+static void plot_getCoordinates (t_plot *x,
+    t_glist *glist,
+    t_array *array,
+    t_symbol *fieldX,
+    t_symbol *fieldY,
+    t_symbol *fieldW,
+    int i,
+    t_float relativeX,
+    t_float relativeY,
+    t_float incrementX,
+    t_float *a,
+    t_float *b,
+    t_float *c)
+{
+    t_float valueX;
+    t_float valueY;
+    t_float width;
+
+    if (fieldX) { valueX = array_getFloatInElementAtIndex (array, i, fieldX); }
+    else { 
+        valueX = i * incrementX;
+    }
+    
+    if (fieldY) { valueY = array_getFloatInElementAtIndex (array, i, fieldY); }
+    else { 
+        valueY = 0.0;
+    }
+    
+    if (fieldW) { width  = array_getFloatInElementAtIndex (array, i, fieldW); }
+    else {
+        width = 1.0;
+    }
+    
+    *a = relativeX + field_convertValueToPosition (&x->x_fieldX, valueX);
+    *b = relativeY + field_convertValueToPosition (&x->x_fieldY, valueY);
+    *c = PD_ABS (width);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static t_error plot_getFields (t_plot *x, t_symbol *elementTemplateIdentifier,
+    t_glist **elementView,
+    t_template **elementTemplate,
+    int *elementSize,
+    int *onsetX,
+    int *onsetY,
+    int *onsetW)
+{
+    t_fielddescriptor *xfielddesc = &x->x_fieldX;
+    t_fielddescriptor *yfielddesc = &x->x_fieldY;
+    t_fielddescriptor *wfielddesc = &x->x_fieldW;
+        
+    int arrayonset;
+    int elemsize;
+    int yonset;
+    int wonset;
+    int xonset;
+    int type;
+    t_template *elemtemplate;
+    t_symbol *dummy;
+    t_symbol *varname;
+    t_glist *elemtemplatecanvas = NULL;
+
+    if (!(elemtemplate = template_findByIdentifier(elementTemplateIdentifier)))
+    {
+        post_error ("plot: %s: no such template", elementTemplateIdentifier->s_name);
+        return PD_ERROR;
+    }
+    if (!(elemtemplatecanvas = template_getFirstInstanceView (elemtemplate)))
+    {
+        post_error ("plot: %s: no canvas for this template", elementTemplateIdentifier->s_name);
+        return PD_ERROR;
+    }
+    elemsize = template_getSize (elemtemplate) * ARRAY_WORD;
+    if (yfielddesc && field_isVariable (yfielddesc))
+        varname = field_getVariableName (yfielddesc);
+    else varname = sym_y;
+    if (!template_findField(elemtemplate, varname, &yonset, &type, &dummy)
+        || type != DATA_FLOAT)    
+            yonset = -1;
+    if (xfielddesc && field_isVariable (xfielddesc))
+        varname = field_getVariableName (xfielddesc);
+    else varname = sym_x;
+    if (!template_findField(elemtemplate, varname, &xonset, &type, &dummy)
+        || type != DATA_FLOAT) 
+            xonset = -1;
+    if (wfielddesc && field_isVariable (wfielddesc))
+        varname = field_getVariableName (wfielddesc);
+    else varname = sym_w;
+    if (!template_findField(elemtemplate, varname, &wonset, &type, &dummy)
+        || type != DATA_FLOAT) 
+            wonset = -1;
+
+        /* fill in slots for return values */
+        
+    *elementView = elemtemplatecanvas;
+    *elementTemplate = elemtemplate;
+    *elementSize = elemsize;
+    *onsetX = xonset;
+    *onsetY = yonset;
+    *onsetW = wonset;
+    
+    return PD_ERROR_NONE;
+}
+
+static void array_getcoordinate (t_plot *x, t_glist *glist,
     char *elem, int xonset, int yonset, int wonset, int indx,
     t_float basex, t_float basey, t_float xinc,
-    t_fielddescriptor *xfielddesc, t_fielddescriptor *yfielddesc, t_fielddescriptor *wfielddesc,
     t_float *xp, t_float *yp, t_float *wp)
 {
+    t_fielddescriptor *xfielddesc = &x->x_fieldX;
+    t_fielddescriptor *yfielddesc = &x->x_fieldY;
+    t_fielddescriptor *wfielddesc = &x->x_fieldW;
+        
     t_float xval, yval, ypix, wpix;
     if (xonset >= 0)
         xval = *(t_float *)(elem + xonset);
@@ -153,71 +288,13 @@ static void array_getcoordinate (t_glist *glist,
     *wp = wpix;
 }
 
-    /* get everything else you could possibly need about a plot,
-    either for plot's own purposes or for plotting a "garray" */
-static int array_getfields(t_symbol *elemtemplatesym,
-    t_glist **elemtemplatecanvasp,
-    t_template **elemtemplatep, int *elemsizep,
-    t_fielddescriptor *xfielddesc, t_fielddescriptor *yfielddesc, t_fielddescriptor *wfielddesc, 
-    int *xonsetp, int *yonsetp, int *wonsetp)
-{
-    int arrayonset, elemsize, yonset, wonset, xonset, type;
-    t_template *elemtemplate;
-    t_symbol *dummy, *varname;
-    t_glist *elemtemplatecanvas = 0;
-
-        /* the "float" template is special in not having to have a canvas;
-        template_findByIdentifier is hardwired to return a predefined 
-        template. */
-
-    if (!(elemtemplate =  template_findByIdentifier(elemtemplatesym)))
-    {
-        post_error ("plot: %s: no such template", elemtemplatesym->s_name);
-        return (-1);
-    }
-    if (!((elemtemplatesym == &s_float) ||
-        (elemtemplatecanvas = template_getFirstInstanceView (elemtemplate))))
-    {
-        post_error ("plot: %s: no canvas for this template", elemtemplatesym->s_name);
-        return (-1);
-    }
-    elemsize = template_getSize (elemtemplate) * ARRAY_WORD;
-    if (yfielddesc && field_isVariable (yfielddesc))
-        varname = field_getVariableName (yfielddesc);
-    else varname = sym_y;
-    if (!template_findField(elemtemplate, varname, &yonset, &type, &dummy)
-        || type != DATA_FLOAT)    
-            yonset = -1;
-    if (xfielddesc && field_isVariable (xfielddesc))
-        varname = field_getVariableName (xfielddesc);
-    else varname = sym_x;
-    if (!template_findField(elemtemplate, varname, &xonset, &type, &dummy)
-        || type != DATA_FLOAT) 
-            xonset = -1;
-    if (wfielddesc && field_isVariable (wfielddesc))
-        varname = field_getVariableName (wfielddesc);
-    else varname = sym_w;
-    if (!template_findField(elemtemplate, varname, &wonset, &type, &dummy)
-        || type != DATA_FLOAT) 
-            wonset = -1;
-
-        /* fill in slots for return values */
-    *elemtemplatecanvasp = elemtemplatecanvas;
-    *elemtemplatep = elemtemplate;
-    *elemsizep = elemsize;
-    *xonsetp = xonset;
-    *yonsetp = yonset;
-    *wonsetp = wonset;
-    return (0);
-}
-
-
-
-
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
     /* try clicking on an element of the array as a scalar (if clicking
     on the trace of the array failed) */
-static int array_doclick_element(t_array *array, t_glist *glist,
+static int array_doclick_element(t_plot *x, t_array *array, t_glist *glist,
     t_scalar *sc, t_array *ap,
     t_symbol *elemtemplatesym,
     t_float linewidth, t_float xloc, t_float xinc, t_float yloc,
@@ -231,8 +308,8 @@ static int array_doclick_element(t_array *array, t_glist *glist,
 
     if (elemtemplatesym == &s_float)
         return (0);
-    if (array_getfields(elemtemplatesym, &elemtemplatecanvas,
-        &elemtemplate, &elemsize, xfield, yfield, wfield,
+    if (plot_getFields(x, elemtemplatesym, &elemtemplatecanvas,
+        &elemtemplate, &elemsize,
             &xonset, &yonset, &wonset))
                 return (0);
         /* if it has more than 2000 points, just check 300 of them. */
@@ -269,7 +346,7 @@ static int array_doclick_element(t_array *array, t_glist *glist,
     return (0);
 }
 
-static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
+static int array_doclick (t_plot *x, t_array *array, t_glist *glist, t_scalar *sc,
     t_array *ap, t_symbol *elemtemplatesym,
     t_float linewidth, t_float xloc, t_float xinc, t_float yloc, t_float scalarvis,
     t_fielddescriptor *xfield, t_fielddescriptor *yfield, t_fielddescriptor *wfield,
@@ -279,8 +356,8 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
     t_template *elemtemplate;
     int elemsize, yonset, wonset, xonset, i, callmotion = 0;
 
-    if (!array_getfields(elemtemplatesym, &elemtemplatecanvas,
-        &elemtemplate, &elemsize, xfield, yfield, wfield,
+    if (!plot_getFields(x, elemtemplatesym, &elemtemplatecanvas,
+        &elemtemplate, &elemsize,
         &xonset, &yonset, &wonset))
     {
         t_float best = 100;
@@ -332,10 +409,10 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
             for (i = 0; i < array->a_size; i += incr)
             {
                 t_float pxpix, pypix, pwpix, dx, dy;
-                array_getcoordinate(glist,
+                array_getcoordinate(x, glist,
                     (char *)(array->a_vector) + i * elemsize,
                     xonset, yonset, wonset, i, xloc, yloc, xinc,
-                    xfield, yfield, wfield, &pxpix, &pypix, &pwpix);
+                    &pxpix, &pypix, &pwpix);
                 if (pwpix < 4)
                     pwpix = 4;
                 dx = pxpix - xpix;
@@ -361,7 +438,7 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
             if (best > 8)
             {
                 if (1)
-                    return (array_doclick_element(array, glist, sc, ap,
+                    return (array_doclick_element(x, array, glist, sc, ap,
                         elemtemplatesym, linewidth, xloc, xinc, yloc,
                             xfield, yfield, wfield,
                             xpix, ypix, shift, alt, dbl, doit));
@@ -371,9 +448,9 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
             for (i = 0; i < array->a_size; i += incr)
             {
                 t_float pxpix, pypix, pwpix, dx, dy, dy2, dy3;
-                array_getcoordinate(glist, (char *)(array->a_vector) + i * elemsize,
+                array_getcoordinate(x, glist, (char *)(array->a_vector) + i * elemsize,
                     xonset, yonset, wonset, i, xloc, yloc, xinc,
-                    xfield, yfield, wfield, &pxpix, &pypix, &pwpix);
+                    &pxpix, &pypix, &pwpix);
                 if (pwpix < 4)
                     pwpix = 4;
                 dx = pxpix - xpix;
@@ -600,6 +677,52 @@ static void plot_motion(void *z, t_float dx, t_float dy, t_float modifier)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void plot_behaviorGetRectangleRecursive (t_plot *x,
+    t_glist *glist,
+    t_array *array,
+    int i,
+    t_float baseX,
+    t_float baseY,
+    int *a,
+    int *b,
+    int *c,
+    int *d)
+{
+    t_glist *view = template_getFirstInstanceView (array_getTemplate (array));
+    
+    if (view) {
+    //
+    t_gobj *y = NULL;
+                        
+    for (y = view->gl_graphics; y; y = y->g_next) {
+    
+        t_parentwidgetbehavior *behavior = class_getParentWidget (pd_class (y));
+        
+        if (behavior) {
+        
+            int x1, y1, x2, y2;
+            
+            (*behavior->w_fnParentGetRectangle) (y,
+                glist,
+                array_getElementAtIndex (array, i),
+                array_getTemplate (array),
+                baseX,
+                baseY, 
+                &x1,
+                &y1,
+                &x2,
+                &y2);
+            
+            *a = PD_MIN (*a, x1);
+            *b = PD_MIN (*b, y1);
+            *c = PD_MAX (*c, x2);
+            *d = PD_MAX (*d, y2);
+        }
+    }
+    //
+    }
+}
+
 static void plot_behaviorGetRectangle (t_gobj *z,
     t_glist *glist,
     t_word *w,
@@ -613,115 +736,79 @@ static void plot_behaviorGetRectangle (t_gobj *z,
 {
     t_plot *x = (t_plot *)z;
     
-    if (garray_isSingle (glist)) { *a = -PD_INT_MAX; *b = -PD_INT_MAX; *c = PD_INT_MAX; *d = PD_INT_MAX; }
-    else {
-    //
     int x1 = PD_INT_MAX;
     int y1 = PD_INT_MAX;
     int x2 = -x1;
     int y2 = -y2;
     
-    int elemsize;
-    int yonset;
-    int wonset;
-    int xonset;
-    t_glist *elemtemplatecanvas;
-    t_template *elemtemplate;
-    t_symbol *elemtemplatesym;
-    t_float linewidth;
-    t_float xloc;
-    t_float xinc;
-    t_float yloc;
-    t_float style;
-    t_float xsum;
-    t_float yval;
-    t_float vis;
-    t_float scalarvis;
-    t_array *array;
-
-    int i;
-    t_float xpix;
-    t_float ypix;
-    t_float wpix;
-    t_fielddescriptor *xfielddesc = &x->x_fieldX;
-    t_fielddescriptor *yfielddesc = &x->x_fieldY;
-    t_fielddescriptor *wfielddesc = &x->x_fieldW;
-    
-    if (!plot_fetch (x, w, tmpl, 
-        &array, &elemtemplatesym, &linewidth, &xloc, &yloc, &xinc, &style,
-            &vis)) {
-            
-    if (vis != 0) {
+    if (garray_isSingle (glist)) { x1 = -PD_INT_MAX; y1 = -PD_INT_MAX; x2 = PD_INT_MAX; y2 = PD_INT_MAX; }
+    else {
     //
-    if (!array_getfields(elemtemplatesym, &elemtemplatecanvas,
-                &elemtemplate, &elemsize, 
-                xfielddesc, yfielddesc, wfielddesc,
-                &xonset, &yonset, &wonset))
-    {
-            /* if it has more than 2000 points, just check 1000 of them. */
-        int incr = (array->a_size <= 2000 ? 1 : array->a_size / 1000);
-        for (i = 0, xsum = 0; i < array->a_size; i += incr)
-        {
-            t_float usexloc, useyloc;
-            t_gobj *y;
-                /* get the coords of the point proper */
-            array_getcoordinate(glist, (char *)(array->a_vector) + i * elemsize,
-                xonset, yonset, wonset, i, baseX + xloc, baseY + yloc, xinc,
-                xfielddesc, yfielddesc, wfielddesc, &xpix, &ypix, &wpix);
-            if (xpix < x1)
-                x1 = xpix;
-            if (xpix > x2)
-                x2 = xpix;
-            if (ypix - wpix < y1)
-                y1 = ypix - wpix;
-            if (ypix + wpix > y2)
-                y2 = ypix + wpix;
-            
-            if (1)
-            {
-                    /* check also the drawing instructions for the scalar */ 
-                if (xonset >= 0)
-                    usexloc = baseX + xloc + field_convertValueToPosition(xfielddesc, 
-                        *(t_float *)(((char *)(array->a_vector) + elemsize * i)
-                            + xonset));
-                else usexloc = baseX + xsum, xsum += xinc;
-                if (yonset >= 0)
-                    yval = *(t_float *)(((char *)(array->a_vector) + elemsize * i)
-                        + yonset);
-                else yval = 0;
-                useyloc = baseY + yloc + field_convertValueToPosition(yfielddesc, yval);
-                for (y = elemtemplatecanvas->gl_graphics; y; y = y->g_next)
-                {
-                    int xx1, xx2, yy1, yy2;
-                    t_parentwidgetbehavior *wb = class_getParentWidget(pd_class (&y->g_pd));
-                    if (!wb) continue;
-                    (*wb->w_fnParentGetRectangle)(y, glist,
-                        (t_word *)((char *)(array->a_vector) + elemsize * i),
-                            elemtemplate, usexloc, useyloc, 
-                                &xx1, &yy1, &xx2, &yy2);
-                    if (xx1 < x1)
-                        x1 = xx1;
-                    if (yy1 < y1)
-                        y1 = yy1;
-                     if (xx2 > x2)
-                        x2 = xx2;
-                    if (yy2 > y2)
-                        y2 = yy2;   
-                }
-            }
-        }
-    }
+    t_array *array = NULL;
+    t_float width;
+    t_float positionX;
+    t_float positionY;
+    t_float incrementX;
+    t_float style;
+    t_float isVisible;
+    
+    if (!plot_fetchScalarFields (x, w, tmpl,
+            &array,
+            &width,
+            &positionX,
+            &positionY,
+            &incrementX,
+            &style,
+            &isVisible) && (isVisible != 0.0)) {
+    //
+    t_symbol *fieldX = NULL;
+    t_symbol *fieldY = NULL;
+    t_symbol *fieldW = NULL;
+    
+    if (!plot_fetchElementFieldNames (x, array, &fieldX, &fieldY, &fieldW)) {
+    //
+    int i, k = plot_getStep (array);
+    
+    for (i = 0; i < array_getSize (array); i += k) {
 
+        t_float valueX;
+        t_float valueY;
+        t_float valueWidth;
+        t_float coordinateX;
+        t_float coordinateY;
+        
+        plot_getCoordinates (x, glist, array, fieldX, fieldY, fieldW,
+            i,
+            baseX + positionX,
+            baseY + positionY,
+            incrementX,
+            &valueX,
+            &valueY,
+            &valueWidth);
+        
+        coordinateX = canvas_valueToPositionX (glist, valueX);
+        coordinateY = canvas_valueToPositionY (glist, valueY);
+        
+        valueWidth  = PD_MAX (valueWidth, width);
+        
+        x1 = PD_MIN (x1, coordinateX);
+        x2 = PD_MAX (x2, coordinateX);
+        y1 = PD_MIN (y1, coordinateY - valueWidth);
+        y2 = PD_MAX (y2, coordinateY + valueWidth);
+        
+        plot_behaviorGetRectangleRecursive (x, glist, array, i, valueX, valueY, &x1, &y1, &x2, &y2);
+    }
+    //
+    }
+    //
+    }
+    //
+    }
+    
     *a = x1;
     *b = y1;
     *c = x2;
     *d = y2;
-    //
-    }
-    //
-    }
-    //
-    }
 }
 
 static void plot_behaviorVisibilityChanged(t_gobj *z, t_glist *glist, 
@@ -732,7 +819,6 @@ static void plot_behaviorVisibilityChanged(t_gobj *z, t_glist *glist,
     int elemsize, yonset, wonset, xonset, i;
     t_glist *elemtemplatecanvas;
     t_template *elemtemplate;
-    t_symbol *elemtemplatesym;
     t_float linewidth, xloc, xinc, yloc, style, usexloc, xsum, yval, vis,
         scalarvis;
     t_array *array;
@@ -742,12 +828,12 @@ static void plot_behaviorVisibilityChanged(t_gobj *z, t_glist *glist,
     t_fielddescriptor *yfielddesc = &x->x_fieldY;
     t_fielddescriptor *wfielddesc = &x->x_fieldW;
     
-    if (plot_fetch(x, data, template, 
-        &array, &elemtemplatesym, &linewidth, &xloc, &yloc, &xinc, &style,
+    if (plot_fetchScalarFields(x, data, template, 
+        &array, &linewidth, &xloc, &yloc, &xinc, &style,
         &vis) ||
             ((vis == 0) && tovis) /* see above for 'tovis' */
-            || array_getfields(elemtemplatesym, &elemtemplatecanvas,
-                &elemtemplate, &elemsize, xfielddesc, yfielddesc, wfielddesc,
+            || plot_getFields(x, array_getTemplateIdentifier (array), &elemtemplatecanvas,
+                &elemtemplate, &elemsize,
                 &xonset, &yonset, &wonset))
                     return;
     nelem = array->a_size;
@@ -1003,7 +1089,6 @@ static int plot_behaviorClicked(t_gobj *z, t_glist *glist,
     int xpix, int ypix, int shift, int alt, int dbl, int doit)
 {
     t_plot *x = (t_plot *)z;
-    t_symbol *elemtemplatesym;
     t_float linewidth, xloc, xinc, yloc, style, vis, scalarvis;
     t_array *array;
     
@@ -1011,12 +1096,12 @@ static int plot_behaviorClicked(t_gobj *z, t_glist *glist,
     t_fielddescriptor *yfielddesc = &x->x_fieldY;
     t_fielddescriptor *wfielddesc = &x->x_fieldW;
 
-    if (!plot_fetch(x, data, template, 
-        &array, &elemtemplatesym, &linewidth, &xloc, &yloc, &xinc, &style,
+    if (!plot_fetchScalarFields(x, data, template, 
+        &array, &linewidth, &xloc, &yloc, &xinc, &style,
         &vis) && (vis != 0))
     {
-        return (array_doclick(array, glist, sc, ap,
-            elemtemplatesym,
+        return (array_doclick(x, array, glist, sc, ap,
+            array_getTemplateIdentifier (array),
             linewidth, basex + xloc, xinc, basey + yloc, scalarvis,
             xfielddesc, yfielddesc, wfielddesc,
             xpix, ypix, shift, alt, dbl, doit));
@@ -1042,7 +1127,7 @@ static void *plot_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_plot *x = (t_plot *)pd_new (plot_class);
     
-    field_setAsFloatConstant (&x->x_array,          0.0);
+    field_setAsFloatConstant (&x->x_array,          0.0);       /* Default is invalid. */
     field_setAsFloatConstant (&x->x_colorOutline,   0.0);
     field_setAsFloatConstant (&x->x_width,          1.0);
     field_setAsFloatConstant (&x->x_positionX,      1.0);
@@ -1050,6 +1135,7 @@ static void *plot_new (t_symbol *s, int argc, t_atom *argv)
     field_setAsFloatConstant (&x->x_incrementX,     1.0);
     field_setAsFloatConstant (&x->x_style,          (t_float)PLOT_POLYGONS);
     field_setAsFloatConstant (&x->x_isVisible,      1.0);
+    
     field_setAsFloatVariable (&x->x_fieldX,         sym_x);
     field_setAsFloatVariable (&x->x_fieldY,         sym_y);
     field_setAsFloatVariable (&x->x_fieldW,         sym_w);
