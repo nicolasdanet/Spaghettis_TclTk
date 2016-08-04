@@ -157,9 +157,9 @@ static void drawnumber_getrect(t_gobj *z, t_glist *glist,
         *xp2 = *yp2 = -PD_INT_MAX;
         return;
     }
-    xloc = canvas_valueToPositionX(glist,
+    xloc = canvas_valueToPixelX(glist,
         basex + word_getFloatByDescriptorAsPosition(data, template, &x->x_xloc));
-    yloc = canvas_valueToPositionY(glist,
+    yloc = canvas_valueToPixelY(glist,
         basey + word_getFloatByDescriptorAsPosition(data, template, &x->x_yloc));
     font = canvas_getFontSize(glist);
     fontwidth = font_getHostFontWidth(font);
@@ -194,9 +194,9 @@ static void drawnumber_vis(t_gobj *z, t_glist *glist,
     if (vis)
     {
         t_atom at;
-        int xloc = canvas_valueToPositionX(glist,
+        int xloc = canvas_valueToPixelX(glist,
             basex + word_getFloatByDescriptorAsPosition(data, template, &x->x_xloc));
-        int yloc = canvas_valueToPositionY(glist,
+        int yloc = canvas_valueToPixelY(glist,
             basey + word_getFloatByDescriptorAsPosition(data, template, &x->x_yloc));
         char colorstring[20], buf[DRAWNUMBER_BUFSIZE];
         color_toEncodedString(colorstring, 20,

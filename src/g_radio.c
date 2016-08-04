@@ -62,8 +62,8 @@ void radio_drawMoveVertical (t_radio *x, t_glist *glist)
     t_glist *canvas = canvas_getView (glist);
     
     int n = x->x_numberOfButtons;
-    int a = text_getPositionX (cast_object (x), glist);
-    int b = text_getPositionY (cast_object (x), glist);
+    int a = text_getPixelX (cast_object (x), glist);
+    int b = text_getPixelY (cast_object (x), glist);
     int k = x->x_gui.iem_height / 4;
     
     int i, t = b;
@@ -101,8 +101,8 @@ void radio_drawNewVertical (t_radio *x, t_glist *glist)
     t_glist *canvas = canvas_getView (glist);
     
     int n = x->x_numberOfButtons;
-    int a = text_getPositionX (cast_object (x), glist);
-    int b = text_getPositionY (cast_object (x), glist);
+    int a = text_getPixelX (cast_object (x), glist);
+    int b = text_getPixelY (cast_object (x), glist);
     int k = x->x_gui.iem_height / 4;
     
     int i, t = b;
@@ -152,8 +152,8 @@ void radio_drawMoveHorizontal (t_radio *x, t_glist *glist)
     t_glist *canvas = canvas_getView (glist);
     
     int n = x->x_numberOfButtons;
-    int a = text_getPositionX (cast_object (x), glist);
-    int b = text_getPositionY (cast_object (x), glist);
+    int a = text_getPixelX (cast_object (x), glist);
+    int b = text_getPixelY (cast_object (x), glist);
     int k = x->x_gui.iem_width / 4;
     
     int i, t = a;
@@ -191,8 +191,8 @@ void radio_drawNewHorizontal (t_radio *x, t_glist *glist)
     t_glist *canvas = canvas_getView (glist);
 
     int n = x->x_numberOfButtons;
-    int a = text_getPositionX (cast_object (x), glist);
-    int b = text_getPositionY (cast_object (x), glist);
+    int a = text_getPixelX (cast_object (x), glist);
+    int b = text_getPixelY (cast_object (x), glist);
     int k = x->x_gui.iem_width / 4;
     
     int i, t = a;
@@ -423,9 +423,9 @@ static void radio_click (t_radio *x, t_float a, t_float b, t_float shift, t_floa
     t_float f;
     
     if (x->x_isVertical) { 
-        f = ((b - text_getPositionY (cast_object (x), x->x_gui.iem_owner)) / x->x_gui.iem_height);
+        f = ((b - text_getPixelY (cast_object (x), x->x_gui.iem_owner)) / x->x_gui.iem_height);
     } else {
-        f = ((a - text_getPositionX (cast_object (x), x->x_gui.iem_owner)) / x->x_gui.iem_width);
+        f = ((a - text_getPixelX (cast_object (x), x->x_gui.iem_owner)) / x->x_gui.iem_width);
     }
 
     x->x_state = PD_CLAMP ((int)f, 0, x->x_numberOfButtons - 1);
@@ -492,8 +492,8 @@ static void radio_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *
 {
     t_radio *x = (t_radio *)z;
     
-    *a = text_getPositionX (cast_object (z), glist);
-    *b = text_getPositionY (cast_object (z), glist);
+    *a = text_getPixelX (cast_object (z), glist);
+    *b = text_getPixelY (cast_object (z), glist);
     
     if (x->x_isVertical) {
         *c = *a + cast_iem (z)->iem_width;

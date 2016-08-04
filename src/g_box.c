@@ -29,7 +29,7 @@ extern t_class *canvas_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define BOX_BUFFER_SIZE         50
+#define BOX_TAG_SIZE    50
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ struct _boxtext {
     int                 box_widthInPixels;
     int                 box_heightInPixels;
     int                 box_checked;
-    char                box_tag[BOX_BUFFER_SIZE];
+    char                box_tag[BOX_TAG_SIZE];
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -253,8 +253,8 @@ static int boxtext_send (t_boxtext *x, int action, int a, int b)
         sys_vGui ("::ui_box::newText .x%lx.c %s %f %f {%s} %d #%06x\n",
                         canvas,
                         x->box_tag,
-                        (double)text_getPositionX (x->box_object, x->box_glist) + BOX_MARGIN_LEFT, 
-                        (double)text_getPositionY (x->box_object, x->box_glist) + BOX_MARGIN_TOP,
+                        (double)text_getPixelX (x->box_object, x->box_glist) + BOX_MARGIN_LEFT, 
+                        (double)text_getPixelY (x->box_object, x->box_glist) + BOX_MARGIN_TOP,
                         buffer, 
                         font_getHostFontSize (fontSize),
                         (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
@@ -339,7 +339,7 @@ t_boxtext *boxtext_new (t_glist *glist, t_object *object)
     {
     //
     t_glist *canvas = canvas_getView (glist);
-    t_error err = string_sprintf (x->box_tag, BOX_BUFFER_SIZE, ".x%lx.%lxBOXTEXT", (t_int)canvas, (t_int)x);
+    t_error err = string_sprintf (x->box_tag, BOX_TAG_SIZE, ".x%lx.%lxBOXTEXT", (t_int)canvas, (t_int)x);
     PD_ASSERT (!err);
     //
     }

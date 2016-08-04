@@ -92,8 +92,8 @@ void bng_drawMove (t_bng *x, t_glist *glist)
 {
     t_glist *canvas = canvas_getView (glist);
         
-    int a = text_getPositionX (cast_object (x), glist);
-    int b = text_getPositionY (cast_object (x), glist);
+    int a = text_getPixelX (cast_object (x), glist);
+    int b = text_getPixelY (cast_object (x), glist);
     
     sys_vGui (".x%lx.c coords %lxBASE %d %d %d %d\n",
                     canvas,
@@ -118,8 +118,8 @@ void bng_drawMove (t_bng *x, t_glist *glist)
 
 void bng_drawNew (t_bng *x, t_glist *glist)
 {
-    int a = text_getPositionX (cast_object (x), glist);
-    int b = text_getPositionY (cast_object (x), glist);
+    int a = text_getPixelX (cast_object (x), glist);
+    int b = text_getPixelY (cast_object (x), glist);
     
     t_glist *canvas = canvas_getView (glist);
 
@@ -359,8 +359,8 @@ static void bng_taskBreak (t_bng *x)
 
 static void bng_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
 {
-    *a = text_getPositionX (cast_object (z), glist);
-    *b = text_getPositionY (cast_object (z), glist);
+    *a = text_getPixelX (cast_object (z), glist);
+    *b = text_getPixelY (cast_object (z), glist);
     *c = *a + cast_iem (z)->iem_width;
     *d = *b + cast_iem (z)->iem_height;
 }

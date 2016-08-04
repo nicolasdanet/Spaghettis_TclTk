@@ -443,15 +443,15 @@ void            canvas_bounds                           (t_glist *glist,
                                                             t_float c,
                                                             t_float d);
                                                             
-t_float         canvas_valueToPositionX                 (t_glist *glist, t_float f);
-t_float         canvas_valueToPositionY                 (t_glist *glist, t_float f);
-t_float         canvas_positionToValueX                 (t_glist *glist, t_float f);
-t_float         canvas_positionToValueY                 (t_glist *glist, t_float f);
+t_float         canvas_valueToPixelX                    (t_glist *glist, t_float f);
+t_float         canvas_valueToPixelY                    (t_glist *glist, t_float f);
+t_float         canvas_pixelToValueX                    (t_glist *glist, t_float f);
+t_float         canvas_pixelToValueY                    (t_glist *glist, t_float f);
 
-t_float         canvas_deltaPositionToValueX            (t_glist *glist, t_float f);
-t_float         canvas_deltaPositionToValueY            (t_glist *glist, t_float f);
-t_float         canvas_stepX                            (t_glist *glist);
-t_float         canvas_stepY                            (t_glist *glist);
+t_float         canvas_valueForDeltaInPixelX            (t_glist *glist, t_float f);
+t_float         canvas_valueForDeltaInPixelY            (t_glist *glist, t_float f);
+t_float         canvas_valueForOnePixelX                (t_glist *glist);
+t_float         canvas_valueForOnePixelY                (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -654,8 +654,8 @@ int             text_behaviorClicked                    (t_gobj *x,
 void            text_functionSave                       (t_gobj *x, t_buffer *b);
 
 void            text_set                                (t_object *x, t_glist *glist, char *s, int size);
-int             text_getPositionX                       (t_object *x, t_glist *glist);
-int             text_getPositionY                       (t_object *x, t_glist *glist);
+int             text_getPixelX                          (t_object *x, t_glist *glist);
+int             text_getPixelY                          (t_object *x, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

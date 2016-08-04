@@ -85,8 +85,8 @@ void toggle_drawMove (t_toggle *x, t_glist *glist)
 {
     t_glist *canvas = canvas_getView (glist);
     
-    int a = text_getPositionX (cast_object (x), glist);
-    int b = text_getPositionY (cast_object (x), glist);
+    int a = text_getPixelX (cast_object (x), glist);
+    int b = text_getPixelY (cast_object (x), glist);
     
     int thickness = (int)((x->x_gui.iem_width / 30.0) + 0.5);
         
@@ -130,8 +130,8 @@ void toggle_drawNew (t_toggle *x, t_glist *glist)
 {
     t_glist *canvas = canvas_getView (glist);
     
-    int a = text_getPositionX (cast_object (x), glist);
-    int b = text_getPositionY (cast_object (x), glist);
+    int a = text_getPixelX (cast_object (x), glist);
+    int b = text_getPixelY (cast_object (x), glist);
     
     int thickness = (int)((x->x_gui.iem_width / 30.0) + 0.5);
 
@@ -329,8 +329,8 @@ static void toggle_nonZero (t_toggle *x, t_float f)
 
 static void toggle_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
 {
-    *a = text_getPositionX (cast_object (z), glist);
-    *b = text_getPositionY (cast_object (z), glist);
+    *a = text_getPixelX (cast_object (z), glist);
+    *b = text_getPixelY (cast_object (z), glist);
     *c = *a + cast_iem (z)->iem_width;
     *d = *b + cast_iem (z)->iem_height;
 }

@@ -148,9 +148,9 @@ static void drawpolygon_behaviorGetRectangle (t_gobj *z,
     int x2 = -x1;
     int y2 = -y1;
     
-    int visibleField = (int)word_getFloatByDescriptor (w, tmpl, &x->x_isVisible);
+    int visible = (int)word_getFloatByDescriptor (w, tmpl, &x->x_isVisible);
     
-    if (visibleField && !(x->x_flags & DRAWPOLYGON_NO_MOUSE)) {
+    if (visible && !(x->x_flags & DRAWPOLYGON_NO_MOUSE)) {
     //
     int i;
     t_fielddescriptor *fd = x->x_coordinates;
@@ -159,8 +159,8 @@ static void drawpolygon_behaviorGetRectangle (t_gobj *z,
     //
     int m, n;
     
-    m = canvas_valueToPositionX (glist, baseX + word_getFloatByDescriptorAsPosition (w, tmpl, fd + i));
-    n = canvas_valueToPositionY (glist, baseY + word_getFloatByDescriptorAsPosition (w, tmpl, fd + i + 1));
+    m = canvas_valueToPixelX (glist, baseX + word_getFloatByDescriptorAsPosition (w, tmpl, fd + i));
+    n = canvas_valueToPixelY (glist, baseY + word_getFloatByDescriptorAsPosition (w, tmpl, fd + i + 1));
     
     x1 = PD_MIN (m, x1);
     x2 = PD_MAX (m, x2);
@@ -187,9 +187,9 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
 {
     t_drawpolygon *x = (t_drawpolygon *)z;
     
-    int visibleField = (int)word_getFloatByDescriptor (w, tmpl, &x->x_isVisible);
+    int visible = (int)word_getFloatByDescriptor (w, tmpl, &x->x_isVisible);
     
-    if (!isVisible || visibleField) {
+    if (!isVisible || visible) {
     //
     int i, n = x->x_numberOfPoints;
     
@@ -221,8 +221,8 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     //
     int a, b;
     
-    a = canvas_valueToPositionX (glist, baseX + word_getFloatByDescriptorAsPosition (w, tmpl, fd + i));
-    b = canvas_valueToPositionY (glist, baseY + word_getFloatByDescriptorAsPosition (w, tmpl, fd + i + 1));
+    a = canvas_valueToPixelX (glist, baseX + word_getFloatByDescriptorAsPosition (w, tmpl, fd + i));
+    b = canvas_valueToPixelY (glist, baseY + word_getFloatByDescriptorAsPosition (w, tmpl, fd + i + 1));
         
     err |= string_addSprintf (t, DRAWPOLYGON_BUFFER_SIZE,       " %d %d", a, b);
     //
@@ -271,9 +271,9 @@ static int drawpolygon_behaviorClicked (t_gobj *z,
 {
     t_drawpolygon *x = (t_drawpolygon *)z;
     
-    int visibleField = (int)word_getFloatByDescriptor (w, tmpl, &x->x_isVisible);
+    int visible = (int)word_getFloatByDescriptor (w, tmpl, &x->x_isVisible);
     
-    if (visibleField) {
+    if (visible) {
     //
     int i;
     int bestField = -1;
@@ -285,13 +285,13 @@ static int drawpolygon_behaviorClicked (t_gobj *z,
     //
     if (field_isVariable (fd + i) || field_isVariable (fd + i + 1)) {
     //
-    int valueX    = word_getFloatByDescriptorAsPosition (w, tmpl, fd + i);
-    int valueY    = word_getFloatByDescriptorAsPosition (w, tmpl, fd + i + 1);
-    int positionX = canvas_valueToPositionX (glist, baseX + valueX);
-    int positionY = canvas_valueToPositionY (glist, baseY + valueY);
-    int errorX    = PD_ABS (positionX - a);
-    int errorY    = PD_ABS (positionY - b);
-    int error     = PD_MAX (errorX, errorY);
+    int valueX = word_getFloatByDescriptorAsPosition (w, tmpl, fd + i);
+    int valueY = word_getFloatByDescriptorAsPosition (w, tmpl, fd + i + 1);
+    int pixelX = canvas_valueToPixelX (glist, baseX + valueX);
+    int pixelY = canvas_valueToPixelY (glist, baseY + valueY);
+    int errorX = PD_ABS (pixelX - a);
+    int errorY = PD_ABS (pixelY - b);
+    int error  = PD_MAX (errorX, errorY);
 
     if (error < bestError) {
         drawpolygon_coordinateX = valueX;
@@ -308,8 +308,8 @@ static int drawpolygon_behaviorClicked (t_gobj *z,
     
         if (clicked) {
         
-            drawpolygon_stepX       = canvas_stepX (glist);
-            drawpolygon_stepY       = canvas_stepY (glist);
+            drawpolygon_stepX       = canvas_valueForOnePixelX (glist);
+            drawpolygon_stepY       = canvas_valueForOnePixelY (glist);
             drawpolygon_cumulativeX = 0.0;
             drawpolygon_cumulativeY = 0.0;
             drawpolygon_view        = glist;

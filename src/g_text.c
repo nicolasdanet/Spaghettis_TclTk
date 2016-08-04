@@ -55,8 +55,8 @@ void text_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *
     int w = boxtext_getWidth (text);
     int h = boxtext_getHeight (text);
     
-    *a = text_getPositionX (x, glist);
-    *b = text_getPositionY (x, glist);
+    *a = text_getPixelX (x, glist);
+    *b = text_getPixelY (x, glist);
     *c = *a + w;
     *d = *b + h;
 }
@@ -241,20 +241,20 @@ void text_set (t_object *x, t_glist *glist, char *s, int size)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int text_getPositionX (t_object *x, t_glist *glist)
+int text_getPixelX (t_object *x, t_glist *glist)
 {
     if (canvas_canHaveWindow (glist)) { return x->te_xCoordinate; }
     else {
-        int n = canvas_valueToPositionX (glist, glist->gl_valueLeft) - glist->gl_graphMarginLeft;
+        int n = canvas_valueToPixelX (glist, glist->gl_valueLeft) - glist->gl_graphMarginLeft;
         return (n + x->te_xCoordinate);
     }
 }
 
-int text_getPositionY (t_object *x, t_glist *glist)
+int text_getPixelY (t_object *x, t_glist *glist)
 {
     if (canvas_canHaveWindow (glist)) { return x->te_yCoordinate; }
     else {
-        int n = canvas_valueToPositionY (glist, glist->gl_valueTop) - glist->gl_graphMarginTop;
+        int n = canvas_valueToPixelY (glist, glist->gl_valueTop) - glist->gl_graphMarginTop;
         return (n + x->te_yCoordinate);
     }
 }

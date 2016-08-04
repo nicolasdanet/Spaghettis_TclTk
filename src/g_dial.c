@@ -122,9 +122,9 @@ static int dial_getNeedleTopY (t_dial *x, int n, double distance)
 
 static void dial_setString (t_dial *x)
 {
-    t_error err = string_sprintf (x->x_t, IEM_DIAL_BUFFER_LENGTH, "%f", x->x_floatValue);
+    t_error err = string_sprintf (x->x_t, IEM_DIGITS_SIZE, "%f", x->x_floatValue);
     PD_ASSERT (!err);
-    PD_ASSERT (x->x_digitsNumber < IEM_DIAL_BUFFER_LENGTH);
+    PD_ASSERT (x->x_digitsNumber < IEM_DIGITS_SIZE);
     x->x_t[x->x_digitsNumber] = 0;
 }
 
@@ -140,8 +140,8 @@ static void dial_drawJob (t_gobj *z, t_glist *glist)
     //
     t_glist *canvas = canvas_getView (glist);
     
-    int a = text_getPositionX (cast_object (x), glist);
-    int b = text_getPositionY (cast_object (x), glist);
+    int a = text_getPixelX (cast_object (x), glist);
+    int b = text_getPixelY (cast_object (x), glist);
     int h = x->x_digitsFontSize;
     int w = dial_getWidth (x);
     int m = a + (w / 2);
@@ -179,8 +179,8 @@ static void dial_drawMove (t_dial *x, t_glist *glist)
 {
     t_glist *canvas = canvas_getView (glist);
     
-    int a = text_getPositionX (cast_object (x), glist);
-    int b = text_getPositionY (cast_object (x), glist);
+    int a = text_getPixelX (cast_object (x), glist);
+    int b = text_getPixelY (cast_object (x), glist);
     int k = x->x_gui.iem_height - (x->x_digitsFontSize / 2);
     int h = x->x_digitsFontSize;
     int w = dial_getWidth (x);
@@ -224,8 +224,8 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
 {
     t_glist *canvas = canvas_getView (glist);
     
-    int a = text_getPositionX (cast_object (x), glist);
-    int b = text_getPositionY (cast_object (x), glist);
+    int a = text_getPixelX (cast_object (x), glist);
+    int b = text_getPixelY (cast_object (x), glist);
     int k = x->x_gui.iem_height - (x->x_digitsFontSize / 2);
     int h = x->x_digitsFontSize;
     int w = dial_getWidth (x);
@@ -514,7 +514,7 @@ static void dial_size (t_dial *x, t_symbol *s, int argc, t_atom *argv)
     //
     int digits = (int)atom_getFloatAtIndex (0, argc, argv);
 
-    x->x_digitsNumber = PD_CLAMP (digits, 1, IEM_DIAL_BUFFER_LENGTH - 1);
+    x->x_digitsNumber = PD_CLAMP (digits, 1, IEM_DIGITS_SIZE - 1);
     
     if (argc > 1) {
         int height = (int)atom_getFloatAtIndex (1, argc, argv);
@@ -583,8 +583,8 @@ static void dial_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b
 {
     t_dial *x = (t_dial *)z;
     
-    *a = text_getPositionX (cast_object (z), glist);
-    *b = text_getPositionY (cast_object (z), glist);
+    *a = text_getPixelX (cast_object (z), glist);
+    *b = text_getPixelY (cast_object (z), glist);
     *c = *a + dial_getWidth (x);
     *d = *b + cast_iem (z)->iem_height;
 }
@@ -693,7 +693,7 @@ static void dial_fromDialog (t_dial *x, t_symbol *s, int argc, t_atom *argv)
     
     x->x_gui.iem_height = PD_MAX (height, IEM_MINIMUM_HEIGHT);
     x->x_isLogarithmic  = (isLogarithmic != 0);
-    x->x_digitsNumber   = PD_CLAMP (digits, 1, IEM_DIAL_BUFFER_LENGTH - 1);
+    x->x_digitsNumber   = PD_CLAMP (digits, 1, IEM_DIGITS_SIZE - 1);
     x->x_steps          = PD_MAX (steps, 1);
     x->x_position       = PD_MIN (x->x_position, x->x_steps);
     
@@ -789,7 +789,7 @@ static void *dial_new (t_symbol *s, int argc, t_atom *argv)
         
     x->x_isLogarithmic  = (isLogarithmic != 0);
     x->x_steps          = PD_MAX (steps, 1);
-    x->x_digitsNumber   = PD_CLAMP (digits, 1, IEM_DIAL_BUFFER_LENGTH - 1);
+    x->x_digitsNumber   = PD_CLAMP (digits, 1, IEM_DIGITS_SIZE - 1);
     
     dial_setRange (x, minimum, maximum);
     

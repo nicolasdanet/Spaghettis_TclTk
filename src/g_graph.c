@@ -274,8 +274,8 @@ static void canvas_getGraphOnParentRectangle (t_gobj *z, t_glist *glist, int *a,
     
     PD_ASSERT (pd_class (z) == canvas_class);
     
-    int x1 = text_getPositionX (cast_object (x), glist);
-    int y1 = text_getPositionY (cast_object (x), glist);
+    int x1 = text_getPixelX (cast_object (x), glist);
+    int y1 = text_getPixelY (cast_object (x), glist);
     int x2 = x1 + x->gl_graphWidth;
     int y2 = y1 + x->gl_graphHeight;
 
@@ -289,7 +289,7 @@ static void canvas_getGraphOnParentRectangle (t_gobj *z, t_glist *glist, int *a,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_float canvas_positionToValueX (t_glist *glist, t_float f)
+t_float canvas_pixelToValueX (t_glist *glist, t_float f)
 {
     t_float range = glist->gl_valueRight - glist->gl_valueLeft;
     t_float v = 0.0;
@@ -307,7 +307,7 @@ t_float canvas_positionToValueX (t_glist *glist, t_float f)
     return (glist->gl_valueLeft + (range * v));
 }
 
-t_float canvas_positionToValueY (t_glist *glist, t_float f)
+t_float canvas_pixelToValueY (t_glist *glist, t_float f)
 {
     t_float range = glist->gl_valueBottom - glist->gl_valueTop;
     t_float v = 0.0;
@@ -325,7 +325,7 @@ t_float canvas_positionToValueY (t_glist *glist, t_float f)
     return (glist->gl_valueTop + (range * v));
 }
 
-t_float canvas_valueToPositionX (t_glist *glist, t_float f)
+t_float canvas_valueToPixelX (t_glist *glist, t_float f)
 {
     t_float range = glist->gl_valueRight - glist->gl_valueLeft;
     t_float v = 1.0;
@@ -345,7 +345,7 @@ t_float canvas_valueToPositionX (t_glist *glist, t_float f)
     return (x + (v * ((f - glist->gl_valueLeft) / range)));
 }
 
-t_float canvas_valueToPositionY (t_glist *glist, t_float f)
+t_float canvas_valueToPixelY (t_glist *glist, t_float f)
 {
     t_float range = glist->gl_valueBottom - glist->gl_valueTop;
     t_float v = 1.0;
@@ -365,24 +365,28 @@ t_float canvas_valueToPositionY (t_glist *glist, t_float f)
     return (x + (v * ((f - glist->gl_valueTop) / range)));
 }
 
-t_float canvas_deltaPositionToValueX (t_glist *glist, t_float f)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_float canvas_valueForDeltaInPixelX (t_glist *glist, t_float f)
 { 
-    return (f * canvas_stepX (glist));
+    return (f * canvas_valueForOnePixelX (glist));
 }
 
-t_float canvas_deltaPositionToValueY (t_glist *glist, t_float f)
+t_float canvas_valueForDeltaInPixelY (t_glist *glist, t_float f)
 {
-    return (f * canvas_stepY (glist));
+    return (f * canvas_valueForOnePixelY (glist));
 }
 
-t_float canvas_stepX (t_glist *glist)
+t_float canvas_valueForOnePixelX (t_glist *glist)
 {
-    return (canvas_positionToValueX (glist, 1.0) - canvas_positionToValueX (glist, 0.0));
+    return (canvas_pixelToValueX (glist, 1.0) - canvas_pixelToValueX (glist, 0.0));
 }
 
-t_float canvas_stepY (t_glist *glist)
+t_float canvas_valueForOnePixelY (t_glist *glist)
 {
-    return (canvas_positionToValueY (glist, 1.0) - canvas_positionToValueY (glist, 0.0));
+    return (canvas_pixelToValueY (glist, 1.0) - canvas_pixelToValueY (glist, 0.0));
 }
 
 // -----------------------------------------------------------------------------------------------------------

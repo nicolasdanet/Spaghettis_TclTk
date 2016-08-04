@@ -240,8 +240,8 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
 
     if (!view) {
     
-        x1 = canvas_valueToPositionX (glist, baseX);
-        y1 = canvas_valueToPositionY (glist, baseY);
+        x1 = canvas_valueToPixelX (glist, baseX);
+        y1 = canvas_valueToPixelY (glist, baseY);
         x2 = x1 + SCALAR_WRONG_SIZE;
         y2 = y1 + SCALAR_WRONG_SIZE;
         
@@ -300,7 +300,7 @@ static void scalar_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int
     if (template_fieldIsFloat (template, sym_x)) {
     //
     t_float f = word_getFloat (x->sc_vector, template, sym_x);
-    f += canvas_deltaPositionToValueX (glist, deltaX);
+    f += canvas_valueForDeltaInPixelX (glist, deltaX);
     word_setFloat (x->sc_vector, template, sym_x, f);
     //
     }
@@ -308,7 +308,7 @@ static void scalar_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int
     if (template_fieldIsFloat (template, sym_y)) {
     //
     t_float f = word_getFloat (x->sc_vector, template, sym_y);
-    f += canvas_deltaPositionToValueY (glist, deltaY);
+    f += canvas_valueForDeltaInPixelY (glist, deltaY);
     word_setFloat (x->sc_vector, template, sym_y, f);
     //
     }
@@ -356,8 +356,8 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
         
         if (isVisible) {
         
-            int a = canvas_valueToPositionX (glist, baseX);
-            int b = canvas_valueToPositionY (glist, baseY);
+            int a = canvas_valueToPixelX (glist, baseX);
+            int b = canvas_valueToPixelY (glist, baseY);
             
             sys_vGui (".x%lx.c create rectangle %d %d %d %d"
                             " -outline #%06x"

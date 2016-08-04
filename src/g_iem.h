@@ -70,7 +70,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IEM_DIAL_BUFFER_LENGTH          32
+#define IEM_DIGITS_SIZE                 32
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -166,7 +166,7 @@ typedef struct _slider {
 
 typedef struct _dial {
     t_iem       x_gui;
-    char        x_t[IEM_DIAL_BUFFER_LENGTH];
+    char        x_t[IEM_DIGITS_SIZE];
     int         x_position;
     int         x_isLogarithmic;
     int         x_digitsNumber;
