@@ -73,18 +73,19 @@ static void plot_motion (void *, t_float, t_float, t_float);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define PLOT_MAX            1e20
+#define PLOT_MAX                1e20
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define PLOT_CLIP(x)        (((x) > -PLOT_MAX && (x) < PLOT_MAX) ? (x) : 0)
+#define PLOT_CLIP(x)            (((x) > -PLOT_MAX && (x) < PLOT_MAX) ? (x) : 0)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define PLOT_BUFFER_SIZE    4096
+#define PLOT_BUFFER_SIZE        4096
+#define PLOT_MAXIMUM_DRAWN      256
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -169,17 +170,19 @@ static void plot_getCoordinates (t_plot *x,
     t_float valueY;
     t_float valueW;
 
-    if (fieldX) { valueX = array_getFloatInElementAtIndex (array, i, fieldX); }
+    int size = array_getSize (array);
+    
+    if (fieldX) { valueX = (i < size) ? array_getFloatInElementAtIndex (array, i, fieldX) : 0.0; }
     else { 
         valueX = i * incrementX;
     }
     
-    if (fieldY) { valueY = array_getFloatInElementAtIndex (array, i, fieldY); }
+    if (fieldY) { valueY = (i < size) ? array_getFloatInElementAtIndex (array, i, fieldY) : 0.0; }
     else { 
         valueY = 0.0;
     }
     
-    if (fieldW) { valueW = array_getFloatInElementAtIndex (array, i, fieldW); }
+    if (fieldW) { valueW = (i < size) ? array_getFloatInElementAtIndex (array, i, fieldW) : 0.0; }
     else {
         valueW = 0.0;
     }
@@ -444,101 +447,199 @@ static void plot_behaviorGetRectangle (t_gobj *z,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#if 0
-
 static void plot_behaviorVisibilityChangedDrawPoint (t_plot *x,
+    t_glist *glist,
+    t_word  *w,
     t_array *array,
     t_symbol *fieldX,
     t_symbol *fieldY,
     t_symbol *fieldW,
     t_float relativeX,
     t_float relativeY, 
-    t_float incrementX)
+    t_float incrementX, 
+    t_float width)
 {
-    char t[PLOT_BUFFER_SIZE] = { 0 };
-    
-    int numberOfElements     = array_getSize (array);
-    int numberOfElementDrawn = 0;
-    t_float minimumValueY    =  PLOT_MAX;
-    t_float maximumValueY    = -PLOT_MAX;
-    
+    int numberOfElements  = array_getSize (array);
+    t_float minimumValueY =  PLOT_MAX;
+    t_float maximumValueY = -PLOT_MAX;
     int i;
     
     for (i = 0; i < numberOfElements; i++) {
     //
-    t_float valueY;
     t_float valueX;
-    t_float width;
-    t_float pixelX;
-    t_float pixelY;
+    t_float valueY;
+    t_float valueW;
+    int pixelX, nextPixelX;
     
-    int draw = (i == numberOfElements - 1);
-    
-    plot_getCoordinates (x, 
+    plot_getCoordinates (x,
         array,
         fieldX,
         fieldY,
-        NULL,
+        fieldW,
         i,
         relativeX,
         relativeY,
         incrementX, 
         &valueX, 
         &valueY, 
-        &width);
+        &valueW);
     
-    int ixpix;
-    int inextx;
-    /*
-    if (fieldX) {
-        valueX = baseX + positionX + *(t_float *)((elem + elemsize * i) + xonset);
-        ixpix = canvas_valueToPixelX(glist, field_convertValueToPosition(xfielddesc, valueX));
-        inextx = ixpix + 2;
-    }
-    else
-    {
-        valueX = relativeX;
-        relativeX += xinc;
-        ixpix = canvas_valueToPixelX(glist,
-            field_convertValueToPosition(xfielddesc, valueX));
-        inextx = canvas_valueToPixelX(glist,
-            field_convertValueToPosition(xfielddesc, relativeX));
-    }
-
-    if (yonset >= 0)
-        valueY = positionY + *(t_float *)((elem + elemsize * i) + yonset);
-    else valueY = 0;
+    pixelX = (int)canvas_valueToPixelX (glist, valueX);
     
-    valueY = PLOT_CLIP(valueY);
+    minimumValueY = PD_MIN (minimumValueY, PLOT_CLIP (valueY));
+    maximumValueY = PD_MAX (maximumValueY, PLOT_CLIP (valueY));
     
-    if (valueY < minimumValueY)
-        minimumValueY = valueY;
-    if (valueY > maximumValueY)
-        maximumValueY = valueY;
+    plot_getCoordinates (x, 
+        array,
+        fieldX,
+        fieldY,
+        fieldW,
+        i + 1,
+        relativeX,
+        relativeY,
+        incrementX, 
+        &valueX, 
+        &valueY, 
+        &valueW);
         
-    if (i == numberOfElements-1 || inextx != ixpix)
-    {
-        sys_vGui(".x%lx.c create rectangle %d %d %d %d -fill black -width 0 -tags [list PLOT%lx array]\n",
-            canvas_getView(glist),
-            ixpix,
-            (int)canvas_valueToPixelY (glist, baseY + field_convertValueToPosition(yfielddesc, minimumValueY)),
-            inextx,
-            (int)(canvas_valueToPixelY (glist, baseY + field_convertValueToPosition(yfielddesc, maximumValueY)) + linewidth),
-            w);
-        numberOfElementDrawn++;
-        minimumValueY = PLOT_MAX;
+    nextPixelX = (int)canvas_valueToPixelX (glist, valueX);
+
+    if (i == numberOfElements - 1 || pixelX != nextPixelX) {
+        
+        t_float min = relativeY + field_convertValueToPosition (&x->x_fieldY, minimumValueY);
+        t_float max = relativeY + field_convertValueToPosition (&x->x_fieldY, maximumValueY);
+        
+        sys_vGui (".x%lx.c create rectangle %d %d %d %d"
+                        " -width %d"
+                        " -fill #%06x"
+                        " -tags PLOT%lx\n",
+                        canvas_getView (glist),
+                        (fieldX == NULL) ? pixelX : pixelX - 1,
+                        (int)canvas_valueToPixelY (glist, min),
+                        (fieldX == NULL) ? nextPixelX : pixelX + 1,
+                        (int)canvas_valueToPixelY (glist, max),
+                        (int)PD_MAX (0, width - 1),
+                        COLOR_NORMAL,
+                        (t_int)w);
+    
+        minimumValueY =  PLOT_MAX;
         maximumValueY = -PLOT_MAX;
     }
-    
-    if (numberOfElementDrawn > 2000 || ixpix >= 3000) { break; }
-    */
     //
     }
 }
 
-static void plot_behaviorVisibilityChangedDrawPolygon (void)
+static void plot_behaviorVisibilityChangedDrawPolygonFill (t_plot *x,
+    t_glist *glist,
+    t_word  *w,
+    t_array *array,
+    t_symbol *fieldX,
+    t_symbol *fieldY,
+    t_symbol *fieldW,
+    t_float relativeX,
+    t_float relativeY, 
+    t_float incrementX, 
+    t_float width, 
+    int style, 
+    t_symbol *color)
+{
+    int numberOfElements = array_getSize (array);
+    int coordinatesX[PLOT_MAXIMUM_DRAWN] = { 0 };     
+    int coordinatesL[PLOT_MAXIMUM_DRAWN] = { 0 };
+    int coordinatesH[PLOT_MAXIMUM_DRAWN] = { 0 };
+    int elementDrawn = 0;
+    int i;
+    
+    for (i = 0; i < numberOfElements; i++) {
+    //
+    t_float valueX;
+    t_float valueY;
+    t_float valueW;
+    int pixelX, previousPixelX = -PD_INT_MAX;
+    
+    plot_getCoordinates (x,
+        array,
+        fieldX,
+        fieldY,
+        fieldW,
+        i,
+        relativeX,
+        relativeY,
+        incrementX, 
+        &valueX, 
+        &valueY, 
+        &valueW);
+    
+    valueY = PLOT_CLIP (valueY);
+    valueW = PLOT_CLIP (valueW);
+    pixelX = (int)canvas_valueToPixelX (glist, valueX);
+    
+    if (pixelX != previousPixelX) {
+    //
+    t_float pixelY = canvas_valueToPixelY (glist, valueY);
+    t_float pixelW = canvas_valueToPixelY (glist, valueY + valueW) - pixelY;
+    
+    pixelW = PD_ABS (pixelW);
+    pixelW = PD_MAX (pixelW, width);
+    
+    coordinatesX[elementDrawn] = pixelX;
+    coordinatesL[elementDrawn] = pixelY - pixelW;
+    coordinatesH[elementDrawn] = pixelY + pixelW;
+    elementDrawn++; 
+    
+    if (elementDrawn >= PLOT_MAXIMUM_DRAWN) { break; }
+    //
+    }
+
+    previousPixelX = pixelX;
+    //
+    }
+    
+    if (elementDrawn) {         /* Tk requires at least three points (i.e. two elements). */
+    //
+    char t[PLOT_BUFFER_SIZE] = { 0 };
+    t_error err = PD_ERROR_NONE;
+    
+    err |= string_sprintf (t, PLOT_BUFFER_SIZE,         ".x%lx.c create polygon", canvas_getView (glist));
+  
+    for (i = 0; i < elementDrawn; i++) {
+        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " %d %d", coordinatesX[i], coordinatesL[i]);
+    }
+    
+    if (elementDrawn == 1) { 
+        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " %d %d", coordinatesX[0] + 1, coordinatesL[0]);
+    } 
+    
+    for (i = elementDrawn - 1; i >= 0; i--) {
+        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " %d %d", coordinatesX[i], coordinatesH[i]);
+    }
+    
+    if (elementDrawn == 1) { 
+        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " %d %d", coordinatesX[0] + 1, coordinatesH[0]);
+    } 
+    
+    err |= string_addSprintf (t, PLOT_BUFFER_SIZE,      " -fill %s", color->s_name);
+    err |= string_addSprintf (t, PLOT_BUFFER_SIZE,      " -outline %s", color->s_name);
+
+    if (style == PLOT_CURVES) { 
+        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " -width 1 -smooth 1 -tags PLOT%lx\n", (t_int)w);
+    } else { 
+        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " -width 1 -tags PLOT%lx\n", (t_int)w);
+    }
+    
+    if (!err) { sys_gui (t); }
+    else {
+        PD_BUG;
+    }
+    //
+    }
+}
+
+static void plot_behaviorVisibilityChangedDrawPolygonSegment (t_plot *x)
 {
     /*
+    char t[PLOT_BUFFER_SIZE] = { 0 };
+    
     char outline[20];
     int lastpixel = -1, ndrawn = 0;
     t_float yval = 0, wval = 0, xpix;
@@ -672,8 +773,6 @@ static void plot_behaviorVisibilityChangedDrawPolygon (void)
 
         sys_vGui("-tags [list PLOT%lx array]\n", w);
     }
-    
-    post_log ("! %d", ndrawn);
     */
 }
 
@@ -762,20 +861,46 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
             if (style == PLOT_POINTS) { 
             
                 plot_behaviorVisibilityChangedDrawPoint (x,
+                    glist,
+                    w,
                     array,
                     fieldX, 
                     fieldY,
                     fieldW,
                     baseX + positionX,
                     baseY + positionY,
-                    incrementX);
+                    incrementX, 
+                    width);
                     
             } else {
-                plot_behaviorVisibilityChangedDrawPolygon();
+                
+                int color = (int)word_getFloatByDescriptor (w, tmpl, &x->x_colorOutline);
+                
+                if (fieldW) {
+                
+                    plot_behaviorVisibilityChangedDrawPolygonFill (x,
+                        glist,
+                        w,
+                        array,
+                        fieldX, 
+                        fieldY, 
+                        fieldW, 
+                        baseX + positionX, 
+                        baseY + positionY, 
+                        incrementX,
+                        width, 
+                        style, 
+                        color_toEncodedSymbol (color_withDigits (color)));
+                        
+                } else {
+                    plot_behaviorVisibilityChangedDrawPolygonSegment (x);
+                }
             }
             
         } else {
-            sys_vGui (".x%lx.c delete PLOT%lx\n", canvas_getView (glist), w);      
+            if (style == PLOT_POINTS || fieldW) {
+                sys_vGui (".x%lx.c delete PLOT%lx\n", canvas_getView (glist), w); 
+            }
         }
         
         plot_behaviorVisibilityChangedRecursive();
@@ -785,8 +910,6 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
     //
     }
 }
-
-#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -891,6 +1014,8 @@ static void array_getcoordinate (t_plot *x, t_glist *glist,
     *yp = ypix;
     *wp = wpix;
 }
+
+#if 0
 
 static void plot_behaviorVisibilityChanged (t_gobj *z,
     t_glist *glist, 
@@ -1179,6 +1304,8 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
             canvas_getView(glist), w);      
     }
 }
+
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
