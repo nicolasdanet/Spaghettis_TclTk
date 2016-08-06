@@ -990,303 +990,6 @@ static void array_getcoordinate (t_plot *x, t_glist *glist,
     *wp = wpix;
 }
 
-#if 0
-
-static void plot_behaviorVisibilityChanged (t_gobj *z,
-    t_glist *glist, 
-    t_word *w,
-    t_template *tmpl,
-    t_float baseX,
-    t_float baseY,
-    int isVisible)
-{
-    t_plot *x = (t_plot *)z;
-    int elemsize;
-    int yonset;
-    int wonset;
-    int xonset;
-    int i;
-    t_glist *elemtemplatecanvas;
-    t_template *elemtemplate;
-    t_float linewidth;
-    t_float xloc;
-    t_float xinc;
-    t_float yloc;
-    t_float style;
-    t_float usexloc;
-    t_float xsum;
-    t_float yval;
-    t_float vis;
-    t_float scalarvis;
-    t_array *array;
-    int nelem;
-    char *elem;
-    t_fielddescriptor *xfielddesc = &x->x_fieldX;
-    t_fielddescriptor *yfielddesc = &x->x_fieldY;
-    t_fielddescriptor *wfielddesc = &x->x_fieldW;
-    
-    if (plot_fetchScalarFields (x, w, tmpl, 
-        &array, &linewidth, &xloc, &yloc, &xinc, &style,
-        &vis) ||
-            ((vis == 0) && isVisible) /* see above for 'tovis' */
-            || plot_getFields(x, array_getTemplateIdentifier (array), &elemtemplatecanvas,
-                &elemtemplate, &elemsize,
-                &xonset, &yonset, &wonset))
-                    return;
-    nelem = array->a_size;
-    elem = (char *)array->a_vector;
-
-    if (isVisible)
-    {
-        if (style == PLOT_POINTS)
-        {
-            t_float minyval = PLOT_MAX, maxyval = -PLOT_MAX;
-            int ndrawn = 0;
-            for (xsum = baseX + xloc, i = 0; i < nelem; i++)
-            {
-                t_float yval, xpix, ypix, nextxloc;
-                int ixpix, inextx;
-
-                if (xonset >= 0)
-                {
-                    usexloc = baseX + xloc +
-                        *(t_float *)((elem + elemsize * i) + xonset);
-                    ixpix = canvas_valueToPixelX(glist, 
-                        field_convertValueToPosition(xfielddesc, usexloc));
-                    inextx = ixpix + 2;
-                }
-                else
-                {
-                    usexloc = xsum;
-                    xsum += xinc;
-                    ixpix = canvas_valueToPixelX(glist,
-                        field_convertValueToPosition(xfielddesc, usexloc));
-                    inextx = canvas_valueToPixelX(glist,
-                        field_convertValueToPosition(xfielddesc, xsum));
-                }
-
-                if (yonset >= 0)
-                    yval = yloc + *(t_float *)((elem + elemsize * i) + yonset);
-                else yval = 0;
-                yval = PLOT_CLIP(yval);
-                if (yval < minyval)
-                    minyval = yval;
-                if (yval > maxyval)
-                    maxyval = yval;
-                if (i == nelem-1 || inextx != ixpix)
-                {
-                    sys_vGui(".x%lx.c create rectangle %d %d %d %d \
--fill black -width 0  -tags [list plot%lx array]\n",
-                        canvas_getView(glist),
-                        ixpix, (int)canvas_valueToPixelY(glist, 
-                            baseY + field_convertValueToPosition(yfielddesc, minyval)),
-                        inextx, (int)(canvas_valueToPixelY(glist, 
-                            baseY + field_convertValueToPosition(yfielddesc, maxyval))
-                                + linewidth), w);
-                    ndrawn++;
-                    minyval = PLOT_MAX;
-                    maxyval = -PLOT_MAX;
-                }
-                if (ndrawn > 2000 || ixpix >= 3000) break;
-            }
-        }
-        else
-        {
-            char outline[20];
-            int lastpixel = -1, ndrawn = 0;
-            t_float yval = 0, wval = 0, xpix;
-            int ixpix = 0;
-                /* draw the trace */
-            color_toEncodedString(outline, 20,
-                color_withDigits (word_getFloatByDescriptor (w, tmpl, &x->x_colorOutline)));
-            if (wonset >= 0)
-            {
-                    /* found "w" field which controls linewidth.  The trace is
-                    a filled polygon with 2n points. */
-                sys_vGui(".x%lx.c create polygon \\\n",
-                    canvas_getView(glist));
-
-                for (i = 0, xsum = xloc; i < nelem; i++)
-                {
-                    if (xonset >= 0)
-                        usexloc = xloc + *(t_float *)((elem + elemsize * i)
-                            + xonset);
-                    else usexloc = xsum, xsum += xinc;
-                    if (yonset >= 0)
-                        yval = *(t_float *)((elem + elemsize * i) + yonset);
-                    else yval = 0;
-                    yval = PLOT_CLIP(yval);
-                    wval = *(t_float *)((elem + elemsize * i) + wonset);
-                    wval = PLOT_CLIP(wval);
-                    xpix = canvas_valueToPixelX(glist,
-                        baseX + field_convertValueToPosition(xfielddesc, usexloc));
-                    ixpix = xpix + 0.5;
-                    if (xonset >= 0 || ixpix != lastpixel)
-                    {
-                        sys_vGui("%d %f \\\n", ixpix,
-                            canvas_valueToPixelY(glist,
-                                baseY + field_convertValueToPosition(yfielddesc, 
-                                    yloc + yval) -
-                                        field_convertValueToPosition(wfielddesc,wval)));
-                        ndrawn++;
-                    }
-                    lastpixel = ixpix;
-                    if (ndrawn >= 1000) goto ouch;
-                }
-                lastpixel = -1;
-                for (i = nelem-1; i >= 0; i--)
-                {
-                    t_float usexloc;
-                    if (xonset >= 0)
-                        usexloc = xloc + *(t_float *)((elem + elemsize * i)
-                            + xonset);
-                    else xsum -= xinc, usexloc = xsum;
-                    if (yonset >= 0)
-                        yval = *(t_float *)((elem + elemsize * i) + yonset);
-                    else yval = 0;
-                    yval = PLOT_CLIP(yval);
-                    wval = *(t_float *)((elem + elemsize * i) + wonset);
-                    wval = PLOT_CLIP(wval);
-                    xpix = canvas_valueToPixelX(glist,
-                        baseX + field_convertValueToPosition(xfielddesc, usexloc));
-                    ixpix = xpix + 0.5;
-                    if (xonset >= 0 || ixpix != lastpixel)
-                    {
-                        sys_vGui("%d %f \\\n", ixpix, canvas_valueToPixelY(glist,
-                            baseY + yloc + field_convertValueToPosition(yfielddesc,
-                                yval) +
-                                    field_convertValueToPosition(wfielddesc, wval)));
-                        ndrawn++;
-                    }
-                    lastpixel = ixpix;
-                    if (ndrawn >= 1000) goto ouch;
-                }
-                    /* TK will complain if there aren't at least 3 points.
-                    There should be at least two already. */
-                if (ndrawn < 4)
-                {
-                    sys_vGui("%d %f \\\n", ixpix + 10, canvas_valueToPixelY(glist,
-                        baseY + yloc + field_convertValueToPosition(yfielddesc,
-                            yval) +
-                                field_convertValueToPosition(wfielddesc, wval)));
-                    sys_vGui("%d %f \\\n", ixpix + 10, canvas_valueToPixelY(glist,
-                        baseY + yloc + field_convertValueToPosition(yfielddesc,
-                            yval) -
-                                field_convertValueToPosition(wfielddesc, wval)));
-                }
-            ouch:
-                sys_vGui(" -width 1 -fill %s -outline %s\\\n",
-                    outline, outline);
-                if (style == PLOT_CURVES) sys_vGui("-smooth 1\\\n");
-
-                sys_vGui("-tags [list plot%lx array]\n", w);
-            }
-            else if (linewidth > 0)
-            {
-                    /* no "w" field.  If the linewidth is positive, draw a
-                    segmented line with the requested width; otherwise don't
-                    draw the trace at all. */
-                sys_vGui(".x%lx.c create line \\\n", canvas_getView(glist));
-
-                for (xsum = xloc, i = 0; i < nelem; i++)
-                {
-                    t_float usexloc;
-                    if (xonset >= 0)
-                        usexloc = xloc + *(t_float *)((elem + elemsize * i) +
-                            xonset);
-                    else usexloc = xsum, xsum += xinc;
-                    if (yonset >= 0)
-                        yval = *(t_float *)((elem + elemsize * i) + yonset);
-                    else yval = 0;
-                    yval = PLOT_CLIP(yval);
-                    xpix = canvas_valueToPixelX(glist,
-                        baseX + field_convertValueToPosition(xfielddesc, usexloc));
-                    ixpix = xpix + 0.5;
-                    if (xonset >= 0 || ixpix != lastpixel)
-                    {
-                        sys_vGui("%d %f \\\n", ixpix,
-                            canvas_valueToPixelY(glist,
-                                baseY + yloc + field_convertValueToPosition(yfielddesc,
-                                    yval)));
-                        ndrawn++;
-                    }
-                    lastpixel = ixpix;
-                    if (ndrawn >= 1000) break;
-                }
-                    /* TK will complain if there aren't at least 2 points... */
-                if (ndrawn == 0) sys_vGui("0 0 0 0 \\\n");
-                else if (ndrawn == 1) sys_vGui("%d %f \\\n", ixpix + 10,
-                    canvas_valueToPixelY(glist, baseY + yloc + 
-                        field_convertValueToPosition(yfielddesc, yval)));
-
-                sys_vGui("-width %f\\\n", linewidth);
-                sys_vGui("-fill %s\\\n", outline);
-                if (style == PLOT_CURVES) sys_vGui("-smooth 1\\\n");
-
-                sys_vGui("-tags [list plot%lx array]\n", w);
-            }
-        }
-            /* We're done with the outline; now draw all the points.
-            This code is inefficient since the template has to be
-            searched for drawing instructions for every last point. */
-        if (1)
-        {
-            for (xsum = xloc, i = 0; i < nelem; i++)
-            {
-                t_float usexloc, useyloc;
-                t_gobj *y;
-                if (xonset >= 0)
-                    usexloc = baseX + xloc +
-                        *(t_float *)((elem + elemsize * i) + xonset);
-                else usexloc = baseX + xsum, xsum += xinc;
-                if (yonset >= 0)
-                    yval = *(t_float *)((elem + elemsize * i) + yonset);
-                else yval = 0;
-                useyloc = baseY + yloc +
-                    field_convertValueToPosition(yfielddesc, yval);
-                for (y = elemtemplatecanvas->gl_graphics; y; y = y->g_next)
-                {
-                    t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
-                    if (!wb) continue;
-                    (*wb->w_fnParentVisibilityChanged)(y, glist,
-                        (t_word *)(elem + elemsize * i),
-                            elemtemplate, usexloc, useyloc, isVisible);
-                }
-            }
-        }
-    }
-    else
-    {
-            /* un-draw the individual points */
-        if (1)
-        {
-            int i;
-            for (i = 0; i < nelem; i++)
-            {
-                t_gobj *y;
-                for (y = elemtemplatecanvas->gl_graphics; y; y = y->g_next)
-                {
-                    t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
-                    if (!wb) continue;
-                    (*wb->w_fnParentVisibilityChanged)(y, glist,
-                        (t_word *)(elem + elemsize * i), elemtemplate,
-                            0, 0, 0);
-                }
-            }
-        }
-            /* and then the trace */
-        sys_vGui(".x%lx.c delete plot%lx\n",
-            canvas_getView(glist), w);      
-    }
-}
-
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-
     /* try clicking on an element of the array as a scalar (if clicking
     on the trace of the array failed) */
 static int array_doclick_element(t_plot *x, t_array *array, t_glist *glist,
@@ -1341,16 +1044,19 @@ static int array_doclick_element(t_plot *x, t_array *array, t_glist *glist,
     return (0);
 }
 
-static int array_doclick (t_plot *x, t_array *array, t_glist *glist, t_scalar *sc,
+static int plot_behaviorClickedPerform (t_plot *x, t_array *array, t_glist *glist, t_scalar *sc,
     t_array *ap, t_symbol *elemtemplatesym,
-    t_float linewidth, t_float xloc, t_float xinc, t_float yloc, t_float scalarvis,
-    t_fielddescriptor *xfield, t_fielddescriptor *yfield, t_fielddescriptor *wfield,
+    t_float xloc, t_float yloc, t_float xinc, t_float linewidth,
     int xpix, int ypix, int shift, int alt, int dbl, int doit)
 {
     t_glist *elemtemplatecanvas;
     t_template *elemtemplate;
     int elemsize, yonset, wonset, xonset, i, callmotion = 0;
 
+    t_fielddescriptor *xfield = &x->x_fieldX;
+    t_fielddescriptor *yfield = &x->x_fieldY;
+    t_fielddescriptor *wfield = &x->x_fieldW;
+    
     if (!plot_getFields(x, elemtemplatesym, &elemtemplatecanvas,
         &elemtemplate, &elemsize,
         &xonset, &yonset, &wonset))
@@ -1558,31 +1264,59 @@ static int array_doclick (t_plot *x, t_array *array, t_glist *glist, t_scalar *s
     return (0);
 }
 
-static int plot_behaviorClicked(t_gobj *z, t_glist *glist, 
-    t_word *data, t_template *template, t_scalar *sc, t_array *ap,
-    t_float basex, t_float basey,
-    int xpix, int ypix, int shift, int alt, int dbl, int doit)
+static int plot_behaviorClicked (t_gobj *z,
+    t_glist *glist, 
+    t_word *w,
+    t_template *tmpl,
+    t_scalar *asScalar,
+    t_array *asArray,
+    t_float baseX,
+    t_float baseY,
+    int a,
+    int b,
+    int shift,
+    int alt,
+    int dbl,
+    int clicked)
 {
     t_plot *x = (t_plot *)z;
-    t_float linewidth, xloc, xinc, yloc, style, scalarvis;
-    int vis;
-    t_array *array;
     
-    t_fielddescriptor *xfielddesc = &x->x_fieldX;
-    t_fielddescriptor *yfielddesc = &x->x_fieldY;
-    t_fielddescriptor *wfielddesc = &x->x_fieldW;
-
-    if (!plot_fetchScalarFields(x, data, template, 
-        &array, &linewidth, &xloc, &yloc, &xinc, &style,
-        &vis) && (vis != 0))
-    {
-        return (array_doclick(x, array, glist, sc, ap,
-            array_getTemplateIdentifier (array),
-            linewidth, basex + xloc, xinc, basey + yloc, scalarvis,
-            xfielddesc, yfielddesc, wfielddesc,
-            xpix, ypix, shift, alt, dbl, doit));
+    t_array *array = NULL;
+    t_float width;
+    t_float positionX;
+    t_float positionY;
+    t_float incrementX;
+    t_float style;
+    int visible;
+    
+    if (!plot_fetchScalarFields (x, w, tmpl,
+            &array,
+            &width,
+            &positionX,
+            &positionY,
+            &incrementX,
+            &style,
+            &visible) && (visible != 0)) {
+        
+    return (plot_behaviorClickedPerform (x, 
+                array,
+                glist,
+                asScalar,
+                asArray,
+                array_getTemplateIdentifier (array),
+                baseX + positionX,
+                baseY + positionY,
+                incrementX,
+                width,
+                a,
+                b,
+                shift,
+                alt,
+                dbl,
+                clicked));
     }
-    else return (0);
+    
+    return 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------

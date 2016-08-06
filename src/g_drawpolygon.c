@@ -258,8 +258,8 @@ static int drawpolygon_behaviorClicked (t_gobj *z,
     t_glist *glist, 
     t_word *w,
     t_template *tmpl,
-    t_scalar *scalar,
-    t_array *array,
+    t_scalar *asScalar,
+    t_array *asArray,
     t_float baseX,
     t_float baseY,
     int a,
@@ -313,16 +313,16 @@ static int drawpolygon_behaviorClicked (t_gobj *z,
             drawpolygon_cumulativeX = 0.0;
             drawpolygon_cumulativeY = 0.0;
             drawpolygon_view        = glist;
-            drawpolygon_scalar      = scalar;
-            drawpolygon_array       = array;
+            drawpolygon_scalar      = asScalar;
+            drawpolygon_array       = asArray;
             drawpolygon_data        = w;
             drawpolygon_field       = bestField;
             drawpolygon_template    = tmpl;
             
-            if (scalar) {
-                gpointer_setAsScalar (&drawpolygon_pointer, glist, scalar);
+            if (asScalar) {
+                gpointer_setAsScalar (&drawpolygon_pointer, glist, asScalar);
             } else {
-                gpointer_setAsWord (&drawpolygon_pointer, array, w);
+                gpointer_setAsWord (&drawpolygon_pointer, asArray, w);
             }
             
             canvas_setMotionFunction (glist, z, (t_motionfn)drawpolygon_motion, a, b);
