@@ -716,49 +716,63 @@ static void plot_behaviorVisibilityChangedDrawPolygonSegment (t_plot *x,
     }
 }
 
-static void plot_behaviorVisibilityChangedRecursive (void)
+static void plot_behaviorVisibilityChangedRecursive (t_plot *x,
+    t_glist *glist,
+    t_word  *w,
+    t_array *array,
+    t_symbol *fieldX,
+    t_symbol *fieldY,
+    t_symbol *fieldW,
+    t_float relativeX,
+    t_float relativeY, 
+    t_float incrementX, 
+    t_float width, 
+    int isVisible)
 {
-    // Visible
-    /*
-    for (xsum = xloc, i = 0; i < nelem; i++)
-    {
-        t_float usexloc, useyloc;
-        t_gobj *y;
-        if (xonset >= 0)
-            usexloc = baseX + xloc +
-                *(t_float *)((elem + elemsize * i) + xonset);
-        else usexloc = baseX + xsum, xsum += xinc;
-        if (yonset >= 0)
-            yval = *(t_float *)((elem + elemsize * i) + yonset);
-        else yval = 0;
-        useyloc = baseY + yloc +
-            field_convertValueToPosition(yfielddesc, yval);
-        for (y = elemtemplatecanvas->gl_graphics; y; y = y->g_next)
-        {
-            t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
-            if (!wb) continue;
-            (*wb->w_fnParentVisibilityChanged)(y, glist,
-                (t_word *)(elem + elemsize * i),
-                    elemtemplate, usexloc, useyloc, isVisible);
-        }
-    }*/
+    t_glist *view = template_getFirstInstanceView (array_getTemplate (array));
     
-    // NOT Visible
-    /*
+    if (view) {
+    //
+    int numberOfElements = array_getSize (array);
     int i;
-    for (i = 0; i < nelem; i++)
-    {
-        t_gobj *y;
-        for (y = elemtemplatecanvas->gl_graphics; y; y = y->g_next)
-        {
-            t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
-            if (!wb) continue;
-            (*wb->w_fnParentVisibilityChanged)(y, glist,
-                (t_word *)(elem + elemsize * i), elemtemplate,
-                    0, 0, 0);
+        
+    for (i = 0; i < numberOfElements; i++) {
+    //
+    t_gobj *y = NULL;
+    
+    t_float valueX;
+    t_float valueY;
+    t_float valueW;
+
+    plot_getCoordinates (x,
+        array,
+        fieldX,
+        fieldY,
+        fieldW,
+        i,
+        relativeX,
+        relativeY,
+        incrementX, 
+        &valueX, 
+        &valueY, 
+        &valueW);
+    
+    for (y = view->gl_graphics; y; y = y->g_next) {
+        t_parentwidgetbehavior *behavior = class_getParentWidget (pd_class (y));
+        if (behavior) {
+            (*behavior->w_fnParentVisibilityChanged) (y,
+                glist,
+                array_getElementAtIndex (array, i),
+                array_getTemplate (array),
+                valueX,
+                valueY,
+                isVisible);
         }
     }
-    */
+    //
+    }
+    //
+    }
 }
 
 static void plot_behaviorVisibilityChanged (t_gobj *z,
@@ -853,7 +867,18 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
             sys_vGui (".x%lx.c delete PLOT%lx\n", canvas_getView (glist), w); 
         }
         
-        plot_behaviorVisibilityChangedRecursive();
+        plot_behaviorVisibilityChangedRecursive (x,
+            glist,
+            w,
+            array,
+            fieldX, 
+            fieldY,
+            fieldW,
+            baseX + positionX,
+            baseY + positionY,
+            incrementX, 
+            width,
+            isVisible);
     }
     //
     }

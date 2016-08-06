@@ -172,7 +172,6 @@ t_symbol        *array_getTemplateIdentifier            (t_array *x);
 t_template      *array_getTemplate                      (t_array *x);
 t_word          *array_getData                          (t_array *x);
 t_word          *array_getElementAtIndex                (t_array *x, int n);
-t_word          *array_getFieldInElementAtIndex         (t_array *x, int n, t_symbol *fieldName);
 
 int             array_getSize                           (t_array *x);
 int             array_getElementSize                    (t_array *x);

@@ -96,18 +96,6 @@ t_word *array_getElementAtIndex (t_array *x, int n)
     return (array_getData (x) + offset);
 }
 
-t_word *array_getFieldInElementAtIndex (t_array *x, int n, t_symbol *fieldName)
-{
-    if (fieldName) {
-        int offset = template_getIndexOfField (array_getTemplate (x), fieldName);
-        if (offset >= 0) {
-            return (array_getElementAtIndex (x, n) + offset);
-        }
-    }
-    
-    return NULL;
-}
-
 t_symbol *array_getTemplateIdentifier (t_array *x)
 {
     return x->a_templateIdentifier;
