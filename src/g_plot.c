@@ -547,15 +547,16 @@ static void plot_behaviorVisibilityChangedDrawPolygonFill (t_plot *x,
     int coordinatesX[PLOT_MAXIMUM_DRAWN] = { 0 };     
     int coordinatesL[PLOT_MAXIMUM_DRAWN] = { 0 };
     int coordinatesH[PLOT_MAXIMUM_DRAWN] = { 0 };
-    int elementDrawn = 0;
+    int elementsDrawn = 0;
     int i;
     
+    int pixelX, previousPixelX = -PD_INT_MAX;
+        
     for (i = 0; i < numberOfElements; i++) {
     //
     t_float valueX;
     t_float valueY;
     t_float valueW;
-    int pixelX, previousPixelX = -PD_INT_MAX;
     
     plot_getCoordinates (x,
         array,
@@ -574,20 +575,20 @@ static void plot_behaviorVisibilityChangedDrawPolygonFill (t_plot *x,
     valueW = PLOT_CLIP (valueW);
     pixelX = (int)canvas_valueToPixelX (glist, valueX);
     
-    if (pixelX != previousPixelX) {
+    if (fieldX || pixelX != previousPixelX) {
     //
     t_float pixelY = canvas_valueToPixelY (glist, valueY);
     t_float pixelW = canvas_valueToPixelY (glist, valueY + valueW) - pixelY;
     
     pixelW = PD_ABS (pixelW);
-    pixelW = PD_MAX (pixelW, width);
+    pixelW = PD_MAX (pixelW, width - 1.0);
+
+    coordinatesX[elementsDrawn] = pixelX;
+    coordinatesL[elementsDrawn] = pixelY - pixelW;
+    coordinatesH[elementsDrawn] = pixelY + pixelW;
+    elementsDrawn++; 
     
-    coordinatesX[elementDrawn] = pixelX;
-    coordinatesL[elementDrawn] = pixelY - pixelW;
-    coordinatesH[elementDrawn] = pixelY + pixelW;
-    elementDrawn++; 
-    
-    if (elementDrawn >= PLOT_MAXIMUM_DRAWN) { break; }
+    if (elementsDrawn >= PLOT_MAXIMUM_DRAWN) { break; }
     //
     }
 
@@ -595,26 +596,26 @@ static void plot_behaviorVisibilityChangedDrawPolygonFill (t_plot *x,
     //
     }
     
-    if (elementDrawn) {         /* Tk requires at least three points (i.e. two elements). */
+    if (elementsDrawn) {        /* Tk requires at least three points (i.e. two elements). */
     //
     char t[PLOT_BUFFER_SIZE] = { 0 };
     t_error err = PD_ERROR_NONE;
     
     err |= string_sprintf (t, PLOT_BUFFER_SIZE,         ".x%lx.c create polygon", canvas_getView (glist));
   
-    for (i = 0; i < elementDrawn; i++) {
+    for (i = 0; i < elementsDrawn; i++) {
         err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " %d %d", coordinatesX[i], coordinatesL[i]);
     }
     
-    if (elementDrawn == 1) { 
+    if (elementsDrawn == 1) { 
         err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " %d %d", coordinatesX[0] + 1, coordinatesL[0]);
     } 
     
-    for (i = elementDrawn - 1; i >= 0; i--) {
+    for (i = elementsDrawn - 1; i >= 0; i--) {
         err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " %d %d", coordinatesX[i], coordinatesH[i]);
     }
     
-    if (elementDrawn == 1) { 
+    if (elementsDrawn == 1) { 
         err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " %d %d", coordinatesX[0] + 1, coordinatesH[0]);
     } 
     
@@ -635,145 +636,84 @@ static void plot_behaviorVisibilityChangedDrawPolygonFill (t_plot *x,
     }
 }
 
-static void plot_behaviorVisibilityChangedDrawPolygonSegment (t_plot *x)
+static void plot_behaviorVisibilityChangedDrawPolygonSegment (t_plot *x,
+    t_glist *glist,
+    t_word  *w,
+    t_array *array,
+    t_symbol *fieldX,
+    t_symbol *fieldY,
+    t_symbol *fieldW,
+    t_float relativeX,
+    t_float relativeY, 
+    t_float incrementX, 
+    t_float width, 
+    int style, 
+    t_symbol *color)
 {
-    /*
     char t[PLOT_BUFFER_SIZE] = { 0 };
+    t_error err = PD_ERROR_NONE;
     
-    char outline[20];
-    int lastpixel = -1, ndrawn = 0;
-    t_float yval = 0, wval = 0, xpix;
-    int ixpix = 0;
+    int numberOfElements = array_getSize (array);
+    int elementsDrawn = 0;
+    int i;
+    
+    int pixelY, pixelX, previousPixelX = -PD_INT_MAX;
         
-    color_toEncodedString(outline, 20,
-        color_withDigits (word_getFloatByDescriptor (w, tmpl, &x->x_colorOutline)));
-    if (wonset >= 0)
-    {
-            // found "w" field which controls linewidth.  The trace is
-            // a filled polygon with 2n points. 
-        sys_vGui(".x%lx.c create polygon \\\n",
-            canvas_getView(glist));
+    err |= string_sprintf (t, PLOT_BUFFER_SIZE,         ".x%lx.c create line", canvas_getView (glist));
+    
+    for (i = 0; i < numberOfElements; i++) {
+    //
+    t_float valueX;
+    t_float valueY;
+    t_float valueW;
 
-        for (i = 0, xsum = xloc; i < nelem; i++)
-        {
-            if (xonset >= 0)
-                usexloc = xloc + *(t_float *)((elem + elemsize * i)
-                    + xonset);
-            else usexloc = xsum, xsum += xinc;
-            if (yonset >= 0)
-                yval = *(t_float *)((elem + elemsize * i) + yonset);
-            else yval = 0;
-            yval = PLOT_CLIP(yval);
-            wval = *(t_float *)((elem + elemsize * i) + wonset);
-            wval = PLOT_CLIP(wval);
-            xpix = canvas_valueToPixelX(glist,
-                baseX + field_convertValueToPosition(xfielddesc, usexloc));
-            ixpix = xpix + 0.5;
-            if (xonset >= 0 || ixpix != lastpixel)
-            {
-                sys_vGui("%d %f \\\n", ixpix,
-                    canvas_valueToPixelY(glist,
-                        baseY + field_convertValueToPosition(yfielddesc, 
-                            yloc + yval) -
-                                field_convertValueToPosition(wfielddesc,wval)));
-                ndrawn++;
-            }
-            lastpixel = ixpix;
-            if (ndrawn >= 1000) { post_log ("toto"); goto ouch; }
-        }
-        lastpixel = -1;
-        for (i = nelem-1; i >= 0; i--)
-        {
-            t_float usexloc;
-            if (xonset >= 0)
-                usexloc = xloc + *(t_float *)((elem + elemsize * i)
-                    + xonset);
-            else xsum -= xinc, usexloc = xsum;
-            if (yonset >= 0)
-                yval = *(t_float *)((elem + elemsize * i) + yonset);
-            else yval = 0;
-            yval = PLOT_CLIP(yval);
-            wval = *(t_float *)((elem + elemsize * i) + wonset);
-            wval = PLOT_CLIP(wval);
-            xpix = canvas_valueToPixelX(glist,
-                baseX + field_convertValueToPosition(xfielddesc, usexloc));
-            ixpix = xpix + 0.5;
-            if (xonset >= 0 || ixpix != lastpixel)
-            {
-                sys_vGui("%d %f \\\n", ixpix, canvas_valueToPixelY(glist,
-                    baseY + yloc + field_convertValueToPosition(yfielddesc,
-                        yval) +
-                            field_convertValueToPosition(wfielddesc, wval)));
-                ndrawn++;
-            }
-            lastpixel = ixpix;
-            if (ndrawn >= 1000) { post_log ("toto"); goto ouch; }
-        }
-            // TK will complain if there aren't at least 3 points.
-            // There should be at least two already.
-        if (ndrawn < 4)
-        {
-            sys_vGui("%d %f \\\n", ixpix + 10, canvas_valueToPixelY(glist,
-                baseY + yloc + field_convertValueToPosition(yfielddesc,
-                    yval) +
-                        field_convertValueToPosition(wfielddesc, wval)));
-            sys_vGui("%d %f \\\n", ixpix + 10, canvas_valueToPixelY(glist,
-                baseY + yloc + field_convertValueToPosition(yfielddesc,
-                    yval) -
-                        field_convertValueToPosition(wfielddesc, wval)));
-        }
-    ouch:
-        sys_vGui(" -width 1 -fill %s -outline %s\\\n",
-            outline, outline);
-        if (style == PLOT_CURVES) sys_vGui("-smooth 1\\\n");
-
-        sys_vGui("-tags [list PLOT%lx array]\n", w);
+    plot_getCoordinates (x,
+        array,
+        fieldX,
+        fieldY,
+        fieldW,
+        i,
+        relativeX,
+        relativeY,
+        incrementX, 
+        &valueX, 
+        &valueY, 
+        &valueW);
+    
+    valueY = PLOT_CLIP (valueY);
+    pixelX = (int)canvas_valueToPixelX (glist, valueX);
+    
+    if (fieldX || pixelX != previousPixelX) {
+        pixelY = (int)canvas_valueToPixelY (glist, valueY);
+        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " %d %d", pixelX, pixelY);
+        elementsDrawn++;
+        previousPixelX = pixelX;
     }
-    else if (linewidth > 0)
-    {
-            //no "w" field.  If the linewidth is positive, draw a
-            //segmented line with the requested width; otherwise don't
-            // draw the trace at all.
-        sys_vGui(".x%lx.c create line \\\n", canvas_getView(glist));
-
-        for (xsum = xloc, i = 0; i < nelem; i++)
-        {
-            t_float usexloc;
-            if (xonset >= 0)
-                usexloc = xloc + *(t_float *)((elem + elemsize * i) +
-                    xonset);
-            else usexloc = xsum, xsum += xinc;
-            if (yonset >= 0)
-                yval = *(t_float *)((elem + elemsize * i) + yonset);
-            else yval = 0;
-            yval = PLOT_CLIP(yval);
-            xpix = canvas_valueToPixelX(glist,
-                baseX + field_convertValueToPosition(xfielddesc, usexloc));
-            ixpix = xpix + 0.5;
-            if (xonset >= 0 || ixpix != lastpixel)
-            {
-                sys_vGui("%d %f \\\n", ixpix,
-                    canvas_valueToPixelY(glist,
-                        baseY + yloc + field_convertValueToPosition(yfielddesc,
-                            yval)));
-                ndrawn++;
-            }
-            lastpixel = ixpix;
-            if (ndrawn >= 1000) break;
-        }
-            // TK will complain if there aren't at least 2 points...
-        if (ndrawn == 0) sys_vGui("0 0 0 0 \\\n");
-        else if (ndrawn == 1) sys_vGui("%d %f \\\n", ixpix + 10,
-            canvas_valueToPixelY(glist, baseY + yloc + 
-                field_convertValueToPosition(yfielddesc, yval)));
-
-        sys_vGui("-width %f\\\n", linewidth);
-        sys_vGui("-fill %s\\\n", outline);
-        if (style == PLOT_CURVES) sys_vGui("-smooth 1\\\n");
-
-        sys_vGui("-tags [list PLOT%lx array]\n", w);
+    //
     }
-    */
+    
+    
+    if (elementsDrawn) {    /* Tk requires at least two points. */
+    //
+    if (elementsDrawn == 1) { 
+        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " %d %d", pixelX + 1, pixelY);
+    }
+    
+    err |= string_addSprintf (t, PLOT_BUFFER_SIZE,      " -width %d", (int)(PD_MAX (0, width - 1)));
+    err |= string_addSprintf (t, PLOT_BUFFER_SIZE,      " -fill %s", color->s_name);
+
+    if (style == PLOT_CURVES) {
+        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " -smooth 1 -tags PLOT%lx\n", (t_int)w);
+    } else {
+        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " -tags PLOT%lx\n", (t_int)w);
+    }
+
+    if (!err) { sys_gui (t); }
+    else {
+        PD_BUG;
+    }
+    //
+    }
 }
 
 static void plot_behaviorVisibilityChangedRecursive (void)
@@ -893,14 +833,24 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
                         color_toEncodedSymbol (color_withDigits (color)));
                         
                 } else {
-                    plot_behaviorVisibilityChangedDrawPolygonSegment (x);
+                    plot_behaviorVisibilityChangedDrawPolygonSegment (x,
+                        glist,
+                        w,
+                        array,
+                        fieldX, 
+                        fieldY, 
+                        fieldW, 
+                        baseX + positionX, 
+                        baseY + positionY, 
+                        incrementX,
+                        width, 
+                        style, 
+                        color_toEncodedSymbol (color_withDigits (color)));
                 }
             }
             
         } else {
-            if (style == PLOT_POINTS || fieldW) {
-                sys_vGui (".x%lx.c delete PLOT%lx\n", canvas_getView (glist), w); 
-            }
+            sys_vGui (".x%lx.c delete PLOT%lx\n", canvas_getView (glist), w); 
         }
         
         plot_behaviorVisibilityChangedRecursive();
