@@ -33,17 +33,16 @@ static t_float              plot_stepX;                 /* Shared. */
 static t_float              plot_stepY;                 /* Shared. */
 static int                  plot_currentX;              /* Shared. */
 static int                  plot_previousX;             /* Shared. */
-static int                  plot_numberOfPoints;        /* Shared. */
-static int                  plot_elementSize;           /* Shared. */
+static int                  plot_numberOfElements;      /* Shared. */
 static int                  plot_fatten;                /* Shared. */
 
-static t_fielddescriptor    *plot_fieldX;               /* Shared. */
-static t_fielddescriptor    *plot_fieldY;               /* Shared. */
+static t_fielddescriptor    *plot_fieldDescriptorX;     /* Shared. */
+static t_fielddescriptor    *plot_fieldDescriptorY;     /* Shared. */
 static t_glist              *plot_glist;                /* Shared. */
-static t_scalar             *plot_scalar;               /* Shared. */
-static t_array              *plot_array;                /* Shared. */
+static t_scalar             *plot_asScalar;             /* Shared. */
+static t_array              *plot_asArray;              /* Shared. */
 static t_word               *plot_data;                 /* Shared. */
-static t_template           *plot_template;             /* Shared. */
+static t_array              *plot_array;                /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -79,6 +78,12 @@ static void plot_motion (void *, t_float, t_float, t_float);
 // -----------------------------------------------------------------------------------------------------------
 
 #define PLOT_CLIP(x)            (((x) > -PLOT_MAX && (x) < PLOT_MAX) ? (x) : 0)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define PLOT_HANDLE_SIZE        8
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -148,11 +153,6 @@ static t_error plot_fetchElementFieldNames (t_plot *x, t_array *array,
     return PD_ERROR_NONE;
 }
 
-static int plot_getStep (t_array *array)
-{
-    int size = array_getSize (array); return (size <= 1000 ? 1 : (int)sqrt ((double)size));
-}
-
 static void plot_getCoordinates (t_plot *x,
     t_array *array,
     t_symbol *fieldX,
@@ -192,67 +192,72 @@ static void plot_getCoordinates (t_plot *x,
     *c = field_convertValueToPosition (&x->x_fieldY, valueW);
 }
 
+static int plot_getStep (t_array *array)
+{
+    int size = array_getSize (array); return (size <= 1000 ? 1 : (int)sqrt ((double)size));
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void plot_float(t_plot *x, t_float f)
+void plot_float (t_plot *x, t_float f)
 {
-    int viswas;
-    if (!field_isFloatConstant (&x->x_isVisible))
-    {
-        post_error ("global vis/invis for a template with variable visibility");
-        return;
-    }
-
-    viswas = (field_getFloatConstant (&x->x_isVisible) != 0);
+    if (field_isFloatConstant (&x->x_isVisible)) {
+    //
+    int k = (f != 0.0);
     
-    if ((f != 0 && viswas) || (f == 0 && !viswas))
-        return;
+    if (k != (int)(field_getFloatConstant (&x->x_isVisible))) {
+    //
     paint_scalarsEraseAll();
-    field_setAsFloatConstant(&x->x_isVisible, (f != 0));
+    field_setAsFloatConstant (&x->x_isVisible, (t_float)k);
     paint_scalarsDrawAll();
+    //
+    }
+    //
+    }
 }
 
-static void plot_motion(void *z, t_float dx, t_float dy, t_float modifier)
+static void plot_motion (void *dummy, t_float deltaX, t_float deltaY, t_float modifier)
 {
-    plot_cumulativeX += dx * plot_stepX;
-    plot_cumulativeY += dy * plot_stepY;
-    if (plot_fieldX)
+    /*
+    plot_cumulativeX += deltaX * plot_stepX;
+    plot_cumulativeY += deltaY * plot_stepY;
+    if (plot_fieldDescriptorX)
     {
-            /* it's an x, y plot */
+            // it's an x, y plot
         int i;
-        for (i = 0; i < plot_numberOfPoints; i++)
+        for (i = 0; i < plot_numberOfElements; i++)
         {
             t_word *thisword = (t_word *)(((char *)plot_data) +
                 i * plot_elementSize);
             t_float xwas = word_getFloatByDescriptorAsPosition(
                 thisword,
                 plot_template,
-                plot_fieldX);
-            t_float ywas = (plot_fieldY ?
+                plot_fieldDescriptorX);
+            t_float ywas = (plot_fieldDescriptorY ?
                 word_getFloatByDescriptorAsPosition(
                     thisword, 
                     plot_template,
-                    plot_fieldY) : 0);
+                    plot_fieldDescriptorY) : 0);
             word_setFloatByDescriptorAsPosition(
                 thisword,
                 plot_template,
-                plot_fieldX,
-                xwas + dx);
-            if (plot_fieldY)
+                plot_fieldDescriptorX,
+                xwas + deltaX);
+            if (plot_fieldDescriptorY)
             {
                 if (plot_fatten)
                 {
                     if (i == 0)
                     {
-                        t_float newy = ywas + dy * plot_stepY;
+                        t_float newy = ywas + deltaY * plot_stepY;
                         if (newy < 0)
                             newy = 0;
                         word_setFloatByDescriptorAsPosition(
                             thisword,
                             plot_template,
-                            plot_fieldY,
+                            plot_fieldDescriptorY,
                             newy);
                     }
                 }
@@ -261,26 +266,26 @@ static void plot_motion(void *z, t_float dx, t_float dy, t_float modifier)
                     word_setFloatByDescriptorAsPosition(
                         thisword,
                         plot_template,
-                        plot_fieldY,
-                        ywas + dy * plot_stepY);
+                        plot_fieldDescriptorY,
+                        ywas + deltaY * plot_stepY);
                 }
             }
         }
     }
-    else if (plot_fieldY)
+    else if (plot_fieldDescriptorY)
     {
-            /* a y-only plot. */
+            // a y-only plot.
         int thisx = plot_currentX + plot_cumulativeX + 0.5, x2;
         int increment, i, nchange;
         t_float newy = plot_cumulativeY,
             oldy = word_getFloatByDescriptorAsPosition(
                 (t_word *)(((char *)plot_data) + plot_elementSize * plot_previousX),
                 plot_template,
-                plot_fieldY);
+                plot_fieldDescriptorY);
         t_float ydiff = newy - oldy;
         if (thisx < 0) thisx = 0;
-        else if (thisx >= plot_numberOfPoints)
-            thisx = plot_numberOfPoints - 1;
+        else if (thisx >= plot_numberOfElements)
+            thisx = plot_numberOfElements - 1;
         increment = (thisx > plot_previousX ? -1 : 1);
         nchange = 1 + increment * (plot_previousX - thisx);
 
@@ -289,17 +294,18 @@ static void plot_motion(void *z, t_float dx, t_float dy, t_float modifier)
             word_setFloatByDescriptorAsPosition(
                 (t_word *)(((char *)plot_data) + plot_elementSize * x2),
                 plot_template,
-                plot_fieldY,
+                plot_fieldDescriptorY,
                 newy);
             if (nchange > 1)
                 newy -= ydiff * (1./(nchange - 1));
          }
          plot_previousX = thisx;
     }
-    if (plot_scalar)
-        scalar_redraw(plot_scalar, plot_glist);
-    if (plot_array)
-        array_redraw(plot_array, plot_glist);
+    if (plot_asScalar)
+        scalar_redraw(plot_asScalar, plot_glist);
+    if (plot_asArray)
+        array_redraw(plot_asArray, plot_glist);
+    */
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -421,7 +427,7 @@ static void plot_behaviorGetRectangle (t_gobj *z,
         pixelW = canvas_valueToPixelY (glist, valueY + valueW) - pixelY;
         
         pixelW = PD_ABS (pixelW);
-        pixelW = PD_MAX (pixelW, width);
+        pixelW = PD_MAX (pixelW, width - 1);
 
         x1 = PD_MIN (x1, pixelX);
         x2 = PD_MAX (x2, pixelX);
@@ -990,15 +996,23 @@ static void array_getcoordinate (t_plot *x, t_glist *glist,
     *wp = wpix;
 }
 
-    /* try clicking on an element of the array as a scalar (if clicking
-    on the trace of the array failed) */
-static int array_doclick_element(t_plot *x, t_array *array, t_glist *glist,
-    t_scalar *sc, t_array *ap,
-    t_symbol *elemtemplatesym,
-    t_float linewidth, t_float xloc, t_float xinc, t_float yloc,
-    t_fielddescriptor *xfield, t_fielddescriptor *yfield, t_fielddescriptor *wfield,
-    int xpix, int ypix, int shift, int alt, int dbl, int doit)
+static int plot_behaviorClickedPerformRegularRecursive (t_plot *x,
+    t_array *array,
+    t_glist *glist,
+    t_scalar *sc,
+    t_array *ap,
+    t_float xloc,
+    t_float yloc,
+    t_float xinc,
+    t_float linewidth,
+    int xpix,
+    int ypix,
+    int shift,
+    int alt,
+    int dbl,
+    int doit)
 {
+    /*
     t_glist *elemtemplatecanvas;
     t_template *elemtemplate;
     int elemsize, yonset, wonset, xonset, i, incr, hit;
@@ -1010,7 +1024,7 @@ static int array_doclick_element(t_plot *x, t_array *array, t_glist *glist,
         &elemtemplate, &elemsize,
             &xonset, &yonset, &wonset))
                 return (0);
-        /* if it has more than 2000 points, just check 300 of them. */
+        // if it has more than 2000 points, just check 300 of them.
     if (array->a_size < 2000)
         incr = 1;
     else incr = array->a_size / 300;
@@ -1042,226 +1056,374 @@ static int array_doclick_element(t_plot *x, t_array *array, t_glist *glist,
             }
     }
     return (0);
+    */
+    
+    return 0;
 }
 
-static int plot_behaviorClickedPerform (t_plot *x, t_array *array, t_glist *glist, t_scalar *sc,
-    t_array *ap, t_symbol *elemtemplatesym,
-    t_float xloc, t_float yloc, t_float xinc, t_float linewidth,
-    int xpix, int ypix, int shift, int alt, int dbl, int doit)
+static int plot_behaviorClickedPerformRegularMatch (t_plot *x,
+    t_array  *array,
+    t_glist  *glist,
+    t_scalar *asScalar,
+    t_array  *asArray,
+    t_float relativeX,
+    t_float relativeY,
+    t_float incrementX,
+    t_float width,
+    int a,
+    int b,
+    int shift,
+    int alt,
+    int dbl,
+    int clicked)
 {
-    t_glist *elemtemplatecanvas;
-    t_template *elemtemplate;
-    int elemsize, yonset, wonset, xonset, i, callmotion = 0;
-
-    t_fielddescriptor *xfield = &x->x_fieldX;
-    t_fielddescriptor *yfield = &x->x_fieldY;
-    t_fielddescriptor *wfield = &x->x_fieldW;
-    
-    if (!plot_getFields(x, elemtemplatesym, &elemtemplatecanvas,
-        &elemtemplate, &elemsize,
-        &xonset, &yonset, &wonset))
+        /*
+    bestError += 0.001;  // add truncation error margin
+    for (i = 0; i < array->a_size; i += incr)
     {
-        t_float best = 100;
-            /* if it has more than 2000 points, just check 1000 of them. */
-        int incr = (array->a_size <= 2000 ? 1 : array->a_size / 1000);
-        plot_elementSize = elemsize;
-        plot_glist = glist;
-        plot_scalar = sc;
-        plot_array = ap;
-        plot_template = elemtemplate;
-        plot_stepX = canvas_valueForOnePixelX (glist);
-        plot_stepY = canvas_valueForOnePixelY (glist);
-            /* if we're a garray, the only one here, and if we appear to have
-            only a 'y' field, click always succeeds and furthermore we'll
-            call "motion" later. */
-        if (glist->gl_graphics && pd_class(&glist->gl_graphics->g_pd) == garray_class
-            && !glist->gl_graphics->g_next &&
-                elemsize == ARRAY_WORD)
+        t_float pxpix, pypix, pwpix, dx, dy, dy2, dy3;
+        array_getcoordinate(x, glist, (char *)(array->a_vector) + i * elemsize,
+            xonset, yonset, wonset, i, relativeX, relativeY, incrementX,
+            &pxpix, &pypix, &pwpix);
+        if (pwpix < 4)
+            pwpix = 4;
+        dx = pxpix - a;
+        if (dx < 0) dx = -dx;
+        dy = pypix - b;
+        if (dy < 0) dy = -dy;
+        if (wonset >= 0)
         {
-            int xval = canvas_pixelToValueX(glist, xpix);
-            if (xval < 0)
-                xval = 0;
-            else if (xval >= array->a_size)
-                xval = array->a_size - 1;
-            plot_fieldY = yfield;
-            plot_cumulativeY = canvas_pixelToValueY(glist, ypix);
-            plot_fatten = 0;
-            plot_fieldX = 0;
-            plot_cumulativeX = 0;
-            plot_previousX = plot_currentX = xval;
-            plot_numberOfPoints = array->a_size;
-            plot_data = (t_word *)((char *)array->a_vector);
-            if (doit)
-            {
-                word_setFloatByDescriptorAsPosition(
-                    (t_word *)(((char *)array->a_vector) + elemsize * xval),
-                    elemtemplate,
-                    yfield,
-                    canvas_pixelToValueY(glist, ypix));
-                canvas_setMotionFunction(glist, 0, (t_motionfn)plot_motion, xpix, ypix);
-                if (plot_scalar)
-                    scalar_redraw(plot_scalar, plot_glist);
-                if (plot_array)
-                    array_redraw(plot_array, plot_glist);
-            }
+            dy2 = (pypix + pwpix) - b;
+            if (dy2 < 0) dy2 = -dy2;
+            dy3 = (pypix - pwpix) - b;
+            if (dy3 < 0) dy3 = -dy3;
+            if (yonset < 0)
+                dy = 100;
         }
-        else
+        else dy2 = dy3 = 100;
+        if (dx + dy <= bestError || dx + dy2 <= bestError || dx + dy3 <= bestError)
         {
-            for (i = 0; i < array->a_size; i += incr)
+            if (dy < dy2 && dy < dy3)
+                plot_fatten = 0;
+            else if (dy2 < dy3)
+                plot_fatten = -1;
+            else plot_fatten = 1;
+            if (clicked)
             {
-                t_float pxpix, pypix, pwpix, dx, dy;
-                array_getcoordinate(x, glist,
-                    (char *)(array->a_vector) + i * elemsize,
-                    xonset, yonset, wonset, i, xloc, yloc, xinc,
-                    &pxpix, &pypix, &pwpix);
-                if (pwpix < 4)
-                    pwpix = 4;
-                dx = pxpix - xpix;
-                if (dx < 0) dx = -dx;
-                if (dx > 8)
-                    continue;   
-                dy = pypix - ypix;
-                if (dy < 0) dy = -dy;
-                if (dx + dy < best)
-                    best = dx + dy;
-                if (wonset >= 0)
+                char *elem = (char *)array->a_vector;
+                if (alt && a < pxpix) // delete a point
                 {
-                    dy = (pypix + pwpix) - ypix;
-                    if (dy < 0) dy = -dy;
-                    if (dx + dy < best)
-                        best = dx + dy;
-                    dy = (pypix - pwpix) - ypix;
-                    if (dy < 0) dy = -dy;
-                    if (dx + dy < best)
-                        best = dx + dy;
+                    if (array->a_size <= 1)
+                        return (0);
+                    memmove((char *)(array->a_vector) + elemsize * i, 
+                        (char *)(array->a_vector) + elemsize * (i+1),
+                            (array->a_size - 1 - i) * elemsize);
+                    array_resizeAndRedraw(array, glist, array->a_size - 1);
+                    return (0);
                 }
-            }
-            if (best > 8)
-            {
-                if (1)
-                    return (array_doclick_element(x, array, glist, sc, ap,
-                        elemtemplatesym, linewidth, xloc, xinc, yloc,
-                            xfield, yfield, wfield,
-                            xpix, ypix, shift, alt, dbl, doit));
-                else return (0);
-            }
-            best += 0.001;  /* add truncation error margin */
-            for (i = 0; i < array->a_size; i += incr)
-            {
-                t_float pxpix, pypix, pwpix, dx, dy, dy2, dy3;
-                array_getcoordinate(x, glist, (char *)(array->a_vector) + i * elemsize,
-                    xonset, yonset, wonset, i, xloc, yloc, xinc,
-                    &pxpix, &pypix, &pwpix);
-                if (pwpix < 4)
-                    pwpix = 4;
-                dx = pxpix - xpix;
-                if (dx < 0) dx = -dx;
-                dy = pypix - ypix;
-                if (dy < 0) dy = -dy;
-                if (wonset >= 0)
+                else if (alt)
                 {
-                    dy2 = (pypix + pwpix) - ypix;
-                    if (dy2 < 0) dy2 = -dy2;
-                    dy3 = (pypix - pwpix) - ypix;
-                    if (dy3 < 0) dy3 = -dy3;
-                    if (yonset < 0)
-                        dy = 100;
+                    // add a point (after the clicked-on one)
+                    array_resizeAndRedraw(array, glist, array->a_size + 1);
+                    elem = (char *)array->a_vector;
+                    memmove(elem + elemsize * (i+1), 
+                        elem + elemsize * i,
+                            (array->a_size - i - 1) * elemsize);
+                    i++;
                 }
-                else dy2 = dy3 = 100;
-                if (dx + dy <= best || dx + dy2 <= best || dx + dy3 <= best)
+                if (xonset >= 0)
                 {
-                    if (dy < dy2 && dy < dy3)
-                        plot_fatten = 0;
-                    else if (dy2 < dy3)
-                        plot_fatten = -1;
-                    else plot_fatten = 1;
-                    if (doit)
-                    {
-                        char *elem = (char *)array->a_vector;
-                        if (alt && xpix < pxpix) /* delete a point */
-                        {
-                            if (array->a_size <= 1)
-                                return (0);
-                            memmove((char *)(array->a_vector) + elemsize * i, 
-                                (char *)(array->a_vector) + elemsize * (i+1),
-                                    (array->a_size - 1 - i) * elemsize);
-                            array_resizeAndRedraw(array, glist, array->a_size - 1);
-                            return (0);
-                        }
-                        else if (alt)
-                        {
-                            /* add a point (after the clicked-on one) */
-                            array_resizeAndRedraw(array, glist, array->a_size + 1);
-                            elem = (char *)array->a_vector;
-                            memmove(elem + elemsize * (i+1), 
-                                elem + elemsize * i,
-                                    (array->a_size - i - 1) * elemsize);
-                            i++;
-                        }
-                        if (xonset >= 0)
-                        {
-                            plot_fieldX = xfield;
-                            plot_cumulativeX = 
-                                word_getFloatByDescriptorAsPosition(
-                                    (t_word *)(elem + i * elemsize),
-                                    plot_template,
-                                    xfield);
-                                plot_data = (t_word *)(elem + i * elemsize);
-                            if (shift)
-                                plot_numberOfPoints = array->a_size - i;
-                            else plot_numberOfPoints = 1;
-                        }
-                        else
-                        {
-                            plot_fieldX = 0;
-                            plot_cumulativeX = 0;
-                            plot_data = (t_word *)elem;
-                            plot_numberOfPoints = array->a_size;
+                    plot_fieldDescriptorX = xfield;
+                    plot_cumulativeX = 
+                        word_getFloatByDescriptorAsPosition(
+                            (t_word *)(elem + i * elemsize),
+                            plot_template,
+                            xfield);
+                        plot_data = (t_word *)(elem + i * elemsize);
+                    if (shift)
+                        plot_numberOfElements = array->a_size - i;
+                    else plot_numberOfElements = 1;
+                }
+                else
+                {
+                    plot_fieldDescriptorX = 0;
+                    plot_cumulativeX = 0;
+                    plot_data = (t_word *)elem;
+                    plot_numberOfElements = array->a_size;
 
-                            plot_currentX = i;
-                            plot_previousX = i;
-                            plot_stepX *= (xinc == 0 ? 1 : 1./xinc);
-                        }
-                        if (plot_fatten)
-                        {
-                            plot_fieldY = wfield;
-                            plot_cumulativeY = 
-                                word_getFloatByDescriptorAsPosition(
-                                    (t_word *)(elem + i * elemsize),
-                                    plot_template,
-                                    wfield);
-                            plot_stepY *= -plot_fatten;
-                        }
-                        else if (yonset >= 0)
-                        {
-                            plot_fieldY = yfield;
-                            plot_cumulativeY = 
-                                word_getFloatByDescriptorAsPosition(
-                                    (t_word *)(elem + i * elemsize),
-                                    plot_template,
-                                    yfield);
-                                /* *(t_float *)((elem + elemsize * i) + yonset); */
-                        }
-                        else
-                        {
-                            plot_fieldY = 0;
-                            plot_cumulativeY = 0;
-                        }
-                        canvas_setMotionFunction(glist, 0, (t_motionfn)plot_motion, xpix, ypix);
-                    }
-                    if (alt)
-                    {
-                        if (xpix < pxpix)
-                            return (CURSOR_THICKEN /* CURSOR_EDIT_DISCONNECT */);
-                        else return (CURSOR_ADD);
-                    }
-                    else return (plot_fatten ?
-                        CURSOR_THICKEN : CURSOR_CLICK);
+                    plot_currentX = i;
+                    plot_previousX = i;
+                    plot_stepX *= (incrementX == 0 ? 1 : 1./incrementX);
                 }
-            }   
+                if (plot_fatten)
+                {
+                    plot_fieldDescriptorY = wfield;
+                    plot_cumulativeY = 
+                        word_getFloatByDescriptorAsPosition(
+                            (t_word *)(elem + i * elemsize),
+                            plot_template,
+                            wfield);
+                    plot_stepY *= -plot_fatten;
+                }
+                else if (yonset >= 0)
+                {
+                    plot_fieldDescriptorY = yfield;
+                    plot_cumulativeY = 
+                        word_getFloatByDescriptorAsPosition(
+                            (t_word *)(elem + i * elemsize),
+                            plot_template,
+                            yfield);
+                        // *(t_float *)((elem + elemsize * i) + yonset);
+                }
+                else
+                {
+                    plot_fieldDescriptorY = 0;
+                    plot_cumulativeY = 0;
+                }
+                canvas_setMotionFunction(glist, 0, (t_motionfn)plot_motion, a, b);
+            }
+            if (alt)
+            {
+                if (a < pxpix)
+                    return (CURSOR_THICKEN); // CURSOR_EDIT_DISCONNECT
+                else return (CURSOR_ADD);
+            }
+            else return (plot_fatten ?
+                CURSOR_THICKEN : CURSOR_CLICK);
         }
+    } */
+    
+    return 0;
+}
+
+static int plot_behaviorClickedPerformRegular (t_plot *x,
+    t_array  *array,
+    t_glist  *glist,
+    t_scalar *asScalar,
+    t_array  *asArray,
+    t_float relativeX,
+    t_float relativeY,
+    t_float incrementX,
+    t_float width,
+    int a,
+    int b,
+    int shift,
+    int alt,
+    int dbl,
+    int clicked)
+{
+    t_symbol *fieldX = NULL;
+    t_symbol *fieldY = NULL;
+    t_symbol *fieldW = NULL;
+    
+    if (!plot_fetchElementFieldNames (x, array, &fieldX, &fieldY, &fieldW)) {
+    //
+    int bestError = PD_INT_MAX;
+    int bestErrorIndex = -1;
+    
+    int i, k = plot_getStep (array);
+    
+    for (i = 0; i < array_getSize (array); i += k) {
+    //
+    t_float valueX;
+    t_float valueY;
+    t_float valueW;
+    t_float pixelX;
+    t_float pixelY;
+    t_float pixelW;
+    
+    int deltaX;
+    
+    plot_getCoordinates (x, array, fieldX, fieldY, fieldW,
+        i,
+        relativeX,
+        relativeY,
+        incrementX,
+        &valueX,
+        &valueY,
+        &valueW);
+    
+    pixelX = canvas_valueToPixelX (glist, valueX);
+    pixelY = canvas_valueToPixelY (glist, valueY);
+    pixelW = canvas_valueToPixelY (glist, valueY + valueW) - pixelY;
+    
+    pixelW = PD_ABS (pixelW);
+    pixelW = PD_MAX (pixelW, width - 1);
+    
+    deltaX = PD_ABS ((int)pixelX - a);
+
+    if (deltaX <= PLOT_HANDLE_SIZE) {
+    
+        int deltaY = PD_ABS ((int)pixelY - b);
+        int deltaL = PD_ABS ((int)pixelY - b - pixelW);
+        int deltaH = PD_ABS ((int)pixelY - b + pixelW);
+    
+        if (deltaX + deltaY < bestError) { bestError = deltaX + deltaY; bestErrorIndex = i; }
+        if (deltaX + deltaL < bestError) { bestError = deltaX + deltaL; bestErrorIndex = i; }
+        if (deltaX + deltaH < bestError) { bestError = deltaX + deltaH; bestErrorIndex = i; }
     }
-    return (0);
+    //
+    }
+    
+    if (bestError > PLOT_HANDLE_SIZE) {
+    
+        return (plot_behaviorClickedPerformRegularRecursive (x,
+                    array,
+                    glist,
+                    asScalar,
+                    asArray,
+                    relativeX,
+                    relativeY,
+                    incrementX,
+                    width,
+                    a,
+                    b,
+                    shift,
+                    alt, 
+                    dbl,
+                    clicked));
+                    
+    } else {
+        
+        return (plot_behaviorClickedPerformRegularMatch (x,
+                    array,
+                    glist,
+                    asScalar,
+                    asArray,
+                    relativeX,
+                    relativeY,
+                    incrementX,
+                    width,
+                    a,
+                    b,
+                    shift,
+                    alt, 
+                    dbl,
+                    clicked));
+    }
+    //
+    }
+    
+    return 0;
+}
+
+static int plot_behaviorClickedPerformSingle (t_plot *x,
+    t_array  *array,
+    t_glist  *glist,
+    t_scalar *asScalar,
+    t_array  *asArray,
+    t_float style,
+    int a,
+    int b,
+    int shift,
+    int alt,
+    int dbl,
+    int clicked)
+{
+    int size = array_getSize (array);
+    t_float valueX = canvas_pixelToValueX (glist, a);
+    t_float valueY = canvas_pixelToValueY (glist, b);
+    
+    int i = ((int)style == PLOT_POINTS) ? valueX : valueX + 0.5;
+    
+    i = PD_CLAMP (i, 0, size - 1);
+    
+    plot_fatten             = 0;
+    plot_cumulativeX        = 0;
+    plot_cumulativeY        = valueY;
+    plot_previousX          = i;
+    plot_currentX           = i;
+    plot_numberOfElements   = size;
+    plot_fieldDescriptorX   = NULL;
+    plot_fieldDescriptorY   = &x->x_fieldY;
+    plot_data               = array_getData (array);
+
+    if (clicked) {
+    //
+    word_setFloatByDescriptorAsPosition (array_getElementAtIndex (array, i),
+        array_getTemplate (array),
+        &x->x_fieldY,
+        valueY);
+            
+    canvas_setMotionFunction (glist, NULL, (t_motionfn)plot_motion, a, b);
+
+    if (plot_asScalar) { scalar_redraw (plot_asScalar, plot_glist); }
+    else {
+        PD_ASSERT (plot_asArray); array_redraw (plot_asArray, plot_glist);
+    }
+    //
+    }
+    
+    return 1;
+}
+
+static int plot_behaviorClickedPerform (t_plot *x,
+    t_array  *array,
+    t_glist  *glist,
+    t_scalar *asScalar,
+    t_array  *asArray,
+    t_float relativeX,
+    t_float relativeY,
+    t_float incrementX,
+    t_float width,
+    t_float style,
+    int a,
+    int b,
+    int shift,
+    int alt,
+    int dbl,
+    int clicked)
+{
+    t_symbol *fieldX = NULL;
+    t_symbol *fieldY = NULL;
+    t_symbol *fieldW = NULL;
+
+    if (!plot_fetchElementFieldNames (x, array, &fieldX, &fieldY, &fieldW)) {
+    //
+    plot_stepX    = canvas_valueForOnePixelX (glist);
+    plot_stepY    = canvas_valueForOnePixelY (glist);
+    plot_glist    = glist;
+    plot_asScalar = asScalar;
+    plot_asArray  = asArray;
+    plot_array    = array;
+
+    if (garray_isSingle (glist)) {
+    
+        return (plot_behaviorClickedPerformSingle (x,
+            array,
+            glist,
+            asScalar,
+            asArray,
+            style,
+            a,
+            b,
+            shift,
+            alt,
+            dbl,
+            clicked));
+            
+    } else {
+
+        return (plot_behaviorClickedPerformRegular (x,
+            array,
+            glist,
+            asScalar,
+            asArray,
+            relativeX,
+            relativeY,
+            incrementX,
+            width,
+            a,
+            b,
+            shift,
+            alt,
+            dbl,
+            clicked));
+    }
+    //
+    }
+    
+    return 0;
 }
 
 static int plot_behaviorClicked (t_gobj *z,
@@ -1303,11 +1465,11 @@ static int plot_behaviorClicked (t_gobj *z,
                 glist,
                 asScalar,
                 asArray,
-                array_getTemplateIdentifier (array),
                 baseX + positionX,
                 baseY + positionY,
                 incrementX,
                 width,
+                style,
                 a,
                 b,
                 shift,

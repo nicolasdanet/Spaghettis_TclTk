@@ -150,8 +150,8 @@ void            scalar_redraw                           (t_scalar *x, t_glist *g
 
 int             scalar_performClick                     (t_word *w,
                                                             t_template *tmpl,
-                                                            t_scalar *scalar,
-                                                            t_array *array,
+                                                            t_scalar *asScalar,
+                                                            t_array *asArray,
                                                             t_glist *glist,
                                                             t_float offsetX,
                                                             t_float offestY,

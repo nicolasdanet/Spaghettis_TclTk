@@ -26,7 +26,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define DRAWPOLYGON_HANDLE_SIZE     6
+#define DRAWPOLYGON_HANDLE_SIZE     8
 #define DRAWPOLYGON_BUFFER_SIZE     4096
 
 // -----------------------------------------------------------------------------------------------------------
@@ -42,8 +42,8 @@ static t_float      drawpolygon_stepY;                  /* Shared. */
 static t_gpointer   drawpolygon_pointer;                /* Shared. */
 
 static t_glist      *drawpolygon_view;                  /* Shared. */
-static t_scalar     *drawpolygon_scalar;                /* Shared. */
-static t_array      *drawpolygon_array;                 /* Shared. */
+static t_scalar     *drawpolygon_asScalar;              /* Shared. */
+static t_array      *drawpolygon_asArray;               /* Shared. */
 static t_word       *drawpolygon_data;                  /* Shared. */
 static t_template   *drawpolygon_template;              /* Shared. */
 
@@ -114,13 +114,13 @@ static void drawpolygon_motion (void *z, t_float deltaX, t_float deltaY, t_float
         word_setFloatByDescriptorAsPosition (drawpolygon_data, drawpolygon_template, fd + 1, positionY);
     }
     
-    if (drawpolygon_scalar) {
-        template_notify (drawpolygon_template, drawpolygon_view, drawpolygon_scalar, sym_change, 0, NULL);
-        scalar_redraw (drawpolygon_scalar, drawpolygon_view);
+    if (drawpolygon_asScalar) {
+        template_notify (drawpolygon_template, drawpolygon_view, drawpolygon_asScalar, sym_change, 0, NULL);
+        scalar_redraw (drawpolygon_asScalar, drawpolygon_view);
     }
     
-    if (drawpolygon_array) { 
-        array_redraw (drawpolygon_array, drawpolygon_view);
+    if (drawpolygon_asArray) { 
+        array_redraw (drawpolygon_asArray, drawpolygon_view);
     }
     //
     }
@@ -313,8 +313,8 @@ static int drawpolygon_behaviorClicked (t_gobj *z,
             drawpolygon_cumulativeX = 0.0;
             drawpolygon_cumulativeY = 0.0;
             drawpolygon_view        = glist;
-            drawpolygon_scalar      = asScalar;
-            drawpolygon_array       = asArray;
+            drawpolygon_asScalar    = asScalar;
+            drawpolygon_asArray     = asArray;
             drawpolygon_data        = w;
             drawpolygon_field       = bestField;
             drawpolygon_template    = tmpl;

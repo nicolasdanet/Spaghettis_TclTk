@@ -163,8 +163,8 @@ void scalar_redraw (t_scalar *x, t_glist *glist)
 
 int scalar_performClick (t_word *w,
     t_template *template,
-    t_scalar *scalar,
-    t_array *array,
+    t_scalar *asScalar,
+    t_array *asArray,
     t_glist *glist,
     t_float offsetX,
     t_float offsetY,
@@ -183,7 +183,9 @@ int scalar_performClick (t_word *w,
     t_float baseY = word_getFloat (w, template, sym_y);
     t_gobj *y = NULL;
         
-    if (clicked) { scalar_notifyClicked (scalar, glist, template, baseX + offsetX, baseY + offsetY); }
+    if (clicked) { 
+        if (asScalar) { scalar_notifyClicked (asScalar, glist, template, baseX + offsetX, baseY + offsetY); }
+    }
             
     for (y = view->gl_graphics; y; y = y->g_next) {
     //
@@ -194,8 +196,8 @@ int scalar_performClick (t_word *w,
                     glist,
                     w,
                     template,
-                    scalar,
-                    array,
+                    asScalar,
+                    asArray,
                     baseX + offsetX,
                     baseY + offsetY,
                     a,
