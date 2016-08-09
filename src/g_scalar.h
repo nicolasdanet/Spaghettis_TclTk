@@ -148,20 +148,6 @@ void            scalar_setFloat                         (t_scalar *x, t_symbol *
 
 void            scalar_redraw                           (t_scalar *x, t_glist *glist);
 
-int             scalar_performClick                     (t_word *w,
-                                                            t_template *tmpl,
-                                                            t_scalar *asScalar,
-                                                            t_array *asArray,
-                                                            t_glist *glist,
-                                                            t_float offsetX,
-                                                            t_float offestY,
-                                                            int a,
-                                                            int b,
-                                                            int shift,
-                                                            int alt,
-                                                            int dbl,
-                                                            int clicked);
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

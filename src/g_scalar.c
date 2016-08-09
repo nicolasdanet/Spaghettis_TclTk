@@ -161,68 +161,6 @@ void scalar_redraw (t_scalar *x, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int scalar_performClick (t_word *w,
-    t_template *template,
-    t_scalar *asScalar,
-    t_array *asArray,
-    t_glist *glist,
-    t_float offsetX,
-    t_float offsetY,
-    int a,
-    int b,
-    int shift,
-    int alt,
-    int dbl,
-    int clicked)
-{
-    t_glist *view = template_getFirstInstanceView (template);
-    
-    if (view) {
-    //
-    t_float baseX = word_getFloat (w, template, sym_x);
-    t_float baseY = word_getFloat (w, template, sym_y);
-    t_gobj *y = NULL;
-        
-    if (clicked) { 
-        if (asScalar) { scalar_notifyClicked (asScalar, glist, template, baseX + offsetX, baseY + offsetY); }
-    }
-            
-    for (y = view->gl_graphics; y; y = y->g_next) {
-    //
-    t_parentwidgetbehavior *behavior = class_getParentWidget (pd_class (y));
-    
-    if (behavior) { 
-        int k = (*behavior->w_fnParentClicked) (y, 
-                    glist,
-                    w,
-                    template,
-                    asScalar,
-                    asArray,
-                    baseX + offsetX,
-                    baseY + offsetY,
-                    a,
-                    b,
-                    shift,
-                    alt,
-                    dbl,
-                    clicked);
-                    
-        if (k) {
-            return k;
-        }
-    }
-    //
-    }
-    //
-    }
-    
-    return 0;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
 {
     t_scalar *x = cast_scalar (z);
@@ -413,22 +351,52 @@ static int scalar_behaviorClicked (t_gobj *z,
 {
     t_scalar *x = cast_scalar (z);
     
-    int k = scalar_performClick (x->sc_vector, template_findByIdentifier (x->sc_templateIdentifier),
-                x,
-                NULL,
-                glist,
-                0.0,
-                0.0,
-                a,
-                b,
-                shift,
-                alt,
-                dbl,
-                clicked);
+    t_template *template = template_findByIdentifier (x->sc_templateIdentifier);
     
-    return k;
+    PD_ASSERT (template);
+    
+    t_glist *view = template_getFirstInstanceView (template);
+    
+    if (view) {
+    //
+    t_float baseX = scalar_getFloat (x, sym_x);
+    t_float baseY = scalar_getFloat (x, sym_y);
+    t_gobj *y = NULL;
+        
+    if (clicked) { scalar_notifyClicked (x, glist, template, baseX, baseY); }
+            
+    for (y = view->gl_graphics; y; y = y->g_next) {
+    //
+    t_parentwidgetbehavior *behavior = class_getParentWidget (pd_class (y));
+    
+    if (behavior) { 
+        int k = (*behavior->w_fnParentClicked) (y, 
+                    glist,
+                    x->sc_vector,
+                    template,
+                    x,
+                    NULL,
+                    baseX,
+                    baseY,
+                    a,
+                    b,
+                    shift,
+                    alt,
+                    dbl,
+                    clicked);
+                    
+        if (k) {
+            return k;
+        }
+    }
+    //
+    }
+    //
+    }
+    
+    return 0;
 }
-
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

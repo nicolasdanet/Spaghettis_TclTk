@@ -87,9 +87,10 @@ static void plot_motion (void *, t_float, t_float, t_float);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define PLOT_HANDLE_SIZE        8
+
 #define PLOT_BUFFER_SIZE        4096
 #define PLOT_MAXIMUM_DRAWN      256
+#define PLOT_HANDLE_SIZE        8
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -868,61 +869,6 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int plot_behaviorClickedRegularRecursive (t_plot *x,
-    int a,
-    int b,
-    int shift,
-    int alt,
-    int dbl,
-    int clicked)
-{
-    /*
-    t_glist *elemtemplatecanvas;
-    t_template *elemtemplate;
-    int elemsize, yonset, wonset, xonset, i, incr, hit;
-    t_float xsum;
-
-    if (elemtemplatesym == &s_float)
-        return (0);
-    if (plot_getFields (x, elemtemplatesym, &elemtemplatecanvas,
-        &elemtemplate, &elemsize,
-            &xonset, &yonset, &wonset))
-                return (0);
-        // if it has more than 2000 points, just check 300 of them.
-    if (array->a_size < 2000)
-        incr = 1;
-    else incr = array->a_size / 300;
-    for (i = 0, xsum = 0; i < array->a_size; i += incr)
-    {
-        t_float usexloc, useyloc;
-        if (xonset >= 0)
-            usexloc = xloc + field_convertValueToPosition(xfield, 
-                *(t_float *)(((char *)(array->a_vector) + elemsize * i) + xonset));
-        else usexloc = xloc + xsum, xsum += xinc;
-        useyloc = yloc + (yonset >= 0 ? field_convertValueToPosition(yfield,
-            *(t_float *)(((char *)(array->a_vector) + elemsize * i) + yonset)) : 0);
-        
-        if (hit = scalar_performClick(
-            (t_word *)((char *)(array->a_vector) + i * elemsize),
-            elemtemplate,
-            0,
-            array,
-            glist,
-            usexloc,
-            useyloc,
-            a,
-            b,
-            shift,
-            alt,
-            dbl,
-            clicked)) {
-                return (hit);
-            }
-    }
-    */
-    return 0;
-}
-
 static int plot_behaviorClickedRegularMatch (t_plot *x,
     t_symbol *fieldX,
     t_symbol *fieldY,
@@ -946,7 +892,8 @@ static int plot_behaviorClickedRegularMatch (t_plot *x,
     plot_direction = 1.0;
     
     if (fieldW) {
-        if ((bestDeltaY < bestDeltaL) && (bestDeltaY < bestDeltaH)) { plot_thickness = PLOT_THICKNESS_NONE; } 
+        if (bestDeltaY < (PLOT_HANDLE_SIZE / 2)) { }
+        else if ((bestDeltaY < bestDeltaL) && (bestDeltaY < bestDeltaH)) { } 
         else if (bestDeltaH < bestDeltaL) { plot_thickness = PLOT_THICKNESS_DOWN; }
         else {
             plot_thickness = PLOT_THICKNESS_UP;
@@ -1064,12 +1011,8 @@ static int plot_behaviorClickedRegular (t_plot *x,
     //
     }
     
-    if (best > PLOT_HANDLE_SIZE) {
-    
-        return (plot_behaviorClickedRegularRecursive (x, a, b, shift, alt, dbl, clicked));
-                    
-    } else {
-    
+    if (best <= PLOT_HANDLE_SIZE) {
+
         return (plot_behaviorClickedRegularMatch (x,
                     fieldX,
                     fieldY, 
