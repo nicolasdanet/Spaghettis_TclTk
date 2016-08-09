@@ -463,7 +463,7 @@ void canvas_setCursorType (t_glist *glist, int type)
         {
             "left_ptr",             // CURSOR_NOTHING
             "hand2",                // CURSOR_CLICK
-            "crosshair",            // CURSOR_THICKEN
+            "sb_v_double_arrow",    // CURSOR_THICKEN
             "plus",                 // CURSOR_ADD
             "circle",               // CURSOR_CONNECT
             "sb_h_double_arrow"     // CURSOR_RESIZE

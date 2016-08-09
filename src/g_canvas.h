@@ -37,8 +37,8 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define CURSOR_NOTHING                  0
-#define CURSOR_CLICK                    1
+#define CURSOR_NOTHING                  0                   /* Must NOT be changed. */
+#define CURSOR_CLICK                    1                   /* Must NOT be changed. */
 #define CURSOR_THICKEN                  2
 #define CURSOR_ADD                      3
 #define CURSOR_CONNECT                  4

@@ -249,7 +249,7 @@ static void canvas_performMouseClick (t_glist *glist, int positionX, int positio
     }
     
     if (!clicked) {
-        if (y && k) { canvas_setCursorType (glist, CURSOR_CLICK); }
+        if (y && k) { canvas_setCursorType (glist, k); }
         else {
             canvas_setCursorType (glist, CURSOR_NOTHING);
         }
