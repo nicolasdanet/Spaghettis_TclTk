@@ -32,6 +32,7 @@
 #include "m_utils.c"
 #include "m_color.c"
 #include "m_dollar.c"
+#include "m_heapstring.c"
 #include "m_bindlist.c"
 
 /* System. */

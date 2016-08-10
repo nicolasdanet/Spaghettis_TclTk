@@ -212,9 +212,9 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     t_glist *view = canvas_getView (glist);
     
     if (x->x_flags & DRAWPOLYGON_CLOSED) {
-        err |= string_sprintf (t, DRAWPOLYGON_BUFFER_SIZE,      ".x%lx.c create polygon", view);
+        err |= string_addSprintf (t, DRAWPOLYGON_BUFFER_SIZE,   ".x%lx.c create polygon", view);
     } else {
-        err |= string_sprintf (t, DRAWPOLYGON_BUFFER_SIZE,      ".x%lx.c create line", view);
+        err |= string_addSprintf (t, DRAWPOLYGON_BUFFER_SIZE,   ".x%lx.c create line", view);
     }
     
     for (i = 0; i < x->x_size; i += 2) {

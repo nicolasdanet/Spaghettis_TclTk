@@ -123,7 +123,7 @@ t_error guistub_new (t_pd *owner, void *key, const char *cmd)
     guistub_destroyWithKey (key);                   /* Destroy already allocated stub with an equal key. */
     
     x = (t_guistub *)pd_new (guistub_class);
-    string_sprintf (name, PD_STRING, PD_GUISTUB "%lx", x);
+    string_addSprintf (name, PD_STRING, PD_GUISTUB "%lx", x);
     s = gensym (name);
     
     x->x_owner  = owner;
@@ -147,7 +147,7 @@ t_error guistub_new (t_pd *owner, void *key, const char *cmd)
         char m[GUISTUB_STRING] = { 0 };
             
         err |= string_append (t, PD_STRING, cmd, (int)(afterFirstSubstitution - cmd));
-        err |= string_sprintf (m, GUISTUB_STRING, t, s->s_name);
+        err |= string_addSprintf (m, GUISTUB_STRING, t, s->s_name);
         err |= string_add (m, GUISTUB_STRING, afterFirstSubstitution);
 
         PD_ASSERT (!err);

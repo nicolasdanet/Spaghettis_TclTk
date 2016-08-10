@@ -580,7 +580,7 @@ static void plot_behaviorVisibilityChangedDrawPolygonFill (t_plot *x,
     char t[PLOT_BUFFER_SIZE] = { 0 };
     t_error err = PD_ERROR_NONE;
     
-    err |= string_sprintf (t, PLOT_BUFFER_SIZE,         ".x%lx.c create polygon", canvas_getView (glist));
+    err |= string_addSprintf (t, PLOT_BUFFER_SIZE,      ".x%lx.c create polygon", canvas_getView (glist));
   
     for (i = 0; i < elementsDrawn; i++) {
         err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " %d %d", coordinatesX[i], coordinatesL[i]);
@@ -638,7 +638,7 @@ static void plot_behaviorVisibilityChangedDrawPolygonSegment (t_plot *x,
     
     int pixelY, pixelX, previousPixelX = -PD_INT_MAX;
         
-    err |= string_sprintf (t, PLOT_BUFFER_SIZE,         ".x%lx.c create line", canvas_getView (glist));
+    err |= string_addSprintf (t, PLOT_BUFFER_SIZE,      ".x%lx.c create line", canvas_getView (glist));
     
     for (i = 0; i < numberOfElements; i++) {
     //
@@ -670,7 +670,6 @@ static void plot_behaviorVisibilityChangedDrawPolygonSegment (t_plot *x,
     }
     //
     }
-    
     
     if (elementsDrawn) {    /* Tk requires at least two points. */
     //

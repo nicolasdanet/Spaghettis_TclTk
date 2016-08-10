@@ -152,6 +152,16 @@ struct _pdinstance {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+typedef struct _heapstring {
+    size_t                  hs_used;
+    size_t                  hs_size;
+    char                    *hs_raw;
+    } t_heapstring;
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 typedef struct _bindelement {
     t_pd                    *e_what;                    /* MUST be the first. */
     struct _bindelement     *e_next;
@@ -192,6 +202,18 @@ int         string_containsAtStart                      (const char *s, const ch
 
 int         string_indexOfFirstOccurrenceUntil          (char *s, const char *c, size_t n);
 int         string_indexOfFirstOccurrenceFrom           (char *s, const char *c, size_t n);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_heapstring    *heapstring_new                         (int size);
+char            *heapstring_getRaw                      (t_heapstring *x);
+
+void        heapstring_free                             (t_heapstring *x);
+t_error     heapstring_add                              (t_heapstring *x, const char *src);
+t_error     heapstring_append                           (t_heapstring *x, const char *src, int n);
+t_error     heapstring_addSprintf                       (t_heapstring *x, const char *format, ...);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
