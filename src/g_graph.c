@@ -436,9 +436,9 @@ static void canvas_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
     
     if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnSelected (z, glist, isSelected); }
     else {
-        sys_vGui (".x%lx.c itemconfigure GRAPH%lx -fill #%06x\n",
+        sys_vGui (".x%lx.c itemconfigure %lxGRAPH -fill #%06x\n",
                         canvas_getView (glist),
-                        (t_int)x,
+                        x,
                         x->gl_hasWindow ? COLOR_MASKED : (x->gl_isSelected ? COLOR_SELECTED : COLOR_NORMAL));
     }
 }
@@ -472,7 +472,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     else {
     //
     char tag[PD_STRING] = { 0 };
-    t_error err = string_sprintf (tag, PD_STRING, "GRAPH%lx", (t_int)x);
+    t_error err = string_sprintf (tag, PD_STRING, "%lxGRAPH", x);
     int x1, y1, x2, y2;
     
     canvas_behaviorGetRectangle (z, glist, &x1, &y1, &x2, &y2);

@@ -293,8 +293,8 @@ void midi_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
     PD_ASSERT (t == MAXIMUM_MIDI_OUT);
     
     for (k = 0; k < t; k++) {
-        i[k] = (t_int)atom_getFloatAtIndex (k, argc, argv);
-        o[k] = (t_int)atom_getFloatAtIndex (k + t, argc, argv);
+        i[k] = (int)atom_getFloatAtIndex (k, argc, argv);
+        o[k] = (int)atom_getFloatAtIndex (k + t, argc, argv);
     }
 
     for (k = 0; k < t; k++) { if (i[k] > 0) { i[m] = i[k] - MIDI_SOMETHING; m++; } }

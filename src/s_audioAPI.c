@@ -457,14 +457,14 @@ void audio_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
     PD_ASSERT (MAXIMUM_AUDIO_OUT >= 4);
     
     for (t = 0; t < 4; t++) {
-        i[t] = (t_int)atom_getFloatAtIndex (t + 0,  argc, argv);
-        j[t] = (t_int)atom_getFloatAtIndex (t + 4,  argc, argv);
-        o[t] = (t_int)atom_getFloatAtIndex (t + 8,  argc, argv);
-        p[t] = (t_int)atom_getFloatAtIndex (t + 12, argc, argv);
+        i[t] = (int)atom_getFloatAtIndex (t + 0,  argc, argv);
+        j[t] = (int)atom_getFloatAtIndex (t + 4,  argc, argv);
+        o[t] = (int)atom_getFloatAtIndex (t + 8,  argc, argv);
+        p[t] = (int)atom_getFloatAtIndex (t + 12, argc, argv);
     }
     
-    sampleRate   = (t_int)atom_getFloatAtIndex (16, argc, argv);
-    blockSize    = (t_int)atom_getFloatAtIndex (17, argc, argv);
+    sampleRate   = (int)atom_getFloatAtIndex (16, argc, argv);
+    blockSize    = (int)atom_getFloatAtIndex (17, argc, argv);
     
     /* Remove devices with number of channels set to zero. */
     

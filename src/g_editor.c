@@ -907,7 +907,7 @@ static t_editor *editor_new (t_glist *owner)
     
     t_editor *x = (t_editor *)PD_MEMORY_GET (sizeof (t_editor));
     
-    string_sprintf (t, PD_STRING, ".x%lx", (t_int)owner);
+    string_sprintf (t, PD_STRING, ".x%lx", owner);
     
     x->e_buffer     = buffer_new();
     x->e_clock      = clock_new (owner, (t_method)canvas_taskDisplace);

@@ -339,7 +339,7 @@ t_boxtext *boxtext_new (t_glist *glist, t_object *object)
     {
     //
     t_glist *canvas = canvas_getView (glist);
-    t_error err = string_sprintf (x->box_tag, BOX_TAG_SIZE, ".x%lx.%lxBOXTEXT", (t_int)canvas, (t_int)x);
+    t_error err = string_sprintf (x->box_tag, BOX_TAG_SIZE, ".x%lx.%lxBOXTEXT", canvas, x);
     PD_ASSERT (!err);
     //
     }

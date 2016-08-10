@@ -195,7 +195,7 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     
     if (n > 1) {
     //
-    if (!isVisible) { sys_vGui (".x%lx.c delete CURVE%lx\n", canvas_getView (glist), w); }
+    if (!isVisible) { sys_vGui (".x%lx.c delete %lxCURVE\n", canvas_getView (glist), w); }
     else {
     //
     t_float width        = word_getFloatByDescriptor (w, tmpl, &x->x_width);
@@ -240,7 +240,7 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     }
 
     err |= string_addSprintf (t, DRAWPOLYGON_BUFFER_SIZE,       " -width %f", PD_MAX (width, 1.0));
-    err |= string_addSprintf (t, DRAWPOLYGON_BUFFER_SIZE,       " -tags CURVE%lx\n", w);
+    err |= string_addSprintf (t, DRAWPOLYGON_BUFFER_SIZE,       " -tags %lxCURVE\n", w);
     
     if (!err) { sys_gui (t); }
     else {

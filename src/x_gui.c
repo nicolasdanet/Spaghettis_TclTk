@@ -26,7 +26,7 @@ static void *openpanel_new( void)
 {
     char buf[50];
     t_openpanel *x = (t_openpanel *)pd_new(openpanel_class);
-    sprintf(buf, "d%lx", (t_int)x);
+    sprintf(buf, "d%lx", x);
     x->x_s = gensym (buf);
     pd_bind(&x->x_obj.te_g.g_pd, x->x_s);
     outlet_new(&x->x_obj, &s_symbol);
@@ -81,7 +81,7 @@ static void *savepanel_new( void)
 {
     char buf[50];
     t_savepanel *x = (t_savepanel *)pd_new(savepanel_class);
-    sprintf(buf, "d%lx", (t_int)x);
+    sprintf(buf, "d%lx", x);
     x->x_s = gensym (buf);
     x->x_canvas = canvas_getCurrent();
     pd_bind(&x->x_obj.te_g.g_pd, x->x_s);

@@ -491,7 +491,7 @@ static void plot_behaviorVisibilityChangedDrawPoint (t_plot *x,
         sys_vGui (".x%lx.c create rectangle %d %d %d %d"
                         " -width %d"
                         " -fill #%06x"
-                        " -tags PLOT%lx\n",
+                        " -tags %lxPLOT\n",
                         canvas_getView (glist),
                         (fieldX == NULL) ? pixelX : pixelX - 1,
                         (int)canvas_valueToPixelY (glist, min),
@@ -499,7 +499,7 @@ static void plot_behaviorVisibilityChangedDrawPoint (t_plot *x,
                         (int)canvas_valueToPixelY (glist, max),
                         (int)PD_MAX (0, width - 1),
                         COLOR_NORMAL,
-                        (t_int)w);
+                        w);
     
         minimumValueY =  PLOT_MAX;
         maximumValueY = -PLOT_MAX;
@@ -602,9 +602,9 @@ static void plot_behaviorVisibilityChangedDrawPolygonFill (t_plot *x,
     err |= string_addSprintf (t, PLOT_BUFFER_SIZE,      " -outline %s", color->s_name);
 
     if (style == PLOT_CURVES) { 
-        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " -width 1 -smooth 1 -tags PLOT%lx\n", (t_int)w);
+        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " -width 1 -smooth 1 -tags %lxPLOT\n", w);
     } else { 
-        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " -width 1 -tags PLOT%lx\n", (t_int)w);
+        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " -width 1 -tags %lxPLOT\n", w);
     }
     
     if (!err) { sys_gui (t); }
@@ -682,9 +682,9 @@ static void plot_behaviorVisibilityChangedDrawPolygonSegment (t_plot *x,
     err |= string_addSprintf (t, PLOT_BUFFER_SIZE,      " -fill %s", color->s_name);
 
     if (style == PLOT_CURVES) {
-        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " -smooth 1 -tags PLOT%lx\n", (t_int)w);
+        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " -smooth 1 -tags %lxPLOT\n", w);
     } else {
-        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " -tags PLOT%lx\n", (t_int)w);
+        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " -tags %lxPLOT\n", w);
     }
 
     if (!err) { sys_gui (t); }
@@ -843,7 +843,7 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
             }
             
         } else {
-            sys_vGui (".x%lx.c delete PLOT%lx\n", canvas_getView (glist), w); 
+            sys_vGui (".x%lx.c delete %lxPLOT\n", canvas_getView (glist), w); 
         }
         
         plot_behaviorVisibilityChangedRecursive (x,
