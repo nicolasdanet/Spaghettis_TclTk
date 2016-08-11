@@ -28,7 +28,7 @@ static void heapstring_reserve (t_heapstring *x, size_t size)
     //
     size_t newSize = PD_NEXTPOWER2 (size);
     size_t oldSize = x->hs_size;
-    
+
     x->hs_raw  = PD_MEMORY_RESIZE (x->hs_raw, oldSize, newSize);
     x->hs_size = newSize;
     //
@@ -97,9 +97,9 @@ t_error heapstring_addSprintf (t_heapstring *x, const char *format, ...)
 t_heapstring *heapstring_new (int size)
 {
     t_heapstring *x = (t_heapstring *)PD_MEMORY_GET (sizeof (t_heapstring));
-    
+ 
     x->hs_used = 0;
-    x->hs_size = (size <= 0) ? HEAPSTRING_DEFAULT_SIZE : PD_NEXTPOWER2 (size);
+    x->hs_size = (size <= 0) ? HEAPSTRING_DEFAULT_SIZE : size;
     x->hs_raw  = (char *)PD_MEMORY_GET (x->hs_size * sizeof (char));
     
     return x;

@@ -87,8 +87,6 @@ static void plot_motion (void *, t_float, t_float, t_float);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-
-#define PLOT_BUFFER_SIZE        4096
 #define PLOT_MAXIMUM_DRAWN      256
 #define PLOT_HANDLE_SIZE        8
 
@@ -577,40 +575,37 @@ static void plot_behaviorVisibilityChangedDrawPolygonFill (t_plot *x,
     
     if (elementsDrawn) {        /* Tk requires at least three points (i.e. two elements). */
     //
-    char t[PLOT_BUFFER_SIZE] = { 0 };
-    t_error err = PD_ERROR_NONE;
+    t_heapstring *t = heapstring_new (0);
     
-    err |= string_addSprintf (t, PLOT_BUFFER_SIZE,      ".x%lx.c create polygon", canvas_getView (glist));
+    heapstring_addSprintf (t, ".x%lx.c create polygon", canvas_getView (glist));
   
     for (i = 0; i < elementsDrawn; i++) {
-        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " %d %d", coordinatesX[i], coordinatesL[i]);
+        heapstring_addSprintf (t, " %d %d", coordinatesX[i], coordinatesL[i]);
     }
     
     if (elementsDrawn == 1) { 
-        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " %d %d", coordinatesX[0] + 1, coordinatesL[0]);
+        heapstring_addSprintf (t, " %d %d", coordinatesX[0] + 1, coordinatesL[0]);
     } 
     
     for (i = elementsDrawn - 1; i >= 0; i--) {
-        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " %d %d", coordinatesX[i], coordinatesH[i]);
+        heapstring_addSprintf (t, " %d %d", coordinatesX[i], coordinatesH[i]);
     }
     
     if (elementsDrawn == 1) { 
-        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " %d %d", coordinatesX[0] + 1, coordinatesH[0]);
+        heapstring_addSprintf (t, " %d %d", coordinatesX[0] + 1, coordinatesH[0]);
     } 
     
-    err |= string_addSprintf (t, PLOT_BUFFER_SIZE,      " -fill %s", color->s_name);
-    err |= string_addSprintf (t, PLOT_BUFFER_SIZE,      " -outline %s", color->s_name);
+    heapstring_addSprintf (t, " -fill %s", color->s_name);
+    heapstring_addSprintf (t, " -outline %s", color->s_name);
 
-    if (style == PLOT_CURVES) { 
-        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " -width 1 -smooth 1 -tags %lxPLOT\n", w);
-    } else { 
-        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " -width 1 -tags %lxPLOT\n", w);
+    if (style == PLOT_CURVES) { heapstring_addSprintf (t, " -width 1 -smooth 1 -tags %lxPLOT\n", w); }
+    else { 
+        heapstring_addSprintf (t, " -width 1 -tags %lxPLOT\n", w);
     }
     
-    if (!err) { sys_gui (t); }
-    else {
-        PD_BUG;
-    }
+    sys_gui (heapstring_getRaw (t));
+
+    heapstring_free (t);
     //
     }
 }
@@ -629,8 +624,7 @@ static void plot_behaviorVisibilityChangedDrawPolygonSegment (t_plot *x,
     int style, 
     t_symbol *color)
 {
-    char t[PLOT_BUFFER_SIZE] = { 0 };
-    t_error err = PD_ERROR_NONE;
+    t_heapstring *t = heapstring_new (0);
     
     int numberOfElements = array_getSize (array);
     int elementsDrawn = 0;
@@ -638,7 +632,7 @@ static void plot_behaviorVisibilityChangedDrawPolygonSegment (t_plot *x,
     
     int pixelY, pixelX, previousPixelX = -PD_INT_MAX;
         
-    err |= string_addSprintf (t, PLOT_BUFFER_SIZE,      ".x%lx.c create line", canvas_getView (glist));
+    heapstring_addSprintf (t, ".x%lx.c create line", canvas_getView (glist));
     
     for (i = 0; i < numberOfElements; i++) {
     //
@@ -664,7 +658,7 @@ static void plot_behaviorVisibilityChangedDrawPolygonSegment (t_plot *x,
     
     if (fieldX || pixelX != previousPixelX) {
         pixelY = (int)canvas_valueToPixelY (glist, valueY);
-        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " %d %d", pixelX, pixelY);
+        heapstring_addSprintf (t, " %d %d", pixelX, pixelY);
         elementsDrawn++;
         previousPixelX = pixelX;
     }
@@ -673,25 +667,21 @@ static void plot_behaviorVisibilityChangedDrawPolygonSegment (t_plot *x,
     
     if (elementsDrawn) {    /* Tk requires at least two points. */
     //
-    if (elementsDrawn == 1) { 
-        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " %d %d", pixelX + 1, pixelY);
-    }
+    if (elementsDrawn == 1) { heapstring_addSprintf (t, " %d %d", pixelX + 1, pixelY); }
     
-    err |= string_addSprintf (t, PLOT_BUFFER_SIZE,      " -width %d", (int)(PD_MAX (0, width - 1)));
-    err |= string_addSprintf (t, PLOT_BUFFER_SIZE,      " -fill %s", color->s_name);
+    heapstring_addSprintf (t, " -width %d", (int)(PD_MAX (0, width - 1)));
+    heapstring_addSprintf (t, " -fill %s", color->s_name);
 
-    if (style == PLOT_CURVES) {
-        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " -smooth 1 -tags %lxPLOT\n", w);
-    } else {
-        err |= string_addSprintf (t, PLOT_BUFFER_SIZE,  " -tags %lxPLOT\n", w);
-    }
-
-    if (!err) { sys_gui (t); }
+    if (style == PLOT_CURVES) { heapstring_addSprintf (t, " -smooth 1 -tags %lxPLOT\n", w); }
     else {
-        PD_BUG;
+        heapstring_addSprintf (t, " -tags %lxPLOT\n", w);
     }
+
+    sys_gui (heapstring_getRaw (t));
     //
     }
+    
+    heapstring_free (t);
 }
 
 static void plot_behaviorVisibilityChangedRecursive (t_plot *x,
