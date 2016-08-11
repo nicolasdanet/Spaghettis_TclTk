@@ -50,11 +50,23 @@ char *heapstring_getRaw (t_heapstring *x)
 
 t_error heapstring_add (t_heapstring *x, const char *src)
 {
-    return PD_ERROR_NONE;
+    return heapstring_append (x, src, -1);
 }
 
 t_error heapstring_append (t_heapstring *x, const char *src, int n)
 {
+    size_t size = 0;
+        
+    if (n < 0) { size = strlen (src); }
+    else {
+        const char *t = src; while (*t && size < n) { size++; t++; }
+    }
+    
+    heapstring_reserve (x, x->hs_used + size + 1);
+    
+    strncat (x->hs_raw + x->hs_used, src, size);
+    x->hs_used += size;
+    
     return PD_ERROR_NONE;
 }
 

@@ -27,7 +27,6 @@
 #pragma mark -
 
 #define DRAWPOLYGON_HANDLE_SIZE     8
-#define DRAWPOLYGON_BUFFER_SIZE     4096
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -205,16 +204,14 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     t_symbol *outlined   = color_toEncodedSymbol (color_withDigits ((int)colorOutline));
     
     t_fielddescriptor *fd = x->x_coordinates;
-    t_error err = PD_ERROR_NONE;
-    char t[DRAWPOLYGON_BUFFER_SIZE] = { 0 };
+    t_heapstring *t = heapstring_new (0);
     int i;
     
     t_glist *view = canvas_getView (glist);
     
-    if (x->x_flags & DRAWPOLYGON_CLOSED) {
-        err |= string_addSprintf (t, DRAWPOLYGON_BUFFER_SIZE,   ".x%lx.c create polygon", view);
-    } else {
-        err |= string_addSprintf (t, DRAWPOLYGON_BUFFER_SIZE,   ".x%lx.c create line", view);
+    if (x->x_flags & DRAWPOLYGON_CLOSED) { heapstring_addSprintf (t, ".x%lx.c create polygon", view); }
+    else {
+        heapstring_addSprintf (t, ".x%lx.c create line", view);
     }
     
     for (i = 0; i < x->x_size; i += 2) {
@@ -224,28 +221,24 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     a = canvas_valueToPixelX (glist, baseX + word_getFloatByDescriptorAsPosition (w, tmpl, fd + i));
     b = canvas_valueToPixelY (glist, baseY + word_getFloatByDescriptorAsPosition (w, tmpl, fd + i + 1));
         
-    err |= string_addSprintf (t, DRAWPOLYGON_BUFFER_SIZE,       " %d %d", a, b);
+    heapstring_addSprintf (t, " %d %d", a, b);
     //
     }
     
-    if (x->x_flags & DRAWPOLYGON_BEZIER) {
-        err |= string_add (t, DRAWPOLYGON_BUFFER_SIZE,          " -smooth 1");
-    }
-        
+    if (x->x_flags & DRAWPOLYGON_BEZIER)  { heapstring_add (t, " -smooth 1"); }
     if (x->x_flags & DRAWPOLYGON_CLOSED)  {
-        err |= string_addSprintf (t, DRAWPOLYGON_BUFFER_SIZE,   " -fill %s", filled->s_name);
-        err |= string_addSprintf (t, DRAWPOLYGON_BUFFER_SIZE,   " -outline %s", outlined->s_name);
+        heapstring_addSprintf (t, " -fill %s", filled->s_name);
+        heapstring_addSprintf (t, " -outline %s", outlined->s_name);
     } else {
-        err |= string_addSprintf (t, DRAWPOLYGON_BUFFER_SIZE,   " -fill %s", outlined->s_name);
+        heapstring_addSprintf (t, " -fill %s", outlined->s_name);
     }
 
-    err |= string_addSprintf (t, DRAWPOLYGON_BUFFER_SIZE,       " -width %f", PD_MAX (width, 1.0));
-    err |= string_addSprintf (t, DRAWPOLYGON_BUFFER_SIZE,       " -tags %lxCURVE\n", w);
+    heapstring_addSprintf (t,  " -width %f", PD_MAX (width, 1.0));
+    heapstring_addSprintf (t,  " -tags %lxCURVE\n", w);
     
-    if (!err) { sys_gui (t); }
-    else {
-        PD_BUG;
-    }
+    sys_gui (heapstring_getRaw (t));
+    
+    heapstring_free (t);
     //
     }
     //
