@@ -418,28 +418,28 @@ static void scalar_functionSave (t_gobj *z, t_buffer *b)
 static void scalar_functionProperties (t_gobj *z, t_glist *glist)
 {
     t_scalar *x = cast_scalar (z);
-    
-    char cmd[PD_STRING] = { 0 };
-    t_error err = PD_ERROR_NONE;
+    t_heapstring *t = heapstring_new (0);
     
     canvas_deselectAll (glist);
     canvas_selectObject (glist, z);
 
-    err = string_sprintf (cmd, PD_STRING, "::ui_data::show %%s {");
+    heapstring_add (t, "::ui_data::show %s {");
     
-    if (!err && !(err = guistub_new (cast_pd (glist), (void *)x, cmd))) {
-
-        int n; char *s = NULL;
-        t_buffer *t = glist_writetobinbuf (glist, 0);
+    {
+        char *s = NULL;
+        t_buffer *b = glist_writetobinbuf (glist, 0);
         
-        buffer_toString (t, &s, &n);
-        guistub_add (s);
-        guistub_add ("}\n");
+        buffer_toString (b, &s);
+        heapstring_add (t, s);
+        heapstring_add (t, "}\n");
         
-        buffer_free (t);
+        buffer_free (b);
         PD_MEMORY_FREE (s);
+    }
 
-    } else { PD_BUG; }
+    guistub_new (cast_pd (glist), (void *)x, heapstring_getRaw (t));
+        
+    heapstring_free (t);
 }
 
 // -----------------------------------------------------------------------------------------------------------

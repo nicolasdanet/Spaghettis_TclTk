@@ -61,9 +61,8 @@ void post_atoms (int argc, t_atom *argv)
     if (buffer_size (t)) {
     //
     char *s = NULL;
-    int size = 0;
     
-    buffer_toString (t, &s, &size);
+    buffer_toString (t, &s);
     post_error ("%s", s);
     
     PD_MEMORY_FREE (s);

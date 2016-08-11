@@ -281,7 +281,7 @@ void buffer_withStringUnzeroed (t_buffer *x, char *s, int size)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void buffer_toString (t_buffer *x, char **s, int *size)
+void buffer_toString (t_buffer *x, char **s)
 {
     char *buffer = NULL;
     int n, length = 0;
@@ -292,7 +292,6 @@ void buffer_toString (t_buffer *x, char **s, int *size)
     buffer[n - 1] = 0;
     
     *s = buffer; 
-    *size = n;
 }
 
 // -----------------------------------------------------------------------------------------------------------

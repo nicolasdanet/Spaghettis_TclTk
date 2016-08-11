@@ -331,7 +331,7 @@ void        buffer_resize                               (t_buffer *x, int n);
 void        buffer_vAppend                              (t_buffer *x, char *fmt, ...);
 void        buffer_appendSemicolon                      (t_buffer *x);
 void        buffer_parseStringUnzeroed                  (t_buffer *x, char *s, int size, int preallocated);
-void        buffer_toString                             (t_buffer *x, char **s, int *size);
+void        buffer_toString                             (t_buffer *x, char **s);
 void        buffer_toStringUnzeroed                     (t_buffer *x, char **s, int *size);
 void        buffer_withStringUnzeroed                   (t_buffer *x, char *s, int size);
 void        buffer_serialize                            (t_buffer *x, t_buffer *y);
@@ -377,7 +377,6 @@ void        sys_vGui                                    (char *format, ...);
 #pragma mark -
 
 t_error     guistub_new                                 (t_pd *owner, void *key, const char *cmd);
-void        guistub_add                                 (const char *cmd);
 void        guistub_destroyWithKey                      (void *key);
 
 // -----------------------------------------------------------------------------------------------------------

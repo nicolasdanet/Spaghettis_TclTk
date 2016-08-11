@@ -17,12 +17,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define GUISTUB_STRING      4096
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 typedef struct _guistub
 {
     t_pd                x_pd;
@@ -144,25 +138,22 @@ t_error guistub_new (t_pd *owner, void *key, const char *cmd)
     if (afterFirstSubstitution == NULL) { PD_BUG; err = PD_ERROR; }
     else {
         char t[PD_STRING] = { 0 };
-        char m[GUISTUB_STRING] = { 0 };
+        t_heapstring *m = heapstring_new (0);
             
         err |= string_append (t, PD_STRING, cmd, (int)(afterFirstSubstitution - cmd));
-        err |= string_addSprintf (m, GUISTUB_STRING, t, s->s_name);
-        err |= string_add (m, GUISTUB_STRING, afterFirstSubstitution);
+        err |= heapstring_addSprintf (m, t, s->s_name);
+        err |= heapstring_add (m, afterFirstSubstitution);
 
         PD_ASSERT (!err);
         
-        sys_gui (m); 
+        sys_gui (heapstring_getRaw (m));
+        
+        heapstring_free (m);
     }
     
     return err;
     //
     }
-}
-
-void guistub_add (const char *cmd)
-{
-    sys_gui (cmd);
 }
 
 static void guistub_free (t_guistub *x)
