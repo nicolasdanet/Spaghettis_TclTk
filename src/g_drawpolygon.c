@@ -38,13 +38,7 @@ static t_float      drawpolygon_coordinateX;            /* Shared. */
 static t_float      drawpolygon_coordinateY;            /* Shared. */
 static t_float      drawpolygon_stepX;                  /* Shared. */
 static t_float      drawpolygon_stepY;                  /* Shared. */
-static t_gpointer   drawpolygon_pointer;                /* Shared. */
-
-static t_glist      *drawpolygon_view;                  /* Shared. */
-static t_scalar     *drawpolygon_asScalar;              /* Shared. */
-static t_array      *drawpolygon_asArray;               /* Shared. */
-static t_word       *drawpolygon_data;                  /* Shared. */
-static t_template   *drawpolygon_template;              /* Shared. */
+static t_gpointer   drawpolygon_gpointer;               /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -95,10 +89,10 @@ static void drawpolygon_motion (void *z, t_float deltaX, t_float deltaY, t_float
 {
     t_drawpolygon *x = (t_drawpolygon *)z;
 
-    if (gpointer_isValid (&drawpolygon_pointer)) {
+    if (gpointer_isValid (&drawpolygon_gpointer)) {
     //
     t_fielddescriptor *fd = x->x_coordinates + drawpolygon_field;
-        
+    
     drawpolygon_cumulativeX += deltaX;
     drawpolygon_cumulativeY += deltaY;
     
@@ -106,21 +100,29 @@ static void drawpolygon_motion (void *z, t_float deltaX, t_float deltaY, t_float
     t_float positionY = drawpolygon_coordinateY + (drawpolygon_cumulativeY * drawpolygon_stepY);
     
     if (field_isVariable (fd + 0)) {
-        word_setFloatByDescriptorAsPosition (drawpolygon_data, drawpolygon_template, fd + 0, positionX); 
+        word_setFloatByDescriptorAsPosition (gpointer_getData (&drawpolygon_gpointer),
+            gpointer_getTemplate (&drawpolygon_gpointer),
+            fd + 0,
+            positionX); 
     }
     
     if (field_isVariable (fd + 1)) {
-        word_setFloatByDescriptorAsPosition (drawpolygon_data, drawpolygon_template, fd + 1, positionY);
+        word_setFloatByDescriptorAsPosition (gpointer_getData (&drawpolygon_gpointer),
+            gpointer_getTemplate (&drawpolygon_gpointer),
+            fd + 1,
+            positionY);
     }
     
-    if (drawpolygon_asScalar) {
-        template_notify (drawpolygon_template, drawpolygon_view, drawpolygon_asScalar, sym_change, 0, NULL);
-        scalar_redraw (drawpolygon_asScalar, drawpolygon_view);
+    if (gpointer_isScalar (&drawpolygon_gpointer)) {
+        template_notify (gpointer_getTemplate (&drawpolygon_gpointer),
+            gpointer_getView (&drawpolygon_gpointer),
+            gpointer_getScalar (&drawpolygon_gpointer),
+            sym_change,
+            0,
+            NULL);
     }
     
-    if (drawpolygon_asArray) { 
-        array_redraw (drawpolygon_asArray, drawpolygon_view);
-    }
+    gpointer_redraw (&drawpolygon_gpointer);
     //
     }
 }
@@ -252,7 +254,7 @@ static int drawpolygon_behaviorClicked (t_gobj *z,
     t_word *w,
     t_template *tmpl,
     t_scalar *asScalar,
-    t_array *asArray,
+    t_array *dummy,
     t_float baseX,
     t_float baseY,
     int a,
@@ -305,18 +307,9 @@ static int drawpolygon_behaviorClicked (t_gobj *z,
             drawpolygon_stepY       = canvas_valueForOnePixelY (glist);
             drawpolygon_cumulativeX = 0.0;
             drawpolygon_cumulativeY = 0.0;
-            drawpolygon_view        = glist;
-            drawpolygon_asScalar    = asScalar;
-            drawpolygon_asArray     = asArray;
-            drawpolygon_data        = w;
             drawpolygon_field       = bestField;
-            drawpolygon_template    = tmpl;
             
-            if (asScalar) {
-                gpointer_setAsScalar (&drawpolygon_pointer, glist, asScalar);
-            } else {
-                gpointer_setAsWord (&drawpolygon_pointer, asArray, w);
-            }
+            gpointer_setAsScalar (&drawpolygon_gpointer, glist, asScalar);
             
             canvas_setMotionFunction (glist, z, (t_motionfn)drawpolygon_motion, a, b);
         }
@@ -431,7 +424,7 @@ void drawpolygon_initialize (void)
 
 void drawpolygon_release (void)
 {
-    if (gpointer_isSet (&drawpolygon_pointer)) { gpointer_unset (&drawpolygon_pointer); }
+    if (gpointer_isSet (&drawpolygon_gpointer)) { gpointer_unset (&drawpolygon_gpointer); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
