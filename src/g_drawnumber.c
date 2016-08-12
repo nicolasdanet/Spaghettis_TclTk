@@ -50,14 +50,7 @@ typedef struct _drawnumber {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define DRAWNUMBER_BUFFER_SIZE      1024
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static int drawnumber_gettype(t_drawnumber *x, t_word *data,
-    t_template *template, int *onsetp)
+static int drawnumber_gettype (t_drawnumber *x, t_word *data, t_template *template, int *onsetp)
 {
     int type;
     t_symbol *arraytype;
@@ -67,61 +60,64 @@ static int drawnumber_gettype(t_drawnumber *x, t_word *data,
     else return (-1);
 }
 
-static void drawnumber_getbuf(t_drawnumber *x, t_word *data,
-    t_template *template, char *buf)
+static t_error drawnumber_getContents (t_drawnumber *x,
+    t_word *w,
+    t_template *tmpl,
+    char *dest,
+    size_t size,
+    int *m,
+    int *n)
 {
-    int nchars, onset, type = drawnumber_gettype(x, data, template, &onset);
-    if (type < 0)
-        buf[0] = 0;
-    else
-    {
-        strncpy(buf, x->x_label->s_name, DRAWNUMBER_BUFFER_SIZE);
-        buf[DRAWNUMBER_BUFFER_SIZE - 1] = 0;
-        nchars = strlen(buf);
-        if (type == DATA_TEXT)
-        {
-            char *buf2;
-            int size2, ncopy;
-            buffer_toStringUnzeroed(((t_word *)((char *)data + onset))->w_buffer,
-                &buf2, &size2);
-            ncopy = (size2 > DRAWNUMBER_BUFFER_SIZE-1-nchars ? 
-                DRAWNUMBER_BUFFER_SIZE-1-nchars: size2);
-            memcpy(buf+nchars, buf2, ncopy);
-            buf[nchars+ncopy] = 0;
-            if (nchars+ncopy == DRAWNUMBER_BUFFER_SIZE-1)
-                strcpy(buf+(DRAWNUMBER_BUFFER_SIZE-4), "...");
-            PD_MEMORY_FREE(buf2);
+    if (!template_fieldIsArray (tmpl, x->x_fieldName)) {
+    //
+    t_error err = PD_ERROR_NONE;
+    
+    err |= string_copy (dest, size, x->x_label->s_name);
+    
+    if (template_fieldIsText (tmpl, x->x_fieldName)) {
+        char *t = NULL;
+        buffer_toString (word_getBuffer (w, tmpl, x->x_fieldName), &t);
+        err |= string_add (dest, size, t);
+        PD_MEMORY_FREE (t);
+        
+    } else {
+        t_atom a;
+        if (template_fieldIsFloat (tmpl, x->x_fieldName)) {
+            SET_FLOAT (&a, word_getFloat (w, tmpl, x->x_fieldName));
+        } else {
+            SET_SYMBOL (&a, word_getSymbol (w, tmpl, x->x_fieldName));
         }
-        else
-        {
-            t_atom at;
-            if (type == DATA_FLOAT)
-                SET_FLOAT(&at, ((t_word *)((char *)data + onset))->w_float);
-            else SET_SYMBOL(&at, ((t_word *)((char *)data + onset))->w_symbol);
-            atom_toString(&at, buf + nchars, DRAWNUMBER_BUFFER_SIZE - nchars);
-        }
+        err |= string_addAtom (dest, size, &a);
     }
+    
+    if (m && n) { string_getColumnsAndLines (dest, m, n); }
+    
+    return err;
+    //
+    }
+    
+    return PD_ERROR;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void drawnumber_float(t_drawnumber *x, t_float f)
+static void drawnumber_float (t_drawnumber *x, t_float f)
 {
-    int viswas;
-    if (!field_isFloatConstant (&x->x_isVisible))
-    {
-        post_error ("global vis/invis for a template with variable visibility");
-        return;
-    }
-    viswas = (field_getFloatConstant (&x->x_isVisible) != 0);
+    if (field_isFloatConstant (&x->x_isVisible)) {
+    //
+    int k = (f != 0.0);
     
-    if ((f != 0 && viswas) || (f == 0 && !viswas))
-        return;
+    if (k != (int)(field_getFloatConstant (&x->x_isVisible))) {
+    //
     paint_scalarsEraseAll();
-    field_setAsFloatConstant(&x->x_isVisible, (f != 0));
+    field_setAsFloatConstant (&x->x_isVisible, (t_float)k);
     paint_scalarsDrawAll();
+    //
+    }
+    //
+    }
 }
 
 static void drawnumber_motion(void *z, t_float dx, t_float dy, t_float modifier)
@@ -155,44 +151,41 @@ static void drawnumber_motion(void *z, t_float dx, t_float dy, t_float modifier)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void drawnumber_behaviorGetRectangle(t_gobj *z, t_glist *glist,
-    t_word *data, t_template *template, t_float basex, t_float basey,
-    int *xp1, int *yp1, int *xp2, int *yp2)
+static void drawnumber_behaviorGetRectangle (t_gobj *z,
+    t_glist *glist,
+    t_word *w,
+    t_template *tmpl,
+    t_float baseX,
+    t_float baseY,
+    int *a,
+    int *b,
+    int *c,
+    int *d)
 {
     t_drawnumber *x = (t_drawnumber *)z;
-    t_atom at;
-    int xloc, yloc, font, fontwidth, fontheight, bufsize, width, height;
-    char buf[DRAWNUMBER_BUFFER_SIZE], *startline, *newline;
-
-    if (!word_getFloatByDescriptor(data, template, &x->x_isVisible))
-    {
-        *xp1 = *yp1 = PD_INT_MAX;
-        *xp2 = *yp2 = -PD_INT_MAX;
+    
+    if (word_getFloatByDescriptor (w, tmpl, &x->x_isVisible)) {
+    //
+    char t[PD_STRING] = { 0 };
+    int m, n;
+    
+    t_float valueX      = baseX + word_getFloatByDescriptorAsPosition (w, tmpl, &x->x_positionX);
+    t_float valueY      = baseY + word_getFloatByDescriptorAsPosition (w, tmpl, &x->x_positionY);
+    int pixelX          = canvas_valueToPixelX (glist, valueX);
+    int pixelY          = canvas_valueToPixelY (glist, valueY);
+    t_fontsize fontSize = canvas_getFontSize (glist);
+    
+    if (!drawnumber_getContents (x, w, tmpl, t, PD_STRING, &m, &n)) {
+        *a = pixelX;
+        *b = pixelY;
+        *c = pixelX + (m * font_getHostFontWidth (fontSize));
+        *d = pixelY + (n * font_getHostFontHeight (fontSize));
         return;
     }
-    xloc = canvas_valueToPixelX(glist,
-        basex + word_getFloatByDescriptorAsPosition(data, template, &x->x_positionX));
-    yloc = canvas_valueToPixelY(glist,
-        basey + word_getFloatByDescriptorAsPosition(data, template, &x->x_positionY));
-    font = canvas_getFontSize(glist);
-    fontwidth = font_getHostFontWidth(font);
-        fontheight = font_getHostFontHeight(font);
-    drawnumber_getbuf(x, data, template, buf);
-    width = 0;
-    height = 1;
-    for (startline = buf; newline = strchr(startline, '\n');
-        startline = newline+1)
-    {
-        if (newline - startline > width)
-            width = newline - startline;
-        height++;
+    //
     }
-    if (strlen(startline) > (unsigned)width)
-        width = strlen(startline);
-    *xp1 = xloc;
-    *yp1 = yloc;
-    *xp2 = xloc + fontwidth * width;
-    *yp2 = yloc + fontheight * height;
+    
+    *a = PD_INT_MAX; *b = PD_INT_MAX; *c = -PD_INT_MAX; *d = -PD_INT_MAX;
 }
 
 static void drawnumber_behaviorVisibilityChanged(t_gobj *z, t_glist *glist, 
@@ -211,10 +204,10 @@ static void drawnumber_behaviorVisibilityChanged(t_gobj *z, t_glist *glist,
             basex + word_getFloatByDescriptorAsPosition(data, template, &x->x_positionX));
         int yloc = canvas_valueToPixelY(glist,
             basey + word_getFloatByDescriptorAsPosition(data, template, &x->x_positionY));
-        char colorstring[20], buf[DRAWNUMBER_BUFFER_SIZE];
+        char colorstring[20], buf[PD_STRING];
         color_toEncodedString(colorstring, 20,
             color_withDigits (word_getFloatByDescriptor(data, template, &x->x_color)));
-        drawnumber_getbuf(x, data, template, buf);
+        drawnumber_getContents(x, data, template, buf, PD_STRING, NULL, NULL);
         sys_vGui(".x%lx.c create text %d %d -anchor nw -fill %s -text {%s}",
                 canvas_getView(glist), xloc, yloc, colorstring, buf);
         sys_vGui(" -font [::getFont %d]",
@@ -274,39 +267,41 @@ t_parentwidgetbehavior drawnumber_widgetBehavior =
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *drawnumber_new(t_symbol *classsym, int argc, t_atom *argv)
+static void *drawnumber_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_drawnumber *x = (t_drawnumber *)pd_new(drawnumber_class);
-    char *classname = classsym->s_name;
+    t_drawnumber *x = (t_drawnumber *)pd_new (drawnumber_class);
 
-    field_setAsFloatConstant(&x->x_isVisible, 1);
+    field_setAsFloatConstant (&x->x_positionX,  0.0);
+    field_setAsFloatConstant (&x->x_positionY,  0.0);
+    field_setAsFloatConstant (&x->x_color,      0.0);
+    field_setAsFloatConstant (&x->x_isVisible,  1.0);
     
-    while (1)
-    {
-        t_symbol *firstarg = atom_getSymbolAtIndex(0, argc, argv);
-        if (!strcmp(firstarg->s_name, "-v") && argc > 1)
-        {
-            field_setAsFloat(&x->x_isVisible, 1, argv+1);
-            argc -= 2; argv += 2;
-        }
-        else break;
-    }
-        /* next argument is name of field to draw - we don't know its type yet
-        but field_setAsFloat() will do fine here. */
-    x->x_fieldName = atom_getSymbolAtIndex(0, argc, argv);
-    if (argc)
-        argc--, argv++;
-    if (argc) field_setAsFloat(&x->x_positionX, argc--, argv++);
-    else field_setAsFloatConstant(&x->x_positionX, 0);
-    if (argc) field_setAsFloat(&x->x_positionY, argc--, argv++);
-    else field_setAsFloatConstant(&x->x_positionY, 0);
-    if (argc) field_setAsFloat(&x->x_color, argc--, argv++);
-    else field_setAsFloatConstant(&x->x_color, 1);
-    if (argc)
-        x->x_label = atom_getSymbolAtIndex(0, argc, argv);
-    else x->x_label = &s_;
+    x->x_label = &s_;
+    
+    while (argc > 0) {
 
-    return (x);
+        t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
+        
+        if (argc > 1 && (t == sym___dash__v || t == sym___dash__visible)) {
+            field_setAsFloat (&x->x_isVisible, 1, argv + 1);
+            argc -= 2; argv += 2;
+            
+        } else {
+            break;
+        }
+    }
+
+    x->x_fieldName = atom_getSymbolAtIndex (0, argc, argv);
+    
+    if (argc) { argc--, argv++; }
+    
+    if (argc) { field_setAsFloat (&x->x_positionX,  argc--, argv++); }
+    if (argc) { field_setAsFloat (&x->x_positionY,  argc--, argv++); }
+    if (argc) { field_setAsFloat (&x->x_color,      argc--, argv++); }
+    
+    if (argc) { x->x_label = atom_getSymbolAtIndex (0, argc, argv);  }
+
+    return x;
 }
 
 // -----------------------------------------------------------------------------------------------------------

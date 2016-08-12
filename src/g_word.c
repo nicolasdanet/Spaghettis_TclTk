@@ -95,17 +95,30 @@ t_float word_getFloat (t_word *w, t_template *tmpl, t_symbol *fieldName)
     return 0.0;
 }
 
-void word_setFloat (t_word *w, t_template *tmpl, t_symbol *fieldName, t_float f)
+t_symbol *word_getSymbol (t_word *w, t_template *tmpl, t_symbol *fieldName)
 {
     int i, type; t_symbol *dummy = NULL;
     
-    PD_ASSERT (template_fieldIsFloat (tmpl, fieldName));
-    
     if (template_getRaw (tmpl, fieldName, &i, &type, &dummy)) {
-        if (type == DATA_FLOAT) { 
-            *(t_float *)(w + i) = f; 
+        if (type == DATA_SYMBOL) {
+            return *(t_symbol **)(w + i);
         }
     }
+
+    return &s_;
+}
+
+t_buffer *word_getBuffer (t_word *w, t_template *tmpl, t_symbol *fieldName)
+{
+    int i, type; t_symbol *dummy = NULL;
+    
+    if (template_getRaw (tmpl, fieldName, &i, &type, &dummy)) {
+        if (type == DATA_TEXT) {
+            return *(t_buffer **)(w + i);
+        }
+    }
+
+    return NULL;
 }
 
 t_array *word_getArray (t_word *w, t_template *tmpl, t_symbol *fieldName)
@@ -125,17 +138,17 @@ t_array *word_getArray (t_word *w, t_template *tmpl, t_symbol *fieldName)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol *word_getSymbol (t_word *w, t_template *tmpl, t_symbol *fieldName)
+void word_setFloat (t_word *w, t_template *tmpl, t_symbol *fieldName, t_float f)
 {
     int i, type; t_symbol *dummy = NULL;
     
+    PD_ASSERT (template_fieldIsFloat (tmpl, fieldName));
+    
     if (template_getRaw (tmpl, fieldName, &i, &type, &dummy)) {
-        if (type == DATA_SYMBOL) {
-            return *(t_symbol **)(w + i);
+        if (type == DATA_FLOAT) { 
+            *(t_float *)(w + i) = f; 
         }
     }
-
-    return &s_;
 }
 
 void word_setSymbol (t_word *w, t_template *tmpl, t_symbol *fieldName, t_symbol *s)

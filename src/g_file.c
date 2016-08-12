@@ -51,7 +51,7 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
             glist->gl_windowTopLeftY,
             glist->gl_windowBottomRightX - glist->gl_windowTopLeftX,
             glist->gl_windowBottomRightY - glist->gl_windowTopLeftY,
-            glist->gl_fontSize);
+            (int)glist->gl_fontSize);
     }
     
     for (y = glist->gl_graphics; y; y = y->g_next) { gobj_save (y, b); }

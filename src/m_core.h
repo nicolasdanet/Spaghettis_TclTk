@@ -197,11 +197,14 @@ t_error     string_add                                  (char *dest, size_t size
 t_error     string_append                               (char *dest, size_t size, const char *src, int n);
 t_error     string_sprintf                              (char *dest, size_t size, const char *format, ...);
 t_error     string_addSprintf                           (char *dest, size_t size, const char *format, ...);
+t_error     string_addAtom                              (char *dest, size_t size, t_atom *a);
 
 int         string_containsAtStart                      (const char *s, const char *isContained);
 
 int         string_indexOfFirstOccurrenceUntil          (char *s, const char *c, size_t n);
 int         string_indexOfFirstOccurrenceFrom           (char *s, const char *c, size_t n);
+
+void        string_getColumnsAndLines                   (char *s, int *numberOfColumns, int *numberOfLines);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

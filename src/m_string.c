@@ -90,6 +90,20 @@ t_error string_addSprintf (char *dest, size_t size, const char *format, ...)
     }
 }
 
+t_error string_addAtom (char *dest, size_t size, t_atom *a)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    char *t = (char *)PD_MEMORY_GET (size * sizeof (char));
+    
+    err |= atom_toString (a, t, size);
+    err |= string_add (dest, size, t);
+
+    PD_MEMORY_FREE (t);
+    
+    return err;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -101,6 +115,20 @@ int string_containsAtStart (const char *s, const char *isContained)
     if (strlen (s) >= n) { return (strncmp (s, isContained, n) == 0); }
     
     return 0;
+}
+
+void string_getColumnsAndLines (char *s, int *numberOfColumns, int *numberOfLines)
+{
+    char *end = NULL;
+    char *start = NULL;
+    size_t m = 0;
+    size_t n = 1;
+        
+    for (start = s; end = strchr (start, '\n'); start = end + 1) { m = PD_MAX (m, end - start); n++; }
+    if (strlen (start) > m) { m = strlen (start); }
+        
+    *numberOfColumns = m;
+    *numberOfLines   = n;
 }
 
 // -----------------------------------------------------------------------------------------------------------

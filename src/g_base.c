@@ -444,7 +444,7 @@ void canvas_updateTitle (t_glist *glist)
                     glist->gl_isDirty);
 }
 
-int canvas_getFontSize (t_glist *glist)
+t_fontsize canvas_getFontSize (t_glist *glist)
 {
     while (!glist->gl_environment) { if (!(glist = glist->gl_parent)) { PD_BUG; } }
     

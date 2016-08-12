@@ -237,6 +237,24 @@ int template_fieldIsSymbol (t_template *x, t_symbol *fieldName)
     return 0;
 }
 
+int template_fieldIsText (t_template *x, t_symbol *fieldName)
+{
+    int i, type; t_symbol *dummy = NULL;
+    
+    if (template_getRaw (x, fieldName, &i, &type, &dummy)) { return (type == DATA_TEXT); }
+    
+    return 0;
+}
+
+int template_fieldIsArray (t_template *x, t_symbol *fieldName)
+{
+    int i, type; t_symbol *dummy = NULL;
+    
+    if (template_getRaw (x, fieldName, &i, &type, &dummy)) { return (type == DATA_ARRAY); }
+    
+    return 0;
+}
+
 int template_fieldIsArrayAndValid (t_template *x, t_symbol *fieldName)
 {
     int i, type; t_symbol *templateIdentifier = NULL;

@@ -143,7 +143,7 @@ static void gatom_getPostion (t_gatom *x, t_glist *glist, int *positionX, int *p
 {
     int a, b, c, d;
     
-    double width = font_getHostFontWidth (x->a_fontSize);
+    double width  = font_getHostFontWidth (x->a_fontSize);
     double height = font_getHostFontHeight (x->a_fontSize);
     
     text_behaviorGetRectangle (cast_gobj (x), glist, &a, &b, &c, &d);

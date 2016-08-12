@@ -213,7 +213,7 @@ struct _glist {
     int                 gl_windowTopLeftY;
     int                 gl_windowBottomRightX;
     int                 gl_windowBottomRightY;
-    int                 gl_fontSize;
+    t_fontsize          gl_fontSize;
     char                gl_isMapped;
     char                gl_isDirty;
     char                gl_isLoading;
@@ -304,7 +304,7 @@ void            canvas_bind                             (t_glist *glist);
 void            canvas_unbind                           (t_glist *glist);
 t_error         canvas_makeFilePath                     (t_glist *glist, char *name, char *dest, size_t size);
 void            canvas_updateTitle                      (t_glist *glist);
-int             canvas_getFontSize                      (t_glist *glist);
+t_fontsize      canvas_getFontSize                      (t_glist *glist);
 void            canvas_setCursorType                    (t_glist *glist, int type);
 
 t_gobj          *canvas_getHitObject                    (t_glist *glist, 

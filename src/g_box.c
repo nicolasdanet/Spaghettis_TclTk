@@ -216,7 +216,7 @@ static int boxtext_sendTypeset (t_boxtext *x,
 static int boxtext_send (t_boxtext *x, int action, int a, int b)
 {
     int isCanvas            = (pd_class (x->box_object) == canvas_class);
-    int fontSize            = canvas_getFontSize (isCanvas ? cast_glist (x->box_object) : x->box_glist);
+    t_fontsize fontSize     = canvas_getFontSize (isCanvas ? cast_glist (x->box_object) : x->box_glist);
     int widthInPixels       = 0;
     int heightInPixels      = 0;
     int selectionStart      = 0;

@@ -701,7 +701,7 @@ t_glist *canvas_newGraph (t_glist *glist,
     t_glist *x = (t_glist *)pd_new (canvas_class);
     
     char t[PD_STRING] = { 0 };
-    int fontSize = (canvas_getCurrent() ? canvas_getCurrent()->gl_fontSize : font_getDefaultFontSize());
+    t_fontsize fontSize = canvas_getCurrent() ? canvas_getCurrent()->gl_fontSize : font_getDefaultFontSize();
     
     if (valueStart >= valueEnd || valueUp == valueDown) {
     //
@@ -757,16 +757,16 @@ t_glist *canvas_newGraph (t_glist *glist,
 
 t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
-    t_glist *x      = (t_glist *)pd_new (canvas_class);
-    t_glist *owner  = canvas_getCurrent();
-    t_symbol *name  = &s_;
+    t_glist *x          = (t_glist *)pd_new (canvas_class);
+    t_glist *owner      = canvas_getCurrent();
+    t_symbol *name      = &s_;
     
-    int visible     = 0;
-    int width       = WINDOW_WIDTH;
-    int height      = WINDOW_HEIGHT;
-    int topLeftX    = 0;
-    int topLeftY    = WINDOW_HEADER;
-    int fontSize    = (owner ? owner->gl_fontSize : font_getDefaultFontSize());
+    int visible         = 0;
+    int width           = WINDOW_WIDTH;
+    int height          = WINDOW_HEIGHT;
+    int topLeftX        = 0;
+    int topLeftY        = WINDOW_HEADER;
+    t_fontsize fontSize = (owner ? owner->gl_fontSize : font_getDefaultFontSize());
     
     /* Top. */
     
