@@ -117,7 +117,7 @@ int string_containsAtStart (const char *s, const char *isContained)
     return 0;
 }
 
-void string_getColumnsAndLines (char *s, int *numberOfColumns, int *numberOfLines)
+void string_getNumberOfColumnsAndLines (char *s, int *numberOfColumns, int *numberOfLines)
 {
     char *end = NULL;
     char *start = NULL;

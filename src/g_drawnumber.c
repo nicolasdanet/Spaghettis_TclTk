@@ -24,8 +24,7 @@ static t_class      *drawnumber_class;                      /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 static t_float      drawnumber_cumulativeY;                 /* Shared. */
-static int          drawnumber_type;                        /* Shared. */
-static t_gpointer   drawnumber_gpointer;                    /* Shared. */
+static t_gpointer   drawnumber_pointer;                     /* Shared. */
 
 static t_glist      *drawnumber_glist;                      /* Shared. */
 static t_scalar     *drawnumber_asScalar;                   /* Shared. */
@@ -50,16 +49,6 @@ typedef struct _drawnumber {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int drawnumber_gettype (t_drawnumber *x, t_word *data, t_template *template, int *onsetp)
-{
-    int type;
-    t_symbol *arraytype;
-    if (template_findField(template, x->x_fieldName, onsetp, &type,
-        &arraytype) && type != DATA_ARRAY)
-            return (type);
-    else return (-1);
-}
-
 static t_error drawnumber_getContents (t_drawnumber *x,
     t_word *w,
     t_template *tmpl,
@@ -70,9 +59,7 @@ static t_error drawnumber_getContents (t_drawnumber *x,
 {
     if (!template_fieldIsArray (tmpl, x->x_fieldName)) {
     //
-    t_error err = PD_ERROR_NONE;
-    
-    err |= string_copy (dest, size, x->x_label->s_name);
+    t_error err = string_copy (dest, size, x->x_label->s_name);
     
     if (template_fieldIsText (tmpl, x->x_fieldName)) {
         char *t = NULL;
@@ -90,7 +77,7 @@ static t_error drawnumber_getContents (t_drawnumber *x,
         err |= string_addAtom (dest, size, &a);
     }
     
-    if (m && n) { string_getColumnsAndLines (dest, m, n); }
+    if (m && n) { string_getNumberOfColumnsAndLines (dest, m, n); }
     
     return err;
     //
@@ -124,13 +111,12 @@ static void drawnumber_motion(void *z, t_float dx, t_float dy, t_float modifier)
 {
     t_drawnumber *x = (t_drawnumber *)z;
     // t_atom at;
-    if (!gpointer_isValid(&drawnumber_gpointer))
+    if (!gpointer_isValid(&drawnumber_pointer))
     {
         post("drawnumber_motion: scalar disappeared");
         return;
     }
-    if (drawnumber_type != DATA_FLOAT)
-        return;
+
     drawnumber_cumulativeY -= dy;
     word_setFloat(drawnumber_data, 
         drawnumber_template,
@@ -188,69 +174,101 @@ static void drawnumber_behaviorGetRectangle (t_gobj *z,
     *a = PD_INT_MAX; *b = PD_INT_MAX; *c = -PD_INT_MAX; *d = -PD_INT_MAX;
 }
 
-static void drawnumber_behaviorVisibilityChanged(t_gobj *z, t_glist *glist, 
-    t_word *data, t_template *template, t_float basex, t_float basey,
-    int vis)
+static void drawnumber_behaviorVisibilityChanged (t_gobj *z,
+    t_glist *glist, 
+    t_word *w,
+    t_template *tmpl,
+    t_float baseX,
+    t_float baseY,
+    int isVisible)
 {
     t_drawnumber *x = (t_drawnumber *)z;
     
-        /* see comment in plot_vis() */
-    if (vis && !word_getFloatByDescriptor(data, template, &x->x_isVisible))
-        return;
-    if (vis)
-    {
-        t_atom at;
-        int xloc = canvas_valueToPixelX(glist,
-            basex + word_getFloatByDescriptorAsPosition(data, template, &x->x_positionX));
-        int yloc = canvas_valueToPixelY(glist,
-            basey + word_getFloatByDescriptorAsPosition(data, template, &x->x_positionY));
-        char colorstring[20], buf[PD_STRING];
-        color_toEncodedString(colorstring, 20,
-            color_withDigits (word_getFloatByDescriptor(data, template, &x->x_color)));
-        drawnumber_getContents(x, data, template, buf, PD_STRING, NULL, NULL);
-        sys_vGui(".x%lx.c create text %d %d -anchor nw -fill %s -text {%s}",
-                canvas_getView(glist), xloc, yloc, colorstring, buf);
-        sys_vGui(" -font [::getFont %d]",
-                 font_getHostFontSize(canvas_getFontSize(glist)));
-        sys_vGui(" -tags [list drawnumber%lx label]\n", data);
+    int visible = (int)word_getFloatByDescriptor (w, tmpl, &x->x_isVisible);
+
+    if (!isVisible || visible) {
+    //
+    if (!isVisible) { sys_vGui(".x%lx.c delete %lxNUMBER\n", canvas_getView (glist), w); }
+    else {
+    //
+    char t[PD_STRING] = { 0 };
+    
+    t_color color   = color_withDigits ((int)word_getFloatByDescriptor (w, tmpl, &x->x_color));
+    t_float valueX  = baseX + word_getFloatByDescriptorAsPosition (w, tmpl, &x->x_positionX);
+    t_float valueY  = baseY + word_getFloatByDescriptorAsPosition (w, tmpl, &x->x_positionY);
+    int pixelX      = canvas_valueToPixelX (glist, valueX);
+    int pixelY      = canvas_valueToPixelY (glist, valueY);
+    
+    drawnumber_getContents (x, w, tmpl, t, PD_STRING, NULL, NULL);
+    
+    sys_vGui (".x%lx.c create text %d %d"
+                    " -anchor nw"
+                    " -fill %s"
+                    " -font [::getFont %d]"
+                    " -text {%s}"
+                    " -tags %lxNUMBER\n",
+                    canvas_getView (glist),
+                    pixelX,
+                    pixelY,
+                    color_toEncodedSymbol (color)->s_name,
+                    font_getHostFontSize (canvas_getFontSize (glist)),
+                    t, 
+                    w);
+    //
     }
-    else sys_vGui(".x%lx.c delete drawnumber%lx\n", canvas_getView(glist), data);
+    //
+    }
 }
 
-static int drawnumber_behaviorClicked(t_gobj *z, t_glist *glist, 
-    t_word *data, t_template *template, t_scalar *sc, t_array *ap,
-    t_float basex, t_float basey,
-    int xpix, int ypix, int shift, int alt, int dbl, int doit)
+static int drawnumber_behaviorClicked (t_gobj *z,
+    t_glist *glist, 
+    t_word *w,
+    t_template *tmpl,
+    t_scalar *asScalar,
+    t_array *asArray,
+    t_float baseX,
+    t_float baseY,
+    int a,
+    int b,
+    int shift,
+    int alt,
+    int dbl,
+    int clicked)
 {
     t_drawnumber *x = (t_drawnumber *)z;
-    int x1, y1, x2, y2, type, onset;
-    drawnumber_behaviorGetRectangle(z, glist,
-        data, template, basex, basey,
-        &x1, &y1, &x2, &y2);
-    if (xpix >= x1 && xpix <= x2 && ypix >= y1 && ypix <= y2 &&
-        ((type = drawnumber_gettype(x, data, template, &onset)) == DATA_FLOAT ||
-            type == DATA_SYMBOL))
-    {
-        if (doit)
-        {
-            drawnumber_glist = glist;
-            drawnumber_data = data;
-            drawnumber_template = template;
-            drawnumber_asScalar = sc;
-            drawnumber_asArray = ap;
-            drawnumber_cumulativeY =
-                word_getFloat(data, template, x->x_fieldName);
-            drawnumber_type = type;
-            if (drawnumber_asScalar)
-                gpointer_setAsScalar(&drawnumber_gpointer, 
-                    drawnumber_glist, drawnumber_asScalar);
-            else gpointer_setAsWord(&drawnumber_gpointer,
-                    drawnumber_asArray, drawnumber_data);
-            canvas_setMotionFunction(glist, z, (t_motionfn)drawnumber_motion, xpix, ypix);
+    
+    int x1, y1, x2, y2;
+    
+    drawnumber_behaviorGetRectangle (z, glist, w, tmpl, baseX, baseY, &x1, &y1, &x2, &y2);
+    
+    if (a >= x1 && a <= x2 && b >= y1 && b <= y2) {
+    //
+    if (template_fieldIsFloat (tmpl, x->x_fieldName)) {
+    //
+    if (clicked) {
+    
+        drawnumber_glist        = glist;
+        drawnumber_data         = w;
+        drawnumber_template     = tmpl;
+        drawnumber_asScalar     = asScalar;
+        drawnumber_asArray      = asArray;
+        drawnumber_cumulativeY  = word_getFloat (w, tmpl, x->x_fieldName);
+
+        if (drawnumber_asScalar) { gpointer_setAsScalar (&drawnumber_pointer, glist, asScalar); }
+        else {
+            gpointer_setAsWord (&drawnumber_pointer, asArray, w);
         }
-        return (1);
+        
+        canvas_setMotionFunction (glist, z, (t_motionfn)drawnumber_motion, a, b);
     }
-    else return (0);
+    
+    return 1;
+    //
+    }
+    //
+    }
+    
+    return 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -328,6 +346,19 @@ void drawnumber_setup (void)
     class_setParentWidgetBehavior (c, &drawnumber_widgetBehavior);
     
     drawnumber_class = c;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void drawnumber_initialize (void)
+{
+}
+
+void drawnumber_release (void)
+{
+    if (gpointer_isSet (&drawnumber_pointer)) { gpointer_unset (&drawnumber_pointer); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

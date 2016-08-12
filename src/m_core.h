@@ -39,7 +39,7 @@ typedef int  (*t_clickedfn)             (t_gobj *x,
                                             int ctrl,
                                             int alt,
                                             int dbl,
-                                            int k);
+                                            int clicked);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -66,7 +66,7 @@ typedef int  (*t_parentclickedfn)       (t_gobj *x, t_glist *glist, t_word *w, t
                                             int shift,
                                             int alt,
                                             int dbl,
-                                            int k);
+                                            int clicked);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -204,7 +204,7 @@ int         string_containsAtStart                      (const char *s, const ch
 int         string_indexOfFirstOccurrenceUntil          (char *s, const char *c, size_t n);
 int         string_indexOfFirstOccurrenceFrom           (char *s, const char *c, size_t n);
 
-void        string_getColumnsAndLines                   (char *s, int *numberOfColumns, int *numberOfLines);
+void        string_getNumberOfColumnsAndLines           (char *s, int *numberOfColumns, int *numberOfLines);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
