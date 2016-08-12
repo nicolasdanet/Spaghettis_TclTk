@@ -107,30 +107,24 @@ static void drawnumber_float (t_drawnumber *x, t_float f)
     }
 }
 
-static void drawnumber_motion(void *z, t_float dx, t_float dy, t_float modifier)
+static void drawnumber_motion (void *z, t_float deltaX, t_float deltaY, t_float modifier)
 {
     t_drawnumber *x = (t_drawnumber *)z;
-    // t_atom at;
-    if (!gpointer_isValid(&drawnumber_pointer))
-    {
-        post("drawnumber_motion: scalar disappeared");
-        return;
+
+    if (gpointer_isValid (&drawnumber_pointer)) {
+    //
+    drawnumber_cumulativeY -= deltaY;
+    
+    word_setFloat (drawnumber_data, drawnumber_template, x->x_fieldName, drawnumber_cumulativeY);
+        
+    if (drawnumber_asScalar) {
+        template_notify (drawnumber_template, drawnumber_glist, drawnumber_asScalar, sym_change, 0, NULL);
     }
 
-    drawnumber_cumulativeY -= dy;
-    word_setFloat(drawnumber_data, 
-        drawnumber_template,
-        x->x_fieldName,
-        drawnumber_cumulativeY);
-    if (drawnumber_asScalar)
-        template_notify(drawnumber_template,
-            drawnumber_glist, drawnumber_asScalar,
-                sym_change, 0, NULL);
-
-    if (drawnumber_asScalar)
-        scalar_redraw(drawnumber_asScalar, drawnumber_glist);
-    if (drawnumber_asArray)
-        array_redraw(drawnumber_asArray, drawnumber_glist);
+    if (drawnumber_asScalar) { scalar_redraw (drawnumber_asScalar, drawnumber_glist); }
+    if (drawnumber_asArray)  { array_redraw (drawnumber_asArray, drawnumber_glist);   }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
