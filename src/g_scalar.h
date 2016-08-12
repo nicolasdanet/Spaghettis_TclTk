@@ -85,7 +85,7 @@ typedef struct _dataslot {
 // -----------------------------------------------------------------------------------------------------------
 
 struct _template {
-    t_pd                tp_pd;                      /* MUST be the first. */
+    t_pd                tp_pd;                          /* MUST be the first. */
     int                 tp_size;    
     t_dataslot          *tp_vector;   
     t_symbol            *tp_templateIdentifier; 
