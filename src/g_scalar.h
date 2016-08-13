@@ -326,62 +326,13 @@ void            paint_scalarsRedrawAll                  (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            canvas_writescalar                      (t_symbol *templatesym,
-                                                            t_word *w,
-                                                            t_buffer *b,
-                                                            int amarrayelement);
-                                                            
-int             canvas_readscalar                       (t_glist *x,
-                                                            int natoms,
-                                                            t_atom *vec,
-                                                            int *p_nextmsg,
-                                                            int selectit);
-
-void            canvas_serializeTemplates               (t_glist *glist, t_buffer *b);
-
-void            canvas_read                             (t_glist *glist, t_symbol *name, t_symbol *format);
-void            canvas_write                            (t_glist *glist, t_symbol *name, t_symbol *format);
-void            canvas_merge                            (t_glist *glist, t_symbol *name, t_symbol *format);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void signal_setborrowed(t_signal *sig, t_signal *sig2);
-void signal_makereusable(t_signal *sig);
-
-void glist_readfrombinbuf (t_glist *x, t_buffer *b, char *filename, int selectem);
+void canvas_writescalar (t_symbol *templatesym, t_word *w, t_buffer *b, int amarrayelement);
+int canvas_readscalar (t_glist *x, int natoms, t_atom *vec, int *p_nextmsg, int selectit);
+void canvas_read (t_glist *glist, t_symbol *name, t_symbol *format);
+void canvas_write (t_glist *glist, t_symbol *name, t_symbol *format);
+void canvas_merge (t_glist *glist, t_symbol *name, t_symbol *format);
 void canvas_dataproperties (t_glist *x, t_scalar *sc, t_buffer *b);
-void canvas_find_parent (t_glist *x);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_buffer *glist_writetobinbuf   (t_glist *x, int wholething);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void     canvas_vistext                     (t_glist *x, t_object *y);
-
-void     canvas_zapallfortemplate           (t_glist *tmpl);
-void     canvas_setusedastemplate           (t_glist *x);
-
-int      canvas_getfont                     (t_glist *x);
-
-void     canvas_fattenforscalars        (t_glist *x, int *x1, int *y1, int *x2, int *y2);
-void     canvas_visforscalars           (t_glist *x, t_glist *glist, int vis);
-int      canvas_clicksub                (t_glist *x,
-                                            int xpix,
-                                            int ypix,
-                                            int shift,
-                                            int alt,
-                                            int dbl,
-                                            int b);
-
-t_glist  *canvas_getglistonsuper        (void);
+t_buffer *glist_writetobinbuf (t_glist *x, int wholething);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

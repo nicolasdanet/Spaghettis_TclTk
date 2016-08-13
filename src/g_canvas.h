@@ -544,6 +544,12 @@ void            canvas_dsp                              (t_glist *glist, t_signa
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void            canvas_serializeTemplates               (t_glist *glist, t_buffer *b);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void            dsp_state                               (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void            dsp_update                              (void);
 int             dsp_suspend                             (void);

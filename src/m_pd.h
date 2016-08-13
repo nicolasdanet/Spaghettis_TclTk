@@ -707,22 +707,7 @@ PD_DLL void         clock_delay                 (t_clock *x, double delay);
 PD_DLL void         post                        (const char *fmt, ...);
 PD_DLL void         post_error                  (const char *fmt, ...);
 PD_DLL void         post_log                    (const char *fmt, ...);
-PD_DLL void         post_syslog                 (const char *s);
                                        
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-PD_DLL t_float      *value_get                  (t_symbol *s);
-PD_DLL void         value_release               (t_symbol *s);
-PD_DLL int          value_getfloat              (t_symbol *s, t_float *f);
-PD_DLL int          value_setfloat              (t_symbol *s, t_float f);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-PD_DLL int          sys_isreadablefile          (const char *name);
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -748,24 +733,27 @@ typedef t_int *(*t_perform)(t_int *args);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_DLL t_int        *plus_perform               (t_int *args);
-PD_DLL t_int        *zero_perform               (t_int *args);
-PD_DLL t_int        *copy_perform               (t_int *args);
+void    signal_setborrowed  (t_signal *sig, t_signal *sig2);
+void    signal_makereusable (t_signal *sig);
 
-PD_DLL void         dsp_add_plus                (t_sample *in1, t_sample *in2, t_sample *out, int n);
-PD_DLL void         dsp_add_copy                (t_sample *in, t_sample *out, int n);
-PD_DLL void         dsp_add_scalarcopy          (t_float *in, t_sample *out, int n);
-PD_DLL void         dsp_add_zero                (t_sample *out, int n);
+t_int   *plus_perform       (t_int *args);
+t_int   *zero_perform       (t_int *args);
+t_int   *copy_perform       (t_int *args);
 
-PD_DLL void         dsp_add                     (t_perform f, int n, ...);
-PD_DLL void         pd_fft                      (t_float *buffer, int npoints, int inverse);
-PD_DLL int          ilog2                       (int n);
+void    dsp_add_plus        (t_sample *in1, t_sample *in2, t_sample *out, int n);
+void    dsp_add_copy        (t_sample *in, t_sample *out, int n);
+void    dsp_add_scalarcopy  (t_float *in, t_sample *out, int n);
+void    dsp_add_zero        (t_sample *out, int n);
 
-PD_DLL void         mayer_fht                   (t_sample *fz, int n);
-PD_DLL void         mayer_fft                   (int n, t_sample *real, t_sample *imag);
-PD_DLL void         mayer_ifft                  (int n, t_sample *real, t_sample *imag);
-PD_DLL void         mayer_realfft               (int n, t_sample *real);
-PD_DLL void         mayer_realifft              (int n, t_sample *real);
+void    dsp_add             (t_perform f, int n, ...);
+void    pd_fft              (t_float *buffer, int npoints, int inverse);
+int     ilog2               (int n);
+
+void    mayer_fht           (t_sample *fz, int n);
+void    mayer_fft           (int n, t_sample *real, t_sample *imag);
+void    mayer_ifft          (int n, t_sample *real, t_sample *imag);
+void    mayer_realfft       (int n, t_sample *real);
+void    mayer_realifft      (int n, t_sample *real);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -787,40 +775,24 @@ typedef struct _resample {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_DLL void         resample_init               (t_resample *x, t_symbol *type);
-PD_DLL void         resample_free               (t_resample *x);
-
-PD_DLL void         resample_dsp                (t_resample *x,
-                                                    t_sample *in,
-                                                    int insize,
-                                                    t_sample *out,
-                                                    int outsize,
-                                                    int m);
-                                                    
-PD_DLL void         resamplefrom_dsp            (t_resample *x,
-                                                    t_sample *in,
-                                                    int insize,
-                                                    int outsize,
-                                                    int m);
-                                                    
-PD_DLL void         resampleto_dsp              (t_resample *x,
-                                                    t_sample *out,
-                                                    int insize,
-                                                    int outsize,
-                                                    int m);
+void    resample_init       (t_resample *x, t_symbol *type);
+void    resample_free       (t_resample *x);
+void    resample_dsp        (t_resample *x, t_sample *in, int insize, t_sample *out, int outsize, int m);
+void    resamplefrom_dsp    (t_resample *x, t_sample *in, int insize, int outsize, int m);
+void    resampleto_dsp      (t_resample *x, t_sample *out, int insize, int outsize, int m);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_DLL t_float      mtof                        (t_float);
-PD_DLL t_float      ftom                        (t_float);
-PD_DLL t_float      rmstodb                     (t_float);
-PD_DLL t_float      powtodb                     (t_float);
-PD_DLL t_float      dbtorms                     (t_float);
-PD_DLL t_float      dbtopow                     (t_float);
-PD_DLL t_float      q8_sqrt                     (t_float);
-PD_DLL t_float      q8_rsqrt                    (t_float);
+t_float mtof                (t_float);
+t_float ftom                (t_float);
+t_float rmstodb             (t_float);
+t_float powtodb             (t_float);
+t_float dbtorms             (t_float);
+t_float dbtopow             (t_float);
+t_float q8_sqrt             (t_float);
+t_float q8_rsqrt            (t_float);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -23,7 +23,6 @@ extern t_class *canvas_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
     /* return true if two dataslot definitions match */
 static int dataslot_matches(t_dataslot *ds1, t_dataslot *ds2,
@@ -198,7 +197,7 @@ int canvas_readscalar(t_glist *x, int natoms, t_atom *vec,
     return (1);
 }
 
-void glist_readfrombinbuf(t_glist *x, t_buffer *b, char *filename, int selectem)
+static void glist_readfrombinbuf(t_glist *x, t_buffer *b, char *filename, int selectem)
 {
     t_glist *canvas = canvas_getView(x);
     int cr = 0, natoms, nline, message, nextmsg = 0, i, j, nitems;
@@ -419,7 +418,7 @@ didit:
 
     /* ----------- routines to write data to a binbuf ----------- */
 
-void canvas_doaddtemplate(t_symbol *templatesym, 
+static void canvas_doaddtemplate(t_symbol *templatesym, 
     int *p_ntemplates, t_symbol ***p_templatevec)
 {
     int n = *p_ntemplates, i;
@@ -433,8 +432,6 @@ void canvas_doaddtemplate(t_symbol *templatesym,
     *p_templatevec = templatevec;
     *p_ntemplates = n+1;
 }
-
-static void glist_writelist(t_gobj *y, t_buffer *b);
 
     /* save a text object to a binbuf for a file or copy buf */
 static void binbuf_savetext(t_buffer *bfrom, t_buffer *bto)
@@ -525,9 +522,6 @@ static void glist_writelist(t_gobj *y, t_buffer *b)
 }
 
     /* ------------ routines to write out templates for data ------- */
-
-static void canvas_addtemplatesforlist(t_gobj *y,
-    int  *p_ntemplates, t_symbol ***p_templatevec);
 
 static void canvas_addtemplatesforscalar(t_symbol *templatesym,
     t_word *w, int *p_ntemplates, t_symbol ***p_templatevec)
