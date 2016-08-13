@@ -24,13 +24,7 @@ static t_class      *drawnumber_class;                      /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 static t_float      drawnumber_cumulativeY;                 /* Shared. */
-static t_gpointer   drawnumber_pointer;                     /* Shared. */
-
-static t_glist      *drawnumber_glist;                      /* Shared. */
-static t_scalar     *drawnumber_asScalar;                   /* Shared. */
-static t_array      *drawnumber_asArray;                    /* Shared. */
-static t_word       *drawnumber_data;                       /* Shared. */
-static t_template   *drawnumber_template;                   /* Shared. */
+static t_gpointer   drawnumber_gpointer;                    /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -111,18 +105,22 @@ static void drawnumber_motion (void *z, t_float deltaX, t_float deltaY, t_float 
 {
     t_drawnumber *x = (t_drawnumber *)z;
 
-    if (gpointer_isValid (&drawnumber_pointer)) {
+    if (gpointer_isValid (&drawnumber_gpointer)) {
     //
     drawnumber_cumulativeY -= deltaY;
     
-    word_setFloat (drawnumber_data, drawnumber_template, x->x_fieldName, drawnumber_cumulativeY);
-        
-    if (drawnumber_asScalar) {
-        template_notify (drawnumber_template, drawnumber_glist, drawnumber_asScalar, sym_change, 0, NULL);
-    }
+    gpointer_setFloat (&drawnumber_gpointer, x->x_fieldName, drawnumber_cumulativeY);
+    
+    PD_ASSERT (gpointer_isScalar (&drawnumber_gpointer));
+    
+    template_notify (gpointer_getTemplate (&drawnumber_gpointer), 
+        gpointer_getView (&drawnumber_gpointer), 
+        gpointer_getScalar (&drawnumber_gpointer),
+        sym_change,
+        0,
+        NULL);
 
-    if (drawnumber_asScalar) { scalar_redraw (drawnumber_asScalar, drawnumber_glist); }
-    if (drawnumber_asArray)  { array_redraw (drawnumber_asArray, drawnumber_glist);   }
+    gpointer_redraw (&drawnumber_gpointer);
     //
     }
 }
@@ -219,7 +217,7 @@ static int drawnumber_behaviorClicked (t_gobj *z,
     t_word *w,
     t_template *tmpl,
     t_scalar *asScalar,
-    t_array *asArray,
+    t_array *dummy,
     t_float baseX,
     t_float baseY,
     int a,
@@ -241,17 +239,9 @@ static int drawnumber_behaviorClicked (t_gobj *z,
     //
     if (clicked) {
     
-        drawnumber_glist        = glist;
-        drawnumber_data         = w;
-        drawnumber_template     = tmpl;
-        drawnumber_asScalar     = asScalar;
-        drawnumber_asArray      = asArray;
-        drawnumber_cumulativeY  = word_getFloat (w, tmpl, x->x_fieldName);
+        drawnumber_cumulativeY = word_getFloat (w, tmpl, x->x_fieldName);
 
-        if (drawnumber_asScalar) { gpointer_setAsScalar (&drawnumber_pointer, glist, asScalar); }
-        else {
-            gpointer_setAsWord (&drawnumber_pointer, asArray, w);
-        }
+        gpointer_setAsScalar (&drawnumber_gpointer, glist, asScalar);
         
         canvas_setMotionFunction (glist, z, (t_motionfn)drawnumber_motion, a, b);
     }
@@ -352,7 +342,7 @@ void drawnumber_initialize (void)
 
 void drawnumber_release (void)
 {
-    if (gpointer_isSet (&drawnumber_pointer)) { gpointer_unset (&drawnumber_pointer); }
+    if (gpointer_isSet (&drawnumber_gpointer)) { gpointer_unset (&drawnumber_gpointer); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -113,14 +113,14 @@ static void drawpolygon_motion (void *z, t_float deltaX, t_float deltaY, t_float
             positionY);
     }
     
-    if (gpointer_isScalar (&drawpolygon_gpointer)) {
-        template_notify (gpointer_getTemplate (&drawpolygon_gpointer),
-            gpointer_getView (&drawpolygon_gpointer),
-            gpointer_getScalar (&drawpolygon_gpointer),
-            sym_change,
-            0,
-            NULL);
-    }
+    PD_ASSERT (gpointer_isScalar (&drawpolygon_gpointer));
+    
+    template_notify (gpointer_getTemplate (&drawpolygon_gpointer),
+        gpointer_getView (&drawpolygon_gpointer),
+        gpointer_getScalar (&drawpolygon_gpointer),
+        sym_change,
+        0,
+        NULL);
     
     gpointer_redraw (&drawpolygon_gpointer);
     //
