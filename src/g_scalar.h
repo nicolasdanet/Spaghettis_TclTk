@@ -249,10 +249,14 @@ t_symbol        *template_getTemplateIdentifier         (t_template *x);
 t_glist         *template_getFirstInstanceView          (t_template *x);
 t_template      *template_getTemplateIfArrayAtIndex     (t_template *x, int n);
 
+void            template_free                           (t_template *x);
+int             template_isValid                        (t_template *x);
+
 int             template_hasInstance                    (t_template *x);
 void            template_registerInstance               (t_template *x, t_struct *o);
 void            template_unregisterInstance             (t_template *x, t_struct *o);
 
+void            template_serialize                      (t_template *x, t_buffer *b);
 void            template_notify                         (t_template *x, 
                                                             t_glist *owner,
                                                             t_scalar *scalar,
@@ -260,9 +264,6 @@ void            template_notify                         (t_template *x,
                                                             int argc,
                                                             t_atom *argv);
 
-void            template_free                           (t_template *x);
-int             template_isValid                        (t_template *x);
-    
 int             template_findField                      (t_template *x,
                                                             t_symbol *fieldName,
                                                             int *onset,

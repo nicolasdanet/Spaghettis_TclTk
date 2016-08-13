@@ -91,6 +91,40 @@ t_glist *template_getFirstInstanceView (t_template *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void template_serialize (t_template *x, t_buffer *b)
+{
+    int i;
+    
+    buffer_vAppend (b, "sss", sym___hash__N, sym_struct, utils_stripBindSymbol (x->tp_templateIdentifier));
+        
+    for (i = 0; i < x->tp_size; i++) {
+    //
+    t_symbol *type = &s_float;
+    
+    switch (x->tp_vector[i].ds_type) {
+        case DATA_FLOAT     : type = &s_float;  break;
+        case DATA_SYMBOL    : type = &s_symbol; break;
+        case DATA_ARRAY     : type = sym_array; break;
+        case DATA_TEXT      : type = sym_text;  break;
+    }
+    
+    if (x->tp_vector[i].ds_type == DATA_ARRAY) {
+        buffer_vAppend (b, "sss",
+            type,
+            x->tp_vector[i].ds_fieldName,
+            utils_stripBindSymbol (x->tp_vector[i].ds_templateIdentifier));
+            
+    } else {
+        buffer_vAppend (b, "ss",
+            type,
+            x->tp_vector[i].ds_fieldName);
+    }
+    //
+    }
+    
+    buffer_appendSemicolon (b);
+}
+
 void template_notify (t_template *x,
     t_glist *owner,
     t_scalar *scalar,

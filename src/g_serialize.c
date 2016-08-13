@@ -32,9 +32,7 @@ static void canvas_findTemplatesAppendPerform (t_symbol *templateIdentifier, int
     int i;
     
     for (i = 0; i < t; i++) { if (templates[i] == templateIdentifier) { alreadyExist = 1; break; } }
-    
-    post_log ("%s", templateIdentifier->s_name);
-    
+
     if (!alreadyExist) {
     //
     int oldSize = sizeof (t_symbol *) * (t);
@@ -657,37 +655,7 @@ void canvas_serializeTemplates (t_glist *glist, t_buffer *b)
     
     canvas_findTemplatesRecursive (glist, &n, &v);
     
-    for (i = 0; i < n; i++) {
-    //
-    t_template *template = template_findByIdentifier(v[i]);
-    int j, m = template->tp_size;
-    if (!template)
-    {
-        PD_BUG;
-        continue;
-    }
-        /* drop UTILS_BIND prefix from template symbol to print */
-    buffer_vAppend(b, "sss", sym___hash__N, sym_struct,
-        gensym (v[i]->s_name + 3));
-    for (j = 0; j < m; j++)
-    {
-        t_symbol *type;
-        switch (template->tp_vector[j].ds_type)
-        {
-            case DATA_FLOAT: type = &s_float; break;
-            case DATA_SYMBOL: type = &s_symbol; break;
-            case DATA_ARRAY: type = sym_array; break;
-            case DATA_TEXT: type = sym_text; break;
-            default: type = &s_float; PD_BUG;
-        }
-        if (template->tp_vector[j].ds_type == DATA_ARRAY)
-            buffer_vAppend(b, "sss", type, template->tp_vector[j].ds_fieldName,
-                gensym (template->tp_vector[j].ds_templateIdentifier->s_name + 3));
-        else buffer_vAppend(b, "ss", type, template->tp_vector[j].ds_fieldName);
-    }
-    buffer_appendSemicolon(b);
-    //
-    }
+    for (i = 0; i < n; i++) { template_serialize (template_findByIdentifier (v[i]), b); }
     
     PD_MEMORY_FREE (v);
 }
