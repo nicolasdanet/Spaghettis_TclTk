@@ -141,6 +141,7 @@ void            word_setFloatByDescriptorAsPosition     (t_word *w,
 
 t_scalar        *scalar_new                             (t_glist *owner, t_symbol *templateIdentifier);
 t_word          *scalar_getData                         (t_scalar *x);
+t_template      *scalar_getTemplate                     (t_scalar *x);
 t_symbol        *scalar_getTemplateIdentifier           (t_scalar *x);
 t_array         *scalar_getArray                        (t_scalar *x, t_symbol *fieldName);
 
@@ -244,7 +245,9 @@ t_template      *template_new                           (t_symbol *templateIdent
 
 int             template_getSize                        (t_template *x);
 t_dataslot      *template_getData                       (t_template *x);
+t_symbol        *template_getTemplateIdentifier         (t_template *x);
 t_glist         *template_getFirstInstanceView          (t_template *x);
+t_template      *template_getTemplateIfArrayAtIndex     (t_template *x, int n);
 
 int             template_hasInstance                    (t_template *x);
 void            template_registerInstance               (t_template *x, t_struct *o);

@@ -38,6 +38,24 @@ t_dataslot *template_getData (t_template *x)
     return x->tp_vector;
 }
 
+t_symbol *template_getTemplateIdentifier (t_template *x)
+{
+    return x->tp_templateIdentifier;
+}
+
+t_template *template_getTemplateIfArrayAtIndex (t_template *x, int n)
+{
+    PD_ASSERT (x);
+    PD_ASSERT (n >= 0);
+    PD_ASSERT (n < x->tp_size);
+    
+    if (x->tp_vector[n].ds_type == DATA_ARRAY) {
+        return template_findByIdentifier (x->tp_vector[n].ds_templateIdentifier);
+    }
+    
+    return NULL;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

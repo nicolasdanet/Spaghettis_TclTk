@@ -451,6 +451,15 @@ t_word *scalar_getData (t_scalar *x)
     return x->sc_vector;
 }
 
+t_template *scalar_getTemplate (t_scalar *x)
+{
+    t_template *template = template_findByIdentifier (x->sc_templateIdentifier);
+    
+    PD_ASSERT (template);
+    
+    return template;
+}
+
 t_symbol *scalar_getTemplateIdentifier (t_scalar *x)
 {
     return x->sc_templateIdentifier;

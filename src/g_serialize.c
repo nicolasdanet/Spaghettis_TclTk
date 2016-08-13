@@ -24,6 +24,63 @@ extern t_class *canvas_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static void canvas_findTemplatesAppendPerform (t_symbol *templateIdentifier, int *n, t_symbol ***v)
+{
+    int t = *n;
+    t_symbol **templates = *v;
+    int alreadyExist = 0;
+    int i;
+    
+    for (i = 0; i < t; i++) { if (templates[i] == templateIdentifier) { alreadyExist = 1; break; } }
+    
+    post_log ("%s", templateIdentifier->s_name);
+    
+    if (!alreadyExist) {
+    //
+    int oldSize = sizeof (t_symbol *) * (t);
+    int newSize = sizeof (t_symbol *) * (t + 1);
+        
+    templates    = (t_symbol **)PD_MEMORY_RESIZE (templates, oldSize, newSize);
+    templates[t] = templateIdentifier;
+    
+    *v = templates;
+    *n = t + 1;
+    //
+    }
+}
+
+static void canvas_findTemplatesAppendRecursive (t_template *tmpl, int *n, t_symbol ***v)
+{
+    int i;
+
+    canvas_findTemplatesAppendPerform (template_getTemplateIdentifier (tmpl), n, v);
+
+    for (i = 0; i < template_getSize (tmpl); i++) {
+        t_template *t = template_getTemplateIfArrayAtIndex (tmpl, i);
+        if (t) {
+            canvas_findTemplatesAppendRecursive (t, n, v);
+        }
+    }
+}
+
+static void canvas_findTemplatesRecursive (t_glist *glist, int *n, t_symbol ***v)
+{
+    t_gobj *y = NULL;
+
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+        if (pd_class (y) == scalar_class) {
+            canvas_findTemplatesAppendRecursive (scalar_getTemplate (cast_scalar (y)), n, v);
+        }
+        if (pd_class (y) == canvas_class) { 
+            canvas_findTemplatesRecursive (cast_glist (y), n, v);
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
     /* return true if two dataslot definitions match */
 static int dataslot_matches(t_dataslot *ds1, t_dataslot *ds2,
     int nametoo)
@@ -418,20 +475,7 @@ didit:
 
     /* ----------- routines to write data to a binbuf ----------- */
 
-static void canvas_doaddtemplate(t_symbol *templatesym, 
-    int *p_ntemplates, t_symbol ***p_templatevec)
-{
-    int n = *p_ntemplates, i;
-    t_symbol **templatevec = *p_templatevec;
-    for (i = 0; i < n; i++)
-        if (templatevec[i] == templatesym)
-            return;
-    templatevec = (t_symbol **)PD_MEMORY_RESIZE(templatevec,
-        n * sizeof(*templatevec), (n+1) * sizeof(*templatevec));
-    templatevec[n] = templatesym;
-    *p_templatevec = templatevec;
-    *p_ntemplates = n+1;
-}
+
 
     /* save a text object to a binbuf for a file or copy buf */
 static void binbuf_savetext(t_buffer *bfrom, t_buffer *bto)
@@ -521,46 +565,6 @@ static void glist_writelist(t_gobj *y, t_buffer *b)
     }
 }
 
-    /* ------------ routines to write out templates for data ------- */
-
-static void canvas_addtemplatesforscalar(t_symbol *templatesym,
-    t_word *w, int *p_ntemplates, t_symbol ***p_templatevec)
-{
-    t_dataslot *ds;
-    int i;
-    t_template *template = template_findByIdentifier(templatesym);
-    canvas_doaddtemplate(templatesym, p_ntemplates, p_templatevec);
-    if (!template) { PD_BUG; }
-    else for (ds = template->tp_vector, i = template->tp_size; i--; ds++, w++)
-    {
-        if (ds->ds_type == DATA_ARRAY)
-        {
-            int j;
-            t_array *a = w->w_array;
-            int elemsize = a->a_stride, nitems = a->a_size;
-            t_symbol *arraytemplatesym = ds->ds_templateIdentifier;
-            canvas_doaddtemplate(arraytemplatesym, p_ntemplates, p_templatevec);
-            for (j = 0; j < nitems; j++)
-                canvas_addtemplatesforscalar(arraytemplatesym,
-                    (t_word *)(((char *)a->a_vector) + elemsize * j), 
-                        p_ntemplates, p_templatevec);
-        }
-    }
-}
-
-static void canvas_addtemplatesforlist(t_gobj *y,
-    int  *p_ntemplates, t_symbol ***p_templatevec)
-{
-    for (; y; y = y->g_next)
-    {
-        if (pd_class(&y->g_pd) == scalar_class)
-        {
-            canvas_addtemplatesforscalar(((t_scalar *)y)->sc_templateIdentifier,
-                ((t_scalar *)y)->sc_vector, p_ntemplates, p_templatevec);
-        }
-    }
-}
-
     /* write all "scalars" in a glist to a binbuf. */
 t_buffer *glist_writetobinbuf(t_glist *x, int wholething)
 {
@@ -575,8 +579,7 @@ t_buffer *glist_writetobinbuf(t_glist *x, int wholething)
         if ((pd_class(&y->g_pd) == scalar_class) &&
             (wholething || canvas_isObjectSelected(x, y)))
         {
-            canvas_addtemplatesforscalar(((t_scalar *)y)->sc_templateIdentifier,
-                ((t_scalar *)y)->sc_vector,  &ntemplates, &templatevec);
+            canvas_findTemplatesAppendRecursive (scalar_getTemplate (cast_scalar (y)), &ntemplates, &templatevec);
         }
     }
     buffer_vAppend(b, "s;", sym_data);
@@ -647,27 +650,12 @@ void canvas_write(t_glist *x, t_symbol *filename, t_symbol *format)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_findTemplates (t_glist *glist, int *n, t_symbol ***v)
-{
-    t_gobj *y = NULL;
-
-    for (y = glist->gl_graphics; y; y = y->g_next) {
-    //
-    if (pd_class (y) == scalar_class) {
-        canvas_addtemplatesforscalar (cast_scalar (y)->sc_templateIdentifier, cast_scalar (y)->sc_vector, n, v);
-    } else if (pd_class (y) == canvas_class) {
-        canvas_findTemplates (cast_glist (y), n, v);
-    }
-    //
-    }
-}
-
 void canvas_serializeTemplates (t_glist *glist, t_buffer *b)
 {
     t_symbol **v = PD_MEMORY_GET (0);
     int i, n = 0;
     
-    canvas_findTemplates (glist, &n, &v);
+    canvas_findTemplatesRecursive (glist, &n, &v);
     
     for (i = 0; i < n; i++) {
     //
