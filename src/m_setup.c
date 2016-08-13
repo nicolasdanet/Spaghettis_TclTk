@@ -22,6 +22,7 @@ void bindlist_initialize    (void);
 void global_initialize      (void);
 void editor_initialize      (void);
 void drawpolygon_initialize (void);
+void plot_initialize        (void);
 void drawnumber_initialize  (void);
 void canvas_initialize      (void);
 void garray_initialize      (void);
@@ -37,6 +38,7 @@ void bindlist_release       (void);
 void global_release         (void);
 void editor_release         (void);
 void drawpolygon_release    (void);
+void plot_release           (void);
 void drawnumber_release     (void);
 void canvas_release         (void);
 void garray_release         (void);
@@ -114,6 +116,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     global_initialize();
     editor_initialize();
     drawpolygon_initialize();
+    plot_initialize();
     drawnumber_initialize();
     
     garray_setup();
@@ -184,6 +187,7 @@ void setup_release (void)
     canvas_release();
     
     drawnumber_release();
+    plot_release();
     drawpolygon_release();
     editor_release();
     global_release();

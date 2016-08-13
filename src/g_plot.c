@@ -40,12 +40,10 @@ static int                  plot_startX;                /* Shared. */
 static int                  plot_previousX;             /* Shared. */
 static int                  plot_thickness;             /* Shared. */
 static t_float              plot_direction;             /* Shared. */
+static t_gpointer           plot_gpointer;              /* Shared. */
 
 static t_fielddescriptor    *plot_fieldDescriptorX;     /* Shared. */
 static t_fielddescriptor    *plot_fieldDescriptorY;     /* Shared. */
-static t_glist              *plot_glist;                /* Shared. */
-static t_scalar             *plot_asScalar;             /* Shared. */
-static t_array              *plot_asArray;              /* Shared. */
 static t_array              *plot_array;                /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -267,15 +265,16 @@ static void plot_motionVertical (void)
 
 static void plot_motion (void *dummy, t_float deltaX, t_float deltaY, t_float modifier)
 {
+    if (gpointer_isValid (&plot_gpointer)) {
+    //
     plot_cumulativeX += deltaX * plot_stepX;
     plot_cumulativeY += deltaY * plot_stepY * (plot_thickness ? plot_direction : 1.0);
         
     if (plot_fieldDescriptorX)      { plot_motionHorizontalVertical(); }
     else if (plot_fieldDescriptorY) { plot_motionVertical(); }
     
-    if (plot_asScalar) { scalar_redraw (plot_asScalar, plot_glist); }
-    else {
-        PD_ASSERT (plot_asArray); array_redraw (plot_asArray, plot_glist);
+    gpointer_redraw (&plot_gpointer);
+    //
     }
 }
 
@@ -921,7 +920,7 @@ static int plot_behaviorClickedRegularMatch (t_plot *x,
     if (plot_thickness == PLOT_THICKNESS_UP   && plot_cumulativeY >= 0.0) { plot_direction = -1.0; }
     if (plot_thickness == PLOT_THICKNESS_DOWN && plot_cumulativeY <= 0.0) { plot_direction = -1.0; }
         
-    canvas_setMotionFunction (plot_glist, NULL, (t_motionfn)plot_motion, a, b);
+    canvas_setMotionFunction (gpointer_getView (&plot_gpointer), NULL, (t_motionfn)plot_motion, a, b);
     //
     }
     
@@ -975,9 +974,9 @@ static int plot_behaviorClickedRegular (t_plot *x,
         &valueY,
         &valueW);
     
-    pixelX = canvas_valueToPixelX (plot_glist, valueX);
-    pixelY = canvas_valueToPixelY (plot_glist, valueY);
-    pixelW = canvas_valueToPixelY (plot_glist, valueY + valueW) - pixelY;
+    pixelX = canvas_valueToPixelX (gpointer_getView (&plot_gpointer), valueX);
+    pixelY = canvas_valueToPixelY (gpointer_getView (&plot_gpointer), valueY);
+    pixelW = canvas_valueToPixelY (gpointer_getView (&plot_gpointer), valueY + valueW) - pixelY;
     pixelW = PD_ABS (pixelW);
     pixelW = PD_MAX (pixelW, plot_width - 1);
     
@@ -1031,8 +1030,8 @@ static int plot_behaviorClickedSingle (t_plot *x,
     int dbl,
     int clicked)
 {
-    t_float valueX = canvas_pixelToValueX (plot_glist, a);
-    t_float valueY = canvas_pixelToValueY (plot_glist, b);
+    t_float valueX = canvas_pixelToValueX (gpointer_getView (&plot_gpointer), a);
+    t_float valueY = canvas_pixelToValueY (gpointer_getView (&plot_gpointer), b);
     
     PD_ASSERT (plot_relativeX  == 0.0);
     PD_ASSERT (plot_relativeY  == 0.0);
@@ -1058,12 +1057,9 @@ static int plot_behaviorClickedSingle (t_plot *x,
         &x->x_fieldY,
         valueY);
             
-    canvas_setMotionFunction (plot_glist, NULL, (t_motionfn)plot_motion, a, b);
+    canvas_setMotionFunction (gpointer_getView (&plot_gpointer), NULL, (t_motionfn)plot_motion, a, b);
 
-    if (plot_asScalar) { scalar_redraw (plot_asScalar, plot_glist); }
-    else {
-        PD_ASSERT (plot_asArray); array_redraw (plot_asArray, plot_glist);
-    }
+    gpointer_redraw (&plot_gpointer);
     //
     }
     
@@ -1075,7 +1071,7 @@ static int plot_behaviorClicked (t_gobj *z,
     t_word *w,
     t_template *tmpl,
     t_scalar *asScalar,
-    t_array *asArray,
+    t_array *dummy,
     t_float baseX,
     t_float baseY,
     int a,
@@ -1111,10 +1107,9 @@ static int plot_behaviorClicked (t_gobj *z,
     plot_incrementX = incrementX;
     plot_width      = width;
     plot_style      = style;
-    plot_glist      = glist;
-    plot_asScalar   = asScalar;
-    plot_asArray    = asArray;
     plot_array      = array;
+    
+    gpointer_setAsScalar (&plot_gpointer, glist, asScalar);
     
     if (garray_isSingle (glist)) { return (plot_behaviorClickedSingle (x, a, b, shift, alt, dbl, clicked)); } 
     else {
@@ -1216,6 +1211,19 @@ void plot_setup (void)
     class_setParentWidgetBehavior (c, &plot_widgetBehavior);
     
     plot_class = c;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void plot_initialize (void)
+{
+}
+
+void plot_release (void)
+{
+    if (gpointer_isSet (&plot_gpointer)) { gpointer_unset (&plot_gpointer); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
