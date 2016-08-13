@@ -273,6 +273,19 @@ static void plot_motion (void *dummy, t_float deltaX, t_float deltaY, t_float mo
     if (plot_fieldDescriptorX)      { plot_motionHorizontalVertical(); }
     else if (plot_fieldDescriptorY) { plot_motionVertical(); }
     
+    if (gpointer_getTemplateIdentifier (&plot_gpointer) != sym___TEMPLATE__float__dash__array) {
+    //
+    PD_ASSERT (gpointer_isScalar (&plot_gpointer));
+    
+    template_notify (gpointer_getTemplate (&plot_gpointer), 
+        gpointer_getView (&plot_gpointer), 
+        gpointer_getScalar (&plot_gpointer),
+        sym_change,
+        0,
+        NULL);
+    //
+    }
+    
     gpointer_redraw (&plot_gpointer);
     //
     }
