@@ -91,12 +91,17 @@ t_glist *template_getFirstInstanceView (t_template *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void template_serialize (t_template *x, t_buffer *b)
+static void template_serialize (t_template *x, t_buffer *b, int asProperties)
 {
     int i;
     
-    buffer_vAppend (b, "sss", sym___hash__N, sym_struct, utils_stripBindSymbol (x->tp_templateIdentifier));
-        
+    t_symbol *s = utils_stripBindSymbol (x->tp_templateIdentifier);
+    
+    if (asProperties) { buffer_vAppend (b, "ss;", sym_template, s); }
+    else {
+        buffer_vAppend (b, "sss", sym___hash__N, sym_struct, s);
+    }
+    
     for (i = 0; i < x->tp_size; i++) {
     //
     t_symbol *type = &s_float;
@@ -109,13 +114,13 @@ void template_serialize (t_template *x, t_buffer *b)
     }
     
     if (x->tp_vector[i].ds_type == DATA_ARRAY) {
-        buffer_vAppend (b, "sss",
+        buffer_vAppend (b, asProperties ? "sss;" : "sss",
             type,
             x->tp_vector[i].ds_fieldName,
             utils_stripBindSymbol (x->tp_vector[i].ds_templateIdentifier));
             
     } else {
-        buffer_vAppend (b, "ss",
+        buffer_vAppend (b, asProperties ? "ss;"  : "ss",
             type,
             x->tp_vector[i].ds_fieldName);
     }
@@ -124,6 +129,20 @@ void template_serialize (t_template *x, t_buffer *b)
     
     buffer_appendSemicolon (b);
 }
+
+void template_serializeAsProperties (t_template *x, t_buffer *b)
+{
+    template_serialize (x, b, 1);
+}
+
+void template_serializeForSaving (t_template *x, t_buffer *b)
+{
+    template_serialize (x, b, 0);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void template_notify (t_template *x,
     t_glist *owner,

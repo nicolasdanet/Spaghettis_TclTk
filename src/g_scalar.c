@@ -427,8 +427,9 @@ static void scalar_functionProperties (t_gobj *z, t_glist *glist)
     
     {
         char *s = NULL;
-        t_buffer *b = glist_writetobinbuf (glist, 0);
+        t_buffer *b = buffer_new();
         
+        canvas_serializeScalarsSelected (glist, b);
         buffer_toString (b, &s);
         heapstring_add (t, s);
         heapstring_add (t, "}\n");

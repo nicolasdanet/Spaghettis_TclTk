@@ -333,20 +333,14 @@ static void glist_readfrombinbuf(t_glist *x, t_buffer *b, char *filename, int se
     }
 }
 
-static void glist_doread(t_glist *x, t_symbol *filename, t_symbol *format,
-    int clearme)
+static void glist_doread(t_glist *x, t_symbol *filename, int clearme)
 {
     t_buffer *b = buffer_new();
     t_glist *canvas = canvas_getView(x);
     int wasvis = canvas_isMapped(canvas);
-    int cr = 0, natoms, nline, message, nextmsg = 0, i, j;
+    int natoms, nline, message, nextmsg = 0, i, j;
     t_atom *vec;
 
-    /*if (!strcmp(format->s_name, "cr"))
-        cr = 1;
-    else if (*format->s_name)
-        post_error ("qlist_read: unknown flag: %s", format->s_name); */
-    
     if (buffer_read(b, filename->s_name, canvas))
     {
         post_error ("read failed");
@@ -363,15 +357,7 @@ static void glist_doread(t_glist *x, t_symbol *filename, t_symbol *format,
     buffer_free(b);
 }
 
-void canvas_read(t_glist *x, t_symbol *filename, t_symbol *format)
-{
-    glist_doread(x, filename, format, 1);
-}
 
-void canvas_merge (t_glist *x, t_symbol *filename, t_symbol *format)
-{
-    glist_doread(x, filename, format, 0);
-}
 
     /* read text from a "properties" window, called from a guistub set
     up in scalar_functionProperties().  We try to restore the object; if successful
@@ -563,85 +549,76 @@ static void glist_writelist(t_gobj *y, t_buffer *b)
     }
 }
 
-    /* write all "scalars" in a glist to a binbuf. */
-t_buffer *glist_writetobinbuf(t_glist *x, int wholething)
-{
-    int i;
-    t_symbol **templatevec = PD_MEMORY_GET(0);
-    int ntemplates = 0;
-    t_gobj *y;
-    t_buffer *b = buffer_new();
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-    for (y = x->gl_graphics; y; y = y->g_next)
-    {
-        if ((pd_class(&y->g_pd) == scalar_class) &&
-            (wholething || canvas_isObjectSelected(x, y)))
-        {
-            canvas_findTemplatesAppendRecursive (scalar_getTemplate (cast_scalar (y)), &ntemplates, &templatevec);
-        }
-    }
-    buffer_vAppend(b, "s;", sym_data);
-    for (i = 0; i < ntemplates; i++)
-    {
-        t_template *template = template_findByIdentifier(templatevec[i]);
-        int j, m = template->tp_size;
-            /* drop UTILS_BIND prefix from template symbol to print it: */
-        buffer_vAppend(b, "ss;", sym_template,
-            gensym (templatevec[i]->s_name + 3));
-        for (j = 0; j < m; j++)
-        {
-            t_symbol *type;
-            switch (template->tp_vector[j].ds_type)
-            {
-                case DATA_FLOAT: type = &s_float; break;
-                case DATA_SYMBOL: type = &s_symbol; break;
-                case DATA_ARRAY: type = sym_array; break;
-                case DATA_TEXT: type = &s_list; break;
-                default: type = &s_float; PD_BUG;
-            }
-            if (template->tp_vector[j].ds_type == DATA_ARRAY)
-                buffer_vAppend(b, "sss;", type, template->tp_vector[j].ds_fieldName,
-                    gensym (template->tp_vector[j].ds_templateIdentifier->s_name + 3));
-            else buffer_vAppend(b, "ss;", type, template->tp_vector[j].ds_fieldName);
-        }
-        buffer_appendSemicolon(b);
-    }
-    buffer_appendSemicolon(b);
-        /* now write out the objects themselves */
-    for (y = x->gl_graphics; y; y = y->g_next)
-    {
-        if ((pd_class(&y->g_pd) == scalar_class) &&
-            (wholething || canvas_isObjectSelected(x, y)))
-        {
-            canvas_writescalar(((t_scalar *)y)->sc_templateIdentifier,
-                ((t_scalar *)y)->sc_vector,  b, 0);
-        }
-    }
-    return (b);
+/* Read and write scalars. */
+
+void canvas_read (t_glist *glist, t_symbol *filename)
+{
+    glist_doread (glist, filename, 1);
 }
 
-void canvas_write(t_glist *x, t_symbol *filename, t_symbol *format)
+void canvas_merge (t_glist *glist, t_symbol *filename)
 {
-    int cr = 0, i;
-    t_buffer *b;
-    char buf[PD_STRING];
-    t_symbol **templatevec = PD_MEMORY_GET(0);
-    int ntemplates = 0;
-    t_gobj *y;
-    t_glist *canvas = canvas_getView(x);
-    canvas_makeFilePath(canvas, filename->s_name, buf, PD_STRING);
-    if (!strcmp(format->s_name, "cr"))
-        cr = 1;
-    else if (*format->s_name)
-        post_error ("qlist_read: unknown flag: %s", format->s_name);
+    glist_doread (glist, filename, 0);
+}
+
+void canvas_write (t_glist *glist, t_symbol *filename)
+{
+    t_buffer *b = buffer_new();
     
-    b = glist_writetobinbuf(x, 1);
-    if (b)
-    {
-        if (buffer_write(b, buf, ""))
-            post_error ("%s: write failed", filename->s_name);
-        buffer_free(b);
+    char t[PD_STRING] = { 0 };
+    canvas_makeFilePath (canvas_getView (glist), filename->s_name, t, PD_STRING);
+    
+    canvas_serializeScalarsAll (glist, b);
+    if (buffer_write (b, t, "")) { post_error (PD_TRANSLATE ("%s: write failed"), filename->s_name); }
+    
+    buffer_free (b);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void canvas_serializeScalars (t_glist *glist, t_buffer *b, int allScalars)
+{
+    t_symbol **v = PD_MEMORY_GET(0);
+    int i, n = 0;
+    t_gobj *y = NULL;
+
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+        if (pd_class (y) == scalar_class) {
+            if (allScalars || canvas_isObjectSelected (glist, y)) {
+                canvas_findTemplatesAppendRecursive (scalar_getTemplate (cast_scalar (y)), &n, &v);
+            }
+        }
     }
+    
+    buffer_vAppend (b, "s;", sym_data);
+    
+    for (i = 0; i < n; i++) { template_serializeAsProperties (template_findByIdentifier (v[i]), b); }
+    
+    buffer_appendSemicolon (b);
+
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+        if (pd_class (y) == scalar_class) {
+            if (allScalars || canvas_isObjectSelected (glist, y)) {
+                canvas_writescalar (((t_scalar *)y)->sc_templateIdentifier, ((t_scalar *)y)->sc_vector, b, 0);
+            }
+        }
+    }
+}
+
+void canvas_serializeScalarsAll (t_glist *glist, t_buffer *b)
+{
+    canvas_serializeScalars (glist, b, 1);
+}
+
+void canvas_serializeScalarsSelected (t_glist *glist, t_buffer *b)
+{
+    canvas_serializeScalars (glist, b, 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -655,7 +632,7 @@ void canvas_serializeTemplates (t_glist *glist, t_buffer *b)
     
     canvas_findTemplatesRecursive (glist, &n, &v);
     
-    for (i = 0; i < n; i++) { template_serialize (template_findByIdentifier (v[i]), b); }
+    for (i = 0; i < n; i++) { template_serializeForSaving (template_findByIdentifier (v[i]), b); }
     
     PD_MEMORY_FREE (v);
 }

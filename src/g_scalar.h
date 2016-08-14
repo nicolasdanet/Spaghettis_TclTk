@@ -256,7 +256,8 @@ int             template_hasInstance                    (t_template *x);
 void            template_registerInstance               (t_template *x, t_struct *o);
 void            template_unregisterInstance             (t_template *x, t_struct *o);
 
-void            template_serialize                      (t_template *x, t_buffer *b);
+void            template_serializeAsProperties          (t_template *x, t_buffer *b);
+void            template_serializeForSaving             (t_template *x, t_buffer *b);
 void            template_notify                         (t_template *x, 
                                                             t_glist *owner,
                                                             t_scalar *scalar,
@@ -332,11 +333,7 @@ void            paint_scalarsRedrawAll                  (void);
 
 void canvas_writescalar (t_symbol *templatesym, t_word *w, t_buffer *b, int amarrayelement);
 int canvas_readscalar (t_glist *x, int natoms, t_atom *vec, int *p_nextmsg, int selectit);
-void canvas_read (t_glist *glist, t_symbol *name, t_symbol *format);
-void canvas_write (t_glist *glist, t_symbol *name, t_symbol *format);
-void canvas_merge (t_glist *glist, t_symbol *name, t_symbol *format);
 void canvas_dataproperties (t_glist *x, t_scalar *sc, t_buffer *b);
-t_buffer *glist_writetobinbuf (t_glist *x, int wholething);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

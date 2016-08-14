@@ -992,19 +992,16 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_write,
         sym_write,
         A_SYMBOL,
-        A_DEFSYMBOL,
         A_NULL);
         
     class_addMethod (c, (t_method)canvas_read,
         sym_read,
         A_SYMBOL,
-        A_DEFSYMBOL,
         A_NULL);
         
     class_addMethod (c, (t_method)canvas_merge,
         sym_merge,
         A_SYMBOL,
-        A_DEFSYMBOL,
         A_NULL);
     
     class_addMethod (c, (t_method)canvas_bounds,
@@ -1037,7 +1034,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_makePanel,     sym_mycnv,             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeDial,      sym_numbox,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_visible,       sym_vis,               A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_merge,         sym_mergefile,         A_SYMBOL, A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)canvas_merge,         sym_mergefile,         A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)canvas_save,          sym_menusave,          A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_saveAs,        sym_menusaveas,        A_DEFFLOAT, A_NULL);    
     class_addMethod (c, (t_method)canvas_requireArray,  sym_menuarray,         A_NULL);
