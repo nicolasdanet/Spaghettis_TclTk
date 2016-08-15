@@ -259,8 +259,7 @@ int             template_hasInstance                    (t_template *x);
 void            template_registerInstance               (t_template *x, t_struct *o);
 void            template_unregisterInstance             (t_template *x, t_struct *o);
 
-void            template_serializeForFile               (t_template *x, t_buffer *b);
-void            template_serializeForPatch              (t_template *x, t_buffer *b);
+void            template_serialize                      (t_template *x, t_buffer *b);
 void            template_notify                         (t_template *x, 
                                                             t_glist *owner,
                                                             t_scalar *scalar,

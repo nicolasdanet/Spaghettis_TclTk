@@ -812,7 +812,6 @@
 				378971C41C4F716700263434 /* g_graph.c */,
 				378971C11C4F716700263434 /* g_canvas.c */,
 				370934811CC6887300827F75 /* g_dsp.c */,
-				374A76321CF5FA81001A57EB /* g_serialize.c */,
 				37BA30811CD1DB0F0091113F /* g_object.c */,
 				378971CE1C4F716700263434 /* g_box.c */,
 				377899A41CFED7B60056BE61 /* g_message.c */,
@@ -847,6 +846,7 @@
 				379C1B711D37934500C4D92C /* g_plot.c */,
 				379C1B3F1D3790C200C4D92C /* g_drawnumber.c */,
 				371430B01D0D46BC00E68D11 /* g_paint.c */,
+				374A76321CF5FA81001A57EB /* g_serialize.c */,
 			);
 			name = Scalar;
 			sourceTree = "<group>";

@@ -79,39 +79,21 @@ static void canvas_findTemplatesRecursive (t_glist *glist, int *n, t_symbol ***v
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* return true if two dataslot definitions match */
-static int dataslot_matches(t_dataslot *ds1, t_dataslot *ds2,
-    int nametoo)
+void canvas_serializeTemplates (t_glist *glist, t_buffer *b)
 {
-    return ((!nametoo || ds1->ds_fieldName == ds2->ds_fieldName) &&
-        ds1->ds_type == ds2->ds_type &&
-            (ds1->ds_type != DATA_ARRAY ||
-                ds1->ds_templateIdentifier == ds2->ds_templateIdentifier));
-}
-
-    /* stringent check to see if a "saved" template, x2, matches the current
-        one (x1).  It's OK if x1 has additional scalar elements but not (yet)
-        arrays.  This is used for reading in "data files". */
-static int template_equals(t_template *x1, t_template *x2)
-{
-    int i;
-    if (x1->tp_size < x2->tp_size)
-        return (0);
-    for (i = x2->tp_size; i < x1->tp_size; i++)
-    {
-        if (x1->tp_vector[i].ds_type == DATA_ARRAY)
-                return (0);
-    }
-    if (x2->tp_size > x1->tp_size)
-        post("add elements...");
-    for (i = 0; i < x2->tp_size; i++)
-        if (!dataslot_matches(&x1->tp_vector[i], &x2->tp_vector[i], 1))
-            return (0);
-    return (1);
+    t_symbol **v = PD_MEMORY_GET (0);
+    int i, n = 0;
+    
+    canvas_findTemplatesRecursive (glist, &n, &v);
+    
+    for (i = 0; i < n; i++) { template_serialize (template_findByIdentifier (v[i]), b); }
+    
+    PD_MEMORY_FREE (v);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static int canvas_scanbinbuf(int natoms, t_atom *vec, int *p_indexout, int *p_next)
 {
@@ -126,13 +108,6 @@ static int canvas_scanbinbuf(int natoms, t_atom *vec, int *p_indexout, int *p_ne
         *p_next = i;
     else *p_next = i + 1;
     return (i - indexwas);
-}
-
-static void canvas_readerror (int natoms, t_atom *vec, int message, int nline, char *s)
-{
-    post_error ("%s", s);
-    post("line was:");
-    post_atoms(nline, vec + message);
 }
 
     /* fill in the contents of the scalar into the vector w. */
@@ -250,197 +225,6 @@ int canvas_readscalar(t_glist *x, int natoms, t_atom *vec,
         canvas_selectObject(x, &sc->sc_g);
     }
     return (1);
-}
-
-static void glist_readfrombinbuf(t_glist *x, t_buffer *b, char *filename, int selectem)
-{
-    t_glist *canvas = canvas_getView(x);
-    int cr = 0, natoms, nline, message, nextmsg = 0, i, j, nitems;
-    t_atom *vec;
-    t_gobj *gobj;
-
-    natoms = buffer_size(b);
-    vec = buffer_atoms(b);
-
-    
-            /* check for file type */
-    nline = canvas_scanbinbuf(natoms, vec, &message, &nextmsg);
-    if (nline != 1 && vec[message].a_type != A_SYMBOL &&
-        strcmp(vec[message].a_w.w_symbol->s_name, "data"))
-    {
-        post_error ("%s: file apparently of wrong type", filename);
-        buffer_free(b);
-        return;
-    }
-        /* read in templates and check for consistency */
-    while (1)
-    {
-        t_template *newtemplate, *existtemplate;
-        t_symbol *templatesym;
-        t_atom *templateargs = PD_MEMORY_GET(0);
-        int ntemplateargs = 0, newnargs;
-        nline = canvas_scanbinbuf(natoms, vec, &message, &nextmsg);
-        if (nline < 2)
-            break;
-        else if (nline > 2)
-            canvas_readerror(natoms, vec, message, nline,
-                "extra items ignored");
-        else if (vec[message].a_type != A_SYMBOL ||
-            strcmp(vec[message].a_w.w_symbol->s_name, "template") ||
-            vec[message + 1].a_type != A_SYMBOL)
-        {
-            canvas_readerror(natoms, vec, message, nline,
-                "bad template header");
-            continue;
-        }
-        templatesym = utils_makeBindSymbol(vec[message + 1].a_w.w_symbol);
-        while (1)
-        {
-            nline = canvas_scanbinbuf(natoms, vec, &message, &nextmsg);
-            if (nline != 2 && nline != 3)
-                break;
-            newnargs = ntemplateargs + nline;
-            templateargs = (t_atom *)PD_MEMORY_RESIZE(templateargs,
-                sizeof(*templateargs) * ntemplateargs,
-                sizeof(*templateargs) * newnargs);
-            templateargs[ntemplateargs] = vec[message];
-            templateargs[ntemplateargs + 1] = vec[message + 1];
-            if (nline == 3)
-                templateargs[ntemplateargs + 2] = vec[message + 2];
-            ntemplateargs = newnargs;
-        }
-        if (!(existtemplate = template_findByIdentifier(templatesym)))
-        {
-            post_error ("%s: template not found in current patch",
-                templatesym->s_name);
-            PD_MEMORY_FREE(templateargs);
-            return;
-        }
-        newtemplate = template_new(templatesym, ntemplateargs, templateargs);
-        PD_MEMORY_FREE(templateargs);
-        if (!template_equals(existtemplate, newtemplate))
-        {
-            post_error ("%s: template doesn't match current one",
-                templatesym->s_name);
-            template_free(newtemplate);
-            return;
-        }
-        template_free(newtemplate);
-    }
-    while (nextmsg < natoms)
-    {
-        canvas_readscalar(x, natoms, vec, &nextmsg, selectem);
-    }
-}
-
-static void glist_doread(t_glist *x, t_symbol *filename, int clearme)
-{
-    t_buffer *b = buffer_new();
-    t_glist *canvas = canvas_getView(x);
-    int wasvis = canvas_isMapped(canvas);
-    int natoms, nline, message, nextmsg = 0, i, j;
-    t_atom *vec;
-
-    if (buffer_read(b, filename->s_name, canvas))
-    {
-        post_error ("read failed");
-        buffer_free(b);
-        return;
-    }
-    if (wasvis)
-        canvas_visible(canvas, 0);
-    if (clearme)
-        canvas_clear(x);
-    glist_readfrombinbuf(x, b, filename->s_name, 0);
-    if (wasvis)
-        canvas_visible(canvas, 1);
-    buffer_free(b);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-/* Read and write scalars. */
-
-void canvas_scalarsRead (t_glist *glist, t_symbol *filename)
-{
-    glist_doread (glist, filename, 1);
-}
-
-void canvas_scalarsMerge (t_glist *glist, t_symbol *filename)
-{
-    glist_doread (glist, filename, 0);
-}
-
-void canvas_scalarsWrite (t_glist *glist, t_symbol *filename)
-{
-    t_buffer *b = buffer_new();
-    
-    char t[PD_STRING] = { 0 };
-    canvas_makeFilePath (canvas_getView (glist), filename->s_name, t, PD_STRING);
-    
-    canvas_serializeScalarsAll (glist, b);
-    if (buffer_write (b, t, "")) { post_error (PD_TRANSLATE ("%s: write failed"), filename->s_name); }
-    
-    buffer_free (b);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void canvas_serializeScalars (t_glist *glist, t_buffer *b, int allScalars)
-{
-    t_symbol **v = PD_MEMORY_GET(0);
-    int i, n = 0;
-    t_gobj *y = NULL;
-
-    for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (pd_class (y) == scalar_class) {
-            if (allScalars || canvas_isObjectSelected (glist, y)) {
-                canvas_findTemplatesAppendRecursive (scalar_getTemplate (cast_scalar (y)), &n, &v);
-            }
-        }
-    }
-    
-    buffer_vAppend (b, "s;", sym_data);
-    
-    for (i = 0; i < n; i++) { template_serializeForFile (template_findByIdentifier (v[i]), b); }
-    
-    buffer_appendSemicolon (b);
-
-    for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (pd_class (y) == scalar_class) {
-            if (allScalars || canvas_isObjectSelected (glist, y)) { scalar_serialize (cast_scalar (y), b); }
-        }
-    }
-}
-
-void canvas_serializeScalarsAll (t_glist *glist, t_buffer *b)
-{
-    canvas_serializeScalars (glist, b, 1);
-}
-
-void canvas_serializeScalarsSelected (t_glist *glist, t_buffer *b)
-{
-    canvas_serializeScalars (glist, b, 0);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void canvas_serializeTemplates (t_glist *glist, t_buffer *b)
-{
-    t_symbol **v = PD_MEMORY_GET (0);
-    int i, n = 0;
-    
-    canvas_findTemplatesRecursive (glist, &n, &v);
-    
-    for (i = 0; i < n; i++) { template_serializeForPatch (template_findByIdentifier (v[i]), b); }
-    
-    PD_MEMORY_FREE (v);
 }
 
 // -----------------------------------------------------------------------------------------------------------

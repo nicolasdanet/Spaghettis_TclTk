@@ -73,7 +73,6 @@
 #include "g_graph.c"
 #include "g_canvas.c"
 #include "g_dsp.c"
-#include "g_serialize.c"
 #include "g_object.c"
 #include "g_box.c"
 #include "g_message.c"
@@ -110,6 +109,7 @@
 #include "g_plot.c"
 #include "g_drawnumber.c"
 #include "g_paint.c"
+#include "g_serialize.c"
 
 /* Control. */
 
