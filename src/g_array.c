@@ -116,8 +116,6 @@ void array_serialize (t_array *x, t_buffer *b)
     buffer_appendSemicolon (b);
     //
     }
-    
-    buffer_appendSemicolon (b);
 }
 
 // -----------------------------------------------------------------------------------------------------------

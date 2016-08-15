@@ -401,29 +401,6 @@ static int scalar_behaviorClicked (t_gobj *z,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void scalar_serializeText (t_buffer *bfrom, t_buffer *bto)
-{
-    int k, n = buffer_size(bfrom);
-    t_atom *ap = buffer_atoms(bfrom), at;
-    for (k = 0; k < n; k++)
-    {
-        if (ap[k].a_type == A_FLOAT ||
-            ap[k].a_type == A_SYMBOL &&
-                !strchr(ap[k].a_w.w_symbol->s_name, ';') &&
-                !strchr(ap[k].a_w.w_symbol->s_name, ',') &&
-                !strchr(ap[k].a_w.w_symbol->s_name, '$'))
-                    buffer_append(bto, 1, &ap[k]);
-        else
-        {
-            char buf[PD_STRING+1];
-            atom_toString(&ap[k], buf, PD_STRING);
-            SET_SYMBOL(&at, gensym (buf));
-            buffer_append(bto, 1, &at);
-        }
-    }
-    buffer_appendSemicolon(bto);
-}
-
 void scalar_serialize (t_scalar *x, t_buffer *b)
 {
     t_template *template = template_findByIdentifier (x->sc_templateIdentifier);
@@ -457,16 +434,14 @@ void scalar_serialize (t_scalar *x, t_buffer *b)
             
         if (template_fieldIsArray (template, fieldName)) {
             array_serialize (word_getArray (x->sc_vector, template, fieldName), b);
+            buffer_appendSemicolon (b);
             
         } else if (template_fieldIsText (template, fieldName)) {
-            scalar_serializeText (word_getBuffer (x->sc_vector, template, fieldName), b);
+            buffer_serialize (b, word_getBuffer (x->sc_vector, template, fieldName));
+            buffer_appendSemicolon (b);
         }
     }
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 static void scalar_functionSave (t_gobj *z, t_buffer *b)
 {
