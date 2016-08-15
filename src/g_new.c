@@ -168,10 +168,9 @@ void canvas_makeScalar (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     if (template_findByIdentifier (templateIdentifier)) {
     //
     t_buffer *t = buffer_new();
-    int n = 0;
     
     buffer_deserialize (t, argc, argv);
-    canvas_readscalar (glist, buffer_size (t), buffer_atoms (t), &n, 0);
+    canvas_deserializeScalar (glist, buffer_size (t), buffer_atoms (t));
     buffer_free (t);
     
     return;

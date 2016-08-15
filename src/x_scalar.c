@@ -121,13 +121,13 @@ static void scalar_define_set(t_glist *x, t_symbol *s, int argc, t_atom *argv)
     if (x->gl_graphics && pd_class(&x->gl_graphics->g_pd) == scalar_class)
     {
         t_buffer *b = buffer_new();
-        int nextmsg = 0, natoms;
+        int natoms;
         t_atom *vec;
         canvas_clear(x);
         buffer_deserialize(b, argc, argv);
         natoms = buffer_size(b);
         vec = buffer_atoms(b);
-        canvas_readscalar(x, natoms, vec, &nextmsg, 0);
+        canvas_deserializeScalar(x, natoms, vec);
         buffer_free(b);
     }
     else { PD_BUG; }

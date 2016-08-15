@@ -545,6 +545,7 @@ void            canvas_dsp                              (t_glist *glist, t_signa
 #pragma mark -
 
 void            canvas_serializeTemplates               (t_glist *glist, t_buffer *b);
+t_error         canvas_deserializeScalar                (t_glist *glist, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

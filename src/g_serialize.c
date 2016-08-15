@@ -95,25 +95,35 @@ void canvas_serializeTemplates (t_glist *glist, t_buffer *b)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int canvas_scanbinbuf(int natoms, t_atom *vec, int *p_indexout, int *p_next)
+static int canvas_fetchNext (int argc, t_atom *argv, int *current, int *next)
 {
-    int i, j;
-    int indexwas = *p_next;
-    *p_indexout = indexwas;
-    if (indexwas >= natoms)
-        return (0);
-    for (i = indexwas; i < natoms && vec[i].a_type != A_SEMICOLON; i++)
-        ;
-    if (i >= natoms)
-        *p_next = i;
-    else *p_next = i + 1;
-    return (i - indexwas);
+    int k = *next;
+    int n = 0;
+    
+    *current = k;
+    
+    if (k < argc) {
+    //
+    int i;
+    for (i = k; i < argc && !IS_SEMICOLON (argv + i); i++) { }
+    *next = PD_MIN (i + 1, argc);
+    n = i - k;
+    //
+    }
+    
+    // post_atoms (n, argv + k);
+    
+    return n;
 }
 
-    /* fill in the contents of the scalar into the vector w. */
-
-static void glist_readatoms(t_glist *x, int natoms, t_atom *vec,
-    int *p_nextmsg, t_symbol *templatesym, t_word *w, int argc, t_atom *argv)
+static void canvas_readElements (t_glist *x,
+    int natoms,
+    t_atom *vec,
+    int *p_nextmsg,
+    t_symbol *templatesym,
+    t_word *w,
+    int argc,
+    t_atom *argv)
 {
     int message, nline, n, i;
 
@@ -143,14 +153,14 @@ static void glist_readatoms(t_glist *x, int natoms, t_atom *vec,
             else while (1)
             {
                 t_word *element;
-                int nline = canvas_scanbinbuf(natoms, vec, &message, p_nextmsg);
+                int nline = canvas_fetchNext(natoms, vec, &message, p_nextmsg);
                     /* empty line terminates array */
                 if (!nline)
                     break;
                 array_resize(a, nitems + 1);
                 element = (t_word *)(((char *)a->a_vector) +
                     nitems * elemsize);
-                glist_readatoms(x, natoms, vec, p_nextmsg, arraytemplatesym,
+                canvas_readElements(x, natoms, vec, p_nextmsg, arraytemplatesym,
                     element, nline, vec + message);
                 nitems++;
             }
@@ -171,60 +181,43 @@ static void glist_readatoms(t_glist *x, int natoms, t_atom *vec,
     }
 }
 
-int canvas_readscalar(t_glist *x, int natoms, t_atom *vec,
-    int *p_nextmsg, int selectit)
-{
-    int message, i, j, nline;
-    t_template *template;
-    t_symbol *templatesym;
-    t_scalar *sc;
-    int nextmsg = *p_nextmsg;
-    int wasvis = canvas_isMapped(x);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-    if (nextmsg >= natoms || vec[nextmsg].a_type != A_SYMBOL)
-    {
-        if (nextmsg < natoms)
-            post("stopping early: type %d", vec[nextmsg].a_type);
-        *p_nextmsg = natoms;
-        return (0);
-    }
-    templatesym = utils_makeBindSymbol(vec[nextmsg].a_w.w_symbol);
-    *p_nextmsg = nextmsg + 1;
+t_error canvas_deserializeScalar (t_glist *glist, int argc, t_atom *argv)
+{
+    if (argc > 0 && IS_SYMBOL (argv)) {
+    //
+    t_symbol *templateIdentifier = utils_makeBindSymbol (GET_SYMBOL (argv));
+        
+    if (template_isValid (template_findByIdentifier (templateIdentifier))) {
+    //
+    t_scalar *scalar = scalar_new (glist, templateIdentifier);
     
-    if (!(template = template_findByIdentifier(templatesym)))
-    {
-        post_error ("canvas_read: %s: no such template", templatesym->s_name);
-        *p_nextmsg = natoms;
-        return (0);
-    }
-    sc = scalar_new(x, templatesym);
-    if (!sc)
-    {
-        post_error ("couldn't create scalar \"%s\"", templatesym->s_name);
-        *p_nextmsg = natoms;
-        return (0);
-    }
-    if (wasvis)
-    {
-            /* temporarily lie about vis flag while this is built */
-        canvas_getView(x)->gl_isMapped = 0;
-    }
-    canvas_addObject (x, &sc->sc_g);
+    PD_ASSERT (scalar);
     
-    nline = canvas_scanbinbuf(natoms, vec, &message, p_nextmsg);
-    glist_readatoms(x, natoms, vec, p_nextmsg, templatesym, sc->sc_vector, 
-        nline, vec + message);
-    if (wasvis)
-    {
-            /* reset vis flag as before */
-        canvas_getView(x)->gl_isMapped = 1;
-        gobj_visibilityChanged(&sc->sc_g, x, 1);
+    if (scalar) {
+    //
+    int next = 1;       /* Start after the template name. */
+    int i;
+    int n;
+    
+    canvas_addObject (glist, cast_gobj (scalar));
+    
+    n = canvas_fetchNext (argc, argv, &i, &next);
+    
+    canvas_readElements (glist, argc, argv, &next, templateIdentifier, scalar->sc_vector, n, argv + i);
+
+    if (canvas_isMapped (glist)) { gobj_visibilityChanged (cast_gobj (scalar), glist, 1); }
+    //
     }
-    if (selectit)
-    {
-        canvas_selectObject(x, &sc->sc_g);
+    //
     }
-    return (1);
+    //
+    }
+    
+    return PD_ERROR;
 }
 
 // -----------------------------------------------------------------------------------------------------------
