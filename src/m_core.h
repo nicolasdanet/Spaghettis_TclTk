@@ -332,6 +332,8 @@ t_error     atom_toString                               (t_atom *a, char *s, int
 
 void        buffer_resize                               (t_buffer *x, int n);
 void        buffer_vAppend                              (t_buffer *x, char *fmt, ...);
+void        buffer_appendAtom                           (t_buffer *x, t_atom *a);
+void        buffer_appendBuffer                         (t_buffer *x, t_buffer *y);
 void        buffer_appendSemicolon                      (t_buffer *x);
 void        buffer_parseStringUnzeroed                  (t_buffer *x, char *s, int size, int preallocated);
 void        buffer_toString                             (t_buffer *x, char **s);

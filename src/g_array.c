@@ -84,6 +84,45 @@ void array_free (t_array *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void array_serialize (t_array *x, t_buffer *b)
+{
+    t_template *template = array_getTemplate (x);
+    int i, j;
+            
+    for (i = 0; i < array_getSize (x); i++) {
+    //
+    t_word *w = array_getElementAtIndex (x, i);
+    
+    for (j = 0; j < template_getSize (template); j++) {
+
+        t_symbol *fieldName = template_getFieldAtIndex (template, j);
+        
+        if (template_fieldIsFloat (template, fieldName)) {
+            t_atom t;
+            SET_FLOAT (&t, word_getFloat (w, template, fieldName));
+            buffer_appendAtom (b, &t);
+            
+        } else if (template_fieldIsSymbol (template, fieldName)) {
+            t_atom t;
+            SET_SYMBOL (&t, word_getSymbol (w, template, fieldName));
+            buffer_appendAtom (b, &t);
+            
+        } else {
+            PD_BUG;     /* Not implemented yet. */
+        }
+    }
+    
+    buffer_appendSemicolon (b);
+    //
+    }
+    
+    buffer_appendSemicolon (b);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_word *array_getData (t_array *x)
 {
     return (t_word *)x->a_vector;

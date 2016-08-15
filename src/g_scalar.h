@@ -149,6 +149,7 @@ int             scalar_fieldIsFloat                     (t_scalar *x, t_symbol *
 t_float         scalar_getFloat                         (t_scalar *x, t_symbol *fieldName);
 void            scalar_setFloat                         (t_scalar *x, t_symbol *fieldName, t_float f);
 
+void            scalar_serialize                        (t_scalar *x, t_buffer *b);
 void            scalar_redraw                           (t_scalar *x, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -170,6 +171,7 @@ void            array_free                              (t_array *x);
 void            array_resize                            (t_array *x, int n);
 void            array_redraw                            (t_array *x, t_glist *glist);
 void            array_resizeAndRedraw                   (t_array *x, t_glist *glist, int n);
+void            array_serialize                         (t_array *x, t_buffer *b);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -248,6 +250,7 @@ t_dataslot      *template_getData                       (t_template *x);
 t_symbol        *template_getTemplateIdentifier         (t_template *x);
 t_glist         *template_getFirstInstanceView          (t_template *x);
 t_template      *template_getTemplateIfArrayAtIndex     (t_template *x, int n);
+t_symbol        *template_getFieldAtIndex               (t_template *x, int n);
 
 void            template_free                           (t_template *x);
 int             template_isValid                        (t_template *x);
@@ -256,8 +259,8 @@ int             template_hasInstance                    (t_template *x);
 void            template_registerInstance               (t_template *x, t_struct *o);
 void            template_unregisterInstance             (t_template *x, t_struct *o);
 
-void            template_serializeAsProperties          (t_template *x, t_buffer *b);
-void            template_serializeForSaving             (t_template *x, t_buffer *b);
+void            template_serializeForFile               (t_template *x, t_buffer *b);
+void            template_serializeForPatch              (t_template *x, t_buffer *b);
 void            template_notify                         (t_template *x, 
                                                             t_glist *owner,
                                                             t_scalar *scalar,
@@ -331,7 +334,6 @@ void            paint_scalarsRedrawAll                  (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_writescalar (t_symbol *templatesym, t_word *w, t_buffer *b, int amarrayelement);
 int canvas_readscalar (t_glist *x, int natoms, t_atom *vec, int *p_nextmsg, int selectit);
 void canvas_dataproperties (t_glist *x, t_scalar *sc, t_buffer *b);
 

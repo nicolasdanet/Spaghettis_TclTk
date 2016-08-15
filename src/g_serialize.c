@@ -462,92 +462,7 @@ didit:
 
 
     /* save a text object to a binbuf for a file or copy buf */
-static void binbuf_savetext(t_buffer *bfrom, t_buffer *bto)
-{
-    int k, n = buffer_size(bfrom);
-    t_atom *ap = buffer_atoms(bfrom), at;
-    for (k = 0; k < n; k++)
-    {
-        if (ap[k].a_type == A_FLOAT ||
-            ap[k].a_type == A_SYMBOL &&
-                !strchr(ap[k].a_w.w_symbol->s_name, ';') &&
-                !strchr(ap[k].a_w.w_symbol->s_name, ',') &&
-                !strchr(ap[k].a_w.w_symbol->s_name, '$'))
-                    buffer_append(bto, 1, &ap[k]);
-        else
-        {
-            char buf[PD_STRING+1];
-            atom_toString(&ap[k], buf, PD_STRING);
-            SET_SYMBOL(&at, gensym (buf));
-            buffer_append(bto, 1, &at);
-        }
-    }
-    buffer_appendSemicolon(bto);
-}
 
-void canvas_writescalar(t_symbol *templatesym, t_word *w, t_buffer *b,
-    int amarrayelement)
-{
-    t_dataslot *ds;
-    t_template *template = template_findByIdentifier(templatesym);
-    t_atom *a = (t_atom *)PD_MEMORY_GET(0);
-    int i, n = template->tp_size, natom = 0;
-    if (!amarrayelement)
-    {
-        t_atom templatename;
-        SET_SYMBOL(&templatename, gensym (templatesym->s_name + 3));
-        buffer_append(b, 1, &templatename);
-    }
-    if (!template) { PD_BUG; }
-        /* write the atoms (floats and symbols) */
-    for (i = 0; i < n; i++)
-    {
-        if (template->tp_vector[i].ds_type == DATA_FLOAT ||
-            template->tp_vector[i].ds_type == DATA_SYMBOL)
-        {
-            a = (t_atom *)PD_MEMORY_RESIZE(a,
-                natom * sizeof(*a), (natom + 1) * sizeof (*a));
-            if (template->tp_vector[i].ds_type == DATA_FLOAT)
-                SET_FLOAT(a + natom, w[i].w_float);
-            else SET_SYMBOL(a + natom,  w[i].w_symbol);
-            natom++;
-        }
-    }
-        /* array elements have to have at least something */
-    if (natom == 0 && amarrayelement)
-        SET_SYMBOL(a + natom,  &s_bang), natom++;
-    buffer_append(b, natom, a);
-    buffer_appendSemicolon(b);
-    PD_MEMORY_FREE(a);
-    for (i = 0; i < n; i++)
-    {
-        if (template->tp_vector[i].ds_type == DATA_ARRAY)
-        {
-            int j;
-            t_array *a = w[i].w_array;
-            int elemsize = a->a_stride, nitems = a->a_size;
-            t_symbol *arraytemplatesym = template->tp_vector[i].ds_templateIdentifier;
-            for (j = 0; j < nitems; j++)
-                canvas_writescalar(arraytemplatesym,
-                    (t_word *)(((char *)a->a_vector) + elemsize * j), b, 1);
-            buffer_appendSemicolon(b);
-        }
-        else if (template->tp_vector[i].ds_type == DATA_TEXT)
-            binbuf_savetext(w[i].w_buffer, b);
-    }
-}
-
-static void glist_writelist(t_gobj *y, t_buffer *b)
-{
-    for (; y; y = y->g_next)
-    {
-        if (pd_class(&y->g_pd) == scalar_class)
-        {
-            canvas_writescalar(((t_scalar *)y)->sc_templateIdentifier,
-                ((t_scalar *)y)->sc_vector, b, 0);
-        }
-    }
-}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -555,17 +470,17 @@ static void glist_writelist(t_gobj *y, t_buffer *b)
 
 /* Read and write scalars. */
 
-void canvas_read (t_glist *glist, t_symbol *filename)
+void canvas_scalarsRead (t_glist *glist, t_symbol *filename)
 {
     glist_doread (glist, filename, 1);
 }
 
-void canvas_merge (t_glist *glist, t_symbol *filename)
+void canvas_scalarsMerge (t_glist *glist, t_symbol *filename)
 {
     glist_doread (glist, filename, 0);
 }
 
-void canvas_write (t_glist *glist, t_symbol *filename)
+void canvas_scalarsWrite (t_glist *glist, t_symbol *filename)
 {
     t_buffer *b = buffer_new();
     
@@ -598,15 +513,13 @@ static void canvas_serializeScalars (t_glist *glist, t_buffer *b, int allScalars
     
     buffer_vAppend (b, "s;", sym_data);
     
-    for (i = 0; i < n; i++) { template_serializeAsProperties (template_findByIdentifier (v[i]), b); }
+    for (i = 0; i < n; i++) { template_serializeForFile (template_findByIdentifier (v[i]), b); }
     
     buffer_appendSemicolon (b);
 
     for (y = glist->gl_graphics; y; y = y->g_next) {
         if (pd_class (y) == scalar_class) {
-            if (allScalars || canvas_isObjectSelected (glist, y)) {
-                canvas_writescalar (((t_scalar *)y)->sc_templateIdentifier, ((t_scalar *)y)->sc_vector, b, 0);
-            }
+            if (allScalars || canvas_isObjectSelected (glist, y)) { scalar_serialize (cast_scalar (y), b); }
         }
     }
 }
@@ -632,7 +545,7 @@ void canvas_serializeTemplates (t_glist *glist, t_buffer *b)
     
     canvas_findTemplatesRecursive (glist, &n, &v);
     
-    for (i = 0; i < n; i++) { template_serializeForSaving (template_findByIdentifier (v[i]), b); }
+    for (i = 0; i < n; i++) { template_serializeForPatch (template_findByIdentifier (v[i]), b); }
     
     PD_MEMORY_FREE (v);
 }

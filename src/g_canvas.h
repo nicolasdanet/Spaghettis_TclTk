@@ -544,9 +544,9 @@ void            canvas_dsp                              (t_glist *glist, t_signa
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            canvas_read                             (t_glist *glist, t_symbol *name);
-void            canvas_merge                            (t_glist *glist, t_symbol *name);
-void            canvas_write                            (t_glist *glist, t_symbol *name);
+void            canvas_scalarsRead                      (t_glist *glist, t_symbol *name);
+void            canvas_scalarsMerge                     (t_glist *glist, t_symbol *name);
+void            canvas_scalarsWrite                     (t_glist *glist, t_symbol *name);
 
 void            canvas_serializeScalarsAll              (t_glist *glist, t_buffer *b);
 void            canvas_serializeScalarsSelected         (t_glist *glist, t_buffer *b);

@@ -91,13 +91,13 @@ t_glist *template_getFirstInstanceView (t_template *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void template_serialize (t_template *x, t_buffer *b, int asProperties)
+static void template_serialize (t_template *x, t_buffer *b, int asFile)
 {
     int i;
     
     t_symbol *s = utils_stripBindSymbol (x->tp_templateIdentifier);
     
-    if (asProperties) { buffer_vAppend (b, "ss;", sym_template, s); }
+    if (asFile) { buffer_vAppend (b, "ss;", sym_template, s); }
     else {
         buffer_vAppend (b, "sss", sym___hash__N, sym_struct, s);
     }
@@ -114,13 +114,13 @@ static void template_serialize (t_template *x, t_buffer *b, int asProperties)
     }
     
     if (x->tp_vector[i].ds_type == DATA_ARRAY) {
-        buffer_vAppend (b, asProperties ? "sss;" : "sss",
+        buffer_vAppend (b, asFile ? "sss;" : "sss",
             type,
             x->tp_vector[i].ds_fieldName,
             utils_stripBindSymbol (x->tp_vector[i].ds_templateIdentifier));
             
     } else {
-        buffer_vAppend (b, asProperties ? "ss;"  : "ss",
+        buffer_vAppend (b, asFile ? "ss;"  : "ss",
             type,
             x->tp_vector[i].ds_fieldName);
     }
@@ -130,12 +130,12 @@ static void template_serialize (t_template *x, t_buffer *b, int asProperties)
     buffer_appendSemicolon (b);
 }
 
-void template_serializeAsProperties (t_template *x, t_buffer *b)
+void template_serializeForFile (t_template *x, t_buffer *b)
 {
     template_serialize (x, b, 1);
 }
 
-void template_serializeForSaving (t_template *x, t_buffer *b)
+void template_serializeForPatch (t_template *x, t_buffer *b)
 {
     template_serialize (x, b, 0);
 }
@@ -253,6 +253,14 @@ int template_getIndexOfField (t_template *x, t_symbol *fieldName)
     if (template_getRaw (x, fieldName, &i, &t, &dummy)) { return i; }
     else {
         return -1;
+    }
+}
+
+t_symbol *template_getFieldAtIndex (t_template *x, int n)
+{
+    if (n >= 0 && n < x->tp_size) { return x->tp_vector[n].ds_fieldName; }
+    else {
+        return NULL;
     }
 }
 
