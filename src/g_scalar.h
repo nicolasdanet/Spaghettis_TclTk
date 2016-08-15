@@ -335,7 +335,6 @@ void            paint_scalarsRedrawAll                  (void);
 #pragma mark -
 
 int canvas_readscalar (t_glist *x, int natoms, t_atom *vec, int *p_nextmsg, int selectit);
-void canvas_dataproperties (t_glist *x, t_scalar *sc, t_buffer *b);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

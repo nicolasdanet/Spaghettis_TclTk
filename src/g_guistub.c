@@ -34,7 +34,6 @@ static t_class      *guistub_class;             /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_buffer     *guistub_buffer;            /* Shared. */
 static t_guistub    *guistub_list;              /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -78,20 +77,6 @@ void guistub_destroyWithKey (void *key)
 static void guistub_anything (t_guistub *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (x->x_owner) { pd_message (x->x_owner, s, argc, argv); }
-}
-
-static void guistub_data (t_guistub *x, t_symbol *s, int argc, t_atom *argv)
-{
-    if (!guistub_buffer) { guistub_buffer = buffer_new(); }
-    buffer_append (guistub_buffer, argc, argv);
-    buffer_appendSemicolon (guistub_buffer);
-}
-
-static void guistub_end (t_guistub *x)
-{
-    canvas_dataproperties (cast_glist (x->x_owner), cast_scalar (x->x_key), guistub_buffer);
-    buffer_free (guistub_buffer);
-    guistub_buffer = NULL;
 }
 
 static void guistub_signoff (t_guistub *x)
@@ -178,8 +163,6 @@ void guistub_setup (void)
         
     class_addAnything (c, guistub_anything);
 
-    class_addMethod (c, (t_method)guistub_data,     sym__data,      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)guistub_end,      sym__end,       A_NULL);
     class_addMethod (c, (t_method)guistub_signoff,  sym__signoff,   A_NULL);
     
     guistub_class = c;

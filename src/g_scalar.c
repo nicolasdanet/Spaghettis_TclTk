@@ -481,34 +481,6 @@ static void scalar_functionSave (t_gobj *z, t_buffer *b)
     buffer_free (t);
 }
 
-static void scalar_functionProperties (t_gobj *z, t_glist *glist)
-{
-    t_scalar *x = cast_scalar (z);
-    t_heapstring *t = heapstring_new (0);
-    
-    canvas_deselectAll (glist);
-    canvas_selectObject (glist, z);
-
-    heapstring_add (t, "::ui_data::show %s {");
-    
-    {
-        char *s = NULL;
-        t_buffer *b = buffer_new();
-        
-        canvas_serializeScalarsSelected (glist, b);
-        buffer_toString (b, &s);
-        heapstring_add (t, s);
-        heapstring_add (t, "}\n");
-        
-        buffer_free (b);
-        PD_MEMORY_FREE (s);
-    }
-
-    guistub_new (cast_pd (glist), (void *)x, heapstring_getRaw (t));
-        
-    heapstring_free (t);
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -609,7 +581,6 @@ void scalar_setup (void)
         
     class_setWidgetBehavior (c, &scalar_widgetBehavior);
     class_setSaveFunction (c, scalar_functionSave);
-    class_setPropertiesFunction (c, scalar_functionProperties);
     
     scalar_class = c;
 }

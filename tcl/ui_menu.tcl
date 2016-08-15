@@ -415,7 +415,6 @@ proc _close {} {
                 "Audio"         { ::ui_audio::closed  $top }
                 "Bang"          { ::ui_iem::closed    $top }
                 "Canvas"        { ::ui_canvas::closed $top }
-                "Data"          { ::ui_data::closed   $top }
                 "MIDI"          { ::ui_midi::closed   $top }
                 "Dial"          { ::ui_iem::closed    $top }
                 "Panel"         { ::ui_iem::closed    $top }

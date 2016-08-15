@@ -97,7 +97,6 @@ package require ui_box
 package require ui_canvas
 package require ui_confirm
 package require ui_console
-package require ui_data
 package require ui_file
 package require ui_iem
 package require ui_interface
