@@ -106,9 +106,12 @@ void array_serialize (t_array *x, t_buffer *b)
         t_atom t;
         SET_SYMBOL (&t, word_getSymbol (w, template, fieldName));
         buffer_appendAtom (b, &t);
-        
+    
+    } else if (template_fieldIsText (template, fieldName)) {
+        buffer_serialize (b, word_getBuffer (w, template, fieldName));
+            
     } else {
-        PD_BUG;     /* Not implemented yet. */
+        PD_BUG;     /* Nested arrays not allowed. */
     }
     //
     }
