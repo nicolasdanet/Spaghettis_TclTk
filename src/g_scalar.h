@@ -150,6 +150,7 @@ t_float         scalar_getFloat                         (t_scalar *x, t_symbol *
 void            scalar_setFloat                         (t_scalar *x, t_symbol *fieldName, t_float f);
 
 void            scalar_serialize                        (t_scalar *x, t_buffer *b);
+void            scalar_deserialize                      (t_scalar *x, t_glist *glist, int argc, t_atom *argv);
 void            scalar_redraw                           (t_scalar *x, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------

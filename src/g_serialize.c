@@ -95,96 +95,6 @@ void canvas_serializeTemplates (t_glist *glist, t_buffer *b)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int canvas_fetchNext (int argc, t_atom *argv, int *current, int *next)
-{
-    int k = *next;
-    int n = 0;
-    
-    *current = k;
-    
-    if (k < argc) {
-    //
-    int i;
-    for (i = k; i < argc && !IS_SEMICOLON (argv + i); i++) { }
-    *next = PD_MIN (i + 1, argc);
-    n = i - k;
-    //
-    }
-    
-    // post_atoms (n, argv + k);
-    
-    return n;
-}
-
-static void canvas_readElements (t_glist *x,
-    int natoms,
-    t_atom *vec,
-    int *p_nextmsg,
-    t_symbol *templatesym,
-    t_word *w,
-    int argc,
-    t_atom *argv)
-{
-    int message, nline, n, i;
-
-    t_template *template = template_findByIdentifier(templatesym);
-    if (!template)
-    {
-        post_error ("%s: no such template", templatesym->s_name);
-        *p_nextmsg = natoms;
-        return;
-    }
-    word_restore(w, template, argc, argv);
-    n = template->tp_size;
-    for (i = 0; i < n; i++)
-    {
-        if (template->tp_vector[i].ds_type == DATA_ARRAY)
-        {
-            int j;
-            t_array *a = w[i].w_array;
-            int elemsize = a->a_stride, nitems = 0;
-            t_symbol *arraytemplatesym = template->tp_vector[i].ds_templateIdentifier;
-            t_template *arraytemplate =
-                template_findByIdentifier(arraytemplatesym);
-            if (!arraytemplate)
-            {
-                post_error ("%s: no such template", arraytemplatesym->s_name);
-            }
-            else while (1)
-            {
-                t_word *element;
-                int nline = canvas_fetchNext(natoms, vec, &message, p_nextmsg);
-                    /* empty line terminates array */
-                if (!nline)
-                    break;
-                array_resize(a, nitems + 1);
-                element = (t_word *)(((char *)a->a_vector) +
-                    nitems * elemsize);
-                canvas_readElements(x, natoms, vec, p_nextmsg, arraytemplatesym,
-                    element, nline, vec + message);
-                nitems++;
-            }
-        }
-        else if (template->tp_vector[i].ds_type == DATA_TEXT)
-        {
-            t_buffer *z = buffer_new();
-            int first = *p_nextmsg, last;
-            for (last = first; last < natoms && vec[last].a_type != A_SEMICOLON;
-                last++);
-            buffer_deserialize(z, last-first, vec+first);
-            buffer_append(w[i].w_buffer, buffer_size(z), buffer_atoms(z));
-            buffer_free(z);
-            last++;
-            if (last > natoms) last = natoms;
-            *p_nextmsg = last;
-        }
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 t_error canvas_deserializeScalar (t_glist *glist, int argc, t_atom *argv)
 {
     if (argc > 0 && IS_SYMBOL (argv)) {
@@ -198,19 +108,9 @@ t_error canvas_deserializeScalar (t_glist *glist, int argc, t_atom *argv)
     PD_ASSERT (scalar);
     
     if (scalar) {
-    //
-    int next = 1;       /* Start after the template name. */
-    int i;
-    int n;
-    
-    canvas_addObject (glist, cast_gobj (scalar));
-    
-    n = canvas_fetchNext (argc, argv, &i, &next);
-    
-    canvas_readElements (glist, argc, argv, &next, templateIdentifier, scalar->sc_vector, n, argv + i);
-
-    if (canvas_isMapped (glist)) { gobj_visibilityChanged (cast_gobj (scalar), glist, 1); }
-    //
+        canvas_addObject (glist, cast_gobj (scalar));
+        scalar_deserialize (scalar, glist, argc - 1, argv + 1);
+        if (canvas_isMapped (glist)) { gobj_visibilityChanged (cast_gobj (scalar), glist, 1); }
     }
     //
     }

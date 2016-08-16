@@ -443,6 +443,121 @@ void scalar_serialize (t_scalar *x, t_buffer *b)
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static int scalar_deserializeFetchNext (int argc, t_atom *argv, int *current, int *next)
+{
+    int k = *next;
+    int n = 0;
+    
+    *current = k;
+    
+    if (k < argc) {
+    //
+    int i;
+    for (i = k; i < argc && !IS_SEMICOLON (argv + i); i++) { }
+    *next = PD_MIN (i + 1, argc);
+    n = i - k;
+    //
+    }
+    
+    // post_atoms (n, argv + k);
+    
+    return n;
+}
+
+static void scalar_deserializeReadElements (t_glist *x,
+    int argc,
+    t_atom *argv,
+    t_symbol *templateIdentifier,
+    t_word *w,
+    int current,
+    int count,
+    int *next)
+{
+    int message, nline, n, i;
+    t_atom *cacaargv = argv + current;
+    
+    t_template *template = template_findByIdentifier(templateIdentifier);
+    if (!template)
+    {
+        post_error ("%s: no such template", templateIdentifier->s_name);
+        *next = argc;
+        return;
+    }
+    word_restore(w, template, count, cacaargv);
+    n = template->tp_size;
+    for (i = 0; i < n; i++)
+    {
+        if (template->tp_vector[i].ds_type == DATA_ARRAY)
+        {
+            int j;
+            t_array *a = w[i].w_array;
+            int elemsize = a->a_stride, nitems = 0;
+            t_symbol *arraytemplatesym = template->tp_vector[i].ds_templateIdentifier;
+            t_template *arraytemplate =
+                template_findByIdentifier(arraytemplatesym);
+            if (!arraytemplate)
+            {
+                post_error ("%s: no such template", arraytemplatesym->s_name);
+            }
+            else while (1)
+            {
+                t_word *element;
+                int nline = scalar_deserializeFetchNext(argc, argv, &message, next);
+                    /* empty line terminates array */
+                if (!nline)
+                    break;
+                array_resize(a, nitems + 1);
+                element = (t_word *)(((char *)a->a_vector) +
+                    nitems * elemsize);
+                scalar_deserializeReadElements(x, argc, argv, arraytemplatesym,
+                    element, message, nline, next);
+                nitems++;
+            }
+        }
+        else if (template->tp_vector[i].ds_type == DATA_TEXT)
+        {
+            t_buffer *z = buffer_new();
+            int first = *next, last;
+            for (last = first; last < argc && argv[last].a_type != A_SEMICOLON;
+                last++);
+            buffer_deserialize(z, last-first, argv+first);
+            buffer_append(w[i].w_buffer, buffer_size(z), buffer_atoms(z));
+            buffer_free(z);
+            last++;
+            if (last > argc) last = argc;
+            *next = last;
+        }
+    }
+}
+
+void scalar_deserialize (t_scalar *x, t_glist *glist, int argc, t_atom *argv)
+{
+    if (!template_isValid (scalar_getTemplate (x))) { PD_BUG; }
+    else {
+    //
+    int current, next = 0;
+    int count = scalar_deserializeFetchNext (argc, argv, &current, &next);
+    
+    scalar_deserializeReadElements (glist,
+        argc,
+        argv,
+        scalar_getTemplateIdentifier (x),
+        scalar_getData (x),
+        current,
+        count,
+        &next);
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void scalar_functionSave (t_gobj *z, t_buffer *b)
 {
     t_scalar *x = cast_scalar (z);
