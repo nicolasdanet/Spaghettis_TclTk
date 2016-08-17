@@ -636,13 +636,10 @@ void garray_fromDialog (t_garray *x, t_symbol *name, t_float size, t_float flags
     //
     }
 
+    if (newStyle != oldStyle) { scalar_setFloat (x->x_scalar, sym_style, (t_float)newStyle); }
     if (newSize != array_getSize (array)) { garray_resizeWithInteger (x, newSize); }
-    
-    if (newStyle != oldStyle) {
-        scalar_setFloat (x->x_scalar, sym_style, (t_float)newStyle);
-        garray_updateGraphBounds (x, newSize, newStyle); 
-    }
-
+        
+    garray_updateGraphBounds (x, newSize, newStyle); 
     garray_setSaveWithParent (x, save);
     garray_redraw (x);
     canvas_dirty (x->x_owner, 1);
