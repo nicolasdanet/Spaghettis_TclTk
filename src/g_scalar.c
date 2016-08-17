@@ -437,121 +437,61 @@ void scalar_serialize (t_scalar *x, t_buffer *b)
             buffer_appendSemicolon (b);
             
         } else if (template_fieldIsText (template, fieldName)) {
-            buffer_serialize (b, word_getBuffer (x->sc_vector, template, fieldName));
+            buffer_serialize (b, word_getText (x->sc_vector, template, fieldName));
             buffer_appendSemicolon (b);
         }
     }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static int scalar_deserializeFetchNext (int argc, t_atom *argv, int *current, int *next)
+void scalar_deserialize (t_scalar *x, t_glist *glist, int argc, t_atom *argv)
 {
-    int k = *next;
-    int n = 0;
+    t_template *template = scalar_getTemplate (x);
     
-    *current = k;
-    
-    if (k < argc) {
+    if (!template_isValid (x)) { PD_BUG; }
+    else {
     //
+    t_iterator *iter = iterator_new (argc, argv);
+    t_atom *atoms = NULL;
+    int count = iterator_next (iter, &atoms);      
     int i;
-    for (i = k; i < argc && !IS_SEMICOLON (argv + i); i++) { }
-    *next = PD_MIN (i + 1, argc);
-    n = i - k;
-    //
-    }
-    
-    post_atoms (n, argv + k);
-    
-    return n;
-}
-
-static void scalar_deserializeReadElements (t_glist *x,
-    int argc,
-    t_atom *argv,
-    t_symbol *templateIdentifier,
-    t_word *w,
-    int current,
-    int count,
-    int *next)
-{
-    int i;
-    
-    t_template *template = template_findByIdentifier (templateIdentifier);
-    
-    PD_ASSERT (template);
-    
-    word_restore (w, template, count, argv + current);
         
     for (i = 0; i < template_getSize (template); i++) {
     //
-    int message;
-    int nline;
+    t_symbol *fieldName = template_getFieldAtIndex (template, i);
     
+    if (template_fieldIsFloat (template, fieldName)) {
+        t_float f = 0.0;
+        if (count) { f = atom_getFloat (atoms); atoms++; count--; }
+        word_setFloat (x->sc_vector, template, fieldName, f);
+        
+    } else if (template_fieldIsSymbol (template, fieldName)) {
+        t_symbol *s = &s_;
+        if (count) { s = atom_getSymbol (atoms); atoms++; count--; }
+        word_setSymbol (x->sc_vector, template, fieldName, s);
+    }
+    //
+    }
+    
+    PD_ASSERT (count == 0);
+    
+    for (i = 0; i < template_getSize (template); i++) {
+    //
     t_symbol *fieldName = template_getFieldAtIndex (template, i);
     
     if (template_fieldIsArray (template, fieldName)) {
+        array_deserialize (word_getArray (x->sc_vector, template, fieldName), iter);
 
-        int j;
-        t_array *a = w[i].w_array;
-        int elemsize = a->a_stride, nitems = 0;
-        t_symbol *arraytemplatesym = template->tp_vector[i].ds_templateIdentifier;
-        t_template *arraytemplate =
-            template_findByIdentifier(arraytemplatesym);
-        if (!arraytemplate)
-        {
-            post_error ("%s: no such template", arraytemplatesym->s_name);
-        }
-        else while (1)
-        {
-            t_word *element;
-            int nline = scalar_deserializeFetchNext(argc, argv, &message, next);
-                // empty line terminates array
-            if (!nline)
-                break;
-            array_resize(a, nitems + 1);
-            element = (t_word *)(((char *)a->a_vector) +
-                nitems * elemsize);
-            scalar_deserializeReadElements(x, argc, argv, arraytemplatesym,
-                element, message, nline, next);
-            nitems++;
-        }
-        
     } else if (template_fieldIsText (template, fieldName)) {
-
-        t_buffer *z = buffer_new();
-        int first = *next, last;
-        for (last = first; last < argc && argv[last].a_type != A_SEMICOLON;
-            last++);
-        buffer_deserialize(z, last-first, argv+first);
-        buffer_append(w[i].w_buffer, buffer_size(z), buffer_atoms(z));
-        buffer_free(z);
-        last++;
-        if (last > argc) last = argc;
-        *next = last;
+        t_buffer *t = buffer_new();
+        count = iterator_next (iter, &atoms);
+        buffer_deserialize (t, count, atoms);
+        word_setText (x->sc_vector, template, fieldName, t);
+        buffer_free (t);
     }
     //
     }
-}
-
-void scalar_deserialize (t_scalar *x, t_glist *glist, int argc, t_atom *argv)
-{
-    if (!template_isValid (scalar_getTemplate (x))) { PD_BUG; }
-    else {
-    //
-    int current, next = 0;
-    int count = scalar_deserializeFetchNext (argc, argv, &current, &next);
     
-    scalar_deserializeReadElements (glist,
-        argc,
-        argv,
-        scalar_getTemplateIdentifier (x),
-        scalar_getData (x),
-        current,
-        count,
-        &next);
+    iterator_free (iter);
     //
     }
 }

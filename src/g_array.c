@@ -107,16 +107,48 @@ void array_serialize (t_array *x, t_buffer *b)
         SET_SYMBOL (&t, word_getSymbol (w, template, fieldName));
         buffer_appendAtom (b, &t);
     
-    } else if (template_fieldIsText (template, fieldName)) {
-        buffer_serialize (b, word_getBuffer (w, template, fieldName));
-            
     } else {
-        PD_BUG;     /* Nested arrays not allowed. */
+        PD_BUG;     /* Not implemented, yet. */
     }
     //
     }
     
     buffer_appendSemicolon (b);
+    //
+    }
+}
+
+void array_deserialize (t_array *x, t_iterator *iter)
+{
+    t_template *template = array_getTemplate (x);
+    t_atom *atoms = NULL;
+    int count, i = 0;
+    int n = 0;
+    
+    while (count = iterator_next (iter, &atoms)) {
+    //
+    int j;
+    t_word *w = NULL;
+    
+    array_resize (x, n + 1);
+    w = array_getElementAtIndex (x, n);
+    n++;
+    
+    for (j = 0; j < template_getSize (template); j++) {
+    //
+    t_symbol *fieldName = template_getFieldAtIndex (template, j);
+    
+    if (template_fieldIsFloat (template, fieldName)) {
+        if (count) { word_setFloat (w, template, fieldName, atom_getFloat (atoms));     atoms++; count--; }
+        
+    } else if (template_fieldIsSymbol (template, fieldName)) {
+        if (count) { word_setSymbol (w, template, fieldName, atom_getSymbol (atoms));   atoms++; count--; }
+        
+    } else {
+        PD_BUG;     /* Not implemented, yet. */
+    }
+    //
+    }
     //
     }
 }
@@ -200,7 +232,7 @@ void array_resize (t_array *x, int n)
         for (; i--; t += elementSize) { word_init ((t_word *)t, template, &x->a_parent); }
     }
     
-    x->a_uniqueIdentifier = utils_unique();                 /* Invalidate all existent pointers. */
+    x->a_uniqueIdentifier = utils_unique();     /* Invalidate all existent pointers. */
 }
 
 void array_redraw (t_array *x, t_glist *glist)

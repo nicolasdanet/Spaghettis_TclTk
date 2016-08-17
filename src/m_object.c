@@ -28,8 +28,7 @@ static int object_stackCount;               /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-struct _inlet
-{
+struct _inlet {
     t_pd                i_pd;               /* MUST be the first. */
     struct _inlet       *i_next;
     t_object            *i_owner;
@@ -42,21 +41,19 @@ struct _inlet
         t_symbol        **i_symbol;
         t_float         i_signal;
     } i_un;
-};
+    };
 
-struct _outconnect
-{
+struct _outconnect {
     struct _outconnect  *oc_next;
     t_pd                *oc_to;
-};
+    };
 
-struct _outlet
-{
+struct _outlet {
     struct _outlet      *o_next;
     t_object            *o_owner;
     t_outconnect        *o_connections;
     t_symbol            *o_symbol;
-};
+    };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

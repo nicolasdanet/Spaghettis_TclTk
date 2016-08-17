@@ -36,31 +36,6 @@ void word_init (t_word *w, t_template *tmpl, t_gpointer *gp)
     }
 }
 
-void word_restore (t_word *w, t_template *tmpl, int argc, t_atom *argv)
-{
-    int i, size = template_getSize (tmpl);
-    t_dataslot *v = template_getData (tmpl);
-    
-    for (i = 0; i < size; i++, v++, w++) {
-    //
-    int type = v->ds_type;
-    
-    if (type == DATA_FLOAT) {
-        t_float f = 0.0;
-        if (argc) { f = atom_getFloat (argv); argv++; argc--; }
-        w->w_float = f; 
-        
-    } else if (type == DATA_SYMBOL) {
-        t_symbol *s = &s_;
-        if (argc) { s = atom_getSymbol (argv); argv++; argc--; }
-        w->w_symbol = s;
-    }
-    //
-    }
-    
-    PD_ASSERT (argc == 0);
-}
-
 void word_free (t_word *w, t_template *tmpl)
 {
     if (!tmpl) { PD_BUG; }
@@ -108,7 +83,7 @@ t_symbol *word_getSymbol (t_word *w, t_template *tmpl, t_symbol *fieldName)
     return &s_;
 }
 
-t_buffer *word_getBuffer (t_word *w, t_template *tmpl, t_symbol *fieldName)
+t_buffer *word_getText (t_word *w, t_template *tmpl, t_symbol *fieldName)
 {
     int i, type; t_symbol *dummy = NULL;
     
@@ -161,6 +136,22 @@ void word_setSymbol (t_word *w, t_template *tmpl, t_symbol *fieldName, t_symbol 
     if (template_getRaw (tmpl, fieldName, &i, &type, &dummy)) {
         if (type == DATA_SYMBOL) { 
             *(t_symbol **)(w + i) = s;
+        }
+    }
+}
+
+void word_setText (t_word *w, t_template *tmpl, t_symbol *fieldName, t_buffer *b)
+{
+    int i, type;
+    t_symbol *dummy = NULL;
+    
+    PD_ASSERT (b);
+    PD_ASSERT (template_fieldIsText (tmpl, fieldName));
+    
+    if (template_getRaw (tmpl, fieldName, &i, &type, &dummy)) {
+        if (type == DATA_TEXT) {
+            t_buffer *x = *(t_buffer **)(w + i);
+            buffer_reset (x); buffer_appendBuffer (x, b);
         }
     }
 }

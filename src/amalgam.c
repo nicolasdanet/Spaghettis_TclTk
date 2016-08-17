@@ -23,6 +23,7 @@
 #include "m_class.c"
 #include "m_object.c"
 #include "m_atom.c"
+#include "m_iterator.c"
 #include "m_buffer.c"
 #include "m_parse.c"
 #include "m_eval.c"

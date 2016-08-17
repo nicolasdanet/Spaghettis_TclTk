@@ -57,7 +57,7 @@ static t_error drawnumber_getContents (t_drawnumber *x,
     
     if (template_fieldIsText (tmpl, x->x_fieldName)) {
         char *t = NULL;
-        buffer_toString (word_getBuffer (w, tmpl, x->x_fieldName), &t);
+        buffer_toString (word_getText (w, tmpl, x->x_fieldName), &t);
         err |= string_add (dest, size, t);
         PD_MEMORY_FREE (t);
         

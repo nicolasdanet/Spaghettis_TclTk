@@ -126,7 +126,7 @@ void buffer_appendAtom (t_buffer *x, t_atom *a)
 
 void buffer_appendBuffer (t_buffer *x, t_buffer *y)
 {
-    buffer_append (x, buffer_atoms (y), buffer_size (y));
+    buffer_append (x, buffer_size (y), buffer_atoms (y));
 }
 
 void buffer_appendSemicolon (t_buffer *x)

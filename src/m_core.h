@@ -330,6 +330,15 @@ t_error     atom_toString                               (t_atom *a, char *s, int
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_iterator  *iterator_new                               (int argc, t_atom *argv);
+
+void        iterator_free                               (t_iterator *x);
+int         iterator_next                               (t_iterator *x, t_atom **a);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void        buffer_resize                               (t_buffer *x, int n);
 void        buffer_vAppend                              (t_buffer *x, char *fmt, ...);
 void        buffer_appendAtom                           (t_buffer *x, t_atom *a);

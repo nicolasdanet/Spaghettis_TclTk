@@ -36,6 +36,7 @@
 		371655951BA3466000ABDE22 /* pmutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655941BA3466000ABDE22 /* pmutil.c */; };
 		371655971BA3466600ABDE22 /* portmidi.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655961BA3466600ABDE22 /* portmidi.c */; };
 		371655991BA3467500ABDE22 /* ptmacosx_cf.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655981BA3467500ABDE22 /* ptmacosx_cf.c */; };
+		3716C79D1D6335C400022709 /* m_iterator.c in Sources */ = {isa = PBXBuildFile; fileRef = 3716C79C1D6335C400022709 /* m_iterator.c */; };
 		3720EBB61D239650001675BD /* g_vinlet.c in Sources */ = {isa = PBXBuildFile; fileRef = 3720EBB41D239650001675BD /* g_vinlet.c */; };
 		3720EBB71D239650001675BD /* g_voutlet.c in Sources */ = {isa = PBXBuildFile; fileRef = 3720EBB51D239650001675BD /* g_voutlet.c */; };
 		3722C5301C4F91EB00D2BF6F /* u_pdreceive.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972031C4F716700263434 /* u_pdreceive.c */; };
@@ -242,6 +243,7 @@
 		371655941BA3466000ABDE22 /* pmutil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pmutil.c; path = portmidi/pm_common/pmutil.c; sourceTree = "<group>"; };
 		371655961BA3466600ABDE22 /* portmidi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = portmidi.c; path = portmidi/pm_common/portmidi.c; sourceTree = "<group>"; };
 		371655981BA3467500ABDE22 /* ptmacosx_cf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ptmacosx_cf.c; path = portmidi/porttime/ptmacosx_cf.c; sourceTree = "<group>"; };
+		3716C79C1D6335C400022709 /* m_iterator.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_iterator.c; path = src/m_iterator.c; sourceTree = "<group>"; };
 		3720EBB41D239650001675BD /* g_vinlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_vinlet.c; path = src/g_vinlet.c; sourceTree = "<group>"; };
 		3720EBB51D239650001675BD /* g_voutlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_voutlet.c; path = src/g_voutlet.c; sourceTree = "<group>"; };
 		373690A31C84854B00A332BD /* portmidi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = portmidi.h; path = portmidi/pm_common/portmidi.h; sourceTree = "<group>"; };
@@ -619,6 +621,7 @@
 				378971DA1C4F716700263434 /* m_class.c */,
 				378971E01C4F716700263434 /* m_object.c */,
 				378971D81C4F716700263434 /* m_atom.c */,
+				3716C79C1D6335C400022709 /* m_iterator.c */,
 				378971D91C4F716700263434 /* m_buffer.c */,
 				3709BE581D01726800D9B48C /* m_parse.c */,
 				3709BE1D1D016C9400D9B48C /* m_eval.c */,
@@ -1156,6 +1159,7 @@
 				37D643541D4795ED00071C3C /* g_set.c in Sources */,
 				37D643761D4796C700071C3C /* g_get.c in Sources */,
 				37C41F4F1D5B240000DC9C3E /* m_heapstring.c in Sources */,
+				3716C79D1D6335C400022709 /* m_iterator.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -109,11 +109,10 @@ struct _template {
 #pragma mark -
 
 void            word_init                               (t_word *w, t_template *tmpl, t_gpointer *gp);
-void            word_restore                            (t_word *w, t_template *tmpl, int argc, t_atom *argv);
 void            word_free                               (t_word *w, t_template *tmpl);
 
 t_symbol        *word_getSymbol                         (t_word *w, t_template *tmpl, t_symbol *fieldName);
-t_buffer        *word_getBuffer                         (t_word *w, t_template *tmpl, t_symbol *fieldName);
+t_buffer        *word_getText                           (t_word *w, t_template *tmpl, t_symbol *fieldName);
 t_array         *word_getArray                          (t_word *w, t_template *tmpl, t_symbol *fieldName);
 
 t_float         word_getFloat                           (t_word *w, t_template *tmpl, t_symbol *fieldName);
@@ -127,6 +126,11 @@ void            word_setSymbol                          (t_word *w,
                                                             t_template *tmpl,
                                                             t_symbol *fieldName,
                                                             t_symbol *s);
+                                                            
+void            word_setText                            (t_word *w,
+                                                            t_template *tmpl,
+                                                            t_symbol *fieldName,
+                                                            t_buffer *b);
                                                             
 t_float         word_getFloatByDescriptor               (t_word *w, t_template *tmpl, t_fielddescriptor *fd);
 t_float         word_getFloatByDescriptorAsPosition     (t_word *w, t_template *tmpl, t_fielddescriptor *fd);
@@ -173,6 +177,7 @@ void            array_resize                            (t_array *x, int n);
 void            array_redraw                            (t_array *x, t_glist *glist);
 void            array_resizeAndRedraw                   (t_array *x, t_glist *glist, int n);
 void            array_serialize                         (t_array *x, t_buffer *b);
+void            array_deserialize                       (t_array *x, t_iterator *iter);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
