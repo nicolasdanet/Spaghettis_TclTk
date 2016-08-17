@@ -610,30 +610,30 @@ static void plot_behaviorVisibilityChangedDrawPolygonFill (t_plot *x,
     //
     t_heapstring *t = heapstring_new (0);
     
-    heapstring_addSprintf (t, ".x%lx.c create polygon", canvas_getView (glist));
+    heapstring_addSprintf (t,       ".x%lx.c create polygon", canvas_getView (glist));
   
     for (i = 0; i < elementsDrawn; i++) {
-        heapstring_addSprintf (t, " %d %d", coordinatesX[i], coordinatesL[i]);
+        heapstring_addSprintf (t,   " %d %d", coordinatesX[i], coordinatesL[i]);
     }
     
     if (elementsDrawn == 1) { 
-        heapstring_addSprintf (t, " %d %d", coordinatesX[0] + 1, coordinatesL[0]);
+        heapstring_addSprintf (t,   " %d %d", coordinatesX[0] + 1, coordinatesL[0]);
     } 
     
     for (i = elementsDrawn - 1; i >= 0; i--) {
-        heapstring_addSprintf (t, " %d %d", coordinatesX[i], coordinatesH[i]);
+        heapstring_addSprintf (t,   " %d %d", coordinatesX[i], coordinatesH[i]);
     }
     
     if (elementsDrawn == 1) { 
-        heapstring_addSprintf (t, " %d %d", coordinatesX[0] + 1, coordinatesH[0]);
+        heapstring_addSprintf (t,   " %d %d", coordinatesX[0] + 1, coordinatesH[0]);
     } 
     
-    heapstring_addSprintf (t, " -fill %s", color->s_name);
-    heapstring_addSprintf (t, " -outline %s", color->s_name);
+    heapstring_addSprintf (t,       " -fill %s", color->s_name);
+    heapstring_addSprintf (t,       " -outline %s", color->s_name);
 
     if (style == PLOT_CURVES) { heapstring_addSprintf (t, " -width 1 -smooth 1 -tags %lxPLOT\n", w); }
     else { 
-        heapstring_addSprintf (t, " -width 1 -tags %lxPLOT\n", w);
+        heapstring_addSprintf (t,   " -width 1 -tags %lxPLOT\n", w);
     }
     
     sys_gui (heapstring_getRaw (t));
@@ -702,8 +702,8 @@ static void plot_behaviorVisibilityChangedDrawPolygonSegment (t_plot *x,
     //
     if (elementsDrawn == 1) { heapstring_addSprintf (t, " %d %d", pixelX + 1, pixelY); }
     
-    heapstring_addSprintf (t, " -width %d", (int)(PD_MAX (0, width - 1)));
-    heapstring_addSprintf (t, " -fill %s", color->s_name);
+    heapstring_addSprintf (t,     " -width %d", (int)(PD_MAX (0, width - 1)));
+    heapstring_addSprintf (t,     " -fill %s", color->s_name);
 
     if (style == PLOT_CURVES) { heapstring_addSprintf (t, " -smooth 1 -tags %lxPLOT\n", w); }
     else {

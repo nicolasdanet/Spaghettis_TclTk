@@ -213,7 +213,7 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     
     if (x->x_flags & DRAWPOLYGON_CLOSED) { heapstring_addSprintf (t, ".x%lx.c create polygon", view); }
     else {
-        heapstring_addSprintf (t, ".x%lx.c create line", view);
+        heapstring_addSprintf (t,   ".x%lx.c create line", view);
     }
     
     for (i = 0; i < x->x_size; i += 2) {
@@ -223,20 +223,20 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     a = canvas_valueToPixelX (glist, baseX + word_getFloatByDescriptorAsPosition (w, tmpl, fd + i));
     b = canvas_valueToPixelY (glist, baseY + word_getFloatByDescriptorAsPosition (w, tmpl, fd + i + 1));
         
-    heapstring_addSprintf (t, " %d %d", a, b);
+    heapstring_addSprintf (t,       " %d %d", a, b);
     //
     }
     
     if (x->x_flags & DRAWPOLYGON_BEZIER)  { heapstring_add (t, " -smooth 1"); }
     if (x->x_flags & DRAWPOLYGON_CLOSED)  {
-        heapstring_addSprintf (t, " -fill %s", filled->s_name);
-        heapstring_addSprintf (t, " -outline %s", outlined->s_name);
+        heapstring_addSprintf (t,   " -fill %s", filled->s_name);
+        heapstring_addSprintf (t,   " -outline %s", outlined->s_name);
     } else {
-        heapstring_addSprintf (t, " -fill %s", outlined->s_name);
+        heapstring_addSprintf (t,   " -fill %s", outlined->s_name);
     }
 
-    heapstring_addSprintf (t,  " -width %f", PD_MAX (width, 1.0));
-    heapstring_addSprintf (t,  " -tags %lxCURVE\n", w);
+    heapstring_addSprintf (t,       " -width %f", PD_MAX (width, 1.0));
+    heapstring_addSprintf (t,       " -tags %lxCURVE\n", w);
     
     sys_gui (heapstring_getRaw (t));
     
