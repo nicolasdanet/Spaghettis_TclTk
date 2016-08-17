@@ -252,8 +252,29 @@ static void plot_motionVertical (void)
     
     int i = PD_MIN (currentX, plot_previousX);
     int j = PD_MAX (currentX, plot_previousX);
+    int n = j - i;
+    int back = currentX < plot_previousX;
+        
+    if (n > 0) {    /* Distribute change linearly between samples. */
+    //
+    t_float startY  = word_getFloatByDescriptorAsPosition (array_getElementAtIndex (plot_array, back ? j : i),
+                            array_getTemplate (plot_array),
+                            plot_fieldDescriptorY);
+    t_float stepY   = (plot_cumulativeY - startY) / n;
+    
+    int k = back ? n : 0;
     
     for (; i <= j; i++) {
+    
+        word_setFloatByDescriptorAsPosition (array_getElementAtIndex (plot_array, i),
+                array_getTemplate (plot_array),
+                plot_fieldDescriptorY,
+                startY + (stepY * k));
+        
+        if (back) { k--; } else { k++; }
+    }
+    //
+    } else {
         word_setFloatByDescriptorAsPosition (array_getElementAtIndex (plot_array, i),
                 array_getTemplate (plot_array),
                 plot_fieldDescriptorY,
