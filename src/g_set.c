@@ -23,8 +23,8 @@ static t_class  *set_class;                 /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _setvariable {
-    t_symbol        *gv_fieldName;
-    union word      gv_w;
+    t_symbol        *sv_fieldName;
+    union word      sv_w;
     } t_setvariable;
 
 typedef struct _set {
@@ -58,14 +58,14 @@ static void set_bang (t_set *x)
     
     for (i = 0; i < x->x_fieldsSize; i++) {
     //
-    t_symbol *s = x->x_fields[i].gv_fieldName;
+    t_symbol *s = x->x_fields[i].sv_fieldName;
     
     if (gpointer_hasField (&x->x_gpointer, s)) {
         if (x->x_asSymbol && gpointer_fieldIsSymbol (&x->x_gpointer, s)) {
-            gpointer_setSymbol (&x->x_gpointer, s, x->x_fields[i].gv_w.w_symbol);
+            gpointer_setSymbol (&x->x_gpointer, s, x->x_fields[i].sv_w.w_symbol);
         }
         if (!x->x_asSymbol && gpointer_fieldIsFloat (&x->x_gpointer, s)) {
-            gpointer_setFloat (&x->x_gpointer, s, x->x_fields[i].gv_w.w_float);
+            gpointer_setFloat (&x->x_gpointer, s, x->x_fields[i].sv_w.w_float);
         }
     }
     //
@@ -83,7 +83,7 @@ static void set_float (t_set *x, t_float f)
 {
     if (!x->x_fieldsSize || x->x_asSymbol) { set_error(); }
     else {
-        x->x_fields[0].gv_w.w_float = f;
+        x->x_fields[0].sv_w.w_float = f;
         set_bang (x);
     }
 }
@@ -92,7 +92,7 @@ static void set_symbol (t_set *x, t_symbol *s)
 {
     if (!x->x_fieldsSize || !x->x_asSymbol) { set_error(); }
     else {
-        x->x_fields[0].gv_w.w_symbol = s; 
+        x->x_fields[0].sv_w.w_symbol = s; 
         set_bang (x);
     }
 }
@@ -106,12 +106,12 @@ static void set_set (t_set *x, t_symbol *templateName, t_symbol *fieldName)
     if (x->x_fieldsSize != 1) { post_error (PD_TRANSLATE ("set: cannot set multiple fields")); }
     else {
         x->x_templateIdentifier     = template_makeTemplateIdentifier (templateName); 
-        x->x_fields[0].gv_fieldName = fieldName;
+        x->x_fields[0].sv_fieldName = fieldName;
        
         if (x->x_asSymbol) {
-            x->x_fields[0].gv_w.w_symbol = &s_;
+            x->x_fields[0].sv_w.w_symbol = &s_;
         } else {
-            x->x_fields[0].gv_w.w_float  = 0.0;
+            x->x_fields[0].sv_w.w_float  = 0.0;
         }
     }
 }
@@ -142,17 +142,17 @@ static void *set_new (t_symbol *s, int argc, t_atom *argv)
     if (x->x_asSymbol) {
         int i;
         for (i = 0; i < x->x_fieldsSize; i++) {
-            x->x_fields[i].gv_fieldName  = atom_getSymbolAtIndex (i + 1, argc, argv);
-            x->x_fields[i].gv_w.w_symbol = &s_;
-            if (i) { inlet_newSymbol (cast_object (x), &x->x_fields[i].gv_w.w_symbol); }
+            x->x_fields[i].sv_fieldName  = atom_getSymbolAtIndex (i + 1, argc, argv);
+            x->x_fields[i].sv_w.w_symbol = &s_;
+            if (i) { inlet_newSymbol (cast_object (x), &x->x_fields[i].sv_w.w_symbol); }
         }
         
     } else {
         int i;
         for (i = 0; i < x->x_fieldsSize; i++) {
-            x->x_fields[i].gv_fieldName  = atom_getSymbolAtIndex (i + 1, argc, argv);
-            x->x_fields[i].gv_w.w_float  = 0.0;
-            if (i) { inlet_newFloat (cast_object (x), &x->x_fields[i].gv_w.w_float); }
+            x->x_fields[i].sv_fieldName  = atom_getSymbolAtIndex (i + 1, argc, argv);
+            x->x_fields[i].sv_w.w_float  = 0.0;
+            if (i) { inlet_newFloat (cast_object (x), &x->x_fields[i].sv_w.w_float); }
         }
     }
     
