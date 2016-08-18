@@ -87,7 +87,6 @@ static void plot_motion (void *, t_float, t_float, t_float);
 
 #define PLOT_MAXIMUM_DRAWN      256
 #define PLOT_HANDLE_SIZE        8
-#define PLOT_WIDTH              1
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -432,7 +431,7 @@ static void plot_behaviorGetRectangle (t_gobj *z,
         pixelW = canvas_valueToPixelY (glist, valueY + valueW) - pixelY;
         
         pixelW = PD_ABS (pixelW);
-        pixelW = PD_MAX (pixelW, width - 1);
+        pixelW = PD_MAX (pixelW, width - 1.0);
 
         x1 = PD_MIN (x1, pixelX);
         x2 = PD_MAX (x2, pixelX);
@@ -468,7 +467,9 @@ static void plot_behaviorVisibilityChangedDrawPoint (t_plot *x,
     t_float relativeX,
     t_float relativeY, 
     t_float incrementX, 
-    t_float width)
+    t_float width, 
+    int style, 
+    t_symbol *color)
 {
     int numberOfElements  = array_getSize (array);
     t_float minimumValueY =  PLOT_MAX;
@@ -519,15 +520,17 @@ static void plot_behaviorVisibilityChangedDrawPoint (t_plot *x,
 
         sys_vGui (".x%lx.c create rectangle %d %d %d %d"
                         " -width %d"
-                        " -fill #%06x"
+                        " -fill %s"
+                        " -outline %s"
                         " -tags %lxPLOT\n",
                         canvas_getView (glist),
-                        (fieldX == NULL) ? pixelX : pixelX - PLOT_WIDTH,
+                        (fieldX == NULL) ? pixelX : pixelX - 1,
                         (int)canvas_valueToPixelY (glist, minimumValueY),
-                        (fieldX == NULL) ? nextPixelX : pixelX + PLOT_WIDTH,
+                        (fieldX == NULL) ? nextPixelX : pixelX + 1,
                         (int)canvas_valueToPixelY (glist, maximumValueY),
-                        (int)PD_MAX (0, width - 1),
-                        COLOR_NORMAL,
+                        (int)PD_MAX (0, width - 1.0),
+                        color->s_name,
+                        color->s_name,
                         w);
     
         minimumValueY =  PLOT_MAX;
@@ -611,8 +614,8 @@ static void plot_behaviorVisibilityChangedDrawPolygonFill (t_plot *x,
     heapstring_addSprintf (t,           ".x%lx.c create polygon", canvas_getView (glist));
   
     if (elementsDrawn == 1) {
-        heapstring_addSprintf (t,       " %d %d", coordinatesX[0] - PLOT_WIDTH, coordinatesL[0]);
-        heapstring_addSprintf (t,       " %d %d", coordinatesX[0] + PLOT_WIDTH, coordinatesL[0]);
+        heapstring_addSprintf (t,       " %d %d", coordinatesX[0] - 1, coordinatesL[0]);
+        heapstring_addSprintf (t,       " %d %d", coordinatesX[0] + 1, coordinatesL[0]);
     } else {
         for (i = 0; i < elementsDrawn; i++) {
             heapstring_addSprintf (t,   " %d %d", coordinatesX[i], coordinatesL[i]);
@@ -620,8 +623,8 @@ static void plot_behaviorVisibilityChangedDrawPolygonFill (t_plot *x,
     }
 
     if (elementsDrawn == 1) {
-        heapstring_addSprintf (t,       " %d %d", coordinatesX[0] + PLOT_WIDTH, coordinatesH[0]);
-        heapstring_addSprintf (t,       " %d %d", coordinatesX[0] - PLOT_WIDTH, coordinatesH[0]);
+        heapstring_addSprintf (t,       " %d %d", coordinatesX[0] + 1, coordinatesH[0]);
+        heapstring_addSprintf (t,       " %d %d", coordinatesX[0] - 1, coordinatesH[0]);
     } else { 
         for (i = elementsDrawn - 1; i >= 0; i--) {
             heapstring_addSprintf (t,   " %d %d", coordinatesX[i], coordinatesH[i]);
@@ -698,23 +701,37 @@ static void plot_behaviorVisibilityChangedDrawPolygonSegment (t_plot *x,
     //
     }
     
-    if (elementsDrawn) {    /* Tk requires at least two points. */
-    //
-    if (elementsDrawn == 1) { heapstring_addSprintf (t, " %d %d", pixelX + 1, pixelY); }
-    
-    heapstring_addSprintf (t,     " -width %d", (int)(PD_MAX (0, width - 1)));
-    heapstring_addSprintf (t,     " -fill %s", color->s_name);
+    if (elementsDrawn > 1) {    /* Tk line requires at least two points. */
 
-    if (style == PLOT_CURVES) { heapstring_addSprintf (t, " -smooth 1 -tags %lxPLOT\n", w); }
-    else {
-        heapstring_addSprintf (t, " -tags %lxPLOT\n", w);
-    }
+        heapstring_addSprintf (t,     " -width %d", (int)(PD_MAX (0, width - 1.0)));
+        heapstring_addSprintf (t,     " -fill %s", color->s_name);
 
-    sys_gui (heapstring_getRaw (t));
-    //
+        if (style == PLOT_CURVES) { heapstring_addSprintf (t, " -smooth 1 -tags %lxPLOT\n", w); }
+        else {
+            heapstring_addSprintf (t, " -tags %lxPLOT\n", w);
+        }
+
+        sys_gui (heapstring_getRaw (t));
     }
     
     heapstring_free (t);
+    
+    if (elementsDrawn == 1) {
+
+        plot_behaviorVisibilityChangedDrawPoint (x,
+            glist,
+            w,
+            array,
+            fieldX, 
+            fieldY,
+            fieldW,
+            relativeX,
+            relativeY,
+            incrementX, 
+            width,
+            style, 
+            color);
+    }
 }
 
 static void plot_behaviorVisibilityChangedRecursive (t_plot *x,
@@ -813,6 +830,8 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
 
         if (isVisible) {
         
+            int color = (int)word_getFloatByDescriptor (w, tmpl, &x->x_colorOutline);
+                            
             if (style == PLOT_POINTS) { 
             
                 plot_behaviorVisibilityChangedDrawPoint (x,
@@ -825,11 +844,11 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
                     baseX + positionX,
                     baseY + positionY,
                     incrementX, 
-                    width);
+                    width,
+                    style, 
+                    color_toEncodedSymbol (color_withDigits (color)));
                     
             } else {
-                
-                int color = (int)word_getFloatByDescriptor (w, tmpl, &x->x_colorOutline);
                 
                 if (fieldW) {
                 
@@ -848,6 +867,7 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
                         color_toEncodedSymbol (color_withDigits (color)));
                         
                 } else {
+                
                     plot_behaviorVisibilityChangedDrawPolygonSegment (x,
                         glist,
                         w,
@@ -1012,7 +1032,7 @@ static int plot_behaviorClickedRegular (t_plot *x,
     pixelY = canvas_valueToPixelY (gpointer_getView (&plot_gpointer), valueY);
     pixelW = canvas_valueToPixelY (gpointer_getView (&plot_gpointer), valueY + valueW) - pixelY;
     pixelW = PD_ABS (pixelW);
-    pixelW = PD_MAX (pixelW, plot_width - 1);
+    pixelW = PD_MAX (pixelW, plot_width - 1.0);
     
     deltaX = PD_ABS ((int)pixelX - a);
 
