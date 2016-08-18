@@ -87,6 +87,7 @@ static void plot_motion (void *, t_float, t_float, t_float);
 
 #define PLOT_MAXIMUM_DRAWN      256
 #define PLOT_HANDLE_SIZE        8
+#define PLOT_WIDTH              1
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -521,9 +522,9 @@ static void plot_behaviorVisibilityChangedDrawPoint (t_plot *x,
                         " -fill #%06x"
                         " -tags %lxPLOT\n",
                         canvas_getView (glist),
-                        (fieldX == NULL) ? pixelX : pixelX - 1,
+                        (fieldX == NULL) ? pixelX : pixelX - PLOT_WIDTH,
                         (int)canvas_valueToPixelY (glist, minimumValueY),
-                        (fieldX == NULL) ? nextPixelX : pixelX + 1,
+                        (fieldX == NULL) ? nextPixelX : pixelX + PLOT_WIDTH,
                         (int)canvas_valueToPixelY (glist, maximumValueY),
                         (int)PD_MAX (0, width - 1),
                         COLOR_NORMAL,
@@ -607,30 +608,32 @@ static void plot_behaviorVisibilityChangedDrawPolygonFill (t_plot *x,
     //
     t_heapstring *t = heapstring_new (0);
     
-    heapstring_addSprintf (t,       ".x%lx.c create polygon", canvas_getView (glist));
+    heapstring_addSprintf (t,           ".x%lx.c create polygon", canvas_getView (glist));
   
-    for (i = 0; i < elementsDrawn; i++) {
-        heapstring_addSprintf (t,   " %d %d", coordinatesX[i], coordinatesL[i]);
+    if (elementsDrawn == 1) {
+        heapstring_addSprintf (t,       " %d %d", coordinatesX[0] - PLOT_WIDTH, coordinatesL[0]);
+        heapstring_addSprintf (t,       " %d %d", coordinatesX[0] + PLOT_WIDTH, coordinatesL[0]);
+    } else {
+        for (i = 0; i < elementsDrawn; i++) {
+            heapstring_addSprintf (t,   " %d %d", coordinatesX[i], coordinatesL[i]);
+        }
+    }
+
+    if (elementsDrawn == 1) {
+        heapstring_addSprintf (t,       " %d %d", coordinatesX[0] + PLOT_WIDTH, coordinatesH[0]);
+        heapstring_addSprintf (t,       " %d %d", coordinatesX[0] - PLOT_WIDTH, coordinatesH[0]);
+    } else { 
+        for (i = elementsDrawn - 1; i >= 0; i--) {
+            heapstring_addSprintf (t,   " %d %d", coordinatesX[i], coordinatesH[i]);
+        }
     }
     
-    if (elementsDrawn == 1) { 
-        heapstring_addSprintf (t,   " %d %d", coordinatesX[0] + 1, coordinatesL[0]);
-    } 
-    
-    for (i = elementsDrawn - 1; i >= 0; i--) {
-        heapstring_addSprintf (t,   " %d %d", coordinatesX[i], coordinatesH[i]);
-    }
-    
-    if (elementsDrawn == 1) { 
-        heapstring_addSprintf (t,   " %d %d", coordinatesX[0] + 1, coordinatesH[0]);
-    } 
-    
-    heapstring_addSprintf (t,       " -fill %s", color->s_name);
-    heapstring_addSprintf (t,       " -outline %s", color->s_name);
+    heapstring_addSprintf (t,           " -fill %s", color->s_name);
+    heapstring_addSprintf (t,           " -outline %s", color->s_name);
 
     if (style == PLOT_CURVES) { heapstring_addSprintf (t, " -width 1 -smooth 1 -tags %lxPLOT\n", w); }
     else { 
-        heapstring_addSprintf (t,   " -width 1 -tags %lxPLOT\n", w);
+        heapstring_addSprintf (t,       " -width 1 -tags %lxPLOT\n", w);
     }
     
     sys_gui (heapstring_getRaw (t));
