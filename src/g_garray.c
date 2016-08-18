@@ -636,6 +636,7 @@ void garray_fromDialog (t_garray *x, t_symbol *name, t_float size, t_float flags
     //
     }
 
+    if (newSize == 1) { newStyle = PLOT_POINTS; }
     if (newStyle != oldStyle) { scalar_setFloat (x->x_scalar, sym_style, (t_float)newStyle); }
     if (newSize != array_getSize (array)) { garray_resizeWithInteger (x, newSize); }
         
