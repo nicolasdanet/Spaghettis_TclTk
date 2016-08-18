@@ -514,20 +514,17 @@ static void plot_behaviorVisibilityChangedDrawPoint (t_plot *x,
         
     nextPixelX = (int)canvas_valueToPixelX (glist, valueX);
 
-    if (i == numberOfElements - 1 || pixelX != nextPixelX) {
-        
-        t_float min = relativeY + field_convertValueToPosition (&x->x_fieldY, minimumValueY);
-        t_float max = relativeY + field_convertValueToPosition (&x->x_fieldY, maximumValueY);
-        
+    if (fieldX || i == numberOfElements - 1 || pixelX != nextPixelX) {
+
         sys_vGui (".x%lx.c create rectangle %d %d %d %d"
                         " -width %d"
                         " -fill #%06x"
                         " -tags %lxPLOT\n",
                         canvas_getView (glist),
                         (fieldX == NULL) ? pixelX : pixelX - 1,
-                        (int)canvas_valueToPixelY (glist, min),
+                        (int)canvas_valueToPixelY (glist, minimumValueY),
                         (fieldX == NULL) ? nextPixelX : pixelX + 1,
-                        (int)canvas_valueToPixelY (glist, max),
+                        (int)canvas_valueToPixelY (glist, maximumValueY),
                         (int)PD_MAX (0, width - 1),
                         COLOR_NORMAL,
                         w);
