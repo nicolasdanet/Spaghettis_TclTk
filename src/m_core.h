@@ -244,6 +244,12 @@ t_error     utils_version                               (char *dest, size_t size
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_float     math_euclideanDistance                      (t_float x1, t_float y1, t_float x2, t_float y2);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_symbol    *dollar_toHash                              (t_symbol *s);
 t_symbol    *dollar_fromHash                            (t_symbol *s);
 t_symbol    *dollar_expandDollarSymbol                  (t_symbol *s, int argc, t_atom *argv);

@@ -284,10 +284,8 @@ static int drawpolygon_behaviorClicked (t_gobj *z,
     int valueY = word_getFloatByDescriptorAsPosition (w, tmpl, fd + i + 1);
     int pixelX = canvas_valueToPixelX (glist, baseX + valueX);
     int pixelY = canvas_valueToPixelY (glist, baseY + valueY);
-    int errorX = PD_ABS (pixelX - a);
-    int errorY = PD_ABS (pixelY - b);
-    int error  = PD_MAX (errorX, errorY);
-
+    int error  = (int)math_euclideanDistance (pixelX, pixelY, a, b);
+    
     if (error < bestError) {
         drawpolygon_coordinateX = valueX;
         drawpolygon_coordinateY = valueY;
@@ -391,6 +389,15 @@ static void drawpolygon_free (t_drawpolygon *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void drawpolygon_initialize (void)
+{
+}
+
+void drawpolygon_release (void)
+{
+    if (gpointer_isSet (&drawpolygon_gpointer)) { gpointer_unset (&drawpolygon_gpointer); }
+}
+
 void drawpolygon_setup (void)
 {
     t_class *c = NULL;
@@ -412,19 +419,6 @@ void drawpolygon_setup (void)
     class_setParentWidgetBehavior (c, &drawpolygon_parentWidgetBehavior);
     
     drawpolygon_class = c;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void drawpolygon_initialize (void)
-{
-}
-
-void drawpolygon_release (void)
-{
-    if (gpointer_isSet (&drawpolygon_gpointer)) { gpointer_unset (&drawpolygon_gpointer); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -1248,6 +1248,15 @@ static void *plot_new (t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void plot_initialize (void)
+{
+}
+
+void plot_release (void)
+{
+    if (gpointer_isSet (&plot_gpointer)) { gpointer_unset (&plot_gpointer); }
+}
+
 void plot_setup (void)
 {
     t_class *c = NULL;
@@ -1265,19 +1274,6 @@ void plot_setup (void)
     class_setParentWidgetBehavior (c, &plot_widgetBehavior);
     
     plot_class = c;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void plot_initialize (void)
-{
-}
-
-void plot_release (void)
-{
-    if (gpointer_isSet (&plot_gpointer)) { gpointer_unset (&plot_gpointer); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

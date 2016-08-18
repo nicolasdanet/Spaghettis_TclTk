@@ -310,6 +310,15 @@ static void *drawnumber_new (t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void drawnumber_initialize (void)
+{
+}
+
+void drawnumber_release (void)
+{
+    if (gpointer_isSet (&drawnumber_gpointer)) { gpointer_unset (&drawnumber_gpointer); }
+}
+
 void drawnumber_setup (void)
 {
     t_class *c = NULL;
@@ -330,19 +339,6 @@ void drawnumber_setup (void)
     class_setParentWidgetBehavior (c, &drawnumber_widgetBehavior);
     
     drawnumber_class = c;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void drawnumber_initialize (void)
-{
-}
-
-void drawnumber_release (void)
-{
-    if (gpointer_isSet (&drawnumber_gpointer)) { gpointer_unset (&drawnumber_gpointer); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
