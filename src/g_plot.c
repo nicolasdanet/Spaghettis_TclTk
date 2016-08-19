@@ -1015,8 +1015,10 @@ static int plot_behaviorClickedRegular (t_plot *x,
     t_float pixelX;
     t_float pixelY;
     t_float pixelW;
-    
-    int deltaX;
+    int deltaY;
+    int deltaL;
+    int deltaH;
+    int k = 0;
     
     plot_getCoordinates (x, plot_array, fieldX, fieldY, fieldW,
         i,
@@ -1033,22 +1035,15 @@ static int plot_behaviorClickedRegular (t_plot *x,
     pixelW = PD_ABS (pixelW);
     pixelW = PD_MAX (pixelW, plot_width - 1.0);
     
-    deltaX = PD_ABS ((int)pixelX - a);
-
-    if (deltaX <= PLOT_HANDLE_SIZE) {
-    //    
-    int deltaY = PD_ABS ((int)pixelY - b);
-    int deltaL = PD_ABS ((int)pixelY - b - pixelW);
-    int deltaH = PD_ABS ((int)pixelY - b + pixelW);
-    int k = 0;
+    deltaY = (int)math_euclideanDistance (pixelX, pixelY, a, b);
+    deltaL = (int)math_euclideanDistance (pixelX, pixelY - pixelW, a, b);
+    deltaH = (int)math_euclideanDistance (pixelX, pixelY + pixelW, a, b);
     
-    if (deltaX + deltaY < best) { best = deltaX + deltaY; k = 1; }
-    if (deltaX + deltaL < best) { best = deltaX + deltaL; k = 1; }
-    if (deltaX + deltaH < best) { best = deltaX + deltaH; k = 1; }
+    if (deltaY < best) { best = deltaY; k = 1; }
+    if (deltaL < best) { best = deltaL; k = 1; }
+    if (deltaH < best) { best = deltaH; k = 1; }
     
     if (k) { bestIndex = i; bestDeltaY = deltaY; bestDeltaL = deltaL; bestDeltaH = deltaH; }
-    //
-    }
     //
     }
     
