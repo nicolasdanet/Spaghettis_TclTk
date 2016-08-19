@@ -111,11 +111,10 @@ struct _template {
 void            word_init                               (t_word *w, t_template *tmpl, t_gpointer *gp);
 void            word_free                               (t_word *w, t_template *tmpl);
 
+t_float         word_getFloat                           (t_word *w, t_template *tmpl, t_symbol *fieldName);
 t_symbol        *word_getSymbol                         (t_word *w, t_template *tmpl, t_symbol *fieldName);
 t_buffer        *word_getText                           (t_word *w, t_template *tmpl, t_symbol *fieldName);
 t_array         *word_getArray                          (t_word *w, t_template *tmpl, t_symbol *fieldName);
-
-t_float         word_getFloat                           (t_word *w, t_template *tmpl, t_symbol *fieldName);
 
 void            word_setFloat                           (t_word *w, 
                                                             t_template *tmpl,
@@ -162,11 +161,11 @@ void            scalar_redraw                           (t_scalar *x, t_glist *g
 #pragma mark -
 
 t_array         *array_new                              (t_symbol *templateIdentifier, t_gpointer *parent);
-t_gpointer      *array_getTopParentArray                (t_gpointer *gp);
 t_symbol        *array_getTemplateIdentifier            (t_array *x);
 t_template      *array_getTemplate                      (t_array *x);
 t_word          *array_getData                          (t_array *x);
 t_word          *array_getElementAtIndex                (t_array *x, int n);
+t_gpointer      *array_getTopParent                     (t_array *x);
 
 int             array_getSize                           (t_array *x);
 int             array_getElementSize                    (t_array *x);
@@ -195,23 +194,29 @@ void            gpointer_masterRelease                  (t_gmaster *master);
 void            gpointer_init                           (t_gpointer *gp);
 void            gpointer_setAsScalar                    (t_gpointer *gp, t_glist *owner, t_scalar *scalar);
 void            gpointer_setAsWord                      (t_gpointer *gp, t_array *owner, t_word *w);
+
+t_scalar        *gpointer_getScalar                     (t_gpointer *gp);
+t_word          *gpointer_getWord                       (t_gpointer *gp);
+t_glist         *gpointer_getParentGlist                (t_gpointer *gp);
+t_array         *gpointer_getParentArray                (t_gpointer *gp);
+
 void            gpointer_setByCopy                      (t_gpointer *gp, t_gpointer *toSet);
 void            gpointer_unset                          (t_gpointer *gp);
-t_unique        gpointer_getUniqueIdentifier            (t_gpointer *gp);
+
+void            gpointer_retain                         (t_gpointer *gp);
+void            gpointer_rawCopy                        (t_gpointer *src, t_gpointer *dest);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* Functions below callable on both types. */
+
 int             gpointer_isSet                          (t_gpointer *gp);
 int             gpointer_isNull                         (t_gpointer *gp);
 int             gpointer_isValid                        (t_gpointer *gp);
 int             gpointer_isValidNullAllowed             (t_gpointer *gp);
 int             gpointer_isScalar                       (t_gpointer *gp);
 int             gpointer_isWord                         (t_gpointer *gp);
-
-void            gpointer_retain                         (t_gpointer *gp);
-void            gpointer_rawCopy                        (t_gpointer *src, t_gpointer *dest);
-
-t_scalar        *gpointer_getScalar                     (t_gpointer *gp);
-t_word          *gpointer_getWord                       (t_gpointer *gp);
-t_glist         *gpointer_getParentGlist                (t_gpointer *gp);
-t_array         *gpointer_getParentArray                (t_gpointer *gp);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -221,6 +226,7 @@ t_glist         *gpointer_getView                       (t_gpointer *gp);
 t_word          *gpointer_getData                       (t_gpointer *gp);
 t_symbol        *gpointer_getTemplateIdentifier         (t_gpointer *gp);
 t_template      *gpointer_getTemplate                   (t_gpointer *gp);
+t_scalar        *gpointer_getBase                       (t_gpointer *gp);
 
 int             gpointer_isInstanceOf                   (t_gpointer *gp, t_symbol *templateIdentifier);
 int             gpointer_isValidInstanceOf              (t_gpointer *gp, t_symbol *templateIdentifier);
@@ -251,14 +257,14 @@ t_template      *template_new                           (t_symbol *templateIdent
                                                             int argc,
                                                             t_atom *argv);
 
-int             template_getSize                        (t_template *x);
-t_dataslot      *template_getData                       (t_template *x);
+t_dataslot      *template_getSlots                      (t_template *x);
 t_symbol        *template_getTemplateIdentifier         (t_template *x);
 t_glist         *template_getFirstInstanceView          (t_template *x);
 t_template      *template_getTemplateIfArrayAtIndex     (t_template *x, int n);
 t_symbol        *template_getFieldAtIndex               (t_template *x, int n);
 
 void            template_free                           (t_template *x);
+int             template_getSize                        (t_template *x);
 int             template_isValid                        (t_template *x);
 
 int             template_hasInstance                    (t_template *x);

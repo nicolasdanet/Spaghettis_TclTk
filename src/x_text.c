@@ -301,7 +301,8 @@ t_buffer *pointertobinbuf(t_pd *x, t_gpointer *gp, t_symbol *s,
             templatesym->s_name);
         return (0);
     }
-    if (!template_findField(template, s, &onset, &type, &arraytype))
+    /* Remove template_findField ASAP !!! */
+    if (!template_findField(template, s, &onset, &type, &arraytype))    
     {
         post_error ("%s: %s.%s: no such field", fname,
             templatesym->s_name, s->s_name);
@@ -465,7 +466,7 @@ static t_buffer *text_client_getbuf(t_text_client *x)
         }
         vec = gpointer_getData (&x->tc_gp);
 
-        if (!template_findField(template,
+        if (!template_findField(template,   /* Remove template_findField ASAP !!! */
             x->tc_field, &onset, &type, &arraytype))
         {
             post_error ("text: no field named %s", x->tc_field->s_name);

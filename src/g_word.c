@@ -20,7 +20,7 @@
 void word_init (t_word *w, t_template *tmpl, t_gpointer *gp)
 {
     int i, size = template_getSize (tmpl);
-    t_dataslot *v = template_getData (tmpl);
+    t_dataslot *v = template_getSlots (tmpl);
     
     for (i = 0; i < size; i++, v++, w++) {
     //
@@ -42,7 +42,7 @@ void word_free (t_word *w, t_template *tmpl)
     else {
     //
     int i;
-    t_dataslot *v = template_getData (tmpl);
+    t_dataslot *v = template_getSlots (tmpl);
     
     for (i = 0; i < template_getSize (tmpl); i++) {
         if (v->ds_type == DATA_ARRAY) { array_free (w[i].w_array); }

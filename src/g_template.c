@@ -33,7 +33,7 @@ int template_getSize (t_template *x)
     return x->tp_size;
 }
 
-t_dataslot *template_getData (t_template *x)
+t_dataslot *template_getSlots (t_template *x)
 {
     return x->tp_vector;
 }

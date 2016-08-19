@@ -28,13 +28,6 @@ static t_array *array_getTop (t_array *x)
     return a;
 }
 
-static t_gpointer *array_getTopParent (t_array *x)
-{
-    t_array *a = array_getTop (x);
-    
-    return &a->a_parent;
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -202,9 +195,11 @@ t_float array_getFloatInElementAtIndex (t_array *x, int n, t_symbol *fieldName)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_gpointer *array_getTopParentArray (t_gpointer *gp)
+t_gpointer *array_getTopParent (t_array *x)
 {
-    return (array_getTopParent (gpointer_getParentArray (gp)));
+    t_array *a = array_getTop (x);
+    
+    return &a->a_parent;
 }
 
 // -----------------------------------------------------------------------------------------------------------

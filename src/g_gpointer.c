@@ -227,11 +227,6 @@ int gpointer_isWord (t_gpointer *gp)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_unique gpointer_getUniqueIdentifier (t_gpointer *gp)
-{
-    return (gp->gp_uniqueIdentifier);
-}
-
 t_scalar *gpointer_getScalar (t_gpointer *gp)
 {
     PD_ASSERT (gpointer_isScalar (gp)); return (gp->gp_un.gp_scalar);
@@ -272,7 +267,7 @@ t_glist *gpointer_getView (t_gpointer *gp)
 {
     if (gpointer_isScalar (gp)) { return gpointer_getParentGlist (gp); }
     else {
-        PD_ASSERT (gpointer_isWord (gp)); return (gpointer_getParentGlist (array_getTopParentArray (gp)));
+        return (gpointer_getParentGlist (array_getTopParent (gpointer_getParentArray (gp))));
     }
 }
 
@@ -295,6 +290,18 @@ t_symbol *gpointer_getTemplateIdentifier (t_gpointer *gp)
 t_template *gpointer_getTemplate (t_gpointer *gp)
 {
     return (template_findByIdentifier (gpointer_getTemplateIdentifier (gp)));
+}
+
+t_scalar *gpointer_getBase (t_gpointer *gp)
+{
+    t_scalar *scalar = NULL;
+    
+    if (gpointer_isScalar (gp)) { scalar = gpointer_getScalar (gp); }
+    else {
+        scalar = gpointer_getScalar (array_getTopParent (gpointer_getParentArray (gp)));
+    }
+    
+    return scalar;
 }
 
 int gpointer_isInstanceOf (t_gpointer *gp, t_symbol *templateIdentifier)
@@ -320,34 +327,12 @@ int gpointer_isValidInstanceOf (t_gpointer *gp, t_symbol *templateIdentifier)
 
 void gpointer_redraw (t_gpointer *gp)
 {
-    t_glist *glist = gpointer_getView (gp);
-    
-    t_scalar *scalar = NULL;
-        
-    if (gpointer_isScalar (gp)) { scalar = gpointer_getScalar (gp); }
-    else {
-        scalar = gpointer_getScalar (array_getTopParentArray (gp));
-    }
-    
-    scalar_redraw (scalar, glist);
+    scalar_redraw (gpointer_getBase (gp), gpointer_getView (gp));
 }
 
 void gpointer_setVisibility (t_gpointer *gp, int isVisible)
 {
-    t_glist *glist = gpointer_getView (gp);
-    
-    if (canvas_isMapped (glist)) {
-    //
-    t_scalar *scalar = NULL;
-        
-    if (gpointer_isScalar (gp)) { scalar = gpointer_getScalar (gp); }
-    else {
-        scalar = gpointer_getScalar (array_getTopParentArray (gp));
-    }
-    
-    gobj_visibilityChanged (cast_gobj (scalar), glist, isVisible); 
-    //
-    }
+    gobj_visibilityChanged (cast_gobj (gpointer_getBase (gp)), gpointer_getView (gp), isVisible); 
 }
 
 // -----------------------------------------------------------------------------------------------------------
