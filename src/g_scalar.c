@@ -80,11 +80,6 @@ static void scalar_drawSelectRectangle (t_scalar *x, t_glist *glist, int isSelec
        
         scalar_behaviorGetRectangle (cast_gobj (x), glist, &a, &b, &c, &d);
         
-        a -= SCALAR_SELECT_MARGIN;
-        b -= SCALAR_SELECT_MARGIN;
-        c += SCALAR_SELECT_MARGIN;
-        d += SCALAR_SELECT_MARGIN;
-        
         sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d"
                         " -width 0"
                         " -fill #%06x"
@@ -189,10 +184,7 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
     
         t_gobj *y = NULL;
         
-        x1 += PD_INT_MAX;
-        y1 += PD_INT_MAX;
-        x2 -= PD_INT_MAX;
-        y2 -= PD_INT_MAX;
+        rectangle_initialize (&x1, &y1, &x2, &y2);
         
         for (y = view->gl_graphics; y; y = y->g_next) {
         //
@@ -219,7 +211,15 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
         //
         }
         
-        if (x2 < x1 || y2 < y1) { x1 = y1 = x2 = y2 = 0; }
+        if (x2 < x1 || y2 < y1) { rectangle_setNothing (&x1, &y1, &x2, &y2); }
+        else {
+            if (!rectangle_isEverything (x1, y1, x2, y2)) {
+                x1 -= SCALAR_SELECT_MARGIN;
+                y1 -= SCALAR_SELECT_MARGIN;
+                x2 += SCALAR_SELECT_MARGIN;
+                y2 += SCALAR_SELECT_MARGIN;
+            }
+        }
     }
 
     *a = x1;

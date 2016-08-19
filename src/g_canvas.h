@@ -257,6 +257,17 @@ void            guiconnect_release                      (t_guiconnect *x, double
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void            rectangle_setEverything                 (int *a, int *b, int *c, int *d);
+void            rectangle_setNothing                    (int *a, int *b, int *c, int *d);
+void            rectangle_initialize                    (int *a, int *b, int *c, int *d);
+
+int             rectangle_isEverything                  (int a, int b, int c, int d);
+int             rectangle_isNothing                     (int a, int b, int c, int d);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void            canvas_newPatch                         (void *dummy, t_symbol *name, t_symbol *directory);
 void            canvas_setActiveFileNameAndDirectory    (t_symbol *name, t_symbol *directory);
 void            canvas_setActiveArguments               (int argc, t_atom *argv);

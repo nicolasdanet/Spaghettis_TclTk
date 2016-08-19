@@ -163,7 +163,7 @@ static void drawnumber_behaviorGetRectangle (t_gobj *z,
     //
     }
     
-    *a = PD_INT_MAX; *b = PD_INT_MAX; *c = -PD_INT_MAX; *d = -PD_INT_MAX;
+    rectangle_initialize (a, b, c, d);
 }
 
 static void drawnumber_behaviorVisibilityChanged (t_gobj *z,

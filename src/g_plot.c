@@ -375,12 +375,11 @@ static void plot_behaviorGetRectangle (t_gobj *z,
 {
     t_plot *x = (t_plot *)z;
     
-    int x1 = PD_INT_MAX;
-    int y1 = PD_INT_MAX;
-    int x2 = -x1;
-    int y2 = -y2;
+    int x1, y1, x2, y2;
     
-    if (garray_isSingle (glist)) { x1 = -PD_INT_MAX; y1 = -PD_INT_MAX; x2 = PD_INT_MAX; y2 = PD_INT_MAX; }
+    rectangle_initialize (&x1, &y1, &x2, &y2);
+    
+    if (garray_isSingle (glist)) { rectangle_setEverything (&x1, &y1, &x2, &y2); }
     else {
     //
     t_array *array = NULL;

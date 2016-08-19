@@ -66,6 +66,7 @@
 
 #include "g_guistub.c"
 #include "g_guiconnect.c"
+#include "g_rectangle.c"
 #include "g_base.c"
 #include "g_draw.c"
 #include "g_select.c"

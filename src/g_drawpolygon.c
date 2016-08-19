@@ -144,10 +144,9 @@ static void drawpolygon_behaviorGetRectangle (t_gobj *z,
 {
     t_drawpolygon *x = (t_drawpolygon *)z;
     
-    int x1 = PD_INT_MAX;
-    int y1 = PD_INT_MAX;
-    int x2 = -x1;
-    int y2 = -y1;
+    int x1, y1, x2, y2;
+    
+    rectangle_initialize (&x1, &y1, &x2, &y2);
     
     int visible = (int)word_getFloatByDescriptor (w, tmpl, &x->x_isVisible);
     
