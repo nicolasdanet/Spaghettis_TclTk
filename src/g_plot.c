@@ -317,7 +317,7 @@ static void plot_motion (void *dummy, t_float deltaX, t_float deltaY, t_float mo
 #pragma mark -
 
 static void plot_behaviorGetRectangleRecursive (t_plot *x,
-    t_glist *glist,
+    t_glist *view,
     t_array *array,
     int i,
     t_float baseX,
@@ -327,10 +327,6 @@ static void plot_behaviorGetRectangleRecursive (t_plot *x,
     int *c,
     int *d)
 {
-    t_glist *view = template_getFirstInstanceView (array_getTemplate (array));
-    
-    if (view) {
-    //
     t_gobj *y = NULL;
                         
     for (y = view->gl_graphics; y; y = y->g_next) {
@@ -341,16 +337,13 @@ static void plot_behaviorGetRectangleRecursive (t_plot *x,
         
             int x1, y1, x2, y2;
             
-            (*behavior->w_fnParentGetRectangle) (y,
-                glist,
-                array_getElementAtIndex (array, i),
-                array_getTemplate (array),
-                baseX,
-                baseY, 
-                &x1,
-                &y1,
-                &x2,
-                &y2);
+            t_gpointer gp = GPOINTER_INIT;
+            
+            gpointer_setAsWord (&gp, array, array_getElementAtIndex (array, i));
+            
+            (*behavior->w_fnParentGetRectangle) (y, &gp, baseX, baseY, &x1, &y1, &x2, &y2);
+            
+            gpointer_unset (&gp);
             
             *a = PD_MIN (*a, x1);
             *b = PD_MIN (*b, y1);
@@ -358,14 +351,10 @@ static void plot_behaviorGetRectangleRecursive (t_plot *x,
             *d = PD_MAX (*d, y2);
         }
     }
-    //
-    }
 }
 
 static void plot_behaviorGetRectangle (t_gobj *z,
-    t_glist *glist,
-    t_word *w,
-    t_template *tmpl,
+    t_gpointer *gp,
     t_float baseX,
     t_float baseY,
     int *a,
@@ -374,9 +363,13 @@ static void plot_behaviorGetRectangle (t_gobj *z,
     int *d)
 {
     t_plot *x = (t_plot *)z;
+
+    t_template *template = gpointer_getTemplate (gp);
+    t_word *w = gpointer_getData (gp);
+    t_glist *glist = gpointer_getView (gp);
     
     int x1, y1, x2, y2;
-    
+        
     rectangle_initialize (&x1, &y1, &x2, &y2);
     
     if (garray_isSingle (glist)) { rectangle_setEverything (&x1, &y1, &x2, &y2); }
@@ -390,7 +383,7 @@ static void plot_behaviorGetRectangle (t_gobj *z,
     t_float style;
     int visible;
     
-    if (!plot_fetchScalarFields (x, w, tmpl,
+    if (!plot_fetchScalarFields (x, w, template,
             &array,
             &width,
             &positionX,
@@ -406,6 +399,8 @@ static void plot_behaviorGetRectangle (t_gobj *z,
     if (!plot_fetchElementFieldNames (x, array, &fieldX, &fieldY, &fieldW)) {
     //
     int i, k = plot_getStep (array);
+    
+    t_glist *view = template_getFirstInstanceView (array_getTemplate (array));
     
     for (i = 0; i < array_getSize (array); i += k) {
 
@@ -437,7 +432,9 @@ static void plot_behaviorGetRectangle (t_gobj *z,
         y1 = PD_MIN (y1, pixelY - pixelW);
         y2 = PD_MAX (y2, pixelY + pixelW);
         
-        plot_behaviorGetRectangleRecursive (x, glist, array, i, valueX, valueY, &x1, &y1, &x2, &y2);
+        if (view) {
+            plot_behaviorGetRectangleRecursive (x, view, array, i, valueX, valueY, &x1, &y1, &x2, &y2);
+        }
     }
     //
     }
@@ -610,32 +607,36 @@ static void plot_behaviorVisibilityChangedDrawPolygonFill (t_plot *x,
     //
     t_heapstring *t = heapstring_new (0);
     
-    heapstring_addSprintf (t,           ".x%lx.c create polygon", canvas_getView (glist));
+    heapstring_addSprintf (t,       ".x%lx.c create polygon", canvas_getView (glist));
   
     if (elementsDrawn == 1) {
-        heapstring_addSprintf (t,       " %d %d", coordinatesX[0] - 1, coordinatesL[0]);
-        heapstring_addSprintf (t,       " %d %d", coordinatesX[0] + 1, coordinatesL[0]);
+        heapstring_addSprintf (t,   " %d %d", coordinatesX[0] - 1, coordinatesL[0]);
+        heapstring_addSprintf (t,   " %d %d", coordinatesX[0] + 1, coordinatesL[0]);
     } else {
-        for (i = 0; i < elementsDrawn; i++) {
-            heapstring_addSprintf (t,   " %d %d", coordinatesX[i], coordinatesL[i]);
-        }
+    //
+    for (i = 0; i < elementsDrawn; i++) {
+        heapstring_addSprintf (t,   " %d %d", coordinatesX[i], coordinatesL[i]);
+    }
+    //
     }
 
     if (elementsDrawn == 1) {
-        heapstring_addSprintf (t,       " %d %d", coordinatesX[0] + 1, coordinatesH[0]);
-        heapstring_addSprintf (t,       " %d %d", coordinatesX[0] - 1, coordinatesH[0]);
+        heapstring_addSprintf (t,   " %d %d", coordinatesX[0] + 1, coordinatesH[0]);
+        heapstring_addSprintf (t,   " %d %d", coordinatesX[0] - 1, coordinatesH[0]);
     } else { 
-        for (i = elementsDrawn - 1; i >= 0; i--) {
-            heapstring_addSprintf (t,   " %d %d", coordinatesX[i], coordinatesH[i]);
-        }
+    //
+    for (i = elementsDrawn - 1; i >= 0; i--) {
+        heapstring_addSprintf (t,   " %d %d", coordinatesX[i], coordinatesH[i]);
+    }
+    //
     }
     
-    heapstring_addSprintf (t,           " -fill %s", color->s_name);
-    heapstring_addSprintf (t,           " -outline %s", color->s_name);
+    heapstring_addSprintf (t,       " -fill %s", color->s_name);
+    heapstring_addSprintf (t,       " -outline %s", color->s_name);
 
     if (style == PLOT_CURVES) { heapstring_addSprintf (t, " -width 1 -smooth 1 -tags %lxPLOT\n", w); }
     else { 
-        heapstring_addSprintf (t,       " -width 1 -tags %lxPLOT\n", w);
+        heapstring_addSprintf (t,   " -width 1 -tags %lxPLOT\n", w);
     }
     
     sys_gui (heapstring_getRaw (t));

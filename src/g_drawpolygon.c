@@ -132,9 +132,7 @@ static void drawpolygon_motion (void *z, t_float deltaX, t_float deltaY, t_float
 #pragma mark -
 
 static void drawpolygon_behaviorGetRectangle (t_gobj *z,
-    t_glist *glist,
-    t_word *w,
-    t_template *tmpl,
+    t_gpointer *gp,
     t_float baseX,
     t_float baseY,
     int *a,
@@ -144,12 +142,16 @@ static void drawpolygon_behaviorGetRectangle (t_gobj *z,
 {
     t_drawpolygon *x = (t_drawpolygon *)z;
     
+    t_template *template = gpointer_getTemplate (gp);
+    t_word *w = gpointer_getData (gp);
+    t_glist *glist = gpointer_getView (gp);
+    
     int x1, y1, x2, y2;
+
+    int visible = (int)word_getFloatByDescriptor (w, template, &x->x_isVisible);
     
     rectangle_initialize (&x1, &y1, &x2, &y2);
-    
-    int visible = (int)word_getFloatByDescriptor (w, tmpl, &x->x_isVisible);
-    
+        
     if (visible && !(x->x_flags & DRAWPOLYGON_NO_MOUSE)) {
     //
     int i;
@@ -159,8 +161,8 @@ static void drawpolygon_behaviorGetRectangle (t_gobj *z,
     //
     int m, n;
     
-    m = canvas_valueToPixelX (glist, baseX + word_getFloatByDescriptorAsPosition (w, tmpl, fd + i));
-    n = canvas_valueToPixelY (glist, baseY + word_getFloatByDescriptorAsPosition (w, tmpl, fd + i + 1));
+    m = canvas_valueToPixelX (glist, baseX + word_getFloatByDescriptorAsPosition (w, template, fd + i));
+    n = canvas_valueToPixelY (glist, baseY + word_getFloatByDescriptorAsPosition (w, template, fd + i + 1));
     
     x1 = PD_MIN (m, x1);
     x2 = PD_MAX (m, x2);

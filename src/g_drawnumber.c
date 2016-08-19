@@ -130,9 +130,7 @@ static void drawnumber_motion (void *z, t_float deltaX, t_float deltaY, t_float 
 #pragma mark -
 
 static void drawnumber_behaviorGetRectangle (t_gobj *z,
-    t_glist *glist,
-    t_word *w,
-    t_template *tmpl,
+    t_gpointer *gp,
     t_float baseX,
     t_float baseY,
     int *a,
@@ -142,18 +140,24 @@ static void drawnumber_behaviorGetRectangle (t_gobj *z,
 {
     t_drawnumber *x = (t_drawnumber *)z;
     
-    if (word_getFloatByDescriptor (w, tmpl, &x->x_isVisible)) {
+    t_template *template = gpointer_getTemplate (gp);
+    t_word *w = gpointer_getData (gp);
+    t_glist *glist = gpointer_getView (gp);
+    
+    int visible = word_getFloatByDescriptor (w, template, &x->x_isVisible);
+    
+    if (visible) {
     //
     char t[PD_STRING] = { 0 };
     int m, n;
     
-    t_float valueX      = baseX + word_getFloatByDescriptorAsPosition (w, tmpl, &x->x_positionX);
-    t_float valueY      = baseY + word_getFloatByDescriptorAsPosition (w, tmpl, &x->x_positionY);
+    t_float valueX      = baseX + word_getFloatByDescriptorAsPosition (w, template, &x->x_positionX);
+    t_float valueY      = baseY + word_getFloatByDescriptorAsPosition (w, template, &x->x_positionY);
     int pixelX          = canvas_valueToPixelX (glist, valueX);
     int pixelY          = canvas_valueToPixelY (glist, valueY);
     t_fontsize fontSize = canvas_getFontSize (glist);
     
-    if (!drawnumber_getContents (x, w, tmpl, t, PD_STRING, &m, &n)) {
+    if (!drawnumber_getContents (x, w, template, t, PD_STRING, &m, &n)) {
         *a = pixelX;
         *b = pixelY;
         *c = pixelX + (m * font_getHostFontWidth (fontSize));
@@ -231,7 +235,11 @@ static int drawnumber_behaviorClicked (t_gobj *z,
     
     int x1, y1, x2, y2;
     
-    drawnumber_behaviorGetRectangle (z, glist, w, tmpl, baseX, baseY, &x1, &y1, &x2, &y2);
+    t_gpointer gp = GPOINTER_INIT; gpointer_setAsScalar (&gp, glist, asScalar); 
+    
+    drawnumber_behaviorGetRectangle (z, &gp, baseX, baseY, &x1, &y1, &x2, &y2);
+    
+    gpointer_unset (&gp);
     
     if (a >= x1 && a <= x2 && b >= y1 && b <= y2) {
     //

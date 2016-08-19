@@ -194,17 +194,14 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
         //
         int e, f, g, h;
         
-        (*behavior->w_fnParentGetRectangle) (y,
-            glist,
-            x->sc_vector,
-            template,
-            baseX,
-            baseY,
-            &e,
-            &f,
-            &g,
-            &h);
-            
+        t_gpointer gp = GPOINTER_INIT;
+        
+        gpointer_setAsScalar (&gp, glist, x);
+        
+        (*behavior->w_fnParentGetRectangle) (y, &gp, baseX, baseY, &e, &f, &g, &h);
+        
+        gpointer_unset (&gp);
+        
         x1 = PD_MIN (x1, e); y1 = PD_MIN (y1, f); x2 = PD_MAX (x2, g); y2 = PD_MAX (y2, h);
         //
         }

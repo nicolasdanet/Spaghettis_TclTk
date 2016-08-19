@@ -45,9 +45,7 @@ typedef int  (*t_clickedfn)             (t_gobj *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef void (*t_parentgetrectanglefn)  (t_gobj *x, t_glist *glist, t_word *w, t_template *tmpl,
-                                            t_float baseX,
-                                            t_float baseY,
+typedef void (*t_parentgetrectanglefn)  (t_gobj *x, t_gpointer *gp, t_float baseX, t_float baseY,
                                             int *a,
                                             int *b,
                                             int *c,
