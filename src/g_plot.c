@@ -776,15 +776,18 @@ static void plot_behaviorVisibilityChangedRecursive (t_plot *x,
         &valueW);
     
     for (y = view->gl_graphics; y; y = y->g_next) {
+    
         t_parentwidgetbehavior *behavior = class_getParentWidget (pd_class (y));
+        
         if (behavior) {
-            (*behavior->w_fnParentVisibilityChanged) (y,
-                glist,
-                array_getElementAtIndex (array, i),
-                array_getTemplate (array),
-                valueX,
-                valueY,
-                isVisible);
+        
+            t_gpointer gp = GPOINTER_INIT;
+            
+            gpointer_setAsWord (&gp, array, array_getElementAtIndex (array, i));
+            
+            (*behavior->w_fnParentVisibilityChanged) (y, &gp, valueX, valueY, isVisible);
+            
+            gpointer_unset (&gp);
         }
     }
     //
@@ -794,15 +797,17 @@ static void plot_behaviorVisibilityChangedRecursive (t_plot *x,
 }
 
 static void plot_behaviorVisibilityChanged (t_gobj *z,
-    t_glist *glist, 
-    t_word *w,
-    t_template *tmpl,
+    t_gpointer *gp,
     t_float baseX,
     t_float baseY,
     int isVisible)
 {
     t_plot *x = (t_plot *)z;
 
+    t_template *template = gpointer_getTemplate (gp);
+    t_word *w = gpointer_getData (gp);
+    t_glist *glist = gpointer_getView (gp);
+    
     t_array *array = NULL;
     t_float width;
     t_float positionX;
@@ -811,7 +816,7 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
     t_float style;
     int visible;
     
-    if (!plot_fetchScalarFields (x, w, tmpl,
+    if (!plot_fetchScalarFields (x, w, template,
             &array,
             &width,
             &positionX,
@@ -830,7 +835,7 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
 
         if (isVisible) {
         
-            int color = (int)word_getFloatByDescriptor (w, tmpl, &x->x_colorOutline);
+            int color = (int)word_getFloatByDescriptor (w, template, &x->x_colorOutline);
                             
             if (style == PLOT_POINTS) { 
             

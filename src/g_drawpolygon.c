@@ -179,17 +179,19 @@ static void drawpolygon_behaviorGetRectangle (t_gobj *z,
     *d = y2; 
 }
 
-static void drawpolygon_behaviorVisibilityChanged (t_gobj *z, 
-    t_glist *glist, 
-    t_word *w,
-    t_template *tmpl,
+static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
+    t_gpointer *gp,
     t_float baseX,
     t_float baseY,
     int isVisible)
 {
     t_drawpolygon *x = (t_drawpolygon *)z;
     
-    int visible = (int)word_getFloatByDescriptor (w, tmpl, &x->x_isVisible);
+    t_template *template = gpointer_getTemplate (gp);
+    t_word *w = gpointer_getData (gp);
+    t_glist *glist = gpointer_getView (gp);
+    
+    int visible = (int)word_getFloatByDescriptor (w, template, &x->x_isVisible);
     
     if (!isVisible || visible) {
     //
@@ -200,9 +202,9 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     if (!isVisible) { sys_vGui (".x%lx.c delete %lxCURVE\n", canvas_getView (glist), w); }
     else {
     //
-    t_float width        = word_getFloatByDescriptor (w, tmpl, &x->x_width);
-    t_float colorFill    = word_getFloatByDescriptor (w, tmpl, &x->x_colorFill);
-    t_float colorOutline = word_getFloatByDescriptor (w, tmpl, &x->x_colorOutline);
+    t_float width        = word_getFloatByDescriptor (w, template, &x->x_width);
+    t_float colorFill    = word_getFloatByDescriptor (w, template, &x->x_colorFill);
+    t_float colorOutline = word_getFloatByDescriptor (w, template, &x->x_colorOutline);
     t_symbol *filled     = color_toEncodedSymbol (color_withDigits ((int)colorFill));
     t_symbol *outlined   = color_toEncodedSymbol (color_withDigits ((int)colorOutline));
     
@@ -221,8 +223,8 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     //
     int a, b;
     
-    a = canvas_valueToPixelX (glist, baseX + word_getFloatByDescriptorAsPosition (w, tmpl, fd + i));
-    b = canvas_valueToPixelY (glist, baseY + word_getFloatByDescriptorAsPosition (w, tmpl, fd + i + 1));
+    a = canvas_valueToPixelX (glist, baseX + word_getFloatByDescriptorAsPosition (w, template, fd + i));
+    b = canvas_valueToPixelY (glist, baseY + word_getFloatByDescriptorAsPosition (w, template, fd + i + 1));
         
     heapstring_addSprintf (t,       " %d %d", a, b);
     //

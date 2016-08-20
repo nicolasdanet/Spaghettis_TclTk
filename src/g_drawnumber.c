@@ -171,16 +171,18 @@ static void drawnumber_behaviorGetRectangle (t_gobj *z,
 }
 
 static void drawnumber_behaviorVisibilityChanged (t_gobj *z,
-    t_glist *glist, 
-    t_word *w,
-    t_template *tmpl,
+    t_gpointer *gp,
     t_float baseX,
     t_float baseY,
     int isVisible)
 {
     t_drawnumber *x = (t_drawnumber *)z;
     
-    int visible = (int)word_getFloatByDescriptor (w, tmpl, &x->x_isVisible);
+    t_template *template = gpointer_getTemplate (gp);
+    t_word *w = gpointer_getData (gp);
+    t_glist *glist = gpointer_getView (gp);
+    
+    int visible = (int)word_getFloatByDescriptor (w, template, &x->x_isVisible);
 
     if (!isVisible || visible) {
     //
@@ -189,13 +191,13 @@ static void drawnumber_behaviorVisibilityChanged (t_gobj *z,
     //
     char t[PD_STRING] = { 0 };
     
-    t_color color   = color_withDigits ((int)word_getFloatByDescriptor (w, tmpl, &x->x_color));
-    t_float valueX  = baseX + word_getFloatByDescriptorAsPosition (w, tmpl, &x->x_positionX);
-    t_float valueY  = baseY + word_getFloatByDescriptorAsPosition (w, tmpl, &x->x_positionY);
+    t_color color   = color_withDigits ((int)word_getFloatByDescriptor (w, template, &x->x_color));
+    t_float valueX  = baseX + word_getFloatByDescriptorAsPosition (w, template, &x->x_positionX);
+    t_float valueY  = baseY + word_getFloatByDescriptorAsPosition (w, template, &x->x_positionY);
     int pixelX      = canvas_valueToPixelX (glist, valueX);
     int pixelY      = canvas_valueToPixelY (glist, valueY);
     
-    drawnumber_getContents (x, w, tmpl, t, PD_STRING, NULL, NULL);
+    drawnumber_getContents (x, w, template, t, PD_STRING, NULL, NULL);
     
     sys_vGui (".x%lx.c create text %d %d"
                     " -anchor nw"

@@ -319,13 +319,14 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
             t_parentwidgetbehavior *behavior = class_getParentWidget (pd_class (y));
             
             if (behavior) {
-                (*behavior->w_fnParentVisibilityChanged) (y, 
-                    glist,
-                    x->sc_vector,
-                    template,
-                    baseX,
-                    baseY,
-                    isVisible);
+                
+                t_gpointer gp = GPOINTER_INIT;
+                
+                gpointer_setAsScalar (&gp, glist, x);
+                
+                (*behavior->w_fnParentVisibilityChanged) (y, &gp, baseX, baseY, isVisible);
+                
+                gpointer_unset (&gp);
             }
         }
     }
