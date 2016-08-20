@@ -289,7 +289,11 @@ t_symbol *gpointer_getTemplateIdentifier (t_gpointer *gp)
 
 t_template *gpointer_getTemplate (t_gpointer *gp)
 {
-    return (template_findByIdentifier (gpointer_getTemplateIdentifier (gp)));
+    t_template *template = template_findByIdentifier (gpointer_getTemplateIdentifier (gp));
+    
+    PD_ASSERT (template);
+    
+    return (template);
 }
 
 static t_scalar *gpointer_getBase (t_gpointer *gp)
@@ -341,56 +345,32 @@ void gpointer_setVisibility (t_gpointer *gp, int isVisible)
 
 int gpointer_hasField (t_gpointer *gp, t_symbol *fieldName)
 {
-    t_template *template = gpointer_getTemplate (gp);
-    
-    PD_ASSERT (template);
-    
-    return (template_hasField (template, fieldName));
+    return (template_hasField (gpointer_getTemplate (gp), fieldName));
 }
 
 int gpointer_fieldIsFloat (t_gpointer *gp, t_symbol *fieldName)
 {
-    t_template *template = gpointer_getTemplate (gp);
-    
-    PD_ASSERT (template);
-    
-    return (template_fieldIsFloat (template, fieldName));
+    return (template_fieldIsFloat (gpointer_getTemplate (gp), fieldName));
 }
 
 int gpointer_fieldIsSymbol (t_gpointer *gp, t_symbol *fieldName)
 {
-    t_template *template = gpointer_getTemplate (gp);
-    
-    PD_ASSERT (template);
-    
-    return (template_fieldIsSymbol (template, fieldName));
+    return (template_fieldIsSymbol (gpointer_getTemplate (gp), fieldName));
 }
 
 int gpointer_fieldIsText (t_gpointer *gp, t_symbol *fieldName)
 {
-    t_template *template = gpointer_getTemplate (gp);
-    
-    PD_ASSERT (template);
-    
-    return (template_fieldIsText (template, fieldName));
+    return (template_fieldIsText (gpointer_getTemplate (gp), fieldName));
 }
 
 int gpointer_fieldIsArray (t_gpointer *gp, t_symbol *fieldName)
 {
-    t_template *template = gpointer_getTemplate (gp);
-    
-    PD_ASSERT (template);
-    
-    return (template_fieldIsArray (template, fieldName));
+    return (template_fieldIsArray (gpointer_getTemplate (gp), fieldName));
 }
 
 int gpointer_fieldIsArrayAndValid (t_gpointer *gp, t_symbol *fieldName)
 {
-    t_template *template = gpointer_getTemplate (gp);
-    
-    PD_ASSERT (template);
-    
-    return (template_fieldIsArrayAndValid (template, fieldName));
+    return (template_fieldIsArrayAndValid (gpointer_getTemplate (gp), fieldName));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -399,56 +379,32 @@ int gpointer_fieldIsArrayAndValid (t_gpointer *gp, t_symbol *fieldName)
 
 t_float gpointer_getFloat (t_gpointer *gp, t_symbol *fieldName)
 {
-    t_template *template = gpointer_getTemplate (gp);
-    
-    PD_ASSERT (template);
-    
-    return word_getFloat (gpointer_getData (gp), template, fieldName);
+    return word_getFloat (gpointer_getData (gp), gpointer_getTemplate (gp), fieldName);
 }
 
 t_symbol *gpointer_getSymbol (t_gpointer *gp, t_symbol *fieldName)
 {
-    t_template *template = gpointer_getTemplate (gp);
-    
-    PD_ASSERT (template);
-    
-    return word_getSymbol (gpointer_getData (gp), template, fieldName);
+    return word_getSymbol (gpointer_getData (gp), gpointer_getTemplate (gp), fieldName);
 }
 
 t_buffer *gpointer_getText (t_gpointer *gp, t_symbol *fieldName)
 {
-    t_template *template = gpointer_getTemplate (gp);
-    
-    PD_ASSERT (template);
-    
-    return word_getText (gpointer_getData (gp), template, fieldName);
+    return word_getText (gpointer_getData (gp), gpointer_getTemplate (gp), fieldName);
 }
 
 t_array *gpointer_getArray (t_gpointer *gp, t_symbol *fieldName)
 {
-    t_template *template = gpointer_getTemplate (gp);
-    
-    PD_ASSERT (template);
-    
-    return word_getArray (gpointer_getData (gp), template, fieldName);
+    return word_getArray (gpointer_getData (gp), gpointer_getTemplate (gp), fieldName);
 }
 
 void gpointer_setFloat (t_gpointer *gp, t_symbol *fieldName, t_float f)
 {
-    t_template *template = gpointer_getTemplate (gp);
-    
-    PD_ASSERT (template);
-    
-    word_setFloat (gpointer_getData (gp), template, fieldName, f);
+    word_setFloat (gpointer_getData (gp), gpointer_getTemplate (gp), fieldName, f);
 }
 
 void gpointer_setSymbol (t_gpointer *gp, t_symbol *fieldName, t_symbol *s)
 {
-    t_template *template = gpointer_getTemplate (gp);
-    
-    PD_ASSERT (template);
-    
-    word_setSymbol (gpointer_getData (gp), template, fieldName, s);
+    word_setSymbol (gpointer_getData (gp), gpointer_getTemplate (gp), fieldName, s);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -457,29 +413,17 @@ void gpointer_setSymbol (t_gpointer *gp, t_symbol *fieldName, t_symbol *s)
 
 t_float gpointer_getFloatByDescriptor (t_gpointer *gp, t_fielddescriptor *fd)
 {
-    t_template *template = gpointer_getTemplate (gp);
-    
-    PD_ASSERT (template);
-    
-    word_getFloatByDescriptor (gpointer_getData (gp), template, fd);
+    word_getFloatByDescriptor (gpointer_getData (gp), gpointer_getTemplate (gp), fd);
 }
 
 t_float gpointer_getFloatByDescriptorAsPosition (t_gpointer *gp, t_fielddescriptor *fd)
 {
-    t_template *template = gpointer_getTemplate (gp);
-    
-    PD_ASSERT (template);
-    
-    word_getFloatByDescriptorAsPosition (gpointer_getData (gp), template, fd);
+    word_getFloatByDescriptorAsPosition (gpointer_getData (gp), gpointer_getTemplate (gp), fd);
 }
 
 void gpointer_setFloatByDescriptorAsPosition (t_gpointer *gp, t_fielddescriptor *fd, t_float position)
 {
-    t_template *template = gpointer_getTemplate (gp);
-    
-    PD_ASSERT (template);
-    
-    word_setFloatByDescriptorAsPosition (gpointer_getData (gp), template, fd, position);
+    word_setFloatByDescriptorAsPosition (gpointer_getData (gp), gpointer_getTemplate (gp), fd, position);
 }
                                                             
 // -----------------------------------------------------------------------------------------------------------
