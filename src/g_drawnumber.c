@@ -219,11 +219,7 @@ static void drawnumber_behaviorVisibilityChanged (t_gobj *z,
 }
 
 static int drawnumber_behaviorClicked (t_gobj *z,
-    t_glist *glist, 
-    t_word *w,
-    t_template *tmpl,
-    t_scalar *asScalar,
-    t_array *dummy,
+    t_gpointer *gp,
     t_float baseX,
     t_float baseY,
     int a,
@@ -235,23 +231,23 @@ static int drawnumber_behaviorClicked (t_gobj *z,
 {
     t_drawnumber *x = (t_drawnumber *)z;
     
+    t_template *template = gpointer_getTemplate (gp);
+    t_word *w = gpointer_getData (gp);
+    t_glist *glist = gpointer_getView (gp);
+    
     int x1, y1, x2, y2;
-    
-    t_gpointer gp = GPOINTER_INIT; gpointer_setAsScalar (&gp, glist, asScalar); 
-    
-    drawnumber_behaviorGetRectangle (z, &gp, baseX, baseY, &x1, &y1, &x2, &y2);
-    
-    gpointer_unset (&gp);
-    
+     
+    drawnumber_behaviorGetRectangle (z, gp, baseX, baseY, &x1, &y1, &x2, &y2);
+
     if (a >= x1 && a <= x2 && b >= y1 && b <= y2) {
     //
-    if (template_fieldIsFloat (tmpl, x->x_fieldName)) {
+    if (template_fieldIsFloat (template, x->x_fieldName)) {
     //
     if (clicked) {
     
-        drawnumber_cumulativeY = word_getFloat (w, tmpl, x->x_fieldName);
+        drawnumber_cumulativeY = word_getFloat (w, template, x->x_fieldName);
 
-        gpointer_setAsScalar (&drawnumber_gpointer, glist, asScalar);
+        gpointer_setByCopy (gp, &drawnumber_gpointer);
         
         canvas_setMotionFunction (glist, z, (t_motionfn)drawnumber_motion, a, b);
     }

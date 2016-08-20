@@ -368,12 +368,13 @@ static int scalar_behaviorClicked (t_gobj *z,
     t_parentwidgetbehavior *behavior = class_getParentWidget (pd_class (y));
     
     if (behavior) { 
-        int k = (*behavior->w_fnParentClicked) (y, 
-                    glist,
-                    x->sc_vector,
-                    template,
-                    x,
-                    NULL,
+        
+        t_gpointer gp = GPOINTER_INIT;
+        
+        gpointer_setAsScalar (&gp, glist, x);
+        
+        int k = (*behavior->w_fnParentClicked) (y,
+                    &gp,
                     baseX,
                     baseY,
                     a,
@@ -382,7 +383,9 @@ static int scalar_behaviorClicked (t_gobj *z,
                     alt,
                     dbl,
                     clicked);
-                    
+        
+        gpointer_unset (&gp);
+        
         if (k) {
             return k;
         }

@@ -51,9 +51,7 @@ typedef void (*t_parentgetrectanglefn)  (t_gobj *x, t_gpointer *gp, t_float base
                                             int *c,
                                             int *d);
 typedef void (*t_parentvisibilityfn)    (t_gobj *x, t_gpointer *gp, t_float baseX, t_float baseY, int flag);
-typedef int  (*t_parentclickedfn)       (t_gobj *x, t_glist *glist, t_word *w, t_template *tmpl,
-                                            t_scalar *scalar,
-                                            t_array  *array,
+typedef int  (*t_parentclickedfn)       (t_gobj *x, t_gpointer *gp,
                                             t_float baseX,
                                             t_float baseY,
                                             int a,

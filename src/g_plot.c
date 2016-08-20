@@ -1121,11 +1121,7 @@ static int plot_behaviorClickedSingle (t_plot *x,
 }
 
 static int plot_behaviorClicked (t_gobj *z,
-    t_glist *glist, 
-    t_word *w,
-    t_template *tmpl,
-    t_scalar *asScalar,
-    t_array *dummy,
+    t_gpointer *gp,
     t_float baseX,
     t_float baseY,
     int a,
@@ -1137,6 +1133,10 @@ static int plot_behaviorClicked (t_gobj *z,
 {
     t_plot *x = (t_plot *)z;
     
+    t_template *template = gpointer_getTemplate (gp);
+    t_word *w = gpointer_getData (gp);
+    t_glist *glist = gpointer_getView (gp);
+    
     t_array *array = NULL;
     t_float width;
     t_float positionX;
@@ -1145,7 +1145,7 @@ static int plot_behaviorClicked (t_gobj *z,
     t_float style;
     int visible;
     
-    if (!plot_fetchScalarFields (x, w, tmpl,
+    if (!plot_fetchScalarFields (x, w, template,
             &array,
             &width,
             &positionX,
@@ -1163,7 +1163,7 @@ static int plot_behaviorClicked (t_gobj *z,
     plot_style      = style;
     plot_array      = array;
     
-    gpointer_setAsScalar (&plot_gpointer, glist, asScalar);
+    gpointer_setByCopy (gp, &plot_gpointer);
     
     if (garray_isSingle (glist)) { return (plot_behaviorClickedSingle (x, a, b, shift, alt, dbl, clicked)); } 
     else {

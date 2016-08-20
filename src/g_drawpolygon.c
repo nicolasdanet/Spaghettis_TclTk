@@ -253,11 +253,7 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
 }
 
 static int drawpolygon_behaviorClicked (t_gobj *z,
-    t_glist *glist, 
-    t_word *w,
-    t_template *tmpl,
-    t_scalar *asScalar,
-    t_array *dummy,
+    t_gpointer *gp,
     t_float baseX,
     t_float baseY,
     int a,
@@ -269,7 +265,11 @@ static int drawpolygon_behaviorClicked (t_gobj *z,
 {
     t_drawpolygon *x = (t_drawpolygon *)z;
     
-    int visible = (int)word_getFloatByDescriptor (w, tmpl, &x->x_isVisible);
+    t_template *template = gpointer_getTemplate (gp);
+    t_word *w = gpointer_getData (gp);
+    t_glist *glist = gpointer_getView (gp);
+    
+    int visible = (int)word_getFloatByDescriptor (w, template, &x->x_isVisible);
     
     if (visible) {
     //
@@ -283,8 +283,8 @@ static int drawpolygon_behaviorClicked (t_gobj *z,
     //
     if (field_isVariable (fd + i) || field_isVariable (fd + i + 1)) {
     //
-    int valueX = word_getFloatByDescriptorAsPosition (w, tmpl, fd + i);
-    int valueY = word_getFloatByDescriptorAsPosition (w, tmpl, fd + i + 1);
+    int valueX = word_getFloatByDescriptorAsPosition (w, template, fd + i);
+    int valueY = word_getFloatByDescriptorAsPosition (w, template, fd + i + 1);
     int pixelX = canvas_valueToPixelX (glist, baseX + valueX);
     int pixelY = canvas_valueToPixelY (glist, baseY + valueY);
     int error  = (int)math_euclideanDistance (pixelX, pixelY, a, b);
@@ -310,7 +310,7 @@ static int drawpolygon_behaviorClicked (t_gobj *z,
             drawpolygon_cumulativeY = 0.0;
             drawpolygon_field       = bestField;
             
-            gpointer_setAsScalar (&drawpolygon_gpointer, glist, asScalar);
+            gpointer_setByCopy (gp, &drawpolygon_gpointer);
             
             canvas_setMotionFunction (glist, z, (t_motionfn)drawpolygon_motion, a, b);
         }
