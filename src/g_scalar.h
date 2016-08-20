@@ -232,6 +232,11 @@ int         gpointer_isValidInstanceOf                  (t_gpointer *gp, t_symbo
 void        gpointer_redraw                             (t_gpointer *gp);
 void        gpointer_setVisibility                      (t_gpointer *gp, int isVisible);
 
+t_error     gpointer_fieldToString                      (t_gpointer *gp,
+                                                            t_symbol *fieldName,
+                                                            char *dest,
+                                                            size_t size);
+
 int         gpointer_hasField                           (t_gpointer *gp, t_symbol *fieldName);
 int         gpointer_fieldIsFloat                       (t_gpointer *gp, t_symbol *fieldName);
 int         gpointer_fieldIsSymbol                      (t_gpointer *gp, t_symbol *fieldName);

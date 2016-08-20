@@ -50,33 +50,13 @@ static t_error drawnumber_getContents (t_drawnumber *x,
     int *m,
     int *n)
 {
-    if (!gpointer_fieldIsArray (gp, x->x_fieldName)) {
-    //
-    t_error err = string_copy (dest, size, x->x_label->s_name);
-    
-    if (gpointer_fieldIsText (gp, x->x_fieldName)) {
-        char *t = NULL;
-        buffer_toString (gpointer_getText (gp, x->x_fieldName), &t);
-        err |= string_add (dest, size, t);
-        PD_MEMORY_FREE (t);
-        
-    } else {
-        t_atom a;
-        if (gpointer_fieldIsFloat (gp, x->x_fieldName)) {
-            SET_FLOAT (&a, gpointer_getFloat (gp, x->x_fieldName));
-        } else {
-            SET_SYMBOL (&a, gpointer_getSymbol (gp, x->x_fieldName));
-        }
-        err |= string_addAtom (dest, size, &a);
+    if (gpointer_fieldIsArray (gp, x->x_fieldName)) { return PD_ERROR; }
+    else {
+        t_error err = string_copy (dest, size, x->x_label->s_name);
+        err |= gpointer_fieldToString (gp, x->x_fieldName, dest, size);
+        if (m && n) { string_getNumberOfColumnsAndLines (dest, m, n); }
+        return err;
     }
-    
-    if (m && n) { string_getNumberOfColumnsAndLines (dest, m, n); }
-    
-    return err;
-    //
-    }
-    
-    return PD_ERROR;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -139,19 +119,17 @@ static void drawnumber_behaviorGetRectangle (t_gobj *z,
 {
     t_drawnumber *x = (t_drawnumber *)z;
     
-    t_template *template = gpointer_getTemplate (gp);
-    t_word *w = gpointer_getData (gp);
-    t_glist *glist = gpointer_getView (gp);
-    
-    int visible = word_getFloatByDescriptor (w, template, &x->x_isVisible);
+    int visible = (int)gpointer_getFloatByDescriptor (gp, &x->x_isVisible);
     
     if (visible) {
     //
+    t_glist *glist = gpointer_getView (gp);
+    
     char t[PD_STRING] = { 0 };
     int m, n;
-    
-    t_float valueX      = baseX + word_getFloatByDescriptorAsPosition (w, template, &x->x_positionX);
-    t_float valueY      = baseY + word_getFloatByDescriptorAsPosition (w, template, &x->x_positionY);
+        
+    t_float valueX      = baseX + gpointer_getFloatByDescriptorAsPosition (gp, &x->x_positionX);
+    t_float valueY      = baseY + gpointer_getFloatByDescriptorAsPosition (gp, &x->x_positionY);
     int pixelX          = canvas_valueToPixelX (glist, valueX);
     int pixelY          = canvas_valueToPixelY (glist, valueY);
     t_fontsize fontSize = canvas_getFontSize (glist);
@@ -177,22 +155,21 @@ static void drawnumber_behaviorVisibilityChanged (t_gobj *z,
 {
     t_drawnumber *x = (t_drawnumber *)z;
     
-    t_template *template = gpointer_getTemplate (gp);
-    t_word *w = gpointer_getData (gp);
-    t_glist *glist = gpointer_getView (gp);
-    
-    int visible = (int)word_getFloatByDescriptor (w, template, &x->x_isVisible);
+    int visible = (int)gpointer_getFloatByDescriptor (gp, &x->x_isVisible);
 
     if (!isVisible || visible) {
     //
-    if (!isVisible) { sys_vGui(".x%lx.c delete %lxNUMBER\n", canvas_getView (glist), w); }
+    t_word *tag    = gpointer_getData (gp);
+    t_glist *glist = gpointer_getView (gp);
+    
+    if (!isVisible) { sys_vGui(".x%lx.c delete %lxNUMBER\n", canvas_getView (glist), tag); }
     else {
     //
     char t[PD_STRING] = { 0 };
     
-    t_color color   = color_withDigits ((int)word_getFloatByDescriptor (w, template, &x->x_color));
-    t_float valueX  = baseX + word_getFloatByDescriptorAsPosition (w, template, &x->x_positionX);
-    t_float valueY  = baseY + word_getFloatByDescriptorAsPosition (w, template, &x->x_positionY);
+    t_color color   = color_withDigits ((int)gpointer_getFloatByDescriptor (gp, &x->x_color));
+    t_float valueX  = baseX + gpointer_getFloatByDescriptorAsPosition (gp, &x->x_positionX);
+    t_float valueY  = baseY + gpointer_getFloatByDescriptorAsPosition (gp, &x->x_positionY);
     int pixelX      = canvas_valueToPixelX (glist, valueX);
     int pixelY      = canvas_valueToPixelY (glist, valueY);
     
@@ -210,7 +187,7 @@ static void drawnumber_behaviorVisibilityChanged (t_gobj *z,
                     color_toEncodedSymbol (color)->s_name,
                     font_getHostFontSize (canvas_getFontSize (glist)),
                     t, 
-                    w);
+                    tag);
     //
     }
     //
@@ -230,25 +207,21 @@ static int drawnumber_behaviorClicked (t_gobj *z,
 {
     t_drawnumber *x = (t_drawnumber *)z;
     
-    t_template *template = gpointer_getTemplate (gp);
-    t_word *w = gpointer_getData (gp);
-    t_glist *glist = gpointer_getView (gp);
-    
     int x1, y1, x2, y2;
      
     drawnumber_behaviorGetRectangle (z, gp, baseX, baseY, &x1, &y1, &x2, &y2);
 
     if (a >= x1 && a <= x2 && b >= y1 && b <= y2) {
     //
-    if (template_fieldIsFloat (template, x->x_fieldName)) {
+    if (gpointer_fieldIsFloat (gp, x->x_fieldName)) {
     //
     if (clicked) {
     
-        drawnumber_cumulativeY = word_getFloat (w, template, x->x_fieldName);
+        drawnumber_cumulativeY = gpointer_getFloat (gp, x->x_fieldName);
 
         gpointer_setByCopy (gp, &drawnumber_gpointer);
         
-        canvas_setMotionFunction (glist, z, (t_motionfn)drawnumber_motion, a, b);
+        canvas_setMotionFunction (gpointer_getView (gp), z, (t_motionfn)drawnumber_motion, a, b);
     }
     
     return 1;

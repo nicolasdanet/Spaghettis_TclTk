@@ -343,6 +343,37 @@ void gpointer_setVisibility (t_gpointer *gp, int isVisible)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_error gpointer_fieldToString (t_gpointer *gp, t_symbol *fieldName, char *dest, size_t size)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    if (gpointer_fieldIsFloat (gp, fieldName)) {
+        t_atom a;
+        SET_FLOAT (&a, gpointer_getFloat (gp, fieldName));
+        err = string_addAtom (dest, size, &a);
+        
+    } else if (gpointer_fieldIsSymbol (gp, fieldName)) {
+        t_atom a;
+        SET_SYMBOL (&a, gpointer_getSymbol (gp, fieldName));
+        err = string_addAtom (dest, size, &a);
+            
+    } else if (gpointer_fieldIsText (gp, fieldName)) {
+        char *t = NULL;
+        buffer_toString (gpointer_getText (gp, fieldName), &t);
+        err = string_add (dest, size, t);
+        PD_MEMORY_FREE (t);
+        
+    } else {
+        err = PD_ERROR; PD_BUG;     /* Not implemented yet. */
+    }
+    
+    return err;
+}
+                                                            
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 int gpointer_hasField (t_gpointer *gp, t_symbol *fieldName)
 {
     return (template_hasField (gpointer_getTemplate (gp), fieldName));
