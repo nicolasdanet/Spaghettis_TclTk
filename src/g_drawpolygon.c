@@ -326,7 +326,7 @@ static int drawpolygon_behaviorClicked (t_gobj *z,
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_parentwidgetbehavior drawpolygon_parentWidgetBehavior =
+t_painterwidgetbehavior drawpolygon_widgetBehavior =
     {
         drawpolygon_behaviorGetRectangle,
         drawpolygon_behaviorVisibilityChanged,
@@ -419,7 +419,7 @@ void drawpolygon_setup (void)
     
     class_addFloat (c, drawpolygon_float);
         
-    class_setParentWidgetBehavior (c, &drawpolygon_parentWidgetBehavior);
+    class_setPainterWidgetBehavior (c, &drawpolygon_widgetBehavior);
     
     drawpolygon_class = c;
 }

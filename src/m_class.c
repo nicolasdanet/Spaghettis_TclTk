@@ -220,7 +220,7 @@ t_class *class_new (t_symbol *s,
     c->c_methodList         = class_defaultList;
     c->c_methodAnything     = class_defaultAnything;
     c->c_behavior           = (type == CLASS_BOX ? &text_widgetBehavior : NULL);
-    c->c_behaviorParent     = NULL;
+    c->c_behaviorPainter    = NULL;
     c->c_fnSave             = (type == CLASS_BOX ? text_functionSave : class_defaultSave);
     c->c_fnProperties       = class_defaultProperties;
     c->c_signalOffset       = 0;
@@ -401,7 +401,7 @@ int class_hasBang (t_class *c)
 
 int class_hasDrawCommand (t_class *c)
 {
-    return (c->c_behaviorParent != NULL);
+    return (c->c_behaviorPainter != NULL);
 }
 
 int class_hasPropertiesFunction (t_class *c)
@@ -423,9 +423,9 @@ void class_setWidgetBehavior (t_class *c, t_widgetbehavior *w)
     c->c_behavior = w;
 }
 
-void class_setParentWidgetBehavior (t_class *c, t_parentwidgetbehavior *pw)
+void class_setPainterWidgetBehavior (t_class *c, t_painterwidgetbehavior *pw)
 {
-    c->c_behaviorParent = pw;
+    c->c_behaviorPainter = pw;
 }
 
 void class_setSaveFunction (t_class *c, t_savefn f)
@@ -457,9 +457,9 @@ char *class_getExternalDirectory (t_class *c)
     return (c->c_externalDirectory->s_name);
 }
 
-t_parentwidgetbehavior *class_getParentWidget (t_class *c)
+t_painterwidgetbehavior *class_getPainterWidget (t_class *c)
 {
-    return c->c_behaviorParent;
+    return c->c_behaviorPainter;
 }
 
 t_propertiesfn class_getPropertiesFunction (t_class *c)

@@ -438,7 +438,7 @@ struct _iterator;
 struct _message;
 struct _outconnect;
 struct _outlet;
-struct _parentwidgetbehavior;
+struct _painterwidgetbehavior;
 struct _pdinstance;
 struct _struct;
 struct _template;
@@ -462,7 +462,7 @@ struct _widgetbehavior;
 #define t_message                   struct _message
 #define t_outconnect                struct _outconnect
 #define t_outlet                    struct _outlet
-#define t_parentwidgetbehavior      struct _parentwidgetbehavior
+#define t_painterwidgetbehavior     struct _painterwidgetbehavior
 #define t_pdinstance                struct _pdinstance
 #define t_struct                    struct _struct
 #define t_template                  struct _template

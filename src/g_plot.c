@@ -331,7 +331,7 @@ static void plot_behaviorGetRectangleRecursive (t_plot *x,
                         
     for (y = view->gl_graphics; y; y = y->g_next) {
     
-        t_parentwidgetbehavior *behavior = class_getParentWidget (pd_class (y));
+        t_painterwidgetbehavior *behavior = class_getPainterWidget (pd_class (y));
         
         if (behavior) {
         
@@ -341,7 +341,7 @@ static void plot_behaviorGetRectangleRecursive (t_plot *x,
             
             gpointer_setAsWord (&gp, array, array_getElementAtIndex (array, i));
             
-            (*behavior->w_fnParentGetRectangle) (y, &gp, baseX, baseY, &x1, &y1, &x2, &y2);
+            (*behavior->w_fnPainterGetRectangle) (y, &gp, baseX, baseY, &x1, &y1, &x2, &y2);
             
             gpointer_unset (&gp);
             
@@ -777,7 +777,7 @@ static void plot_behaviorVisibilityChangedRecursive (t_plot *x,
     
     for (y = view->gl_graphics; y; y = y->g_next) {
     
-        t_parentwidgetbehavior *behavior = class_getParentWidget (pd_class (y));
+        t_painterwidgetbehavior *behavior = class_getPainterWidget (pd_class (y));
         
         if (behavior) {
         
@@ -785,7 +785,7 @@ static void plot_behaviorVisibilityChangedRecursive (t_plot *x,
             
             gpointer_setAsWord (&gp, array, array_getElementAtIndex (array, i));
             
-            (*behavior->w_fnParentVisibilityChanged) (y, &gp, valueX, valueY, isVisible);
+            (*behavior->w_fnPainterVisibilityChanged) (y, &gp, valueX, valueY, isVisible);
             
             gpointer_unset (&gp);
         }
@@ -1178,7 +1178,7 @@ static int plot_behaviorClicked (t_gobj *z,
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_parentwidgetbehavior plot_widgetBehavior =
+t_painterwidgetbehavior plot_widgetBehavior =
     {
         plot_behaviorGetRectangle,
         plot_behaviorVisibilityChanged,
@@ -1271,7 +1271,7 @@ void plot_setup (void)
             
     class_addFloat (c, plot_float);
     
-    class_setParentWidgetBehavior (c, &plot_widgetBehavior);
+    class_setPainterWidgetBehavior (c, &plot_widgetBehavior);
     
     plot_class = c;
 }

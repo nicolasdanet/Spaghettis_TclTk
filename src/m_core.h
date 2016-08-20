@@ -45,13 +45,14 @@ typedef int  (*t_clickedfn)             (t_gobj *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef void (*t_parentgetrectanglefn)  (t_gobj *x, t_gpointer *gp, t_float baseX, t_float baseY,
+typedef void (*t_paintergetrectanglefn) (t_gobj *x, t_gpointer *gp, t_float baseX, t_float baseY,
                                             int *a,
                                             int *b,
                                             int *c,
                                             int *d);
-typedef void (*t_parentvisibilityfn)    (t_gobj *x, t_gpointer *gp, t_float baseX, t_float baseY, int flag);
-typedef int  (*t_parentclickedfn)       (t_gobj *x, t_gpointer *gp,
+                                            
+typedef void (*t_paintervisibilityfn)   (t_gobj *x, t_gpointer *gp, t_float baseX, t_float baseY, int flag);
+typedef int  (*t_painterclickedfn)      (t_gobj *x, t_gpointer *gp,
                                             t_float baseX,
                                             t_float baseY,
                                             int a,
@@ -74,10 +75,10 @@ struct _widgetbehavior {
     t_clickedfn                     w_fnClicked;
     };
     
-struct _parentwidgetbehavior {
-    t_parentgetrectanglefn          w_fnParentGetRectangle;
-    t_parentvisibilityfn            w_fnParentVisibilityChanged;
-    t_parentclickedfn               w_fnParentClicked;
+struct _painterwidgetbehavior {
+    t_paintergetrectanglefn         w_fnPainterGetRectangle;
+    t_paintervisibilityfn           w_fnPainterVisibilityChanged;
+    t_painterclickedfn              w_fnPainterClicked;
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -118,7 +119,7 @@ struct _class {
     t_anythingmethod        c_methodAnything;
     t_pointermethod         c_methodPointer;
     t_widgetbehavior        *c_behavior;
-    t_parentwidgetbehavior  *c_behaviorParent;
+    t_painterwidgetbehavior *c_behaviorPainter;
     t_savefn                c_fnSave;
     t_propertiesfn          c_fnProperties;
     int                     c_signalOffset;
@@ -262,7 +263,7 @@ int         class_hasBang                               (t_class *c);
 int         class_hasDrawCommand                        (t_class *c);
 int         class_hasPropertiesFunction                 (t_class *c); 
 void        class_setWidgetBehavior                     (t_class *c, t_widgetbehavior *w);
-void        class_setParentWidgetBehavior               (t_class *c, t_parentwidgetbehavior *w);
+void        class_setPainterWidgetBehavior              (t_class *c, t_painterwidgetbehavior *w);
 void        class_setHelpName                           (t_class *c, t_symbol *s);
 void        class_setPropertiesFunction                 (t_class *c, t_propertiesfn f);
 void        class_setSaveFunction                       (t_class *c, t_savefn f);
@@ -274,7 +275,7 @@ char        *class_getExternalDirectory                 (t_class *c);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_parentwidgetbehavior  *class_getParentWidget          (t_class *c);
+t_painterwidgetbehavior *class_getPainterWidget         (t_class *c);
 t_propertiesfn          class_getPropertiesFunction     (t_class *c);
 
 // -----------------------------------------------------------------------------------------------------------

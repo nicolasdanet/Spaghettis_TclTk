@@ -188,7 +188,7 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
         
         for (y = view->gl_graphics; y; y = y->g_next) {
         //
-        t_parentwidgetbehavior *behavior = class_getParentWidget (pd_class (y));
+        t_painterwidgetbehavior *behavior = class_getPainterWidget (pd_class (y));
         
         if (behavior) {
         //
@@ -198,7 +198,7 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
         
         gpointer_setAsScalar (&gp, glist, x);
         
-        (*behavior->w_fnParentGetRectangle) (y, &gp, baseX, baseY, &e, &f, &g, &h);
+        (*behavior->w_fnPainterGetRectangle) (y, &gp, baseX, baseY, &e, &f, &g, &h);
         
         gpointer_unset (&gp);
         
@@ -316,7 +316,7 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
         
         for (y = view->gl_graphics; y; y = y->g_next) {
         
-            t_parentwidgetbehavior *behavior = class_getParentWidget (pd_class (y));
+            t_painterwidgetbehavior *behavior = class_getPainterWidget (pd_class (y));
             
             if (behavior) {
                 
@@ -324,7 +324,7 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                 
                 gpointer_setAsScalar (&gp, glist, x);
                 
-                (*behavior->w_fnParentVisibilityChanged) (y, &gp, baseX, baseY, isVisible);
+                (*behavior->w_fnPainterVisibilityChanged) (y, &gp, baseX, baseY, isVisible);
                 
                 gpointer_unset (&gp);
             }
@@ -365,7 +365,7 @@ static int scalar_behaviorClicked (t_gobj *z,
             
     for (y = view->gl_graphics; y; y = y->g_next) {
     //
-    t_parentwidgetbehavior *behavior = class_getParentWidget (pd_class (y));
+    t_painterwidgetbehavior *behavior = class_getPainterWidget (pd_class (y));
     
     if (behavior) { 
         
@@ -373,7 +373,7 @@ static int scalar_behaviorClicked (t_gobj *z,
         
         gpointer_setAsScalar (&gp, glist, x);
         
-        int k = (*behavior->w_fnParentClicked) (y,
+        int k = (*behavior->w_fnPainterClicked) (y,
                     &gp,
                     baseX,
                     baseY,

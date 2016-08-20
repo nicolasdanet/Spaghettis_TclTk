@@ -264,7 +264,7 @@ static int drawnumber_behaviorClicked (t_gobj *z,
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_parentwidgetbehavior drawnumber_widgetBehavior =
+t_painterwidgetbehavior drawnumber_widgetBehavior =
     {
         drawnumber_behaviorGetRectangle,
         drawnumber_behaviorVisibilityChanged,
@@ -342,7 +342,7 @@ void drawnumber_setup (void)
     class_addCreator ((t_newmethod)drawnumber_new, sym_drawsymbol, A_GIMME, A_NULL);
     class_addCreator ((t_newmethod)drawnumber_new, sym_drawnumber, A_GIMME, A_NULL);
     
-    class_setParentWidgetBehavior (c, &drawnumber_widgetBehavior);
+    class_setPainterWidgetBehavior (c, &drawnumber_widgetBehavior);
     
     drawnumber_class = c;
 }
