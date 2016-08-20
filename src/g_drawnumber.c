@@ -44,29 +44,28 @@ typedef struct _drawnumber {
 #pragma mark -
 
 static t_error drawnumber_getContents (t_drawnumber *x,
-    t_word *w,
-    t_template *tmpl,
+    t_gpointer *gp,
     char *dest,
     size_t size,
     int *m,
     int *n)
 {
-    if (!template_fieldIsArray (tmpl, x->x_fieldName)) {
+    if (!gpointer_fieldIsArray (gp, x->x_fieldName)) {
     //
     t_error err = string_copy (dest, size, x->x_label->s_name);
     
-    if (template_fieldIsText (tmpl, x->x_fieldName)) {
+    if (gpointer_fieldIsText (gp, x->x_fieldName)) {
         char *t = NULL;
-        buffer_toString (word_getText (w, tmpl, x->x_fieldName), &t);
+        buffer_toString (gpointer_getText (gp, x->x_fieldName), &t);
         err |= string_add (dest, size, t);
         PD_MEMORY_FREE (t);
         
     } else {
         t_atom a;
-        if (template_fieldIsFloat (tmpl, x->x_fieldName)) {
-            SET_FLOAT (&a, word_getFloat (w, tmpl, x->x_fieldName));
+        if (gpointer_fieldIsFloat (gp, x->x_fieldName)) {
+            SET_FLOAT (&a, gpointer_getFloat (gp, x->x_fieldName));
         } else {
-            SET_SYMBOL (&a, word_getSymbol (w, tmpl, x->x_fieldName));
+            SET_SYMBOL (&a, gpointer_getSymbol (gp, x->x_fieldName));
         }
         err |= string_addAtom (dest, size, &a);
     }
@@ -157,7 +156,7 @@ static void drawnumber_behaviorGetRectangle (t_gobj *z,
     int pixelY          = canvas_valueToPixelY (glist, valueY);
     t_fontsize fontSize = canvas_getFontSize (glist);
     
-    if (!drawnumber_getContents (x, w, template, t, PD_STRING, &m, &n)) {
+    if (!drawnumber_getContents (x, gp, t, PD_STRING, &m, &n)) {
         *a = pixelX;
         *b = pixelY;
         *c = pixelX + (m * font_getHostFontWidth (fontSize));
@@ -197,7 +196,7 @@ static void drawnumber_behaviorVisibilityChanged (t_gobj *z,
     int pixelX      = canvas_valueToPixelX (glist, valueX);
     int pixelY      = canvas_valueToPixelY (glist, valueY);
     
-    drawnumber_getContents (x, w, template, t, PD_STRING, NULL, NULL);
+    drawnumber_getContents (x, gp, t, PD_STRING, NULL, NULL);
     
     sys_vGui (".x%lx.c create text %d %d"
                     " -anchor nw"

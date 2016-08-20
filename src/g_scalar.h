@@ -235,10 +235,13 @@ void        gpointer_setVisibility                      (t_gpointer *gp, int isV
 int         gpointer_hasField                           (t_gpointer *gp, t_symbol *fieldName);
 int         gpointer_fieldIsFloat                       (t_gpointer *gp, t_symbol *fieldName);
 int         gpointer_fieldIsSymbol                      (t_gpointer *gp, t_symbol *fieldName);
+int         gpointer_fieldIsText                        (t_gpointer *gp, t_symbol *fieldName);
+int         gpointer_fieldIsArray                       (t_gpointer *gp, t_symbol *fieldName);
 int         gpointer_fieldIsArrayAndValid               (t_gpointer *gp, t_symbol *fieldName);
 
 t_float     gpointer_getFloat                           (t_gpointer *gp, t_symbol *fieldName);
 t_symbol    *gpointer_getSymbol                         (t_gpointer *gp, t_symbol *fieldName);
+t_buffer    *gpointer_getText                           (t_gpointer *gp, t_symbol *fieldName);
 t_array     *gpointer_getArray                          (t_gpointer *gp, t_symbol *fieldName);
 
 void        gpointer_setFloat                           (t_gpointer *gp, t_symbol *fieldName, t_float f);
