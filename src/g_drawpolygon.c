@@ -136,27 +136,24 @@ static void drawpolygon_behaviorGetRectangle (t_gobj *z,
 {
     t_drawpolygon *x = (t_drawpolygon *)z;
     
-    t_template *template = gpointer_getTemplate (gp);
-    t_word *w = gpointer_getData (gp);
-    t_glist *glist = gpointer_getView (gp);
-    
     int x1, y1, x2, y2;
 
-    int visible = (int)word_getFloatByDescriptor (w, template, &x->x_isVisible);
+    int visible = (int)gpointer_getFloatByDescriptor (gp, &x->x_isVisible);
     
     rectangle_initialize (&x1, &y1, &x2, &y2);
         
     if (visible && !(x->x_flags & DRAWPOLYGON_NO_MOUSE)) {
     //
     int i;
+    t_glist *glist = gpointer_getView (gp);
     t_fielddescriptor *fd = x->x_coordinates;
-    
+        
     for (i = 0; i < x->x_size; i += 2) {
     //
     int m, n;
     
-    m = canvas_valueToPixelX (glist, baseX + word_getFloatByDescriptorAsPosition (w, template, fd + i));
-    n = canvas_valueToPixelY (glist, baseY + word_getFloatByDescriptorAsPosition (w, template, fd + i + 1));
+    m = canvas_valueToPixelX (glist, baseX + gpointer_getFloatByDescriptorAsPosition (gp, fd + i));
+    n = canvas_valueToPixelY (glist, baseY + gpointer_getFloatByDescriptorAsPosition (gp, fd + i + 1));
     
     x1 = PD_MIN (m, x1);
     x2 = PD_MAX (m, x2);
@@ -181,11 +178,7 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
 {
     t_drawpolygon *x = (t_drawpolygon *)z;
     
-    t_template *template = gpointer_getTemplate (gp);
-    t_word *w = gpointer_getData (gp);
-    t_glist *glist = gpointer_getView (gp);
-    
-    int visible = (int)word_getFloatByDescriptor (w, template, &x->x_isVisible);
+    int visible = (int)gpointer_getFloatByDescriptor (gp, &x->x_isVisible);
     
     if (!isVisible || visible) {
     //
@@ -193,12 +186,16 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     
     if (n > 1) {
     //
-    if (!isVisible) { sys_vGui (".x%lx.c delete %lxCURVE\n", canvas_getView (glist), w); }
+    t_word *tag    = gpointer_getData (gp);
+    t_glist *glist = gpointer_getView (gp);
+    t_glist *view  = canvas_getView (glist);
+    
+    if (!isVisible) { sys_vGui (".x%lx.c delete %lxCURVE\n", view, tag); }
     else {
     //
-    t_float width        = word_getFloatByDescriptor (w, template, &x->x_width);
-    t_float colorFill    = word_getFloatByDescriptor (w, template, &x->x_colorFill);
-    t_float colorOutline = word_getFloatByDescriptor (w, template, &x->x_colorOutline);
+    t_float width        = gpointer_getFloatByDescriptor (gp, &x->x_width);
+    t_float colorFill    = gpointer_getFloatByDescriptor (gp, &x->x_colorFill);
+    t_float colorOutline = gpointer_getFloatByDescriptor (gp, &x->x_colorOutline);
     t_symbol *filled     = color_toEncodedSymbol (color_withDigits ((int)colorFill));
     t_symbol *outlined   = color_toEncodedSymbol (color_withDigits ((int)colorOutline));
     
@@ -206,34 +203,36 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     t_heapstring *t = heapstring_new (0);
     int i;
     
-    t_glist *view = canvas_getView (glist);
-    
     if (x->x_flags & DRAWPOLYGON_CLOSED) { heapstring_addSprintf (t, ".x%lx.c create polygon", view); }
     else {
-        heapstring_addSprintf (t,   ".x%lx.c create line", view);
+        heapstring_addSprintf (t, ".x%lx.c create line", view);
     }
     
     for (i = 0; i < x->x_size; i += 2) {
     //
     int a, b;
     
-    a = canvas_valueToPixelX (glist, baseX + word_getFloatByDescriptorAsPosition (w, template, fd + i));
-    b = canvas_valueToPixelY (glist, baseY + word_getFloatByDescriptorAsPosition (w, template, fd + i + 1));
+    a = canvas_valueToPixelX (glist, baseX + gpointer_getFloatByDescriptorAsPosition (gp, fd + i));
+    b = canvas_valueToPixelY (glist, baseY + gpointer_getFloatByDescriptorAsPosition (gp, fd + i + 1));
         
-    heapstring_addSprintf (t,       " %d %d", a, b);
+    heapstring_addSprintf (t, " %d %d", a, b);
     //
     }
     
     if (x->x_flags & DRAWPOLYGON_BEZIER)  { heapstring_add (t, " -smooth 1"); }
     if (x->x_flags & DRAWPOLYGON_CLOSED)  {
-        heapstring_addSprintf (t,   " -fill %s", filled->s_name);
-        heapstring_addSprintf (t,   " -outline %s", outlined->s_name);
+    //
+    heapstring_addSprintf (t, " -fill %s", filled->s_name);
+    heapstring_addSprintf (t, " -outline %s", outlined->s_name);
+    //
     } else {
-        heapstring_addSprintf (t,   " -fill %s", outlined->s_name);
+    //
+    heapstring_addSprintf (t, " -fill %s", outlined->s_name);
+    //
     }
 
-    heapstring_addSprintf (t,       " -width %f", PD_MAX (width, 1.0));
-    heapstring_addSprintf (t,       " -tags %lxCURVE\n", w);
+    heapstring_addSprintf (t, " -width %f", PD_MAX (width, 1.0));
+    heapstring_addSprintf (t, " -tags %lxCURVE\n", tag);
     
     sys_gui (heapstring_getRaw (t));
     
@@ -259,14 +258,12 @@ static int drawpolygon_behaviorClicked (t_gobj *z,
 {
     t_drawpolygon *x = (t_drawpolygon *)z;
     
-    t_template *template = gpointer_getTemplate (gp);
-    t_word *w = gpointer_getData (gp);
-    t_glist *glist = gpointer_getView (gp);
-    
-    int visible = (int)word_getFloatByDescriptor (w, template, &x->x_isVisible);
+    int visible = (int)gpointer_getFloatByDescriptor (gp, &x->x_isVisible);
     
     if (visible) {
     //
+    t_glist *glist = gpointer_getView (gp);
+    
     int i;
     int bestField = -1;
     int bestError = PD_INT_MAX;
@@ -277,8 +274,8 @@ static int drawpolygon_behaviorClicked (t_gobj *z,
     //
     if (field_isVariable (fd + i) || field_isVariable (fd + i + 1)) {
     //
-    int valueX = word_getFloatByDescriptorAsPosition (w, template, fd + i);
-    int valueY = word_getFloatByDescriptorAsPosition (w, template, fd + i + 1);
+    int valueX = gpointer_getFloatByDescriptorAsPosition (gp, fd + i);
+    int valueY = gpointer_getFloatByDescriptorAsPosition (gp, fd + i + 1);
     int pixelX = canvas_valueToPixelX (glist, baseX + valueX);
     int pixelY = canvas_valueToPixelY (glist, baseY + valueY);
     int error  = (int)math_euclideanDistance (pixelX, pixelY, a, b);
