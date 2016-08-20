@@ -292,7 +292,7 @@ t_template *gpointer_getTemplate (t_gpointer *gp)
     return (template_findByIdentifier (gpointer_getTemplateIdentifier (gp)));
 }
 
-t_scalar *gpointer_getBase (t_gpointer *gp)
+static t_scalar *gpointer_getBase (t_gpointer *gp)
 {
     t_scalar *scalar = NULL;
     
@@ -424,5 +424,36 @@ void gpointer_setSymbol (t_gpointer *gp, t_symbol *fieldName, t_symbol *s)
     word_setSymbol (gpointer_getData (gp), template, fieldName, s);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_float gpointer_getFloatByDescriptor (t_gpointer *gp, t_fielddescriptor *fd)
+{
+    t_template *template = gpointer_getTemplate (gp);
+    
+    PD_ASSERT (template);
+    
+    word_getFloatByDescriptor (gpointer_getData (gp), template, fd);
+}
+
+t_float gpointer_getFloatByDescriptorAsPosition (t_gpointer *gp, t_fielddescriptor *fd)
+{
+    t_template *template = gpointer_getTemplate (gp);
+    
+    PD_ASSERT (template);
+    
+    word_getFloatByDescriptorAsPosition (gpointer_getData (gp), template, fd);
+}
+
+void gpointer_setFloatByDescriptorAsPosition (t_gpointer *gp, t_fielddescriptor *fd, t_float position)
+{
+    t_template *template = gpointer_getTemplate (gp);
+    
+    PD_ASSERT (template);
+    
+    word_setFloatByDescriptorAsPosition (gpointer_getData (gp), template, fd, position);
+}
+                                                            
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

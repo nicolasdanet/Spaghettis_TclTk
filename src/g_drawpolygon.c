@@ -100,17 +100,11 @@ static void drawpolygon_motion (void *z, t_float deltaX, t_float deltaY, t_float
     t_float positionY = drawpolygon_coordinateY + (drawpolygon_cumulativeY * drawpolygon_stepY);
     
     if (field_isVariable (fd + 0)) {
-        word_setFloatByDescriptorAsPosition (gpointer_getData (&drawpolygon_gpointer),
-            gpointer_getTemplate (&drawpolygon_gpointer),
-            fd + 0,
-            positionX); 
+        gpointer_setFloatByDescriptorAsPosition (&drawpolygon_gpointer, fd + 0, positionX); 
     }
     
     if (field_isVariable (fd + 1)) {
-        word_setFloatByDescriptorAsPosition (gpointer_getData (&drawpolygon_gpointer),
-            gpointer_getTemplate (&drawpolygon_gpointer),
-            fd + 1,
-            positionY);
+        gpointer_setFloatByDescriptorAsPosition (&drawpolygon_gpointer, fd + 1, positionY);
     }
     
     PD_ASSERT (gpointer_isScalar (&drawpolygon_gpointer));
