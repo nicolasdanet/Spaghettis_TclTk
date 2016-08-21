@@ -144,7 +144,7 @@ static void drawnumber_behaviorGetRectangle (t_gobj *z,
     //
     }
     
-    rectangle_initialize (a, b, c, d);
+    rectangle_setNowhere (a, b, c, d);
 }
 
 static void drawnumber_behaviorVisibilityChanged (t_gobj *z,

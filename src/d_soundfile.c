@@ -1333,7 +1333,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
         if (nitems <= 0) break;
         soundfile_xferin_float(channels, argc, (t_float **)vecs, itemsread,
             (unsigned char *)sampbuf, nitems, bytespersamp, bigendian,
-                ARRAY_WORD/sizeof(t_sample));
+                sizeof (t_word)/sizeof(t_sample));
         itemsread += nitems;
     }
         /* zero out remaining elements of vectors */
@@ -1457,7 +1457,7 @@ long soundfiler_dowrite(void *obj, t_glist *canvas,
         thiswrite = (thiswrite > bufframes ? bufframes : thiswrite);
         soundfile_xferout_float(argc, (t_float **)vecs, (unsigned char *)sampbuf,
             thiswrite, onset, bytespersamp, bigendian, normfactor,
-                 ARRAY_WORD/sizeof(t_sample));
+                 sizeof (t_word)/sizeof(t_sample));
         nbytes = write(fd, sampbuf, nchannels * bytespersamp * thiswrite);
         if (nbytes < nchannels * bytespersamp * thiswrite)
         {
@@ -1467,7 +1467,7 @@ long soundfiler_dowrite(void *obj, t_glist *canvas,
             break;
         }
         itemswritten += thiswrite;
-        onset += thiswrite * (ARRAY_WORD/sizeof(float));
+        onset += thiswrite * (sizeof (t_word)/sizeof(float));
     }
     if (fd >= 0)
     {

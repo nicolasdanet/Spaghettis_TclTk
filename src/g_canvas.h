@@ -259,7 +259,7 @@ void            guiconnect_release                      (t_guiconnect *x, double
 
 void            rectangle_setEverything                 (int *a, int *b, int *c, int *d);
 void            rectangle_setNothing                    (int *a, int *b, int *c, int *d);
-void            rectangle_initialize                    (int *a, int *b, int *c, int *d);
+void            rectangle_setNowhere                    (int *a, int *b, int *c, int *d);
 
 int             rectangle_isEverything                  (int a, int b, int c, int d);
 int             rectangle_isNothing                     (int a, int b, int c, int d);

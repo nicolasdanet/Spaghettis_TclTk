@@ -80,8 +80,8 @@ static void *scalar_define_new(t_symbol *s, int argc, t_atom *argv)
         post_error ("%s: couldn't create scalar", templatesym->s_name);
         goto noscalar;
     }
-    sc->sc_g.g_next = 0;
-    x->gl_graphics = &sc->sc_g;
+    sc->sc_g.g_next = 0;            /* Encapsulate ASAP. */
+    x->gl_graphics = &sc->sc_g;     /* Encapsulate ASAP. */
     x->gl_saveScalar = keep;
            /* bashily unbind #A -- this would create garbage if #A were
            multiply bound but we believe in this context it's at most

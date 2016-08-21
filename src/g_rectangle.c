@@ -26,7 +26,7 @@ void rectangle_setNothing (int *a, int *b, int *c, int *d)
     *a = 0; *b = 0; *c = 0; *d = 0;
 }
 
-void rectangle_initialize (int *a, int *b, int *c, int *d)
+void rectangle_setNowhere (int *a, int *b, int *c, int *d)
 {
     *a = PD_INT_MAX; *b = PD_INT_MAX; *c = -PD_INT_MAX; *d = -PD_INT_MAX;
 }

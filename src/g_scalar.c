@@ -184,7 +184,7 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
     
         t_gobj *y = NULL;
         
-        rectangle_initialize (&x1, &y1, &x2, &y2);
+        rectangle_setNowhere (&x1, &y1, &x2, &y2);
         
         for (y = view->gl_graphics; y; y = y->g_next) {
         //

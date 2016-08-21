@@ -369,7 +369,7 @@ static void plot_behaviorGetRectangle (t_gobj *z,
         
     int x1, y1, x2, y2;
         
-    rectangle_initialize (&x1, &y1, &x2, &y2);
+    rectangle_setNowhere (&x1, &y1, &x2, &y2);
     
     if (garray_isSingle (glist)) { rectangle_setEverything (&x1, &y1, &x2, &y2); }
     else {

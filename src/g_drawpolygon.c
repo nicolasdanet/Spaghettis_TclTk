@@ -140,7 +140,7 @@ static void drawpolygon_behaviorGetRectangle (t_gobj *z,
 
     int visible = (int)gpointer_getFloatByDescriptor (gp, &x->x_isVisible);
     
-    rectangle_initialize (&x1, &y1, &x2, &y2);
+    rectangle_setNowhere (&x1, &y1, &x2, &y2);
         
     if (visible && !(x->x_flags & DRAWPOLYGON_NO_MOUSE)) {
     //

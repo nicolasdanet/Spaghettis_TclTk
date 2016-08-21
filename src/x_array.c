@@ -76,7 +76,7 @@ static void array_define_yrange(t_glist *x, t_float ylo, t_float yhi)
     t_glist *gl = (x->gl_graphics ? canvas_castToGlistChecked(&x->gl_graphics->g_pd) : 0);
     if (gl && gl->gl_graphics && pd_class(&gl->gl_graphics->g_pd) == garray_class)
     {
-        int n = garray_getArray((t_garray *)gl->gl_graphics)->a_size;
+        int n = array_getSize (garray_getArray ((t_garray *)gl->gl_graphics));
         pd_vMessage(&x->gl_graphics->g_pd, sym_bounds,
             "ffff", 0., yhi, (double)(n == 1 ? n : n-1), ylo);
     }
@@ -342,7 +342,7 @@ static void array_size_bang(t_array_size *x)
     t_glist *glist;
     t_array *a = array_client_getbuf(&x->x_tc, &glist);
     if (a)
-        outlet_float(x->x_outlet, a->a_size);
+        outlet_float(x->x_outlet, array_getSize (a));
 }
 
 static void array_size_float(t_array_size *x, t_float f)
@@ -479,29 +479,27 @@ static int array_rangeop_getrange(t_array_rangeop *x,
     t_template *template;
     if (!a)
         return (0);
-    template = template_findByIdentifier(a->a_templateIdentifier);
+    template = array_getTemplate (a);
     if (!template_findField(template, x->x_elemfield, &fieldonset, /* Remove template_findField ASAP !!! */
         &type, &arraytype) || type != DATA_FLOAT)
     {
-        post_error ("can't find field %s in struct %s",
-            x->x_elemfield->s_name, a->a_templateIdentifier->s_name);
         return (0);
     }
-    stride = a->a_stride;
+    stride = a->a_stride;   /* Encapsulate ASAP. */
     arrayonset = x->x_onset;
     if (arrayonset < 0)
         arrayonset = 0;
-    else if (arrayonset > a->a_size)
-        arrayonset = a->a_size;
+    else if (arrayonset > array_getSize (a))
+        arrayonset = array_getSize (a);
     if (x->x_n < 0)
-        nitem = a->a_size - arrayonset;
+        nitem = array_getSize (a) - arrayonset;
     else
     {
         nitem = x->x_n;
-        if (nitem + arrayonset > a->a_size)
-            nitem = a->a_size - arrayonset;
+        if (nitem + arrayonset > array_getSize (a))
+            nitem = array_getSize (a) - arrayonset;
     }
-    *firstitemp = a->a_vector+(fieldonset+arrayonset*stride);
+    *firstitemp = a->a_vector+(fieldonset+arrayonset*stride);   /* Encapsulate ASAP. */
     *nitemp = nitem;
     *stridep = stride;
     *arrayonsetp = arrayonset;

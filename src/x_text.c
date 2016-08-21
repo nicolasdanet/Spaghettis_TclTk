@@ -259,8 +259,8 @@ static void *text_define_new(t_symbol *s, int argc, t_atom *argv)
     textbuf_init(&x->x_textbuf);
         /* set up a scalar and a pointer to it that we can output */
     x->x_scalar = scalar_new(canvas_getCurrent(), sym___TEMPLATE__text);
-    buffer_free(x->x_scalar->sc_vector[2].w_buffer); 
-    x->x_scalar->sc_vector[2].w_buffer = x->x_binbuf;
+    buffer_free(x->x_scalar->sc_vector[2].w_buffer);                        /* Encaspulate ASAP. */
+    x->x_scalar->sc_vector[2].w_buffer = x->x_binbuf;                       /* Encaspulate ASAP. */
     x->x_out = outlet_new(&x->x_ob, &s_pointer);
     gpointer_init(&x->x_gp);
     x->x_canvas = canvas_getCurrent();
