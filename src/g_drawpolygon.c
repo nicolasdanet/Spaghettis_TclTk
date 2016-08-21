@@ -34,8 +34,8 @@
 static int          drawpolygon_field;                  /* Shared. */
 static t_float      drawpolygon_cumulativeX;            /* Shared. */
 static t_float      drawpolygon_cumulativeY;            /* Shared. */
-static t_float      drawpolygon_coordinateX;            /* Shared. */
-static t_float      drawpolygon_coordinateY;            /* Shared. */
+static t_float      drawpolygon_valueX;                 /* Shared. */
+static t_float      drawpolygon_valueY;                 /* Shared. */
 static t_float      drawpolygon_stepX;                  /* Shared. */
 static t_float      drawpolygon_stepY;                  /* Shared. */
 static t_gpointer   drawpolygon_gpointer;               /* Shared. */
@@ -96,8 +96,8 @@ static void drawpolygon_motion (void *z, t_float deltaX, t_float deltaY, t_float
     drawpolygon_cumulativeX += deltaX;
     drawpolygon_cumulativeY += deltaY;
     
-    t_float positionX = drawpolygon_coordinateX + (drawpolygon_cumulativeX * drawpolygon_stepX);
-    t_float positionY = drawpolygon_coordinateY + (drawpolygon_cumulativeY * drawpolygon_stepY);
+    t_float positionX = drawpolygon_valueX + (drawpolygon_cumulativeX * drawpolygon_stepX);
+    t_float positionY = drawpolygon_valueY + (drawpolygon_cumulativeY * drawpolygon_stepY);
     
     if (field_isVariable (fd + 0)) {
         gpointer_setFloatByDescriptorAsPosition (&drawpolygon_gpointer, fd + 0, positionX); 
@@ -281,8 +281,8 @@ static int drawpolygon_behaviorClicked (t_gobj *z,
     int error  = (int)math_euclideanDistance (pixelX, pixelY, a, b);
     
     if (error < bestError) {
-        drawpolygon_coordinateX = valueX;
-        drawpolygon_coordinateY = valueY;
+        drawpolygon_valueX = valueX;
+        drawpolygon_valueY = valueY;
         bestError = error;
         bestField = i;
     }

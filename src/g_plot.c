@@ -41,10 +41,11 @@ static int                  plot_previousX;             /* Shared. */
 static int                  plot_thickness;             /* Shared. */
 static t_float              plot_direction;             /* Shared. */
 static t_gpointer           plot_gpointer;              /* Shared. */
+static t_gpointer           plot_check;                 /* Shared. */
 
 static t_fielddescriptor    *plot_fieldDescriptorX;     /* Shared. */
 static t_fielddescriptor    *plot_fieldDescriptorY;     /* Shared. */
-static t_array              *plot_array;                /* Shared. */
+static t_fielddescriptor    *plot_fieldArray;           /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -100,7 +101,7 @@ static void plot_motion (void *, t_float, t_float, t_float);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_error plot_fetchScalarFields (t_plot *x, t_word *w, t_template *tmpl, 
+static t_error plot_fetchScalarFields (t_plot *x, t_gpointer *gp, 
     t_array **array,
     t_float *width,
     t_float *positionX,
@@ -113,15 +114,15 @@ static t_error plot_fetchScalarFields (t_plot *x, t_word *w, t_template *tmpl,
     //
     t_symbol *s = field_getVariableName (&x->x_array);
     
-    if (template_hasField (tmpl, s) && template_fieldIsArrayAndValid (tmpl, s)) {
+    if (gpointer_hasField (gp, s) && gpointer_fieldIsArrayAndValid (gp, s)) {
     //
-    *array      = word_getArray (w, tmpl, s);
-    *width      = word_getFloatByDescriptor (w, tmpl, &x->x_width);
-    *positionX  = word_getFloatByDescriptor (w, tmpl, &x->x_positionX);
-    *positionY  = word_getFloatByDescriptor (w, tmpl, &x->x_positionY);
-    *incrementX = word_getFloatByDescriptor (w, tmpl, &x->x_incrementX);
-    *style      = word_getFloatByDescriptor (w, tmpl, &x->x_style);
-    *visible    = (int)word_getFloatByDescriptor (w, tmpl, &x->x_isVisible);
+    *array      = gpointer_getArray (gp, s);
+    *width      = gpointer_getFloatByDescriptor (gp, &x->x_width);
+    *positionX  = gpointer_getFloatByDescriptor (gp, &x->x_positionX);
+    *positionY  = gpointer_getFloatByDescriptor (gp, &x->x_positionY);
+    *incrementX = gpointer_getFloatByDescriptor (gp, &x->x_incrementX);
+    *style      = gpointer_getFloatByDescriptor (gp, &x->x_style);
+    *visible    = (int)gpointer_getFloatByDescriptor (gp, &x->x_isVisible);
     
     return PD_ERROR_NONE;
     //
@@ -226,29 +227,29 @@ void plot_float (t_plot *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void plot_motionHorizontalVertical (void)
+static void plot_motionHorizontalVertical (t_array *array)
 {
     if (plot_fieldDescriptorX) {
     
-        word_setFloatByDescriptorAsPosition (array_getElementAtIndex (plot_array, plot_startX),
-                array_getTemplate (plot_array),
+        word_setFloatByDescriptorAsPosition (array_getElementAtIndex (array, plot_startX),
+                array_getTemplate (array),
                 plot_fieldDescriptorX,
                 plot_cumulativeX);
     }
     
     if (plot_fieldDescriptorY) {
     
-        word_setFloatByDescriptorAsPosition (array_getElementAtIndex (plot_array, plot_startX),
-                array_getTemplate (plot_array),
+        word_setFloatByDescriptorAsPosition (array_getElementAtIndex (array, plot_startX),
+                array_getTemplate (array),
                 plot_fieldDescriptorY,
                 plot_cumulativeY);
     }
 }
 
-static void plot_motionVertical (void)
+static void plot_motionVertical (t_array *array)
 {
     t_float distanceX   = (plot_cumulativeX / plot_incrementX) + 0.5;
-    int currentX        = PD_CLAMP ((int)(plot_startX + distanceX), 0, array_getSize (plot_array) - 1);
+    int currentX        = PD_CLAMP ((int)(plot_startX + distanceX), 0, array_getSize (array) - 1);
     
     int i = PD_MIN (currentX, plot_previousX);
     int j = PD_MAX (currentX, plot_previousX);
@@ -257,8 +258,8 @@ static void plot_motionVertical (void)
         
     if (n > 0) {    /* Distribute change linearly between samples. */
     //
-    t_float startY  = word_getFloatByDescriptorAsPosition (array_getElementAtIndex (plot_array, back ? j : i),
-                            array_getTemplate (plot_array),
+    t_float startY  = word_getFloatByDescriptorAsPosition (array_getElementAtIndex (array, back ? j : i),
+                            array_getTemplate (array),
                             plot_fieldDescriptorY);
     t_float stepY   = (plot_cumulativeY - startY) / n;
     
@@ -266,8 +267,8 @@ static void plot_motionVertical (void)
     
     for (; i <= j; i++) {
     
-        word_setFloatByDescriptorAsPosition (array_getElementAtIndex (plot_array, i),
-                array_getTemplate (plot_array),
+        word_setFloatByDescriptorAsPosition (array_getElementAtIndex (array, i),
+                array_getTemplate (array),
                 plot_fieldDescriptorY,
                 startY + (stepY * k));
         
@@ -275,8 +276,8 @@ static void plot_motionVertical (void)
     }
     //
     } else {
-        word_setFloatByDescriptorAsPosition (array_getElementAtIndex (plot_array, i),
-                array_getTemplate (plot_array),
+        word_setFloatByDescriptorAsPosition (array_getElementAtIndex (array, i),
+                array_getTemplate (array),
                 plot_fieldDescriptorY,
                 plot_cumulativeY);
     }
@@ -286,13 +287,21 @@ static void plot_motionVertical (void)
 
 static void plot_motion (void *dummy, t_float deltaX, t_float deltaY, t_float modifier)
 {
-    if (gpointer_isValid (&plot_gpointer)) {
+    if (gpointer_isValid (&plot_gpointer) && gpointer_isValid (&plot_check)) {
     //
+    if (field_isArray (plot_fieldArray)) {
+    //
+    t_symbol *s = field_getVariableName (plot_fieldArray);
+    
+    if (gpointer_hasField (&plot_gpointer, s) && gpointer_fieldIsArrayAndValid (&plot_gpointer, s)) {
+    //
+    t_array *array = gpointer_getArray (&plot_gpointer, s);
+    
     plot_cumulativeX += deltaX * plot_stepX;
     plot_cumulativeY += deltaY * plot_stepY * (plot_thickness ? plot_direction : 1.0);
-        
-    if (plot_fieldDescriptorX)      { plot_motionHorizontalVertical(); }
-    else if (plot_fieldDescriptorY) { plot_motionVertical(); }
+    
+    if (plot_fieldDescriptorX)      { plot_motionHorizontalVertical (array); }
+    else if (plot_fieldDescriptorY) { plot_motionVertical (array); }
     
     if (gpointer_getTemplateIdentifier (&plot_gpointer) != sym___TEMPLATE__float__dash__array) {
     //
@@ -308,6 +317,10 @@ static void plot_motion (void *dummy, t_float deltaX, t_float deltaY, t_float mo
     }
     
     gpointer_redraw (&plot_gpointer);
+    //
+    }
+    //
+    }
     //
     }
 }
@@ -364,10 +377,8 @@ static void plot_behaviorGetRectangle (t_gobj *z,
 {
     t_plot *x = (t_plot *)z;
 
-    t_template *template = gpointer_getTemplate (gp);
-    t_word *w = gpointer_getData (gp);
     t_glist *glist = gpointer_getView (gp);
-    
+        
     int x1, y1, x2, y2;
         
     rectangle_initialize (&x1, &y1, &x2, &y2);
@@ -383,7 +394,7 @@ static void plot_behaviorGetRectangle (t_gobj *z,
     t_float style;
     int visible;
     
-    if (!plot_fetchScalarFields (x, w, template,
+    if (!plot_fetchScalarFields (x, gp,
             &array,
             &width,
             &positionX,
@@ -735,8 +746,6 @@ static void plot_behaviorVisibilityChangedDrawPolygonSegment (t_plot *x,
 }
 
 static void plot_behaviorVisibilityChangedRecursive (t_plot *x,
-    t_glist *glist,
-    t_word  *w,
     t_array *array,
     t_symbol *fieldX,
     t_symbol *fieldY,
@@ -803,8 +812,6 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
     int isVisible)
 {
     t_plot *x = (t_plot *)z;
-
-    t_template *template = gpointer_getTemplate (gp);
     t_word *w = gpointer_getData (gp);
     t_glist *glist = gpointer_getView (gp);
     
@@ -816,7 +823,7 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
     t_float style;
     int visible;
     
-    if (!plot_fetchScalarFields (x, w, template,
+    if (!plot_fetchScalarFields (x, gp,
             &array,
             &width,
             &positionX,
@@ -835,7 +842,7 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
 
         if (isVisible) {
         
-            int color = (int)word_getFloatByDescriptor (w, template, &x->x_colorOutline);
+            int color = (int)gpointer_getFloatByDescriptor (gp, &x->x_colorOutline);
                             
             if (style == PLOT_POINTS) { 
             
@@ -894,8 +901,6 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
         }
         
         plot_behaviorVisibilityChangedRecursive (x,
-            glist,
-            w,
             array,
             fieldX, 
             fieldY,
@@ -916,7 +921,7 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int plot_behaviorClickedRegularMatch (t_plot *x,
+static int plot_behaviorClickedRegularMatch (t_plot *x, t_array *array,
     t_symbol *fieldX,
     t_symbol *fieldY,
     t_symbol *fieldW,
@@ -958,21 +963,21 @@ static int plot_behaviorClickedRegularMatch (t_plot *x,
     
     if (fieldX) {
         plot_fieldDescriptorX = &x->x_fieldX;
-        plot_cumulativeX      = word_getFloatByDescriptorAsPosition (array_getElementAtIndex (plot_array, i),
-                                        array_getTemplate (plot_array),
+        plot_cumulativeX      = word_getFloatByDescriptorAsPosition (array_getElementAtIndex (array, i),
+                                        array_getTemplate (array),
                                         &x->x_fieldX);
     }
     
     if (plot_thickness) {
         plot_fieldDescriptorY = &x->x_fieldW;
-        plot_cumulativeY      = word_getFloatByDescriptorAsPosition (array_getElementAtIndex (plot_array, i),
-                                        array_getTemplate (plot_array),
+        plot_cumulativeY      = word_getFloatByDescriptorAsPosition (array_getElementAtIndex (array, i),
+                                        array_getTemplate (array),
                                         &x->x_fieldW);
 
     } else if (fieldY) {
         plot_fieldDescriptorY = &x->x_fieldY;
-        plot_cumulativeY      = word_getFloatByDescriptorAsPosition (array_getElementAtIndex (plot_array, i),
-                                        array_getTemplate (plot_array),
+        plot_cumulativeY      = word_getFloatByDescriptorAsPosition (array_getElementAtIndex (array, i),
+                                        array_getTemplate (array),
                                         &x->x_fieldY);
     }
 
@@ -990,7 +995,7 @@ static int plot_behaviorClickedRegularMatch (t_plot *x,
     return 0;
 }
 
-static int plot_behaviorClickedRegular (t_plot *x,
+static int plot_behaviorClickedRegular (t_plot *x, t_array *array,
     int a,
     int b,
     int shift,
@@ -1002,7 +1007,7 @@ static int plot_behaviorClickedRegular (t_plot *x,
     t_symbol *fieldY = NULL;
     t_symbol *fieldW = NULL;
     
-    if (!plot_fetchElementFieldNames (x, plot_array, &fieldX, &fieldY, &fieldW)) {
+    if (!plot_fetchElementFieldNames (x, array, &fieldX, &fieldY, &fieldW)) {
     //
     int best = PD_INT_MAX;
     int bestDeltaY;
@@ -1011,9 +1016,9 @@ static int plot_behaviorClickedRegular (t_plot *x,
     
     int bestIndex = -1;
         
-    int i, k = plot_getStep (plot_array);
+    int i, k = plot_getStep (array);
     
-    for (i = 0; i < array_getSize (plot_array); i += k) {
+    for (i = 0; i < array_getSize (array); i += k) {
     //
     t_float valueX;
     t_float valueY;
@@ -1026,7 +1031,7 @@ static int plot_behaviorClickedRegular (t_plot *x,
     int deltaH;
     int k = 0;
     
-    plot_getCoordinates (x, plot_array, fieldX, fieldY, fieldW,
+    plot_getCoordinates (x, array, fieldX, fieldY, fieldW,
         i,
         plot_relativeX,
         plot_relativeY,
@@ -1055,7 +1060,7 @@ static int plot_behaviorClickedRegular (t_plot *x,
     
     if (best <= PLOT_HANDLE_SIZE) {
 
-        return (plot_behaviorClickedRegularMatch (x,
+        return (plot_behaviorClickedRegularMatch (x, array,
                     fieldX,
                     fieldY, 
                     fieldW,
@@ -1076,7 +1081,7 @@ static int plot_behaviorClickedRegular (t_plot *x,
     return 0;
 }
 
-static int plot_behaviorClickedSingle (t_plot *x,
+static int plot_behaviorClickedSingle (t_plot *x, t_array *array,
     int a,
     int b,
     int shift,
@@ -1093,7 +1098,7 @@ static int plot_behaviorClickedSingle (t_plot *x,
         
     int i = ((int)plot_style == PLOT_POINTS) ? valueX : valueX + 0.5;
     
-    i = PD_CLAMP (i, 0, array_getSize (plot_array) - 1);
+    i = PD_CLAMP (i, 0, array_getSize (array) - 1);
     
     plot_thickness          = PLOT_THICKNESS_NONE;
     plot_direction          = 1.0;
@@ -1106,8 +1111,8 @@ static int plot_behaviorClickedSingle (t_plot *x,
 
     if (clicked) {
     //
-    word_setFloatByDescriptorAsPosition (array_getElementAtIndex (plot_array, i),
-        array_getTemplate (plot_array),
+    word_setFloatByDescriptorAsPosition (array_getElementAtIndex (array, i),
+        array_getTemplate (array),
         &x->x_fieldY,
         valueY);
             
@@ -1132,9 +1137,6 @@ static int plot_behaviorClicked (t_gobj *z,
     int clicked)
 {
     t_plot *x = (t_plot *)z;
-    
-    t_template *template = gpointer_getTemplate (gp);
-    t_word *w = gpointer_getData (gp);
     t_glist *glist = gpointer_getView (gp);
     
     t_array *array = NULL;
@@ -1145,7 +1147,7 @@ static int plot_behaviorClicked (t_gobj *z,
     t_float style;
     int visible;
     
-    if (!plot_fetchScalarFields (x, w, template,
+    if (!plot_fetchScalarFields (x, gp,
             &array,
             &width,
             &positionX,
@@ -1161,13 +1163,15 @@ static int plot_behaviorClicked (t_gobj *z,
     plot_incrementX = incrementX;
     plot_width      = width;
     plot_style      = style;
-    plot_array      = array;
-    
+    plot_fieldArray = &x->x_array;
+        
     gpointer_setByCopy (gp, &plot_gpointer);
+    gpointer_setAsWord (&plot_check, array, array_getData (array));
     
-    if (garray_isSingle (glist)) { return (plot_behaviorClickedSingle (x, a, b, shift, alt, dbl, clicked)); } 
-    else {
-        return (plot_behaviorClickedRegular (x, a, b, shift, alt, dbl, clicked));
+    if (garray_isSingle (glist)) {
+        return (plot_behaviorClickedSingle (x, array, a, b, shift, alt, dbl, clicked)); 
+    } else {
+        return (plot_behaviorClickedRegular (x, array, a, b, shift, alt, dbl, clicked));
     }
     //
     }
@@ -1254,6 +1258,7 @@ void plot_initialize (void)
 
 void plot_release (void)
 {
+    if (gpointer_isSet (&plot_check)) { gpointer_unset (&plot_check); }
     if (gpointer_isSet (&plot_gpointer)) { gpointer_unset (&plot_gpointer); }
 }
 
