@@ -82,7 +82,7 @@ static void append_set (t_append *x, t_symbol *templateName, t_symbol *fieldName
 {
     if (x->x_fieldsSize != 1) { post_error (PD_TRANSLATE ("append: cannot set multiple fields")); }
     else {
-        x->x_templateIdentifier     = template_makeTemplateIdentifier (templateName); 
+        x->x_templateIdentifier     = template_makeIdentifierWithWildcard (templateName); 
         x->x_fields[0].gv_fieldName = fieldName;
         x->x_fields[0].gv_f         = 0.0;
     }
@@ -99,7 +99,7 @@ static void *append_new (t_symbol *s, int argc, t_atom *argv)
 
     gpointer_init (&x->x_gpointer);
         
-    x->x_templateIdentifier = template_makeTemplateIdentifier (atom_getSymbolAtIndex (0, argc, argv));
+    x->x_templateIdentifier = template_makeIdentifierWithWildcard (atom_getSymbolAtIndex (0, argc, argv));
     x->x_fieldsSize         = n;
     x->x_fields             = (t_appendvariable *)PD_MEMORY_GET (n * sizeof (t_appendvariable));
 

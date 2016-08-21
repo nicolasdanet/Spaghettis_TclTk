@@ -49,7 +49,7 @@ static void getsize_pointer (t_getsize *x, t_gpointer *gp)
 
 static void getsize_set (t_getsize *x, t_symbol *templateName, t_symbol *fieldName)
 {
-    x->x_templateIdentifier = template_makeTemplateIdentifier (templateName);
+    x->x_templateIdentifier = template_makeIdentifierWithWildcard (templateName);
     x->x_fieldName          = fieldName;
 }
 
@@ -61,7 +61,7 @@ static void *getsize_new (t_symbol *templateName, t_symbol *fieldName)
 {
     t_getsize *x = (t_getsize *)pd_new (getsize_class);
     
-    x->x_templateIdentifier = template_makeTemplateIdentifier (templateName);
+    x->x_templateIdentifier = template_makeIdentifierWithWildcard (templateName);
     x->x_fieldName          = fieldName;
     
     outlet_new (cast_object (x), &s_float);

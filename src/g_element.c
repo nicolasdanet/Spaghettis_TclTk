@@ -53,7 +53,7 @@ static void element_float (t_element *x, t_float f)
 
 static void element_set (t_element *x, t_symbol *templateName, t_symbol *fieldName)
 {
-    x->x_templateIdentifier = template_makeTemplateIdentifier (templateName);
+    x->x_templateIdentifier = template_makeIdentifierWithWildcard (templateName);
     x->x_fieldName          = fieldName;
 }
 
@@ -68,7 +68,7 @@ static void *element_new (t_symbol *templateName, t_symbol *fieldName)
     gpointer_init (&x->x_gpointerWord);
     gpointer_init (&x->x_gpointer);
     
-    x->x_templateIdentifier = template_makeTemplateIdentifier (templateName);
+    x->x_templateIdentifier = template_makeIdentifierWithWildcard (templateName);
     x->x_fieldName          = fieldName;
     
     inlet_newPointer (cast_object (x), &x->x_gpointer);

@@ -105,7 +105,7 @@ static void set_set (t_set *x, t_symbol *templateName, t_symbol *fieldName)
 {
     if (x->x_fieldsSize != 1) { post_error (PD_TRANSLATE ("set: cannot set multiple fields")); }
     else {
-        x->x_templateIdentifier     = template_makeTemplateIdentifier (templateName); 
+        x->x_templateIdentifier     = template_makeIdentifierWithWildcard (templateName); 
         x->x_fields[0].sv_fieldName = fieldName;
        
         if (x->x_asSymbol) {
@@ -137,7 +137,7 @@ static void *set_new (t_symbol *s, int argc, t_atom *argv)
     
     x->x_fieldsSize         = PD_MAX (1, argc - 1);
     x->x_fields             = (t_setvariable *)PD_MEMORY_GET (x->x_fieldsSize * sizeof (t_setvariable));
-    x->x_templateIdentifier = template_makeTemplateIdentifier (atom_getSymbolAtIndex (0, argc, argv));
+    x->x_templateIdentifier = template_makeIdentifierWithWildcard (atom_getSymbolAtIndex (0, argc, argv));
     
     if (x->x_asSymbol) {
         int i;

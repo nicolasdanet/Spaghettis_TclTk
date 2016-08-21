@@ -266,7 +266,7 @@ void        gpointer_setFloatByDescriptorAsPosition     (t_gpointer *gp,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol    *template_makeTemplateIdentifier            (t_symbol *s);
+t_symbol    *template_makeIdentifierWithWildcard        (t_symbol *s);
 t_symbol    *template_getWildcard                       (void);
 
 t_template  *template_findByIdentifier                  (t_symbol *templateIdentifier);

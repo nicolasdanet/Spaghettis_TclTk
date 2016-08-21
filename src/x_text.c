@@ -409,7 +409,7 @@ static void text_client_argparse(t_text_client *x, int *argcp, t_atom **argvp,
         if (!strcmp(argv->a_w.w_symbol->s_name, "-s") &&
             argc >= 3 && argv[1].a_type == A_SYMBOL && argv[2].a_type == A_SYMBOL)
         {
-            x->tc_struct = utils_makeBindSymbol(argv[1].a_w.w_symbol);
+            x->tc_struct = utils_makeTemplateIdentifier(argv[1].a_w.w_symbol);
             x->tc_field = argv[2].a_w.w_symbol;
             argc -= 2; argv += 2;
         }

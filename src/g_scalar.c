@@ -409,7 +409,7 @@ void scalar_serialize (t_scalar *x, t_buffer *b)
         
     PD_ASSERT (template);
     
-    buffer_vAppend (b, "s", utils_stripBindSymbol (x->sc_templateIdentifier));
+    buffer_vAppend (b, "s", utils_stripTemplateIdentifier (x->sc_templateIdentifier));
 
     for (i = 0; i < template_getSize (template); i++) {
     

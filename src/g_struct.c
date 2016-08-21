@@ -82,7 +82,7 @@ static void *struct_new (t_symbol *s, int argc, t_atom *argv)
     if (templateName == &s_) { return (struct_newEmpty()); }
     else {
     //
-    t_symbol *templateIdentifier = utils_makeBindSymbol (templateName);
+    t_symbol *templateIdentifier = utils_makeTemplateIdentifier (templateName);
     
     /* For now forbid multiple instantiation. */
     

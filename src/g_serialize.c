@@ -99,7 +99,7 @@ t_error canvas_deserializeScalar (t_glist *glist, int argc, t_atom *argv)
 {
     if (argc > 0 && IS_SYMBOL (argv)) {
     //
-    t_symbol *templateIdentifier = utils_makeBindSymbol (GET_SYMBOL (argv));
+    t_symbol *templateIdentifier = utils_makeTemplateIdentifier (GET_SYMBOL (argv));
         
     if (template_isValid (template_findByIdentifier (templateIdentifier))) {
     //

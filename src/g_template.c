@@ -95,7 +95,10 @@ void template_serialize (t_template *x, t_buffer *b)
 {
     int i;
     
-    buffer_vAppend (b, "sss", sym___hash__N, sym_struct, utils_stripBindSymbol (x->tp_templateIdentifier));
+    buffer_vAppend (b, "sss",
+        sym___hash__N,
+        sym_struct,
+        utils_stripTemplateIdentifier (x->tp_templateIdentifier));
     
     for (i = 0; i < x->tp_size; i++) {
     //
@@ -112,7 +115,7 @@ void template_serialize (t_template *x, t_buffer *b)
         buffer_vAppend (b, "sss",
             type,
             x->tp_vector[i].ds_fieldName,
-            utils_stripBindSymbol (x->tp_vector[i].ds_templateIdentifier));
+            utils_stripTemplateIdentifier (x->tp_vector[i].ds_templateIdentifier));
             
     } else {
         buffer_vAppend (b,  "ss",
@@ -155,7 +158,7 @@ static void template_anything (t_template *x, t_symbol *s, int argc, t_atom *arg
 {
     #if PD_WITH_DEBUG
     
-    post ("My name is %s.", utils_stripBindSymbol (x->tp_templateIdentifier)->s_name);
+    post ("My name is %s.", utils_stripTemplateIdentifier (x->tp_templateIdentifier)->s_name);
     
     #endif
 }
@@ -336,13 +339,13 @@ int template_fieldIsArrayAndValid (t_template *x, t_symbol *fieldName)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol *template_makeTemplateIdentifier (t_symbol *s)
+t_symbol *template_makeIdentifierWithWildcard (t_symbol *s)
 {
     PD_ASSERT (s);
     
     if (s == &s_ || s == sym___dash__) { return template_getWildcard(); }
     else { 
-        return (utils_makeBindSymbol (s));
+        return (utils_makeTemplateIdentifier (s));
     }
 }
 
@@ -364,7 +367,7 @@ static void template_create (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc && IS_SYMBOL (argv)) {
     //
-    t_symbol *templateIdentifier = utils_makeBindSymbol (atom_getSymbolAtIndex (0, argc, argv));
+    t_symbol *templateIdentifier = utils_makeTemplateIdentifier (atom_getSymbolAtIndex (0, argc, argv));
     
     argc--;
     argv++;
@@ -405,7 +408,7 @@ static void template_newParse (t_template *x, int argc, t_atom *argv)
         else if (type == sym_text)   { k = DATA_TEXT;   }
         else if (type == sym_array)  {
             if (argc >= 3 && IS_SYMBOL (argv + 2)) {
-                templateIdentifier = utils_makeBindSymbol (GET_SYMBOL (argv + 2));
+                templateIdentifier = utils_makeTemplateIdentifier (GET_SYMBOL (argv + 2));
                 k = DATA_ARRAY;
                 argc--;
                 argv++;
@@ -445,7 +448,7 @@ t_template *template_new (t_symbol *templateIdentifier, int argc, t_atom *argv)
     
     /* Empty template should be managed appropriately elsewhere. */
     
-    PD_ASSERT (utils_stripBindSymbol (templateIdentifier) != &s_); 
+    PD_ASSERT (utils_stripTemplateIdentifier (templateIdentifier) != &s_); 
         
     x->tp_size               = 0;
     x->tp_vector             = (t_dataslot *)PD_MEMORY_GET (0);

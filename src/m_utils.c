@@ -16,7 +16,8 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define UTILS_BIND  "pd-"
+#define UTILS_BIND              "pd-"
+#define UTILS_BIND_TEMPLATE     "_TEMPLATE_"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -129,9 +130,30 @@ t_symbol *utils_makeBindSymbol (t_symbol *s)
     return (gensym (t));
 }
 
+t_symbol *utils_makeTemplateIdentifier (t_symbol *s)
+{
+    t_error err = PD_ERROR_NONE;
+    char t[PD_STRING] = { 0 };
+    PD_ASSERT (s);
+    err = string_sprintf (t, PD_STRING, UTILS_BIND_TEMPLATE "%s", s->s_name);
+    PD_ASSERT (!err);
+    return (gensym (t));
+}
+
 t_symbol *utils_stripBindSymbol (t_symbol *s)
 {
-    if (string_containsAtStart (s->s_name, UTILS_BIND)) { return gensym (s->s_name + strlen (UTILS_BIND)); }
+    if (string_containsAtStart (s->s_name, UTILS_BIND)) { 
+        return gensym (s->s_name + strlen (UTILS_BIND));
+    }
+    
+    return s;
+}
+
+t_symbol *utils_stripTemplateIdentifier (t_symbol *s)
+{
+    if (string_containsAtStart (s->s_name, UTILS_BIND_TEMPLATE)) {
+        return gensym (s->s_name + strlen (UTILS_BIND_TEMPLATE)); 
+    }
     
     return s;
 }

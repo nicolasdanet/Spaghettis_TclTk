@@ -62,7 +62,7 @@ static void get_set (t_get *x, t_symbol *templateName, t_symbol *fieldName)
 {
     if (x->x_fieldsSize != 1) { post_error (PD_TRANSLATE ("get: cannot set multiple fields")); }
     else {
-        x->x_templateIdentifier     = template_makeTemplateIdentifier (templateName); 
+        x->x_templateIdentifier     = template_makeIdentifierWithWildcard (templateName); 
         x->x_fields[0].gv_fieldName = fieldName;
     }
 }
@@ -78,7 +78,7 @@ static void *get_new (t_symbol *s, int argc, t_atom *argv)
 
     x->x_fieldsSize         = PD_MAX (1, argc - 1);
     x->x_fields             = (t_getvariable *)PD_MEMORY_GET (x->x_fieldsSize * sizeof (t_getvariable));
-    x->x_templateIdentifier = template_makeTemplateIdentifier (atom_getSymbolAtIndex (0, argc, argv));
+    x->x_templateIdentifier = template_makeIdentifierWithWildcard (atom_getSymbolAtIndex (0, argc, argv));
     
     for (i = 0; i < x->x_fieldsSize; i++) {
         x->x_fields[i].gv_fieldName = atom_getSymbolAtIndex (i + 1, argc, argv);
