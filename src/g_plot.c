@@ -177,17 +177,17 @@ static void plot_getCoordinates (t_plot *x,
 
     int size = array_getSize (array);
     
-    if (fieldX) { valueX = (i < size) ? array_getFloatInElementAtIndex (array, i, fieldX) : 0.0; }
+    if (fieldX) { valueX = (i < size) ? array_getFloatAtIndex (array, i, fieldX) : 0.0; }
     else { 
         valueX = i * incrementX;
     }
     
-    if (fieldY) { valueY = (i < size) ? array_getFloatInElementAtIndex (array, i, fieldY) : 0.0; }
+    if (fieldY) { valueY = (i < size) ? array_getFloatAtIndex (array, i, fieldY) : 0.0; }
     else { 
         valueY = 0.0;
     }
     
-    if (fieldW) { valueW = (i < size) ? array_getFloatInElementAtIndex (array, i, fieldW) : 0.0; }
+    if (fieldW) { valueW = (i < size) ? array_getFloatAtIndex (array, i, fieldW) : 0.0; }
     else {
         valueW = 0.0;
     }
@@ -230,19 +230,17 @@ void plot_float (t_plot *x, t_float f)
 static void plot_motionHorizontalVertical (t_array *array)
 {
     if (plot_fieldDescriptorX) {
-    
-        word_setFloatByDescriptorAsPosition (array_getElementAtIndex (array, plot_startX),
-                array_getTemplate (array),
-                plot_fieldDescriptorX,
-                plot_cumulativeX);
+        array_setFloatAtIndexByDescriptorAsPosition (array, 
+            plot_startX, 
+            plot_fieldDescriptorX,
+            plot_cumulativeX);
     }
     
     if (plot_fieldDescriptorY) {
-    
-        word_setFloatByDescriptorAsPosition (array_getElementAtIndex (array, plot_startX),
-                array_getTemplate (array),
-                plot_fieldDescriptorY,
-                plot_cumulativeY);
+        array_setFloatAtIndexByDescriptorAsPosition (array, 
+            plot_startX,
+            plot_fieldDescriptorY,
+            plot_cumulativeY);
     }
 }
 
@@ -258,28 +256,18 @@ static void plot_motionVertical (t_array *array)
         
     if (n > 0) {    /* Distribute change linearly between samples. */
     //
-    t_float startY  = word_getFloatByDescriptorAsPosition (array_getElementAtIndex (array, back ? j : i),
-                            array_getTemplate (array),
-                            plot_fieldDescriptorY);
-    t_float stepY   = (plot_cumulativeY - startY) / n;
+    t_float startY = array_getFloatAtIndexByDescriptorAsPosition (array, back ? j : i, plot_fieldDescriptorY);
+    t_float stepY  = (plot_cumulativeY - startY) / n;
     
     int k = back ? n : 0;
     
     for (; i <= j; i++) {
-    
-        word_setFloatByDescriptorAsPosition (array_getElementAtIndex (array, i),
-                array_getTemplate (array),
-                plot_fieldDescriptorY,
-                startY + (stepY * k));
-        
+        array_setFloatAtIndexByDescriptorAsPosition (array, i, plot_fieldDescriptorY, startY + (stepY * k));
         if (back) { k--; } else { k++; }
     }
     //
     } else {
-        word_setFloatByDescriptorAsPosition (array_getElementAtIndex (array, i),
-                array_getTemplate (array),
-                plot_fieldDescriptorY,
-                plot_cumulativeY);
+        array_setFloatAtIndexByDescriptorAsPosition (array, i, plot_fieldDescriptorY, plot_cumulativeY);
     }
     
     plot_previousX = currentX;
@@ -714,12 +702,14 @@ static void plot_behaviorVisibilityChangedDrawPolygonSegment (t_plot *x,
     
     if (elementsDrawn > 1) {    /* Tk line requires at least two points. */
 
-        heapstring_addSprintf (t,     " -width %d", (int)(PD_MAX (0, width - 1.0)));
-        heapstring_addSprintf (t,     " -fill %s", color->s_name);
+        heapstring_addSprintf (t, " -width %d", (int)(PD_MAX (0, width - 1.0)));
+        heapstring_addSprintf (t, " -fill %s", color->s_name);
 
         if (style == PLOT_CURVES) { heapstring_addSprintf (t, " -smooth 1 -tags %lxPLOT\n", w); }
         else {
-            heapstring_addSprintf (t, " -tags %lxPLOT\n", w);
+        //
+        heapstring_addSprintf (t, " -tags %lxPLOT\n", w);
+        //
         }
 
         sys_gui (heapstring_getRaw (t));
@@ -963,22 +953,16 @@ static int plot_behaviorClickedRegularMatch (t_plot *x, t_array *array,
     
     if (fieldX) {
         plot_fieldDescriptorX = &x->x_fieldX;
-        plot_cumulativeX      = word_getFloatByDescriptorAsPosition (array_getElementAtIndex (array, i),
-                                        array_getTemplate (array),
-                                        &x->x_fieldX);
+        plot_cumulativeX      = array_getFloatAtIndexByDescriptorAsPosition (array, i, &x->x_fieldX);
     }
     
     if (plot_thickness) {
         plot_fieldDescriptorY = &x->x_fieldW;
-        plot_cumulativeY      = word_getFloatByDescriptorAsPosition (array_getElementAtIndex (array, i),
-                                        array_getTemplate (array),
-                                        &x->x_fieldW);
+        plot_cumulativeY      = array_getFloatAtIndexByDescriptorAsPosition (array, i, &x->x_fieldW);
 
     } else if (fieldY) {
         plot_fieldDescriptorY = &x->x_fieldY;
-        plot_cumulativeY      = word_getFloatByDescriptorAsPosition (array_getElementAtIndex (array, i),
-                                        array_getTemplate (array),
-                                        &x->x_fieldY);
+        plot_cumulativeY      = array_getFloatAtIndexByDescriptorAsPosition (array, i, &x->x_fieldY);
     }
 
     if (plot_thickness == PLOT_THICKNESS_UP   && plot_cumulativeY >= 0.0) { plot_direction = -1.0; }
@@ -1110,16 +1094,9 @@ static int plot_behaviorClickedSingle (t_plot *x, t_array *array,
     plot_fieldDescriptorY   = &x->x_fieldY;
 
     if (clicked) {
-    //
-    word_setFloatByDescriptorAsPosition (array_getElementAtIndex (array, i),
-        array_getTemplate (array),
-        &x->x_fieldY,
-        valueY);
-            
-    canvas_setMotionFunction (gpointer_getView (&plot_gpointer), NULL, (t_motionfn)plot_motion, a, b);
-
-    gpointer_redraw (&plot_gpointer);
-    //
+        array_setFloatAtIndexByDescriptorAsPosition (array, i, &x->x_fieldY, valueY);
+        canvas_setMotionFunction (gpointer_getView (&plot_gpointer), NULL, (t_motionfn)plot_motion, a, b);
+        gpointer_redraw (&plot_gpointer);
     }
     
     return 1;

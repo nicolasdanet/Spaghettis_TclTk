@@ -186,9 +186,19 @@ int array_getElementSize (t_array *x)
     return (x->a_stride / ARRAY_WORD); 
 }
 
-t_float array_getFloatInElementAtIndex (t_array *x, int n, t_symbol *fieldName)
+t_float array_getFloatAtIndex (t_array *x, int n, t_symbol *fieldName)
 {
     return word_getFloat (array_getElementAtIndex (x, n), array_getTemplate (x), fieldName);
+}
+
+t_float array_getFloatAtIndexByDescriptorAsPosition (t_array *x, int n, t_fielddescriptor *fd)
+{
+    return word_getFloatByDescriptorAsPosition (array_getElementAtIndex (x, n), array_getTemplate (x), fd);
+}
+
+void array_setFloatAtIndexByDescriptorAsPosition (t_array *x, int n, t_fielddescriptor *fd, t_float f)
+{
+    word_setFloatByDescriptorAsPosition (array_getElementAtIndex (x, n), array_getTemplate (x), fd, f);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -136,7 +136,7 @@ t_float     word_getFloatByDescriptorAsPosition         (t_word *w, t_template *
 void        word_setFloatByDescriptorAsPosition         (t_word *w,
                                                             t_template *tmpl,
                                                             t_fielddescriptor *fd,
-                                                            t_float position);
+                                                            t_float f);
                                                             
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -169,8 +169,11 @@ t_gpointer  *array_getTopParent                         (t_array *x);
 
 int         array_getSize                               (t_array *x);
 int         array_getElementSize                        (t_array *x);
-t_float     array_getFloatInElementAtIndex              (t_array *x, int n, t_symbol *fieldName);
+t_float     array_getFloatAtIndex                       (t_array *x, int n, t_symbol *fieldName);
 
+t_float     array_getFloatAtIndexByDescriptorAsPosition (t_array *x, int n, t_fielddescriptor *fd);
+void        array_setFloatAtIndexByDescriptorAsPosition (t_array *x, int n, t_fielddescriptor *fd, t_float f);
+                                                            
 void        array_free                                  (t_array *x);
 void        array_resize                                (t_array *x, int n);
 void        array_redraw                                (t_array *x, t_glist *glist);
@@ -257,7 +260,7 @@ t_float     gpointer_getFloatByDescriptorAsPosition     (t_gpointer *gp, t_field
 
 void        gpointer_setFloatByDescriptorAsPosition     (t_gpointer *gp,
                                                             t_fielddescriptor *fd,
-                                                            t_float position);
+                                                            t_float f);
                                                             
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
