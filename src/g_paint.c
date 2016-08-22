@@ -41,17 +41,18 @@ static void paint_performAllRecursive (t_glist *glist, int action)
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
     //
-    if (visible && pd_class (y) == scalar_class) {
-    //
-    switch (action) {
-        case PAINT_REDRAW   : scalar_redraw (cast_scalar (y), glist);   break;
-        case PAINT_DRAW     : gobj_visibilityChanged (y, glist, 1);     break;
-        case PAINT_ERASE    : gobj_visibilityChanged (y, glist, 0);     break;
-    }
-    //
+    t_glist *z = canvas_castToGlistChecked (cast_pd (y));
+    
+    if (z) { paint_performAllRecursive (z, action); }
+    else {
+        if (visible && pd_class (y) == scalar_class) {
+            switch (action) {
+                case PAINT_REDRAW   : scalar_redraw (cast_scalar (y), glist);   break;
+                case PAINT_DRAW     : gobj_visibilityChanged (y, glist, 1);     break;
+                case PAINT_ERASE    : gobj_visibilityChanged (y, glist, 0);     break;
+            }
+        }
     } 
-
-    if (pd_class (y) == canvas_class) { paint_performAllRecursive (cast_glist (y), action); }
     //
     }
 }
