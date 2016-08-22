@@ -122,7 +122,7 @@ static void *scalardefine_newObject (t_symbol *s, int argc, t_atom *argv)
     SET_FLOAT  (a + 1, WINDOW_HEADER);
     SET_FLOAT  (a + 2, WINDOW_WIDTH);
     SET_FLOAT  (a + 3, WINDOW_HEIGHT);
-    SET_SYMBOL (a + 4, s);
+    SET_SYMBOL (a + 4, sym_Scalar);
     SET_FLOAT  (a + 5, 0.0);
     
     x = canvas_new (NULL, NULL, 6, a);

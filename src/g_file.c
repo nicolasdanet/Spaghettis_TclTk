@@ -39,7 +39,7 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
             glist->gl_windowTopLeftY,
             glist->gl_windowBottomRightX - glist->gl_windowTopLeftX,
             glist->gl_windowBottomRightY - glist->gl_windowTopLeftY,
-            (s != &s_ ? s : sym_subpatch),
+            (s != &s_ ? s : sym_Subpatch),
             glist->gl_isMapped);
             
     } else {
