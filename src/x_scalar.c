@@ -28,63 +28,70 @@ t_class         *scalardefine_class;            /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-    /* send a pointer to the scalar to whomever is bound to the symbol */
-static void scalardefine_send(t_glist *x, t_symbol *s)
+static void scalardefine_send (t_glist *x, t_symbol *s)
 {
-    if (!s->s_thing)
-        post_error ("scalardefine_send: %s: no such object", s->s_name);
-    else if (x->gl_graphics && pd_class(&x->gl_graphics->g_pd) == scalar_class)
-    {
+    if (!s->s_thing) { post_error (PD_TRANSLATE ("%s: no such object"), s->s_name); }
+    else if (x->gl_graphics) {
+    //
+    t_gobj *y = x->gl_graphics;
+
+    if (pd_class (y) == scalar_class) {
         t_gpointer gp = GPOINTER_INIT;
-        gpointer_setAsScalar(&gp, x, (t_scalar *)&x->gl_graphics->g_pd);
-        pd_pointer(s->s_thing, &gp);
-        gpointer_unset(&gp);
+        gpointer_setAsScalar (&gp, x, cast_scalar (y));
+        pd_pointer (s->s_thing, &gp);
+        gpointer_unset (&gp);
     }
-    else { PD_BUG; }
+    //
+    }
 }
 
-    /* set to a list, used to restore from scalardefine_save()s below */
-static void scalardefine_set(t_glist *x, t_symbol *s, int argc, t_atom *argv)
+static void scalardefine_set (t_glist *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (x->gl_graphics && pd_class(&x->gl_graphics->g_pd) == scalar_class)
-    {
-        t_buffer *b = buffer_new();
-        int natoms;
-        t_atom *vec;
-        canvas_clear(x);
-        buffer_deserialize(b, argc, argv);
-        natoms = buffer_size(b);
-        vec = buffer_atoms(b);
-        canvas_deserializeScalar(x, natoms, vec);
-        buffer_free(b);
+    if (x->gl_graphics) {
+    //
+    t_gobj *y = x->gl_graphics;
+    
+    if (pd_class (y) == scalar_class) {
+        t_buffer *t = buffer_new();
+        canvas_clear (x);
+        buffer_deserialize (t, argc, argv);
+        canvas_deserializeScalar (x, buffer_size (t), buffer_atoms (t));
+        buffer_free (t);
     }
-    else { PD_BUG; }
+    //
+    }
 }
 
-    /* save to a binbuf (for file save or copy) */
-static void scalardefine_save(t_gobj *z, t_buffer *bb)
+static void scalardefine_save (t_gobj *z, t_buffer *b)
 {
     t_glist *x = (t_glist *)z;
-    buffer_vAppend(bb, "ssff", sym___hash__X, sym_obj,
-        (float)x->gl_obj.te_xCoordinate, (float)x->gl_obj.te_yCoordinate);
-    buffer_serialize(bb, x->gl_obj.te_buffer);
-    buffer_appendSemicolon(bb);
-    if (x->gl_saveScalar && x->gl_graphics &&
-        pd_class(&x->gl_graphics->g_pd) == scalar_class)
-    {
-        t_buffer *b2 = buffer_new();
-        t_scalar *sc = (t_scalar *)(x->gl_graphics);
-        buffer_vAppend(bb, "ss", sym___hash__A, sym_set);
-        scalar_serialize (sc, b2);
-        buffer_serialize(bb, b2);
-        buffer_appendSemicolon(bb);
-        buffer_free(b2);
+    
+    buffer_vAppend (b, "ssff", 
+        sym___hash__X,
+        sym_obj,
+        (float)(cast_object (x)->te_xCoordinate),
+        (float)(cast_object (x)->te_yCoordinate));
+        
+    buffer_serialize (b, cast_object (x)->te_buffer);
+    buffer_appendSemicolon (b);
+    
+    if (x->gl_saveScalar && x->gl_graphics) {
+
+        t_gobj *y = x->gl_graphics;
+        
+        if (pd_class (y) == scalar_class) {
+            t_buffer *t = buffer_new();
+            buffer_vAppend (b, "ss", sym___hash__A, sym_set);
+            scalar_serialize (cast_scalar (y), t);
+            buffer_serialize (b, t);
+            buffer_appendSemicolon (b);
+            buffer_free (t);
+        }
     }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 static void scalardefine_anything (t_glist *x, t_symbol *s, int argc, t_atom *argv)
 {
@@ -120,6 +127,8 @@ static void *scalardefine_newObject (t_symbol *s, int argc, t_atom *argv)
     
     x = canvas_new (NULL, NULL, 6, a);
 
+    PD_ASSERT (x);
+    
     x->gl_saveScalar = k;
 
     if (template_findByIdentifier (templateIdentifier)) {
