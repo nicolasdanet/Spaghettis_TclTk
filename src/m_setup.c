@@ -50,6 +50,7 @@ void loader_release         (void);
 
 void garray_setup           (void);
 void canvas_setup           (void);
+void guistub_setup          (void);
 void guiconnect_setup       (void);
 void bng_setup              (void);
 void toggle_setup           (void);
@@ -76,6 +77,7 @@ void element_setup          (void);
 void getsize_setup          (void);
 void setsize_setup          (void);
 void append_setup           (void);
+void scalardefine_setup     (void);
 void x_acoustics_setup      (void);
 void x_interface_setup      (void);
 void x_connective_setup     (void);
@@ -86,10 +88,8 @@ void x_midi_setup           (void);
 void x_misc_setup           (void);
 void x_net_setup            (void);
 void x_qlist_setup          (void);
-void guistub_setup          (void);
 void x_gui_setup            (void);
 void x_list_setup           (void);
-void x_scalar_setup         (void);
 void d_arithmetic_setup     (void);
 void d_array_setup          (void);
 void d_ctl_setup            (void);
@@ -121,6 +121,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     
     garray_setup();
     canvas_setup();
+    guistub_setup();
     guiconnect_setup();
     bng_setup();
     toggle_setup();
@@ -147,6 +148,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     getsize_setup();
     setsize_setup();
     append_setup();
+    scalardefine_setup();
     x_acoustics_setup();
     x_interface_setup();
     x_connective_setup();
@@ -157,10 +159,9 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     x_misc_setup();
     x_net_setup();
     x_qlist_setup();
-    guistub_setup();
     x_gui_setup();
     x_list_setup();
-    x_scalar_setup();
+
     d_arithmetic_setup();
     d_array_setup();
     d_ctl_setup();

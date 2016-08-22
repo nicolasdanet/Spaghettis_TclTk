@@ -88,12 +88,12 @@ static void *subpatch_new (t_symbol *s)
     
     if (s == &s_) { s = sym_subpatch; }
     
-    SET_FLOAT  (a + 0, 0);
+    SET_FLOAT  (a + 0, 0.0);
     SET_FLOAT  (a + 1, WINDOW_HEADER);
     SET_FLOAT  (a + 2, WINDOW_WIDTH);
     SET_FLOAT  (a + 3, WINDOW_HEIGHT);
     SET_SYMBOL (a + 4, s);
-    SET_FLOAT  (a + 5, 1);
+    SET_FLOAT  (a + 5, 1.0);
     
     x = canvas_new (NULL, NULL, 6, a);
     x->gl_parent = z;
