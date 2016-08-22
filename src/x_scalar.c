@@ -97,7 +97,6 @@ static void scalardefine_anything (t_glist *x, t_symbol *s, int argc, t_atom *ar
 static void *scalardefine_newObject (t_symbol *s, int argc, t_atom *argv)
 {
     t_glist *x = NULL;
-    t_glist *z = canvas_getCurrent();
     t_symbol *templateIdentifier = utils_makeTemplateIdentifier (&s_float);
     t_atom a[6];
     int k = 0;
@@ -121,7 +120,6 @@ static void *scalardefine_newObject (t_symbol *s, int argc, t_atom *argv)
     
     x = canvas_new (NULL, NULL, 6, a);
 
-    x->gl_parent = z;
     x->gl_saveScalar = k;
 
     if (template_findByIdentifier (templateIdentifier)) {
