@@ -410,22 +410,22 @@ int gpointer_fieldIsArrayAndValid (t_gpointer *gp, t_symbol *fieldName)
 
 t_float gpointer_getFloat (t_gpointer *gp, t_symbol *fieldName)
 {
-    return word_getFloat (gpointer_getData (gp), gpointer_getTemplate (gp), fieldName);
+    return (word_getFloat (gpointer_getData (gp), gpointer_getTemplate (gp), fieldName));
 }
 
 t_symbol *gpointer_getSymbol (t_gpointer *gp, t_symbol *fieldName)
 {
-    return word_getSymbol (gpointer_getData (gp), gpointer_getTemplate (gp), fieldName);
+    return (word_getSymbol (gpointer_getData (gp), gpointer_getTemplate (gp), fieldName));
 }
 
 t_buffer *gpointer_getText (t_gpointer *gp, t_symbol *fieldName)
 {
-    return word_getText (gpointer_getData (gp), gpointer_getTemplate (gp), fieldName);
+    return (word_getText (gpointer_getData (gp), gpointer_getTemplate (gp), fieldName));
 }
 
 t_array *gpointer_getArray (t_gpointer *gp, t_symbol *fieldName)
 {
-    return word_getArray (gpointer_getData (gp), gpointer_getTemplate (gp), fieldName);
+    return (word_getArray (gpointer_getData (gp), gpointer_getTemplate (gp), fieldName));
 }
 
 void gpointer_setFloat (t_gpointer *gp, t_symbol *fieldName, t_float f)
@@ -444,12 +444,12 @@ void gpointer_setSymbol (t_gpointer *gp, t_symbol *fieldName, t_symbol *s)
 
 t_float gpointer_getFloatByDescriptor (t_gpointer *gp, t_fielddescriptor *fd)
 {
-    word_getFloatByDescriptor (gpointer_getData (gp), gpointer_getTemplate (gp), fd);
+    return (word_getFloatByDescriptor (gpointer_getData (gp), gpointer_getTemplate (gp), fd));
 }
 
 t_float gpointer_getFloatByDescriptorAsPosition (t_gpointer *gp, t_fielddescriptor *fd)
 {
-    word_getFloatByDescriptorAsPosition (gpointer_getData (gp), gpointer_getTemplate (gp), fd);
+    return (word_getFloatByDescriptorAsPosition (gpointer_getData (gp), gpointer_getTemplate (gp), fd));
 }
 
 void gpointer_setFloatByDescriptorAsPosition (t_gpointer *gp, t_fielddescriptor *fd, t_float position)
