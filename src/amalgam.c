@@ -116,6 +116,7 @@
 
 /* Control. */
 
+#include "x_textbuffer.c"
 #include "x_scalar.c"
 
 /* DSP. */
