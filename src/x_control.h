@@ -57,6 +57,7 @@ void *text_tolist_new(t_symbol *s, int argc, t_atom *argv);
 void *text_fromlist_new(t_symbol *s, int argc, t_atom *argv);
 void *text_size_new(t_symbol *s, int argc, t_atom *argv);
 void *text_set_new(t_symbol *s, int argc, t_atom *argv);
+void *text_get_new(t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

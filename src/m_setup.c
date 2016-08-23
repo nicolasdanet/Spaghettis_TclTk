@@ -88,6 +88,7 @@ void x_midi_setup           (void);
 void x_misc_setup           (void);
 void x_net_setup            (void);
 void textdefine_setup       (void);
+void textget_setup          (void);
 void textset_setup          (void);
 void textsize_setup         (void);
 void textlist_setup         (void);
@@ -165,6 +166,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     x_misc_setup();
     x_net_setup();
     textdefine_setup();
+    textget_setup();
     textset_setup();
     textsize_setup();
     textlist_setup();
