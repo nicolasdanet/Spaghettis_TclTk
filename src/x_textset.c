@@ -20,14 +20,14 @@
 // -----------------------------------------------------------------------------------------------------------
 
 #define x_obj x_tc.tc_obj
-#define x_sym x_tc.tc_sym
-#define x_gp x_tc.tc_gp
-#define x_struct x_tc.tc_struct
-#define x_field x_tc.tc_field
+#define x_sym x_tc.tc_symbol
+#define x_gp x_tc.tc_gpointer
+#define x_struct x_tc.tc_templateIdentifier
+#define x_field x_tc.tc_fieldName
 
 typedef struct _text_set
 {
-    t_text_client x_tc;
+    t_textclient x_tc;
     t_float x_f1;           /* line number */
     t_float x_f2;           /* field number, -1 for whole line */
 } t_text_set;
@@ -71,7 +71,7 @@ void *text_set_new(t_symbol *s, int argc, t_atom *argv)
     }
     if (x->x_struct)
         inlet_newPointer(&x->x_obj, &x->x_gp);
-    else inlet_newSymbol(&x->x_obj, &x->x_tc.tc_sym);
+    else inlet_newSymbol(&x->x_obj, &x->x_tc.tc_symbol);
     return (x);
 }
 

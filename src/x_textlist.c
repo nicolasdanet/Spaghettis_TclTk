@@ -22,7 +22,7 @@
 /* ---------------- text_tolist object - output text as a list ----------- */
 t_class *text_tolist_class;
 
-#define t_text_tolist t_text_client
+#define t_text_tolist t_textclient
 
 void *text_tolist_new(t_symbol *s, int argc, t_atom *argv)
 {
@@ -34,9 +34,9 @@ void *text_tolist_new(t_symbol *s, int argc, t_atom *argv)
         post("warning: text tolist ignoring extra argument: ");
         post_atoms(argc, argv);
     }
-    if (x->tc_struct)
-        inlet_newPointer(&x->tc_obj, &x->tc_gp);
-    else inlet_newSymbol(&x->tc_obj, &x->tc_sym);
+    if (x->tc_templateIdentifier)
+        inlet_newPointer(&x->tc_obj, &x->tc_gpointer);
+    else inlet_newSymbol(&x->tc_obj, &x->tc_symbol);
     return (x);
 }
 
@@ -56,7 +56,7 @@ static void text_tolist_bang(t_text_tolist *x)
 /* ------------- text_fromlist object - set text from a list -------- */
 t_class *text_fromlist_class;
 
-#define t_text_fromlist t_text_client
+#define t_text_fromlist t_textclient
 
 void *text_fromlist_new(t_symbol *s, int argc, t_atom *argv)
 {
@@ -67,9 +67,9 @@ void *text_fromlist_new(t_symbol *s, int argc, t_atom *argv)
         post("warning: text fromlist ignoring extra argument: ");
         post_atoms(argc, argv);
     }
-    if (x->tc_struct)
-        inlet_newPointer(&x->tc_obj, &x->tc_gp);
-    else inlet_newSymbol(&x->tc_obj, &x->tc_sym);
+    if (x->tc_templateIdentifier)
+        inlet_newPointer(&x->tc_obj, &x->tc_gpointer);
+    else inlet_newSymbol(&x->tc_obj, &x->tc_symbol);
     return (x);
 }
 

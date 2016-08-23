@@ -17,10 +17,10 @@
 #include "x_control.h"
 
 #define x_obj x_tc.tc_obj
-#define x_sym x_tc.tc_sym
-#define x_gp x_tc.tc_gp
-#define x_struct x_tc.tc_struct
-#define x_field x_tc.tc_field
+#define x_sym x_tc.tc_symbol
+#define x_gp x_tc.tc_gpointer
+#define x_struct x_tc.tc_templateIdentifier
+#define x_field x_tc.tc_fieldName
 
 /* ---- text_search object - output index of line(s) matching criteria ---- */
 
@@ -42,7 +42,7 @@ typedef struct _key
 
 typedef struct _text_search
 {
-    t_text_client x_tc;
+    t_textclient x_tc;
     t_outlet *x_out1;       /* line indices */
     int x_nkeys;
     t_key *x_keyvec;
@@ -93,7 +93,7 @@ void *text_search_new(t_symbol *s, int argc, t_atom *argv)
     }
     if (x->x_struct)
         inlet_newPointer(&x->x_obj, &x->x_gp);
-    else inlet_newSymbol(&x->x_obj, &x->x_tc.tc_sym);
+    else inlet_newSymbol(&x->x_obj, &x->x_tc.tc_symbol);
     return (x);
 }
 

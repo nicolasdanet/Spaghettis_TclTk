@@ -27,7 +27,7 @@
 
 typedef struct _qlist
 {
-    t_textbuf x_textbuf;
+    t_textbuffer x_textbuf;
     t_outlet *x_bangout;
     int x_onset;                /* playback position */
     t_clock *x_clock;
@@ -37,9 +37,9 @@ typedef struct _qlist
     int x_rewound;          /* we've been rewound since last start */
     int x_innext;           /* we're currently inside the "next" routine */
 } t_qlist;
-#define x_ob x_textbuf.b_ob
-#define x_binbuf x_textbuf.b_binbuf
-#define x_canvas x_textbuf.b_canvas
+#define x_ob x_textbuf.tb_obj
+#define x_binbuf x_textbuf.tb_buffer
+#define x_canvas x_textbuf.tb_owner
 
 static void qlist_tick(t_qlist *x);
 
@@ -48,7 +48,7 @@ static t_class *qlist_class;
 static void *qlist_new( void)
 {
     t_qlist *x = (t_qlist *)pd_new(qlist_class);
-    textbuf_init(&x->x_textbuf);
+    TEXTBUFFER_INIT (&x->x_textbuf);
     x->x_clock = clock_new(x, (t_method)qlist_tick);
     outlet_new(&x->x_ob, &s_list);
     x->x_bangout = outlet_new(&x->x_ob, &s_bang);
@@ -254,7 +254,7 @@ static void qlist_tempo(t_qlist *x, t_float f)
 
 static void qlist_free(t_qlist *x)
 {
-    textbuf_free(&x->x_textbuf);
+    textbuffer_free (&x->x_textbuf);
     clock_free(x->x_clock);
 }
 
@@ -270,7 +270,7 @@ static t_class *textfile_class;
 static void *textfile_new( void)
 {
     t_qlist *x = (t_qlist *)pd_new(textfile_class);
-    textbuf_init(&x->x_textbuf);
+    TEXTBUFFER_INIT (&x->x_textbuf);
     outlet_new(&x->x_ob, &s_list);
     x->x_bangout = outlet_new(&x->x_ob, &s_bang);
     x->x_onset = PD_INT_MAX;
@@ -338,8 +338,8 @@ void x_qlist_setup(void )
         A_SYMBOL, A_DEFSYMBOL, 0);
     class_addMethod(qlist_class, (t_method)qlist_write, sym_write,
         A_SYMBOL, A_DEFSYMBOL, 0);
-    class_addMethod(qlist_class, (t_method)textbuf_open, sym_click, 0);
-    class_addMethod(qlist_class, (t_method)textbuf_close, sym_close, 0);
+    class_addMethod(qlist_class, (t_method)textbuffer_open, sym_click, 0);
+    class_addMethod(qlist_class, (t_method)textbuffer_close, sym_close, 0);
     class_addMethod(qlist_class, (t_method)textbuf_addline, 
         sym_addline, A_GIMME, 0);
     /*class_addMethod(qlist_class, (t_method)qlist_print, gen_sym ("print"),
@@ -351,7 +351,7 @@ void x_qlist_setup(void )
     class_addBang(qlist_class, qlist_bang);
 
     textfile_class = class_new(sym_textfile, (t_newmethod)textfile_new,
-        (t_method)textbuf_free, sizeof(t_qlist), 0, 0);
+        (t_method)textbuffer_free, sizeof(t_qlist), 0, 0);
     class_addMethod(textfile_class, (t_method)textfile_rewind, sym_rewind,
         0);
     class_addMethod(textfile_class, (t_method)qlist_set, sym_set,
@@ -367,8 +367,8 @@ void x_qlist_setup(void )
         A_SYMBOL, A_DEFSYMBOL, 0);
     class_addMethod(textfile_class, (t_method)qlist_write, sym_write, 
         A_SYMBOL, A_DEFSYMBOL, 0);
-    class_addMethod(textfile_class, (t_method)textbuf_open, sym_click, 0);
-    class_addMethod(textfile_class, (t_method)textbuf_close, sym_close, 
+    class_addMethod(textfile_class, (t_method)textbuffer_open, sym_click, 0);
+    class_addMethod(textfile_class, (t_method)textbuffer_close, sym_close, 
         0);
     class_addMethod(textfile_class, (t_method)textbuf_addline, 
         sym_addline, A_GIMME, 0);

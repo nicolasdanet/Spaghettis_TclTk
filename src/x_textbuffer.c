@@ -23,19 +23,64 @@ extern t_class *textdefine_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void textbuf_init(t_textbuf *x)
+void textbuffer_init (t_textbuffer *x)
 {
-    x->b_binbuf = buffer_new();
-    x->b_canvas = canvas_getCurrent();
+    x->tb_buffer = buffer_new();
+    x->tb_owner  = canvas_getCurrent();
 }
 
-void textbuf_senditup(t_textbuf *x)
+void textbuffer_free (t_textbuffer *x)
+{
+    t_pd *t = NULL;
+    
+    buffer_free (x->tb_buffer);
+    
+    if (x->tb_guiconnect) {
+        sys_vGui ("destroy .x%lx\n", x);
+        guiconnect_release (x->tb_guiconnect, 1000.0);
+    }
+
+    while (t = pd_findByClass (sym___hash__A, textdefine_class)) { pd_unbind (t, sym___hash__A); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void textbuffer_open (t_textbuffer *x)
+{
+    if (x->tb_guiconnect) {
+        sys_vGui ("wm deiconify .x%lx\n", x);
+        sys_vGui ("raise .x%lx\n", x);
+        sys_vGui ("focus .x%lx.text\n", x);
+        
+    } else {
+        char t[PD_STRING] = { 0 };
+        t_error err = string_sprintf (t, PD_STRING, ".x%lx", x);
+        PD_ASSERT (!err);
+        sys_vGui ("::ui_text::show .x%lx\n", x);
+        x->tb_guiconnect = guiconnect_new (cast_pd (x), gensym (t));
+        textbuffer_send (x);
+    }
+}
+
+void textbuffer_close (t_textbuffer *x)
+{
+    sys_vGui ("::ui_text::release .x%lx\n", x);
+    
+    if (x->tb_guiconnect) {
+        guiconnect_release (x->tb_guiconnect, 1000.0); 
+        x->tb_guiconnect = NULL;
+    }    
+}
+
+void textbuffer_send (t_textbuffer *x)
 {
     int i, ntxt;
     char *txt;
-    if (!x->b_guiconnect)
+    if (!x->tb_guiconnect)
         return;
-    buffer_toStringUnzeroed(x->b_binbuf, &txt, &ntxt);
+    buffer_toStringUnzeroed(x->tb_buffer, &txt, &ntxt);
     sys_vGui("::ui_text::clear .x%lx\n", x);
     for (i = 0; i < ntxt; )
     {
@@ -49,46 +94,16 @@ void textbuf_senditup(t_textbuf *x)
     PD_MEMORY_FREE(txt);
 }
 
-void textbuf_open(t_textbuf *x)
-{
-    if (x->b_guiconnect)
-    {
-        sys_vGui("wm deiconify .x%lx\n", x);
-        sys_vGui("raise .x%lx\n", x);
-        sys_vGui("focus .x%lx.text\n", x);
-    }
-    else
-    {
-        char buf[40];
-        sys_vGui("::ui_text::show .x%lx\n",
-            x /*, 600, 340, "myname", "text",
-                 font_getHostFontSize(canvas_getFontSize(x->b_canvas))*/);
-        sprintf(buf, ".x%lx", (unsigned long)x);
-        x->b_guiconnect = guiconnect_new(&x->b_ob.te_g.g_pd, gensym (buf));
-        textbuf_senditup(x);
-    }
-}
-
-void textbuf_close(t_textbuf *x)
-{
-    sys_vGui("::ui_text::release .x%lx\n", x);
-    if (x->b_guiconnect)
-    {
-        guiconnect_release(x->b_guiconnect, 1000);
-        x->b_guiconnect = 0;
-    }    
-}
-
-void textbuf_addline(t_textbuf *b, t_symbol *s, int argc, t_atom *argv)
+void textbuf_addline(t_textbuffer *b, t_symbol *s, int argc, t_atom *argv)
 {
     t_buffer *z = buffer_new();
     buffer_deserialize(z, argc, argv);
-    buffer_append(b->b_binbuf, buffer_size(z), buffer_atoms(z));
+    buffer_append(b->tb_buffer, buffer_size(z), buffer_atoms(z));
     buffer_free(z);
-    textbuf_senditup(b);
+    textbuffer_send(b);
 }
 
-void textbuf_read(t_textbuf *x, t_symbol *s, int argc, t_atom *argv)
+void textbuf_read(t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
 {
     int cr = 0;
     t_symbol *filename;
@@ -119,12 +134,12 @@ void textbuf_read(t_textbuf *x, t_symbol *s, int argc, t_atom *argv)
         post("warning: text define ignoring extra argument: ");
         post_atoms(argc, argv);
     }
-    if (buffer_read(x->b_binbuf, filename->s_name, x->b_canvas))
+    if (buffer_read(x->tb_buffer, filename->s_name, x->tb_owner))
             post_error ("%s: read failed", filename->s_name);
-    textbuf_senditup(x);
+    textbuffer_send(x);
 }
 
-void textbuf_write(t_textbuf *x, t_symbol *s, int argc, t_atom *argv)
+void textbuf_write(t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
 {
     int cr = 0;
     t_symbol *filename;
@@ -156,24 +171,10 @@ void textbuf_write(t_textbuf *x, t_symbol *s, int argc, t_atom *argv)
         post("warning: text define ignoring extra argument: ");
         post_atoms(argc, argv);
     }
-    canvas_makeFilePath(x->b_canvas, filename->s_name,
+    canvas_makeFilePath(x->tb_owner, filename->s_name,
         buf, PD_STRING);
-    if (buffer_write(x->b_binbuf, buf, ""))
+    if (buffer_write(x->tb_buffer, buf, ""))
             post_error ("%s: write failed", filename->s_name);
-}
-
-void textbuf_free(t_textbuf *x)
-{
-    t_pd *x2;
-    buffer_free(x->b_binbuf);
-    if (x->b_guiconnect)
-    {
-        sys_vGui("destroy .x%lx\n", x);
-        guiconnect_release(x->b_guiconnect, 1000);
-    }
-        /* just in case we're still bound to #A from loading... */
-    while (x2 = pd_findByClass(sym___hash__A, textdefine_class))
-        pd_unbind(x2, sym___hash__A);
 }
 
 // -----------------------------------------------------------------------------------------------------------

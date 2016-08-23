@@ -20,17 +20,17 @@
 // -----------------------------------------------------------------------------------------------------------
 
 #define x_obj x_tc.tc_obj
-#define x_sym x_tc.tc_sym
-#define x_gp x_tc.tc_gp
-#define x_struct x_tc.tc_struct
-#define x_field x_tc.tc_field
+#define x_sym x_tc.tc_symbol
+#define x_gp x_tc.tc_gpointer
+#define x_struct x_tc.tc_templateIdentifier
+#define x_field x_tc.tc_fieldName
 
 /* ---------------- text_sequence object - sequencer ----------- */
 t_class *text_sequence_class;
 
 typedef struct _text_sequence
 {
-    t_text_client x_tc;
+    t_textclient x_tc;
     t_outlet *x_mainout;    /* outlet for lists, zero if "global" */
     t_outlet *x_waitout;    /* outlet for wait times, zero if we never wait */
     t_outlet *x_endout;    /* bang when hit end */
@@ -101,9 +101,9 @@ void *text_sequence_new(t_symbol *s, int argc, t_atom *argv)
         post("warning: text sequence ignoring extra argument: ");
         post_atoms(argc, argv);
     }
-    if (x->x_tc.tc_struct)
-        inlet_newPointer(&x->x_tc.tc_obj, &x->x_tc.tc_gp);
-    else inlet_newSymbol(&x->x_tc.tc_obj, &x->x_tc.tc_sym);
+    if (x->x_tc.tc_templateIdentifier)
+        inlet_newPointer(&x->x_tc.tc_obj, &x->x_tc.tc_gpointer);
+    else inlet_newSymbol(&x->x_tc.tc_obj, &x->x_tc.tc_symbol);
     x->x_argc = 0;
     x->x_argv = (t_atom *)PD_MEMORY_GET(0);
     x->x_onset = PD_INT_MAX;

@@ -56,7 +56,7 @@ int text_nthline(int n, t_atom *vec, int line, int *startp, int *endp)
 
 typedef struct _text_define
 {
-    t_textbuf x_textbuf;
+    t_textbuffer x_textbuf;
     t_outlet *x_out;
     t_symbol *x_bindsym;
     t_scalar *x_scalar;     /* faux scalar (struct text-scalar) to point to */
@@ -65,9 +65,9 @@ typedef struct _text_define
     unsigned char x_keep;   /* whether to embed contents in patch on save */
 } t_text_define;
 
-#define x_ob x_textbuf.b_ob
-#define x_binbuf x_textbuf.b_binbuf
-#define x_canvas x_textbuf.b_canvas
+#define x_ob x_textbuf.tb_obj
+#define x_binbuf x_textbuf.tb_buffer
+#define x_canvas x_textbuf.tb_owner
 
 static void *text_define_new(t_symbol *s, int argc, t_atom *argv)
 {
@@ -98,7 +98,7 @@ static void *text_define_new(t_symbol *s, int argc, t_atom *argv)
         post("warning: text define ignoring extra argument: ");
         post_atoms(argc, argv);
     }
-    textbuf_init(&x->x_textbuf);
+    TEXTBUFFER_INIT (&x->x_textbuf);
         /* set up a scalar and a pointer to it that we can output */
     x->x_scalar = scalar_new(canvas_getCurrent(), sym___TEMPLATE__text);
     buffer_free(x->x_scalar->sc_vector[2].w_buffer);                        /* Encaspulate ASAP. */
@@ -119,7 +119,7 @@ static void *text_define_new(t_symbol *s, int argc, t_atom *argv)
 static void text_define_clear(t_text_define *x)
 {
     buffer_reset(x->x_binbuf);
-    textbuf_senditup(&x->x_textbuf);
+    textbuffer_send(&x->x_textbuf);
 }
 
 /*********  random utility function to find a binbuf in a datum */
@@ -166,23 +166,23 @@ t_buffer *pointertobinbuf(t_pd *x, t_gpointer *gp, t_symbol *s,
 static void text_define_frompointer(t_text_define *x, t_gpointer *gp,
     t_symbol *s)
 {
-    t_buffer *b = pointertobinbuf(&x->x_textbuf.b_ob.te_g.g_pd,
+    t_buffer *b = pointertobinbuf(&x->x_textbuf.tb_obj.te_g.g_pd,
         gp, s, "text_frompointer");
     if (b)
     {
-        buffer_reset(x->x_textbuf.b_binbuf);
-        buffer_append(x->x_textbuf.b_binbuf, buffer_size(b), buffer_atoms(b));
+        buffer_reset(x->x_textbuf.tb_buffer);
+        buffer_append(x->x_textbuf.tb_buffer, buffer_size(b), buffer_atoms(b));
     } 
 }
 
 static void text_define_topointer(t_text_define *x, t_gpointer *gp, t_symbol *s)
 {
-    t_buffer *b = pointertobinbuf(&x->x_textbuf.b_ob.te_g.g_pd, gp, s, "text_topointer");
+    t_buffer *b = pointertobinbuf(&x->x_textbuf.tb_obj.te_g.g_pd, gp, s, "text_topointer");
     if (b)
     {
         buffer_reset(b);
-        buffer_append(b, buffer_size(x->x_textbuf.b_binbuf),
-            buffer_atoms(x->x_textbuf.b_binbuf));
+        buffer_append(b, buffer_size(x->x_textbuf.tb_buffer),
+            buffer_atoms(x->x_textbuf.tb_buffer));
         gpointer_redraw (gp);
     } 
 }
@@ -198,7 +198,7 @@ void text_define_bang(t_text_define *x)
 void text_define_set(t_text_define *x, t_symbol *s, int argc, t_atom *argv)
 {
     buffer_deserialize(x->x_binbuf, argc, argv);
-    textbuf_senditup(&x->x_textbuf);
+    textbuffer_send(&x->x_textbuf);
 }
 
 
@@ -220,7 +220,7 @@ static void text_define_save(t_gobj *z, t_buffer *bb)
 
 static void text_define_free(t_text_define *x)
 {
-    textbuf_free(&x->x_textbuf);
+    textbuffer_free (&x->x_textbuf);
     if (x->x_bindsym != &s_)
         pd_unbind(&x->x_ob.te_g.g_pd, x->x_bindsym);
     gpointer_unset(&x->x_gp);
@@ -296,9 +296,9 @@ void textdefine_setup (void)
     textdefine_class = class_new(sym_text__space__define,
         (t_newmethod)text_define_new,
         (t_method)text_define_free, sizeof(t_text_define), 0, A_GIMME, 0);
-    class_addMethod(textdefine_class, (t_method)textbuf_open,
+    class_addMethod(textdefine_class, (t_method)textbuffer_open,
         sym_click, 0);
-    class_addMethod(textdefine_class, (t_method)textbuf_close,
+    class_addMethod(textdefine_class, (t_method)textbuffer_close,
         sym_close, 0);
     class_addMethod(textdefine_class, (t_method)textbuf_addline, 
         sym_addline, A_GIMME, 0);
