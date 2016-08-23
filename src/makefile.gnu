@@ -63,7 +63,7 @@ SRC = amalgam.c \
     d_math.c d_fft.c d_fft_fftsg.c d_array.c d_global.c \
     d_delay.c d_resample.c d_soundfile.c \
     x_arithmetic.c x_connective.c x_interface.c x_midi.c x_misc.c \
-    x_time.c x_acoustics.c x_net.c x_text.c x_gui.c x_list.c x_array.c
+    x_time.c x_acoustics.c x_net.c x_text.c x_gui.c x_list.c x_array.c x_qlist.c
 
 OBJ = $(SRC:.c=.o) $(MIDI_SRC:.c=.o) $(AUDIO_SRC:.c=.o)
 
