@@ -86,7 +86,7 @@ static void *subpatch_new (t_symbol *s)
     t_glist *x = NULL;
     t_glist *z = canvas_getCurrent();
     
-    if (s == &s_) { s = sym_Subpatch; }
+    if (s == &s_) { s = sym_Patch; }
     
     SET_FLOAT  (a + 0, 0.0);
     SET_FLOAT  (a + 1, WINDOW_HEADER);
@@ -473,7 +473,7 @@ static void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         stack_pop (cast_pd (glist));
         
     } else { 
-        canvas_setName (glist, gensym (PD_NAME_SHORT));
+        canvas_setName (glist, sym_Patch);
     }
 }
 
@@ -798,7 +798,7 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     
     x->gl_master = gpointer_masterCreateWithGlist (x);
     x->gl_parent = owner;
-    x->gl_name   = (name != &s_ ? name : (canvas_fileName ? canvas_fileName : gensym (PD_NAME_SHORT)));
+    x->gl_name   = (name != &s_ ? name : (canvas_fileName ? canvas_fileName : sym_Patch));
     
     x->gl_uniqueIdentifier = utils_unique();
     
