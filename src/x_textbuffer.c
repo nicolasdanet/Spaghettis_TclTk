@@ -18,7 +18,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_class *text_define_class;
+extern t_class *textdefine_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -172,7 +172,7 @@ void textbuf_free(t_textbuf *x)
         guiconnect_release(x->b_guiconnect, 1000);
     }
         /* just in case we're still bound to #A from loading... */
-    while (x2 = pd_findByClass(sym___hash__A, text_define_class))
+    while (x2 = pd_findByClass(sym___hash__A, textdefine_class))
         pd_unbind(x2, sym___hash__A);
 }
 

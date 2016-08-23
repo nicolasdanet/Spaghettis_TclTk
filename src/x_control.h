@@ -24,6 +24,15 @@ typedef struct _textbuf
     t_guiconnect *b_guiconnect;
 } t_textbuf;
 
+typedef struct _text_client
+{
+    t_object tc_obj;
+    t_symbol *tc_sym;
+    t_gpointer tc_gp;
+    t_symbol *tc_struct;
+    t_symbol *tc_field;
+} t_text_client;
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
@@ -35,6 +44,11 @@ void textbuf_addline (t_textbuf *b, t_symbol *s, int argc, t_atom *argv);
 void textbuf_read (t_textbuf *x, t_symbol *s, int argc, t_atom *argv);
 void textbuf_write (t_textbuf *x, t_symbol *s, int argc, t_atom *argv);
 void textbuf_free (t_textbuf *x);
+
+void text_client_argparse (t_text_client *x, int *argcp, t_atom **argvp, char *name);
+t_buffer *text_client_getbuf (t_text_client *x);
+void text_client_senditup (t_text_client *x);
+void text_client_free (t_text_client *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

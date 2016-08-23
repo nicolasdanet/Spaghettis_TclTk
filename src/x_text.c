@@ -25,7 +25,7 @@ extern t_pd     pd_canvasMaker;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_class         *text_define_class;         /* Shared. */
+t_class         *textdefine_class;         /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -71,7 +71,7 @@ typedef struct _text_define
 
 static void *text_define_new(t_symbol *s, int argc, t_atom *argv)
 {
-    t_text_define *x = (t_text_define *)pd_new(text_define_class);
+    t_text_define *x = (t_text_define *)pd_new(textdefine_class);
     t_symbol *asym = sym___hash__A;
     x->x_keep = 0;
     x->x_bindsym = &s_;
@@ -226,135 +226,9 @@ static void text_define_free(t_text_define *x)
     gpointer_unset(&x->x_gp);
 }
 
-/* ---  text_client - common code for objects that refer to text buffers -- */
-
-typedef struct _text_client
-{
-    t_object tc_obj;
-    t_symbol *tc_sym;
-    t_gpointer tc_gp;
-    t_symbol *tc_struct;
-    t_symbol *tc_field;
-} t_text_client;
-
-    /* parse buffer-finding arguments */
-static void text_client_argparse(t_text_client *x, int *argcp, t_atom **argvp,
-    char *name)
-{
-    int argc = *argcp;
-    t_atom *argv = *argvp;
-    x->tc_sym = x->tc_struct = x->tc_field = 0;
-    gpointer_init(&x->tc_gp);
-    while (argc && argv->a_type == A_SYMBOL &&
-        *argv->a_w.w_symbol->s_name == '-')
-    {
-        if (!strcmp(argv->a_w.w_symbol->s_name, "-s") &&
-            argc >= 3 && argv[1].a_type == A_SYMBOL && argv[2].a_type == A_SYMBOL)
-        {
-            x->tc_struct = utils_makeTemplateIdentifier(argv[1].a_w.w_symbol);
-            x->tc_field = argv[2].a_w.w_symbol;
-            argc -= 2; argv += 2;
-        }
-        else
-        {
-            post_error ("%s: unknown flag '%s'...", name,
-                argv->a_w.w_symbol->s_name);
-        }
-        argc--; argv++;
-    }
-    if (argc && argv->a_type == A_SYMBOL)
-    {
-        if (x->tc_struct)
-            post_error ("%s: extra names after -s..", name);
-        else x->tc_sym = argv->a_w.w_symbol;
-        argc--; argv++;
-    }
-    *argcp = argc;
-    *argvp = argv;
-}
-
-    /* find the binbuf for this object.  This should be reusable for other
-    objects.  Prints an error  message and returns 0 on failure. */
-static t_buffer *text_client_getbuf(t_text_client *x)
-{
-    if (x->tc_sym)       /* named text object */
-    {
-        t_textbuf *y = (t_textbuf *)pd_findByClass(x->tc_sym,
-            text_define_class);
-        if (y)
-            return (y->b_binbuf);
-        else
-        {
-            post_error ("text: couldn't find text buffer '%s'",
-                x->tc_sym->s_name);
-            return (0);
-        }
-    }
-    else if (x->tc_struct)   /* by pointer */
-    {
-        t_template *template = template_findByIdentifier(x->tc_struct);
-        t_word *vec; 
-        int onset, type;
-        t_symbol *arraytype;
-        if (!template)
-        {
-            post_error ("text: couldn't find struct %s", x->tc_struct->s_name);
-            return (0);
-        }
-        if (!gpointer_isValid(&x->tc_gp))
-        {
-            post_error ("text: stale or empty pointer");
-            return (0);
-        }
-        vec = gpointer_getData (&x->tc_gp);
-
-        if (!template_findField(template,   /* Remove template_findField ASAP !!! */
-            x->tc_field, &onset, &type, &arraytype))
-        {
-            post_error ("text: no field named %s", x->tc_field->s_name);
-            return (0);
-        }
-        if (type != DATA_TEXT)
-        {
-            post_error ("text: field %s not of type text", x->tc_field->s_name);
-            return (0);
-        }
-        return (*(t_buffer **)(((char *)vec) + onset));
-    }
-    else return (0);    /* shouldn't happen */
-}
-
-static  void text_client_senditup(t_text_client *x)
-{
-    if (x->tc_sym)       /* named text object */
-    {
-        t_textbuf *y = (t_textbuf *)pd_findByClass(x->tc_sym,
-            text_define_class);
-        if (y)
-            textbuf_senditup(y);
-        else { PD_BUG; }
-    }
-    else if (x->tc_struct)   /* by pointer */
-    {
-        t_template *template = template_findByIdentifier(x->tc_struct);
-        if (!template)
-        {
-            post_error ("text: couldn't find struct %s", x->tc_struct->s_name);
-            return;
-        }
-        if (!gpointer_isValid(&x->tc_gp))
-        {
-            post_error ("text: stale or empty pointer");
-            return;
-        }
-        gpointer_redraw (&x->tc_gp);
-    }
-}
-
-static void text_client_free(t_text_client *x)
-{
-    gpointer_unset(&x->tc_gp);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* ------- text_get object - output all or part of nth lines ----------- */
 t_class *text_get_class;
@@ -1656,26 +1530,26 @@ static void text_template_init( void)
 void x_qlist_setup(void )
 {
     text_template_init();
-    text_define_class = class_new(sym_text__space__define,
+    textdefine_class = class_new(sym_text__space__define,
         (t_newmethod)text_define_new,
         (t_method)text_define_free, sizeof(t_text_define), 0, A_GIMME, 0);
-    class_addMethod(text_define_class, (t_method)textbuf_open,
+    class_addMethod(textdefine_class, (t_method)textbuf_open,
         sym_click, 0);
-    class_addMethod(text_define_class, (t_method)textbuf_close,
+    class_addMethod(textdefine_class, (t_method)textbuf_close,
         sym_close, 0);
-    class_addMethod(text_define_class, (t_method)textbuf_addline, 
+    class_addMethod(textdefine_class, (t_method)textbuf_addline, 
         sym_addline, A_GIMME, 0);
-    class_addMethod(text_define_class, (t_method)text_define_set,
+    class_addMethod(textdefine_class, (t_method)text_define_set,
         sym_set, A_GIMME, 0);
-    class_addMethod(text_define_class, (t_method)text_define_clear,
+    class_addMethod(textdefine_class, (t_method)text_define_clear,
         sym_clear, 0);
-    class_addMethod(text_define_class, (t_method)textbuf_write,
+    class_addMethod(textdefine_class, (t_method)textbuf_write,
         sym_write, A_GIMME, 0);
-    class_addMethod(text_define_class, (t_method)textbuf_read,
+    class_addMethod(textdefine_class, (t_method)textbuf_read,
         sym_read, A_GIMME, 0);
-    class_setSaveFunction(text_define_class, text_define_save);
-    class_addBang(text_define_class, text_define_bang);
-    class_setHelpName(text_define_class, sym_text);
+    class_setSaveFunction(textdefine_class, text_define_save);
+    class_addBang(textdefine_class, text_define_bang);
+    class_setHelpName(textdefine_class, sym_text);
 
     class_addCreator((t_newmethod)text_new, sym_text, A_GIMME, 0);
 
