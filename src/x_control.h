@@ -50,6 +50,9 @@ t_buffer *text_client_getbuf (t_text_client *x);
 void text_client_senditup (t_text_client *x);
 void text_client_free (t_text_client *x);
 
+int text_nthline(int n, t_atom *vec, int line, int *startp, int *endp);
+void *text_sequence_new(t_symbol *s, int argc, t_atom *argv);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
