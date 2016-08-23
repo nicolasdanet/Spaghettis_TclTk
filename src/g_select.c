@@ -394,7 +394,7 @@ int canvas_deselectAll (t_glist *glist)
 {
     int k = 0;
     
-    if (glist->gl_editor) {         /* Required for newly recreated subpatch for instance. */
+    if (glist->gl_editor) {         /* Required (for newly recreated subpatch for instance). */
     //
     while (glist->gl_editor->e_selectedObjects) {
         k |= canvas_deselectObject (glist, glist->gl_editor->e_selectedObjects->sel_what);
@@ -404,7 +404,7 @@ int canvas_deselectAll (t_glist *glist)
     //
     }
     
-    return k;
+    return k;   /* Return 1 if an object has been recreated. */
 }
 
 // -----------------------------------------------------------------------------------------------------------

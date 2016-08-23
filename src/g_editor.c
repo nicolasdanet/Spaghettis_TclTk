@@ -437,8 +437,12 @@ static int canvas_performMouseLines (t_glist *glist, int positionX, int position
 
 static void canvas_performMouseLassoStart (t_glist *glist, int positionX, int positionY, int modifier)
 {
-    if (!(modifier & MODIFIER_SHIFT)) { canvas_deselectAll (glist); }
+    int newlyCreated = 0;
     
+    if (!(modifier & MODIFIER_SHIFT)) { newlyCreated = canvas_deselectAll (glist); }
+    
+    if (!newlyCreated) {
+    //
     sys_vGui (".x%lx.c create rectangle %d %d %d %d -tags TEMPORARY\n",
                     canvas_getView (glist),
                     positionX,
@@ -449,6 +453,8 @@ static void canvas_performMouseLassoStart (t_glist *glist, int positionX, int po
     glist->gl_editor->e_action = ACTION_REGION;
     glist->gl_editor->e_previousX = positionX;
     glist->gl_editor->e_previousY = positionY;
+    //
+    }
 }
 
 static void canvas_performMouse (t_glist *glist, int a, int b, int modifier, int clicked)
