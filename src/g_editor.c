@@ -855,7 +855,7 @@ void canvas_copy (t_glist *glist)
         int s = 0;
         boxtext_getSelection (glist->gl_editor->e_selectedText, &t, &s);
         sys_gui ("clipboard clear\n");
-        sys_vGui ("clipboard append {%.*s}\n", s, t);   
+        sys_vGui ("clipboard append {%.*s}\n", s, t);       /* < http://stackoverflow.com/a/13289324 > */
         
     } else {
         canvas_performCopy (glist);

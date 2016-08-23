@@ -76,22 +76,35 @@ void textbuffer_close (t_textbuffer *x)
 
 void textbuffer_send (t_textbuffer *x)
 {
-    int i, ntxt;
-    char *txt;
-    if (!x->tb_guiconnect)
-        return;
-    buffer_toStringUnzeroed(x->tb_buffer, &txt, &ntxt);
-    sys_vGui("::ui_text::clear .x%lx\n", x);
-    for (i = 0; i < ntxt; )
-    {
-        char *j = strchr(txt+i, '\n');
-        if (!j) j = txt + ntxt;
-        sys_vGui("::ui_text::append .x%lx {%.*s\n}\n",
-            x, j-txt-i, txt+i);
-        i = (j-txt)+1;
+    if (x->tb_guiconnect) {
+    //
+    int size;
+    char *text = NULL;
+    int i = 0;
+        
+    buffer_toStringUnzeroed (x->tb_buffer, &text, &size);
+    
+    sys_vGui ("::ui_text::clear .x%lx\n", x);
+    
+    while (i < size) {  /* Send it line by line. */
+
+        char *start   = text + i;
+        char *newline = strchr (start, '\n');
+        
+        if (!newline) { newline = text + size; }
+        
+        /* < http://stackoverflow.com/a/13289324 > */
+        
+        sys_vGui ("::ui_text::append .x%lx {%.*s\n}\n", x, (int)(newline - start), start);  
+        
+        i = (newline - text) + 1;
     }
-    sys_vGui("::ui_text::dirty .x%lx 0\n", x);
-    PD_MEMORY_FREE(txt);
+    
+    sys_vGui ("::ui_text::dirty .x%lx 0\n", x);
+    
+    PD_MEMORY_FREE (text);
+    //
+    }
 }
 
 void textbuf_addline(t_textbuffer *b, t_symbol *s, int argc, t_atom *argv)
