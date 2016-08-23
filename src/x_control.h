@@ -55,6 +55,7 @@ void *text_sequence_new(t_symbol *s, int argc, t_atom *argv);
 void *text_search_new(t_symbol *s, int argc, t_atom *argv);
 void *text_tolist_new(t_symbol *s, int argc, t_atom *argv);
 void *text_fromlist_new(t_symbol *s, int argc, t_atom *argv);
+void *text_size_new(t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
