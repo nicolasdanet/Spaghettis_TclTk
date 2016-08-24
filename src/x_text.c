@@ -300,8 +300,8 @@ void textdefine_setup (void)
         sym_click, 0);
     class_addMethod(textdefine_class, (t_method)textbuffer_close,
         sym_close, 0);
-    class_addMethod(textdefine_class, (t_method)textbuffer_add, 
-        sym_addline, A_GIMME, 0);
+    class_addMethod(textdefine_class, (t_method)textbuffer_addLine, 
+        sym__addline, A_GIMME, 0);
     class_addMethod(textdefine_class, (t_method)text_define_set,
         sym_set, A_GIMME, 0);
     class_addMethod(textdefine_class, (t_method)text_define_clear,

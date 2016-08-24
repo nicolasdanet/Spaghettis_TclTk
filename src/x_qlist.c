@@ -340,8 +340,8 @@ void x_qlist_setup(void )
         A_SYMBOL, A_DEFSYMBOL, 0);
     class_addMethod(qlist_class, (t_method)textbuffer_open, sym_click, 0);
     class_addMethod(qlist_class, (t_method)textbuffer_close, sym_close, 0);
-    class_addMethod(qlist_class, (t_method)textbuffer_add, 
-        sym_addline, A_GIMME, 0);
+    class_addMethod(qlist_class, (t_method)textbuffer_addLine, 
+        sym__addline, A_GIMME, 0);
     /*class_addMethod(qlist_class, (t_method)qlist_print, gen_sym ("print"),
         A_DEFSYMBOL, 0);*/
     class_addMethod(qlist_class, (t_method)qlist_tempo,
@@ -370,8 +370,8 @@ void x_qlist_setup(void )
     class_addMethod(textfile_class, (t_method)textbuffer_open, sym_click, 0);
     class_addMethod(textfile_class, (t_method)textbuffer_close, sym_close, 
         0);
-    class_addMethod(textfile_class, (t_method)textbuffer_add, 
-        sym_addline, A_GIMME, 0);
+    class_addMethod(textfile_class, (t_method)textbuffer_addLine, 
+        sym__addline, A_GIMME, 0);
     /*class_addMethod(textfile_class, (t_method)qlist_print, gen_sym ("print"),
         A_DEFSYMBOL, 0);*/
     class_addBang(textfile_class, textfile_bang);

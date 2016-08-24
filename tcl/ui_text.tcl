@@ -113,7 +113,7 @@ proc _save {top} {
         if {$line != ""} {
             #set line [::escaped $line]
             set line [string map {"," " \\, " ";" " \\; " "$" "\\$"} $line]
-            ::ui_interface::pdsend [concat $top addline $line]
+            ::ui_interface::pdsend [concat $top _addline $line]
         }
     }
     
