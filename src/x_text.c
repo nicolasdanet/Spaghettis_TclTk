@@ -98,7 +98,7 @@ static void *text_define_new(t_symbol *s, int argc, t_atom *argv)
         post("warning: text define ignoring extra argument: ");
         post_atoms(argc, argv);
     }
-    TEXTBUFFER_INIT (&x->x_textbuf);
+    textbuffer_init (&x->x_textbuf);
         /* set up a scalar and a pointer to it that we can output */
     x->x_scalar = scalar_new(canvas_getCurrent(), sym___TEMPLATE__text);
     buffer_free(x->x_scalar->sc_vector[2].w_buffer);                        /* Encaspulate ASAP. */

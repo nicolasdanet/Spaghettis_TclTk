@@ -20,7 +20,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 #define x_obj x_tc.tc_obj
-#define x_sym x_tc.tc_symbol
+#define x_sym x_tc.tc_name
 #define x_gp x_tc.tc_gpointer
 #define x_struct x_tc.tc_templateIdentifier
 #define x_field x_tc.tc_fieldName
@@ -38,7 +38,7 @@ void *text_size_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_text_size *x = (t_text_size *)pd_new(text_size_class);
     x->x_out1 = outlet_new(&x->x_obj, &s_float);
-    text_client_argparse(&x->x_tc, &argc, &argv, "text size");
+    textclient_init(&x->x_tc, &argc, &argv, "text size");
     if (argc)
     {
         post("warning: text size ignoring extra argument: ");
@@ -46,13 +46,13 @@ void *text_size_new(t_symbol *s, int argc, t_atom *argv)
     }
     if (x->x_struct)
         inlet_newPointer(&x->x_obj, &x->x_gp);
-    else inlet_newSymbol(&x->x_obj, &x->x_tc.tc_symbol);
+    else inlet_newSymbol(&x->x_obj, &x->x_tc.tc_name);
     return (x);
 }
 
 static void text_size_bang(t_text_size *x)
 {
-    t_buffer *b = text_client_getbuf(&x->x_tc);
+    t_buffer *b = textclient_fetchBuffer(&x->x_tc);
     int n, i, cnt = 0;
     t_atom *vec;
     if (!b)
@@ -71,7 +71,7 @@ static void text_size_bang(t_text_size *x)
 
 static void text_size_float(t_text_size *x, t_float f)
 {
-    t_buffer *b = text_client_getbuf(&x->x_tc);
+    t_buffer *b = textclient_fetchBuffer(&x->x_tc);
     int start, end, n;
     t_atom *vec;
     if (!b)
@@ -86,7 +86,7 @@ static void text_size_float(t_text_size *x, t_float f)
 void textsize_setup (void)
 {
     text_size_class = class_new(sym_text__space__size,
-        (t_newmethod)text_size_new, (t_method)text_client_free,
+        (t_newmethod)text_size_new, (t_method)textclient_free,
             sizeof(t_text_size), 0, A_GIMME, 0);
     class_addBang(text_size_class, text_size_bang);
     class_addFloat(text_size_class, text_size_float);

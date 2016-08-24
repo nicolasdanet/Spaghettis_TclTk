@@ -26,7 +26,7 @@ typedef struct _textbuffer {
 typedef struct _textclient {
     t_object        tc_obj;                         /* Must be the first. */
     t_gpointer      tc_gpointer;
-    t_symbol        *tc_symbol;
+    t_symbol        *tc_name;
     t_symbol        *tc_templateIdentifier;
     t_symbol        *tc_fieldName;
     } t_textclient;
@@ -48,11 +48,11 @@ void        textbuffer_write            (t_textbuffer *x, t_symbol *s, int argc,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_buffer    *text_client_getbuf         (t_textclient *x);
+void        textclient_init             (t_textclient *x, int *argc, t_atom **argv, char *type);
+void        textclient_free             (t_textclient *x);
+void        textclient_send             (t_textclient *x);
 
-void        text_client_argparse        (t_textclient *x, int *argcp, t_atom **argvp, char *name);
-void        text_client_senditup        (t_textclient *x);
-void        text_client_free            (t_textclient *x);
+t_buffer    *textclient_fetchBuffer     (t_textclient *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -71,12 +71,6 @@ void        *text_fromlist_new          (t_symbol *s, int argc, t_atom *argv);
 void        *text_tolist_new            (t_symbol *s, int argc, t_atom *argv);
 void        *text_search_new            (t_symbol *s, int argc, t_atom *argv);
 void        *text_sequence_new          (t_symbol *s, int argc, t_atom *argv);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#define TEXTBUFFER_INIT(x)      textbuffer_init (x)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -22,56 +22,55 @@ extern t_class *textdefine_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
-void text_client_argparse (t_textclient *x, int *argcp, t_atom **argvp, char *name)
+void textclient_init (t_textclient *x, int *ac, t_atom **av, char *dummy)
 {
-    int argc = *argcp;
-    t_atom *argv = *argvp;
-    x->tc_symbol = x->tc_templateIdentifier = x->tc_fieldName = 0;
-    gpointer_init(&x->tc_gpointer);
-    while (argc && argv->a_type == A_SYMBOL &&
-        *argv->a_w.w_symbol->s_name == '-')
-    {
-        if (!strcmp(argv->a_w.w_symbol->s_name, "-s") &&
-            argc >= 3 && argv[1].a_type == A_SYMBOL && argv[2].a_type == A_SYMBOL)
-        {
-            x->tc_templateIdentifier = utils_makeTemplateIdentifier(argv[1].a_w.w_symbol);
-            x->tc_fieldName = argv[2].a_w.w_symbol;
-            argc -= 2; argv += 2;
+    int argc = *ac;
+    t_atom *argv = *av;
+    
+    x->tc_name               = NULL;
+    x->tc_templateIdentifier = NULL;
+    x->tc_fieldName          = NULL;
+    
+    gpointer_init (&x->tc_gpointer);
+    
+    while (argc && IS_SYMBOL (argv)) {
+    //
+    if (GET_SYMBOL (argv) == sym___dash__s || GET_SYMBOL (argv) == sym___dash__symbol) {
+        if (argc >= 3 && IS_SYMBOL (argv + 1) && IS_SYMBOL (argv + 2)) {
+            x->tc_templateIdentifier = utils_makeTemplateIdentifier (GET_SYMBOL (argv + 1));
+            x->tc_fieldName = GET_SYMBOL (argv + 2);
+            argc -= 3; argv += 3;
         }
-        else
-        {
-            post_error ("%s: unknown flag '%s'...", name,
-                argv->a_w.w_symbol->s_name);
-        }
+    }
+    
+    break;
+    //
+    }
+    
+    if (argc && IS_SYMBOL (argv) && !x->tc_templateIdentifier) {
+        x->tc_name = GET_SYMBOL (argv); 
         argc--; argv++;
     }
-    if (argc && argv->a_type == A_SYMBOL)
-    {
-        if (x->tc_templateIdentifier)
-            post_error ("%s: extra names after -s..", name);
-        else x->tc_symbol = argv->a_w.w_symbol;
-        argc--; argv++;
-    }
-    *argcp = argc;
-    *argvp = argv;
+    
+    *ac = argc;
+    *av = argv;
 }
 
     /* find the binbuf for this object.  This should be reusable for other
     objects.  Prints an error  message and returns 0 on failure. */
-t_buffer *text_client_getbuf(t_textclient *x)
+t_buffer *textclient_fetchBuffer(t_textclient *x)
 {
-    if (x->tc_symbol)       /* named text object */
+    if (x->tc_name)       /* named text object */
     {
-        t_textbuffer *y = (t_textbuffer *)pd_findByClass(x->tc_symbol,
+        t_textbuffer *y = (t_textbuffer *)pd_findByClass(x->tc_name,
             textdefine_class);
         if (y)
             return (y->tb_buffer);
         else
         {
             post_error ("text: couldn't find text buffer '%s'",
-                x->tc_symbol->s_name);
+                x->tc_name->s_name);
             return (0);
         }
     }
@@ -109,11 +108,11 @@ t_buffer *text_client_getbuf(t_textclient *x)
     else return (0);    /* shouldn't happen */
 }
 
-void text_client_senditup(t_textclient *x)
+void textclient_send(t_textclient *x)
 {
-    if (x->tc_symbol)       /* named text object */
+    if (x->tc_name)       /* named text object */
     {
-        t_textbuffer *y = (t_textbuffer *)pd_findByClass(x->tc_symbol,
+        t_textbuffer *y = (t_textbuffer *)pd_findByClass(x->tc_name,
             textdefine_class);
         if (y)
             textbuffer_send(y);
@@ -136,9 +135,9 @@ void text_client_senditup(t_textclient *x)
     }
 }
 
-void text_client_free(t_textclient *x)
+void textclient_free (t_textclient *x)
 {
-    gpointer_unset(&x->tc_gpointer);
+    gpointer_unset (&x->tc_gpointer);
 }
 
 // -----------------------------------------------------------------------------------------------------------

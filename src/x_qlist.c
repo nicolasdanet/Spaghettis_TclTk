@@ -48,7 +48,7 @@ static t_class *qlist_class;
 static void *qlist_new( void)
 {
     t_qlist *x = (t_qlist *)pd_new(qlist_class);
-    TEXTBUFFER_INIT (&x->x_textbuf);
+    textbuffer_init (&x->x_textbuf);
     x->x_clock = clock_new(x, (t_method)qlist_tick);
     outlet_new(&x->x_ob, &s_list);
     x->x_bangout = outlet_new(&x->x_ob, &s_bang);
@@ -270,7 +270,7 @@ static t_class *textfile_class;
 static void *textfile_new( void)
 {
     t_qlist *x = (t_qlist *)pd_new(textfile_class);
-    TEXTBUFFER_INIT (&x->x_textbuf);
+    textbuffer_init (&x->x_textbuf);
     outlet_new(&x->x_ob, &s_list);
     x->x_bangout = outlet_new(&x->x_ob, &s_bang);
     x->x_onset = PD_INT_MAX;

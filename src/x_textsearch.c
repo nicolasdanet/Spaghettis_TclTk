@@ -17,7 +17,7 @@
 #include "x_control.h"
 
 #define x_obj x_tc.tc_obj
-#define x_sym x_tc.tc_symbol
+#define x_sym x_tc.tc_name
 #define x_gp x_tc.tc_gpointer
 #define x_struct x_tc.tc_templateIdentifier
 #define x_field x_tc.tc_fieldName
@@ -53,7 +53,7 @@ void *text_search_new(t_symbol *s, int argc, t_atom *argv)
     t_text_search *x = (t_text_search *)pd_new(text_search_class);
     int i, key, nkey, nextop;
     x->x_out1 = outlet_new(&x->x_obj, &s_list);
-    text_client_argparse(&x->x_tc, &argc, &argv, "text search");
+    textclient_init(&x->x_tc, &argc, &argv, "text search");
     for (i = nkey = 0; i < argc; i++)
         if (argv[i].a_type == A_FLOAT)
             nkey++;
@@ -93,14 +93,14 @@ void *text_search_new(t_symbol *s, int argc, t_atom *argv)
     }
     if (x->x_struct)
         inlet_newPointer(&x->x_obj, &x->x_gp);
-    else inlet_newSymbol(&x->x_obj, &x->x_tc.tc_symbol);
+    else inlet_newSymbol(&x->x_obj, &x->x_tc.tc_name);
     return (x);
 }
 
 static void text_search_list(t_text_search *x,
     t_symbol *s, int argc, t_atom *argv)
 {
-    t_buffer *b = text_client_getbuf(&x->x_tc);
+    t_buffer *b = textclient_fetchBuffer(&x->x_tc);
     int i, j, n, lineno, bestline = -1, beststart, bestn, thisstart, thisn,
         nkeys = x->x_nkeys, failed = 0;
     t_atom *vec;
@@ -265,7 +265,7 @@ static void text_search_list(t_text_search *x,
 void textsearch_setup (void)
 {
     text_search_class = class_new(sym_text__space__search,
-        (t_newmethod)text_search_new, (t_method)text_client_free,
+        (t_newmethod)text_search_new, (t_method)textclient_free,
             sizeof(t_text_search), 0, A_GIMME, 0);
     class_addList(text_search_class, text_search_list);
     class_setHelpName(text_search_class, sym_text);

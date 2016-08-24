@@ -32,7 +32,7 @@ typedef struct _text_get
 } t_text_get;
 
 #define x_obj x_tc.tc_obj
-#define x_sym x_tc.tc_symbol
+#define x_sym x_tc.tc_name
 #define x_gp x_tc.tc_gpointer
 #define x_struct x_tc.tc_templateIdentifier
 #define x_field x_tc.tc_fieldName
@@ -46,7 +46,7 @@ void *text_get_new(t_symbol *s, int argc, t_atom *argv)
     inlet_newFloat(&x->x_obj, &x->x_f2);
     x->x_f1 = -1;
     x->x_f2 = 1;
-    text_client_argparse(&x->x_tc, &argc, &argv, "text get");
+    textclient_init(&x->x_tc, &argc, &argv, "text get");
     if (argc)
     {
         if (argv->a_type == A_FLOAT)
@@ -76,13 +76,13 @@ void *text_get_new(t_symbol *s, int argc, t_atom *argv)
     }
     if (x->x_struct)
         inlet_newPointer(&x->x_obj, &x->x_gp);
-    else inlet_newSymbol(&x->x_obj, &x->x_tc.tc_symbol);
+    else inlet_newSymbol(&x->x_obj, &x->x_tc.tc_name);
     return (x);
 }
 
 static void text_get_float(t_text_get *x, t_float f)
 {
-    t_buffer *b = text_client_getbuf(&x->x_tc);
+    t_buffer *b = textclient_fetchBuffer(&x->x_tc);
     int start, end, n, startfield, nfield;
     t_atom *vec;
     if (!b)
@@ -127,7 +127,7 @@ static void text_get_float(t_text_get *x, t_float f)
 void textget_setup (void)
 {
     text_get_class = class_new(sym_text__space__get,
-        (t_newmethod)text_get_new, (t_method)text_client_free,
+        (t_newmethod)text_get_new, (t_method)textclient_free,
             sizeof(t_text_get), 0, A_GIMME, 0);
     class_addFloat(text_get_class, text_get_float);
     class_setHelpName(text_get_class, sym_text);

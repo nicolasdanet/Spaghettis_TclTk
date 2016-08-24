@@ -20,7 +20,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 #define x_obj x_tc.tc_obj
-#define x_sym x_tc.tc_symbol
+#define x_sym x_tc.tc_name
 #define x_gp x_tc.tc_gpointer
 #define x_struct x_tc.tc_templateIdentifier
 #define x_field x_tc.tc_fieldName
@@ -57,7 +57,7 @@ void *text_sequence_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_text_sequence *x = (t_text_sequence *)pd_new(text_sequence_class);
     int global = 0;
-    text_client_argparse(&x->x_tc, &argc, &argv, "text sequence");
+    textclient_init(&x->x_tc, &argc, &argv, "text sequence");
     x->x_waitsym = 0;
     x->x_waitargc = 0;
     x->x_eaten = 0;
@@ -103,7 +103,7 @@ void *text_sequence_new(t_symbol *s, int argc, t_atom *argv)
     }
     if (x->x_tc.tc_templateIdentifier)
         inlet_newPointer(&x->x_tc.tc_obj, &x->x_tc.tc_gpointer);
-    else inlet_newSymbol(&x->x_tc.tc_obj, &x->x_tc.tc_symbol);
+    else inlet_newSymbol(&x->x_tc.tc_obj, &x->x_tc.tc_name);
     x->x_argc = 0;
     x->x_argv = (t_atom *)PD_MEMORY_GET(0);
     x->x_onset = PD_INT_MAX;
@@ -124,7 +124,7 @@ void *text_sequence_new(t_symbol *s, int argc, t_atom *argv)
 
 static void text_sequence_doit(t_text_sequence *x, int argc, t_atom *argv)
 {
-    t_buffer *b = text_client_getbuf(&x->x_tc), *b2;
+    t_buffer *b = textclient_fetchBuffer(&x->x_tc), *b2;
     int n, i, onset, nfield, wait, eatsemi = 1, gotcomma = 0;
     t_atom *vec, *outvec, *ap;
     if (!b)
@@ -325,7 +325,7 @@ static void text_sequence_step(t_text_sequence *x)
 
 static void text_sequence_line(t_text_sequence *x, t_float f)
 {
-    t_buffer *b = text_client_getbuf(&x->x_tc), *b2;
+    t_buffer *b = textclient_fetchBuffer(&x->x_tc), *b2;
     int n, start, end;
     t_atom *vec;
     if (!b)
@@ -369,7 +369,7 @@ static void text_sequence_free(t_text_sequence *x)
 {
     PD_MEMORY_FREE(x->x_argv);
     clock_free(x->x_clock);
-    text_client_free(&x->x_tc);
+    textclient_free(&x->x_tc);
 }
 
 void textsequence_setup (void)
