@@ -76,9 +76,9 @@ proc removeFromScreen {top} {
 
 # Escaping and quoting.
 
-proc encoded   {x} { concat @[string map {" " "@_" "$" "@d" ";" "@s" "," "@c" "@" "@@"} $x] }
-proc escaped   {x} { string map {"," "\\," ";" "\\;" " " "\\ " "$" "\\$"} $x }
-proc sanitized {x} { concat [string map {" " "_" ";" "" "," "" "{" "" "}" "" "\\" ""} $x] }
+proc encoded   {x} { return @[string map {" " "@_" "$" "@d" ";" "@s" "," "@c" "@" "@@"} $x] }
+proc escaped   {x} { return [string map {"," "\\," ";" "\\;" " " "\\ " "$" "\\$"} $x] }
+proc sanitized {x} { return [string map {" " "_" ";" "" "," "" "{" "" "}" "" "\\" ""} $x] }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
