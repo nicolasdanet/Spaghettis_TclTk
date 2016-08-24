@@ -300,15 +300,15 @@ void textdefine_setup (void)
         sym_click, 0);
     class_addMethod(textdefine_class, (t_method)textbuffer_close,
         sym_close, 0);
-    class_addMethod(textdefine_class, (t_method)textbuf_addline, 
+    class_addMethod(textdefine_class, (t_method)textbuffer_add, 
         sym_addline, A_GIMME, 0);
     class_addMethod(textdefine_class, (t_method)text_define_set,
         sym_set, A_GIMME, 0);
     class_addMethod(textdefine_class, (t_method)text_define_clear,
         sym_clear, 0);
-    class_addMethod(textdefine_class, (t_method)textbuf_write,
+    class_addMethod(textdefine_class, (t_method)textbuffer_write,
         sym_write, A_GIMME, 0);
-    class_addMethod(textdefine_class, (t_method)textbuf_read,
+    class_addMethod(textdefine_class, (t_method)textbuffer_read,
         sym_read, A_GIMME, 0);
     class_setSaveFunction(textdefine_class, text_define_save);
     class_addBang(textdefine_class, text_define_bang);

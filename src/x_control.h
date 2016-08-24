@@ -17,14 +17,14 @@
 #pragma mark -
 
 typedef struct _textbuffer {
-    t_object        tb_obj;                 /* Must be the first. */
+    t_object        tb_obj;                         /* Must be the first. */
     t_buffer        *tb_buffer;
     t_glist         *tb_owner;
     t_guiconnect    *tb_guiconnect;
     } t_textbuffer;
 
 typedef struct _textclient {
-    t_object        tc_obj;                 /* Must be the first. */
+    t_object        tc_obj;                         /* Must be the first. */
     t_gpointer      tc_gpointer;
     t_symbol        *tc_symbol;
     t_symbol        *tc_templateIdentifier;
@@ -40,9 +40,9 @@ void        textbuffer_free             (t_textbuffer *x);
 void        textbuffer_open             (t_textbuffer *x);
 void        textbuffer_close            (t_textbuffer *x);
 void        textbuffer_send             (t_textbuffer *x);
-void        textbuf_addline             (t_textbuffer *b, t_symbol *s, int argc, t_atom *argv);
-void        textbuf_read                (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv);
-void        textbuf_write               (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv);
+void        textbuffer_add              (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv);
+void        textbuffer_read             (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv);
+void        textbuffer_write            (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -74,6 +74,7 @@ void        *text_sequence_new          (t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #define TEXTBUFFER_INIT(x)      textbuffer_init (x)
 

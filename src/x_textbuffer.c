@@ -107,87 +107,44 @@ void textbuffer_send (t_textbuffer *x)
     }
 }
 
-void textbuf_addline(t_textbuffer *b, t_symbol *s, int argc, t_atom *argv)
+void textbuffer_add (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_buffer *z = buffer_new();
-    buffer_deserialize(z, argc, argv);
-    buffer_append(b->tb_buffer, buffer_size(z), buffer_atoms(z));
-    buffer_free(z);
-    textbuffer_send(b);
+    t_buffer *t = buffer_new();
+    buffer_deserialize (t, argc, argv);
+    buffer_append (x->tb_buffer, buffer_size (t), buffer_atoms (t));
+    buffer_free (t);
+    textbuffer_send (x);
 }
 
-void textbuf_read(t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
+void textbuffer_read (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int cr = 0;
-    t_symbol *filename;
-    while (argc && argv->a_type == A_SYMBOL &&
-        *argv->a_w.w_symbol->s_name == '-')
-    {
-        if (!strcmp(argv->a_w.w_symbol->s_name, "-c"))
-            cr = 1;
-        else
-        {
-            post_error ("text read: unknown flag ...");
-            post_atoms(argc, argv);
-        }
-        argc--; argv++;
+    if (argc && IS_SYMBOL (argv)) {
+    //
+    t_symbol *name = GET_SYMBOL (argv);
+        
+    if (buffer_read (x->tb_buffer, name->s_name, x->tb_owner)) {
+        post_error (PD_TRANSLATE ("%s: read failed"), name->s_name);
     }
-    if (argc && argv->a_type == A_SYMBOL)
-    {
-        filename = argv->a_w.w_symbol;
-        argc--; argv++;
+    
+    textbuffer_send (x);
+    //
     }
-    else
-    {
-        post_error ("text read: no file name given");
-        return;
-    }
-    if (argc)
-    {
-        post("warning: text define ignoring extra argument: ");
-        post_atoms(argc, argv);
-    }
-    if (buffer_read(x->tb_buffer, filename->s_name, x->tb_owner))
-            post_error ("%s: read failed", filename->s_name);
-    textbuffer_send(x);
 }
 
-void textbuf_write(t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
+void textbuffer_write (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int cr = 0;
-    t_symbol *filename;
-    char buf[PD_STRING];
-    while (argc && argv->a_type == A_SYMBOL &&
-        *argv->a_w.w_symbol->s_name == '-')
-    {
-        if (!strcmp(argv->a_w.w_symbol->s_name, "-c"))
-            cr = 1;
-        else
-        {
-            post_error ("text write: unknown flag ...");
-            post_atoms(argc, argv);
-        }
-        argc--; argv++;
+    if (argc && IS_SYMBOL (argv)) {
+    //
+    char t[PD_STRING] = { 0 };
+    t_symbol *name = GET_SYMBOL (argv);
+    
+    canvas_makeFilePath (x->tb_owner, name->s_name, t, PD_STRING);
+    
+    if (buffer_write (x->tb_buffer, t, "")) { 
+        post_error (PD_TRANSLATE ("%s: write failed"), name->s_name);
     }
-    if (argc && argv->a_type == A_SYMBOL)
-    {
-        filename = argv->a_w.w_symbol;
-        argc--; argv++;
+    //
     }
-    else
-    {
-        post_error ("text write: no file name given");
-        return;
-    }
-    if (argc)
-    {
-        post("warning: text define ignoring extra argument: ");
-        post_atoms(argc, argv);
-    }
-    canvas_makeFilePath(x->tb_owner, filename->s_name,
-        buf, PD_STRING);
-    if (buffer_write(x->tb_buffer, buf, ""))
-            post_error ("%s: write failed", filename->s_name);
 }
 
 // -----------------------------------------------------------------------------------------------------------
