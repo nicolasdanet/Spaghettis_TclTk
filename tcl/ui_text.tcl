@@ -111,9 +111,7 @@ proc _save {top} {
     for {set i 1} {[$top.text compare $i.end < end]} {incr i 1} {
         set line [$top.text get $i.0 $i.end]
         if {$line != ""} {
-            #set line [::escaped $line]
-            set line [string map {"," " \\, " ";" " \\; " "$" "\\$"} $line]
-            ::ui_interface::pdsend [concat $top _addline $line]
+            ::ui_interface::pdsend [concat $top _addline [::expanded $line]]
         }
     }
     
