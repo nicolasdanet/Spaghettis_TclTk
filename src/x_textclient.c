@@ -23,7 +23,7 @@ extern t_class *textdefine_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void textclient_init (t_textclient *x, int *ac, t_atom **av, char *dummy)
+void textclient_init (t_textclient *x, int *ac, t_atom **av)
 {
     int argc = *ac;
     t_atom *argv = *av;
@@ -38,7 +38,7 @@ void textclient_init (t_textclient *x, int *ac, t_atom **av, char *dummy)
     //
     if (GET_SYMBOL (argv) == sym___dash__s || GET_SYMBOL (argv) == sym___dash__symbol) {
         if (argc >= 3 && IS_SYMBOL (argv + 1) && IS_SYMBOL (argv + 2)) {
-            x->tc_templateIdentifier = utils_makeTemplateIdentifier (GET_SYMBOL (argv + 1));
+            x->tc_templateIdentifier = template_makeIdentifierWithWildcard (GET_SYMBOL (argv + 1));
             x->tc_fieldName = GET_SYMBOL (argv + 2);
             argc -= 3; argv += 3;
         }
@@ -57,55 +57,41 @@ void textclient_init (t_textclient *x, int *ac, t_atom **av, char *dummy)
     *av = argv;
 }
 
-    /* find the binbuf for this object.  This should be reusable for other
-    objects.  Prints an error  message and returns 0 on failure. */
-t_buffer *textclient_fetchBuffer(t_textclient *x)
+void textclient_free (t_textclient *x)
 {
-    if (x->tc_name)       /* named text object */
-    {
-        t_textbuffer *y = (t_textbuffer *)pd_findByClass(x->tc_name,
-            textdefine_class);
-        if (y)
-            return (y->tb_buffer);
-        else
-        {
-            post_error ("text: couldn't find text buffer '%s'",
-                x->tc_name->s_name);
-            return (0);
-        }
-    }
-    else if (x->tc_templateIdentifier)   /* by pointer */
-    {
-        t_template *template = template_findByIdentifier(x->tc_templateIdentifier);
-        t_word *vec; 
-        int onset, type;
-        t_symbol *arraytype;
-        if (!template)
-        {
-            post_error ("text: couldn't find struct %s", x->tc_templateIdentifier->s_name);
-            return (0);
-        }
-        if (!gpointer_isValid(&x->tc_gpointer))
-        {
-            post_error ("text: stale or empty pointer");
-            return (0);
-        }
-        vec = gpointer_getData (&x->tc_gpointer);
+    gpointer_unset (&x->tc_gpointer);
+}
 
-        if (!template_findField(template,   /* Remove template_findField ASAP !!! */
-            x->tc_fieldName, &onset, &type, &arraytype))
-        {
-            post_error ("text: no field named %s", x->tc_fieldName->s_name);
-            return (0);
-        }
-        if (type != DATA_TEXT)
-        {
-            post_error ("text: field %s not of type text", x->tc_fieldName->s_name);
-            return (0);
-        }
-        return (*(t_buffer **)(((char *)vec) + onset));
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_buffer *textclient_fetchBuffer (t_textclient *x)
+{
+    if (x->tc_name) {
+    //
+    t_textbuffer *y = (t_textbuffer *)pd_findByClass (x->tc_name, textdefine_class);
+
+    if (y) { return textbuffer_getBuffer (y); }
+    else {
+        post_error (PD_TRANSLATE ("text: couldn't find %s"), x->tc_name->s_name);
     }
-    else return (0);    /* shouldn't happen */
+    //
+    } else if (x->tc_templateIdentifier) {
+    //
+    if (gpointer_isValidInstanceOf (&x->tc_gpointer, x->tc_templateIdentifier)) {
+        if (gpointer_hasField (&x->tc_gpointer, x->tc_fieldName)) {
+            if (gpointer_fieldIsText (&x->tc_gpointer, x->tc_fieldName)) {
+                return gpointer_getText (&x->tc_gpointer, x->tc_fieldName);
+            }
+        }
+    }
+    
+    pointer_error (sym_text);
+    //
+    }
+    
+    return NULL;
 }
 
 void textclient_send(t_textclient *x)
@@ -133,11 +119,6 @@ void textclient_send(t_textclient *x)
         }
         gpointer_redraw (&x->tc_gpointer);
     }
-}
-
-void textclient_free (t_textclient *x)
-{
-    gpointer_unset (&x->tc_gpointer);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -40,15 +40,17 @@ void        textbuffer_free             (t_textbuffer *x);
 void        textbuffer_open             (t_textbuffer *x);
 void        textbuffer_close            (t_textbuffer *x);
 void        textbuffer_send             (t_textbuffer *x);
-void        textbuffer_addLine          (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv);
+void        textbuffer_add              (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv);
 void        textbuffer_read             (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv);
 void        textbuffer_write            (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv);
+
+t_buffer    *textbuffer_getBuffer       (t_textbuffer *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        textclient_init             (t_textclient *x, int *argc, t_atom **argv, char *type);
+void        textclient_init             (t_textclient *x, int *argc, t_atom **argv);
 void        textclient_free             (t_textclient *x);
 void        textclient_send             (t_textclient *x);
 

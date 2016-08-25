@@ -28,7 +28,7 @@ void *text_tolist_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_text_tolist *x = (t_text_tolist *)pd_new(text_tolist_class);
     outlet_new(&x->tc_obj, &s_list);
-    textclient_init(x, &argc, &argv, "text tolist");
+    textclient_init(x, &argc, &argv);
     if (argc)
     {
         post("warning: text tolist ignoring extra argument: ");
@@ -61,7 +61,7 @@ t_class *text_fromlist_class;
 void *text_fromlist_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_text_fromlist *x = (t_text_fromlist *)pd_new(text_fromlist_class);
-    textclient_init(x, &argc, &argv, "text fromlist");
+    textclient_init(x, &argc, &argv);
     if (argc)
     {
         post("warning: text fromlist ignoring extra argument: ");

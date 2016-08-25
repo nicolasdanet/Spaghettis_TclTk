@@ -53,7 +53,7 @@ void *text_search_new(t_symbol *s, int argc, t_atom *argv)
     t_text_search *x = (t_text_search *)pd_new(text_search_class);
     int i, key, nkey, nextop;
     x->x_out1 = outlet_new(&x->x_obj, &s_list);
-    textclient_init(&x->x_tc, &argc, &argv, "text search");
+    textclient_init(&x->x_tc, &argc, &argv);
     for (i = nkey = 0; i < argc; i++)
         if (argv[i].a_type == A_FLOAT)
             nkey++;

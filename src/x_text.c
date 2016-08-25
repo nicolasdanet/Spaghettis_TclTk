@@ -56,7 +56,7 @@ int text_nthline(int n, t_atom *vec, int line, int *startp, int *endp)
 
 typedef struct _text_define
 {
-    t_textbuffer x_textbuf;
+    t_textbuffer x_textbuf;     /* Must be the first. */
     t_outlet *x_out;
     t_symbol *x_bindsym;
     t_scalar *x_scalar;     /* faux scalar (struct text-scalar) to point to */
@@ -166,23 +166,23 @@ t_buffer *pointertobinbuf(t_pd *x, t_gpointer *gp, t_symbol *s,
 static void text_define_frompointer(t_text_define *x, t_gpointer *gp,
     t_symbol *s)
 {
-    t_buffer *b = pointertobinbuf(&x->x_textbuf.tb_obj.te_g.g_pd,
+    t_buffer *b = pointertobinbuf(&x->x_ob.te_g.g_pd,
         gp, s, "text_frompointer");
     if (b)
     {
-        buffer_reset(x->x_textbuf.tb_buffer);
-        buffer_append(x->x_textbuf.tb_buffer, buffer_size(b), buffer_atoms(b));
+        buffer_reset(x->x_binbuf);
+        buffer_append(x->x_binbuf, buffer_size(b), buffer_atoms(b));
     } 
 }
 
 static void text_define_topointer(t_text_define *x, t_gpointer *gp, t_symbol *s)
 {
-    t_buffer *b = pointertobinbuf(&x->x_textbuf.tb_obj.te_g.g_pd, gp, s, "text_topointer");
+    t_buffer *b = pointertobinbuf(&x->x_ob.te_g.g_pd, gp, s, "text_topointer");
     if (b)
     {
         buffer_reset(b);
-        buffer_append(b, buffer_size(x->x_textbuf.tb_buffer),
-            buffer_atoms(x->x_textbuf.tb_buffer));
+        buffer_append(b, buffer_size(x->x_binbuf),
+            buffer_atoms(x->x_binbuf));
         gpointer_redraw (gp);
     } 
 }
@@ -300,7 +300,7 @@ void textdefine_setup (void)
         sym_click, 0);
     class_addMethod(textdefine_class, (t_method)textbuffer_close,
         sym_close, 0);
-    class_addMethod(textdefine_class, (t_method)textbuffer_addLine, 
+    class_addMethod(textdefine_class, (t_method)textbuffer_add, 
         sym__addline, A_GIMME, 0);
     class_addMethod(textdefine_class, (t_method)text_define_set,
         sym_set, A_GIMME, 0);

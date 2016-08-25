@@ -57,7 +57,7 @@ void *text_sequence_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_text_sequence *x = (t_text_sequence *)pd_new(text_sequence_class);
     int global = 0;
-    textclient_init(&x->x_tc, &argc, &argv, "text sequence");
+    textclient_init(&x->x_tc, &argc, &argv);
     x->x_waitsym = 0;
     x->x_waitargc = 0;
     x->x_eaten = 0;

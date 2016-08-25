@@ -47,6 +47,15 @@ void textbuffer_free (t_textbuffer *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_buffer *textbuffer_getBuffer (t_textbuffer *x)
+{
+    return x->tb_buffer;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void textbuffer_open (t_textbuffer *x)
 {
     if (x->tb_guiconnect) {
@@ -107,7 +116,7 @@ void textbuffer_send (t_textbuffer *x)
     }
 }
 
-void textbuffer_addLine (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
+void textbuffer_add (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_buffer *t = buffer_new();
     buffer_deserialize (t, argc, argv);

@@ -38,7 +38,7 @@ void *text_size_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_text_size *x = (t_text_size *)pd_new(text_size_class);
     x->x_out1 = outlet_new(&x->x_obj, &s_float);
-    textclient_init(&x->x_tc, &argc, &argv, "text size");
+    textclient_init(&x->x_tc, &argc, &argv);
     if (argc)
     {
         post("warning: text size ignoring extra argument: ");

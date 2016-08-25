@@ -46,7 +46,7 @@ void *text_get_new(t_symbol *s, int argc, t_atom *argv)
     inlet_newFloat(&x->x_obj, &x->x_f2);
     x->x_f1 = -1;
     x->x_f2 = 1;
-    textclient_init(&x->x_tc, &argc, &argv, "text get");
+    textclient_init(&x->x_tc, &argc, &argv);
     if (argc)
     {
         if (argv->a_type == A_FLOAT)
