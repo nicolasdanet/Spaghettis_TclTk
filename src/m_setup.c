@@ -26,7 +26,9 @@ void plot_initialize        (void);
 void drawnumber_initialize  (void);
 void canvas_initialize      (void);
 void garray_initialize      (void);
+void textdefine_initialize  (void);
 void loader_initialize      (void);
+
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -42,6 +44,7 @@ void plot_release           (void);
 void drawnumber_release     (void);
 void canvas_release         (void);
 void garray_release         (void);
+void textdefine_release     (void);
 void loader_release         (void);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -192,12 +195,14 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     
     canvas_initialize();
     garray_initialize();
+    textdefine_initialize();
     loader_initialize();
 }
 
 void setup_release (void)
 {
     loader_release();
+    textdefine_release();
     garray_release();
     canvas_release();
     

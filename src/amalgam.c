@@ -114,9 +114,10 @@
 
 /* Control. */
 
+#include "x_scalar.c"
+#include "x_text.c"
 #include "x_textbuffer.c"
 #include "x_textclient.c"
-#include "x_scalar.c"
 
 /* DSP. */
 
