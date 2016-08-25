@@ -69,7 +69,7 @@ void textbuffer_open (t_textbuffer *x)
         PD_ASSERT (!err);
         sys_vGui ("::ui_text::show .x%lx\n", x);
         x->tb_guiconnect = guiconnect_new (cast_pd (x), gensym (t));
-        textbuffer_send (x);
+        textbuffer_update (x);
     }
 }
 
@@ -83,7 +83,7 @@ void textbuffer_close (t_textbuffer *x)
     }    
 }
 
-void textbuffer_send (t_textbuffer *x)
+void textbuffer_update (t_textbuffer *x)
 {
     if (x->tb_guiconnect) {
     //
@@ -122,7 +122,7 @@ void textbuffer_add (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
     buffer_deserialize (t, argc, argv);
     buffer_append (x->tb_buffer, buffer_size (t), buffer_atoms (t));
     buffer_free (t);
-    textbuffer_send (x);
+    textbuffer_update (x);
 }
 
 void textbuffer_read (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
@@ -135,7 +135,7 @@ void textbuffer_read (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
         post_error (PD_TRANSLATE ("%s: read failed"), name->s_name);
     }
     
-    textbuffer_send (x);
+    textbuffer_update (x);
     //
     }
 }

@@ -119,7 +119,7 @@ static void *text_define_new(t_symbol *s, int argc, t_atom *argv)
 static void text_define_clear(t_text_define *x)
 {
     buffer_reset(x->x_binbuf);
-    textbuffer_send(&x->x_textbuf);
+    textbuffer_update(&x->x_textbuf);
 }
 
 /*********  random utility function to find a binbuf in a datum */
@@ -198,7 +198,7 @@ void text_define_bang(t_text_define *x)
 void text_define_set(t_text_define *x, t_symbol *s, int argc, t_atom *argv)
 {
     buffer_deserialize(x->x_binbuf, argc, argv);
-    textbuffer_send(&x->x_textbuf);
+    textbuffer_update(&x->x_textbuf);
 }
 
 

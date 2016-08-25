@@ -22,6 +22,15 @@ extern t_class *textdefine_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void textclient_error (t_textclient *x)
+{
+    post_error (PD_TRANSLATE ("text: couldn't find %s"), x->tc_name->s_name);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 void textclient_init (t_textclient *x, int *ac, t_atom **av)
 {
@@ -74,7 +83,7 @@ t_buffer *textclient_fetchBuffer (t_textclient *x)
 
     if (y) { return textbuffer_getBuffer (y); }
     else {
-        post_error (PD_TRANSLATE ("text: couldn't find %s"), x->tc_name->s_name);
+        textclient_error (x);
     }
     //
     } else if (x->tc_templateIdentifier) {
@@ -100,9 +109,9 @@ void textclient_update (t_textclient *x)
     //
     t_textbuffer *y = (t_textbuffer *)pd_findByClass (x->tc_name, textdefine_class);
     
-    if (y) { textbuffer_send (y); }
+    if (y) { textbuffer_update (y); }
     else { 
-        post_error (PD_TRANSLATE ("text: couldn't find %s"), x->tc_name->s_name);
+        textclient_error (x);
     }
     //
     } else if (x->tc_templateIdentifier) {
