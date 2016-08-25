@@ -172,7 +172,7 @@ t_symbol *dollar_toHash (t_symbol *s)
         }
     }
     
-    return (gensym (t));
+    return gensym (t);
     //
     }
 }
@@ -193,7 +193,7 @@ t_symbol *dollar_fromHash (t_symbol *s)
         }
     }
     
-    return (gensym (t));
+    return gensym (t);
     //
     }
 }

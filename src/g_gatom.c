@@ -116,7 +116,7 @@ static t_symbol *gatom_parse (t_symbol *s)
 {
     if (s == utils_empty() || s == utils_dash()) { return &s_; }
     else { 
-        return (dollar_fromHash (s));
+        return dollar_fromHash (s);
     }
 }
 

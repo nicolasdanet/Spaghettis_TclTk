@@ -85,7 +85,7 @@ t_symbol *utils_decode (t_symbol *s)
     
     t[i] = 0;
     
-    return (gensym (t));
+    return gensym (t);
     //
     }
     //
@@ -127,7 +127,7 @@ t_symbol *utils_makeBindSymbol (t_symbol *s)
     PD_ASSERT (s);
     err = string_sprintf (t, PD_STRING, UTILS_BIND "%s", s->s_name);
     PD_ASSERT (!err);
-    return (gensym (t));
+    return gensym (t);
 }
 
 t_symbol *utils_makeTemplateIdentifier (t_symbol *s)
@@ -137,7 +137,7 @@ t_symbol *utils_makeTemplateIdentifier (t_symbol *s)
     PD_ASSERT (s);
     err = string_sprintf (t, PD_STRING, UTILS_BIND_TEMPLATE "%s", s->s_name);
     PD_ASSERT (!err);
-    return (gensym (t));
+    return gensym (t);
 }
 
 t_symbol *utils_stripBindSymbol (t_symbol *s)

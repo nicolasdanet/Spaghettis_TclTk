@@ -79,7 +79,7 @@ static void *struct_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_symbol *templateName = atom_getSymbolAtIndex (0, argc, argv);
     
-    if (templateName == &s_) { return (struct_newEmpty()); }
+    if (templateName == &s_) { return struct_newEmpty(); }
     else {
     //
     t_symbol *templateIdentifier = utils_makeTemplateIdentifier (templateName);
@@ -94,7 +94,7 @@ static void *struct_new (t_symbol *s, int argc, t_atom *argv)
     } else {
         if (argc >= 1) { argc--; argv++; }
         if (!template) { template = template_new (templateIdentifier, argc, argv); }
-        return (struct_newInstance (template, argc, argv));
+        return struct_newInstance (template, argc, argv);
     }
     //
     }

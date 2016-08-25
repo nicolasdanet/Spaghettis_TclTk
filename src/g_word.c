@@ -164,7 +164,7 @@ t_float word_getFloatByDescriptor (t_word *w, t_template *tmpl, t_fielddescripto
 {
     if (fd->fd_type == DATA_FLOAT) {
     //
-    if (fd->fd_isVariable) { return (word_getFloat (w, tmpl, fd->fd_un.fd_variableName)); }
+    if (fd->fd_isVariable) { return word_getFloat (w, tmpl, fd->fd_un.fd_variableName); }
     else {
         return (fd->fd_un.fd_float);
     }
@@ -181,7 +181,7 @@ t_float word_getFloatByDescriptorAsPosition (t_word *w, t_template *tmpl, t_fiel
     if (fd->fd_type == DATA_FLOAT) {
     //
     if (fd->fd_isVariable) {
-        return (field_convertValueToPosition (fd, word_getFloat (w, tmpl, fd->fd_un.fd_variableName)));
+        return field_convertValueToPosition (fd, word_getFloat (w, tmpl, fd->fd_un.fd_variableName));
     } else {
         return (fd->fd_un.fd_float);
     }

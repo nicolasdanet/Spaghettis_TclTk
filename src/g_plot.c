@@ -1044,7 +1044,7 @@ static int plot_behaviorClickedRegular (t_plot *x, t_array *array,
     
     if (best <= PLOT_HANDLE_SIZE) {
 
-        return (plot_behaviorClickedRegularMatch (x, array,
+        return plot_behaviorClickedRegularMatch (x, array,
                     fieldX,
                     fieldY, 
                     fieldW,
@@ -1057,7 +1057,7 @@ static int plot_behaviorClickedRegular (t_plot *x, t_array *array,
                     shift,
                     alt, 
                     dbl,
-                    clicked));
+                    clicked);
     }
     //
     }
@@ -1146,9 +1146,9 @@ static int plot_behaviorClicked (t_gobj *z,
     gpointer_setAsWord (&plot_check, array, array_getData (array));
     
     if (garray_isSingle (glist)) {
-        return (plot_behaviorClickedSingle (x, array, a, b, shift, alt, dbl, clicked)); 
+        return plot_behaviorClickedSingle (x, array, a, b, shift, alt, dbl, clicked); 
     } else {
-        return (plot_behaviorClickedRegular (x, array, a, b, shift, alt, dbl, clicked));
+        return plot_behaviorClickedRegular (x, array, a, b, shift, alt, dbl, clicked);
     }
     //
     }

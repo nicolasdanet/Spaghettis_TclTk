@@ -231,7 +231,7 @@ int template_hasField (t_template *x, t_symbol *fieldName)
 {
     int i, t; t_symbol *dummy = NULL;
     
-    return (template_getRaw (x, fieldName, &i, &t, &dummy));
+    return template_getRaw (x, fieldName, &i, &t, &dummy);
 }
 
 int template_getIndexOfField (t_template *x, t_symbol *fieldName)
@@ -345,7 +345,7 @@ t_symbol *template_makeIdentifierWithWildcard (t_symbol *s)
     
     if (s == &s_ || s == sym___dash__) { return template_getWildcard(); }
     else { 
-        return (utils_makeTemplateIdentifier (s));
+        return utils_makeTemplateIdentifier (s);
     }
 }
 

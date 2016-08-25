@@ -470,7 +470,7 @@ void sys_vGui (char *format, ...)
 
 int interface_pollOrFlushGui (void)
 {
-    return (interface_monitorNonBlocking());
+    return interface_monitorNonBlocking();
 }
 
 #else

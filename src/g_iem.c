@@ -81,7 +81,7 @@ static t_color iemgui_colorDecode (t_atom *a)
 
 static t_symbol *iemgui_fetchName (int i, t_atom *argv)
 {
-    if (IS_SYMBOL (argv + i))     { return (atom_getSymbol (argv + i)); }
+    if (IS_SYMBOL (argv + i))     { return atom_getSymbol (argv + i); }
     else if (IS_FLOAT (argv + i)) {
         char t[PD_STRING] = { 0 };
         string_sprintf (t, PD_STRING, "%d", (int)atom_getFloat (argv + i));

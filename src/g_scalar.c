@@ -554,7 +554,7 @@ void scalar_setFloat (t_scalar *x, t_symbol *fieldName, t_float f)
 
 int scalar_fieldIsFloat (t_scalar *x, t_symbol *fieldName)
 {
-    return (template_fieldIsFloat (template_findByIdentifier (x->sc_templateIdentifier), fieldName));
+    return template_fieldIsFloat (template_findByIdentifier (x->sc_templateIdentifier), fieldName);
 }
 
 // -----------------------------------------------------------------------------------------------------------

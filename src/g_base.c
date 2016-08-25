@@ -100,7 +100,7 @@ t_glist *canvas_getRoot (t_glist *glist)
 {
     if (canvas_isRoot (glist)) { return glist; }
     else {
-        return (canvas_getRoot (glist->gl_parent));
+        return canvas_getRoot (glist->gl_parent);
     }
 }
 

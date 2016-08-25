@@ -32,7 +32,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 int main (int argc, char **argv)
 {
-    return (main_entry (argc, argv));
+    return main_entry (argc, argv);
 }
 
 #endif // PD_MSVC

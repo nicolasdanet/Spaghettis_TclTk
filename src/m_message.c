@@ -115,7 +115,7 @@ t_symbol *generateSymbol (const char *s, t_symbol *alreadyAllocatedSymbol)
 
 t_symbol *gensym (const char *s)
 {
-    return (generateSymbol (s, NULL));
+    return generateSymbol (s, NULL);
 }
 
 // -----------------------------------------------------------------------------------------------------------
