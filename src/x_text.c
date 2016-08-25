@@ -74,70 +74,6 @@ static void textdefine_clear(t_textdefine *x)
     textbuffer_update(&x->x_textbuffer);
 }
 
-/*********  random utility function to find a binbuf in a datum */
-
-t_buffer *pointertobinbuf(t_pd *x, t_gpointer *gp, t_symbol *s,
-    const char *fname)
-{
-    t_symbol *templatesym = gpointer_getTemplateIdentifier(gp), *arraytype;
-    t_template *template;
-    int onset, type;
-    t_buffer *b;
-    t_word *vec;
-    if (!templatesym)
-    {
-        post_error ("%s: bad pointer", fname);
-        return (0);
-    }
-    if (!(template = template_findByIdentifier(templatesym)))
-    {
-        post_error ("%s: couldn't find template %s", fname,
-            templatesym->s_name);
-        return (0);
-    }
-    /* Remove template_findField ASAP !!! */
-    if (!template_findField(template, s, &onset, &type, &arraytype))    
-    {
-        post_error ("%s: %s.%s: no such field", fname,
-            templatesym->s_name, s->s_name);
-        return (0);
-    }
-    if (type != DATA_TEXT)
-    {
-        post_error ("%s: %s.%s: not a list", fname,
-            templatesym->s_name, s->s_name);
-        return (0);
-    }
-    vec = gpointer_getData (gp);
-    return (vec[onset].w_buffer);
-}
-
-
-    /* these are unused; they copy text from this object to and from a text
-        field in a scalar. */
-static void textdefine_frompointer(t_textdefine *x, t_gpointer *gp,
-    t_symbol *s)
-{
-    t_buffer *b = pointertobinbuf(cast_pd (x),
-        gp, s, "text_frompointer");
-    if (b)
-    {
-        buffer_reset(textbuffer_getBuffer (&x->x_textbuffer));
-        buffer_appendBuffer(textbuffer_getBuffer (&x->x_textbuffer), b);
-    } 
-}
-
-static void textdefine_topointer(t_textdefine *x, t_gpointer *gp, t_symbol *s)
-{
-    t_buffer *b = pointertobinbuf(cast_pd (x), gp, s, "text_topointer");
-    if (b)
-    {
-        buffer_reset(b);
-        buffer_appendBuffer (b, textbuffer_getBuffer (&x->x_textbuffer));
-        gpointer_redraw (gp);
-    } 
-}
-
     /* bang: output a pointer to a struct containing this text */
 void textdefine_bang(t_textdefine *x)
 {
@@ -151,7 +87,6 @@ void textdefine_set(t_textdefine *x, t_symbol *s, int argc, t_atom *argv)
     buffer_deserialize(textbuffer_getBuffer (&x->x_textbuffer), argc, argv);
     textbuffer_update(&x->x_textbuffer);
 }
-
 
 static void textdefine_save(t_gobj *z, t_buffer *bb)
 {
@@ -173,50 +108,41 @@ static void textdefine_save(t_gobj *z, t_buffer *bb)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *textdefine_newObject(t_symbol *s, int argc, t_atom *argv)
+static void *textdefine_newObject (t_symbol *s, int argc, t_atom *argv)
 {
-    t_textdefine *x = (t_textdefine *)pd_new(textdefine_class);
-    t_symbol *asym = sym___hash__A;
+    t_textdefine *x = (t_textdefine *)pd_new (textdefine_class);
+    
+    textbuffer_init (&x->x_textbuffer);
+    gpointer_init (&x->x_gpointer);
+    
     x->x_keep = 0;
     x->x_name = &s_;
-    while (argc && argv->a_type == A_SYMBOL &&
-        *argv->a_w.w_symbol->s_name == '-')
-    {
-        if (!strcmp(argv->a_w.w_symbol->s_name, "-k"))
-            x->x_keep = 1;
-        else
-        {
-            post_error ("text define: unknown flag ...");
-            post_atoms(argc, argv);
+    
+    while (argc && IS_SYMBOL (argv)) {
+        if (GET_SYMBOL (argv) == sym___dash__k || GET_SYMBOL (argv) == sym___dash__keep) {
+            x->x_keep = 1; argc--; argv++;
+        } else {
+            break;
         }
+    }
+    
+    if (argc && IS_SYMBOL (argv)) {
+        pd_bind (cast_pd (x), GET_SYMBOL (argv));
+        x->x_name = GET_SYMBOL (argv);
         argc--; argv++;
     }
-    if (argc && argv->a_type == A_SYMBOL)
-    {
-        pd_bind(cast_pd (x), argv->a_w.w_symbol);
-        x->x_name = argv->a_w.w_symbol;
-        argc--; argv++;
-    }
-    if (argc)
-    {
-        post("warning: text define ignoring extra argument: ");
-        post_atoms(argc, argv);
-    }
-    textbuffer_init (&x->x_textbuffer);
-        /* set up a scalar and a pointer to it that we can output */
-    x->x_scalar = scalar_new(canvas_getCurrent(), sym___TEMPLATE__text);
-    buffer_free(x->x_scalar->sc_vector[2].w_buffer);                                /* Encaspulate ASAP. */
+    
+    x->x_scalar = scalar_new (canvas_getCurrent(), sym___TEMPLATE__text);
+    
+    buffer_free (x->x_scalar->sc_vector[2].w_buffer);                               /* Encaspulate ASAP. */
     x->x_scalar->sc_vector[2].w_buffer = textbuffer_getBuffer (&x->x_textbuffer);   /* Encaspulate ASAP. */
-    x->x_outlet = outlet_new(cast_object (x), &s_pointer);
-    gpointer_init(&x->x_gpointer);
-           /* bashily unbind #A -- this would create garbage if #A were
-           multiply bound but we believe in this context it's at most
-           bound to whichever textdefine or array was created most recently */
-    asym->s_thing = 0;
-        /* and now bind #A to us to receive following messages in the
-        saved file or copy buffer */
-    pd_bind(cast_pd (x), asym); 
-    return (x);
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_pointer);
+    
+    sym___hash__A->s_thing = NULL;
+    pd_bind (cast_pd (x), sym___hash__A);
+    
+    return x;
 }
 
 static void *textdefine_new (t_symbol *s, int argc, t_atom *argv)
