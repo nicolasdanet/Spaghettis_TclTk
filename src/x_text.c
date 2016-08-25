@@ -219,44 +219,39 @@ static void *textdefine_newObject(t_symbol *s, int argc, t_atom *argv)
     return (x);
 }
 
-static void *textdefine_new(t_symbol *s, int argc, t_atom *argv)
+static void *textdefine_new (t_symbol *s, int argc, t_atom *argv)
 {
-    if (!argc || argv[0].a_type != A_SYMBOL)
-        pd_newest = textdefine_newObject(s, argc, argv);
-    else
-    {
-        char *str = argv[0].a_w.w_symbol->s_name;
-        if (!strcmp(str, "d") || !strcmp(str, "define"))
-            pd_newest = textdefine_newObject(s, argc-1, argv+1);
-        else if (!strcmp(str, "get"))
-            pd_newest = textget_new(s, argc-1, argv+1);
-        else if (!strcmp(str, "set"))
-            pd_newest = textset_new(s, argc-1, argv+1);
-        else if (!strcmp(str, "size"))
-            pd_newest = textsize_new(s, argc-1, argv+1);
-        else if (!strcmp(str, "tolist"))
-            pd_newest = texttolist_new(s, argc-1, argv+1);
-        else if (!strcmp(str, "fromlist"))
-            pd_newest = textfromlist_new(s, argc-1, argv+1);
-        else if (!strcmp(str, "search"))
-            pd_newest = textsearch_new(s, argc-1, argv+1);
-        else if (!strcmp(str, "sequence"))
-            pd_newest = textsequence_new(s, argc-1, argv+1);
-        else 
-        {
-            post_error ("list %s: unknown function", str);
-            pd_newest = 0;
-        }
+    pd_newest = NULL;
+    
+    if (!argc || !IS_SYMBOL (argv)) { pd_newest = textdefine_newObject (s, argc, argv); }
+    else {
+    //
+    t_symbol *t = atom_getSymbol (argv);
+    
+    if (t == sym_d || t == sym_define)  { pd_newest = textdefine_newObject (s,  argc - 1, argv + 1); }
+    else if (t == sym_get)              { pd_newest = textget_new (s,           argc - 1, argv + 1); }
+    else if (t == sym_set)              { pd_newest = textset_new (s,           argc - 1, argv + 1); }
+    else if (t == sym_size)             { pd_newest = textsize_new (s,          argc - 1, argv + 1); }
+    else if (t == sym_tolist)           { pd_newest = texttolist_new (s,        argc - 1, argv + 1); }
+    else if (t == sym_fromlist)         { pd_newest = textfromlist_new (s,      argc - 1, argv + 1); }
+    else if (t == sym_search)           { pd_newest = textsearch_new (s,        argc - 1, argv + 1); }
+    else if (t == sym_sequence)         { pd_newest = textsequence_new (s,      argc - 1, argv + 1); }
+    else {
+        post_error (PD_TRANSLATE ("text: unknown function"));
     }
-    return (pd_newest);
+    //
+    }
+    
+    return pd_newest;
 }
 
 static void textdefine_free(t_textdefine *x)
 {
     textbuffer_free (&x->x_textbuffer);
-    if (x->x_name != &s_)
-        pd_unbind(cast_pd (x), x->x_name);
-    gpointer_unset(&x->x_gpointer);
+    
+    if (x->x_name != &s_) { pd_unbind (cast_pd (x), x->x_name); }
+    
+    gpointer_unset (&x->x_gpointer);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -276,7 +271,6 @@ void textdefine_setup (void)
             A_NULL);
         
     class_addBang (c, textdefine_bang);
-    
     class_addClick (c, textbuffer_click);
             
     class_addMethod (c, (t_method)textbuffer_close,     sym_close,      A_NULL);

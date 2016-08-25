@@ -155,11 +155,11 @@ static void *scalardefine_new (t_symbol *s, int argc, t_atom *argv)
 {
     pd_newest = NULL;
     
-    if (!argc || !IS_SYMBOL (argv)) { pd_newest = cast_pd (scalardefine_newObject (s, argc, argv)); }
+    if (!argc || !IS_SYMBOL (argv)) { pd_newest = scalardefine_newObject (s, argc, argv); }
     else {
         t_symbol *t = atom_getSymbol (argv);
         if (t == sym_d || t == sym_define) { 
-            pd_newest = cast_pd (scalardefine_newObject (s, argc - 1, argv + 1)); 
+            pd_newest = scalardefine_newObject (s, argc - 1, argv + 1); 
         } else {
             post_error (PD_TRANSLATE ("scalar: unknown function"));
         }
