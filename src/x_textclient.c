@@ -94,30 +94,23 @@ t_buffer *textclient_fetchBuffer (t_textclient *x)
     return NULL;
 }
 
-void textclient_send(t_textclient *x)
+void textclient_update (t_textclient *x)
 {
-    if (x->tc_name)       /* named text object */
-    {
-        t_textbuffer *y = (t_textbuffer *)pd_findByClass(x->tc_name,
-            textdefine_class);
-        if (y)
-            textbuffer_send(y);
-        else { PD_BUG; }
+    if (x->tc_name) {
+    //
+    t_textbuffer *y = (t_textbuffer *)pd_findByClass (x->tc_name, textdefine_class);
+    
+    if (y) { textbuffer_send (y); }
+    else { 
+        post_error (PD_TRANSLATE ("text: couldn't find %s"), x->tc_name->s_name);
     }
-    else if (x->tc_templateIdentifier)   /* by pointer */
-    {
-        t_template *template = template_findByIdentifier(x->tc_templateIdentifier);
-        if (!template)
-        {
-            post_error ("text: couldn't find struct %s", x->tc_templateIdentifier->s_name);
-            return;
-        }
-        if (!gpointer_isValid(&x->tc_gpointer))
-        {
-            post_error ("text: stale or empty pointer");
-            return;
-        }
+    //
+    } else if (x->tc_templateIdentifier) {
+    //
+    if (gpointer_isValidInstanceOf (&x->tc_gpointer, x->tc_templateIdentifier)) {
         gpointer_redraw (&x->tc_gpointer);
+    }
+    //
     }
 }
 

@@ -81,7 +81,7 @@ static void text_fromlist_list(t_text_fromlist *x,
        return;
     buffer_reset(b);
     buffer_deserialize(b, argc, argv);
-    textclient_send(x);
+    textclient_update(x);
 }
 
 void textlist_setup (void)

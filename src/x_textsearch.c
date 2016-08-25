@@ -93,7 +93,7 @@ void *text_search_new(t_symbol *s, int argc, t_atom *argv)
     }
     if (x->x_struct)
         inlet_newPointer(&x->x_obj, &x->x_gp);
-    else inlet_newSymbol(&x->x_obj, &x->x_tc.tc_name);
+    else inlet_newSymbol(&x->x_obj, &x->x_sym);
     return (x);
 }
 

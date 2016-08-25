@@ -71,7 +71,7 @@ void *text_set_new(t_symbol *s, int argc, t_atom *argv)
     }
     if (x->x_struct)
         inlet_newPointer(&x->x_obj, &x->x_gp);
-    else inlet_newSymbol(&x->x_obj, &x->x_tc.tc_name);
+    else inlet_newSymbol(&x->x_obj, &x->x_sym);
     return (x);
 }
 
@@ -144,7 +144,7 @@ static void text_set_list(t_text_set *x,
             SET_SYMBOL(&vec[start+i], sym___parenthesis__pointer__parenthesis__);
         else vec[start+i] = argv[i];
     }
-    textclient_send(&x->x_tc);
+    textclient_update(&x->x_tc);
 }
 
 void textset_setup (void)

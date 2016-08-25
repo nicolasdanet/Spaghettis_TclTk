@@ -101,9 +101,9 @@ void *text_sequence_new(t_symbol *s, int argc, t_atom *argv)
         post("warning: text sequence ignoring extra argument: ");
         post_atoms(argc, argv);
     }
-    if (x->x_tc.tc_templateIdentifier)
-        inlet_newPointer(&x->x_tc.tc_obj, &x->x_tc.tc_gpointer);
-    else inlet_newSymbol(&x->x_tc.tc_obj, &x->x_tc.tc_name);
+    if (x->x_struct)
+        inlet_newPointer(&x->x_obj, &x->x_gp);
+    else inlet_newSymbol(&x->x_obj, &x->x_sym);
     x->x_argc = 0;
     x->x_argv = (t_atom *)PD_MEMORY_GET(0);
     x->x_onset = PD_INT_MAX;
