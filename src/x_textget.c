@@ -91,7 +91,7 @@ static void text_get_float(t_text_get *x, t_float f)
     n = buffer_size(b);
     startfield = x->x_f1;
     nfield = x->x_f2;
-    if (text_nthline(b, f, &start, &end))
+    if (buffer_getMessageAt(b, f, &start, &end))
     {
         int outc = end - start, k;
         t_atom *outv;

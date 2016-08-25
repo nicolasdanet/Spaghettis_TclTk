@@ -30,31 +30,6 @@ t_class         *textdefine_class;                  /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-    /* random helper function */
-int text_nthline (t_buffer *b, int line, int *startp, int *endp)
-{
-    t_atom *vec = buffer_atoms(b);
-    int n = buffer_size(b);
-    
-    int i, cnt = 0;
-    for (i = 0; i < n; i++)
-    {
-        if (cnt == line)
-        {
-            int j = i, outc, k;
-            while (j < n && vec[j].a_type != A_SEMICOLON &&
-                vec[j].a_type != A_COMMA)
-                    j++;
-            *startp = i;
-            *endp = j;
-            return (1);
-        }
-        else if (vec[i].a_type == A_SEMICOLON || vec[i].a_type == A_COMMA)
-            cnt++;
-    }
-    return (0);
-}
-
 /* text_define object - text buffer, accessible by other accessor objects */
 
 typedef struct _text_define

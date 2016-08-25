@@ -298,6 +298,30 @@ void buffer_toString (t_buffer *x, char **s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+int buffer_getMessageAt (t_buffer *x, int n, int *start, int *end)
+{
+    int i, k = 0;
+    
+    for (i = 0; i < x->b_size; i++) {
+    //
+    if (k != n) { if (IS_SEMICOLON (&x->b_vector[i]) || IS_COMMA (&x->b_vector[i])) { k++; } }
+    else {
+        int j = i;
+        while (j < x->b_size && !IS_SEMICOLON (&x->b_vector[j]) && !IS_COMMA (&x->b_vector[j])) { j++; }
+        *start = i;
+        *end   = j;
+        return 1;
+    }
+    //
+    }
+    
+    return 0;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void buffer_serialize (t_buffer *x, t_buffer *y)
 {
     t_buffer *copy = buffer_new();
