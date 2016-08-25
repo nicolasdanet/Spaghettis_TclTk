@@ -34,7 +34,7 @@ typedef struct _text_size
     t_outlet *x_out1;       /* float */
 } t_text_size;
 
-void *text_size_new(t_symbol *s, int argc, t_atom *argv)
+void *textsize_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_text_size *x = (t_text_size *)pd_new(text_size_class);
     x->x_out1 = outlet_new(&x->x_obj, &s_float);
@@ -86,7 +86,7 @@ static void text_size_float(t_text_size *x, t_float f)
 void textsize_setup (void)
 {
     text_size_class = class_new(sym_text__space__size,
-        (t_newmethod)text_size_new, (t_method)textclient_free,
+        (t_newmethod)textsize_new, (t_method)textclient_free,
             sizeof(t_text_size), 0, A_GIMME, 0);
     class_addBang(text_size_class, text_size_bang);
     class_addFloat(text_size_class, text_size_float);

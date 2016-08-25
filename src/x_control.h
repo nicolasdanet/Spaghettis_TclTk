@@ -44,6 +44,7 @@ void        textbuffer_add              (t_textbuffer *x, t_symbol *s, int argc,
 void        textbuffer_read             (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv);
 void        textbuffer_write            (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv);
 
+t_glist     *textbuffer_getView         (t_textbuffer *x);
 t_buffer    *textbuffer_getBuffer       (t_textbuffer *x);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -60,13 +61,13 @@ t_buffer    *textclient_fetchBuffer     (t_textclient *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        *text_get_new               (t_symbol *s, int argc, t_atom *argv);
-void        *text_set_new               (t_symbol *s, int argc, t_atom *argv);
-void        *text_size_new              (t_symbol *s, int argc, t_atom *argv);
-void        *text_fromlist_new          (t_symbol *s, int argc, t_atom *argv);
-void        *text_tolist_new            (t_symbol *s, int argc, t_atom *argv);
-void        *text_search_new            (t_symbol *s, int argc, t_atom *argv);
-void        *text_sequence_new          (t_symbol *s, int argc, t_atom *argv);
+void        *textget_new                (t_symbol *s, int argc, t_atom *argv);
+void        *textset_new                (t_symbol *s, int argc, t_atom *argv);
+void        *textsize_new               (t_symbol *s, int argc, t_atom *argv);
+void        *textfromlist_new           (t_symbol *s, int argc, t_atom *argv);
+void        *texttolist_new             (t_symbol *s, int argc, t_atom *argv);
+void        *textsearch_new             (t_symbol *s, int argc, t_atom *argv);
+void        *textsequence_new           (t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

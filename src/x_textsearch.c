@@ -48,7 +48,7 @@ typedef struct _text_search
     t_key *x_keyvec;
 } t_text_search;
 
-void *text_search_new(t_symbol *s, int argc, t_atom *argv)
+void *textsearch_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_text_search *x = (t_text_search *)pd_new(text_search_class);
     int i, key, nkey, nextop;
@@ -265,7 +265,7 @@ static void text_search_list(t_text_search *x,
 void textsearch_setup (void)
 {
     text_search_class = class_new(sym_text__space__search,
-        (t_newmethod)text_search_new, (t_method)textclient_free,
+        (t_newmethod)textsearch_new, (t_method)textclient_free,
             sizeof(t_text_search), 0, A_GIMME, 0);
     class_addList(text_search_class, text_search_list);
     class_setHelpName(text_search_class, sym_text);

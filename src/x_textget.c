@@ -37,7 +37,7 @@ typedef struct _text_get
 #define x_struct x_tc.tc_templateIdentifier
 #define x_field x_tc.tc_fieldName
 
-void *text_get_new(t_symbol *s, int argc, t_atom *argv)
+void *textget_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_text_get *x = (t_text_get *)pd_new(text_get_class);
     x->x_out1 = outlet_new(&x->x_obj, &s_list);
@@ -127,7 +127,7 @@ static void text_get_float(t_text_get *x, t_float f)
 void textget_setup (void)
 {
     text_get_class = class_new(sym_text__space__get,
-        (t_newmethod)text_get_new, (t_method)textclient_free,
+        (t_newmethod)textget_new, (t_method)textclient_free,
             sizeof(t_text_get), 0, A_GIMME, 0);
     class_addFloat(text_get_class, text_get_float);
     class_setHelpName(text_get_class, sym_text);

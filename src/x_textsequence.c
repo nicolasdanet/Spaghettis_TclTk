@@ -53,7 +53,7 @@ static void text_sequence_tempo(t_text_sequence *x,
 void parsetimeunits(void *x, t_float amount, t_symbol *unitname,
     t_float *unit, int *samps); /* time unit parsing from x_time.c */
 
-void *text_sequence_new(t_symbol *s, int argc, t_atom *argv)
+void *textsequence_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_text_sequence *x = (t_text_sequence *)pd_new(text_sequence_class);
     int global = 0;
@@ -375,7 +375,7 @@ static void text_sequence_free(t_text_sequence *x)
 void textsequence_setup (void)
 {
     text_sequence_class = class_new(sym_text__space__sequence,
-        (t_newmethod)text_sequence_new, (t_method)text_sequence_free,
+        (t_newmethod)textsequence_new, (t_method)text_sequence_free,
             sizeof(t_text_sequence), 0, A_GIMME, 0);
     class_addMethod(text_sequence_class, (t_method)text_sequence_step, 
         sym_step, 0);

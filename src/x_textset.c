@@ -34,7 +34,7 @@ typedef struct _text_set
 
 t_class *text_set_class;
 
-void *text_set_new(t_symbol *s, int argc, t_atom *argv)
+void *textset_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_text_set *x = (t_text_set *)pd_new(text_set_class);
     inlet_newFloat(&x->x_obj, &x->x_f1);
@@ -150,7 +150,7 @@ static void text_set_list(t_text_set *x,
 void textset_setup (void)
 {
     text_set_class = class_new(sym_text__space__set,
-        (t_newmethod)text_set_new, (t_method)textclient_free,
+        (t_newmethod)textset_new, (t_method)textclient_free,
             sizeof(t_text_set), 0, A_GIMME, 0);
     class_addList(text_set_class, text_set_list);
     class_setHelpName(text_set_class, sym_text);

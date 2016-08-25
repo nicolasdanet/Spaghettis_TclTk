@@ -24,7 +24,7 @@ t_class *text_tolist_class;
 
 #define t_text_tolist t_textclient
 
-void *text_tolist_new(t_symbol *s, int argc, t_atom *argv)
+void *texttolist_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_text_tolist *x = (t_text_tolist *)pd_new(text_tolist_class);
     outlet_new(&x->tc_obj, &s_list);
@@ -58,7 +58,7 @@ t_class *text_fromlist_class;
 
 #define t_text_fromlist t_textclient
 
-void *text_fromlist_new(t_symbol *s, int argc, t_atom *argv)
+void *textfromlist_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_text_fromlist *x = (t_text_fromlist *)pd_new(text_fromlist_class);
     textclient_init(x, &argc, &argv);
@@ -87,13 +87,13 @@ static void text_fromlist_list(t_text_fromlist *x,
 void textlist_setup (void)
 {
     text_tolist_class = class_new(sym_text__space__tolist,
-        (t_newmethod)text_tolist_new, (t_method)textclient_free,
+        (t_newmethod)texttolist_new, (t_method)textclient_free,
             sizeof(t_text_tolist), 0, A_GIMME, 0);
     class_addBang(text_tolist_class, text_tolist_bang);
     class_setHelpName(text_tolist_class, sym_text);
 
     text_fromlist_class = class_new(sym_text__space__fromlist,
-        (t_newmethod)text_fromlist_new, (t_method)textclient_free,
+        (t_newmethod)textfromlist_new, (t_method)textclient_free,
             sizeof(t_text_fromlist), 0, A_GIMME, 0);
     class_addList(text_fromlist_class, text_fromlist_list);
     class_setHelpName(text_fromlist_class, sym_text);

@@ -709,9 +709,9 @@
 			children = (
 				378232301D6C49C300C128AD /* x_control.h */,
 				378972101C4F716800263434 /* x_scalar.c */,
+				378972111C4F716800263434 /* x_text.c */,
 				378232431D6C4A3300C128AD /* x_textbuffer.c */,
 				378232A21D6C50D600C128AD /* x_textclient.c */,
-				378972111C4F716800263434 /* x_text.c */,
 				378234261D6C826800C128AD /* x_textget.c */,
 				3782340C1D6C812200C128AD /* x_textset.c */,
 				378233EA1D6C7F9400C128AD /* x_textsize.c */,

@@ -47,6 +47,11 @@ void textbuffer_free (t_textbuffer *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_glist *textbuffer_getView (t_textbuffer *x)
+{
+    return x->tb_owner;
+}
+
 t_buffer *textbuffer_getBuffer (t_textbuffer *x)
 {
     return x->tb_buffer;
