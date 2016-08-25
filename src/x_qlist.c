@@ -338,7 +338,8 @@ void x_qlist_setup(void )
         A_SYMBOL, A_DEFSYMBOL, 0);
     class_addMethod(qlist_class, (t_method)qlist_write, sym_write,
         A_SYMBOL, A_DEFSYMBOL, 0);
-    class_addMethod(qlist_class, (t_method)textbuffer_open, sym_click, 0);
+    class_addClick (qlist_class, textbuffer_click);
+    //class_addMethod(qlist_class, (t_method)textbuffer_open, sym_click, 0);
     class_addMethod(qlist_class, (t_method)textbuffer_close, sym_close, 0);
     class_addMethod(qlist_class, (t_method)textbuffer_add, 
         sym__addline, A_GIMME, 0);
@@ -367,7 +368,8 @@ void x_qlist_setup(void )
         A_SYMBOL, A_DEFSYMBOL, 0);
     class_addMethod(textfile_class, (t_method)qlist_write, sym_write, 
         A_SYMBOL, A_DEFSYMBOL, 0);
-    class_addMethod(textfile_class, (t_method)textbuffer_open, sym_click, 0);
+    class_addClick (textfile_class, textbuffer_click);
+    //class_addMethod(textfile_class, (t_method)textbuffer_open, sym_click, 0);
     class_addMethod(textfile_class, (t_method)textbuffer_close, sym_close, 
         0);
     class_addMethod(textfile_class, (t_method)textbuffer_add, 

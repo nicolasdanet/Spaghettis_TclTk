@@ -68,52 +68,6 @@ void textdefine_release (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *textdefine_new(t_symbol *s, int argc, t_atom *argv)
-{
-    t_textdefine *x = (t_textdefine *)pd_new(textdefine_class);
-    t_symbol *asym = sym___hash__A;
-    x->x_keep = 0;
-    x->x_name = &s_;
-    while (argc && argv->a_type == A_SYMBOL &&
-        *argv->a_w.w_symbol->s_name == '-')
-    {
-        if (!strcmp(argv->a_w.w_symbol->s_name, "-k"))
-            x->x_keep = 1;
-        else
-        {
-            post_error ("text define: unknown flag ...");
-            post_atoms(argc, argv);
-        }
-        argc--; argv++;
-    }
-    if (argc && argv->a_type == A_SYMBOL)
-    {
-        pd_bind(cast_pd (x), argv->a_w.w_symbol);
-        x->x_name = argv->a_w.w_symbol;
-        argc--; argv++;
-    }
-    if (argc)
-    {
-        post("warning: text define ignoring extra argument: ");
-        post_atoms(argc, argv);
-    }
-    textbuffer_init (&x->x_textbuffer);
-        /* set up a scalar and a pointer to it that we can output */
-    x->x_scalar = scalar_new(canvas_getCurrent(), sym___TEMPLATE__text);
-    buffer_free(x->x_scalar->sc_vector[2].w_buffer);                                /* Encaspulate ASAP. */
-    x->x_scalar->sc_vector[2].w_buffer = textbuffer_getBuffer (&x->x_textbuffer);   /* Encaspulate ASAP. */
-    x->x_outlet = outlet_new(cast_object (x), &s_pointer);
-    gpointer_init(&x->x_gpointer);
-           /* bashily unbind #A -- this would create garbage if #A were
-           multiply bound but we believe in this context it's at most
-           bound to whichever textdefine or array was created most recently */
-    asym->s_thing = 0;
-        /* and now bind #A to us to receive following messages in the
-        saved file or copy buffer */
-    pd_bind(cast_pd (x), asym); 
-    return (x);
-}
-
 static void textdefine_clear(t_textdefine *x)
 {
     buffer_reset(textbuffer_getBuffer (&x->x_textbuffer));
@@ -215,28 +169,65 @@ static void textdefine_save(t_gobj *z, t_buffer *bb)
     object_saveWidth(cast_object (x), bb);
 }
 
-static void textdefine_free(t_textdefine *x)
-{
-    textbuffer_free (&x->x_textbuffer);
-    if (x->x_name != &s_)
-        pd_unbind(cast_pd (x), x->x_name);
-    gpointer_unset(&x->x_gpointer);
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* --- overall creator for "text" objects: dispatch to "text define" etc --- */
-static void *text_new(t_symbol *s, int argc, t_atom *argv)
+static void *textdefine_newObject(t_symbol *s, int argc, t_atom *argv)
+{
+    t_textdefine *x = (t_textdefine *)pd_new(textdefine_class);
+    t_symbol *asym = sym___hash__A;
+    x->x_keep = 0;
+    x->x_name = &s_;
+    while (argc && argv->a_type == A_SYMBOL &&
+        *argv->a_w.w_symbol->s_name == '-')
+    {
+        if (!strcmp(argv->a_w.w_symbol->s_name, "-k"))
+            x->x_keep = 1;
+        else
+        {
+            post_error ("text define: unknown flag ...");
+            post_atoms(argc, argv);
+        }
+        argc--; argv++;
+    }
+    if (argc && argv->a_type == A_SYMBOL)
+    {
+        pd_bind(cast_pd (x), argv->a_w.w_symbol);
+        x->x_name = argv->a_w.w_symbol;
+        argc--; argv++;
+    }
+    if (argc)
+    {
+        post("warning: text define ignoring extra argument: ");
+        post_atoms(argc, argv);
+    }
+    textbuffer_init (&x->x_textbuffer);
+        /* set up a scalar and a pointer to it that we can output */
+    x->x_scalar = scalar_new(canvas_getCurrent(), sym___TEMPLATE__text);
+    buffer_free(x->x_scalar->sc_vector[2].w_buffer);                                /* Encaspulate ASAP. */
+    x->x_scalar->sc_vector[2].w_buffer = textbuffer_getBuffer (&x->x_textbuffer);   /* Encaspulate ASAP. */
+    x->x_outlet = outlet_new(cast_object (x), &s_pointer);
+    gpointer_init(&x->x_gpointer);
+           /* bashily unbind #A -- this would create garbage if #A were
+           multiply bound but we believe in this context it's at most
+           bound to whichever textdefine or array was created most recently */
+    asym->s_thing = 0;
+        /* and now bind #A to us to receive following messages in the
+        saved file or copy buffer */
+    pd_bind(cast_pd (x), asym); 
+    return (x);
+}
+
+static void *textdefine_new(t_symbol *s, int argc, t_atom *argv)
 {
     if (!argc || argv[0].a_type != A_SYMBOL)
-        pd_newest = textdefine_new(s, argc, argv);
+        pd_newest = textdefine_newObject(s, argc, argv);
     else
     {
         char *str = argv[0].a_w.w_symbol->s_name;
         if (!strcmp(str, "d") || !strcmp(str, "define"))
-            pd_newest = textdefine_new(s, argc-1, argv+1);
+            pd_newest = textdefine_newObject(s, argc-1, argv+1);
         else if (!strcmp(str, "get"))
             pd_newest = textget_new(s, argc-1, argv+1);
         else if (!strcmp(str, "set"))
@@ -260,34 +251,48 @@ static void *text_new(t_symbol *s, int argc, t_atom *argv)
     return (pd_newest);
 }
 
+static void textdefine_free(t_textdefine *x)
+{
+    textbuffer_free (&x->x_textbuffer);
+    if (x->x_name != &s_)
+        pd_unbind(cast_pd (x), x->x_name);
+    gpointer_unset(&x->x_gpointer);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 void textdefine_setup (void)
 {
-    textdefine_class = class_new(sym_text__space__define,
-        (t_newmethod)textdefine_new,
-        (t_method)textdefine_free, sizeof(t_textdefine), 0, A_GIMME, 0);
-    class_addMethod(textdefine_class, (t_method)textbuffer_open,
-        sym_click, 0);
-    class_addMethod(textdefine_class, (t_method)textbuffer_close,
-        sym_close, 0);
-    class_addMethod(textdefine_class, (t_method)textbuffer_add, 
-        sym__addline, A_GIMME, 0);
-    class_addMethod(textdefine_class, (t_method)textdefine_set,
-        sym_set, A_GIMME, 0);
-    class_addMethod(textdefine_class, (t_method)textdefine_clear,
-        sym_clear, 0);
-    class_addMethod(textdefine_class, (t_method)textbuffer_write,
-        sym_write, A_GIMME, 0);
-    class_addMethod(textdefine_class, (t_method)textbuffer_read,
-        sym_read, A_GIMME, 0);
-    class_setSaveFunction(textdefine_class, textdefine_save);
-    class_addBang(textdefine_class, textdefine_bang);
-    class_setHelpName(textdefine_class, sym_text);
+    t_class *c = NULL;
+    
+    c = class_new (sym_text__space__define,
+            (t_newmethod)textdefine_new,
+            (t_method)textdefine_free,
+            sizeof (t_textdefine),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+        
+    class_addBang (c, textdefine_bang);
+    
+    class_addClick (c, textbuffer_click);
+            
+    class_addMethod (c, (t_method)textbuffer_close,     sym_close,      A_NULL);
+    class_addMethod (c, (t_method)textbuffer_add,       sym__addline,   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)textbuffer_write,     sym_write,      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)textbuffer_read,      sym_read,       A_GIMME, A_NULL);
+    
+    class_addMethod (c, (t_method)textdefine_set,       sym_set,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)textdefine_clear,     sym_clear,      A_NULL);
+        
+    class_setSaveFunction (c, textdefine_save);
+    class_setHelpName (c, sym_text);
 
-    class_addCreator((t_newmethod)text_new, sym_text, A_GIMME, 0);
+    class_addCreator ((t_newmethod)textdefine_new, sym_text, A_GIMME, A_NULL);
+    
+    textdefine_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
