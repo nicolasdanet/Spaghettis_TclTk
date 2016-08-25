@@ -12,7 +12,6 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "m_alloca.h"
 #include "g_graphics.h"
 #include "x_control.h"
 
@@ -20,19 +19,23 @@
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_pd     *pd_newest;
+
 extern t_pd     pd_canvasMaker;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_class         *textdefine_class;         /* Shared. */
+t_class         *textdefine_class;                  /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
     /* random helper function */
-int text_nthline(int n, t_atom *vec, int line, int *startp, int *endp)
+int text_nthline (t_buffer *b, int line, int *startp, int *endp)
 {
+    t_atom *vec = buffer_atoms(b);
+    int n = buffer_size(b);
+    
     int i, cnt = 0;
     for (i = 0; i < n; i++)
     {
@@ -171,7 +174,7 @@ static void text_define_frompointer(t_text_define *x, t_gpointer *gp,
     if (b)
     {
         buffer_reset(x->x_binbuf);
-        buffer_append(x->x_binbuf, buffer_size(b), buffer_atoms(b));
+        buffer_appendBuffer(x->x_binbuf, b);
     } 
 }
 
@@ -181,8 +184,7 @@ static void text_define_topointer(t_text_define *x, t_gpointer *gp, t_symbol *s)
     if (b)
     {
         buffer_reset(b);
-        buffer_append(b, buffer_size(x->x_binbuf),
-            buffer_atoms(x->x_binbuf));
+        buffer_appendBuffer (b, x->x_binbuf);
         gpointer_redraw (gp);
     } 
 }

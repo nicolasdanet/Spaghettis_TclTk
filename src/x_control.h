@@ -60,12 +60,6 @@ t_buffer    *textclient_fetchBuffer     (t_textclient *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int         text_nthline                (int n, t_atom *vec, int line, int *startp, int *endp);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void        *text_get_new               (t_symbol *s, int argc, t_atom *argv);
 void        *text_set_new               (t_symbol *s, int argc, t_atom *argv);
 void        *text_size_new              (t_symbol *s, int argc, t_atom *argv);

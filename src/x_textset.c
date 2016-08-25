@@ -90,7 +90,7 @@ static void text_set_list(t_text_set *x,
         post_error ("text set: line number (%d) < 0", lineno);
         return;
     }
-    if (text_nthline(n, vec, lineno, &start, &end))
+    if (text_nthline(b, lineno, &start, &end))
     {
         if (fieldno < 0)
         {

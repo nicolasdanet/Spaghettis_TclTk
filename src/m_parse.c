@@ -303,7 +303,7 @@ void buffer_serialize (t_buffer *x, t_buffer *y)
     t_buffer *copy = buffer_new();
     int i;
 
-    buffer_append (copy, y->b_size, y->b_vector);
+    buffer_appendBuffer (copy, y);
     
     for (i = 0; i < copy->b_size; i++) {
     //
@@ -320,7 +320,7 @@ void buffer_serialize (t_buffer *x, t_buffer *y)
     //
     }
     
-    buffer_append (x, copy->b_size, copy->b_vector);
+    buffer_appendBuffer (x, copy);
 }
 
 void buffer_deserialize (t_buffer *x, int argc, t_atom *argv)

@@ -333,7 +333,7 @@ static void text_sequence_line(t_text_sequence *x, t_float f)
     x->x_lastto = 0;
     vec = buffer_atoms(b);
     n = buffer_size(b);
-    if (!text_nthline(n, vec, f, &start, &end))
+    if (!text_nthline(b, f, &start, &end))
     {
         post_error ("text sequence: line number %d out of range", (int)f);
         x->x_onset = PD_INT_MAX;

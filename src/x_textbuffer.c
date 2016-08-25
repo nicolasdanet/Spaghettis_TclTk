@@ -120,7 +120,7 @@ void textbuffer_add (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_buffer *t = buffer_new();
     buffer_deserialize (t, argc, argv);
-    buffer_append (x->tb_buffer, buffer_size (t), buffer_atoms (t));
+    buffer_appendBuffer (x->tb_buffer, t);
     buffer_free (t);
     textbuffer_update (x);
 }

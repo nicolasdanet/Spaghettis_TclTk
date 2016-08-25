@@ -78,7 +78,7 @@ static void text_size_float(t_text_size *x, t_float f)
        return;
     vec = buffer_atoms(b);
     n = buffer_size(b);
-    if (text_nthline(n, vec, f, &start, &end))
+    if (text_nthline(b, f, &start, &end))
         outlet_float(x->x_out1, end-start);
     else outlet_float(x->x_out1, -1);
 }

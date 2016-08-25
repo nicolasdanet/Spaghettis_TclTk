@@ -123,7 +123,7 @@ static t_symbol *gatom_parse (t_symbol *s)
 static void gatom_update (t_gatom *x)
 {
     buffer_reset (cast_object (x)->te_buffer);
-    buffer_append (cast_object (x)->te_buffer, 1, &x->a_atom);
+    buffer_appendAtom (cast_object (x)->te_buffer, &x->a_atom);
     
     if (canvas_isMapped (x->a_owner)) { 
     //
@@ -460,13 +460,13 @@ void gatom_makeObject (t_glist *glist, t_atomtype type, t_symbol *s, int argc, t
         t_atom a;
         SET_FLOAT (&x->a_atom, 0);
         SET_FLOAT (&a, 0);
-        buffer_append (cast_object (x)->te_buffer, 1, &a);
+        buffer_appendAtom (cast_object (x)->te_buffer, &a);
         
     } else {
         t_atom a;
         SET_SYMBOL (&x->a_atom, &s_symbol);
         SET_SYMBOL (&a, &s_symbol);
-        buffer_append (cast_object (x)->te_buffer, 1, &a);
+        buffer_appendAtom (cast_object (x)->te_buffer, &a);
     }
     
     if (argc > 1) {                                                             /* File creation. */

@@ -187,7 +187,7 @@ static void qlist_add(t_qlist *x, t_symbol *s, int argc, t_atom *argv)
     t_atom a;
     SET_SEMICOLON(&a);
     buffer_append(x->x_binbuf, argc, argv);
-    buffer_append(x->x_binbuf, 1, &a);
+    buffer_appendAtom(x->x_binbuf, &a);
 }
 
 static void qlist_add2(t_qlist *x, t_symbol *s, int argc, t_atom *argv)

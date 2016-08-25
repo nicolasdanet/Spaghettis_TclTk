@@ -149,7 +149,7 @@ static void message_addComma (t_message *x)
 {
     t_atom a; SET_COMMA (&a);
     
-    buffer_append (cast_object (x)->te_buffer, 1, &a);
+    buffer_appendAtom (cast_object (x)->te_buffer, &a);
     
     boxtext_retext (x->m_owner, cast_object (x));
 }
@@ -164,7 +164,7 @@ static void message_addDollar (t_message *x, t_float f)
     int n = PD_MAX (0, (int)f);
     t_atom a; SET_DOLLAR (&a, n);
     
-    buffer_append (cast_object (x)->te_buffer, 1, &a);
+    buffer_appendAtom (cast_object (x)->te_buffer, &a);
     
     boxtext_retext (x->m_owner, cast_object (x));
 }
@@ -177,7 +177,7 @@ static void message_addDollarSymbol (t_message *x, t_symbol *s)
     string_sprintf (t, PD_STRING, "$%s", s->s_name);
     SET_DOLLARSYMBOL (&a, gensym (t));
 
-    buffer_append (cast_object (x)->te_buffer, 1, &a);
+    buffer_appendAtom (cast_object (x)->te_buffer, &a);
     
     boxtext_retext (x->m_owner, cast_object (x));
 }
