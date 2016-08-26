@@ -165,10 +165,7 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
     int x2 = 0;
     int y2 = 0;
     
-    t_template *template = template_findByIdentifier (x->sc_templateIdentifier);
-    
-    PD_ASSERT (template);
-    
+    t_template *template = scalar_getTemplate (x);
     t_glist *view = template_getFirstInstanceView (template);
     t_float baseX = scalar_getFloat (x, sym_x);
     t_float baseY = scalar_getFloat (x, sym_y);
@@ -229,7 +226,7 @@ static void scalar_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int
 {
     t_scalar *x = cast_scalar (z);
     
-    t_template *template = template_findByIdentifier (x->sc_templateIdentifier);
+    t_template *template = scalar_getTemplate (x);
     
     if (!template) { PD_BUG; }
     else {
@@ -260,7 +257,7 @@ static void scalar_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
 {
     t_scalar *x = cast_scalar (z);
     
-    t_template *template = template_findByIdentifier (x->sc_templateIdentifier);
+    t_template *template = scalar_getTemplate (x);
     
     if (!template) { PD_BUG; }
     else {
@@ -281,10 +278,7 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
 {
     t_scalar *x = cast_scalar (z);
     
-    t_template *template = template_findByIdentifier (x->sc_templateIdentifier);
-    
-    PD_ASSERT (template);
-    
+    t_template *template = scalar_getTemplate (x);
     t_glist *view = template_getFirstInstanceView (template);
     t_float baseX = scalar_getFloat (x, sym_x);
     t_float baseY = scalar_getFloat (x, sym_y);
@@ -349,10 +343,7 @@ static int scalar_behaviorClicked (t_gobj *z,
 {
     t_scalar *x = cast_scalar (z);
     
-    t_template *template = template_findByIdentifier (x->sc_templateIdentifier);
-    
-    PD_ASSERT (template);
-    
+    t_template *template = scalar_getTemplate (x);
     t_glist *view = template_getFirstInstanceView (template);
     
     if (view) {
@@ -404,11 +395,9 @@ static int scalar_behaviorClicked (t_gobj *z,
 
 void scalar_serialize (t_scalar *x, t_buffer *b)
 {
-    t_template *template = template_findByIdentifier (x->sc_templateIdentifier);
+    t_template *template = scalar_getTemplate (x);
     int i;
         
-    PD_ASSERT (template);
-    
     buffer_vAppend (b, "s", utils_stripTemplateIdentifier (x->sc_templateIdentifier));
 
     for (i = 0; i < template_getSize (template); i++) {
@@ -539,22 +528,31 @@ t_symbol *scalar_getTemplateIdentifier (t_scalar *x)
 
 t_array *scalar_getArray (t_scalar *x, t_symbol *fieldName)
 {
-    return word_getArray (x->sc_vector, template_findByIdentifier (x->sc_templateIdentifier), fieldName);
+    return word_getArray (x->sc_vector, scalar_getTemplate (x), fieldName);
 }
 
 t_float scalar_getFloat (t_scalar *x, t_symbol *fieldName)
 {
-    return word_getFloat (x->sc_vector, template_findByIdentifier (x->sc_templateIdentifier), fieldName);
+    return word_getFloat (x->sc_vector, scalar_getTemplate (x), fieldName);
 }
 
 void scalar_setFloat (t_scalar *x, t_symbol *fieldName, t_float f)
 {
-    word_setFloat (x->sc_vector, template_findByIdentifier (x->sc_templateIdentifier), fieldName, f);  
+    word_setFloat (x->sc_vector, scalar_getTemplate (x), fieldName, f);  
 }
 
 int scalar_fieldIsFloat (t_scalar *x, t_symbol *fieldName)
 {
-    return template_fieldIsFloat (template_findByIdentifier (x->sc_templateIdentifier), fieldName);
+    return template_fieldIsFloat (scalar_getTemplate (x), fieldName);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_error scalar_setInternalBuffer (t_scalar *x, t_symbol *fieldName, t_buffer *b)
+{
+    return word_setInternalBuffer (x->sc_vector, scalar_getTemplate (x), fieldName, b);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -591,7 +589,7 @@ t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
 
 static void scalar_free (t_scalar *x)
 {
-    word_free (x->sc_vector, template_findByIdentifier (x->sc_templateIdentifier));
+    word_free (x->sc_vector, scalar_getTemplate (x));
     guistub_destroyWithKey ((void *)x);
 
     PD_MEMORY_FREE (x);

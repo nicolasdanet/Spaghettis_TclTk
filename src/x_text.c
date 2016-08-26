@@ -111,7 +111,7 @@ static void textdefine_save(t_gobj *z, t_buffer *bb)
 static void *textdefine_newObject (t_symbol *s, int argc, t_atom *argv)
 {
     t_textdefine *x = (t_textdefine *)pd_new (textdefine_class);
-    
+
     textbuffer_init (&x->x_textbuffer);
     gpointer_init (&x->x_gpointer);
     
@@ -134,9 +134,11 @@ static void *textdefine_newObject (t_symbol *s, int argc, t_atom *argv)
     
     x->x_scalar = scalar_new (canvas_getCurrent(), sym___TEMPLATE__text);
     
-    buffer_free (x->x_scalar->sc_vector[2].w_buffer);                               /* Encaspulate ASAP. */
-    x->x_scalar->sc_vector[2].w_buffer = textbuffer_getBuffer (&x->x_textbuffer);   /* Encaspulate ASAP. */
-    
+    {
+        t_error err = scalar_setInternalBuffer (x->x_scalar, sym_t, textbuffer_getBuffer (&x->x_textbuffer));
+        PD_ASSERT (!err);
+    }
+
     x->x_outlet = outlet_new (cast_object (x), &s_pointer);
     
     sym___hash__A->s_thing = NULL;
@@ -173,11 +175,10 @@ static void *textdefine_new (t_symbol *s, int argc, t_atom *argv)
 
 static void textdefine_free(t_textdefine *x)
 {
-    textbuffer_free (&x->x_textbuffer);
-    
     if (x->x_name != &s_) { pd_unbind (cast_pd (x), x->x_name); }
     
     gpointer_unset (&x->x_gpointer);
+    textbuffer_free (&x->x_textbuffer);
 }
 
 // -----------------------------------------------------------------------------------------------------------

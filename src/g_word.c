@@ -150,12 +150,36 @@ void word_setText (t_word *w, t_template *tmpl, t_symbol *fieldName, t_buffer *b
     
     if (template_getRaw (tmpl, fieldName, &i, &type, &dummy)) {
         if (type == DATA_TEXT) {
-            t_buffer *x = *(t_buffer **)(w + i);
-            buffer_reset (x); buffer_appendBuffer (x, b);
+            t_buffer *x = *(t_buffer **)(w + i); buffer_reset (x); buffer_appendBuffer (x, b);
         }
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_error word_setInternalBuffer (t_word *w, t_template *tmpl, t_symbol *fieldName, t_buffer *b)
+{
+    t_error err = PD_ERROR;
+    
+    if (b && template_fieldIsText (tmpl, fieldName)) {
+    //
+    int i, type;
+    t_symbol *dummy = NULL;
+    
+    if (template_getRaw (tmpl, fieldName, &i, &type, &dummy)) {
+        if (type == DATA_TEXT) {
+            t_buffer *x = *(t_buffer **)(w + i); buffer_free (x); *(t_buffer **)(w + i) = b;
+            err = PD_ERROR_NONE;
+        }
+    }
+    //
+    }
+    
+    return err;
+}
+                                                            
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
