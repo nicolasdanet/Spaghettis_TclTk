@@ -87,7 +87,7 @@ void *textget_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_textget *x = (t_textget *)pd_new (textget_class);
     
-    textclient_init (&x->x_textclient, &argc, &argv);           /* Note that it may consumes arguments. */
+    textclient_init (&x->x_textclient, &argc, &argv);           /* Note that it may consume arguments. */
     
     x->x_fieldStart  = -1;
     x->x_fieldCount  = 1;

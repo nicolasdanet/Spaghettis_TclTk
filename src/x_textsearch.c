@@ -20,7 +20,6 @@
 #define x_sym x_tc.tc_name
 #define x_gp x_tc.tc_gpointer
 #define x_struct x_tc.tc_templateIdentifier
-#define x_field x_tc.tc_fieldName
 
 /* ---- text_search object - output index of line(s) matching criteria ---- */
 

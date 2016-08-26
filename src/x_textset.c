@@ -19,67 +19,26 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define x_obj x_tc.tc_obj
-#define x_sym x_tc.tc_name
-#define x_gp x_tc.tc_gpointer
-#define x_struct x_tc.tc_templateIdentifier
-#define x_field x_tc.tc_fieldName
+typedef struct _textset {
+    t_textclient    x_textclient;           /* Must be the first. */
+    t_float         x_line;
+    t_float         x_field;
+    } t_textset;
 
-typedef struct _text_set
-{
-    t_textclient x_tc;
-    t_float x_f1;           /* line number */
-    t_float x_f2;           /* field number, -1 for whole line */
-} t_text_set;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-t_class *text_set_class;
+t_class *textset_class;                    /* Shared. */
 
-void *textset_new(t_symbol *s, int argc, t_atom *argv)
-{
-    t_text_set *x = (t_text_set *)pd_new(text_set_class);
-    inlet_newFloat(&x->x_obj, &x->x_f1);
-    inlet_newFloat(&x->x_obj, &x->x_f2);
-    x->x_f1 = 0;
-    x->x_f2 = -1;
-    textclient_init(&x->x_tc, &argc, &argv);
-    if (argc)
-    {
-        if (argv->a_type == A_FLOAT)
-            x->x_f1 = argv->a_w.w_float;
-        else
-        {
-            post("text get: can't understand field number");
-            post_atoms(argc, argv);
-        }
-        argc--; argv++;
-    }
-    if (argc)
-    {
-        if (argv->a_type == A_FLOAT)
-            x->x_f2 = argv->a_w.w_float;
-        else
-        {
-            post("text get: can't understand field count");
-            post_atoms(argc, argv);
-        }
-        argc--; argv++;
-    }
-    if (argc)
-    {
-        post("warning: text set ignoring extra argument: ");
-        post_atoms(argc, argv);
-    }
-    if (x->x_struct)
-        inlet_newPointer(&x->x_obj, &x->x_gp);
-    else inlet_newSymbol(&x->x_obj, &x->x_sym);
-    return (x);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static void text_set_list(t_text_set *x,
+static void textset_list(t_textset *x,
     t_symbol *s, int argc, t_atom *argv)
 {
-    t_buffer *b = textclient_fetchBuffer(&x->x_tc);
-    int start, end, n, lineno = x->x_f1, fieldno = x->x_f2, i;
+    t_buffer *b = textclient_fetchBuffer(&x->x_textclient);
+    int start, end, n, lineno = x->x_line, fieldno = x->x_field, i;
     t_atom *vec;
     if (!b)
        return;
@@ -144,16 +103,65 @@ static void text_set_list(t_text_set *x,
             SET_SYMBOL(&vec[start+i], sym___parenthesis__pointer__parenthesis__);
         else vec[start+i] = argv[i];
     }
-    textclient_update(&x->x_tc);
+    textclient_update(&x->x_textclient);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void *textset_new(t_symbol *s, int argc, t_atom *argv)
+{
+    t_textset *x = (t_textset *)pd_new(textset_class);
+    inlet_newFloat(cast_object (x), &x->x_line);
+    inlet_newFloat(cast_object (x), &x->x_field);
+    x->x_line = 0;
+    x->x_field = -1;
+    textclient_init(&x->x_textclient, &argc, &argv);
+    if (argc)
+    {
+        if (argv->a_type == A_FLOAT)
+            x->x_line = argv->a_w.w_float;
+        else
+        {
+            post("text get: can't understand field number");
+            post_atoms(argc, argv);
+        }
+        argc--; argv++;
+    }
+    if (argc)
+    {
+        if (argv->a_type == A_FLOAT)
+            x->x_field = argv->a_w.w_float;
+        else
+        {
+            post("text get: can't understand field count");
+            post_atoms(argc, argv);
+        }
+        argc--; argv++;
+    }
+    if (argc)
+    {
+        post("warning: text set ignoring extra argument: ");
+        post_atoms(argc, argv);
+    }
+    if (TEXTCLIENT_ASPOINTER (&x->x_textclient))
+        inlet_newPointer(cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
+    else inlet_newSymbol(cast_object (x), TEXTCLIENT_GETNAME (&x->x_textclient));
+    return (x);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void textset_setup (void)
 {
-    text_set_class = class_new(sym_text__space__set,
+    textset_class = class_new(sym_text__space__set,
         (t_newmethod)textset_new, (t_method)textclient_free,
-            sizeof(t_text_set), 0, A_GIMME, 0);
-    class_addList(text_set_class, text_set_list);
-    class_setHelpName(text_set_class, sym_text);
+            sizeof(t_textset), 0, A_GIMME, 0);
+    class_addList(textset_class, textset_list);
+    class_setHelpName(textset_class, sym_text);
 }
 
 // -----------------------------------------------------------------------------------------------------------

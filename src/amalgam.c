@@ -119,6 +119,7 @@
 #include "x_textbuffer.c"
 #include "x_textclient.c"
 #include "x_textget.c"
+#include "x_textset.c"
 
 /* DSP. */
 

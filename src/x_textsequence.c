@@ -23,7 +23,6 @@
 #define x_sym x_tc.tc_name
 #define x_gp x_tc.tc_gpointer
 #define x_struct x_tc.tc_templateIdentifier
-#define x_field x_tc.tc_fieldName
 
 /* ---------------- text_sequence object - sequencer ----------- */
 t_class *text_sequence_class;
