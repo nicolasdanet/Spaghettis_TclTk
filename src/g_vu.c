@@ -435,8 +435,8 @@ void vu_setHeight (t_vu *x, int height)
 
 static void vu_bang (t_vu *x)
 {
-    outlet_float (x->x_outRight, x->x_peakValue);
-    outlet_float (x->x_outLeft, x->x_rmsValue);
+    outlet_float (x->x_outletRight, x->x_peakValue);
+    outlet_float (x->x_outletLeft, x->x_rmsValue);
     
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
 }
@@ -450,7 +450,7 @@ static void vu_float (t_vu *x, t_float rms)
     
     if (x->x_rms != old) { (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
     
-    outlet_float (x->x_outLeft, rms);
+    outlet_float (x->x_outletLeft, rms);
 }
 
 static void vu_ft1 (t_vu *x, t_float peak)
@@ -462,7 +462,7 @@ static void vu_ft1 (t_vu *x, t_float peak)
     
     if (x->x_peak != old) { (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
         
-    outlet_float (x->x_outRight, peak);
+    outlet_float (x->x_outletRight, peak);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -638,14 +638,14 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
     
     if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
         
-    x->x_hasScale   = (hasScale != 0);
-    x->x_peakValue  = -101.0;
-    x->x_rmsValue   = -101.0;
+    x->x_hasScale    = (hasScale != 0);
+    x->x_peakValue   = -101.0;
+    x->x_rmsValue    = -101.0;
     
     inlet_new (cast_object (x), cast_pd (x), &s_float, sym_ft1);
     
-    x->x_outLeft  = outlet_new (cast_object (x), &s_float);
-    x->x_outRight = outlet_new (cast_object (x), &s_float);
+    x->x_outletLeft  = outlet_new (cast_object (x), &s_float);
+    x->x_outletRight = outlet_new (cast_object (x), &s_float);
     
     return x;
 }

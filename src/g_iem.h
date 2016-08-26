@@ -185,8 +185,8 @@ typedef struct _vu {
     int         x_rms;
     t_float     x_peakValue;
     t_float     x_rmsValue;
-    void        *x_outLeft;
-    void        *x_outRight;
+    t_outlet    *x_outletLeft;
+    t_outlet    *x_outletRight;
     } t_vu;
 
 typedef struct _panel {
