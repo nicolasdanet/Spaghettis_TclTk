@@ -84,47 +84,30 @@ static void textget_float(t_textget *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void *textget_new(t_symbol *s, int argc, t_atom *argv)
+void *textget_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_textget *x = (t_textget *)pd_new(textget_class);
-    x->x_outletLeft = outlet_new (cast_object (x), &s_list);
-    x->x_outletRight = outlet_new(cast_object (x), &s_float);
-    inlet_newFloat(cast_object (x), &x->x_startField);
-    inlet_newFloat(cast_object (x), &x->x_numberOfFields);
-    x->x_startField = -1;
+    t_textget *x = (t_textget *)pd_new (textget_class);
+    
+    textclient_init (&x->x_textclient, &argc, &argv);           /* Note that it may consumes arguments. */
+    
+    x->x_startField     = -1;
     x->x_numberOfFields = 1;
-    textclient_init(&x->x_textclient, &argc, &argv);
-    if (argc)
-    {
-        if (argv->a_type == A_FLOAT)
-            x->x_startField = argv->a_w.w_float;
-        else
-        {
-            post("text get: can't understand field number");
-            post_atoms(argc, argv);
-        }
-        argc--; argv++;
+    x->x_outletLeft     = outlet_new (cast_object (x), &s_list);
+    x->x_outletRight    = outlet_new (cast_object (x), &s_float);
+    
+    inlet_newFloat (cast_object (x), &x->x_startField);
+    inlet_newFloat (cast_object (x), &x->x_numberOfFields);
+    
+    if (argc && IS_FLOAT (argv)) { x->x_startField = GET_FLOAT (argv);      argc--; argv++; }
+    if (argc && IS_FLOAT (argv)) { x->x_numberOfFields = GET_FLOAT (argv);  argc--; argv++; }
+
+    if (TEXTCLIENT_ASPOINTER (&x->x_textclient)) {
+        inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
+    } else {
+        inlet_newSymbol (cast_object (x), TEXTCLIENT_GETNAME (&x->x_textclient));
     }
-    if (argc)
-    {
-        if (argv->a_type == A_FLOAT)
-            x->x_numberOfFields = argv->a_w.w_float;
-        else
-        {
-            post("text get: can't understand field count");
-            post_atoms(argc, argv);
-        }
-        argc--; argv++;
-    }
-    if (argc)
-    {
-        post("warning: text get ignoring extra argument: ");
-        post_atoms(argc, argv);
-    }
-    if (TEXTCLIENT_ASPOINTER (x->x_textclient))
-        inlet_newPointer(cast_object (x), TEXTCLIENT_GETPOINTER (x->x_textclient));
-    else inlet_newSymbol(cast_object (x), TEXTCLIENT_GETNAME (x->x_textclient));
-    return (x);
+    
+    return x;
 }
 
 // -----------------------------------------------------------------------------------------------------------
