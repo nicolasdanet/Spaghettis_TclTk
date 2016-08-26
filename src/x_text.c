@@ -18,19 +18,19 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pd     *pd_newest;
-extern t_pd     pd_canvasMaker;
+extern t_pd         *pd_newest;
+extern t_pd         pd_canvasMaker;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_class         *textdefine_class;                  /* Shared. */
+t_class             *textdefine_class;                  /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _textdefine {
-    t_textbuffer    x_textbuffer;                   /* Must be the first. */
+    t_textbuffer    x_textbuffer;                       /* Must be the first. */
     t_gpointer      x_gpointer;
     int             x_keep;
     t_symbol        *x_name;
@@ -68,40 +68,44 @@ void textdefine_release (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void textdefine_clear(t_textdefine *x)
+void textdefine_bang (t_textdefine *x)
 {
-    buffer_reset(textbuffer_getBuffer (&x->x_textbuffer));
-    textbuffer_update(&x->x_textbuffer);
+    gpointer_setAsScalar (&x->x_gpointer, textbuffer_getView (&x->x_textbuffer), x->x_scalar);
+    outlet_pointer (x->x_outlet, &x->x_gpointer);
 }
 
-    /* bang: output a pointer to a struct containing this text */
-void textdefine_bang(t_textdefine *x)
+void textdefine_set (t_textdefine *x, t_symbol *s, int argc, t_atom *argv)
 {
-    gpointer_setAsScalar(&x->x_gpointer, textbuffer_getView (&x->x_textbuffer), x->x_scalar);
-    outlet_pointer(x->x_outlet, &x->x_gpointer);
+    buffer_deserialize (textbuffer_getBuffer (&x->x_textbuffer), argc, argv);
+    textbuffer_update (&x->x_textbuffer);
 }
 
-    /* set from a list */
-void textdefine_set(t_textdefine *x, t_symbol *s, int argc, t_atom *argv)
+static void textdefine_clear (t_textdefine *x)
 {
-    buffer_deserialize(textbuffer_getBuffer (&x->x_textbuffer), argc, argv);
-    textbuffer_update(&x->x_textbuffer);
+    buffer_reset (textbuffer_getBuffer (&x->x_textbuffer));
+    textbuffer_update (&x->x_textbuffer);
 }
 
-static void textdefine_save(t_gobj *z, t_buffer *bb)
+static void textdefine_save (t_gobj *z, t_buffer *b)
 {
     t_textdefine *x = (t_textdefine *)z;
-    buffer_vAppend(bb, "ssff", sym___hash__X, sym_obj,
-        (float)cast_object (x)->te_xCoordinate, (float)cast_object (x)->te_yCoordinate);
-    buffer_serialize(bb, cast_object (x)->te_buffer);
-    buffer_appendSemicolon(bb);
-    if (x->x_keep)
-    {
-        buffer_vAppend(bb, "ss", sym___hash__A, sym_set);
-        buffer_serialize(bb, textbuffer_getBuffer (&x->x_textbuffer));
-        buffer_appendSemicolon(bb);
+    
+    buffer_vAppend (b, "ssff", 
+        sym___hash__X,
+        sym_obj,
+        (float)cast_object (x)->te_xCoordinate,
+        (float)cast_object (x)->te_yCoordinate);
+        
+    buffer_serialize (b, cast_object (x)->te_buffer);
+    buffer_appendSemicolon (b);
+    
+    if (x->x_keep) {
+        buffer_vAppend (b, "ss", sym___hash__A, sym_set);
+        buffer_serialize (b, textbuffer_getBuffer (&x->x_textbuffer));
+        buffer_appendSemicolon (b);
     }
-    object_saveWidth(cast_object (x), bb);
+    
+    object_saveWidth (cast_object (x), b);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -173,7 +177,7 @@ static void *textdefine_new (t_symbol *s, int argc, t_atom *argv)
     return pd_newest;
 }
 
-static void textdefine_free(t_textdefine *x)
+static void textdefine_free (t_textdefine *x)
 {
     if (x->x_name != &s_) { pd_unbind (cast_pd (x), x->x_name); }
     
