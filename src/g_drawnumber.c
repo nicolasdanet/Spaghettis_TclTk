@@ -194,7 +194,7 @@ static void drawnumber_behaviorVisibilityChanged (t_gobj *z,
     }
 }
 
-static int drawnumber_behaviorClicked (t_gobj *z,
+static int drawnumber_behaviorMouse (t_gobj *z,
     t_gpointer *gp,
     t_float baseX,
     t_float baseY,
@@ -240,7 +240,7 @@ t_painterwidgetbehavior drawnumber_widgetBehavior =
     {
         drawnumber_behaviorGetRectangle,
         drawnumber_behaviorVisibilityChanged,
-        drawnumber_behaviorClicked,
+        drawnumber_behaviorMouse,
     };
 
 // -----------------------------------------------------------------------------------------------------------

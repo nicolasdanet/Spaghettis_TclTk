@@ -245,7 +245,7 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     }
 }
 
-static int drawpolygon_behaviorClicked (t_gobj *z,
+static int drawpolygon_behaviorMouse (t_gobj *z,
     t_gpointer *gp,
     t_float baseX,
     t_float baseY,
@@ -321,7 +321,7 @@ t_painterwidgetbehavior drawpolygon_widgetBehavior =
     {
         drawpolygon_behaviorGetRectangle,
         drawpolygon_behaviorVisibilityChanged,
-        drawpolygon_behaviorClicked,
+        drawpolygon_behaviorMouse,
     };
     
 // -----------------------------------------------------------------------------------------------------------

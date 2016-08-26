@@ -911,7 +911,7 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int plot_behaviorClickedRegularMatch (t_plot *x, t_array *array,
+static int plot_behaviorMouseRegularMatch (t_plot *x, t_array *array,
     t_symbol *fieldX,
     t_symbol *fieldY,
     t_symbol *fieldW,
@@ -979,7 +979,7 @@ static int plot_behaviorClickedRegularMatch (t_plot *x, t_array *array,
     return 0;
 }
 
-static int plot_behaviorClickedRegular (t_plot *x, t_array *array,
+static int plot_behaviorMouseRegular (t_plot *x, t_array *array,
     int a,
     int b,
     int shift,
@@ -1044,7 +1044,7 @@ static int plot_behaviorClickedRegular (t_plot *x, t_array *array,
     
     if (best <= PLOT_HANDLE_SIZE) {
 
-        return plot_behaviorClickedRegularMatch (x, array,
+        return plot_behaviorMouseRegularMatch (x, array,
                     fieldX,
                     fieldY, 
                     fieldW,
@@ -1065,7 +1065,7 @@ static int plot_behaviorClickedRegular (t_plot *x, t_array *array,
     return 0;
 }
 
-static int plot_behaviorClickedSingle (t_plot *x, t_array *array,
+static int plot_behaviorMouseSingle (t_plot *x, t_array *array,
     int a,
     int b,
     int shift,
@@ -1102,7 +1102,7 @@ static int plot_behaviorClickedSingle (t_plot *x, t_array *array,
     return 1;
 }
 
-static int plot_behaviorClicked (t_gobj *z,
+static int plot_behaviorMouse (t_gobj *z,
     t_gpointer *gp,
     t_float baseX,
     t_float baseY,
@@ -1146,9 +1146,9 @@ static int plot_behaviorClicked (t_gobj *z,
     gpointer_setAsWord (&plot_check, array, array_getData (array));
     
     if (garray_isSingle (glist)) {
-        return plot_behaviorClickedSingle (x, array, a, b, shift, alt, dbl, clicked); 
+        return plot_behaviorMouseSingle (x, array, a, b, shift, alt, dbl, clicked); 
     } else {
-        return plot_behaviorClickedRegular (x, array, a, b, shift, alt, dbl, clicked);
+        return plot_behaviorMouseRegular (x, array, a, b, shift, alt, dbl, clicked);
     }
     //
     }
@@ -1163,7 +1163,7 @@ t_painterwidgetbehavior plot_widgetBehavior =
     {
         plot_behaviorGetRectangle,
         plot_behaviorVisibilityChanged,
-        plot_behaviorClicked,
+        plot_behaviorMouse,
     };
 
 // -----------------------------------------------------------------------------------------------------------

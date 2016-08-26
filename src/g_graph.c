@@ -37,7 +37,7 @@ static void canvas_behaviorSelected             (t_gobj *, t_glist *, int);
 static void canvas_behaviorActivated            (t_gobj *, t_glist *, int);
 static void canvas_behaviorDeleted              (t_gobj *, t_glist *);
 static void canvas_behaviorVisibilityChanged    (t_gobj *, t_glist *, int);
-static int  canvas_behaviorClicked              (t_gobj *, t_glist *, int, int, int, int, int, int, int);
+static int  canvas_behaviorMouse                (t_gobj *, t_glist *, int, int, int, int, int, int, int);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -50,7 +50,7 @@ t_widgetbehavior canvas_widgetbehavior =        /* Shared. */
         canvas_behaviorActivated,
         canvas_behaviorDeleted,
         canvas_behaviorVisibilityChanged,
-        canvas_behaviorClicked,
+        canvas_behaviorMouse,
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -568,7 +568,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     }
 }
 
-static int canvas_behaviorClicked (t_gobj *z,
+static int canvas_behaviorMouse (t_gobj *z,
     t_glist *glist,
     int a,
     int b,
@@ -581,7 +581,7 @@ static int canvas_behaviorClicked (t_gobj *z,
     t_glist *x = cast_glist (z);
 
     if (!x->gl_isGraphOnParent) {
-        return (text_widgetBehavior.w_fnClicked (z, glist, a, b, shift, ctrl, alt, dbl, clicked));
+        return (text_widgetBehavior.w_fnMouse (z, glist, a, b, shift, ctrl, alt, dbl, clicked));
         
     } else {
     //
@@ -594,7 +594,7 @@ static int canvas_behaviorClicked (t_gobj *z,
         for (y = x->gl_graphics; y; y = y->g_next) {
             int x1, y1, x2, y2;
             if (gobj_hit (y, x, a, b, &x1, &y1, &x2, &y2)) {
-                if (k = gobj_clicked (y, x, a, b, shift, ctrl, alt, 0, clicked)) {
+                if (k = gobj_mouse (y, x, a, b, shift, ctrl, alt, 0, clicked)) {
                     break;
                 }
             }

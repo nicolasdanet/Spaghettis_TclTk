@@ -41,7 +41,7 @@ t_widgetbehavior text_widgetBehavior =              /* Shared. */
         text_behaviorActivated,
         text_behaviorDeleted,
         text_behaviorVisibilityChanged,
-        text_behaviorClicked
+        text_behaviorMouse
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -130,7 +130,7 @@ void text_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
     }
 }
 
-int text_behaviorClicked (t_gobj *z,
+int text_behaviorMouse (t_gobj *z,
     t_glist *glist,
     int a,
     int b,

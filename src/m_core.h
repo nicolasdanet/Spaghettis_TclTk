@@ -31,7 +31,7 @@ typedef void (*t_selectedfn)            (t_gobj *x, t_glist *glist, int isSelect
 typedef void (*t_activatedfn)           (t_gobj *x, t_glist *glist, int isActivated);
 typedef void (*t_deletedfn)             (t_gobj *x, t_glist *glist);
 typedef void (*t_visibilityfn)          (t_gobj *x, t_glist *glist, int isVisible);
-typedef int  (*t_clickedfn)             (t_gobj *x,
+typedef int  (*t_mousefn)               (t_gobj *x,
                                             t_glist *glist,
                                             int a,
                                             int b,
@@ -52,7 +52,7 @@ typedef void (*t_paintergetrectanglefn) (t_gobj *x, t_gpointer *gp, t_float base
                                             int *d);
                                             
 typedef void (*t_paintervisibilityfn)   (t_gobj *x, t_gpointer *gp, t_float baseX, t_float baseY, int flag);
-typedef int  (*t_painterclickedfn)      (t_gobj *x, t_gpointer *gp,
+typedef int  (*t_paintermousefn)        (t_gobj *x, t_gpointer *gp,
                                             t_float baseX,
                                             t_float baseY,
                                             int a,
@@ -72,13 +72,13 @@ struct _widgetbehavior {
     t_activatedfn                   w_fnActivated;
     t_deletedfn                     w_fnDeleted;
     t_visibilityfn                  w_fnVisibilityChanged;
-    t_clickedfn                     w_fnClicked;
+    t_mousefn                       w_fnMouse;
     };
     
 struct _painterwidgetbehavior {
     t_paintergetrectanglefn         w_fnPainterGetRectangle;
     t_paintervisibilityfn           w_fnPainterVisibilityChanged;
-    t_painterclickedfn              w_fnPainterClicked;
+    t_paintermousefn                w_fnPainterMouse;
     };
 
 // -----------------------------------------------------------------------------------------------------------

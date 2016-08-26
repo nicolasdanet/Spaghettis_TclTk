@@ -42,7 +42,7 @@ static void scalar_behaviorSelected             (t_gobj *, t_glist *, int);
 static void scalar_behaviorActivated            (t_gobj *, t_glist *, int);
 static void scalar_behaviorDeleted              (t_gobj *, t_glist *);
 static void scalar_behaviorVisibilityChanged    (t_gobj *, t_glist *, int);
-static int  scalar_behaviorClicked              (t_gobj *, t_glist *, int, int, int, int, int, int, int);
+static int  scalar_behaviorMouse                (t_gobj *, t_glist *, int, int, int, int, int, int, int);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -56,7 +56,7 @@ static t_widgetbehavior scalar_widgetBehavior =         /* Shared. */
         scalar_behaviorActivated,
         scalar_behaviorDeleted,
         scalar_behaviorVisibilityChanged,
-        scalar_behaviorClicked,
+        scalar_behaviorMouse,
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -331,7 +331,7 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     }
 }
 
-static int scalar_behaviorClicked (t_gobj *z,
+static int scalar_behaviorMouse (t_gobj *z,
     t_glist *glist,
     int a,
     int b,
@@ -364,7 +364,7 @@ static int scalar_behaviorClicked (t_gobj *z,
         
         gpointer_setAsScalar (&gp, glist, x);
         
-        int k = (*behavior->w_fnPainterClicked) (y,
+        int k = (*behavior->w_fnPainterMouse) (y,
                     &gp,
                     baseX,
                     baseY,

@@ -68,7 +68,7 @@ static t_widgetbehavior gatom_widgetBehavior =          /* Shared. */
         NULL,
         text_behaviorDeleted,
         gatom_behaviorVisibilityChanged,
-        text_behaviorClicked
+        text_behaviorMouse
     };
 
 // -----------------------------------------------------------------------------------------------------------

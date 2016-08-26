@@ -30,7 +30,7 @@
 static void toggle_set                  (t_toggle *, t_float);
 static void toggle_nonZero              (t_toggle *, t_float);
 static void toggle_behaviorGetRectangle (t_gobj *, t_glist *, int *, int *, int *, int *);
-static int  toggle_behaviorClicked      (t_gobj *, t_glist *, int, int, int, int, int, int, int);
+static int  toggle_behaviorMouse        (t_gobj *, t_glist *, int, int, int, int, int, int, int);
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -45,7 +45,7 @@ static t_widgetbehavior toggle_widgetBehavior =         /* Shared. */
         NULL,
         iemgui_behaviorDeleted,
         iemgui_behaviorVisibilityChanged,
-        toggle_behaviorClicked
+        toggle_behaviorMouse
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -335,7 +335,7 @@ static void toggle_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
     *d = *b + cast_iem (z)->iem_height;
 }
 
-static int toggle_behaviorClicked (t_gobj *z, t_glist *glist,
+static int toggle_behaviorMouse (t_gobj *z, t_glist *glist,
     int a,
     int b,
     int shift,

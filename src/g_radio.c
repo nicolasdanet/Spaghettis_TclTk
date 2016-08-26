@@ -35,7 +35,7 @@
 
 static void radio_buttonsNumber         (t_radio *, t_float);
 static void radio_behaviorGetRectangle  (t_gobj *, t_glist *, int *, int *, int *, int *);
-static int  radio_behaviorClicked       (t_gobj *, t_glist *, int, int, int, int, int, int, int);
+static int  radio_behaviorMouse         (t_gobj *, t_glist *, int, int, int, int, int, int, int);
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -50,7 +50,7 @@ static t_widgetbehavior radio_widgetBehavior =          /* Shared. */
         NULL,
         iemgui_behaviorDeleted,
         iemgui_behaviorVisibilityChanged,
-        radio_behaviorClicked,
+        radio_behaviorMouse,
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -504,7 +504,7 @@ static void radio_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *
     }
 }
 
-static int radio_behaviorClicked (t_gobj *z, t_glist *glist,
+static int radio_behaviorMouse (t_gobj *z, t_glist *glist,
     int a,
     int b,
     int shift,

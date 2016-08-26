@@ -38,7 +38,7 @@ static void garray_behaviorSelected             (t_gobj *, t_glist *, int);
 static void garray_behaviorActivated            (t_gobj *, t_glist *, int);
 static void garray_behaviorDeleted              (t_gobj *, t_glist *);
 static void garray_behaviorVisibilityChanged    (t_gobj *, t_glist *, int);
-static int  garray_behaviorClicked              (t_gobj *, t_glist *, int, int, int, int, int, int, int);
+static int  garray_behaviorMouse                (t_gobj *, t_glist *, int, int, int, int, int, int, int);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -76,7 +76,7 @@ static t_widgetbehavior garray_widgetBehavior =             /* Shared. */
         garray_behaviorActivated,
         garray_behaviorDeleted,
         garray_behaviorVisibilityChanged,
-        garray_behaviorClicked,
+        garray_behaviorMouse,
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -554,7 +554,7 @@ static void garray_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     gobj_visibilityChanged (cast_gobj (x->x_scalar), glist, isVisible);
 }
 
-static int garray_behaviorClicked (t_gobj *z,
+static int garray_behaviorMouse (t_gobj *z,
     t_glist *glist,
     int a,
     int b,
@@ -566,7 +566,7 @@ static int garray_behaviorClicked (t_gobj *z,
 {
     t_garray *x = (t_garray *)z;
 
-    if (clicked) { gobj_clicked (cast_gobj (x->x_scalar), glist, a, b, shift, ctrl, alt, dbl, clicked); }
+    if (clicked) { gobj_mouse (cast_gobj (x->x_scalar), glist, a, b, shift, ctrl, alt, dbl, clicked); }
     
     return 1;
 }

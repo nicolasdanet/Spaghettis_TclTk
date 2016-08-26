@@ -234,7 +234,7 @@ static void canvas_performMouseClick (t_glist *glist, int positionX, int positio
     //
     if (gobj_hit (y, glist, positionX, positionY, &a, &b, &c, &d)) {
     
-        k = gobj_clicked (y, glist, 
+        k = gobj_mouse (y, glist, 
                 positionX, 
                 positionY, 
                 (modifier & MODIFIER_SHIFT), 

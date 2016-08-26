@@ -59,7 +59,7 @@
 static void dial_set                    (t_dial *, t_float);
 static void dial_motion                 (t_dial *, t_float, t_float, t_float);
 static void dial_behaviorGetRectangle   (t_gobj *, t_glist *, int *, int *, int *, int *);
-static int  dial_behaviorClicked        (t_gobj *, t_glist *, int, int, int, int, int, int, int);
+static int  dial_behaviorMouse          (t_gobj *, t_glist *, int, int, int, int, int, int, int);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -75,7 +75,7 @@ static t_widgetbehavior dial_widgetBehavior =       /* Shared. */
         NULL,
         iemgui_behaviorDeleted,
         iemgui_behaviorVisibilityChanged,
-        dial_behaviorClicked,
+        dial_behaviorMouse,
     };
     
 // -----------------------------------------------------------------------------------------------------------
@@ -589,7 +589,7 @@ static void dial_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b
     *d = *b + cast_iem (z)->iem_height;
 }
 
-static int dial_behaviorClicked (t_gobj *z, t_glist *glist,
+static int dial_behaviorMouse (t_gobj *z, t_glist *glist,
     int a,
     int b,
     int shift,
