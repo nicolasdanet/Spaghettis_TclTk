@@ -346,11 +346,17 @@ void        buffer_vAppend                              (t_buffer *x, char *fmt,
 void        buffer_appendAtom                           (t_buffer *x, t_atom *a);
 void        buffer_appendBuffer                         (t_buffer *x, t_buffer *y);
 void        buffer_appendSemicolon                      (t_buffer *x);
+t_error     buffer_copyAtomAtIndex                      (t_buffer *x, int n, t_atom *a);
+t_atom      *buffer_getAtomAtIndex                      (t_buffer *x, int n);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 void        buffer_parseStringUnzeroed                  (t_buffer *x, char *s, int size, int preallocated);
 void        buffer_toString                             (t_buffer *x, char **s);
 void        buffer_toStringUnzeroed                     (t_buffer *x, char **s, int *size);
 void        buffer_withStringUnzeroed                   (t_buffer *x, char *s, int size);
-int         buffer_getMessageAt                         (t_buffer *b, int n, int *start, int *end);
+int         buffer_getMessageAt                         (t_buffer *x, int n, int *start, int *end);
 void        buffer_serialize                            (t_buffer *x, t_buffer *y);
 void        buffer_deserialize                          (t_buffer *x, int argc, t_atom *argv);
 void        buffer_eval                                 (t_buffer *x, t_pd *object, int argc, t_atom *argv);
