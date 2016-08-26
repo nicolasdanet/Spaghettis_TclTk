@@ -62,8 +62,10 @@ static void textget_float (t_textget *x, t_float f)
             outlet_list (x->x_outletLeft, NULL, size, t);
             ATOMS_FREEA (t, size);
             
-        } else if (field + count <= size) {
+        } else if (field < size) {
         
+            count = PD_MIN (count, size - field);
+            
             ATOMS_ALLOCA (t, count);
             for (i = 0; i < count; i++) { buffer_copyAtomAtIndex (b, start + field + i, t + i); }
             outlet_list (x->x_outletLeft, NULL, count, t);
