@@ -105,7 +105,7 @@ static void iemgui_fetchUnexpanded (t_iem *iem, t_symbol **s, int i, t_symbol *f
         if (i < buffer_size (b)) {
             char t[PD_STRING] = { 0 };
             PD_ASSERT (i >= 0);
-            if (!(err = atom_toString (buffer_atoms (b) + i, t, PD_STRING))) { *s = gensym (t); }
+            if (!(err = atom_toString (buffer_atomAtIndex (b, i), t, PD_STRING))) { *s = gensym (t); }
         }
         if (err) {
             *s = (fallback ? fallback : utils_empty());
