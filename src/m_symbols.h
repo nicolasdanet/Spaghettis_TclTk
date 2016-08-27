@@ -74,7 +74,6 @@ extern t_symbol *sym___less____equals__;
 extern t_symbol *sym___less____less__;
 extern t_symbol *sym___minus__;
 extern t_symbol *sym___minus____tilde__;
-extern t_symbol *sym___parenthesis__pointer__parenthesis__;
 extern t_symbol *sym___percent__;
 extern t_symbol *sym___plus__;
 extern t_symbol *sym___plus____tilde__;

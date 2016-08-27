@@ -35,8 +35,6 @@ t_class *textset_class;                     /* Shared. */
 
 static void textset_list (t_textset *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_atom substitute; SET_SYMBOL (&substitute, sym___parenthesis__pointer__parenthesis__);
-        
     t_buffer *b = textclient_fetchBuffer (&x->x_textclient);
     
     if (b) {
@@ -47,7 +45,8 @@ static void textset_list (t_textset *x, t_symbol *s, int argc, t_atom *argv)
     if (line >= 0) {
     //
     int start, end, count = argc; 
-    
+    int i;
+        
     if (buffer_getMessageAt (b, line, &start, &end)) {
     
         int size = end - start;
@@ -86,14 +85,7 @@ static void textset_list (t_textset *x, t_symbol *s, int argc, t_atom *argv)
         }
     }
     
-    int i;
-    
-    for (i = 0; i < count; i++) {
-        if (IS_POINTER (argv + i)) { buffer_setAtomAtIndex (b, start + i, &substitute); }
-        else {
-            buffer_setAtomAtIndex (b, start + i, argv + i);
-        }
-    }
+    for (i = 0; i < count; i++) { buffer_setAtomAtIndex (b, start + i, atom_substituteIfPointer (argv + i)); }
     
     textclient_update (&x->x_textclient);
     //

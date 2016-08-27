@@ -160,6 +160,13 @@ void buffer_appendSemicolon (t_buffer *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_atom *buffer_atomAtIndex (t_buffer *x, int n)
+{
+    if (n >= 0 && n < buffer_size (x)) { return (buffer_atoms (x) + n); }
+    
+    return NULL;
+}
+
 t_error buffer_getAtomAtIndex (t_buffer *x, int n, t_atom *a)
 {
     t_error err = PD_ERROR;
@@ -176,13 +183,6 @@ t_error buffer_setAtomAtIndex (t_buffer *x, int n, t_atom *a)
     t_atom *t = buffer_atomAtIndex (x, n); if (t) { *t = *a; return PD_ERROR_NONE; }
     
     return err;
-}
-
-t_atom *buffer_atomAtIndex (t_buffer *x, int n)
-{
-    if (n >= 0 && n < buffer_size (x)) { return (buffer_atoms (x) + n); }
-    
-    return NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------

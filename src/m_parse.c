@@ -39,7 +39,7 @@ enum {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int buffer_isMalformed (char *s, int size)
+static int buffer_parseIsMalformed (char *s, int size)
 {
     if (size < 0) { return 1; }
     else {
@@ -50,12 +50,12 @@ static int buffer_isMalformed (char *s, int size)
     return 0;
 }
 
-static int buffer_isValidCharacter (char c)
+static int buffer_parseIsValidCharacter (char c)
 {
     return (!utils_isTokenWhitespace (c) && !utils_isTokenEnd (c));
 }
 
-static int buffer_isValidState (int floatState)
+static int buffer_parseIsValidState (int floatState)
 {
     return (floatState == FLOAT_STATE_INTEGER_DIGIT
             || floatState == FLOAT_STATE_DOT
@@ -63,7 +63,7 @@ static int buffer_isValidState (int floatState)
             || floatState == FLOAT_STATE_EXPONENTIAL_DIGIT);
 }
 
-static int buffer_nextFloatState (int floatState, char c)
+static int buffer_parseNextFloatState (int floatState, char c)
 {
     int digit       = (c >= '0' && c <= '9');
     int dot         = (c == '.');
@@ -150,7 +150,7 @@ void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int preallocate
     const char *text = s;
     const char *tBound = s + size;
 
-    if (buffer_isMalformed (s, size)) { PD_BUG; return; }
+    if (buffer_parseIsMalformed (s, size)) { PD_BUG; return; }
     
     PD_MEMORY_FREE (x->b_vector);
     x->b_vector = (t_atom *)PD_MEMORY_GET (preallocated * sizeof (t_atom));
@@ -181,17 +181,17 @@ void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int preallocate
         
         lastSlash = slash; slash = utils_isTokenEscape (c);
 
-        if (floatState >= 0) { floatState = buffer_nextFloatState (floatState, c); }
+        if (floatState >= 0) { floatState = buffer_parseNextFloatState (floatState, c); }
         if (!lastSlash && text != tBound && dollar_isPointingToDollarAndNumber (text - 1)) { dollar = 1; }
         
         if (!slash)         { p++; }
         else if (lastSlash) { p++; slash = 0; }
         //
-        } while (text != tBound && p != pBound && (slash || (buffer_isValidCharacter (*text))));
+        } while (text != tBound && p != pBound && (slash || (buffer_parseIsValidCharacter (*text))));
                 
         *p = 0;
 
-        if (buffer_isValidState (floatState)) {
+        if (buffer_parseIsValidState (floatState)) {
             SET_FLOAT (a, atof (buffer));
                         
         } else if (dollar) {

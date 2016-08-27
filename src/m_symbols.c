@@ -69,7 +69,6 @@ t_symbol *sym___less____equals__;
 t_symbol *sym___less____less__;
 t_symbol *sym___minus__;
 t_symbol *sym___minus____tilde__;
-t_symbol *sym___parenthesis__pointer__parenthesis__;
 t_symbol *sym___percent__;
 t_symbol *sym___plus__;
 t_symbol *sym___plus____tilde__;
@@ -572,7 +571,6 @@ void symbols_initialize (void)
     sym___less____less__                        = gensym ("<<");
     sym___minus__                               = gensym ("-");
     sym___minus____tilde__                      = gensym ("-~");
-    sym___parenthesis__pointer__parenthesis__   = gensym ("(pointer)");
     sym___percent__                             = gensym ("%");
     sym___plus__                                = gensym ("+");
     sym___plus____tilde__                       = gensym ("+~");
