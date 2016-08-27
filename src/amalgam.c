@@ -120,6 +120,7 @@
 #include "x_textclient.c"
 #include "x_textget.c"
 #include "x_textset.c"
+#include "x_textsize.c"
 
 /* DSP. */
 
