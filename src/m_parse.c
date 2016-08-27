@@ -315,6 +315,8 @@ int buffer_getNumberOfMessages (t_buffer *x)
 
 int buffer_getMessageAt (t_buffer *x, int n, int *start, int *end)
 {
+    if (n >= 0) {
+    //
     int i, k = 0;
     
     for (i = 0; i < x->b_size; i++) {
@@ -326,6 +328,8 @@ int buffer_getMessageAt (t_buffer *x, int n, int *start, int *end)
         *start = i;
         *end   = j;
         return 1;
+    }
+    //
     }
     //
     }

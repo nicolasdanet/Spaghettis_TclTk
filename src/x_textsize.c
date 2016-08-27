@@ -39,25 +39,24 @@ static void textsize_bang (t_textsize *x)
     if (b) { outlet_float (x->x_outlet, (t_float)buffer_getNumberOfMessages (b)); }
 }
 
-static void textsize_float(t_textsize *x, t_float f)
+static void textsize_float (t_textsize *x, t_float f)
 {
-    t_buffer *b = textclient_fetchBuffer(&x->x_textclient);
-    int start, end, n;
-    t_atom *vec;
-    if (!b)
-       return;
-    vec = buffer_atoms(b);
-    n = buffer_size(b);
-    if (buffer_getMessageAt(b, f, &start, &end))
-        outlet_float(x->x_outlet, end-start);
-    else outlet_float(x->x_outlet, -1);
+    t_buffer *b = textclient_fetchBuffer (&x->x_textclient);
+    
+    if (b) {
+        int start, end;
+        if (buffer_getMessageAt (b, f, &start, &end)) { outlet_float (x->x_outlet, (t_float)(end - start)); }
+        else {
+            outlet_float (x->x_outlet, -1);
+        }
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void *textsize_new(t_symbol *s, int argc, t_atom *argv)
+void *textsize_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_textsize *x = (t_textsize *)pd_new (textsize_class);
     
