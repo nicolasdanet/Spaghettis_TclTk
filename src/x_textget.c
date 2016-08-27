@@ -54,11 +54,11 @@ static void textget_float (t_textget *x, t_float f)
         
         if (field < 0) {
         
-            t_float type = (end < buffer_size (b) && IS_COMMA (buffer_getAtomAtIndex (b, end)));
+            t_float type = (end < buffer_size (b) && IS_COMMA (buffer_atomAtIndex (b, end)));
             outlet_float (x->x_outletRight, type);
             
             ATOMS_ALLOCA (t, size);
-            for (i = 0; i < size; i++) { buffer_copyAtomAtIndex (b, start + i, t + i); }
+            for (i = 0; i < size; i++) { buffer_getAtomAtIndex (b, start + i, t + i); }
             outlet_list (x->x_outletLeft, NULL, size, t);
             ATOMS_FREEA (t, size);
             
@@ -67,7 +67,7 @@ static void textget_float (t_textget *x, t_float f)
             count = PD_MIN (count, size - field);
             
             ATOMS_ALLOCA (t, count);
-            for (i = 0; i < count; i++) { buffer_copyAtomAtIndex (b, start + field + i, t + i); }
+            for (i = 0; i < count; i++) { buffer_getAtomAtIndex (b, start + field + i, t + i); }
             outlet_list (x->x_outletLeft, NULL, count, t);
             ATOMS_FREEA (t, count);
         }

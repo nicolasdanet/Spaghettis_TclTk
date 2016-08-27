@@ -81,6 +81,26 @@ void buffer_resize (t_buffer *x, int n)
     x->b_vector = PD_MEMORY_RESIZE (x->b_vector, x->b_size * sizeof (t_atom), n * sizeof (t_atom));
 }
 
+t_error buffer_resizeAtBetween (t_buffer *x, int n, int start, int end)
+{
+    PD_ASSERT (n >= 0);
+    
+    if ((start < 0) || (end > x->b_size) || (start > end)) { return PD_ERROR; }
+    else {
+    //
+    size_t oldSize  = (size_t)x->b_size;
+    size_t newSize  = oldSize + (size_t)(n - (end - start));
+    size_t tailSize = oldSize - (size_t)(end);
+    
+    if (newSize > oldSize) { buffer_resize (x, (int)newSize); }
+    memmove ((void *)(x->b_vector + start + n), (void *)(x->b_vector + end), sizeof (t_atom) * tailSize);
+    if (newSize < oldSize) { buffer_resize (x, (int)newSize); }
+    //
+    }
+    
+    return PD_ERROR_NONE;
+}
+
 /* < http://stackoverflow.com/a/11270603 > */
 
 void buffer_vAppend (t_buffer *x, char *fmt, ...)
@@ -140,16 +160,25 @@ void buffer_appendSemicolon (t_buffer *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error buffer_copyAtomAtIndex (t_buffer *x, int n, t_atom *a)
+t_error buffer_getAtomAtIndex (t_buffer *x, int n, t_atom *a)
 {
     t_error err = PD_ERROR;
     
-    t_atom *t = buffer_getAtomAtIndex (x, n); if (t) { *a = *t; return PD_ERROR_NONE; }
+    t_atom *t = buffer_atomAtIndex (x, n); if (t) { *a = *t; return PD_ERROR_NONE; }
     
     return err;
 }
 
-t_atom *buffer_getAtomAtIndex (t_buffer *x, int n)
+t_error buffer_setAtomAtIndex (t_buffer *x, int n, t_atom *a)
+{
+    t_error err = PD_ERROR;
+    
+    t_atom *t = buffer_atomAtIndex (x, n); if (t) { *t = *a; return PD_ERROR_NONE; }
+    
+    return err;
+}
+
+t_atom *buffer_atomAtIndex (t_buffer *x, int n)
 {
     if (n >= 0 && n < buffer_size (x)) { return (buffer_atoms (x) + n); }
     

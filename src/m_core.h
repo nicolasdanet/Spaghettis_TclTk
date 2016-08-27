@@ -346,8 +346,10 @@ void        buffer_vAppend                              (t_buffer *x, char *fmt,
 void        buffer_appendAtom                           (t_buffer *x, t_atom *a);
 void        buffer_appendBuffer                         (t_buffer *x, t_buffer *y);
 void        buffer_appendSemicolon                      (t_buffer *x);
-t_error     buffer_copyAtomAtIndex                      (t_buffer *x, int n, t_atom *a);
-t_atom      *buffer_getAtomAtIndex                      (t_buffer *x, int n);
+t_error     buffer_resizeAtBetween                      (t_buffer *x, int n, int start, int end);
+t_error     buffer_getAtomAtIndex                       (t_buffer *x, int n, t_atom *a);
+t_error     buffer_setAtomAtIndex                       (t_buffer *x, int n, t_atom *a);
+t_atom      *buffer_atomAtIndex                         (t_buffer *x, int n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
