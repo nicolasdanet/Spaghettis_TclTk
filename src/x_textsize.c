@@ -32,23 +32,11 @@ typedef struct _textsize {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void textsize_bang(t_textsize *x)
+static void textsize_bang (t_textsize *x)
 {
-    t_buffer *b = textclient_fetchBuffer(&x->x_textclient);
-    int n, i, cnt = 0;
-    t_atom *vec;
-    if (!b)
-       return;
-    vec = buffer_atoms(b);
-    n = buffer_size(b);
-    for (i = 0; i < n; i++)
-    {
-        if (vec[i].a_type == A_SEMICOLON || vec[i].a_type == A_COMMA)
-            cnt++;
-    }
-    if (n && vec[n-1].a_type != A_SEMICOLON && vec[n-1].a_type != A_COMMA)
-        cnt++;
-    outlet_float(x->x_outlet, cnt);
+    t_buffer *b = textclient_fetchBuffer (&x->x_textclient);
+    
+    if (b) { outlet_float (x->x_outlet, (t_float)buffer_getNumberOfMessages (b)); }
 }
 
 static void textsize_float(t_textsize *x, t_float f)
@@ -71,18 +59,19 @@ static void textsize_float(t_textsize *x, t_float f)
 
 void *textsize_new(t_symbol *s, int argc, t_atom *argv)
 {
-    t_textsize *x = (t_textsize *)pd_new(textsize_class);
-    x->x_outlet = outlet_new(cast_object (x), &s_float);
-    textclient_init(&x->x_textclient, &argc, &argv);
-    if (argc)
-    {
-        post("warning: text size ignoring extra argument: ");
-        post_atoms(argc, argv);
+    t_textsize *x = (t_textsize *)pd_new (textsize_class);
+    
+    textclient_init (&x->x_textclient, &argc, &argv);           /* Note that it may consume arguments. */
+        
+    x->x_outlet = outlet_new (cast_object (x), &s_float);
+
+    if (TEXTCLIENT_ASPOINTER (&x->x_textclient)) {
+        inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
+    } else {
+        inlet_newSymbol (cast_object (x), TEXTCLIENT_GETNAME (&x->x_textclient));
     }
-    if (TEXTCLIENT_ASPOINTER (&x->x_textclient))
-        inlet_newPointer(cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
-    else inlet_newSymbol(cast_object (x), TEXTCLIENT_GETNAME (&x->x_textclient));
-    return (x);
+    
+    return x;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -91,12 +80,22 @@ void *textsize_new(t_symbol *s, int argc, t_atom *argv)
 
 void textsize_setup (void)
 {
-    textsize_class = class_new(sym_text__space__size,
-        (t_newmethod)textsize_new, (t_method)textclient_free,
-            sizeof(t_textsize), 0, A_GIMME, 0);
-    class_addBang(textsize_class, textsize_bang);
-    class_addFloat(textsize_class, textsize_float);
-    class_setHelpName(textsize_class, sym_text);
+    t_class *c = NULL;
+    
+    c = class_new (sym_text__space__size,
+            (t_newmethod)textsize_new,
+            (t_method)textclient_free,
+            sizeof (t_textsize),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+            
+    class_addBang (c, textsize_bang);
+    class_addFloat (c, textsize_float);
+    
+    class_setHelpName (c, sym_text);
+    
+    textsize_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
