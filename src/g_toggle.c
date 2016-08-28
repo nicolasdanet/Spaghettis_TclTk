@@ -459,16 +459,16 @@ static void *toggle_new (t_symbol *s, int argc, t_atom *argv)
     if (argc >= 13
             && IS_FLOAT (argv)                                  // Size.
             && IS_FLOAT (argv + 1)                              // Loadbang.
-            && IS_SYMBOLORFLOAT (argv + 2)                      // Send.
-            && IS_SYMBOLORFLOAT (argv + 3)                      // Receive.
-            && IS_SYMBOLORFLOAT (argv + 4)                      // Label.
+            && IS_SYMBOL_OR_FLOAT (argv + 2)                    // Send.
+            && IS_SYMBOL_OR_FLOAT (argv + 3)                    // Receive.
+            && IS_SYMBOL_OR_FLOAT (argv + 4)                    // Label.
             && IS_FLOAT (argv + 5)                              // Label X.
             && IS_FLOAT (argv + 6)                              // Label Y.
             && IS_FLOAT (argv + 7)                              // Label font.
             && IS_FLOAT (argv + 8)                              // Label font size.
-            && IS_SYMBOLORFLOAT (argv + 9)                      // Background color.
-            && IS_SYMBOLORFLOAT (argv + 10)                     // Foreground color.
-            && IS_SYMBOLORFLOAT (argv + 11)                     // Label color.
+            && IS_SYMBOL_OR_FLOAT (argv + 9)                    // Background color.
+            && IS_SYMBOL_OR_FLOAT (argv + 10)                   // Foreground color.
+            && IS_SYMBOL_OR_FLOAT (argv + 11)                   // Label color.
             && IS_FLOAT (argv + 12))                            // Toggle state.
     {
         size                        = (int)atom_getFloatAtIndex (0, argc,  argv);

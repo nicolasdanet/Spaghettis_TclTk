@@ -241,7 +241,7 @@ void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)
     
     /* Remove whitespace before a semicolon or a comma for cosmetic purpose. */
     
-    if (IS_SEMICOLON (a) || IS_COMMA (a)) {
+    if (IS_SEMICOLON_OR_COMMA (a)) {
     //
     if (length && buffer[length - 1] == ' ') { 
         buffer = PD_MEMORY_RESIZE (buffer, length, length - 1); length--; 
@@ -303,10 +303,10 @@ int buffer_getNumberOfMessages (t_buffer *x)
     int i, count = 0;
 
     for (i = 0; i < x->b_size; i++) {
-        if (IS_SEMICOLON (&x->b_vector[i]) || IS_COMMA (&x->b_vector[i])) { count++; }
+        if (IS_SEMICOLON_OR_COMMA (&x->b_vector[i])) { count++; }
     }
     
-    if (x->b_size && !IS_SEMICOLON (&x->b_vector[x->b_size - 1]) && !IS_COMMA (&x->b_vector[x->b_size - 1])) {
+    if (x->b_size && !IS_SEMICOLON_OR_COMMA (&x->b_vector[x->b_size - 1])) {
         count++;
     }
         
@@ -321,10 +321,10 @@ int buffer_getMessageAt (t_buffer *x, int n, int *start, int *end)
     
     for (i = 0; i < x->b_size; i++) {
     //
-    if (k != n) { if (IS_SEMICOLON (&x->b_vector[i]) || IS_COMMA (&x->b_vector[i])) { k++; } }
+    if (k != n) { if (IS_SEMICOLON_OR_COMMA (&x->b_vector[i])) { k++; } }
     else {
         int j = i;
-        while (j < x->b_size && !IS_SEMICOLON (&x->b_vector[j]) && !IS_COMMA (&x->b_vector[j])) { j++; }
+        while (j < x->b_size && !IS_SEMICOLON_OR_COMMA (&x->b_vector[j])) { j++; }
         *start = i;
         *end   = j;
         return 1;

@@ -352,15 +352,15 @@ static void *panel_new (t_symbol *s, int argc, t_atom *argv)
             && IS_FLOAT (argv + 0)                                              // Grip width.
             && IS_FLOAT (argv + 1)                                              // Panel width.
             && IS_FLOAT (argv + 2)                                              // Panel Height.
-            && IS_SYMBOLORFLOAT (argv + 3)                                      // Send.
-            && IS_SYMBOLORFLOAT (argv + 4)                                      // Receive.
-            && IS_SYMBOLORFLOAT (argv + 5)                                      // Label.
+            && IS_SYMBOL_OR_FLOAT (argv + 3)                                    // Send.
+            && IS_SYMBOL_OR_FLOAT (argv + 4)                                    // Receive.
+            && IS_SYMBOL_OR_FLOAT (argv + 5)                                    // Label.
             && IS_FLOAT (argv + 6)                                              // Label X.
             && IS_FLOAT (argv + 7)                                              // Label Y.
             && IS_FLOAT (argv + 8)                                              // Label font.
             && IS_FLOAT (argv + 9)                                              // Label font size.
-            && IS_SYMBOLORFLOAT (argv + 10)                                     // Background color.
-            && IS_SYMBOLORFLOAT (argv + 11))                                    // Label color.
+            && IS_SYMBOL_OR_FLOAT (argv + 10)                                   // Background color.
+            && IS_SYMBOL_OR_FLOAT (argv + 11))                                  // Label color.
     {
         gripSize                    = (int)atom_getFloatAtIndex (0,  argc, argv);
         panelWidth                  = (int)atom_getFloatAtIndex (1,  argc, argv);

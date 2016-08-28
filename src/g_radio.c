@@ -639,16 +639,16 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
             && IS_FLOAT (argv + 1)                                  // Dummy.
             && IS_FLOAT (argv + 2)                                  // Loadbang.
             && IS_FLOAT (argv + 3)                                  // Number of buttons.
-            && IS_SYMBOLORFLOAT (argv + 4)                          // Send.
-            && IS_SYMBOLORFLOAT (argv + 5)                          // Receive.
-            && IS_SYMBOLORFLOAT (argv + 6)                          // Label.
+            && IS_SYMBOL_OR_FLOAT (argv + 4)                        // Send.
+            && IS_SYMBOL_OR_FLOAT (argv + 5)                        // Receive.
+            && IS_SYMBOL_OR_FLOAT (argv + 6)                        // Label.
             && IS_FLOAT (argv + 7)                                  // Label X.
             && IS_FLOAT (argv + 8)                                  // Label Y.
             && IS_FLOAT (argv + 9)                                  // Label font.
             && IS_FLOAT (argv + 10)                                 // Label font size.
-            && IS_SYMBOLORFLOAT (argv + 11)                         // Background color.
-            && IS_SYMBOLORFLOAT (argv + 12)                         // Foreground color.
-            && IS_SYMBOLORFLOAT (argv + 13)                         // Label color.
+            && IS_SYMBOL_OR_FLOAT (argv + 11)                       // Background color.
+            && IS_SYMBOL_OR_FLOAT (argv + 12)                       // Foreground color.
+            && IS_SYMBOL_OR_FLOAT (argv + 13)                       // Label color.
             && IS_FLOAT (argv + 14))                                // Float value.
     {
         size                        = (int)atom_getFloatAtIndex (0, argc,  argv);

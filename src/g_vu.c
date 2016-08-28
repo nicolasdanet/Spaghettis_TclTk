@@ -595,14 +595,14 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
     if (argc >= 11
             && IS_FLOAT (argv + 0)                                  // Width.
             && IS_FLOAT (argv + 1)                                  // Height.
-            && IS_SYMBOLORFLOAT (argv + 2)                          // Receive.
-            && IS_SYMBOLORFLOAT (argv + 3)                          // Label.
+            && IS_SYMBOL_OR_FLOAT (argv + 2)                        // Receive.
+            && IS_SYMBOL_OR_FLOAT (argv + 3)                        // Label.
             && IS_FLOAT (argv + 4)                                  // Label X.
             && IS_FLOAT (argv + 5)                                  // Label Y.
             && IS_FLOAT (argv + 6)                                  // Label font.
             && IS_FLOAT (argv + 7)                                  // Label font size.
-            && IS_SYMBOLORFLOAT (argv + 8)                          // Background color.
-            && IS_SYMBOLORFLOAT (argv + 9)                          // Label color.
+            && IS_SYMBOL_OR_FLOAT (argv + 8)                        // Background color.
+            && IS_SYMBOL_OR_FLOAT (argv + 9)                        // Label color.
             && IS_FLOAT (argv + 10))                                // Dummy.
     {
         width                       = (int)atom_getFloatAtIndex (0,  argc, argv);

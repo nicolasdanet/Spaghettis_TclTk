@@ -131,7 +131,7 @@ void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
          
         t_symbol *s = NULL;
         
-        while (size && (IS_SEMICOLON (v) || IS_COMMA (v))) { size--; v++; }
+        while (size && IS_SEMICOLON_OR_COMMA (v)) { size--; v++; }
         
         if (size) { s = buffer_evalGetObject (v, argc, argv); }
         else {

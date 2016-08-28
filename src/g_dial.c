@@ -736,16 +736,16 @@ static void *dial_new (t_symbol *s, int argc, t_atom *argv)
             && IS_FLOAT (argv + 3)                                              // Range maximum.
             && IS_FLOAT (argv + 4)                                              // Is logarithmic.
             && IS_FLOAT (argv + 5)                                              // Loadbang.
-            && IS_SYMBOLORFLOAT (argv + 6)                                      // Send.
-            && IS_SYMBOLORFLOAT (argv + 7)                                      // Receive.
-            && IS_SYMBOLORFLOAT (argv + 8)                                      // Label.
+            && IS_SYMBOL_OR_FLOAT (argv + 6)                                    // Send.
+            && IS_SYMBOL_OR_FLOAT (argv + 7)                                    // Receive.
+            && IS_SYMBOL_OR_FLOAT (argv + 8)                                    // Label.
             && IS_FLOAT (argv + 9)                                              // Label X.
             && IS_FLOAT (argv + 10)                                             // Label Y.
             && IS_FLOAT (argv + 11)                                             // Label font.
             && IS_FLOAT (argv + 12)                                             // Label font size.
-            && IS_SYMBOLORFLOAT (argv + 13)                                     // Background color.
-            && IS_SYMBOLORFLOAT (argv + 14)                                     // Foreground color.
-            && IS_SYMBOLORFLOAT (argv + 15)                                     // Label color.
+            && IS_SYMBOL_OR_FLOAT (argv + 13)                                   // Background color.
+            && IS_SYMBOL_OR_FLOAT (argv + 14)                                   // Foreground color.
+            && IS_SYMBOL_OR_FLOAT (argv + 15)                                   // Label color.
             && IS_FLOAT (argv + 16))                                            // Value.
     {
         digits                      = (int)atom_getFloatAtIndex (0,  argc, argv);

@@ -488,16 +488,16 @@ static void *bng_new (t_symbol *s, int argc, t_atom *argv)
             && IS_FLOAT (argv + 1)                              // Flash hold.
             && IS_FLOAT (argv + 2)                              // Flash break.
             && IS_FLOAT (argv + 3)                              // Loadbang.
-            && IS_SYMBOLORFLOAT (argv + 4)                      // Send.
-            && IS_SYMBOLORFLOAT (argv + 5)                      // Receive.
-            && IS_SYMBOLORFLOAT (argv + 6)                      // Label.
+            && IS_SYMBOL_OR_FLOAT (argv + 4)                    // Send.
+            && IS_SYMBOL_OR_FLOAT (argv + 5)                    // Receive.
+            && IS_SYMBOL_OR_FLOAT (argv + 6)                    // Label.
             && IS_FLOAT (argv + 7)                              // Label X.
             && IS_FLOAT (argv + 8)                              // Label Y.
             && IS_FLOAT (argv + 9)                              // Label font.
             && IS_FLOAT (argv + 10)                             // Label font size.
-            && IS_SYMBOLORFLOAT (argv + 11)                     // Background color.
-            && IS_SYMBOLORFLOAT (argv + 12)                     // Foreground color.
-            && IS_SYMBOLORFLOAT (argv + 13))                    // Label color.
+            && IS_SYMBOL_OR_FLOAT (argv + 11)                   // Background color.
+            && IS_SYMBOL_OR_FLOAT (argv + 12)                   // Foreground color.
+            && IS_SYMBOL_OR_FLOAT (argv + 13))                  // Label color.
     {
         size                        = (int)atom_getFloatAtIndex (0,  argc, argv);
         flashHold                   = (int)atom_getFloatAtIndex (1,  argc, argv);
