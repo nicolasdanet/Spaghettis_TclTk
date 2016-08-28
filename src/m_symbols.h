@@ -302,6 +302,7 @@ extern t_symbol *sym_mtof;
 extern t_symbol *sym_mtof__tilde__;
 extern t_symbol *sym_namecanvas;
 extern t_symbol *sym_nbx;
+extern t_symbol *sym_near;
 extern t_symbol *sym_netreceive;
 extern t_symbol *sym_netsend;
 extern t_symbol *sym_new;

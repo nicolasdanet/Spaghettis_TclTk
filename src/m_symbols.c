@@ -297,6 +297,7 @@ t_symbol *sym_mtof;
 t_symbol *sym_mtof__tilde__;
 t_symbol *sym_namecanvas;
 t_symbol *sym_nbx;
+t_symbol *sym_near;
 t_symbol *sym_netreceive;
 t_symbol *sym_netsend;
 t_symbol *sym_new;
@@ -799,6 +800,7 @@ void symbols_initialize (void)
     sym_mtof__tilde__                           = gensym ("mtof~");
     sym_namecanvas                              = gensym ("namecanvas");
     sym_nbx                                     = gensym ("nbx");
+    sym_near                                    = gensym ("near");
     sym_netreceive                              = gensym ("netreceive");
     sym_netsend                                 = gensym ("netsend");
     sym_new                                     = gensym ("new");

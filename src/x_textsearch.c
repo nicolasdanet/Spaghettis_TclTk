@@ -18,17 +18,17 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *text_search_class;          /* Shared. */
+static t_class *text_search_class;      /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define KB_EQ 0     /*  equal */
-#define KB_GT 1     /* > (etc..) */
-#define KB_GE 2
-#define KB_LT 3
-#define KB_LE 4
-#define KB_NEAR 5   /* anything matches but closer is better */
+#define TEXTSEARCH_EQUAL                0
+#define TEXTSEARCH_GREATER              1
+#define TEXTSEARCH_GREATER_EQUAL        2
+#define TEXTSEARCH_LESS                 3
+#define TEXTSEARCH_LESS_EQUAL           4
+#define TEXTSEARCH_NEAR                 5
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -85,26 +85,26 @@ static void text_search_list(t_text_search *x,
                 {
                     switch (binop)
                     {
-                        case KB_EQ:
+                        case TEXTSEARCH_EQUAL:
                             if (vec[thisstart+field].a_w.w_float !=
                                 argv[j].a_w.w_float)
                                     goto nomatch;
                         break;
-                        case KB_GT:
+                        case TEXTSEARCH_GREATER:
                             if (vec[thisstart+field].a_w.w_float <=
                                 argv[j].a_w.w_float)
                                     goto nomatch;
                         break;
-                        case KB_GE:
+                        case TEXTSEARCH_GREATER_EQUAL:
                             if (vec[thisstart+field].a_w.w_float <
                                 argv[j].a_w.w_float)
                                     goto nomatch;
-                        case KB_LT:
+                        case TEXTSEARCH_LESS:
                             if (vec[thisstart+field].a_w.w_float >=
                                 argv[j].a_w.w_float)
                                     goto nomatch;
                         break;
-                        case KB_LE:
+                        case TEXTSEARCH_LESS_EQUAL:
                             if (vec[thisstart+field].a_w.w_float >
                                 argv[j].a_w.w_float)
                                     goto nomatch;
@@ -114,7 +114,7 @@ static void text_search_list(t_text_search *x,
                 }
                 else                                /* arg is a symbol */
                 {
-                    if (binop != KB_EQ)
+                    if (binop != TEXTSEARCH_EQUAL)
                     {
                         if (!failed)
                         {
@@ -149,20 +149,20 @@ static void text_search_list(t_text_search *x,
                             bestv = vec[beststart+field].a_w.w_float;
                         switch (binop)
                         {
-                            case KB_GT:
-                            case KB_GE:
+                            case TEXTSEARCH_GREATER:
+                            case TEXTSEARCH_GREATER_EQUAL:
                                 if (thisv < bestv)
                                     goto replace;
                                 else if (thisv > bestv)
                                     goto nomatch;
                             break;
-                            case KB_LT:
-                            case KB_LE:
+                            case TEXTSEARCH_LESS:
+                            case TEXTSEARCH_LESS_EQUAL:
                                 if (thisv > bestv)
                                     goto replace;
                                 else if (thisv < bestv)
                                     goto nomatch;
-                            case KB_NEAR:
+                            case TEXTSEARCH_NEAR:
                                 if (thisv >= argv[j].a_w.w_float &&
                                     bestv >= argv[j].a_w.w_float)
                                 {
@@ -220,53 +220,57 @@ static void text_search_list(t_text_search *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void *textsearch_new(t_symbol *s, int argc, t_atom *argv)
+void *textsearch_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_text_search *x = (t_text_search *)pd_new(text_search_class);
-    int i, key, nkey, nextop;
-    x->x_outlet = outlet_new (cast_object (x), &s_list);
-    textclient_init(&x->x_textclient, &argc, &argv);
-    for (i = nkey = 0; i < argc; i++)
-        if (argv[i].a_type == A_FLOAT)
-            nkey++;
-    if (nkey == 0)
-        nkey = 1;
-    x->x_numberOfKeys = nkey;
-    x->x_keys = (t_key *)PD_MEMORY_GET(nkey * sizeof(*x->x_keys));
-    if (!argc)
-        x->x_keys[0].k_field = 0, x->x_keys[0].k_type = KB_EQ; 
-    else for (i = key = 0, nextop = -1; i < argc; i++)
-    {
-        if (argv[i].a_type == A_FLOAT)
-        {
-            x->x_keys[key].k_field =
-                (argv[i].a_w.w_float > 0 ? argv[i].a_w.w_float : 0);
-            x->x_keys[key].k_type = (nextop >= 0 ? nextop : KB_EQ);
-            nextop = -1;
-            key++;
-        }
-        else
-        {
-            char *s = argv[i].a_w.w_symbol->s_name;
-            if (nextop >= 0)
-                post_error ("text search: extra operation argument ignored: %s", s);
-            else if (!strcmp(argv[i].a_w.w_symbol->s_name, ">"))
-                nextop = KB_GT;
-            else if (!strcmp(argv[i].a_w.w_symbol->s_name, ">="))
-                nextop = KB_GE;
-            else if (!strcmp(argv[i].a_w.w_symbol->s_name, "<"))
-                nextop = KB_LT;
-            else if (!strcmp(argv[i].a_w.w_symbol->s_name, "<="))
-                nextop = KB_LE;
-            else if (!strcmp(argv[i].a_w.w_symbol->s_name, "near"))
-                nextop = KB_NEAR;
-            else post_error ("text search: unknown operation argument: %s", s);
+    t_text_search *x = (t_text_search *)pd_new (text_search_class);
+    
+    int i, numberOfKeys = 0;
+    
+    textclient_init (&x->x_textclient, &argc, &argv);           /* Note that it may consume arguments. */
+    
+    for (i = 0; i < argc; i++) { if (IS_FLOAT (argv + i)) { numberOfKeys++; } }
+    
+    x->x_numberOfKeys   = PD_MAX (1, numberOfKeys);
+    x->x_keys           = (t_key *)PD_MEMORY_GET (x->x_numberOfKeys * sizeof (t_key));
+    x->x_outlet         = outlet_new (cast_object (x), &s_list);
+     
+    if (!numberOfKeys) { x->x_keys[0].k_field = 0; x->x_keys[0].k_type = TEXTSEARCH_EQUAL; }
+    else {
+    //
+    int key = 0;
+    int operator = -1;
+    
+    for (i = 0; i < argc; i++) {
+    //
+    if (IS_FLOAT (argv + i)) {
+        x->x_keys[key].k_field = PD_MAX (0.0, (int)GET_FLOAT (argv + i));
+        x->x_keys[key].k_type  = PD_MAX (TEXTSEARCH_EQUAL, operator);
+        operator = -1;
+        key++;
+        
+    } else {
+        t_symbol *t = atom_getSymbolAtIndex (i, argc, argv);
+        
+        if (operator < 0) {
+            if (t == sym___greater__)                { operator = TEXTSEARCH_GREATER;       }
+            else if (t == sym___greater____equals__) { operator = TEXTSEARCH_GREATER_EQUAL; }
+            else if (t == sym___less__)              { operator = TEXTSEARCH_LESS;          }
+            else if (t == sym___less____equals__)    { operator = TEXTSEARCH_LESS_EQUAL;    }
+            else if (t == sym_near)                  { operator = TEXTSEARCH_NEAR;          }
         }
     }
-    if (TEXTCLIENT_ASPOINTER (&x->x_textclient))
-        inlet_newPointer(cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
-    else inlet_newSymbol(cast_object (x), TEXTCLIENT_GETNAME (&x->x_textclient));
-    return (x);
+    //
+    }
+    //
+    }
+    
+    if (TEXTCLIENT_ASPOINTER (&x->x_textclient)) { 
+        inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
+    } else {
+        inlet_newSymbol(cast_object (x), TEXTCLIENT_GETNAME (&x->x_textclient));
+    }
+    
+    return x;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -275,11 +279,20 @@ void *textsearch_new(t_symbol *s, int argc, t_atom *argv)
 
 void textsearch_setup (void)
 {
-    text_search_class = class_new(sym_text__space__search,
-        (t_newmethod)textsearch_new, (t_method)textclient_free,
-            sizeof(t_text_search), 0, A_GIMME, 0);
-    class_addList(text_search_class, text_search_list);
-    class_setHelpName(text_search_class, sym_text);
+    t_class *c = NULL;
+    
+    c = class_new (sym_text__space__search,
+            (t_newmethod)textsearch_new,
+            (t_method)textclient_free,
+            sizeof (t_text_search),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+            
+    class_addList (c, text_search_list);
+    class_setHelpName (c, sym_text);
+    
+    text_search_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
