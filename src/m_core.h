@@ -329,6 +329,7 @@ t_atom      *atom_substituteIfPointer                   (t_atom *a);
 
 t_error     atom_withStringUnzeroed                     (t_atom *a, char *s, int size);
 t_error     atom_toString                               (t_atom *a, char *s, int size);
+int         atom_typesAreEqual                          (t_atom *a, t_atom *b);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

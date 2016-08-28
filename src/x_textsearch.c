@@ -50,103 +50,84 @@ typedef struct _textsearch {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static int textsearch_listIsMatch (t_textsearch *x, t_buffer *b, int start, int end, int argc, t_atom *argv)
+{
+    int field = x->x_keys[0].k_field;
+    int type  = x->x_keys[0].k_type;
+    int count = end - start;
+    int j;
+    
+    for (j = 0; j < argc; ) {
+    //
+    if (field < count && atom_typesAreEqual (buffer_atomAtIndex (b, start + field), argv + j)) {
+    //
+    if (IS_FLOAT (argv + j)) {
+        t_float f1 = GET_FLOAT (buffer_atomAtIndex (b, start + field));
+        t_float f2 = GET_FLOAT (argv + j);
+        switch (type) {
+            case TEXTSEARCH_EQUAL           : if (f1 != f2) { return 0; } break;
+            case TEXTSEARCH_GREATER         : if (f1 <= f2) { return 0; } break;
+            case TEXTSEARCH_GREATER_EQUAL   : if (f1 < f2)  { return 0; } break;
+            case TEXTSEARCH_LESS            : if (f1 >= f2) { return 0; } break;
+            case TEXTSEARCH_LESS_EQUAL      : if (f1 > f2)  { return 0; } break;
+            case TEXTSEARCH_NEAR            : break;
+        }
+        
+    } else {
+        if (type != TEXTSEARCH_EQUAL) { return 0; }
+        if (atom_getSymbol (buffer_atomAtIndex (b, start + field)) != atom_getSymbol (argv + j)) {
+            return 0; 
+        }
+    }
+    
+    if (++j < x->x_numberOfKeys) { field = x->x_keys[j].k_field; type = x->x_keys[j].k_type; }
+    else {
+        field++;
+    }
+    //
+    } else {
+        return 0;
+    }
+    //
+    }
+
+    return 1;
+}
+
 static void textsearch_list (t_textsearch *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_buffer *b = textclient_fetchBuffer (&x->x_textclient);
     
     if (b) {
     //
-    int i, bestLine  = -1;
-    int currentLine  = 0;
-    int currentStart = 0;
-
-    for (i = 0; i < buffer_size (b); i++) {
+    int numberOfLines = buffer_getNumberOfMessages (b);
+    int bestLine = -1;
+    int bestLineStart;
+    int i, start, end;
+        
+    for (i = 0; i < numberOfLines; i++) {
     //
-    int j;
-    int beststart;
-    int bestn;
-    int thisn;
-    int failed = 0;
+    buffer_getMessageAt (b, i, &start, &end);
 
-    t_atom *vec = buffer_atoms (b);
-    
-    if (IS_SEMICOLON_OR_COMMA (buffer_atomAtIndex (b, i)) || i == (buffer_size (b) - 1)) {
+    if (textsearch_listIsMatch (x, b, start, end, argc, argv)) {
     //
-    int thisn = i - currentStart, j, field = x->x_keys[0].k_field,
-        binop = x->x_keys[0].k_type;
-        /* do we match? */
-    for (j = 0; j < argc; )
-    {
-        if (field >= thisn ||
-            vec[currentStart+field].a_type != argv[j].a_type)
-                goto nomatch;
-        if (argv[j].a_type == A_FLOAT)      /* arg is a float */
-        {
-            switch (binop)
-            {
-                case TEXTSEARCH_EQUAL:
-                    if (vec[currentStart+field].a_w.w_float !=
-                        argv[j].a_w.w_float)
-                            goto nomatch;
-                break;
-                case TEXTSEARCH_GREATER:
-                    if (vec[currentStart+field].a_w.w_float <=
-                        argv[j].a_w.w_float)
-                            goto nomatch;
-                break;
-                case TEXTSEARCH_GREATER_EQUAL:
-                    if (vec[currentStart+field].a_w.w_float <
-                        argv[j].a_w.w_float)
-                            goto nomatch;
-                case TEXTSEARCH_LESS:
-                    if (vec[currentStart+field].a_w.w_float >=
-                        argv[j].a_w.w_float)
-                            goto nomatch;
-                break;
-                case TEXTSEARCH_LESS_EQUAL:
-                    if (vec[currentStart+field].a_w.w_float >
-                        argv[j].a_w.w_float)
-                            goto nomatch;
-                break;
-                    /* the other possibility ('near') never fails */
-            }
-        }
-        else                                /* arg is a symbol */
-        {
-            if (binop != TEXTSEARCH_EQUAL)
-            {
-                if (!failed)
-                {
-                    post_error ("text search (%s): only exact matches allowed for symbols",
-                        argv[j].a_w.w_symbol->s_name);
-                    failed = 1;
-                }
-                goto nomatch;
-            }
-            if (vec[currentStart+field].a_w.w_symbol !=
-                argv[j].a_w.w_symbol)
-                    goto nomatch;
-        }
-        if (++j >= x->x_numberOfKeys)    /* if at last key just increment field */
-            field++;
-        else field = x->x_keys[j].k_field,    /* else next key */
-                binop = x->x_keys[j].k_type;
-    }
-        /* the line matches.  Now, if there is a previous match, are
-        we better than it? */
     if (bestLine >= 0)
     {
-        field = x->x_keys[0].k_field;
-        binop = x->x_keys[0].k_type;
+        t_atom *vec = buffer_atoms (b);
+        int count = end - start;
+        int j;
+        int field = x->x_keys[0].k_field;
+        int type = x->x_keys[0].k_type;
+        
         for (j = 0; j < argc; )
         {
-            if (field >= thisn
-                || vec[currentStart+field].a_type != argv[j].a_type) { PD_BUG; }
+            if (field >= count
+                || vec[start+field].a_type != argv[j].a_type) { PD_BUG; }
             if (argv[j].a_type == A_FLOAT)      /* arg is a float */
             {
-                float thisv = vec[currentStart+field].a_w.w_float, 
-                    bestv = vec[beststart+field].a_w.w_float;
-                switch (binop)
+                float thisv = vec[start+field].a_w.w_float, 
+                    bestv = vec[bestLineStart+field].a_w.w_float;
+                switch (type)
                 {
                     case TEXTSEARCH_GREATER:
                     case TEXTSEARCH_GREATER_EQUAL:
@@ -199,19 +180,18 @@ static void textsearch_list (t_textsearch *x, t_symbol *s, int argc, t_atom *arg
             if (++j >= x->x_numberOfKeys)    /* last key - increment field */
                 field++;
             else field = x->x_keys[j].k_field,    /* else next key */
-                    binop = x->x_keys[j].k_type;
+                    type = x->x_keys[j].k_type;
         }
         goto nomatch;   /* a tie - keep the old one */
-    replace:
-        bestLine = currentLine, beststart = currentStart, bestn = thisn;
+replace:
+        bestLine = i, bestLineStart = start;
+    } else {
+        bestLine = i, bestLineStart = start;
     }
-        /* no previous match so we're best */
-    else bestLine = currentLine, beststart = currentStart, bestn = thisn;
-nomatch:
-    currentLine++;
-    currentStart = i+1;
     //
     }
+nomatch:
+    ;
     //
     }
     

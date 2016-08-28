@@ -54,7 +54,7 @@ static void textget_float (t_textget *x, t_float f)
         
         if (field < 0) {
         
-            t_float type = (end < buffer_size (b) && IS_COMMA (buffer_atomAtIndex (b, end)));
+            t_float type = ((end < buffer_size (b)) && (IS_COMMA (buffer_atomAtIndex (b, end))));
             outlet_float (x->x_outletRight, type);
             
             ATOMS_ALLOCA (t, size);

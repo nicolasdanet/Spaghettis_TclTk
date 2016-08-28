@@ -145,6 +145,11 @@ t_error atom_toString (t_atom *a, char *s, int size)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+int atom_typesAreEqual (t_atom *a, t_atom *b)
+{
+    return (a->a_type == b->a_type);
+}
+
 t_atom *atom_substituteIfPointer (t_atom *a)
 {
     if (IS_POINTER (a)) { SET_SYMBOL (a, sym_pointer); } 
