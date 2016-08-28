@@ -12,91 +12,110 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "m_alloca.h"
 #include "g_graphics.h"
 #include "x_control.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* ---------------- text_tolist object - output text as a list ----------- */
-t_class *text_tolist_class;
+static t_class *texttolist_class;           /* Shared. */
+static t_class *textfromlist_class;         /* Shared. */
 
-#define t_text_tolist t_textclient
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-void *texttolist_new(t_symbol *s, int argc, t_atom *argv)
+void *texttolist_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_text_tolist *x = (t_text_tolist *)pd_new(text_tolist_class);
-    outlet_new(&x->tc_obj, &s_list);
-    textclient_init(x, &argc, &argv);
-    if (argc)
-    {
-        post("warning: text tolist ignoring extra argument: ");
-        post_atoms(argc, argv);
+    t_textclient *x = (t_textclient *)pd_new (texttolist_class);
+    
+    textclient_init (x, &argc, &argv);                  /* Note that it may consume arguments. */
+        
+    outlet_new (cast_object (x), &s_list);
+
+    if (TEXTCLIENT_ASPOINTER (x)) {
+        inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (x));
+    } else {
+        inlet_newSymbol (cast_object (x), TEXTCLIENT_GETNAME (x));
     }
-    if (x->tc_templateIdentifier)
-        inlet_newPointer(&x->tc_obj, &x->tc_gpointer);
-    else inlet_newSymbol(&x->tc_obj, &x->tc_name);
-    return (x);
+    
+    return x;
 }
 
-static void text_tolist_bang(t_text_tolist *x)
+static void texttolist_bang (t_textclient *x)
 {
-    t_buffer *b = textclient_fetchBuffer(x), *b2;
-    int n, i, cnt = 0;
-    t_atom *vec;
-    if (!b)
-       return;
-    b2 = buffer_new();
-    buffer_serialize(b2, b);
-    outlet_list(x->tc_obj.te_outlet, 0, buffer_size(b2), buffer_atoms(b2));
-    buffer_free(b2);
-}
-
-/* ------------- text_fromlist object - set text from a list -------- */
-t_class *text_fromlist_class;
-
-#define t_text_fromlist t_textclient
-
-void *textfromlist_new(t_symbol *s, int argc, t_atom *argv)
-{
-    t_text_fromlist *x = (t_text_fromlist *)pd_new(text_fromlist_class);
-    textclient_init(x, &argc, &argv);
-    if (argc)
-    {
-        post("warning: text fromlist ignoring extra argument: ");
-        post_atoms(argc, argv);
+    t_buffer *b = textclient_fetchBuffer (x);
+    
+    if (b) {
+        t_buffer *t = buffer_new();
+        buffer_serialize (t, b);
+        outlet_list (cast_object (x)->te_outlet, NULL, buffer_size (t), buffer_atoms (t));
+        buffer_free (t);
     }
-    if (x->tc_templateIdentifier)
-        inlet_newPointer(&x->tc_obj, &x->tc_gpointer);
-    else inlet_newSymbol(&x->tc_obj, &x->tc_name);
-    return (x);
 }
 
-static void text_fromlist_list(t_text_fromlist *x,
-    t_symbol *s, int argc, t_atom *argv)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void *textfromlist_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_buffer *b = textclient_fetchBuffer(x);
-    if (!b)
-       return;
-    buffer_reset(b);
-    buffer_deserialize(b, argc, argv);
-    textclient_update(x);
+    t_textclient *x = (t_textclient *)pd_new (textfromlist_class);
+    
+    textclient_init (x, &argc, &argv);                  /* Note that it may consume arguments. */
+    
+    if (TEXTCLIENT_ASPOINTER (x)) {
+        inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (x));
+    } else {
+        inlet_newSymbol (cast_object (x), TEXTCLIENT_GETNAME (x));
+    }
+    
+     return x;
 }
+
+static void textfromlist_list (t_textclient *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_buffer *b = textclient_fetchBuffer (x);
+    
+    if (b) {
+        buffer_reset (b);
+        buffer_deserialize (b, argc, argv);
+        textclient_update (x);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void textlist_setup (void)
 {
-    text_tolist_class = class_new(sym_text__space__tolist,
-        (t_newmethod)texttolist_new, (t_method)textclient_free,
-            sizeof(t_text_tolist), 0, A_GIMME, 0);
-    class_addBang(text_tolist_class, text_tolist_bang);
-    class_setHelpName(text_tolist_class, sym_text);
+    t_class *c = NULL;
+    
+    c = class_new (sym_text__space__tolist,
+            (t_newmethod)texttolist_new,
+            (t_method)textclient_free,
+            sizeof (t_textclient),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+            
+    class_addBang (c, texttolist_bang);
+    class_setHelpName (c, sym_text);
 
-    text_fromlist_class = class_new(sym_text__space__fromlist,
-        (t_newmethod)textfromlist_new, (t_method)textclient_free,
-            sizeof(t_text_fromlist), 0, A_GIMME, 0);
-    class_addList(text_fromlist_class, text_fromlist_list);
-    class_setHelpName(text_fromlist_class, sym_text);
+    texttolist_class = c;
+    
+    c = class_new (sym_text__space__fromlist,
+            (t_newmethod)textfromlist_new,
+            (t_method)textclient_free,
+            sizeof (t_textclient),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+            
+    class_addList (c, textfromlist_list);
+    class_setHelpName (c, sym_text);
+    
+    textfromlist_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
