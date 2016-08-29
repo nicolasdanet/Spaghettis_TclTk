@@ -50,6 +50,45 @@ typedef struct _textsearch {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static int textsearch_listIsBetter (t_textsearch *x,
+    t_buffer *b,
+    int bestLineStart,
+    int start,
+    int argc,
+    t_atom *argv)
+{
+    int field = x->x_keys[0].k_field;
+    int type  = x->x_keys[0].k_type;
+    int j;
+        
+    for (j = 0; j < argc;) {
+    //
+    if (IS_FLOAT (argv + j)) {
+    //
+    t_float f            = GET_FLOAT (argv + j);
+    t_float bestValue    = GET_FLOAT (buffer_atomAtIndex (b, bestLineStart + field));
+    t_float thisValue    = GET_FLOAT (buffer_atomAtIndex (b, start + field)); 
+    t_float bestDistance = math_euclideanDistance (f, 0.0, bestValue, 0.0);
+    t_float thisDistance = math_euclideanDistance (f, 0.0, thisValue, 0.0);
+    
+    if (type != TEXTSEARCH_EQUAL) { 
+        int cmp = math_compareFloat (thisDistance, bestDistance);
+        if (cmp == -1)     { return 1; }
+        else if (cmp == 1) { return 0; }
+    }
+    //
+    }
+    
+    if (++j < x->x_numberOfKeys) { field = x->x_keys[j].k_field; type = x->x_keys[j].k_type; }
+    else {
+        field++;
+    }
+    //
+    }
+    
+    return 0;
+}
+
 static int textsearch_listIsMatch (t_textsearch *x, t_buffer *b, int start, int end, int argc, t_atom *argv)
 {
     int field = x->x_keys[0].k_field;
@@ -57,7 +96,7 @@ static int textsearch_listIsMatch (t_textsearch *x, t_buffer *b, int start, int 
     int count = end - start;
     int j;
     
-    for (j = 0; j < argc; ) {
+    for (j = 0; j < argc;) {
     //
     if (field < count && atom_typesAreEqual (buffer_atomAtIndex (b, start + field), argv + j)) {
     //
@@ -106,93 +145,12 @@ static void textsearch_list (t_textsearch *x, t_symbol *s, int argc, t_atom *arg
     int i, start, end;
         
     for (i = 0; i < numberOfLines; i++) {
-    //
-    buffer_getMessageAt (b, i, &start, &end);
-
-    if (textsearch_listIsMatch (x, b, start, end, argc, argv)) {
-    //
-    if (bestLine >= 0)
-    {
-        t_atom *vec = buffer_atoms (b);
-        int count = end - start;
-        int j;
-        int field = x->x_keys[0].k_field;
-        int type = x->x_keys[0].k_type;
-        
-        for (j = 0; j < argc; )
-        {
-            if (field >= count
-                || vec[start+field].a_type != argv[j].a_type) { PD_BUG; }
-            if (argv[j].a_type == A_FLOAT)      /* arg is a float */
-            {
-                float thisv = vec[start+field].a_w.w_float, 
-                    bestv = vec[bestLineStart+field].a_w.w_float;
-                switch (type)
-                {
-                    case TEXTSEARCH_GREATER:
-                    case TEXTSEARCH_GREATER_EQUAL:
-                        if (thisv < bestv)
-                            goto replace;
-                        else if (thisv > bestv)
-                            goto nomatch;
-                    break;
-                    case TEXTSEARCH_LESS:
-                    case TEXTSEARCH_LESS_EQUAL:
-                        if (thisv > bestv)
-                            goto replace;
-                        else if (thisv < bestv)
-                            goto nomatch;
-                    case TEXTSEARCH_NEAR:
-                        if (thisv >= argv[j].a_w.w_float &&
-                            bestv >= argv[j].a_w.w_float)
-                        {
-                            if (thisv < bestv)
-                                goto replace;
-                            else if (thisv > bestv)
-                                goto nomatch;
-                        }
-                        else if (thisv <= argv[j].a_w.w_float &&
-                            bestv <= argv[j].a_w.w_float)
-                        {
-                            if (thisv > bestv)
-                                goto replace;
-                            else if (thisv < bestv)
-                                goto nomatch;
-                        }
-                        else
-                        {
-                            float d1 = thisv - argv[j].a_w.w_float,
-                                d2 = bestv - argv[j].a_w.w_float;
-                            if (d1 < 0)
-                                d1 = -d1;
-                            if (d2 < 0)
-                                d2 = -d2;
-                                
-                            if (d1 < d2)
-                                goto replace;
-                            else if (d1 > d2)
-                                goto nomatch;
-                        }   
-                    break;
-                        /* the other possibility ('=') never decides */
-                }
+        buffer_getMessageAt (b, i, &start, &end);
+        if (textsearch_listIsMatch (x, b, start, end, argc, argv)) {
+            if (bestLine < 0 || textsearch_listIsBetter (x, b, bestLineStart, start, argc, argv)) {
+                bestLine = i; bestLineStart = start;
             }
-            if (++j >= x->x_numberOfKeys)    /* last key - increment field */
-                field++;
-            else field = x->x_keys[j].k_field,    /* else next key */
-                    type = x->x_keys[j].k_type;
         }
-        goto nomatch;   /* a tie - keep the old one */
-replace:
-        bestLine = i, bestLineStart = start;
-    } else {
-        bestLine = i, bestLineStart = start;
-    }
-    //
-    }
-nomatch:
-    ;
-    //
     }
     
     outlet_float (x->x_outlet, bestLine);
@@ -222,25 +180,25 @@ void *textsearch_new (t_symbol *s, int argc, t_atom *argv)
     else {
     //
     int key = 0;
-    int operator = -1;
+    int op = -1;
     
     for (i = 0; i < argc; i++) {
     //
     if (IS_FLOAT (argv + i)) {
         x->x_keys[key].k_field = PD_MAX (0.0, (int)GET_FLOAT (argv + i));
-        x->x_keys[key].k_type  = PD_MAX (TEXTSEARCH_EQUAL, operator);
-        operator = -1;
+        x->x_keys[key].k_type  = PD_MAX (TEXTSEARCH_EQUAL, op);
+        op = -1;
         key++;
         
     } else {
         t_symbol *t = atom_getSymbolAtIndex (i, argc, argv);
         
-        if (operator < 0) {
-            if (t == sym___greater__)                { operator = TEXTSEARCH_GREATER;       }
-            else if (t == sym___greater____equals__) { operator = TEXTSEARCH_GREATER_EQUAL; }
-            else if (t == sym___less__)              { operator = TEXTSEARCH_LESS;          }
-            else if (t == sym___less____equals__)    { operator = TEXTSEARCH_LESS_EQUAL;    }
-            else if (t == sym_near)                  { operator = TEXTSEARCH_NEAR;          }
+        if (op < 0) {
+            if (t == sym___greater__)                { op = TEXTSEARCH_GREATER;       }
+            else if (t == sym___greater____equals__) { op = TEXTSEARCH_GREATER_EQUAL; }
+            else if (t == sym___less__)              { op = TEXTSEARCH_LESS;          }
+            else if (t == sym___less____equals__)    { op = TEXTSEARCH_LESS_EQUAL;    }
+            else if (t == sym_near)                  { op = TEXTSEARCH_NEAR;          }
         }
     }
     //
@@ -251,7 +209,7 @@ void *textsearch_new (t_symbol *s, int argc, t_atom *argv)
     if (TEXTCLIENT_ASPOINTER (&x->x_textclient)) { 
         inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
     } else {
-        inlet_newSymbol(cast_object (x), TEXTCLIENT_GETNAME (&x->x_textclient));
+        inlet_newSymbol (cast_object (x), TEXTCLIENT_GETNAME (&x->x_textclient));
     }
     
     return x;

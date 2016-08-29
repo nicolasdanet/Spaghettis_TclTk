@@ -16,6 +16,13 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* Naive implementation of comparaison function. */
+
+int math_compareFloat (t_float a, t_float b)
+{
+    if (a < b) { return -1; } else if (b > a) { return 1; } else { return 0; }
+}
+
 t_float math_euclideanDistance (t_float x1, t_float y1, t_float x2, t_float y2)
 {
     double x = ((double)x2 - x1);
