@@ -15,8 +15,22 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_class *bindlist_class;        /* Shared. */
+t_class *bindlist_class;                    /* Shared. */
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+typedef struct _bindelement {
+    t_pd                    *e_what;        /* MUST be the first. */
+    struct _bindelement     *e_next;
+    } t_bindelement;
+
+typedef struct _bindlist {
+    t_pd                    b_pd;           /* MUST be the first. */
+    t_bindelement           *b_list;
+    } t_bindlist;
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -79,6 +93,94 @@ void bindlist_initialize (void)
 
 void bindlist_release (void)
 {
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void pd_bind (t_pd *x, t_symbol *s)
+{
+    if (s->s_thing) {
+    
+        if (pd_class (s->s_thing) == bindlist_class) {
+            t_bindlist *b = (t_bindlist *)s->s_thing;
+            t_bindelement *e = (t_bindelement *)PD_MEMORY_GET (sizeof (t_bindelement));
+            e->e_next = b->b_list;
+            e->e_what = x;
+            b->b_list = e;
+            
+        } else {
+            t_bindlist *b = (t_bindlist *)pd_new (bindlist_class);
+            t_bindelement *e1 = (t_bindelement *)PD_MEMORY_GET (sizeof (t_bindelement));
+            t_bindelement *e2 = (t_bindelement *)PD_MEMORY_GET (sizeof (t_bindelement));
+            b->b_list  = e1;
+            e1->e_what = x;
+            e1->e_next = e2;
+            e2->e_what = s->s_thing;
+            e2->e_next = NULL;
+            s->s_thing = &b->b_pd;
+        }
+        
+    } else {
+        s->s_thing = x;
+    }
+}
+
+void pd_unbind (t_pd *x, t_symbol *s)
+{
+    if (s->s_thing == x) { 
+        s->s_thing = NULL; 
+        
+    } else if (s->s_thing && pd_class (s->s_thing) == bindlist_class) {
+        
+        t_bindlist *b = (t_bindlist *)s->s_thing;
+        t_bindelement *e1 = NULL;
+        t_bindelement *e2 = NULL;
+        
+        if ((e1 = b->b_list)->e_what == x) {
+            b->b_list = e1->e_next;
+            PD_MEMORY_FREE (e1);
+        } else {
+            for (e1 = b->b_list; e2 = e1->e_next; e1 = e2) {
+                if (e2->e_what == x) {
+                    e1->e_next = e2->e_next;
+                    PD_MEMORY_FREE (e2);
+                    break;
+                }
+            }
+        }
+        
+        if (!b->b_list->e_next) {                           /* Delete it if just one element remains. */
+            s->s_thing = b->b_list->e_what;
+            PD_MEMORY_FREE (b->b_list);
+            pd_free (&b->b_pd);
+        }
+        
+    } else { PD_BUG; }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_pd *pd_findByClass (t_symbol *s, t_class *c)
+{
+    t_pd *x = NULL;
+    
+    if (!s->s_thing) { return NULL; }
+    if (pd_class (s->s_thing) == c) { return s->s_thing; }
+    
+    if (pd_class (s->s_thing) == bindlist_class) {
+        t_bindlist *b = (t_bindlist *)s->s_thing;
+        t_bindelement *e = NULL;
+        
+        for (e = b->b_list; e; e = e->e_next) {
+            if (*e->e_what == c) { PD_ASSERT (x == NULL); x = e->e_what; }
+        }
+    }
+    
+    return x;
 }
 
 // -----------------------------------------------------------------------------------------------------------
