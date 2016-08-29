@@ -112,10 +112,7 @@ static void pointer_send (t_pointer *x, t_symbol *s)
 {
     if (!gpointer_isValidNullAllowed (&x->x_gpointer)) { pointer_error (sym_pointer); }
     else {
-        if (!s->s_thing) { post_error (PD_TRANSLATE ("%s: no such object"), s->s_name); }
-        else {
-            pd_pointer (s->s_thing, &x->x_gpointer);
-        }
+        if (pd_isThing (s)) { pd_pointer (s->s_thing, &x->x_gpointer); }
     }
 }
 

@@ -30,8 +30,9 @@ t_class         *scalardefine_class;            /* Shared. */
 
 static void scalardefine_send (t_glist *x, t_symbol *s)
 {
-    if (!s->s_thing) { post_error (PD_TRANSLATE ("%s: no such object"), s->s_name); }
-    else if (x->gl_graphics) {
+    if (pd_isThing (s)) {
+    //
+    if (x->gl_graphics) {
     //
     t_gobj *y = x->gl_graphics;
 
@@ -40,6 +41,8 @@ static void scalardefine_send (t_glist *x, t_symbol *s)
         gpointer_setAsScalar (&gp, x, cast_scalar (y));
         pd_pointer (s->s_thing, &gp);
         gpointer_unset (&gp);
+    }
+    //
     }
     //
     }
