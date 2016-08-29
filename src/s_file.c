@@ -12,6 +12,7 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
+#include "h_helpers.h"
 #include "s_utf8.h"
 
 // -----------------------------------------------------------------------------------------------------------

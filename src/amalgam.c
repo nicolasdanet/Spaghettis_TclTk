@@ -23,19 +23,17 @@
 #include "m_class.c"
 #include "m_object.c"
 #include "m_atom.c"
-#include "m_iterator.c"
 #include "m_buffer.c"
 #include "m_parse.c"
 #include "m_eval.c"
-#include "m_setup.c"
 #include "m_global.c"
+#include "m_bind.c"
+#include "m_setup.c"
+#include "m_dollar.c"
 #include "m_string.c"
 #include "m_utils.c"
 #include "m_math.c"
 #include "m_color.c"
-#include "m_dollar.c"
-#include "m_heapstring.c"
-#include "m_bindlist.c"
 
 /* System. */
 
@@ -56,11 +54,16 @@
 #include "s_audio.c"
 #include "s_audioAPI.c"
 #include "s_memory.c"
-#include "s_pathlist.c"
 #include "s_font.c"
 #include "s_post.c"
 #include "s_logger.c"
 #include "s_utf8.c"
+
+/* Helpers. */
+
+#include "h_iterator.c"
+#include "h_pathlist.c"
+#include "h_heapstring.c"
 
 /* Graphics. */
 

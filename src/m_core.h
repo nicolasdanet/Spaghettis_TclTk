@@ -146,16 +146,6 @@ struct _pdinstance {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef struct _heapstring {
-    size_t                  hs_used;
-    size_t                  hs_size;
-    char                    *hs_raw;
-    } t_heapstring;
-    
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 typedef struct _bindelement {
     t_pd                    *e_what;                    /* MUST be the first. */
     struct _bindelement     *e_next;
@@ -199,18 +189,6 @@ int         string_indexOfFirstOccurrenceUntil          (char *s, const char *c,
 int         string_indexOfFirstOccurrenceFrom           (char *s, const char *c, size_t n);
 
 void        string_getNumberOfColumnsAndLines           (char *s, int *numberOfColumns, int *numberOfLines);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_heapstring    *heapstring_new                         (int size);
-char            *heapstring_getRaw                      (t_heapstring *x);
-
-void        heapstring_free                             (t_heapstring *x);
-t_error     heapstring_add                              (t_heapstring *x, const char *src);
-t_error     heapstring_append                           (t_heapstring *x, const char *src, int n);
-t_error     heapstring_addSprintf                       (t_heapstring *x, const char *format, ...);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -331,15 +309,6 @@ t_atom      *atom_substituteIfPointer                   (t_atom *a);
 t_error     atom_withStringUnzeroed                     (t_atom *a, char *s, int size);
 t_error     atom_toString                               (t_atom *a, char *s, int size);
 int         atom_typesAreEqual                          (t_atom *a, t_atom *b);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_iterator  *iterator_new                               (int argc, t_atom *argv);
-
-void        iterator_free                               (t_iterator *x);
-int         iterator_next                               (t_iterator *x, t_atom **a);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

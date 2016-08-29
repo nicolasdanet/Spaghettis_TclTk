@@ -106,26 +106,6 @@ typedef struct _receiver {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-typedef struct _pathlist {
-    struct _pathlist    *pl_next;
-    char                *pl_string;
-    } t_pathlist;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_pathlist      *pathlist_newAppend                     (t_pathlist *x, const char *s);
-t_pathlist      *pathlist_newAppendEncoded              (t_pathlist *x, t_symbol *s);
-char            *pathlist_getFileAtIndex                (t_pathlist *x, int n);
-char            *pathlist_getFile                       (t_pathlist *x);
-t_pathlist      *pathlist_getNext                       (t_pathlist *x);
-
-void            pathlist_free                           (t_pathlist *x);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 void            font_withHostMeasured                   (void *dummy, t_symbol *s, int argc, t_atom *argv);
