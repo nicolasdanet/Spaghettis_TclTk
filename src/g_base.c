@@ -308,7 +308,7 @@ void canvas_makeTextObject (t_glist *glist,
     if (!x) {
         x = (t_object *)pd_new (text_class);    /* Create a dummy box. */
         if (buffer_size (b)) {
-            error_couldNotCreate (buffer_size (b), buffer_atoms (b)); 
+            error_canNotMake (buffer_size (b), buffer_atoms (b)); 
         }
     }
 

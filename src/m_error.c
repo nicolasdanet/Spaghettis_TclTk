@@ -32,7 +32,7 @@ void error_error2 (char *s1, char *s2)
 
 void error_post (int argc, t_atom *argv)
 {
-    char *s = atom_atomsToString (argc, argv); post_error ("%s", s); PD_MEMORY_FREE (s);
+    char *s = atom_atomsToString (argc, argv); post_error ("[ %s ]", s); PD_MEMORY_FREE (s);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -176,13 +176,26 @@ void error_invalidArgumentsFor (t_symbol *s1, t_symbol *s2)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void error_couldNotCreate (int argc, t_atom *argv)
+void error_canNotMake (int argc, t_atom *argv)
 {
-    char *s = atom_atomsToString (argc, argv);
+    char *t = atom_atomsToString (argc, argv);
     
-    post_error (PD_TRANSLATE (": %s ... couldn't create"), s);
+    post_error (PD_TRANSLATE (": can't make [ %s ]"), t);
     
-    PD_MEMORY_FREE (s);
+    PD_MEMORY_FREE (t);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void error_invalidArguments (t_symbol *s, int argc, t_atom *argv)
+{
+    char *t = atom_atomsToString (argc, argv);
+    
+    post_error (PD_TRANSLATE ("%s: invalid arguments [ %s ]"), s->s_name, t);
+    
+    PD_MEMORY_FREE (t);
 }
 
 // -----------------------------------------------------------------------------------------------------------

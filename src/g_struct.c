@@ -92,7 +92,11 @@ static void *struct_new (t_symbol *s, int argc, t_atom *argv)
     else {
         if (argc >= 1) { argc--; argv++; }
         if (!template) { template = template_new (templateIdentifier, argc, argv); }
-        return struct_newInstance (template);
+        if (template)  {
+            return struct_newInstance (template);
+        }
+        
+        return NULL;
     }
     //
     }

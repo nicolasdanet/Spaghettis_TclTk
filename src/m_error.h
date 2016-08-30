@@ -30,6 +30,10 @@ void error_ioStuck                          (void);
 void error_stubNotFound                     (void);
 void error_tooManyCharacters                (void);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void error_invalidPointer                   (t_symbol *);
 void error_canNotSetMultipleFields          (t_symbol *);
 void error_mismatchTypeOrUnspecifiedField   (t_symbol *);
@@ -44,6 +48,10 @@ void error_ignored                          (t_symbol *);
 void error_failed                           (t_symbol *);
 void error_alreadyExists                    (t_symbol *);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void error_unexpected                       (t_symbol *, t_symbol *);
 void error_invalid                          (t_symbol *, t_symbol *);
 void error_noSuch                           (t_symbol *, t_symbol *);
@@ -52,7 +60,17 @@ void error_unknownMethod                    (t_symbol *, t_symbol *);
 void error_unknownFunction                  (t_symbol *, t_symbol *);
 void error_invalidArgumentsFor              (t_symbol *, t_symbol *);
 
-void error_couldNotCreate                   (int argc, t_atom *argv);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void error_canNotMake                       (int argc, t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void error_invalidArguments                 (t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

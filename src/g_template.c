@@ -385,7 +385,7 @@ static void template_create (void *dummy, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void template_newParse (t_template *x, int argc, t_atom *argv)
+static t_error template_newParse (t_template *x, int argc, t_atom *argv)
 {
     while (argc > 0) {
 
@@ -413,7 +413,7 @@ static void template_newParse (t_template *x, int argc, t_atom *argv)
                 argc--;
                 argv++;
             } else {
-                // error
+                return PD_ERROR;
             }
         }
         
@@ -435,13 +435,15 @@ static void template_newParse (t_template *x, int argc, t_atom *argv)
         }
         //
         } else {
-            // error
+            return PD_ERROR;
         }
 
     argc -= 2;
     argv += 2;
     //
     }
+    
+    return PD_ERROR_NONE;
 }
     
 t_template *template_new (t_symbol *templateIdentifier, int argc, t_atom *argv)
@@ -458,11 +460,17 @@ t_template *template_new (t_symbol *templateIdentifier, int argc, t_atom *argv)
     x->tp_vector             = (t_dataslot *)PD_MEMORY_GET (0);
     x->tp_templateIdentifier = templateIdentifier;
     x->tp_instance           = NULL;
-        
-    template_newParse (x, argc, argv);
     
     pd_bind (cast_pd (x), x->tp_templateIdentifier);
-
+    
+    if (template_newParse (x, argc, argv)) {
+    //
+    error_invalidArguments (utils_stripTemplateIdentifier (templateIdentifier), argc, argv);
+    template_free (x);
+    x = NULL;
+    //
+    }
+    
     return x;
 }
 
