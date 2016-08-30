@@ -125,10 +125,8 @@ static void instance_newAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     //
     close (f);
     
-    if (stack_setLoadingAbstraction (s)) { 
-        post_error (PD_TRANSLATE ("%s: can't load abstraction within itself"), s->s_name);
-        
-    } else {
+    if (stack_setLoadingAbstraction (s)) { error_recursiveInstantiation (s); }
+    else {
         t_pd *t = s__X.s_thing;
         canvas_setActiveArguments (argc, argv);
         buffer_fileEval (gensym (name), gensym (directory));

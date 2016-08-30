@@ -34,7 +34,7 @@ typedef struct _getsize {
 
 static void getsize_pointer (t_getsize *x, t_gpointer *gp)
 {
-    if (!gpointer_isValidInstanceOf (gp, x->x_templateIdentifier)) { pointer_error (sym_getsize); }
+    if (!gpointer_isValidInstanceOf (gp, x->x_templateIdentifier)) { error_invalidPointer (sym_getsize); }
     else {
     //
     if (gpointer_hasField (gp, x->x_fieldName)) {

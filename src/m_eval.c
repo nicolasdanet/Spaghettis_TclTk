@@ -139,7 +139,7 @@ void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
         }
         
         if (s == NULL || !(object = s->s_thing)) {
-            if (!s) { post_error (PD_TRANSLATE ("$: invalid expansion")); }
+            if (!s) { error_invalidExpansion(); }
             else if (!string_containsAtStart (s->s_name, PD_GUISTUB)) { pd_isThing (s); }
             do { size--; v++; } while (size && !IS_SEMICOLON (v));
             
@@ -186,18 +186,18 @@ void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error buffer_read (t_buffer *x, char *name, t_glist *glist)
+t_error buffer_read (t_buffer *x, t_symbol *name, t_glist *glist)
 {
     t_error err = PD_ERROR;
     
     char *filepath = NULL;
     char directory[PD_STRING] = { 0 };
     
-    int f = canvas_openFile (glist, name, "", directory, &filepath, PD_STRING);
+    int f = canvas_openFile (glist, name->s_name, "", directory, &filepath, PD_STRING);
     
     err = (f < 0);
     
-    if (err) { post_error (PD_TRANSLATE ("%s: can't open"), name); }
+    if (err) { error_canNotOpen (name); }
     else {
         close (f);
         err = buffer_fromFile (x, filepath, directory);
@@ -255,7 +255,7 @@ t_error buffer_fileEval (t_symbol *name, t_symbol *directory)
     
     err = buffer_fromFile (t, name->s_name, directory->s_name);
     
-    if (err) { post_error (PD_TRANSLATE ("%s: fails to read"), name->s_name); }
+    if (err) { error_failsToRead (name); }
     else {
     //
     t_pd *boundA = s__A.s_thing;

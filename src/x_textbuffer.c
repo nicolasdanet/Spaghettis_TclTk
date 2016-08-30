@@ -133,31 +133,19 @@ void textbuffer_add (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
 void textbuffer_read (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc && IS_SYMBOL (argv)) {
-    //
-    t_symbol *name = GET_SYMBOL (argv);
-        
-    if (buffer_read (x->tb_buffer, name->s_name, x->tb_owner)) {
-        post_error (PD_TRANSLATE ("%s: read failed"), name->s_name);
-    }
-    
-    textbuffer_update (x);
-    //
+        t_symbol *name = GET_SYMBOL (argv);
+        if (buffer_read (x->tb_buffer, name, x->tb_owner)) { error_failsToRead (name); }
+        textbuffer_update (x);
     }
 }
 
 void textbuffer_write (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc && IS_SYMBOL (argv)) {
-    //
-    char t[PD_STRING] = { 0 };
-    t_symbol *name = GET_SYMBOL (argv);
-    
-    canvas_makeFilePath (x->tb_owner, name->s_name, t, PD_STRING);
-    
-    if (buffer_write (x->tb_buffer, t, "")) { 
-        post_error (PD_TRANSLATE ("%s: write failed"), name->s_name);
-    }
-    //
+        char t[PD_STRING] = { 0 };
+        t_symbol *name = GET_SYMBOL (argv);
+        canvas_makeFilePath (x->tb_owner, name->s_name, t, PD_STRING);
+        if (buffer_write (x->tb_buffer, t, "")) { error_failsToWrite (name); }
     }
 }
 

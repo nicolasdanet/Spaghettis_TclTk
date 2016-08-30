@@ -253,7 +253,7 @@ void canvas_redrawGraphOnParent (t_glist *glist)
 
 void canvas_bounds (t_glist *glist, t_float a, t_float b, t_float c, t_float d)
 {
-    if ((a == b) || (c == d)) { post_error (PD_TRANSLATE ("graph: invalid bounds")); }
+    if ((a == b) || (c == d)) { error_invalid (sym_graph, sym_bounds); }
     else {
         glist->gl_valueLeft   = a;
         glist->gl_valueRight  = c;

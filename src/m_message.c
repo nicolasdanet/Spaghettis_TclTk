@@ -411,7 +411,7 @@ void pd_message (t_pd *x, t_symbol *s, int argc, t_atom *argv)
         }
     }
 
-    post_error (PD_TRANSLATE ("%s: bad arguments for method %s"), class_getName (c), s->s_name);
+    error_invalidArgumentsFor (class_getName (c), s);
 }
 
 // -----------------------------------------------------------------------------------------------------------

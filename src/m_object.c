@@ -72,27 +72,13 @@ static void inlet_forList (t_inlet *, t_symbol *, int, t_atom *);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void object_errorUnexpected (t_inlet *x, t_symbol *s)
-{
-    post_error (PD_TRANSLATE ("inlet: unexpected %s"), s->s_name);
-}
-
-static void object_errorStackOverflow (t_outlet *x)
-{
-    post_error (PD_TRANSLATE ("inlet: stack overflow"));
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void inlet_forBang (t_inlet *x)
 {
     if (x->i_from == &s_bang)               { pd_vMessage (x->i_destination, x->i_un.i_to, ""); }
     else if (x->i_from == NULL)             { pd_bang (x->i_destination); }
     else if (x->i_from == &s_list)          { inlet_forList (x, &s_bang, 0, NULL); }
     else {
-        object_errorUnexpected (x, &s_bang);
+        error_unexpected (class_getName (pd_class (x)), &s_bang);
     }
 }
 
@@ -106,7 +92,7 @@ static void inlet_forPointer (t_inlet *x, t_gpointer *gp)
         inlet_forList (x, &s_pointer, 1, &a);
 
     } else {
-        object_errorUnexpected (x, &s_pointer);
+        error_unexpected (class_getName (pd_class (x)), &s_pointer);
     }
 }
 
@@ -120,7 +106,7 @@ static void inlet_forFloat (t_inlet *x, t_float f)
         SET_FLOAT (&a, f);
         inlet_forList (x, &s_float, 1, &a);
     } else { 
-        object_errorUnexpected (x, &s_float);
+        error_unexpected (class_getName (pd_class (x)), &s_float);
     }
 }
 
@@ -133,7 +119,7 @@ static void inlet_forSymbol (t_inlet *x, t_symbol *s)
         SET_SYMBOL (&a, s);
         inlet_forList (x, &s_symbol, 1, &a);
     } else { 
-        object_errorUnexpected (x, &s_symbol);
+        error_unexpected (class_getName (pd_class (x)), &s_symbol);
     }
 }
 
@@ -148,7 +134,7 @@ static void inlet_forList (t_inlet *x, t_symbol *s, int argc, t_atom *argv)
     else if (argc == 1 && IS_FLOAT (argv))  { inlet_forFloat (x, atom_getFloat (argv));   }
     else if (argc == 1 && IS_SYMBOL (argv)) { inlet_forSymbol (x, atom_getSymbol (argv)); }
     else { 
-        object_errorUnexpected (x, &s_list);
+        error_unexpected (class_getName (pd_class (x)), &s_list);
     }
 }
 
@@ -157,7 +143,7 @@ static void inlet_forAnything (t_inlet *x, t_symbol *s, int argc, t_atom *argv)
     if (x->i_from == s)                     { pd_message (x->i_destination, x->i_un.i_to, argc, argv); }
     else if (x->i_from == NULL)             { pd_message (x->i_destination, s, argc, argv); }
     else {
-        object_errorUnexpected (x, s);
+        error_unexpected (class_getName (pd_class (x)), s);
     }
 }
 
@@ -355,7 +341,7 @@ void outlet_bang (t_outlet *x)
 {
     t_outconnect *oc = NULL;
     
-    if (++object_stackCount >= OBJECT_MAXIMUM_ITERATION)  { object_errorStackOverflow (x); }
+    if (++object_stackCount >= OBJECT_MAXIMUM_ITERATION)  { error_stackOverflow(); }
     else {
         for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_bang (oc->oc_to); }
     }
@@ -368,7 +354,7 @@ void outlet_pointer (t_outlet *x, t_gpointer *gp)
     t_outconnect *oc = NULL;
     t_gpointer gpointer = GPOINTER_INIT;
     
-    if (++object_stackCount >= OBJECT_MAXIMUM_ITERATION)  { object_errorStackOverflow (x); }
+    if (++object_stackCount >= OBJECT_MAXIMUM_ITERATION)  { error_stackOverflow(); }
     else {
         gpointer_setByCopy (gp, &gpointer);     /* Temporary copy cached on the stack. */
         for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_pointer (oc->oc_to, &gpointer); }
@@ -382,7 +368,7 @@ void outlet_float (t_outlet *x, t_float f)
 {
     t_outconnect *oc = NULL;
     
-    if (++object_stackCount >= OBJECT_MAXIMUM_ITERATION)  { object_errorStackOverflow (x); }
+    if (++object_stackCount >= OBJECT_MAXIMUM_ITERATION)  { error_stackOverflow(); }
     else {
         for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_float (oc->oc_to, f); }
     }
@@ -394,7 +380,7 @@ void outlet_symbol (t_outlet *x, t_symbol *s)
 {
     t_outconnect *oc = NULL;
     
-    if (++object_stackCount >= OBJECT_MAXIMUM_ITERATION)  { object_errorStackOverflow (x); }
+    if (++object_stackCount >= OBJECT_MAXIMUM_ITERATION)  { error_stackOverflow(); }
     else {
         for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_symbol (oc->oc_to, s); }
     }
@@ -406,7 +392,7 @@ void outlet_list (t_outlet *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_outconnect *oc = NULL;
     
-    if (++object_stackCount >= OBJECT_MAXIMUM_ITERATION)  { object_errorStackOverflow (x); }
+    if (++object_stackCount >= OBJECT_MAXIMUM_ITERATION)  { error_stackOverflow(); }
     else {
         for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_list (oc->oc_to, argc, argv); }
     }
@@ -418,12 +404,21 @@ void outlet_anything (t_outlet *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_outconnect *oc = NULL;
     
-    if (++object_stackCount >= OBJECT_MAXIMUM_ITERATION)  { object_errorStackOverflow (x); }
+    if (++object_stackCount >= OBJECT_MAXIMUM_ITERATION)  { error_stackOverflow(); }
     else {
         for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_message (oc->oc_to, s, argc, argv); }
     }
     
     --object_stackCount;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void object_errorUnexpected (t_inlet *x, t_symbol *s)
+{
+    error_unexpected (class_getName (pd_class (x)), s);
 }
 
 // -----------------------------------------------------------------------------------------------------------

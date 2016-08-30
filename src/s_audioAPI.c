@@ -95,7 +95,7 @@ t_error audio_open (void)
     }
     
     if (err) {
-        post_error (PD_TRANSLATE ("audio: fails to open device"));
+        error_canNotOpen (sym_audio);
         audio_state = 0;
         scheduler_setAudioMode (SCHEDULER_AUDIO_NONE);
         

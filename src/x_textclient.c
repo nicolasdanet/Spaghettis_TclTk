@@ -25,7 +25,7 @@ extern t_class *textdefine_class;
 
 void textclient_error (t_textclient *x)
 {
-    post_error (PD_TRANSLATE ("text: couldn't find %s"), x->tc_name->s_name);
+    error_canNotFind (sym_text, x->tc_name);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -96,7 +96,7 @@ t_buffer *textclient_fetchBuffer (t_textclient *x)
         }
     }
     
-    pointer_error (sym_text);
+    error_invalidPointer (sym_text);
     //
     }
     

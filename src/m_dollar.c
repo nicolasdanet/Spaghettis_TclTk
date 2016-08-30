@@ -130,7 +130,7 @@ t_symbol *dollar_expandDollarSymbol (t_symbol *s, int argc, t_atom *argv)
     //
     }
     
-    if (err) { post_error (PD_TRANSLATE ("$: invalid expansion")); return NULL; }
+    if (err) { error_invalidExpansion(); return NULL; }
     else {
         return gensym (result);
     }
@@ -147,8 +147,7 @@ void dollar_expandDollarNumber (t_atom *dollar, t_atom *a, int argc, t_atom *arg
     if (n > 0 && n <= argc) { *a = *(argv + n - 1); }
     else if (n == 0)        { SET_FLOAT (a, dollar_getDollarZero()); }
     else {
-        post_error (PD_TRANSLATE ("$: invalid expansion"));
-        SET_FLOAT (a, 0.0);
+        error_invalidExpansion(); SET_FLOAT (a, 0.0);
     }
 }
 

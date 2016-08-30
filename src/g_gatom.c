@@ -179,7 +179,7 @@ static void gatom_bang (t_gatom *x)
         if (x->a_send != &s_ && x->a_send->s_thing) {
             if (x->a_send != x->a_receive) { pd_float (x->a_send->s_thing, GET_FLOAT (&x->a_atom)); }
             else {
-                post_error (PD_TRANSLATE ("gatom: send/receive loop %s"), x->a_unexpandedSend->s_name);
+                error_sendReceiveLoop (x->a_unexpandedSend);
             }
         }
         
@@ -190,7 +190,7 @@ static void gatom_bang (t_gatom *x)
         if (x->a_send != &s_ && x->a_send->s_thing) {
             if (x->a_send != x->a_receive) { pd_symbol (x->a_send->s_thing, GET_SYMBOL (&x->a_atom)); }
             else {
-                post_error (PD_TRANSLATE ("gatom: send/receive loop %s"), x->a_unexpandedSend->s_name);
+                error_sendReceiveLoop (x->a_unexpandedSend);
             }
         }
     }

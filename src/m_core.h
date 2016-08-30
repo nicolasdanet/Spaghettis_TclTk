@@ -175,9 +175,10 @@ void        class_setHelpName                           (t_class *c, t_symbol *s
 void        class_setPropertiesFunction                 (t_class *c, t_propertiesfn f);
 void        class_setSaveFunction                       (t_class *c, t_savefn f);
 
-char        *class_getName                              (t_class *c);
-char        *class_getHelpName                          (t_class *c);
-char        *class_getExternalDirectory                 (t_class *c);
+t_symbol    *class_getName                              (t_class *c);
+char        *class_getNameAsString                      (t_class *c);
+char        *class_getHelpNameAsString                  (t_class *c);
+char        *class_getExternalDirectoryAsString         (t_class *c);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -262,7 +263,7 @@ int         buffer_getMessageAt                         (t_buffer *x, int n, int
 void        buffer_serialize                            (t_buffer *x, t_buffer *y);
 void        buffer_deserialize                          (t_buffer *x, int argc, t_atom *argv);
 void        buffer_eval                                 (t_buffer *x, t_pd *object, int argc, t_atom *argv);
-t_error     buffer_read                                 (t_buffer *x, char *name, t_glist *glist);
+t_error     buffer_read                                 (t_buffer *x, t_symbol *name, t_glist *glist);
 t_error     buffer_write                                (t_buffer *x, char *name, char *directory);
 t_error     buffer_fileEval                             (t_symbol *name, t_symbol *directory);
 void        buffer_fileOpen                             (void *dummy, t_symbol *name, t_symbol *directory);
@@ -308,6 +309,7 @@ void        guistub_destroyWithKey                      (void *key);
 // -----------------------------------------------------------------------------------------------------------
 
 #include "m_utils.h"
+#include "m_error.h"
 #include "m_color.h"
 #include "m_symbols.h"
 

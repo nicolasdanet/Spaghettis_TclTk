@@ -131,7 +131,7 @@ static t_error plot_fetchScalarFields (t_plot *x, t_gpointer *gp,
     //
     }
     
-    post_error (PD_TRANSLATE ("plot: needs a valid array field"));
+    error_unspecifiedArrayField (sym_plot);
     
     return PD_ERROR;
 }

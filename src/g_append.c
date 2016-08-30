@@ -43,12 +43,11 @@ static void append_float (t_append *x, t_float f)
 {
     t_template *template = template_findByIdentifier (x->x_templateIdentifier);
     
-    if (!template) { post_error (PD_TRANSLATE ("append: couldn't find template")); }
+    if (!template) { error_canNotFind (sym_append, sym_template); }
     else {
     //
     if (!gpointer_isValidNullAllowed (&x->x_gpointer) || !gpointer_isScalar (&x->x_gpointer)) {
-        pointer_error (sym_append); 
-        
+        error_invalidPointer (sym_append); 
     } else {
     //
     t_scalar *scalar = scalar_new (gpointer_getView (&x->x_gpointer), x->x_templateIdentifier);
@@ -80,7 +79,7 @@ static void append_float (t_append *x, t_float f)
 
 static void append_set (t_append *x, t_symbol *templateName, t_symbol *fieldName)
 {
-    if (x->x_fieldsSize != 1) { post_error (PD_TRANSLATE ("append: cannot set multiple fields")); }
+    if (x->x_fieldsSize != 1) { error_canNotSetMultipleFields (sym_append); }
     else {
         x->x_templateIdentifier     = template_makeIdentifierWithWildcard (templateName); 
         x->x_fields[0].gv_fieldName = fieldName;

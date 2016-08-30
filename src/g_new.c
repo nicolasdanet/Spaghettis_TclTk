@@ -177,7 +177,7 @@ void canvas_makeScalar (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     //
     }
     
-    post_error (PD_TRANSLATE ("%s: no such template"), templateName->s_name);
+    error_noSuch (templateName, sym_template);
     //
     }
 }

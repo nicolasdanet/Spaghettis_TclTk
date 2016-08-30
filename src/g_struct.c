@@ -88,10 +88,8 @@ static void *struct_new (t_symbol *s, int argc, t_atom *argv)
     
     t_template *template = template_findByIdentifier (templateIdentifier);
     
-    if (template && template_hasInstance (template)) { 
-        post_error (PD_TRANSLATE ("struct: %s already exists"), templateName->s_name); return NULL;
-
-    } else {
+    if (template && template_hasInstance (template)) { error_alreadyExists (templateName); return NULL; } 
+    else {
         if (argc >= 1) { argc--; argv++; }
         if (!template) { template = template_new (templateIdentifier, argc, argv); }
         return struct_newInstance (template, argc, argv);

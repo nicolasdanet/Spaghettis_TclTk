@@ -215,7 +215,7 @@ static void qlist_read(t_qlist *x, t_symbol *filename, t_symbol *format)
     else if (*format->s_name)
         post_error ("qlist_read: unknown flag: %s", format->s_name);
 
-    if (buffer_read(x->x_binbuf, filename->s_name, x->x_canvas))
+    if (buffer_read(x->x_binbuf, filename, x->x_canvas))
             post_error ("%s: read failed", filename->s_name);
     x->x_onset = PD_INT_MAX;
     x->x_rewound = 1;

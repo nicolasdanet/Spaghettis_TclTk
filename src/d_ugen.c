@@ -627,8 +627,8 @@ void ugen_connect(t_dspcontext *dc, t_object *x1, int outno, t_object *x2,
     int siginno = object_indexOfSignalInlet(x2, inno);
     if (ugen_loud)
         post("%s -> %s: %d->%d",
-            class_getName(x1->te_g.g_pd),
-                class_getName(x2->te_g.g_pd), outno, inno);
+            class_getNameAsString(x1->te_g.g_pd),
+                class_getNameAsString(x2->te_g.g_pd), outno, inno);
     for (u1 = dc->dc_ugenlist; u1 && u1->u_obj != x1; u1 = u1->u_next);
     for (u2 = dc->dc_ugenlist; u2 && u2->u_obj != x2; u2 = u2->u_next);
     if (!u1 || !u2 || siginno < 0)
@@ -689,7 +689,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
     t_signal **insig, **outsig, **sig, *s1, *s2, *s3;
     t_ugenbox *u2;
     
-    if (ugen_loud) post("doit %s %d %d", class_getName(class), nofreesigs,
+    if (ugen_loud) post("doit %s %d %d", class_getNameAsString(class), nofreesigs,
         nonewsigs);
     for (i = 0, uin = u->u_in; i < u->u_nin; i++, uin++)
     {
@@ -698,7 +698,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
             t_float *scalar;
             s3 = signal_new(dc->dc_calcsize, dc->dc_srate);
             /* post("%s: unconnected signal inlet set to zero",
-                class_getName(u->u_obj->te_g.g_pd)); */
+                class_getNameAsString(u->u_obj->te_g.g_pd)); */
             if (scalar = object_getSignalValueAtIndex(u->u_obj, i))
                 dsp_add_scalarcopy(scalar, s3->s_vector, s3->s_blockSize);
             else
@@ -760,14 +760,14 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
     if (ugen_loud)
     {
         if (u->u_nin + u->u_nout == 0) post("put %s %d", 
-            class_getName(u->u_obj->te_g.g_pd), ugen_index(dc, u));
+            class_getNameAsString(u->u_obj->te_g.g_pd), ugen_index(dc, u));
         else if (u->u_nin + u->u_nout == 1) post("put %s %d (%lx)", 
-            class_getName(u->u_obj->te_g.g_pd), ugen_index(dc, u), sig[0]);
+            class_getNameAsString(u->u_obj->te_g.g_pd), ugen_index(dc, u), sig[0]);
         else if (u->u_nin + u->u_nout == 2) post("put %s %d (%lx %lx)", 
-            class_getName(u->u_obj->te_g.g_pd), ugen_index(dc, u),
+            class_getNameAsString(u->u_obj->te_g.g_pd), ugen_index(dc, u),
                 sig[0], sig[1]);
         else post("put %s %d (%lx %lx %lx ...)", 
-            class_getName(u->u_obj->te_g.g_pd), ugen_index(dc, u),
+            class_getNameAsString(u->u_obj->te_g.g_pd), ugen_index(dc, u),
                 sig[0], sig[1], sig[2]);
     }
 
@@ -787,7 +787,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
                 if (!signal_compatible(s1, s2))
                 {
                     post_error ("%s: incompatible signal inputs",
-                        class_getName(u->u_obj->te_g.g_pd));
+                        class_getNameAsString(u->u_obj->te_g.g_pd));
                     return;
                 }
                 s3 = signal_newlike(s1);
@@ -847,12 +847,12 @@ void ugen_done_graph(t_dspcontext *dc)
         post("ugen_done_graph...");
         for (u = dc->dc_ugenlist; u; u = u->u_next)
         {
-            post("ugen: %s", class_getName(u->u_obj->te_g.g_pd));
+            post("ugen: %s", class_getNameAsString(u->u_obj->te_g.g_pd));
             for (uout = u->u_out, i = 0; i < u->u_nout; uout++, i++)
                 for (oc = uout->o_connections; oc; oc = oc->oc_next)
             {
                 post("... out %d to %s, index %d, inlet %d", i,
-                    class_getName(oc->oc_who->u_obj->te_g.g_pd),
+                    class_getNameAsString(oc->oc_who->u_obj->te_g.g_pd),
                         ugen_index(dc, oc->oc_who), oc->oc_inno);
             }
         }

@@ -40,7 +40,7 @@ typedef struct _get {
 
 static void get_pointer (t_get *x, t_gpointer *gp)
 {
-    if (!gpointer_isValidInstanceOf (gp, x->x_templateIdentifier)) { pointer_error (sym_get); }
+    if (!gpointer_isValidInstanceOf (gp, x->x_templateIdentifier)) { error_invalidPointer (sym_get); }
     else {
     //
     int i;
@@ -60,7 +60,7 @@ static void get_pointer (t_get *x, t_gpointer *gp)
 
 static void get_set (t_get *x, t_symbol *templateName, t_symbol *fieldName)
 {
-    if (x->x_fieldsSize != 1) { post_error (PD_TRANSLATE ("get: cannot set multiple fields")); }
+    if (x->x_fieldsSize != 1) { error_canNotSetMultipleFields (sym_get); }
     else {
         x->x_templateIdentifier     = template_makeIdentifierWithWildcard (templateName); 
         x->x_fields[0].gv_fieldName = fieldName;

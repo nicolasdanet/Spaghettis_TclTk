@@ -277,7 +277,7 @@ t_error audio_openNative (int sampleRate,
     #if PD_APPLE    /* Jackmp linked as a weak framework. */
         
     if (!jack_client_open) {
-        post_error (PD_TRANSLATE ("audio: can't find JACK framework")); return PD_ERROR;
+        error_canNotFind (sym_audio, sym_JACK); return PD_ERROR;
     }
     
     #endif
@@ -324,7 +324,7 @@ t_error audio_openNative (int sampleRate,
     string_sprintf (t, PD_STRING, "input_%d", i + 1);
     jack_portsIn[i] = jack_port_register (jack_client, t, JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
     if (!jack_portsIn[i]) {
-        post_error (PD_TRANSLATE ("audio: JACK can only register %d input ports"), i);
+        error_failed (sym_JACK);
         break;
     }
     //
@@ -338,7 +338,7 @@ t_error audio_openNative (int sampleRate,
     string_sprintf (t, PD_STRING, "output_%d", i + 1);
     jack_portsOut[i] = jack_port_register (jack_client, t, JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
     if (!jack_portsOut[i]) {
-        post_error (PD_TRANSLATE ("audio: JACK can only register %d output ports"), i);
+        error_failed (sym_JACK);
         break;  
     }
     //

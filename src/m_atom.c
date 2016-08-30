@@ -152,7 +152,7 @@ int atom_typesAreEqual (t_atom *a, t_atom *b)
 
 t_atom *atom_substituteIfPointer (t_atom *a)
 {
-    if (IS_POINTER (a)) { SET_SYMBOL (a, sym_pointer); } 
+    if (IS_POINTER (a)) { SET_SYMBOL (a, &s_pointer); } 
     
     return a;
 }

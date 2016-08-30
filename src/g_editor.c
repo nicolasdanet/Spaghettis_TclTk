@@ -604,9 +604,7 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
     k |= (n == '}');
     k |= (n == '\\');
     
-    if (k) {
-        post_error (PD_TRANSLATE ("key: keycode %d not allowed"), (int)n); return; 
-    }
+    if (k) { error_ignored (sym_key); return; }
 
     /* Parse special keys. */
     

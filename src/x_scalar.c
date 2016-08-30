@@ -164,7 +164,7 @@ static void *scalardefine_new (t_symbol *s, int argc, t_atom *argv)
         if (t == sym_d || t == sym_define) { 
             pd_newest = scalardefine_newObject (s, argc - 1, argv + 1); 
         } else {
-            post_error (PD_TRANSLATE ("scalar: unknown function"));
+            error_unknownFunction (sym_scalar, t);
         }
     }
     

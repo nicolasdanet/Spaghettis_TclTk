@@ -234,7 +234,7 @@ void canvas_connect (t_glist *glist,
     //
     }
 
-    post_error (PD_TRANSLATE ("connection: failed in %s"), glist->gl_name->s_name);
+    error_failed (sym_connect);
 }
 
 void canvas_disconnect (t_glist *glist,
@@ -595,8 +595,8 @@ static void canvas_fromPopupDialog (t_glist *glist, t_float action, t_float posi
         }
         
     } else {
-        err = string_copy (name, PD_STRING, class_getHelpName (pd_class (y)));
-        directory = class_getExternalDirectory (pd_class (y));
+        err = string_copy (name, PD_STRING, class_getHelpNameAsString (pd_class (y)));
+        directory = class_getExternalDirectoryAsString (pd_class (y));
     }
 
     if (!err) { file_openHelp (directory, name); }

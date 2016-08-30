@@ -485,7 +485,7 @@ static void garray_read (t_garray *x, t_symbol *name)
     //
     }
     
-    if (err) { post_error (PD_TRANSLATE ("%s: can't open"), name->s_name); }
+    if (err) { error_canNotOpen (name); }
 }
 
 static void garray_write (t_garray *x, t_symbol *name)
@@ -495,7 +495,7 @@ static void garray_write (t_garray *x, t_symbol *name)
         
     canvas_makeFilePath (canvas_getView (x->x_owner), name->s_name, t, PD_STRING);
     
-    if (!(file = file_openWrite (t))) { post_error (PD_TRANSLATE ("%s: can't create"), t); }
+    if (!(file = file_openWrite (t))) { error_canNotCreate (name); }
     else {
     //
     int i;

@@ -426,7 +426,7 @@ static void dial_setRange (t_dial *x, double minimum, double maximum)
     
     if (err) { 
         x->x_isLogarithmic = 0;
-        post_error (PD_TRANSLATE ("dial: invalid range"));
+        error_invalid (sym_nbx, sym_range);
         
     } else {
         x->x_minimum = minimum;

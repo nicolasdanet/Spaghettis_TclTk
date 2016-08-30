@@ -33,6 +33,7 @@
 #include "m_string.c"
 #include "m_utils.c"
 #include "m_math.c"
+#include "m_error.c"
 #include "m_color.c"
 
 /* System. */

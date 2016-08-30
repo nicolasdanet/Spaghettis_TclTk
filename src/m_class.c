@@ -157,7 +157,7 @@ static void class_defaultList (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 
 static void class_defaultAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
-    post_error (PD_TRANSLATE ("%s: unknown method %s"), class_getName (pd_class (x)), s->s_name);
+    error_unknownMethod (class_getName (pd_class (x)), s);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -442,17 +442,22 @@ void class_setPropertiesFunction (t_class *c, t_propertiesfn f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-char *class_getName (t_class *c)
+t_symbol *class_getName (t_class *c)
+{
+    return c->c_name;
+}
+
+char *class_getNameAsString (t_class *c)
 {
     return c->c_name->s_name;
 }
 
-char *class_getHelpName (t_class *c)
+char *class_getHelpNameAsString (t_class *c)
 {
     return c->c_helpName->s_name;
 }
 
-char *class_getExternalDirectory (t_class *c)
+char *class_getExternalDirectoryAsString (t_class *c)
 {
     return (c->c_externalDirectory->s_name);
 }

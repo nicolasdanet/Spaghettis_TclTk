@@ -169,7 +169,7 @@ static void *textdefine_new (t_symbol *s, int argc, t_atom *argv)
     else if (t == sym_search)           { pd_newest = textsearch_new (s,        argc - 1, argv + 1); }
     else if (t == sym_sequence)         { pd_newest = textsequence_new (s,      argc - 1, argv + 1); }
     else {
-        post_error (PD_TRANSLATE ("text: unknown function"));
+        error_unknownFunction (sym_text, t);
     }
     //
     }

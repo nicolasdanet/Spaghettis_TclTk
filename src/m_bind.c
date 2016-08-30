@@ -187,8 +187,7 @@ int pd_isThing (t_symbol *s)
 {
     if (s && s->s_thing) { return 1; }
     else {
-        if (s) { post_error (PD_TRANSLATE ("%s: no such object"), s->s_name); }
-        return 0;
+        if (s) { error_noSuch (s, sym_object); } return 0;
     }
 }
 

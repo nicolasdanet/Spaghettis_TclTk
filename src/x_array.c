@@ -429,7 +429,7 @@ static void *array_rangeop_new(t_class *class,
         }
         else
         {
-            post_error ("%s: unknown flag ...", class_getName(class));
+            post_error ("%s: unknown flag ...", class_getNameAsString(class));
             post_atoms(argc, argv);
         }
         argc--; argv++;
@@ -438,7 +438,7 @@ static void *array_rangeop_new(t_class *class,
     {
         if (x->x_struct)
         {
-            post_error ("%s: extra names after -s..", class_getName(class));
+            post_error ("%s: extra names after -s..", class_getNameAsString(class));
             post_atoms(argc, argv);
         }
         else x->x_sym = argv->a_w.w_symbol;
@@ -456,7 +456,7 @@ static void *array_rangeop_new(t_class *class,
     }
     if (argc && warnextra)
     {
-        post("warning: %s ignoring extra argument: ", class_getName(class));
+        post("warning: %s ignoring extra argument: ", class_getNameAsString(class));
         post_atoms(argc, argv);
     }
     if (x->x_struct)

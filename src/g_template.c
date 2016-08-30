@@ -399,12 +399,12 @@ static void template_newParse (t_template *x, int argc, t_atom *argv)
         
         #if PD_WITH_LEGACY
         
-        if (type == sym_list) { type = sym_text; }
+        if (type == &s_list) { type = sym_text; }
             
         #endif
         
-        if (type == sym_float)       { k = DATA_FLOAT;  }
-        else if (type == sym_symbol) { k = DATA_SYMBOL; }
+        if (type == &s_float)        { k = DATA_FLOAT;  }
+        else if (type == &s_symbol)  { k = DATA_SYMBOL; }
         else if (type == sym_text)   { k = DATA_TEXT;   }
         else if (type == sym_array)  {
             if (argc >= 3 && IS_SYMBOL (argv + 2)) {

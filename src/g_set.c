@@ -40,19 +40,11 @@ typedef struct _set {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void set_error (void)
-{
-    post_error (PD_TRANSLATE ("set: type mismatch or no field specified"));
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void set_bang (t_set *x)
 {
-    if (!gpointer_isValidInstanceOf (&x->x_gpointer, x->x_templateIdentifier)) { pointer_error (sym_set); }
-    else {
+    if (!gpointer_isValidInstanceOf (&x->x_gpointer, x->x_templateIdentifier)) { 
+        error_invalidPointer (sym_set);
+    } else {
     //
     int i;
     
@@ -81,7 +73,7 @@ static void set_bang (t_set *x)
 
 static void set_float (t_set *x, t_float f)
 {
-    if (!x->x_fieldsSize || x->x_asSymbol) { set_error(); }
+    if (!x->x_fieldsSize || x->x_asSymbol) { error_mismatchTypeOrUnspecifiedField (sym_set); }
     else {
         x->x_fields[0].sv_w.w_float = f;
         set_bang (x);
@@ -90,7 +82,7 @@ static void set_float (t_set *x, t_float f)
 
 static void set_symbol (t_set *x, t_symbol *s)
 {
-    if (!x->x_fieldsSize || !x->x_asSymbol) { set_error(); }
+    if (!x->x_fieldsSize || !x->x_asSymbol) { error_mismatchTypeOrUnspecifiedField (sym_set); }
     else {
         x->x_fields[0].sv_w.w_symbol = s; 
         set_bang (x);
@@ -103,7 +95,7 @@ static void set_symbol (t_set *x, t_symbol *s)
 
 static void set_set (t_set *x, t_symbol *templateName, t_symbol *fieldName)
 {
-    if (x->x_fieldsSize != 1) { post_error (PD_TRANSLATE ("set: cannot set multiple fields")); }
+    if (x->x_fieldsSize != 1) { error_canNotSetMultipleFields (sym_set); }
     else {
         x->x_templateIdentifier     = template_makeIdentifierWithWildcard (templateName); 
         x->x_fields[0].sv_fieldName = fieldName;
