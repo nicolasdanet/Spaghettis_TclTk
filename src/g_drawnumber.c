@@ -46,14 +46,14 @@ typedef struct _drawnumber {
 static t_error drawnumber_getContents (t_drawnumber *x,
     t_gpointer *gp,
     char *dest,
-    size_t size,
+    int size,
     int *m,
     int *n)
 {
     if (gpointer_fieldIsArray (gp, x->x_fieldName)) { return PD_ERROR; }
     else {
         t_error err = string_copy (dest, size, x->x_label->s_name);
-        err |= gpointer_fieldToString (gp, x->x_fieldName, dest, size);
+        err |= gpointer_fieldToString (gp, x->x_fieldName, dest, (int)size);
         if (m && n) { string_getNumberOfColumnsAndLines (dest, m, n); }
         return err;
     }

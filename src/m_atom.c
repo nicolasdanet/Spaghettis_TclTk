@@ -123,20 +123,20 @@ t_error atom_withStringUnzeroed (t_atom *a, char *s, int size)
     }
 }
 
-t_error atom_toString (t_atom *a, char *s, int size)
+t_error atom_toString (t_atom *a, char *dest, int size)
 {
     t_error err = PD_ERROR;
     
     PD_ASSERT (size > 0);
     
     switch (a->a_type) {
-        case A_SYMBOL       : err = atom_symbolToQuotedString (a, s, size);                     break;
-        case A_FLOAT        : err = string_sprintf (s, (size_t)size, "%g", GET_FLOAT (a));      break;
-        case A_DOLLAR       : err = string_sprintf (s, (size_t)size, "$%d", GET_DOLLAR (a));    break;
-        case A_DOLLARSYMBOL : err = string_copy (s,  (size_t)size, GET_SYMBOL (a)->s_name);     break;
-        case A_SEMICOLON    : err = string_copy (s,  (size_t)size, ";");                        break;
-        case A_COMMA        : err = string_copy (s,  (size_t)size, ",");                        break;
-        case A_POINTER      : err = string_copy (s,  (size_t)size, s_pointer.s_name);           break;
+        case A_SYMBOL       : err = atom_symbolToQuotedString (a, dest, size);                  break;
+        case A_FLOAT        : err = string_sprintf (dest, (size_t)size, "%g", GET_FLOAT (a));   break;
+        case A_DOLLAR       : err = string_sprintf (dest, (size_t)size, "$%d", GET_DOLLAR (a)); break;
+        case A_DOLLARSYMBOL : err = string_copy (dest,  (size_t)size, GET_SYMBOL (a)->s_name);  break;
+        case A_SEMICOLON    : err = string_copy (dest,  (size_t)size, ";");                     break;
+        case A_COMMA        : err = string_copy (dest,  (size_t)size, ",");                     break;
+        case A_POINTER      : err = string_copy (dest,  (size_t)size, s_pointer.s_name);        break;
     }
 
     return err;
@@ -155,6 +155,18 @@ t_atom *atom_substituteIfPointer (t_atom *a)
     if (IS_POINTER (a)) { SET_SYMBOL (a, &s_pointer); } 
     
     return a;
+}
+
+char *atom_atomsToString (int argc, t_atom *argv)       /* Caller acquires string ownership. */
+{
+    char *s = NULL;
+    t_buffer *t = buffer_new();
+    
+    buffer_append (t, argc, argv);
+    buffer_toString (t, &s);
+    buffer_free (t);
+    
+    return s;
 }
 
 // -----------------------------------------------------------------------------------------------------------

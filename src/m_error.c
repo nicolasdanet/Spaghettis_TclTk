@@ -30,6 +30,15 @@ void error_error2 (char *s1, char *s2)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void error_post (int argc, t_atom *argv)
+{
+    char *s = atom_atomsToString (argc, argv); post_error ("%s", s); PD_MEMORY_FREE (s);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void error_invalidExpansion (void)
 {
     post_error (PD_TRANSLATE (": invalid expansion"));
@@ -38,11 +47,6 @@ void error_invalidExpansion (void)
 void error_stackOverflow (void)
 {
     post_error (PD_TRANSLATE (": stack overflow"));
-}
-
-void error_couldNotCreate (void)
-{
-    post_error (PD_TRANSLATE ("... couldn't create"));
 }
 
 void error_ioStuck (void)
@@ -166,6 +170,19 @@ void error_unknownFunction (t_symbol *s1, t_symbol *s2)
 void error_invalidArgumentsFor (t_symbol *s1, t_symbol *s2)
 {
     post_error (PD_TRANSLATE ("%s: invalid arguments for %s"), s1->s_name, s2->s_name);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void error_couldNotCreate (int argc, t_atom *argv)
+{
+    char *s = atom_atomsToString (argc, argv);
+    
+    post_error (PD_TRANSLATE (": %s ... couldn't create"), s);
+    
+    PD_MEMORY_FREE (s);
 }
 
 // -----------------------------------------------------------------------------------------------------------

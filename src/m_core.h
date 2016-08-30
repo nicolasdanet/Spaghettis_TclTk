@@ -232,9 +232,10 @@ void        global_shouldQuit                           (void *dummy);
 #pragma mark -
 
 t_atom      *atom_substituteIfPointer                   (t_atom *a);
+char        *atom_atomsToString                         (int argc, t_atom *argv);
 
 t_error     atom_withStringUnzeroed                     (t_atom *a, char *s, int size);
-t_error     atom_toString                               (t_atom *a, char *s, int size);
+t_error     atom_toString                               (t_atom *a, char *dest, int size);
 int         atom_typesAreEqual                          (t_atom *a, t_atom *b);
 
 // -----------------------------------------------------------------------------------------------------------

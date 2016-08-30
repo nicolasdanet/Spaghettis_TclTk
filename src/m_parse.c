@@ -227,7 +227,7 @@ void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int preallocate
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)
+void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)     /* Caller acquires string ownership. */
 {
     char *buffer = (char *)PD_MEMORY_GET (0);
     int i, length = 0;
@@ -281,7 +281,7 @@ void buffer_withStringUnzeroed (t_buffer *x, char *s, int size)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void buffer_toString (t_buffer *x, char **s)
+void buffer_toString (t_buffer *x, char **s)        /* Caller acquires string ownership. */
 {
     char *buffer = NULL;
     int n, length = 0;

@@ -39,7 +39,6 @@ int iterator_next (t_iterator *x, t_atom **a)
     next = PD_MIN (i + 1, x->iter_argc);
     (*a) = x->iter_argv + x->iter_index; 
     x->iter_index = next;
-    //post_atoms (n, *a);
     return n;
     //
     }

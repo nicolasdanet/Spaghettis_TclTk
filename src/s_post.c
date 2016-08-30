@@ -52,30 +52,6 @@ void post_error (const char *fmt, ...)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void post_atoms (int argc, t_atom *argv)
-{
-    t_buffer *t = buffer_new();
-    
-    buffer_append (t, argc, argv);
-    
-    if (buffer_size (t)) {
-    //
-    char *s = NULL;
-    
-    buffer_toString (t, &s);
-    post_error ("%s", s);
-    
-    PD_MEMORY_FREE (s);
-    //
-    }
-    
-    buffer_free (t);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 #if PD_WITH_DEBUG
 
 void post_log (const char *fmt, ...)

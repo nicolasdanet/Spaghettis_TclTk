@@ -343,9 +343,11 @@ void gpointer_setVisibility (t_gpointer *gp, int isVisible)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error gpointer_fieldToString (t_gpointer *gp, t_symbol *fieldName, char *dest, size_t size)
+t_error gpointer_fieldToString (t_gpointer *gp, t_symbol *fieldName, char *dest, int size)
 {
     t_error err = PD_ERROR_NONE;
+    
+    PD_ASSERT (size > 0);
     
     if (gpointer_fieldIsFloat (gp, fieldName)) {
         t_atom a;

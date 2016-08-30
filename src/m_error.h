@@ -16,8 +16,9 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void error_error1 (char *);
-void error_error2 (char *, char *);
+void error_error1   (char *);
+void error_error2   (char *, char *);
+void error_post     (int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -25,7 +26,6 @@ void error_error2 (char *, char *);
 
 void error_invalidExpansion                 (void);
 void error_stackOverflow                    (void);
-void error_couldNotCreate                   (void);
 void error_ioStuck                          (void);
 void error_stubNotFound                     (void);
 void error_tooManyCharacters                (void);
@@ -51,6 +51,8 @@ void error_canNotFind                       (t_symbol *, t_symbol *);
 void error_unknownMethod                    (t_symbol *, t_symbol *);
 void error_unknownFunction                  (t_symbol *, t_symbol *);
 void error_invalidArgumentsFor              (t_symbol *, t_symbol *);
+
+void error_couldNotCreate                   (int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

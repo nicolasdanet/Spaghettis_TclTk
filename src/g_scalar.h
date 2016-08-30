@@ -245,7 +245,7 @@ void        gpointer_setVisibility                      (t_gpointer *gp, int isV
 t_error     gpointer_fieldToString                      (t_gpointer *gp,
                                                             t_symbol *fieldName,
                                                             char *dest,
-                                                            size_t size);
+                                                            int size);
 
 int         gpointer_hasField                           (t_gpointer *gp, t_symbol *fieldName);
 int         gpointer_fieldIsFloat                       (t_gpointer *gp, t_symbol *fieldName);

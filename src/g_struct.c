@@ -49,7 +49,7 @@ t_glist *struct_getView (t_struct *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *struct_newInstance (t_template *template, int argc, t_atom *argv)
+static void *struct_newInstance (t_template *template)
 {
     t_struct *x = (t_struct *)pd_new (struct_class);
     
@@ -92,7 +92,7 @@ static void *struct_new (t_symbol *s, int argc, t_atom *argv)
     else {
         if (argc >= 1) { argc--; argv++; }
         if (!template) { template = template_new (templateIdentifier, argc, argv); }
-        return struct_newInstance (template, argc, argv);
+        return struct_newInstance (template);
     }
     //
     }

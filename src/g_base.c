@@ -306,16 +306,10 @@ void canvas_makeTextObject (t_glist *glist,
     if (pd_newest) { x = canvas_castToObjectIfPatchable (pd_newest); }
 
     if (!x) {
-    //
-    x = (t_object *)pd_new (text_class);    /* Create a dummy box. */
-    
-    if (buffer_size (b)) {                  /* Avoid unnecessary moanings. */
-    //
-    post_atoms (buffer_size (b), buffer_atoms (b));
-    error_couldNotCreate();
-    //
-    }
-    //
+        x = (t_object *)pd_new (text_class);    /* Create a dummy box. */
+        if (buffer_size (b)) {
+            error_couldNotCreate (buffer_size (b), buffer_atoms (b)); 
+        }
     }
 
     x->te_buffer        = b;

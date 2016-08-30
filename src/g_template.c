@@ -412,6 +412,8 @@ static void template_newParse (t_template *x, int argc, t_atom *argv)
                 k = DATA_ARRAY;
                 argc--;
                 argv++;
+            } else {
+                // error
             }
         }
         
@@ -432,6 +434,8 @@ static void template_newParse (t_template *x, int argc, t_atom *argv)
         //
         }
         //
+        } else {
+            // error
         }
 
     argc -= 2;
