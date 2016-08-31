@@ -1237,6 +1237,8 @@ static void *plot_new (t_symbol *s, int argc, t_atom *argv)
     if (argc) { field_setAsFloat (&x->x_incrementX,     argc--, argv++); }
     if (argc) { field_setAsFloat (&x->x_style,          argc--, argv++); }
 
+    if (argc) { warning_unusedArguments (s, argc, argv); }
+    
     return x;
 }
 

@@ -292,7 +292,9 @@ static void *drawnumber_new (t_symbol *s, int argc, t_atom *argv)
     if (argc) { field_setAsFloat (&x->x_positionY,  argc--, argv++); }
     if (argc) { field_setAsFloat (&x->x_color,      argc--, argv++); }
     
-    if (argc) { x->x_label = atom_getSymbolAtIndex (0, argc, argv);  }
+    if (argc) { x->x_label = atom_getSymbolAtIndex (0, argc--, argv++); }
+    
+    if (argc) { warning_unusedArguments (s, argc, argv); }
 
     return x;
 }

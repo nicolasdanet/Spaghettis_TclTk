@@ -385,12 +385,7 @@ static void *drawpolygon_new (t_symbol *s, int argc, t_atom *argv)
     
     for (i = 0; i < x->x_size; i++) { field_setAsFloat (x->x_coordinates + i, 1, argv + i); }
 
-    if (argc - x->x_size > 0) {
-    //
-    error_invalidArguments (s, argc - x->x_size, argv + x->x_size);
-    pd_free (x); x = NULL;
-    //
-    }
+    if (argc - x->x_size > 0) { warning_unusedArguments (s, argc - x->x_size, argv + x->x_size); }
     
     return x;
 }
