@@ -65,7 +65,7 @@ static void global_dummy (void *dummy)
 
 static void global_default (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
-    error_unknown (class_getName (pd_class (x)), s);
+    error_unknownMethod (class_getName (pd_class (x)), s);
 }
 
 // -----------------------------------------------------------------------------------------------------------

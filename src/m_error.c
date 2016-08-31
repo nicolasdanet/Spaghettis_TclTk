@@ -117,6 +117,26 @@ void error_failed (t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void error_noSuch (t_symbol *s1, t_symbol *s2)
+{
+    post_error (PD_TRANSLATE ("%s: no such %s"), s1->s_name, s2->s_name);
+}
+
+void error_canNotFind (t_symbol *s1, t_symbol *s2)
+{
+    post_error (PD_TRANSLATE ("%s: can't find %s"), s1->s_name, s2->s_name);
+}
+
+void error_unknownMethod (t_symbol *s1, t_symbol *s2)
+{
+    post_error (PD_TRANSLATE ("%s: unknown method %s"), s1->s_name, s2->s_name);
+}
+
+void error_missingField (t_symbol *s1, t_symbol *s2)
+{
+    post_error (PD_TRANSLATE ("%s: missing field %s"), s1->s_name, s2->s_name);
+}
+
 void error_unexpected (t_symbol *s1, t_symbol *s2)
 {
     post_error (PD_TRANSLATE ("%s: unexpected %s"), s1->s_name, s2->s_name);
@@ -135,21 +155,6 @@ void error_mismatch (t_symbol *s1, t_symbol *s2)
 void error_unspecified (t_symbol *s1, t_symbol *s2)
 {
     post_error (PD_TRANSLATE ("%s: unspecified %s"), s1->s_name, s2->s_name);
-}
-
-void error_unknown (t_symbol *s1, t_symbol *s2)
-{
-    post_error (PD_TRANSLATE ("%s: unknown %s"), s1->s_name, s2->s_name);
-}
-
-void error_noSuch (t_symbol *s1, t_symbol *s2)
-{
-    post_error (PD_TRANSLATE ("%s: no such %s"), s1->s_name, s2->s_name);
-}
-
-void error_canNotFind (t_symbol *s1, t_symbol *s2)
-{
-    post_error (PD_TRANSLATE ("%s: can't find %s"), s1->s_name, s2->s_name);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -39,12 +39,15 @@ static void element_float (t_element *x, t_float f)
     if (gpointer_isValidInstanceOf (&x->x_gpointer, x->x_templateIdentifier)) {
     //
     if (gpointer_hasField (&x->x_gpointer, x->x_fieldName)) {
-        if (gpointer_fieldIsArrayAndValid (&x->x_gpointer, x->x_fieldName)) {
-            t_array *array = gpointer_getArray (&x->x_gpointer, x->x_fieldName);
-            gpointer_setAsWord (&x->x_gpointerWord, array, array_getElementAtIndex (array, (int)f));
-            outlet_pointer (cast_object (x)->te_outlet, &x->x_gpointerWord);
-        }
-    }
+    //
+    if (gpointer_fieldIsArrayAndValid (&x->x_gpointer, x->x_fieldName)) {
+        t_array *array = gpointer_getArray (&x->x_gpointer, x->x_fieldName);
+        gpointer_setAsWord (&x->x_gpointerWord, array, array_getElementAtIndex (array, (int)f));
+        outlet_pointer (cast_object (x)->te_outlet, &x->x_gpointerWord);
+        
+    } else { error_invalid (sym_element, x->x_fieldName); }
+    //
+    } else { error_missingField (sym_element, x->x_fieldName); }
     //
     } else { error_invalid (sym_element, &s_pointer); }
 }

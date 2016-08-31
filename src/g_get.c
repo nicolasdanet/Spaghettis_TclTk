@@ -51,6 +51,8 @@ static void get_pointer (t_get *x, t_gpointer *gp)
         if (gpointer_hasField (gp, s)) {
             if (gpointer_fieldIsFloat (gp, s))       { outlet_float (o, gpointer_getFloat (gp, s));   }
             else if (gpointer_fieldIsSymbol (gp, s)) { outlet_symbol (o, gpointer_getSymbol (gp, s)); }
+        } else {
+            error_missingField (sym_get, s);
         }
     }
     //

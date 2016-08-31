@@ -36,7 +36,6 @@ void error_tooManyCharacters                (void);
 void error_recursiveInstantiation           (t_symbol *);
 void error_sendReceiveLoop                  (t_symbol *);
 void error_canNotSetMultipleFields          (t_symbol *);
-
 void error_alreadyExists                    (t_symbol *);
 void error_canNotOpen                       (t_symbol *);
 void error_canNotCreate                     (t_symbol *);
@@ -49,13 +48,14 @@ void error_failed                           (t_symbol *);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void error_noSuch                           (t_symbol *, t_symbol *);
+void error_canNotFind                       (t_symbol *, t_symbol *);
+void error_unknownMethod                    (t_symbol *, t_symbol *);
+void error_missingField                     (t_symbol *, t_symbol *);
 void error_unexpected                       (t_symbol *, t_symbol *);
 void error_invalid                          (t_symbol *, t_symbol *);
 void error_mismatch                         (t_symbol *, t_symbol *);
 void error_unspecified                      (t_symbol *, t_symbol *);
-void error_unknown                          (t_symbol *, t_symbol *);
-void error_noSuch                           (t_symbol *, t_symbol *);
-void error_canNotFind                       (t_symbol *, t_symbol *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

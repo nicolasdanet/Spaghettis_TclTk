@@ -58,7 +58,7 @@ static void set_bang (t_set *x)
         } else {
             error_mismatch (sym_set, sym_type);
         }
-    } else { error_invalid (sym_set, sym_field); }
+    } else { error_missingField (sym_set, s); }
     //
     }
 
