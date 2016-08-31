@@ -38,11 +38,14 @@ static void setsize_float (t_setsize *x, t_float f)
     if (gpointer_isValidInstanceOf (&x->x_gpointer, x->x_templateIdentifier)) {
     //
     if (gpointer_hasField (&x->x_gpointer, x->x_fieldName)) {
-        if (gpointer_fieldIsArrayAndValid (&x->x_gpointer, x->x_fieldName)) {
-            t_array *array = gpointer_getArray (&x->x_gpointer, x->x_fieldName);
-            array_resizeAndRedraw (array, gpointer_getView (&x->x_gpointer), PD_MAX (1, (int)f));
-        }
-    }
+    //
+    if (gpointer_fieldIsArrayAndValid (&x->x_gpointer, x->x_fieldName)) {
+        t_array *array = gpointer_getArray (&x->x_gpointer, x->x_fieldName);
+        array_resizeAndRedraw (array, gpointer_getView (&x->x_gpointer), PD_MAX (1, (int)f));
+        
+    } else { error_invalid (sym_setsize, x->x_fieldName); }
+    //
+    } else { error_missingField (sym_setsize, x->x_fieldName); }
     //
     } else { error_invalid (sym_setsize, &s_pointer); }
 }
