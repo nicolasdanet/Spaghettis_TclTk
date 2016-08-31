@@ -54,7 +54,7 @@ static void get_pointer (t_get *x, t_gpointer *gp)
         }
     }
     //
-    } else { error_invalidPointer (sym_get); }
+    } else { error_invalid (sym_get, &s_pointer); }
 }
 
 static void get_set (t_get *x, t_symbol *templateName, t_symbol *fieldName)

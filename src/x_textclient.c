@@ -96,7 +96,7 @@ t_buffer *textclient_fetchBuffer (t_textclient *x)
         }
     }
     
-    error_invalidPointer (sym_text);
+    error_invalid (sym_text, &s_pointer);
     //
     }
     

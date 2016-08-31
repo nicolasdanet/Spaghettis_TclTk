@@ -61,7 +61,7 @@ static int pointer_nextSkip (t_gobj *z, t_glist *glist, int wantSelected)
 
 static void pointer_bang (t_pointer *x)
 {
-    if (!gpointer_isValidNullAllowed (&x->x_gpointer)) { error_invalidPointer (&s_pointer); }
+    if (!gpointer_isValidNullAllowed (&x->x_gpointer)) { error_invalid (&s_pointer, &s_pointer); }
     else {
     //
     int i;
@@ -93,7 +93,7 @@ static void pointer_pointer (t_pointer *x, t_gpointer *gp)
 
 static void pointer_sendwindow (t_pointer *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (!gpointer_isValidNullAllowed (&x->x_gpointer)) { error_invalidPointer (&s_pointer); }
+    if (!gpointer_isValidNullAllowed (&x->x_gpointer)) { error_invalid (&s_pointer, &s_pointer); }
     else if (argc && IS_SYMBOL (argv)) {
         t_glist *view = canvas_getView (gpointer_getView (&x->x_gpointer));
         pd_message (cast_pd (view), GET_SYMBOL (argv), argc - 1, argv + 1);
@@ -102,7 +102,7 @@ static void pointer_sendwindow (t_pointer *x, t_symbol *s, int argc, t_atom *arg
 
 static void pointer_send (t_pointer *x, t_symbol *s)
 {
-    if (!gpointer_isValidNullAllowed (&x->x_gpointer)) { error_invalidPointer (&s_pointer); }
+    if (!gpointer_isValidNullAllowed (&x->x_gpointer)) { error_invalid (&s_pointer, &s_pointer); }
     else {
         if (pd_isThing (s)) { pd_pointer (s->s_thing, &x->x_gpointer); }
     }
@@ -119,7 +119,7 @@ static void pointer_traverse (t_pointer *x, t_symbol *s)
     
     if (glist) { gpointer_setAsScalar (&x->x_gpointer, glist, NULL); }
     else { 
-        error_invalidPointer (&s_pointer);
+        error_invalid (&s_pointer, &s_pointer);
     }
 }
 
@@ -128,7 +128,7 @@ static void pointer_rewind (t_pointer *x)
     if (gpointer_isValidNullAllowed (&x->x_gpointer) && gpointer_isScalar (&x->x_gpointer)) {
         gpointer_setAsScalar (&x->x_gpointer, gpointer_getParentGlist (&x->x_gpointer), NULL);
     } else {
-        error_invalidPointer (&s_pointer);
+        error_invalid (&s_pointer, &s_pointer);
     }
 }
 
@@ -172,7 +172,7 @@ static void pointer_nextSelected (t_pointer *x, t_float f)
     //
     }
     
-    error_invalidPointer (&s_pointer);
+    error_invalid (&s_pointer, &s_pointer);
 }
 
 static void pointer_next (t_pointer *x)

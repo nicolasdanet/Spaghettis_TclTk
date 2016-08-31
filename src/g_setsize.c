@@ -44,7 +44,7 @@ static void setsize_float (t_setsize *x, t_float f)
         }
     }
     //
-    } else { error_invalidPointer (sym_setsize); }
+    } else { error_invalid (sym_setsize, &s_pointer); }
 }
 
 static void setsize_set (t_setsize *x, t_symbol *templateName, t_symbol *fieldName)

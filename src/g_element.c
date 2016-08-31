@@ -46,7 +46,7 @@ static void element_float (t_element *x, t_float f)
         }
     }
     //
-    } else { error_invalidPointer (sym_element); }
+    } else { error_invalid (sym_element, &s_pointer); }
 }
 
 static void element_set (t_element *x, t_symbol *templateName, t_symbol *fieldName)

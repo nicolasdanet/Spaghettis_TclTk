@@ -131,7 +131,7 @@ static t_error plot_fetchScalarFields (t_plot *x, t_gpointer *gp,
     //
     }
     
-    error_unspecifiedArrayField (sym_plot);
+    error_unspecified (sym_plot, sym_array);
     
     return PD_ERROR;
 }

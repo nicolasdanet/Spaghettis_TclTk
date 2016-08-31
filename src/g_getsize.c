@@ -43,7 +43,7 @@ static void getsize_pointer (t_getsize *x, t_gpointer *gp)
         }
     }
     //
-    } else { error_invalidPointer (sym_getsize); }
+    } else { error_invalid (sym_getsize, &s_pointer); }
 }
 
 static void getsize_set (t_getsize *x, t_symbol *templateName, t_symbol *fieldName)
