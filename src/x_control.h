@@ -57,7 +57,7 @@ t_buffer    *textbuffer_getBuffer       (t_textbuffer *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        textclient_init             (t_textclient *x, int *argc, t_atom **argv);
+t_error     textclient_init             (t_textclient *x, int *argc, t_atom **argv);
 void        textclient_free             (t_textclient *x);
 void        textclient_update           (t_textclient *x);
 

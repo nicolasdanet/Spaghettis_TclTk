@@ -22,17 +22,9 @@ extern t_class *textdefine_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-void textclient_error (t_textclient *x)
-{
-    error_canNotFind (sym_text, x->tc_name);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void textclient_init (t_textclient *x, int *ac, t_atom **av)
+t_error textclient_init (t_textclient *x, int *ac, t_atom **av)
 {
     int argc = *ac;
     t_atom *argv = *av;
@@ -50,6 +42,8 @@ void textclient_init (t_textclient *x, int *ac, t_atom **av)
             x->tc_templateIdentifier = template_makeIdentifierWithWildcard (GET_SYMBOL (argv + 1));
             x->tc_fieldName = GET_SYMBOL (argv + 2);
             argc -= 3; argv += 3;
+        } else {
+            return PD_ERROR;
         }
     }
     
@@ -57,13 +51,20 @@ void textclient_init (t_textclient *x, int *ac, t_atom **av)
     //
     }
     
-    if (argc && IS_SYMBOL (argv) && !x->tc_templateIdentifier) {
+    if (!x->tc_templateIdentifier && argc) {
+    //
+    if (!IS_SYMBOL (argv)) { return PD_ERROR; }
+    else {
         x->tc_name = GET_SYMBOL (argv); 
         argc--; argv++;
+    }
+    //
     }
     
     *ac = argc;
     *av = argv;
+    
+    return PD_ERROR_NONE;
 }
 
 void textclient_free (t_textclient *x)
@@ -78,26 +79,25 @@ void textclient_free (t_textclient *x)
 t_buffer *textclient_fetchBuffer (t_textclient *x)
 {
     if (x->tc_name) {
-    //
-    t_textbuffer *y = (t_textbuffer *)pd_findByClass (x->tc_name, textdefine_class);
 
-    if (y) { return textbuffer_getBuffer (y); }
-    else {
-        textclient_error (x);
-    }
-    //
-    } else if (x->tc_templateIdentifier) {
-    //
-    if (gpointer_isValidInstanceOf (&x->tc_gpointer, x->tc_templateIdentifier)) {
-        if (gpointer_hasField (&x->tc_gpointer, x->tc_fieldName)) {
-            if (gpointer_fieldIsText (&x->tc_gpointer, x->tc_fieldName)) {
-                return gpointer_getText (&x->tc_gpointer, x->tc_fieldName);
-            }
+        t_textbuffer *y = (t_textbuffer *)pd_findByClass (x->tc_name, textdefine_class);
+
+        if (y) { return textbuffer_getBuffer (y); }
+        else {
+            error_canNotFind (sym_text, x->tc_name);
         }
-    }
-    
-    error_invalid (sym_text, &s_pointer);
-    //
+
+    } else if (x->tc_templateIdentifier) {
+
+        if (gpointer_isValidInstanceOf (&x->tc_gpointer, x->tc_templateIdentifier)) {
+            if (gpointer_hasField (&x->tc_gpointer, x->tc_fieldName)) {
+                if (gpointer_fieldIsText (&x->tc_gpointer, x->tc_fieldName)) {
+                    return gpointer_getText (&x->tc_gpointer, x->tc_fieldName);
+                    
+        } else { error_invalid (sym_text, x->tc_fieldName); }
+        } else { error_missingField (sym_text, x->tc_fieldName); }
+        } else { error_invalid (sym_text, &s_pointer); }
+
     }
     
     return NULL;
@@ -106,20 +106,19 @@ t_buffer *textclient_fetchBuffer (t_textclient *x)
 void textclient_update (t_textclient *x)
 {
     if (x->tc_name) {
-    //
-    t_textbuffer *y = (t_textbuffer *)pd_findByClass (x->tc_name, textdefine_class);
-    
-    if (y) { textbuffer_update (y); }
-    else { 
-        textclient_error (x);
-    }
-    //
+
+        t_textbuffer *y = (t_textbuffer *)pd_findByClass (x->tc_name, textdefine_class);
+        
+        if (y) { textbuffer_update (y); }
+        else { 
+            error_canNotFind (sym_text, x->tc_name);
+        }
+
     } else if (x->tc_templateIdentifier) {
-    //
-    if (gpointer_isValidInstanceOf (&x->tc_gpointer, x->tc_templateIdentifier)) {
-        gpointer_redraw (&x->tc_gpointer);
-    }
-    //
+
+        if (gpointer_isValidInstanceOf (&x->tc_gpointer, x->tc_templateIdentifier)) {
+            gpointer_redraw (&x->tc_gpointer);
+        }
     }
 }
 

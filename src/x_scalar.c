@@ -62,7 +62,7 @@ static void scalardefine_set (t_glist *x, t_symbol *s, int argc, t_atom *argv)
         buffer_free (t);
     }
     //
-    }
+    } else { PD_BUG; }
 }
 
 static void scalardefine_save (t_gobj *z, t_buffer *b)
