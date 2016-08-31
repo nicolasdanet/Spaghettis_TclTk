@@ -46,9 +46,7 @@ static void append_float (t_append *x, t_float f)
     if (!template) { error_canNotFind (sym_append, sym_template); }
     else {
     //
-    if (!gpointer_isValidNullAllowed (&x->x_gpointer) || !gpointer_isScalar (&x->x_gpointer)) {
-        error_invalid (sym_append, &s_pointer); 
-    } else {
+    if (gpointer_isValidNullAllowed (&x->x_gpointer) && gpointer_isScalar (&x->x_gpointer)) {
     //
     t_scalar *scalar = scalar_new (gpointer_getView (&x->x_gpointer), x->x_templateIdentifier);
     
@@ -60,19 +58,22 @@ static void append_float (t_append *x, t_float f)
     x->x_fields[0].gv_f = f;
         
     for (i = 0; i < x->x_fieldsSize; i++) {
-        if (scalar_fieldIsFloat (scalar, x->x_fields[i].gv_fieldName)) {
-            scalar_setFloat (scalar, x->x_fields[i].gv_fieldName, x->x_fields[i].gv_f);
-        }
+    //
+    if (scalar_fieldIsFloat (scalar, x->x_fields[i].gv_fieldName)) {
+        scalar_setFloat (scalar, x->x_fields[i].gv_fieldName, x->x_fields[i].gv_f);
+    } else {
+        error_mismatch (sym_set, sym_type);
+    }
+    //
     }
     
     canvas_addScalarNext (gpointer_getView (&x->x_gpointer), gpointer_getScalar (&x->x_gpointer), scalar);
-    
     gpointer_setAsScalar (&x->x_gpointer, gpointer_getView (&x->x_gpointer), scalar);
     outlet_pointer (cast_object (x)->te_outlet, &x->x_gpointer);
     //
     }
     //
-    }
+    } else { error_invalid (sym_append, &s_pointer); }
     //
     }
 }
