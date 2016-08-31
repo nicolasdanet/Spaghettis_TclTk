@@ -102,6 +102,20 @@ static void plot_motion (void *, t_float, t_float, t_float);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void plot_initialize (void)
+{
+}
+
+void plot_release (void)
+{
+    if (gpointer_isSet (&plot_check)) { gpointer_unset (&plot_check); }
+    if (gpointer_isSet (&plot_gpointer)) { gpointer_unset (&plot_gpointer); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static t_error plot_fetchScalarFields (t_plot *x, t_gpointer *gp, 
     t_array **array,
     t_float *width,
@@ -221,7 +235,7 @@ void plot_float (t_plot *x, t_float f)
     //
     }
     //
-    }
+    } else { error_unexpected (sym_plot, &s_float); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -1229,16 +1243,6 @@ static void *plot_new (t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-void plot_initialize (void)
-{
-}
-
-void plot_release (void)
-{
-    if (gpointer_isSet (&plot_check)) { gpointer_unset (&plot_check); }
-    if (gpointer_isSet (&plot_gpointer)) { gpointer_unset (&plot_gpointer); }
-}
 
 void plot_setup (void)
 {

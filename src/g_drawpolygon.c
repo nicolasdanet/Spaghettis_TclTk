@@ -66,6 +66,19 @@ typedef struct _drawpolygon {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void drawpolygon_initialize (void)
+{
+}
+
+void drawpolygon_release (void)
+{
+    if (gpointer_isSet (&drawpolygon_gpointer)) { gpointer_unset (&drawpolygon_gpointer); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void drawpolygon_float (t_drawpolygon *x, t_float f)
 {
     if (field_isFloatConstant (&x->x_isVisible)) {
@@ -80,7 +93,7 @@ void drawpolygon_float (t_drawpolygon *x, t_float f)
     //
     }
     //
-    }
+    } else { error_unexpected (sym_drawpolygon, &s_float); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -372,6 +385,13 @@ static void *drawpolygon_new (t_symbol *s, int argc, t_atom *argv)
     
     for (i = 0; i < x->x_size; i++) { field_setAsFloat (x->x_coordinates + i, 1, argv + i); }
 
+    if (argc - x->x_size > 0) {
+    //
+    error_invalidArguments (s, argc - x->x_size, argv + x->x_size);
+    pd_free (x); x = NULL;
+    //
+    }
+    
     return x;
 }
 
@@ -383,15 +403,6 @@ static void drawpolygon_free (t_drawpolygon *x)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-void drawpolygon_initialize (void)
-{
-}
-
-void drawpolygon_release (void)
-{
-    if (gpointer_isSet (&drawpolygon_gpointer)) { gpointer_unset (&drawpolygon_gpointer); }
-}
 
 void drawpolygon_setup (void)
 {

@@ -43,6 +43,19 @@ typedef struct _drawnumber {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void drawnumber_initialize (void)
+{
+}
+
+void drawnumber_release (void)
+{
+    if (gpointer_isSet (&drawnumber_gpointer)) { gpointer_unset (&drawnumber_gpointer); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static t_error drawnumber_getContents (t_drawnumber *x,
     t_gpointer *gp,
     char *dest,
@@ -77,7 +90,7 @@ static void drawnumber_float (t_drawnumber *x, t_float f)
     //
     }
     //
-    }
+    } else { error_unexpected (sym_drawpolygon, &s_float); }
 }
 
 static void drawnumber_motion (void *z, t_float deltaX, t_float deltaY, t_float modifier)
@@ -287,15 +300,6 @@ static void *drawnumber_new (t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-void drawnumber_initialize (void)
-{
-}
-
-void drawnumber_release (void)
-{
-    if (gpointer_isSet (&drawnumber_gpointer)) { gpointer_unset (&drawnumber_gpointer); }
-}
 
 void drawnumber_setup (void)
 {
