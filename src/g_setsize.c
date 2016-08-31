@@ -35,9 +35,7 @@ typedef struct _setsize {
 
 static void setsize_float (t_setsize *x, t_float f)
 {
-    if (!gpointer_isValidInstanceOf (&x->x_gpointer, x->x_templateIdentifier)) { 
-        error_invalidPointer (sym_setsize);
-    } else {
+    if (gpointer_isValidInstanceOf (&x->x_gpointer, x->x_templateIdentifier)) {
     //
     if (gpointer_hasField (&x->x_gpointer, x->x_fieldName)) {
         if (gpointer_fieldIsArrayAndValid (&x->x_gpointer, x->x_fieldName)) {
@@ -46,7 +44,7 @@ static void setsize_float (t_setsize *x, t_float f)
         }
     }
     //
-    }
+    } else { error_invalidPointer (sym_setsize); }
 }
 
 static void setsize_set (t_setsize *x, t_symbol *templateName, t_symbol *fieldName)

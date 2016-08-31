@@ -411,7 +411,7 @@ void pd_message (t_pd *x, t_symbol *s, int argc, t_atom *argv)
         }
     }
 
-    error_invalidArgumentsFor (class_getName (c), s);
+    error_invalidArgumentsForMethod (class_getName (c), s);
 }
 
 // -----------------------------------------------------------------------------------------------------------

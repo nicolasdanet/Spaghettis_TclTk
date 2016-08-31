@@ -217,6 +217,7 @@ extern t_symbol *sym_exp;
 extern t_symbol *sym_exp__tilde__;
 extern t_symbol *sym_f;
 extern t_symbol *sym_fft__tilde__;
+extern t_symbol *sym_field;
 extern t_symbol *sym_file__dot____percent__d;
 extern t_symbol *sym_filledcurve;
 extern t_symbol *sym_filledpolygon;

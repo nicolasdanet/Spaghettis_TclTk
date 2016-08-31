@@ -78,9 +78,9 @@ void error_canNotSetMultipleFields (t_symbol *s)
     post_error (PD_TRANSLATE ("%s: can't set multiple fields"), s->s_name);
 }
 
-void error_mismatchTypeOrUnspecifiedField (t_symbol *s)
+void error_mismatchType (t_symbol *s)
 {
-    post_error (PD_TRANSLATE ("%s: mismatch type or unspecified field"), s->s_name);
+    post_error (PD_TRANSLATE ("%s: mismatch type"), s->s_name);
 }
 
 void error_unspecifiedArrayField (t_symbol *s)
@@ -167,9 +167,9 @@ void error_unknownFunction (t_symbol *s1, t_symbol *s2)
     post_error (PD_TRANSLATE ("%s: unknown function %s"), s1->s_name, s2->s_name);
 }
 
-void error_invalidArgumentsFor (t_symbol *s1, t_symbol *s2)
+void error_invalidArgumentsForMethod (t_symbol *s1, t_symbol *s2)
 {
-    post_error (PD_TRANSLATE ("%s: invalid arguments for %s"), s1->s_name, s2->s_name);
+    post_error (PD_TRANSLATE ("%s: invalid arguments for method %s"), s1->s_name, s2->s_name);
 }
 
 // -----------------------------------------------------------------------------------------------------------

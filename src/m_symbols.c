@@ -212,6 +212,7 @@ t_symbol *sym_exp;
 t_symbol *sym_exp__tilde__;
 t_symbol *sym_f;
 t_symbol *sym_fft__tilde__;
+t_symbol *sym_field;
 t_symbol *sym_file__dot____percent__d;
 t_symbol *sym_filledcurve;
 t_symbol *sym_filledpolygon;
@@ -718,6 +719,7 @@ void symbols_initialize (void)
     sym_exp__tilde__                            = gensym ("exp~");
     sym_f                                       = gensym ("f");
     sym_fft__tilde__                            = gensym ("fft~");
+    sym_field                                   = gensym ("field");
     sym_file__dot____percent__d                 = gensym ("file.%d");
     sym_filledcurve                             = gensym ("filledcurve");
     sym_filledpolygon                           = gensym ("filledpolygon");

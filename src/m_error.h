@@ -36,7 +36,7 @@ void error_tooManyCharacters                (void);
 
 void error_invalidPointer                   (t_symbol *);
 void error_canNotSetMultipleFields          (t_symbol *);
-void error_mismatchTypeOrUnspecifiedField   (t_symbol *);
+void error_mismatchType                     (t_symbol *);
 void error_unspecifiedArrayField            (t_symbol *);
 void error_recursiveInstantiation           (t_symbol *);
 void error_sendReceiveLoop                  (t_symbol *);
@@ -58,7 +58,7 @@ void error_noSuch                           (t_symbol *, t_symbol *);
 void error_canNotFind                       (t_symbol *, t_symbol *);
 void error_unknownMethod                    (t_symbol *, t_symbol *);
 void error_unknownFunction                  (t_symbol *, t_symbol *);
-void error_invalidArgumentsFor              (t_symbol *, t_symbol *);
+void error_invalidArgumentsForMethod        (t_symbol *, t_symbol *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

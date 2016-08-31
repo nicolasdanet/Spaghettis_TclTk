@@ -42,9 +42,7 @@ typedef struct _set {
 
 static void set_bang (t_set *x)
 {
-    if (!gpointer_isValidInstanceOf (&x->x_gpointer, x->x_templateIdentifier)) { 
-        error_invalidPointer (sym_set);
-    } else {
+    if (gpointer_isValidInstanceOf (&x->x_gpointer, x->x_templateIdentifier)) { 
     //
     int i;
     
@@ -55,17 +53,18 @@ static void set_bang (t_set *x)
     if (gpointer_hasField (&x->x_gpointer, s)) {
         if (x->x_asSymbol && gpointer_fieldIsSymbol (&x->x_gpointer, s)) {
             gpointer_setSymbol (&x->x_gpointer, s, x->x_fields[i].sv_w.w_symbol);
-        }
-        if (!x->x_asSymbol && gpointer_fieldIsFloat (&x->x_gpointer, s)) {
+        } else if (!x->x_asSymbol && gpointer_fieldIsFloat (&x->x_gpointer, s)) {
             gpointer_setFloat (&x->x_gpointer, s, x->x_fields[i].sv_w.w_float);
+        } else {
+            error_mismatchType (sym_set);
         }
-    }
+    } else { error_invalid (sym_set, sym_field); }
     //
     }
     
     gpointer_redraw (&x->x_gpointer);
     //
-    }
+    } else { error_invalidPointer (sym_set); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -73,7 +72,7 @@ static void set_bang (t_set *x)
 
 static void set_float (t_set *x, t_float f)
 {
-    if (!x->x_fieldsSize || x->x_asSymbol) { error_mismatchTypeOrUnspecifiedField (sym_set); }
+    if (x->x_asSymbol) { error_mismatchType (sym_set); }
     else {
         x->x_fields[0].sv_w.w_float = f;
         set_bang (x);
@@ -82,7 +81,7 @@ static void set_float (t_set *x, t_float f)
 
 static void set_symbol (t_set *x, t_symbol *s)
 {
-    if (!x->x_fieldsSize || !x->x_asSymbol) { error_mismatchTypeOrUnspecifiedField (sym_set); }
+    if (!x->x_asSymbol) { error_mismatchType (sym_set); }
     else {
         x->x_fields[0].sv_w.w_symbol = s; 
         set_bang (x);

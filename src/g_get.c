@@ -40,8 +40,7 @@ typedef struct _get {
 
 static void get_pointer (t_get *x, t_gpointer *gp)
 {
-    if (!gpointer_isValidInstanceOf (gp, x->x_templateIdentifier)) { error_invalidPointer (sym_get); }
-    else {
+    if (gpointer_isValidInstanceOf (gp, x->x_templateIdentifier)) {
     //
     int i;
     for (i = x->x_fieldsSize - 1; i >= 0; i--) {
@@ -55,7 +54,7 @@ static void get_pointer (t_get *x, t_gpointer *gp)
         }
     }
     //
-    }
+    } else { error_invalidPointer (sym_get); }
 }
 
 static void get_set (t_get *x, t_symbol *templateName, t_symbol *fieldName)
