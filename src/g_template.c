@@ -385,8 +385,10 @@ static void template_create (void *dummy, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_error template_newParse (t_template *x, int argc, t_atom *argv)
+static t_error template_newParse (t_template *x, int *ac, t_atom **av)
 {
+    int argc = *ac; t_atom *argv = *av;
+    
     while (argc > 0) {
 
         if ((argc >= 2) && IS_SYMBOL (argv + 0) && IS_SYMBOL (argv + 1)) {
@@ -438,8 +440,8 @@ static t_error template_newParse (t_template *x, int argc, t_atom *argv)
             return PD_ERROR;
         }
 
-    argc -= 2;
-    argv += 2;
+    argc -= 2; *ac = argc;
+    argv += 2; *av = argv;
     //
     }
     
@@ -463,7 +465,7 @@ t_template *template_new (t_symbol *templateIdentifier, int argc, t_atom *argv)
     
     pd_bind (cast_pd (x), x->tp_templateIdentifier);
     
-    if (template_newParse (x, argc, argv)) {
+    if (template_newParse (x, &argc, &argv)) {      /* Note that it may consume arguments. */
     //
     error_invalidArguments (utils_stripTemplateIdentifier (templateIdentifier), argc, argv);
     template_free (x);
