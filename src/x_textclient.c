@@ -22,7 +22,6 @@ extern t_class *textdefine_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 t_error textclient_init (t_textclient *x, int *ac, t_atom **av)
 {
@@ -37,7 +36,9 @@ t_error textclient_init (t_textclient *x, int *ac, t_atom **av)
     
     while (argc && IS_SYMBOL (argv)) {
     //
-    if (GET_SYMBOL (argv) == sym___dash__s || GET_SYMBOL (argv) == sym___dash__symbol) {
+    t_symbol *t = GET_SYMBOL (argv);
+    
+    if (t == sym___dash__s || t == sym___dash__t || t == sym___dash__template) {
         if (argc >= 3 && IS_SYMBOL (argv + 1) && IS_SYMBOL (argv + 2)) {
             x->tc_templateIdentifier = template_makeIdentifierWithWildcard (GET_SYMBOL (argv + 1));
             x->tc_fieldName = GET_SYMBOL (argv + 2);
@@ -52,15 +53,13 @@ t_error textclient_init (t_textclient *x, int *ac, t_atom **av)
     }
     
     if (!x->tc_templateIdentifier && argc) {
-    //
-    if (!IS_SYMBOL (argv)) { return PD_ERROR; }
-    else {
-        x->tc_name = GET_SYMBOL (argv); 
-        argc--; argv++;
+        if (!IS_SYMBOL (argv)) { return PD_ERROR; }
+        else {
+            x->tc_name = GET_SYMBOL (argv); 
+            argc--; argv++;
+        }
     }
-    //
-    }
-    
+        
     *ac = argc;
     *av = argv;
     
@@ -97,7 +96,6 @@ t_buffer *textclient_fetchBuffer (t_textclient *x)
         } else { error_invalid (sym_text, x->tc_fieldName); }
         } else { error_missingField (sym_text, x->tc_fieldName); }
         } else { error_invalid (sym_text, &s_pointer); }
-
     }
     
     return NULL;

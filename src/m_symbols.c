@@ -49,6 +49,8 @@ t_symbol *sym___dash__k;
 t_symbol *sym___dash__keep;
 t_symbol *sym___dash__s;
 t_symbol *sym___dash__symbol;
+t_symbol *sym___dash__t;
+t_symbol *sym___dash__template;
 t_symbol *sym___dash__v;
 t_symbol *sym___dash__visible;
 t_symbol *sym___dash__w;
@@ -558,6 +560,8 @@ void symbols_initialize (void)
     sym___dash__keep                            = gensym ("-keep");
     sym___dash__s                               = gensym ("-s");
     sym___dash__symbol                          = gensym ("-symbol");
+    sym___dash__t                               = gensym ("-t");
+    sym___dash__template                        = gensym ("-template");
     sym___dash__v                               = gensym ("-v");
     sym___dash__visible                         = gensym ("-visible");
     sym___dash__w                               = gensym ("-w");

@@ -89,23 +89,35 @@ void *textget_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_textget *x = (t_textget *)pd_new (textget_class);
     
-    textclient_init (&x->x_textclient, &argc, &argv);           /* Note that it may consume arguments. */
+    /* Note that it may consume arguments. */
     
-    x->x_fieldStart  = -1;
-    x->x_fieldCount  = 1;
-    x->x_outletLeft  = outlet_new (cast_object (x), &s_list);
-    x->x_outletRight = outlet_new (cast_object (x), &s_float);
+    t_error err = textclient_init (&x->x_textclient, &argc, &argv); 
     
-    inlet_newFloat (cast_object (x), &x->x_fieldStart);
-    inlet_newFloat (cast_object (x), &x->x_fieldCount);
+    if (!err) {
     
-    if (argc && IS_FLOAT (argv)) { x->x_fieldStart = GET_FLOAT (argv); argc--; argv++; }
-    if (argc && IS_FLOAT (argv)) { x->x_fieldCount = GET_FLOAT (argv); argc--; argv++; }
+        x->x_fieldStart  = -1;
+        x->x_fieldCount  = 1;
+        x->x_outletLeft  = outlet_new (cast_object (x), &s_list);
+        x->x_outletRight = outlet_new (cast_object (x), &s_float);
+        
+        inlet_newFloat (cast_object (x), &x->x_fieldStart);
+        inlet_newFloat (cast_object (x), &x->x_fieldCount);
+        
+        if (argc && IS_FLOAT (argv)) { x->x_fieldStart = GET_FLOAT (argv); argc--; argv++; }
+        if (argc && IS_FLOAT (argv)) { x->x_fieldCount = GET_FLOAT (argv); argc--; argv++; }
 
-    if (TEXTCLIENT_ASPOINTER (&x->x_textclient)) {
-        inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
+         if (argc) { warning_unusedArguments (s, argc, argv); }
+         
+        if (TEXTCLIENT_ASPOINTER (&x->x_textclient)) {
+            inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
+        } else {
+            inlet_newSymbol (cast_object (x), TEXTCLIENT_GETNAME (&x->x_textclient));
+        }
+        
     } else {
-        inlet_newSymbol (cast_object (x), TEXTCLIENT_GETNAME (&x->x_textclient));
+    
+        error_invalidArguments (s, argc, argv);
+        pd_free (x); x = NULL; 
     }
     
     return x;

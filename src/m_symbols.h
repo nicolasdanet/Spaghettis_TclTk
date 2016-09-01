@@ -54,6 +54,8 @@ extern t_symbol *sym___dash__k;
 extern t_symbol *sym___dash__keep;
 extern t_symbol *sym___dash__s;
 extern t_symbol *sym___dash__symbol;
+extern t_symbol *sym___dash__t;
+extern t_symbol *sym___dash__template;
 extern t_symbol *sym___dash__v;
 extern t_symbol *sym___dash__visible;
 extern t_symbol *sym___dash__w;

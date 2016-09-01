@@ -1222,7 +1222,7 @@ static void *plot_new (t_symbol *s, int argc, t_atom *argv)
             field_setAsFloat (&x->x_fieldY, 1, argv + 1);
             argc -= 2; argv += 2;
             
-        } else if (argc > 1 && t == sym___dash__w) {
+        } else if (argc > 1 && (t == sym___dash__w || t == sym___dash__width)) {
             field_setAsFloat (&x->x_fieldW, 1, argv + 1);
             argc -= 2; argv += 2;
             
