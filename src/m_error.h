@@ -16,9 +16,10 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void error_error1   (char *);
-void error_error2   (char *, char *);
-void error_post     (int argc, t_atom *argv);
+void error__error1  (char *);
+void error__error2  (char *, char *);
+void error__post    (int argc, t_atom *argv);
+void error__options (t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -68,13 +69,14 @@ void error_canNotMake                       (int argc, t_atom *argv);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void error_invalidArguments                 (t_symbol *s, int argc, t_atom *argv);
+void error_invalidArguments                 (t_symbol *, int argc, t_atom *argv);
 void error_invalidArgumentsForMethod        (t_symbol *, t_symbol *, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void warning_unusedOption                   (t_symbol *s1, t_symbol *s2);
 void warning_unusedArguments                (t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------

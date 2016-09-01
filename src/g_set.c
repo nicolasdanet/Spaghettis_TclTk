@@ -126,6 +126,8 @@ static void *set_new (t_symbol *s, int argc, t_atom *argv)
         }
     }
     
+    error__options (s, argc, argv);
+    
     x->x_fieldsSize         = PD_MAX (1, argc - 1);
     x->x_fields             = (t_setvariable *)PD_MEMORY_GET (x->x_fieldsSize * sizeof (t_setvariable));
     x->x_templateIdentifier = template_makeIdentifierWithWildcard (atom_getSymbolAtIndex (0, argc, argv));

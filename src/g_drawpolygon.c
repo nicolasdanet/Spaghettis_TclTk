@@ -373,6 +373,8 @@ static void *drawpolygon_new (t_symbol *s, int argc, t_atom *argv)
         } else { break; }
     }
     
+    error__options (s, argc, argv);
+    
     if (argc && (x->x_flags & DRAWPOLYGON_CLOSED)) { field_setAsFloat (&x->x_colorFill, argc--, argv++); }
     if (argc) { field_setAsFloat (&x->x_colorOutline, argc--, argv++); }
     if (argc) { field_setAsFloat (&x->x_width, argc--, argv++); }

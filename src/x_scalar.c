@@ -119,8 +119,14 @@ static void *scalardefine_newObject (t_symbol *s, int argc, t_atom *argv)
         }
     }
     
-    if (argc && IS_SYMBOL (argv)) { templateIdentifier = utils_makeTemplateIdentifier (GET_SYMBOL (argv)); }
-
+    error__options (s, argc, argv);
+    
+    if (argc && IS_SYMBOL (argv)) { 
+        templateIdentifier = utils_makeTemplateIdentifier (GET_SYMBOL (argv)); argc--; argv++;
+    }
+    
+    if (argc) { warning_unusedArguments (s, argc, argv); }
+    
     SET_FLOAT  (a + 0, 0.0);
     SET_FLOAT  (a + 1, WINDOW_HEADER);
     SET_FLOAT  (a + 2, WINDOW_WIDTH);

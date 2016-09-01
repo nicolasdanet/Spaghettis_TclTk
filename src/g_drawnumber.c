@@ -284,6 +284,8 @@ static void *drawnumber_new (t_symbol *s, int argc, t_atom *argv)
         }
     }
 
+    error__options (s, argc, argv);
+    
     x->x_fieldName = atom_getSymbolAtIndex (0, argc, argv);
     
     if (argc) { argc--, argv++; }

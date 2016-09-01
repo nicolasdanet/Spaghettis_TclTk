@@ -98,7 +98,7 @@ void *textsequence_new(t_symbol *s, int argc, t_atom *argv)
     if (argc)
     {
         post("warning: text sequence ignoring extra argument: ");
-        error_post (argc, argv);
+        error__post (argc, argv);
     }
     if (x->x_struct)
         inlet_newPointer(&x->x_obj, &x->x_gp);

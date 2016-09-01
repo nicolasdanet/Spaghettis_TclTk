@@ -16,12 +16,12 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void error_error1 (char *s)
+void error__error1 (char *s)
 {
-    error_error2 ("", s);
+    error__error2 ("", s);
 }
 
-void error_error2 (char *s1, char *s2)
+void error__error2 (char *s1, char *s2)
 {
     post_error ("%s: %s", s1, s2);
 }
@@ -30,9 +30,25 @@ void error_error2 (char *s1, char *s2)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void error_post (int argc, t_atom *argv)
+void error__post (int argc, t_atom *argv)
 {
     char *s = atom_atomsToString (argc, argv); post_error ("[ %s ]", s); PD_MEMORY_FREE (s);
+}
+
+void error__options (t_symbol *s, int argc, t_atom *argv)
+{
+    int i;
+    
+    for (i = 0; i < argc; i++) {
+    //
+    if (IS_SYMBOL (argv + i)) {
+        t_symbol *t = GET_SYMBOL (argv + i);
+        if (t != sym___dash__ && string_containsAtStart (t->s_name, sym___dash__->s_name)) { 
+            warning_unusedOption (s, t); 
+        }
+    }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -183,7 +199,7 @@ void error_invalidArguments (t_symbol *s, int argc, t_atom *argv)
 {
     char *t = atom_atomsToString (argc, argv);
     
-    post_error (PD_TRANSLATE ("%s: invalid arguments [ %s ]"), s->s_name, t);
+    post_error (PD_TRANSLATE ("%s: invalid argument(s) [ %s ]"), s->s_name, t);
     
     PD_MEMORY_FREE (t);
 }
@@ -192,7 +208,7 @@ void error_invalidArgumentsForMethod (t_symbol *s1, t_symbol *s2, int argc, t_at
 {
     char *t = atom_atomsToString (argc, argv);
         
-    post_error (PD_TRANSLATE ("%s: invalid arguments for method %s [ %s ]"), s1->s_name, s2->s_name, t);
+    post_error (PD_TRANSLATE ("%s: invalid argument(s) for method %s [ %s ]"), s1->s_name, s2->s_name, t);
     
     PD_MEMORY_FREE (t);
 }
@@ -201,11 +217,16 @@ void error_invalidArgumentsForMethod (t_symbol *s1, t_symbol *s2, int argc, t_at
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void warning_unusedOption (t_symbol *s1, t_symbol *s2)
+{
+    post_error (PD_TRANSLATE ("%s: unused option %s"), s1->s_name, s2->s_name);
+}
+
 void warning_unusedArguments (t_symbol *s, int argc, t_atom *argv)
 {
     char *t = atom_atomsToString (argc, argv);
     
-    post_error (PD_TRANSLATE ("%s: unused arguments [ %s ]"), s->s_name, t);
+    post_error (PD_TRANSLATE ("%s: unused argument(s) [ %s ]"), s->s_name, t);
     
     PD_MEMORY_FREE (t);
 }

@@ -164,7 +164,7 @@ t_error audio_initializeNative (void)
 {
     PaError err = Pa_Initialize();
 
-    if (err != paNoError) { error_error1 (Pa_GetErrorText (err)); return PD_ERROR; }
+    if (err != paNoError) { error__error1 (Pa_GetErrorText (err)); return PD_ERROR; }
     else {
         return PD_ERROR_NONE;
     }
@@ -266,7 +266,7 @@ t_error audio_openNative (int sampleRate,
             o,
             pa_ringCallback);
     
-    if (err != paNoError) { error_error1 (Pa_GetErrorText (err)); return PD_ERROR; }
+    if (err != paNoError) { error__error1 (Pa_GetErrorText (err)); return PD_ERROR; }
     else {
         return PD_ERROR_NONE;
     }

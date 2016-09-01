@@ -70,7 +70,7 @@ static void print_list(t_print *x, t_symbol *s, int argc, t_atom *argv)
         (*x->x_sym->s_name ? ": " : ""),
         (argc > 1 ? s_list.s_name : (argc == 1 ? s_symbol.s_name :
             s_bang.s_name)));
-    error_post (argc, argv);
+    error__post (argc, argv);
 }
 
 static void print_anything(t_print *x, t_symbol *s, int argc, t_atom *argv)
@@ -78,7 +78,7 @@ static void print_anything(t_print *x, t_symbol *s, int argc, t_atom *argv)
     int i;
     post("%s%s%s", x->x_sym->s_name, (*x->x_sym->s_name ? ": " : ""),
         s->s_name);
-    error_post (argc, argv);
+    error__post (argc, argv);
 }
 
 static void print_setup(void)

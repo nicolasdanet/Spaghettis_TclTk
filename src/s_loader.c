@@ -115,7 +115,7 @@ static t_handle loader_openExternalNative (char *filepath, char* stub, t_symbol 
 
     handle = LoadLibrary (filepath);
     
-    if (!handle) { error_error2 (filepath, dlerror()); }
+    if (!handle) { error__error2 (filepath, dlerror()); }
     else {
         t_stub ctor = (t_stub)GetProcAddress (handle, stub);
     
@@ -136,7 +136,7 @@ static t_handle loader_openExternalNative (char *filepath, char* stub, t_symbol 
 {
     t_handle handle = dlopen (filepath, RTLD_NOW | RTLD_GLOBAL);
     
-    if (!handle) { error_error2 (filepath, dlerror()); }
+    if (!handle) { error__error2 (filepath, dlerror()); }
     else {
         t_stub ctor = (t_stub)dlsym (handle, stub);
         

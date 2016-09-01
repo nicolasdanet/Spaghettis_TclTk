@@ -1229,6 +1229,8 @@ static void *plot_new (t_symbol *s, int argc, t_atom *argv)
         } else { break; }
     }
     
+    error__options (s, argc, argv);
+    
     if (argc) { field_setAsArray (&x->x_array,          argc--, argv++); }
     if (argc) { field_setAsFloat (&x->x_colorOutline,   argc--, argv++); }
     if (argc) { field_setAsFloat (&x->x_width,          argc--, argv++); }

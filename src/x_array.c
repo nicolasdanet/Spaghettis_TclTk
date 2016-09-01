@@ -119,7 +119,7 @@ static void *array_define_new(t_symbol *s, int argc, t_atom *argv)
         else
         {
             post_error ("array define: unknown flag ...");
-            error_post (argc, argv);
+            error__post (argc, argv);
         }
         argc--; argv++;
     }
@@ -136,7 +136,7 @@ static void *array_define_new(t_symbol *s, int argc, t_atom *argv)
     if (argc)
     {
         post("warning: array define ignoring extra argument: ");
-        error_post (argc, argv);
+        error__post (argc, argv);
     }
     x = (t_glist *)table_donew(arrayname, arraysize, keep, xpix, ypix);
     
@@ -311,7 +311,7 @@ static void *array_size_new(t_symbol *s, int argc, t_atom *argv)
         else
         {
             post_error ("array setline: unknown flag ...");
-            error_post (argc, argv);
+            error__post (argc, argv);
         }
         argc--; argv++;
     }
@@ -320,7 +320,7 @@ static void *array_size_new(t_symbol *s, int argc, t_atom *argv)
         if (x->x_struct)
         {
             post_error ("array setline: extra names after -s..");
-            error_post (argc, argv);
+            error__post (argc, argv);
         }
         else x->x_sym = argv->a_w.w_symbol;
         argc--; argv++;
@@ -328,7 +328,7 @@ static void *array_size_new(t_symbol *s, int argc, t_atom *argv)
     if (argc)
     {
         post("warning: array setline ignoring extra argument: ");
-        error_post (argc, argv);
+        error__post (argc, argv);
     }
     if (x->x_struct)
         inlet_newPointer(&x->x_tc.tc_obj, &x->x_gp);
@@ -430,7 +430,7 @@ static void *array_rangeop_new(t_class *class,
         else
         {
             post_error ("%s: unknown flag ...", class_getNameAsString(class));
-            error_post (argc, argv);
+            error__post (argc, argv);
         }
         argc--; argv++;
     }
@@ -439,7 +439,7 @@ static void *array_rangeop_new(t_class *class,
         if (x->x_struct)
         {
             post_error ("%s: extra names after -s..", class_getNameAsString(class));
-            error_post (argc, argv);
+            error__post (argc, argv);
         }
         else x->x_sym = argv->a_w.w_symbol;
         argc--; argv++;
@@ -457,7 +457,7 @@ static void *array_rangeop_new(t_class *class,
     if (argc && warnextra)
     {
         post("warning: %s ignoring extra argument: ", class_getNameAsString(class));
-        error_post (argc, argv);
+        error__post (argc, argv);
     }
     if (x->x_struct)
         inlet_newPointer(&x->x_tc.tc_obj, &x->x_gp);
