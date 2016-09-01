@@ -78,7 +78,7 @@ static void textget_float (t_textget *x, t_float f)
         }
     }
     //
-    }
+    } else { error_undefined (sym_text__space__get, sym_text); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -116,7 +116,7 @@ void *textget_new (t_symbol *s, int argc, t_atom *argv)
         
     } else {
     
-        error_invalidArguments (s, argc, argv);
+        error_invalidArguments (sym_text__space__get, argc, argv);
         pd_free (x); x = NULL; 
     }
     

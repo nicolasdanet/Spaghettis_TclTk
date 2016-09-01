@@ -56,6 +56,7 @@ void error_unexpected                       (t_symbol *, t_symbol *);
 void error_invalid                          (t_symbol *, t_symbol *);
 void error_mismatch                         (t_symbol *, t_symbol *);
 void error_unspecified                      (t_symbol *, t_symbol *);
+void error_undefined                        (t_symbol *, t_symbol *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
