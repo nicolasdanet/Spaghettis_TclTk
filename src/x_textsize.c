@@ -37,6 +37,9 @@ static void textsize_bang (t_textsize *x)
     t_buffer *b = textclient_fetchBuffer (&x->x_textclient);
     
     if (b) { outlet_float (x->x_outlet, (t_float)buffer_getNumberOfMessages (b)); }
+    else {
+        error_undefined (sym_text__space__size, sym_text);
+    }
 }
 
 static void textsize_float (t_textsize *x, t_float f)
@@ -49,7 +52,8 @@ static void textsize_float (t_textsize *x, t_float f)
         else {
             outlet_float (x->x_outlet, -1);
         }
-    }
+        
+    } else { error_undefined (sym_text__space__size, sym_text); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -60,14 +64,26 @@ void *textsize_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_textsize *x = (t_textsize *)pd_new (textsize_class);
     
-    textclient_init (&x->x_textclient, &argc, &argv);           /* Note that it may consume arguments. */
+    /* Note that it may consume arguments. */
+    
+    t_error err = textclient_init (&x->x_textclient, &argc, &argv);
+    
+    if (!err) {
+    
+        x->x_outlet = outlet_new (cast_object (x), &s_float);
+                
+        if (argc) { warning_unusedArguments (sym_text__space__size, argc, argv); }
         
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
-
-    if (TEXTCLIENT_ASPOINTER (&x->x_textclient)) {
-        inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
+        if (TEXTCLIENT_ASPOINTER (&x->x_textclient)) {
+            inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
+        } else {
+            inlet_newSymbol (cast_object (x), TEXTCLIENT_GETNAME (&x->x_textclient));
+        }
+        
     } else {
-        inlet_newSymbol (cast_object (x), TEXTCLIENT_GETNAME (&x->x_textclient));
+        
+        error_invalidArguments (sym_text__space__size, argc, argv);
+        pd_free (x); x = NULL; 
     }
     
     return x;

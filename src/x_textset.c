@@ -89,7 +89,7 @@ static void textset_list (t_textset *x, t_symbol *s, int argc, t_atom *argv)
     //
     }
     //
-    }
+    } else { error_undefined (sym_text__space__set, sym_text); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -100,21 +100,33 @@ void *textset_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_textset *x = (t_textset *)pd_new (textset_class);
     
-    textclient_init (&x->x_textclient, &argc, &argv);            /* Note that it may consume arguments. */
+    /* Note that it may consume arguments. */
     
-    x->x_line  = 0;
-    x->x_field = -1;
+    t_error err = textclient_init (&x->x_textclient, &argc, &argv); 
     
-    inlet_newFloat (cast_object (x), &x->x_line);
-    inlet_newFloat (cast_object (x), &x->x_field);
+    if (!err) {
     
-    if (argc && IS_FLOAT (argv)) { x->x_line = GET_FLOAT (argv);  argc--; argv++; }
-    if (argc && IS_FLOAT (argv)) { x->x_field = GET_FLOAT (argv); argc--; argv++; }
+        x->x_line  = 0;
+        x->x_field = -1;
+        
+        inlet_newFloat (cast_object (x), &x->x_line);
+        inlet_newFloat (cast_object (x), &x->x_field);
+        
+        if (argc && IS_FLOAT (argv)) { x->x_line = GET_FLOAT (argv);  argc--; argv++; }
+        if (argc && IS_FLOAT (argv)) { x->x_field = GET_FLOAT (argv); argc--; argv++; }
+        
+        if (argc) { warning_unusedArguments (sym_text__space__set, argc, argv); }
+        
+        if (TEXTCLIENT_ASPOINTER (&x->x_textclient)) {
+            inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
+        } else {
+            inlet_newSymbol (cast_object (x), TEXTCLIENT_GETNAME (&x->x_textclient));
+        }
     
-    if (TEXTCLIENT_ASPOINTER (&x->x_textclient)) {
-        inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
     } else {
-        inlet_newSymbol (cast_object (x), TEXTCLIENT_GETNAME (&x->x_textclient));
+        
+        error_invalidArguments (sym_text__space__set, argc, argv);
+        pd_free (x); x = NULL; 
     }
     
     return x;

@@ -106,7 +106,7 @@ void *textget_new (t_symbol *s, int argc, t_atom *argv)
         if (argc && IS_FLOAT (argv)) { x->x_fieldStart = GET_FLOAT (argv); argc--; argv++; }
         if (argc && IS_FLOAT (argv)) { x->x_fieldCount = GET_FLOAT (argv); argc--; argv++; }
 
-         if (argc) { warning_unusedArguments (s, argc, argv); }
+        if (argc) { warning_unusedArguments (sym_text__space__get, argc, argv); }
          
         if (TEXTCLIENT_ASPOINTER (&x->x_textclient)) {
             inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));

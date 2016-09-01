@@ -28,14 +28,26 @@ void *texttolist_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_textclient *x = (t_textclient *)pd_new (texttolist_class);
     
-    textclient_init (x, &argc, &argv);                  /* Note that it may consume arguments. */
+    /* Note that it may consume arguments. */
+    
+    t_error err = textclient_init (x, &argc, &argv);
+    
+    if (!err) {
+    
+        outlet_new (cast_object (x), &s_list);
         
-    outlet_new (cast_object (x), &s_list);
-
-    if (TEXTCLIENT_ASPOINTER (x)) {
-        inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (x));
+        if (argc) { warning_unusedArguments (sym_text__space__tolist, argc, argv); }
+        
+        if (TEXTCLIENT_ASPOINTER (x)) {
+            inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (x));
+        } else {
+            inlet_newSymbol (cast_object (x), TEXTCLIENT_GETNAME (x));
+        }
+    
     } else {
-        inlet_newSymbol (cast_object (x), TEXTCLIENT_GETNAME (x));
+        
+        error_invalidArguments (sym_text__space__tolist, argc, argv);
+        pd_free (x); x = NULL;
     }
     
     return x;
@@ -50,7 +62,8 @@ static void texttolist_bang (t_textclient *x)
         buffer_serialize (t, b);
         outlet_list (cast_object (x)->te_outlet, NULL, buffer_size (t), buffer_atoms (t));
         buffer_free (t);
-    }
+        
+    } else { error_undefined (sym_text__space__tolist, sym_text); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -61,15 +74,27 @@ void *textfromlist_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_textclient *x = (t_textclient *)pd_new (textfromlist_class);
     
-    textclient_init (x, &argc, &argv);                  /* Note that it may consume arguments. */
+    /* Note that it may consume arguments. */
     
-    if (TEXTCLIENT_ASPOINTER (x)) {
-        inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (x));
+    t_error err = textclient_init (x, &argc, &argv);
+    
+    if (!err) {
+    
+        if (argc) { warning_unusedArguments (sym_text__space__fromlist, argc, argv); }
+        
+        if (TEXTCLIENT_ASPOINTER (x)) {
+            inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (x));
+        } else {
+            inlet_newSymbol (cast_object (x), TEXTCLIENT_GETNAME (x));
+        }
+        
     } else {
-        inlet_newSymbol (cast_object (x), TEXTCLIENT_GETNAME (x));
+    
+        error_invalidArguments (sym_text__space__fromlist, argc, argv);
+        pd_free (x); x = NULL;
     }
     
-     return x;
+    return x;
 }
 
 static void textfromlist_list (t_textclient *x, t_symbol *s, int argc, t_atom *argv)
@@ -80,7 +105,8 @@ static void textfromlist_list (t_textclient *x, t_symbol *s, int argc, t_atom *a
         buffer_reset (b);
         buffer_deserialize (b, argc, argv);
         textclient_update (x);
-    }
+    
+    } else { error_undefined (sym_text__space__fromlist, sym_text); } 
 }
 
 // -----------------------------------------------------------------------------------------------------------
