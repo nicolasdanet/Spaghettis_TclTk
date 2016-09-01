@@ -45,38 +45,39 @@ static void textget_float (t_textget *x, t_float f)
     int field = (int)x->x_fieldStart;
     int count = (int)x->x_fieldCount;
     
-    int start, end;
+    int start, end, match = 0;
     
     if (buffer_getMessageAt (b, f, &start, &end)) {
     
-        int i, size = end - start;
         t_atom *t = NULL;
-        
+        int size = end - start;
+        int type = ((end < buffer_size (b)) && (IS_COMMA (buffer_atomAtIndex (b, end))));
+        int i;
+                
         if (field < 0) {
         
-            t_float type = ((end < buffer_size (b)) && (IS_COMMA (buffer_atomAtIndex (b, end))));
-            outlet_float (x->x_outletRight, type);
+            outlet_float (x->x_outletRight, (t_float)type);
             
             ATOMS_ALLOCA (t, size);
             for (i = 0; i < size; i++) { buffer_getAtomAtIndex (b, start + i, t + i); }
-            outlet_list (x->x_outletLeft, NULL, size, t);
+            outlet_list (x->x_outletLeft, NULL, size, t); 
+            match = 1;
             ATOMS_FREEA (t, size);
             
         } else if (field < size) {
         
-            count = PD_MIN (count, size - field);
+            outlet_float (x->x_outletRight, (t_float)type);
             
+            count = PD_MIN (count, size - field);
             ATOMS_ALLOCA (t, count);
             for (i = 0; i < count; i++) { buffer_getAtomAtIndex (b, start + field + i, t + i); }
             outlet_list (x->x_outletLeft, NULL, count, t);
+            match = 1;
             ATOMS_FREEA (t, count);
         }
-        
-    } else { 
-        if (field < 0) {
-            outlet_float (x->x_outletRight, 2); outlet_list (x->x_outletLeft, NULL, 0, NULL);
-        }
-    }
+    } 
+
+    if (!match) { outlet_float (x->x_outletRight, 2); outlet_list (x->x_outletLeft, NULL, 0, NULL); }
     //
     } else { error_undefined (sym_text__space__get, sym_text); }
 }
