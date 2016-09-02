@@ -21,26 +21,26 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_class  *global_object;
+extern t_pd global_object;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int      audio_state;                                                        /* Shared. */
+static int  audio_state;                                                        /* Shared. */
   
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int      audio_numberOfDevicesIn;                                            /* Shared. */
-static int      audio_devicesInChannels[MAXIMUM_AUDIO_IN];                          /* Shared. */
-static char     audio_devicesInNames[MAXIMUM_MIDI_IN * MAXIMUM_DESCRIPTION];        /* Shared. */
+static int  audio_numberOfDevicesIn;                                            /* Shared. */
+static int  audio_devicesInChannels[MAXIMUM_AUDIO_IN];                          /* Shared. */
+static char audio_devicesInNames[MAXIMUM_MIDI_IN * MAXIMUM_DESCRIPTION];        /* Shared. */
 
-static int      audio_numberOfDevicesOut;                                           /* Shared. */
-static int      audio_devicesOutChannels[MAXIMUM_AUDIO_OUT];                        /* Shared. */
-static char     audio_devicesOutNames[MAXIMUM_AUDIO_OUT * MAXIMUM_DESCRIPTION];     /* Shared. */
+static int  audio_numberOfDevicesOut;                                           /* Shared. */
+static int  audio_devicesOutChannels[MAXIMUM_AUDIO_OUT];                        /* Shared. */
+static char audio_devicesOutNames[MAXIMUM_AUDIO_OUT * MAXIMUM_DESCRIPTION];     /* Shared. */
 
-static int      audio_tempSampleRate = AUDIO_DEFAULT_SAMPLERATE;                    /* Shared. */
-static int      audio_tempBlockSize  = AUDIO_DEFAULT_BLOCKSIZE;                     /* Shared. */
+static int  audio_tempSampleRate = AUDIO_DEFAULT_SAMPLERATE;                    /* Shared. */
+static int  audio_tempBlockSize  = AUDIO_DEFAULT_BLOCKSIZE;                     /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

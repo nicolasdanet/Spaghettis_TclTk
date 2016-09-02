@@ -408,7 +408,7 @@ proc _close {} {
         "PdPatch" { 
             ::ui_interface::pdsend "$top close"
         }
-        "PdDialog|PdText|PdData|PdTool" { 
+        "PdDialog|PdText|PdTool" { 
             switch -- [::getTitle $top] {
                 "Array"         { ::ui_array::closed  $top }
                 "Atom"          { ::ui_atom::closed   $top }

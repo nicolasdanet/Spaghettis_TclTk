@@ -93,7 +93,6 @@ proc initialize {} {
     event add <<ClickRelease>>              <ButtonRelease-1>
     
     bind PdConsole  <FocusIn>               { ::ui_bind::_focusIn %W }
-    bind PdData     <FocusIn>               { ::ui_bind::_focusIn %W }
     bind PdDialog   <FocusIn>               { ::ui_bind::_focusIn %W }
     bind PdPatch    <FocusIn>               { ::ui_bind::_focusIn %W }
     bind PdText     <FocusIn>               { ::ui_bind::_focusIn %W }
@@ -192,7 +191,7 @@ proc _focusIn {top} {
             ::ui_menu::configureForPatch
             ::ui_patch::setEditMode $top
         }
-        "PdText|PdData"     {
+        "PdText"            {
             ::ui_menu::configureForText
             ::ui_menu::disableEditing
             set ::var(isEditMode) 0

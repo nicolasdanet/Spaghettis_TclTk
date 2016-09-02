@@ -140,9 +140,7 @@ proc cancel {w} {
     set top [winfo toplevel $w]
     set class [winfo class $top]
     
-    if {$class eq "PdDialog" || $class eq "PdData" || $class eq "PdText"} { 
-        destroy $top; ::ui_interface::pdsend "$top _signoff"
-    }
+    if {$class eq "PdDialog" || $class eq "PdText"} { destroy $top; ::ui_interface::pdsend "$top _signoff" }
 }
 
 # ------------------------------------------------------------------------------------------------------------
