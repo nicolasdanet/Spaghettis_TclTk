@@ -34,7 +34,7 @@ int iterator_next (t_iterator *x, t_atom **a)
     if (x->iter_index < x->iter_argc) {
     //
     int i, n, next;
-    for (i = x->iter_index; i < x->iter_argc && !IS_SEMICOLON (x->iter_argv + i); i++) { }
+    for (i = x->iter_index; i < x->iter_argc && !IS_SEMICOLON_OR_COMMA (x->iter_argv + i); i++) { }
     n = i - x->iter_index;
     next = PD_MIN (i + 1, x->iter_argc);
     (*a) = x->iter_argv + x->iter_index; 
