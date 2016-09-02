@@ -30,8 +30,8 @@ typedef struct _textsequence {
     int                 x_onset;
     int                 x_leadingNumbersToWait;
     int                 x_isLeadingNumbersEaten;
-    int                 x_isLoop;
-    int                 x_isAuto;
+    int                 x_isAutomatic;
+    int                 x_isLooping;
     int                 x_argc;
     t_atom              *x_argv;
     t_symbol            *x_sendTo;
@@ -52,7 +52,7 @@ static void textsequence_stop   (t_textsequence *);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void textsequence_doit(t_textsequence *x, int argc, t_atom *argv)
+static void textsequence_perform(t_textsequence *x, int argc, t_atom *argv)
 {
     t_buffer *b = textclient_fetchBuffer(&x->x_textclient), *b2;
     int n, i, onset, nfield, wait, eatsemi = 1, gotcomma = 0;
@@ -65,7 +65,7 @@ static void textsequence_doit(t_textsequence *x, int argc, t_atom *argv)
     {
     nosequence:
         x->x_onset = PD_INT_MAX;
-        x->x_isLoop = x->x_isAuto = 0;
+        x->x_isLooping = x->x_isAutomatic = 0;
         outlet_bang(x->x_outletEnd);
         return;
     }
@@ -146,14 +146,14 @@ static void textsequence_doit(t_textsequence *x, int argc, t_atom *argv)
     }
     if (wait)
     {
-        x->x_isLoop = 0;
+        x->x_isLooping = 0;
         x->x_sendTo = 0;
-        if (x->x_isAuto && nfield == 1 && outvec[0].a_type == A_FLOAT)
+        if (x->x_isAutomatic && nfield == 1 && outvec[0].a_type == A_FLOAT)
             x->x_delay = outvec[0].a_w.w_float;
         else if (!x->x_outletWait) { PD_BUG; }
         else
         {
-            x->x_isAuto = 0;
+            x->x_isAutomatic = 0;
             outlet_list(x->x_outletWait, 0, nfield, outvec);
         }
     }
@@ -204,15 +204,15 @@ static void textsequence_doit(t_textsequence *x, int argc, t_atom *argv)
 static void textsequence_tick(t_textsequence *x)  /* clock callback */
 {
     x->x_sendTo = 0;
-    while (x->x_isAuto)
+    while (x->x_isAutomatic)
     {
-        x->x_isLoop = 1;
-        while (x->x_isLoop)  
-            textsequence_doit(x, x->x_argc, x->x_argv);
+        x->x_isLooping = 1;
+        while (x->x_isLooping)  
+            textsequence_perform(x, x->x_argc, x->x_argv);
         if (x->x_delay > 0) 
             break;
     }
-    if (x->x_isAuto)
+    if (x->x_isAutomatic)
         clock_delay(x->x_clock, x->x_delay);
 }
 
@@ -220,15 +220,22 @@ static void textsequence_tick(t_textsequence *x)  /* clock callback */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void textsequence_list(t_textsequence *x, t_symbol *s, int argc,
-    t_atom *argv)
+static void textsequence_bang (t_textsequence *x)
 {
-    x->x_isLoop = 1;
-    while (x->x_isLoop)
-    {
-        if (argc)
-            textsequence_doit(x, argc, argv);
-        else textsequence_doit(x, x->x_argc, x->x_argv);
+    x->x_isLooping = 1; while (x->x_isLooping) { textsequence_perform (x, x->x_argc, x->x_argv); }
+}
+
+static void textsequence_list (t_textsequence *x, t_symbol *s, int argc, t_atom *argv)
+{
+    x->x_isLooping = 1;
+    
+    while (x->x_isLooping) {
+    //
+    if (argc) { textsequence_perform (x, argc, argv); }
+    else {
+        textsequence_perform (x, x->x_argc, x->x_argv);
+    }
+    //
     }
 }
 
@@ -236,71 +243,71 @@ static void textsequence_list(t_textsequence *x, t_symbol *s, int argc,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void textsequence_step(t_textsequence *x)
+static void textsequence_stop (t_textsequence *x)
 {
-    textsequence_stop(x);
-    textsequence_doit(x, x->x_argc, x->x_argv);
+    x->x_isLooping = 0; if (x->x_isAutomatic) { clock_unset (x->x_clock); x->x_isAutomatic = 0; }
 }
 
-static void textsequence_line(t_textsequence *x, t_float f)
+static void textsequence_step (t_textsequence *x)
 {
-    t_buffer *b = textclient_fetchBuffer(&x->x_textclient), *b2;
-    int n, start, end;
-    t_atom *vec;
-    if (!b)
-       return;
-    x->x_sendTo = 0;
-    vec = buffer_atoms(b);
-    n = buffer_size(b);
-    if (!buffer_getMessageAt(b, f, &start, &end))
-    {
-        post_error ("text sequence: line number %d out of range", (int)f);
-        x->x_onset = PD_INT_MAX;
-    }
-    else x->x_onset = start;
+    textsequence_stop (x); textsequence_perform (x, x->x_argc, x->x_argv);
+}
+
+static void textsequence_automatic (t_textsequence *x)
+{
+    x->x_sendTo = NULL;
+    
+    if (x->x_isAutomatic) { clock_unset (x->x_clock); } else { x->x_isAutomatic = 1; }
+    
+    textsequence_tick (x);
+}
+
+static void textsequence_line (t_textsequence *x, t_float f)
+{
+    t_buffer *b = textclient_fetchBuffer (&x->x_textclient);
+
+    if (b) {
+    //
+    int start, end;
+    
+    x->x_sendTo = NULL;
     x->x_isLeadingNumbersEaten = 0;
-}
-
-static void textsequence_auto(t_textsequence *x)
-{
-    x->x_sendTo = 0;
-    if (x->x_isAuto)
-        clock_unset(x->x_clock);
-    x->x_isAuto = 1;
-    textsequence_tick(x);
-}
-
-static void textsequence_stop(t_textsequence *x)
-{
-    x->x_isLoop = 0;
-    if (x->x_isAuto)
-    {
-        clock_unset(x->x_clock);
-        x->x_isAuto = 0;
+    
+    if (!buffer_getMessageAt (b, f, &start, &end)) { x->x_onset = PD_INT_MAX; }
+    else {
+        x->x_onset = start;
     }
+    //
+    } else { error_undefined (sym_text__space__sequence, sym_text); }
 }
 
-static void textsequence_args(t_textsequence *x, t_symbol *s,
-    int argc, t_atom *argv)
+static void textsequence_arguments (t_textsequence *x, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
-    x->x_argv = PD_MEMORY_RESIZE(x->x_argv,
-        x->x_argc * sizeof(t_atom), argc * sizeof(t_atom));
-    for (i = 0; i < argc; i++)
-        x->x_argv[i] = argv[i];
+    size_t oldSize = x->x_argc * sizeof (t_atom);
+    size_t newSize = argc * sizeof(t_atom);
+    
     x->x_argc = argc;
+    x->x_argv = PD_MEMORY_RESIZE (x->x_argv, oldSize, newSize);
+    
+    for (i = 0; i < argc; i++) { x->x_argv[i] = argv[i]; }
 }
 
-static void textsequence_tempo(t_textsequence *x,
-    t_symbol *unitname, t_float tempo)
+static void textsequence_unit (t_textsequence *x, t_float f, t_symbol *unitName)
 {
-    t_float unit;
-    int samps;
-    time_parseUnits (tempo, unitname, &unit, &samps);
-    if (samps) { clock_setUnitAsSamples (x->x_clock, unit); }
+    int samples;
+    t_float milliseconds;
+    
+    post ("%f %s", f, unitName ? unitName->s_name : sym__dummy->s_name);
+    
+    /*
+    time_parseUnits (f, unitName, &milliseconds, &samples);
+    
+    if (samples) { clock_setUnitAsSamples (x->x_clock, milliseconds); }
     else {
-        clock_setUnitAsMilliseconds (x->x_clock, unit);
+        clock_setUnitAsMilliseconds (x->x_clock, milliseconds);
     }
+    */
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -340,7 +347,7 @@ void *textsequence_new (t_symbol *s, int argc, t_atom *argv)
                 
             } else if (argc >= 3 && (t == sym___dash__u || t == sym___dash__unit)) {
             
-                textsequence_tempo (x, atom_getSymbol (argv + 2), atom_getFloat (argv + 1));
+                textsequence_unit (x, atom_getFloat (argv + 1), atom_getSymbol (argv + 2));
                 argc -= 3; argv += 3;
                 
             } else {
@@ -364,7 +371,7 @@ void *textsequence_new (t_symbol *s, int argc, t_atom *argv)
         
         x->x_outletEnd = outlet_new (cast_object (x), &s_bang);
         
-        if (useGlobal) { x->x_leadingNumbersToWait = 0x40000000; }  /* WTF. */
+        if (useGlobal) { x->x_leadingNumbersToWait = 0x40000000; }      /* ASAP. */
     
         if (TEXTCLIENT_ASPOINTER (&x->x_textclient)) {
             inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
@@ -404,20 +411,21 @@ void textsequence_setup (void)
             A_GIMME,
             A_NULL);
     
+    class_addBang (c, textsequence_bang);
     class_addList (c, textsequence_list);
-        
-    class_addMethod (c, (t_method)textsequence_step,    sym_step,       A_NULL);
-    class_addMethod (c, (t_method)textsequence_line,    sym_line,       A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)textsequence_auto,    sym_automatic,  A_NULL);
-    class_addMethod (c, (t_method)textsequence_stop,    sym_stop,       A_NULL);
-    class_addMethod (c, (t_method)textsequence_args,    sym_arguments,  A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)textsequence_tempo,   sym_unit,       A_FLOAT, A_SYMBOL, A_NULL);
+    
+    class_addMethod (c, (t_method)textsequence_stop,        sym_stop,       A_NULL);
+    class_addMethod (c, (t_method)textsequence_step,        sym_step,       A_NULL);
+    class_addMethod (c, (t_method)textsequence_automatic,   sym_automatic,  A_NULL);
+    class_addMethod (c, (t_method)textsequence_line,        sym_line,       A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)textsequence_arguments,   sym_arguments,  A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)textsequence_unit,        sym_unit,       A_FLOAT, A_SYMBOL, A_NULL);
     
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)textsequence_auto,    sym_auto,       A_NULL);
-    class_addMethod (c, (t_method)textsequence_args,    sym_args,       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)textsequence_tempo,   sym_tempo,      A_FLOAT, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)textsequence_automatic,   sym_auto,       A_NULL);
+    class_addMethod (c, (t_method)textsequence_arguments,   sym_args,       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)textsequence_unit,        sym_tempo,      A_FLOAT, A_SYMBOL, A_NULL);
         
     #endif 
 

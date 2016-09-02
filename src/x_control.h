@@ -79,7 +79,7 @@ void        *textsequence_new           (t_symbol *s, int argc, t_atom *argv);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        time_parseUnits             (t_float f, t_symbol *name, t_float *unit, int *samples);
+void        time_parseUnits             (t_float f, t_symbol *nameOfUnit, t_float *unit, int *samples);
  
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
