@@ -18,7 +18,7 @@
     the fly for incoming 'tempo' messages, hmm...  This isn't public because
     its interface migth want to change - but it's used in x_text.c as well
     as here. */
-void parsetimeunits(void *x, t_float amount, t_symbol *unitname,
+void time_parseUnits (t_float amount, t_symbol *unitname,
     t_float *unit, int *samps)
 {
     char *s = unitname->s_name;
@@ -104,7 +104,7 @@ static void delay_tempo(t_delay *x, t_symbol *unitname, t_float tempo)
 {
     t_float unit;
     int samps;
-    parsetimeunits(x, tempo, unitname, &unit, &samps);
+    time_parseUnits (tempo, unitname, &unit, &samps);
     if (samps) { clock_setUnitAsSamples (x->x_clock, unit); }
     else {
         clock_setUnitAsMilliseconds (x->x_clock, unit);
@@ -192,7 +192,7 @@ static void metro_tempo(t_metro *x, t_symbol *unitname, t_float tempo)
 {
     t_float unit;
     int samps;
-    parsetimeunits(x, tempo, unitname, &unit, &samps);
+    time_parseUnits (tempo, unitname, &unit, &samps);
     if (samps) { clock_setUnitAsSamples (x->x_clock, unit); }
     else {
         clock_setUnitAsMilliseconds (x->x_clock, unit);
@@ -382,7 +382,7 @@ static void timer_tempo(t_timer *x, t_symbol *unitname, t_float tempo)
     x->x_moreelapsed +=  scheduler_getUnitsSince(x->x_settime,
         x->x_unit, x->x_samps);
     x->x_settime = scheduler_getLogicalTime();
-    parsetimeunits(x, tempo, unitname, &x->x_unit, &x->x_samps);
+    time_parseUnits (tempo, unitname, &x->x_unit, &x->x_samps);
 }
 
 static void *timer_new(t_symbol *unitname, t_float tempo)

@@ -127,6 +127,7 @@
 #include "x_textsize.c"
 #include "x_textlist.c"
 #include "x_textsearch.c"
+#include "x_textsequence.c"
 
 /* DSP. */
 

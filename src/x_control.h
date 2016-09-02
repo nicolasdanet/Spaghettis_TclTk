@@ -79,6 +79,12 @@ void        *textsequence_new           (t_symbol *s, int argc, t_atom *argv);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void        time_parseUnits             (t_float f, t_symbol *name, t_float *unit, int *samples);
+ 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #define TEXTCLIENT_ASPOINTER(x)         ((x)->tc_templateIdentifier)
 #define TEXTCLIENT_GETPOINTER(x)        &((x)->tc_gpointer)
 #define TEXTCLIENT_GETNAME(x)           &((x)->tc_name)
