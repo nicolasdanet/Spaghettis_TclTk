@@ -19,7 +19,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *textsequence_class;     /* Shared. */
+static t_class *textsequence_class;                 /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -46,8 +46,7 @@ typedef struct _textsequence {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void textsequence_tick (t_textsequence *x);
-static void textsequence_tempo (t_textsequence *x, t_symbol *unitname, t_float tempo);
+static void textsequence_stop   (t_textsequence *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -202,28 +201,6 @@ static void textsequence_doit(t_textsequence *x, int argc, t_atom *argv)
     ATOMS_FREEA(outvec, nfield+1);
 }
 
-static void textsequence_list(t_textsequence *x, t_symbol *s, int argc,
-    t_atom *argv)
-{
-    x->x_isLoop = 1;
-    while (x->x_isLoop)
-    {
-        if (argc)
-            textsequence_doit(x, argc, argv);
-        else textsequence_doit(x, x->x_argc, x->x_argv);
-    }
-}
-
-static void textsequence_stop(t_textsequence *x)
-{
-    x->x_isLoop = 0;
-    if (x->x_isAuto)
-    {
-        clock_unset(x->x_clock);
-        x->x_isAuto = 0;
-    }
-}
-
 static void textsequence_tick(t_textsequence *x)  /* clock callback */
 {
     x->x_sendTo = 0;
@@ -239,14 +216,25 @@ static void textsequence_tick(t_textsequence *x)  /* clock callback */
         clock_delay(x->x_clock, x->x_delay);
 }
 
-static void textsequence_auto(t_textsequence *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void textsequence_list(t_textsequence *x, t_symbol *s, int argc,
+    t_atom *argv)
 {
-    x->x_sendTo = 0;
-    if (x->x_isAuto)
-        clock_unset(x->x_clock);
-    x->x_isAuto = 1;
-    textsequence_tick(x);
+    x->x_isLoop = 1;
+    while (x->x_isLoop)
+    {
+        if (argc)
+            textsequence_doit(x, argc, argv);
+        else textsequence_doit(x, x->x_argc, x->x_argv);
+    }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void textsequence_step(t_textsequence *x)
 {
@@ -271,6 +259,25 @@ static void textsequence_line(t_textsequence *x, t_float f)
     }
     else x->x_onset = start;
     x->x_isLeadingNumbersEaten = 0;
+}
+
+static void textsequence_auto(t_textsequence *x)
+{
+    x->x_sendTo = 0;
+    if (x->x_isAuto)
+        clock_unset(x->x_clock);
+    x->x_isAuto = 1;
+    textsequence_tick(x);
+}
+
+static void textsequence_stop(t_textsequence *x)
+{
+    x->x_isLoop = 0;
+    if (x->x_isAuto)
+    {
+        clock_unset(x->x_clock);
+        x->x_isAuto = 0;
+    }
 }
 
 static void textsequence_args(t_textsequence *x, t_symbol *s,
@@ -382,25 +389,36 @@ static void textsequence_free(t_textsequence *x)
 
 void textsequence_setup (void)
 {
-    textsequence_class = class_new(sym_text__space__sequence,
-        (t_newmethod)textsequence_new, (t_method)textsequence_free,
-            sizeof(t_textsequence), 0, A_GIMME, 0);
-    class_addMethod(textsequence_class, (t_method)textsequence_step, 
-        sym_step, 0);
-    class_addMethod(textsequence_class, (t_method)textsequence_line, 
-        sym_line, A_FLOAT, 0);
-    class_addMethod(textsequence_class, (t_method)textsequence_auto, 
-        sym_auto, 0); /* LEGACY !!! */
-    class_addMethod(textsequence_class, (t_method)textsequence_stop, 
-        sym_stop, 0);
-    class_addMethod(textsequence_class, (t_method)textsequence_args, 
-        sym_args, A_GIMME, 0);   /* LEGACY !!! */
-    class_addMethod(textsequence_class, (t_method)textsequence_tempo, 
-        sym_tempo, A_FLOAT, A_SYMBOL, 0);  /* LEGACY !!! */
-    class_addMethod(textsequence_class, (t_method)textsequence_tempo, 
-        sym_unit, A_FLOAT, A_SYMBOL, 0);
-    class_addList(textsequence_class, textsequence_list);
-    class_setHelpName(textsequence_class, sym_text);
+    t_class *c = NULL;
+    
+    c = class_new (sym_text__space__sequence,
+            (t_newmethod)textsequence_new,
+            (t_method)textsequence_free,
+            sizeof (t_textsequence),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+    
+    class_addList (c, textsequence_list);
+        
+    class_addMethod (c, (t_method)textsequence_step,    sym_step,       A_NULL);
+    class_addMethod (c, (t_method)textsequence_line,    sym_line,       A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)textsequence_auto,    sym_automatic,  A_NULL);
+    class_addMethod (c, (t_method)textsequence_stop,    sym_stop,       A_NULL);
+    class_addMethod (c, (t_method)textsequence_args,    sym_arguments,  A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)textsequence_tempo,   sym_unit,       A_FLOAT, A_SYMBOL, A_NULL);
+    
+    #if PD_WITH_LEGACY
+    
+    class_addMethod (c, (t_method)textsequence_auto,    sym_auto,       A_NULL);
+    class_addMethod (c, (t_method)textsequence_args,    sym_args,       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)textsequence_tempo,   sym_tempo,      A_FLOAT, A_SYMBOL, A_NULL);
+        
+    #endif 
+
+    class_setHelpName (c, sym_text);
+    
+    textsequence_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
