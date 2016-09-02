@@ -90,9 +90,7 @@ void *textget_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_textget *x = (t_textget *)pd_new (textget_class);
     
-    /* Note that it may consume arguments. */
-    
-    t_error err = textclient_init (&x->x_textclient, &argc, &argv); 
+    t_error err = textclient_init (&x->x_textclient, &argc, &argv);         /* It may consume arguments. */
     
     if (!err) {
     

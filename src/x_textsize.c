@@ -64,9 +64,7 @@ void *textsize_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_textsize *x = (t_textsize *)pd_new (textsize_class);
     
-    /* Note that it may consume arguments. */
-    
-    t_error err = textclient_init (&x->x_textclient, &argc, &argv);
+    t_error err = textclient_init (&x->x_textclient, &argc, &argv);         /* It may consume arguments. */
     
     if (!err) {
     

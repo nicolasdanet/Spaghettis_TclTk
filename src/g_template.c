@@ -465,7 +465,7 @@ t_template *template_new (t_symbol *templateIdentifier, int argc, t_atom *argv)
     
     pd_bind (cast_pd (x), x->tp_templateIdentifier);
     
-    if (template_newParse (x, &argc, &argv)) {      /* Note that it may consume arguments. */
+    if (template_newParse (x, &argc, &argv)) {      /* It may consume arguments. */
     //
     error_invalidArguments (utils_stripTemplateIdentifier (templateIdentifier), argc, argv);
     template_free (x);

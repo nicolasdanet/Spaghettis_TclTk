@@ -28,9 +28,7 @@ void *texttolist_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_textclient *x = (t_textclient *)pd_new (texttolist_class);
     
-    /* Note that it may consume arguments. */
-    
-    t_error err = textclient_init (x, &argc, &argv);
+    t_error err = textclient_init (x, &argc, &argv);            /* It may consume arguments. */
     
     if (!err) {
     
@@ -74,9 +72,7 @@ void *textfromlist_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_textclient *x = (t_textclient *)pd_new (textfromlist_class);
     
-    /* Note that it may consume arguments. */
-    
-    t_error err = textclient_init (x, &argc, &argv);
+    t_error err = textclient_init (x, &argc, &argv);            /* It may consume arguments. */
     
     if (!err) {
     

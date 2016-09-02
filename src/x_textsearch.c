@@ -166,14 +166,12 @@ void *textsearch_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_textsearch *x = (t_textsearch *)pd_new (textsearch_class);
     
-    int i, numberOfKeys = 0;
-    
-    /* Note that it may consume arguments. */
-    
-    t_error err = textclient_init (&x->x_textclient, &argc, &argv);
+    t_error err = textclient_init (&x->x_textclient, &argc, &argv);         /* It may consume arguments. */
     
     if (!err) {
-    
+        
+    int i, numberOfKeys = 0;
+            
         for (i = 0; i < argc; i++) { if (IS_FLOAT (argv + i)) { numberOfKeys++; } }
         
         x->x_numberOfKeys = PD_MAX (1, numberOfKeys);

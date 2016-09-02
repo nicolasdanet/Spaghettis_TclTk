@@ -307,80 +307,85 @@ static void textsequence_tempo(t_textsequence *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void *textsequence_new(t_symbol *s, int argc, t_atom *argv)
+void *textsequence_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_textsequence *x = (t_textsequence *)pd_new(textsequence_class);
-    int global = 0;
-    textclient_init(&x->x_textclient, &argc, &argv);
-    x->x_symbolToWait = 0;
-    x->x_leadingNumbersToWait = 0;
-    x->x_isLeadingNumbersEaten = 0;
-    x->x_isLoop = 0;
-    x->x_sendTo = 0;
-    while (argc && argv->a_type == A_SYMBOL &&
-        *argv->a_w.w_symbol->s_name == '-')
-    {
-        if (!strcmp(argv->a_w.w_symbol->s_name, "-w") && argc >= 2)
-        {
-            if (argv[1].a_type == A_SYMBOL)
-            {
-                x->x_symbolToWait = argv[1].a_w.w_symbol;
-                x->x_leadingNumbersToWait = 0;
+    t_textsequence *x = (t_textsequence *)pd_new (textsequence_class);
+        
+    t_error err = textclient_init (&x->x_textclient, &argc, &argv);         /* It may consume arguments. */
+    
+    if (!err) {
+    
+        int hasWait = 0;
+        int useGlobal = 0;
+        
+        while (argc > 0) {
+
+            t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
+        
+            if (t == sym___dash__g || t == sym___dash__global) { 
+            
+                useGlobal = 1; argc--; argv++; 
+                
+            } else if (argc >= 2 && (t == sym___dash__w || t == sym___dash__wait)) {
+                
+                if (!x->x_symbolToWait && !x->x_leadingNumbersToWait) {
+                //
+                if (IS_SYMBOL (argv + 1)) { x->x_symbolToWait = atom_getSymbol (argv + 1); }
+                else {
+                    x->x_leadingNumbersToWait = PD_MAX (0, (int)atom_getFloat (argv + 1));
+                }
+                argc -= 2; argv += 2;
+                //
+                }
+                
+            } else if (argc >= 3 && (t == sym___dash__u || t == sym___dash__unit)) {
+            
+                textsequence_tempo (x, atom_getSymbol (argv + 2), atom_getFloat (argv + 1));
+                argc -= 3; argv += 3;
+                
+            } else {
+                break;
             }
-            else
-            {
-                x->x_symbolToWait = 0;
-                if ((x->x_leadingNumbersToWait = argv[1].a_w.w_float) < 0)
-                    x->x_leadingNumbersToWait = 0;
-            }
-            argc -= 1; argv += 1;
         }
-        else if (!strcmp(argv->a_w.w_symbol->s_name, "-g"))
-            global = 1;
-        else if (!strcmp(argv->a_w.w_symbol->s_name, "-t") && argc >= 3)
-        {
-            textsequence_tempo(x, atom_getSymbolAtIndex(2, argc, argv),
-                atom_getFloatAtIndex(1, argc, argv));
-             argc -= 2; argv += 2;
+        
+        error__options (s, argc, argv);
+
+        if (argc) { warning_unusedArguments (s, argc, argv); }
+        
+        hasWait = (useGlobal || x->x_symbolToWait || x->x_leadingNumbersToWait);
+        
+        x->x_onset = PD_INT_MAX;
+        x->x_argc  = 0;
+        x->x_argv  = (t_atom *)PD_MEMORY_GET (0);
+        x->x_clock = clock_new (x, (t_method)textsequence_tick);
+        
+        if (!useGlobal) { x->x_outletMain = outlet_new (cast_object (x), &s_list); }
+        if (hasWait)    { x->x_outletWait = outlet_new (cast_object (x), &s_list); }
+        
+        x->x_outletEnd = outlet_new (cast_object (x), &s_bang);
+        
+        if (useGlobal) { x->x_leadingNumbersToWait = 0x40000000; }  /* WTF. */
+    
+        if (TEXTCLIENT_ASPOINTER (&x->x_textclient)) {
+            inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
+        } else {
+            inlet_newSymbol (cast_object (x), TEXTCLIENT_GETNAME (&x->x_textclient));
         }
-        else
-        {
-            post_error ("text sequence: unknown flag '%s'...",
-                argv->a_w.w_symbol->s_name);
-        }
-        argc--; argv++;
+        
+    } else {
+        error_invalidArguments (sym_text__space__search, argc, argv);
+        pd_free (x); x = NULL;
     }
-    if (argc)
-    {
-        post("warning: text sequence ignoring extra argument: ");
-        error__post (argc, argv);
-    }
-    if (TEXTCLIENT_ASPOINTER (&x->x_textclient))
-        inlet_newPointer(cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
-    else inlet_newSymbol(cast_object (x), TEXTCLIENT_GETNAME (&x->x_textclient));
-    x->x_argc = 0;
-    x->x_argv = (t_atom *)PD_MEMORY_GET(0);
-    x->x_onset = PD_INT_MAX;
-    x->x_outletMain = (!global ? outlet_new(cast_object (x), &s_list) : 0);
-    x->x_outletWait = (global || x->x_symbolToWait || x->x_leadingNumbersToWait ?
-        outlet_new(cast_object (x), &s_list) : 0);
-    x->x_outletEnd = outlet_new(cast_object (x), &s_bang);
-    x->x_clock = clock_new(x, (t_method)textsequence_tick);
-    if (global)
-    {
-        if (x->x_leadingNumbersToWait)
-            post_error (
-       "warning: text sequence: numeric 'w' argument ignored if '-g' given");
-        x->x_leadingNumbersToWait = 0x40000000;
-    }
-    return (x);
+    
+    return x;
 }
 
-static void textsequence_free(t_textsequence *x)
+static void textsequence_free (t_textsequence *x)
 {
-    PD_MEMORY_FREE(x->x_argv);
-    clock_free(x->x_clock);
-    textclient_free(&x->x_textclient);
+    if (x->x_argv)  { PD_MEMORY_FREE (x->x_argv); }
+    if (x->x_clock) { clock_free (x->x_clock); }
+    
+    textclient_free (&x->x_textclient);
 }
 
 // -----------------------------------------------------------------------------------------------------------
