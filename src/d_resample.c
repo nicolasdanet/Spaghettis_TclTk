@@ -107,7 +107,7 @@ void resample_init (t_resample *x, t_symbol *s)
 {
     if (s == sym_hold)x->r_type=1;        /* up: sample and hold */
     else if (s == sym_linear)x->r_type=2; /* up: linear interpolation */
-    else if (PD_WITH_LEGACY && s == sym_lin)x->r_type=2;      /* LEGACY */
+    else if ((PD_WITH_LEGACY && s == sym_lin))x->r_type=2;      /* LEGACY */
     else if (s == sym_pad)x->r_type=0;    /* up: zero pad */
     else x->r_type=3;                           /* up: zero-padding; down: ignore samples inbetween */
     

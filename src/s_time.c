@@ -219,19 +219,27 @@ t_error clock_parseUnit (t_float f, t_symbol *s, t_float *n, int *isSamples)
     else if (s == sym_minute)       { *n = 60000.0 * f;       }
     else if (s == sym_sample)       { *n = f; *isSamples = 1; }
     else {
-        if (s == sym_perms)         { err = clock_parseUnit (f, sym_permillisecond, n, isSamples); }
-        else if (s == sym_permsec)  { err = clock_parseUnit (f, sym_permillisecond, n, isSamples); }
-        else if (s == sym_persec)   { err = clock_parseUnit (f, sym_persecond,      n, isSamples); }
-        else if (s == sym_permin)   { err = clock_parseUnit (f, sym_perminute,      n, isSamples); }
-        else if (s == sym_msec)     { err = clock_parseUnit (f, sym_millisecond,    n, isSamples); }
-        else if (s == sym_ms)       { err = clock_parseUnit (f, sym_millisecond,    n, isSamples); }
-        else if (s == sym_sec)      { err = clock_parseUnit (f, sym_second,         n, isSamples); }
-        else if (s == sym_min)      { err = clock_parseUnit (f, sym_minute,         n, isSamples); }
-        else if (s == sym_sam)      { err = clock_parseUnit (f, sym_sample,         n, isSamples); }
-        else if (s == sym_samp)     { err = clock_parseUnit (f, sym_sample,         n, isSamples); }
-        else {
-            err = PD_ERROR;
-        }
+        #if PD_WITH_LEGACY
+        
+            if (s == sym_perms)         { err = clock_parseUnit (f, sym_permillisecond, n, isSamples); }
+            else if (s == sym_permsec)  { err = clock_parseUnit (f, sym_permillisecond, n, isSamples); }
+            else if (s == sym_persec)   { err = clock_parseUnit (f, sym_persecond,      n, isSamples); }
+            else if (s == sym_permin)   { err = clock_parseUnit (f, sym_perminute,      n, isSamples); }
+            else if (s == sym_msec)     { err = clock_parseUnit (f, sym_millisecond,    n, isSamples); }
+            else if (s == sym_ms)       { err = clock_parseUnit (f, sym_millisecond,    n, isSamples); }
+            else if (s == sym_sec)      { err = clock_parseUnit (f, sym_second,         n, isSamples); }
+            else if (s == sym_min)      { err = clock_parseUnit (f, sym_minute,         n, isSamples); }
+            else if (s == sym_sam)      { err = clock_parseUnit (f, sym_sample,         n, isSamples); }
+            else if (s == sym_samp)     { err = clock_parseUnit (f, sym_sample,         n, isSamples); }
+            else {
+                err = PD_ERROR;
+            }
+        
+        #else
+        
+        err = PD_ERROR;
+        
+        #endif
     }
     //
     }

@@ -1206,7 +1206,13 @@ static void *plot_new (t_symbol *s, int argc, t_atom *argv)
 
         t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
         
-        if ((PD_WITH_LEGACY && t == sym_curve) || t == sym___dash__c || t == sym___dash__curve) {
+        #if PD_WITH_LEGACY
+        
+        if (t == sym_curve) { t = sym___dash__curve; }
+        
+        #endif
+        
+        if (t == sym___dash__c || t == sym___dash__curve) {
             field_setAsFloatConstant (&x->x_style, (t_float)PLOT_CURVES);
             argc -= 1; argv += 1;
             
