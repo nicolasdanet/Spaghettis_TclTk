@@ -201,7 +201,7 @@ static void textsequence_perform(t_textsequence *x, int argc, t_atom *argv)
     ATOMS_FREEA(outvec, nfield+1);
 }
 
-static void textsequence_tick(t_textsequence *x)  /* clock callback */
+static void textsequence_tick (t_textsequence *x)
 {
     x->x_sendTo = 0;
     while (x->x_isAutomatic)
@@ -295,19 +295,16 @@ static void textsequence_arguments (t_textsequence *x, t_symbol *s, int argc, t_
 
 static void textsequence_unit (t_textsequence *x, t_float f, t_symbol *unitName)
 {
-    int samples;
-    t_float milliseconds;
+    t_float n; int isSamples;
+    t_error err = clock_parseUnit (f, unitName, &n, &isSamples);
     
-    post ("%f %s", f, unitName ? unitName->s_name : sym__dummy->s_name);
-    
-    /*
-    time_parseUnits (f, unitName, &milliseconds, &samples);
-    
-    if (samples) { clock_setUnitAsSamples (x->x_clock, milliseconds); }
+    if (err) { error_invalid (sym_text__space__sequence, sym_unit); }
     else {
-        clock_setUnitAsMilliseconds (x->x_clock, milliseconds);
+        if (isSamples) { clock_setUnitAsSamples (x->x_clock, n); }
+        else {
+            clock_setUnitAsMilliseconds (x->x_clock, n);
+        }
     }
-    */
 }
 
 // -----------------------------------------------------------------------------------------------------------

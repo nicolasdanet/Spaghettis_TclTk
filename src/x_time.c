@@ -12,57 +12,6 @@
 #include <stdio.h>
 #include <string.h>
 
-    /* parse a time unit such as "5 msec", "60 perminute", or "1 sample" to
-    a form usable by clock_setUnit)( and scheduler_getUnitsSince().
-    This brute-force search through symbols really ought not to be done on
-    the fly for incoming 'tempo' messages, hmm...  This isn't public because
-    its interface migth want to change - but it's used in x_text.c as well
-    as here. */
-void time_parseUnits (t_float amount, t_symbol *unitname,
-    t_float *unit, int *samps)
-{
-    char *s = unitname->s_name;
-    if (amount <= 0)
-        amount = 1;
-    if (s[0] == 'p' && s[1] == 'e' && s[2] == 'r')  /* starts with 'per' */
-    {
-        char *s2 = s+3;
-        if (!strcmp(s2, "millisecond") || !strcmp(s2, "msec"))  /* msec */
-            *samps = 0, *unit = 1./amount;
-        else if (!strncmp(s2, "sec", 3))        /* seconds */
-            *samps = 0, *unit = 1000./amount;
-        else if (!strncmp(s2, "min", 3))        /* minutes */
-            *samps = 0, *unit = 60000./amount;
-        else if (!strncmp(s2, "sam", 3))        /* samples */
-            *samps = 1, *unit = 1./amount;
-        else goto fail;
-    }
-    else
-    {
-            /* empty string defaults to msec */
-        if (!strcmp(s, "millisecond") || !strcmp(s, "msec"))
-            *samps = 0, *unit = amount;
-        else if (!strncmp(s, "sec", 3))
-            *samps = 0, *unit = 1000.*amount;
-        else if (!strncmp(s, "min", 3))
-            *samps = 0, *unit = 60000.*amount;
-        else if (!strncmp(s, "sam", 3))
-            *samps = 1, *unit = amount;
-        else
-        {
-        fail:
-                /* empty time unit specification defaults to 1 msec for
-                back compatibility, since it's possible someone threw a
-                float argument to timer which had previously been ignored. */
-            if (*s)
-                post_error ("%s: unknown time unit", s);
-            else post_error ("tempo setting needs time unit ('sec', 'samp', 'permin', etc.");
-            *unit = 1;
-            *samps = 0;
-        }
-    }
-}
-
 /* -------------------------- delay ------------------------------ */
 static t_class *delay_class;
 
@@ -104,7 +53,7 @@ static void delay_tempo(t_delay *x, t_symbol *unitname, t_float tempo)
 {
     t_float unit;
     int samps;
-    time_parseUnits (tempo, unitname, &unit, &samps);
+    clock_parseUnit (tempo, unitname, &unit, &samps);
     if (samps) { clock_setUnitAsSamples (x->x_clock, unit); }
     else {
         clock_setUnitAsMilliseconds (x->x_clock, unit);
@@ -192,7 +141,7 @@ static void metro_tempo(t_metro *x, t_symbol *unitname, t_float tempo)
 {
     t_float unit;
     int samps;
-    time_parseUnits (tempo, unitname, &unit, &samps);
+    clock_parseUnit (tempo, unitname, &unit, &samps);
     if (samps) { clock_setUnitAsSamples (x->x_clock, unit); }
     else {
         clock_setUnitAsMilliseconds (x->x_clock, unit);
@@ -382,7 +331,7 @@ static void timer_tempo(t_timer *x, t_symbol *unitname, t_float tempo)
     x->x_moreelapsed +=  scheduler_getUnitsSince(x->x_settime,
         x->x_unit, x->x_samps);
     x->x_settime = scheduler_getLogicalTime();
-    time_parseUnits (tempo, unitname, &x->x_unit, &x->x_samps);
+    clock_parseUnit (tempo, unitname, &x->x_unit, &x->x_samps);
 }
 
 static void *timer_new(t_symbol *unitname, t_float tempo)

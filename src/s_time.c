@@ -201,3 +201,43 @@ void clock_setUnitAsMilliseconds (t_clock *x, double ms)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_error clock_parseUnit (t_float f, t_symbol *s, t_float *n, int *isSamples)
+{
+    t_error err = (f <= 0);
+    
+    *n = 1; *isSamples = 0;
+    
+    if (!err) {
+    //
+    if (s == sym_permillisecond)    { *n = 1.0 / f;           }
+    else if (s == sym_persecond)    { *n = 1000.0 / f;        }
+    else if (s == sym_perminute)    { *n = 60000.0 / f;       }
+    else if (s == sym_millisecond)  { *n = f;                 }
+    else if (s == sym_second)       { *n = 1000.0 * f;        }
+    else if (s == sym_minute)       { *n = 60000.0 * f;       }
+    else if (s == sym_sample)       { *n = f; *isSamples = 1; }
+    else {
+        if (s == sym_perms)         { err = clock_parseUnit (f, sym_permillisecond, n, isSamples); }
+        else if (s == sym_permsec)  { err = clock_parseUnit (f, sym_permillisecond, n, isSamples); }
+        else if (s == sym_persec)   { err = clock_parseUnit (f, sym_persecond,      n, isSamples); }
+        else if (s == sym_permin)   { err = clock_parseUnit (f, sym_perminute,      n, isSamples); }
+        else if (s == sym_msec)     { err = clock_parseUnit (f, sym_millisecond,    n, isSamples); }
+        else if (s == sym_ms)       { err = clock_parseUnit (f, sym_millisecond,    n, isSamples); }
+        else if (s == sym_sec)      { err = clock_parseUnit (f, sym_second,         n, isSamples); }
+        else if (s == sym_min)      { err = clock_parseUnit (f, sym_minute,         n, isSamples); }
+        else if (s == sym_sam)      { err = clock_parseUnit (f, sym_sample,         n, isSamples); }
+        else if (s == sym_samp)     { err = clock_parseUnit (f, sym_sample,         n, isSamples); }
+        else {
+            err = PD_ERROR;
+        }
+    }
+    //
+    }
+    
+    return err;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

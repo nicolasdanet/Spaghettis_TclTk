@@ -108,257 +108,259 @@ typedef struct _receiver {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            font_withHostMeasured                   (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void            font_setDefaultFontSize                 (int size);
-t_fontsize      font_getDefaultFontSize                 (void);
-t_fontsize      font_getNearestValidFontSize            (int size);
-int             font_getHostFontSize                    (t_fontsize fontSize);
-double          font_getHostFontWidth                   (t_fontsize fontSize);
-double          font_getHostFontHeight                  (t_fontsize fontSize);
+void        font_withHostMeasured                   (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void        font_setDefaultFontSize                 (int size);
+t_fontsize  font_getDefaultFontSize                 (void);
+t_fontsize  font_getNearestValidFontSize            (int size);
+int         font_getHostFontSize                    (t_fontsize fontSize);
+double      font_getHostFontWidth                   (t_fontsize fontSize);
+double      font_getHostFontHeight                  (t_fontsize fontSize);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int             main_entry                              (int argc, char **argv);
+int         main_entry                              (int argc, char **argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-double          scheduler_getLogicalTime                (void);
-double          scheduler_getLogicalTimeAfter           (double ms);
-double          scheduler_getMillisecondsSince          (double systime);
-double          scheduler_getUnitsSince                 (double systime, double unit, int isSamples);
-void            scheduler_setAudioMode                  (int flag);
-void            scheduler_needToExit                    (void);
-void            scheduler_needToExitWithError           (void);
-void            scheduler_lock                          (void);
-void            scheduler_unlock                        (void);
-t_error         scheduler_main                          (void);
+double      scheduler_getLogicalTime                (void);
+double      scheduler_getLogicalTimeAfter           (double ms);
+double      scheduler_getMillisecondsSince          (double systime);
+double      scheduler_getUnitsSince                 (double systime, double unit, int isSamples);
+void        scheduler_setAudioMode                  (int flag);
+void        scheduler_needToExit                    (void);
+void        scheduler_needToExitWithError           (void);
+void        scheduler_lock                          (void);
+void        scheduler_unlock                        (void);
+t_error     scheduler_main                          (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            ugen_tick                               (void);
+void        ugen_tick                               (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error         priority_privilegeStart                 (void);
-t_error         priority_privilegeDrop                  (void);
-t_error         priority_privilegeRestore               (void);
-t_error         priority_privilegeRelinquish            (void);
+t_error     priority_privilegeStart                 (void);
+t_error     priority_privilegeDrop                  (void);
+t_error     priority_privilegeRestore               (void);
+t_error     priority_privilegeRelinquish            (void);
 
-t_error         priority_setPolicy                      (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void            clock_setUnitAsSamples                  (t_clock *x, double samples);
-void            clock_setUnitAsMilliseconds             (t_clock *x, double ms);
+t_error     priority_setPolicy                      (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            sys_setSignalHandlers                   (void);
-double          sys_getRealTimeInSeconds                (void);
+void        clock_setUnitAsSamples                  (t_clock *x, double samples);
+void        clock_setUnitAsMilliseconds             (t_clock *x, double ms);
+
+t_error     clock_parseUnit                         (t_float f, t_symbol *unit, t_float *n, int *isSamples);
+                                                            
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        sys_setSignalHandlers                   (void);
+double      sys_getRealTimeInSeconds                (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error         logger_initialize                       (void);
-void            logger_release                          (void);
-int             logger_isRunning                        (void);
+t_error     logger_initialize                       (void);
+void        logger_release                          (void);
+int         logger_isRunning                        (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_receiver      *receiver_new                           (void *owner,
+t_receiver  *receiver_new                           (void *owner,
                                                             int fd,
                                                             t_notifyfn notify,          /* Socket closed. */
                                                             t_receivefn receive,        /* Data received. */
                                                             int isUdp);
 
-void            receiver_free                           (t_receiver *x);
-void            receiver_read                           (t_receiver *x, int fd);
+void        receiver_free                           (t_receiver *x);
+void        receiver_read                           (t_receiver *x, int fd);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int             interface_monitorBlocking               (int microseconds);
-int             interface_monitorNonBlocking            (void);
-void            interface_monitorAddPoller              (int fd, t_pollfn fn, void *ptr);
-void            interface_monitorRemovePoller           (int fd);
-void            interface_guiQueueAddIfNotAlreadyThere  (void *owner, t_glist *glist, t_drawfn f);
-void            interface_guiQueueRemove                (void *owner);
-int             interface_pollOrFlushGui                (void);
-void            interface_closeSocket                   (int fd);
-void            interface_quit                          (void *dummy);
-void            interface_watchdog                      (void *dummy);
-t_error         interface_start                         (void);
+int         interface_monitorBlocking               (int microseconds);
+int         interface_monitorNonBlocking            (void);
+void        interface_monitorAddPoller              (int fd, t_pollfn fn, void *ptr);
+void        interface_monitorRemovePoller           (int fd);
+void        interface_guiQueueAddIfNotAlreadyThere  (void *owner, t_glist *glist, t_drawfn f);
+void        interface_guiQueueRemove                (void *owner);
+int         interface_pollOrFlushGui                (void);
+void        interface_closeSocket                   (int fd);
+void        interface_quit                          (void *dummy);
+void        interface_watchdog                      (void *dummy);
+t_error     interface_start                         (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-FILE            *file_openWrite                         (const char *filepath);
-int             file_openRaw                            (const char *filepath, int oflag);
+FILE        *file_openWrite                         (const char *filepath);
+int         file_openRaw                            (const char *filepath, int oflag);
 
-int             file_openWithDirectoryAndName           (const char *directory,
-                                                            const char *name,
-                                                            const char *extension,
-                                                            char *directoryResult,
-                                                            char **nameResult,
-                                                            size_t size);
+int         file_openWithDirectoryAndName           (const char *directory,
+                                                        const char *name,
+                                                        const char *extension,
+                                                        char *directoryResult,
+                                                        char **nameResult,
+                                                        size_t size);
                                                         
-int             file_openConsideringSearchPath          (const char *directory, 
-                                                            const char *name,
-                                                            const char *extension,
-                                                            char *directoryResult,
-                                                            char **nameResult,
-                                                            size_t size);
+int         file_openConsideringSearchPath          (const char *directory, 
+                                                        const char *name,
+                                                        const char *extension,
+                                                        char *directoryResult,
+                                                        char **nameResult,
+                                                        size_t size);
 
-void            file_openHelp                           (const char *directory, const char *name);
+void        file_openHelp                           (const char *directory, const char *name);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            path_slashToBackslashIfNecessary        (char *dest, char *src);
-void            path_backslashToSlashIfNecessary        (char *dest, char *src);
-int             path_isFileExist                        (const char *filepath);
-int             path_isFileExistAsRegularFile           (const char *filepath);
-t_error         path_withDirectoryAndName               (char *dest, 
-                                                            size_t size, 
-                                                            const char *directory, 
-                                                            const char *name,
-                                                            int expandEnvironment);
+void        path_slashToBackslashIfNecessary        (char *dest, char *src);
+void        path_backslashToSlashIfNecessary        (char *dest, char *src);
+int         path_isFileExist                        (const char *filepath);
+int         path_isFileExistAsRegularFile           (const char *filepath);
+t_error     path_withDirectoryAndName               (char *dest, 
+                                                        size_t size, 
+                                                        const char *directory, 
+                                                        const char *name,
+                                                        int expandEnvironment);
                                                         
-t_error         path_expandEnvironment                  (char *dest, size_t size, const char *src);
-void            path_setSearchPath                      (void *dummy, t_symbol *s, int argc, t_atom *argv);
+t_error     path_expandEnvironment                  (char *dest, size_t size, const char *src);
+void        path_setSearchPath                      (void *dummy, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int             loader_loadExternal                     (t_glist *canvas, char *name);
+int         loader_loadExternal                     (t_glist *canvas, char *name);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            preferences_load                        (void);
-void            preferences_save                        (void *dummy);
+void        preferences_load                        (void);
+void        preferences_save                        (void *dummy);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            midi_start                              (void);
-void            midi_synchronise                        (void);
-void            midi_poll                               (void);
-void            midi_receive                            (int port, int byte);
-void            midi_broadcast                          (int port, int hasOneByte, int a, int b, int c);
+void        midi_start                              (void);
+void        midi_synchronise                        (void);
+void        midi_poll                               (void);
+void        midi_receive                            (int port, int byte);
+void        midi_broadcast                          (int port, int hasOneByte, int a, int b, int c);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void            midi_requireDialog                      (void *dummy);
-void            midi_fromDialog                         (void *dummy, t_symbol *s, int argc, t_atom *argv);
-int             midi_numberWithName                     (int isOutput, const char *name);
-t_error         midi_numberToName                       (int isOutput, int k, char *dest, size_t size);
-void            midi_open                               (void);
-void            midi_close                              (void);
+void        midi_requireDialog                      (void *dummy);
+void        midi_fromDialog                         (void *dummy, t_symbol *s, int argc, t_atom *argv);
+int         midi_numberWithName                     (int isOutput, const char *name);
+t_error     midi_numberToName                       (int isOutput, int k, char *dest, size_t size);
+void        midi_open                               (void);
+void        midi_close                              (void);
 
-void            midi_getDevices                         (int *numberOfDevicesIn,
-                                                            int *devicesIn,
-                                                            int *numberOfDevicesOut,
-                                                            int *devicesOut);
+void        midi_getDevices                         (int *numberOfDevicesIn,
+                                                        int *devicesIn,
+                                                        int *numberOfDevicesOut,
+                                                        int *devicesOut);
 
-void            midi_setDefaultDevices                  (int numberOfDevicesIn, 
-                                                            int *devicesIn, 
-                                                            int numberOfDevicesOut, 
-                                                            int *devicesOut);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void            inmidi_noteOn                           (int port, int channel, int pitch, int velocity);
-void            inmidi_controlChange                    (int port, int channel, int control, int value);
-void            inmidi_programChange                    (int port, int channel, int value);
-void            inmidi_pitchBend                        (int port, int channel, int value);
-void            inmidi_afterTouch                       (int port, int channel, int value);
-void            inmidi_polyPressure                     (int port, int channel, int pitch, int value);
-void            inmidi_realTimeIn                       (int port, int command);
-void            inmidi_byte                             (int port, int byte);
-void            inmidi_sysex                            (int port, int byte);
+void        midi_setDefaultDevices                  (int numberOfDevicesIn, 
+                                                        int *devicesIn, 
+                                                        int numberOfDevicesOut, 
+                                                        int *devicesOut);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            outmidi_noteOn                          (int port, int channel, int pitch, int velocity);
-void            outmidi_controlChange                   (int port, int channel, int control, int value);
-void            outmidi_programChange                   (int port, int channel, int value);
-void            outmidi_pitchBend                       (int port, int channel, int value);
-void            outmidi_afterTouch                      (int port, int channel, int value);
-void            outmidi_polyPressure                    (int port, int channel, int pitch, int value);
-void            outmidi_clock                           (int port);
+void        inmidi_noteOn                           (int port, int channel, int pitch, int velocity);
+void        inmidi_controlChange                    (int port, int channel, int control, int value);
+void        inmidi_programChange                    (int port, int channel, int value);
+void        inmidi_pitchBend                        (int port, int channel, int value);
+void        inmidi_afterTouch                       (int port, int channel, int value);
+void        inmidi_polyPressure                     (int port, int channel, int pitch, int value);
+void        inmidi_realTimeIn                       (int port, int command);
+void        inmidi_byte                             (int port, int byte);
+void        inmidi_sysex                            (int port, int byte);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error         audio_initialize                        (void);
-void            audio_release                           (void);
-int             audio_pollDSP                           (void);
-t_error         audio_stopDSP                           (void);
-t_error         audio_startDSP                          (void);
+void        outmidi_noteOn                          (int port, int channel, int pitch, int velocity);
+void        outmidi_controlChange                   (int port, int channel, int control, int value);
+void        outmidi_programChange                   (int port, int channel, int value);
+void        outmidi_pitchBend                       (int port, int channel, int value);
+void        outmidi_afterTouch                      (int port, int channel, int value);
+void        outmidi_polyPressure                    (int port, int channel, int pitch, int value);
+void        outmidi_clock                           (int port);
 
-void            audio_initializeMemory                  (int usedChannelsIn, int usedChannelsOut);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-void            audio_shrinkChannelsIn                  (int numberOfChannelsIn);
-void            audio_shrinkChannelsOut                 (int numberOfChannelsOut);
-void            audio_setSampleRate                     (t_float sampleRate);
-void            audio_setBlockSize                      (int blockSize);
-int             audio_getChannelsIn                     (void);
-int             audio_getChannelsOut                    (void);
-t_float         audio_getSampleRate                     (void);
+t_error     audio_initialize                        (void);
+void        audio_release                           (void);
+int         audio_pollDSP                           (void);
+t_error     audio_stopDSP                           (void);
+t_error     audio_startDSP                          (void);
 
-void            audio_requireDialog                     (void *dummy);
-void            audio_fromDialog                        (void *dummy, t_symbol *s, int argc, t_atom *argv);
-int             audio_numberWithName                    (int isOutput, const char *name);
-t_error         audio_numberToName                      (int isOutput, int k, char *dest, size_t size);
-t_error         audio_open                              (void);
-void            audio_close                             (void);
-int             audio_isOpened                          (void);
+void        audio_initializeMemory                  (int usedChannelsIn, int usedChannelsOut);
 
-void            audio_getDevices                        (int *numberOfDevicesIn,
-                                                            int *devicesIn,
-                                                            int *channelsIn,
-                                                            int *numberOfDevicesOut,
-                                                            int *devicesOut,
-                                                            int *channelsOut,
-                                                            int *sampleRate,
-                                                            int *blockSize);
+void        audio_shrinkChannelsIn                  (int numberOfChannelsIn);
+void        audio_shrinkChannelsOut                 (int numberOfChannelsOut);
+void        audio_setSampleRate                     (t_float sampleRate);
+void        audio_setBlockSize                      (int blockSize);
+int         audio_getChannelsIn                     (void);
+int         audio_getChannelsOut                    (void);
+t_float     audio_getSampleRate                     (void);
 
-void            audio_setDevicesWithDefault             (int numberOfDevicesIn,
-                                                            int *devicesIn,
-                                                            int *channelsIn,
-                                                            int numberOfDevicesOut,
-                                                            int *devicesOut,
-                                                            int *channelsOut,
-                                                            int sampleRate,
-                                                            int blockSize);
+void        audio_requireDialog                     (void *dummy);
+void        audio_fromDialog                        (void *dummy, t_symbol *s, int argc, t_atom *argv);
+int         audio_numberWithName                    (int isOutput, const char *name);
+t_error     audio_numberToName                      (int isOutput, int k, char *dest, size_t size);
+t_error     audio_open                              (void);
+void        audio_close                             (void);
+int         audio_isOpened                          (void);
+
+void        audio_getDevices                        (int *numberOfDevicesIn,
+                                                        int *devicesIn,
+                                                        int *channelsIn,
+                                                        int *numberOfDevicesOut,
+                                                        int *devicesOut,
+                                                        int *channelsOut,
+                                                        int *sampleRate,
+                                                        int *blockSize);
+
+void        audio_setDevicesWithDefault             (int numberOfDevicesIn,
+                                                        int *devicesIn,
+                                                        int *channelsIn,
+                                                        int numberOfDevicesOut,
+                                                        int *devicesOut,
+                                                        int *channelsOut,
+                                                        int sampleRate,
+                                                        int blockSize);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
