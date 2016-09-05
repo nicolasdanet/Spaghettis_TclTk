@@ -155,6 +155,31 @@ void dollar_expandDollarNumber (t_atom *dollar, t_atom *a, int argc, t_atom *arg
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void dollar_copyExpandAtoms (t_atom *src, int m, t_atom *dest, int n, int argc, t_atom *argv)
+{
+    int i;
+    int size = PD_MIN (m, n);
+    
+    for (i = 0; i < size; i++) {
+
+        t_atom *a = src + i;
+        t_atom *b = dest + i;
+        
+        if (IS_FLOAT (a) || IS_SYMBOL (a)) { *b = *a; }
+        else if (IS_DOLLAR (a))            { dollar_expandDollarNumber (a, b, argc, argv); }
+        else if (IS_DOLLARSYMBOL (a))      {
+            t_symbol *s = dollar_expandDollarSymbol (GET_DOLLARSYMBOL (a), argc, argv);
+            if (s) { SET_SYMBOL (b, s); } else { SET_SYMBOL (b, GET_DOLLARSYMBOL (a)); }
+        } else { 
+            PD_BUG; 
+        }
+    }
+}
+                                                            
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_symbol *dollar_toHash (t_symbol *s)
 {
     char t[PD_STRING + 1] = { 0 };

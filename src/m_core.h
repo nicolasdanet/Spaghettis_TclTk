@@ -273,6 +273,25 @@ void        buffer_fileOpen                             (void *dummy, t_symbol *
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_symbol    *dollar_toHash                              (t_symbol *s);
+t_symbol    *dollar_fromHash                            (t_symbol *s);
+t_symbol    *dollar_expandDollarSymbol                  (t_symbol *s, int argc, t_atom *argv);
+
+void        dollar_expandDollarNumber                   (t_atom *dollar, t_atom *a, int argc, t_atom *argv);
+int         dollar_isDollarNumber                       (char *s);
+int         dollar_isPointingToDollarAndNumber          (char *s);
+
+void        dollar_copyExpandAtoms                      (t_atom *src,
+                                                            int m,
+                                                            t_atom *dest,
+                                                            int n,
+                                                            int argc,
+                                                            t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void        instance_initialize                         (void);
 void        instance_release                            (void);
 void        instance_addToRoots                         (t_glist *glist);

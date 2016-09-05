@@ -63,16 +63,4 @@ t_float     math_euclideanDistance                      (t_float x1, t_float y1,
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_symbol    *dollar_toHash                              (t_symbol *s);
-t_symbol    *dollar_fromHash                            (t_symbol *s);
-t_symbol    *dollar_expandDollarSymbol                  (t_symbol *s, int argc, t_atom *argv);
-
-void        dollar_expandDollarNumber                   (t_atom *dollar, t_atom *a, int argc, t_atom *argv);
-int         dollar_isDollarNumber                       (char *s);
-int         dollar_isPointingToDollarAndNumber          (char *s);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #endif // __m_utils_h_
