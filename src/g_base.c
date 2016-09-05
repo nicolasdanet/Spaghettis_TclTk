@@ -390,18 +390,9 @@ int canvas_openFile (t_glist *glist,
 
 t_symbol *canvas_expandDollar (t_glist *glist, t_symbol *s)
 {
-    t_symbol *t = s;
-    
-    if (strchr (s->s_name, '$')) {
-    //
-    t_environment *environment = canvas_getEnvironment (glist);
-    stack_push (cast_pd (glist));
-    t = dollar_expandDollarSymbol (s, environment->ce_argc, environment->ce_argv, NULL);
-    stack_pop (cast_pd (glist));
-    //
-    }
+    if (strchr (s->s_name, '$')) { s = dollar_expandDollarSymbolByEnvironment (s, glist); }
 
-    return t;
+    return s;
 }
 
 t_error canvas_makeFilePath (t_glist *glist, char *name, char *dest, size_t size)

@@ -17,30 +17,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* True if the string start with a dollar following by zero or more numbers. */
-
-int dollar_isDollarNumber (char *s)
-{
-    if (*s != '$') { return 0; } while (*(++s)) { if (*s < '0' || *s > '9') { return 0; } }
-    
-    return 1;
-}
-
-/* True if the string start with a dollar following by one number. */
-
-int dollar_isPointingToDollarAndNumber (char *s)
-{
-    PD_ASSERT (s[0] != 0);
-    
-    if (s[0] != '$' || s[1] < '0' || s[1] > '9') { return 0; }
-    
-    return 1;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static int dollar_getDollarZero (t_glist *glist)
 {
     glist = (glist == NULL) ? canvas_getCurrent() : glist;
@@ -139,6 +115,18 @@ t_symbol *dollar_expandDollarSymbol (t_symbol *s, int argc, t_atom *argv, t_glis
     }
 }
 
+t_symbol *dollar_expandDollarSymbolByEnvironment (t_symbol *s, t_glist *glist)
+{
+    t_environment *environment = NULL;
+    
+    if (glist) { environment = canvas_getEnvironment (glist); }
+
+    if (!environment) { dollar_expandDollarSymbol (s, 0, NULL, glist); }
+    else {
+        dollar_expandDollarSymbol (s, environment->ce_argc, environment->ce_argv, glist);
+    }
+}
+
 /* Dollar expansion (e.g. '$1' to 'foo'). */
 
 void dollar_expandDollarNumber (t_atom *dollar, t_atom *a, int argc, t_atom *argv, t_glist *glist)
@@ -158,18 +146,6 @@ void dollar_expandDollarNumber (t_atom *dollar, t_atom *a, int argc, t_atom *arg
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void dollar_copyExpandAtomsByEnvironment (t_atom *src, int m, t_atom *dest, int n, t_glist *glist)
-{
-    t_environment *environment = NULL;
-    
-    if (glist) { environment = canvas_getEnvironment (glist); }
-
-    if (!environment) { dollar_copyExpandAtoms (src, m, dest, n, 0, NULL, glist); }
-    else {
-        dollar_copyExpandAtoms (src, m, dest, n, environment->ce_argc, environment->ce_argv, glist);
-    }
-}
-                                                            
 void dollar_copyExpandAtoms (t_atom *src, int m, t_atom *dest, int n, int argc, t_atom *argv, t_glist *glist)
 {
     int i;
@@ -190,7 +166,43 @@ void dollar_copyExpandAtoms (t_atom *src, int m, t_atom *dest, int n, int argc, 
         }
     }
 }
-                                                            
+
+void dollar_copyExpandAtomsByEnvironment (t_atom *src, int m, t_atom *dest, int n, t_glist *glist)
+{
+    t_environment *environment = NULL;
+    
+    if (glist) { environment = canvas_getEnvironment (glist); }
+
+    if (!environment) { dollar_copyExpandAtoms (src, m, dest, n, 0, NULL, glist); }
+    else {
+        dollar_copyExpandAtoms (src, m, dest, n, environment->ce_argc, environment->ce_argv, glist);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* True if the string start with a dollar following by zero or more numbers. */
+
+int dollar_isDollarNumber (char *s)
+{
+    if (*s != '$') { return 0; } while (*(++s)) { if (*s < '0' || *s > '9') { return 0; } }
+    
+    return 1;
+}
+
+/* True if the string start with a dollar following by one number. */
+
+int dollar_isPointingToDollarAndNumber (char *s)
+{
+    PD_ASSERT (s[0] != 0);
+    
+    if (s[0] != '$' || s[1] < '0' || s[1] > '9') { return 0; }
+    
+    return 1;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
