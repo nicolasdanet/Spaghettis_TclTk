@@ -41,18 +41,21 @@ int dollar_isPointingToDollarAndNumber (char *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int dollar_getDollarZero (void)
+static int dollar_getDollarZero (t_glist *glist)
 {
-    t_glist *glist = canvas_getCurrent();
-    t_environment *environment = (glist ? canvas_getEnvironment (glist) : NULL);
+    glist = (glist == NULL) ? canvas_getCurrent() : glist;
     
-    if (environment) { return (environment->ce_dollarZeroValue); }
-    else {
-        return 0;
+    {
+        t_environment *environment = (glist ? canvas_getEnvironment (glist) : NULL);
+        
+        if (environment) { return (environment->ce_dollarZeroValue); }
+        else {
+            return 0;
+        }
     }
 }
 
-static int dollar_expand (char *s, char *buffer, int size, int argc, t_atom *argv)
+static int dollar_expand (char *s, char *buffer, int size, int argc, t_atom *argv, t_glist *glist)
 {
     int n = (int)atol (s);      /* Note that atol return zero for an invalid number. */
     char *ptr = s;
@@ -79,7 +82,7 @@ static int dollar_expand (char *s, char *buffer, int size, int argc, t_atom *arg
 
     } else if (n == 0) {                                    
         t_atom a;
-        SET_FLOAT (&a, dollar_getDollarZero());
+        SET_FLOAT (&a, dollar_getDollarZero (glist));
         err = atom_toString (&a, buffer, size);
         PD_ASSERT (length == 1);
         
@@ -96,7 +99,7 @@ static int dollar_expand (char *s, char *buffer, int size, int argc, t_atom *arg
 
 /* Dollar symbol expansion (e.g. '$1-foo' to 'bar-foo'). */
 
-t_symbol *dollar_expandDollarSymbol (t_symbol *s, int argc, t_atom *argv)
+t_symbol *dollar_expandDollarSymbol (t_symbol *s, int argc, t_atom *argv, t_glist *glist)
 {
     char t[PD_STRING] = { 0 };
     char result[PD_STRING] = { 0 };
@@ -113,7 +116,7 @@ t_symbol *dollar_expandDollarSymbol (t_symbol *s, int argc, t_atom *argv)
         str = substr + 1;
     }
 
-    while (!err && ((next = dollar_expand (str, t, PD_STRING, argc, argv)) >= 0)) {
+    while (!err && ((next = dollar_expand (str, t, PD_STRING, argc, argv, glist)) >= 0)) {
     //
     if ((next == 0) && (*t == 0)) { return NULL; }          /* Dollar number argument is out of bound. */
 
@@ -138,14 +141,14 @@ t_symbol *dollar_expandDollarSymbol (t_symbol *s, int argc, t_atom *argv)
 
 /* Dollar expansion (e.g. '$1' to 'foo'). */
 
-void dollar_expandDollarNumber (t_atom *dollar, t_atom *a, int argc, t_atom *argv)
+void dollar_expandDollarNumber (t_atom *dollar, t_atom *a, int argc, t_atom *argv, t_glist *glist)
 {
     int n = GET_DOLLAR (dollar);
         
     PD_ASSERT (IS_DOLLAR (dollar));
     
     if (n > 0 && n <= argc) { *a = *(argv + n - 1); }
-    else if (n == 0)        { SET_FLOAT (a, dollar_getDollarZero()); }
+    else if (n == 0)        { SET_FLOAT (a, dollar_getDollarZero (glist)); }
     else {
         error_invalid (&s_, sym_expansion); SET_FLOAT (a, 0.0);
     }
@@ -166,9 +169,9 @@ void dollar_copyExpandAtoms (t_atom *src, int m, t_atom *dest, int n, int argc, 
         t_atom *b = dest + i;
         
         if (IS_FLOAT (a) || IS_SYMBOL (a)) { *b = *a; }
-        else if (IS_DOLLAR (a))            { dollar_expandDollarNumber (a, b, argc, argv); }
+        else if (IS_DOLLAR (a))            { dollar_expandDollarNumber (a, b, argc, argv, NULL); }
         else if (IS_DOLLARSYMBOL (a))      {
-            t_symbol *s = dollar_expandDollarSymbol (GET_DOLLARSYMBOL (a), argc, argv);
+            t_symbol *s = dollar_expandDollarSymbol (GET_DOLLARSYMBOL (a), argc, argv, NULL);
             if (s) { SET_SYMBOL (b, s); } else { SET_SYMBOL (b, GET_DOLLARSYMBOL (a)); }
         } else { 
             PD_BUG; 

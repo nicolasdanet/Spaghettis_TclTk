@@ -275,18 +275,23 @@ void        buffer_fileOpen                             (void *dummy, t_symbol *
 
 t_symbol    *dollar_toHash                              (t_symbol *s);
 t_symbol    *dollar_fromHash                            (t_symbol *s);
-t_symbol    *dollar_expandDollarSymbol                  (t_symbol *s, int argc, t_atom *argv);
+t_symbol    *dollar_expandDollarSymbol                  (t_symbol *s, int argc, t_atom *argv, t_glist *glist);
 
-void        dollar_expandDollarNumber                   (t_atom *dollar, t_atom *a, int argc, t_atom *argv);
-int         dollar_isDollarNumber                       (char *s);
-int         dollar_isPointingToDollarAndNumber          (char *s);
-
+void        dollar_expandDollarNumber                   (t_atom *dollar,
+                                                            t_atom *a,
+                                                            int argc,
+                                                            t_atom *argv, 
+                                                            t_glist *glist);
+                                                            
 void        dollar_copyExpandAtoms                      (t_atom *src,
                                                             int m,
                                                             t_atom *dest,
                                                             int n,
                                                             int argc,
                                                             t_atom *argv);
+
+int         dollar_isDollarNumber                       (char *s);
+int         dollar_isPointingToDollarAndNumber          (char *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -396,7 +396,7 @@ t_symbol *canvas_expandDollar (t_glist *glist, t_symbol *s)
     //
     t_environment *environment = canvas_getEnvironment (glist);
     stack_push (cast_pd (glist));
-    t = dollar_expandDollarSymbol (s, environment->ce_argc, environment->ce_argv);
+    t = dollar_expandDollarSymbol (s, environment->ce_argc, environment->ce_argv, NULL);
     stack_pop (cast_pd (glist));
     //
     }
