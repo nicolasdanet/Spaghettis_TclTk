@@ -72,6 +72,7 @@ static int textsequence_performGetEndWait (t_textsequence *x, t_buffer *b)
     
     if (IS_FLOAT (buffer_atomAtIndex (b, x->x_indexOfStart))) {
         int n = x->x_indexOfStart + x->x_leadingToWait;
+        n = (n < 0 ? PD_INT_MAX : n);
         while (i < buffer_size (b) && i < n && IS_FLOAT (buffer_atomAtIndex (b, i))) {
             i++;
         }
@@ -365,13 +366,12 @@ void *textsequence_new (t_symbol *s, int argc, t_atom *argv)
         x->x_argv   = (t_atom *)PD_MEMORY_GET (0);
         x->x_clock  = clock_new (x, (t_method)textsequence_task);
         
+        if (useGlobal)  { x->x_leadingToWait = PD_INT_MAX; }
         if (!useGlobal) { x->x_outletMain = outlet_new (cast_object (x), &s_list); }
         if (hasWait)    { x->x_outletWait = outlet_new (cast_object (x), &s_list); }
         
         x->x_outletEnd = outlet_new (cast_object (x), &s_bang);
         
-        if (useGlobal) { x->x_leadingToWait = 0x40000000; }      /* ASAP. */
-    
         if (TEXTCLIENT_ASPOINTER (&x->x_textclient)) {
             inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
         } else {
