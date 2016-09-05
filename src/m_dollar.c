@@ -158,6 +158,18 @@ void dollar_expandDollarNumber (t_atom *dollar, t_atom *a, int argc, t_atom *arg
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void dollar_copyExpandAtomsByEnvironment (t_atom *src, int m, t_atom *dest, int n, t_glist *glist)
+{
+    t_environment *environment = NULL;
+    
+    if (glist) { environment = canvas_getEnvironment (glist); }
+
+    if (!environment) { dollar_copyExpandAtoms (src, m, dest, n, 0, NULL, glist); }
+    else {
+        dollar_copyExpandAtoms (src, m, dest, n, environment->ce_argc, environment->ce_argv, glist);
+    }
+}
+                                                            
 void dollar_copyExpandAtoms (t_atom *src, int m, t_atom *dest, int n, int argc, t_atom *argv, t_glist *glist)
 {
     int i;

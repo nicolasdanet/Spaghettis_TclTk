@@ -113,13 +113,22 @@ static void textsequence_performOut (t_textsequence *x, t_buffer *b, int argc, t
 
     ATOMS_ALLOCA (t, size);     /* Extra size reserved for possible labelling further below. */
     
-    dollar_copyExpandAtoms (buffer_atomAtIndex (b, x->x_indexOfStart), 
-        numberOfFields,
-        t, 
-        numberOfFields,
-        argc, 
-        argv, 
-        textclient_fetchView (&x->x_textclient));
+    if (argc) {
+        dollar_copyExpandAtoms (buffer_atomAtIndex (b, x->x_indexOfStart), 
+            numberOfFields,
+            t, 
+            numberOfFields,
+            argc, 
+            argv, 
+            textclient_fetchView (&x->x_textclient));
+            
+    } else {
+        dollar_copyExpandAtomsByEnvironment (buffer_atomAtIndex (b, x->x_indexOfStart), 
+            numberOfFields,
+            t, 
+            numberOfFields,
+            textclient_fetchView (&x->x_textclient));
+    }
     
     if (x->x_needToWait) {
     
