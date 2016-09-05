@@ -158,7 +158,7 @@ void dollar_expandDollarNumber (t_atom *dollar, t_atom *a, int argc, t_atom *arg
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void dollar_copyExpandAtoms (t_atom *src, int m, t_atom *dest, int n, int argc, t_atom *argv)
+void dollar_copyExpandAtoms (t_atom *src, int m, t_atom *dest, int n, int argc, t_atom *argv, t_glist *glist)
 {
     int i;
     int size = PD_MIN (m, n);
@@ -169,9 +169,9 @@ void dollar_copyExpandAtoms (t_atom *src, int m, t_atom *dest, int n, int argc, 
         t_atom *b = dest + i;
         
         if (IS_FLOAT (a) || IS_SYMBOL (a)) { *b = *a; }
-        else if (IS_DOLLAR (a))            { dollar_expandDollarNumber (a, b, argc, argv, NULL); }
+        else if (IS_DOLLAR (a))            { dollar_expandDollarNumber (a, b, argc, argv, glist); }
         else if (IS_DOLLARSYMBOL (a))      {
-            t_symbol *s = dollar_expandDollarSymbol (GET_DOLLARSYMBOL (a), argc, argv, NULL);
+            t_symbol *s = dollar_expandDollarSymbol (GET_DOLLARSYMBOL (a), argc, argv, glist);
             if (s) { SET_SYMBOL (b, s); } else { SET_SYMBOL (b, GET_DOLLARSYMBOL (a)); }
         } else { 
             PD_BUG; 

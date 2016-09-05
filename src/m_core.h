@@ -288,7 +288,8 @@ void        dollar_copyExpandAtoms                      (t_atom *src,
                                                             t_atom *dest,
                                                             int n,
                                                             int argc,
-                                                            t_atom *argv);
+                                                            t_atom *argv, 
+                                                            t_glist *glist);
 
 int         dollar_isDollarNumber                       (char *s);
 int         dollar_isPointingToDollarAndNumber          (char *s);

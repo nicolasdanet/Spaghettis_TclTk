@@ -61,6 +61,7 @@ t_error     textclient_init             (t_textclient *x, int *argc, t_atom **ar
 void        textclient_free             (t_textclient *x);
 void        textclient_update           (t_textclient *x);
 
+t_glist     *textclient_fetchView       (t_textclient *x);
 t_buffer    *textclient_fetchBuffer     (t_textclient *x);
 
 // -----------------------------------------------------------------------------------------------------------

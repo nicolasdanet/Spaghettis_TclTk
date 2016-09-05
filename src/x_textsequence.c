@@ -118,7 +118,8 @@ static void textsequence_performOut (t_textsequence *x, t_buffer *b, int argc, t
         t, 
         numberOfFields,
         argc, 
-        argv);
+        argv, 
+        textclient_fetchView (&x->x_textclient));
     
     if (x->x_needToWait) {
     

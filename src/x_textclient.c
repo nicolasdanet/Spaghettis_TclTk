@@ -101,6 +101,36 @@ t_buffer *textclient_fetchBuffer (t_textclient *x)
     return NULL;
 }
 
+t_glist *textclient_fetchView (t_textclient *x)
+{
+    if (x->tc_name) {
+
+        t_textbuffer *y = (t_textbuffer *)pd_findByClass (x->tc_name, textdefine_class);
+
+        if (y) { return textbuffer_getView (y); }
+        else {
+            error_canNotFind (sym_text, x->tc_name);
+        }
+
+    } else if (x->tc_templateIdentifier) {
+
+        if (gpointer_isValidInstanceOf (&x->tc_gpointer, x->tc_templateIdentifier)) {
+            if (gpointer_hasField (&x->tc_gpointer, x->tc_fieldName)) {
+                if (gpointer_fieldIsText (&x->tc_gpointer, x->tc_fieldName)) {
+                    return gpointer_getView (&x->tc_gpointer);
+                    
+        } else { error_invalid (sym_text, x->tc_fieldName); }
+        } else { error_missingField (sym_text, x->tc_fieldName); }
+        } else { error_invalid (sym_text, &s_pointer); }
+    }
+    
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void textclient_update (t_textclient *x)
 {
     if (x->tc_name) {
