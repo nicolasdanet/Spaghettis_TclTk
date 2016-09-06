@@ -12,21 +12,19 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "m_alloca.h"
 #include "g_graphics.h"
 #include "x_control.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/*  the qlist and textfile objects, as of 0.44, are 'derived' from
-* the text object above.  Maybe later it will be desirable to add new
-* functionality to textfile; qlist is an ancient holdover (1987) and
-* is probably best left alone. 
-*/
+static t_class *qlist_class;            /* Shared. */
+static t_class *textfile_class;         /* Shared. */
 
-typedef struct _qlist
-{
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _qlist {
     t_textbuffer x_textbuf;
     t_outlet *x_bangout;
     int x_onset;                /* playback position */
@@ -34,31 +32,13 @@ typedef struct _qlist
     t_float x_tempo;
     double x_whenclockset;
     t_float x_clockdelay;
-    int x_rewound;          /* we've been rewound since last start */
-    int x_innext;           /* we're currently inside the "next" routine */
-} t_qlist;
-#define x_ob x_textbuf.tb_obj
-#define x_binbuf x_textbuf.tb_buffer
-#define x_canvas x_textbuf.tb_owner
+    int x_rewound;              /* we've been rewound since last start */
+    int x_innext;               /* we're currently inside the "next" routine */
+    } t_qlist;
 
-static void qlist_tick(t_qlist *x);
-
-static t_class *qlist_class;
-
-static void *qlist_new( void)
-{
-    t_qlist *x = (t_qlist *)pd_new(qlist_class);
-    textbuffer_init (&x->x_textbuf);
-    x->x_clock = clock_new(x, (t_method)qlist_tick);
-    outlet_new(&x->x_ob, &s_list);
-    x->x_bangout = outlet_new(&x->x_ob, &s_bang);
-    x->x_onset = PD_INT_MAX;
-    x->x_tempo = 1;
-    x->x_whenclockset = 0;
-    x->x_clockdelay = 0;
-    x->x_rewound = x->x_innext = 0;
-    return (x);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void qlist_rewind(t_qlist *x)
 {
@@ -79,9 +59,9 @@ static void qlist_donext(t_qlist *x, int drop, int automatic)
     x->x_innext = 1;
     while (1)
     {
-        int argc = buffer_size(x->x_binbuf),
+        int argc = buffer_size(textbuffer_getBuffer (&x->x_textbuf)),
             count, onset = x->x_onset, onset2, wasrewound;
-        t_atom *argv = buffer_atoms(x->x_binbuf);
+        t_atom *argv = buffer_atoms(textbuffer_getBuffer (&x->x_textbuf));
         t_atom *ap = argv + onset, *ap2;
         if (onset >= argc) goto end;
         while (ap->a_type == A_SEMICOLON || ap->a_type == A_COMMA)
@@ -104,7 +84,7 @@ static void qlist_donext(t_qlist *x, int drop, int automatic)
                     x->x_clockdelay = ap->a_w.w_float * x->x_tempo);
                 x->x_whenclockset = scheduler_getLogicalTime();
             }
-            else outlet_list(x->x_ob.te_outlet, 0, onset2-onset, ap);
+            else outlet_list(cast_object (x)->te_outlet, 0, onset2-onset, ap);
             x->x_innext = 0;
             return;
         }
@@ -186,19 +166,19 @@ static void qlist_add(t_qlist *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_atom a;
     SET_SEMICOLON(&a);
-    buffer_append(x->x_binbuf, argc, argv);
-    buffer_appendAtom(x->x_binbuf, &a);
+    buffer_append(textbuffer_getBuffer (&x->x_textbuf), argc, argv);
+    buffer_appendAtom(textbuffer_getBuffer (&x->x_textbuf), &a);
 }
 
 static void qlist_add2(t_qlist *x, t_symbol *s, int argc, t_atom *argv)
 {
-    buffer_append(x->x_binbuf, argc, argv);
+    buffer_append(textbuffer_getBuffer (&x->x_textbuf), argc, argv);
 }
 
 static void qlist_clear(t_qlist *x)
 {
     qlist_rewind(x);
-    buffer_reset(x->x_binbuf);
+    buffer_reset(textbuffer_getBuffer (&x->x_textbuf));
 }
 
 static void qlist_set(t_qlist *x, t_symbol *s, int argc, t_atom *argv)
@@ -215,7 +195,7 @@ static void qlist_read(t_qlist *x, t_symbol *filename, t_symbol *format)
     else if (*format->s_name)
         post_error ("qlist_read: unknown flag: %s", format->s_name);
 
-    if (buffer_read(x->x_binbuf, filename, x->x_canvas))
+    if (buffer_read(textbuffer_getBuffer (&x->x_textbuf), filename, textbuffer_getView (&x->x_textbuf)))
             post_error ("%s: read failed", filename->s_name);
     x->x_onset = PD_INT_MAX;
     x->x_rewound = 1;
@@ -225,13 +205,13 @@ static void qlist_write(t_qlist *x, t_symbol *filename, t_symbol *format)
 {
     int cr = 0;
     char buf[PD_STRING];
-    canvas_makeFilePath(x->x_canvas, filename->s_name,
+    canvas_makeFilePath(textbuffer_getView (&x->x_textbuf), filename->s_name,
         buf, PD_STRING);
     if (!strcmp(format->s_name, "cr"))
         cr = 1;
     else if (*format->s_name)
         post_error ("qlist_read: unknown flag: %s", format->s_name);
-    if (buffer_write(x->x_binbuf, buf, ""))
+    if (buffer_write(textbuffer_getBuffer (&x->x_textbuf), buf, ""))
             post_error ("%s: write failed", filename->s_name);
 }
 
@@ -258,21 +238,16 @@ static void qlist_free(t_qlist *x)
     clock_free(x->x_clock);
 }
 
-/* -------------------- textfile ------------------------------- */
-
-/* has the same struct as qlist (so we can reuse some of its
-* methods) but "sequencing" here only relies on 'binbuf' and 'onset'
-* fields.
-*/
-
-static t_class *textfile_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void *textfile_new( void)
 {
     t_qlist *x = (t_qlist *)pd_new(textfile_class);
     textbuffer_init (&x->x_textbuf);
-    outlet_new(&x->x_ob, &s_list);
-    x->x_bangout = outlet_new(&x->x_ob, &s_bang);
+    outlet_new(cast_object (x), &s_list);
+    x->x_bangout = outlet_new(cast_object (x), &s_bang);
     x->x_onset = PD_INT_MAX;
     x->x_rewound = 0;
     x->x_tempo = 1;
@@ -284,9 +259,9 @@ static void *textfile_new( void)
 
 static void textfile_bang(t_qlist *x)
 {
-    int argc = buffer_size(x->x_binbuf),
+    int argc = buffer_size(textbuffer_getBuffer (&x->x_textbuf)),
         count, onset = x->x_onset, onset2;
-    t_atom *argv = buffer_atoms(x->x_binbuf);
+    t_atom *argv = buffer_atoms(textbuffer_getBuffer (&x->x_textbuf));
     t_atom *ap = argv + onset, *ap2;
     while (onset < argc &&
         (ap->a_type == A_SEMICOLON || ap->a_type == A_COMMA))
@@ -300,9 +275,9 @@ static void textfile_bang(t_qlist *x)
     {
         x->x_onset = onset2;
         if (ap->a_type == A_SYMBOL)
-            outlet_anything(x->x_ob.te_outlet, ap->a_w.w_symbol,
+            outlet_anything(cast_object (x)->te_outlet, ap->a_w.w_symbol,
                 onset2-onset-1, ap+1);
-        else outlet_list(x->x_ob.te_outlet, 0, onset2-onset, ap);
+        else outlet_list(cast_object (x)->te_outlet, 0, onset2-onset, ap);
     }
     else
     {
@@ -316,7 +291,25 @@ static void textfile_rewind(t_qlist *x)
     x->x_onset = 0;
 }
 
-/* ---------------- global setup function -------------------- */
+
+static void *qlist_new( void)
+{
+    t_qlist *x = (t_qlist *)pd_new(qlist_class);
+    textbuffer_init (&x->x_textbuf);
+    x->x_clock = clock_new(x, (t_method)qlist_tick);
+    outlet_new(cast_object (x), &s_list);
+    x->x_bangout = outlet_new(cast_object (x), &s_bang);
+    x->x_onset = PD_INT_MAX;
+    x->x_tempo = 1;
+    x->x_whenclockset = 0;
+    x->x_clockdelay = 0;
+    x->x_rewound = x->x_innext = 0;
+    return (x);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void x_qlist_setup(void )
 {

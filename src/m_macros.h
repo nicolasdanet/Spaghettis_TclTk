@@ -94,7 +94,6 @@
 #define GET_FLOAT(atom)                     ((atom)->a_w.w_float)
 #define GET_SYMBOL(atom)                    ((atom)->a_w.w_symbol)
 #define GET_DOLLAR(atom)                    ((atom)->a_w.w_index)
-#define GET_DOLLARSYMBOL(atom)              ((atom)->a_w.w_symbol)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -108,6 +107,10 @@
 #define IS_SYMBOL(atom)                     ((atom)->a_type == A_SYMBOL)
 #define IS_DOLLAR(atom)                     ((atom)->a_type == A_DOLLAR)
 #define IS_DOLLARSYMBOL(atom)               ((atom)->a_type == A_DOLLARSYMBOL)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #define IS_SYMBOL_OR_FLOAT(atom)            (IS_SYMBOL(atom) || IS_FLOAT(atom))
 #define IS_SEMICOLON_OR_COMMA(atom)         (IS_SEMICOLON(atom) || IS_COMMA(atom))

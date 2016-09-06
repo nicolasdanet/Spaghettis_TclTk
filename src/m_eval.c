@@ -68,7 +68,7 @@ static t_error buffer_fromFile (t_buffer *x, char *name, char *directory)
 
 static t_symbol *buffer_evalGetObject (t_atom *v, int argc, t_atom *argv)
 {   
-    if (IS_DOLLARSYMBOL (v)) { return dollar_expandDollarSymbol (GET_DOLLARSYMBOL (v), argc, argv, NULL); }
+    if (IS_DOLLARSYMBOL (v)) { return dollar_expandDollarSymbol (GET_SYMBOL (v), argc, argv, NULL); }
     else if (IS_DOLLAR  (v)) {
         t_symbol *s = atom_getSymbolAtIndex (GET_DOLLAR (v) - 1, argc, argv); 
         return (s == &s_ ? NULL : s);
@@ -97,10 +97,10 @@ static int buffer_evalGetMessage (t_atom *v, t_pd *object, t_pd **next, t_atom *
     case A_FLOAT        :   *m = *v; break;
     case A_SYMBOL       :   *m = *v; break;
     case A_DOLLAR       :   dollar_expandDollarNumber (v, m, argc, argv, NULL); break;
-    case A_DOLLARSYMBOL :   s = dollar_expandDollarSymbol (GET_DOLLARSYMBOL (v), argc, argv, NULL);
+    case A_DOLLARSYMBOL :   s = dollar_expandDollarSymbol (GET_SYMBOL (v), argc, argv, NULL);
                             if (s) { SET_SYMBOL (m, s); }
                             else {
-                                SET_SYMBOL (m, GET_DOLLARSYMBOL (v));
+                                SET_SYMBOL (m, GET_SYMBOL (v));
                             }
                             break;
     default             :   end = 1; PD_BUG; 

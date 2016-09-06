@@ -124,11 +124,12 @@ static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     t_pd *z = NULL;
-
-    if ((argc > 3) && IS_SYMBOL (argv + 3)) {
-        t_symbol *name = dollar_expandDollarSymbolByEnvironment (GET_SYMBOL (argv + 3), canvas_getCurrent());
-        canvas_setName (glist, name);
-    }
+    
+    t_symbol *name = &s_;
+    
+    if (argc > 3) { name = dollar_expandGetIfSymbolByEnvironment (argv + 3, canvas_getCurrent()); }
+    
+    canvas_setName (glist, (name == &s_ ? sym_Patch : name));
     
     canvas_pop (glist, glist->gl_openedAtLoad);
 
@@ -458,16 +459,17 @@ void canvas_pop (t_glist *glist, t_float f)
 
 static void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    t_symbol *name = sym_Patch;
+    t_symbol *name = &s_;
     
     if (argc) {
-        if (IS_SYMBOL (argv)) { name = GET_SYMBOL (argv); }
-        else if (IS_DOLLARSYMBOL (argv)) { 
-            name = dollar_expandDollarSymbolByEnvironment (GET_DOLLARSYMBOL (argv), glist);
-        }
+    //
+    name = dollar_expandGetIfSymbolByEnvironment (argv, glist);
+    if (name != &s_) { argc--; argv++; }
+    if (argc) { warning_unusedArguments (class_getName (pd_class (glist)), argc, argv); }
+    //
     }
     
-    canvas_setName (glist, name);
+    canvas_setName (glist, (name == &s_ ? sym_Patch : name));
 }
 
 // -----------------------------------------------------------------------------------------------------------
