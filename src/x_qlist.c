@@ -109,7 +109,7 @@ end:
     x->ql_indexOfStart = PD_INT_MAX;
     x->ql_lastLogicalTime = 0;
     x->ql_checkIfNextIsRecursive = 0;
-    outlet_bang(x->ql_outlet);
+    outlet_bang(x->ql_outletRight);
 }
 
 static void qlist_tick(t_qlist *x)
@@ -227,25 +227,30 @@ void qlist_write(t_qlist *x, t_symbol *filename)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *qlist_new( void)
+static void *qlist_new (void)
 {
-    t_qlist *x = (t_qlist *)pd_new(qlist_class);
+    t_qlist *x = (t_qlist *)pd_new (qlist_class);
+    
     textbuffer_init (&x->ql_textbuffer);
-    x->ql_clock = clock_new(x, (t_method)qlist_tick);
-    outlet_new(cast_object (x), &s_list);
-    x->ql_outlet = outlet_new(cast_object (x), &s_bang);
-    x->ql_indexOfStart = PD_INT_MAX;
-    x->ql_unit = 1;
-    x->ql_lastLogicalTime = 0;
-    x->ql_delay = 0;
-    x->ql_hasBeenRewound = x->ql_checkIfNextIsRecursive = 0;
-    return (x);
+    
+    x->ql_unit                   = 1.0;
+    x->ql_delay                  = 0.0;
+    x->ql_lastLogicalTime        = 0.0;
+    x->ql_indexOfStart           = PD_INT_MAX;
+    x->ql_hasBeenRewound         = 0;
+    x->ql_checkIfNextIsRecursive = 0;
+    x->ql_outletLeft             = outlet_new (cast_object (x), &s_list);
+    x->ql_outletRight            = outlet_new (cast_object (x), &s_bang);
+    x->ql_clock                  = clock_new (x, (t_method)qlist_tick);
+
+    return x;
 }
 
 static void qlist_free(t_qlist *x)
 {
+    clock_free (x->ql_clock);
+    
     textbuffer_free (&x->ql_textbuffer);
-    clock_free(x->ql_clock);
 }
 
 // -----------------------------------------------------------------------------------------------------------

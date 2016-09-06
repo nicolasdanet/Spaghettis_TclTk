@@ -48,7 +48,7 @@ static void textfile_bang(t_qlist *x)
     else
     {
         x->ql_indexOfStart = PD_INT_MAX;
-        outlet_bang(x->ql_outlet);
+        outlet_bang(x->ql_outletRight);
     }
 }
 
@@ -66,7 +66,7 @@ static void *textfile_new( void)
     t_qlist *x = (t_qlist *)pd_new(textfile_class);
     textbuffer_init (&x->ql_textbuffer);
     outlet_new(cast_object (x), &s_list);
-    x->ql_outlet = outlet_new(cast_object (x), &s_bang);
+    x->ql_outletRight = outlet_new(cast_object (x), &s_bang);
     x->ql_indexOfStart = PD_INT_MAX;
     x->ql_hasBeenRewound = 0;
     x->ql_unit = 1;
