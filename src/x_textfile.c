@@ -25,9 +25,9 @@ static t_class *textfile_class;         /* Shared. */
 
 static void textfile_bang(t_qlist *x)
 {
-    int argc = buffer_size(textbuffer_getBuffer (&x->x_textbuf)),
-        count, onset = x->x_onset, onset2;
-    t_atom *argv = buffer_atoms(textbuffer_getBuffer (&x->x_textbuf));
+    int argc = buffer_size(textbuffer_getBuffer (&x->ql_textbuffer)),
+        count, onset = x->ql_indexOfStart, onset2;
+    t_atom *argv = buffer_atoms(textbuffer_getBuffer (&x->ql_textbuffer));
     t_atom *ap = argv + onset, *ap2;
     while (onset < argc &&
         (ap->a_type == A_SEMICOLON || ap->a_type == A_COMMA))
@@ -39,7 +39,7 @@ static void textfile_bang(t_qlist *x)
             onset2++, ap2++;
     if (onset2 > onset)
     {
-        x->x_onset = onset2;
+        x->ql_indexOfStart = onset2;
         if (ap->a_type == A_SYMBOL)
             outlet_anything(cast_object (x)->te_outlet, ap->a_w.w_symbol,
                 onset2-onset-1, ap+1);
@@ -47,14 +47,14 @@ static void textfile_bang(t_qlist *x)
     }
     else
     {
-        x->x_onset = PD_INT_MAX;
-        outlet_bang(x->x_bangout);
+        x->ql_indexOfStart = PD_INT_MAX;
+        outlet_bang(x->ql_outlet);
     }
 }
 
 static void textfile_rewind(t_qlist *x)
 {
-    x->x_onset = 0;
+    x->ql_indexOfStart = 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -64,15 +64,15 @@ static void textfile_rewind(t_qlist *x)
 static void *textfile_new( void)
 {
     t_qlist *x = (t_qlist *)pd_new(textfile_class);
-    textbuffer_init (&x->x_textbuf);
+    textbuffer_init (&x->ql_textbuffer);
     outlet_new(cast_object (x), &s_list);
-    x->x_bangout = outlet_new(cast_object (x), &s_bang);
-    x->x_onset = PD_INT_MAX;
-    x->x_rewound = 0;
-    x->x_tempo = 1;
-    x->x_whenclockset = 0;
-    x->x_clockdelay = 0;
-    x->x_clock = NULL;
+    x->ql_outlet = outlet_new(cast_object (x), &s_bang);
+    x->ql_indexOfStart = PD_INT_MAX;
+    x->ql_hasBeenRewound = 0;
+    x->ql_unit = 1;
+    x->ql_lastLogicalTime = 0;
+    x->ql_delay = 0;
+    x->ql_clock = NULL;
     return (x);
 }
 
@@ -96,9 +96,9 @@ void textfile_setup(void )
     class_addMethod(textfile_class, (t_method)qlist_add, sym_append, /* LEGACY !!! */
         A_GIMME, 0);
     class_addMethod(textfile_class, (t_method)qlist_read, sym_read, 
-        A_SYMBOL, A_DEFSYMBOL, 0);
+        A_SYMBOL, 0);
     class_addMethod(textfile_class, (t_method)qlist_write, sym_write, 
-        A_SYMBOL, A_DEFSYMBOL, 0);
+        A_SYMBOL, 0);
     class_addClick (textfile_class, textbuffer_click);
     //class_addMethod(textfile_class, (t_method)textbuffer_open, sym_click, 0);
     class_addMethod(textfile_class, (t_method)textbuffer_close, sym_close, 
