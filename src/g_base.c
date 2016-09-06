@@ -390,9 +390,10 @@ int canvas_openFile (t_glist *glist,
 
 t_symbol *canvas_expandDollar (t_glist *glist, t_symbol *s)
 {
-    if (strchr (s->s_name, '$')) { s = dollar_expandDollarSymbolByEnvironment (s, glist); }
-
-    return s;
+    if (strchr (s->s_name, '$')) { return dollar_expandDollarSymbolByEnvironment (s, glist); }
+    else {
+        return s;
+    }
 }
 
 t_error canvas_makeFilePath (t_glist *glist, char *name, char *dest, size_t size)

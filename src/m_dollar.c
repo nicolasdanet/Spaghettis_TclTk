@@ -120,9 +120,9 @@ t_symbol *dollar_expandDollarSymbolByEnvironment (t_symbol *s, t_glist *glist)
     
     if (glist) { environment = canvas_getEnvironment (glist); }
 
-    if (!environment) { dollar_expandDollarSymbol (s, 0, NULL, glist); }
+    if (!environment) { return dollar_expandDollarSymbol (s, 0, NULL, glist); }
     else {
-        dollar_expandDollarSymbol (s, environment->ce_argc, environment->ce_argv, glist);
+        return dollar_expandDollarSymbol (s, environment->ce_argc, environment->ce_argv, glist);
     }
 }
 
