@@ -23,14 +23,6 @@ static t_class *qlist_class;            /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void qlist_rewind (t_qlist *x)
-{
-    x->ql_indexOfStart = 0;
-    if (x->ql_clock) clock_unset(x->ql_clock);
-    x->ql_lastLogicalTime = 0;
-    x->ql_hasBeenRewound = 1;
-}
-
 static void qlist_donext(t_qlist *x, int drop, int automatic)
 {
     t_pd *target = 0;
@@ -120,10 +112,15 @@ end:
     outlet_bang(x->ql_outlet);
 }
 
-static void qlist_next(t_qlist *x, t_float drop)
+static void qlist_tick(t_qlist *x)
 {
-    qlist_donext(x, drop != 0, 0);
+    x->ql_lastLogicalTime = 0;
+    qlist_donext(x, 0, 1);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void qlist_bang(t_qlist *x)
 {
@@ -139,10 +136,24 @@ static void qlist_bang(t_qlist *x)
     else qlist_donext(x, 0, 1);
 }
 
-static void qlist_tick(t_qlist *x)
+void qlist_rewind (t_qlist *x)
 {
+    x->ql_indexOfStart = 0;
+    if (x->ql_clock) clock_unset(x->ql_clock);
     x->ql_lastLogicalTime = 0;
-    qlist_donext(x, 0, 1);
+    x->ql_hasBeenRewound = 1;
+}
+
+void qlist_clear(t_qlist *x)
+{
+    qlist_rewind(x);
+    buffer_reset(textbuffer_getBuffer (&x->ql_textbuffer));
+}
+
+void qlist_set(t_qlist *x, t_symbol *s, int argc, t_atom *argv)
+{
+    qlist_clear(x);
+    qlist_add(x, s, argc, argv);
 }
 
 void qlist_add(t_qlist *x, t_symbol *s, int argc, t_atom *argv)
@@ -158,16 +169,26 @@ void qlist_add2(t_qlist *x, t_symbol *s, int argc, t_atom *argv)
     buffer_append(textbuffer_getBuffer (&x->ql_textbuffer), argc, argv);
 }
 
-void qlist_clear(t_qlist *x)
+static void qlist_tempo(t_qlist *x, t_float f)
 {
-    qlist_rewind(x);
-    buffer_reset(textbuffer_getBuffer (&x->ql_textbuffer));
+    t_float newtempo;
+    if (f < 1e-20) f = 1e-20;
+    else if (f > 1e20) f = 1e20;
+    newtempo = 1./f;
+    if (x->ql_lastLogicalTime != 0)
+    {
+        t_float elapsed = scheduler_getMillisecondsSince(x->ql_lastLogicalTime);
+        t_float left = x->ql_delay - elapsed;
+        if (left < 0) left = 0;
+        left *= newtempo / x->ql_unit;
+        clock_delay(x->ql_clock, left);
+    }
+    x->ql_unit = newtempo;
 }
 
-void qlist_set(t_qlist *x, t_symbol *s, int argc, t_atom *argv)
+static void qlist_next(t_qlist *x, t_float drop)
 {
-    qlist_clear(x);
-    qlist_add(x, s, argc, argv);
+    qlist_donext(x, drop != 0, 0);
 }
 
 void qlist_read(t_qlist *x, t_symbol *filename)
@@ -202,24 +223,6 @@ void qlist_write(t_qlist *x, t_symbol *filename)
             post_error ("%s: write failed", filename->s_name);
 }
 
-static void qlist_tempo(t_qlist *x, t_float f)
-{
-    t_float newtempo;
-    if (f < 1e-20) f = 1e-20;
-    else if (f > 1e20) f = 1e20;
-    newtempo = 1./f;
-    if (x->ql_lastLogicalTime != 0)
-    {
-        t_float elapsed = scheduler_getMillisecondsSince(x->ql_lastLogicalTime);
-        t_float left = x->ql_delay - elapsed;
-        if (left < 0) left = 0;
-        left *= newtempo / x->ql_unit;
-        clock_delay(x->ql_clock, left);
-    }
-    x->ql_unit = newtempo;
-}
-
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -249,38 +252,42 @@ static void qlist_free(t_qlist *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void x_qlist_setup(void )
+void qlist_setup (void)
 {
-    qlist_class = class_new(sym_qlist, (t_newmethod)qlist_new,
-        (t_method)qlist_free, sizeof(t_qlist), 0, 0);
-    class_addMethod(qlist_class, (t_method)qlist_rewind, sym_rewind, 0);
-    class_addMethod(qlist_class, (t_method)qlist_next,
-        sym_next, A_DEFFLOAT, 0);  
-    class_addMethod(qlist_class, (t_method)qlist_set, sym_set,
-        A_GIMME, 0);
-    class_addMethod(qlist_class, (t_method)qlist_clear, sym_clear, 0);
-    class_addMethod(qlist_class, (t_method)qlist_add, sym_add,
-        A_GIMME, 0);
-    class_addMethod(qlist_class, (t_method)qlist_add2, sym_add2, /* LEGACY !!! */
-        A_GIMME, 0);
-    class_addMethod(qlist_class, (t_method)qlist_add, sym_append, /* LEGACY !!! */
-        A_GIMME, 0);
-    class_addMethod(qlist_class, (t_method)qlist_read, sym_read,
-        A_SYMBOL, 0);
-    class_addMethod(qlist_class, (t_method)qlist_write, sym_write,
-        A_SYMBOL, 0);
-    class_addClick (qlist_class, textbuffer_click);
-    //class_addMethod(qlist_class, (t_method)textbuffer_open, sym_click, 0);
-    class_addMethod(qlist_class, (t_method)textbuffer_close, sym_close, 0);
-    class_addMethod(qlist_class, (t_method)textbuffer_add, 
-        sym__addline, A_GIMME, 0);
-    /*class_addMethod(qlist_class, (t_method)qlist_print, gen_sym ("print"),
-        A_DEFSYMBOL, 0);*/
-    class_addMethod(qlist_class, (t_method)qlist_tempo,
-        sym_tempo, A_FLOAT, 0); /* LEGACY !!! */
-    class_addMethod(qlist_class, (t_method)qlist_tempo,
-        sym_unit, A_FLOAT, 0);
-    class_addBang(qlist_class, qlist_bang);
+    t_class *c = NULL;
+    
+    c = class_new (sym_qlist,
+            (t_newmethod)qlist_new,
+            (t_method)qlist_free,
+            sizeof (t_qlist),
+            CLASS_DEFAULT,
+            A_NULL);
+    
+    class_addBang (c, qlist_bang);
+    
+    class_addClick (c, textbuffer_click);
+        
+    class_addMethod (c, (t_method)qlist_rewind,         sym_rewind,     A_NULL);
+    class_addMethod (c, (t_method)qlist_clear,          sym_clear,      A_NULL);
+    class_addMethod (c, (t_method)qlist_set,            sym_set,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)qlist_add,            sym_add,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)qlist_add2,           sym_append,     A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)qlist_tempo,          sym_unit,       A_FLOAT, A_NULL); 
+    class_addMethod (c, (t_method)qlist_next,           sym_next,       A_DEFFLOAT, A_NULL); 
+    class_addMethod (c, (t_method)qlist_read,           sym_read,       A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)qlist_write,          sym_write,      A_SYMBOL, A_NULL);
+
+    class_addMethod (c, (t_method)textbuffer_close,     sym_close,      A_NULL);
+    class_addMethod (c, (t_method)textbuffer_add,       sym__addline,   A_GIMME, A_NULL);
+
+    #if PD_WITH_LEGACY
+    
+    class_addMethod (c, (t_method)qlist_add2,           sym_add2,       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)qlist_tempo,          sym_tempo,      A_FLOAT, A_NULL);
+   
+    #endif
+    
+    qlist_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

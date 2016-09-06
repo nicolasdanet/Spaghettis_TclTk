@@ -92,6 +92,7 @@ void        *textsequence_new           (t_symbol *s, int argc, t_atom *argv);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void        qlist_rewind                (t_qlist *x);
 void        qlist_clear                 (t_qlist *x);
 void        qlist_set                   (t_qlist *x, t_symbol *s, int argc, t_atom *argv);
 void        qlist_add                   (t_qlist *x, t_symbol *s, int argc, t_atom *argv);

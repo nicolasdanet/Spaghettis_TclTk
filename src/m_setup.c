@@ -97,7 +97,7 @@ void textsize_setup         (void);
 void textlist_setup         (void);
 void textsearch_setup       (void);
 void textsequence_setup     (void);
-void x_qlist_setup          (void);
+void qlist_setup            (void);
 void textfile_setup         (void);
 void x_gui_setup            (void);
 void x_list_setup           (void);
@@ -176,7 +176,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     textlist_setup();
     textsearch_setup();
     textsequence_setup();
-    x_qlist_setup();
+    qlist_setup();
     textfile_setup();
     x_gui_setup();
     x_list_setup();

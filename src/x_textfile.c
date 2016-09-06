@@ -93,7 +93,7 @@ void textfile_setup(void )
         A_GIMME, 0);
     class_addMethod(textfile_class, (t_method)qlist_add2, sym_add2, /* LEGACY !!! */
         A_GIMME, 0);
-    class_addMethod(textfile_class, (t_method)qlist_add, sym_append, /* LEGACY !!! */
+    class_addMethod(textfile_class, (t_method)qlist_add2, sym_append, /* LEGACY !!! */
         A_GIMME, 0);
     class_addMethod(textfile_class, (t_method)qlist_read, sym_read, 
         A_SYMBOL, 0);
