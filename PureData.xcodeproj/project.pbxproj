@@ -42,6 +42,7 @@
 		3722C5301C4F91EB00D2BF6F /* u_pdreceive.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972031C4F716700263434 /* u_pdreceive.c */; };
 		3722C5311C4F91F500D2BF6F /* u_pdsend.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972041C4F716700263434 /* u_pdsend.c */; };
 		3722C5321C4F91FC00D2BF6F /* u_watchdog.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972051C4F716700263434 /* u_watchdog.c */; };
+		37395E6F1D7F0B3F000430C5 /* x_textfile.c in Sources */ = {isa = PBXBuildFile; fileRef = 37395E6E1D7F0B3F000430C5 /* x_textfile.c */; };
 		373D6CCA1C610AAF00106641 /* m_bind.c in Sources */ = {isa = PBXBuildFile; fileRef = 373D6CC91C610AAF00106641 /* m_bind.c */; };
 		373F78251C7E097A0083D316 /* s_audioAPI.c in Sources */ = {isa = PBXBuildFile; fileRef = 373F78241C7E097A0083D316 /* s_audioAPI.c */; };
 		3744481A1D66000B00E54A0D /* m_math.c in Sources */ = {isa = PBXBuildFile; fileRef = 374448191D66000B00E54A0D /* m_math.c */; };
@@ -265,6 +266,7 @@
 		373690AC1C8485E600A332BD /* pmmac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pmmac.h; path = portmidi/pm_mac/pmmac.h; sourceTree = "<group>"; };
 		373690AD1C8485EF00A332BD /* pmmacosxcm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pmmacosxcm.h; path = portmidi/pm_mac/pmmacosxcm.h; sourceTree = "<group>"; };
 		373690AE1C8485FF00A332BD /* readbinaryplist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = readbinaryplist.h; path = portmidi/pm_mac/readbinaryplist.h; sourceTree = "<group>"; };
+		37395E6E1D7F0B3F000430C5 /* x_textfile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_textfile.c; path = src/x_textfile.c; sourceTree = "<group>"; };
 		373D6CC91C610AAF00106641 /* m_bind.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_bind.c; path = src/m_bind.c; sourceTree = "<group>"; };
 		373F78241C7E097A0083D316 /* s_audioAPI.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_audioAPI.c; path = src/s_audioAPI.c; sourceTree = "<group>"; };
 		374448191D66000B00E54A0D /* m_math.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_math.c; path = src/m_math.c; sourceTree = "<group>"; };
@@ -725,6 +727,7 @@
 				378233751D6C7B8E00C128AD /* x_textsearch.c */,
 				3782333E1D6C782F00C128AD /* x_textsequence.c */,
 				378232E71D6C743D00C128AD /* x_qlist.c */,
+				37395E6E1D7F0B3F000430C5 /* x_textfile.c */,
 				378972081C4F716700263434 /* x_array.c */,
 				3789720C1C4F716800263434 /* x_list.c */,
 				378972121C4F716800263434 /* x_time.c */,
@@ -1224,6 +1227,7 @@
 				3782340D1D6C812200C128AD /* x_textset.c in Sources */,
 				378234271D6C826800C128AD /* x_textget.c in Sources */,
 				37D5E3421D743889004CB497 /* m_error.c in Sources */,
+				37395E6F1D7F0B3F000430C5 /* x_textfile.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

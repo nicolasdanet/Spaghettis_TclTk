@@ -19,28 +19,11 @@
 // -----------------------------------------------------------------------------------------------------------
 
 static t_class *qlist_class;            /* Shared. */
-static t_class *textfile_class;         /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _qlist {
-    t_textbuffer x_textbuf;
-    t_outlet *x_bangout;
-    int x_onset;                /* playback position */
-    t_clock *x_clock;
-    t_float x_tempo;
-    double x_whenclockset;
-    t_float x_clockdelay;
-    int x_rewound;              /* we've been rewound since last start */
-    int x_innext;               /* we're currently inside the "next" routine */
-    } t_qlist;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void qlist_rewind(t_qlist *x)
+static void qlist_rewind (t_qlist *x)
 {
     x->x_onset = 0;
     if (x->x_clock) clock_unset(x->x_clock);
@@ -162,7 +145,7 @@ static void qlist_tick(t_qlist *x)
     qlist_donext(x, 0, 1);
 }
 
-static void qlist_add(t_qlist *x, t_symbol *s, int argc, t_atom *argv)
+void qlist_add(t_qlist *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_atom a;
     SET_SEMICOLON(&a);
@@ -170,24 +153,24 @@ static void qlist_add(t_qlist *x, t_symbol *s, int argc, t_atom *argv)
     buffer_appendAtom(textbuffer_getBuffer (&x->x_textbuf), &a);
 }
 
-static void qlist_add2(t_qlist *x, t_symbol *s, int argc, t_atom *argv)
+void qlist_add2(t_qlist *x, t_symbol *s, int argc, t_atom *argv)
 {
     buffer_append(textbuffer_getBuffer (&x->x_textbuf), argc, argv);
 }
 
-static void qlist_clear(t_qlist *x)
+void qlist_clear(t_qlist *x)
 {
     qlist_rewind(x);
     buffer_reset(textbuffer_getBuffer (&x->x_textbuf));
 }
 
-static void qlist_set(t_qlist *x, t_symbol *s, int argc, t_atom *argv)
+void qlist_set(t_qlist *x, t_symbol *s, int argc, t_atom *argv)
 {
     qlist_clear(x);
     qlist_add(x, s, argc, argv);
 }
 
-static void qlist_read(t_qlist *x, t_symbol *filename, t_symbol *format)
+void qlist_read(t_qlist *x, t_symbol *filename, t_symbol *format)
 {
     int cr = 0;
     if (!strcmp(format->s_name, "cr"))
@@ -201,7 +184,7 @@ static void qlist_read(t_qlist *x, t_symbol *filename, t_symbol *format)
     x->x_rewound = 1;
 }
 
-static void qlist_write(t_qlist *x, t_symbol *filename, t_symbol *format)
+void qlist_write(t_qlist *x, t_symbol *filename, t_symbol *format)
 {
     int cr = 0;
     char buf[PD_STRING];
@@ -232,65 +215,10 @@ static void qlist_tempo(t_qlist *x, t_float f)
     x->x_tempo = newtempo;
 }
 
-static void qlist_free(t_qlist *x)
-{
-    textbuffer_free (&x->x_textbuf);
-    clock_free(x->x_clock);
-}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-static void *textfile_new( void)
-{
-    t_qlist *x = (t_qlist *)pd_new(textfile_class);
-    textbuffer_init (&x->x_textbuf);
-    outlet_new(cast_object (x), &s_list);
-    x->x_bangout = outlet_new(cast_object (x), &s_bang);
-    x->x_onset = PD_INT_MAX;
-    x->x_rewound = 0;
-    x->x_tempo = 1;
-    x->x_whenclockset = 0;
-    x->x_clockdelay = 0;
-    x->x_clock = NULL;
-    return (x);
-}
-
-static void textfile_bang(t_qlist *x)
-{
-    int argc = buffer_size(textbuffer_getBuffer (&x->x_textbuf)),
-        count, onset = x->x_onset, onset2;
-    t_atom *argv = buffer_atoms(textbuffer_getBuffer (&x->x_textbuf));
-    t_atom *ap = argv + onset, *ap2;
-    while (onset < argc &&
-        (ap->a_type == A_SEMICOLON || ap->a_type == A_COMMA))
-            onset++, ap++;
-    onset2 = onset;
-    ap2 = ap;
-    while (onset2 < argc &&
-        (ap2->a_type != A_SEMICOLON && ap2->a_type != A_COMMA))
-            onset2++, ap2++;
-    if (onset2 > onset)
-    {
-        x->x_onset = onset2;
-        if (ap->a_type == A_SYMBOL)
-            outlet_anything(cast_object (x)->te_outlet, ap->a_w.w_symbol,
-                onset2-onset-1, ap+1);
-        else outlet_list(cast_object (x)->te_outlet, 0, onset2-onset, ap);
-    }
-    else
-    {
-        x->x_onset = PD_INT_MAX;
-        outlet_bang(x->x_bangout);
-    }
-}
-
-static void textfile_rewind(t_qlist *x)
-{
-    x->x_onset = 0;
-}
-
 
 static void *qlist_new( void)
 {
@@ -305,6 +233,12 @@ static void *qlist_new( void)
     x->x_clockdelay = 0;
     x->x_rewound = x->x_innext = 0;
     return (x);
+}
+
+static void qlist_free(t_qlist *x)
+{
+    textbuffer_free (&x->x_textbuf);
+    clock_free(x->x_clock);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -343,33 +277,6 @@ void x_qlist_setup(void )
     class_addMethod(qlist_class, (t_method)qlist_tempo,
         sym_unit, A_FLOAT, 0);
     class_addBang(qlist_class, qlist_bang);
-
-    textfile_class = class_new(sym_textfile, (t_newmethod)textfile_new,
-        (t_method)textbuffer_free, sizeof(t_qlist), 0, 0);
-    class_addMethod(textfile_class, (t_method)textfile_rewind, sym_rewind,
-        0);
-    class_addMethod(textfile_class, (t_method)qlist_set, sym_set,
-        A_GIMME, 0);
-    class_addMethod(textfile_class, (t_method)qlist_clear, sym_clear, 0);
-    class_addMethod(textfile_class, (t_method)qlist_add, sym_add,
-        A_GIMME, 0);
-    class_addMethod(textfile_class, (t_method)qlist_add2, sym_add2, /* LEGACY !!! */
-        A_GIMME, 0);
-    class_addMethod(textfile_class, (t_method)qlist_add, sym_append, /* LEGACY !!! */
-        A_GIMME, 0);
-    class_addMethod(textfile_class, (t_method)qlist_read, sym_read, 
-        A_SYMBOL, A_DEFSYMBOL, 0);
-    class_addMethod(textfile_class, (t_method)qlist_write, sym_write, 
-        A_SYMBOL, A_DEFSYMBOL, 0);
-    class_addClick (textfile_class, textbuffer_click);
-    //class_addMethod(textfile_class, (t_method)textbuffer_open, sym_click, 0);
-    class_addMethod(textfile_class, (t_method)textbuffer_close, sym_close, 
-        0);
-    class_addMethod(textfile_class, (t_method)textbuffer_add, 
-        sym__addline, A_GIMME, 0);
-    /*class_addMethod(textfile_class, (t_method)qlist_print, gen_sym ("print"),
-        A_DEFSYMBOL, 0);*/
-    class_addBang(textfile_class, textfile_bang);
 }
 
 // -----------------------------------------------------------------------------------------------------------
