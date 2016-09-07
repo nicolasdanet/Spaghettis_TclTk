@@ -26,12 +26,12 @@ static t_class *qlist_class;            /* Shared. */
 static void qlist_donext(t_qlist *x, int drop, int automatic)
 {
     t_pd *target = 0;
-    if (x->ql_checkIfNextIsRecursive)
+    if (x->ql_isReentrant)
     {
         post_error ("qlist sent 'next' from within itself");
         return;
     }
-    x->ql_checkIfNextIsRecursive = 1;
+    x->ql_isReentrant = 1;
     while (1)
     {
         int argc = buffer_size(textbuffer_getBuffer (&x->ql_textbuffer)),
@@ -60,7 +60,7 @@ static void qlist_donext(t_qlist *x, int drop, int automatic)
                 x->ql_lastLogicalTime = scheduler_getLogicalTime();
             }
             else outlet_list(cast_object (x)->te_outlet, 0, onset2-onset, ap);
-            x->ql_checkIfNextIsRecursive = 0;
+            x->ql_isReentrant = 0;
             return;
         }
         ap2 = ap + 1;
@@ -99,7 +99,7 @@ static void qlist_donext(t_qlist *x, int drop, int automatic)
         }
         if (x->ql_hasBeenRewound)
         {
-            x->ql_checkIfNextIsRecursive = 0;
+            x->ql_isReentrant = 0;
             return;
         }
         x->ql_hasBeenRewound = wasrewound;
@@ -108,7 +108,7 @@ static void qlist_donext(t_qlist *x, int drop, int automatic)
 end:
     x->ql_indexOfStart = PD_INT_MAX;
     x->ql_lastLogicalTime = 0;
-    x->ql_checkIfNextIsRecursive = 0;
+    x->ql_isReentrant = 0;
     outlet_bang(x->ql_outletRight);
 }
 
@@ -122,18 +122,16 @@ static void qlist_tick(t_qlist *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void qlist_bang(t_qlist *x)
+static void qlist_bang (t_qlist *x)
 {
-    qlist_rewind(x);
-        /* if we're restarted reentrantly from a "next" message set ourselves
-        up to do this non-reentrantly after a delay of 0 */
-    if (x->ql_checkIfNextIsRecursive)
-    {
+    qlist_rewind (x);
+
+    if (!x->ql_isReentrant) { qlist_donext (x, 0, 1); }
+    else {
         x->ql_lastLogicalTime = scheduler_getLogicalTime();
-        x->ql_delay = 0;
-        clock_delay(x->ql_clock, 0);
+        x->ql_delay           = 0.0;
+        clock_delay (x->ql_clock, x->ql_delay);
     }
-    else qlist_donext(x, 0, 1);
 }
 
 void qlist_rewind (t_qlist *x)
@@ -233,15 +231,15 @@ static void *qlist_new (void)
     
     textbuffer_init (&x->ql_textbuffer);
     
-    x->ql_unit                   = 1.0;
-    x->ql_delay                  = 0.0;
-    x->ql_lastLogicalTime        = 0.0;
-    x->ql_indexOfStart           = PD_INT_MAX;
-    x->ql_hasBeenRewound         = 0;
-    x->ql_checkIfNextIsRecursive = 0;
-    x->ql_outletLeft             = outlet_new (cast_object (x), &s_list);
-    x->ql_outletRight            = outlet_new (cast_object (x), &s_bang);
-    x->ql_clock                  = clock_new (x, (t_method)qlist_tick);
+    x->ql_unit              = 1.0;
+    x->ql_delay             = 0.0;
+    x->ql_lastLogicalTime   = 0.0;
+    x->ql_indexOfStart      = PD_INT_MAX;
+    x->ql_hasBeenRewound    = 0;
+    x->ql_isReentrant       = 0;
+    x->ql_outletLeft        = outlet_new (cast_object (x), &s_list);
+    x->ql_outletRight       = outlet_new (cast_object (x), &s_bang);
+    x->ql_clock             = clock_new (x, (t_method)qlist_tick);
 
     return x;
 }

@@ -38,7 +38,7 @@ typedef struct _qlist {
     double          ql_lastLogicalTime;
     int             ql_indexOfStart;
     int             ql_hasBeenRewound;
-    int             ql_checkIfNextIsRecursive;
+    int             ql_isReentrant;
     t_outlet        *ql_outletLeft;
     t_outlet        *ql_outletRight;
     t_clock         *ql_clock;
