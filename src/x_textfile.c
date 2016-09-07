@@ -88,9 +88,9 @@ void textfile_setup(void )
     class_addMethod(textfile_class, (t_method)qlist_clear, sym_clear, 0);
     class_addMethod(textfile_class, (t_method)qlist_add, sym_add,
         A_GIMME, 0);
-    class_addMethod(textfile_class, (t_method)qlist_add2, sym_add2, /* LEGACY !!! */
+    class_addMethod(textfile_class, (t_method)qlist_append, sym_add2, /* LEGACY !!! */
         A_GIMME, 0);
-    class_addMethod(textfile_class, (t_method)qlist_add2, sym_append, /* LEGACY !!! */
+    class_addMethod(textfile_class, (t_method)qlist_append, sym_append, /* LEGACY !!! */
         A_GIMME, 0);
     class_addMethod(textfile_class, (t_method)qlist_read, sym_read, 
         A_SYMBOL, 0);

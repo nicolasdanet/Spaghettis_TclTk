@@ -130,58 +130,48 @@ static void qlist_bang (t_qlist *x)
 
 void qlist_rewind (t_qlist *x)
 {
-    x->ql_indexOfStart = 0;
-    if (x->ql_clock) clock_unset(x->ql_clock);
+    if (x->ql_clock) { clock_unset (x->ql_clock); }
+    
+    x->ql_indexOfStart   = 0;
     x->ql_hasBeenRewound = 1;
 }
 
-void qlist_clear(t_qlist *x)
+void qlist_clear (t_qlist *x)
 {
-    qlist_rewind(x);
-    buffer_reset(textbuffer_getBuffer (&x->ql_textbuffer));
+    qlist_rewind (x);
+    buffer_reset (textbuffer_getBuffer (&x->ql_textbuffer));
+    textbuffer_update (&x->ql_textbuffer);
 }
 
-void qlist_set(t_qlist *x, t_symbol *s, int argc, t_atom *argv)
+void qlist_set (t_qlist *x, t_symbol *s, int argc, t_atom *argv)
 {
-    qlist_clear(x);
-    qlist_add(x, s, argc, argv);
+    qlist_clear (x);
+    qlist_add (x, s, argc, argv);
 }
 
-void qlist_add(t_qlist *x, t_symbol *s, int argc, t_atom *argv)
+void qlist_add (t_qlist *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_atom a;
-    SET_SEMICOLON(&a);
-    buffer_append(textbuffer_getBuffer (&x->ql_textbuffer), argc, argv);
-    buffer_appendAtom(textbuffer_getBuffer (&x->ql_textbuffer), &a);
+    SET_SEMICOLON (&a);
+    buffer_append (textbuffer_getBuffer (&x->ql_textbuffer), argc, argv);
+    buffer_appendAtom (textbuffer_getBuffer (&x->ql_textbuffer), &a);
+    textbuffer_update (&x->ql_textbuffer);
 }
 
-void qlist_add2(t_qlist *x, t_symbol *s, int argc, t_atom *argv)
+void qlist_append (t_qlist *x, t_symbol *s, int argc, t_atom *argv)
 {
-    buffer_append(textbuffer_getBuffer (&x->ql_textbuffer), argc, argv);
+    buffer_append (textbuffer_getBuffer (&x->ql_textbuffer), argc, argv);
+    textbuffer_update (&x->ql_textbuffer);
 }
 
-static void qlist_tempo(t_qlist *x, t_float f)
+static void qlist_unit (t_qlist *x, t_float f, t_symbol *unitName)
 {
-    /*
-    t_float newtempo;
-    if (f < 1e-20) f = 1e-20;
-    else if (f > 1e20) f = 1e20;
-    newtempo = 1./f;
-    if (x->ql_lastLogicalTime != 0)
-    {
-        t_float elapsed = scheduler_getMillisecondsSince(x->ql_lastLogicalTime);
-        t_float left = x->ql_delay - elapsed;
-        if (left < 0) left = 0;
-        left *= newtempo / x->ql_unit;
-        clock_delay(x->ql_clock, left);
-    }
-    x->ql_unit = newtempo;
-    */
+
 }
 
-static void qlist_next(t_qlist *x, t_float drop)
+static void qlist_next (t_qlist *x, t_float f)
 {
-    qlist_donext(x, drop != 0, 0);
+    qlist_donext (x, (f != 0.0), 0);
 }
 
 void qlist_read(t_qlist *x, t_symbol *filename)
@@ -266,8 +256,8 @@ void qlist_setup (void)
     class_addMethod (c, (t_method)qlist_clear,          sym_clear,      A_NULL);
     class_addMethod (c, (t_method)qlist_set,            sym_set,        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)qlist_add,            sym_add,        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)qlist_add2,           sym_append,     A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)qlist_tempo,          sym_unit,       A_FLOAT, A_NULL); 
+    class_addMethod (c, (t_method)qlist_append,         sym_append,     A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)qlist_unit,           sym_unit,       A_FLOAT, A_DEFSYMBOL, A_NULL); 
     class_addMethod (c, (t_method)qlist_next,           sym_next,       A_DEFFLOAT, A_NULL); 
     class_addMethod (c, (t_method)qlist_read,           sym_read,       A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)qlist_write,          sym_write,      A_SYMBOL, A_NULL);
@@ -277,8 +267,8 @@ void qlist_setup (void)
 
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)qlist_add2,           sym_add2,       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)qlist_tempo,          sym_tempo,      A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)qlist_append,         sym_add2,       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)qlist_unit,           sym_tempo,      A_FLOAT, A_DEFSYMBOL, A_NULL);
    
     #endif
     

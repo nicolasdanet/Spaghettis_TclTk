@@ -94,7 +94,7 @@ void        qlist_rewind                (t_qlist *x);
 void        qlist_clear                 (t_qlist *x);
 void        qlist_set                   (t_qlist *x, t_symbol *s, int argc, t_atom *argv);
 void        qlist_add                   (t_qlist *x, t_symbol *s, int argc, t_atom *argv);
-void        qlist_add2                  (t_qlist *x, t_symbol *s, int argc, t_atom *argv);
+void        qlist_append                (t_qlist *x, t_symbol *s, int argc, t_atom *argv);
 void        qlist_read                  (t_qlist *x, t_symbol *name);
 void        qlist_write                 (t_qlist *x, t_symbol *name);
 
