@@ -174,20 +174,15 @@ static void qlist_next (t_qlist *x, t_float f)
     qlist_donext (x, (f != 0.0), 0);
 }
 
-void qlist_read(t_qlist *x, t_symbol *filename)
+void qlist_read (t_qlist *x, t_symbol *s)
 {
-    /*
-    int cr = 0;
-    if (!strcmp(format->s_name, "cr"))
-        cr = 1;
-    else if (*format->s_name)
-        post_error ("qlist_read: unknown flag: %s", format->s_name);
-    */
+    qlist_clear (x);
     
-    if (buffer_read(textbuffer_getBuffer (&x->ql_textbuffer), filename, textbuffer_getView (&x->ql_textbuffer)))
-            post_error ("%s: read failed", filename->s_name);
-    x->ql_indexOfStart = PD_INT_MAX;
-    x->ql_hasBeenRewound = 1;
+    if (buffer_read (textbuffer_getBuffer (&x->ql_textbuffer), s, textbuffer_getView (&x->ql_textbuffer))) {
+        error_failsToRead (s);
+    } else {
+        textbuffer_update (&x->ql_textbuffer);
+    }
 }
 
 void qlist_write(t_qlist *x, t_symbol *filename)
