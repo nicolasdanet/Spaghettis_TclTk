@@ -54,7 +54,7 @@ static int          midi_inTail;                                            /* S
 static t_midiparser midi_parser[MAXIMUM_MIDI_IN];                           /* Shared. */
     
 static double       midi_realTimeAtStart;                                   /* Shared. */
-static double       midi_logicalTimeAtStart;                                /* Shared. */
+static t_systime    midi_logicalTimeAtStart;                                /* Shared. */
 static double       midi_dacOffset;                                         /* Shared. */
 static double       midi_adcOffset;                                         /* Shared. */
 static double       midi_dacNewOffset = MIDI_UNDEFINED_OFFSET;              /* Shared. */

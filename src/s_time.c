@@ -121,7 +121,7 @@ void clock_unset (t_clock *x)
     }
 }
 
-static void clock_set (t_clock *x, double time)
+static void clock_set (t_clock *x, t_systime time)
 {
     if (time < pd_this->pd_systime) { time = pd_this->pd_systime; }
     
@@ -147,7 +147,8 @@ static void clock_set (t_clock *x, double time)
 
 void clock_delay (t_clock *x, double delay)     /* Could be in milliseconds or in samples. */
 {
-    double d, time;
+    double d;
+    t_systime time;
     
     if (x->c_unit > 0) { d = x->c_unit; }
     else {

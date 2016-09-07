@@ -202,7 +202,7 @@ typedef struct _line
 
 static void line_tick(t_line *x)
 {
-    double timenow = scheduler_getLogicalTime();
+    t_systime timenow = scheduler_getLogicalTime();
     double msectogo = - scheduler_getMillisecondsSince(x->x_targettime);
     if (msectogo < 1E-9)
     {
@@ -222,7 +222,7 @@ static void line_tick(t_line *x)
 
 static void line_float(t_line *x, t_float f)
 {
-    double timenow = scheduler_getLogicalTime();
+    t_systime timenow = scheduler_getLogicalTime();
     if (x->x_gotinlet && x->x_in1val > 0)
     {
         if (timenow > x->x_targettime) x->x_setval = x->x_targetval;

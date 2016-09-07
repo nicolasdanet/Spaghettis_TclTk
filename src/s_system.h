@@ -81,7 +81,7 @@ typedef void (*t_clockfn)       (void *owner);
 #pragma mark -
 
 struct _clock {
-    double              c_systime;      /* Negative for unset clocks. */
+    t_systime           c_systime;      /* Negative for unset clocks. */
     double              c_unit;         /* A positive value is in ticks, negative for number of samples. */
     t_clockfn           c_fn;
     void                *c_owner;
@@ -126,10 +126,10 @@ int         main_entry                              (int argc, char **argv);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-double      scheduler_getLogicalTime                (void);
-double      scheduler_getLogicalTimeAfter           (double ms);
-double      scheduler_getMillisecondsSince          (double systime);
-double      scheduler_getUnitsSince                 (double systime, double unit, int isSamples);
+t_systime   scheduler_getLogicalTime                (void);
+t_systime   scheduler_getLogicalTimeAfter           (double ms);
+double      scheduler_getMillisecondsSince          (t_systime systime);
+double      scheduler_getUnitsSince                 (t_systime systime, double unit, int isSamples);
 void        scheduler_setAudioMode                  (int flag);
 void        scheduler_needToExit                    (void);
 void        scheduler_needToExitWithError           (void);

@@ -398,6 +398,7 @@ typedef float                   t_sample;
 typedef int                     t_error;
 typedef int                     t_color;
 typedef int                     t_fontsize;
+typedef double                  t_systime;
 typedef unsigned long           t_unique;
 
 // -----------------------------------------------------------------------------------------------------------

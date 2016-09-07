@@ -406,7 +406,7 @@ int audio_pollDSPNative (void)
     //
     int i;
     t_sample *p = NULL;
-    int now = sys_getRealTimeInSeconds();
+    double now = sys_getRealTimeInSeconds();
     size_t size = INTERNAL_BLOCKSIZE * sizeof (t_sample);
     
     pthread_mutex_lock (&jack_mutex);

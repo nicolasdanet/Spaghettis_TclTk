@@ -61,19 +61,20 @@ static int      scheduler_nextPing;                     /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-double scheduler_getLogicalTime (void)
+t_systime scheduler_getLogicalTime (void)
 {
     return pd_this->pd_systime;
 }
 
-double scheduler_getLogicalTimeAfter (double ms)
+t_systime scheduler_getLogicalTimeAfter (double ms)
 {
     return (pd_this->pd_systime + (SYSTIME_PER_MILLISECOND * ms));
 }
 
-double scheduler_getUnitsSince (double systime, double unit, int isSamples)
+double scheduler_getUnitsSince (t_systime systime, double unit, int isSamples)
 {
-    double d, elapsed = pd_this->pd_systime - systime;
+    double d;
+    t_systime elapsed = pd_this->pd_systime - systime;
     
     PD_ASSERT (elapsed >= 0.0);
     
@@ -85,9 +86,9 @@ double scheduler_getUnitsSince (double systime, double unit, int isSamples)
     return (elapsed / (d * unit));
 }
 
-double scheduler_getMillisecondsSince (double systime)
+double scheduler_getMillisecondsSince (t_systime systime)
 {
-    double elapsed = pd_this->pd_systime - systime;
+    t_systime elapsed = pd_this->pd_systime - systime;
     
     PD_ASSERT (elapsed >= 0.0);
     
@@ -121,7 +122,7 @@ void scheduler_needToExitWithError (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static double scheduler_getSystimePerDSPTick (void)
+static t_systime scheduler_getSystimePerDSPTick (void)
 {
     return (SYSTIME_PER_SECOND * ((double)INTERNAL_BLOCKSIZE / audio_getSampleRate()));
 }
@@ -159,7 +160,7 @@ static void scheduler_pollStuck (int init)
 
 static void scheduler_tick (void)
 {
-    double nextSystime = pd_this->pd_systime + scheduler_getSystimePerDSPTick();
+    t_systime nextSystime = pd_this->pd_systime + scheduler_getSystimePerDSPTick();
     
     while (pd_this->pd_clocks && pd_this->pd_clocks->c_systime < nextSystime) {
     //
@@ -192,8 +193,8 @@ static void scheduler_mainLoop (void)
 {
     int idleCount = 0;
     
-    double realTimeAtStart    = sys_getRealTimeInSeconds();
-    double logicalTimeAtStart = scheduler_getLogicalTime();
+    double realTimeAtStart = sys_getRealTimeInSeconds();
+    t_systime logicalTimeAtStart = scheduler_getLogicalTime();
     
     midi_start();
     

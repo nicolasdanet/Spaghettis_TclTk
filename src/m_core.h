@@ -133,7 +133,7 @@ struct _class {
 // -----------------------------------------------------------------------------------------------------------
 
 struct _pdinstance {
-    double                  pd_systime;
+    t_systime               pd_systime;
     int                     pd_dspState;
     int                     pd_dspChainSize;
     t_int                   *pd_dspChain;
