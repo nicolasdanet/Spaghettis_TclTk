@@ -147,8 +147,8 @@ void textbuffer_write (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
     //
     char t[PD_STRING] = { 0 };
     t_symbol *name = GET_SYMBOL (argv);
-    canvas_makeFilePath (x->tb_owner, name->s_name, t, PD_STRING);
-    if (buffer_write (x->tb_buffer, t, "")) { error_failsToWrite (name); }
+    t_error err = canvas_makeFilePath (x->tb_owner, name->s_name, t, PD_STRING);
+    if (err || buffer_write (x->tb_buffer, t, "")) { error_failsToWrite (name); }
     //
     }
 }

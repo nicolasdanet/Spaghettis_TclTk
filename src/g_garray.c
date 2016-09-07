@@ -493,9 +493,9 @@ static void garray_write (t_garray *x, t_symbol *name)
     char t[PD_STRING] = { 0 };
     FILE *file = NULL;
         
-    canvas_makeFilePath (canvas_getView (x->x_owner), name->s_name, t, PD_STRING);
+    t_error err = canvas_makeFilePath (canvas_getView (x->x_owner), name->s_name, t, PD_STRING);
     
-    if (!(file = file_openWrite (t))) { error_canNotCreate (name); }
+    if (err || !(file = file_openWrite (t))) { error_canNotCreate (name); }
     else {
     //
     int i;
