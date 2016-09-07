@@ -209,7 +209,7 @@ void textdefine_setup (void)
     class_addClick (c, textbuffer_click);
             
     class_addMethod (c, (t_method)textbuffer_close,     sym_close,      A_NULL);
-    class_addMethod (c, (t_method)textbuffer_add,       sym__addline,   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)textbuffer_addLine,   sym__addline,   A_GIMME, A_NULL);
     class_addMethod (c, (t_method)textbuffer_write,     sym_write,      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)textbuffer_read,      sym_read,       A_GIMME, A_NULL);
     

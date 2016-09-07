@@ -121,15 +121,6 @@ void textbuffer_update (t_textbuffer *x)
     }
 }
 
-void textbuffer_add (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
-{
-    t_buffer *t = buffer_new();
-    buffer_deserialize (t, argc, argv);
-    buffer_appendBuffer (x->tb_buffer, t);
-    buffer_free (t);
-    textbuffer_update (x);
-}
-
 void textbuffer_read (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc && IS_SYMBOL (argv)) {
@@ -151,6 +142,21 @@ void textbuffer_write (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
     if (err || buffer_write (x->tb_buffer, t, "")) { error_failsToWrite (name); }
     //
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* Used by the GUI to set contents of the buffer. */
+
+void textbuffer_addLine (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_buffer *t = buffer_new();
+    buffer_deserialize (t, argc, argv);
+    buffer_appendBuffer (x->tb_buffer, t);
+    buffer_free (t);
+    textbuffer_update (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------

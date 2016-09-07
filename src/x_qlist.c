@@ -18,100 +18,116 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *qlist_class;            /* Shared. */
+static t_class *qlist_class;        /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void qlist_donext(t_qlist *x, int drop, int automatic)
+static void qlist_perform (t_qlist *x, int doNotSend, int isAutomatic)
 {
-    t_pd *target = 0;
-    if (x->ql_isReentrant)
-    {
-        post_error ("qlist sent 'next' from within itself");
-        return;
-    }
+    if (x->ql_isReentrant) { error_unexpected (sym_qlist, sym_next); }
+    else {
+    //
+    t_buffer *b = textbuffer_getBuffer (&x->ql_textbuffer);
+    t_pd *target = NULL;
+    t_error err = PD_ERROR_NONE;
+    
     x->ql_isReentrant = 1;
-    while (1)
+    
+    while (!err) {
+    //
+    int onset = x->ql_indexOfStart;
+    
+    err = (onset >= buffer_size (b));
+    
+    if (!err) {
+    //
+    int argc = buffer_size (textbuffer_getBuffer (&x->ql_textbuffer));
+    int count;
+    int onset2;
+    int wasrewound;
+    t_atom *argv = buffer_atoms (textbuffer_getBuffer (&x->ql_textbuffer));
+    t_atom *ap = argv + onset;
+    t_atom *ap2;
+    
+    while (ap->a_type == A_SEMICOLON || ap->a_type == A_COMMA)
     {
-        int argc = buffer_size(textbuffer_getBuffer (&x->ql_textbuffer)),
-            count, onset = x->ql_indexOfStart, onset2, wasrewound;
-        t_atom *argv = buffer_atoms(textbuffer_getBuffer (&x->ql_textbuffer));
-        t_atom *ap = argv + onset, *ap2;
+        if (ap->a_type == A_SEMICOLON) target = 0;
+        onset++, ap++;
         if (onset >= argc) goto end;
-        while (ap->a_type == A_SEMICOLON || ap->a_type == A_COMMA)
-        {
-            if (ap->a_type == A_SEMICOLON) target = 0;
-            onset++, ap++;
-            if (onset >= argc) goto end;
-        }
+    }
 
-        if (!target && ap->a_type == A_FLOAT)
-        {
-            ap2 = ap + 1;
-            onset2 = onset + 1;
-            while (onset2 < argc && ap2->a_type == A_FLOAT)
-                onset2++, ap2++;
-            x->ql_indexOfStart = onset2;
-            if (automatic)
-            {
-                clock_delay(x->ql_clock, ap->a_w.w_float);
-            }
-            else outlet_list(cast_object (x)->te_outlet, 0, onset2-onset, ap);
-            x->ql_isReentrant = 0;
-            return;
-        }
+    if (!target && ap->a_type == A_FLOAT)
+    {
         ap2 = ap + 1;
         onset2 = onset + 1;
-        while (onset2 < argc &&
-            (ap2->a_type == A_FLOAT || ap2->a_type == A_SYMBOL))
-                onset2++, ap2++;
+        while (onset2 < argc && ap2->a_type == A_FLOAT)
+            onset2++, ap2++;
         x->ql_indexOfStart = onset2;
-        count = onset2 - onset;
-        if (!target)
+        if (isAutomatic)
         {
-            if (ap->a_type != A_SYMBOL) continue;
-            else if (!(target = ap->a_w.w_symbol->s_thing))
-            {
-                post_error ("qlist: %s: no such object",
-                    ap->a_w.w_symbol->s_name);
-                continue;
-            }
-            ap++;
-            onset++;
-            count--;
-            if (!count) 
-            {
-                x->ql_indexOfStart = onset2;
-                continue;
-            }
+            clock_delay(x->ql_clock, ap->a_w.w_float);
         }
-        wasrewound = x->ql_hasBeenRewound;
-        x->ql_hasBeenRewound = 0;
-        if (!drop)
-        {   
-            if (ap->a_type == A_FLOAT)
-                pd_message(target, &s_list, count, ap);
-            else if (ap->a_type == A_SYMBOL)
-                pd_message(target, ap->a_w.w_symbol, count-1, ap+1);
-        }
-        if (x->ql_hasBeenRewound)
+        else outlet_list(cast_object (x)->te_outlet, 0, onset2-onset, ap);
+        x->ql_isReentrant = 0;
+        return;
+    }
+    ap2 = ap + 1;
+    onset2 = onset + 1;
+    while (onset2 < argc &&
+        (ap2->a_type == A_FLOAT || ap2->a_type == A_SYMBOL))
+            onset2++, ap2++;
+    x->ql_indexOfStart = onset2;
+    count = onset2 - onset;
+    if (!target)
+    {
+        if (ap->a_type != A_SYMBOL) continue;
+        else if (!(target = ap->a_w.w_symbol->s_thing))
         {
-            x->ql_isReentrant = 0;
-            return;
+            post_error ("qlist: %s: no such object",
+                ap->a_w.w_symbol->s_name);
+            continue;
         }
-        x->ql_hasBeenRewound = wasrewound;
-    }  /* while (1); never falls through */
+        ap++;
+        onset++;
+        count--;
+        if (!count) 
+        {
+            x->ql_indexOfStart = onset2;
+            continue;
+        }
+    }
+    wasrewound = x->ql_hasBeenRewound;
+    x->ql_hasBeenRewound = 0;
+    if (!doNotSend)
+    {   
+        if (ap->a_type == A_FLOAT)
+            pd_message(target, &s_list, count, ap);
+        else if (ap->a_type == A_SYMBOL)
+            pd_message(target, ap->a_w.w_symbol, count-1, ap+1);
+    }
+    if (x->ql_hasBeenRewound)
+    {
+        x->ql_isReentrant = 0;
+        return;
+    }
+    x->ql_hasBeenRewound = wasrewound;
+    //
+    }
+    //
+    }
 
 end:
     x->ql_indexOfStart = PD_INT_MAX;
-    x->ql_isReentrant = 0;
-    outlet_bang(x->ql_outletRight);
+    x->ql_isReentrant  = 0;
+    outlet_bang (x->ql_outletRight);
+    //
+    }
 }
 
-static void qlist_tick (t_qlist *x)
+static void qlist_task (t_qlist *x)
 {
-    qlist_donext (x, 0, 1);
+    qlist_perform (x, 0, 1);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -122,7 +138,7 @@ static void qlist_bang (t_qlist *x)
 {
     qlist_rewind (x);
 
-    if (!x->ql_isReentrant) { qlist_donext (x, 0, 1); }
+    if (!x->ql_isReentrant) { qlist_perform (x, 0, 1); }
     else {
         clock_delay (x->ql_clock, 0.0);
     }
@@ -171,7 +187,7 @@ static void qlist_unit (t_qlist *x, t_float f, t_symbol *unitName)
 
 static void qlist_next (t_qlist *x, t_float f)
 {
-    qlist_donext (x, (f != 0.0), 0);
+    qlist_perform (x, (f != 0.0), 0);
 }
 
 void qlist_read (t_qlist *x, t_symbol *s)
@@ -205,7 +221,7 @@ static void *qlist_new (void)
     x->ql_isReentrant       = 0;
     x->ql_outletLeft        = outlet_new (cast_object (x), &s_list);
     x->ql_outletRight       = outlet_new (cast_object (x), &s_bang);
-    x->ql_clock             = clock_new (x, (t_method)qlist_tick);
+    x->ql_clock             = clock_new (x, (t_method)qlist_task);
 
     return x;
 }
@@ -213,7 +229,6 @@ static void *qlist_new (void)
 static void qlist_free(t_qlist *x)
 {
     clock_free (x->ql_clock);
-    
     textbuffer_free (&x->ql_textbuffer);
 }
 
@@ -247,7 +262,7 @@ void qlist_setup (void)
     class_addMethod (c, (t_method)qlist_write,          sym_write,      A_SYMBOL, A_NULL);
 
     class_addMethod (c, (t_method)textbuffer_close,     sym_close,      A_NULL);
-    class_addMethod (c, (t_method)textbuffer_add,       sym__addline,   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)textbuffer_addLine,   sym__addline,   A_GIMME, A_NULL);
 
     #if PD_WITH_LEGACY
     
