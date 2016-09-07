@@ -55,9 +55,7 @@ static void qlist_donext(t_qlist *x, int drop, int automatic)
             x->ql_indexOfStart = onset2;
             if (automatic)
             {
-                clock_delay(x->ql_clock,
-                    x->ql_delay = ap->a_w.w_float * x->ql_unit);
-                x->ql_lastLogicalTime = scheduler_getLogicalTime();
+                clock_delay(x->ql_clock, ap->a_w.w_float);
             }
             else outlet_list(cast_object (x)->te_outlet, 0, onset2-onset, ap);
             x->ql_isReentrant = 0;
@@ -107,14 +105,12 @@ static void qlist_donext(t_qlist *x, int drop, int automatic)
 
 end:
     x->ql_indexOfStart = PD_INT_MAX;
-    x->ql_lastLogicalTime = 0;
     x->ql_isReentrant = 0;
     outlet_bang(x->ql_outletRight);
 }
 
 static void qlist_tick(t_qlist *x)
 {
-    x->ql_lastLogicalTime = 0;
     qlist_donext(x, 0, 1);
 }
 
@@ -128,9 +124,7 @@ static void qlist_bang (t_qlist *x)
 
     if (!x->ql_isReentrant) { qlist_donext (x, 0, 1); }
     else {
-        x->ql_lastLogicalTime = scheduler_getLogicalTime();
-        x->ql_delay           = 0.0;
-        clock_delay (x->ql_clock, x->ql_delay);
+        clock_delay (x->ql_clock, 0.0);
     }
 }
 
@@ -138,7 +132,6 @@ void qlist_rewind (t_qlist *x)
 {
     x->ql_indexOfStart = 0;
     if (x->ql_clock) clock_unset(x->ql_clock);
-    x->ql_lastLogicalTime = 0;
     x->ql_hasBeenRewound = 1;
 }
 
@@ -169,6 +162,7 @@ void qlist_add2(t_qlist *x, t_symbol *s, int argc, t_atom *argv)
 
 static void qlist_tempo(t_qlist *x, t_float f)
 {
+    /*
     t_float newtempo;
     if (f < 1e-20) f = 1e-20;
     else if (f > 1e20) f = 1e20;
@@ -182,6 +176,7 @@ static void qlist_tempo(t_qlist *x, t_float f)
         clock_delay(x->ql_clock, left);
     }
     x->ql_unit = newtempo;
+    */
 }
 
 static void qlist_next(t_qlist *x, t_float drop)
@@ -231,9 +226,6 @@ static void *qlist_new (void)
     
     textbuffer_init (&x->ql_textbuffer);
     
-    x->ql_unit              = 1.0;
-    x->ql_delay             = 0.0;
-    x->ql_lastLogicalTime   = 0.0;
     x->ql_indexOfStart      = PD_INT_MAX;
     x->ql_hasBeenRewound    = 0;
     x->ql_isReentrant       = 0;
