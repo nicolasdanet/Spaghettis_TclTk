@@ -28,6 +28,7 @@ typedef struct _element {
     t_gpointer      x_gpointer;
     t_symbol        *x_templateIdentifier;
     t_symbol        *x_fieldName;
+    t_outlet        *x_outlet;
     } t_element;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -41,7 +42,7 @@ static void element_float (t_element *x, t_float f)
             if (gpointer_fieldIsArrayAndValid (&x->x_gpointer, x->x_fieldName)) {
                 t_array *array = gpointer_getArray (&x->x_gpointer, x->x_fieldName);
                 gpointer_setAsWord (&x->x_gpointerWord, array, array_getElementAtIndex (array, (int)f));
-                outlet_pointer (cast_object (x)->te_outlet, &x->x_gpointerWord);
+                outlet_pointer (x->x_outlet, &x->x_gpointerWord);
         
     } else { error_invalid (sym_element, x->x_fieldName); }
     } else { error_missingField (sym_element, x->x_fieldName); }
@@ -67,9 +68,9 @@ static void *element_new (t_symbol *templateName, t_symbol *fieldName)
     
     x->x_templateIdentifier = template_makeIdentifierWithWildcard (templateName);
     x->x_fieldName          = fieldName;
+    x->x_outlet             = outlet_new (cast_object (x), &s_pointer);
     
     inlet_newPointer (cast_object (x), &x->x_gpointer);
-    outlet_new (cast_object (x), &s_pointer);
     
     return x;
 }

@@ -33,6 +33,7 @@ typedef struct _append {
     int                 x_fieldsSize;
     t_appendvariable    *x_fields;
     t_symbol            *x_templateIdentifier;
+    t_outlet            *x_outlet;
     } t_append;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -69,7 +70,7 @@ static void append_float (t_append *x, t_float f)
     
     canvas_addScalarNext (gpointer_getView (&x->x_gpointer), gpointer_getScalar (&x->x_gpointer), scalar);
     gpointer_setAsScalar (&x->x_gpointer, gpointer_getView (&x->x_gpointer), scalar);
-    outlet_pointer (cast_object (x)->te_outlet, &x->x_gpointer);
+    outlet_pointer (x->x_outlet, &x->x_gpointer);
     //
     }
     //
@@ -102,7 +103,8 @@ static void *append_new (t_symbol *s, int argc, t_atom *argv)
     x->x_templateIdentifier = template_makeIdentifierWithWildcard (atom_getSymbolAtIndex (0, argc, argv));
     x->x_fieldsSize         = n;
     x->x_fields             = (t_appendvariable *)PD_MEMORY_GET (n * sizeof (t_appendvariable));
-
+    x->x_outlet             = outlet_new (cast_object (x), &s_pointer);
+    
     for (i = 0; i < x->x_fieldsSize; i++) {
         x->x_fields[i].gv_fieldName = atom_getSymbolAtIndex (i + 1, argc, argv);
         x->x_fields[i].gv_f = 0.0;
@@ -110,8 +112,7 @@ static void *append_new (t_symbol *s, int argc, t_atom *argv)
     }
     
     inlet_newPointer (cast_object (x), &x->x_gpointer);
-    outlet_new (cast_object (x), &s_pointer);
-
+    
     return x;
 }
 

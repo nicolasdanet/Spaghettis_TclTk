@@ -26,6 +26,7 @@ typedef struct _getsize {
     t_object    x_obj;                      /* Must be the first. */
     t_symbol    *x_templateIdentifier;
     t_symbol    *x_fieldName;
+    t_outlet    *x_outlet;
     } t_getsize;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -38,7 +39,7 @@ static void getsize_pointer (t_getsize *x, t_gpointer *gp)
         if (gpointer_hasField (gp, x->x_fieldName)) {
             if (gpointer_fieldIsArrayAndValid (gp, x->x_fieldName)) {
                 t_float size = (t_float)array_getSize (gpointer_getArray (gp, x->x_fieldName));
-                outlet_float (cast_object (x)->te_outlet, size);
+                outlet_float (x->x_outlet, size);
         
     } else { error_invalid (sym_getsize, x->x_fieldName); }
     } else { error_missingField (sym_getsize, x->x_fieldName); }
@@ -61,8 +62,7 @@ static void *getsize_new (t_symbol *templateName, t_symbol *fieldName)
     
     x->x_templateIdentifier = template_makeIdentifierWithWildcard (templateName);
     x->x_fieldName          = fieldName;
-    
-    outlet_new (cast_object (x), &s_float);
+    x->x_outlet             = outlet_new (cast_object (x), &s_float);
     
     return x;
 }
