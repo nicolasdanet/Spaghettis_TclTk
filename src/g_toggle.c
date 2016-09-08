@@ -253,7 +253,7 @@ void toggle_draw (t_toggle *x, t_glist *glist, int mode)
 
 static void toggle_out (t_toggle *x)
 {
-    outlet_float (cast_object (x)->te_outlet, x->x_state);
+    outlet_float (x->x_outlet, x->x_state);
     
     if (x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing) { 
         pd_float (x->x_gui.iem_send->s_thing, x->x_state); 
@@ -509,7 +509,7 @@ static void *toggle_new (t_symbol *s, int argc, t_atom *argv)
         x->x_state = 0.0;
     }
 
-    outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_new (cast_object (x), &s_float);
     
     return x;
 }

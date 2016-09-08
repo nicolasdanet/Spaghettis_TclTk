@@ -390,7 +390,7 @@ void radio_draw (t_toggle *x, t_glist *glist, int mode)
 
 static void radio_out (t_radio *x)
 {
-    outlet_float (cast_object (x)->te_outlet, x->x_floatValue);
+    outlet_float (x->x_outlet, x->x_floatValue);
     
     if (x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing) {
         pd_float (x->x_gui.iem_send->s_thing, x->x_floatValue);
@@ -693,7 +693,7 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
         x->x_state = 0;
     }
 
-    outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_new (cast_object (x), &s_float);
     //
     }
     

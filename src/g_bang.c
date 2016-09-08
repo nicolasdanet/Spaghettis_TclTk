@@ -251,7 +251,7 @@ static void bng_updateFlash (t_bng *x)
 
 static void bng_out (t_bng *x)
 {
-    outlet_bang (cast_object (x)->te_outlet);
+    outlet_bang (x->x_outlet);
     
     if (x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing) { pd_bang (x->x_gui.iem_send->s_thing); }
 }
@@ -532,10 +532,9 @@ static void *bng_new (t_symbol *s, int argc, t_atom *argv)
         
     bng_setFlashTimes (x, flashBreak, flashHold);
     
+    x->x_outlet     = outlet_new (cast_object (x), &s_bang);
     x->x_clockHold  = clock_new (x, (t_method)bng_taskHold);
     x->x_clockBreak = clock_new (x, (t_method)bng_taskBreak);
-    
-    outlet_new (cast_object (x), &s_bang);
     
     return x;
 }

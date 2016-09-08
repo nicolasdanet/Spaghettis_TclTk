@@ -440,7 +440,7 @@ static void dial_setRange (t_dial *x, double minimum, double maximum)
 
 static void dial_out (t_dial *x)
 {
-    outlet_float (cast_object (x)->te_outlet, x->x_floatValue);
+    outlet_float (x->x_outlet, x->x_floatValue);
     
     if (x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing) {
         pd_float (x->x_gui.iem_send->s_thing, x->x_floatValue);
@@ -798,7 +798,7 @@ static void *dial_new (t_symbol *s, int argc, t_atom *argv)
         dial_set (x, 0.0);
     }
 
-    outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_new (cast_object (x), &s_float);
     
     return x;
 }

@@ -133,6 +133,7 @@ typedef struct _bng {
     int         x_flashed;
     int         x_flashTimeBreak;
     int         x_flashTimeHold;
+    t_outlet    *x_outlet;
     t_clock     *x_clockHold;
     t_clock     *x_clockBreak;
     } t_bng;
@@ -141,6 +142,7 @@ typedef struct _toggle {
     t_iem       x_gui;
     t_float     x_state;
     t_float     x_nonZero;
+    t_outlet    *x_outlet;
     } t_toggle;
 
 typedef struct _radio {
@@ -151,6 +153,7 @@ typedef struct _radio {
     int         x_state;
     int         x_stateDrawn;
     t_float     x_floatValue;
+    t_outlet    *x_outlet;
     } t_radio;
 
 typedef struct _slider {
@@ -162,6 +165,7 @@ typedef struct _slider {
     double      x_minimum;
     double      x_maximum;
     t_float     x_floatValue;
+    t_outlet    *x_outlet;
     } t_slider;
 
 typedef struct _dial {
@@ -175,6 +179,7 @@ typedef struct _dial {
     double      x_minimum;
     double      x_maximum;
     t_float     x_floatValue;
+    t_outlet    *x_outlet;
     } t_dial;
     
 typedef struct _vu {
