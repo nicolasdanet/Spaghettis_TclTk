@@ -80,14 +80,12 @@ static int qlist_performNext (t_qlist *x, int doNotSend, int isAutomatic, int on
 
 static void qlist_perform (t_qlist *x, int doNotSend, int isAutomatic)
 {
-    if (x->ql_flagReentrant) { error_unexpected (sym_qlist, sym_next); }
-    else {
-    //
     t_buffer *b = textbuffer_getBuffer (&x->ql_textbuffer);
     t_error err = PD_ERROR_NONE;
     
+    PD_ASSERT (!x->ql_flagReentrant);
+        
     x->ql_target = NULL;
-    
     x->ql_flagReentrant = 1;
     
     while (!err) {
@@ -125,8 +123,6 @@ static void qlist_perform (t_qlist *x, int doNotSend, int isAutomatic)
         x->ql_indexOfStart = PD_INT_MAX;
         outlet_bang (x->ql_outletRight);
     }
-    //
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -154,7 +150,10 @@ static void qlist_bang (t_qlist *x)
 
 static void qlist_next (t_qlist *x, t_float f)
 {
-    qlist_perform (x, (f != 0.0), 0);
+    if (!x->ql_flagReentrant) { qlist_perform (x, (f != 0.0), 0); }
+    else {
+        error_unexpected (sym_qlist, sym_next);
+    }
 }
 
 void qlist_rewind (t_qlist *x)
@@ -164,6 +163,9 @@ void qlist_rewind (t_qlist *x)
     x->ql_indexOfStart  = 0;
     x->ql_flagRewound   = 1;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 void qlist_clear (t_qlist *x)
 {
