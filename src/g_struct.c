@@ -26,6 +26,7 @@ struct _struct {
     t_object    x_obj;                          /* MUST be the first. */
     t_template  *x_template;
     t_glist     *x_owner;
+    t_outlet    *x_outlet;
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -33,7 +34,7 @@ struct _struct {
 
 void struct_notify (t_struct *x, t_symbol *s, int argc, t_atom *argv)
 {
-    outlet_anything (cast_object (x)->te_outlet, s, argc, argv);
+    outlet_anything (x->x_outlet, s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -53,13 +54,12 @@ static void *struct_newInstance (t_template *template)
 {
     t_struct *x = (t_struct *)pd_new (struct_class);
     
-    x->x_template  = template;
-    x->x_owner     = canvas_getCurrent();
+    x->x_template = template;
+    x->x_owner    = canvas_getCurrent();
+    x->x_outlet   = outlet_new (cast_object (x), &s_anything);
     
     template_registerInstance (x->x_template, x);
 
-    outlet_new (cast_object (x), &s_anything);
-    
     return x;
 }
 
@@ -67,10 +67,9 @@ static void *struct_newEmpty (void)
 {
     t_struct *x = (t_struct *)pd_new (struct_class);
     
-    x->x_template  = NULL;
-    x->x_owner     = canvas_getCurrent();
-
-    outlet_new (cast_object (x), &s_anything);
+    x->x_template = NULL;
+    x->x_owner    = canvas_getCurrent();
+    x->x_outlet   = outlet_new (cast_object (x), &s_anything);
     
     return x;
 }
