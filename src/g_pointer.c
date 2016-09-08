@@ -38,8 +38,8 @@ typedef struct _ptrobj {
     t_gpointer  x_gpointer;
     int         x_outletTypedSize;
     t_typedout  *x_outletTyped;
-    t_outlet    *x_outletOther;
-    t_outlet    *x_outletBang;
+    t_outlet    *x_outletBeforeRight;
+    t_outlet    *x_outletRight;
     } t_pointer;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -74,7 +74,7 @@ static void pointer_bang (t_pointer *x)
         }
     }
     
-    outlet_pointer (x->x_outletOther, &x->x_gpointer);
+    outlet_pointer (x->x_outletBeforeRight, &x->x_gpointer);
     //
     } 
 }
@@ -151,7 +151,7 @@ static void pointer_nextSelected (t_pointer *x, t_float f)
     
     while (z && pointer_nextSkip (z, glist, wantSelected)) { z = z->g_next; }
     
-    if (!z) { gpointer_unset (&x->x_gpointer); outlet_bang (x->x_outletBang); }
+    if (!z) { gpointer_unset (&x->x_gpointer); outlet_bang (x->x_outletRight); }
     else {
         int i;
         t_symbol *templateIdentifier = scalar_getTemplateIdentifier (cast_scalar (z));
@@ -164,7 +164,7 @@ static void pointer_nextSelected (t_pointer *x, t_float f)
             }
         }
         
-        outlet_pointer (x->x_outletOther, &x->x_gpointer);
+        outlet_pointer (x->x_outletBeforeRight, &x->x_gpointer);
     }
     
     return;
@@ -199,8 +199,8 @@ static void *pointer_new (t_symbol *s, int argc, t_atom *argv)
         x->x_outletTyped[i].to_outlet = outlet_new (cast_object (x), &s_pointer);
     }
     
-    x->x_outletOther = outlet_new (cast_object (x), &s_pointer);
-    x->x_outletBang  = outlet_new (cast_object (x), &s_bang);
+    x->x_outletBeforeRight  = outlet_new (cast_object (x), &s_pointer);
+    x->x_outletRight        = outlet_new (cast_object (x), &s_bang);
     
     inlet_newPointer (cast_object (x), &x->x_gpointer);
     
