@@ -23,23 +23,36 @@ static t_class *textfromlist_class;         /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+typedef struct _texttolist {
+    t_textclient    x_textclient;           /* Must be the first. */
+    t_outlet        *x_outlet;
+    } t_texttolist;
+
+typedef struct _textfromlist {
+    t_textclient    x_textclient;           /* Must be the first. */
+    } t_textfromlist;
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 void *texttolist_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_textclient *x = (t_textclient *)pd_new (texttolist_class);
+    t_texttolist *x = (t_texttolist *)pd_new (texttolist_class);
     
-    t_error err = textclient_init (x, &argc, &argv);            /* It may consume arguments. */
+    t_error err = textclient_init (&x->x_textclient, &argc, &argv);     /* It may consume arguments. */
     
     if (!err) {
     
-        outlet_new (cast_object (x), &s_list);
+        x->x_outlet = outlet_new (cast_object (x), &s_list);
         
         if (argc) { warning_unusedArguments (sym_text__space__tolist, argc, argv); }
         
-        if (TEXTCLIENT_ASPOINTER (x)) {
-            inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (x));
+        if (TEXTCLIENT_ASPOINTER (&x->x_textclient)) {
+            inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
         } else {
-            inlet_newSymbol (cast_object (x), TEXTCLIENT_GETNAME (x));
+            inlet_newSymbol (cast_object (x), TEXTCLIENT_GETNAME (&x->x_textclient));
         }
     
     } else {
@@ -51,14 +64,14 @@ void *texttolist_new (t_symbol *s, int argc, t_atom *argv)
     return x;
 }
 
-static void texttolist_bang (t_textclient *x)
+static void texttolist_bang (t_texttolist *x)
 {
-    t_buffer *b = textclient_fetchBuffer (x);
+    t_buffer *b = textclient_fetchBuffer (&x->x_textclient);
     
     if (b) {
         t_buffer *t = buffer_new();
         buffer_serialize (t, b);
-        outlet_list (cast_object (x)->te_outlet, NULL, buffer_size (t), buffer_atoms (t));
+        outlet_list (x->x_outlet, NULL, buffer_size (t), buffer_atoms (t));
         buffer_free (t);
         
     } else { error_undefined (sym_text__space__tolist, sym_text); }
@@ -70,18 +83,18 @@ static void texttolist_bang (t_textclient *x)
 
 void *textfromlist_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_textclient *x = (t_textclient *)pd_new (textfromlist_class);
+    t_textfromlist *x = (t_textfromlist *)pd_new (textfromlist_class);
     
-    t_error err = textclient_init (x, &argc, &argv);            /* It may consume arguments. */
+    t_error err = textclient_init (&x->x_textclient, &argc, &argv);     /* It may consume arguments. */
     
     if (!err) {
     
         if (argc) { warning_unusedArguments (sym_text__space__fromlist, argc, argv); }
         
-        if (TEXTCLIENT_ASPOINTER (x)) {
-            inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (x));
+        if (TEXTCLIENT_ASPOINTER (&x->x_textclient)) {
+            inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
         } else {
-            inlet_newSymbol (cast_object (x), TEXTCLIENT_GETNAME (x));
+            inlet_newSymbol (cast_object (x), TEXTCLIENT_GETNAME (&x->x_textclient));
         }
         
     } else {
@@ -93,14 +106,14 @@ void *textfromlist_new (t_symbol *s, int argc, t_atom *argv)
     return x;
 }
 
-static void textfromlist_list (t_textclient *x, t_symbol *s, int argc, t_atom *argv)
+static void textfromlist_list (t_textfromlist *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_buffer *b = textclient_fetchBuffer (x);
+    t_buffer *b = textclient_fetchBuffer (&x->x_textclient);
     
     if (b) {
         buffer_reset (b);
         buffer_deserialize (b, argc, argv);
-        textclient_update (x);
+        textclient_update (&x->x_textclient);
     
     } else { error_undefined (sym_text__space__fromlist, sym_text); } 
 }
