@@ -34,8 +34,9 @@ typedef struct _textclient {
 typedef struct _qlist {
     t_textbuffer    ql_textbuffer;                  /* Must be the first. */
     int             ql_indexOfStart;
-    int             ql_hasBeenRewound;
-    int             ql_isReentrant;
+    int             ql_flagRewound;
+    int             ql_flagReentrant;
+    t_symbol        *ql_target;
     t_outlet        *ql_outletLeft;
     t_outlet        *ql_outletRight;
     t_clock         *ql_clock;

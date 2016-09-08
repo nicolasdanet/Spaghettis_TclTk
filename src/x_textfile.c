@@ -68,8 +68,6 @@ static void *textfile_new( void)
     outlet_new(cast_object (x), &s_list);
     x->ql_outletRight = outlet_new(cast_object (x), &s_bang);
     x->ql_indexOfStart = PD_INT_MAX;
-    x->ql_hasBeenRewound = 0;
-    x->ql_clock = NULL;
     return (x);
 }
 
