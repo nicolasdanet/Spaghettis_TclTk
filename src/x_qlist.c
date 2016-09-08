@@ -195,11 +195,6 @@ void qlist_append (t_qlist *x, t_symbol *s, int argc, t_atom *argv)
     textbuffer_update (&x->ql_textbuffer);
 }
 
-static void qlist_unit (t_qlist *x, t_float f, t_symbol *unitName)
-{
-
-}
-
 void qlist_read (t_qlist *x, t_symbol *s)
 {
     t_atom a;
@@ -214,6 +209,15 @@ void qlist_write (t_qlist *x, t_symbol *s)
     t_atom a;
     SET_SYMBOL (&a, s);
     textbuffer_write (&x->ql_textbuffer, sym_read, 1, &a);
+}
+
+static void qlist_unit (t_qlist *x, t_float f, t_symbol *unitName)
+{
+    t_error err = clock_setUnitParsed (x->ql_clock, f, (unitName == &s_ ? sym_millisecond : unitName));
+    
+    if (err) {
+        error_invalid (sym_qlist, sym_unit); 
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -234,7 +238,7 @@ static void *qlist_new (void)
     return x;
 }
 
-static void qlist_free(t_qlist *x)
+static void qlist_free (t_qlist *x)
 {
     clock_free (x->ql_clock);
     textbuffer_free (&x->ql_textbuffer);
@@ -264,10 +268,10 @@ void qlist_setup (void)
     class_addMethod (c, (t_method)qlist_set,            sym_set,        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)qlist_add,            sym_add,        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)qlist_append,         sym_append,     A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)qlist_unit,           sym_unit,       A_FLOAT, A_DEFSYMBOL, A_NULL); 
     class_addMethod (c, (t_method)qlist_next,           sym_next,       A_DEFFLOAT, A_NULL); 
     class_addMethod (c, (t_method)qlist_read,           sym_read,       A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)qlist_write,          sym_write,      A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)qlist_unit,           sym_unit,       A_FLOAT, A_DEFSYMBOL, A_NULL); 
 
     class_addMethod (c, (t_method)textbuffer_close,     sym_close,      A_NULL);
     class_addMethod (c, (t_method)textbuffer_addLine,   sym__addline,   A_GIMME, A_NULL);

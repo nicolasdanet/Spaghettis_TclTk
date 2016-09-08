@@ -310,8 +310,8 @@ static void textsequence_unit (t_textsequence *x, t_float f, t_symbol *unitName)
 {
     t_error err = clock_setUnitParsed (x->x_clock, f, unitName);
     
-    if (err) {
-        error_invalid (sym_text__space__sequence, sym_unit); 
+    if (err) { 
+        error_invalid (sym_text__space__sequence, sym_unit);
     }
 }
 

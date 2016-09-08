@@ -200,6 +200,21 @@ void clock_setUnitAsMilliseconds (t_clock *x, double ms)
     clock_setUnit (x, ms, 0);
 }
 
+t_error clock_setUnitParsed (t_clock *x, t_float f, t_symbol *unitName)
+{
+    t_float n; int isSamples;
+    t_error err = clock_parseUnit (f, unitName, &n, &isSamples);
+    
+    if (!err) {
+        if (isSamples) { clock_setUnitAsSamples (x, n); }
+        else {
+            clock_setUnitAsMilliseconds (x, n);
+        }
+    }
+    
+    return err;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -243,21 +258,6 @@ t_error clock_parseUnit (t_float f, t_symbol *s, t_float *n, int *isSamples)
         #endif
     }
     //
-    }
-    
-    return err;
-}
-
-t_error clock_setUnitParsed (t_clock *x, t_float f, t_symbol *unitName)
-{
-    t_float n; int isSamples;
-    t_error err = clock_parseUnit (f, unitName, &n, &isSamples);
-    
-    if (!err) {
-        if (isSamples) { clock_setUnitAsSamples (x, n); }
-        else {
-            clock_setUnitAsMilliseconds (x, n);
-        }
     }
     
     return err;
