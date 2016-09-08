@@ -25,6 +25,7 @@ t_class *vinlet_class;                              /* Shared. */
 typedef struct _vinlet {
     t_object        x_obj;
     t_glist         *x_owner;
+    t_outlet        *x_outlet;
     t_inlet         *x_inlet;
     t_signal        *x_directSignal;
     int             x_bufferSize;
@@ -51,32 +52,32 @@ t_inlet *vinlet_getInlet (t_pd *x)
 
 static void vinlet_bang (t_vinlet *x)
 {
-    outlet_bang (cast_object (x)->te_outlet);
+    outlet_bang (x->x_outlet);
 }
 
 static void vinlet_pointer (t_vinlet *x, t_gpointer *gp)
 {
-    outlet_pointer (cast_object (x)->te_outlet, gp);
+    outlet_pointer (x->x_outlet, gp);
 }
 
 static void vinlet_float (t_vinlet *x, t_float f)
 {
-    outlet_float (cast_object (x)->te_outlet, f);
+    outlet_float (x->x_outlet, f);
 }
 
 static void vinlet_symbol (t_vinlet *x, t_symbol *s)
 {
-    outlet_symbol (cast_object (x)->te_outlet, s);
+    outlet_symbol (x->x_outlet, s);
 }
 
 static void vinlet_list (t_vinlet *x, t_symbol *s, int argc, t_atom *argv)
 {
-    outlet_list (cast_object (x)->te_outlet, s, argc, argv);
+    outlet_list (x->x_outlet, s, argc, argv);
 }
 
 static void vinlet_anything (t_vinlet *x, t_symbol *s, int argc, t_atom *argv)
 {
-    outlet_anything (cast_object (x)->te_outlet, s, argc, argv);
+    outlet_anything (x->x_outlet, s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -235,13 +236,12 @@ static void *vinlet_newSignal (t_symbol *s)
     t_vinlet *x = (t_vinlet *)pd_new (vinlet_class);
     
     x->x_owner          = canvas_getCurrent();
+    x->x_outlet         = outlet_new (cast_object (x), &s_signal);
     x->x_inlet          = canvas_addInlet (x->x_owner, cast_pd (x), &s_signal);
     x->x_buffer         = (t_sample *)PD_MEMORY_GET (0);
     x->x_bufferEnd      = x->x_buffer;
     x->x_bufferSize     = 0;
     x->x_directSignal   = NULL;
-    
-    outlet_new (cast_object (x), &s_signal);
     
     resample_init (&x->x_resampling, s);
 
@@ -252,12 +252,11 @@ static void *vinlet_new (t_symbol *s)
 {
     t_vinlet *x = (t_vinlet *)pd_new (vinlet_class);
     
-    x->x_owner      = canvas_getCurrent();
-    x->x_inlet      = canvas_addInlet (x->x_owner, cast_pd (x), NULL);
-    x->x_bufferSize = 0;
-    x->x_buffer     = NULL;
-    
-    outlet_new (cast_object (x), &s_anything);
+    x->x_owner          = canvas_getCurrent();
+    x->x_outlet         = outlet_new (cast_object (x), &s_anything);
+    x->x_inlet          = canvas_addInlet (x->x_owner, cast_pd (x), NULL);
+    x->x_bufferSize     = 0;
+    x->x_buffer         = NULL;
     
     return x;
 }
