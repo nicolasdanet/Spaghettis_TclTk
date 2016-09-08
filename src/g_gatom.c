@@ -55,6 +55,7 @@ struct _gatom {
     t_symbol        *a_unexpandedSend;
     t_symbol        *a_unexpandedReceive;
     t_symbol        *a_unexpandedLabel;
+    t_outlet        *a_outlet;
     };
     
 // -----------------------------------------------------------------------------------------------------------
@@ -174,7 +175,7 @@ static void gatom_bang (t_gatom *x)
 {
     if (IS_FLOAT (&x->a_atom)) {
     
-        outlet_float (cast_object (x)->te_outlet, GET_FLOAT (&x->a_atom));
+        outlet_float (x->a_outlet, GET_FLOAT (&x->a_atom));
         
         if (x->a_send != &s_ && x->a_send->s_thing) {
             if (x->a_send != x->a_receive) { pd_float (x->a_send->s_thing, GET_FLOAT (&x->a_atom)); }
@@ -185,7 +186,7 @@ static void gatom_bang (t_gatom *x)
         
     } else {
     
-        outlet_symbol (cast_object (x)->te_outlet, GET_SYMBOL (&x->a_atom));
+        outlet_symbol (x->a_outlet, GET_SYMBOL (&x->a_atom));
         
         if (x->a_send != &s_ && x->a_send->s_thing) {
             if (x->a_send != x->a_receive) { pd_symbol (x->a_send->s_thing, GET_SYMBOL (&x->a_atom)); }
@@ -489,7 +490,7 @@ void gatom_makeObject (t_glist *glist, t_atomtype type, t_symbol *s, int argc, t
                 
         if (x->a_receive != &s_) { pd_bind (cast_pd (x), x->a_receive); }
 
-        outlet_new (cast_object (x), IS_FLOAT (&x->a_atom) ? &s_float : &s_symbol);
+        x->a_outlet = outlet_new (cast_object (x), IS_FLOAT (&x->a_atom) ? &s_float : &s_symbol);
         
         canvas_addObject (glist, cast_gobj (x));
         
@@ -504,7 +505,7 @@ void gatom_makeObject (t_glist *glist, t_atomtype type, t_symbol *s, int argc, t
         cast_object (x)->te_xCoordinate = positionX;
         cast_object (x)->te_yCoordinate = positionY;
         
-        outlet_new (cast_object (x), IS_FLOAT (&x->a_atom) ? &s_float : &s_symbol);
+        x->a_outlet = outlet_new (cast_object (x), IS_FLOAT (&x->a_atom) ? &s_float : &s_symbol);
                 
         canvas_addObject (glist, cast_gobj (x));
         
