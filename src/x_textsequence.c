@@ -308,15 +308,10 @@ static void textsequence_arguments (t_textsequence *x, t_symbol *s, int argc, t_
 
 static void textsequence_unit (t_textsequence *x, t_float f, t_symbol *unitName)
 {
-    t_float n; int isSamples;
-    t_error err = clock_parseUnit (f, unitName, &n, &isSamples);
+    t_error err = clock_setUnitParsed (x->x_clock, f, unitName);
     
-    if (err) { error_invalid (sym_text__space__sequence, sym_unit); }
-    else {
-        if (isSamples) { clock_setUnitAsSamples (x->x_clock, n); }
-        else {
-            clock_setUnitAsMilliseconds (x->x_clock, n);
-        }
+    if (err) {
+        error_invalid (sym_text__space__sequence, sym_unit); 
     }
 }
 

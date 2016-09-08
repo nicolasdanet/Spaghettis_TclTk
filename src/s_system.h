@@ -158,6 +158,7 @@ t_error     priority_setPolicy                      (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_error     clock_setUnitParsed                     (t_clock *x, t_float f, t_symbol *unitName);
 void        clock_setUnitAsSamples                  (t_clock *x, double samples);
 void        clock_setUnitAsMilliseconds             (t_clock *x, double ms);
 

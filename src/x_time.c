@@ -49,14 +49,12 @@ static void delay_float(t_delay *x, t_float f)
     delay_bang(x);
 }
 
-static void delay_tempo(t_delay *x, t_symbol *unitname, t_float tempo)
+static void delay_tempo(t_delay *x, t_float f, t_symbol *unitName)
 {
-    t_float unit;
-    int samps;
-    clock_parseUnit (tempo, unitname, &unit, &samps);
-    if (samps) { clock_setUnitAsSamples (x->x_clock, unit); }
-    else {
-        clock_setUnitAsMilliseconds (x->x_clock, unit);
+    t_error err = clock_setUnitParsed (x->x_clock, f, unitName);
+    
+    if (err) {
+        error_invalid (sym_delay, sym_unit); 
     }
 }
 
@@ -73,7 +71,7 @@ static void *delay_new(t_symbol *unitname, t_float f, t_float tempo)
     outlet_new(&x->x_obj, sym_bang);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, sym_float, sym_ft1);
     if (tempo != 0)
-        delay_tempo(x, unitname, tempo);
+        delay_tempo(x, tempo, unitname);
     return (x);
 }
 
@@ -137,14 +135,12 @@ static void metro_stop(t_metro *x)
     metro_float(x, 0);
 }
 
-static void metro_tempo(t_metro *x, t_symbol *unitname, t_float tempo)
+static void metro_tempo(t_metro *x, t_float f, t_symbol *unitName)
 {
-    t_float unit;
-    int samps;
-    clock_parseUnit (tempo, unitname, &unit, &samps);
-    if (samps) { clock_setUnitAsSamples (x->x_clock, unit); }
-    else {
-        clock_setUnitAsMilliseconds (x->x_clock, unit);
+    t_error err = clock_setUnitParsed (x->x_clock, f, unitName);
+    
+    if (err) {
+        error_invalid (sym_delay, sym_unit); 
     }
 }
 
@@ -162,7 +158,7 @@ static void *metro_new(t_symbol *unitname, t_float f, t_float tempo)
     outlet_new(&x->x_obj, sym_bang);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, sym_float, sym_ft1);
     if (tempo != 0)
-        metro_tempo(x, unitname, tempo);
+        metro_tempo(x, tempo, unitname);
     return (x);
 }
 
@@ -326,12 +322,12 @@ static void timer_bang2(t_timer *x)
             + x->x_moreelapsed);
 }
 
-static void timer_tempo(t_timer *x, t_symbol *unitname, t_float tempo)
+static void timer_tempo(t_timer *x, t_float f, t_symbol *unitName)
 {
-    x->x_moreelapsed +=  scheduler_getUnitsSince(x->x_settime,
-        x->x_unit, x->x_samps);
+    x->x_moreelapsed += scheduler_getUnitsSince(x->x_settime, x->x_unit, x->x_samps);
     x->x_settime = scheduler_getLogicalTime();
-    clock_parseUnit (tempo, unitname, &x->x_unit, &x->x_samps);
+
+    clock_parseUnit (f, unitName, &x->x_unit, &x->x_samps);
 }
 
 static void *timer_new(t_symbol *unitname, t_float tempo)
@@ -343,7 +339,7 @@ static void *timer_new(t_symbol *unitname, t_float tempo)
     outlet_new(&x->x_obj, sym_float);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, sym_bang, sym_bang2);
     if (tempo != 0)
-        timer_tempo(x, unitname, tempo);
+        timer_tempo(x, tempo, unitname);
     return (x);
 }
 
