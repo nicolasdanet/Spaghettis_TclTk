@@ -25,30 +25,31 @@ static t_class *textfile_class;         /* Shared. */
 
 static void textfile_bang (t_qlist *x)
 {
-    int argc = buffer_size(textbuffer_getBuffer (&x->ql_textbuffer)),
-        count, onset = x->ql_indexOfStart, onset2;
-    t_atom *argv = buffer_atoms(textbuffer_getBuffer (&x->ql_textbuffer));
-    t_atom *ap = argv + onset, *ap2;
-    while (onset < argc &&
-        (ap->a_type == A_SEMICOLON || ap->a_type == A_COMMA))
-            onset++, ap++;
-    onset2 = onset;
-    ap2 = ap;
-    while (onset2 < argc &&
-        (ap2->a_type != A_SEMICOLON && ap2->a_type != A_COMMA))
-            onset2++, ap2++;
-    if (onset2 > onset)
-    {
-        x->ql_indexOfStart = onset2;
-        if (ap->a_type == A_SYMBOL)
-            outlet_anything(cast_object (x)->te_outlet, ap->a_w.w_symbol,
-                onset2-onset-1, ap+1);
-        else outlet_list(cast_object (x)->te_outlet, 0, onset2-onset, ap);
+    t_buffer *b = textbuffer_getBuffer (&x->ql_textbuffer);
+    
+    int i = x->ql_indexOfStart;
+    int j, count;
+    
+    while (i < buffer_size (b) && IS_SEMICOLON_OR_COMMA (buffer_atomAtIndex (b, i))) { i++; }
+    
+    j = i;
+    
+    while (j < buffer_size (b) && !IS_SEMICOLON_OR_COMMA (buffer_atomAtIndex (b, j))) { j++; }
+
+    count = j - i;
+    
+    if (count <= 0) { x->ql_indexOfStart = PD_INT_MAX; outlet_bang (x->ql_outletRight); }
+    else {
+    //
+    t_atom *first = buffer_atomAtIndex (b, i);
+    
+    x->ql_indexOfStart = j;
+        
+    if (IS_SYMBOL (first)) { outlet_anything (x->ql_outletLeft, GET_SYMBOL (first), count - 1, first + 1); } 
+    else {
+        outlet_list (x->ql_outletLeft, NULL, count, first);
     }
-    else
-    {
-        x->ql_indexOfStart = PD_INT_MAX;
-        outlet_bang(x->ql_outletRight);
+    //
     }
 }
 
