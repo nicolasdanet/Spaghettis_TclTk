@@ -110,7 +110,7 @@ void *textset_new (t_symbol *s, int argc, t_atom *argv)
         inlet_newFloat (cast_object (x), &x->x_line);
         inlet_newFloat (cast_object (x), &x->x_field);
         
-        if (argc && IS_FLOAT (argv)) { x->x_line = GET_FLOAT (argv);  argc--; argv++; }
+        if (argc && IS_FLOAT (argv)) { x->x_line  = GET_FLOAT (argv); argc--; argv++; }
         if (argc && IS_FLOAT (argv)) { x->x_field = GET_FLOAT (argv); argc--; argv++; }
         
         if (argc) { warning_unusedArguments (sym_text__space__set, argc, argv); }
@@ -118,7 +118,7 @@ void *textset_new (t_symbol *s, int argc, t_atom *argv)
         if (TEXTCLIENT_ASPOINTER (&x->x_textclient)) {
             inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
         } else {
-            inlet_newSymbol (cast_object (x), TEXTCLIENT_GETNAME (&x->x_textclient));
+            inlet_newSymbol (cast_object (x),  TEXTCLIENT_GETNAME    (&x->x_textclient));
         }
     
     } else {

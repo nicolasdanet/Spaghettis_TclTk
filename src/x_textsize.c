@@ -75,7 +75,7 @@ void *textsize_new (t_symbol *s, int argc, t_atom *argv)
         if (TEXTCLIENT_ASPOINTER (&x->x_textclient)) {
             inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
         } else {
-            inlet_newSymbol (cast_object (x), TEXTCLIENT_GETNAME (&x->x_textclient));
+            inlet_newSymbol (cast_object (x),  TEXTCLIENT_GETNAME    (&x->x_textclient));
         }
         
     } else {
