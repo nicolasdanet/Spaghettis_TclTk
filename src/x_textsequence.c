@@ -50,7 +50,8 @@ typedef struct _textsequence {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void textsequence_stop   (t_textsequence *);
+static void textsequence_stop       (t_textsequence *);
+static void textsequence_message    (t_textsequence *, t_float);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -275,6 +276,11 @@ static void textsequence_automatic (t_textsequence *x)
     textsequence_task (x);
 }
 
+static void textsequence_rewind (t_textsequence *x)
+{
+    textsequence_message (x, 0.0);
+}
+
 static void textsequence_message (t_textsequence *x, t_float f)
 {
     t_buffer *b = textclient_fetchBuffer (&x->x_textclient);
@@ -421,6 +427,7 @@ void textsequence_setup (void)
     class_addMethod (c, (t_method)textsequence_stop,        sym_stop,       A_NULL);
     class_addMethod (c, (t_method)textsequence_step,        sym_step,       A_NULL);
     class_addMethod (c, (t_method)textsequence_automatic,   sym_automatic,  A_NULL);
+    class_addMethod (c, (t_method)textsequence_rewind,      sym_rewind,     A_NULL);
     class_addMethod (c, (t_method)textsequence_message,     sym_message,    A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)textsequence_arguments,   sym_arguments,  A_GIMME, A_NULL);
     class_addMethod (c, (t_method)textsequence_unit,        sym_unit,       A_FLOAT, A_SYMBOL, A_NULL);
