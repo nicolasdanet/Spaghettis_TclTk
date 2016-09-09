@@ -23,7 +23,7 @@ static t_class *textfile_class;         /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void textfile_bang(t_qlist *x)
+static void textfile_bang (t_qlist *x)
 {
     int argc = buffer_size(textbuffer_getBuffer (&x->ql_textbuffer)),
         count, onset = x->ql_indexOfStart, onset2;
@@ -52,7 +52,7 @@ static void textfile_bang(t_qlist *x)
     }
 }
 
-static void textfile_rewind(t_qlist *x)
+static void textfile_rewind (t_qlist *x)
 {
     x->ql_indexOfStart = 0;
 }
@@ -61,48 +61,57 @@ static void textfile_rewind(t_qlist *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *textfile_new( void)
+static void *textfile_new (void)
 {
-    t_qlist *x = (t_qlist *)pd_new(textfile_class);
+    t_qlist *x = (t_qlist *)pd_new (textfile_class);
+    
     textbuffer_init (&x->ql_textbuffer);
-    outlet_new(cast_object (x), &s_list);
-    x->ql_outletRight = outlet_new(cast_object (x), &s_bang);
-    x->ql_indexOfStart = PD_INT_MAX;
-    return (x);
+    
+    x->ql_indexOfStart  = PD_INT_MAX;
+    x->ql_outletLeft    = outlet_new (cast_object (x), &s_list);
+    x->ql_outletRight   = outlet_new (cast_object (x), &s_bang);
+
+    return x;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void textfile_setup(void )
+void textfile_setup (void)
 {
-    textfile_class = class_new(sym_textfile, (t_newmethod)textfile_new,
-        (t_method)textbuffer_free, sizeof(t_qlist), 0, 0);
-    class_addMethod(textfile_class, (t_method)textfile_rewind, sym_rewind,
-        0);
-    class_addMethod(textfile_class, (t_method)qlist_set, sym_set,
-        A_GIMME, 0);
-    class_addMethod(textfile_class, (t_method)qlist_clear, sym_clear, 0);
-    class_addMethod(textfile_class, (t_method)qlist_add, sym_add,
-        A_GIMME, 0);
-    class_addMethod(textfile_class, (t_method)qlist_append, sym_add2, /* LEGACY !!! */
-        A_GIMME, 0);
-    class_addMethod(textfile_class, (t_method)qlist_append, sym_append, /* LEGACY !!! */
-        A_GIMME, 0);
-    class_addMethod(textfile_class, (t_method)qlist_read, sym_read, 
-        A_SYMBOL, 0);
-    class_addMethod(textfile_class, (t_method)qlist_write, sym_write, 
-        A_SYMBOL, 0);
-    class_addClick (textfile_class, textbuffer_click);
-    //class_addMethod(textfile_class, (t_method)textbuffer_open, sym_click, 0);
-    class_addMethod(textfile_class, (t_method)textbuffer_close, sym_close, 
-        0);
-    class_addMethod(textfile_class, (t_method)textbuffer_addLine, 
-        sym__addline, A_GIMME, 0);
-    /*class_addMethod(textfile_class, (t_method)qlist_print, gen_sym ("print"),
-        A_DEFSYMBOL, 0);*/
-    class_addBang(textfile_class, textfile_bang);
+    t_class *c = NULL;
+    
+    c = class_new (sym_textfile,
+            (t_newmethod)textfile_new,
+            (t_method)textbuffer_free,
+            sizeof (t_qlist),
+            CLASS_DEFAULT,
+            A_NULL);
+    
+    class_addBang (c, textfile_bang);
+    
+    class_addClick (c, textbuffer_click);
+        
+    class_addMethod (c, (t_method)textfile_rewind,      sym_rewind,     A_NULL);
+    
+    class_addMethod (c, (t_method)qlist_clear,          sym_clear,      A_NULL);
+    class_addMethod (c, (t_method)qlist_set,            sym_set,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)qlist_add,            sym_add,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)qlist_append,         sym_append,     A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)qlist_read,           sym_read,       A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)qlist_write,          sym_write,      A_SYMBOL, A_NULL);
+
+    class_addMethod (c, (t_method)textbuffer_close,     sym_close,      A_NULL);
+    class_addMethod (c, (t_method)textbuffer_addLine,   sym__addline,   A_GIMME, A_NULL);
+    
+    #if PD_WITH_LEGACY
+    
+    class_addMethod (c, (t_method)qlist_append,         sym_add2,       A_GIMME, A_NULL);
+        
+    #endif
+    
+    textfile_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
