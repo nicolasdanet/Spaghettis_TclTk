@@ -82,7 +82,7 @@ static int buffer_evalGetMessage (t_atom *v, t_pd *object, t_pd **next, t_atom *
     t_symbol *s = NULL;
     int end = 0;
     
-    switch (v->a_type) {
+    switch (atom_getType (v)) {
     //
     case A_SEMICOLON    :   if (object == &pd_objectMaker) { SET_SYMBOL (m, sym___semicolon__); }
                             else { 

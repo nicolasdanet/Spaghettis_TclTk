@@ -337,6 +337,22 @@ int buffer_getMessageAt (t_buffer *x, int n, int *start, int *end)
     return 0;
 }
 
+int buffer_getMessageAtWithTypeOfEnd (t_buffer *x, int n, int *start, int *end, t_atomtype *type)
+{
+    int k = buffer_getMessageAt (x, n, start, end);
+    
+    if (k) {
+    //
+    if (buffer_atomAtIndex (x, *end)) { *type = atom_getType (buffer_atomAtIndex (x, *end)); }
+    else {
+        *type = A_NULL;
+    }
+    //
+    }
+    
+    return k;
+}
+                                                            
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

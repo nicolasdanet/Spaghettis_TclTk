@@ -145,9 +145,14 @@ t_error atom_toString (t_atom *a, char *dest, int size)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_atomtype atom_getType (t_atom *a)
+{
+    return a->a_type;
+}
+
 int atom_typesAreEqual (t_atom *a, t_atom *b)
 {
-    return (a->a_type == b->a_type);
+    return (atom_getType (a) == atom_getType (b));
 }
 
 t_atom *atom_substituteIfPointer (t_atom *a)

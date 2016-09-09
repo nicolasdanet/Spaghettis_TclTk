@@ -236,6 +236,7 @@ char        *atom_atomsToString                         (int argc, t_atom *argv)
 
 t_error     atom_withStringUnzeroed                     (t_atom *a, char *s, int size);
 t_error     atom_toString                               (t_atom *a, char *dest, int size);
+t_atomtype  atom_getType                                (t_atom *a);
 int         atom_typesAreEqual                          (t_atom *a, t_atom *b);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -261,6 +262,12 @@ void        buffer_toStringUnzeroed                     (t_buffer *x, char **s, 
 void        buffer_withStringUnzeroed                   (t_buffer *x, char *s, int size);
 int         buffer_getNumberOfMessages                  (t_buffer *x);
 int         buffer_getMessageAt                         (t_buffer *x, int n, int *start, int *end);
+int         buffer_getMessageAtWithTypeOfEnd            (t_buffer *x,
+                                                            int n,
+                                                            int *start,
+                                                            int *end,
+                                                            t_atomtype *type);
+
 void        buffer_serialize                            (t_buffer *x, t_buffer *y);
 void        buffer_deserialize                          (t_buffer *x, int argc, t_atom *argv);
 void        buffer_eval                                 (t_buffer *x, t_pd *object, int argc, t_atom *argv);
