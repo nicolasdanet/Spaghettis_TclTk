@@ -27,35 +27,28 @@ static void textfile_bang (t_qlist *x)
 {
     t_buffer *b = textbuffer_getBuffer (&x->ql_textbuffer);
     
-    int i = x->ql_indexOfStart;
-    int j, count;
+    int i = x->ql_indexOfMessage;
+    int start, end;
     
-    while (i < buffer_size (b) && IS_SEMICOLON_OR_COMMA (buffer_atomAtIndex (b, i))) { i++; }
-    
-    j = i;
-    
-    while (j < buffer_size (b) && !IS_SEMICOLON_OR_COMMA (buffer_atomAtIndex (b, j))) { j++; }
-
-    count = j - i;
-    
-    if (count <= 0) { x->ql_indexOfStart = PD_INT_MAX; outlet_bang (x->ql_outletRight); }
-    else {
+    if (buffer_getMessageAt (b, i, &start, &end)) {
     //
-    t_atom *first = buffer_atomAtIndex (b, i);
-    
-    x->ql_indexOfStart = j;
+    int count = end - start;
+    t_atom *first = buffer_atomAtIndex (b, start);
         
-    if (IS_SYMBOL (first)) { outlet_anything (x->ql_outletLeft, GET_SYMBOL (first), count - 1, first + 1); } 
-    else {
+    if (count && IS_SYMBOL (first)) {
+        outlet_anything (x->ql_outletLeft, GET_SYMBOL (first), count - 1, first + 1); 
+    } else {
         outlet_list (x->ql_outletLeft, NULL, count, first);
     }
+    
+    x->ql_indexOfMessage += 1;
     //
-    }
+    } else { x->ql_indexOfMessage = PD_INT_MAX; outlet_bang (x->ql_outletRight); }
 }
 
 static void textfile_rewind (t_qlist *x)
 {
-    x->ql_indexOfStart = 0;
+    x->ql_indexOfMessage = 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -68,9 +61,9 @@ static void *textfile_new (void)
     
     textbuffer_init (&x->ql_textbuffer);
     
-    x->ql_indexOfStart  = PD_INT_MAX;
-    x->ql_outletLeft    = outlet_new (cast_object (x), &s_list);
-    x->ql_outletRight   = outlet_new (cast_object (x), &s_bang);
+    x->ql_indexOfMessage = 0;
+    x->ql_outletLeft     = outlet_new (cast_object (x), &s_list);
+    x->ql_outletRight    = outlet_new (cast_object (x), &s_bang);
 
     return x;
 }
