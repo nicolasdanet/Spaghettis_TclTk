@@ -129,7 +129,7 @@ void textlist_setup (void)
     c = class_new (sym_text__space__tolist,
             (t_newmethod)texttolist_new,
             (t_method)textclient_free,
-            sizeof (t_textclient),
+            sizeof (t_texttolist),
             CLASS_DEFAULT,
             A_GIMME,
             A_NULL);
@@ -142,7 +142,7 @@ void textlist_setup (void)
     c = class_new (sym_text__space__fromlist,
             (t_newmethod)textfromlist_new,
             (t_method)textclient_free,
-            sizeof (t_textclient),
+            sizeof (t_textfromlist),
             CLASS_DEFAULT,
             A_GIMME,
             A_NULL);
