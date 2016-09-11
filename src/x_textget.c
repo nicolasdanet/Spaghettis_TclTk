@@ -46,17 +46,17 @@ static void textget_float (t_textget *x, t_float f)
     int count = (int)x->x_fieldCount;
     
     int start, end, match = 0;
+    t_atomtype type;
     
-    if (buffer_getMessageAt (b, f, &start, &end)) {
+    if (buffer_getMessageAtWithTypeOfEnd (b, f, &start, &end, &type)) {
     
         t_atom *t = NULL;
         int size = end - start;
-        int type = ((end < buffer_size (b)) && (IS_COMMA (buffer_atomAtIndex (b, end))));
         int i;
                 
         if (field < 0) {
         
-            outlet_float (x->x_outletRight, (t_float)type);
+            outlet_float (x->x_outletRight, (t_float)(type == A_COMMA));
             
             ATOMS_ALLOCA (t, size);
             for (i = 0; i < size; i++) { buffer_getAtomAtIndex (b, start + i, t + i); }
@@ -66,7 +66,7 @@ static void textget_float (t_textget *x, t_float f)
             
         } else if (field < size) {
         
-            outlet_float (x->x_outletRight, (t_float)type);
+            outlet_float (x->x_outletRight, (t_float)(type == A_COMMA));
             
             count = PD_MIN (count, size - field);
             ATOMS_ALLOCA (t, count);
