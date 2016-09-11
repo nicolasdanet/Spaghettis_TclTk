@@ -298,6 +298,14 @@ void buffer_toString (t_buffer *x, char **s)        /* Caller acquires string ow
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+int buffer_isLastMessageProperlyEnded (t_buffer *x)
+{
+    if (x->b_size) { return IS_SEMICOLON_OR_COMMA (&x->b_vector[x->b_size - 1]); }
+    else {
+        return 1;
+    }
+}
+
 int buffer_getNumberOfMessages (t_buffer *x)
 {
     int i, count = 0;
@@ -306,9 +314,7 @@ int buffer_getNumberOfMessages (t_buffer *x)
         if (IS_SEMICOLON_OR_COMMA (&x->b_vector[i])) { count++; }
     }
     
-    if (x->b_size && !IS_SEMICOLON_OR_COMMA (&x->b_vector[x->b_size - 1])) {
-        count++;
-    }
+    if (!buffer_isLastMessageProperlyEnded (x)) { count++; }
         
     return count;
 }

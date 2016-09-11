@@ -66,7 +66,7 @@ static void textset_list (t_textset *x, t_symbol *s, int argc, t_atom *argv)
         if (field < 0) {
 
             int oldSize = buffer_size (b);
-            int addSemi = oldSize && !IS_SEMICOLON_OR_COMMA (buffer_atomAtIndex (b, oldSize - 1));
+            int addSemi = !buffer_isLastMessageProperlyEnded (b);
             int newSize = oldSize + addSemi + count + 1;
             
             t_atom a; SET_SEMICOLON (&a);
