@@ -138,11 +138,7 @@ static int buffer_parseNextFloatState (int floatState, char c)
     return k;
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int preallocated)
+static void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int preallocated)
 {
     int length = 0;
     t_atom *a = NULL;
@@ -227,6 +223,19 @@ void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int preallocate
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void buffer_toString (t_buffer *x, char **s)        /* Caller acquires string ownership. */
+{
+    char *buffer = NULL;
+    int n, length = 0;
+    
+    buffer_toStringUnzeroed (x, &buffer, &length);
+    n = length + 1; 
+    buffer = PD_MEMORY_RESIZE (buffer, length, n); 
+    buffer[n - 1] = 0;
+    
+    *s = buffer; 
+}
+
 void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)     /* Caller acquires string ownership. */
 {
     char *buffer = (char *)PD_MEMORY_GET (0);
@@ -275,23 +284,6 @@ void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)     /* Caller ac
 void buffer_withStringUnzeroed (t_buffer *x, char *s, int size)
 {
     buffer_parseStringUnzeroed (x, s, size, BUFFER_PREALLOCATED_ATOMS);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void buffer_toString (t_buffer *x, char **s)        /* Caller acquires string ownership. */
-{
-    char *buffer = NULL;
-    int n, length = 0;
-    
-    buffer_toStringUnzeroed (x, &buffer, &length);
-    n = length + 1; 
-    buffer = PD_MEMORY_RESIZE (buffer, length, n); 
-    buffer[n - 1] = 0;
-    
-    *s = buffer; 
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -108,7 +108,7 @@ t_error atom_withStringUnzeroed (t_atom *a, char *s, int size)
 {
     t_buffer *t = buffer_new();
     
-    buffer_parseStringUnzeroed (t, s, size, 1);
+    buffer_withStringUnzeroed (t, s, size);
     
     if (buffer_size (t) != 1) { SET_NULL (a); }
     else {

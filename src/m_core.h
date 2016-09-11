@@ -256,7 +256,6 @@ t_atom      *buffer_atomAtIndex                         (t_buffer *x, int n);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void        buffer_parseStringUnzeroed                  (t_buffer *x, char *s, int size, int preallocated);
 void        buffer_toString                             (t_buffer *x, char **s);
 void        buffer_toStringUnzeroed                     (t_buffer *x, char **s, int *size);
 void        buffer_withStringUnzeroed                   (t_buffer *x, char *s, int size);
