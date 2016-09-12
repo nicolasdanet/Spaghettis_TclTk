@@ -68,7 +68,7 @@ void array_quantile_float(t_arrayrange *x, t_float f)
 void arrayquantile_setup(void)
 {
     array_quantile_class = class_new(sym_array__space__quantile,
-        (t_newmethod)array_quantile_new, (t_method)array_client_free,
+        (t_newmethod)array_quantile_new, (t_method)arrayclient_free,
             sizeof(t_array_quantile), 0, A_GIMME, 0);
     class_addFloat(array_quantile_class, array_quantile_float);
     class_setHelpName(array_quantile_class, sym_array);

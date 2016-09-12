@@ -78,7 +78,7 @@ static void array_max_float(t_array_max *x, t_float f)
 void arraymax_setup(void)
 {
     array_max_class = class_new(sym_array__space__max,
-        (t_newmethod)array_max_new, (t_method)array_client_free,
+        (t_newmethod)array_max_new, (t_method)arrayclient_free,
             sizeof(t_array_max), 0, A_GIMME, 0);
     class_addFloat(array_max_class, array_max_float);
     class_addBang(array_max_class, array_max_bang);

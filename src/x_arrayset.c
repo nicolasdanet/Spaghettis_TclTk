@@ -48,7 +48,7 @@ static void array_set_list(t_arrayrange *x, t_symbol *s,
         nitem = argc;
     for (i = 0, itemp = firstitem; i < nitem; i++, itemp += stride)
         *(t_float *)itemp = atom_getFloatAtIndex(i, argc, argv);
-    array_client_senditup(&x->ar_arrayclient);
+    arrayclient_update (&x->ar_arrayclient);
 }
 
 /* ---------------- global setup function -------------------- */
@@ -56,7 +56,7 @@ static void array_set_list(t_arrayrange *x, t_symbol *s,
 void arrayset_setup(void)
 {
     array_set_class = class_new(sym_array__space__set,
-        (t_newmethod)array_set_new, (t_method)array_client_free,
+        (t_newmethod)array_set_new, (t_method)arrayclient_free,
             sizeof(t_array_set), 0, A_GIMME, 0);
     class_addList(array_set_class, array_set_list);
     class_setHelpName(array_set_class, sym_array);

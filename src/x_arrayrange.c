@@ -110,7 +110,7 @@ int array_rangeop_getrange(t_arrayrange *x,
     char **firstitemp, int *nitemp, int *stridep, int *arrayonsetp)
 {
     t_glist *glist;
-    t_array *a = array_client_getbuf(&x->ar_arrayclient, &glist);
+    t_array *a = arrayclient_fetchArray(&x->ar_arrayclient, &glist);
     char *elemp;
     int stride, fieldonset, arrayonset, nitem, i, type;
     t_symbol *arraytype;

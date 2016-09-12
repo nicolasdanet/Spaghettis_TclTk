@@ -91,7 +91,7 @@ void *array_size_new(t_symbol *s, int argc, t_atom *argv)
 static void array_size_bang(t_array_size *x)
 {
     t_glist *glist;
-    t_array *a = array_client_getbuf(&x->ar_arrayclient, &glist);
+    t_array *a = arrayclient_fetchArray(&x->ar_arrayclient, &glist);
     if (a)
         outlet_float(x->x_outlet, array_getSize (a));
 }
@@ -99,12 +99,12 @@ static void array_size_bang(t_array_size *x)
 static void array_size_float(t_array_size *x, t_float f)
 {
     t_glist *glist;
-    t_array *a = array_client_getbuf(&x->ar_arrayclient, &glist);
+    t_array *a = arrayclient_fetchArray(&x->ar_arrayclient, &glist);
     if (a)
     {
               /* if it's a named array object we have to go back and find the
-              garray (repeating work done in array_client_getbuf()) because
-              the garray might want to adjust.  Maybe array_client_getbuf
+              garray (repeating work done in arrayclient_fetchArray()) because
+              the garray might want to adjust.  Maybe arrayclient_fetchArray
               should have a return slot for the garray if any?  */
         if (x->ar_arrayclient.ac_name)
         {
@@ -126,7 +126,7 @@ static void array_size_float(t_array_size *x, t_float f)
 void arraysize_setup(void)
 {
     array_size_class = class_new(sym_array__space__size,
-        (t_newmethod)array_size_new, (t_method)array_client_free,
+        (t_newmethod)array_size_new, (t_method)arrayclient_free,
             sizeof(t_array_size), 0, A_GIMME, 0);
     class_addBang(array_size_class, array_size_bang);
     class_addFloat(array_size_class, array_size_float);

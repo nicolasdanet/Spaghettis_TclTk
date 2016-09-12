@@ -66,6 +66,10 @@ typedef struct _arrayrange {
 #define TEXTCLIENT_GETPOINTER(x)        &((x)->tc_gpointer)
 #define TEXTCLIENT_GETNAME(x)           &((x)->tc_name)
 
+#define ARRAYCLIENT_ASPOINTER(x)        ((x)->ac_templateIdentifier)
+#define ARRAYCLIENT_GETPOINTER(x)       &((x)->ac_gpointer)
+#define ARRAYCLIENT_GETNAME(x)          &((x)->ac_name)
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -127,9 +131,11 @@ void        qlist_write                 (t_qlist *x, t_symbol *name);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_array     *array_client_getbuf        (t_arrayclient *x, t_glist **glist);
-void        array_client_senditup       (t_arrayclient *x);
-void        array_client_free           (t_arrayclient *x);
+t_array     *arrayclient_fetchArray     (t_arrayclient *x, t_glist **glist);
+t_glist     *arrayclient_fetchView      (t_arrayclient *x);
+
+void        arrayclient_update          (t_arrayclient *x);
+void        arrayclient_free            (t_arrayclient *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

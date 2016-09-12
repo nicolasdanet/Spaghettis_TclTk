@@ -79,7 +79,7 @@ static void array_random_float(t_array_random *x, t_float f)
 void arrayrandom_setup (void)
 {
     array_random_class = class_new(sym_array__space__random,
-        (t_newmethod)array_random_new, (t_method)array_client_free,
+        (t_newmethod)array_random_new, (t_method)arrayclient_free,
             sizeof(t_array_random), 0, A_GIMME, 0);
     class_addMethod(array_random_class, (t_method)array_random_seed,
         sym_seed, A_FLOAT, 0);
