@@ -147,6 +147,7 @@ int array_rangeop_getrange(t_array_rangeop *x,
 
 void array_quantile_float(t_array_rangeop *x, t_float f);
 
+void *array_quantile_new(t_symbol *s, int argc, t_atom *argv);
 void *array_random_new(t_symbol *s, int argc, t_atom *argv);
 void *array_max_new(t_symbol *s, int argc, t_atom *argv);
 void *array_min_new(t_symbol *s, int argc, t_atom *argv);

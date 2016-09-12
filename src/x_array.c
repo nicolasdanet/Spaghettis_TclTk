@@ -390,38 +390,6 @@ static void array_set_list(t_array_rangeop *x, t_symbol *s,
     array_client_senditup(&x->x_tc);
 }
 
-/* -----  array quantile -- output quantile for input from 0 to 1 ------- */
-static t_class *array_quantile_class;
-
-#define t_array_quantile t_array_rangeop
-
-static void *array_quantile_new(t_symbol *s, int argc, t_atom *argv)
-{
-    t_array_quantile *x = array_rangeop_new(array_quantile_class, s,
-        &argc, &argv, 1, 1, 1);
-    outlet_new(&x->x_tc.tc_obj, &s_float);
-    return (x);
-}
-
-void array_quantile_float(t_array_rangeop *x, t_float f)
-{
-    char *itemp, *firstitem;
-    int stride, nitem, arrayonset, i;
-    double sum;
-    if (!array_rangeop_getrange(x, &firstitem, &nitem, &stride, &arrayonset))
-        return;
-    for (i = 0, sum = 0, itemp = firstitem; i < nitem; i++, itemp += stride)
-        sum += (*(t_float *)itemp > 0? *(t_float *)itemp : 0);
-    sum *= f;
-    for (i = 0, itemp = firstitem; i < (nitem-1); i++, itemp += stride)
-    {
-        sum -= (*(t_float *)itemp > 0? *(t_float *)itemp : 0);
-        if (sum < 0)
-            break;
-    }
-    outlet_float(x->x_outlet, i);
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -547,12 +515,6 @@ void x_array_setup(void)
             sizeof(t_array_set), 0, A_GIMME, 0);
     class_addList(array_set_class, array_set_list);
     class_setHelpName(array_set_class, sym_array);
-
-    array_quantile_class = class_new(sym_array__space__quantile,
-        (t_newmethod)array_quantile_new, (t_method)array_client_free,
-            sizeof(t_array_quantile), 0, A_GIMME, 0);
-    class_addFloat(array_quantile_class, array_quantile_float);
-    class_setHelpName(array_quantile_class, sym_array);
 }
 
 // -----------------------------------------------------------------------------------------------------------
