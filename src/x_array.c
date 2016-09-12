@@ -300,37 +300,6 @@ static void array_size_float(t_array_size *x, t_float f)
     }
 }
 
-/* ----------------  array sum -- add them up ------------------- */
-static t_class *array_sum_class;
-
-#define t_array_sum t_array_rangeop
-
-static void *array_sum_new(t_symbol *s, int argc, t_atom *argv)
-{
-    t_array_sum *x = array_rangeop_new(array_sum_class, s, &argc, &argv,
-        0, 1, 1);
-    outlet_new(&x->x_tc.tc_obj, &s_float);
-    return (x);
-}
-
-static void array_sum_bang(t_array_rangeop *x)
-{
-    char *itemp, *firstitem;
-    int stride, nitem, arrayonset, i;
-    double sum;
-    if (!array_rangeop_getrange(x, &firstitem, &nitem, &stride, &arrayonset))
-        return;
-    for (i = 0, sum = 0, itemp = firstitem; i < nitem; i++, itemp += stride)
-        sum += *(t_float *)itemp;
-    outlet_float(x->x_outlet, sum);
-}
-
-static void array_sum_float(t_array_rangeop *x, t_float f)
-{
-    x->x_onset = f;
-    array_sum_bang(x);
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -436,13 +405,6 @@ void x_array_setup(void)
     class_addBang(array_size_class, array_size_bang);
     class_addFloat(array_size_class, array_size_float);
     class_setHelpName(array_size_class, sym_array);
-
-    array_sum_class = class_new(sym_array__space__sum,
-        (t_newmethod)array_sum_new, (t_method)array_client_free,
-            sizeof(t_array_sum), 0, A_GIMME, 0);
-    class_addBang(array_sum_class, array_sum_bang);
-    class_addFloat(array_sum_class, array_sum_float);
-    class_setHelpName(array_sum_class, sym_array);
 }
 
 // -----------------------------------------------------------------------------------------------------------
