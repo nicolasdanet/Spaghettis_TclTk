@@ -25,11 +25,11 @@ extern t_class *garray_class;
 
 /* ---  array_client - common code for objects that refer to arrays -- */
 
-#define x_sym x_tc.tc_sym
-#define x_struct x_tc.tc_struct
-#define x_field x_tc.tc_field
-#define x_gp x_tc.tc_gp
-#define x_outlet x_tc.tc_obj.te_outlet
+#define x_sym ar_arrayclient.ac_name
+#define x_struct ar_arrayclient.ac_templateIdentifier
+#define x_field ar_arrayclient.ac_fieldName
+#define x_gp ar_arrayclient.ac_gpointer
+#define x_outlet ar_arrayclient.ac_obj.te_outlet
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -40,7 +40,7 @@ static t_class *array_size_class;
 
 typedef struct _array_size
 {
-    t_array_client x_tc;
+    t_arrayclient ar_arrayclient;
 } t_array_size;
 
 void *array_size_new(t_symbol *s, int argc, t_atom *argv)
@@ -82,16 +82,16 @@ void *array_size_new(t_symbol *s, int argc, t_atom *argv)
         error__post (argc, argv);
     }
     if (x->x_struct)
-        inlet_newPointer(&x->x_tc.tc_obj, &x->x_gp);
-    else inlet_newSymbol(&x->x_tc.tc_obj, &x->x_tc.tc_sym);
-    outlet_new(&x->x_tc.tc_obj, &s_float);
+        inlet_newPointer(&x->ar_arrayclient.ac_obj, &x->x_gp);
+    else inlet_newSymbol(&x->ar_arrayclient.ac_obj, &x->ar_arrayclient.ac_name);
+    outlet_new(&x->ar_arrayclient.ac_obj, &s_float);
     return (x);
 }
 
 static void array_size_bang(t_array_size *x)
 {
     t_glist *glist;
-    t_array *a = array_client_getbuf(&x->x_tc, &glist);
+    t_array *a = array_client_getbuf(&x->ar_arrayclient, &glist);
     if (a)
         outlet_float(x->x_outlet, array_getSize (a));
 }
@@ -99,16 +99,16 @@ static void array_size_bang(t_array_size *x)
 static void array_size_float(t_array_size *x, t_float f)
 {
     t_glist *glist;
-    t_array *a = array_client_getbuf(&x->x_tc, &glist);
+    t_array *a = array_client_getbuf(&x->ar_arrayclient, &glist);
     if (a)
     {
               /* if it's a named array object we have to go back and find the
               garray (repeating work done in array_client_getbuf()) because
               the garray might want to adjust.  Maybe array_client_getbuf
               should have a return slot for the garray if any?  */
-        if (x->x_tc.tc_sym)
+        if (x->ar_arrayclient.ac_name)
         {
-            t_garray *y = (t_garray *)pd_findByClass(x->x_tc.tc_sym, garray_class);
+            t_garray *y = (t_garray *)pd_findByClass(x->ar_arrayclient.ac_name, garray_class);
             garray_resizeWithInteger (y, (int)f);
         }
         else

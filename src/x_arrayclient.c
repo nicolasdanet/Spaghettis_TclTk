@@ -17,11 +17,11 @@
 
 extern t_class *garray_class;
 
-t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
+t_array *array_client_getbuf(t_arrayclient *x, t_glist **glist)
 {
-    if (x->tc_sym)       /* named array object */
+    if (x->ac_name)       /* named array object */
     {
-        t_garray *y = (t_garray *)pd_findByClass(x->tc_sym, garray_class);
+        t_garray *y = (t_garray *)pd_findByClass(x->ac_name, garray_class);
         if (y)
         {
             *glist = garray_getOwner(y);
@@ -30,58 +30,58 @@ t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
         else
         {
             post_error ("array: couldn't find named array '%s'",
-                x->tc_sym->s_name);
+                x->ac_name->s_name);
             *glist = 0;
             return (0);
         }
     }
-    else if (x->tc_struct)   /* by pointer */
+    else if (x->ac_templateIdentifier)   /* by pointer */
     {
-        t_template *template = template_findByIdentifier(x->tc_struct);
+        t_template *template = template_findByIdentifier(x->ac_templateIdentifier);
         t_word *vec; 
         int onset, type;
         t_symbol *arraytype;
         if (!template)
         {
-            post_error ("array: couldn't find struct %s", x->tc_struct->s_name);
+            post_error ("array: couldn't find struct %s", x->ac_templateIdentifier->s_name);
             return (0);
         }
-        if (!gpointer_isValid(&x->tc_gp))
+        if (!gpointer_isValid(&x->ac_gpointer))
         {
             post_error ("array: stale or empty pointer");
             return (0);
         }
-        vec = gpointer_getData (&x->tc_gp);
+        vec = gpointer_getData (&x->ac_gpointer);
 
         if (!template_findField(template,   /* Remove template_findField ASAP !!! */
-            x->tc_field, &onset, &type, &arraytype))
+            x->ac_fieldName, &onset, &type, &arraytype))
         {
-            post_error ("array: no field named %s", x->tc_field->s_name);
+            post_error ("array: no field named %s", x->ac_fieldName->s_name);
             return (0);
         }
         if (type != DATA_ARRAY)
         {
             post_error ("array: field %s not of type array",
-                x->tc_field->s_name);
+                x->ac_fieldName->s_name);
             return (0);
         }
-        *glist = gpointer_getView (&x->tc_gp);
+        *glist = gpointer_getView (&x->ac_gpointer);
 
         return (*(t_array **)(((char *)vec) + onset));
     }
     else return (0);    /* shouldn't happen */
 }
 
-void array_client_senditup(t_array_client *x)
+void array_client_senditup(t_arrayclient *x)
 {
     t_glist *glist = 0;
     t_array *a = array_client_getbuf(x, &glist);
     array_redraw(a, glist);
 }
 
-void array_client_free(t_array_client *x)
+void array_client_free(t_arrayclient *x)
 {
-    gpointer_unset(&x->tc_gp);
+    gpointer_unset(&x->ac_gpointer);
 }
 
 // -----------------------------------------------------------------------------------------------------------

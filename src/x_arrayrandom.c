@@ -23,18 +23,18 @@
 
 /* ---  array_client - common code for objects that refer to arrays -- */
 
-#define x_sym x_tc.tc_sym
-#define x_struct x_tc.tc_struct
-#define x_field x_tc.tc_field
-#define x_gp x_tc.tc_gp
-#define x_outlet x_tc.tc_obj.te_outlet
+#define x_sym ar_arrayclient.ac_name
+#define x_struct ar_arrayclient.ac_templateIdentifier
+#define x_field ar_arrayclient.ac_fieldName
+#define x_gp ar_arrayclient.ac_gpointer
+#define x_outlet ar_arrayclient.ac_obj.te_outlet
 
 /* ----  array random -- output random value with array as distribution ---- */
 static t_class *array_random_class;
 
 typedef struct _array_random   /* any operation meaningful on a subrange */
 {
-    t_array_rangeop x_r;
+    t_arrayrange x_r;
     unsigned int x_state;
 } t_array_random;
 
@@ -45,7 +45,7 @@ void *array_random_new(t_symbol *s, int argc, t_atom *argv)
     static unsigned int random_nextseed = 584926371;
     random_nextseed = random_nextseed * 435898247 + 938284287;
     x->x_state = random_nextseed;
-    outlet_new(&x->x_r.x_tc.tc_obj, &s_float);
+    outlet_new(&x->x_r.ar_arrayclient.ac_obj, &s_float);
     return (x);
 }
 
@@ -68,7 +68,7 @@ static void array_random_bang(t_array_random *x)
 
 static void array_random_float(t_array_random *x, t_float f)
 {
-    x->x_r.x_onset = f;
+    x->x_r.ar_onset = f;
     array_random_bang(x);
 }
 

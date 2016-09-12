@@ -23,18 +23,18 @@
 
 /* ---  array_client - common code for objects that refer to arrays -- */
 
-#define x_sym x_tc.tc_sym
-#define x_struct x_tc.tc_struct
-#define x_field x_tc.tc_field
-#define x_gp x_tc.tc_gp
-#define x_outlet x_tc.tc_obj.te_outlet
+#define x_sym ar_arrayclient.ac_name
+#define x_struct ar_arrayclient.ac_templateIdentifier
+#define x_field ar_arrayclient.ac_fieldName
+#define x_gp ar_arrayclient.ac_gpointer
+#define x_outlet ar_arrayclient.ac_obj.te_outlet
 
 /* ----  array min -- output largest value and its index ------------ */
 static t_class *array_min_class;
 
 typedef struct _array_min
 {
-    t_array_rangeop x_rangeop;
+    t_arrayrange x_rangeop;
     t_outlet *x_out1;       /* value */
     t_outlet *x_out2;       /* index */
 } t_array_min;
@@ -43,8 +43,8 @@ void *array_min_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_array_min *x = array_rangeop_new(array_min_class, s, &argc, &argv,
         0, 1, 1);
-    x->x_out1 = outlet_new(&x->x_rangeop.x_tc.tc_obj, &s_float);
-    x->x_out2 = outlet_new(&x->x_rangeop.x_tc.tc_obj, &s_float);
+    x->x_out1 = outlet_new(&x->x_rangeop.ar_arrayclient.ac_obj, &s_float);
+    x->x_out2 = outlet_new(&x->x_rangeop.ar_arrayclient.ac_obj, &s_float);
     return (x);
 }
 
@@ -66,7 +66,7 @@ static void array_min_bang(t_array_min *x)
 
 static void array_min_float(t_array_min *x, t_float f)
 {
-    x->x_rangeop.x_onset = f;
+    x->x_rangeop.ar_onset = f;
     array_min_bang(x);
 }
 

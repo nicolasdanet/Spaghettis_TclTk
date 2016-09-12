@@ -23,26 +23,26 @@
 
 /* ---  array_client - common code for objects that refer to arrays -- */
 
-#define x_sym x_tc.tc_sym
-#define x_struct x_tc.tc_struct
-#define x_field x_tc.tc_field
-#define x_gp x_tc.tc_gp
-#define x_outlet x_tc.tc_obj.te_outlet
+#define x_sym ar_arrayclient.ac_name
+#define x_struct ar_arrayclient.ac_templateIdentifier
+#define x_field ar_arrayclient.ac_fieldName
+#define x_gp ar_arrayclient.ac_gpointer
+#define x_outlet ar_arrayclient.ac_obj.te_outlet
 
 /* ----------------  array get -- output as list ------------------- */
 static t_class *array_get_class;
 
-#define t_array_get t_array_rangeop
+#define t_array_get t_arrayrange
 
 void *array_get_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_array_get *x = array_rangeop_new(array_get_class, s, &argc, &argv,
         0, 1, 1);
-    outlet_new(&x->x_tc.tc_obj, &s_float);
+    outlet_new(&x->ar_arrayclient.ac_obj, &s_float);
     return (x);
 }
 
-static void array_get_bang(t_array_rangeop *x)
+static void array_get_bang(t_arrayrange *x)
 {
     char *itemp, *firstitem;
     int stride, nitem, arrayonset, i;
@@ -56,9 +56,9 @@ static void array_get_bang(t_array_rangeop *x)
     ATOMS_FREEA(outv, nitem);
 }
 
-static void array_get_float(t_array_rangeop *x, t_float f)
+static void array_get_float(t_arrayrange *x, t_float f)
 {
-    x->x_onset = f;
+    x->ar_onset = f;
     array_get_bang(x);
 }
 

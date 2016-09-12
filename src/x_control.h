@@ -43,6 +43,29 @@ typedef struct _qlist {
     t_clock         *ql_clock;
     } t_qlist;
 
+typedef struct _arrayclient {
+    t_object        ac_obj;                         /* Must be the first. */
+    t_gpointer      ac_gpointer;
+    t_symbol        *ac_name;
+    t_symbol        *ac_templateIdentifier;
+    t_symbol        *ac_fieldName;
+    } t_arrayclient;
+
+typedef struct _arrayrange {
+    t_arrayclient   ar_arrayclient;                 /* Must be the first. */
+    t_float         ar_onset;
+    t_float         ar_size;
+    t_symbol        *ar_fieldName;
+    } t_arrayrange;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define TEXTCLIENT_ASPOINTER(x)         ((x)->tc_templateIdentifier)
+#define TEXTCLIENT_GETPOINTER(x)        &((x)->tc_gpointer)
+#define TEXTCLIENT_GETNAME(x)           &((x)->tc_name)
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -104,57 +127,46 @@ void        qlist_write                 (t_qlist *x, t_symbol *name);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define TEXTCLIENT_ASPOINTER(x)         ((x)->tc_templateIdentifier)
-#define TEXTCLIENT_GETPOINTER(x)        &((x)->tc_gpointer)
-#define TEXTCLIENT_GETNAME(x)           &((x)->tc_name)
+t_array     *array_client_getbuf        (t_arrayclient *x, t_glist **glist);
+void        array_client_senditup       (t_arrayclient *x);
+void        array_client_free           (t_arrayclient *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef struct _array_client {
-    t_object        tc_obj;
-    t_symbol        *tc_sym;
-    t_gpointer      tc_gp;
-    t_symbol        *tc_struct;
-    t_symbol        *tc_field;
-    t_glist         *tc_canvas;
-    } t_array_client;
-
-typedef struct _array_rangeop   /* any operation meaningful on a subrange */
-{
-    t_array_client x_tc;
-    t_float x_onset;
-    t_float x_n;
-    t_symbol *x_elemfield;
-    t_symbol *x_elemtemplate;   /* unused - perhaps should at least check it */
-} t_array_rangeop;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_array     *array_client_getbuf        (t_array_client *x, t_glist **glist);
-void        array_client_senditup       (t_array_client *x);
-void        array_client_free           (t_array_client *x);
-
-void *array_rangeop_new(t_class *class,
-    t_symbol *s, int *argcp, t_atom **argvp,
-    int onsetin, int nin, int warnextra);
+void        *array_rangeop_new          (t_class *class, 
+                                            t_symbol *s,
+                                            int *argcp,
+                                            t_atom **argvp,
+                                            int onsetin,
+                                            int nin,
+                                            int warnextra);
     
-int array_rangeop_getrange(t_array_rangeop *x,
-    char **firstitemp, int *nitemp, int *stridep, int *arrayonsetp);
+int         array_rangeop_getrange      (t_arrayrange *x, 
+                                            char **firstitemp,
+                                            int *nitemp,
+                                            int *stridep,
+                                            int *arrayonsetp);
 
-void array_quantile_float(t_array_rangeop *x, t_float f);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-void *array_size_new(t_symbol *s, int argc, t_atom *argv);
-void *array_sum_new(t_symbol *s, int argc, t_atom *argv);
-void *array_get_new(t_symbol *s, int argc, t_atom *argv);
-void *array_set_new(t_symbol *s, int argc, t_atom *argv);
-void *array_quantile_new(t_symbol *s, int argc, t_atom *argv);
-void *array_random_new(t_symbol *s, int argc, t_atom *argv);
-void *array_max_new(t_symbol *s, int argc, t_atom *argv);
-void *array_min_new(t_symbol *s, int argc, t_atom *argv);
+void        array_quantile_float        (t_arrayrange *x, t_float f);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        *array_size_new             (t_symbol *s, int argc, t_atom *argv);
+void        *array_sum_new              (t_symbol *s, int argc, t_atom *argv);
+void        *array_get_new              (t_symbol *s, int argc, t_atom *argv);
+void        *array_set_new              (t_symbol *s, int argc, t_atom *argv);
+void        *array_quantile_new         (t_symbol *s, int argc, t_atom *argv);
+void        *array_random_new           (t_symbol *s, int argc, t_atom *argv);
+void        *array_max_new              (t_symbol *s, int argc, t_atom *argv);
+void        *array_min_new              (t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

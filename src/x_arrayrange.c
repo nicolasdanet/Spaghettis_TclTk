@@ -17,11 +17,11 @@
 #include "g_graphics.h"
 #include "x_control.h"
 
-#define x_sym x_tc.tc_sym
-#define x_struct x_tc.tc_struct
-#define x_field x_tc.tc_field
-#define x_gp x_tc.tc_gp
-#define x_outlet x_tc.tc_obj.te_outlet
+#define x_sym ar_arrayclient.ac_name
+#define x_struct ar_arrayclient.ac_templateIdentifier
+#define x_field ar_arrayclient.ac_fieldName
+#define x_gp ar_arrayclient.ac_gpointer
+#define x_outlet ar_arrayclient.ac_obj.te_outlet
 
     /* generic creator for operations on ranges (array {get,set,sum,random,
         quantile,search,...}  "onsetin" and "nin" are true if we should make
@@ -38,17 +38,16 @@ void *array_rangeop_new(t_class *class,
 {
     int argc = *argcp;
     t_atom *argv = *argvp;
-    t_array_rangeop *x = (t_array_rangeop *)pd_new(class);
+    t_arrayrange *x = (t_arrayrange *)pd_new(class);
     x->x_sym = x->x_struct = x->x_field = 0;
     gpointer_init(&x->x_gp);
-    x->x_elemtemplate = &s_;
-    x->x_elemfield = sym_y; 
-    x->x_onset = 0;
-    x->x_n = -1;
+    x->ar_fieldName = sym_y; 
+    x->ar_onset = 0;
+    x->ar_size = -1;
     if (onsetin)
-        inlet_newFloat(&x->x_tc.tc_obj, &x->x_onset);
+        inlet_newFloat(&x->ar_arrayclient.ac_obj, &x->ar_onset);
     if (nin)
-        inlet_newFloat(&x->x_tc.tc_obj, &x->x_n);
+        inlet_newFloat(&x->ar_arrayclient.ac_obj, &x->ar_size);
     while (argc && argv->a_type == A_SYMBOL &&
         *argv->a_w.w_symbol->s_name == '-')
     {
@@ -64,8 +63,7 @@ void *array_rangeop_new(t_class *class,
             argc >= 3 && argv[1].a_type == A_SYMBOL &&
                 argv[2].a_type == A_SYMBOL)
         {
-            x->x_elemtemplate = argv[1].a_w.w_symbol;
-            x->x_elemfield = argv[2].a_w.w_symbol;
+            x->ar_fieldName = argv[2].a_w.w_symbol;
             argc -= 2; argv += 2;
         }
         else
@@ -87,12 +85,12 @@ void *array_rangeop_new(t_class *class,
     }
     if (argc && argv->a_type == A_FLOAT)
     {
-        x->x_onset = argv->a_w.w_float;
+        x->ar_onset = argv->a_w.w_float;
         argc--; argv++;
     }
     if (argc && argv->a_type == A_FLOAT)
     {
-        x->x_n = argv->a_w.w_float;
+        x->ar_size = argv->a_w.w_float;
         argc--; argv++;
     }
     if (argc && warnextra)
@@ -101,18 +99,18 @@ void *array_rangeop_new(t_class *class,
         error__post (argc, argv);
     }
     if (x->x_struct)
-        inlet_newPointer(&x->x_tc.tc_obj, &x->x_gp);
-    else inlet_newSymbol(&x->x_tc.tc_obj, &x->x_tc.tc_sym);
+        inlet_newPointer(&x->ar_arrayclient.ac_obj, &x->x_gp);
+    else inlet_newSymbol(&x->ar_arrayclient.ac_obj, &x->ar_arrayclient.ac_name);
     *argcp = argc;
     *argvp = argv;
     return (x);
 }
 
-int array_rangeop_getrange(t_array_rangeop *x,
+int array_rangeop_getrange(t_arrayrange *x,
     char **firstitemp, int *nitemp, int *stridep, int *arrayonsetp)
 {
     t_glist *glist;
-    t_array *a = array_client_getbuf(&x->x_tc, &glist);
+    t_array *a = array_client_getbuf(&x->ar_arrayclient, &glist);
     char *elemp;
     int stride, fieldonset, arrayonset, nitem, i, type;
     t_symbol *arraytype;
@@ -121,22 +119,22 @@ int array_rangeop_getrange(t_array_rangeop *x,
     if (!a)
         return (0);
     template = array_getTemplate (a);
-    if (!template_findField(template, x->x_elemfield, &fieldonset, /* Remove template_findField ASAP !!! */
+    if (!template_findField(template, x->ar_fieldName, &fieldonset, /* Remove template_findField ASAP !!! */
         &type, &arraytype) || type != DATA_FLOAT)
     {
         return (0);
     }
     stride = a->a_stride;   /* Encapsulate ASAP. */
-    arrayonset = x->x_onset;
+    arrayonset = x->ar_onset;
     if (arrayonset < 0)
         arrayonset = 0;
     else if (arrayonset > array_getSize (a))
         arrayonset = array_getSize (a);
-    if (x->x_n < 0)
+    if (x->ar_size < 0)
         nitem = array_getSize (a) - arrayonset;
     else
     {
-        nitem = x->x_n;
+        nitem = x->ar_size;
         if (nitem + arrayonset > array_getSize (a))
             nitem = array_getSize (a) - arrayonset;
     }
