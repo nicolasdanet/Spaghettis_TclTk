@@ -45,27 +45,6 @@ typedef struct _qlist {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-typedef struct _array_client {
-    t_object        tc_obj;
-    t_symbol        *tc_sym;
-    t_gpointer      tc_gp;
-    t_symbol        *tc_struct;
-    t_symbol        *tc_field;
-    t_glist         *tc_canvas;
-    } t_array_client;
-
-typedef struct _array_rangeop   /* any operation meaningful on a subrange */
-{
-    t_array_client x_tc;
-    t_float x_onset;
-    t_float x_n;
-    t_symbol *x_elemfield;
-    t_symbol *x_elemtemplate;   /* unused - perhaps should at least check it */
-} t_array_rangeop;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 void        textbuffer_init             (t_textbuffer *x);
@@ -125,6 +104,36 @@ void        qlist_write                 (t_qlist *x, t_symbol *name);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define TEXTCLIENT_ASPOINTER(x)         ((x)->tc_templateIdentifier)
+#define TEXTCLIENT_GETPOINTER(x)        &((x)->tc_gpointer)
+#define TEXTCLIENT_GETNAME(x)           &((x)->tc_name)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+typedef struct _array_client {
+    t_object        tc_obj;
+    t_symbol        *tc_sym;
+    t_gpointer      tc_gp;
+    t_symbol        *tc_struct;
+    t_symbol        *tc_field;
+    t_glist         *tc_canvas;
+    } t_array_client;
+
+typedef struct _array_rangeop   /* any operation meaningful on a subrange */
+{
+    t_array_client x_tc;
+    t_float x_onset;
+    t_float x_n;
+    t_symbol *x_elemfield;
+    t_symbol *x_elemtemplate;   /* unused - perhaps should at least check it */
+} t_array_rangeop;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_array     *array_client_getbuf        (t_array_client *x, t_glist **glist);
 void        array_client_senditup       (t_array_client *x);
 void        array_client_free           (t_array_client *x);
@@ -137,14 +146,6 @@ int array_rangeop_getrange(t_array_rangeop *x,
     char **firstitemp, int *nitemp, int *stridep, int *arrayonsetp);
 
 void *array_min_new(t_symbol *s, int argc, t_atom *argv);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#define TEXTCLIENT_ASPOINTER(x)         ((x)->tc_templateIdentifier)
-#define TEXTCLIENT_GETPOINTER(x)        &((x)->tc_gpointer)
-#define TEXTCLIENT_GETNAME(x)           &((x)->tc_name)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
