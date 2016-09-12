@@ -146,6 +146,7 @@ int array_rangeop_getrange(t_array_rangeop *x,
     char **firstitemp, int *nitemp, int *stridep, int *arrayonsetp);
 
 void *array_min_new(t_symbol *s, int argc, t_atom *argv);
+void *array_max_new(t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
