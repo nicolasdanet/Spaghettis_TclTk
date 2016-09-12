@@ -364,32 +364,6 @@ static void array_get_float(t_array_rangeop *x, t_float f)
     array_get_bang(x);
 }
 
-/* --------------  array set -- copy list to array -------------- */
-static t_class *array_set_class;
-
-#define t_array_set t_array_rangeop
-
-static void *array_set_new(t_symbol *s, int argc, t_atom *argv)
-{
-    t_array_set *x = array_rangeop_new(array_set_class, s, &argc, &argv,
-        1, 0, 1);
-    return (x);
-}
-
-static void array_set_list(t_array_rangeop *x, t_symbol *s,
-    int argc, t_atom *argv)
-{
-    char *itemp, *firstitem;
-    int stride, nitem, arrayonset, i;
-    if (!array_rangeop_getrange(x, &firstitem, &nitem, &stride, &arrayonset))
-        return;
-    if (nitem > argc)
-        nitem = argc;
-    for (i = 0, itemp = firstitem; i < nitem; i++, itemp += stride)
-        *(t_float *)itemp = atom_getFloatAtIndex(i, argc, argv);
-    array_client_senditup(&x->x_tc);
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -509,12 +483,6 @@ void x_array_setup(void)
     class_addBang(array_get_class, array_get_bang);
     class_addFloat(array_get_class, array_get_float);
     class_setHelpName(array_get_class, sym_array);
-
-    array_set_class = class_new(sym_array__space__set,
-        (t_newmethod)array_set_new, (t_method)array_client_free,
-            sizeof(t_array_set), 0, A_GIMME, 0);
-    class_addList(array_set_class, array_set_list);
-    class_setHelpName(array_set_class, sym_array);
 }
 
 // -----------------------------------------------------------------------------------------------------------
