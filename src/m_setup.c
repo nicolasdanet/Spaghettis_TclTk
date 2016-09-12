@@ -87,6 +87,7 @@ void x_connective_setup     (void);
 void x_time_setup           (void);
 void x_arithmetic_setup     (void);
 void x_array_setup          (void);
+void arraymin_setup         (void);
 void x_midi_setup           (void);
 void x_misc_setup           (void);
 void x_net_setup            (void);
@@ -166,6 +167,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     x_time_setup();
     x_arithmetic_setup();
     x_array_setup();
+    arraymin_setup();
     x_midi_setup();
     x_misc_setup();
     x_net_setup();

@@ -55,6 +55,15 @@ typedef struct _array_client {
     t_glist         *tc_canvas;
     } t_array_client;
 
+typedef struct _array_rangeop   /* any operation meaningful on a subrange */
+{
+    t_array_client x_tc;
+    t_float x_onset;
+    t_float x_n;
+    t_symbol *x_elemfield;
+    t_symbol *x_elemtemplate;   /* unused - perhaps should at least check it */
+} t_array_rangeop;
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -119,6 +128,15 @@ void        qlist_write                 (t_qlist *x, t_symbol *name);
 t_array     *array_client_getbuf        (t_array_client *x, t_glist **glist);
 void        array_client_senditup       (t_array_client *x);
 void        array_client_free           (t_array_client *x);
+
+void *array_rangeop_new(t_class *class,
+    t_symbol *s, int *argcp, t_atom **argvp,
+    int onsetin, int nin, int warnextra);
+    
+int array_rangeop_getrange(t_array_rangeop *x,
+    char **firstitemp, int *nitemp, int *stridep, int *arrayonsetp);
+
+void *array_min_new(t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
