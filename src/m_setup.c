@@ -87,6 +87,7 @@ void x_connective_setup     (void);
 void x_time_setup           (void);
 void x_arithmetic_setup     (void);
 void x_array_setup          (void);
+void arraysize_setup        (void);
 void arraysum_setup         (void);
 void arrayget_setup         (void);
 void arrayset_setup         (void);
@@ -173,6 +174,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     x_time_setup();
     x_arithmetic_setup();
     x_array_setup();
+    arraysize_setup();
     arraysum_setup();
     arrayget_setup();
     arrayset_setup();
