@@ -1,8 +1,13 @@
-/* Copyright (c) 1997-2013 Miller Puckette and others.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-/* The "array" object. */
+/* 
+    Copyright (c) 1997-2016 Miller Puckette and others.
+*/
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #include "m_pd.h"
 #include "m_core.h"
@@ -10,14 +15,10 @@
 #include "m_alloca.h"
 #include "s_system.h"
 #include "g_graphics.h"
-#include <string.h>
-#include <stdio.h>
+#include "x_control.h"
 
-#ifdef _WIN32
-    #include <io.h>
-#else
-    #include <unistd.h>
-#endif
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 extern t_pd *pd_newest;    /* OK - this should go into a .h file now :) */
 extern t_class *garray_class;
@@ -197,91 +198,16 @@ static void array_define_ignore(t_glist *x,
 {
 }
 
-/* ---  array_client - common code for objects that refer to arrays -- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-typedef struct _array_client
-{
-    t_object tc_obj;
-    t_symbol *tc_sym;
-    t_gpointer tc_gp;
-    t_symbol *tc_struct;
-    t_symbol *tc_field;
-    t_glist *tc_canvas;
-} t_array_client;
+/* ---  array_client - common code for objects that refer to arrays -- */
 
 #define x_sym x_tc.tc_sym
 #define x_struct x_tc.tc_struct
 #define x_field x_tc.tc_field
 #define x_gp x_tc.tc_gp
-
-    /* find the array for this object.  Prints an error  message and returns
-        0 on failure. */
-static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
-{
-    if (x->tc_sym)       /* named array object */
-    {
-        t_garray *y = (t_garray *)pd_findByClass(x->tc_sym, garray_class);
-        if (y)
-        {
-            *glist = garray_getOwner(y);
-            return (garray_getArray(y));
-        }
-        else
-        {
-            post_error ("array: couldn't find named array '%s'",
-                x->tc_sym->s_name);
-            *glist = 0;
-            return (0);
-        }
-    }
-    else if (x->tc_struct)   /* by pointer */
-    {
-        t_template *template = template_findByIdentifier(x->tc_struct);
-        t_word *vec; 
-        int onset, type;
-        t_symbol *arraytype;
-        if (!template)
-        {
-            post_error ("array: couldn't find struct %s", x->tc_struct->s_name);
-            return (0);
-        }
-        if (!gpointer_isValid(&x->tc_gp))
-        {
-            post_error ("array: stale or empty pointer");
-            return (0);
-        }
-        vec = gpointer_getData (&x->tc_gp);
-
-        if (!template_findField(template,   /* Remove template_findField ASAP !!! */
-            x->tc_field, &onset, &type, &arraytype))
-        {
-            post_error ("array: no field named %s", x->tc_field->s_name);
-            return (0);
-        }
-        if (type != DATA_ARRAY)
-        {
-            post_error ("array: field %s not of type array",
-                x->tc_field->s_name);
-            return (0);
-        }
-        *glist = gpointer_getView (&x->tc_gp);
-
-        return (*(t_array **)(((char *)vec) + onset));
-    }
-    else return (0);    /* shouldn't happen */
-}
-
-static void array_client_senditup(t_array_client *x)
-{
-    t_glist *glist = 0;
-    t_array *a = array_client_getbuf(x, &glist);
-    array_redraw(a, glist);
-}
-
-static void array_client_free(t_array_client *x)
-{
-    gpointer_unset(&x->tc_gp);
-}
 
 /* ----------  array size : get or set size of an array ---------------- */
 static t_class *array_size_class;
@@ -906,3 +832,6 @@ void x_array_setup(void )
     class_addBang(array_min_class, array_min_bang);
     class_setHelpName(array_min_class, sym_array);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

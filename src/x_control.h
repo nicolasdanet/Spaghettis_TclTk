@@ -42,7 +42,19 @@ typedef struct _qlist {
     t_outlet        *ql_outletRight;
     t_clock         *ql_clock;
     } t_qlist;
-    
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _array_client {
+    t_object        tc_obj;
+    t_symbol        *tc_sym;
+    t_gpointer      tc_gp;
+    t_symbol        *tc_struct;
+    t_symbol        *tc_field;
+    t_glist         *tc_canvas;
+    } t_array_client;
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -99,6 +111,14 @@ void        qlist_add                   (t_qlist *x, t_symbol *s, int argc, t_at
 void        qlist_append                (t_qlist *x, t_symbol *s, int argc, t_atom *argv);
 void        qlist_read                  (t_qlist *x, t_symbol *name);
 void        qlist_write                 (t_qlist *x, t_symbol *name);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_array     *array_client_getbuf        (t_array_client *x, t_glist **glist);
+void        array_client_senditup       (t_array_client *x);
+void        array_client_free           (t_array_client *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

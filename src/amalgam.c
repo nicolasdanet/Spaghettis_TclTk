@@ -130,6 +130,7 @@
 #include "x_textsequence.c"
 #include "x_qlist.c"
 #include "x_textfile.c"
+#include "x_arrayclient.c"
 
 /* DSP. */
 
