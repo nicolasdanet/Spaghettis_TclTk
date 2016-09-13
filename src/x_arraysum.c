@@ -75,7 +75,7 @@ static void array_sum_bang (t_arrayrange *x)
     int i, n;
     t_array *a = arrayrange_getRange (x, &i, &n);
     double sum = 0.0;
-    for (i = 0; i < n; i++) { sum += array_getFloatAtIndex (a, i, arrayrange_getField (x)); }
+    for (i = 0; i < n; i++) { sum += array_getFloatAtIndex (a, i, arrayrange_getFieldName (x)); }
     outlet_float (x->x_outlet, sum);
     //
     }

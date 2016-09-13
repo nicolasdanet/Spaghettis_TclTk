@@ -48,6 +48,8 @@ void *arrayrange_new (t_class *class, int argc, t_atom *argv, int onset, int siz
         }
     }
     
+    error__options (class_getName (class), argc, argv);
+    
     if (!err) { 
     
         if (onset) { inlet_newFloat (cast_object (x), &x->ar_first); }
@@ -112,7 +114,7 @@ t_array *arrayrange_getRange (t_arrayrange *x, int *i, int *n)
     return a;
 }
 
-t_symbol *arrayrange_getField (t_arrayrange *x)
+t_symbol *arrayrange_getFieldName (t_arrayrange *x)
 {
     return x->ar_fieldName;
 }

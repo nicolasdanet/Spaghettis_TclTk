@@ -144,12 +144,12 @@ t_array     *arrayclient_fetchArray         (t_arrayclient *x);
 
 void        *arrayrange_new                 (t_class *c, int argc, t_atom *argv, int onset, int size);
 t_array     *arrayrange_getRange            (t_arrayrange *x, int *i, int *n);
-t_symbol    *arrayrange_getField            (t_arrayrange *x);
+t_symbol    *arrayrange_getFieldName        (t_arrayrange *x);
 
 int         arrayrange_isValid              (t_arrayrange *x);
 int         arrayrange_setFirst             (t_arrayrange *x, t_float f);
 
-int         array_rangeop_getrange          (t_arrayrange *x, 
+int         array_rangeop_getrange          (t_arrayrange *x,   /* ASAP */
                                                 char **firstitemp,
                                                 int *nitemp,
                                                 int *stridep,
