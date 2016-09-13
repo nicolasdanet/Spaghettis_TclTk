@@ -17,25 +17,22 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pd *pd_newest;    /* OK - this should go into a .h file now :) */
-extern t_class *garray_class;
+extern t_pd *pd_newest;
 
-/* -- "table" - classic "array define" object by Guenter Geiger --*/
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static int tabcount = 0;
-
-void *table_donew(t_symbol *s, int size, int flags, int xpix, int ypix)
+void *table_makeObject(t_symbol *s, int size, int flags, int xpix, int ypix)
 {
-    t_atom a[9];
+    t_atom a[6];
+    
     t_glist *gl;
-    t_glist *x, *z = canvas_getCurrent();
-    if (s == &s_)
-    {
-         char  tabname[255];
-         t_symbol *t = sym_table; 
-         sprintf(tabname, "%s%d", t->s_name, tabcount++);
-         s = gensym (tabname); 
-    }
+    t_glist *x;
+    t_glist *z = canvas_getCurrent();
+    
+    if (s == &s_) { s = utils_getDefaultTableName(); }
+    
     if (size < 1)
         size = 100;
     SET_FLOAT(a, 0);
@@ -58,22 +55,21 @@ void *table_donew(t_symbol *s, int size, int flags, int xpix, int ypix)
     stack_pop(&x->gl_obj.te_g.g_pd);
     x->gl_isLoading = 0;
 
-    return (x);
+    return x;
 }
 
-static void *table_new(t_symbol *s, t_float f)
+static void *table_new (t_symbol *name, t_float f)
 {
-    return (table_donew(s, f, 0, 500, 300));
+    return table_makeObject (name, f, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void table_setup(void)
+void table_setup (void)
 {
-    class_addCreator((t_newmethod)table_new, sym_table,
-        A_DEFSYMBOL, A_DEFFLOAT, 0);
+    class_addCreator ((t_newmethod)table_new, sym_table, A_DEFSYMBOL, A_DEFFLOAT, A_NULL);
 }
 
 // -----------------------------------------------------------------------------------------------------------

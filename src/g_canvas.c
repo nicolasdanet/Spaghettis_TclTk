@@ -275,7 +275,7 @@ static void canvas_requireArray (t_glist *glist)
     char t[PD_STRING] = { 0 };
     
     while (!err) {
-        err = string_sprintf (t, PD_STRING, "array%d", i);
+        err = string_sprintf (t, PD_STRING, "%s%d", sym_array->s_name, i);
         if (!pd_findByClass (gensym (t), garray_class)) { break; }
         i++;
         PD_ABORT (i < 0);

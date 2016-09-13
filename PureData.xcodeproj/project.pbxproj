@@ -930,9 +930,9 @@
 				378971CE1C4F716700263434 /* g_box.c */,
 				377899A41CFED7B60056BE61 /* g_message.c */,
 				378971D11C4F716700263434 /* g_text.c */,
+				372220551D884C6B0045BC57 /* g_table.c */,
 				377899DC1CFEDB5B0056BE61 /* g_gatom.c */,
 				378971BF1C4F716700263434 /* g_garray.c */,
-				372220551D884C6B0045BC57 /* g_table.c */,
 				3720EBB41D239650001675BD /* g_vinlet.c */,
 				3720EBB51D239650001675BD /* g_voutlet.c */,
 			);

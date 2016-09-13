@@ -120,6 +120,20 @@ t_symbol *utils_substituteIfEmpty (t_symbol *s, int asDash)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_symbol *utils_getDefaultTableName (void)
+{
+    static int tableCount = 0;          /* Shared. */
+    
+    char t[PD_STRING] = { 0 };
+    t_error err = string_sprintf (t, PD_STRING, "%s%d", sym_table->s_name, ++tableCount);
+    PD_ASSERT (!err);
+    return gensym (t); 
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_symbol *utils_makeBindSymbol (t_symbol *s)
 {
     t_error err = PD_ERROR_NONE;
