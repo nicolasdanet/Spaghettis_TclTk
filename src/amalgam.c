@@ -86,6 +86,7 @@
 #include "g_text.c"
 #include "g_gatom.c"
 #include "g_garray.c"
+#include "g_table.c"
 #include "g_vinlet.c"
 #include "g_voutlet.c"
 #include "g_iem.c"
@@ -132,6 +133,7 @@
 #include "x_textfile.c"
 #include "x_arrayclient.c"
 #include "x_arrayrange.c"
+#include "x_array.c"
 
 /* DSP. */
 
