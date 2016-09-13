@@ -59,7 +59,7 @@ static void array_get_bang(t_arrayrange *x)
 
 static void array_get_float(t_arrayrange *x, t_float f)
 {
-    x->ar_onset = f;
+    x->ar_first = f;
     array_get_bang(x);
 }
 

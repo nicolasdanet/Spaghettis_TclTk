@@ -49,6 +49,11 @@ void *array_sum_new(t_symbol *s, int argc, t_atom *argv)
     return (x);
 }
 
+/*
+print: 0.653327
+print: 21
+print: -83
+
 static void array_sum_bang(t_arrayrange *x)
 {
     char *itemp, *firstitem;
@@ -60,10 +65,25 @@ static void array_sum_bang(t_arrayrange *x)
         sum += *(t_float *)itemp;
     outlet_float(x->x_outlet, sum);
 }
+*/
+
+static void array_sum_bang (t_arrayrange *x)
+{
+    if (!arrayrange_isValid (x)) { error_invalid (sym_array__space__sum, sym_field); }
+    else {
+    //
+    int i, n;
+    t_array *a = arrayrange_getRange (x, &i, &n);
+    double sum = 0.0;
+    for (i = 0; i < n; i++) { sum += array_getFloatAtIndex (a, i, arrayrange_getField (x)); }
+    outlet_float (x->x_outlet, sum);
+    //
+    }
+}
 
 static void array_sum_float(t_arrayrange *x, t_float f)
 {
-    x->ar_onset = f;
+    x->ar_first = f;
     array_sum_bang(x);
 }
 

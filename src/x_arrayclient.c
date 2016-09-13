@@ -90,7 +90,7 @@ t_array *arrayclient_fetchArray (t_arrayclient *x)
     
         if (gpointer_isValidInstanceOf (&x->ac_gpointer, x->ac_templateIdentifier)) {
             if (gpointer_hasField (&x->ac_gpointer, x->ac_fieldName)) {
-                if (gpointer_fieldIsArray (&x->ac_gpointer, x->ac_fieldName)) {
+                if (gpointer_fieldIsArrayAndValid (&x->ac_gpointer, x->ac_fieldName)) {
                     return gpointer_getArray (&x->ac_gpointer, x->ac_fieldName);
                     
         } else { error_invalid (sym_array, x->ac_fieldName); }
@@ -116,7 +116,7 @@ t_glist *arrayclient_fetchView (t_arrayclient *x)
     
         if (gpointer_isValidInstanceOf (&x->ac_gpointer, x->ac_templateIdentifier)) {
             if (gpointer_hasField (&x->ac_gpointer, x->ac_fieldName)) {
-                if (gpointer_fieldIsArray (&x->ac_gpointer, x->ac_fieldName)) {
+                if (gpointer_fieldIsArrayAndValid (&x->ac_gpointer, x->ac_fieldName)) {
                     return gpointer_getView (&x->ac_gpointer);
                     
         } else { error_invalid (sym_array, x->ac_fieldName); }

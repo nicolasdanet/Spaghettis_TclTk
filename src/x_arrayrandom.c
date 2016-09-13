@@ -69,7 +69,7 @@ static void array_random_bang(t_array_random *x)
 
 static void array_random_float(t_array_random *x, t_float f)
 {
-    x->x_r.ar_onset = f;
+    x->x_r.ar_first = f;
     array_random_bang(x);
 }
 

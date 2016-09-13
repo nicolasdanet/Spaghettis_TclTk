@@ -26,7 +26,7 @@ void *arrayrange_new (t_class *class, int argc, t_atom *argv, int onset, int siz
     
     if (!err) {
 
-        x->ar_onset     = 0;
+        x->ar_first     = 0;
         x->ar_size      = -1;
         x->ar_fieldName = sym_y; 
             
@@ -50,10 +50,10 @@ void *arrayrange_new (t_class *class, int argc, t_atom *argv, int onset, int siz
     
     if (!err) { 
     
-        if (onset) { inlet_newFloat (cast_object (x), &x->ar_onset); }
+        if (onset) { inlet_newFloat (cast_object (x), &x->ar_first); }
         if (size)  { inlet_newFloat (cast_object (x), &x->ar_size); }
         
-        if (argc && IS_FLOAT (argv)) { x->ar_onset = GET_FLOAT (argv); argc--; argv++; }
+        if (argc && IS_FLOAT (argv)) { x->ar_first = GET_FLOAT (argv); argc--; argv++; }
         if (argc && IS_FLOAT (argv)) { x->ar_size  = GET_FLOAT (argv); argc--; argv++; }
 
         if (argc) { warning_unusedArguments (class_getName (class), argc, argv); }
@@ -70,8 +70,58 @@ void *arrayrange_new (t_class *class, int argc, t_atom *argv, int onset, int siz
     return NULL;
 }
 
-int array_rangeop_getrange(t_arrayrange *x,
-    char **firstitemp, int *nitemp, int *stridep, int *arrayonsetp)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int arrayrange_setFirst (t_arrayrange *x, t_float f)
+{
+    x->ar_first = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int arrayrange_isValid (t_arrayrange *x)
+{
+    t_array *a = arrayclient_fetchArray (&x->ar_arrayclient);
+    
+    if (a) { return template_fieldIsFloat (array_getTemplate (a), x->ar_fieldName); }
+    
+    return 0;
+}
+
+t_array *arrayrange_getRange (t_arrayrange *x, int *i, int *n)
+{
+    t_array *a = arrayclient_fetchArray (&x->ar_arrayclient);
+    
+    PD_ASSERT (a);
+    
+    int size = array_getSize (a);
+    int count, first = PD_CLAMP (x->ar_first, 0, size);
+    
+    if (x->ar_size < 0) { count = size - first; }
+    else {
+        count = x->ar_size; if (first + count > size) { count = size - first; }
+    }
+    
+    *i = first;
+    *n = count;
+    
+    return a;
+}
+
+t_symbol *arrayrange_getField (t_arrayrange *x)
+{
+    return x->ar_fieldName;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int array_rangeop_getrange (t_arrayrange *x, char **firstitemp, int *nitemp, int *stridep, int *arrayonsetp)
 {
     //t_glist *glist;
     t_array *a = arrayclient_fetchArray (&x->ar_arrayclient);
@@ -89,7 +139,7 @@ int array_rangeop_getrange(t_arrayrange *x,
         return (0);
     }
     stride = a->a_stride;   /* Encapsulate ASAP. */
-    arrayonset = x->ar_onset;
+    arrayonset = x->ar_first;
     if (arrayonset < 0)
         arrayonset = 0;
     else if (arrayonset > array_getSize (a))
@@ -102,6 +152,7 @@ int array_rangeop_getrange(t_arrayrange *x,
         if (nitem + arrayonset > array_getSize (a))
             nitem = array_getSize (a) - arrayonset;
     }
+    
     *firstitemp = a->a_vector+(fieldonset+arrayonset*stride);   /* Encapsulate ASAP. */
     *nitemp = nitem;
     *stridep = stride;

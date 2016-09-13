@@ -68,7 +68,7 @@ static void array_max_bang(t_array_max *x)
 
 static void array_max_float(t_array_max *x, t_float f)
 {
-    x->x_rangeop.ar_onset = f;
+    x->x_rangeop.ar_first = f;
     array_max_bang(x);
 }
 

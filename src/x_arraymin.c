@@ -67,7 +67,7 @@ static void array_min_bang(t_array_min *x)
 
 static void array_min_float(t_array_min *x, t_float f)
 {
-    x->x_rangeop.ar_onset = f;
+    x->x_rangeop.ar_first = f;
     array_min_bang(x);
 }
 
