@@ -131,6 +131,7 @@
 #include "x_qlist.c"
 #include "x_textfile.c"
 #include "x_arrayclient.c"
+#include "x_arrayrange.c"
 
 /* DSP. */
 
