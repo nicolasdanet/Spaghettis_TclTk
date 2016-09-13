@@ -90,18 +90,22 @@ void *array_size_new(t_symbol *s, int argc, t_atom *argv)
 
 static void array_size_bang(t_array_size *x)
 {
-    t_glist *glist;
-    t_array *a = arrayclient_fetchArray(&x->ar_arrayclient, &glist);
+    //t_glist *glist;
+    t_array *a = arrayclient_fetchArray (&x->ar_arrayclient);
     if (a)
         outlet_float(x->x_outlet, array_getSize (a));
 }
 
 static void array_size_float(t_array_size *x, t_float f)
 {
-    t_glist *glist;
-    t_array *a = arrayclient_fetchArray(&x->ar_arrayclient, &glist);
+    t_glist *glist = arrayclient_fetchView (&x->ar_arrayclient);
+    t_array *a = arrayclient_fetchArray (&x->ar_arrayclient);
     if (a)
     {
+            int n = f;
+            if (n < 1)
+                n = 1;
+                
               /* if it's a named array object we have to go back and find the
               garray (repeating work done in arrayclient_fetchArray()) because
               the garray might want to adjust.  Maybe arrayclient_fetchArray
@@ -109,14 +113,11 @@ static void array_size_float(t_array_size *x, t_float f)
         if (x->ar_arrayclient.ac_name)
         {
             t_garray *y = (t_garray *)pd_findByClass(x->ar_arrayclient.ac_name, garray_class);
-            garray_resizeWithInteger (y, (int)f);
+            garray_resizeWithInteger (y, n);
         }
         else
         {
-            int n = f;
-            if (n < 1)
-                n = 1;
-             array_resizeAndRedraw(a, glist, n);
+            array_resizeAndRedraw(a, glist, n);
         }
     }
 }

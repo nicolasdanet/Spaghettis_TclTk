@@ -131,11 +131,11 @@ void        qlist_write                 (t_qlist *x, t_symbol *name);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_array     *arrayclient_fetchArray     (t_arrayclient *x, t_glist **glist);
-t_glist     *arrayclient_fetchView      (t_arrayclient *x);
-
-void        arrayclient_update          (t_arrayclient *x);
 void        arrayclient_free            (t_arrayclient *x);
+void        arrayclient_update          (t_arrayclient *x);
+
+t_glist     *arrayclient_fetchView      (t_arrayclient *x);
+t_array     *arrayclient_fetchArray     (t_arrayclient *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
