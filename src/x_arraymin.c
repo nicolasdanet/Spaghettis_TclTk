@@ -41,8 +41,9 @@ typedef struct _array_min
 
 void *array_min_new(t_symbol *s, int argc, t_atom *argv)
 {
-    t_array_min *x = array_rangeop_new(array_min_class, s, &argc, &argv,
-        0, 1, 1);
+    t_array_min *x = arrayrange_new(array_min_class, argc, argv,
+        0, 1);
+    if (!x) { return NULL; } /* FREE & WARN ! */
     x->x_out1 = outlet_new(&x->x_rangeop.ar_arrayclient.ac_obj, &s_float);
     x->x_out2 = outlet_new(&x->x_rangeop.ar_arrayclient.ac_obj, &s_float);
     return (x);

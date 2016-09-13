@@ -36,8 +36,9 @@ static t_class *array_quantile_class;
 
 void *array_quantile_new(t_symbol *s, int argc, t_atom *argv)
 {
-    t_array_quantile *x = array_rangeop_new(array_quantile_class, s,
-        &argc, &argv, 1, 1, 1);
+    t_array_quantile *x = arrayrange_new(array_quantile_class,
+        argc, argv, 1, 1);
+    if (!x) { return NULL; } /* FREE & WARN ! */
     outlet_new(&x->ar_arrayclient.ac_obj, &s_float);
     return (x);
 }

@@ -32,8 +32,9 @@ static t_class *array_set_class;
 
 void *array_set_new(t_symbol *s, int argc, t_atom *argv)
 {
-    t_array_set *x = array_rangeop_new(array_set_class, s, &argc, &argv,
-        1, 0, 1);
+    t_array_set *x = arrayrange_new(array_set_class, argc, argv,
+        1, 0);
+    if (!x) { return NULL; } /* FREE & WARN ! */
     return (x);
 }
 

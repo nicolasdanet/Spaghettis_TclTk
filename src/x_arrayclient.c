@@ -23,6 +23,49 @@ extern t_class *garray_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+t_error arrayclient_init (t_arrayclient *x, int *ac, t_atom **av)
+{
+    int argc = *ac;
+    t_atom *argv = *av;
+    
+    x->ac_name               = NULL;
+    x->ac_templateIdentifier = NULL;
+    x->ac_fieldName          = NULL;
+    
+    gpointer_init (&x->ac_gpointer);
+    
+    while (argc && IS_SYMBOL (argv)) {
+    //
+    t_symbol *t = GET_SYMBOL (argv);
+    
+    if (t == sym___dash__s || t == sym___dash__t || t == sym___dash__template) {
+        if (argc >= 3 && IS_SYMBOL (argv + 1) && IS_SYMBOL (argv + 2)) {
+            x->ac_templateIdentifier = template_makeIdentifierWithWildcard (GET_SYMBOL (argv + 1));
+            x->ac_fieldName = GET_SYMBOL (argv + 2);
+            argc -= 3; argv += 3;
+        } else {
+            return PD_ERROR;
+        }
+    } 
+
+    break;
+    //
+    }
+
+    if (!x->ac_templateIdentifier && argc) {
+        if (!IS_SYMBOL (argv)) { return PD_ERROR; }
+        else {
+            x->ac_name = GET_SYMBOL (argv); 
+            argc--; argv++;
+        }
+    }
+    
+    *ac = argc;
+    *av = argv;
+    
+    return PD_ERROR_NONE;
+}
+
 void arrayclient_free (t_arrayclient *x)
 {
     gpointer_unset (&x->ac_gpointer);
@@ -31,118 +74,6 @@ void arrayclient_free (t_arrayclient *x)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-/*
-t_array *arrayclient_fetchArray(t_arrayclient *x, t_glist **glist)
-{
-    if (x->ac_name)
-    {
-        t_garray *y = (t_garray *)pd_findByClass (x->ac_name, garray_class);
-        
-        if (y)
-        {
-            *glist = garray_getOwner(y);
-            return (garray_getArray(y));
-        }
-        else
-        {
-            post_error ("array: couldn't find named array '%s'",
-                x->ac_name->s_name);
-            *glist = 0;
-            return (0);
-        }
-    }
-    else if (x->ac_templateIdentifier)
-    {
-        t_template *template = template_findByIdentifier(x->ac_templateIdentifier);
-        t_word *vec; 
-        int onset, type;
-        t_symbol *arraytype;
-        if (!template)
-        {
-            post_error ("array: couldn't find struct %s", x->ac_templateIdentifier->s_name);
-            return (0);
-        }
-        if (!gpointer_isValid(&x->ac_gpointer))
-        {
-            post_error ("array: stale or empty pointer");
-            return (0);
-        }
-        vec = gpointer_getData (&x->ac_gpointer);
-
-        if (!template_findField(template,
-            x->ac_fieldName, &onset, &type, &arraytype))
-        {
-            post_error ("array: no field named %s", x->ac_fieldName->s_name);
-            return (0);
-        }
-        if (type != DATA_ARRAY)
-        {
-            post_error ("array: field %s not of type array",
-                x->ac_fieldName->s_name);
-            return (0);
-        }
-        *glist = gpointer_getView (&x->ac_gpointer);
-
-        return (*(t_array **)(((char *)vec) + onset));
-    }
-    else return (0);
-}
-*/
-
-/*
-t_buffer *textclient_fetchBuffer (t_textclient *x)
-{
-    if (x->tc_name) {
-
-        t_textbuffer *y = (t_textbuffer *)pd_findByClass (x->tc_name, textdefine_class);
-
-        if (y) { return textbuffer_getBuffer (y); }
-        else {
-            error_canNotFind (sym_text, x->tc_name);
-        }
-
-    } else if (x->tc_templateIdentifier) {
-
-        if (gpointer_isValidInstanceOf (&x->tc_gpointer, x->tc_templateIdentifier)) {
-            if (gpointer_hasField (&x->tc_gpointer, x->tc_fieldName)) {
-                if (gpointer_fieldIsText (&x->tc_gpointer, x->tc_fieldName)) {
-                    return gpointer_getText (&x->tc_gpointer, x->tc_fieldName);
-                    
-        } else { error_invalid (sym_text, x->tc_fieldName); }
-        } else { error_missingField (sym_text, x->tc_fieldName); }
-        } else { error_invalid (sym_text, &s_pointer); }
-    }
-    
-    return NULL;
-}
-
-t_glist *textclient_fetchView (t_textclient *x)
-{
-    if (x->tc_name) {
-
-        t_textbuffer *y = (t_textbuffer *)pd_findByClass (x->tc_name, textdefine_class);
-
-        if (y) { return textbuffer_getView (y); }
-        else {
-            error_canNotFind (sym_text, x->tc_name);
-        }
-
-    } else if (x->tc_templateIdentifier) {
-
-        if (gpointer_isValidInstanceOf (&x->tc_gpointer, x->tc_templateIdentifier)) {
-            if (gpointer_hasField (&x->tc_gpointer, x->tc_fieldName)) {
-                if (gpointer_fieldIsText (&x->tc_gpointer, x->tc_fieldName)) {
-                    return gpointer_getView (&x->tc_gpointer);
-                    
-        } else { error_invalid (sym_text, x->tc_fieldName); }
-        } else { error_missingField (sym_text, x->tc_fieldName); }
-        } else { error_invalid (sym_text, &s_pointer); }
-    }
-    
-    return NULL;
-}
-*/
 
 t_array *arrayclient_fetchArray (t_arrayclient *x)
 {

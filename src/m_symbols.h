@@ -48,6 +48,8 @@ extern t_symbol *sym___comma__;
 extern t_symbol *sym___dash__;
 extern t_symbol *sym___dash__c;
 extern t_symbol *sym___dash__curve;
+extern t_symbol *sym___dash__f;
+extern t_symbol *sym___dash__field;
 extern t_symbol *sym___dash__g;
 extern t_symbol *sym___dash__global;
 extern t_symbol *sym___dash__i;

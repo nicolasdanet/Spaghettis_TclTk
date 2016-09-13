@@ -42,8 +42,9 @@ typedef struct _array_max
 
 void *array_max_new(t_symbol *s, int argc, t_atom *argv)
 {
-    t_array_max *x = array_rangeop_new(array_max_class, s, &argc, &argv,
-        0, 1, 1);
+    t_array_max *x = arrayrange_new(array_max_class, argc, argv,
+        0, 1);
+    if (!x) { return NULL; } /* FREE & WARN ! */
     x->x_out1 = outlet_new(&x->x_rangeop.ar_arrayclient.ac_obj, &s_float);
     x->x_out2 = outlet_new(&x->x_rangeop.ar_arrayclient.ac_obj, &s_float);
     return (x);

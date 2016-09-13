@@ -43,6 +43,8 @@ t_symbol *sym___comma__;
 t_symbol *sym___dash__;
 t_symbol *sym___dash__c;
 t_symbol *sym___dash__curve;
+t_symbol *sym___dash__f;
+t_symbol *sym___dash__field;
 t_symbol *sym___dash__g;
 t_symbol *sym___dash__global;
 t_symbol *sym___dash__i;
@@ -577,6 +579,8 @@ void symbols_initialize (void)
     sym___dash__                                = gensym ("-");
     sym___dash__c                               = gensym ("-c");
     sym___dash__curve                           = gensym ("-curve");
+    sym___dash__f                               = gensym ("-f");
+    sym___dash__field                           = gensym ("-field");
     sym___dash__g                               = gensym ("-g");
     sym___dash__global                          = gensym ("-global");
     sym___dash__i                               = gensym ("-i");

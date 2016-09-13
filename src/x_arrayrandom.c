@@ -40,8 +40,9 @@ typedef struct _array_random   /* any operation meaningful on a subrange */
 
 void *array_random_new(t_symbol *s, int argc, t_atom *argv)
 {
-    t_array_random *x = array_rangeop_new(array_random_class, s,
-        &argc, &argv, 0, 1, 1);
+    t_array_random *x = arrayrange_new(array_random_class,
+        argc, argv, 0, 1);
+    if (!x) { return NULL; } /* FREE & WARN ! */
     static unsigned int random_nextseed = 584926371;
     random_nextseed = random_nextseed * 435898247 + 938284287;
     x->x_state = random_nextseed;

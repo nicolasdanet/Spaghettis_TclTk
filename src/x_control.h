@@ -131,6 +131,7 @@ void        qlist_write                 (t_qlist *x, t_symbol *name);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_error     arrayclient_init            (t_arrayclient *x, int *argc, t_atom **argv);
 void        arrayclient_free            (t_arrayclient *x);
 void        arrayclient_update          (t_arrayclient *x);
 
@@ -141,13 +142,7 @@ t_array     *arrayclient_fetchArray     (t_arrayclient *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        *array_rangeop_new          (t_class *class, 
-                                            t_symbol *s,
-                                            int *argcp,
-                                            t_atom **argvp,
-                                            int onsetin,
-                                            int nin,
-                                            int warnextra);
+void        *arrayrange_new             (t_class *c, int argc, t_atom *argv, int onset, int size);
     
 int         array_rangeop_getrange      (t_arrayrange *x, 
                                             char **firstitemp,

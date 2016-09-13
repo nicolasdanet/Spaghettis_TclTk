@@ -42,8 +42,9 @@ static t_class *array_sum_class;
 
 void *array_sum_new(t_symbol *s, int argc, t_atom *argv)
 {
-    t_array_sum *x = array_rangeop_new(array_sum_class, s, &argc, &argv,
-        0, 1, 1);
+    t_array_sum *x = arrayrange_new(array_sum_class, argc, argv,
+        0, 1);
+    if (!x) { return NULL; } /* FREE & WARN ! */
     outlet_new(&x->ar_arrayclient.ac_obj, &s_float);
     return (x);
 }
