@@ -217,6 +217,11 @@ void error_invalidArgumentsForMethod (t_symbol *s1, t_symbol *s2, int argc, t_at
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void warning_badName (t_symbol *s1, t_symbol *s2)
+{
+    post_error (PD_TRANSLATE ("%s: bad name %s"), s1->s_name, s2->s_name);
+}
+
 void warning_unusedOption (t_symbol *s1, t_symbol *s2)
 {
     post_error (PD_TRANSLATE ("%s: unused option %s"), s1->s_name, s2->s_name);

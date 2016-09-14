@@ -86,6 +86,8 @@ static void *subpatch_new (t_symbol *s)
     t_glist *x = NULL;
     t_glist *z = canvas_getCurrent();
     
+    if (!utils_isNameAllowedForWindow (s)) { warning_badName (sym_pd, s); }
+    
     if (s == &s_) { s = sym_Patch; }
     
     SET_FLOAT  (a + 0, 0.0);
@@ -459,6 +461,8 @@ static void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     if (argc) { warning_unusedArguments (class_getName (pd_class (glist)), argc, argv); }
     //
     }
+    
+    if (!utils_isNameAllowedForWindow (name)) { warning_badName (sym_pd, name); }
     
     canvas_setName (glist, (name == &s_ ? sym_Patch : name));
 }
