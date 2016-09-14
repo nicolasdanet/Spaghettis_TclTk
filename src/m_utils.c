@@ -120,7 +120,7 @@ t_symbol *utils_substituteIfEmpty (t_symbol *s, int asDash)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol *utils_getDefaultName (t_class *class, t_symbol *prefix)
+t_symbol *utils_getDefaultBindName (t_class *class, t_symbol *prefix)
 {
     int i = 1;
     char t[PD_STRING] = { 0 };

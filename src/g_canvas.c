@@ -271,7 +271,7 @@ void canvas_disconnect (t_glist *glist,
 static void canvas_requireArray (t_glist *glist)
 {
     char t[PD_STRING] = { 0 };
-    t_symbol *s = utils_getDefaultName (garray_class, sym_array);
+    t_symbol *s = utils_getDefaultBindName (garray_class, sym_array);
     t_error err = string_sprintf (t, PD_STRING, "::ui_array::show %%s %s 100 3\n", s->s_name);
     
     PD_ASSERT (!err);

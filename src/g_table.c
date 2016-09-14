@@ -31,14 +31,14 @@ void *table_makeObject (t_symbol *name, t_float size, t_float flags)
     t_glist *z = canvas_getCurrent();
     t_atom a[6];
     
-    if (name == &s_) { name = utils_getDefaultName (garray_class, sym_table); }
+    if (name == &s_) { name = utils_getDefaultBindName (garray_class, sym_table); }
     if (size < 1.0)  { size = GRAPH_DEFAULT_END; }
     
     SET_FLOAT  (a + 0, 0.0);
     SET_FLOAT  (a + 1, WINDOW_HEADER);
     SET_FLOAT  (a + 2, WINDOW_WIDTH);
     SET_FLOAT  (a + 3, WINDOW_HEIGHT);
-    SET_SYMBOL (a + 4, name);
+    SET_SYMBOL (a + 4, sym_Array);
     SET_FLOAT  (a + 5, 0.0);
     
     x = canvas_new (NULL, NULL, 6, a);
