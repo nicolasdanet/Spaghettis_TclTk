@@ -681,7 +681,7 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
 
 /* Create a graph on parent fit for arrays. */
 
-t_glist *canvas_newGraph (t_glist *glist,
+t_glist *canvas_newGraphOnParent (t_glist *glist,
     t_float valueStart,
     t_float valueUp,
     t_float valueEnd,

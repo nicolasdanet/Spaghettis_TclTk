@@ -23,33 +23,40 @@ extern t_pd *pd_newest;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void *table_makeObject(t_symbol *s, int size, int flags, int xpix, int ypix)
+void *table_makeObject (t_symbol *name, t_float size, t_float flags)
 {
+    t_glist *x = NULL;
+    t_glist *y = NULL;
+    t_glist *z = canvas_getCurrent();
     t_atom a[6];
     
-    t_glist *gl;
-    t_glist *x;
-    t_glist *z = canvas_getCurrent();
+    if (name == &s_) { name = utils_getDefaultTableName(); }
+    if (size < 1.0)  { size = GRAPH_DEFAULT_END; }
     
-    if (s == &s_) { s = utils_getDefaultTableName(); }
+    SET_FLOAT  (a + 0, 0.0);
+    SET_FLOAT  (a + 1, WINDOW_HEADER);
+    SET_FLOAT  (a + 2, WINDOW_WIDTH);
+    SET_FLOAT  (a + 3, WINDOW_HEIGHT);
+    SET_SYMBOL (a + 4, name);
+    SET_FLOAT  (a + 5, 0.0);
     
-    if (size < 1)
-        size = 100;
-    SET_FLOAT(a, 0);
-    SET_FLOAT(a+1, 50);
-    SET_FLOAT(a+2, xpix + 100);
-    SET_FLOAT(a+3, ypix + 100);
-    SET_SYMBOL(a+4, s);
-    SET_FLOAT(a+5, 0);
     x = canvas_new (NULL, NULL, 6, a);
-
+    
+    PD_ASSERT (x);
+    
     x->gl_parent = z;
 
-        /* create a graph for the table */
-    gl = canvas_newGraph((t_glist*)x, 0, -1, (size > 1 ? size-1 : 1), 1,
-        50, ypix+50, xpix+50, 50);
+    y = canvas_newGraphOnParent (x,
+            GRAPH_DEFAULT_START,
+            GRAPH_DEFAULT_UP,
+            size,
+            GRAPH_DEFAULT_DOWN,
+            GRAPH_DEFAULT_X,
+            GRAPH_DEFAULT_Y,
+            GRAPH_DEFAULT_X + GRAPH_DEFAULT_WIDTH,
+            GRAPH_DEFAULT_Y + GRAPH_DEFAULT_HEIGHT);
 
-    garray_makeObject(gl, s, &s_float, size, flags);
+    garray_makeObject (y, name, size, flags);
 
     pd_newest = &x->gl_obj.te_g.g_pd;     /* mimic action of canvas_pop() */
     stack_pop(&x->gl_obj.te_g.g_pd);
@@ -58,9 +65,9 @@ void *table_makeObject(t_symbol *s, int size, int flags, int xpix, int ypix)
     return x;
 }
 
-static void *table_new (t_symbol *name, t_float f)
+static void *table_new (t_symbol *name, t_float size)
 {
-    return table_makeObject (name, f, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+    return table_makeObject (name, size, 0.0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

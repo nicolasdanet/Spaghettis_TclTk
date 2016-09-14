@@ -459,8 +459,8 @@ void gatom_makeObject (t_glist *glist, t_atomtype type, t_symbol *s, int argc, t
     
     if (type == A_FLOAT) {
         t_atom a;
-        SET_FLOAT (&x->a_atom, 0);
-        SET_FLOAT (&a, 0);
+        SET_FLOAT (&x->a_atom, 0.0);
+        SET_FLOAT (&a, 0.0);
         buffer_appendAtom (cast_object (x)->te_buffer, &a);
         
     } else {

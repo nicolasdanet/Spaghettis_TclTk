@@ -145,7 +145,7 @@ static void *array_define_new(t_symbol *s, int argc, t_atom *argv)
         post("warning: array define ignoring extra argument: ");
         error__post (argc, argv);
     }
-    x = (t_glist *)table_makeObject(arrayname, arraysize, keep, xpix, ypix);
+    x = (t_glist *)table_makeObject(arrayname, arraysize, keep);
     
         /* bash the class to "array define".  We don't do this earlier in
         part so that canvas_getCurrent() will work while the glist and

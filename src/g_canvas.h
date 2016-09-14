@@ -467,7 +467,7 @@ t_float         canvas_valueForOnePixelY                (t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_glist         *canvas_newGraph                        (t_glist *glist,
+t_glist         *canvas_newGraphOnParent                (t_glist *glist,
                                                             t_float valueStart,
                                                             t_float valueUp,
                                                             t_float valueEnd,
@@ -679,11 +679,7 @@ int             text_getPixelY                          (t_object *x, t_glist *g
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            *table_makeObject                       (t_symbol *name, 
-                                                            int size,
-                                                            int flags,
-                                                            int width,
-                                                            int height);
+void            *table_makeObject                       (t_symbol *name, t_float size, t_float flags);
                                                             
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -708,7 +704,6 @@ void            gatom_click                             (t_gatom *x,
 
 t_garray        *garray_makeObject                      (t_glist *glist,
                                                             t_symbol *name,
-                                                            t_symbol *type,
                                                             t_float size,
                                                             t_float flags);
                                                             

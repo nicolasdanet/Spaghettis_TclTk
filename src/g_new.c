@@ -55,7 +55,7 @@ void canvas_makeGraphWithArray (t_glist *glist, t_symbol *name, t_float size, t_
     
     canvas_getLastMotionCoordinates (glist, &positionX, &positionY);
         
-    g = canvas_newGraph (glist, 
+    g = canvas_newGraphOnParent (glist, 
             GRAPH_DEFAULT_START,
             GRAPH_DEFAULT_UP,
             n,
@@ -65,13 +65,13 @@ void canvas_makeGraphWithArray (t_glist *glist, t_symbol *name, t_float size, t_
             (t_float)positionX + GRAPH_DEFAULT_WIDTH,
             (t_float)positionY + GRAPH_DEFAULT_HEIGHT);
     
-    garray_makeObject (g, dollar_fromHash (name), &s_float, n, (int)flags);
+    garray_makeObject (g, dollar_fromHash (name), n, flags);
     canvas_dirty (glist, 1);
 }
 
-void canvas_makeArray (t_glist *glist, t_symbol *s, t_symbol *type, t_float size, t_float flags)
+void canvas_makeArray (t_glist *glist, t_symbol *s, t_symbol *dummy, t_float size, t_float flags)
 {
-    garray_makeObject (glist, s, type, size, flags);
+    garray_makeObject (glist, s, size, flags);
 }
 
 // -----------------------------------------------------------------------------------------------------------
