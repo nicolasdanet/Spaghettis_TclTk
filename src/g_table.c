@@ -58,9 +58,9 @@ void *table_makeObject (t_symbol *name, t_float size, t_float flags)
 
     garray_makeObject (y, name, size, flags);
 
-    pd_newest = &x->gl_obj.te_g.g_pd;     /* mimic action of canvas_pop() */
-    stack_pop(&x->gl_obj.te_g.g_pd);
-    x->gl_isLoading = 0;
+    pd_newest = cast_pd (x);
+    
+    canvas_pop (x, 0.0);
 
     return x;
 }

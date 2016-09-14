@@ -112,7 +112,7 @@ static void textdefine_save (t_gobj *z, t_buffer *b)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *textdefine_newObject (t_symbol *s, int argc, t_atom *argv)
+static void *textdefine_makeObject (t_symbol *s, int argc, t_atom *argv)
 {
     t_textdefine *x = (t_textdefine *)pd_new (textdefine_class);
 
@@ -159,12 +159,12 @@ static void *textdefine_new (t_symbol *s, int argc, t_atom *argv)
 {
     pd_newest = NULL;
     
-    if (!argc || !IS_SYMBOL (argv)) { pd_newest = textdefine_newObject (s, argc, argv); }
+    if (!argc || !IS_SYMBOL (argv)) { pd_newest = textdefine_makeObject (s, argc, argv); }
     else {
     //
     t_symbol *t = atom_getSymbol (argv);
     
-    if (t == sym_d || t == sym_define)  { pd_newest = textdefine_newObject (s,  argc - 1, argv + 1); }
+    if (t == sym_d || t == sym_define)  { pd_newest = textdefine_makeObject (s, argc - 1, argv + 1); }
     else if (t == sym_get)              { pd_newest = textget_new (s,           argc - 1, argv + 1); }
     else if (t == sym_set)              { pd_newest = textset_new (s,           argc - 1, argv + 1); }
     else if (t == sym_size)             { pd_newest = textsize_new (s,          argc - 1, argv + 1); }

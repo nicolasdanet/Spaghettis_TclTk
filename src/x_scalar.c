@@ -104,7 +104,7 @@ static void scalardefine_anything (t_glist *x, t_symbol *s, int argc, t_atom *ar
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *scalardefine_newObject (t_symbol *s, int argc, t_atom *argv)
+static void *scalardefine_makeObject (t_symbol *s, int argc, t_atom *argv)
 {
     t_glist *x = NULL;
     t_symbol *templateIdentifier = utils_makeTemplateIdentifier (&s_float);
@@ -164,11 +164,11 @@ static void *scalardefine_new (t_symbol *s, int argc, t_atom *argv)
 {
     pd_newest = NULL;
     
-    if (!argc || !IS_SYMBOL (argv)) { pd_newest = scalardefine_newObject (s, argc, argv); }
+    if (!argc || !IS_SYMBOL (argv)) { pd_newest = scalardefine_makeObject (s, argc, argv); }
     else {
         t_symbol *t = atom_getSymbol (argv);
         if (t == sym_d || t == sym_define) { 
-            pd_newest = scalardefine_newObject (s, argc - 1, argv + 1); 
+            pd_newest = scalardefine_makeObject (s, argc - 1, argv + 1); 
         } else {
             error_unexpected (sym_scalar, t);
         }
