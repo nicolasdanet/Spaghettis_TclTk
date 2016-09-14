@@ -17,7 +17,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pd *pd_newest;
+extern t_pd     *pd_newest;
+extern t_class  *garray_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -30,7 +31,7 @@ void *table_makeObject (t_symbol *name, t_float size, t_float flags)
     t_glist *z = canvas_getCurrent();
     t_atom a[6];
     
-    if (name == &s_) { name = utils_getDefaultTableName(); }
+    if (name == &s_) { name = utils_getDefaultName (garray_class, sym_table); }
     if (size < 1.0)  { size = GRAPH_DEFAULT_END; }
     
     SET_FLOAT  (a + 0, 0.0);

@@ -120,14 +120,21 @@ t_symbol *utils_substituteIfEmpty (t_symbol *s, int asDash)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol *utils_getDefaultTableName (void)
+t_symbol *utils_getDefaultName (t_class *class, t_symbol *prefix)
 {
-    static int tableCount = 0;          /* Shared. */
-    
+    int i = 1;
     char t[PD_STRING] = { 0 };
-    t_error err = string_sprintf (t, PD_STRING, "%s%d", sym_table->s_name, ++tableCount);
-    PD_ASSERT (!err);
-    return gensym (t); 
+    
+    PD_ASSERT (prefix);
+    
+    while (1) {
+        t_error err = string_sprintf (t, PD_STRING, "%s%d", prefix->s_name, i);
+        PD_ABORT (err != PD_ERROR_NONE);
+        t_symbol *name = gensym (t);
+        if (!pd_findByClass (name, class)) { return name; }
+        i++;
+        PD_ABORT (i < 0);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

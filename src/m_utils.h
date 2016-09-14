@@ -42,7 +42,7 @@ t_symbol    *utils_dash                                 (void);
 t_symbol    *utils_empty                                (void); 
 t_symbol    *utils_substituteIfEmpty                    (t_symbol *s, int asDash);
 
-t_symbol    *utils_getDefaultTableName                  (void);
+t_symbol    *utils_getDefaultName                       (t_class *c, t_symbol *prefix);
 
 t_symbol    *utils_makeBindSymbol                       (t_symbol *s);
 t_symbol    *utils_makeTemplateIdentifier               (t_symbol *s);

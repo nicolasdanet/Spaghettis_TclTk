@@ -270,18 +270,9 @@ void canvas_disconnect (t_glist *glist,
 
 static void canvas_requireArray (t_glist *glist)
 {
-    int i = 1;
-    t_error err = PD_ERROR_NONE;
     char t[PD_STRING] = { 0 };
-    
-    while (!err) {
-        err = string_sprintf (t, PD_STRING, "%s%d", sym_array->s_name, i);
-        if (!pd_findByClass (gensym (t), garray_class)) { break; }
-        i++;
-        PD_ABORT (i < 0);
-    }
-    
-    err |= string_sprintf (t, PD_STRING, "::ui_array::show %%s array%d 100 3\n", i);
+    t_symbol *s = utils_getDefaultName (garray_class, sym_array);
+    t_error err = string_sprintf (t, PD_STRING, "::ui_array::show %%s %s 100 3\n", s->s_name);
     
     PD_ASSERT (!err);
     
