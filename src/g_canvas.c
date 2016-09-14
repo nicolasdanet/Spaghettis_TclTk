@@ -682,11 +682,8 @@ t_glist *canvas_newGraphOnParent (t_glist *glist,
     t_float bottomRightX,
     t_float bottomRightY)
 {
-    static int graphCount = 0;              /* Shared. */
-
     t_glist *x = (t_glist *)pd_new (canvas_class);
     
-    char t[PD_STRING] = { 0 };
     t_fontsize fontSize = canvas_getCurrent() ? canvas_getCurrent()->gl_fontSize : font_getDefaultFontSize();
     
     if (valueStart >= valueEnd || valueUp == valueDown) {
@@ -706,8 +703,6 @@ t_glist *canvas_newGraphOnParent (t_glist *glist,
     bottomRightY = topLeftY + GRAPH_DEFAULT_HEIGHT;
     //
     }
-    
-    string_sprintf (t, PD_STRING, PD_GRAPH "%d", ++graphCount);
         
     cast_object (x)->te_buffer          = buffer_new();
     cast_object (x)->te_xCoordinate     = topLeftX;
@@ -715,7 +710,7 @@ t_glist *canvas_newGraphOnParent (t_glist *glist,
     cast_object (x)->te_type            = TYPE_OBJECT;
     x->gl_master                        = gpointer_masterCreateWithGlist (x);
     x->gl_parent                        = glist;
-    x->gl_name                          = gensym (t);
+    x->gl_name                          = utils_getDefaultBindName (canvas_class, sym__graph);
     x->gl_uniqueIdentifier              = utils_unique();
     x->gl_graphWidth                    = bottomRightX - topLeftX;
     x->gl_graphHeight                   = bottomRightY - topLeftY;

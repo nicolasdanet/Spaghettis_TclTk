@@ -551,14 +551,14 @@ void canvas_getLastMotionCoordinates (t_glist *glist, int *a, int *b)
 
 void canvas_bind (t_glist *glist)
 {
-    if (glist->gl_name != sym_Patch) {
+    if (utils_isNameAllowedForWindow (glist->gl_name)) {
         pd_bind (cast_pd (glist), utils_makeBindSymbol (glist->gl_name));
     }
 }
 
 void canvas_unbind (t_glist *glist)
 {
-    if (glist->gl_name != sym_Patch) {
+    if (utils_isNameAllowedForWindow (glist->gl_name)) {
         pd_unbind (cast_pd (glist), utils_makeBindSymbol (glist->gl_name));
     }
 }

@@ -42,12 +42,14 @@ t_symbol    *utils_dash                                 (void);
 t_symbol    *utils_empty                                (void); 
 t_symbol    *utils_substituteIfEmpty                    (t_symbol *s, int asDash);
 
-t_symbol    *utils_getDefaultBindName                   (t_class *c, t_symbol *prefix);
-
 t_symbol    *utils_makeBindSymbol                       (t_symbol *s);
 t_symbol    *utils_makeTemplateIdentifier               (t_symbol *s);
 t_symbol    *utils_stripBindSymbol                      (t_symbol *s);
 t_symbol    *utils_stripTemplateIdentifier              (t_symbol *s);
+
+t_symbol    *utils_getDefaultBindName                   (t_class *c, t_symbol *prefix);
+
+int         utils_isNameAllowedForWindow                (t_symbol *s);
 
 int         utils_isTokenEnd                            (char c);
 int         utils_isTokenEscape                         (char c);
