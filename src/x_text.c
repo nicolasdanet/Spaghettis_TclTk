@@ -112,7 +112,7 @@ static void textdefine_save (t_gobj *z, t_buffer *b)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *textdefine_makeObject (t_symbol *s, int argc, t_atom *argv)
+static void *textdefine_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_textdefine *x = (t_textdefine *)pd_new (textdefine_class);
 
@@ -155,16 +155,16 @@ static void *textdefine_makeObject (t_symbol *s, int argc, t_atom *argv)
     return x;
 }
 
-static void *textdefine_new (t_symbol *s, int argc, t_atom *argv)
+static void *textdefine_makeObject (t_symbol *s, int argc, t_atom *argv)
 {
     pd_newest = NULL;
     
-    if (!argc || !IS_SYMBOL (argv)) { pd_newest = textdefine_makeObject (s, argc, argv); }
+    if (!argc || !IS_SYMBOL (argv)) { pd_newest = textdefine_new (s, argc, argv); }
     else {
     //
     t_symbol *t = atom_getSymbol (argv);
     
-    if (t == sym_d || t == sym_define)  { pd_newest = textdefine_makeObject (s, argc - 1, argv + 1); }
+    if (t == sym_d || t == sym_define)  { pd_newest = textdefine_new (s,        argc - 1, argv + 1); }
     else if (t == sym_get)              { pd_newest = textget_new (s,           argc - 1, argv + 1); }
     else if (t == sym_set)              { pd_newest = textset_new (s,           argc - 1, argv + 1); }
     else if (t == sym_size)             { pd_newest = textsize_new (s,          argc - 1, argv + 1); }
@@ -198,16 +198,19 @@ void textdefine_setup (void)
     t_class *c = NULL;
     
     c = class_new (sym_text__space__define,
-            (t_newmethod)textdefine_new,
+            (t_newmethod)textdefine_makeObject,
             (t_method)textdefine_free,
             sizeof (t_textdefine),
             CLASS_DEFAULT,
             A_GIMME,
             A_NULL);
+    
+    class_addCreator ((t_newmethod)textdefine_makeObject, sym_text, A_GIMME, A_NULL);
         
-    class_addBang (c, textdefine_bang);
     class_addClick (c, textbuffer_click);
-            
+    
+    class_addBang (c, textdefine_bang);
+    
     class_addMethod (c, (t_method)textbuffer_close,     sym_close,      A_NULL);
     class_addMethod (c, (t_method)textbuffer_addLine,   sym__addline,   A_GIMME, A_NULL);
     class_addMethod (c, (t_method)textbuffer_write,     sym_write,      A_GIMME, A_NULL);
@@ -219,8 +222,6 @@ void textdefine_setup (void)
     class_setSaveFunction (c, textdefine_save);
     class_setHelpName (c, sym_text);
 
-    class_addCreator ((t_newmethod)textdefine_new, sym_text, A_GIMME, A_NULL);
-    
     textdefine_class = c;
 }
 

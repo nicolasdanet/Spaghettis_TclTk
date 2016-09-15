@@ -104,7 +104,7 @@ static void scalardefine_anything (t_glist *x, t_symbol *s, int argc, t_atom *ar
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *scalardefine_makeObject (t_symbol *s, int argc, t_atom *argv)
+static void *scalardefine_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_glist *x = NULL;
     t_symbol *templateIdentifier = utils_makeTemplateIdentifier (&s_float);
@@ -160,15 +160,15 @@ static void *scalardefine_makeObject (t_symbol *s, int argc, t_atom *argv)
     return x;
 }
 
-static void *scalardefine_new (t_symbol *s, int argc, t_atom *argv)
+static void *scalardefine_makeObject (t_symbol *s, int argc, t_atom *argv)
 {
     pd_newest = NULL;
     
-    if (!argc || !IS_SYMBOL (argv)) { pd_newest = scalardefine_makeObject (s, argc, argv); }
+    if (!argc || !IS_SYMBOL (argv)) { pd_newest = scalardefine_new (s, argc, argv); }
     else {
         t_symbol *t = atom_getSymbol (argv);
         if (t == sym_d || t == sym_define) { 
-            pd_newest = scalardefine_makeObject (s, argc - 1, argv + 1); 
+            pd_newest = scalardefine_new (s, argc - 1, argv + 1); 
         } else {
             error_unexpected (sym_scalar, t);
         }
@@ -192,6 +192,8 @@ void scalardefine_setup (void)
             CLASS_DEFAULT,
             A_NULL);
     
+    class_addCreator ((t_newmethod)scalardefine_makeObject, sym_scalar, A_GIMME, A_NULL);
+        
     class_addKey (c, canvas_key);
     class_addClick (c, canvas_click);
     class_addMotion (c, canvas_motion);
@@ -226,8 +228,6 @@ void scalardefine_setup (void)
     class_addMethod (c, (t_method)canvas_window, sym_setbounds,  A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
     
     #endif 
-
-    class_addCreator ((t_newmethod)scalardefine_new, sym_scalar, A_GIMME, A_NULL);
         
     class_setHelpName (c, sym_scalar);
     class_setSaveFunction (c, scalardefine_save);

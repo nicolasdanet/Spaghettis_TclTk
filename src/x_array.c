@@ -18,14 +18,18 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pd *pd_newest;    /* OK - this should go into a .h file now :) */
-extern t_class *garray_class;
+extern t_pd     *pd_newest;
+extern t_class  *garray_class;
 
-/* -- "table" - classic "array define" object by Guenter Geiger --*/
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-t_class *array_define_class;
+t_class *arraydefine_class;             /* Shared. */
 
-static void array_define_yrange(t_glist *x, t_float ylo, t_float yhi)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static void arraydefine_yrange(t_glist *x, t_float ylo, t_float yhi)
 {
     t_glist *gl = (x->gl_graphics ? canvas_castToGlistChecked(&x->gl_graphics->g_pd) : 0);
     if (gl && gl->gl_graphics && pd_class(&gl->gl_graphics->g_pd) == garray_class)
@@ -37,28 +41,22 @@ static void array_define_yrange(t_glist *x, t_float ylo, t_float yhi)
     else { PD_BUG; }
 }
 
-void array_define_save(t_gobj *z, t_buffer *bb)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void arraydefine_ignore(t_glist *x,
+    t_symbol *s, int argc, t_atom *argv)
 {
-    t_glist *x = (t_glist *)z;
-    t_glist *gl = (x->gl_graphics ? canvas_castToGlistChecked(&x->gl_graphics->g_pd) : 0);
-    buffer_vAppend(bb, "ssff", sym___hash__X, sym_obj,
-        (float)x->gl_obj.te_xCoordinate, (float)x->gl_obj.te_yCoordinate);
-    buffer_serialize(bb, x->gl_obj.te_buffer);
-    buffer_appendSemicolon(bb);
-
-    garray_saveContentsToBuffer ((t_garray *)gl->gl_graphics, bb);
-    object_saveWidth(&x->gl_obj, bb);
 }
-
-
 
     /* send a pointer to the scalar that owns this array to
     whomever is bound to the given symbol */
-static void array_define_send(t_glist *x, t_symbol *s)
+static void arraydefine_send(t_glist *x, t_symbol *s)
 {
     t_glist *gl = (x->gl_graphics ? canvas_castToGlistChecked(&x->gl_graphics->g_pd) : 0);
     if (!s->s_thing)
-        post_error ("array_define_send: %s: no such object", s->s_name);
+        post_error ("arraydefine_send: %s: no such object", s->s_name);
     else if (gl && gl->gl_graphics && pd_class(&gl->gl_graphics->g_pd) == garray_class)
     {
         t_gpointer gp = GPOINTER_INIT;
@@ -71,7 +69,7 @@ static void array_define_send(t_glist *x, t_symbol *s)
 }
 
     /* just forward any messages to the garray */
-static void array_define_anything(t_glist *x,
+static void arraydefine_anything(t_glist *x,
     t_symbol *s, int argc, t_atom *argv)
 {
     t_glist *gl = (x->gl_graphics ? canvas_castToGlistChecked(&x->gl_graphics->g_pd) : 0);
@@ -80,17 +78,28 @@ static void array_define_anything(t_glist *x,
     else { PD_BUG; }
 }
 
-    /* ignore messages like "editmode" */
-static void array_define_ignore(t_glist *x,
-    t_symbol *s, int argc, t_atom *argv)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void arraydefine_save(t_gobj *z, t_buffer *bb)
 {
+    t_glist *x = (t_glist *)z;
+    t_glist *gl = (x->gl_graphics ? canvas_castToGlistChecked(&x->gl_graphics->g_pd) : 0);
+    buffer_vAppend(bb, "ssff", sym___hash__X, sym_obj,
+        (float)x->gl_obj.te_xCoordinate, (float)x->gl_obj.te_yCoordinate);
+    buffer_serialize(bb, x->gl_obj.te_buffer);
+    buffer_appendSemicolon(bb);
+
+    garray_saveContentsToBuffer ((t_garray *)gl->gl_graphics, bb);
+    object_saveWidth(&x->gl_obj, bb);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *array_define_new(t_symbol *s, int argc, t_atom *argv)
+static void *arraydefine_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_symbol *arrayname = &s_;
     float arraysize = 100;
@@ -150,21 +159,20 @@ static void *array_define_new(t_symbol *s, int argc, t_atom *argv)
         /* bash the class to "array define".  We don't do this earlier in
         part so that canvas_getCurrent() will work while the glist and
         garray are being created.  There may be other, unknown side effects. */
-    x->gl_obj.te_g.g_pd = array_define_class;
-    array_define_yrange(x, ylo, yhi);
+    x->gl_obj.te_g.g_pd = arraydefine_class;
+    arraydefine_yrange(x, ylo, yhi);
     return (x);
 }
 
-/* overall creator for "array" objects - dispatch to "array define" etc */
-static void *arrayobj_new(t_symbol *s, int argc, t_atom *argv)
+static void *arraydefine_makeObject(t_symbol *s, int argc, t_atom *argv)
 {
     if (!argc || argv[0].a_type != A_SYMBOL)
-        pd_newest = array_define_new(s, argc, argv);
+        pd_newest = arraydefine_new(s, argc, argv);
     else
     {
         char *str = argv[0].a_w.w_symbol->s_name;
         if (!strcmp(str, "d") || !strcmp(str, "define"))
-            pd_newest = array_define_new(s, argc-1, argv+1);
+            pd_newest = arraydefine_new(s, argc-1, argv+1);
         else if (!strcmp(str, "size"))
             pd_newest = array_size_new(s, argc-1, argv+1);
         else if (!strcmp(str, "sum"))
@@ -194,58 +202,65 @@ static void *arrayobj_new(t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void x_array_setup(void)
+void arraydefine_setup (void)
 {
-    array_define_class = class_new(sym_array__space__define, 0,
-        (t_method)canvas_free, sizeof(t_glist), 0, 0);
+    t_class *c = NULL;
     
-    class_addMethod(array_define_class, (t_method)canvas_restore,
-        sym_restore, A_GIMME, 0);
+    c = class_new (sym_array__space__define,
+            NULL,
+            (t_method)canvas_free,
+            sizeof (t_glist),
+            CLASS_DEFAULT,
+            A_NULL);
     
-    class_addClick (array_define_class, canvas_click);
-    /*class_addMethod(array_define_class, (t_method)canvas_click,
-        sym_click, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0); */
-    class_addMethod(array_define_class, (t_method)canvas_dsp,
-        sym_dsp, A_CANT, 0);
-    class_addMethod(array_define_class, (t_method)canvas_map,
-        sym__map, A_FLOAT, A_NULL);
-    class_addMethod(array_define_class, (t_method)canvas_window,
-        sym_window, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addMethod(array_define_class, (t_method)canvas_window,
-        sym_setbounds, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL); /* LEGACY !!! */
+    class_addCreator ((t_newmethod)arraydefine_makeObject, sym_array, A_GIMME, A_NULL);
     
-    class_addMouse (array_define_class, canvas_mouse);
-    class_addMouseUp (array_define_class, canvas_mouseUp);
+    class_addKey (c, canvas_key);
+    class_addMouse (c, canvas_mouse);
+    class_addMouseUp (c, canvas_mouseUp);
+    class_addClick (c, canvas_click);
+    class_addMotion (c, canvas_motion);
     
-    /*class_addMethod(array_define_class, (t_method)canvas_mouse, sym_mouse,
-        A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addMethod(array_define_class, (t_method)canvas_mouseUp, sym_mouseup,
-        A_FLOAT, A_FLOAT, A_FLOAT, A_NULL); */
-    class_addMethod(array_define_class, (t_method)canvas_key, sym_key,
-        A_GIMME, A_NULL);
-    class_addMethod(array_define_class, (t_method)canvas_motion, sym_motion,
-        A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addMethod(array_define_class, (t_method)canvas_close,
-        sym_close, A_DEFFLOAT, 0);
-    class_addMethod(array_define_class, (t_method)canvas_close,
-        sym_menuclose, A_DEFFLOAT, 0); /* LEGACY !!! */
-    /*class_addMethod(array_define_class, (t_method)canvas_find_parent,
-        gen_sym ("findparent"), A_NULL)*/
-    class_addMethod(array_define_class, (t_method)canvas_save,
-        sym_menusave, 0); /* LEGACY !!! */
-    class_addMethod(array_define_class, (t_method)canvas_saveAs,
-        sym_menusaveas, 0); /* LEGACY !!! */
+    class_addMethod (c, (t_method)canvas_dsp,           sym_dsp,        A_CANT, A_NULL);
+    class_addMethod (c, (t_method)canvas_restore,       sym_restore,    A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_map,           sym__map,       A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_close,         sym_close,      A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_save,          sym_save,       A_NULL); 
+    class_addMethod (c, (t_method)canvas_saveAs,        sym_saveas,     A_NULL);
     
-    class_addMethod(array_define_class, (t_method)array_define_send,
-        sym_send, A_SYMBOL, 0);
-    class_addAnything(array_define_class, array_define_anything);
-    class_setHelpName(array_define_class, sym_array);
-    class_setSaveFunction(array_define_class, array_define_save);
-
-    class_addMethod(array_define_class, (t_method)array_define_ignore,
-        sym_editmode, A_GIMME, 0);
-
-    class_addCreator((t_newmethod)arrayobj_new, sym_array, A_GIMME, 0);
+    class_addMethod (c, (t_method)canvas_window,
+        sym_window,
+        A_FLOAT,
+        A_FLOAT,
+        A_FLOAT,
+        A_FLOAT,
+        A_NULL);
+        
+    class_addMethod (c, (t_method)arraydefine_ignore,   sym_editmode,   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)arraydefine_send,     sym_send,       A_SYMBOL, A_NULL);
+    
+    class_addAnything (c, arraydefine_anything);
+    
+    #if PD_WITH_LEGACY
+    
+    class_addMethod (c, (t_method)canvas_close,         sym_menuclose,  A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_save,          sym_menusave,   A_NULL); 
+    class_addMethod (c, (t_method)canvas_saveAs,        sym_menusaveas, A_NULL);
+    
+    class_addMethod (c, (t_method)canvas_window, 
+        sym_setbounds,
+        A_FLOAT,
+        A_FLOAT,
+        A_FLOAT,
+        A_FLOAT,
+        A_NULL);
+        
+    #endif
+    
+    class_setHelpName (c, sym_array);
+    class_setSaveFunction (c, arraydefine_save);
+    
+    arraydefine_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

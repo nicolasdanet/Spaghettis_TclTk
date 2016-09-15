@@ -22,7 +22,7 @@ extern t_class              *text_class;
 extern t_class              *canvas_class;
 extern t_class              *vinlet_class;
 extern t_class              *voutlet_class;
-extern t_class              *array_define_class;
+extern t_class              *arraydefine_class;
 extern t_class              *scalardefine_class;
 extern t_pd                 *pd_newest;
 extern t_pdinstance         *pd_this;
@@ -74,7 +74,7 @@ t_glist *canvas_castToGlistChecked (t_pd *x)
 {
     t_class *c = pd_class (x);
     
-    if (c == canvas_class || c == array_define_class || c == scalardefine_class) {
+    if (c == canvas_class || c == arraydefine_class || c == scalardefine_class) {
         return cast_glist (x);
     } else {
         return NULL;
