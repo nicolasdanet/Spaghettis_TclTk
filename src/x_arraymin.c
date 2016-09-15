@@ -39,7 +39,7 @@ typedef struct _array_min
     t_outlet *x_out2;       /* index */
 } t_array_min;
 
-void *array_min_new(t_symbol *s, int argc, t_atom *argv)
+void *arraymin_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_array_min *x = arrayrange_new(array_min_class, argc, argv,
         0, 1);
@@ -76,7 +76,7 @@ static void array_min_float(t_array_min *x, t_float f)
 void arraymin_setup(void )
 {
     array_min_class = class_new(sym_array__space__min,
-        (t_newmethod)array_min_new, (t_method)arrayclient_free,
+        (t_newmethod)arraymin_new, (t_method)arrayclient_free,
             sizeof(t_array_min), 0, A_GIMME, 0);
     class_addFloat(array_min_class, array_min_float);
     class_addBang(array_min_class, array_min_bang);

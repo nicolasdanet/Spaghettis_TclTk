@@ -164,6 +164,34 @@ static void *arraydefine_new(t_symbol *s, int argc, t_atom *argv)
     return (x);
 }
 
+static void *arraydefine_makeObject (t_symbol *s, int argc, t_atom *argv)
+{
+    pd_newest = NULL;
+    
+    if (!argc || !IS_SYMBOL (argv)) { pd_newest = arraydefine_new (s, argc, argv); }
+    else {
+    //
+    t_symbol *t = atom_getSymbol (argv);
+    
+    if (t == sym_d || t == sym_define)  { pd_newest = arraydefine_new (s,       argc - 1, argv + 1); }
+    else if (t == sym_size)             { pd_newest = arraysize_new (s,         argc - 1, argv + 1); }
+    else if (t == sym_sum)              { pd_newest = arraysum_new (s,          argc - 1, argv + 1); }
+    else if (t == sym_get)              { pd_newest = arrayget_new (s,          argc - 1, argv + 1); }
+    else if (t == sym_set)              { pd_newest = arrayset_new (s,          argc - 1, argv + 1); }
+    else if (t == sym_quantile)         { pd_newest = arrayquantile_new (s,     argc - 1, argv + 1); }
+    else if (t == sym_random)           { pd_newest = arrayrandom_new (s,       argc - 1, argv + 1); }
+    else if (t == sym_max)              { pd_newest = arraymax_new (s,          argc - 1, argv + 1); }
+    else if (t == sym_min)              { pd_newest = arraymin_new (s,          argc - 1, argv + 1); }
+    else {
+        error_unexpected (sym_array, t);
+    }
+    //
+    }
+    
+    return pd_newest;
+}
+
+/*
 static void *arraydefine_makeObject(t_symbol *s, int argc, t_atom *argv)
 {
     if (!argc || argv[0].a_type != A_SYMBOL)
@@ -174,21 +202,21 @@ static void *arraydefine_makeObject(t_symbol *s, int argc, t_atom *argv)
         if (!strcmp(str, "d") || !strcmp(str, "define"))
             pd_newest = arraydefine_new(s, argc-1, argv+1);
         else if (!strcmp(str, "size"))
-            pd_newest = array_size_new(s, argc-1, argv+1);
+            pd_newest = arraysize_new(s, argc-1, argv+1);
         else if (!strcmp(str, "sum"))
-            pd_newest = array_sum_new(s, argc-1, argv+1);
+            pd_newest = arraysum_new(s, argc-1, argv+1);
         else if (!strcmp(str, "get"))
-            pd_newest = array_get_new(s, argc-1, argv+1);
+            pd_newest = arrayget_new(s, argc-1, argv+1);
         else if (!strcmp(str, "set"))
-            pd_newest = array_set_new(s, argc-1, argv+1);
+            pd_newest = arrayset_new(s, argc-1, argv+1);
         else if (!strcmp(str, "quantile"))
-            pd_newest = array_quantile_new(s, argc-1, argv+1);
+            pd_newest = arrayquantile_new(s, argc-1, argv+1);
         else if (!strcmp(str, "random"))
-            pd_newest = array_random_new(s, argc-1, argv+1);
+            pd_newest = arrayrandom_new(s, argc-1, argv+1);
         else if (!strcmp(str, "max"))
-            pd_newest = array_max_new(s, argc-1, argv+1);
+            pd_newest = arraymax_new(s, argc-1, argv+1);
         else if (!strcmp(str, "min"))
-            pd_newest = array_min_new(s, argc-1, argv+1);
+            pd_newest = arraymin_new(s, argc-1, argv+1);
         else 
         {
             post_error ("array %s: unknown function", str);
@@ -197,7 +225,7 @@ static void *arraydefine_makeObject(t_symbol *s, int argc, t_atom *argv)
     }
     return (pd_newest);
 }
-
+*/
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

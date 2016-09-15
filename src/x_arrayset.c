@@ -30,7 +30,7 @@ static t_class *array_set_class;
 
 #define t_array_set t_arrayrange
 
-void *array_set_new(t_symbol *s, int argc, t_atom *argv)
+void *arrayset_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_array_set *x = arrayrange_new(array_set_class, argc, argv,
         1, 0);
@@ -57,7 +57,7 @@ static void array_set_list(t_arrayrange *x, t_symbol *s,
 void arrayset_setup(void)
 {
     array_set_class = class_new(sym_array__space__set,
-        (t_newmethod)array_set_new, (t_method)arrayclient_free,
+        (t_newmethod)arrayset_new, (t_method)arrayclient_free,
             sizeof(t_array_set), 0, A_GIMME, 0);
     class_addList(array_set_class, array_set_list);
     class_setHelpName(array_set_class, sym_array);

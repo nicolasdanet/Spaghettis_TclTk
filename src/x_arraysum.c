@@ -40,7 +40,7 @@ static t_class *array_sum_class;
 
 #define t_array_sum t_arrayrange
 
-void *array_sum_new(t_symbol *s, int argc, t_atom *argv)
+void *arraysum_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_array_sum *x = arrayrange_new(array_sum_class, argc, argv,
         0, 1);
@@ -96,7 +96,7 @@ static void array_sum_float(t_arrayrange *x, t_float f)
 void arraysum_setup(void)
 {
     array_sum_class = class_new(sym_array__space__sum,
-        (t_newmethod)array_sum_new, (t_method)arrayclient_free,
+        (t_newmethod)arraysum_new, (t_method)arrayclient_free,
             sizeof(t_array_sum), 0, A_GIMME, 0);
     class_addBang(array_sum_class, array_sum_bang);
     class_addFloat(array_sum_class, array_sum_float);

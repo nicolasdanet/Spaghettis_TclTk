@@ -34,7 +34,7 @@ static t_class *array_quantile_class;
 
 #define t_array_quantile t_arrayrange
 
-void *array_quantile_new(t_symbol *s, int argc, t_atom *argv)
+void *arrayquantile_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_array_quantile *x = arrayrange_new(array_quantile_class,
         argc, argv, 1, 1);
@@ -43,7 +43,7 @@ void *array_quantile_new(t_symbol *s, int argc, t_atom *argv)
     return (x);
 }
 
-void array_quantile_float(t_arrayrange *x, t_float f)
+void arrayquantile_float(t_arrayrange *x, t_float f)
 {
     char *itemp, *firstitem;
     int stride, nitem, arrayonset, i;
@@ -69,9 +69,9 @@ void array_quantile_float(t_arrayrange *x, t_float f)
 void arrayquantile_setup(void)
 {
     array_quantile_class = class_new(sym_array__space__quantile,
-        (t_newmethod)array_quantile_new, (t_method)arrayclient_free,
+        (t_newmethod)arrayquantile_new, (t_method)arrayclient_free,
             sizeof(t_array_quantile), 0, A_GIMME, 0);
-    class_addFloat(array_quantile_class, array_quantile_float);
+    class_addFloat(array_quantile_class, arrayquantile_float);
     class_setHelpName(array_quantile_class, sym_array);
 }
 

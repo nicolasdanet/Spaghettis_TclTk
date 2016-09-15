@@ -159,20 +159,20 @@ int         array_rangeop_getrange          (t_arrayrange *x,   /* ASAP */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        array_quantile_float            (t_arrayrange *x, t_float f);
+void        *arraysize_new                  (t_symbol *s, int argc, t_atom *argv);
+void        *arraysum_new                   (t_symbol *s, int argc, t_atom *argv);
+void        *arrayget_new                   (t_symbol *s, int argc, t_atom *argv);
+void        *arrayset_new                   (t_symbol *s, int argc, t_atom *argv);
+void        *arrayquantile_new              (t_symbol *s, int argc, t_atom *argv);
+void        *arrayrandom_new                (t_symbol *s, int argc, t_atom *argv);
+void        *arraymax_new                   (t_symbol *s, int argc, t_atom *argv);
+void        *arraymin_new                   (t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        *array_size_new                 (t_symbol *s, int argc, t_atom *argv);
-void        *array_sum_new                  (t_symbol *s, int argc, t_atom *argv);
-void        *array_get_new                  (t_symbol *s, int argc, t_atom *argv);
-void        *array_set_new                  (t_symbol *s, int argc, t_atom *argv);
-void        *array_quantile_new             (t_symbol *s, int argc, t_atom *argv);
-void        *array_random_new               (t_symbol *s, int argc, t_atom *argv);
-void        *array_max_new                  (t_symbol *s, int argc, t_atom *argv);
-void        *array_min_new                  (t_symbol *s, int argc, t_atom *argv);
+void        arrayquantile_float             (t_arrayrange *x, t_float f);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

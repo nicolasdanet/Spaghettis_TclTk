@@ -43,7 +43,7 @@ typedef struct _array_size
     t_arrayclient ar_arrayclient;
 } t_array_size;
 
-void *array_size_new(t_symbol *s, int argc, t_atom *argv)
+void *arraysize_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_array_size *x = (t_array_size *)pd_new(array_size_class);
     x->x_sym = x->x_struct = x->x_field = 0;
@@ -127,7 +127,7 @@ static void array_size_float(t_array_size *x, t_float f)
 void arraysize_setup(void)
 {
     array_size_class = class_new(sym_array__space__size,
-        (t_newmethod)array_size_new, (t_method)arrayclient_free,
+        (t_newmethod)arraysize_new, (t_method)arrayclient_free,
             sizeof(t_array_size), 0, A_GIMME, 0);
     class_addBang(array_size_class, array_size_bang);
     class_addFloat(array_size_class, array_size_float);

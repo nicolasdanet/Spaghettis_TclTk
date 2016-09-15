@@ -38,7 +38,7 @@ typedef struct _array_random   /* any operation meaningful on a subrange */
     unsigned int x_state;
 } t_array_random;
 
-void *array_random_new(t_symbol *s, int argc, t_atom *argv)
+void *arrayrandom_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_array_random *x = arrayrange_new(array_random_class,
         argc, argv, 0, 1);
@@ -64,7 +64,7 @@ static void array_random_bang(t_array_random *x)
         &arrayonset))
             return;
     x->x_state = x->x_state * 472940017 + 832416023;
-    array_quantile_float(&x->x_r, (1./4294967296.0) * (double)(x->x_state));
+    arrayquantile_float(&x->x_r, (1./4294967296.0) * (double)(x->x_state));
 }
 
 static void array_random_float(t_array_random *x, t_float f)
@@ -80,7 +80,7 @@ static void array_random_float(t_array_random *x, t_float f)
 void arrayrandom_setup (void)
 {
     array_random_class = class_new(sym_array__space__random,
-        (t_newmethod)array_random_new, (t_method)arrayclient_free,
+        (t_newmethod)arrayrandom_new, (t_method)arrayclient_free,
             sizeof(t_array_random), 0, A_GIMME, 0);
     class_addMethod(array_random_class, (t_method)array_random_seed,
         sym_seed, A_FLOAT, 0);

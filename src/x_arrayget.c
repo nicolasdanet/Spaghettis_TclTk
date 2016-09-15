@@ -34,7 +34,7 @@ static t_class *array_get_class;
 
 #define t_array_get t_arrayrange
 
-void *array_get_new(t_symbol *s, int argc, t_atom *argv)
+void *arrayget_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_array_get *x = arrayrange_new(array_get_class, argc, argv,
         0, 1);
@@ -68,7 +68,7 @@ static void array_get_float(t_arrayrange *x, t_float f)
 void arrayget_setup(void)
 {
     array_get_class = class_new(sym_array__space__get,
-        (t_newmethod)array_get_new, (t_method)arrayclient_free,
+        (t_newmethod)arrayget_new, (t_method)arrayclient_free,
             sizeof(t_array_get), 0, A_GIMME, 0);
     class_addBang(array_get_class, array_get_bang);
     class_addFloat(array_get_class, array_get_float);
