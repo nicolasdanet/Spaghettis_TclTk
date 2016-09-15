@@ -43,55 +43,31 @@ static t_garray *arraydefine_getContentChecked (t_glist *x)
     return NULL;
 }
 
-/*
-static void arraydefine_setRange(t_glist *x, t_float ylo, t_float yhi)
-{
-    t_glist *gl = (x->gl_graphics ? canvas_castToGlistChecked (&x->gl_graphics->g_pd) : 0);
-    if (gl && gl->gl_graphics && pd_class(&gl->gl_graphics->g_pd) == garray_class)
-    {
-        int n = array_getSize (garray_getArray ((t_garray *)gl->gl_graphics));
-        pd_vMessage(&x->gl_graphics->g_pd, sym_bounds,
-            "ffff", 0., yhi, (double)(n == 1 ? n : n-1), ylo);
-    }
-    else { PD_BUG; }
-}
-*/
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void arraydefine_ignore(t_glist *x,
-    t_symbol *s, int argc, t_atom *argv)
+static void arraydefine_send (t_glist *x, t_symbol *s)
 {
-}
-
-    /* send a pointer to the scalar that owns this array to
-    whomever is bound to the given symbol */
-static void arraydefine_send(t_glist *x, t_symbol *s)
-{
-    t_glist *gl = (x->gl_graphics ? canvas_castToGlistChecked(&x->gl_graphics->g_pd) : 0);
-    if (!s->s_thing)
-        post_error ("arraydefine_send: %s: no such object", s->s_name);
-    else if (gl && gl->gl_graphics && pd_class(&gl->gl_graphics->g_pd) == garray_class)
-    {
+    if (pd_isThing (s)) {
+    
+        t_garray *t = arraydefine_getContentChecked (x);
         t_gpointer gp = GPOINTER_INIT;
-        gpointer_setAsScalar(&gp, gl,
-            garray_getScalar((t_garray *)gl->gl_graphics));
-        pd_pointer(s->s_thing, &gp);
-        gpointer_unset(&gp);
+    
+        gpointer_setAsScalar (&gp, garray_getView (t), garray_getScalar (t));
+        pd_pointer (s->s_thing, &gp);
+        gpointer_unset (&gp);
     }
-    else { PD_BUG; }
 }
 
-    /* just forward any messages to the garray */
-static void arraydefine_anything(t_glist *x,
-    t_symbol *s, int argc, t_atom *argv)
+static void arraydefine_dummy (t_glist *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_glist *gl = (x->gl_graphics ? canvas_castToGlistChecked(&x->gl_graphics->g_pd) : 0);
-    if (gl && gl->gl_graphics && pd_class(&gl->gl_graphics->g_pd) == garray_class)
-        pd_message(&gl->gl_graphics->g_pd, s, argc, argv);
-    else { PD_BUG; }
+}
+
+static void arraydefine_anything (t_glist *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_garray *t = arraydefine_getContentChecked (x);
+    pd_message (cast_pd (t), s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -225,9 +201,15 @@ void arraydefine_setup (void)
         A_FLOAT,
         A_NULL);
         
-    class_addMethod (c, (t_method)arraydefine_ignore,   sym_editmode,   A_GIMME, A_NULL);
     class_addMethod (c, (t_method)arraydefine_send,     sym_send,       A_SYMBOL, A_NULL);
-    
+    class_addMethod (c, (t_method)arraydefine_dummy,    sym_editmode,   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)arraydefine_dummy,
+        sym__popupdialog,
+        A_FLOAT,
+        A_FLOAT,
+        A_FLOAT,
+        A_NULL);
+        
     class_addAnything (c, arraydefine_anything);
     
     #if PD_WITH_LEGACY
