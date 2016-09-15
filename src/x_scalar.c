@@ -119,10 +119,10 @@ static void *scalardefine_new (t_symbol *s, int argc, t_atom *argv)
         }
     }
     
-    error__options (s, argc, argv);
-    
-    if (argc && IS_SYMBOL (argv)) { 
-        templateIdentifier = utils_makeTemplateIdentifier (GET_SYMBOL (argv)); argc--; argv++;
+    if (!error__options (s, argc, argv)) {
+        if (argc && IS_SYMBOL (argv)) { 
+            templateIdentifier = utils_makeTemplateIdentifier (GET_SYMBOL (argv)); argc--; argv++;
+        }
     }
     
     if (argc) { warning_unusedArguments (s, argc, argv); }

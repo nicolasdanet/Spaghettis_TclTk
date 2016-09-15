@@ -35,9 +35,9 @@ void error__post (int argc, t_atom *argv)
     char *s = atom_atomsToString (argc, argv); post_error ("[ %s ]", s); PD_MEMORY_FREE (s);
 }
 
-void error__options (t_symbol *s, int argc, t_atom *argv)
+int error__options (t_symbol *s, int argc, t_atom *argv)
 {
-    int i;
+    int i, k = 0;
     
     for (i = 0; i < argc; i++) {
     //
@@ -45,10 +45,13 @@ void error__options (t_symbol *s, int argc, t_atom *argv)
         t_symbol *t = GET_SYMBOL (argv + i);
         if (t != sym___dash__ && string_containsAtStart (t->s_name, sym___dash__->s_name)) { 
             warning_unusedOption (s, t); 
+            k = 1;
         }
     }
     //
     }
+    
+    return k;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -19,7 +19,7 @@
 void error__error1  (char *);
 void error__error2  (char *, char *);
 void error__post    (int argc, t_atom *argv);
-void error__options (t_symbol *s, int argc, t_atom *argv);
+int  error__options (t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

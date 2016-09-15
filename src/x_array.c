@@ -99,69 +99,51 @@ void arraydefine_save(t_gobj *z, t_buffer *bb)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *arraydefine_new(t_symbol *s, int argc, t_atom *argv)
+static void *arraydefine_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_symbol *arrayname = &s_;
-    float arraysize = 100;
-    t_glist *x;
-    int keep = 0;
-    float ylo = -1, yhi = 1;
-    float xpix = 500, ypix = 300;
-    while (argc && argv->a_type == A_SYMBOL &&
-        *argv->a_w.w_symbol->s_name == '-')
-    {
-        if (!strcmp(argv->a_w.w_symbol->s_name, "-k"))
-            keep = 1;
-        else if (!strcmp(argv->a_w.w_symbol->s_name, "-yrange") &&
-            argc >= 3 && argv[1].a_type == A_FLOAT &&
-                argv[2].a_type == A_FLOAT)
-        {
-            ylo = atom_getFloatAtIndex(1, argc, argv);
-            yhi = atom_getFloatAtIndex(2, argc, argv);
-            if (ylo == yhi)
-                ylo = -1, yhi = 1;
-            argc -= 2; argv += 2;
-        }
-        else if (!strcmp(argv->a_w.w_symbol->s_name, "-pix") &&
-            argc >= 3 && argv[1].a_type == A_FLOAT &&
-                argv[2].a_type == A_FLOAT)
-        {
-            if ((xpix = atom_getFloatAtIndex(1, argc, argv)) < 10)
-                xpix = 10;
-            if ((ypix = atom_getFloatAtIndex(2, argc, argv)) < 10)
-                ypix = 10;
-            argc -= 2; argv += 2;
-        }
-        else
-        {
-            post_error ("array define: unknown flag ...");
-            error__post (argc, argv);
-        }
-        argc--; argv++;
-    }
-    if (argc && argv->a_type == A_SYMBOL)
-    {
-        arrayname = argv->a_w.w_symbol;
-        argc--; argv++;
-    }
-    if (argc && argv->a_type == A_FLOAT)
-    {
-        arraysize = argv->a_w.w_float;
-        argc--; argv++;
-    }
-    if (argc)
-    {
-        post("warning: array define ignoring extra argument: ");
-        error__post (argc, argv);
-    }
-    x = (t_glist *)table_makeObject(arrayname, arraysize, keep);
+    t_glist *x = NULL;
     
-        /* bash the class to "array define".  We don't do this earlier in
-        part so that canvas_getCurrent() will work while the glist and
-        garray are being created.  There may be other, unknown side effects. */
-    x->gl_obj.te_g.g_pd = arraydefine_class;
-    arraydefine_yrange(x, ylo, yhi);
-    return (x);
+    t_symbol *name = &s_;
+    t_float size   = GRAPH_DEFAULT_END;
+    t_float down   = 0.0;
+    t_float up     = 0.0;
+    int keep = 0;
+    
+    while (argc && IS_SYMBOL (argv)) {
+    
+        t_symbol *t = GET_SYMBOL (argv);
+        
+        if (t == sym___dash__k || t == sym___dash__keep) {
+            keep = 1; argc--; argv++;
+            
+        } else if (t == sym___dash__yrange && (argc >= 3) && IS_FLOAT (argv + 1) && IS_FLOAT (argv + 2)) {
+            down = atom_getFloatAtIndex (1, argc, argv);
+            up   = atom_getFloatAtIndex (2, argc, argv);
+            argc -= 3; argv += 3;
+            
+        } else {
+            break;
+        }
+    }
+    
+    if (down == up) { down = GRAPH_DEFAULT_DOWN; up = GRAPH_DEFAULT_UP; }
+    
+    if (!error__options (s, argc, argv)) {
+    //
+    if (argc && IS_SYMBOL (argv)) { name = GET_SYMBOL (argv); argc--; argv++; }
+    if (argc && IS_FLOAT (argv))  { size = GET_FLOAT (argv);  argc--; argv++; }
+    //
+    }
+    
+    if (argc) { warning_unusedArguments (s, argc, argv); }
+    
+    x = (t_glist *)table_makeObject (name, size, keep);
+    
+    pd_class (x) = arraydefine_class;
+    
+    arraydefine_yrange (x, down, up);
+    
+    return x;
 }
 
 static void *arraydefine_makeObject (t_symbol *s, int argc, t_atom *argv)
@@ -191,41 +173,6 @@ static void *arraydefine_makeObject (t_symbol *s, int argc, t_atom *argv)
     return pd_newest;
 }
 
-/*
-static void *arraydefine_makeObject(t_symbol *s, int argc, t_atom *argv)
-{
-    if (!argc || argv[0].a_type != A_SYMBOL)
-        pd_newest = arraydefine_new(s, argc, argv);
-    else
-    {
-        char *str = argv[0].a_w.w_symbol->s_name;
-        if (!strcmp(str, "d") || !strcmp(str, "define"))
-            pd_newest = arraydefine_new(s, argc-1, argv+1);
-        else if (!strcmp(str, "size"))
-            pd_newest = arraysize_new(s, argc-1, argv+1);
-        else if (!strcmp(str, "sum"))
-            pd_newest = arraysum_new(s, argc-1, argv+1);
-        else if (!strcmp(str, "get"))
-            pd_newest = arrayget_new(s, argc-1, argv+1);
-        else if (!strcmp(str, "set"))
-            pd_newest = arrayset_new(s, argc-1, argv+1);
-        else if (!strcmp(str, "quantile"))
-            pd_newest = arrayquantile_new(s, argc-1, argv+1);
-        else if (!strcmp(str, "random"))
-            pd_newest = arrayrandom_new(s, argc-1, argv+1);
-        else if (!strcmp(str, "max"))
-            pd_newest = arraymax_new(s, argc-1, argv+1);
-        else if (!strcmp(str, "min"))
-            pd_newest = arraymin_new(s, argc-1, argv+1);
-        else 
-        {
-            post_error ("array %s: unknown function", str);
-            pd_newest = 0;
-        }
-    }
-    return (pd_newest);
-}
-*/
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
