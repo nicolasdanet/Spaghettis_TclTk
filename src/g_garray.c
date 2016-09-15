@@ -168,7 +168,7 @@ static void garray_drawJob (t_gobj *z, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void garray_updateGraphBounds (t_garray *x, int size, int style)
+static void garray_updateGraphSize (t_garray *x, int size, int style)
 {
     t_glist *glist = x->x_owner;
         
@@ -199,7 +199,7 @@ void garray_resizeWithInteger (t_garray *x, int n)
     
     PD_ASSERT (n > 0);
     
-    garray_updateGraphBounds (x, PD_MAX (1, n), style);
+    garray_updateGraphSize (x, PD_MAX (1, n), style);
     array_resizeAndRedraw (array, x->x_owner, PD_MAX (1, n));
     
     if (x->x_isUsedInDSP) { dsp_update(); }
@@ -329,7 +329,7 @@ t_symbol *garray_getName (t_garray *x)
     return x->x_name;
 }
 
-t_glist *garray_getOwner (t_garray *x)
+t_glist *garray_getView (t_garray *x)
 {
     return x->x_owner;
 }
@@ -640,7 +640,7 @@ void garray_fromDialog (t_garray *x, t_symbol *name, t_float size, t_float flags
     if (newStyle != oldStyle) { scalar_setFloat (x->x_scalar, sym_style, (t_float)newStyle); }
     if (newSize != array_getSize (array)) { garray_resizeWithInteger (x, newSize); }
         
-    garray_updateGraphBounds (x, newSize, newStyle); 
+    garray_updateGraphSize (x, newSize, newStyle); 
     garray_setSaveWithParent (x, save);
     garray_redraw (x);
     canvas_dirty (x->x_owner, 1);
@@ -699,7 +699,7 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_float size, t_flo
     pd_bind (cast_pd (x), sym___hash__A); 
 
     garray_redraw (x);
-    garray_updateGraphBounds (x, n, style);
+    garray_updateGraphSize (x, n, style);
     garray_updateGraphName (x);
     dsp_update();
     //

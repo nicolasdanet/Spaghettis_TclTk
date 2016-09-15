@@ -107,7 +107,7 @@ t_glist *arrayclient_fetchView (t_arrayclient *x)
     
         t_garray *y = (t_garray *)pd_findByClass (x->ac_name, garray_class);
         
-        if (y) { return garray_getOwner (y); }
+        if (y) { return garray_getView (y); }
         else {
             error_canNotFind (sym_array, x->ac_name);
         }

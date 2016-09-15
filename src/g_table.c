@@ -24,7 +24,7 @@ extern t_class  *garray_class;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void *table_makeObject (t_symbol *name, t_float size, t_float flags)
+void *table_makeObject (t_symbol *name, t_float down, t_float up, t_float size, t_float flags)
 {
     t_glist *x = NULL;
     t_glist *y = NULL;
@@ -49,9 +49,9 @@ void *table_makeObject (t_symbol *name, t_float size, t_float flags)
 
     y = canvas_newGraphOnParent (x,
             GRAPH_DEFAULT_START,
-            GRAPH_DEFAULT_UP,
+            up,
             size,
-            GRAPH_DEFAULT_DOWN,
+            down,
             GRAPH_DEFAULT_X,
             GRAPH_DEFAULT_Y,
             GRAPH_DEFAULT_X + GRAPH_DEFAULT_WIDTH,
@@ -68,7 +68,7 @@ void *table_makeObject (t_symbol *name, t_float size, t_float flags)
 
 static void *table_new (t_symbol *name, t_float size)
 {
-    return table_makeObject (name, size, 0.0);
+    return table_makeObject (name, GRAPH_DEFAULT_DOWN, GRAPH_DEFAULT_UP, size, 0.0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

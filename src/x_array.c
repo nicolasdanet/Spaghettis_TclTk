@@ -29,9 +29,24 @@ t_class *arraydefine_class;             /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void arraydefine_yrange(t_glist *x, t_float ylo, t_float yhi)
+static t_garray *arraydefine_getContentChecked (t_glist *x)
 {
-    t_glist *gl = (x->gl_graphics ? canvas_castToGlistChecked(&x->gl_graphics->g_pd) : 0);
+    t_gobj *y = x->gl_graphics;
+    
+    if (y) {
+        t_glist *glist = canvas_castToGlistChecked (cast_pd (y));
+        if (glist && garray_isSingle (glist)) { return (t_garray *)glist->gl_graphics; }
+    }
+    
+    PD_BUG; 
+    
+    return NULL;
+}
+
+/*
+static void arraydefine_setRange(t_glist *x, t_float ylo, t_float yhi)
+{
+    t_glist *gl = (x->gl_graphics ? canvas_castToGlistChecked (&x->gl_graphics->g_pd) : 0);
     if (gl && gl->gl_graphics && pd_class(&gl->gl_graphics->g_pd) == garray_class)
     {
         int n = array_getSize (garray_getArray ((t_garray *)gl->gl_graphics));
@@ -40,6 +55,7 @@ static void arraydefine_yrange(t_glist *x, t_float ylo, t_float yhi)
     }
     else { PD_BUG; }
 }
+*/
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -137,11 +153,9 @@ static void *arraydefine_new (t_symbol *s, int argc, t_atom *argv)
     
     if (argc) { warning_unusedArguments (s, argc, argv); }
     
-    x = (t_glist *)table_makeObject (name, size, keep);
+    x = (t_glist *)table_makeObject (name, down, up, size, keep);
     
     pd_class (x) = arraydefine_class;
-    
-    arraydefine_yrange (x, down, up);
     
     return x;
 }
@@ -155,15 +169,15 @@ static void *arraydefine_makeObject (t_symbol *s, int argc, t_atom *argv)
     //
     t_symbol *t = atom_getSymbol (argv);
     
-    if (t == sym_d || t == sym_define)  { pd_newest = arraydefine_new (s,       argc - 1, argv + 1); }
-    else if (t == sym_size)             { pd_newest = arraysize_new (s,         argc - 1, argv + 1); }
-    else if (t == sym_sum)              { pd_newest = arraysum_new (s,          argc - 1, argv + 1); }
-    else if (t == sym_get)              { pd_newest = arrayget_new (s,          argc - 1, argv + 1); }
-    else if (t == sym_set)              { pd_newest = arrayset_new (s,          argc - 1, argv + 1); }
-    else if (t == sym_quantile)         { pd_newest = arrayquantile_new (s,     argc - 1, argv + 1); }
-    else if (t == sym_random)           { pd_newest = arrayrandom_new (s,       argc - 1, argv + 1); }
-    else if (t == sym_max)              { pd_newest = arraymax_new (s,          argc - 1, argv + 1); }
-    else if (t == sym_min)              { pd_newest = arraymin_new (s,          argc - 1, argv + 1); }
+    if (t == sym_d || t == sym_define)  { pd_newest = arraydefine_new (s,   argc - 1, argv + 1); }
+    else if (t == sym_size)             { pd_newest = arraysize_new (s,     argc - 1, argv + 1); }
+    else if (t == sym_sum)              { pd_newest = arraysum_new (s,      argc - 1, argv + 1); }
+    else if (t == sym_get)              { pd_newest = arrayget_new (s,      argc - 1, argv + 1); }
+    else if (t == sym_set)              { pd_newest = arrayset_new (s,      argc - 1, argv + 1); }
+    else if (t == sym_quantile)         { pd_newest = arrayquantile_new (s, argc - 1, argv + 1); }
+    else if (t == sym_random)           { pd_newest = arrayrandom_new (s,   argc - 1, argv + 1); }
+    else if (t == sym_max)              { pd_newest = arraymax_new (s,      argc - 1, argv + 1); }
+    else if (t == sym_min)              { pd_newest = arraymin_new (s,      argc - 1, argv + 1); }
     else {
         error_unexpected (sym_array, t);
     }

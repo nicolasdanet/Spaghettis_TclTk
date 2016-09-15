@@ -678,7 +678,11 @@ int             text_getPixelY                          (t_object *x, t_glist *g
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            *table_makeObject                       (t_symbol *name, t_float size, t_float flags);
+void            *table_makeObject                       (t_symbol *name,
+                                                            t_float down, 
+                                                            t_float up,
+                                                            t_float size,
+                                                            t_float flags);
                                                             
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -707,7 +711,7 @@ t_garray        *garray_makeObject                      (t_glist *glist,
                                                             t_float flags);
                                                             
 t_array         *garray_getArray                        (t_garray *x);
-t_glist         *garray_getOwner                        (t_garray *x);
+t_glist         *garray_getView                         (t_garray *x);
 t_scalar        *garray_getScalar                       (t_garray *x);
 t_symbol        *garray_getName                         (t_garray *x);
 
