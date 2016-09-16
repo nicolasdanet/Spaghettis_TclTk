@@ -90,11 +90,11 @@ static void textdefine_save (t_gobj *z, t_buffer *b)
 {
     t_textdefine *x = (t_textdefine *)z;
     
-    buffer_vAppend (b, "ssff", 
+    buffer_vAppend (b, "ssii", 
         sym___hash__X,
         sym_obj,
-        (float)cast_object (x)->te_xCoordinate,
-        (float)cast_object (x)->te_yCoordinate);
+        cast_object (x)->te_xCoordinate,
+        cast_object (x)->te_yCoordinate);
         
     buffer_serialize (b, cast_object (x)->te_buffer);
     buffer_appendSemicolon (b);

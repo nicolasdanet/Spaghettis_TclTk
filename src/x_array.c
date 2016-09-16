@@ -50,13 +50,13 @@ static t_garray *arraydefine_getContentChecked (t_glist *x)
 static void arraydefine_send (t_glist *x, t_symbol *s)
 {
     if (pd_isThing (s)) {
-    
-        t_garray *t = arraydefine_getContentChecked (x);
-        t_gpointer gp = GPOINTER_INIT;
-    
-        gpointer_setAsScalar (&gp, garray_getView (t), garray_getScalar (t));
-        pd_pointer (s->s_thing, &gp);
-        gpointer_unset (&gp);
+    //
+    t_garray *t = arraydefine_getContentChecked (x);
+    t_gpointer gp = GPOINTER_INIT;
+    gpointer_setAsScalar (&gp, garray_getView (t), garray_getScalar (t));
+    pd_pointer (s->s_thing, &gp);
+    gpointer_unset (&gp);
+    //
     }
 }
 
@@ -74,17 +74,23 @@ static void arraydefine_anything (t_glist *x, t_symbol *s, int argc, t_atom *arg
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void arraydefine_save(t_gobj *z, t_buffer *bb)
+void arraydefine_save (t_gobj *z, t_buffer *b)
 {
-    t_glist *x = (t_glist *)z;
-    t_glist *gl = (x->gl_graphics ? canvas_castToGlistChecked(&x->gl_graphics->g_pd) : 0);
-    buffer_vAppend(bb, "ssff", sym___hash__X, sym_obj,
-        (float)x->gl_obj.te_xCoordinate, (float)x->gl_obj.te_yCoordinate);
-    buffer_serialize(bb, x->gl_obj.te_buffer);
-    buffer_appendSemicolon(bb);
+    t_glist *x = cast_glist (z);
+    t_garray *t = arraydefine_getContentChecked (x);
+        
+    buffer_vAppend (b, "ssii", 
+        sym___hash__X, 
+        sym_obj,
+        cast_object (x)->te_xCoordinate, 
+        cast_object (x)->te_yCoordinate);
+        
+    buffer_serialize (b, cast_object (x)->te_buffer);
+    buffer_appendSemicolon (b);
 
-    garray_saveContentsToBuffer ((t_garray *)gl->gl_graphics, bb);
-    object_saveWidth(&x->gl_obj, bb);
+    garray_saveContentsToBuffer (t, b);
+    
+    object_saveWidth (z, b);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -129,7 +135,7 @@ static void *arraydefine_new (t_symbol *s, int argc, t_atom *argv)
     
     if (argc) { warning_unusedArguments (s, argc, argv); }
     
-    x = (t_glist *)table_makeObject (name, down, up, size, keep);
+    x = cast_glist (table_makeObject (name, down, up, size, keep));
     
     pd_class (x) = arraydefine_class;
     

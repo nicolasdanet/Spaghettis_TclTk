@@ -669,7 +669,7 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
         iemgui_deserializeColors (&x->x_gui, NULL, NULL, NULL);
     }
     
-    x->x_gui.iem_owner      = (t_glist *)canvas_getCurrent();
+    x->x_gui.iem_owner      = canvas_getCurrent();
     x->x_gui.iem_draw       = (t_iemfn)radio_draw;
     x->x_gui.iem_canSend    = (x->x_gui.iem_send == utils_empty()) ? 0 : 1;
     x->x_gui.iem_canReceive = (x->x_gui.iem_receive == utils_empty()) ? 0 : 1;

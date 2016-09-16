@@ -67,13 +67,13 @@ static void scalardefine_set (t_glist *x, t_symbol *s, int argc, t_atom *argv)
 
 static void scalardefine_save (t_gobj *z, t_buffer *b)
 {
-    t_glist *x = (t_glist *)z;
+    t_glist *x = cast_glist (z);
     
-    buffer_vAppend (b, "ssff", 
+    buffer_vAppend (b, "ssii", 
         sym___hash__X,
         sym_obj,
-        (float)(cast_object (x)->te_xCoordinate),
-        (float)(cast_object (x)->te_yCoordinate));
+        cast_object (x)->te_xCoordinate,
+        cast_object (x)->te_yCoordinate);
         
     buffer_serialize (b, cast_object (x)->te_buffer);
     buffer_appendSemicolon (b);

@@ -505,8 +505,8 @@ static void vu_functionSave (t_gobj *z, t_buffer *b)
     buffer_vAppend (b, "ssiisiissiiiissii",
         sym___hash__X,
         sym_obj,
-        (int)cast_object (x)->te_xCoordinate,
-        (int)cast_object (x)->te_yCoordinate,
+        cast_object (x)->te_xCoordinate,
+        cast_object (x)->te_yCoordinate,
         sym_vu,
         x->x_gui.iem_width,                                         // Width.
         x->x_gui.iem_height,                                        // Height.
@@ -623,7 +623,7 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
         iemgui_deserializeColors (&x->x_gui, NULL, NULL, NULL);
     }
 
-    x->x_gui.iem_owner      = (t_glist *)canvas_getCurrent();
+    x->x_gui.iem_owner      = canvas_getCurrent();
     x->x_gui.iem_draw       = (t_iemfn)vu_draw;
     x->x_gui.iem_canSend    = 0;
     x->x_gui.iem_canReceive = (x->x_gui.iem_receive == utils_empty()) ? 0 : 1;
