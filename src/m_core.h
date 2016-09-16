@@ -191,7 +191,7 @@ t_propertiesfn          class_getPropertiesFunction     (t_class *c);
 #pragma mark -
 
 void        object_list                                 (t_object *x, t_symbol *s, int argc, t_atom *argv);
-void        object_saveAppendWidth                      (t_object *x, t_buffer *b);
+void        object_saveWidth                            (t_object *x, t_buffer *b);
 int         object_numberOfInlets                       (t_object *x);
 int         object_numberOfOutlets                      (t_object *x);
 int         object_numberOfSignalInlets                 (t_object *x);

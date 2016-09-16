@@ -190,8 +190,8 @@ void text_functionSave (t_gobj *z, t_buffer *b)
     }
     
     buffer_serialize (b, x->te_buffer);
-    object_saveAppendWidth (x, b);
-    buffer_appendSemicolon (b); 
+    buffer_appendSemicolon (b);
+    object_saveWidth (x, b);
 }
 
 // -----------------------------------------------------------------------------------------------------------
