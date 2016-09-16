@@ -101,6 +101,11 @@ t_array *arrayclient_fetchArray (t_arrayclient *x)
     return NULL;
 }
 
+t_garray *arrayclient_fetchOwnerIfName (t_arrayclient *x)
+{
+    PD_ASSERT (x->ac_name); return (t_garray *)pd_findByClass (x->ac_name, garray_class);
+}
+
 t_glist *arrayclient_fetchView (t_arrayclient *x)
 {
     if (x->ac_name) {

@@ -137,6 +137,7 @@ void        arrayclient_update              (t_arrayclient *x);
 
 t_glist     *arrayclient_fetchView          (t_arrayclient *x);
 t_array     *arrayclient_fetchArray         (t_arrayclient *x);
+t_garray    *arrayclient_fetchOwnerIfName   (t_arrayclient *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

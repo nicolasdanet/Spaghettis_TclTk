@@ -59,7 +59,7 @@ LIB += -ljack
 # The sources (filepath must NOT contain space).
 
 SRC = amalgam.c \
-    x_arraysize.c x_arraysum.c x_arrayget.c x_arrayset.c x_arrayquantile.c x_arrayrandom.c x_arraymax.c x_arraymin.c \
+    x_arraysum.c x_arrayget.c x_arrayset.c x_arrayquantile.c x_arrayrandom.c x_arraymax.c x_arraymin.c \
     x_list.c x_time.c \
     x_acoustics.c x_arithmetic.c x_connective.c x_gui.c x_interface.c \
     x_midi.c x_misc.c x_net.c \

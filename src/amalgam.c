@@ -134,6 +134,7 @@
 #include "x_arrayclient.c"
 #include "x_arrayrange.c"
 #include "x_array.c"
+#include "x_arraysize.c"
 
 /* DSP. */
 
