@@ -411,7 +411,7 @@ static void bng_functionSave (t_gobj *z, t_buffer *b)
         colors.c_symColorForeground,                            // Foreground color.
         colors.c_symColorLabel);                                // Label color.
                 
-    buffer_vAppend (b, ";");
+    buffer_appendSemicolon (b);
 }
 
 static void bng_functionProperties (t_gobj *z, t_glist *owner)

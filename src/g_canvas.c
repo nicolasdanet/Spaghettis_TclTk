@@ -496,10 +496,8 @@ static void canvas_functionSave (t_gobj *x, t_buffer *b)
     }
     
     buffer_serialize (b, cast_object (x)->te_buffer);
-    
-    if (cast_object (x)->te_width) { buffer_vAppend (b, ",si", sym_f, cast_object (x)->te_width); }
-    
-    buffer_vAppend (b, ";");
+    object_saveAppendWidth (cast_object (x), b);
+    buffer_appendSemicolon (b);
 }
 
 static void canvas_functionProperties (t_gobj *x, t_glist *dummy)

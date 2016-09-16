@@ -593,7 +593,7 @@ static void slider_functionSave (t_gobj *z, t_buffer *b)
         x->x_position,                                                  // Position.
         x->x_isSteadyOnClick);                                          // Is steady.
         
-    buffer_vAppend (b, ";");
+    buffer_appendSemicolon (b);
 }
 
 static void slider_functionProperties (t_gobj *z, t_glist *owner)

@@ -807,9 +807,9 @@ void object_moveOutletFirst (t_object *x, t_outlet *o)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void object_saveWidth (t_object *x, t_buffer *b)
+void object_saveAppendWidth (t_object *x, t_buffer *b)
 {
-    if (x->te_width) { buffer_vAppend (b, "ssf;", sym___hash__X, sym_f, (t_float)x->te_width); }
+    if (x->te_width) { buffer_vAppend (b, ",si", sym_f, x->te_width); }
 }
 
 t_float *object_getSignalValueAtIndex (t_object *x, int m)

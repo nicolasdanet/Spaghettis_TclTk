@@ -277,7 +277,7 @@ static void panel_functionSave (t_gobj *z, t_buffer *b)
         colors.c_symColorBackground,                                            // Background color.
         colors.c_symColorLabel);                                                // Label color.
         
-    buffer_vAppend (b, ";");
+    buffer_appendSemicolon (b);
 }
 
 static void panel_functionProperties (t_gobj *z, t_glist *owner)

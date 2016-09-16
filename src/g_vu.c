@@ -521,7 +521,7 @@ static void vu_functionSave (t_gobj *z, t_buffer *b)
         x->x_hasScale,                                              // Dummy.
         0);                                                         // Dummy.
         
-    buffer_vAppend (b, ";");
+    buffer_appendSemicolon (b);
 }
 
 static void vu_functionProperties (t_gobj *z, t_glist *owner)

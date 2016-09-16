@@ -345,9 +345,8 @@ static void gatom_functionSave (t_gobj *z, t_buffer *b)
         receive,
         send);
 
-    if (cast_object (x)->te_width) { buffer_vAppend (b, ",si", sym_f, cast_object (x)->te_width); }
-    
-    buffer_vAppend (b, ";");
+    object_saveAppendWidth (cast_object (x), b);
+    buffer_appendSemicolon (b);
 }
 
 static void gatom_functionProperties (t_gobj *z, t_glist *owner)

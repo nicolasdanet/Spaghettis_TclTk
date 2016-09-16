@@ -640,7 +640,7 @@ static void dial_functionSave (t_gobj *z, t_buffer *b)
         x->x_floatValue,                                                        // Value.
         x->x_steps);                                                            // Steps.
         
-    buffer_vAppend (b, ";");
+    buffer_appendSemicolon (b);
 }
 
 static void dial_functionProperties (t_gobj *z, t_glist *owner)

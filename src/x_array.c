@@ -76,7 +76,7 @@ static void arraydefine_anything (t_glist *x, t_symbol *s, int argc, t_atom *arg
 
 void arraydefine_save (t_gobj *z, t_buffer *b)
 {
-    t_glist *x = cast_glist (z);
+    t_glist *x  = cast_glist (z);
     t_garray *t = arraydefine_getContentChecked (x);
         
     buffer_vAppend (b, "ssii", 
@@ -86,11 +86,10 @@ void arraydefine_save (t_gobj *z, t_buffer *b)
         cast_object (x)->te_yCoordinate);
         
     buffer_serialize (b, cast_object (x)->te_buffer);
+    object_saveAppendWidth (cast_object (x), b);
     buffer_appendSemicolon (b);
 
     garray_saveContentsToBuffer (t, b);
-    
-    object_saveWidth (z, b);
 }
 
 // -----------------------------------------------------------------------------------------------------------

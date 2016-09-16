@@ -551,7 +551,7 @@ static void radio_functionSave (t_gobj *z, t_buffer *b)
         colors.c_symColorLabel,                                     // Label color.
         x->x_floatValue);                                           // Float value.
         
-    buffer_vAppend (b, ";");
+    buffer_appendSemicolon (b);
 }
 
 static void radio_functionProperties (t_gobj *z, t_glist *owner)

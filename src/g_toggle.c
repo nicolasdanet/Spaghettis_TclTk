@@ -381,7 +381,7 @@ static void toggle_functionSave (t_gobj *z, t_buffer *b)
         x->x_state,                                         // Toggle state.
         x->x_nonZero);                                      // Non-zero value.
         
-    buffer_vAppend (b, ";");
+    buffer_appendSemicolon (b);
 }
 
 static void toggle_functionProperties (t_gobj *z, t_glist *owner)

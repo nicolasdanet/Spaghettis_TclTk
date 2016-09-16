@@ -220,7 +220,7 @@ void garray_saveContentsToBuffer (t_garray *x, t_buffer *b)
     
     buffer_vAppend (b, "si", sym___hash__A, n);
     for (i = 0; i < chunk; i++) { buffer_vAppend (b, "f", GARRAY_AT (n + i)); }
-    buffer_vAppend (b, ";");
+    buffer_appendSemicolon (b);
         
     n += chunk;
     //
