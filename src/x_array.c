@@ -192,7 +192,6 @@ void arraydefine_setup (void)
     class_addMotion (c, canvas_motion);
     
     class_addMethod (c, (t_method)canvas_dsp,           sym_dsp,        A_CANT, A_NULL);
-    class_addMethod (c, (t_method)canvas_restore,       sym_restore,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_map,           sym__map,       A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_close,         sym_close,      A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_save,          sym_save,       A_NULL); 

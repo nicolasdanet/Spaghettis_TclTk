@@ -76,6 +76,7 @@ static void scalardefine_save (t_gobj *z, t_buffer *b)
         cast_object (x)->te_yCoordinate);
         
     buffer_serialize (b, cast_object (x)->te_buffer);
+    object_saveAppendWidth (cast_object (x), b);
     buffer_appendSemicolon (b);
     
     if (x->gl_saveScalar && x->gl_graphics) {
@@ -203,7 +204,6 @@ void scalardefine_setup (void)
     class_addMethod (c, (t_method)scalardefine_send,    sym_send,       A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)scalardefine_set,     sym_set,        A_GIMME, A_NULL);
     
-    class_addMethod (c, (t_method)canvas_restore,       sym_restore,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_dsp,           sym_dsp,        A_CANT, A_NULL);
     class_addMethod (c, (t_method)canvas_map,           sym__map,       A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_close,         sym_close,      A_DEFFLOAT, A_NULL);
