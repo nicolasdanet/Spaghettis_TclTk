@@ -12,78 +12,96 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "m_alloca.h"
-#include "s_system.h"
 #include "g_graphics.h"
 #include "x_control.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+static t_class *arraymax_class;             /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _arraymax {
+    t_arrayrange    x_arrayrange;           /* Must be the first. */
+    t_outlet        *x_outLeft;
+    t_outlet        *x_outRight;
+    } t_arraymax;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* ---  array_client - common code for objects that refer to arrays -- */
-
-#define x_sym ar_arrayclient.ac_name
-#define x_struct ar_arrayclient.ac_templateIdentifier
-#define x_field ar_arrayclient.ac_fieldName
-#define x_gp ar_arrayclient.ac_gpointer
-#define x_outlet ar_arrayclient.ac_obj.te_outlet
-
-
-/* ----  array max -- output largest value and its index ------------ */
-static t_class *array_max_class;
-
-typedef struct _array_max
+static void arraymax_bang (t_arraymax *x)
 {
-    t_arrayrange x_rangeop;
-    t_outlet *x_out1;       /* value */
-    t_outlet *x_out2;       /* index */
-} t_array_max;
-
-void *arraymax_new(t_symbol *s, int argc, t_atom *argv)
-{
-    t_array_max *x = arrayrange_new(array_max_class, argc, argv,
-        0, 1);
-    if (!x) { return NULL; } /* FREE & WARN ! */
-    x->x_out1 = outlet_new(&x->x_rangeop.ar_arrayclient.ac_obj, &s_float);
-    x->x_out2 = outlet_new(&x->x_rangeop.ar_arrayclient.ac_obj, &s_float);
-    return (x);
+    if (!arrayrange_isValid (&x->x_arrayrange)) { error_invalid (sym_array__space__max, sym_field); }
+    else {
+    //
+    int i, start, n;
+    t_array *a = arrayrange_getRange (&x->x_arrayrange, &start, &n);
+    
+    t_float maxIndex = -1.0;
+    t_float maxValue = PD_FLT_MIN;
+    
+    for (i = 0; i < n; i++) {
+        t_float t = array_getFloatAtIndex (a, start + i, arrayrange_getFieldName (&x->x_arrayrange));
+        if (t > maxValue) { maxValue = t; maxIndex = start + i; }
+    }
+    
+    outlet_float (x->x_outRight, maxIndex);
+    outlet_float (x->x_outLeft, maxValue);
+    //
+    }
 }
 
-static void array_max_bang(t_array_max *x)
+static void arraymax_float (t_arraymax *x, t_float f)
 {
-    char *itemp, *firstitem;
-    int stride, nitem, arrayonset, i, besti;
-    t_float bestf;
-    if (!array_rangeop_getrange(&x->x_rangeop, &firstitem, &nitem, &stride,
-        &arrayonset))
-            return;
-    for (i = 0, besti = -1, bestf= -1e30, itemp = firstitem;
-        i < nitem; i++, itemp += stride)
-            if (*(t_float *)itemp > bestf)
-                bestf = *(t_float *)itemp, besti = i+arrayonset;
-    outlet_float(x->x_out2, besti);
-    outlet_float(x->x_out1, bestf);
-}
-
-static void array_max_float(t_array_max *x, t_float f)
-{
-    x->x_rangeop.ar_first = f;
-    array_max_bang(x);
+    arrayrange_setFirst (&x->x_arrayrange, f); arraymax_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void arraymax_setup(void)
+void *arraymax_new (t_symbol *s, int argc, t_atom *argv)
 {
-    array_max_class = class_new(sym_array__space__max,
-        (t_newmethod)arraymax_new, (t_method)arrayclient_free,
-            sizeof(t_array_max), 0, A_GIMME, 0);
-    class_addFloat(array_max_class, array_max_float);
-    class_addBang(array_max_class, array_max_bang);
-    class_setHelpName(array_max_class, sym_array);
+    t_arraymax *x = (t_arraymax *)arrayrange_new (arraymax_class, argc, argv, 0, 1);
+    
+    if (x) {
+        x->x_outLeft  = outlet_new (cast_object (x), &s_float);
+        x->x_outRight = outlet_new (cast_object (x), &s_float);
+
+    } else {
+        error_invalidArguments (sym_array__space__max, argc, argv);
+        pd_free (x); x = NULL; 
+    }
+    
+    return x;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void arraymax_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_array__space__max,
+            (t_newmethod)arraymax_new,
+            (t_method)arrayclient_free,
+            sizeof (t_arraymax),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+    
+    class_addBang (c, arraymax_bang);
+    class_addFloat (c, arraymax_float);
+
+    class_setHelpName (c, sym_array);
+    
+    arraymax_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
