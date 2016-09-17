@@ -18,7 +18,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void *arrayrange_new (t_class *class, int argc, t_atom *argv, int onset, int size)
+void *arrayrange_new (t_class *class, int argc, t_atom *argv, int makeOnsetInlet, int makeSizeInlet)
 {
     t_arrayrange *x = (t_arrayrange *)pd_new (class);
 
@@ -52,8 +52,8 @@ void *arrayrange_new (t_class *class, int argc, t_atom *argv, int onset, int siz
     
     if (!err) { 
     
-        if (onset) { inlet_newFloat (cast_object (x), &x->ar_first); }
-        if (size)  { inlet_newFloat (cast_object (x), &x->ar_size); }
+        if (makeOnsetInlet) { inlet_newFloat (cast_object (x), &x->ar_first); }
+        if (makeSizeInlet)  { inlet_newFloat (cast_object (x), &x->ar_size); }
         
         if (argc && IS_FLOAT (argv)) { x->ar_first = GET_FLOAT (argv); argc--; argv++; }
         if (argc && IS_FLOAT (argv)) { x->ar_size  = GET_FLOAT (argv); argc--; argv++; }

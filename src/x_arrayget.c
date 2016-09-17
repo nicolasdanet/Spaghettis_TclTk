@@ -13,66 +13,91 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "m_alloca.h"
-#include "s_system.h"
 #include "g_graphics.h"
 #include "x_control.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+static t_class *arrayget_class;             /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _arrayget {
+    t_arrayrange  x_arrayrange;             /* Must be the first. */
+    t_outlet      *x_outlet;
+    } t_arrayget;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* ---  array_client - common code for objects that refer to arrays -- */
-
-#define x_sym ar_arrayclient.ac_name
-#define x_struct ar_arrayclient.ac_templateIdentifier
-#define x_field ar_arrayclient.ac_fieldName
-#define x_gp ar_arrayclient.ac_gpointer
-#define x_outlet ar_arrayclient.ac_obj.te_outlet
-
-/* ----------------  array get -- output as list ------------------- */
-static t_class *array_get_class;
-
-#define t_array_get t_arrayrange
-
-void *arrayget_new(t_symbol *s, int argc, t_atom *argv)
+static void arrayget_bang (t_arrayget *x)
 {
-    t_array_get *x = arrayrange_new(array_get_class, argc, argv,
-        0, 1);
-    if (!x) { return NULL; } /* FREE & WARN ! */
-    outlet_new(&x->ar_arrayclient.ac_obj, &s_float);
-    return (x);
+    if (!arrayrange_isValid (&x->x_arrayrange)) { error_invalid (sym_array__space__get, sym_field); }
+    else {
+    //
+    int i, start, n;
+    t_array *a = arrayrange_getRange (&x->x_arrayrange, &start, &n);
+    t_atom *t  = NULL;
+    
+    ATOMS_ALLOCA (t, n);
+    
+    for (i = 0; i < n; i++) {
+        SET_FLOAT (t + i, array_getFloatAtIndex (a, start + i, arrayrange_getFieldName (&x->x_arrayrange))); 
+    }
+    outlet_list (x->x_outlet, NULL, n, t);
+    
+    ATOMS_FREEA (t, n);
+    //
+    }
 }
 
-static void array_get_bang(t_arrayrange *x)
+static void arrayget_float (t_arrayget *x, t_float f)
 {
-    char *itemp, *firstitem;
-    int stride, nitem, arrayonset, i;
-    t_atom *outv;
-    if (!array_rangeop_getrange(x, &firstitem, &nitem, &stride, &arrayonset))
-        return;
-    ATOMS_ALLOCA(outv, nitem);
-    for (i = 0, itemp = firstitem; i < nitem; i++, itemp += stride)
-        SET_FLOAT(&outv[i],  *(t_float *)itemp);
-    outlet_list(x->x_outlet, 0, nitem, outv);
-    ATOMS_FREEA(outv, nitem);
+    arrayrange_setFirst (&x->x_arrayrange, f); arrayget_bang (x);
 }
 
-static void array_get_float(t_arrayrange *x, t_float f)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void *arrayget_new (t_symbol *s, int argc, t_atom *argv)
 {
-    x->ar_first = f;
-    array_get_bang(x);
+    t_arrayget *x = (t_arrayget *)arrayrange_new (arrayget_class, argc, argv, 0, 1);
+    
+    if (x) { x->x_outlet = outlet_new (cast_object (x), &s_list); }
+    else {
+        error_invalidArguments (sym_array__space__get, argc, argv);
+        pd_free (x); x = NULL; 
+    }
+    
+    return x;
 }
 
-/* ---------------- global setup function -------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-void arrayget_setup(void)
+void arrayget_setup (void)
 {
-    array_get_class = class_new(sym_array__space__get,
-        (t_newmethod)arrayget_new, (t_method)arrayclient_free,
-            sizeof(t_array_get), 0, A_GIMME, 0);
-    class_addBang(array_get_class, array_get_bang);
-    class_addFloat(array_get_class, array_get_float);
-    class_setHelpName(array_get_class, sym_array);
+    t_class *c = NULL;
+    
+    c = class_new (sym_array__space__get,
+            (t_newmethod)arrayget_new,
+            (t_method)arrayclient_free,
+            sizeof (t_arrayget),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+            
+    class_addBang (c, arrayget_bang);
+    class_addFloat (c, arrayget_float);
+    
+    class_setHelpName (c, sym_array);
+    
+    arrayget_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

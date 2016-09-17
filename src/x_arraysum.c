@@ -59,7 +59,7 @@ static void arraysum_float (t_arraysum *x, t_float f)
 
 void *arraysum_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_arraysum *x = arrayrange_new (arraysum_class, argc, argv, 0, 1);
+    t_arraysum *x = (t_arraysum *)arrayrange_new (arraysum_class, argc, argv, 0, 1);
     
     if (x) { x->x_outlet = outlet_new (cast_object (x), &s_float); }
     else {

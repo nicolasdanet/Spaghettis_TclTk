@@ -143,7 +143,7 @@ t_garray    *arrayclient_fetchOwnerIfName   (t_arrayclient *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        *arrayrange_new                 (t_class *c, int argc, t_atom *argv, int onset, int size);
+void        *arrayrange_new                 (t_class *c, int argc, t_atom *argv, int makeOnset, int makeSize);
 t_array     *arrayrange_getRange            (t_arrayrange *x, int *i, int *n);
 t_symbol    *arrayrange_getFieldName        (t_arrayrange *x);
 
