@@ -138,6 +138,7 @@
 #include "x_arraysum.c"
 #include "x_arrayget.c"
 #include "x_arrayset.c"
+#include "x_arrayquantile.c"
 
 /* DSP. */
 

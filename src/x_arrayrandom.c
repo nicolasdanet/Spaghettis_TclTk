@@ -64,7 +64,8 @@ static void array_random_bang(t_array_random *x)
         &arrayonset))
             return;
     x->x_state = x->x_state * 472940017 + 832416023;
-    arrayquantile_float(&x->x_r, (1./4294967296.0) * (double)(x->x_state));
+    
+    arrayrange_quantile (&x->x_r, (1./4294967296.0) * (double)(x->x_state)); /* !!! */
 }
 
 static void array_random_float(t_array_random *x, t_float f)

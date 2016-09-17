@@ -150,6 +150,7 @@ t_symbol    *arrayrange_getFieldName        (t_arrayrange *x);
 void        arrayrange_update               (t_arrayrange *x);
 int         arrayrange_isValid              (t_arrayrange *x);
 int         arrayrange_setFirst             (t_arrayrange *x, t_float f);
+t_float     arrayrange_quantile             (t_arrayrange *x, t_float f);
 
 int         array_rangeop_getrange          (t_arrayrange *x,   /* ASAP */
                                                 char **firstitemp,
@@ -169,12 +170,6 @@ void        *arrayquantile_new              (t_symbol *s, int argc, t_atom *argv
 void        *arrayrandom_new                (t_symbol *s, int argc, t_atom *argv);
 void        *arraymax_new                   (t_symbol *s, int argc, t_atom *argv);
 void        *arraymin_new                   (t_symbol *s, int argc, t_atom *argv);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void        arrayquantile_float             (t_arrayrange *x, t_float f);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
