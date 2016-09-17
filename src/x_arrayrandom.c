@@ -7,71 +7,78 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+/* Weird PRNG kept for compatbility. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "m_alloca.h"
-#include "s_system.h"
 #include "g_graphics.h"
 #include "x_control.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+static t_class *arrayrandom_class;          /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _arrayrandom {
+    t_arrayrange    x_arrayrange;           /* Must be the first. */
+    unsigned int    x_state;
+    t_outlet        *x_outlet;
+    } t_arrayrandom;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* ---  array_client - common code for objects that refer to arrays -- */
-
-#define x_sym ar_arrayclient.ac_name
-#define x_struct ar_arrayclient.ac_templateIdentifier
-#define x_field ar_arrayclient.ac_fieldName
-#define x_gp ar_arrayclient.ac_gpointer
-#define x_outlet ar_arrayclient.ac_obj.te_outlet
-
-/* ----  array random -- output random value with array as distribution ---- */
-static t_class *array_random_class;
-
-typedef struct _array_random   /* any operation meaningful on a subrange */
+static void arrayrandom_bang (t_arrayrandom *x)
 {
-    t_arrayrange x_r;
-    unsigned int x_state;
-} t_array_random;
-
-void *arrayrandom_new(t_symbol *s, int argc, t_atom *argv)
-{
-    t_array_random *x = arrayrange_new(array_random_class,
-        argc, argv, 0, 1);
-    if (!x) { return NULL; } /* FREE & WARN ! */
-    static unsigned int random_nextseed = 584926371;
-    random_nextseed = random_nextseed * 435898247 + 938284287;
-    x->x_state = random_nextseed;
-    outlet_new(&x->x_r.ar_arrayclient.ac_obj, &s_float);
-    return (x);
+    if (!arrayrange_isValid (&x->x_arrayrange)) { error_invalid (sym_array__space__random, sym_field); }
+    else {
+        double k;
+        x->x_state = x->x_state * 472940017 + 832416023;
+        k = (1.0 / 4294967296.0) * (double)(x->x_state);
+        outlet_float (x->x_outlet, arrayrange_quantile (&x->x_arrayrange, k));
+    }
 }
 
-static void array_random_seed(t_array_random *x, t_float f)
+static void arrayrandom_float (t_arrayrandom *x, t_float f)
+{
+    arrayrange_setFirst (&x->x_arrayrange, f); arrayrandom_bang(x);
+}
+
+static void arrayrandom_seed (t_arrayrandom *x, t_float f)
 {
     x->x_state = f;
 }
 
-static void array_random_bang(t_array_random *x)
-{
-    char *itemp, *firstitem;
-    int stride, nitem, arrayonset, i;
-    
-    if (!array_rangeop_getrange(&x->x_r, &firstitem, &nitem, &stride,
-        &arrayonset))
-            return;
-    x->x_state = x->x_state * 472940017 + 832416023;
-    
-    arrayrange_quantile (&x->x_r, (1./4294967296.0) * (double)(x->x_state)); /* !!! */
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void array_random_float(t_array_random *x, t_float f)
+void *arrayrandom_new (t_symbol *s, int argc, t_atom *argv)
 {
-    x->x_r.ar_first = f;
-    array_random_bang(x);
+    static unsigned int random_nextSeed = 584926371;
+    
+    t_arrayrandom *x = (t_arrayrandom *)arrayrange_new (arrayrandom_class, argc, argv, 0, 1);
+    
+    random_nextSeed = random_nextSeed * 435898247 + 938284287;
+
+    if (x) {
+        x->x_state  = random_nextSeed;
+        x->x_outlet = outlet_new (cast_object (x), &s_float);
+        
+    } else {
+        error_invalidArguments (sym_array__space__random, argc, argv);
+        pd_free (x); x = NULL; 
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -80,14 +87,24 @@ static void array_random_float(t_array_random *x, t_float f)
 
 void arrayrandom_setup (void)
 {
-    array_random_class = class_new(sym_array__space__random,
-        (t_newmethod)arrayrandom_new, (t_method)arrayclient_free,
-            sizeof(t_array_random), 0, A_GIMME, 0);
-    class_addMethod(array_random_class, (t_method)array_random_seed,
-        sym_seed, A_FLOAT, 0);
-    class_addFloat(array_random_class, array_random_float);
-    class_addBang(array_random_class, array_random_bang);
-    class_setHelpName(array_random_class, sym_array);
+    t_class *c = NULL;
+    
+    c = class_new (sym_array__space__random,
+            (t_newmethod)arrayrandom_new,
+            (t_method)arrayclient_free,
+            sizeof (t_arrayrandom),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+    
+    class_addBang (c, arrayrandom_bang);
+    class_addFloat (c, arrayrandom_float);
+    
+    class_addMethod (c, (t_method)arrayrandom_seed, sym_seed, A_FLOAT, A_NULL);
+
+    class_setHelpName (c, sym_array);
+    
+    arrayrandom_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

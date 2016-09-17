@@ -156,52 +156,8 @@ t_float arrayrange_quantile (t_arrayrange *x, t_float f)
     return i;
 }
 
-/*
-
-print: 0
-print: 11
-print: 22
-print: 25
-print: 27
-print: 30
-print: 69
-print: 73
-print: 76
-print: 79
-print: 82
-print: 99
-print: 99
-
-print: 29
-print: 75
-print: 26
-print: 72
-print: 74
-print: 86
-print: 25
-print: 81
-print: 77
-print: 20
-
-t_float arrayrange_quantile (t_arrayrange *x, t_float f)
-{
-    char *itemp, *firstitem;
-    int stride, nitem, arrayonset, i;
-    double sum;
-    if (!array_rangeop_getrange(x, &firstitem, &nitem, &stride, &arrayonset))
-        return;
-    for (i = 0, sum = 0, itemp = firstitem; i < nitem; i++, itemp += stride)
-        sum += (*(t_float *)itemp > 0? *(t_float *)itemp : 0);
-    sum *= f;
-    for (i = 0, itemp = firstitem; i < (nitem-1); i++, itemp += stride)
-    {
-        sum -= (*(t_float *)itemp > 0? *(t_float *)itemp : 0);
-        if (sum < 0)
-            break;
-    }
-    
-    return i;
-} */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 int array_rangeop_getrange (t_arrayrange *x, char **firstitemp, int *nitemp, int *stridep, int *arrayonsetp)
 {

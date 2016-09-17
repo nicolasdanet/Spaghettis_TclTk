@@ -139,6 +139,7 @@
 #include "x_arrayget.c"
 #include "x_arrayset.c"
 #include "x_arrayquantile.c"
+#include "x_arrayrandom.c"
 
 /* DSP. */
 
