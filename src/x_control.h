@@ -147,6 +147,7 @@ void        *arrayrange_new                 (t_class *c, int argc, t_atom *argv,
 t_array     *arrayrange_getRange            (t_arrayrange *x, int *i, int *n);
 t_symbol    *arrayrange_getFieldName        (t_arrayrange *x);
 
+void        arrayrange_update               (t_arrayrange *x);
 int         arrayrange_isValid              (t_arrayrange *x);
 int         arrayrange_setFirst             (t_arrayrange *x, t_float f);
 

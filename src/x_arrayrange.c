@@ -85,6 +85,11 @@ int arrayrange_setFirst (t_arrayrange *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void arrayrange_update (t_arrayrange *x)
+{
+    arrayclient_update (&x->ar_arrayclient);
+}
+
 int arrayrange_isValid (t_arrayrange *x)
 {
     t_array *a = arrayclient_fetchArray (&x->ar_arrayclient);

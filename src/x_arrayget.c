@@ -25,8 +25,8 @@ static t_class *arrayget_class;             /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _arrayget {
-    t_arrayrange  x_arrayrange;             /* Must be the first. */
-    t_outlet      *x_outlet;
+    t_arrayrange    x_arrayrange;           /* Must be the first. */
+    t_outlet        *x_outlet;
     } t_arrayget;
 
 // -----------------------------------------------------------------------------------------------------------

@@ -29,8 +29,8 @@ static t_class *arraysize_class;                /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _arraysize {
-    t_arrayclient x_arrayclient;               /* Must be the first. */
-    t_outlet      *x_outlet;
+    t_arrayclient   x_arrayclient;              /* Must be the first. */
+    t_outlet        *x_outlet;
     } t_arraysize;
 
 // -----------------------------------------------------------------------------------------------------------

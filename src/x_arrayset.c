@@ -12,55 +12,82 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "m_alloca.h"
-#include "s_system.h"
 #include "g_graphics.h"
 #include "x_control.h"
 
-/* ---  array_client - common code for objects that refer to arrays -- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-#define x_sym ar_arrayclient.ac_name
-#define x_struct ar_arrayclient.ac_templateIdentifier
-#define x_field ar_arrayclient.ac_fieldName
-#define x_gp ar_arrayclient.ac_gpointer
-#define x_outlet ar_arrayclient.ac_obj.te_outlet
+static t_class *arrayset_class;         /* Shared. */
 
-/* --------------  array set -- copy list to array -------------- */
-static t_class *array_set_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-#define t_array_set t_arrayrange
+typedef struct _arrayset {
+    t_arrayrange    x_arrayrange;       /* Must be the first. */
+    } t_arrayset;
 
-void *arrayset_new(t_symbol *s, int argc, t_atom *argv)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void arrayset_list (t_arrayset *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_array_set *x = arrayrange_new(array_set_class, argc, argv,
-        1, 0);
-    if (!x) { return NULL; } /* FREE & WARN ! */
-    return (x);
+    if (!arrayrange_isValid (&x->x_arrayrange)) { error_invalid (sym_array__space__set, sym_field); }
+    else {
+    //
+    int i, start, n;
+    t_array *a = arrayrange_getRange (&x->x_arrayrange, &start, &n);
+    
+    n = PD_MIN (argc, n);
+    
+    for (i = 0; i < n; i++) {
+        t_float f = atom_getFloatAtIndex (i, argc, argv);
+        array_setFloatAtIndex (a, start + i, arrayrange_getFieldName (&x->x_arrayrange), f);
+    }
+    //
+    }
+    
+    arrayrange_update (&x->x_arrayrange);
 }
 
-static void array_set_list(t_arrayrange *x, t_symbol *s,
-    int argc, t_atom *argv)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void *arrayset_new (t_symbol *s, int argc, t_atom *argv)
 {
-    char *itemp, *firstitem;
-    int stride, nitem, arrayonset, i;
-    if (!array_rangeop_getrange(x, &firstitem, &nitem, &stride, &arrayonset))
-        return;
-    if (nitem > argc)
-        nitem = argc;
-    for (i = 0, itemp = firstitem; i < nitem; i++, itemp += stride)
-        *(t_float *)itemp = atom_getFloatAtIndex(i, argc, argv);
-    arrayclient_update (&x->ar_arrayclient);
+    t_arrayset *x = (t_arrayset *)arrayrange_new (arrayset_class, argc, argv, 1, 0);
+    
+    if (!x) {
+        error_invalidArguments (sym_array__space__set, argc, argv);
+        pd_free (x); x = NULL; 
+    }
+    
+    return x;
 }
 
-/* ---------------- global setup function -------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-void arrayset_setup(void)
+void arrayset_setup (void)
 {
-    array_set_class = class_new(sym_array__space__set,
-        (t_newmethod)arrayset_new, (t_method)arrayclient_free,
-            sizeof(t_array_set), 0, A_GIMME, 0);
-    class_addList(array_set_class, array_set_list);
-    class_setHelpName(array_set_class, sym_array);
+    t_class *c = NULL;
+    
+    c = class_new (sym_array__space__set,
+            (t_newmethod)arrayset_new,
+            (t_method)arrayclient_free,
+            sizeof (t_arrayset),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+            
+    class_addList (c, arrayset_list);
+    
+    class_setHelpName (c, sym_array);
+    
+    arrayset_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

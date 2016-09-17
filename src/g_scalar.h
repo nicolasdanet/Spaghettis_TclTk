@@ -177,6 +177,7 @@ t_gpointer  *array_getTopParent                         (t_array *x);
 int         array_getSize                               (t_array *x);
 int         array_getElementSize                        (t_array *x);
 t_float     array_getFloatAtIndex                       (t_array *x, int n, t_symbol *fieldName);
+void        array_setFloatAtIndex                       (t_array *x, int n, t_symbol *fieldName, t_float f);
 
 t_float     array_getFloatAtIndexByDescriptorAsPosition (t_array *x, int n, t_fielddescriptor *fd);
 void        array_setFloatAtIndexByDescriptorAsPosition (t_array *x, int n, t_fielddescriptor *fd, t_float f);

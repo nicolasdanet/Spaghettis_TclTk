@@ -24,8 +24,8 @@ static t_class *arraysum_class;         /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _arraysum {
-    t_arrayrange  x_arrayrange;         /* Must be the first. */
-    t_outlet      *x_outlet;
+    t_arrayrange    x_arrayrange;       /* Must be the first. */
+    t_outlet        *x_outlet;
     } t_arraysum;
 
 // -----------------------------------------------------------------------------------------------------------

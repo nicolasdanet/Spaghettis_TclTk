@@ -137,6 +137,7 @@
 #include "x_arraysize.c"
 #include "x_arraysum.c"
 #include "x_arrayget.c"
+#include "x_arrayset.c"
 
 /* DSP. */
 
