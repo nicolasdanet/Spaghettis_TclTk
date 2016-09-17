@@ -18,62 +18,80 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *array_sum_class;        /* Shared. */
+static t_class *arraysum_class;         /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define t_array_sum t_arrayrange
+typedef struct _arraysum {
+    t_arrayrange  x_arrayrange;         /* Must be the first. */
+    t_outlet      *x_outlet;
+    } t_arraysum;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void array_sum_bang (t_arrayrange *x)
+static void arraysum_bang (t_arraysum *x)
 {
-    if (!arrayrange_isValid (x)) { error_invalid (sym_array__space__sum, sym_field); }
+    if (!arrayrange_isValid (&x->x_arrayrange)) { error_invalid (sym_array__space__sum, sym_field); }
     else {
     //
-    int i, n;
-    t_array *a = arrayrange_getRange (x, &i, &n);
+    int i, start, n;
+    t_array *a = arrayrange_getRange (&x->x_arrayrange, &start, &n);
     double sum = 0.0;
-    for (i = 0; i < n; i++) { sum += array_getFloatAtIndex (a, i, arrayrange_getFieldName (x)); }
-    outlet_float (x->ar_arrayclient.ac_obj.te_outlet, sum);
+    for (i = 0; i < n; i++) {
+        sum += array_getFloatAtIndex (a, start + i, arrayrange_getFieldName (&x->x_arrayrange)); 
+    }
+    outlet_float (x->x_outlet, sum);
     //
     }
 }
 
-static void array_sum_float(t_arrayrange *x, t_float f)
+static void arraysum_float (t_arraysum *x, t_float f)
 {
-    x->ar_first = f;
-    array_sum_bang(x);
+    arrayrange_setFirst (&x->x_arrayrange, f); arraysum_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void *arraysum_new(t_symbol *s, int argc, t_atom *argv)
+void *arraysum_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_array_sum *x = arrayrange_new(array_sum_class, argc, argv,
-        0, 1);
-    if (!x) { return NULL; } /* FREE & WARN ! */
-    outlet_new(&x->ar_arrayclient.ac_obj, &s_float);
-    return (x);
+    t_arraysum *x = arrayrange_new (arraysum_class, argc, argv, 0, 1);
+    
+    if (x) { x->x_outlet = outlet_new (cast_object (x), &s_float); }
+    else {
+        error_invalidArguments (sym_array__space__sum, argc, argv);
+        pd_free (x); x = NULL; 
+    }
+    
+    return x;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void arraysum_setup(void)
+void arraysum_setup (void)
 {
-    array_sum_class = class_new(sym_array__space__sum,
-        (t_newmethod)arraysum_new, (t_method)arrayclient_free,
-            sizeof(t_array_sum), 0, A_GIMME, 0);
-    class_addBang(array_sum_class, array_sum_bang);
-    class_addFloat(array_sum_class, array_sum_float);
-    class_setHelpName(array_sum_class, sym_array);
+    t_class *c = NULL;
+    
+    c = class_new (sym_array__space__sum,
+            (t_newmethod)arraysum_new,
+            (t_method)arrayclient_free,
+            sizeof (t_arraysum),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+            
+    class_addBang (c, arraysum_bang);
+    class_addFloat (c, arraysum_float);
+    
+    class_setHelpName (c, sym_array);
+    
+    arraysum_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
