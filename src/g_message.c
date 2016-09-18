@@ -138,7 +138,7 @@ static void message_add (t_message *x, t_symbol *s, int argc, t_atom *argv)
     boxtext_retext (x->m_owner, &x->m_obj);
 }
 
-static void message_addWord (t_message *x, t_symbol *s, int argc, t_atom *argv)
+static void message_append (t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
     buffer_append (cast_object (x)->te_buffer, argc, argv);
     
@@ -273,7 +273,7 @@ void message_setup (void)
         
     class_addMethod (c, (t_method)message_set,              sym_set,                A_GIMME, A_NULL);
     class_addMethod (c, (t_method)message_add,              sym_add,                A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)message_addWord,          sym_addword,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)message_append,           sym_append,             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)message_addComma,         sym_addcomma,           A_NULL);
     class_addMethod (c, (t_method)message_addSemicolon,     sym_addsemicolon,       A_NULL);
     class_addMethod (c, (t_method)message_addDollar,        sym_adddollar,          A_FLOAT, A_NULL);
@@ -281,7 +281,7 @@ void message_setup (void)
 
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)message_addWord,          sym_add2,               A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)message_append,           sym_add2,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)message_addSemicolon,     sym_addsemi,            A_NULL);
     class_addMethod (c, (t_method)message_addDollarSymbol,  sym_adddollsym,         A_SYMBOL, A_NULL);
         

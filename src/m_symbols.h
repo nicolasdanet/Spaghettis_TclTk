@@ -141,7 +141,6 @@ extern t_symbol *sym_addcomma;
 extern t_symbol *sym_adddollar;
 extern t_symbol *sym_adddollarsymbol;
 extern t_symbol *sym_addsemicolon;
-extern t_symbol *sym_addword;
 extern t_symbol *sym_append;
 extern t_symbol *sym_arguments;
 extern t_symbol *sym_array;

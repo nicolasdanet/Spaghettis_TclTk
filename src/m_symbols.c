@@ -136,7 +136,6 @@ t_symbol *sym_addcomma;
 t_symbol *sym_adddollar;
 t_symbol *sym_adddollarsymbol;
 t_symbol *sym_addsemicolon;
-t_symbol *sym_addword;
 t_symbol *sym_append;
 t_symbol *sym_arguments;
 t_symbol *sym_array;
@@ -679,7 +678,6 @@ void symbols_initialize (void)
     sym_adddollar                               = gensym ("adddollar");
     sym_adddollarsymbol                         = gensym ("adddollarsymbol");
     sym_addsemicolon                            = gensym ("addsemicolon");
-    sym_addword                                 = gensym ("addword");
     sym_append                                  = gensym ("append");
     sym_arguments                               = gensym ("arguments");
     sym_array                                   = gensym ("array");
