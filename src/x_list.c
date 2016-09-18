@@ -1,14 +1,23 @@
-/* Copyright (c) 1997- Miller Puckette and others.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
+
+/* 
+    Copyright (c) 1997-2016 Miller Puckette and others.
+*/
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
 #include "m_alloca.h"
 #include "g_graphics.h"
+#include "x_control.h"
 
-#include <string.h>
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 extern t_pd *pd_newest;
 
@@ -435,7 +444,9 @@ static void list_trim_setup(void)
     class_setHelpName(list_trim_class, &s_list);
 }
 
-/* ------------- list length --------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 t_class *list_length_class;
 
@@ -473,7 +484,9 @@ static void list_length_setup(void)
     class_setHelpName(list_length_class, &s_list);
 }
 
-/* ------------- list fromsymbol --------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 t_class *list_fromsymbol_class;
 
@@ -508,7 +521,9 @@ static void list_fromsymbol_setup(void)
     class_setHelpName(list_fromsymbol_class, &s_list);
 }
 
-/* ------------- list tosymbol --------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 t_class *list_tosymbol_class;
 
@@ -575,6 +590,10 @@ static void *list_new(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
     return (pd_newest);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void x_list_setup(void)
 {
     alist_setup();
@@ -587,3 +606,7 @@ void x_list_setup(void)
     list_tosymbol_setup();
     class_addCreator((t_newmethod)list_new, &s_list, A_GIMME, 0);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+

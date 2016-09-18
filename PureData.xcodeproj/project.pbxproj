@@ -729,7 +729,7 @@
 				378971C21C4F716700263434 /* g_graphics.h */,
 				379AE2E01C9E7B4600250ADD /* Canvas */,
 				379AE2DA1C9E7A9700250ADD /* IEM */,
-				379AE2E41C9E7B8200250ADD /* Scalar */,
+				379AE2E41C9E7B8200250ADD /* Scalars */,
 			);
 			name = Graphics;
 			sourceTree = "<group>";
@@ -741,7 +741,7 @@
 				3751490C1D86DC3D005679B0 /* Scalar */,
 				3751490D1D86DC48005679B0 /* Text */,
 				3751490E1D86DC68005679B0 /* Array */,
-				3789720C1C4F716800263434 /* x_list.c */,
+				37F86D531D8EEA3F0009717B /* List */,
 				378972121C4F716800263434 /* x_time.c */,
 				378972061C4F716700263434 /* x_acoustics.c */,
 				378972071C4F716700263434 /* x_arithmetic.c */,
@@ -939,7 +939,7 @@
 			name = Canvas;
 			sourceTree = "<group>";
 		};
-		379AE2E41C9E7B8200250ADD /* Scalar */ = {
+		379AE2E41C9E7B8200250ADD /* Scalars */ = {
 			isa = PBXGroup;
 			children = (
 				37702F321D41E7FE00AE3FE2 /* g_scalar.h */,
@@ -963,7 +963,7 @@
 				371430B01D0D46BC00E68D11 /* g_paint.c */,
 				374A76321CF5FA81001A57EB /* g_serialize.c */,
 			);
-			name = Scalar;
+			name = Scalars;
 			sourceTree = "<group>";
 		};
 		37A59CDB1C538B3200FBD0AD /* MIDI */ = {
@@ -998,6 +998,14 @@
 				37F513B01C9B12E30076A0C4 /* s_logger_dummy.c */,
 			);
 			name = Log;
+			sourceTree = "<group>";
+		};
+		37F86D531D8EEA3F0009717B /* List */ = {
+			isa = PBXGroup;
+			children = (
+				3789720C1C4F716800263434 /* x_list.c */,
+			);
+			name = List;
 			sourceTree = "<group>";
 		};
 		C6A0FF2B0290797F04C91782 /* Documentation */ = {
