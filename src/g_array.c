@@ -87,7 +87,7 @@ void array_serialize (t_array *x, t_buffer *b)
     //
     t_word *w = array_getElementAtIndex (x, i);
     
-    for (j = 0; j < template_getSize (template); j++) {
+    for (j = 0; j < x->a_elementSize; j++) {
     //
     t_symbol *fieldName = template_getFieldAtIndex (template, j);
     
@@ -128,7 +128,7 @@ void array_deserialize (t_array *x, t_iterator *iter)
     w = array_getElementAtIndex (x, n);
     n++;
     
-    for (j = 0; j < template_getSize (template); j++) {
+    for (j = 0; j < x->a_elementSize; j++) {
     //
     t_symbol *fieldName = template_getFieldAtIndex (template, j);
     
@@ -158,7 +158,7 @@ t_word *array_getData (t_array *x)
 
 t_word *array_getElementAtIndex (t_array *x, int n)
 {
-    int offset = array_getElementSize (x) * PD_CLAMP (n, 0, x->a_size - 1);
+    int offset = x->a_elementSize * PD_CLAMP (n, 0, x->a_size - 1);
         
     return (array_getData (x) + offset);
 }
@@ -186,6 +186,10 @@ int array_getElementSize (t_array *x)
 {
     return x->a_elementSize; 
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 t_float array_getFloatAtIndex (t_array *x, int n, t_symbol *fieldName)
 {
