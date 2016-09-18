@@ -25,8 +25,8 @@ static t_class *arraymax_class;             /* Shared. */
 
 typedef struct _arraymax {
     t_arrayrange    x_arrayrange;           /* Must be the first. */
-    t_outlet        *x_outLeft;
-    t_outlet        *x_outRight;
+    t_outlet        *x_outletLeft;
+    t_outlet        *x_outletRight;
     } t_arraymax;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -49,8 +49,8 @@ static void arraymax_bang (t_arraymax *x)
         if (t > maxValue) { maxValue = t; maxIndex = start + i; }
     }
     
-    outlet_float (x->x_outRight, maxIndex);
-    outlet_float (x->x_outLeft, maxValue);
+    outlet_float (x->x_outletRight, maxIndex);
+    outlet_float (x->x_outletLeft, maxValue);
     //
     }
 }
@@ -69,8 +69,8 @@ void *arraymax_new (t_symbol *s, int argc, t_atom *argv)
     t_arraymax *x = (t_arraymax *)arrayrange_new (arraymax_class, argc, argv, 0, 1);
     
     if (x) {
-        x->x_outLeft  = outlet_new (cast_object (x), &s_float);
-        x->x_outRight = outlet_new (cast_object (x), &s_float);
+        x->x_outletLeft  = outlet_new (cast_object (x), &s_float);
+        x->x_outletRight = outlet_new (cast_object (x), &s_float);
 
     } else {
         error_invalidArguments (sym_array__space__max, argc, argv);

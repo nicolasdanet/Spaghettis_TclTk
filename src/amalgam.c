@@ -141,6 +141,7 @@
 #include "x_arrayquantile.c"
 #include "x_arrayrandom.c"
 #include "x_arraymax.c"
+#include "x_arraymin.c"
 
 /* DSP. */
 

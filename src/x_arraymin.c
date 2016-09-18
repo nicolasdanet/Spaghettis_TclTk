@@ -26,8 +26,8 @@ static t_class *arraymin_class;             /* Shared. */
 
 typedef struct _arraymin {
     t_arrayrange    x_arrayrange;           /* Must be the first. */
-    t_outlet        *x_outLeft;
-    t_outlet        *x_outRight;
+    t_outlet        *x_outletLeft;
+    t_outlet        *x_outletRight;
     } t_arraymin;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -50,8 +50,8 @@ static void arraymin_bang (t_arraymin *x)
         if (t < minValue) { minValue = t; minIndex = start + i; }
     }
     
-    outlet_float (x->x_outRight, minIndex);
-    outlet_float (x->x_outLeft, minValue);
+    outlet_float (x->x_outletRight, minIndex);
+    outlet_float (x->x_outletLeft, minValue);
     //
     }
 }
@@ -70,8 +70,8 @@ void *arraymin_new (t_symbol *s, int argc, t_atom *argv)
     t_arraymin *x = (t_arraymin *)arrayrange_new (arraymin_class, argc, argv, 0, 1);
 
     if (x) {
-        x->x_outLeft  = outlet_new (cast_object (x), &s_float);
-        x->x_outRight = outlet_new (cast_object (x), &s_float);
+        x->x_outletLeft  = outlet_new (cast_object (x), &s_float);
+        x->x_outletRight = outlet_new (cast_object (x), &s_float);
 
     } else {
         error_invalidArguments (sym_array__space__min, argc, argv);

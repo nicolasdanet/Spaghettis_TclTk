@@ -53,6 +53,8 @@ void *arrayquantile_new (t_symbol *s, int argc, t_atom *argv)
         error_invalidArguments (sym_array__space__quantile, argc, argv);
         pd_free (x); x = NULL; 
     }
+    
+    return x;
 }
 
 // -----------------------------------------------------------------------------------------------------------
