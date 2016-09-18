@@ -236,9 +236,21 @@ void array_resize (t_array *x, int n)
     int newSize = PD_MAX (1, n);
 
     int m = x->a_elementSize * sizeof (t_word);
-        
+    
+    /* Release. */
+    
+    if (newSize < oldSize) {
+        t_word *t = x->a_vector + (x->a_elementSize * newSize);
+        int count = oldSize - newSize;
+        for (; count--; t += x->a_elementSize) { word_free (t, template); }
+    }
+    
+    /* Reallocate. */
+    
     x->a_vector = (t_word *)PD_MEMORY_RESIZE (x->a_vector, oldSize * m, newSize * m);
     x->a_size   = n;
+    
+    /* Initialize. */
     
     if (newSize > oldSize) {
         t_word *t = x->a_vector + (x->a_elementSize * oldSize);
