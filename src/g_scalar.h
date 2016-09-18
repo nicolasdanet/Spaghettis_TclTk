@@ -47,8 +47,8 @@ struct _gpointer {
 
 struct _array {
     int                 a_size;
-    int                 a_stride;
-    char                *a_vector;
+    int                 a_elementSize;
+    t_word              *a_vector;
     t_symbol            *a_templateIdentifier;
     t_gmaster           *a_master;
     t_unique            a_uniqueIdentifier;
@@ -91,12 +91,6 @@ struct _template {
     t_symbol            *tp_templateIdentifier; 
     t_struct            *tp_instance;                   /* For now, only one instance is allowed. */
     };
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#define ARRAY_WORD      sizeof (t_word)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -42,15 +42,15 @@ t_array *array_new (t_symbol *templateIdentifier, t_gpointer *parent)
     PD_ASSERT (template);
     
     x->a_size               = 1;
-    x->a_stride             = ARRAY_WORD * template_getSize (template);
-    x->a_vector             = (char *)PD_MEMORY_GET (x->a_stride);
+    x->a_elementSize        = template_getSize (template);
+    x->a_vector             = (t_word *)PD_MEMORY_GET (x->a_elementSize * sizeof (t_word));
     x->a_templateIdentifier = templateIdentifier;
     x->a_master             = gpointer_masterCreateWithArray (x);
     x->a_uniqueIdentifier   = utils_unique();
     
     gpointer_setByCopy (parent, &x->a_parent);
 
-    word_init ((t_word *)(x->a_vector), template, parent);
+    word_init (x->a_vector, template, parent);
     
     return x;
 }
@@ -66,7 +66,7 @@ void array_free (t_array *x)
     gpointer_masterRelease (x->a_master);
     
     for (i = 0; i < x->a_size; i++) {
-        t_word *w = (t_word *)(x->a_vector + (x->a_stride * i));
+        t_word *w = x->a_vector + (x->a_elementSize * i);
         word_free (w, template);
     }
     
@@ -153,7 +153,7 @@ void array_deserialize (t_array *x, t_iterator *iter)
 
 t_word *array_getData (t_array *x)
 {
-    return (t_word *)x->a_vector;
+    return x->a_vector;
 }
 
 t_word *array_getElementAtIndex (t_array *x, int n)
@@ -184,7 +184,7 @@ int array_getSize (t_array *x)
 
 int array_getElementSize (t_array *x)
 {
-    return (x->a_stride / ARRAY_WORD); 
+    return x->a_elementSize; 
 }
 
 t_float array_getFloatAtIndex (t_array *x, int n, t_symbol *fieldName)
@@ -228,22 +228,23 @@ void array_resize (t_array *x, int n)
     
     PD_ASSERT (template);
     
-    int elementSize = ARRAY_WORD * template_getSize (template);
     int oldSize = x->a_size;
     int newSize = PD_MAX (1, n);
 
-    x->a_vector = (char *)PD_MEMORY_RESIZE (x->a_vector, oldSize * elementSize, newSize * elementSize);
+    int m = x->a_elementSize * sizeof (t_word);
+        
+    x->a_vector = (t_word *)PD_MEMORY_RESIZE (x->a_vector, oldSize * m, newSize * m);
     x->a_size   = n;
     
     if (newSize > oldSize) {
-            
-        char *t = x->a_vector + (elementSize * oldSize);
-        int i   = newSize - oldSize;
-        
-        for (; i--; t += elementSize) { word_init ((t_word *)t, template, &x->a_parent); }
+        t_word *t = x->a_vector + (x->a_elementSize * oldSize);
+        int count = newSize - oldSize;
+        for (; count--; t += x->a_elementSize) { word_init (t, template, &x->a_parent); }
     }
     
-    x->a_uniqueIdentifier = utils_unique();     /* Invalidate all existent pointers. */
+    /* Invalidate all existent pointers. */
+    
+    x->a_uniqueIdentifier = utils_unique();
 }
 
 void array_redraw (t_array *x, t_glist *glist)
