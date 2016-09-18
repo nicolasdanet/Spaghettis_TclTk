@@ -110,6 +110,7 @@ void qlist_setup            (void);
 void textfile_setup         (void);
 void x_gui_setup            (void);
 void x_list_setup           (void);
+void list_tosymbol_setup    (void);
 void d_arithmetic_setup     (void);
 void d_array_setup          (void);
 void d_ctl_setup            (void);
@@ -198,6 +199,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     textfile_setup();
     x_gui_setup();
     x_list_setup();
+    list_tosymbol_setup();
 
     d_arithmetic_setup();
     d_array_setup();

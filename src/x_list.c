@@ -525,41 +525,6 @@ static void list_fromsymbol_setup(void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_class *list_tosymbol_class;
-
-typedef struct _list_tosymbol
-{
-    t_object x_obj;
-} t_list_tosymbol;
-
-static void *list_tosymbol_new( void)
-{
-    t_list_tosymbol *x = (t_list_tosymbol *)pd_new(list_tosymbol_class);
-    outlet_new(&x->x_obj, &s_symbol);
-    return (x);
-}
-
-static void list_tosymbol_list(t_list_tosymbol *x, t_symbol *s,
-    int argc, t_atom *argv)
-{
-    int i;
-    char *str = alloca(argc + 1);
-    for (i = 0; i < argc; i++)
-        str[i] = (char)atom_getFloatAtIndex(i, argc, argv);
-    str[argc] = 0;
-    outlet_symbol(x->x_obj.te_outlet, gensym (str));
-}
-
-static void list_tosymbol_setup(void)
-{
-    list_tosymbol_class = class_new(sym_list__space__tosymbol,
-        (t_newmethod)list_tosymbol_new, 0, sizeof(t_list_tosymbol), 0, 0);
-    class_addList(list_tosymbol_class, list_tosymbol_list);
-    class_setHelpName(list_tosymbol_class, &s_list);
-}
-
-/* ------------- list ------------------- */
-
 static void *list_new(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     if (!argc || argv[0].a_type != A_SYMBOL)
@@ -603,7 +568,6 @@ void x_list_setup(void)
     list_trim_setup();
     list_length_setup();
     list_fromsymbol_setup();
-    list_tosymbol_setup();
     class_addCreator((t_newmethod)list_new, &s_list, A_GIMME, 0);
 }
 
