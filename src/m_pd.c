@@ -33,8 +33,13 @@ t_pd *pd_new (t_class *c)
     
     *x = c;
     
-    if (c->c_isBox) { 
-        cast_object (x)->te_buffer = cast_object (x)->te_inlet = cast_object (x)->te_outlet = NULL; 
+    if (c->c_isBox) {
+
+        PD_ASSERT (cast_object (x)->te_buffer == NULL);
+        PD_ASSERT (cast_object (x)->te_inlet  == NULL);
+        PD_ASSERT (cast_object (x)->te_outlet == NULL);
+
+        cast_object (x)->te_buffer = cast_object (x)->te_inlet = cast_object (x)->te_outlet = NULL;
     }
     
     return x;
@@ -44,6 +49,10 @@ void pd_free (t_pd *x)
 {
     t_class *c = pd_class (x);
 
+    PD_ASSERT (c != NULL);
+    PD_ASSERT (c->c_type != CLASS_ABSTRACT);
+    PD_ASSERT (c->c_size > 0);
+    
     if (c->c_methodFree) { (*(c->c_methodFree))(x); }
 
     if (c->c_isBox) {
