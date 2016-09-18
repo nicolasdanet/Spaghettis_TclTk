@@ -12,75 +12,97 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "m_alloca.h"
 #include "s_system.h"
 #include "g_graphics.h"
 #include "x_control.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+static t_class *arraymin_class;         /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _arraymin {
+    t_arrayrange    x_arrayrange;
+    t_outlet        *x_outLeft;
+    t_outlet        *x_outRight;
+    } t_arraymin;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* ---  array_client - common code for objects that refer to arrays -- */
-
-#define x_sym ar_arrayclient.ac_name
-#define x_struct ar_arrayclient.ac_templateIdentifier
-#define x_field ar_arrayclient.ac_fieldName
-#define x_gp ar_arrayclient.ac_gpointer
-#define x_outlet ar_arrayclient.ac_obj.te_outlet
-
-/* ----  array min -- output largest value and its index ------------ */
-static t_class *array_min_class;
-
-typedef struct _array_min
+static void arraymin_bang (t_arraymin *x)
 {
-    t_arrayrange x_rangeop;
-    t_outlet *x_out1;       /* value */
-    t_outlet *x_out2;       /* index */
-} t_array_min;
-
-void *arraymin_new(t_symbol *s, int argc, t_atom *argv)
-{
-    t_array_min *x = arrayrange_new(array_min_class, argc, argv,
-        0, 1);
-    if (!x) { return NULL; } /* FREE & WARN ! */
-    x->x_out1 = outlet_new(&x->x_rangeop.ar_arrayclient.ac_obj, &s_float);
-    x->x_out2 = outlet_new(&x->x_rangeop.ar_arrayclient.ac_obj, &s_float);
-    return (x);
+    if (!arrayrange_isValid (&x->x_arrayrange)) { error_invalid (sym_array__space__min, sym_field); }
+    else {
+    //
+    int i, start, n;
+    t_array *a = arrayrange_getRange (&x->x_arrayrange, &start, &n);
+    
+    t_float minIndex = -1.0;
+    t_float minValue = PD_FLT_MAX;
+    
+    for (i = 0; i < n; i++) {
+        t_float t = array_getFloatAtIndex (a, start + i, arrayrange_getFieldName (&x->x_arrayrange));
+        if (t < minValue) { minValue = t; minIndex = start + i; }
+    }
+    
+    outlet_float (x->x_outRight, minIndex);
+    outlet_float (x->x_outLeft, minValue);
+    //
+    }
 }
 
-static void array_min_bang(t_array_min *x)
+static void arraymin_float (t_arraymin *x, t_float f)
 {
-    char *itemp, *firstitem;
-    int stride, nitem, i, arrayonset, besti;
-    t_float bestf;
-    if (!array_rangeop_getrange(&x->x_rangeop, &firstitem, &nitem, &stride,
-        &arrayonset))
-            return;
-    for (i = 0, besti = -1, bestf= 1e30, itemp = firstitem;
-        i < nitem; i++, itemp += stride)
-            if (*(t_float *)itemp < bestf)
-                bestf = *(t_float *)itemp, besti = i+arrayonset;
-    outlet_float(x->x_out2, besti);
-    outlet_float(x->x_out1, bestf);
+    arrayrange_setFirst (&x->x_arrayrange, f); arraymin_bang (x);
 }
 
-static void array_min_float(t_array_min *x, t_float f)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void *arraymin_new (t_symbol *s, int argc, t_atom *argv)
 {
-    x->x_rangeop.ar_first = f;
-    array_min_bang(x);
+    t_arraymin *x = (t_arraymin *)arrayrange_new (arraymin_class, argc, argv, 0, 1);
+
+    if (x) {
+        x->x_outLeft  = outlet_new (cast_object (x), &s_float);
+        x->x_outRight = outlet_new (cast_object (x), &s_float);
+
+    } else {
+        error_invalidArguments (sym_array__space__min, argc, argv);
+        pd_free (x); x = NULL; 
+    }
+    
+    return x;
 }
 
-/* ---------------- global setup function -------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-void arraymin_setup(void )
+void arraymin_setup (void)
 {
-    array_min_class = class_new(sym_array__space__min,
-        (t_newmethod)arraymin_new, (t_method)arrayclient_free,
-            sizeof(t_array_min), 0, A_GIMME, 0);
-    class_addFloat(array_min_class, array_min_float);
-    class_addBang(array_min_class, array_min_bang);
-    class_setHelpName(array_min_class, sym_array);
+    t_class *c = NULL;
+    
+    c = class_new (sym_array__space__min,
+            (t_newmethod)arraymin_new,
+            (t_method)arrayclient_free,
+            sizeof (t_arraymin),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+    
+    class_addBang (c, arraymin_bang);
+    class_addFloat (c, arraymin_float);
+
+    class_setHelpName (c, sym_array);
+    
+    arraymin_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
