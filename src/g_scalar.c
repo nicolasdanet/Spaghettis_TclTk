@@ -568,21 +568,17 @@ t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
 
     if (!template_isValid (template)) { PD_BUG; }
     else {
-    //
-    {
-        size_t extraForArrayOfWords = (template_getSize (template) - 1) * sizeof (t_word);
-        x = (t_scalar *)PD_MEMORY_GET (sizeof (t_scalar) + extraForArrayOfWords); 
-        pd_class (x) = scalar_class;
-    }
-    
-    t_gpointer gp = GPOINTER_INIT;
-    
-    x->sc_templateIdentifier = templateIdentifier;
-    
-    gpointer_setAsScalar (&gp, owner, x);
-    word_init (x->sc_vector, template, &gp);
-    gpointer_unset (&gp);
-    //
+
+        t_gpointer gp = GPOINTER_INIT;
+        
+        x = (t_scalar *)pd_new (scalar_class);
+        
+        x->sc_templateIdentifier = templateIdentifier;
+        x->sc_vector = (t_word *)PD_MEMORY_GET (template_getSize (template) * sizeof (t_word));
+        
+        gpointer_setAsScalar (&gp, owner, x);
+        word_init (x->sc_vector, template, &gp);
+        gpointer_unset (&gp);
     }
     
     return x;
@@ -593,7 +589,7 @@ static void scalar_free (t_scalar *x)
     word_free (x->sc_vector, scalar_getTemplate (x));
     guistub_destroyWithKey ((void *)x);
 
-    PD_MEMORY_FREE (x);
+    PD_MEMORY_FREE (x->sc_vector);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -607,7 +603,7 @@ void scalar_setup (void)
     c = class_new (sym_scalar,
         NULL,
         (t_method)scalar_free,
-        0,
+        sizeof (t_scalar),
         CLASS_GRAPHIC,
         A_NULL);
         
