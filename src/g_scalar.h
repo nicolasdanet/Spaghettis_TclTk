@@ -304,12 +304,6 @@ void        template_notify                             (t_template *x,
                                                             int argc,
                                                             t_atom *argv);
 
-int         template_findField                          (t_template *x,
-                                                            t_symbol *fieldName,
-                                                            int *onset,
-                                                            int *type,
-                                                            t_symbol **templateIdentifier);
-
 int         template_hasField                           (t_template *x, t_symbol *fieldName);
 int         template_getIndexOfField                    (t_template *x, t_symbol *fieldName);
 int         template_getRaw                             (t_template *x,

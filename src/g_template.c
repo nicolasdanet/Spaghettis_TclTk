@@ -167,40 +167,6 @@ static void template_anything (t_template *x, t_symbol *s, int argc, t_atom *arg
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int template_findField (t_template *x,
-    t_symbol *fieldName,
-    int *onset,
-    int *type,
-    t_symbol **templateIdentifier)
-{
-    PD_ASSERT (x);
-    
-    if (x) {
-    //
-    int i;
-    
-    for (i = 0; i < x->tp_size; i++) {
-    //
-    if (x->tp_vector[i].ds_fieldName == fieldName) {
-    
-        *onset              = i * ARRAY_WORD;
-        *type               = x->tp_vector[i].ds_type;
-        *templateIdentifier = x->tp_vector[i].ds_templateIdentifier;
-        
-        return 1;
-    }
-    //
-    }
-    //
-    }
-    
-    return 0;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 int template_isValid (t_template *x)
 {
     if (!x) { return 0; }

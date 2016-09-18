@@ -152,12 +152,6 @@ int         arrayrange_isValid              (t_arrayrange *x);
 int         arrayrange_setFirst             (t_arrayrange *x, t_float f);
 t_float     arrayrange_quantile             (t_arrayrange *x, t_float f);
 
-int         array_rangeop_getrange          (t_arrayrange *x,   /* ASAP */
-                                                char **firstitemp,
-                                                int *nitemp,
-                                                int *stridep,
-                                                int *arrayonsetp);
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
