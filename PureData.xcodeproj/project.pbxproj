@@ -59,6 +59,7 @@
 		37514A411D86E4DF005679B0 /* x_arraysize.c in Sources */ = {isa = PBXBuildFile; fileRef = 37514A401D86E4DF005679B0 /* x_arraysize.c */; };
 		375D72E71D86A5F000D079B1 /* x_arrayclient.c in Sources */ = {isa = PBXBuildFile; fileRef = 375D72E61D86A5F000D079B1 /* x_arrayclient.c */; };
 		375D73211D86ACAC00D079B1 /* x_arraymin.c in Sources */ = {isa = PBXBuildFile; fileRef = 375D73201D86ACAC00D079B1 /* x_arraymin.c */; };
+		375E88DF1D901BA90052D22C /* x_listinlet.c in Sources */ = {isa = PBXBuildFile; fileRef = 375E88DE1D901BA90052D22C /* x_listinlet.c */; };
 		3770FAA61CB1036A007C7E66 /* g_radio.c in Sources */ = {isa = PBXBuildFile; fileRef = 3770FAA51CB1036A007C7E66 /* g_radio.c */; };
 		377899491CFED1B10056BE61 /* g_new.c in Sources */ = {isa = PBXBuildFile; fileRef = 377899481CFED1B10056BE61 /* g_new.c */; };
 		377899A51CFED7B60056BE61 /* g_message.c in Sources */ = {isa = PBXBuildFile; fileRef = 377899A41CFED7B60056BE61 /* g_message.c */; };
@@ -301,6 +302,7 @@
 		37514A401D86E4DF005679B0 /* x_arraysize.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arraysize.c; path = src/x_arraysize.c; sourceTree = "<group>"; };
 		375D72E61D86A5F000D079B1 /* x_arrayclient.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arrayclient.c; path = src/x_arrayclient.c; sourceTree = "<group>"; };
 		375D73201D86ACAC00D079B1 /* x_arraymin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arraymin.c; path = src/x_arraymin.c; sourceTree = "<group>"; };
+		375E88DE1D901BA90052D22C /* x_listinlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_listinlet.c; path = src/x_listinlet.c; sourceTree = "<group>"; };
 		37702F321D41E7FE00AE3FE2 /* g_scalar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_scalar.h; path = src/g_scalar.h; sourceTree = "<group>"; };
 		37702F511D41EA3300AE3FE2 /* g_canvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_canvas.h; path = src/g_canvas.h; sourceTree = "<group>"; };
 		3770FAA51CB1036A007C7E66 /* g_radio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_radio.c; path = src/g_radio.c; sourceTree = "<group>"; };
@@ -1017,6 +1019,7 @@
 		37F86D531D8EEA3F0009717B /* List */ = {
 			isa = PBXGroup;
 			children = (
+				375E88DE1D901BA90052D22C /* x_listinlet.c */,
 				3789720C1C4F716800263434 /* x_list.c */,
 				378E4C4D1D8FD67D00DFFDC3 /* x_listappend.c */,
 				378E4C021D8FD46100DFFDC3 /* x_listprepend.c */,
@@ -1332,6 +1335,7 @@
 				378E4BD01D8FD2B000DFFDC3 /* x_listsplit.c in Sources */,
 				378E4C031D8FD46100DFFDC3 /* x_listprepend.c in Sources */,
 				378E4C4E1D8FD67D00DFFDC3 /* x_listappend.c in Sources */,
+				375E88DF1D901BA90052D22C /* x_listinlet.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -109,6 +109,7 @@ void textsequence_setup     (void);
 void qlist_setup            (void);
 void textfile_setup         (void);
 void x_gui_setup            (void);
+void listinlet_setup        (void);
 void list_setup             (void);
 void list_append_setup      (void);
 void list_prepend_setup     (void);
@@ -204,6 +205,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     qlist_setup();
     textfile_setup();
     x_gui_setup();
+    listinlet_setup();
     list_setup();
     list_append_setup();
     list_prepend_setup();

@@ -142,6 +142,7 @@
 #include "x_arrayrandom.c"
 #include "x_arraymax.c"
 #include "x_arraymin.c"
+#include "x_listinlet.c"
 #include "x_list.c"
 #include "x_listappend.c"
 #include "x_listprepend.c"
