@@ -46,17 +46,17 @@ static void list_prepend_list(t_list_prepend *x, t_symbol *s,
     int n, outc = x->x_alist.li_size + argc;
     ATOMS_ALLOCA(outv, outc);
     atom_copyAtomsUnchecked(argc, argv, outv + x->x_alist.li_size);
-    if (x->x_alist.li_numberOfPointers)
+    if (x->x_alist.li_hasPointer)
     {
         t_listinlet y;
         listinlet_clone(&x->x_alist, &y);
-        listinlet_copyAtoms(&y, outv);
+        listinlet_copy(&y, outv);
         outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
         listinlet_clear(&y);
     }
     else
     {
-        listinlet_copyAtoms(&x->x_alist, outv);
+        listinlet_copy(&x->x_alist, outv);
         outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
     }
     ATOMS_FREEA(outv, outc);
@@ -72,17 +72,17 @@ static void list_prepend_anything(t_list_prepend *x, t_symbol *s,
     ATOMS_ALLOCA(outv, outc);
     SET_SYMBOL(outv + x->x_alist.li_size, s);
     atom_copyAtomsUnchecked(argc, argv, outv + x->x_alist.li_size + 1);
-    if (x->x_alist.li_numberOfPointers)
+    if (x->x_alist.li_hasPointer)
     {
         t_listinlet y;
         listinlet_clone(&x->x_alist, &y);
-        listinlet_copyAtoms(&y, outv);
+        listinlet_copy(&y, outv);
         outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
         listinlet_clear(&y);
     }
     else
     {
-        listinlet_copyAtoms(&x->x_alist, outv);
+        listinlet_copy(&x->x_alist, outv);
         outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
     }
     ATOMS_FREEA(outv, outc);

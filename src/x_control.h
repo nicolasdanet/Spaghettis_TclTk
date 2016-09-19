@@ -61,7 +61,7 @@ typedef struct _arrayrange {
 typedef struct _listinlet {
     t_pd                li_pd;                          /* MUST be the first. */
     int                 li_size;
-    int                 li_numberOfPointers;
+    int                 li_hasPointer;
     t_listinletelement  *li_vector;
     } t_listinlet;
 
@@ -182,8 +182,8 @@ void        *arraymin_new                   (t_symbol *s, int argc, t_atom *argv
 
 void        listinlet_init                  (t_listinlet *x);
 void        listinlet_clear                 (t_listinlet *x);
-void        listinlet_clone                 (t_listinlet *x, t_listinlet *y);
-void        listinlet_copyAtoms             (t_listinlet *x, t_atom *a);
+void        listinlet_clone                 (t_listinlet *x, t_listinlet *newList);
+void        listinlet_copy                  (t_listinlet *x, t_atom *a);
 void        listinlet_list                  (t_listinlet *x, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------

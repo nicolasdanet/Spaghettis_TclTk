@@ -18,7 +18,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class  *list_class;        /* Shared. */
+static t_class  *listinlet_class;       /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -27,28 +27,68 @@ struct _listinletelement {
     t_atom      le_atom;
     t_gpointer  le_gpointer;
     };
-    
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void listinlet_init(t_listinlet *x)
+void listinlet_init (t_listinlet *x)
 {
-    x->li_pd = list_class;
-    x->li_size = x->li_numberOfPointers = 0;
-    x->li_vector = 0;
+    x->li_pd          = listinlet_class;
+    x->li_size        = 0;
+    x->li_hasPointer  = 0;
+    x->li_vector      = NULL;
 }
 
-void listinlet_clear(t_listinlet *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void listinlet_clear (t_listinlet *x)
 {
     int i;
-    for (i = 0; i < x->li_size; i++)
-    {
-        if (x->li_vector[i].le_atom.a_type == A_POINTER)
-            gpointer_unset(x->li_vector[i].le_atom.a_w.w_gpointer);
+    
+    for (i = 0; i < x->li_size; i++) {
+    //
+    if (IS_POINTER (&x->li_vector[i].le_atom)) { 
+        gpointer_unset (GET_POINTER (&x->li_vector[i].le_atom));
     }
-    if (x->li_vector)
-        PD_MEMORY_FREE(x->li_vector);
+    //
+    }
+    
+    if (x->li_vector) { PD_MEMORY_FREE (x->li_vector); }
 }
+
+void listinlet_clone (t_listinlet *x, t_listinlet *y)
+{
+    int i;
+    
+    y->li_pd         = x->li_pd;
+    y->li_size       = x->li_size;
+    y->li_hasPointer = x->li_hasPointer;
+    y->li_vector     = (t_listinletelement *)PD_MEMORY_GET (x->li_size * sizeof (t_listinletelement));
+
+    for (i = 0; i < x->li_size; i++) {
+    //
+    y->li_vector[i].le_atom = x->li_vector[i].le_atom;
+        
+    if (IS_POINTER (&y->li_vector[i].le_atom)) {
+        gpointer_setByCopy (&x->li_vector[i].le_gpointer, &y->li_vector[i].le_gpointer);
+        SET_POINTER (&y->li_vector[i].le_atom, &y->li_vector[i].le_gpointer);
+    }
+    //
+    }
+}
+
+void listinlet_copy (t_listinlet *x, t_atom *a)
+{
+    int i;
+    
+    for (i = 0; i < x->li_size; i++) { a[i] = x->li_vector[i].le_atom; }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void listinlet_list(t_listinlet *x, t_symbol *s, int argc, t_atom *argv)
 {
@@ -61,13 +101,13 @@ void listinlet_list(t_listinlet *x, t_symbol *s, int argc, t_atom *argv)
         return;
     }
     x->li_size = argc;
-    x->li_numberOfPointers = 0;
+    x->li_hasPointer = 0;
     for (i = 0; i < argc; i++)
     {
         x->li_vector[i].le_atom = argv[i];
         if (x->li_vector[i].le_atom.a_type == A_POINTER)
         {
-            x->li_numberOfPointers++;
+            x->li_hasPointer++;
             gpointer_setByCopy(x->li_vector[i].le_atom.a_w.w_gpointer, &x->li_vector[i].le_gpointer);
             x->li_vector[i].le_atom.a_w.w_gpointer = &x->li_vector[i].le_gpointer;
         }
@@ -85,46 +125,16 @@ static void listinlet_anything(t_listinlet *x, t_symbol *s, int argc, t_atom *ar
         return;
     }
     x->li_size = argc+1;
-    x->li_numberOfPointers = 0;
+    x->li_hasPointer = 0;
     SET_SYMBOL(&x->li_vector[0].le_atom, s);
     for (i = 0; i < argc; i++)
     {
         x->li_vector[i+1].le_atom = argv[i];
         if (x->li_vector[i+1].le_atom.a_type == A_POINTER)
         {
-            x->li_numberOfPointers++;            
+            x->li_hasPointer++;            
             gpointer_setByCopy(x->li_vector[i+1].le_atom.a_w.w_gpointer, &x->li_vector[i+1].le_gpointer);
             x->li_vector[i+1].le_atom.a_w.w_gpointer = &x->li_vector[i+1].le_gpointer;
-        }
-    }
-}
-
-void listinlet_copyAtoms(t_listinlet *x, t_atom *to)
-{
-    int i;
-    for (i = 0; i < x->li_size; i++)
-        to[i] = x->li_vector[i].le_atom;
-}
-
-
-void listinlet_clone(t_listinlet *x, t_listinlet *y)
-{
-    int i;
-    y->li_pd = list_class;
-    y->li_size = x->li_size;
-    y->li_numberOfPointers = x->li_numberOfPointers;
-    if (!(y->li_vector = (t_listinletelement *)PD_MEMORY_GET(y->li_size * sizeof(*y->li_vector))))
-    {
-        y->li_size = 0;
-        post_error ("list_alloc: out of memory");
-    }
-    else for (i = 0; i < x->li_size; i++)
-    {
-        y->li_vector[i].le_atom = x->li_vector[i].le_atom;
-        if (y->li_vector[i].le_atom.a_type == A_POINTER)
-        {
-            gpointer_setByCopy(y->li_vector[i].le_atom.a_w.w_gpointer, &y->li_vector[i].le_gpointer);
-            y->li_vector[i].le_atom.a_w.w_gpointer = &y->li_vector[i].le_gpointer;
         }
     }
 }
@@ -137,7 +147,7 @@ void listinlet_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (sym_list__space__inlet,
+    c = class_new (sym_listinlet,
             NULL,
             NULL,
             0,
@@ -147,7 +157,7 @@ void listinlet_setup (void)
     class_addList (c, listinlet_list);
     class_addAnything (c, listinlet_anything);
     
-    list_class = c;
+    listinlet_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
