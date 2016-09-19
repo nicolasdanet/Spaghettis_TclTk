@@ -47,12 +47,7 @@ Probably don't need:
 /* -------------- utility functions: storage, copying  -------------- */
     /* List element for storage.  Keep an atom and, in case it's a pointer,
         an associated 'gpointer' to protect against stale pointers. */
-void atoms_copy(int argc, t_atom *from, t_atom *to)
-{
-    int i;
-    for (i = 0; i < argc; i++)
-        to[i] = from[i];
-}
+
 
 /* ------------- fake class to divert inlets to ----------------- */
 

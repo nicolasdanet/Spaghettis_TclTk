@@ -185,8 +185,6 @@ void        *arraymin_new                   (t_symbol *s, int argc, t_atom *argv
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        atoms_copy (int argc, t_atom *from, t_atom *to);
-
 void        alist_init                      (t_list *x);
 void        alist_clear                     (t_list *x);
 void        alist_clone                     (t_list *x, t_list *y);

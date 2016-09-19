@@ -16,46 +16,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_float atom_getFloat (t_atom *a)
-{
-    if (IS_FLOAT (a)) { return GET_FLOAT (a); }
-    else {
-        return 0.0;
-    }
-}
-
-t_float atom_getFloatAtIndex (int n, int argc, t_atom *argv)
-{
-    if (n >= 0 && n < argc) { return atom_getFloat (argv + n); }
-    else {
-        return 0.0;
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_symbol *atom_getSymbol (t_atom *a)
-{
-    if (IS_SYMBOL (a)) { return GET_SYMBOL (a); }
-    else { 
-        return (&s_);
-    }
-}
-
-t_symbol *atom_getSymbolAtIndex (int n, int argc, t_atom *argv)
-{
-    if (n >= 0 && n < argc) { return atom_getSymbol (argv + n); }
-    else {
-        return (&s_);
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static t_error atom_symbolToQuotedString (t_atom *a, char *s, int size)
 {
     char *p = NULL;
@@ -104,6 +64,69 @@ static t_error atom_symbolToQuotedString (t_atom *a, char *s, int size)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_float atom_getFloat (t_atom *a)
+{
+    if (IS_FLOAT (a)) { return GET_FLOAT (a); }
+    else {
+        return 0.0;
+    }
+}
+
+t_float atom_getFloatAtIndex (int n, int argc, t_atom *argv)
+{
+    if (n >= 0 && n < argc) { return atom_getFloat (argv + n); }
+    else {
+        return 0.0;
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_symbol *atom_getSymbol (t_atom *a)
+{
+    if (IS_SYMBOL (a)) { return GET_SYMBOL (a); }
+    else { 
+        return (&s_);
+    }
+}
+
+t_symbol *atom_getSymbolAtIndex (int n, int argc, t_atom *argv)
+{
+    if (n >= 0 && n < argc) { return atom_getSymbol (argv + n); }
+    else {
+        return (&s_);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_atomtype atom_getType (t_atom *a)
+{
+    return a->a_type;
+}
+
+int atom_typesAreEqual (t_atom *a, t_atom *b)
+{
+    return (atom_getType (a) == atom_getType (b));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void atom_copyAtomsUnchecked (int argc, t_atom *src, t_atom *dest)
+{
+    int i; for (i = 0; i < argc; i++) { dest[i] = src[i]; }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_error atom_withStringUnzeroed (t_atom *a, char *s, int size)
 {
     t_buffer *t = buffer_new();
@@ -141,19 +164,10 @@ t_error atom_toString (t_atom *a, char *dest, int size)
 
     return err;
 }
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-t_atomtype atom_getType (t_atom *a)
-{
-    return a->a_type;
-}
-
-int atom_typesAreEqual (t_atom *a, t_atom *b)
-{
-    return (atom_getType (a) == atom_getType (b));
-}
 
 t_atom *atom_substituteIfPointer (t_atom *a)
 {

@@ -63,7 +63,7 @@ static void list_split_anything(t_list_split *x, t_symbol *s,
     t_atom *outv;
     ATOMS_ALLOCA(outv, argc+1);
     SET_SYMBOL(outv, s);
-    atoms_copy(argc, argv, outv + 1);
+    atom_copyAtomsUnchecked(argc, argv, outv + 1);
     list_split_list(x, &s_list, argc+1, outv);
     ATOMS_FREEA(outv, argc+1);
 }

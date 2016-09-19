@@ -45,7 +45,7 @@ static void list_append_list(t_list_append *x, t_symbol *s,
     t_atom *outv;
     int n, outc = x->x_alist.l_size + argc;
     ATOMS_ALLOCA(outv, outc);
-    atoms_copy(argc, argv, outv);
+    atom_copyAtomsUnchecked(argc, argv, outv);
     if (x->x_alist.l_numberOfPointers)
     {
         t_list y;
@@ -69,7 +69,7 @@ static void list_append_anything(t_list_append *x, t_symbol *s,
     int n, outc = x->x_alist.l_size + argc + 1;
     ATOMS_ALLOCA(outv, outc);
     SET_SYMBOL(outv, s);
-    atoms_copy(argc, argv, outv + 1);
+    atom_copyAtomsUnchecked(argc, argv, outv + 1);
     if (x->x_alist.l_numberOfPointers)
     {
         t_list y;

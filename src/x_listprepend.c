@@ -45,7 +45,7 @@ static void list_prepend_list(t_list_prepend *x, t_symbol *s,
     t_atom *outv;
     int n, outc = x->x_alist.l_size + argc;
     ATOMS_ALLOCA(outv, outc);
-    atoms_copy(argc, argv, outv + x->x_alist.l_size);
+    atom_copyAtomsUnchecked(argc, argv, outv + x->x_alist.l_size);
     if (x->x_alist.l_numberOfPointers)
     {
         t_list y;
@@ -71,7 +71,7 @@ static void list_prepend_anything(t_list_prepend *x, t_symbol *s,
     int n, outc = x->x_alist.l_size + argc + 1;
     ATOMS_ALLOCA(outv, outc);
     SET_SYMBOL(outv + x->x_alist.l_size, s);
-    atoms_copy(argc, argv, outv + x->x_alist.l_size + 1);
+    atom_copyAtomsUnchecked(argc, argv, outv + x->x_alist.l_size + 1);
     if (x->x_alist.l_numberOfPointers)
     {
         t_list y;
