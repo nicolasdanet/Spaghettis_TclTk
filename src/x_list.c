@@ -58,100 +58,100 @@ void atoms_copy(int argc, t_atom *from, t_atom *to)
 
 t_class *alist_class;
 
-void alist_init(t_alist *x)
+void alist_init(t_list *x)
 {
     x->l_pd = alist_class;
-    x->l_n = x->l_npointer = 0;
-    x->l_vec = 0;
+    x->l_size = x->l_numberOfPointers = 0;
+    x->l_vector = 0;
 }
 
-void alist_clear(t_alist *x)
+void alist_clear(t_list *x)
 {
     int i;
-    for (i = 0; i < x->l_n; i++)
+    for (i = 0; i < x->l_size; i++)
     {
-        if (x->l_vec[i].l_a.a_type == A_POINTER)
-            gpointer_unset(x->l_vec[i].l_a.a_w.w_gpointer);
+        if (x->l_vector[i].le_atom.a_type == A_POINTER)
+            gpointer_unset(x->l_vector[i].le_atom.a_w.w_gpointer);
     }
-    if (x->l_vec)
-        PD_MEMORY_FREE(x->l_vec);
+    if (x->l_vector)
+        PD_MEMORY_FREE(x->l_vector);
 }
 
-void alist_list(t_alist *x, t_symbol *s, int argc, t_atom *argv)
+void alist_list(t_list *x, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
     alist_clear(x);
-    if (!(x->l_vec = (t_listelem *)PD_MEMORY_GET(argc * sizeof(*x->l_vec))))
+    if (!(x->l_vector = (t_listelement *)PD_MEMORY_GET(argc * sizeof(*x->l_vector))))
     {
-        x->l_n = 0;
+        x->l_size = 0;
         post_error ("list_alloc: out of memory");
         return;
     }
-    x->l_n = argc;
-    x->l_npointer = 0;
+    x->l_size = argc;
+    x->l_numberOfPointers = 0;
     for (i = 0; i < argc; i++)
     {
-        x->l_vec[i].l_a = argv[i];
-        if (x->l_vec[i].l_a.a_type == A_POINTER)
+        x->l_vector[i].le_atom = argv[i];
+        if (x->l_vector[i].le_atom.a_type == A_POINTER)
         {
-            x->l_npointer++;
-            gpointer_setByCopy(x->l_vec[i].l_a.a_w.w_gpointer, &x->l_vec[i].l_p);
-            x->l_vec[i].l_a.a_w.w_gpointer = &x->l_vec[i].l_p;
+            x->l_numberOfPointers++;
+            gpointer_setByCopy(x->l_vector[i].le_atom.a_w.w_gpointer, &x->l_vector[i].le_gpointer);
+            x->l_vector[i].le_atom.a_w.w_gpointer = &x->l_vector[i].le_gpointer;
         }
     }
 }
 
-static void alist_anything(t_alist *x, t_symbol *s, int argc, t_atom *argv)
+static void alist_anything(t_list *x, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
     alist_clear(x);
-    if (!(x->l_vec = (t_listelem *)PD_MEMORY_GET((argc+1) * sizeof(*x->l_vec))))
+    if (!(x->l_vector = (t_listelement *)PD_MEMORY_GET((argc+1) * sizeof(*x->l_vector))))
     {
-        x->l_n = 0;
+        x->l_size = 0;
         post_error ("list_alloc: out of memory");
         return;
     }
-    x->l_n = argc+1;
-    x->l_npointer = 0;
-    SET_SYMBOL(&x->l_vec[0].l_a, s);
+    x->l_size = argc+1;
+    x->l_numberOfPointers = 0;
+    SET_SYMBOL(&x->l_vector[0].le_atom, s);
     for (i = 0; i < argc; i++)
     {
-        x->l_vec[i+1].l_a = argv[i];
-        if (x->l_vec[i+1].l_a.a_type == A_POINTER)
+        x->l_vector[i+1].le_atom = argv[i];
+        if (x->l_vector[i+1].le_atom.a_type == A_POINTER)
         {
-            x->l_npointer++;            
-            gpointer_setByCopy(x->l_vec[i+1].l_a.a_w.w_gpointer, &x->l_vec[i+1].l_p);
-            x->l_vec[i+1].l_a.a_w.w_gpointer = &x->l_vec[i+1].l_p;
+            x->l_numberOfPointers++;            
+            gpointer_setByCopy(x->l_vector[i+1].le_atom.a_w.w_gpointer, &x->l_vector[i+1].le_gpointer);
+            x->l_vector[i+1].le_atom.a_w.w_gpointer = &x->l_vector[i+1].le_gpointer;
         }
     }
 }
 
-void alist_toatoms(t_alist *x, t_atom *to)
+void alist_toatoms(t_list *x, t_atom *to)
 {
     int i;
-    for (i = 0; i < x->l_n; i++)
-        to[i] = x->l_vec[i].l_a;
+    for (i = 0; i < x->l_size; i++)
+        to[i] = x->l_vector[i].le_atom;
 }
 
 
-void alist_clone(t_alist *x, t_alist *y)
+void alist_clone(t_list *x, t_list *y)
 {
     int i;
     y->l_pd = alist_class;
-    y->l_n = x->l_n;
-    y->l_npointer = x->l_npointer;
-    if (!(y->l_vec = (t_listelem *)PD_MEMORY_GET(y->l_n * sizeof(*y->l_vec))))
+    y->l_size = x->l_size;
+    y->l_numberOfPointers = x->l_numberOfPointers;
+    if (!(y->l_vector = (t_listelement *)PD_MEMORY_GET(y->l_size * sizeof(*y->l_vector))))
     {
-        y->l_n = 0;
+        y->l_size = 0;
         post_error ("list_alloc: out of memory");
     }
-    else for (i = 0; i < x->l_n; i++)
+    else for (i = 0; i < x->l_size; i++)
     {
-        y->l_vec[i].l_a = x->l_vec[i].l_a;
-        if (y->l_vec[i].l_a.a_type == A_POINTER)
+        y->l_vector[i].le_atom = x->l_vector[i].le_atom;
+        if (y->l_vector[i].le_atom.a_type == A_POINTER)
         {
-            gpointer_setByCopy(y->l_vec[i].l_a.a_w.w_gpointer, &y->l_vec[i].l_p);
-            y->l_vec[i].l_a.a_w.w_gpointer = &y->l_vec[i].l_p;
+            gpointer_setByCopy(y->l_vector[i].le_atom.a_w.w_gpointer, &y->l_vector[i].le_gpointer);
+            y->l_vector[i].le_atom.a_w.w_gpointer = &y->l_vector[i].le_gpointer;
         }
     }
 }
@@ -159,7 +159,7 @@ void alist_clone(t_alist *x, t_alist *y)
 static void alist_setup(void)
 {
     alist_class = class_new(sym_list__space__inlet,
-        0, 0, sizeof(t_alist), 0, 0);
+        0, 0, sizeof(t_list), 0, 0);
     class_addList(alist_class, alist_list);
     class_addAnything(alist_class, alist_anything);
 }

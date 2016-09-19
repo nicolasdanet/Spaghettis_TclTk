@@ -58,19 +58,17 @@ typedef struct _arrayrange {
     t_symbol        *ar_fieldName;
     } t_arrayrange;
 
-typedef struct _listelem
-{
-    t_atom l_a;
-    t_gpointer l_p;
-} t_listelem;
-
-typedef struct _alist
-{
-    t_pd l_pd;          /* object to point inlets to */
-    int l_n;            /* number of items */
-    int l_npointer;     /* number of pointers */
-    t_listelem *l_vec;  /* pointer to items */
-} t_alist;
+typedef struct _listelement {
+    t_atom          le_atom;
+    t_gpointer      le_gpointer;
+    } t_listelement;
+    
+typedef struct _list {
+    t_pd            l_pd;                           /* MUST be the first. */
+    int             l_size;
+    int             l_numberOfPointers;
+    t_listelement   *l_vector;
+    } t_list;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -187,12 +185,17 @@ void        *arraymin_new                   (t_symbol *s, int argc, t_atom *argv
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void atoms_copy (int argc, t_atom *from, t_atom *to);
-void alist_init(t_alist *x);
-void alist_clear(t_alist *x);
-void alist_clone (t_alist *x, t_alist *y);
-void alist_toatoms(t_alist *x, t_atom *to);
-void alist_list(t_alist *x, t_symbol *s, int argc, t_atom *argv);
+void        atoms_copy (int argc, t_atom *from, t_atom *to);
+
+void        alist_init                      (t_list *x);
+void        alist_clear                     (t_list *x);
+void        alist_clone                     (t_list *x, t_list *y);
+void        alist_toatoms                   (t_list *x, t_atom *to);
+void        alist_list                      (t_list *x, t_symbol *s, int argc, t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void        *list_append_new                (t_symbol *s, int argc, t_atom *argv);
 void        *list_prepend_new               (t_symbol *s, int argc, t_atom *argv);
@@ -201,7 +204,6 @@ void        *list_trim_new                  (void);
 void        *list_length_new                (void);
 void        *list_fromsymbol_new            (void);
 void        *list_tosymbol_new              (void);
-
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

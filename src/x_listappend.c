@@ -26,7 +26,7 @@ t_class *list_append_class;
 typedef struct _list_append
 {
     t_object x_obj;
-    t_alist x_alist;
+    t_list x_alist;
 } t_list_append;
 
 void *list_append_new(t_symbol *s, int argc, t_atom *argv)
@@ -43,12 +43,12 @@ static void list_append_list(t_list_append *x, t_symbol *s,
     int argc, t_atom *argv)
 {
     t_atom *outv;
-    int n, outc = x->x_alist.l_n + argc;
+    int n, outc = x->x_alist.l_size + argc;
     ATOMS_ALLOCA(outv, outc);
     atoms_copy(argc, argv, outv);
-    if (x->x_alist.l_npointer)
+    if (x->x_alist.l_numberOfPointers)
     {
-        t_alist y;
+        t_list y;
         alist_clone(&x->x_alist, &y);
         alist_toatoms(&y, outv+argc);
         outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
@@ -66,13 +66,13 @@ static void list_append_anything(t_list_append *x, t_symbol *s,
     int argc, t_atom *argv)
 {
     t_atom *outv;
-    int n, outc = x->x_alist.l_n + argc + 1;
+    int n, outc = x->x_alist.l_size + argc + 1;
     ATOMS_ALLOCA(outv, outc);
     SET_SYMBOL(outv, s);
     atoms_copy(argc, argv, outv + 1);
-    if (x->x_alist.l_npointer)
+    if (x->x_alist.l_numberOfPointers)
     {
-        t_alist y;
+        t_list y;
         alist_clone(&x->x_alist, &y);
         alist_toatoms(&y, outv + 1 + argc);
         outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
