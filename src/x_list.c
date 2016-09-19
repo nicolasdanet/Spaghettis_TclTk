@@ -21,41 +21,14 @@
 
 extern t_pd *pd_newest;
 
-/* the "list" object family.
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-    list append - append a list to another
-    list prepend - prepend a list to another
-    list split - first n elements to first outlet, rest to second outlet 
-    list trim - trim off "list" selector
-    list length - output number of items in list
-    list fromsymbol - "explode" a symbol into a list of character codes
-
-Need to think more about:
-    list foreach - spit out elements of a list one by one (also in reverse?)
-    list array - get items from a named array as a list
-    list reverse - permute elements of a list back to front
-    list pack - synonym for 'pack'
-    list unpack - synonym for 'unpack'
-    list cat - build a list by accumulating elements
-
-Probably don't need:
-    list first - output first n elements.
-    list last - output last n elements
-    list nth - nth item in list, counting from zero
-*/
-
-/* -------------- utility functions: storage, copying  -------------- */
-    /* List element for storage.  Keep an atom and, in case it's a pointer,
-        an associated 'gpointer' to protect against stale pointers. */
-
-
-/* ------------- fake class to divert inlets to ----------------- */
-
-t_class *alist_class;
+static t_class *list_class;
 
 void alist_init(t_list *x)
 {
-    x->l_pd = alist_class;
+    x->l_pd = list_class;
     x->l_size = x->l_numberOfPointers = 0;
     x->l_vector = 0;
 }
@@ -132,7 +105,7 @@ void alist_toatoms(t_list *x, t_atom *to)
 void alist_clone(t_list *x, t_list *y)
 {
     int i;
-    y->l_pd = alist_class;
+    y->l_pd = list_class;
     y->l_size = x->l_size;
     y->l_numberOfPointers = x->l_numberOfPointers;
     if (!(y->l_vector = (t_listelement *)PD_MEMORY_GET(y->l_size * sizeof(*y->l_vector))))
@@ -149,14 +122,6 @@ void alist_clone(t_list *x, t_list *y)
             y->l_vector[i].le_atom.a_w.w_gpointer = &y->l_vector[i].le_gpointer;
         }
     }
-}
-
-static void alist_setup(void)
-{
-    alist_class = class_new(sym_list__space__inlet,
-        0, 0, sizeof(t_list), 0, 0);
-    class_addList(alist_class, alist_list);
-    class_addAnything(alist_class, alist_anything);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -197,10 +162,23 @@ static void *list_new(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void x_list_setup(void)
+void list_setup (void)
 {
-    alist_setup();
-    class_addCreator((t_newmethod)list_new, &s_list, A_GIMME, 0);
+    t_class *c = NULL;
+    
+    c = class_new (sym_list__space__inlet,
+            NULL,
+            NULL,
+            sizeof (t_list),
+            0,
+            A_NULL);
+            
+    class_addList (c, alist_list);
+    class_addAnything (c, alist_anything);
+    
+    class_addCreator ((t_newmethod)list_new, &s_list, A_GIMME, A_NULL);
+    
+    list_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

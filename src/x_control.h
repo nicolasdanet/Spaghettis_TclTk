@@ -188,7 +188,7 @@ void        *arraymin_new                   (t_symbol *s, int argc, t_atom *argv
 void        alist_init                      (t_list *x);
 void        alist_clear                     (t_list *x);
 void        alist_clone                     (t_list *x, t_list *y);
-void        alist_toatoms                   (t_list *x, t_atom *to);
+void        alist_toatoms                   (t_list *x, t_atom *a);
 void        alist_list                      (t_list *x, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
