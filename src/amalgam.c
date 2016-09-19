@@ -143,6 +143,7 @@
 #include "x_arraymax.c"
 #include "x_arraymin.c"
 #include "x_list.c"
+#include "x_listlength.c"
 #include "x_listfromsymbol.c"
 #include "x_listtosymbol.c"
 

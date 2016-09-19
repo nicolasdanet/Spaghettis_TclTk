@@ -169,6 +169,7 @@ void        *arraymin_new                   (t_symbol *s, int argc, t_atom *argv
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void        *list_length_new                (void);
 void        *list_fromsymbol_new            (void);
 void        *list_tosymbol_new              (void);
 

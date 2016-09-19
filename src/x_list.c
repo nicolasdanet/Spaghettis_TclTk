@@ -448,46 +448,6 @@ static void list_trim_setup(void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_class *list_length_class;
-
-typedef struct _list_length
-{
-    t_object x_obj;
-} t_list_length;
-
-static void *list_length_new( void)
-{
-    t_list_length *x = (t_list_length *)pd_new(list_length_class);
-    outlet_new(&x->x_obj, &s_float);
-    return (x);
-}
-
-static void list_length_list(t_list_length *x, t_symbol *s,
-    int argc, t_atom *argv)
-{
-    outlet_float(x->x_obj.te_outlet, (t_float)argc);
-}
-
-static void list_length_anything(t_list_length *x, t_symbol *s,
-    int argc, t_atom *argv)
-{
-    outlet_float(x->x_obj.te_outlet, (t_float)argc+1);
-}
-
-static void list_length_setup(void)
-{
-    list_length_class = class_new(sym_list__space__length,
-        (t_newmethod)list_length_new, 0,
-        sizeof(t_list_length), 0, 0);
-    class_addList(list_length_class, list_length_list);
-    class_addAnything(list_length_class, list_length_anything);
-    class_setHelpName(list_length_class, &s_list);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void *list_new(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     if (!argc || argv[0].a_type != A_SYMBOL)
@@ -529,7 +489,6 @@ void x_list_setup(void)
     list_prepend_setup();
     list_split_setup();
     list_trim_setup();
-    list_length_setup();
     class_addCreator((t_newmethod)list_new, &s_list, A_GIMME, 0);
 }
 
