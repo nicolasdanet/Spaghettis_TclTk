@@ -488,43 +488,6 @@ static void list_length_setup(void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_class *list_fromsymbol_class;
-
-typedef struct _list_fromsymbol
-{
-    t_object x_obj;
-} t_list_fromsymbol;
-
-static void *list_fromsymbol_new( void)
-{
-    t_list_fromsymbol *x = (t_list_fromsymbol *)pd_new(list_fromsymbol_class);
-    outlet_new(&x->x_obj, &s_list);
-    return (x);
-}
-
-static void list_fromsymbol_symbol(t_list_fromsymbol *x, t_symbol *s)
-{
-    t_atom *outv;
-    int n, outc = strlen(s->s_name);
-    ATOMS_ALLOCA(outv, outc);
-    for (n = 0; n < outc; n++)
-        SET_FLOAT(outv + n, (unsigned char)s->s_name[n]);
-    outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
-    ATOMS_FREEA(outv, outc);
-}
-
-static void list_fromsymbol_setup(void)
-{
-    list_fromsymbol_class = class_new(sym_list__space__fromsymbol,
-        (t_newmethod)list_fromsymbol_new, 0, sizeof(t_list_fromsymbol), 0, 0);
-    class_addSymbol(list_fromsymbol_class, list_fromsymbol_symbol);
-    class_setHelpName(list_fromsymbol_class, &s_list);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void *list_new(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     if (!argc || argv[0].a_type != A_SYMBOL)
@@ -567,7 +530,6 @@ void x_list_setup(void)
     list_split_setup();
     list_trim_setup();
     list_length_setup();
-    list_fromsymbol_setup();
     class_addCreator((t_newmethod)list_new, &s_list, A_GIMME, 0);
 }
 
