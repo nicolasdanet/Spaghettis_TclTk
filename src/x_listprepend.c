@@ -29,7 +29,7 @@ typedef struct _list_prepend
     t_list x_alist;
 } t_list_prepend;
 
-void *list_prepend_new(t_symbol *s, int argc, t_atom *argv)
+void *listprepend_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_list_prepend *x = (t_list_prepend *)pd_new(list_prepend_class);
     alist_init(&x->x_alist);
@@ -96,8 +96,8 @@ static void list_prepend_free(t_list_prepend *x)
 void list_prepend_setup(void)
 {
     list_prepend_class = class_new(sym_list__space__prepend,
-        (t_newmethod)list_prepend_new, (t_method)list_prepend_free,
-        sizeof(t_list_prepend), 0, A_GIMME, 0);
+        (t_newmethod)listprepend_new, (t_method)list_prepend_free,
+        sizeof(t_list_prepend), CLASS_DEFAULT, A_GIMME, 0);
     class_addList(list_prepend_class, list_prepend_list);
     class_addAnything(list_prepend_class, list_prepend_anything);
     class_setHelpName(list_prepend_class, &s_list);

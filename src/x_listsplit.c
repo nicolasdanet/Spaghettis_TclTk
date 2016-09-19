@@ -32,8 +32,9 @@ typedef struct _list_split
     t_outlet *x_out3;
 } t_list_split;
 
-void *list_split_new(t_float f)
+void *listsplit_new(t_symbol *s, int argc, t_atom *argv)
 {
+    t_float f = atom_getFloatAtIndex (0, argc, argv);
     t_list_split *x = (t_list_split *)pd_new(list_split_class);
     x->x_out1 = outlet_new(&x->x_obj, &s_list);
     x->x_out2 = outlet_new(&x->x_obj, &s_list);
@@ -71,8 +72,8 @@ static void list_split_anything(t_list_split *x, t_symbol *s,
 void list_split_setup(void)
 {
     list_split_class = class_new(sym_list__space__split,
-        (t_newmethod)list_split_new, 0,
-        sizeof(t_list_split), 0, A_DEFFLOAT, 0);
+        (t_newmethod)listsplit_new, 0,
+        sizeof(t_list_split), CLASS_DEFAULT, A_GIMME, 0);
     class_addList(list_split_class, list_split_list);
     class_addAnything(list_split_class, list_split_anything);
     class_setHelpName(list_split_class, &s_list);

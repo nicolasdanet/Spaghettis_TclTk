@@ -28,7 +28,7 @@ typedef struct _list_length
     t_object x_obj;
 } t_list_length;
 
-void *list_length_new( void)
+void *listlength_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_list_length *x = (t_list_length *)pd_new(list_length_class);
     outlet_new(&x->x_obj, &s_float);
@@ -50,8 +50,8 @@ static void list_length_anything(t_list_length *x, t_symbol *s,
 void list_length_setup(void)
 {
     list_length_class = class_new(sym_list__space__length,
-        (t_newmethod)list_length_new, 0,
-        sizeof(t_list_length), 0, 0);
+        (t_newmethod)listlength_new, 0,
+        sizeof(t_list_length), CLASS_DEFAULT, A_GIMME, 0);
     class_addList(list_length_class, list_length_list);
     class_addAnything(list_length_class, list_length_anything);
     class_setHelpName(list_length_class, &s_list);

@@ -166,24 +166,24 @@ static void alist_setup(void)
 static void *list_new(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     if (!argc || argv[0].a_type != A_SYMBOL)
-        pd_newest = list_append_new(s, argc, argv);
+        pd_newest = listappend_new(s, argc, argv);
     else
     {
         t_symbol *s2 = argv[0].a_w.w_symbol;
         if (s2 == sym_append)
-            pd_newest = list_append_new(s, argc-1, argv+1);
+            pd_newest = listappend_new(s, argc-1, argv+1);
         else if (s2 == sym_prepend)
-            pd_newest = list_prepend_new(s, argc-1, argv+1);
+            pd_newest = listprepend_new(s, argc-1, argv+1);
         else if (s2 == sym_split)
-            pd_newest = list_split_new(atom_getFloatAtIndex(1, argc, argv));
+            pd_newest = listsplit_new(s, argc-1, argv+1);
         else if (s2 == sym_trim)
-            pd_newest = list_trim_new();
+            pd_newest = listtrim_new(s, argc-1, argv+1);
         else if (s2 == sym_length)
-            pd_newest = list_length_new();
+            pd_newest = listlength_new(s, argc-1, argv+1);
         else if (s2 == sym_fromsymbol)
-            pd_newest = list_fromsymbol_new();
+            pd_newest = listfromsymbol_new(s, argc-1, argv+1);
         else if (s2 == sym_tosymbol)
-            pd_newest = list_tosymbol_new();
+            pd_newest = listtosymbol_new(s, argc-1, argv+1);
         else 
         {
             post_error ("list %s: unknown function", s2->s_name);

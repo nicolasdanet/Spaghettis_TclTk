@@ -29,7 +29,7 @@ typedef struct _list_append
     t_list x_alist;
 } t_list_append;
 
-void *list_append_new(t_symbol *s, int argc, t_atom *argv)
+void *listappend_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_list_append *x = (t_list_append *)pd_new(list_append_class);
     alist_init(&x->x_alist);
@@ -94,8 +94,8 @@ static void list_append_free(t_list_append *x)
 void list_append_setup(void)
 {
     list_append_class = class_new(sym_list__space__append,
-        (t_newmethod)list_append_new, (t_method)list_append_free,
-        sizeof(t_list_append), 0, A_GIMME, 0);
+        (t_newmethod)listappend_new, (t_method)list_append_free,
+        sizeof(t_list_append), CLASS_DEFAULT, A_GIMME, 0);
     class_addList(list_append_class, list_append_list);
     class_addAnything(list_append_class, list_append_anything);
     class_setHelpName(list_append_class, &s_list);

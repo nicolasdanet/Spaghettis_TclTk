@@ -28,7 +28,7 @@ typedef struct _list_fromsymbol
     t_object x_obj;
 } t_list_fromsymbol;
 
-void *list_fromsymbol_new( void)
+void *listfromsymbol_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_list_fromsymbol *x = (t_list_fromsymbol *)pd_new(list_fromsymbol_class);
     outlet_new(&x->x_obj, &s_list);
@@ -49,7 +49,7 @@ static void list_fromsymbol_symbol(t_list_fromsymbol *x, t_symbol *s)
 void list_fromsymbol_setup(void)
 {
     list_fromsymbol_class = class_new(sym_list__space__fromsymbol,
-        (t_newmethod)list_fromsymbol_new, 0, sizeof(t_list_fromsymbol), 0, 0);
+        (t_newmethod)listfromsymbol_new, 0, sizeof(t_list_fromsymbol), CLASS_DEFAULT, A_GIMME, 0);
     class_addSymbol(list_fromsymbol_class, list_fromsymbol_symbol);
     class_setHelpName(list_fromsymbol_class, &s_list);
 }

@@ -195,13 +195,13 @@ void        alist_list                      (t_list *x, t_symbol *s, int argc, t
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        *list_append_new                (t_symbol *s, int argc, t_atom *argv);
-void        *list_prepend_new               (t_symbol *s, int argc, t_atom *argv);
-void        *list_split_new                 (t_float f);
-void        *list_trim_new                  (void);
-void        *list_length_new                (void);
-void        *list_fromsymbol_new            (void);
-void        *list_tosymbol_new              (void);
+void        *listappend_new                 (t_symbol *s, int argc, t_atom *argv);
+void        *listprepend_new                (t_symbol *s, int argc, t_atom *argv);
+void        *listsplit_new                  (t_symbol *s, int argc, t_atom *argv);
+void        *listtrim_new                   (t_symbol *s, int argc, t_atom *argv);
+void        *listlength_new                 (t_symbol *s, int argc, t_atom *argv);
+void        *listfromsymbol_new             (t_symbol *s, int argc, t_atom *argv);
+void        *listtosymbol_new               (t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

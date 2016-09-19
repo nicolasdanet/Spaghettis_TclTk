@@ -23,7 +23,7 @@ typedef struct _list_trim
     t_object x_obj;
 } t_list_trim;
 
-void *list_trim_new( void)
+void *listtrim_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_list_trim *x = (t_list_trim *)pd_new(list_trim_class);
     outlet_new(&x->x_obj, &s_list);
@@ -48,8 +48,8 @@ static void list_trim_anything(t_list_trim *x, t_symbol *s,
 void list_trim_setup (void)
 {
     list_trim_class = class_new(sym_list__space__trim,
-        (t_newmethod)list_trim_new, 0,
-        sizeof(t_list_trim), 0, 0);
+        (t_newmethod)listtrim_new, 0,
+        sizeof(t_list_trim), CLASS_DEFAULT, A_GIMME, 0);
     class_addList(list_trim_class, list_trim_list);
     class_addAnything(list_trim_class, list_trim_anything);
     class_setHelpName(list_trim_class, &s_list);
