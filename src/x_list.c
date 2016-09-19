@@ -28,100 +28,108 @@ static t_class  *list_class;        /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void list_init(t_list *x)
+struct _listinletelement {
+    t_atom      le_atom;
+    t_gpointer  le_gpointer;
+    };
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void listinlet_init(t_listinlet *x)
 {
-    x->l_pd = list_class;
-    x->l_size = x->l_numberOfPointers = 0;
-    x->l_vector = 0;
+    x->li_pd = list_class;
+    x->li_size = x->li_numberOfPointers = 0;
+    x->li_vector = 0;
 }
 
-void list_clear(t_list *x)
+void listinlet_clear(t_listinlet *x)
 {
     int i;
-    for (i = 0; i < x->l_size; i++)
+    for (i = 0; i < x->li_size; i++)
     {
-        if (x->l_vector[i].le_atom.a_type == A_POINTER)
-            gpointer_unset(x->l_vector[i].le_atom.a_w.w_gpointer);
+        if (x->li_vector[i].le_atom.a_type == A_POINTER)
+            gpointer_unset(x->li_vector[i].le_atom.a_w.w_gpointer);
     }
-    if (x->l_vector)
-        PD_MEMORY_FREE(x->l_vector);
+    if (x->li_vector)
+        PD_MEMORY_FREE(x->li_vector);
 }
 
-void list_list(t_list *x, t_symbol *s, int argc, t_atom *argv)
+void listinlet_list(t_listinlet *x, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
-    list_clear(x);
-    if (!(x->l_vector = (t_listelement *)PD_MEMORY_GET(argc * sizeof(*x->l_vector))))
+    listinlet_clear(x);
+    if (!(x->li_vector = (t_listinletelement *)PD_MEMORY_GET(argc * sizeof(*x->li_vector))))
     {
-        x->l_size = 0;
+        x->li_size = 0;
         post_error ("list_alloc: out of memory");
         return;
     }
-    x->l_size = argc;
-    x->l_numberOfPointers = 0;
+    x->li_size = argc;
+    x->li_numberOfPointers = 0;
     for (i = 0; i < argc; i++)
     {
-        x->l_vector[i].le_atom = argv[i];
-        if (x->l_vector[i].le_atom.a_type == A_POINTER)
+        x->li_vector[i].le_atom = argv[i];
+        if (x->li_vector[i].le_atom.a_type == A_POINTER)
         {
-            x->l_numberOfPointers++;
-            gpointer_setByCopy(x->l_vector[i].le_atom.a_w.w_gpointer, &x->l_vector[i].le_gpointer);
-            x->l_vector[i].le_atom.a_w.w_gpointer = &x->l_vector[i].le_gpointer;
+            x->li_numberOfPointers++;
+            gpointer_setByCopy(x->li_vector[i].le_atom.a_w.w_gpointer, &x->li_vector[i].le_gpointer);
+            x->li_vector[i].le_atom.a_w.w_gpointer = &x->li_vector[i].le_gpointer;
         }
     }
 }
 
-static void list_anything(t_list *x, t_symbol *s, int argc, t_atom *argv)
+static void listinlet_anything(t_listinlet *x, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
-    list_clear(x);
-    if (!(x->l_vector = (t_listelement *)PD_MEMORY_GET((argc+1) * sizeof(*x->l_vector))))
+    listinlet_clear(x);
+    if (!(x->li_vector = (t_listinletelement *)PD_MEMORY_GET((argc+1) * sizeof(*x->li_vector))))
     {
-        x->l_size = 0;
+        x->li_size = 0;
         post_error ("list_alloc: out of memory");
         return;
     }
-    x->l_size = argc+1;
-    x->l_numberOfPointers = 0;
-    SET_SYMBOL(&x->l_vector[0].le_atom, s);
+    x->li_size = argc+1;
+    x->li_numberOfPointers = 0;
+    SET_SYMBOL(&x->li_vector[0].le_atom, s);
     for (i = 0; i < argc; i++)
     {
-        x->l_vector[i+1].le_atom = argv[i];
-        if (x->l_vector[i+1].le_atom.a_type == A_POINTER)
+        x->li_vector[i+1].le_atom = argv[i];
+        if (x->li_vector[i+1].le_atom.a_type == A_POINTER)
         {
-            x->l_numberOfPointers++;            
-            gpointer_setByCopy(x->l_vector[i+1].le_atom.a_w.w_gpointer, &x->l_vector[i+1].le_gpointer);
-            x->l_vector[i+1].le_atom.a_w.w_gpointer = &x->l_vector[i+1].le_gpointer;
+            x->li_numberOfPointers++;            
+            gpointer_setByCopy(x->li_vector[i+1].le_atom.a_w.w_gpointer, &x->li_vector[i+1].le_gpointer);
+            x->li_vector[i+1].le_atom.a_w.w_gpointer = &x->li_vector[i+1].le_gpointer;
         }
     }
 }
 
-void list_copyAtoms(t_list *x, t_atom *to)
+void listinlet_copyAtoms(t_listinlet *x, t_atom *to)
 {
     int i;
-    for (i = 0; i < x->l_size; i++)
-        to[i] = x->l_vector[i].le_atom;
+    for (i = 0; i < x->li_size; i++)
+        to[i] = x->li_vector[i].le_atom;
 }
 
 
-void list_clone(t_list *x, t_list *y)
+void listinlet_clone(t_listinlet *x, t_listinlet *y)
 {
     int i;
-    y->l_pd = list_class;
-    y->l_size = x->l_size;
-    y->l_numberOfPointers = x->l_numberOfPointers;
-    if (!(y->l_vector = (t_listelement *)PD_MEMORY_GET(y->l_size * sizeof(*y->l_vector))))
+    y->li_pd = list_class;
+    y->li_size = x->li_size;
+    y->li_numberOfPointers = x->li_numberOfPointers;
+    if (!(y->li_vector = (t_listinletelement *)PD_MEMORY_GET(y->li_size * sizeof(*y->li_vector))))
     {
-        y->l_size = 0;
+        y->li_size = 0;
         post_error ("list_alloc: out of memory");
     }
-    else for (i = 0; i < x->l_size; i++)
+    else for (i = 0; i < x->li_size; i++)
     {
-        y->l_vector[i].le_atom = x->l_vector[i].le_atom;
-        if (y->l_vector[i].le_atom.a_type == A_POINTER)
+        y->li_vector[i].le_atom = x->li_vector[i].le_atom;
+        if (y->li_vector[i].le_atom.a_type == A_POINTER)
         {
-            gpointer_setByCopy(y->l_vector[i].le_atom.a_w.w_gpointer, &y->l_vector[i].le_gpointer);
-            y->l_vector[i].le_atom.a_w.w_gpointer = &y->l_vector[i].le_gpointer;
+            gpointer_setByCopy(y->li_vector[i].le_atom.a_w.w_gpointer, &y->li_vector[i].le_gpointer);
+            y->li_vector[i].le_atom.a_w.w_gpointer = &y->li_vector[i].le_gpointer;
         }
     }
 }
@@ -172,8 +180,8 @@ void list_setup (void)
         
     class_addCreator ((t_newmethod)list_makeObject, &s_list, A_GIMME, A_NULL);
             
-    class_addList (c, list_list);
-    class_addAnything (c, list_anything);
+    class_addList (c, listinlet_list);
+    class_addAnything (c, listinlet_anything);
     
     list_class = c;
 }

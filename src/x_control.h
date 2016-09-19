@@ -17,58 +17,53 @@
 #pragma mark -
 
 typedef struct _textbuffer {
-    t_object        tb_obj;                         /* Must be the first. */
-    t_buffer        *tb_buffer;
-    t_glist         *tb_owner;
-    t_guiconnect    *tb_guiconnect;
+    t_object            tb_obj;                         /* Must be the first. */
+    t_buffer            *tb_buffer;
+    t_glist             *tb_owner;
+    t_guiconnect        *tb_guiconnect;
     } t_textbuffer;
 
 typedef struct _textclient {
-    t_object        tc_obj;                         /* Must be the first. */
-    t_gpointer      tc_gpointer;
-    t_symbol        *tc_name;
-    t_symbol        *tc_templateIdentifier;
-    t_symbol        *tc_fieldName;
+    t_object            tc_obj;                         /* Must be the first. */
+    t_gpointer          tc_gpointer;
+    t_symbol            *tc_name;
+    t_symbol            *tc_templateIdentifier;
+    t_symbol            *tc_fieldName;
     } t_textclient;
 
 typedef struct _qlist {
-    t_textbuffer    ql_textbuffer;                  /* Must be the first. */
-    int             ql_indexOfMessage;
-    int             ql_waitCount;
-    int             ql_flagRewound;
-    int             ql_flagReentrant;
-    t_symbol        *ql_target;
-    t_outlet        *ql_outletLeft;
-    t_outlet        *ql_outletRight;
-    t_clock         *ql_clock;
+    t_textbuffer        ql_textbuffer;                  /* Must be the first. */
+    int                 ql_indexOfMessage;
+    int                 ql_waitCount;
+    int                 ql_flagRewound;
+    int                 ql_flagReentrant;
+    t_symbol            *ql_target;
+    t_outlet            *ql_outletLeft;
+    t_outlet            *ql_outletRight;
+    t_clock             *ql_clock;
     } t_qlist;
 
 typedef struct _arrayclient {
-    t_object        ac_obj;                         /* Must be the first. */
-    t_gpointer      ac_gpointer;
-    t_symbol        *ac_name;
-    t_symbol        *ac_templateIdentifier;
-    t_symbol        *ac_fieldName;
+    t_object            ac_obj;                         /* Must be the first. */
+    t_gpointer          ac_gpointer;
+    t_symbol            *ac_name;
+    t_symbol            *ac_templateIdentifier;
+    t_symbol            *ac_fieldName;
     } t_arrayclient;
 
 typedef struct _arrayrange {
-    t_arrayclient   ar_arrayclient;                 /* Must be the first. */
-    t_float         ar_first;
-    t_float         ar_size;
-    t_symbol        *ar_fieldName;
+    t_arrayclient       ar_arrayclient;                 /* Must be the first. */
+    t_float             ar_first;
+    t_float             ar_size;
+    t_symbol            *ar_fieldName;
     } t_arrayrange;
 
-typedef struct _listelement {
-    t_atom          le_atom;
-    t_gpointer      le_gpointer;
-    } t_listelement;
-    
-typedef struct _list {
-    t_pd            l_pd;                           /* MUST be the first. */
-    int             l_size;
-    int             l_numberOfPointers;
-    t_listelement   *l_vector;
-    } t_list;
+typedef struct _listinlet {
+    t_pd                li_pd;                          /* MUST be the first. */
+    int                 li_size;
+    int                 li_numberOfPointers;
+    t_listinletelement  *li_vector;
+    } t_listinlet;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -185,11 +180,11 @@ void        *arraymin_new                   (t_symbol *s, int argc, t_atom *argv
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        list_init                       (t_list *x);
-void        list_clear                      (t_list *x);
-void        list_clone                      (t_list *x, t_list *y);
-void        list_copyAtoms                  (t_list *x, t_atom *a);
-void        list_list                       (t_list *x, t_symbol *s, int argc, t_atom *argv);
+void        listinlet_init                  (t_listinlet *x);
+void        listinlet_clear                 (t_listinlet *x);
+void        listinlet_clone                 (t_listinlet *x, t_listinlet *y);
+void        listinlet_copyAtoms             (t_listinlet *x, t_atom *a);
+void        listinlet_list                  (t_listinlet *x, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
