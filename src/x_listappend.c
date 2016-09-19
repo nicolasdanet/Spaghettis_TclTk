@@ -32,8 +32,8 @@ typedef struct _list_append
 void *listappend_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_list_append *x = (t_list_append *)pd_new(list_append_class);
-    alist_init(&x->x_alist);
-    alist_list(&x->x_alist, 0, argc, argv);
+    list_init(&x->x_alist);
+    list_list(&x->x_alist, 0, argc, argv);
     outlet_new(&x->x_obj, &s_list);
     inlet_new(&x->x_obj, &x->x_alist.l_pd, 0, 0);
     return (x);
@@ -49,14 +49,14 @@ static void list_append_list(t_list_append *x, t_symbol *s,
     if (x->x_alist.l_numberOfPointers)
     {
         t_list y;
-        alist_clone(&x->x_alist, &y);
-        alist_toatoms(&y, outv+argc);
+        list_clone(&x->x_alist, &y);
+        list_copyAtoms(&y, outv+argc);
         outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
-        alist_clear(&y);
+        list_clear(&y);
     }
     else
     {
-        alist_toatoms(&x->x_alist, outv+argc);
+        list_copyAtoms(&x->x_alist, outv+argc);
         outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
     }
     ATOMS_FREEA(outv, outc);
@@ -73,14 +73,14 @@ static void list_append_anything(t_list_append *x, t_symbol *s,
     if (x->x_alist.l_numberOfPointers)
     {
         t_list y;
-        alist_clone(&x->x_alist, &y);
-        alist_toatoms(&y, outv + 1 + argc);
+        list_clone(&x->x_alist, &y);
+        list_copyAtoms(&y, outv + 1 + argc);
         outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
-        alist_clear(&y);
+        list_clear(&y);
     }
     else
     {
-        alist_toatoms(&x->x_alist, outv + 1 + argc);
+        list_copyAtoms(&x->x_alist, outv + 1 + argc);
         outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
     }
     ATOMS_FREEA(outv, outc);
@@ -88,7 +88,7 @@ static void list_append_anything(t_list_append *x, t_symbol *s,
 
 static void list_append_free(t_list_append *x)
 {
-    alist_clear(&x->x_alist);
+    list_clear(&x->x_alist);
 }
 
 void list_append_setup(void)

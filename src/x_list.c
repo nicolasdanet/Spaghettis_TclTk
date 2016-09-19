@@ -12,28 +12,30 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "m_alloca.h"
 #include "g_graphics.h"
 #include "x_control.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pd *pd_newest;
+extern t_pd     *pd_newest;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *list_class;
+static t_class  *list_class;        /* Shared. */
 
-void alist_init(t_list *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void list_init(t_list *x)
 {
     x->l_pd = list_class;
     x->l_size = x->l_numberOfPointers = 0;
     x->l_vector = 0;
 }
 
-void alist_clear(t_list *x)
+void list_clear(t_list *x)
 {
     int i;
     for (i = 0; i < x->l_size; i++)
@@ -45,10 +47,10 @@ void alist_clear(t_list *x)
         PD_MEMORY_FREE(x->l_vector);
 }
 
-void alist_list(t_list *x, t_symbol *s, int argc, t_atom *argv)
+void list_list(t_list *x, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
-    alist_clear(x);
+    list_clear(x);
     if (!(x->l_vector = (t_listelement *)PD_MEMORY_GET(argc * sizeof(*x->l_vector))))
     {
         x->l_size = 0;
@@ -69,10 +71,10 @@ void alist_list(t_list *x, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-static void alist_anything(t_list *x, t_symbol *s, int argc, t_atom *argv)
+static void list_anything(t_list *x, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
-    alist_clear(x);
+    list_clear(x);
     if (!(x->l_vector = (t_listelement *)PD_MEMORY_GET((argc+1) * sizeof(*x->l_vector))))
     {
         x->l_size = 0;
@@ -94,7 +96,7 @@ static void alist_anything(t_list *x, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-void alist_toatoms(t_list *x, t_atom *to)
+void list_copyAtoms(t_list *x, t_atom *to)
 {
     int i;
     for (i = 0; i < x->l_size; i++)
@@ -102,7 +104,7 @@ void alist_toatoms(t_list *x, t_atom *to)
 }
 
 
-void alist_clone(t_list *x, t_list *y)
+void list_clone(t_list *x, t_list *y)
 {
     int i;
     y->l_pd = list_class;
@@ -128,34 +130,29 @@ void alist_clone(t_list *x, t_list *y)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *list_new(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
+static void *list_makeObject (t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
 {
-    if (!argc || argv[0].a_type != A_SYMBOL)
-        pd_newest = listappend_new(s, argc, argv);
-    else
-    {
-        t_symbol *s2 = argv[0].a_w.w_symbol;
-        if (s2 == sym_append)
-            pd_newest = listappend_new(s, argc-1, argv+1);
-        else if (s2 == sym_prepend)
-            pd_newest = listprepend_new(s, argc-1, argv+1);
-        else if (s2 == sym_split)
-            pd_newest = listsplit_new(s, argc-1, argv+1);
-        else if (s2 == sym_trim)
-            pd_newest = listtrim_new(s, argc-1, argv+1);
-        else if (s2 == sym_length)
-            pd_newest = listlength_new(s, argc-1, argv+1);
-        else if (s2 == sym_fromsymbol)
-            pd_newest = listfromsymbol_new(s, argc-1, argv+1);
-        else if (s2 == sym_tosymbol)
-            pd_newest = listtosymbol_new(s, argc-1, argv+1);
-        else 
-        {
-            post_error ("list %s: unknown function", s2->s_name);
-            pd_newest = 0;
-        }
+    pd_newest = NULL;
+    
+    if (!argc || !IS_SYMBOL (argv)) { pd_newest = listappend_new (s, argc, argv); }
+    else {
+    //
+    t_symbol *t = atom_getSymbol (argv);
+    
+    if (t == sym_append)            { pd_newest = listappend_new (s,        argc - 1, argv + 1); }
+    else if (t == sym_prepend)      { pd_newest = listprepend_new (s,       argc - 1, argv + 1); }
+    else if (t == sym_split)        { pd_newest = listsplit_new (s,         argc - 1, argv + 1); }
+    else if (t == sym_trim)         { pd_newest = listtrim_new (s,          argc - 1, argv + 1); }
+    else if (t == sym_length)       { pd_newest = listlength_new (s,        argc - 1, argv + 1); }
+    else if (t == sym_fromsymbol)   { pd_newest = listfromsymbol_new (s,    argc - 1, argv + 1); }
+    else if (t == sym_tosymbol)     { pd_newest = listtosymbol_new (s,      argc - 1, argv + 1); }
+    else {
+        error_unexpected (sym_list, t);
     }
-    return (pd_newest);
+    //
+    }
+    
+    return pd_newest;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -169,14 +166,14 @@ void list_setup (void)
     c = class_new (sym_list__space__inlet,
             NULL,
             NULL,
-            sizeof (t_list),
             0,
+            CLASS_ABSTRACT,
             A_NULL);
+        
+    class_addCreator ((t_newmethod)list_makeObject, &s_list, A_GIMME, A_NULL);
             
-    class_addList (c, alist_list);
-    class_addAnything (c, alist_anything);
-    
-    class_addCreator ((t_newmethod)list_new, &s_list, A_GIMME, A_NULL);
+    class_addList (c, list_list);
+    class_addAnything (c, list_anything);
     
     list_class = c;
 }
