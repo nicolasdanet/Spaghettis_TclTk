@@ -169,9 +169,13 @@ void        *arraymin_new                   (t_symbol *s, int argc, t_atom *argv
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void        *list_split_new                 (t_float f);
+void        *list_trim_new                  (void);
 void        *list_length_new                (void);
 void        *list_fromsymbol_new            (void);
 void        *list_tosymbol_new              (void);
+
+void atoms_copy (int argc, t_atom *from, t_atom *to);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

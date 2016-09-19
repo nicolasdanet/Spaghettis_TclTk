@@ -61,7 +61,7 @@ typedef struct _alist
     t_listelem *l_vec;  /* pointer to items */
 } t_alist;
 
-static void atoms_copy(int argc, t_atom *from, t_atom *to)
+void atoms_copy(int argc, t_atom *from, t_atom *to)
 {
     int i;
     for (i = 0; i < argc; i++)
@@ -344,106 +344,6 @@ static void list_prepend_setup(void)
     class_setHelpName(list_prepend_class, &s_list);
 }
 
-/* ------------- list split --------------------- */
-
-t_class *list_split_class;
-
-typedef struct _list_split
-{
-    t_object x_obj;
-    t_float x_f;
-    t_outlet *x_out1;
-    t_outlet *x_out2;
-    t_outlet *x_out3;
-} t_list_split;
-
-static void *list_split_new(t_float f)
-{
-    t_list_split *x = (t_list_split *)pd_new(list_split_class);
-    x->x_out1 = outlet_new(&x->x_obj, &s_list);
-    x->x_out2 = outlet_new(&x->x_obj, &s_list);
-    x->x_out3 = outlet_new(&x->x_obj, &s_list);
-    inlet_newFloat(&x->x_obj, &x->x_f);
-    x->x_f = f;
-    return (x);
-}
-
-static void list_split_list(t_list_split *x, t_symbol *s,
-    int argc, t_atom *argv)
-{
-    int n = x->x_f;
-    if (n < 0)
-        n = 0;
-    if (argc >= n)
-    {
-        outlet_list(x->x_out2, &s_list, argc-n, argv+n);
-        outlet_list(x->x_out1, &s_list, n, argv);
-    }
-    else outlet_list(x->x_out3, &s_list, argc, argv);
-}
-
-static void list_split_anything(t_list_split *x, t_symbol *s,
-    int argc, t_atom *argv)
-{
-    t_atom *outv;
-    ATOMS_ALLOCA(outv, argc+1);
-    SET_SYMBOL(outv, s);
-    atoms_copy(argc, argv, outv + 1);
-    list_split_list(x, &s_list, argc+1, outv);
-    ATOMS_FREEA(outv, argc+1);
-}
-
-static void list_split_setup(void)
-{
-    list_split_class = class_new(sym_list__space__split,
-        (t_newmethod)list_split_new, 0,
-        sizeof(t_list_split), 0, A_DEFFLOAT, 0);
-    class_addList(list_split_class, list_split_list);
-    class_addAnything(list_split_class, list_split_anything);
-    class_setHelpName(list_split_class, &s_list);
-}
-
-/* ------------- list trim --------------------- */
-
-t_class *list_trim_class;
-
-typedef struct _list_trim
-{
-    t_object x_obj;
-} t_list_trim;
-
-static void *list_trim_new( void)
-{
-    t_list_trim *x = (t_list_trim *)pd_new(list_trim_class);
-    outlet_new(&x->x_obj, &s_list);
-    return (x);
-}
-
-static void list_trim_list(t_list_trim *x, t_symbol *s,
-    int argc, t_atom *argv)
-{
-    if (argc < 1 || argv[0].a_type != A_SYMBOL)
-        outlet_list(x->x_obj.te_outlet, &s_list, argc, argv);
-    else outlet_anything(x->x_obj.te_outlet, argv[0].a_w.w_symbol,
-        argc-1, argv+1);
-}
-
-static void list_trim_anything(t_list_trim *x, t_symbol *s,
-    int argc, t_atom *argv)
-{
-    outlet_anything(x->x_obj.te_outlet, s, argc, argv);
-}
-
-static void list_trim_setup(void)
-{
-    list_trim_class = class_new(sym_list__space__trim,
-        (t_newmethod)list_trim_new, 0,
-        sizeof(t_list_trim), 0, 0);
-    class_addList(list_trim_class, list_trim_list);
-    class_addAnything(list_trim_class, list_trim_anything);
-    class_setHelpName(list_trim_class, &s_list);
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -487,8 +387,6 @@ void x_list_setup(void)
     alist_setup();
     list_append_setup();
     list_prepend_setup();
-    list_split_setup();
-    list_trim_setup();
     class_addCreator((t_newmethod)list_new, &s_list, A_GIMME, 0);
 }
 
