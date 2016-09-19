@@ -110,6 +110,7 @@ void qlist_setup            (void);
 void textfile_setup         (void);
 void x_gui_setup            (void);
 void x_list_setup           (void);
+void list_prepend_setup     (void);
 void list_split_setup       (void);
 void list_trim_setup        (void);
 void list_length_setup      (void);
@@ -203,6 +204,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     textfile_setup();
     x_gui_setup();
     x_list_setup();
+    list_prepend_setup();
     list_split_setup();
     list_trim_setup();
     list_length_setup();

@@ -47,20 +47,6 @@ Probably don't need:
 /* -------------- utility functions: storage, copying  -------------- */
     /* List element for storage.  Keep an atom and, in case it's a pointer,
         an associated 'gpointer' to protect against stale pointers. */
-typedef struct _listelem
-{
-    t_atom l_a;
-    t_gpointer l_p;
-} t_listelem;
-
-typedef struct _alist
-{
-    t_pd l_pd;          /* object to point inlets to */
-    int l_n;            /* number of items */
-    int l_npointer;     /* number of pointers */
-    t_listelem *l_vec;  /* pointer to items */
-} t_alist;
-
 void atoms_copy(int argc, t_atom *from, t_atom *to)
 {
     int i;
@@ -72,14 +58,14 @@ void atoms_copy(int argc, t_atom *from, t_atom *to)
 
 t_class *alist_class;
 
-static void alist_init(t_alist *x)
+void alist_init(t_alist *x)
 {
     x->l_pd = alist_class;
     x->l_n = x->l_npointer = 0;
     x->l_vec = 0;
 }
 
-static void alist_clear(t_alist *x)
+void alist_clear(t_alist *x)
 {
     int i;
     for (i = 0; i < x->l_n; i++)
@@ -91,7 +77,7 @@ static void alist_clear(t_alist *x)
         PD_MEMORY_FREE(x->l_vec);
 }
 
-static void alist_list(t_alist *x, t_symbol *s, int argc, t_atom *argv)
+void alist_list(t_alist *x, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
     alist_clear(x);
@@ -140,7 +126,7 @@ static void alist_anything(t_alist *x, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-static void alist_toatoms(t_alist *x, t_atom *to)
+void alist_toatoms(t_alist *x, t_atom *to)
 {
     int i;
     for (i = 0; i < x->l_n; i++)
@@ -148,7 +134,7 @@ static void alist_toatoms(t_alist *x, t_atom *to)
 }
 
 
-static void alist_clone(t_alist *x, t_alist *y)
+void alist_clone(t_alist *x, t_alist *y)
 {
     int i;
     y->l_pd = alist_class;
@@ -260,90 +246,6 @@ static void list_append_setup(void)
     class_setHelpName(list_append_class, &s_list);
 }
 
-/* ------------- list prepend --------------------- */
-
-t_class *list_prepend_class;
-
-typedef struct _list_prepend
-{
-    t_object x_obj;
-    t_alist x_alist;
-} t_list_prepend;
-
-static void *list_prepend_new(t_symbol *s, int argc, t_atom *argv)
-{
-    t_list_prepend *x = (t_list_prepend *)pd_new(list_prepend_class);
-    alist_init(&x->x_alist);
-    alist_list(&x->x_alist, 0, argc, argv);
-    outlet_new(&x->x_obj, &s_list);
-    inlet_new(&x->x_obj, &x->x_alist.l_pd, 0, 0);
-    return (x);
-}
-
-static void list_prepend_list(t_list_prepend *x, t_symbol *s,
-    int argc, t_atom *argv)
-{
-    t_atom *outv;
-    int n, outc = x->x_alist.l_n + argc;
-    ATOMS_ALLOCA(outv, outc);
-    atoms_copy(argc, argv, outv + x->x_alist.l_n);
-    if (x->x_alist.l_npointer)
-    {
-        t_alist y;
-        alist_clone(&x->x_alist, &y);
-        alist_toatoms(&y, outv);
-        outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
-        alist_clear(&y);
-    }
-    else
-    {
-        alist_toatoms(&x->x_alist, outv);
-        outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
-    }
-    ATOMS_FREEA(outv, outc);
-}
-
-
-
-static void list_prepend_anything(t_list_prepend *x, t_symbol *s,
-    int argc, t_atom *argv)
-{
-    t_atom *outv;
-    int n, outc = x->x_alist.l_n + argc + 1;
-    ATOMS_ALLOCA(outv, outc);
-    SET_SYMBOL(outv + x->x_alist.l_n, s);
-    atoms_copy(argc, argv, outv + x->x_alist.l_n + 1);
-    if (x->x_alist.l_npointer)
-    {
-        t_alist y;
-        alist_clone(&x->x_alist, &y);
-        alist_toatoms(&y, outv);
-        outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
-        alist_clear(&y);
-    }
-    else
-    {
-        alist_toatoms(&x->x_alist, outv);
-        outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
-    }
-    ATOMS_FREEA(outv, outc);
-}
-
-static void list_prepend_free(t_list_prepend *x)
-{
-    alist_clear(&x->x_alist);
-}
-
-static void list_prepend_setup(void)
-{
-    list_prepend_class = class_new(sym_list__space__prepend,
-        (t_newmethod)list_prepend_new, (t_method)list_prepend_free,
-        sizeof(t_list_prepend), 0, A_GIMME, 0);
-    class_addList(list_prepend_class, list_prepend_list);
-    class_addAnything(list_prepend_class, list_prepend_anything);
-    class_setHelpName(list_prepend_class, &s_list);
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -386,7 +288,6 @@ void x_list_setup(void)
 {
     alist_setup();
     list_append_setup();
-    list_prepend_setup();
     class_addCreator((t_newmethod)list_new, &s_list, A_GIMME, 0);
 }
 

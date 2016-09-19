@@ -58,6 +58,20 @@ typedef struct _arrayrange {
     t_symbol        *ar_fieldName;
     } t_arrayrange;
 
+typedef struct _listelem
+{
+    t_atom l_a;
+    t_gpointer l_p;
+} t_listelem;
+
+typedef struct _alist
+{
+    t_pd l_pd;          /* object to point inlets to */
+    int l_n;            /* number of items */
+    int l_npointer;     /* number of pointers */
+    t_listelem *l_vec;  /* pointer to items */
+} t_alist;
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -65,6 +79,10 @@ typedef struct _arrayrange {
 #define TEXTCLIENT_ASPOINTER(x)     ((x)->tc_templateIdentifier)
 #define TEXTCLIENT_GETPOINTER(x)    &((x)->tc_gpointer)
 #define TEXTCLIENT_GETNAME(x)       &((x)->tc_name)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #define ARRAYCLIENT_ASPOINTER(x)    ((x)->ac_templateIdentifier)
 #define ARRAYCLIENT_GETPOINTER(x)   &((x)->ac_gpointer)
@@ -169,13 +187,20 @@ void        *arraymin_new                   (t_symbol *s, int argc, t_atom *argv
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void atoms_copy (int argc, t_atom *from, t_atom *to);
+void alist_init(t_alist *x);
+void alist_clear(t_alist *x);
+void alist_clone (t_alist *x, t_alist *y);
+void alist_toatoms(t_alist *x, t_atom *to);
+void alist_list(t_alist *x, t_symbol *s, int argc, t_atom *argv);
+
+void        *list_prepend_new               (t_symbol *s, int argc, t_atom *argv);
 void        *list_split_new                 (t_float f);
 void        *list_trim_new                  (void);
 void        *list_length_new                (void);
 void        *list_fromsymbol_new            (void);
 void        *list_tosymbol_new              (void);
 
-void atoms_copy (int argc, t_atom *from, t_atom *to);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
