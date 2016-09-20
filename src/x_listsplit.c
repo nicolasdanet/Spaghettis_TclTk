@@ -25,7 +25,7 @@ static t_class  *listsplit_class;       /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _listsplit {
-    t_object    x_obj;
+    t_object    x_obj;                  /* Must be the first. */
     t_float     x_f;
     t_outlet    *x_outletLeft;
     t_outlet    *x_outletMiddle;

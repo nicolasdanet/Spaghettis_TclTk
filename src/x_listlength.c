@@ -47,7 +47,7 @@ static void list_length_anything(t_list_length *x, t_symbol *s,
     outlet_float(x->x_obj.te_outlet, (t_float)argc+1);
 }
 
-void list_length_setup(void)
+void listlength_setup(void)
 {
     list_length_class = class_new(sym_list__space__length,
         (t_newmethod)listlength_new, 0,

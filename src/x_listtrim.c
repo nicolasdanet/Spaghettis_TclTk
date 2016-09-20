@@ -12,47 +12,74 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "m_alloca.h"
 #include "g_graphics.h"
 #include "x_control.h"
 
-t_class *list_trim_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct _list_trim
-{
-    t_object x_obj;
-} t_list_trim;
+static t_class *listtrim_class;         /* Shared. */
 
-void *listtrim_new(t_symbol *s, int argc, t_atom *argv)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _listtrim {
+    t_object    x_obj;                  /* Must be the first. */
+    t_outlet    *x_outlet;
+    } t_listtrim;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void listtrim_list (t_listtrim *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_list_trim *x = (t_list_trim *)pd_new(list_trim_class);
-    outlet_new(&x->x_obj, &s_list);
-    return (x);
+    if (!argc || !IS_SYMBOL (argv)) { outlet_list (x->x_outlet, &s_list, argc, argv); }
+    else { 
+        outlet_anything (x->x_outlet, GET_SYMBOL (argv), argc - 1, argv + 1);
+    }
 }
 
-static void list_trim_list(t_list_trim *x, t_symbol *s,
-    int argc, t_atom *argv)
+static void listtrim_anything (t_listtrim *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc < 1 || argv[0].a_type != A_SYMBOL)
-        outlet_list(x->x_obj.te_outlet, &s_list, argc, argv);
-    else outlet_anything(x->x_obj.te_outlet, argv[0].a_w.w_symbol,
-        argc-1, argv+1);
+    outlet_anything (x->x_outlet, s, argc, argv);
 }
 
-static void list_trim_anything(t_list_trim *x, t_symbol *s,
-    int argc, t_atom *argv)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void *listtrim_new (t_symbol *s, int argc, t_atom *argv)
 {
-    outlet_anything(x->x_obj.te_outlet, s, argc, argv);
+    t_listtrim *x = (t_listtrim *)pd_new (listtrim_class);
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_list);
+    
+    return x;
 }
 
-void list_trim_setup (void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void listtrim_setup (void)
 {
-    list_trim_class = class_new(sym_list__space__trim,
-        (t_newmethod)listtrim_new, 0,
-        sizeof(t_list_trim), CLASS_DEFAULT, A_GIMME, 0);
-    class_addList(list_trim_class, list_trim_list);
-    class_addAnything(list_trim_class, list_trim_anything);
-    class_setHelpName(list_trim_class, &s_list);
+    t_class *c = NULL;
+    
+    c = class_new (sym_list__space__trim,
+            (t_newmethod)listtrim_new,
+            NULL,
+            sizeof (t_listtrim),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+            
+    class_addList (c, listtrim_list);
+    class_addAnything (c, listtrim_anything);
+    
+    class_setHelpName (c, &s_list);
+    
+    listtrim_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

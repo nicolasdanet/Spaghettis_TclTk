@@ -25,7 +25,7 @@ static t_class  *listprepend_class;     /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _listprepend {
-    t_object        x_obj;
+    t_object        x_obj;              /* Must be the first. */
     t_listinlet     x_listinlet;
     t_outlet        *x_outlet;
     } t_listprepend;

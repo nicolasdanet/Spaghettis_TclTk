@@ -46,7 +46,7 @@ static void list_fromsymbol_symbol(t_list_fromsymbol *x, t_symbol *s)
     ATOMS_FREEA(outv, outc);
 }
 
-void list_fromsymbol_setup(void)
+void listfromsymbol_setup(void)
 {
     list_fromsymbol_class = class_new(sym_list__space__fromsymbol,
         (t_newmethod)listfromsymbol_new, 0, sizeof(t_list_fromsymbol), CLASS_DEFAULT, A_GIMME, 0);

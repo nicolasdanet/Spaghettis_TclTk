@@ -44,7 +44,7 @@ static void list_tosymbol_list(t_list_tosymbol *x, t_symbol *s,
     outlet_symbol(x->x_obj.te_outlet, gensym (str));
 }
 
-void list_tosymbol_setup(void)
+void listtosymbol_setup(void)
 {
     list_tosymbol_class = class_new(sym_list__space__tosymbol,
         (t_newmethod)listtosymbol_new, 0, sizeof(t_list_tosymbol), CLASS_DEFAULT, A_GIMME, 0);
