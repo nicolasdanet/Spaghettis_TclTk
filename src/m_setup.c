@@ -113,7 +113,7 @@ void listinlet_setup        (void);
 void list_setup             (void);
 void listappend_setup       (void);
 void listprepend_setup      (void);
-void list_split_setup       (void);
+void listsplit_setup        (void);
 void list_trim_setup        (void);
 void list_length_setup      (void);
 void list_fromsymbol_setup  (void);
@@ -209,7 +209,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     list_setup();
     listappend_setup();
     listprepend_setup();
-    list_split_setup();
+    listsplit_setup();
     list_trim_setup();
     list_length_setup();
     list_fromsymbol_setup();

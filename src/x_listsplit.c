@@ -19,64 +19,81 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pd *pd_newest;
+static t_class  *listsplit_class;       /* Shared. */
 
-t_class *list_split_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct _list_split
+typedef struct _listsplit {
+    t_object    x_obj;
+    t_float     x_f;
+    t_outlet    *x_outletLeft;
+    t_outlet    *x_outletMiddle;
+    t_outlet    *x_outletRight;
+}   t_listsplit;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void listsplit_list (t_listsplit *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_object x_obj;
-    t_float x_f;
-    t_outlet *x_out1;
-    t_outlet *x_out2;
-    t_outlet *x_out3;
-} t_list_split;
-
-void *listsplit_new(t_symbol *s, int argc, t_atom *argv)
-{
-    t_float f = atom_getFloatAtIndex (0, argc, argv);
-    t_list_split *x = (t_list_split *)pd_new(list_split_class);
-    x->x_out1 = outlet_new(&x->x_obj, &s_list);
-    x->x_out2 = outlet_new(&x->x_obj, &s_list);
-    x->x_out3 = outlet_new(&x->x_obj, &s_list);
-    inlet_newFloat(&x->x_obj, &x->x_f);
-    x->x_f = f;
-    return (x);
-}
-
-static void list_split_list(t_list_split *x, t_symbol *s,
-    int argc, t_atom *argv)
-{
-    int n = x->x_f;
-    if (n < 0)
-        n = 0;
-    if (argc >= n)
-    {
-        outlet_list(x->x_out2, &s_list, argc-n, argv+n);
-        outlet_list(x->x_out1, &s_list, n, argv);
+    int n = PD_MAX (0.0, x->x_f);
+    
+    if (argc >= n) {
+        outlet_list (x->x_outletMiddle, &s_list, argc - n, argv + n);
+        outlet_list (x->x_outletLeft,   &s_list, n, argv);
+    } else {
+        outlet_list (x->x_outletRight,  &s_list, argc, argv);
     }
-    else outlet_list(x->x_out3, &s_list, argc, argv);
 }
 
-static void list_split_anything(t_list_split *x, t_symbol *s,
-    int argc, t_atom *argv)
+static void listsplit_anything (t_listsplit *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_atom *outv;
-    ATOMS_ALLOCA(outv, argc+1);
-    SET_SYMBOL(outv, s);
-    atom_copyAtomsUnchecked(argc, argv, outv + 1);
-    list_split_list(x, &s_list, argc+1, outv);
-    ATOMS_FREEA(outv, argc+1);
+    utils_anythingToList (cast_pd (x), listsplit_list, s, argc, argv);
 }
 
-void list_split_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void *listsplit_new (t_symbol *s, int argc, t_atom *argv)
 {
-    list_split_class = class_new(sym_list__space__split,
-        (t_newmethod)listsplit_new, 0,
-        sizeof(t_list_split), CLASS_DEFAULT, A_GIMME, 0);
-    class_addList(list_split_class, list_split_list);
-    class_addAnything(list_split_class, list_split_anything);
-    class_setHelpName(list_split_class, &s_list);
+    t_listsplit *x = (t_listsplit *)pd_new (listsplit_class);
+    
+    x->x_f = atom_getFloatAtIndex (0, argc, argv);
+    
+    x->x_outletLeft   = outlet_new (cast_object (x), &s_list);
+    x->x_outletMiddle = outlet_new (cast_object (x), &s_list);
+    x->x_outletRight  = outlet_new (cast_object (x), &s_list);
+    
+    inlet_newFloat (cast_object (x), &x->x_f);
+    
+    return x;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void listsplit_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_list__space__split,
+            (t_newmethod)listsplit_new,
+            NULL,
+            sizeof (t_listsplit),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+            
+    class_addList (c, listsplit_list);
+    class_addAnything (c, listsplit_anything);
+    
+    class_setHelpName (c, &s_list);
+    
+    listsplit_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
