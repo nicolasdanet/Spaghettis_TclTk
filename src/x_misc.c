@@ -492,7 +492,7 @@ static void oscparse_list(t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
                 (int)(argv[i].a_w.w_float), (int)(argv[i].a_w.w_float));
         } 
     }
-    outlet_list(x->x_obj.te_outlet, 0, j, outv);
+    outlet_list(x->x_obj.te_outlet, j, outv);
     return;
 tooshort:
     post_error ("oscparse: OSC message ended prematurely");
@@ -675,7 +675,7 @@ static void oscformat_list(t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
         SET_FLOAT(&msg[typeindex], 0), typeindex++;
     if (typeindex != datastart || msgindex != msgsize) { PD_BUG; }
     /* else post("datastart %d, msgsize %d", datastart, msgsize); */
-    outlet_list(x->x_obj.te_outlet, 0, msgsize, msg);
+    outlet_list(x->x_obj.te_outlet, msgsize, msg);
 }
 
 static void oscformat_free(t_oscformat *x)

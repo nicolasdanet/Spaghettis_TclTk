@@ -72,7 +72,7 @@ static void vinlet_symbol (t_vinlet *x, t_symbol *s)
 
 static void vinlet_list (t_vinlet *x, t_symbol *s, int argc, t_atom *argv)
 {
-    outlet_list (x->x_outlet, s, argc, argv);
+    outlet_list (x->x_outlet, argc, argv);
 }
 
 static void vinlet_anything (t_vinlet *x, t_symbol *s, int argc, t_atom *argv)

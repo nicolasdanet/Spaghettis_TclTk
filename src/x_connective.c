@@ -305,7 +305,7 @@ static void receive_pointer(t_receive *x, t_gpointer *gp)
 
 static void receive_list(t_receive *x, t_symbol *s, int argc, t_atom *argv)
 {
-    outlet_list(x->x_obj.te_outlet, s, argc, argv);
+    outlet_list(x->x_obj.te_outlet, argc, argv);
 }
 
 static void receive_anything(t_receive *x, t_symbol *s, int argc, t_atom *argv)
@@ -514,7 +514,7 @@ static void route_anything(t_route *x, t_symbol *sel, int argc, t_atom *argv)
             if (argc > 0 && argv[0].a_type == A_SYMBOL)
                 outlet_anything(e->e_outlet, argv[0].a_w.w_symbol,
                     argc-1, argv+1);
-            else outlet_list(e->e_outlet, 0, argc, argv);
+            else outlet_list(e->e_outlet, argc, argv);
             return;
         }
     }
@@ -538,7 +538,7 @@ static void route_list(t_route *x, t_symbol *sel, int argc, t_atom *argv)
             if (argc > 1 && argv[1].a_type == A_SYMBOL)
                 outlet_anything(e->e_outlet, argv[1].a_w.w_symbol,
                     argc-2, argv+2);
-            else outlet_list(e->e_outlet, 0, argc-1, argv+1);
+            else outlet_list(e->e_outlet, argc-1, argv+1);
             return;
         }
     }
@@ -553,7 +553,7 @@ static void route_list(t_route *x, t_symbol *sel, int argc, t_atom *argv)
                     if (argc > 0 && argv[0].a_type == A_SYMBOL)
                         outlet_anything(e->e_outlet, argv[0].a_w.w_symbol,
                             argc-1, argv+1);
-                    else outlet_list(e->e_outlet, 0, argc, argv);
+                    else outlet_list(e->e_outlet, argc, argv);
                     return;
                 }
             }
@@ -593,7 +593,7 @@ static void route_list(t_route *x, t_symbol *sel, int argc, t_atom *argv)
         }
     }
  rejected:
-    outlet_list(x->x_rejectout, 0, argc, argv);
+    outlet_list(x->x_rejectout, argc, argv);
 }
 
 
@@ -745,7 +745,7 @@ static void pack_bang(t_pack *x)
         x->x_outvec = 0;
     }
     memcpy(outvec, x->x_vec, size);
-    outlet_list(x->x_obj.te_outlet, &s_list, x->x_n, outvec);
+    outlet_list(x->x_obj.te_outlet, x->x_n, outvec);
     if (reentered)
         PD_MEMORY_FREE(outvec);
     else x->x_outvec = outvec;
@@ -1016,7 +1016,7 @@ static void trigger_list(t_trigger *x, t_symbol *s, int argc, t_atom *argv)
                 post_error ("unpack: bad pointer");
             else outlet_pointer(u->u_outlet, argv->a_w.w_gpointer);
         }
-        else outlet_list(u->u_outlet, &s_list, argc, argv);
+        else outlet_list(u->u_outlet, argc, argv);
     }
 }
 
@@ -1118,7 +1118,7 @@ static void spigot_symbol(t_spigot *x, t_symbol *s)
 
 static void spigot_list(t_spigot *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (x->x_state != 0) outlet_list(x->x_obj.te_outlet, s, argc, argv);
+    if (x->x_state != 0) outlet_list(x->x_obj.te_outlet, argc, argv);
 }
 
 static void spigot_anything(t_spigot *x, t_symbol *s, int argc, t_atom *argv)

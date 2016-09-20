@@ -109,7 +109,7 @@ static void netsend_readbin(t_netsend *x, int fd)
         t_atom *ap = (t_atom *)alloca(ret * sizeof(t_atom));
         for (i = 0; i < ret; i++)
             SET_FLOAT(ap+i, inbuf[i]);
-        outlet_list(x->x_msgout, 0, ret, ap);
+        outlet_list(x->x_msgout, ret, ap);
     }
     else
     {
@@ -142,7 +142,7 @@ static void netsend_doit(void *z, t_buffer *b)
             if (at[msg].a_type == A_FLOAT)
             {
                 if (emsg > msg + 1)
-                    outlet_list(x->x_msgout, 0, emsg-msg, at + msg);
+                    outlet_list(x->x_msgout, emsg-msg, at + msg);
                 else outlet_float(x->x_msgout, at[msg].a_w.w_float);
             }
             else if (at[msg].a_type == A_SYMBOL)

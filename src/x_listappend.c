@@ -49,13 +49,13 @@ static void listappend_list (t_listappend *x, t_symbol *s, int argc, t_atom *arg
         listinlet_init (&cache);
         listinlet_clone (&x->x_listinlet, &cache);
         listinlet_copyListUnchecked (&cache, t + argc);
-        outlet_list (x->x_outlet, &s_list, count, t);
+        outlet_list (x->x_outlet, count, t);
         listinlet_clear (&cache);
         
     } else {
     
         listinlet_copyListUnchecked (&x->x_listinlet, t + argc);
-        outlet_list (x->x_outlet, &s_list, count, t);
+        outlet_list (x->x_outlet, count, t);
     }
     
     ATOMS_FREEA (t, count);

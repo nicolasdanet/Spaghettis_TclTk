@@ -94,7 +94,7 @@ static void textsequence_performOutWaitForSymbol (t_textsequence *x, t_buffer *b
         PD_ASSERT (x->x_outletWait);
         PD_ASSERT (x->x_waitCount);
         x->x_isAutomatic = 0;
-        outlet_list (x->x_outletWait, NULL, x->x_waitCount - 1, buffer_atomAtIndex (b, start + 1));
+        outlet_list (x->x_outletWait, x->x_waitCount - 1, buffer_atomAtIndex (b, start + 1));
     }
 }
 
@@ -107,7 +107,7 @@ static void textsequence_performOutWaitForFloat (t_textsequence *x, t_buffer *b,
         PD_ASSERT (x->x_outletWait);
         PD_ASSERT (x->x_waitCount);
         x->x_isAutomatic = 0;
-        outlet_list (x->x_outletWait, NULL, x->x_waitCount, buffer_atomAtIndex (b, start));
+        outlet_list (x->x_outletWait, x->x_waitCount, buffer_atomAtIndex (b, start));
     }
 }
 
@@ -138,7 +138,7 @@ static void textsequence_performOutContentMain (t_textsequence *x, t_atom *t, in
         if (!x->x_sendTo && count && IS_SYMBOL (t)) { x->x_sendTo = GET_SYMBOL (t); }
     }
         
-    outlet_list (x->x_outletMain, NULL, count, t);
+    outlet_list (x->x_outletMain, count, t);
 }
 
 static void textsequence_performOutContentGlobal (t_textsequence *x, t_atom *t, int count, t_atomtype type)

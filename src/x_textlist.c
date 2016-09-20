@@ -71,7 +71,7 @@ static void texttolist_bang (t_texttolist *x)
     if (b) {
         t_buffer *t = buffer_new();
         buffer_serialize (t, b);
-        outlet_list (x->x_outlet, NULL, buffer_size (t), buffer_atoms (t));
+        outlet_list (x->x_outlet, buffer_size (t), buffer_atoms (t));
         buffer_free (t);
         
     } else { error_undefined (sym_text__space__tolist, sym_text); }

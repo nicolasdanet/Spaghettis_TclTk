@@ -47,7 +47,7 @@ static void arrayget_bang (t_arrayget *x)
     for (i = 0; i < n; i++) {
         SET_FLOAT (t + i, array_getFloatAtIndex (a, start + i, arrayrange_getFieldName (&x->x_arrayrange))); 
     }
-    outlet_list (x->x_outlet, NULL, n, t);
+    outlet_list (x->x_outlet, n, t);
     
     ATOMS_FREEA (t, n);
     //

@@ -42,7 +42,7 @@ static void list_fromsymbol_symbol(t_list_fromsymbol *x, t_symbol *s)
     ATOMS_ALLOCA(outv, outc);
     for (n = 0; n < outc; n++)
         SET_FLOAT(outv + n, (unsigned char)s->s_name[n]);
-    outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
+    outlet_list(x->x_obj.te_outlet, outc, outv);
     ATOMS_FREEA(outv, outc);
 }
 

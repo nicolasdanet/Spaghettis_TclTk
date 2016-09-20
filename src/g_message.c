@@ -61,7 +61,7 @@ static void messageresponder_symbol (t_messageresponder *x, t_symbol *s)
 
 static void messageresponder_list (t_messageresponder *x, t_symbol *s, int argc, t_atom *argv)
 {
-    outlet_list (x->mr_outlet, s, argc, argv);
+    outlet_list (x->mr_outlet, argc, argv);
 }
 
 static void messageresponder_anything (t_messageresponder *x, t_symbol *s, int argc, t_atom *argv)

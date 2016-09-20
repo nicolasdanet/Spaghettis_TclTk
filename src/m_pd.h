@@ -668,7 +668,7 @@ PD_DLL void         outlet_bang                 (t_outlet *x);
 PD_DLL void         outlet_pointer              (t_outlet *x, t_gpointer *gp);
 PD_DLL void         outlet_float                (t_outlet *x, t_float f);
 PD_DLL void         outlet_symbol               (t_outlet *x, t_symbol *s);
-PD_DLL void         outlet_list                 (t_outlet *x, t_symbol *s, int argc, t_atom *argv);
+PD_DLL void         outlet_list                 (t_outlet *x, int argc, t_atom *argv);
 PD_DLL void         outlet_anything             (t_outlet *x, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------

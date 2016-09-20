@@ -41,10 +41,10 @@ static void listsplit_list (t_listsplit *x, t_symbol *s, int argc, t_atom *argv)
     int n = PD_MAX (0.0, x->x_f);
     
     if (argc >= n) {
-        outlet_list (x->x_outletMiddle, &s_list, argc - n, argv + n);
-        outlet_list (x->x_outletLeft,   &s_list, n, argv);
+        outlet_list (x->x_outletMiddle, argc - n, argv + n);
+        outlet_list (x->x_outletLeft,   n, argv);
     } else {
-        outlet_list (x->x_outletRight,  &s_list, argc, argv);
+        outlet_list (x->x_outletRight,  argc, argv);
     }
 }
 

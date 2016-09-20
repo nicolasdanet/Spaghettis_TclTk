@@ -388,7 +388,7 @@ void outlet_symbol (t_outlet *x, t_symbol *s)
     --object_stackCount;
 }
 
-void outlet_list (t_outlet *x, t_symbol *s, int argc, t_atom *argv)
+void outlet_list (t_outlet *x, int argc, t_atom *argv)
 {
     t_outconnect *oc = NULL;
     

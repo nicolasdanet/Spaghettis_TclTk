@@ -34,7 +34,7 @@ typedef struct _listtrim {
 
 static void listtrim_list (t_listtrim *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (!argc || !IS_SYMBOL (argv)) { outlet_list (x->x_outlet, &s_list, argc, argv); }
+    if (!argc || !IS_SYMBOL (argv)) { outlet_list (x->x_outlet, argc, argv); }
     else { 
         outlet_anything (x->x_outlet, GET_SYMBOL (argv), argc - 1, argv + 1);
     }

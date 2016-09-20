@@ -72,7 +72,7 @@ static void voutlet_symbol (t_voutlet *x, t_symbol *s)
 
 static void voutlet_list (t_voutlet *x, t_symbol *s, int argc, t_atom *argv)
 {
-    outlet_list (x->x_outlet, s, argc, argv);
+    outlet_list (x->x_outlet, argc, argv);
 }
 
 static void voutlet_anything (t_voutlet *x, t_symbol *s, int argc, t_atom *argv)

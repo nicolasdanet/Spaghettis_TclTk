@@ -38,7 +38,7 @@ static void textfile_bang (t_qlist *x)
     if (size && IS_SYMBOL (first)) {
         outlet_anything (x->ql_outletLeft, GET_SYMBOL (first), size - 1, first + 1); 
     } else {
-        outlet_list (x->ql_outletLeft, NULL, size, size ? first : NULL);
+        outlet_list (x->ql_outletLeft, size, size ? first : NULL);
     }
     
     x->ql_indexOfMessage += 1;

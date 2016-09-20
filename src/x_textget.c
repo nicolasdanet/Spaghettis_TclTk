@@ -60,7 +60,7 @@ static void textget_float (t_textget *x, t_float f)
             
             ATOMS_ALLOCA (t, size);
             for (i = 0; i < size; i++) { buffer_getAtomAtIndex (b, start + i, t + i); }
-            outlet_list (x->x_outletLeft, NULL, size, t); 
+            outlet_list (x->x_outletLeft, size, t); 
             match = 1;
             ATOMS_FREEA (t, size);
             
@@ -71,13 +71,13 @@ static void textget_float (t_textget *x, t_float f)
             count = PD_MIN (count, size - field);
             ATOMS_ALLOCA (t, count);
             for (i = 0; i < count; i++) { buffer_getAtomAtIndex (b, start + field + i, t + i); }
-            outlet_list (x->x_outletLeft, NULL, count, t);
+            outlet_list (x->x_outletLeft, count, t);
             match = 1;
             ATOMS_FREEA (t, count);
         }
     } 
 
-    if (!match) { outlet_float (x->x_outletRight, 2); outlet_list (x->x_outletLeft, NULL, 0, NULL); }
+    if (!match) { outlet_float (x->x_outletRight, 2); outlet_list (x->x_outletLeft, 0, NULL); }
     //
     } else { error_undefined (sym_text__space__get, sym_text); }
 }
