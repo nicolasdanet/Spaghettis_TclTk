@@ -143,15 +143,7 @@ static void listinlet_list (t_listinlet *x, t_symbol *s, int argc, t_atom *argv)
 
 static void listinlet_anything (t_listinlet *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_atom *t = NULL;
-    
-    ATOMS_ALLOCA (t, argc + 1);
-    
-    atom_copyAtomsUnchecked (argc, argv, t + 1);
-    SET_SYMBOL (t, s);
-    listinlet_list (x, NULL, argc + 1, t);
-    
-    ATOMS_FREEA (t, argc + 1);
+    utils_anythingToList (cast_pd (x), listinlet_list, s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -63,15 +63,7 @@ static void listappend_list (t_listappend *x, t_symbol *s, int argc, t_atom *arg
 
 static void listappend_anything (t_listappend *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_atom *t = NULL;
-    
-    ATOMS_ALLOCA (t, argc + 1);
-    
-    atom_copyAtomsUnchecked (argc, argv, t + 1);
-    SET_SYMBOL (t, s);
-    listappend_list (x, NULL, argc + 1, t);
-    
-    ATOMS_FREEA (t, argc + 1);
+    utils_anythingToList (cast_pd (x), listappend_list, s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -16,6 +16,16 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void        utils_anythingToList                        (t_pd *x, 
+                                                            t_listmethod fn,
+                                                            t_symbol *s,
+                                                            int argc,
+                                                            t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_error     string_copy                                 (char *dest, size_t size, const char *src);
 t_error     string_add                                  (char *dest, size_t size, const char *src);
 t_error     string_append                               (char *dest, size_t size, const char *src, int n);
