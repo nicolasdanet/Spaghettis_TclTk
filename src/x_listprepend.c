@@ -19,7 +19,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class  *listprepend_class;
+static t_class  *listprepend_class;     /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -34,72 +34,59 @@ typedef struct _listprepend {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void listprepend_list(t_listprepend *x, t_symbol *s,
-    int argc, t_atom *argv)
+static void listprepend_list (t_listprepend *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_atom *outv;
-    int n, outc = x->x_listinlet.li_size + argc;
-    ATOMS_ALLOCA(outv, outc);
-    atom_copyAtomsUnchecked(argc, argv, outv + x->x_listinlet.li_size);
-    if (x->x_listinlet.li_hasPointer)
-    {
-        t_listinlet y;
-        listinlet_clone(&x->x_listinlet, &y);
-        listinlet_copyListUnchecked(&y, outv);
-        outlet_list(x->x_outlet, &s_list, outc, outv);
-        listinlet_clear(&y);
+    t_atom *t = NULL;
+    int count = listinlet_getSize (&x->x_listinlet) + argc;
+    
+    ATOMS_ALLOCA (t, count);
+    
+    atom_copyAtomsUnchecked (argc, argv, t + listinlet_getSize (&x->x_listinlet));
+    
+    if (listinlet_hasPointer (&x->x_listinlet)) {
+    
+        t_listinlet cache;
+        listinlet_init (&cache);
+        listinlet_clone (&x->x_listinlet, &cache);
+        listinlet_copyListUnchecked (&cache, t);
+        outlet_list (x->x_outlet, &s_list, count, t);
+        listinlet_clear (&cache);
+        
+    } else {
+    
+        listinlet_copyListUnchecked (&x->x_listinlet, t);
+        outlet_list (x->x_outlet, &s_list, count, t);
     }
-    else
-    {
-        listinlet_copyListUnchecked(&x->x_listinlet, outv);
-        outlet_list(x->x_outlet, &s_list, outc, outv);
-    }
-    ATOMS_FREEA(outv, outc);
+    
+    ATOMS_FREEA (t, count);
 }
 
-
-
-static void listprepend_anything(t_listprepend *x, t_symbol *s,
-    int argc, t_atom *argv)
+static void listprepend_anything (t_listprepend *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_atom *outv;
-    int n, outc = x->x_listinlet.li_size + argc + 1;
-    ATOMS_ALLOCA(outv, outc);
-    SET_SYMBOL(outv + x->x_listinlet.li_size, s);
-    atom_copyAtomsUnchecked(argc, argv, outv + x->x_listinlet.li_size + 1);
-    if (x->x_listinlet.li_hasPointer)
-    {
-        t_listinlet y;
-        listinlet_clone(&x->x_listinlet, &y);
-        listinlet_copyListUnchecked(&y, outv);
-        outlet_list(x->x_outlet, &s_list, outc, outv);
-        listinlet_clear(&y);
-    }
-    else
-    {
-        listinlet_copyListUnchecked(&x->x_listinlet, outv);
-        outlet_list(x->x_outlet, &s_list, outc, outv);
-    }
-    ATOMS_FREEA(outv, outc);
+    utils_anythingToList (cast_pd (x), listprepend_list, s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void *listprepend_new(t_symbol *s, int argc, t_atom *argv)
+void *listprepend_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_listprepend *x = (t_listprepend *)pd_new(listprepend_class);
-    listinlet_init(&x->x_listinlet);
-    listinlet_setList(&x->x_listinlet, argc, argv);
-    x->x_outlet = outlet_new(&x->x_obj, &s_list);
-    inlet_new(&x->x_obj, &x->x_listinlet.li_pd, 0, 0);
-    return (x);
+    t_listprepend *x = (t_listprepend *)pd_new (listprepend_class);
+    
+    listinlet_init (&x->x_listinlet);
+    listinlet_setList (&x->x_listinlet, argc, argv);
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_list);
+    
+    inlet_new (cast_object (x), cast_pd (&x->x_listinlet), NULL, NULL);
+    
+    return x;
 }
 
-static void listprepend_free(t_listprepend *x)
+static void listprepend_free (t_listprepend *x)
 {
-    listinlet_clear(&x->x_listinlet);
+    listinlet_clear (&x->x_listinlet);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -108,12 +95,22 @@ static void listprepend_free(t_listprepend *x)
 
 void listprepend_setup (void)
 {
-    listprepend_class = class_new(sym_list__space__prepend,
-        (t_newmethod)listprepend_new, (t_method)listprepend_free,
-        sizeof(t_listprepend), CLASS_DEFAULT, A_GIMME, 0);
-    class_addList(listprepend_class, listprepend_list);
-    class_addAnything(listprepend_class, listprepend_anything);
-    class_setHelpName(listprepend_class, &s_list);
+    t_class *c = NULL;
+    
+    c = class_new (sym_list__space__prepend,
+            (t_newmethod)listprepend_new,
+            (t_method)listprepend_free,
+            sizeof (t_listprepend),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+            
+    class_addList (c, listprepend_list);
+    class_addAnything (c, listprepend_anything);
+    
+    class_setHelpName (c, &s_list);
+    
+    listprepend_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
