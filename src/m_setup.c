@@ -112,7 +112,7 @@ void x_gui_setup            (void);
 void listinlet_setup        (void);
 void list_setup             (void);
 void listappend_setup       (void);
-void list_prepend_setup     (void);
+void listprepend_setup      (void);
 void list_split_setup       (void);
 void list_trim_setup        (void);
 void list_length_setup      (void);
@@ -208,7 +208,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     listinlet_setup();
     list_setup();
     listappend_setup();
-    list_prepend_setup();
+    listprepend_setup();
     list_split_setup();
     list_trim_setup();
     list_length_setup();
