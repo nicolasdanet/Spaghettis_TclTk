@@ -182,9 +182,11 @@ void        *arraymin_new                   (t_symbol *s, int argc, t_atom *argv
 
 void        listinlet_init                  (t_listinlet *x);
 void        listinlet_clear                 (t_listinlet *x);
+void        listinlet_setList               (t_listinlet *x, int argc, t_atom *argv);
+int         listinlet_getSize               (t_listinlet *x);
+int         listinlet_hasPointer            (t_listinlet *x);
+void        listinlet_copyListUnchecked     (t_listinlet *x, t_atom *a);
 void        listinlet_clone                 (t_listinlet *x, t_listinlet *newList);
-void        listinlet_copy                  (t_listinlet *x, t_atom *a);
-void        listinlet_list                  (t_listinlet *x, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

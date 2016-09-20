@@ -23,7 +23,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _messageresponder {
-    t_pd                mr_pd;                  /* MUST be the first. */
+    t_pd                mr_pd;                          /* MUST be the first. */
     t_outlet            *mr_outlet;
     } t_messageresponder;
 

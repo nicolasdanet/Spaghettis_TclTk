@@ -32,6 +32,12 @@ struct _listinletelement {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static void listinlet_list (t_listinlet *, t_symbol *, int, t_atom *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void listinlet_cachePointer (t_listinlet *x, int i, t_atom *a)
 {
     if (IS_POINTER (a)) {
@@ -51,6 +57,25 @@ void listinlet_init (t_listinlet *x)
     x->li_size        = 0;
     x->li_hasPointer  = 0;
     x->li_vector      = NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void listinlet_setList (t_listinlet *x, int argc, t_atom *argv)
+{
+    listinlet_list (x, NULL, argc, argv);
+}
+
+int listinlet_hasPointer (t_listinlet *x)
+{
+    return x->li_hasPointer;
+}
+
+int listinlet_getSize (t_listinlet *x)
+{
+    return x->li_size;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -89,7 +114,7 @@ void listinlet_clone (t_listinlet *x, t_listinlet *y)
     }
 }
 
-void listinlet_copy (t_listinlet *x, t_atom *a)
+void listinlet_copyListUnchecked (t_listinlet *x, t_atom *a)
 {
     int i;
     for (i = 0; i < x->li_size; i++) { a[i] = x->li_vector[i].le_atom; }
@@ -99,7 +124,7 @@ void listinlet_copy (t_listinlet *x, t_atom *a)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void listinlet_list (t_listinlet *x, t_symbol *s, int argc, t_atom *argv)
+static void listinlet_list (t_listinlet *x, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
     
@@ -124,7 +149,7 @@ static void listinlet_anything (t_listinlet *x, t_symbol *s, int argc, t_atom *a
     
     atom_copyAtomsUnchecked (argc, argv, t + 1);
     SET_SYMBOL (t, s);
-    listinlet_list (x, &s_list, argc + 1, t);
+    listinlet_list (x, NULL, argc + 1, t);
     
     ATOMS_FREEA (t, argc + 1);
 }

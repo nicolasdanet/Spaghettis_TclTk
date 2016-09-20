@@ -33,7 +33,7 @@ void *listprepend_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_list_prepend *x = (t_list_prepend *)pd_new(list_prepend_class);
     listinlet_init(&x->x_alist);
-    listinlet_list(&x->x_alist, 0, argc, argv);
+    listinlet_setList(&x->x_alist, argc, argv);
     outlet_new(&x->x_obj, &s_list);
     inlet_new(&x->x_obj, &x->x_alist.li_pd, 0, 0);
     return (x);
@@ -50,13 +50,13 @@ static void list_prepend_list(t_list_prepend *x, t_symbol *s,
     {
         t_listinlet y;
         listinlet_clone(&x->x_alist, &y);
-        listinlet_copy(&y, outv);
+        listinlet_copyListUnchecked(&y, outv);
         outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
         listinlet_clear(&y);
     }
     else
     {
-        listinlet_copy(&x->x_alist, outv);
+        listinlet_copyListUnchecked(&x->x_alist, outv);
         outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
     }
     ATOMS_FREEA(outv, outc);
@@ -76,13 +76,13 @@ static void list_prepend_anything(t_list_prepend *x, t_symbol *s,
     {
         t_listinlet y;
         listinlet_clone(&x->x_alist, &y);
-        listinlet_copy(&y, outv);
+        listinlet_copyListUnchecked(&y, outv);
         outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
         listinlet_clear(&y);
     }
     else
     {
-        listinlet_copy(&x->x_alist, outv);
+        listinlet_copyListUnchecked(&x->x_alist, outv);
         outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
     }
     ATOMS_FREEA(outv, outc);
