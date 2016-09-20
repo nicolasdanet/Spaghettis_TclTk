@@ -31,6 +31,17 @@ struct _listinletelement {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static void listinlet_cachePointerAtIndex (t_listinlet *x, int i, t_gpointer *gp)
+{
+    gpointer_setByCopy (gp, &x->li_vector[i].le_gpointer);
+    
+    SET_POINTER (&x->li_vector[i].le_atom, &x->li_vector[i].le_gpointer);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void listinlet_init (t_listinlet *x)
 {
     x->li_pd          = listinlet_class;
@@ -49,9 +60,7 @@ void listinlet_clear (t_listinlet *x)
     
     for (i = 0; i < x->li_size; i++) {
     //
-    if (IS_POINTER (&x->li_vector[i].le_atom)) { 
-        gpointer_unset (GET_POINTER (&x->li_vector[i].le_atom));
-    }
+    if (IS_POINTER (&x->li_vector[i].le_atom)) { gpointer_unset (&x->li_vector[i].le_gpointer); }
     //
     }
     
@@ -71,9 +80,8 @@ void listinlet_clone (t_listinlet *x, t_listinlet *y)
     //
     y->li_vector[i].le_atom = x->li_vector[i].le_atom;
         
-    if (IS_POINTER (&y->li_vector[i].le_atom)) {
-        gpointer_setByCopy (&x->li_vector[i].le_gpointer, &y->li_vector[i].le_gpointer);
-        SET_POINTER (&y->li_vector[i].le_atom, &y->li_vector[i].le_gpointer);
+    if (IS_POINTER (&x->li_vector[i].le_atom)) {
+        listinlet_cachePointerAtIndex (y, i, &x->li_vector[i].le_gpointer);
     }
     //
     }
