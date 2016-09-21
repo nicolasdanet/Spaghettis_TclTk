@@ -45,7 +45,7 @@ void guiconnect_release (t_guiconnect *x, double timeOut)
     if (!x->x_bound) { pd_free (cast_pd (x)); }
     else {
         x->x_owner = NULL;
-        x->x_clock = clock_new (x, (t_method)guiconnect_task);
+        x->x_clock = clock_new ((void *)x, (t_method)guiconnect_task);
         clock_delay (x->x_clock, PD_MAX (0.0, timeOut));
     }    
 }

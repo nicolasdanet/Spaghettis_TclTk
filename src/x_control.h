@@ -69,6 +69,12 @@ typedef struct _listinlet {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define TIME_DEFAULT_DELAY          1000.0
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #define TEXTCLIENT_ASPOINTER(x)     ((x)->tc_templateIdentifier)
 #define TEXTCLIENT_GETPOINTER(x)    &((x)->tc_gpointer)
 #define TEXTCLIENT_GETNAME(x)       &((x)->tc_name)

@@ -213,7 +213,7 @@ void message_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     x->m_responder.mr_pd        = messageresponder_class;
     x->m_responder.mr_outlet    = outlet_new (cast_object (x), &s_anything);
     x->m_owner                  = glist;
-    x->m_clock                  = clock_new (x, (t_method)message_taskTick);
+    x->m_clock                  = clock_new ((void *)x, (t_method)message_taskTick);
     
     if (argc > 1) {                                                             /* File creation. */
     

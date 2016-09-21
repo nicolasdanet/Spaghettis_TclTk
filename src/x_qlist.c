@@ -242,7 +242,7 @@ static void *qlist_new (void)
     x->ql_waitCount      = 0;
     x->ql_outletLeft     = outlet_new (cast_object (x), &s_list);
     x->ql_outletRight    = outlet_new (cast_object (x), &s_bang);
-    x->ql_clock          = clock_new (x, (t_method)qlist_task);
+    x->ql_clock          = clock_new ((void *)x, (t_method)qlist_task);
 
     return x;
 }

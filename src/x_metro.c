@@ -14,6 +14,7 @@
 #include "m_macros.h"
 #include "s_system.h"
 #include "g_graphics.h"
+#include "x_control.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -30,7 +31,7 @@ typedef struct _metro {
     t_outlet    *x_outlet;
     t_clock     *x_clock;
     } t_metro;
-    
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -41,47 +42,14 @@ static void metro_float (t_metro *, t_float);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void metro_tick(t_metro *x)
+static void metro_task (t_metro *x)
 {
     x->x_hit = 0;
-    outlet_bang(x->x_obj.te_outlet);
-    if (!x->x_hit) clock_delay(x->x_clock, x->x_delay);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void metro_bang(t_metro *x)
-{
-    metro_float(x, 1);
-}
-
-static void metro_float(t_metro *x, t_float f)
-{
-    if (f != 0) metro_tick(x);
-    else clock_unset(x->x_clock);
-    x->x_hit = 1;
-}
-
-static void metro_ft1(t_metro *x, t_float g)
-{
-    if (g <= 0) /* as of 0.45, we're willing to try any positive time value */
-        g = 1;  /* but default to 1 (arbitrary and probably not so good) */
-    x->x_delay = g;
-}
-
-static void metro_stop(t_metro *x)
-{
-    metro_float(x, 0);
-}
-
-static void metro_tempo(t_metro *x, t_float f, t_symbol *unitName)
-{
-    t_error err = clock_setUnitParsed (x->x_clock, f, unitName);
     
-    if (err) {
-        error_invalid (sym_delay, sym_unit); 
+    outlet_bang (x->x_outlet);
+    
+    if (!x->x_hit) { 
+        clock_delay (x->x_clock, x->x_delay);
     }
 }
 
@@ -89,22 +57,67 @@ static void metro_tempo(t_metro *x, t_float f, t_symbol *unitName)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *metro_new (t_symbol *unitname, t_float f, t_float tempo)
+static void metro_bang (t_metro *x)
 {
-    t_metro *x = (t_metro *)pd_new(metro_class);
-    metro_ft1(x, f);
-    x->x_hit = 0;
-    x->x_clock = clock_new(x, (t_method)metro_tick);
-    outlet_new(&x->x_obj, sym_bang);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, sym_float, sym_ft1);
-    if (tempo != 0)
-        metro_tempo(x, tempo, unitname);
-    return (x);
+    metro_float (x, 1.0);
 }
 
-static void metro_free(t_metro *x)
+static void metro_float (t_metro *x, t_float f)
 {
-    clock_free(x->x_clock);
+    if (f != 0.0) { metro_task (x); }
+    else {
+        clock_unset (x->x_clock);
+    }
+    
+    x->x_hit = 1;
+}
+
+static void metro_ft1 (t_metro *x, t_float f)
+{
+    if (f <= 0.0) { error_invalid (sym_metro, sym_delay); }
+    else {
+        x->x_delay = (double)f;
+    }
+}
+
+static void metro_stop (t_metro *x)
+{
+    metro_float (x, 0.0);
+}
+
+static void metro_unit (t_metro *x, t_float f, t_symbol *unitName)
+{
+    t_error err = clock_setUnitParsed (x->x_clock, f, unitName);
+    
+    if (err) {
+        error_invalid (sym_metro, sym_unit); 
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *metro_new (t_float f, t_float unit, t_symbol *unitName)
+{
+    t_metro *x = (t_metro *)pd_new (metro_class);
+    
+    x->x_hit    = 0;
+    x->x_clock  = clock_new ((void *)x, (t_method)metro_task);
+    x->x_outlet = outlet_new (cast_object (x), sym_bang);
+    
+    inlet_new (cast_object (x), cast_pd (x), sym_float, sym_ft1);
+    
+    metro_ft1 (x, (f <= 0.0) ? TIME_DEFAULT_DELAY : f);
+    
+    if (unitName != &s_) { metro_unit (x, unit, unitName); }
+    
+    return x;
+}
+
+static void metro_free (t_metro *x)
+{
+    clock_free (x->x_clock);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -130,12 +143,11 @@ void metro_setup (void)
     
     class_addMethod (c, (t_method)metro_ft1,    sym_ft1,    A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)metro_stop,   sym_stop,   A_NULL);
-    class_addMethod (c, (t_method)metro_tempo,  sym_unit,   A_FLOAT, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)metro_unit,   sym_unit,   A_FLOAT, A_SYMBOL, A_NULL);
 
-    
     #if PD_WITH_LEGACY 
     
-    class_addMethod (c, (t_method)metro_tempo,  sym_tempo,  A_FLOAT, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)metro_unit,   sym_tempo,  A_FLOAT, A_SYMBOL, A_NULL);
     
     #endif
         

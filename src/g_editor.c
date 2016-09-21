@@ -914,7 +914,7 @@ static t_editor *editor_new (t_glist *owner)
     string_sprintf (t, PD_STRING, ".x%lx", owner);
     
     x->e_buffer     = buffer_new();
-    x->e_clock      = clock_new (owner, (t_method)canvas_taskDisplace);
+    x->e_clock      = clock_new ((void *)owner, (t_method)canvas_taskDisplace);
     x->e_guiconnect = guiconnect_new (cast_pd (owner), gensym (t));
     
     return x;

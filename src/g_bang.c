@@ -533,8 +533,8 @@ static void *bng_new (t_symbol *s, int argc, t_atom *argv)
     bng_setFlashTimes (x, flashBreak, flashHold);
     
     x->x_outlet     = outlet_new (cast_object (x), &s_bang);
-    x->x_clockHold  = clock_new (x, (t_method)bng_taskHold);
-    x->x_clockBreak = clock_new (x, (t_method)bng_taskBreak);
+    x->x_clockHold  = clock_new ((void *)x, (t_method)bng_taskHold);
+    x->x_clockBreak = clock_new ((void *)x, (t_method)bng_taskBreak);
     
     return x;
 }
