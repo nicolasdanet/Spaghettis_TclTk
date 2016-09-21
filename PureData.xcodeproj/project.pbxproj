@@ -141,7 +141,6 @@
 		378972671C4F716800263434 /* x_net.c in Sources */ = {isa = PBXBuildFile; fileRef = 3789720F1C4F716800263434 /* x_net.c */; };
 		378972681C4F716800263434 /* x_scalar.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972101C4F716800263434 /* x_scalar.c */; };
 		378972691C4F716800263434 /* x_text.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972111C4F716800263434 /* x_text.c */; };
-		3789726A1C4F716800263434 /* x_time.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972121C4F716800263434 /* x_time.c */; };
 		378B47391C6C660B004099AA /* s_file.c in Sources */ = {isa = PBXBuildFile; fileRef = 378B47381C6C660B004099AA /* s_file.c */; };
 		378E4B4B1D8FB07000DFFDC3 /* x_listfromsymbol.c in Sources */ = {isa = PBXBuildFile; fileRef = 378E4B4A1D8FB07000DFFDC3 /* x_listfromsymbol.c */; };
 		378E4B741D8FB1C300DFFDC3 /* x_listlength.c in Sources */ = {isa = PBXBuildFile; fileRef = 378E4B731D8FB1C300DFFDC3 /* x_listlength.c */; };
@@ -193,6 +192,8 @@
 		37D724771D92768600408D24 /* x_pipe.c in Sources */ = {isa = PBXBuildFile; fileRef = 37D724761D92768600408D24 /* x_pipe.c */; };
 		37D724A01D92788800408D24 /* x_timer.c in Sources */ = {isa = PBXBuildFile; fileRef = 37D7249F1D92788800408D24 /* x_timer.c */; };
 		37D724D41D9279A800408D24 /* x_line.c in Sources */ = {isa = PBXBuildFile; fileRef = 37D724D31D9279A800408D24 /* x_line.c */; };
+		37D724FC1D927A9A00408D24 /* x_delay.c in Sources */ = {isa = PBXBuildFile; fileRef = 37D724FB1D927A9A00408D24 /* x_delay.c */; };
+		37D724FE1D927AAE00408D24 /* x_metro.c in Sources */ = {isa = PBXBuildFile; fileRef = 37D724FD1D927AAE00408D24 /* x_metro.c */; };
 		37DFBC5D1D2937BA00FCDEEE /* g_guiconnect.c in Sources */ = {isa = PBXBuildFile; fileRef = 37DFBC5B1D2937BA00FCDEEE /* g_guiconnect.c */; };
 		37DFBC5E1D2937BA00FCDEEE /* g_guistub.c in Sources */ = {isa = PBXBuildFile; fileRef = 37DFBC5C1D2937BA00FCDEEE /* g_guistub.c */; };
 		37E0BC371C53E0B700114412 /* h_pathlist.c in Sources */ = {isa = PBXBuildFile; fileRef = 37E0BC361C53E0B700114412 /* h_pathlist.c */; };
@@ -449,7 +450,6 @@
 		3789720F1C4F716800263434 /* x_net.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_net.c; path = src/x_net.c; sourceTree = "<group>"; };
 		378972101C4F716800263434 /* x_scalar.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_scalar.c; path = src/x_scalar.c; sourceTree = "<group>"; };
 		378972111C4F716800263434 /* x_text.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_text.c; path = src/x_text.c; sourceTree = "<group>"; };
-		378972121C4F716800263434 /* x_time.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_time.c; path = src/x_time.c; sourceTree = "<group>"; };
 		378B47381C6C660B004099AA /* s_file.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_file.c; path = src/s_file.c; sourceTree = "<group>"; };
 		378E4B4A1D8FB07000DFFDC3 /* x_listfromsymbol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_listfromsymbol.c; path = src/x_listfromsymbol.c; sourceTree = "<group>"; };
 		378E4B731D8FB1C300DFFDC3 /* x_listlength.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_listlength.c; path = src/x_listlength.c; sourceTree = "<group>"; };
@@ -496,6 +496,8 @@
 		37D724761D92768600408D24 /* x_pipe.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_pipe.c; path = src/x_pipe.c; sourceTree = "<group>"; };
 		37D7249F1D92788800408D24 /* x_timer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_timer.c; path = src/x_timer.c; sourceTree = "<group>"; };
 		37D724D31D9279A800408D24 /* x_line.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_line.c; path = src/x_line.c; sourceTree = "<group>"; };
+		37D724FB1D927A9A00408D24 /* x_delay.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_delay.c; path = src/x_delay.c; sourceTree = "<group>"; };
+		37D724FD1D927AAE00408D24 /* x_metro.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_metro.c; path = src/x_metro.c; sourceTree = "<group>"; };
 		37DFBC5B1D2937BA00FCDEEE /* g_guiconnect.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_guiconnect.c; path = src/g_guiconnect.c; sourceTree = "<group>"; };
 		37DFBC5C1D2937BA00FCDEEE /* g_guistub.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_guistub.c; path = src/g_guistub.c; sourceTree = "<group>"; };
 		37E0BC361C53E0B700114412 /* h_pathlist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = h_pathlist.c; path = src/h_pathlist.c; sourceTree = "<group>"; };
@@ -1014,7 +1016,8 @@
 		37D724561D92757C00408D24 /* Time */ = {
 			isa = PBXGroup;
 			children = (
-				378972121C4F716800263434 /* x_time.c */,
+				37D724FD1D927AAE00408D24 /* x_metro.c */,
+				37D724FB1D927A9A00408D24 /* x_delay.c */,
 				37D724D31D9279A800408D24 /* x_line.c */,
 				37D7249F1D92788800408D24 /* x_timer.c */,
 				37D724761D92768600408D24 /* x_pipe.c */,
@@ -1270,7 +1273,6 @@
 				378972671C4F716800263434 /* x_net.c in Sources */,
 				378972681C4F716800263434 /* x_scalar.c in Sources */,
 				378972691C4F716800263434 /* x_text.c in Sources */,
-				3789726A1C4F716800263434 /* x_time.c in Sources */,
 				37E0BC371C53E0B700114412 /* h_pathlist.c in Sources */,
 				37D287111C54F1D70041C5C2 /* s_font.c in Sources */,
 				37C76DA51C5CF20D00AE4CBF /* s_handlers.c in Sources */,
@@ -1356,6 +1358,8 @@
 				37D724771D92768600408D24 /* x_pipe.c in Sources */,
 				37D724A01D92788800408D24 /* x_timer.c in Sources */,
 				37D724D41D9279A800408D24 /* x_line.c in Sources */,
+				37D724FC1D927A9A00408D24 /* x_delay.c in Sources */,
+				37D724FE1D927AAE00408D24 /* x_metro.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
