@@ -19,39 +19,68 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pd *pd_newest;
+static t_class *listfromsymbol_class;       /* Shared. */
 
-t_class *list_fromsymbol_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct _list_fromsymbol
+typedef struct _listfromsymbol {
+    t_object    x_obj;                      /* Must be the first. */
+    t_outlet    *x_outlet;
+    } t_listfromsymbol;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static void listfromsymbol_symbol (t_listfromsymbol *x, t_symbol *s)
 {
-    t_object x_obj;
-} t_list_fromsymbol;
-
-void *listfromsymbol_new(t_symbol *s, int argc, t_atom *argv)
-{
-    t_list_fromsymbol *x = (t_list_fromsymbol *)pd_new(list_fromsymbol_class);
-    outlet_new(&x->x_obj, &s_list);
-    return (x);
+    t_atom *t = NULL;
+    int count = strlen (s->s_name);
+    int n;
+        
+    ATOMS_ALLOCA (t, count);
+    
+    for (n = 0; n < count; n++) { SET_FLOAT (t + n, (unsigned char)s->s_name[n]); }
+    
+    outlet_list (x->x_outlet, count, t);
+    
+    ATOMS_FREEA (t, count);
 }
 
-static void list_fromsymbol_symbol(t_list_fromsymbol *x, t_symbol *s)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void *listfromsymbol_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_atom *outv;
-    int n, outc = strlen(s->s_name);
-    ATOMS_ALLOCA(outv, outc);
-    for (n = 0; n < outc; n++)
-        SET_FLOAT(outv + n, (unsigned char)s->s_name[n]);
-    outlet_list(x->x_obj.te_outlet, outc, outv);
-    ATOMS_FREEA(outv, outc);
+    t_listfromsymbol *x = (t_listfromsymbol *)pd_new (listfromsymbol_class);
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_list);
+    
+    return x;
 }
 
-void listfromsymbol_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void listfromsymbol_setup (void)
 {
-    list_fromsymbol_class = class_new(sym_list__space__fromsymbol,
-        (t_newmethod)listfromsymbol_new, 0, sizeof(t_list_fromsymbol), CLASS_DEFAULT, A_GIMME, 0);
-    class_addSymbol(list_fromsymbol_class, list_fromsymbol_symbol);
-    class_setHelpName(list_fromsymbol_class, &s_list);
+    t_class *c = NULL;
+    
+    c = class_new (sym_list__space__fromsymbol,
+            (t_newmethod)listfromsymbol_new,
+            NULL,
+            sizeof (t_listfromsymbol),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+            
+    class_addSymbol (c, listfromsymbol_symbol);
+    
+    class_setHelpName (c, &s_list);
+    
+    listfromsymbol_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

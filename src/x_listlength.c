@@ -12,7 +12,6 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "m_alloca.h"
 #include "g_graphics.h"
 #include "x_control.h"
 
@@ -25,7 +24,7 @@ static t_class *listlength_class;      /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _listlength {
-    t_object    x_obj;
+    t_object    x_obj;                  /* Must be the first. */
     t_outlet    *x_outlet;
     } t_listlength;
 

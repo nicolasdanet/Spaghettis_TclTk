@@ -12,44 +12,74 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "m_alloca.h"
 #include "g_graphics.h"
 #include "x_control.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_class *list_tosymbol_class;
+static t_class *listtosymbol_class;             /* Shared. */
 
-typedef struct _list_tosymbol
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _listtosymbol {
+    t_object    x_obj;                          /* Must be the first. */
+    t_outlet    *x_outlet;
+    } t_listtosymbol;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void listtosymbol_list (t_listtosymbol *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_object x_obj;
-} t_list_tosymbol;
+    char *t = (char *)PD_MEMORY_GET ((argc + 1) * sizeof (char));
+    
+    int i;
+    for (i = 0; i < argc; i++) { t[i] = (char)atom_getFloatAtIndex (i, argc, argv); }
+
+    PD_ASSERT (t[argc] == 0);
+    
+    outlet_symbol (x->x_outlet, gensym (t));
+    
+    PD_MEMORY_FREE (t);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void *listtosymbol_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_list_tosymbol *x = (t_list_tosymbol *)pd_new(list_tosymbol_class);
-    outlet_new(&x->x_obj, &s_symbol);
-    return (x);
+    t_listtosymbol *x = (t_listtosymbol *)pd_new (listtosymbol_class);
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_symbol);
+    
+    return x;
 }
 
-static void list_tosymbol_list(t_list_tosymbol *x, t_symbol *s,
-    int argc, t_atom *argv)
-{
-    int i;
-    char *str = alloca(argc + 1);
-    for (i = 0; i < argc; i++)
-        str[i] = (char)atom_getFloatAtIndex(i, argc, argv);
-    str[argc] = 0;
-    outlet_symbol(x->x_obj.te_outlet, gensym (str));
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-void listtosymbol_setup(void)
+void listtosymbol_setup (void)
 {
-    list_tosymbol_class = class_new(sym_list__space__tosymbol,
-        (t_newmethod)listtosymbol_new, 0, sizeof(t_list_tosymbol), CLASS_DEFAULT, A_GIMME, 0);
-    class_addList(list_tosymbol_class, list_tosymbol_list);
-    class_setHelpName(list_tosymbol_class, &s_list);
+    t_class *c = NULL;
+    
+    c = class_new (sym_list__space__tosymbol,
+            (t_newmethod)listtosymbol_new,
+            NULL,
+            sizeof (t_listtosymbol),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+            
+    class_addList (c, listtosymbol_list);
+    
+    class_setHelpName (c, &s_list);
+    
+    listtosymbol_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
