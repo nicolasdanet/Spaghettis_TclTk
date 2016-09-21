@@ -27,7 +27,8 @@ static t_class *metro_class;            /* Shared. */
 typedef struct _metro {
     t_object    x_obj;                  /* Must be the first. */
     double      x_delay;
-    int         x_hit;
+    int         x_reentrantStart;
+    int         x_reentrantStop;
     t_outlet    *x_outlet;
     t_clock     *x_clock;
     } t_metro;
@@ -44,13 +45,22 @@ static void metro_float (t_metro *, t_float);
 
 static void metro_task (t_metro *x)
 {
-    x->x_hit = 0;
+    x->x_reentrantStop  = 0;
     
+    if (!x->x_reentrantStart) {
+    //
+    x->x_reentrantStart = 1;
     outlet_bang (x->x_outlet);
-    
-    if (!x->x_hit) { 
-        clock_delay (x->x_clock, x->x_delay);
+    //
     }
+    
+    if (!x->x_reentrantStop) { 
+    //
+    clock_delay (x->x_clock, x->x_delay);
+    //
+    }
+    
+    x->x_reentrantStart = 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -69,14 +79,14 @@ static void metro_float (t_metro *x, t_float f)
         clock_unset (x->x_clock);
     }
     
-    x->x_hit = 1;
+    x->x_reentrantStop = 1;
 }
 
 static void metro_ft1 (t_metro *x, t_float f)
 {
-    if (f <= 0.0) { error_invalid (sym_metro, sym_delay); }
+    if (f < 0.0) { error_invalid (sym_metro, sym_delay); }
     else {
-        x->x_delay = (double)f;
+        x->x_delay = (double)((f == 0.0) ? TIME_DEFAULT_DELAY : f);
     }
 }
 
@@ -102,13 +112,15 @@ static void *metro_new (t_float f, t_float unit, t_symbol *unitName)
 {
     t_metro *x = (t_metro *)pd_new (metro_class);
     
-    x->x_hit    = 0;
+    x->x_reentrantStart = 0;
+    x->x_reentrantStop  = 0;
+    
     x->x_clock  = clock_new ((void *)x, (t_method)metro_task);
     x->x_outlet = outlet_new (cast_object (x), sym_bang);
     
     inlet_new (cast_object (x), cast_pd (x), sym_float, sym_ft1);
     
-    metro_ft1 (x, (f <= 0.0) ? TIME_DEFAULT_DELAY : f);
+    metro_ft1 (x, f);
     
     if (unitName != &s_) { metro_unit (x, unit, unitName); }
     
