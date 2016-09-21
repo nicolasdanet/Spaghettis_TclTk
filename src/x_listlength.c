@@ -19,42 +19,64 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pd *pd_newest;
+static t_class *listlength_class;      /* Shared. */
 
-t_class *list_length_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct _list_length
+typedef struct _listlength {
+    t_object    x_obj;
+    t_outlet    *x_outlet;
+    } t_listlength;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static void listlength_list (t_listlength *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_object x_obj;
-} t_list_length;
-
-void *listlength_new(t_symbol *s, int argc, t_atom *argv)
-{
-    t_list_length *x = (t_list_length *)pd_new(list_length_class);
-    outlet_new(&x->x_obj, &s_float);
-    return (x);
+    outlet_float (x->x_outlet, (t_float)argc);
 }
 
-static void list_length_list(t_list_length *x, t_symbol *s,
-    int argc, t_atom *argv)
+static void listlength_anything (t_listlength *x, t_symbol *s, int argc, t_atom *argv)
 {
-    outlet_float(x->x_obj.te_outlet, (t_float)argc);
+    outlet_float (x->x_outlet, (t_float)(argc + 1));
 }
 
-static void list_length_anything(t_list_length *x, t_symbol *s,
-    int argc, t_atom *argv)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void *listlength_new (t_symbol *s, int argc, t_atom *argv)
 {
-    outlet_float(x->x_obj.te_outlet, (t_float)argc+1);
+    t_listlength *x = (t_listlength *)pd_new (listlength_class);
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    
+    return x;
 }
 
-void listlength_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void listlength_setup (void)
 {
-    list_length_class = class_new(sym_list__space__length,
-        (t_newmethod)listlength_new, 0,
-        sizeof(t_list_length), CLASS_DEFAULT, A_GIMME, 0);
-    class_addList(list_length_class, list_length_list);
-    class_addAnything(list_length_class, list_length_anything);
-    class_setHelpName(list_length_class, &s_list);
+    t_class *c = NULL;
+    
+    c = class_new (sym_list__space__length,
+            (t_newmethod)listlength_new,
+            NULL,
+            sizeof (t_listlength),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+        
+    class_addList (c, listlength_list);
+    class_addAnything (c, listlength_anything);
+    
+    class_setHelpName (c, &s_list);
+    
+    listlength_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
