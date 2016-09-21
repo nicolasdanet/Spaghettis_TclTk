@@ -14,48 +14,67 @@
 #include "m_macros.h"
 #include "s_system.h"
 #include "g_graphics.h"
+#include "x_control.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* -------------------------- delay ------------------------------ */
-static t_class *delay_class;
+static t_class *delay_class;        /* Shared. */
 
-typedef struct _delay
-{
-    t_object x_obj;
-    t_clock *x_clock;
-    double x_deltime;
-} t_delay;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static void delay_ft1(t_delay *x, t_float g)
+typedef struct _delay {
+    t_object    x_obj;              /* Must be the first. */
+    double      x_delay;
+    t_outlet    *x_outlet;
+    t_clock     *x_clock;
+    } t_delay;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void delay_ft1 (t_delay *, t_float);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void delay_task (t_delay *x)
 {
-    if (g < 0) g = 0;
-    x->x_deltime = g;
+    outlet_bang (x->x_outlet);
 }
 
-static void delay_tick(t_delay *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void delay_bang (t_delay *x)
 {
-    outlet_bang(x->x_obj.te_outlet);
+    clock_delay (x->x_clock, x->x_delay);
 }
 
-static void delay_bang(t_delay *x)
+static void delay_float (t_delay *x, t_float f)
 {
-    clock_delay(x->x_clock, x->x_deltime);
+    delay_ft1 (x, f);
+    delay_bang (x);
 }
 
-static void delay_stop(t_delay *x)
+static void delay_ft1 (t_delay *x, t_float f)
 {
-    clock_unset(x->x_clock);
+    if (f < 0.0) { error_invalid (sym_delay, sym_delay); }
+    else {
+        x->x_delay = (double)((f == 0.0) ? TIME_DEFAULT_DELAY : f);
+    }
 }
 
-static void delay_float(t_delay *x, t_float f)
+static void delay_stop (t_delay *x)
 {
-    delay_ft1(x, f);
-    delay_bang(x);
+    clock_unset (x->x_clock);
 }
 
-static void delay_tempo(t_delay *x, t_float f, t_symbol *unitName)
+static void delay_unit (t_delay *x, t_float f, t_symbol *unitName)
 {
     t_error err = clock_setUnitParsed (x->x_clock, f, unitName);
     
@@ -64,39 +83,65 @@ static void delay_tempo(t_delay *x, t_float f, t_symbol *unitName)
     }
 }
 
-static void delay_free(t_delay *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *delay_new (t_float f, t_float unit, t_symbol *unitName)
 {
-    clock_free(x->x_clock);
+    t_delay *x = (t_delay *)pd_new (delay_class);
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_bang);
+    x->x_clock  = clock_new ((void *)x, (t_method)delay_task);
+    
+    inlet_new (cast_object (x), cast_pd (x), sym_float, sym_ft1);
+    
+    delay_ft1 (x, f);
+    
+    if (unit != 0.0) { delay_unit (x, unit, unitName); }
+    
+    return x;
 }
 
-static void *delay_new(t_symbol *unitname, t_float f, t_float tempo)
+static void delay_free (t_delay *x)
 {
-    t_delay *x = (t_delay *)pd_new(delay_class);
-    delay_ft1(x, f);
-    x->x_clock = clock_new(x, (t_method)delay_tick);
-    outlet_new(&x->x_obj, sym_bang);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, sym_float, sym_ft1);
-    if (tempo != 0)
-        delay_tempo(x, tempo, unitname);
-    return (x);
+    clock_free (x->x_clock);
 }
 
-void delay_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void delay_setup (void)
 {
-    delay_class = class_new(sym_delay, (t_newmethod)delay_new,
-        (t_method)delay_free, sizeof(t_delay), 0,
-            A_DEFFLOAT, A_DEFFLOAT, A_DEFSYMBOL, 0);
-    class_addCreator((t_newmethod)delay_new, sym_del,
-        A_DEFFLOAT, A_DEFFLOAT, A_DEFSYMBOL, 0);
-    class_addBang(delay_class, delay_bang);
-    class_addMethod(delay_class, (t_method)delay_stop, sym_stop, 0);
-    class_addMethod(delay_class, (t_method)delay_ft1,
-        sym_ft1, A_FLOAT, 0);
-    class_addMethod(delay_class, (t_method)delay_tempo,
-        sym_tempo, A_FLOAT, A_SYMBOL, 0); /* LEGACY !!! */
-    class_addMethod(delay_class, (t_method)delay_tempo,
-        sym_unit, A_FLOAT, A_SYMBOL, 0);
-    class_addFloat(delay_class, (t_method)delay_float);
+    t_class *c = NULL;
+    
+    c = class_new (sym_delay,
+            (t_newmethod)delay_new,
+            (t_method)delay_free,
+            sizeof (t_delay),
+            CLASS_DEFAULT,
+            A_DEFFLOAT,
+            A_DEFFLOAT,
+            A_DEFSYMBOL,
+            A_NULL);
+            
+    class_addCreator ((t_newmethod)delay_new, sym_del, A_DEFFLOAT, A_DEFFLOAT, A_DEFSYMBOL, A_NULL);
+    
+    class_addBang (c, delay_bang);
+    class_addFloat (c, delay_float);
+        
+    class_addMethod (c, (t_method)delay_ft1,    sym_ft1,    A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)delay_stop,   sym_stop,   A_NULL);
+    class_addMethod (c, (t_method)delay_unit,   sym_unit,   A_FLOAT, A_SYMBOL, A_NULL);
+    
+    #if PD_WITH_LEGACY
+    
+    class_addMethod (c, (t_method)delay_unit,   sym_tempo,  A_FLOAT, A_SYMBOL, A_NULL);
+        
+    #endif
+    
+    delay_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
