@@ -151,6 +151,8 @@
 #include "x_listlength.c"
 #include "x_listfromsymbol.c"
 #include "x_listtosymbol.c"
+#include "x_time.c"
+#include "x_pipe.c"
 
 /* DSP. */
 

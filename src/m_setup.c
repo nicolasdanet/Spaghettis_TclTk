@@ -85,6 +85,7 @@ void x_acoustics_setup      (void);
 void x_interface_setup      (void);
 void x_connective_setup     (void);
 void x_time_setup           (void);
+void pipe_setup             (void);
 void x_arithmetic_setup     (void);
 void arraydefine_setup      (void);
 void table_setup            (void);
@@ -181,6 +182,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     x_interface_setup();
     x_connective_setup();
     x_time_setup();
+    pipe_setup();
     x_arithmetic_setup();
     arraydefine_setup();
     table_setup();
