@@ -18,30 +18,43 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static t_class *metro_class;            /* Shared. */
 
-/* -------------------------- metro ------------------------------ */
-static t_class *metro_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct _metro
-{
-    t_object x_obj;
-    t_clock *x_clock;
-    double x_deltime;
-    int x_hit;
-} t_metro;
+typedef struct _metro {
+    t_object    x_obj;                  /* Must be the first. */
+    double      x_delay;
+    int         x_hit;
+    t_outlet    *x_outlet;
+    t_clock     *x_clock;
+    } t_metro;
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void metro_ft1(t_metro *x, t_float g)
-{
-    if (g <= 0) /* as of 0.45, we're willing to try any positive time value */
-        g = 1;  /* but default to 1 (arbitrary and probably not so good) */
-    x->x_deltime = g;
-}
+static void metro_float (t_metro *, t_float);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void metro_tick(t_metro *x)
 {
     x->x_hit = 0;
     outlet_bang(x->x_obj.te_outlet);
-    if (!x->x_hit) clock_delay(x->x_clock, x->x_deltime);
+    if (!x->x_hit) clock_delay(x->x_clock, x->x_delay);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void metro_bang(t_metro *x)
+{
+    metro_float(x, 1);
 }
 
 static void metro_float(t_metro *x, t_float f)
@@ -51,9 +64,11 @@ static void metro_float(t_metro *x, t_float f)
     x->x_hit = 1;
 }
 
-static void metro_bang(t_metro *x)
+static void metro_ft1(t_metro *x, t_float g)
 {
-    metro_float(x, 1);
+    if (g <= 0) /* as of 0.45, we're willing to try any positive time value */
+        g = 1;  /* but default to 1 (arbitrary and probably not so good) */
+    x->x_delay = g;
 }
 
 static void metro_stop(t_metro *x)
@@ -70,12 +85,11 @@ static void metro_tempo(t_metro *x, t_float f, t_symbol *unitName)
     }
 }
 
-static void metro_free(t_metro *x)
-{
-    clock_free(x->x_clock);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void *metro_new(t_symbol *unitname, t_float f, t_float tempo)
+static void *metro_new (t_symbol *unitname, t_float f, t_float tempo)
 {
     t_metro *x = (t_metro *)pd_new(metro_class);
     metro_ft1(x, f);
@@ -88,20 +102,44 @@ static void *metro_new(t_symbol *unitname, t_float f, t_float tempo)
     return (x);
 }
 
-void metro_setup(void)
+static void metro_free(t_metro *x)
 {
-    metro_class = class_new(sym_metro, (t_newmethod)metro_new,
-        (t_method)metro_free, sizeof(t_metro), 0,
-            A_DEFFLOAT, A_DEFFLOAT, A_DEFSYMBOL, 0);
-    class_addBang(metro_class, metro_bang);
-    class_addMethod(metro_class, (t_method)metro_stop, sym_stop, 0);
-    class_addMethod(metro_class, (t_method)metro_ft1, sym_ft1,
-        A_FLOAT, 0);
-    class_addMethod(metro_class, (t_method)metro_tempo,
-        sym_tempo, A_FLOAT, A_SYMBOL, 0); /* LEGACY !!! */
-    class_addMethod(metro_class, (t_method)metro_tempo,
-        sym_unit, A_FLOAT, A_SYMBOL, 0);
-    class_addFloat(metro_class, (t_method)metro_float);
+    clock_free(x->x_clock);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void metro_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_metro,
+            (t_newmethod)metro_new,
+            (t_method)metro_free,
+            sizeof (t_metro),
+            CLASS_DEFAULT,
+            A_DEFFLOAT,
+            A_DEFFLOAT,
+            A_DEFSYMBOL,
+            A_NULL);
+            
+    class_addBang (c, metro_bang);
+    class_addFloat (c, metro_float);
+    
+    class_addMethod (c, (t_method)metro_ft1,    sym_ft1,    A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)metro_stop,   sym_stop,   A_NULL);
+    class_addMethod (c, (t_method)metro_tempo,  sym_unit,   A_FLOAT, A_SYMBOL, A_NULL);
+
+    
+    #if PD_WITH_LEGACY 
+    
+    class_addMethod (c, (t_method)metro_tempo,  sym_tempo,  A_FLOAT, A_SYMBOL, A_NULL);
+    
+    #endif
+        
+    metro_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
