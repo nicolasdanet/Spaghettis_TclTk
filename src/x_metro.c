@@ -116,9 +116,9 @@ static void *metro_new (t_float f, t_float unit, t_symbol *unitName)
     x->x_reentrantStop  = 0;
     
     x->x_clock  = clock_new ((void *)x, (t_method)metro_task);
-    x->x_outlet = outlet_new (cast_object (x), sym_bang);
+    x->x_outlet = outlet_new (cast_object (x), &s_bang);
     
-    inlet_new (cast_object (x), cast_pd (x), sym_float, sym_ft1);
+    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_ft1);
     
     metro_ft1 (x, f);
     

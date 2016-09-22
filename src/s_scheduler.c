@@ -90,8 +90,6 @@ double scheduler_getMillisecondsSince (t_systime systime)
 {
     t_systime elapsed = pd_this->pd_systime - systime;
     
-    PD_ASSERT (elapsed >= 0.0);
-    
     return (elapsed / SYSTIME_PER_MILLISECOND);
 }
 

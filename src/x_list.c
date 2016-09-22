@@ -40,7 +40,7 @@ static void *list_makeObject (t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
     else if (t == sym_fromsymbol)   { pd_newest = listfromsymbol_new (s,    argc - 1, argv + 1); }
     else if (t == sym_tosymbol)     { pd_newest = listtosymbol_new (s,      argc - 1, argv + 1); }
     else {
-        error_unexpected (sym_list, t);
+        error_unexpected (&s_list, t);
     }
     //
     }

@@ -14,128 +14,171 @@
 #include "m_macros.h"
 #include "s_system.h"
 #include "g_graphics.h"
+#include "x_control.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static t_class *line_class;         /* Shared. */
 
-/* -------------------------- line ------------------------------ */
-#define DEFAULTLINEGRAIN 20
-static t_class *line_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct _line
+typedef struct _line {
+    t_object    x_obj;              /* Must be the first. */
+    t_systime   x_targetTime;
+    t_systime   x_startTime;
+    double      x_rampTime;
+    t_float     x_targetValue;
+    t_float     x_startValue;
+    t_float     x_grain;
+    int         x_hasRamp;
+    t_outlet    *x_outlet;
+    t_clock     *x_clock;
+    } t_line;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void line_set (t_line *, t_float);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static t_float line_valueAtTime (t_line *x, t_systime t)
 {
-    t_object x_obj;
-    t_clock *x_clock;
-    double x_targettime;
-    t_float x_targetval;
-    double x_prevtime;
-    t_float x_setval;
-    int x_gotinlet;
-    t_float x_grain;
-    double x_1overtimediff;
-    double x_in1val;
-} t_line;
-
-static void line_tick(t_line *x)
-{
-    t_systime timenow = scheduler_getLogicalTime();
-    double msectogo = - scheduler_getMillisecondsSince(x->x_targettime);
-    if (msectogo < 1E-9)
-    {
-        outlet_float(x->x_obj.te_outlet, x->x_targetval);
-    }
-    else
-    {
-        outlet_float(x->x_obj.te_outlet,
-            x->x_setval + x->x_1overtimediff * (timenow - x->x_prevtime)
-                * (x->x_targetval - x->x_setval));
-        if (x->x_grain <= 0)
-            x->x_grain = DEFAULTLINEGRAIN;
-        clock_delay(x->x_clock,
-            (x->x_grain > msectogo ? msectogo : x->x_grain));
-    }
-}
-
-static void line_float(t_line *x, t_float f)
-{
-    t_systime timenow = scheduler_getLogicalTime();
-    if (x->x_gotinlet && x->x_in1val > 0)
-    {
-        if (timenow > x->x_targettime) x->x_setval = x->x_targetval;
-        else x->x_setval = x->x_setval + x->x_1overtimediff *
-            (timenow - x->x_prevtime)
-            * (x->x_targetval - x->x_setval);
-        x->x_prevtime = timenow;
-        x->x_targettime = scheduler_getLogicalTimeAfter(x->x_in1val);
-        x->x_targetval = f;
-        line_tick(x);
-        x->x_gotinlet = 0;
-        x->x_1overtimediff = 1./ (x->x_targettime - timenow);
-        if (x->x_grain <= 0)
-            x->x_grain = DEFAULTLINEGRAIN;
-        clock_delay(x->x_clock,
-            (x->x_grain > x->x_in1val ? x->x_in1val : x->x_grain));
+    double a = t - x->x_startTime;
+    double b = x->x_targetTime - x->x_startTime;
+    double y = x->x_targetValue - x->x_startValue;
+        
+    PD_ASSERT (b != 0.0); 
     
+    return (t_float)(x->x_startValue + (a / b * y));
+}
+
+static void line_task (t_line *x)
+{
+    double remains = - scheduler_getMillisecondsSince (x->x_targetTime);
+    
+    if (remains < math_epsilon()) { outlet_float (x->x_outlet, x->x_targetValue); }
+    else {
+    //
+    outlet_float (x->x_outlet, line_valueAtTime (x, scheduler_getLogicalTime()));
+    
+    clock_delay (x->x_clock, PD_MIN (x->x_grain, remains));
+    //
     }
-    else
-    {
-        clock_unset(x->x_clock);
-        x->x_targetval = x->x_setval = f;
-        outlet_float(x->x_obj.te_outlet, f);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void line_float (t_line *x, t_float f)
+{
+    t_systime now   = scheduler_getLogicalTime();
+    t_systime after = scheduler_getLogicalTimeAfter (x->x_rampTime);
+    
+    if (x->x_hasRamp && (after > now)) {
+    
+        x->x_hasRamp = 0;
+        
+        if (now > x->x_targetTime) { x->x_startValue = x->x_targetValue; }      /* Usual case. */
+        else { 
+            x->x_startValue = line_valueAtTime (x, now);                        /* Retriggered case. */
+        }
+        
+        x->x_startTime   = now;
+        x->x_targetTime  = after;
+        x->x_targetValue = f;
+        
+        line_task (x);
+        
+        clock_delay (x->x_clock, PD_MIN (x->x_grain, x->x_rampTime));
+    
+    } else {
+    
+        line_set (x, f);
+        outlet_float (x->x_outlet, f);
     }
-    x->x_gotinlet = 0;
 }
 
-static void line_ft1(t_line *x, t_float g)
+static void line_ft1 (t_line *x, t_float f)
 {
-    x->x_in1val = g;
-    x->x_gotinlet = 1;
+    x->x_rampTime = f; x->x_hasRamp = 1;
 }
 
-static void line_stop(t_line *x)
+static void line_ft2 (t_line *x, t_float f)
 {
-    x->x_targetval = x->x_setval;
-    clock_unset(x->x_clock);
+    x->x_grain = (f <= 0.0 ? TIME_DEFAULT_GRAIN : f);
 }
 
-static void line_set(t_line *x, t_float f)
+static void line_stop (t_line *x)
 {
-    clock_unset(x->x_clock);
-    x->x_targetval = x->x_setval = f;
+    line_set (x, x->x_startValue);
 }
 
-static void line_free(t_line *x)
+static void line_set (t_line *x, t_float f)
 {
-    clock_free(x->x_clock);
+    clock_unset (x->x_clock); x->x_targetValue = x->x_startValue = f;
 }
 
-static void *line_new(t_float f, t_float grain)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *line_new (t_float f, t_float grain)
 {
-    t_line *x = (t_line *)pd_new(line_class);
-    x->x_targetval = x->x_setval = f;
-    x->x_gotinlet = 0;
-    x->x_1overtimediff = 1;
-    x->x_clock = clock_new(x, (t_method)line_tick);
-    x->x_targettime = x->x_prevtime = scheduler_getLogicalTime();
-    x->x_grain = grain;
-    outlet_new(&x->x_obj, sym_float);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, sym_float, sym_ft1);
-    inlet_newFloat(&x->x_obj, &x->x_grain);
-    return (x);
+    t_line *x = (t_line *)pd_new (line_class);
+    
+    x->x_targetTime     = scheduler_getLogicalTime();
+    x->x_startTime      = x->x_targetTime;
+    x->x_targetValue    = f;
+    x->x_startValue     = f;
+    x->x_hasRamp        = 0;
+    x->x_outlet         = outlet_new (cast_object (x), &s_float);
+    x->x_clock          = clock_new ((void *)x, (t_method)line_task);
+    
+    line_ft2 (x, grain);
+    
+    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_ft1);
+    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_ft2);
+    
+    return x;
 }
 
-void line_setup(void)
+static void line_free (t_line *x)
 {
-    line_class = class_new(sym_line, (t_newmethod)line_new,
-        (t_method)line_free, sizeof(t_line), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
-    class_addMethod(line_class, (t_method)line_ft1,
-        sym_ft1, A_FLOAT, 0);
-    class_addMethod(line_class, (t_method)line_stop,
-        sym_stop, 0);
-    class_addMethod(line_class, (t_method)line_set,
-        sym_set, A_FLOAT, 0);
-    class_addFloat(line_class, (t_method)line_float);
+    clock_free (x->x_clock);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void line_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_line,
+            (t_newmethod)line_new,
+            (t_method)line_free,
+            sizeof (t_line),
+            CLASS_DEFAULT,
+            A_DEFFLOAT,
+            A_DEFFLOAT,
+            A_NULL);
+        
+    class_addFloat (c, line_float);
+        
+    class_addMethod (c, (t_method)line_ft1,     sym_ft1,    A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)line_ft2,     sym_ft2,    A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)line_stop,    sym_stop,   A_NULL);
+    class_addMethod (c, (t_method)line_set,     sym_set,    A_FLOAT, A_NULL);
+
+    line_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

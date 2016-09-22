@@ -94,7 +94,7 @@ static void *delay_new (t_float f, t_float unit, t_symbol *unitName)
     x->x_outlet = outlet_new (cast_object (x), &s_bang);
     x->x_clock  = clock_new ((void *)x, (t_method)delay_task);
     
-    inlet_new (cast_object (x), cast_pd (x), sym_float, sym_ft1);
+    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_ft1);
     
     delay_ft1 (x, f);
     
