@@ -73,7 +73,7 @@ static void *phasor_new(t_float f)
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, sym_ft1);
     x->x_phase = 0;
     x->x_conv = 0;
-    outlet_new(&x->x_obj, sym_signal);
+    outlet_new(&x->x_obj, &s_signal);
     return (x);
 }
 
@@ -143,7 +143,7 @@ typedef struct _cos
 static void *cos_new(void)
 {
     t_cos *x = (t_cos *)pd_new(cos_class);
-    outlet_new(&x->x_obj, sym_signal);
+    outlet_new(&x->x_obj, &s_signal);
     x->x_f = 0;
     return (x);
 }
@@ -247,7 +247,7 @@ static void *osc_new(t_float f)
 {
     t_osc *x = (t_osc *)pd_new(osc_class);
     x->x_f = f;
-    outlet_new(&x->x_obj, sym_signal);
+    outlet_new(&x->x_obj, &s_signal);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, sym_ft1);
     x->x_phase = 0;
     x->x_conv = 0;
@@ -357,9 +357,9 @@ static void *sigvcf_new(t_float q)
 {
     t_sigvcf *x = (t_sigvcf *)pd_new(sigvcf_class);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, sym_float, sym_ft1);
-    outlet_new(&x->x_obj, sym_signal);
-    outlet_new(&x->x_obj, sym_signal);
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, sym_ft1);
+    outlet_new(&x->x_obj, &s_signal);
+    outlet_new(&x->x_obj, &s_signal);
     x->x_ctl = &x->x_cspace;
     x->x_cspace.c_re = 0;
     x->x_cspace.c_im = 0;
@@ -471,7 +471,7 @@ static void *noise_new(void)
     t_noise *x = (t_noise *)pd_new(noise_class);
     static int init = 307;
     x->x_val = (init *= 1319); 
-    outlet_new(&x->x_obj, sym_signal);
+    outlet_new(&x->x_obj, &s_signal);
     return (x);
 }
 

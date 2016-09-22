@@ -48,8 +48,8 @@ typedef struct fft
 static void *sigfft_new(void)
 {
     t_sigfft *x = (t_sigfft *)pd_new(sigfft_class);
-    outlet_new(&x->x_obj, sym_signal);
-    outlet_new(&x->x_obj, sym_signal);
+    outlet_new(&x->x_obj, &s_signal);
+    outlet_new(&x->x_obj, &s_signal);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
     x->x_f = 0;
     return (x);
@@ -58,8 +58,8 @@ static void *sigfft_new(void)
 static void *sigifft_new(void)
 {
     t_sigfft *x = (t_sigfft *)pd_new(sigifft_class);
-    outlet_new(&x->x_obj, sym_signal);
-    outlet_new(&x->x_obj, sym_signal);
+    outlet_new(&x->x_obj, &s_signal);
+    outlet_new(&x->x_obj, &s_signal);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
     x->x_f = 0;
     return (x);
@@ -144,8 +144,8 @@ typedef struct rfft
 static void *sigrfft_new(void)
 {
     t_sigrfft *x = (t_sigrfft *)pd_new(sigrfft_class);
-    outlet_new(&x->x_obj, sym_signal);
-    outlet_new(&x->x_obj, sym_signal);
+    outlet_new(&x->x_obj, &s_signal);
+    outlet_new(&x->x_obj, &s_signal);
     x->x_f = 0;
     return (x);
 }
@@ -203,7 +203,7 @@ static void *sigrifft_new(void)
 {
     t_sigrifft *x = (t_sigrifft *)pd_new(sigrifft_class);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
-    outlet_new(&x->x_obj, sym_signal);
+    outlet_new(&x->x_obj, &s_signal);
     x->x_f = 0;
     return (x);
 }
@@ -264,8 +264,8 @@ static void *sigframp_new(void)
 {
     t_sigframp *x = (t_sigframp *)pd_new(sigframp_class);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
-    outlet_new(&x->x_obj, sym_signal);
-    outlet_new(&x->x_obj, sym_signal);
+    outlet_new(&x->x_obj, &s_signal);
+    outlet_new(&x->x_obj, &s_signal);
     x->x_f = 0;
     return (x);
 }

@@ -106,7 +106,7 @@ static void pdfloat_send(t_pdfloat *x, t_symbol *s)
 
 void pdfloat_setup(void)
 {
-    pdfloat_class = class_new(sym_float, (t_newmethod)pdfloat_new, 0,
+    pdfloat_class = class_new(&s_float, (t_newmethod)pdfloat_new, 0,
         sizeof(t_pdfloat), 0, A_FLOAT, 0);
     class_addCreator((t_newmethod)pdfloat_new2, sym_f, A_DEFFLOAT, 0);
     class_addMethod(pdfloat_class, (t_method)pdfloat_send, sym_send,
@@ -167,7 +167,7 @@ static void pdsymbol_list(t_pdsymbol *x, t_symbol *s, int ac, t_atom *av)
 
 void pdsymbol_setup(void)
 {
-    pdsymbol_class = class_new (sym_symbol, (t_newmethod)pdsymbol_new, 0,
+    pdsymbol_class = class_new (&s_symbol, (t_newmethod)pdsymbol_new, 0,
         sizeof(t_pdsymbol), 0, A_SYMBOL, 0);
     class_addBang(pdsymbol_class, pdsymbol_bang);
     class_addSymbol(pdsymbol_class, pdsymbol_symbol);
@@ -202,7 +202,7 @@ static void bang_bang(t_bang *x)
 
 void bang_setup(void)
 {
-    bang_class = class_new (sym_bang, (t_newmethod)bang_new, 0,
+    bang_class = class_new (&s_bang, (t_newmethod)bang_new, 0,
         sizeof(t_bang), 0, 0);
     class_addCreator((t_newmethod)bang_new2, sym_b, 0);
     class_addBang(bang_class, bang_bang);
@@ -1185,7 +1185,7 @@ typedef struct _until
 static void *until_new(void)
 {
     t_until *x = (t_until *)pd_new(until_class);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, sym_bang, sym_bang2);
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_bang, sym_bang2);
     outlet_new(&x->x_obj, &s_bang);
     x->x_run = 0;
     return (x);

@@ -73,7 +73,7 @@ static void *sig_tilde_new(t_float f)
 {
     t_sig *x = (t_sig *)pd_new(sig_tilde_class);
     x->x_f = f;
-    outlet_new(&x->x_obj, sym_signal);
+    outlet_new(&x->x_obj, &s_signal);
     return (x);
 }
 
@@ -211,7 +211,7 @@ static void line_tilde_dsp(t_line *x, t_signal **sp)
 static void *line_tilde_new(void)
 {
     t_line *x = (t_line *)pd_new(line_tilde_class);
-    outlet_new(&x->x_obj, sym_signal);
+    outlet_new(&x->x_obj, &s_signal);
     inlet_newFloat(&x->x_obj, &x->x_inletvalue);
     x->x_ticksleft = x->x_retarget = 0;
     x->x_value = x->x_target = x->x_inletvalue = x->x_inletwas = 0;
@@ -400,7 +400,7 @@ static void vline_tilde_dsp(t_vline *x, t_signal **sp)
 static void *vline_tilde_new(void)
 {
     t_vline *x = (t_vline *)pd_new(vline_tilde_class);
-    outlet_new(&x->x_obj, sym_signal);
+    outlet_new(&x->x_obj, &s_signal);
     inlet_newFloat(&x->x_obj, &x->x_inlet1);
     inlet_newFloat(&x->x_obj, &x->x_inlet2);
     x->x_inlet1 = x->x_inlet2 = 0;
@@ -617,7 +617,7 @@ static void *env_tilde_new(t_float fnpoints, t_float fperiod)
         buf[i] = (1. - cos((2 * PD_PI * i) / npoints))/npoints;
     for (; i < npoints+INITVSTAKEN; i++) buf[i] = 0;
     x->x_clock = clock_new(x, (t_method)env_tilde_tick);
-    x->x_outlet = outlet_new(&x->x_obj, sym_float);
+    x->x_outlet = outlet_new(&x->x_obj, &s_float);
     x->x_f = 0;
     x->x_allocforvs = INITVSTAKEN;
     return (x);

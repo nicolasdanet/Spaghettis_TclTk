@@ -1924,7 +1924,7 @@ static void *readsf_new(t_float fnchannels, t_float fbufsize)
     x = (t_readsf *)pd_new(readsf_class);
     
     for (i = 0; i < nchannels; i++)
-        outlet_new(&x->x_obj, sym_signal);
+        outlet_new(&x->x_obj, &s_signal);
     x->x_noutlets = nchannels;
     x->x_bangout = outlet_new(&x->x_obj, &s_bang);
     pthread_mutex_init(&x->x_mutex, 0);

@@ -28,7 +28,7 @@ static void *clip_new(t_float lo, t_float hi)
     t_clip *x = (t_clip *)pd_new(clip_class);
     x->x_lo = lo;
     x->x_hi = hi;
-    outlet_new(&x->x_obj, sym_signal);
+    outlet_new(&x->x_obj, &s_signal);
     inlet_newFloat(&x->x_obj, &x->x_lo);
     inlet_newFloat(&x->x_obj, &x->x_hi);
     x->x_f = 0;
@@ -128,7 +128,7 @@ static t_class *sigrsqrt_class;
 static void *sigrsqrt_new(void)
 {
     t_sigrsqrt *x = (t_sigrsqrt *)pd_new(sigrsqrt_class);
-    outlet_new(&x->x_obj, sym_signal);
+    outlet_new(&x->x_obj, &s_signal);
     x->x_f = 0;
     return (x);
 }
@@ -187,7 +187,7 @@ static t_class *sigsqrt_class;
 static void *sigsqrt_new(void)
 {
     t_sigsqrt *x = (t_sigsqrt *)pd_new(sigsqrt_class);
-    outlet_new(&x->x_obj, sym_signal);
+    outlet_new(&x->x_obj, &s_signal);
     x->x_f = 0;
     return (x);
 }
@@ -243,7 +243,7 @@ t_class *sigwrap_class;
 static void *sigwrap_new(void)
 {
     t_sigwrap *x = (t_sigwrap *)pd_new(sigwrap_class);
-    outlet_new(&x->x_obj, sym_signal);
+    outlet_new(&x->x_obj, &s_signal);
     x->x_f = 0;
     return (x);
 }
@@ -289,7 +289,7 @@ t_class *mtof_tilde_class;
 static void *mtof_tilde_new(void)
 {
     t_mtof_tilde *x = (t_mtof_tilde *)pd_new(mtof_tilde_class);
-    outlet_new(&x->x_obj, sym_signal);
+    outlet_new(&x->x_obj, &s_signal);
     x->x_f = 0;
     return (x);
 }
@@ -338,7 +338,7 @@ t_class *ftom_tilde_class;
 static void *ftom_tilde_new(void)
 {
     t_ftom_tilde *x = (t_ftom_tilde *)pd_new(ftom_tilde_class);
-    outlet_new(&x->x_obj, sym_signal);
+    outlet_new(&x->x_obj, &s_signal);
     x->x_f = 0;
     return (x);
 }
@@ -382,7 +382,7 @@ t_class *dbtorms_tilde_class;
 static void *dbtorms_tilde_new(void)
 {
     t_dbtorms_tilde *x = (t_dbtorms_tilde *)pd_new(dbtorms_tilde_class);
-    outlet_new(&x->x_obj, sym_signal);
+    outlet_new(&x->x_obj, &s_signal);
     x->x_f = 0;
     return (x);
 }
@@ -432,7 +432,7 @@ t_class *rmstodb_tilde_class;
 static void *rmstodb_tilde_new(void)
 {
     t_rmstodb_tilde *x = (t_rmstodb_tilde *)pd_new(rmstodb_tilde_class);
-    outlet_new(&x->x_obj, sym_signal);
+    outlet_new(&x->x_obj, &s_signal);
     x->x_f = 0;
     return (x);
 }
@@ -481,7 +481,7 @@ t_class *dbtopow_tilde_class;
 static void *dbtopow_tilde_new(void)
 {
     t_dbtopow_tilde *x = (t_dbtopow_tilde *)pd_new(dbtopow_tilde_class);
-    outlet_new(&x->x_obj, sym_signal);
+    outlet_new(&x->x_obj, &s_signal);
     x->x_f = 0;
     return (x);
 }
@@ -531,7 +531,7 @@ t_class *powtodb_tilde_class;
 static void *powtodb_tilde_new(void)
 {
     t_powtodb_tilde *x = (t_powtodb_tilde *)pd_new(powtodb_tilde_class);
-    outlet_new(&x->x_obj, sym_signal);
+    outlet_new(&x->x_obj, &s_signal);
     x->x_f = 0;
     return (x);
 }

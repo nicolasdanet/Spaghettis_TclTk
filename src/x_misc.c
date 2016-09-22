@@ -260,9 +260,9 @@ static void cputime_bang2(t_cputime *x)
 static void *cputime_new(void)
 {
     t_cputime *x = (t_cputime *)pd_new(cputime_class);
-    outlet_new(&x->x_obj, sym_float);
+    outlet_new(&x->x_obj, &s_float);
 
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, sym_bang, sym_bang2);
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_bang, sym_bang2);
 #ifdef _WIN32
     x->x_warned = 0;
 #endif
@@ -302,8 +302,8 @@ static void realtime_bang2(t_realtime *x)
 static void *realtime_new(void)
 {
     t_realtime *x = (t_realtime *)pd_new(realtime_class);
-    outlet_new(&x->x_obj, sym_float);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, sym_bang, sym_bang2);
+    outlet_new(&x->x_obj, &s_float);
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_bang, sym_bang2);
     realtime_bang(x);
     return (x);
 }
@@ -501,7 +501,7 @@ tooshort:
 static t_oscparse *oscparse_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_oscparse *x = (t_oscparse *)pd_new(oscparse_class);
-    outlet_new(&x->x_obj, sym_list);
+    outlet_new(&x->x_obj, &s_list);
     return (x);
 }
 
@@ -686,7 +686,7 @@ static void oscformat_free(t_oscformat *x)
 static void *oscformat_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_oscformat *x = (t_oscformat *)pd_new(oscformat_class);
-    outlet_new(&x->x_obj, sym_list);
+    outlet_new(&x->x_obj, &s_list);
     x->x_pathbuf = PD_MEMORY_GET(1);
     x->x_pathsize = 1;
     *x->x_pathbuf = 0;
