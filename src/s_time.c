@@ -221,7 +221,7 @@ t_error clock_setUnitParsed (t_clock *x, t_float f, t_symbol *unitName)
 
 t_error clock_parseUnit (t_float f, t_symbol *s, t_float *n, int *isSamples)
 {
-    t_error err = (f <= 0);
+    t_error err = (f <= 0.0);
     
     *n = 1; *isSamples = 0;
     

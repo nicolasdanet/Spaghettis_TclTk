@@ -18,62 +18,93 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* -------------------------- timer ------------------------------ */
-static t_class *timer_class;
+static t_class *timer_class;        /* Shared. */
 
-typedef struct _timer
-{
-    t_object x_obj;
-    double x_settime;
-    double x_moreelapsed;
-    t_float x_unit;
-    int x_samps;
-} t_timer;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static void timer_bang(t_timer *x)
+typedef struct _timer {
+    t_object    x_obj;              /* Must be the first. */
+    t_systime   x_start;
+    t_float     x_unit;
+    int         x_isSamples;        /* Samples or milliseconds. */
+    t_outlet    *x_outlet;
+    } t_timer;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void timer_bang (t_timer *x)
 {
-    x->x_settime = scheduler_getLogicalTime();
-    x->x_moreelapsed = 0;
+    x->x_start = scheduler_getLogicalTime();
 }
 
-static void timer_bang2(t_timer *x)
+static void timer_bangElapsed (t_timer *x)
 {
-    outlet_float(x->x_obj.te_outlet,
-        scheduler_getUnitsSince(x->x_settime, x->x_unit, x->x_samps)
-            + x->x_moreelapsed);
+    outlet_float (x->x_outlet, scheduler_getUnitsSince (x->x_start, x->x_unit, x->x_isSamples));
 }
 
-static void timer_tempo(t_timer *x, t_float f, t_symbol *unitName)
+static void timer_unit (t_timer *x, t_float f, t_symbol *unitName)
 {
-    x->x_moreelapsed += scheduler_getUnitsSince(x->x_settime, x->x_unit, x->x_samps);
-    x->x_settime = scheduler_getLogicalTime();
-
-    clock_parseUnit (f, unitName, &x->x_unit, &x->x_samps);
+    t_error err = clock_parseUnit (f, unitName, &x->x_unit, &x->x_isSamples);
+    
+    if (err) {
+        error_invalid (sym_timer, sym_unit); 
+    }
 }
 
-static void *timer_new(t_symbol *unitname, t_float tempo)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *timer_new (t_float unit, t_symbol *unitName)
 {
-    t_timer *x = (t_timer *)pd_new(timer_class);
-    x->x_unit = 1;
-    x->x_samps = 0;
-    timer_bang(x);
-    outlet_new(&x->x_obj, &s_float);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_bang, sym_inlet2);
-    if (tempo != 0)
-        timer_tempo(x, tempo, unitname);
-    return (x);
+    t_timer *x = (t_timer *)pd_new (timer_class);
+    
+    x->x_unit      = 1;
+    x->x_isSamples = 0;
+    
+    timer_bang (x);
+        
+    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    
+    inlet_new (cast_object (x), cast_pd (x), &s_bang, sym_inlet2);
+    
+    if (unit != 0.0) { timer_unit (x, unit, unitName); }
+        
+    return x;
 }
 
-void timer_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void timer_setup (void)
 {
-    timer_class = class_new(sym_timer, (t_newmethod)timer_new, 0,
-        sizeof(t_timer), 0, A_DEFFLOAT, A_DEFSYMBOL, 0);
-    class_addBang(timer_class, timer_bang);
-    class_addMethod(timer_class, (t_method)timer_bang2, sym_inlet2, 0);
-    class_addMethod(timer_class, (t_method)timer_tempo,
-        sym_tempo, A_FLOAT, A_SYMBOL, 0); /* LEGACY !!! */
-    class_addMethod(timer_class, (t_method)timer_tempo,
-        sym_unit, A_FLOAT, A_SYMBOL, 0);
+    t_class *c = NULL;
+    
+    c = class_new (sym_timer,
+            (t_newmethod)timer_new,
+            NULL,
+            sizeof (t_timer),
+            CLASS_DEFAULT,
+            A_DEFFLOAT,
+            A_DEFSYMBOL,
+            A_NULL);
+            
+    class_addBang (c, timer_bang);
+    
+    class_addMethod (c, (t_method)timer_bangElapsed,    sym_inlet2, A_NULL);
+    class_addMethod (c, (t_method)timer_unit,           sym_unit,   A_FLOAT, A_SYMBOL, A_NULL);
+    
+    #if PD_WITH_LEGACY
+    
+    class_addMethod (c, (t_method)timer_unit,           sym_tempo,  A_FLOAT, A_SYMBOL, A_NULL);
+        
+    #endif
+    
+    timer_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
