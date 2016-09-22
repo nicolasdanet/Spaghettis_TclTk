@@ -453,7 +453,7 @@ static void vu_float (t_vu *x, t_float rms)
     outlet_float (x->x_outletLeft, rms);
 }
 
-static void vu_ft1 (t_vu *x, t_float peak)
+static void vu_floatPeak (t_vu *x, t_float peak)
 {
     int old = x->x_peak;
     
@@ -642,7 +642,7 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
     x->x_peakValue   = -101.0;
     x->x_rmsValue    = -101.0;
     
-    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_ft1);
+    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_inlet2);
     
     x->x_outletLeft  = outlet_new (cast_object (x), &s_float);
     x->x_outletRight = outlet_new (cast_object (x), &s_float);
@@ -676,7 +676,7 @@ void vu_setup (void)
     class_addBang (c, vu_bang);
     class_addFloat (c, vu_float);
     
-    class_addMethod (c, (t_method)vu_ft1,                   sym_ft1,                A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)vu_floatPeak,             sym_inlet2,             A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)vu_fromDialog,            sym__iemdialog,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)vu_size,                  sym_size,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_move,             sym_move,               A_GIMME, A_NULL);

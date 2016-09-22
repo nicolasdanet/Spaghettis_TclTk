@@ -58,7 +58,7 @@ static void *timer_new(t_symbol *unitname, t_float tempo)
     x->x_samps = 0;
     timer_bang(x);
     outlet_new(&x->x_obj, &s_float);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_bang, sym_bang2);
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_bang, sym_inlet2);
     if (tempo != 0)
         timer_tempo(x, tempo, unitname);
     return (x);
@@ -69,7 +69,7 @@ void timer_setup(void)
     timer_class = class_new(sym_timer, (t_newmethod)timer_new, 0,
         sizeof(t_timer), 0, A_DEFFLOAT, A_DEFSYMBOL, 0);
     class_addBang(timer_class, timer_bang);
-    class_addMethod(timer_class, (t_method)timer_bang2, sym_bang2, 0);
+    class_addMethod(timer_class, (t_method)timer_bang2, sym_inlet2, 0);
     class_addMethod(timer_class, (t_method)timer_tempo,
         sym_tempo, A_FLOAT, A_SYMBOL, 0); /* LEGACY !!! */
     class_addMethod(timer_class, (t_method)timer_tempo,

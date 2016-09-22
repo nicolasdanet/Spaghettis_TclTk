@@ -35,7 +35,7 @@ typedef struct _delay {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void delay_ft1 (t_delay *, t_float);
+static void delay_floatDelay (t_delay *, t_float);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -57,11 +57,11 @@ static void delay_bang (t_delay *x)
 
 static void delay_float (t_delay *x, t_float f)
 {
-    delay_ft1 (x, f);
+    delay_floatDelay (x, f);
     delay_bang (x);
 }
 
-static void delay_ft1 (t_delay *x, t_float f)
+static void delay_floatDelay (t_delay *x, t_float f)
 {
     if (f < 0.0) { error_invalid (sym_delay, sym_delay); }
     else {
@@ -94,9 +94,9 @@ static void *delay_new (t_float f, t_float unit, t_symbol *unitName)
     x->x_outlet = outlet_new (cast_object (x), &s_bang);
     x->x_clock  = clock_new ((void *)x, (t_method)delay_task);
     
-    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_ft1);
+    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_inlet2);
     
-    delay_ft1 (x, f);
+    delay_floatDelay (x, f);
     
     if (unit != 0.0) { delay_unit (x, unit, unitName); }
     
@@ -131,13 +131,13 @@ void delay_setup (void)
     class_addBang (c, delay_bang);
     class_addFloat (c, delay_float);
         
-    class_addMethod (c, (t_method)delay_ft1,    sym_ft1,    A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)delay_stop,   sym_stop,   A_NULL);
-    class_addMethod (c, (t_method)delay_unit,   sym_unit,   A_FLOAT, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)delay_floatDelay, sym_inlet2, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)delay_stop,       sym_stop,   A_NULL);
+    class_addMethod (c, (t_method)delay_unit,       sym_unit,   A_FLOAT, A_SYMBOL, A_NULL);
     
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)delay_unit,   sym_tempo,  A_FLOAT, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)delay_unit,       sym_tempo,  A_FLOAT, A_SYMBOL, A_NULL);
         
     #endif
     

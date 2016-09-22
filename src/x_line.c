@@ -105,12 +105,12 @@ static void line_float (t_line *x, t_float f)
     }
 }
 
-static void line_ft1 (t_line *x, t_float f)
+static void line_floatRamp (t_line *x, t_float f)
 {
     x->x_rampTime = f; x->x_hasRamp = 1;
 }
 
-static void line_ft2 (t_line *x, t_float f)
+static void line_floatGrain (t_line *x, t_float f)
 {
     x->x_grain = (f <= 0.0 ? TIME_DEFAULT_GRAIN : f);
 }
@@ -141,10 +141,10 @@ static void *line_new (t_float f, t_float grain)
     x->x_outlet         = outlet_new (cast_object (x), &s_float);
     x->x_clock          = clock_new ((void *)x, (t_method)line_task);
     
-    line_ft2 (x, grain);
+    line_floatGrain (x, grain);
     
-    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_ft1);
-    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_ft2);
+    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_inlet2);
+    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_inlet3);
     
     return x;
 }
@@ -173,10 +173,10 @@ void line_setup (void)
         
     class_addFloat (c, line_float);
         
-    class_addMethod (c, (t_method)line_ft1,     sym_ft1,    A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)line_ft2,     sym_ft2,    A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)line_stop,    sym_stop,   A_NULL);
-    class_addMethod (c, (t_method)line_set,     sym_set,    A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)line_floatRamp,   sym_inlet2, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)line_floatGrain,  sym_inlet3, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)line_stop,        sym_stop,   A_NULL);
+    class_addMethod (c, (t_method)line_set,         sym_set,    A_FLOAT, A_NULL);
 
     line_class = c;
 }

@@ -1185,7 +1185,7 @@ typedef struct _until
 static void *until_new(void)
 {
     t_until *x = (t_until *)pd_new(until_class);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_bang, sym_bang2);
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_bang, sym_inlet2);
     outlet_new(&x->x_obj, &s_bang);
     x->x_run = 0;
     return (x);
@@ -1220,7 +1220,7 @@ static void until_setup(void)
         sizeof(t_until), 0, 0);
     class_addBang(until_class, until_bang);
     class_addFloat(until_class, until_float);
-    class_addMethod(until_class, (t_method)until_bang2, sym_bang2, 0);
+    class_addMethod(until_class, (t_method)until_bang2, sym_inlet2, 0);
 }
 
 /* ----------------------- makefilename --------------------- */

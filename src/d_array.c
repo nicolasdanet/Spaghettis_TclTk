@@ -563,7 +563,7 @@ static void *tabosc4_tilde_new(t_symbol *s)
     x->x_fnpoints = 512.;
     x->x_finvnpoints = (1./512.);
     outlet_new(&x->x_obj, &s_signal);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, sym_ft1);
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, sym_inlet2);
     x->x_f = 0;
     return (x);
 }
@@ -679,7 +679,7 @@ static void tabosc4_tilde_setup(void)
     class_addMethod(tabosc4_tilde_class, (t_method)tabosc4_tilde_set,
         sym_set, A_SYMBOL, 0);
     class_addMethod(tabosc4_tilde_class, (t_method)tabosc4_tilde_ft1,
-        sym_ft1, A_FLOAT, 0);
+        sym_inlet2, A_FLOAT, 0);
 }
 
 /* ------------------------ tabsend~ ------------------------- */

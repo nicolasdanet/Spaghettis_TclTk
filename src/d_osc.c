@@ -70,7 +70,7 @@ static void *phasor_new(t_float f)
 {
     t_phasor *x = (t_phasor *)pd_new(phasor_class);
     x->x_f = f;
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, sym_ft1);
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, sym_inlet2);
     x->x_phase = 0;
     x->x_conv = 0;
     outlet_new(&x->x_obj, &s_signal);
@@ -123,7 +123,7 @@ static void phasor_setup(void)
     class_addMethod(phasor_class, (t_method)phasor_dsp,
         sym_dsp, A_CANT, 0);
     class_addMethod(phasor_class, (t_method)phasor_ft1,
-        sym_ft1, A_FLOAT, 0);
+        sym_inlet2, A_FLOAT, 0);
 }
 
 #endif  /* Hoeldrich version */
@@ -248,7 +248,7 @@ static void *osc_new(t_float f)
     t_osc *x = (t_osc *)pd_new(osc_class);
     x->x_f = f;
     outlet_new(&x->x_obj, &s_signal);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, sym_ft1);
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, sym_inlet2);
     x->x_phase = 0;
     x->x_conv = 0;
     return (x);
@@ -328,7 +328,7 @@ static void osc_setup(void)
         sizeof(t_osc), 0, A_DEFFLOAT, 0);
     CLASS_SIGNAL(osc_class, t_osc, x_f);
     class_addMethod(osc_class, (t_method)osc_dsp, sym_dsp, A_CANT, 0);
-    class_addMethod(osc_class, (t_method)osc_ft1, sym_ft1, A_FLOAT, 0);
+    class_addMethod(osc_class, (t_method)osc_ft1, sym_inlet2, A_FLOAT, 0);
 
     cos_maketable();
 }
@@ -357,7 +357,7 @@ static void *sigvcf_new(t_float q)
 {
     t_sigvcf *x = (t_sigvcf *)pd_new(sigvcf_class);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, sym_ft1);
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, sym_inlet2);
     outlet_new(&x->x_obj, &s_signal);
     outlet_new(&x->x_obj, &s_signal);
     x->x_ctl = &x->x_cspace;
@@ -454,7 +454,7 @@ void sigvcf_setup(void)
     class_addMethod(sigvcf_class, (t_method)sigvcf_dsp,
         sym_dsp, A_CANT, 0);
     class_addMethod(sigvcf_class, (t_method)sigvcf_ft1,
-        sym_ft1, A_FLOAT, 0);
+        sym_inlet2, A_FLOAT, 0);
 }
 
 /* -------------------------- noise~ ------------------------------ */

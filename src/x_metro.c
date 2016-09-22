@@ -82,7 +82,7 @@ static void metro_float (t_metro *x, t_float f)
     x->x_reentrantStop = 1;
 }
 
-static void metro_ft1 (t_metro *x, t_float f)
+static void metro_floatDelay (t_metro *x, t_float f)
 {
     if (f < 0.0) { error_invalid (sym_metro, sym_delay); }
     else {
@@ -118,9 +118,9 @@ static void *metro_new (t_float f, t_float unit, t_symbol *unitName)
     x->x_clock  = clock_new ((void *)x, (t_method)metro_task);
     x->x_outlet = outlet_new (cast_object (x), &s_bang);
     
-    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_ft1);
+    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_inlet2);
     
-    metro_ft1 (x, f);
+    metro_floatDelay (x, f);
     
     if (unitName != &s_) { metro_unit (x, unit, unitName); }
     
@@ -153,13 +153,13 @@ void metro_setup (void)
     class_addBang (c, metro_bang);
     class_addFloat (c, metro_float);
     
-    class_addMethod (c, (t_method)metro_ft1,    sym_ft1,    A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)metro_stop,   sym_stop,   A_NULL);
-    class_addMethod (c, (t_method)metro_unit,   sym_unit,   A_FLOAT, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)metro_floatDelay, sym_inlet2, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)metro_stop,       sym_stop,   A_NULL);
+    class_addMethod (c, (t_method)metro_unit,       sym_unit,   A_FLOAT, A_SYMBOL, A_NULL);
 
     #if PD_WITH_LEGACY 
     
-    class_addMethod (c, (t_method)metro_unit,   sym_tempo,  A_FLOAT, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)metro_unit,       sym_tempo,  A_FLOAT, A_SYMBOL, A_NULL);
     
     #endif
         

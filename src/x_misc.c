@@ -262,7 +262,7 @@ static void *cputime_new(void)
     t_cputime *x = (t_cputime *)pd_new(cputime_class);
     outlet_new(&x->x_obj, &s_float);
 
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_bang, sym_bang2);
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_bang, sym_inlet2);
 #ifdef _WIN32
     x->x_warned = 0;
 #endif
@@ -275,7 +275,7 @@ static void cputime_setup(void)
     cputime_class = class_new(sym_cputime, (t_newmethod)cputime_new, 0,
         sizeof(t_cputime), 0, 0);
     class_addBang(cputime_class, cputime_bang);
-    class_addMethod(cputime_class, (t_method)cputime_bang2, sym_bang2, 0);
+    class_addMethod(cputime_class, (t_method)cputime_bang2, sym_inlet2, 0);
 }
 
 /* -------------------------- realtime ------------------------------ */
@@ -303,7 +303,7 @@ static void *realtime_new(void)
 {
     t_realtime *x = (t_realtime *)pd_new(realtime_class);
     outlet_new(&x->x_obj, &s_float);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_bang, sym_bang2);
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_bang, sym_inlet2);
     realtime_bang(x);
     return (x);
 }
@@ -313,7 +313,7 @@ static void realtime_setup(void)
     realtime_class = class_new(sym_realtime, (t_newmethod)realtime_new, 0,
         sizeof(t_realtime), 0, 0);
     class_addBang(realtime_class, realtime_bang);
-    class_addMethod(realtime_class, (t_method)realtime_bang2, sym_bang2,
+    class_addMethod(realtime_class, (t_method)realtime_bang2, sym_inlet2,
         0);
 }
 
