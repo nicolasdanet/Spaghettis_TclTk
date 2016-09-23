@@ -36,7 +36,7 @@
 struct _gpointer {
     union {   
         struct _scalar  *gp_scalar;
-        union word      *gp_w;
+        t_word          *gp_w;
     } gp_un;
     t_gmaster           *gp_master;
     t_unique            gp_uniqueIdentifier;
@@ -207,9 +207,6 @@ t_array     *gpointer_getParentArray                    (t_gpointer *gp);
 
 void        gpointer_setByCopy                          (t_gpointer *gp, t_gpointer *toSet);
 void        gpointer_unset                              (t_gpointer *gp);
-
-void        gpointer_retain                             (t_gpointer *gp);
-void        gpointer_rawCopy                            (t_gpointer *src, t_gpointer *dest);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

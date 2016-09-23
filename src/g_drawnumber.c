@@ -49,7 +49,7 @@ void drawnumber_initialize (void)
 
 void drawnumber_release (void)
 {
-    if (gpointer_isSet (&drawnumber_gpointer)) { gpointer_unset (&drawnumber_gpointer); }
+    gpointer_unset (&drawnumber_gpointer);
 }
 
 // -----------------------------------------------------------------------------------------------------------

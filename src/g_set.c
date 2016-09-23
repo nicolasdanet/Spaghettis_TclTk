@@ -24,7 +24,7 @@ static t_class *set_class;                  /* Shared. */
 
 typedef struct _setvariable {
     t_symbol        *sv_fieldName;
-    union word      sv_w;
+    t_word          sv_w;
     } t_setvariable;
 
 typedef struct _set {

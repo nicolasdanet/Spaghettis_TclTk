@@ -336,6 +336,7 @@ t_symbol *sym_oscformat;
 t_symbol *sym_oscparse;
 t_symbol *sym_outlet;
 t_symbol *sym_outlet__tilde__;
+t_symbol *sym_p;
 t_symbol *sym_pack;
 t_symbol *sym_pad;
 t_symbol *sym_panelsize;
@@ -877,6 +878,7 @@ void symbols_initialize (void)
     sym_oscparse                                = gensym ("oscparse");
     sym_outlet                                  = gensym ("outlet");
     sym_outlet__tilde__                         = gensym ("outlet~");
+    sym_p                                       = gensym ("p");
     sym_pack                                    = gensym ("pack");
     sym_pad                                     = gensym ("pad");
     sym_panelsize                               = gensym ("panelsize");

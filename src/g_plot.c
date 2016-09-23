@@ -108,8 +108,8 @@ void plot_initialize (void)
 
 void plot_release (void)
 {
-    if (gpointer_isSet (&plot_check)) { gpointer_unset (&plot_check); }
-    if (gpointer_isSet (&plot_gpointer)) { gpointer_unset (&plot_gpointer); }
+    gpointer_unset (&plot_check);
+    gpointer_unset (&plot_gpointer);
 }
 
 // -----------------------------------------------------------------------------------------------------------

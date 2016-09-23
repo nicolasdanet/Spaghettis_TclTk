@@ -167,7 +167,7 @@ void gpointer_setByCopy (t_gpointer *gp, t_gpointer *toSet)
 
 void gpointer_unset (t_gpointer *gp)
 {
-    if (gp->gp_master) { gpointer_masterDecrement (gp->gp_master); }
+    if (gpointer_isSet (gp)) { gpointer_masterDecrement (gp->gp_master); }
     
     gpointer_init (gp);
 }
@@ -190,23 +190,6 @@ int gpointer_isValid (t_gpointer *gp)
 int gpointer_isValidNullAllowed (t_gpointer *gp)
 {
     return gpointer_isValidRaw (gp, 1); 
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void gpointer_retain (t_gpointer *gp)
-{
-    if (gp->gp_master) { gpointer_masterIncrement (gp->gp_master); }
-    else {
-        PD_BUG;
-    }
-}
-
-void gpointer_rawCopy (t_gpointer *src, t_gpointer *dest)
-{
-    *dest = *src;
 }
 
 // -----------------------------------------------------------------------------------------------------------

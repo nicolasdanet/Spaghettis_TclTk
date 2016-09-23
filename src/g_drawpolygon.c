@@ -72,7 +72,7 @@ void drawpolygon_initialize (void)
 
 void drawpolygon_release (void)
 {
-    if (gpointer_isSet (&drawpolygon_gpointer)) { gpointer_unset (&drawpolygon_gpointer); }
+    gpointer_unset (&drawpolygon_gpointer);
 }
 
 // -----------------------------------------------------------------------------------------------------------

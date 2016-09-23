@@ -511,7 +511,7 @@ typedef enum {
 
 typedef struct _atom {
     t_atomtype      a_type;
-    union word      a_w;
+    t_word          a_w;
     } t_atom;
 
 // -----------------------------------------------------------------------------------------------------------

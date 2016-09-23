@@ -101,6 +101,13 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define ADDRESS_FLOAT(atom)                 &((atom)->a_w.w_float)
+#define ADDRESS_SYMBOL(atom)                &((atom)->a_w.w_symbol)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #define IS_NULL(atom)                       ((atom)->a_type == A_NULL)
 #define IS_SEMICOLON(atom)                  ((atom)->a_type == A_SEMICOLON)
 #define IS_COMMA(atom)                      ((atom)->a_type == A_COMMA)
