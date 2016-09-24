@@ -684,7 +684,7 @@ static void env_tilde_dsp(t_sigenv *x, t_signal **sp)
 
 static void env_tilde_tick(t_sigenv *x) /* callback function for the clock */
 {
-    outlet_float(x->x_outlet, powtodb(x->x_result));
+    outlet_float(x->x_outlet, math_powerToDecibel(x->x_result));
 }
 
 static void env_tilde_ff(t_sigenv *x)           /* cleanup on free */

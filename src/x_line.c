@@ -62,7 +62,7 @@ static void line_task (t_line *x)
 {
     double remains = - scheduler_getMillisecondsSince (x->x_targetTime);
     
-    if (remains < math_epsilon()) { outlet_float (x->x_outlet, x->x_targetValue); }
+    if (remains < PD_EPSILON) { outlet_float (x->x_outlet, x->x_targetValue); }
     else {
     //
     outlet_float (x->x_outlet, line_valueAtTime (x, scheduler_getLogicalTime()));

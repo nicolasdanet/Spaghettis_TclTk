@@ -156,6 +156,7 @@
 #include "x_line.c"
 #include "x_timer.c"
 #include "x_pipe.c"
+#include "x_acoustics.c"
 
 /* DSP. */
 

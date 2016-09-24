@@ -74,7 +74,13 @@ t_error     utils_version                               (char *dest, size_t size
 
 int         math_compareFloat                           (t_float a, t_float b);
 t_float     math_euclideanDistance                      (t_float x1, t_float y1, t_float x2, t_float y2);
-double      math_epsilon                                (void);
+
+t_float     math_midiToFrequency                        (t_float f);
+t_float     math_frequencyToMidi                        (t_float f);
+t_float     math_rootMeanSquareToDecibel                (t_float f);
+t_float     math_decibelToRootMeanSquare                (t_float f);
+t_float     math_powerToDecibel                         (t_float f);
+t_float     math_decibelToPower                         (t_float f);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

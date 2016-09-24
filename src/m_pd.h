@@ -788,12 +788,6 @@ void    resampleto_dsp      (t_resample *x, t_sample *out, int insize, int outsi
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_float mtof                (t_float);
-t_float ftom                (t_float);
-t_float rmstodb             (t_float);
-t_float powtodb             (t_float);
-t_float dbtorms             (t_float);
-t_float dbtopow             (t_float);
 t_float q8_sqrt             (t_float);
 t_float q8_rsqrt            (t_float);
 

@@ -81,7 +81,7 @@ void getsize_setup          (void);
 void setsize_setup          (void);
 void append_setup           (void);
 void scalardefine_setup     (void);
-void x_acoustics_setup      (void);
+void acoustics_setup        (void);
 void x_interface_setup      (void);
 void x_connective_setup     (void);
 void metro_setup            (void);
@@ -181,7 +181,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     setsize_setup();
     append_setup();
     scalardefine_setup();
-    x_acoustics_setup();
+    acoustics_setup();
     x_interface_setup();
     x_connective_setup();
     metro_setup();

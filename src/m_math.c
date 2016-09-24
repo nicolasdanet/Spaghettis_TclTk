@@ -31,9 +31,56 @@ t_float math_euclideanDistance (t_float x1, t_float y1, t_float x2, t_float y2)
     return (t_float)sqrt (x * x + y * y);
 }
 
-double math_epsilon (void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_float math_midiToFrequency (t_float f)
 {
-    return 1E-9;
+    if (f <= -1500.0) { return 0.0; }
+    else {
+        f = PD_MIN (f, 1499.0); return (8.17579891564 * exp (0.0577622650 * f));
+    }
+}
+
+t_float math_frequencyToMidi (t_float f)
+{
+    if (f <= 0.0) { return -1500.0; }
+    else { 
+        return (17.3123405046 * log (0.12231220585 * f));
+    }
+}
+
+t_float math_powerToDecibel (t_float f)
+{
+    if (f <= 0.0) { return 0.0; }
+    else {
+        t_float t = 100.0 + (10.0 / PD_LOGTEN * log (f)); return (t < 0.0 ? 0.0 : t);
+    }
+}
+
+t_float math_decibelToPower (t_float f)
+{
+    if (f <= 0.0)  { return 0.0; }
+    else {
+        f = PD_MIN (f, 870.0); return (exp ((PD_LOGTEN * 0.10) * (f - 100.0)));
+    }
+}
+
+t_float math_rootMeanSquareToDecibel (t_float f)
+{
+    if (f <= 0.0) { return 0.0; }
+    else {
+        t_float t = 100.0 + (20.0 / PD_LOGTEN * log (f)); return (t < 0.0 ? 0.0 : t);
+    }
+}
+
+t_float math_decibelToRootMeanSquare (t_float f)
+{
+    if (f <= 0.0) { return 0.0; }
+    else {
+        f = PD_MIN (f, 485.0); return (exp ((PD_LOGTEN * 0.05) * (f - 100.0)));
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -178,9 +178,12 @@ typedef void (*t_gotfn1)(void *x, void *arg1);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define PD_PI                               3.14159
+#define PD_LOGTEN                           2.302585092994
+#define PD_EPSILON                          1E-9
+
 #define PD_ISPOWER2(v)                      (!((v) & ((v) - 1)))
 #define PD_NEXTPOWER2(v)                    sys_nextPowerOf2 (v)
-#define PD_PI                               3.14159
 #define PD_TORADIANS(degrees)               ((PD_PI * (degrees)) / 180.0)
 
 // -----------------------------------------------------------------------------------------------------------
