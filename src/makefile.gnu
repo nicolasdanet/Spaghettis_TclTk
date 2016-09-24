@@ -59,7 +59,7 @@ LIB += -ljack
 # The sources (filepath must NOT contain space).
 
 SRC = amalgam.c \
-    x_arithmetic.c x_connective.c x_gui.c x_interface.c \
+    x_connective.c x_gui.c x_interface.c \
     x_midi.c x_misc.c x_net.c \
     d_ugen.c d_ctl.c d_arithmetic.c d_osc.c d_filter.c d_dac.c d_misc.c \
     d_math.c d_fft.c d_fft_fftsg.c d_array.c d_global.c \
