@@ -314,7 +314,9 @@ static void textsequence_arguments (t_textsequence *x, t_symbol *s, int argc, t_
     for (i = 0; i < argc; i++) { x->x_argv[i] = argv[i]; }
 }
 
-static void textsequence_unit (t_textsequence *x, t_float f, t_symbol *unitName)
+/* Note that float arguments are always passed at last. */
+
+static void textsequence_unit (t_textsequence *x, t_symbol *unitName, t_float f)
 {
     t_error err = clock_setUnitParsed (x->x_clock, f, unitName);
     
@@ -355,7 +357,7 @@ void *textsequence_new (t_symbol *s, int argc, t_atom *argv)
                 }
                 
             } else if (argc >= 3 && (t == sym___dash__u || t == sym___dash__unit)) {
-                textsequence_unit (x, atom_getFloat (argv + 1), atom_getSymbol (argv + 2));
+                textsequence_unit (x, atom_getSymbol (argv + 2), atom_getFloat (argv + 1));
                 argc -= 3; argv += 3;
                 
             } else {

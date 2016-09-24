@@ -45,7 +45,9 @@ static void timer_bangElapsed (t_timer *x)
     outlet_float (x->x_outlet, scheduler_getUnitsSince (x->x_start, x->x_unit, x->x_isSamples));
 }
 
-static void timer_unit (t_timer *x, t_float f, t_symbol *unitName)
+/* Note that float arguments are always passed at last. */
+
+static void timer_unit (t_timer *x, t_symbol *unitName, t_float f)
 {
     t_error err = clock_parseUnit (f, unitName, &x->x_unit, &x->x_isSamples);
     
@@ -58,7 +60,9 @@ static void timer_unit (t_timer *x, t_float f, t_symbol *unitName)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *timer_new (t_float unit, t_symbol *unitName)
+/* Note that float arguments are always passed at last. */
+
+static void *timer_new (t_symbol *unitName, t_float unit)
 {
     t_timer *x = (t_timer *)pd_new (timer_class);
     
@@ -71,7 +75,7 @@ static void *timer_new (t_float unit, t_symbol *unitName)
     
     inlet_new (cast_object (x), cast_pd (x), &s_bang, sym_inlet2);
     
-    if (unit != 0.0) { timer_unit (x, unit, unitName); }
+    if (unit != 0.0) { timer_unit (x, unitName, unit); }
         
     return x;
 }

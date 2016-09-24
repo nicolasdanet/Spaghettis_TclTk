@@ -74,7 +74,9 @@ static void delay_stop (t_delay *x)
     clock_unset (x->x_clock);
 }
 
-static void delay_unit (t_delay *x, t_float f, t_symbol *unitName)
+/* Note that float arguments are always passed at last. */
+
+static void delay_unit (t_delay *x, t_symbol *unitName, t_float f)
 {
     t_error err = clock_setUnitParsed (x->x_clock, f, unitName);
     
@@ -87,7 +89,9 @@ static void delay_unit (t_delay *x, t_float f, t_symbol *unitName)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *delay_new (t_float f, t_float unit, t_symbol *unitName)
+/* Note that float arguments are always passed at last. */
+
+static void *delay_new (t_symbol *unitName, t_float f, t_float unit)
 {
     t_delay *x = (t_delay *)pd_new (delay_class);
     
@@ -98,7 +102,7 @@ static void *delay_new (t_float f, t_float unit, t_symbol *unitName)
     
     delay_floatDelay (x, f);
     
-    if (unit != 0.0) { delay_unit (x, unit, unitName); }
+    if (unit != 0.0) { delay_unit (x, unitName, unit); }
     
     return x;
 }

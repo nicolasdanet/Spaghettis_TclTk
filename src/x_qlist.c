@@ -219,7 +219,9 @@ void qlist_write (t_qlist *x, t_symbol *s)
     textbuffer_write (&x->ql_textbuffer, sym_read, 1, &a);
 }
 
-static void qlist_unit (t_qlist *x, t_float f, t_symbol *unitName)
+/* Note that float arguments are always passed at last. */
+
+static void qlist_unit (t_qlist *x, t_symbol *unitName, t_float f)
 {
     t_error err = clock_setUnitParsed (x->ql_clock, f, (unitName == &s_ ? sym_millisecond : unitName));
     

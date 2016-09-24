@@ -95,7 +95,9 @@ static void metro_stop (t_metro *x)
     metro_float (x, 0.0);
 }
 
-static void metro_unit (t_metro *x, t_float f, t_symbol *unitName)
+/* Note that float arguments are always passed at last. */
+
+static void metro_unit (t_metro *x, t_symbol *unitName, t_float f)
 {
     t_error err = clock_setUnitParsed (x->x_clock, f, unitName);
     
@@ -108,7 +110,9 @@ static void metro_unit (t_metro *x, t_float f, t_symbol *unitName)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *metro_new (t_float f, t_float unit, t_symbol *unitName)
+/* Note that float arguments are always passed at last. */
+
+static void *metro_new (t_symbol *unitName, t_float f, t_float unit)
 {
     t_metro *x = (t_metro *)pd_new (metro_class);
     
@@ -122,7 +126,7 @@ static void *metro_new (t_float f, t_float unit, t_symbol *unitName)
     
     metro_floatDelay (x, f);
     
-    if (unitName != &s_) { metro_unit (x, unit, unitName); }
+    if (unitName != &s_) { metro_unit (x, unitName, unit); }
     
     return x;
 }
