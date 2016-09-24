@@ -11,7 +11,7 @@ Copyright:
 
 Remark:
 
-    All files largely modified by Nicolas Danet < nicolasdanet@free.fr >.
+    All files largely modified by Nicolas Danet < nicolas.danet@free.fr >.
     
 Additional terms:
 
