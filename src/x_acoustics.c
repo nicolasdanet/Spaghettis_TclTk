@@ -15,108 +15,119 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
-static t_class *mtof_class;
+static t_class *mtof_class;         /* Shared. */
+static t_class *ftom_class;         /* Shared. */
+static t_class *powtodb_class;      /* Shared. */
+static t_class *dbtopow_class;      /* Shared. */
+static t_class *rmstodb_class;      /* Shared. */
+static t_class *dbtorms_class;      /* Shared. */
 
-static void *mtof_new(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static void *mtof_new (void)
 {
-    t_object *x = (t_object *)pd_new(mtof_class);
-    outlet_new(x, &s_float);
-    return (x);
+    t_object *x = (t_object *)pd_new (mtof_class);
+    
+    outlet_new (x, &s_float);
+    
+    return x;
 }
 
-static void mtof_float(t_object *x, t_float f)
+static void mtof_float (t_object *x, t_float f)
 {
-    outlet_float(x->te_outlet, math_midiToFrequency (f));
+    outlet_float (x->te_outlet, math_midiToFrequency (f));
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_class *ftom_class;
-
-static void *ftom_new(void)
+static void *ftom_new (void)
 {
-    t_object *x = (t_object *)pd_new(ftom_class);
-    outlet_new(x, &s_float);
-    return (x);
+    t_object *x = (t_object *)pd_new (ftom_class);
+    
+    outlet_new (x, &s_float);
+    
+    return x;
 }
 
-static void ftom_float(t_object *x, t_float f)
+static void ftom_float (t_object *x, t_float f)
 {
-    outlet_float(x->te_outlet, math_frequencyToMidi(f));
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static t_class *rmstodb_class;
-
-static void *rmstodb_new(void)
-{
-    t_object *x = (t_object *)pd_new(rmstodb_class);
-    outlet_new(x, &s_float);
-    return (x);
-}
-
-static void rmstodb_float(t_object *x, t_float f)
-{
-    outlet_float(x->te_outlet, math_rootMeanSquareToDecibel(f));
-}
-
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static t_class *powtodb_class;
-
-static void *powtodb_new(void)
-{
-    t_object *x = (t_object *)pd_new(powtodb_class);
-    outlet_new(x, &s_float);
-    return (x);
-}
-
-static void powtodb_float(t_object *x, t_float f)
-{
-    outlet_float(x->te_outlet, math_powerToDecibel(f));
+    outlet_float (x->te_outlet, math_frequencyToMidi (f));
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_class *dbtopow_class;
-
-static void *dbtopow_new(void)
+static void *powtodb_new (void)
 {
-    t_object *x = (t_object *)pd_new(dbtopow_class);
-    outlet_new(x, &s_float);
-    return (x);
+    t_object *x = (t_object *)pd_new (powtodb_class);
+    
+    outlet_new (x, &s_float);
+    
+    return x;
 }
 
-static void dbtopow_float(t_object *x, t_float f)
+static void powtodb_float (t_object *x, t_float f)
 {
-    outlet_float(x->te_outlet, math_decibelToPower(f));
+    outlet_float (x->te_outlet, math_powerToDecibel (f));
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static t_class *dbtorms_class;
-
-static void *dbtorms_new(void)
+static void *dbtopow_new (void)
 {
-    t_object *x = (t_object *)pd_new(dbtorms_class);
-    outlet_new(x, &s_float);
-    return (x);
+    t_object *x = (t_object *)pd_new (dbtopow_class);
+    
+    outlet_new (x, &s_float);
+    
+    return x;
 }
 
-static void dbtorms_float(t_object *x, t_float f)
+static void dbtopow_float (t_object *x, t_float f)
 {
-    outlet_float(x->te_outlet, math_decibelToRootMeanSquare(f));
+    outlet_float (x->te_outlet, math_decibelToPower (f));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *rmstodb_new (void)
+{
+    t_object *x = (t_object *)pd_new (rmstodb_class);
+    
+    outlet_new (x, &s_float);
+    
+    return x;
+}
+
+static void rmstodb_float (t_object *x, t_float f)
+{
+    outlet_float (x->te_outlet, math_rootMeanSquareToDecibel (f));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *dbtorms_new (void)
+{
+    t_object *x = (t_object *)pd_new (dbtorms_class);
+    
+    outlet_new (x, &s_float);
+    
+    return x;
+}
+
+static void dbtorms_float (t_object *x, t_float f)
+{
+    outlet_float (x->te_outlet, math_decibelToRootMeanSquare (f));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -125,36 +136,61 @@ static void dbtorms_float(t_object *x, t_float f)
 
 void acoustics_setup (void)
 {
-    t_symbol *s = sym_mtof;
-    mtof_class = class_new(sym_mtof, mtof_new, 0,
-        sizeof(t_object), 0, 0);
-    class_addFloat(mtof_class, (t_method)mtof_float);
-    class_setHelpName(mtof_class, s);
+    mtof_class = class_new (sym_mtof, 
+                        mtof_new,
+                        NULL,
+                        sizeof (t_object),
+                        CLASS_DEFAULT,
+                        A_NULL);
+
+    ftom_class = class_new (sym_ftom,
+                        ftom_new,
+                        NULL,
+                        sizeof (t_object),
+                        CLASS_DEFAULT,
+                        A_NULL);
+
+    powtodb_class = class_new (sym_powtodb,
+                        powtodb_new,
+                        NULL,
+                        sizeof (t_object),
+                        CLASS_DEFAULT,
+                        A_NULL);
+                        
+    dbtopow_class = class_new (sym_dbtopow, 
+                        dbtopow_new,
+                        NULL,
+                        sizeof (t_object),
+                        CLASS_DEFAULT,
+                        A_NULL);
+
+    rmstodb_class = class_new (sym_rmstodb,
+                        rmstodb_new,
+                        NULL,
+                        sizeof (t_object),
+                        CLASS_DEFAULT,
+                        A_NULL);
+
+    dbtorms_class = class_new (sym_dbtorms,
+                        dbtorms_new,
+                        NULL,
+                        sizeof (t_object),
+                        CLASS_DEFAULT,
+                        A_NULL);
     
-    ftom_class = class_new(sym_ftom, ftom_new, 0,
-        sizeof(t_object), 0, 0);
-    class_addFloat(ftom_class, (t_method)ftom_float);
-    class_setHelpName(ftom_class, s);
-
-    powtodb_class = class_new (sym_powtodb, powtodb_new, 0,
-        sizeof(t_object), 0, 0);
-    class_addFloat(powtodb_class, (t_method)powtodb_float);
-    class_setHelpName(powtodb_class, s);
-
-    rmstodb_class = class_new (sym_rmstodb, rmstodb_new, 0,
-        sizeof(t_object), 0, 0);
-    class_addFloat(rmstodb_class, (t_method)rmstodb_float);
-    class_setHelpName(rmstodb_class, s);
-
-    dbtopow_class = class_new (sym_dbtopow, dbtopow_new, 0,
-        sizeof(t_object), 0, 0);
-    class_addFloat(dbtopow_class, (t_method)dbtopow_float);
-    class_setHelpName(dbtopow_class, s);
-
-    dbtorms_class = class_new(sym_dbtorms, dbtorms_new, 0,
-        sizeof(t_object), 0, 0);
-    class_addFloat(dbtorms_class, (t_method)dbtorms_float);
-    class_setHelpName(dbtorms_class, s);
+    class_addFloat (mtof_class, (t_method)mtof_float);
+    class_addFloat (ftom_class, (t_method)ftom_float);
+    class_addFloat (powtodb_class, (t_method)powtodb_float);
+    class_addFloat (dbtopow_class, (t_method)dbtopow_float);
+    class_addFloat (rmstodb_class, (t_method)rmstodb_float);
+    class_addFloat (dbtorms_class, (t_method)dbtorms_float);
+    
+    class_setHelpName (mtof_class, sym_mtof);
+    class_setHelpName (ftom_class, sym_mtof);
+    class_setHelpName (powtodb_class, sym_mtof);
+    class_setHelpName (dbtopow_class, sym_mtof);
+    class_setHelpName (rmstodb_class, sym_mtof);
+    class_setHelpName (dbtorms_class, sym_mtof);
 }
 
 // -----------------------------------------------------------------------------------------------------------
