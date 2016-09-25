@@ -223,6 +223,8 @@ void        *listtosymbol_new               (t_symbol *s, int argc, t_atom *argv
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void        *binop_new                      (t_class *c, t_float f);
+
 void        binop2_ba_bang                  (t_binop *x);
 void        binop2_ba_float                 (t_binop *x, t_float f);
 void        binop2_la_bang                  (t_binop *x);

@@ -1,10 +1,13 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-/* arithmetic: binops ala C language.  The 4 functions and relationals are
-done on floats; the logical and bitwise binops convert their
-inputs to int and their outputs back to float. */
+/* 
+    Copyright (c) 1997-2016 Miller Puckette and others.
+*/
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #include "m_pd.h"
 #include "m_core.h"
@@ -13,11 +16,19 @@ inputs to int and their outputs back to float. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
-/* ------------------ binop1:  +, -, *, / ----------------------------- */
+static t_class *binopAdd_class;             /* Shared. */
+static t_class *binopSubtract_class;        /* Shared. */
+static t_class *binopMultiply_class;        /* Shared. */
+static t_class *binopDivide_class;          /* Shared. */
+static t_class *binopPower_class;           /* Shared. */
+static t_class *binopMaximum_class;         /* Shared. */
+static t_class *binopMinimum_class;         /* Shared. */
 
-static void *binop1_new(t_class *floatclass, t_float f)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void *binop_new (t_class *floatclass, t_float f)
 {
     t_binop *x = (t_binop *)pd_new(floatclass);
     outlet_new(&x->bo_obj, &s_float);
@@ -27,145 +38,144 @@ static void *binop1_new(t_class *floatclass, t_float f)
     return (x);
 }
 
-/* --------------------- addition ------------------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static t_class *binop1_plus_class;
-
-static void *binop1_plus_new(t_float f)
+static void *binopAdd_new(t_float f)
 {
-    return (binop1_new(binop1_plus_class, f));
+    return (binop_new(binopAdd_class, f));
 }
 
-static void binop1_plus_bang(t_binop *x)
+static void binopAdd_bang(t_binop *x)
 {
     outlet_float(x->bo_obj.te_outlet, x->bo_f1 + x->bo_f2);
 }
 
-static void binop1_plus_float(t_binop *x, t_float f)
+static void binopAdd_float(t_binop *x, t_float f)
 {
     outlet_float(x->bo_obj.te_outlet, (x->bo_f1 = f) + x->bo_f2);
 }
 
-/* --------------------- subtraction ------------------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static t_class *binop1_minus_class;
-
-static void *binop1_minus_new(t_float f)
+static void *binopSubtract_new(t_float f)
 {
-    return (binop1_new(binop1_minus_class, f));
+    return (binop_new(binopSubtract_class, f));
 }
 
-static void binop1_minus_bang(t_binop *x)
+static void binopSubtract_bang(t_binop *x)
 {
     outlet_float(x->bo_obj.te_outlet, x->bo_f1 - x->bo_f2);
 }
 
-static void binop1_minus_float(t_binop *x, t_float f)
+static void binopSubtract_float(t_binop *x, t_float f)
 {
     outlet_float(x->bo_obj.te_outlet, (x->bo_f1 = f) - x->bo_f2);
 }
 
-/* --------------------- multiplication ------------------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static t_class *binop1_times_class;
-
-static void *binop1_times_new(t_float f)
+static void *binopMultiply_new(t_float f)
 {
-    return (binop1_new(binop1_times_class, f));
+    return (binop_new(binopMultiply_class, f));
 }
 
-static void binop1_times_bang(t_binop *x)
+static void binopMultiply_bang(t_binop *x)
 {
     outlet_float(x->bo_obj.te_outlet, x->bo_f1 * x->bo_f2);
 }
 
-static void binop1_times_float(t_binop *x, t_float f)
+static void binopMultiply_float(t_binop *x, t_float f)
 {
     outlet_float(x->bo_obj.te_outlet, (x->bo_f1 = f) * x->bo_f2);
 }
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-/* --------------------- division ------------------------------- */
-
-static t_class *binop1_div_class;
-
-static void *binop1_div_new(t_float f)
+static void *binopDivide_new(t_float f)
 {
-    return (binop1_new(binop1_div_class, f));
+    return (binop_new(binopDivide_class, f));
 }
 
-static void binop1_div_bang(t_binop *x)
+static void binopDivide_bang(t_binop *x)
 {
     outlet_float(x->bo_obj.te_outlet,
         (x->bo_f2 != 0 ? x->bo_f1 / x->bo_f2 : 0));
 }
 
-static void binop1_div_float(t_binop *x, t_float f)
+static void binopDivide_float(t_binop *x, t_float f)
 {
     x->bo_f1 = f;
     outlet_float(x->bo_obj.te_outlet,
         (x->bo_f2 != 0 ? x->bo_f1 / x->bo_f2 : 0));
 }
 
-/* ------------------------ pow -------------------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static t_class *binop1_pow_class;
-
-static void *binop1_pow_new(t_float f)
+static void *binopPower_new(t_float f)
 {
-    return (binop1_new(binop1_pow_class, f));
+    return (binop_new(binopPower_class, f));
 }
 
-static void binop1_pow_bang(t_binop *x)
+static void binopPower_bang(t_binop *x)
 {
     outlet_float(x->bo_obj.te_outlet,
         (x->bo_f1 > 0 ? powf(x->bo_f1, x->bo_f2) : 0));
 }
 
-static void binop1_pow_float(t_binop *x, t_float f)
+static void binopPower_float(t_binop *x, t_float f)
 {
     x->bo_f1 = f;
     outlet_float(x->bo_obj.te_outlet,
         (x->bo_f1 > 0 ? powf(x->bo_f1, x->bo_f2) : 0));
 }
 
-/* ------------------------ max -------------------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static t_class *binop1_max_class;
-
-static void *binop1_max_new(t_float f)
+static void *binopMaximum_new(t_float f)
 {
-    return (binop1_new(binop1_max_class, f));
+    return (binop_new(binopMaximum_class, f));
 }
 
-static void binop1_max_bang(t_binop *x)
+static void binopMaximum_bang(t_binop *x)
 {
     outlet_float(x->bo_obj.te_outlet,
         (x->bo_f1 > x->bo_f2 ? x->bo_f1 : x->bo_f2));
 }
 
-static void binop1_max_float(t_binop *x, t_float f)
+static void binopMaximum_float(t_binop *x, t_float f)
 {
     x->bo_f1 = f;
     outlet_float(x->bo_obj.te_outlet,
         (x->bo_f1 > x->bo_f2 ? x->bo_f1 : x->bo_f2));
 }
 
-/* ------------------------ min -------------------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static t_class *binop1_min_class;
-
-static void *binop1_min_new(t_float f)
+static void *binopMinimum_new(t_float f)
 {
-    return (binop1_new(binop1_min_class, f));
+    return (binop_new(binopMinimum_class, f));
 }
 
-static void binop1_min_bang(t_binop *x)
+static void binopMinimum_bang(t_binop *x)
 {
     outlet_float(x->bo_obj.te_outlet,
         (x->bo_f1 < x->bo_f2 ? x->bo_f1 : x->bo_f2));
 }
 
-static void binop1_min_float(t_binop *x, t_float f)
+static void binopMinimum_float(t_binop *x, t_float f)
 {
     x->bo_f1 = f;
     outlet_float(x->bo_obj.te_outlet,
@@ -176,58 +186,59 @@ static void binop1_min_float(t_binop *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void binop1_setup(void)
+void binop1_setup (void)
 {
     t_symbol *binop1_sym = sym_pow;
     t_symbol *binop23_sym = sym___ampersand____ampersand__;
 
-    binop1_plus_class = class_new (sym___plus__, (t_newmethod)binop1_plus_new, 0,
+    binopAdd_class = class_new (sym___plus__, (t_newmethod)binopAdd_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addBang(binop1_plus_class, binop1_plus_bang);
-    class_addFloat(binop1_plus_class, (t_method)binop1_plus_float);
-    class_setHelpName(binop1_plus_class, binop1_sym);
+    class_addBang(binopAdd_class, binopAdd_bang);
+    class_addFloat(binopAdd_class, (t_method)binopAdd_float);
+    class_setHelpName(binopAdd_class, binop1_sym);
     
-    binop1_minus_class = class_new(sym___minus__,
-        (t_newmethod)binop1_minus_new, 0,
+    binopSubtract_class = class_new(sym___minus__,
+        (t_newmethod)binopSubtract_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addBang(binop1_minus_class, binop1_minus_bang);
-    class_addFloat(binop1_minus_class, (t_method)binop1_minus_float);
-    class_setHelpName(binop1_minus_class, binop1_sym);
+    class_addBang(binopSubtract_class, binopSubtract_bang);
+    class_addFloat(binopSubtract_class, (t_method)binopSubtract_float);
+    class_setHelpName(binopSubtract_class, binop1_sym);
 
-    binop1_times_class = class_new(sym___asterisk__,
-        (t_newmethod)binop1_times_new, 0,
+    binopMultiply_class = class_new(sym___asterisk__,
+        (t_newmethod)binopMultiply_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addBang(binop1_times_class, binop1_times_bang);
-    class_addFloat(binop1_times_class, (t_method)binop1_times_float);
-    class_setHelpName(binop1_times_class, binop1_sym);
+    class_addBang(binopMultiply_class, binopMultiply_bang);
+    class_addFloat(binopMultiply_class, (t_method)binopMultiply_float);
+    class_setHelpName(binopMultiply_class, binop1_sym);
 
-    binop1_div_class = class_new (sym___slash__,
-        (t_newmethod)binop1_div_new, 0,
+    binopDivide_class = class_new (sym___slash__,
+        (t_newmethod)binopDivide_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addBang(binop1_div_class, binop1_div_bang);
-    class_addFloat(binop1_div_class, (t_method)binop1_div_float);
-    class_setHelpName(binop1_div_class, binop1_sym);
+    class_addBang(binopDivide_class, binopDivide_bang);
+    class_addFloat(binopDivide_class, (t_method)binopDivide_float);
+    class_setHelpName(binopDivide_class, binop1_sym);
 
-    binop1_pow_class = class_new(sym_pow,
-        (t_newmethod)binop1_pow_new, 0,
+    binopPower_class = class_new(sym_pow,
+        (t_newmethod)binopPower_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addBang(binop1_pow_class, binop1_pow_bang);
-    class_addFloat(binop1_pow_class, (t_method)binop1_pow_float);
-    class_setHelpName(binop1_pow_class, binop1_sym);
+    class_addBang(binopPower_class, binopPower_bang);
+    class_addFloat(binopPower_class, (t_method)binopPower_float);
+    class_setHelpName(binopPower_class, binop1_sym);
 
-    binop1_max_class = class_new (sym_max,
-        (t_newmethod)binop1_max_new, 0,
+    binopMaximum_class = class_new (sym_max,
+        (t_newmethod)binopMaximum_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addBang(binop1_max_class, binop1_max_bang);
-    class_addFloat(binop1_max_class, (t_method)binop1_max_float);
-    class_setHelpName(binop1_max_class, binop1_sym);
+    class_addBang(binopMaximum_class, binopMaximum_bang);
+    class_addFloat(binopMaximum_class, (t_method)binopMaximum_float);
+    class_setHelpName(binopMaximum_class, binop1_sym);
 
-    binop1_min_class = class_new (sym_min,
-        (t_newmethod)binop1_min_new, 0,
+    binopMinimum_class = class_new (sym_min,
+        (t_newmethod)binopMinimum_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addBang(binop1_min_class, binop1_min_bang);
-    class_addFloat(binop1_min_class, (t_method)binop1_min_float);
-    class_setHelpName(binop1_min_class, binop1_sym);
+    class_addBang(binopMinimum_class, binopMinimum_bang);
+    class_addFloat(binopMinimum_class, (t_method)binopMinimum_float);
+    class_setHelpName(binopMinimum_class, binop1_sym);
 }
 
-
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
