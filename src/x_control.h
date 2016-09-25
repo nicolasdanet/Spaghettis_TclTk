@@ -225,21 +225,6 @@ void        *listtosymbol_new               (t_symbol *s, int argc, t_atom *argv
 
 void        *binop_new                      (t_class *c, t_float f);
 
-void        binop2_ba_bang                  (t_binop *x);
-void        binop2_ba_float                 (t_binop *x, t_float f);
-void        binop2_la_bang                  (t_binop *x);
-void        binop2_la_float                 (t_binop *x, t_float f);
-void        binop2_bo_bang                  (t_binop *x);
-void        binop2_bo_float                 (t_binop *x, t_float f);
-void        binop2_lo_bang                  (t_binop *x);
-void        binop2_lo_float                 (t_binop *x, t_float f);
-void        binop2_ls_bang                  (t_binop *x);
-void        binop2_ls_float                 (t_binop *x, t_float f);
-void        binop2_rs_bang                  (t_binop *x);
-void        binop2_rs_float                 (t_binop *x, t_float f);
-void        binop2_pc_bang                  (t_binop *x);
-void        binop2_pc_float                 (t_binop *x, t_float f);
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 

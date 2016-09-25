@@ -152,6 +152,87 @@ static void binop3_div_float(t_binop *x, t_float f)
     binop3_div_bang(x);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void binop2_ba_bang(t_binop *x)
+{
+    outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1)) & (int)(x->bo_f2));
+}
+
+void binop2_ba_float(t_binop *x, t_float f)
+{
+    outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1 = f)) & (int)(x->bo_f2));
+}
+
+void binop2_la_bang(t_binop *x)
+{
+    outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1)) && (int)(x->bo_f2));
+}
+
+void binop2_la_float(t_binop *x, t_float f)
+{
+    outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1 = f)) && (int)(x->bo_f2));
+}
+
+void binop2_bo_bang(t_binop *x)
+{
+    outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1)) | (int)(x->bo_f2));
+}
+
+void binop2_bo_float(t_binop *x, t_float f)
+{
+    outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1 = f)) | (int)(x->bo_f2));
+}
+
+void binop2_lo_bang(t_binop *x)
+{
+    outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1)) || (int)(x->bo_f2));
+}
+
+void binop2_lo_float(t_binop *x, t_float f)
+{
+    outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1 = f)) || (int)(x->bo_f2));
+}
+
+void binop2_ls_bang(t_binop *x)
+{
+    outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1)) << (int)(x->bo_f2));
+}
+
+void binop2_ls_float(t_binop *x, t_float f)
+{
+    outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1 = f)) << (int)(x->bo_f2));
+}
+
+void binop2_rs_bang(t_binop *x)
+{
+    outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1)) >> (int)(x->bo_f2));
+}
+
+void binop2_rs_float(t_binop *x, t_float f)
+{
+    outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1 = f)) >> (int)(x->bo_f2));
+}
+
+void binop2_pc_bang(t_binop *x)
+{
+    int n2 = x->bo_f2;
+        /* apparently "%" raises an exception for INT_MIN and -1 */
+    if (n2 == -1)
+        outlet_float(x->bo_obj.te_outlet, 0);
+    else outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1)) % (n2 ? n2 : 1));
+}
+
+void binop2_pc_float(t_binop *x, t_float f)
+{
+    int n2 = x->bo_f2;
+    if (n2 == -1)
+        outlet_float(x->bo_obj.te_outlet, 0);
+    else outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1 = f)) % (n2 ? n2 : 1));
+}
+
 void binop3_setup(void)
 {
     t_symbol *binop1_sym = sym_pow;
