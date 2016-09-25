@@ -193,7 +193,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     pipe_setup();
     x_arithmetic_setup();
     binop_setup();
-    //binop3_setup();
+    binop3_setup();
     arraydefine_setup();
     table_setup();
     arraysize_setup();

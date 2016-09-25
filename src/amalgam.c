@@ -158,7 +158,7 @@
 #include "x_pipe.c"
 #include "x_math.c"
 #include "x_binop.c"
-//#include "x_binop3.c"
+#include "x_binop3.c"
 #include "x_acoustic.c"
 
 /* DSP. */
