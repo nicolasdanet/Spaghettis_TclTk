@@ -175,7 +175,7 @@ void file_openHelp (const char *directory, const char *name)
         f = file_openConsideringSearchPath (help, name, PD_HELP, directoryResult, &nameResult, PD_STRING);
     }
     
-    if (f < 0) { error_canNotOpen (name); }
+    if (f < 0) { error_canNotFind (gensym (name), sym_help); }
     else {
         close (f);
         buffer_fileOpen (NULL, gensym (nameResult), gensym (directoryResult));

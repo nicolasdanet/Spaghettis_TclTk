@@ -254,6 +254,7 @@ extern t_symbol *sym_guiconnect;
 extern t_symbol *sym_guistub;
 extern t_symbol *sym_graph;
 extern t_symbol *sym_gripsize;
+extern t_symbol *sym_help;
 extern t_symbol *sym_hip__tilde__;
 extern t_symbol *sym_hold;
 extern t_symbol *sym_hradio;

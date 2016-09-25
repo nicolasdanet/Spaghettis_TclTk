@@ -249,6 +249,7 @@ t_symbol *sym_guiconnect;
 t_symbol *sym_guistub;
 t_symbol *sym_graph;
 t_symbol *sym_gripsize;
+t_symbol *sym_help;
 t_symbol *sym_hip__tilde__;
 t_symbol *sym_hold;
 t_symbol *sym_hradio;
@@ -791,6 +792,7 @@ void symbols_initialize (void)
     sym_guistub                                 = gensym ("guistub");
     sym_graph                                   = gensym ("graph");
     sym_gripsize                                = gensym ("gripsize");
+    sym_help                                    = gensym ("help");
     sym_hip__tilde__                            = gensym ("hip~");
     sym_hold                                    = gensym ("hold");
     sym_hradio                                  = gensym ("hradio");
