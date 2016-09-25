@@ -90,7 +90,8 @@ void line_setup             (void);
 void timer_setup            (void);
 void pipe_setup             (void);
 void x_arithmetic_setup     (void);
-void binop_setup            (void);         
+void binop_setup            (void);
+void binop3_setup           (void);        
 void arraydefine_setup      (void);
 void table_setup            (void);
 void arraysize_setup        (void);
@@ -192,6 +193,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     pipe_setup();
     x_arithmetic_setup();
     binop_setup();
+    //binop3_setup();
     arraydefine_setup();
     table_setup();
     arraysize_setup();
