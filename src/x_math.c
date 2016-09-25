@@ -37,14 +37,6 @@ typedef struct _math {
     t_outlet    *x_outlet;
     } t_math;
 
-typedef struct _clip
-{
-    t_object x_ob;
-    t_float x_f1;
-    t_float x_f2;
-    t_float x_f3;
-} t_clip;
-
 typedef struct _atan2
 {
     t_object    x_ob;
@@ -215,34 +207,6 @@ static void atan_float(t_object *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *clip_new(t_float f1, t_float f2)
-{
-    t_clip *x = (t_clip *)pd_new(clip_class);
-    inlet_newFloat(&x->x_ob, &x->x_f2);
-    inlet_newFloat(&x->x_ob, &x->x_f3);
-    outlet_new(&x->x_ob, &s_float);
-    x->x_f2 = f1;
-    x->x_f3 = f2;
-    return (x);
-}
-
-static void clip_bang(t_clip *x)
-{
-        outlet_float(x->x_ob.te_outlet, (x->x_f1 < x->x_f2 ? x->x_f2 : (
-        x->x_f1 > x->x_f3 ? x->x_f3 : x->x_f1)));
-}
-
-static void clip_float(t_clip *x, t_float f)
-{
-        x->x_f1 = f;
-        outlet_float(x->x_ob.te_outlet, (x->x_f1 < x->x_f2 ? x->x_f2 : (
-        x->x_f1 > x->x_f3 ? x->x_f3 : x->x_f1)));
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void *atan2_new(void)
 {
     t_atan2 *x = (t_atan2 *)pd_new(atan2_class);
@@ -311,11 +275,6 @@ void math_setup (void)
     class_addFloat(atan_class, (t_method)atan_float);
     class_setHelpName(atan_class, math_sym);
 
-    clip_class = class_new (sym_clip, (t_newmethod)clip_new, 0,
-        sizeof(t_clip), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
-    class_addFloat(clip_class, clip_float);
-    class_addBang(clip_class, clip_bang);
-    
     atan2_class = class_new(sym_atan2, atan2_new, 0,
         sizeof(t_atan2), 0, 0);
     class_addFloat(atan2_class, (t_method)atan2_float);    

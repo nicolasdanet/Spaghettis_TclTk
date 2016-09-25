@@ -158,6 +158,7 @@
 #include "x_pipe.c"
 #include "x_acoustic.c"
 #include "x_math.c"
+#include "x_clip.c"
 #include "x_binop1.c"
 #include "x_binop2.c"
 #include "x_binop3.c"

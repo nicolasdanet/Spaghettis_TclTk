@@ -90,6 +90,7 @@ void line_setup             (void);
 void timer_setup            (void);
 void pipe_setup             (void);
 void math_setup             (void);
+void clip_setup             (void);
 void binop1_setup           (void);
 void binop2_setup           (void);
 void binop3_setup           (void);        
@@ -193,6 +194,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     timer_setup();
     pipe_setup();
     math_setup();
+    clip_setup();
     binop1_setup();
     binop2_setup();
     binop3_setup();
