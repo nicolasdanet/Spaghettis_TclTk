@@ -207,8 +207,9 @@
 		37F5138C1C9B0EA80076A0C4 /* s_logger.c in Sources */ = {isa = PBXBuildFile; fileRef = 37F5138B1C9B0EA80076A0C4 /* s_logger.c */; };
 		37F514161C9B19A70076A0C4 /* s_logger_pa.c in Sources */ = {isa = PBXBuildFile; fileRef = 37F514151C9B19A70076A0C4 /* s_logger_pa.c */; };
 		37F86D981D8EEF460009717B /* x_listtosymbol.c in Sources */ = {isa = PBXBuildFile; fileRef = 37F86D971D8EEF460009717B /* x_listtosymbol.c */; };
-		37FFF5311D979C7000669135 /* x_binop.c in Sources */ = {isa = PBXBuildFile; fileRef = 37FFF5301D979C7000669135 /* x_binop.c */; };
+		37FFF5311D979C7000669135 /* x_binop1.c in Sources */ = {isa = PBXBuildFile; fileRef = 37FFF5301D979C7000669135 /* x_binop1.c */; };
 		37FFF6441D97BF0600669135 /* x_binop3.c in Sources */ = {isa = PBXBuildFile; fileRef = 37FFF6431D97BF0600669135 /* x_binop3.c */; };
+		37FFF6881D97C17C00669135 /* x_binop2.c in Sources */ = {isa = PBXBuildFile; fileRef = 37FFF6871D97C17C00669135 /* x_binop2.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -516,8 +517,9 @@
 		37F514151C9B19A70076A0C4 /* s_logger_pa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_logger_pa.c; path = src/s_logger_pa.c; sourceTree = "<group>"; };
 		37F518551C9D27BE0076A0C4 /* s_logger_jack.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_logger_jack.c; path = src/s_logger_jack.c; sourceTree = "<group>"; };
 		37F86D971D8EEF460009717B /* x_listtosymbol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_listtosymbol.c; path = src/x_listtosymbol.c; sourceTree = "<group>"; };
-		37FFF5301D979C7000669135 /* x_binop.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_binop.c; path = src/x_binop.c; sourceTree = "<group>"; };
+		37FFF5301D979C7000669135 /* x_binop1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_binop1.c; path = src/x_binop1.c; sourceTree = "<group>"; };
 		37FFF6431D97BF0600669135 /* x_binop3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_binop3.c; path = src/x_binop3.c; sourceTree = "<group>"; };
+		37FFF6871D97C17C00669135 /* x_binop2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_binop2.c; path = src/x_binop2.c; sourceTree = "<group>"; };
 		8DD76FB20486AB0100D96B5E /* pd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pd; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -893,7 +895,8 @@
 			isa = PBXGroup;
 			children = (
 				378972071C4F716700263434 /* x_math.c */,
-				37FFF5301D979C7000669135 /* x_binop.c */,
+				37FFF5301D979C7000669135 /* x_binop1.c */,
+				37FFF6871D97C17C00669135 /* x_binop2.c */,
 				37FFF6431D97BF0600669135 /* x_binop3.c */,
 				378972061C4F716700263434 /* x_acoustic.c */,
 			);
@@ -1374,8 +1377,9 @@
 				37D724D41D9279A800408D24 /* x_line.c in Sources */,
 				37D724FC1D927A9A00408D24 /* x_delay.c in Sources */,
 				37D724FE1D927AAE00408D24 /* x_metro.c in Sources */,
-				37FFF5311D979C7000669135 /* x_binop.c in Sources */,
+				37FFF5311D979C7000669135 /* x_binop1.c in Sources */,
 				37FFF6441D97BF0600669135 /* x_binop3.c in Sources */,
+				37FFF6881D97C17C00669135 /* x_binop2.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
