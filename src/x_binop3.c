@@ -20,10 +20,10 @@ inputs to int and their outputs back to float. */
 static void *binop3_new(t_class *fixclass, t_float f)
 {
     t_binop *x = (t_binop *)pd_new(fixclass);
-    outlet_new(&x->x_obj, &s_float);
-    inlet_newFloat(&x->x_obj, &x->x_f2);
-    x->x_f1 = 0;
-    x->x_f2 = f;
+    outlet_new(&x->bo_obj, &s_float);
+    inlet_newFloat(&x->bo_obj, &x->bo_f2);
+    x->bo_f1 = 0;
+    x->bo_f2 = f;
     return (x);
 }
 
@@ -113,17 +113,17 @@ static void *binop3_mod_new(t_float f)
 
 static void binop3_mod_bang(t_binop *x)
 {
-    int n2 = x->x_f2, result;
+    int n2 = x->bo_f2, result;
     if (n2 < 0) n2 = -n2;
     else if (!n2) n2 = 1;
-    result = ((int)(x->x_f1)) % n2;
+    result = ((int)(x->bo_f1)) % n2;
     if (result < 0) result += n2;
-    outlet_float(x->x_obj.te_outlet, (t_float)result);
+    outlet_float(x->bo_obj.te_outlet, (t_float)result);
 }
 
 static void binop3_mod_float(t_binop *x, t_float f)
 {
-    x->x_f1 = f;
+    x->bo_f1 = f;
     binop3_mod_bang(x);
 }
 
@@ -138,17 +138,17 @@ static void *binop3_div_new(t_float f)
 
 static void binop3_div_bang(t_binop *x)
 {
-    int n1 = x->x_f1, n2 = x->x_f2, result;
+    int n1 = x->bo_f1, n2 = x->bo_f2, result;
     if (n2 < 0) n2 = -n2;
     else if (!n2) n2 = 1;
     if (n1 < 0) n1 -= (n2-1);
     result = n1 / n2;
-    outlet_float(x->x_obj.te_outlet, (t_float)result);
+    outlet_float(x->bo_obj.te_outlet, (t_float)result);
 }
 
 static void binop3_div_float(t_binop *x, t_float f)
 {
-    x->x_f1 = f;
+    x->bo_f1 = f;
     binop3_div_bang(x);
 }
 

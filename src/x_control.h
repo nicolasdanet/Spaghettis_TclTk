@@ -71,9 +71,10 @@ typedef struct _listinlet {
     } t_listinlet;
 
 typedef struct _binop {
-    t_object            x_obj;                          /* MUST be the first. */
-    t_float             x_f1;
-    t_float             x_f2;
+    t_object            bo_obj;                         /* MUST be the first. */
+    t_float             bo_f1;
+    t_float             bo_f2;
+    t_outlet            *bo_outlet;
     } t_binop;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -222,20 +223,20 @@ void        *listtosymbol_new               (t_symbol *s, int argc, t_atom *argv
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void binop2_ba_bang(t_binop *x);
-void binop2_ba_float(t_binop *x, t_float f);
-void binop2_la_bang(t_binop *x);
-void binop2_la_float(t_binop *x, t_float f);
-void binop2_bo_bang(t_binop *x);
-void binop2_bo_float(t_binop *x, t_float f);
-void binop2_lo_bang(t_binop *x);
-void binop2_lo_float(t_binop *x, t_float f);
-void binop2_ls_bang(t_binop *x);
-void binop2_ls_float(t_binop *x, t_float f);
-void binop2_rs_bang(t_binop *x);
-void binop2_rs_float(t_binop *x, t_float f);
-void binop2_pc_bang(t_binop *x);
-void binop2_pc_float(t_binop *x, t_float f);
+void        binop2_ba_bang                  (t_binop *x);
+void        binop2_ba_float                 (t_binop *x, t_float f);
+void        binop2_la_bang                  (t_binop *x);
+void        binop2_la_float                 (t_binop *x, t_float f);
+void        binop2_bo_bang                  (t_binop *x);
+void        binop2_bo_float                 (t_binop *x, t_float f);
+void        binop2_lo_bang                  (t_binop *x);
+void        binop2_lo_float                 (t_binop *x, t_float f);
+void        binop2_ls_bang                  (t_binop *x);
+void        binop2_ls_float                 (t_binop *x, t_float f);
+void        binop2_rs_bang                  (t_binop *x);
+void        binop2_rs_float                 (t_binop *x, t_float f);
+void        binop2_pc_bang                  (t_binop *x);
+void        binop2_pc_float                 (t_binop *x, t_float f);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
