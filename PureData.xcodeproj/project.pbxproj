@@ -894,11 +894,11 @@
 		379079D31D96D7EC0055CBFF /* Math */ = {
 			isa = PBXGroup;
 			children = (
+				378972061C4F716700263434 /* x_acoustic.c */,
 				378972071C4F716700263434 /* x_math.c */,
 				37FFF5301D979C7000669135 /* x_binop1.c */,
 				37FFF6871D97C17C00669135 /* x_binop2.c */,
 				37FFF6431D97BF0600669135 /* x_binop3.c */,
-				378972061C4F716700263434 /* x_acoustic.c */,
 			);
 			name = Math;
 			sourceTree = "<group>";
