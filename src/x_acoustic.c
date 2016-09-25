@@ -134,7 +134,7 @@ static void dbtorms_float (t_object *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void acoustics_setup (void)
+void acoustic_setup (void)
 {
     mtof_class = class_new (sym_mtof, 
                         mtof_new,
