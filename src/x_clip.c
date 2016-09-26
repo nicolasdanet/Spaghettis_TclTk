@@ -16,41 +16,52 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *clip_class;         /* Shared. */
+static t_class *clip_class;     /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _clip
-{
-    t_object x_ob;
-    t_float x_f1;
-    t_float x_f2;
-    t_float x_f3;
-} t_clip;
+typedef struct _clip {
+    t_object    x_obj;
+    t_float     x_f1;
+    t_float     x_f2;
+    t_float     x_f3;
+    t_outlet    *x_outlet;
+    } t_clip;
 
-static void *clip_new(t_float f1, t_float f2)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void clip_bang (t_clip *x)
 {
-    t_clip *x = (t_clip *)pd_new(clip_class);
-    inlet_newFloat(&x->x_ob, &x->x_f2);
-    inlet_newFloat(&x->x_ob, &x->x_f3);
-    outlet_new(&x->x_ob, &s_float);
-    x->x_f2 = f1;
-    x->x_f3 = f2;
-    return (x);
+    t_float a = PD_MIN (x->x_f2, x->x_f3);
+    t_float b = PD_MAX (x->x_f2, x->x_f3);
+    
+    outlet_float (x->x_outlet, PD_CLAMP (x->x_f1, a, b));
 }
 
-static void clip_bang(t_clip *x)
+static void clip_float (t_clip *x, t_float f)
 {
-        outlet_float(x->x_ob.te_outlet, (x->x_f1 < x->x_f2 ? x->x_f2 : (
-        x->x_f1 > x->x_f3 ? x->x_f3 : x->x_f1)));
+    x->x_f1 = f; clip_bang (x);
 }
 
-static void clip_float(t_clip *x, t_float f)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *clip_new (t_float f2, t_float f3)
 {
-        x->x_f1 = f;
-        outlet_float(x->x_ob.te_outlet, (x->x_f1 < x->x_f2 ? x->x_f2 : (
-        x->x_f1 > x->x_f3 ? x->x_f3 : x->x_f1)));
+    t_clip *x = (t_clip *)pd_new (clip_class);
+    
+    x->x_f2     = f2;
+    x->x_f3     = f3;
+    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    
+    inlet_newFloat (cast_object (x), &x->x_f2);
+    inlet_newFloat (cast_object (x), &x->x_f3);
+
+    return x;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -59,10 +70,21 @@ static void clip_float(t_clip *x, t_float f)
 
 void clip_setup (void)
 {
-    clip_class = class_new (sym_clip, (t_newmethod)clip_new, 0,
-        sizeof(t_clip), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
-    class_addFloat(clip_class, clip_float);
-    class_addBang(clip_class, clip_bang);
+    t_class *c = NULL;
+    
+    c = class_new (sym_clip,
+            (t_newmethod)clip_new,
+            NULL,
+            sizeof (t_clip),
+            CLASS_DEFAULT,
+            A_DEFFLOAT,
+            A_DEFFLOAT,
+            A_NULL);
+            
+    class_addBang (c, clip_bang);
+    class_addFloat (c, clip_float); 
+    
+    clip_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
