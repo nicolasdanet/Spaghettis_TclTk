@@ -49,6 +49,7 @@
 		3744481A1D66000B00E54A0D /* m_math.c in Sources */ = {isa = PBXBuildFile; fileRef = 374448191D66000B00E54A0D /* m_math.c */; };
 		3744493A1D66154D00E54A0D /* g_rectangle.c in Sources */ = {isa = PBXBuildFile; fileRef = 374449391D66154D00E54A0D /* g_rectangle.c */; };
 		374905EB1D9971C900377F1E /* x_value.c in Sources */ = {isa = PBXBuildFile; fileRef = 374905EA1D9971C900377F1E /* x_value.c */; };
+		374906181D99741000377F1E /* x_change.c in Sources */ = {isa = PBXBuildFile; fileRef = 374906171D99741000377F1E /* x_change.c */; };
 		374A76331CF5FA81001A57EB /* g_serialize.c in Sources */ = {isa = PBXBuildFile; fileRef = 374A76321CF5FA81001A57EB /* g_serialize.c */; };
 		375148DB1D86D9E5005679B0 /* x_arrayrange.c in Sources */ = {isa = PBXBuildFile; fileRef = 375148DA1D86D9E5005679B0 /* x_arrayrange.c */; };
 		3751490B1D86DC2D005679B0 /* x_arraymax.c in Sources */ = {isa = PBXBuildFile; fileRef = 3751490A1D86DC2D005679B0 /* x_arraymax.c */; };
@@ -302,6 +303,7 @@
 		374448191D66000B00E54A0D /* m_math.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_math.c; path = src/m_math.c; sourceTree = "<group>"; };
 		374449391D66154D00E54A0D /* g_rectangle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_rectangle.c; path = src/g_rectangle.c; sourceTree = "<group>"; };
 		374905EA1D9971C900377F1E /* x_value.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_value.c; path = src/x_value.c; sourceTree = "<group>"; };
+		374906171D99741000377F1E /* x_change.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_change.c; path = src/x_change.c; sourceTree = "<group>"; };
 		374A76321CF5FA81001A57EB /* g_serialize.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_serialize.c; path = src/g_serialize.c; sourceTree = "<group>"; };
 		375148DA1D86D9E5005679B0 /* x_arrayrange.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arrayrange.c; path = src/x_arrayrange.c; sourceTree = "<group>"; };
 		3751490A1D86DC2D005679B0 /* x_arraymax.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arraymax.c; path = src/x_arraymax.c; sourceTree = "<group>"; };
@@ -823,6 +825,8 @@
 			isa = PBXGroup;
 			children = (
 				378972091C4F716800263434 /* x_connective.c */,
+				374906171D99741000377F1E /* x_change.c */,
+				37DB520F1D97D03100FEEBE0 /* x_clip.c */,
 				374905EA1D9971C900377F1E /* x_value.c */,
 			);
 			name = Connect;
@@ -927,7 +931,6 @@
 			children = (
 				378972061C4F716700263434 /* x_acoustic.c */,
 				378972071C4F716700263434 /* x_math.c */,
-				37DB520F1D97D03100FEEBE0 /* x_clip.c */,
 				37DB52951D97FA1700FEEBE0 /* x_atan2.c */,
 				37FFF5301D979C7000669135 /* x_binop1.c */,
 				37FFF6871D97C17C00669135 /* x_binop2.c */,
@@ -1416,6 +1419,7 @@
 				37DB52101D97D03100FEEBE0 /* x_clip.c in Sources */,
 				37DB52961D97FA1700FEEBE0 /* x_atan2.c in Sources */,
 				374905EB1D9971C900377F1E /* x_value.c in Sources */,
+				374906181D99741000377F1E /* x_change.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
