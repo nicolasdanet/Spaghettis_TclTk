@@ -168,6 +168,7 @@
 #include "x_change.c"
 #include "x_clip.c"
 #include "x_value.c"
+#include "x_moses.c"
 
 #include "x_makefilename.c"
 
