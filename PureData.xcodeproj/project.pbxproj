@@ -778,12 +778,9 @@
 				37F86D531D8EEA3F0009717B /* List */,
 				37D724561D92757C00408D24 /* Time */,
 				379079D31D96D7EC0055CBFF /* Math */,
-				378972091C4F716800263434 /* x_connective.c */,
-				3789720A1C4F716800263434 /* x_gui.c */,
-				3789720B1C4F716800263434 /* x_interface.c */,
-				3789720D1C4F716800263434 /* x_midi.c */,
-				3789720E1C4F716800263434 /* x_misc.c */,
-				3789720F1C4F716800263434 /* x_net.c */,
+				374905C71D99702300377F1E /* Connect */,
+				374905C91D99703B00377F1E /* Miscellaneous */,
+				374905CC1D99707A00377F1E /* Midi */,
 			);
 			name = Control;
 			sourceTree = "<group>";
@@ -818,6 +815,33 @@
 				37A59CDC1C538B4800FBD0AD /* Audio */,
 			);
 			name = API;
+			sourceTree = "<group>";
+		};
+		374905C71D99702300377F1E /* Connect */ = {
+			isa = PBXGroup;
+			children = (
+				378972091C4F716800263434 /* x_connective.c */,
+			);
+			name = Connect;
+			sourceTree = "<group>";
+		};
+		374905C91D99703B00377F1E /* Miscellaneous */ = {
+			isa = PBXGroup;
+			children = (
+				3789720B1C4F716800263434 /* x_interface.c */,
+				3789720A1C4F716800263434 /* x_gui.c */,
+				3789720F1C4F716800263434 /* x_net.c */,
+				3789720E1C4F716800263434 /* x_misc.c */,
+			);
+			name = Miscellaneous;
+			sourceTree = "<group>";
+		};
+		374905CC1D99707A00377F1E /* Midi */ = {
+			isa = PBXGroup;
+			children = (
+				3789720D1C4F716800263434 /* x_midi.c */,
+			);
+			name = Midi;
 			sourceTree = "<group>";
 		};
 		3751490C1D86DC3D005679B0 /* Scalar */ = {

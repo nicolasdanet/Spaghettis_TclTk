@@ -163,6 +163,7 @@
 #include "x_binop1.c"
 #include "x_binop2.c"
 #include "x_binop3.c"
+#include "x_connective.c"
 
 /* DSP. */
 
