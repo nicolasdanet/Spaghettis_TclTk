@@ -1,10 +1,13 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-/* arithmetic: binops ala C language.  The 4 functions and relationals are
-done on floats; the logical and bitwise binops convert their
-inputs to int and their outputs back to float. */
+/* 
+    Copyright (c) 1997-2016 Miller Puckette and others.
+*/
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #include "m_pd.h"
 #include "m_core.h"
@@ -13,284 +16,321 @@ inputs to int and their outputs back to float. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
-/* ------------- binop3: &, |, &&, ||, <<, >>, %, mod, div ------------------ */
+static t_class *binopBitwiseAnd_class;          /* Shared. */
+static t_class *binopLogicalAnd_class;          /* Shared. */
+static t_class *binopBitwiseOr_class;           /* Shared. */
+static t_class *binopLogicalOr_class;           /* Shared. */
+static t_class *binopShiftLeft_class;           /* Shared. */
+static t_class *binopShiftRight_class;          /* Shared. */
+static t_class *binopModulo_class;              /* Shared. */
+static t_class *binopIntegerModulo_class;       /* Shared. */
+static t_class *binopIntegerDivide_class;       /* Shared. */
 
-static void *binop3_new(t_class *fixclass, t_float f)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static void *binopBitwiseAnd_new (t_float f)
 {
-    t_binop *x = (t_binop *)pd_new(fixclass);
-    outlet_new(&x->bo_obj, &s_float);
-    inlet_newFloat(&x->bo_obj, &x->bo_f2);
-    x->bo_f1 = 0;
-    x->bo_f2 = f;
-    return (x);
+    return binop_new (binopBitwiseAnd_class, f);
 }
 
-/* --------------------------- & ---------------------------- */
-
-static t_class *binop3_ba_class;
-
-static void *binop3_ba_new(t_float f)
+void binopBitwiseAnd_bang (t_binop *x)
 {
-    return (binop3_new(binop3_ba_class, f));
+    outlet_float (x->bo_outlet, (t_float)((int)(x->bo_f1) & (int)(x->bo_f2)));
 }
 
-
-
-/* --------------------------- && ---------------------------- */
-
-static t_class *binop3_la_class;
-
-static void *binop3_la_new(t_float f)
+void binopBitwiseAnd_float (t_binop *x, t_float f)
 {
-    return (binop3_new(binop3_la_class, f));
-}
-
-
-
-/* --------------------------- | ---------------------------- */
-
-static t_class *binop3_bo_class;
-
-static void *binop3_bo_new(t_float f)
-{
-    return (binop3_new(binop3_bo_class, f));
-}
-
-
-
-/* --------------------------- || ---------------------------- */
-
-static t_class *binop3_lo_class;
-
-static void *binop3_lo_new(t_float f)
-{
-    return (binop3_new(binop3_lo_class, f));
-}
-
-
-
-/* --------------------------- << ---------------------------- */
-
-static t_class *binop3_ls_class;
-
-static void *binop3_ls_new(t_float f)
-{
-    return (binop3_new(binop3_ls_class, f));
-}
-
-
-
-/* --------------------------- >> ---------------------------- */
-
-static t_class *binop3_rs_class;
-
-static void *binop3_rs_new(t_float f)
-{
-    return (binop3_new(binop3_rs_class, f));
-}
-
-/* --------------------------- % ---------------------------- */
-
-static t_class *binop3_pc_class;
-
-static void *binop3_pc_new(t_float f)
-{
-    return (binop3_new(binop3_pc_class, f));
-}
-
-
-
-/* --------------------------- mod ---------------------------- */
-
-static t_class *binop3_mod_class;
-
-static void *binop3_mod_new(t_float f)
-{
-    return (binop3_new(binop3_mod_class, f));
-}
-
-static void binop3_mod_bang(t_binop *x)
-{
-    int n2 = x->bo_f2, result;
-    if (n2 < 0) n2 = -n2;
-    else if (!n2) n2 = 1;
-    result = ((int)(x->bo_f1)) % n2;
-    if (result < 0) result += n2;
-    outlet_float(x->bo_obj.te_outlet, (t_float)result);
-}
-
-static void binop3_mod_float(t_binop *x, t_float f)
-{
-    x->bo_f1 = f;
-    binop3_mod_bang(x);
-}
-
-/* --------------------------- div ---------------------------- */
-
-static t_class *binop3_div_class;
-
-static void *binop3_div_new(t_float f)
-{
-    return (binop3_new(binop3_div_class, f));
-}
-
-static void binop3_div_bang(t_binop *x)
-{
-    int n1 = x->bo_f1, n2 = x->bo_f2, result;
-    if (n2 < 0) n2 = -n2;
-    else if (!n2) n2 = 1;
-    if (n1 < 0) n1 -= (n2-1);
-    result = n1 / n2;
-    outlet_float(x->bo_obj.te_outlet, (t_float)result);
-}
-
-static void binop3_div_float(t_binop *x, t_float f)
-{
-    x->bo_f1 = f;
-    binop3_div_bang(x);
+    x->bo_f1 = f; binopBitwiseAnd_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void binop2_ba_bang(t_binop *x)
+static void *binopLogicalAnd_new (t_float f)
 {
-    outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1)) & (int)(x->bo_f2));
+    return binop_new (binopLogicalAnd_class, f);
 }
 
-void binop2_ba_float(t_binop *x, t_float f)
+void binopLogicalAnd_bang (t_binop *x)
 {
-    outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1 = f)) & (int)(x->bo_f2));
+    outlet_float (x->bo_outlet, (t_float)((int)(x->bo_f1) && (int)(x->bo_f2)));
 }
 
-void binop2_la_bang(t_binop *x)
+void binopLogicalAnd_float (t_binop *x, t_float f)
 {
-    outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1)) && (int)(x->bo_f2));
+    x->bo_f1 = f; binopLogicalAnd_bang (x);
 }
 
-void binop2_la_float(t_binop *x, t_float f)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *binopBitwiseOr_new (t_float f)
 {
-    outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1 = f)) && (int)(x->bo_f2));
+    return binop_new (binopBitwiseOr_class, f);
 }
 
-void binop2_bo_bang(t_binop *x)
+void binopBitwiseOr_bang (t_binop *x)
 {
-    outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1)) | (int)(x->bo_f2));
+    outlet_float (x->bo_outlet, (t_float)((int)(x->bo_f1) | (int)(x->bo_f2)));
 }
 
-void binop2_bo_float(t_binop *x, t_float f)
+void binopBitwiseOr_float (t_binop *x, t_float f)
 {
-    outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1 = f)) | (int)(x->bo_f2));
+    x->bo_f1 = f; binopBitwiseOr_bang (x);
 }
 
-void binop2_lo_bang(t_binop *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *binopLogicalOr_new (t_float f)
 {
-    outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1)) || (int)(x->bo_f2));
+    return binop_new (binopLogicalOr_class, f);
 }
 
-void binop2_lo_float(t_binop *x, t_float f)
+void binopLogicalOr_bang (t_binop *x)
 {
-    outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1 = f)) || (int)(x->bo_f2));
+    outlet_float (x->bo_outlet, (t_float)((int)(x->bo_f1) || (int)(x->bo_f2)));
 }
 
-void binop2_ls_bang(t_binop *x)
+void binopLogicalOr_float (t_binop *x, t_float f)
 {
-    outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1)) << (int)(x->bo_f2));
+    x->bo_f1 = f; binopLogicalOr_bang (x);
 }
 
-void binop2_ls_float(t_binop *x, t_float f)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *binopShiftLeft_new (t_float f)
 {
-    outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1 = f)) << (int)(x->bo_f2));
+    return binop_new (binopShiftLeft_class, f);
 }
 
-void binop2_rs_bang(t_binop *x)
+void binopShiftLeft_bang (t_binop *x)
 {
-    outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1)) >> (int)(x->bo_f2));
+    outlet_float (x->bo_outlet, (t_float)((int)(x->bo_f1) << (int)(x->bo_f2)));
 }
 
-void binop2_rs_float(t_binop *x, t_float f)
+void binopShiftLeft_float (t_binop *x, t_float f)
 {
-    outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1 = f)) >> (int)(x->bo_f2));
+    x->bo_f1 = f; binopShiftLeft_bang (x);
 }
 
-void binop2_pc_bang(t_binop *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *binopShiftRight_new (t_float f)
 {
-    int n2 = x->bo_f2;
-        /* apparently "%" raises an exception for INT_MIN and -1 */
-    if (n2 == -1)
-        outlet_float(x->bo_obj.te_outlet, 0);
-    else outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1)) % (n2 ? n2 : 1));
+    return binop_new (binopShiftRight_class, f);
 }
 
-void binop2_pc_float(t_binop *x, t_float f)
+void binopShiftRight_bang (t_binop *x)
 {
-    int n2 = x->bo_f2;
-    if (n2 == -1)
-        outlet_float(x->bo_obj.te_outlet, 0);
-    else outlet_float(x->bo_obj.te_outlet, ((int)(x->bo_f1 = f)) % (n2 ? n2 : 1));
+    outlet_float (x->bo_outlet, (t_float)((int)(x->bo_f1) >> (int)(x->bo_f2)));
 }
 
-void binop3_setup(void)
+void binopShiftRight_float (t_binop *x, t_float f)
 {
-    t_symbol *binop1_sym = sym_pow;
-    t_symbol *binop23_sym = sym___ampersand____ampersand__;
-
-    binop3_ba_class = class_new (sym___ampersand__, (t_newmethod)binop3_ba_new, 0,
-        sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addBang(binop3_ba_class, binop2_ba_bang);
-    class_addFloat(binop3_ba_class, (t_method)binop2_ba_float);
-    class_setHelpName(binop3_ba_class, binop23_sym);
-
-    binop3_la_class = class_new(sym___ampersand____ampersand__, (t_newmethod)binop3_la_new, 0,
-        sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addBang(binop3_la_class, binop2_la_bang);
-    class_addFloat(binop3_la_class, (t_method)binop2_la_float);
-    class_setHelpName(binop3_la_class, binop23_sym);
-
-    binop3_bo_class = class_new (sym___bar__, (t_newmethod)binop3_bo_new, 0,
-        sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addBang(binop3_bo_class, binop2_bo_bang);
-    class_addFloat(binop3_bo_class, (t_method)binop2_bo_float);
-    class_setHelpName(binop3_bo_class, binop23_sym);
-
-    binop3_lo_class = class_new (sym___bar____bar__, (t_newmethod)binop3_lo_new, 0,
-        sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addBang(binop3_lo_class, binop2_lo_bang);
-    class_addFloat(binop3_lo_class, (t_method)binop2_lo_float);
-    class_setHelpName(binop3_lo_class, binop23_sym);
-
-    binop3_ls_class = class_new(sym___less____less__, (t_newmethod)binop3_ls_new, 0,
-        sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addBang(binop3_ls_class, binop2_ls_bang);
-    class_addFloat(binop3_ls_class, (t_method)binop2_ls_float);
-    class_setHelpName(binop3_ls_class, binop23_sym);
-
-    binop3_rs_class = class_new(sym___greater____greater__, (t_newmethod)binop3_rs_new, 0,
-        sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addBang(binop3_rs_class, binop2_rs_bang);
-    class_addFloat(binop3_rs_class, (t_method)binop2_rs_float);
-    class_setHelpName(binop3_rs_class, binop23_sym);
-
-    binop3_pc_class = class_new(sym___percent__, (t_newmethod)binop3_pc_new, 0,
-        sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addBang(binop3_pc_class, binop2_pc_bang);
-    class_addFloat(binop3_pc_class, (t_method)binop2_pc_float);
-    class_setHelpName(binop3_pc_class, binop23_sym);
-
-    binop3_mod_class = class_new(sym_mod, (t_newmethod)binop3_mod_new, 0,
-        sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addBang(binop3_mod_class, binop3_mod_bang);
-    class_addFloat(binop3_mod_class, (t_method)binop3_mod_float);
-    class_setHelpName(binop3_mod_class, binop23_sym);
-
-    binop3_div_class = class_new (sym_div, (t_newmethod)binop3_div_new, 0,
-        sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addBang(binop3_div_class, binop3_div_bang);
-    class_addFloat(binop3_div_class, (t_method)binop3_div_float);
-    class_setHelpName(binop3_div_class, binop23_sym);
+    x->bo_f1 = f; binopShiftRight_bang (x);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
+static void *binopModulo_new (t_float f)
+{
+    return binop_new (binopModulo_class, f);
+}
+
+void binopModulo_bang (t_binop *x)
+{
+    int n1 = (int)x->bo_f1;
+    int n2 = (int)x->bo_f2 == 0 ? 1 : (int)x->bo_f2;
+    
+    if (n2 == -1) { outlet_float (x->bo_outlet, 0.0); }     /* Apparently "%" raises an exception for -1. */
+    else {
+        outlet_float (x->bo_outlet, (t_float)(n1 % n2));
+    }
+}
+
+void binopModulo_float (t_binop *x, t_float f)
+{
+    x->bo_f1 = f; binopModulo_bang (x);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *binopIntegerModulo_new (t_float f)
+{
+    return binop_new (binopIntegerModulo_class, f);
+}
+
+static void binopIntegerModulo_bang (t_binop *x)
+{
+    int n1 = (int)x->bo_f1;
+    int n2 = (int)x->bo_f2 == 0 ? 1 : (int)x->bo_f2;
+    int k;
+        
+    n2 = PD_ABS (n2);
+    
+    k = n1 % n2;
+    
+    if (k < 0) { k += n2; }
+    
+    outlet_float (x->bo_outlet, (t_float)k);
+}
+
+static void binopIntegerModulo_float (t_binop *x, t_float f)
+{
+    x->bo_f1 = f; binopIntegerModulo_bang (x);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *binopIntegerDivide_new (t_float f)
+{
+    return binop_new (binopIntegerDivide_class, f);
+}
+
+static void binopIntegerDivide_bang (t_binop *x)
+{
+    int n1 = (int)x->bo_f1;
+    int n2 = (int)x->bo_f2 == 0 ? 1 : (int)x->bo_f2;
+    int k;
+    
+    n2 = PD_ABS (n2);
+    
+    if (n1 < 0) { n1 -= (n2 - 1); }
+    
+    k = n1 / n2;
+    
+    outlet_float (x->bo_outlet, (t_float)k);
+}
+
+static void binopIntegerDivide_float (t_binop *x, t_float f)
+{
+    x->bo_f1 = f; binopIntegerDivide_bang (x);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void binop3_setup (void)
+{
+    binopBitwiseAnd_class = class_new (sym___ampersand__, 
+                                    (t_newmethod)binopBitwiseAnd_new,
+                                    NULL,
+                                    sizeof (t_binop),
+                                    CLASS_DEFAULT,
+                                    A_DEFFLOAT,
+                                    A_NULL);
+                                    
+    binopLogicalAnd_class = class_new (sym___ampersand____ampersand__,
+                                    (t_newmethod)binopLogicalAnd_new,
+                                    NULL,
+                                    sizeof (t_binop),
+                                    CLASS_DEFAULT,
+                                    A_DEFFLOAT,
+                                    A_NULL);
+                                    
+    binopBitwiseOr_class = class_new (sym___bar__,
+                                    (t_newmethod)binopBitwiseOr_new,
+                                    NULL,
+                                    sizeof (t_binop),
+                                    CLASS_DEFAULT,
+                                    A_DEFFLOAT,
+                                    A_NULL);
+                                    
+    binopLogicalOr_class = class_new (sym___bar____bar__,
+                                    (t_newmethod)binopLogicalOr_new,
+                                    NULL,
+                                    sizeof (t_binop),
+                                    CLASS_DEFAULT,
+                                    A_DEFFLOAT,
+                                    A_NULL);
+                                    
+    binopShiftLeft_class = class_new (sym___less____less__,
+                                    (t_newmethod)binopShiftLeft_new,
+                                    NULL,
+                                    sizeof (t_binop),
+                                    CLASS_DEFAULT,
+                                    A_DEFFLOAT,
+                                    A_NULL);
+
+    binopShiftRight_class = class_new (sym___greater____greater__,
+                                    (t_newmethod)binopShiftRight_new,
+                                    NULL,
+                                    sizeof (t_binop),
+                                    CLASS_DEFAULT,
+                                    A_DEFFLOAT,
+                                    A_NULL);
+                                    
+    binopModulo_class = class_new (sym___percent__,
+                                    (t_newmethod)binopModulo_new,
+                                    NULL,
+                                    sizeof (t_binop),
+                                    CLASS_DEFAULT,
+                                    A_DEFFLOAT,
+                                    A_NULL);
+
+    binopIntegerModulo_class = class_new (sym_mod,
+                                    (t_newmethod)binopIntegerModulo_new,
+                                    NULL,
+                                    sizeof (t_binop),
+                                    CLASS_DEFAULT,
+                                    A_DEFFLOAT,
+                                    A_NULL);
+                                    
+    binopIntegerDivide_class = class_new (sym_div, 
+                                    (t_newmethod)binopIntegerDivide_new,
+                                    NULL,
+                                    sizeof (t_binop),
+                                    CLASS_DEFAULT,
+                                    A_DEFFLOAT,
+                                    A_NULL);
+                                    
+    class_addBang (binopBitwiseAnd_class,           binopBitwiseAnd_bang);
+    class_addBang (binopLogicalAnd_class,           binopLogicalAnd_bang);
+    class_addBang (binopBitwiseOr_class,            binopBitwiseOr_bang);
+    class_addBang (binopLogicalOr_class,            binopLogicalOr_bang);
+    class_addBang (binopShiftLeft_class,            binopShiftLeft_bang);
+    class_addBang (binopShiftRight_class,           binopShiftRight_bang);  
+    class_addBang (binopModulo_class,               binopModulo_bang);
+    class_addBang (binopIntegerModulo_class,        binopIntegerModulo_bang);
+    class_addBang (binopIntegerDivide_class,        binopIntegerDivide_bang);
+        
+    class_addFloat (binopBitwiseAnd_class,          (t_method)binopBitwiseAnd_float);
+    class_addFloat (binopLogicalAnd_class,          (t_method)binopLogicalAnd_float);
+    class_addFloat (binopBitwiseOr_class,           (t_method)binopBitwiseOr_float);
+    class_addFloat (binopLogicalOr_class,           (t_method)binopLogicalOr_float);
+    class_addFloat (binopShiftLeft_class,           (t_method)binopShiftLeft_float);
+    class_addFloat (binopShiftRight_class,          (t_method)binopShiftRight_float);
+    class_addFloat (binopModulo_class,              (t_method)binopModulo_float);
+    class_addFloat (binopIntegerModulo_class,       (t_method)binopIntegerModulo_float);
+    class_addFloat (binopIntegerDivide_class,       (t_method)binopIntegerDivide_float);
+        
+    class_setHelpName (binopBitwiseAnd_class,       sym___ampersand____ampersand__);
+    class_setHelpName (binopLogicalAnd_class,       sym___ampersand____ampersand__);
+    class_setHelpName (binopBitwiseOr_class,        sym___ampersand____ampersand__);
+    class_setHelpName (binopLogicalOr_class,        sym___ampersand____ampersand__);
+    class_setHelpName (binopShiftLeft_class,        sym___ampersand____ampersand__);
+    class_setHelpName (binopShiftRight_class,       sym___ampersand____ampersand__);
+    class_setHelpName (binopModulo_class,           sym___ampersand____ampersand__);
+    class_setHelpName (binopIntegerModulo_class,    sym___ampersand____ampersand__);
+    class_setHelpName (binopIntegerDivide_class,    sym___ampersand____ampersand__);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
