@@ -84,6 +84,7 @@ void scalardefine_setup     (void);
 void acoustic_setup         (void);
 void x_interface_setup      (void);
 void x_connective_setup     (void);
+void makefilename_setup     (void);
 void swap_setup             (void);
 void change_setup           (void);
 void value_setup            (void);
@@ -195,6 +196,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     swap_setup();
     change_setup();
     value_setup();
+    makefilename_setup();
     metro_setup();
     delay_setup();
     line_setup();
