@@ -267,7 +267,7 @@ static void *send_new(t_symbol *s)
     return (x);
 }
 
-static void send_setup(void)
+void send_setup(void)
 {
     send_class = class_new(sym_send, (t_newmethod)send_new, 0,
         sizeof(t_send), 0, A_DEFSYMBOL, 0);
@@ -333,7 +333,7 @@ static void receive_free(t_receive *x)
     pd_unbind(&x->x_obj.te_g.g_pd, x->x_sym);
 }
 
-static void receive_setup(void)
+void receive_setup(void)
 {
     receive_class = class_new(sym_receive, (t_newmethod)receive_new, 
         (t_method)receive_free, sizeof(t_receive), CLASS_NOINLET, A_DEFSYMBOL, 0);
@@ -814,7 +814,7 @@ static void pack_free(t_pack *x)
     PD_MEMORY_FREE(x->x_gpointer);
 }
 
-static void pack_setup(void)
+void pack_setup(void)
 {
     pack_class = class_new(sym_pack, (t_newmethod)pack_new,
         (t_method)pack_free, sizeof(t_pack), 0, A_GIMME, 0);
@@ -926,7 +926,7 @@ static void unpack_free(t_unpack *x)
     PD_MEMORY_FREE(x->x_vec);
 }
 
-static void unpack_setup(void)
+void unpack_setup(void)
 {
     unpack_class = class_new(sym_unpack, (t_newmethod)unpack_new,
         (t_method)unpack_free, sizeof(t_unpack), 0, A_GIMME, 0);
@@ -1071,7 +1071,7 @@ static void trigger_free(t_trigger *x)
     PD_MEMORY_FREE(x->x_vec);
 }
 
-static void trigger_setup(void)
+void trigger_setup(void)
 {
     trigger_class = class_new(sym_trigger, (t_newmethod)trigger_new,
         (t_method)trigger_free, sizeof(t_trigger), 0, A_GIMME, 0);
@@ -1132,7 +1132,7 @@ static void spigot_anything(t_spigot *x, t_symbol *s, int argc, t_atom *argv)
     if (x->x_state != 0) outlet_anything(x->x_obj.te_outlet, s, argc, argv);
 }
 
-static void spigot_setup(void)
+void spigot_setup(void)
 {
     spigot_class = class_new(sym_spigot, (t_newmethod)spigot_new, 0,
         sizeof(t_spigot), 0, A_DEFFLOAT, 0);
@@ -1170,84 +1170,11 @@ static void moses_float(t_moses *x, t_float f)
     else outlet_float(x->x_out2, f);
 }
 
-static void moses_setup(void)
+void moses_setup(void)
 {
     moses_class = class_new(sym_moses, (t_newmethod)moses_new, 0,
         sizeof(t_moses), 0, A_DEFFLOAT, 0);
     class_addFloat(moses_class, moses_float);
-}
-
-/* ----------------------- until --------------------- */
-
-static t_class *until_class;
-
-typedef struct _until
-{
-    t_object x_obj;
-    int x_run;
-    int x_count;
-} t_until;
-
-static void *until_new(void)
-{
-    t_until *x = (t_until *)pd_new(until_class);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_bang, sym_inlet2);
-    outlet_new(&x->x_obj, &s_bang);
-    x->x_run = 0;
-    return (x);
-}
-
-static void until_bang(t_until *x)
-{
-    x->x_run = 1;
-    x->x_count = -1;
-    while (x->x_run && x->x_count)
-        x->x_count--, outlet_bang(x->x_obj.te_outlet);
-}
-
-static void until_float(t_until *x, t_float f)
-{
-    if (f < 0)
-        f = 0;
-    x->x_run = 1;
-    x->x_count = f;
-    while (x->x_run && x->x_count)
-        x->x_count--, outlet_bang(x->x_obj.te_outlet);
-}
-
-static void until_bang2(t_until *x)
-{
-    x->x_run = 0;
-}
-
-static void until_setup(void)
-{
-    until_class = class_new(sym_until, (t_newmethod)until_new, 0,
-        sizeof(t_until), 0, 0);
-    class_addBang(until_class, until_bang);
-    class_addFloat(until_class, until_float);
-    class_addMethod(until_class, (t_method)until_bang2, sym_inlet2, 0);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-void x_connective_setup(void)
-{
-    pdint_setup();
-    pdfloat_setup();
-    pdsymbol_setup();
-    bang_setup();
-    send_setup();
-    receive_setup();
-    select_setup();
-    route_setup();
-    pack_setup();
-    unpack_setup();
-    trigger_setup();
-    spigot_setup();
-    moses_setup();
-    until_setup();
 }
 
 // -----------------------------------------------------------------------------------------------------------
