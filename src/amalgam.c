@@ -164,6 +164,7 @@
 #include "x_binop2.c"
 #include "x_binop3.c"
 #include "x_connective.c"
+#include "x_value.c"
 
 /* DSP. */
 
