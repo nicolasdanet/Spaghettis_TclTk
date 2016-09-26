@@ -21,25 +21,31 @@ static t_class *atan2_class;        /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _atan2
-{
-    t_object    x_ob;
+typedef struct _atan2 {
+    t_object    x_obj;
     t_float     x_f;
-} t_atan2;
+    t_outlet    *x_outlet;
+    } t_atan2;
 
-static void *atan2_new(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *atan2_new (void)
 {
-    t_atan2 *x = (t_atan2 *)pd_new(atan2_class);
-    inlet_newFloat(&x->x_ob, &x->x_f);
-    x->x_f = 0;
-    outlet_new(&x->x_ob, &s_float);
-    return (x);
+    t_atan2 *x = (t_atan2 *)pd_new (atan2_class);
+    
+    x->x_f = 0.0;
+    x->x_outlet = outlet_new (cast_object (x), &s_float);
+        
+    inlet_newFloat (cast_object (x), &x->x_f);
+
+    return x;
 }
 
-static void atan2_float(t_atan2 *x, t_float f)
+static void atan2_float (t_atan2 *x, t_float f)
 {
-    t_float r = (f == 0 && x->x_f == 0 ? 0 : atan2f(f, x->x_f));
-    outlet_float(x->x_ob.te_outlet, r);
+    outlet_float (x->x_outlet, (f == 0.0 && x->x_f == 0.0 ? 0.0 : atan2f (f, x->x_f)));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -48,12 +54,20 @@ static void atan2_float(t_atan2 *x, t_float f)
 
 void atan2_setup (void)
 {
-    t_symbol *math_sym = sym_sqrt;
+    t_class *c = NULL;
 
-    atan2_class = class_new(sym_atan2, atan2_new, 0,
-        sizeof(t_atan2), 0, 0);
-    class_addFloat(atan2_class, (t_method)atan2_float);    
-    class_setHelpName(atan2_class, math_sym);
+    c = class_new (sym_atan2,
+            atan2_new,
+            NULL,
+            sizeof (t_atan2),
+            CLASS_DEFAULT,
+            A_NULL);
+            
+    class_addFloat (c, (t_method)atan2_float);
+    
+    class_setHelpName (c, sym_sqrt);
+    
+    atan2_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
