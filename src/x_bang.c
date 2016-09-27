@@ -26,6 +26,8 @@ typedef struct _bang
     t_object x_obj;
 } t_bang;
 
+/* Called by the t_bangmethod of the object maker class. */
+
 static void *bang_new(t_pd *dummy)
 {
     t_bang *x = (t_bang *)pd_new(bang_class);

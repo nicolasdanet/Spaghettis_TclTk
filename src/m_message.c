@@ -382,14 +382,17 @@ void pd_message (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     t_class *c = pd_class (x);
         
     /* Note that "pointer" is not catched. */
+    /* In order to let the pointer object be A_GIMME initialized. */
 
+    PD_ASSERT (s != &s_pointer || x == &pd_objectMaker);
+    
     if (s == &s_bang || s == &s_float || s == &s_symbol || s == &s_list) {
         err = pd_messageSlots (x, s, argc, argv);
         if (!err) { 
             return; 
         }  
     }
-    
+        
     if (!err) {
     
         t_entry *m = NULL;

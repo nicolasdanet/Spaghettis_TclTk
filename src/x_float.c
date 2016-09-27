@@ -30,6 +30,8 @@ typedef struct _pdfloat
     they're created by short-circuited messages to the "new"
     object which are handled specially in pd_message(). */
 
+/* Called by the t_floatmethod of the object maker class. */
+
 static void *pdfloat_new(t_pd *dummy, t_float f)
 {
     t_pdfloat *x = (t_pdfloat *)pd_new(pdfloat_class);

@@ -279,6 +279,9 @@ void class_addMethod (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ..
     if (s == &s_signal) { PD_BUG; return; }     /* Deprecated. */
     
     /* Note that "pointer" is not catched. */
+    /* In order to let the pointer object be A_GIMME initialized. */
+    
+    PD_ASSERT (s != &s_pointer || class_getName (c) == sym_objectmaker);
     
     if (s == &s_bang) {
         if (argtype) { PD_BUG; return; }

@@ -22,6 +22,8 @@ extern t_pd *pd_newest;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+/* Called by the t_listmethod of the object maker class. */
+
 static void *list_makeObject (t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     pd_newest = NULL;

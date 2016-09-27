@@ -27,6 +27,8 @@ typedef struct _pdsymbol
     t_symbol *x_s;
 } t_pdsymbol;
 
+/* Called by the t_symbolmethod of the object maker class. */
+
 static void *pdsymbol_new(t_pd *dummy, t_symbol *s)
 {
     t_pdsymbol *x = (t_pdsymbol *)pd_new(pdsymbol_class);
