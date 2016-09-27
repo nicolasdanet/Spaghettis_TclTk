@@ -163,6 +163,7 @@
 #include "x_binop2.c"
 #include "x_binop3.c"
 #include "x_connective.c"
+#include "x_receive.c"
 #include "x_select.c"
 #include "x_route.c"
 #include "x_pack.c"
