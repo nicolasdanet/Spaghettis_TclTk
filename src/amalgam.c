@@ -163,13 +163,14 @@
 #include "x_binop2.c"
 #include "x_binop3.c"
 #include "x_connective.c"
+#include "x_trigger.c"
+#include "x_spigot.c"
+#include "x_moses.c"
 #include "x_until.c"
 #include "x_swap.c"
 #include "x_change.c"
 #include "x_clip.c"
 #include "x_value.c"
-#include "x_moses.c"
-#include "x_spigot.c"
 
 #include "x_makefilename.c"
 
