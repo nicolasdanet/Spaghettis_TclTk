@@ -46,7 +46,7 @@ static void *list_makeObject (t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
     //
     }
     
-    return pd_newest;
+    return pd_newest;                       /* Unused but kept due to t_newmethod signature. */
 }
 
 // -----------------------------------------------------------------------------------------------------------

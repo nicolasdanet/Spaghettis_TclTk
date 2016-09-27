@@ -84,7 +84,7 @@ void scalardefine_setup     (void);
 void acoustic_setup         (void);
 void x_interface_setup      (void);
 void int_setup              (void);
-void pdfloat_setup          (void);
+void float_setup            (void);
 void pdsymbol_setup         (void);
 void bang_setup             (void);
 void send_setup             (void);
@@ -206,7 +206,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     acoustic_setup();
     x_interface_setup();
     int_setup();
-    pdfloat_setup();
+    float_setup();
     pdsymbol_setup();
     bang_setup();
     send_setup();
