@@ -163,6 +163,7 @@
 #include "x_binop2.c"
 #include "x_binop3.c"
 #include "x_connective.c"
+#include "x_unpack.c"
 #include "x_trigger.c"
 #include "x_spigot.c"
 #include "x_moses.c"
