@@ -21,7 +21,7 @@
 #define DRAWPOLYGON_NONE            0
 #define DRAWPOLYGON_CLOSED          1
 #define DRAWPOLYGON_BEZIER          2
-#define DRAWPOLYGON_NO_MOUSE        4
+#define DRAWPOLYGON_INHIBIT         4
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -156,7 +156,7 @@ static void drawpolygon_behaviorGetRectangle (t_gobj *z,
     
     rectangle_setNowhere (&x1, &y1, &x2, &y2);
         
-    if (visible && !(x->x_flags & DRAWPOLYGON_NO_MOUSE)) {
+    if (visible && !(x->x_flags & DRAWPOLYGON_INHIBIT)) {
     //
     int i;
     t_glist *glist = gpointer_getView (gp);
@@ -367,7 +367,7 @@ static void *drawpolygon_new (t_symbol *s, int argc, t_atom *argv)
             argc -= 2; argv += 2;
             
         } else if (t == sym___dash__i || t == sym___dash__inhibit) {
-            x->x_flags |= DRAWPOLYGON_NO_MOUSE;
+            x->x_flags |= DRAWPOLYGON_INHIBIT;
             argc -= 1; argv += 1;
             
         } else { break; }
