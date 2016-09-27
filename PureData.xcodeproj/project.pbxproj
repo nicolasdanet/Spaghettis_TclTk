@@ -144,7 +144,6 @@
 		3789725E1C4F716800263434 /* x_acoustic.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972061C4F716700263434 /* x_acoustic.c */; };
 		3789725F1C4F716800263434 /* x_math.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972071C4F716700263434 /* x_math.c */; };
 		378972601C4F716800263434 /* x_array.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972081C4F716700263434 /* x_array.c */; };
-		378972611C4F716800263434 /* x_connective.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972091C4F716800263434 /* x_connective.c */; };
 		378972621C4F716800263434 /* x_gui.c in Sources */ = {isa = PBXBuildFile; fileRef = 3789720A1C4F716800263434 /* x_gui.c */; };
 		378972631C4F716800263434 /* x_interface.c in Sources */ = {isa = PBXBuildFile; fileRef = 3789720B1C4F716800263434 /* x_interface.c */; };
 		378972641C4F716800263434 /* x_list.c in Sources */ = {isa = PBXBuildFile; fileRef = 3789720C1C4F716800263434 /* x_list.c */; };
@@ -197,6 +196,8 @@
 		37CD71191D9A9AAB00A61BD3 /* x_send.c in Sources */ = {isa = PBXBuildFile; fileRef = 37CD71181D9A9AAB00A61BD3 /* x_send.c */; };
 		37CD71381D9A9B7600A61BD3 /* x_bang.c in Sources */ = {isa = PBXBuildFile; fileRef = 37CD71371D9A9B7600A61BD3 /* x_bang.c */; };
 		37CD716E1D9A9C5400A61BD3 /* x_symbol.c in Sources */ = {isa = PBXBuildFile; fileRef = 37CD716D1D9A9C5400A61BD3 /* x_symbol.c */; };
+		37CD71A31D9A9D5100A61BD3 /* x_float.c in Sources */ = {isa = PBXBuildFile; fileRef = 37CD71A11D9A9D5100A61BD3 /* x_float.c */; };
+		37CD71A41D9A9D5100A61BD3 /* x_int.c in Sources */ = {isa = PBXBuildFile; fileRef = 37CD71A21D9A9D5100A61BD3 /* x_int.c */; };
 		37D287111C54F1D70041C5C2 /* s_font.c in Sources */ = {isa = PBXBuildFile; fileRef = 37D287101C54F1D70041C5C2 /* s_font.c */; };
 		37D5E3421D743889004CB497 /* m_error.c in Sources */ = {isa = PBXBuildFile; fileRef = 37D5E3411D743889004CB497 /* m_error.c */; };
 		37D642BC1D47924100071C3C /* g_append.c in Sources */ = {isa = PBXBuildFile; fileRef = 37D642BB1D47924100071C3C /* g_append.c */; };
@@ -474,7 +475,6 @@
 		378972061C4F716700263434 /* x_acoustic.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_acoustic.c; path = src/x_acoustic.c; sourceTree = "<group>"; };
 		378972071C4F716700263434 /* x_math.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_math.c; path = src/x_math.c; sourceTree = "<group>"; };
 		378972081C4F716700263434 /* x_array.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_array.c; path = src/x_array.c; sourceTree = "<group>"; };
-		378972091C4F716800263434 /* x_connective.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_connective.c; path = src/x_connective.c; sourceTree = "<group>"; };
 		3789720A1C4F716800263434 /* x_gui.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_gui.c; path = src/x_gui.c; sourceTree = "<group>"; };
 		3789720B1C4F716800263434 /* x_interface.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_interface.c; path = src/x_interface.c; sourceTree = "<group>"; };
 		3789720C1C4F716800263434 /* x_list.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_list.c; path = src/x_list.c; sourceTree = "<group>"; };
@@ -521,6 +521,8 @@
 		37CD71181D9A9AAB00A61BD3 /* x_send.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_send.c; path = src/x_send.c; sourceTree = "<group>"; };
 		37CD71371D9A9B7600A61BD3 /* x_bang.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_bang.c; path = src/x_bang.c; sourceTree = "<group>"; };
 		37CD716D1D9A9C5400A61BD3 /* x_symbol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_symbol.c; path = src/x_symbol.c; sourceTree = "<group>"; };
+		37CD71A11D9A9D5100A61BD3 /* x_float.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_float.c; path = src/x_float.c; sourceTree = "<group>"; };
+		37CD71A21D9A9D5100A61BD3 /* x_int.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_int.c; path = src/x_int.c; sourceTree = "<group>"; };
 		37D287101C54F1D70041C5C2 /* s_font.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_font.c; path = src/s_font.c; sourceTree = "<group>"; };
 		37D5E3411D743889004CB497 /* m_error.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_error.c; path = src/m_error.c; sourceTree = "<group>"; };
 		37D5E4271D746170004CB497 /* m_error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_error.h; path = src/m_error.h; sourceTree = "<group>"; };
@@ -852,7 +854,8 @@
 		374905C71D99702300377F1E /* Flow */ = {
 			isa = PBXGroup;
 			children = (
-				378972091C4F716800263434 /* x_connective.c */,
+				37CD71A21D9A9D5100A61BD3 /* x_int.c */,
+				37CD71A11D9A9D5100A61BD3 /* x_float.c */,
 				37CD716D1D9A9C5400A61BD3 /* x_symbol.c */,
 				37CD71371D9A9B7600A61BD3 /* x_bang.c */,
 				37CD71181D9A9AAB00A61BD3 /* x_send.c */,
@@ -1359,7 +1362,6 @@
 				3789725E1C4F716800263434 /* x_acoustic.c in Sources */,
 				3789725F1C4F716800263434 /* x_math.c in Sources */,
 				378972601C4F716800263434 /* x_array.c in Sources */,
-				378972611C4F716800263434 /* x_connective.c in Sources */,
 				378972621C4F716800263434 /* x_gui.c in Sources */,
 				378972631C4F716800263434 /* x_interface.c in Sources */,
 				378972641C4F716800263434 /* x_list.c in Sources */,
@@ -1476,6 +1478,8 @@
 				37CD71191D9A9AAB00A61BD3 /* x_send.c in Sources */,
 				37CD71381D9A9B7600A61BD3 /* x_bang.c in Sources */,
 				37CD716E1D9A9C5400A61BD3 /* x_symbol.c in Sources */,
+				37CD71A31D9A9D5100A61BD3 /* x_float.c in Sources */,
+				37CD71A41D9A9D5100A61BD3 /* x_int.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
