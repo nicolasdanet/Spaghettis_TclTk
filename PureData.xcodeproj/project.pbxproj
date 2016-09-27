@@ -812,6 +812,7 @@
 				37F86D531D8EEA3F0009717B /* List */,
 				37D724561D92757C00408D24 /* Time */,
 				379079D31D96D7EC0055CBFF /* Math */,
+				37CD71BA1D9A9DDF00A61BD3 /* Atom */,
 				374905C71D99702300377F1E /* Flow */,
 				374905C91D99703B00377F1E /* Miscellaneous */,
 				374905CC1D99707A00377F1E /* MIDI */,
@@ -854,10 +855,6 @@
 		374905C71D99702300377F1E /* Flow */ = {
 			isa = PBXGroup;
 			children = (
-				37CD71A21D9A9D5100A61BD3 /* x_int.c */,
-				37CD71A11D9A9D5100A61BD3 /* x_float.c */,
-				37CD716D1D9A9C5400A61BD3 /* x_symbol.c */,
-				37CD71371D9A9B7600A61BD3 /* x_bang.c */,
 				37CD71181D9A9AAB00A61BD3 /* x_send.c */,
 				37CD71021D9A99E500A61BD3 /* x_receive.c */,
 				374907A31D9A433A00377F1E /* x_select.c */,
@@ -1109,6 +1106,17 @@
 				378971EC1C4F716700263434 /* s_audio_dummy.c */,
 			);
 			name = Audio;
+			sourceTree = "<group>";
+		};
+		37CD71BA1D9A9DDF00A61BD3 /* Atom */ = {
+			isa = PBXGroup;
+			children = (
+				37CD71A21D9A9D5100A61BD3 /* x_int.c */,
+				37CD71A11D9A9D5100A61BD3 /* x_float.c */,
+				37CD716D1D9A9C5400A61BD3 /* x_symbol.c */,
+				37CD71371D9A9B7600A61BD3 /* x_bang.c */,
+			);
+			name = Atom;
 			sourceTree = "<group>";
 		};
 		37D724561D92757C00408D24 /* Time */ = {
