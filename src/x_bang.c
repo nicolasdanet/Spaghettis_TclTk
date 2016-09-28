@@ -12,50 +12,79 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_pd *pd_newest;
 
-static t_class *bang_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct _bang
+static t_class *bang_class;         /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _bang {
+    t_object    x_obj;
+    t_outlet    *x_outlet;
+    } t_bang;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static void bang_bang (t_bang *x)
 {
-    t_object x_obj;
-} t_bang;
+    outlet_bang (x->x_outlet);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* Called by the t_bangmethod of the object maker class. */
 
-static void *bang_new(t_pd *dummy)
+static void *bang_newBySlot (t_pd *dummy)
 {
-    t_bang *x = (t_bang *)pd_new(bang_class);
-    outlet_new(&x->x_obj, &s_bang);
-    pd_newest = &x->x_obj.te_g.g_pd;
-    return (x);
+    t_bang *x = (t_bang *)pd_new (bang_class);
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_bang);
+    
+    pd_newest = cast_pd (x);
+    
+    return x;
 }
 
-static void *bang_new2(t_bang f)
+static void *bang_newByRegular (t_bang f)
 {
-    return (bang_new(0));
+    return bang_newBySlot (NULL);
 }
 
-static void bang_bang(t_bang *x)
-{
-    outlet_bang(x->x_obj.te_outlet);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-void bang_setup(void)
+void bang_setup (void)
 {
-    bang_class = class_new (&s_bang, (t_newmethod)bang_new, 0,
-        sizeof(t_bang), 0, 0);
-    class_addCreator((t_newmethod)bang_new2, sym_b, 0);
-    class_addBang(bang_class, bang_bang);
-    class_addFloat(bang_class, bang_bang);
-    class_addSymbol(bang_class, bang_bang);
-    class_addList(bang_class, bang_bang);
-    class_addAnything(bang_class, bang_bang);
+    t_class *c = NULL;
+    
+    c = class_new (&s_bang,
+            (t_newmethod)bang_newBySlot,
+            NULL,
+            sizeof (t_bang),
+            CLASS_DEFAULT,
+            A_NULL);
+            
+    class_addCreator ((t_newmethod)bang_newByRegular, sym_b, A_NULL);
+    
+    class_addBang (c, bang_bang);
+    class_addFloat (c, bang_bang);
+    class_addSymbol (c, bang_bang);
+    class_addList (c, bang_bang);
+    class_addAnything (c, bang_bang);
+    
+    bang_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

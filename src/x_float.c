@@ -69,7 +69,7 @@ static void *float_newBySlot (t_pd *dummy, t_float f)
     
     pd_newest = cast_pd (x);
     
-    return x;                                           /* Unused but kept due to t_newmethod signature. */
+    return x;
 }
 
 static void *float_newByRegular (t_float f)
