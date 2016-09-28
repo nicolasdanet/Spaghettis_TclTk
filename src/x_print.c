@@ -22,7 +22,7 @@ static t_class *print_class;    /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _print {
-    t_object    x_obj;
+    t_object    x_obj;          /* Must be the first. */
     t_symbol    *x_name;
     } t_print;
 

@@ -12,69 +12,95 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *send_class;
+static t_class *send_class;     /* Shared. */
 
-typedef struct _send
-{
-    t_object x_obj;
-    t_symbol *x_sym;
-} t_send;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static void send_bang(t_send *x)
+typedef struct _send {
+    t_object    x_obj;          /* Must be the first. */
+    t_symbol    *x_name;
+    } t_send;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void send_bang (t_send *x)
 {
-    if (x->x_sym->s_thing) pd_bang(x->x_sym->s_thing);
+    if (pd_isThing (x->x_name)) { pd_bang (x->x_name->s_thing); }
 }
 
-static void send_float(t_send *x, t_float f)
+static void send_float (t_send *x, t_float f)
 {
-    if (x->x_sym->s_thing) pd_float(x->x_sym->s_thing, f);
+    if (pd_isThing (x->x_name)) { pd_float (x->x_name->s_thing, f); }
 }
 
-static void send_symbol(t_send *x, t_symbol *s)
+static void send_symbol (t_send *x, t_symbol *s)
 {
-    if (x->x_sym->s_thing) pd_symbol(x->x_sym->s_thing, s);
+    if (pd_isThing (x->x_name)) { pd_symbol (x->x_name->s_thing, s); }
 }
 
-static void send_pointer(t_send *x, t_gpointer *gp)
+static void send_pointer (t_send *x, t_gpointer *gp)
 {
-    if (x->x_sym->s_thing) pd_pointer(x->x_sym->s_thing, gp);
+    if (pd_isThing (x->x_name)) { pd_pointer (x->x_name->s_thing, gp); }
 }
 
-static void send_list(t_send *x, t_symbol *s, int argc, t_atom *argv)
+static void send_list (t_send *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (x->x_sym->s_thing) pd_list(x->x_sym->s_thing, argc, argv);
+    if (pd_isThing (x->x_name)) { pd_list (x->x_name->s_thing, argc, argv); }
 }
 
-static void send_anything(t_send *x, t_symbol *s, int argc, t_atom *argv)
+static void send_anything (t_send *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (x->x_sym->s_thing) pd_message(x->x_sym->s_thing, s, argc, argv);
+    if (pd_isThing (x->x_name)) { pd_message (x->x_name->s_thing, s, argc, argv); }
 }
 
-static void *send_new(t_symbol *s)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *send_new (t_symbol *s)
 {
-    t_send *x = (t_send *)pd_new(send_class);
-    if (!*s->s_name)
-        inlet_newSymbol(&x->x_obj, &x->x_sym);
-    x->x_sym = s;
-    return (x);
+    t_send *x = (t_send *)pd_new (send_class);
+    
+    x->x_name = s;
+    
+    if (s == &s_) { inlet_newSymbol (cast_object (x), &x->x_name); }
+
+    return x;
 }
 
-void send_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void send_setup (void)
 {
-    send_class = class_new(sym_send, (t_newmethod)send_new, 0,
-        sizeof(t_send), 0, A_DEFSYMBOL, 0);
-    class_addCreator((t_newmethod)send_new, sym_s, A_DEFSYMBOL, 0);
-    class_addBang(send_class, send_bang);
-    class_addFloat(send_class, send_float);
-    class_addSymbol(send_class, send_symbol);
-    class_addPointer(send_class, send_pointer);
-    class_addList(send_class, send_list);
-    class_addAnything(send_class, send_anything);
+    t_class *c = NULL;
+    
+    c = class_new (sym_send,
+            (t_newmethod)send_new,
+            NULL,
+            sizeof (t_send),
+            CLASS_DEFAULT,
+            A_DEFSYMBOL,
+            A_NULL);
+            
+    class_addCreator ((t_newmethod)send_new, sym_s, A_DEFSYMBOL, A_NULL);
+    
+    class_addBang (c, send_bang);
+    class_addFloat (c, send_float);
+    class_addSymbol (c, send_symbol);
+    class_addPointer (c, send_pointer);
+    class_addList (c, send_list);
+    class_addAnything (c, send_anything);
+    
+    send_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
