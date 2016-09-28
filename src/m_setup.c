@@ -85,7 +85,7 @@ void acoustic_setup         (void);
 void x_interface_setup      (void);
 void int_setup              (void);
 void float_setup            (void);
-void pdsymbol_setup         (void);
+void symbol_setup           (void);
 void bang_setup             (void);
 void send_setup             (void);
 void receive_setup          (void);
@@ -207,7 +207,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     x_interface_setup();
     int_setup();
     float_setup();
-    pdsymbol_setup();
+    symbol_setup();
     bang_setup();
     send_setup();
     receive_setup();
