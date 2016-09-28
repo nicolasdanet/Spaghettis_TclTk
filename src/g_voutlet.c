@@ -55,11 +55,6 @@ static void voutlet_bang (t_voutlet *x)
     outlet_bang (x->x_outlet);
 }
 
-static void voutlet_pointer (t_voutlet *x, t_gpointer *gp)
-{
-    outlet_pointer (x->x_outlet, gp);
-}
-
 static void voutlet_float (t_voutlet *x, t_float f)
 {
     outlet_float (x->x_outlet, f);
@@ -68,6 +63,11 @@ static void voutlet_float (t_voutlet *x, t_float f)
 static void voutlet_symbol (t_voutlet *x, t_symbol *s)
 {
     outlet_symbol (x->x_outlet, s);
+}
+
+static void voutlet_pointer (t_voutlet *x, t_gpointer *gp)
+{
+    outlet_pointer (x->x_outlet, gp);
 }
 
 static void voutlet_list (t_voutlet *x, t_symbol *s, int argc, t_atom *argv)
@@ -341,9 +341,9 @@ void voutlet_setup (void)
     class_addCreator ((t_newmethod)voutlet_newSignal, sym_outlet__tilde__, A_DEFSYMBOL, A_NULL);
     
     class_addBang (c, voutlet_bang);
-    class_addPointer (c, voutlet_pointer);
     class_addFloat (c, voutlet_float);
     class_addSymbol (c, voutlet_symbol);
+    class_addPointer (c, voutlet_pointer);
     class_addList (c, voutlet_list);
     class_addAnything (c, voutlet_anything);
     

@@ -26,6 +26,12 @@ void        utils_anythingToList                        (t_pd *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_symbol    *utils_gensymWithAtoms                      (int argc, t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_error     string_copy                                 (char *dest, size_t size, const char *src);
 t_error     string_add                                  (char *dest, size_t size, const char *src);
 t_error     string_append                               (char *dest, size_t size, const char *src, int n);

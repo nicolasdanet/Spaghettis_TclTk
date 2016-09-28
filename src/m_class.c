@@ -353,6 +353,11 @@ void class_addSymbol (t_class *c, t_method fn)
     c->c_methodSymbol = (t_symbolmethod)fn;
 }
 
+void class_addPointer (t_class *c, t_method fn)
+{
+    c->c_methodPointer = (t_pointermethod)fn;
+}
+
 void class_addList (t_class *c, t_method fn)
 {
     c->c_methodList = (t_listmethod)fn;
@@ -361,11 +366,6 @@ void class_addList (t_class *c, t_method fn)
 void class_addAnything (t_class *c, t_method fn)
 {
     c->c_methodAnything = (t_anythingmethod)fn;
-}
-
-void class_addPointer (t_class *c, t_method fn)
-{
-    c->c_methodPointer = (t_pointermethod)fn;
 }
 
 // -----------------------------------------------------------------------------------------------------------

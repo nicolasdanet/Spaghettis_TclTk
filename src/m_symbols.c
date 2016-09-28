@@ -51,6 +51,8 @@ t_symbol *sym___dash__i;
 t_symbol *sym___dash__inhibit;
 t_symbol *sym___dash__k;
 t_symbol *sym___dash__keep;
+t_symbol *sym___dash__n;
+t_symbol *sym___dash__none;
 t_symbol *sym___dash__s;
 t_symbol *sym___dash__symbol;
 t_symbol *sym___dash__t;
@@ -594,6 +596,8 @@ void symbols_initialize (void)
     sym___dash__inhibit                         = gensym ("-inhibit");
     sym___dash__k                               = gensym ("-k");
     sym___dash__keep                            = gensym ("-keep");
+    sym___dash__n                               = gensym ("-n");
+    sym___dash__none                            = gensym ("-none");
     sym___dash__s                               = gensym ("-s");
     sym___dash__symbol                          = gensym ("-symbol");
     sym___dash__t                               = gensym ("-t");

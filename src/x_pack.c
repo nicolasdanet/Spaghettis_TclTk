@@ -186,9 +186,9 @@ void pack_setup(void)
     pack_class = class_new(sym_pack, (t_newmethod)pack_new,
         (t_method)pack_free, sizeof(t_pack), 0, A_GIMME, 0);
     class_addBang(pack_class, pack_bang);
-    class_addPointer(pack_class, pack_pointer);
     class_addFloat(pack_class, pack_float);
     class_addSymbol(pack_class, pack_symbol);
+    class_addPointer(pack_class, pack_pointer);
     class_addList(pack_class, pack_list);
     class_addAnything(pack_class, pack_anything);
 }

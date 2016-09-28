@@ -89,6 +89,7 @@
 #include "g_garray.c"
 #include "g_vinlet.c"
 #include "g_voutlet.c"
+
 #include "g_iem.c"
 #include "g_bang.c"
 #include "g_toggle.c"
@@ -97,6 +98,7 @@
 #include "g_dial.c"
 #include "g_vu.c"
 #include "g_panel.c"
+
 #include "g_word.c"
 #include "g_scalar.c"
 #include "g_field.c"
@@ -119,7 +121,23 @@
 
 /* Control. */
 
+#include "x_int.c"
+#include "x_float.c"
+#include "x_symbol.c"
+#include "x_bang.c"
+
+#include "x_listinlet.c"
+#include "x_list.c"
+#include "x_listappend.c"
+#include "x_listprepend.c"
+#include "x_listsplit.c"
+#include "x_listtrim.c"
+#include "x_listlength.c"
+#include "x_listfromsymbol.c"
+#include "x_listtosymbol.c"
+
 #include "x_scalar.c"
+
 #include "x_textbuffer.c"
 #include "x_textclient.c"
 #include "x_text.c"
@@ -131,6 +149,7 @@
 #include "x_textsequence.c"
 #include "x_qlist.c"
 #include "x_textfile.c"
+
 #include "x_arrayclient.c"
 #include "x_arrayrange.c"
 #include "x_array.c"
@@ -142,30 +161,20 @@
 #include "x_arrayrandom.c"
 #include "x_arraymax.c"
 #include "x_arraymin.c"
-#include "x_listinlet.c"
-#include "x_list.c"
-#include "x_listappend.c"
-#include "x_listprepend.c"
-#include "x_listsplit.c"
-#include "x_listtrim.c"
-#include "x_listlength.c"
-#include "x_listfromsymbol.c"
-#include "x_listtosymbol.c"
+
 #include "x_metro.c"
 #include "x_delay.c"
 #include "x_line.c"
 #include "x_timer.c"
 #include "x_pipe.c"
+
 #include "x_acoustic.c"
 #include "x_math.c"
 #include "x_atan2.c"
 #include "x_binop1.c"
 #include "x_binop2.c"
 #include "x_binop3.c"
-#include "x_int.c"
-#include "x_float.c"
-#include "x_symbol.c"
-#include "x_bang.c"
+
 #include "x_send.c"
 #include "x_receive.c"
 #include "x_select.c"
@@ -181,6 +190,7 @@
 #include "x_clip.c"
 #include "x_value.c"
 
+#include "x_print.c"
 #include "x_makefilename.c"
 
 /* DSP. */

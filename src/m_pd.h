@@ -636,9 +636,9 @@ PD_DLL void         class_addMethod             (t_class *c, t_method fn, t_symb
 PD_DLL void         class_addBang               (t_class *c, t_method fn);
 PD_DLL void         class_addFloat              (t_class *c, t_method fn);
 PD_DLL void         class_addSymbol             (t_class *c, t_method fn);
+PD_DLL void         class_addPointer            (t_class *c, t_method fn);
 PD_DLL void         class_addList               (t_class *c, t_method fn);
 PD_DLL void         class_addAnything           (t_class *c, t_method fn);
-PD_DLL void         class_addPointer            (t_class *c, t_method fn);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

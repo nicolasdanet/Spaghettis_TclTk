@@ -34,6 +34,20 @@ void utils_anythingToList (t_pd *x, t_listmethod fn, t_symbol *s, int argc, t_at
     ATOMS_FREEA (t, argc + 1);
 }
 
+t_symbol *utils_gensymWithAtoms (int argc, t_atom *argv)
+{
+    t_symbol *s = &s_;
+        
+    if (argc == 1 && IS_SYMBOL (argv)) { s = GET_SYMBOL (argv); }
+    else if (argc) {
+        char *t = atom_atomsToString (argc, argv);
+        s = gensym (t);
+        PD_MEMORY_FREE (t);
+    }
+    
+    return s;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

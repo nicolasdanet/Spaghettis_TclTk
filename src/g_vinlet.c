@@ -55,11 +55,6 @@ static void vinlet_bang (t_vinlet *x)
     outlet_bang (x->x_outlet);
 }
 
-static void vinlet_pointer (t_vinlet *x, t_gpointer *gp)
-{
-    outlet_pointer (x->x_outlet, gp);
-}
-
 static void vinlet_float (t_vinlet *x, t_float f)
 {
     outlet_float (x->x_outlet, f);
@@ -68,6 +63,11 @@ static void vinlet_float (t_vinlet *x, t_float f)
 static void vinlet_symbol (t_vinlet *x, t_symbol *s)
 {
     outlet_symbol (x->x_outlet, s);
+}
+
+static void vinlet_pointer (t_vinlet *x, t_gpointer *gp)
+{
+    outlet_pointer (x->x_outlet, gp);
 }
 
 static void vinlet_list (t_vinlet *x, t_symbol *s, int argc, t_atom *argv)
@@ -289,9 +289,9 @@ void vinlet_setup (void)
     class_addCreator ((t_newmethod)vinlet_newSignal, sym_inlet__tilde__, A_DEFSYMBOL, A_NULL);
     
     class_addBang (c, vinlet_bang);
-    class_addPointer (c, vinlet_pointer);
     class_addFloat (c, vinlet_float);
     class_addSymbol (c, vinlet_symbol);
+    class_addPointer (c, vinlet_pointer);
     class_addList (c, vinlet_list);
     class_addAnything (c, vinlet_anything);
     

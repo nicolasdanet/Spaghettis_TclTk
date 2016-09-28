@@ -56,6 +56,8 @@ extern t_symbol *sym___dash__i;
 extern t_symbol *sym___dash__inhibit;
 extern t_symbol *sym___dash__k;
 extern t_symbol *sym___dash__keep;
+extern t_symbol *sym___dash__n;
+extern t_symbol *sym___dash__none;
 extern t_symbol *sym___dash__s;
 extern t_symbol *sym___dash__symbol;
 extern t_symbol *sym___dash__t;

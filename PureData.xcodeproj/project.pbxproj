@@ -145,7 +145,7 @@
 		3789725F1C4F716800263434 /* x_math.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972071C4F716700263434 /* x_math.c */; };
 		378972601C4F716800263434 /* x_array.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972081C4F716700263434 /* x_array.c */; };
 		378972621C4F716800263434 /* x_gui.c in Sources */ = {isa = PBXBuildFile; fileRef = 3789720A1C4F716800263434 /* x_gui.c */; };
-		378972631C4F716800263434 /* x_interface.c in Sources */ = {isa = PBXBuildFile; fileRef = 3789720B1C4F716800263434 /* x_interface.c */; };
+		378972631C4F716800263434 /* x_print.c in Sources */ = {isa = PBXBuildFile; fileRef = 3789720B1C4F716800263434 /* x_print.c */; };
 		378972641C4F716800263434 /* x_list.c in Sources */ = {isa = PBXBuildFile; fileRef = 3789720C1C4F716800263434 /* x_list.c */; };
 		378972651C4F716800263434 /* x_midi.c in Sources */ = {isa = PBXBuildFile; fileRef = 3789720D1C4F716800263434 /* x_midi.c */; };
 		378972661C4F716800263434 /* x_misc.c in Sources */ = {isa = PBXBuildFile; fileRef = 3789720E1C4F716800263434 /* x_misc.c */; };
@@ -476,7 +476,7 @@
 		378972071C4F716700263434 /* x_math.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_math.c; path = src/x_math.c; sourceTree = "<group>"; };
 		378972081C4F716700263434 /* x_array.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_array.c; path = src/x_array.c; sourceTree = "<group>"; };
 		3789720A1C4F716800263434 /* x_gui.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_gui.c; path = src/x_gui.c; sourceTree = "<group>"; };
-		3789720B1C4F716800263434 /* x_interface.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_interface.c; path = src/x_interface.c; sourceTree = "<group>"; };
+		3789720B1C4F716800263434 /* x_print.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_print.c; path = src/x_print.c; sourceTree = "<group>"; };
 		3789720C1C4F716800263434 /* x_list.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_list.c; path = src/x_list.c; sourceTree = "<group>"; };
 		3789720D1C4F716800263434 /* x_midi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_midi.c; path = src/x_midi.c; sourceTree = "<group>"; };
 		3789720E1C4F716800263434 /* x_misc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_misc.c; path = src/x_misc.c; sourceTree = "<group>"; };
@@ -876,8 +876,8 @@
 		374905C91D99703B00377F1E /* Miscellaneous */ = {
 			isa = PBXGroup;
 			children = (
+				3789720B1C4F716800263434 /* x_print.c */,
 				374906651D9977C700377F1E /* x_makefilename.c */,
-				3789720B1C4F716800263434 /* x_interface.c */,
 				3789720A1C4F716800263434 /* x_gui.c */,
 				3789720F1C4F716800263434 /* x_net.c */,
 				3789720E1C4F716800263434 /* x_misc.c */,
@@ -1371,7 +1371,7 @@
 				3789725F1C4F716800263434 /* x_math.c in Sources */,
 				378972601C4F716800263434 /* x_array.c in Sources */,
 				378972621C4F716800263434 /* x_gui.c in Sources */,
-				378972631C4F716800263434 /* x_interface.c in Sources */,
+				378972631C4F716800263434 /* x_print.c in Sources */,
 				378972641C4F716800263434 /* x_list.c in Sources */,
 				378972651C4F716800263434 /* x_midi.c in Sources */,
 				378972661C4F716800263434 /* x_misc.c in Sources */,

@@ -82,7 +82,7 @@ void setsize_setup          (void);
 void append_setup           (void);
 void scalardefine_setup     (void);
 void acoustic_setup         (void);
-void x_interface_setup      (void);
+void print_setup            (void);
 void int_setup              (void);
 void float_setup            (void);
 void symbol_setup           (void);
@@ -204,7 +204,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     append_setup();
     scalardefine_setup();
     acoustic_setup();
-    x_interface_setup();
+    print_setup();
     int_setup();
     float_setup();
     symbol_setup();

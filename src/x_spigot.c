@@ -69,9 +69,9 @@ void spigot_setup(void)
     spigot_class = class_new(sym_spigot, (t_newmethod)spigot_new, 0,
         sizeof(t_spigot), 0, A_DEFFLOAT, 0);
     class_addBang(spigot_class, spigot_bang);
-    class_addPointer(spigot_class, spigot_pointer);
     class_addFloat(spigot_class, spigot_float);
     class_addSymbol(spigot_class, spigot_symbol);
+    class_addPointer(spigot_class, spigot_pointer);
     class_addList(spigot_class, spigot_list);
     class_addAnything(spigot_class, spigot_anything);
 }

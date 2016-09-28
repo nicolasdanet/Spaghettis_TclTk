@@ -82,20 +82,6 @@ static void inlet_forBang (t_inlet *x)
     }
 }
 
-static void inlet_forPointer (t_inlet *x, t_gpointer *gp)
-{
-    if (x->i_from == &s_pointer)            { pd_vMessage (x->i_destination, x->i_un.i_to, "p", gp); }
-    else if (x->i_from == NULL)             { pd_pointer (x->i_destination, gp); }
-    else if (x->i_from == &s_list) {
-        t_atom a;
-        SET_POINTER (&a, gp);
-        inlet_forList (x, &s_pointer, 1, &a);
-
-    } else {
-        error_unexpected (class_getName (pd_class (x)), &s_pointer);
-    }
-}
-
 static void inlet_forFloat (t_inlet *x, t_float f)
 {
     if (x->i_from == &s_float)              { pd_vMessage (x->i_destination, x->i_un.i_to, "f", f); }
@@ -120,6 +106,20 @@ static void inlet_forSymbol (t_inlet *x, t_symbol *s)
         inlet_forList (x, &s_symbol, 1, &a);
     } else { 
         error_unexpected (class_getName (pd_class (x)), &s_symbol);
+    }
+}
+
+static void inlet_forPointer (t_inlet *x, t_gpointer *gp)
+{
+    if (x->i_from == &s_pointer)            { pd_vMessage (x->i_destination, x->i_un.i_to, "p", gp); }
+    else if (x->i_from == NULL)             { pd_pointer (x->i_destination, gp); }
+    else if (x->i_from == &s_list) {
+        t_atom a;
+        SET_POINTER (&a, gp);
+        inlet_forList (x, &s_pointer, 1, &a);
+
+    } else {
+        error_unexpected (class_getName (pd_class (x)), &s_pointer);
     }
 }
 
@@ -433,9 +433,9 @@ void object_initialize (void)
     symbolinlet_class   = class_new (sym_inlet, NULL, NULL, sizeof (t_inlet), CLASS_NOBOX, A_NULL);
     
     class_addBang (inlet_class,             (t_method)inlet_forBang);
-    class_addPointer (inlet_class,          (t_method)inlet_forPointer);
     class_addFloat (inlet_class,            (t_method)inlet_forFloat);
     class_addSymbol (inlet_class,           (t_method)inlet_forSymbol);
+    class_addPointer (inlet_class,          (t_method)inlet_forPointer);
     class_addList (inlet_class,             (t_method)inlet_forList);
     class_addAnything (inlet_class,         (t_method)inlet_forAnything);
     
