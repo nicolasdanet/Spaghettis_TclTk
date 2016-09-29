@@ -12,150 +12,196 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *sel1_class;
+static t_class *select1_class;      /* Shared. */
+static t_class *select2_class;      /* Shared. */
 
-typedef struct _sel1
-{
-    t_object x_obj;
-    t_atom x_atom;
-    t_outlet *x_outlet1;
-    t_outlet *x_outlet2;
-} t_sel1;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static void sel1_float(t_sel1 *x, t_float f)
+typedef struct _select1 {
+    t_object            x_obj;
+    t_atom              x_atom;
+    t_outlet            *x_outletLeft;
+    t_outlet            *x_outletRight;
+    } t_select1;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _selectelement {
+    t_atom              e_atom;
+    t_outlet            *e_outlet;
+    } t_selectelement;
+
+typedef struct _select2 {
+    t_object            x_obj;
+    t_atomtype          x_type;
+    t_int               x_size;
+    t_selectelement     *x_vector;
+    t_outlet            *x_outlet;
+    } t_select2;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void select1_float (t_select1 *x, t_float f)
 {
-    if (x->x_atom.a_type == A_FLOAT && f == x->x_atom.a_w.w_float)
-        outlet_bang(x->x_outlet1);
-    else outlet_float(x->x_outlet2, f);
+    if (IS_FLOAT (&x->x_atom) && (f == GET_FLOAT (&x->x_atom))) { outlet_bang (x->x_outletLeft); }
+    else {
+        outlet_float (x->x_outletRight, f);
+    }
 }
 
-static void sel1_symbol(t_sel1 *x, t_symbol *s)
+static void select1_symbol (t_select1 *x, t_symbol *s)
 {
-    if (x->x_atom.a_type == A_SYMBOL && s == x->x_atom.a_w.w_symbol)
-        outlet_bang(x->x_outlet1);
-    else outlet_symbol(x->x_outlet2, s);
+    if (IS_SYMBOL (&x->x_atom) && (s == GET_SYMBOL (&x->x_atom))) { outlet_bang (x->x_outletLeft); }
+    else { 
+        outlet_symbol (x->x_outletRight, s);
+    }
 }
 
-static t_class *sel2_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-typedef struct _selectelement
+static void select2_float (t_select2 *x, t_float f)
 {
-    t_word e_w;
-    t_outlet *e_outlet;
-} t_selectelement;
-
-typedef struct _sel2
-{
-    t_object x_obj;
-    t_atomtype x_type;
-    t_int x_nelement;
-    t_selectelement *x_vec;
-    t_outlet *x_rejectout;
-} t_sel2;
-
-static void sel2_float(t_sel2 *x, t_float f)
-{
-    t_selectelement *e;
-    int nelement;
-    if (x->x_type == A_FLOAT)
-    {
-        for (nelement = x->x_nelement, e = x->x_vec; nelement--; e++)
-            if (e->e_w.w_float == f)
-        {
-            outlet_bang(e->e_outlet);
-            return;
+    int k = 0;
+    
+    if (x->x_type == A_FLOAT) {
+    //
+    int i;
+    
+    for (i = x->x_size - 1; i >= 0; i--) {
+        if (GET_FLOAT (&x->x_vector[i].e_atom) == f) {
+            outlet_bang (x->x_vector[i].e_outlet);
+            k = 1; 
         }
     }
-    outlet_float(x->x_rejectout, f);
+    //
+    }
+    
+    if (!k) { outlet_float (x->x_outlet, f); }
 }
 
-static void sel2_symbol(t_sel2 *x, t_symbol *s)
+static void select2_symbol (t_select2 *x, t_symbol *s)
 {
-    t_selectelement *e;
-    int nelement;
-    if (x->x_type == A_SYMBOL)
-    {
-        for (nelement = x->x_nelement, e = x->x_vec; nelement--; e++)
-            if (e->e_w.w_symbol == s)
-        {
-            outlet_bang(e->e_outlet);
-            return;
+    int k = 0;
+    
+    if (x->x_type == A_SYMBOL) {
+    //
+    int i;
+    
+    for (i = x->x_size - 1; i >= 0; i--) {
+        if (GET_SYMBOL (&x->x_vector[i].e_atom) == s) {
+            outlet_bang (x->x_vector[i].e_outlet);
+            k = 1; 
         }
     }
-    outlet_symbol(x->x_rejectout, s);
+    //
+    }
+    
+    if (!k) { outlet_symbol (x->x_outlet, s); }
 }
 
-static void sel2_free(t_sel2 *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *select1_new (int argc, t_atom *argv)
 {
-    PD_MEMORY_FREE(x->x_vec);
+    t_select1 *x = (t_select1 *)pd_new (select1_class);
+    
+    x->x_atom = *argv;
+    x->x_outletLeft = outlet_new (cast_object (x), &s_bang);
+    
+    if (IS_FLOAT (argv)) { x->x_outletRight = outlet_new (cast_object (x), &s_float); }
+    else {
+        x->x_outletRight = outlet_new (cast_object (x), &s_symbol);
+    }
+    
+    if (IS_FLOAT (argv)) { inlet_newFloat (cast_object (x), ADDRESS_FLOAT (&x->x_atom)); } 
+    else {
+        inlet_newSymbol (cast_object (x), ADDRESS_SYMBOL (&x->x_atom));
+    }
+    
+    return x;
 }
 
-static void *select_new(t_symbol *s, int argc, t_atom *argv)
+static void *select2_new (int argc, t_atom *argv)
 {
-    t_atom a;
-    if (argc == 0)
-    {
-        argc = 1;
-        SET_FLOAT(&a, 0);
-        argv = &a;
+    t_select2 *x = (t_select2 *)pd_new (select2_class);
+    int i;
+        
+    x->x_size   = argc;
+    x->x_vector = (t_selectelement *)PD_MEMORY_GET (x->x_size * sizeof (t_selectelement));
+    x->x_type   = atom_getType (argv);
+        
+    for (i = 0; i < argc; i++) {
+    //
+    x->x_vector[i].e_outlet = outlet_new (cast_object (x), &s_bang);
+    
+    if (x->x_type == A_FLOAT) { SET_FLOAT (&x->x_vector[i].e_atom, atom_getFloatAtIndex (i, argc, argv)); }
+    else {
+        SET_SYMBOL (&x->x_vector[i].e_atom, atom_getSymbolAtIndex (i, argc, argv));
     }
-    if (argc == 1)
-    {
-        t_sel1 *x = (t_sel1 *)pd_new(sel1_class);
-        x->x_atom = *argv;
-        x->x_outlet1 = outlet_new(&x->x_obj, &s_bang);
-        if (argv->a_type == A_FLOAT)
-        {
-            inlet_newFloat(&x->x_obj, &x->x_atom.a_w.w_float);
-            x->x_outlet2 = outlet_new(&x->x_obj, &s_float);
-        }
-        else
-        {
-            inlet_newSymbol(&x->x_obj, &x->x_atom.a_w.w_symbol);
-            x->x_outlet2 = outlet_new(&x->x_obj, &s_symbol);
-        }
-        return (x);
+    //
     }
-    else
-    {
-        int n;
-        t_selectelement *e;
-        t_sel2 *x = (t_sel2 *)pd_new(sel2_class);
-        x->x_nelement = argc;
-        x->x_vec = (t_selectelement *)PD_MEMORY_GET(argc * sizeof(*x->x_vec));
-        x->x_type = argv[0].a_type;
-        for (n = 0, e = x->x_vec; n < argc; n++, e++)
-        {
-            e->e_outlet = outlet_new(&x->x_obj, &s_bang);
-            if ((x->x_type = argv->a_type) == A_FLOAT)
-                e->e_w.w_float = atom_getFloatAtIndex(n, argc, argv);
-            else e->e_w.w_symbol = atom_getSymbolAtIndex(n, argc, argv);
-        }
-        x->x_rejectout = outlet_new(&x->x_obj, &s_float);
-        return (x);
-    }
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_anything);
 
+    return x;
 }
 
-void select_setup(void)
+static void select2_free (t_select2 *x)
 {
-    sel1_class = class_new(sym_select, 0, 0,
-        sizeof(t_sel1), 0, 0);
-    class_addFloat(sel1_class, sel1_float);
-    class_addSymbol(sel1_class, sel1_symbol);
+    PD_MEMORY_FREE (x->x_vector);
+}
 
-    sel2_class = class_new(sym_select, 0, (t_method)sel2_free,
-        sizeof(t_sel2), 0, 0);
-    class_addFloat(sel2_class, sel2_float);
-    class_addSymbol(sel2_class, sel2_symbol);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-    class_addCreator((t_newmethod)select_new, sym_select,  A_GIMME, 0);
-    class_addCreator((t_newmethod)select_new, sym_sel,  A_GIMME, 0);
+static void *select_new (t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc == 0) { t_atom a; SET_FLOAT (&a, 0.0); return select1_new (1, &a); }
+    if (argc == 1) { return select1_new (argv, argv); }
+
+    return select2_new (argc, argv);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void select_setup (void)
+{
+    select1_class = class_new (sym_select,
+                        NULL,
+                        NULL,
+                        sizeof (t_select1),
+                        CLASS_DEFAULT,
+                        A_NULL);
+    
+    select2_class = class_new (sym_select,
+                        NULL,
+                        (t_method)select2_free,
+                        sizeof (t_select2),
+                        CLASS_DEFAULT,
+                        A_NULL);
+    
+    class_addCreator ((t_newmethod)select_new, sym_select,  A_GIMME, A_NULL);
+    class_addCreator ((t_newmethod)select_new, sym_sel,     A_GIMME, A_NULL);
+    
+    class_addFloat (select1_class,  select1_float);
+    class_addFloat (select2_class,  select2_float);
+    class_addSymbol (select1_class, select1_symbol);
+    class_addSymbol (select2_class, select2_symbol);
 }
 
 // -----------------------------------------------------------------------------------------------------------

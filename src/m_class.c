@@ -173,6 +173,8 @@ void class_setDefaultExternalDirectory (t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* Note that the class name needs to be unique only if it contains a constructor. */
+
 t_class *class_new (t_symbol *s, 
     t_newmethod newMethod, 
     t_method freeMethod, 
