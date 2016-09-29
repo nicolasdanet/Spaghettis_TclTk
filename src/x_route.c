@@ -149,6 +149,7 @@ static void route_anything (t_route *x, t_symbol *s, int argc, t_atom *argv)
 
 static void *route_newPerform (int argc, t_atom *argv)
 {
+    t_error err = PD_ERROR_NONE;
     t_route *x = (t_route *)pd_new (route_class);
     int i;
     
@@ -156,27 +157,34 @@ static void *route_newPerform (int argc, t_atom *argv)
     x->x_size   = argc;
     x->x_vector = (t_atomoutlet *)PD_MEMORY_GET (x->x_size * sizeof (t_atomoutlet));
     
-    for (i = 0; i < argc; i++) {
-    //
-    x->x_vector[i].ao_outlet = outlet_new (cast_object (x), &s_anything);
+    for (i = 1; i < argc; i++) { if (atom_getType (argv + i) != x->x_type) { err = PD_ERROR; } }
     
-    if (x->x_type == A_FLOAT) { SET_FLOAT (&x->x_vector[i].ao_atom, atom_getFloatAtIndex (i, argc, argv)); } 
-    else {
-        SET_SYMBOL (&x->x_vector[i].ao_atom, atom_getSymbolAtIndex (i, argc, argv));
-    }
-    //
-    }
+    if (!err) {
     
-    if (argc == 1) {
-    //
-    if (x->x_type == A_FLOAT) { inlet_newFloat (cast_object (x), ADDRESS_FLOAT (&x->x_vector[0].ao_atom)); }
-    else {
-        inlet_newSymbol (cast_object (x), ADDRESS_SYMBOL (&x->x_vector[0].ao_atom));
+        for (i = 0; i < argc; i++) {
+            x->x_vector[i].ao_outlet = outlet_new (cast_object (x), &s_anything);
+            if (x->x_type == A_FLOAT) { 
+                SET_FLOAT (&x->x_vector[i].ao_atom, atom_getFloatAtIndex (i, argc, argv));
+            } else {
+                SET_SYMBOL (&x->x_vector[i].ao_atom, atom_getSymbolAtIndex (i, argc, argv));
+            }
+        }
+        
+        if (argc == 1) {
+            if (x->x_type == A_FLOAT) {
+                inlet_newFloat (cast_object (x), ADDRESS_FLOAT (&x->x_vector[0].ao_atom)); 
+            } else {
+                inlet_newSymbol (cast_object (x), ADDRESS_SYMBOL (&x->x_vector[0].ao_atom));
+            }
+        }
+        
+        x->x_outlet = outlet_new (cast_object (x), &s_anything);
+        
+    } else {
+        error_mismatch (sym_route, sym_type);
+        pd_free (x);
+        x = NULL;
     }
-    //
-    }
-    
-    x->x_outlet = outlet_new (cast_object (x), &s_anything);
     
     return x;
 }
