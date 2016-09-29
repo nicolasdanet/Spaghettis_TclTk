@@ -131,25 +131,34 @@ static void *select1_new (int argc, t_atom *argv)
 
 static void *select2_new (int argc, t_atom *argv)
 {
+    t_error err = PD_ERROR_NONE;
     t_select2 *x = (t_select2 *)pd_new (select2_class);
     int i;
         
     x->x_size   = argc;
     x->x_vector = (t_atomoutlet *)PD_MEMORY_GET (x->x_size * sizeof (t_atomoutlet));
     x->x_type   = atom_getType (argv);
+    
+    for (i = 1; i < argc; i++) { if (atom_getType (argv + i) != x->x_type) { err = PD_ERROR; } }
+    
+    if (!err) {
+    
+        for (i = 0; i < argc; i++) {
+            x->x_vector[i].ao_outlet = outlet_new (cast_object (x), &s_bang);
+            if (x->x_type == A_FLOAT) {
+                SET_FLOAT (&x->x_vector[i].ao_atom, atom_getFloatAtIndex (i, argc, argv));
+            } else {
+                SET_SYMBOL (&x->x_vector[i].ao_atom, atom_getSymbolAtIndex (i, argc, argv));
+            }
+        }
         
-    for (i = 0; i < argc; i++) {
-    //
-    x->x_vector[i].ao_outlet = outlet_new (cast_object (x), &s_bang);
-    
-    if (x->x_type == A_FLOAT) { SET_FLOAT (&x->x_vector[i].ao_atom, atom_getFloatAtIndex (i, argc, argv)); }
-    else {
-        SET_SYMBOL (&x->x_vector[i].ao_atom, atom_getSymbolAtIndex (i, argc, argv));
+        x->x_outlet = outlet_new (cast_object (x), &s_anything);
+
+    } else {
+        error_mismatch (sym_select, sym_type);
+        pd_free (x);
+        x = NULL;
     }
-    //
-    }
-    
-    x->x_outlet = outlet_new (cast_object (x), &s_anything);
 
     return x;
 }
