@@ -236,5 +236,25 @@ void        *binop_new                      (t_class *c, t_float f);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_atom      *atomoutlet_getAtom             (t_atomoutlet *x);
+t_outlet    *atomoutlet_getOutlet           (t_atomoutlet *x);
+t_gpointer  *atomoutlet_getPointer          (t_atomoutlet *x);
+
+t_atomtype  atomoutlet_getType              (t_atomoutlet *x);
+int         atomoutlet_isPointer            (t_atomoutlet *x);
+void        atomoutlet_copyAtom             (t_atomoutlet *x, t_atom *a);
+t_error     atomoutlet_setAtom              (t_atomoutlet *x, t_atom *a);
+
+void        atomoutlet_init                 (t_atomoutlet *x);
+void        atomoutlet_release              (t_atomoutlet *x);
+
+void        atomoutlet_makeFloat            (t_atomoutlet *x, t_object *o, t_float f, int createInlet);
+void        atomoutlet_makeSymbol           (t_atomoutlet *x, t_object *o, int createInlet);
+void        atomoutlet_makePointer          (t_atomoutlet *x, t_object *o, int createInlet);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 #endif // __x_control_h_

@@ -121,11 +121,12 @@
 
 /* Control. */
 
-#include "x_listinlet.c"
 #include "x_textbuffer.c"
 #include "x_textclient.c"
 #include "x_arrayclient.c"
 #include "x_arrayrange.c"
+#include "x_listinlet.c"
+#include "x_atomoutlet.c"
 
 #include "x_int.c"
 #include "x_float.c"
