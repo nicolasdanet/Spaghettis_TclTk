@@ -82,6 +82,7 @@ typedef struct _binop {
 
 typedef struct _atomoutlet {
     t_atom              ao_atom;
+    t_gpointer          ao_gpointer;
     t_outlet            *ao_outlet;
     } t_atomoutlet;
     

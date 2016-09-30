@@ -121,12 +121,17 @@
 
 /* Control. */
 
+#include "x_listinlet.c"
+#include "x_textbuffer.c"
+#include "x_textclient.c"
+#include "x_arrayclient.c"
+#include "x_arrayrange.c"
+
 #include "x_int.c"
 #include "x_float.c"
 #include "x_symbol.c"
 #include "x_bang.c"
 
-#include "x_listinlet.c"
 #include "x_list.c"
 #include "x_listappend.c"
 #include "x_listprepend.c"
@@ -138,8 +143,6 @@
 
 #include "x_scalar.c"
 
-#include "x_textbuffer.c"
-#include "x_textclient.c"
 #include "x_text.c"
 #include "x_textget.c"
 #include "x_textset.c"
@@ -150,8 +153,6 @@
 #include "x_qlist.c"
 #include "x_textfile.c"
 
-#include "x_arrayclient.c"
-#include "x_arrayrange.c"
 #include "x_array.c"
 #include "x_arraysize.c"
 #include "x_arraysum.c"

@@ -14,6 +14,7 @@
 #include "m_macros.h"
 #include "s_system.h"
 #include "g_graphics.h"
+#include "x_control.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -34,17 +35,11 @@ typedef struct _pipecallback {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _pipeoutlet {
-    t_atom                  p_atom;
-    t_gpointer              p_gpointer;
-    t_outlet                *p_outlet;
-    } t_pipeoutlet;
-
 typedef struct _pipe {
     t_object                x_obj;                  /* Must be the first. */
     t_float                 x_delay;
     int                     x_size;
-    t_pipeoutlet            *x_vector;
+    t_atomoutlet            *x_vector;
     t_pipecallback          *x_callbacks;
     } t_pipe;
 
@@ -72,10 +67,10 @@ static void callback_task (t_pipecallback *h)
     
     for (i = owner->x_size - 1; i >= 0; i--) {
     //
-    switch (atom_getType (&owner->x_vector[i].p_atom)) {
-        case A_FLOAT    : outlet_float (owner->x_vector[i].p_outlet, GET_FLOAT (h->h_atoms + i));     break;
-        case A_SYMBOL   : outlet_symbol (owner->x_vector[i].p_outlet, GET_SYMBOL (h->h_atoms + i));   break;
-        case A_POINTER  : outlet_pointer (owner->x_vector[i].p_outlet, GET_POINTER (h->h_atoms + i)); break;
+    switch (atom_getType (&owner->x_vector[i].ao_atom)) {
+        case A_FLOAT    : outlet_float (owner->x_vector[i].ao_outlet, GET_FLOAT (h->h_atoms + i));      break;
+        case A_SYMBOL   : outlet_symbol (owner->x_vector[i].ao_outlet, GET_SYMBOL (h->h_atoms + i));    break;
+        case A_POINTER  : outlet_pointer (owner->x_vector[i].ao_outlet, GET_POINTER (h->h_atoms + i));  break;
     }
     //
     }
@@ -99,11 +94,11 @@ static void callback_new (t_pipe *x, int argc, t_atom *argv)
     h->h_next       = x->x_callbacks;
     
     for (i = 0; i < x->x_size; i++) {
-        if (IS_POINTER (&x->x_vector[i].p_atom)) {
+        if (IS_POINTER (&x->x_vector[i].ao_atom)) {
             SET_POINTER (&h->h_atoms[i], h->h_gpointers + i);
-            gpointer_setByCopy (&x->x_vector[i].p_gpointer, h->h_gpointers + i);
+            gpointer_setByCopy (&x->x_vector[i].ao_gpointer, h->h_gpointers + i);
         } else {
-            h->h_atoms[i] = x->x_vector[i].p_atom;
+            h->h_atoms[i] = x->x_vector[i].ao_atom;
         }
     }
     
@@ -146,17 +141,17 @@ static void pipe_list (t_pipe *x, t_symbol *s, int argc, t_atom *argv)
     argc = PD_MIN (argc, x->x_size);
     
     for (i = 0; i < argc; i++) {
-        if (!atom_typesAreEqual (&x->x_vector[i].p_atom, argv + i)) {  
+        if (!atom_typesAreEqual (&x->x_vector[i].ao_atom, argv + i)) {  
             error_mismatch (sym_pipe, sym_type); 
             return;
         }
     }
 
     for (i = 0; i < argc; i++) {
-        switch (atom_getType (&x->x_vector[i].p_atom)) {
-            case A_FLOAT   : SET_FLOAT (&x->x_vector[i].p_atom, atom_getFloat (argv + i));            break;
-            case A_SYMBOL  : SET_SYMBOL (&x->x_vector[i].p_atom, atom_getSymbol (argv + i));          break;
-            case A_POINTER : gpointer_setByCopy (GET_POINTER (argv + i), &x->x_vector[i].p_gpointer); break;
+        switch (atom_getType (&x->x_vector[i].ao_atom)) {
+            case A_FLOAT   : SET_FLOAT (&x->x_vector[i].ao_atom, atom_getFloat (argv + i));             break;
+            case A_SYMBOL  : SET_SYMBOL (&x->x_vector[i].ao_atom, atom_getSymbol (argv + i));           break;
+            case A_POINTER : gpointer_setByCopy (GET_POINTER (argv + i), &x->x_vector[i].ao_gpointer);  break;
         }
     }
     
@@ -200,15 +195,15 @@ static void *pipe_new (t_symbol *s, int argc, t_atom *argv)
     }
 
     x->x_size   = PD_MAX (1, argc);     
-    x->x_vector = (t_pipeoutlet *)PD_MEMORY_GET (x->x_size * sizeof (t_pipeoutlet));
+    x->x_vector = (t_atomoutlet *)PD_MEMORY_GET (x->x_size * sizeof (t_atomoutlet));
 
     for (i = 0; i < x->x_size; i++) {
     //
-    gpointer_init (&x->x_vector[i].p_gpointer); SET_FLOAT (&x->x_vector[i].p_atom, 0.0);
+    gpointer_init (&x->x_vector[i].ao_gpointer); SET_FLOAT (&x->x_vector[i].ao_atom, 0.0);
     //
     }
     
-    if (!argc) { x->x_vector[0].p_outlet = outlet_new (cast_object (x), &s_float); }
+    if (!argc) { x->x_vector[0].ao_outlet = outlet_new (cast_object (x), &s_float); }
     else {
     //
     for (i = 0; i < argc; i++) {
@@ -216,19 +211,19 @@ static void *pipe_new (t_symbol *s, int argc, t_atom *argv)
     t_atom *a = argv + i; t_symbol *t = atom_getSymbol (a);
     
     if (t == sym_s) {
-        SET_SYMBOL (&x->x_vector[i].p_atom, &s_symbol);
-        x->x_vector[i].p_outlet = outlet_new (cast_object (x), &s_symbol);
-        if (i) { inlet_newSymbol (cast_object (x), ADDRESS_SYMBOL (&x->x_vector[i].p_atom)); }
+        SET_SYMBOL (&x->x_vector[i].ao_atom, &s_symbol);
+        x->x_vector[i].ao_outlet = outlet_new (cast_object (x), &s_symbol);
+        if (i) { inlet_newSymbol (cast_object (x), ADDRESS_SYMBOL (&x->x_vector[i].ao_atom)); }
         
     } else if (t == sym_p) {
-        SET_POINTER (&x->x_vector[i].p_atom, &x->x_vector[i].p_gpointer);
-        x->x_vector[i].p_outlet = outlet_new (cast_object (x), &s_pointer);
-        if (i) { inlet_newPointer (cast_object (x), &x->x_vector[i].p_gpointer); }
+        SET_POINTER (&x->x_vector[i].ao_atom, &x->x_vector[i].ao_gpointer);
+        x->x_vector[i].ao_outlet = outlet_new (cast_object (x), &s_pointer);
+        if (i) { inlet_newPointer (cast_object (x), &x->x_vector[i].ao_gpointer); }
         
     } else {
-        SET_FLOAT (&x->x_vector[i].p_atom, atom_getFloat (a));
-        x->x_vector[i].p_outlet = outlet_new (cast_object (x), &s_float);
-        if (i) { inlet_newFloat (cast_object (x), ADDRESS_FLOAT (&x->x_vector[i].p_atom)); }
+        SET_FLOAT (&x->x_vector[i].ao_atom, atom_getFloat (a));
+        x->x_vector[i].ao_outlet = outlet_new (cast_object (x), &s_float);
+        if (i) { inlet_newFloat (cast_object (x), ADDRESS_FLOAT (&x->x_vector[i].ao_atom)); }
         if (!IS_FLOAT (a) && t != sym_f) { warning_badType (sym_pipe, t); }
     }
     //
@@ -249,7 +244,7 @@ static void pipe_free (t_pipe *x)
     
     pipe_clear (x);
     
-    for (i = 0; i < x->x_size; i++) { gpointer_unset (&x->x_vector[i].p_gpointer); }
+    for (i = 0; i < x->x_size; i++) { gpointer_unset (&x->x_vector[i].ao_gpointer); }
     
     PD_MEMORY_FREE (x->x_vector);
 }
