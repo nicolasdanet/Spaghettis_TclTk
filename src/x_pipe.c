@@ -195,8 +195,7 @@ static void *pipe_new (t_symbol *s, int argc, t_atom *argv)
         
     if (argc) {
     //
-    t_atom *a = argv + (argc - 1);
-    if (IS_FLOAT (a)) { x->x_delay = GET_FLOAT (a); argc--; }
+    t_atom *a = argv + (argc - 1); if (IS_FLOAT (a)) { x->x_delay = GET_FLOAT (a); argc--; }
     //
     }
 
@@ -205,8 +204,7 @@ static void *pipe_new (t_symbol *s, int argc, t_atom *argv)
 
     for (i = 0; i < x->x_size; i++) {
     //
-    gpointer_init (&x->x_vector[i].p_gpointer);
-    SET_FLOAT (&x->x_vector[i].p_atom, 0.0);
+    gpointer_init (&x->x_vector[i].p_gpointer); SET_FLOAT (&x->x_vector[i].p_atom, 0.0);
     //
     }
     
@@ -217,12 +215,7 @@ static void *pipe_new (t_symbol *s, int argc, t_atom *argv)
     //
     t_atom *a = argv + i; t_symbol *t = atom_getSymbol (a);
     
-    if (t == sym_f || IS_FLOAT (a)) {
-        SET_FLOAT (&x->x_vector[i].p_atom, atom_getFloat (a));
-        x->x_vector[i].p_outlet = outlet_new (cast_object (x), &s_float);
-        if (i) { inlet_newFloat (cast_object (x), ADDRESS_FLOAT (&x->x_vector[i].p_atom)); }
-        
-    } else if (t == sym_s) {
+    if (t == sym_s) {
         SET_SYMBOL (&x->x_vector[i].p_atom, &s_symbol);
         x->x_vector[i].p_outlet = outlet_new (cast_object (x), &s_symbol);
         if (i) { inlet_newSymbol (cast_object (x), ADDRESS_SYMBOL (&x->x_vector[i].p_atom)); }
@@ -232,7 +225,12 @@ static void *pipe_new (t_symbol *s, int argc, t_atom *argv)
         x->x_vector[i].p_outlet = outlet_new (cast_object (x), &s_pointer);
         if (i) { inlet_newPointer (cast_object (x), &x->x_vector[i].p_gpointer); }
         
-    } else { error_invalid (sym_pipe, sym_type); }
+    } else {
+        SET_FLOAT (&x->x_vector[i].p_atom, atom_getFloat (a));
+        x->x_vector[i].p_outlet = outlet_new (cast_object (x), &s_float);
+        if (i) { inlet_newFloat (cast_object (x), ADDRESS_FLOAT (&x->x_vector[i].p_atom)); }
+        if (!IS_FLOAT (a) && t != sym_f) { warning_badType (sym_pipe, t); }
+    }
     //
     }
     //
