@@ -91,15 +91,47 @@ void atomoutlet_release (t_atomoutlet *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error atomoutlet_makeParse (t_atomoutlet *x, t_object *o, t_atom *a, int createInlet, int createOutlet)
+void atomoutlet_makeBangOutlet (t_atomoutlet *x, t_object *owner, t_atom *a)
+{
+    atomoutlet_init (x);
+    
+    if (IS_SYMBOL (a)) { SET_SYMBOL (&x->ao_atom, atom_getSymbol (a)); }
+    else {
+        SET_FLOAT (&x->ao_atom, atom_getFloat (a));
+    }
+    
+    x->ao_outlet = outlet_new (owner, &s_bang);
+}
+
+int atomoutlet_matchBangOutlet (t_atomoutlet *x, t_atom *a)
+{
+    if (atom_typesAreEqual (&x->ao_atom, a)) {
+    //
+    if (IS_FLOAT (&x->ao_atom) && (GET_FLOAT (&x->ao_atom) == GET_FLOAT (a))) {
+        outlet_bang (x->ao_outlet); return 1;
+    }
+    if (IS_SYMBOL (&x->ao_atom) && (GET_SYMBOL (&x->ao_atom) == GET_SYMBOL (a))) {
+        outlet_bang (x->ao_outlet); return 1;
+    }
+    //
+    }
+    
+    return 0;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_error atomoutlet_makeParse (t_atomoutlet *x, t_object *owner, t_atom *a, int createInlet, int createOutlet)
 {
     t_error err = PD_ERROR_NONE;
     t_symbol *t = atom_getSymbol (a);
         
-    if (t == sym_p)      { atomoutlet_makePointer (x, o, createInlet, createOutlet); }
-    else if (t == sym_s) { atomoutlet_makeSymbol (x, o, createInlet, createOutlet); }
+    if (t == sym_p)      { atomoutlet_makePointer (x, owner, createInlet, createOutlet); }
+    else if (t == sym_s) { atomoutlet_makeSymbol (x, owner, createInlet, createOutlet); }
     else {
-        atomoutlet_makeFloat (x, o, atom_getFloat (a), createInlet, createOutlet);
+        atomoutlet_makeFloat (x, owner, atom_getFloat (a), createInlet, createOutlet);
         if (!IS_FLOAT (a) && t != sym_f) {
             err = PD_ERROR;
         }
