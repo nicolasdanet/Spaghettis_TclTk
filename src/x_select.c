@@ -69,9 +69,12 @@ static void select2_float (t_select2 *x, t_float f)
     int i, k = 0;
     
     for (i = x->x_size - 1; i >= 0; i--) {
-    //
-    t_atom a; SET_FLOAT (&a, f); k |= atomoutlet_matchBangOutlet (x->x_vector + i, &a);
-    //
+
+        t_atom a; SET_FLOAT (&a, f); 
+        
+        if (atomoutlet_isMatchTypedOutlet (x->x_vector + i, &a)) {
+            k |= 1; outlet_bang (atomoutlet_getOutlet (x->x_vector + i));
+        }
     }
     
     if (!k) { outlet_float (x->x_outlet, f); }
@@ -82,9 +85,12 @@ static void select2_symbol (t_select2 *x, t_symbol *s)
     int i, k = 0;
     
     for (i = x->x_size - 1; i >= 0; i--) {
-    //
-    t_atom a; SET_SYMBOL (&a, s); k |= atomoutlet_matchBangOutlet (x->x_vector + i, &a);
-    //
+
+        t_atom a; SET_SYMBOL (&a, s); 
+        
+        if (atomoutlet_isMatchTypedOutlet (x->x_vector + i, &a)) {
+            k |= 1; outlet_bang (atomoutlet_getOutlet (x->x_vector + i));
+        }
     }
     
     if (!k) { outlet_symbol (x->x_outlet, s); }
@@ -123,7 +129,7 @@ static void *select2_new (int argc, t_atom *argv)
     x->x_vector = (t_atomoutlet *)PD_MEMORY_GET (x->x_size * sizeof (t_atomoutlet));
 
     for (i = 0; i < argc; i++) {
-        atomoutlet_makeBangOutlet (x->x_vector + i, cast_object (x), argv + i);
+        atomoutlet_makeTypedOutlet (x->x_vector + i, cast_object (x), &s_bang, argv + i);
     }
     
     x->x_outlet = outlet_new (cast_object (x), &s_anything);

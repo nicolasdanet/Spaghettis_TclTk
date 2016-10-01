@@ -250,8 +250,8 @@ t_error     atomoutlet_setAtom              (t_atomoutlet *x, t_atom *a);
 void        atomoutlet_init                 (t_atomoutlet *x);
 void        atomoutlet_release              (t_atomoutlet *x);
 
-void        atomoutlet_makeBangOutlet       (t_atomoutlet *x, t_object *o, t_atom *a);
-int         atomoutlet_matchBangOutlet      (t_atomoutlet *x, t_atom *a);
+void        atomoutlet_makeTypedOutlet      (t_atomoutlet *x, t_object *o, t_symbol *type, t_atom *a);
+int         atomoutlet_isMatchTypedOutlet   (t_atomoutlet *x, t_atom *a);
 
 t_error     atomoutlet_makeParse            (t_atomoutlet *x, t_object *o, t_atom *a, int inlet, int outlet);
 void        atomoutlet_makeFloat            (t_atomoutlet *x, t_object *o, t_float f, int inlet, int outlet);
