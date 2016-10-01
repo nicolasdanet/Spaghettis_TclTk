@@ -46,6 +46,20 @@ int atomoutlet_isPointer (t_atomoutlet *x)
     return (atomoutlet_getType (x) == A_POINTER);
 }
 
+int atomoutlet_isEqualTo (t_atomoutlet *x, t_atom *a)
+{
+    if (atom_typesAreEqual (&x->ao_atom, a)) {
+    //
+    if (IS_FLOAT (&x->ao_atom) && (GET_FLOAT (&x->ao_atom) == GET_FLOAT (a)))    { return 1; }
+    if (IS_SYMBOL (&x->ao_atom) && (GET_SYMBOL (&x->ao_atom) == GET_SYMBOL (a))) { return 1; }
+    
+    PD_BUG;     /* Not implemented yet. */
+    //
+    }
+    
+    return 0;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -71,6 +85,22 @@ t_error atomoutlet_setAtom (t_atomoutlet *x, t_atom *a)
     return PD_ERROR_NONE;
 }
 
+t_error atomoutlet_outputAtom (t_atomoutlet *x, t_atom *a)
+{
+    if (!atom_typesAreEqual (&x->ao_atom, a)) { return PD_ERROR; }
+    else {
+    //
+    switch (atomoutlet_getType (&x->ao_atom)) {
+        case A_FLOAT    : outlet_float (x->ao_outlet, GET_FLOAT (a));     break;
+        case A_SYMBOL   : outlet_symbol (x->ao_outlet, GET_SYMBOL (a));   break;
+        case A_POINTER  : outlet_pointer (x->ao_outlet, GET_POINTER (a)); break;
+    }
+    //
+    }
+    
+    return PD_ERROR_NONE;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -85,43 +115,6 @@ void atomoutlet_init (t_atomoutlet *x)
 void atomoutlet_release (t_atomoutlet *x)
 {
     gpointer_unset (&x->ao_gpointer); 
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void atomoutlet_makeTypedOutlet (t_atomoutlet *x, t_object *owner, t_symbol *type, t_atom *a, int createInlet)
-{
-    atomoutlet_init (x);
-    
-    if (IS_SYMBOL (a)) { SET_SYMBOL (&x->ao_atom, atom_getSymbol (a)); }
-    else {
-        SET_FLOAT (&x->ao_atom, atom_getFloat (a));
-    }
-    
-    if (createInlet) {
-    //
-    if (IS_SYMBOL (a)) { inlet_newSymbol (owner, ADDRESS_SYMBOL (&x->ao_atom)); }
-    else {
-        inlet_newFloat (owner, ADDRESS_FLOAT (&x->ao_atom));        
-    }
-    //
-    }
-    
-    x->ao_outlet = outlet_new (owner, type);
-}
-
-int atomoutlet_isMatchTypedOutlet (t_atomoutlet *x, t_atom *a)
-{
-    if (atom_typesAreEqual (&x->ao_atom, a)) {
-    //
-    if (IS_FLOAT (&x->ao_atom) && (GET_FLOAT (&x->ao_atom) == GET_FLOAT (a)))    { return 1; }
-    if (IS_SYMBOL (&x->ao_atom) && (GET_SYMBOL (&x->ao_atom) == GET_SYMBOL (a))) { return 1; }
-    //
-    }
-    
-    return 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -167,6 +160,30 @@ void atomoutlet_makePointer (t_atomoutlet *x, t_object *owner, int createInlet, 
     SET_POINTER (&x->ao_atom, &x->ao_gpointer);
     if (createOutlet) { x->ao_outlet = outlet_new (owner, &s_pointer); }
     if (createInlet)  { inlet_newPointer (owner, &x->ao_gpointer); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void atomoutlet_makeOutlet (t_atomoutlet *x, t_object *owner, t_symbol *type, t_atom *a, int createInlet)
+{
+    atomoutlet_init (x);
+    
+    if (IS_SYMBOL (a)) { SET_SYMBOL (&x->ao_atom, atom_getSymbol (a)); }
+    else {
+        SET_FLOAT (&x->ao_atom, atom_getFloat (a));
+    }
+    
+    if (createInlet) {
+    //
+    if (IS_SYMBOL (a)) { inlet_newSymbol (owner, ADDRESS_SYMBOL (&x->ao_atom)); }
+    else {
+        inlet_newFloat (owner, ADDRESS_FLOAT (&x->ao_atom));        
+    }
+    //
+    }
+    
+    x->ao_outlet = outlet_new (owner, type);
 }
 
 // -----------------------------------------------------------------------------------------------------------

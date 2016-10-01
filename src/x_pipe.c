@@ -66,16 +66,8 @@ static void callback_task (t_pipecallback *h)
     }
     
     for (i = owner->x_size - 1; i >= 0; i--) {
-    //
-    t_atomoutlet *a = owner->x_vector + i;
-    t_outlet *outlet = atomoutlet_getOutlet (a);
-    
-    switch (atomoutlet_getType (a)) {
-        case A_FLOAT    : outlet_float (outlet, GET_FLOAT (h->h_atoms + i));     break;
-        case A_SYMBOL   : outlet_symbol (outlet, GET_SYMBOL (h->h_atoms + i));   break;
-        case A_POINTER  : outlet_pointer (outlet, GET_POINTER (h->h_atoms + i)); break;
-    }
-    //
+        t_error err = atomoutlet_outputAtom (owner->x_vector + i, h->h_atoms + i);
+        PD_ASSERT (!err);
     }
     
     callback_free (h);

@@ -13,111 +13,100 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "g_graphics.h"
+#include "x_control.h"
 
-static t_class *unpack_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct unpackout
+static t_class *unpack_class;       /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _unpack {
+    t_object        x_obj;          /* Must be the first. */
+    t_int           x_size;
+    t_atomoutlet    *x_vector;
+    } t_unpack;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void unpack_list (t_unpack *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_atomtype u_type;
-    t_outlet *u_outlet;
-} t_unpackout;
-
-typedef struct _unpack
-{
-    t_object x_obj;
-    t_int x_n;
-    t_unpackout *x_vec;
-} t_unpack;
-
-static void *unpack_new(t_symbol *s, int argc, t_atom *argv)
-{
-    t_unpack *x = (t_unpack *)pd_new(unpack_class);
-    t_atom defarg[2], *ap;
-    t_unpackout *u;
     int i;
-    if (!argc)
-    {
-        argv = defarg;
-        argc = 2;
-        SET_FLOAT(&defarg[0], 0);
-        SET_FLOAT(&defarg[1], 0);
-    }
-    x->x_n = argc;
-    x->x_vec = (t_unpackout *)PD_MEMORY_GET(argc * sizeof(*x->x_vec));
-    for (i = 0, ap = argv, u = x->x_vec; i < argc; u++, ap++, i++)
-    {
-        t_atomtype type = ap->a_type;
-        if (type == A_SYMBOL)
-        {
-            char c = *ap->a_w.w_symbol->s_name;
-            if (c == 's')
-            {
-                u->u_type = A_SYMBOL;
-                u->u_outlet = outlet_new(&x->x_obj, &s_symbol);
-            }
-            else if (c == 'p')
-            {
-                u->u_type =  A_POINTER;
-                u->u_outlet = outlet_new(&x->x_obj, &s_pointer);
-            }
-            else
-            {
-                if (c != 'f') post_error ("unpack: %s: bad type",
-                    ap->a_w.w_symbol->s_name);
-                u->u_type = A_FLOAT;
-                u->u_outlet = outlet_new(&x->x_obj, &s_float);
-            }
-        }
-        else
-        {
-            u->u_type =  A_FLOAT;
-            u->u_outlet = outlet_new(&x->x_obj, &s_float);
+    
+    for (i = PD_MIN (x->x_size, argc) - 1; i >= 0; i--) {
+        if (atomoutlet_outputAtom (x->x_vector + i, argv + i)) { 
+            error_mismatch (sym_unpack, sym_type);
         }
     }
-    return (x);
 }
 
-static void unpack_list(t_unpack *x, t_symbol *s, int argc, t_atom *argv)
+static void unpack_anything (t_unpack *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_atom *ap;
-    t_unpackout *u;
+    utils_anythingToList (cast_object (x), unpack_list, s, argc, argv);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *unpack_newPerform (int argc, t_atom *argv)
+{
+    t_unpack *x = (t_unpack *)pd_new (unpack_class);
     int i;
-    if (argc > x->x_n) argc = x->x_n;
-    for (i = argc, u = x->x_vec + i, ap = argv + i; u--, ap--, i--;)
-    {
-        t_atomtype type = u->u_type;
-        if (type != ap->a_type)
-            post_error ("unpack: type mismatch");
-        else if (type == A_FLOAT)
-            outlet_float(u->u_outlet, ap->a_w.w_float);
-        else if (type == A_SYMBOL)
-            outlet_symbol(u->u_outlet, ap->a_w.w_symbol);
-        else outlet_pointer(u->u_outlet, ap->a_w.w_gpointer);
+
+    x->x_size   = argc;
+    x->x_vector = (t_atomoutlet *)PD_MEMORY_GET (x->x_size * sizeof (t_atomoutlet));
+    
+    for (i = 0; i < x->x_size; i++) {
+        if (atomoutlet_makeParse (x->x_vector + i, cast_object (x), argv + i, 0, 1)) {
+            warning_badType (sym_pipe, atom_getSymbol (argv + i));
+        }
+    }
+    
+    return x;
+}
+
+static void *unpack_new (t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc) { return unpack_newPerform (argc, argv); }
+    else {
+        t_atom a[2]; SET_FLOAT (&a[0], 0.0); SET_FLOAT (&a[1], 0.0); return unpack_newPerform (2, &a);
     }
 }
 
-static void unpack_anything(t_unpack *x, t_symbol *s, int ac, t_atom *av)
+static void unpack_free (t_unpack *x)
 {
-    t_atom *av2 = (t_atom *)PD_MEMORY_GET((ac + 1) * sizeof(t_atom));
     int i;
-    for (i = 0; i < ac; i++)
-        av2[i + 1] = av[i];
-    SET_SYMBOL(av2, s);
-    unpack_list(x, 0, ac+1, av2);
-    PD_MEMORY_FREE(av2);
+    
+    for (i = 0; i < x->x_size; i++) { atomoutlet_release (x->x_vector + i); }
+    
+    PD_MEMORY_FREE (x->x_vector);
 }
 
-static void unpack_free(t_unpack *x)
-{
-    PD_MEMORY_FREE(x->x_vec);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-void unpack_setup(void)
+void unpack_setup (void)
 {
-    unpack_class = class_new(sym_unpack, (t_newmethod)unpack_new,
-        (t_method)unpack_free, sizeof(t_unpack), 0, A_GIMME, 0);
-    class_addList(unpack_class, unpack_list);
-    class_addAnything(unpack_class, unpack_anything);
+    t_class *c = NULL;
+    
+    c = class_new (sym_unpack,
+            (t_newmethod)unpack_new,
+            (t_method)unpack_free,
+            sizeof (t_unpack),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+            
+    class_addList (c, unpack_list);
+    class_addAnything (c, unpack_anything);
+    
+    unpack_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
