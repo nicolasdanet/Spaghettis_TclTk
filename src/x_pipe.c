@@ -97,11 +97,13 @@ static void callback_new (t_pipe *x, int argc, t_atom *argv)
     h->h_next       = x->x_callbacks;
     
     for (i = 0; i < x->x_size; i++) {
+    
         t_atomoutlet *a = x->x_vector + i;
+        
         if (!atomoutlet_isPointer (a)) { atomoutlet_copyAtom (a, h->h_atoms + i); }
         else {
-            gpointer_setByCopy (atomoutlet_getPointer (a), h->h_gpointers + i);
             SET_POINTER (&h->h_atoms[i], h->h_gpointers + i);
+            gpointer_setByCopy (atomoutlet_getPointer (a), h->h_gpointers + i);
         }
     }
     
@@ -196,20 +198,12 @@ static void *pipe_new (t_symbol *s, int argc, t_atom *argv)
     x->x_size   = PD_MAX (1, argc);     
     x->x_vector = (t_atomoutlet *)PD_MEMORY_GET (x->x_size * sizeof (t_atomoutlet));
 
-    if (!argc) { atomoutlet_makeFloat (x->x_vector + 0, cast_object (x), 0.0, 0); }
+    if (!argc) { atomoutlet_makeFloat (x->x_vector + 0, cast_object (x), 0.0, 0, 1); }
     else {
     //
     for (i = 0; i < argc; i++) {
-
-        t_atom *a = argv + i; t_symbol *t = atom_getSymbol (a);
-        
-        if (t == sym_p)      { atomoutlet_makePointer (x->x_vector + i, cast_object (x), (i != 0)); }
-        else if (t == sym_s) { atomoutlet_makeSymbol (x->x_vector + i, cast_object (x), (i != 0)); }
-        else {
-            atomoutlet_makeFloat (x->x_vector + i, cast_object (x), atom_getFloat (a), (i != 0));
-            if (!IS_FLOAT (a) && t != sym_f) {
-                warning_badType (sym_pipe, t);
-            }
+        if (atomoutlet_makeParse (x->x_vector + i, cast_object (x), argv + i, (i != 0), 1)) {
+            warning_badType (sym_pipe, atom_getSymbol (argv + i));
         }
     }
     //

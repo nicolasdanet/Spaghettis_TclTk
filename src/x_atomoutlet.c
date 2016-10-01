@@ -91,28 +91,45 @@ void atomoutlet_release (t_atomoutlet *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void atomoutlet_makeFloat (t_atomoutlet *x, t_object *owner, t_float f, int createInlet)
+t_error atomoutlet_makeParse (t_atomoutlet *x, t_object *o, t_atom *a, int createInlet, int createOutlet)
+{
+    t_error err = PD_ERROR_NONE;
+    t_symbol *t = atom_getSymbol (a);
+        
+    if (t == sym_p)      { atomoutlet_makePointer (x, o, createInlet, createOutlet); }
+    else if (t == sym_s) { atomoutlet_makeSymbol (x, o, createInlet, createOutlet); }
+    else {
+        atomoutlet_makeFloat (x, o, atom_getFloat (a), createInlet, createOutlet);
+        if (!IS_FLOAT (a) && t != sym_f) {
+            err = PD_ERROR;
+        }
+    }
+    
+    return err;
+}
+
+void atomoutlet_makeFloat (t_atomoutlet *x, t_object *owner, t_float f, int createInlet, int createOutlet)
 {
     atomoutlet_init (x);
     SET_FLOAT (&x->ao_atom, f);
-    x->ao_outlet = outlet_new (owner, &s_float);
-    if (createInlet) { inlet_newFloat (owner, ADDRESS_FLOAT (&x->ao_atom)); }
+    if (createOutlet) { x->ao_outlet = outlet_new (owner, &s_float); }
+    if (createInlet)  { inlet_newFloat (owner, ADDRESS_FLOAT (&x->ao_atom)); }
 }
 
-void atomoutlet_makeSymbol (t_atomoutlet *x, t_object *owner, int createInlet)
+void atomoutlet_makeSymbol (t_atomoutlet *x, t_object *owner, int createInlet, int createOutlet)
 {
     atomoutlet_init (x);
     SET_SYMBOL (&x->ao_atom, &s_symbol);
-    x->ao_outlet = outlet_new (owner, &s_symbol);
-    if (createInlet) { inlet_newSymbol (owner, ADDRESS_SYMBOL (&x->ao_atom)); }
+    if (createOutlet) { x->ao_outlet = outlet_new (owner, &s_symbol); }
+    if (createInlet)  { inlet_newSymbol (owner, ADDRESS_SYMBOL (&x->ao_atom)); }
 }
 
-void atomoutlet_makePointer (t_atomoutlet *x, t_object *owner, int createInlet)
+void atomoutlet_makePointer (t_atomoutlet *x, t_object *owner, int createInlet, int createOutlet)
 {
     atomoutlet_init (x);
     SET_POINTER (&x->ao_atom, &x->ao_gpointer);
-    x->ao_outlet = outlet_new (owner, &s_pointer);
-    if (createInlet) { inlet_newPointer (owner, &x->ao_gpointer); }
+    if (createOutlet) { x->ao_outlet = outlet_new (owner, &s_pointer); }
+    if (createInlet)  { inlet_newPointer (owner, &x->ao_gpointer); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

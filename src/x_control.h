@@ -250,9 +250,10 @@ t_error     atomoutlet_setAtom              (t_atomoutlet *x, t_atom *a);
 void        atomoutlet_init                 (t_atomoutlet *x);
 void        atomoutlet_release              (t_atomoutlet *x);
 
-void        atomoutlet_makeFloat            (t_atomoutlet *x, t_object *o, t_float f, int createInlet);
-void        atomoutlet_makeSymbol           (t_atomoutlet *x, t_object *o, int createInlet);
-void        atomoutlet_makePointer          (t_atomoutlet *x, t_object *o, int createInlet);
+t_error     atomoutlet_makeParse            (t_atomoutlet *x, t_object *o, t_atom *a, int inlet, int outlet);
+void        atomoutlet_makeFloat            (t_atomoutlet *x, t_object *o, t_float f, int inlet, int outlet);
+void        atomoutlet_makeSymbol           (t_atomoutlet *x, t_object *o, int inlet, int outlet);
+void        atomoutlet_makePointer          (t_atomoutlet *x, t_object *o, int inlet, int outlet);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
