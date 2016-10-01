@@ -91,13 +91,22 @@ void atomoutlet_release (t_atomoutlet *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void atomoutlet_makeTypedOutlet (t_atomoutlet *x, t_object *owner, t_symbol *type, t_atom *a)
+void atomoutlet_makeTypedOutlet (t_atomoutlet *x, t_object *owner, t_symbol *type, t_atom *a, int createInlet)
 {
     atomoutlet_init (x);
     
     if (IS_SYMBOL (a)) { SET_SYMBOL (&x->ao_atom, atom_getSymbol (a)); }
     else {
         SET_FLOAT (&x->ao_atom, atom_getFloat (a));
+    }
+    
+    if (createInlet) {
+    //
+    if (IS_SYMBOL (a)) { inlet_newSymbol (owner, ADDRESS_SYMBOL (&x->ao_atom)); }
+    else {
+        inlet_newFloat (owner, ADDRESS_FLOAT (&x->ao_atom));        
+    }
+    //
     }
     
     x->ao_outlet = outlet_new (owner, type);

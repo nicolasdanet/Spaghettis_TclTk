@@ -44,11 +44,12 @@ static int route_listForFloat (t_route *x, int argc, t_atom *argv)
     
     for (i = x->x_size - 1; i >= 0; i--) {
     
-        if (GET_FLOAT (&x->x_vector[i].ao_atom) == atom_getFloat (argv)) {
+        if (atomoutlet_isMatchTypedOutlet (x->x_vector + i, argv)) {
+            t_outlet *outlet = atomoutlet_getOutlet (x->x_vector + i);
             if (argc > 1 && IS_SYMBOL (argv + 1)) {
-                outlet_anything (x->x_vector[i].ao_outlet, GET_SYMBOL (argv + 1), argc - 2, argv + 2);
+                outlet_anything (outlet, GET_SYMBOL (argv + 1), argc - 2, argv + 2);
             } else { 
-                outlet_list (x->x_vector[i].ao_outlet, argc - 1, argv + 1);
+                outlet_list (outlet, argc - 1, argv + 1);
             }
             k = 1;
         }
@@ -66,11 +67,11 @@ static int route_listForSymbol (t_route *x, int argc, t_atom *argv)
     if (argc > 1) {
         for (i = x->x_size - 1; i >= 0; i--) {
         
-            if (GET_SYMBOL (&x->x_vector[i].ao_atom) == &s_list) {
-                if (argc > 0 && IS_SYMBOL (argv)) {
-                    outlet_anything (x->x_vector[i].ao_outlet, GET_SYMBOL (argv), argc - 1, argv + 1);
-                } else {
-                    outlet_list (x->x_vector[i].ao_outlet, argc, argv);
+            if (GET_SYMBOL (atomoutlet_getAtom (x->x_vector + i)) == &s_list) {
+                t_outlet *outlet = atomoutlet_getOutlet (x->x_vector + i);
+                if (!argc || !IS_SYMBOL (argv)) { outlet_list (outlet, argc, argv); }
+                else {
+                    outlet_anything (outlet, GET_SYMBOL (argv), argc - 1, argv + 1);
                 }
                 k = 1;
             }
@@ -79,8 +80,8 @@ static int route_listForSymbol (t_route *x, int argc, t_atom *argv)
     } else if (argc == 0) {
         for (i = x->x_size - 1; i >= 0; i--) {
         
-            if (GET_SYMBOL (&x->x_vector[i].ao_atom) == &s_bang) {
-                outlet_bang (x->x_vector[i].ao_outlet); 
+            if (GET_SYMBOL (atomoutlet_getAtom (x->x_vector + i)) == &s_bang) {
+                outlet_bang (atomoutlet_getOutlet (x->x_vector + i)); 
                 k = 1;
             }
         }
@@ -88,8 +89,8 @@ static int route_listForSymbol (t_route *x, int argc, t_atom *argv)
     } else if (IS_FLOAT (argv)) {
         for (i = x->x_size - 1; i >= 0; i--) {
 
-            if (GET_SYMBOL (&x->x_vector[i].ao_atom) == &s_float) {
-                outlet_float (x->x_vector[i].ao_outlet, GET_FLOAT (argv));
+            if (GET_SYMBOL (atomoutlet_getAtom (x->x_vector + i)) == &s_float) {
+                outlet_float (atomoutlet_getOutlet (x->x_vector + i), GET_FLOAT (argv));
                 k = 1;
             }
         }
@@ -97,8 +98,8 @@ static int route_listForSymbol (t_route *x, int argc, t_atom *argv)
     } else if (IS_SYMBOL (argv)) {
         for (i = x->x_size - 1; i >= 0; i--) {
         
-            if (GET_SYMBOL (&x->x_vector[i].ao_atom) == &s_symbol) {
-                outlet_symbol (x->x_vector[i].ao_outlet, GET_SYMBOL (argv));
+            if (GET_SYMBOL (atomoutlet_getAtom (x->x_vector + i)) == &s_symbol) {
+                outlet_symbol (atomoutlet_getOutlet (x->x_vector + i), GET_SYMBOL (argv));
                 k = 1;
             }
         }
@@ -128,16 +129,22 @@ static void route_anything (t_route *x, t_symbol *s, int argc, t_atom *argv)
     int i, k = 0;
     
     if (x->x_type == A_SYMBOL) {
-        for (i = x->x_size - 1; i >= 0; i--) {
-        
-            if (GET_SYMBOL (&x->x_vector[i].ao_atom) == s) {
-                if (!argc || !IS_SYMBOL (argv)) { outlet_list (x->x_vector[i].ao_outlet, argc, argv); }
-                else {
-                    outlet_anything (x->x_vector[i].ao_outlet, GET_SYMBOL (argv), argc - 1, argv + 1);
-                } 
-                k = 1;
-            }
-        }
+    //
+    for (i = x->x_size - 1; i >= 0; i--) {
+    //
+    t_atom a; SET_SYMBOL (&a, s);
+    
+    if (atomoutlet_isMatchTypedOutlet (x->x_vector + i, &a)) {
+        t_outlet *outlet = atomoutlet_getOutlet (x->x_vector + i);
+        if (!argc || !IS_SYMBOL (argv)) { outlet_list (outlet, argc, argv); }
+        else {
+            outlet_anything (outlet, GET_SYMBOL (argv), argc - 1, argv + 1);
+        } 
+        k = 1;
+    }
+    //
+    }
+    //
     }
     
     if (!k) { outlet_anything (x->x_outlet, s, argc, argv); }
@@ -160,24 +167,9 @@ static void *route_newPerform (int argc, t_atom *argv)
     for (i = 1; i < argc; i++) { if (atom_getType (argv + i) != x->x_type) { err = PD_ERROR; } }
     
     if (!err) {
-    
         for (i = 0; i < argc; i++) {
-            x->x_vector[i].ao_outlet = outlet_new (cast_object (x), &s_anything);
-            if (x->x_type == A_FLOAT) { 
-                SET_FLOAT (&x->x_vector[i].ao_atom, atom_getFloatAtIndex (i, argc, argv));
-            } else {
-                SET_SYMBOL (&x->x_vector[i].ao_atom, atom_getSymbolAtIndex (i, argc, argv));
-            }
+            atomoutlet_makeTypedOutlet (x->x_vector + i, cast_object (x), &s_anything, argv + i, argc == 1);
         }
-        
-        if (argc == 1) {
-            if (x->x_type == A_FLOAT) {
-                inlet_newFloat (cast_object (x), ADDRESS_FLOAT (&x->x_vector[0].ao_atom)); 
-            } else {
-                inlet_newSymbol (cast_object (x), ADDRESS_SYMBOL (&x->x_vector[0].ao_atom));
-            }
-        }
-        
         x->x_outlet = outlet_new (cast_object (x), &s_anything);
         
     } else {
