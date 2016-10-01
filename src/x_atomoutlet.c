@@ -52,7 +52,7 @@ int atomoutlet_isPointer (t_atomoutlet *x)
 
 void atomoutlet_copyAtom (t_atomoutlet *x, t_atom *a)
 {
-    *a = x->ao_atom;
+    *a = *atomoutlet_getAtom (x);
 }
 
 t_error atomoutlet_setAtom (t_atomoutlet *x, t_atom *a)
