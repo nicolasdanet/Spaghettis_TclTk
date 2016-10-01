@@ -139,6 +139,10 @@ static void *select2_new (int argc, t_atom *argv)
 
 static void select2_free (t_select2 *x)
 {
+    int i;
+    
+    for (i = 0; i < x->x_size; i++) { atomoutlet_release (x->x_vector + i); }
+    
     PD_MEMORY_FREE (x->x_vector);
 }
 
