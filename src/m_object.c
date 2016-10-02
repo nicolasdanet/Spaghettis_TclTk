@@ -456,7 +456,7 @@ void object_release (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void object_list (t_object *x, int argc, t_atom *argv)
+void object_distributeOnInlets (t_object *x, int argc, t_atom *argv)
 {
     if (!argc) { pd_empty (cast_pd (x)); }
     else {

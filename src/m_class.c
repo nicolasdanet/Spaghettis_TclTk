@@ -67,7 +67,7 @@ static void class_defaultBang (t_pd *x)
 {
     t_class *c = pd_class (x);
     
-    if ((*c->c_methodList) != class_defaultList) { (*c->c_methodList) (x, NULL, 0, NULL); }
+    if ((*c->c_methodList) != class_defaultList) { (*c->c_methodList) (x, &s_bang, 0, NULL); }
     else { 
         (*c->c_methodAnything) (x, &s_bang, 0, NULL);
     }
@@ -80,7 +80,7 @@ static void class_defaultPointer (t_pd *x, t_gpointer *gp)
     t_atom a;
     SET_POINTER (&a, gp);
         
-    if ((*c->c_methodList) != class_defaultList) { (*c->c_methodList) (x, NULL, 1, &a); }
+    if ((*c->c_methodList) != class_defaultList) { (*c->c_methodList) (x, &s_pointer, 1, &a); }
     else {
         (*c->c_methodAnything) (x, &s_pointer, 1, &a);
     }
@@ -93,7 +93,7 @@ static void class_defaultFloat (t_pd *x, t_float f)
     t_atom a;
     SET_FLOAT (&a, f);
         
-    if ((*c->c_methodList) != class_defaultList) { (*c->c_methodList) (x, NULL, 1, &a); }
+    if ((*c->c_methodList) != class_defaultList) { (*c->c_methodList) (x, &s_float, 1, &a); }
     else {
         (*c->c_methodAnything) (x, &s_float, 1, &a);
     }
@@ -106,7 +106,7 @@ static void class_defaultSymbol (t_pd *x, t_symbol *s)
     t_atom a;
     SET_SYMBOL (&a, s);
         
-    if ((*c->c_methodList) != class_defaultList) { (*c->c_methodList) (x, NULL, 1, &a); }
+    if ((*c->c_methodList) != class_defaultList) { (*c->c_methodList) (x, &s_symbol, 1, &a); }
     else {
         (*c->c_methodAnything) (x, &s_symbol, 1, &a);
     }
@@ -145,7 +145,7 @@ static void class_defaultList (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     }
 
     if ((*c->c_methodAnything) != class_defaultAnything) { (*c->c_methodAnything) (x, &s_list, argc, argv); }
-    else if (c->c_isBox) { object_list (cast_object (x), argc, argv); }
+    else if (c->c_isBox) { object_distributeOnInlets (cast_object (x), argc, argv); }
     else { 
         class_defaultAnything (x, &s_list, argc, argv); 
     }
@@ -281,7 +281,7 @@ void class_addMethod (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ..
     if (s == &s_signal) { PD_BUG; return; }     /* Deprecated. */
     
     /* Note that "pointer" is not catched. */
-    /* In order to let the pointer object be A_GIMME initialized. */
+    /* It aims to let the pointer object be A_GIMME initialized. */
     
     PD_ASSERT (s != &s_pointer || class_getName (c) == sym_objectmaker);
     
