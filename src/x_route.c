@@ -168,7 +168,7 @@ static void *route_newPerform (int argc, t_atom *argv)
     
     if (!err) {
         for (i = 0; i < argc; i++) {
-            atomoutlet_makeOutlet (x->x_vector + i, cast_object (x), &s_anything, argv + i, argc == 1);
+            atomoutlet_makeTypedOutlet (x->x_vector + i, cast_object (x), &s_anything, argv + i, argc == 1);
         }
         x->x_outlet = outlet_new (cast_object (x), &s_anything);
         

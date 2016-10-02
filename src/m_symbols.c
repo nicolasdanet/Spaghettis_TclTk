@@ -130,6 +130,7 @@ t_symbol *sym__sysexin;
 t_symbol *sym__texttemplate;
 t_symbol *sym__touchin;
 t_symbol *sym__watchdog;
+t_symbol *sym_a;
 t_symbol *sym_abs;
 t_symbol *sym_abs__tilde__;
 t_symbol *sym_adc__tilde__;
@@ -138,6 +139,7 @@ t_symbol *sym_addcomma;
 t_symbol *sym_adddollar;
 t_symbol *sym_adddollarsymbol;
 t_symbol *sym_addsemicolon;
+t_symbol *sym_anything;
 t_symbol *sym_append;
 t_symbol *sym_arguments;
 t_symbol *sym_array;
@@ -267,6 +269,7 @@ t_symbol *sym_int;
 t_symbol *sym_key;
 t_symbol *sym_keyname;
 t_symbol *sym_keyup;
+t_symbol *sym_l;
 t_symbol *sym_label;
 t_symbol *sym_labelcolor;
 t_symbol *sym_labelfont;
@@ -675,6 +678,7 @@ void symbols_initialize (void)
     sym__texttemplate                           = gensym ("_texttemplate");
     sym__touchin                                = gensym ("_touchin");
     sym__watchdog                               = gensym ("_watchdog");
+    sym_a                                       = gensym ("a");
     sym_abs                                     = gensym ("abs");
     sym_abs__tilde__                            = gensym ("abs~");
     sym_adc__tilde__                            = gensym ("adc~"),
@@ -683,6 +687,7 @@ void symbols_initialize (void)
     sym_adddollar                               = gensym ("adddollar");
     sym_adddollarsymbol                         = gensym ("adddollarsymbol");
     sym_addsemicolon                            = gensym ("addsemicolon");
+    sym_anything                                = gensym ("anything");
     sym_append                                  = gensym ("append");
     sym_arguments                               = gensym ("arguments");
     sym_array                                   = gensym ("array");
@@ -812,6 +817,7 @@ void symbols_initialize (void)
     sym_key                                     = gensym ("key");
     sym_keyname                                 = gensym ("keyname");
     sym_keyup                                   = gensym ("keyup");
+    sym_l                                       = gensym ("l");
     sym_label                                   = gensym ("label");
     sym_labelcolor                              = gensym ("labelcolor");
     sym_labelfont                               = gensym ("labelfont");

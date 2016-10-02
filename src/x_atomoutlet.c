@@ -164,8 +164,9 @@ void atomoutlet_makePointer (t_atomoutlet *x, t_object *owner, int createInlet, 
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-void atomoutlet_makeOutlet (t_atomoutlet *x, t_object *owner, t_symbol *type, t_atom *a, int createInlet)
+void atomoutlet_makeTypedOutlet (t_atomoutlet *x, t_object *owner, t_symbol *type, t_atom *a, int createInlet)
 {
     atomoutlet_init (x);
     

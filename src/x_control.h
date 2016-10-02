@@ -257,7 +257,7 @@ void        atomoutlet_makeFloat            (t_atomoutlet *x, t_object *o, t_flo
 void        atomoutlet_makeSymbol           (t_atomoutlet *x, t_object *o, int inlet, int outlet);
 void        atomoutlet_makePointer          (t_atomoutlet *x, t_object *o, int inlet, int outlet);
 
-void        atomoutlet_makeOutlet           (t_atomoutlet *x,
+void        atomoutlet_makeTypedOutlet      (t_atomoutlet *x,
                                                 t_object *o,
                                                 t_symbol *type,
                                                 t_atom *a,
