@@ -53,7 +53,7 @@ int atomoutlet_isEqualTo (t_atomoutlet *x, t_atom *a)
     if (IS_FLOAT (&x->ao_atom) && (GET_FLOAT (&x->ao_atom) == GET_FLOAT (a)))    { return 1; }
     if (IS_SYMBOL (&x->ao_atom) && (GET_SYMBOL (&x->ao_atom) == GET_SYMBOL (a))) { return 1; }
     
-    PD_BUG;     /* Not implemented yet. */
+    PD_ASSERT (IS_FLOAT (&x->ao_atom) || IS_SYMBOL (&x->ao_atom));      /* Others not implemented yet. */
     //
     }
     
