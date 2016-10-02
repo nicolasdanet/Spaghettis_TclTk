@@ -73,8 +73,13 @@ static void trigger_list (t_trigger *x, t_symbol *s, int argc, t_atom *argv)
     if (t == &s_)             { outlet_float (outlet, atom_getFloatAtIndex (0, argc, argv)); }
     else if (t == &s_bang)    { outlet_bang (outlet); }
     else if (t == &s_symbol)  { outlet_symbol (outlet, atom_getSymbolAtIndex (0, argc, argv)); }
-    else if (t == &s_pointer) { /* outlet_pointer (outlet, atom_getPointerAtIndex (0, argc, argv)); */ }
-    else {
+    else if (t == &s_pointer) { 
+        if (argc && IS_POINTER (argv)) { outlet_pointer (outlet, GET_POINTER (argv)); }
+        else {
+            outlet_pointer (outlet, gpointer_getEmpty());
+        }
+        
+    } else {
         if (t == &s_anything && isCalledByAnything && argc) {
             outlet_anything (outlet, atom_getSymbol (argv), argc - 1, argv + 1); 
         } else {

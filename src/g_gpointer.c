@@ -123,6 +123,19 @@ static int gpointer_isValidRaw (t_gpointer *gp, int nullPointerIsValid)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+const t_gpointer *gpointer_getEmpty (void)
+{
+    static t_gpointer emptyPointer = { NULL, NULL, 0 };     /* Shared. */
+    
+    PD_ASSERT (!gpointer_isSet (&emptyPointer));
+    
+    return &emptyPointer;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void gpointer_init (t_gpointer *gp)
 {
     gp->gp_un.gp_scalar     = NULL;
