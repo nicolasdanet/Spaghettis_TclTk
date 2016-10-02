@@ -78,6 +78,7 @@ t_error atomoutlet_setAtom (t_atomoutlet *x, t_atom *a)
         case A_FLOAT   : SET_FLOAT (&x->ao_atom,  GET_FLOAT (a));               break;
         case A_SYMBOL  : SET_SYMBOL (&x->ao_atom, GET_SYMBOL (a));              break;
         case A_POINTER : gpointer_setByCopy (GET_POINTER (a), &x->ao_gpointer); break;
+        default         : PD_BUG; return PD_ERROR;
     }
     //
     }
@@ -94,6 +95,7 @@ t_error atomoutlet_outputAtom (t_atomoutlet *x, t_atom *a)
         case A_FLOAT    : outlet_float (x->ao_outlet, GET_FLOAT (a));     break;
         case A_SYMBOL   : outlet_symbol (x->ao_outlet, GET_SYMBOL (a));   break;
         case A_POINTER  : outlet_pointer (x->ao_outlet, GET_POINTER (a)); break;
+        default         : PD_BUG; return PD_ERROR;
     }
     //
     }
@@ -126,11 +128,11 @@ t_error atomoutlet_makeParse (t_atomoutlet *x, t_object *owner, t_atom *a, int c
     t_error err = PD_ERROR_NONE;
     t_symbol *t = atom_getSymbol (a);
         
-    if (t == sym_p || t == sym_pointer) { atomoutlet_makePointer (x, owner, createInlet, createOutlet); }
-    else if (t == sym_s || t == sym_symbol) { atomoutlet_makeSymbol (x, owner, createInlet, createOutlet); }
+    if (t == sym_p || t == &s_pointer) { atomoutlet_makePointer (x, owner, createInlet, createOutlet); }
+    else if (t == sym_s || t == &s_symbol) { atomoutlet_makeSymbol (x, owner, createInlet, createOutlet); }
     else {
         atomoutlet_makeFloat (x, owner, atom_getFloat (a), createInlet, createOutlet);
-        if (!IS_FLOAT (a) && t != sym_f && t != sym_float) {
+        if (!IS_FLOAT (a) && t != sym_f && t != &s_float) {
             err = PD_ERROR;
         }
     }
@@ -165,6 +167,42 @@ void atomoutlet_makePointer (t_atomoutlet *x, t_object *owner, int createInlet, 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+t_error atomoutlet_makeTypedOutletParse (t_atomoutlet *x, t_object *owner, t_atom *a)
+{
+    t_symbol *t = atom_getSymbol (a);
+    
+    if (t == sym_b || t == &s_bang) {
+        x->ao_outlet = outlet_new (owner, &s_bang); 
+        SET_SYMBOL (&x->ao_atom, &s_bang); 
+        
+    } else if (t == sym_p || t == &s_pointer) {
+        x->ao_outlet = outlet_new (owner, &s_pointer);
+        SET_SYMBOL (&x->ao_atom, &s_pointer);
+        
+    } else if (t == sym_l || t == &s_list) {
+        x->ao_outlet = outlet_new (owner, &s_list);
+        SET_SYMBOL (&x->ao_atom, &s_list); 
+ 
+    } else if (t == sym_s || t == &s_symbol) {
+        x->ao_outlet = outlet_new (owner, &s_symbol);
+        SET_SYMBOL (&x->ao_atom, &s_symbol); 
+    
+    } else if (t == sym_a || t == &s_anything) {
+        x->ao_outlet = outlet_new (owner, &s_anything);
+        SET_SYMBOL (&x->ao_atom, &s_anything);
+        
+    } else {
+        x->ao_outlet = outlet_new (owner, &s_float);
+        SET_FLOAT (&x->ao_atom, 0.0);
+        
+        if (t != sym_f && t != &s_float) { 
+            return PD_ERROR;
+        }
+    }
+    
+    return PD_ERROR_NONE;
+}
 
 void atomoutlet_makeTypedOutlet (t_atomoutlet *x, t_object *owner, t_symbol *type, t_atom *a, int createInlet)
 {

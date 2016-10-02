@@ -13,7 +13,6 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "m_alloca.h"
-#include "g_graphics.h"
 #include "x_control.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -53,7 +52,7 @@ static void pack_float (t_pack *x, t_float f)
 {
     t_atom a; SET_FLOAT (&a, f);
     
-    if (atomoutlet_setAtom (x->x_vector + 0, &a)) { warning_badType (sym_pack, sym_float); }
+    if (atomoutlet_setAtom (x->x_vector + 0, &a)) { warning_badType (sym_pack, &s_float); }
     
     pack_bang (x);
 }
@@ -62,7 +61,7 @@ static void pack_symbol (t_pack *x, t_symbol *s)
 {
     t_atom a; SET_SYMBOL (&a, s);
     
-    if (atomoutlet_setAtom (x->x_vector + 0, &a)) { warning_badType (sym_pack, sym_symbol); }
+    if (atomoutlet_setAtom (x->x_vector + 0, &a)) { warning_badType (sym_pack, &s_symbol); }
     
     pack_bang (x);
 }
@@ -71,7 +70,7 @@ static void pack_pointer (t_pack *x, t_gpointer *gp)
 {
     t_atom a; SET_POINTER (&a, gp);
     
-    if (atomoutlet_setAtom (x->x_vector + 0, &a)) { warning_badType (sym_pack, sym_pointer); }
+    if (atomoutlet_setAtom (x->x_vector + 0, &a)) { warning_badType (sym_pack, &s_pointer); }
     
     pack_bang (x);
 }
