@@ -12,54 +12,76 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *change_class;
+static t_class *change_class;           /* Shared. */
 
-typedef struct _change
-{
-    t_object x_obj;
-    t_float x_f;
-} t_change;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static void *change_new(t_float f)
+typedef struct _change {
+    t_object    x_obj;                  /* Must be the first. */
+    t_float     x_f;
+    t_outlet    *x_outlet;
+    } t_change;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void change_bang (t_change *x)
 {
-    t_change *x = (t_change *)pd_new(change_class);
-    x->x_f = f;
-    outlet_new(&x->x_obj, &s_float);
-    return (x);
+    outlet_float (x->x_outlet, x->x_f);
 }
 
-static void change_bang(t_change *x)
+static void change_float (t_change *x, t_float f)
 {
-    outlet_float(x->x_obj.te_outlet, x->x_f);
+    if (f != x->x_f) { x->x_f = f; change_bang (x); }
 }
 
-static void change_float(t_change *x, t_float f)
-{
-    if (f != x->x_f)
-    {
-        x->x_f = f;
-        outlet_float(x->x_obj.te_outlet, x->x_f);
-    }
-}
-
-static void change_set(t_change *x, t_float f)
+static void change_set (t_change *x, t_float f)
 {
     x->x_f = f;
 }
 
-void change_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *change_new (t_float f)
 {
-    change_class = class_new(sym_change, (t_newmethod)change_new, 0,
-        sizeof(t_change), 0, A_DEFFLOAT, 0);
-    class_addBang(change_class, change_bang);
-    class_addFloat(change_class, change_float);
-    class_addMethod(change_class, (t_method)change_set, sym_set,
-        A_DEFFLOAT, 0);
+    t_change *x = (t_change *)pd_new (change_class);
+    
+    x->x_f = f;
+    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    
+    return x;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void change_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_change,
+            (t_newmethod)change_new,
+            NULL,
+            sizeof (t_change),
+            CLASS_DEFAULT,
+            A_DEFFLOAT,
+            A_NULL);
+            
+    class_addBang (c, change_bang);
+    class_addFloat (c, change_float);
+    
+    class_addMethod (c, (t_method)change_set, sym_set,  A_DEFFLOAT, A_NULL);
+        
+    change_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
