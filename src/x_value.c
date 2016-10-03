@@ -12,127 +12,119 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *value_class, *vcommon_class;
+static t_class *valuecommon_class;          /* Shared. */
+static t_class *value_class;                /* Shared. */
 
-typedef struct vcommon
-{
-    t_pd c_pd;
-    int c_refcount;
-    t_float c_f;
-} t_vcommon;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct _value
-{
-    t_object x_obj;
-    t_symbol *x_sym;
-    t_float *x_floatstar;
-} t_value;
+typedef struct _valuecommon {
+    t_pd        x_pd;                       /* Must be the first. */
+    int         x_referenceCount;
+    t_float     x_f;
+    } t_valuecommon;
 
-    /* get a pointer to a named floating-point variable.  The variable
-    belongs to a "vcommon" object, which is created if necessary. */
-t_float *value_get(t_symbol *s)
+typedef struct _value {
+    t_object    x_obj;                      /* Must be the first. */
+    t_symbol    *x_name;
+    t_float     *x_raw;
+    t_outlet    *x_outlet;
+    } t_value;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_float *valuecommon_fetch (t_symbol *s)
 {
-    t_vcommon *c = (t_vcommon *)pd_findByClass(s, vcommon_class);
-    if (!c)
-    {
-        c = (t_vcommon *)pd_new(vcommon_class);
-        c->c_f = 0;
-        c->c_refcount = 0;
-        pd_bind(&c->c_pd, s);
+    t_valuecommon *x = (t_valuecommon *)pd_findByClass (s, valuecommon_class);
+    
+    if (!x) {
+        x = (t_valuecommon *)pd_new (valuecommon_class);
+        x->x_referenceCount = 0;
+        x->x_f = 0;
+        pd_bind (cast_pd (x), s);
     }
-    c->c_refcount++;
-    return (&c->c_f);
+    
+    x->x_referenceCount++;
+    
+    return (&x->x_f);
 }
 
-    /* release a variable.  This only frees the "vcommon" resource when the
-    last interested party releases it. */
-void value_release(t_symbol *s)
+void valuecommon_release (t_symbol *s)
 {
-    t_vcommon *c = (t_vcommon *)pd_findByClass(s, vcommon_class);
-    if (c)
-    {
-        if (!--c->c_refcount)
-        {
-            pd_unbind(&c->c_pd, s);
-            pd_free(&c->c_pd);
-        }
-    }
-    else { PD_BUG; }
+    t_valuecommon *x = (t_valuecommon *)pd_findByClass (s, valuecommon_class);
+    
+    PD_ASSERT (x != NULL);
+    
+    x->x_referenceCount--;
+    
+    if (!x->x_referenceCount) { pd_unbind (cast_pd (x), s); pd_free (cast_pd (x)); }
 }
 
-/*
- * value_getfloat -- obtain the float value of a "value" object 
- *                  return 0 on success, 1 otherwise
- */
-int
-value_getfloat(t_symbol *s, t_float *f) 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void value_bang (t_value *x)
 {
-    t_vcommon *c = (t_vcommon *)pd_findByClass(s, vcommon_class);
-    if (!c)
-        return (1);
-    *f = c->c_f;
-    return (0); 
-}
- 
-/*
- * value_setfloat -- set the float value of a "value" object
- *                  return 0 on success, 1 otherwise
- */
-int
-value_setfloat(t_symbol *s, t_float f)
-{
-    t_vcommon *c = (t_vcommon *)pd_findByClass(s, vcommon_class);
-    if (!c)
-        return (1);
-    c->c_f = f; 
-    return (0); 
+    outlet_float (x->x_outlet, *x->x_raw);
 }
 
-static void vcommon_float(t_vcommon *x, t_float f)
+static void value_float (t_value *x, t_float f)
 {
-    x->c_f = f;
+    *x->x_raw = f;
 }
 
-static void *value_new(t_symbol *s)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *value_new (t_symbol *s)
 {
-    t_value *x = (t_value *)pd_new(value_class);
-    x->x_sym = s;
-    x->x_floatstar = value_get(s);
-    outlet_new(&x->x_obj, &s_float);
-    return (x);
+    t_value *x = (t_value *)pd_new (value_class);
+    
+    x->x_name   = s;
+    x->x_raw    = valuecommon_fetch (s);
+    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    
+    return x;
 }
 
-static void value_bang(t_value *x)
+static void value_free (t_value *x)
 {
-    outlet_float(x->x_obj.te_outlet, *x->x_floatstar);
+    valuecommon_release (x->x_name);
 }
 
-static void value_float(t_value *x, t_float f)
-{
-    *x->x_floatstar = f;
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void value_ff(t_value *x)
+void value_setup (void)
 {
-    value_release(x->x_sym);
-}
-
-void value_setup(void)
-{
-    value_class = class_new(sym_value, (t_newmethod)value_new,
-        (t_method)value_ff,
-        sizeof(t_value), 0, A_DEFSYMBOL, 0);
-    class_addCreator((t_newmethod)value_new, sym_v, A_DEFSYMBOL, 0);
-    class_addBang(value_class, value_bang);
-    class_addFloat(value_class, value_float);
-    vcommon_class = class_new(sym_value, 0, 0,
-        sizeof(t_vcommon), CLASS_NOBOX, 0);
-    class_addFloat(vcommon_class, vcommon_float);
+    valuecommon_class = class_new (sym_value,
+                                NULL,
+                                NULL,
+                                sizeof (t_valuecommon),
+                                CLASS_NOBOX,
+                                A_NULL);
+    
+    value_class = class_new (sym_value,
+                                (t_newmethod)value_new,
+                                (t_method)value_free,
+                                sizeof (t_value),
+                                CLASS_DEFAULT,
+                                A_DEFSYMBOL,
+                                A_NULL);
+                                
+    class_addCreator ((t_newmethod)value_new, sym_v, A_DEFSYMBOL, A_NULL);
+    
+    class_addBang (value_class, value_bang);
+    class_addFloat (value_class, value_float);
 }
 
 // -----------------------------------------------------------------------------------------------------------
