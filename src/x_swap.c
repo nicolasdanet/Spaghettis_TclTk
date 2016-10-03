@@ -12,51 +12,78 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *swap_class;
+static t_class *swap_class;         /* Shared. */
 
-typedef struct _swap
-{
-    t_object x_obj;
-    t_outlet *x_out2;
-    t_float x_f1;
-    t_float x_f2;
-} t_swap;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static void *swap_new(t_float f)
+typedef struct _swap {
+    t_object    x_obj;              /* Must be the first. */
+    t_float     x_f1;
+    t_float     x_f2;
+    t_outlet    *x_outletLeft;
+    t_outlet    *x_outletRight;
+    } t_swap;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void swap_bang (t_swap *x)
 {
-    t_swap *x = (t_swap *)pd_new(swap_class);
-    x->x_f2 = f;
+    outlet_float (x->x_outletRight, x->x_f1);
+    outlet_float (x->x_outletLeft,  x->x_f2);
+}
+
+static void swap_float (t_swap *x, t_float f)
+{
+    x->x_f1 = f; swap_bang (x);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *swap_new (t_float f)
+{
+    t_swap *x = (t_swap *)pd_new (swap_class);
+    
     x->x_f1 = 0;
-    outlet_new(&x->x_obj, &s_float);
-    x->x_out2 = outlet_new(&x->x_obj, &s_float);
-    inlet_newFloat(&x->x_obj, &x->x_f2);
-    return (x);
+    x->x_f2 = f;
+    x->x_outletLeft  = outlet_new (cast_object (x), &s_float);
+    x->x_outletRight = outlet_new (cast_object (x), &s_float);
+    
+    inlet_newFloat (cast_object (x), &x->x_f2);
+    
+    return x;
 }
 
-static void swap_bang(t_swap *x)
-{
-    outlet_float(x->x_out2, x->x_f1);
-    outlet_float(x->x_obj.te_outlet, x->x_f2);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void swap_float(t_swap *x, t_float f)
+void swap_setup (void)
 {
-    x->x_f1 = f;
-    swap_bang(x);
-}
+    t_class *c = NULL;
+    
+    c = class_new (sym_swap,
+            (t_newmethod)swap_new,
+            NULL,
+            sizeof (t_swap),
+            CLASS_DEFAULT,
+            A_DEFFLOAT,
+            A_NULL);
 
-void swap_setup(void)
-{
-    swap_class = class_new(sym_swap, (t_newmethod)swap_new, 0,
-        sizeof(t_swap), 0, A_DEFFLOAT, 0);
-    class_addCreator((t_newmethod)swap_new, sym_fswap, A_DEFFLOAT, 0);
-    class_addBang(swap_class, swap_bang);
-    class_addFloat(swap_class, swap_float);
+    class_addCreator ((t_newmethod)swap_new, sym_fswap, A_DEFFLOAT, A_NULL);
+    
+    class_addBang (c, swap_bang);
+    class_addFloat (c, swap_float);
+    
+    swap_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
