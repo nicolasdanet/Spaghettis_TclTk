@@ -17,36 +17,66 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *moses_class;
+static t_class *moses_class;        /* Shared. */
 
-typedef struct _moses
-{
-    t_object x_ob;
-    t_outlet *x_out2;
-    t_float x_y;
-} t_moses;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static void *moses_new(t_float f)
+typedef struct _moses {
+    t_object    x_obj;              /* Must be the first. */
+    t_float     x_f;
+    t_outlet    *x_outletLeft;
+    t_outlet    *x_outletRight;
+    } t_moses;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void moses_float (t_moses *x, t_float f)
 {
-    t_moses *x = (t_moses *)pd_new(moses_class);
-    inlet_newFloat(&x->x_ob, &x->x_y);
-    outlet_new(&x->x_ob, &s_float);
-    x->x_out2 = outlet_new(&x->x_ob, &s_float);
-    x->x_y = f;
-    return (x);
+    if (f < x->x_f) { outlet_float (x->x_outletLeft, f); }
+    else {
+        outlet_float (x->x_outletRight, f);
+    }
 }
 
-static void moses_float(t_moses *x, t_float f)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *moses_new (t_float f)
 {
-    if (f < x->x_y) outlet_float(x->x_ob.te_outlet, f);
-    else outlet_float(x->x_out2, f);
+    t_moses *x = (t_moses *)pd_new (moses_class);
+    
+    x->x_f = f;
+    x->x_outletLeft  = outlet_new (cast_object (x), &s_float);
+    x->x_outletRight = outlet_new (cast_object (x), &s_float);
+
+    inlet_newFloat (cast_object (x), &x->x_f);
+    
+    return x;
 }
 
-void moses_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void moses_setup (void)
 {
-    moses_class = class_new(sym_moses, (t_newmethod)moses_new, 0,
-        sizeof(t_moses), 0, A_DEFFLOAT, 0);
-    class_addFloat(moses_class, moses_float);
+    t_class *c = NULL;
+    
+    c = class_new (sym_moses,
+            (t_newmethod)moses_new,
+            NULL,
+            sizeof (t_moses),
+            CLASS_DEFAULT,
+            A_DEFFLOAT,
+            A_NULL);
+        
+    class_addFloat (c, moses_float);
+    
+    moses_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
