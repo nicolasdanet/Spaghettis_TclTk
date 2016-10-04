@@ -113,7 +113,7 @@ t_error path_expandEnvironment (char *dest, size_t size, const char *src)
 {
     t_error err = PD_ERROR_NONE;
 
-    if ((strlen (src) == 1 && src[0] == '~') || string_containsAtStart (src, "~/")) {
+    if ((strlen (src) == 1 && src[0] == '~') || string_startWith (src, "~/")) {
     
         const char *home = getenv ("HOME");
         

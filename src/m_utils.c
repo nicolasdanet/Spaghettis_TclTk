@@ -192,7 +192,7 @@ t_symbol *utils_makeTemplateIdentifier (t_symbol *s)
 
 t_symbol *utils_stripBindSymbol (t_symbol *s)
 {
-    if (string_containsAtStart (s->s_name, UTILS_BIND)) { 
+    if (string_startWith (s->s_name, UTILS_BIND)) { 
         return gensym (s->s_name + strlen (UTILS_BIND));
     }
     
@@ -201,7 +201,7 @@ t_symbol *utils_stripBindSymbol (t_symbol *s)
 
 t_symbol *utils_stripTemplateIdentifier (t_symbol *s)
 {
-    if (string_containsAtStart (s->s_name, UTILS_BIND_TEMPLATE)) {
+    if (string_startWith (s->s_name, UTILS_BIND_TEMPLATE)) {
         return gensym (s->s_name + strlen (UTILS_BIND_TEMPLATE)); 
     }
     

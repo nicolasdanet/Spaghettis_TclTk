@@ -43,7 +43,7 @@ int error__options (t_symbol *s, int argc, t_atom *argv)
     //
     if (IS_SYMBOL (argv + i)) {
         t_symbol *t = GET_SYMBOL (argv + i);
-        if (t != sym___dash__ && string_containsAtStart (t->s_name, sym___dash__->s_name)) { 
+        if (t != sym___dash__ && string_startWith (t->s_name, sym___dash__->s_name)) { 
             warning_unusedOption (s, t); 
             k = 1;
         }

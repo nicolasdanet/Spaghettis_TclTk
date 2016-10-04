@@ -443,6 +443,7 @@ extern t_symbol *sym_stop;
 extern t_symbol *sym_stripnote;
 extern t_symbol *sym_struct;
 extern t_symbol *sym_style;
+extern t_symbol *sym_substitution;
 extern t_symbol *sym_sum;
 extern t_symbol *sym_swap;
 extern t_symbol *sym_switch__tilde__;

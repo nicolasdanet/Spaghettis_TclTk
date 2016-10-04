@@ -438,6 +438,7 @@ t_symbol *sym_stop;
 t_symbol *sym_struct;
 t_symbol *sym_stripnote;
 t_symbol *sym_style;
+t_symbol *sym_substitution;
 t_symbol *sym_sum;
 t_symbol *sym_swap;
 t_symbol *sym_switch__tilde__;
@@ -986,6 +987,7 @@ void symbols_initialize (void)
     sym_stripnote                               = gensym ("stripnote");
     sym_struct                                  = gensym ("struct");
     sym_style                                   = gensym ("style");
+    sym_substitution                            = gensym ("substitution");
     sym_sum                                     = gensym ("sum");
     sym_swap                                    = gensym ("swap");
     sym_switch__tilde__                         = gensym ("switch~");

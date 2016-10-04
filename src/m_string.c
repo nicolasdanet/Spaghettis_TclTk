@@ -108,13 +108,18 @@ t_error string_addAtom (char *dest, size_t size, t_atom *a)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int string_containsAtStart (const char *s, const char *isContained)
+int string_startWith (const char *s, const char *isStartWith)
 {
-    size_t n = strlen (isContained);
+    size_t n = strlen (isStartWith);
     
-    if (strlen (s) >= n) { return (strncmp (s, isContained, n) == 0); }
+    if (strlen (s) >= n) { return (strncmp (s, isStartWith, n) == 0); }
     
     return 0;
+}
+
+int string_containsCharacterAtStart (const char *s, const char *isContained)
+{
+    return (strchr (isContained, *s) != NULL);
 }
 
 void string_getNumberOfColumnsAndLines (char *s, int *numberOfColumns, int *numberOfLines)

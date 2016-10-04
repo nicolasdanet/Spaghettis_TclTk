@@ -140,7 +140,7 @@ void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
         
         if (s == NULL || !(object = s->s_thing)) {
             if (!s) { error_invalid (&s_, sym_expansion); }
-            else if (!string_containsAtStart (s->s_name, PD_GUISTUB)) { pd_isThing (s); }
+            else if (!string_startWith (s->s_name, PD_GUISTUB)) { pd_isThing (s); }
             do { size--; v++; } while (size && !IS_SEMICOLON (v));
             
         } else {
