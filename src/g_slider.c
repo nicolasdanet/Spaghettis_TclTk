@@ -777,12 +777,12 @@ void slider_setup (void)
     t_class *c = NULL;
     
     c = class_new (sym_hslider,
-        (t_newmethod)slider_new,
-        (t_method)slider_free,
-        sizeof (t_slider),
-        CLASS_DEFAULT,
-        A_GIMME,
-        A_NULL);
+            (t_newmethod)slider_new,
+            (t_method)slider_free,
+            sizeof (t_slider),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
 
     class_addCreator ((t_newmethod)slider_new, sym_vslider, A_GIMME, A_NULL);
 

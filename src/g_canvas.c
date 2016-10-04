@@ -871,7 +871,7 @@ void canvas_setup (void)
             NULL, 
             (t_method)canvas_free, 
             sizeof (t_glist), 
-            CLASS_NOINLET,
+            CLASS_DEFAULT | CLASS_NOINLET,
             A_NULL);
 
     class_addCreator ((t_newmethod)subpatch_new, sym_pd, A_DEFSYMBOL, A_NULL);

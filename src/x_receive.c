@@ -94,7 +94,7 @@ void receive_setup (void)
             (t_newmethod)receive_new, 
             (t_method)receive_free,
             sizeof (t_receive),
-            CLASS_NOINLET,
+            CLASS_DEFAULT | CLASS_NOINLET,
             A_DEFSYMBOL,
             A_NULL);
             

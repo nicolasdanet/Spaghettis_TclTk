@@ -418,12 +418,12 @@ void panel_setup (void)
     t_class *c = NULL;
     
     c = class_new (sym_cnv, 
-        (t_newmethod)panel_new,
-        (t_method)panel_free,
-        sizeof (t_panel), 
-        CLASS_DEFAULT | CLASS_NOINLET,
-        A_GIMME,
-        A_NULL);
+            (t_newmethod)panel_new,
+            (t_method)panel_free,
+            sizeof (t_panel), 
+            CLASS_DEFAULT | CLASS_NOINLET,
+            A_GIMME,
+            A_NULL);
         
     class_addMethod (c, (t_method)panel_fromDialog,         sym__iemdialog,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)panel_gripSize,           sym_gripsize,           A_GIMME, A_NULL);

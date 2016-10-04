@@ -666,12 +666,12 @@ void vu_setup (void)
     t_class *c = NULL;
     
     c = class_new (sym_vu,
-        (t_newmethod)vu_new,
-        (t_method)vu_free,
-        sizeof (t_vu),
-        CLASS_DEFAULT,
-        A_GIMME,
-        A_NULL);
+            (t_newmethod)vu_new,
+            (t_method)vu_free,
+            sizeof (t_vu),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
         
     class_addBang (c, vu_bang);
     class_addFloat (c, vu_float);

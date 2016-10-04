@@ -819,12 +819,12 @@ void dial_setup (void)
     t_class *c = NULL;
     
     c = class_new (sym_nbx,
-        (t_newmethod)dial_new,
-        (t_method)dial_free,
-        sizeof (t_dial),
-        CLASS_DEFAULT,
-        A_GIMME,
-        A_NULL);
+            (t_newmethod)dial_new,
+            (t_method)dial_free,
+            sizeof (t_dial),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
         
     class_addBang (c, dial_bang);
     class_addFloat (c, dial_float);
