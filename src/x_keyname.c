@@ -13,47 +13,71 @@
 #include "m_core.h"
 #include "m_macros.h"
 
-static t_symbol *keyname_sym;
-static t_class *keyname_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_class *keyname_class;          /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _keyname
-{
-    t_object x_obj;
-    t_outlet *x_outlet1;
-    t_outlet *x_outlet2;
-} t_keyname;
+typedef struct _keyname {
+    t_object    x_obj;                  /* Must be the first. */
+    t_outlet    *x_outletLeft;
+    t_outlet    *x_outletRight;
+    } t_keyname;
 
-static void *keyname_new( void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void keyname_list (t_keyname *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_keyname *x = (t_keyname *)pd_new(keyname_class);
-    x->x_outlet1 = outlet_new(&x->x_obj, &s_float);
-    x->x_outlet2 = outlet_new(&x->x_obj, &s_symbol);
-    pd_bind(&x->x_obj.te_g.g_pd, keyname_sym);
-    return (x);
+    outlet_symbol (x->x_outletRight, atom_getSymbolAtIndex (1, argc, argv));
+    outlet_float (x->x_outletLeft, atom_getFloatAtIndex (0, argc, argv));
 }
 
-static void keyname_list(t_keyname *x, t_symbol *s, int ac, t_atom *av)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *keyname_new (void)
 {
-    outlet_symbol(x->x_outlet2, atom_getSymbolAtIndex(1, ac, av));
-    outlet_float(x->x_outlet1, atom_getFloatAtIndex(0, ac, av));
+    t_keyname *x = (t_keyname *)pd_new (keyname_class);
+    
+    x->x_outletLeft  = outlet_new (cast_object (x), &s_float);
+    x->x_outletRight = outlet_new (cast_object (x), &s_symbol);
+    
+    pd_bind (cast_pd (x), sym__keyname);
+    
+    return x;
 }
 
-static void keyname_free(t_keyname *x)
+static void keyname_free (t_keyname *x)
 {
-    pd_unbind(&x->x_obj.te_g.g_pd, keyname_sym);
+    pd_unbind (cast_pd (x), sym__keyname);
 }
 
-void keyname_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void keyname_setup (void)
 {
-    keyname_class = class_new(sym_keyname,
-        (t_newmethod)keyname_new, (t_method)keyname_free,
-        sizeof(t_keyname), CLASS_NOINLET, 0);
-    class_addList(keyname_class, keyname_list);
-    keyname_sym = sym__keyname;
-    class_setHelpName(keyname_class, sym_key);
+    t_class *c = NULL;
+    
+    c = class_new (sym_keyname,
+            (t_newmethod)keyname_new,
+            (t_method)keyname_free,
+            sizeof (t_keyname),
+            CLASS_DEFAULT | CLASS_NOINLET,
+            A_NULL);
+            
+    class_addList (c, keyname_list);
+
+    class_setHelpName (c, sym_key);
+    
+    keyname_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
