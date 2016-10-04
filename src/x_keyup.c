@@ -12,45 +12,69 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_symbol *keyup_sym;
-static t_class *keyup_class;
+static t_class *keyup_class;            /* Shared. */
 
-typedef struct _keyup
-{
-    t_object x_obj;
-} t_keyup;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static void *keyup_new( void)
+typedef struct _keyup {
+    t_object    x_obj;                  /* Must be the first. */
+    t_outlet    *x_outlet;
+    } t_keyup;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void keyup_float (t_keyup *x, t_float f)
 {
-    t_keyup *x = (t_keyup *)pd_new(keyup_class);
-    outlet_new(&x->x_obj, &s_float);
-    pd_bind(&x->x_obj.te_g.g_pd, keyup_sym);
-    return (x);
+    outlet_float (x->x_outlet, f);
 }
 
-static void keyup_float(t_keyup *x, t_float f)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *keyup_new (void)
 {
-    outlet_float(x->x_obj.te_outlet, f);
+    t_keyup *x = (t_keyup *)pd_new (keyup_class);
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    
+    pd_bind (cast_pd (x), sym__keyup);
+    
+    return x;
 }
 
-static void keyup_free(t_keyup *x)
+static void keyup_free (t_keyup *x)
 {
-    pd_unbind(&x->x_obj.te_g.g_pd, keyup_sym);
+    pd_unbind (cast_pd (x), sym__keyup);
 }
 
-void keyup_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void keyup_setup (void)
 {
-    keyup_class = class_new(sym_keyup,
-        (t_newmethod)keyup_new, (t_method)keyup_free,
-        sizeof(t_keyup), CLASS_NOINLET, 0);
-    class_addFloat(keyup_class, keyup_float);
-    keyup_sym = sym__keyup;
-    class_setHelpName(keyup_class, sym_key);
+    t_class *c = NULL;
+    
+    c = class_new (sym_keyup,
+            (t_newmethod)keyup_new,
+            (t_method)keyup_free,
+            sizeof (t_keyup),
+            CLASS_DEFAULT | CLASS_NOINLET,
+            A_NULL);
+        
+    class_addFloat (c, keyup_float);
+
+    class_setHelpName (c, sym_key);
+    
+    keyup_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
