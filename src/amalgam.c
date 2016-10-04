@@ -195,6 +195,7 @@
 #include "x_print.c"
 #include "x_makefilename.c"
 #include "x_gui.c"
+#include "x_key.c"
 #include "x_keyup.c"
 #include "x_keyname.c"
 

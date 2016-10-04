@@ -135,6 +135,7 @@ void textsequence_setup     (void);
 void qlist_setup            (void);
 void textfile_setup         (void);
 void x_gui_setup            (void);
+void key_setup              (void);
 void keyup_setup            (void);
 void keyname_setup          (void);
 void listinlet_setup        (void);
@@ -259,6 +260,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     qlist_setup();
     textfile_setup();
     x_gui_setup();
+    key_setup();
     keyup_setup();
     keyname_setup();
     listinlet_setup();
