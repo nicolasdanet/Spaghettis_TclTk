@@ -128,8 +128,8 @@ static void savepanel_setup(void)
 
 /* ---------------------- key and its relatives ------------------ */
 
-static t_symbol *key_sym, *keyup_sym, *keyname_sym;
-static t_class *key_class, *keyup_class, *keyname_class;
+static t_symbol *key_sym, *keyup_sym;
+static t_class *key_class, *keyup_class;
 
 typedef struct _key
 {
@@ -177,33 +177,6 @@ static void keyup_free(t_keyup *x)
     pd_unbind(&x->x_obj.te_g.g_pd, keyup_sym);
 }
 
-typedef struct _keyname
-{
-    t_object x_obj;
-    t_outlet *x_outlet1;
-    t_outlet *x_outlet2;
-} t_keyname;
-
-static void *keyname_new( void)
-{
-    t_keyname *x = (t_keyname *)pd_new(keyname_class);
-    x->x_outlet1 = outlet_new(&x->x_obj, &s_float);
-    x->x_outlet2 = outlet_new(&x->x_obj, &s_symbol);
-    pd_bind(&x->x_obj.te_g.g_pd, keyname_sym);
-    return (x);
-}
-
-static void keyname_list(t_keyname *x, t_symbol *s, int ac, t_atom *av)
-{
-    outlet_symbol(x->x_outlet2, atom_getSymbolAtIndex(1, ac, av));
-    outlet_float(x->x_outlet1, atom_getFloatAtIndex(0, ac, av));
-}
-
-static void keyname_free(t_keyname *x)
-{
-    pd_unbind(&x->x_obj.te_g.g_pd, keyname_sym);
-}
-
 static void key_setup(void)
 {
     key_class = class_new (sym_key,
@@ -218,13 +191,6 @@ static void key_setup(void)
     class_addFloat(keyup_class, keyup_float);
     keyup_sym = sym__keyup;
     class_setHelpName(keyup_class, sym_key);
-    
-    keyname_class = class_new(sym_keyname,
-        (t_newmethod)keyname_new, (t_method)keyname_free,
-        sizeof(t_keyname), CLASS_NOINLET, 0);
-    class_addList(keyname_class, keyname_list);
-    keyname_sym = sym__keyname;
-    class_setHelpName(keyname_class, sym_key);
 }
 
 /* -------------------------- setup routine ------------------------------ */
