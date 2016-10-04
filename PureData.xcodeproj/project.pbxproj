@@ -64,6 +64,7 @@
 		374D7AD61DA3DEFF00FECF8F /* x_keyname.c in Sources */ = {isa = PBXBuildFile; fileRef = 374D7AD51DA3DEFF00FECF8F /* x_keyname.c */; };
 		374D7B061DA3E0A500FECF8F /* x_keyup.c in Sources */ = {isa = PBXBuildFile; fileRef = 374D7B051DA3E0A500FECF8F /* x_keyup.c */; };
 		374D7B301DA3E1E900FECF8F /* x_key.c in Sources */ = {isa = PBXBuildFile; fileRef = 374D7B2F1DA3E1E900FECF8F /* x_key.c */; };
+		374D7B5E1DA3E30500FECF8F /* x_savepanel.c in Sources */ = {isa = PBXBuildFile; fileRef = 374D7B5D1DA3E30500FECF8F /* x_savepanel.c */; };
 		375148DB1D86D9E5005679B0 /* x_arrayrange.c in Sources */ = {isa = PBXBuildFile; fileRef = 375148DA1D86D9E5005679B0 /* x_arrayrange.c */; };
 		3751490B1D86DC2D005679B0 /* x_arraymax.c in Sources */ = {isa = PBXBuildFile; fileRef = 3751490A1D86DC2D005679B0 /* x_arraymax.c */; };
 		375149471D86DE53005679B0 /* x_arrayrandom.c in Sources */ = {isa = PBXBuildFile; fileRef = 375149461D86DE53005679B0 /* x_arrayrandom.c */; };
@@ -147,7 +148,7 @@
 		3789725E1C4F716800263434 /* x_acoustic.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972061C4F716700263434 /* x_acoustic.c */; };
 		3789725F1C4F716800263434 /* x_math.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972071C4F716700263434 /* x_math.c */; };
 		378972601C4F716800263434 /* x_array.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972081C4F716700263434 /* x_array.c */; };
-		378972621C4F716800263434 /* x_gui.c in Sources */ = {isa = PBXBuildFile; fileRef = 3789720A1C4F716800263434 /* x_gui.c */; };
+		378972621C4F716800263434 /* x_openpanel.c in Sources */ = {isa = PBXBuildFile; fileRef = 3789720A1C4F716800263434 /* x_openpanel.c */; };
 		378972631C4F716800263434 /* x_print.c in Sources */ = {isa = PBXBuildFile; fileRef = 3789720B1C4F716800263434 /* x_print.c */; };
 		378972641C4F716800263434 /* x_list.c in Sources */ = {isa = PBXBuildFile; fileRef = 3789720C1C4F716800263434 /* x_list.c */; };
 		378972651C4F716800263434 /* x_midi.c in Sources */ = {isa = PBXBuildFile; fileRef = 3789720D1C4F716800263434 /* x_midi.c */; };
@@ -337,6 +338,7 @@
 		374D7AD51DA3DEFF00FECF8F /* x_keyname.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_keyname.c; path = src/x_keyname.c; sourceTree = "<group>"; };
 		374D7B051DA3E0A500FECF8F /* x_keyup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_keyup.c; path = src/x_keyup.c; sourceTree = "<group>"; };
 		374D7B2F1DA3E1E900FECF8F /* x_key.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_key.c; path = src/x_key.c; sourceTree = "<group>"; };
+		374D7B5D1DA3E30500FECF8F /* x_savepanel.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_savepanel.c; path = src/x_savepanel.c; sourceTree = "<group>"; };
 		375148DA1D86D9E5005679B0 /* x_arrayrange.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arrayrange.c; path = src/x_arrayrange.c; sourceTree = "<group>"; };
 		3751490A1D86DC2D005679B0 /* x_arraymax.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arraymax.c; path = src/x_arraymax.c; sourceTree = "<group>"; };
 		375149461D86DE53005679B0 /* x_arrayrandom.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arrayrandom.c; path = src/x_arrayrandom.c; sourceTree = "<group>"; };
@@ -482,7 +484,7 @@
 		378972061C4F716700263434 /* x_acoustic.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_acoustic.c; path = src/x_acoustic.c; sourceTree = "<group>"; };
 		378972071C4F716700263434 /* x_math.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_math.c; path = src/x_math.c; sourceTree = "<group>"; };
 		378972081C4F716700263434 /* x_array.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_array.c; path = src/x_array.c; sourceTree = "<group>"; };
-		3789720A1C4F716800263434 /* x_gui.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_gui.c; path = src/x_gui.c; sourceTree = "<group>"; };
+		3789720A1C4F716800263434 /* x_openpanel.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_openpanel.c; path = src/x_openpanel.c; sourceTree = "<group>"; };
 		3789720B1C4F716800263434 /* x_print.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_print.c; path = src/x_print.c; sourceTree = "<group>"; };
 		3789720C1C4F716800263434 /* x_list.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_list.c; path = src/x_list.c; sourceTree = "<group>"; };
 		3789720D1C4F716800263434 /* x_midi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_midi.c; path = src/x_midi.c; sourceTree = "<group>"; };
@@ -891,11 +893,12 @@
 			isa = PBXGroup;
 			children = (
 				3789720B1C4F716800263434 /* x_print.c */,
-				374906651D9977C700377F1E /* x_makefilename.c */,
-				3789720A1C4F716800263434 /* x_gui.c */,
 				374D7B2F1DA3E1E900FECF8F /* x_key.c */,
 				374D7B051DA3E0A500FECF8F /* x_keyup.c */,
 				374D7AD51DA3DEFF00FECF8F /* x_keyname.c */,
+				3789720A1C4F716800263434 /* x_openpanel.c */,
+				374D7B5D1DA3E30500FECF8F /* x_savepanel.c */,
+				374906651D9977C700377F1E /* x_makefilename.c */,
 				3789720F1C4F716800263434 /* x_net.c */,
 				3789720E1C4F716800263434 /* x_misc.c */,
 			);
@@ -1382,7 +1385,7 @@
 				3789725E1C4F716800263434 /* x_acoustic.c in Sources */,
 				3789725F1C4F716800263434 /* x_math.c in Sources */,
 				378972601C4F716800263434 /* x_array.c in Sources */,
-				378972621C4F716800263434 /* x_gui.c in Sources */,
+				378972621C4F716800263434 /* x_openpanel.c in Sources */,
 				378972631C4F716800263434 /* x_print.c in Sources */,
 				378972641C4F716800263434 /* x_list.c in Sources */,
 				378972651C4F716800263434 /* x_midi.c in Sources */,
@@ -1504,6 +1507,7 @@
 				374D7AD61DA3DEFF00FECF8F /* x_keyname.c in Sources */,
 				374D7B061DA3E0A500FECF8F /* x_keyup.c in Sources */,
 				374D7B301DA3E1E900FECF8F /* x_key.c in Sources */,
+				374D7B5E1DA3E30500FECF8F /* x_savepanel.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
