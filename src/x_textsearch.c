@@ -33,15 +33,15 @@ static t_class *textsearch_class;       /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef struct _key {
+typedef struct _textkey {
     int k_field;
     int k_type;
-    } t_key;
+    } t_textkey;
 
 typedef struct _textsearch {
     t_textclient    x_textclient;
     int             x_numberOfKeys;
-    t_key           *x_keys;
+    t_textkey       *x_keys;
     t_outlet        *x_outlet;
     } t_textsearch;
 
@@ -174,7 +174,7 @@ void *textsearch_new (t_symbol *s, int argc, t_atom *argv)
         for (i = 0; i < argc; i++) { if (IS_FLOAT (argv + i)) { numberOfKeys++; } }
         
         x->x_numberOfKeys = PD_MAX (1, numberOfKeys);
-        x->x_keys         = (t_key *)PD_MEMORY_GET (x->x_numberOfKeys * sizeof (t_key));
+        x->x_keys         = (t_textkey *)PD_MEMORY_GET (x->x_numberOfKeys * sizeof (t_textkey));
         x->x_outlet       = outlet_new (cast_object (x), &s_list);
          
         if (!numberOfKeys) { x->x_keys[0].k_field = 0; x->x_keys[0].k_type = TEXTSEARCH_EQUAL; }

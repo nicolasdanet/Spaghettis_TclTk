@@ -1,16 +1,21 @@
-/* Copyright (c) 1997-2000 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-/* dialogs.  LATER, deal with the situation where the object goes 
-away before the panel does... */
+/* 
+    Copyright (c) 1997-2016 Miller Puckette and others.
+*/
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
 #include "g_graphics.h"
-#include <stdio.h>
-#include <string.h>
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 /* -------------------------- openpanel ------------------------------ */
 
@@ -230,3 +235,6 @@ void x_gui_setup(void)
     savepanel_setup();
     key_setup();
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

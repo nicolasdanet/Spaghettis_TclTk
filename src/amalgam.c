@@ -194,6 +194,7 @@
 
 #include "x_print.c"
 #include "x_makefilename.c"
+#include "x_gui.c"
 
 /* DSP. */
 
