@@ -103,8 +103,6 @@ static void message_list (t_message *x, t_symbol *s, int argc, t_atom *argv)
 
 void message_click (t_message *x, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
 {
-    message_float (x, 0);
-    
     if (canvas_isMapped (x->m_owner)) {
     //
     t_boxtext *text = boxtext_fetch (x->m_owner, cast_object (x));
@@ -116,6 +114,8 @@ void message_click (t_message *x, t_float a, t_float b, t_float shift, t_float c
     clock_delay (x->m_clock, 120.0);
     //
     }
+    
+    message_float (x, 0.0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

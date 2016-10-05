@@ -427,9 +427,9 @@ static void slider_click (t_slider *x, t_float a, t_float b, t_float shift, t_fl
         (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
     }
     
-    slider_out (x);
-    
     canvas_setMotionFunction (x->x_gui.iem_owner, cast_gobj (x), (t_motionfn)slider_motion, a, b);
+    
+    slider_out (x);
 }
 
 static void slider_motion (t_slider *x, t_float deltaX, t_float deltaY, t_float modifier)
