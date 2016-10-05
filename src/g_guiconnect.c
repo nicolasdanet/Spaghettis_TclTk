@@ -69,8 +69,18 @@ static void guiconnect_signoff (t_guiconnect *x)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-t_guiconnect *guiconnect_new (t_pd *owner, t_symbol *bindTo)
+char *guiconnect_getBoundAsString (t_guiconnect *x)
+{
+    return x->x_bound->s_name;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static t_guiconnect *guiconnect_newWithBound (t_pd *owner, t_symbol *bindTo)
 {
     t_guiconnect *x = (t_guiconnect *)pd_new (guiconnect_class);
     
@@ -83,6 +93,15 @@ t_guiconnect *guiconnect_new (t_pd *owner, t_symbol *bindTo)
     pd_bind (cast_pd (x), x->x_bound);
     
     return x;
+}
+
+t_guiconnect *guiconnect_new (t_pd *owner)
+{
+    char t[PD_STRING] = { 0 };
+    t_error err = string_sprintf (t, PD_STRING, ".x%lx", owner);
+    PD_ASSERT (!err);
+    
+    return guiconnect_newWithBound (owner, gensym (t));
 }
 
 static void guiconnect_free (t_guiconnect *x)

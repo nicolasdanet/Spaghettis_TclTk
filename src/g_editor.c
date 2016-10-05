@@ -907,15 +907,11 @@ void canvas_selectAll (t_glist *glist)
 
 static t_editor *editor_new (t_glist *owner)
 {
-    char t[PD_STRING] = { 0 };
-    
     t_editor *x = (t_editor *)PD_MEMORY_GET (sizeof (t_editor));
-    
-    string_sprintf (t, PD_STRING, ".x%lx", owner);
-    
+ 
     x->e_buffer     = buffer_new();
     x->e_clock      = clock_new ((void *)owner, (t_method)canvas_taskDisplace);
-    x->e_guiconnect = guiconnect_new (cast_pd (owner), gensym (t));
+    x->e_guiconnect = guiconnect_new (cast_pd (owner));
     
     return x;
 }

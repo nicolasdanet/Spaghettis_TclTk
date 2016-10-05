@@ -68,11 +68,8 @@ void textbuffer_click (t_textbuffer *x, t_float a, t_float b, t_float shift, t_f
         sys_vGui ("focus .x%lx.text\n", x);
         
     } else {
-        char t[PD_STRING] = { 0 };
-        t_error err = string_sprintf (t, PD_STRING, ".x%lx", x);
-        PD_ASSERT (!err);
-        sys_vGui ("::ui_text::show .x%lx\n", x);
-        x->tb_guiconnect = guiconnect_new (cast_pd (x), gensym (t));
+        x->tb_guiconnect = guiconnect_new (cast_pd (x));
+        sys_vGui ("::ui_text::show %s\n", guiconnect_getBoundAsString (x->tb_guiconnect));
         textbuffer_update (x);
     }
 }

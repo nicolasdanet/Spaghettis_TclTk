@@ -23,7 +23,6 @@ static t_class *openpanel_class;            /* Shared. */
 
 typedef struct _openpanel {
     t_object        x_obj;                  /* Must be the first. */
-    t_symbol        *x_bound;
     t_guiconnect    *x_guiconnect;
     t_outlet        *x_outlet;
     } t_openpanel;
@@ -45,7 +44,7 @@ static void openpanel_bang (t_openpanel *x)
 
 static void openpanel_symbol (t_openpanel *x, t_symbol *s)
 {
-    sys_vGui ("::ui_file::openPanel {%s} {%s}\n", x->x_bound->s_name, s->s_name);
+    sys_vGui ("::ui_file::openPanel {%s} {%s}\n", guiconnect_getBoundAsString (x->x_guiconnect), s->s_name);
 }
 
 static void openpanel_callback (t_openpanel *x, t_symbol *s)
@@ -60,13 +59,8 @@ static void openpanel_callback (t_openpanel *x, t_symbol *s)
 static void *openpanel_new (void)
 {
     t_openpanel *x = (t_openpanel *)pd_new (openpanel_class);
-    
-    char t[PD_STRING] = { 0 };
-    t_error err = string_sprintf (t, PD_STRING, ".x%lx", x);
-    PD_ASSERT (!err);
-    
-    x->x_bound      = gensym (t);
-    x->x_guiconnect = guiconnect_new (cast_pd (x), x->x_bound);
+
+    x->x_guiconnect = guiconnect_new (cast_pd (x));
     x->x_outlet     = outlet_new (cast_object (x), &s_symbol);
         
     return x;
