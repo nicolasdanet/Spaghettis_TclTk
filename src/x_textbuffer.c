@@ -68,8 +68,8 @@ void textbuffer_click (t_textbuffer *x, t_float a, t_float b, t_float shift, t_f
         sys_vGui ("focus .x%lx.text\n", x);
         
     } else {
+        sys_vGui ("::ui_text::show .x%lx\n", x);
         x->tb_guiconnect = guiconnect_new (cast_pd (x));
-        sys_vGui ("::ui_text::show %s\n", guiconnect_getBoundAsString (x->tb_guiconnect));
         textbuffer_update (x);
     }
 }
@@ -144,7 +144,7 @@ void textbuffer_write (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Used by the GUI to set contents of the buffer. */
+/* Used only by the GUI to set contents of the buffer. */
 
 void textbuffer_addLine (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
 {
