@@ -12,63 +12,92 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* -------------------------- openpanel ------------------------------ */
+static t_class *openpanel_class;            /* Shared. */
 
-static t_class *openpanel_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct _openpanel
+typedef struct _openpanel {
+    t_object        x_obj;                  /* Must be the first. */
+    t_symbol        *x_bound;
+    t_guiconnect    *x_guiconnect;
+    t_outlet        *x_outlet;
+    } t_openpanel;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void openpanel_symbol (t_openpanel *, t_symbol *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void openpanel_bang (t_openpanel *x)
 {
-    t_object x_obj;
-    t_symbol *x_s;
-} t_openpanel;
-
-static void *openpanel_new( void)
-{
-    char buf[50];
-    t_openpanel *x = (t_openpanel *)pd_new(openpanel_class);
-    sprintf(buf, "d%lx", x);
-    x->x_s = gensym (buf);
-    pd_bind(&x->x_obj.te_g.g_pd, x->x_s);
-    outlet_new(&x->x_obj, &s_symbol);
-    return (x);
+    openpanel_symbol (x, &s_);
 }
 
-static void openpanel_symbol(t_openpanel *x, t_symbol *s)
+static void openpanel_symbol (t_openpanel *x, t_symbol *s)
 {
-    char *path = (s && s->s_name) ? s->s_name : "\"\"";
-    sys_vGui("::ui_file::openPanel {%s} {%s}\n", x->x_s->s_name, path);
+    sys_vGui ("::ui_file::openPanel {%s} {%s}\n", x->x_bound->s_name, s->s_name);
 }
 
-static void openpanel_bang(t_openpanel *x)
+static void openpanel_callback (t_openpanel *x, t_symbol *s)
 {
-    openpanel_symbol(x, &s_);
+    outlet_symbol (x->x_outlet, s);
 }
 
-static void openpanel_callback(t_openpanel *x, t_symbol *s)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *openpanel_new (void)
 {
-    outlet_symbol(x->x_obj.te_outlet, s);
+    t_openpanel *x = (t_openpanel *)pd_new (openpanel_class);
+    
+    char t[PD_STRING] = { 0 };
+    t_error err = string_sprintf (t, PD_STRING, ".x%lx", x);
+    PD_ASSERT (!err);
+    
+    x->x_bound      = gensym (t);
+    x->x_guiconnect = guiconnect_new (cast_pd (x), x->x_bound);
+    x->x_outlet     = outlet_new (cast_object (x), &s_symbol);
+        
+    return x;
 }
 
-
-static void openpanel_free(t_openpanel *x)
+static void openpanel_free (t_openpanel *x)
 {
-    pd_unbind(&x->x_obj.te_g.g_pd, x->x_s);
+    guiconnect_release (x->x_guiconnect, 1000.0);
 }
 
-void openpanel_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void openpanel_setup (void)
 {
-    openpanel_class = class_new(sym_openpanel,
-        (t_newmethod)openpanel_new, (t_method)openpanel_free,
-        sizeof(t_openpanel), 0, 0);
-    class_addBang(openpanel_class, openpanel_bang);
-    class_addSymbol(openpanel_class, openpanel_symbol);
-    class_addMethod(openpanel_class, (t_method)openpanel_callback,
-        sym_callback, A_SYMBOL, 0);
+    t_class *c = NULL;
+    
+    c = class_new (sym_openpanel,
+            (t_newmethod)openpanel_new,
+            (t_method)openpanel_free,
+            sizeof (t_openpanel),
+            CLASS_DEFAULT,
+            A_NULL);
+            
+    class_addBang (c, openpanel_bang);
+    class_addSymbol (c, openpanel_symbol);
+    
+    class_addMethod (c, (t_method)openpanel_callback,   sym_callback, A_SYMBOL, A_NULL);
+    
+    openpanel_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
