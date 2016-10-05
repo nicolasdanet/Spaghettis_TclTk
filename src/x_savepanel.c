@@ -17,57 +17,76 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *savepanel_class;
+static t_class *savepanel_class;            /* Shared. */
 
-typedef struct _savepanel
-{
-    t_object x_obj;
-    t_glist *x_canvas;
-    t_symbol *x_s;
-} t_savepanel;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static void *savepanel_new( void)
+typedef struct _savepanel {
+    t_object        x_obj;                  /* Must be the first. */
+    t_guiconnect    *x_guiconnect;
+    t_outlet        *x_outlet;
+    } t_savepanel;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void savepanel_symbol (t_savepanel *x, t_symbol *s)
 {
-    char buf[50];
-    t_savepanel *x = (t_savepanel *)pd_new(savepanel_class);
-    sprintf(buf, "d%lx", x);
-    x->x_s = gensym (buf);
-    x->x_canvas = canvas_getCurrent();
-    pd_bind(&x->x_obj.te_g.g_pd, x->x_s);
-    outlet_new(&x->x_obj, &s_symbol);
-    return (x);
+    sys_vGui ("::ui_file::savePanel {%s} {%s}\n", guiconnect_getBoundAsString (x->x_guiconnect), s->s_name);
 }
 
-static void savepanel_symbol(t_savepanel *x, t_symbol *s)
+static void savepanel_bang (t_savepanel *x)
 {
-    char *path = (s && s->s_name) ? s->s_name : "\"\"";
-    sys_vGui("::ui_file::savePanel {%s} {%s}\n", x->x_s->s_name, path);
+    savepanel_symbol (x, &s_);
 }
 
-static void savepanel_bang(t_savepanel *x)
+static void savepanel_callback (t_savepanel *x, t_symbol *s)
 {
-    savepanel_symbol(x, &s_);
+    outlet_symbol (x->x_outlet, s);
 }
 
-static void savepanel_callback(t_savepanel *x, t_symbol *s)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *savepanel_new (void)
 {
-    outlet_symbol(x->x_obj.te_outlet, s);
+    t_savepanel *x = (t_savepanel *)pd_new (savepanel_class);
+    
+    x->x_guiconnect = guiconnect_new (cast_pd (x));
+    x->x_outlet     = outlet_new (cast_object (x), &s_symbol);
+    
+    return x;
 }
 
-static void savepanel_free(t_savepanel *x)
+static void savepanel_free (t_savepanel *x)
 {
-    pd_unbind(&x->x_obj.te_g.g_pd, x->x_s);
+    guiconnect_release (x->x_guiconnect, 1000.0);
 }
 
-void savepanel_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void savepanel_setup (void)
 {
-    savepanel_class = class_new(sym_savepanel,
-        (t_newmethod)savepanel_new, (t_method)savepanel_free,
-        sizeof(t_savepanel), 0, 0);
-    class_addBang(savepanel_class, savepanel_bang);
-    class_addSymbol(savepanel_class, savepanel_symbol);
-    class_addMethod(savepanel_class, (t_method)savepanel_callback,
-        sym_callback, A_SYMBOL, 0);
+    t_class *c = NULL;
+    
+    c = class_new (sym_savepanel,
+            (t_newmethod)savepanel_new,
+            (t_method)savepanel_free,
+            sizeof (t_savepanel),
+            CLASS_DEFAULT,
+            A_NULL);
+            
+    class_addBang (c, savepanel_bang);
+    class_addSymbol (c, savepanel_symbol);
+    
+    class_addMethod (c, (t_method)savepanel_callback, sym_callback, A_SYMBOL, A_NULL);
+    
+    savepanel_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
