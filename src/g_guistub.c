@@ -164,7 +164,7 @@ void guistub_setup (void)
         
     class_addAnything (c, guistub_anything);
 
-    class_addMethod (c, (t_method)guistub_signoff,  sym__signoff,   A_NULL);
+    class_addMethod (c, (t_method)guistub_signoff, sym__signoff, A_NULL);
     
     guistub_class = c;
 }

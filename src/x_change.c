@@ -79,7 +79,7 @@ void change_setup (void)
     class_addBang (c, change_bang);
     class_addFloat (c, change_float);
     
-    class_addMethod (c, (t_method)change_set, sym_set,  A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)change_set, sym_set, A_DEFFLOAT, A_NULL);
         
     change_class = c;
 }

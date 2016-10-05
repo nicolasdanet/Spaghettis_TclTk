@@ -83,7 +83,7 @@ void int_setup (void)
     class_addBang (c, int_bang);
     class_addFloat (c, int_float);
     
-    class_addMethod (c, (t_method)int_send, sym_send,   A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)int_send, sym_send, A_SYMBOL, A_NULL);
     
     int_class = c;
 }

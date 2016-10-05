@@ -1006,7 +1006,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_saveAs,        sym_menusaveas,        A_DEFFLOAT, A_NULL);    
     class_addMethod (c, (t_method)canvas_requireArray,  sym_menuarray,         A_NULL);
 
-    class_addCreator ((t_newmethod)subpatch_new,        sym_page,              A_DEFSYMBOL, A_NULL);
+    class_addCreator ((t_newmethod)subpatch_new, sym_page, A_DEFSYMBOL, A_NULL);
 
     #endif
     

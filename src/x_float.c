@@ -98,7 +98,7 @@ void float_setup (void)
     class_addBang (c, float_bang);
     class_addFloat (c, float_float);
     
-    class_addMethod (c, (t_method)float_send,   sym_send, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)float_send, sym_send, A_SYMBOL, A_NULL);
 
     float_class = c;
 }
