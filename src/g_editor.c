@@ -650,14 +650,14 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
 
     /* Report keystrokes to bounded objects. */
     
-    if (sym__key->s_thing && isDown)    { if (n) { pd_float (sym__key->s_thing,   (t_float)n); } }
-    if (sym__keyup->s_thing && !isDown) { if (n) { pd_float (sym__keyup->s_thing, (t_float)n); } }
+    if (pd_isThingQuiet (sym__key) && isDown && n)      { pd_float (pd_getThing (sym__key),   (t_float)n); }
+    if (pd_isThingQuiet (sym__keyup) && !isDown && n)   { pd_float (pd_getThing (sym__keyup), (t_float)n); }
     
-    if (sym__keyname->s_thing) {
+    if (pd_isThingQuiet (sym__keyname)) {
         t_atom a[2];
         SET_FLOAT (a + 0, isDown);
         SET_SYMBOL (a + 1, s);
-        pd_list (sym__keyname->s_thing, 2, a);
+        pd_list (pd_getThing (sym__keyname), 2, a);
     }
     
     /* Handle the event. */

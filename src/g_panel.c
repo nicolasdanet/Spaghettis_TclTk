@@ -226,12 +226,12 @@ static void panel_panelSize (t_panel *x, t_symbol *s, int argc, t_atom *argv)
 
 static void panel_getPosition (t_panel *x)
 {
-    if (x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing) {
+    if (x->x_gui.iem_canSend && pd_isThing (x->x_gui.iem_send)) {
         t_float a = text_getPixelX (cast_object (x), x->x_gui.iem_owner);
         t_float b = text_getPixelY (cast_object (x), x->x_gui.iem_owner);
         SET_FLOAT (&x->x_t[0], a);
         SET_FLOAT (&x->x_t[1], b);
-        pd_list (x->x_gui.iem_send->s_thing, 2, x->x_t);
+        pd_list (pd_getThing (x->x_gui.iem_send), 2, x->x_t);
     }
 }
 

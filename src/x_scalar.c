@@ -39,7 +39,7 @@ static void scalardefine_send (t_glist *x, t_symbol *s)
     if (pd_class (y) == scalar_class) {
         t_gpointer gp = GPOINTER_INIT;
         gpointer_setAsScalar (&gp, x, cast_scalar (y));
-        pd_pointer (s->s_thing, &gp);
+        pd_pointer (pd_getThing (s), &gp);
         gpointer_unset (&gp);
     }
     //
@@ -148,7 +148,7 @@ static void *scalardefine_new (t_symbol *s, int argc, t_atom *argv)
     if (!scalar) { PD_BUG; }
     else {
         canvas_addScalarNext (x, NULL, scalar);
-        sym___hash__A->s_thing = NULL;
+        s__A.s_thing = NULL;
         pd_bind (cast_pd (x), sym___hash__A);
     }
     //

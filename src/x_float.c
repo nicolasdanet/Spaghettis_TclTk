@@ -49,7 +49,7 @@ static void float_float (t_floatobject *x, t_float f)
 
 static void float_send (t_floatobject *x, t_symbol *s)
 {
-    if (pd_isThing (s)) { pd_float (s->s_thing, x->x_f); }
+    if (pd_isThing (s)) { pd_float (pd_getThing (s), x->x_f); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

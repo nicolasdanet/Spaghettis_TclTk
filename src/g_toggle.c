@@ -255,8 +255,8 @@ static void toggle_out (t_toggle *x)
 {
     outlet_float (x->x_outlet, x->x_state);
     
-    if (x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing) { 
-        pd_float (x->x_gui.iem_send->s_thing, x->x_state); 
+    if (x->x_gui.iem_canSend && pd_isThing (x->x_gui.iem_send)) { 
+        pd_float (pd_getThing (x->x_gui.iem_send), x->x_state); 
     }
 }
 

@@ -57,12 +57,13 @@ typedef t_pd *(*t_newmethod6) (t_int, t_int, t_int, t_int, t_int, t_int,    MESS
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-extern t_pd *pd_newest;
+extern t_pd     *pd_newest;
+extern t_class  *bindlist_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pd pd_objectMaker;
+extern t_pd     pd_objectMaker;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -189,10 +190,15 @@ void message_release (void)
     sym1 = message_hashTable[i];
     
     while ((sym2 = sym1)) {
-        sym1 = sym2->s_next;
-        if (!message_isStaticSymbol (sym2)) {
-            PD_MEMORY_FREE (sym2->s_name); PD_MEMORY_FREE (sym2); 
-        }
+    //
+    sym1 = sym2->s_next;
+    
+    if (sym2->s_thing) {
+        pd_free (sym2->s_thing);
+    }
+    
+    if (!message_isStaticSymbol (sym2)) { PD_MEMORY_FREE (sym2->s_name); PD_MEMORY_FREE (sym2); }
+    //
     }
     //
     }

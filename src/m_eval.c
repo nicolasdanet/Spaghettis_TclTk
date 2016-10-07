@@ -138,7 +138,7 @@ void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
             break;
         }
         
-        if (s == NULL || !(object = s->s_thing)) {
+        if (s == NULL || !(object = pd_getThing (s))) {
             if (!s) { error_invalid (&s_, sym_expansion); }
             else if (!string_startWith (s->s_name, PD_GUISTUB)) { pd_isThing (s); }
             do { size--; v++; } while (size && !IS_SEMICOLON (v));

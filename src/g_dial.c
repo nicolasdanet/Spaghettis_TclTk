@@ -442,8 +442,8 @@ static void dial_out (t_dial *x)
 {
     outlet_float (x->x_outlet, x->x_floatValue);
     
-    if (x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing) {
-        pd_float (x->x_gui.iem_send->s_thing, x->x_floatValue);
+    if (x->x_gui.iem_canSend && pd_isThing (x->x_gui.iem_send)) {
+        pd_float (pd_getThing (x->x_gui.iem_send), x->x_floatValue);
     }
 }
 

@@ -127,22 +127,22 @@ static void midiin_setup(void)
 void inmidi_byte(int portno, int byte)
 {
     t_atom at[2];
-    if (sym__midiin->s_thing)
+    if (pd_isThingQuiet (sym__midiin))
     {
         SET_FLOAT(at, byte);
         SET_FLOAT(at+1, portno);
-        pd_list(sym__midiin->s_thing, 2, at);
+        pd_list (pd_getThing (sym__midiin), 2, at);
     }
 }
 
 void inmidi_sysex(int portno, int byte)
 {
     t_atom at[2];
-    if (sym__sysexin->s_thing)
+    if (pd_isThingQuiet (sym__sysexin))
     {
         SET_FLOAT(at, byte);
         SET_FLOAT(at+1, portno);
-        pd_list(sym__sysexin->s_thing, 2, at);
+        pd_list (pd_getThing (sym__sysexin), 2, at);
     }
 }
 
@@ -204,13 +204,13 @@ static void notein_setup(void)
 
 void inmidi_noteOn(int portno, int channel, int pitch, int velo)
 {
-    if (sym__notein->s_thing)
+    if (pd_isThingQuiet (sym__notein))
     {
         t_atom at[3];
         SET_FLOAT(at, pitch);
         SET_FLOAT(at+1, velo);
         SET_FLOAT(at+2, (channel + (portno << 4) + 1));
-        pd_list(sym__notein->s_thing, 3, at);
+        pd_list (pd_getThing (sym__notein), 3, at);
     }
 }
 
@@ -275,13 +275,13 @@ static void ctlin_setup(void)
 
 void inmidi_controlChange(int portno, int channel, int ctlnumber, int value)
 {
-    if (sym__ctlin->s_thing)
+    if (pd_isThingQuiet (sym__ctlin))
     {
         t_atom at[3];
         SET_FLOAT(at, ctlnumber);
         SET_FLOAT(at+1, value);
         SET_FLOAT(at+2, (channel + (portno << 4) + 1));
-        pd_list(sym__ctlin->s_thing, 3, at);
+        pd_list (pd_getThing (sym__ctlin), 3, at);
     }
 }
 
@@ -339,12 +339,12 @@ static void pgmin_setup(void)
 
 void inmidi_programChange(int portno, int channel, int value)
 {
-    if (sym__pgmin->s_thing)
+    if (pd_isThingQuiet (sym__pgmin))
     {
         t_atom at[2];
         SET_FLOAT(at, value + 1);
         SET_FLOAT(at+1, (channel + (portno << 4) + 1));
-        pd_list(sym__pgmin->s_thing, 2, at);
+        pd_list (pd_getThing (sym__pgmin), 2, at);
     }
 }
 
@@ -401,12 +401,12 @@ static void bendin_setup(void)
 
 void inmidi_pitchBend(int portno, int channel, int value)
 {
-    if (sym__bendin->s_thing)
+    if (pd_isThingQuiet (sym__bendin))
     {
         t_atom at[2];
         SET_FLOAT(at, value);
         SET_FLOAT(at+1, (channel + (portno << 4) + 1));
-        pd_list(sym__bendin->s_thing, 2, at);
+        pd_list (pd_getThing (sym__bendin), 2, at);
     }
 }
 
@@ -464,12 +464,12 @@ static void touchin_setup(void)
 
 void inmidi_afterTouch(int portno, int channel, int value)
 {
-    if (sym__touchin->s_thing)
+    if (pd_isThingQuiet (sym__touchin))
     {
         t_atom at[2];
         SET_FLOAT(at, value);
         SET_FLOAT(at+1, (channel + (portno << 4) + 1));
-        pd_list(sym__touchin->s_thing, 2, at);
+        pd_list (pd_getThing (sym__touchin), 2, at);
     }
 }
 
@@ -533,13 +533,13 @@ static void polytouchin_setup(void)
 
 void inmidi_polyPressure(int portno, int channel, int pitch, int value)
 {
-    if (sym__polytouchin->s_thing)
+    if (pd_isThingQuiet (sym__polytouchin))
     {
         t_atom at[3];
         SET_FLOAT(at, pitch);
         SET_FLOAT(at+1, value);
         SET_FLOAT(at+2, (channel + (portno << 4) + 1));
-        pd_list(sym__polytouchin->s_thing, 3, at);
+        pd_list (pd_getThing (sym__polytouchin), 3, at);
     }
 }
 
@@ -592,7 +592,7 @@ void inmidi_clk(double timing)
     static t_float count = 0;
     t_float cur,diff;
 
-    if (sym__midiclkin->s_thing)
+    if (pd_isThingQuiet (sym__midiclkin))
     {
         t_atom at[2];
         diff =timing - prev;
@@ -606,7 +606,7 @@ void inmidi_clk(double timing)
         else SET_FLOAT(at, 0);
 
         SET_FLOAT(at+1, diff);
-        pd_list(sym__midiclkin->s_thing, 2, at);
+        pd_list (pd_getThing (sym__midiclkin), 2, at);
         prev = timing;
     }
 }
@@ -657,12 +657,12 @@ static void midirealtimein_setup(void)
 
 void inmidi_realTimeIn(int portno, int SysMsg)
 {
-    if (sym__midirealtimein->s_thing)
+    if (pd_isThingQuiet (sym__midirealtimein))
     {
         t_atom at[2];
         SET_FLOAT(at, portno);
         SET_FLOAT(at+1, SysMsg);
-        pd_list(sym__midirealtimein->s_thing, 2, at);
+        pd_list (pd_getThing (sym__midirealtimein), 2, at);
     }
 }
 

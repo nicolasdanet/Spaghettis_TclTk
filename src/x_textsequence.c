@@ -154,9 +154,9 @@ static void textsequence_performOutContentGlobal (t_textsequence *x, t_atom *t, 
     int n = count - shitfRight;
     t_atom *v = t + shitfRight;
     
-    if (n > 0 && IS_SYMBOL (v)) { pd_message (send->s_thing, GET_SYMBOL (v), n - 1, v + 1); }
+    if (n > 0 && IS_SYMBOL (v)) { pd_message (pd_getThing (send), GET_SYMBOL (v), n - 1, v + 1); }
     else {
-        pd_list (send->s_thing, n, v);
+        pd_list (pd_getThing (send), n, v);
     }
     //
     }

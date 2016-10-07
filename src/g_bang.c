@@ -253,7 +253,7 @@ static void bng_out (t_bng *x)
 {
     outlet_bang (x->x_outlet);
     
-    if (x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing) { pd_bang (x->x_gui.iem_send->s_thing); }
+    if (x->x_gui.iem_canSend && pd_isThing (x->x_gui.iem_send)) { pd_bang (pd_getThing (x->x_gui.iem_send)); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

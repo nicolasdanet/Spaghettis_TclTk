@@ -147,7 +147,7 @@ static void *textdefine_new (t_symbol *s, int argc, t_atom *argv)
 
     x->x_outlet = outlet_new (cast_object (x), &s_pointer);
     
-    sym___hash__A->s_thing = NULL;
+    s__A.s_thing = NULL;
     pd_bind (cast_pd (x), sym___hash__A);
     
     return x;

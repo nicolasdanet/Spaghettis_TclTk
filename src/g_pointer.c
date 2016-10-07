@@ -104,7 +104,7 @@ static void pointer_send (t_pointer *x, t_symbol *s)
 {
     if (!gpointer_isValidNullAllowed (&x->x_gpointer)) { error_invalid (&s_pointer, &s_pointer); }
     else {
-        if (pd_isThing (s)) { pd_pointer (s->s_thing, &x->x_gpointer); }
+        if (pd_isThing (s)) { pd_pointer (pd_getThing (s), &x->x_gpointer); }
     }
 }
 

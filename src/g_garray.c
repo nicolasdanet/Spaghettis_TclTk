@@ -695,7 +695,7 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_float size, t_flo
     scalar_setFloat (x->x_scalar, sym_style, style);
     scalar_setFloat (x->x_scalar, sym_linewidth, 1);
 
-    sym___hash__A->s_thing = NULL;
+    s__A.s_thing = NULL;
     pd_bind (cast_pd (x), sym___hash__A); 
 
     garray_redraw (x);

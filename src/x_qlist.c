@@ -52,7 +52,7 @@ static int qlist_performNext (t_qlist *x,
         if (!IS_SYMBOL (buffer_atomAtIndex (b, start))) { return 0; }
         else {
             t_symbol *t = GET_SYMBOL (buffer_atomAtIndex (b, start));
-            if (pd_isThing (t)) { x->ql_target = t->s_thing; }
+            if (pd_isThing (t)) { x->ql_target = pd_getThing (t); }
             else {
                 return 0;
             }
