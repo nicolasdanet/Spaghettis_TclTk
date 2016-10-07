@@ -145,6 +145,10 @@ void message_initialize (void)
     for (i = 0; i < 11; i++) { generateSymbol (symbols[i]->s_name, symbols[i]); }
     
     symbols_initialize();
+    
+    PD_ASSERT (sym___hash__N == &s__N);
+    PD_ASSERT (sym___hash__X == &s__X);
+    PD_ASSERT (sym___hash__A == &s__A);
 }
 
 // -----------------------------------------------------------------------------------------------------------

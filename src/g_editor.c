@@ -543,11 +543,12 @@ static void canvas_performPaste (t_glist *glist)
     
     t_pd *boundA = s__A.s_thing; 
     t_pd *boundX = s__X.s_thing;
-    t_pd *boundN = s__N.s_thing;
+    t_pd *boundN = pd_getBoundN();
     
     s__A.s_thing = NULL;
     s__X.s_thing = cast_pd (glist);
-    s__N.s_thing = &pd_canvasMaker;
+
+    pd_setBoundN (&pd_canvasMaker);
 
     canvas_deselectAll (glist);
     
@@ -569,8 +570,8 @@ static void canvas_performPaste (t_glist *glist)
     
     s__A.s_thing = boundA;
     s__X.s_thing = boundX;
-    s__N.s_thing = boundN;
-
+    pd_setBoundN (boundN);
+    
     for (s = glist->gl_editor->e_selectedObjects; s; s = s->sel_next) {
         gobj_displaced (s->sel_what, glist, n, n);
     }

@@ -33,7 +33,7 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
         buffer_free (t);
         
         buffer_vAppend (b, "ssiiiisi;", 
-            &s__N, 
+            sym___hash__N, 
             sym_canvas,
             glist->gl_windowTopLeftX,
             glist->gl_windowTopLeftY,
@@ -45,7 +45,7 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
     } else {
     
         buffer_vAppend (b, "ssiiiii;", 
-            &s__N,
+            sym___hash__N,
             sym_canvas,
             glist->gl_windowTopLeftX,
             glist->gl_windowTopLeftY,

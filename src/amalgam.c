@@ -28,6 +28,7 @@
 #include "m_eval.c"
 #include "m_global.c"
 #include "m_bind.c"
+#include "m_hash.c"
 #include "m_setup.c"
 #include "m_dollar.c"
 #include "m_string.c"

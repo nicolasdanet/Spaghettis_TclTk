@@ -259,14 +259,15 @@ t_error buffer_fileEval (t_symbol *name, t_symbol *directory)
     else {
     //
     t_pd *boundA = s__A.s_thing;
-    t_pd *boundN = s__N.s_thing;
+    t_pd *boundN = pd_getBoundN();
     
     s__A.s_thing = NULL; 
-    s__N.s_thing = &pd_canvasMaker;
+    pd_setBoundN (&pd_canvasMaker);
+    
     buffer_eval (t, NULL, 0, NULL);
     
     s__A.s_thing = boundA;
-    s__N.s_thing = boundN;
+    pd_setBoundN (boundN);
     //
     }
     
