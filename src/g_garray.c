@@ -108,12 +108,12 @@ void garray_initialize (void)
     canvas_setActiveFileNameAndDirectory (sym__floattemplate, sym___dot__);
     buffer_withStringUnzeroed (b, floatTemplateFile, strlen (floatTemplateFile));
     buffer_eval (b, &pd_canvasMaker, 0, NULL);
-    pd_vMessage (s__X.s_thing, sym__pop, "i", 0);
+    pd_vMessage (pd_getBoundX(), sym__pop, "i", 0);
     
     canvas_setActiveFileNameAndDirectory (sym__floatarraytemplate, sym___dot__);
     buffer_withStringUnzeroed (b, floatArrayTemplateFile, strlen (floatArrayTemplateFile));
     buffer_eval (b, &pd_canvasMaker, 0, NULL);
-    pd_vMessage (s__X.s_thing, sym__pop, "i", 0);
+    pd_vMessage (pd_getBoundX(), sym__pop, "i", 0);
 
     canvas_setActiveFileNameAndDirectory (&s_, &s_);
     
@@ -583,7 +583,7 @@ static void garray_functionSave (t_gobj *z, t_buffer *b)
     t_array *array = garray_getArray (x);
         
     buffer_vAppend (b, "sssisi;",
-        &s__X,
+        sym___hash__X,
         sym_array,
         x->x_unexpandedName,
         array_getSize (array),

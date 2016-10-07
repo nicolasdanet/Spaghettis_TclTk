@@ -107,7 +107,7 @@ static void canvas_cacheLines (t_glist *glist)
     if (s1 != s2) {
     //
     buffer_vAppend (glist->gl_editor->e_buffer, "ssiiii;",
-        &s__X, 
+        sym___hash__X, 
         sym_connect,
         canvas_getIndexOfObject (glist, cast_gobj (t.tr_srcObject)),
         t.tr_srcIndexOfOutlet,
@@ -121,12 +121,12 @@ static void canvas_cacheLines (t_glist *glist)
 
 void canvas_restoreCachedLines (t_glist *glist)
 {
-    t_pd *t = s__X.s_thing;
+    t_pd *boundX = pd_getBoundX();
     
-    s__X.s_thing = cast_pd (glist);
+    pd_setBoundX (cast_pd (glist));
     buffer_eval (glist->gl_editor->e_buffer, NULL, 0, NULL);
     
-    s__X.s_thing = t;
+    pd_setBoundX (boundX);
 }
 
 // -----------------------------------------------------------------------------------------------------------

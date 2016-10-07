@@ -283,21 +283,17 @@ void buffer_fileOpen (void *dummy, t_symbol *name, t_symbol *directory)
 {
     t_pd *x = NULL;
     
-    t_pd *boundX = s__X.s_thing;
-    int state = dsp_suspend();
+    t_pd *boundX = pd_getBoundX(); int state = dsp_suspend();
     
-    s__X.s_thing = NULL;
+    pd_setBoundX (NULL);
+    
     buffer_fileEval (name, directory);
     
-    while ((x != s__X.s_thing) && s__X.s_thing) {
-        x = s__X.s_thing;
-        pd_vMessage (x, sym__pop, "i", 1);
-    }
+    while ((x != pd_getBoundX()) && pd_getBoundX()) { x = pd_getBoundX(); pd_vMessage (x, sym__pop, "i", 1); }
     
     stack_performLoadbang();
     
-    dsp_resume (state);
-    s__X.s_thing = boundX;
+    dsp_resume (state); pd_setBoundX (boundX);
 }
 
 // -----------------------------------------------------------------------------------------------------------

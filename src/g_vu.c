@@ -503,7 +503,7 @@ static void vu_functionSave (t_gobj *z, t_buffer *b)
     iemgui_serialize (&x->x_gui, &names, &colors);
     
     buffer_vAppend (b, "ssiisiissiiiissii",
-        &s__X,
+        sym___hash__X,
         sym_obj,
         cast_object (x)->te_xCoordinate,
         cast_object (x)->te_yCoordinate,

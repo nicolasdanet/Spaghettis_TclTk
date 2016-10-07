@@ -333,7 +333,7 @@ static void gatom_functionSave (t_gobj *z, t_buffer *b)
     t_symbol *send      = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedSend, 1));
     
     buffer_vAppend (b, "ssiiifffsss",
-        &s__X,
+        sym___hash__X,
         type,
         cast_object (x)->te_xCoordinate,
         cast_object (x)->te_yCoordinate,

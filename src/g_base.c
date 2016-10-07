@@ -63,7 +63,7 @@ void canvas_newPatch (void *dummy, t_symbol *name, t_symbol *directory)
 {
     canvas_setActiveFileNameAndDirectory (name, directory);
     canvas_new (NULL, NULL, 0, NULL);
-    canvas_pop (cast_glist (s__X.s_thing), 1);
+    canvas_pop (cast_glist (pd_getBoundX()), 1);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -93,7 +93,7 @@ int canvas_objectIsBox (t_object *x)
 
 t_glist *canvas_getCurrent (void)
 {
-    return (cast_glist (pd_findByClass (&s__X, canvas_class)));
+    return cast_glist (pd_getBoundX());
 }
 
 t_glist *canvas_getRoot (t_glist *glist)

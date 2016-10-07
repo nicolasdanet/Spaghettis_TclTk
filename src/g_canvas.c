@@ -135,7 +135,7 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     canvas_pop (glist, glist->gl_openedAtLoad);
 
-    if (!(z = s__X.s_thing) || (pd_class (z) != canvas_class)) { PD_BUG; }
+    if (!(z = pd_getBoundX()) || (pd_class (z) != canvas_class)) { PD_BUG; }
     else {
         t_glist *parent  = cast_glist (z);
         t_object *object = cast_object (glist);
@@ -483,13 +483,13 @@ static void canvas_functionSave (t_gobj *x, t_buffer *b)
     if (needToSaveContents) { 
         canvas_serialize (cast_glist (x), b);
         buffer_vAppend (b, "ssii",
-            &s__X,
+            sym___hash__X,
             sym_restore,
             cast_object (x)->te_xCoordinate,
             cast_object (x)->te_yCoordinate);
     } else {
         buffer_vAppend (b, "ssii",
-            &s__X,
+            sym___hash__X,
             sym_obj,
             cast_object (x)->te_xCoordinate,
             cast_object (x)->te_yCoordinate);

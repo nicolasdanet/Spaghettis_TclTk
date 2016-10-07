@@ -516,7 +516,7 @@ static void canvas_performCopy (t_glist *glist)
     
     if (m &&n) {
         buffer_vAppend (b, "ssiiii;", 
-            &s__X, 
+            sym___hash__X, 
             sym_connect,
             canvas_getIndexOfObjectAmongSelected (glist, &t.tr_srcObject->te_g),
             t.tr_srcIndexOfOutlet,
@@ -542,11 +542,11 @@ static void canvas_performPaste (t_glist *glist)
     int state = dsp_suspend();
     
     t_pd *boundA = s__A.s_thing; 
-    t_pd *boundX = s__X.s_thing;
+    t_pd *boundX = pd_getBoundX();
     t_pd *boundN = pd_getBoundN();
     
     s__A.s_thing = NULL;
-    s__X.s_thing = cast_pd (glist);
+    pd_setBoundX (cast_pd (glist));
 
     pd_setBoundN (&pd_canvasMaker);
 
@@ -569,7 +569,7 @@ static void canvas_performPaste (t_glist *glist)
     dsp_resume (state);
     
     s__A.s_thing = boundA;
-    s__X.s_thing = boundX;
+    pd_setBoundX (boundX);
     pd_setBoundN (boundN);
     
     for (s = glist->gl_editor->e_selectedObjects; s; s = s->sel_next) {

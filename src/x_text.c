@@ -52,7 +52,7 @@ void textdefine_initialize (void)
     canvas_setActiveFileNameAndDirectory (sym__texttemplate, sym___dot__);
     buffer_withStringUnzeroed (b, textTemplateFile, strlen (textTemplateFile));
     buffer_eval (b, &pd_canvasMaker, 0, NULL);
-    pd_vMessage (s__X.s_thing, sym__pop, "i", 0);
+    pd_vMessage (pd_getBoundX(), sym__pop, "i", 0);
     
     canvas_setActiveFileNameAndDirectory (&s_, &s_);
     
@@ -90,7 +90,7 @@ static void textdefine_save (t_gobj *z, t_buffer *b)
     t_textdefine *x = (t_textdefine *)z;
     
     buffer_vAppend (b, "ssii", 
-        &s__X,
+        sym___hash__X,
         sym_obj,
         cast_object (x)->te_xCoordinate,
         cast_object (x)->te_yCoordinate);

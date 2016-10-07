@@ -36,20 +36,20 @@ static t_symbol *stack_loadingAbstraction;      /* Shared. */
 void stack_push (t_pd *x)
 {
     t_gstack *p = (t_gstack *)PD_MEMORY_GET (sizeof (t_gstack));
-    p->g_what = s__X.s_thing;
+    p->g_what = pd_getBoundX();
     p->g_next = stack_stackHead;
     p->g_loadingAbstraction  = stack_loadingAbstraction;
     stack_loadingAbstraction = NULL;
     stack_stackHead = p;
-    s__X.s_thing = x;
+    pd_setBoundX (x);
 }
 
 void stack_pop (t_pd *x)
 {
-    if (!stack_stackHead || s__X.s_thing != x) { PD_BUG; }
+    if (!stack_stackHead || pd_getBoundX() != x) { PD_BUG; }
     else {
         t_gstack *p = stack_stackHead;
-        s__X.s_thing = p->g_what;
+        pd_setBoundX (p->g_what);
         stack_stackHead = p->g_next;
         PD_MEMORY_FREE (p);
         stack_lastPopped = x;

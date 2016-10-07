@@ -21,8 +21,8 @@ static int dollar_getDollarZero (t_glist *glist)
 {
     t_environment *environment = NULL;
     
-    glist = (glist == NULL) ? canvas_getCurrent() : glist;
-    environment = (glist ? canvas_getEnvironment (glist) : NULL);
+    glist       = (glist == NULL) ? canvas_getCurrent() : glist;
+    environment = (glist != NULL) ? canvas_getEnvironment (glist) : NULL;
     
     if (environment) { return (environment->ce_dollarZeroValue); }
     else {

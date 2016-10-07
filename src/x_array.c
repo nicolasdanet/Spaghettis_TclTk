@@ -79,7 +79,7 @@ void arraydefine_save (t_gobj *z, t_buffer *b)
     t_garray *t = arraydefine_getContentChecked (x);
         
     buffer_vAppend (b, "ssii", 
-        &s__X, 
+        sym___hash__X, 
         sym_obj,
         cast_object (x)->te_xCoordinate, 
         cast_object (x)->te_yCoordinate);
