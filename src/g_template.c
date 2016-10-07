@@ -341,7 +341,7 @@ static void template_create (void *dummy, t_symbol *s, int argc, t_atom *argv)
     if (template_findByIdentifier (templateIdentifier) == NULL) { 
         template_new (templateIdentifier, argc, argv);
     } else {
-        PD_BUG;
+        // PD_BUG;
     }
     //
     }

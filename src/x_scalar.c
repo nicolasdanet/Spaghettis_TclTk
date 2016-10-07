@@ -85,7 +85,7 @@ static void scalardefine_save (t_gobj *z, t_buffer *b)
         
         if (pd_class (y) == scalar_class) {
             t_buffer *t = buffer_new();
-            buffer_vAppend (b, "ss", &s__A, sym_set);
+            buffer_vAppend (b, "ss", sym___hash__A, sym_set);
             scalar_serialize (cast_scalar (y), t);
             buffer_serialize (b, t);
             buffer_appendSemicolon (b);
@@ -148,8 +148,7 @@ static void *scalardefine_new (t_symbol *s, int argc, t_atom *argv)
     if (!scalar) { PD_BUG; }
     else {
         canvas_addScalarNext (x, NULL, scalar);
-        s__A.s_thing = NULL;
-        pd_bind (cast_pd (x), &s__A);
+        pd_setBoundA (cast_pd (x));
     }
     //
     }

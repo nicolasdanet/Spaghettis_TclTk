@@ -39,7 +39,7 @@ void textbuffer_free (t_textbuffer *x)
         guiconnect_release (x->tb_guiconnect, 1000.0);
     }
 
-    while (t = pd_findByClass (&s__A, textdefine_class)) { pd_unbind (t, &s__A); }
+    pd_setBoundA (NULL);
 }
 
 // -----------------------------------------------------------------------------------------------------------

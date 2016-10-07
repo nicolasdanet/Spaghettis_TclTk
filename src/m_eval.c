@@ -258,16 +258,16 @@ t_error buffer_fileEval (t_symbol *name, t_symbol *directory)
     if (err) { error_failsToRead (name); }
     else {
     //
-    t_pd *boundA = s__A.s_thing;
+    t_pd *boundA = pd_getBoundA();
     t_pd *boundN = pd_getBoundN();
     
-    s__A.s_thing = NULL; 
+    pd_setBoundA (NULL); 
     pd_setBoundN (&pd_canvasMaker);
     
     buffer_eval (t, NULL, 0, NULL);
     
-    s__A.s_thing = boundA;
     pd_setBoundN (boundN);
+    pd_setBoundA (boundA);
     //
     }
     
@@ -282,7 +282,6 @@ t_error buffer_fileEval (t_symbol *name, t_symbol *directory)
 void buffer_fileOpen (void *dummy, t_symbol *name, t_symbol *directory)
 {
     t_pd *x = NULL;
-    
     t_pd *boundX = pd_getBoundX(); int state = dsp_suspend();
     
     pd_setBoundX (NULL);

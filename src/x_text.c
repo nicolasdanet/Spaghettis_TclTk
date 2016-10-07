@@ -100,7 +100,7 @@ static void textdefine_save (t_gobj *z, t_buffer *b)
     object_saveWidth (cast_object (x), b);
         
     if (x->x_keep) {
-        buffer_vAppend (b, "ss", &s__A, sym_set);
+        buffer_vAppend (b, "ss", sym___hash__A, sym_set);
         buffer_serialize (b, textbuffer_getBuffer (&x->x_textbuffer));
         buffer_appendSemicolon (b);
     }
@@ -147,8 +147,7 @@ static void *textdefine_new (t_symbol *s, int argc, t_atom *argv)
 
     x->x_outlet = outlet_new (cast_object (x), &s_pointer);
     
-    s__A.s_thing = NULL;
-    pd_bind (cast_pd (x), &s__A);
+    pd_setBoundA (cast_pd (x));
     
     return x;
 }

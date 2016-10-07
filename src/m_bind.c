@@ -120,6 +120,10 @@ void bindlist_release (void)
 
 void pd_bind (t_pd *x, t_symbol *s)
 {
+    PD_ASSERT (s != &s__A);
+    PD_ASSERT (s != &s__N);
+    PD_ASSERT (s != &s__X);
+    
     if (s->s_thing) {
     
         if (pd_class (s->s_thing) == bindlist_class) {

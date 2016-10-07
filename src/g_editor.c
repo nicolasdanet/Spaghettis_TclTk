@@ -541,13 +541,12 @@ static void canvas_performPaste (t_glist *glist)
     int n = EDITOR_PASTE_OFFSET * ++editor_pasteCount;
     int state = dsp_suspend();
     
-    t_pd *boundA = s__A.s_thing; 
+    t_pd *boundA = pd_getBoundA(); 
     t_pd *boundX = pd_getBoundX();
     t_pd *boundN = pd_getBoundN();
     
-    s__A.s_thing = NULL;
+    pd_setBoundA (NULL);
     pd_setBoundX (cast_pd (glist));
-
     pd_setBoundN (&pd_canvasMaker);
 
     canvas_deselectAll (glist);
@@ -568,10 +567,10 @@ static void canvas_performPaste (t_glist *glist)
     
     dsp_resume (state);
     
-    s__A.s_thing = boundA;
-    pd_setBoundX (boundX);
     pd_setBoundN (boundN);
-    
+    pd_setBoundX (boundX);
+    pd_setBoundA (boundA);
+        
     for (s = glist->gl_editor->e_selectedObjects; s; s = s->sel_next) {
         gobj_displaced (s->sel_what, glist, n, n);
     }
