@@ -483,13 +483,13 @@ static void canvas_functionSave (t_gobj *x, t_buffer *b)
     if (needToSaveContents) { 
         canvas_serialize (cast_glist (x), b);
         buffer_vAppend (b, "ssii",
-            sym___hash__X,
+            &s__X,
             sym_restore,
             cast_object (x)->te_xCoordinate,
             cast_object (x)->te_yCoordinate);
     } else {
         buffer_vAppend (b, "ssii",
-            sym___hash__X,
+            &s__X,
             sym_obj,
             cast_object (x)->te_xCoordinate,
             cast_object (x)->te_yCoordinate);

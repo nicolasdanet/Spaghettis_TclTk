@@ -259,7 +259,7 @@ static void panel_functionSave (t_gobj *z, t_buffer *b)
     iemgui_serialize (&x->x_gui, &names, &colors);
     
     buffer_vAppend (b, "ssiisiiisssiiiiss",
-        sym___hash__X,
+        &s__X,
         sym_obj,
         (int)cast_object (z)->te_xCoordinate,
         (int)cast_object (z)->te_yCoordinate,

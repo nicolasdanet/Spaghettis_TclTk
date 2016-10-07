@@ -391,7 +391,7 @@ static void bng_functionSave (t_gobj *z, t_buffer *b)
     iemgui_serialize (cast_iem (z), &names, &colors);
     
     buffer_vAppend (b, "ssiisiiiisssiiiisss", 
-        sym___hash__X,
+        &s__X,
         sym_obj,
         (int)cast_object (z)->te_xCoordinate,
         (int)cast_object (z)->te_yCoordinate,

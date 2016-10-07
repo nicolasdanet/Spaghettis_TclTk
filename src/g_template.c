@@ -96,7 +96,7 @@ void template_serialize (t_template *x, t_buffer *b)
     int i;
     
     buffer_vAppend (b, "sss",
-        sym___hash__N,
+        &s__N,
         sym_struct,
         utils_stripTemplateIdentifier (x->tp_templateIdentifier));
     

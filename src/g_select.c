@@ -107,7 +107,7 @@ static void canvas_cacheLines (t_glist *glist)
     if (s1 != s2) {
     //
     buffer_vAppend (glist->gl_editor->e_buffer, "ssiiii;",
-        sym___hash__X, 
+        &s__X, 
         sym_connect,
         canvas_getIndexOfObject (glist, cast_gobj (t.tr_srcObject)),
         t.tr_srcIndexOfOutlet,

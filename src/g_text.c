@@ -177,13 +177,13 @@ void text_functionSave (t_gobj *z, t_buffer *b)
     t_object *x = cast_object (z);
     
     if (x->te_type == TYPE_COMMENT) {
-        buffer_vAppend (b, "ssii", sym___hash__X, sym_text, x->te_xCoordinate, x->te_yCoordinate);
+        buffer_vAppend (b, "ssii", &s__X, sym_text, x->te_xCoordinate, x->te_yCoordinate);
         
     } else if (x->te_type == TYPE_OBJECT) {
-        buffer_vAppend (b, "ssii", sym___hash__X, sym_obj,  x->te_xCoordinate, x->te_yCoordinate);
+        buffer_vAppend (b, "ssii", &s__X, sym_obj,  x->te_xCoordinate, x->te_yCoordinate);
         
     } else if (x->te_type == TYPE_MESSAGE) {
-        buffer_vAppend (b, "ssii", sym___hash__X, sym_msg,  x->te_xCoordinate, x->te_yCoordinate);
+        buffer_vAppend (b, "ssii", &s__X, sym_msg,  x->te_xCoordinate, x->te_yCoordinate);
         
     } else { 
         PD_BUG;

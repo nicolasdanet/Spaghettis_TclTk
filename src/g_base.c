@@ -93,7 +93,7 @@ int canvas_objectIsBox (t_object *x)
 
 t_glist *canvas_getCurrent (void)
 {
-    return (cast_glist (pd_findByClass (sym___hash__X, canvas_class)));
+    return (cast_glist (pd_findByClass (&s__X, canvas_class)));
 }
 
 t_glist *canvas_getRoot (t_glist *glist)

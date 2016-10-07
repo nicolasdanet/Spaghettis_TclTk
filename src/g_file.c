@@ -33,7 +33,7 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
         buffer_free (t);
         
         buffer_vAppend (b, "ssiiiisi;", 
-            sym___hash__N, 
+            &s__N, 
             sym_canvas,
             glist->gl_windowTopLeftX,
             glist->gl_windowTopLeftY,
@@ -45,7 +45,7 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
     } else {
     
         buffer_vAppend (b, "ssiiiii;", 
-            sym___hash__N,
+            &s__N,
             sym_canvas,
             glist->gl_windowTopLeftX,
             glist->gl_windowTopLeftY,
@@ -61,7 +61,7 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
     while (connection = canvas_traverseLinesNext (&t)) {
     
         buffer_vAppend (b, "ssiiii;", 
-            sym___hash__X,
+            &s__X,
             sym_connect,
             canvas_getIndexOfObject (glist, cast_gobj (t.tr_srcObject)), 
             t.tr_srcIndexOfOutlet, 
@@ -71,7 +71,7 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
     
     {
         buffer_vAppend (b, "ssfffffffff;", 
-            sym___hash__X, 
+            &s__X, 
             sym_coords,
             glist->gl_valueLeft,
             glist->gl_valueTop,

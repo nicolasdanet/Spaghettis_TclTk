@@ -497,7 +497,7 @@ static void scalar_functionSave (t_gobj *z, t_buffer *b)
     t_buffer *t = buffer_new();
    
     scalar_serialize (x, t);
-    buffer_vAppend (b, "ss", sym___hash__X, sym_scalar);
+    buffer_vAppend (b, "ss", &s__X, sym_scalar);
     buffer_serialize (b, t);
     buffer_appendSemicolon (b);
     

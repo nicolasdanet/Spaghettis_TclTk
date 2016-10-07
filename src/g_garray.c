@@ -218,7 +218,7 @@ void garray_saveContentsToBuffer (t_garray *x, t_buffer *b)
     
     if (chunk > GARRAY_MAXIMUM_CHUNK) { chunk = GARRAY_MAXIMUM_CHUNK; }
     
-    buffer_vAppend (b, "si", sym___hash__A, n);
+    buffer_vAppend (b, "si", &s__A, n);
     for (i = 0; i < chunk; i++) { buffer_vAppend (b, "f", GARRAY_AT (n + i)); }
     buffer_appendSemicolon (b);
         
@@ -583,7 +583,7 @@ static void garray_functionSave (t_gobj *z, t_buffer *b)
     t_array *array = garray_getArray (x);
         
     buffer_vAppend (b, "sssisi;",
-        sym___hash__X,
+        &s__X,
         sym_array,
         x->x_unexpandedName,
         array_getSize (array),
@@ -696,7 +696,7 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_float size, t_flo
     scalar_setFloat (x->x_scalar, sym_linewidth, 1);
 
     s__A.s_thing = NULL;
-    pd_bind (cast_pd (x), sym___hash__A); 
+    pd_bind (cast_pd (x), &s__A); 
 
     garray_redraw (x);
     garray_updateGraphSize (x, n, style);
@@ -722,7 +722,7 @@ static void garray_free (t_garray *x)
     
     /* Just in case we're still bound to #A from above. */
     
-    while (t = pd_findByClass (sym___hash__A, garray_class)) { pd_unbind (t, sym___hash__A); }
+    while (t = pd_findByClass (&s__A, garray_class)) { pd_unbind (t, &s__A); }
     
     pd_free (cast_pd (x->x_scalar));
 }

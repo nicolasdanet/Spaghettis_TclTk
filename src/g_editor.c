@@ -516,7 +516,7 @@ static void canvas_performCopy (t_glist *glist)
     
     if (m &&n) {
         buffer_vAppend (b, "ssiiii;", 
-            sym___hash__X, 
+            &s__X, 
             sym_connect,
             canvas_getIndexOfObjectAmongSelected (glist, &t.tr_srcObject->te_g),
             t.tr_srcIndexOfOutlet,
