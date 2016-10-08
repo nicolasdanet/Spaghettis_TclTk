@@ -284,6 +284,7 @@ t_glist     *template_getFirstInstanceView              (t_template *x);
 t_template  *template_getTemplateIfArrayAtIndex         (t_template *x, int n);
 t_symbol    *template_getFieldAtIndex                   (t_template *x, int n);
 
+void        template_create                             (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void        template_free                               (t_template *x);
 int         template_getSize                            (t_template *x);
 int         template_isValid                            (t_template *x);

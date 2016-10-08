@@ -11,12 +11,6 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "g_graphics.h"
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-extern t_pd     pd_canvasMaker;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -47,12 +41,12 @@ t_pd *pd_getBoundA (void)
 
 void pd_setBoundN (t_pd *x)
 {
-    s__N.s_thing = x;   PD_ASSERT (x == NULL || x == &pd_canvasMaker); 
+    s__N.s_thing = x;
 }
 
 void pd_setBoundX (t_pd *x)
 {
-    s__X.s_thing = x;   PD_ASSERT (x == NULL || canvas_castToGlistChecked (x) != NULL);
+    s__X.s_thing = x;
 }
 
 void pd_setBoundA (t_pd *x)

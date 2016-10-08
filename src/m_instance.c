@@ -154,10 +154,19 @@ void instance_initialize (void)
     pd_canvasMaker = class_new (sym_canvasmaker, NULL, NULL, 0, CLASS_ABSTRACT, A_NULL);
     
     class_addAnything (pd_objectMaker, (t_method)instance_newAnything);
+        
+    class_addMethod (pd_canvasMaker, (t_method)canvas_new,      sym_canvas, A_GIMME, A_NULL);
+    class_addMethod (pd_canvasMaker, (t_method)template_create, sym_struct, A_GIMME, A_NULL);
+    
+    pd_setBoundN (&pd_canvasMaker);
 }
 
 void instance_release (void)
 {
+    pd_setBoundA (NULL);
+    pd_setBoundN (NULL);
+    pd_setBoundX (NULL);
+    
     pdinstance_free (pd_this);
 }
 

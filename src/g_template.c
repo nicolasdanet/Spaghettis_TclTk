@@ -18,11 +18,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pd     pd_canvasMaker;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 static t_class  *template_class;                    /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -329,7 +324,7 @@ t_template *template_findByIdentifier (t_symbol *s)
     return ((t_template *)pd_findByClass (s, template_class));
 }
 
-static void template_create (void *dummy, t_symbol *s, int argc, t_atom *argv)
+void template_create (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc && IS_SYMBOL (argv)) {
     //
@@ -465,8 +460,6 @@ void template_setup (void)
         A_NULL);
     
     class_addAnything (c, template_anything);
-        
-    class_addMethod (pd_canvasMaker, (t_method)template_create, sym_struct, A_GIMME, A_NULL);
     
     template_class = c;
 }

@@ -18,7 +18,6 @@
 #pragma mark -
 
 extern t_pd pd_objectMaker;
-extern t_pd pd_canvasMaker;
 
 extern t_widgetbehavior text_widgetBehavior;
 

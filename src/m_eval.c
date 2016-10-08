@@ -19,7 +19,6 @@
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_pd pd_objectMaker;
-extern t_pd pd_canvasMaker;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -259,14 +258,10 @@ t_error buffer_fileEval (t_symbol *name, t_symbol *directory)
     else {
     //
     t_pd *boundA = pd_getBoundA();
-    t_pd *boundN = pd_getBoundN();
     
     pd_setBoundA (NULL); 
-    pd_setBoundN (&pd_canvasMaker);
-    
     buffer_eval (t, NULL, 0, NULL);
     
-    pd_setBoundN (boundN);
     pd_setBoundA (boundA);
     //
     }

@@ -28,7 +28,6 @@ extern int      editor_pasteOffsetWhileConnectingObjects;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pd                 pd_canvasMaker;
 extern t_widgetbehavior     canvas_widgetbehavior;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -863,10 +862,6 @@ void canvas_setup (void)
 {
     t_class *c = NULL;
         
-    /* Creator function by sending the "canvas" message to #N. */
-            
-    class_addMethod (pd_canvasMaker, (t_method)canvas_new, sym_canvas, A_GIMME, A_NULL);
-    
     c = class_new (sym_canvas,
             NULL, 
             (t_method)canvas_free, 

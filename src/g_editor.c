@@ -20,7 +20,6 @@
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_class              *canvas_class;
-extern t_pd                 pd_canvasMaker;
 extern t_widgetbehavior     text_widgetBehavior;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -543,11 +542,9 @@ static void canvas_performPaste (t_glist *glist)
     
     t_pd *boundA = pd_getBoundA(); 
     t_pd *boundX = pd_getBoundX();
-    t_pd *boundN = pd_getBoundN();
     
     pd_setBoundA (NULL);
     pd_setBoundX (cast_pd (glist));
-    pd_setBoundN (&pd_canvasMaker);
 
     canvas_deselectAll (glist);
     
@@ -567,7 +564,6 @@ static void canvas_performPaste (t_glist *glist)
     
     dsp_resume (state);
     
-    pd_setBoundN (boundN);
     pd_setBoundX (boundX);
     pd_setBoundA (boundA);
         
