@@ -28,48 +28,15 @@ typedef struct _bindelement {
 
 typedef struct _bindlist {
     t_pd                    b_pd;           /* MUST be the first. */
+    t_bindelement           *b_cached;
     t_bindelement           *b_list;
     } t_bindlist;
-    
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
-static void bindlist_bang (t_bindlist *x)
-{
-    t_bindelement *e = NULL;
-    for (e = x->b_list; e; e = e->e_next) { pd_bang (e->e_what); }
-}
-
-static void bindlist_float (t_bindlist *x, t_float f)
-{
-    t_bindelement *e = NULL;
-    for (e = x->b_list; e; e = e->e_next) { pd_float (e->e_what, f); }
-}
-
-static void bindlist_symbol (t_bindlist *x, t_symbol *s)
-{
-    t_bindelement *e = NULL;
-    for (e = x->b_list; e; e = e->e_next) { pd_symbol (e->e_what, s); }
-}
-
-static void bindlist_pointer (t_bindlist *x, t_gpointer *gp)
-{
-    t_bindelement *e = NULL;
-    for (e = x->b_list; e; e = e->e_next) { pd_pointer (e->e_what, gp); }
-}
-
-static void bindlist_list (t_bindlist *x, t_symbol *s, int argc, t_atom *argv)
-{
-    t_bindelement *e = NULL;
-    for (e = x->b_list; e; e = e->e_next) { pd_list (e->e_what, argc, argv); }
-}
-
-static void bindlist_anything (t_bindlist *x, t_symbol *s, int argc, t_atom *argv)
-{
-    t_bindelement *e = NULL;
-    for (e = x->b_list; e; e = e->e_next) { pd_message (e->e_what, s, argc, argv); }
-}
+/* Note that binding or/and unbinding might be possible while broadcasting. */
+/* It means therefore that a receiver can unbound itself also during the sender call. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -79,6 +46,68 @@ static int bindlist_isEmpty (t_bindlist *x)
 {
     return (x->b_list == NULL);
 }
+
+static t_bindelement *bindlist_traverseStart (t_bindlist *x)
+{
+    x->b_cached = NULL;
+    
+    if (x->b_list) { x->b_cached = x->b_list->e_next; }
+    
+    return x->b_list;
+}
+
+static t_bindelement *bindlist_traverseNext (t_bindlist *x)
+{
+    t_bindelement *e = x->b_cached;
+    
+    if (e) { x->b_cached = e->e_next; }
+    
+    return e;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void bindlist_bang (t_bindlist *x)
+{
+    t_bindelement *e = bindlist_traverseStart (x);
+    while (e) { pd_bang (e->e_what); e = bindlist_traverseNext (x); }
+}
+
+static void bindlist_float (t_bindlist *x, t_float f)
+{
+    t_bindelement *e = bindlist_traverseStart (x);
+    while (e) { pd_float (e->e_what, f); e = bindlist_traverseNext (x); }
+}
+
+static void bindlist_symbol (t_bindlist *x, t_symbol *s)
+{
+    t_bindelement *e = bindlist_traverseStart (x);
+    while (e) { pd_symbol (e->e_what, s); e = bindlist_traverseNext (x); }
+}
+
+static void bindlist_pointer (t_bindlist *x, t_gpointer *gp)
+{
+    t_bindelement *e = bindlist_traverseStart (x);
+    while (e) { pd_pointer (e->e_what, gp); e = bindlist_traverseNext (x); }
+}
+
+static void bindlist_list (t_bindlist *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_bindelement *e = bindlist_traverseStart (x);
+    while (e) { pd_list (e->e_what, argc, argv); e = bindlist_traverseNext (x); }
+}
+
+static void bindlist_anything (t_bindlist *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_bindelement *e = bindlist_traverseStart (x);
+    while (e) { pd_message (e->e_what, s, argc, argv); e = bindlist_traverseNext (x); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void bindlist_free (t_bindlist *x)
 {
@@ -112,28 +141,6 @@ void bindlist_initialize (void)
 
 void bindlist_release (void)
 {
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static int pd_isThingPerform (t_symbol *s, int withError)
-{
-    int k = 0;
-    
-    if (s && s->s_thing) {
-    //
-    if (pd_class (s->s_thing) == bindlist_class) { k = !bindlist_isEmpty ((t_bindlist *)s->s_thing); }
-    else {
-        k = 1;
-    }
-    //
-    }
-    
-    if (withError && !k && s) { error_noSuch (s, sym_object); }
-    
-    return k;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -190,6 +197,7 @@ void pd_unbind (t_pd *x, t_symbol *s)
             for (e1 = b->b_list; e2 = e1->e_next; e1 = e2) {
                 if (e2->e_what == x) {
                     e1->e_next = e2->e_next;
+                    if (e2 == b->b_cached) { b->b_cached = e2->e_next; }
                     PD_MEMORY_FREE (e2);
                     break;
                 }
@@ -202,6 +210,24 @@ void pd_unbind (t_pd *x, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+static int pd_isThingPerform (t_symbol *s, int withError)
+{
+    int k = 0;
+    
+    if (s && s->s_thing) {
+    //
+    if (pd_class (s->s_thing) == bindlist_class) { k = !bindlist_isEmpty ((t_bindlist *)s->s_thing); }
+    else {
+        k = 1;
+    }
+    //
+    }
+    
+    if (withError && !k && s) { error_noSuch (s, sym_object); }
+    
+    return k;
+}
 
 int pd_isThingQuiet (t_symbol *s)
 {
@@ -217,14 +243,6 @@ int pd_isThing (t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_pd *pd_getThing (t_symbol *s)
-{
-    if (pd_isThingQuiet (s)) { return s->s_thing; }
-    else {
-        return NULL;
-    }
-}
-
 t_pd *pd_getThingByClass (t_symbol *s, t_class *c)
 {
     t_pd *x = NULL;
@@ -237,14 +255,19 @@ t_pd *pd_getThingByClass (t_symbol *s, t_class *c)
         t_bindelement *e = NULL;
         
         for (e = b->b_list; e; e = e->e_next) {
-            if (*e->e_what == c) {
-                x = e->e_what;
-                break;
-            }
+            if (*e->e_what == c) { PD_ASSERT (x == NULL); x = e->e_what; }
         }
     }
     
     return x;
+}
+
+t_pd *pd_getThing (t_symbol *s)
+{
+    if (pd_isThingQuiet (s)) { return s->s_thing; }
+    else {
+        return NULL;
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
