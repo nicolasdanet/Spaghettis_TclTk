@@ -118,6 +118,28 @@ void bindlist_release (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static int pd_isThingPerform (t_symbol *s, int withError)
+{
+    int k = 0;
+    
+    if (s && s->s_thing) {
+    //
+    if (pd_class (s->s_thing) == bindlist_class) { k = !bindlist_isEmpty ((t_bindlist *)s->s_thing); }
+    else {
+        k = 1;
+    }
+    //
+    }
+    
+    if (withError && !k && s) { error_noSuch (s, sym_object); }
+    
+    return k;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void pd_bind (t_pd *x, t_symbol *s)
 {
     PD_ASSERT (s != &s__A);
@@ -181,50 +203,6 @@ void pd_unbind (t_pd *x, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_pd *pd_findByClass (t_symbol *s, t_class *c)
-{
-    t_pd *x = NULL;
-    
-    if (!s->s_thing) { return NULL; }
-    if (pd_class (s->s_thing) == c) { return s->s_thing; }
-    
-    if (pd_class (s->s_thing) == bindlist_class) {
-        t_bindlist *b = (t_bindlist *)s->s_thing;
-        t_bindelement *e = NULL;
-        
-        for (e = b->b_list; e; e = e->e_next) {
-            if (*e->e_what == c) {
-                x = e->e_what;
-                break;
-            }
-        }
-    }
-    
-    return x;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static int pd_isThingPerform (t_symbol *s, int withError)
-{
-    int k = 0;
-    
-    if (s && s->s_thing) {
-    //
-    if (pd_class (s->s_thing) == bindlist_class) { k = !bindlist_isEmpty ((t_bindlist *)s->s_thing); }
-    else {
-        k = 1;
-    }
-    //
-    }
-    
-    if (withError && !k && s) { error_noSuch (s, sym_object); }
-    
-    return k;
-}
-
 int pd_isThingQuiet (t_symbol *s)
 {
     return pd_isThingPerform (s, 0);
@@ -245,6 +223,28 @@ t_pd *pd_getThing (t_symbol *s)
     else {
         return NULL;
     }
+}
+
+t_pd *pd_getThingByClass (t_symbol *s, t_class *c)
+{
+    t_pd *x = NULL;
+    
+    if (!s->s_thing) { return NULL; }
+    if (pd_class (s->s_thing) == c) { return s->s_thing; }
+    
+    if (pd_class (s->s_thing) == bindlist_class) {
+        t_bindlist *b = (t_bindlist *)s->s_thing;
+        t_bindelement *e = NULL;
+        
+        for (e = b->b_list; e; e = e->e_next) {
+            if (*e->e_what == c) {
+                x = e->e_what;
+                break;
+            }
+        }
+    }
+    
+    return x;
 }
 
 // -----------------------------------------------------------------------------------------------------------

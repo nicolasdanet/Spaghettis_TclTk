@@ -160,7 +160,7 @@ t_symbol *utils_getDefaultBindName (t_class *class, t_symbol *prefix)
         t_error err = string_sprintf (t, PD_STRING, "%s%d", prefix->s_name, i);
         PD_ABORT (err != PD_ERROR_NONE);
         t_symbol *name = gensym (t);
-        if (!pd_findByClass (name, class)) { return name; }
+        if (!pd_getThingByClass (name, class)) { return name; }
         i++;
         PD_ABORT (i < 0);
     }

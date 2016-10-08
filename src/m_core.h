@@ -154,15 +154,11 @@ void        pd_vMessage                                 (t_pd *x, t_symbol *s, c
 #pragma mark -
 
 t_pd        *pd_getThing                                (t_symbol *s);
+t_pd        *pd_getThingByClass                         (t_symbol *s, t_class *c);
+t_pd        *pd_getBoundX                               (void);
 
 int         pd_isThing                                  (t_symbol *s);
 int         pd_isThingQuiet                             (t_symbol *s);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_pd        *pd_getBoundX                               (void);
 
 void        pd_setBoundN                                (t_pd *x);
 void        pd_setBoundX                                (t_pd *x);

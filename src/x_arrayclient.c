@@ -78,7 +78,7 @@ t_array *arrayclient_fetchArray (t_arrayclient *x)
 {
     if (x->ac_name) {
     
-        t_garray *y = (t_garray *)pd_findByClass (x->ac_name, garray_class);
+        t_garray *y = (t_garray *)pd_getThingByClass (x->ac_name, garray_class);
         
         if (y) { return garray_getArray (y); }
         else {
@@ -102,14 +102,14 @@ t_array *arrayclient_fetchArray (t_arrayclient *x)
 
 t_garray *arrayclient_fetchOwnerIfName (t_arrayclient *x)
 {
-    PD_ASSERT (x->ac_name); return (t_garray *)pd_findByClass (x->ac_name, garray_class);
+    PD_ASSERT (x->ac_name); return (t_garray *)pd_getThingByClass (x->ac_name, garray_class);
 }
 
 t_glist *arrayclient_fetchView (t_arrayclient *x)
 {
     if (x->ac_name) {
     
-        t_garray *y = (t_garray *)pd_findByClass (x->ac_name, garray_class);
+        t_garray *y = (t_garray *)pd_getThingByClass (x->ac_name, garray_class);
         
         if (y) { return garray_getView (y); }
         else {

@@ -78,7 +78,7 @@ t_buffer *textclient_fetchBuffer (t_textclient *x)
 {
     if (x->tc_name) {
 
-        t_textbuffer *y = (t_textbuffer *)pd_findByClass (x->tc_name, textdefine_class);
+        t_textbuffer *y = (t_textbuffer *)pd_getThingByClass (x->tc_name, textdefine_class);
 
         if (y) { return textbuffer_getBuffer (y); }
         else {
@@ -104,7 +104,7 @@ t_glist *textclient_fetchView (t_textclient *x)
 {
     if (x->tc_name) {
 
-        t_textbuffer *y = (t_textbuffer *)pd_findByClass (x->tc_name, textdefine_class);
+        t_textbuffer *y = (t_textbuffer *)pd_getThingByClass (x->tc_name, textdefine_class);
 
         if (y) { return textbuffer_getView (y); }
         else {
@@ -134,7 +134,7 @@ void textclient_update (t_textclient *x)
 {
     if (x->tc_name) {
 
-        t_textbuffer *y = (t_textbuffer *)pd_findByClass (x->tc_name, textdefine_class);
+        t_textbuffer *y = (t_textbuffer *)pd_getThingByClass (x->tc_name, textdefine_class);
         
         if (y) { textbuffer_update (y); }
         else { 

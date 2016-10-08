@@ -170,7 +170,7 @@ static void sigdelread_float(t_sigdelread *x, t_float f)
 {
     int samps;
     t_sigdelwrite *delwriter =
-        (t_sigdelwrite *)pd_findByClass(x->x_sym, sigdelwrite_class);
+        (t_sigdelwrite *)pd_getThingByClass(x->x_sym, sigdelwrite_class);
     x->x_deltime = f;
     if (delwriter)
     {
@@ -205,7 +205,7 @@ static t_int *sigdelread_perform(t_int *w)
 static void sigdelread_dsp(t_sigdelread *x, t_signal **sp)
 {
     t_sigdelwrite *delwriter =
-        (t_sigdelwrite *)pd_findByClass(x->x_sym, sigdelwrite_class);
+        (t_sigdelwrite *)pd_getThingByClass(x->x_sym, sigdelwrite_class);
     x->x_sr = sp[0]->s_sampleRate * 0.001;
     x->x_n = sp[0]->s_blockSize;
     if (delwriter)
@@ -301,7 +301,7 @@ static t_int *sigvd_perform(t_int *w)
 static void sigvd_dsp(t_sigvd *x, t_signal **sp)
 {
     t_sigdelwrite *delwriter =
-        (t_sigdelwrite *)pd_findByClass(x->x_sym, sigdelwrite_class);
+        (t_sigdelwrite *)pd_getThingByClass(x->x_sym, sigdelwrite_class);
     x->x_sr = sp[0]->s_sampleRate * 0.001;
     if (delwriter)
     {

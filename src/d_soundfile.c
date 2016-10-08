@@ -1252,7 +1252,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
         if (argv[i].a_type != A_SYMBOL)
             goto usage;
         if (!(garrays[i] =
-            (t_garray *)pd_findByClass(argv[i].a_w.w_symbol, garray_class)))
+            (t_garray *)pd_getThingByClass(argv[i].a_w.w_symbol, garray_class)))
         {
             post_error ("%s: no such table", argv[i].a_w.w_symbol->s_name);
             goto done;
@@ -1404,7 +1404,7 @@ long soundfiler_dowrite(void *obj, t_glist *canvas,
         if (argv[i].a_type != A_SYMBOL)
             goto usage;
         if (!(garrays[i] =
-            (t_garray *)pd_findByClass(argv[i].a_w.w_symbol, garray_class)))
+            (t_garray *)pd_getThingByClass(argv[i].a_w.w_symbol, garray_class)))
         {
             post_error ("%s: no such table", argv[i].a_w.w_symbol->s_name);
             goto fail;

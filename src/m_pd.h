@@ -600,7 +600,6 @@ PD_DLL void         sys_freeMemory              (void *ptr);
 #pragma mark -
 
 PD_DLL t_pd         *pd_new                     (t_class *c);
-PD_DLL t_pd         *pd_findByClass             (t_symbol *s, t_class *c);
 
 PD_DLL void         pd_free                     (t_pd *x);
 PD_DLL void         pd_bang                     (t_pd *x);

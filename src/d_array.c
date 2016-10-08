@@ -40,7 +40,7 @@ static void *tabwrite_tilde_new(t_symbol *s)
 
 static void tabwrite_tilde_redraw(t_tabwrite_tilde *x)
 {
-    t_garray *a = (t_garray *)pd_findByClass(x->x_arrayname, garray_class);
+    t_garray *a = (t_garray *)pd_getThingByClass(x->x_arrayname, garray_class);
     if (!a) { PD_BUG; }
     else garray_redraw(a);
 }
@@ -82,7 +82,7 @@ static void tabwrite_tilde_set(t_tabwrite_tilde *x, t_symbol *s)
     t_garray *a;
 
     x->x_arrayname = s;
-    if (!(a = (t_garray *)pd_findByClass(x->x_arrayname, garray_class)))
+    if (!(a = (t_garray *)pd_getThingByClass(x->x_arrayname, garray_class)))
     {
         if (*s->s_name) post_error ("tabwrite~: %s: no such array",
             x->x_arrayname->s_name);
@@ -207,7 +207,7 @@ static void tabplay_tilde_set(t_tabplay_tilde *x, t_symbol *s)
     t_garray *a;
 
     x->x_arrayname = s;
-    if (!(a = (t_garray *)pd_findByClass(x->x_arrayname, garray_class)))
+    if (!(a = (t_garray *)pd_getThingByClass(x->x_arrayname, garray_class)))
     {
         if (*s->s_name) post_error ("tabplay~: %s: no such array",
             x->x_arrayname->s_name);
@@ -327,7 +327,7 @@ static void tabread_tilde_set(t_tabread_tilde *x, t_symbol *s)
     t_garray *a;
     
     x->x_arrayname = s;
-    if (!(a = (t_garray *)pd_findByClass(x->x_arrayname, garray_class)))
+    if (!(a = (t_garray *)pd_getThingByClass(x->x_arrayname, garray_class)))
     {
         if (*s->s_name)
             post_error ("tabread~: %s: no such array", x->x_arrayname->s_name);
@@ -459,7 +459,7 @@ static void tabread4_tilde_set(t_tabread4_tilde *x, t_symbol *s)
     t_garray *a;
     
     x->x_arrayname = s;
-    if (!(a = (t_garray *)pd_findByClass(x->x_arrayname, garray_class)))
+    if (!(a = (t_garray *)pd_getThingByClass(x->x_arrayname, garray_class)))
     {
         if (*s->s_name)
             post_error ("tabread4~: %s: no such array", x->x_arrayname->s_name);
@@ -628,7 +628,7 @@ static void tabosc4_tilde_set(t_tabosc4_tilde *x, t_symbol *s)
     int npoints, pointsinarray;
 
     x->x_arrayname = s;
-    if (!(a = (t_garray *)pd_findByClass(x->x_arrayname, garray_class)))
+    if (!(a = (t_garray *)pd_getThingByClass(x->x_arrayname, garray_class)))
     {
         if (*s->s_name)
             post_error ("tabosc4~: %s: no such array", x->x_arrayname->s_name);
@@ -727,7 +727,7 @@ static t_int *tabsend_perform(t_int *w)
     }
     if (!i--)
     {
-        t_garray *a = (t_garray *)pd_findByClass(x->x_arrayname, garray_class);
+        t_garray *a = (t_garray *)pd_getThingByClass(x->x_arrayname, garray_class);
         if (!a) { PD_BUG; }
         else garray_redraw(a);
         i = x->x_graphperiod;
@@ -742,7 +742,7 @@ static void tabsend_set(t_tabsend *x, t_symbol *s)
     t_garray *a;
     
     x->x_arrayname = s;
-    if (!(a = (t_garray *)pd_findByClass(x->x_arrayname, garray_class)))
+    if (!(a = (t_garray *)pd_getThingByClass(x->x_arrayname, garray_class)))
     {
         if (*s->s_name)
             post_error ("tabsend~: %s: no such array", x->x_arrayname->s_name);
@@ -818,7 +818,7 @@ static void tabreceive_set(t_tabreceive *x, t_symbol *s)
     t_garray *a;
     
     x->x_arrayname = s;
-    if (!(a = (t_garray *)pd_findByClass(x->x_arrayname, garray_class)))
+    if (!(a = (t_garray *)pd_getThingByClass(x->x_arrayname, garray_class)))
     {
         if (*s->s_name)
             post_error ("tabreceive~: %s: no such array",
@@ -875,7 +875,7 @@ static void tabread_float(t_tabread *x, t_float f)
     int npoints;
     t_word *vec;
 
-    if (!(a = (t_garray *)pd_findByClass(x->x_arrayname, garray_class)))
+    if (!(a = (t_garray *)pd_getThingByClass(x->x_arrayname, garray_class)))
         post_error ("%s: no such array", x->x_arrayname->s_name);
     else if (!garray_getData(a, &npoints, &vec)) /* Always true now !!! */
         post_error ("%s: bad template for tabread", x->x_arrayname->s_name);
@@ -926,7 +926,7 @@ static void tabread4_float(t_tabread4 *x, t_float f)
     int npoints;
     t_word *vec;
 
-    if (!(a = (t_garray *)pd_findByClass(x->x_arrayname, garray_class)))
+    if (!(a = (t_garray *)pd_getThingByClass(x->x_arrayname, garray_class)))
         post_error ("%s: no such array", x->x_arrayname->s_name);
     else if (!garray_getData(a, &npoints, &vec)) /* Always true now !!! */
         post_error ("%s: bad template for tabread4", x->x_arrayname->s_name);
@@ -995,7 +995,7 @@ static void tabwrite_float(t_tabwrite *x, t_float f)
     t_garray *a;
     t_word *vec;
 
-    if (!(a = (t_garray *)pd_findByClass(x->x_arrayname, garray_class)))
+    if (!(a = (t_garray *)pd_getThingByClass(x->x_arrayname, garray_class)))
         post_error ("%s: no such array", x->x_arrayname->s_name);
     else if (!garray_getData(a, &vecsize, &vec)) /* Always true now !!! */
         post_error ("%s: bad template for tabwrite", x->x_arrayname->s_name);

@@ -321,7 +321,7 @@ t_symbol *template_getWildcard (void)
 
 t_template *template_findByIdentifier (t_symbol *s)
 {
-    return ((t_template *)pd_findByClass (s, template_class));
+    return ((t_template *)pd_getThingByClass (s, template_class));
 }
 
 void template_create (void *dummy, t_symbol *s, int argc, t_atom *argv)
