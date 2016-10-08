@@ -122,6 +122,8 @@ void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
     t_pd *next = NULL;
     int args = 0;
     
+    pd_setBoundA (NULL);
+    
     ATOMS_ALLOCA (message, x->b_size);
     
     while (1) {
@@ -257,12 +259,7 @@ t_error buffer_fileEval (t_symbol *name, t_symbol *directory)
     if (err) { error_failsToRead (name); }
     else {
     //
-    t_pd *boundA = pd_getBoundA();
-    
-    pd_setBoundA (NULL); 
     buffer_eval (t, NULL, 0, NULL);
-    
-    pd_setBoundA (boundA);
     //
     }
     

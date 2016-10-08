@@ -177,6 +177,11 @@ static void *scalardefine_makeObject (t_symbol *s, int argc, t_atom *argv)
     return pd_newest;
 }
 
+static void scalardefine_free (t_glist *x)
+{
+    pd_setBoundA (NULL); canvas_free (x);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -187,7 +192,7 @@ void scalardefine_setup (void)
     
     c = class_new (sym_scalar__space__define,
             NULL,
-            (t_method)canvas_free,
+            (t_method)scalardefine_free,
             sizeof (t_glist),
             CLASS_DEFAULT,
             A_NULL);

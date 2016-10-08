@@ -162,9 +162,7 @@ int         pd_isThingQuiet                             (t_symbol *s);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_pd        *pd_getBoundN                               (void);
 t_pd        *pd_getBoundX                               (void);
-t_pd        *pd_getBoundA                               (void);
 
 void        pd_setBoundN                                (t_pd *x);
 void        pd_setBoundX                                (t_pd *x);

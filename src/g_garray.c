@@ -714,13 +714,9 @@ static void garray_free (t_garray *x)
     t_pd *t = NULL;
     
     interface_guiQueueRemove (cast_gobj (x));
-
     guistub_destroyWithKey ((void *)x);
-    
-    pd_unbind (cast_pd (x), x->x_name);
-    
     pd_setBoundA (NULL);
-    
+    pd_unbind (cast_pd (x), x->x_name);
     pd_free (cast_pd (x->x_scalar));
 }
 

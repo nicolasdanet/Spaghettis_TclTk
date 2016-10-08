@@ -38,8 +38,6 @@ void textbuffer_free (t_textbuffer *x)
         sys_vGui ("destroy .x%lx\n", x);
         guiconnect_release (x->tb_guiconnect, 1000.0);
     }
-
-    pd_setBoundA (NULL);
 }
 
 // -----------------------------------------------------------------------------------------------------------

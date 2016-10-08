@@ -182,6 +182,8 @@ static void textdefine_free (t_textdefine *x)
 {
     if (x->x_name != &s_) { pd_unbind (cast_pd (x), x->x_name); }
     
+    pd_setBoundA (NULL);
+        
     gpointer_unset (&x->x_gpointer);
     textbuffer_free (&x->x_textbuffer);
 }
