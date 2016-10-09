@@ -59,8 +59,7 @@ static void canvas_loadbangAbstractions (t_glist *glist)
 
 static void canvas_loadbangSubpatches (t_glist *glist)
 {
-    t_gobj   *y = NULL;
-    t_symbol *s = sym_loadbang;
+    t_gobj *y = NULL;
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
         if (pd_class (y) == canvas_class) {
@@ -69,8 +68,8 @@ static void canvas_loadbangSubpatches (t_glist *glist)
     }
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
-        if ((pd_class (y) != canvas_class) && class_hasMethod (pd_class (y), s)) {
-            pd_vMessage (cast_pd (y), s, "");
+        if ((pd_class (y) != canvas_class) && class_hasMethod (pd_class (y), sym_loadbang)) {
+            pd_vMessage (cast_pd (y), sym_loadbang, "");
         }
     }
 }

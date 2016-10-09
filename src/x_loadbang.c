@@ -12,35 +12,61 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "m_alloca.h"
-#include "s_system.h"
-#include "g_graphics.h"
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-/* -------------------------- loadbang ------------------------------ */
-static t_class *loadbang_class;
+static t_class *loadbang_class;         /* Shared. */
 
-typedef struct _loadbang
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _loadbang {
+    t_object    x_obj;                  /* Must be the first. */
+    t_outlet    *x_outlet;
+    } t_loadbang;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void loadbang_loadbang (t_loadbang *x)
 {
-    t_object x_obj;
-} t_loadbang;
-
-static void *loadbang_new(void)
-{
-    t_loadbang *x = (t_loadbang *)pd_new(loadbang_class);
-    outlet_new(&x->x_obj, &s_bang);
-    return (x);
+    outlet_bang (x->x_outlet);
 }
 
-static void loadbang_loadbang(t_loadbang *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *loadbang_new (void)
 {
-    outlet_bang(x->x_obj.te_outlet);
+    t_loadbang *x = (t_loadbang *)pd_new (loadbang_class);
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_bang);
+    
+    return x;
 }
 
-void loadbang_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void loadbang_setup (void)
 {
-    loadbang_class = class_new (sym_loadbang, (t_newmethod)loadbang_new, 0,
-        sizeof(t_loadbang), CLASS_NOINLET, 0);
-    class_addMethod(loadbang_class, (t_method)loadbang_loadbang,
-        sym_loadbang, 0);
+    t_class *c = NULL;
+    
+    c = class_new (sym_loadbang,
+            (t_newmethod)loadbang_new,
+            NULL,
+            sizeof (t_loadbang),
+            CLASS_NOINLET,
+            A_NULL);
+            
+    class_addMethod (c, (t_method)loadbang_loadbang, sym_loadbang, A_NULL);
+    
+    loadbang_class = c;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
