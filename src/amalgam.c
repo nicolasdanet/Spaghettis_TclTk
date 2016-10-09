@@ -37,6 +37,7 @@
 #include "m_math.c"
 #include "m_error.c"
 #include "m_color.c"
+#include "m_rectangle.c"
 
 /* System. */
 
@@ -72,7 +73,6 @@
 
 #include "g_guistub.c"
 #include "g_guiconnect.c"
-#include "g_rectangle.c"
 #include "g_base.c"
 #include "g_draw.c"
 #include "g_select.c"

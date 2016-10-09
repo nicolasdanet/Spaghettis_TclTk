@@ -91,4 +91,15 @@ t_float     math_decibelToPower                         (t_float f);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        rectangle_setEverything                     (int *a, int *b, int *c, int *d);
+void        rectangle_setNothing                        (int *a, int *b, int *c, int *d);
+void        rectangle_setNowhere                        (int *a, int *b, int *c, int *d);
+
+int         rectangle_isEverything                      (int a, int b, int c, int d);
+int         rectangle_isNothing                         (int a, int b, int c, int d);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #endif // __m_utils_h_
