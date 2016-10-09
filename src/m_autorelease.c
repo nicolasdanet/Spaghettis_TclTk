@@ -52,7 +52,7 @@ void autorelease_run (void)
 void autorelease_stop (void)
 {
     autorelease_drain();
-    clock_free (pd_this->pd_autorelease);
+    clock_free (pd_this->pd_autorelease); pd_this->pd_autorelease = NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -74,7 +74,10 @@ void autorelease_drain (void)
 
 void autorelease_add (t_pd *x)
 {
-    autorelease_reschedule(); pd_bind (x, sym__autoreleasepool);
+    if (!pd_this->pd_autorelease) { pd_free (x); }
+    else {
+        autorelease_reschedule(); pd_bind (x, sym__autoreleasepool);
+    }
 }
 
 void autorelease_perform (t_pd *x)
