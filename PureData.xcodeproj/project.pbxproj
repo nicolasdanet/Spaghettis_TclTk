@@ -914,8 +914,8 @@
 				3789720A1C4F716800263434 /* x_openpanel.c */,
 				374D7B5D1DA3E30500FECF8F /* x_savepanel.c */,
 				374906651D9977C700377F1E /* x_makefilename.c */,
-				3789720F1C4F716800263434 /* x_net.c */,
 				3789720E1C4F716800263434 /* x_misc.c */,
+				3789720F1C4F716800263434 /* x_net.c */,
 			);
 			name = Miscellaneous;
 			sourceTree = "<group>";

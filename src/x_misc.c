@@ -1,27 +1,20 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-/* misc. */
+/* 
+    Copyright (c) 1997-2016 Miller Puckette and others.
+*/
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
+#include "m_alloca.h"
 #include "s_system.h"
 #include "g_graphics.h"
-#include <math.h>
-#include <stdio.h>
-#include <string.h>
-#ifdef _WIN32
-#include <wtypes.h>
-#include <time.h>
-#else
-#include <sys/types.h>
-#include <sys/time.h>
-#include <sys/times.h>
-#include <sys/param.h>
-#include <unistd.h>
-#endif /* _WIN32 */
 
 #if defined (__APPLE__) || defined (__FreeBSD__)
 #define CLOCKHZ CLK_TCK
@@ -34,7 +27,7 @@
 #define CLOCKHZ CLOCKS_PER_SEC
 #endif
 
-#include "m_alloca.h"
+
 
 /* -------------------------- random ------------------------------ */
 /* this is strictly homebrew and untested. */
