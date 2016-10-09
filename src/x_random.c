@@ -12,68 +12,100 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "m_alloca.h"
-#include "s_system.h"
-#include "g_graphics.h"
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
+/* Notice that it is a strictly homebrew and untested PRNG. */
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
+static t_class *random_class;       /* Shared. */
 
-/* -------------------------- random ------------------------------ */
-/* this is strictly homebrew and untested. */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static t_class *random_class;
+typedef struct _random {
+    t_object        x_obj;          /* Must be the first. */
+    t_float         x_range;
+    unsigned int    x_state;
+    t_outlet        *x_outlet;
+    } t_random;
 
-typedef struct _random
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static int random_makeSeed (void)
 {
-    t_object x_obj;
-    t_float x_f;
-    unsigned int x_state;
-} t_random;
-
-
-static int makeseed(void)
-{
-    static unsigned int random_nextseed = 1489853723;
-    random_nextseed = random_nextseed * 435898247 + 938284287;
-    return (random_nextseed & PD_INT_MAX);
+    static unsigned int random_seed = 1489853723;
+    
+    random_seed = random_seed * 435898247 + 938284287;
+    
+    return (random_seed & PD_INT_MAX);
 }
 
-static void *random_new(t_float f)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void random_bang (t_random *x)                       /* Weird LCG kept for compatbility. */
 {
-    t_random *x = (t_random *)pd_new(random_class);
-    x->x_f = f;
-    x->x_state = makeseed();
-    inlet_newFloat(&x->x_obj, &x->x_f);
-    outlet_new(&x->x_obj, &s_float);
-    return (x);
+    int range = PD_MAX (1, (int)x->x_range);
+    int k = 0;
+        
+    x->x_state = x->x_state * 472940017 + 832416023;
+    k = (int)((double)range * (double)x->x_state * (1.0 / 4294967296.0));
+    k = PD_MIN (k, range - 1);
+    
+    outlet_float (x->x_outlet, (t_float)k);
 }
 
-static void random_bang(t_random *x)
-{
-    int n = x->x_f, nval;
-    int range = (n < 1 ? 1 : n);
-    unsigned int randval = x->x_state;
-    x->x_state = randval = randval * 472940017 + 832416023;
-    nval = ((double)range) * ((double)randval)
-        * (1./4294967296.);
-    if (nval >= range) nval = range-1;
-    outlet_float(x->x_obj.te_outlet, nval);
-}
-
-static void random_seed(t_random *x, t_float f, t_float glob)
+static void random_seed (t_random *x, t_float f)
 {
     x->x_state = f;
 }
 
-void random_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *random_new (t_float f)
 {
-    random_class = class_new(sym_random, (t_newmethod)random_new, 0,
-        sizeof(t_random), 0, A_DEFFLOAT, 0);
-    class_addBang(random_class, random_bang);
-    class_addMethod(random_class, (t_method)random_seed,
-        sym_seed, A_FLOAT, 0);
+    t_random *x = (t_random *)pd_new (random_class);
+    
+    x->x_range  = f;
+    x->x_state  = (unsigned int)random_makeSeed();
+    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    
+    inlet_newFloat (cast_object (x), &x->x_range);
+    
+    return x;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
+void random_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_random,
+            (t_newmethod)random_new,
+            NULL,
+            sizeof (t_random),
+            CLASS_DEFAULT,
+            A_DEFFLOAT,
+            A_NULL);
+            
+    class_addBang (c, random_bang);
+    
+    class_addMethod (c, (t_method)random_seed, sym_seed, A_FLOAT, A_NULL);
+    
+    random_class = c;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

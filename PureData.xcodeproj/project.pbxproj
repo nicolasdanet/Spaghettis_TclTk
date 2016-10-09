@@ -928,7 +928,6 @@
 				3789720A1C4F716800263434 /* x_openpanel.c */,
 				374D7B5D1DA3E30500FECF8F /* x_savepanel.c */,
 				374906651D9977C700377F1E /* x_makefilename.c */,
-				377CEF461DAA831E00E60461 /* x_random.c */,
 				377CEF451DAA831E00E60461 /* x_loadbang.c */,
 				377CEF151DAA820C00E60461 /* x_namecanvas.c */,
 				377CEEE71DAA80FC00E60461 /* x_serial.c */,
@@ -1029,6 +1028,7 @@
 				37FFF5301D979C7000669135 /* x_binop1.c */,
 				37FFF6871D97C17C00669135 /* x_binop2.c */,
 				37FFF6431D97BF0600669135 /* x_binop3.c */,
+				377CEF461DAA831E00E60461 /* x_random.c */,
 			);
 			name = Math;
 			sourceTree = "<group>";

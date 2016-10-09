@@ -173,6 +173,7 @@
 #include "x_binop1.c"
 #include "x_binop2.c"
 #include "x_binop3.c"
+#include "x_random.c"
 
 #include "x_metro.c"
 #include "x_delay.c"
@@ -202,7 +203,6 @@
 #include "x_openpanel.c"
 #include "x_savepanel.c"
 #include "x_makefilename.c"
-#include "x_random.c"
 #include "x_loadbang.c"
 #include "x_namecanvas.c"
 #include "x_serial.c"
