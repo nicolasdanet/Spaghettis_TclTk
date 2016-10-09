@@ -67,7 +67,7 @@ static void random_seed(t_random *x, t_float f, t_float glob)
     x->x_state = f;
 }
 
-static void random_setup(void)
+void random_setup(void)
 {
     random_class = class_new(sym_random, (t_newmethod)random_new, 0,
         sizeof(t_random), 0, A_DEFFLOAT, 0);
@@ -77,36 +77,3 @@ static void random_setup(void)
 }
 
 
-/* -------------------------- loadbang ------------------------------ */
-static t_class *loadbang_class;
-
-typedef struct _loadbang
-{
-    t_object x_obj;
-} t_loadbang;
-
-static void *loadbang_new(void)
-{
-    t_loadbang *x = (t_loadbang *)pd_new(loadbang_class);
-    outlet_new(&x->x_obj, &s_bang);
-    return (x);
-}
-
-static void loadbang_loadbang(t_loadbang *x)
-{
-    outlet_bang(x->x_obj.te_outlet);
-}
-
-static void loadbang_setup(void)
-{
-    loadbang_class = class_new (sym_loadbang, (t_newmethod)loadbang_new, 0,
-        sizeof(t_loadbang), CLASS_NOINLET, 0);
-    class_addMethod(loadbang_class, (t_method)loadbang_loadbang,
-        sym_loadbang, 0);
-}
-
-void x_misc_setup(void)
-{
-    random_setup();
-    loadbang_setup();
-}
