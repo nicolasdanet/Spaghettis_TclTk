@@ -911,7 +911,7 @@ static t_editor *editor_new (t_glist *owner)
 
 static void editor_free (t_editor *x)
 {
-    guiconnect_release (x->e_guiconnect, 1000.0);
+    guiconnect_release (x->e_guiconnect);
     clock_free (x->e_clock);
     buffer_free (x->e_buffer);
 

@@ -11,6 +11,7 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
+#include "g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -211,6 +212,17 @@ void pd_unbind (t_pd *x, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void pd_isThingError (t_symbol *s)
+{  
+    if (s) {
+    if (!string_startWith (s->s_name, PD_GUISTUB)) {
+    if (!string_startWith (s->s_name, ".x")) {
+        error_noSuch (s, sym_object);
+    }
+    }
+    }
+}
+
 static int pd_isThingPerform (t_symbol *s, int withError)
 {
     int k = 0;
@@ -224,7 +236,7 @@ static int pd_isThingPerform (t_symbol *s, int withError)
     //
     }
     
-    if (withError && !k && s) { error_noSuch (s, sym_object); }
+    if (withError && !k) { pd_isThingError (s); }
     
     return k;
 }

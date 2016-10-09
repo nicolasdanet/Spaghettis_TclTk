@@ -17,37 +17,38 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-struct _guiconnect
-{
-    t_object    x_obj;
+static t_class *guiconnect_class;       /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+struct _guiconnect {
+    t_object    x_obj;                  /* Must be the first. */
     t_pd        *x_owner;
     t_symbol    *x_bound;
-    t_clock     *x_clock;
-};
+    };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *guiconnect_class;   /* Shared. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-static void guiconnect_task (t_guiconnect *x)
+void guiconnect_release (t_guiconnect *x)
 {
-    pd_free (cast_pd (x));
-}
-
-void guiconnect_release (t_guiconnect *x, double timeOut)
-{
-    PD_ASSERT (timeOut >= 0.0);
+    x->x_owner = NULL;
     
     if (!x->x_bound) { pd_free (cast_pd (x)); }
     else {
-        x->x_owner = NULL;
-        x->x_clock = clock_new ((void *)x, (t_method)guiconnect_task);
-        clock_delay (x->x_clock, PD_MAX (0.0, timeOut));
+        autorelease_add (cast_pd (x));
     }    
+}
+
+static void guiconnect_signoff (t_guiconnect *x)
+{
+    if (x->x_owner) { pd_unbind (cast_pd (x), x->x_bound); x->x_bound = NULL; }
+}
+
+static void guiconnect_autorelease (t_guiconnect *x)
+{
+    autorelease_perform (cast_pd (x));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -59,21 +60,15 @@ static void guiconnect_anything (t_guiconnect *x, t_symbol *s, int argc, t_atom 
     if (x->x_owner) { pd_message (x->x_owner, s, argc, argv); }
 }
 
-static void guiconnect_signoff (t_guiconnect *x)
-{
-    if (!x->x_owner) { pd_free (cast_pd (x)); }
-    else {
-        pd_unbind (cast_pd (x), x->x_bound); x->x_bound = NULL;
-    }
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 char *guiconnect_getBoundAsString (t_guiconnect *x)
 {
-    return x->x_bound->s_name;
+    if (x->x_bound) { return x->x_bound->s_name; }
+    
+    return NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -97,8 +92,7 @@ static t_guiconnect *guiconnect_newWithBound (t_pd *owner, t_symbol *bindTo)
 
 t_guiconnect *guiconnect_new (t_pd *owner)
 {
-    char t[PD_STRING] = { 0 };
-    t_error err = string_sprintf (t, PD_STRING, ".x%lx", owner);
+    char t[PD_STRING] = { 0 }; t_error err = string_sprintf (t, PD_STRING, ".x%lx", owner);
     
     PD_ASSERT (!err);
     
@@ -108,7 +102,6 @@ t_guiconnect *guiconnect_new (t_pd *owner)
 static void guiconnect_free (t_guiconnect *x)
 {
     if (x->x_bound) { pd_unbind (cast_pd (x), x->x_bound); }
-    if (x->x_clock) { clock_free (x->x_clock); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -128,8 +121,9 @@ void guiconnect_setup (void)
         
     class_addAnything (c, guiconnect_anything);
     
-    class_addMethod (c, (t_method)guiconnect_signoff, sym__signoff, A_NULL);
-        
+    class_addMethod (c, (t_method)guiconnect_autorelease,   sym__autorelease,   A_NULL);
+    class_addMethod (c, (t_method)guiconnect_signoff,       sym__signoff,       A_NULL);
+    
     guiconnect_class = c;
 }
 

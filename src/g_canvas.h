@@ -252,7 +252,7 @@ int             canvas_objectIsBox                      (t_object *x);
 t_guiconnect    *guiconnect_new                         (t_pd *owner);
 char            *guiconnect_getBoundAsString            (t_guiconnect *x);
 
-void            guiconnect_release                      (t_guiconnect *x, double timeOut);
+void            guiconnect_release                      (t_guiconnect *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

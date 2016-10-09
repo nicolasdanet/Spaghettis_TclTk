@@ -140,6 +140,7 @@ struct _pdinstance {
     t_clock                 *pd_clocks;
     t_signal                *pd_signals;
     t_glist                 *pd_roots;
+    t_clock                 *pd_autorelease;
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -346,6 +347,16 @@ void        instance_initialize                         (void);
 void        instance_release                            (void);
 void        instance_addToRoots                         (t_glist *glist);
 void        instance_removeFromRoots                    (t_glist *glist);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        autorelease_run                             (void);
+void        autorelease_stop                            (void);
+void        autorelease_drain                           (void);
+void        autorelease_add                             (t_pd *x);
+void        autorelease_perform                         (t_pd *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -36,7 +36,7 @@ void textbuffer_free (t_textbuffer *x)
     
     if (x->tb_guiconnect) {
         sys_vGui ("destroy .x%lx\n", x);
-        guiconnect_release (x->tb_guiconnect, 1000.0);
+        guiconnect_release (x->tb_guiconnect);
     }
 }
 
@@ -77,7 +77,7 @@ void textbuffer_close (t_textbuffer *x)
     sys_vGui ("::ui_text::release .x%lx\n", x);
     
     if (x->tb_guiconnect) {
-        guiconnect_release (x->tb_guiconnect, 1000.0); 
+        guiconnect_release (x->tb_guiconnect); 
         x->tb_guiconnect = NULL;
     }    
 }

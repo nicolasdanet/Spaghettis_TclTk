@@ -68,7 +68,7 @@ static void *openpanel_new (void)
 
 static void openpanel_free (t_openpanel *x)
 {
-    guiconnect_release (x->x_guiconnect, 1000.0);
+    guiconnect_release (x->x_guiconnect);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -93,6 +93,8 @@ t_symbol *sym__array;
 t_symbol *sym__arraydialog;
 t_symbol *sym__audiodialog;
 t_symbol *sym__audioproperties;
+t_symbol *sym__autorelease;
+t_symbol *sym__autoreleasepool;
 t_symbol *sym__bendin;
 t_symbol *sym__canvasdialog;
 t_symbol *sym__copy;
@@ -636,6 +638,8 @@ void symbols_initialize (void)
     sym__arraydialog                            = gensym ("_arraydialog");
     sym__audiodialog                            = gensym ("_audiodialog");
     sym__audioproperties                        = gensym ("_audioproperties");
+    sym__autorelease                            = gensym ("_autorelease");
+    sym__autoreleasepool                        = gensym ("_autoreleasepool");
     sym__bendin                                 = gensym ("_bendin");
     sym__canvasdialog                           = gensym ("_canvasdialog");
     sym__copy                                   = gensym ("_copy");

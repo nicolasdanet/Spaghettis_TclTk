@@ -7,86 +7,79 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *savepanel_class;            /* Shared. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-typedef struct _savepanel {
-    t_object        x_obj;                  /* Must be the first. */
-    t_guiconnect    *x_guiconnect;
-    t_outlet        *x_outlet;
-    } t_savepanel;
+extern t_pdinstance *pd_this;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void savepanel_symbol (t_savepanel *x, t_symbol *s)
+#define AUTORELEASE_PERIOD  SECONDS_TO_MILLISECONDS (5.0)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void autorelease_task (void *dummy)
 {
-    sys_vGui ("::ui_file::savePanel {%s} {%s}\n", guiconnect_getBoundAsString (x->x_guiconnect), s->s_name);
+    autorelease_drain();
+    clock_delay (pd_this->pd_autorelease, AUTORELEASE_PERIOD);
 }
 
-static void savepanel_bang (t_savepanel *x)
+static void autorelease_reschedule (void)
 {
-    savepanel_symbol (x, &s_);
-}
-
-static void savepanel_callback (t_savepanel *x, t_symbol *s)
-{
-    outlet_symbol (x->x_outlet, s);
+    clock_unset (pd_this->pd_autorelease); 
+    clock_delay (pd_this->pd_autorelease, AUTORELEASE_PERIOD);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *savepanel_new (void)
+void autorelease_run (void)
 {
-    t_savepanel *x = (t_savepanel *)pd_new (savepanel_class);
-    
-    x->x_guiconnect = guiconnect_new (cast_pd (x));
-    x->x_outlet     = outlet_new (cast_object (x), &s_symbol);
-    
-    return x;
+    pd_this->pd_autorelease = clock_new ((void *)NULL, (t_method)autorelease_task);
+    clock_delay (pd_this->pd_autorelease, AUTORELEASE_PERIOD);
 }
 
-static void savepanel_free (t_savepanel *x)
+void autorelease_stop (void)
 {
-    guiconnect_release (x->x_guiconnect);
+    autorelease_drain();
+    clock_free (pd_this->pd_autorelease);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void savepanel_setup (void)
+void autorelease_drain (void)
 {
-    t_class *c = NULL;
-    
-    c = class_new (sym_savepanel,
-            (t_newmethod)savepanel_new,
-            (t_method)savepanel_free,
-            sizeof (t_savepanel),
-            CLASS_DEFAULT,
-            A_NULL);
-            
-    class_addBang (c, savepanel_bang);
-    class_addSymbol (c, savepanel_symbol);
-    
-    class_addMethod (c, (t_method)savepanel_callback, sym_callback, A_SYMBOL, A_NULL);
-    
-    savepanel_class = c;
+    if (pd_isThingQuiet (sym__autoreleasepool)) {
+    //
+    pd_message (pd_getThing (sym__autoreleasepool), sym__autorelease, 0, NULL);
+    //
+    }   
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void autorelease_add (t_pd *x)
+{
+    autorelease_reschedule(); pd_bind (x, sym__autoreleasepool);
+}
+
+void autorelease_perform (t_pd *x)
+{
+    pd_unbind (x, sym__autoreleasepool); pd_free (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------

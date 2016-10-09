@@ -248,9 +248,9 @@ static void scheduler_mainLoop (void)
 t_error scheduler_main (void)
 {
     midi_open();
-    //
+    autorelease_run();
     scheduler_mainLoop();
-    //
+    autorelease_stop();
     audio_close();
     midi_close();
     
