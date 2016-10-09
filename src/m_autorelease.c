@@ -74,9 +74,11 @@ void autorelease_drain (void)
 
 void autorelease_add (t_pd *x)
 {
-    if (!pd_this->pd_autorelease) { pd_free (x); }
+    pd_bind (x, sym__autoreleasepool);
+    
+    if (!pd_this->pd_autorelease) { autorelease_drain(); }      /* While quitting the application. */
     else {
-        autorelease_reschedule(); pd_bind (x, sym__autoreleasepool);
+        autorelease_reschedule(); 
     }
 }
 
