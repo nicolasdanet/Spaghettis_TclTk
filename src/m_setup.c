@@ -124,6 +124,7 @@ void arraymax_setup         (void);
 void arraymin_setup         (void);
 void x_midi_setup           (void);
 void x_misc_setup           (void);
+void realtime_setup         (void);
 void oscparse_setup         (void);
 void oscformat_setup        (void);
 void x_net_setup            (void);
@@ -252,6 +253,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     arraymin_setup();
     x_midi_setup();
     x_misc_setup();
+    realtime_setup();
     oscparse_setup();
     oscformat_setup();
     x_net_setup();

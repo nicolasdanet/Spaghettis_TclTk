@@ -203,6 +203,7 @@
 #include "x_savepanel.c"
 #include "x_makefilename.c"
 #include "x_misc.c"
+#include "x_realtime.c"
 #include "x_oscparse.c"
 #include "x_oscformat.c"
 

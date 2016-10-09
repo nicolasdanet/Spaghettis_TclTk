@@ -271,45 +271,6 @@ static void cputime_setup(void)
     class_addMethod(cputime_class, (t_method)cputime_bang2, sym_inlet2, 0);
 }
 
-/* -------------------------- realtime ------------------------------ */
-
-static t_class *realtime_class;
-
-typedef struct _realtime
-{
-    t_object x_obj;
-    double x_setrealtime;
-} t_realtime;
-
-static void realtime_bang(t_realtime *x)
-{
-    x->x_setrealtime = sys_getRealTimeInSeconds();
-}
-
-static void realtime_bang2(t_realtime *x)
-{
-    outlet_float(x->x_obj.te_outlet,
-        (sys_getRealTimeInSeconds() - x->x_setrealtime) * 1000.);
-}
-
-static void *realtime_new(void)
-{
-    t_realtime *x = (t_realtime *)pd_new(realtime_class);
-    outlet_new(&x->x_obj, &s_float);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_bang, sym_inlet2);
-    realtime_bang(x);
-    return (x);
-}
-
-static void realtime_setup(void)
-{
-    realtime_class = class_new(sym_realtime, (t_newmethod)realtime_new, 0,
-        sizeof(t_realtime), 0, 0);
-    class_addBang(realtime_class, realtime_bang);
-    class_addMethod(realtime_class, (t_method)realtime_bang2, sym_inlet2,
-        0);
-}
-
 void x_misc_setup(void)
 {
     random_setup();
@@ -317,5 +278,4 @@ void x_misc_setup(void)
     namecanvas_setup();
     serial_setup();
     cputime_setup();
-    realtime_setup();
 }
