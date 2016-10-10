@@ -28,6 +28,12 @@ extern t_receiver   *interface_inGuiReceiver;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void receiver_read (t_receiver *, int);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void receiver_closeSocketAndRemoveCallback (t_receiver *x)
 {
     if (!x->r_isClosed) {
@@ -191,7 +197,7 @@ static t_error receiver_readTCP (t_receiver *x, int fd)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void receiver_read (t_receiver *x, int fd)
+static void receiver_read (t_receiver *x, int fd)
 {
     if (x->r_isUdp) { receiver_readUDP (x, fd); }       /* Without buffer. */
     else {  

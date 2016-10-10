@@ -747,8 +747,8 @@
 				3722C5361C4F925600D2BF6F /* Control */,
 				3722C5371C4F926300D2BF6F /* DSP */,
 				3789717E1C4F712A00263434 /* Scripts */,
-				378972031C4F716700263434 /* u_pdreceive.c */,
 				378972041C4F716700263434 /* u_pdsend.c */,
+				378972031C4F716700263434 /* u_pdreceive.c */,
 				378972051C4F716700263434 /* u_watchdog.c */,
 			);
 			name = PureData;
