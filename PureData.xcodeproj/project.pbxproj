@@ -84,8 +84,7 @@
 		377899DD1CFEDB5B0056BE61 /* g_gatom.c in Sources */ = {isa = PBXBuildFile; fileRef = 377899DC1CFEDB5B0056BE61 /* g_gatom.c */; };
 		377CEE201DAA7BEE00E60461 /* x_oscformat.c in Sources */ = {isa = PBXBuildFile; fileRef = 377CEE1F1DAA7BEE00E60461 /* x_oscformat.c */; };
 		377CEE471DAA7D9700E60461 /* x_oscparse.c in Sources */ = {isa = PBXBuildFile; fileRef = 377CEE461DAA7D9700E60461 /* x_oscparse.c */; };
-		377CEE7A1DAA7EFB00E60461 /* x_realtime.c in Sources */ = {isa = PBXBuildFile; fileRef = 377CEE791DAA7EFB00E60461 /* x_realtime.c */; };
-		377CEEAB1DAA7FFE00E60461 /* x_cputime.c in Sources */ = {isa = PBXBuildFile; fileRef = 377CEEAA1DAA7FFE00E60461 /* x_cputime.c */; };
+		377CEEAB1DAA7FFE00E60461 /* x_realtime.c in Sources */ = {isa = PBXBuildFile; fileRef = 377CEEAA1DAA7FFE00E60461 /* x_realtime.c */; };
 		377CEF161DAA820C00E60461 /* x_namecanvas.c in Sources */ = {isa = PBXBuildFile; fileRef = 377CEF151DAA820C00E60461 /* x_namecanvas.c */; };
 		377CEF471DAA831E00E60461 /* x_loadbang.c in Sources */ = {isa = PBXBuildFile; fileRef = 377CEF451DAA831E00E60461 /* x_loadbang.c */; };
 		377CEF481DAA831E00E60461 /* x_random.c in Sources */ = {isa = PBXBuildFile; fileRef = 377CEF461DAA831E00E60461 /* x_random.c */; };
@@ -369,8 +368,7 @@
 		377899DC1CFEDB5B0056BE61 /* g_gatom.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_gatom.c; path = src/g_gatom.c; sourceTree = "<group>"; };
 		377CEE1F1DAA7BEE00E60461 /* x_oscformat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_oscformat.c; path = src/x_oscformat.c; sourceTree = "<group>"; };
 		377CEE461DAA7D9700E60461 /* x_oscparse.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_oscparse.c; path = src/x_oscparse.c; sourceTree = "<group>"; };
-		377CEE791DAA7EFB00E60461 /* x_realtime.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_realtime.c; path = src/x_realtime.c; sourceTree = "<group>"; };
-		377CEEAA1DAA7FFE00E60461 /* x_cputime.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_cputime.c; path = src/x_cputime.c; sourceTree = "<group>"; };
+		377CEEAA1DAA7FFE00E60461 /* x_realtime.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_realtime.c; path = src/x_realtime.c; sourceTree = "<group>"; };
 		377CEF151DAA820C00E60461 /* x_namecanvas.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_namecanvas.c; path = src/x_namecanvas.c; sourceTree = "<group>"; };
 		377CEF451DAA831E00E60461 /* x_loadbang.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_loadbang.c; path = src/x_loadbang.c; sourceTree = "<group>"; };
 		377CEF461DAA831E00E60461 /* x_random.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_random.c; path = src/x_random.c; sourceTree = "<group>"; };
@@ -931,8 +929,7 @@
 				377CEF451DAA831E00E60461 /* x_loadbang.c */,
 				377CEF151DAA820C00E60461 /* x_namecanvas.c */,
 				3702414F1DAB95AC00AB5440 /* x_serial.c */,
-				377CEEAA1DAA7FFE00E60461 /* x_cputime.c */,
-				377CEE791DAA7EFB00E60461 /* x_realtime.c */,
+				377CEEAA1DAA7FFE00E60461 /* x_realtime.c */,
 				377CEE461DAA7D9700E60461 /* x_oscparse.c */,
 				377CEE1F1DAA7BEE00E60461 /* x_oscformat.c */,
 				3789720F1C4F716800263434 /* x_net.c */,
@@ -1546,8 +1543,7 @@
 				37B9B6141DA949CE007FEB07 /* m_autorelease.c in Sources */,
 				377CEE201DAA7BEE00E60461 /* x_oscformat.c in Sources */,
 				377CEE471DAA7D9700E60461 /* x_oscparse.c in Sources */,
-				377CEE7A1DAA7EFB00E60461 /* x_realtime.c in Sources */,
-				377CEEAB1DAA7FFE00E60461 /* x_cputime.c in Sources */,
+				377CEEAB1DAA7FFE00E60461 /* x_realtime.c in Sources */,
 				377CEF161DAA820C00E60461 /* x_namecanvas.c in Sources */,
 				377CEF471DAA831E00E60461 /* x_loadbang.c in Sources */,
 				377CEF481DAA831E00E60461 /* x_random.c in Sources */,
