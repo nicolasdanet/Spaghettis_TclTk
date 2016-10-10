@@ -77,6 +77,30 @@ typedef struct _binop {
     t_outlet            *bo_outlet;
     } t_binop;
 
+typedef struct _netsend
+{
+    t_object x_obj;
+    t_outlet *x_msgout;
+    t_outlet *x_connectout;
+    int x_sockfd;
+    int x_protocol;
+    int x_bin;
+} t_netsend;
+
+typedef struct _netreceive
+{
+    t_netsend x_ns;
+    int x_nconnections;
+    int x_sockfd;
+    int *x_connections;
+    int x_old;
+} t_netreceive;
+
+void netsend_readbin(t_netsend *x, int fd);
+void netsend_doit(void *z, t_buffer *b);
+void netreceive_notify(t_netreceive *x, int fd);
+int netsend_dosend(t_netsend *x, int sockfd, t_symbol *s, int argc, t_atom *argv);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 

@@ -75,6 +75,8 @@
 		375149D71D86E243005679B0 /* x_arrayget.c in Sources */ = {isa = PBXBuildFile; fileRef = 375149D61D86E243005679B0 /* x_arrayget.c */; };
 		37514A0B1D86E38F005679B0 /* x_arraysum.c in Sources */ = {isa = PBXBuildFile; fileRef = 37514A0A1D86E38F005679B0 /* x_arraysum.c */; };
 		37514A411D86E4DF005679B0 /* x_arraysize.c in Sources */ = {isa = PBXBuildFile; fileRef = 37514A401D86E4DF005679B0 /* x_arraysize.c */; };
+		375BED391DABC801009BFCD7 /* x_netreceive.c in Sources */ = {isa = PBXBuildFile; fileRef = 375BED371DABC801009BFCD7 /* x_netreceive.c */; };
+		375BED3A1DABC801009BFCD7 /* x_netsend.c in Sources */ = {isa = PBXBuildFile; fileRef = 375BED381DABC801009BFCD7 /* x_netsend.c */; };
 		375D72E71D86A5F000D079B1 /* x_arrayclient.c in Sources */ = {isa = PBXBuildFile; fileRef = 375D72E61D86A5F000D079B1 /* x_arrayclient.c */; };
 		375D73211D86ACAC00D079B1 /* x_arraymin.c in Sources */ = {isa = PBXBuildFile; fileRef = 375D73201D86ACAC00D079B1 /* x_arraymin.c */; };
 		375E88DF1D901BA90052D22C /* x_listinlet.c in Sources */ = {isa = PBXBuildFile; fileRef = 375E88DE1D901BA90052D22C /* x_listinlet.c */; };
@@ -160,7 +162,6 @@
 		378972631C4F716800263434 /* x_print.c in Sources */ = {isa = PBXBuildFile; fileRef = 3789720B1C4F716800263434 /* x_print.c */; };
 		378972641C4F716800263434 /* x_list.c in Sources */ = {isa = PBXBuildFile; fileRef = 3789720C1C4F716800263434 /* x_list.c */; };
 		378972651C4F716800263434 /* x_midi.c in Sources */ = {isa = PBXBuildFile; fileRef = 3789720D1C4F716800263434 /* x_midi.c */; };
-		378972671C4F716800263434 /* x_net.c in Sources */ = {isa = PBXBuildFile; fileRef = 3789720F1C4F716800263434 /* x_net.c */; };
 		378972681C4F716800263434 /* x_scalar.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972101C4F716800263434 /* x_scalar.c */; };
 		378972691C4F716800263434 /* x_text.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972111C4F716800263434 /* x_text.c */; };
 		378B47391C6C660B004099AA /* s_file.c in Sources */ = {isa = PBXBuildFile; fileRef = 378B47381C6C660B004099AA /* s_file.c */; };
@@ -357,6 +358,8 @@
 		375149D61D86E243005679B0 /* x_arrayget.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arrayget.c; path = src/x_arrayget.c; sourceTree = "<group>"; };
 		37514A0A1D86E38F005679B0 /* x_arraysum.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arraysum.c; path = src/x_arraysum.c; sourceTree = "<group>"; };
 		37514A401D86E4DF005679B0 /* x_arraysize.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arraysize.c; path = src/x_arraysize.c; sourceTree = "<group>"; };
+		375BED371DABC801009BFCD7 /* x_netreceive.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_netreceive.c; path = src/x_netreceive.c; sourceTree = "<group>"; };
+		375BED381DABC801009BFCD7 /* x_netsend.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_netsend.c; path = src/x_netsend.c; sourceTree = "<group>"; };
 		375D72E61D86A5F000D079B1 /* x_arrayclient.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arrayclient.c; path = src/x_arrayclient.c; sourceTree = "<group>"; };
 		375D73201D86ACAC00D079B1 /* x_arraymin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arraymin.c; path = src/x_arraymin.c; sourceTree = "<group>"; };
 		375E88DE1D901BA90052D22C /* x_listinlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_listinlet.c; path = src/x_listinlet.c; sourceTree = "<group>"; };
@@ -504,7 +507,6 @@
 		3789720B1C4F716800263434 /* x_print.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_print.c; path = src/x_print.c; sourceTree = "<group>"; };
 		3789720C1C4F716800263434 /* x_list.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_list.c; path = src/x_list.c; sourceTree = "<group>"; };
 		3789720D1C4F716800263434 /* x_midi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_midi.c; path = src/x_midi.c; sourceTree = "<group>"; };
-		3789720F1C4F716800263434 /* x_net.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_net.c; path = src/x_net.c; sourceTree = "<group>"; };
 		378972101C4F716800263434 /* x_scalar.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_scalar.c; path = src/x_scalar.c; sourceTree = "<group>"; };
 		378972111C4F716800263434 /* x_text.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_text.c; path = src/x_text.c; sourceTree = "<group>"; };
 		378B47381C6C660B004099AA /* s_file.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_file.c; path = src/s_file.c; sourceTree = "<group>"; };
@@ -930,9 +932,10 @@
 				377CEF151DAA820C00E60461 /* x_namecanvas.c */,
 				3702414F1DAB95AC00AB5440 /* x_serial.c */,
 				377CEEAA1DAA7FFE00E60461 /* x_realtime.c */,
+				375BED381DABC801009BFCD7 /* x_netsend.c */,
+				375BED371DABC801009BFCD7 /* x_netreceive.c */,
 				377CEE461DAA7D9700E60461 /* x_oscparse.c */,
 				377CEE1F1DAA7BEE00E60461 /* x_oscformat.c */,
-				3789720F1C4F716800263434 /* x_net.c */,
 			);
 			name = Miscellaneous;
 			sourceTree = "<group>";
@@ -1421,7 +1424,6 @@
 				378972631C4F716800263434 /* x_print.c in Sources */,
 				378972641C4F716800263434 /* x_list.c in Sources */,
 				378972651C4F716800263434 /* x_midi.c in Sources */,
-				378972671C4F716800263434 /* x_net.c in Sources */,
 				378972681C4F716800263434 /* x_scalar.c in Sources */,
 				378972691C4F716800263434 /* x_text.c in Sources */,
 				37E0BC371C53E0B700114412 /* h_pathlist.c in Sources */,
@@ -1548,6 +1550,8 @@
 				377CEF471DAA831E00E60461 /* x_loadbang.c in Sources */,
 				377CEF481DAA831E00E60461 /* x_random.c in Sources */,
 				370241501DAB95AC00AB5440 /* x_serial.c in Sources */,
+				375BED391DABC801009BFCD7 /* x_netreceive.c in Sources */,
+				375BED3A1DABC801009BFCD7 /* x_netsend.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

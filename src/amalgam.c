@@ -209,7 +209,8 @@
 #include "x_realtime.c"
 #include "x_oscparse.c"
 #include "x_oscformat.c"
-#include "x_net.c"
+#include "x_netsend.c"
+#include "x_netreceive.c"
 
 /* DSP. */
 
