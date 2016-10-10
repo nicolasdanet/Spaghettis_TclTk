@@ -205,6 +205,7 @@
 #include "x_makefilename.c"
 #include "x_loadbang.c"
 #include "x_namecanvas.c"
+#include "x_serial.c"
 #include "x_cputime.c"
 #include "x_realtime.c"
 #include "x_oscparse.c"

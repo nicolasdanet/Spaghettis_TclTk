@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		370241501DAB95AC00AB5440 /* x_serial.c in Sources */ = {isa = PBXBuildFile; fileRef = 3702414F1DAB95AC00AB5440 /* x_serial.c */; };
 		370899CA1DA7A47E00D2DCAA /* m_hash.c in Sources */ = {isa = PBXBuildFile; fileRef = 370899C91DA7A47E00D2DCAA /* m_hash.c */; };
 		370934821CC6887300827F75 /* g_dsp.c in Sources */ = {isa = PBXBuildFile; fileRef = 370934811CC6887300827F75 /* g_dsp.c */; };
 		370939451CC92BF300827F75 /* g_draw.c in Sources */ = {isa = PBXBuildFile; fileRef = 370939431CC92BF300827F75 /* g_draw.c */; };
@@ -284,6 +285,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3702414F1DAB95AC00AB5440 /* x_serial.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_serial.c; path = src/x_serial.c; sourceTree = "<group>"; };
 		370899C91DA7A47E00D2DCAA /* m_hash.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_hash.c; path = src/m_hash.c; sourceTree = "<group>"; };
 		370934811CC6887300827F75 /* g_dsp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_dsp.c; path = src/g_dsp.c; sourceTree = "<group>"; };
 		370939431CC92BF300827F75 /* g_draw.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_draw.c; path = src/g_draw.c; sourceTree = "<group>"; };
@@ -928,6 +930,7 @@
 				374906651D9977C700377F1E /* x_makefilename.c */,
 				377CEF451DAA831E00E60461 /* x_loadbang.c */,
 				377CEF151DAA820C00E60461 /* x_namecanvas.c */,
+				3702414F1DAB95AC00AB5440 /* x_serial.c */,
 				377CEEAA1DAA7FFE00E60461 /* x_cputime.c */,
 				377CEE791DAA7EFB00E60461 /* x_realtime.c */,
 				377CEE461DAA7D9700E60461 /* x_oscparse.c */,
@@ -1548,6 +1551,7 @@
 				377CEF161DAA820C00E60461 /* x_namecanvas.c in Sources */,
 				377CEF471DAA831E00E60461 /* x_loadbang.c in Sources */,
 				377CEF481DAA831E00E60461 /* x_random.c in Sources */,
+				370241501DAB95AC00AB5440 /* x_serial.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

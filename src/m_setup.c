@@ -126,6 +126,7 @@ void x_midi_setup           (void);
 void random_setup           (void);
 void loadbang_setup         (void);
 void namecanvas_setup       (void);
+void serial_setup           (void);
 void cputime_setup          (void);
 void realtime_setup         (void);
 void oscparse_setup         (void);
@@ -258,6 +259,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     random_setup();
     loadbang_setup();
     namecanvas_setup();
+    serial_setup();
     cputime_setup();
     realtime_setup();
     oscparse_setup();
