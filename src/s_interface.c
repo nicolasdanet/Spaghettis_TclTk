@@ -499,7 +499,7 @@ static t_error interface_fetchGuiServer (struct sockaddr_in *server)
         server->sin_family = AF_INET;
         server->sin_port = htons ((unsigned short)main_portNumber);
         memcpy ((char *)&server->sin_addr, (char *)host->h_addr, host->h_length);
-        err |= connect (interface_guiSocket, (struct sockaddr *)server, sizeof (struct sockaddr_in));
+        err |= (connect (interface_guiSocket, (struct sockaddr *)server, sizeof (struct sockaddr_in)) != 0);
         PD_ASSERT (!err);
     }
     

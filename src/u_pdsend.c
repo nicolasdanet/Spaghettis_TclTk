@@ -1,158 +1,193 @@
-/* Copyright (c) 2000 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in the Pd distribution.  */
 
-/* the "pdsend" command.  This is a standalone program that forwards messages
-from its standard input to Pd via the netsend/netreceive ("FUDI") protocol. */
+/* 
+    Copyright (c) 1997-2016 Miller Puckette and others.
+*/
 
-#include <sys/types.h>
-#include <string.h>
-#include <stdio.h>
-#include <errno.h>
-#include <stdlib.h>
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 #ifdef _WIN32
+
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
 #include <winsock.h>
+    
 #else
-#include <sys/socket.h>
+
+#include <errno.h>
+#include <netdb.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
-#include <netdb.h>
-#include <stdio.h>
 #include <unistd.h>
-#define SOCKET_ERROR -1
-#endif
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 
-void sockerror(char *s);
-void x_closesocket(int fd);
-#define BUFSIZE 4096
+#endif // _WIN32
 
-int main(int argc, char **argv)
-{
-    int sockfd, portno, protocol;
-    struct sockaddr_in server;
-    struct hostent *hp;
-    char *hostname;
-    int nretry = 10;
-#ifdef _WIN32
-    short version = MAKEWORD(2, 0);
-    WSADATA nobby;
-#endif
-    if (argc < 2 || sscanf(argv[1], "%d", &portno) < 1 || portno <= 0)
-        goto usage;
-    if (argc >= 3)
-        hostname = argv[2];
-    else hostname = "127.0.0.1";
-    if (argc >= 4)
-    {
-        if (!strcmp(argv[3], "tcp"))
-            protocol = SOCK_STREAM;
-        else if (!strcmp(argv[3], "udp"))
-            protocol = SOCK_DGRAM;
-        else goto usage;
-    }
-    else protocol = SOCK_STREAM;
-#ifdef _WIN32
-    if (WSAStartup(version, &nobby)) sockerror("WSAstartup");
-#endif
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-    sockfd = socket(AF_INET, protocol, 0);
-    if (sockfd < 0)
-    {
-        sockerror("socket()");
-        exit(1);
-    }
-        /* connect socket using hostname provided in command line */
-    server.sin_family = AF_INET;
-    hp = gethostbyname(hostname);
-    if (hp == 0)
-    {
-        fprintf(stderr, "%s: unknown host\n", hostname);
-        x_closesocket(sockfd);
-        exit(1);
-    }
-    memcpy((char *)&server.sin_addr, (char *)hp->h_addr, hp->h_length);
-
-        /* assign client port number */
-    server.sin_port = htons((unsigned short)portno);
-
-#if 0   /* try this again for 4.0; this crashed my RH 6.2 machine!) */
-
-        /* try to connect.  */
-    for (nretry = 0; nretry < (protocol == SOCK_STREAM ? 10 : 1); nretry++)
+/*
+    This is a standalone program that forwards messages from its standard input
+    to PureData via the netsend/netreceive ("FUDI") protocol.
     
-    {
-        if (nretry > 0)
-        {
-            sleep (nretry < 5 ? 1 : 5);
-            fprintf(stderr, "retrying...");
-        }
-        if (connect(sockfd, (struct sockaddr *) &server, sizeof (server)) >= 0)
-            goto connected;
-        sockerror("connect");
-    }
-    x_closesocket(sockfd);
-    exit(1);
-connected: ;
-#else
-    /* try to connect.  */
-    if (connect(sockfd, (struct sockaddr *) &server, sizeof (server)) < 0)
-    {
-        sockerror("connect");
-        x_closesocket(sockfd);
-        exit(1);
-    }
-#endif
-        /* now loop reading stdin and sending  it to socket */
-    while (1)
-    {
-        char buf[BUFSIZE], *bp;
-        int nsent, nsend;
-        if (!fgets(buf, BUFSIZE, stdin))
-            break;
-        nsend = strlen(buf);
-        for (bp = buf, nsent = 0; nsent < nsend;)
-        {
-            int res = send(sockfd, bp, nsend-nsent, 0);
-            if (res < 0)
-            {
-                sockerror("send");
-                goto done;
-            }
-            nsent += res;
-            bp += res;
-        }
-    }
-done:
-    if (ferror(stdin))
-        perror("stdin");
-    exit (0);
-usage:
-    fprintf(stderr, "usage: pdsend <portnumber> [host] [udp|tcp]\n");
-    fprintf(stderr, "(default is localhost and tcp)\n");
-    exit(1);
+*/
+
+/* < http://en.wikipedia.org/wiki/FUDI > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#define PDSEND_BUFFER_SIZE      4096
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int pdsend_usage (void)
+{
+    fprintf (stderr, "usage: pdsend < portnumber > [ host ] [ udp | tcp ]\n");
+    fprintf (stderr, "(default is localhost and tcp)\n");
 }
 
-void sockerror(char *s)
-{
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #ifdef _WIN32
+
+void pdsend_socketError (char *s)
+{
     int err = WSAGetLastError();
-    if (err == 10054) return;
-    else if (err == 10044)
-    {
-        fprintf(stderr,
-            "Warning: you might not have TCP/IP \"networking\" turned on\n");
-    }
-#else
-    int err = errno;
-#endif
-    fprintf(stderr, "%s: %s (%d)\n", s, strerror(err), err);
+    
+    if (err != 10054) { fprintf (stderr, "%s: error %d / %s\n", s, err, strerror (err)); }
 }
 
-void x_closesocket(int fd)
+void pdsend_socketClose (int fd)
 {
-#ifdef _WIN32
-    closesocket(fd);
-#else
-    close(fd);
-#endif
+    closesocket (fd);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#else
+
+void pdsend_socketError (char *s)
+{
+    int err = errno; fprintf (stderr, "%s: error %d / %s\n", s, err, strerror (err));
+}
+
+void pdsend_socketClose (int fd)
+{
+    close (fd);
+}
+
+#endif // _WIN32
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int main (int argc, char **argv)
+{
+    int portNumber = 0;
+    int protocol   = SOCK_STREAM;
+    char *hostName = "127.0.0.1";
+    
+    /* Get parameters. */
+    
+    int err = (argc < 2 || sscanf (argv[1], "%d", &portNumber) < 1 || portNumber <= 0);
+    
+    if (!err) {
+        if (argc >= 3) { hostName = argv[2]; }
+        if (argc >= 4) {
+            if (strcmp (argv[3], "udp") == 0) { protocol = SOCK_DGRAM; }
+            else { 
+                err = (strcmp (argv[3], "tcp") != 0); 
+            }
+        }
+    }
+    
+    /* Make connection. */
+    
+    if (err) { pdsend_usage(); }
+    else {
+    //
+    #ifdef _WIN32
+    
+    short version = MAKEWORD (2, 0);
+    WSADATA nobby;
+    
+    if (WSAStartup (version, &nobby)) {
+        pdsend_socketError ("WSAstartup");
+        return 1; 
+    }
+        
+    #endif
+    
+    int fd = socket (AF_INET, protocol, 0);
+    
+    if (fd < 0) { err = 1; pdsend_socketError ("socket"); }
+    else {
+    //
+    struct hostent *host = gethostbyname (hostName);
+    
+    if (host == NULL) { err = 1; fprintf (stderr, "%s: unknown host\n", hostName); }
+    else {
+    //
+    struct sockaddr_in server;
+    
+    server.sin_family = AF_INET;
+    server.sin_port = htons ((unsigned short)portNumber);
+    memcpy ((char *)&server.sin_addr, (char *)host->h_addr, host->h_length);
+    err = (connect (fd, (struct sockaddr *) &server, sizeof (struct sockaddr_in)) != 0);
+    
+    if (err) { pdsend_socketError ("connect"); }
+
+    /* Start the REPL loop. */
+    
+    while (!err) {
+    
+        char t[PDSEND_BUFFER_SIZE] = { 0 };
+
+        if (!fgets (t, PDSEND_BUFFER_SIZE, stdin)) { break; }
+        else {
+        //
+        int numberOfCharactersToSend = strlen (t);
+        int alreadySent = 0; char *p = t;
+                    
+        while (alreadySent < numberOfCharactersToSend) {
+            int n = send (fd, p, numberOfCharactersToSend - alreadySent, 0);
+            if (n < 0) { err = 1; pdsend_socketError ("send"); break; }
+            else {
+                alreadySent += n;
+                p += n;
+            }
+        }
+        //
+        }
+    }
+    //
+    }
+    
+    pdsend_socketClose (fd);
+    //
+    }
+    //
+    }
+        
+    return err;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
