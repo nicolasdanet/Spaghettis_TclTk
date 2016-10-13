@@ -1,306 +1,411 @@
-/* Copyright (c) 2000 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in the Pd distribution.  */
 
-/* the "pdreceive" command. This is a standalone program that receives messages
-from Pd via the netsend/netreceive ("FUDI") protocol, and copies them to
-standard output. */
-
-/* May 2008 : fixed a buffer overflow problem; pdreceive sometimes 
-    repeated infinitely its buffer during high speed transfer. 
-    Moonix::Antoine Rousseau
+/* 
+    Copyright (c) 1997-2016 Miller Puckette and others.
 */
 
-#include <sys/types.h>
-#include <string.h>
-#include <stdio.h>
-#include <errno.h>
-#include <stdlib.h>
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 #ifdef _WIN32
+
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
 #include <winsock.h>
+    
 #else
-#include <sys/socket.h>
+
+#include <errno.h>
+#include <netdb.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
-#include <netdb.h>
-#include <stdio.h>
 #include <unistd.h>
-#define SOCKET_ERROR -1
-#endif
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 
-typedef struct _poll
+#endif // _WIN32
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* 
+    This is a standalone program that receives messages from PureData via the
+    netsend/netreceive ("FUDI") protocol, and copies them to standard output.
+
+*/
+
+/* < http://en.wikipedia.org/wiki/FUDI > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _poll {
+    int     p_fd;
+    int     p_messageIsTruncated;
+    int     p_lastCharacterIsSemicolon;
+    int     p_messageLength;
+    char    *p_buffer;
+    } t_poll;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define PDRECEIVE_BUFFER_SIZE   4096
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_poll   *pdreceive_pollers;
+
+static int      pdreceive_pollersSize;
+static int      pdreceive_maximumFileDescriptor;
+static int      pdreceive_socketFileDescriptor;
+static int      pdreceive_socketProtocol;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int pdreceive_usage (void)
 {
-    int p_fd;
-    char *p_outbuf;/*output message buffer*/ 
-    int p_outlen;     /*length of output message*/
-    int p_discard;/*buffer overflow: output message is incomplete, discard it*/
-    int p_gotsemi;/*last char from input was a semicolon*/
-} t_poll;
+    fprintf (stderr, "usage: pdreceive < portnumber > [ udp | tcp ]\n");
+    fprintf (stderr, "(default is tcp)\n");
+}
 
-static int nfdpoll;
-static t_poll *fdpoll;
-static int maxfd;
-static int sockfd;
-static int protocol;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void sockerror(char *s);
-static void x_closesocket(int fd);
-static void dopoll(void);
-#define BUFSIZE 4096
-
-int main(int argc, char **argv)
-{
-    int portno;
-    struct sockaddr_in server;
-    int nretry = 10;
 #ifdef _WIN32
-    short version = MAKEWORD(2, 0);
+
+void pdreceive_socketError (char *s)
+{
+    int err = WSAGetLastError();
+    
+    if (err != 10054) { fprintf (stderr, "%s: error %d / %s\n", s, err, strerror (err)); }
+}
+
+void pdreceive_socketClose (int fd)
+{
+    closesocket (fd);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#else
+
+void pdreceive_socketError (char *s)
+{
+    int err = errno; fprintf (stderr, "%s: error %d / %s\n", s, err, strerror (err));
+}
+
+void pdreceive_socketClose (int fd)
+{
+    close (fd);
+}
+
+#endif // _WIN32
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#ifdef _WIN32
+
+static int pdreceive_outputRaw (char *t, int size)
+{
+    int j; for (j = 0; j < size; j++) { putchar (t[j]); } return 0;
+}
+
+#else
+
+static int pdreceive_outputRaw (char *t, int size)
+{
+    if (write (1, t, size) < size) { pdreceive_socketError ("write"); return 1; }
+    else {
+        return 0;
+    }
+}
+
+#endif // _WIN32
+
+static int pdreceive_outputUDP (char *t, int size)
+{
+    return pdreceive_outputRaw (t, size);
+}
+
+static int pdreceive_outputTCP (t_poll *x, char *t, int size)
+{
+    char *messageBuffer = x->p_buffer;
+    int i, messageLength = x->p_messageLength;
+    
+    for (i = 0; i < size; i++) {
+    //
+    char c = t[i];
+    
+    if ((c != '\n') || (!x->p_lastCharacterIsSemicolon)) { messageBuffer[messageLength++] = c; }
+    
+    x->p_lastCharacterIsSemicolon = 0; 
+    
+    if (messageLength >= (PDRECEIVE_BUFFER_SIZE - 1)) {
+        fprintf (stderr, "overflow: discard message\n");
+        messageLength = 0;
+        x->p_messageIsTruncated = 1;
+    }  
+
+    if (c == ';') {
+        messageBuffer[messageLength++] = '\n';
+        if (!x->p_messageIsTruncated) { pdreceive_outputRaw (messageBuffer, messageLength); }
+        messageLength = 0;
+        x->p_messageIsTruncated = 0;
+        x->p_lastCharacterIsSemicolon = 1;
+    }
+    //
+    }
+
+    x->p_messageLength = messageLength;
+    
+    return 0;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static int pdreceive_addPort (int fd)
+{
+    pdreceive_pollers = (t_poll *)realloc (pdreceive_pollers, (pdreceive_pollersSize + 1) * sizeof (t_poll));
+    
+    if (pdreceive_pollers) {
+    //
+    t_poll *p = pdreceive_pollers + pdreceive_pollersSize;
+    
+    pdreceive_pollersSize++;
+    
+    p->p_fd                         = fd;
+    p->p_messageIsTruncated         = 0;
+    p->p_lastCharacterIsSemicolon   = 0;
+    p->p_messageLength              = 0;
+    p->p_buffer                     = (char *)malloc (PDRECEIVE_BUFFER_SIZE);
+    
+    if (fd >= pdreceive_maximumFileDescriptor) { pdreceive_maximumFileDescriptor = fd + 1; }
+    
+    if (p->p_buffer) { return 0; }
+    //
+    }
+    
+    return 1;   /* Just quit if a memory error occurs. */
+}
+
+static int pdreceive_removePort (t_poll *x)
+{
+    int i, k = -1;
+    
+    for (i = 0; i < pdreceive_pollersSize; i++) {
+        if (pdreceive_pollers + i == x) {
+            pdreceive_socketClose (pdreceive_pollers[i].p_fd);
+            free (pdreceive_pollers[i].p_buffer);
+            k = i;
+            break;
+        }
+    }
+    
+    if (k == -1) { return 1; }
+    else {
+    //
+    for (i = k; i < pdreceive_pollersSize - 1; i++) { pdreceive_pollers[i] = pdreceive_pollers[i + 1]; }
+    pdreceive_pollers = (t_poll *)realloc (pdreceive_pollers, (pdreceive_pollersSize - 1) * sizeof (t_poll));
+    pdreceive_pollersSize--;
+    //
+    }
+    
+    return 0;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static int pdreceive_readUDP (void)
+{
+    char t[PDRECEIVE_BUFFER_SIZE] = { 0 };
+    int  n = recv (pdreceive_socketFileDescriptor, t, PDRECEIVE_BUFFER_SIZE, 0);
+    
+    if (n < 0) { pdreceive_socketError ("recv"); return 1; }
+    else {
+        if (n > 0) { 
+            return pdreceive_outputUDP (t, n);
+        }
+    }
+        
+    return 0;
+}
+
+static int pdreceive_readTCP (t_poll *x)
+{
+    char t[PDRECEIVE_BUFFER_SIZE] = { 0 };
+    int  n = recv (x->p_fd, t, PDRECEIVE_BUFFER_SIZE, 0);
+    
+    if (n <= 0) { if (n) { pdreceive_socketError ("recv"); } return pdreceive_removePort (x); }
+    else { 
+        return pdreceive_outputTCP (x, t, n);
+    }
+}
+
+static int pdreceive_connect (void)
+{
+    int fd = accept (pdreceive_socketFileDescriptor, NULL, NULL);
+    
+    if (fd < 0) { pdreceive_socketError ("accept"); }
+    else {
+        return pdreceive_addPort (fd);
+    }
+    
+    return 0;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static int pdreceive_poll (void)
+{
+    int err = 0;
+    
+    fd_set rSet;
+    fd_set wSet;
+    fd_set eSet;
+    
+    FD_ZERO (&wSet);
+    FD_ZERO (&rSet);
+    FD_ZERO (&eSet);
+
+    FD_SET (pdreceive_socketFileDescriptor, &rSet);
+    
+    if (pdreceive_socketProtocol == SOCK_STREAM) {
+        int i;
+        for (i = 0; i < pdreceive_pollersSize; i++) { FD_SET (pdreceive_pollers[i].p_fd, &rSet); }
+    }
+    
+    if (select (pdreceive_maximumFileDescriptor + 1, &rSet, &wSet, &eSet, 0) < 0) {
+        err = 1; pdreceive_socketError ("select");
+        
+    }
+    
+    if (!err) {
+    //
+    if (pdreceive_socketProtocol == SOCK_DGRAM) {
+        if (FD_ISSET (pdreceive_socketFileDescriptor, &rSet)) {
+            err = pdreceive_readUDP();
+        }
+    }
+    
+    if (pdreceive_socketProtocol == SOCK_STREAM) {
+        int i;
+        for (i = 0; i < pdreceive_pollersSize; i++) {
+            if (FD_ISSET (pdreceive_pollers[i].p_fd, &rSet)) {
+                err |= pdreceive_readTCP (&pdreceive_pollers[i]);
+            }
+        }
+        if (FD_ISSET (pdreceive_socketFileDescriptor, &rSet)) {
+            err |= pdreceive_connect(); 
+        }
+    }
+    //
+    }
+    
+    return err;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int main (int argc, char **argv)
+{
+    int portNumber = 0;
+    
+    /* Get parameters. */
+    
+    int err = (argc < 2 || sscanf (argv[1], "%d", &portNumber) < 1 || portNumber <= 0);
+    
+    pdreceive_socketProtocol = SOCK_STREAM;
+    
+    if (!err) {
+        if (argc >= 3) {
+            if (strcmp (argv[2], "udp") == 0) { pdreceive_socketProtocol = SOCK_DGRAM; }
+            else { 
+                err = (strcmp (argv[3], "tcp") != 0); 
+            }
+        }
+    }
+    
+    /* Make connection. */
+    
+    if (err) { pdreceive_usage(); }
+    else {
+    //
+    #ifdef _WIN32
+    
+    short version = MAKEWORD (2, 0);
     WSADATA nobby;
-#endif
-    if (argc < 2 || sscanf(argv[1], "%d", &portno) < 1 || portno <= 0)
-        goto usage;
-    if (argc >= 3)
-    {
-        if (!strcmp(argv[2], "tcp"))
-            protocol = SOCK_STREAM;
-        else if (!strcmp(argv[2], "udp"))
-            protocol = SOCK_DGRAM;
-        else goto usage;
+    
+    if (WSAStartup (version, &nobby)) {
+        pdreceive_socketError ("WSAstartup");
+        return 1; 
     }
-    else protocol = SOCK_STREAM;
-#ifdef _WIN32
-    if (WSAStartup(version, &nobby)) sockerror("WSAstartup");
-#endif
-    sockfd = socket(AF_INET, protocol, 0);
-    if (sockfd < 0)
-    {
-        sockerror("socket()");
-        exit(1);
-    }
-    maxfd = sockfd + 1;
+        
+    #endif
+    
+    pdreceive_socketFileDescriptor = socket (AF_INET, pdreceive_socketProtocol, 0);
+    
+    if (pdreceive_socketFileDescriptor < 0) { err = 1; pdreceive_socketError ("socket"); }
+    else {
+    //
+    struct sockaddr_in server;
+    
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = INADDR_ANY;
+    server.sin_port = htons ((unsigned short)portNumber);
 
-        /* assign client port number */
-    server.sin_port = htons((unsigned short)portno);
-
-        /* name the socket */
-    if (bind(sockfd, (struct sockaddr *)&server, sizeof(server)) < 0)
-    {
-        sockerror("bind");
-        x_closesocket(sockfd);
-        return (0);
-    }
-    if (protocol == SOCK_STREAM)
-    {
-        if (listen(sockfd, 5) < 0)
-        {
-            sockerror("listen");
-            x_closesocket(sockfd);
-            exit(1);
-        }
-    }
-        /* now loop forever selecting on sockets */
-    while (1)
-        dopoll();
-
-usage:
-    fprintf(stderr, "usage: pdreceive <portnumber> [udp|tcp]\n");
-    fprintf(stderr, "(default is tcp)\n");
-    exit(1);
-}
-
-static void addport(int fd)
-{
-    int nfd = nfdpoll;
-    t_poll *fp;
-    fdpoll = (t_poll *)realloc(fdpoll,
-        (nfdpoll+1) * sizeof(t_poll));
-    fp = fdpoll + nfdpoll;
-    fp->p_fd = fd;
-    nfdpoll++;
-    if (fd >= maxfd) maxfd = fd + 1;
-    fp->p_outlen = fp->p_discard = fp->p_gotsemi = 0;
-    if (!(fp->p_outbuf = (char*) malloc(BUFSIZE)))
-    {
-        fprintf(stderr, "out of memory");
-        exit(1);
-    }
-    printf("number_connected %d;\n", nfdpoll);
-}
-
-static void rmport(t_poll *x)
-{
-    int nfd = nfdpoll;
-    int i, size = nfdpoll * sizeof(t_poll);
-    t_poll *fp;
-    for (i = nfdpoll, fp = fdpoll; i--; fp++)
-    {
-        if (fp == x)
-        {
-            x_closesocket(fp->p_fd);
-            free(fp->p_outbuf);
-            while (i--)
-            {
-                fp[0] = fp[1];
-                fp++;
-            }
-            fdpoll = (t_poll *)realloc(fdpoll,
-                (nfdpoll-1) * sizeof(t_poll));
-            nfdpoll--;
-            printf("number_connected %d;\n", nfdpoll);
-            return;
-        }
-    }
-    fprintf(stderr, "warning: item removed from poll list but not found");
-}
-
-static void doconnect(void)
-{
-    int fd = accept(sockfd, 0, 0);
-    if (fd < 0)
-        perror("accept");
-    else addport(fd);
-}
-
-static void makeoutput(char *buf, int len)
-{
-#ifdef _WIN32
-    int j;
-    for (j = 0; j < len; j++)
-        putchar(buf[j]);
-#else
-    if (write(1, buf, len) < len)
-    {
-        perror("write");
-        exit(1);
-    }
-#endif
-}
-
-static void udpread(void)
-{
-    char buf[BUFSIZE];
-    int ret = recv(sockfd, buf, BUFSIZE, 0);
-    if (ret < 0)
-    {
-        sockerror("recv (udp)");
-        x_closesocket(sockfd);
-        exit(1);
-    }
-    else if (ret > 0)
-        makeoutput(buf, ret);
-}
-
-static int tcpmakeoutput(t_poll *x, char *inbuf, int len)
-{
-    int i;
-    int outlen = x->p_outlen;
-    char *outbuf = x->p_outbuf;
+    pdreceive_maximumFileDescriptor = pdreceive_socketFileDescriptor + 1;
     
-    for (i = 0 ; i < len ; i++)
-    {
-        char c = inbuf[i];
+    if (bind (pdreceive_socketFileDescriptor, (struct sockaddr *)&server, sizeof (struct sockaddr)) < 0) {
+        err = 1; pdreceive_socketError ("bind");
+    }
+    
+    /* Loop selecting on sockets. */
+    
+    if (!err) {
+    
+        if (pdreceive_socketProtocol == SOCK_STREAM) {
+            if (listen (pdreceive_socketFileDescriptor, 5) < 0) {
+                err = 1; pdreceive_socketError ("listen");
+            }
+        }
         
-        if((c != '\n') || (!x->p_gotsemi))
-            outbuf[outlen++] = c;
-        x->p_gotsemi = 0; 
-        if (outlen >= (BUFSIZE-1)) /*output buffer overflow; reserve 1 for '\n' */
-        {
-            fprintf(stderr, "pdreceive: message too long; discarding\n");
-            outlen = 0;
-            x->p_discard = 1;
-        }  
-            /* search for a semicolon.   */
-        if (c == ';')
-        {
-            outbuf[outlen++] = '\n';
-            if (!x->p_discard)
-               makeoutput(outbuf, outlen);
-
-            outlen = 0;
-            x->p_discard = 0;
-            x->p_gotsemi = 1;
-        } /* if (c == ';') */
-    } /* for */
-
-    x->p_outlen = outlen;
-    return (0);
+        while (!err) { err = pdreceive_poll(); }
+    }
+    
+    pdreceive_socketClose (pdreceive_socketFileDescriptor);
+    //
+    }
+    //
+    }
+    
+    return err;
 }
 
-static void tcpread(t_poll *x)
-{
-    int  ret;
-    char inbuf[BUFSIZE];
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-    ret = recv(x->p_fd, inbuf, BUFSIZE, 0);
-    if (ret < 0)
-    {
-        sockerror("recv (tcp)");
-        rmport(x);
-    }
-    else if (ret == 0)
-        rmport(x);
-    else tcpmakeoutput(x, inbuf, ret);
-}
-
-static void dopoll(void)
-{
-    int i;
-    t_poll *fp;
-    fd_set readset, writeset, exceptset;
-    FD_ZERO(&writeset);
-    FD_ZERO(&readset);
-    FD_ZERO(&exceptset);
-
-    FD_SET(sockfd, &readset);
-    if (protocol == SOCK_STREAM)
-    {
-        for (fp = fdpoll, i = nfdpoll; i--; fp++)
-            FD_SET(fp->p_fd, &readset);
-    }
-    if (select(maxfd+1, &readset, &writeset, &exceptset, 0) < 0)
-    {
-        perror("select");
-        exit(1);
-    }
-    if (protocol == SOCK_STREAM)
-    {
-        for (i = 0; i < nfdpoll; i++)
-            if (FD_ISSET(fdpoll[i].p_fd, &readset))
-                tcpread(&fdpoll[i]);
-        if (FD_ISSET(sockfd, &readset))
-            doconnect();
-    }
-    else
-    {
-        if (FD_ISSET(sockfd, &readset))
-            udpread();
-    }
-}
-
-
-static void sockerror(char *s)
-{
-#ifdef _WIN32
-    int err = WSAGetLastError();
-    if (err == 10054) return;
-    else if (err == 10044)
-    {
-        fprintf(stderr,
-            "Warning: you might not have TCP/IP \"networking\" turned on\n");
-    }
-#else
-    int err = errno;
-#endif
-    fprintf(stderr, "%s: %s (%d)\n", s, strerror(err), err);
-}
-
-static void x_closesocket(int fd)
-{
-#ifdef _WIN32
-    closesocket(fd);
-#else
-    close(fd);
-#endif
-}
