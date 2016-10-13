@@ -105,24 +105,24 @@ typedef struct _atomoutlet {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define TIME_DEFAULT_DELAY          1000.0
-#define TIME_DEFAULT_GRAIN          20.0
+#define TIME_DEFAULT_DELAY                  1000.0
+#define TIME_DEFAULT_GRAIN                  20.0
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define TEXTCLIENT_ASPOINTER(x)     ((x)->tc_templateIdentifier)
-#define TEXTCLIENT_GETPOINTER(x)    &((x)->tc_gpointer)
-#define TEXTCLIENT_GETNAME(x)       &((x)->tc_name)
+#define TEXTCLIENT_ASPOINTER(x)             ((x)->tc_templateIdentifier)
+#define TEXTCLIENT_GETPOINTER(x)            &((x)->tc_gpointer)
+#define TEXTCLIENT_GETNAME(x)               &((x)->tc_name)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define ARRAYCLIENT_ASPOINTER(x)    ((x)->ac_templateIdentifier)
-#define ARRAYCLIENT_GETPOINTER(x)   &((x)->ac_gpointer)
-#define ARRAYCLIENT_GETNAME(x)      &((x)->ac_name)
+#define ARRAYCLIENT_ASPOINTER(x)            ((x)->ac_templateIdentifier)
+#define ARRAYCLIENT_GETPOINTER(x)           &((x)->ac_gpointer)
+#define ARRAYCLIENT_GETNAME(x)              &((x)->ac_name)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

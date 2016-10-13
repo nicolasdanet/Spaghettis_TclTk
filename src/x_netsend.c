@@ -26,7 +26,7 @@ extern t_class *netreceive_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *netsend_class;
+static t_class *netsend_class;                      /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -270,62 +270,75 @@ static void netsend_send(t_netsend *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *netsend_new(t_symbol *s, int argc, t_atom *argv)
+static void *netsend_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_netsend *x = (t_netsend *)pd_new(netsend_class);
-    outlet_new(&x->x_obj, &s_float);
-    x->x_protocol = SOCK_STREAM;
-    x->x_isBinary = 0;
-    if (argc && argv->a_type == A_FLOAT)
-    {
-        x->x_protocol = (argv->a_w.w_float != 0 ? SOCK_DGRAM : SOCK_STREAM);
+    t_netsend *x = (t_netsend *)pd_new (netsend_class);
+
+    x->x_fd         = -1;
+    x->x_isBinary   = 0;
+    x->x_protocol   = SOCK_STREAM;
+    x->x_outletLeft = outlet_new (cast_object (x), &s_float);
+    
+    #if PD_WITH_LEGACY 
+    
+    if (argc && IS_FLOAT (argv)) {
+        x->x_protocol = (GET_FLOAT (argv) != 0.0 ? SOCK_DGRAM : SOCK_STREAM); 
         argc = 0;
     }
-    else while (argc && argv->a_type == A_SYMBOL &&
-        *argv->a_w.w_symbol->s_name == '-')
-    {
-        if (!strcmp(argv->a_w.w_symbol->s_name, "-b"))
-            x->x_isBinary = 1;
-        else if (!strcmp(argv->a_w.w_symbol->s_name, "-u"))
-            x->x_protocol = SOCK_DGRAM;
-        else
-        {
-            post_error ("netsend: unknown flag ...");
-            error__post (argc, argv);
-        }
-        argc--; argv++;
+    
+    #endif
+    
+    while (argc > 0) {
+    //
+    t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
+
+    if (t == sym___dash__b || t == sym___dash__binary)   { argc--; argv++; x->x_isBinary = 1; }
+    else if (t == sym___dash__u || t == sym___dash__udp) { argc--; argv++; x->x_protocol = SOCK_DGRAM; }
+    else {
+        break;
     }
-    if (argc)
-    {
-        post_error ("netsend: extra arguments ignored:");
-        error__post (argc, argv);
+    //
     }
-    x->x_fd = -1;
-    if (x->x_protocol == SOCK_STREAM)
-        x->x_outletRight = outlet_new(&x->x_obj, &s_anything);
-    return (x);
+    
+    error__options (s, argc, argv);
+    
+    if (argc) { 
+        warning_unusedArguments (s, argc, argv); 
+    }
+    
+    if (x->x_protocol == SOCK_STREAM) {
+        x->x_outletRight = outlet_new (cast_object (x), &s_anything);
+    }
+    
+    return x;
 }
 
-static void netsend_free(t_netsend *x)
+static void netsend_free (t_netsend *x)
 {
-    netsend_disconnect(x);
+    netsend_disconnect (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void netsend_setup(void)
+void netsend_setup (void)
 {
-    netsend_class = class_new(sym_netsend, (t_newmethod)netsend_new,
-        (t_method)netsend_free,
-        sizeof(t_netsend), 0, A_GIMME, 0);
-    class_addMethod(netsend_class, (t_method)netsend_connect,
-        sym_connect, A_SYMBOL, A_FLOAT, 0);
-    class_addMethod(netsend_class, (t_method)netsend_disconnect,
-        sym_disconnect, 0);
-    class_addMethod(netsend_class, (t_method)netsend_send, sym_send,
-        A_GIMME, 0);
+    t_class *c = NULL;
+    
+    c = class_new (sym_netsend,
+            (t_newmethod)netsend_new,
+            (t_method)netsend_free,
+            sizeof (t_netsend),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+            
+    class_addMethod (c, (t_method)netsend_connect,      sym_connect,    A_SYMBOL, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)netsend_disconnect,   sym_disconnect, A_NULL);
+    class_addMethod (c, (t_method)netsend_send,         sym_send,       A_GIMME, A_NULL);
+        
+    netsend_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
