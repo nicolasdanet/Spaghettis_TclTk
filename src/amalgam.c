@@ -207,10 +207,10 @@
 #include "x_namecanvas.c"
 #include "x_serial.c"
 #include "x_realtime.c"
-#include "x_oscparse.c"
-#include "x_oscformat.c"
 #include "x_netsend.c"
 #include "x_netreceive.c"
+#include "x_oscparse.c"
+#include "x_oscformat.c"
 
 /* DSP. */
 

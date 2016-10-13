@@ -18,51 +18,24 @@
 #include "s_system.h"
 #include "x_control.h"
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 extern t_class *netreceive_class;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 static t_class *netsend_class;
 
-static void *netsend_new(t_symbol *s, int argc, t_atom *argv)
-{
-    t_netsend *x = (t_netsend *)pd_new(netsend_class);
-    outlet_new(&x->x_obj, &s_float);
-    x->x_protocol = SOCK_STREAM;
-    x->x_bin = 0;
-    if (argc && argv->a_type == A_FLOAT)
-    {
-        x->x_protocol = (argv->a_w.w_float != 0 ? SOCK_DGRAM : SOCK_STREAM);
-        argc = 0;
-    }
-    else while (argc && argv->a_type == A_SYMBOL &&
-        *argv->a_w.w_symbol->s_name == '-')
-    {
-        if (!strcmp(argv->a_w.w_symbol->s_name, "-b"))
-            x->x_bin = 1;
-        else if (!strcmp(argv->a_w.w_symbol->s_name, "-u"))
-            x->x_protocol = SOCK_DGRAM;
-        else
-        {
-            post_error ("netsend: unknown flag ...");
-            error__post (argc, argv);
-        }
-        argc--; argv++;
-    }
-    if (argc)
-    {
-        post_error ("netsend: extra arguments ignored:");
-        error__post (argc, argv);
-    }
-    x->x_sockfd = -1;
-    if (x->x_protocol == SOCK_STREAM)
-        x->x_msgout = outlet_new(&x->x_obj, &s_anything);
-    return (x);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 void netsend_readbin(t_netsend *x, int fd)
 {
     unsigned char inbuf[PD_STRING];
     int ret = recv(fd, inbuf, PD_STRING, 0), i;
-    if (!x->x_msgout)
+    if (!x->x_outletRight)
     {
         PD_BUG;
         return;
@@ -81,12 +54,12 @@ void netsend_readbin(t_netsend *x, int fd)
         t_atom *ap = (t_atom *)alloca(ret * sizeof(t_atom));
         for (i = 0; i < ret; i++)
             SET_FLOAT(ap+i, inbuf[i]);
-        outlet_list(x->x_msgout, ret, ap);
+        outlet_list(x->x_outletRight, ret, ap);
     }
     else
     {
         for (i = 0; i < ret; i++)
-            outlet_float(x->x_msgout, inbuf[i]);
+            outlet_float(x->x_outletRight, inbuf[i]);
     }
 }
 
@@ -114,11 +87,11 @@ void netsend_doit(void *z, t_buffer *b)
             if (at[msg].a_type == A_FLOAT)
             {
                 if (emsg > msg + 1)
-                    outlet_list(x->x_msgout, emsg-msg, at + msg);
-                else outlet_float(x->x_msgout, at[msg].a_w.w_float);
+                    outlet_list(x->x_outletRight, emsg-msg, at + msg);
+                else outlet_float(x->x_outletRight, at[msg].a_w.w_float);
             }
             else if (at[msg].a_type == A_SYMBOL)
-                outlet_anything(x->x_msgout, at[msg].a_w.w_symbol,
+                outlet_anything(x->x_outletRight, at[msg].a_w.w_symbol,
                     emsg-msg-1, at + msg + 1);
         }
     nodice:
@@ -126,6 +99,72 @@ void netsend_doit(void *z, t_buffer *b)
     }
 }
 
+int netsend_dosend(t_netsend *x, int sockfd, t_symbol *s, int argc, t_atom *argv)
+{
+    char *buf, *bp;
+    int length, sent, fail = 0;
+    t_buffer *b = 0;
+    if (x->x_isBinary)
+    {
+        int i;
+        buf = alloca(argc);
+        for (i = 0; i < argc; i++)
+            ((unsigned char *)buf)[i] = atom_getFloatAtIndex(i, argc, argv);
+        length = argc;
+    }
+    else
+    {
+        t_atom at;
+        b = buffer_new();
+        buffer_append(b, argc, argv);
+        SET_SEMICOLON(&at);
+        buffer_appendAtom(b, &at);
+        buffer_toStringUnzeroed(b, &buf, &length);
+    }
+    for (bp = buf, sent = 0; sent < length;)
+    {
+        static double lastwarntime;
+        static double pleasewarn;
+        double timebefore = sys_getRealTimeInSeconds();
+        int res = send(sockfd, bp, length-sent, 0);
+        double timeafter = sys_getRealTimeInSeconds();
+        int late = (timeafter - timebefore > 0.005);
+        if (late || pleasewarn)
+        {
+            if (timeafter > lastwarntime + 2)
+            {
+                 post("netsend/netreceive blocked %d msec",
+                    (int)(1000 * ((timeafter - timebefore) +
+                        pleasewarn)));
+                 pleasewarn = 0;
+                 lastwarntime = timeafter;
+            }
+            else if (late) pleasewarn += timeafter - timebefore;
+        }
+        if (res <= 0)
+        {
+            PD_BUG;
+            fail = 1;
+            break;
+        }
+        else
+        {
+            sent += res;
+            bp += res;
+        }
+    }
+    done:
+    if (!x->x_isBinary)
+    {
+        PD_MEMORY_FREE(buf);
+        buffer_free(b);
+    }
+    return (fail);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void netsend_connect(t_netsend *x, t_symbol *hostname,
     t_float fportno)
@@ -135,7 +174,7 @@ static void netsend_connect(t_netsend *x, t_symbol *hostname,
     int sockfd;
     int portno = fportno;
     int intarg;
-    if (x->x_sockfd >= 0)
+    if (x->x_fd >= 0)
     {
         post_error ("netsend_connect: already connected");
         return;
@@ -191,10 +230,10 @@ static void netsend_connect(t_netsend *x, t_symbol *hostname,
         interface_closeSocket(sockfd);
         return;
     }
-    x->x_sockfd = sockfd;
-    if (x->x_msgout)    /* add polling function for return messages */
+    x->x_fd = sockfd;
+    if (x->x_outletRight)    /* add polling function for return messages */
     {
-        if (x->x_bin)
+        if (x->x_isBinary)
             interface_monitorAddPoller(sockfd, (t_pollfn)netsend_readbin, x);
         else
         {
@@ -206,92 +245,75 @@ static void netsend_connect(t_netsend *x, t_symbol *hostname,
 
 static void netsend_disconnect(t_netsend *x)
 {
-    if (x->x_sockfd >= 0)
+    if (x->x_fd >= 0)
     {
-        interface_monitorRemovePoller(x->x_sockfd);
-        interface_closeSocket(x->x_sockfd);
-        x->x_sockfd = -1;
+        interface_monitorRemovePoller(x->x_fd);
+        interface_closeSocket(x->x_fd);
+        x->x_fd = -1;
         outlet_float(x->x_obj.te_outlet, 0);
     }
 }
 
-int netsend_dosend(t_netsend *x, int sockfd, t_symbol *s, int argc, t_atom *argv)
-{
-    char *buf, *bp;
-    int length, sent, fail = 0;
-    t_buffer *b = 0;
-    if (x->x_bin)
-    {
-        int i;
-        buf = alloca(argc);
-        for (i = 0; i < argc; i++)
-            ((unsigned char *)buf)[i] = atom_getFloatAtIndex(i, argc, argv);
-        length = argc;
-    }
-    else
-    {
-        t_atom at;
-        b = buffer_new();
-        buffer_append(b, argc, argv);
-        SET_SEMICOLON(&at);
-        buffer_appendAtom(b, &at);
-        buffer_toStringUnzeroed(b, &buf, &length);
-    }
-    for (bp = buf, sent = 0; sent < length;)
-    {
-        static double lastwarntime;
-        static double pleasewarn;
-        double timebefore = sys_getRealTimeInSeconds();
-        int res = send(sockfd, bp, length-sent, 0);
-        double timeafter = sys_getRealTimeInSeconds();
-        int late = (timeafter - timebefore > 0.005);
-        if (late || pleasewarn)
-        {
-            if (timeafter > lastwarntime + 2)
-            {
-                 post("netsend/netreceive blocked %d msec",
-                    (int)(1000 * ((timeafter - timebefore) +
-                        pleasewarn)));
-                 pleasewarn = 0;
-                 lastwarntime = timeafter;
-            }
-            else if (late) pleasewarn += timeafter - timebefore;
-        }
-        if (res <= 0)
-        {
-            PD_BUG;
-            fail = 1;
-            break;
-        }
-        else
-        {
-            sent += res;
-            bp += res;
-        }
-    }
-    done:
-    if (!x->x_bin)
-    {
-        PD_MEMORY_FREE(buf);
-        buffer_free(b);
-    }
-    return (fail);
-}
+
 
 
 static void netsend_send(t_netsend *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (x->x_sockfd >= 0)
+    if (x->x_fd >= 0)
     {
-        if (netsend_dosend(x, x->x_sockfd, s, argc, argv))
+        if (netsend_dosend(x, x->x_fd, s, argc, argv))
             netsend_disconnect(x);
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *netsend_new(t_symbol *s, int argc, t_atom *argv)
+{
+    t_netsend *x = (t_netsend *)pd_new(netsend_class);
+    outlet_new(&x->x_obj, &s_float);
+    x->x_protocol = SOCK_STREAM;
+    x->x_isBinary = 0;
+    if (argc && argv->a_type == A_FLOAT)
+    {
+        x->x_protocol = (argv->a_w.w_float != 0 ? SOCK_DGRAM : SOCK_STREAM);
+        argc = 0;
+    }
+    else while (argc && argv->a_type == A_SYMBOL &&
+        *argv->a_w.w_symbol->s_name == '-')
+    {
+        if (!strcmp(argv->a_w.w_symbol->s_name, "-b"))
+            x->x_isBinary = 1;
+        else if (!strcmp(argv->a_w.w_symbol->s_name, "-u"))
+            x->x_protocol = SOCK_DGRAM;
+        else
+        {
+            post_error ("netsend: unknown flag ...");
+            error__post (argc, argv);
+        }
+        argc--; argv++;
+    }
+    if (argc)
+    {
+        post_error ("netsend: extra arguments ignored:");
+        error__post (argc, argv);
+    }
+    x->x_fd = -1;
+    if (x->x_protocol == SOCK_STREAM)
+        x->x_outletRight = outlet_new(&x->x_obj, &s_anything);
+    return (x);
 }
 
 static void netsend_free(t_netsend *x)
 {
     netsend_disconnect(x);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void netsend_setup(void)
 {
@@ -305,4 +327,7 @@ void netsend_setup(void)
     class_addMethod(netsend_class, (t_method)netsend_send, sym_send,
         A_GIMME, 0);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
