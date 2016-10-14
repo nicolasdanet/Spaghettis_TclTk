@@ -78,18 +78,19 @@ typedef struct _binop {
     } t_binop;
 
 typedef struct _netsend {
-    t_object            x_obj;                          /* Must be the first. */
-    int                 x_fd;
-    int                 x_protocol;
-    int                 x_isBinary;
-    t_outlet            *x_outletLeft;
-    t_outlet            *x_outletRight;
+    t_object            ns_obj;                         /* Must be the first. */
+    int                 ns_fd;
+    int                 ns_protocol;
+    int                 ns_isBinary;
+    t_outlet            *ns_outlet;
+    t_outlet            *ns_outletLeft;
+    t_outlet            *ns_outletRight;
     } t_netsend;
 
 typedef struct _netreceive {
-    t_netsend           x_ns;                           /* Must be the first. */
-    int                 x_pollersSize;
-    int                 *x_pollers;
+    t_netsend           nr_ns;                          /* Must be the first. */
+    int                 nr_pollersSize;
+    int                 *nr_pollers;
     } t_netreceive;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -278,15 +279,6 @@ void        atomoutlet_makeTypedOutlet      (t_atomoutlet *x,
                                                 t_symbol *type,
                                                 t_atom *a,
                                                 int inlet);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void        netreceive_notify               (t_netreceive *x, int fd);
-void        netsend_readbin                 (t_netsend *x, int fd);
-int         netsend_dosend                  (t_netsend *x, int sockfd, t_symbol *s, int argc, t_atom *argv);
-void        netsend_doit                    (void *z, t_buffer *b);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

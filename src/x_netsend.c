@@ -31,80 +31,32 @@ static t_class *netsend_class;                      /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void netsend_readbin(t_netsend *x, int fd)
+static void netsend_socketOption (t_netsend *x, int fd)
 {
-    unsigned char inbuf[PD_STRING];
-    int ret = recv(fd, inbuf, PD_STRING, 0), i;
-    if (!x->x_outletRight)
-    {
-        PD_BUG;
-        return;
-    }
-    if (ret <= 0)
-    {
-        if (ret < 0)
+    if (x->ns_protocol == SOCK_STREAM) {
+        int option = 1;
+        if (setsockopt (fd, IPPROTO_TCP, TCP_NODELAY, (char *)&option, sizeof (option)) < 0) {
             PD_BUG;
-        interface_monitorRemovePoller(fd);
-        interface_closeSocket(fd);
-        if (x->x_obj.te_g.g_pd == netreceive_class)
-            netreceive_notify((t_netreceive *)x, fd);
-    }
-    else if (x->x_protocol == SOCK_DGRAM)
-    {
-        t_atom *ap = (t_atom *)alloca(ret * sizeof(t_atom));
-        for (i = 0; i < ret; i++)
-            SET_FLOAT(ap+i, inbuf[i]);
-        outlet_list(x->x_outletRight, ret, ap);
-    }
-    else
-    {
-        for (i = 0; i < ret; i++)
-            outlet_float(x->x_outletRight, inbuf[i]);
+        }
+        
+    } else {
+        int option = 1;
+        if (setsockopt (fd, SOL_SOCKET, SO_BROADCAST, (const void *)&option, sizeof (option)) < 0) {
+            PD_BUG;
+        }
     }
 }
 
-void netsend_doit(void *z, t_buffer *b)
-{
-    t_atom messbuf[1024];
-    t_netsend *x = (t_netsend *)z;
-    int msg, natom = buffer_size(b);
-    t_atom *at = buffer_atoms(b);
-    for (msg = 0; msg < natom;)
-    {
-        int emsg;
-        for (emsg = msg; emsg < natom && at[emsg].a_type != A_COMMA
-            && at[emsg].a_type != A_SEMICOLON; emsg++)
-                ;
-        if (emsg > msg)
-        {
-            int i;
-            for (i = msg; i < emsg; i++)
-                if (at[i].a_type == A_DOLLAR || at[i].a_type == A_DOLLARSYMBOL)
-            {
-                post_error ("netreceive: got dollar sign in message");
-                goto nodice;
-            }
-            if (at[msg].a_type == A_FLOAT)
-            {
-                if (emsg > msg + 1)
-                    outlet_list(x->x_outletRight, emsg-msg, at + msg);
-                else outlet_float(x->x_outletRight, at[msg].a_w.w_float);
-            }
-            else if (at[msg].a_type == A_SYMBOL)
-                outlet_anything(x->x_outletRight, at[msg].a_w.w_symbol,
-                    emsg-msg-1, at + msg + 1);
-        }
-    nodice:
-        msg = emsg + 1;
-    }
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 int netsend_dosend(t_netsend *x, int sockfd, t_symbol *s, int argc, t_atom *argv)
 {
     char *buf, *bp;
     int length, sent, fail = 0;
     t_buffer *b = 0;
-    if (x->x_isBinary)
+    if (x->ns_isBinary)
     {
         int i;
         buf = alloca(argc);
@@ -154,7 +106,7 @@ int netsend_dosend(t_netsend *x, int sockfd, t_symbol *s, int argc, t_atom *argv
         }
     }
     done:
-    if (!x->x_isBinary)
+    if (!x->ns_isBinary)
     {
         PD_MEMORY_FREE(buf);
         buffer_free(b);
@@ -166,102 +118,63 @@ int netsend_dosend(t_netsend *x, int sockfd, t_symbol *s, int argc, t_atom *argv
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void netsend_connect(t_netsend *x, t_symbol *hostname,
-    t_float fportno)
+static void netsend_connect (t_netsend *x, t_symbol *hostName, t_float f)
 {
+    int portNumber = f;
+    
+    if (x->ns_fd >= 0) { error_unexpected (sym_netsend, hostName); }
+    else {
+    //
+    int fd = socket (AF_INET, x->ns_protocol, 0);
+
+    if (fd < 0) { error_canNotOpen (sym_netsend); }
+    else {
+    //
+    struct hostent *h = gethostbyname (hostName->s_name);
+    
+    netsend_socketOption (x, fd);
+    
+    if (h == NULL) { error_invalid (sym_netsend, hostName); }
+    else {
+    //
     struct sockaddr_in server;
-    struct hostent *hp;
-    int sockfd;
-    int portno = fportno;
-    int intarg;
-    if (x->x_fd >= 0)
-    {
-        post_error ("netsend_connect: already connected");
-        return;
-    }
-
-        /* create a socket */
-    sockfd = socket(AF_INET, x->x_protocol, 0);
-#if 0
-    fprintf(stderr, "send socket %d\n", sockfd);
-#endif
-    if (sockfd < 0)
-    {
-        PD_BUG;
-        return;
-    }
-    /* connect socket using hostname provided in command line */
+    
+    post ("netsend: connecting to port %d", portNumber);
+    
     server.sin_family = AF_INET;
-    hp = gethostbyname(hostname->s_name);
-    if (hp == 0)
-    {
-        post("bad host?\n");
-        return;
-    }
-#if 0
-    intarg = 0;
-    if (setsockopt(sockfd, SOL_SOCKET, SO_SNDBUF,
-        &intarg, sizeof(intarg)) < 0)
-            post("setsockopt (SO_RCVBUF) failed\n");
-#endif
-    intarg = 1;
-    if(setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, 
-                  (const void *)&intarg, sizeof(intarg)) < 0)
-        post("setting SO_BROADCAST");
-        /* for stream (TCP) sockets, specify "nodelay" */
-    if (x->x_protocol == SOCK_STREAM)
-    {
-        intarg = 1;
-        if (setsockopt(sockfd, IPPROTO_TCP, TCP_NODELAY,
-            (char *)&intarg, sizeof(intarg)) < 0)
-                post("setsockopt (TCP_NODELAY) failed\n");
-    }
-    memcpy((char *)&server.sin_addr, (char *)hp->h_addr, hp->h_length);
+    server.sin_port = htons ((u_short)portNumber);
+    memcpy ((char *)&server.sin_addr, (char *)h->h_addr, h->h_length);
 
-    /* assign client port number */
-    server.sin_port = htons((u_short)portno);
-
-    post("connecting to port %d", portno);
-        /* try to connect.  LATER make a separate thread to do this
-        because it might block */
-    if (connect(sockfd, (struct sockaddr *) &server, sizeof (server)) < 0)
-    {
-        PD_BUG;
-        interface_closeSocket(sockfd);
+    if (connect (fd, (struct sockaddr *)&server, sizeof (server)) < 0) {
+        error_failed (sym_netsend);
+        interface_closeSocket (fd);
         return;
+        
+    } else { x->ns_fd = fd; outlet_float (x->ns_outlet, 1); }
+    //
     }
-    x->x_fd = sockfd;
-    if (x->x_outletRight)    /* add polling function for return messages */
-    {
-        if (x->x_isBinary)
-            interface_monitorAddPoller(sockfd, (t_pollfn)netsend_readbin, x);
-        else
-        {
-            t_receiver *y = receiver_new((void *)x, sockfd, NULL, netsend_doit, 0);
-        }
+    //
     }
-    outlet_float(x->x_obj.te_outlet, 1);
+    //
+    }
 }
 
 static void netsend_disconnect(t_netsend *x)
 {
-    if (x->x_fd >= 0)
+    if (x->ns_fd >= 0)
     {
-        interface_monitorRemovePoller(x->x_fd);
-        interface_closeSocket(x->x_fd);
-        x->x_fd = -1;
-        outlet_float(x->x_obj.te_outlet, 0);
+        interface_monitorRemovePoller(x->ns_fd);
+        interface_closeSocket(x->ns_fd);
+        x->ns_fd = -1;
+        outlet_float(x->ns_outlet, 0);
     }
 }
 
-
-
-
 static void netsend_send(t_netsend *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (x->x_fd >= 0)
+    if (x->ns_fd >= 0)
     {
-        if (netsend_dosend(x, x->x_fd, s, argc, argv))
+        if (netsend_dosend(x, x->ns_fd, s, argc, argv))
             netsend_disconnect(x);
     }
 }
@@ -274,15 +187,15 @@ static void *netsend_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_netsend *x = (t_netsend *)pd_new (netsend_class);
 
-    x->x_fd         = -1;
-    x->x_isBinary   = 0;
-    x->x_protocol   = SOCK_STREAM;
-    x->x_outletLeft = outlet_new (cast_object (x), &s_float);
+    x->ns_fd        = -1;
+    x->ns_isBinary  = 0;
+    x->ns_protocol  = SOCK_STREAM;
+    x->ns_outlet    = outlet_new (cast_object (x), &s_float);
     
     #if PD_WITH_LEGACY 
     
     if (argc && IS_FLOAT (argv)) {
-        x->x_protocol = (GET_FLOAT (argv) != 0.0 ? SOCK_DGRAM : SOCK_STREAM); 
+        x->ns_protocol = (GET_FLOAT (argv) != 0.0 ? SOCK_DGRAM : SOCK_STREAM); 
         argc = 0;
     }
     
@@ -292,8 +205,8 @@ static void *netsend_new (t_symbol *s, int argc, t_atom *argv)
     //
     t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
 
-    if (t == sym___dash__b || t == sym___dash__binary)   { argc--; argv++; x->x_isBinary = 1; }
-    else if (t == sym___dash__u || t == sym___dash__udp) { argc--; argv++; x->x_protocol = SOCK_DGRAM; }
+    if (t == sym___dash__b || t == sym___dash__binary)   { argc--; argv++; x->ns_isBinary = 1; }
+    else if (t == sym___dash__u || t == sym___dash__udp) { argc--; argv++; x->ns_protocol = SOCK_DGRAM; }
     else {
         break;
     }
@@ -304,10 +217,6 @@ static void *netsend_new (t_symbol *s, int argc, t_atom *argv)
     
     if (argc) { 
         warning_unusedArguments (s, argc, argv); 
-    }
-    
-    if (x->x_protocol == SOCK_STREAM) {
-        x->x_outletRight = outlet_new (cast_object (x), &s_anything);
     }
     
     return x;
