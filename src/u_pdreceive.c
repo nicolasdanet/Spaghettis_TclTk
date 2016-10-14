@@ -39,7 +39,8 @@
 /* 
     This is a standalone program that receives messages from PureData via the
     netsend/netreceive ("FUDI") protocol, and copies them to standard output.
-
+    
+    Note that it does NOT support binary mode.
 */
 
 /* < http://en.wikipedia.org/wiki/FUDI > */
@@ -50,7 +51,6 @@
 typedef struct _poll {
     int     p_fd;
     int     p_messageIsTruncated;
-    int     p_lastCharacterIsSemicolon;
     int     p_messageLength;
     char    *p_buffer;
     } t_poll;
@@ -130,7 +130,7 @@ static int pdreceive_outputRaw (char *t, int size)
 #else
 
 static int pdreceive_outputRaw (char *t, int size)
-{
+{   
     if (write (1, t, size) < size) { pdreceive_socketError ("write"); return 1; }
     else {
         return 0;
@@ -146,34 +146,30 @@ static int pdreceive_outputUDP (char *t, int size)
 
 static int pdreceive_outputTCP (t_poll *x, char *t, int size)
 {
-    char *messageBuffer = x->p_buffer;
-    int i, messageLength = x->p_messageLength;
-    
+    char *p = x->p_buffer;
+    int i, length = x->p_messageLength;
+        
     for (i = 0; i < size; i++) {
     //
     char c = t[i];
     
-    if ((c != '\n') || (!x->p_lastCharacterIsSemicolon)) { messageBuffer[messageLength++] = c; }
+    if (c != '\n') { p[length++] = c; }
     
-    x->p_lastCharacterIsSemicolon = 0; 
-    
-    if (messageLength >= (PDRECEIVE_BUFFER_SIZE - 1)) {
+    if (length >= (PDRECEIVE_BUFFER_SIZE - 1)) {
         fprintf (stderr, "overflow: discard message\n");
-        messageLength = 0;
+        length = 0;
         x->p_messageIsTruncated = 1;
     }  
 
     if (c == ';') {
-        messageBuffer[messageLength++] = '\n';
-        if (!x->p_messageIsTruncated) { pdreceive_outputRaw (messageBuffer, messageLength); }
-        messageLength = 0;
-        x->p_messageIsTruncated = 0;
-        x->p_lastCharacterIsSemicolon = 1;
+        p[length++] = '\n';
+        if (!x->p_messageIsTruncated) { pdreceive_outputRaw (p, length); }
+        length = 0; x->p_messageIsTruncated = 0;
     }
     //
     }
 
-    x->p_messageLength = messageLength;
+    x->p_messageLength = length;
     
     return 0;
 }
@@ -192,11 +188,10 @@ static int pdreceive_addPort (int fd)
     
     pdreceive_pollersSize++;
     
-    p->p_fd                         = fd;
-    p->p_messageIsTruncated         = 0;
-    p->p_lastCharacterIsSemicolon   = 0;
-    p->p_messageLength              = 0;
-    p->p_buffer                     = (char *)malloc (PDRECEIVE_BUFFER_SIZE);
+    p->p_fd                 = fd;
+    p->p_messageIsTruncated = 0;
+    p->p_messageLength      = 0;
+    p->p_buffer             = (char *)malloc (PDRECEIVE_BUFFER_SIZE);
     
     if (fd >= pdreceive_maximumFileDescriptor) { pdreceive_maximumFileDescriptor = fd + 1; }
     

@@ -9,109 +9,93 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Memory leak!!!!*/
-/* receiver_free never called */
-
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "s_system.h"
 #include "x_control.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_class *netreceive_class;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-static t_class *netsend_class;                      /* Shared. */
+static t_class *netsend_class;      /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 static void netsend_socketOption (t_netsend *x, int fd)
 {
+    int v = 1;
+    
     if (x->ns_protocol == SOCK_STREAM) {
-        int option = 1;
-        if (setsockopt (fd, IPPROTO_TCP, TCP_NODELAY, (char *)&option, sizeof (option)) < 0) {
-            PD_BUG;
-        }
-        
+        if (setsockopt (fd, IPPROTO_TCP, TCP_NODELAY, (const void *)&v, sizeof (v)) < 0) { PD_BUG; }
     } else {
-        int option = 1;
-        if (setsockopt (fd, SOL_SOCKET, SO_BROADCAST, (const void *)&option, sizeof (option)) < 0) {
-            PD_BUG;
-        }
+        if (setsockopt (fd, SOL_SOCKET, SO_BROADCAST, (const void *)&v, sizeof (v)) < 0) { PD_BUG; }
     }
+}
+
+static void netsend_socketClose (t_netsend *x)
+{
+    if (x->ns_fd >= 0) { interface_closeSocket (x->ns_fd); x->ns_fd = -1; }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int netsend_dosend(t_netsend *x, int sockfd, t_symbol *s, int argc, t_atom *argv)
+t_error netsend_sendPerformRaw (t_netsend *x, int fd, char *t, int length)
 {
-    char *buf, *bp;
-    int length, sent, fail = 0;
-    t_buffer *b = 0;
-    if (x->ns_isBinary)
-    {
-        int i;
-        buf = alloca(argc);
-        for (i = 0; i < argc; i++)
-            ((unsigned char *)buf)[i] = atom_getFloatAtIndex(i, argc, argv);
-        length = argc;
-    }
-    else
-    {
-        t_atom at;
-        b = buffer_new();
-        buffer_append(b, argc, argv);
-        SET_SEMICOLON(&at);
-        buffer_appendAtom(b, &at);
-        buffer_toStringUnzeroed(b, &buf, &length);
-    }
-    for (bp = buf, sent = 0; sent < length;)
-    {
-        static double lastwarntime;
-        static double pleasewarn;
-        double timebefore = sys_getRealTimeInSeconds();
-        int res = send(sockfd, bp, length-sent, 0);
-        double timeafter = sys_getRealTimeInSeconds();
-        int late = (timeafter - timebefore > 0.005);
-        if (late || pleasewarn)
-        {
-            if (timeafter > lastwarntime + 2)
-            {
-                 post("netsend/netreceive blocked %d msec",
-                    (int)(1000 * ((timeafter - timebefore) +
-                        pleasewarn)));
-                 pleasewarn = 0;
-                 lastwarntime = timeafter;
-            }
-            else if (late) pleasewarn += timeafter - timebefore;
-        }
-        if (res <= 0)
-        {
-            PD_BUG;
-            fail = 1;
-            break;
-        }
-        else
-        {
-            sent += res;
-            bp += res;
+    t_error err = PD_ERROR_NONE;
+    
+    ssize_t alreadySent = 0;
+    char *p = t;
+
+    while (alreadySent < length) {
+        ssize_t n = send (fd, p, length - alreadySent, 0);
+        if (n <= 0) {
+            error_failsToWrite (sym_netsend);
+            err = PD_ERROR;
+            break; 
+        } else {
+            alreadySent += n; p += n;
         }
     }
-    done:
-    if (!x->ns_isBinary)
-    {
-        PD_MEMORY_FREE(buf);
-        buffer_free(b);
-    }
-    return (fail);
+    
+    return err;
+}
+
+t_error netsend_sendPerformText (t_netsend *x, int fd, t_symbol *s, int argc, t_atom *argv)
+{   
+    t_error err = PD_ERROR_NONE;
+    
+    t_buffer *b = buffer_new();
+    char *t = NULL; int length;
+    
+    buffer_append (b, argc, argv);
+    buffer_appendSemicolon (b);
+    buffer_toStringUnzeroed (b, &t, &length);
+    
+    err = netsend_sendPerformRaw (x, fd, t, length);
+
+    PD_MEMORY_FREE (t);
+    buffer_free (b);
+
+    return err;
+}
+
+t_error netsend_sendPerformBinary (t_netsend *x, int fd, t_symbol *s, int argc, t_atom *argv)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    unsigned char *t = (unsigned char *)PD_MEMORY_GET (argc * sizeof (unsigned char));
+    int i;
+        
+    for (i = 0; i < argc; i++) { *(t + i) = (unsigned char)atom_getFloatAtIndex (i, argc, argv); }
+    
+    err = netsend_sendPerformRaw (x, fd, (char *)t, argc);
+
+    PD_MEMORY_FREE (t);
+
+    return err;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -147,7 +131,8 @@ static void netsend_connect (t_netsend *x, t_symbol *hostName, t_float f)
 
     if (connect (fd, (struct sockaddr *)&server, sizeof (server)) < 0) {
         error_failed (sym_netsend);
-        interface_closeSocket (fd);
+        netsend_socketClose (x);
+        outlet_float (x->ns_outlet, 0);
         return;
         
     } else { x->ns_fd = fd; outlet_float (x->ns_outlet, 1); }
@@ -159,23 +144,24 @@ static void netsend_connect (t_netsend *x, t_symbol *hostName, t_float f)
     }
 }
 
-static void netsend_disconnect(t_netsend *x)
+static void netsend_disconnect (t_netsend *x)
 {
-    if (x->ns_fd >= 0)
-    {
-        interface_monitorRemovePoller(x->ns_fd);
-        interface_closeSocket(x->ns_fd);
-        x->ns_fd = -1;
-        outlet_float(x->ns_outlet, 0);
-    }
+    netsend_socketClose (x); outlet_float (x->ns_outlet, 0);
 }
 
-static void netsend_send(t_netsend *x, t_symbol *s, int argc, t_atom *argv)
+static void netsend_send (t_netsend *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (x->ns_fd >= 0)
-    {
-        if (netsend_dosend(x, x->ns_fd, s, argc, argv))
-            netsend_disconnect(x);
+    if (x->ns_fd >= 0) {
+    //
+    t_error err = PD_ERROR_NONE;
+    
+    if (x->ns_isBinary) { err = netsend_sendPerformBinary (x, x->ns_fd, s, argc, argv); }
+    else {
+        err = netsend_sendPerformText (x, x->ns_fd, s, argc, argv);
+    }
+    
+    if (err) { netsend_disconnect (x); }
+    //
     }
 }
 
@@ -224,7 +210,7 @@ static void *netsend_new (t_symbol *s, int argc, t_atom *argv)
 
 static void netsend_free (t_netsend *x)
 {
-    netsend_disconnect (x);
+    netsend_socketClose (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------

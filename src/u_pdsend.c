@@ -164,10 +164,10 @@ int main (int argc, char **argv)
         else {
         //
         int numberOfCharactersToSend = strlen (t);
-        int alreadySent = 0; char *p = t;
+        ssize_t alreadySent = 0; char *p = t;
                     
         while (alreadySent < numberOfCharactersToSend) {
-            int n = send (fd, p, numberOfCharactersToSend - alreadySent, 0);
+            ssize_t n = send (fd, p, numberOfCharactersToSend - alreadySent, 0);
             if (n < 0) { err = 1; pdsend_socketError ("send"); break; }
             else {
                 alreadySent += n;
