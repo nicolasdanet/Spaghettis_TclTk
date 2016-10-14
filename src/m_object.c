@@ -528,6 +528,8 @@ t_outconnect *object_connect (t_object *src, int m, t_object *dest, int n)
     return oc1;
     //
     }
+    
+    return NULL;
 }
 
 void object_disconnect (t_object *src, int m, t_object *dest, int n)
