@@ -22,11 +22,11 @@ static t_class *netsend_class;              /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _netsend {
-    t_object            ns_obj;             /* Must be the first. */
-    int                 ns_fd;
-    int                 ns_protocol;
-    int                 ns_isBinary;
-    t_outlet            *ns_outlet;
+    t_object    ns_obj;                     /* Must be the first. */
+    int         ns_fd;
+    int         ns_protocol;
+    int         ns_isBinary;
+    t_outlet    *ns_outlet;
     } t_netsend;
     
 // -----------------------------------------------------------------------------------------------------------
