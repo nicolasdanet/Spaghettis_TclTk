@@ -77,22 +77,6 @@ typedef struct _binop {
     t_outlet            *bo_outlet;
     } t_binop;
 
-typedef struct _netsend {
-    t_object            ns_obj;                         /* Must be the first. */
-    int                 ns_fd;
-    int                 ns_protocol;
-    int                 ns_isBinary;
-    t_outlet            *ns_outlet;
-    t_outlet            *ns_outletLeft;
-    t_outlet            *ns_outletRight;
-    } t_netsend;
-
-typedef struct _netreceive {
-    t_netsend           nr_ns;                          /* Must be the first. */
-    int                 nr_pollersSize;
-    int                 *nr_pollers;
-    } t_netreceive;
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
