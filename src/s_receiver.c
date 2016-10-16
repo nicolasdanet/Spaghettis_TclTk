@@ -68,6 +68,7 @@ t_receiver *receiver_new (void *owner,
     x->r_inTail     = 0;
     x->r_fd         = fd;
     x->r_isUdp      = isUdp;
+    x->r_isBinary   = isBinary;
     x->r_isClosed   = 0;
     x->r_fnNotify   = notify;
     x->r_fnReceive  = receive;
@@ -158,15 +159,32 @@ static t_error receiver_readUDP (t_receiver *x, int fd)
     else if (length == 0) { receiver_readHandleDisconnect (x, fd, 0); err = PD_ERROR_NONE; }
     else if (length > 0)  {
     //
-    t[length] = 0;
+    if (x->r_isBinary) {
     
-    if (t[length - 1] != '\n') { PD_BUG; }
-    else {
-        char *semicolon = strchr (t, ';');
-        if (semicolon) { *semicolon = 0; }
-        buffer_withStringUnzeroed (x->r_message, t, strlen (t));
+        int i;
+        
+        buffer_reset (x->r_message);
+        
+        for (i = 0; i < length; i++) { 
+            buffer_appendFloat (x->r_message, (t_float)((unsigned char)(*(t + i))));
+        }
+        
         if (x->r_fnReceive) { (*x->r_fnReceive) (x->r_owner, x->r_message); }
+        
         err == PD_ERROR_NONE;
+            
+    } else {
+    
+        t[length] = 0;
+        
+        if (t[length - 1] != '\n') { PD_BUG; }
+        else {
+            char *semicolon = strchr (t, ';');
+            if (semicolon) { *semicolon = 0; }
+            buffer_withStringUnzeroed (x->r_message, t, strlen (t));
+            if (x->r_fnReceive) { (*x->r_fnReceive) (x->r_owner, x->r_message); }
+            err == PD_ERROR_NONE;
+        }
     }
     //
     }
@@ -183,20 +201,24 @@ static t_error receiver_readTCP (t_receiver *x, int fd)
     if (sizeOfAvailableSpace == 0) { x->r_inHead = x->r_inTail = 0; PD_BUG; }
     else {
     //
-    int length = recv (fd, x->r_inRaw + x->r_inHead, sizeOfAvailableSpace, 0);
+    ssize_t length = recv (fd, x->r_inRaw + x->r_inHead, sizeOfAvailableSpace, 0);
     
     if (length < 0)       { receiver_readHandleDisconnect (x, fd, 1); PD_BUG; }
     else if (length == 0) { receiver_readHandleDisconnect (x, fd, 0); err = PD_ERROR_NONE; }
-    else
-    {
+    else {
+    
         x->r_inHead += length; if (x->r_inHead >= RECEIVER_BUFFER_SIZE) { x->r_inHead = 0; }
         
-        while (receiver_readHandleTCP (x)) {
-            if (x->r_fnReceive) { (*x->r_fnReceive) (x->r_owner, x->r_message); }
-            else { 
-                buffer_eval (x->r_message, NULL, 0, NULL); 
+        if (0) { }
+        else {
+        
+            while (receiver_readHandleTCP (x)) {
+                if (x->r_fnReceive) { (*x->r_fnReceive) (x->r_owner, x->r_message); }
+                else { 
+                    buffer_eval (x->r_message, NULL, 0, NULL); 
+                }
+                if (x->r_inTail == x->r_inHead) { break; }
             }
-            if (x->r_inTail == x->r_inHead) { break; }
         }
     }
     //

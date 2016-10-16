@@ -99,6 +99,7 @@ typedef struct _receiver {
     int                 r_inTail;
     int                 r_fd;
     int                 r_isUdp;
+    int                 r_isBinary;
     int                 r_isClosed;
     t_notifyfn          r_fnNotify;
     t_receivefn         r_fnReceive;

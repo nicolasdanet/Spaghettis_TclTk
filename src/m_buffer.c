@@ -149,6 +149,13 @@ void buffer_appendBuffer (t_buffer *x, t_buffer *y)
     buffer_append (x, buffer_size (y), buffer_atoms (y));
 }
 
+void buffer_appendFloat (t_buffer *x, t_float f)
+{
+    t_atom a;
+    SET_FLOAT (&a, f);
+    buffer_append (x, 1, &a);
+}
+
 void buffer_appendSemicolon (t_buffer *x)
 {
     t_atom a;

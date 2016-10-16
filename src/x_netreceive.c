@@ -17,13 +17,13 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_class *netreceive_class;          /* Shared. */
+t_class *netreceive_class;                  /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _netreceive {
-    t_object    nr_obj;             /* Must be the first. */
+    t_object    nr_obj;                     /* Must be the first. */
     int         nr_fd;
     int         nr_protocol;
     int         nr_isBinary;
@@ -38,7 +38,7 @@ typedef struct _netreceive {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define NETRECEIVE_LISTENED     5
+#define NETRECEIVE_LISTEN_BACKLOG       5
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -99,23 +99,6 @@ static void netreceive_receiversClean (t_netreceive *x)
     }
     
     if (x->nr_protocol == SOCK_STREAM) { outlet_float (x->nr_outletRight, 0.0); }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void netreceive_socketOptions (t_netreceive *x, int fd)
-{
-    int v = 1;
-    
-    if (x->nr_protocol == SOCK_STREAM) {
-        if (setsockopt (fd, IPPROTO_TCP, TCP_NODELAY, (const void *)&v, sizeof (v)) < 0) { PD_BUG; }
-        if (setsockopt (fd, SOL_SOCKET, SO_REUSEADDR, (const void *)&v, sizeof (v)) < 0) { PD_BUG; }
-    } else {
-        if (setsockopt (fd, SOL_SOCKET, SO_BROADCAST, (const void *)&v, sizeof (v)) < 0) { PD_BUG; }
-        if (setsockopt (fd, SOL_SOCKET, SO_REUSEADDR, (const void *)&v, sizeof (v)) < 0) { PD_BUG; }
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -193,39 +176,23 @@ static void netreceive_callbackConnected (t_netreceive *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/*
-void netsend_readbin (t_netreceive *x, int fd)
+static void netreceive_socketOptions (t_netreceive *x, int fd)
 {
-    unsigned char inbuf[PD_STRING];
-    int ret = recv(fd, inbuf, PD_STRING, 0), i;
-    if (!x->nr_outletLeft)
-    {
-        PD_BUG;
-        return;
-    }
-    if (ret <= 0)
-    {
-        if (ret < 0)
-            PD_BUG;
-        interface_monitorRemovePoller(fd);
-        interface_closeSocket(fd);
-        if (pd_class (x) == netreceive_class)
-            netreceive_notify((t_netreceive *)x, fd);
-    }
-    else if (x->nr_protocol == SOCK_DGRAM)
-    {
-        t_atom *ap = (t_atom *)alloca(ret * sizeof(t_atom));
-        for (i = 0; i < ret; i++)
-            SET_FLOAT(ap+i, inbuf[i]);
-        outlet_list(x->nr_outletLeft, ret, ap);
-    }
-    else
-    {
-        for (i = 0; i < ret; i++)
-            outlet_float(x->nr_outletLeft, inbuf[i]);
+    int v = 1;
+    
+    if (x->nr_protocol == SOCK_STREAM) {
+        if (setsockopt (fd, IPPROTO_TCP, TCP_NODELAY, (const void *)&v, sizeof (v)) < 0) { PD_BUG; }
+        if (setsockopt (fd, SOL_SOCKET, SO_REUSEADDR, (const void *)&v, sizeof (v)) < 0) { PD_BUG; }
+    } else {
+        if (setsockopt (fd, SOL_SOCKET, SO_BROADCAST, (const void *)&v, sizeof (v)) < 0) { PD_BUG; }
+        if (setsockopt (fd, SOL_SOCKET, SO_REUSEADDR, (const void *)&v, sizeof (v)) < 0) { PD_BUG; }
     }
 }
-*/
+
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void netreceive_close (t_netreceive *x)
 {
@@ -283,7 +250,7 @@ static void netreceive_listen (t_netreceive *x, t_float f)
         
     } else {
     
-        err = (listen (fd, NETRECEIVE_LISTENED) < 0);
+        err = (listen (fd, NETRECEIVE_LISTEN_BACKLOG) < 0);
         
         if (!err) {
             interface_monitorAddPoller (fd, (t_pollfn)netreceive_callbackConnected, (void *)x);
@@ -313,7 +280,7 @@ static void *netreceive_new (t_symbol *s, int argc, t_atom *argv)
     x->nr_fd          = -1;
     x->nr_protocol    = SOCK_STREAM;
     x->nr_isBinary    = 0;
-    x->nr_size        = NETRECEIVE_LISTENED;
+    x->nr_size        = NETRECEIVE_LISTEN_BACKLOG;
     x->nr_vector      = (t_receiver **)PD_MEMORY_GET (sizeof (t_receiver *) * x->nr_size);
     x->nr_outletLeft  = outlet_new (cast_object (x), &s_anything);
         
