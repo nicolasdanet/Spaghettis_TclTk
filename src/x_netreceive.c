@@ -136,8 +136,7 @@ void netreceive_callbackReceived (void *z, t_buffer *b)
     //
     int size = end - start;
     
-    if (!size) { outlet_bang (x->nr_outletLeft); }
-    else {
+    if (size) {
     //
     t_atom *t = buffer_atomAtIndex (b, start);
     
