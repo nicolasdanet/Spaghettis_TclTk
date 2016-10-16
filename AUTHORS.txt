@@ -1,8 +1,10 @@
 
-Thanks to legacy authors:
+# Authors
+
+Authors (thanks to):
 
     < http://msp.ucsd.edu/Software/pd-README.txt >
 
-Authors ordered by first contribution (since original fork):
+Contributors sort by first contribution (since original fork):
 
     Nicolas Danet < nicolas.danet@free.fr >

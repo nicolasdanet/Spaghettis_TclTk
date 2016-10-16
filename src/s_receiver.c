@@ -43,11 +43,21 @@ static void receiver_closeSocketAndRemoveCallback (t_receiver *x)
     }
 }
 
+int receiver_isClosed (t_receiver *x)
+{
+    return x->r_isClosed;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_receiver *receiver_new (void *owner, int fd, t_notifyfn notify, t_receivefn receive, int isUdp)
+t_receiver *receiver_new (void *owner,
+    int fd,
+    t_notifyfn notify,
+    t_receivefn receive,
+    int isUdp,
+    int isBinary)
 {
     t_receiver *x = (t_receiver *)PD_MEMORY_GET (sizeof (t_receiver));
     
@@ -62,6 +72,8 @@ t_receiver *receiver_new (void *owner, int fd, t_notifyfn notify, t_receivefn re
     x->r_fnNotify   = notify;
     x->r_fnReceive  = receive;
 
+    PD_ASSERT (x->r_fnNotify == NULL || x->r_isUdp == 0);
+    
     interface_monitorAddPoller (x->r_fd, (t_pollfn)receiver_read, x);
     
     return x;

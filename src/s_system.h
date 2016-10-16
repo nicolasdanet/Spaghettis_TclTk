@@ -189,9 +189,11 @@ t_receiver  *receiver_new                           (void *owner,
                                                             int fd,
                                                             t_notifyfn notify,          /* Socket closed. */
                                                             t_receivefn receive,        /* Data received. */
-                                                            int isUdp);
+                                                            int isUdp, 
+                                                            int isBinary);
 
 void        receiver_free                           (t_receiver *x);
+int         receiver_isClosed                       (t_receiver *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

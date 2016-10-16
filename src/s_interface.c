@@ -705,7 +705,7 @@ static t_error interface_startGui (void)
     }
     
     if (!err) {
-        interface_inGuiReceiver = receiver_new (NULL, interface_guiSocket, NULL, NULL, 0);
+        interface_inGuiReceiver = receiver_new (NULL, interface_guiSocket, NULL, NULL, 0, 0);
     }
     
     /* Initialize GUI. */

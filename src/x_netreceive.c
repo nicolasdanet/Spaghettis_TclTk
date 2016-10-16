@@ -9,9 +9,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Memory leak!!!!*/
-/* receiver_free never called */
-
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
@@ -30,21 +27,179 @@ typedef struct _netreceive {
     int         nr_fd;
     int         nr_protocol;
     int         nr_isBinary;
-    int         nr_pollersSize;
-    int         *nr_pollers;
+    int         nr_numberOfConnections;
+    int         nr_size;
+    t_receiver  **nr_vector;
     t_outlet    *nr_outletLeft;
     t_outlet    *nr_outletRight;
     } t_netreceive;
-    
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define NETRECEIVE_LISTENED     5
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void netreceive_receiversEnlarge (t_netreceive *x)
+{
+    size_t oldSize  = sizeof (t_receiver *) * (x->nr_size);
+    size_t newSize  = sizeof (t_receiver *) * (x->nr_size * 2);
+    x->nr_size      = (x->nr_size * 2);
+    x->nr_vector    = PD_MEMORY_RESIZE (x->nr_vector, oldSize, newSize);
+}
+
+static void netreceive_receiversPurge (t_netreceive *x)
+{
+    int i, hasEmptySlot = 0;
+    
+    for (i = 0; i < x->nr_size; i++) {
+        if (x->nr_vector[i] != NULL && receiver_isClosed (x->nr_vector[i])) { 
+            receiver_free (x->nr_vector[i]); x->nr_vector[i] = NULL; 
+        }
+    }
+    
+    for (i = 0; i < x->nr_size; i++) {
+        if (x->nr_vector[i] == NULL) { hasEmptySlot = 1; break; } 
+    }
+    
+    if (!hasEmptySlot) { netreceive_receiversEnlarge (x); }
+}
+
+static void netreceive_receiversAdd (t_netreceive *x, t_receiver *receiver)
+{
+    int i, hasFilledEmptySlot = 0;
+    
+    netreceive_receiversPurge (x);
+    
+    for (i = 0; i < x->nr_size; i++) {
+        if (x->nr_vector[i] == NULL) { 
+            x->nr_vector[i] = receiver; hasFilledEmptySlot = 1; break; 
+        }
+    }
+    
+    PD_ASSERT (hasFilledEmptySlot);
+    
+    if (x->nr_protocol == SOCK_STREAM) { outlet_float (x->nr_outletRight, x->nr_numberOfConnections); }
+}
+
+static void netreceive_receiversClean (t_netreceive *x)
+{
+    int i;
+    
+    for (i = 0; i < x->nr_size; i++) {
+    //
+    if (x->nr_vector[i] != NULL) {
+        receiver_free (x->nr_vector[i]); x->nr_vector[i] = NULL; 
+    }
+    //
+    }
+    
+    if (x->nr_protocol == SOCK_STREAM) { outlet_float (x->nr_outletRight, 0.0); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void netreceive_socketOptions (t_netreceive *x, int fd)
+{
+    int v = 1;
+    
+    if (x->nr_protocol == SOCK_STREAM) {
+        if (setsockopt (fd, IPPROTO_TCP, TCP_NODELAY, (const void *)&v, sizeof (v)) < 0) { PD_BUG; }
+        if (setsockopt (fd, SOL_SOCKET, SO_REUSEADDR, (const void *)&v, sizeof (v)) < 0) { PD_BUG; }
+    } else {
+        if (setsockopt (fd, SOL_SOCKET, SO_BROADCAST, (const void *)&v, sizeof (v)) < 0) { PD_BUG; }
+        if (setsockopt (fd, SOL_SOCKET, SO_REUSEADDR, (const void *)&v, sizeof (v)) < 0) { PD_BUG; }
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void netreceive_callbackReceived (void *z, t_buffer *b)
+{
+    t_netreceive *x = (t_netreceive *)z;
+    
+    int i, n = buffer_getNumberOfMessages (b);
+    
+    for (i = 0; i < n; i++) {
+    //
+    int start, end;
+    
+    if (buffer_getMessageAt (b, i, &start, &end)) {
+    //
+    int size = end - start;
+    
+    if (!size) { outlet_bang (x->nr_outletLeft); }
+    else {
+    //
+    t_atom *t = buffer_atomAtIndex (b, start);
+    
+    if (IS_FLOAT (t)) { 
+        if (size == 1) { outlet_float (x->nr_outletLeft, GET_FLOAT (t)); }
+        else {
+            outlet_list (x->nr_outletLeft, size, t);
+        }
+    } else if (IS_SYMBOL (t)) {
+        if (size == 1) { outlet_symbol (x->nr_outletLeft, GET_SYMBOL (t)); }
+        else {
+            outlet_anything (x->nr_outletLeft, GET_SYMBOL (t), size - 1, t + 1);
+        }
+    } else {
+        PD_BUG;
+    }
+    //
+    }
+    //
+    }
+    //
+    }
+}
+
+void netreceive_callbackClosed (t_netreceive *x, int fd)
+{
+    x->nr_numberOfConnections--;
+    
+    PD_ASSERT (x->nr_protocol == SOCK_STREAM);
+    
+    outlet_float (x->nr_outletRight, x->nr_numberOfConnections);
+}
+
+static void netreceive_callbackConnected (t_netreceive *x)
+{
+    int fd = accept (x->nr_fd, 0, 0);
+    
+    if (fd < 0) { error_failed (sym_netreceive); }
+    else {
+        t_receiver *t = receiver_new ((void *)x,
+                            fd,
+                            netreceive_callbackClosed,
+                            netreceive_callbackReceived,
+                            0,
+                            x->nr_isBinary);
+        
+        x->nr_numberOfConnections++;
+        
+        netreceive_receiversAdd (x, t);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/*
 void netsend_readbin (t_netreceive *x, int fd)
 {
     unsigned char inbuf[PD_STRING];
     int ret = recv(fd, inbuf, PD_STRING, 0), i;
-    if (!x->nr_outletRight)
+    if (!x->nr_outletLeft)
     {
         PD_BUG;
         return;
@@ -63,196 +218,88 @@ void netsend_readbin (t_netreceive *x, int fd)
         t_atom *ap = (t_atom *)alloca(ret * sizeof(t_atom));
         for (i = 0; i < ret; i++)
             SET_FLOAT(ap+i, inbuf[i]);
-        outlet_list(x->nr_outletRight, ret, ap);
+        outlet_list(x->nr_outletLeft, ret, ap);
     }
     else
     {
         for (i = 0; i < ret; i++)
-            outlet_float(x->nr_outletRight, inbuf[i]);
+            outlet_float(x->nr_outletLeft, inbuf[i]);
     }
 }
+*/
 
-
-void netsend_doit(void *z, t_buffer *b)
+static void netreceive_close (t_netreceive *x)
 {
-    t_atom messbuf[1024];
-    t_netreceive *x = (t_netreceive *)z;
-    int msg, natom = buffer_size(b);
-    t_atom *at = buffer_atoms(b);
-    for (msg = 0; msg < natom;)
-    {
-        int emsg;
-        for (emsg = msg; emsg < natom && at[emsg].a_type != A_COMMA
-            && at[emsg].a_type != A_SEMICOLON; emsg++)
-                ;
-        if (emsg > msg)
-        {
-            int i;
-            for (i = msg; i < emsg; i++)
-                if (at[i].a_type == A_DOLLAR || at[i].a_type == A_DOLLARSYMBOL)
-            {
-                post_error ("netreceive: got dollar sign in message");
-                goto nodice;
-            }
-            if (at[msg].a_type == A_FLOAT)
-            {
-                if (emsg > msg + 1)
-                    outlet_list(x->nr_outletRight, emsg-msg, at + msg);
-                else outlet_float(x->nr_outletRight, at[msg].a_w.w_float);
-            }
-            else if (at[msg].a_type == A_SYMBOL)
-                outlet_anything(x->nr_outletRight, at[msg].a_w.w_symbol,
-                    emsg-msg-1, at + msg + 1);
-        }
-    nodice:
-        msg = emsg + 1;
+    if (x->nr_protocol == SOCK_STREAM) {
+    if (x->nr_fd >= 0) {
+        interface_monitorRemovePoller (x->nr_fd);
+        interface_closeSocket (x->nr_fd);
     }
-}
-
-void netreceive_notify(t_netreceive *x, int fd)
-{
-    int i;
-    for (i = 0; i < x->nr_pollersSize; i++)
-    {
-        if (x->nr_pollers[i] == fd)
-        {
-            memmove(x->nr_pollers+i, x->nr_pollers+(i+1),
-                sizeof(int) * (x->nr_pollersSize - (i+1)));
-            x->nr_pollers = (int *)PD_MEMORY_RESIZE(x->nr_pollers,
-                x->nr_pollersSize * sizeof(int), 
-                    (x->nr_pollersSize-1) * sizeof(int));
-            x->nr_pollersSize--;
-        }
     }
-    outlet_float(x->nr_outletLeft, x->nr_pollersSize);
-}
-
-static void netreceive_connectpoll(t_netreceive *x)
-{
-    int fd = accept(x->nr_fd, 0, 0);
-    if (fd < 0) post("netreceive: accept failed");
-    else
-    {
-        int nconnections = x->nr_pollersSize+1;
-        
-        x->nr_pollers = (int *)PD_MEMORY_RESIZE(x->nr_pollers,
-            x->nr_pollersSize * sizeof(int), nconnections * sizeof(int));
-        x->nr_pollers[x->nr_pollersSize] = fd;
-        if (x->nr_isBinary)
-            interface_monitorAddPoller(fd, (t_pollfn)netsend_readbin, x);
-        else
-        {
-            t_receiver *y = receiver_new((void *)x, fd, 
-            (t_notifyfn)netreceive_notify,
-                (x->nr_outletRight ? netsend_doit : NULL), 0);
-        }
-        outlet_float(x->nr_outletLeft, (x->nr_pollersSize = nconnections));
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void netreceive_closeall(t_netreceive *x)
-{
-    int i;
-    for (i = 0; i < x->nr_pollersSize; i++)
-    {
-        interface_monitorRemovePoller(x->nr_pollers[i]);
-        interface_closeSocket(x->nr_pollers[i]);
-    }
-    x->nr_pollers = (int *)PD_MEMORY_RESIZE(x->nr_pollers, 
-        x->nr_pollersSize * sizeof(int), 0);
-    x->nr_pollersSize = 0;
-    if (x->nr_fd >= 0)
-    {
-        interface_monitorRemovePoller(x->nr_fd);
-        interface_closeSocket(x->nr_fd);
-    }
+    
+    netreceive_receiversClean (x);
+    
     x->nr_fd = -1;
 }
 
-static void netreceive_listen(t_netreceive *x, t_float fportno)
+static void netreceive_listen (t_netreceive *x, t_float f)
 {
-    int portno = fportno, intarg;
-    struct sockaddr_in server;
-    netreceive_closeall(x);
-    if (portno <= 0)
-        return;
-    x->nr_fd = socket(AF_INET, x->nr_protocol, 0);
-    if (x->nr_fd < 0)
-    {
-        PD_BUG;
-        return;
-    }
-#if 0
-    fprintf(stderr, "receive socket %d\n", x->x_ sockfd);
-#endif
+    int portNumber = f;
 
-#if 1
-        /* ask OS to allow another Pd to repoen this port after we close it. */
-    intarg = 1;
-    if (setsockopt(x->nr_fd, SOL_SOCKET, SO_REUSEADDR,
-        (char *)&intarg, sizeof(intarg)) < 0)
-            post("netreceive: setsockopt (SO_REUSEADDR) failed\n");
-#endif
-#if 0
-    intarg = 0;
-    if (setsockopt(x->nr_fd, SOL_SOCKET, SO_RCVBUF,
-        &intarg, sizeof(intarg)) < 0)
-            post("setsockopt (SO_RCVBUF) failed\n");
-#endif
-    intarg = 1;
-    if (setsockopt(x->nr_fd, SOL_SOCKET, SO_BROADCAST, 
-        (const void *)&intarg, sizeof(intarg)) < 0)
-            post("netreceive: failed to sett SO_BROADCAST");
-        /* Stream (TCP) sockets are set NODELAY */
-    if (x->nr_protocol == SOCK_STREAM)
-    {
-        intarg = 1;
-        if (setsockopt(x->nr_fd, IPPROTO_TCP, TCP_NODELAY,
-            (char *)&intarg, sizeof(intarg)) < 0)
-                post("setsockopt (TCP_NODELAY) failed\n");
-    }
-        /* assign server port number etc */
+    netreceive_close (x);
+    
+    if (portNumber > 0) {
+    //
+    int fd = socket (AF_INET, x->nr_protocol, 0);
+    
+    if (fd < 0) { error_canNotOpen (sym_netreceive); }
+    else {
+    //
+    t_error err = PD_ERROR_NONE;
+    
+    struct sockaddr_in server;
+
+    post ("netreceive: listening on port %d", portNumber);
+    
+    netreceive_socketOptions (x, fd);
+    
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = INADDR_ANY;
-    server.sin_port = htons((u_short)portno);
+    server.sin_port = htons ((u_short)portNumber);
 
-        /* name the socket */
-    if (bind(x->nr_fd, (struct sockaddr *)&server, sizeof(server)) < 0)
-    {
-        PD_BUG;
-        interface_closeSocket(x->nr_fd);
-        x->nr_fd = -1;
-        return;
-    }
-
-    if (x->nr_protocol == SOCK_DGRAM)        /* datagram protocol */
-    {
-        if (x->nr_isBinary)
-            interface_monitorAddPoller(x->nr_fd, (t_pollfn)netsend_readbin, x);
-        else
-        {
-            t_receiver *y = receiver_new((void *)x, x->nr_fd, 
-                (t_notifyfn)netreceive_notify, (x->nr_outletRight ? netsend_doit : NULL), 1);
-            x->nr_outletLeft = 0;
+    err = (bind (fd, (struct sockaddr *)&server, sizeof (struct sockaddr_in)) < 0);
+    
+    if (!err) {
+    //
+    if (x->nr_protocol == SOCK_DGRAM) {
+    
+        t_receiver *t = receiver_new ((void *)x,
+                            fd,
+                            NULL,
+                            netreceive_callbackReceived,
+                            1,
+                            x->nr_isBinary);
+                            
+        netreceive_receiversAdd (x, t);
+        
+    } else {
+    
+        err = (listen (fd, NETRECEIVE_LISTENED) < 0);
+        
+        if (!err) {
+            interface_monitorAddPoller (fd, (t_pollfn)netreceive_callbackConnected, (void *)x);
         }
     }
-    else        /* streaming protocol */
-    {
-        if (listen(x->nr_fd, 5) < 0)
-        {
-            PD_BUG;
-            interface_closeSocket(x->nr_fd);
-            x->nr_fd = -1;
-        }
-        else
-        {
-            interface_monitorAddPoller(x->nr_fd, (t_pollfn)netreceive_connectpoll, x);
-            x->nr_outletLeft = outlet_new (cast_object (x), &s_float);
-        }
+    //
+    }
+    
+    if (err) { interface_closeSocket (fd); error_failed (sym_netreceive); }
+    else {
+        x->nr_fd = fd;
+    }
+    //
+    }
+    //
     }
 }
 
@@ -260,62 +307,43 @@ static void netreceive_listen(t_netreceive *x, t_float fportno)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *netreceive_new(t_symbol *s, int argc, t_atom *argv)
+static void *netreceive_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_netreceive *x = (t_netreceive *)pd_new(netreceive_class);
-    int portno = 0;
-    x->nr_protocol = SOCK_STREAM;
-    x->nr_isBinary = 0;
-    x->nr_pollersSize = 0;
-    x->nr_pollers = (int *)PD_MEMORY_GET(0);
-    x->nr_fd = -1;
-    if (argc && argv->a_type == A_FLOAT)
-    {
-        portno = atom_getFloatAtIndex(0, argc, argv);
-        x->nr_protocol = (atom_getFloatAtIndex(1, argc, argv) != 0 ?
-            SOCK_DGRAM : SOCK_STREAM);
-        argc = 0;
-    }
-    else 
-    {
-        while (argc && argv->a_type == A_SYMBOL &&
-            *argv->a_w.w_symbol->s_name == '-')
-        {
-            if (!strcmp(argv->a_w.w_symbol->s_name, "-b"))
-                x->nr_isBinary = 1;
-            else if (!strcmp(argv->a_w.w_symbol->s_name, "-u"))
-                x->nr_protocol = SOCK_DGRAM;
-            else
-            {
-                post_error ("netreceive: unknown flag ...");
-                error__post (argc, argv);
-            }
-            argc--; argv++;
-        }
-    }
-    if (argc && argv->a_type == A_FLOAT)
-        portno = argv->a_w.w_float, argc--, argv++;
-    if (argc)
-    {
-        post_error ("netreceive: extra arguments ignored:");
-        error__post (argc, argv);
-    }
-    if (0)
-    {
-        /* old style, nonsecure version */
-        x->nr_outletRight = 0;
-    }
-    else x->nr_outletRight = outlet_new(cast_object (x), &s_anything);
-        /* create a socket */
-    if (portno > 0)
-        netreceive_listen(x, portno);
+    t_netreceive *x = (t_netreceive *)pd_new (netreceive_class);
+    
+    x->nr_fd          = -1;
+    x->nr_protocol    = SOCK_STREAM;
+    x->nr_isBinary    = 0;
+    x->nr_size        = NETRECEIVE_LISTENED;
+    x->nr_vector      = (t_receiver **)PD_MEMORY_GET (sizeof (t_receiver *) * x->nr_size);
+    x->nr_outletLeft  = outlet_new (cast_object (x), &s_anything);
+        
+    while (argc > 0) {
+    //
+    t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
 
-    return (x);
+    if (t == sym___dash__b || t == sym___dash__binary)   { argc--; argv++; x->nr_isBinary = 1; }
+    else if (t == sym___dash__u || t == sym___dash__udp) { argc--; argv++; x->nr_protocol = SOCK_DGRAM; }
+    else {
+        break;
+    }
+    //
+    }
+
+    error__options (s, argc, argv);
+    
+    if (argc) { warning_unusedArguments (s, argc, argv); }
+    
+    if (x->nr_protocol == SOCK_STREAM) { x->nr_outletRight = outlet_new (cast_object (x), &s_float); }
+    
+    return x;
 }
 
 static void netreceive_free (t_netreceive *x)
 {
-    netreceive_closeall (x);
+    netreceive_close (x);
+    
+    PD_MEMORY_FREE (x->nr_vector);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -334,8 +362,9 @@ void netreceive_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addMethod (c, (t_method)netreceive_listen, sym_listen, A_FLOAT, A_NULL);
-        
+    class_addMethod (c, (t_method)netreceive_listen,    sym_listen, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)netreceive_close,     sym_close,  A_NULL);
+    
     netreceive_class = c;
 }
 

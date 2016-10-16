@@ -31,8 +31,9 @@ typedef struct _netsend {
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void netsend_socketOption (t_netsend *x, int fd)
+static void netsend_socketOptions (t_netsend *x, int fd)
 {
     int v = 1;
     
@@ -126,7 +127,7 @@ static void netsend_connect (t_netsend *x, t_symbol *hostName, t_float f)
     //
     struct hostent *h = gethostbyname (hostName->s_name);
     
-    netsend_socketOption (x, fd);
+    netsend_socketOptions (x, fd);
     
     if (h == NULL) { error_invalid (sym_netsend, hostName); }
     else {
@@ -187,15 +188,6 @@ static void *netsend_new (t_symbol *s, int argc, t_atom *argv)
     x->ns_isBinary  = 0;
     x->ns_protocol  = SOCK_STREAM;
     x->ns_outlet    = outlet_new (cast_object (x), &s_float);
-    
-    #if PD_WITH_LEGACY 
-    
-    if (argc && IS_FLOAT (argv)) {
-        x->ns_protocol = (GET_FLOAT (argv) != 0.0 ? SOCK_DGRAM : SOCK_STREAM); 
-        argc = 0;
-    }
-    
-    #endif
     
     while (argc > 0) {
     //
