@@ -103,6 +103,24 @@ static int receiver_readHandleIsSemicolonEscaped (t_receiver *x, int i)
     }
 }
 
+static int receiver_readHandleTCPForBinary (t_receiver *x)
+{
+    int i, top = 1;
+    
+    PD_ASSERT ((x->r_inHead != x->r_inTail) || (x->r_inHead == 0 && x->r_inTail == 0));
+    
+    buffer_reset (x->r_message);
+    
+    for (i = x->r_inTail; top || (i != x->r_inHead); top = 0, (i = (i + 1) & (RECEIVER_BUFFER_SIZE - 1))) {
+        unsigned char byte = x->r_inRaw[i];
+        buffer_appendFloat (x->r_message, (t_float)byte);
+    }
+        
+    x->r_inTail = i;
+    
+    return 1;
+}
+
 static int receiver_readHandleTCP (t_receiver *x)
 {
     char t[RECEIVER_BUFFER_SIZE] = { 0 };
@@ -149,54 +167,44 @@ static void receiver_readHandleDisconnect (t_receiver *x, int fd, int withError)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_error receiver_readUDP (t_receiver *x, int fd)
+static void receiver_readUDP (t_receiver *x, int fd)
 {
     char t[RECEIVER_BUFFER_SIZE + 1] = { 0 };
     ssize_t length = recv (fd, t, RECEIVER_BUFFER_SIZE, 0);
-    t_error err = PD_ERROR;
     
     if (length < 0)       { receiver_readHandleDisconnect (x, fd, 1); PD_BUG; }
-    else if (length == 0) { receiver_readHandleDisconnect (x, fd, 0); err = PD_ERROR_NONE; }
-    else if (length > 0)  {
+    else if (length == 0) { receiver_readHandleDisconnect (x, fd, 0); }
+    else {
     //
-    if (x->r_isBinary) {
+    t[length] = 0;
     
+    if (x->r_isBinary) {
+
         int i;
-        
         buffer_reset (x->r_message);
-        
         for (i = 0; i < length; i++) { 
             buffer_appendFloat (x->r_message, (t_float)((unsigned char)(*(t + i))));
         }
-        
         if (x->r_fnReceive) { (*x->r_fnReceive) (x->r_owner, x->r_message); }
-        
-        err == PD_ERROR_NONE;
-            
+
     } else {
     
-        t[length] = 0;
-        
         if (t[length - 1] != '\n') { PD_BUG; }
         else {
             char *semicolon = strchr (t, ';');
             if (semicolon) { *semicolon = 0; }
             buffer_withStringUnzeroed (x->r_message, t, strlen (t));
             if (x->r_fnReceive) { (*x->r_fnReceive) (x->r_owner, x->r_message); }
-            err == PD_ERROR_NONE;
         }
     }
     //
     }
-    
-    return err;
 }
 
-static t_error receiver_readTCP (t_receiver *x, int fd)
+static void receiver_readTCP (t_receiver *x, int fd)
 {
     int endOfAvailableSpace  = (x->r_inHead >= x->r_inTail ? RECEIVER_BUFFER_SIZE : x->r_inTail - 1);
     int sizeOfAvailableSpace = endOfAvailableSpace - x->r_inHead;
-    t_error err = PD_ERROR;
     
     if (sizeOfAvailableSpace == 0) { x->r_inHead = x->r_inTail = 0; PD_BUG; }
     else {
@@ -204,27 +212,29 @@ static t_error receiver_readTCP (t_receiver *x, int fd)
     ssize_t length = recv (fd, x->r_inRaw + x->r_inHead, sizeOfAvailableSpace, 0);
     
     if (length < 0)       { receiver_readHandleDisconnect (x, fd, 1); PD_BUG; }
-    else if (length == 0) { receiver_readHandleDisconnect (x, fd, 0); err = PD_ERROR_NONE; }
+    else if (length == 0) { receiver_readHandleDisconnect (x, fd, 0); }
     else {
+    //
+    x->r_inHead += length; if (x->r_inHead >= RECEIVER_BUFFER_SIZE) { x->r_inHead = 0; }
     
-        x->r_inHead += length; if (x->r_inHead >= RECEIVER_BUFFER_SIZE) { x->r_inHead = 0; }
+    if (x->r_isBinary) {
+        if (receiver_readHandleTCPForBinary (x)) {
+            if (x->r_fnReceive) { (*x->r_fnReceive) (x->r_owner, x->r_message); }
+        }
         
-        if (0) { }
-        else {
-        
-            while (receiver_readHandleTCP (x)) {
-                if (x->r_fnReceive) { (*x->r_fnReceive) (x->r_owner, x->r_message); }
-                else { 
-                    buffer_eval (x->r_message, NULL, 0, NULL); 
-                }
-                if (x->r_inTail == x->r_inHead) { break; }
+    } else {
+        while (receiver_readHandleTCP (x)) {
+            if (x->r_fnReceive) { (*x->r_fnReceive) (x->r_owner, x->r_message); }
+            else { 
+                buffer_eval (x->r_message, NULL, 0, NULL); 
             }
+            if (x->r_inTail == x->r_inHead) { break; }
         }
     }
     //
     }
-    
-    return err;
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
