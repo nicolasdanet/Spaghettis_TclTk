@@ -40,6 +40,12 @@
 #include "m_color.c"
 #include "m_rectangle.c"
 
+/* Helpers. */
+
+#include "h_iterator.c"
+#include "h_pathlist.c"
+#include "h_heapstring.c"
+
 /* System. */
 
 #include "s_entry.c"
@@ -63,12 +69,6 @@
 #include "s_post.c"
 #include "s_logger.c"
 #include "s_utf8.c"
-
-/* Helpers. */
-
-#include "h_iterator.c"
-#include "h_pathlist.c"
-#include "h_heapstring.c"
 
 /* Graphics. */
 
