@@ -15,13 +15,7 @@
 #include "m_alloca.h"
 #include "s_system.h"
 #include "g_graphics.h"
-
-#define ROUNDUPTO4(x) (((x) + 3) & (~3))
-
-#define READINT(x)  ((((int)(((x)  )->a_w.w_float)) & 0xff) << 24) | \
-                    ((((int)(((x)+1)->a_w.w_float)) & 0xff) << 16) | \
-                    ((((int)(((x)+2)->a_w.w_float)) & 0xff) << 8) | \
-                    ((((int)(((x)+3)->a_w.w_float)) & 0xff) << 0)
+#include "x_control.h"
 
 static t_class *oscformat_class;
 
@@ -68,11 +62,6 @@ static void oscformat_format(t_oscformat *x, t_symbol *s)
     x->x_format = s;
 }
 
-#define WRITEINT(msg, i)    SET_FLOAT((msg),   (((i) >> 24) & 0xff)); \
-                            SET_FLOAT((msg)+1, (((i) >> 16) & 0xff)); \
-                            SET_FLOAT((msg)+2, (((i) >>  8) & 0xff)); \
-                            SET_FLOAT((msg)+3, (((i)      ) & 0xff))
-
 static void putstring(t_atom *msg, int *ip, const char *s)
 {
     const char *sp = s;
@@ -103,7 +92,7 @@ static void oscformat_list(t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
             typecode = 's';
         else typecode = 'f';
         if (typecode == 's')
-            msgindex += ROUNDUPTO4(strlen(argv[j].a_w.w_symbol->s_name) + 1);
+            msgindex += OSC_ROUNDUP(strlen(argv[j].a_w.w_symbol->s_name) + 1);
         else if (typecode == 'b')
         {
             int blobsize = PD_INT_MAX, blobindex;
@@ -113,14 +102,14 @@ static void oscformat_list(t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
                     blobsize = (int)(argv[j].a_w.w_float);
             if (blobsize > argc - j - 1)
                 blobsize = argc - j - 1;    /* if no or bad size, eat it all */ 
-            msgindex += 4 + ROUNDUPTO4(blobsize);
+            msgindex += 4 + OSC_ROUNDUP(blobsize);
             j += blobsize;
         }
         else msgindex += 4;
         j++;
         ndata++;
     }
-    datastart = ROUNDUPTO4(strlen(x->x_pathbuf)+1) + ROUNDUPTO4(ndata + 2);
+    datastart = OSC_ROUNDUP(strlen(x->x_pathbuf)+1) + OSC_ROUNDUP(ndata + 2);
     msgsize = datastart + msgindex;
     msg = (t_atom *)alloca(msgsize * sizeof(t_atom));
     putstring(msg, &typeindex, x->x_pathbuf);
@@ -144,13 +133,13 @@ static void oscformat_list(t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
                 uint32_t z_i;
             } z;
             z.z_f = atom_getFloat(&argv[j]);
-            WRITEINT(msg+msgindex, z.z_i);
+            OSC_WRITE(msg+msgindex, z.z_i);
             msgindex += 4;
         }
         else if (typecode == 'i')
         {
             int dat = atom_getFloat(&argv[j]);
-            WRITEINT(msg+msgindex, dat);
+            OSC_WRITE(msg+msgindex, dat);
             msgindex += 4;
         }
         else if (typecode == 's')
@@ -163,7 +152,7 @@ static void oscformat_list(t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
                     blobsize = (int)(argv[j].a_w.w_float);
             if (blobsize > argc - j - 1)
                 blobsize = argc - j - 1;
-            WRITEINT(msg+msgindex, blobsize);
+            OSC_WRITE(msg+msgindex, blobsize);
             msgindex += 4;
             for (blobindex = 0; blobindex < blobsize; blobindex++)
                 SET_FLOAT(msg+msgindex+blobindex,

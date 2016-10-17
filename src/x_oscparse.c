@@ -14,21 +14,24 @@
 #include "m_macros.h"
 #include "m_alloca.h"
 #include "s_system.h"
-#include "g_graphics.h"
+#include "x_control.h"
 
-static t_class *oscparse_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct _oscparse
-{
-    t_object x_obj;
-} t_oscparse;
+static t_class *oscparse_class;         /* Shared. */
 
-#define ROUNDUPTO4(x) (((x) + 3) & (~3))
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-#define READINT(x)  ((((int)(((x)  )->a_w.w_float)) & 0xff) << 24) | \
-                    ((((int)(((x)+1)->a_w.w_float)) & 0xff) << 16) | \
-                    ((((int)(((x)+2)->a_w.w_float)) & 0xff) << 8) | \
-                    ((((int)(((x)+3)->a_w.w_float)) & 0xff) << 0)
+typedef struct _oscparse {
+    t_object    x_obj;                  /* Must be the first. */
+    t_outlet    *x_outlet;
+    } t_oscparse;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static t_symbol *grabstring(int argc, t_atom *argv, int *ip, int slash)
 {
@@ -46,11 +49,15 @@ static t_symbol *grabstring(int argc, t_atom *argv, int *ip, int slash)
     }
     buf[nchar] = 0;
     if (!slash)
-        *ip = ROUNDUPTO4(*ip+1);
+        *ip = OSC_ROUNDUP(*ip+1);
     if (*ip > argc)
         *ip = argc;
     return (gensym (buf));
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void oscparse_list(t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
 {
@@ -77,7 +84,7 @@ static void oscparse_list(t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
             into Pd time units. */
         for (i = 16; i < argc-4; )
         {
-            int msize = READINT(argv+i);
+            int msize = OSC_READ(argv+i);
             if (msize <= 0 || msize & 3)
             {
                 post_error ("oscparse: bad bundle element size");
@@ -96,7 +103,7 @@ static void oscparse_list(t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
     for (i = 1; i < argc && argv[i].a_w.w_float != 0; i++)
         if (argv[i].a_w.w_float == '/')
             outc++;
-    i = ROUNDUPTO4(i+1);
+    i = OSC_ROUNDUP(i+1);
     if (argv[i].a_w.w_float != ',' || (i+1) >= argc)
     {
         post_error ("oscparse: malformed type string (char %d, index %d)",
@@ -112,7 +119,7 @@ static void oscparse_list(t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
         outc += argc - typeonset;
     else outc += nfield;
     outv = (t_atom *)alloca(outc * sizeof(t_atom));
-    dataonset = ROUNDUPTO4(i + 1);
+    dataonset = OSC_ROUNDUP(i + 1);
     /* post("outc %d, typeonset %d, dataonset %d, nfield %d", outc, typeonset, 
         dataonset, nfield); */
     for (i = j = 0; i < typeonset-1 && argv[i].a_w.w_float != 0 &&
@@ -132,7 +139,7 @@ static void oscparse_list(t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
         case 'f':
             if (k > argc - 4)
                 goto tooshort;
-            z.z_i = READINT(argv+k);
+            z.z_i = OSC_READ(argv+k);
             f = z.z_f;
             if (PD_DENORMAL_OR_ZERO(f))
                 f = 0;
@@ -152,7 +159,7 @@ static void oscparse_list(t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
                 PD_BUG;
                 return;
             }
-            SET_FLOAT(outv+j, READINT(argv+k));
+            SET_FLOAT(outv+j, OSC_READ(argv+k));
             j++; k += 4;
             break;
         case 's':
@@ -167,7 +174,7 @@ static void oscparse_list(t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
         case 'b':
             if (k > argc - 4)
                 goto tooshort;
-            blobsize = READINT(argv+k);
+            blobsize = OSC_READ(argv+k);
             k += 4;
             if (blobsize < 0 || blobsize > argc - k)
                 goto tooshort;
@@ -182,7 +189,7 @@ static void oscparse_list(t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
             j++;
             for (j2 = 0; j2 < blobsize; j++, j2++, k++)
                 SET_FLOAT(outv+j, argv[k].a_w.w_float);
-            k = ROUNDUPTO4(k);
+            k = OSC_ROUNDUP(k);
             break;
         default:
             post_error ("oscparse: unknown tag '%c' (%d)", 
@@ -195,16 +202,39 @@ tooshort:
     post_error ("oscparse: OSC message ended prematurely");
 }
 
-static t_oscparse *oscparse_new(t_symbol *s, int argc, t_atom *argv)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static t_oscparse *oscparse_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_oscparse *x = (t_oscparse *)pd_new(oscparse_class);
-    outlet_new(&x->x_obj, &s_list);
-    return (x);
+    t_oscparse *x = (t_oscparse *)pd_new (oscparse_class);
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_list);
+    
+    return x;
 }
 
-void oscparse_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void oscparse_setup (void)
 {
-    oscparse_class = class_new(sym_oscparse, (t_newmethod)oscparse_new,
-        0, sizeof(t_oscparse), 0, A_GIMME, 0);
-    class_addList(oscparse_class, oscparse_list);
+    t_class *c = NULL;
+    
+    c = class_new (sym_oscparse,
+            (t_newmethod)oscparse_new,
+            NULL,
+            sizeof (t_oscparse),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+            
+    class_addList (c, oscparse_list);
+    
+    oscparse_class = c;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

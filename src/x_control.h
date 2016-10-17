@@ -113,6 +113,22 @@ typedef struct _atomoutlet {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define OSC_ROUNDUP(x)                      (((x) + 3) & (~3))
+
+#define OSC_READ(x)                         ((((int)(((x) + 0)->a_w.w_float)) & 0xff) << 24) | \
+                                            ((((int)(((x) + 1)->a_w.w_float)) & 0xff) << 16) | \
+                                            ((((int)(((x) + 2)->a_w.w_float)) & 0xff) << 8)  | \
+                                            ((((int)(((x) + 3)->a_w.w_float)) & 0xff) << 0)
+
+#define OSC_WRITE(x, i)                     SET_FLOAT ((x) + 0, (((i) >> 24) & 0xff)); \
+                                            SET_FLOAT ((x) + 1, (((i) >> 16) & 0xff)); \
+                                            SET_FLOAT ((x) + 2, (((i) >>  8) & 0xff)); \
+                                            SET_FLOAT ((x) + 3, (((i)      ) & 0xff))
+                            
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void        textbuffer_init                 (t_textbuffer *x);
 void        textbuffer_free                 (t_textbuffer *x);
 void        textbuffer_click                (t_textbuffer *x,
