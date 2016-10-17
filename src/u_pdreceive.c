@@ -39,8 +39,7 @@
 /* 
     This is a standalone program that receives messages from PureData via the
     netsend/netreceive ("FUDI") protocol, and copies them to standard output.
-    
-    Note that it does NOT support binary mode.
+
 */
 
 /* < http://en.wikipedia.org/wiki/FUDI > */
@@ -70,6 +69,7 @@ static int      pdreceive_pollersSize;
 static int      pdreceive_maximumFileDescriptor;
 static int      pdreceive_socketFileDescriptor;
 static int      pdreceive_socketProtocol;
+static int      pdreceive_socketIsBinary;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -77,7 +77,7 @@ static int      pdreceive_socketProtocol;
 
 int pdreceive_usage (void)
 {
-    fprintf (stderr, "usage: pdreceive < portnumber > [ udp | tcp ]\n");
+    fprintf (stderr, "usage: pdreceive < portnumber > [ udp | tcp ] [ binary ]\n");
     fprintf (stderr, "(default is tcp)\n");
 }
 
@@ -115,64 +115,6 @@ void pdreceive_socketClose (int fd)
 }
 
 #endif // _WIN32
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#ifdef _WIN32
-
-static int pdreceive_outputRaw (char *t, int size)
-{
-    int j; for (j = 0; j < size; j++) { putchar (t[j]); } return 0;
-}
-
-#else
-
-static int pdreceive_outputRaw (char *t, int size)
-{   
-    if (write (1, t, size) < size) { pdreceive_socketError ("write"); return 1; }
-    else {
-        return 0;
-    }
-}
-
-#endif // _WIN32
-
-static int pdreceive_outputUDP (char *t, int size)
-{
-    return pdreceive_outputRaw (t, size);
-}
-
-static int pdreceive_outputTCP (t_poll *x, char *t, int size)
-{
-    char *p = x->p_buffer;
-    int i, length = x->p_messageLength;
-        
-    for (i = 0; i < size; i++) {
-    //
-    char c = t[i];
-    
-    if (c != '\n') { p[length++] = c; }
-    
-    if (length >= (PDRECEIVE_BUFFER_SIZE - 1)) {
-        fprintf (stderr, "overflow: discard message\n");
-        length = 0;
-        x->p_messageIsTruncated = 1;
-    }  
-
-    if (c == ';') {
-        p[length++] = '\n';
-        if (!x->p_messageIsTruncated) { pdreceive_outputRaw (p, length); }
-        length = 0; x->p_messageIsTruncated = 0;
-    }
-    //
-    }
-
-    x->p_messageLength = length;
-    
-    return 0;
-}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -225,6 +167,69 @@ static int pdreceive_removePort (t_poll *x)
     }
     
     return 0;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#ifdef _WIN32
+
+static int pdreceive_outputRaw (char *t, int size)
+{
+    int j; for (j = 0; j < size; j++) { putchar (t[j]); } return 0;
+}
+
+#else
+
+static int pdreceive_outputRaw (char *t, int size)
+{   
+    if (write (1, t, size) < size) { pdreceive_socketError ("write"); return 1; }
+    else {
+        return 0;
+    }
+}
+
+#endif // _WIN32
+
+static int pdreceive_outputUDP (char *t, int size)
+{
+    return pdreceive_outputRaw (t, size);
+}
+
+static int pdreceive_outputTCP (t_poll *x, char *t, int size)
+{
+    if (pdreceive_socketIsBinary) { pdreceive_outputRaw (t, size); }
+    else {
+    //
+    char *p = x->p_buffer;
+    int i, length = x->p_messageLength;
+        
+    for (i = 0; i < size; i++) {
+    //
+    char c = t[i];
+    
+    if (c != '\n') { p[length++] = c; }
+    
+    if (length >= (PDRECEIVE_BUFFER_SIZE - 1)) {
+        fprintf (stderr, "overflow: discard message\n");
+        length = 0;
+        x->p_messageIsTruncated = 1;
+    }  
+
+    if (c == ';') {
+        p[length++] = '\n';
+        if (!x->p_messageIsTruncated) { pdreceive_outputRaw (p, length); }
+        length = 0; x->p_messageIsTruncated = 0;
+    }
+    //
+    }
+
+    x->p_messageLength = length;
+    
+    return 0;
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -337,10 +342,11 @@ int main (int argc, char **argv)
     pdreceive_socketProtocol = SOCK_STREAM;
     
     if (!err) {
+        if (argc >= 4 && strcmp (argv[3], "binary") == 0) { pdreceive_socketIsBinary = 1; }
         if (argc >= 3) {
             if (strcmp (argv[2], "udp") == 0) { pdreceive_socketProtocol = SOCK_DGRAM; }
             else { 
-                err = (strcmp (argv[3], "tcp") != 0); 
+                err = (strcmp (argv[2], "tcp") != 0); 
             }
         }
     }
