@@ -845,22 +845,8 @@
 			isa = PBXGroup;
 			children = (
 				378232301D6C49C300C128AD /* x_control.h */,
-				378232431D6C4A3300C128AD /* x_textbuffer.c */,
-				378232A21D6C50D600C128AD /* x_textclient.c */,
-				375D72E61D86A5F000D079B1 /* x_arrayclient.c */,
-				375148DA1D86D9E5005679B0 /* x_arrayrange.c */,
-				375E88DE1D901BA90052D22C /* x_listinlet.c */,
-				37B145831D9E97A1003A354F /* x_atomoutlet.c */,
-				37CD71BA1D9A9DDF00A61BD3 /* Atom */,
-				37F86D531D8EEA3F0009717B /* List */,
-				3751490C1D86DC3D005679B0 /* Scalar */,
-				3751490D1D86DC48005679B0 /* Text */,
-				3751490E1D86DC68005679B0 /* Array */,
-				379079D31D96D7EC0055CBFF /* Math */,
-				37D724561D92757C00408D24 /* Time */,
-				374905C71D99702300377F1E /* Flow */,
-				374905C91D99703B00377F1E /* Miscellaneous */,
-				374905CC1D99707A00377F1E /* MIDI */,
+				37AEFD551DB5182A0039FB59 /* Shared */,
+				37AEFD541DB518100039FB59 /* Objects */,
 			);
 			name = Control;
 			sourceTree = "<group>";
@@ -1157,6 +1143,36 @@
 				378971EC1C4F716700263434 /* s_audio_dummy.c */,
 			);
 			name = Audio;
+			sourceTree = "<group>";
+		};
+		37AEFD541DB518100039FB59 /* Objects */ = {
+			isa = PBXGroup;
+			children = (
+				37CD71BA1D9A9DDF00A61BD3 /* Atom */,
+				37F86D531D8EEA3F0009717B /* List */,
+				3751490C1D86DC3D005679B0 /* Scalar */,
+				3751490D1D86DC48005679B0 /* Text */,
+				3751490E1D86DC68005679B0 /* Array */,
+				379079D31D96D7EC0055CBFF /* Math */,
+				37D724561D92757C00408D24 /* Time */,
+				374905C71D99702300377F1E /* Flow */,
+				374905C91D99703B00377F1E /* Miscellaneous */,
+				374905CC1D99707A00377F1E /* MIDI */,
+			);
+			name = Objects;
+			sourceTree = "<group>";
+		};
+		37AEFD551DB5182A0039FB59 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				378232431D6C4A3300C128AD /* x_textbuffer.c */,
+				378232A21D6C50D600C128AD /* x_textclient.c */,
+				375D72E61D86A5F000D079B1 /* x_arrayclient.c */,
+				375148DA1D86D9E5005679B0 /* x_arrayrange.c */,
+				375E88DE1D901BA90052D22C /* x_listinlet.c */,
+				37B145831D9E97A1003A354F /* x_atomoutlet.c */,
+			);
+			name = Shared;
 			sourceTree = "<group>";
 		};
 		37CD71BA1D9A9DDF00A61BD3 /* Atom */ = {
