@@ -121,20 +121,31 @@ void netreceive_callbackReceived (void *z, t_buffer *b)
     
     if (size) {
     //
-    t_atom *t = buffer_atomAtIndex (b, start);
-    
-    if (IS_FLOAT (t)) { 
-        if (size == 1) { outlet_float (x->nr_outletLeft, GET_FLOAT (t)); }
-        else {
-            outlet_list (x->nr_outletLeft, size, t);
+    if (x->nr_isBinary) { 
+        
+        int j;
+        
+        for (j = 0; j < size; j++) { 
+            outlet_float (x->nr_outletLeft, atom_getFloat (buffer_atomAtIndex (b, start + j))); 
         }
-    } else if (IS_SYMBOL (t)) {
-        if (size == 1) { outlet_symbol (x->nr_outletLeft, GET_SYMBOL (t)); }
-        else {
-            outlet_anything (x->nr_outletLeft, GET_SYMBOL (t), size - 1, t + 1);
-        }
+        
     } else {
-        PD_BUG;
+    
+        t_atom *t = buffer_atomAtIndex (b, start);
+        
+        if (IS_FLOAT (t)) { 
+            if (size == 1) { outlet_float (x->nr_outletLeft, GET_FLOAT (t)); }
+            else {
+                outlet_list (x->nr_outletLeft, size, t);
+            }
+        } else if (IS_SYMBOL (t)) {
+            if (size == 1) { outlet_symbol (x->nr_outletLeft, GET_SYMBOL (t)); }
+            else {
+                outlet_anything (x->nr_outletLeft, GET_SYMBOL (t), size - 1, t + 1);
+            }
+        } else {
+            PD_BUG;
+        }
     }
     //
     }
