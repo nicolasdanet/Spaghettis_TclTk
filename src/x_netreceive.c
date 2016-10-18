@@ -121,7 +121,7 @@ void netreceive_callbackReceived (void *z, t_buffer *b)
     
     if (size) {
     //
-    if (x->nr_isBinary) { 
+    if (x->nr_isBinary && x->nr_protocol == SOCK_STREAM) { 
         
         int j;
         
