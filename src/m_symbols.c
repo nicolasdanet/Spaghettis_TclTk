@@ -173,6 +173,7 @@ t_symbol *sym_block__tilde__;
 t_symbol *sym_bng;
 t_symbol *sym_bounds;
 t_symbol *sym_bp__tilde__;
+t_symbol *sym_bundle;
 t_symbol *sym_buttonsnumber;
 t_symbol *sym_callback;
 t_symbol *sym_canvas;
@@ -721,6 +722,7 @@ void symbols_initialize (void)
     sym_bng                                     = gensym ("bng");
     sym_bounds                                  = gensym ("bounds");
     sym_bp__tilde__                             = gensym ("bp~");
+    sym_bundle                                  = gensym ("bundle");
     sym_buttonsnumber                           = gensym ("buttonsnumber");
     sym_callback                                = gensym ("callback");
     sym_canvas                                  = gensym ("canvas");

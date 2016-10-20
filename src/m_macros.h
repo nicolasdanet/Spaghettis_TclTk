@@ -219,32 +219,38 @@ static inline unsigned long sys_nextPowerOf2 (unsigned long v)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+typedef union {
+    t_float     z_f;
+    uint32_t    z_i;
+    } t_rawcast;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #if ! ( PD_MSVC )
 
     #if ( PD_CPU_x86 || PD_CPU_AMD64 || PD_CPU_ARM )
         
-        typedef union {
-            t_float f;
-            unsigned int ui;
-        } t_bigorsmall32;
-
         static inline int PD_DENORMAL_OR_ZERO (t_float f)   /* Is malformed (denormal, infinite, NaN)? */
         {
-            t_bigorsmall32 pun;
-            pun.f = f;
-            pun.ui &= 0x7f800000;
-            return ((pun.ui == 0) | (pun.ui == 0x7f800000));
+            t_rawcast z;
+            z.z_f = f;
+            z.z_i &= 0x7f800000;
+            return ((z.z_i == 0) | (z.z_i == 0x7f800000));
         }
         
         static inline int PD_BIG_OR_SMALL (t_float f)       /* If exponent falls out (-64, 64) range. */
         {
-            t_bigorsmall32 pun;
-            pun.f = f;
-            return ((pun.ui & 0x20000000) == ((pun.ui >> 1) & 0x20000000)); 
+            t_rawcast z;
+            z.z_f = f;
+            return ((z.z_i & 0x20000000) == ((z.z_i >> 1) & 0x20000000)); 
         }
 
     #else
     
+        #error
+        
         #define PD_DENORMAL_OR_ZERO(f)  0
         #define PD_BIG_OR_SMALL(f)      0
         

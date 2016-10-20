@@ -7,6 +7,11 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+/* < http://opensoundcontrol.org/introduction-osc > */ 
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 #include "m_pd.h"
@@ -92,7 +97,7 @@ static void oscformat_list(t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
             typecode = 's';
         else typecode = 'f';
         if (typecode == 's')
-            msgindex += OSC_ROUNDUP(strlen(argv[j].a_w.w_symbol->s_name) + 1);
+            msgindex += OSC_ROUND(strlen(argv[j].a_w.w_symbol->s_name) + 1);
         else if (typecode == 'b')
         {
             int blobsize = PD_INT_MAX, blobindex;
@@ -102,14 +107,14 @@ static void oscformat_list(t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
                     blobsize = (int)(argv[j].a_w.w_float);
             if (blobsize > argc - j - 1)
                 blobsize = argc - j - 1;    /* if no or bad size, eat it all */ 
-            msgindex += 4 + OSC_ROUNDUP(blobsize);
+            msgindex += 4 + OSC_ROUND(blobsize);
             j += blobsize;
         }
         else msgindex += 4;
         j++;
         ndata++;
     }
-    datastart = OSC_ROUNDUP(strlen(x->x_pathbuf)+1) + OSC_ROUNDUP(ndata + 2);
+    datastart = OSC_ROUND(strlen(x->x_pathbuf)+1) + OSC_ROUND(ndata + 2);
     msgsize = datastart + msgindex;
     msg = (t_atom *)alloca(msgsize * sizeof(t_atom));
     putstring(msg, &typeindex, x->x_pathbuf);

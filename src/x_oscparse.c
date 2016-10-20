@@ -7,6 +7,11 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+/* < http://opensoundcontrol.org/introduction-osc > */ 
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 #include "m_pd.h"
@@ -33,173 +38,371 @@ typedef struct _oscparse {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_symbol *grabstring(int argc, t_atom *argv, int *ip, int slash)
+static t_error oscparse_perform (t_oscparse *, int, t_atom *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static t_symbol *oscparse_fetchNextAdressElement (int argc, t_atom *argv, int *i)
 {
-    char buf[PD_STRING];
-    int first, nchar;
-    if (slash)
-        while (*ip < argc && argv[*ip].a_w.w_float == '/')
-            (*ip)++;
-    for (nchar = 0; nchar < PD_STRING-1 && *ip < argc; nchar++, (*ip)++)
-    {
-        char c = argv[*ip].a_w.w_float;
-        if (c == 0 || (slash && c == '/'))
-            break;
-        buf[nchar] = c;
+    int j = *i;
+    
+    char t[PD_STRING] = { 0 };
+    int n = 0;
+    
+    while (j < argc && OSC_CHAR (argv + j) == '/') { j++; }
+        
+    for (n = 0; n < PD_STRING - 1 && j < argc; n++, j++) {
+        char c = OSC_CHAR (argv + j);
+        if (c == 0 || c == '/') { break; }
+        else {
+            t[n] = c;
+        }
     }
-    buf[nchar] = 0;
-    if (!slash)
-        *ip = OSC_ROUNDUP(*ip+1);
-    if (*ip > argc)
-        *ip = argc;
-    return (gensym (buf));
+    
+    t[n] = 0;
+    
+    PD_ASSERT (j <= argc);
+    
+    *i = j;
+    
+    return gensym (t);
+}
+
+static t_symbol *oscparse_fetchString (int argc, t_atom *argv, int *i)
+{
+    int j = *i;
+    
+    char t[PD_STRING] = { 0 };
+    int n = 0;
+    
+    for (n = 0; n < PD_STRING - 1 && j < argc; n++, j++) {
+        char c = OSC_CHAR (argv + j);
+        if (c == 0) { break; }
+        else {
+            t[n] = c;
+        }
+    }
+    
+    t[n] = 0;
+    
+    PD_ASSERT (j <= argc);
+    
+    *i = OSC_ROUND (j + 1);
+    
+    return gensym (t);
+}
+
+static int oscparse_isValidTypetag (char c)
+{
+    return (c == 'i' || c == 'f' || c == 's' || c == 'b');
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void oscparse_list(t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
+static t_error oscparse_performArgumentsFloat (t_oscparse *x,
+    int argc,
+    t_atom *argv,
+    int *dataOffset,
+    int *atomOffset,
+    t_atom *a,
+    int size)
 {
-    int i, j, j2, k, outc = 1, blob = 0, typeonset, dataonset, nfield;
-    t_atom *outv;
-    if (!argc)
-        return;
-    for (i = 0; i < argc; i++)
-        if (argv[i].a_type != A_FLOAT)
-    {
-        post_error ("oscparse: takes numbers only");
-        return;
+    t_error err = PD_ERROR_NONE;
+    
+    int k = *dataOffset;
+    int n = *atomOffset;
+    
+    if (k > argc - 4) { err = PD_ERROR; }
+    else {
+        t_rawcast z;
+        z.z_i = OSC_READ (argv + k);
+        t_float f = z.z_f;
+        if (PD_DENORMAL_OR_ZERO (f)) { f = 0.0; }
+        SET_FLOAT (a + n, f);
+        n++; k += 4;
     }
-    if (argv[0].a_w.w_float == '#') /* it's a bundle */
-    {
-        if (argv[1].a_w.w_float != 'b' || argc < 16)
-        {
-            post_error ("oscparse: malformed bundle");
-            return;
+    
+    *dataOffset = k;
+    *atomOffset = n;
+    
+    return err;
+}
+
+static t_error oscparse_performArgumentsInteger (t_oscparse *x,
+    int argc,
+    t_atom *argv,
+    int *dataOffset,
+    int *atomOffset,
+    t_atom *a,
+    int size)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    int k = *dataOffset;
+    int n = *atomOffset;
+    
+    if (k > argc - 4) { err = PD_ERROR; }
+    else {
+        SET_FLOAT (a + n, OSC_READ (argv + k));
+        n++; k += 4;
+    }
+    
+    *dataOffset = k;
+    *atomOffset = n;
+    
+    return err;
+}
+
+static t_error oscparse_performArgumentsString (t_oscparse *x,
+    int argc,
+    t_atom *argv,
+    int *dataOffset,
+    int *atomOffset,
+    t_atom *a,
+    int size)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    int k = *dataOffset;
+    int n = *atomOffset;
+    
+    SET_SYMBOL (a + n, oscparse_fetchString (argc, argv, &k));
+    n++;
+                
+    *dataOffset = k;
+    *atomOffset = n;
+    
+    return err;
+}
+
+static t_error oscparse_performArgumentsBlob (t_oscparse *x,
+    int argc,
+    t_atom *argv,
+    int *dataOffset,
+    int *atomOffset,
+    t_atom *a,
+    int size)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    int k = *dataOffset;
+    int n = *atomOffset;
+    
+    if (k > argc - 4) { err = PD_ERROR; }
+    else {
+        int blobSize = OSC_READ (argv + k); 
+        k += 4;
+        err |= (blobSize < 0 || blobSize > argc - k);
+        err |= (n + blobSize >= size);
+        if (!err) {
+            int j;
+            SET_FLOAT (a + n, blobSize);
+            n++;
+            for (j = 0; j < blobSize; j++) {
+                SET_FLOAT (a + n, GET_FLOAT (argv + k));
+                n++;
+                k++;
+            }
+            k = OSC_ROUND (k);
         }
-            /* we ignore the timetag since there's no correct way to
-            convert it to Pd logical time that I can think of.  LATER
-            consider at least outputting timetag differentially converted
-            into Pd time units. */
-        for (i = 16; i < argc-4; )
-        {
-            int msize = OSC_READ(argv+i);
-            if (msize <= 0 || msize & 3)
-            {
-                post_error ("oscparse: bad bundle element size");
-                return;
-            }
-            oscparse_list(x, 0, msize, argv+i+4);
-            i += msize+4;
+    }
+                
+    *dataOffset = k;
+    *atomOffset = n;
+    
+    return err;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static t_error oscparse_performArguments (t_oscparse *x,
+    int argc,
+    t_atom *argv,
+    int i,
+    int *k,
+    int *n,
+    t_atom *a,
+    int size)
+{
+    switch (OSC_CHAR (argv + i)) {
+        case 'f': return oscparse_performArgumentsFloat (x, argc, argv, k, n, a, size);
+        case 'i': return oscparse_performArgumentsInteger (x, argc, argv, k, n, a, size);
+        case 's': return oscparse_performArgumentsString (x, argc, argv, k, n, a, size);
+        case 'b': return oscparse_performArgumentsBlob (x, argc, argv, k, n, a, size);
+    }
+    
+    PD_BUG; return PD_ERROR;
+}
+
+static int oscparse_performFetch (t_oscparse *x,
+    int argc,
+    t_atom *argv,
+    int typeOnset,
+    int numberOfTypeTags,
+    t_atom *a,
+    int size)
+{
+    int i, n = 0;
+
+    /* Fill the elements of the adress path. */
+    
+    for (i = 0; i < typeOnset - 1; n++) {
+        if (OSC_CHAR (argv + i) == 0) { break; }
+        else {
+            PD_ASSERT (n < size); SET_SYMBOL (a + n, oscparse_fetchNextAdressElement (argc, argv, &i));
         }
-        return;
     }
-    else if (argv[0].a_w.w_float != '/')
-    {
-        post_error ("oscparse: not an OSC message (no leading slash)");
-        return;
+    
+    /* Fill the arguments. */
+    
+    int k = OSC_ROUND (typeOnset + numberOfTypeTags + 1);
+    
+    for (i = typeOnset; i < typeOnset + numberOfTypeTags; i++) {
+        if (n >= size || oscparse_performArguments (x, argc, argv, i, &k, &n, a, size)) { return -1; }
     }
-    for (i = 1; i < argc && argv[i].a_w.w_float != 0; i++)
-        if (argv[i].a_w.w_float == '/')
-            outc++;
-    i = OSC_ROUNDUP(i+1);
-    if (argv[i].a_w.w_float != ',' || (i+1) >= argc)
-    {
-        post_error ("oscparse: malformed type string (char %d, index %d)",
-            (int)(argv[i].a_w.w_float), i);
-        return;
+    
+    return n;
+}
+
+static t_error oscparse_performBundle (t_oscparse *x, int argc, t_atom *argv)
+{
+    t_error err = PD_ERROR;
+    
+    /* Notice that timetag is ignored. */
+    
+    const int headerBundle = 16;
+    const int headerMessage = 4;
+    
+    if (argc >= headerBundle && OSC_CHAR (argv + 1) == 'b') {
+    //
+    int i = headerBundle;
+        
+    while (!err && (i < argc - headerMessage)) {
+    //
+    int length = OSC_READ (argv + i);
+        
+    err = (length <= 0 || length & 3);  /* Must be a multiple of 4. */
+    
+    if (!err) { 
+        err = oscparse_perform (x, length, argv + i + headerMessage);
+        i += headerMessage + length;
     }
-    typeonset = ++i;
-    for (; i < argc && argv[i].a_w.w_float != 0; i++)
-        if (argv[i].a_w.w_float == 'b')
-            blob = 1;
-    nfield = i - typeonset;
-    if (blob)
-        outc += argc - typeonset;
-    else outc += nfield;
-    outv = (t_atom *)alloca(outc * sizeof(t_atom));
-    dataonset = OSC_ROUNDUP(i + 1);
-    /* post("outc %d, typeonset %d, dataonset %d, nfield %d", outc, typeonset, 
-        dataonset, nfield); */
-    for (i = j = 0; i < typeonset-1 && argv[i].a_w.w_float != 0 &&
-        j < outc; j++)
-            SET_SYMBOL(outv+j, grabstring(argc, argv, &i, 1));
-    for (i = typeonset, k = dataonset; i < typeonset + nfield; i++)
-    {
-        union
-        {
-            float z_f;
-            uint32_t z_i;
-        } z;
-        float f;
-        int blobsize;
-        switch ((int)(argv[i].a_w.w_float))
-        {
-        case 'f':
-            if (k > argc - 4)
-                goto tooshort;
-            z.z_i = OSC_READ(argv+k);
-            f = z.z_f;
-            if (PD_DENORMAL_OR_ZERO(f))
-                f = 0;
-            if (j >= outc)
-            {
-                PD_BUG;
-                return;
-            }
-            SET_FLOAT(outv+j, f);
-            j++; k += 4;
-            break;
-        case 'i':
-            if (k > argc - 4)
-                goto tooshort;
-            if (j >= outc)
-            {
-                PD_BUG;
-                return;
-            }
-            SET_FLOAT(outv+j, OSC_READ(argv+k));
-            j++; k += 4;
-            break;
-        case 's':
-            if (j >= outc)
-            {
-                PD_BUG;
-                return;
-            }
-            SET_SYMBOL(outv+j, grabstring(argc, argv, &k, 0));
-            j++;
-            break;
-        case 'b':
-            if (k > argc - 4)
-                goto tooshort;
-            blobsize = OSC_READ(argv+k);
-            k += 4;
-            if (blobsize < 0 || blobsize > argc - k)
-                goto tooshort;
-            if (j + blobsize + 1 > outc)
-            {
-                PD_BUG;
-                return;
-            }
-            if (k + blobsize > argc)
-                goto tooshort;
-            SET_FLOAT(outv+j, blobsize);
-            j++;
-            for (j2 = 0; j2 < blobsize; j++, j2++, k++)
-                SET_FLOAT(outv+j, argv[k].a_w.w_float);
-            k = OSC_ROUNDUP(k);
-            break;
-        default:
-            post_error ("oscparse: unknown tag '%c' (%d)", 
-                (int)(argv[i].a_w.w_float), (int)(argv[i].a_w.w_float));
-        } 
+    //
     }
-    outlet_list(x->x_obj.te_outlet, j, outv);
-    return;
-tooshort:
-    post_error ("oscparse: OSC message ended prematurely");
+    //
+    }
+    
+    if (err) { error_invalid (sym_oscparse, sym_bundle); }
+    
+    return err;
+}
+
+static t_error oscparse_perform (t_oscparse *x, int argc, t_atom *argv)
+{
+    if (OSC_CHAR (argv) == '#') { return oscparse_performBundle (x, argc, argv); }
+    else if (OSC_CHAR (argv) == '/') {
+    //
+    t_error err = PD_ERROR_NONE;
+    int i, size = 1;
+
+    /* Get the number of elements in the adress path. */
+    
+    for (i = 1; i < argc; i++) {
+        if (OSC_CHAR (argv + i) == 0) { break; }
+        else {
+            if (OSC_CHAR (argv + i) == '/') { 
+                size++;
+            }
+        }
+    }
+    
+    i = OSC_ROUND (i + 1);
+    
+    /* Test existence of typetags. */
+    
+    err = ((OSC_CHAR (argv + i) != ',') || (i + 1 >= argc));
+    
+    i++;
+    
+    if (!err) {
+    //
+    int typeOnset = i;              /* Index of first typetag. */
+    int numberOfTypeTags = 0;
+    int hasBlob = 0;
+    
+    /* Get the number of typetags. */
+    
+    for (; i < argc; i++) {
+        if (OSC_CHAR (argv + i) == 0) { break; }
+        else {
+            if (!oscparse_isValidTypetag (OSC_CHAR (argv + i))) { err = PD_ERROR; }
+            else {
+                hasBlob |= (OSC_CHAR (argv + i) == 'b'); numberOfTypeTags++;
+            }
+        }
+    }
+    
+    if (!err) {
+    //
+    t_atom *a = NULL;
+    int n;
+    
+    size += hasBlob ? argc - typeOnset : numberOfTypeTags;
+    
+    ATOMS_ALLOCA (a, size);
+    
+    /* Fetch adress and arguments. */
+    
+    n = oscparse_performFetch (x, argc, argv, typeOnset, numberOfTypeTags, a, size);
+    
+    if (n == -1) { err = PD_ERROR; }
+    else {
+        outlet_list (x->x_outlet, n, a);
+    }
+    
+    ATOMS_FREEA (a, size);
+    //
+    }
+    //
+    }
+    
+    if (err) { error_invalid (sym_oscparse, sym_message); }
+    
+    return err;
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void oscparse_list (t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc) {
+    //
+    t_error err = PD_ERROR_NONE;
+    int i;
+    
+    for (i = 0; i < argc; i++) {
+        err |= (!IS_FLOAT (argv + i) || OSC_CHAR (argv + i) < 0 || OSC_CHAR (argv + i) > 255); 
+    }
+        
+    if (!err) {
+        err = oscparse_perform (x, argc, argv);
+    }
+    
+    if (err) { 
+        error_failed (sym_oscparse);
+    }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
