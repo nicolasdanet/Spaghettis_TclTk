@@ -211,6 +211,7 @@
 #include "x_netreceive.c"
 #include "x_oscparse.c"
 #include "x_oscformat.c"
+#include "x_midi.c"
 
 /* DSP. */
 
