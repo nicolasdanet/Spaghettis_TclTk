@@ -123,6 +123,7 @@ void arrayrandom_setup      (void);
 void arraymax_setup         (void);
 void arraymin_setup         (void);
 void x_midi_setup           (void);
+void bag_setup              (void);
 void random_setup           (void);
 void loadbang_setup         (void);
 void namecanvas_setup       (void);
@@ -256,6 +257,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     arraymax_setup();
     arraymin_setup();
     x_midi_setup();
+    bag_setup();
     random_setup();
     loadbang_setup();
     namecanvas_setup();

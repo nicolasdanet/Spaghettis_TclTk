@@ -61,9 +61,9 @@
 #include "s_loader.c"
 #include "s_preferences.c"
 #include "s_midi.c"
-#include "s_midiAPI.c"
-#include "s_midiIn.c"
 #include "s_midiOut.c"
+#include "s_midiIn.c"
+#include "s_midiAPI.c"
 #include "s_audio.c"
 #include "s_audioAPI.c"
 #include "s_memory.c"
@@ -214,6 +214,7 @@
 #include "x_oscparse.c"
 #include "x_oscformat.c"
 #include "x_midi.c"
+#include "x_bag.c"
 
 /* DSP. */
 
