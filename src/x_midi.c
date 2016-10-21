@@ -1,68 +1,19 @@
-/* Copyright (c) 1997-2001 Miller Puckette and others.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-/* MIDI. */
+/* 
+    Copyright (c) 1997-2016 Miller Puckette and others.
+*/
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
 #include "s_midi.h"
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void outmidi_noteOn (int port, int channel, int pitch, int velocity)
-{
-    pitch    = PD_CLAMP (pitch, 0, 127);
-    velocity = PD_CLAMP (velocity, 0, 127);
-
-    midi_broadcast (port, 0, MIDI_NOTEON + (channel & 0xf), pitch, velocity);
-}
-
-void outmidi_controlChange (int port, int channel, int control, int value)
-{
-    control = PD_CLAMP (control, 0, 127);
-    value   = PD_CLAMP (value, 0, 127);
-    
-    midi_broadcast (port, 0, MIDI_CONTROLCHANGE + (channel & 0xf), control, value);
-}
-
-void outmidi_programChange (int port, int channel, int value)
-{
-    value = PD_CLAMP (value, 0, 127);
-    
-    midi_broadcast (port, 0, MIDI_PROGRAMCHANGE + (channel & 0xf), value, 0);
-}
-
-void outmidi_pitchBend (int port, int channel, int value)
-{
-    value = PD_CLAMP (value, 0, 16383);     // 0x3fff 
-    
-    midi_broadcast (port, 0, MIDI_PITCHBEND + (channel & 0xf), (value & 127), ((value >> 7) & 127));
-}
-
-void outmidi_afterTouch (int port, int channel, int value)
-{
-    value = PD_CLAMP (value, 0, 127);
-    
-    midi_broadcast (port, 0, MIDI_AFTERTOUCH + (channel & 0xf), value, 0);
-}
-
-void outmidi_polyPressure (int port, int channel, int pitch, int value)
-{
-    pitch = PD_CLAMP (pitch, 0, 127);
-    value = PD_CLAMP (value, 0, 127);
-    
-    midi_broadcast (port, 0, MIDI_POLYPRESSURE + (channel & 0xf), pitch, value);
-}
-
-void outmidi_clock (int port)
-{
-    midi_broadcast (port, 1, MIDI_CLOCK, 0, 0);
-}
 
 /* ----------------------- midiin and sysexin ------------------------- */
 
@@ -124,27 +75,9 @@ static void midiin_setup(void)
     class_setHelpName(sysexin_class, sym_midiout);
 }
 
-void inmidi_byte(int portno, int byte)
-{
-    t_atom at[2];
-    if (pd_isThingQuiet (sym__midiin))
-    {
-        SET_FLOAT(at, byte);
-        SET_FLOAT(at+1, portno);
-        pd_list (pd_getThing (sym__midiin), 2, at);
-    }
-}
-
-void inmidi_sysex(int portno, int byte)
-{
-    t_atom at[2];
-    if (pd_isThingQuiet (sym__sysexin))
-    {
-        SET_FLOAT(at, byte);
-        SET_FLOAT(at+1, portno);
-        pd_list (pd_getThing (sym__sysexin), 2, at);
-    }
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* ----------------------- notein ------------------------- */
 
@@ -202,17 +135,9 @@ static void notein_setup(void)
     class_setHelpName(notein_class, sym_midiout);
 }
 
-void inmidi_noteOn(int portno, int channel, int pitch, int velo)
-{
-    if (pd_isThingQuiet (sym__notein))
-    {
-        t_atom at[3];
-        SET_FLOAT(at, pitch);
-        SET_FLOAT(at+1, velo);
-        SET_FLOAT(at+2, (channel + (portno << 4) + 1));
-        pd_list (pd_getThing (sym__notein), 3, at);
-    }
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* ----------------------- ctlin ------------------------- */
 
@@ -273,17 +198,9 @@ static void ctlin_setup(void)
     class_setHelpName(ctlin_class, sym_midiout);
 }
 
-void inmidi_controlChange(int portno, int channel, int ctlnumber, int value)
-{
-    if (pd_isThingQuiet (sym__ctlin))
-    {
-        t_atom at[3];
-        SET_FLOAT(at, ctlnumber);
-        SET_FLOAT(at+1, value);
-        SET_FLOAT(at+2, (channel + (portno << 4) + 1));
-        pd_list (pd_getThing (sym__ctlin), 3, at);
-    }
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* ----------------------- pgmin ------------------------- */
 
@@ -337,16 +254,9 @@ static void pgmin_setup(void)
     class_setHelpName(pgmin_class, sym_midiout);
 }
 
-void inmidi_programChange(int portno, int channel, int value)
-{
-    if (pd_isThingQuiet (sym__pgmin))
-    {
-        t_atom at[2];
-        SET_FLOAT(at, value + 1);
-        SET_FLOAT(at+1, (channel + (portno << 4) + 1));
-        pd_list (pd_getThing (sym__pgmin), 2, at);
-    }
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* ----------------------- bendin ------------------------- */
 
@@ -399,16 +309,9 @@ static void bendin_setup(void)
     class_setHelpName(bendin_class, sym_midiout);
 }
 
-void inmidi_pitchBend(int portno, int channel, int value)
-{
-    if (pd_isThingQuiet (sym__bendin))
-    {
-        t_atom at[2];
-        SET_FLOAT(at, value);
-        SET_FLOAT(at+1, (channel + (portno << 4) + 1));
-        pd_list (pd_getThing (sym__bendin), 2, at);
-    }
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* ----------------------- touchin ------------------------- */
 
@@ -462,16 +365,9 @@ static void touchin_setup(void)
     class_setHelpName(touchin_class, sym_midiout);
 }
 
-void inmidi_afterTouch(int portno, int channel, int value)
-{
-    if (pd_isThingQuiet (sym__touchin))
-    {
-        t_atom at[2];
-        SET_FLOAT(at, value);
-        SET_FLOAT(at+1, (channel + (portno << 4) + 1));
-        pd_list (pd_getThing (sym__touchin), 2, at);
-    }
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* ----------------------- polytouchin ------------------------- */
 
@@ -531,17 +427,9 @@ static void polytouchin_setup(void)
     class_setHelpName(polytouchin_class, sym_midiout);
 }
 
-void inmidi_polyPressure(int portno, int channel, int pitch, int value)
-{
-    if (pd_isThingQuiet (sym__polytouchin))
-    {
-        t_atom at[3];
-        SET_FLOAT(at, pitch);
-        SET_FLOAT(at+1, value);
-        SET_FLOAT(at+2, (channel + (portno << 4) + 1));
-        pd_list (pd_getThing (sym__polytouchin), 3, at);
-    }
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /*----------------------- midiclkin--(midi F8 message )---------------------*/
 
@@ -585,31 +473,9 @@ static void midiclkin_setup(void)
         class_setHelpName(midiclkin_class, sym_midiout);
 }
 
-void inmidi_clk(double timing)
-{
-
-    static t_float prev = 0;
-    static t_float count = 0;
-    t_float cur,diff;
-
-    if (pd_isThingQuiet (sym__midiclkin))
-    {
-        t_atom at[2];
-        diff =timing - prev;
-        count++;
-   
-        if (count == 3)
-        {  /* 24 count per quoter note */
-             SET_FLOAT(at, 1 );
-             count = 0;
-        }
-        else SET_FLOAT(at, 0);
-
-        SET_FLOAT(at+1, diff);
-        pd_list (pd_getThing (sym__midiclkin), 2, at);
-        prev = timing;
-    }
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /*----------midirealtimein (midi FA,FB,FC,FF message )-----------------*/
 
@@ -655,16 +521,9 @@ static void midirealtimein_setup(void)
         class_setHelpName(midirealtimein_class, sym_midiout);
 }
 
-void inmidi_realTimeIn(int portno, int SysMsg)
-{
-    if (pd_isThingQuiet (sym__midirealtimein))
-    {
-        t_atom at[2];
-        SET_FLOAT(at, portno);
-        SET_FLOAT(at+1, SysMsg);
-        pd_list (pd_getThing (sym__midirealtimein), 2, at);
-    }
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* -------------------------- midiout -------------------------- */
 
@@ -697,6 +556,10 @@ static void midiout_setup(void)
     class_addFloat(midiout_class, midiout_float);
     class_setHelpName(midiout_class, sym_midiout);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* -------------------------- noteout -------------------------- */
 
@@ -737,6 +600,9 @@ static void noteout_setup(void)
     class_setHelpName(noteout_class, sym_midiout);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* -------------------------- ctlout -------------------------- */
 
@@ -777,6 +643,9 @@ static void ctlout_setup(void)
     class_setHelpName(ctlout_class, sym_midiout);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* -------------------------- pgmout -------------------------- */
 
@@ -817,6 +686,9 @@ static void pgmout_setup(void)
     class_setHelpName(pgmout_class, sym_midiout);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* -------------------------- bendout -------------------------- */
 
@@ -854,6 +726,10 @@ static void bendout_setup(void)
     class_setHelpName(bendout_class, sym_midiout);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 /* -------------------------- touch -------------------------- */
 
 static t_class *touchout_class;
@@ -888,6 +764,10 @@ static void touchout_setup(void)
     class_addFloat(touchout_class, touchout_float);
     class_setHelpName(touchout_class, sym_midiout);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* -------------------------- polytouch -------------------------- */
 
@@ -927,6 +807,10 @@ static void polytouchout_setup(void)
     class_addFloat(polytouchout_class, polytouchout_float);
     class_setHelpName(polytouchout_class, sym_midiout);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* -------------------------- makenote -------------------------- */
 
@@ -1033,6 +917,10 @@ static void makenote_setup(void)
         0);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 /* -------------------------- stripnote -------------------------- */
 
 static t_class *stripnote_class;
@@ -1068,6 +956,10 @@ static void stripnote_setup(void)
         (t_newmethod)stripnote_new, 0, sizeof(t_stripnote), 0, 0);
     class_addFloat(stripnote_class, stripnote_float);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* -------------------------- poly -------------------------- */
 
@@ -1203,6 +1095,10 @@ static void poly_setup(void)
     class_addMethod(poly_class, (t_method)poly_clear, sym_clear, 0);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 /* -------------------------- bag -------------------------- */
 
 static t_class *bag_class;
@@ -1300,6 +1196,10 @@ static void bag_setup(void)
 void sys_setmidiprefix(const char *prefix)
 {
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void x_midi_setup(void)
 {
