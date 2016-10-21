@@ -170,7 +170,7 @@ static void receiver_readHandleDisconnect (t_receiver *x, int fd, int withError)
 static void receiver_readUDP (t_receiver *x, int fd)
 {
     char t[RECEIVER_BUFFER_SIZE + 1] = { 0 };
-    ssize_t length = recv (fd, t, RECEIVER_BUFFER_SIZE, 0);
+    ssize_t length = recv (fd, (void *)t, RECEIVER_BUFFER_SIZE, 0);
     
     if (length < 0)       { receiver_readHandleDisconnect (x, fd, 1); PD_BUG; }
     else if (length == 0) { receiver_readHandleDisconnect (x, fd, 0); }
@@ -209,7 +209,7 @@ static void receiver_readTCP (t_receiver *x, int fd)
     if (sizeOfAvailableSpace == 0) { x->r_inHead = x->r_inTail = 0; PD_BUG; }
     else {
     //
-    ssize_t length = recv (fd, x->r_inRaw + x->r_inHead, sizeOfAvailableSpace, 0);
+    ssize_t length = recv (fd, (void *)(x->r_inRaw + x->r_inHead), sizeOfAvailableSpace, 0);
     
     if (length < 0)       { receiver_readHandleDisconnect (x, fd, 1); PD_BUG; }
     else if (length == 0) { receiver_readHandleDisconnect (x, fd, 0); }

@@ -239,7 +239,7 @@ static int pdreceive_outputTCP (t_poll *x, char *t, int size)
 static int pdreceive_readUDP (void)
 {
     char t[PDRECEIVE_BUFFER_SIZE] = { 0 };
-    ssize_t n = recv (pdreceive_socketFileDescriptor, t, PDRECEIVE_BUFFER_SIZE, 0);
+    ssize_t n = recv (pdreceive_socketFileDescriptor, (void *)t, PDRECEIVE_BUFFER_SIZE, 0);
     
     if (n < 0) { pdreceive_socketError ("recv"); return 1; }
     else {
@@ -254,7 +254,7 @@ static int pdreceive_readUDP (void)
 static int pdreceive_readTCP (t_poll *x)
 {
     char t[PDRECEIVE_BUFFER_SIZE] = { 0 };
-    ssize_t n = recv (x->p_fd, t, PDRECEIVE_BUFFER_SIZE, 0);
+    ssize_t n = recv (x->p_fd, (void *)t, PDRECEIVE_BUFFER_SIZE, 0);
     
     if (n <= 0) { if (n) { pdreceive_socketError ("recv"); } return pdreceive_removePort (x); }
     else { 

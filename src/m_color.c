@@ -24,7 +24,7 @@
 
 static unsigned int color_digitTo8BitsComponent (int n)
 {
-    unsigned int c = PD_CLAMP (n, 0, 8); return PD_MIN ((c << 5), 255);
+    unsigned int c = PD_CLAMP (n, 0, 8); return PD_MIN ((c << 5), 0xff);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -46,9 +46,9 @@ t_color color_withRGB (int argc, t_atom *argv)
     unsigned int g = (unsigned int)atom_getFloatAtIndex (1, argc, argv);
     unsigned int b = (unsigned int)atom_getFloatAtIndex (2, argc, argv);
     
-    r = PD_CLAMP (r, 0, 255);
-    g = PD_CLAMP (g, 0, 255);
-    b = PD_CLAMP (b, 0, 255);
+    r = PD_CLAMP (r, 0, 0xff);
+    g = PD_CLAMP (g, 0, 0xff);
+    b = PD_CLAMP (b, 0, 0xff);
         
     return (t_color)(COLOR_MASK & ((r << 16) | (g << 8) | b));
 }

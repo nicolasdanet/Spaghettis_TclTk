@@ -222,7 +222,7 @@ void midi_pollNative (void)
     long i;
     long n = snd_midi_event_decode (midialsa_event, t, MIDIALSA_MAXIMUM_EVENTS, midievent);
     for (i = 0; i < n; i++) {
-        midi_receive (midievent->dest.port, (t[i] & 0xff));
+        midi_receive (midievent->dest.port, (int)(t[i] & 0xff));
     }
     //
     }

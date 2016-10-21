@@ -45,7 +45,7 @@ static void unpack_list (t_unpack *x, t_symbol *s, int argc, t_atom *argv)
 
 static void unpack_anything (t_unpack *x, t_symbol *s, int argc, t_atom *argv)
 {
-    utils_anythingToList (cast_object (x), unpack_list, s, argc, argv);
+    utils_anythingToList (cast_pd (x), unpack_list, s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------

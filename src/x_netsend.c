@@ -102,7 +102,7 @@ t_error netsend_sendPerformBinary (t_netsend *x, int fd, t_symbol *s, int argc, 
         
     for (i = 0; i < argc; i++) {
         int byte = atom_getFloatAtIndex (i, argc, argv);
-        byte = PD_CLAMP (byte, 0, 255);
+        byte = PD_CLAMP (byte, 0, 0xff);
         *(t + i) = (unsigned char)byte; 
     }
     
