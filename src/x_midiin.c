@@ -17,48 +17,74 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *midiin_class;
+static t_class *midiin_class;           /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _midiin
-{
-    t_object x_obj;
-    t_outlet *x_outlet1;
-    t_outlet *x_outlet2;
-} t_midiin;
+typedef struct _midiin {
+    t_object    x_obj;                  /* Must be the first. */
+    t_outlet    *x_outletLeft;
+    t_outlet    *x_outletRight;
+    } t_midiin;
 
-static void *midiin_new( void)
-{
-    t_midiin *x = (t_midiin *)pd_new(midiin_class);
-    x->x_outlet1 = outlet_new(&x->x_obj, &s_float);
-    x->x_outlet2 = outlet_new(&x->x_obj, &s_float);
-    pd_bind(&x->x_obj.te_g.g_pd, sym__midiin);
-    return (x);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void midiin_list(t_midiin *x, t_symbol *s, int ac, t_atom *av)
+static void midiin_list (t_midiin *x, t_symbol *s, int argc, t_atom *argv)
 {
-    outlet_float(x->x_outlet2, atom_getFloatAtIndex(1, ac, av) + 1);
-    outlet_float(x->x_outlet1, atom_getFloatAtIndex(0, ac, av));
-}
+    int byte = (int)atom_getFloatAtIndex (0, argc, argv);
+    int port = (int)atom_getFloatAtIndex (1, argc, argv);
 
-static void midiin_free(t_midiin *x)
-{
-    pd_unbind(&x->x_obj.te_g.g_pd, sym__midiin);
+    port += 1;
+    
+    outlet_float (x->x_outletRight, (t_float)port);
+    outlet_float (x->x_outletLeft,  (t_float)byte);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-void midiin_setup(void)
+static void *midiin_new (void)
 {
-    midiin_class = class_new(sym_midiin, (t_newmethod)midiin_new,
-        (t_method)midiin_free, sizeof(t_midiin),
-            CLASS_NOINLET, A_DEFFLOAT, 0);
-    class_addList(midiin_class, midiin_list);
-    class_setHelpName(midiin_class, sym_midiout);
+    t_midiin *x = (t_midiin *)pd_new (midiin_class);
+    
+    x->x_outletLeft  = outlet_new (cast_object (x), &s_float);
+    x->x_outletRight = outlet_new (cast_object (x), &s_float);
+    
+    pd_bind (cast_pd (x), sym__midiin);
+    
+    return x;
+}
+
+static void midiin_free (t_midiin *x)
+{
+    pd_unbind (cast_pd (x), sym__midiin);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void midiin_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_midiin,
+            (t_newmethod)midiin_new,
+            (t_method)midiin_free,
+            sizeof (t_midiin),
+            CLASS_DEFAULT | CLASS_NOINLET,
+            A_DEFFLOAT,
+            A_NULL);
+            
+    class_addList (c, midiin_list);
+    
+    class_setHelpName (c, sym_midiout);
+    
+    midiin_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

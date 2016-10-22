@@ -77,14 +77,6 @@ typedef struct _binop {
     t_outlet            *bo_outlet;
     } t_binop;
 
-typedef struct _hang
-{
-    t_clock *h_clock;
-    struct _hang *h_next;
-    t_float h_pitch;
-    struct _makenote *h_owner;
-} t_hang;
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 

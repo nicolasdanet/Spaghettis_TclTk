@@ -14,7 +14,6 @@
 #include "m_macros.h"
 #include "s_system.h"
 #include "s_midi.h"
-#include "x_control.h"
 
 static t_class *stripnote_class;
 
@@ -37,7 +36,6 @@ static void *stripnote_new(void )
     
 static void stripnote_float(t_stripnote *x, t_float f)
 {
-    t_hang *hang;
     if (!x->x_velo) return;
     outlet_float(x->x_velout, x->x_velo);
     outlet_float(x->x_pitchout, f);

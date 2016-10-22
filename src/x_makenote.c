@@ -14,11 +14,18 @@
 #include "m_macros.h"
 #include "s_system.h"
 #include "s_midi.h"
-#include "x_control.h"
 
 /* -------------------------- makenote -------------------------- */
 
 static t_class *makenote_class;
+
+typedef struct _hang
+{
+    t_clock *h_clock;
+    struct _hang *h_next;
+    t_float h_pitch;
+    struct _makenote *h_owner;
+} t_hang;
 
 typedef struct _makenote
 {
