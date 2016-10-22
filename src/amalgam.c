@@ -215,6 +215,7 @@
 #include "x_oscformat.c"
 
 #include "x_midi.c"
+#include "x_midiclkin.c"
 #include "x_midirealtimein.c"
 #include "x_midiout.c"
 #include "x_noteout.c"
