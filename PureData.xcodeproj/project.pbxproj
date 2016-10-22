@@ -55,8 +55,8 @@
 		3722C5301C4F91EB00D2BF6F /* u_pdreceive.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972031C4F716700263434 /* u_pdreceive.c */; };
 		3722C5311C4F91F500D2BF6F /* u_pdsend.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972041C4F716700263434 /* u_pdsend.c */; };
 		3722C5321C4F91FC00D2BF6F /* u_watchdog.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972051C4F716700263434 /* u_watchdog.c */; };
-		373393801DBA6E4E00A76E6E /* s_midiIn.c in Sources */ = {isa = PBXBuildFile; fileRef = 3733937E1DBA6E4E00A76E6E /* s_midiIn.c */; };
-		373393811DBA6E4E00A76E6E /* s_midiOut.c in Sources */ = {isa = PBXBuildFile; fileRef = 3733937F1DBA6E4E00A76E6E /* s_midiOut.c */; };
+		373393801DBA6E4E00A76E6E /* s_inmidi.c in Sources */ = {isa = PBXBuildFile; fileRef = 3733937E1DBA6E4E00A76E6E /* s_inmidi.c */; };
+		373393811DBA6E4E00A76E6E /* s_outmidi.c in Sources */ = {isa = PBXBuildFile; fileRef = 3733937F1DBA6E4E00A76E6E /* s_outmidi.c */; };
 		373393C01DBA702D00A76E6E /* x_bag.c in Sources */ = {isa = PBXBuildFile; fileRef = 373393BF1DBA702D00A76E6E /* x_bag.c */; };
 		37395E6F1D7F0B3F000430C5 /* x_textfile.c in Sources */ = {isa = PBXBuildFile; fileRef = 37395E6E1D7F0B3F000430C5 /* x_textfile.c */; };
 		373D6CCA1C610AAF00106641 /* m_bind.c in Sources */ = {isa = PBXBuildFile; fileRef = 373D6CC91C610AAF00106641 /* m_bind.c */; };
@@ -352,8 +352,8 @@
 		3720EBB41D239650001675BD /* g_vinlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_vinlet.c; path = src/g_vinlet.c; sourceTree = "<group>"; };
 		3720EBB51D239650001675BD /* g_voutlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_voutlet.c; path = src/g_voutlet.c; sourceTree = "<group>"; };
 		372220551D884C6B0045BC57 /* g_table.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_table.c; path = src/g_table.c; sourceTree = "<group>"; };
-		3733937E1DBA6E4E00A76E6E /* s_midiIn.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_midiIn.c; path = src/s_midiIn.c; sourceTree = "<group>"; };
-		3733937F1DBA6E4E00A76E6E /* s_midiOut.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_midiOut.c; path = src/s_midiOut.c; sourceTree = "<group>"; };
+		3733937E1DBA6E4E00A76E6E /* s_inmidi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_inmidi.c; path = src/s_inmidi.c; sourceTree = "<group>"; };
+		3733937F1DBA6E4E00A76E6E /* s_outmidi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_outmidi.c; path = src/s_outmidi.c; sourceTree = "<group>"; };
 		373393BF1DBA702D00A76E6E /* x_bag.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_bag.c; path = src/x_bag.c; sourceTree = "<group>"; };
 		373690A31C84854B00A332BD /* portmidi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = portmidi.h; path = portmidi/pm_common/portmidi.h; sourceTree = "<group>"; };
 		373690A41C84858000A332BD /* porttime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = porttime.h; path = portmidi/porttime/porttime.h; sourceTree = "<group>"; };
@@ -890,11 +890,11 @@
 				378971F51C4F716700263434 /* s_loader.c */,
 				378971F31C4F716700263434 /* s_preferences.c */,
 				378971FB1C4F716700263434 /* s_midi.c */,
-				3733937F1DBA6E4E00A76E6E /* s_midiOut.c */,
-				3733937E1DBA6E4E00A76E6E /* s_midiIn.c */,
 				37A402671C77524D00001FD3 /* s_midiAPI.c */,
 				378971F11C4F716700263434 /* s_audio.c */,
 				373F78241C7E097A0083D316 /* s_audioAPI.c */,
+				3733937E1DBA6E4E00A76E6E /* s_inmidi.c */,
+				3733937F1DBA6E4E00A76E6E /* s_outmidi.c */,
 				378971DE1C4F716700263434 /* s_memory.c */,
 				37D287101C54F1D70041C5C2 /* s_font.c */,
 				378971FD1C4F716700263434 /* s_post.c */,
@@ -1646,8 +1646,8 @@
 				370241501DAB95AC00AB5440 /* x_serial.c in Sources */,
 				375BED391DABC801009BFCD7 /* x_netreceive.c in Sources */,
 				375BED3A1DABC801009BFCD7 /* x_netsend.c in Sources */,
-				373393801DBA6E4E00A76E6E /* s_midiIn.c in Sources */,
-				373393811DBA6E4E00A76E6E /* s_midiOut.c in Sources */,
+				373393801DBA6E4E00A76E6E /* s_inmidi.c in Sources */,
+				373393811DBA6E4E00A76E6E /* s_outmidi.c in Sources */,
 				373393C01DBA702D00A76E6E /* x_bag.c in Sources */,
 				37C522751DBB37CC008753D1 /* x_poly.c in Sources */,
 				37C5229C1DBB38E5008753D1 /* x_stripnote.c in Sources */,
