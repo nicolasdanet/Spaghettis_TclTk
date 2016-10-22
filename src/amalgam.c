@@ -215,6 +215,7 @@
 #include "x_oscformat.c"
 
 #include "x_midi.c"
+#include "x_touchout.c"
 #include "x_polytouchout.c"
 #include "x_makenote.c"
 #include "x_stripnote.c"
