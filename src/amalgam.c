@@ -215,6 +215,7 @@
 #include "x_oscformat.c"
 
 #include "x_midi.c"
+#include "x_ctlout.c"
 #include "x_pgmout.c"
 #include "x_bendout.c"
 #include "x_touchout.c"
