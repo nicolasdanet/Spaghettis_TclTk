@@ -13,41 +13,72 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
-#include "s_midi.h"
-#include "x_control.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_class *midiout_class;          /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _midiout {
+    t_object    x_obj;                  /* Must be the first. */
+    t_float     x_port;
+    } t_midiout;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* -------------------------- midiout -------------------------- */
-
-static t_class *midiout_class;
-
-typedef struct _midiout
+static void midiout_float (t_midiout *x, t_float f)
 {
-    t_object x_obj;
-    t_float x_portno;
-} t_midiout;
-
-static void *midiout_new(t_float portno)
-{
-    t_midiout *x = (t_midiout *)pd_new(midiout_class);
-    if (portno <= 0) portno = 1;
-    x->x_portno = portno;
-    inlet_newFloat(&x->x_obj, &x->x_portno);
-    return (x);
+    int port = PD_MAX (0, x->x_port - 1);
+    int byte = (int)f;
+    
+    byte = PD_CLAMP (byte, 0, 0xff);
+    
+    midi_broadcast (port, 1, byte, 0, 0);
 }
 
-static void midiout_float(t_midiout *x, t_float f)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *midiout_new (t_float port)
 {
-    midi_broadcast (x->x_portno - 1, 1, f, 0, 0);
+    t_midiout *x = (t_midiout *)pd_new (midiout_class);
+    
+    x->x_port = PD_MAX (1, port);
+    
+    inlet_newFloat (cast_object (x), &x->x_port);
+    
+    return x;
 }
 
-void midiout_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void midiout_setup (void)
 {
-    midiout_class = class_new(sym_midiout, (t_newmethod)midiout_new, 0,
-        sizeof(t_midiout), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
-    class_addFloat(midiout_class, midiout_float);
-    class_setHelpName(midiout_class, sym_midiout);
+    t_class *c = NULL;
+    
+    c = class_new (sym_midiout,
+        (t_newmethod)midiout_new,
+        NULL,
+        sizeof (t_midiout),
+        CLASS_DEFAULT,
+        A_DEFFLOAT,
+        A_DEFFLOAT,
+        A_NULL);
+        
+    class_addFloat (c, midiout_float);
+    
+    class_setHelpName (c, sym_midiout);
+    
+    midiout_class = c;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

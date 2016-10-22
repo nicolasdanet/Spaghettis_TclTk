@@ -46,9 +46,9 @@ t_color color_withRGB (int argc, t_atom *argv)
     unsigned int g = (unsigned int)atom_getFloatAtIndex (1, argc, argv);
     unsigned int b = (unsigned int)atom_getFloatAtIndex (2, argc, argv);
     
-    r = PD_CLAMP (r, 0, 0xff);
-    g = PD_CLAMP (g, 0, 0xff);
-    b = PD_CLAMP (b, 0, 0xff);
+    r = r & 0xff;
+    g = g & 0xff;
+    b = b & 0xff;
         
     return (t_color)(COLOR_MASK & ((r << 16) | (g << 8) | b));
 }

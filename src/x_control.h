@@ -118,15 +118,15 @@ typedef struct _atomoutlet {
 
 #define OSC_ROUND4(x)                       (((x) + 3) & (~3))
 
-#define OSC_READ4INT(x)                     ((((int)(GET_FLOAT ((x) + 0))) & 0xff) << 24) | \
-                                            ((((int)(GET_FLOAT ((x) + 1))) & 0xff) << 16) | \
-                                            ((((int)(GET_FLOAT ((x) + 2))) & 0xff) << 8)  | \
-                                            ((((int)(GET_FLOAT ((x) + 3))) & 0xff) << 0)
+#define OSC_READ4INT(x)                     ((((unsigned int)(GET_FLOAT ((x) + 0))) & 0xff) << 24) | \
+                                            ((((unsigned int)(GET_FLOAT ((x) + 1))) & 0xff) << 16) | \
+                                            ((((unsigned int)(GET_FLOAT ((x) + 2))) & 0xff) << 8)  | \
+                                            ((((unsigned int)(GET_FLOAT ((x) + 3))) & 0xff) << 0)
 
-#define OSC_WRITE4INT(x, i)                 SET_FLOAT ((x) + 0, (((int)(i) >> 24) & 0xff)); \
-                                            SET_FLOAT ((x) + 1, (((int)(i) >> 16) & 0xff)); \
-                                            SET_FLOAT ((x) + 2, (((int)(i) >>  8) & 0xff)); \
-                                            SET_FLOAT ((x) + 3, (((int)(i)      ) & 0xff))
+#define OSC_WRITE4INT(x, i)                 SET_FLOAT ((x) + 0, (((unsigned int)(i) >> 24) & 0xff)); \
+                                            SET_FLOAT ((x) + 1, (((unsigned int)(i) >> 16) & 0xff)); \
+                                            SET_FLOAT ((x) + 2, (((unsigned int)(i) >>  8) & 0xff)); \
+                                            SET_FLOAT ((x) + 3, (((unsigned int)(i)      ) & 0xff))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
