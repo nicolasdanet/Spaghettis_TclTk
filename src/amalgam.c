@@ -215,6 +215,7 @@
 #include "x_oscformat.c"
 
 #include "x_midi.c"
+#include "x_makenote.c"
 #include "x_stripnote.c"
 #include "x_poly.c"
 #include "x_bag.c"
