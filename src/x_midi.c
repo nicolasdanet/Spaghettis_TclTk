@@ -521,39 +521,3 @@ void midirealtimein_setup(void)
     class_addList(midirealtimein_class, midirealtimein_list);
         class_setHelpName(midirealtimein_class, sym_midiout);
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-/* -------------------------- midiout -------------------------- */
-
-static t_class *midiout_class;
-
-typedef struct _midiout
-{
-    t_object x_obj;
-    t_float x_portno;
-} t_midiout;
-
-static void *midiout_new(t_float portno)
-{
-    t_midiout *x = (t_midiout *)pd_new(midiout_class);
-    if (portno <= 0) portno = 1;
-    x->x_portno = portno;
-    inlet_newFloat(&x->x_obj, &x->x_portno);
-    return (x);
-}
-
-static void midiout_float(t_midiout *x, t_float f)
-{
-    midi_broadcast (x->x_portno - 1, 1, f, 0, 0);
-}
-
-void midiout_setup(void)
-{
-    midiout_class = class_new(sym_midiout, (t_newmethod)midiout_new, 0,
-        sizeof(t_midiout), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
-    class_addFloat(midiout_class, midiout_float);
-    class_setHelpName(midiout_class, sym_midiout);
-}

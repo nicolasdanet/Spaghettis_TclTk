@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		370241501DAB95AC00AB5440 /* x_serial.c in Sources */ = {isa = PBXBuildFile; fileRef = 3702414F1DAB95AC00AB5440 /* x_serial.c */; };
+		370793031DBB4F4B00183F74 /* x_midiout.c in Sources */ = {isa = PBXBuildFile; fileRef = 370793021DBB4F4B00183F74 /* x_midiout.c */; };
 		370899CA1DA7A47E00D2DCAA /* m_hash.c in Sources */ = {isa = PBXBuildFile; fileRef = 370899C91DA7A47E00D2DCAA /* m_hash.c */; };
 		370934821CC6887300827F75 /* g_dsp.c in Sources */ = {isa = PBXBuildFile; fileRef = 370934811CC6887300827F75 /* g_dsp.c */; };
 		370939451CC92BF300827F75 /* g_draw.c in Sources */ = {isa = PBXBuildFile; fileRef = 370939431CC92BF300827F75 /* g_draw.c */; };
@@ -298,6 +299,7 @@
 
 /* Begin PBXFileReference section */
 		3702414F1DAB95AC00AB5440 /* x_serial.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_serial.c; path = src/x_serial.c; sourceTree = "<group>"; };
+		370793021DBB4F4B00183F74 /* x_midiout.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_midiout.c; path = src/x_midiout.c; sourceTree = "<group>"; };
 		370899C91DA7A47E00D2DCAA /* m_hash.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_hash.c; path = src/m_hash.c; sourceTree = "<group>"; };
 		370934811CC6887300827F75 /* g_dsp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_dsp.c; path = src/g_dsp.c; sourceTree = "<group>"; };
 		370939431CC92BF300827F75 /* g_draw.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_draw.c; path = src/g_draw.c; sourceTree = "<group>"; };
@@ -956,6 +958,7 @@
 			isa = PBXGroup;
 			children = (
 				3789720D1C4F716800263434 /* x_midi.c */,
+				370793021DBB4F4B00183F74 /* x_midiout.c */,
 				37C523731DBB4EA1008753D1 /* x_noteout.c */,
 				37C5236A1DBB4DFC008753D1 /* x_ctlout.c */,
 				37C5234B1DBB4D44008753D1 /* x_pgmout.c */,
@@ -1616,6 +1619,7 @@
 				37C5234C1DBB4D44008753D1 /* x_pgmout.c in Sources */,
 				37C5236B1DBB4DFC008753D1 /* x_ctlout.c in Sources */,
 				37C523741DBB4EA1008753D1 /* x_noteout.c in Sources */,
+				370793031DBB4F4B00183F74 /* x_midiout.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
