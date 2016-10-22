@@ -16,7 +16,7 @@
 #include "s_midi.h"
 #include "x_control.h"
 
-/*----------midirealtimein (midi FA,FB,FC,FF message )-----------------*/
+/*----------midirealtimein (midi FA,FB,FC,FE,FF message )-----------------*/
 
 static t_class *midirealtimein_class;
 
@@ -39,8 +39,8 @@ static void *midirealtimein_new( void)
 static void midirealtimein_list(t_midirealtimein *x, t_symbol *s,
     int argc, t_atom *argv)
 {
-    t_float portno = atom_getFloatAtIndex(0, argc, argv);
-    t_float byte = atom_getFloatAtIndex(1, argc, argv);
+    t_float byte = atom_getFloatAtIndex(0, argc, argv);
+    t_float portno = atom_getFloatAtIndex(1, argc, argv);
 
     outlet_float(x->x_outlet2, portno);
     outlet_float(x->x_outlet1, byte);

@@ -146,7 +146,7 @@ static void midi_dispatchNext (void)
     PD_ASSERT (midi_inQueue[midi_inTail].q_hasOneByte);
     PD_ASSERT (port >= 0 || port < MAXIMUM_MIDI_IN);
     
-    if (byte >= MIDI_CLOCK) { inmidi_realTimeIn (port, byte); }
+    if (byte >= MIDI_CLOCK) { inmidi_realTime (port, byte); }
     else {
     //
     inmidi_byte (port, byte);
