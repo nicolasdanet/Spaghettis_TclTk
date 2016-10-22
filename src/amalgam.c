@@ -226,6 +226,7 @@
 #include "x_bendin.c"
 #include "x_touchin.c"
 #include "x_polytouchin.c"
+#include "x_midirealtimein.c"
 #include "x_midiout.c"
 #include "x_noteout.c"
 #include "x_ctlout.c"
@@ -233,9 +234,6 @@
 #include "x_bendout.c"
 #include "x_touchout.c"
 #include "x_polytouchout.c"
-
-#include "x_midiclkin.c"
-#include "x_midirealtimein.c"
 
 /* DSP. */
 

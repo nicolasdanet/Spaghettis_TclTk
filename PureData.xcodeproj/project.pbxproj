@@ -10,7 +10,6 @@
 		370241501DAB95AC00AB5440 /* x_serial.c in Sources */ = {isa = PBXBuildFile; fileRef = 3702414F1DAB95AC00AB5440 /* x_serial.c */; };
 		370793031DBB4F4B00183F74 /* x_midiout.c in Sources */ = {isa = PBXBuildFile; fileRef = 370793021DBB4F4B00183F74 /* x_midiout.c */; };
 		3707931F1DBB507700183F74 /* x_midirealtimein.c in Sources */ = {isa = PBXBuildFile; fileRef = 3707931E1DBB507700183F74 /* x_midirealtimein.c */; };
-		3707933C1DBB515F00183F74 /* x_midiclkin.c in Sources */ = {isa = PBXBuildFile; fileRef = 3707933B1DBB515F00183F74 /* x_midiclkin.c */; };
 		3707935C1DBB520A00183F74 /* x_polytouchin.c in Sources */ = {isa = PBXBuildFile; fileRef = 3707935B1DBB520A00183F74 /* x_polytouchin.c */; };
 		3707937C1DBB529600183F74 /* x_touchin.c in Sources */ = {isa = PBXBuildFile; fileRef = 3707937B1DBB529600183F74 /* x_touchin.c */; };
 		370793851DBB531000183F74 /* x_bendin.c in Sources */ = {isa = PBXBuildFile; fileRef = 370793841DBB531000183F74 /* x_bendin.c */; };
@@ -309,7 +308,6 @@
 		3702414F1DAB95AC00AB5440 /* x_serial.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_serial.c; path = src/x_serial.c; sourceTree = "<group>"; };
 		370793021DBB4F4B00183F74 /* x_midiout.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_midiout.c; path = src/x_midiout.c; sourceTree = "<group>"; };
 		3707931E1DBB507700183F74 /* x_midirealtimein.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_midirealtimein.c; path = src/x_midirealtimein.c; sourceTree = "<group>"; };
-		3707933B1DBB515F00183F74 /* x_midiclkin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_midiclkin.c; path = src/x_midiclkin.c; sourceTree = "<group>"; };
 		3707935B1DBB520A00183F74 /* x_polytouchin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_polytouchin.c; path = src/x_polytouchin.c; sourceTree = "<group>"; };
 		3707937B1DBB529600183F74 /* x_touchin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_touchin.c; path = src/x_touchin.c; sourceTree = "<group>"; };
 		370793841DBB531000183F74 /* x_bendin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_bendin.c; path = src/x_bendin.c; sourceTree = "<group>"; };
@@ -724,6 +722,7 @@
 				370793841DBB531000183F74 /* x_bendin.c */,
 				3707937B1DBB529600183F74 /* x_touchin.c */,
 				3707935B1DBB520A00183F74 /* x_polytouchin.c */,
+				3707931E1DBB507700183F74 /* x_midirealtimein.c */,
 				370793021DBB4F4B00183F74 /* x_midiout.c */,
 				37C523731DBB4EA1008753D1 /* x_noteout.c */,
 				37C5236A1DBB4DFC008753D1 /* x_ctlout.c */,
@@ -733,15 +732,6 @@
 				37C523091DBB4B58008753D1 /* x_polytouchout.c */,
 			);
 			name = IO;
-			sourceTree = "<group>";
-		};
-		370794171DBB57C400183F74 /* Clock */ = {
-			isa = PBXGroup;
-			children = (
-				3707933B1DBB515F00183F74 /* x_midiclkin.c */,
-				3707931E1DBB507700183F74 /* x_midirealtimein.c */,
-			);
-			name = Clock;
 			sourceTree = "<group>";
 		};
 		371655471BA3451000ABDE22 /* PortAudio */ = {
@@ -1008,7 +998,6 @@
 				37C522741DBB37CC008753D1 /* x_poly.c */,
 				373393BF1DBA702D00A76E6E /* x_bag.c */,
 				370794141DBB576200183F74 /* IO */,
-				370794171DBB57C400183F74 /* Clock */,
 			);
 			name = MIDI;
 			sourceTree = "<group>";
@@ -1660,7 +1649,6 @@
 				37C523741DBB4EA1008753D1 /* x_noteout.c in Sources */,
 				370793031DBB4F4B00183F74 /* x_midiout.c in Sources */,
 				3707931F1DBB507700183F74 /* x_midirealtimein.c in Sources */,
-				3707933C1DBB515F00183F74 /* x_midiclkin.c in Sources */,
 				3707935C1DBB520A00183F74 /* x_polytouchin.c in Sources */,
 				3707937C1DBB529600183F74 /* x_touchin.c in Sources */,
 				370793851DBB531000183F74 /* x_bendin.c in Sources */,

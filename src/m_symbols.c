@@ -117,7 +117,6 @@ t_symbol *sym__key;
 t_symbol *sym__keyup;
 t_symbol *sym__keyname;
 t_symbol *sym__map;
-t_symbol *sym__midiclkin;
 t_symbol *sym__mididialog;
 t_symbol *sym__midiin;
 t_symbol *sym__midiproperties;
@@ -669,7 +668,6 @@ void symbols_initialize (void)
     sym__keyup                                  = gensym ("_keyup");
     sym__keyname                                = gensym ("_keyname");
     sym__map                                    = gensym ("_map");
-    sym__midiclkin                              = gensym ("_midiclkin");
     sym__mididialog                             = gensym ("_mididialog");
     sym__midiin                                 = gensym ("_midiin");
     sym__midiproperties                         = gensym ("_midiproperties");

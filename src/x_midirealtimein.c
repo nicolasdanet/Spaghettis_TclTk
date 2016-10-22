@@ -16,7 +16,7 @@
 #include "s_midi.h"
 #include "x_control.h"
 
-/*----------midirealtimein (midi FA,FB,FC,FE,FF message )-----------------*/
+/*----------midirealtimein (midi F8 F9 FA,FB,FC,FE,FF message )-----------------*/
 
 static t_class *midirealtimein_class;
 

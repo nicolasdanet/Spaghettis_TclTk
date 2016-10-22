@@ -122,7 +122,6 @@ extern t_symbol *sym__key;
 extern t_symbol *sym__keyup;
 extern t_symbol *sym__keyname;
 extern t_symbol *sym__map;
-extern t_symbol *sym__midiclkin;
 extern t_symbol *sym__mididialog;
 extern t_symbol *sym__midiin;
 extern t_symbol *sym__midiproperties;

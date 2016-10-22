@@ -130,7 +130,6 @@ void pgmin_setup            (void);
 void bendin_setup           (void);
 void touchin_setup          (void);
 void polytouchin_setup      (void);
-void midiclkin_setup        (void);
 void midiout_setup          (void);
 void noteout_setup          (void);
 void ctlout_setup           (void);
@@ -282,7 +281,6 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     bendin_setup();
     touchin_setup();
     polytouchin_setup();
-    midiclkin_setup();
     midiout_setup();
     noteout_setup();
     ctlout_setup();
