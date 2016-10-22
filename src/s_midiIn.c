@@ -87,6 +87,11 @@ void inmidi_polyPressure(int portno, int channel, int pitch, int value)
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/*
 void inmidi_clk(double timing)
 {
 
@@ -101,7 +106,7 @@ void inmidi_clk(double timing)
         count++;
    
         if (count == 3)
-        {  /* 24 count per quoter note */
+        { 
              SET_FLOAT(at, 1 );
              count = 0;
         }
@@ -110,6 +115,18 @@ void inmidi_clk(double timing)
         SET_FLOAT(at+1, diff);
         pd_list (pd_getThing (sym__midiclkin), 2, at);
         prev = timing;
+    }
+}
+*/
+
+void inmidi_realTimeIn(int portno, int SysMsg)
+{
+    if (pd_isThingQuiet (sym__midirealtimein))
+    {
+        t_atom at[2];
+        SET_FLOAT(at, portno);
+        SET_FLOAT(at+1, SysMsg);
+        pd_list (pd_getThing (sym__midirealtimein), 2, at);
     }
 }
 
@@ -135,13 +152,5 @@ void inmidi_sysex(int portno, int byte)
     }
 }
 
-void inmidi_realTimeIn(int portno, int SysMsg)
-{
-    if (pd_isThingQuiet (sym__midirealtimein))
-    {
-        t_atom at[2];
-        SET_FLOAT(at, portno);
-        SET_FLOAT(at+1, SysMsg);
-        pd_list (pd_getThing (sym__midirealtimein), 2, at);
-    }
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
