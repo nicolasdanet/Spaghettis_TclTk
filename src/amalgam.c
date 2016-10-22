@@ -220,20 +220,21 @@
 #include "x_bag.c"
 
 #include "x_midiin.c"
-#include "x_notein.c"
-#include "x_ctlin.c"
-#include "x_pgmin.c"
-#include "x_bendin.c"
-#include "x_touchin.c"
-#include "x_polytouchin.c"
-#include "x_midirealtimein.c"
 #include "x_midiout.c"
+#include "x_notein.c"
 #include "x_noteout.c"
+#include "x_ctlin.c"
 #include "x_ctlout.c"
+#include "x_pgmin.c"
 #include "x_pgmout.c"
+#include "x_bendin.c"
 #include "x_bendout.c"
+#include "x_touchin.c"
 #include "x_touchout.c"
+#include "x_polytouchin.c"
 #include "x_polytouchout.c"
+#include "x_sysexin.c"
+#include "x_midirealtimein.c"
 
 /* DSP. */
 

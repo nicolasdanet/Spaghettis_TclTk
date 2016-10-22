@@ -123,6 +123,7 @@ void arrayrandom_setup      (void);
 void arraymax_setup         (void);
 void arraymin_setup         (void);
 void midiin_setup           (void);
+void sysexin_setup          (void);
 void midirealtimein_setup   (void);
 void notein_setup           (void);
 void ctlin_setup            (void);
@@ -274,6 +275,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     arraymax_setup();
     arraymin_setup();
     midiin_setup();
+    sysexin_setup();
     midirealtimein_setup();
     notein_setup();
     ctlin_setup();

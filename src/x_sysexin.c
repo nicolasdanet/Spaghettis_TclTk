@@ -17,48 +17,48 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *midiin_class;
+static t_class *sysexin_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _midiin
+typedef struct _sysexin
 {
     t_object x_obj;
     t_outlet *x_outlet1;
     t_outlet *x_outlet2;
-} t_midiin;
+} t_sysexin;
 
-static void *midiin_new( void)
-{
-    t_midiin *x = (t_midiin *)pd_new(midiin_class);
-    x->x_outlet1 = outlet_new(&x->x_obj, &s_float);
-    x->x_outlet2 = outlet_new(&x->x_obj, &s_float);
-    pd_bind(&x->x_obj.te_g.g_pd, sym__midiin);
-    return (x);
-}
-
-static void midiin_list(t_midiin *x, t_symbol *s, int ac, t_atom *av)
+static void sysexin_list(t_sysexin *x, t_symbol *s, int ac, t_atom *av)
 {
     outlet_float(x->x_outlet2, atom_getFloatAtIndex(1, ac, av) + 1);
     outlet_float(x->x_outlet1, atom_getFloatAtIndex(0, ac, av));
 }
 
-static void midiin_free(t_midiin *x)
+static void *sysexin_new( void)
 {
-    pd_unbind(&x->x_obj.te_g.g_pd, sym__midiin);
+    t_sysexin *x = (t_sysexin *)pd_new(sysexin_class);
+    x->x_outlet1 = outlet_new(&x->x_obj, &s_float);
+    x->x_outlet2 = outlet_new(&x->x_obj, &s_float);
+    pd_bind(&x->x_obj.te_g.g_pd, sym__sysexin);
+    return (x);
+}
+
+static void sysexin_free(t_sysexin *x)
+{
+    pd_unbind(&x->x_obj.te_g.g_pd, sym__sysexin);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void midiin_setup(void)
+void sysexin_setup(void)
 {
-    midiin_class = class_new(sym_midiin, (t_newmethod)midiin_new,
-        (t_method)midiin_free, sizeof(t_midiin),
+    sysexin_class = class_new(sym_sysexin, (t_newmethod)sysexin_new,
+        (t_method)sysexin_free, sizeof(t_sysexin),
             CLASS_NOINLET, A_DEFFLOAT, 0);
-    class_addList(midiin_class, midiin_list);
-    class_setHelpName(midiin_class, sym_midiout);
+    class_addList(sysexin_class, sysexin_list);
+    class_setHelpName(sysexin_class, sym_midiout);
 }
 
 // -----------------------------------------------------------------------------------------------------------
