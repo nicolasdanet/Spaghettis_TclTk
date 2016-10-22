@@ -14,6 +14,7 @@
 #include "m_macros.h"
 #include "s_system.h"
 #include "s_midi.h"
+#include "x_control.h"
 
 /* ----------------------- midiin and sysexin ------------------------- */
 
@@ -60,7 +61,7 @@ static void sysexin_free(t_midiin *x)
     pd_unbind(&x->x_obj.te_g.g_pd, sym__sysexin);
 }
 
-static void midiin_setup(void)
+void midiin_setup(void)
 {
     midiin_class = class_new(sym_midiin, (t_newmethod)midiin_new,
         (t_method)midiin_free, sizeof(t_midiin),
@@ -127,7 +128,7 @@ static void notein_free(t_notein *x)
     pd_unbind(&x->x_obj.te_g.g_pd, sym__notein);
 }
 
-static void notein_setup(void)
+void notein_setup(void)
 {
     notein_class = class_new(sym_notein, (t_newmethod)notein_new,
         (t_method)notein_free, sizeof(t_notein), CLASS_NOINLET, A_DEFFLOAT, 0);
@@ -189,7 +190,7 @@ static void ctlin_free(t_ctlin *x)
     pd_unbind(&x->x_obj.te_g.g_pd, sym__ctlin);
 }
 
-static void ctlin_setup(void)
+void ctlin_setup(void)
 {
     ctlin_class = class_new(sym_ctlin, (t_newmethod)ctlin_new, 
         (t_method)ctlin_free, sizeof(t_ctlin),
@@ -245,7 +246,7 @@ static void pgmin_free(t_pgmin *x)
     pd_unbind(&x->x_obj.te_g.g_pd, sym__pgmin);
 }
 
-static void pgmin_setup(void)
+void pgmin_setup(void)
 {
     pgmin_class = class_new(sym_pgmin, (t_newmethod)pgmin_new,
         (t_method)pgmin_free, sizeof(t_pgmin),
@@ -301,7 +302,7 @@ static void bendin_free(t_bendin *x)
     pd_unbind(&x->x_obj.te_g.g_pd, sym__bendin);
 }
 
-static void bendin_setup(void)
+void bendin_setup(void)
 {
     bendin_class = class_new(sym_bendin, (t_newmethod)bendin_new,
         (t_method)bendin_free, sizeof(t_bendin), CLASS_NOINLET, A_DEFFLOAT, 0);
@@ -356,7 +357,7 @@ static void touchin_free(t_touchin *x)
     pd_unbind(&x->x_obj.te_g.g_pd, sym__touchin);
 }
 
-static void touchin_setup(void)
+void touchin_setup(void)
 {
     touchin_class = class_new(sym_touchin, (t_newmethod)touchin_new,
         (t_method)touchin_free, sizeof(t_touchin),
@@ -418,7 +419,7 @@ static void polytouchin_free(t_polytouchin *x)
     pd_unbind(&x->x_obj.te_g.g_pd, sym__polytouchin);
 }
 
-static void polytouchin_setup(void)
+void polytouchin_setup(void)
 {
     polytouchin_class = class_new(sym_polytouchin,
         (t_newmethod)polytouchin_new, (t_method)polytouchin_free,
@@ -464,7 +465,7 @@ static void midiclkin_free(t_midiclkin *x)
     pd_unbind(&x->x_obj.te_g.g_pd, sym__midiclkin);
 }
 
-static void midiclkin_setup(void)
+void midiclkin_setup(void)
 {
     midiclkin_class = class_new(sym_midiclkin, 
         (t_newmethod)midiclkin_new, (t_method)midiclkin_free, 
@@ -512,7 +513,7 @@ static void midirealtimein_free(t_midirealtimein *x)
     pd_unbind(&x->x_obj.te_g.g_pd, sym__midirealtimein);
 }
 
-static void midirealtimein_setup(void)
+void midirealtimein_setup(void)
 {
     midirealtimein_class = class_new(sym_midirealtimein, 
         (t_newmethod)midirealtimein_new, (t_method)midirealtimein_free, 
@@ -549,7 +550,7 @@ static void midiout_float(t_midiout *x, t_float f)
     midi_broadcast (x->x_portno - 1, 1, f, 0, 0);
 }
 
-static void midiout_setup(void)
+void midiout_setup(void)
 {
     midiout_class = class_new(sym_midiout, (t_newmethod)midiout_new, 0,
         sizeof(t_midiout), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
@@ -592,7 +593,7 @@ static void noteout_float(t_noteout *x, t_float f)
         (binchan & 15), (int)f, (int)x->x_velo);
 }
 
-static void noteout_setup(void)
+void noteout_setup(void)
 {
     noteout_class = class_new(sym_noteout, (t_newmethod)noteout_new, 0,
         sizeof(t_noteout), 0, A_DEFFLOAT, 0);
@@ -635,7 +636,7 @@ static void ctlout_float(t_ctlout *x, t_float f)
         (binchan & 15), (int)(x->x_ctl), (int)f);
 }
 
-static void ctlout_setup(void)
+void ctlout_setup(void)
 {
     ctlout_class = class_new(sym_ctlout, (t_newmethod)ctlout_new, 0,
         sizeof(t_ctlout), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
@@ -678,7 +679,7 @@ static void pgmout_float(t_pgmout *x, t_float f)
         (binchan & 15), n);
 }
 
-static void pgmout_setup(void)
+void pgmout_setup(void)
 {
     pgmout_class = class_new(sym_pgmout, (t_newmethod)pgmout_new, 0,
         sizeof(t_pgmout), 0, A_DEFFLOAT, 0);
@@ -718,7 +719,7 @@ static void bendout_float(t_bendout *x, t_float f)
     outmidi_pitchBend((binchan >> 4), (binchan & 15), n);
 }
 
-static void bendout_setup(void)
+void bendout_setup(void)
 {
     bendout_class = class_new(sym_bendout, (t_newmethod)bendout_new, 0,
         sizeof(t_bendout), 0, A_DEFFLOAT, 0);
@@ -757,7 +758,7 @@ static void touchout_float(t_touchout *x, t_float f)
     outmidi_afterTouch((binchan >> 4), (binchan & 15), (int)f);
 }
 
-static void touchout_setup(void)
+void touchout_setup(void)
 {
     touchout_class = class_new(sym_touchout, (t_newmethod)touchout_new, 0,
         sizeof(t_touchout), 0, A_DEFFLOAT, 0);
@@ -799,7 +800,7 @@ static void polytouchout_float(t_polytouchout *x, t_float n)
     outmidi_polyPressure((binchan >> 4), (binchan & 15), x->x_pitch, n);
 }
 
-static void polytouchout_setup(void)
+void polytouchout_setup(void)
 {
     polytouchout_class = class_new(sym_polytouchout, 
         (t_newmethod)polytouchout_new, 0,
@@ -815,14 +816,6 @@ static void polytouchout_setup(void)
 /* -------------------------- makenote -------------------------- */
 
 static t_class *makenote_class;
-
-typedef struct _hang
-{
-    t_clock *h_clock;
-    struct _hang *h_next;
-    t_float h_pitch;
-    struct _makenote *h_owner;
-} t_hang;
 
 typedef struct _makenote
 {
@@ -905,7 +898,7 @@ static void makenote_clear(t_makenote *x)
     }
 }
 
-static void makenote_setup(void)
+void makenote_setup(void)
 {
     makenote_class = class_new(sym_makenote, 
         (t_newmethod)makenote_new, (t_method)makenote_clear,
@@ -915,70 +908,4 @@ static void makenote_setup(void)
         0);
     class_addMethod(makenote_class, (t_method)makenote_clear, sym_clear,
         0);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-/* -------------------------- stripnote -------------------------- */
-
-static t_class *stripnote_class;
-
-typedef struct _stripnote
-{
-    t_object x_obj;
-    t_float x_velo;
-    t_outlet *x_pitchout;
-    t_outlet *x_velout;
-} t_stripnote;
-
-static void *stripnote_new(void )
-{
-    t_stripnote *x = (t_stripnote *)pd_new(stripnote_class);
-    inlet_newFloat(&x->x_obj, &x->x_velo);
-    x->x_pitchout = outlet_new(&x->x_obj, &s_float);
-    x->x_velout = outlet_new(&x->x_obj, &s_float);
-    return (x);
-}
-    
-static void stripnote_float(t_stripnote *x, t_float f)
-{
-    t_hang *hang;
-    if (!x->x_velo) return;
-    outlet_float(x->x_velout, x->x_velo);
-    outlet_float(x->x_pitchout, f);
-}
-
-static void stripnote_setup(void)
-{
-    stripnote_class = class_new(sym_stripnote,
-        (t_newmethod)stripnote_new, 0, sizeof(t_stripnote), 0, 0);
-    class_addFloat(stripnote_class, stripnote_float);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void x_midi_setup(void)
-{
-    midiin_setup();
-    midirealtimein_setup();
-    notein_setup();
-    ctlin_setup();
-    pgmin_setup();
-    bendin_setup();
-    touchin_setup();
-    polytouchin_setup();
-    midiclkin_setup();
-    midiout_setup();
-    noteout_setup();
-    ctlout_setup();
-    pgmout_setup();
-    bendout_setup();
-    touchout_setup();
-    polytouchout_setup();
-    makenote_setup();
-    stripnote_setup();
 }
