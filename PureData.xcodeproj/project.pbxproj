@@ -15,6 +15,7 @@
 		3707937C1DBB529600183F74 /* x_touchin.c in Sources */ = {isa = PBXBuildFile; fileRef = 3707937B1DBB529600183F74 /* x_touchin.c */; };
 		370793851DBB531000183F74 /* x_bendin.c in Sources */ = {isa = PBXBuildFile; fileRef = 370793841DBB531000183F74 /* x_bendin.c */; };
 		370793AD1DBB548B00183F74 /* x_pgmin.c in Sources */ = {isa = PBXBuildFile; fileRef = 370793AC1DBB548B00183F74 /* x_pgmin.c */; };
+		370793CD1DBB551300183F74 /* x_ctlin.c in Sources */ = {isa = PBXBuildFile; fileRef = 370793CC1DBB551300183F74 /* x_ctlin.c */; };
 		370899CA1DA7A47E00D2DCAA /* m_hash.c in Sources */ = {isa = PBXBuildFile; fileRef = 370899C91DA7A47E00D2DCAA /* m_hash.c */; };
 		370934821CC6887300827F75 /* g_dsp.c in Sources */ = {isa = PBXBuildFile; fileRef = 370934811CC6887300827F75 /* g_dsp.c */; };
 		370939451CC92BF300827F75 /* g_draw.c in Sources */ = {isa = PBXBuildFile; fileRef = 370939431CC92BF300827F75 /* g_draw.c */; };
@@ -312,6 +313,7 @@
 		3707937B1DBB529600183F74 /* x_touchin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_touchin.c; path = src/x_touchin.c; sourceTree = "<group>"; };
 		370793841DBB531000183F74 /* x_bendin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_bendin.c; path = src/x_bendin.c; sourceTree = "<group>"; };
 		370793AC1DBB548B00183F74 /* x_pgmin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_pgmin.c; path = src/x_pgmin.c; sourceTree = "<group>"; };
+		370793CC1DBB551300183F74 /* x_ctlin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_ctlin.c; path = src/x_ctlin.c; sourceTree = "<group>"; };
 		370899C91DA7A47E00D2DCAA /* m_hash.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_hash.c; path = src/m_hash.c; sourceTree = "<group>"; };
 		370934811CC6887300827F75 /* g_dsp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_dsp.c; path = src/g_dsp.c; sourceTree = "<group>"; };
 		370939431CC92BF300827F75 /* g_draw.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_draw.c; path = src/g_draw.c; sourceTree = "<group>"; };
@@ -970,6 +972,7 @@
 			isa = PBXGroup;
 			children = (
 				3789720D1C4F716800263434 /* x_midi.c */,
+				370793CC1DBB551300183F74 /* x_ctlin.c */,
 				370793AC1DBB548B00183F74 /* x_pgmin.c */,
 				370793841DBB531000183F74 /* x_bendin.c */,
 				3707937B1DBB529600183F74 /* x_touchin.c */,
@@ -1644,6 +1647,7 @@
 				3707937C1DBB529600183F74 /* x_touchin.c in Sources */,
 				370793851DBB531000183F74 /* x_bendin.c in Sources */,
 				370793AD1DBB548B00183F74 /* x_pgmin.c in Sources */,
+				370793CD1DBB551300183F74 /* x_ctlin.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
