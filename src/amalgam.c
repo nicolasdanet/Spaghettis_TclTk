@@ -214,7 +214,8 @@
 #include "x_oscparse.c"
 #include "x_oscformat.c"
 
-#include "x_midi.c"
+#include "x_midiin.c"
+#include "x_notein.c"
 #include "x_ctlin.c"
 #include "x_pgmin.c"
 #include "x_bendin.c"
