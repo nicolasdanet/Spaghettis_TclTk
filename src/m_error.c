@@ -55,7 +55,7 @@ int error__options (t_symbol *s, int argc, t_atom *argv)
 
 void error_stackOverflow (void)
 {
-    post_error (PD_TRANSLATE (": stack overflow"));
+    post_error (PD_TRANSLATE ("%s: stack overflow"), PD_NAME_LOWERCASE);
 }
 
 void error_ioStuck (void)
@@ -184,7 +184,7 @@ void error_canNotMake (int argc, t_atom *argv)
 {
     char *t = atom_atomsToString (argc, argv);
     
-    post_error (PD_TRANSLATE (": can't make [ %s ]"), t);
+    post_error (PD_TRANSLATE ("%s: can't make [ %s ]"), PD_NAME_LOWERCASE, t);
     
     PD_MEMORY_FREE (t);
 }
