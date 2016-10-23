@@ -313,7 +313,7 @@ void        inmidi_realTime                         (int port, int byte);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        outmidi_noteOn                          (int port, int channel, int pitch, int velocity);
+void        outmidi_noteOn                          (int channel, int pitch, int velocity);
 void        outmidi_controlChange                   (int port, int channel, int control, int value);
 void        outmidi_programChange                   (int port, int channel, int value);
 void        outmidi_pitchBend                       (int port, int channel, int value);

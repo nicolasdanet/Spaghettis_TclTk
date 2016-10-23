@@ -18,12 +18,13 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void outmidi_noteOn (int port, int channel, int pitch, int velocity)
+void outmidi_noteOn (int channel, int pitch, int velocity)
 {
+    int t    = PD_MAX (0, channel - 1);
     pitch    = PD_CLAMP (pitch, 0, 127);
     velocity = PD_CLAMP (velocity, 0, 127);
 
-    midi_broadcast (port, 0, MIDI_NOTEON + (channel & 0xf), pitch, velocity);
+    midi_broadcast ((t >> 4), 0, MIDI_NOTEON + (t & 0xf), pitch, velocity);
 }
 
 void outmidi_controlChange (int port, int channel, int control, int value)

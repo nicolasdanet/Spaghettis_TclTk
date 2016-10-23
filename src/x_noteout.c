@@ -34,11 +34,7 @@ typedef struct _noteout {
 
 static void noteout_float (t_noteout *x, t_float f)
 {
-    int t = PD_MAX (0.0, x->x_channel - 1);
-    int port = t >> 4;
-    int channel = t & 0xf;
-    
-    outmidi_noteOn (port, channel, (int)f, (int)x->x_velocity);
+    outmidi_noteOn (x->x_channel, (int)f, (int)x->x_velocity);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -50,7 +46,7 @@ static void *noteout_new (t_float channel)
     t_noteout *x = (t_noteout *)pd_new (noteout_class);
     
     x->x_velocity = 0;
-    x->x_channel  = PD_MAX (1.0, channel);
+    x->x_channel  = channel;
     
     inlet_newFloat (cast_object (x), &x->x_velocity);
     inlet_newFloat (cast_object (x), &x->x_channel);
