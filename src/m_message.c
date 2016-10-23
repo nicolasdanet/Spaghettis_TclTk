@@ -285,10 +285,12 @@ static t_error pd_messageSlots (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     t_class *c = pd_class (x);
         
     if (s == &s_float) {
-        if (!argc) { (*c->c_methodFloat) (x, 0.0); }
-        else if (IS_FLOAT (argv)) { (*c->c_methodFloat) (x, GET_FLOAT (argv)); }
-        else { 
-            err = PD_ERROR; 
+        if (argc && IS_FLOAT (argv)) { (*c->c_methodFloat) (x, GET_FLOAT (argv)); }
+        else {
+            if (!argc) { (*c->c_methodFloat) (x, 0.0); }
+            else {
+                err = PD_ERROR;
+            }
         }
         
     } else if (s == &s_bang)   {
@@ -300,8 +302,18 @@ static t_error pd_messageSlots (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     } else if (s == &s_symbol) {
         if (argc && IS_SYMBOL (argv)) { (*c->c_methodSymbol) (x, GET_SYMBOL (argv)); }
         else {
-            (*c->c_methodSymbol) (x, &s_);
+            if (!argc) { (*c->c_methodSymbol) (x, &s_); }
+            else {
+                err = PD_ERROR;
+            }
         }
+    }
+    
+    if (x == &pd_objectMaker) {
+    //
+    if (argc > 0 && s == &s_bang)       { warning_unusedArguments (s, argc - 0, argv); }
+    else if (argc > 1 && s != &s_list)  { warning_unusedArguments (s, argc - 1, argv); }
+    //
     }
     
     return err;
@@ -373,6 +385,12 @@ static t_error pd_messageMethods (t_entry *m, t_pd *x, t_symbol *s, int argc, t_
     }
 
     pd_messageExecute (x, f, n, ai, af);
+    
+    if (x == &pd_objectMaker) { 
+    if (argc) { 
+        warning_unusedArguments (s, argc, argv); 
+    }
+    }
     
     return PD_ERROR_NONE;
 }

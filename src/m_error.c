@@ -210,8 +210,12 @@ void error_invalidArguments (t_symbol *s, int argc, t_atom *argv)
 void error_invalidArgumentsForMethod (t_symbol *s1, t_symbol *s2, int argc, t_atom *argv)
 {
     char *t = atom_atomsToString (argc, argv);
-        
-    post_error (PD_TRANSLATE ("%s: invalid argument(s) for method %s [ %s ]"), s1->s_name, s2->s_name, t);
+    
+    if (s1 != sym_objectmaker) {
+        post_error (PD_TRANSLATE ("%s: invalid argument(s) for method %s [ %s ]"), s1->s_name, s2->s_name, t);
+    } else {
+        post_error (PD_TRANSLATE ("%s: invalid argument(s) [ %s ]"), s2->s_name, t);
+    }
     
     PD_MEMORY_FREE (t);
 }
