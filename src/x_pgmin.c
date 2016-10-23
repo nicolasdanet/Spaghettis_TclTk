@@ -13,61 +13,85 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
-#include "s_midi.h"
-#include "x_control.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_class *pgmin_class;            /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _pgmin {
+    t_object    x_obj;                  /* Must be the first. */
+    t_float     x_channel;
+    t_outlet    *x_outletLeft;
+    t_outlet    *x_outletRight;
+    } t_pgmin;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* ----------------------- pgmin ------------------------- */
-
-static t_class *pgmin_class;
-
-typedef struct _pgmin
+static void pgmin_list (t_pgmin *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_object x_obj;
-    t_float x_channel;
-    t_outlet *x_outlet1;
-    t_outlet *x_outlet2;
-} t_pgmin;
-
-static void *pgmin_new(t_float f)
-{
-    t_pgmin *x = (t_pgmin *)pd_new(pgmin_class);
-    x->x_channel = f;
-    x->x_outlet1 = outlet_new(&x->x_obj, &s_float);
-    if (f == 0) x->x_outlet2 = outlet_new(&x->x_obj, &s_float);
-    pd_bind(&x->x_obj.te_g.g_pd, sym__pgmin);
-    return (x);
-}
-
-static void pgmin_list(t_pgmin *x, t_symbol *s, int argc, t_atom *argv)
-{
-    t_float value = atom_getFloatAtIndex(0, argc, argv);
-    t_float channel = atom_getFloatAtIndex(1, argc, argv);
-    if (x->x_channel != 0)
-    {
-        if (channel != x->x_channel) return;
-        outlet_float(x->x_outlet1, value);
-    }
-    else
-    {
-        outlet_float(x->x_outlet2, channel);
-        outlet_float(x->x_outlet1, value);
+    t_float value   = atom_getFloatAtIndex (0, argc, argv);
+    t_float channel = atom_getFloatAtIndex (1, argc, argv);
+    
+    if (x->x_channel) {
+        if (x->x_channel == channel) { outlet_float (x->x_outletLeft, value); }
+        
+    } else {
+        outlet_float (x->x_outletRight, channel);
+        outlet_float (x->x_outletLeft, value);
     }
 }
 
-static void pgmin_free(t_pgmin *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *pgmin_new (t_float f)
 {
-    pd_unbind(&x->x_obj.te_g.g_pd, sym__pgmin);
+    t_pgmin *x = (t_pgmin *)pd_new (pgmin_class);
+    
+    x->x_channel    = f;
+    x->x_outletLeft = outlet_new (cast_object (x), &s_float);
+    
+    if (!x->x_channel) { x->x_outletRight = outlet_new (cast_object (x), &s_float); }
+    
+    pd_bind (cast_pd (x), sym__pgmin);
+    
+    return x;
 }
 
-void pgmin_setup(void)
+static void pgmin_free (t_pgmin *x)
 {
-    pgmin_class = class_new(sym_pgmin, (t_newmethod)pgmin_new,
-        (t_method)pgmin_free, sizeof(t_pgmin),
-            CLASS_NOINLET, A_DEFFLOAT, 0);
-    class_addList(pgmin_class, pgmin_list);
-    class_setHelpName(pgmin_class, sym_midiout);
+    pd_unbind (cast_pd (x), sym__pgmin);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void pgmin_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_pgmin,
+            (t_newmethod)pgmin_new,
+            (t_method)pgmin_free,
+            sizeof (t_pgmin),
+            CLASS_DEFAULT | CLASS_NOINLET,
+            A_DEFFLOAT,
+            A_NULL);
+            
+    class_addList (c, pgmin_list);
+    
+    class_setHelpName (c, sym_midiout);
+    
+    pgmin_class = c;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
