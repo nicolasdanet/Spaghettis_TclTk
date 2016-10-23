@@ -13,45 +13,74 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
-#include "s_midi.h"
-#include "x_control.h"
 
-/* ------------------------- noteout -------------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static t_class *noteout_class;
+static t_class *noteout_class;          /* Shared. */
 
-typedef struct _noteout
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _noteout {
+    t_object    x_obj;                  /* Must be the first. */
+    t_float     x_velocity;
+    t_float     x_channel;
+    } t_noteout;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void noteout_float (t_noteout *x, t_float f)
 {
-    t_object x_obj;
-    t_float x_velo;
-    t_float x_channel;
-} t_noteout;
-
-static void *noteout_new(t_float channel)
-{
-    t_noteout *x = (t_noteout *)pd_new(noteout_class);
-    x->x_velo = 0;
-    if (channel < 1) channel = 1;
-    x->x_channel = channel;
-    inlet_newFloat(&x->x_obj, &x->x_velo);
-    inlet_newFloat(&x->x_obj, &x->x_channel);
-    return (x);
+    int t = PD_MAX (0.0, x->x_channel - 1);
+    int port = t >> 4;
+    int channel = t & 0xf;
+    
+    outmidi_noteOn (port, channel, (int)f, (int)x->x_velocity);
 }
 
-static void noteout_float(t_noteout *x, t_float f)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *noteout_new (t_float channel)
 {
-    int binchan = x->x_channel - 1;
-    if (binchan < 0)
-        binchan = 0;
-    outmidi_noteOn((binchan >> 4),
-        (binchan & 15), (int)f, (int)x->x_velo);
+    t_noteout *x = (t_noteout *)pd_new (noteout_class);
+    
+    x->x_velocity = 0;
+    x->x_channel  = PD_MAX (1.0, channel);
+    
+    inlet_newFloat (cast_object (x), &x->x_velocity);
+    inlet_newFloat (cast_object (x), &x->x_channel);
+    
+    return x;
 }
 
-void noteout_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void noteout_setup (void)
 {
-    noteout_class = class_new(sym_noteout, (t_newmethod)noteout_new, 0,
-        sizeof(t_noteout), 0, A_DEFFLOAT, 0);
-    class_addFloat(noteout_class, noteout_float);
-    class_setHelpName(noteout_class, sym_midiout);
+    t_class *c = NULL;
+    
+    c = class_new (sym_noteout,
+            (t_newmethod)noteout_new,
+            NULL,
+            sizeof (t_noteout),
+            CLASS_DEFAULT,
+            A_DEFFLOAT,
+            A_NULL);
+        
+    class_addFloat (c, noteout_float);
+    
+    class_setHelpName (c, sym_midiout);
+    
+    noteout_class = c;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
