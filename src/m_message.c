@@ -309,10 +309,10 @@ static t_error pd_messageSlots (t_pd *x, t_symbol *s, int argc, t_atom *argv)
         }
     }
     
-    if (x == &pd_objectMaker) {
+    if (!err && x == &pd_objectMaker) {
     //
-    if (argc > 0 && s == &s_bang)       { warning_unusedArguments (s, argc - 0, argv); }
-    else if (argc > 1 && s != &s_list)  { warning_unusedArguments (s, argc - 1, argv); }
+    if (argc > 0 && s == &s_bang)       { warning_unusedArguments (s, argc, argv); }
+    else if (argc > 1 && s != &s_list)  { warning_unusedArguments (s, argc - 1, argv + 1); }
     //
     }
     

@@ -708,6 +708,7 @@ PD_DLL void         clock_delay                 (t_clock *x, double delay);
 #pragma mark -
 
 PD_DLL void         post                        (const char *fmt, ...);
+PD_DLL void         post_warning                (const char *fmt, ...);
 PD_DLL void         post_error                  (const char *fmt, ...);
 PD_DLL void         post_log                    (const char *fmt, ...);
                                        

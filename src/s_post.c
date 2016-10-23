@@ -33,6 +33,21 @@ void post (const char *fmt, ...)
     }
 }
 
+void post_warning (const char *fmt, ...)
+{
+    int k;
+    char t[PD_STRING] = { 0 };
+    va_list ap;
+    
+    va_start (ap, fmt);
+    k = vsnprintf (t, PD_STRING, fmt, ap);
+    va_end (ap);
+    
+    PD_ASSERT (k >= 0 && k < PD_STRING);
+
+    sys_vGui ("::ui_console::warning {%s}\n", t);
+}
+
 void post_error (const char *fmt, ...)
 {
     int k;
