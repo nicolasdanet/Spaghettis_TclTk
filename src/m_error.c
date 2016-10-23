@@ -30,11 +30,6 @@ void error__error2 (char *s1, char *s2)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void error__post (int argc, t_atom *argv)
-{
-    char *s = atom_atomsToString (argc, argv); post_error ("[ %s ]", s); PD_MEMORY_FREE (s);
-}
-
 int error__options (t_symbol *s, int argc, t_atom *argv)
 {
     int i, k = 0;
@@ -189,7 +184,7 @@ void error_canNotMake (int argc, t_atom *argv)
 {
     char *t = atom_atomsToString (argc, argv);
     
-    post_error (PD_TRANSLATE (": can't make [ %s ]"), t);
+    post_error (PD_TRANSLATE (": [ %s ] can't make"), t);
     
     PD_MEMORY_FREE (t);
 }
@@ -202,7 +197,7 @@ void error_invalidArguments (t_symbol *s, int argc, t_atom *argv)
 {
     char *t = atom_atomsToString (argc, argv);
     
-    post_error (PD_TRANSLATE ("%s: invalid argument(s) [ %s ]"), s->s_name, t);
+    post_error (PD_TRANSLATE ("%s: [ %s ] invalid argument(s)"), s->s_name, t);
     
     PD_MEMORY_FREE (t);
 }
@@ -212,9 +207,9 @@ void error_invalidArgumentsForMethod (t_symbol *s1, t_symbol *s2, int argc, t_at
     char *t = atom_atomsToString (argc, argv);
     
     if (s1 != sym_objectmaker) {
-        post_error (PD_TRANSLATE ("%s: invalid argument(s) for method %s [ %s ]"), s1->s_name, s2->s_name, t);
+        post_error (PD_TRANSLATE ("%s: [ %s ] invalid argument(s) for method %s"), s1->s_name, t, s2->s_name);
     } else {
-        post_error (PD_TRANSLATE ("%s: invalid argument(s) [ %s ]"), s2->s_name, t);
+        post_error (PD_TRANSLATE ("%s: [ %s ] invalid argument(s)"), s2->s_name, t);
     }
     
     PD_MEMORY_FREE (t);
@@ -243,7 +238,7 @@ void warning_unusedArguments (t_symbol *s, int argc, t_atom *argv)
 {
     char *t = atom_atomsToString (argc, argv);
     
-    post_warning (PD_TRANSLATE ("%s: unused argument(s) [ %s ]"), s->s_name, t);
+    post_warning (PD_TRANSLATE ("%s: [ %s ] unused argument(s)"), s->s_name, t);
     
     PD_MEMORY_FREE (t);
 }
