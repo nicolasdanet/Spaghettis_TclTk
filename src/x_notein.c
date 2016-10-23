@@ -13,65 +13,92 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
-#include "s_midi.h"
-#include "x_control.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_class *notein_class;           /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _notein {
+    t_object    x_obj;                  /* Must be the first. */
+    t_float     x_channel;
+    t_outlet    *x_outletLeft;
+    t_outlet    *x_outletMiddle;
+    t_outlet    *x_outletRight;
+    } t_notein;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* ----------------------- notein ------------------------- */
-
-static t_class *notein_class;
-
-typedef struct _notein
+static void notein_list (t_notein *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_object x_obj;
-    t_float x_channel;
-    t_outlet *x_outlet1;
-    t_outlet *x_outlet2;
-    t_outlet *x_outlet3;
-} t_notein;
-
-static void *notein_new(t_float f)
-{
-    t_notein *x = (t_notein *)pd_new(notein_class);
-    x->x_channel = f;
-    x->x_outlet1 = outlet_new(&x->x_obj, &s_float);
-    x->x_outlet2 = outlet_new(&x->x_obj, &s_float);
-    if (f == 0) x->x_outlet3 = outlet_new(&x->x_obj, &s_float);
-    pd_bind(&x->x_obj.te_g.g_pd, sym__notein);
-    return (x);
-}
-
-static void notein_list(t_notein *x, t_symbol *s, int argc, t_atom *argv)
-{
-    t_float pitch = atom_getFloatAtIndex(0, argc, argv);
-    t_float velo = atom_getFloatAtIndex(1, argc, argv);
-    t_float channel = atom_getFloatAtIndex(2, argc, argv);
-    if (x->x_channel != 0)
-    {
-        if (channel != x->x_channel) return;
-        outlet_float(x->x_outlet2, velo);
-        outlet_float(x->x_outlet1, pitch);
-    }
-    else
-    {
-        outlet_float(x->x_outlet3, channel);
-        outlet_float(x->x_outlet2, velo);
-        outlet_float(x->x_outlet1, pitch);
+    t_float pitch    = atom_getFloatAtIndex (0, argc, argv);
+    t_float velocity = atom_getFloatAtIndex (1, argc, argv);
+    t_float channel  = atom_getFloatAtIndex (2, argc, argv);
+    
+    if (x->x_channel) {
+        if (x->x_channel == channel) { 
+            outlet_float (x->x_outletMiddle, velocity);
+            outlet_float (x->x_outletLeft, pitch);
+        }
+        
+    } else {
+        outlet_float (x->x_outletRight, channel);
+        outlet_float (x->x_outletMiddle, velocity);
+        outlet_float (x->x_outletLeft, pitch);
     }
 }
 
-static void notein_free(t_notein *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *notein_new (t_float f)
 {
-    pd_unbind(&x->x_obj.te_g.g_pd, sym__notein);
+    t_notein *x = (t_notein *)pd_new (notein_class);
+    
+    x->x_channel      = PD_ABS (f);
+    x->x_outletLeft   = outlet_new (cast_object (x), &s_float);
+    x->x_outletMiddle = outlet_new (cast_object (x), &s_float);
+    
+    if (x->x_channel == 0.0) { x->x_outletRight = outlet_new (cast_object (x), &s_float); }
+    
+    pd_bind (cast_pd (x), sym__notein);
+    
+    return x;
 }
 
-void notein_setup(void)
+static void notein_free (t_notein *x)
 {
-    notein_class = class_new(sym_notein, (t_newmethod)notein_new,
-        (t_method)notein_free, sizeof(t_notein), CLASS_NOINLET, A_DEFFLOAT, 0);
-    class_addList(notein_class, notein_list);
-    class_setHelpName(notein_class, sym_midiout);
+    pd_unbind (cast_pd (x), sym__notein);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void notein_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_notein, 
+            (t_newmethod)notein_new,
+            (t_method)notein_free,
+            sizeof (t_notein),
+            CLASS_DEFAULT | CLASS_NOINLET,
+            A_DEFFLOAT,
+            A_NULL);
+            
+    class_addList (c, notein_list);
+    
+    class_setHelpName (c, sym_midiout);
+    
+    notein_class = c;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
