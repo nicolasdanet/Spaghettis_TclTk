@@ -33,7 +33,7 @@ typedef struct _midiout {
 
 static void midiout_float (t_midiout *x, t_float f)
 {
-    int port = PD_MAX (0, x->x_port - 1);
+    int port = (int)PD_ABS (x->x_port);
     int byte = (int)f;
     
     byte = PD_CLAMP (byte, 0, 0xff);
@@ -49,7 +49,7 @@ static void *midiout_new (t_float port)
 {
     t_midiout *x = (t_midiout *)pd_new (midiout_class);
     
-    x->x_port = PD_MAX (1, port);
+    x->x_port = PD_ABS (port);
     
     inlet_newFloat (cast_object (x), &x->x_port);
     
@@ -69,7 +69,6 @@ void midiout_setup (void)
         NULL,
         sizeof (t_midiout),
         CLASS_DEFAULT,
-        A_DEFFLOAT,
         A_DEFFLOAT,
         A_NULL);
         

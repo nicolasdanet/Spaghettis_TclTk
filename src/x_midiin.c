@@ -37,8 +37,6 @@ static void midiin_list (t_midiin *x, t_symbol *s, int argc, t_atom *argv)
     int byte = (int)atom_getFloatAtIndex (0, argc, argv);
     int port = (int)atom_getFloatAtIndex (1, argc, argv);
 
-    port += 1;
-    
     outlet_float (x->x_outletRight, (t_float)port);
     outlet_float (x->x_outletLeft,  (t_float)byte);
 }
@@ -77,7 +75,6 @@ void midiin_setup (void)
             (t_method)midiin_free,
             sizeof (t_midiin),
             CLASS_DEFAULT | CLASS_NOINLET,
-            A_DEFFLOAT,
             A_NULL);
             
     class_addList (c, midiin_list);
