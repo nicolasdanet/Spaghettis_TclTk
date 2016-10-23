@@ -69,7 +69,7 @@ void midi_getDevices (int *numberOfDevicesIn, int *devicesIn, int *numberOfDevic
         
     for (i = 0; i < midi_numberOfDevicesOut; i++) {
         char *s = &midi_devicesOutNames[i * MAXIMUM_DESCRIPTION];
-        int t = midi_numberWithName (1, s); if (t != -1) { devicesIn[n] = t; n++; }
+        int t = midi_numberWithName (1, s); if (t != -1) { devicesOut[n] = t; n++; }
     }
     
     *numberOfDevicesIn  = m;
