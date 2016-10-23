@@ -82,8 +82,8 @@ proc _create {} {
     # Set the color layout. 
     
     .console.text tag configure errorLog    -foreground red
+    .console.text tag configure warningLog  -foreground red
     .console.text tag configure basicLog    -foreground black
-    .console.text tag configure warningLog  -foreground orange
     
     # Read-only text widget ( http://wiki.tcl.tk/1152 ).
   

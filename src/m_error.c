@@ -184,7 +184,7 @@ void error_canNotMake (int argc, t_atom *argv)
 {
     char *t = atom_atomsToString (argc, argv);
     
-    post_error (PD_TRANSLATE (": [ %s ] can't make"), t);
+    post_error (PD_TRANSLATE (": can't make [ %s ]"), t);
     
     PD_MEMORY_FREE (t);
 }
