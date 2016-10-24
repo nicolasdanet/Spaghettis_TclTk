@@ -17,48 +17,71 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *sysexin_class;
+static t_class *sysexin_class;          /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _sysexin
-{
-    t_object x_obj;
-    t_outlet *x_outlet1;
-    t_outlet *x_outlet2;
-} t_sysexin;
+typedef struct _sysexin {
+    t_object    x_obj;                  /* Must be the first. */
+    t_outlet    *x_outletLeft;
+    t_outlet    *x_outletRight;
+    } t_sysexin;
 
-static void sysexin_list(t_sysexin *x, t_symbol *s, int ac, t_atom *av)
-{
-    outlet_float(x->x_outlet2, atom_getFloatAtIndex(1, ac, av) + 1);
-    outlet_float(x->x_outlet1, atom_getFloatAtIndex(0, ac, av));
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void *sysexin_new( void)
+static void sysexin_list (t_sysexin *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_sysexin *x = (t_sysexin *)pd_new(sysexin_class);
-    x->x_outlet1 = outlet_new(&x->x_obj, &s_float);
-    x->x_outlet2 = outlet_new(&x->x_obj, &s_float);
-    pd_bind(&x->x_obj.te_g.g_pd, sym__sysexin);
-    return (x);
-}
-
-static void sysexin_free(t_sysexin *x)
-{
-    pd_unbind(&x->x_obj.te_g.g_pd, sym__sysexin);
+    int byte = (int)atom_getFloatAtIndex (0, argc, argv);
+    int port = (int)atom_getFloatAtIndex (1, argc, argv);
+    
+    outlet_float (x->x_outletRight, (t_float)port);
+    outlet_float (x->x_outletLeft,  (t_float)byte);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-void sysexin_setup(void)
+static void *sysexin_new (void)
 {
-    sysexin_class = class_new(sym_sysexin, (t_newmethod)sysexin_new,
-        (t_method)sysexin_free, sizeof(t_sysexin),
-            CLASS_NOINLET, A_DEFFLOAT, 0);
-    class_addList(sysexin_class, sysexin_list);
-    class_setHelpName(sysexin_class, sym_midiout);
+    t_sysexin *x = (t_sysexin *)pd_new (sysexin_class);
+    
+    x->x_outletLeft  = outlet_new (cast_object (x), &s_float);
+    x->x_outletRight = outlet_new (cast_object (x), &s_float);
+    
+    pd_bind (cast_pd (x), sym__sysexin);
+    
+    return x;
+}
+
+static void sysexin_free (t_sysexin *x)
+{
+    pd_unbind (cast_pd (x), sym__sysexin);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void sysexin_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_sysexin,
+            (t_newmethod)sysexin_new,
+            (t_method)sysexin_free,
+            sizeof (t_sysexin),
+            CLASS_DEFAULT | CLASS_NOINLET,
+            A_NULL);
+            
+    class_addList (c, sysexin_list);
+    
+    class_setHelpName (c, sym_midiout);
+    
+    sysexin_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
