@@ -13,44 +13,66 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
-#include "s_midi.h"
-#include "x_control.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_class *touchout_class;         /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _touchout {
+    t_object    x_obj;                  /* Must be the first. */
+    t_float     x_channel;
+    } t_touchout;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* -------------------------- touch -------------------------- */
-
-static t_class *touchout_class;
-
-typedef struct _touchout
+static void touchout_float (t_touchout *x, t_float f)
 {
-    t_object x_obj;
-    t_float x_channel;
-} t_touchout;
+    outmidi_afterTouch (x->x_channel, (int)f);
+}
 
-static void *touchout_new(t_float channel)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *touchout_new (t_float channel)
 {
-    t_touchout *x = (t_touchout *)pd_new(touchout_class);
-    if (channel <= 0) channel = 1;
+    t_touchout *x = (t_touchout *)pd_new (touchout_class);
+    
     x->x_channel = channel;
-    inlet_newFloat(&x->x_obj, &x->x_channel);
-    return (x);
+    
+    inlet_newFloat (cast_object (x), &x->x_channel);
+    
+    return x;
 }
 
-static void touchout_float(t_touchout *x, t_float f)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void touchout_setup (void)
 {
-    int binchan = x->x_channel - 1;
-    if (binchan < 0)
-        binchan = 0;
-    outmidi_afterTouch((binchan >> 4), (binchan & 15), (int)f);
+    t_class *c = NULL;
+    
+    c = class_new (sym_touchout, 
+            (t_newmethod)touchout_new,
+            NULL,
+            sizeof (t_touchout),
+            CLASS_DEFAULT,
+            A_DEFFLOAT,
+            A_NULL);
+            
+    class_addFloat (c, touchout_float);
+    
+    class_setHelpName (c, sym_midiout);
+    
+    touchout_class = c;
 }
 
-void touchout_setup(void)
-{
-    touchout_class = class_new(sym_touchout, (t_newmethod)touchout_new, 0,
-        sizeof(t_touchout), 0, A_DEFFLOAT, 0);
-    class_addFloat(touchout_class, touchout_float);
-    class_setHelpName(touchout_class, sym_midiout);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

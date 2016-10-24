@@ -317,7 +317,7 @@ void        outmidi_noteOn                          (int channel, int pitch, int
 void        outmidi_controlChange                   (int channel, int control, int value);
 void        outmidi_programChange                   (int channel, int value);
 void        outmidi_pitchBend                       (int channel, int value);
-void        outmidi_afterTouch                      (int port, int channel, int value);
+void        outmidi_afterTouch                      (int channel, int value);
 void        outmidi_polyPressure                    (int port, int channel, int pitch, int value);
 void        outmidi_clock                           (int port);
 
