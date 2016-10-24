@@ -42,70 +42,87 @@ typedef struct _makenote {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void makenote_tick(t_hang *hang)
+static void makenote_task (t_hang *h)
 {
-    t_makenote *x = hang->h_owner;
-    t_hang *h2, *h3;
-    outlet_float(x->x_outletRight, 0);
-    outlet_float(x->x_outletLeft, hang->h_pitch);
-    if (x->x_hangs == hang) x->x_hangs = hang->h_next;
-    else for (h2 = x->x_hangs; h3 = h2->h_next; h2 = h3)
-    {
-        if (h3 == hang)
-        {
-            h2->h_next = h3->h_next;
-            break;
+    t_makenote *x = h->h_owner;
+    
+    outlet_float (x->x_outletRight, 0.0);
+    outlet_float (x->x_outletLeft,  h->h_pitch);
+    
+    if (x->x_hangs == h) { x->x_hangs = h->h_next; }
+    else {
+        t_hang *h1 = NULL;
+        t_hang *h2 = NULL;
+        
+        for (h1 = x->x_hangs; h2 = h1->h_next; h1 = h2) {
+            if (h2 == h) { 
+                h1->h_next = h2->h_next; break; 
+            }
         }
     }
-    clock_free(hang->h_clock);
-    PD_MEMORY_FREE(hang);
+    
+    clock_free (h->h_clock);
+    
+    PD_MEMORY_FREE (h);
+}
+
+static void makenote_add (t_makenote *x, t_float pitch, t_float duration)
+{
+    t_hang *h = (t_hang *)PD_MEMORY_GET (sizeof (t_hang));
+    
+    h->h_pitch = pitch;
+    h->h_clock = clock_new ((void *)h, (t_method)makenote_task);
+    h->h_owner = x;
+    h->h_next  = x->x_hangs;
+    
+    x->x_hangs = h;
+    
+    clock_delay (h->h_clock, PD_MAX (0.0, duration));
+}
+
+static void makenote_removeAll (t_makenote *x, int dump)
+{
+    t_hang *h = NULL;
+    
+    while (h = x->x_hangs) {
+    //
+    if (dump) {
+        outlet_float (x->x_outletRight, 0.0);
+        outlet_float (x->x_outletLeft,  h->h_pitch);
+    }
+
+    x->x_hangs = h->h_next; clock_free (h->h_clock); PD_MEMORY_FREE (h);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void makenote_float(t_makenote *x, t_float f)
+static void makenote_float (t_makenote *x, t_float pitch)
 {
-    t_hang *hang;
-    if (!x->x_velocity) return;
-    outlet_float(x->x_outletRight, x->x_velocity);
-    outlet_float(x->x_outletLeft, f);
-    hang = (t_hang *)PD_MEMORY_GET(sizeof *hang);
-    hang->h_next = x->x_hangs;
-    x->x_hangs = hang;
-    hang->h_pitch = f;
-    hang->h_owner = x;
-    hang->h_clock = clock_new(hang, (t_method)makenote_tick);
-    clock_delay(hang->h_clock, (x->x_duration >= 0 ? x->x_duration : 0));
+    if (x->x_velocity) {
+    //
+    outlet_float (x->x_outletRight, x->x_velocity);
+    outlet_float (x->x_outletLeft,  pitch);
+    makenote_add (x, pitch, x->x_duration);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void makenote_stop(t_makenote *x)
+static void makenote_stop (t_makenote *x)
 {
-    t_hang *hang;
-    while (hang = x->x_hangs)
-    {
-        outlet_float(x->x_outletRight, 0);
-        outlet_float(x->x_outletLeft, hang->h_pitch);
-        x->x_hangs = hang->h_next;
-        clock_free(hang->h_clock);
-        PD_MEMORY_FREE(hang);
-    }
+    makenote_removeAll (x, 1);
 }
 
-static void makenote_clear(t_makenote *x)
+static void makenote_clear (t_makenote *x)
 {
-    t_hang *hang;
-    while (hang = x->x_hangs)
-    {
-        x->x_hangs = hang->h_next;
-        clock_free(hang->h_clock);
-        PD_MEMORY_FREE(hang);
-    }
+    makenote_removeAll (x, 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
