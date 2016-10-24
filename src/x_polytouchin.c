@@ -13,67 +13,92 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
-#include "s_midi.h"
-#include "x_control.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_class *polytouchin_class;          /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _polytouchin {
+    t_object    x_obj;                      /* Must be the first. */
+    t_float     x_channel;
+    t_outlet    *x_outletLeft;
+    t_outlet    *x_outletMiddle;
+    t_outlet    *x_outletRight;
+    } t_polytouchin;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* ----------------------- polytouchin ------------------------- */
-
-static t_class *polytouchin_class;
-
-typedef struct _polytouchin
+static void polytouchin_list (t_polytouchin *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_object x_obj;
-    t_float x_channel;
-    t_outlet *x_outlet1;
-    t_outlet *x_outlet2;
-    t_outlet *x_outlet3;
-} t_polytouchin;
-
-static void *polytouchin_new(t_float f)
-{
-    t_polytouchin *x = (t_polytouchin *)pd_new(polytouchin_class);
-    x->x_channel = f;
-    x->x_outlet1 = outlet_new(&x->x_obj, &s_float);
-    x->x_outlet2 = outlet_new(&x->x_obj, &s_float);
-    if (f == 0) x->x_outlet3 = outlet_new(&x->x_obj, &s_float);
-    pd_bind(&x->x_obj.te_g.g_pd, sym__polytouchin);
-    return (x);
-}
-
-static void polytouchin_list(t_polytouchin *x, t_symbol *s, int argc,
-    t_atom *argv)
-{
-    t_float pitch = atom_getFloatAtIndex(0, argc, argv);
-    t_float value = atom_getFloatAtIndex(1, argc, argv);
-    t_float channel = atom_getFloatAtIndex(2, argc, argv);
-    if (x->x_channel != 0)
-    {
-        if (channel != x->x_channel) return;
-        outlet_float(x->x_outlet2, pitch);
-        outlet_float(x->x_outlet1, value);
-    }
-    else
-    {
-        outlet_float(x->x_outlet3, channel);
-        outlet_float(x->x_outlet2, pitch);
-        outlet_float(x->x_outlet1, value);
+    t_float pitch   = atom_getFloatAtIndex (0, argc, argv);
+    t_float value   = atom_getFloatAtIndex (1, argc, argv);
+    t_float channel = atom_getFloatAtIndex (2, argc, argv);
+    
+    if (x->x_channel) {
+        if (x->x_channel == channel) { 
+            outlet_float (x->x_outletMiddle, pitch);
+            outlet_float (x->x_outletLeft,   value);
+        }
+        
+    } else {
+        outlet_float (x->x_outletRight,  channel);
+        outlet_float (x->x_outletMiddle, pitch);
+        outlet_float (x->x_outletLeft,   value);
     }
 }
 
-static void polytouchin_free(t_polytouchin *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *polytouchin_new (t_float f)
 {
-    pd_unbind(&x->x_obj.te_g.g_pd, sym__polytouchin);
+    t_polytouchin *x = (t_polytouchin *)pd_new (polytouchin_class);
+    
+    x->x_channel      = f;
+    x->x_outletLeft   = outlet_new (cast_object (x), &s_float);
+    x->x_outletMiddle = outlet_new (cast_object (x), &s_float);
+    
+    if (!x->x_channel) { x->x_outletRight = outlet_new (cast_object (x), &s_float); }
+    
+    pd_bind (cast_pd (x), sym__polytouchin);
+    
+    return x;
 }
 
-void polytouchin_setup(void)
+static void polytouchin_free (t_polytouchin *x)
 {
-    polytouchin_class = class_new(sym_polytouchin,
-        (t_newmethod)polytouchin_new, (t_method)polytouchin_free,
-        sizeof(t_polytouchin), CLASS_NOINLET, A_DEFFLOAT, 0);
-    class_addList(polytouchin_class, polytouchin_list);
-    class_setHelpName(polytouchin_class, sym_midiout);
+    pd_unbind (cast_pd (x), sym__polytouchin);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void polytouchin_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_polytouchin,
+            (t_newmethod)polytouchin_new,
+            (t_method)polytouchin_free,
+            sizeof (t_polytouchin),
+            CLASS_DEFAULT | CLASS_NOINLET,
+            A_DEFFLOAT,
+            A_NULL);
+            
+    class_addList (c, polytouchin_list);
+    
+    class_setHelpName (c, sym_midiout);
+    
+    polytouchin_class = c;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
