@@ -44,11 +44,12 @@ void outmidi_programChange (int channel, int value)
     midi_broadcast ((t >> 4), 0, MIDI_PROGRAMCHANGE + (t & 0xf), value, 0);
 }
 
-void outmidi_pitchBend (int port, int channel, int value)
+void outmidi_pitchBend (int channel, int value)
 {
+    int t = PD_MAX (0, channel - 1);
     value = PD_CLAMP (value, 0, 16383);     // 0x3fff 
     
-    midi_broadcast (port, 0, MIDI_PITCHBEND + (channel & 0xf), (value & 127), ((value >> 7) & 127));
+    midi_broadcast ((t >> 4), 0, MIDI_PITCHBEND + (t & 0xf), (value & 127), ((value >> 7) & 127));
 }
 
 void outmidi_afterTouch (int port, int channel, int value)

@@ -13,45 +13,66 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
-#include "s_midi.h"
-#include "x_control.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_class *bendout_class;          /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _bendout {
+    t_object    x_obj;                  /* Must be the first. */
+    t_float     x_channel;
+    } t_bendout;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* -------------------------- bendout -------------------------- */
-
-static t_class *bendout_class;
-
-typedef struct _bendout
+static void bendout_float (t_bendout *x, t_float f)
 {
-    t_object x_obj;
-    t_float x_channel;
-} t_bendout;
+    outmidi_pitchBend (x->x_channel, (int)f + 8192);
+}
 
-static void *bendout_new(t_float channel)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *bendout_new (t_float channel)
 {
-    t_bendout *x = (t_bendout *)pd_new(bendout_class);
-    if (channel <= 0) channel = 1;
+    t_bendout *x = (t_bendout *)pd_new (bendout_class);
+    
     x->x_channel = channel;
-    inlet_newFloat(&x->x_obj, &x->x_channel);
-    return (x);
+    
+    inlet_newFloat (cast_object (x), &x->x_channel);
+    
+    return x;
 }
 
-static void bendout_float(t_bendout *x, t_float f)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void bendout_setup (void)
 {
-    int binchan = x->x_channel - 1;
-    int n = (int)f +  8192;
-    if (binchan < 0)
-        binchan = 0;
-    outmidi_pitchBend((binchan >> 4), (binchan & 15), n);
+    t_class *c = NULL;
+    
+    c = class_new (sym_bendout,
+            (t_newmethod)bendout_new,
+            NULL,
+            sizeof (t_bendout),
+            CLASS_DEFAULT,
+            A_DEFFLOAT,
+            A_NULL);
+            
+    class_addFloat (c, bendout_float);
+    
+    class_setHelpName (c, sym_midiout);
+    
+    bendout_class = c;
 }
 
-void bendout_setup(void)
-{
-    bendout_class = class_new(sym_bendout, (t_newmethod)bendout_new, 0,
-        sizeof(t_bendout), 0, A_DEFFLOAT, 0);
-    class_addFloat(bendout_class, bendout_float);
-    class_setHelpName(bendout_class, sym_midiout);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
