@@ -13,49 +13,77 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
-#include "s_midi.h"
-#include "x_control.h"
 
-/*----------midirealtimein (midi F8 F9 FA,FB,FC,FE,FF message )-----------------*/
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static t_class *midirealtimein_class;
+static t_class *midirealtimein_class;           /* Shared. */
 
-typedef struct _midirealtimein
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _midirealtimein {
+    t_object    x_obj;                          /* Must be the first. */
+    t_outlet    *x_outletLeft;
+    t_outlet    *x_outletRight;
+    } t_midirealtimein;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void midirealtimein_list (t_midirealtimein *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_object x_obj;
-    t_outlet *x_outlet1;
-    t_outlet *x_outlet2;
-} t_midirealtimein;
-
-static void *midirealtimein_new( void)
-{
-    t_midirealtimein *x = (t_midirealtimein *)pd_new(midirealtimein_class);
-    x->x_outlet1 = outlet_new(&x->x_obj, &s_float);
-    x->x_outlet2 = outlet_new(&x->x_obj, &s_float);
-    pd_bind(&x->x_obj.te_g.g_pd, sym__midirealtimein);
-    return (x);
+    int byte = (int)atom_getFloatAtIndex (0, argc, argv);
+    int port = (int)atom_getFloatAtIndex (1, argc, argv);
+    
+    outlet_float (x->x_outletRight, (t_float)port);
+    outlet_float (x->x_outletLeft,  (t_float)byte);
 }
 
-static void midirealtimein_list(t_midirealtimein *x, t_symbol *s,
-    int argc, t_atom *argv)
-{
-    t_float byte = atom_getFloatAtIndex(0, argc, argv);
-    t_float portno = atom_getFloatAtIndex(1, argc, argv);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-    outlet_float(x->x_outlet2, portno);
-    outlet_float(x->x_outlet1, byte);
+static void *midirealtimein_new (void)
+{
+    t_midirealtimein *x = (t_midirealtimein *)pd_new (midirealtimein_class);
+    
+    x->x_outletLeft  = outlet_new (cast_object (x), &s_float);
+    x->x_outletRight = outlet_new (cast_object (x), &s_float);
+    
+    pd_bind (cast_pd (x), sym__midirealtimein);
+    
+    return x;
 }
 
-static void midirealtimein_free(t_midirealtimein *x)
+static void midirealtimein_free (t_midirealtimein *x)
 {
-    pd_unbind(&x->x_obj.te_g.g_pd, sym__midirealtimein);
+    pd_unbind (cast_pd (x), sym__midirealtimein);
 }
 
-void midirealtimein_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void midirealtimein_setup (void)
 {
-    midirealtimein_class = class_new(sym_midirealtimein, 
-        (t_newmethod)midirealtimein_new, (t_method)midirealtimein_free, 
-            sizeof(t_midirealtimein), CLASS_NOINLET, A_DEFFLOAT, 0);
-    class_addList(midirealtimein_class, midirealtimein_list);
-        class_setHelpName(midirealtimein_class, sym_midiout);
+    t_class *c = NULL;
+    
+    c = class_new (sym_midirealtimein, 
+            (t_newmethod)midirealtimein_new,
+            (t_method)midirealtimein_free, 
+            sizeof (t_midirealtimein),
+            CLASS_DEFAULT | CLASS_NOINLET,
+            A_DEFFLOAT,
+            A_NULL);
+            
+    class_addList (c, midirealtimein_list);
+    
+    class_setHelpName (c, sym_midiout);
+        
+    midirealtimein_class = c;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
