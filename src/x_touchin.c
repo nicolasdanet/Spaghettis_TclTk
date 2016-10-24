@@ -13,61 +13,85 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
-#include "s_midi.h"
-#include "x_control.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_class *touchin_class;          /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _touchin {
+    t_object    x_obj;                  /* Must be the first. */
+    t_float     x_channel;
+    t_outlet    *x_outletLeft;
+    t_outlet    *x_outletRight;
+    } t_touchin;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* ----------------------- touchin ------------------------- */
-
-static t_class *touchin_class;
-
-typedef struct _touchin
+static void touchin_list (t_touchin *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_object x_obj;
-    t_float x_channel;
-    t_outlet *x_outlet1;
-    t_outlet *x_outlet2;
-} t_touchin;
-
-static void *touchin_new(t_float f)
-{
-    t_touchin *x = (t_touchin *)pd_new(touchin_class);
-    x->x_channel = f;
-    x->x_outlet1 = outlet_new(&x->x_obj, &s_float);
-    if (f == 0) x->x_outlet2 = outlet_new(&x->x_obj, &s_float);
-    pd_bind(&x->x_obj.te_g.g_pd, sym__touchin);
-    return (x);
-}
-
-static void touchin_list(t_touchin *x, t_symbol *s, int argc, t_atom *argv)
-{
-    t_float value = atom_getFloatAtIndex(0, argc, argv);
-    t_float channel = atom_getFloatAtIndex(1, argc, argv);
-    if (x->x_channel)
-    {
-        if (channel != x->x_channel) return;
-        outlet_float(x->x_outlet1, value);
-    }
-    else
-    {
-        outlet_float(x->x_outlet2, channel);
-        outlet_float(x->x_outlet1, value);
+    t_float value   = atom_getFloatAtIndex (0, argc, argv);
+    t_float channel = atom_getFloatAtIndex (1, argc, argv);
+    
+    if (x->x_channel) {
+        if (x->x_channel == channel) { outlet_float (x->x_outletLeft, value); }
+        
+    } else {
+        outlet_float (x->x_outletRight, channel);
+        outlet_float (x->x_outletLeft, value);
     }
 }
 
-static void touchin_free(t_touchin *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *touchin_new (t_float f)
 {
-    pd_unbind(&x->x_obj.te_g.g_pd, sym__touchin);
+    t_touchin *x = (t_touchin *)pd_new (touchin_class);
+    
+    x->x_channel    = f;
+    x->x_outletLeft = outlet_new (cast_object (x), &s_float);
+    
+    if (!x->x_channel) { x->x_outletRight = outlet_new (cast_object (x), &s_float); }
+    
+    pd_bind (cast_pd (x), sym__touchin);
+    
+    return x;
 }
 
-void touchin_setup(void)
+static void touchin_free (t_touchin *x)
 {
-    touchin_class = class_new(sym_touchin, (t_newmethod)touchin_new,
-        (t_method)touchin_free, sizeof(t_touchin),
-            CLASS_NOINLET, A_DEFFLOAT, 0);
-    class_addList(touchin_class, touchin_list);
-    class_setHelpName(touchin_class, sym_midiout);
+    pd_unbind (cast_pd (x), sym__touchin);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void touchin_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_touchin,
+            (t_newmethod)touchin_new,
+            (t_method)touchin_free,
+            sizeof (t_touchin),
+            CLASS_DEFAULT | CLASS_NOINLET,
+            A_DEFFLOAT,
+            A_NULL);
+            
+    class_addList (c, touchin_list);
+    
+    class_setHelpName (c, sym_midiout);
+    
+    touchin_class = c;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
