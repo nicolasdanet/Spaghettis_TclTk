@@ -13,56 +13,85 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
-#include "s_midi.h"
-#include "x_control.h"
 
-/* ----------------------- bendin ------------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static t_class *bendin_class;
+static t_class *bendin_class;           /* Shared. */
 
-typedef struct _bendin
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _bendin {
+    t_object    x_obj;                  /* Must be the first. */
+    t_float     x_channel;
+    t_outlet    *x_outletLeft;
+    t_outlet    *x_outletRight;
+    } t_bendin;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void bendin_list (t_bendin *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_object x_obj;
-    t_float x_channel;
-    t_outlet *x_outlet1;
-    t_outlet *x_outlet2;
-} t_bendin;
-
-static void *bendin_new(t_float f)
-{
-    t_bendin *x = (t_bendin *)pd_new(bendin_class);
-    x->x_channel = f;
-    x->x_outlet1 = outlet_new(&x->x_obj, &s_float);
-    if (f == 0) x->x_outlet2 = outlet_new(&x->x_obj, &s_float);
-    pd_bind(&x->x_obj.te_g.g_pd, sym__bendin);
-    return (x);
-}
-
-static void bendin_list(t_bendin *x, t_symbol *s, int argc, t_atom *argv)
-{
-    t_float value = atom_getFloatAtIndex(0, argc, argv);
-    t_float channel = atom_getFloatAtIndex(1, argc, argv);
-    if (x->x_channel != 0)
-    {
-        if (channel != x->x_channel) return;
-        outlet_float(x->x_outlet1, value);
-    }
-    else
-    {
-        outlet_float(x->x_outlet2, channel);
-        outlet_float(x->x_outlet1, value);
+    t_float value   = atom_getFloatAtIndex (0, argc, argv);
+    t_float channel = atom_getFloatAtIndex (1, argc, argv);
+    
+    if (x->x_channel) {
+        if (x->x_channel == channel) { outlet_float (x->x_outletLeft, value); }
+        
+    } else {
+        outlet_float (x->x_outletRight, channel);
+        outlet_float (x->x_outletLeft,  value);
     }
 }
 
-static void bendin_free(t_bendin *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *bendin_new (t_float f)
 {
-    pd_unbind(&x->x_obj.te_g.g_pd, sym__bendin);
+    t_bendin *x = (t_bendin *)pd_new (bendin_class);
+    
+    x->x_channel    = f;
+    x->x_outletLeft = outlet_new (cast_object (x), &s_float);
+    
+    if (!x->x_channel) { x->x_outletRight = outlet_new (cast_object (x), &s_float); }
+    
+    pd_bind (cast_pd (x), sym__bendin);
+    
+    return x;
 }
 
-void bendin_setup(void)
+static void bendin_free (t_bendin *x)
 {
-    bendin_class = class_new(sym_bendin, (t_newmethod)bendin_new,
-        (t_method)bendin_free, sizeof(t_bendin), CLASS_NOINLET, A_DEFFLOAT, 0);
-    class_addList(bendin_class, bendin_list);
-    class_setHelpName(bendin_class, sym_midiout);
+    pd_unbind (cast_pd (x), sym__bendin);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void bendin_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_bendin,
+            (t_newmethod)bendin_new,
+            (t_method)bendin_free,
+            sizeof (t_bendin),
+            CLASS_DEFAULT | CLASS_NOINLET,
+            A_DEFFLOAT,
+            A_NULL);
+            
+    class_addList (c, bendin_list);
+    
+    class_setHelpName (c, sym_midiout);
+    
+    bendin_class = c;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
