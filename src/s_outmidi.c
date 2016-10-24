@@ -36,11 +36,12 @@ void outmidi_controlChange (int channel, int control, int value)
     midi_broadcast ((t >> 4), 0, MIDI_CONTROLCHANGE + (t & 0xf), control, value);
 }
 
-void outmidi_programChange (int port, int channel, int value)
+void outmidi_programChange (int channel, int value)
 {
-    value = PD_CLAMP (value, 0, 127);
+    int t = PD_MAX (0, channel - 1);
+    value = PD_CLAMP (value - 1, 0, 127);
     
-    midi_broadcast (port, 0, MIDI_PROGRAMCHANGE + (channel & 0xf), value, 0);
+    midi_broadcast ((t >> 4), 0, MIDI_PROGRAMCHANGE + (t & 0xf), value, 0);
 }
 
 void outmidi_pitchBend (int port, int channel, int value)
