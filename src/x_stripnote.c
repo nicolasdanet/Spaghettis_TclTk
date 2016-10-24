@@ -12,38 +12,69 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "s_system.h"
-#include "s_midi.h"
 
-static t_class *stripnote_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct _stripnote
+static t_class *stripnote_class;        /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _stripnote {
+    t_object    x_obj;                  /* Must be the first. */
+    t_float     x_velocity;
+    t_outlet    *x_outletLeft;
+    t_outlet    *x_outletRight;
+    } t_stripnote;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void stripnote_float (t_stripnote *x, t_float f)
 {
-    t_object x_obj;
-    t_float x_velo;
-    t_outlet *x_pitchout;
-    t_outlet *x_velout;
-} t_stripnote;
-
-static void *stripnote_new(void )
-{
-    t_stripnote *x = (t_stripnote *)pd_new(stripnote_class);
-    inlet_newFloat(&x->x_obj, &x->x_velo);
-    x->x_pitchout = outlet_new(&x->x_obj, &s_float);
-    x->x_velout = outlet_new(&x->x_obj, &s_float);
-    return (x);
+    if (x->x_velocity) { 
+        outlet_float (x->x_outletRight, x->x_velocity);
+        outlet_float (x->x_outletLeft,  f);
+    }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *stripnote_new (void)
+{
+    t_stripnote *x = (t_stripnote *)pd_new (stripnote_class);
+        
+    x->x_outletLeft  = outlet_new (cast_object (x), &s_float);
+    x->x_outletRight = outlet_new (cast_object (x), &s_float);
     
-static void stripnote_float(t_stripnote *x, t_float f)
-{
-    if (!x->x_velo) return;
-    outlet_float(x->x_velout, x->x_velo);
-    outlet_float(x->x_pitchout, f);
+    inlet_newFloat (cast_object (x), &x->x_velocity);
+    
+    return x;
 }
 
-void stripnote_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void stripnote_setup (void)
 {
-    stripnote_class = class_new(sym_stripnote,
-        (t_newmethod)stripnote_new, 0, sizeof(t_stripnote), 0, 0);
-    class_addFloat(stripnote_class, stripnote_float);
+    t_class *c = NULL;
+    
+    c = class_new (sym_stripnote,
+            (t_newmethod)stripnote_new,
+            NULL,
+            sizeof (t_stripnote),
+            CLASS_DEFAULT,
+            A_NULL);
+            
+    class_addFloat (c, stripnote_float);
+    
+    stripnote_class = c;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
