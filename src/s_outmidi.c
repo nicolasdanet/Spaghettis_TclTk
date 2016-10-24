@@ -60,12 +60,13 @@ void outmidi_afterTouch (int channel, int value)
     midi_broadcast ((t >> 4), 0, MIDI_AFTERTOUCH + (t & 0xf), value, 0);
 }
 
-void outmidi_polyPressure (int port, int channel, int pitch, int value)
+void outmidi_polyPressure (int channel, int pitch, int value)
 {
+    int t = PD_MAX (0, channel - 1);
     pitch = PD_CLAMP (pitch, 0, 127);
     value = PD_CLAMP (value, 0, 127);
     
-    midi_broadcast (port, 0, MIDI_POLYPRESSURE + (channel & 0xf), pitch, value);
+    midi_broadcast ((t >> 4), 0, MIDI_POLYPRESSURE + (t & 0xf), pitch, value);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -13,48 +13,69 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
-#include "s_midi.h"
-#include "x_control.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_class *polytouchout_class;         /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _polytouchout {
+    t_object    x_obj;                      /* Must be the first. */
+    t_float     x_pitch;
+    t_float     x_channel;
+    } t_polytouchout;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* -------------------------- polytouch -------------------------- */
-
-static t_class *polytouchout_class;
-
-typedef struct _polytouchout
+static void polytouchout_float (t_polytouchout *x, t_float n)
 {
-    t_object x_obj;
-    t_float x_channel;
-    t_float x_pitch;
-} t_polytouchout;
+    outmidi_polyPressure (x->x_channel, x->x_pitch, n);
+}
 
-static void *polytouchout_new(t_float channel)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *polytouchout_new (t_float channel)
 {
-    t_polytouchout *x = (t_polytouchout *)pd_new(polytouchout_class);
-    if (channel <= 0) channel = 1;
+    t_polytouchout *x = (t_polytouchout *)pd_new (polytouchout_class);
+    
+    x->x_pitch   = 0;
     x->x_channel = channel;
-    x->x_pitch = 0;
-    inlet_newFloat(&x->x_obj, &x->x_pitch);
-    inlet_newFloat(&x->x_obj, &x->x_channel);
-    return (x);
+    
+    inlet_newFloat (cast_object (x), &x->x_pitch);
+    inlet_newFloat (cast_object (x), &x->x_channel);
+    
+    return x;
 }
 
-static void polytouchout_float(t_polytouchout *x, t_float n)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void polytouchout_setup (void)
 {
-    int binchan = x->x_channel - 1;
-    if (binchan < 0)
-        binchan = 0;
-    outmidi_polyPressure((binchan >> 4), (binchan & 15), x->x_pitch, n);
+    t_class *c = NULL;
+    
+    c = class_new (sym_polytouchout, 
+            (t_newmethod)polytouchout_new,
+            NULL,
+            sizeof (t_polytouchout),
+            CLASS_DEFAULT,
+            A_DEFFLOAT,
+            A_NULL);
+            
+    class_addFloat (c, polytouchout_float);
+    
+    class_setHelpName (c, sym_midiout);
+    
+    polytouchout_class = c;
 }
 
-void polytouchout_setup(void)
-{
-    polytouchout_class = class_new(sym_polytouchout, 
-        (t_newmethod)polytouchout_new, 0,
-        sizeof(t_polytouchout), 0, A_DEFFLOAT, 0);
-    class_addFloat(polytouchout_class, polytouchout_float);
-    class_setHelpName(polytouchout_class, sym_midiout);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
