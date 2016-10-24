@@ -216,8 +216,8 @@
 
 #include "x_makenote.c"
 #include "x_stripnote.c"
-#include "x_poly.c"
 #include "x_bag.c"
+#include "x_poly.c"
 
 #include "x_midiin.c"
 #include "x_midiout.c"

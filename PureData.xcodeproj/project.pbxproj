@@ -974,8 +974,8 @@
 			children = (
 				37C522E51DBB4A79008753D1 /* x_makenote.c */,
 				37C5229B1DBB38E5008753D1 /* x_stripnote.c */,
-				37C522741DBB37CC008753D1 /* x_poly.c */,
 				373393BF1DBA702D00A76E6E /* x_bag.c */,
+				37C522741DBB37CC008753D1 /* x_poly.c */,
 				370793E41DBB55A700183F74 /* x_midiin.c */,
 				370793021DBB4F4B00183F74 /* x_midiout.c */,
 				370793E51DBB55A700183F74 /* x_notein.c */,
