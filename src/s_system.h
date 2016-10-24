@@ -319,7 +319,6 @@ void        outmidi_programChange                   (int channel, int value);
 void        outmidi_pitchBend                       (int channel, int value);
 void        outmidi_afterTouch                      (int channel, int value);
 void        outmidi_polyPressure                    (int channel, int pitch, int value);
-void        outmidi_clock                           (int port);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
