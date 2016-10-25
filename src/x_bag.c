@@ -37,15 +37,50 @@ typedef struct _bag {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void bag_add (t_bag *x, t_float f)
+{
+    t_bagelement *e = (t_bagelement *)PD_MEMORY_GET (sizeof (t_bagelement));
+    
+    e->e_value = f;
+    e->e_next  = NULL;
+    
+    if (!x->x_elements) { x->x_elements = e; }
+    else {
+        t_bagelement *e1 = NULL;
+        t_bagelement *e2 = NULL;
+        for (e1 = x->x_elements; e2 = e1->e_next; e1 = e2) { }
+        e1->e_next = e;
+    }
+}
+
+static void bag_remove (t_bag *x, t_float f)
+{
+    if (x->x_elements) {
+    //
+    t_bagelement *e = NULL;
+    
+    if (x->x_elements->e_value == f) {
+        e = x->x_elements;
+        x->x_elements = x->x_elements->e_next; PD_MEMORY_FREE (e);
+        
+    } else {
+        t_bagelement *e1 = NULL;
+        t_bagelement *e2 = NULL;
+        for (e1 = x->x_elements; e2 = e1->e_next; e1 = e2) {
+            if (e2->e_value == f) { e1->e_next = e2->e_next; PD_MEMORY_FREE (e2); break; }
+        }
+    }
+    //
+    }
+}
+
 static void bag_removeAll (t_bag *x, int dump)
 {
     t_bagelement *e = NULL;
     
     while (e = x->x_elements) {
-    //
-    if (dump) { outlet_float (x->x_outlet, e->e_value); }
-    x->x_elements = e->e_next; PD_MEMORY_FREE (e);
-    //
+        if (dump) { outlet_float (x->x_outlet, e->e_value); }
+        x->x_elements = e->e_next; PD_MEMORY_FREE (e);
     }
 }
 
@@ -53,39 +88,11 @@ static void bag_removeAll (t_bag *x, int dump)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void bag_float(t_bag *x, t_float f)
+static void bag_float (t_bag *x, t_float f)
 {
-    t_bagelement *bagelement, *e2, *e3;
-    if (x->x_velocity != 0)
-    {
-        bagelement = (t_bagelement *)PD_MEMORY_GET(sizeof *bagelement);
-        bagelement->e_next = 0;
-        bagelement->e_value = f;
-        if (!x->x_elements) x->x_elements = bagelement;
-        else    /* LATER replace with a faster algorithm */
-        {
-            for (e2 = x->x_elements; e3 = e2->e_next; e2 = e3)
-                ;
-            e2->e_next = bagelement;
-        }
-    }
-    else
-    {
-        if (!x->x_elements) return;
-        if (x->x_elements->e_value == f)
-        {
-            bagelement = x->x_elements;
-            x->x_elements = x->x_elements->e_next;
-            PD_MEMORY_FREE(bagelement);
-            return;
-        }
-        for (e2 = x->x_elements; e3 = e2->e_next; e2 = e3)
-            if (e3->e_value == f)
-        {
-            e2->e_next = e3->e_next;
-            PD_MEMORY_FREE(e3);
-            return;
-        }
+    if (x->x_velocity) { bag_add (x, f); }
+    else {
+        bag_remove (x, f);
     }
 }
 
