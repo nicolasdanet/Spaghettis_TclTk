@@ -11,6 +11,7 @@ to reset the value.
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
+#include "d_dsp.h"
 
 /* ----------------------------- plus ----------------------------- */
 static t_class *plus_class, *scalarplus_class;

@@ -7,6 +7,7 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
+#include "d_dsp.h"
 #include <math.h>
 
 /* ---------------- hip~ - 1-pole 1-zero hipass filter. ----------------- */

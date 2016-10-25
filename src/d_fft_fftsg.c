@@ -22,6 +22,7 @@ for another, more permissive-sounding copyright notice.  -MSP
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
+#include "d_dsp.h"
 
 #define FFTFLT double
 void cdft(int, int, FFTFLT *, int *, FFTFLT *);

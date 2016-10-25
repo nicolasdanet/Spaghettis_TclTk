@@ -10,6 +10,7 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "g_graphics.h"
+#include "d_dsp.h"
 
 extern t_class *garray_class;
 

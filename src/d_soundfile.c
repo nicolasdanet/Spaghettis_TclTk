@@ -30,6 +30,7 @@ objects use Posix-like threads.  */
 #include "m_macros.h"
 #include "s_system.h"
 #include "g_graphics.h"
+#include "d_dsp.h"
 
 extern t_class *garray_class;
 

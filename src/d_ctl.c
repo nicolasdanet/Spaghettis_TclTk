@@ -10,6 +10,7 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
+#include "d_dsp.h"
 #include "math.h"
 
 /* -------------------------- sig~ ------------------------------ */

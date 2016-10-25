@@ -9,6 +9,7 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
+#include "d_dsp.h"
 
 /* ----------------------------- dac~ --------------------------- */
 static t_class *dac_class;

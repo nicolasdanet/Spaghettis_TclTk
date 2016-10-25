@@ -6,6 +6,7 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
+#include "d_dsp.h"
 
 /* --------------------- up/down-sampling --------------------- */
 t_int *downsampling_perform_0(t_int *w)

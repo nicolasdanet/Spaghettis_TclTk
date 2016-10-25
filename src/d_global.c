@@ -7,6 +7,7 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
+#include "d_dsp.h"
 #include <string.h>
 
 #define DEFSENDVS 64    /* LATER get send to get this from canvas */

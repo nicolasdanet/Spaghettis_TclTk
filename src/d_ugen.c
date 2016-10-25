@@ -16,6 +16,7 @@
 #include "m_macros.h"
 #include "s_system.h"
 #include "g_graphics.h"
+#include "d_dsp.h"
 #include <stdlib.h>
 #include <stdarg.h>
 
