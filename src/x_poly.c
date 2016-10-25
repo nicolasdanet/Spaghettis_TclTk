@@ -12,143 +12,193 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "s_system.h"
-#include "s_midi.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_class *poly_class;                 /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct voice {
+    t_float         v_pitch;
+    int             v_used;
+    unsigned long   v_serial;
+    } t_voice;
+
+typedef struct poly {
+    t_object        x_obj;                  /* Must be the first. */
+    t_float         x_velocity;
+    int             x_hasStealMode;
+    unsigned long   x_serial;
+    int             x_size;
+    t_voice         *x_vector;
+    t_outlet        *x_outletLeft;
+    t_outlet        *x_outletMiddle;
+    t_outlet        *x_outletRight;
+    } t_poly;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* -------------------------- poly -------------------------- */
-
-static t_class *poly_class;
-
-typedef struct voice
+static void poly_addAtIndex (t_poly *x, t_float f, int i)
 {
-    t_float v_pitch;
-    int v_used;
-    unsigned long v_serial;
-} t_voice;
-
-typedef struct poly
-{
-    t_object x_obj;
-    int x_n;
-    t_voice *x_vec;
-    t_float x_vel;
-    t_outlet *x_pitchout;
-    t_outlet *x_velout;
-    unsigned long x_serial;
-    int x_steal;
-} t_poly;
-
-static void *poly_new(t_float fnvoice, t_float fsteal)
-{
-    int i, n = fnvoice;
-    t_poly *x = (t_poly *)pd_new(poly_class);
-    t_voice *v;
-    if (n < 1) n = 1;
-    x->x_n = n;
-    x->x_vec = (t_voice *)PD_MEMORY_GET(n * sizeof(*x->x_vec));
-    for (v = x->x_vec, i = n; i--; v++)
-        v->v_pitch = v->v_used = v->v_serial = 0;
-    x->x_vel = 0;
-    x->x_steal = (fsteal != 0);
-    inlet_newFloat(&x->x_obj, &x->x_vel);
-    outlet_new(&x->x_obj, &s_float);
-    x->x_pitchout = outlet_new(&x->x_obj, &s_float);
-    x->x_velout = outlet_new(&x->x_obj, &s_float);
-    x->x_serial = 0;
-    return (x);
+    PD_ASSERT (!x->x_vector[i].v_used);
+    
+    x->x_vector[i].v_pitch  = f;
+    x->x_vector[i].v_used   = 1;
+    x->x_vector[i].v_serial = x->x_serial++;
+        
+    outlet_float (x->x_outletRight,  x->x_velocity);
+    outlet_float (x->x_outletMiddle, x->x_vector[i].v_pitch);
+    outlet_float (x->x_outletLeft,   i + 1);
 }
 
-static void poly_float(t_poly *x, t_float f)
+static void poly_removeAtIndex (t_poly *x, int i, int dump)
+{
+    int k = (dump && x->x_vector[i].v_used);
+    int t = x->x_vector[i].v_pitch;
+    
+    x->x_vector[i].v_pitch  = -1.0;
+    x->x_vector[i].v_used   = 0;
+    x->x_vector[i].v_serial = x->x_serial++;
+    
+    if (k) {
+        outlet_float (x->x_outletRight,  0.0);
+        outlet_float (x->x_outletMiddle, t);
+        outlet_float (x->x_outletLeft,   i + 1);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void poly_add (t_poly *x, t_float f)
 {
     int i;
-    t_voice *v;
-    t_voice *firston, *firstoff;
-    unsigned int serialon, serialoff, onindex = 0, offindex = 0;
-    if (x->x_vel > 0)
-    {
-            /* note on.  Look for a vacant voice */
-        for (v = x->x_vec, i = 0, firston = firstoff = 0,
-            serialon = serialoff = 0xffffffff; i < x->x_n; v++, i++)
-        {
-            if (v->v_used && v->v_serial < serialon)
-                    firston = v, serialon = v->v_serial, onindex = i;
-            else if (!v->v_used && v->v_serial < serialoff)
-                    firstoff = v, serialoff = v->v_serial, offindex = i;
-        }
-        if (firstoff)
-        {
-            outlet_float(x->x_velout, x->x_vel);
-            outlet_float(x->x_pitchout, firstoff->v_pitch = f);
-            outlet_float(x->x_obj.te_outlet, offindex+1);
-            firstoff->v_used = 1;
-            firstoff->v_serial = x->x_serial++;
-        }
-            /* if none, steal one */
-        else if (firston && x->x_steal)
-        {
-            outlet_float(x->x_velout, 0);
-            outlet_float(x->x_pitchout, firston->v_pitch);
-            outlet_float(x->x_obj.te_outlet, onindex+1);
-            outlet_float(x->x_velout, x->x_vel);
-            outlet_float(x->x_pitchout, firston->v_pitch = f);
-            outlet_float(x->x_obj.te_outlet, onindex+1);
-            firston->v_serial = x->x_serial++;
+    int m = -1;
+    int n = -1;
+    unsigned long used  = (~0L);
+    unsigned long empty = (~0L);
+    
+    for (i = 0; i < x->x_size; i++) {
+        if (x->x_vector[i].v_used && x->x_vector[i].v_serial < used) {
+            used = x->x_vector[i].v_serial; 
+            m = i;
+        } else if (!x->x_vector[i].v_used && x->x_vector[i].v_serial < empty) {
+            empty = x->x_vector[i].v_serial;
+            n = i;
         }
     }
-    else    /* note off. Turn off oldest match */
-    {
-        for (v = x->x_vec, i = 0, firston = 0, serialon = 0xffffffff;
-            i < x->x_n; v++, i++)
-                if (v->v_used && v->v_pitch == f && v->v_serial < serialon)
-                    firston = v, serialon = v->v_serial, onindex = i;
-        if (firston)
-        {
-            firston->v_used = 0;
-            firston->v_serial = x->x_serial++;
-            outlet_float(x->x_velout, 0);
-            outlet_float(x->x_pitchout, firston->v_pitch);
-            outlet_float(x->x_obj.te_outlet, onindex+1);
+        
+    if (n != -1) { poly_addAtIndex (x, f, n); }
+    else if (m != -1) {
+        if (x->x_hasStealMode) {
+            poly_removeAtIndex (x, m, 1); poly_addAtIndex (x, f, m);
         }
     }
 }
 
-static void poly_stop(t_poly *x)
+static void poly_remove (t_poly *x, t_float f)
 {
     int i;
-    t_voice *v;
-    for (i = 0, v = x->x_vec; i < x->x_n; i++, v++)
-        if (v->v_used)
-    {
-        outlet_float(x->x_velout, 0L);
-        outlet_float(x->x_pitchout, v->v_pitch);
-        outlet_float(x->x_obj.te_outlet, i+1);
-        v->v_used = 0;
-        v->v_serial = x->x_serial++;
+    int m = -1;
+    unsigned long used = (~0L);
+    
+    for (i = 0; i < x->x_size; i++) {
+        if (x->x_vector[i].v_used && x->x_vector[i].v_pitch == f && x->x_vector[i].v_serial < used) {
+            used = x->x_vector[i].v_serial; 
+            m = i;
+        } 
+    }
+    
+    if (m != -1) { poly_removeAtIndex (x, m, 1); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void poly_float (t_poly *x, t_float f)
+{
+    if (x->x_velocity > 0.0) { poly_add (x, f); }
+    else {
+        poly_remove (x, f);
     }
 }
 
-static void poly_clear(t_poly *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void poly_stop (t_poly *x)
 {
     int i;
-    t_voice *v;
-    for (v = x->x_vec, i = x->x_n; i--; v++) v->v_used = v->v_serial = 0;
+    for (i = 0; i < x->x_size; i++) { poly_removeAtIndex (x, i, 1); }
 }
 
-static void poly_free(t_poly *x)
+static void poly_clear (t_poly *x)
 {
-    PD_MEMORY_FREE(x->x_vec);
+    int i;
+    for (i = 0; i < x->x_size; i++) { poly_removeAtIndex (x, i, 0); }
 }
 
-void poly_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *poly_new (t_float voices, t_float steal)
 {
-    poly_class = class_new(sym_poly, 
-        (t_newmethod)poly_new, (t_method)poly_free,
-        sizeof(t_poly), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
-    class_addFloat(poly_class, poly_float);
-    class_addMethod(poly_class, (t_method)poly_stop, sym_stop, 0);
-    class_addMethod(poly_class, (t_method)poly_clear, sym_clear, 0);
+    t_poly *x = (t_poly *)pd_new (poly_class);
+    
+    x->x_velocity     = 0;
+    x->x_hasStealMode = (steal != 0.0);
+    x->x_serial       = 0;
+    x->x_size         = PD_MAX (1, (int)voices);
+    x->x_vector       = (t_voice *)PD_MEMORY_GET (x->x_size * sizeof (t_voice));
+    x->x_outletLeft   = outlet_new (cast_object (x), &s_float);
+    x->x_outletMiddle = outlet_new (cast_object (x), &s_float);
+    x->x_outletRight  = outlet_new (cast_object (x), &s_float);
+
+    inlet_newFloat (cast_object (x), &x->x_velocity);
+    
+    poly_clear (x);
+    
+    return x;
 }
+
+static void poly_free (t_poly *x)
+{
+    PD_MEMORY_FREE (x->x_vector);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void poly_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_poly, 
+            (t_newmethod)poly_new,
+            (t_method)poly_free,
+            sizeof (t_poly),
+            CLASS_DEFAULT,
+            A_DEFFLOAT,
+            A_DEFFLOAT,
+            A_NULL);
+        
+    class_addFloat (c, poly_float);
+    
+    class_addMethod (c, (t_method)poly_stop,    sym_stop,   A_NULL);
+    class_addMethod (c, (t_method)poly_clear,   sym_clear,  A_NULL);
+    
+    poly_class = c;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
