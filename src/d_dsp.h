@@ -28,6 +28,18 @@ struct _signal {
     struct _signal      *s_nextUsed;
     };
 
+typedef struct _resample {
+    int                 r_type;
+    int                 r_downSample;
+    int                 r_upSample;
+    int                 r_vectorSize;
+    int                 r_coefficientsSize;
+    int                 r_bufferSize;
+    t_sample            *r_vector;
+    t_sample            *r_coefficients;
+    t_sample            *r_buffer;
+    } t_resample;
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
@@ -58,22 +70,6 @@ void    mayer_fft           (int n, t_sample *real, t_sample *imag);
 void    mayer_ifft          (int n, t_sample *real, t_sample *imag);
 void    mayer_realfft       (int n, t_sample *real);
 void    mayer_realifft      (int n, t_sample *real);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-typedef struct _resample {
-    int         r_type;
-    int         r_downSample;
-    int         r_upSample;
-    int         r_vectorSize;
-    int         r_coefficientsSize;
-    int         r_bufferSize;
-    t_sample    *r_vector;
-    t_sample    *r_coefficients;
-    t_sample    *r_buffer;
-    } t_resample;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

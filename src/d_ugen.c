@@ -35,41 +35,6 @@ static int ugen_loud;
 struct _vinlet;
 struct _voutlet;
 
-t_int *zero_perform(t_int *w)   /* zero out a vector */
-{
-    t_sample *out = (t_sample *)(w[1]);
-    int n = (int)(w[2]);
-    while (n--) *out++ = 0; 
-    return (w+3);
-}
-
-t_int *zero_perf8(t_int *w)
-{
-    t_sample *out = (t_sample *)(w[1]);
-    int n = (int)(w[2]);
-    
-    for (; n; n -= 8, out += 8)
-    {
-        out[0] = 0;
-        out[1] = 0;
-        out[2] = 0;
-        out[3] = 0;
-        out[4] = 0;
-        out[5] = 0;
-        out[6] = 0;
-        out[7] = 0;
-    }
-    return (w+3);
-}
-
-void dsp_add_zero(t_sample *out, int n)
-{
-    if (n&7)
-        dsp_add(zero_perform, 2, out, n);
-    else        
-        dsp_add(zero_perf8, 2, out, n);
-}
-
 /* ---------------------------- block~ ----------------------------- */
 
 /* The "block~ object maintains the containing canvas's DSP computation,
