@@ -21,6 +21,9 @@
 
 #define MAXLOGSIG           32
 
+#define PROLOGCALL 2
+#define EPILOGCALL 2
+
 extern t_pdinstance *pd_this;
 extern t_class *canvas_class;
 
@@ -224,10 +227,6 @@ static void block_bang(t_block *x)
     }
     else post_error ("bang to block~ or on-state switch~ has no effect");
 }
-
-
-#define PROLOGCALL 2
-#define EPILOGCALL 2
 
 static t_int *block_prolog(t_int *w)
 {
