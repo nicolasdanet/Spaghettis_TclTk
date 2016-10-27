@@ -213,6 +213,7 @@
 		37A402681C77524D00001FD3 /* s_midiAPI.c in Sources */ = {isa = PBXBuildFile; fileRef = 37A402671C77524D00001FD3 /* s_midiAPI.c */; };
 		37A7BBF31D030B45000C7AB5 /* m_string.c in Sources */ = {isa = PBXBuildFile; fileRef = 37A7BBF21D030B45000C7AB5 /* m_string.c */; };
 		37B145841D9E97A1003A354F /* x_atomoutlet.c in Sources */ = {isa = PBXBuildFile; fileRef = 37B145831D9E97A1003A354F /* x_atomoutlet.c */; };
+		37B1AA571DC1EE3E0017355A /* d_samplerate.c in Sources */ = {isa = PBXBuildFile; fileRef = 37B1AA561DC1EE3E0017355A /* d_samplerate.c */; };
 		37B6D30B1DBBB16000ECF049 /* x_sysexin.c in Sources */ = {isa = PBXBuildFile; fileRef = 37B6D30A1DBBB16000ECF049 /* x_sysexin.c */; };
 		37B9B6141DA949CE007FEB07 /* m_autorelease.c in Sources */ = {isa = PBXBuildFile; fileRef = 37B9B6131DA949CE007FEB07 /* m_autorelease.c */; };
 		37BA30821CD1DB0F0091113F /* g_object.c in Sources */ = {isa = PBXBuildFile; fileRef = 37BA30811CD1DB0F0091113F /* g_object.c */; };
@@ -575,6 +576,7 @@
 		37A404B71C789F6200001FD3 /* s_midi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = s_midi.h; path = src/s_midi.h; sourceTree = "<group>"; };
 		37A7BBF21D030B45000C7AB5 /* m_string.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_string.c; path = src/m_string.c; sourceTree = "<group>"; };
 		37B145831D9E97A1003A354F /* x_atomoutlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_atomoutlet.c; path = src/x_atomoutlet.c; sourceTree = "<group>"; };
+		37B1AA561DC1EE3E0017355A /* d_samplerate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_samplerate.c; path = src/d_samplerate.c; sourceTree = "<group>"; };
 		37B6D30A1DBBB16000ECF049 /* x_sysexin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_sysexin.c; path = src/x_sysexin.c; sourceTree = "<group>"; };
 		37B9B6131DA949CE007FEB07 /* m_autorelease.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_autorelease.c; path = src/m_autorelease.c; sourceTree = "<group>"; };
 		37BA30811CD1DB0F0091113F /* g_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_object.c; path = src/g_object.c; sourceTree = "<group>"; };
@@ -917,6 +919,7 @@
 				378971B61C4F716700263434 /* d_fft.c */,
 				378971B51C4F716700263434 /* d_fft_fftsg.c */,
 				3769632F1DBFB4C4001B91B5 /* d_utils.c */,
+				37B1AA491DC1EDE70017355A /* Objects */,
 			);
 			name = DSP;
 			sourceTree = "<group>";
@@ -1241,6 +1244,14 @@
 				37B145831D9E97A1003A354F /* x_atomoutlet.c */,
 			);
 			name = Shared;
+			sourceTree = "<group>";
+		};
+		37B1AA491DC1EDE70017355A /* Objects */ = {
+			isa = PBXGroup;
+			children = (
+				37B1AA561DC1EE3E0017355A /* d_samplerate.c */,
+			);
+			name = Objects;
 			sourceTree = "<group>";
 		};
 		37CD71BA1D9A9DDF00A61BD3 /* Atom */ = {
@@ -1658,6 +1669,7 @@
 				370793E71DBB55A700183F74 /* x_notein.c in Sources */,
 				37B6D30B1DBBB16000ECF049 /* x_sysexin.c in Sources */,
 				376963301DBFB4C4001B91B5 /* d_utils.c in Sources */,
+				37B1AA571DC1EE3E0017355A /* d_samplerate.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

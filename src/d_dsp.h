@@ -40,6 +40,27 @@ typedef struct _resample {
     t_sample            *r_buffer;
     } t_resample;
     
+typedef struct _block
+{
+    t_object x_obj;
+    int x_vecsize;      /* size of audio signals in this block */
+    int x_calcsize;     /* number of samples actually to compute */
+    int x_overlap;
+    int x_phase;        /* from 0 to period-1; when zero we run the block */
+    int x_period;       /* submultiple of containing canvas */
+    int x_frequency;    /* supermultiple of comtaining canvas */
+    int x_count;        /* number of times parent block has called us */
+    int x_chainonset;   /* beginning of code in DSP chain */
+    int x_blocklength;  /* length of dspchain for this block */
+    int x_epiloglength; /* length of epilog */
+    char x_switched;    /* true if we're acting as a a switch */
+    char x_switchon;    /* true if we're switched on */
+    char x_reblock;     /* true if inlets and outlets are reblocking */
+    int x_upsample;     /* upsampling-factor */
+    int x_downsample;   /* downsampling-factor */
+    int x_return;       /* stop right after this block (for one-shots) */
+} t_block;
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 

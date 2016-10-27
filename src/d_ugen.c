@@ -1,15 +1,13 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-/*  These routines build a copy of the DSP portion of a graph, which is
-    then sorted into a linear list of DSP operations which are added to
-    the DSP duty cycle called by the scheduler.  Once that's been done,
-    we delete the copy.  The DSP objects are represented by "ugenbox"
-    structures which are parallel to the DSP objects in the graph and
-    have vectors of siginlets and sigoutlets which record their
-    interconnections.
+/* 
+    Copyright (c) 1997-2016 Miller Puckette and others.
 */
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #include "m_pd.h"
 #include "m_core.h"
@@ -17,8 +15,6 @@
 #include "s_system.h"
 #include "g_graphics.h"
 #include "d_dsp.h"
-#include <stdlib.h>
-#include <stdarg.h>
 
 #define MAXLOGSIG           32
 
@@ -66,28 +62,7 @@ copies zeros to all signal outlets.
 */
 
 static int dsp_phase;
-static t_class *block_class;
-
-typedef struct _block
-{
-    t_object x_obj;
-    int x_vecsize;      /* size of audio signals in this block */
-    int x_calcsize;     /* number of samples actually to compute */
-    int x_overlap;
-    int x_phase;        /* from 0 to period-1; when zero we run the block */
-    int x_period;       /* submultiple of containing canvas */
-    int x_frequency;    /* supermultiple of comtaining canvas */
-    int x_count;        /* number of times parent block has called us */
-    int x_chainonset;   /* beginning of code in DSP chain */
-    int x_blocklength;  /* length of dspchain for this block */
-    int x_epiloglength; /* length of epilog */
-    char x_switched;    /* true if we're acting as a a switch */
-    char x_switchon;    /* true if we're switched on */
-    char x_reblock;     /* true if inlets and outlets are reblocking */
-    int x_upsample;     /* upsampling-factor */
-    int x_downsample;   /* downsampling-factor */
-    int x_return;       /* stop right after this block (for one-shots) */
-} t_block;
+t_class *block_class;
 
 static void block_set(t_block *x, t_float fvecsize, t_float foverlap,
     t_float fupsample);
@@ -1073,64 +1048,10 @@ t_signal *ugen_getiosig(int index, int inout)
     return (ugen_currentcontext->dc_iosigs[index]);
 }
 
-/* ------------------------ samplerate~~ -------------------------- */
-
-static t_class *samplerate_tilde_class;
-
-typedef struct _samplerate
-{
-    t_object x_obj;
-    t_float x_sr;
-    t_glist *x_canvas;
-} t_samplerate;
-
-static void *canvas_getblock (t_class *blockclass, t_glist **canvasp)
-{
-    t_glist *canvas = *canvasp;
-    t_gobj *g;
-    void *ret = 0;
-    for (g = canvas->gl_graphics; g; g = g->g_next)
-    {
-        if (g->g_pd == blockclass)
-            ret = g;
-    }
-    *canvasp = canvas->gl_parent;
-    return(ret);
-}
-
-static void samplerate_tilde_bang(t_samplerate *x)
-{
-    t_float srate = audio_getSampleRate();
-    t_glist *canvas = x->x_canvas;
-    while (canvas)
-    {
-        t_block *b = (t_block *)canvas_getblock(block_class, &canvas);
-        if (b) 
-            srate *= (t_float)(b->x_upsample) / (t_float)(b->x_downsample); 
-    }
-    outlet_float(x->x_obj.te_outlet, srate);
-}
-
-static void *samplerate_tilde_new(t_symbol *s)
-{
-    t_samplerate *x = (t_samplerate *)pd_new(samplerate_tilde_class);
-    outlet_new(&x->x_obj, &s_float);
-    x->x_canvas = canvas_getCurrent();
-    return (x);
-}
-
-static void samplerate_tilde_setup(void)
-{
-    samplerate_tilde_class = class_new(sym_samplerate__tilde__,
-        (t_newmethod)samplerate_tilde_new, 0, sizeof(t_samplerate), 0, 0);
-    class_addBang(samplerate_tilde_class, samplerate_tilde_bang);
-}
-
 /* -------------------- setup routine -------------------------- */
 
 void d_ugen_setup(void) 
 {
     block_tilde_setup();
-    samplerate_tilde_setup();
 }
 

@@ -187,6 +187,7 @@ void d_misc_setup           (void);
 void d_osc_setup            (void);
 void d_soundfile_setup      (void);
 void d_ugen_setup           (void);
+void samplerate_tilde_setup (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -340,6 +341,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     d_osc_setup();
     d_soundfile_setup();
     d_ugen_setup();
+    samplerate_tilde_setup();
     
     canvas_initialize();
     garray_initialize();
