@@ -239,6 +239,7 @@
 /* DSP. */
 
 #include "d_dsp.c"
+#include "d_signal.c"
 #include "d_ugen.c"
 #include "d_utils.c"
 #include "d_block.c"
