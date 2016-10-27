@@ -174,10 +174,10 @@ static void sigrfft_dsp(t_sigrfft *x, t_signal **sp)
         dsp_add(copy_perform, 3, in1, out1, n);
     dsp_add(sigrfft_perform, 2, out1, n);
     dsp_add(sigrfft_flip, 3, out1 + (n2+1), out2 + n2, n2-1);
-    dsp_add_zero(out1 + (n2+1), ((n2-1)&(~7)));
-    dsp_add_zero(out1 + (n2+1) + ((n2-1)&(~7)), ((n2-1)&7));
-    dsp_add_zero(out2 + n2, n2);
-    dsp_add_zero(out2, 1);
+    dsp_addZeroPerform(out1 + (n2+1), ((n2-1)&(~7)));
+    dsp_addZeroPerform(out1 + (n2+1) + ((n2-1)&(~7)), ((n2-1)&7));
+    dsp_addZeroPerform(out2 + n2, n2);
+    dsp_addZeroPerform(out2, 1);
 }
 
 static void sigrfft_setup(void)

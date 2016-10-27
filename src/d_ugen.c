@@ -667,7 +667,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
             if (scalar = object_getSignalValueAtIndex(u->u_obj, i))
                 dsp_add_scalarcopy(scalar, s3->s_vector, s3->s_blockSize);
             else
-                dsp_add_zero(s3->s_vector, s3->s_blockSize);
+                dsp_addZeroPerform(s3->s_vector, s3->s_blockSize);
             uin->i_signal = s3;
             s3->s_count = 1;
         }
@@ -993,7 +993,7 @@ void ugen_done_graph(t_dspcontext *dc)
                 t_signal *s3 = signal_new(parent_vecsize, parent_srate);
                 signal_setborrowed(*sigp, s3);
                 (*sigp)->s_count++;
-                dsp_add_zero(s3->s_vector, s3->s_blockSize);
+                dsp_addZeroPerform(s3->s_vector, s3->s_blockSize);
                 if (ugen_loud)
                     post("oops, belatedly set %lx->%lx", *sigp,
                         (*sigp)->s_borrowedFrom);

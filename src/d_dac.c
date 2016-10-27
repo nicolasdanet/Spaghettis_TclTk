@@ -171,7 +171,7 @@ static void adc_dsp(t_adc *x, t_signal **sp)
         else if (ch >= 0 && ch < audio_getChannelsIn())
             dsp_add_copy(audio_soundIn + AUDIO_DEFAULT_BLOCKSIZE*ch,
                 (*sp2)->s_vector, AUDIO_DEFAULT_BLOCKSIZE);
-        else dsp_add_zero((*sp2)->s_vector, AUDIO_DEFAULT_BLOCKSIZE);
+        else dsp_addZeroPerform((*sp2)->s_vector, AUDIO_DEFAULT_BLOCKSIZE);
     }    
 }
 

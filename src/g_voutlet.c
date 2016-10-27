@@ -271,7 +271,7 @@ void voutlet_dspEpilog (struct _voutlet *x,
     //
     if (parentSignals) {
         out = parentSignals[object_getIndexOfSignalOutlet (x->x_outlet)];
-        dsp_add_zero (out->s_vector, out->s_blockSize);
+        dsp_addZeroPerform (out->s_vector, out->s_blockSize);
     }
     //
     }

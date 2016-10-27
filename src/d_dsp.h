@@ -49,17 +49,21 @@ typedef t_int *(*t_perform)(t_int *args);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void    dsp_addZeroPerform (t_sample *s, int n);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void    signal_setborrowed  (t_signal *sig, t_signal *sig2);
 void    signal_makereusable (t_signal *sig);
 
 t_int   *plus_perform       (t_int *args);
-t_int   *zero_perform       (t_int *args);
 t_int   *copy_perform       (t_int *args);
 
 void    dsp_add_plus        (t_sample *in1, t_sample *in2, t_sample *out, int n);
 void    dsp_add_copy        (t_sample *in, t_sample *out, int n);
 void    dsp_add_scalarcopy  (t_float *in, t_sample *out, int n);
-void    dsp_add_zero        (t_sample *out, int n);
 
 void    dsp_add             (t_perform f, int n, ...);
 void    pd_fft              (t_float *buffer, int npoints, int inverse);
