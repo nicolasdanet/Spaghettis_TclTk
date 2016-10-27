@@ -8,11 +8,12 @@
 #X text 28 44 When Openpanel gets a "bang" an "Open file" browser appears
 on the screen. If you select a file \, its name appears on the outlet.
 ;
+#X text 285 289 updated for Pd version 0.40.;
 #X text 178 109 Starts open panel in current directory;
 #X msg 144 136 symbol /tmp;
 #X msg 146 161 symbol C:/;
 #X text 252 137 Starts in a specified directory;
 #X connect 0 0 2 0;
 #X connect 1 0 0 0;
-#X connect 8 0 0 0;
 #X connect 9 0 0 0;
+#X connect 10 0 0 0;

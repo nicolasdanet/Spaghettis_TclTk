@@ -1,7 +1,7 @@
 #N struct help-element-template float x float y array array1 help-element-array1-template
 ;
 #N struct help-element-array1-template float y;
-#N canvas 339 94 671 548 12;
+#N canvas 36 82 671 548 12;
 #X text 31 474 see also:;
 #N canvas 393 50 503 273 help-element-template 0;
 #X obj 27 76 plot array1 500 1 10 15 20;
@@ -9,9 +9,9 @@
 #X obj 24 15 struct help-element-template float x float y array array1
 help-element-array1-template;
 #X restore 421 450 pd help-element-template;
-#N canvas 250 262 292 163 help-element-data 0;
-#X scalar help-element-template 35 24 \; 0 \; 10 \; 62 \; 62 \; 20
-\; 10 \; 20 \; 70 \; 10 \; \;;
+#N canvas 2 79 292 163 help-element-data 1;
+#X scalar help-element-template 35 24 \; 0 \; 10 \; 0 \; 10 \; 20 \;
+10 \; 20 \; 70 \; 10 \; \;;
 #X restore 457 429 pd help-element-data;
 #N canvas 196 292 373 142 help-element-array1-template 0;
 #X obj 30 71 filledpolygon 0 0 0 -5 0 0 5 5 0 0 -5;
@@ -43,6 +43,7 @@ one \; indices out of range are quietly replaced by the nearest endpoint.
 ;
 #X text 335 254 click here first;
 #X obj 28 494 struct;
+#X text 414 517 updated for Pd version 0.47;
 #X msg 55 321 set help-element-template array1;
 #X text 89 299 set template and field name;
 #X text 35 195 If you don't know the template name you may specify
@@ -53,4 +54,4 @@ one \; indices out of range are quietly replaced by the nearest endpoint.
 #X connect 12 0 13 0;
 #X connect 13 0 14 0;
 #X connect 14 0 15 0;
-#X connect 24 0 13 0;
+#X connect 25 0 13 0;

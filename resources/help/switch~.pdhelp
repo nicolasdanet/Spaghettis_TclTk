@@ -1,4 +1,4 @@
-#N canvas 528 90 619 368 12;
+#N canvas 218 166 619 368 12;
 #X msg 382 133 \; metro 0;
 #X text 462 92 <-Click to start;
 #X text 455 137 <-Click to stop;
@@ -6,7 +6,8 @@
 and control block size;
 #N canvas 15 32 598 301 switched 1;
 #X obj 265 148 switch~;
-#X floatatom 75 168 4 0 0 0 - - -, f 4;
+#X floatatom 265 121 1 0 0;
+#X floatatom 75 168 4 0 0;
 #X obj 75 104 noise~;
 #X obj 75 136 env~ 512;
 #X text 25 26 DSP in this subwindow is turned on and off by the switch~
@@ -18,11 +19,9 @@ If you supply arguments to switch \, the patch will be switched AND
 reblocked.;
 #X text 31 258 Only one switch~ or block~ may appear in any window.
 ;
-#X obj 265 112 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
-1;
-#X connect 2 0 3 0;
-#X connect 3 0 1 0;
-#X connect 7 0 0 0;
+#X connect 1 0 0 0;
+#X connect 3 0 4 0;
+#X connect 4 0 2 0;
 #X restore 139 124 pd switched;
 #N canvas 13 421 564 200 blocked 1;
 #X obj 184 35 block~ 1024 4;
@@ -35,7 +34,8 @@ than your superpatch. This is useful for writing FFT based patches
 #X msg 382 87 \; pd dsp 1;
 #X obj 382 61 loadbang;
 #X text 38 82 see the subpatches for explanation:;
-#X text 50 193 BUG! -- dac~ and adc~ work only with a blocksize of
+#X text 362 334 updated for Pd version 0.34;
+#X text 34 195 BUG! -- dac~ and adc~ work only with a blocksize of
 64 If you want to reblock audio computation \, do so in a sub-patch
 and keep the adc~ and dac~ objects in a super-patch. Also \, you can't
 send~ or receive~ between windows with different block sizes or overlapping.

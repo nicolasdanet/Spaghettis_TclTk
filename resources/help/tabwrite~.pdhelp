@@ -21,6 +21,7 @@ documentation \, and these objects:;
 #X text 153 261 stop recording;
 #X msg 47 236 start 500;
 #X text 147 236 start in middle of table;
+#X text 370 420 updated for Pd version 0.40.;
 #X text 104 12 - write a signal in an array;
 #X obj 27 187 phasor~ 200;
 #X text 148 209 start recording;
@@ -36,4 +37,4 @@ stopping occur on block boundaries \, typically multiples of 64 samples
 #X connect 5 0 2 0;
 #X connect 14 0 2 0;
 #X connect 16 0 2 0;
-#X connect 19 0 2 0;
+#X connect 20 0 2 0;

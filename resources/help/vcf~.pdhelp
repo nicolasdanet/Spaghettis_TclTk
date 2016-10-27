@@ -28,6 +28,7 @@ by messages. More expensive but more powerful than the bp~ bandpass
 filter.;
 #X msg 544 67 \; pd dsp 0;
 #X msg 544 28 \; pd dsp 1;
+#X text 419 509 updated for Pd version 0.46;
 #X text 9 129 vcf~ is implemented as a one-pole complex filter with
 outlets for the real and imaginary value. These may be used as bandpass
 and lowpass filter outputs \, or combined to allow other possibilities.

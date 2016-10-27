@@ -1,4 +1,4 @@
-#N canvas 383 184 557 321 12;
+#N canvas 343 45 557 321 12;
 #X text 88 11 -- declare the fields in a data structure.;
 #N canvas 345 476 638 171 help-template1 0;
 #X obj 60 21 struct struct-1 float x float y symbol dog array weasel
@@ -18,6 +18,7 @@ a symbol and "weasel" is an array of objects of structure "struct-2".
 #X text 36 195 see also:;
 #X obj 141 215 drawnumber;
 #X obj 236 216 plot;
+#X text 281 290 updated for Pd version 0.35;
 #X obj 21 10 struct;
 #X text 16 49 There should be one "struct" object in each Pd window
 you are using as a data structure template. The arguments specify the

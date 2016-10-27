@@ -1,4 +1,4 @@
-#N canvas 159 101 796 472 12;
+#N canvas 23 52 796 472 12;
 #X text 351 276 1st argument: name of delay line;
 #X floatatom 116 253 0 0 0 0 - - -;
 #X text 151 255 float input (delay time in ms);
@@ -19,13 +19,14 @@ delay line.;
 #X obj 24 16 delread~;
 #X text 424 176 input to delay line;
 #X obj 383 201 sig~;
+#X text 433 443 updated for Pd version 0.33;
 #X text 89 16 - read a signal from a delay line;
 #X text 21 133 Note: if the delaywrite~ runs after the delread~ the
 minimum delay is actually one DSP period \, not zero.;
 #X text 351 292 2nd argument: (initial) delay time in ms;
 #X obj 126 444 delwrite~;
-#X obj 217 444 vd~;
 #X text 36 443 see also:;
+#X obj 217 444 delread4~;
 #X connect 1 0 13 0;
 #X connect 7 0 16 0;
 #X connect 8 0 9 0;

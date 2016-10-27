@@ -1,6 +1,6 @@
 #N struct template2 float x float y;
 #N struct template1 float x float y float z;
-#N canvas 459 22 698 700 12;
+#N canvas 459 64 698 764 12;
 #X text 19 635 see also:;
 #X obj 21 10 pointer;
 #X text 95 10 -- remember the location of a scalar in a list;
@@ -57,6 +57,7 @@ to it are marked invalid.;
 #X text 52 468 output;
 #X obj 354 656 struct;
 #X msg 71 313 vnext 1;
+#X text 453 665 updated for Pd version 0.45;
 #X msg 71 377 send pointer-help;
 #X text 109 256 output current value;
 #X text 119 274 move forward one item and output pointer \; if we reach
@@ -79,5 +80,5 @@ to make sense).;
 #X connect 21 2 24 0;
 #X connect 21 3 25 0;
 #X connect 34 0 12 0;
-#X connect 35 0 12 0;
-#X connect 39 0 40 0;
+#X connect 36 0 12 0;
+#X connect 40 0 41 0;

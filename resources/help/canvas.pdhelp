@@ -1,4 +1,4 @@
-#N canvas 410 65 575 525 12;
+#N canvas 102 88 575 525 12;
 #X obj 51 48 table;
 #X text 108 49 - Array of numbers;
 #X obj 44 312 table help-tab1 25;
@@ -17,6 +17,7 @@ item.;
 #N canvas 1 51 450 300 (subpatch) 0;
 #X restore 51 23 pd;
 #X text 108 24 - subpatch;
+#X text 342 494 updated for Pd version 0.46;
 #X text 17 462 see also:;
 #X obj 108 461 array;
 #N canvas 1 51 471 242 foo 0;

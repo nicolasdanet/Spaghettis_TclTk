@@ -1,4 +1,4 @@
-#N canvas 279 177 538 357 10;
+#N canvas 11 201 538 357 10;
 #X obj 1 1 cnv 8 100 60 empty empty bng 20 20 1 18 -262144 -1109 0
 ;
 #X text 10 288 (c) musil@iem.kug.ac.at;
@@ -24,13 +24,14 @@
 -1;
 #X obj 3 130 bng 15 250 50 0 empty empty empty 8 -8 0 10 -262144 -1
 -1;
-#X obj 36 173 bng 50 950 50 1 foo5_snd foo5_rcv big-bang 63 2 0 12
+#X obj 36 173 bng 50 950 50 1 foo5_snd foo5_rcv big-bang 63 2 192 12
 -262131 -260818 -143491;
 #X msg 36 53 33;
 #X msg 50 75 -3.14;
 #X msg 73 117 11 22 33.33;
 #X msg 63 95 open xxx;
 #X msg 96 142 funny;
+#X text 101 11 gui-bang:;
 #X obj 202 135 s foo5_rcv;
 #X obj 202 155 r foo5_snd;
 #X obj 202 115 bng 15 250 50 0 empty empty empty 8 -8 0 10 -262144
@@ -40,25 +41,25 @@
 #X msg 4 53 0;
 #X text 125 205 UP- \, DOWN- \, LEFT- or RIGHT-key;
 #X text 124 216 for moving selected gui-objects;
-#N canvas 129 22 699 530 edit 0;
+#N canvas 425 170 699 530 edit 0;
 #X obj 39 197 f;
 #X msg 17 176 bang;
-#X floatatom 55 175 3 63 88 0 - - -, f 3;
-#X floatatom 90 197 3 0 37 0 - - -, f 3;
+#X floatatom 55 175 3 63 88;
+#X floatatom 90 197 3 0 37;
 #X obj 39 220 pack 0 0;
 #X text 117 197 y-label;
 #X text 83 175 x-label;
-#X floatatom 259 143 3 8 75 0 - - -, f 3;
+#X floatatom 259 143 3 8 75;
 #X text 286 143 size;
 #X obj 279 236 f;
 #X msg 257 215 bang;
-#X floatatom 295 214 3 -10 10 0 - - -, f 3;
-#X floatatom 330 236 3 -10 10 0 - - -, f 3;
+#X floatatom 295 214 3 -10 10;
+#X floatatom 330 236 3 -10 10;
 #X obj 279 259 pack 0 0;
 #X obj 304 348 f;
 #X msg 282 327 bang;
-#X floatatom 320 326 3 20 90 0 - - -, f 3;
-#X floatatom 355 348 3 150 200 0 - - -, f 3;
+#X floatatom 320 326 3 20 90;
+#X floatatom 355 348 3 150 200;
 #X obj 304 371 pack 0 0;
 #X text 323 214 x-delta;
 #X text 357 236 y-delta;
@@ -66,8 +67,8 @@
 #X text 382 348 y-position;
 #X obj 59 312 f;
 #X msg 37 291 bang;
-#X floatatom 75 290 3 0 2 0 - - -, f 3;
-#X floatatom 110 312 3 4 36 0 - - -, f 3;
+#X floatatom 75 290 3 0 2;
+#X floatatom 110 312 3 4 36;
 #X obj 59 335 pack 0 0;
 #X text 103 290 font;
 #X text 139 312 height;
@@ -87,8 +88,8 @@
 #X msg 512 435 \; foo5_rcv init 1;
 #X obj 493 260 f;
 #X msg 471 239 bang;
-#X floatatom 509 238 4 10 100 0 - - -, f 4;
-#X floatatom 544 261 5 100 3000 0 - - -, f 5;
+#X floatatom 509 238 4 10 100;
+#X floatatom 544 261 5 100 3000;
 #X obj 493 283 pack 0 0;
 #X msg 493 308 \; foo5_rcv flashtime \$1 \$2;
 #X text 548 237 interrupt-time;
@@ -99,9 +100,9 @@
 #X obj 47 114 pack 0 0 0;
 #X obj 47 86 f;
 #X msg 24 38 bang;
-#X floatatom 63 36 3 0 29 0 - - -, f 3;
-#X floatatom 79 56 3 0 29 0 - - -, f 3;
-#X floatatom 112 72 3 0 29 0 - - -, f 3;
+#X floatatom 63 36 3 0 29;
+#X floatatom 79 56 3 0 29;
+#X floatatom 112 72 3 0 29;
 #X text 91 36 background;
 #X text 106 56 front-color;
 #X text 140 73 label-color;
@@ -194,9 +195,9 @@
 #X connect 36 2 29 0;
 #X connect 36 3 35 0;
 #X restore 285 96 pd RGB_____________;
-#X floatatom 327 65 3 0 255 0 - - -, f 3;
-#X floatatom 370 65 3 0 255 0 - - -, f 3;
-#X floatatom 413 66 3 0 255 0 - - -, f 3;
+#X floatatom 327 65 3 0 255;
+#X floatatom 370 65 3 0 255;
+#X floatatom 413 66 3 0 255;
 #X text 34 10 preset-colors;
 #X text 296 7 RGB-colors;
 #X text 327 47 red;
@@ -245,9 +246,11 @@
 #X connect 70 0 68 2;
 #X connect 71 0 68 3;
 #X restore 297 144 pd edit;
-#X obj 248 34 bng 15 250 50 0 aaa aaa empty 20 8 0 8 -262144 -1 -1
+#X obj 248 34 bng 15 250 50 0 aaa aaa empty 20 8 192 8 -262144 -1 -1
 ;
+#X text 185 312 updated for Pd version 0.35;
 #X text 27 313 graz \, austria 2002;
+#X obj 180 11 x_all_guis aaa bbb ccc ddd eee fff ggg hhh iii;
 #X connect 6 0 5 0;
 #X connect 8 0 9 0;
 #X connect 9 0 7 0;
@@ -257,6 +260,6 @@
 #X connect 12 0 9 0;
 #X connect 13 0 9 0;
 #X connect 14 0 9 0;
-#X connect 16 0 18 0;
-#X connect 17 0 15 0;
-#X connect 19 0 9 0;
+#X connect 17 0 19 0;
+#X connect 18 0 16 0;
+#X connect 20 0 9 0;

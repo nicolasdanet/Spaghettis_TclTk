@@ -43,6 +43,7 @@
 #X msg 136 511 set - y;
 #X obj 461 330 get - x;
 #X floatatom 461 355 5 0 0 0 - - -, f 5;
+#X text 390 593 updated for Pd version 0.47;
 #X text 22 378 If there are zero or one data fields specified \, you
 can use the "set" message to change the template and/or field name
 on the fly:, f 47;

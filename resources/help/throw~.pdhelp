@@ -1,6 +1,6 @@
 #N canvas 80 120 664 313 12;
 #X obj 97 159 throw~ signal1;
-#X floatatom 268 211 0 0 0 0 - - -;
+#X floatatom 268 211 0 0 0;
 #X obj 90 193 sig~ 50;
 #X obj 268 181 snapshot~;
 #X obj 90 221 throw~ signal1;
@@ -12,14 +12,14 @@
 #X obj 551 88 loadbang;
 #X msg 561 110 \; pd dsp 1;
 #X obj 551 151 metro 200;
-#X text 33 48 Any number of throw~ objects can add into one catch~
-object (but two catch~ objects cannot share the same name.);
-#X floatatom 401 206 0 0 0 0 - - -;
+#X text 33 48 Any number of throw~ objects can add into one catch~ object (but two catch~ objects cannot share the same name.);
+#X floatatom 401 206 0 0 0;
 #X obj 402 182 snapshot~;
 #X obj 402 134 catch~ signal2;
 #X msg 113 111 set signal2;
 #X msg 114 135 set signal1;
 #X text 75 252 You can redirect throw~ via a "set" message.;
+#X text 410 283 updated for Pd version 0.33;
 #X connect 2 0 4 0;
 #X connect 3 0 1 0;
 #X connect 5 0 0 0;

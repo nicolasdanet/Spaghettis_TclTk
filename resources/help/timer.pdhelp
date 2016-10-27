@@ -1,4 +1,4 @@
-#N canvas 131 106 601 508 12;
+#N canvas 58 53 601 508 12;
 #X msg 67 190 bang;
 #X msg 30 115 bang;
 #X obj 30 220 timer;
@@ -8,6 +8,7 @@
 #X text 12 48 The timer object measures elapsed logical time. Logical
 time moves forward as if all computation were instantaneous and as
 if all "delay" and "metro" objects were exact.;
+#X text 337 458 updated for Pd version 0.45;
 #X text 27 277 Output is in the specified time units \, milliseconds
 by default., f 63;
 #X text 105 191 Bang in inlet: output elapsed time;
@@ -34,10 +35,10 @@ to that tempo:, f 37;
 #X connect 0 0 2 1;
 #X connect 1 0 2 0;
 #X connect 2 0 5 0;
-#X connect 13 0 19 0;
-#X connect 14 0 22 1;
-#X connect 17 0 22 0;
-#X connect 19 0 21 0;
-#X connect 19 1 17 0;
-#X connect 21 0 14 0;
-#X connect 22 0 18 0;
+#X connect 14 0 20 0;
+#X connect 15 0 23 1;
+#X connect 18 0 23 0;
+#X connect 20 0 22 0;
+#X connect 20 1 18 0;
+#X connect 22 0 15 0;
+#X connect 23 0 19 0;

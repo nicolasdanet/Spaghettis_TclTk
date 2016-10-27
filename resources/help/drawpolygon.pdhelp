@@ -1,6 +1,6 @@
 #N struct help-drawpolygon-template float x float y float cat float
 dog float weasel;
-#N canvas 469 80 537 188 12;
+#N canvas 16 28 537 188 12;
 #X text 13 130 see also:;
 #X obj 95 149 drawnumber;
 #X obj 191 149 plot;
@@ -37,9 +37,10 @@ line of height "weasel".;
 #X text 38 127 - optional "-x" flag to inhibit selecting the object
 when the shape is clicked on in "edit" mode;
 #X restore 240 92 pd help-drawpolygon-template;
-#N canvas 220 341 384 178 help-drawpolygon-data 1;
+#N canvas 11 270 384 178 help-drawpolygon-data 1;
 #X scalar help-drawpolygon-template 50 40 30 9 80 \;;
 #X scalar help-drawpolygon-template 150 40 -20 90 50 \;;
 #X coords 0 178 1 177 0 0 0;
 #X restore 240 118 pd help-drawpolygon-data;
 #X obj 34 149 struct;
+#X text 272 166 updated for Pd version 0.40.;

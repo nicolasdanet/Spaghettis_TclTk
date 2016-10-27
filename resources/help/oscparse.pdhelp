@@ -3,6 +3,7 @@
 #X text 52 663 see also:;
 #X obj 140 663 oscformat;
 #X obj 224 663 netreceive;
+#X text 435 666 updated for Pd version 0.46;
 #X obj 171 599 print parse-output;
 #X obj 314 663 list;
 #X obj 419 521 netreceive -u -b;
@@ -40,13 +41,13 @@ use the OSC objects from mrpeach which have more features than these.
 #X text 42 356 OSC messages may be combined in "bundles". If oscparse
 receives a bundle it simply parses all the messages in the bundle in
 the order they appear \, and ignores the bundle's time tag.;
-#X connect 0 0 4 0;
-#X connect 6 0 0 0;
-#X connect 7 0 6 0;
-#X connect 8 0 6 0;
-#X connect 10 0 12 0;
-#X connect 12 0 0 0;
-#X connect 12 0 15 0;
+#X connect 0 0 5 0;
+#X connect 7 0 0 0;
+#X connect 8 0 7 0;
+#X connect 9 0 7 0;
+#X connect 11 0 13 0;
 #X connect 13 0 0 0;
-#X connect 13 0 15 0;
-#X connect 14 0 13 0;
+#X connect 13 0 16 0;
+#X connect 14 0 0 0;
+#X connect 14 0 16 0;
+#X connect 15 0 14 0;

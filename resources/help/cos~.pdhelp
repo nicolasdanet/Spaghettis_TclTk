@@ -3,7 +3,7 @@
 #X obj 23 200 cos~;
 #X obj 23 249 snapshot~;
 #X obj 23 152 sig~;
-#X floatatom 23 275 7 0 0 0 - - -, f 7;
+#X floatatom 23 275 7 0 0 0 - - -;
 #X obj 23 125 * 0.01;
 #X floatatom 23 98 0 0 0 0 - - -;
 #X obj 90 215 metro 500;
@@ -23,6 +23,7 @@
 #X text 13 41 The cos~ object outputs the cosine of two pi times its
 signal input. So -1 \, 0 \, 1 and 2 give 1 out \, 0.5 gives -1 \, and
 so on.;
+#X text 411 298 updated for Pd version 0.41;
 #X connect 1 0 2 0;
 #X connect 2 0 4 0;
 #X connect 2 0 4 0;

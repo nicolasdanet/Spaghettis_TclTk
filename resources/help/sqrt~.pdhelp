@@ -1,4 +1,4 @@
-#N canvas 182 132 778 399 12;
+#N canvas 813 199 685 380 12;
 #X obj 71 201 metro 500;
 #X obj 71 176 r metro;
 #X msg 575 106 \; metro 0;
@@ -17,6 +17,10 @@
 #X text 18 45 sqrt~ takes the approximate square root of the incoming
 signal \, using a fast \, approximate algorithm which is probably accurate
 to about 120 dB (20 bits).;
+#X text 226 196 An older object \, q8_sqrt \, is included in Pd for
+back compatibilty but should probably not be used. It only gives about
+8 bit accuracy., f 45;
+#X text 434 332 updated for Pd version 0.47;
 #X connect 0 0 10 0;
 #X connect 1 0 0 0;
 #X connect 1 0 0 0;

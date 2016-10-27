@@ -22,6 +22,7 @@ with the value of the filtered signal on the right.;
 #X msg 119 161 set 0 0;
 #X msg 120 186 clear;
 #X obj 15 170 osc~ 5512.5;
+#X text 422 337 updated for Pd version-0.30;
 #X text 189 163 set internal state;
 #X text 187 185 ... or just clear it;
 #X connect 3 0 4 0;

@@ -1,6 +1,6 @@
 #N canvas 430 114 568 497 12;
 #X obj 24 451 snapshot~;
-#X floatatom 24 476 5 0 0 0 - - -, f 5;
+#X floatatom 24 476 5 0 0 0 - - -;
 #X obj 33 425 metro 100;
 #X obj 19 7 samphold~;
 #X text 96 6 - sample and hold unit;
@@ -10,8 +10,8 @@ its right input decreases in value (as a phasor~ does each period \,
 for example.) Both inputs are audio signals.;
 #X obj 59 340 sig~;
 #X obj 116 376 sig~;
-#X floatatom 59 315 3 0 0 0 - - -, f 3;
-#X floatatom 116 355 3 0 0 0 - - -, f 3;
+#X floatatom 59 315 3 0 0 0 - - -;
+#X floatatom 116 355 3 0 0 0 - - -;
 #X msg 24 212 set 34;
 #X msg 37 281 reset;
 #X text 89 210 set output to a number;
@@ -21,6 +21,7 @@ for example.) Both inputs are audio signals.;
 #X text 111 242 reset previous value;
 #X text 100 292 to force the next sample;
 #X obj 33 403 loadbang;
+#X text 320 472 updated for version 0.39;
 #X text 111 256 for control inlet;
 #X text 99 278 reset to default 1e+20;
 #X text 14 82 The "set" message sets the output value (which continues
@@ -42,4 +43,4 @@ sampled.;
 #X connect 12 0 5 0;
 #X connect 16 0 5 0;
 #X connect 19 0 2 0;
-#X connect 19 0 23 0;
+#X connect 19 0 24 0;

@@ -1,7 +1,7 @@
 #N struct help-setsize-template float x float y array array1 help-setsize-array1-template
 ;
 #N struct help-setsize-array1-template float y;
-#N canvas 382 144 666 517 12;
+#N canvas 490 274 666 517 12;
 #X text 32 443 see also:;
 #N canvas 393 50 495 265 help-setsize-template 0;
 #X obj 27 174 filledpolygon 509 509 0 -10 -10 10 -10 10 10 -10 10;
@@ -40,13 +40,14 @@ are initialized to default values.;
 #X msg 565 422 bang;
 #X text 298 424 click to reload from file -->;
 #X text 309 222 click here first;
-#N canvas 460 61 439 176 readit 1;
+#N canvas 458 61 439 176 readit 1;
 #X msg 66 65 \; pd-help-setsize-data read setsize.txt;
 #X obj 107 18 inlet;
 #X msg 62 123 \; pd-help-setsize-data write setsize.txt;
 #X connect 1 0 0 0;
 #X restore 565 448 pd readit;
 #X obj 29 463 struct;
+#X text 417 479 updated for Pd version 0.47;
 #X text 67 250 set template and field name;
 #X text 20 154 If you don't know the template name you may specify
 "-" \, in which case the object will figure out the template name itself
@@ -56,4 +57,4 @@ are initialized to default values.;
 #X connect 7 0 6 0;
 #X connect 8 0 10 0;
 #X connect 19 0 22 0;
-#X connect 26 0 10 0;
+#X connect 27 0 10 0;

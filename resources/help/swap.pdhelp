@@ -1,4 +1,4 @@
-#N canvas 260 30 615 593 12;
+#N canvas 475 187 615 593 12;
 #X msg 72 167 bang;
 #X floatatom 72 292 0 0 0 0 - - -;
 #X floatatom 84 200 0 0 0 0 - - -;
@@ -18,9 +18,10 @@
 objects like this:;
 #X obj 72 491 swap;
 #X obj 72 519 -;
-#X floatatom 72 541 5 0 0 0 - - -, f 5;
-#X floatatom 103 469 3 0 0 0 - - -, f 3;
-#X floatatom 72 469 3 0 0 0 - - -, f 3;
+#X floatatom 72 541 5 0 0 0 - - -;
+#X floatatom 103 469 3 0 0 0 - - -;
+#X floatatom 72 469 3 0 0 0 - - -;
+#X text 291 549 updated for Pd version 0.41;
 #X text 32 52 The swap object swaps the positions of two incoming numbers.
 The number coming in through the right inlet will be sent to the left
 outlet and the number coming in left will come out right. Only the

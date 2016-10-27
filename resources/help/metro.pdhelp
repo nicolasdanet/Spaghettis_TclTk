@@ -9,6 +9,7 @@
 #X msg 49 194 stop;
 #X text 99 181 zero or "stop" to stop.;
 #X text 150 268 right inlet sets the rate in msec per tick.;
+#X text 377 471 Updated for Pd version 0.45;
 #X text 121 8 - metronome;
 #X text 23 35 The metro object sends a series of bangs at regular time
 intervals. The right inlet takes the value in milliseconds between
@@ -34,12 +35,12 @@ at 120 beats per minute:, f 37;
 -1 -1;
 #X obj 220 435 delay;
 #X text 50 428 for details on tempo setting \, see:, f 20;
-#X connect 0 0 12 0;
+#X connect 0 0 13 0;
 #X connect 2 0 0 1;
 #X connect 3 0 0 0;
 #X connect 5 0 0 0;
 #X connect 6 0 0 0;
 #X connect 7 0 0 0;
-#X connect 16 0 0 0;
-#X connect 21 0 23 0;
-#X connect 22 0 21 0;
+#X connect 17 0 0 0;
+#X connect 22 0 24 0;
+#X connect 23 0 22 0;

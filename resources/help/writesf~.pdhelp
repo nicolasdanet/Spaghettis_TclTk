@@ -1,4 +1,4 @@
-#N canvas 146 65 775 631 12;
+#N canvas 146 65 733 567 12;
 #X msg 592 11 \; pd dsp 1;
 #X msg 141 163 print;
 #X msg 53 83 bang;
@@ -13,6 +13,7 @@
 #X obj 131 207 writesf~ 2;
 #X msg 131 31 open /tmp/foo.wav;
 #X obj 131 538 soundfiler;
+#X text 485 540 updated for Pd version 0.37;
 #X text 36 539 see also:;
 #X obj 145 185 osc~ 440;
 #X text 34 257 writesf~ creates a subthread whose task is to write
@@ -43,6 +44,6 @@ but the file will _not_ be resampled.);
 #X connect 4 0 11 0;
 #X connect 5 0 4 0;
 #X connect 12 0 11 0;
-#X connect 15 0 11 0;
-#X connect 17 0 11 0;
-#X connect 21 0 11 0;
+#X connect 16 0 11 0;
+#X connect 18 0 11 0;
+#X connect 22 0 11 0;

@@ -15,7 +15,7 @@
 #X text 267 233 Remaining args are names of fields.;
 #X obj 31 660 pointer;
 #X msg 197 150 traverse pd-help-set-data \, next;
-#N canvas 871 161 276 122 help-set-data 0;
+#N canvas 2 79 276 122 help-set-data 1;
 #X scalar help-set-template1 39 23 dog \;;
 #X scalar help-set-template1 99 73 cat \;;
 #X restore 414 639 pd help-set-data;
@@ -45,6 +45,7 @@ and numbers in the same "set" object.), f 56;
 \; the remaining inlets set numeric fields. Symbols are handled specially
 \, as shown below. Arrays are accessed using the "elemen" object \,
 and lists using "text" objects. Only the leftmost inlet is "hot".;
+#X text 341 688 updated for Pd version 0.47;
 #X text 39 443 You can use the template "-" as a wild card (this may
 be slower than if you use a specific template name). Also \, if there
 are zero or one fields specified \, you can send a "set" message to
@@ -68,10 +69,10 @@ set a new template name and field name:;
 #X connect 28 0 27 0;
 #X connect 29 0 28 0;
 #X connect 30 0 28 0;
-#X connect 36 0 34 0;
-#X connect 37 0 38 0;
-#X connect 38 0 35 1;
-#X connect 38 0 34 1;
-#X connect 39 0 35 0;
-#X connect 40 0 35 0;
-#X connect 41 0 35 0;
+#X connect 37 0 35 0;
+#X connect 38 0 39 0;
+#X connect 39 0 36 1;
+#X connect 39 0 35 1;
+#X connect 40 0 36 0;
+#X connect 41 0 36 0;
+#X connect 42 0 36 0;

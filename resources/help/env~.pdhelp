@@ -4,7 +4,7 @@
 #X text 120 16 - envelope follower;
 #X obj 11 209 osc~ 400;
 #X obj 11 236 *~;
-#X floatatom 103 211 3 -99 300 0 - - -, f 3;
+#X floatatom 103 211 3 -99 300 0 - - -;
 #X obj 103 235 dbtorms;
 #X text 9 46 The env~ object takes a signal and outputs its RMS amplitude
 in dB (with 1 normalized to 100 dB.) Output is bounded below by zero.
@@ -12,6 +12,7 @@ in dB (with 1 normalized to 100 dB.) Output is bounded below by zero.
 #X text 141 209 <- set peak-to-peak amplitude here in dB.;
 #X text 57 333 <- the output is RMS amplitude which (for a sinusoid)
 is about 3 dB below peak-to-peak amplitude.;
+#X text 359 380 updated for Pd version 0.40.;
 #X obj 11 269 env~ 16384 8192;
 #X text 160 259 creation arguments:;
 #X text 158 277 1 window size in samples (1024 default);
@@ -23,8 +24,8 @@ size in samples \, and the period (the number of samples between analyses).
 The latter should normally be a multiple of the DSP block size \, although
 this isn't enforced.;
 #X connect 3 0 4 0;
-#X connect 4 0 10 0;
+#X connect 4 0 11 0;
 #X connect 5 0 6 0;
 #X connect 6 0 4 1;
-#X connect 10 0 0 0;
-#X connect 10 0 0 0;
+#X connect 11 0 0 0;
+#X connect 11 0 0 0;

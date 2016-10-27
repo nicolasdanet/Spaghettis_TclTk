@@ -1,5 +1,5 @@
 #N canvas 241 181 652 514 12;
-#N canvas 0 22 600 400 (subpatch) 0;
+#N canvas 0 0 600 400 (subpatch) 0;
 #X restore 23 13 pd;
 #X text 57 14 - subpatch;
 #X obj 180 13 inlet;
@@ -30,7 +30,7 @@ objects \, etc \, in the subpatch (open the patch below to see them.)
 #X obj 94 444 block~;
 #X obj 371 307 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
-#N canvas 406 76 634 613 up/downsampling 0;
+#N canvas 868 141 634 613 up/downsampling 0;
 #X obj 29 395 print~;
 #X obj 47 369 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
 -1;
@@ -40,7 +40,7 @@ objects \, etc \, in the subpatch (open the patch below to see them.)
 #X obj 276 395 print~;
 #X obj 294 369 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
-#N canvas 0 22 450 300 (subpatch) 0;
+#N canvas 0 0 450 300 (subpatch) 0;
 #X array \$0-tab 64 float 3;
 #A 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
@@ -140,6 +140,9 @@ command line or by a message:;
 #X restore 50 279 pd subpatch-with-inlets-and-outlets;
 #X text 193 368 <- here are some ugly details on;
 #X text 219 386 up/downsampling for inlet~ and outlet~;
+#X text 390 435 updated for Pd version 0.44;
+#X text 183 470 (documents new default upsampling behavior for reblocked
+inlet~ and outlet~.);
 #X connect 14 0 24 1;
 #X connect 15 0 24 0;
 #X connect 22 0 13 0;

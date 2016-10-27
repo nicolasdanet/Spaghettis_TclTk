@@ -1,5 +1,5 @@
 #N canvas 174 90 458 270 12;
-#X floatatom 77 178 4 0 0 0 - - -, f 4;
+#X floatatom 77 178 4 0 0;
 #X obj 77 111 noise~;
 #X obj 167 149 print~;
 #X msg 167 123 bang;
@@ -7,6 +7,7 @@
 #X msg 282 114 \; pd dsp 1;
 #X obj 77 150 env~ 4096;
 #X text 67 204 RMS in dB;
+#X text 171 242 updated for Pd version 0.33;
 #X obj 20 11 noise~;
 #X text 84 11 - uniformly distributed white noise;
 #X text 38 49 the output range is -1 to 1...;

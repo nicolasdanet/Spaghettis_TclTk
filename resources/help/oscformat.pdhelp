@@ -1,4 +1,4 @@
-#N canvas 48 22 786 752 12;
+#N canvas 48 64 758 768 12;
 #X text 36 11 oscformat - convert lists to Open Sound Control (OSC)
 packets, f 61;
 #X msg 72 560 format b;
@@ -27,6 +27,7 @@ below the message will contain 'float' and 'string' data.;
 #X obj 335 330 list trim;
 #X obj 180 327 print reassembled;
 #X text 25 736 see also:;
+#X text 381 733 updated for Pd version 0.46;
 #X obj 267 736 list;
 #X obj 113 736 oscparse;
 #X obj 197 736 netsend;
@@ -75,4 +76,4 @@ between floats and integers \, nor to see blobs unambiguously., f
 #X connect 21 0 20 0;
 #X connect 22 0 23 0;
 #X connect 23 0 20 0;
-#X connect 33 0 14 0;
+#X connect 34 0 14 0;

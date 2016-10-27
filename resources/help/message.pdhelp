@@ -1,4 +1,4 @@
-#N canvas 286 23 700 661 12;
+#N canvas 70 162 648 546 12;
 #X msg 67 10 message boxes;
 #X text 34 33 Message boxes hold one or more message. Anytime the message
 box receives any message at all \, the messages in the box are all
@@ -15,7 +15,7 @@ the printout window:;
 #X text 239 139 <--- message;
 #X text 223 165 <--- object (different border);
 #X text 14 197 You can separate multiple messages by commas. Also \,
-you can use "\$1" \, "\$2" \, etc. to make variable messages:;
+you can use "$1" \, "$2" \, etc. to make variable messages:;
 #X text 14 323 Finally \, if you separate messages by a semicolon instead
 of a comma \, the following message(s) are re-routed to named objects
 such as "receives":;
@@ -24,9 +24,10 @@ such as "receives":;
 #X floatatom 253 402 0 0 0 0 - - -;
 #X floatatom 252 449 0 0 0 0 - - -;
 #X obj 252 425 receive another-receiver;
+#X text 396 519 updated for Pd version 0.39;
 #X text 19 471 You can send messages to message boxes to change their
 content - open the subpatch below for details:;
-#N canvas 0 22 718 466 changing-messages 0;
+#N canvas 0 0 718 466 changing-messages 0;
 #X msg 55 380 dog bird monkey \; bird;
 #X msg 58 69 set dog;
 #X msg 75 143 add monkey;

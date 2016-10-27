@@ -1,16 +1,16 @@
 #N struct help-drawnumber-template float x float y float cat float
 dog symbol weasel;
-#N canvas 414 317 600 204 12;
+#N canvas 445 324 600 204 12;
 #X text 15 103 see also:;
 #X obj 18 7 drawnumber;
 #X obj 187 132 plot;
 #X obj 83 131 drawpolygon;
 #X text 240 0 -- draw numeric fields from data structures;
-#N canvas 53 153 375 224 help-drawnumber-data 1;
+#N canvas 11 52 375 224 help-drawnumber-data 1;
 #X scalar help-drawnumber-template 50 100 23 43 ethel \;;
-#X scalar help-drawnumber-template 172 95 3.14 -1.618 fred \;;
+#X scalar help-drawnumber-template 150 50 3.14 -1.618 fred \;;
 #X restore 273 71 pd help-drawnumber-data;
-#N canvas 439 22 565 700 help-drawnumber-template 1;
+#N canvas 439 52 565 765 help-drawnumber-template 1;
 #X text 25 567 This object defines the fields for this template. Their
 values are initialized in the "works" subwindow. You can see them by
 right-clicking on the object in the "data" window and selecting "properties."
@@ -44,4 +44,5 @@ through "set" objects..;
 #X connect 11 0 4 0;
 #X restore 273 44 pd help-drawnumber-template;
 #X obj 22 130 struct;
+#X text 275 159 updated for Pd version 0.39;
 #X obj 107 8 drawsymbol;

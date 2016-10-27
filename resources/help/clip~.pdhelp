@@ -1,10 +1,9 @@
 #N canvas 182 132 778 399 12;
 #X obj 75 164 clip~ -0.5 0.5;
 #X obj 75 104 osc~ 1000;
-#N canvas 0 22 450 278 (subpatch) 0;
+#X graph graph1 0 1 100 -1 78 280 278 380;
 #X array array99 100 float 0;
-#X coords 0 1 100 -1 200 100 1;
-#X restore 78 280 graph;
+#X pop;
 #X obj 91 213 metro 500;
 #X obj 91 188 r metro;
 #X text 239 235 <-- graph the output;
@@ -16,11 +15,12 @@
 #X obj 42 19 clip~;
 #X text 88 18 - restrict a signal to lie between two limits;
 #X text 243 136 inlets to reset clip range;
-#X floatatom 135 136 4 0 0 0 - - -, f 4;
-#X floatatom 196 137 4 0 0 0 - - -, f 4;
+#X floatatom 135 136 4 0 0;
+#X floatatom 196 137 4 0 0;
 #X text 210 164 creation arguments initialize clip range;
 #X text 4 55 The clip~ object passes its signal input to its output
 \, clipping it to lie between two limits.;
+#X text 470 371 updated for Pd version 0.33;
 #X connect 0 0 6 0;
 #X connect 1 0 0 0;
 #X connect 3 0 6 0;

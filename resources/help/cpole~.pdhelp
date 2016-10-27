@@ -1,31 +1,31 @@
-#N canvas 336 39 610 611 12;
+#N canvas 619 313 610 611 12;
 #X obj 54 95 osc~ 100;
 #X msg 62 122 clear;
 #X text 12 374 The transfer function is H(Z) = 1/(1 - aZ^-1).;
 #X text 115 121 <-- clear internal state to zero;
 #N canvas 168 90 498 357 test 0;
 #X obj 76 78 osc~;
-#X floatatom 76 55 5 0 0 0 - - -, f 5;
+#X floatatom 76 55 5 0 0 0 - - -;
 #X obj 18 287 env~ 16384;
-#X floatatom 18 311 5 0 0 0 - - -, f 5;
+#X floatatom 18 311 5 0 0 0 - - -;
 #X obj 104 107 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 0
 1;
 #X obj 76 105 *~;
 #X msg 85 132 set 1;
-#X floatatom 350 112 4 -1000 1000 0 - - -, f 4;
+#X floatatom 350 112 4 -1000 1000 0 - - -;
 #X obj 215 315 dac~;
 #X obj 215 279 *~;
 #X text 80 18 Stuff to test it:;
 #X obj 241 106 cos~;
 #X obj 77 227 cpole~;
 #X obj 261 65 phasor~;
-#X floatatom 261 44 5 0 0 0 - - -, f 5;
-#X floatatom 132 55 5 0 0 0 - - -, f 5;
+#X floatatom 261 44 5 0 0 0 - - -;
+#X floatatom 132 55 5 0 0 0 - - -;
 #X obj 160 107 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 0
 1;
 #X obj 132 105 *~;
 #X obj 132 78 phasor~;
-#X floatatom 324 42 5 0 0 0 - - -, f 5;
+#X floatatom 324 42 5 0 0 0 - - -;
 #X obj 324 65 / 1000;
 #X obj 274 107 -~ 0.25;
 #X obj 274 129 cos~;
@@ -33,9 +33,9 @@
 #X obj 240 157 *~;
 #X obj 274 157 *~;
 #X obj 94 287 env~ 16384;
-#X floatatom 94 311 5 0 0 0 - - -, f 5;
+#X floatatom 94 311 5 0 0 0 - - -;
 #X obj 247 275 dbtorms;
-#X floatatom 248 255 5 0 0 0 - - -, f 5;
+#X floatatom 248 255 5 0 0 0 - - -;
 #X connect 0 0 5 0;
 #X connect 1 0 0 0;
 #X connect 2 0 3 0;
@@ -110,6 +110,7 @@ arguments or by another complex audio signal (remaining two inlets).
 #X text 143 490 1-zero \, reversed;
 #X text 58 474 summary of raw filters:;
 #X text 140 563 etc.: user-friendly filters;
+#X text 343 583 updated for Pd version 0.43;
 #X connect 0 0 14 0;
 #X connect 1 0 14 0;
 #X connect 10 0 14 1;
