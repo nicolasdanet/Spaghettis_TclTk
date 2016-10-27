@@ -48,7 +48,7 @@ void signal_cleanup(void)
     /* mark the signal "reusable." */
 void signal_makereusable(t_signal *sig)
 {
-    int logn = ilog2(sig->s_vectorSize);
+    int logn = math_ilog2 (sig->s_vectorSize);
 #if 1
     t_signal *s5;
     for (s5 = signal_freeborrowed; s5; s5 = s5->s_nextFree)
@@ -100,7 +100,7 @@ t_signal *signal_new(int n, t_float sr)
     int logn, n2, vecsize = 0;
     t_signal *ret, **whichlist;
     t_sample *fp;
-    logn = ilog2(n);
+    logn = math_ilog2 (n);
     if (n)
     {
         if ((vecsize = (1<<logn)) != n)

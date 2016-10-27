@@ -28,8 +28,6 @@ for another, more permissive-sounding copyright notice.  -MSP
 void cdft(int, int, FFTFLT *, int *, FFTFLT *);
 void rdft(int, int, FFTFLT *, int *, FFTFLT *);
 
-int ilog2(int n);
-
 static int ooura_maxn;
 static int *ooura_bitrev;
 static int ooura_bitrevsize;
@@ -37,7 +35,7 @@ static FFTFLT *ooura_costab;
 
 static int ooura_init( int n)
 {
-    n = (1 << ilog2(n));
+    n = (1 << math_ilog2 (n));
     if (n < 64)
         return (0);
     if (n > ooura_maxn)
@@ -47,7 +45,7 @@ static int ooura_init( int n)
             PD_MEMORY_FREE(ooura_bitrev);
             PD_MEMORY_FREE(ooura_costab);
         }
-        ooura_bitrevsize = sizeof(int) * (2 + (1 << (ilog2(n)/2)));
+        ooura_bitrevsize = sizeof(int) * (2 + (1 << (math_ilog2 (n)/2)));
         ooura_bitrev = (int *)PD_MEMORY_GET(ooura_bitrevsize);
         ooura_bitrev[0] = 0;
         if (!ooura_bitrev)

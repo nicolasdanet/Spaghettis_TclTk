@@ -79,6 +79,8 @@ t_error     utils_version                               (char *dest, size_t size
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+int         math_ilog2                                  (int n);
+
 int         math_compareFloat                           (t_float a, t_float b);
 t_float     math_euclideanDistance                      (t_float x1, t_float y1, t_float x2, t_float y2);
 

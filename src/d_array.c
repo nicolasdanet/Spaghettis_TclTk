@@ -640,7 +640,7 @@ static void tabosc4_tilde_set(t_tabosc4_tilde *x, t_symbol *s)
         post_error ("%s: bad template for tabosc4~", x->x_arrayname->s_name);
         x->x_vec = 0;
     }
-    else if ((npoints = pointsinarray - 3) != (1 << ilog2(pointsinarray - 3)))
+    else if ((npoints = pointsinarray - 3) != (1 << math_ilog2 (pointsinarray - 3)))
     {
         post_error ("%s: number of points (%d) not a power of 2 plus three",
             x->x_arrayname->s_name, pointsinarray);

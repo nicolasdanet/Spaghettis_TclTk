@@ -17,50 +17,49 @@
 #pragma mark -
 
 struct _signal {
-    int                 s_blockSize;
-    int                 s_vectorSize;
-    t_sample            *s_vector;
-    t_float             s_sampleRate;
-    int                 s_count;
-    int                 s_isBorrowed;
-    struct _signal      *s_borrowedFrom;
-    struct _signal      *s_nextFree;
-    struct _signal      *s_nextUsed;
+    int             s_blockSize;
+    t_float         s_sampleRate;
+    int             s_count;
+    int             s_isBorrowed;
+    int             s_vectorSize;
+    t_sample        *s_vector;
+    struct _signal  *s_borrowedFrom;
+    struct _signal  *s_nextFree;
+    struct _signal  *s_nextUsed;
     };
 
+typedef struct _block {
+    t_object        x_obj;
+    int             x_vecsize;
+    int             x_calcsize;
+    int             x_overlap;
+    int             x_phase;
+    int             x_period;
+    int             x_frequency;
+    int             x_count;
+    int             x_chainonset;  
+    int             x_blocklength;
+    int             x_epiloglength;
+    char            x_switched;
+    char            x_switchon;
+    char            x_reblock;
+    int             x_upsample;
+    int             x_downsample;
+    int             x_return;
+    } t_block;
+
 typedef struct _resample {
-    int                 r_type;
-    int                 r_downSample;
-    int                 r_upSample;
-    int                 r_vectorSize;
-    int                 r_coefficientsSize;
-    int                 r_bufferSize;
-    t_sample            *r_vector;
-    t_sample            *r_coefficients;
-    t_sample            *r_buffer;
+    int             r_type;
+    int             r_downSample;
+    int             r_upSample;
+    int             r_vectorSize;
+    int             r_coefficientsSize;
+    int             r_bufferSize;
+    t_sample        *r_vector;
+    t_sample        *r_coefficients;
+    t_sample        *r_buffer;
     } t_resample;
     
-typedef struct _block
-{
-    t_object x_obj;
-    int x_vecsize;      /* size of audio signals in this block */
-    int x_calcsize;     /* number of samples actually to compute */
-    int x_overlap;
-    int x_phase;        /* from 0 to period-1; when zero we run the block */
-    int x_period;       /* submultiple of containing canvas */
-    int x_frequency;    /* supermultiple of comtaining canvas */
-    int x_count;        /* number of times parent block has called us */
-    int x_chainonset;   /* beginning of code in DSP chain */
-    int x_blocklength;  /* length of dspchain for this block */
-    int x_epiloglength; /* length of epilog */
-    char x_switched;    /* true if we're acting as a a switch */
-    char x_switchon;    /* true if we're switched on */
-    char x_reblock;     /* true if inlets and outlets are reblocking */
-    int x_upsample;     /* upsampling-factor */
-    int x_downsample;   /* downsampling-factor */
-    int x_return;       /* stop right after this block (for one-shots) */
-} t_block;
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
@@ -70,13 +69,13 @@ typedef t_int *(*t_perform)(t_int *args);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_int   dsp_done            (t_int *w);
-
 void    dsp_addZeroPerform  (t_sample *s, int n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+t_int   dsp_done            (t_int *w);
 
 t_signal *signal_newlike    (const t_signal *sig);
 void    signal_setborrowed  (t_signal *sig, t_signal *sig2);
@@ -91,7 +90,6 @@ void    dsp_add_scalarcopy  (t_float *in, t_sample *out, int n);
 
 void    dsp_add             (t_perform f, int n, ...);
 void    pd_fft              (t_float *buffer, int npoints, int inverse);
-int     ilog2               (int n);
 
 void    mayer_fht           (t_sample *fz, int n);
 void    mayer_fft           (int n, t_sample *real, t_sample *imag);
@@ -108,13 +106,6 @@ void    resample_free       (t_resample *x);
 void    resample_dsp        (t_resample *x, t_sample *in, int insize, t_sample *out, int outsize, int m);
 void    resamplefrom_dsp    (t_resample *x, t_sample *in, int insize, int outsize, int m);
 void    resampleto_dsp      (t_resample *x, t_sample *out, int insize, int outsize, int m);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_float q8_sqrt             (t_float);
-t_float q8_rsqrt            (t_float);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

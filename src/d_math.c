@@ -94,6 +94,7 @@ static void init_rsqrt(void)
 
     /* these are used in externs like "bonk" */
 
+/*
 t_float q8_rsqrt(t_float f0)
 {
     union {
@@ -117,7 +118,7 @@ t_float q8_sqrt(t_float f0)
     else return (u.f * rsqrt_exptab[(u.l >> 23) & 0xff] *
             rsqrt_mantissatab[(u.l >> 13) & 0x3ff]);
 }
-
+*/
 typedef struct sigrsqrt
 {
     t_object x_obj;

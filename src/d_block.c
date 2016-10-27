@@ -97,26 +97,26 @@ static void block_set(t_block *x, t_float fcalcsize, t_float foverlap,
         /* vecsize is smallest power of 2 large enough to hold calcsize */
     if (calcsize)
     {
-        if ((vecsize = (1 << ilog2(calcsize))) != calcsize)
+        if ((vecsize = (1 << math_ilog2 (calcsize))) != calcsize)
             vecsize *= 2;
     }
     else vecsize = 0;
-    if (vecsize && (vecsize != (1 << ilog2(vecsize))))
+    if (vecsize && (vecsize != (1 << math_ilog2 (vecsize))))
     {
         post_error ("block~: vector size not a power of 2");
         vecsize = 64;
     }
-    if (overlap != (1 << ilog2(overlap)))
+    if (overlap != (1 << math_ilog2 (overlap)))
     {
         post_error ("block~: overlap not a power of 2");
         overlap = 1;
     }
-    if (downsample != (1 << ilog2(downsample)))
+    if (downsample != (1 << math_ilog2 (downsample)))
     {
         post_error ("block~: downsampling not a power of 2");
         downsample = 1;
     }
-    if (upsample != (1 << ilog2(upsample)))
+    if (upsample != (1 << math_ilog2 (upsample)))
     {
         post_error ("block~: upsampling not a power of 2");
         upsample = 1;
