@@ -158,7 +158,7 @@ static void block_bang(t_block *x)
     else post_error ("bang to block~ or on-state switch~ has no effect");
 }
 
-t_int *block_prolog(t_int *w)
+t_int *block_dspProlog(t_int *w)
 {
     t_block *x = (t_block *)w[1];
     int phase = x->x_phase;
@@ -180,7 +180,7 @@ t_int *block_prolog(t_int *w)
     }
 }
 
-t_int *block_epilog(t_int *w)
+t_int *block_dspEpilog(t_int *w)
 {
     t_block *x = (t_block *)w[1];
     int count = x->x_count - 1;

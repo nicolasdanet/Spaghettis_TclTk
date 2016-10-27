@@ -70,12 +70,15 @@ typedef t_int *(*t_perform)(t_int *args);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    dsp_addZeroPerform (t_sample *s, int n);
+t_int   dsp_done            (t_int *w);
+
+void    dsp_addZeroPerform  (t_sample *s, int n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_signal *signal_newlike    (const t_signal *sig);
 void    signal_setborrowed  (t_signal *sig, t_signal *sig2);
 void    signal_makereusable (t_signal *sig);
 
@@ -117,6 +120,13 @@ t_float q8_rsqrt            (t_float);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_int   *block_dspProlog    (t_int *w);
+t_int   *block_dspEpilog    (t_int *w);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void    vinlet_dspProlog    (struct _vinlet *x,
                                 t_signal **parentSignals,
                                 int vectorSize,
@@ -153,9 +163,6 @@ void    voutlet_dspEpilog   (struct _voutlet *x,
                                 int reblock,
                                 int switched);
                                                             
-t_int   *block_prolog       (t_int *w);
-t_int   *block_epilog       (t_int *w);
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #endif // __d_dsp_h_
