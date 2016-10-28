@@ -13,8 +13,10 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
-#include "g_graphics.h"
 #include "d_dsp.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 #define MAXLOGSIG           32
 
@@ -27,6 +29,9 @@ static int ugen_loud;
 static t_signal *signal_freelist[MAXLOGSIG+1];
     /* list of reusable "borrowed" signals (which don't own sample buffers) */
 static t_signal *signal_freeborrowed;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
     /* call this when DSP is stopped to free all the signals */
 void signal_cleanup(void)
@@ -159,3 +164,7 @@ int signal_compatible(t_signal *s1, t_signal *s2)
 {
     return (s1->s_blockSize == s2->s_blockSize && s1->s_sampleRate == s2->s_sampleRate);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
