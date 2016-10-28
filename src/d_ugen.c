@@ -337,13 +337,15 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
             {
                 s1->s_count--;
                 s2->s_count--;
-                if (!signal_compatible(s1, s2))
+                //if (!signal_compatible(s1, s2))
+                if (!(s1->s_blockSize == s2->s_blockSize && s1->s_sampleRate == s2->s_sampleRate))
                 {
                     post_error ("%s: incompatible signal inputs",
                         class_getNameAsString(u->u_obj->te_g.g_pd));
                     return;
                 }
-                s3 = signal_newlike(s1);
+                s3 = signal_new(s1->s_blockSize, s1->s_sampleRate);
+                //s3 = signal_newlike(s1);
                 dsp_add_plus(s1->s_vector, s2->s_vector, s3->s_vector, s1->s_blockSize);
                 uin->i_signal = s3;
                 s3->s_count = 1;

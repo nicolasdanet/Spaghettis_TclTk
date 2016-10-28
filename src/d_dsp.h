@@ -69,7 +69,17 @@ typedef t_int *(*t_perform)(t_int *args);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_int   dsp_done            (t_int *w);
+t_int       dsp_done                (t_int *w);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_signal    *signal_new             (int n, t_float sampleRate);
+
+void        signal_cleanup          (void);
+void        signal_setborrowed      (t_signal *s1, t_signal *s2);
+void        signal_makereusable     (t_signal *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -83,9 +93,7 @@ void    dsp_addZeroPerform  (t_sample *s, int n);
 
 void    ugen_tick           (void);
 
-t_signal *signal_newlike    (const t_signal *sig);
-void    signal_setborrowed  (t_signal *sig, t_signal *sig2);
-void    signal_makereusable (t_signal *sig);
+
 
 t_int   *plus_perform       (t_int *args);
 t_int   *copy_perform       (t_int *args);
