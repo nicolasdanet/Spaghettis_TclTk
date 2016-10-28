@@ -28,8 +28,20 @@ struct _signal {
     struct _signal  *s_nextUsed;
     };
 
+typedef struct _resample {
+    int             r_type;
+    int             r_downSample;
+    int             r_upSample;
+    int             r_vectorSize;
+    int             r_coefficientsSize;
+    int             r_bufferSize;
+    t_sample        *r_vector;
+    t_sample        *r_coefficients;
+    t_sample        *r_buffer;
+    } t_resample;
+
 typedef struct _block {
-    t_object        x_obj;
+    t_object        x_obj;                  /* Must be the first. */
     int             x_vecsize;
     int             x_calcsize;
     int             x_overlap;
@@ -47,23 +59,17 @@ typedef struct _block {
     int             x_downsample;
     int             x_return;
     } t_block;
-
-typedef struct _resample {
-    int             r_type;
-    int             r_downSample;
-    int             r_upSample;
-    int             r_vectorSize;
-    int             r_coefficientsSize;
-    int             r_bufferSize;
-    t_sample        *r_vector;
-    t_sample        *r_coefficients;
-    t_sample        *r_buffer;
-    } t_resample;
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 typedef t_int *(*t_perform)(t_int *args);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_int   dsp_done            (t_int *w);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -75,7 +81,7 @@ void    dsp_addZeroPerform  (t_sample *s, int n);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_int   dsp_done            (t_int *w);
+void    ugen_tick           (void);
 
 t_signal *signal_newlike    (const t_signal *sig);
 void    signal_setborrowed  (t_signal *sig, t_signal *sig2);
@@ -97,19 +103,11 @@ void    mayer_ifft          (int n, t_sample *real, t_sample *imag);
 void    mayer_realfft       (int n, t_sample *real);
 void    mayer_realifft      (int n, t_sample *real);
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void    resample_init       (t_resample *x, t_symbol *type);
 void    resample_free       (t_resample *x);
 void    resample_dsp        (t_resample *x, t_sample *in, int insize, t_sample *out, int outsize, int m);
 void    resamplefrom_dsp    (t_resample *x, t_sample *in, int insize, int outsize, int m);
 void    resampleto_dsp      (t_resample *x, t_sample *out, int insize, int outsize, int m);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 t_int   *block_dspProlog    (t_int *w);
 t_int   *block_dspEpilog    (t_int *w);

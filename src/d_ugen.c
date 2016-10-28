@@ -26,7 +26,7 @@ static int ugen_loud;
 struct _vinlet;
 struct _voutlet;
 
-extern int dsp_phase;
+static int dsp_phase;
 extern t_class *block_class;
 
 typedef struct _ugenbox
@@ -82,6 +82,16 @@ struct _dspcontext
 
 static int ugen_sortno = 0;
 static t_dspcontext *ugen_currentcontext;
+
+void ugen_tick(void)
+{
+    if (pd_this->pd_dspChain)
+    {
+        t_int *ip;
+        for (ip = pd_this->pd_dspChain; ip; ) ip = (*(t_perform)(*ip))(ip);
+        dsp_phase++;
+    }
+}
 
 void ugen_stop(void)
 {

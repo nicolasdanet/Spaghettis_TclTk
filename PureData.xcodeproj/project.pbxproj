@@ -914,6 +914,7 @@
 				378971BE1C4F716700263434 /* d_ugen.c */,
 				378971B31C4F716700263434 /* d_dac.c */,
 				378971BC1C4F716700263434 /* d_resample.c */,
+				3770AD891DC2338300ADAE26 /* d_block.c */,
 				378971B81C4F716700263434 /* d_global.c */,
 				378971B11C4F716700263434 /* d_array.c */,
 				378971BB1C4F716700263434 /* d_osc.c */,
@@ -1257,7 +1258,6 @@
 		37B1AA491DC1EDE70017355A /* Objects */ = {
 			isa = PBXGroup;
 			children = (
-				3770AD891DC2338300ADAE26 /* d_block.c */,
 				37B1AA561DC1EE3E0017355A /* d_samplerate.c */,
 			);
 			name = Objects;
