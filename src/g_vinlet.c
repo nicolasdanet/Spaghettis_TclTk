@@ -217,7 +217,7 @@ void vinlet_dspProlog (struct _vinlet *x,
 
     /* Free signal with a zero reference count. */
         
-    if (!signalIn->s_count) { signal_makereusable (signalIn); }
+    if (!signalIn->s_count) { signal_free (signalIn); }
     //
     }
     

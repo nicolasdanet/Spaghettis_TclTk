@@ -24,7 +24,7 @@ struct _signal {
     int             s_vectorSize;
     t_sample        *s_vector;
     struct _signal  *s_borrowedFrom;
-    struct _signal  *s_nextFree;
+    struct _signal  *s_nextReusable;
     struct _signal  *s_nextUsed;
     };
 
@@ -75,25 +75,23 @@ t_int       dsp_done                (t_int *w);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_signal    *signal_new             (int n, t_float sampleRate);
+t_signal    *signal_new             (int blockSize, t_float sampleRate);
 
-void        signal_cleanup          (void);
+void        signal_free             (t_signal *s);
 void        signal_setborrowed      (t_signal *s1, t_signal *s2);
-void        signal_makereusable     (t_signal *s);
+void        signal_release          (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    dsp_addZeroPerform  (t_sample *s, int n);
+void        dsp_addZeroPerform      (t_sample *s, int n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 void    ugen_tick           (void);
-
-
 
 t_int   *plus_perform       (t_int *args);
 t_int   *copy_perform       (t_int *args);

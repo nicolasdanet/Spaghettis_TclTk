@@ -102,7 +102,7 @@ void ugen_stop(void)
         PD_MEMORY_FREE(pd_this->pd_dspChain);
         pd_this->pd_dspChain = 0;
     }
-    signal_cleanup();
+    signal_release();
     
 }
 
@@ -275,7 +275,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
         if (nofreesigs)
             (*sig)->s_count++;
         else if (!newrefcount)
-            signal_makereusable(*sig);
+            signal_free(*sig);
     }
     for (sig = outsig, uout = u->u_out, i = u->u_nout; i--; sig++, uout++)
     {
@@ -308,7 +308,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
     for (sig = outsig, uout = u->u_out, i = u->u_nout; i--; sig++, uout++)
     {
         if (!(*sig)->s_count)
-            signal_makereusable(*sig);
+            signal_free(*sig);
     }
     if (ugen_loud)
     {
@@ -349,8 +349,8 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
                 dsp_add_plus(s1->s_vector, s2->s_vector, s3->s_vector, s1->s_blockSize);
                 uin->i_signal = s3;
                 s3->s_count = 1;
-                if (!s1->s_count) signal_makereusable(s1);
-                if (!s2->s_count) signal_makereusable(s2);
+                if (!s1->s_count) signal_free(s1);
+                if (!s2->s_count) signal_free(s2);
             }
             else uin->i_signal = s1;
             uin->i_ngot++;

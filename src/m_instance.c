@@ -48,14 +48,6 @@ static t_pdinstance *pdinstance_new()
 {
     t_pdinstance *x = (t_pdinstance *)PD_MEMORY_GET (sizeof (t_pdinstance));
     
-    x->pd_systime       = 0.0;
-    x->pd_dspState      = 0;
-    x->pd_dspChainSize  = 0;
-    x->pd_dspChain      = NULL;
-    x->pd_clocks        = NULL;
-    x->pd_signals       = NULL;
-    x->pd_roots         = NULL;
-    
     return x;
 }
 
