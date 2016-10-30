@@ -16,18 +16,28 @@
 #include "g_graphics.h"
 #include "d_dsp.h"
 
-extern t_pdinstance *pd_this;
-extern t_class *canvas_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-extern t_class *vinlet_class, *voutlet_class;
+extern t_pdinstance     *pd_this;
+extern t_class          *canvas_class;
+extern t_class          *vinlet_class; 
+extern t_class          *voutlet_class;
+extern t_class          *block_class;
 
-static int ugen_loud;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-struct _vinlet;
-struct _voutlet;
+static t_dspcontext     *ugen_currentcontext;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 static int dsp_phase;
-extern t_class *block_class;
+static int ugen_sortno;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 typedef struct _ugenbox
 {
@@ -63,7 +73,6 @@ typedef struct _sigoutlet
     t_sigoutconnect *o_connections;
 } t_sigoutlet;
 
-
 struct _dspcontext
 {
     struct _ugenbox *dc_ugenlist;
@@ -77,11 +86,11 @@ struct _dspcontext
     char dc_toplevel;       /* true if "iosigs" is invalid. */
     char dc_reblock;        /* true if we have to reblock inlets/outlets */
     char dc_switched;       /* true if we're switched */
-    
 };
 
-static int ugen_sortno = 0;
-static t_dspcontext *ugen_currentcontext;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void ugen_tick(void)
 {
@@ -129,7 +138,7 @@ t_dspcontext *ugen_start_graph(int toplevel, t_signal **sp,
     t_float parent_srate, srate;
     int parent_vecsize, vecsize;
 
-    if (ugen_loud) post("ugen_start_graph...");
+    if (0) post("ugen_start_graph...");
 
     /* protect against invalid numsignals
      * this might happen if we have an abstraction with inlet~/outlet~ opened as a toplevel patch
@@ -178,7 +187,7 @@ void ugen_connect(t_dspcontext *dc, t_object *x1, int outno, t_object *x2,
     t_sigoutconnect *oc;
     int sigoutno = object_indexOfSignalOutlet(x1, outno);
     int siginno = object_indexOfSignalInlet(x2, inno);
-    if (ugen_loud)
+    if (0)
         post("%s -> %s: %d->%d",
             class_getNameAsString(x1->te_g.g_pd),
                 class_getNameAsString(x2->te_g.g_pd), outno, inno);
@@ -242,7 +251,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
     t_signal **insig, **outsig, **sig, *s1, *s2, *s3;
     t_ugenbox *u2;
     
-    if (ugen_loud) post("doit %s %d %d", class_getNameAsString(class), nofreesigs,
+    if (0) post("doit %s %d %d", class_getNameAsString(class), nofreesigs,
         nonewsigs);
     for (i = 0, uin = u->u_in; i < u->u_nin; i++, uin++)
     {
@@ -310,7 +319,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
         if (!(*sig)->s_count)
             signal_free(*sig);
     }
-    if (ugen_loud)
+    if (0)
     {
         if (u->u_nin + u->u_nout == 0) post("put %s %d", 
             class_getNameAsString(u->u_obj->te_g.g_pd), ugen_index(dc, u));
@@ -397,7 +406,7 @@ void ugen_done_graph(t_dspcontext *dc)
     int downsample = 1, upsample = 1;
     /* debugging printout */
     
-    if (ugen_loud)
+    if (0)
     {
         post("ugen_done_graph...");
         for (u = dc->dc_ugenlist; u; u = u->u_next)
@@ -503,13 +512,13 @@ void ugen_done_graph(t_dspcontext *dc)
                     signal_new(parent_vecsize, parent_srate));
                 (*sigp)->s_count++;
 
-                if (ugen_loud) post("set %lx->%lx", *sigp,
+                if (0) post("set %lx->%lx", *sigp,
                     (*sigp)->s_borrowedFrom);
             }
         }
     }
 
-    if (ugen_loud)
+    if (0)
         post("reblock %d, switched %d", reblock, switched);
 
         /* schedule prologs for inlets and outlets.  If the "reblock" flag
@@ -527,11 +536,11 @@ void ugen_done_graph(t_dspcontext *dc)
         if (outsigs) outsigs += dc->dc_ninlets;
 
         if (pd_class(zz) == vinlet_class)
-            vinlet_dspProlog((struct _vinlet *)zz, 
+            vinlet_dspProlog((t_vinlet *)zz, 
                 dc->dc_iosigs, vecsize, calcsize, dsp_phase, period, frequency,
                     downsample, upsample, reblock, switched);
         else if (pd_class(zz) == voutlet_class)
-            voutlet_dspProlog((struct _voutlet *)zz, 
+            voutlet_dspProlog((t_voutlet *)zz, 
                 outsigs, vecsize, calcsize, dsp_phase, period, frequency,
                     downsample, upsample, reblock, switched);
     }    
@@ -584,7 +593,7 @@ void ugen_done_graph(t_dspcontext *dc)
                 signal_borrowFrom(*sigp, s3);
                 (*sigp)->s_count++;
                 dsp_addZeroPerform(s3->s_vector, s3->s_blockSize);
-                if (ugen_loud)
+                if (0)
                     post("oops, belatedly set %lx->%lx", *sigp,
                         (*sigp)->s_borrowedFrom);
             }
@@ -605,7 +614,7 @@ void ugen_done_graph(t_dspcontext *dc)
         {
             t_signal **iosigs = dc->dc_iosigs;
             if (iosigs) iosigs += dc->dc_ninlets;
-            voutlet_dspEpilog((struct _voutlet *)zz, 
+            voutlet_dspEpilog((t_voutlet *)zz, 
                 iosigs, vecsize, calcsize, dsp_phase, period, frequency,
                     downsample, upsample, reblock, switched);
         }
@@ -619,7 +628,7 @@ void ugen_done_graph(t_dspcontext *dc)
         blk->x_reblock = reblock;
     }
 
-    if (ugen_loud)
+    if (0)
     {
         t_int *ip;
         if (!dc->dc_parentcontext)
@@ -663,4 +672,5 @@ t_signal *ugen_getiosig(int index, int inout)
     return (ugen_currentcontext->dc_iosigs[index]);
 }
 
-
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

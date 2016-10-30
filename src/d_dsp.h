@@ -121,7 +121,7 @@ t_int   *block_dspEpilog    (t_int *w);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    vinlet_dspProlog    (struct _vinlet *x,
+void    vinlet_dspProlog    (t_vinlet *x,
                                 t_signal **parentSignals,
                                 int vectorSize,
                                 int size,
@@ -133,7 +133,7 @@ void    vinlet_dspProlog    (struct _vinlet *x,
                                 int reblock,
                                 int switched);
 
-void    voutlet_dspProlog   (struct _voutlet *x,
+void    voutlet_dspProlog   (t_voutlet *x,
                                 t_signal **parentSignals,
                                 int vectorSize,
                                 int size,
@@ -145,7 +145,7 @@ void    voutlet_dspProlog   (struct _voutlet *x,
                                 int reblock,
                                 int switched);
                                                             
-void    voutlet_dspEpilog   (struct _voutlet *x,
+void    voutlet_dspEpilog   (t_voutlet *x,
                                 t_signal **parentSignals,
                                 int vectorSize,
                                 int size,

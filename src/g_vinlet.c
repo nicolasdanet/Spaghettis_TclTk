@@ -23,7 +23,7 @@ t_class *vinlet_class;                              /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _vinlet {
+struct _vinlet {
     t_object        x_obj;
     t_glist         *x_owner;
     t_outlet        *x_outlet;
@@ -36,7 +36,7 @@ typedef struct _vinlet {
     t_sample        *x_bufferRead;
     int             x_hopSize;
     t_resample      x_resampling;
-    } t_vinlet;
+    };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -143,7 +143,7 @@ static void vinlet_dsp (t_vinlet *x, t_signal **sp)
     }
 }
 
-void vinlet_dspProlog (struct _vinlet *x,
+void vinlet_dspProlog (t_vinlet *x,
     t_signal **parentSignals,
     int vectorSize,
     int size,

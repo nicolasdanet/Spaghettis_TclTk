@@ -23,7 +23,7 @@ t_class *voutlet_class;                     /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _voutlet {
+struct _voutlet {
     t_object    x_obj;
     t_glist     *x_owner;
     t_outlet    *x_outlet;
@@ -36,7 +36,7 @@ typedef struct _voutlet {
     int         x_hopSize;
     t_resample  x_resampling;
     char        x_copyOut;
-    } t_voutlet;
+    };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -154,7 +154,7 @@ static void voutlet_dsp (t_voutlet *x, t_signal **sp)
     }
 }
 
-void voutlet_dspProlog (struct _voutlet *x,
+void voutlet_dspProlog (t_voutlet *x,
     t_signal **parentSignals,
     int vectorSize,
     int size,
@@ -182,7 +182,7 @@ void voutlet_dspProlog (struct _voutlet *x,
     }
 }
 
-void voutlet_dspEpilog (struct _voutlet *x,
+void voutlet_dspEpilog (t_voutlet *x,
     t_signal **parentSignals,
     int vectorSize,
     int size,

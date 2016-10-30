@@ -446,6 +446,8 @@ struct _pdinstance;
 struct _signal;
 struct _struct;
 struct _template;
+struct _vinlet;
+struct _voutlet;
 struct _widgetbehavior;
 
 #define t_array                     struct _array
@@ -472,6 +474,8 @@ struct _widgetbehavior;
 #define t_signal                    struct _signal
 #define t_struct                    struct _struct
 #define t_template                  struct _template
+#define t_vinlet                    struct _vinlet
+#define t_voutlet                   struct _voutlet
 #define t_widgetbehavior            struct _widgetbehavior
 
 // -----------------------------------------------------------------------------------------------------------
