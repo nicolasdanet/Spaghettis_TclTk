@@ -414,23 +414,24 @@ static int interface_flushBufferAndQueue (void)
 
 #if PD_WITH_NOGUI
 
-void sys_gui (char *s)
-{
-}
-
 void sys_vGui (char *fmt, ...)
 {
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#else
-
 void sys_gui (char *s)
 {
-    sys_vGui ("%s", s);
 }
+
+void sys_guiFlush (void)
+{
+
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#else
 
 void sys_vGui (char *format, ...)
 {
@@ -458,6 +459,16 @@ void sys_vGui (char *format, ...)
     }
     //
     } while (bufferWasTooSmall);
+}
+
+void sys_gui (char *s)
+{
+    sys_vGui ("%s", s);
+}
+
+void sys_guiFlush (void)
+{
+    interface_flushBufferAndQueue();
 }
 
 #endif // PD_WITH_NOGUI

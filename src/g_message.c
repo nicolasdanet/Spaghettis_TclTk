@@ -110,8 +110,8 @@ void message_click (t_message *x, t_float a, t_float b, t_float shift, t_float c
     sys_vGui (".x%lx.c itemconfigure %sBORDER -width 5\n", 
                     canvas_getView (x->m_owner), 
                     boxtext_getTag (text));
-                    
-    clock_delay (x->m_clock, 120.0);
+    
+    sys_guiFlush(); clock_delay (x->m_clock, 120.0);        /* Force the GUI to update. */
     //
     }
     
