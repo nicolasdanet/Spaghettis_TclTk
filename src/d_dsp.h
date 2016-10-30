@@ -17,11 +17,10 @@
 #pragma mark -
 
 struct _signal {
-    int             s_blockSize;
     t_float         s_sampleRate;
     int             s_count;
     int             s_isBorrowed;
-    int             s_vectorSize;
+    int             s_blockSize;
     t_sample        *s_vector;
     struct _signal  *s_borrowedFrom;
     struct _signal  *s_nextReusable;
@@ -77,9 +76,9 @@ t_int       dsp_done                (t_int *w);
 
 t_signal    *signal_new             (int blockSize, t_float sampleRate);
 
+void        signal_borrowFrom       (t_signal *s, t_signal *toBeBorrowed);
 void        signal_free             (t_signal *s);
-void        signal_setborrowed      (t_signal *s1, t_signal *s2);
-void        signal_release          (void);
+void        signal_clean            (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -146,7 +146,7 @@ static void voutlet_dsp (t_voutlet *x, t_signal **sp)
     t_signal *in = sp[0];
     
     if (x->x_copyOut) { dsp_add_copy (in->s_vector, x->x_directSignal->s_vector, in->s_blockSize); }
-    else if (x->x_directSignal) { signal_setborrowed (x->x_directSignal, in); }
+    else if (x->x_directSignal) { signal_borrowFrom (x->x_directSignal, in); }
     else {
         dsp_add (voutlet_perform, 3, x, in->s_vector, in->s_blockSize);
     }
@@ -213,7 +213,7 @@ void voutlet_dspEpilog (struct _voutlet *x,
     
     if (parentSignals) {
         out                         = parentSignals[object_getIndexOfSignalOutlet (x->x_outlet)];
-        parentVectorSize            = out->s_vectorSize;
+        parentVectorSize            = out->s_blockSize;
         parentVectorSizeResampled   = parentVectorSize * upSample / downSample;
     } else {
         out                         = NULL;

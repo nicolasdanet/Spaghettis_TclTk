@@ -134,9 +134,9 @@ static void vinlet_dsp (t_vinlet *x, t_signal **sp)
     //
     t_signal *out = sp[0];
             
-    if (x->x_directSignal) { signal_setborrowed (out, x->x_directSignal); }
+    if (x->x_directSignal) { signal_borrowFrom (out, x->x_directSignal); }
     else {
-        dsp_add (vinlet_perform, 3, x, out->s_vector, out->s_vectorSize);
+        dsp_add (vinlet_perform, 3, x, out->s_vector, out->s_blockSize);
         x->x_bufferRead = x->x_buffer;
     }
     //
@@ -174,7 +174,7 @@ void vinlet_dspProlog (struct _vinlet *x,
     
     if (parentSignals) {
         signalIn                    = parentSignals[object_getIndexOfSignalInlet (x->x_inlet)];
-        parentVectorSize            = signalIn->s_vectorSize;
+        parentVectorSize            = signalIn->s_blockSize;
         parentVectorSizeResampled   = parentVectorSize * upSample / downSample;
         
     } else {

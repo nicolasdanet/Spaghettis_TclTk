@@ -102,8 +102,8 @@ void ugen_stop(void)
         PD_MEMORY_FREE(pd_this->pd_dspChain);
         pd_this->pd_dspChain = 0;
     }
-    signal_release();
     
+    signal_clean();
 }
 
 void ugen_start(void)
@@ -230,7 +230,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
         inlets and subpatchs; except in the case we're an inlet and "blocking"
         is set.  We don't yet know if a subcanvas will be "blocking" so there
         we delay new signal creation, which will be handled by calling
-        signal_setborrowed in the ugen_done_graph routine below. */
+        signal_borrowFrom in the ugen_done_graph routine below. */
     int nonewsigs = (class == canvas_class || 
         (class == vinlet_class) && !(dc->dc_reblock));
         /* when we encounter a subcanvas or a signal outlet, suppress freeing
@@ -499,7 +499,7 @@ void ugen_done_graph(t_dspcontext *dc)
         {
             if ((*sigp)->s_isBorrowed && !(*sigp)->s_borrowedFrom)
             {
-                signal_setborrowed(*sigp,
+                signal_borrowFrom(*sigp,
                     signal_new(parent_vecsize, parent_srate));
                 (*sigp)->s_count++;
 
@@ -581,7 +581,7 @@ void ugen_done_graph(t_dspcontext *dc)
             if ((*sigp)->s_isBorrowed && !(*sigp)->s_borrowedFrom)
             {
                 t_signal *s3 = signal_new(parent_vecsize, parent_srate);
-                signal_setborrowed(*sigp, s3);
+                signal_borrowFrom(*sigp, s3);
                 (*sigp)->s_count++;
                 dsp_addZeroPerform(s3->s_vector, s3->s_blockSize);
                 if (ugen_loud)

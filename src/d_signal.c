@@ -17,6 +17,11 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+/* Note that signals are not freed, but cached to be recycled. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 #define SIGNAL_SLOTS    32
 
 // -----------------------------------------------------------------------------------------------------------
@@ -27,99 +32,66 @@ extern t_pdinstance *pd_this;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_signal *signal_reusable[SIGNAL_SLOTS + 1];         /* Queued by the bloc size (power of two). */
+static t_signal *signal_reusable[SIGNAL_SLOTS + 1];         /* Indexed by the bloc size (power of two). */
 static t_signal *signal_reusableBorrowed;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_signal *signal_new (int n, t_float sr)
+t_signal *signal_new (int blockSize, t_float sampleRate)
 {
-    int logn, n2, vecsize = 0;
-    t_signal *ret, **whichlist;
-    t_sample *fp;
-    logn = math_ilog2 (n);
-    if (n)
-    {
-        if ((vecsize = (1<<logn)) != n)
-            vecsize *= 2;
-        if (logn > SIGNAL_SLOTS) { PD_BUG; }
-        whichlist = signal_reusable + logn;
+    t_signal *s  = NULL;
+    t_signal **t = NULL;
+    
+    PD_ASSERT (math_ilog2 (blockSize) <= SIGNAL_SLOTS);
+    PD_ASSERT (PD_ISPOWER2 (blockSize)); 
+    PD_ABORT (!PD_ISPOWER2 (blockSize));
+    
+    if (!blockSize) { t = &signal_reusableBorrowed; }
+    else {
+        t = signal_reusable + math_ilog2 (blockSize);
     }
-    else
-        whichlist = &signal_reusableBorrowed;
+    
+    if ((s = *t)) { *t = s->s_nextReusable; }
+    else {
+    //
+    s = (t_signal *)PD_MEMORY_GET (sizeof (t_signal));
+    
+    if (blockSize) {
+        s->s_vector     = (t_sample *)PD_MEMORY_GET (blockSize * sizeof (t_sample));
+        s->s_isBorrowed = 0;
+        
+    } else {
+        s->s_vector     = NULL;
+        s->s_isBorrowed = 1;
+    }
 
-        /* first try to reclaim one from the free list */
-    if (ret = *whichlist)
-        *whichlist = ret->s_nextReusable;
-    else
-    {
-            /* LATER figure out what to do for out-of-space here! */
-        ret = (t_signal *)PD_MEMORY_GET(sizeof *ret);
-        if (n)
-        {
-            ret->s_vector = (t_sample *)PD_MEMORY_GET(vecsize * sizeof (*ret->s_vector));
-            ret->s_isBorrowed = 0;
-        }
-        else
-        {
-            ret->s_vector = 0;
-            ret->s_isBorrowed = 1;
-        }
-        ret->s_nextUsed = pd_this->pd_signals;
-        pd_this->pd_signals = ret;
+    s->s_nextUsed = pd_this->pd_signals;
+    pd_this->pd_signals = s;
+    //
     }
-    ret->s_blockSize = n;
-    ret->s_vectorSize = vecsize;
-    ret->s_sampleRate = sr;
-    ret->s_count = 0;
-    ret->s_borrowedFrom = 0;
-    return (ret);
+    
+    s->s_blockSize      = blockSize;
+    s->s_sampleRate     = sampleRate;
+    s->s_count          = 0;
+    s->s_borrowedFrom   = NULL;
+    
+    return s;
 }
 
-    /* mark the signal "reusable." */
-void signal_free(t_signal *sig)
+void signal_free (t_signal *s)
 {
-    int logn = math_ilog2 (sig->s_vectorSize);
-#if 1
-    t_signal *s5;
-    for (s5 = signal_reusableBorrowed; s5; s5 = s5->s_nextReusable)
-    {
-        if (s5 == sig)
-        {
-            PD_BUG;
-            return;
-        }
-    }
-    for (s5 = signal_reusable[logn]; s5; s5 = s5->s_nextReusable)
-    {
-        if (s5 == sig)
-        {
-            PD_BUG;
-            return;
-        }
-    }
-#endif
-    if (sig->s_isBorrowed)
-    {
-            /* if the signal is borrowed, decrement the borrowed-from signal's
-                reference count, possibly marking it reusable too */
-        t_signal *s2 = sig->s_borrowedFrom;
-        if ((s2 == sig) || !s2) { PD_BUG; }
-        s2->s_count--;
-        if (!s2->s_count)
-            signal_free(s2);
-        sig->s_nextReusable = signal_reusableBorrowed;
-        signal_reusableBorrowed = sig;
-    }
-    else
-    {
-            /* if it's a real signal (not borrowed), put it on the free list
-                so we can reuse it. */
-        if (signal_reusable[logn] == sig) { PD_BUG; }
-        sig->s_nextReusable = signal_reusable[logn];
-        signal_reusable[logn] = sig;
+    if (s->s_isBorrowed) {
+
+        t_signal *t = s->s_borrowedFrom;
+        t->s_count--; if (!t->s_count) { signal_free (t); }
+        s->s_nextReusable = signal_reusableBorrowed; signal_reusableBorrowed = s;
+        
+    } else {
+    
+        int n = math_ilog2 (s->s_blockSize);
+        s->s_nextReusable = signal_reusable[n]; signal_reusable[n] = s;
     }
 }
 
@@ -127,34 +99,31 @@ void signal_free(t_signal *sig)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void signal_setborrowed(t_signal *sig, t_signal *sig2)
+void signal_borrowFrom (t_signal *s, t_signal *toBeBorrowed)
 {
-    if (!sig->s_isBorrowed || sig->s_borrowedFrom) { PD_BUG; }
-    if (sig == sig2) { PD_BUG; }
-    sig->s_borrowedFrom = sig2;
-    sig->s_vector = sig2->s_vector;
-    sig->s_blockSize = sig2->s_blockSize;
-    sig->s_vectorSize = sig2->s_vectorSize;
+    s->s_borrowedFrom = toBeBorrowed;
+    s->s_blockSize    = toBeBorrowed->s_blockSize;
+    s->s_vector       = toBeBorrowed->s_vector;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void signal_release(void)
+void signal_clean (void)
 {
-    t_signal **svec, *sig, *sig2;
+    t_signal *s = NULL;
     int i;
-    while (sig = pd_this->pd_signals)
-    {
-        pd_this->pd_signals = sig->s_nextUsed;
-        if (!sig->s_isBorrowed)
-            PD_MEMORY_FREE(sig->s_vector);
-        PD_MEMORY_FREE(sig);
+    
+    while (s = pd_this->pd_signals) {
+
+        pd_this->pd_signals = s->s_nextUsed;
+        if (!s->s_isBorrowed) { PD_MEMORY_FREE (s->s_vector); } PD_MEMORY_FREE (s);
     }
-    for (i = 0; i <= SIGNAL_SLOTS; i++)
-        signal_reusable[i] = 0;
-    signal_reusableBorrowed = 0;
+    
+    for (i = 0; i <= SIGNAL_SLOTS; i++) { signal_reusable[i] = NULL; }
+    
+    signal_reusableBorrowed = NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------
