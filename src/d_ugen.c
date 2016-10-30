@@ -102,6 +102,16 @@ void ugen_tick(void)
     }
 }
 
+void ugen_start(void)
+{
+    ugen_stop();
+    ugen_sortno++;
+    pd_this->pd_dspChain = (t_int *)PD_MEMORY_GET(sizeof(*pd_this->pd_dspChain));
+    pd_this->pd_dspChain[0] = (t_int)dsp_done;
+    pd_this->pd_dspChainSize = 1;
+    if (ugen_currentcontext) { PD_BUG; }
+}
+
 void ugen_stop(void)
 {
     t_signal *s;
@@ -115,106 +125,14 @@ void ugen_stop(void)
     signal_clean();
 }
 
-void ugen_start(void)
-{
-    ugen_stop();
-    ugen_sortno++;
-    pd_this->pd_dspChain = (t_int *)PD_MEMORY_GET(sizeof(*pd_this->pd_dspChain));
-    pd_this->pd_dspChain[0] = (t_int)dsp_done;
-    pd_this->pd_dspChainSize = 1;
-    if (ugen_currentcontext) { PD_BUG; }
-}
-
 int ugen_getsortno(void)
 {
     return (ugen_sortno);
 }
 
-    /* start building the graph for a canvas */
-t_dspcontext *ugen_start_graph(int toplevel, t_signal **sp,
-    int ninlets, int noutlets)
-{
-    t_dspcontext *dc = (t_dspcontext *)PD_MEMORY_GET(sizeof(*dc));
-    t_float parent_srate, srate;
-    int parent_vecsize, vecsize;
-
-    if (0) post("ugen_start_graph...");
-
-    /* protect against invalid numsignals
-     * this might happen if we have an abstraction with inlet~/outlet~ opened as a toplevel patch
-     */
-    if(toplevel)
-        ninlets=noutlets=0;
-
-    dc->dc_ugenlist = 0;
-    dc->dc_toplevel = toplevel;
-    dc->dc_iosigs = sp;
-    dc->dc_ninlets = ninlets;
-    dc->dc_noutlets = noutlets;
-    dc->dc_parentcontext = ugen_currentcontext;
-    ugen_currentcontext = dc;
-    return (dc);
-}
-
-    /* first the canvas calls this to create all the boxes... */
-void ugen_add(t_dspcontext *dc, t_object *obj)
-{
-    t_ugenbox *x = (t_ugenbox *)PD_MEMORY_GET(sizeof *x);
-    int i;
-    t_sigoutlet *uout;
-    t_siginlet *uin;
-    
-    x->u_next = dc->dc_ugenlist;
-    dc->dc_ugenlist = x;
-    x->u_obj = obj;
-    x->u_nin = object_numberOfSignalInlets(obj);
-    x->u_in = PD_MEMORY_GET(x->u_nin * sizeof (*x->u_in));
-    for (uin = x->u_in, i = x->u_nin; i--; uin++)
-        uin->i_nconnect = 0;
-    x->u_nout = object_numberOfSignalOutlets(obj);
-    x->u_out = PD_MEMORY_GET(x->u_nout * sizeof (*x->u_out));
-    for (uout = x->u_out, i = x->u_nout; i--; uout++)
-        uout->o_connections = 0, uout->o_nconnect = 0;
-}
-
-    /* and then this to make all the connections. */
-void ugen_connect(t_dspcontext *dc, t_object *x1, int outno, t_object *x2,
-    int inno)
-{
-    t_ugenbox *u1, *u2;
-    t_sigoutlet *uout;
-    t_siginlet *uin;
-    t_sigoutconnect *oc;
-    int sigoutno = object_indexOfSignalOutlet(x1, outno);
-    int siginno = object_indexOfSignalInlet(x2, inno);
-    if (0)
-        post("%s -> %s: %d->%d",
-            class_getNameAsString(x1->te_g.g_pd),
-                class_getNameAsString(x2->te_g.g_pd), outno, inno);
-    for (u1 = dc->dc_ugenlist; u1 && u1->u_obj != x1; u1 = u1->u_next);
-    for (u2 = dc->dc_ugenlist; u2 && u2->u_obj != x2; u2 = u2->u_next);
-    if (!u1 || !u2 || siginno < 0)
-    {
-        post_error ("signal outlet connect to nonsignal inlet (ignored)");
-        return;
-    }
-    if (sigoutno < 0 || sigoutno >= u1->u_nout || siginno >= u2->u_nin)
-    {
-        PD_BUG;
-    }
-    uout = u1->u_out + sigoutno;
-    uin = u2->u_in + siginno;
-
-        /* add a new connection to the outlet's list */
-    oc = (t_sigoutconnect *)PD_MEMORY_GET(sizeof *oc);
-    oc->oc_next = uout->o_connections;
-    uout->o_connections = oc;
-    oc->oc_who = u2;
-    oc->oc_inno = siginno;
-        /* update inlet and outlet counts  */
-    uout->o_nconnect++;
-    uin->i_nconnect++;
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
     /* get the index of a ugenbox or -1 if it's not on the list */
 static int ugen_index(t_dspcontext *dc, t_ugenbox *x)
@@ -379,6 +297,96 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
     }
     PD_MEMORY_FREE(insig);
     u->u_done = 1;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+    /* start building the graph for a canvas */
+t_dspcontext *ugen_start_graph(int toplevel, t_signal **sp,
+    int ninlets, int noutlets)
+{
+    t_dspcontext *dc = (t_dspcontext *)PD_MEMORY_GET(sizeof(*dc));
+    t_float parent_srate, srate;
+    int parent_vecsize, vecsize;
+
+    if (0) post("ugen_start_graph...");
+
+    /* protect against invalid numsignals
+     * this might happen if we have an abstraction with inlet~/outlet~ opened as a toplevel patch
+     */
+    if(toplevel)
+        ninlets=noutlets=0;
+
+    dc->dc_ugenlist = 0;
+    dc->dc_toplevel = toplevel;
+    dc->dc_iosigs = sp;
+    dc->dc_ninlets = ninlets;
+    dc->dc_noutlets = noutlets;
+    dc->dc_parentcontext = ugen_currentcontext;
+    ugen_currentcontext = dc;
+    return (dc);
+}
+
+    /* first the canvas calls this to create all the boxes... */
+void ugen_add(t_dspcontext *dc, t_object *obj)
+{
+    t_ugenbox *x = (t_ugenbox *)PD_MEMORY_GET(sizeof *x);
+    int i;
+    t_sigoutlet *uout;
+    t_siginlet *uin;
+    
+    x->u_next = dc->dc_ugenlist;
+    dc->dc_ugenlist = x;
+    x->u_obj = obj;
+    x->u_nin = object_numberOfSignalInlets(obj);
+    x->u_in = PD_MEMORY_GET(x->u_nin * sizeof (*x->u_in));
+    for (uin = x->u_in, i = x->u_nin; i--; uin++)
+        uin->i_nconnect = 0;
+    x->u_nout = object_numberOfSignalOutlets(obj);
+    x->u_out = PD_MEMORY_GET(x->u_nout * sizeof (*x->u_out));
+    for (uout = x->u_out, i = x->u_nout; i--; uout++)
+        uout->o_connections = 0, uout->o_nconnect = 0;
+}
+
+    /* and then this to make all the connections. */
+void ugen_connect(t_dspcontext *dc, t_object *x1, int outno, t_object *x2,
+    int inno)
+{
+    t_ugenbox *u1, *u2;
+    t_sigoutlet *uout;
+    t_siginlet *uin;
+    t_sigoutconnect *oc;
+    int sigoutno = object_indexOfSignalOutlet(x1, outno);
+    int siginno = object_indexOfSignalInlet(x2, inno);
+    if (0)
+        post("%s -> %s: %d->%d",
+            class_getNameAsString(x1->te_g.g_pd),
+                class_getNameAsString(x2->te_g.g_pd), outno, inno);
+    for (u1 = dc->dc_ugenlist; u1 && u1->u_obj != x1; u1 = u1->u_next);
+    for (u2 = dc->dc_ugenlist; u2 && u2->u_obj != x2; u2 = u2->u_next);
+    if (!u1 || !u2 || siginno < 0)
+    {
+        post_error ("signal outlet connect to nonsignal inlet (ignored)");
+        return;
+    }
+    if (sigoutno < 0 || sigoutno >= u1->u_nout || siginno >= u2->u_nin)
+    {
+        PD_BUG;
+    }
+    uout = u1->u_out + sigoutno;
+    uin = u2->u_in + siginno;
+
+        /* add a new connection to the outlet's list */
+    oc = (t_sigoutconnect *)PD_MEMORY_GET(sizeof *oc);
+    oc->oc_next = uout->o_connections;
+    uout->o_connections = oc;
+    oc->oc_who = u2;
+    oc->oc_inno = siginno;
+        /* update inlet and outlet counts  */
+    uout->o_nconnect++;
+    uin->i_nconnect++;
 }
 
     /* once the DSP graph is built, we call this routine to sort it.
@@ -664,6 +672,7 @@ void ugen_done_graph(t_dspcontext *dc)
 
 }
 
+/*
 t_signal *ugen_getiosig(int index, int inout)
 {
     if (!ugen_currentcontext) { PD_BUG; }
@@ -671,6 +680,7 @@ t_signal *ugen_getiosig(int index, int inout)
     if (inout) index += ugen_currentcontext->dc_ninlets;
     return (ugen_currentcontext->dc_iosigs[index]);
 }
+*/
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

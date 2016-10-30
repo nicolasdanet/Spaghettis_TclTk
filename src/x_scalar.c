@@ -208,7 +208,6 @@ void scalardefine_setup (void)
     class_addMethod (c, (t_method)scalardefine_send,    sym_send,       A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)scalardefine_set,     sym_set,        A_GIMME, A_NULL);
     
-    class_addMethod (c, (t_method)canvas_dsp,           sym_dsp,        A_CANT, A_NULL);
     class_addMethod (c, (t_method)canvas_map,           sym__map,       A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_close,         sym_close,      A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_save,          sym_save,       A_DEFFLOAT, A_NULL);

@@ -8,7 +8,6 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "d_dsp.h"
-extern int ugen_getsortno(void);
 
 #define DEFDELVS 64             /* LATER get this from canvas at DSP time */
 static int delread_zero = 0;    /* four bytes of zero for delread~, vd~ */

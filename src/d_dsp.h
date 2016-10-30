@@ -68,17 +68,31 @@ typedef t_int *(*t_perform)(t_int *args);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_int       dsp_done                (t_int *w);
+t_int           dsp_done            (t_int *w);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_signal    *signal_new             (int blockSize, t_float sampleRate);
+t_signal        *signal_new         (int blockSize, t_float sampleRate);
 
-void        signal_borrowFrom       (t_signal *s, t_signal *toBeBorrowed);
-void        signal_free             (t_signal *s);
-void        signal_clean            (void);
+void            signal_borrowFrom   (t_signal *s, t_signal *toBeBorrowed);
+void            signal_free         (t_signal *s);
+void            signal_clean        (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void            ugen_tick           (void);
+void            ugen_start          (void);
+void            ugen_stop           (void);
+int             ugen_getsortno      (void);
+
+t_dspcontext    *ugen_start_graph   (int, t_signal **, int, int);
+void            ugen_add            (t_dspcontext *, t_object *);
+void            ugen_connect        (t_dspcontext *, t_object *, int, t_object *, int);
+void            ugen_done_graph     (t_dspcontext *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -90,7 +104,6 @@ void        dsp_addZeroPerform      (t_sample *s, int n);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    ugen_tick           (void);
 
 t_int   *plus_perform       (t_int *args);
 t_int   *copy_perform       (t_int *args);

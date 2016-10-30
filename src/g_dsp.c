@@ -14,6 +14,7 @@
 #include "m_macros.h"
 #include "s_system.h"
 #include "g_graphics.h"
+#include "d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -22,18 +23,6 @@ extern t_pdinstance *pd_this;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-void            ugen_start          (void);
-void            ugen_stop           (void);
-void            ugen_add            (t_dspcontext *, t_object *);
-void            ugen_connect        (t_dspcontext *, t_object *, int, t_object *, int);
-void            ugen_done_graph     (t_dspcontext *);
-
-t_dspcontext    *ugen_start_graph   (int, t_signal **, int, int);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 static void canvas_dspPerform (t_glist *glist, int isTopLevel, t_signal **sp)
 {
@@ -81,8 +70,6 @@ void canvas_dsp (t_glist *x, t_signal **sp)
 static void dsp_start (void)
 {
     t_glist *glist;
-    
-    if (pd_this->pd_dspState) { ugen_stop(); }
 
     ugen_start();
     
