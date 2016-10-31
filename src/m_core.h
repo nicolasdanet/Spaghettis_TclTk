@@ -140,6 +140,7 @@ struct _pdinstance {
     t_clock                 *pd_clocks;
     t_signal                *pd_signals;
     t_glist                 *pd_roots;
+    t_clock                 *pd_polling;
     t_clock                 *pd_autorelease;
     };
 
@@ -358,6 +359,13 @@ void        autorelease_stop                            (void);
 void        autorelease_drain                           (void);
 void        autorelease_add                             (t_pd *x);
 void        autorelease_perform                         (t_pd *x);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        poll_run                                    (void);
+void        poll_stop                                   (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

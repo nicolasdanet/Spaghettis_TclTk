@@ -250,7 +250,9 @@ t_error scheduler_main (void)
 {
     midi_open();
     autorelease_run();
+    poll_run();
     scheduler_mainLoop();
+    poll_stop();
     autorelease_stop();
     audio_close();
     midi_close();

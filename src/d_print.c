@@ -46,7 +46,16 @@ static void print_tilde_bang (t_print_tilde *x)
 
 static void print_tilde_float (t_print_tilde *x, t_float f)
 {
+    pd_bind (cast_pd (x), sym__polling);
+    
     x->x_count = PD_MAX (0, (int)f);
+}
+
+static void print_tilde_polling (t_print_tilde *x)
+{
+    post ("?");
+    
+    pd_unbind (cast_pd (x), sym__polling);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -116,7 +125,8 @@ void print_tilde_setup (void)
     class_addDSP (c, print_tilde_dsp);
     class_addBang (c, print_tilde_bang);
     class_addFloat (c, print_tilde_float);
-
+    class_addPolling (c, print_tilde_polling);
+    
     print_tilde_class = c;
 }
 

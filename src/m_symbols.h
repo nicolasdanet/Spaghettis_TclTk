@@ -129,6 +129,7 @@ extern t_symbol *sym__notein;
 extern t_symbol *sym__paste;
 extern t_symbol *sym__path;
 extern t_symbol *sym__pgmin;
+extern t_symbol *sym__polling;
 extern t_symbol *sym__polytouchin;
 extern t_symbol *sym__pop;
 extern t_symbol *sym__popupdialog;

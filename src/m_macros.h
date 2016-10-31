@@ -179,6 +179,14 @@ typedef void (*t_gotfn1)(void *x, void *arg1);
                                                 A_FLOAT, \
                                                 A_NULL);
 
+#define class_addPolling(c, m)              class_addMethod ((c), (t_method)(m), \
+                                                sym__polling, \
+                                                A_NULL);
+
+#define class_addAutorelease(c, m)          class_addMethod ((c), (t_method)(m), \
+                                                sym__autorelease, \
+                                                A_NULL);
+                                                
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

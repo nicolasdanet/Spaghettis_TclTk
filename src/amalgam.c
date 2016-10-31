@@ -24,6 +24,7 @@
 #include "m_message.c"
 #include "m_class.c"
 #include "m_autorelease.c"
+#include "m_poll.c"
 #include "m_object.c"
 #include "m_atom.c"
 #include "m_buffer.c"

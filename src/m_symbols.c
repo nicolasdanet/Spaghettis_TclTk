@@ -124,6 +124,7 @@ t_symbol *sym__notein;
 t_symbol *sym__paste;
 t_symbol *sym__path;
 t_symbol *sym__pgmin;
+t_symbol *sym__polling;
 t_symbol *sym__polytouchin;
 t_symbol *sym__pop;
 t_symbol *sym__popupdialog;
@@ -674,6 +675,7 @@ void symbols_initialize (void)
     sym__paste                                  = gensym ("_paste");
     sym__path                                   = gensym ("_path");
     sym__pgmin                                  = gensym ("_pgmin");
+    sym__polling                                = gensym ("_polling");
     sym__polytouchin                            = gensym ("_polytouchin");
     sym__pop                                    = gensym ("_pop");
     sym__popupdialog                            = gensym ("_popupdialog");
