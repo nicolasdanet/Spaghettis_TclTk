@@ -28,88 +28,81 @@ extern t_class          *block_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_dspcontext     *ugen_currentcontext;
+static t_dspcontext     *ugen_context;                      /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int dsp_phase;
-static int ugen_sortno;
+static int ugen_dspPhase;                                   /* Shared. */
+static int ugen_buildIdentifier;                            /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _ugenbox
-{
-    struct _siginlet *u_in;
-    int u_nin;
-    struct _sigoutlet *u_out;
-    int u_nout;
-    int u_phase;
-    struct _ugenbox *u_next;
-    t_object *u_obj;
-    int u_done;
-} t_ugenbox;
+typedef struct _sigoutconnect {
+    int                     oc_index;
+    struct _ugenbox         *oc_to;
+    struct _sigoutconnect   *oc_next;
+    } t_sigoutconnect;
 
-typedef struct _siginlet
-{
-    int i_nconnect;
-    int i_ngot;
-    t_signal *i_signal;
-} t_siginlet;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct _sigoutconnect
-{
-    t_ugenbox *oc_who;
-    int oc_inno;
-    struct _sigoutconnect *oc_next;
-} t_sigoutconnect;
+typedef struct _sigoutlet {
+    int                     o_numberOfConnections;
+    t_sigoutconnect         *o_connections;
+    t_signal                *o_signal;
+    } t_sigoutlet;
+    
+typedef struct _siginlet {
+    int                     i_numberOfConnections;
+    int                     i_numberConnected;
+    t_signal                *i_signal;
+    } t_siginlet;
 
-typedef struct _sigoutlet
-{
-    int o_nconnect;
-    int o_nsent;
-    t_signal *o_signal;
-    t_sigoutconnect *o_connections;
-} t_sigoutlet;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-struct _dspcontext
-{
-    struct _ugenbox *dc_ugenlist;
-    struct _dspcontext *dc_parentcontext;
-    int dc_ninlets;
-    int dc_noutlets;
-    t_signal **dc_iosigs;
-    t_float dc_srate;
-    int dc_vecsize;         /* vector size, power of two */
-    int dc_calcsize;        /* number of elements to calculate */
-    char dc_toplevel;       /* true if "iosigs" is invalid. */
-    char dc_reblock;        /* true if we have to reblock inlets/outlets */
-    char dc_switched;       /* true if we're switched */
-};
+typedef struct _ugenbox {
+    int                     u_done;
+    int                     u_phase;
+    int                     u_inSize;
+    int                     u_outSize;
+    t_siginlet              *u_in;
+    t_sigoutlet             *u_out;
+    struct _ugenbox         *u_next;
+    t_object                *u_owner;
+    } t_ugenbox;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+struct _dspcontext {
+    int                     dc_numberOfInlets;
+    int                     dc_numberOfOutlets;
+    t_float                 dc_sampleRate;
+    int                     dc_vectorSize;
+    int                     dc_blockSize;
+    int                     dc_isTopLevel;
+    int                     dc_isReblocked;
+    int                     dc_isSwitched;
+    t_ugenbox               *dc_ugens;
+    struct _dspcontext      *dc_parentContext;
+    t_signal                **dc_ioSignals;
+    };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void ugen_tick(void)
-{
-    if (pd_this->pd_dspChain)
-    {
-        t_int *ip;
-        for (ip = pd_this->pd_dspChain; ip; ) ip = (*(t_perform)(*ip))(ip);
-        dsp_phase++;
-    }
-}
-
 void ugen_start(void)
 {
     ugen_stop();
-    ugen_sortno++;
+    ugen_buildIdentifier++;
     pd_this->pd_dspChain = (t_int *)PD_MEMORY_GET(sizeof(*pd_this->pd_dspChain));
     pd_this->pd_dspChain[0] = (t_int)dsp_done;
     pd_this->pd_dspChainSize = 1;
-    if (ugen_currentcontext) { PD_BUG; }
+    if (ugen_context) { PD_BUG; }
 }
 
 void ugen_stop(void)
@@ -127,7 +120,21 @@ void ugen_stop(void)
 
 int ugen_getsortno(void)
 {
-    return (ugen_sortno);
+    return (ugen_buildIdentifier);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void ugen_tick(void)
+{
+    if (pd_this->pd_dspChain)
+    {
+        t_int *ip;
+        for (ip = pd_this->pd_dspChain; ip; ) ip = (*(t_perform)(*ip))(ip);
+        ugen_dspPhase++;
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -139,7 +146,7 @@ static int ugen_index(t_dspcontext *dc, t_ugenbox *x)
 {
     int ret;
     t_ugenbox *u;
-    for (u = dc->dc_ugenlist, ret = 0; u; u = u->u_next, ret++)
+    for (u = dc->dc_ugens, ret = 0; u; u = u->u_next, ret++)
         if (u == x) return (ret);
     return (-1);
 }
@@ -151,7 +158,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
     t_sigoutlet *uout;
     t_siginlet *uin;
     t_sigoutconnect *oc, *oc2;
-    t_class *class = pd_class(&u->u_obj->te_g.g_pd);
+    t_class *class = pd_class(&u->u_owner->te_g.g_pd);
     int i, n;
         /* suppress creating new signals for the outputs of signal
         inlets and subpatchs; except in the case we're an inlet and "blocking"
@@ -159,27 +166,27 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
         we delay new signal creation, which will be handled by calling
         signal_borrowFrom in the ugen_done_graph routine below. */
     int nonewsigs = (class == canvas_class || 
-        (class == vinlet_class) && !(dc->dc_reblock));
+        (class == vinlet_class) && !(dc->dc_isReblocked));
         /* when we encounter a subcanvas or a signal outlet, suppress freeing
         the input signals as they may be "borrowed" for the super or sub
         patch; same exception as above, but also if we're "switched" we
         have to do a copy rather than a borrow.  */
     int nofreesigs = (class == canvas_class || 
-        (class == voutlet_class) &&  !(dc->dc_reblock || dc->dc_switched));
+        (class == voutlet_class) &&  !(dc->dc_isReblocked || dc->dc_isSwitched));
     t_signal **insig, **outsig, **sig, *s1, *s2, *s3;
     t_ugenbox *u2;
     
     if (0) post("doit %s %d %d", class_getNameAsString(class), nofreesigs,
         nonewsigs);
-    for (i = 0, uin = u->u_in; i < u->u_nin; i++, uin++)
+    for (i = 0, uin = u->u_in; i < u->u_inSize; i++, uin++)
     {
-        if (!uin->i_nconnect)
+        if (!uin->i_numberOfConnections)
         {
             t_float *scalar;
-            s3 = signal_new(dc->dc_calcsize, dc->dc_srate);
+            s3 = signal_new(dc->dc_blockSize, dc->dc_sampleRate);
             /* post("%s: unconnected signal inlet set to zero",
-                class_getNameAsString(u->u_obj->te_g.g_pd)); */
-            if (scalar = object_getSignalValueAtIndex(u->u_obj, i))
+                class_getNameAsString(u->u_owner->te_g.g_pd)); */
+            if (scalar = object_getSignalValueAtIndex(u->u_owner, i))
                 dsp_add_scalarcopy(scalar, s3->s_vector, s3->s_blockSize);
             else
                 dsp_addZeroPerform(s3->s_vector, s3->s_blockSize);
@@ -187,9 +194,9 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
             s3->s_count = 1;
         }
     }
-    insig = (t_signal **)PD_MEMORY_GET((u->u_nin + u->u_nout) * sizeof(t_signal *));
-    outsig = insig + u->u_nin;
-    for (sig = insig, uin = u->u_in, i = u->u_nin; i--; sig++, uin++)
+    insig = (t_signal **)PD_MEMORY_GET((u->u_inSize + u->u_outSize) * sizeof(t_signal *));
+    outsig = insig + u->u_inSize;
+    for (sig = insig, uin = u->u_in, i = u->u_inSize; i--; sig++, uin++)
     {
         int newrefcount;
         *sig = uin->i_signal;
@@ -204,7 +211,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
         else if (!newrefcount)
             signal_free(*sig);
     }
-    for (sig = outsig, uout = u->u_out, i = u->u_nout; i--; sig++, uout++)
+    for (sig = outsig, uout = u->u_out, i = u->u_outSize; i--; sig++, uout++)
     {
             /* similarly, for outlets of subcanvases we delay creating
             them; instead we create "borrowed" ones so that the refcount
@@ -216,49 +223,49 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
         if (nonewsigs)
         {
             *sig = uout->o_signal =
-                signal_new(0, dc->dc_srate);
+                signal_new(0, dc->dc_sampleRate);
         }
         else
-            *sig = uout->o_signal = signal_new(dc->dc_calcsize, dc->dc_srate);
-        (*sig)->s_count = uout->o_nconnect;
+            *sig = uout->o_signal = signal_new(dc->dc_blockSize, dc->dc_sampleRate);
+        (*sig)->s_count = uout->o_numberOfConnections;
     }
         /* now call the DSP scheduling routine for the ugen.  This
         routine must fill in "borrowed" signal outputs in case it's either
         a subcanvas or a signal inlet. */
         
-    mess1(&u->u_obj->te_g.g_pd, sym_dsp, insig);
+    mess1(&u->u_owner->te_g.g_pd, sym_dsp, insig);
     
         /* if any output signals aren't connected to anyone, free them
         now; otherwise they'll either get freed when the reference count
         goes back to zero, or even later as explained above. */
 
-    for (sig = outsig, uout = u->u_out, i = u->u_nout; i--; sig++, uout++)
+    for (sig = outsig, uout = u->u_out, i = u->u_outSize; i--; sig++, uout++)
     {
         if (!(*sig)->s_count)
             signal_free(*sig);
     }
     if (0)
     {
-        if (u->u_nin + u->u_nout == 0) post("put %s %d", 
-            class_getNameAsString(u->u_obj->te_g.g_pd), ugen_index(dc, u));
-        else if (u->u_nin + u->u_nout == 1) post("put %s %d (%lx)", 
-            class_getNameAsString(u->u_obj->te_g.g_pd), ugen_index(dc, u), sig[0]);
-        else if (u->u_nin + u->u_nout == 2) post("put %s %d (%lx %lx)", 
-            class_getNameAsString(u->u_obj->te_g.g_pd), ugen_index(dc, u),
+        if (u->u_inSize + u->u_outSize == 0) post("put %s %d", 
+            class_getNameAsString(u->u_owner->te_g.g_pd), ugen_index(dc, u));
+        else if (u->u_inSize + u->u_outSize == 1) post("put %s %d (%lx)", 
+            class_getNameAsString(u->u_owner->te_g.g_pd), ugen_index(dc, u), sig[0]);
+        else if (u->u_inSize + u->u_outSize == 2) post("put %s %d (%lx %lx)", 
+            class_getNameAsString(u->u_owner->te_g.g_pd), ugen_index(dc, u),
                 sig[0], sig[1]);
         else post("put %s %d (%lx %lx %lx ...)", 
-            class_getNameAsString(u->u_obj->te_g.g_pd), ugen_index(dc, u),
+            class_getNameAsString(u->u_owner->te_g.g_pd), ugen_index(dc, u),
                 sig[0], sig[1], sig[2]);
     }
 
         /* pass it on and trip anyone whose last inlet was filled */
-    for (uout = u->u_out, i = u->u_nout; i--; uout++)
+    for (uout = u->u_out, i = u->u_outSize; i--; uout++)
     {
         s1 = uout->o_signal;
         for (oc = uout->o_connections; oc; oc = oc->oc_next)
         {
-            u2 = oc->oc_who;
-            uin = &u2->u_in[oc->oc_inno];
+            u2 = oc->oc_to;
+            uin = &u2->u_in[oc->oc_index];
                 /* if there's already someone here, sum the two */
             if (s2 = uin->i_signal)
             {
@@ -268,7 +275,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
                 if (!(s1->s_blockSize == s2->s_blockSize && s1->s_sampleRate == s2->s_sampleRate))
                 {
                     post_error ("%s: incompatible signal inputs",
-                        class_getNameAsString(u->u_obj->te_g.g_pd));
+                        class_getNameAsString(u->u_owner->te_g.g_pd));
                     return;
                 }
                 s3 = signal_new(s1->s_blockSize, s1->s_sampleRate);
@@ -280,15 +287,15 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
                 if (!s2->s_count) signal_free(s2);
             }
             else uin->i_signal = s1;
-            uin->i_ngot++;
+            uin->i_numberConnected++;
                 /* if we didn't fill this inlet don't bother yet */
-            if (uin->i_ngot < uin->i_nconnect)
+            if (uin->i_numberConnected < uin->i_numberOfConnections)
                 goto notyet;
                 /* if there's more than one, check them all */
-            if (u2->u_nin > 1)
+            if (u2->u_inSize > 1)
             {
-                for (uin = u2->u_in, n = u2->u_nin; n--; uin++)
-                    if (uin->i_ngot < uin->i_nconnect) goto notyet;
+                for (uin = u2->u_in, n = u2->u_inSize; n--; uin++)
+                    if (uin->i_numberConnected < uin->i_numberOfConnections) goto notyet;
             }
                 /* so now we can schedule the ugen.  */
             ugen_doit(dc, u2);
@@ -319,13 +326,13 @@ t_dspcontext *ugen_start_graph(int toplevel, t_signal **sp,
     if(toplevel)
         ninlets=noutlets=0;
 
-    dc->dc_ugenlist = 0;
-    dc->dc_toplevel = toplevel;
-    dc->dc_iosigs = sp;
-    dc->dc_ninlets = ninlets;
-    dc->dc_noutlets = noutlets;
-    dc->dc_parentcontext = ugen_currentcontext;
-    ugen_currentcontext = dc;
+    dc->dc_ugens = 0;
+    dc->dc_isTopLevel = toplevel;
+    dc->dc_ioSignals = sp;
+    dc->dc_numberOfInlets = ninlets;
+    dc->dc_numberOfOutlets = noutlets;
+    dc->dc_parentContext = ugen_context;
+    ugen_context = dc;
     return (dc);
 }
 
@@ -337,17 +344,17 @@ void ugen_add(t_dspcontext *dc, t_object *obj)
     t_sigoutlet *uout;
     t_siginlet *uin;
     
-    x->u_next = dc->dc_ugenlist;
-    dc->dc_ugenlist = x;
-    x->u_obj = obj;
-    x->u_nin = object_numberOfSignalInlets(obj);
-    x->u_in = PD_MEMORY_GET(x->u_nin * sizeof (*x->u_in));
-    for (uin = x->u_in, i = x->u_nin; i--; uin++)
-        uin->i_nconnect = 0;
-    x->u_nout = object_numberOfSignalOutlets(obj);
-    x->u_out = PD_MEMORY_GET(x->u_nout * sizeof (*x->u_out));
-    for (uout = x->u_out, i = x->u_nout; i--; uout++)
-        uout->o_connections = 0, uout->o_nconnect = 0;
+    x->u_next = dc->dc_ugens;
+    dc->dc_ugens = x;
+    x->u_owner = obj;
+    x->u_inSize = object_numberOfSignalInlets(obj);
+    x->u_in = PD_MEMORY_GET(x->u_inSize * sizeof (*x->u_in));
+    for (uin = x->u_in, i = x->u_inSize; i--; uin++)
+        uin->i_numberOfConnections = 0;
+    x->u_outSize = object_numberOfSignalOutlets(obj);
+    x->u_out = PD_MEMORY_GET(x->u_outSize * sizeof (*x->u_out));
+    for (uout = x->u_out, i = x->u_outSize; i--; uout++)
+        uout->o_connections = 0, uout->o_numberOfConnections = 0;
 }
 
     /* and then this to make all the connections. */
@@ -364,14 +371,14 @@ void ugen_connect(t_dspcontext *dc, t_object *x1, int outno, t_object *x2,
         post("%s -> %s: %d->%d",
             class_getNameAsString(x1->te_g.g_pd),
                 class_getNameAsString(x2->te_g.g_pd), outno, inno);
-    for (u1 = dc->dc_ugenlist; u1 && u1->u_obj != x1; u1 = u1->u_next);
-    for (u2 = dc->dc_ugenlist; u2 && u2->u_obj != x2; u2 = u2->u_next);
+    for (u1 = dc->dc_ugens; u1 && u1->u_owner != x1; u1 = u1->u_next);
+    for (u2 = dc->dc_ugens; u2 && u2->u_owner != x2; u2 = u2->u_next);
     if (!u1 || !u2 || siginno < 0)
     {
         post_error ("signal outlet connect to nonsignal inlet (ignored)");
         return;
     }
-    if (sigoutno < 0 || sigoutno >= u1->u_nout || siginno >= u2->u_nin)
+    if (sigoutno < 0 || sigoutno >= u1->u_outSize || siginno >= u2->u_inSize)
     {
         PD_BUG;
     }
@@ -382,11 +389,11 @@ void ugen_connect(t_dspcontext *dc, t_object *x1, int outno, t_object *x2,
     oc = (t_sigoutconnect *)PD_MEMORY_GET(sizeof *oc);
     oc->oc_next = uout->o_connections;
     uout->o_connections = oc;
-    oc->oc_who = u2;
-    oc->oc_inno = siginno;
+    oc->oc_to = u2;
+    oc->oc_index = siginno;
         /* update inlet and outlet counts  */
-    uout->o_nconnect++;
-    uin->i_nconnect++;
+    uout->o_numberOfConnections++;
+    uin->i_numberOfConnections++;
 }
 
     /* once the DSP graph is built, we call this routine to sort it.
@@ -402,7 +409,7 @@ void ugen_done_graph(t_dspcontext *dc)
     t_sigoutconnect *oc, *oc2;
     int i, n;
     t_block *blk;
-    t_dspcontext *parent_context = dc->dc_parentcontext;
+    t_dspcontext *parent_context = dc->dc_parentContext;
     t_float parent_srate;
     int parent_vecsize;
     int period, frequency, phase, vecsize, calcsize;
@@ -417,23 +424,23 @@ void ugen_done_graph(t_dspcontext *dc)
     if (0)
     {
         post("ugen_done_graph...");
-        for (u = dc->dc_ugenlist; u; u = u->u_next)
+        for (u = dc->dc_ugens; u; u = u->u_next)
         {
-            post("ugen: %s", class_getNameAsString(u->u_obj->te_g.g_pd));
-            for (uout = u->u_out, i = 0; i < u->u_nout; uout++, i++)
+            post("ugen: %s", class_getNameAsString(u->u_owner->te_g.g_pd));
+            for (uout = u->u_out, i = 0; i < u->u_outSize; uout++, i++)
                 for (oc = uout->o_connections; oc; oc = oc->oc_next)
             {
                 post("... out %d to %s, index %d, inlet %d", i,
-                    class_getNameAsString(oc->oc_who->u_obj->te_g.g_pd),
-                        ugen_index(dc, oc->oc_who), oc->oc_inno);
+                    class_getNameAsString(oc->oc_to->u_owner->te_g.g_pd),
+                        ugen_index(dc, oc->oc_to), oc->oc_index);
             }
         }
     }
     
         /* search for an object of class "block~" */
-    for (u = dc->dc_ugenlist, blk = 0; u; u = u->u_next)
+    for (u = dc->dc_ugens, blk = 0; u; u = u->u_next)
     {
-        t_pd *zz = &u->u_obj->te_g.g_pd;
+        t_pd *zz = &u->u_owner->te_g.g_pd;
         if (pd_class(zz) == block_class)
         {
             if (blk)
@@ -445,8 +452,8 @@ void ugen_done_graph(t_dspcontext *dc)
         /* figure out block size, calling frequency, sample rate */
     if (parent_context)
     {
-        parent_srate = parent_context->dc_srate;
-        parent_vecsize = parent_context->dc_vecsize;
+        parent_srate = parent_context->dc_sampleRate;
+        parent_vecsize = parent_context->dc_vectorSize;
     }
     else
     {
@@ -478,7 +485,7 @@ void ugen_done_graph(t_dspcontext *dc)
         if (frequency < 1) frequency = 1;
         blk->x_frequency = frequency;
         blk->x_period = period;
-        blk->x_phase = dsp_phase & (period - 1);
+        blk->x_phase = ugen_dspPhase & (period - 1);
         if (! parent_context || (realoverlap != 1) ||
             (vecsize != parent_vecsize) || 
                 (downsample != 1) || (upsample != 1))
@@ -489,18 +496,18 @@ void ugen_done_graph(t_dspcontext *dc)
     {
         srate = parent_srate;
         vecsize = parent_vecsize;
-        calcsize = (parent_context ? parent_context->dc_calcsize : vecsize);
+        calcsize = (parent_context ? parent_context->dc_blockSize : vecsize);
         downsample = upsample = 1;
         period = frequency = 1;
         phase = 0;
         if (!parent_context) reblock = 1;
         switched = 0;
     }
-    dc->dc_reblock = reblock;
-    dc->dc_switched = switched;
-    dc->dc_srate = srate;
-    dc->dc_vecsize = vecsize;
-    dc->dc_calcsize = calcsize;
+    dc->dc_isReblocked = reblock;
+    dc->dc_isSwitched = switched;
+    dc->dc_sampleRate = srate;
+    dc->dc_vectorSize = vecsize;
+    dc->dc_blockSize = calcsize;
     
         /* if we're reblocking or switched, we now have to create output
         signals to fill in for the "borrowed" ones we have now.  This
@@ -508,10 +515,10 @@ void ugen_done_graph(t_dspcontext *dc)
         the case that there was a signal loop.  But we don't know this
         yet.  */
 
-    if (dc->dc_iosigs && (switched || reblock))
+    if (dc->dc_ioSignals && (switched || reblock))
     {
         t_signal **sigp;
-        for (i = 0, sigp = dc->dc_iosigs + dc->dc_ninlets; i < dc->dc_noutlets;
+        for (i = 0, sigp = dc->dc_ioSignals + dc->dc_numberOfInlets; i < dc->dc_numberOfOutlets;
             i++, sigp++)
         {
             if ((*sigp)->s_isBorrowed && !(*sigp)->s_borrowedFrom)
@@ -537,19 +544,19 @@ void ugen_done_graph(t_dspcontext *dc)
         if any.  Outlets will also need pointers, unless we're switched, in
         which case outlet epilog code will kick in. */
         
-    for (u = dc->dc_ugenlist; u; u = u->u_next)
+    for (u = dc->dc_ugens; u; u = u->u_next)
     {
-        t_pd *zz = &u->u_obj->te_g.g_pd;
-        t_signal **insigs = dc->dc_iosigs, **outsigs = dc->dc_iosigs;
-        if (outsigs) outsigs += dc->dc_ninlets;
+        t_pd *zz = &u->u_owner->te_g.g_pd;
+        t_signal **insigs = dc->dc_ioSignals, **outsigs = dc->dc_ioSignals;
+        if (outsigs) outsigs += dc->dc_numberOfInlets;
 
         if (pd_class(zz) == vinlet_class)
             vinlet_dspProlog((t_vinlet *)zz, 
-                dc->dc_iosigs, vecsize, calcsize, dsp_phase, period, frequency,
+                dc->dc_ioSignals, vecsize, calcsize, ugen_dspPhase, period, frequency,
                     downsample, upsample, reblock, switched);
         else if (pd_class(zz) == voutlet_class)
             voutlet_dspProlog((t_voutlet *)zz, 
-                outsigs, vecsize, calcsize, dsp_phase, period, frequency,
+                outsigs, vecsize, calcsize, ugen_dspPhase, period, frequency,
                     downsample, upsample, reblock, switched);
     }    
     chainblockbegin = pd_this->pd_dspChainSize;
@@ -560,23 +567,23 @@ void ugen_done_graph(t_dspcontext *dc)
         blk->x_chainonset = pd_this->pd_dspChainSize - 1;
     }   
         /* Initialize for sorting */
-    for (u = dc->dc_ugenlist; u; u = u->u_next)
+    for (u = dc->dc_ugens; u; u = u->u_next)
     {
         u->u_done = 0;
-        for (uout = u->u_out, i = u->u_nout; i--; uout++)
-            uout->o_nsent = 0;
-        for (uin = u->u_in, i = u->u_nin; i--; uin++)
-            uin->i_ngot = 0, uin->i_signal = 0;
+        /* for (uout = u->u_out, i = u->u_outSize; i--; uout++)
+            uout->o_nsent = 0; */
+        for (uin = u->u_in, i = u->u_inSize; i--; uin++)
+            uin->i_numberConnected = 0, uin->i_signal = 0;
    }
     
         /* Do the sort */
 
-    for (u = dc->dc_ugenlist; u; u = u->u_next)
+    for (u = dc->dc_ugens; u; u = u->u_next)
     {
             /* check that we have no connected signal inlets */
         if (u->u_done) continue;
-        for (uin = u->u_in, i = u->u_nin; i--; uin++)
-            if (uin->i_nconnect) goto next;
+        for (uin = u->u_in, i = u->u_inSize; i--; uin++)
+            if (uin->i_numberOfConnections) goto next;
 
         ugen_doit(dc, u);
     next: ;
@@ -585,14 +592,14 @@ void ugen_done_graph(t_dspcontext *dc)
         /* check for a DSP loop, which is evidenced here by the presence
         of ugens not yet scheduled. */
         
-    for (u = dc->dc_ugenlist; u; u = u->u_next)
+    for (u = dc->dc_ugens; u; u = u->u_next)
         if (!u->u_done) 
     {
         t_signal **sigp;
         post_error ("DSP loop detected (some tilde objects not scheduled)");
                 /* this might imply that we have unfilled "borrowed" outputs
                 which we'd better fill in now. */
-        for (i = 0, sigp = dc->dc_iosigs + dc->dc_ninlets; i < dc->dc_noutlets;
+        for (i = 0, sigp = dc->dc_ioSignals + dc->dc_numberOfInlets; i < dc->dc_numberOfOutlets;
             i++, sigp++)
         {
             if ((*sigp)->s_isBorrowed && !(*sigp)->s_borrowedFrom)
@@ -615,15 +622,15 @@ void ugen_done_graph(t_dspcontext *dc)
 
         /* add epilogs for outlets.  */
 
-    for (u = dc->dc_ugenlist; u; u = u->u_next)
+    for (u = dc->dc_ugens; u; u = u->u_next)
     {
-        t_pd *zz = &u->u_obj->te_g.g_pd;
+        t_pd *zz = &u->u_owner->te_g.g_pd;
         if (pd_class(zz) == voutlet_class)
         {
-            t_signal **iosigs = dc->dc_iosigs;
-            if (iosigs) iosigs += dc->dc_ninlets;
+            t_signal **iosigs = dc->dc_ioSignals;
+            if (iosigs) iosigs += dc->dc_numberOfInlets;
             voutlet_dspEpilog((t_voutlet *)zz, 
-                iosigs, vecsize, calcsize, dsp_phase, period, frequency,
+                iosigs, vecsize, calcsize, ugen_dspPhase, period, frequency,
                     downsample, upsample, reblock, switched);
         }
     }
@@ -639,16 +646,16 @@ void ugen_done_graph(t_dspcontext *dc)
     if (0)
     {
         t_int *ip;
-        if (!dc->dc_parentcontext)
+        if (!dc->dc_parentContext)
             for (i = pd_this->pd_dspChainSize, ip = pd_this->pd_dspChain; 
                 i--; ip++)
                     post("chain %lx", *ip);
         post("... ugen_done_graph done.");
     }
         /* now delete everything. */
-    while (dc->dc_ugenlist)
+    while (dc->dc_ugens)
     {
-        for (uout = dc->dc_ugenlist->u_out, n = dc->dc_ugenlist->u_nout;
+        for (uout = dc->dc_ugens->u_out, n = dc->dc_ugens->u_outSize;
             n--; uout++)
         {
             oc = uout->o_connections;
@@ -659,14 +666,14 @@ void ugen_done_graph(t_dspcontext *dc)
                 oc = oc2;
             }
         }
-        PD_MEMORY_FREE(dc->dc_ugenlist->u_out);
-        PD_MEMORY_FREE(dc->dc_ugenlist->u_in);
-        u = dc->dc_ugenlist;
-        dc->dc_ugenlist = u->u_next;
+        PD_MEMORY_FREE(dc->dc_ugens->u_out);
+        PD_MEMORY_FREE(dc->dc_ugens->u_in);
+        u = dc->dc_ugens;
+        dc->dc_ugens = u->u_next;
         PD_MEMORY_FREE(u);
     }
-    if (ugen_currentcontext == dc)
-        ugen_currentcontext = dc->dc_parentcontext;
+    if (ugen_context == dc)
+        ugen_context = dc->dc_parentContext;
     else { PD_BUG; }
     PD_MEMORY_FREE(dc);
 
@@ -675,10 +682,10 @@ void ugen_done_graph(t_dspcontext *dc)
 /*
 t_signal *ugen_getiosig(int index, int inout)
 {
-    if (!ugen_currentcontext) { PD_BUG; }
-    if (ugen_currentcontext->dc_toplevel) return (0);
-    if (inout) index += ugen_currentcontext->dc_ninlets;
-    return (ugen_currentcontext->dc_iosigs[index]);
+    if (!ugen_context) { PD_BUG; }
+    if (ugen_context->dc_isTopLevel) return (0);
+    if (inout) index += ugen_context->dc_numberOfInlets;
+    return (ugen_context->dc_ioSignals[index]);
 }
 */
 

@@ -84,10 +84,10 @@ void            signal_clean        (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            ugen_tick           (void);
 void            ugen_start          (void);
 void            ugen_stop           (void);
 int             ugen_getsortno      (void);
+void            ugen_tick           (void);
 
 t_dspcontext    *ugen_start_graph   (int, t_signal **, int, int);
 void            ugen_add            (t_dspcontext *, t_object *);
@@ -103,7 +103,6 @@ void        dsp_addZeroPerform      (t_sample *s, int n);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
 
 t_int   *plus_perform       (t_int *args);
 t_int   *copy_perform       (t_int *args);
@@ -134,41 +133,41 @@ t_int   *block_dspEpilog    (t_int *w);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    vinlet_dspProlog    (t_vinlet *x,
-                                t_signal **parentSignals,
-                                int vectorSize,
-                                int size,
-                                int phase,
-                                int period,
-                                int frequency,
-                                int downSample,
-                                int upSample,
-                                int reblock,
-                                int switched);
+void        vinlet_dspProlog    (t_vinlet *x,
+                                    t_signal **parentSignals,
+                                    int vectorSize,
+                                    int size,
+                                    int phase,
+                                    int period,
+                                    int frequency,
+                                    int downSample,
+                                    int upSample,
+                                    int reblock,
+                                    int switched);
 
-void    voutlet_dspProlog   (t_voutlet *x,
-                                t_signal **parentSignals,
-                                int vectorSize,
-                                int size,
-                                int phase,
-                                int period,
-                                int frequency,
-                                int downSample,
-                                int upSample,
-                                int reblock,
-                                int switched);
+void        voutlet_dspProlog   (t_voutlet *x,
+                                    t_signal **parentSignals,
+                                    int vectorSize,
+                                    int size,
+                                    int phase,
+                                    int period,
+                                    int frequency,
+                                    int downSample,
+                                    int upSample,
+                                    int reblock,
+                                    int switched);
                                                             
-void    voutlet_dspEpilog   (t_voutlet *x,
-                                t_signal **parentSignals,
-                                int vectorSize,
-                                int size,
-                                int phase,
-                                int period,
-                                int frequency,
-                                int downSample,
-                                int upSample,
-                                int reblock,
-                                int switched);
+void        voutlet_dspEpilog   (t_voutlet *x,
+                                    t_signal **parentSignals,
+                                    int vectorSize,
+                                    int size,
+                                    int phase,
+                                    int period,
+                                    int frequency,
+                                    int downSample,
+                                    int upSample,
+                                    int reblock,
+                                    int switched);
                                                             
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
