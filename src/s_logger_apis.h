@@ -16,7 +16,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 /* Lock-free logger for low latency debugging. */
-/* Handy to post small strings while developing DSP code. */
+/* Handy to post small constant strings while developing DSP code. */
 /* By the way probably not a good idea to use it in the release product. */
 
 // -----------------------------------------------------------------------------------------------------------

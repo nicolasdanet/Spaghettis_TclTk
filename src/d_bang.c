@@ -55,7 +55,7 @@ void bang_tilde_setup(void)
     bang_tilde_class = class_new(sym_bang__tilde__, (t_newmethod)bang_tilde_new,
         (t_method)bang_tilde_free, sizeof(t_bang_tilde), 0, 0);
     class_addMethod(bang_tilde_class, (t_method)bang_tilde_dsp,
-        sym_dsp, 0);
+        sym_dsp, A_CANT, A_NULL);
 }
 
 

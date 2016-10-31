@@ -289,14 +289,13 @@ void vinlet_setup (void)
             
     class_addCreator ((t_newmethod)vinlet_newSignal, sym_inlet__tilde__, A_DEFSYMBOL, A_NULL);
     
+    class_addDSP (c, vinlet_dsp);
     class_addBang (c, vinlet_bang);
     class_addFloat (c, vinlet_float);
     class_addSymbol (c, vinlet_symbol);
     class_addPointer (c, vinlet_pointer);
     class_addList (c, vinlet_list);
     class_addAnything (c, vinlet_anything);
-    
-    class_addMethod (c, (t_method)vinlet_dsp, sym_dsp, A_CANT, A_NULL);
     
     class_setHelpName (c, sym_pd);
     

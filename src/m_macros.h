@@ -140,6 +140,11 @@ typedef void (*t_gotfn1)(void *x, void *arg1);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define class_addDSP(c, m)                  class_addMethod ((c), (t_method)(m), \
+                                                sym_dsp, \
+                                                A_CANT, \
+                                                A_NULL);
+                                                
 #define class_addKey(c, m)                  class_addMethod ((c), (t_method)(m), \
                                                 sym_key, \
                                                 A_GIMME, \

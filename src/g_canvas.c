@@ -870,6 +870,7 @@ void canvas_setup (void)
 
     class_addCreator ((t_newmethod)subpatch_new, sym_pd, A_DEFSYMBOL, A_NULL);
     
+    class_addDSP (c, canvas_dsp);
     class_addKey (c, canvas_key);
     class_addClick (c, canvas_click);
     class_addMotion (c, canvas_motion);
@@ -953,7 +954,6 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_selectAll,             sym__selectall,     A_NULL);
     
     class_addMethod (c, (t_method)canvas_clear,                 sym_clear,          A_NULL);
-    class_addMethod (c, (t_method)canvas_dsp,                   sym_dsp,            A_CANT, A_NULL);
     class_addMethod (c, (t_method)canvas_rename,                sym_rename,         A_GIMME, A_NULL);
     
     class_addMethod (c, (t_method)canvas_save,                  sym_save,           A_DEFFLOAT, A_NULL);

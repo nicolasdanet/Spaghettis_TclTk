@@ -67,6 +67,20 @@ void post_error (const char *fmt, ...)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* On Mac OS X the syslog call seems to affect the JACK server. */
+/* Consequently it should be reserved for exceptional situations. */
+
+static void post_syslog (const char *s)
+{
+    openlog (PD_NAME, LOG_CONS | LOG_PID | LOG_PERROR, LOG_USER);
+    syslog (LOG_ERR, "%s", s);
+    closelog();
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #if PD_WITH_DEBUG
 
 void post_log (const char *fmt, ...)
@@ -94,16 +108,6 @@ void post_log (const char *fmt, ...)
 }
 
 #endif
-
-/* On Mac OS X the syslog call seems to affect the JACK server. */
-/* Consequently it should be reserved for exceptional situations. */
-
-void post_syslog (const char *s)
-{
-    openlog (PD_NAME, LOG_CONS | LOG_PID | LOG_PERROR, LOG_USER);
-    syslog (LOG_ERR, "%s", s);
-    closelog();
-}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
