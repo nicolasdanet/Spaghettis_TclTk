@@ -61,9 +61,9 @@ void autorelease_stop (void)
 
 void autorelease_drain (void)
 {
-    if (pd_isThingQuiet (sym__autoreleasepool)) {
+    if (pd_isThingQuiet (sym__autorelease)) {
     //
-    pd_message (pd_getThing (sym__autoreleasepool), sym__autorelease, 0, NULL);
+    pd_message (pd_getThing (sym__autorelease), sym__autorelease, 0, NULL);
     //
     }   
 }
@@ -74,7 +74,7 @@ void autorelease_drain (void)
 
 void autorelease_add (t_pd *x)
 {
-    pd_bind (x, sym__autoreleasepool);
+    pd_bind (x, sym__autorelease);
     
     if (!pd_this->pd_autorelease) { autorelease_drain(); }      /* While quitting the application. */
     else {
@@ -84,7 +84,7 @@ void autorelease_add (t_pd *x)
 
 void autorelease_perform (t_pd *x)
 {
-    pd_unbind (x, sym__autoreleasepool); pd_free (x);
+    pd_unbind (x, sym__autorelease); pd_free (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------

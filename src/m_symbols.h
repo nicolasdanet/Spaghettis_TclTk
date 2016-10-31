@@ -104,7 +104,6 @@ extern t_symbol *sym__arraydialog;
 extern t_symbol *sym__audiodialog;
 extern t_symbol *sym__audioproperties;
 extern t_symbol *sym__autorelease;
-extern t_symbol *sym__autoreleasepool;
 extern t_symbol *sym__bendin;
 extern t_symbol *sym__canvasdialog;
 extern t_symbol *sym__copy;
