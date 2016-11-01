@@ -65,12 +65,12 @@ void midiout_setup (void)
     t_class *c = NULL;
     
     c = class_new (sym_midiout,
-        (t_newmethod)midiout_new,
-        NULL,
-        sizeof (t_midiout),
-        CLASS_DEFAULT,
-        A_DEFFLOAT,
-        A_NULL);
+            (t_newmethod)midiout_new,
+            NULL,
+            sizeof (t_midiout),
+            CLASS_DEFAULT,
+            A_DEFFLOAT,
+            A_NULL);
         
     class_addFloat (c, midiout_float);
     

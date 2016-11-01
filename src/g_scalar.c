@@ -586,7 +586,6 @@ t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
 static void scalar_free (t_scalar *x)
 {
     word_free (x->sc_vector, scalar_getTemplate (x));
-    guistub_destroyWithKey ((void *)x);
 
     PD_MEMORY_FREE (x->sc_vector);
 }
