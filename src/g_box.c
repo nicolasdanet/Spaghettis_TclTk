@@ -250,11 +250,11 @@ static int boxtext_send (t_boxtext *x, int action, int a, int b)
         x->box_checked = 1;                     /* Used once at creation time. */
         
     } else if (action == BOX_FIRST) {
-        sys_vGui ("::ui_box::newText .x%lx.c %s %f %f {%s} %d #%06x\n",
+        sys_vGui ("::ui_box::newText .x%lx.c %s %d %d {%s} %d #%06x\n",
                         canvas,
                         x->box_tag,
-                        (double)text_getPixelX (x->box_object, x->box_glist) + BOX_MARGIN_LEFT, 
-                        (double)text_getPixelY (x->box_object, x->box_glist) + BOX_MARGIN_TOP,
+                        (int)(text_getPixelX (x->box_object, x->box_glist) + BOX_MARGIN_LEFT), 
+                        (int)(text_getPixelY (x->box_object, x->box_glist) + BOX_MARGIN_TOP),
                         buffer, 
                         font_getHostFontSize (fontSize),
                         (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
