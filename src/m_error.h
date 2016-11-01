@@ -27,7 +27,6 @@ int  error__options (t_symbol *s, int argc, t_atom *argv);
 void error_stackOverflow                    (void);
 void error_ioStuck                          (void);
 void error_stubNotFound                     (void);
-void error_tooManyCharacters                (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -79,6 +78,7 @@ void warning_badName                        (t_symbol *, t_symbol *);
 void warning_badType                        (t_symbol *, t_symbol *);
 void warning_unusedOption                   (t_symbol *, t_symbol *);
 void warning_unusedArguments                (t_symbol *, int argc, t_atom *argv);
+void warning_tooManyCharacters              (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -29,7 +29,7 @@ void post (const char *fmt, ...)
     
     if (k >= 0 && k < PD_STRING) { sys_vGui ("::ui_console::post {%s}\n", t); }
     else {
-        error_tooManyCharacters();
+        warning_tooManyCharacters();
     }
 }
 

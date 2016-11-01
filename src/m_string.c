@@ -104,6 +104,11 @@ t_error string_addAtom (char *dest, size_t size, t_atom *a)
     return err;
 }
 
+t_error string_clear (char *dest, size_t size)
+{
+    int i; for (i = 0; i < size; i++) { dest[i] = 0; } return PD_ERROR_NONE;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

@@ -22,6 +22,7 @@ t_error     string_append                               (char *dest, size_t size
 t_error     string_sprintf                              (char *dest, size_t size, const char *format, ...);
 t_error     string_addSprintf                           (char *dest, size_t size, const char *format, ...);
 t_error     string_addAtom                              (char *dest, size_t size, t_atom *a);
+t_error     string_clear                                (char *dest, size_t size);
 
 int         string_startWith                            (const char *s, const char *isStartWith);
 int         string_containsCharacterAtStart             (const char *s, const char *isContained);

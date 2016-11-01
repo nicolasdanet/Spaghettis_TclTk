@@ -68,11 +68,6 @@ void error_stubNotFound (void)
     post_error (PD_TRANSLATE ("loader: stub not found"));
 }
 
-void error_tooManyCharacters (void) 
-{ 
-    post_error (PD_TRANSLATE ("console: too many characters"));
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -241,6 +236,11 @@ void warning_unusedArguments (t_symbol *s, int argc, t_atom *argv)
     post_warning (PD_TRANSLATE ("%s: [ %s ] unused argument(s)"), s->s_name, t);
     
     PD_MEMORY_FREE (t);
+}
+
+void warning_tooManyCharacters (void) 
+{ 
+    post_warning (PD_TRANSLATE ("console: too many characters"));
 }
 
 // -----------------------------------------------------------------------------------------------------------

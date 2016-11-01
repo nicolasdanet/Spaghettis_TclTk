@@ -26,8 +26,18 @@ typedef struct _print_tilde {
     t_object    x_obj;                          /* Must be the first. */
     t_float     x_f;
     int         x_count;
+    int         x_overflow;
+    int         x_index;
+    t_sample    *x_buffer;
     t_symbol    *x_name;
     } t_print_tilde;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define PRINT_BUFFER_SIZE   4096
+#define PRINT_BUFFER_CHUNK  16
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -48,14 +58,42 @@ static void print_tilde_float (t_print_tilde *x, t_float f)
 {
     pd_bind (cast_pd (x), sym__polling);
     
-    x->x_count = PD_MAX (0, (int)f);
+    x->x_count = (int)PD_MAX (1.0, f);
 }
 
 static void print_tilde_polling (t_print_tilde *x)
 {
-    post ("?");
+    if (!x->x_count) {
+    //
+    if (x->x_overflow) { warning_tooManyCharacters(); }
+    else {
+    //
+    t_error err = PD_ERROR_NONE;
+    char t[PD_STRING] = { 0 };
+    int i;
+    
+    for (i = 0; i < x->x_index; i++) {
+
+        int dump = ((i % PRINT_BUFFER_CHUNK) == (PRINT_BUFFER_CHUNK - 1));
+        dump |= (i == (x->x_index - 1));
+        
+        if (!dump) { err |= string_addSprintf (t, PD_STRING, "%g ", x->x_buffer[i]); }
+        else {
+            err |= string_addSprintf (t, PD_STRING, "%g", x->x_buffer[i]); 
+            PD_ASSERT (!err);
+            post ("%s: %s", x->x_name->s_name, t);
+            string_clear (t, PD_STRING);
+        }
+    }
+    //
+    }
+
+    x->x_overflow = 0;
+    x->x_index    = 0;
     
     pd_unbind (cast_pd (x), sym__polling);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -69,16 +107,16 @@ static t_int *print_tilde_perform (t_int *w)
     int n = (int)(w[3]);
     
     if (x->x_count) {
-    //
-    /*
-    int i=0;
-    post("%s:", x->x_name->s_name);
-    for(i=0; i<n; i++) {
-      post("%.4g  ", in[i]);
-    }
-    */
-    x->x_count--;
-    //
+    
+        if (x->x_index + n >= PRINT_BUFFER_SIZE) { x->x_overflow = 1; }
+        else {
+            int i;
+            for (i = 0; i < n; i++) {
+                x->x_buffer[x->x_index] = in[i]; x->x_index++;
+            }
+        }
+        
+        x->x_count--;
     }
     
     return (w + 4);
@@ -97,11 +135,15 @@ static void *print_tilde_new (t_symbol *s)
 {
     t_print_tilde *x = (t_print_tilde *)pd_new (print_tilde_class);
     
-    x->x_f     = 0;
-    x->x_count = 0;
-    x->x_name  = (s != &s_ ? s : sym_print__tilde__);
+    x->x_buffer = (t_sample *)PD_MEMORY_GET (PRINT_BUFFER_SIZE * sizeof (t_sample));
+    x->x_name   = (s != &s_ ? s : sym_print__tilde__);
     
     return x;
+}
+
+static void print_tilde_free (t_print_tilde *x)
+{
+    PD_MEMORY_FREE (x->x_buffer);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -114,7 +156,7 @@ void print_tilde_setup (void)
     
     c = class_new (sym_print__tilde__,
             (t_newmethod)print_tilde_new,
-            NULL,
+            (t_method)print_tilde_free,
             sizeof (t_print_tilde),
             CLASS_DEFAULT,
             A_DEFSYMBOL,
