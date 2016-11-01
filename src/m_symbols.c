@@ -190,6 +190,7 @@ t_symbol *sym_cnv;
 t_symbol *sym_color;
 t_symbol *sym_comment;
 t_symbol *sym_connect;
+t_symbol *sym_console;
 t_symbol *sym_constant;
 t_symbol *sym_coords;
 t_symbol *sym_cos;
@@ -741,6 +742,7 @@ void symbols_initialize (void)
     sym_color                                   = gensym ("color");
     sym_comment                                 = gensym ("comment");
     sym_connect                                 = gensym ("connect");
+    sym_console                                 = gensym ("console");
     sym_constant                                = gensym ("constant");
     sym_coords                                  = gensym ("coords");
     sym_cos                                     = gensym ("cos");

@@ -238,9 +238,9 @@ void warning_unusedArguments (t_symbol *s, int argc, t_atom *argv)
     PD_MEMORY_FREE (t);
 }
 
-void warning_tooManyCharacters (void) 
+void warning_tooManyCharacters (t_symbol *s) 
 { 
-    post_warning (PD_TRANSLATE ("console: too many characters"));
+    post_warning (PD_TRANSLATE ("%s: too many characters"), s->s_name);
 }
 
 // -----------------------------------------------------------------------------------------------------------

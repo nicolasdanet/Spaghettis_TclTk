@@ -65,7 +65,7 @@ static void print_tilde_polling (t_print_tilde *x)
 {
     if (!x->x_count) {
     //
-    if (x->x_overflow) { warning_tooManyCharacters(); }
+    if (x->x_overflow) { warning_tooManyCharacters (sym_print__tilde__); }
     else {
     //
     t_error err = PD_ERROR_NONE;

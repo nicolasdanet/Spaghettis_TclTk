@@ -195,6 +195,7 @@ extern t_symbol *sym_cnv;
 extern t_symbol *sym_color;
 extern t_symbol *sym_comment;
 extern t_symbol *sym_connect;
+extern t_symbol *sym_console;
 extern t_symbol *sym_constant;
 extern t_symbol *sym_coords;
 extern t_symbol *sym_cos;
