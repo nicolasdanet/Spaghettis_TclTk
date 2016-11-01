@@ -1441,10 +1441,10 @@ long soundfiler_dowrite(void *obj, t_glist *canvas,
     {
         if ((bytespersamp != 4) && (biggest > 1))
         {
-            post("%s: normalizing max amplitude %f to 1", filesym->s_name, biggest);
+            post("%s: normalizing max amplitude %g to 1", filesym->s_name, biggest);
             normalize = 1;
         }
-        else post("%s: biggest amplitude = %f", filesym->s_name, biggest);
+        else post("%s: biggest amplitude = %g", filesym->s_name, biggest);
     }
     if (normalize)
         normfactor = (biggest > 0 ? 32767./(32768. * biggest) : 1);

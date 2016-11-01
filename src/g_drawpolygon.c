@@ -206,7 +206,7 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     if (!isVisible) { sys_vGui (".x%lx.c delete %lxCURVE\n", view, tag); }
     else {
     //
-    t_float width        = gpointer_getFloatByDescriptor (gp, &x->x_width);
+    int width            = gpointer_getFloatByDescriptor (gp, &x->x_width);
     t_float colorFill    = gpointer_getFloatByDescriptor (gp, &x->x_colorFill);
     t_float colorOutline = gpointer_getFloatByDescriptor (gp, &x->x_colorOutline);
     t_symbol *filled     = color_toEncodedSymbol (color_withDigits ((int)colorFill));
@@ -244,7 +244,9 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     //
     }
 
-    heapstring_addSprintf (t, " -width %f", PD_MAX (width, 1.0));
+    width = PD_MAX (width, 1);
+    
+    heapstring_addSprintf (t, " -width %d", width);
     heapstring_addSprintf (t, " -tags %lxCURVE\n", tag);
     
     sys_gui (heapstring_getRaw (t));
