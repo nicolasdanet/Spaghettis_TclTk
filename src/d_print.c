@@ -56,9 +56,9 @@ static void print_tilde_bang (t_print_tilde *x)
 
 static void print_tilde_float (t_print_tilde *x, t_float f)
 {
-    pd_bind (cast_pd (x), sym__polling);
-    
     x->x_count = (int)PD_MAX (1.0, f);
+    
+    pd_bind (cast_pd (x), sym__polling);
 }
 
 static void print_tilde_polling (t_print_tilde *x)
@@ -143,6 +143,8 @@ static void *print_tilde_new (t_symbol *s)
 
 static void print_tilde_free (t_print_tilde *x)
 {
+    if (x->x_count) { pd_unbind (cast_pd (x), sym__polling); }
+    
     PD_MEMORY_FREE (x->x_buffer);
 }
 
