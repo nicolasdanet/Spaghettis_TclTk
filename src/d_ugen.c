@@ -95,46 +95,46 @@ struct _dspcontext {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void ugen_start(void)
+void ugen_start (void)
 {
     ugen_stop();
-    ugen_buildIdentifier++;
-    pd_this->pd_dspChain = (t_int *)PD_MEMORY_GET(sizeof(*pd_this->pd_dspChain));
-    pd_this->pd_dspChain[0] = (t_int)dsp_done;
+    
+    PD_ASSERT (!ugen_context);
+    
     pd_this->pd_dspChainSize = 1;
-    if (ugen_context) { PD_BUG; }
+    pd_this->pd_dspChain     = (t_int *)PD_MEMORY_GET (pd_this->pd_dspChainSize * sizeof (t_int));
+    pd_this->pd_dspChain[0]  = (t_int)dsp_done;
+    
+    ugen_buildIdentifier++;
 }
 
-void ugen_stop(void)
+void ugen_tick (void)
 {
-    t_signal *s;
-    int i;
-    if (pd_this->pd_dspChain)
-    {
-        PD_MEMORY_FREE(pd_this->pd_dspChain);
-        pd_this->pd_dspChain = 0;
+    if (pd_this->pd_dspChain) {
+    //
+    t_int *t = pd_this->pd_dspChain; while (t) { t = (*(t_perform)(*t))(t); } ugen_dspPhase++;
+    //
+    }
+}
+
+void ugen_stop (void)
+{
+    if (pd_this->pd_dspChain) {
+    //
+    PD_MEMORY_FREE (pd_this->pd_dspChain); pd_this->pd_dspChain = NULL;
+    //
     }
     
     signal_clean();
-}
-
-int ugen_getsortno(void)
-{
-    return (ugen_buildIdentifier);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void ugen_tick(void)
+int ugen_getBuildIdentifier (void)
 {
-    if (pd_this->pd_dspChain)
-    {
-        t_int *ip;
-        for (ip = pd_this->pd_dspChain; ip; ) ip = (*(t_perform)(*ip))(ip);
-        ugen_dspPhase++;
-    }
+    return ugen_buildIdentifier;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -164,7 +164,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
         inlets and subpatchs; except in the case we're an inlet and "blocking"
         is set.  We don't yet know if a subcanvas will be "blocking" so there
         we delay new signal creation, which will be handled by calling
-        signal_borrowFrom in the ugen_done_graph routine below. */
+        signal_borrow in the ugen_done_graph routine below. */
     int nonewsigs = (class == canvas_class || 
         (class == vinlet_class) && !(dc->dc_isReblocked));
         /* when we encounter a subcanvas or a signal outlet, suppress freeing
@@ -523,7 +523,7 @@ void ugen_done_graph(t_dspcontext *dc)
         {
             if ((*sigp)->s_isBorrowed && !(*sigp)->s_borrowedFrom)
             {
-                signal_borrowFrom(*sigp,
+                signal_borrow(*sigp,
                     signal_new(parent_vecsize, parent_srate));
                 (*sigp)->s_count++;
 
@@ -605,7 +605,7 @@ void ugen_done_graph(t_dspcontext *dc)
             if ((*sigp)->s_isBorrowed && !(*sigp)->s_borrowedFrom)
             {
                 t_signal *s3 = signal_new(parent_vecsize, parent_srate);
-                signal_borrowFrom(*sigp, s3);
+                signal_borrow(*sigp, s3);
                 (*sigp)->s_count++;
                 dsp_addZeroPerform(s3->s_vector, s3->s_blockSize);
                 if (0)
@@ -678,16 +678,6 @@ void ugen_done_graph(t_dspcontext *dc)
     PD_MEMORY_FREE(dc);
 
 }
-
-/*
-t_signal *ugen_getiosig(int index, int inout)
-{
-    if (!ugen_context) { PD_BUG; }
-    if (ugen_context->dc_isTopLevel) return (0);
-    if (inout) index += ugen_context->dc_numberOfInlets;
-    return (ugen_context->dc_ioSignals[index]);
-}
-*/
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

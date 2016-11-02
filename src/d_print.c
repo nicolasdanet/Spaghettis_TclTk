@@ -73,17 +73,18 @@ static void print_tilde_polling (t_print_tilde *x)
     int i;
     
     for (i = 0; i < x->x_index; i++) {
-
-        int dump = ((i % PRINT_BUFFER_CHUNK) == (PRINT_BUFFER_CHUNK - 1));
-        dump |= (i == (x->x_index - 1));
-        
-        if (!dump) { err |= string_addSprintf (t, PD_STRING, "%g ", x->x_buffer[i]); }
-        else {
-            err |= string_addSprintf (t, PD_STRING, "%g", x->x_buffer[i]); 
-            PD_ASSERT (!err);
-            post ("%s: %s", x->x_name->s_name, t);
-            string_clear (t, PD_STRING);
-        }
+    //
+    int dump = ((i % PRINT_BUFFER_CHUNK) == (PRINT_BUFFER_CHUNK - 1));
+    dump |= (i == (x->x_index - 1));
+    
+    if (!dump) { err |= string_addSprintf (t, PD_STRING, "%g ", x->x_buffer[i]); }
+    else {
+        err |= string_addSprintf (t, PD_STRING, "%g", x->x_buffer[i]); 
+        PD_ASSERT (!err);
+        post ("%s: %s", x->x_name->s_name, t);
+        string_clear (t, PD_STRING);
+    }
+    //
     }
     //
     }

@@ -134,7 +134,7 @@ static void vinlet_dsp (t_vinlet *x, t_signal **sp)
     //
     t_signal *out = sp[0];
             
-    if (x->x_directSignal) { signal_borrowFrom (out, x->x_directSignal); }
+    if (x->x_directSignal) { signal_borrow (out, x->x_directSignal); }
     else {
         dsp_add (vinlet_perform, 3, x, out->s_vector, out->s_blockSize);
         x->x_bufferRead = x->x_buffer;

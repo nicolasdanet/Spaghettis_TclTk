@@ -99,7 +99,7 @@ void signal_free (t_signal *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void signal_borrowFrom (t_signal *s, t_signal *toBeBorrowed)
+void signal_borrow (t_signal *s, t_signal *toBeBorrowed)
 {
     s->s_borrowedFrom = toBeBorrowed;
     s->s_blockSize    = toBeBorrowed->s_blockSize;

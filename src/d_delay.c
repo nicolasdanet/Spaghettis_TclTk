@@ -55,10 +55,10 @@ static void sigdelwrite_updatesr (t_sigdelwrite *x, t_float sr) /* added by Math
     /* routine to check that all delwrites/delreads/vds have same vecsize */
 static void sigdelwrite_checkvecsize(t_sigdelwrite *x, int vecsize)
 {
-    if (x->x_rsortno != ugen_getsortno())
+    if (x->x_rsortno != ugen_getBuildIdentifier())
     {
         x->x_vecsize = vecsize;
-        x->x_rsortno = ugen_getsortno();
+        x->x_rsortno = ugen_getBuildIdentifier();
     }
     /*
         LATER this should really check sample rate and blocking, once that is
@@ -117,7 +117,7 @@ static t_int *sigdelwrite_perform(t_int *w)
 static void sigdelwrite_dsp(t_sigdelwrite *x, t_signal **sp)
 {
     dsp_add(sigdelwrite_perform, 3, sp[0]->s_vector, &x->x_cspace, sp[0]->s_blockSize);
-    x->x_sortno = ugen_getsortno();
+    x->x_sortno = ugen_getBuildIdentifier();
     sigdelwrite_checkvecsize(x, sp[0]->s_blockSize);
     sigdelwrite_updatesr(x, sp[0]->s_sampleRate);
 }
@@ -212,7 +212,7 @@ static void sigdelread_dsp(t_sigdelread *x, t_signal **sp)
     {
         sigdelwrite_updatesr(delwriter, sp[0]->s_sampleRate);
         sigdelwrite_checkvecsize(delwriter, sp[0]->s_blockSize);
-        x->x_zerodel = (delwriter->x_sortno == ugen_getsortno() ?
+        x->x_zerodel = (delwriter->x_sortno == ugen_getBuildIdentifier() ?
             0 : delwriter->x_vecsize);
         sigdelread_float(x, x->x_deltime);
         dsp_add(sigdelread_perform, 4,
@@ -306,7 +306,7 @@ static void sigvd_dsp(t_sigvd *x, t_signal **sp)
     if (delwriter)
     {
         sigdelwrite_checkvecsize(delwriter, sp[0]->s_blockSize);
-        x->x_zerodel = (delwriter->x_sortno == ugen_getsortno() ?
+        x->x_zerodel = (delwriter->x_sortno == ugen_getBuildIdentifier() ?
             0 : delwriter->x_vecsize);
         dsp_add(sigvd_perform, 5,
             sp[0]->s_vector, sp[1]->s_vector,
