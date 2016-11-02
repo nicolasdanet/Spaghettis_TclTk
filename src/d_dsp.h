@@ -84,21 +84,22 @@ void            signal_clean                (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            ugen_start                  (void);
-void            ugen_tick                   (void);
-void            ugen_stop                   (void);
+void            ugen_dspInitialize          (void);
+void            ugen_dspTick                (void);
+void            ugen_dspRelease             (void);
 int             ugen_getBuildIdentifier     (void);
 
-t_dspcontext    *ugen_start_graph           (int, t_signal **, int, int);
-void            ugen_add                    (t_dspcontext *, t_object *);
-void            ugen_connect                (t_dspcontext *, t_object *, int, t_object *, int);
-void            ugen_done_graph             (t_dspcontext *);
+t_dspcontext    *ugen_graphStart            (int isTopLevel, t_signal **sp, int m, int n);
+                                                
+void            ugen_graphAdd               (t_dspcontext *context, t_object *o);
+void            ugen_graphConnect           (t_dspcontext *context, t_object *o1, int m, t_object *o2, int n);
+void            ugen_graphClose             (t_dspcontext *context);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        dsp_addZeroPerform      (t_sample *s, int n);
+void            dsp_addZeroPerform          (t_sample *s, int n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

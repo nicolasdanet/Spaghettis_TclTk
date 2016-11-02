@@ -173,7 +173,7 @@ static void scheduler_tick (void)
     
     pd_this->pd_systime = nextSystime;
     
-    ugen_tick();
+    ugen_dspTick();
     
     #if PD_WATCHDOG
     #if PD_WITH_NOGUI

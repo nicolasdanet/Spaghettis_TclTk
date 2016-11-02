@@ -34,12 +34,12 @@ static void canvas_dspPerform (t_glist *glist, int isTopLevel, t_signal **sp)
     int m = object_numberOfSignalInlets (cast_object (glist));
     int n = object_numberOfSignalOutlets (cast_object (glist));
     
-    context = ugen_start_graph (isTopLevel, sp, m, n);
+    context = ugen_graphStart (isTopLevel, sp, m, n);
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
     //
     t_object *o = canvas_castToObjectIfPatchable (y);
-    if (o && class_hasMethod (pd_class (y), sym_dsp)) { ugen_add (context, o); }
+    if (o && class_hasMethod (pd_class (y), sym_dsp)) { ugen_graphAdd (context, o); }
     //
     }
 
@@ -47,7 +47,7 @@ static void canvas_dspPerform (t_glist *glist, int isTopLevel, t_signal **sp)
     
     while (connection = canvas_traverseLinesNext (&t)) {
         if (object_isSignalOutlet (t.tr_srcObject, t.tr_srcIndexOfOutlet)) {
-            ugen_connect (context, 
+            ugen_graphConnect (context, 
                 t.tr_srcObject, 
                 t.tr_srcIndexOfOutlet, 
                 t.tr_destObject, 
@@ -55,7 +55,7 @@ static void canvas_dspPerform (t_glist *glist, int isTopLevel, t_signal **sp)
         }
     }
 
-    ugen_done_graph (context);
+    ugen_graphClose (context);
 }
 
 void canvas_dsp (t_glist *x, t_signal **sp)
@@ -71,7 +71,7 @@ static void dsp_start (void)
 {
     t_glist *glist;
 
-    ugen_start();
+    ugen_dspInitialize();
     
     for (glist = pd_this->pd_roots; glist; glist = glist->gl_next) { canvas_dspPerform (glist, 1, NULL); }
     
@@ -83,7 +83,7 @@ static void dsp_stop (void)
 {
     PD_ASSERT (pd_this->pd_dspState);
     
-    ugen_stop();
+    ugen_dspRelease();
     
     pd_this->pd_dspState = 0;
 }

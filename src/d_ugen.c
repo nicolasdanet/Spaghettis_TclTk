@@ -95,9 +95,9 @@ struct _dspcontext {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void ugen_start (void)
+void ugen_dspInitialize (void)
 {
-    ugen_stop();
+    ugen_dspRelease();
     
     PD_ASSERT (!ugen_context);
     
@@ -108,7 +108,7 @@ void ugen_start (void)
     ugen_buildIdentifier++;
 }
 
-void ugen_tick (void)
+void ugen_dspTick (void)
 {
     if (pd_this->pd_dspChain) {
     //
@@ -117,7 +117,7 @@ void ugen_tick (void)
     }
 }
 
-void ugen_stop (void)
+void ugen_dspRelease (void)
 {
     if (pd_this->pd_dspChain) {
     //
@@ -164,7 +164,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
         inlets and subpatchs; except in the case we're an inlet and "blocking"
         is set.  We don't yet know if a subcanvas will be "blocking" so there
         we delay new signal creation, which will be handled by calling
-        signal_borrow in the ugen_done_graph routine below. */
+        signal_borrow in the ugen_graphClose routine below. */
     int nonewsigs = (class == canvas_class || 
         (class == vinlet_class) && !(dc->dc_isReblocked));
         /* when we encounter a subcanvas or a signal outlet, suppress freeing
@@ -310,15 +310,11 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* start building the graph for a canvas */
-t_dspcontext *ugen_start_graph(int toplevel, t_signal **sp,
-    int ninlets, int noutlets)
+t_dspcontext *ugen_graphStart (int toplevel, t_signal **sp, int ninlets, int noutlets)
 {
     t_dspcontext *dc = (t_dspcontext *)PD_MEMORY_GET(sizeof(*dc));
     t_float parent_srate, srate;
     int parent_vecsize, vecsize;
-
-    if (0) post("ugen_start_graph...");
 
     /* protect against invalid numsignals
      * this might happen if we have an abstraction with inlet~/outlet~ opened as a toplevel patch
@@ -337,7 +333,7 @@ t_dspcontext *ugen_start_graph(int toplevel, t_signal **sp,
 }
 
     /* first the canvas calls this to create all the boxes... */
-void ugen_add(t_dspcontext *dc, t_object *obj)
+void ugen_graphAdd(t_dspcontext *dc, t_object *obj)
 {
     t_ugenbox *x = (t_ugenbox *)PD_MEMORY_GET(sizeof *x);
     int i;
@@ -358,7 +354,7 @@ void ugen_add(t_dspcontext *dc, t_object *obj)
 }
 
     /* and then this to make all the connections. */
-void ugen_connect(t_dspcontext *dc, t_object *x1, int outno, t_object *x2,
+void ugen_graphConnect(t_dspcontext *dc, t_object *x1, int outno, t_object *x2,
     int inno)
 {
     t_ugenbox *u1, *u2;
@@ -401,7 +397,7 @@ void ugen_connect(t_dspcontext *dc, t_object *x1, int outno, t_object *x2,
     graph around, in case the user is editing the DSP network, to save having
     to recreate it all the time.  But not today.  */
 
-void ugen_done_graph(t_dspcontext *dc)
+void ugen_graphClose(t_dspcontext *dc)
 {
     t_ugenbox *u, *u2;
     t_sigoutlet *uout;
