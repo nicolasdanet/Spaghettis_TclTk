@@ -304,6 +304,10 @@ int main_entry (int argc, char **argv)
     //
     }
     
+    #if PD_WITH_DEBUG
+        post_log ("Shutdown");
+    #endif
+    
     return err;
 }
 
