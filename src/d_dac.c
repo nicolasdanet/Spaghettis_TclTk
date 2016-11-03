@@ -51,7 +51,7 @@ static void dac_dsp(t_dac *x, t_signal **sp)
     for (i = x->x_n, ip = x->x_vec, sp2 = sp; i--; ip++, sp2++)
     {
         int ch = *ip - 1;
-        if ((*sp2)->s_blockSize != AUDIO_DEFAULT_BLOCKSIZE)
+        if ((*sp2)->s_vectorSize != AUDIO_DEFAULT_BLOCKSIZE)
             post_error ("dac~: bad vector size");
         else if (ch >= 0 && ch < audio_getChannelsOut())
             dsp_add(plus_perform, 4, audio_soundOut + AUDIO_DEFAULT_BLOCKSIZE*ch,
@@ -166,7 +166,7 @@ static void adc_dsp(t_adc *x, t_signal **sp)
     for (i = x->x_n, ip = x->x_vec, sp2 = sp; i--; ip++, sp2++)
     {
         int ch = *ip - 1;
-        if ((*sp2)->s_blockSize != AUDIO_DEFAULT_BLOCKSIZE)
+        if ((*sp2)->s_vectorSize != AUDIO_DEFAULT_BLOCKSIZE)
             post_error ("adc~: bad vector size");
         else if (ch >= 0 && ch < audio_getChannelsIn())
             dsp_add_copy(audio_soundIn + AUDIO_DEFAULT_BLOCKSIZE*ch,

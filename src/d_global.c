@@ -52,8 +52,8 @@ static t_int *sigsend_perform(t_int *w)
 
 static void sigsend_dsp(t_sigsend *x, t_signal **sp)
 {
-    if (x->x_n == sp[0]->s_blockSize)
-        dsp_add(sigsend_perform, 3, sp[0]->s_vector, x->x_vec, sp[0]->s_blockSize);
+    if (x->x_n == sp[0]->s_vectorSize)
+        dsp_add(sigsend_perform, 3, sp[0]->s_vector, x->x_vec, sp[0]->s_vectorSize);
     else post_error ("sigsend %s: unexpected vector size", x->x_sym->s_name);
 }
 
@@ -162,18 +162,18 @@ static void sigreceive_set(t_sigreceive *x, t_symbol *s)
 
 static void sigreceive_dsp(t_sigreceive *x, t_signal **sp)
 {
-    if (sp[0]->s_blockSize != x->x_n)
+    if (sp[0]->s_vectorSize != x->x_n)
     {
         post_error ("receive~ %s: vector size mismatch", x->x_sym->s_name);
     }
     else
     {
         sigreceive_set(x, x->x_sym);
-        if (sp[0]->s_blockSize&7)
+        if (sp[0]->s_vectorSize&7)
             dsp_add(sigreceive_perform, 3,
-                x, sp[0]->s_vector, sp[0]->s_blockSize);
+                x, sp[0]->s_vector, sp[0]->s_vectorSize);
         else dsp_add(sigreceive_perf8, 3,
-            x, sp[0]->s_vector, sp[0]->s_blockSize);
+            x, sp[0]->s_vector, sp[0]->s_vectorSize);
     }
 }
 
@@ -241,12 +241,12 @@ static t_int *sigcatch_perf8(t_int *w)
 
 static void sigcatch_dsp(t_sigcatch *x, t_signal **sp)
 {
-    if (x->x_n == sp[0]->s_blockSize)
+    if (x->x_n == sp[0]->s_vectorSize)
     {
-        if(sp[0]->s_blockSize&7)
-        dsp_add(sigcatch_perform, 3, x->x_vec, sp[0]->s_vector, sp[0]->s_blockSize);
+        if(sp[0]->s_vectorSize&7)
+        dsp_add(sigcatch_perform, 3, x->x_vec, sp[0]->s_vector, sp[0]->s_vectorSize);
         else
-        dsp_add(sigcatch_perf8, 3, x->x_vec, sp[0]->s_vector, sp[0]->s_blockSize);
+        dsp_add(sigcatch_perf8, 3, x->x_vec, sp[0]->s_vector, sp[0]->s_vectorSize);
     }
     else post_error ("sigcatch %s: unexpected vector size", x->x_sym->s_name);
 }
@@ -329,7 +329,7 @@ static void sigthrow_set(t_sigthrow *x, t_symbol *s)
 
 static void sigthrow_dsp(t_sigthrow *x, t_signal **sp)
 {
-    if (sp[0]->s_blockSize != x->x_n)
+    if (sp[0]->s_vectorSize != x->x_n)
     {
         post_error ("throw~ %s: vector size mismatch", x->x_sym->s_name);
     }
@@ -337,7 +337,7 @@ static void sigthrow_dsp(t_sigthrow *x, t_signal **sp)
     {
         sigthrow_set(x, x->x_sym);
         dsp_add(sigthrow_perform, 3,
-            x, sp[0]->s_vector, sp[0]->s_blockSize);
+            x, sp[0]->s_vector, sp[0]->s_vectorSize);
     }
 }
 

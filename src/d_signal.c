@@ -39,18 +39,18 @@ static t_signal *signal_reusableBorrowed;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_signal *signal_new (int blockSize, t_float sampleRate)
+t_signal *signal_new (int vectorSize, t_float sampleRate)
 {
     t_signal *s  = NULL;
     t_signal **t = NULL;
     
-    PD_ASSERT (math_ilog2 (blockSize) <= SIGNAL_SLOTS);
-    PD_ASSERT (PD_ISPOWER2 (blockSize)); 
-    PD_ABORT (!PD_ISPOWER2 (blockSize));
+    PD_ASSERT (math_ilog2 (vectorSize) <= SIGNAL_SLOTS);
+    PD_ASSERT (PD_ISPOWER2 (vectorSize)); 
+    PD_ABORT (!PD_ISPOWER2 (vectorSize));
     
-    if (!blockSize) { t = &signal_reusableBorrowed; }
+    if (!vectorSize) { t = &signal_reusableBorrowed; }
     else {
-        t = signal_reusable + math_ilog2 (blockSize);
+        t = signal_reusable + math_ilog2 (vectorSize);
     }
     
     if ((s = *t)) { *t = s->s_nextReusable; }
@@ -58,8 +58,8 @@ t_signal *signal_new (int blockSize, t_float sampleRate)
     //
     s = (t_signal *)PD_MEMORY_GET (sizeof (t_signal));
     
-    if (blockSize) {
-        s->s_vector     = (t_sample *)PD_MEMORY_GET (blockSize * sizeof (t_sample));
+    if (vectorSize) {
+        s->s_vector     = (t_sample *)PD_MEMORY_GET (vectorSize * sizeof (t_sample));
         s->s_isBorrowed = 0;
         
     } else {
@@ -72,7 +72,7 @@ t_signal *signal_new (int blockSize, t_float sampleRate)
     //
     }
     
-    s->s_blockSize      = blockSize;
+    s->s_vectorSize     = vectorSize;
     s->s_sampleRate     = sampleRate;
     s->s_count          = 0;
     s->s_borrowedFrom   = NULL;
@@ -90,7 +90,7 @@ void signal_free (t_signal *s)
         
     } else {
     
-        int n = math_ilog2 (s->s_blockSize);
+        int n = math_ilog2 (s->s_vectorSize);
         s->s_nextReusable = signal_reusable[n]; signal_reusable[n] = s;
     }
 }
@@ -102,7 +102,7 @@ void signal_free (t_signal *s)
 void signal_borrow (t_signal *s, t_signal *toBeBorrowed)
 {
     s->s_borrowedFrom = toBeBorrowed;
-    s->s_blockSize    = toBeBorrowed->s_blockSize;
+    s->s_vectorSize   = toBeBorrowed->s_vectorSize;
     s->s_vector       = toBeBorrowed->s_vector;
 }
 

@@ -67,7 +67,7 @@ static void sig_tilde_float(t_sig *x, t_float f)
 
 static void sig_tilde_dsp(t_sig *x, t_signal **sp)
 {
-    dsp_add(sig_tilde_perform, 3, &x->x_f, sp[0]->s_vector, sp[0]->s_blockSize);
+    dsp_add(sig_tilde_perform, 3, &x->x_f, sp[0]->s_vector, sp[0]->s_vectorSize);
 }
 
 static void *sig_tilde_new(t_float f)
@@ -201,12 +201,12 @@ static void line_tilde_stop(t_line *x)
 
 static void line_tilde_dsp(t_line *x, t_signal **sp)
 {
-    if(sp[0]->s_blockSize&7)
-        dsp_add(line_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_blockSize);
+    if(sp[0]->s_vectorSize&7)
+        dsp_add(line_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
     else
-        dsp_add(line_tilde_perf8, 3, x, sp[0]->s_vector, sp[0]->s_blockSize);
-    x->x_1overn = 1./sp[0]->s_blockSize;
-    x->x_dspticktomsec = sp[0]->s_sampleRate / (1000 * sp[0]->s_blockSize);
+        dsp_add(line_tilde_perf8, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
+    x->x_1overn = 1./sp[0]->s_vectorSize;
+    x->x_dspticktomsec = sp[0]->s_sampleRate / (1000 * sp[0]->s_vectorSize);
 }
 
 static void *line_tilde_new(void)
@@ -393,7 +393,7 @@ static void vline_tilde_float(t_vline *x, t_float f)
 
 static void vline_tilde_dsp(t_vline *x, t_signal **sp)
 {
-    dsp_add(vline_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_blockSize);
+    dsp_add(vline_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
     x->x_samppermsec = ((double)(sp[0]->s_sampleRate)) / 1000;
     x->x_msecpersamp = ((double)1000) / sp[0]->s_sampleRate;
 }
@@ -454,7 +454,7 @@ static t_int *snapshot_tilde_perform(t_int *w)
 
 static void snapshot_tilde_dsp(t_snapshot *x, t_signal **sp)
 {
-    dsp_add(snapshot_tilde_perform, 2, sp[0]->s_vector + (sp[0]->s_blockSize-1),
+    dsp_add(snapshot_tilde_perform, 2, sp[0]->s_vector + (sp[0]->s_vectorSize-1),
         &x->x_value);
 }
 
@@ -520,7 +520,7 @@ static t_int *vsnapshot_tilde_perform(t_int *w)
 
 static void vsnapshot_tilde_dsp(t_vsnapshot *x, t_signal **sp)
 {
-    int n = sp[0]->s_blockSize;
+    int n = sp[0]->s_vectorSize;
     if (n != x->x_n)
     {
         if (x->x_vec)
@@ -664,23 +664,23 @@ static t_int *env_tilde_perform(t_int *w)
 
 static void env_tilde_dsp(t_sigenv *x, t_signal **sp)
 {
-    if (x->x_period % sp[0]->s_blockSize) x->x_realperiod =
-        x->x_period + sp[0]->s_blockSize - (x->x_period % sp[0]->s_blockSize);
+    if (x->x_period % sp[0]->s_vectorSize) x->x_realperiod =
+        x->x_period + sp[0]->s_vectorSize - (x->x_period % sp[0]->s_vectorSize);
     else x->x_realperiod = x->x_period;
-    if (sp[0]->s_blockSize > x->x_allocforvs)
+    if (sp[0]->s_vectorSize > x->x_allocforvs)
     {
         void *xx = PD_MEMORY_RESIZE(x->x_buf,
             (x->x_npoints + x->x_allocforvs) * sizeof(t_sample),
-            (x->x_npoints + sp[0]->s_blockSize) * sizeof(t_sample));
+            (x->x_npoints + sp[0]->s_vectorSize) * sizeof(t_sample));
         if (!xx)
         {
             post_error ("env~: out of memory");
             return;
         }
         x->x_buf = (t_sample *)xx;
-        x->x_allocforvs = sp[0]->s_blockSize;
+        x->x_allocforvs = sp[0]->s_vectorSize;
     }
-    dsp_add(env_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_blockSize);
+    dsp_add(env_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
 }
 
 static void env_tilde_tick(t_sigenv *x) /* callback function for the clock */
@@ -815,8 +815,8 @@ done:
 
 void threshold_tilde_dsp(t_threshold_tilde *x, t_signal **sp)
 {
-    x->x_msecpertick = 1000. * sp[0]->s_blockSize / sp[0]->s_sampleRate;
-    dsp_add(threshold_tilde_perform, 3, sp[0]->s_vector, x, sp[0]->s_blockSize);
+    x->x_msecpertick = 1000. * sp[0]->s_vectorSize / sp[0]->s_sampleRate;
+    dsp_add(threshold_tilde_perform, 3, sp[0]->s_vector, x, sp[0]->s_vectorSize);
 }
 
 static void threshold_tilde_ff(t_threshold_tilde *x)

@@ -187,9 +187,9 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
             /* post("%s: unconnected signal inlet set to zero",
                 class_getNameAsString(u->u_owner->te_g.g_pd)); */
             if (scalar = object_getSignalValueAtIndex(u->u_owner, i))
-                dsp_add_scalarcopy(scalar, s3->s_vector, s3->s_blockSize);
+                dsp_add_scalarcopy(scalar, s3->s_vector, s3->s_vectorSize);
             else
-                dsp_addZeroPerform(s3->s_vector, s3->s_blockSize);
+                dsp_addZeroPerform(s3->s_vector, s3->s_vectorSize);
             uin->i_signal = s3;
             s3->s_count = 1;
         }
@@ -272,15 +272,15 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
                 s1->s_count--;
                 s2->s_count--;
                 //if (!signal_compatible(s1, s2))
-                if (!(s1->s_blockSize == s2->s_blockSize && s1->s_sampleRate == s2->s_sampleRate))
+                if (!(s1->s_vectorSize == s2->s_vectorSize && s1->s_sampleRate == s2->s_sampleRate))
                 {
                     post_error ("%s: incompatible signal inputs",
                         class_getNameAsString(u->u_owner->te_g.g_pd));
                     return;
                 }
-                s3 = signal_new(s1->s_blockSize, s1->s_sampleRate);
+                s3 = signal_new(s1->s_vectorSize, s1->s_sampleRate);
                 //s3 = signal_newlike(s1);
-                dsp_add_plus(s1->s_vector, s2->s_vector, s3->s_vector, s1->s_blockSize);
+                dsp_add_plus(s1->s_vector, s2->s_vector, s3->s_vector, s1->s_vectorSize);
                 uin->i_signal = s3;
                 s3->s_count = 1;
                 if (!s1->s_count) signal_free(s1);
@@ -332,6 +332,27 @@ static void ugen_graphConnectUgens (t_ugenbox *u1, int m, t_ugenbox *u2, int n)
     i->i_numberOfConnections++;
 }
 
+static t_block *ugen_graphGetBlockIfContainsAny (t_dspcontext *context)
+{
+    t_block *block = NULL;
+    t_ugenbox *u = NULL;
+    
+    for (u = context->dc_ugens; u; u = u->u_next) {
+    //
+    t_object *o = u->u_owner;
+    
+    if (pd_class (o) == block_class) {
+        if (block) { error_unexpected (sym_dsp, sym_block__tilde__); }
+        else {
+            block = (t_block *)o;
+        }
+    }
+    //
+    }
+    
+    return block;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -345,7 +366,7 @@ t_dspcontext *ugen_graphStart (int isTopLevel, t_signal **sp, int m, int n)
     context->dc_numberOfInlets  = isTopLevel ? 0 : m;
     context->dc_numberOfOutlets = isTopLevel ? 0 : n;
     context->dc_isTopLevel      = isTopLevel;
-    context->dc_ugens           = 0;
+    context->dc_ugens           = NULL;
     context->dc_parentContext   = ugen_context;
     context->dc_ioSignals       = sp;
         
@@ -392,94 +413,63 @@ void ugen_graphClose (t_dspcontext *context)
     t_sigoutconnect *oc2;
     int i; 
     int n;
-    t_block *blk;
-    t_dspcontext *parent_context = context->dc_parentContext;
-    t_float parent_srate;
-    int parent_vecsize;
-    int period;
-    int frequency;
-    int phase;
-    int vecsize;
-    int calcsize;
-    t_float srate;
     int chainblockbegin;    /* DSP chain onset before block prolog code */
     int chainblockend;      /* and after block epilog code */
     int chainafterall;      /* and after signal outlet epilog */
-    int reblock = 0;
-    int switched;
-    int downsample = 1;
-    int upsample = 1;
     
-    for (u = context->dc_ugens, blk = 0; u; u = u->u_next)
-    {
-        t_pd *zz = &u->u_owner->te_g.g_pd;
-        if (pd_class(zz) == block_class)
-        {
-            if (blk)
-                post_error ("conflicting block~ objects in same page");
-            else blk = (t_block *)zz;
-        }
-    }
-
-        /* figure out block size, calling frequency, sample rate */
-    if (parent_context)
-    {
-        parent_srate = parent_context->dc_sampleRate;
-        parent_vecsize = parent_context->dc_vectorSize;
-    }
-    else
-    {
-        parent_srate = audio_getSampleRate();
-        parent_vecsize = AUDIO_DEFAULT_BLOCKSIZE;
-    }
-    if (blk)
+    t_block *block              = ugen_graphGetBlockIfContainsAny (context);
+    t_dspcontext *parentContext = context->dc_parentContext;
+    t_float parentSampleRate    = parentContext ? parentContext->dc_sampleRate : audio_getSampleRate();
+    int parentVectorSize        = parentContext ? parentContext->dc_vectorSize : AUDIO_DEFAULT_BLOCKSIZE;
+    int blockSize               = parentContext ? parentContext->dc_blockSize  : parentVectorSize;
+    t_float sampleRate          = parentSampleRate;
+    int vectorSize              = parentVectorSize;
+    int downSample              = 1;
+    int upSample                = 1;
+    int period                  = 1;
+    int frequency               = 1;
+    int phase                   = 0;
+    int switched                = 0;
+    int reblock                 = parentContext ? 0 : 1;
+        
+    if (block)
     {
         int realoverlap;
-        vecsize = blk->x_vecsize;
-        if (vecsize == 0)
-            vecsize = parent_vecsize;
-        calcsize = blk->x_calcsize;
-        if (calcsize == 0)
-            calcsize = vecsize;
-        realoverlap = blk->x_overlap;
-        if (realoverlap > vecsize) realoverlap = vecsize;
-        downsample = blk->x_downsample;
-        upsample   = blk->x_upsample;
-        if (downsample > parent_vecsize)
-            downsample = parent_vecsize;
-        period = (vecsize * downsample)/
-            (parent_vecsize * realoverlap * upsample);
-        frequency = (parent_vecsize * realoverlap * upsample)/
-            (vecsize * downsample);
-        phase = blk->x_phase;
-        srate = parent_srate * realoverlap * upsample / downsample;
+        vectorSize = block->x_vecsize;
+        if (vectorSize == 0)
+            vectorSize = parentVectorSize;
+        blockSize = block->x_calcsize;
+        if (blockSize == 0)
+            blockSize = vectorSize;
+        realoverlap = block->x_overlap;
+        if (realoverlap > vectorSize) realoverlap = vectorSize;
+        downSample = block->x_downsample;
+        upSample   = block->x_upsample;
+        if (downSample > parentVectorSize)
+            downSample = parentVectorSize;
+        period = (vectorSize * downSample)/
+            (parentVectorSize * realoverlap * upSample);
+        frequency = (parentVectorSize * realoverlap * upSample)/
+            (vectorSize * downSample);
+        phase = block->x_phase;
+        sampleRate = parentSampleRate * realoverlap * upSample / downSample;
         if (period < 1) period = 1;
         if (frequency < 1) frequency = 1;
-        blk->x_frequency = frequency;
-        blk->x_period = period;
-        blk->x_phase = ugen_dspPhase & (period - 1);
-        if (! parent_context || (realoverlap != 1) ||
-            (vecsize != parent_vecsize) || 
-                (downsample != 1) || (upsample != 1))
+        block->x_frequency = frequency;
+        block->x_period = period;
+        block->x_phase = ugen_dspPhase & (period - 1);
+        if (! parentContext || (realoverlap != 1) ||
+            (vectorSize != parentVectorSize) || 
+                (downSample != 1) || (upSample != 1))
                     reblock = 1;
-        switched = blk->x_switched;
+        switched = block->x_switched;
     }
-    else
-    {
-        srate = parent_srate;
-        vecsize = parent_vecsize;
-        calcsize = (parent_context ? parent_context->dc_blockSize : vecsize);
-        downsample = upsample = 1;
-        period = frequency = 1;
-        phase = 0;
-        if (!parent_context) reblock = 1;
-        switched = 0;
-    }
+
     context->dc_isReblocked = reblock;
     context->dc_isSwitched = switched;
-    context->dc_sampleRate = srate;
-    context->dc_vectorSize = vecsize;
-    context->dc_blockSize = calcsize;
+    context->dc_sampleRate = sampleRate;
+    context->dc_vectorSize = vectorSize;
+    context->dc_blockSize = blockSize;
     
         /* if we're reblocking or switched, we now have to create output
         signals to fill in for the "borrowed" ones we have now.  This
@@ -496,7 +486,7 @@ void ugen_graphClose (t_dspcontext *context)
             if ((*sigp)->s_isBorrowed && !(*sigp)->s_borrowedFrom)
             {
                 signal_borrow(*sigp,
-                    signal_new(parent_vecsize, parent_srate));
+                    signal_new(parentVectorSize, parentSampleRate));
                 (*sigp)->s_count++;
 
                 if (0) post("set %lx->%lx", *sigp,
@@ -524,19 +514,19 @@ void ugen_graphClose (t_dspcontext *context)
 
         if (pd_class(zz) == vinlet_class)
             vinlet_dspProlog((t_vinlet *)zz, 
-                context->dc_ioSignals, vecsize, calcsize, ugen_dspPhase, period, frequency,
-                    downsample, upsample, reblock, switched);
+                context->dc_ioSignals, vectorSize, ugen_dspPhase, period, frequency,
+                    downSample, upSample, reblock, switched);
         else if (pd_class(zz) == voutlet_class)
             voutlet_dspProlog((t_voutlet *)zz, 
-                outsigs, vecsize, calcsize, ugen_dspPhase, period, frequency,
-                    downsample, upsample, reblock, switched);
+                outsigs, vectorSize, ugen_dspPhase, period, frequency,
+                    downSample, upSample, reblock, switched);
     }    
     chainblockbegin = pd_this->pd_dspChainSize;
 
-    if (blk && (reblock || switched))   /* add the block DSP prolog */
+    if (block && (reblock || switched))   /* add the block DSP prolog */
     {
-        dsp_add(block_dspProlog, 1, blk);
-        blk->x_chainonset = pd_this->pd_dspChainSize - 1;
+        dsp_add(block_dspProlog, 1, block);
+        block->x_chainonset = pd_this->pd_dspChainSize - 1;
     }   
         /* Initialize for sorting */
     for (u = context->dc_ugens; u; u = u->u_next)
@@ -576,10 +566,10 @@ void ugen_graphClose (t_dspcontext *context)
         {
             if ((*sigp)->s_isBorrowed && !(*sigp)->s_borrowedFrom)
             {
-                t_signal *s3 = signal_new(parent_vecsize, parent_srate);
+                t_signal *s3 = signal_new(parentVectorSize, parentSampleRate);
                 signal_borrow(*sigp, s3);
                 (*sigp)->s_count++;
-                dsp_addZeroPerform(s3->s_vector, s3->s_blockSize);
+                dsp_addZeroPerform(s3->s_vector, s3->s_vectorSize);
                 if (0)
                     post("oops, belatedly set %lx->%lx", *sigp,
                         (*sigp)->s_borrowedFrom);
@@ -588,8 +578,8 @@ void ugen_graphClose (t_dspcontext *context)
         break;   /* don't need to keep looking. */
     }
 
-    if (blk && (reblock || switched))    /* add block DSP epilog */
-        dsp_add(block_dspEpilog, 1, blk);
+    if (block && (reblock || switched))    /* add block DSP epilog */
+        dsp_add(block_dspEpilog, 1, block);
     chainblockend = pd_this->pd_dspChainSize;
 
         /* add epilogs for outlets.  */
@@ -602,17 +592,17 @@ void ugen_graphClose (t_dspcontext *context)
             t_signal **iosigs = context->dc_ioSignals;
             if (iosigs) iosigs += context->dc_numberOfInlets;
             voutlet_dspEpilog((t_voutlet *)zz, 
-                iosigs, vecsize, calcsize, ugen_dspPhase, period, frequency,
-                    downsample, upsample, reblock, switched);
+                iosigs, vectorSize, ugen_dspPhase, period, frequency,
+                    downSample, upSample, reblock, switched);
         }
     }
 
     chainafterall = pd_this->pd_dspChainSize;
-    if (blk)
+    if (block)
     {
-        blk->x_blocklength = chainblockend - chainblockbegin;
-        blk->x_epiloglength = chainafterall - chainblockend;
-        blk->x_reblock = reblock;
+        block->x_blocklength = chainblockend - chainblockbegin;
+        block->x_epiloglength = chainafterall - chainblockend;
+        block->x_reblock = reblock;
     }
 
     if (0)

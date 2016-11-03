@@ -20,7 +20,7 @@ struct _signal {
     t_float         s_sampleRate;
     int             s_count;
     int             s_isBorrowed;
-    int             s_blockSize;
+    int             s_vectorSize;
     t_sample        *s_vector;
     struct _signal  *s_borrowedFrom;
     struct _signal  *s_nextReusable;
@@ -134,41 +134,38 @@ t_int   *block_dspEpilog    (t_int *w);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        vinlet_dspProlog    (t_vinlet *x,
-                                    t_signal **parentSignals,
-                                    int vectorSize,
-                                    int size,
-                                    int phase,
-                                    int period,
-                                    int frequency,
-                                    int downSample,
-                                    int upSample,
-                                    int reblock,
-                                    int switched);
+void            vinlet_dspProlog    (t_vinlet *x,
+                                        t_signal **parentSignals,
+                                        int vectorSize,
+                                        int phase,
+                                        int period,
+                                        int frequency,
+                                        int downSample,
+                                        int upSample,
+                                        int reblock,
+                                        int switched);
 
-void        voutlet_dspProlog   (t_voutlet *x,
-                                    t_signal **parentSignals,
-                                    int vectorSize,
-                                    int size,
-                                    int phase,
-                                    int period,
-                                    int frequency,
-                                    int downSample,
-                                    int upSample,
-                                    int reblock,
-                                    int switched);
+void            voutlet_dspProlog   (t_voutlet *x,
+                                        t_signal **parentSignals,
+                                        int vectorSize,
+                                        int phase,
+                                        int period,
+                                        int frequency,
+                                        int downSample,
+                                        int upSample,
+                                        int reblock,
+                                        int switched);
                                                             
-void        voutlet_dspEpilog   (t_voutlet *x,
-                                    t_signal **parentSignals,
-                                    int vectorSize,
-                                    int size,
-                                    int phase,
-                                    int period,
-                                    int frequency,
-                                    int downSample,
-                                    int upSample,
-                                    int reblock,
-                                    int switched);
+void            voutlet_dspEpilog   (t_voutlet *x,
+                                        t_signal **parentSignals,
+                                        int vectorSize,
+                                        int phase,
+                                        int period,
+                                        int frequency,
+                                        int downSample,
+                                        int upSample,
+                                        int reblock,
+                                        int switched);
                                                             
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

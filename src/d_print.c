@@ -125,7 +125,7 @@ static t_int *print_tilde_perform (t_int *w)
 
 static void print_tilde_dsp (t_print_tilde *x, t_signal **sp)
 {
-    dsp_add (print_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_blockSize);
+    dsp_add (print_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------

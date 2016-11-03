@@ -145,10 +145,10 @@ static void voutlet_dsp (t_voutlet *x, t_signal **sp)
     //
     t_signal *in = sp[0];
     
-    if (x->x_copyOut) { dsp_add_copy (in->s_vector, x->x_directSignal->s_vector, in->s_blockSize); }
+    if (x->x_copyOut) { dsp_add_copy (in->s_vector, x->x_directSignal->s_vector, in->s_vectorSize); }
     else if (x->x_directSignal) { signal_borrow (x->x_directSignal, in); }
     else {
-        dsp_add (voutlet_perform, 3, x, in->s_vector, in->s_blockSize);
+        dsp_add (voutlet_perform, 3, x, in->s_vector, in->s_vectorSize);
     }
     //
     }
@@ -157,7 +157,6 @@ static void voutlet_dsp (t_voutlet *x, t_signal **sp)
 void voutlet_dspProlog (t_voutlet *x,
     t_signal **parentSignals,
     int vectorSize,
-    int size,
     int phase,
     int period,
     int frequency,
@@ -185,7 +184,6 @@ void voutlet_dspProlog (t_voutlet *x,
 void voutlet_dspEpilog (t_voutlet *x,
     t_signal **parentSignals,
     int vectorSize,
-    int size,
     int phase,
     int period,
     int frequency,
@@ -213,7 +211,7 @@ void voutlet_dspEpilog (t_voutlet *x,
     
     if (parentSignals) {
         out                         = parentSignals[object_getIndexOfSignalOutlet (x->x_outlet)];
-        parentVectorSize            = out->s_blockSize;
+        parentVectorSize            = out->s_vectorSize;
         parentVectorSizeResampled   = parentVectorSize * upSample / downSample;
     } else {
         out                         = NULL;
@@ -271,7 +269,7 @@ void voutlet_dspEpilog (t_voutlet *x,
     //
     if (parentSignals) {
         out = parentSignals[object_getIndexOfSignalOutlet (x->x_outlet)];
-        dsp_addZeroPerform (out->s_vector, out->s_blockSize);
+        dsp_addZeroPerform (out->s_vector, out->s_vectorSize);
     }
     //
     }

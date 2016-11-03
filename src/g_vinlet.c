@@ -136,7 +136,7 @@ static void vinlet_dsp (t_vinlet *x, t_signal **sp)
             
     if (x->x_directSignal) { signal_borrow (out, x->x_directSignal); }
     else {
-        dsp_add (vinlet_perform, 3, x, out->s_vector, out->s_blockSize);
+        dsp_add (vinlet_perform, 3, x, out->s_vector, out->s_vectorSize);
         x->x_bufferRead = x->x_buffer;
     }
     //
@@ -146,7 +146,6 @@ static void vinlet_dsp (t_vinlet *x, t_signal **sp)
 void vinlet_dspProlog (t_vinlet *x,
     t_signal **parentSignals,
     int vectorSize,
-    int size,
     int phase,
     int period,
     int frequency,
@@ -174,7 +173,7 @@ void vinlet_dspProlog (t_vinlet *x,
     
     if (parentSignals) {
         signalIn                    = parentSignals[object_getIndexOfSignalInlet (x->x_inlet)];
-        parentVectorSize            = signalIn->s_blockSize;
+        parentVectorSize            = signalIn->s_vectorSize;
         parentVectorSizeResampled   = parentVectorSize * upSample / downSample;
         
     } else {

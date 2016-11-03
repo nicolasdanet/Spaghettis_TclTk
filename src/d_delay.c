@@ -116,9 +116,9 @@ static t_int *sigdelwrite_perform(t_int *w)
 
 static void sigdelwrite_dsp(t_sigdelwrite *x, t_signal **sp)
 {
-    dsp_add(sigdelwrite_perform, 3, sp[0]->s_vector, &x->x_cspace, sp[0]->s_blockSize);
+    dsp_add(sigdelwrite_perform, 3, sp[0]->s_vector, &x->x_cspace, sp[0]->s_vectorSize);
     x->x_sortno = ugen_getBuildIdentifier();
-    sigdelwrite_checkvecsize(x, sp[0]->s_blockSize);
+    sigdelwrite_checkvecsize(x, sp[0]->s_vectorSize);
     sigdelwrite_updatesr(x, sp[0]->s_sampleRate);
 }
 
@@ -207,16 +207,16 @@ static void sigdelread_dsp(t_sigdelread *x, t_signal **sp)
     t_sigdelwrite *delwriter =
         (t_sigdelwrite *)pd_getThingByClass(x->x_sym, sigdelwrite_class);
     x->x_sr = sp[0]->s_sampleRate * 0.001;
-    x->x_n = sp[0]->s_blockSize;
+    x->x_n = sp[0]->s_vectorSize;
     if (delwriter)
     {
         sigdelwrite_updatesr(delwriter, sp[0]->s_sampleRate);
-        sigdelwrite_checkvecsize(delwriter, sp[0]->s_blockSize);
+        sigdelwrite_checkvecsize(delwriter, sp[0]->s_vectorSize);
         x->x_zerodel = (delwriter->x_sortno == ugen_getBuildIdentifier() ?
             0 : delwriter->x_vecsize);
         sigdelread_float(x, x->x_deltime);
         dsp_add(sigdelread_perform, 4,
-            sp[0]->s_vector, &delwriter->x_cspace, &x->x_delsamps, sp[0]->s_blockSize);
+            sp[0]->s_vector, &delwriter->x_cspace, &x->x_delsamps, sp[0]->s_vectorSize);
     }
     else if (*x->x_sym->s_name)
         post_error ("delread~: %s: no such delwrite~",x->x_sym->s_name);
@@ -305,12 +305,12 @@ static void sigvd_dsp(t_sigvd *x, t_signal **sp)
     x->x_sr = sp[0]->s_sampleRate * 0.001;
     if (delwriter)
     {
-        sigdelwrite_checkvecsize(delwriter, sp[0]->s_blockSize);
+        sigdelwrite_checkvecsize(delwriter, sp[0]->s_vectorSize);
         x->x_zerodel = (delwriter->x_sortno == ugen_getBuildIdentifier() ?
             0 : delwriter->x_vecsize);
         dsp_add(sigvd_perform, 5,
             sp[0]->s_vector, sp[1]->s_vector,
-                &delwriter->x_cspace, x, sp[0]->s_blockSize);
+                &delwriter->x_cspace, x, sp[0]->s_vectorSize);
     }
     else if (*x->x_sym->s_name)
         post_error ("vd~: %s: no such delwrite~",x->x_sym->s_name);

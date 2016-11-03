@@ -100,7 +100,7 @@ static void tabwrite_tilde_set(t_tabwrite_tilde *x, t_symbol *s)
 static void tabwrite_tilde_dsp(t_tabwrite_tilde *x, t_signal **sp)
 {
     tabwrite_tilde_set(x, x->x_arrayname);
-    dsp_add(tabwrite_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_blockSize);
+    dsp_add(tabwrite_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
 }
 
 static void tabwrite_tilde_bang(t_tabwrite_tilde *x)
@@ -225,7 +225,7 @@ static void tabplay_tilde_set(t_tabplay_tilde *x, t_symbol *s)
 static void tabplay_tilde_dsp(t_tabplay_tilde *x, t_signal **sp)
 {
     tabplay_tilde_set(x, x->x_arrayname);
-    dsp_add(tabplay_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_blockSize);
+    dsp_add(tabplay_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
 }
 
 static void tabplay_tilde_list(t_tabplay_tilde *x, t_symbol *s,
@@ -347,7 +347,7 @@ static void tabread_tilde_dsp(t_tabread_tilde *x, t_signal **sp)
     tabread_tilde_set(x, x->x_arrayname);
 
     dsp_add(tabread_tilde_perform, 4, x,
-        sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_blockSize);
+        sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 
 }
 
@@ -479,7 +479,7 @@ static void tabread4_tilde_dsp(t_tabread4_tilde *x, t_signal **sp)
     tabread4_tilde_set(x, x->x_arrayname);
 
     dsp_add(tabread4_tilde_perform, 4, x,
-        sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_blockSize);
+        sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 
 }
 
@@ -666,7 +666,7 @@ static void tabosc4_tilde_dsp(t_tabosc4_tilde *x, t_signal **sp)
     tabosc4_tilde_set(x, x->x_arrayname);
 
     dsp_add(tabosc4_tilde_perform, 4, x,
-        sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_blockSize);
+        sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
 static void tabosc4_tilde_setup(void)
@@ -760,7 +760,7 @@ static void tabsend_set(t_tabsend *x, t_symbol *s)
 static void tabsend_dsp(t_tabsend *x, t_signal **sp)
 {
     int i, vecsize;
-    int n = sp[0]->s_blockSize;
+    int n = sp[0]->s_vectorSize;
     int ticksper = sp[0]->s_sampleRate/n;
     tabsend_set(x, x->x_arrayname);
     if (ticksper < 1) ticksper = 1;
@@ -838,7 +838,7 @@ static void tabreceive_set(t_tabreceive *x, t_symbol *s)
 static void tabreceive_dsp(t_tabreceive *x, t_signal **sp)
 {
     tabreceive_set(x, x->x_arrayname);
-    dsp_add(tabreceive_perform, 3, x, sp[0]->s_vector, sp[0]->s_blockSize);
+    dsp_add(tabreceive_perform, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
 }
 
 static void *tabreceive_new(t_symbol *s)
