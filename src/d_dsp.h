@@ -39,6 +39,21 @@ typedef struct _resample {
     t_sample        *r_buffer;
     } t_resample;
 
+struct _vinlet {
+    t_object        vi_obj;                         /* Must be the first. */
+    t_resample      vi_resampling;
+    int             vi_hopSize;
+    int             vi_bufferSize;
+    t_sample        *vi_buffer;
+    t_sample        *vi_bufferEnd;
+    t_sample        *vi_bufferWrite;
+    t_sample        *vi_bufferRead;
+    t_glist         *vi_owner;
+    t_outlet        *vi_outlet;
+    t_inlet         *vi_inlet;
+    t_signal        *vi_directSignal;
+    };
+    
 typedef struct _block {
     t_object        x_obj;                  /* Must be the first. */
     int             x_vecsize;
@@ -84,13 +99,29 @@ void            signal_clean                (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void            vinlet_dsp              (t_vinlet *x, t_signal **sp);
+void            vinlet_dspProlog        (t_vinlet *x,
+                                            t_signal **parentSignals,
+                                            int vectorSize,
+                                            int phase,
+                                            int period,
+                                            int frequency,
+                                            int downSample,
+                                            int upSample,
+                                            int reblock,
+                                            int switched);
+                                        
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void            ugen_dspInitialize          (void);
 void            ugen_dspTick                (void);
 void            ugen_dspRelease             (void);
 int             ugen_getBuildIdentifier     (void);
 
 t_dspcontext    *ugen_graphStart            (int isTopLevel, t_signal **sp, int m, int n);
-                                                
+
 void            ugen_graphAdd               (t_dspcontext *context, t_object *o);
 void            ugen_graphConnect           (t_dspcontext *context, t_object *o1, int m, t_object *o2, int n);
 void            ugen_graphClose             (t_dspcontext *context);
@@ -133,17 +164,6 @@ t_int   *block_dspEpilog    (t_int *w);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-void            vinlet_dspProlog    (t_vinlet *x,
-                                        t_signal **parentSignals,
-                                        int vectorSize,
-                                        int phase,
-                                        int period,
-                                        int frequency,
-                                        int downSample,
-                                        int upSample,
-                                        int reblock,
-                                        int switched);
 
 void            voutlet_dspProlog   (t_voutlet *x,
                                         t_signal **parentSignals,

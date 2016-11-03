@@ -242,6 +242,7 @@
 #include "d_dsp.c"
 #include "d_signal.c"
 #include "d_ugen.c"
+#include "d_vinlet.c"
 #include "d_dac.c"
 #include "d_resample.c"
 #include "d_block.c"
