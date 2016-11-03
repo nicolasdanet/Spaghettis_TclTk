@@ -40,7 +40,6 @@ struct _vinlet {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 t_inlet *vinlet_getInlet (t_pd *x)
 {
@@ -87,11 +86,11 @@ static void vinlet_anything (t_vinlet *x, t_symbol *s, int argc, t_atom *argv)
 
 t_int *vinlet_perform (t_int *w)
 {
-    t_vinlet *x   = (t_vinlet *)(w[1]);
+    t_vinlet *x = (t_vinlet *)(w[1]);
     t_sample *out = (t_sample *)(w[2]);
-    int n         = (int)(w[3]);
+    int n = (int)(w[3]);
     
-    t_sample *in  = x->x_bufferRead;
+    t_sample *in = x->x_bufferRead;
 
     while (n--) { *out++ = *in++; }
     if (in == x->x_bufferEnd) { in = x->x_buffer; }
@@ -103,9 +102,9 @@ t_int *vinlet_perform (t_int *w)
 
 static t_int *vinlet_performProlog (t_int *w)
 {
-    t_vinlet *x   = (t_vinlet *)(w[1]);
-    t_sample *in  = (t_sample *)(w[2]);
-    int n         = (int)(w[3]);
+    t_vinlet *x = (t_vinlet *)(w[1]);
+    t_sample *in = (t_sample *)(w[2]);
+    int n = (int)(w[3]);
     
     t_sample *out = x->x_bufferWrite;
     

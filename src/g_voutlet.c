@@ -40,7 +40,6 @@ struct _voutlet {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 t_outlet *voutlet_getOutlet (t_pd *x)
 {
@@ -87,9 +86,9 @@ static void voutlet_anything (t_voutlet *x, t_symbol *s, int argc, t_atom *argv)
 
 t_int *voutlet_perform (t_int *w)
 {
-    t_voutlet *x  = (t_voutlet *)(w[1]);
-    t_sample *in  = (t_sample *)(w[2]);
-    int n         = (int)(w[3]);
+    t_voutlet *x = (t_voutlet *)(w[1]);
+    t_sample *in = (t_sample *)(w[2]);
+    int n = (int)(w[3]);
     
     t_sample *out  = x->x_bufferWrite;
     t_sample *next = out + x->x_hopSize;
@@ -103,9 +102,9 @@ t_int *voutlet_perform (t_int *w)
 
 static t_int *voutlet_performEpilog (t_int *w)
 {
-    t_voutlet *x  = (t_voutlet *)(w[1]);
+    t_voutlet *x = (t_voutlet *)(w[1]);
     t_sample *out = (t_sample *)(w[2]);
-    int n         = (int)(w[3]);
+    int n = (int)(w[3]);
     
     t_sample *in  = x->x_bufferRead;
     
@@ -121,8 +120,8 @@ static t_int *voutlet_performEpilog (t_int *w)
 
 static t_int *voutlet_performEpilogWithResampling (t_int *w)
 {
-    t_voutlet *x  = (t_voutlet *)(w[1]);
-    int n         = (int)(w[2]);
+    t_voutlet *x = (t_voutlet *)(w[1]);
+    int n = (int)(w[2]);
     
     t_sample *in  = x->x_bufferRead;
     t_sample *out = x->x_resampling.r_vector;
