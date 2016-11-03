@@ -619,7 +619,7 @@ int object_numberOfSignalOutlets (t_object *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int object_indexOfSignalInlet (t_object *x, int m)
+int object_indexAsSignalInlet (t_object *x, int m)
 {
     int n = 0;
     t_inlet *i = NULL;
@@ -643,7 +643,7 @@ int object_indexOfSignalInlet (t_object *x, int m)
     return -1;
 }
 
-int object_indexOfSignalOutlet (t_object *x, int m)
+int object_indexAsSignalOutlet (t_object *x, int m)
 {
     int n = 0;
     t_outlet *o = NULL;
