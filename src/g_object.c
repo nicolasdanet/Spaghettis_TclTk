@@ -143,9 +143,9 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
     //
     }
     
-    if (object = canvas_castToObjectIfPatchable (x)) {
+    if (object = cast_objectIfPatchable (x)) {
     //
-    if (canvas_objectIsBox (object)) {
+    if (object_isBox (object)) {
     // 
     if (object->te_type != TYPE_COMMENT) { return 0; }
     //
@@ -165,6 +165,16 @@ void gobj_visibilityChanged (t_gobj *x, t_glist *owner, int isVisible)
             (*(pd_class (x)->c_behavior->w_fnVisibilityChanged)) (x, owner, isVisible);
         }
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int object_isBox (t_object *x)
+{
+    return (pd_class (x)->c_behavior == &text_widgetBehavior)
+        || (cast_glistChecked (cast_pd (x)) && !(cast_glist (x)->gl_isGraphOnParent));
 }
 
 // -----------------------------------------------------------------------------------------------------------

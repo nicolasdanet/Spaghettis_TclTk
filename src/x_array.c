@@ -33,7 +33,7 @@ static t_garray *arraydefine_getContentChecked (t_glist *x)
     t_gobj *y = x->gl_graphics;
     
     if (y) {
-        t_glist *glist = canvas_castToGlistChecked (cast_pd (y));
+        t_glist *glist = cast_glistChecked (cast_pd (y));
         if (glist && garray_isSingle (glist)) { return (t_garray *)glist->gl_graphics; }
     }
     

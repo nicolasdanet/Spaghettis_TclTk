@@ -41,7 +41,7 @@ static void paint_performAllRecursive (t_glist *glist, int action)
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
     //
-    t_glist *z = canvas_castToGlistChecked (cast_pd (y));
+    t_glist *z = cast_glistChecked (cast_pd (y));
     
     if (z) { paint_performAllRecursive (z, action); }
     else {

@@ -86,8 +86,8 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
 
     if (y1 && y2) {
     //
-    t_object *object1 = canvas_castToObjectIfPatchable (y1);
-    t_object *object2 = canvas_castToObjectIfPatchable (y2);
+    t_object *object1 = cast_objectIfPatchable (y1);
+    t_object *object2 = cast_objectIfPatchable (y2);
     
     if (object1 && object2 && object1 != object2) {
     //
@@ -168,11 +168,11 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
         
     if (y) {
     //
-    t_object *object = canvas_castToObjectIfPatchable (y);
+    t_object *object = cast_objectIfPatchable (y);
     
     if (object) {
     //
-    if (canvas_objectIsBox (object)) {
+    if (object_isBox (object)) {
         int w = (positionX - a) / font_getHostFontWidth (canvas_getFontSize (glist));
         object->te_width = PD_MAX (1, w);
         gobj_visibilityChanged (y, glist, 0);
@@ -258,7 +258,7 @@ static void canvas_performMouseClick (t_glist *glist, int positionX, int positio
 static int canvas_performMouseHitResizeZone (t_object *object, int positionX, int positionY, int c, int d)
 {
     if (object) {
-        if (canvas_objectIsBox (object) || canvas_castToGlistChecked (cast_pd (object))) {
+        if (object_isBox (object) || cast_glistChecked (cast_pd (object))) {
             if (positionX > (c - EDITOR_GRIP_SIZE) && positionY < (d - EDITOR_GRIP_SIZE)) {
                 return 1;
             }
@@ -307,7 +307,7 @@ static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY,
     if (!y) { return 0; }
     else {
     //
-    t_object *object = canvas_castToObjectIfPatchable (y);
+    t_object *object = cast_objectIfPatchable (y);
 
     if (modifier & MODIFIER_RIGHT) { canvas_performMouseClickRight (glist, y, positionX, positionY); }
     else if (modifier & MODIFIER_SHIFT) {
@@ -788,7 +788,7 @@ void canvas_editmode (t_glist *glist, t_float f)
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
         t_object *o = NULL;
-        if ((o = canvas_castToObjectIfPatchable (y)) && o->te_type == TYPE_COMMENT) {
+        if ((o = cast_objectIfPatchable (y)) && o->te_type == TYPE_COMMENT) {
             t_boxtext *text = boxtext_fetch (glist, o);
             canvas_drawBox (glist, o, boxtext_getTag (text), 1);
         }
@@ -932,7 +932,7 @@ void canvas_createEditorIfNone (t_glist *glist)
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
         t_object *o = NULL;
-        if (o = canvas_castToObjectIfPatchable (y)) { boxtext_new (glist, o); }
+        if (o = cast_objectIfPatchable (y)) { boxtext_new (glist, o); }
     }
     //
     }

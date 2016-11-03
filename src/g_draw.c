@@ -403,7 +403,7 @@ void canvas_drawBox (t_glist *glist, t_object *o, char *tag, int create)
     else if (o->te_type == TYPE_ATOM)       { canvas_drawBoxAtom (glist, o, tag, create, a, b, c, d);    }
     else if (o->te_type == TYPE_COMMENT)    { canvas_drawBoxComment (glist, o, tag, create, a, b, c, d); }
 
-    if (canvas_castToObjectIfPatchable (o)) {
+    if (cast_objectIfPatchable (o)) {
     // 
     canvas_drawInletsAndOutlets (glist, o, tag, create, a, b, c, d); 
     //

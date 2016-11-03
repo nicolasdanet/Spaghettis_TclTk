@@ -45,6 +45,21 @@ static int                  canvas_lastCanvasY;             /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+t_glist *cast_glistChecked (t_pd *x)
+{
+    t_class *c = pd_class (x);
+    
+    if (c == canvas_class || c == arraydefine_class || c == scalardefine_class) {
+        return cast_glist (x);
+    } else {
+        return NULL;
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void canvas_setActiveFileNameAndDirectory (t_symbol *name, t_symbol *directory)
 {
     canvas_fileName  = name;
@@ -64,27 +79,6 @@ void canvas_newPatch (void *dummy, t_symbol *name, t_symbol *directory)
     canvas_setActiveFileNameAndDirectory (name, directory);
     canvas_new (NULL, NULL, 0, NULL);
     canvas_pop (cast_glist (pd_getBoundX()), 1);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_glist *canvas_castToGlistChecked (t_pd *x)
-{
-    t_class *c = pd_class (x);
-    
-    if (c == canvas_class || c == arraydefine_class || c == scalardefine_class) {
-        return cast_glist (x);
-    } else {
-        return NULL;
-    }
-}
-
-int canvas_objectIsBox (t_object *x)
-{
-    return (pd_class (x)->c_behavior == &text_widgetBehavior)
-        || (canvas_castToGlistChecked (cast_pd (x)) && !(cast_glist (x)->gl_isGraphOnParent));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -206,7 +200,7 @@ void canvas_addObject (t_glist *glist, t_gobj *y)
         t->g_next = y;
     }
     
-    if (glist->gl_editor && (object = canvas_castToObjectIfPatchable (y))) { boxtext_new (glist, object); }
+    if (glist->gl_editor && (object = cast_objectIfPatchable (y))) { boxtext_new (glist, object); }
     if (canvas_isMapped (canvas_getView (glist))) { gobj_visibilityChanged (y, glist, 1); }
     
     if (needToPaintScalars) { paint_scalarsRedrawAll(); }
@@ -245,7 +239,7 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
         }
     }
     
-    if (glist->gl_editor && (object = canvas_castToObjectIfPatchable (y))) {
+    if (glist->gl_editor && (object = cast_objectIfPatchable (y))) {
         text = boxtext_fetch (glist, object);
     }
     
@@ -270,7 +264,7 @@ void canvas_clear (t_glist *glist)
     while (y = glist->gl_graphics) {
     //
     if (!dspSuspended) {
-        if (canvas_castToObjectIfPatchable (y) && class_hasMethod (pd_class (y), sym_dsp)) {
+        if (cast_objectIfPatchable (y) && class_hasMethod (pd_class (y), sym_dsp)) {
             dspState = dsp_suspend();
             dspSuspended = 1;
         }
@@ -303,7 +297,7 @@ void canvas_makeTextObject (t_glist *glist,
     
     buffer_eval (b, &pd_objectMaker, argc, argv);
 
-    if (pd_newest) { x = canvas_castToObjectIfPatchable (pd_newest); }
+    if (pd_newest) { x = cast_objectIfPatchable (pd_newest); }
 
     if (!x) {
         x = (t_object *)pd_new (text_class);    /* Create a dummy box. */
@@ -623,7 +617,7 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
     }
     
     for (; y; y = y->g_next) {
-        if ((o = canvas_castToObjectIfPatchable (y))) { break; }     /* Only box objects are considered. */
+        if ((o = cast_objectIfPatchable (y))) { break; }     /* Only box objects are considered. */
     }
     
     if (!o) { return NULL; }

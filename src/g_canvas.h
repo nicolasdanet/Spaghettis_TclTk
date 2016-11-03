@@ -230,19 +230,6 @@ struct _glist {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define canvas_castToObjectIfPatchable(x)   (pd_class (x)->c_isBox ? (t_object *)(x) : NULL)
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_glist         *canvas_castToGlistChecked              (t_pd *x);
-int             canvas_objectIsBox                      (t_object *x);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 t_guiconnect    *guiconnect_new                         (t_pd *owner);
 char            *guiconnect_getBoundAsString            (t_guiconnect *x);
 
@@ -593,6 +580,12 @@ int             gobj_isVisible                          (t_gobj *x, t_glist *own
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+int             object_isBox                            (t_object *x);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_boxtext       *boxtext_new                            (t_glist *glist, t_object *object);
 t_boxtext       *boxtext_fetch                          (t_glist *glist, t_object *object);
 char            *boxtext_getTag                         (t_boxtext *x);
@@ -654,6 +647,9 @@ int             text_behaviorMouse                      (t_gobj *x,
                                                             int clicked);
 
 void            text_functionSave                       (t_gobj *x, t_buffer *b);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 void            text_set                                (t_object *x, t_glist *glist, char *s, int size);
 int             text_getPixelX                          (t_object *x, t_glist *glist);
