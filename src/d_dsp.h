@@ -53,6 +53,21 @@ struct _vinlet {
     t_inlet         *vi_inlet;
     t_signal        *vi_directSignal;
     };
+
+struct _voutlet {
+    t_object        vo_obj;                      /* Must be the first. */
+    t_resample      vo_resampling;
+    int             vo_hopSize;
+    int             vo_copyOut;
+    int             vo_bufferSize;
+    t_sample        *vo_buffer;
+    t_sample        *vo_bufferEnd;
+    t_sample        *vo_bufferRead;
+    t_sample        *vo_bufferWrite;
+    t_glist         *vo_owner;
+    t_outlet        *vo_outlet;
+    t_signal        *vo_directSignal;
+    };
     
 typedef struct _block {
     t_object        x_obj;                  /* Must be the first. */
@@ -99,22 +114,6 @@ void            signal_clean                (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            vinlet_dsp              (t_vinlet *x, t_signal **sp);
-void            vinlet_dspProlog        (t_vinlet *x,
-                                            t_signal **parentSignals,
-                                            int vectorSize,
-                                            int phase,
-                                            int period,
-                                            int frequency,
-                                            int downSample,
-                                            int upSample,
-                                            int reblock,
-                                            int switched);
-                                        
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void            ugen_dspInitialize          (void);
 void            ugen_dspTick                (void);
 void            ugen_dspRelease             (void);
@@ -126,6 +125,49 @@ void            ugen_graphAdd               (t_dspcontext *context, t_object *o)
 void            ugen_graphConnect           (t_dspcontext *context, t_object *o1, int m, t_object *o2, int n);
 void            ugen_graphClose             (t_dspcontext *context);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void            vinlet_dsp                  (t_vinlet *x, t_signal **sp);
+void            vinlet_dspProlog            (t_vinlet *x,
+                                                t_signal **parentSignals,
+                                                int vectorSize,
+                                                int phase,
+                                                int period,
+                                                int frequency,
+                                                int downSample,
+                                                int upSample,
+                                                int reblock,
+                                                int switched);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void            voutlet_dsp                 (t_voutlet *x, t_signal **sp);
+void            voutlet_dspProlog           (t_voutlet *x,
+                                                t_signal **parentSignals,
+                                                int vectorSize,
+                                                int phase,
+                                                int period,
+                                                int frequency,
+                                                int downSample,
+                                                int upSample,
+                                                int reblock,
+                                                int switched);
+                                                            
+void            voutlet_dspEpilog           (t_voutlet *x,
+                                                t_signal **parentSignals,
+                                                int vectorSize,
+                                                int phase,
+                                                int period,
+                                                int frequency,
+                                                int downSample,
+                                                int upSample,
+                                                int reblock,
+                                                int switched);
+                                        
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -161,32 +203,6 @@ void    resampleto_dsp      (t_resample *x, t_sample *out, int insize, int outsi
 t_int   *block_dspProlog    (t_int *w);
 t_int   *block_dspEpilog    (t_int *w);
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void            voutlet_dspProlog   (t_voutlet *x,
-                                        t_signal **parentSignals,
-                                        int vectorSize,
-                                        int phase,
-                                        int period,
-                                        int frequency,
-                                        int downSample,
-                                        int upSample,
-                                        int reblock,
-                                        int switched);
-                                                            
-void            voutlet_dspEpilog   (t_voutlet *x,
-                                        t_signal **parentSignals,
-                                        int vectorSize,
-                                        int phase,
-                                        int period,
-                                        int frequency,
-                                        int downSample,
-                                        int upSample,
-                                        int reblock,
-                                        int switched);
-                                                            
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #endif // __d_dsp_h_

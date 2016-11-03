@@ -218,6 +218,7 @@
 		37B1AA571DC1EE3E0017355A /* d_samplerate.c in Sources */ = {isa = PBXBuildFile; fileRef = 37B1AA561DC1EE3E0017355A /* d_samplerate.c */; };
 		37B6D30B1DBBB16000ECF049 /* x_sysexin.c in Sources */ = {isa = PBXBuildFile; fileRef = 37B6D30A1DBBB16000ECF049 /* x_sysexin.c */; };
 		37B79AFB1DCB775900EB423B /* d_vinlet.c in Sources */ = {isa = PBXBuildFile; fileRef = 37B79AFA1DCB775900EB423B /* d_vinlet.c */; };
+		37B79B4A1DCB7E0300EB423B /* d_voutlet.c in Sources */ = {isa = PBXBuildFile; fileRef = 37B79B491DCB7E0300EB423B /* d_voutlet.c */; };
 		37B9B6141DA949CE007FEB07 /* m_autorelease.c in Sources */ = {isa = PBXBuildFile; fileRef = 37B9B6131DA949CE007FEB07 /* m_autorelease.c */; };
 		37BA30821CD1DB0F0091113F /* g_object.c in Sources */ = {isa = PBXBuildFile; fileRef = 37BA30811CD1DB0F0091113F /* g_object.c */; };
 		37C41F4F1D5B240000DC9C3E /* h_heapstring.c in Sources */ = {isa = PBXBuildFile; fileRef = 37C41F4E1D5B240000DC9C3E /* h_heapstring.c */; };
@@ -587,6 +588,7 @@
 		37B1AA561DC1EE3E0017355A /* d_samplerate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_samplerate.c; path = src/d_samplerate.c; sourceTree = "<group>"; };
 		37B6D30A1DBBB16000ECF049 /* x_sysexin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_sysexin.c; path = src/x_sysexin.c; sourceTree = "<group>"; };
 		37B79AFA1DCB775900EB423B /* d_vinlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_vinlet.c; path = src/d_vinlet.c; sourceTree = "<group>"; };
+		37B79B491DCB7E0300EB423B /* d_voutlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_voutlet.c; path = src/d_voutlet.c; sourceTree = "<group>"; };
 		37B9B6131DA949CE007FEB07 /* m_autorelease.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_autorelease.c; path = src/m_autorelease.c; sourceTree = "<group>"; };
 		37BA30811CD1DB0F0091113F /* g_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_object.c; path = src/g_object.c; sourceTree = "<group>"; };
 		37C41F4E1D5B240000DC9C3E /* h_heapstring.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = h_heapstring.c; path = src/h_heapstring.c; sourceTree = "<group>"; };
@@ -920,6 +922,7 @@
 				3770AE3A1DC23D2000ADAE26 /* d_signal.c */,
 				378971BE1C4F716700263434 /* d_ugen.c */,
 				37B79AFA1DCB775900EB423B /* d_vinlet.c */,
+				37B79B491DCB7E0300EB423B /* d_voutlet.c */,
 				378971B31C4F716700263434 /* d_dac.c */,
 				378971BC1C4F716700263434 /* d_resample.c */,
 				3770AD891DC2338300ADAE26 /* d_block.c */,
@@ -1694,6 +1697,7 @@
 				37EECD3E1DC749AE00E02EDF /* d_print.c in Sources */,
 				37EECE601DC7887100E02EDF /* m_poll.c in Sources */,
 				37B79AFB1DCB775900EB423B /* d_vinlet.c in Sources */,
+				37B79B4A1DCB7E0300EB423B /* d_voutlet.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
