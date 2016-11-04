@@ -421,9 +421,10 @@ void ugen_graphClose (t_dspcontext *context)
     t_dspcontext *parentContext = context->dc_parentContext;
     t_float parentSampleRate    = parentContext ? parentContext->dc_sampleRate : audio_getSampleRate();
     int parentVectorSize        = parentContext ? parentContext->dc_vectorSize : AUDIO_DEFAULT_BLOCKSIZE;
-    int blockSize               = parentContext ? parentContext->dc_blockSize  : parentVectorSize;
+    int parentBlockSize         = parentContext ? parentContext->dc_blockSize  : AUDIO_DEFAULT_BLOCKSIZE;
     t_float sampleRate          = parentSampleRate;
     int vectorSize              = parentVectorSize;
+    int blockSize               = parentBlockSize;
     int downSample              = 1;
     int upSample                = 1;
     int period                  = 1;
@@ -432,44 +433,38 @@ void ugen_graphClose (t_dspcontext *context)
     int switched                = 0;
     int reblock                 = parentContext ? 0 : 1;
         
-    if (block)
-    {
-        int realoverlap;
-        vectorSize = block->x_vecsize;
-        if (vectorSize == 0)
-            vectorSize = parentVectorSize;
-        blockSize = block->x_calcsize;
-        if (blockSize == 0)
-            blockSize = vectorSize;
-        realoverlap = block->x_overlap;
-        if (realoverlap > vectorSize) realoverlap = vectorSize;
-        downSample = block->x_downsample;
-        upSample   = block->x_upsample;
-        if (downSample > parentVectorSize)
-            downSample = parentVectorSize;
-        period = (vectorSize * downSample)/
-            (parentVectorSize * realoverlap * upSample);
-        frequency = (parentVectorSize * realoverlap * upSample)/
-            (vectorSize * downSample);
-        phase = block->x_phase;
-        sampleRate = parentSampleRate * realoverlap * upSample / downSample;
-        if (period < 1) period = 1;
-        if (frequency < 1) frequency = 1;
-        block->x_frequency = frequency;
-        block->x_period = period;
-        block->x_phase = ugen_dspPhase & (period - 1);
-        if (! parentContext || (realoverlap != 1) ||
-            (vectorSize != parentVectorSize) || 
-                (downSample != 1) || (upSample != 1))
-                    reblock = 1;
-        switched = block->x_switched;
+    if (block) {
+    //
+    int overlap = block->x_overlap;
+    
+    if (block->x_vecsize > 0)  { vectorSize = block->x_vecsize;  }
+    if (block->x_calcsize > 0) { blockSize  = block->x_calcsize; } 
+        
+    overlap     = PD_MIN (overlap, vectorSize);
+    downSample  = PD_MIN (block->x_downsample, parentVectorSize);
+    upSample    = block->x_upsample;
+    period      = PD_MAX (1, ((vectorSize * downSample) / (parentVectorSize * overlap * upSample)));
+    frequency   = PD_MAX (1, ((parentVectorSize * overlap * upSample) / (vectorSize * downSample)));
+    phase       = block->x_phase;
+    sampleRate  = parentSampleRate * overlap * upSample / downSample;
+    switched    = block->x_switched;
+    
+    block->x_frequency = frequency;
+    block->x_period    = period;
+    block->x_phase     = ugen_dspPhase & (period - 1);
+    
+    reblock |= (overlap != 1);
+    reblock |= (vectorSize != parentVectorSize);
+    reblock |= (downSample != 1);
+    reblock |= (upSample != 1);
+    //
     }
 
+    context->dc_sampleRate  = sampleRate;
+    context->dc_vectorSize  = vectorSize;
+    context->dc_blockSize   = blockSize;
     context->dc_isReblocked = reblock;
-    context->dc_isSwitched = switched;
-    context->dc_sampleRate = sampleRate;
-    context->dc_vectorSize = vectorSize;
-    context->dc_blockSize = blockSize;
+    context->dc_isSwitched  = switched;
     
         /* if we're reblocking or switched, we now have to create output
         signals to fill in for the "borrowed" ones we have now.  This

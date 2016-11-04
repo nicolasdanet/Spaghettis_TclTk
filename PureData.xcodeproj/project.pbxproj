@@ -717,7 +717,6 @@
 			isa = PBXGroup;
 			children = (
 				371655A51BA3469200ABDE22 /* PureData */,
-				37961C251CAD85DB00859402 /* Libs */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -807,6 +806,7 @@
 				3722C5361C4F925600D2BF6F /* Control */,
 				3722C5371C4F926300D2BF6F /* DSP */,
 				3789717E1C4F712A00263434 /* Scripts */,
+				37961C251CAD85DB00859402 /* Libraries */,
 				378972041C4F716700263434 /* u_pdsend.c */,
 				378972031C4F716700263434 /* u_pdreceive.c */,
 				378972051C4F716700263434 /* u_watchdog.c */,
@@ -1109,13 +1109,13 @@
 			name = Math;
 			sourceTree = "<group>";
 		};
-		37961C251CAD85DB00859402 /* Libs */ = {
+		37961C251CAD85DB00859402 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
 				371655871BA3461600ABDE22 /* PortMidi */,
 				371655471BA3451000ABDE22 /* PortAudio */,
 			);
-			name = Libs;
+			name = Libraries;
 			sourceTree = "<group>";
 		};
 		379789601D7404220055E010 /* Helpers */ = {
