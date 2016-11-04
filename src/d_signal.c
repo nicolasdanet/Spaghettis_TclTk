@@ -32,8 +32,8 @@ extern t_pdinstance *pd_this;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_signal *signal_reusable[SIGNAL_SLOTS + 1];         /* Indexed by the bloc size (power of two). */
-static t_signal *signal_reusableBorrowed;
+static t_signal *signal_reusable[SIGNAL_SLOTS + 1];         /* Indexed by the vector size (power of two). */
+static t_signal *signal_reusableBorrowed;                   /* Doesn't have a proper vector size. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
