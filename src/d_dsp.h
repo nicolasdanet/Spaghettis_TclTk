@@ -55,7 +55,7 @@ struct _vinlet {
     };
 
 struct _voutlet {
-    t_object        vo_obj;                      /* Must be the first. */
+    t_object        vo_obj;                         /* Must be the first. */
     t_resample      vo_resampling;
     int             vo_hopSize;
     int             vo_copyOut;
@@ -70,23 +70,23 @@ struct _voutlet {
     };
     
 typedef struct _block {
-    t_object        x_obj;                  /* Must be the first. */
-    int             x_vecsize;
-    int             x_calcsize;
-    int             x_overlap;
-    int             x_phase;
-    int             x_period;
-    int             x_frequency;
-    int             x_count;
-    int             x_chainonset;  
-    int             x_blocklength;
-    int             x_epiloglength;
-    char            x_switched;
-    char            x_switchon;
-    char            x_reblock;
-    int             x_upsample;
-    int             x_downsample;
-    int             x_return;
+    t_object        bk_obj;                         /* Must be the first. */
+    int             bk_vectorSize;
+    int             bk_blockSize;
+    int             bk_overlap;
+    int             bk_phase;
+    int             bk_period;
+    int             bk_frequency;
+    int             bk_count;
+    int             bk_chainOnset;  
+    int             bk_blockLength;
+    int             bk_epilogLength;
+    int             bk_isSwitchObject;
+    int             bk_isSwitchedOn;
+    int             bk_isReblocked;
+    int             bk_upSample;
+    int             bk_downSample;
+    int             bk_return;
     } t_block;
     
 // -----------------------------------------------------------------------------------------------------------

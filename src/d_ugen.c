@@ -435,23 +435,23 @@ void ugen_graphClose (t_dspcontext *context)
         
     if (block) {
     //
-    int overlap = block->x_overlap;
+    int overlap = block->bk_overlap;
     
-    if (block->x_vecsize > 0)  { vectorSize = block->x_vecsize;  }
-    if (block->x_calcsize > 0) { blockSize  = block->x_calcsize; } 
+    if (block->bk_vectorSize > 0) { vectorSize = block->bk_vectorSize;  }
+    if (block->bk_blockSize > 0)  { blockSize  = block->bk_blockSize;   } 
         
     overlap     = PD_MIN (overlap, vectorSize);
-    downSample  = PD_MIN (block->x_downsample, parentVectorSize);
-    upSample    = block->x_upsample;
+    downSample  = PD_MIN (block->bk_downSample, parentVectorSize);
+    upSample    = block->bk_upSample;
     period      = PD_MAX (1, ((vectorSize * downSample) / (parentVectorSize * overlap * upSample)));
     frequency   = PD_MAX (1, ((parentVectorSize * overlap * upSample) / (vectorSize * downSample)));
-    phase       = block->x_phase;
+    phase       = block->bk_phase;
     sampleRate  = parentSampleRate * overlap * upSample / downSample;
-    switched    = block->x_switched;
+    switched    = block->bk_isSwitchObject;
     
-    block->x_frequency = frequency;
-    block->x_period    = period;
-    block->x_phase     = ugen_dspPhase & (period - 1);
+    block->bk_frequency = frequency;
+    block->bk_period    = period;
+    block->bk_phase     = ugen_dspPhase & (period - 1);
     
     reblock |= (overlap != 1);
     reblock |= (vectorSize != parentVectorSize);
@@ -521,7 +521,7 @@ void ugen_graphClose (t_dspcontext *context)
     if (block && (reblock || switched))   /* add the block DSP prolog */
     {
         dsp_add(block_dspProlog, 1, block);
-        block->x_chainonset = pd_this->pd_dspChainSize - 1;
+        block->bk_chainOnset = pd_this->pd_dspChainSize - 1;
     }   
         /* Initialize for sorting */
     for (u = context->dc_ugens; u; u = u->u_next)
@@ -595,9 +595,9 @@ void ugen_graphClose (t_dspcontext *context)
     chainafterall = pd_this->pd_dspChainSize;
     if (block)
     {
-        block->x_blocklength = chainblockend - chainblockbegin;
-        block->x_epiloglength = chainafterall - chainblockend;
-        block->x_reblock = reblock;
+        block->bk_blockLength = chainblockend - chainblockbegin;
+        block->bk_epilogLength = chainafterall - chainblockend;
+        block->bk_isReblocked = reblock;
     }
 
     if (0)
