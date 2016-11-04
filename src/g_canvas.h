@@ -533,15 +533,6 @@ t_error         canvas_deserializeScalar                (t_glist *glist, int arg
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            dsp_state                               (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void            dsp_update                              (void);
-int             dsp_suspend                             (void);
-void            dsp_resume                              (int oldState);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void            gobj_getRectangle                       (t_gobj *x,
                                                             t_glist *owner,
                                                             int *a,

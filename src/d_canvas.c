@@ -12,19 +12,13 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "s_system.h"
 #include "g_graphics.h"
 #include "d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pdinstance *pd_this;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-static void canvas_dspPerform (t_glist *glist, int isTopLevel, t_signal **sp)
+void canvas_dspPerform (t_glist *glist, int isTopLevel, t_signal **sp)
 {
     t_gobj          *y = NULL;
     t_dspcontext    *context = NULL;
@@ -61,83 +55,6 @@ static void canvas_dspPerform (t_glist *glist, int isTopLevel, t_signal **sp)
 void canvas_dsp (t_glist *x, t_signal **sp)
 {
     canvas_dspPerform (x, 0, sp);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void dsp_start (void)
-{
-    t_glist *glist;
-
-    ugen_dspInitialize();
-    
-    for (glist = pd_this->pd_roots; glist; glist = glist->gl_next) { canvas_dspPerform (glist, 1, NULL); }
-    
-    pd_this->pd_dspState = 1;
-}
-
-
-static void dsp_stop (void)
-{
-    PD_ASSERT (pd_this->pd_dspState);
-    
-    ugen_dspRelease();
-    
-    pd_this->pd_dspState = 0;
-}
-
-static void dsp_notify (int n)
-{
-    sys_vGui ("set ::var(isDsp) %d\n", n);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void dsp_state (void *dummy, t_symbol *s, int argc, t_atom *argv)
-{
-    if (argc) {
-    //
-    int n = (int)atom_getFloatAtIndex (0, argc, argv);
-    
-    if (n != pd_this->pd_dspState) {
-    //
-    if (n) { if (audio_startDSP() == PD_ERROR_NONE) { dsp_start(); } }
-    else {
-        dsp_stop(); audio_stopDSP();
-    }
-    
-    dsp_notify (pd_this->pd_dspState);
-    //
-    }
-    //
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void dsp_update (void)
-{
-    if (pd_this->pd_dspState) { dsp_start(); }
-}
-
-int dsp_suspend (void)
-{
-    int oldState = pd_this->pd_dspState;
-    
-    if (oldState) { dsp_stop(); }
-    
-    return oldState;
-}
-
-void dsp_resume (int oldState)
-{
-    if (oldState) { dsp_start(); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

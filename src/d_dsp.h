@@ -98,6 +98,10 @@ typedef t_int *(*t_perform)(t_int *args);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void            dsp_state                   (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void            dsp_update                  (void);
+int             dsp_suspend                 (void);
+void            dsp_resume                  (int oldState);
 t_int           dsp_done                    (t_int *w);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -124,6 +128,12 @@ t_dspcontext    *ugen_graphStart            (int isTopLevel, t_signal **sp, int 
 void            ugen_graphAdd               (t_dspcontext *context, t_object *o);
 void            ugen_graphConnect           (t_dspcontext *context, t_object *o1, int m, t_object *o2, int n);
 void            ugen_graphClose             (t_dspcontext *context);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void            canvas_dspPerform           (t_glist *glist, int isTopLevel, t_signal **sp);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
