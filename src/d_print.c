@@ -58,7 +58,7 @@ static void print_tilde_float (t_print_tilde *x, t_float f)
 {
     x->x_count = (int)PD_MAX (1.0, f);
     
-    pd_bind (cast_pd (x), sym__polling);
+    poll_add (cast_pd (x));
 }
 
 static void print_tilde_polling (t_print_tilde *x)
@@ -92,7 +92,7 @@ static void print_tilde_polling (t_print_tilde *x)
     x->x_overflow = 0;
     x->x_index    = 0;
     
-    pd_unbind (cast_pd (x), sym__polling);
+    poll_remove (cast_pd (x));
     //
     }
 }
@@ -144,7 +144,7 @@ static void *print_tilde_new (t_symbol *s)
 
 static void print_tilde_free (t_print_tilde *x)
 {
-    if (x->x_count) { pd_unbind (cast_pd (x), sym__polling); }
+    if (x->x_count) { poll_remove (cast_pd (x)); }
     
     PD_MEMORY_FREE (x->x_buffer);
 }
