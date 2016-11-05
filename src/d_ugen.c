@@ -426,7 +426,7 @@ void ugen_graphClose (t_dspcontext *context)
     int upSample                = 1;
     int period                  = 1;
     int frequency               = 1;
-    int switchable                = 0;
+    int switchable              = 0;
     int reblocked               = parentContext ? 0 : 1;
         
     if (block) {
@@ -459,12 +459,6 @@ void ugen_graphClose (t_dspcontext *context)
     context->dc_isReblocked = reblocked;
     context->dc_isSwitch    = switchable;
     
-        /* if we're reblocking or switched, we now have to create output
-        signals to fill in for the "borrowed" ones we have now.  This
-        is also possibly true even if we're not blocked/switched, in
-        the case that there was a signal loop.  But we don't know this
-        yet.  */
-
     if (context->dc_ioSignals && (switchable || reblocked))
     {
         t_signal **sigp;

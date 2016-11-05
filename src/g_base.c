@@ -213,7 +213,7 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     t_object *object = NULL;
     t_glist *canvas  = canvas_getView (glist);
         
-    int needToUpdateDSPChain = class_hasMethod (pd_class (y), sym_dsp);
+    int needToUpdateDSPChain = class_hasDSP (pd_class (y));
     int needToPaintScalars   = class_hasDrawCommand (pd_class (y));
     int deletingState        = canvas->gl_isDeleting;
     
@@ -265,7 +265,7 @@ void canvas_clear (t_glist *glist)
     while (y = glist->gl_graphics) {
     //
     if (!dspSuspended) {
-        if (cast_objectIfPatchable (y) && class_hasMethod (pd_class (y), sym_dsp)) {
+        if (cast_objectIfPatchable (y) && class_hasDSP (pd_class (y))) {
             dspState = dsp_suspend();
             dspSuspended = 1;
         }

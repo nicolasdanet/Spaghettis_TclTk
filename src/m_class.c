@@ -394,6 +394,11 @@ int class_hasMethod (t_class *c, t_symbol *s)
     return (class_getMethod (c, s) != NULL);
 }
 
+int class_hasDSP (t_class *c)
+{
+    return class_hasMethod (c, sym_dsp);
+}
+
 int class_hasBang (t_class *c)
 {
     return (c->c_methodBang != class_defaultBang);
