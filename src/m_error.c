@@ -214,6 +214,11 @@ void error_invalidArgumentsForMethod (t_symbol *s1, t_symbol *s2, int argc, t_at
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void warning_invalid (t_symbol *s1, t_symbol *s2)
+{
+    post_warning (PD_TRANSLATE ("%s: invalid %s"), s1->s_name, s2->s_name);
+}
+
 void warning_badName (t_symbol *s1, t_symbol *s2)
 {
     post_warning (PD_TRANSLATE ("%s: bad name %s"), s1->s_name, s2->s_name);

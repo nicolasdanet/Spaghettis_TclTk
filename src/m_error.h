@@ -74,6 +74,7 @@ void error_invalidArgumentsForMethod        (t_symbol *, t_symbol *, int argc, t
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void warning_invalid                        (t_symbol *, t_symbol *);
 void warning_badName                        (t_symbol *, t_symbol *);
 void warning_badType                        (t_symbol *, t_symbol *);
 void warning_unusedOption                   (t_symbol *, t_symbol *);

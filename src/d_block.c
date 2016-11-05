@@ -19,105 +19,58 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pdinstance *pd_this;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 t_class *block_class;                       /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define BLOCK_PROLOGCALL    2
-#define BLOCK_EPILOGCALL    2
+#define BLOCK_PROLOG    2
+#define BLOCK_EPILOG    2
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void block_float(t_block *x, t_float f)
+static void block_float (t_block *x, t_float f)
 {
-    if (x->bk_isSwitchObject)
-        x->bk_isSwitchedOn = (f != 0);
-}
-
-static void block_bang(t_block *x)
-{
-    if (x->bk_isSwitchObject && !x->bk_isSwitchedOn && pd_this->pd_dspChain)
-    {
-        t_int *ip;
-        x->bk_return = 1;
-        for (ip = pd_this->pd_dspChain + x->bk_chainOnset; ip; )
-            ip = (*(t_perform)(*ip))(ip);
-        x->bk_return = 0;
-    }
-    else post_error ("bang to block~ or on-state switch~ has no effect");
+    if (x->bk_isSwitchObject) { x->bk_isSwitchedOn = (f != 0.0); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void block_set(t_block *x, t_float fcalcsize, t_float foverlap,
-    t_float fupsample)
+static void block_set (t_block *x, t_float f1, t_float f2, t_float f3)
 {
-    int upsample, downsample;
-    int calcsize = fcalcsize;
-    int overlap = foverlap;
-    int dspstate = dsp_suspend();
-    int vecsize;
-    if (overlap < 1)
-        overlap = 1;
-    if (calcsize < 0)
-        calcsize = 0;    /* this means we'll get it from parent later. */
-
-    if (fupsample <= 0)
-        upsample = downsample = 1;
-    else if (fupsample >= 1) {
-        upsample = fupsample;
-        downsample   = 1;
+    int blockSize   = PD_MAX (0.0, f1);
+    int overlap     = PD_MAX (1.0, f2);
+    int upSample    = 1;
+    int downSample  = 1;
+    int oldState    = dsp_suspend();
+    
+    if (blockSize && !PD_ISPOWER2 (blockSize)) { blockSize = PD_NEXTPOWER2 (blockSize); }
+    if (!PD_ISPOWER2 (overlap)) { overlap = PD_NEXTPOWER2 (overlap); }
+    
+    if (f3 > 0.0) {
+    //
+    if (f3 >= 1.0) { upSample = (int)f3; downSample = 1; }
+    else {
+        upSample = 1; downSample = (int)(1.0 / f3);
     }
-    else
-    {
-        downsample = 1.0 / fupsample;
-        upsample   = 1;
+        
+    if (!PD_ISPOWER2 (downSample) || !PD_ISPOWER2 (upSample)) {
+        warning_invalid (sym_block__tilde__, sym_resampling);
+        downSample = 1; upSample = 1;
     }
-
-        /* vecsize is smallest power of 2 large enough to hold calcsize */
-    if (calcsize)
-    {
-        if ((vecsize = (1 << math_ilog2 (calcsize))) != calcsize)
-            vecsize *= 2;
-    }
-    else vecsize = 0;
-    if (vecsize && (vecsize != (1 << math_ilog2 (vecsize))))
-    {
-        post_error ("block~: vector size not a power of 2");
-        vecsize = 64;
-    }
-    if (overlap != (1 << math_ilog2 (overlap)))
-    {
-        post_error ("block~: overlap not a power of 2");
-        overlap = 1;
-    }
-    if (downsample != (1 << math_ilog2 (downsample)))
-    {
-        post_error ("block~: downsampling not a power of 2");
-        downsample = 1;
-    }
-    if (upsample != (1 << math_ilog2 (upsample)))
-    {
-        post_error ("block~: upsampling not a power of 2");
-        upsample = 1;
+    //
     }
 
-    x->bk_blockSize = calcsize;
-    x->bk_vectorSize = vecsize;
-    x->bk_overlap = overlap;
-    x->bk_upSample = upsample;
-    x->bk_downSample = downsample;
-    dsp_resume(dspstate);
+    x->bk_blockSize  = blockSize;
+    x->bk_overlap    = overlap;
+    x->bk_upSample   = upSample;
+    x->bk_downSample = downSample;
+    
+    dsp_resume (oldState);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -147,7 +100,7 @@ t_int *block_dspProlog(t_int *w)
     {
         x->bk_count = x->bk_frequency;
         x->bk_phase = (x->bk_period > 1 ? 1 : 0);
-        return (w + BLOCK_PROLOGCALL);        /* beginning of block is next ugen */
+        return (w + BLOCK_PROLOG);        /* beginning of block is next ugen */
     }
 }
 
@@ -155,43 +108,44 @@ t_int *block_dspEpilog(t_int *w)
 {
     t_block *x = (t_block *)w[1];
     int count = x->bk_count - 1;
-    if (x->bk_return)
-        return (0);
     if (!x->bk_isReblocked)
-        return (w + x->bk_epilogLength + BLOCK_EPILOGCALL);
+        return (w + x->bk_epilogLength + BLOCK_EPILOG);
     if (count)
     {
         x->bk_count = count;
         return (w - (x->bk_blockLength -
-            (BLOCK_PROLOGCALL + BLOCK_EPILOGCALL)));   /* go to ugen after prolog */
+            (BLOCK_PROLOG + BLOCK_EPILOG)));   /* go to ugen after prolog */
     }
-    else return (w + BLOCK_EPILOGCALL);
+    else return (w + BLOCK_EPILOG);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *block_new(t_float fvecsize, t_float foverlap,
-                       t_float fupsample)
+static void *block_new (t_float blockSize, t_float overlap, t_float upSample)
 {
-    t_block *x = (t_block *)pd_new(block_class);
-    x->bk_phase = 0;
-    x->bk_period = 1;
-    x->bk_frequency = 1;
-    x->bk_isSwitchObject = 0;
-    x->bk_isSwitchedOn = 1;
-    block_set(x, fvecsize, foverlap, fupsample);
-    return (x);
+    t_block *x = (t_block *)pd_new (block_class);
+    
+    x->bk_phase             = 0;
+    x->bk_period            = 1;
+    x->bk_frequency         = 1;
+    x->bk_isSwitchObject    = 0;
+    x->bk_isSwitchedOn      = 1;
+    
+    block_set (x, blockSize, overlap, upSample);
+    
+    return x;
 }
 
-static void *block_newSwitch(t_float fvecsize, t_float foverlap,
-                        t_float fupsample)
+static void *block_newSwitch (t_float blockSize, t_float overlap, t_float upSample)
 {
-    t_block *x = (t_block *)(block_new(fvecsize, foverlap, fupsample));
-    x->bk_isSwitchObject = 1;
-    x->bk_isSwitchedOn = 0;
-    return (x);
+    t_block *x = block_new (blockSize, overlap, upSample);
+    
+    x->bk_isSwitchObject    = 1;
+    x->bk_isSwitchedOn      = 0;
+    
+    return x;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -220,7 +174,6 @@ void block_tilde_setup (void)
             A_NULL);
             
     class_addDSP (c, block_dsp);
-    class_addBang (c, block_bang);
     class_addFloat (c, block_float);
     
     class_addMethod (c, (t_method)block_set, sym_set, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, A_NULL);

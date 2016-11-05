@@ -39,6 +39,9 @@ typedef struct _resample {
     t_sample        *r_buffer;
     } t_resample;
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 struct _vinlet {
     t_object        vi_obj;                         /* Must be the first. */
     t_resample      vi_resampling;
@@ -71,7 +74,6 @@ struct _voutlet {
     
 typedef struct _block {
     t_object        bk_obj;                         /* Must be the first. */
-    int             bk_vectorSize;
     int             bk_blockSize;
     int             bk_overlap;
     int             bk_phase;
@@ -86,7 +88,6 @@ typedef struct _block {
     int             bk_isReblocked;
     int             bk_upSample;
     int             bk_downSample;
-    int             bk_return;
     } t_block;
     
 // -----------------------------------------------------------------------------------------------------------

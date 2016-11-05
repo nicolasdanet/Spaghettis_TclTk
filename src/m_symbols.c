@@ -386,6 +386,7 @@ t_symbol *sym_realtime;
 t_symbol *sym_receive;
 t_symbol *sym_receive__tilde__;
 t_symbol *sym_rename;
+t_symbol *sym_resampling;
 t_symbol *sym_reset;
 t_symbol *sym_resize;
 t_symbol *sym_restore;
@@ -938,6 +939,7 @@ void symbols_initialize (void)
     sym_receive                                 = gensym ("receive");
     sym_receive__tilde__                        = gensym ("receive~");
     sym_rename                                  = gensym ("rename");
+    sym_resampling                              = gensym ("resampling");
     sym_reset                                   = gensym ("reset");
     sym_resize                                  = gensym ("resize");
     sym_restore                                 = gensym ("restore");

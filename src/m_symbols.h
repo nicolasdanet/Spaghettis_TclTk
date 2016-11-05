@@ -391,6 +391,7 @@ extern t_symbol *sym_realtime;
 extern t_symbol *sym_receive;
 extern t_symbol *sym_receive__tilde__;
 extern t_symbol *sym_rename;
+extern t_symbol *sym_resampling;
 extern t_symbol *sym_reset;
 extern t_symbol *sym_resize;
 extern t_symbol *sym_restore;

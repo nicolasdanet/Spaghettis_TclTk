@@ -431,14 +431,13 @@ void ugen_graphClose (t_dspcontext *context)
     int frequency               = 1;
     int phase                   = 0;
     int switched                = 0;
-    int reblock                 = parentContext ? 0 : 1;
+    int reblocked               = parentContext ? 0 : 1;
         
     if (block) {
     //
     int overlap = block->bk_overlap;
     
-    if (block->bk_vectorSize > 0) { vectorSize = block->bk_vectorSize;  }
-    if (block->bk_blockSize > 0)  { blockSize  = block->bk_blockSize;   } 
+    if (block->bk_blockSize > 0) { vectorSize = blockSize = block->bk_blockSize; } 
         
     overlap     = PD_MIN (overlap, vectorSize);
     downSample  = PD_MIN (block->bk_downSample, parentVectorSize);
@@ -453,17 +452,17 @@ void ugen_graphClose (t_dspcontext *context)
     block->bk_period    = period;
     block->bk_phase     = ugen_dspPhase & (period - 1);
     
-    reblock |= (overlap != 1);
-    reblock |= (vectorSize != parentVectorSize);
-    reblock |= (downSample != 1);
-    reblock |= (upSample != 1);
+    reblocked |= (overlap != 1);
+    reblocked |= (vectorSize != parentVectorSize);
+    reblocked |= (downSample != 1);
+    reblocked |= (upSample != 1);
     //
     }
 
     context->dc_sampleRate  = sampleRate;
     context->dc_vectorSize  = vectorSize;
     context->dc_blockSize   = blockSize;
-    context->dc_isReblocked = reblock;
+    context->dc_isReblocked = reblocked;
     context->dc_isSwitched  = switched;
     
         /* if we're reblocking or switched, we now have to create output
@@ -472,7 +471,7 @@ void ugen_graphClose (t_dspcontext *context)
         the case that there was a signal loop.  But we don't know this
         yet.  */
 
-    if (context->dc_ioSignals && (switched || reblock))
+    if (context->dc_ioSignals && (switched || reblocked))
     {
         t_signal **sigp;
         for (i = 0, sigp = context->dc_ioSignals + context->dc_numberOfInlets; i < context->dc_numberOfOutlets;
@@ -491,7 +490,7 @@ void ugen_graphClose (t_dspcontext *context)
     }
 
     if (0)
-        post("reblock %d, switched %d", reblock, switched);
+        post("reblock %d, switched %d", reblocked, switched);
 
         /* schedule prologs for inlets and outlets.  If the "reblock" flag
         is set, an inlet will put code on the DSP chain to copy its input
@@ -510,15 +509,15 @@ void ugen_graphClose (t_dspcontext *context)
         if (pd_class(zz) == vinlet_class)
             vinlet_dspProlog((t_vinlet *)zz, 
                 context->dc_ioSignals, vectorSize, ugen_dspPhase, period, frequency,
-                    downSample, upSample, reblock, switched);
+                    downSample, upSample, reblocked, switched);
         else if (pd_class(zz) == voutlet_class)
             voutlet_dspProlog((t_voutlet *)zz, 
                 outsigs, vectorSize, ugen_dspPhase, period, frequency,
-                    downSample, upSample, reblock, switched);
+                    downSample, upSample, reblocked, switched);
     }    
     chainblockbegin = pd_this->pd_dspChainSize;
 
-    if (block && (reblock || switched))   /* add the block DSP prolog */
+    if (block && (reblocked || switched))   /* add the block DSP prolog */
     {
         dsp_add(block_dspProlog, 1, block);
         block->bk_chainOnset = pd_this->pd_dspChainSize - 1;
@@ -573,7 +572,7 @@ void ugen_graphClose (t_dspcontext *context)
         break;   /* don't need to keep looking. */
     }
 
-    if (block && (reblock || switched))    /* add block DSP epilog */
+    if (block && (reblocked || switched))    /* add block DSP epilog */
         dsp_add(block_dspEpilog, 1, block);
     chainblockend = pd_this->pd_dspChainSize;
 
@@ -588,7 +587,7 @@ void ugen_graphClose (t_dspcontext *context)
             if (iosigs) iosigs += context->dc_numberOfInlets;
             voutlet_dspEpilog((t_voutlet *)zz, 
                 iosigs, vectorSize, ugen_dspPhase, period, frequency,
-                    downSample, upSample, reblock, switched);
+                    downSample, upSample, reblocked, switched);
         }
     }
 
@@ -597,7 +596,7 @@ void ugen_graphClose (t_dspcontext *context)
     {
         block->bk_blockLength = chainblockend - chainblockbegin;
         block->bk_epilogLength = chainafterall - chainblockend;
-        block->bk_isReblocked = reblock;
+        block->bk_isReblocked = reblocked;
     }
 
     if (0)
