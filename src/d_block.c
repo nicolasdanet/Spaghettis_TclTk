@@ -33,7 +33,7 @@ t_class *block_class;                       /* Shared. */
 
 static void block_float (t_block *x, t_float f)
 {
-    if (x->bk_isSwitchObject) { x->bk_isSwitchedOn = (f != 0.0); }
+    if (x->bk_isSwitch) { x->bk_isSwitchedOn = (f != 0.0); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -129,11 +129,11 @@ static void *block_new (t_float blockSize, t_float overlap, t_float upSample)
 {
     t_block *x = (t_block *)pd_new (block_class);
     
-    x->bk_phase             = 0;
-    x->bk_period            = 1;
-    x->bk_frequency         = 1;
-    x->bk_isSwitchObject    = 0;
-    x->bk_isSwitchedOn      = 1;
+    x->bk_phase         = 0;
+    x->bk_period        = 1;
+    x->bk_frequency     = 1;
+    x->bk_isSwitch      = 0;
+    x->bk_isSwitchedOn  = 1;
     
     block_set (x, blockSize, overlap, upSample);
     
@@ -144,8 +144,8 @@ static void *block_newSwitch (t_float blockSize, t_float overlap, t_float upSamp
 {
     t_block *x = block_new (blockSize, overlap, upSample);
     
-    x->bk_isSwitchObject    = 1;
-    x->bk_isSwitchedOn      = 0;
+    x->bk_isSwitch      = 1;
+    x->bk_isSwitchedOn  = 0;
     
     return x;
 }

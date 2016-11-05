@@ -81,11 +81,10 @@ struct _dspcontext {
     int                     dc_numberOfInlets;
     int                     dc_numberOfOutlets;
     t_float                 dc_sampleRate;
-    int                     dc_vectorSize;
     int                     dc_blockSize;
     int                     dc_isTopLevel;
     int                     dc_isReblocked;
-    int                     dc_isSwitched;
+    int                     dc_isSwitch;
     t_ugenbox               *dc_ugens;
     struct _dspcontext      *dc_parentContext;
     t_signal                **dc_ioSignals;
@@ -172,7 +171,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
         patch; same exception as above, but also if we're "switched" we
         have to do a copy rather than a borrow.  */
     int nofreesigs = (class == canvas_class || 
-        (class == voutlet_class) &&  !(dc->dc_isReblocked || dc->dc_isSwitched));
+        (class == voutlet_class) &&  !(dc->dc_isReblocked || dc->dc_isSwitch));
     t_signal **insig, **outsig, **sig, *s1, *s2, *s3;
     t_ugenbox *u2;
     
@@ -420,48 +419,45 @@ void ugen_graphClose (t_dspcontext *context)
     t_block *block              = ugen_graphGetBlockIfContainsAny (context);
     t_dspcontext *parentContext = context->dc_parentContext;
     t_float parentSampleRate    = parentContext ? parentContext->dc_sampleRate : audio_getSampleRate();
-    int parentVectorSize        = parentContext ? parentContext->dc_vectorSize : AUDIO_DEFAULT_BLOCKSIZE;
     int parentBlockSize         = parentContext ? parentContext->dc_blockSize  : AUDIO_DEFAULT_BLOCKSIZE;
     t_float sampleRate          = parentSampleRate;
-    int vectorSize              = parentVectorSize;
     int blockSize               = parentBlockSize;
     int downSample              = 1;
     int upSample                = 1;
     int period                  = 1;
     int frequency               = 1;
-    int switched                = 0;
+    int switchable                = 0;
     int reblocked               = parentContext ? 0 : 1;
         
     if (block) {
     //
     int overlap = block->bk_overlap;
     
-    if (block->bk_blockSize > 0) { vectorSize = blockSize = block->bk_blockSize; } 
+    if (block->bk_blockSize > 0) { blockSize = block->bk_blockSize; } 
         
-    overlap     = PD_MIN (overlap, vectorSize);
-    downSample  = PD_MIN (block->bk_downSample, parentVectorSize);
+    overlap     = PD_MIN (overlap, blockSize);
+    downSample  = PD_MIN (block->bk_downSample, parentBlockSize);
     upSample    = block->bk_upSample;
-    period      = PD_MAX (1, ((vectorSize * downSample) / (parentVectorSize * overlap * upSample)));
-    frequency   = PD_MAX (1, ((parentVectorSize * overlap * upSample) / (vectorSize * downSample)));
+    period      = PD_MAX (1, ((blockSize * downSample) / (parentBlockSize * overlap * upSample)));
+    frequency   = PD_MAX (1, ((parentBlockSize * overlap * upSample) / (blockSize * downSample)));
     sampleRate  = parentSampleRate * overlap * upSample / downSample;
-    switched    = block->bk_isSwitchObject;
+    switchable  = block->bk_isSwitch;
     
     block->bk_phase     = ugen_dspPhase & (period - 1);
     block->bk_period    = period;
     block->bk_frequency = frequency;
     
     reblocked |= (overlap != 1);
-    reblocked |= (vectorSize != parentVectorSize);
+    reblocked |= (blockSize != parentBlockSize);
     reblocked |= (downSample != 1);
     reblocked |= (upSample != 1);
     //
     }
 
     context->dc_sampleRate  = sampleRate;
-    context->dc_vectorSize  = vectorSize;
     context->dc_blockSize   = blockSize;
     context->dc_isReblocked = reblocked;
-    context->dc_isSwitched  = switched;
+    context->dc_isSwitch    = switchable;
     
         /* if we're reblocking or switched, we now have to create output
         signals to fill in for the "borrowed" ones we have now.  This
@@ -469,7 +465,7 @@ void ugen_graphClose (t_dspcontext *context)
         the case that there was a signal loop.  But we don't know this
         yet.  */
 
-    if (context->dc_ioSignals && (switched || reblocked))
+    if (context->dc_ioSignals && (switchable || reblocked))
     {
         t_signal **sigp;
         for (i = 0, sigp = context->dc_ioSignals + context->dc_numberOfInlets; i < context->dc_numberOfOutlets;
@@ -478,7 +474,7 @@ void ugen_graphClose (t_dspcontext *context)
             if ((*sigp)->s_isBorrowed && !(*sigp)->s_borrowedFrom)
             {
                 signal_borrow(*sigp,
-                    signal_new(parentVectorSize, parentSampleRate));
+                    signal_new(parentBlockSize, parentSampleRate));
                 (*sigp)->s_count++;
 
                 if (0) post("set %lx->%lx", *sigp,
@@ -488,7 +484,7 @@ void ugen_graphClose (t_dspcontext *context)
     }
 
     if (0)
-        post("reblock %d, switched %d", reblocked, switched);
+        post("reblock %d, switched %d", reblocked, switchable);
 
         /* schedule prologs for inlets and outlets.  If the "reblock" flag
         is set, an inlet will put code on the DSP chain to copy its input
@@ -506,16 +502,16 @@ void ugen_graphClose (t_dspcontext *context)
 
         if (pd_class(zz) == vinlet_class)
             vinlet_dspProlog((t_vinlet *)zz, 
-                context->dc_ioSignals, vectorSize, ugen_dspPhase, period, frequency,
-                    downSample, upSample, reblocked, switched);
+                context->dc_ioSignals, blockSize, ugen_dspPhase, period, frequency,
+                    downSample, upSample, reblocked, switchable);
         else if (pd_class(zz) == voutlet_class)
             voutlet_dspProlog((t_voutlet *)zz, 
-                outsigs, vectorSize, ugen_dspPhase, period, frequency,
-                    downSample, upSample, reblocked, switched);
+                outsigs, blockSize, ugen_dspPhase, period, frequency,
+                    downSample, upSample, reblocked, switchable);
     }    
     chainblockbegin = pd_this->pd_dspChainSize;
 
-    if (block && (reblocked || switched))   /* add the block DSP prolog */
+    if (block && (reblocked || switchable))   /* add the block DSP prolog */
     {
         dsp_add(block_performProlog, 1, block);
         //block->bk_chainOnset = pd_this->pd_dspChainSize - 1;
@@ -558,7 +554,7 @@ void ugen_graphClose (t_dspcontext *context)
         {
             if ((*sigp)->s_isBorrowed && !(*sigp)->s_borrowedFrom)
             {
-                t_signal *s3 = signal_new(parentVectorSize, parentSampleRate);
+                t_signal *s3 = signal_new(parentBlockSize, parentSampleRate);
                 signal_borrow(*sigp, s3);
                 (*sigp)->s_count++;
                 dsp_addZeroPerform(s3->s_vector, s3->s_vectorSize);
@@ -570,7 +566,7 @@ void ugen_graphClose (t_dspcontext *context)
         break;   /* don't need to keep looking. */
     }
 
-    if (block && (reblocked || switched))    /* add block DSP epilog */
+    if (block && (reblocked || switchable))    /* add block DSP epilog */
         dsp_add(block_performEpilog, 1, block);
     chainblockend = pd_this->pd_dspChainSize;
 
@@ -584,8 +580,8 @@ void ugen_graphClose (t_dspcontext *context)
             t_signal **iosigs = context->dc_ioSignals;
             if (iosigs) iosigs += context->dc_numberOfInlets;
             voutlet_dspEpilog((t_voutlet *)zz, 
-                iosigs, vectorSize, ugen_dspPhase, period, frequency,
-                    downSample, upSample, reblocked, switched);
+                iosigs, blockSize, ugen_dspPhase, period, frequency,
+                    downSample, upSample, reblocked, switchable);
         }
     }
 

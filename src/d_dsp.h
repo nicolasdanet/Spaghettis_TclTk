@@ -82,7 +82,7 @@ typedef struct _block {
     int             bk_count;
     int             bk_allBlockLength;
     int             bk_outletEpilogLength;
-    int             bk_isSwitchObject;
+    int             bk_isSwitch;
     int             bk_isSwitchedOn;
     int             bk_isReblocked;
     int             bk_upSample;
