@@ -33,7 +33,7 @@ extern t_pdinstance *pd_this;
 // -----------------------------------------------------------------------------------------------------------
 
 static t_signal *signal_reusable[SIGNAL_SLOTS + 1];         /* Indexed by the vector size (power of two). */
-static t_signal *signal_reusableBorrowed;                   /* Doesn't have a proper vector size. */
+static t_signal *signal_reusableVectorBorrowed;             /* Doesn't have a proper vector size. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ t_signal *signal_new (int vectorSize, t_float sampleRate)
     PD_ASSERT (PD_ISPOWER2 (vectorSize)); 
     PD_ABORT (!PD_ISPOWER2 (vectorSize));
     
-    if (!vectorSize) { t = &signal_reusableBorrowed; }
+    if (!vectorSize) { t = &signal_reusableVectorBorrowed; }
     else {
         t = signal_reusable + math_ilog2 (vectorSize);
     }
@@ -59,12 +59,12 @@ t_signal *signal_new (int vectorSize, t_float sampleRate)
     s = (t_signal *)PD_MEMORY_GET (sizeof (t_signal));
     
     if (vectorSize) {
-        s->s_vector     = (t_sample *)PD_MEMORY_GET (vectorSize * sizeof (t_sample));
-        s->s_isBorrowed = 0;
+        s->s_vector             = (t_sample *)PD_MEMORY_GET (vectorSize * sizeof (t_sample));
+        s->s_isVectorBorrowed   = 0;
         
     } else {
-        s->s_vector     = NULL;
-        s->s_isBorrowed = 1;
+        s->s_vector             = NULL;
+        s->s_isVectorBorrowed   = 1;
     }
 
     s->s_nextUsed = pd_this->pd_signals;
@@ -82,11 +82,11 @@ t_signal *signal_new (int vectorSize, t_float sampleRate)
 
 void signal_free (t_signal *s)
 {
-    if (s->s_isBorrowed) {
+    if (s->s_isVectorBorrowed) {
 
         t_signal *t = s->s_borrowedFrom;
         t->s_count--; if (!t->s_count) { signal_free (t); }
-        s->s_nextReusable = signal_reusableBorrowed; signal_reusableBorrowed = s;
+        s->s_nextReusable = signal_reusableVectorBorrowed; signal_reusableVectorBorrowed = s;
         
     } else {
     
@@ -116,14 +116,18 @@ void signal_clean (void)
     int i;
     
     while (s = pd_this->pd_signals) {
-
-        pd_this->pd_signals = s->s_nextUsed;
-        if (!s->s_isBorrowed) { PD_MEMORY_FREE (s->s_vector); } PD_MEMORY_FREE (s);
+    //
+    pd_this->pd_signals = s->s_nextUsed;
+    
+    if (!s->s_isVectorBorrowed) { PD_MEMORY_FREE (s->s_vector); }
+    
+    PD_MEMORY_FREE (s);
+    //
     }
     
     for (i = 0; i <= SIGNAL_SLOTS; i++) { signal_reusable[i] = NULL; }
     
-    signal_reusableBorrowed = NULL;
+    signal_reusableVectorBorrowed = NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------

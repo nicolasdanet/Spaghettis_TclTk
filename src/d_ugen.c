@@ -352,6 +352,25 @@ static t_block *ugen_graphGetBlockIfContainsAny (t_dspcontext *context)
     return block;
 }
 
+void ugen_graphCreateMissingSignalsForOutlets (t_dspcontext *context, int blockSize, t_float sampleRate)
+{
+    int i;
+    t_signal **t = context->dc_ioSignals + context->dc_numberOfInlets;
+    
+    for (i = 0; i < context->dc_numberOfOutlets; i++) {
+    //
+    t_signal *s = (*t);
+    
+    if (s->s_isVectorBorrowed && !s->s_borrowedFrom) {
+        signal_borrow (s, signal_new (blockSize, sampleRate));
+        s->s_count++;                                                       /* ??? */
+    }
+    
+    t++;
+    //
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -459,26 +478,9 @@ void ugen_graphClose (t_dspcontext *context)
     context->dc_isReblocked = reblocked;
     context->dc_isSwitch    = switchable;
     
-    if (context->dc_ioSignals && (switchable || reblocked))
-    {
-        t_signal **sigp;
-        for (i = 0, sigp = context->dc_ioSignals + context->dc_numberOfInlets; i < context->dc_numberOfOutlets;
-            i++, sigp++)
-        {
-            if ((*sigp)->s_isBorrowed && !(*sigp)->s_borrowedFrom)
-            {
-                signal_borrow(*sigp,
-                    signal_new(parentBlockSize, parentSampleRate));
-                (*sigp)->s_count++;
-
-                if (0) post("set %lx->%lx", *sigp,
-                    (*sigp)->s_borrowedFrom);
-            }
-        }
+    if (context->dc_ioSignals && (switchable || reblocked)) {
+        ugen_graphCreateMissingSignalsForOutlets (context, parentBlockSize, parentSampleRate);
     }
-
-    if (0)
-        post("reblock %d, switched %d", reblocked, switchable);
 
         /* schedule prologs for inlets and outlets.  If the "reblock" flag
         is set, an inlet will put code on the DSP chain to copy its input
@@ -546,7 +548,7 @@ void ugen_graphClose (t_dspcontext *context)
         for (i = 0, sigp = context->dc_ioSignals + context->dc_numberOfInlets; i < context->dc_numberOfOutlets;
             i++, sigp++)
         {
-            if ((*sigp)->s_isBorrowed && !(*sigp)->s_borrowedFrom)
+            if ((*sigp)->s_isVectorBorrowed && !(*sigp)->s_borrowedFrom)
             {
                 t_signal *s3 = signal_new(parentBlockSize, parentSampleRate);
                 signal_borrow(*sigp, s3);

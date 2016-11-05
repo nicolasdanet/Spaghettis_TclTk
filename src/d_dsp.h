@@ -19,7 +19,7 @@
 struct _signal {
     t_float         s_sampleRate;
     int             s_count;
-    int             s_isBorrowed;
+    int             s_isVectorBorrowed;
     int             s_vectorSize;
     t_sample        *s_vector;
     struct _signal  *s_borrowedFrom;
