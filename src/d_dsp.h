@@ -80,9 +80,8 @@ typedef struct _block {
     int             bk_period;
     int             bk_frequency;
     int             bk_count;
-    int             bk_chainOnset;  
-    int             bk_blockLength;
-    int             bk_epilogLength;
+    int             bk_allBlockLength;
+    int             bk_outletEpilogLength;
     int             bk_isSwitchObject;
     int             bk_isSwitchedOn;
     int             bk_isReblocked;

@@ -24,8 +24,8 @@ t_class *block_class;                       /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define BLOCK_PROLOG    2
-#define BLOCK_EPILOG    2
+#define BLOCK_PROLOG_LENGTH     2
+#define BLOCK_EPILOG_LENGTH     2
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -77,46 +77,44 @@ static void block_set (t_block *x, t_float f1, t_float f2, t_float f3)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void block_dsp(t_block *x, t_signal **sp)
+static void block_dsp (t_block *x, t_signal **sp)
 {
-    /* do nothing here */
 }
 
-t_int *block_dspProlog(t_int *w)
+t_int *block_dspProlog (t_int *w)
 {
     t_block *x = (t_block *)w[1];
-    int phase = x->bk_phase;
-        /* if we're switched off, jump past the epilog code */
-    if (!x->bk_isSwitchedOn)
-        return (w + x->bk_blockLength);
-    if (phase)
-    {
-        phase++;
-        if (phase == x->bk_period) phase = 0;
-        x->bk_phase = phase;
-        return (w + x->bk_blockLength);  /* skip block; jump past epilog */
-    }
-    else
-    {
+    
+    if (x->bk_isSwitchedOn) {
+    //
+    if (x->bk_phase) { x->bk_phase++; if (x->bk_phase == x->bk_period) { x->bk_phase = 0; } }
+    else {
         x->bk_count = x->bk_frequency;
-        x->bk_phase = (x->bk_period > 1 ? 1 : 0);
-        return (w + BLOCK_PROLOG);        /* beginning of block is next ugen */
+        x->bk_phase = x->bk_period > 1 ? 1 : 0;
+
+        return (w + BLOCK_PROLOG_LENGTH);
     }
+    //
+    }
+    
+    return (w + x->bk_allBlockLength);
 }
 
-t_int *block_dspEpilog(t_int *w)
+t_int *block_dspEpilog (t_int *w)
 {
     t_block *x = (t_block *)w[1];
-    int count = x->bk_count - 1;
-    if (!x->bk_isReblocked)
-        return (w + x->bk_epilogLength + BLOCK_EPILOG);
-    if (count)
-    {
-        x->bk_count = count;
-        return (w - (x->bk_blockLength -
-            (BLOCK_PROLOG + BLOCK_EPILOG)));   /* go to ugen after prolog */
+    
+    if (x->bk_isReblocked) {
+    //
+    if (x->bk_count - 1) {
+        x->bk_count--; return (w - (x->bk_allBlockLength - (BLOCK_PROLOG_LENGTH + BLOCK_EPILOG_LENGTH)));
+    } else {
+        return (w + BLOCK_EPILOG_LENGTH);
     }
-    else return (w + BLOCK_EPILOG);
+    //
+    }
+    
+    return (w + BLOCK_EPILOG_LENGTH + x->bk_outletEpilogLength);
 }
 
 // -----------------------------------------------------------------------------------------------------------

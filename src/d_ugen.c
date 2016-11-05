@@ -429,7 +429,6 @@ void ugen_graphClose (t_dspcontext *context)
     int upSample                = 1;
     int period                  = 1;
     int frequency               = 1;
-    int phase                   = 0;
     int switched                = 0;
     int reblocked               = parentContext ? 0 : 1;
         
@@ -444,13 +443,12 @@ void ugen_graphClose (t_dspcontext *context)
     upSample    = block->bk_upSample;
     period      = PD_MAX (1, ((vectorSize * downSample) / (parentVectorSize * overlap * upSample)));
     frequency   = PD_MAX (1, ((parentVectorSize * overlap * upSample) / (vectorSize * downSample)));
-    phase       = block->bk_phase;
     sampleRate  = parentSampleRate * overlap * upSample / downSample;
     switched    = block->bk_isSwitchObject;
     
-    block->bk_frequency = frequency;
-    block->bk_period    = period;
     block->bk_phase     = ugen_dspPhase & (period - 1);
+    block->bk_period    = period;
+    block->bk_frequency = frequency;
     
     reblocked |= (overlap != 1);
     reblocked |= (vectorSize != parentVectorSize);
@@ -520,7 +518,7 @@ void ugen_graphClose (t_dspcontext *context)
     if (block && (reblocked || switched))   /* add the block DSP prolog */
     {
         dsp_add(block_dspProlog, 1, block);
-        block->bk_chainOnset = pd_this->pd_dspChainSize - 1;
+        //block->bk_chainOnset = pd_this->pd_dspChainSize - 1;
     }   
         /* Initialize for sorting */
     for (u = context->dc_ugens; u; u = u->u_next)
@@ -594,8 +592,8 @@ void ugen_graphClose (t_dspcontext *context)
     chainafterall = pd_this->pd_dspChainSize;
     if (block)
     {
-        block->bk_blockLength = chainblockend - chainblockbegin;
-        block->bk_epilogLength = chainafterall - chainblockend;
+        block->bk_allBlockLength = chainblockend - chainblockbegin;
+        block->bk_outletEpilogLength = chainafterall - chainblockend;
         block->bk_isReblocked = reblocked;
     }
 
