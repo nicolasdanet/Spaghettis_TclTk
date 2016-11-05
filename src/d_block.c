@@ -24,8 +24,8 @@ t_class *block_class;                       /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define BLOCK_PROLOG_LENGTH     2
-#define BLOCK_EPILOG_LENGTH     2
+#define BLOCK_PROLOG    2
+#define BLOCK_EPILOG    2
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -81,7 +81,11 @@ static void block_dsp (t_block *x, t_signal **sp)
 {
 }
 
-t_int *block_dspProlog (t_int *w)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_int *block_performProlog (t_int *w)
 {
     t_block *x = (t_block *)w[1];
     
@@ -92,7 +96,7 @@ t_int *block_dspProlog (t_int *w)
         x->bk_count = x->bk_frequency;
         x->bk_phase = x->bk_period > 1 ? 1 : 0;
 
-        return (w + BLOCK_PROLOG_LENGTH);
+        return (w + BLOCK_PROLOG);
     }
     //
     }
@@ -100,21 +104,21 @@ t_int *block_dspProlog (t_int *w)
     return (w + x->bk_allBlockLength);
 }
 
-t_int *block_dspEpilog (t_int *w)
+t_int *block_performEpilog (t_int *w)
 {
     t_block *x = (t_block *)w[1];
     
     if (x->bk_isReblocked) {
     //
     if (x->bk_count - 1) {
-        x->bk_count--; return (w - (x->bk_allBlockLength - (BLOCK_PROLOG_LENGTH + BLOCK_EPILOG_LENGTH)));
+        x->bk_count--; return (w - (x->bk_allBlockLength - (BLOCK_PROLOG + BLOCK_EPILOG)));
     } else {
-        return (w + BLOCK_EPILOG_LENGTH);
+        return (w + BLOCK_EPILOG);
     }
     //
     }
     
-    return (w + BLOCK_EPILOG_LENGTH + x->bk_outletEpilogLength);
+    return (w + BLOCK_EPILOG + x->bk_outletEpilogLength);
 }
 
 // -----------------------------------------------------------------------------------------------------------

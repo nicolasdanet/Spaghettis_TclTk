@@ -517,7 +517,7 @@ void ugen_graphClose (t_dspcontext *context)
 
     if (block && (reblocked || switched))   /* add the block DSP prolog */
     {
-        dsp_add(block_dspProlog, 1, block);
+        dsp_add(block_performProlog, 1, block);
         //block->bk_chainOnset = pd_this->pd_dspChainSize - 1;
     }   
         /* Initialize for sorting */
@@ -571,7 +571,7 @@ void ugen_graphClose (t_dspcontext *context)
     }
 
     if (block && (reblocked || switched))    /* add block DSP epilog */
-        dsp_add(block_dspEpilog, 1, block);
+        dsp_add(block_performEpilog, 1, block);
     chainblockend = pd_this->pd_dspChainSize;
 
         /* add epilogs for outlets.  */

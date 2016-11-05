@@ -177,7 +177,14 @@ void            voutlet_dspEpilog           (t_voutlet *x,
                                                 int upSample,
                                                 int reblock,
                                                 int switched);
-                                        
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_int           *block_performProlog        (t_int *w);
+t_int           *block_performEpilog        (t_int *w);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -209,9 +216,6 @@ void    resample_free       (t_resample *x);
 void    resample_dsp        (t_resample *x, t_sample *in, int insize, t_sample *out, int outsize, int m);
 void    resamplefrom_dsp    (t_resample *x, t_sample *in, int insize, int outsize, int m);
 void    resampleto_dsp      (t_resample *x, t_sample *out, int insize, int outsize, int m);
-
-t_int   *block_dspProlog    (t_int *w);
-t_int   *block_dspEpilog    (t_int *w);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
