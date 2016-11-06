@@ -11,6 +11,8 @@
 #include "s_system.h"
 #include "d_dsp.h"
 
+extern t_sample *audio_soundOut;
+
 /* ----------------------------- dac~ --------------------------- */
 static t_class *dac_class;
 

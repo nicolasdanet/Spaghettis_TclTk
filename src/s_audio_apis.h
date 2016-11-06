@@ -16,33 +16,35 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-extern t_sample *audio_soundIn;
-extern t_sample *audio_soundOut;
+char        *audio_nameNative               (void);
+int         audio_getPriorityNative         (int min, int max, int isWatchdog);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-char    *audio_nameNative               (void);
-int     audio_getPriorityNative         (int min, int max, int isWatchdog);
+t_error     audio_initializeNative          (void);
+void        audio_releaseNative             (void);
 
-t_error audio_initializeNative          (void);
-void    audio_releaseNative             (void);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-
-t_error audio_openNative                (int sampleRate,
-                                            int numberOfChannelsIn,
-                                            int numberOfChannelsOut,
-                                            int blockSize,
-                                            int deviceIn,
-                                            int deviceOut);
+void        audio_closeNative               (void);
+t_error     audio_openNative                (int sampleRate,
+                                                int numberOfChannelsIn,
+                                                int numberOfChannelsOut,
+                                                int blockSize,
+                                                int deviceIn,
+                                                int deviceOut);
                                             
-void    audio_closeNative               (void);
-int     audio_pollDSPNative             (void);
-t_error audio_getListsNative            (char *devicesIn,
-                                            int  *numberOfDevicesIn,
-                                            char *devicesOut,
-                                            int  *numberOfDevicesOut,
-                                            int  *canMultiple);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+int         audio_pollDSPNative             (void);
+t_error     audio_getListsNative            (char *devicesIn,
+                                                int  *numberOfDevicesIn,
+                                                char *devicesOut,
+                                                int  *numberOfDevicesOut,
+                                                int  *canMultiple);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

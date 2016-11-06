@@ -18,27 +18,32 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *adc_class;
+extern t_sample *audio_soundIn;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _adc
-{
-    t_object x_obj;
-    t_int x_n;
-    t_int *x_vec;
-} t_adc;
+static t_class  *adc_class;         /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _adc {
+    t_object    x_obj;              /* Must be the first. */
+    int         x_size;
+    int         *x_vector;
+    } t_adc;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void adc_set(t_adc *x, t_symbol *s, int argc, t_atom *argv)
+static void adc_set (t_adc *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int i;
-    for (i = 0; i < argc && i < x->x_n; i++)
-        x->x_vec[i] = (t_int)atom_getFloatAtIndex(i, argc, argv);
+    int i, k = PD_MIN (argc, x->x_size);
+    
+    for (i = 0; i < k; i++) { x->x_vector[i] = (int)atom_getFloatAtIndex (i, argc, argv); }
+    
     dsp_update();
 }
 
@@ -46,19 +51,31 @@ static void adc_set(t_adc *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void adc_dsp(t_adc *x, t_signal **sp)
+static void adc_dsp (t_adc *x, t_signal **sp)
 {
-    t_int i, *ip;
-    t_signal **sp2;
-    for (i = x->x_n, ip = x->x_vec, sp2 = sp; i--; ip++, sp2++)
-    {
-        int ch = *ip - 1;
-        if ((*sp2)->s_vectorSize != AUDIO_DEFAULT_BLOCKSIZE)
-            post_error ("adc~: bad vector size");
-        else if (ch >= 0 && ch < audio_getChannelsIn())
-            dsp_addCopyPerform(audio_soundIn + AUDIO_DEFAULT_BLOCKSIZE*ch,
-                (*sp2)->s_vector, AUDIO_DEFAULT_BLOCKSIZE);
-        else dsp_addZeroPerform((*sp2)->s_vector, AUDIO_DEFAULT_BLOCKSIZE);
+    t_signal **s = sp;
+    int i;
+        
+    for (i = 0; i < x->x_size; i++) {
+    //
+    int channel = x->x_vector[i] - 1;
+    int k = audio_getChannelsIn();
+    t_signal *t = (*s);
+    
+    PD_ASSERT (t->s_vectorSize == AUDIO_DEFAULT_BLOCKSIZE);
+    PD_ABORT  (t->s_vectorSize != AUDIO_DEFAULT_BLOCKSIZE);
+    
+    if (channel < 0 || channel >= k) { dsp_addZeroPerform (t->s_vector, AUDIO_DEFAULT_BLOCKSIZE); }
+    else {
+    //
+    t_sample *in = audio_soundIn + (AUDIO_DEFAULT_BLOCKSIZE * channel);
+    
+    dsp_addCopyPerform (in, t->s_vector, AUDIO_DEFAULT_BLOCKSIZE);
+    //
+    }
+        
+    s++;
+    //
     }    
 }
 
@@ -66,44 +83,54 @@ static void adc_dsp(t_adc *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *adc_new(t_symbol *s, int argc, t_atom *argv)
+static void *adc_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_adc *x = (t_adc *)pd_new(adc_class);
-    t_atom defarg[2], *ap;
+    t_adc *x = (t_adc *)pd_new (adc_class);
     int i;
-    if (!argc)
-    {
-        argv = defarg;
-        argc = 2;
-        SET_FLOAT(&defarg[0], 1);
-        SET_FLOAT(&defarg[1], 2);
+    
+    x->x_size   = argc ? argc : 2;
+    x->x_vector = (int *)PD_MEMORY_GET (x->x_size * sizeof (int));
+    
+    if (!argc) { x->x_vector[0] = 1; x->x_vector[1] = 2; }
+    else {
+        for (i = 0; i < argc; i++) { x->x_vector[i] = (int)atom_getFloatAtIndex (i, argc, argv); }
     }
-    x->x_n = argc;
-    x->x_vec = (t_int *)PD_MEMORY_GET(argc * sizeof(*x->x_vec));
-    for (i = 0; i < argc; i++)
-        x->x_vec[i] = (t_int)atom_getFloatAtIndex(i, argc, argv);
-    for (i = 0; i < argc; i++)
-        outlet_new(&x->x_obj, &s_signal);
-    return (x);
+    
+    for (i = 0; i < x->x_size; i++) {
+        outlet_new (cast_object (x), &s_signal);
+    }
+    
+    return x;
 }
 
-
-static void adc_free(t_adc *x)
+static void adc_free (t_adc *x)
 {
-    PD_MEMORY_FREE(x->x_vec);
+    PD_MEMORY_FREE (x->x_vector);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void adc_setup(void)
+void adc_setup (void)
 {
-    adc_class = class_new(sym_adc__tilde__, (t_newmethod)adc_new,
-        (t_method)adc_free, sizeof(t_adc), 0, A_GIMME, 0);
-    class_addMethod(adc_class, (t_method)adc_dsp, sym_dsp, A_CANT, 0);
-    class_addMethod(adc_class, (t_method)adc_set, sym_set, A_GIMME, 0);
-    class_setHelpName(adc_class, sym_adc__tilde__);
+    t_class *c = NULL;
+    
+    c = class_new (sym_adc__tilde__,
+            (t_newmethod)adc_new,
+            (t_method)adc_free,
+            sizeof (t_adc),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+            
+    class_addDSP (c, (t_method)adc_dsp);
+    
+    class_addMethod (c, (t_method)adc_set, sym_set, A_GIMME, A_NULL);
+    
+    class_setHelpName (c, sym_adc__tilde__);
+    
+    adc_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
