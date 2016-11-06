@@ -29,21 +29,22 @@ static t_class  *dac_class;         /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _dac {
-    t_object    x_obj;
-    t_int       x_size;
-    t_int       *x_vector;
+    t_object    x_obj;              /* Must be the first. */
     t_float     x_f;
+    int         x_size;
+    int         *x_vector;
     } t_dac;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void dac_set(t_dac *x, t_symbol *s, int argc, t_atom *argv)
+static void dac_set (t_dac *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int i;
-    for (i = 0; i < argc && i < x->x_size; i++)
-        x->x_vector[i] = (t_int)atom_getFloatAtIndex(i, argc, argv);
+    int i, k = PD_MIN (argc, x->x_size);
+    
+    for (i = 0; i < k; i++) { x->x_vector[i] = (int)atom_getFloatAtIndex (i, argc, argv); }
+    
     dsp_update();
 }
 
@@ -51,18 +52,30 @@ static void dac_set(t_dac *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void dac_dsp(t_dac *x, t_signal **sp)
+static void dac_dsp (t_dac *x, t_signal **sp)
 {
-    t_int i, *ip;
-    t_signal **sp2;
-    for (i = x->x_size, ip = x->x_vector, sp2 = sp; i--; ip++, sp2++)
-    {
-        int ch = *ip - 1;
-        if ((*sp2)->s_vectorSize != AUDIO_DEFAULT_BLOCKSIZE)
-            post_error ("dac~: bad vector size");
-        else if (ch >= 0 && ch < audio_getChannelsOut())
-            dsp_add(plus_perform, 4, audio_soundOut + AUDIO_DEFAULT_BLOCKSIZE*ch,
-                (*sp2)->s_vector, audio_soundOut + AUDIO_DEFAULT_BLOCKSIZE*ch, AUDIO_DEFAULT_BLOCKSIZE);
+    t_signal **s = sp;
+    int i;
+        
+    for (i = 0; i < x->x_size; i++) {
+    //
+    int channel = x->x_vector[i] - 1;
+    int k = audio_getChannelsOut();
+    t_signal *t = (*s);
+    
+    PD_ASSERT (t->s_vectorSize == AUDIO_DEFAULT_BLOCKSIZE);
+    PD_ABORT  (t->s_vectorSize != AUDIO_DEFAULT_BLOCKSIZE);
+    
+    if (channel >= 0 && channel < k) {
+    //
+    t_sample *out = audio_soundOut + (AUDIO_DEFAULT_BLOCKSIZE * channel);
+    
+    dsp_add (plus_perform, 4, out, t->s_vector, out, AUDIO_DEFAULT_BLOCKSIZE);
+    //
+    }
+        
+    s++;
+    //
     }    
 }
 
@@ -70,45 +83,56 @@ static void dac_dsp(t_dac *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *dac_new(t_symbol *s, int argc, t_atom *argv)
+static void *dac_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_dac *x = (t_dac *)pd_new(dac_class);
-    t_atom defarg[2], *ap;
+    t_dac *x = (t_dac *)pd_new (dac_class);
     int i;
-    if (!argc)
-    {
-        argv = defarg;
-        argc = 2;
-        SET_FLOAT(&defarg[0], 1);
-        SET_FLOAT(&defarg[1], 2);
+    
+    x->x_size   = argc ? argc : 2;
+    x->x_vector = (int *)PD_MEMORY_GET (x->x_size * sizeof (int));
+    
+    if (!argc) { x->x_vector[0] = 1; x->x_vector[1] = 2; }
+    else {
+        for (i = 0; i < argc; i++) { x->x_vector[i] = (int)atom_getFloatAtIndex (i, argc, argv); }
     }
-    x->x_size = argc;
-    x->x_vector = (t_int *)PD_MEMORY_GET(argc * sizeof(*x->x_vector));
-    for (i = 0; i < argc; i++)
-        x->x_vector[i] = (t_int)atom_getFloatAtIndex(i, argc, argv);
-    for (i = 1; i < argc; i++)
-        inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
-    x->x_f = 0;
-    return (x);
+    
+    for (i = 1; i < x->x_size; i++) {
+        inlet_new (cast_object (x), cast_pd (x), &s_signal, &s_signal);
+    }
+    
+    return x;
 }
 
-static void dac_free(t_dac *x)
+static void dac_free (t_dac *x)
 {
-    PD_MEMORY_FREE(x->x_vector);
+    PD_MEMORY_FREE (x->x_vector);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void dac_setup(void)
+void dac_setup (void)
 {
-    dac_class = class_new(sym_dac__tilde__, (t_newmethod)dac_new,
-        (t_method)dac_free, sizeof(t_dac), 0, A_GIMME, 0);
-    CLASS_SIGNAL(dac_class, t_dac, x_f);
-    class_addMethod(dac_class, (t_method)dac_dsp, sym_dsp, A_CANT, 0);
-    class_addMethod(dac_class, (t_method)dac_set, sym_set, A_GIMME, 0);
-    class_setHelpName(dac_class, sym_adc__tilde__);
+    t_class *c = NULL;
+    
+    c = class_new (sym_dac__tilde__,
+            (t_newmethod)dac_new,
+            (t_method)dac_free,
+            sizeof (t_dac),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+        
+    CLASS_SIGNAL (c, t_dac, x_f);
+    
+    class_addDSP (c, dac_dsp);
+    
+    class_addMethod (c, (t_method)dac_set, sym_set, A_GIMME, A_NULL);
+    
+    class_setHelpName (c, sym_adc__tilde__);
+    
+    dac_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

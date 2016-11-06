@@ -128,8 +128,6 @@ void adc_setup (void)
     
     class_addMethod (c, (t_method)adc_set, sym_set, A_GIMME, A_NULL);
     
-    class_setHelpName (c, sym_adc__tilde__);
-    
     adc_class = c;
 }
 
