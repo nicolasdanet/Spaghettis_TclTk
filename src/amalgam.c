@@ -244,6 +244,7 @@
 #include "d_canvas.c"
 #include "d_vinlet.c"
 #include "d_voutlet.c"
+#include "d_adc.c"
 #include "d_dac.c"
 #include "d_resample.c"
 #include "d_block.c"
