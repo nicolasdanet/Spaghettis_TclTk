@@ -43,7 +43,7 @@ typedef struct _print_tilde {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void print_tilde_float (t_print_tilde *, t_float);
+static void print_tilde_count (t_print_tilde *, t_float);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -51,10 +51,10 @@ static void print_tilde_float (t_print_tilde *, t_float);
 
 static void print_tilde_bang (t_print_tilde *x)
 {
-    print_tilde_float (x, 1.0);
+    print_tilde_count (x, 1.0);
 }
 
-static void print_tilde_float (t_print_tilde *x, t_float f)
+static void print_tilde_count (t_print_tilde *x, t_float f)
 {
     x->x_count = (int)PD_MAX (1.0, f);
     
@@ -169,8 +169,9 @@ void print_tilde_setup (void)
     
     class_addDSP (c, print_tilde_dsp);
     class_addBang (c, print_tilde_bang);
-    class_addFloat (c, print_tilde_float);
     class_addPolling (c, print_tilde_polling);
+    
+    class_addMethod (c, (t_method)print_tilde_count, sym_count, A_FLOAT, A_NULL);
     
     print_tilde_class = c;
 }

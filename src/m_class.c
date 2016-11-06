@@ -235,6 +235,8 @@ t_class *class_new (t_symbol *s,
 
 void class_addSignal (t_class *c, int offset)
 {
+    PD_ASSERT (c->c_methodFloat == class_defaultFloat);
+    
     if (offset <= 0) { PD_BUG; }
     else {
         c->c_signalOffset = offset;
@@ -341,31 +343,43 @@ void class_addMethod (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ..
 
 void class_addBang (t_class *c, t_method fn)
 {
+    PD_ASSERT (c->c_methodBang == class_defaultBang);
+    
     c->c_methodBang = (t_bangmethod)fn;
 }
 
 void class_addFloat (t_class *c, t_method fn)
 {
+    PD_ASSERT (c->c_methodFloat == class_defaultFloat);
+    
     c->c_methodFloat = (t_floatmethod)fn;
 }
 
 void class_addSymbol (t_class *c, t_method fn)
 {
+    PD_ASSERT (c->c_methodSymbol == class_defaultSymbol);
+    
     c->c_methodSymbol = (t_symbolmethod)fn;
 }
 
 void class_addPointer (t_class *c, t_method fn)
 {
+    PD_ASSERT (c->c_methodPointer == class_defaultPointer);
+    
     c->c_methodPointer = (t_pointermethod)fn;
 }
 
 void class_addList (t_class *c, t_method fn)
 {
+    PD_ASSERT (c->c_methodList == class_defaultList);
+    
     c->c_methodList = (t_listmethod)fn;
 }
 
 void class_addAnything (t_class *c, t_method fn)
 {
+    PD_ASSERT (c->c_methodAnything == class_defaultAnything);
+    
     c->c_methodAnything = (t_anythingmethod)fn;
 }
 
