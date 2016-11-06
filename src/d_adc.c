@@ -1,9 +1,13 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-/*  The dac~ and adc~ routines.
+/* 
+    Copyright (c) 1997-2016 Miller Puckette and others.
 */
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #include "m_pd.h"
 #include "m_core.h"
@@ -11,8 +15,13 @@
 #include "s_system.h"
 #include "d_dsp.h"
 
-/* ----------------------------- adc~ --------------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static t_class *adc_class;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 typedef struct _adc
 {
@@ -20,6 +29,42 @@ typedef struct _adc
     t_int x_n;
     t_int *x_vec;
 } t_adc;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void adc_set(t_adc *x, t_symbol *s, int argc, t_atom *argv)
+{
+    int i;
+    for (i = 0; i < argc && i < x->x_n; i++)
+        x->x_vec[i] = (t_int)atom_getFloatAtIndex(i, argc, argv);
+    dsp_update();
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void adc_dsp(t_adc *x, t_signal **sp)
+{
+    t_int i, *ip;
+    t_signal **sp2;
+    for (i = x->x_n, ip = x->x_vec, sp2 = sp; i--; ip++, sp2++)
+    {
+        int ch = *ip - 1;
+        if ((*sp2)->s_vectorSize != AUDIO_DEFAULT_BLOCKSIZE)
+            post_error ("adc~: bad vector size");
+        else if (ch >= 0 && ch < audio_getChannelsIn())
+            dsp_addCopyPerform(audio_soundIn + AUDIO_DEFAULT_BLOCKSIZE*ch,
+                (*sp2)->s_vector, AUDIO_DEFAULT_BLOCKSIZE);
+        else dsp_addZeroPerform((*sp2)->s_vector, AUDIO_DEFAULT_BLOCKSIZE);
+    }    
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void *adc_new(t_symbol *s, int argc, t_atom *argv)
 {
@@ -42,80 +87,15 @@ static void *adc_new(t_symbol *s, int argc, t_atom *argv)
     return (x);
 }
 
-t_int *copy_perform(t_int *w)
-{
-    t_sample *in1 = (t_sample *)(w[1]);
-    t_sample *out = (t_sample *)(w[2]);
-    int n = (int)(w[3]);
-    while (n--) *out++ = *in1++; 
-    return (w+4);
-}
-
-static t_int *copy_perf8(t_int *w)
-{
-    t_sample *in1 = (t_sample *)(w[1]);
-    t_sample *out = (t_sample *)(w[2]);
-    int n = (int)(w[3]);
-    
-    for (; n; n -= 8, in1 += 8, out += 8)
-    {
-        t_sample f0 = in1[0];
-        t_sample f1 = in1[1];
-        t_sample f2 = in1[2];
-        t_sample f3 = in1[3];
-        t_sample f4 = in1[4];
-        t_sample f5 = in1[5];
-        t_sample f6 = in1[6];
-        t_sample f7 = in1[7];
-
-        out[0] = f0;
-        out[1] = f1;
-        out[2] = f2;
-        out[3] = f3;
-        out[4] = f4;
-        out[5] = f5;
-        out[6] = f6;
-        out[7] = f7;
-    }
-    return (w+4);
-}
-
-void dsp_add_copy(t_sample *in, t_sample *out, int n)
-{
-    if (n&7)
-        dsp_add(copy_perform, 3, in, out, n);
-    else        
-        dsp_add(copy_perf8, 3, in, out, n);
-}
-
-static void adc_dsp(t_adc *x, t_signal **sp)
-{
-    t_int i, *ip;
-    t_signal **sp2;
-    for (i = x->x_n, ip = x->x_vec, sp2 = sp; i--; ip++, sp2++)
-    {
-        int ch = *ip - 1;
-        if ((*sp2)->s_vectorSize != AUDIO_DEFAULT_BLOCKSIZE)
-            post_error ("adc~: bad vector size");
-        else if (ch >= 0 && ch < audio_getChannelsIn())
-            dsp_add_copy(audio_soundIn + AUDIO_DEFAULT_BLOCKSIZE*ch,
-                (*sp2)->s_vector, AUDIO_DEFAULT_BLOCKSIZE);
-        else dsp_addZeroPerform((*sp2)->s_vector, AUDIO_DEFAULT_BLOCKSIZE);
-    }    
-}
-
-static void adc_set(t_adc *x, t_symbol *s, int argc, t_atom *argv)
-{
-    int i;
-    for (i = 0; i < argc && i < x->x_n; i++)
-        x->x_vec[i] = (t_int)atom_getFloatAtIndex(i, argc, argv);
-    dsp_update();
-}
 
 static void adc_free(t_adc *x)
 {
     PD_MEMORY_FREE(x->x_vec);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void adc_setup(void)
 {
@@ -126,5 +106,7 @@ void adc_setup(void)
     class_setHelpName(adc_class, sym_adc__tilde__);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 

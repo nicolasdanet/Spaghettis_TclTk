@@ -95,13 +95,13 @@ static void sigfft_dspx(t_sigfft *x, t_signal **sp, t_int *(*f)(t_int *w))
         dsp_add(sigfft_swap, 3, out1, out2, n);
     else if (out1 == in2)
     {
-        dsp_add(copy_perform, 3, in2, out2, n);
-        dsp_add(copy_perform, 3, in1, out1, n);
+        dsp_addCopyPerform (in2, out2, n);
+        dsp_addCopyPerform (in1, out1, n);
     }
     else
     {
-        if (out1 != in1) dsp_add(copy_perform, 3, in1, out1, n);
-        if (out2 != in2) dsp_add(copy_perform, 3, in2, out2, n);
+        if (out1 != in1) dsp_addCopyPerform (in1, out1, n);
+        if (out2 != in2) dsp_addCopyPerform (in2, out2, n);
     }
     dsp_add(f, 3, sp[2]->s_vector, sp[3]->s_vector, n);
 }
@@ -171,7 +171,7 @@ static void sigrfft_dsp(t_sigrfft *x, t_signal **sp)
         return;
     }
     if (in1 != out1)
-        dsp_add(copy_perform, 3, in1, out1, n);
+        dsp_addCopyPerform (in1, out1, n);
     dsp_add(sigrfft_perform, 2, out1, n);
     dsp_add(sigrfft_flip, 3, out1 + (n2+1), out2 + n2, n2-1);
     dsp_addZeroPerform(out1 + (n2+1), ((n2-1)&(~7)));
@@ -231,11 +231,11 @@ static void sigrifft_dsp(t_sigrifft *x, t_signal **sp)
     if (in2 == out1)
     {
         dsp_add(sigrfft_flip, 3, out1+1, out1 + n, n2-1);
-        dsp_add(copy_perform, 3, in1, out1, n2+1);
+        dsp_addCopyPerform (in1, out1, n2+1);
     }
     else
     {
-        if (in1 != out1) dsp_add(copy_perform, 3, in1, out1, n2+1);
+        if (in1 != out1) dsp_addCopyPerform (in1, out1, n2+1);
         dsp_add(sigrfft_flip, 3, in2+1, out1 + n, n2-1);
     }
     dsp_add(sigrifft_perform, 2, out1, n);

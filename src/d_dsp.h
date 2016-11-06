@@ -190,16 +190,16 @@ t_int           *block_performEpilog        (t_int *w);
 #pragma mark -
 
 void            dsp_addZeroPerform          (t_sample *s, int n);
+void            dsp_addCopyPerform          (t_sample *src, t_sample *dest, int n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 t_int   *plus_perform       (t_int *args);
-t_int   *copy_perform       (t_int *args);
 
 void    dsp_add_plus        (t_sample *in1, t_sample *in2, t_sample *out, int n);
-void    dsp_add_copy        (t_sample *in, t_sample *out, int n);
+
 void    dsp_add_scalarcopy  (t_float *in, t_sample *out, int n);
 
 void    dsp_add             (t_perform f, int n, ...);

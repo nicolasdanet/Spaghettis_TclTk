@@ -78,7 +78,7 @@ void voutlet_dsp (t_voutlet *x, t_signal **sp)
     //
     t_signal *in = sp[0];
     
-    if (x->vo_copyOut) { dsp_add_copy (in->s_vector, x->vo_directSignal->s_vector, in->s_vectorSize); }
+    if (x->vo_copyOut) { dsp_addCopyPerform (in->s_vector, x->vo_directSignal->s_vector, in->s_vectorSize); }
     else if (x->vo_directSignal) { signal_borrow (x->vo_directSignal, in); }
     else {
         dsp_add (voutlet_perform, 3, x, in->s_vector, in->s_vectorSize);
