@@ -352,21 +352,81 @@ static t_block *ugen_graphGetBlockIfContainsAny (t_dspcontext *context)
     return block;
 }
 
-void ugen_graphCreateMissingSignalsForOutlets (t_dspcontext *context, int blockSize, t_float sampleRate)
+void ugen_graphCreateMissingSignalsForOutlets (t_dspcontext *context,
+    int switchable, 
+    int reblocked, 
+    int blockSize,
+    t_float sampleRate)
 {
-    int i;
-    t_signal **t = context->dc_ioSignals + context->dc_numberOfInlets;
-    
-    for (i = 0; i < context->dc_numberOfOutlets; i++) {
+    if (context->dc_ioSignals) {
     //
-    t_signal *s = (*t);
+    if (switchable || reblocked) {
+
+        int i;
+        t_signal **t = context->dc_ioSignals + context->dc_numberOfInlets;
+        
+        for (i = 0; i < context->dc_numberOfOutlets; i++) {
+        //
+        t_signal *s = (*t);
+        
+        if (s->s_isVectorBorrowed && !s->s_borrowedFrom) {
+            signal_borrow (s, signal_new (blockSize, sampleRate));
+            s->s_count++;                                                       /* ??? */
+        }
+        
+        t++;
+        //
+        }
+    }
+    //
+    }
+}
+
+void ugen_graphDspProlog (t_dspcontext *context, 
+    int switchable,
+    int reblocked, 
+    int blockSize,
+    int period, 
+    int frequency,
+    int downSample,
+    int upSample)
+{
+    t_ugenbox *u = NULL;
     
-    if (s->s_isVectorBorrowed && !s->s_borrowedFrom) {
-        signal_borrow (s, signal_new (blockSize, sampleRate));
-        s->s_count++;                                                       /* ??? */
+    for (u = context->dc_ugens; u; u = u->u_next) {
+    //
+    t_object *object = u->u_owner;
+    
+    t_signal **i = context->dc_ioSignals;
+    t_signal **o = i ? i + context->dc_numberOfInlets : NULL;
+
+    if (pd_class (object) == vinlet_class) {
+    
+        vinlet_dspProlog ((t_vinlet *)object, 
+            i,
+            blockSize,
+            ugen_dspPhase,
+            period,
+            frequency,
+            downSample,
+            upSample,
+            reblocked,
+            switchable);
     }
     
-    t++;
+    if (pd_class(object) == voutlet_class) {
+    
+        voutlet_dspProlog ((t_voutlet *)object, 
+            o,
+            blockSize,
+            ugen_dspPhase,
+            period,
+            frequency,
+            downSample,
+            upSample,
+            reblocked,
+            switchable);
+    }
     //
     }
 }
@@ -375,56 +435,8 @@ void ugen_graphCreateMissingSignalsForOutlets (t_dspcontext *context, int blockS
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Note that an abstraction can be opened as a toplevel patch. */
-
-t_dspcontext *ugen_graphStart (int isTopLevel, t_signal **sp, int m, int n)
-{
-    t_dspcontext *context = (t_dspcontext *)PD_MEMORY_GET (sizeof (t_dspcontext));
-
-    context->dc_numberOfInlets  = isTopLevel ? 0 : m;
-    context->dc_numberOfOutlets = isTopLevel ? 0 : n;
-    context->dc_isTopLevel      = isTopLevel;
-    context->dc_ugens           = NULL;
-    context->dc_parentContext   = ugen_context;
-    context->dc_ioSignals       = sp;
-        
-    ugen_context = context;
-    
-    return context;
-}
-
-void ugen_graphAdd (t_dspcontext *context, t_object *o)
-{
-    t_ugenbox *x = (t_ugenbox *)PD_MEMORY_GET (sizeof (t_ugenbox));
-
-    x->u_inSize  = object_numberOfSignalInlets (o);
-    x->u_outSize = object_numberOfSignalOutlets (o);
-    x->u_in      = PD_MEMORY_GET (x->u_inSize * sizeof (t_siginlet));
-    x->u_out     = PD_MEMORY_GET (x->u_outSize * sizeof (t_sigoutlet));
-    x->u_owner   = o;
-    x->u_next    = context->dc_ugens;
-    
-    context->dc_ugens = x;
-}
-
-void ugen_graphConnect (t_dspcontext *context, t_object *o1, int m, t_object *o2, int n)
-{
-    t_ugenbox *u1 = ugen_graphFetchUgen (context, o1);
-    t_ugenbox *u2 = ugen_graphFetchUgen (context, o2);
-    
-    m = object_indexAsSignalOutlet (o1, m);
-    n = object_indexAsSignalInlet (o2, n);
-    
-    if (!u1 || !u2 || n < 0) { PD_BUG; }
-    else if (m < 0 || m >= u1->u_outSize || n >= u2->u_inSize) { PD_BUG; }
-    else {
-        ugen_graphConnectUgens (u1, m, u2, n);
-    }
-}
-
 void ugen_graphClose (t_dspcontext *context)
 {
-    t_ugenbox *u;
     t_sigoutlet *uout;
     t_siginlet *uin;
     t_sigoutconnect *oc;
@@ -434,6 +446,7 @@ void ugen_graphClose (t_dspcontext *context)
     int chainblockbegin;    /* DSP chain onset before block prolog code */
     int chainblockend;      /* and after block epilog code */
     int chainafterall;      /* and after signal outlet epilog */
+    t_ugenbox *u = NULL;
     
     t_block *block              = ugen_graphGetBlockIfContainsAny (context);
     t_dspcontext *parentContext = context->dc_parentContext;
@@ -449,28 +462,27 @@ void ugen_graphClose (t_dspcontext *context)
     int reblocked               = parentContext ? 0 : 1;
         
     if (block) {
-    //
-    int overlap = block->bk_overlap;
-    
-    if (block->bk_blockSize > 0) { blockSize = block->bk_blockSize; } 
+
+        int overlap = block->bk_overlap;
         
-    overlap     = PD_MIN (overlap, blockSize);
-    downSample  = PD_MIN (block->bk_downSample, parentBlockSize);
-    upSample    = block->bk_upSample;
-    period      = PD_MAX (1, ((blockSize * downSample) / (parentBlockSize * overlap * upSample)));
-    frequency   = PD_MAX (1, ((parentBlockSize * overlap * upSample) / (blockSize * downSample)));
-    sampleRate  = parentSampleRate * overlap * upSample / downSample;
-    switchable  = block->bk_isSwitch;
-    
-    block->bk_phase     = ugen_dspPhase & (period - 1);
-    block->bk_period    = period;
-    block->bk_frequency = frequency;
-    
-    reblocked |= (overlap != 1);
-    reblocked |= (blockSize != parentBlockSize);
-    reblocked |= (downSample != 1);
-    reblocked |= (upSample != 1);
-    //
+        if (block->bk_blockSize > 0) { blockSize = block->bk_blockSize; } 
+            
+        overlap     = PD_MIN (overlap, blockSize);
+        downSample  = PD_MIN (block->bk_downSample, parentBlockSize);
+        upSample    = block->bk_upSample;
+        period      = PD_MAX (1, ((blockSize * downSample) / (parentBlockSize * overlap * upSample)));
+        frequency   = PD_MAX (1, ((parentBlockSize * overlap * upSample) / (blockSize * downSample)));
+        sampleRate  = parentSampleRate * overlap * (upSample / downSample);
+        switchable  = block->bk_isSwitch;
+        
+        block->bk_phase     = ugen_dspPhase & (period - 1);
+        block->bk_period    = period;
+        block->bk_frequency = frequency;
+        
+        reblocked |= (overlap != 1);
+        reblocked |= (blockSize != parentBlockSize);
+        reblocked |= (downSample != 1);
+        reblocked |= (upSample != 1);
     }
 
     context->dc_sampleRate  = sampleRate;
@@ -478,33 +490,21 @@ void ugen_graphClose (t_dspcontext *context)
     context->dc_isReblocked = reblocked;
     context->dc_isSwitch    = switchable;
     
-    if (context->dc_ioSignals && (switchable || reblocked)) {
-        ugen_graphCreateMissingSignalsForOutlets (context, parentBlockSize, parentSampleRate);
-    }
-
-        /* schedule prologs for inlets and outlets.  If the "reblock" flag
-        is set, an inlet will put code on the DSP chain to copy its input
-        into an internal buffer here, before any unit generators' DSP code
-        gets scheduled.  If we don't "reblock", inlets will need to get
-        pointers to their corresponding inlets/outlets on the box we're inside,
-        if any.  Outlets will also need pointers, unless we're switched, in
-        which case outlet epilog code will kick in. */
+    ugen_graphCreateMissingSignalsForOutlets (context,
+        switchable,
+        reblocked,
+        parentBlockSize,
+        parentSampleRate);
         
-    for (u = context->dc_ugens; u; u = u->u_next)
-    {
-        t_pd *zz = &u->u_owner->te_g.g_pd;
-        t_signal **insigs = context->dc_ioSignals, **outsigs = context->dc_ioSignals;
-        if (outsigs) outsigs += context->dc_numberOfInlets;
-
-        if (pd_class(zz) == vinlet_class)
-            vinlet_dspProlog((t_vinlet *)zz, 
-                context->dc_ioSignals, blockSize, ugen_dspPhase, period, frequency,
-                    downSample, upSample, reblocked, switchable);
-        else if (pd_class(zz) == voutlet_class)
-            voutlet_dspProlog((t_voutlet *)zz, 
-                outsigs, blockSize, ugen_dspPhase, period, frequency,
-                    downSample, upSample, reblocked, switchable);
-    }    
+    ugen_graphDspProlog (context,
+        switchable,
+        reblocked,
+        blockSize,
+        period,
+        frequency,
+        downSample,
+        upSample);
+    
     chainblockbegin = pd_this->pd_dspChainSize;
 
     if (block && (reblocked || switchable))   /* add the block DSP prolog */
@@ -622,6 +622,53 @@ void ugen_graphClose (t_dspcontext *context)
         ugen_context = context->dc_parentContext;
     else { PD_BUG; }
     PD_MEMORY_FREE(context);
+}
+
+/* Note that an abstraction can be opened as a toplevel patch. */
+
+t_dspcontext *ugen_graphStart (int isTopLevel, t_signal **sp, int m, int n)
+{
+    t_dspcontext *context = (t_dspcontext *)PD_MEMORY_GET (sizeof (t_dspcontext));
+
+    context->dc_numberOfInlets  = isTopLevel ? 0 : m;
+    context->dc_numberOfOutlets = isTopLevel ? 0 : n;
+    context->dc_isTopLevel      = isTopLevel;
+    context->dc_ugens           = NULL;
+    context->dc_parentContext   = ugen_context;
+    context->dc_ioSignals       = sp;
+        
+    ugen_context = context;
+    
+    return context;
+}
+
+void ugen_graphAdd (t_dspcontext *context, t_object *o)
+{
+    t_ugenbox *x = (t_ugenbox *)PD_MEMORY_GET (sizeof (t_ugenbox));
+
+    x->u_inSize  = object_numberOfSignalInlets (o);
+    x->u_outSize = object_numberOfSignalOutlets (o);
+    x->u_in      = PD_MEMORY_GET (x->u_inSize * sizeof (t_siginlet));
+    x->u_out     = PD_MEMORY_GET (x->u_outSize * sizeof (t_sigoutlet));
+    x->u_owner   = o;
+    x->u_next    = context->dc_ugens;
+    
+    context->dc_ugens = x;
+}
+
+void ugen_graphConnect (t_dspcontext *context, t_object *o1, int m, t_object *o2, int n)
+{
+    t_ugenbox *u1 = ugen_graphFetchUgen (context, o1);
+    t_ugenbox *u2 = ugen_graphFetchUgen (context, o2);
+    
+    m = object_indexAsSignalOutlet (o1, m);
+    n = object_indexAsSignalInlet (o2, n);
+    
+    if (!u1 || !u2 || n < 0) { PD_BUG; }
+    else if (m < 0 || m >= u1->u_outSize || n >= u2->u_inSize) { PD_BUG; }
+    else {
+        ugen_graphConnectUgens (u1, m, u2, n);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
