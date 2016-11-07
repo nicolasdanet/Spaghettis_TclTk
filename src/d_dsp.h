@@ -185,8 +185,8 @@ void            voutlet_dspEpilog           (t_voutlet *x,
 
 void            resample_init               (t_resample *x, t_symbol *type);
 void            resample_free               (t_resample *x);
-void            resample_toDsp              (t_resample *x, t_sample *s, int sizeResampled, int size, int m);
-void            resample_fromDsp            (t_resample *x, t_sample *s, int size, int sizeResampled, int m);
+void            resample_toDsp              (t_resample *x, t_sample *s, int sizeResampled, int size);
+void            resample_fromDsp            (t_resample *x, t_sample *s, int size, int sizeResampled);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

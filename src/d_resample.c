@@ -17,6 +17,15 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#define RESAMPLE_PAD        0
+#define RESAMPLE_HOLD       1
+#define RESAMPLE_LINEAR     2
+#define RESAMPLE_DEFAULT    3
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static t_int *downsampling_perform_0(t_int *w)
 {
   t_sample *in  = (t_sample *)(w[1]); /* original signal     */
@@ -108,10 +117,6 @@ static t_int *upsampling_perform_linear(t_int *w)
   return (w+6);
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void resample_dsp(t_resample *x,
                   t_sample* in,  int insize,
                   t_sample* out, int outsize,
@@ -160,13 +165,15 @@ static void resample_dsp(t_resample *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void resample_init (t_resample *x, t_symbol *s)
+void resample_init (t_resample *x, t_symbol *type)
 {
-    if (s == sym_hold)x->r_type=1;        /* up: sample and hold */
-    else if (s == sym_linear)x->r_type=2; /* up: linear interpolation */
-    else if ((PD_WITH_LEGACY && s == sym_lin))x->r_type=2;      /* LEGACY */
-    else if (s == sym_pad)x->r_type=0;    /* up: zero pad */
-    else x->r_type=3;                           /* up: zero-padding; down: ignore samples inbetween */
+    x->r_type = RESAMPLE_DEFAULT;
+    
+    if (type == sym_hold)x->r_type=RESAMPLE_HOLD;        /* up: sample and hold */
+    else if (type == sym_linear)x->r_type=RESAMPLE_LINEAR; /* up: linear interpolation */
+    else if ((PD_WITH_LEGACY && type == sym_lin))x->r_type=RESAMPLE_LINEAR;      /* LEGACY */
+    else if (type == sym_pad)x->r_type=RESAMPLE_PAD;    /* up: zero pad */
+    else x->r_type=RESAMPLE_DEFAULT;                           /* up: zero-padding; down: ignore samples inbetween */
     
   // x->r_type=0;
 
@@ -176,7 +183,7 @@ void resample_init (t_resample *x, t_symbol *s)
   x->r_vector = x->r_coefficients = x->r_buffer  = 0;
 }
 
-void resample_free(t_resample *x)
+void resample_free (t_resample *x)
 {
   if (x->r_vectorSize) PD_MEMORY_FREE(x->r_vector);
   if (x->r_coefficientsSize) PD_MEMORY_FREE(x->r_coefficients);
@@ -190,33 +197,12 @@ void resample_free(t_resample *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void resample_fromDsp(t_resample *x,
-                           t_sample *in,
-                           int insize, int outsize, int method)
-{
-  if (insize==outsize) {
-   PD_MEMORY_FREE(x->r_vector);
-    x->r_vectorSize = 0;
-    x->r_vector = in;
-    return;
-  }
-
-  if (x->r_vectorSize != outsize) {
-    t_sample *buf=x->r_vector;
-    PD_MEMORY_FREE(buf);
-    buf = (t_sample *)PD_MEMORY_GET(outsize * sizeof(*buf));
-    x->r_vector = buf;
-    x->r_vectorSize   = outsize;
-  }
-
-  resample_dsp(x, in, insize, x->r_vector, x->r_vectorSize, method);
-  return;
-}
-
 void resample_toDsp(t_resample *x,
                          t_sample *out, 
-                         int insize, int outsize, int method)
+                         int insize, int outsize)
 {
+    int method = (x->r_type == RESAMPLE_DEFAULT) ? RESAMPLE_HOLD : x->r_type;
+    
   if (insize==outsize) {
     if (x->r_vectorSize)PD_MEMORY_FREE(x->r_vector);
     x->r_vectorSize = 0;
@@ -234,6 +220,31 @@ void resample_toDsp(t_resample *x,
 
   resample_dsp(x, x->r_vector, x->r_vectorSize, out, outsize, method);
 
+  return;
+}
+
+void resample_fromDsp(t_resample *x,
+                           t_sample *in,
+                           int insize, int outsize)
+{
+    int method = (x->r_type == RESAMPLE_DEFAULT) ? RESAMPLE_PAD : x->r_type;
+    
+  if (insize==outsize) {
+   PD_MEMORY_FREE(x->r_vector);
+    x->r_vectorSize = 0;
+    x->r_vector = in;
+    return;
+  }
+
+  if (x->r_vectorSize != outsize) {
+    t_sample *buf=x->r_vector;
+    PD_MEMORY_FREE(buf);
+    buf = (t_sample *)PD_MEMORY_GET(outsize * sizeof(*buf));
+    x->r_vector = buf;
+    x->r_vectorSize   = outsize;
+  }
+
+  resample_dsp(x, in, insize, x->r_vector, x->r_vectorSize, method);
   return;
 }
 

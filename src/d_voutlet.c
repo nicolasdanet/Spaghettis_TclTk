@@ -189,12 +189,7 @@ void voutlet_dspEpilog (t_voutlet *x,
             
         } else {
             dsp_add (voutlet_performEpilogWithResampling, 2, x, parentVectorSizeResampled);
-            
-            resample_toDsp (&x->vo_resampling,
-                out->s_vector,
-                parentVectorSizeResampled,
-                parentVectorSize,
-                (x->vo_resampling.r_type == 3) ? 1 : x->vo_resampling.r_type);
+            resample_toDsp (&x->vo_resampling, out->s_vector, parentVectorSizeResampled, parentVectorSize);
         }
     }
     //
