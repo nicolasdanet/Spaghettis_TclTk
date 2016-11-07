@@ -24,7 +24,7 @@ static t_class *unpack_class;       /* Shared. */
 
 typedef struct _unpack {
     t_object        x_obj;          /* Must be the first. */
-    t_int           x_size;
+    int             x_size;
     t_atomoutlet    *x_vector;
     } t_unpack;
 

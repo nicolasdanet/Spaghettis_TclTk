@@ -25,7 +25,7 @@ static t_class *trigger_class;          /* Shared. */
 
 typedef struct _trigger {
     t_object        x_obj;              /* Must be the first. */
-    t_int           x_size;
+    int             x_size;
     t_atomoutlet    *x_vector;
     } t_trigger;
 

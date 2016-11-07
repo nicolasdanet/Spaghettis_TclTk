@@ -25,7 +25,7 @@ static t_class *route_class;            /* Shared. */
 typedef struct _route {
     t_object        x_obj;              /* Must be the first. */
     t_atomtype      x_type;
-    t_int           x_size;
+    int             x_size;
     t_atomoutlet    *x_vector;
     t_outlet        *x_outlet;
     } t_route;

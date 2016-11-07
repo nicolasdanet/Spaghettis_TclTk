@@ -35,7 +35,7 @@ typedef struct _select1 {
 
 typedef struct _select2 {
     t_object            x_obj;                  /* Must be the first. */
-    t_int               x_size;
+    int                 x_size;
     t_atomoutlet        *x_vector;
     t_outlet            *x_outlet;
     } t_select2;
