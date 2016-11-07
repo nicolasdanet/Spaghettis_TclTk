@@ -70,7 +70,7 @@ static void dac_dsp (t_dac *x, t_signal **sp)
     //
     t_sample *out = audio_soundOut + (AUDIO_DEFAULT_BLOCKSIZE * channel);
     
-    dsp_add (plus_perform, 4, out, t->s_vector, out, AUDIO_DEFAULT_BLOCKSIZE);
+    dsp_addPlusPerform (out, t->s_vector, out, AUDIO_DEFAULT_BLOCKSIZE);
     //
     }
         

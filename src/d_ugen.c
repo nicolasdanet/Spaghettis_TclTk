@@ -279,7 +279,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
                 }
                 s3 = signal_new(s1->s_vectorSize, s1->s_sampleRate);
                 //s3 = signal_newlike(s1);
-                dsp_add_plus(s1->s_vector, s2->s_vector, s3->s_vector, s1->s_vectorSize);
+                dsp_addPlusPerform(s1->s_vector, s2->s_vector, s3->s_vector, s1->s_vectorSize);
                 uin->i_signal = s3;
                 s3->s_count = 1;
                 if (!s1->s_count) signal_free(s1);

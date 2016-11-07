@@ -103,6 +103,7 @@ void            dsp_update                  (void);
 int             dsp_suspend                 (void);
 void            dsp_resume                  (int oldState);
 t_int           dsp_done                    (t_int *w);
+void            dsp_add                     (t_perform f, int n, ...);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -191,18 +192,14 @@ t_int           *block_performEpilog        (t_int *w);
 
 void            dsp_addZeroPerform          (t_sample *s, int n);
 void            dsp_addCopyPerform          (t_sample *src, t_sample *dest, int n);
+void            dsp_addPlusPerform          (t_sample *src1, t_sample *src2, t_sample *dest, int n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_int   *plus_perform       (t_int *args);
-
-void    dsp_add_plus        (t_sample *in1, t_sample *in2, t_sample *out, int n);
-
 void    dsp_add_scalarcopy  (t_float *in, t_sample *out, int n);
 
-void    dsp_add             (t_perform f, int n, ...);
 void    pd_fft              (t_float *buffer, int npoints, int inverse);
 
 void    mayer_fht           (t_sample *fz, int n);
