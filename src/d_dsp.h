@@ -183,6 +183,15 @@ void            voutlet_dspEpilog           (t_voutlet *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void            resample_init               (t_resample *x, t_symbol *type);
+void            resample_free               (t_resample *x);
+void            resample_toDsp              (t_resample *x, t_sample *s, int sizeResampled, int size, int m);
+void            resample_fromDsp            (t_resample *x, t_sample *s, int size, int sizeResampled, int m);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_int           *block_performProlog        (t_int *w);
 t_int           *block_performEpilog        (t_int *w);
 
@@ -207,12 +216,6 @@ void    mayer_fft           (int n, t_sample *real, t_sample *imag);
 void    mayer_ifft          (int n, t_sample *real, t_sample *imag);
 void    mayer_realfft       (int n, t_sample *real);
 void    mayer_realifft      (int n, t_sample *real);
-
-void    resample_init       (t_resample *x, t_symbol *type);
-void    resample_free       (t_resample *x);
-void    resample_dsp        (t_resample *x, t_sample *in, int insize, t_sample *out, int outsize, int m);
-void    resamplefrom_dsp    (t_resample *x, t_sample *in, int insize, int outsize, int m);
-void    resampleto_dsp      (t_resample *x, t_sample *out, int insize, int outsize, int m);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

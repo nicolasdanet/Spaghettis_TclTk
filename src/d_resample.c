@@ -1,15 +1,23 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
- * For information on usage and redistribution, and for a DISCLAIMER OF ALL
- * WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
+/* 
+    Copyright (c) 1997-2016 Miller Puckette and others.
+*/
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
 #include "d_dsp.h"
 
-/* --------------------- up/down-sampling --------------------- */
-t_int *downsampling_perform_0(t_int *w)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_int *downsampling_perform_0(t_int *w)
 {
   t_sample *in  = (t_sample *)(w[1]); /* original signal     */
   t_sample *out = (t_sample *)(w[2]); /* downsampled signal  */
@@ -26,7 +34,7 @@ t_int *downsampling_perform_0(t_int *w)
   return (w+5);
 }
 
-t_int *upsampling_perform_0(t_int *w)
+static t_int *upsampling_perform_0(t_int *w)
 {
   t_sample *in  = (t_sample *)(w[1]); /* original signal     */
   t_sample *out = (t_sample *)(w[2]); /* upsampled signal    */
@@ -48,7 +56,7 @@ t_int *upsampling_perform_0(t_int *w)
   return (w+5);
 }
 
-t_int *upsampling_perform_hold(t_int *w)
+static t_int *upsampling_perform_hold(t_int *w)
 {
   t_sample *in  = (t_sample *)(w[1]); /* original signal     */
   t_sample *out = (t_sample *)(w[2]); /* upsampled signal    */
@@ -72,7 +80,7 @@ t_int *upsampling_perform_hold(t_int *w)
   return (w+5);
 }
 
-t_int *upsampling_perform_linear(t_int *w)
+static t_int *upsampling_perform_linear(t_int *w)
 {
   t_resample *x= (t_resample *)(w[1]);
   t_sample *in  = (t_sample *)(w[2]); /* original signal     */
@@ -100,40 +108,11 @@ t_int *upsampling_perform_linear(t_int *w)
   return (w+6);
 }
 
-/* ----------------------- public -------------------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-/* utils */
-
-void resample_init (t_resample *x, t_symbol *s)
-{
-    if (s == sym_hold)x->r_type=1;        /* up: sample and hold */
-    else if (s == sym_linear)x->r_type=2; /* up: linear interpolation */
-    else if ((PD_WITH_LEGACY && s == sym_lin))x->r_type=2;      /* LEGACY */
-    else if (s == sym_pad)x->r_type=0;    /* up: zero pad */
-    else x->r_type=3;                           /* up: zero-padding; down: ignore samples inbetween */
-    
-  // x->r_type=0;
-
-  x->r_downSample=x->r_upSample=1;
-
-  x->r_vectorSize = x->r_coefficientsSize = x->r_bufferSize = 0;
-  x->r_vector = x->r_coefficients = x->r_buffer  = 0;
-}
-
-void resample_free(t_resample *x)
-{
-  if (x->r_vectorSize) PD_MEMORY_FREE(x->r_vector);
-  if (x->r_coefficientsSize) PD_MEMORY_FREE(x->r_coefficients);
-  if (x->r_bufferSize) PD_MEMORY_FREE(x->r_buffer);
-
-  x->r_vectorSize = x->r_coefficientsSize = x->r_bufferSize = 0;
-  x->r_vector = x->r_coefficients = x->r_buffer  = 0;
-}
-
-
-/* dsp-adding */
-
-void resample_dsp(t_resample *x,
+static void resample_dsp(t_resample *x,
                   t_sample* in,  int insize,
                   t_sample* out, int outsize,
                   int method)
@@ -177,7 +156,41 @@ void resample_dsp(t_resample *x,
   }
 }
 
-void resamplefrom_dsp(t_resample *x,
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void resample_init (t_resample *x, t_symbol *s)
+{
+    if (s == sym_hold)x->r_type=1;        /* up: sample and hold */
+    else if (s == sym_linear)x->r_type=2; /* up: linear interpolation */
+    else if ((PD_WITH_LEGACY && s == sym_lin))x->r_type=2;      /* LEGACY */
+    else if (s == sym_pad)x->r_type=0;    /* up: zero pad */
+    else x->r_type=3;                           /* up: zero-padding; down: ignore samples inbetween */
+    
+  // x->r_type=0;
+
+  x->r_downSample=x->r_upSample=1;
+
+  x->r_vectorSize = x->r_coefficientsSize = x->r_bufferSize = 0;
+  x->r_vector = x->r_coefficients = x->r_buffer  = 0;
+}
+
+void resample_free(t_resample *x)
+{
+  if (x->r_vectorSize) PD_MEMORY_FREE(x->r_vector);
+  if (x->r_coefficientsSize) PD_MEMORY_FREE(x->r_coefficients);
+  if (x->r_bufferSize) PD_MEMORY_FREE(x->r_buffer);
+
+  x->r_vectorSize = x->r_coefficientsSize = x->r_bufferSize = 0;
+  x->r_vector = x->r_coefficients = x->r_buffer  = 0;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void resample_fromDsp(t_resample *x,
                            t_sample *in,
                            int insize, int outsize, int method)
 {
@@ -200,7 +213,7 @@ void resamplefrom_dsp(t_resample *x,
   return;
 }
 
-void resampleto_dsp(t_resample *x,
+void resample_toDsp(t_resample *x,
                          t_sample *out, 
                          int insize, int outsize, int method)
 {
@@ -223,3 +236,6 @@ void resampleto_dsp(t_resample *x,
 
   return;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
