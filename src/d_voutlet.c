@@ -163,7 +163,7 @@ void voutlet_dspEpilog (t_voutlet *x,
         t_sample *t = x->vo_buffer;
         PD_MEMORY_FREE (t);
         t = (t_sample *)PD_MEMORY_GET (newBufferSize * sizeof (t_sample));
-        memset ((char *)t, 0, newBufferSize * sizeof (t_sample));
+        //memset (t, 0, newBufferSize * sizeof (t_sample));
         x->vo_bufferSize = newBufferSize;
         x->vo_bufferEnd  = t + newBufferSize;
         x->vo_buffer     = t;

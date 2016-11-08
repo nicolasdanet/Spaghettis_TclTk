@@ -36,24 +36,17 @@ t_int *perform_downsampling (t_int *w)
 
 t_int *perform_upsamplingPad (t_int *w)
 {
-  t_sample *in  = (t_sample *)(w[1]); /* original signal     */
-  t_sample *out = (t_sample *)(w[2]); /* upsampled signal    */
-  int up       = (int)(w[3]);       /* upsampling factor   */
-  int parent   = (int)(w[4]);       /* original vectorsize */
+    t_sample *s1 = (t_sample *)(w[1]);
+    t_sample *s2 = (t_sample *)(w[2]);
+    int up = (int)(w[3]);
+    int size = (int)(w[4]);
+    int n = size * up;
+    
+    memset (s2, 0, n * sizeof (t_sample));
+    
+    while (size--){ *s2 = *s1; s2 += up; s1++; }
 
-  int n=parent*up;
-  t_sample *dummy = out;
-  
-  while(n--)*out++=0;
-
-  n = parent;
-  out = dummy;
-  while(n--){
-    *out=*in++;
-    out+=up;
-  }
-
-  return (w+5);
+    return (w + 5);
 }
 
 t_int *perform_upsamplingHold(t_int *w)
@@ -117,7 +110,7 @@ static t_int *perform_zero (t_int *w)
     t_sample *s = (t_sample *)(w[1]);
     int n = (int)(w[2]);
     
-    while (n--) { *s++ = 0; }
+    memset (s, 0, n * sizeof (t_sample));
     
     return (w + 3);
 }
@@ -148,6 +141,8 @@ static t_int *perform_plus (t_int *w)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+/* SSE welcomed in the future. */
 
 /* < https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions > */
 

@@ -31,7 +31,7 @@ static void *sigsend_new(t_symbol *s)
     x->x_sym = s;
     x->x_n = DEFSENDVS;
     x->x_vec = (t_sample *)PD_MEMORY_GET(DEFSENDVS * sizeof(t_sample));
-    memset((char *)(x->x_vec), 0, DEFSENDVS * sizeof(t_sample));
+    //memset(x->x_vec, 0, DEFSENDVS * sizeof(t_sample));
     x->x_f = 0;
     return (x);
 }
@@ -208,7 +208,7 @@ static void *sigcatch_new(t_symbol *s)
     x->x_sym = s;
     x->x_n = DEFSENDVS;
     x->x_vec = (t_sample *)PD_MEMORY_GET(DEFSENDVS * sizeof(t_sample));
-    memset((char *)(x->x_vec), 0, DEFSENDVS * sizeof(t_sample));
+    //memset(x->x_vec, 0, DEFSENDVS * sizeof(t_sample));
     outlet_new(&x->x_obj, &s_signal);
     return (x);
 }

@@ -122,13 +122,13 @@ void vinlet_dspProlog (t_vinlet *x,
         t_sample *t = x->vi_buffer;
         PD_MEMORY_FREE (t);
         t = (t_sample *)PD_MEMORY_GET (newBufferSize * sizeof (t_sample));
-        memset ((char *)t, 0, newBufferSize * sizeof (t_sample));
+        //memset (t, 0, newBufferSize * sizeof (t_sample));
         x->vi_bufferSize = newBufferSize;
         x->vi_bufferEnd  = t + newBufferSize;
         x->vi_buffer     = t;
     }
     
-    if (!parentSignals) { memset ((char *)x->vi_buffer, 0, newBufferSize * sizeof (t_sample)); }
+    if (!parentSignals) { memset (x->vi_buffer, 0, newBufferSize * sizeof (t_sample)); }
     else {
     //
     x->vi_hopSize = period * parentVectorSizeResampled;
