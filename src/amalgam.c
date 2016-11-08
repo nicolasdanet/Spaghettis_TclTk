@@ -249,7 +249,7 @@
 #include "d_resample.c"
 #include "d_block.c"
 
-#include "d_utils.c"
+#include "d_perform.c"
 
 #include "d_print.c"
 #include "d_bang.c"
