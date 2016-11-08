@@ -17,7 +17,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define RESAMPLE_PAD        0
+#define RESAMPLE_ZERO       0
 #define RESAMPLE_HOLD       1
 #define RESAMPLE_LINEAR     2
 #define RESAMPLE_DEFAULT    3
@@ -78,7 +78,7 @@ static void resample_addPerform (t_resample *x,
     switch (type) {
     //
     case RESAMPLE_DEFAULT : PD_BUG;
-    case RESAMPLE_PAD     : dsp_add (perform_upsamplingPad,     4, in, out, t, inSize); break;
+    case RESAMPLE_ZERO    : dsp_add (perform_upsamplingZero,    4, in, out, t, inSize); break;
     case RESAMPLE_HOLD    : dsp_add (perform_upsamplingHold,    4, in, out, t, inSize); break;
     case RESAMPLE_LINEAR  : dsp_add (perform_upsamplingLinear,  5, x->r_buffer, in, out, t, inSize); break;
     //
@@ -97,7 +97,7 @@ void resample_init (t_resample *x, t_symbol *type)
     
     if (type == sym_hold)   { x->r_type = RESAMPLE_HOLD;    }
     if (type == sym_linear) { x->r_type = RESAMPLE_LINEAR;  }
-    if (type == sym_pad)    { x->r_type = RESAMPLE_PAD;     }
+    if (type == sym_pad)    { x->r_type = RESAMPLE_ZERO;    }
     
     #if PD_WITH_LEGACY
     
@@ -133,7 +133,7 @@ void resample_fromDsp (t_resample *x, t_sample *s, int size, int resampledSize)
             size,
             x->r_vector,
             x->r_vectorSize,
-            (x->r_type != RESAMPLE_DEFAULT) ? x->r_type : RESAMPLE_PAD);
+            (x->r_type != RESAMPLE_DEFAULT) ? x->r_type : RESAMPLE_ZERO);
     }
 }
 

@@ -19,10 +19,10 @@
 
 t_int *perform_downsampling (t_int *w)
 {
-    t_sample *s1 = (t_sample *)(w[1]);      /* Original. */
-    t_sample *s2 = (t_sample *)(w[2]);      /* Downsampled. */
-    int down = (int)(w[3]);                 /* Downsampling factor. */
-    int size = (int)(w[4]);                 /* Original vector size. */
+    t_sample *s1 = (t_sample *)(w[1]);
+    t_sample *s2 = (t_sample *)(w[2]);
+    int down = (int)(w[3]);
+    int size = (int)(w[4]);
     int n = size / down;
 
     while (n--) { *s2 = *s1; s2++; s1 += down; }
@@ -34,46 +34,42 @@ t_int *perform_downsampling (t_int *w)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_int *perform_upsamplingPad (t_int *w)
+t_int *perform_upsamplingZero (t_int *w)
 {
     t_sample *s1 = (t_sample *)(w[1]);
     t_sample *s2 = (t_sample *)(w[2]);
     int up = (int)(w[3]);
     int size = (int)(w[4]);
-    int n = size * up;
     
-    memset (s2, 0, n * sizeof (t_sample));
+    memset (s2, 0, size * up * sizeof (t_sample));
     
-    while (size--){ *s2 = *s1; s2 += up; s1++; }
+    while (size--) { *s2 = *s1; s2 += up; s1++; }
 
     return (w + 5);
 }
 
-t_int *perform_upsamplingHold(t_int *w)
+t_int *perform_upsamplingHold (t_int *w)
 {
-  t_sample *in  = (t_sample *)(w[1]); /* original signal     */
-  t_sample *out = (t_sample *)(w[2]); /* upsampled signal    */
-  int up       = (int)(w[3]);       /* upsampling factor   */
-  int parent   = (int)(w[4]);       /* original vectorsize */
-  int i=up;
-
-  int n=parent;
-  t_sample *dum_out = out;
-  t_sample *dum_in  = in;
+    t_sample *s1 = (t_sample *)(w[1]);
+    t_sample *s2 = (t_sample *)(w[2]);
+    int up = (int)(w[3]);
+    int size = (int)(w[4]);
+    
+    int i = up;
   
-  while (i--) {
-    n = parent;
-    out = dum_out+i;
-    in  = dum_in;
-    while(n--){
-      *out=*in++;
-      out+=up;
+    while (i--) {
+    //
+    int n = size;
+    t_sample *t2 = s2 + i;
+    t_sample *t1 = s1;
+    while (n--) { *t2 = *t1; t2 += up; t1++; }
+    //
     }
-  }
-  return (w+5);
+    
+    return (w + 5);
 }
 
-t_int *perform_upsamplingLinear(t_int *w)
+t_int *perform_upsamplingLinear (t_int *w)
 {
   t_sample *t = (t_sample *)(w[1]);
   t_sample *in  = (t_sample *)(w[2]); /* original signal     */
@@ -100,6 +96,42 @@ t_int *perform_upsamplingLinear(t_int *w)
   *t = a;
   return (w+6);
 }
+
+/*
+t_int *perform_upsamplingLinear (t_int *w)
+{
+    t_sample *t  = (t_sample *)(w[1]);
+    t_sample *s1 = (t_sample *)(w[2]);
+    t_sample *s2 = (t_sample *)(w[3]);
+    int up = (int)(w[4]);
+    int size = (int)(w[5]);
+    int length = size * up;
+    
+    t_sample a = *t;
+    t_sample b = *s1;
+    int n;
+    
+    for (n = 0; n < length; n++) {
+    //
+    t_sample indexAsFloat = (t_sample)(n + 1) / up;
+    int indexAsInteger = (int)indexAsFloat;
+    t_sample fractional = indexAsFloat - indexAsInteger;
+    
+    if (fractional == 0.0) { fractional = 1.0; }
+    
+    *s2++ = fractional * b + (1.0 - fractional) * a;
+    
+    t_sample *fp = s1+indexAsInteger;
+    b=*fp;
+    a=(indexAsInteger)?*(fp-1):a;
+    //
+    }
+
+    *t = a;
+  
+    return (w + 6);
+}
+*/
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
