@@ -17,28 +17,24 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_int *perform_downsamplingPad(t_int *w)
+t_int *perform_downsampling (t_int *w)
 {
-  t_sample *in  = (t_sample *)(w[1]); /* original signal     */
-  t_sample *out = (t_sample *)(w[2]); /* downsampled signal  */
-  int down     = (int)(w[3]);       /* downsampling factor */
-  int parent   = (int)(w[4]);       /* original vectorsize */
+    t_sample *s1 = (t_sample *)(w[1]);      /* Original. */
+    t_sample *s2 = (t_sample *)(w[2]);      /* Downsampled. */
+    int down = (int)(w[3]);                 /* Downsampling factor. */
+    int size = (int)(w[4]);                 /* Original vector size. */
+    int n = size / down;
 
-  int n=parent/down;
+    while (n--) { *s2 = *s1; s2++; s1 += down; }
 
-  while(n--){
-    *out++=*in;
-    in+=down;
-  }
-
-  return (w+5);
+    return (w + 5);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_int *perform_upsamplingPad(t_int *w)
+t_int *perform_upsamplingPad (t_int *w)
 {
   t_sample *in  = (t_sample *)(w[1]); /* original signal     */
   t_sample *out = (t_sample *)(w[2]); /* upsampled signal    */

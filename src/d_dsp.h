@@ -196,7 +196,7 @@ t_int           *block_performEpilog        (t_int *w);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_int           *perform_downsamplingPad    (t_int *w);
+t_int           *perform_downsampling       (t_int *w);
 t_int           *perform_upsamplingPad      (t_int *w);
 t_int           *perform_upsamplingHold     (t_int *w);
 t_int           *perform_upsamplingLinear   (t_int *w);

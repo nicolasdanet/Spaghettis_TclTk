@@ -67,7 +67,7 @@ static void resample_addPerform (t_resample *x,
     //
     PD_ASSERT (!(inSize % outSize));
         
-    dsp_add (perform_downsamplingPad, 4, in, out, inSize / outSize, inSize);
+    dsp_add (perform_downsampling, 4, in, out, inSize / outSize, inSize);
     //
     } else {
     //
@@ -78,9 +78,9 @@ static void resample_addPerform (t_resample *x,
     switch (type) {
     //
     case RESAMPLE_DEFAULT : PD_BUG;
-    case RESAMPLE_PAD     : dsp_add (perform_upsamplingPad, 4, in, out, t, inSize);                 break;
-    case RESAMPLE_HOLD    : dsp_add (perform_upsamplingHold, 4, in, out, t, inSize);                break;
-    case RESAMPLE_LINEAR  : dsp_add (perform_upsamplingLinear, 5, x->r_buffer, in, out, t, inSize); break;
+    case RESAMPLE_PAD     : dsp_add (perform_upsamplingPad,     4, in, out, t, inSize); break;
+    case RESAMPLE_HOLD    : dsp_add (perform_upsamplingHold,    4, in, out, t, inSize); break;
+    case RESAMPLE_LINEAR  : dsp_add (perform_upsamplingLinear,  5, x->r_buffer, in, out, t, inSize); break;
     //
     }
     //
