@@ -17,7 +17,106 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_int *utils_performZero (t_int *w)
+t_int *perform_downsamplingPad(t_int *w)
+{
+  t_sample *in  = (t_sample *)(w[1]); /* original signal     */
+  t_sample *out = (t_sample *)(w[2]); /* downsampled signal  */
+  int down     = (int)(w[3]);       /* downsampling factor */
+  int parent   = (int)(w[4]);       /* original vectorsize */
+
+  int n=parent/down;
+
+  while(n--){
+    *out++=*in;
+    in+=down;
+  }
+
+  return (w+5);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_int *perform_upsamplingPad(t_int *w)
+{
+  t_sample *in  = (t_sample *)(w[1]); /* original signal     */
+  t_sample *out = (t_sample *)(w[2]); /* upsampled signal    */
+  int up       = (int)(w[3]);       /* upsampling factor   */
+  int parent   = (int)(w[4]);       /* original vectorsize */
+
+  int n=parent*up;
+  t_sample *dummy = out;
+  
+  while(n--)*out++=0;
+
+  n = parent;
+  out = dummy;
+  while(n--){
+    *out=*in++;
+    out+=up;
+  }
+
+  return (w+5);
+}
+
+t_int *perform_upsamplingHold(t_int *w)
+{
+  t_sample *in  = (t_sample *)(w[1]); /* original signal     */
+  t_sample *out = (t_sample *)(w[2]); /* upsampled signal    */
+  int up       = (int)(w[3]);       /* upsampling factor   */
+  int parent   = (int)(w[4]);       /* original vectorsize */
+  int i=up;
+
+  int n=parent;
+  t_sample *dum_out = out;
+  t_sample *dum_in  = in;
+  
+  while (i--) {
+    n = parent;
+    out = dum_out+i;
+    in  = dum_in;
+    while(n--){
+      *out=*in++;
+      out+=up;
+    }
+  }
+  return (w+5);
+}
+
+t_int *perform_upsamplingLinear(t_int *w)
+{
+  t_sample *t = (t_sample *)(w[1]);
+  t_sample *in  = (t_sample *)(w[2]); /* original signal     */
+  t_sample *out = (t_sample *)(w[3]); /* upsampled signal    */
+  int up       = (int)(w[4]);       /* upsampling factor   */
+  int parent   = (int)(w[5]);       /* original vectorsize */
+  int length   = parent*up;
+  int n;
+  t_sample *fp;
+  t_sample a=*t, b=*in;
+
+  
+  for (n=0; n<length; n++) {
+    t_sample findex = (t_sample)(n+1)/up;
+    int     index  = findex;
+    t_sample frac=findex - index;
+    if (frac==0.)frac=1.;
+    *out++ = frac * b + (1.-frac) * a;
+    fp = in+index;
+    b=*fp;
+    a=(index)?*(fp-1):a;
+  }
+
+  *t = a;
+  return (w+6);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static t_int *perform_zero (t_int *w)
 {
     t_sample *s = (t_sample *)(w[1]);
     int n = (int)(w[2]);
@@ -27,7 +126,7 @@ static t_int *utils_performZero (t_int *w)
     return (w + 3);
 }
 
-static t_int *utils_performCopy (t_int *w)
+static t_int *perform_copy (t_int *w)
 {
     t_sample *s1 = (t_sample *)(w[1]);
     t_sample *s2 = (t_sample *)(w[2]);
@@ -38,7 +137,7 @@ static t_int *utils_performCopy (t_int *w)
     return (w + 4);
 }
 
-static t_int *utils_performPlus (t_int *w)
+static t_int *perform_plus (t_int *w)
 {
     t_sample *s1 = (t_sample *)(w[1]);
     t_sample *s2 = (t_sample *)(w[2]);
@@ -56,7 +155,7 @@ static t_int *utils_performPlus (t_int *w)
 
 /* < https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions > */
 
-static t_int *utils_vPerformZero (t_int *w)
+static t_int *vPerform_zero (t_int *w)
 {
     t_sample *s = (t_sample *)(w[1]);
     int n = (int)(w[2]);
@@ -79,7 +178,7 @@ static t_int *utils_vPerformZero (t_int *w)
     return (w + 3);
 }
 
-static t_int *utils_vPerformCopy (t_int *w)
+static t_int *vPerform_copy (t_int *w)
 {
     t_sample *s1 = (t_sample *)(w[1]);
     t_sample *s2 = (t_sample *)(w[2]);
@@ -114,7 +213,7 @@ static t_int *utils_vPerformCopy (t_int *w)
     return (w + 4);
 }
 
-static t_int *utils_vPerformPlus(t_int *w)
+static t_int *vPerform_plus (t_int *w)
 {
     t_sample *s1 = (t_sample *)(w[1]);
     t_sample *s2 = (t_sample *)(w[2]);
@@ -168,9 +267,9 @@ void dsp_addZeroPerform (t_sample *s, int n)
 {
     PD_ASSERT (n > 0);
     
-    if (n & 7) { dsp_add (utils_performZero, 2, s, n); }
+    if (n & 7) { dsp_add (perform_zero, 2, s, n); }
     else {
-        dsp_add (utils_vPerformZero, 2, s, n);
+        dsp_add (vPerform_zero, 2, s, n);
     }
 }
 
@@ -178,9 +277,9 @@ void dsp_addCopyPerform (t_sample *src, t_sample *dest, int n)
 {
     PD_ASSERT (n > 0);
     
-    if (n & 7) { dsp_add (utils_performCopy, 3, src, dest, n); }
+    if (n & 7) { dsp_add (perform_copy, 3, src, dest, n); }
     else {        
-        dsp_add (utils_vPerformCopy, 3, src, dest, n);
+        dsp_add (vPerform_copy, 3, src, dest, n);
     }
 }
 
@@ -188,9 +287,9 @@ void dsp_addPlusPerform (t_sample *src1, t_sample *src2, t_sample *dest, int n)
 {
     PD_ASSERT (n > 0);
     
-    if (n & 7) { dsp_add (utils_performPlus, 4, src1, src2, dest, n); }
+    if (n & 7) { dsp_add (perform_plus, 4, src1, src2, dest, n); }
     else {      
-        dsp_add (utils_vPerformPlus, 4, src1, src2, dest, n);
+        dsp_add (vPerform_plus, 4, src1, src2, dest, n);
     }
 }
 

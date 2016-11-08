@@ -32,7 +32,6 @@ typedef struct _resample {
     int             r_downSample;
     int             r_upSample;
     int             r_vectorSize;
-    int             r_bufferSize;
     t_sample        *r_vector;
     t_sample        *r_buffer;
     } t_resample;
@@ -183,8 +182,8 @@ void            voutlet_dspEpilog           (t_voutlet *x,
 
 void            resample_init               (t_resample *x, t_symbol *type);
 void            resample_free               (t_resample *x);
-void            resample_toDsp              (t_resample *x, t_sample *s, int size, int sizeResampled);
-void            resample_fromDsp            (t_resample *x, t_sample *s, int size, int sizeResampled);
+void            resample_fromDsp            (t_resample *x, t_sample *s, int vectorSize, int resampledSize);
+void            resample_toDsp              (t_resample *x, t_sample *s, int vectorSize, int resampledSize);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -196,6 +195,11 @@ t_int           *block_performEpilog        (t_int *w);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+t_int           *perform_downsamplingPad    (t_int *w);
+t_int           *perform_upsamplingPad      (t_int *w);
+t_int           *perform_upsamplingHold     (t_int *w);
+t_int           *perform_upsamplingLinear   (t_int *w);
 
 void            dsp_addZeroPerform          (t_sample *s, int n);
 void            dsp_addCopyPerform          (t_sample *src, t_sample *dest, int n);
