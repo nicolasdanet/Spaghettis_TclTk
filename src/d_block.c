@@ -44,8 +44,8 @@ static void block_set (t_block *x, t_float f1, t_float f2, t_float f3)
 {
     int blockSize   = PD_MAX (0.0, f1);
     int overlap     = PD_MAX (1.0, f2);
-    int upSample    = 1;
-    int downSample  = 1;
+    int upsample    = 1;
+    int downsample  = 1;
     int oldState    = dsp_suspend();
     
     if (blockSize && !PD_ISPOWER2 (blockSize)) { blockSize = PD_NEXTPOWER2 (blockSize); }
@@ -53,22 +53,22 @@ static void block_set (t_block *x, t_float f1, t_float f2, t_float f3)
     
     if (f3 > 0.0) {
     //
-    if (f3 >= 1.0) { upSample = (int)f3; downSample = 1; }
+    if (f3 >= 1.0) { upsample = (int)f3; downsample = 1; }
     else {
-        upSample = 1; downSample = (int)(1.0 / f3);
+        upsample = 1; downsample = (int)(1.0 / f3);
     }
         
-    if (!PD_ISPOWER2 (downSample) || !PD_ISPOWER2 (upSample)) {
+    if (!PD_ISPOWER2 (downsample) || !PD_ISPOWER2 (upsample)) {
         warning_invalid (sym_block__tilde__, sym_resampling);
-        downSample = 1; upSample = 1;
+        downsample = 1; upsample = 1;
     }
     //
     }
 
     x->bk_blockSize  = blockSize;
     x->bk_overlap    = overlap;
-    x->bk_upSample   = upSample;
-    x->bk_downSample = downSample;
+    x->bk_downsample = downsample;
+    x->bk_upsample   = upsample;
     
     dsp_resume (oldState);
 }
@@ -125,7 +125,7 @@ t_int *block_performEpilog (t_int *w)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *block_new (t_float blockSize, t_float overlap, t_float upSample)
+static void *block_new (t_float blockSize, t_float overlap, t_float upsample)
 {
     t_block *x = (t_block *)pd_new (block_class);
     
@@ -135,14 +135,14 @@ static void *block_new (t_float blockSize, t_float overlap, t_float upSample)
     x->bk_isSwitch      = 0;
     x->bk_isSwitchedOn  = 1;
     
-    block_set (x, blockSize, overlap, upSample);
+    block_set (x, blockSize, overlap, upsample);
     
     return x;
 }
 
-static void *block_newSwitch (t_float blockSize, t_float overlap, t_float upSample)
+static void *block_newSwitch (t_float blockSize, t_float overlap, t_float upsample)
 {
-    t_block *x = block_new (blockSize, overlap, upSample);
+    t_block *x = block_new (blockSize, overlap, upsample);
     
     x->bk_isSwitch      = 1;
     x->bk_isSwitchedOn  = 0;

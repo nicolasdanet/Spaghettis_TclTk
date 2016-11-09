@@ -29,10 +29,10 @@ struct _signal {
 
 typedef struct _resample {
     int             r_type;
-    int             r_downSample;
-    int             r_upSample;
-    int             r_vectorSize;
+    int             r_downsample;
+    int             r_upsample;
     t_sample        r_buffer;
+    int             r_vectorSize;
     t_sample        *r_vector;
     } t_resample;
 
@@ -82,8 +82,8 @@ typedef struct _block {
     int             bk_isSwitch;
     int             bk_isSwitchedOn;
     int             bk_isReblocked;
-    int             bk_upSample;
-    int             bk_downSample;
+    int             bk_downsample;
+    int             bk_upsample;
     } t_block;
     
 // -----------------------------------------------------------------------------------------------------------
@@ -144,8 +144,8 @@ void            vinlet_dspProlog            (t_vinlet *x,
                                                 int phase,
                                                 int period,
                                                 int frequency,
-                                                int downSample,
-                                                int upSample,
+                                                int downsample,
+                                                int upsample,
                                                 int reblock,
                                                 int switched);
 
@@ -160,8 +160,8 @@ void            voutlet_dspProlog           (t_voutlet *x,
                                                 int phase,
                                                 int period,
                                                 int frequency,
-                                                int downSample,
-                                                int upSample,
+                                                int downsample,
+                                                int upsample,
                                                 int reblock,
                                                 int switched);
                                                             
@@ -171,8 +171,8 @@ void            voutlet_dspEpilog           (t_voutlet *x,
                                                 int phase,
                                                 int period,
                                                 int frequency,
-                                                int downSample,
-                                                int upSample,
+                                                int downsample,
+                                                int upsample,
                                                 int reblock,
                                                 int switched);
 
@@ -182,8 +182,12 @@ void            voutlet_dspEpilog           (t_voutlet *x,
 
 void            resample_init               (t_resample *x, t_symbol *type);
 void            resample_free               (t_resample *x);
+void            resample_setRatio           (t_resample *x, int downsample, int upsample);
+int             resample_isResampling       (t_resample *x);
 void            resample_fromDsp            (t_resample *x, t_sample *s, int vectorSize, int resampledSize);
 void            resample_toDsp              (t_resample *x, t_sample *s, int vectorSize, int resampledSize);
+
+t_sample        *resample_vector            (t_resample *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

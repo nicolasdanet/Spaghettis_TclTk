@@ -102,8 +102,8 @@ void resample_init (t_resample *x, t_symbol *type)
     
     #endif
 
-    x->r_downSample = 1;
-    x->r_upSample   = 1;
+    x->r_downsample = 1;
+    x->r_upsample   = 1;
     x->r_vectorSize = 0;
     x->r_vector     = NULL;
 }
@@ -111,6 +111,26 @@ void resample_init (t_resample *x, t_symbol *type)
 void resample_free (t_resample *x)
 {
     if (x->r_vector) { PD_MEMORY_FREE (x->r_vector); x->r_vectorSize = 0; x->r_vector = NULL; }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_sample *resample_vector (t_resample *x)
+{
+    return x->r_vector;
+}
+
+void resample_setRatio (t_resample *x, int downsample, int upsample)
+{
+    x->r_downsample = downsample;
+    x->r_upsample   = upsample;
+}
+
+int resample_isResampling (t_resample *x)
+{
+    return (x->r_downsample != x->r_upsample);
 }
 
 // -----------------------------------------------------------------------------------------------------------

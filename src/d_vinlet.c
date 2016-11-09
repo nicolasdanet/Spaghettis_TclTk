@@ -82,15 +82,14 @@ void vinlet_dspProlog (t_vinlet *x,
     int phase,
     int period,
     int frequency,
-    int downSample,
-    int upSample,
+    int downsample,
+    int upsample,
     int reblock,
     int switched)
 {
     if (x->vi_buffer) {
     //
-    x->vi_resampling.r_downSample = downSample;
-    x->vi_resampling.r_upSample   = upSample;
+    resample_setRatio (&x->vi_resampling, downsample, upsample);
 
     if (!reblock) { x->vi_directSignal = parentSignals[object_getIndexOfSignalInlet (x->vi_inlet)]; }
     else {
@@ -107,7 +106,7 @@ void vinlet_dspProlog (t_vinlet *x,
     if (parentSignals) {
         signalIn                    = parentSignals[object_getIndexOfSignalInlet (x->vi_inlet)];
         parentVectorSize            = signalIn->s_vectorSize;
-        parentVectorSizeResampled   = parentVectorSize * upSample / downSample;
+        parentVectorSizeResampled   = parentVectorSize * upsample / downsample;
         
     } else {
         signalIn                    = NULL;
@@ -134,12 +133,12 @@ void vinlet_dspProlog (t_vinlet *x,
     x->vi_hopSize = period * parentVectorSizeResampled;
     x->vi_bufferWrite = x->vi_bufferEnd - (x->vi_hopSize - prologPhase * parentVectorSizeResampled);
 
-    if (upSample * downSample == 1) {
+    if (upsample * downsample == 1) {
         dsp_add (vinlet_performProlog, 3, x, signalIn->s_vector, parentVectorSizeResampled);
         
     } else {
         resample_fromDsp (&x->vi_resampling, signalIn->s_vector, parentVectorSize, parentVectorSizeResampled);
-        dsp_add (vinlet_performProlog, 3, x, x->vi_resampling.r_vector, parentVectorSizeResampled);
+        dsp_add (vinlet_performProlog, 3, x, resample_vector (&x->vi_resampling), parentVectorSizeResampled);
     }
 
     /* Free signal with a zero reference count. */

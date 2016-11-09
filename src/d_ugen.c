@@ -388,8 +388,8 @@ void ugen_graphDspProlog (t_dspcontext *context,
     int blockSize,
     int period, 
     int frequency,
-    int downSample,
-    int upSample)
+    int downsample,
+    int upsample)
 {
     t_ugenbox *u = NULL;
     
@@ -408,8 +408,8 @@ void ugen_graphDspProlog (t_dspcontext *context,
             ugen_dspPhase,
             period,
             frequency,
-            downSample,
-            upSample,
+            downsample,
+            upsample,
             reblocked,
             switchable);
     }
@@ -422,8 +422,8 @@ void ugen_graphDspProlog (t_dspcontext *context,
             ugen_dspPhase,
             period,
             frequency,
-            downSample,
-            upSample,
+            downsample,
+            upsample,
             reblocked,
             switchable);
     }
@@ -454,8 +454,8 @@ void ugen_graphClose (t_dspcontext *context)
     int parentBlockSize         = parentContext ? parentContext->dc_blockSize  : AUDIO_DEFAULT_BLOCKSIZE;
     t_float sampleRate          = parentSampleRate;
     int blockSize               = parentBlockSize;
-    int downSample              = 1;
-    int upSample                = 1;
+    int downsample              = 1;
+    int upsample                = 1;
     int period                  = 1;
     int frequency               = 1;
     int switchable              = 0;
@@ -468,11 +468,11 @@ void ugen_graphClose (t_dspcontext *context)
         if (block->bk_blockSize > 0) { blockSize = block->bk_blockSize; } 
             
         overlap     = PD_MIN (overlap, blockSize);
-        downSample  = PD_MIN (block->bk_downSample, parentBlockSize);
-        upSample    = block->bk_upSample;
-        period      = PD_MAX (1, ((blockSize * downSample) / (parentBlockSize * overlap * upSample)));
-        frequency   = PD_MAX (1, ((parentBlockSize * overlap * upSample) / (blockSize * downSample)));
-        sampleRate  = parentSampleRate * overlap * (upSample / downSample);
+        downsample  = PD_MIN (block->bk_downsample, parentBlockSize);
+        upsample    = block->bk_upsample;
+        period      = PD_MAX (1, ((blockSize * downsample) / (parentBlockSize * overlap * upsample)));
+        frequency   = PD_MAX (1, ((parentBlockSize * overlap * upsample) / (blockSize * downsample)));
+        sampleRate  = parentSampleRate * overlap * (upsample / downsample);
         switchable  = block->bk_isSwitch;
         
         block->bk_phase     = ugen_dspPhase & (period - 1);
@@ -481,8 +481,8 @@ void ugen_graphClose (t_dspcontext *context)
         
         reblocked |= (overlap != 1);
         reblocked |= (blockSize != parentBlockSize);
-        reblocked |= (downSample != 1);
-        reblocked |= (upSample != 1);
+        reblocked |= (downsample != 1);
+        reblocked |= (upsample != 1);
     }
 
     context->dc_sampleRate  = sampleRate;
@@ -502,8 +502,8 @@ void ugen_graphClose (t_dspcontext *context)
         blockSize,
         period,
         frequency,
-        downSample,
-        upSample);
+        downsample,
+        upsample);
     
     chainblockbegin = pd_this->pd_dspChainSize;
 
@@ -577,7 +577,7 @@ void ugen_graphClose (t_dspcontext *context)
             if (iosigs) iosigs += context->dc_numberOfInlets;
             voutlet_dspEpilog((t_voutlet *)zz, 
                 iosigs, blockSize, ugen_dspPhase, period, frequency,
-                    downSample, upSample, reblocked, switchable);
+                    downsample, upsample, reblocked, switchable);
         }
     }
 

@@ -42,7 +42,7 @@ static t_int *voutlet_performEpilog (t_int *w)
     
     t_sample *in  = x->vo_bufferRead;
     
-    if (x->vo_resampling.r_downSample != x->vo_resampling.r_upSample) { out = x->vo_resampling.r_vector; }
+    if (resample_isResampling (&x->vo_resampling)) { out = resample_vector (&x->vo_resampling); }
 
     while (n--) { *out = *in; *in = 0.0; out++; in++; }
     if (in == x->vo_bufferEnd) { in = x->vo_buffer; }
@@ -58,7 +58,7 @@ static t_int *voutlet_performEpilogWithResampling (t_int *w)
     int n = (int)(w[2]);
     
     t_sample *in  = x->vo_bufferRead;
-    t_sample *out = x->vo_resampling.r_vector;
+    t_sample *out = resample_vector (&x->vo_resampling);
 
     while (n--) { *out = *in; *in = 0.0; out++; in++; }
     if (in == x->vo_bufferEnd) { in = x->vo_buffer; }
@@ -93,15 +93,14 @@ void voutlet_dspProlog (t_voutlet *x,
     int phase,
     int period,
     int frequency,
-    int downSample,
-    int upSample,
+    int downsample,
+    int upsample,
     int reblock,
     int switched)
 {
     if (x->vo_buffer) {
     //
-    x->vo_resampling.r_downSample = downSample;
-    x->vo_resampling.r_upSample   = upSample;
+    resample_setRatio (&x->vo_resampling, downsample, upsample);
     
     x->vo_copyOut = (switched && !reblock);
     
@@ -120,18 +119,17 @@ void voutlet_dspEpilog (t_voutlet *x,
     int phase,
     int period,
     int frequency,
-    int downSample,
-    int upSample,
+    int downsample,
+    int upsample,
     int reblock,
     int switched)
 {
     if (x->vo_buffer) {
     //
     t_signal *out = NULL;
-        
-    x->vo_resampling.r_downSample = downSample;
-    x->vo_resampling.r_upSample   = upSample;
     
+    resample_setRatio (&x->vo_resampling, downsample, upsample);
+
     if (reblock) {
     //
     int parentVectorSize;
@@ -145,7 +143,7 @@ void voutlet_dspEpilog (t_voutlet *x,
     if (parentSignals) {
         out                         = parentSignals[object_getIndexOfSignalOutlet (x->vo_outlet)];
         parentVectorSize            = out->s_vectorSize;
-        parentVectorSizeResampled   = parentVectorSize * upSample / downSample;
+        parentVectorSizeResampled   = parentVectorSize * upsample / downsample;
     } else {
         out                         = NULL;
         parentVectorSize            = 1;
@@ -184,7 +182,7 @@ void voutlet_dspEpilog (t_voutlet *x,
     
         x->vo_bufferRead = x->vo_buffer + parentVectorSizeResampled * epilogPhase;
         
-        if (upSample * downSample == 1) { 
+        if (upsample * downsample == 1) { 
             dsp_add (voutlet_performEpilog, 3, x, out->s_vector, parentVectorSizeResampled);
             
         } else {
