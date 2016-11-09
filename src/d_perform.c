@@ -68,35 +68,6 @@ t_int *perform_upsamplingHold (t_int *w)
     
     return (w + 5);
 }
-/*
-t_int *perform_upsamplingLinear (t_int *w)
-{
-  t_sample *t = (t_sample *)(w[1]);
-  t_sample *in  = (t_sample *)(w[2]);
-  t_sample *out = (t_sample *)(w[3]);
-  int up       = (int)(w[4]);
-  int parent   = (int)(w[5]);
-  int length   = parent*up;
-  int n;
-  t_sample *fp;
-  t_sample a=*t, b=*in;
-
-  
-  for (n=0; n<length; n++) {
-    t_sample findex = (t_sample)(n+1)/up;
-    int     index  = findex;
-    t_sample frac=findex - index;
-    if (frac==0.)frac=1.;
-    *out++ = frac * b + (1.-frac) * a;
-    fp = in+index;
-    b=*fp;
-    a=(index)?*(fp-1):a;
-  }
-
-  *t = a;
-  return (w+6);
-}
-*/
 
 t_int *perform_upsamplingLinear (t_int *w)
 {
@@ -150,7 +121,7 @@ static t_int *perform_copy (t_int *w)
     t_sample *s2 = (t_sample *)(w[2]);
     int n = (int)(w[3]);
     
-    while (n--) { *s2++ = *s1++; }
+    while (n--) { *s2 = *s1; s2++; s1++; }
     
     return (w + 4);
 }
@@ -162,7 +133,7 @@ static t_int *perform_plus (t_int *w)
     t_sample *s3 = (t_sample *)(w[3]);
     int n = (int)(w[4]);
     
-    while (n--) { *s3++ = *s1++ + *s2++; }
+    while (n--) { *s3 = *s1 + *s2; s3++; s1++; s2++; }
     
     return (w + 5);
 }

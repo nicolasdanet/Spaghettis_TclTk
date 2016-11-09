@@ -32,8 +32,8 @@ typedef struct _resample {
     int             r_downSample;
     int             r_upSample;
     int             r_vectorSize;
+    t_sample        r_buffer;
     t_sample        *r_vector;
-    t_sample        *r_buffer;
     } t_resample;
 
 // -----------------------------------------------------------------------------------------------------------

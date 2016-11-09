@@ -30,24 +30,21 @@ static int resample_setAllocateVector (t_resample *x, t_sample *s, int size, int
 {
     if (size == resampledSize) {
     
-        if (x->r_vector) { PD_MEMORY_FREE (x->r_vector); x->r_vector = NULL; }
+        if (x->r_vector) { PD_MEMORY_FREE (x->r_vector); x->r_vectorSize = 0; x->r_vector = NULL; }
         
-        x->r_vectorSize = 0;
-        x->r_vector     = s;
+        x->r_vector = s;
         
         return 0;
         
-    } else {
+    } else if (x->r_vectorSize != resampledSize) {
     
-        if (x->r_vectorSize != resampledSize) {
-            size_t oldSize  = sizeof (t_sample) * x->r_vectorSize;
-            size_t newSize  = sizeof (t_sample) * resampledSize;
-            x->r_vectorSize = resampledSize;
-            x->r_vector     = (t_sample *)PD_MEMORY_RESIZE (x->r_vector, oldSize, newSize);
-        }
-        
-        return 1;
+        size_t oldSize  = sizeof (t_sample) * x->r_vectorSize;
+        size_t newSize  = sizeof (t_sample) * resampledSize;
+        x->r_vectorSize = resampledSize;
+        x->r_vector     = (t_sample *)PD_MEMORY_RESIZE (x->r_vector, oldSize, newSize);  
     }
+    
+    return 1;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -80,7 +77,7 @@ static void resample_addPerform (t_resample *x,
     case RESAMPLE_DEFAULT : PD_BUG;
     case RESAMPLE_ZERO    : dsp_add (perform_upsamplingZero,    4, in, out, t, inSize); break;
     case RESAMPLE_HOLD    : dsp_add (perform_upsamplingHold,    4, in, out, t, inSize); break;
-    case RESAMPLE_LINEAR  : dsp_add (perform_upsamplingLinear,  5, x->r_buffer, in, out, t, inSize); break;
+    case RESAMPLE_LINEAR  : dsp_add (perform_upsamplingLinear,  5, &x->r_buffer, in, out, t, inSize); break;
     //
     }
     //
@@ -109,16 +106,11 @@ void resample_init (t_resample *x, t_symbol *type)
     x->r_upSample   = 1;
     x->r_vectorSize = 0;
     x->r_vector     = NULL;
-    x->r_buffer     = PD_MEMORY_GET (sizeof (t_sample));
 }
 
 void resample_free (t_resample *x)
 {
-    PD_MEMORY_FREE (x->r_buffer);
-    
-    if (x->r_vector) { PD_MEMORY_FREE (x->r_vector); x->r_vector = NULL; }
-    
-    x->r_vectorSize = 0;
+    if (x->r_vector) { PD_MEMORY_FREE (x->r_vector); x->r_vectorSize = 0; x->r_vector = NULL; }
 }
 
 // -----------------------------------------------------------------------------------------------------------
