@@ -68,14 +68,14 @@ t_int *perform_upsamplingHold (t_int *w)
     
     return (w + 5);
 }
-
+/*
 t_int *perform_upsamplingLinear (t_int *w)
 {
   t_sample *t = (t_sample *)(w[1]);
-  t_sample *in  = (t_sample *)(w[2]); /* original signal     */
-  t_sample *out = (t_sample *)(w[3]); /* upsampled signal    */
-  int up       = (int)(w[4]);       /* upsampling factor   */
-  int parent   = (int)(w[5]);       /* original vectorsize */
+  t_sample *in  = (t_sample *)(w[2]);
+  t_sample *out = (t_sample *)(w[3]);
+  int up       = (int)(w[4]);
+  int parent   = (int)(w[5]);
   int length   = parent*up;
   int n;
   t_sample *fp;
@@ -96,8 +96,8 @@ t_int *perform_upsamplingLinear (t_int *w)
   *t = a;
   return (w+6);
 }
+*/
 
-/*
 t_int *perform_upsamplingLinear (t_int *w)
 {
     t_sample *t  = (t_sample *)(w[1]);
@@ -113,17 +113,15 @@ t_int *perform_upsamplingLinear (t_int *w)
     
     for (n = 0; n < length; n++) {
     //
-    t_sample indexAsFloat = (t_sample)(n + 1) / up;
-    int indexAsInteger = (int)indexAsFloat;
-    t_sample fractional = indexAsFloat - indexAsInteger;
+    t_sample f = (t_sample)(n + 1) / up;
+    int i = (int)f;
+    t_sample fractional = f - (t_sample)i;
     
     if (fractional == 0.0) { fractional = 1.0; }
-    
     *s2++ = fractional * b + (1.0 - fractional) * a;
     
-    t_sample *fp = s1+indexAsInteger;
-    b=*fp;
-    a=(indexAsInteger)?*(fp-1):a;
+    if (i < size) { b = *(s1 + i); }
+    if (i != 0)   { a = *(s1 + i - 1); }
     //
     }
 
@@ -131,7 +129,6 @@ t_int *perform_upsamplingLinear (t_int *w)
   
     return (w + 6);
 }
-*/
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
