@@ -143,13 +143,13 @@ void            canvas_dspPerform           (t_glist *glist, int isTopLevel, t_s
 void            vinlet_dsp                  (t_vinlet *x, t_signal **sp);
 void            vinlet_dspProlog            (t_vinlet *x,
                                                 t_signal **parentSignals,
-                                                int vectorSize,
+                                                int blockSize,
                                                 int phase,
                                                 int period,
                                                 int frequency,
                                                 int downsample,
                                                 int upsample,
-                                                int reblock,
+                                                int reblocked,
                                                 int switched);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -165,7 +165,7 @@ void            voutlet_dspProlog           (t_voutlet *x,
                                                 int frequency,
                                                 int downsample,
                                                 int upsample,
-                                                int reblock,
+                                                int reblocked,
                                                 int switched);
                                                             
 void            voutlet_dspEpilog           (t_voutlet *x,
@@ -176,7 +176,7 @@ void            voutlet_dspEpilog           (t_voutlet *x,
                                                 int frequency,
                                                 int downsample,
                                                 int upsample,
-                                                int reblock,
+                                                int reblocked,
                                                 int switched);
 
 // -----------------------------------------------------------------------------------------------------------

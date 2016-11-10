@@ -95,16 +95,16 @@ void voutlet_dspProlog (t_voutlet *x,
     int frequency,
     int downsample,
     int upsample,
-    int reblock,
+    int reblocked,
     int switched)
 {
     if (x->vo_buffer) {
     //
     resample_setRatio (&x->vo_resampling, downsample, upsample);
     
-    x->vo_copyOut = (switched && !reblock);
+    x->vo_copyOut = (switched && !reblocked);
     
-    if (reblock) { x->vo_directSignal = NULL; }
+    if (reblocked) { x->vo_directSignal = NULL; }
     else {
         PD_ASSERT (parentSignals);
         x->vo_directSignal = parentSignals[object_getIndexOfSignalOutlet (x->vo_outlet)];
@@ -121,7 +121,7 @@ void voutlet_dspEpilog (t_voutlet *x,
     int frequency,
     int downsample,
     int upsample,
-    int reblock,
+    int reblocked,
     int switched)
 {
     if (x->vo_buffer) {
@@ -130,7 +130,7 @@ void voutlet_dspEpilog (t_voutlet *x,
     
     resample_setRatio (&x->vo_resampling, downsample, upsample);
 
-    if (reblock) {
+    if (reblocked) {
     //
     int parentVectorSize;
     int parentVectorSizeResampled;

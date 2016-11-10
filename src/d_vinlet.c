@@ -63,7 +63,7 @@ static t_int *vinlet_performProlog (t_int *w)
 
 void vinlet_dsp (t_vinlet *x, t_signal **sp)
 {
-    if (x->vi_buffer) {
+    if (vinlet_isSignal (x)) {
     //
     t_signal *out = sp[0];
             
@@ -78,20 +78,20 @@ void vinlet_dsp (t_vinlet *x, t_signal **sp)
 
 void vinlet_dspProlog (t_vinlet *x,
     t_signal **parentSignals,
-    int vectorSize,
+    int blockSize,
     int phase,
     int period,
     int frequency,
     int downsample,
     int upsample,
-    int reblock,
+    int reblocked,
     int switched)
 {
-    if (x->vi_buffer) {
+    if (vinlet_isSignal (x)) {
     //
     resample_setRatio (&x->vi_resampling, downsample, upsample);
-
-    if (!reblock) { x->vi_directSignal = parentSignals[object_getIndexOfSignalInlet (x->vi_inlet)]; }
+    
+    if (!reblocked) { x->vi_directSignal = parentSignals[object_getIndexOfSignalInlet (x->vi_inlet)]; }
     else {
     //
     t_signal *signalIn = NULL;
@@ -116,7 +116,7 @@ void vinlet_dspProlog (t_vinlet *x,
 
     newBufferSize = parentVectorSizeResampled;
     
-    if (newBufferSize < vectorSize) { newBufferSize = vectorSize; }
+    if (newBufferSize < blockSize) { newBufferSize = blockSize; }
     if (newBufferSize != (oldBufferSize = x->vi_bufferSize)) {
         t_sample *t = x->vi_buffer;
         PD_MEMORY_FREE (t);

@@ -23,6 +23,11 @@ t_class *vinlet_class;          /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+int vinlet_isSignal (t_vinlet *x)
+{
+    return (x->vi_buffer != NULL);
+}
+
 t_inlet *vinlet_getInlet (t_pd *x)
 {
     PD_ASSERT (pd_class (x) == vinlet_class); return (((t_vinlet *)x)->vi_inlet);
