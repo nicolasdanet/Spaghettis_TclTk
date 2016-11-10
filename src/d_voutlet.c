@@ -89,14 +89,14 @@ void voutlet_dsp (t_voutlet *x, t_signal **sp)
 
 void voutlet_dspProlog (t_voutlet *x,
     t_signal **parentSignals,
-    int vectorSize,
+    int switched,
+    int reblocked,
+    int blockSize,
     int phase,
     int period,
     int frequency,
     int downsample,
-    int upsample,
-    int reblocked,
-    int switched)
+    int upsample)
 {
     if (x->vo_buffer) {
     //
@@ -115,14 +115,14 @@ void voutlet_dspProlog (t_voutlet *x,
 
 void voutlet_dspEpilog (t_voutlet *x,
     t_signal **parentSignals,
-    int vectorSize,
+    int switched,
+    int reblocked,
+    int blockSize,
     int phase,
     int period,
     int frequency,
     int downsample,
-    int upsample,
-    int reblocked,
-    int switched)
+    int upsample)
 {
     if (x->vo_buffer) {
     //
@@ -150,13 +150,13 @@ void voutlet_dspEpilog (t_voutlet *x,
         parentVectorSizeResampled   = 1;
     }
     
-    newPeriod       = vectorSize / parentVectorSizeResampled;
+    newPeriod       = blockSize / parentVectorSizeResampled;
     newPeriod       = PD_MAX (1, newPeriod);
     epilogPhase     = phase & (newPeriod - 1);
     blockPhase      = (phase + period - 1) & (newPeriod - 1) & (-period);
     newBufferSize   = parentVectorSizeResampled;
     
-    if (newBufferSize < vectorSize) { newBufferSize = vectorSize; }
+    if (newBufferSize < blockSize) { newBufferSize = blockSize; }
     if (newBufferSize != (oldBufferSize = x->vo_bufferSize)) {
         t_sample *t = x->vo_buffer;
         PD_MEMORY_FREE (t);

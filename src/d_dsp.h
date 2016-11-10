@@ -143,14 +143,14 @@ void            canvas_dspPerform           (t_glist *glist, int isTopLevel, t_s
 void            vinlet_dsp                  (t_vinlet *x, t_signal **sp);
 void            vinlet_dspProlog            (t_vinlet *x,
                                                 t_signal **parentSignals,
+                                                int switched,
+                                                int reblocked,
                                                 int blockSize,
                                                 int phase,
                                                 int period,
                                                 int frequency,
                                                 int downsample,
-                                                int upsample,
-                                                int reblocked,
-                                                int switched);
+                                                int upsample);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -159,25 +159,25 @@ void            vinlet_dspProlog            (t_vinlet *x,
 void            voutlet_dsp                 (t_voutlet *x, t_signal **sp);
 void            voutlet_dspProlog           (t_voutlet *x,
                                                 t_signal **parentSignals,
-                                                int vectorSize,
+                                                int switched,
+                                                int reblocked,
+                                                int blockSize,
                                                 int phase,
                                                 int period,
                                                 int frequency,
                                                 int downsample,
-                                                int upsample,
-                                                int reblocked,
-                                                int switched);
+                                                int upsample);
                                                             
 void            voutlet_dspEpilog           (t_voutlet *x,
                                                 t_signal **parentSignals,
-                                                int vectorSize,
+                                                int switched,
+                                                int reblocked,
+                                                int blockSize,
                                                 int phase,
                                                 int period,
                                                 int frequency,
                                                 int downsample,
-                                                int upsample,
-                                                int reblocked,
-                                                int switched);
+                                                int upsample);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -202,7 +202,7 @@ t_int           *block_performEpilog        (t_int *w);
 t_float         block_getRatio              (t_block *x);
 void            block_setPerformLength      (t_block *x, int allBlockLength, int epilogLength);
 void            block_getParameters         (t_block *x, 
-                                                int *switchable,
+                                                int *switched,
                                                 int *reblocked,
                                                 int *blockSize,
                                                 t_float *sampleRate,

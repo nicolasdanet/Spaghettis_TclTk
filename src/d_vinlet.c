@@ -78,14 +78,14 @@ void vinlet_dsp (t_vinlet *x, t_signal **sp)
 
 void vinlet_dspProlog (t_vinlet *x,
     t_signal **parentSignals,
+    int switched,
+    int reblocked,
     int blockSize,
     int phase,
     int period,
     int frequency,
     int downsample,
-    int upsample,
-    int reblocked,
-    int switched)
+    int upsample)
 {
     if (vinlet_isSignal (x)) {
     //

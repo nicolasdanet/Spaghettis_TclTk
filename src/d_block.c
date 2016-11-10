@@ -53,7 +53,7 @@ void block_getParameters (t_block *x,
     int parentBlockSize,
     t_float parentSampleRate)
 {
-    int switchable      = *a;
+    int switched        = *a;
     int reblocked       = *b;
     int blockSize       = *c;
     t_float sampleRate  = *d;
@@ -72,7 +72,7 @@ void block_getParameters (t_block *x,
     period      = PD_MAX (1, ((blockSize * downsample) / (parentBlockSize * overlap * upsample)));
     frequency   = PD_MAX (1, ((parentBlockSize * overlap * upsample) / (blockSize * downsample)));
     sampleRate  = parentSampleRate * overlap * (upsample / downsample);
-    switchable  = x->bk_isSwitch;
+    switched    = x->bk_isSwitch;
     
     reblocked |= (overlap != 1);
     reblocked |= (blockSize != parentBlockSize);
@@ -84,7 +84,7 @@ void block_getParameters (t_block *x,
     x->bk_frequency   = frequency;
     x->bk_isReblocked = reblocked;
 
-    *a = switchable;
+    *a = switched;
     *b = reblocked;
     *c = blockSize;
     *d = sampleRate;

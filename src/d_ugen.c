@@ -353,14 +353,14 @@ static t_block *ugen_graphGetBlockIfContainsAny (t_dspcontext *context)
 }
 
 void ugen_graphCreateMissingSignalsForOutlets (t_dspcontext *context,
-    int switchable, 
+    int switched, 
     int reblocked, 
     int blockSize,
     t_float sampleRate)
 {
     if (context->dc_ioSignals) {
     //
-    if (switchable || reblocked) {
+    if (switched || reblocked) {
 
         int i;
         t_signal **t = context->dc_ioSignals + context->dc_numberOfInlets;
@@ -383,7 +383,7 @@ void ugen_graphCreateMissingSignalsForOutlets (t_dspcontext *context,
 }
 
 void ugen_graphDspProlog (t_dspcontext *context, 
-    int switchable,
+    int switched,
     int reblocked, 
     int blockSize,
     int period, 
@@ -404,28 +404,28 @@ void ugen_graphDspProlog (t_dspcontext *context,
     
         vinlet_dspProlog ((t_vinlet *)object, 
             i,
+            switched,
+            reblocked,
             blockSize,
             ugen_dspPhase,
             period,
             frequency,
             downsample,
-            upsample,
-            reblocked,
-            switchable);
+            upsample);
     }
     
     if (pd_class (object) == voutlet_class) {
     
         voutlet_dspProlog ((t_voutlet *)object, 
             o,
+            switched,
+            reblocked,
             blockSize,
             ugen_dspPhase,
             period,
             frequency,
             downsample,
-            upsample,
-            reblocked,
-            switchable);
+            upsample);
     }
     //
     }
@@ -457,7 +457,7 @@ void ugen_graphClose (t_dspcontext *context)
     int frequency               = 1;
     int downsample              = 1;
     int upsample                = 1;
-    int switchable              = 0;
+    int switched                = 0;
     int reblocked               = parentContext ? 0 : 1;
     
     t_block *block = ugen_graphGetBlockIfContainsAny (context);
@@ -465,7 +465,7 @@ void ugen_graphClose (t_dspcontext *context)
     if (block) {
     //
     block_getParameters (block,
-        &switchable,
+        &switched,
         &reblocked,
         &blockSize,
         &sampleRate,
@@ -481,16 +481,16 @@ void ugen_graphClose (t_dspcontext *context)
     context->dc_sampleRate  = sampleRate;
     context->dc_blockSize   = blockSize;
     context->dc_isReblocked = reblocked;
-    context->dc_isSwitch    = switchable;
+    context->dc_isSwitch    = switched;
     
     ugen_graphCreateMissingSignalsForOutlets (context,
-        switchable,
+        switched,
         reblocked,
         parentBlockSize,
         parentSampleRate);
         
     ugen_graphDspProlog (context,
-        switchable,
+        switched,
         reblocked,
         blockSize,
         period,
@@ -500,7 +500,7 @@ void ugen_graphClose (t_dspcontext *context)
     
     chainblockbegin = pd_this->pd_dspChainSize;
 
-    if (block && (reblocked || switchable))   /* add the block DSP prolog */
+    if (block && (reblocked || switched))   /* add the block DSP prolog */
     {
         dsp_add(block_performProlog, 1, block);
         //block->bk_chainOnset = pd_this->pd_dspChainSize - 1;
@@ -555,7 +555,7 @@ void ugen_graphClose (t_dspcontext *context)
         break;   /* don't need to keep looking. */
     }
 
-    if (block && (reblocked || switchable))    /* add block DSP epilog */
+    if (block && (reblocked || switched))    /* add block DSP epilog */
         dsp_add(block_performEpilog, 1, block);
     chainblockend = pd_this->pd_dspChainSize;
 
@@ -568,9 +568,9 @@ void ugen_graphClose (t_dspcontext *context)
         {
             t_signal **iosigs = context->dc_ioSignals;
             if (iosigs) iosigs += context->dc_numberOfInlets;
-            voutlet_dspEpilog((t_voutlet *)zz, 
-                iosigs, blockSize, ugen_dspPhase, period, frequency,
-                    downsample, upsample, reblocked, switchable);
+            voutlet_dspEpilog((t_voutlet *)zz,
+                iosigs, switched, reblocked, blockSize, ugen_dspPhase, period, frequency,
+                    downsample, upsample);
         }
     }
 
