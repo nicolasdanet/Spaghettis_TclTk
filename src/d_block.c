@@ -19,11 +19,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern int ugen_dspPhase;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 t_class *block_class;                       /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -50,6 +45,7 @@ void block_getParameters (t_block *x,
     int *f,
     int *g,
     int *h,
+    int phase,
     int parentBlockSize,
     t_float parentSampleRate)
 {
@@ -79,7 +75,7 @@ void block_getParameters (t_block *x,
     reblocked |= (downsample != 1);
     reblocked |= (upsample != 1);
     
-    x->bk_phase       = ugen_dspPhase & (period - 1);
+    x->bk_phase       = phase & (period - 1);
     x->bk_period      = period;
     x->bk_frequency   = frequency;
     x->bk_isReblocked = reblocked;

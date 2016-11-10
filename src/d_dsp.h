@@ -210,6 +210,7 @@ void            block_getParameters         (t_block *x,
                                                 int *frequency,
                                                 int *downsample,
                                                 int *upsample,
+                                                int phase,
                                                 int parentBlockSize,
                                                 t_float parentSampleRate);
 
