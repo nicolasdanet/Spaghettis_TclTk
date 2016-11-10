@@ -36,6 +36,11 @@ t_class *block_class;                       /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_float block_getRatio (t_block *x)
+{
+    return ((t_float)x->bk_upsample / (t_float)x->bk_downsample);
+}
+
 void block_getParameters (t_block *x, 
     int *a,
     int *b,
@@ -74,9 +79,10 @@ void block_getParameters (t_block *x,
     reblocked |= (downsample != 1);
     reblocked |= (upsample != 1);
     
-    x->bk_phase     = ugen_dspPhase & (period - 1);
-    x->bk_period    = period;
-    x->bk_frequency = frequency;
+    x->bk_phase       = ugen_dspPhase & (period - 1);
+    x->bk_period      = period;
+    x->bk_frequency   = frequency;
+    x->bk_isReblocked = reblocked;
 
     *a = switchable;
     *b = reblocked;
@@ -88,9 +94,10 @@ void block_getParameters (t_block *x,
     *h = upsample;
 }
 
-t_float block_getRatio (t_block *x)
+void block_setPerformLength (t_block *x, int block, int epilog)
 {
-    return ((t_float)x->bk_upsample / (t_float)x->bk_downsample);
+    x->bk_allBlockLength = block;
+    x->bk_outletEpilogLength = epilog;
 }
 
 // -----------------------------------------------------------------------------------------------------------

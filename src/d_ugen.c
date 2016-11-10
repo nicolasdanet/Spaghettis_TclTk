@@ -575,11 +575,13 @@ void ugen_graphClose (t_dspcontext *context)
     }
 
     chainafterall = pd_this->pd_dspChainSize;
+    
     if (block)
     {
-        block->bk_allBlockLength = chainblockend - chainblockbegin;
-        block->bk_outletEpilogLength = chainafterall - chainblockend;
-        block->bk_isReblocked = reblocked;
+        block_setPerformLength (block, chainblockend - chainblockbegin, chainafterall - chainblockend);
+        //block->bk_allBlockLength = chainblockend - chainblockbegin;
+        //block->bk_outletEpilogLength = chainafterall - chainblockend;
+        //block->bk_isReblocked = reblocked;
     }
 
     if (0)

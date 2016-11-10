@@ -27,6 +27,9 @@ struct _signal {
     struct _signal  *s_nextUsed;
     };
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 typedef struct _resample {
     int             r_type;
     int             r_downsample;
@@ -35,7 +38,7 @@ typedef struct _resample {
     int             r_vectorSize;
     t_sample        *r_vector;
     } t_resample;
-
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
@@ -76,14 +79,14 @@ typedef struct _block {
     int             bk_phase;
     int             bk_period;
     int             bk_frequency;
-    int             bk_count;
-    int             bk_allBlockLength;
-    int             bk_outletEpilogLength;
+    int             bk_downsample;
+    int             bk_upsample;
     int             bk_isSwitch;
     int             bk_isSwitchedOn;
     int             bk_isReblocked;
-    int             bk_downsample;
-    int             bk_upsample;
+    int             bk_allBlockLength;
+    int             bk_outletEpilogLength;
+    int             bk_count;
     } t_block;
     
 // -----------------------------------------------------------------------------------------------------------
@@ -197,6 +200,7 @@ t_int           *block_performProlog        (t_int *w);
 t_int           *block_performEpilog        (t_int *w);
 
 t_float         block_getRatio              (t_block *x);
+void            block_setPerformLength      (t_block *x, int allBlockLength, int epilogLength);
 void            block_getParameters         (t_block *x, 
                                                 int *switchable,
                                                 int *reblocked,
