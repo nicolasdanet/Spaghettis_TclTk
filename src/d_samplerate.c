@@ -48,7 +48,7 @@ static void samplerate_tilde_bang(t_samplerate *x)
     {
         t_block *b = (t_block *)canvas_getblock(block_class, &canvas);
         if (b) 
-            srate *= (t_float)(b->bk_upsample) / (t_float)(b->bk_downsample); 
+            srate *= block_getRatio (b); 
     }
     outlet_float(x->x_obj.te_outlet, srate);
 }

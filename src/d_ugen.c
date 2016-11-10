@@ -33,8 +33,8 @@ static t_dspcontext     *ugen_context;                      /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int ugen_dspPhase;                                   /* Shared. */
-static int ugen_buildIdentifier;                            /* Shared. */
+int                     ugen_dspPhase;                      /* Shared. */
+static int              ugen_buildIdentifier;               /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -414,7 +414,7 @@ void ugen_graphDspProlog (t_dspcontext *context,
             switchable);
     }
     
-    if (pd_class(object) == voutlet_class) {
+    if (pd_class (object) == voutlet_class) {
     
         voutlet_dspProlog ((t_voutlet *)object, 
             o,
@@ -448,41 +448,34 @@ void ugen_graphClose (t_dspcontext *context)
     int chainafterall;      /* and after signal outlet epilog */
     t_ugenbox *u = NULL;
     
-    t_block *block              = ugen_graphGetBlockIfContainsAny (context);
     t_dspcontext *parentContext = context->dc_parentContext;
     t_float parentSampleRate    = parentContext ? parentContext->dc_sampleRate : audio_getSampleRate();
     int parentBlockSize         = parentContext ? parentContext->dc_blockSize  : AUDIO_DEFAULT_BLOCKSIZE;
     t_float sampleRate          = parentSampleRate;
     int blockSize               = parentBlockSize;
-    int downsample              = 1;
-    int upsample                = 1;
     int period                  = 1;
     int frequency               = 1;
+    int downsample              = 1;
+    int upsample                = 1;
     int switchable              = 0;
     int reblocked               = parentContext ? 0 : 1;
+    
+    t_block *block = ugen_graphGetBlockIfContainsAny (context);
         
     if (block) {
-
-        int overlap = block->bk_overlap;
-        
-        if (block->bk_blockSize > 0) { blockSize = block->bk_blockSize; } 
-            
-        overlap     = PD_MIN (overlap, blockSize);
-        downsample  = PD_MIN (block->bk_downsample, parentBlockSize);
-        upsample    = block->bk_upsample;
-        period      = PD_MAX (1, ((blockSize * downsample) / (parentBlockSize * overlap * upsample)));
-        frequency   = PD_MAX (1, ((parentBlockSize * overlap * upsample) / (blockSize * downsample)));
-        sampleRate  = parentSampleRate * overlap * (upsample / downsample);
-        switchable  = block->bk_isSwitch;
-        
-        block->bk_phase     = ugen_dspPhase & (period - 1);
-        block->bk_period    = period;
-        block->bk_frequency = frequency;
-        
-        reblocked |= (overlap != 1);
-        reblocked |= (blockSize != parentBlockSize);
-        reblocked |= (downsample != 1);
-        reblocked |= (upsample != 1);
+    //
+    block_getParameters (block,
+        &switchable,
+        &reblocked,
+        &blockSize,
+        &sampleRate,
+        &period,
+        &frequency,
+        &downsample,
+        &upsample,
+        parentBlockSize,
+        parentSampleRate);
+    //
     }
 
     context->dc_sampleRate  = sampleRate;

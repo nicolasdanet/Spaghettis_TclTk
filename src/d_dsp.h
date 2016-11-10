@@ -196,6 +196,19 @@ t_sample        *resample_vector            (t_resample *x);
 t_int           *block_performProlog        (t_int *w);
 t_int           *block_performEpilog        (t_int *w);
 
+t_float         block_getRatio              (t_block *x);
+void            block_getParameters         (t_block *x, 
+                                                int *switchable,
+                                                int *reblocked,
+                                                int *blockSize,
+                                                t_float *sampleRate,
+                                                int *period,
+                                                int *frequency,
+                                                int *downsample,
+                                                int *upsample,
+                                                int parentBlockSize,
+                                                t_float parentSampleRate);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

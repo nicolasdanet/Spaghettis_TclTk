@@ -19,6 +19,11 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+extern int ugen_dspPhase;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 t_class *block_class;                       /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -31,6 +36,67 @@ t_class *block_class;                       /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void block_getParameters (t_block *x, 
+    int *a,
+    int *b,
+    int *c,
+    t_float *d,
+    int *e,
+    int *f,
+    int *g,
+    int *h,
+    int parentBlockSize,
+    t_float parentSampleRate)
+{
+    int switchable      = *a;
+    int reblocked       = *b;
+    int blockSize       = *c;
+    t_float sampleRate  = *d;
+    int period          = *e;
+    int frequency       = *f;
+    int downsample      = *g;
+    int upsample        = *h;
+    
+    int overlap = x->bk_overlap;
+        
+    if (x->bk_blockSize > 0) { blockSize = x->bk_blockSize; } 
+        
+    overlap     = PD_MIN (overlap, blockSize);
+    downsample  = PD_MIN (x->bk_downsample, parentBlockSize);
+    upsample    = x->bk_upsample;
+    period      = PD_MAX (1, ((blockSize * downsample) / (parentBlockSize * overlap * upsample)));
+    frequency   = PD_MAX (1, ((parentBlockSize * overlap * upsample) / (blockSize * downsample)));
+    sampleRate  = parentSampleRate * overlap * (upsample / downsample);
+    switchable  = x->bk_isSwitch;
+    
+    reblocked |= (overlap != 1);
+    reblocked |= (blockSize != parentBlockSize);
+    reblocked |= (downsample != 1);
+    reblocked |= (upsample != 1);
+    
+    x->bk_phase     = ugen_dspPhase & (period - 1);
+    x->bk_period    = period;
+    x->bk_frequency = frequency;
+
+    *a = switchable;
+    *b = reblocked;
+    *c = blockSize;
+    *d = sampleRate;
+    *e = period;
+    *f = frequency;
+    *g = downsample;
+    *h = upsample;
+}
+
+t_float block_getRatio (t_block *x)
+{
+    return ((t_float)x->bk_upsample / (t_float)x->bk_downsample);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void block_float (t_block *x, t_float f)
 {
     if (x->bk_isSwitch) { x->bk_isSwitchedOn = (f != 0.0); }
@@ -38,7 +104,6 @@ static void block_float (t_block *x, t_float f)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 static void block_set (t_block *x, t_float f1, t_float f2, t_float f3)
 {
@@ -75,7 +140,6 @@ static void block_set (t_block *x, t_float f1, t_float f2, t_float f3)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 static void block_dsp (t_block *x, t_signal **sp)
 {
