@@ -23,6 +23,11 @@ t_class *voutlet_class;         /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+int voutlet_isSignal (t_voutlet *x)
+{
+    return (x->vo_buffer != NULL);
+}
+
 t_outlet *voutlet_getOutlet (t_pd *x)
 {
     PD_ASSERT (pd_class (x) == voutlet_class); return (((t_voutlet *)x)->vo_outlet);

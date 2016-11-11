@@ -74,7 +74,7 @@ static t_int *voutlet_performEpilogWithResampling (t_int *w)
 
 void voutlet_dsp (t_voutlet *x, t_signal **sp)
 {
-    if (x->vo_buffer) {
+    if (voutlet_isSignal (x)) {
     //
     t_signal *in = sp[0];
     
@@ -98,7 +98,7 @@ void voutlet_dspProlog (t_voutlet *x,
     int downsample,
     int upsample)
 {
-    if (x->vo_buffer) {
+    if (voutlet_isSignal (x)) {
     //
     resample_setRatio (&x->vo_resample, downsample, upsample);
     
@@ -124,7 +124,7 @@ void voutlet_dspEpilog (t_voutlet *x,
     int downsample,
     int upsample)
 {
-    if (x->vo_buffer) {
+    if (voutlet_isSignal (x)) {
     //
     t_signal *out = NULL;
     
