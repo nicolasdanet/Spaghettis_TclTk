@@ -81,7 +81,7 @@ typedef struct _block {
     int             bk_frequency;
     int             bk_downsample;
     int             bk_upsample;
-    int             bk_isSwitch;
+    int             bk_isSwitchObject;
     int             bk_isSwitchedOn;
     int             bk_isReblocked;
     int             bk_allBlockLength;
@@ -143,7 +143,7 @@ void            canvas_dspPerform           (t_glist *glist, int isTopLevel, t_s
 void            vinlet_dsp                  (t_vinlet *x, t_signal **sp);
 void            vinlet_dspProlog            (t_vinlet *x,
                                                 t_signal **signals,
-                                                int switched,
+                                                int switchable,
                                                 int reblocked,
                                                 int blockSize,
                                                 int phase,
@@ -159,7 +159,7 @@ void            vinlet_dspProlog            (t_vinlet *x,
 void            voutlet_dsp                 (t_voutlet *x, t_signal **sp);
 void            voutlet_dspProlog           (t_voutlet *x,
                                                 t_signal **signals,
-                                                int switched,
+                                                int switchable,
                                                 int reblocked,
                                                 int blockSize,
                                                 int phase,
@@ -170,7 +170,7 @@ void            voutlet_dspProlog           (t_voutlet *x,
                                                             
 void            voutlet_dspEpilog           (t_voutlet *x,
                                                 t_signal **signals,
-                                                int switched,
+                                                int switchable,
                                                 int reblocked,
                                                 int blockSize,
                                                 int phase,
@@ -202,7 +202,7 @@ t_int           *block_performEpilog        (t_int *w);
 t_float         block_getRatio              (t_block *x);
 void            block_setPerformLength      (t_block *x, int allBlockLength, int epilogLength);
 void            block_getParameters         (t_block *x, 
-                                                int *switched,
+                                                int *switchable,
                                                 int *reblocked,
                                                 int *blockSize,
                                                 t_float *sampleRate,

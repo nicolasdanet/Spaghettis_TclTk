@@ -49,7 +49,7 @@ void block_getParameters (t_block *x,
     int parentBlockSize,
     t_float parentSampleRate)
 {
-    int switched        = *a;
+    int switchable      = *a;
     int reblocked       = *b;
     int blockSize       = *c;
     t_float sampleRate  = *d;
@@ -68,7 +68,7 @@ void block_getParameters (t_block *x,
     period      = PD_MAX (1, ((blockSize * downsample) / (parentBlockSize * overlap * upsample)));
     frequency   = PD_MAX (1, ((parentBlockSize * overlap * upsample) / (blockSize * downsample)));
     sampleRate  = parentSampleRate * overlap * (upsample / downsample);
-    switched    = x->bk_isSwitch;
+    switchable  = x->bk_isSwitchObject;
     
     PD_ASSERT (period == 1 || frequency == 1);
     
@@ -82,7 +82,7 @@ void block_getParameters (t_block *x,
     x->bk_frequency   = frequency;
     x->bk_isReblocked = reblocked;
 
-    *a = switched;
+    *a = switchable;
     *b = reblocked;
     *c = blockSize;
     *d = sampleRate;
@@ -104,7 +104,7 @@ void block_setPerformLength (t_block *x, int block, int epilog)
 
 static void block_float (t_block *x, t_float f)
 {
-    if (x->bk_isSwitch) { x->bk_isSwitchedOn = (f != 0.0); }
+    if (x->bk_isSwitchObject) { x->bk_isSwitchedOn = (f != 0.0); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -198,11 +198,11 @@ static void *block_new (t_float blockSize, t_float overlap, t_float upsample)
 {
     t_block *x = (t_block *)pd_new (block_class);
     
-    x->bk_phase         = 0;
-    x->bk_period        = 1;
-    x->bk_frequency     = 1;
-    x->bk_isSwitch      = 0;
-    x->bk_isSwitchedOn  = 1;
+    x->bk_phase             = 0;
+    x->bk_period            = 1;
+    x->bk_frequency         = 1;
+    x->bk_isSwitchObject    = 0;
+    x->bk_isSwitchedOn      = 1;
     
     block_set (x, blockSize, overlap, upsample);
     
@@ -213,8 +213,8 @@ static void *block_newSwitch (t_float blockSize, t_float overlap, t_float upsamp
 {
     t_block *x = block_new (blockSize, overlap, upsample);
     
-    x->bk_isSwitch      = 1;
-    x->bk_isSwitchedOn  = 0;
+    x->bk_isSwitchObject = 1;
+    x->bk_isSwitchedOn   = 0;
     
     return x;
 }

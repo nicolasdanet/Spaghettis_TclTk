@@ -168,7 +168,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
         (class == vinlet_class) && !(dc->dc_isReblocked));
         /* when we encounter a subcanvas or a signal outlet, suppress freeing
         the input signals as they may be "borrowed" for the super or sub
-        patch; same exception as above, but also if we're "switched" we
+        patch; same exception as above, but also if we're "switchable" we
         have to do a copy rather than a borrow.  */
     int nofreesigs = (class == canvas_class || 
         (class == voutlet_class) &&  !(dc->dc_isReblocked || dc->dc_isSwitch));
@@ -353,14 +353,14 @@ static t_block *ugen_graphGetBlockIfContainsAny (t_dspcontext *context)
 }
 
 void ugen_graphCreateMissingSignalsForOutlets (t_dspcontext *context,
-    int switched, 
+    int switchable, 
     int reblocked, 
     int blockSize,
     t_float sampleRate)
 {
     if (context->dc_ioSignals) {
     //
-    if (switched || reblocked) {
+    if (switchable || reblocked) {
 
         int i;
         t_signal **t = context->dc_ioSignals + context->dc_numberOfInlets;
@@ -383,7 +383,7 @@ void ugen_graphCreateMissingSignalsForOutlets (t_dspcontext *context,
 }
 
 void ugen_graphDspProlog (t_dspcontext *context, 
-    int switched,
+    int switchable,
     int reblocked, 
     int blockSize,
     int period, 
@@ -404,7 +404,7 @@ void ugen_graphDspProlog (t_dspcontext *context,
     
         vinlet_dspProlog ((t_vinlet *)object, 
             i,
-            switched,
+            switchable,
             reblocked,
             blockSize,
             ugen_dspPhase,
@@ -418,7 +418,7 @@ void ugen_graphDspProlog (t_dspcontext *context,
     
         voutlet_dspProlog ((t_voutlet *)object, 
             o,
-            switched,
+            switchable,
             reblocked,
             blockSize,
             ugen_dspPhase,
@@ -461,7 +461,7 @@ void ugen_graphClose (t_dspcontext *context)
     int frequency               = 1;
     int downsample              = 1;
     int upsample                = 1;
-    int switched                = 0;
+    int switchable              = 0;
     int reblocked               = parentContext ? 0 : 1;
     
     t_block *block = ugen_graphGetBlockIfContainsAny (context);
@@ -469,7 +469,7 @@ void ugen_graphClose (t_dspcontext *context)
     if (block) {
     //
     block_getParameters (block,
-        &switched,
+        &switchable,
         &reblocked,
         &blockSize,
         &sampleRate,
@@ -486,16 +486,16 @@ void ugen_graphClose (t_dspcontext *context)
     context->dc_sampleRate  = sampleRate;
     context->dc_blockSize   = blockSize;
     context->dc_isReblocked = reblocked;
-    context->dc_isSwitch    = switched;
+    context->dc_isSwitch    = switchable;
     
     ugen_graphCreateMissingSignalsForOutlets (context,
-        switched,
+        switchable,
         reblocked,
         parentBlockSize,
         parentSampleRate);
         
     ugen_graphDspProlog (context,
-        switched,
+        switchable,
         reblocked,
         blockSize,
         period,
@@ -505,7 +505,7 @@ void ugen_graphClose (t_dspcontext *context)
     
     chainblockbegin = pd_this->pd_dspChainSize;
 
-    if (block && (reblocked || switched))   /* add the block DSP prolog */
+    if (block && (reblocked || switchable))   /* add the block DSP prolog */
     {
         dsp_add(block_performProlog, 1, block);
         //block->bk_chainOnset = pd_this->pd_dspChainSize - 1;
@@ -560,7 +560,7 @@ void ugen_graphClose (t_dspcontext *context)
         break;   /* don't need to keep looking. */
     }
 
-    if (block && (reblocked || switched))    /* add block DSP epilog */
+    if (block && (reblocked || switchable))    /* add block DSP epilog */
         dsp_add(block_performEpilog, 1, block);
     chainblockend = pd_this->pd_dspChainSize;
 
@@ -574,7 +574,7 @@ void ugen_graphClose (t_dspcontext *context)
             t_signal **iosigs = context->dc_ioSignals;
             if (iosigs) iosigs += context->dc_numberOfInlets;
             voutlet_dspEpilog((t_voutlet *)zz,
-                iosigs, switched, reblocked, blockSize, ugen_dspPhase, period, frequency,
+                iosigs, switchable, reblocked, blockSize, ugen_dspPhase, period, frequency,
                     downsample, upsample);
         }
     }

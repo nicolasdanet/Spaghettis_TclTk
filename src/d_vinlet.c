@@ -78,7 +78,7 @@ void vinlet_dsp (t_vinlet *x, t_signal **sp)
 
 void vinlet_dspProlog (t_vinlet *x,
     t_signal **signals,
-    int switched,
+    int switchable,
     int reblocked,
     int blockSize,
     int phase,
@@ -89,16 +89,15 @@ void vinlet_dspProlog (t_vinlet *x,
 {
     if (vinlet_isSignal (x)) {
     //
-    if (!reblocked) { x->vi_directSignal = signals[object_getIndexOfSignalInlet (x->vi_inlet)]; }
-    else {
+    resample_setRatio (&x->vi_resample, downsample, upsample);
+    
+    if (reblocked) {
     //
     t_signal *s = NULL;
     int parentVectorSize = 1;
     int bufferSize, vectorSize = 1;
 
     x->vi_directSignal = NULL;
-    
-    resample_setRatio (&x->vi_resample, downsample, upsample);
     
     if (signals) {
         s = signals[object_getIndexOfSignalInlet (x->vi_inlet)];
@@ -136,7 +135,7 @@ void vinlet_dspProlog (t_vinlet *x,
         if (!s->s_count) { signal_free (s); }   /* ??? */
     }
     //
-    }
+    } else { PD_ASSERT (signals); x->vi_directSignal = signals[object_getIndexOfSignalInlet (x->vi_inlet)]; }
     //
     }
 }

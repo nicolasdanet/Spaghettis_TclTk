@@ -88,8 +88,8 @@ void voutlet_dsp (t_voutlet *x, t_signal **sp)
 }
 
 void voutlet_dspProlog (t_voutlet *x,
-    t_signal **parentSignals,
-    int switched,
+    t_signal **signals,
+    int switchable,
     int reblocked,
     int blockSize,
     int phase,
@@ -102,20 +102,19 @@ void voutlet_dspProlog (t_voutlet *x,
     //
     resample_setRatio (&x->vo_resample, downsample, upsample);
     
-    x->vo_copyOut = (switched && !reblocked);
+    x->vo_copyOut = (switchable && !reblocked);
     
     if (reblocked) { x->vo_directSignal = NULL; }
     else {
-        PD_ASSERT (parentSignals);
-        x->vo_directSignal = parentSignals[object_getIndexOfSignalOutlet (x->vo_outlet)];
+        PD_ASSERT (signals); x->vo_directSignal = signals[object_getIndexOfSignalOutlet (x->vo_outlet)];
     }
     //
     }
 }
 
 void voutlet_dspEpilog (t_voutlet *x,
-    t_signal **parentSignals,
-    int switched,
+    t_signal **signals,
+    int switchable,
     int reblocked,
     int blockSize,
     int phase,
@@ -140,8 +139,8 @@ void voutlet_dspEpilog (t_voutlet *x,
     int epilogPhase;
     int blockPhase;
     
-    if (parentSignals) {
-        out                         = parentSignals[object_getIndexOfSignalOutlet (x->vo_outlet)];
+    if (signals) {
+        out                         = signals[object_getIndexOfSignalOutlet (x->vo_outlet)];
         parentVectorSize            = out->s_vectorSize;
         parentVectorSizeResampled   = parentVectorSize * upsample / downsample;
     } else {
@@ -178,7 +177,7 @@ void voutlet_dspEpilog (t_voutlet *x,
         x->vo_hopSize = period * parentVectorSizeResampled;
     }
 
-    if (parentSignals) {
+    if (signals) {
     
         x->vo_bufferRead = x->vo_buffer + parentVectorSizeResampled * epilogPhase;
         
@@ -191,10 +190,10 @@ void voutlet_dspEpilog (t_voutlet *x,
         }
     }
     //
-    } else if (switched) {
+    } else if (switchable) {
     //
-    if (parentSignals) {
-        out = parentSignals[object_getIndexOfSignalOutlet (x->vo_outlet)];
+    if (signals) {
+        out = signals[object_getIndexOfSignalOutlet (x->vo_outlet)];
         dsp_addZeroPerform (out->s_vector, out->s_vectorSize);
     }
     //
