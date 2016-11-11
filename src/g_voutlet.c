@@ -70,7 +70,7 @@ static void *voutlet_newSignal (t_symbol *s)
 {
     t_voutlet *x = (t_voutlet *)pd_new (voutlet_class);
     
-    resample_init (&x->vo_resampling, s);
+    resample_init (&x->vo_resample, s);
     
     x->vo_bufferSize = 0;
     x->vo_buffer     = (t_sample *)PD_MEMORY_GET (0);
@@ -101,7 +101,7 @@ static void voutlet_free (t_voutlet *x)
     
     if (x->vo_buffer) { PD_MEMORY_FREE (x->vo_buffer); }
     
-    resample_free (&x->vo_resampling);
+    resample_free (&x->vo_resample);
 }
 
 // -----------------------------------------------------------------------------------------------------------

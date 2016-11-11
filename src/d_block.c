@@ -70,6 +70,8 @@ void block_getParameters (t_block *x,
     sampleRate  = parentSampleRate * overlap * (upsample / downsample);
     switched    = x->bk_isSwitch;
     
+    PD_ASSERT (period == 1 || frequency == 1);
+    
     reblocked |= (overlap != 1);
     reblocked |= (blockSize != parentBlockSize);
     reblocked |= (downsample != 1);

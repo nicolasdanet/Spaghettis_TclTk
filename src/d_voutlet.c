@@ -42,7 +42,7 @@ static t_int *voutlet_performEpilog (t_int *w)
     
     t_sample *in  = x->vo_bufferRead;
     
-    if (resample_isResampling (&x->vo_resampling)) { out = resample_vector (&x->vo_resampling); }
+    if (resample_needResampling (&x->vo_resample)) { out = resample_vector (&x->vo_resample); }
 
     while (n--) { *out = *in; *in = 0.0; out++; in++; }
     if (in == x->vo_bufferEnd) { in = x->vo_buffer; }
@@ -58,7 +58,7 @@ static t_int *voutlet_performEpilogWithResampling (t_int *w)
     int n = (int)(w[2]);
     
     t_sample *in  = x->vo_bufferRead;
-    t_sample *out = resample_vector (&x->vo_resampling);
+    t_sample *out = resample_vector (&x->vo_resample);
 
     while (n--) { *out = *in; *in = 0.0; out++; in++; }
     if (in == x->vo_bufferEnd) { in = x->vo_buffer; }
@@ -100,7 +100,7 @@ void voutlet_dspProlog (t_voutlet *x,
 {
     if (x->vo_buffer) {
     //
-    resample_setRatio (&x->vo_resampling, downsample, upsample);
+    resample_setRatio (&x->vo_resample, downsample, upsample);
     
     x->vo_copyOut = (switched && !reblocked);
     
@@ -128,7 +128,7 @@ void voutlet_dspEpilog (t_voutlet *x,
     //
     t_signal *out = NULL;
     
-    resample_setRatio (&x->vo_resampling, downsample, upsample);
+    resample_setRatio (&x->vo_resample, downsample, upsample);
 
     if (reblocked) {
     //
@@ -187,7 +187,7 @@ void voutlet_dspEpilog (t_voutlet *x,
             
         } else {
             dsp_add (voutlet_performEpilogWithResampling, 2, x, parentVectorSizeResampled);
-            resample_toDsp (&x->vo_resampling, out->s_vector, parentVectorSize, parentVectorSizeResampled);
+            resample_toDsp (&x->vo_resample, out->s_vector, parentVectorSize, parentVectorSizeResampled);
         }
     }
     //

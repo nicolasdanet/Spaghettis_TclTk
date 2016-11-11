@@ -128,7 +128,7 @@ void resample_setRatio (t_resample *x, int downsample, int upsample)
     x->r_upsample   = upsample;
 }
 
-int resample_isResampling (t_resample *x)
+int resample_needResampling (t_resample *x)
 {
     return (x->r_downsample != x->r_upsample);
 }

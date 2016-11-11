@@ -435,6 +435,10 @@ void ugen_graphDspProlog (t_dspcontext *context,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* Period is roughly the number of parent's blocks required to filled the child. */
+/* Frequency is roughly the number of child's iterations required to equaled the parent. */
+/* Note that it is respectively divided and multiplied in case of overlap. */
+
 void ugen_graphClose (t_dspcontext *context)
 {
     t_sigoutlet *uout;

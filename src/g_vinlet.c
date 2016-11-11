@@ -75,7 +75,7 @@ static void *vinlet_newSignal (t_symbol *s)
 {
     t_vinlet *x = (t_vinlet *)pd_new (vinlet_class);
     
-    resample_init (&x->vi_resampling, s);
+    resample_init (&x->vi_resample, s);
 
     x->vi_bufferSize   = 0;
     x->vi_buffer       = (t_sample *)PD_MEMORY_GET (0);
@@ -105,7 +105,7 @@ static void vinlet_free (t_vinlet *x)
     
     if (x->vi_buffer) { PD_MEMORY_FREE (x->vi_buffer); }
     
-    resample_free (&x->vi_resampling);
+    resample_free (&x->vi_resample);
 }
 
 // -----------------------------------------------------------------------------------------------------------

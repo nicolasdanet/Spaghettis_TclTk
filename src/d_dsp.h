@@ -44,7 +44,7 @@ typedef struct _resample {
 
 struct _vinlet {
     t_object        vi_obj;                         /* Must be the first. */
-    t_resample      vi_resampling;
+    t_resample      vi_resample;
     int             vi_hopSize;
     int             vi_bufferSize;
     t_sample        *vi_buffer;
@@ -59,7 +59,7 @@ struct _vinlet {
 
 struct _voutlet {
     t_object        vo_obj;                         /* Must be the first. */
-    t_resample      vo_resampling;
+    t_resample      vo_resample;
     int             vo_hopSize;
     int             vo_copyOut;
     int             vo_bufferSize;
@@ -142,7 +142,7 @@ void            canvas_dspPerform           (t_glist *glist, int isTopLevel, t_s
 
 void            vinlet_dsp                  (t_vinlet *x, t_signal **sp);
 void            vinlet_dspProlog            (t_vinlet *x,
-                                                t_signal **parentSignals,
+                                                t_signal **signals,
                                                 int switched,
                                                 int reblocked,
                                                 int blockSize,
@@ -158,7 +158,7 @@ void            vinlet_dspProlog            (t_vinlet *x,
 
 void            voutlet_dsp                 (t_voutlet *x, t_signal **sp);
 void            voutlet_dspProlog           (t_voutlet *x,
-                                                t_signal **parentSignals,
+                                                t_signal **signals,
                                                 int switched,
                                                 int reblocked,
                                                 int blockSize,
@@ -169,7 +169,7 @@ void            voutlet_dspProlog           (t_voutlet *x,
                                                 int upsample);
                                                             
 void            voutlet_dspEpilog           (t_voutlet *x,
-                                                t_signal **parentSignals,
+                                                t_signal **signals,
                                                 int switched,
                                                 int reblocked,
                                                 int blockSize,
@@ -186,7 +186,7 @@ void            voutlet_dspEpilog           (t_voutlet *x,
 void            resample_init               (t_resample *x, t_symbol *type);
 void            resample_free               (t_resample *x);
 void            resample_setRatio           (t_resample *x, int downsample, int upsample);
-int             resample_isResampling       (t_resample *x);
+int             resample_needResampling     (t_resample *x);
 void            resample_fromDsp            (t_resample *x, t_sample *s, int vectorSize, int resampledSize);
 void            resample_toDsp              (t_resample *x, t_sample *s, int vectorSize, int resampledSize);
 
