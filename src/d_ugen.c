@@ -441,17 +441,6 @@ void ugen_graphDspProlog (t_dspcontext *context,
 
 void ugen_graphClose (t_dspcontext *context)
 {
-    t_sigoutlet *uout;
-    t_siginlet *uin;
-    t_sigoutconnect *oc;
-    t_sigoutconnect *oc2;
-    int i; 
-    int n;
-    int chainblockbegin;    /* DSP chain onset before block prolog code */
-    int chainblockend;      /* and after block epilog code */
-    int chainafterall;      /* and after signal outlet epilog */
-    t_ugenbox *u = NULL;
-    
     t_dspcontext *parentContext = context->dc_parentContext;
     t_float parentSampleRate    = parentContext ? parentContext->dc_sampleRate : audio_getSampleRate();
     int parentBlockSize         = parentContext ? parentContext->dc_blockSize  : AUDIO_DEFAULT_BLOCKSIZE;
@@ -503,27 +492,25 @@ void ugen_graphClose (t_dspcontext *context)
         downsample,
         upsample);
     
-    chainblockbegin = pd_this->pd_dspChainSize;
+    int chainEnd, chainBegin = pd_this->pd_dspChainSize;
+    t_ugenbox *u = NULL;
+    
+    if (block && (reblocked || switchable)) { dsp_add (block_performProlog, 1, block); }   
 
-    if (block && (reblocked || switchable))   /* add the block DSP prolog */
-    {
-        dsp_add(block_performProlog, 1, block);
-        //block->bk_chainOnset = pd_this->pd_dspChainSize - 1;
-    }   
-        /* Initialize for sorting */
-    for (u = context->dc_ugens; u; u = u->u_next)
-    {
+    for (u = context->dc_ugens; u; u = u->u_next) {
+        t_siginlet *uin = NULL;
+        int i;
         u->u_done = 0;
-        /* for (uout = u->u_out, i = u->u_outSize; i--; uout++)
-            uout->o_nsent = 0; */
         for (uin = u->u_in, i = u->u_inSize; i--; uin++)
             uin->i_numberConnected = 0, uin->i_signal = 0;
-   }
+    }
     
         /* Do the sort */
 
     for (u = context->dc_ugens; u; u = u->u_next)
     {
+        t_siginlet *uin;
+        int i;
             /* check that we have no connected signal inlets */
         if (u->u_done) continue;
         for (uin = u->u_in, i = u->u_inSize; i--; uin++)
@@ -540,6 +527,7 @@ void ugen_graphClose (t_dspcontext *context)
         if (!u->u_done) 
     {
         t_signal **sigp;
+        int i;
         post_error ("DSP loop detected (some tilde objects not scheduled)");
                 /* this might imply that we have unfilled "borrowed" outputs
                 which we'd better fill in now. */
@@ -562,7 +550,8 @@ void ugen_graphClose (t_dspcontext *context)
 
     if (block && (reblocked || switchable))    /* add block DSP epilog */
         dsp_add(block_performEpilog, 1, block);
-    chainblockend = pd_this->pd_dspChainSize;
+    
+    chainEnd = pd_this->pd_dspChainSize;
 
         /* add epilogs for outlets.  */
 
@@ -579,28 +568,15 @@ void ugen_graphClose (t_dspcontext *context)
         }
     }
 
-    chainafterall = pd_this->pd_dspChainSize;
-    
-    if (block)
-    {
-        block_setPerformLength (block, chainblockend - chainblockbegin, chainafterall - chainblockend);
-        //block->bk_allBlockLength = chainblockend - chainblockbegin;
-        //block->bk_outletEpilogLength = chainafterall - chainblockend;
-        //block->bk_isReblocked = reblocked;
-    }
+    if (block) { block_setPerformLength (block, chainEnd - chainBegin, pd_this->pd_dspChainSize - chainEnd); }
 
-    if (0)
-    {
-        t_int *ip;
-        if (!context->dc_parentContext)
-            for (i = pd_this->pd_dspChainSize, ip = pd_this->pd_dspChain; 
-                i--; ip++)
-                    post("chain %lx", *ip);
-        post("... ugen_done_graph done.");
-    }
         /* now delete everything. */
     while (context->dc_ugens)
     {
+        int n;
+        t_sigoutlet *uout;
+        t_sigoutconnect *oc;
+        t_sigoutconnect *oc2;
         for (uout = context->dc_ugens->u_out, n = context->dc_ugens->u_outSize;
             n--; uout++)
         {
