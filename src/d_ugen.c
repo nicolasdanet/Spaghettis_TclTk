@@ -94,6 +94,12 @@ struct _dspcontext {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void ugen_graphDelete (t_dspcontext *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void ugen_dspInitialize (void)
 {
     ugen_dspRelease();
@@ -435,6 +441,53 @@ void ugen_graphDspProlog (t_dspcontext *context,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* Note that an abstraction can be opened as a toplevel patch. */
+
+t_dspcontext *ugen_graphStart (int isTopLevel, t_signal **sp, int m, int n)
+{
+    t_dspcontext *context = (t_dspcontext *)PD_MEMORY_GET (sizeof (t_dspcontext));
+
+    context->dc_numberOfInlets  = isTopLevel ? 0 : m;
+    context->dc_numberOfOutlets = isTopLevel ? 0 : n;
+    context->dc_isTopLevel      = isTopLevel;
+    context->dc_ugens           = NULL;
+    context->dc_parentContext   = ugen_context;
+    context->dc_ioSignals       = sp;
+        
+    ugen_context = context;
+    
+    return context;
+}
+
+void ugen_graphAdd (t_dspcontext *context, t_object *o)
+{
+    t_ugenbox *x = (t_ugenbox *)PD_MEMORY_GET (sizeof (t_ugenbox));
+
+    x->u_inSize  = object_numberOfSignalInlets (o);
+    x->u_outSize = object_numberOfSignalOutlets (o);
+    x->u_in      = PD_MEMORY_GET (x->u_inSize * sizeof (t_siginlet));
+    x->u_out     = PD_MEMORY_GET (x->u_outSize * sizeof (t_sigoutlet));
+    x->u_owner   = o;
+    x->u_next    = context->dc_ugens;
+    
+    context->dc_ugens = x;
+}
+
+void ugen_graphConnect (t_dspcontext *context, t_object *o1, int m, t_object *o2, int n)
+{
+    t_ugenbox *u1 = ugen_graphFetchUgen (context, o1);
+    t_ugenbox *u2 = ugen_graphFetchUgen (context, o2);
+    
+    m = object_indexAsSignalOutlet (o1, m);
+    n = object_indexAsSignalInlet (o2, n);
+    
+    if (!u1 || !u2 || n < 0) { PD_BUG; }
+    else if (m < 0 || m >= u1->u_outSize || n >= u2->u_inSize) { PD_BUG; }
+    else {
+        ugen_graphConnectUgens (u1, m, u2, n);
+    }
+}
+
 /* Period is roughly the number of parent's blocks required to filled the child. */
 /* Frequency is roughly the number of child's iterations required to equaled the parent. */
 /* Note that it is respectively divided and multiplied in case of overlap. */
@@ -570,81 +623,41 @@ void ugen_graphClose (t_dspcontext *context)
 
     if (block) { block_setPerformLength (block, chainEnd - chainBegin, pd_this->pd_dspChainSize - chainEnd); }
 
-        /* now delete everything. */
-    while (context->dc_ugens)
-    {
-        int n;
-        t_sigoutlet *uout;
-        t_sigoutconnect *oc;
-        t_sigoutconnect *oc2;
-        for (uout = context->dc_ugens->u_out, n = context->dc_ugens->u_outSize;
-            n--; uout++)
-        {
-            oc = uout->o_connections;
-            while (oc)
-            {
-                oc2 = oc->oc_next;
-                PD_MEMORY_FREE(oc);
-                oc = oc2;
-            }
-        }
-        PD_MEMORY_FREE(context->dc_ugens->u_out);
-        PD_MEMORY_FREE(context->dc_ugens->u_in);
-        u = context->dc_ugens;
-        context->dc_ugens = u->u_next;
-        PD_MEMORY_FREE(u);
-    }
-    if (ugen_context == context)
-        ugen_context = context->dc_parentContext;
-    else { PD_BUG; }
-    PD_MEMORY_FREE(context);
+    ugen_graphDelete (context);
 }
 
-/* Note that an abstraction can be opened as a toplevel patch. */
-
-t_dspcontext *ugen_graphStart (int isTopLevel, t_signal **sp, int m, int n)
+static void ugen_graphDelete (t_dspcontext *context)
 {
-    t_dspcontext *context = (t_dspcontext *)PD_MEMORY_GET (sizeof (t_dspcontext));
-
-    context->dc_numberOfInlets  = isTopLevel ? 0 : m;
-    context->dc_numberOfOutlets = isTopLevel ? 0 : n;
-    context->dc_isTopLevel      = isTopLevel;
-    context->dc_ugens           = NULL;
-    context->dc_parentContext   = ugen_context;
-    context->dc_ioSignals       = sp;
+    while (context->dc_ugens) {
+    //
+    t_ugenbox *u = context->dc_ugens;
+    t_sigoutlet *o = u->u_out;
+    int i;
+    
+    for (i = 0; i < u->u_outSize; i++) {
+    
+        t_sigoutconnect *c = o->o_connections;
         
-    ugen_context = context;
-    
-    return context;
-}
-
-void ugen_graphAdd (t_dspcontext *context, t_object *o)
-{
-    t_ugenbox *x = (t_ugenbox *)PD_MEMORY_GET (sizeof (t_ugenbox));
-
-    x->u_inSize  = object_numberOfSignalInlets (o);
-    x->u_outSize = object_numberOfSignalOutlets (o);
-    x->u_in      = PD_MEMORY_GET (x->u_inSize * sizeof (t_siginlet));
-    x->u_out     = PD_MEMORY_GET (x->u_outSize * sizeof (t_sigoutlet));
-    x->u_owner   = o;
-    x->u_next    = context->dc_ugens;
-    
-    context->dc_ugens = x;
-}
-
-void ugen_graphConnect (t_dspcontext *context, t_object *o1, int m, t_object *o2, int n)
-{
-    t_ugenbox *u1 = ugen_graphFetchUgen (context, o1);
-    t_ugenbox *u2 = ugen_graphFetchUgen (context, o2);
-    
-    m = object_indexAsSignalOutlet (o1, m);
-    n = object_indexAsSignalInlet (o2, n);
-    
-    if (!u1 || !u2 || n < 0) { PD_BUG; }
-    else if (m < 0 || m >= u1->u_outSize || n >= u2->u_inSize) { PD_BUG; }
-    else {
-        ugen_graphConnectUgens (u1, m, u2, n);
+        while (c) {
+            t_sigoutconnect *t = c->oc_next;
+            PD_MEMORY_FREE (c);
+            c = t;
+        }
+        
+        o++;
     }
+    
+    context->dc_ugens = u->u_next;
+    
+    PD_MEMORY_FREE (u->u_out);
+    PD_MEMORY_FREE (u->u_in);
+    PD_MEMORY_FREE (u);
+    //
+    }
+    
+    PD_ASSERT (ugen_context == context); ugen_context = context->dc_parentContext;
+    
+    PD_MEMORY_FREE (context);
 }
 
 // -----------------------------------------------------------------------------------------------------------
