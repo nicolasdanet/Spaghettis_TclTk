@@ -190,8 +190,6 @@ int             resample_needResampling     (t_resample *x);
 void            resample_fromDsp            (t_resample *x, t_sample *s, int vectorSize, int resampledSize);
 void            resample_toDsp              (t_resample *x, t_sample *s, int vectorSize, int resampledSize);
 
-t_sample        *resample_vector            (t_resample *x);
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -240,6 +238,15 @@ void    mayer_fft           (int n, t_sample *real, t_sample *imag);
 void    mayer_ifft          (int n, t_sample *real, t_sample *imag);
 void    mayer_realfft       (int n, t_sample *real);
 void    mayer_realifft      (int n, t_sample *real);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline t_sample *resample_vector (t_resample *x)
+{
+    return x->r_vector;
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

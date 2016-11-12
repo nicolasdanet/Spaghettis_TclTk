@@ -117,11 +117,6 @@ void resample_free (t_resample *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_sample *resample_vector (t_resample *x)
-{
-    return x->r_vector;
-}
-
 void resample_setRatio (t_resample *x, int downsample, int upsample)
 {
     x->r_downsample = downsample;

@@ -36,13 +36,13 @@ static t_int *voutlet_perform (t_int *w)
 
 static t_int *voutlet_performEpilog (t_int *w)
 {
-    t_voutlet *x = (t_voutlet *)(w[1]);
+    t_voutlet *x  = (t_voutlet *)(w[1]);
     t_sample *out = (t_sample *)(w[2]);
     int n = (int)(w[3]);
     
-    t_sample *in  = x->vo_bufferRead;
+    t_sample *in = x->vo_bufferRead;
     
-    if (resample_needResampling (&x->vo_resample)) { out = resample_vector (&x->vo_resample); }
+    if (out == NULL) { out = resample_vector (&x->vo_resample); }
 
     while (n--) { *out = *in; *in = 0.0; out++; in++; }
     if (in == x->vo_bufferEnd) { in = x->vo_buffer; }
@@ -51,7 +51,7 @@ static t_int *voutlet_performEpilog (t_int *w)
     
     return (w + 4);
 }
-
+/*
 static t_int *voutlet_performEpilogWithResampling (t_int *w)
 {
     t_voutlet *x = (t_voutlet *)(w[1]);
@@ -67,7 +67,7 @@ static t_int *voutlet_performEpilogWithResampling (t_int *w)
     
     return (w + 3);
 }
-
+*/
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -77,6 +77,8 @@ void voutlet_dsp (t_voutlet *x, t_signal **sp)
     if (voutlet_isSignal (x)) {
     //
     t_signal *in = sp[0];
+    
+    /* Note that the switch is proceeded by the block object. */
     
     if (x->vo_copyOut) { dsp_addCopyPerform (in->s_vector, x->vo_directSignal->s_vector, in->s_vectorSize); }
     else if (x->vo_directSignal) { signal_borrow (x->vo_directSignal, in); }
@@ -102,10 +104,9 @@ void voutlet_dspProlog (t_voutlet *x,
     //
     resample_setRatio (&x->vo_resample, downsample, upsample);
     
-    x->vo_copyOut = (switchable && !reblocked);
-    
     if (reblocked) { x->vo_directSignal = NULL; }
     else {
+        if (switchable) { x->vo_copyOut = 1; }
         PD_ASSERT (signals); x->vo_directSignal = signals[object_getIndexOfSignalOutlet (x->vo_outlet)];
     }
     //
@@ -185,7 +186,8 @@ void voutlet_dspEpilog (t_voutlet *x,
             dsp_add (voutlet_performEpilog, 3, x, out->s_vector, parentVectorSizeResampled);
             
         } else {
-            dsp_add (voutlet_performEpilogWithResampling, 2, x, parentVectorSizeResampled);
+            dsp_add (voutlet_performEpilog, 3, x, NULL, parentVectorSizeResampled);
+            //dsp_add (voutlet_performEpilogWithResampling, 2, x, parentVectorSizeResampled);
             resample_toDsp (&x->vo_resample, out->s_vector, parentVectorSize, parentVectorSizeResampled);
         }
     }
