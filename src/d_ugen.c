@@ -343,16 +343,15 @@ static t_block *ugen_graphGetBlockIfContainsAny (t_dspcontext *context)
     t_ugenbox *u = NULL;
     
     for (u = context->dc_ugens; u; u = u->u_next) {
-    //
-    t_object *o = u->u_owner;
-    
-    if (pd_class (o) == block_class) {
-        if (block) { error_unexpected (sym_dsp, sym_block__tilde__); }
-        else {
-            block = (t_block *)o;
+
+        t_object *o = u->u_owner;
+        
+        if (pd_class (o) == block_class) {
+            if (block) { error_unexpected (sym_dsp, sym_block__tilde__); }
+            else {
+                block = (t_block *)o;
+            }
         }
-    }
-    //
     }
     
     return block;
@@ -437,6 +436,62 @@ void ugen_graphDspProlog (t_dspcontext *context,
     }
 }
 
+static void ugen_graphDspMain (t_dspcontext *context, int parentBlockSize, t_float parentSampleRate)
+{
+    t_ugenbox *u = NULL;
+    
+    for (u = context->dc_ugens; u; u = u->u_next) {
+        t_siginlet *uin = NULL;
+        int i;
+        u->u_done = 0;
+        for (uin = u->u_in, i = u->u_inSize; i--; uin++)
+            uin->i_numberConnected = 0, uin->i_signal = 0;
+    }
+    
+        /* Do the sort */
+
+    for (u = context->dc_ugens; u; u = u->u_next)
+    {
+        t_siginlet *uin;
+        int i;
+            /* check that we have no connected signal inlets */
+        if (u->u_done) continue;
+        for (uin = u->u_in, i = u->u_inSize; i--; uin++)
+            if (uin->i_numberOfConnections) goto next;
+
+        ugen_doit(context, u);
+    next: ;
+    }
+
+        /* check for a DSP loop, which is evidenced here by the presence
+        of ugens not yet scheduled. */
+        
+    for (u = context->dc_ugens; u; u = u->u_next)
+        if (!u->u_done) 
+    {
+        t_signal **sigp;
+        int i;
+        post_error ("DSP loop detected (some tilde objects not scheduled)");
+                /* this might imply that we have unfilled "borrowed" outputs
+                which we'd better fill in now. */
+        for (i = 0, sigp = context->dc_ioSignals + context->dc_numberOfInlets; i < context->dc_numberOfOutlets;
+            i++, sigp++)
+        {
+            if ((*sigp)->s_isVectorBorrowed && !(*sigp)->s_borrowedFrom)
+            {
+                t_signal *s3 = signal_new(parentBlockSize, parentSampleRate);
+                signal_borrow(*sigp, s3);
+                (*sigp)->s_count++;
+                dsp_addZeroPerform(s3->s_vector, s3->s_vectorSize);
+                if (0)
+                    post("oops, belatedly set %lx->%lx", *sigp,
+                        (*sigp)->s_borrowedFrom);
+            }
+        }
+        break;   /* don't need to keep looking. */
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -505,6 +560,8 @@ void ugen_graphClose (t_dspcontext *context)
     int upsample                = 1;
     int switchable              = 0;
     int reblocked               = parentContext ? 0 : 1;
+    int chainBegin;
+    int chainEnd; 
     
     t_block *block = ugen_graphGetBlockIfContainsAny (context);
         
@@ -545,69 +602,20 @@ void ugen_graphClose (t_dspcontext *context)
         downsample,
         upsample);
     
-    int chainEnd, chainBegin = pd_this->pd_dspChainSize;
-    t_ugenbox *u = NULL;
+    chainBegin = pd_this->pd_dspChainSize;
     
     if (block && (reblocked || switchable)) { dsp_add (block_performProlog, 1, block); }   
 
-    for (u = context->dc_ugens; u; u = u->u_next) {
-        t_siginlet *uin = NULL;
-        int i;
-        u->u_done = 0;
-        for (uin = u->u_in, i = u->u_inSize; i--; uin++)
-            uin->i_numberConnected = 0, uin->i_signal = 0;
-    }
-    
-        /* Do the sort */
+    ugen_graphDspMain (context, parentBlockSize, parentSampleRate);
 
-    for (u = context->dc_ugens; u; u = u->u_next)
-    {
-        t_siginlet *uin;
-        int i;
-            /* check that we have no connected signal inlets */
-        if (u->u_done) continue;
-        for (uin = u->u_in, i = u->u_inSize; i--; uin++)
-            if (uin->i_numberOfConnections) goto next;
-
-        ugen_doit(context, u);
-    next: ;
-    }
-
-        /* check for a DSP loop, which is evidenced here by the presence
-        of ugens not yet scheduled. */
-        
-    for (u = context->dc_ugens; u; u = u->u_next)
-        if (!u->u_done) 
-    {
-        t_signal **sigp;
-        int i;
-        post_error ("DSP loop detected (some tilde objects not scheduled)");
-                /* this might imply that we have unfilled "borrowed" outputs
-                which we'd better fill in now. */
-        for (i = 0, sigp = context->dc_ioSignals + context->dc_numberOfInlets; i < context->dc_numberOfOutlets;
-            i++, sigp++)
-        {
-            if ((*sigp)->s_isVectorBorrowed && !(*sigp)->s_borrowedFrom)
-            {
-                t_signal *s3 = signal_new(parentBlockSize, parentSampleRate);
-                signal_borrow(*sigp, s3);
-                (*sigp)->s_count++;
-                dsp_addZeroPerform(s3->s_vector, s3->s_vectorSize);
-                if (0)
-                    post("oops, belatedly set %lx->%lx", *sigp,
-                        (*sigp)->s_borrowedFrom);
-            }
-        }
-        break;   /* don't need to keep looking. */
-    }
-
-    if (block && (reblocked || switchable))    /* add block DSP epilog */
-        dsp_add(block_performEpilog, 1, block);
+    if (block && (reblocked || switchable)) { dsp_add (block_performEpilog, 1, block); }
     
     chainEnd = pd_this->pd_dspChainSize;
 
         /* add epilogs for outlets.  */
 
+    t_ugenbox *u = NULL;
+    
     for (u = context->dc_ugens; u; u = u->u_next)
     {
         t_pd *zz = &u->u_owner->te_g.g_pd;
