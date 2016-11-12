@@ -51,23 +51,7 @@ static t_int *voutlet_performEpilog (t_int *w)
     
     return (w + 4);
 }
-/*
-static t_int *voutlet_performEpilogWithResampling (t_int *w)
-{
-    t_voutlet *x = (t_voutlet *)(w[1]);
-    int n = (int)(w[2]);
-    
-    t_sample *in  = x->vo_bufferRead;
-    t_sample *out = resample_vector (&x->vo_resample);
 
-    while (n--) { *out = *in; *in = 0.0; out++; in++; }
-    if (in == x->vo_bufferEnd) { in = x->vo_buffer; }
-    
-    x->vo_bufferRead = in;
-    
-    return (w + 3);
-}
-*/
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -126,79 +110,62 @@ void voutlet_dspEpilog (t_voutlet *x,
 {
     if (voutlet_isSignal (x)) {
     //
-    t_signal *out = NULL;
-    
     resample_setRatio (&x->vo_resample, downsample, upsample);
 
     if (reblocked) {
     //
-    int parentVectorSize;
-    int parentVectorSizeResampled;
-    int newBufferSize;
-    int oldBufferSize;
-    int newPeriod;
-    int epilogPhase;
-    int blockPhase;
+    int parentVectorSize = 1;
+    int bufferSize, vectorSize = 1;
+    int phaseEpilog;
+    int phaseBlock;
+    int bigPeriod;
+    
+    t_signal *s = NULL;
     
     if (signals) {
-        out                         = signals[object_getIndexOfSignalOutlet (x->vo_outlet)];
-        parentVectorSize            = out->s_vectorSize;
-        parentVectorSizeResampled   = parentVectorSize * upsample / downsample;
-    } else {
-        out                         = NULL;
-        parentVectorSize            = 1;
-        parentVectorSizeResampled   = 1;
+        s = signals[object_getIndexOfSignalOutlet (x->vo_outlet)];
+        parentVectorSize = s->s_vectorSize;
+        vectorSize = parentVectorSize * upsample / downsample;
     }
     
-    newPeriod       = blockSize / parentVectorSizeResampled;
-    newPeriod       = PD_MAX (1, newPeriod);
-    epilogPhase     = phase & (newPeriod - 1);
-    blockPhase      = (phase + period - 1) & (newPeriod - 1) & (-period);
-    newBufferSize   = parentVectorSizeResampled;
+    bigPeriod   = PD_MAX (1, (int)(blockSize / vectorSize));
+    phaseEpilog = (phase) & (bigPeriod - 1);
+    phaseBlock  = (phase + period - 1) & (bigPeriod - 1) & (- period);
     
-    if (newBufferSize < blockSize) { newBufferSize = blockSize; }
-    if (newBufferSize != (oldBufferSize = x->vo_bufferSize)) {
-        t_sample *t = x->vo_buffer;
-        PD_MEMORY_FREE (t);
-        t = (t_sample *)PD_MEMORY_GET (newBufferSize * sizeof (t_sample));
-        //memset (t, 0, newBufferSize * sizeof (t_sample));
-        x->vo_bufferSize = newBufferSize;
-        x->vo_bufferEnd  = t + newBufferSize;
-        x->vo_buffer     = t;
+    bufferSize  = PD_MAX (blockSize, vectorSize);
+    
+    if (bufferSize != x->vo_bufferSize) {
+        PD_MEMORY_FREE (x->vo_buffer);
+        x->vo_bufferSize = bufferSize;
+        x->vo_buffer     = (t_sample *)PD_MEMORY_GET (x->vo_bufferSize * sizeof (t_sample));
+        x->vo_bufferEnd  = x->vo_buffer + bufferSize;
     }
     
-    PD_ASSERT (parentVectorSizeResampled * period <= newBufferSize);
-    
-    x->vo_bufferWrite = x->vo_buffer + parentVectorSizeResampled * blockPhase;
+    x->vo_bufferWrite = x->vo_buffer + (vectorSize * phaseBlock);
+    x->vo_bufferRead  = x->vo_buffer + (vectorSize * phaseEpilog);
     
     if (x->vo_bufferWrite == x->vo_bufferEnd) { x->vo_bufferWrite = x->vo_buffer; }
-    
-    if (period == 1 && frequency > 1) { x->vo_hopSize = parentVectorSizeResampled / frequency; }
+    if (period == 1 && frequency > 1) { x->vo_hopSize = vectorSize / frequency; }
     else { 
-        x->vo_hopSize = period * parentVectorSizeResampled;
+        x->vo_hopSize = period * vectorSize;
     }
-
-    if (signals) {
     
-        x->vo_bufferRead = x->vo_buffer + parentVectorSizeResampled * epilogPhase;
-        
-        if (upsample * downsample == 1) { 
-            dsp_add (voutlet_performEpilog, 3, x, out->s_vector, parentVectorSizeResampled);
-            
-        } else {
-            dsp_add (voutlet_performEpilog, 3, x, NULL, parentVectorSizeResampled);
-            //dsp_add (voutlet_performEpilogWithResampling, 2, x, parentVectorSizeResampled);
-            resample_toDsp (&x->vo_resample, out->s_vector, parentVectorSize, parentVectorSizeResampled);
-        }
-    }
-    //
-    } else if (switchable) {
-    //
     if (signals) {
-        out = signals[object_getIndexOfSignalOutlet (x->vo_outlet)];
-        dsp_addZeroPerform (out->s_vector, out->s_vectorSize);
+    //
+    if (resample_isRequired (&x->vo_resample)) { dsp_add (voutlet_performEpilog, 3, x, NULL, vectorSize); } 
+    else {
+        dsp_add (voutlet_performEpilog, 3, x, s->s_vector, vectorSize);
+    }
+        
+    if (resample_isRequired (&x->vo_resample)) { 
+        resample_toDsp (&x->vo_resample, s->s_vector, parentVectorSize, vectorSize);
     }
     //
+    }
+    //
+    } else if (switchable && signals) {
+        t_signal *s = signals[object_getIndexOfSignalOutlet (x->vo_outlet)];
+        dsp_addZeroPerform (s->s_vector, s->s_vectorSize);
     }
     //
     }

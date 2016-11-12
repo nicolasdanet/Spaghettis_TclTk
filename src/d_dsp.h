@@ -186,7 +186,7 @@ void            voutlet_dspEpilog           (t_voutlet *x,
 void            resample_init               (t_resample *x, t_symbol *type);
 void            resample_free               (t_resample *x);
 void            resample_setRatio           (t_resample *x, int downsample, int upsample);
-int             resample_needResampling     (t_resample *x);
+int             resample_isRequired         (t_resample *x);
 void            resample_fromDsp            (t_resample *x, t_sample *s, int vectorSize, int resampledSize);
 void            resample_toDsp              (t_resample *x, t_sample *s, int vectorSize, int resampledSize);
 

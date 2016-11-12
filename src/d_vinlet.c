@@ -122,7 +122,7 @@ void vinlet_dspProlog (t_vinlet *x,
         x->vi_hopSize = period * vectorSize;
         x->vi_bufferWrite = x->vi_bufferEnd - (x->vi_hopSize - (((phase - 1) & (period - 1)) * vectorSize));
 
-        if (!resample_needResampling (&x->vi_resample)) { t = s->s_vector; }
+        if (!resample_isRequired (&x->vi_resample)) { t = s->s_vector; }
         else {
         //
         resample_fromDsp (&x->vi_resample, s->s_vector, parentVectorSize, vectorSize); 
