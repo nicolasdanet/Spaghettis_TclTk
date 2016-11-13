@@ -53,6 +53,11 @@ int error__options (t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void error_dspLoop (void)
+{
+    post_error (PD_TRANSLATE ("%s: DSP loop"), PD_NAME_LOWERCASE);
+}
+
 void error_stackOverflow (void)
 {
     post_error (PD_TRANSLATE ("%s: stack overflow"), PD_NAME_LOWERCASE);

@@ -24,6 +24,7 @@ int  error__options (t_symbol *s, int argc, t_atom *argv);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void error_dspLoop                          (void);
 void error_stackOverflow                    (void);
 void error_ioStuck                          (void);
 void error_stubNotFound                     (void);
