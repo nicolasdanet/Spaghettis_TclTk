@@ -94,12 +94,6 @@ struct _dspcontext {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void ugen_graphDelete (t_dspcontext *);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void ugen_dspInitialize (void)
 {
     ugen_dspRelease();
@@ -357,7 +351,7 @@ static t_block *ugen_graphGetBlockIfContainsAny (t_dspcontext *context)
     return block;
 }
 
-void ugen_graphCreateMissingSignalsForOutlets (t_dspcontext *context,
+static void ugen_graphCreateMissingSignalsForOutlets (t_dspcontext *context,
     int switchable, 
     int reblocked, 
     int blockSize,
@@ -387,7 +381,7 @@ void ugen_graphCreateMissingSignalsForOutlets (t_dspcontext *context,
     }
 }
 
-void ugen_graphDspProlog (t_dspcontext *context, 
+static void ugen_graphDspProlog (t_dspcontext *context, 
     int switchable,
     int reblocked, 
     int blockSize,
@@ -492,6 +486,65 @@ static void ugen_graphDspMain (t_dspcontext *context, int parentBlockSize, t_flo
     }
 }
 
+static void ugen_graphDspEpilog (t_dspcontext *context,
+    int switchable,
+    int reblocked, 
+    int blockSize,
+    int period, 
+    int frequency,
+    int downsample,
+    int upsample)
+{
+    t_ugenbox *u = NULL;
+    
+    for (u = context->dc_ugens; u; u = u->u_next)
+    {
+        t_pd *zz = &u->u_owner->te_g.g_pd;
+        if (pd_class(zz) == voutlet_class)
+        {
+            t_signal **iosigs = context->dc_ioSignals;
+            if (iosigs) iosigs += context->dc_numberOfInlets;
+            voutlet_dspEpilog((t_voutlet *)zz,
+                iosigs, switchable, reblocked, blockSize, ugen_dspPhase, period, frequency,
+                    downsample, upsample);
+        }
+    }
+}
+
+static void ugen_graphDelete (t_dspcontext *context)
+{
+    while (context->dc_ugens) {
+    //
+    t_ugenbox *u = context->dc_ugens;
+    t_sigoutlet *o = u->u_out;
+    int i;
+    
+    for (i = 0; i < u->u_outSize; i++) {
+    
+        t_sigoutconnect *c = o->o_connections;
+        
+        while (c) {
+            t_sigoutconnect *t = c->oc_next;
+            PD_MEMORY_FREE (c);
+            c = t;
+        }
+        
+        o++;
+    }
+    
+    context->dc_ugens = u->u_next;
+    
+    PD_MEMORY_FREE (u->u_out);
+    PD_MEMORY_FREE (u->u_in);
+    PD_MEMORY_FREE (u);
+    //
+    }
+    
+    PD_ASSERT (ugen_context == context); ugen_context = context->dc_parentContext;
+    
+    PD_MEMORY_FREE (context);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -561,7 +614,8 @@ void ugen_graphClose (t_dspcontext *context)
     int switchable              = 0;
     int reblocked               = parentContext ? 0 : 1;
     int chainBegin;
-    int chainEnd; 
+    int chainEnd;
+    int chainEpilog; 
     
     t_block *block = ugen_graphGetBlockIfContainsAny (context);
         
@@ -612,60 +666,20 @@ void ugen_graphClose (t_dspcontext *context)
     
     chainEnd = pd_this->pd_dspChainSize;
 
-        /* add epilogs for outlets.  */
+    ugen_graphDspEpilog (context,
+        switchable,
+        reblocked,
+        blockSize,
+        period,
+        frequency,
+        downsample,
+        upsample);
 
-    t_ugenbox *u = NULL;
+    chainEpilog = pd_this->pd_dspChainSize;
     
-    for (u = context->dc_ugens; u; u = u->u_next)
-    {
-        t_pd *zz = &u->u_owner->te_g.g_pd;
-        if (pd_class(zz) == voutlet_class)
-        {
-            t_signal **iosigs = context->dc_ioSignals;
-            if (iosigs) iosigs += context->dc_numberOfInlets;
-            voutlet_dspEpilog((t_voutlet *)zz,
-                iosigs, switchable, reblocked, blockSize, ugen_dspPhase, period, frequency,
-                    downsample, upsample);
-        }
-    }
-
-    if (block) { block_setPerformLength (block, chainEnd - chainBegin, pd_this->pd_dspChainSize - chainEnd); }
+    if (block) { block_setPerformLength (block, chainEnd - chainBegin, chainEpilog - chainEnd); }
 
     ugen_graphDelete (context);
-}
-
-static void ugen_graphDelete (t_dspcontext *context)
-{
-    while (context->dc_ugens) {
-    //
-    t_ugenbox *u = context->dc_ugens;
-    t_sigoutlet *o = u->u_out;
-    int i;
-    
-    for (i = 0; i < u->u_outSize; i++) {
-    
-        t_sigoutconnect *c = o->o_connections;
-        
-        while (c) {
-            t_sigoutconnect *t = c->oc_next;
-            PD_MEMORY_FREE (c);
-            c = t;
-        }
-        
-        o++;
-    }
-    
-    context->dc_ugens = u->u_next;
-    
-    PD_MEMORY_FREE (u->u_out);
-    PD_MEMORY_FREE (u->u_in);
-    PD_MEMORY_FREE (u);
-    //
-    }
-    
-    PD_ASSERT (ugen_context == context); ugen_context = context->dc_parentContext;
-    
-    PD_MEMORY_FREE (context);
 }
 
 // -----------------------------------------------------------------------------------------------------------
