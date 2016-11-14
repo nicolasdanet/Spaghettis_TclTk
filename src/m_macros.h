@@ -194,9 +194,13 @@ t_glist *cast_glistChecked                  (t_pd *x);
 #define PD_LOGTEN                           2.302585092994
 #define PD_EPSILON                          1E-9
 
-#define PD_ISPOWER2(v)                      (!((v) & ((v) - 1)))
-#define PD_NEXTPOWER2(v)                    sys_nextPowerOf2 ((unsigned long)(v))
-#define PD_TORADIANS(degrees)               ((PD_PI * (degrees)) / 180.0)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define PD_IS_POWER_2(v)                    (!((v) & ((v) - 1)))
+#define PD_NEXT_POWER_2(v)                  sys_nextPowerOf2 ((unsigned long)(v))
+#define PD_TO_RADIANS(degrees)              ((PD_PI * (degrees)) / 180.0)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

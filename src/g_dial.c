@@ -102,7 +102,7 @@ static int dial_getKnobColor (t_dial *x)
 static double dial_getNeedleAngle (t_dial *x)
 {
     int degrees    = (int)(((double)x->x_position / x->x_steps) * IEM_DIAL_ANGULAR_RANGE);
-    double radians = PD_TORADIANS (PD_CLAMP (degrees, 0, IEM_DIAL_ANGULAR_RANGE) + IEM_DIAL_ANGULAR_OFFSET);
+    double radians = PD_TO_RADIANS (PD_CLAMP (degrees, 0, IEM_DIAL_ANGULAR_RANGE) + IEM_DIAL_ANGULAR_OFFSET);
     return radians;
 }
 

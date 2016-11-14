@@ -82,7 +82,7 @@ void *logger_task (void *dummy)
 
 t_error logger_initializeNative (void)
 {
-    size_t k = PD_NEXTPOWER2 (JACK_LOGGER_BUFFER_SIZE);
+    size_t k = PD_NEXT_POWER_2 (JACK_LOGGER_BUFFER_SIZE);
     char t[PD_STRING] = { 0 };
     t_error err = string_sprintf (t, PD_STRING, "%s/log-XXXXXX", main_directoryExtras->s_name);
     

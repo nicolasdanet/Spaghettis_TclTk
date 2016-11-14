@@ -247,7 +247,7 @@ static void garray_setWithSumOfFourierComponents (t_garray *x,
     numberOfPoints = (numberOfPoints <= 0) ? 512 : numberOfPoints;
     numberOfPoints = PD_MIN (numberOfPoints, 1 << 30);
     
-    if (!PD_ISPOWER2 (numberOfPoints)) { numberOfPoints = (int)PD_NEXTPOWER2 (numberOfPoints); }
+    if (!PD_IS_POWER_2 (numberOfPoints)) { numberOfPoints = (int)PD_NEXT_POWER_2 (numberOfPoints); }
     
     garray_resizeWithInteger (x, numberOfPoints + 3);
     

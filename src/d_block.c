@@ -118,8 +118,8 @@ static void block_set (t_block *x, t_float f1, t_float f2, t_float f3)
     int downsample  = 1;
     int oldState    = dsp_suspend();
     
-    if (blockSize && !PD_ISPOWER2 (blockSize)) { blockSize = PD_NEXTPOWER2 (blockSize); }
-    if (!PD_ISPOWER2 (overlap)) { overlap = PD_NEXTPOWER2 (overlap); }
+    if (blockSize && !PD_IS_POWER_2 (blockSize)) { blockSize = PD_NEXT_POWER_2 (blockSize); }
+    if (!PD_IS_POWER_2 (overlap)) { overlap = PD_NEXT_POWER_2 (overlap); }
     
     if (f3 > 0.0) {
     //
@@ -128,7 +128,7 @@ static void block_set (t_block *x, t_float f1, t_float f2, t_float f3)
         upsample = 1; downsample = (int)(1.0 / f3);
     }
         
-    if (!PD_ISPOWER2 (downsample) || !PD_ISPOWER2 (upsample)) {
+    if (!PD_IS_POWER_2 (downsample) || !PD_IS_POWER_2 (upsample)) {
         warning_invalid (sym_block__tilde__, sym_resampling);
         downsample = 1; upsample = 1;
     }

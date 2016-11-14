@@ -90,6 +90,17 @@ struct _dspcontext {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+typedef void (*t_dsp)       (void *x, void *signals);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define UGEN_DSP(x, s, a)   ((*(t_dsp)class_getMethod (pd_class (x), (s)))((x), (a)))
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 void ugen_dspInitialize (void)
@@ -355,7 +366,7 @@ static void ugen_graphDspMainRecursive (t_dspcontext *context, int switchable, i
         routine must fill in "borrowed" signal outputs in case it's either
         a subcanvas or a signal inlet. */
     
-    dsp_fn (u->u_owner, sym_dsp, signals);
+    UGEN_DSP (u->u_owner, sym_dsp, signals);
     
         /* if any output signals aren't connected to anyone, free them
         now; otherwise they'll either get freed when the reference count

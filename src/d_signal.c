@@ -29,8 +29,8 @@ t_signal *signal_newEmpty (t_float sampleRate)
 
 t_signal *signal_new (int vectorSize, t_float sampleRate)
 {
-    PD_ASSERT (PD_ISPOWER2 (vectorSize)); 
-    PD_ABORT (!PD_ISPOWER2 (vectorSize));
+    PD_ASSERT (PD_IS_POWER_2 (vectorSize)); 
+    PD_ABORT (!PD_IS_POWER_2 (vectorSize));
     
     t_signal *s = (t_signal *)PD_MEMORY_GET (sizeof (t_signal));
     
