@@ -354,8 +354,8 @@ static void ugen_graphDspMainRecursive (t_dspcontext *context, int switchable, i
         /* now call the DSP scheduling routine for the ugen.  This
         routine must fill in "borrowed" signal outputs in case it's either
         a subcanvas or a signal inlet. */
-        
-    mess1(&u->u_owner->te_g.g_pd, sym_dsp, signals);
+    
+    dsp_fn (u->u_owner, sym_dsp, signals);
     
         /* if any output signals aren't connected to anyone, free them
         now; otherwise they'll either get freed when the reference count
