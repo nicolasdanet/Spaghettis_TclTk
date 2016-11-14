@@ -17,82 +17,28 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Note that signals are not freed, but cached to be recycled. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#define SIGNAL_SLOTS    32
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 extern t_pdinstance *pd_this;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_signal *signal_reusable[SIGNAL_SLOTS + 1];         /* Indexed by the vector size (power of two). */
-static t_signal *signal_reusableVectorBorrowed;             /* Doesn't have a proper vector size. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 t_signal *signal_new (int vectorSize, t_float sampleRate)
 {
-    t_signal *s  = NULL;
-    t_signal **t = NULL;
-    
-    PD_ASSERT (math_ilog2 (vectorSize) <= SIGNAL_SLOTS);
     PD_ASSERT (PD_ISPOWER2 (vectorSize)); 
     PD_ABORT (!PD_ISPOWER2 (vectorSize));
     
-    if (!vectorSize) { t = &signal_reusableVectorBorrowed; }
-    else {
-        t = signal_reusable + math_ilog2 (vectorSize);
-    }
+    t_signal *s = (t_signal *)PD_MEMORY_GET (sizeof (t_signal));
     
-    if ((s = *t)) { *t = s->s_nextReusable; }
-    else {
-    //
-    s = (t_signal *)PD_MEMORY_GET (sizeof (t_signal));
+    s->s_sampleRate         = sampleRate;
+    s->s_isVectorBorrowed   = (vectorSize == 0);
+    s->s_vectorSize         = vectorSize;
+    s->s_vector             = vectorSize ? (t_sample *)PD_MEMORY_GET (vectorSize * sizeof (t_sample)) : NULL;
+    s->s_borrowedFrom       = NULL;
+    s->s_next               = pd_this->pd_signals;
     
-    if (vectorSize) {
-        s->s_vector             = (t_sample *)PD_MEMORY_GET (vectorSize * sizeof (t_sample));
-        s->s_isVectorBorrowed   = 0;
-        
-    } else {
-        s->s_vector             = NULL;
-        s->s_isVectorBorrowed   = 1;
-    }
-
-    s->s_nextUsed = pd_this->pd_signals;
     pd_this->pd_signals = s;
-    //
-    }
-    
-    s->s_vectorSize     = vectorSize;
-    s->s_sampleRate     = sampleRate;
-    s->s_count          = 0;
-    s->s_borrowedFrom   = NULL;
     
     return s;
-}
-
-void signal_free (t_signal *s)
-{
-    if (s->s_isVectorBorrowed) {
-
-        t_signal *t = s->s_borrowedFrom;
-        t->s_count--; if (!t->s_count) { signal_free (t); }
-        s->s_nextReusable = signal_reusableVectorBorrowed; signal_reusableVectorBorrowed = s;
-        
-    } else {
-    
-        int n = math_ilog2 (s->s_vectorSize);
-        s->s_nextReusable = signal_reusable[n]; signal_reusable[n] = s;
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -113,21 +59,16 @@ void signal_borrow (t_signal *s, t_signal *toBeBorrowed)
 void signal_clean (void)
 {
     t_signal *s = NULL;
-    int i;
     
     while (s = pd_this->pd_signals) {
     //
-    pd_this->pd_signals = s->s_nextUsed;
+    pd_this->pd_signals = s->s_next;
     
     if (!s->s_isVectorBorrowed) { PD_MEMORY_FREE (s->s_vector); }
     
     PD_MEMORY_FREE (s);
     //
     }
-    
-    for (i = 0; i <= SIGNAL_SLOTS; i++) { signal_reusable[i] = NULL; }
-    
-    signal_reusableVectorBorrowed = NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -18,13 +18,11 @@
 
 struct _signal {
     t_float         s_sampleRate;
-    int             s_count;
     int             s_isVectorBorrowed;
     int             s_vectorSize;
     t_sample        *s_vector;
     struct _signal  *s_borrowedFrom;
-    struct _signal  *s_nextReusable;
-    struct _signal  *s_nextUsed;
+    struct _signal  *s_next;
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -112,7 +110,6 @@ void            dsp_add                     (t_perform f, int n, ...);
 t_signal        *signal_new                 (int blockSize, t_float sampleRate);
 
 void            signal_borrow               (t_signal *s, t_signal *toBeBorrowed);
-void            signal_free                 (t_signal *s);
 void            signal_clean                (void);
 
 // -----------------------------------------------------------------------------------------------------------

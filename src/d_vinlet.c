@@ -131,8 +131,6 @@ void vinlet_dspProlog (t_vinlet *x,
         }
 
         dsp_add (vinlet_performProlog, 3, x, t, vectorSize);
-        
-        if (!s->s_count) { signal_free (s); }
     }
     //
     } else { PD_ASSERT (signals); x->vi_directSignal = signals[object_getIndexOfSignalInlet (x->vi_inlet)]; }

@@ -197,7 +197,6 @@ static void ugen_graphCreateMissingSignalsForOutlets (t_dspcontext *context,
     if (s->s_isVectorBorrowed && !s->s_borrowedFrom) {
         t_signal *o = signal_new (blockSize, sampleRate);
         signal_borrow (s, o);
-        s->s_count++;
         if (zeroed) {
             dsp_addZeroPerform (o->s_vector, o->s_vectorSize);
         }
@@ -320,7 +319,6 @@ static void ugen_graphDspMainRecursive (t_dspcontext *context, int switchable, i
     }
     
     u->u_in[i].i_signal = s;
-    s->s_count = 1;
     //
     }
     //
@@ -333,26 +331,26 @@ static void ugen_graphDspMainRecursive (t_dspcontext *context, int switchable, i
     for (i = 0; i < u->u_inSize; i++) {
         int newrefcount;
         *p = u->u_in[i].i_signal;
-        newrefcount = --(*p)->s_count;
+        //newrefcount = --(*p)->s_count;
 
-        if (doNotFreeSignals)
-            (*p)->s_count++;
-        else if (!newrefcount)
-            signal_free(*p);
+        if (doNotFreeSignals) {
+            // (*p)->s_count++;
+        } else if (!newrefcount) {
+            //signal_free(*p);
+        }
         
         p++;
     }
-    
+
     for (p = signals + u->u_inSize, uout = u->u_out, i = u->u_outSize; i--; p++, uout++)
     {
         if (doNotCreateSignals)
         {
-            *p = uout->o_signal =
-                signal_new(0, context->dc_sampleRate);
+            *p = uout->o_signal = signal_new(0, context->dc_sampleRate);
         }
         else
             *p = uout->o_signal = signal_new(context->dc_blockSize, context->dc_sampleRate);
-        (*p)->s_count = uout->o_numberOfConnections;
+        //(*p)->s_count = uout->o_numberOfConnections;
     }
         /* now call the DSP scheduling routine for the ugen.  This
         routine must fill in "borrowed" signal outputs in case it's either
@@ -364,12 +362,13 @@ static void ugen_graphDspMainRecursive (t_dspcontext *context, int switchable, i
         now; otherwise they'll either get freed when the reference count
         goes back to zero, or even later as explained above. */
 
+    /*
     for (p = signals + u->u_inSize, uout = u->u_out, i = u->u_outSize; i--; p++, uout++)
     {
-        if (!(*p)->s_count)
-            signal_free(*p);
+        if (!(*p)->s_count) { }
+            //signal_free(*p);
     }
-
+    */
         /* pass it on and trip anyone whose last inlet was filled */
     for (uout = u->u_out, i = u->u_outSize; i--; uout++)
     {
@@ -386,8 +385,8 @@ static void ugen_graphDspMainRecursive (t_dspcontext *context, int switchable, i
                 /* if there's already someone here, sum the two */
             if (s2 = uin->i_signal)
             {
-                s1->s_count--;
-                s2->s_count--;
+                //s1->s_count--;
+                //s2->s_count--;
                 //if (!signal_compatible(s1, s2))
                 if (!(s1->s_vectorSize == s2->s_vectorSize && s1->s_sampleRate == s2->s_sampleRate))
                 {
@@ -399,9 +398,9 @@ static void ugen_graphDspMainRecursive (t_dspcontext *context, int switchable, i
                 //s3 = signal_newlike(s1);
                 dsp_addPlusPerform(s1->s_vector, s2->s_vector, s3->s_vector, s1->s_vectorSize);
                 uin->i_signal = s3;
-                s3->s_count = 1;
-                if (!s1->s_count) signal_free(s1);
-                if (!s2->s_count) signal_free(s2);
+                //s3->s_count = 1;
+                //if (!s1->s_count) signal_free(s1);
+                //if (!s2->s_count) signal_free(s2);
             }
             else uin->i_signal = s1;
             uin->i_numberConnected++;
