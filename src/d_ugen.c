@@ -83,8 +83,6 @@ struct _dspcontext {
     t_float                 dc_sampleRate;
     int                     dc_blockSize;
     int                     dc_isTopLevel;
-    int                     dc_isReblocked;
-    int                     dc_isSwitch;
     t_ugenbox               *dc_ugens;
     struct _dspcontext      *dc_parentContext;
     t_signal                **dc_ioSignals;
@@ -199,8 +197,8 @@ static void ugen_graphCreateMissingSignalsForOutlets (t_dspcontext *context,
     if (s->s_isVectorBorrowed && !s->s_borrowedFrom) {
         t_signal *o = signal_new (blockSize, sampleRate);
         signal_borrow (s, o);
-        s->s_count++;                                                       /* ??? */
-        if (zeroed) {                                                       /* ??? */
+        s->s_count++;
+        if (zeroed) {
             dsp_addZeroPerform (o->s_vector, o->s_vectorSize);
         }
     }
@@ -294,104 +292,95 @@ static void ugen_graphDspEpilog (t_dspcontext *context,
     }
 }
 
-static void ugen_graphDspMainRecursive(t_dspcontext *dc, t_ugenbox *u)
+static void ugen_graphDspMainRecursive (t_dspcontext *context, int switchable, int reblocked, t_ugenbox *u)
 {
     t_sigoutlet *uout;
     t_siginlet *uin;
-    t_sigoutconnect *oc, *oc2;
-    t_class *class = pd_class(&u->u_owner->te_g.g_pd);
-    int i, n;
-        /* suppress creating new signals for the outputs of signal
-        inlets and subpatchs; except in the case we're an inlet and "blocking"
-        is set.  We don't yet know if a subcanvas will be "blocking" so there
-        we delay new signal creation, which will be handled by calling
-        signal_borrow in the ugen_graphClose routine below. */
-    int nonewsigs = (class == canvas_class || 
-        (class == vinlet_class) && !(dc->dc_isReblocked));
-        /* when we encounter a subcanvas or a signal outlet, suppress freeing
-        the input signals as they may be "borrowed" for the super or sub
-        patch; same exception as above, but also if we're "switchable" we
-        have to do a copy rather than a borrow.  */
-    int nofreesigs = (class == canvas_class || 
-        (class == voutlet_class) &&  !(dc->dc_isReblocked || dc->dc_isSwitch));
-    t_signal **insig, **outsig, **sig, *s1, *s2, *s3;
-    t_ugenbox *u2;
+
+    t_signal **signals = NULL;
+    t_signal **p = NULL;
+    int i;
+        
+    int doNotCreateSignals = (pd_class (u->u_owner) == canvas_class);
+    int doNotFreeSignals   = (pd_class (u->u_owner) == canvas_class);
     
-    if (0) post("doit %s %d %d", class_getNameAsString(class), nofreesigs,
-        nonewsigs);
-    for (i = 0, uin = u->u_in; i < u->u_inSize; i++, uin++)
-    {
-        if (!uin->i_numberOfConnections)
-        {
-            t_float *scalar;
-            s3 = signal_new(dc->dc_blockSize, dc->dc_sampleRate);
-            /* post("%s: unconnected signal inlet set to zero",
-                class_getNameAsString(u->u_owner->te_g.g_pd)); */
-            if (scalar = object_getSignalValueAtIndex(u->u_owner, i))
-                dsp_add_scalarcopy(scalar, s3->s_vector, s3->s_vectorSize);
-            else
-                dsp_addZeroPerform(s3->s_vector, s3->s_vectorSize);
-            uin->i_signal = s3;
-            s3->s_count = 1;
-        }
+    if (pd_class (u->u_owner) == vinlet_class)  { doNotCreateSignals = !(reblocked); }
+    if (pd_class (u->u_owner) == voutlet_class) { doNotFreeSignals   = !(switchable || reblocked); }
+        
+    for (i = 0; i < u->u_inSize; i++) {
+    //
+    if (u->u_in[i].i_numberOfConnections == 0) {
+    //
+    t_signal *s = signal_new (context->dc_blockSize, context->dc_sampleRate);
+    t_float *f  = object_getSignalValueAtIndex (u->u_owner, i);
+    
+    if (f) { dsp_add_scalarcopy (f, s->s_vector, s->s_vectorSize); }
+    else {
+        dsp_addZeroPerform (s->s_vector, s->s_vectorSize);
     }
-    insig = (t_signal **)PD_MEMORY_GET((u->u_inSize + u->u_outSize) * sizeof(t_signal *));
-    outsig = insig + u->u_inSize;
-    for (sig = insig, uin = u->u_in, i = u->u_inSize; i--; sig++, uin++)
-    {
+    
+    u->u_in[i].i_signal = s;
+    s->s_count = 1;
+    //
+    }
+    //
+    }
+    
+    signals = (t_signal **)PD_MEMORY_GET ((u->u_inSize + u->u_outSize) * sizeof (t_signal *));
+    
+    p = signals;
+    
+    for (i = 0; i < u->u_inSize; i++) {
         int newrefcount;
-        *sig = uin->i_signal;
-        newrefcount = --(*sig)->s_count;
-            /* if the reference count went to zero, we free the signal now,
-            unless it's a subcanvas or outlet; these might keep the
-            signal around to send to objects connected to them.  In this
-            case we increment the reference count; the corresponding decrement
-            is in sig_makereusable(). */
-        if (nofreesigs)
-            (*sig)->s_count++;
+        *p = u->u_in[i].i_signal;
+        newrefcount = --(*p)->s_count;
+
+        if (doNotFreeSignals)
+            (*p)->s_count++;
         else if (!newrefcount)
-            signal_free(*sig);
+            signal_free(*p);
+        
+        p++;
     }
-    for (sig = outsig, uout = u->u_out, i = u->u_outSize; i--; sig++, uout++)
+    
+    for (p = signals + u->u_inSize, uout = u->u_out, i = u->u_outSize; i--; p++, uout++)
     {
-            /* similarly, for outlets of subcanvases we delay creating
-            them; instead we create "borrowed" ones so that the refcount
-            is known.  The subcanvas replaces the fake signal with one showing
-            where the output data actually is, to avoid having to copy it.
-            For any other object, we just allocate a new output vector;
-            since we've already freed the inputs the objects might get called
-            "in place." */
-        if (nonewsigs)
+        if (doNotCreateSignals)
         {
-            *sig = uout->o_signal =
-                signal_new(0, dc->dc_sampleRate);
+            *p = uout->o_signal =
+                signal_new(0, context->dc_sampleRate);
         }
         else
-            *sig = uout->o_signal = signal_new(dc->dc_blockSize, dc->dc_sampleRate);
-        (*sig)->s_count = uout->o_numberOfConnections;
+            *p = uout->o_signal = signal_new(context->dc_blockSize, context->dc_sampleRate);
+        (*p)->s_count = uout->o_numberOfConnections;
     }
         /* now call the DSP scheduling routine for the ugen.  This
         routine must fill in "borrowed" signal outputs in case it's either
         a subcanvas or a signal inlet. */
         
-    mess1(&u->u_owner->te_g.g_pd, sym_dsp, insig);
+    mess1(&u->u_owner->te_g.g_pd, sym_dsp, signals);
     
         /* if any output signals aren't connected to anyone, free them
         now; otherwise they'll either get freed when the reference count
         goes back to zero, or even later as explained above. */
 
-    for (sig = outsig, uout = u->u_out, i = u->u_outSize; i--; sig++, uout++)
+    for (p = signals + u->u_inSize, uout = u->u_out, i = u->u_outSize; i--; p++, uout++)
     {
-        if (!(*sig)->s_count)
-            signal_free(*sig);
+        if (!(*p)->s_count)
+            signal_free(*p);
     }
 
         /* pass it on and trip anyone whose last inlet was filled */
     for (uout = u->u_out, i = u->u_outSize; i--; uout++)
     {
+        t_signal *s1;
+        t_signal *s2;
+        t_signal *s3;
         s1 = uout->o_signal;
+        t_sigoutconnect *oc;
         for (oc = uout->o_connections; oc; oc = oc->oc_next)
         {
+            t_ugenbox *u2;
             u2 = oc->oc_to;
             uin = &u2->u_in[oc->oc_index];
                 /* if there's already someone here, sum the two */
@@ -422,21 +411,28 @@ static void ugen_graphDspMainRecursive(t_dspcontext *dc, t_ugenbox *u)
                 /* if there's more than one, check them all */
             if (u2->u_inSize > 1)
             {
+                int n;
                 for (uin = u2->u_in, n = u2->u_inSize; n--; uin++)
                     if (uin->i_numberConnected < uin->i_numberOfConnections) goto notyet;
             }
                 /* so now we can schedule the ugen.  */
-            ugen_graphDspMainRecursive(dc, u2);
+            ugen_graphDspMainRecursive(context, switchable, reblocked, u2);
         notyet: ;
         }
     }
-    PD_MEMORY_FREE(insig);
+    
+    PD_MEMORY_FREE (signals);
+    
     u->u_done = 1;
 }
 
 /* Topological sort. */
 
-static void ugen_graphDspMain (t_dspcontext *context, int parentBlockSize, t_float parentSampleRate)
+static void ugen_graphDspMain (t_dspcontext *context,
+    int switchable,
+    int reblocked,
+    int parentBlockSize,
+    t_float parentSampleRate)
 {
     t_ugenbox *u = NULL;
     
@@ -450,7 +446,7 @@ static void ugen_graphDspMain (t_dspcontext *context, int parentBlockSize, t_flo
             for (i = 0; i < u->u_inSize; i++) {     
                 if (u->u_in[i].i_numberOfConnections != 0) { k = 0; break; }
             }
-            if (k) { ugen_graphDspMainRecursive (context, u); }
+            if (k) { ugen_graphDspMainRecursive (context, switchable, reblocked, u); }
         }
     }
 
@@ -594,12 +590,10 @@ void ugen_graphClose (t_dspcontext *context)
     //
     }
 
-    context->dc_sampleRate  = sampleRate;
-    context->dc_blockSize   = blockSize;
-    context->dc_isReblocked = reblocked;
-    context->dc_isSwitch    = switchable;
+    context->dc_sampleRate = sampleRate;
+    context->dc_blockSize  = blockSize;
     
-    if (reblocked || switchable) {
+    if (switchable || reblocked) {
     //
     ugen_graphCreateMissingSignalsForOutlets (context, parentBlockSize, parentSampleRate, 0);
     //
@@ -616,11 +610,11 @@ void ugen_graphClose (t_dspcontext *context)
     
     chainBegin = pd_this->pd_dspChainSize;
     
-    if (block && (reblocked || switchable)) { dsp_add (block_performProlog, 1, block); }   
+    if (block && (switchable || reblocked)) { dsp_add (block_performProlog, 1, block); }   
 
-    ugen_graphDspMain (context, parentBlockSize, parentSampleRate);
+    ugen_graphDspMain (context, switchable, reblocked, parentBlockSize, parentSampleRate);
 
-    if (block && (reblocked || switchable)) { dsp_add (block_performEpilog, 1, block); }
+    if (block && (switchable || reblocked)) { dsp_add (block_performEpilog, 1, block); }
     
     chainEnd = pd_this->pd_dspChainSize;
 
