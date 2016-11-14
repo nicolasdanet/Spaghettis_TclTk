@@ -223,12 +223,11 @@ t_int           *perform_upsamplingLinear   (t_int *w);
 void            dsp_addZeroPerform          (t_sample *s, int n);
 void            dsp_addCopyPerform          (t_sample *src, t_sample *dest, int n);
 void            dsp_addPlusPerform          (t_sample *src1, t_sample *src2, t_sample *dest, int n);
+void            dsp_addScalarPerform        (t_float *f, t_sample *dest, int n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-void    dsp_add_scalarcopy  (t_float *in, t_sample *out, int n);
 
 void    pd_fft              (t_float *buffer, int npoints, int inverse);
 

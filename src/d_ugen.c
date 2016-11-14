@@ -312,7 +312,7 @@ static void ugen_graphDspMainRecursive (t_dspcontext *context, int switchable, i
     t_signal *s = signal_new (context->dc_blockSize, context->dc_sampleRate);
     t_float *f  = object_getSignalValueAtIndex (u->u_owner, i);
     
-    if (f) { dsp_add_scalarcopy (f, s->s_vector, s->s_vectorSize); }
+    if (f) { dsp_addScalarPerform (f, s->s_vector, s->s_vectorSize); }
     else {
         dsp_addZeroPerform (s->s_vector, s->s_vectorSize);
     }

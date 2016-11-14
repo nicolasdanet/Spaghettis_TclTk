@@ -22,44 +22,6 @@ typedef struct _sig
     t_float x_f;
 } t_sig;
 
-static t_int *sig_tilde_perform(t_int *w)
-{
-    t_float f = *(t_float *)(w[1]);
-    t_sample *out = (t_sample *)(w[2]);
-    int n = (int)(w[3]);
-    while (n--)
-        *out++ = f; 
-    return (w+4);
-}
-
-static t_int *sig_tilde_perf8(t_int *w)
-{
-    t_float f = *(t_float *)(w[1]);
-    t_sample *out = (t_sample *)(w[2]);
-    int n = (int)(w[3]);
-    
-    for (; n; n -= 8, out += 8)
-    {
-        out[0] = f;
-        out[1] = f;
-        out[2] = f;
-        out[3] = f;
-        out[4] = f;
-        out[5] = f;
-        out[6] = f;
-        out[7] = f;
-    }
-    return (w+4);
-}
-
-void dsp_add_scalarcopy(t_float *in, t_sample *out, int n)
-{
-    if (n&7)
-        dsp_add(sig_tilde_perform, 3, in, out, n);
-    else        
-        dsp_add(sig_tilde_perf8, 3, in, out, n);
-}
-
 static void sig_tilde_float(t_sig *x, t_float f)
 {
     x->x_f = f;
@@ -67,7 +29,8 @@ static void sig_tilde_float(t_sig *x, t_float f)
 
 static void sig_tilde_dsp(t_sig *x, t_signal **sp)
 {
-    dsp_add(sig_tilde_perform, 3, &x->x_f, sp[0]->s_vector, sp[0]->s_vectorSize);
+    dsp_addScalarPerform (&x->x_f, sp[0]->s_vector, sp[0]->s_vectorSize);
+    // dsp_add(sig_tilde_perform, 3, &x->x_f, sp[0]->s_vector, sp[0]->s_vectorSize);
 }
 
 static void *sig_tilde_new(t_float f)
