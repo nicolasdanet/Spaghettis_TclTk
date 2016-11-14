@@ -194,9 +194,8 @@ static void ugen_graphCreateMissingSignalsForOutlets (t_dspcontext *context,
     //
     t_signal *s = (*t);
     
-    if (s->s_isVectorBorrowed && !s->s_borrowedFrom) {
-        t_signal *o = signal_new (blockSize, sampleRate);
-        signal_borrow (s, o);
+    if (signal_isEmpty (s)) {
+        t_signal *o = signal_borrow (s, signal_new (blockSize, sampleRate));
         if (zeroed) {
             dsp_addZeroPerform (o->s_vector, o->s_vectorSize);
         }
@@ -346,7 +345,7 @@ static void ugen_graphDspMainRecursive (t_dspcontext *context, int switchable, i
     {
         if (doNotCreateSignals)
         {
-            *p = uout->o_signal = signal_new(0, context->dc_sampleRate);
+            *p = uout->o_signal = signal_newEmpty (context->dc_sampleRate);
         }
         else
             *p = uout->o_signal = signal_new(context->dc_blockSize, context->dc_sampleRate);
