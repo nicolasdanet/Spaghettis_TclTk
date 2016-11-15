@@ -82,7 +82,6 @@ struct _dspcontext {
     int                     dc_numberOfOutlets;
     t_float                 dc_sampleRate;
     int                     dc_blockSize;
-    int                     dc_isTopLevel;
     t_ugenbox               *dc_ugens;
     struct _dspcontext      *dc_parentContext;
     t_signal                **dc_ioSignals;
@@ -499,19 +498,20 @@ static void ugen_graphDelete (t_dspcontext *context)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Note that an abstraction can be opened as a toplevel patch. */
-
 t_dspcontext *ugen_graphStart (int isTopLevel, t_signal **sp, int m, int n)
 {
     t_dspcontext *context = (t_dspcontext *)PD_MEMORY_GET (sizeof (t_dspcontext));
 
+    PD_ASSERT (!isTopLevel || ugen_context == NULL);
+    
+    /* Note that an abstraction can be opened as a toplevel patch. */
+    
     context->dc_numberOfInlets  = isTopLevel ? 0 : m;
     context->dc_numberOfOutlets = isTopLevel ? 0 : n;
-    context->dc_isTopLevel      = isTopLevel;
     context->dc_ugens           = NULL;
     context->dc_parentContext   = ugen_context;
     context->dc_ioSignals       = sp;
-        
+
     ugen_context = context;
     
     return context;
