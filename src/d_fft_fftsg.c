@@ -68,12 +68,12 @@ static int ooura_init( int n)
     return (1);
 }
 
-PD_DLL void mayer_fht(t_sample *fz, int n)
+void mayer_fht(t_sample *fz, int n)
 {
     post("FHT: not yet implemented");
 }
 
-PD_DLL void mayer_dofft(t_sample *fz1, t_sample *fz2, int n, int sgn)
+void mayer_dofft(t_sample *fz1, t_sample *fz2, int n, int sgn)
 {
     FFTFLT *buf, *fp3;
     int i;
@@ -96,17 +96,17 @@ PD_DLL void mayer_dofft(t_sample *fz1, t_sample *fz2, int n, int sgn)
     }
 }
 
-PD_DLL void mayer_fft(int n, t_sample *fz1, t_sample *fz2)
+void mayer_fft(int n, t_sample *fz1, t_sample *fz2)
 {
     mayer_dofft(fz1, fz2, n, -1);
 }
 
-PD_DLL void mayer_ifft(int n, t_sample *fz1, t_sample *fz2)
+void mayer_ifft(int n, t_sample *fz1, t_sample *fz2)
 {
     mayer_dofft(fz1, fz2, n, 1);
 }
 
-PD_DLL void mayer_realfft(int n, t_sample *fz)
+void mayer_realfft(int n, t_sample *fz)
 {
     FFTFLT *buf, *fp3;
     int i, nover2 = n/2;
@@ -124,7 +124,7 @@ PD_DLL void mayer_realfft(int n, t_sample *fz)
             *fp1 = fp3[0], *fp2 = fp3[1];
 }
 
-PD_DLL void mayer_realifft(int n, t_sample *fz)
+void mayer_realifft(int n, t_sample *fz)
 {
     FFTFLT *buf, *fp3;
     int i, nover2 = n/2;
@@ -144,6 +144,7 @@ PD_DLL void mayer_realifft(int n, t_sample *fz)
 
     /* ancient ISPW-like version, used in fiddle~ and perhaps other externs
     here and there. */
+/*
 void pd_fft(t_float *buf, int npoints, int inverse)
 {
     FFTFLT *buf2 = (FFTFLT *)alloca(2 * npoints * sizeof(FFTFLT)), *bp2;
@@ -157,7 +158,7 @@ void pd_fft(t_float *buf, int npoints, int inverse)
     for (i = 0, bp2 = buf2, fp = buf; i < 2 * npoints; i++, bp2++, fp++)
         *fp = *bp2;
 }
-
+*/
 /****************** end Pd-specific prologue ***********************/
 /*
 Fast Fourier/Cosine/Sine Transform

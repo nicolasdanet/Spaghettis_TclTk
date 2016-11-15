@@ -96,6 +96,12 @@ typedef t_int *(*t_perform) (t_int *w);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define DSP_SEND_SIZE   64
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void            dsp_state                   (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void            dsp_update                  (void);
 int             dsp_suspend                 (void);
@@ -220,6 +226,10 @@ t_int           *perform_upsamplingZero     (t_int *w);
 t_int           *perform_upsamplingHold     (t_int *w);
 t_int           *perform_upsamplingLinear   (t_int *w);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void            dsp_addZeroPerform          (t_sample *s, int n);
 void            dsp_addCopyPerform          (t_sample *src, t_sample *dest, int n);
 void            dsp_addPlusPerform          (t_sample *src1, t_sample *src2, t_sample *dest, int n);
@@ -229,13 +239,10 @@ void            dsp_addScalarPerform        (t_float *f, t_sample *dest, int n);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    pd_fft              (t_float *buffer, int npoints, int inverse);
-
-void    mayer_fht           (t_sample *fz, int n);
-void    mayer_fft           (int n, t_sample *real, t_sample *imag);
-void    mayer_ifft          (int n, t_sample *real, t_sample *imag);
-void    mayer_realfft       (int n, t_sample *real);
-void    mayer_realifft      (int n, t_sample *real);
+void            mayer_fft                   (int n, t_sample *real, t_sample *imaginary);
+void            mayer_ifft                  (int n, t_sample *real, t_sample *imaginary);
+void            mayer_realfft               (int n, t_sample *real);
+void            mayer_realifft              (int n, t_sample *real);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

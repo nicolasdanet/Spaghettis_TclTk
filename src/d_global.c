@@ -10,8 +10,6 @@
 #include "d_dsp.h"
 #include <string.h>
 
-#define DEFSENDVS 64    /* LATER get send to get this from canvas */
-
 /* ----------------------------- send~ ----------------------------- */
 static t_class *sigsend_class;
 
@@ -29,9 +27,9 @@ static void *sigsend_new(t_symbol *s)
     t_sigsend *x = (t_sigsend *)pd_new(sigsend_class);
     pd_bind(&x->x_obj.te_g.g_pd, s);
     x->x_sym = s;
-    x->x_n = DEFSENDVS;
-    x->x_vec = (t_sample *)PD_MEMORY_GET(DEFSENDVS * sizeof(t_sample));
-    //memset(x->x_vec, 0, DEFSENDVS * sizeof(t_sample));
+    x->x_n = DSP_SEND_SIZE;
+    x->x_vec = (t_sample *)PD_MEMORY_GET(DSP_SEND_SIZE * sizeof(t_sample));
+    //memset(x->x_vec, 0, DSP_SEND_SIZE * sizeof(t_sample));
     x->x_f = 0;
     return (x);
 }
@@ -87,7 +85,7 @@ typedef struct _sigreceive
 static void *sigreceive_new(t_symbol *s)
 {
     t_sigreceive *x = (t_sigreceive *)pd_new(sigreceive_class);
-    x->x_n = DEFSENDVS;             /* LATER find our vector size correctly */
+    x->x_n = DSP_SEND_SIZE;             /* LATER find our vector size correctly */
     x->x_sym = s;
     x->x_wherefrom = 0;
     outlet_new(&x->x_obj, &s_signal);
@@ -206,9 +204,9 @@ static void *sigcatch_new(t_symbol *s)
     t_sigcatch *x = (t_sigcatch *)pd_new(sigcatch_class);
     pd_bind(&x->x_obj.te_g.g_pd, s);
     x->x_sym = s;
-    x->x_n = DEFSENDVS;
-    x->x_vec = (t_sample *)PD_MEMORY_GET(DEFSENDVS * sizeof(t_sample));
-    //memset(x->x_vec, 0, DEFSENDVS * sizeof(t_sample));
+    x->x_n = DSP_SEND_SIZE;
+    x->x_vec = (t_sample *)PD_MEMORY_GET(DSP_SEND_SIZE * sizeof(t_sample));
+    //memset(x->x_vec, 0, DSP_SEND_SIZE * sizeof(t_sample));
     outlet_new(&x->x_obj, &s_signal);
     return (x);
 }
@@ -283,7 +281,7 @@ static void *sigthrow_new(t_symbol *s)
     t_sigthrow *x = (t_sigthrow *)pd_new(sigthrow_class);
     x->x_sym = s;
     x->x_whereto  = 0;
-    x->x_n = DEFSENDVS;
+    x->x_n = DSP_SEND_SIZE;
     x->x_f = 0;
     return (x);
 }
