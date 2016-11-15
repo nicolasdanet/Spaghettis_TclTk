@@ -103,6 +103,12 @@ typedef void (*t_dsp)       (void *x, void *signals);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void ugen_graphDspMainRecursive (t_dspcontext *, int, int, t_ugenbox *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void ugen_dspInitialize (void)
 {
     ugen_dspRelease();
@@ -151,7 +157,7 @@ int ugen_getBuildIdentifier (void)
 
 static t_ugenbox *ugen_graphFetchUgen (t_dspcontext *context, t_object *o)
 {
-    t_ugenbox *u = NULL; for (u = context->dc_ugens; u && u->u_owner != o; u = u->u_next); return u;
+    t_ugenbox *u = NULL; for (u = context->dc_ugens; u && u->u_owner != o; u = u->u_next) { }; return u;
 }
 
 static void ugen_graphConnectUgens (t_ugenbox *u1, int m, t_ugenbox *u2, int n)
@@ -169,6 +175,21 @@ static void ugen_graphConnectUgens (t_ugenbox *u1, int m, t_ugenbox *u2, int n)
 
     o->o_numberOfConnections++;
     i->i_numberOfConnections++;
+}
+
+static int ugen_graphIsUgenReady (t_ugenbox *u)
+{
+    if (u->u_done == 1) { return 0; }
+    else {
+        int i;
+        for (i = 0; i < u->u_inSize; i++) {
+            if (u->u_in[i].i_numberConnected < u->u_in[i].i_numberOfConnections) {
+                return 0;
+            }
+        }
+    }
+    
+    return 1;
 }
 
 static t_block *ugen_graphGetBlockIfContainsAny (t_dspcontext *context)
@@ -191,7 +212,7 @@ static t_block *ugen_graphGetBlockIfContainsAny (t_dspcontext *context)
     return block;
 }
 
-static void ugen_graphCreateMissingSignalsForOutlets (t_dspcontext *context,
+static void ugen_graphFillMissingSignalsForOutlets (t_dspcontext *context,
     int blockSize,
     t_float sampleRate, 
     int zeroed)
@@ -301,19 +322,57 @@ static void ugen_graphDspEpilog (t_dspcontext *context,
     }
 }
 
-static void ugen_graphDspMainRecursive (t_dspcontext *context, int switchable, int reblocked, t_ugenbox *u)
+static void ugen_graphDspMainRecursiveChild (t_dspcontext *context,
+    int switchable,
+    int reblocked,
+    t_ugenbox *u)
 {
-    t_sigoutlet *uout;
-    t_siginlet *uin;
-
-    t_signal **signals = NULL;
-    t_signal **p = NULL;
     int i;
-        
-    int makeEmptySignalForOutlets = (pd_class (u->u_owner) == canvas_class);
     
-    if (pd_class (u->u_owner) == vinlet_class) { makeEmptySignalForOutlets = !(reblocked); }
-        
+    for (i = 0; i < u->u_outSize; i++) {
+    //
+    t_signal *parentSignal = u->u_out[i].o_signal;
+    
+    t_sigoutconnect *c = NULL;
+    
+    for (c = u->u_out[i].o_connections; c; c = c->oc_next) {
+    //
+    t_ugenbox   *child       = c->oc_to;
+    t_siginlet  *childInlet  = &child->u_in[c->oc_index];
+    t_signal    *childSignal = childInlet->i_signal;
+    
+    if (childSignal == NULL) { childInlet->i_signal = parentSignal; }
+    else {
+    //
+    t_signal *s = signal_new (parentSignal->s_vectorSize, parentSignal->s_sampleRate);   
+         
+    PD_ASSERT (signal_isCompatibleWith (parentSignal, childSignal));
+    PD_ABORT (!signal_isCompatibleWith (parentSignal, childSignal));
+    
+    dsp_addPlusPerform (parentSignal->s_vector,
+        childSignal->s_vector,
+        s->s_vector,
+        parentSignal->s_vectorSize);
+    
+    childInlet->i_signal = s;
+    //
+    }
+
+    childInlet->i_numberConnected++;
+    
+    if (ugen_graphIsUgenReady (child)) { 
+        ugen_graphDspMainRecursive (context, switchable, reblocked, child); 
+    }
+    //
+    }
+    //
+    }
+}
+
+static void ugen_graphDspMainRecursiveEmptyInlets (t_dspcontext *context, t_ugenbox *u)
+{
+    int i;
+    
     for (i = 0; i < u->u_inSize; i++) {
     //
     if (u->u_in[i].i_numberOfConnections == 0) {
@@ -331,73 +390,44 @@ static void ugen_graphDspMainRecursive (t_dspcontext *context, int switchable, i
     }
     //
     }
+}
+
+static void ugen_graphDspMainRecursive (t_dspcontext *context, int switchable, int reblocked, t_ugenbox *u)
+{
+    t_signal **signals = (t_signal **)PD_MEMORY_GET ((u->u_inSize + u->u_outSize) * sizeof (t_signal *));
+    t_signal **p = signals;
     
-    p = signals = (t_signal **)PD_MEMORY_GET ((u->u_inSize + u->u_outSize) * sizeof (t_signal *));
+    int makeEmptySignalForOutlets = (pd_class (u->u_owner) == canvas_class);
+    int i;
     
-    for (i = 0; i < u->u_inSize; i++)  { *p++ = u->u_in[i].i_signal; }
+    /* Create signals for inlets without any connections. */
+    /* At this point all signals for inlets are created. */
+    
+    ugen_graphDspMainRecursiveEmptyInlets (context, u);
+    
+    for (i = 0; i < u->u_inSize; i++) { PD_ASSERT (u->u_in[i].i_signal != NULL); }
+    for (i = 0; i < u->u_inSize; i++) { *p++ = u->u_in[i].i_signal; }
+    
+    /* Create all signals for outlets. */
+    
+    if (pd_class (u->u_owner) == vinlet_class) { makeEmptySignalForOutlets = !(reblocked); }
+    
     for (i = 0; i < u->u_outSize; i++) {
-    //
-    t_signal *s = signal_new (makeEmptySignalForOutlets ? 0 : context->dc_blockSize, context->dc_sampleRate);
     
-    *p++ = u->u_out[i].o_signal = s;
-    //
+        int vectorSize = makeEmptySignalForOutlets ? 0 : context->dc_blockSize;
+        
+        *p++ = u->u_out[i].o_signal = signal_new (vectorSize, context->dc_sampleRate);
     }
+    
+    /* Call the ugen dsp method. */
     
     UGEN_DSP (u->u_owner, sym_dsp, signals);
 
-    for (uout = u->u_out, i = u->u_outSize; i--; uout++)
-    {
-        t_signal *s1;
-        t_signal *s2;
-        t_signal *s3;
-        s1 = uout->o_signal;
-        t_sigoutconnect *oc;
-        for (oc = uout->o_connections; oc; oc = oc->oc_next)
-        {
-            t_ugenbox *u2;
-            u2 = oc->oc_to;
-            uin = &u2->u_in[oc->oc_index];
-                /* if there's already someone here, sum the two */
-            if (s2 = uin->i_signal)
-            {
-                //s1->s_count--;
-                //s2->s_count--;
-                //if (!signal_compatible(s1, s2))
-                if (!(s1->s_vectorSize == s2->s_vectorSize && s1->s_sampleRate == s2->s_sampleRate))
-                {
-                    post_error ("%s: incompatible signal inputs",
-                        class_getNameAsString(u->u_owner->te_g.g_pd));
-                    return;
-                }
-                s3 = signal_new(s1->s_vectorSize, s1->s_sampleRate);
-                //s3 = signal_newlike(s1);
-                dsp_addPlusPerform(s1->s_vector, s2->s_vector, s3->s_vector, s1->s_vectorSize);
-                uin->i_signal = s3;
-                //s3->s_count = 1;
-                //if (!s1->s_count) signal_free(s1);
-                //if (!s2->s_count) signal_free(s2);
-            }
-            else uin->i_signal = s1;
-            uin->i_numberConnected++;
-                /* if we didn't fill this inlet don't bother yet */
-            if (uin->i_numberConnected < uin->i_numberOfConnections)
-                goto notyet;
-                /* if there's more than one, check them all */
-            if (u2->u_inSize > 1)
-            {
-                int n;
-                for (uin = u2->u_in, n = u2->u_inSize; n--; uin++)
-                    if (uin->i_numberConnected < uin->i_numberOfConnections) goto notyet;
-            }
-                /* so now we can schedule the ugen.  */
-            ugen_graphDspMainRecursive(context, switchable, reblocked, u2);
-        notyet: ;
-        }
-    }
+    u->u_done = 1; PD_MEMORY_FREE (signals);
     
-    PD_MEMORY_FREE (signals);
+    /* Propagate to childs (depth-first). */
     
-    u->u_done = 1;
+    ugen_graphDspMainRecursiveChild (context, switchable, reblocked, u);
 }
 
 /* Topological sort. */
@@ -410,18 +440,10 @@ static void ugen_graphDspMain (t_dspcontext *context,
 {
     t_ugenbox *u = NULL;
     
-    /* Start from ugens with no connection in. */
+    /* Will start from ugens with no connection in. */
     
     for (u = context->dc_ugens; u; u = u->u_next) {
-
-        int i, k = (u->u_done == 0);
-        
-        if (k) {
-            for (i = 0; i < u->u_inSize; i++) {     
-                if (u->u_in[i].i_numberOfConnections != 0) { k = 0; break; }
-            }
-            if (k) { ugen_graphDspMainRecursive (context, switchable, reblocked, u); }
-        }
+        if (ugen_graphIsUgenReady (u)) { ugen_graphDspMainRecursive (context, switchable, reblocked, u); }
     }
 
     /* Check for DSP loops. */
@@ -430,7 +452,7 @@ static void ugen_graphDspMain (t_dspcontext *context,
 
         if (!u->u_done) {
             error_dspLoop();
-            ugen_graphCreateMissingSignalsForOutlets (context, parentBlockSize, parentSampleRate, 1);
+            ugen_graphFillMissingSignalsForOutlets (context, parentBlockSize, parentSampleRate, 1);
             break;
         }
     }
@@ -569,7 +591,7 @@ void ugen_graphClose (t_dspcontext *context)
     
     if (switchable || reblocked) {
     //
-    ugen_graphCreateMissingSignalsForOutlets (context, parentBlockSize, parentSampleRate, 0);
+    ugen_graphFillMissingSignalsForOutlets (context, parentBlockSize, parentSampleRate, 0);
     //
     }
     

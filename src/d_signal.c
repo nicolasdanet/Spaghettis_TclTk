@@ -55,6 +55,11 @@ int signal_isEmpty (t_signal *s)
     return empty;
 }
 
+int signal_isCompatibleWith (t_signal *s1, t_signal *s2)
+{
+    return (s1->s_vectorSize == s2->s_vectorSize && s1->s_sampleRate == s2->s_sampleRate);
+}
+
 t_signal *signal_borrow (t_signal *s, t_signal *toBeBorrowed)
 {
     s->s_borrowedFrom = toBeBorrowed;
