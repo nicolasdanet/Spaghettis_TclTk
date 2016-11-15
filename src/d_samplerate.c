@@ -16,55 +16,103 @@
 #include "g_graphics.h"
 #include "d_dsp.h"
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 extern t_class *block_class;
-static t_class *samplerate_tilde_class;
 
-typedef struct _samplerate
-{
-    t_object x_obj;
-    t_float x_sr;
-    t_glist *x_canvas;
-} t_samplerate;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static void *canvas_getblock (t_class *blockclass, t_glist **canvasp)
+static t_class *samplerate_tilde_class;         /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _samplerate {
+    t_object    x_obj;                          /* Must be the first. */
+    t_glist     *x_owner;
+    t_outlet    *x_outlet;
+    } t_samplerate;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static t_block *samplerate_tilde_getBlockIfContainsAny (t_glist **p)
 {
-    t_glist *canvas = *canvasp;
-    t_gobj *g;
-    void *ret = 0;
-    for (g = canvas->gl_graphics; g; g = g->g_next)
-    {
-        if (g->g_pd == blockclass)
-            ret = g;
+    t_block *block = NULL;
+    t_glist *glist = *p;
+    
+    t_gobj *y = NULL;
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+        if (pd_class (y) == block_class) {
+            if (block) { error_unexpected (sym_samplerate__tilde__, sym_block__tilde__); }
+            else {
+                block = (t_block *)y;
+            }
+        }
     }
-    *canvasp = canvas->gl_parent;
-    return(ret);
+    
+    *p = glist->gl_parent;
+    
+    return block;
 }
 
-static void samplerate_tilde_bang(t_samplerate *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void samplerate_tilde_bang (t_samplerate *x)
 {
-    t_float srate = audio_getSampleRate();
-    t_glist *canvas = x->x_canvas;
-    while (canvas)
-    {
-        t_block *b = (t_block *)canvas_getblock(block_class, &canvas);
-        if (b) 
-            srate *= block_getRatio (b); 
+    t_float sampleRate = audio_getSampleRate();
+    
+    t_glist *glist = x->x_owner;
+    
+    while (glist) {
+        t_block *b = samplerate_tilde_getBlockIfContainsAny (&glist);
+        if (b) { 
+            sampleRate *= block_getRatio (b);
+        }
     }
-    outlet_float(x->x_obj.te_outlet, srate);
+    
+    outlet_float (x->x_outlet, sampleRate);
 }
 
-static void *samplerate_tilde_new(t_symbol *s)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *samplerate_tilde_new (void)
 {
-    t_samplerate *x = (t_samplerate *)pd_new(samplerate_tilde_class);
-    outlet_new(&x->x_obj, &s_float);
-    x->x_canvas = canvas_getCurrent();
-    return (x);
+    t_samplerate *x = (t_samplerate *)pd_new (samplerate_tilde_class);
+    
+    x->x_owner  = canvas_getCurrent();
+    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    
+    return x;
 }
 
-void samplerate_tilde_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void samplerate_tilde_setup (void)
 {
-    samplerate_tilde_class = class_new(sym_samplerate__tilde__,
-        (t_newmethod)samplerate_tilde_new, 0, sizeof(t_samplerate), 0, 0);
-    class_addBang(samplerate_tilde_class, samplerate_tilde_bang);
+    t_class *c = NULL;
+    
+    c = class_new (sym_samplerate__tilde__,
+            (t_newmethod)samplerate_tilde_new,
+            NULL,
+            sizeof (t_samplerate),
+            CLASS_DEFAULT,
+            A_NULL);
+            
+    class_addBang (c, samplerate_tilde_bang);
+    
+    samplerate_tilde_class = c;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

@@ -62,7 +62,7 @@ static void bang_tilde_dsp (t_bang_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *bang_tilde_new (t_symbol *s)
+static void *bang_tilde_new (void)
 {
     t_bang_tilde *x = (t_bang_tilde *)pd_new (bang_tilde_class);
     
