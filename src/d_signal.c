@@ -22,11 +22,6 @@ extern t_pdinstance *pd_this;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_signal *signal_newEmpty (t_float sampleRate)
-{
-    return signal_new (0, sampleRate);
-}
-
 t_signal *signal_new (int vectorSize, t_float sampleRate)
 {
     PD_ASSERT (PD_IS_POWER_2 (vectorSize)); 

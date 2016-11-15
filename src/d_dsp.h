@@ -107,7 +107,6 @@ void            dsp_add                     (t_perform f, int n, ...);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_signal        *signal_newEmpty            (t_float sampleRate);
 t_signal        *signal_new                 (int blockSize, t_float sampleRate);
 t_signal        *signal_borrow              (t_signal *s, t_signal *toBeBorrowed);
 

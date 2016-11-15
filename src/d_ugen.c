@@ -310,11 +310,9 @@ static void ugen_graphDspMainRecursive (t_dspcontext *context, int switchable, i
     t_signal **p = NULL;
     int i;
         
-    int doNotCreateSignals = (pd_class (u->u_owner) == canvas_class);
-    int doNotFreeSignals   = (pd_class (u->u_owner) == canvas_class);
+    int makeEmptySignalForOutlets = (pd_class (u->u_owner) == canvas_class);
     
-    if (pd_class (u->u_owner) == vinlet_class)  { doNotCreateSignals = !(reblocked); }
-    if (pd_class (u->u_owner) == voutlet_class) { doNotFreeSignals   = !(switchable || reblocked); }
+    if (pd_class (u->u_owner) == vinlet_class) { makeEmptySignalForOutlets = !(reblocked); }
         
     for (i = 0; i < u->u_inSize; i++) {
     //
@@ -334,52 +332,19 @@ static void ugen_graphDspMainRecursive (t_dspcontext *context, int switchable, i
     //
     }
     
-    signals = (t_signal **)PD_MEMORY_GET ((u->u_inSize + u->u_outSize) * sizeof (t_signal *));
+    p = signals = (t_signal **)PD_MEMORY_GET ((u->u_inSize + u->u_outSize) * sizeof (t_signal *));
     
-    p = signals;
+    for (i = 0; i < u->u_inSize; i++)  { *p++ = u->u_in[i].i_signal; }
+    for (i = 0; i < u->u_outSize; i++) {
+    //
+    t_signal *s = signal_new (makeEmptySignalForOutlets ? 0 : context->dc_blockSize, context->dc_sampleRate);
     
-    for (i = 0; i < u->u_inSize; i++) {
-        int newrefcount;
-        *p = u->u_in[i].i_signal;
-        //newrefcount = --(*p)->s_count;
-
-        if (doNotFreeSignals) {
-            // (*p)->s_count++;
-        } else if (!newrefcount) {
-            //signal_free(*p);
-        }
-        
-        p++;
+    *p++ = u->u_out[i].o_signal = s;
+    //
     }
-
-    for (p = signals + u->u_inSize, uout = u->u_out, i = u->u_outSize; i--; p++, uout++)
-    {
-        if (doNotCreateSignals)
-        {
-            *p = uout->o_signal = signal_newEmpty (context->dc_sampleRate);
-        }
-        else
-            *p = uout->o_signal = signal_new(context->dc_blockSize, context->dc_sampleRate);
-        //(*p)->s_count = uout->o_numberOfConnections;
-    }
-        /* now call the DSP scheduling routine for the ugen.  This
-        routine must fill in "borrowed" signal outputs in case it's either
-        a subcanvas or a signal inlet. */
     
     UGEN_DSP (u->u_owner, sym_dsp, signals);
-    
-        /* if any output signals aren't connected to anyone, free them
-        now; otherwise they'll either get freed when the reference count
-        goes back to zero, or even later as explained above. */
 
-    /*
-    for (p = signals + u->u_inSize, uout = u->u_out, i = u->u_outSize; i--; p++, uout++)
-    {
-        if (!(*p)->s_count) { }
-            //signal_free(*p);
-    }
-    */
-        /* pass it on and trip anyone whose last inlet was filled */
     for (uout = u->u_out, i = u->u_outSize; i--; uout++)
     {
         t_signal *s1;
