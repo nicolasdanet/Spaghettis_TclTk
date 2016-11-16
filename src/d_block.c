@@ -45,7 +45,6 @@ void block_getParameters (t_block *x,
     int *f,
     int *g,
     int *h,
-    int phase,
     int parentBlockSize,
     t_float parentSampleRate)
 {
@@ -58,8 +57,9 @@ void block_getParameters (t_block *x,
     int downsample      = *g;
     int upsample        = *h;
     
+    int phase = ugen_getPhase();
     int overlap = x->bk_overlap;
-        
+    
     if (x->bk_blockSize > 0) { blockSize = x->bk_blockSize; } 
         
     overlap     = PD_MIN (overlap, blockSize);

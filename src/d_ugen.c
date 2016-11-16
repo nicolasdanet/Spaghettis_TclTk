@@ -150,6 +150,11 @@ int ugen_getBuildIdentifier (void)
     return ugen_buildIdentifier;
 }
 
+int ugen_getPhase (void)
+{
+    return ugen_dspPhase;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -208,6 +213,8 @@ static int ugen_graphIsUgenReady (t_ugenbox *u)
         }
     }
     
+    /* All the parents of the ugen are done. */
+    
     return 1;
 }
 
@@ -235,7 +242,6 @@ static void ugen_graphProlog (t_dspcontext *context,
             switchable,
             reblocked,
             blockSize,
-            ugen_dspPhase,
             period,
             frequency,
             downsample,
@@ -249,7 +255,6 @@ static void ugen_graphProlog (t_dspcontext *context,
             switchable,
             reblocked,
             blockSize,
-            ugen_dspPhase,
             period,
             frequency,
             downsample,
@@ -283,7 +288,6 @@ static void ugen_graphEpilog (t_dspcontext *context,
             switchable,
             reblocked,
             blockSize,
-            ugen_dspPhase,
             period,
             frequency,
             downsample,
@@ -319,7 +323,7 @@ static void ugen_graphMainRecursiveChild (t_dspcontext *context, t_ugenbox *u)
     PD_ASSERT (signal_isCompatibleWith (parentSignal, childSignal));
     PD_ABORT (!signal_isCompatibleWith (parentSignal, childSignal));
     
-    /* Accumulate content if in signals. */
+    /* Accumulate content of in signals. */
     
     dsp_addPlusPerform (parentSignal->s_vector,
         childSignal->s_vector,
@@ -558,7 +562,6 @@ void ugen_graphClose (t_dspcontext *context)
         &frequency,
         &downsample,
         &upsample,
-        ugen_dspPhase,
         parentBlockSize,
         parentSampleRate);
     //

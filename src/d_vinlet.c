@@ -81,7 +81,6 @@ void vinlet_dspProlog (t_vinlet *x,
     int switchable,
     int reblocked,
     int blockSize,
-    int phase,
     int period,
     int frequency,
     int downsample,
@@ -118,6 +117,7 @@ void vinlet_dspProlog (t_vinlet *x,
     else {
 
         t_sample *t = NULL;
+        int phase = ugen_getPhase();
         
         x->vi_hopSize = period * vectorSize;
         x->vi_bufferWrite = x->vi_bufferEnd - (x->vi_hopSize - (((phase - 1) & (period - 1)) * vectorSize));

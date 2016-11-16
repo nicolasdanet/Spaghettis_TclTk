@@ -78,7 +78,6 @@ void voutlet_dspProlog (t_voutlet *x,
     int switchable,
     int reblocked,
     int blockSize,
-    int phase,
     int period,
     int frequency,
     int downsample,
@@ -102,7 +101,6 @@ void voutlet_dspEpilog (t_voutlet *x,
     int switchable,
     int reblocked,
     int blockSize,
-    int phase,
     int period,
     int frequency,
     int downsample,
@@ -114,6 +112,7 @@ void voutlet_dspEpilog (t_voutlet *x,
 
     if (reblocked) {
     //
+    int phase = ugen_getPhase();
     int parentVectorSize = 1;
     int bufferSize, vectorSize = 1;
     int phaseEpilog;

@@ -127,6 +127,7 @@ void            ugen_dspInitialize          (void);
 void            ugen_dspTick                (void);
 void            ugen_dspRelease             (void);
 int             ugen_getBuildIdentifier     (void);
+int             ugen_getPhase               (void);
 
 t_dspcontext    *ugen_graphStart            (int isTopLevel, t_signal **sp, int m, int n);
 
@@ -150,7 +151,6 @@ void            vinlet_dspProlog            (t_vinlet *x,
                                                 int switchable,
                                                 int reblocked,
                                                 int blockSize,
-                                                int phase,
                                                 int period,
                                                 int frequency,
                                                 int downsample,
@@ -166,7 +166,6 @@ void            voutlet_dspProlog           (t_voutlet *x,
                                                 int switchable,
                                                 int reblocked,
                                                 int blockSize,
-                                                int phase,
                                                 int period,
                                                 int frequency,
                                                 int downsample,
@@ -177,7 +176,6 @@ void            voutlet_dspEpilog           (t_voutlet *x,
                                                 int switchable,
                                                 int reblocked,
                                                 int blockSize,
-                                                int phase,
                                                 int period,
                                                 int frequency,
                                                 int downsample,
@@ -212,7 +210,6 @@ void            block_getParameters         (t_block *x,
                                                 int *frequency,
                                                 int *downsample,
                                                 int *upsample,
-                                                int phase,
                                                 int parentBlockSize,
                                                 t_float parentSampleRate);
 
