@@ -57,8 +57,8 @@ void block_getParameters (t_block *x,
     int downsample      = *g;
     int upsample        = *h;
     
-    int phase = ugen_getPhase();
     int overlap = x->bk_overlap;
+    unsigned long phase = ugen_getPhase();
     
     if (x->bk_blockSize > 0) { blockSize = x->bk_blockSize; } 
         
@@ -70,14 +70,16 @@ void block_getParameters (t_block *x,
     sampleRate  = parentSampleRate * overlap * (upsample / downsample);
     switchable  = x->bk_isSwitchObject;
     
+    PD_ASSERT (PD_IS_POWER_2 (period));
+    PD_ASSERT (PD_IS_POWER_2 (frequency));
     PD_ASSERT (period == 1 || frequency == 1);
-    
+        
     reblocked |= (overlap != 1);
     reblocked |= (blockSize != parentBlockSize);
     reblocked |= (downsample != 1);
     reblocked |= (upsample != 1);
     
-    x->bk_phase       = phase & (period - 1);
+    x->bk_phase       = (int)(phase & (unsigned long)(period - 1));
     x->bk_period      = period;
     x->bk_frequency   = frequency;
     x->bk_isReblocked = reblocked;

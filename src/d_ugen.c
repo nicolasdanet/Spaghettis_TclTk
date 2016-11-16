@@ -28,13 +28,13 @@ extern t_class          *block_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_dspcontext     *ugen_context;          /* Shared. */
+static t_dspcontext     *ugen_context;              /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int ugen_dspPhase;                       /* Shared. */
-static int ugen_buildIdentifier;                /* Shared. */
+static unsigned long    ugen_dspPhase;              /* Shared. */
+static int              ugen_buildIdentifier;       /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -150,7 +150,7 @@ int ugen_getBuildIdentifier (void)
     return ugen_buildIdentifier;
 }
 
-int ugen_getPhase (void)
+unsigned long ugen_getPhase (void)
 {
     return ugen_dspPhase;
 }
@@ -528,8 +528,8 @@ void ugen_graphConnect (t_dspcontext *context, t_object *o1, int m, t_object *o2
     }
 }
 
-/* Period is roughly the number of parent's blocks required to filled the child. */
-/* Frequency is roughly the number of child's iterations required to equaled the parent. */
+/* Period is roughly the number of parent's blocks used to filled the child. */
+/* Frequency is roughly the number of child's iterations used to fill the parent. */
 /* Note that it is respectively divided and multiplied in case of overlap. */
 
 void ugen_graphClose (t_dspcontext *context)

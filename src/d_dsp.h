@@ -127,7 +127,7 @@ void            ugen_dspInitialize          (void);
 void            ugen_dspTick                (void);
 void            ugen_dspRelease             (void);
 int             ugen_getBuildIdentifier     (void);
-int             ugen_getPhase               (void);
+unsigned long   ugen_getPhase               (void);
 
 t_dspcontext    *ugen_graphStart            (int isTopLevel, t_signal **sp, int m, int n);
 
