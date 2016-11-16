@@ -19,9 +19,9 @@
 struct _signal {
     t_float         s_sampleRate;
     int             s_vectorSize;
-    int             s_isBorrowed;
+    int             s_hasBorrowed;
     t_sample        *s_vector;
-    struct _signal  *s_borrowedFrom;
+    t_sample        *s_unused;
     struct _signal  *s_next;
     };
 
@@ -116,7 +116,6 @@ void            dsp_add                     (t_perform f, int n, ...);
 t_signal        *signal_new                 (int blockSize, t_float sampleRate);
 t_signal        *signal_borrow              (t_signal *s, t_signal *toBeBorrowed);
 
-int             signal_isEmpty              (t_signal *s);
 int             signal_isCompatibleWith     (t_signal *s1, t_signal *s2);
 void            signal_clean                (void);
 

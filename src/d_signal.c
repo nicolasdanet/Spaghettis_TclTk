@@ -29,12 +29,11 @@ t_signal *signal_new (int vectorSize, t_float sampleRate)
     
     t_signal *s = (t_signal *)PD_MEMORY_GET (sizeof (t_signal));
     
-    s->s_sampleRate     = sampleRate;
-    s->s_isBorrowed     = (vectorSize == 0);
-    s->s_vectorSize     = vectorSize;
-    s->s_vector         = vectorSize ? (t_sample *)PD_MEMORY_GET (vectorSize * sizeof (t_sample)) : NULL;
-    s->s_borrowedFrom   = NULL;
-    s->s_next           = pd_this->pd_signals;
+    s->s_sampleRate = sampleRate;
+    s->s_vectorSize = vectorSize;
+    s->s_vector     = (t_sample *)PD_MEMORY_GET (vectorSize * sizeof (t_sample));
+    s->s_unused     = NULL;
+    s->s_next       = pd_this->pd_signals;
     
     pd_this->pd_signals = s;
     
@@ -45,16 +44,6 @@ t_signal *signal_new (int vectorSize, t_float sampleRate)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int signal_isEmpty (t_signal *s)
-{
-    int empty = (s->s_isBorrowed && !s->s_borrowedFrom);
-    
-    PD_ASSERT (!empty || !s->s_vectorSize);
-    PD_ASSERT (!empty || !s->s_vector);
-    
-    return empty;
-}
-
 int signal_isCompatibleWith (t_signal *s1, t_signal *s2)
 {
     return (s1->s_vectorSize == s2->s_vectorSize && s1->s_sampleRate == s2->s_sampleRate);
@@ -62,9 +51,12 @@ int signal_isCompatibleWith (t_signal *s1, t_signal *s2)
 
 t_signal *signal_borrow (t_signal *s, t_signal *toBeBorrowed)
 {
-    s->s_borrowedFrom = toBeBorrowed;
-    s->s_vectorSize   = toBeBorrowed->s_vectorSize;
-    s->s_vector       = toBeBorrowed->s_vector;
+    PD_ASSERT (s->s_hasBorrowed == 0);
+    
+    s->s_hasBorrowed    = 1;
+    s->s_unused         = s->s_vector;
+    s->s_vectorSize     = toBeBorrowed->s_vectorSize;
+    s->s_vector         = toBeBorrowed->s_vector;
     
     return s;
 }
@@ -81,7 +73,12 @@ void signal_clean (void)
     //
     pd_this->pd_signals = s->s_next;
     
-    if (!s->s_isBorrowed) { PD_MEMORY_FREE (s->s_vector); }
+    if (!s->s_hasBorrowed) { PD_MEMORY_FREE (s->s_vector); }
+    else {
+    //
+    PD_ASSERT (s->s_unused); PD_MEMORY_FREE (s->s_unused);
+    //
+    }
     
     PD_MEMORY_FREE (s);
     //
