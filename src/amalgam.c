@@ -33,10 +33,10 @@
 #include "m_global.c"
 #include "m_setup.c"
 #include "m_dollar.c"
+#include "m_error.c"
 
 #include "m_utils.c"
 #include "m_string.c"
-#include "m_error.c"
 #include "m_math.c"
 #include "m_color.c"
 #include "m_rectangle.c"

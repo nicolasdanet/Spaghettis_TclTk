@@ -81,7 +81,8 @@ void vinlet_dspProlog (t_vinlet *x,
     //
     t_signal *s = NULL;
     int parentVectorSize = 1;
-    int bufferSize, vectorSize = 1;
+    int vectorSize = 1;
+    int bufferSize;
 
     resample_setRatio (&x->vi_resample, downsample, upsample);
     
@@ -104,22 +105,22 @@ void vinlet_dspProlog (t_vinlet *x,
     
     if (!signals) { memset (x->vi_buffer, 0, x->vi_bufferSize * sizeof (t_sample)); }
     else {
+    //
+    t_sample *t = NULL;
+    int onset = (int)((ugen_getPhase() - 1) & (unsigned long)(period - 1));
     
-        t_sample *t = NULL;
-        int phase = ugen_getPhase();    /* ??? */
-        
-        x->vi_hopSize = period * vectorSize;
-        x->vi_bufferWrite = x->vi_bufferEnd - (x->vi_hopSize - (((phase - 1) & (period - 1)) * vectorSize));
+    x->vi_hopSize     = period * vectorSize;
+    x->vi_bufferWrite = x->vi_bufferEnd - (x->vi_hopSize - (onset * vectorSize));
 
-        if (!resample_isRequired (&x->vi_resample)) { t = s->s_vector; }
-        else {
-        //
-        resample_fromDsp (&x->vi_resample, s->s_vector, parentVectorSize, vectorSize); 
-        t = resample_vector (&x->vi_resample);
-        //
-        }
+    PD_ASSERT (x->vi_hopSize <= x->vi_bufferSize);
+    
+    if (!resample_isRequired (&x->vi_resample)) { t = s->s_vector; }    /* Original signal. */
+    else {
+        t = resample_fromDsp (&x->vi_resample, s->s_vector, parentVectorSize, vectorSize);  /* Resampled. */
+    }
 
-        dsp_add (vinlet_performProlog, 3, x, t, vectorSize);
+    dsp_add (vinlet_performProlog, 3, x, t, vectorSize);
+    //
     }
     //
     }

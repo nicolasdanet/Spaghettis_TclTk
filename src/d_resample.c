@@ -26,7 +26,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int resample_setAllocateVector (t_resample *x, t_sample *s, int size, int resampledSize)
+static int resample_setAllocateVectorIfRequired (t_resample *x, t_sample *s, int size, int resampledSize)
 {
     if (size == resampledSize) {
     
@@ -51,7 +51,7 @@ static int resample_setAllocateVector (t_resample *x, t_sample *s, int size, int
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void resample_addPerform (t_resample *x,
+static void resample_addResampling (t_resample *x,
     t_sample *in,
     int inSize,
     t_sample *out,
@@ -132,22 +132,24 @@ int resample_isRequired (t_resample *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void resample_fromDsp (t_resample *x, t_sample *s, int size, int resampledSize)
+t_sample *resample_fromDsp (t_resample *x, t_sample *s, int size, int resampledSize)
 {
-    if (resample_setAllocateVector (x, s, size, resampledSize)) {
-        resample_addPerform (x,
+    if (resample_setAllocateVectorIfRequired (x, s, size, resampledSize)) {
+        resample_addResampling (x,
             s,
             size,
             x->r_vector,
             x->r_vectorSize,
             (x->r_type != RESAMPLE_DEFAULT) ? x->r_type : RESAMPLE_ZERO);
     }
+    
+    return x->r_vector;
 }
 
 void resample_toDsp (t_resample *x, t_sample *s, int size, int resampledSize)
 {
-    if (resample_setAllocateVector (x, s, size, resampledSize)) {
-        resample_addPerform (x,
+    if (resample_setAllocateVectorIfRequired (x, s, size, resampledSize)) {
+        resample_addResampling (x,
             x->r_vector,
             x->r_vectorSize,
             s,

@@ -189,8 +189,8 @@ void            resample_init               (t_resample *x, t_symbol *type);
 void            resample_free               (t_resample *x);
 void            resample_setRatio           (t_resample *x, int downsample, int upsample);
 int             resample_isRequired         (t_resample *x);
-void            resample_fromDsp            (t_resample *x, t_sample *s, int vectorSize, int resampledSize);
 void            resample_toDsp              (t_resample *x, t_sample *s, int vectorSize, int resampledSize);
+t_sample        *resample_fromDsp           (t_resample *x, t_sample *s, int vectorSize, int resampledSize);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
