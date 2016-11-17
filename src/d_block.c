@@ -175,7 +175,7 @@ t_int *block_performProlog (t_int *w)
     //
     }
     
-    return (w + x->bk_allContextLength);                    /* Go to outlet epilog. */
+    return (w + x->bk_allContextLength);    /* Go to the outlet epilog. */
 }
 
 /* Perform the context several time according to the frequency. */
@@ -194,7 +194,7 @@ t_int *block_performEpilog (t_int *w)
     //
     }
     
-    return (w + BLOCK_EPILOG + x->bk_outletEpilogLength);   /* By-pass outlet epilog. */
+    return (w + BLOCK_EPILOG + x->bk_outletEpilogLength);   /* By-pass the outlet epilog. */
 }
 
 // -----------------------------------------------------------------------------------------------------------

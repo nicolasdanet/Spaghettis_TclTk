@@ -544,7 +544,7 @@ void ugen_graphClose (t_dspcontext *context)
     int downsample              = 1;
     int upsample                = 1;
     int switchable              = 0;
-    int reblocked               = parentContext ? 0 : 1;
+    int reblocked               = parentContext ? 0 : 1;    /* ??? */
     int chainBegin;
     int chainEnd;
     int chainEpilog; 
