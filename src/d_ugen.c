@@ -528,8 +528,8 @@ void ugen_graphConnect (t_dspcontext *context, t_object *o1, int m, t_object *o2
     }
 }
 
-/* Period is roughly the number of parent's blocks used to filled the child. */
-/* Frequency is roughly the number of child's iterations used to fill the parent. */
+/* Period (submultiple) is roughly the number of parent's blocks used to filled the child. */
+/* Frequency (supermultiple) is roughly the number of child's iterations used to fill the parent. */
 /* Note that it is respectively divided and multiplied in case of overlap. */
 
 void ugen_graphClose (t_dspcontext *context)

@@ -94,9 +94,9 @@ void block_getParameters (t_block *x,
     *h = upsample;
 }
 
-void block_setPerformLength (t_block *x, int block, int epilog)
+void block_setPerformLength (t_block *x, int context, int epilog)
 {
-    x->bk_allBlockLength = block;
+    x->bk_allContextLength = context;
     x->bk_outletEpilogLength = epilog;
 }
 
@@ -156,6 +156,9 @@ static void block_dsp (t_block *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* Perform the context only one time (the first) over the period. */
+/* By-pass it the rest of the times (or either all the time if it is switched). */
+
 t_int *block_performProlog (t_int *w)
 {
     t_block *x = (t_block *)w[1];
@@ -172,8 +175,10 @@ t_int *block_performProlog (t_int *w)
     //
     }
     
-    return (w + x->bk_allBlockLength);
+    return (w + x->bk_allContextLength);                    /* Go to outlet epilog. */
 }
+
+/* Perform the context several time according to the frequency. */
 
 t_int *block_performEpilog (t_int *w)
 {
@@ -182,14 +187,14 @@ t_int *block_performEpilog (t_int *w)
     if (x->bk_isReblocked) {
     //
     if (x->bk_count - 1) {
-        x->bk_count--; return (w - (x->bk_allBlockLength - (BLOCK_PROLOG + BLOCK_EPILOG)));
+        x->bk_count--; return (w - (x->bk_allContextLength - (BLOCK_PROLOG + BLOCK_EPILOG)));
     } else {
         return (w + BLOCK_EPILOG);
     }
     //
     }
     
-    return (w + BLOCK_EPILOG + x->bk_outletEpilogLength);
+    return (w + BLOCK_EPILOG + x->bk_outletEpilogLength);   /* By-pass outlet epilog. */
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -215,8 +220,8 @@ static void *block_newSwitch (t_float blockSize, t_float overlap, t_float upsamp
 {
     t_block *x = block_new (blockSize, overlap, upsample);
     
-    x->bk_isSwitchObject = 1;
-    x->bk_isSwitchedOn   = 0;
+    x->bk_isSwitchObject    = 1;
+    x->bk_isSwitchedOn      = 0;
     
     return x;
 }

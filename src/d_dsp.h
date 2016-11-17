@@ -82,7 +82,7 @@ typedef struct _block {
     int             bk_isSwitchObject;
     int             bk_isSwitchedOn;
     int             bk_isReblocked;
-    int             bk_allBlockLength;
+    int             bk_allContextLength;
     int             bk_outletEpilogLength;
     int             bk_count;
     } t_block;
@@ -200,7 +200,7 @@ t_int           *block_performProlog        (t_int *w);
 t_int           *block_performEpilog        (t_int *w);
 
 t_float         block_getRatio              (t_block *x);
-void            block_setPerformLength      (t_block *x, int allBlockLength, int epilogLength);
+void            block_setPerformLength      (t_block *x, int allContextLength, int epilogLength);
 void            block_getParameters         (t_block *x, 
                                                 int *switchable,
                                                 int *reblocked,
