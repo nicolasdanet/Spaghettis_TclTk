@@ -134,7 +134,7 @@ void logger_appendStringNative (const char *s)
 
 void logger_appendFloatNative (t_float f)
 {
-
+    char t[LOGGER_FLOAT_STRING] = { 0 }; logger_appendStringNative (logger_stringWithFloat (t, f));
 }
 
 // -----------------------------------------------------------------------------------------------------------
