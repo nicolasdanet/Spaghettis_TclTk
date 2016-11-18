@@ -25,7 +25,7 @@
 
 #if ( PD_WITH_DEBUG && PD_WITH_LOGGER ) 
     #define PD_LOG(s)               logger_appendStringNative (s)
-    #define PD_LOG_NUMBER(f)        logger_appendFloatNative ((t_float)f)
+    #define PD_LOG_NUMBER(f)        logger_appendFloatNative ((double)f)
 #else
     #define PD_LOG(s)
     #define PD_LOG_NUMBER(f)
@@ -43,7 +43,7 @@ void    logger_releaseNative        (void);
 #pragma mark -
 
 void    logger_appendStringNative   (const char *s);
-void    logger_appendFloatNative    (t_float f);
+void    logger_appendFloatNative    (double f);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -55,20 +55,21 @@ void    logger_appendFloatNative    (t_float f);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static inline char *logger_stringWithFloat (char *dest, t_float f)
+static inline char *logger_stringWithFloat (char *dest, double f)
 {
     char digits[] = "0123456789";
     
     int minus        = (f < 0.0);
-    t_float absolute = PD_MIN ((t_float)PD_INT_MAX, PD_ABS (f));
-    int integer      = (int)absolute;
-    int fractional   = (int)((absolute - (t_float)integer) * 1000000.0);
+    double absolute  = PD_ABS (f);
+    double clamped   = PD_MIN (2147483647.0, absolute);
+    long integer     = (long)clamped;
+    long fractional  = (long)(((double)clamped - (double)integer) * 1000000.0);
        
     char *s = dest + (LOGGER_FLOAT_STRING - 1);
     
     *s-- = 0;
     
-    if (fractional) {
+    if (fractional > 0) {
         do {
         //
         *s-- = digits[fractional % 10]; fractional /= 10; 

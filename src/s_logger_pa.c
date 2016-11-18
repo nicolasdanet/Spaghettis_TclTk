@@ -134,7 +134,7 @@ void logger_appendStringNative (const char *s)
     PaUtil_WriteRingBuffer (&logger_ring, s, (ring_buffer_size_t)strlen (s));
 }
 
-void logger_appendFloatNative (t_float f)
+void logger_appendFloatNative (double f)
 {
     char t[LOGGER_FLOAT_STRING] = { 0 }; logger_appendStringNative (logger_stringWithFloat (t, f));
 }

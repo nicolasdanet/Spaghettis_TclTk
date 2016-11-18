@@ -35,7 +35,7 @@ void logger_appendStringNative (const char *s)
 {
 }
 
-void logger_appendFloatNative (t_float f)
+void logger_appendFloatNative (double f)
 {
 }
 
