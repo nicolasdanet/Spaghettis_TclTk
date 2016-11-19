@@ -25,7 +25,7 @@
 
 #if ( PD_WITH_DEBUG && PD_WITH_LOGGER ) 
     #define PD_LOG(s)               logger_appendStringNative (s)
-    #define PD_LOG_NUMBER(f)        logger_appendFloatNative ((double)f)
+    #define PD_LOG_NUMBER(f)        logger_appendFloatNative ((double)(f))
 #else
     #define PD_LOG(s)
     #define PD_LOG_NUMBER(f)

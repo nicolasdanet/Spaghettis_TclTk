@@ -18,6 +18,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+/* Write to buffer. */
+
 static t_int *vinlet_performProlog (t_int *w)
 {
     t_vinlet *x = (t_vinlet *)(w[1]);
@@ -40,6 +42,8 @@ static t_int *vinlet_performProlog (t_int *w)
     
     return (w + 4);
 }
+
+/* Read from buffer. */
 
 static t_int *vinlet_perform (t_int *w)
 {
@@ -107,10 +111,10 @@ void vinlet_dspProlog (t_vinlet *x,
     else {
     //
     t_sample *t = NULL;
-    int onset = (int)((ugen_getPhase() - 1) & (t_phase)(period - 1));
+    int phase = (int)((ugen_getPhase() - 1) & (t_phase)(period - 1));
     
     x->vi_hopSize     = period * vectorSize;
-    x->vi_bufferWrite = x->vi_bufferEnd - (x->vi_hopSize - (onset * vectorSize));
+    x->vi_bufferWrite = x->vi_bufferEnd - (x->vi_hopSize - (phase * vectorSize));
 
     PD_ASSERT (x->vi_hopSize <= x->vi_bufferSize);
     
@@ -134,10 +138,16 @@ void vinlet_dsp (t_vinlet *x, t_signal **sp)
     //
     t_signal *out = sp[0];
             
-    if (x->vi_directSignal) { signal_borrow (out, x->vi_directSignal); }        /* By-pass the inlet. */
+    if (x->vi_directSignal) { signal_borrow (out, x->vi_directSignal); }    /* By-pass the inlet. */
     else {
-        x->vi_bufferRead = x->vi_buffer;
-        dsp_add (vinlet_perform, 3, x, out->s_vector, out->s_vectorSize);
+    //
+    /* No phase required. */ 
+    /* Submulptiple read always completed for each tick. */
+    
+    x->vi_bufferRead = x->vi_buffer;
+    
+    dsp_add (vinlet_perform, 3, x, out->s_vector, out->s_vectorSize);
+    //
     }
     //
     }

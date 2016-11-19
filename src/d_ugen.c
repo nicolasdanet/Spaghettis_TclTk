@@ -19,6 +19,43 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+/*
+    IN BRIEF
+    
+    These routines build a graph (nodes are called ugens) from the DSP objects,
+    sorted next to obtain a linear list of operations to perform. 
+    Memory for signals is allocated according to the interconnections.
+    Once that's been done, the graph is deleted (while the signals remain).
+    
+    Prolog and epilog functions manage nested graphs relation.
+    With resampling and reblocking it could require additional buffers.
+
+*/
+
+/*
+    RESAMPLING
+    
+    In case of resampling techniques, the "block~" object maintains the
+    synchronisation with the parent's DSP process.
+    It does NOT do any computation in its own right.
+    It triggers associated ugens at a supermultiple or submultiple of the upstream.
+    Note that it can also be invoked just as a switch.
+    
+    The overall order of scheduling is,
+
+        - inlet and outlet prologue code (1)
+        - block prologue (2)
+        - the ugens in the graph, including inlets and outlets
+        - block epilogue (2)
+        - outlet epilogue code (2)
+
+    where (1) means, "if reblocked" and (2) means, "if reblocked or switched".
+
+*/
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 extern t_pdinstance     *pd_this;
 extern t_class          *canvas_class;
 extern t_class          *vinlet_class; 
