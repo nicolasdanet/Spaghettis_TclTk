@@ -33,7 +33,7 @@ static t_dspcontext     *ugen_context;              /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static unsigned long    ugen_dspPhase;              /* Shared. */
+static t_phase          ugen_dspPhase;              /* Shared. */
 static int              ugen_buildIdentifier;       /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -150,7 +150,7 @@ int ugen_getBuildIdentifier (void)
     return ugen_buildIdentifier;
 }
 
-unsigned long ugen_getPhase (void)
+t_phase ugen_getPhase (void)
 {
     return ugen_dspPhase;
 }

@@ -58,7 +58,7 @@ void block_getParameters (t_block *x,
     int upsample        = *h;
     
     int overlap = x->bk_overlap;
-    unsigned long phase = ugen_getPhase();
+    t_phase phase = ugen_getPhase();
     
     if (x->bk_blockSize > 0) { blockSize = x->bk_blockSize; } 
         
@@ -79,7 +79,7 @@ void block_getParameters (t_block *x,
     reblocked |= (downsample != 1);
     reblocked |= (upsample != 1);
     
-    x->bk_phase       = (int)(phase & (unsigned long)(period - 1));
+    x->bk_phase       = (int)(phase & (t_phase)(period - 1));
     x->bk_period      = period;
     x->bk_frequency   = frequency;
     x->bk_isReblocked = reblocked;

@@ -94,6 +94,11 @@ typedef t_int *(*t_perform) (t_int *w);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+typedef int64_t t_phase;                    /* Assumed -1 has all bits set. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 #define DSP_SEND_SIZE   64
@@ -127,7 +132,7 @@ void            ugen_dspInitialize          (void);
 void            ugen_dspTick                (void);
 void            ugen_dspRelease             (void);
 int             ugen_getBuildIdentifier     (void);
-unsigned long   ugen_getPhase               (void);
+t_phase         ugen_getPhase               (void);
 
 t_dspcontext    *ugen_graphStart            (int isTopLevel, t_signal **sp, int m, int n);
 
