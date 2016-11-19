@@ -27,7 +27,7 @@
     Memory for signals is allocated according to the interconnections.
     Once that's been done, the graph is deleted (while the signals remain).
     
-    Prolog and epilog functions manage nested graphs relation.
+    Prologue and epilogue functions manage nested graphs relations.
     With resampling and reblocking it could require additional buffers.
 
 */
