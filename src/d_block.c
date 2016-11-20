@@ -175,7 +175,7 @@ t_int *block_performProlog (t_int *w)
     //
     }
     
-    return (w + x->bk_allContextLength);    /* Go to the outlet epilog. */
+    return (w + x->bk_allContextLength);    /* Go to the outlet epilog (to zero the signal out). */
 }
 
 /* Perform the context several time according to the frequency. */

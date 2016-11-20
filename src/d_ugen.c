@@ -567,7 +567,7 @@ void ugen_graphConnect (t_dspcontext *context, t_object *o1, int m, t_object *o2
 
 /* Period (submultiple) is roughly the number of parent's blocks used to filled the child. */
 /* Frequency (supermultiple) is roughly the number of child's iterations used to fill the parent. */
-/* Note that it is respectively divided and multiplied in case of overlap to get the hop size. */
+/* Note that it is respectively divided and multiplied in case of overlap. */
 
 void ugen_graphClose (t_dspcontext *context)
 {
@@ -581,7 +581,7 @@ void ugen_graphClose (t_dspcontext *context)
     int downsample              = 1;
     int upsample                = 1;
     int switchable              = 0;
-    int reblocked               = parentContext ? 0 : 1;    /* ??? */
+    int reblocked               = parentContext ? 0 : 1;
     int chainBegin;
     int chainEnd;
     int chainEpilog; 

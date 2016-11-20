@@ -36,6 +36,8 @@ static t_int *voutlet_perform (t_int *w)
     return (w + 4);
 }
 
+/* Read from buffer. */
+
 static t_int *voutlet_performEpilog (t_int *w)
 {
     t_voutlet *x  = (t_voutlet *)(w[1]);
@@ -64,13 +66,16 @@ void voutlet_dsp (t_voutlet *x, t_signal **sp)
     //
     t_signal *in = sp[0];
     
-    /* Note that the switch is proceeded by the "block~" object. */
+    if (x->vo_copyOut) {    /* Note that the switch off is proceeded by the "block~" object. */
     
-    if (x->vo_copyOut) { dsp_addCopyPerform (in->s_vector, x->vo_directSignal->s_vector, in->s_vectorSize); }
-    else {
+        dsp_addCopyPerform (in->s_vector, x->vo_directSignal->s_vector, in->s_vectorSize);
+        
+        PD_ASSERT (in->s_vectorSize == x->vo_directSignal->s_vectorSize);
+        
+    } else {
         if (x->vo_directSignal) { signal_borrow (x->vo_directSignal, in); }     /* By-pass the outlet. */
         else {
-            dsp_add (voutlet_perform, 3, x, in->s_vector, in->s_vectorSize);
+            dsp_add (voutlet_perform, 3, x, in->s_vector, in->s_vectorSize);    /* Reblocked. */
         }
     }
     //
@@ -91,8 +96,11 @@ void voutlet_dspProlog (t_voutlet *x,
     //
     if (reblocked) { x->vo_directSignal = NULL; }
     else {
-        if (switchable) { x->vo_copyOut = 1; }
-        PD_ASSERT (signals); x->vo_directSignal = signals[object_getIndexOfSignalOutlet (x->vo_outlet)];
+    //
+    if (switchable) { x->vo_copyOut = 1; }
+    PD_ASSERT (signals);
+    x->vo_directSignal = signals[object_getIndexOfSignalOutlet (x->vo_outlet)];
+    //
     }
     //
     }
@@ -112,14 +120,10 @@ void voutlet_dspEpilog (t_voutlet *x,
     //
     if (reblocked) {
     //
-    int phase = ugen_getPhase();    /* ??? */
-    int parentVectorSize = 1;
-    int bufferSize, vectorSize = 1;
-    int phaseEpilog;
-    int phaseBlock;
-    int bigPeriod;
-    
     t_signal *s = NULL;
+    int parentVectorSize = 1;
+    int vectorSize = 1;
+    int bufferSize;
     
     resample_setRatio (&x->vo_resample, downsample, upsample);
     
@@ -129,11 +133,7 @@ void voutlet_dspEpilog (t_voutlet *x,
         vectorSize = parentVectorSize * upsample / downsample;
     }
     
-    bigPeriod   = PD_MAX (1, (int)(blockSize / vectorSize));
-    phaseEpilog = (phase) & (bigPeriod - 1);
-    phaseBlock  = (phase + period - 1) & (bigPeriod - 1) & (- period);
-    
-    bufferSize  = PD_MAX (blockSize, vectorSize);
+    bufferSize = PD_MAX (blockSize, vectorSize);
     
     if (bufferSize != x->vo_bufferSize) {
         PD_MEMORY_FREE (x->vo_buffer);
@@ -141,6 +141,15 @@ void voutlet_dspEpilog (t_voutlet *x,
         x->vo_buffer     = (t_sample *)PD_MEMORY_GET (x->vo_bufferSize * sizeof (t_sample));
         x->vo_bufferEnd  = x->vo_buffer + bufferSize;
     }
+    
+    int phase = ugen_getPhase();    /* ??? */
+    int bigPeriod;
+    int phaseEpilog;
+    int phaseBlock;
+    
+    bigPeriod   = PD_MAX (1, (int)(blockSize / vectorSize));
+    phaseEpilog = (phase) & (bigPeriod - 1);
+    phaseBlock  = (phase + period - 1) & (bigPeriod - 1) & (- period);
     
     x->vo_bufferWrite = x->vo_buffer + (vectorSize * phaseBlock);
     x->vo_bufferRead  = x->vo_buffer + (vectorSize * phaseEpilog);
@@ -164,9 +173,11 @@ void voutlet_dspEpilog (t_voutlet *x,
     //
     }
     //
-    } else if (switchable && signals) {
-        t_signal *s = signals[object_getIndexOfSignalOutlet (x->vo_outlet)];
-        dsp_addZeroPerform (s->s_vector, s->s_vectorSize);
+    } else if (switchable) {
+        if (signals) {
+            t_signal *s = signals[object_getIndexOfSignalOutlet (x->vo_outlet)];
+            dsp_addZeroPerform (s->s_vector, s->s_vectorSize);
+        }
     }
     //
     }
