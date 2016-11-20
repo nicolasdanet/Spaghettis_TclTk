@@ -18,6 +18,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+/* Write to buffer. */
+
 static t_int *voutlet_perform (t_int *w)
 {
     t_voutlet *x = (t_voutlet *)(w[1]);
@@ -62,12 +64,14 @@ void voutlet_dsp (t_voutlet *x, t_signal **sp)
     //
     t_signal *in = sp[0];
     
-    /* Note that the switch is proceeded by the block object. */
+    /* Note that the switch is proceeded by the "block~" object. */
     
     if (x->vo_copyOut) { dsp_addCopyPerform (in->s_vector, x->vo_directSignal->s_vector, in->s_vectorSize); }
-    else if (x->vo_directSignal) { signal_borrow (x->vo_directSignal, in); }
     else {
-        dsp_add (voutlet_perform, 3, x, in->s_vector, in->s_vectorSize);
+        if (x->vo_directSignal) { signal_borrow (x->vo_directSignal, in); }     /* By-pass the outlet. */
+        else {
+            dsp_add (voutlet_perform, 3, x, in->s_vector, in->s_vectorSize);
+        }
     }
     //
     }
@@ -85,8 +89,6 @@ void voutlet_dspProlog (t_voutlet *x,
 {
     if (voutlet_isSignal (x)) {
     //
-    resample_setRatio (&x->vo_resample, downsample, upsample);
-    
     if (reblocked) { x->vo_directSignal = NULL; }
     else {
         if (switchable) { x->vo_copyOut = 1; }
@@ -108,8 +110,6 @@ void voutlet_dspEpilog (t_voutlet *x,
 {
     if (voutlet_isSignal (x)) {
     //
-    resample_setRatio (&x->vo_resample, downsample, upsample);
-
     if (reblocked) {
     //
     int phase = ugen_getPhase();    /* ??? */
@@ -120,6 +120,8 @@ void voutlet_dspEpilog (t_voutlet *x,
     int bigPeriod;
     
     t_signal *s = NULL;
+    
+    resample_setRatio (&x->vo_resample, downsample, upsample);
     
     if (signals) {
         s = signals[object_getIndexOfSignalOutlet (x->vo_outlet)];
