@@ -16,20 +16,20 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef struct _sigcatch {
-    t_object        x_obj;
-    t_symbol        *x_sym;
-    int             x_n;
-    t_sample        *x_vec;
-    } t_sigcatch;
+typedef struct _catch_tilde {
+    t_object    x_obj;              /* Must be the first. */
+    int         x_vectorSize;
+    t_sample    *x_vector;
+    t_symbol    *x_name;
+    } t_catch_tilde;
 
-typedef struct _sigsend {
-    t_object        x_obj;
-    t_symbol        *x_sym;
-    int             x_n;
-    t_sample        *x_vec;
-    t_float         x_f;
-    } t_sigsend;
+typedef struct _send_tilde {
+    t_object    x_obj;              /* Must be the first. */
+    t_float     x_f;
+    int         x_vectorSize;
+    t_sample    *x_vector;
+    t_symbol    *x_name;
+    } t_send_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -24,7 +24,7 @@ typedef struct _sigthrow
     t_object x_obj;
     t_symbol *x_sym;
     t_sample *x_whereto;
-    int x_n;
+    int x_vectorSize;
     t_float x_f;
 } t_sigthrow;
 
@@ -33,7 +33,7 @@ static void *sigthrow_new(t_symbol *s)
     t_sigthrow *x = (t_sigthrow *)pd_new(sigthrow_class);
     x->x_sym = s;
     x->x_whereto  = 0;
-    x->x_n = DSP_SEND_SIZE;
+    x->x_vectorSize = DSP_SEND_SIZE;
     x->x_f = 0;
     return (x);
 }
@@ -58,12 +58,12 @@ static t_int *sigthrow_perform(t_int *w)
 
 static void sigthrow_set(t_sigthrow *x, t_symbol *s)
 {
-    t_sigcatch *catcher = (t_sigcatch *)pd_getThingByClass((x->x_sym = s),
+    t_catch_tilde *catcher = (t_catch_tilde *)pd_getThingByClass((x->x_sym = s),
         sigcatch_class);
     if (catcher)
     {
-        if (catcher->x_n == x->x_n)
-            x->x_whereto = catcher->x_vec;
+        if (catcher->x_vectorSize == x->x_vectorSize)
+            x->x_whereto = catcher->x_vector;
         else
         {
             post_error ("throw~ %s: vector size mismatch", x->x_sym->s_name);
@@ -79,7 +79,7 @@ static void sigthrow_set(t_sigthrow *x, t_symbol *s)
 
 static void sigthrow_dsp(t_sigthrow *x, t_signal **sp)
 {
-    if (sp[0]->s_vectorSize != x->x_n)
+    if (sp[0]->s_vectorSize != x->x_vectorSize)
     {
         post_error ("throw~ %s: vector size mismatch", x->x_sym->s_name);
     }

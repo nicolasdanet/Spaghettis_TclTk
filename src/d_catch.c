@@ -20,11 +20,11 @@ t_class *sigcatch_class;
 
 static void *sigcatch_new(t_symbol *s)
 {
-    t_sigcatch *x = (t_sigcatch *)pd_new(sigcatch_class);
+    t_catch_tilde *x = (t_catch_tilde *)pd_new(sigcatch_class);
     pd_bind(&x->x_obj.te_g.g_pd, s);
-    x->x_sym = s;
-    x->x_n = DSP_SEND_SIZE;
-    x->x_vec = (t_sample *)PD_MEMORY_GET(DSP_SEND_SIZE * sizeof(t_sample));
+    x->x_name = s;
+    x->x_vectorSize = DSP_SEND_SIZE;
+    x->x_vector = (t_sample *)PD_MEMORY_GET(DSP_SEND_SIZE * sizeof(t_sample));
     //memset(x->x_vec, 0, DSP_SEND_SIZE * sizeof(t_sample));
     outlet_new(&x->x_obj, &s_signal);
     return (x);
@@ -56,28 +56,28 @@ static t_int *sigcatch_perf8(t_int *w)
     return (w+4);
 }
 
-static void sigcatch_dsp(t_sigcatch *x, t_signal **sp)
+static void sigcatch_dsp(t_catch_tilde *x, t_signal **sp)
 {
-    if (x->x_n == sp[0]->s_vectorSize)
+    if (x->x_vectorSize == sp[0]->s_vectorSize)
     {
         if(sp[0]->s_vectorSize&7)
-        dsp_add(sigcatch_perform, 3, x->x_vec, sp[0]->s_vector, sp[0]->s_vectorSize);
+        dsp_add(sigcatch_perform, 3, x->x_vector, sp[0]->s_vector, sp[0]->s_vectorSize);
         else
-        dsp_add(sigcatch_perf8, 3, x->x_vec, sp[0]->s_vector, sp[0]->s_vectorSize);
+        dsp_add(sigcatch_perf8, 3, x->x_vector, sp[0]->s_vector, sp[0]->s_vectorSize);
     }
-    else post_error ("sigcatch %s: unexpected vector size", x->x_sym->s_name);
+    else post_error ("sigcatch %s: unexpected vector size", x->x_name->s_name);
 }
 
-static void sigcatch_free(t_sigcatch *x)
+static void sigcatch_free(t_catch_tilde *x)
 {
-    pd_unbind(&x->x_obj.te_g.g_pd, x->x_sym);
-    PD_MEMORY_FREE(x->x_vec);
+    pd_unbind(&x->x_obj.te_g.g_pd, x->x_name);
+    PD_MEMORY_FREE(x->x_vector);
 }
 
 void sigcatch_setup(void)
 {
     sigcatch_class = class_new(sym_catch__tilde__, (t_newmethod)sigcatch_new,
-        (t_method)sigcatch_free, sizeof(t_sigcatch), CLASS_NOINLET, A_DEFSYMBOL, 0);
+        (t_method)sigcatch_free, sizeof(t_catch_tilde), CLASS_NOINLET, A_DEFSYMBOL, 0);
     class_addMethod(sigcatch_class, (t_method)sigcatch_dsp,
         sym_dsp, A_CANT, 0);
     class_setHelpName(sigcatch_class, sym_throw__tilde__);

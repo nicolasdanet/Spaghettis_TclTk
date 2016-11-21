@@ -28,13 +28,13 @@ typedef struct _sigreceive
     t_object x_obj;
     t_symbol *x_sym;
     t_sample *x_wherefrom;
-    int x_n;
+    int x_vectorSize;
 } t_sigreceive;
 
 static void *sigreceive_new(t_symbol *s)
 {
     t_sigreceive *x = (t_sigreceive *)pd_new(sigreceive_class);
-    x->x_n = DSP_SEND_SIZE;             /* LATER find our vector size correctly */
+    x->x_vectorSize = DSP_SEND_SIZE;             /* LATER find our vector size correctly */
     x->x_sym = s;
     x->x_wherefrom = 0;
     outlet_new(&x->x_obj, &s_signal);
@@ -88,12 +88,12 @@ static t_int *sigreceive_perf8(t_int *w)
 
 static void sigreceive_set(t_sigreceive *x, t_symbol *s)
 {
-    t_sigsend *sender = (t_sigsend *)pd_getThingByClass((x->x_sym = s),
+    t_send_tilde *sender = (t_send_tilde *)pd_getThingByClass((x->x_sym = s),
         sigsend_class);
     if (sender)
     {
-        if (sender->x_n == x->x_n)
-            x->x_wherefrom = sender->x_vec;
+        if (sender->x_vectorSize == x->x_vectorSize)
+            x->x_wherefrom = sender->x_vector;
         else
         {
             post_error ("receive~ %s: vector size mismatch", x->x_sym->s_name);
@@ -109,7 +109,7 @@ static void sigreceive_set(t_sigreceive *x, t_symbol *s)
 
 static void sigreceive_dsp(t_sigreceive *x, t_signal **sp)
 {
-    if (sp[0]->s_vectorSize != x->x_n)
+    if (sp[0]->s_vectorSize != x->x_vectorSize)
     {
         post_error ("receive~ %s: vector size mismatch", x->x_sym->s_name);
     }

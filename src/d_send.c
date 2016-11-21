@@ -20,11 +20,11 @@ t_class *sigsend_class;
 
 static void *sigsend_new(t_symbol *s)
 {
-    t_sigsend *x = (t_sigsend *)pd_new(sigsend_class);
+    t_send_tilde *x = (t_send_tilde *)pd_new(sigsend_class);
     pd_bind(&x->x_obj.te_g.g_pd, s);
-    x->x_sym = s;
-    x->x_n = DSP_SEND_SIZE;
-    x->x_vec = (t_sample *)PD_MEMORY_GET(DSP_SEND_SIZE * sizeof(t_sample));
+    x->x_name = s;
+    x->x_vectorSize = DSP_SEND_SIZE;
+    x->x_vector = (t_sample *)PD_MEMORY_GET(DSP_SEND_SIZE * sizeof(t_sample));
     //memset(x->x_vec, 0, DSP_SEND_SIZE * sizeof(t_sample));
     x->x_f = 0;
     return (x);
@@ -44,25 +44,25 @@ static t_int *sigsend_perform(t_int *w)
     return (w+4);
 }
 
-static void sigsend_dsp(t_sigsend *x, t_signal **sp)
+static void sigsend_dsp(t_send_tilde *x, t_signal **sp)
 {
-    if (x->x_n == sp[0]->s_vectorSize)
-        dsp_add(sigsend_perform, 3, sp[0]->s_vector, x->x_vec, sp[0]->s_vectorSize);
-    else post_error ("sigsend %s: unexpected vector size", x->x_sym->s_name);
+    if (x->x_vectorSize == sp[0]->s_vectorSize)
+        dsp_add(sigsend_perform, 3, sp[0]->s_vector, x->x_vector, sp[0]->s_vectorSize);
+    else post_error ("sigsend %s: unexpected vector size", x->x_name->s_name);
 }
 
-static void sigsend_free(t_sigsend *x)
+static void sigsend_free(t_send_tilde *x)
 {
-    pd_unbind(&x->x_obj.te_g.g_pd, x->x_sym);
-    PD_MEMORY_FREE(x->x_vec);
+    pd_unbind(&x->x_obj.te_g.g_pd, x->x_name);
+    PD_MEMORY_FREE(x->x_vector);
 }
 
 void sigsend_setup(void)
 {
     sigsend_class = class_new(sym_send__tilde__, (t_newmethod)sigsend_new,
-        (t_method)sigsend_free, sizeof(t_sigsend), 0, A_DEFSYMBOL, 0);
+        (t_method)sigsend_free, sizeof(t_send_tilde), 0, A_DEFSYMBOL, 0);
     class_addCreator((t_newmethod)sigsend_new, sym_s__tilde__, A_DEFSYMBOL, 0);
-    CLASS_SIGNAL(sigsend_class, t_sigsend, x_f);
+    CLASS_SIGNAL(sigsend_class, t_send_tilde, x_f);
     class_addMethod(sigsend_class, (t_method)sigsend_dsp,
         sym_dsp, A_CANT, 0);
 }
