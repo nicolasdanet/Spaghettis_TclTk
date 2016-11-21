@@ -16,11 +16,11 @@
 #include "d_global.h"
 
 /* ----------------------------- catch~ ----------------------------- */
-t_class *sigcatch_class;
+t_class *catch_tilde_class;
 
 static void *sigcatch_new(t_symbol *s)
 {
-    t_catch_tilde *x = (t_catch_tilde *)pd_new(sigcatch_class);
+    t_catch_tilde *x = (t_catch_tilde *)pd_new(catch_tilde_class);
     pd_bind(&x->x_obj.te_g.g_pd, s);
     x->x_name = s;
     x->x_vectorSize = DSP_SEND_SIZE;
@@ -76,11 +76,11 @@ static void sigcatch_free(t_catch_tilde *x)
 
 void sigcatch_setup(void)
 {
-    sigcatch_class = class_new(sym_catch__tilde__, (t_newmethod)sigcatch_new,
+    catch_tilde_class = class_new(sym_catch__tilde__, (t_newmethod)sigcatch_new,
         (t_method)sigcatch_free, sizeof(t_catch_tilde), CLASS_NOINLET, A_DEFSYMBOL, 0);
-    class_addMethod(sigcatch_class, (t_method)sigcatch_dsp,
+    class_addMethod(catch_tilde_class, (t_method)sigcatch_dsp,
         sym_dsp, A_CANT, 0);
-    class_setHelpName(sigcatch_class, sym_throw__tilde__);
+    class_setHelpName(catch_tilde_class, sym_throw__tilde__);
 }
 
 // -----------------------------------------------------------------------------------------------------------

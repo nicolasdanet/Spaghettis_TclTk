@@ -15,35 +15,61 @@
 #include "d_dsp.h"
 #include "d_global.h"
 
-extern t_class *sigcatch_class;
-/* ----------------------------- throw~ ----------------------------- */
-static t_class *sigthrow_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct _sigthrow
-{
-    t_object x_obj;
-    t_symbol *x_sym;
-    t_sample *x_whereto;
-    int x_vectorSize;
-    t_float x_f;
-} t_sigthrow;
+extern t_class *catch_tilde_class;
 
-static void *sigthrow_new(t_symbol *s)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_class *throw_tilde_class;          /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _throw_tilde {
+    t_object    x_obj;                      /* Must be the first. */
+    t_float     x_f;
+    int         x_vectorSize;
+    t_sample    *x_vector;
+    t_symbol    *x_name;
+    } t_throw_tilde;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void throw_tilde_set (t_throw_tilde *x, t_symbol *s)
 {
-    t_sigthrow *x = (t_sigthrow *)pd_new(sigthrow_class);
-    x->x_sym = s;
-    x->x_whereto  = 0;
-    x->x_vectorSize = DSP_SEND_SIZE;
-    x->x_f = 0;
-    return (x);
+    t_catch_tilde *catcher = (t_catch_tilde *)pd_getThingByClass((x->x_name = s), catch_tilde_class);
+    if (catcher)
+    {
+        if (catcher->x_vectorSize == x->x_vectorSize)
+            x->x_vector = catcher->x_vector;
+        else
+        {
+            post_error ("throw~ %s: vector size mismatch", x->x_name->s_name);
+            x->x_vector = 0;
+        }
+    }
+    else
+    {
+        post_error ("throw~ %s: no matching catch", x->x_name->s_name);
+        x->x_vector = 0;
+    }
 }
 
-static t_int *sigthrow_perform(t_int *w)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static t_int *throw_tilde_perform(t_int *w)
 {
-    t_sigthrow *x = (t_sigthrow *)(w[1]);
+    t_throw_tilde *x = (t_throw_tilde *)(w[1]);
     t_sample *in = (t_sample *)(w[2]);
     int n = (int)(w[3]);
-    t_sample *out = x->x_whereto;
+    t_sample *out = x->x_vector;
     if (out)
     {
         while (n--)
@@ -56,50 +82,59 @@ static t_int *sigthrow_perform(t_int *w)
     return (w+4);
 }
 
-static void sigthrow_set(t_sigthrow *x, t_symbol *s)
-{
-    t_catch_tilde *catcher = (t_catch_tilde *)pd_getThingByClass((x->x_sym = s),
-        sigcatch_class);
-    if (catcher)
-    {
-        if (catcher->x_vectorSize == x->x_vectorSize)
-            x->x_whereto = catcher->x_vector;
-        else
-        {
-            post_error ("throw~ %s: vector size mismatch", x->x_sym->s_name);
-            x->x_whereto = 0;
-        }
-    }
-    else
-    {
-        post_error ("throw~ %s: no matching catch", x->x_sym->s_name);
-        x->x_whereto = 0;
-    }
-}
-
-static void sigthrow_dsp(t_sigthrow *x, t_signal **sp)
+static void throw_tilde_dsp(t_throw_tilde *x, t_signal **sp)
 {
     if (sp[0]->s_vectorSize != x->x_vectorSize)
     {
-        post_error ("throw~ %s: vector size mismatch", x->x_sym->s_name);
+        post_error ("throw~ %s: vector size mismatch", x->x_name->s_name);
     }
     else
     {
-        sigthrow_set(x, x->x_sym);
-        dsp_add(sigthrow_perform, 3,
+        throw_tilde_set(x, x->x_name);
+        dsp_add(throw_tilde_perform, 3,
             x, sp[0]->s_vector, sp[0]->s_vectorSize);
     }
 }
 
-void sigthrow_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *throw_tilde_new (t_symbol *s)
 {
-    sigthrow_class = class_new(sym_throw__tilde__, (t_newmethod)sigthrow_new, 0,
-        sizeof(t_sigthrow), 0, A_DEFSYMBOL, 0);
-    class_addMethod(sigthrow_class, (t_method)sigthrow_set, sym_set,
-        A_SYMBOL, 0);
-    CLASS_SIGNAL(sigthrow_class, t_sigthrow, x_f);
-    class_addMethod(sigthrow_class, (t_method)sigthrow_dsp,
-        sym_dsp, A_CANT, 0);
+    t_throw_tilde *x = (t_throw_tilde *)pd_new (throw_tilde_class);
+    
+    x->x_f           = 0.0;
+    x->x_vectorSize  = DSP_SEND_SIZE;
+    x->x_vector      = NULL;
+    x->x_name        = s;
+
+    return x;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void throw_tilde_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_throw__tilde__,
+            (t_newmethod)throw_tilde_new,
+            NULL,
+            sizeof (t_throw_tilde),
+            CLASS_DEFAULT,
+            A_DEFSYMBOL,
+            A_NULL);
+        
+    CLASS_SIGNAL (c, t_throw_tilde, x_f);
+    
+    class_addDSP (c, throw_tilde_dsp);
+    
+    class_addMethod (c, (t_method)throw_tilde_set, sym_set, A_SYMBOL, A_NULL);
+        
+    throw_tilde_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
