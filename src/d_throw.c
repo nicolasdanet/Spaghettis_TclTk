@@ -42,21 +42,16 @@ typedef struct _throw_tilde {
 
 static void throw_tilde_set (t_throw_tilde *x, t_symbol *s)
 {
-    t_catch_tilde *catcher = (t_catch_tilde *)pd_getThingByClass((x->x_name = s), catch_tilde_class);
-    if (catcher)
-    {
-        if (catcher->x_vectorSize == x->x_vectorSize)
-            x->x_vector = catcher->x_vector;
-        else
-        {
-            post_error ("throw~ %s: vector size mismatch", x->x_name->s_name);
-            x->x_vector = 0;
+    t_catch_tilde *catcher = (t_catch_tilde *)pd_getThingByClass ((x->x_name = s), catch_tilde_class);
+    
+    x->x_vector = NULL;
+    
+    if (!catcher) { error_canNotFind (sym_throw__tilde__, x->x_name); }
+    else {
+        if (catcher->x_vectorSize == x->x_vectorSize) { x->x_vector = catcher->x_vector; }
+        else {
+            error_mismatch (sym_throw__tilde__, sym_size);
         }
-    }
-    else
-    {
-        post_error ("throw~ %s: no matching catch", x->x_name->s_name);
-        x->x_vector = 0;
     }
 }
 
@@ -64,35 +59,25 @@ static void throw_tilde_set (t_throw_tilde *x, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_int *throw_tilde_perform(t_int *w)
+static t_int *throw_tilde_perform (t_int *w)
 {
     t_throw_tilde *x = (t_throw_tilde *)(w[1]);
     t_sample *in = (t_sample *)(w[2]);
     int n = (int)(w[3]);
+    
     t_sample *out = x->x_vector;
-    if (out)
-    {
-        while (n--)
-        {
-            *out += (PD_BIG_OR_SMALL(*in) ? 0 : *in);
-            out++;
-            in++;
-        }
-    }
-    return (w+4);
+    
+    if (out) { while (n--) { *out += (PD_BIG_OR_SMALL (*in) ? 0.0 : *in); out++; in++; } }
+    
+    return (w + 4);
 }
 
-static void throw_tilde_dsp(t_throw_tilde *x, t_signal **sp)
+static void throw_tilde_dsp (t_throw_tilde *x, t_signal **sp)
 {
-    if (sp[0]->s_vectorSize != x->x_vectorSize)
-    {
-        post_error ("throw~ %s: vector size mismatch", x->x_name->s_name);
-    }
-    else
-    {
-        throw_tilde_set(x, x->x_name);
-        dsp_add(throw_tilde_perform, 3,
-            x, sp[0]->s_vector, sp[0]->s_vectorSize);
+    if (sp[0]->s_vectorSize != x->x_vectorSize) { error_mismatch (sym_throw__tilde__, sym_size); }
+    else {
+        throw_tilde_set (x, x->x_name);
+        dsp_add (throw_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
     }
 }
 
