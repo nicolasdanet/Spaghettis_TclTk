@@ -19,6 +19,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 /* Write to buffer. */
+/* Notice that samples are accumulate (required in case of overlap). */
 
 static t_int *voutlet_perform (t_int *w)
 {
@@ -28,7 +29,7 @@ static t_int *voutlet_perform (t_int *w)
     
     t_sample *out  = x->vo_bufferWrite;
     t_sample *next = out + x->vo_hopSize;
-
+    
     while (n--) { *out += *in; out++; in++; if (out == x->vo_bufferEnd) { out = x->vo_buffer; } }
     
     x->vo_bufferWrite = (next >= x->vo_bufferEnd) ? x->vo_buffer : next;
@@ -37,6 +38,7 @@ static t_int *voutlet_perform (t_int *w)
 }
 
 /* Read from buffer. */
+/* Notice that samples are zeroed (same reason as above). */
 
 static t_int *voutlet_performEpilog (t_int *w)
 {
@@ -142,17 +144,21 @@ void voutlet_dspEpilog (t_voutlet *x,
         x->vo_bufferEnd  = x->vo_buffer + bufferSize;
     }
     
-    int phase = ugen_getPhase();    /* ??? */
-    int bigPeriod;
-    int phaseEpilog;
-    int phaseBlock;
+    {
     
-    bigPeriod   = PD_MAX (1, (int)(blockSize / vectorSize));
-    phaseEpilog = (phase) & (bigPeriod - 1);
-    phaseBlock  = (phase + period - 1) & (bigPeriod - 1) & (- period);
+    t_phase phase   = ugen_getPhase();
+    int bigPeriod   = PD_MAX (1, (int)(blockSize / vectorSize));
+    int phaseRead   = (int)((phase) & (t_phase)(bigPeriod - 1));
+    int phaseWrite  = (int)((phase + period - 1) & (t_phase)(- period) & (t_phase)(bigPeriod - 1));
     
-    x->vo_bufferWrite = x->vo_buffer + (vectorSize * phaseBlock);
-    x->vo_bufferRead  = x->vo_buffer + (vectorSize * phaseEpilog);
+    /* Variable above is the multiple of the hop size (modulo the window period). */
+    /* http://stackoverflow.com/a/1766566 */
+    /* Note that ~(n - 1) is equal to (-n) for power of 2 (assume two's complement). */
+    
+    x->vo_bufferRead  = x->vo_buffer + (vectorSize * phaseRead);
+    x->vo_bufferWrite = x->vo_buffer + (vectorSize * phaseWrite);
+    
+    }
     
     if (x->vo_bufferWrite == x->vo_bufferEnd) { x->vo_bufferWrite = x->vo_buffer; }
     if (period == 1 && frequency > 1) { x->vo_hopSize = vectorSize / frequency; }

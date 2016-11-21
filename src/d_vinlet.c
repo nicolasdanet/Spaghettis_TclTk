@@ -142,7 +142,7 @@ void vinlet_dsp (t_vinlet *x, t_signal **sp)
     else {
     //
     /* No phase required. */ 
-    /* Submultiple read always completed for each tick. */
+    /* Submultiple read is always completed at each tick. */
     
     x->vi_bufferRead = x->vi_buffer;
     
