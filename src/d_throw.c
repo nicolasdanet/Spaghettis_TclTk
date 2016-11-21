@@ -13,6 +13,7 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "d_dsp.h"
+#include "d_global.h"
 
 extern t_class *sigcatch_class;
 /* ----------------------------- throw~ ----------------------------- */

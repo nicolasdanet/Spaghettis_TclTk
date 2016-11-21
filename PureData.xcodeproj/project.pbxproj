@@ -638,6 +638,7 @@
 		37E0BC361C53E0B700114412 /* h_pathlist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = h_pathlist.c; path = src/h_pathlist.c; sourceTree = "<group>"; };
 		37E3E9651C5E1EDE00D9717B /* s_priority.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_priority.c; path = src/s_priority.c; sourceTree = "<group>"; };
 		37E3EB9B1C5F6ACA00D9717B /* s_receiver.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_receiver.c; path = src/s_receiver.c; sourceTree = "<group>"; };
+		37EC36CB1DE32CCC0081F054 /* d_global.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_global.h; path = src/d_global.h; sourceTree = "<group>"; };
 		37ED6A041D2CFD00007EC73D /* g_array.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_array.c; path = src/g_array.c; sourceTree = "<group>"; };
 		37ED6A051D2CFD00007EC73D /* g_word.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_word.c; path = src/g_word.c; sourceTree = "<group>"; };
 		37ED6A501D2D038B007EC73D /* g_gpointer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_gpointer.c; path = src/g_gpointer.c; sourceTree = "<group>"; };
@@ -916,6 +917,7 @@
 		3722C5361C4F925600D2BF6F /* Control */ = {
 			isa = PBXGroup;
 			children = (
+				378232301D6C49C300C128AD /* x_control.h */,
 				37AEFD551DB5182A0039FB59 /* Shared */,
 				37AEFD541DB518100039FB59 /* Objects */,
 			);
@@ -1242,7 +1244,6 @@
 		37AEFD551DB5182A0039FB59 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				378232301D6C49C300C128AD /* x_control.h */,
 				378232431D6C4A3300C128AD /* x_textbuffer.c */,
 				378232A21D6C50D600C128AD /* x_textclient.c */,
 				375D72E61D86A5F000D079B1 /* x_arrayclient.c */,
@@ -1303,6 +1304,7 @@
 		37C000571DE2FE4B00F90584 /* Global */ = {
 			isa = PBXGroup;
 			children = (
+				37EC36CB1DE32CCC0081F054 /* d_global.h */,
 				37C000541DE2FE1B00F90584 /* d_throw.c */,
 				37C000821DE3053200F90584 /* d_catch.c */,
 				37C000A61DE3070D00F90584 /* d_send.c */,
