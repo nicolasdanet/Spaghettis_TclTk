@@ -920,17 +920,7 @@
 			isa = PBXGroup;
 			children = (
 				376962D01DBFAF50001B91B5 /* d_dsp.h */,
-				3770ADFF1DC2396E00ADAE26 /* d_dsp.c */,
-				3770AE3A1DC23D2000ADAE26 /* d_signal.c */,
-				378971BE1C4F716700263434 /* d_ugen.c */,
-				370934811CC6887300827F75 /* d_canvas.c */,
-				37B79AFA1DCB775900EB423B /* d_vinlet.c */,
-				37B79B491DCB7E0300EB423B /* d_voutlet.c */,
-				372BDF761DCF36D00045ECE8 /* d_adc.c */,
-				378971B31C4F716700263434 /* d_dac.c */,
-				378971BC1C4F716700263434 /* d_resample.c */,
-				3770AD891DC2338300ADAE26 /* d_block.c */,
-				3769632F1DBFB4C4001B91B5 /* d_perform.c */,
+				37C000261DE2FBF800F90584 /* Graph */,
 				37B1AA491DC1EDE70017355A /* Objects */,
 			);
 			name = DSP;
@@ -1276,6 +1266,24 @@
 				378971B51C4F716700263434 /* d_fft_fftsg.c */,
 			);
 			name = Objects;
+			sourceTree = "<group>";
+		};
+		37C000261DE2FBF800F90584 /* Graph */ = {
+			isa = PBXGroup;
+			children = (
+				3770ADFF1DC2396E00ADAE26 /* d_dsp.c */,
+				3770AE3A1DC23D2000ADAE26 /* d_signal.c */,
+				378971BE1C4F716700263434 /* d_ugen.c */,
+				370934811CC6887300827F75 /* d_canvas.c */,
+				37B79AFA1DCB775900EB423B /* d_vinlet.c */,
+				37B79B491DCB7E0300EB423B /* d_voutlet.c */,
+				372BDF761DCF36D00045ECE8 /* d_adc.c */,
+				378971B31C4F716700263434 /* d_dac.c */,
+				378971BC1C4F716700263434 /* d_resample.c */,
+				3770AD891DC2338300ADAE26 /* d_block.c */,
+				3769632F1DBFB4C4001B91B5 /* d_perform.c */,
+			);
+			name = Graph;
 			sourceTree = "<group>";
 		};
 		37CD71BA1D9A9DDF00A61BD3 /* Atom */ = {
