@@ -17,36 +17,60 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 extern t_class *send_tilde_class;
-/* ----------------------------- receive~ ----------------------------- */
-static t_class *sigreceive_class;
 
-typedef struct _sigreceive
-{
-    t_object x_obj;
-    t_symbol *x_sym;
-    t_sample *x_wherefrom;
-    int x_vectorSize;
-} t_sigreceive;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static void *sigreceive_new(t_symbol *s)
+static t_class *receive_tilde_class;       /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _receive_tilde {
+    t_object    x_obj;
+    int         x_vectorSize;
+    t_sample    *x_vector;
+    t_symbol    *x_name;
+    t_outlet    *x_outlet;
+    } t_receive_tilde;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void receive_tilde_set(t_receive_tilde *x, t_symbol *s)
 {
-    t_sigreceive *x = (t_sigreceive *)pd_new(sigreceive_class);
-    x->x_vectorSize = DSP_SEND_SIZE;             /* LATER find our vector size correctly */
-    x->x_sym = s;
-    x->x_wherefrom = 0;
-    outlet_new(&x->x_obj, &s_signal);
-    return (x);
+    t_send_tilde *sender = (t_send_tilde *)pd_getThingByClass((x->x_name = s),
+        send_tilde_class);
+    if (sender)
+    {
+        if (sender->x_vectorSize == x->x_vectorSize)
+            x->x_vector = sender->x_vector;
+        else
+        {
+            post_error ("receive~ %s: vector size mismatch", x->x_name->s_name);
+            x->x_vector = 0;
+        }
+    }
+    else
+    {
+        post_error ("receive~ %s: no matching send", x->x_name->s_name);
+        x->x_vector = 0;
+    }
 }
 
-static t_int *sigreceive_perform(t_int *w)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static t_int *receive_tilde_perform(t_int *w)
 {
-    t_sigreceive *x = (t_sigreceive *)(w[1]);
+    t_receive_tilde *x = (t_receive_tilde *)(w[1]);
     t_sample *out = (t_sample *)(w[2]);
     int n = (int)(w[3]);
-    t_sample *in = x->x_wherefrom;
+    t_sample *in = x->x_vector;
     if (in)
     {
         while (n--)
@@ -60,81 +84,48 @@ static t_int *sigreceive_perform(t_int *w)
     return (w+4);
 }
 
-/* tb: vectorized receive function */
-static t_int *sigreceive_perf8(t_int *w)
-{
-    t_sigreceive *x = (t_sigreceive *)(w[1]);
-    t_sample *out = (t_sample *)(w[2]);
-    int n = (int)(w[3]);
-    t_sample *in = x->x_wherefrom;
-    if (in)
-    {
-        for (; n; n -= 8, in += 8, out += 8)
-        {
-            out[0] = in[0]; out[1] = in[1]; out[2] = in[2]; out[3] = in[3]; 
-            out[4] = in[4]; out[5] = in[5]; out[6] = in[6]; out[7] = in[7]; 
-        }
-    }
-    else
-    {
-        for (; n; n -= 8, in += 8, out += 8)
-        {
-            out[0] = 0; out[1] = 0; out[2] = 0; out[3] = 0; 
-            out[4] = 0; out[5] = 0; out[6] = 0; out[7] = 0; 
-        }
-    }
-    return (w+4);
-}
-
-static void sigreceive_set(t_sigreceive *x, t_symbol *s)
-{
-    t_send_tilde *sender = (t_send_tilde *)pd_getThingByClass((x->x_sym = s),
-        send_tilde_class);
-    if (sender)
-    {
-        if (sender->x_vectorSize == x->x_vectorSize)
-            x->x_wherefrom = sender->x_vector;
-        else
-        {
-            post_error ("receive~ %s: vector size mismatch", x->x_sym->s_name);
-            x->x_wherefrom = 0;
-        }
-    }
-    else
-    {
-        post_error ("receive~ %s: no matching send", x->x_sym->s_name);
-        x->x_wherefrom = 0;
-    }
-}
-
-static void sigreceive_dsp(t_sigreceive *x, t_signal **sp)
+static void receive_tilde_dsp(t_receive_tilde *x, t_signal **sp)
 {
     if (sp[0]->s_vectorSize != x->x_vectorSize)
     {
-        post_error ("receive~ %s: vector size mismatch", x->x_sym->s_name);
+        post_error ("receive~ %s: vector size mismatch", x->x_name->s_name);
     }
     else
     {
-        sigreceive_set(x, x->x_sym);
-        if (sp[0]->s_vectorSize&7)
-            dsp_add(sigreceive_perform, 3,
-                x, sp[0]->s_vector, sp[0]->s_vectorSize);
-        else dsp_add(sigreceive_perf8, 3,
-            x, sp[0]->s_vector, sp[0]->s_vectorSize);
+        receive_tilde_set(x, x->x_name);
+        dsp_add(receive_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
     }
 }
 
-void sigreceive_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *receive_tilde_new(t_symbol *s)
 {
-    sigreceive_class = class_new(sym_receive__tilde__,
-        (t_newmethod)sigreceive_new, 0,
-        sizeof(t_sigreceive), 0, A_DEFSYMBOL, 0);
-    class_addCreator((t_newmethod)sigreceive_new, sym_r__tilde__, A_DEFSYMBOL, 0);
-    class_addMethod(sigreceive_class, (t_method)sigreceive_set, sym_set,
+    t_receive_tilde *x = (t_receive_tilde *)pd_new(receive_tilde_class);
+    x->x_vectorSize = DSP_SEND_SIZE;             /* LATER find our vector size correctly */
+    x->x_name = s;
+    x->x_vector = 0;
+    outlet_new(&x->x_obj, &s_signal);
+    return (x);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void receive_tilde_setup(void)
+{
+    receive_tilde_class = class_new(sym_receive__tilde__,
+        (t_newmethod)receive_tilde_new, 0,
+        sizeof(t_receive_tilde), 0, A_DEFSYMBOL, 0);
+    class_addCreator((t_newmethod)receive_tilde_new, sym_r__tilde__, A_DEFSYMBOL, 0);
+    class_addMethod(receive_tilde_class, (t_method)receive_tilde_set, sym_set,
         A_SYMBOL, 0);
-    class_addMethod(sigreceive_class, (t_method)sigreceive_dsp,
+    class_addMethod(receive_tilde_class, (t_method)receive_tilde_dsp,
         sym_dsp, A_CANT, 0);
-    class_setHelpName(sigreceive_class, sym_send__tilde__);
+    class_setHelpName(receive_tilde_class, sym_send__tilde__);
 }
 
 // -----------------------------------------------------------------------------------------------------------
