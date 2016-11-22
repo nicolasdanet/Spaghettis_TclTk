@@ -67,7 +67,7 @@ static t_int *throw_tilde_perform (t_int *w)
     
     t_sample *out = x->x_vector;
     
-    if (out) { while (n--) { *out += (PD_BIG_OR_SMALL (*in) ? 0.0 : *in); out++; in++; } }
+    if (out) { while (n--) { *out += *in; out++; in++; } }
     
     return (w + 4);
 }

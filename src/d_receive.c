@@ -19,7 +19,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-extern t_class *sigsend_class;
+extern t_class *send_tilde_class;
 /* ----------------------------- receive~ ----------------------------- */
 static t_class *sigreceive_class;
 
@@ -89,7 +89,7 @@ static t_int *sigreceive_perf8(t_int *w)
 static void sigreceive_set(t_sigreceive *x, t_symbol *s)
 {
     t_send_tilde *sender = (t_send_tilde *)pd_getThingByClass((x->x_sym = s),
-        sigsend_class);
+        send_tilde_class);
     if (sender)
     {
         if (sender->x_vectorSize == x->x_vectorSize)
