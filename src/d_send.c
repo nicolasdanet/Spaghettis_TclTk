@@ -22,28 +22,12 @@ t_class *send_tilde_class;              /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-/*
-static t_int *send_tilde_perform(t_int *w)
-{
-    t_sample *in = (t_sample *)(w[1]);
-    t_sample *out = (t_sample *)(w[2]);
-    int n = (int)(w[3]);
-    while (n--)
-    {
-        *out = (PD_BIG_OR_SMALL(*in) ? 0 : *in);
-        out++;
-        in++;
-    }
-    return (w+4);
-}
-*/
 
 static void send_tilde_dsp (t_send_tilde *x, t_signal **sp)
 {
     if (x->x_vectorSize != sp[0]->s_vectorSize) { error_mismatch (sym_send__tilde__, sym_size); }
     else {
         dsp_addCopyPerform (sp[0]->s_vector, x->x_vector, sp[0]->s_vectorSize);
-        //dsp_add (send_tilde_perform, 3, sp[0]->s_vector, x->x_vector, sp[0]->s_vectorSize);
     }
 }
 
@@ -76,7 +60,7 @@ static void send_tilde_free (t_send_tilde *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void send_tilde_setup(void)
+void send_tilde_setup (void)
 {
     t_class *c = NULL;
     
