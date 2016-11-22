@@ -186,7 +186,6 @@ static t_int *perform_scalar (t_int *w)
 #pragma mark -
 
 /* SSE welcomed in the future. */
-/* Also consider restrict aliasing for optimizations. */
 
 /* < https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions > */
 
@@ -223,14 +222,23 @@ static t_int *vPerform_copy (t_int *w)
     
     while (n) {
     //
-    s2[0] = s1[0];
-    s2[1] = s1[1];
-    s2[2] = s1[2];
-    s2[3] = s1[3];
-    s2[4] = s1[4];
-    s2[5] = s1[5];
-    s2[6] = s1[6];
-    s2[7] = s1[7];
+    t_sample f0 = s1[0];
+    t_sample f1 = s1[1];
+    t_sample f2 = s1[2];
+    t_sample f3 = s1[3];
+    t_sample f4 = s1[4];
+    t_sample f5 = s1[5];
+    t_sample f6 = s1[6];
+    t_sample f7 = s1[7];
+    
+    s2[0] = f0;
+    s2[1] = f1;
+    s2[2] = f2;
+    s2[3] = f3;
+    s2[4] = f4;
+    s2[5] = f5;
+    s2[6] = f6;
+    s2[7] = f7;
     
     n -= 8; 
     s1 += 8;
@@ -251,14 +259,23 @@ static t_int *vPerform_copyZero (t_int *w)
     
     while (n) {
     //
-    s2[0] = s1[0];
-    s2[1] = s1[1];
-    s2[2] = s1[2];
-    s2[3] = s1[3];
-    s2[4] = s1[4];
-    s2[5] = s1[5];
-    s2[6] = s1[6];
-    s2[7] = s1[7];
+    t_sample f0 = s1[0];
+    t_sample f1 = s1[1];
+    t_sample f2 = s1[2];
+    t_sample f3 = s1[3];
+    t_sample f4 = s1[4];
+    t_sample f5 = s1[5];
+    t_sample f6 = s1[6];
+    t_sample f7 = s1[7];
+    
+    s2[0] = f0;
+    s2[1] = f1;
+    s2[2] = f2;
+    s2[3] = f3;
+    s2[4] = f4;
+    s2[5] = f5;
+    s2[6] = f6;
+    s2[7] = f7;
 
     s1[0] = 0;
     s1[1] = 0;
