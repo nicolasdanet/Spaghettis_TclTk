@@ -184,7 +184,7 @@ void d_fft_setup            (void);
 void d_filter_setup         (void);
 void sigsend_setup          (void);
 void sigreceive_setup       (void);
-void sigcatch_setup         (void);
+void catch_tilde_setup      (void);
 void throw_tilde_setup      (void);
 void d_math_setup           (void);
 void print_tilde_setup      (void);
@@ -343,7 +343,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     d_filter_setup();
     sigsend_setup();
     sigreceive_setup();
-    sigcatch_setup();
+    catch_tilde_setup();
     throw_tilde_setup();
     d_math_setup();
     print_tilde_setup();

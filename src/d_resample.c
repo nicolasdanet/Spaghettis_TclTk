@@ -59,7 +59,8 @@ static void resample_addResampling (t_resample *x,
     int type)
 {
     PD_ASSERT (inSize != outSize);
-
+    PD_ASSERT (in != out);
+    
     if (inSize > outSize) {
     //
     PD_ASSERT (!(inSize % outSize));
