@@ -101,6 +101,12 @@ typedef int64_t t_phase;                    /* Assumed -1 has all bits set (two'
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define PD_RESTRICTED                       t_sample* __restrict__
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void            dsp_state                   (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void            dsp_update                  (void);
 int             dsp_suspend                 (void);
