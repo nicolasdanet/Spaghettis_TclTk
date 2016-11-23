@@ -101,7 +101,15 @@ typedef int64_t t_phase;                    /* Assumed -1 has all bits set (two'
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define PD_RESTRICTED                       t_sample* __restrict__
+#if ( PD_GCC || PD_CLANG )
+
+    #define PD_RESTRICTED                   t_sample* __restrict__
+
+#else
+
+    #define PD_RESTRICTED                   t_sample*
+
+#endif
 
 /* < http://cellperformance.beyond3d.com/articles/2006/05/demystifying-the-restrict-keyword.html > */
 

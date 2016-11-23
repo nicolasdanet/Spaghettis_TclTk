@@ -23,7 +23,7 @@
 static t_int *vinlet_performProlog (t_int *w)
 {
     t_vinlet *x = (t_vinlet *)(w[1]);
-    t_sample *in = (t_sample *)(w[2]);
+    PD_RESTRICTED in = (t_sample *)(w[2]);
     int n = (int)(w[3]);
     
     t_sample *out = x->vi_bufferWrite;
@@ -48,7 +48,7 @@ static t_int *vinlet_performProlog (t_int *w)
 static t_int *vinlet_perform (t_int *w)
 {
     t_vinlet *x = (t_vinlet *)(w[1]);
-    t_sample *out = (t_sample *)(w[2]);
+    PD_RESTRICTED out = (t_sample *)(w[2]);
     int n = (int)(w[3]);
     
     t_sample *in = x->vi_bufferRead;
