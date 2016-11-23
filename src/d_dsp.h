@@ -103,6 +103,8 @@ typedef int64_t t_phase;                    /* Assumed -1 has all bits set (two'
 
 #define PD_RESTRICTED                       t_sample* __restrict__
 
+/* < http://cellperformance.beyond3d.com/articles/2006/05/demystifying-the-restrict-keyword.html > */
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -223,10 +225,11 @@ void            block_getParameters         (t_block *x,
 #pragma mark -
 
 void            dsp_addZeroPerform          (t_sample *s, int n);
-void            dsp_addCopyPerform          (t_sample *src, t_sample *dest, int n);
-void            dsp_addCopyZeroPerform      (t_sample *src, t_sample *dest, int n);
 void            dsp_addPlusPerform          (t_sample *src1, t_sample *src2, t_sample *dest, int n);
 void            dsp_addScalarPerform        (t_float *f, t_sample *dest, int n);
+
+void            dsp_addCopyPerform          (PD_RESTRICTED src, PD_RESTRICTED dest, int n);
+void            dsp_addCopyZeroPerform      (PD_RESTRICTED src, PD_RESTRICTED dest, int n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

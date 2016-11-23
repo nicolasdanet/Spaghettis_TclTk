@@ -21,11 +21,8 @@
 
 /* < https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions > */
 
-/* < http://cellperformance.beyond3d.com/articles/2006/05/demystifying-the-restrict-keyword.html > */
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 static t_int *perform_zero (t_int *w)
 {
@@ -41,8 +38,8 @@ static t_int *perform_zero (t_int *w)
 
 static t_int *perform_copy (t_int *w)
 {
-    t_sample *s1 = (t_sample *)(w[1]);
-    t_sample *s2 = (t_sample *)(w[2]);
+    PD_RESTRICTED s1 = (t_sample *)(w[1]);
+    PD_RESTRICTED s2 = (t_sample *)(w[2]);
     int n = (int)(w[3]);
     
     while (n--) { *s2 = *s1; s2++; s1++; }
@@ -54,8 +51,8 @@ static t_int *perform_copy (t_int *w)
 
 static t_int *perform_copyZero (t_int *w)
 {
-    t_sample *s1 = (t_sample *)(w[1]);
-    t_sample *s2 = (t_sample *)(w[2]);
+    PD_RESTRICTED s1 = (t_sample *)(w[1]);
+    PD_RESTRICTED s2 = (t_sample *)(w[2]);
     int n = (int)(w[3]);
     
     while (n--) { *s2 = *s1; *s1 = 0; s2++; s1++; }
@@ -126,8 +123,8 @@ static t_int *vPerform_zero (t_int *w)
 
 static t_int *vPerform_copy (t_int *w)
 {
-    t_sample *s1 = (t_sample *)(w[1]);
-    t_sample *s2 = (t_sample *)(w[2]);
+    PD_RESTRICTED s1 = (t_sample *)(w[1]);
+    PD_RESTRICTED s2 = (t_sample *)(w[2]);
     int n = (int)(w[3]);
     
     while (n) {
@@ -163,8 +160,8 @@ static t_int *vPerform_copy (t_int *w)
 
 static t_int *vPerform_copyZero (t_int *w)
 {
-    t_sample *s1 = (t_sample *)(w[1]);
-    t_sample *s2 = (t_sample *)(w[2]);
+    PD_RESTRICTED s1 = (t_sample *)(w[1]);
+    PD_RESTRICTED s2 = (t_sample *)(w[2]);
     int n = (int)(w[3]);
     
     while (n) {
@@ -294,7 +291,7 @@ void dsp_addZeroPerform (t_sample *s, int n)
 
 /* No aliasing. */
 
-void dsp_addCopyPerform (t_sample *src, t_sample *dest, int n)
+void dsp_addCopyPerform (PD_RESTRICTED src, PD_RESTRICTED dest, int n)
 {
     PD_ASSERT (n > 0);
     PD_ASSERT (src != dest);
@@ -307,7 +304,7 @@ void dsp_addCopyPerform (t_sample *src, t_sample *dest, int n)
 
 /* No aliasing. */
 
-void dsp_addCopyZeroPerform (t_sample *src, t_sample *dest, int n)
+void dsp_addCopyZeroPerform (PD_RESTRICTED src, PD_RESTRICTED dest, int n)
 {
     PD_ASSERT (n > 0);
     PD_ASSERT (src != dest);
@@ -323,7 +320,6 @@ void dsp_addCopyZeroPerform (t_sample *src, t_sample *dest, int n)
 void dsp_addPlusPerform (t_sample *src1, t_sample *src2, t_sample *dest, int n)
 {
     PD_ASSERT (n > 0);
-    PD_ASSERT (src1 != src2);
     
     if (n & 7) { dsp_add (perform_plus, 4, src1, src2, dest, n); }
     else {      
