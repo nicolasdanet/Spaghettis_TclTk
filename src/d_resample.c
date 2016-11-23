@@ -26,6 +26,98 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* No aliasing. */
+
+static t_int *resample_performDownsampling (t_int *w)
+{
+    t_sample *s1 = (t_sample *)(w[1]);
+    t_sample *s2 = (t_sample *)(w[2]);
+    int down = (int)(w[3]);
+    int size = (int)(w[4]);
+    int n = size / down;
+
+    while (n--) { *s2 = *s1; s2++; s1 += down; }
+
+    return (w + 5);
+}
+
+/* No aliasing. */
+
+static t_int *resample_performUpsamplingZero (t_int *w)
+{
+    t_sample *s1 = (t_sample *)(w[1]);
+    t_sample *s2 = (t_sample *)(w[2]);
+    int up = (int)(w[3]);
+    int size = (int)(w[4]);
+    
+    memset (s2, 0, size * up * sizeof (t_sample));
+    
+    while (size--) { *s2 = *s1; s2 += up; s1++; }
+
+    return (w + 5);
+}
+
+/* No aliasing. */
+
+static t_int *resample_performUpsamplingHold (t_int *w)
+{
+    t_sample *s1 = (t_sample *)(w[1]);
+    t_sample *s2 = (t_sample *)(w[2]);
+    int up = (int)(w[3]);
+    int size = (int)(w[4]);
+    
+    int i = up;
+  
+    while (i--) {
+    //
+    int n = size;
+    t_sample *t2 = s2 + i;
+    t_sample *t1 = s1;
+    while (n--) { *t2 = *t1; t2 += up; t1++; }
+    //
+    }
+    
+    return (w + 5);
+}
+
+/* No aliasing. */
+
+static t_int *resample_performUpsamplingLinear (t_int *w)
+{
+    t_sample *t  = (t_sample *)(w[1]);
+    t_sample *s1 = (t_sample *)(w[2]);
+    t_sample *s2 = (t_sample *)(w[3]);
+    int up = (int)(w[4]);
+    int size = (int)(w[5]);
+    int length = size * up;
+    
+    t_sample a = *t;
+    t_sample b = *s1;
+    int n;
+    
+    for (n = 0; n < length; n++) {
+    //
+    t_sample f = (t_sample)(n + 1) / up;
+    int i = (int)f;
+    t_sample fractional = f - (t_sample)i;
+    
+    if (fractional == 0.0) { fractional = 1.0; }
+    *s2++ = fractional * b + (1.0 - fractional) * a;
+    
+    if (i < size) { b = *(s1 + i); }
+    if (i != 0)   { a = *(s1 + i - 1); }
+    //
+    }
+
+    *t = a;
+  
+    return (w + 6);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static int resample_setAllocateVectorIfRequired (t_resample *x, t_sample *s, int size, int resampledSize)
 {
     if (size == resampledSize) {
@@ -65,7 +157,7 @@ static void resample_addResampling (t_resample *x,
     //
     PD_ASSERT (!(inSize % outSize));
         
-    dsp_add (perform_downsampling, 4, in, out, inSize / outSize, inSize);
+    dsp_add (resample_performDownsampling, 4, in, out, inSize / outSize, inSize);
     //
     } else {
     //
@@ -76,9 +168,9 @@ static void resample_addResampling (t_resample *x,
     switch (type) {
     //
     case RESAMPLE_DEFAULT : PD_BUG;
-    case RESAMPLE_ZERO    : dsp_add (perform_upsamplingZero,    4, in, out, t, inSize); break;
-    case RESAMPLE_HOLD    : dsp_add (perform_upsamplingHold,    4, in, out, t, inSize); break;
-    case RESAMPLE_LINEAR  : dsp_add (perform_upsamplingLinear,  5, &x->r_buffer, in, out, t, inSize); break;
+    case RESAMPLE_ZERO    : dsp_add (resample_performUpsamplingZero,    4, in, out, t, inSize); break;
+    case RESAMPLE_HOLD    : dsp_add (resample_performUpsamplingHold,    4, in, out, t, inSize); break;
+    case RESAMPLE_LINEAR  : dsp_add (resample_performUpsamplingLinear,  5, &x->r_buffer, in, out, t, inSize);
     //
     }
     //

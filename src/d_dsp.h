@@ -222,15 +222,6 @@ void            block_getParameters         (t_block *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_int           *perform_downsampling       (t_int *w);
-t_int           *perform_upsamplingZero     (t_int *w);
-t_int           *perform_upsamplingHold     (t_int *w);
-t_int           *perform_upsamplingLinear   (t_int *w);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void            dsp_addZeroPerform          (t_sample *s, int n);
 void            dsp_addCopyPerform          (t_sample *src, t_sample *dest, int n);
 void            dsp_addCopyZeroPerform      (t_sample *src, t_sample *dest, int n);
