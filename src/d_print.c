@@ -104,7 +104,7 @@ static void print_tilde_polling (t_print_tilde *x)
 static t_int *print_tilde_perform (t_int *w)
 {
     t_print_tilde *x = (t_print_tilde *)(w[1]);
-    t_sample *in = (t_sample *)(w[2]);
+    PD_RESTRICTED in = (t_sample *)(w[2]);
     int n = (int)(w[3]);
     
     if (x->x_count) {
