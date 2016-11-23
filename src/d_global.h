@@ -26,7 +26,6 @@ typedef struct _catch_tilde {
 typedef struct _send_tilde {
     t_object    x_obj;              /* Must be the first. */
     t_float     x_f;
-    int         x_vectorSize;
     t_sample    *x_vector;
     t_symbol    *x_name;
     } t_send_tilde;

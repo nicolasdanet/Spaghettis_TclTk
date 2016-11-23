@@ -23,14 +23,13 @@ extern t_class *send_tilde_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *receive_tilde_class;       /* Shared. */
+static t_class *receive_tilde_class;            /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _receive_tilde {
-    t_object    x_obj;
-    int         x_vectorSize;
+    t_object    x_obj;                          /* Must be the first. */
     t_sample    *x_vector;
     t_symbol    *x_name;
     t_outlet    *x_outlet;
@@ -48,10 +47,7 @@ static void receive_tilde_set (t_receive_tilde *x, t_symbol *s)
     
     if (!sender) { error_canNotFind (sym_receive__tilde__, x->x_name); }
     else {
-        if (sender->x_vectorSize == x->x_vectorSize) { x->x_vector = sender->x_vector; }
-        else {
-            error_mismatch (sym_receive__tilde__, sym_size);
-        }
+        x->x_vector = sender->x_vector;
     }
 }
 
@@ -59,28 +55,28 @@ static void receive_tilde_set (t_receive_tilde *x, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* No aliasing. */
+
 static t_int *receive_tilde_perform (t_int *w)
 {
     t_receive_tilde *x = (t_receive_tilde *)(w[1]);
-    t_sample *out = (t_sample *)(w[2]);
-    int n = (int)(w[3]);
+    PD_RESTRICTED out  = (t_sample *)(w[2]);
+    PD_RESTRICTED in   = x->x_vector;
     
-    t_sample *in = x->x_vector;
-    
-    if (in) { while (n--) { *out++ = *in++; } }
+    if (in) { memcpy (out, in, DSP_SEND_SIZE * sizeof (t_sample)); }
     else {
-        while (n--) { *out++ = 0; }
+        memset (out, 0, DSP_SEND_SIZE * sizeof (t_sample));
     }
     
-    return (w + 4);
+    return (w + 3);
 }
 
 static void receive_tilde_dsp (t_receive_tilde *x, t_signal **sp)
 {
-    if (sp[0]->s_vectorSize != x->x_vectorSize) { error_mismatch (sym_receive__tilde__, sym_size); }
+    if (sp[0]->s_vectorSize != DSP_SEND_SIZE) { error_mismatch (sym_receive__tilde__, sym_size); }
     else {
         receive_tilde_set (x, x->x_name);
-        dsp_add (receive_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
+        PD_ASSERT (x->x_vector != sp[0]->s_vector); dsp_add (receive_tilde_perform, 2, x, sp[0]->s_vector);
     }
 }
 
@@ -92,10 +88,9 @@ static void *receive_tilde_new (t_symbol *s)
 {
     t_receive_tilde *x = (t_receive_tilde *)pd_new (receive_tilde_class);
     
-    x->x_vectorSize = DSP_SEND_SIZE;
-    x->x_vector     = NULL;
-    x->x_name       = s;
-    x->x_outlet     = outlet_new (cast_object (x), &s_signal);
+    x->x_vector = NULL;
+    x->x_name   = s;
+    x->x_outlet = outlet_new (cast_object (x), &s_signal);
     
     return x;
 }
