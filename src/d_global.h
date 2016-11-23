@@ -18,7 +18,6 @@
 
 typedef struct _catch_tilde {
     t_object    x_obj;              /* Must be the first. */
-    int         x_vectorSize;
     t_sample    *x_vector;
     t_symbol    *x_name;
     t_outlet    *x_outlet;
