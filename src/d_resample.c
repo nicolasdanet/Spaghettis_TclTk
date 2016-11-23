@@ -30,8 +30,8 @@
 
 static t_int *resample_performDownsampling (t_int *w)
 {
-    t_sample *s1 = (t_sample *)(w[1]);
-    t_sample *s2 = (t_sample *)(w[2]);
+    PD_RESTRICTED s1 = (t_sample *)(w[1]);
+    PD_RESTRICTED s2 = (t_sample *)(w[2]);
     int down = (int)(w[3]);
     int size = (int)(w[4]);
     int n = size / down;
@@ -45,8 +45,8 @@ static t_int *resample_performDownsampling (t_int *w)
 
 static t_int *resample_performUpsamplingZero (t_int *w)
 {
-    t_sample *s1 = (t_sample *)(w[1]);
-    t_sample *s2 = (t_sample *)(w[2]);
+    PD_RESTRICTED s1 = (t_sample *)(w[1]);
+    PD_RESTRICTED s2 = (t_sample *)(w[2]);
     int up = (int)(w[3]);
     int size = (int)(w[4]);
     
@@ -61,8 +61,8 @@ static t_int *resample_performUpsamplingZero (t_int *w)
 
 static t_int *resample_performUpsamplingHold (t_int *w)
 {
-    t_sample *s1 = (t_sample *)(w[1]);
-    t_sample *s2 = (t_sample *)(w[2]);
+    PD_RESTRICTED s1 = (t_sample *)(w[1]);
+    PD_RESTRICTED s2 = (t_sample *)(w[2]);
     int up = (int)(w[3]);
     int size = (int)(w[4]);
     
@@ -84,9 +84,9 @@ static t_int *resample_performUpsamplingHold (t_int *w)
 
 static t_int *resample_performUpsamplingLinear (t_int *w)
 {
-    t_sample *t  = (t_sample *)(w[1]);
-    t_sample *s1 = (t_sample *)(w[2]);
-    t_sample *s2 = (t_sample *)(w[3]);
+    PD_RESTRICTED t  = (t_sample *)(w[1]);
+    PD_RESTRICTED s1 = (t_sample *)(w[2]);
+    PD_RESTRICTED s2 = (t_sample *)(w[3]);
     int up = (int)(w[4]);
     int size = (int)(w[5]);
     int length = size * up;
