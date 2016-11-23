@@ -19,12 +19,12 @@
 // -----------------------------------------------------------------------------------------------------------
 
 /* Write to buffer. */
-/* Notice that samples are accumulate (required in case of overlap). */
+/* Notice that samples are accumulated (required in case of overlap). */
 
 static t_int *voutlet_perform (t_int *w)
 {
     t_voutlet *x = (t_voutlet *)(w[1]);
-    t_sample *in = (t_sample *)(w[2]);
+    PD_RESTRICTED in = (t_sample *)(w[2]);
     int n = (int)(w[3]);
     
     t_sample *out  = x->vo_bufferWrite;
@@ -42,8 +42,8 @@ static t_int *voutlet_perform (t_int *w)
 
 static t_int *voutlet_performEpilog (t_int *w)
 {
-    t_voutlet *x  = (t_voutlet *)(w[1]);
-    t_sample *out = (t_sample *)(w[2]);
+    t_voutlet *x = (t_voutlet *)(w[1]);
+    PD_RESTRICTED out = (t_sample *)(w[2]);
     int n = (int)(w[3]);
     
     t_sample *in = x->vo_bufferRead;
