@@ -131,9 +131,9 @@ static void phasor_setup(void)
 
 /* ------------------------ cos~ ----------------------------- */
 
-static float *cos_table;
+static float *cos_tilde_table;
 
-static t_class *cos_class;
+static t_class *cos_tilde_class;
 
 typedef struct _cos
 {
@@ -141,20 +141,20 @@ typedef struct _cos
     float x_f;
 } t_cos;
 
-static void *cos_new(void)
+static void *cos_tilde_new(void)
 {
-    t_cos *x = (t_cos *)pd_new(cos_class);
+    t_cos *x = (t_cos *)pd_new(cos_tilde_class);
     outlet_new(&x->x_obj, &s_signal);
     x->x_f = 0;
     return (x);
 }
 
-static t_int *cos_perform(t_int *w)
+static t_int *cos_tilde_perform(t_int *w)
 {
     t_float *in = (t_float *)(w[1]);
     t_float *out = (t_float *)(w[2]);
     int n = (int)(w[3]);
-    float *tab = cos_table, *addr, f1, f2, frac;
+    float *tab = cos_tilde_table, *addr, f1, f2, frac;
     double dphase;
     int normhipart;
     union tabfudge tf;
@@ -199,20 +199,20 @@ static t_int *cos_perform(t_int *w)
     return (w+4);
 }
 
-static void cos_dsp(t_cos *x, t_signal **sp)
+static void cos_tilde_dsp(t_cos *x, t_signal **sp)
 {
-    dsp_add(cos_perform, 3, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
+    dsp_add(cos_tilde_perform, 3, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
-static void cos_maketable(void)
+static void cos_tilde_maketable(void)
 {
     int i;
     float *fp, phase, phsinc = (2. * PD_PI) / COSTABSIZE;
     union tabfudge tf;
     
-    if (cos_table) return;
-    cos_table = (float *)PD_MEMORY_GET(sizeof(float) * (COSTABSIZE+1));
-    for (i = COSTABSIZE + 1, fp = cos_table, phase = 0; i--;
+    if (cos_tilde_table) return;
+    cos_tilde_table = (float *)PD_MEMORY_GET(sizeof(float) * (COSTABSIZE+1));
+    for (i = COSTABSIZE + 1, fp = cos_tilde_table, phase = 0; i--;
         fp++, phase += phsinc)
             *fp = cos(phase);
 
@@ -223,13 +223,13 @@ static void cos_maketable(void)
     if ((unsigned)tf.tf_i[LOWOFFSET] != 0x80000000) { PD_BUG; }
 }
 
-static void cos_setup(void)
+static void cos_tilde_setup(void)
 {
-    cos_class = class_new(sym_cos__tilde__, (t_newmethod)cos_new, 0,
+    cos_tilde_class = class_new(sym_cos__tilde__, (t_newmethod)cos_tilde_new, 0,
         sizeof(t_cos), 0, A_DEFFLOAT, 0);
-    CLASS_SIGNAL(cos_class, t_cos, x_f);
-    class_addMethod(cos_class, (t_method)cos_dsp, sym_dsp, A_CANT, 0);
-    cos_maketable();
+    CLASS_SIGNAL(cos_tilde_class, t_cos, x_f);
+    class_addMethod(cos_tilde_class, (t_method)cos_tilde_dsp, sym_dsp, A_CANT, 0);
+    cos_tilde_maketable();
 }
 
 /* ------------------------ osc~ ----------------------------- */
@@ -261,7 +261,7 @@ static t_int *osc_perform(t_int *w)
     t_float *in = (t_float *)(w[2]);
     t_float *out = (t_float *)(w[3]);
     int n = (int)(w[4]);
-    float *tab = cos_table, *addr, f1, f2, frac;
+    float *tab = cos_tilde_table, *addr, f1, f2, frac;
     double dphase = x->x_phase + UNITBIT32;
     int normhipart;
     union tabfudge tf;
@@ -331,7 +331,7 @@ static void osc_setup(void)
     class_addMethod(osc_class, (t_method)osc_dsp, sym_dsp, A_CANT, 0);
     class_addMethod(osc_class, (t_method)osc_ft1, sym_inlet2, A_FLOAT, 0);
 
-    cos_maketable();
+    cos_tilde_maketable();
 }
 
 /* ---- vcf~ - resonant filter with audio-rate center frequency input ----- */
@@ -391,7 +391,7 @@ static t_int *sigvcf_perform(t_int *w)
     float ampcorrect = 2.0f - 2.0f / (q + 2.0f);
     float isr = c->c_isr;
     float coefr, coefi;
-    float *tab = cos_table, *addr, f1, f2, frac;
+    float *tab = cos_tilde_table, *addr, f1, f2, frac;
     double dphase;
     int normhipart, tabindex;
     union tabfudge tf;
@@ -509,7 +509,7 @@ static void noise_setup(void)
 void d_osc_setup(void)
 {
     phasor_setup();
-    cos_setup();
+    cos_tilde_setup();
     osc_setup();
     sigvcf_setup();
     noise_setup();

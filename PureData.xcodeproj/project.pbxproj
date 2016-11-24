@@ -741,6 +741,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		370D017F1DE6BFA4005918D4 /* Osc */ = {
+			isa = PBXGroup;
+			children = (
+				378971BB1C4F716700263434 /* d_osc.c */,
+			);
+			name = Osc;
+			sourceTree = "<group>";
+		};
 		371655471BA3451000ABDE22 /* PortAudio */ = {
 			isa = PBXGroup;
 			children = (
@@ -1259,8 +1267,8 @@
 			children = (
 				37C000561DE2FE3800F90584 /* Miscellaneous */,
 				37C000571DE2FE4B00F90584 /* Global */,
+				370D017F1DE6BFA4005918D4 /* Osc */,
 				378971B11C4F716700263434 /* d_array.c */,
-				378971BB1C4F716700263434 /* d_osc.c */,
 				378971B41C4F716700263434 /* d_delay.c */,
 				378971B71C4F716700263434 /* d_filter.c */,
 				378971B01C4F716700263434 /* d_arithmetic.c */,
