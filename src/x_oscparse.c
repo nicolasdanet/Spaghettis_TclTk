@@ -118,7 +118,7 @@ static t_error oscparse_performArgumentsFloat (t_oscparse *x,
     
     if (k > argc - 4) { err = PD_ERROR; }
     else {
-        t_rawcast z;
+        t_rawcast32 z;
         z.z_i = OSC_READ4INT (argv + k);
         t_float f = z.z_f;
         if (PD_DENORMAL_OR_ZERO (f)) { f = 0.0; }

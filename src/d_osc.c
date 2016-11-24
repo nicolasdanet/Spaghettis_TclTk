@@ -14,12 +14,6 @@
 #define LOGCOSTABSIZE       9
 #define COSTABSIZE          (1 << LOGCOSTABSIZE)
 
-union tabfudge
-{
-    double tf_d;
-    int32_t tf_i[2];
-};
-
 /* -------------------------- phasor~ ------------------------------ */
 static t_class *phasor_class;
 
@@ -50,24 +44,24 @@ static t_int *phasor_perform(t_int *w)
     t_float *in = (t_float *)(w[2]);
     t_float *out = (t_float *)(w[3]);
     int n = (int)(w[4]);
-    double dphase = x->x_phase + (double)UNITBIT32;
-    union tabfudge tf;
+    double dphase = x->x_phase + (double)DSP_UNITBIT32;
+    t_rawcast64 tf;
     int normhipart;
     float conv = x->x_conv;
 
-    tf.tf_d = UNITBIT32;
-    normhipart = tf.tf_i[HIOFFSET];
-    tf.tf_d = dphase;
+    tf.z_d = DSP_UNITBIT32;
+    normhipart = tf.z_i[PD_RAWCAST64_MSB];
+    tf.z_d = dphase;
 
     while (n--)
     {
-        tf.tf_i[HIOFFSET] = normhipart;
+        tf.z_i[PD_RAWCAST64_MSB] = normhipart;
         dphase += *in++ * conv;
-        *out++ = tf.tf_d - UNITBIT32;
-        tf.tf_d = dphase;
+        *out++ = tf.z_d - DSP_UNITBIT32;
+        tf.z_d = dphase;
     }
-    tf.tf_i[HIOFFSET] = normhipart;
-    x->x_phase = tf.tf_d - UNITBIT32;
+    tf.z_i[PD_RAWCAST64_MSB] = normhipart;
+    x->x_phase = tf.z_d - DSP_UNITBIT32;
     return (w+5);
 }
 
@@ -123,41 +117,41 @@ static t_int *cos_tilde_perform(t_int *w)
     float *tab = cos_tilde_table, *addr, f1, f2, frac;
     double dphase;
     int normhipart;
-    union tabfudge tf;
+    t_rawcast64 tf;
     
-    tf.tf_d = UNITBIT32;
-    normhipart = tf.tf_i[HIOFFSET];
+    tf.z_d = DSP_UNITBIT32;
+    normhipart = tf.z_i[PD_RAWCAST64_MSB];
 
 #if 0           /* this is the readable version of the code. */
     while (n--)
     {
-        dphase = (double)(*in++ * (float)(COSTABSIZE)) + UNITBIT32;
-        tf.tf_d = dphase;
-        addr = tab + (tf.tf_i[HIOFFSET] & (COSTABSIZE-1));
-        tf.tf_i[HIOFFSET] = normhipart;
-        frac = tf.tf_d - UNITBIT32;
+        dphase = (double)(*in++ * (float)(COSTABSIZE)) + DSP_UNITBIT32;
+        tf.z_d = dphase;
+        addr = tab + (tf.z_i[PD_RAWCAST64_MSB] & (COSTABSIZE-1));
+        tf.z_i[PD_RAWCAST64_MSB] = normhipart;
+        frac = tf.z_d - DSP_UNITBIT32;
         f1 = addr[0];
         f2 = addr[1];
         *out++ = f1 + frac * (f2 - f1);
     }
 #endif
 #if 1           /* this is the same, unwrapped by hand. */
-        dphase = (double)(*in++ * (float)(COSTABSIZE)) + UNITBIT32;
-        tf.tf_d = dphase;
-        addr = tab + (tf.tf_i[HIOFFSET] & (COSTABSIZE-1));
-        tf.tf_i[HIOFFSET] = normhipart;
+        dphase = (double)(*in++ * (float)(COSTABSIZE)) + DSP_UNITBIT32;
+        tf.z_d = dphase;
+        addr = tab + (tf.z_i[PD_RAWCAST64_MSB] & (COSTABSIZE-1));
+        tf.z_i[PD_RAWCAST64_MSB] = normhipart;
     while (--n)
     {
-        dphase = (double)(*in++ * (float)(COSTABSIZE)) + UNITBIT32;
-            frac = tf.tf_d - UNITBIT32;
-        tf.tf_d = dphase;
+        dphase = (double)(*in++ * (float)(COSTABSIZE)) + DSP_UNITBIT32;
+            frac = tf.z_d - DSP_UNITBIT32;
+        tf.z_d = dphase;
             f1 = addr[0];
             f2 = addr[1];
-        addr = tab + (tf.tf_i[HIOFFSET] & (COSTABSIZE-1));
+        addr = tab + (tf.z_i[PD_RAWCAST64_MSB] & (COSTABSIZE-1));
             *out++ = f1 + frac * (f2 - f1);
-        tf.tf_i[HIOFFSET] = normhipart;
+        tf.z_i[PD_RAWCAST64_MSB] = normhipart;
     }
-            frac = tf.tf_d - UNITBIT32;
+            frac = tf.z_d - DSP_UNITBIT32;
             f1 = addr[0];
             f2 = addr[1];
             *out++ = f1 + frac * (f2 - f1);
@@ -174,7 +168,7 @@ static void cos_tilde_maketable(void)
 {
     int i;
     float *fp, phase, phsinc = (2. * PD_PI) / COSTABSIZE;
-    union tabfudge tf;
+    t_rawcast64 tf;
     
     if (cos_tilde_table) return;
     cos_tilde_table = (float *)PD_MEMORY_GET(sizeof(float) * (COSTABSIZE+1));
@@ -185,8 +179,8 @@ static void cos_tilde_maketable(void)
         /* here we check at startup whether the byte alignment
             is as we declared it.  If not, the code has to be
             recompiled the other way. */
-    tf.tf_d = UNITBIT32 + 0.5;
-    if ((unsigned)tf.tf_i[LOWOFFSET] != 0x80000000) { PD_BUG; }
+    tf.z_d = DSP_UNITBIT32 + 0.5;
+    if ((unsigned)tf.z_i[PD_RAWCAST64_LSB] != 0x80000000) { PD_BUG; }
 }
 
 void cos_tilde_setup(void)
@@ -228,53 +222,53 @@ static t_int *osc_perform(t_int *w)
     t_float *out = (t_float *)(w[3]);
     int n = (int)(w[4]);
     float *tab = cos_tilde_table, *addr, f1, f2, frac;
-    double dphase = x->x_phase + UNITBIT32;
+    double dphase = x->x_phase + DSP_UNITBIT32;
     int normhipart;
-    union tabfudge tf;
+    t_rawcast64 tf;
     float conv = x->x_conv;
     
-    tf.tf_d = UNITBIT32;
-    normhipart = tf.tf_i[HIOFFSET];
+    tf.z_d = DSP_UNITBIT32;
+    normhipart = tf.z_i[PD_RAWCAST64_MSB];
 #if 0
     while (n--)
     {
-        tf.tf_d = dphase;
+        tf.z_d = dphase;
         dphase += *in++ * conv;
-        addr = tab + (tf.tf_i[HIOFFSET] & (COSTABSIZE-1));
-        tf.tf_i[HIOFFSET] = normhipart;
-        frac = tf.tf_d - UNITBIT32;
+        addr = tab + (tf.z_i[PD_RAWCAST64_MSB] & (COSTABSIZE-1));
+        tf.z_i[PD_RAWCAST64_MSB] = normhipart;
+        frac = tf.z_d - DSP_UNITBIT32;
         f1 = addr[0];
         f2 = addr[1];
         *out++ = f1 + frac * (f2 - f1);
     }
 #endif
 #if 1
-        tf.tf_d = dphase;
+        tf.z_d = dphase;
         dphase += *in++ * conv;
-        addr = tab + (tf.tf_i[HIOFFSET] & (COSTABSIZE-1));
-        tf.tf_i[HIOFFSET] = normhipart;
-        frac = tf.tf_d - UNITBIT32;
+        addr = tab + (tf.z_i[PD_RAWCAST64_MSB] & (COSTABSIZE-1));
+        tf.z_i[PD_RAWCAST64_MSB] = normhipart;
+        frac = tf.z_d - DSP_UNITBIT32;
     while (--n)
     {
-        tf.tf_d = dphase;
+        tf.z_d = dphase;
             f1 = addr[0];
         dphase += *in++ * conv;
             f2 = addr[1];
-        addr = tab + (tf.tf_i[HIOFFSET] & (COSTABSIZE-1));
-        tf.tf_i[HIOFFSET] = normhipart;
+        addr = tab + (tf.z_i[PD_RAWCAST64_MSB] & (COSTABSIZE-1));
+        tf.z_i[PD_RAWCAST64_MSB] = normhipart;
             *out++ = f1 + frac * (f2 - f1);
-        frac = tf.tf_d - UNITBIT32;
+        frac = tf.z_d - DSP_UNITBIT32;
     }
             f1 = addr[0];
             f2 = addr[1];
             *out++ = f1 + frac * (f2 - f1);
 #endif
 
-    tf.tf_d = UNITBIT32 * COSTABSIZE;
-    normhipart = tf.tf_i[HIOFFSET];
-    tf.tf_d = dphase + (UNITBIT32 * COSTABSIZE - UNITBIT32);
-    tf.tf_i[HIOFFSET] = normhipart;
-    x->x_phase = tf.tf_d - UNITBIT32 * COSTABSIZE;
+    tf.z_d = DSP_UNITBIT32 * COSTABSIZE;
+    normhipart = tf.z_i[PD_RAWCAST64_MSB];
+    tf.z_d = dphase + (DSP_UNITBIT32 * COSTABSIZE - DSP_UNITBIT32);
+    tf.z_i[PD_RAWCAST64_MSB] = normhipart;
+    x->x_phase = tf.z_d - DSP_UNITBIT32 * COSTABSIZE;
     return (w+5);
 }
 
@@ -360,10 +354,10 @@ static t_int *sigvcf_perform(t_int *w)
     float *tab = cos_tilde_table, *addr, f1, f2, frac;
     double dphase;
     int normhipart, tabindex;
-    union tabfudge tf;
+    t_rawcast64 tf;
     
-    tf.tf_d = UNITBIT32;
-    normhipart = tf.tf_i[HIOFFSET];
+    tf.z_d = DSP_UNITBIT32;
+    normhipart = tf.z_i[PD_RAWCAST64_MSB];
 
     for (i = 0; i < n; i++)
     {
@@ -374,12 +368,12 @@ static t_int *sigvcf_perform(t_int *w)
         r = (qinv > 0 ? 1 - cf * qinv : 0);
         if (r < 0) r = 0;
         oneminusr = 1.0f - r;
-        dphase = ((double)(cfindx)) + UNITBIT32;
-        tf.tf_d = dphase;
-        tabindex = tf.tf_i[HIOFFSET] & (COSTABSIZE-1);
+        dphase = ((double)(cfindx)) + DSP_UNITBIT32;
+        tf.z_d = dphase;
+        tabindex = tf.z_i[PD_RAWCAST64_MSB] & (COSTABSIZE-1);
         addr = tab + tabindex;
-        tf.tf_i[HIOFFSET] = normhipart;
-        frac = tf.tf_d - UNITBIT32;
+        tf.z_i[PD_RAWCAST64_MSB] = normhipart;
+        frac = tf.z_d - DSP_UNITBIT32;
         f1 = addr[0];
         f2 = addr[1];
         coefr = r * (f1 + frac * (f2 - f1));

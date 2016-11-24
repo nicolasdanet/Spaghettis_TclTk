@@ -116,7 +116,7 @@ static int oscformat_performFillFloat (t_oscformat *x, int argc, t_atom *argv, i
 {
     int n = *m;
     
-    t_rawcast z;
+    t_rawcast32 z;
     z.z_f = atom_getFloat (argv + j);
     OSC_WRITE4INT (a + n, z.z_i);
     n += 4;

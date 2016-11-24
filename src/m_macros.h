@@ -44,6 +44,22 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#if ( PD_GCC || PD_CLANG )
+
+    #define PD_RESTRICTED   t_sample* __restrict__
+
+#else
+
+    #define PD_RESTRICTED   t_sample*
+
+#endif
+
+/* < http://cellperformance.beyond3d.com/articles/2006/05/demystifying-the-restrict-keyword.html > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #define PD_MAX(a,b)         ((a)>(b)?(a):(b))
 #define PD_MIN(a,b)         ((a)<(b)?(a):(b))
 
@@ -97,7 +113,7 @@ t_glist *cast_glistChecked                  (t_pd *x);
 #define SET_FLOAT(atom, f)                  ((atom)->a_type = A_FLOAT, (atom)->a_w.w_float = (f))
 #define SET_SYMBOL(atom, s)                 ((atom)->a_type = A_SYMBOL, (atom)->a_w.w_symbol = (s))
 #define SET_DOLLAR(atom, n)                 ((atom)->a_type = A_DOLLAR, (atom)->a_w.w_index = (n))
-#define SET_DOLLARSYMBOL(atom, s)           ((atom)->a_type = A_DOLLARSYMBOL, (atom)->a_w.w_symbol= (s))
+#define SET_DOLLARSYMBOL(atom, s)           ((atom)->a_type = A_DOLLARSYMBOL, (atom)->a_w.w_symbol = (s))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -238,7 +254,34 @@ static inline unsigned long sys_nextPowerOf2 (unsigned long v)
 typedef union {
     t_float     z_f;
     uint32_t    z_i;
-    } t_rawcast;
+    } t_rawcast32;
+
+typedef union {
+    double      z_d;
+    uint32_t    z_i[2];
+    } t_rawcast64;
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define DSP_UNITBIT32               1572864.0
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#if PD_LITTLE_ENDIAN
+
+    #define PD_RAWCAST64_MSB        1                                                              
+    #define PD_RAWCAST64_LSB        0
+
+#else
+                                                                      
+    #define PD_RAWCAST64_MSB        0
+    #define PD_RAWCAST64_LSB        1
+
+#endif // PD_LITTLE_ENDIAN
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -250,7 +293,7 @@ typedef union {
         
         static inline int PD_DENORMAL_OR_ZERO (t_float f)   /* Is malformed (denormal, infinite, NaN)? */
         {
-            t_rawcast z;
+            t_rawcast32 z;
             z.z_f = f;
             z.z_i &= 0x7f800000;
             return ((z.z_i == 0) | (z.z_i == 0x7f800000));
@@ -258,7 +301,7 @@ typedef union {
         
         static inline int PD_BIG_OR_SMALL (t_float f)       /* If exponent falls out (-64, 64) range. */
         {
-            t_rawcast z;
+            t_rawcast32 z;
             z.z_f = f;
             return ((z.z_i & 0x20000000) == ((z.z_i >> 1) & 0x20000000)); 
         }

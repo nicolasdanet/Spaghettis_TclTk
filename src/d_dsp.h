@@ -101,44 +101,6 @@ typedef int64_t t_phase;        /* Assumed -1 has all bits set (two's complement
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#if ( PD_GCC || PD_CLANG )
-
-    #define PD_RESTRICTED       t_sample* __restrict__
-
-#else
-
-    #define PD_RESTRICTED       t_sample*
-
-#endif
-
-/* < http://cellperformance.beyond3d.com/articles/2006/05/demystifying-the-restrict-keyword.html > */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#define UNITBIT32               1572864.  /* 3*2^19; bit 32 has place value 1 */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#if PD_LITTLE_ENDIAN
-
-    #define HIOFFSET            1                                                              
-    #define LOWOFFSET           0
-
-#else
-                                                                      
-    #define HIOFFSET            0           /* Offset to find MSB. */
-    #define LOWOFFSET           1           /* Offset to find LSB. */
-
-#endif // PD_LITTLE_ENDIAN
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void            dsp_state                   (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void            dsp_update                  (void);
 int             dsp_suspend                 (void);

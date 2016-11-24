@@ -501,12 +501,6 @@ static void tabread4_tilde_setup(void)
 
 /******************** tabosc4~ ***********************/
 
-union tabfudge
-{
-    double tf_d;
-    int32_t tf_i[2];
-};
-
 static t_class *tabosc4_tilde_class;
 
 typedef struct _tabosc4_tilde
@@ -541,28 +535,28 @@ static t_int *tabosc4_tilde_perform(t_int *w)
     t_sample *out = (t_sample *)(w[3]);
     int n = (int)(w[4]);
     int normhipart;
-    union tabfudge tf;
+    t_rawcast64 tf;
     t_float fnpoints = x->x_fnpoints;
     int mask = fnpoints - 1;
     t_float conv = fnpoints * x->x_conv;
     int maxindex;
     t_word *tab = x->x_vec, *addr;
     int i;
-    double dphase = fnpoints * x->x_phase + UNITBIT32;
+    double dphase = fnpoints * x->x_phase + DSP_UNITBIT32;
 
     if (!tab) goto zero;
-    tf.tf_d = UNITBIT32;
-    normhipart = tf.tf_i[HIOFFSET];
+    tf.z_d = DSP_UNITBIT32;
+    normhipart = tf.z_i[PD_RAWCAST64_MSB];
 
 #if 1
     while (n--)
     {
         t_sample frac,  a,  b,  c,  d, cminusb;
-        tf.tf_d = dphase;
+        tf.z_d = dphase;
         dphase += *in++ * conv;
-        addr = tab + (tf.tf_i[HIOFFSET] & mask);
-        tf.tf_i[HIOFFSET] = normhipart;
-        frac = tf.tf_d - UNITBIT32;
+        addr = tab + (tf.z_i[PD_RAWCAST64_MSB] & mask);
+        tf.z_i[PD_RAWCAST64_MSB] = normhipart;
+        frac = tf.z_d - DSP_UNITBIT32;
         a = addr[0].w_float;
         b = addr[1].w_float;
         c = addr[2].w_float;
@@ -576,11 +570,11 @@ static t_int *tabosc4_tilde_perform(t_int *w)
     }
 #endif
 
-    tf.tf_d = UNITBIT32 * fnpoints;
-    normhipart = tf.tf_i[HIOFFSET];
-    tf.tf_d = dphase + (UNITBIT32 * fnpoints - UNITBIT32);
-    tf.tf_i[HIOFFSET] = normhipart;
-    x->x_phase = (tf.tf_d - UNITBIT32 * fnpoints)  * x->x_finvnpoints;
+    tf.z_d = DSP_UNITBIT32 * fnpoints;
+    normhipart = tf.z_i[PD_RAWCAST64_MSB];
+    tf.z_d = dphase + (DSP_UNITBIT32 * fnpoints - DSP_UNITBIT32);
+    tf.z_i[PD_RAWCAST64_MSB] = normhipart;
+    x->x_phase = (tf.z_d - DSP_UNITBIT32 * fnpoints)  * x->x_finvnpoints;
     return (w+5);
  zero:
     while (n--) *out++ = 0;
