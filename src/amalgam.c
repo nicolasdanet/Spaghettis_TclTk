@@ -250,18 +250,19 @@
 #include "d_block.c"
 #include "d_perform.c"
 
-#include "d_print.c"
-#include "d_bang.c"
-#include "d_samplerate.c"
-#include "d_noise.c"
-
 #include "d_throw.c"
 #include "d_catch.c"
 #include "d_send.c"
 #include "d_receive.c"
 
+#include "d_phasor.c"
 #include "d_osc.c"
 #include "d_vcf.c"
+
+#include "d_print.c"
+#include "d_bang.c"
+#include "d_samplerate.c"
+#include "d_noise.c"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
