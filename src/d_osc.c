@@ -10,9 +10,7 @@
 #include "m_macros.h"
 #include "math.h"
 #include "d_dsp.h"
-
-#define LOGCOSTABSIZE       9
-#define COSTABSIZE          (1 << LOGCOSTABSIZE)
+#include "d_osc.h"
 
 /* -------------------------- phasor~ ------------------------------ */
 static t_class *phasor_class;
@@ -91,7 +89,7 @@ void phasor_setup(void)
 
 /* ------------------------ cos~ ----------------------------- */
 
-static float *cos_tilde_table;
+t_float *cos_tilde_table;
 
 static t_class *cos_tilde_class;
 
@@ -125,9 +123,9 @@ static t_int *cos_tilde_perform(t_int *w)
 #if 0           /* this is the readable version of the code. */
     while (n--)
     {
-        dphase = (double)(*in++ * (float)(COSTABSIZE)) + DSP_UNITBIT32;
+        dphase = (double)(*in++ * (float)(COSINE_TABLE_SIZE)) + DSP_UNITBIT32;
         tf.z_d = dphase;
-        addr = tab + (tf.z_i[PD_RAWCAST64_MSB] & (COSTABSIZE-1));
+        addr = tab + (tf.z_i[PD_RAWCAST64_MSB] & (COSINE_TABLE_SIZE-1));
         tf.z_i[PD_RAWCAST64_MSB] = normhipart;
         frac = tf.z_d - DSP_UNITBIT32;
         f1 = addr[0];
@@ -136,18 +134,18 @@ static t_int *cos_tilde_perform(t_int *w)
     }
 #endif
 #if 1           /* this is the same, unwrapped by hand. */
-        dphase = (double)(*in++ * (float)(COSTABSIZE)) + DSP_UNITBIT32;
+        dphase = (double)(*in++ * (float)(COSINE_TABLE_SIZE)) + DSP_UNITBIT32;
         tf.z_d = dphase;
-        addr = tab + (tf.z_i[PD_RAWCAST64_MSB] & (COSTABSIZE-1));
+        addr = tab + (tf.z_i[PD_RAWCAST64_MSB] & (COSINE_TABLE_SIZE-1));
         tf.z_i[PD_RAWCAST64_MSB] = normhipart;
     while (--n)
     {
-        dphase = (double)(*in++ * (float)(COSTABSIZE)) + DSP_UNITBIT32;
+        dphase = (double)(*in++ * (float)(COSINE_TABLE_SIZE)) + DSP_UNITBIT32;
             frac = tf.z_d - DSP_UNITBIT32;
         tf.z_d = dphase;
             f1 = addr[0];
             f2 = addr[1];
-        addr = tab + (tf.z_i[PD_RAWCAST64_MSB] & (COSTABSIZE-1));
+        addr = tab + (tf.z_i[PD_RAWCAST64_MSB] & (COSINE_TABLE_SIZE-1));
             *out++ = f1 + frac * (f2 - f1);
         tf.z_i[PD_RAWCAST64_MSB] = normhipart;
     }
@@ -167,12 +165,12 @@ static void cos_tilde_dsp(t_cos *x, t_signal **sp)
 static void cos_tilde_maketable(void)
 {
     int i;
-    float *fp, phase, phsinc = (2. * PD_PI) / COSTABSIZE;
+    float *fp, phase, phsinc = (2. * PD_PI) / COSINE_TABLE_SIZE;
     t_rawcast64 tf;
     
     if (cos_tilde_table) return;
-    cos_tilde_table = (float *)PD_MEMORY_GET(sizeof(float) * (COSTABSIZE+1));
-    for (i = COSTABSIZE + 1, fp = cos_tilde_table, phase = 0; i--;
+    cos_tilde_table = (float *)PD_MEMORY_GET(sizeof(float) * (COSINE_TABLE_SIZE+1));
+    for (i = COSINE_TABLE_SIZE + 1, fp = cos_tilde_table, phase = 0; i--;
         fp++, phase += phsinc)
             *fp = cos(phase);
 
@@ -234,7 +232,7 @@ static t_int *osc_perform(t_int *w)
     {
         tf.z_d = dphase;
         dphase += *in++ * conv;
-        addr = tab + (tf.z_i[PD_RAWCAST64_MSB] & (COSTABSIZE-1));
+        addr = tab + (tf.z_i[PD_RAWCAST64_MSB] & (COSINE_TABLE_SIZE-1));
         tf.z_i[PD_RAWCAST64_MSB] = normhipart;
         frac = tf.z_d - DSP_UNITBIT32;
         f1 = addr[0];
@@ -245,7 +243,7 @@ static t_int *osc_perform(t_int *w)
 #if 1
         tf.z_d = dphase;
         dphase += *in++ * conv;
-        addr = tab + (tf.z_i[PD_RAWCAST64_MSB] & (COSTABSIZE-1));
+        addr = tab + (tf.z_i[PD_RAWCAST64_MSB] & (COSINE_TABLE_SIZE-1));
         tf.z_i[PD_RAWCAST64_MSB] = normhipart;
         frac = tf.z_d - DSP_UNITBIT32;
     while (--n)
@@ -254,7 +252,7 @@ static t_int *osc_perform(t_int *w)
             f1 = addr[0];
         dphase += *in++ * conv;
             f2 = addr[1];
-        addr = tab + (tf.z_i[PD_RAWCAST64_MSB] & (COSTABSIZE-1));
+        addr = tab + (tf.z_i[PD_RAWCAST64_MSB] & (COSINE_TABLE_SIZE-1));
         tf.z_i[PD_RAWCAST64_MSB] = normhipart;
             *out++ = f1 + frac * (f2 - f1);
         frac = tf.z_d - DSP_UNITBIT32;
@@ -264,23 +262,23 @@ static t_int *osc_perform(t_int *w)
             *out++ = f1 + frac * (f2 - f1);
 #endif
 
-    tf.z_d = DSP_UNITBIT32 * COSTABSIZE;
+    tf.z_d = DSP_UNITBIT32 * COSINE_TABLE_SIZE;
     normhipart = tf.z_i[PD_RAWCAST64_MSB];
-    tf.z_d = dphase + (DSP_UNITBIT32 * COSTABSIZE - DSP_UNITBIT32);
+    tf.z_d = dphase + (DSP_UNITBIT32 * COSINE_TABLE_SIZE - DSP_UNITBIT32);
     tf.z_i[PD_RAWCAST64_MSB] = normhipart;
-    x->x_phase = tf.z_d - DSP_UNITBIT32 * COSTABSIZE;
+    x->x_phase = tf.z_d - DSP_UNITBIT32 * COSINE_TABLE_SIZE;
     return (w+5);
 }
 
 static void osc_dsp(t_osc *x, t_signal **sp)
 {
-    x->x_conv = COSTABSIZE/sp[0]->s_sampleRate;
+    x->x_conv = COSINE_TABLE_SIZE/sp[0]->s_sampleRate;
     dsp_add(osc_perform, 4, x, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
 static void osc_ft1(t_osc *x, t_float f)
 {
-    x->x_phase = COSTABSIZE * f;
+    x->x_phase = COSINE_TABLE_SIZE * f;
 }
 
 void osc_setup(void)
@@ -292,128 +290,4 @@ void osc_setup(void)
     class_addMethod(osc_class, (t_method)osc_ft1, sym_inlet2, A_FLOAT, 0);
 
     cos_tilde_maketable();
-}
-
-/* ---- vcf~ - resonant filter with audio-rate center frequency input ----- */
-
-typedef struct vcfctl
-{
-    float c_re;
-    float c_im;
-    float c_q;
-    float c_isr;
-} t_vcfctl;
-
-typedef struct sigvcf
-{
-    t_object x_obj;
-    t_vcfctl x_cspace;
-    t_vcfctl *x_ctl;
-    float x_f;
-} t_sigvcf;
-
-t_class *sigvcf_class;
-
-static void *sigvcf_new(t_float q)
-{
-    t_sigvcf *x = (t_sigvcf *)pd_new(sigvcf_class);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, sym_inlet2);
-    outlet_new(&x->x_obj, &s_signal);
-    outlet_new(&x->x_obj, &s_signal);
-    x->x_ctl = &x->x_cspace;
-    x->x_cspace.c_re = 0;
-    x->x_cspace.c_im = 0;
-    x->x_cspace.c_q = q;
-    x->x_cspace.c_isr = 0;
-    x->x_f = 0;
-    return (x);
-}
-
-static void sigvcf_ft1(t_sigvcf *x, t_float f)
-{
-    x->x_ctl->c_q = (f > 0 ? f : 0.f);
-}
-
-static t_int *sigvcf_perform(t_int *w)
-{
-    float *in1 = (float *)(w[1]);
-    float *in2 = (float *)(w[2]);
-    float *out1 = (float *)(w[3]);
-    float *out2 = (float *)(w[4]);
-    t_vcfctl *c = (t_vcfctl *)(w[5]);
-    int n = (t_int)(w[6]);
-    int i;
-    float re = c->c_re, re2;
-    float im = c->c_im;
-    float q = c->c_q;
-    float qinv = (q > 0? 1.0f/q : 0);
-    float ampcorrect = 2.0f - 2.0f / (q + 2.0f);
-    float isr = c->c_isr;
-    float coefr, coefi;
-    float *tab = cos_tilde_table, *addr, f1, f2, frac;
-    double dphase;
-    int normhipart, tabindex;
-    t_rawcast64 tf;
-    
-    tf.z_d = DSP_UNITBIT32;
-    normhipart = tf.z_i[PD_RAWCAST64_MSB];
-
-    for (i = 0; i < n; i++)
-    {
-        float cf, cfindx, r, oneminusr;
-        cf = *in2++ * isr;
-        if (cf < 0) cf = 0;
-        cfindx = cf * (float)(COSTABSIZE/6.28318f);
-        r = (qinv > 0 ? 1 - cf * qinv : 0);
-        if (r < 0) r = 0;
-        oneminusr = 1.0f - r;
-        dphase = ((double)(cfindx)) + DSP_UNITBIT32;
-        tf.z_d = dphase;
-        tabindex = tf.z_i[PD_RAWCAST64_MSB] & (COSTABSIZE-1);
-        addr = tab + tabindex;
-        tf.z_i[PD_RAWCAST64_MSB] = normhipart;
-        frac = tf.z_d - DSP_UNITBIT32;
-        f1 = addr[0];
-        f2 = addr[1];
-        coefr = r * (f1 + frac * (f2 - f1));
-
-        addr = tab + ((tabindex - (COSTABSIZE/4)) & (COSTABSIZE-1));
-        f1 = addr[0];
-        f2 = addr[1];
-        coefi = r * (f1 + frac * (f2 - f1));
-
-        f1 = *in1++;
-        re2 = re;
-        *out1++ = re = ampcorrect * oneminusr * f1 
-            + coefr * re2 - coefi * im;
-        *out2++ = im = coefi * re2 + coefr * im;
-    }
-    if (PD_BIG_OR_SMALL(re))
-        re = 0;
-    if (PD_BIG_OR_SMALL(im))
-        im = 0;
-    c->c_re = re;
-    c->c_im = im;
-    return (w+7);
-}
-
-static void sigvcf_dsp(t_sigvcf *x, t_signal **sp)
-{
-    x->x_ctl->c_isr = 6.28318f/sp[0]->s_sampleRate;
-    dsp_add(sigvcf_perform, 6,
-        sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[3]->s_vector, 
-            x->x_ctl, sp[0]->s_vectorSize);
-
-}
-
-void sigvcf_setup(void)
-{
-    sigvcf_class = class_new(sym_vcf__tilde__, (t_newmethod)sigvcf_new, 0,
-        sizeof(t_sigvcf), 0, A_DEFFLOAT, 0);
-    CLASS_SIGNAL(sigvcf_class, t_sigvcf, x_f);
-    class_addMethod(sigvcf_class, (t_method)sigvcf_dsp,
-        sym_dsp, A_CANT, 0);
-    class_addMethod(sigvcf_class, (t_method)sigvcf_ft1,
-        sym_inlet2, A_FLOAT, 0);
 }

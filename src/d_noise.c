@@ -28,7 +28,7 @@ static void *noise_new(void)
     return (x);
 }
 
-static t_int *noise_perform(t_int *w)
+static t_int *noise_perform(t_int *w)               /* Weird LCG kept for compatbility. */
 {
     t_sample *out = (t_sample *)(w[1]);
     int *vp = (int *)(w[2]);

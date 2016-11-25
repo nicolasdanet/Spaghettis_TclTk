@@ -253,6 +253,7 @@
 #include "d_print.c"
 #include "d_bang.c"
 #include "d_samplerate.c"
+#include "d_noise.c"
 
 #include "d_throw.c"
 #include "d_catch.c"
@@ -260,7 +261,7 @@
 #include "d_receive.c"
 
 #include "d_osc.c"
-#include "d_noise.c"
+#include "d_vcf.c"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
