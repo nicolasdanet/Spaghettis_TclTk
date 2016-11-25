@@ -193,7 +193,7 @@ void phasor_setup           (void);
 void cos_tilde_setup        (void);
 void osc_setup              (void);
 void sigvcf_setup           (void);
-void noise_setup            (void);
+void noise_tilde_setup      (void);
 void d_soundfile_setup      (void);
 void block_tilde_setup      (void);
 void samplerate_tilde_setup (void);
@@ -356,7 +356,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     cos_tilde_setup();
     osc_setup();
     sigvcf_setup();
-    noise_setup();
+    noise_tilde_setup();
     d_soundfile_setup();
     block_tilde_setup();
     samplerate_tilde_setup();

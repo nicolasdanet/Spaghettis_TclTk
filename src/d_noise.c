@@ -1,59 +1,99 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-/* sinusoidal oscillator and table lookup; see also tabosc4~ in d_array.c.
+/* 
+    Copyright (c) 1997-2016 Miller Puckette and others.
 */
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "math.h"
 #include "d_dsp.h"
 
-static t_class *noise_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct _noise
-{
-    t_object x_obj;
-    int x_val;
-} t_noise;
+static t_class *noise_tilde_class;      /* Shared. */
 
-static void *noise_new(void)
-{
-    t_noise *x = (t_noise *)pd_new(noise_class);
-    static int init = 307;
-    x->x_val = (init *= 1319); 
-    outlet_new(&x->x_obj, &s_signal);
-    return (x);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static t_int *noise_perform(t_int *w)               /* Weird LCG kept for compatbility. */
+typedef struct _noise_tilde {
+    t_object    x_obj;                  /* Must be the first. */
+    int         x_state;
+    t_outlet    *x_outlet;
+    } t_noise_tilde;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static t_int *noise_tilde_perform (t_int *w)                    /* Weird LCG kept for compatbility. */
 {
-    t_sample *out = (t_sample *)(w[1]);
-    int *vp = (int *)(w[2]);
+    int *p = (int *)(w[1]);
+    PD_RESTRICTED out = (t_sample *)(w[2]);
     int n = (int)(w[3]);
-    int val = *vp;
-    while (n--)
-    {
-        *out++ = ((float)((val & PD_INT_MAX) - 0x40000000)) *
-            (float)(1.0 / 0x40000000);
-        val = val * 435898247 + 382842987;
+    
+    int state = *p;
+    
+    while (n--) {
+    //
+    *out++ = (t_sample)(((float)((state & PD_INT_MAX) - 0x40000000)) * ((float)(1.0 / 0x40000000)));
+    state  = state * 435898247 + 382842987;
+    //
     }
-    *vp = val;
-    return (w+4);
+    
+    *p = state;
+    
+    return (w + 4);
 }
 
-static void noise_dsp(t_noise *x, t_signal **sp)
+static void noise_tilde_dsp (t_noise_tilde *x, t_signal **sp)
 {
-    dsp_add(noise_perform, 3, sp[0]->s_vector, &x->x_val, sp[0]->s_vectorSize);
+    dsp_add (noise_tilde_perform, 3, &x->x_state, sp[0]->s_vector, sp[0]->s_vectorSize);
 }
 
-void noise_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *noise_tilde_new (void)
 {
-    noise_class = class_new(sym_noise__tilde__, (t_newmethod)noise_new, 0,
-        sizeof(t_noise), 0, 0);
-    class_addMethod(noise_class, (t_method)noise_dsp, sym_dsp, A_CANT, 0);
+    static int seed = 307;
+    
+    t_noise_tilde *x = (t_noise_tilde *)pd_new (noise_tilde_class);
+    
+    seed *= 1319;
+    
+    x->x_state  = seed;
+    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    
+    return x;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
+void noise_tilde_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_noise__tilde__,
+            (t_newmethod)noise_tilde_new,
+            NULL,
+            sizeof (t_noise_tilde),
+            CLASS_DEFAULT,
+            A_NULL);
+            
+    class_addDSP (c, noise_tilde_dsp);
+    
+    noise_tilde_class = c;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

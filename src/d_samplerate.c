@@ -29,11 +29,11 @@ static t_class *samplerate_tilde_class;         /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _samplerate {
+typedef struct _samplerate_tilde {
     t_object    x_obj;                          /* Must be the first. */
     t_glist     *x_owner;
     t_outlet    *x_outlet;
-    } t_samplerate;
+    } t_samplerate_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -64,7 +64,7 @@ static t_block *samplerate_tilde_getBlockIfContainsAny (t_glist **p)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void samplerate_tilde_bang (t_samplerate *x)
+static void samplerate_tilde_bang (t_samplerate_tilde *x)
 {
     t_float sampleRate = audio_getSampleRate();
     
@@ -86,7 +86,7 @@ static void samplerate_tilde_bang (t_samplerate *x)
 
 static void *samplerate_tilde_new (void)
 {
-    t_samplerate *x = (t_samplerate *)pd_new (samplerate_tilde_class);
+    t_samplerate_tilde *x = (t_samplerate_tilde *)pd_new (samplerate_tilde_class);
     
     x->x_owner  = canvas_getCurrent();
     x->x_outlet = outlet_new (cast_object (x), &s_float);
@@ -105,7 +105,7 @@ void samplerate_tilde_setup (void)
     c = class_new (sym_samplerate__tilde__,
             (t_newmethod)samplerate_tilde_new,
             NULL,
-            sizeof (t_samplerate),
+            sizeof (t_samplerate_tilde),
             CLASS_DEFAULT,
             A_NULL);
             
