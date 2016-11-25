@@ -255,8 +255,9 @@
 #include "d_send.c"
 #include "d_receive.c"
 
-#include "d_phasor.c"
 #include "d_osc.c"
+#include "d_phasor.c"
+#include "d_cos.c"
 #include "d_vcf.c"
 
 #include "d_print.c"
