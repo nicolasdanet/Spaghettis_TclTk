@@ -20,6 +20,9 @@
 
 t_float         *cos_tilde_table;       /* Shared. */
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static t_class  *cos_tilde_class;       /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -35,28 +38,36 @@ typedef struct _cost_tilde {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void cos_tilde_initialize(void)
+void cos_tilde_initialize (void)
 {
+    if (!cos_tilde_table) {
+    //
+    t_float phase = 0.0;
+    t_float phaseIncrement = (2.0 * PD_PI) / COSINE_TABLE_SIZE;
     int i;
-    float *fp, phase, phsinc = (2. * PD_PI) / COSINE_TABLE_SIZE;
-    t_rawcast64 tf;
     
-    if (cos_tilde_table) return;
-    cos_tilde_table = (float *)PD_MEMORY_GET(sizeof(float) * (COSINE_TABLE_SIZE+1));
-    for (i = COSINE_TABLE_SIZE + 1, fp = cos_tilde_table, phase = 0; i--;
-        fp++, phase += phsinc)
-            *fp = cos(phase);
-
-        /* here we check at startup whether the byte alignment
-            is as we declared it.  If not, the code has to be
-            recompiled the other way. */
-    tf.z_d = DSP_UNITBIT32 + 0.5;
-    if ((unsigned)tf.z_i[PD_RAWCAST64_LSB] != 0x80000000) { PD_BUG; }
+    cos_tilde_table = (t_float *)PD_MEMORY_GET (sizeof (t_float) * (COSINE_TABLE_SIZE + 1));
+    
+    for (i = 0; i < COSINE_TABLE_SIZE + 1; i++) {
+        cos_tilde_table[i] = (t_float)cos ((double)phase);
+        phase += phaseIncrement;
+    }
+    
+    /* Test raw cast byte alignment at startup. */
+    
+    {
+        t_rawcast64 z;
+        z.z_d = DSP_UNITBIT32 + 0.5;
+        PD_ASSERT ((z.z_i[PD_RAWCAST64_LSB] == 0x80000000));
+        PD_ABORT (!(z.z_i[PD_RAWCAST64_LSB] == 0x80000000));
+    }
+    //
+    }
 }
 
 void cos_tilde_release (void)
 {
-    
+    PD_MEMORY_FREE (cos_tilde_table);
 }
 
 // -----------------------------------------------------------------------------------------------------------
