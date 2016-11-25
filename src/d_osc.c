@@ -113,5 +113,5 @@ void osc_setup(void)
     class_addMethod(osc_class, (t_method)osc_dsp, sym_dsp, A_CANT, 0);
     class_addMethod(osc_class, (t_method)osc_ft1, sym_inlet2, A_FLOAT, 0);
 
-    cos_tilde_maketable();
+    cos_tilde_initialize();
 }

@@ -374,6 +374,8 @@ void setup_release (void)
     garray_release();
     canvas_release();
     
+    cos_tilde_release();
+    
     drawnumber_release();
     plot_release();
     drawpolygon_release();
