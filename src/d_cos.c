@@ -81,7 +81,7 @@ void cos_tilde_release (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Notice that the trick below seems broken for signal with a large amplitude. */
+/* Notice that the trick below seems broken for signals with a large amplitude. */
 /* Must be inferior to 1024 (that is 2^19 / COSINE_TABLE_SIZE). */
 
 static t_int *cos_tilde_perform (t_int *w)
