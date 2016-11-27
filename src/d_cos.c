@@ -43,14 +43,18 @@ void cos_tilde_initialize (void)
     if (!cos_tilde_table) {
     //
     /* Test raw cast byte alignment at startup. */
-    /* For more information see the dsp header. */
     
     t_rawcast64 z;
+    
     z.z_d = DSP_UNITBIT32 + 0.5;
     PD_ASSERT ((z.z_i[PD_RAWCAST64_LSB] == 0x80000000));
     PD_ASSERT ((z.z_i[PD_RAWCAST64_MSB] == DSP_UNITBIT32_MSB)); 
     PD_ABORT (!(z.z_i[PD_RAWCAST64_LSB] == 0x80000000));
     PD_ABORT (!(z.z_i[PD_RAWCAST64_MSB] == DSP_UNITBIT32_MSB));
+    
+    z.z_d = OSC_UNITBIT32;
+    PD_ASSERT ((z.z_i[PD_RAWCAST64_MSB] == OSC_UNITBIT32_MSB));
+    PD_ABORT (!(z.z_i[PD_RAWCAST64_MSB] == OSC_UNITBIT32_MSB));
     //
     }
     
@@ -82,7 +86,7 @@ void cos_tilde_release (void)
 #pragma mark -
 
 /* Notice that the trick below seems broken for signals with a large amplitude. */
-/* Must be inferior to 1024 (that is 2^19 / COSINE_TABLE_SIZE). */
+/* Must be inferior to 1024 (that is 2 ^ 19 / COSINE_TABLE_SIZE). */
 
 static t_int *cos_tilde_perform (t_int *w)
 {
@@ -108,6 +112,7 @@ static t_int *cos_tilde_perform (t_int *w)
     
     f1 = cos_tilde_table[i + 0];
     f2 = cos_tilde_table[i + 1];
+    
     *out++ = f1 + f * (f2 - f1);
     //
     }

@@ -40,6 +40,8 @@ typedef struct _osc_tilde {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* Must be inferior to 1024 (that is 2 ^ 19 / COSINE_TABLE_SIZE). */
+
 static void osc_tilde_phase (t_osc_tilde *x, t_float f)
 {
     x->x_phase = (double)COSINE_TABLE_SIZE * f;
@@ -49,121 +51,51 @@ static void osc_tilde_phase (t_osc_tilde *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_int *osc_tilde_perform(t_int *w)
+static t_int *osc_tilde_perform (t_int *w)
 {
     t_osc_tilde *x = (t_osc_tilde *)(w[1]);
-    t_float *in = (t_float *)(w[2]);
-    t_float *out = (t_float *)(w[3]);
+    PD_RESTRICTED in = (t_float *)(w[2]);
+    PD_RESTRICTED out = (t_float *)(w[3]);
     int n = (int)(w[4]);
-    float *tab = cos_tilde_table, *addr, f1, f2, frac;
-    double dphase = x->x_phase + DSP_UNITBIT32;
-    int normhipart;
-    t_rawcast64 tf;
-    float conv = x->x_conversion;
     
-    tf.z_d = DSP_UNITBIT32;
-    normhipart = tf.z_i[PD_RAWCAST64_MSB];
-#if 0
-    while (n--)
-    {
-        tf.z_d = dphase;
-        dphase += *in++ * conv;
-        addr = tab + (tf.z_i[PD_RAWCAST64_MSB] & (COSINE_TABLE_SIZE-1));
-        tf.z_i[PD_RAWCAST64_MSB] = normhipart;
-        frac = tf.z_d - DSP_UNITBIT32;
-        f1 = addr[0];
-        f2 = addr[1];
-        *out++ = f1 + frac * (f2 - f1);
-    }
-#endif
-#if 1
-        tf.z_d = dphase;
-        dphase += *in++ * conv;
-        addr = tab + (tf.z_i[PD_RAWCAST64_MSB] & (COSINE_TABLE_SIZE-1));
-        tf.z_i[PD_RAWCAST64_MSB] = normhipart;
-        frac = tf.z_d - DSP_UNITBIT32;
-    while (--n)
-    {
-        tf.z_d = dphase;
-            f1 = addr[0];
-        dphase += *in++ * conv;
-            f2 = addr[1];
-        addr = tab + (tf.z_i[PD_RAWCAST64_MSB] & (COSINE_TABLE_SIZE-1));
-        tf.z_i[PD_RAWCAST64_MSB] = normhipart;
-            *out++ = f1 + frac * (f2 - f1);
-        frac = tf.z_d - DSP_UNITBIT32;
-    }
-            f1 = addr[0];
-            f2 = addr[1];
-            *out++ = f1 + frac * (f2 - f1);
-#endif
-
-    tf.z_d = DSP_UNITBIT32 * COSINE_TABLE_SIZE;
-    normhipart = tf.z_i[PD_RAWCAST64_MSB];
-    tf.z_d = dphase + (DSP_UNITBIT32 * COSINE_TABLE_SIZE - DSP_UNITBIT32);
-    tf.z_i[PD_RAWCAST64_MSB] = normhipart;
-    x->x_phase = tf.z_d - DSP_UNITBIT32 * COSINE_TABLE_SIZE;
-    return (w+5);
-}
-
-/*
-static t_int *osc_tilde_perform(t_int *w)
-{
-    t_osc_tilde *x = (t_osc_tilde *)(w[1]);
-    t_float *in = (t_float *)(w[2]);
-    t_float *out = (t_float *)(w[3]);
-    int n = (int)(w[4]);
-    float *tab = cos_tilde_table, *addr, f1, f2, frac;
-    double dphase = x->x_phase + DSP_UNITBIT32;
-    int normhipart;
-    t_rawcast64 tf;
-    float conv = x->x_conversion;
+    double phase = x->x_phase + DSP_UNITBIT32;
+    t_float k = x->x_conversion;
+    t_rawcast64 z;
     
-    tf.z_d = DSP_UNITBIT32;
-    normhipart = tf.z_i[PD_RAWCAST64_MSB];
-#if 0
-    while (n--)
-    {
-        tf.z_d = dphase;
-        dphase += *in++ * conv;
-        addr = tab + (tf.z_i[PD_RAWCAST64_MSB] & (COSINE_TABLE_SIZE-1));
-        tf.z_i[PD_RAWCAST64_MSB] = normhipart;
-        frac = tf.z_d - DSP_UNITBIT32;
-        f1 = addr[0];
-        f2 = addr[1];
-        *out++ = f1 + frac * (f2 - f1);
-    }
-#endif
-#if 1
-        tf.z_d = dphase;
-        dphase += *in++ * conv;
-        addr = tab + (tf.z_i[PD_RAWCAST64_MSB] & (COSINE_TABLE_SIZE-1));
-        tf.z_i[PD_RAWCAST64_MSB] = normhipart;
-        frac = tf.z_d - DSP_UNITBIT32;
-    while (--n)
-    {
-        tf.z_d = dphase;
-            f1 = addr[0];
-        dphase += *in++ * conv;
-            f2 = addr[1];
-        addr = tab + (tf.z_i[PD_RAWCAST64_MSB] & (COSINE_TABLE_SIZE-1));
-        tf.z_i[PD_RAWCAST64_MSB] = normhipart;
-            *out++ = f1 + frac * (f2 - f1);
-        frac = tf.z_d - DSP_UNITBIT32;
-    }
-            f1 = addr[0];
-            f2 = addr[1];
-            *out++ = f1 + frac * (f2 - f1);
-#endif
+    while (n--) {
+    //
+    t_float f1, f2, f;
+    int i;
+    
+    z.z_d = phase;
+    
+    i = (int)(z.z_i[PD_RAWCAST64_MSB] & (COSINE_TABLE_SIZE - 1));   /* Integer part. */
+    
+    z.z_i[PD_RAWCAST64_MSB] = DSP_UNITBIT32_MSB;
+    
+    f = z.z_d - DSP_UNITBIT32;  /* Fractional part. */
 
-    tf.z_d = DSP_UNITBIT32 * COSINE_TABLE_SIZE;
-    normhipart = tf.z_i[PD_RAWCAST64_MSB];
-    tf.z_d = dphase + (DSP_UNITBIT32 * COSINE_TABLE_SIZE - DSP_UNITBIT32);
-    tf.z_i[PD_RAWCAST64_MSB] = normhipart;
-    x->x_phase = tf.z_d - DSP_UNITBIT32 * COSINE_TABLE_SIZE;
-    return (w+5);
+    /* Linear interpolation. */
+    
+    f1 = cos_tilde_table[i + 0];
+    f2 = cos_tilde_table[i + 1];
+    
+    *out++ = f1 + f * (f2 - f1);
+    
+    phase += (*in++) * k;
+    //
+    }
+
+    /* Wrap the phase (keep only the fractional part). */
+    
+    z.z_d = (phase - DSP_UNITBIT32) + OSC_UNITBIT32;
+    
+    z.z_i[PD_RAWCAST64_MSB] = OSC_UNITBIT32_MSB;
+    
+    x->x_phase = z.z_d - OSC_UNITBIT32;
+    
+    return (w + 5);
 }
-*/
 
 static void osc_tilde_dsp (t_osc_tilde *x, t_signal **sp)
 {
