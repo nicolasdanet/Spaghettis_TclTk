@@ -41,12 +41,12 @@ static t_int *phasor_perform(t_int *w)
     t_float *in = (t_float *)(w[2]);
     t_float *out = (t_float *)(w[3]);
     int n = (int)(w[4]);
-    double dphase = x->x_phase + (double)DSP_UNITBIT32;
+    double dphase = x->x_phase + (double)DSP_UNITBIT;
     t_rawcast64 tf;
     int normhipart;
     float conv = x->x_conv;
 
-    tf.z_d = DSP_UNITBIT32;
+    tf.z_d = DSP_UNITBIT;
     normhipart = tf.z_i[PD_RAWCAST64_MSB];
     tf.z_d = dphase;
 
@@ -54,11 +54,11 @@ static t_int *phasor_perform(t_int *w)
     {
         tf.z_i[PD_RAWCAST64_MSB] = normhipart;
         dphase += *in++ * conv;
-        *out++ = tf.z_d - DSP_UNITBIT32;
+        *out++ = tf.z_d - DSP_UNITBIT;
         tf.z_d = dphase;
     }
     tf.z_i[PD_RAWCAST64_MSB] = normhipart;
-    x->x_phase = tf.z_d - DSP_UNITBIT32;
+    x->x_phase = tf.z_d - DSP_UNITBIT;
     return (w+5);
 }
 

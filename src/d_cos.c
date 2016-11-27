@@ -46,15 +46,15 @@ void cos_tilde_initialize (void)
     
     t_rawcast64 z;
     
-    z.z_d = DSP_UNITBIT32 + 0.5;
+    z.z_d = DSP_UNITBIT + 0.5;
     PD_ASSERT ((z.z_i[PD_RAWCAST64_LSB] == 0x80000000));
-    PD_ASSERT ((z.z_i[PD_RAWCAST64_MSB] == DSP_UNITBIT32_MSB)); 
+    PD_ASSERT ((z.z_i[PD_RAWCAST64_MSB] == DSP_UNITBIT_MSB)); 
     PD_ABORT (!(z.z_i[PD_RAWCAST64_LSB] == 0x80000000));
-    PD_ABORT (!(z.z_i[PD_RAWCAST64_MSB] == DSP_UNITBIT32_MSB));
+    PD_ABORT (!(z.z_i[PD_RAWCAST64_MSB] == DSP_UNITBIT_MSB));
     
-    z.z_d = OSC_UNITBIT32;
-    PD_ASSERT ((z.z_i[PD_RAWCAST64_MSB] == OSC_UNITBIT32_MSB));
-    PD_ABORT (!(z.z_i[PD_RAWCAST64_MSB] == OSC_UNITBIT32_MSB));
+    z.z_d = OSC_UNITBIT;
+    PD_ASSERT ((z.z_i[PD_RAWCAST64_MSB] == OSC_UNITBIT_MSB));
+    PD_ABORT (!(z.z_i[PD_RAWCAST64_MSB] == OSC_UNITBIT_MSB));
     //
     }
     
@@ -100,13 +100,13 @@ static t_int *cos_tilde_perform (t_int *w)
     t_rawcast64 z;
     int i;
         
-    z.z_d = ((double)((*in++) * (t_sample)(COSINE_TABLE_SIZE)) + DSP_UNITBIT32);
+    z.z_d = ((double)((*in++) * (t_sample)(COSINE_TABLE_SIZE)) + DSP_UNITBIT);
     
     i = (int)(z.z_i[PD_RAWCAST64_MSB] & (COSINE_TABLE_SIZE - 1));   /* Integer part. */
     
-    z.z_i[PD_RAWCAST64_MSB] = DSP_UNITBIT32_MSB;
+    z.z_i[PD_RAWCAST64_MSB] = DSP_UNITBIT_MSB;
     
-    f = z.z_d - DSP_UNITBIT32;  /* Fractional part. */
+    f = z.z_d - DSP_UNITBIT;  /* Fractional part. */
     
     /* Linear interpolation. */
     

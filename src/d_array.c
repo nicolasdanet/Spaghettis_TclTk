@@ -542,10 +542,10 @@ static t_int *tabosc4_tilde_perform(t_int *w)
     int maxindex;
     t_word *tab = x->x_vec, *addr;
     int i;
-    double dphase = fnpoints * x->x_phase + DSP_UNITBIT32;
+    double dphase = fnpoints * x->x_phase + DSP_UNITBIT;
 
     if (!tab) goto zero;
-    tf.z_d = DSP_UNITBIT32;
+    tf.z_d = DSP_UNITBIT;
     normhipart = tf.z_i[PD_RAWCAST64_MSB];
 
 #if 1
@@ -556,7 +556,7 @@ static t_int *tabosc4_tilde_perform(t_int *w)
         dphase += *in++ * conv;
         addr = tab + (tf.z_i[PD_RAWCAST64_MSB] & mask);
         tf.z_i[PD_RAWCAST64_MSB] = normhipart;
-        frac = tf.z_d - DSP_UNITBIT32;
+        frac = tf.z_d - DSP_UNITBIT;
         a = addr[0].w_float;
         b = addr[1].w_float;
         c = addr[2].w_float;
@@ -570,11 +570,11 @@ static t_int *tabosc4_tilde_perform(t_int *w)
     }
 #endif
 
-    tf.z_d = DSP_UNITBIT32 * fnpoints;
+    tf.z_d = DSP_UNITBIT * fnpoints;
     normhipart = tf.z_i[PD_RAWCAST64_MSB];
-    tf.z_d = dphase + (DSP_UNITBIT32 * fnpoints - DSP_UNITBIT32);
+    tf.z_d = dphase + (DSP_UNITBIT * fnpoints - DSP_UNITBIT);
     tf.z_i[PD_RAWCAST64_MSB] = normhipart;
-    x->x_phase = (tf.z_d - DSP_UNITBIT32 * fnpoints)  * x->x_finvnpoints;
+    x->x_phase = (tf.z_d - DSP_UNITBIT * fnpoints)  * x->x_finvnpoints;
     return (w+5);
  zero:
     while (n--) *out++ = 0;

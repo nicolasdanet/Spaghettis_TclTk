@@ -76,7 +76,7 @@ static t_int *sigvcf_perform(t_int *w)
     int normhipart, tabindex;
     t_rawcast64 tf;
     
-    tf.z_d = DSP_UNITBIT32;
+    tf.z_d = DSP_UNITBIT;
     normhipart = tf.z_i[PD_RAWCAST64_MSB];
 
     for (i = 0; i < n; i++)
@@ -88,12 +88,12 @@ static t_int *sigvcf_perform(t_int *w)
         r = (qinv > 0 ? 1 - cf * qinv : 0);
         if (r < 0) r = 0;
         oneminusr = 1.0f - r;
-        dphase = ((double)(cfindx)) + DSP_UNITBIT32;
+        dphase = ((double)(cfindx)) + DSP_UNITBIT;
         tf.z_d = dphase;
         tabindex = tf.z_i[PD_RAWCAST64_MSB] & (COSINE_TABLE_SIZE-1);
         addr = tab + tabindex;
         tf.z_i[PD_RAWCAST64_MSB] = normhipart;
-        frac = tf.z_d - DSP_UNITBIT32;
+        frac = tf.z_d - DSP_UNITBIT;
         f1 = addr[0];
         f2 = addr[1];
         coefr = r * (f1 + frac * (f2 - f1));

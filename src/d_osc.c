@@ -58,7 +58,7 @@ static t_int *osc_tilde_perform (t_int *w)
     PD_RESTRICTED out = (t_float *)(w[3]);
     int n = (int)(w[4]);
     
-    double phase = x->x_phase + DSP_UNITBIT32;
+    double phase = x->x_phase + DSP_UNITBIT;
     t_float k = x->x_conversion;
     t_rawcast64 z;
     
@@ -71,9 +71,9 @@ static t_int *osc_tilde_perform (t_int *w)
     
     i = (int)(z.z_i[PD_RAWCAST64_MSB] & (COSINE_TABLE_SIZE - 1));   /* Integer part. */
     
-    z.z_i[PD_RAWCAST64_MSB] = DSP_UNITBIT32_MSB;
+    z.z_i[PD_RAWCAST64_MSB] = DSP_UNITBIT_MSB;
     
-    f = z.z_d - DSP_UNITBIT32;  /* Fractional part. */
+    f = z.z_d - DSP_UNITBIT;  /* Fractional part. */
 
     /* Linear interpolation. */
     
@@ -88,11 +88,11 @@ static t_int *osc_tilde_perform (t_int *w)
 
     /* Wrap the phase to cosine table size (keep only the fractional part). */
     
-    z.z_d = (phase - DSP_UNITBIT32) + OSC_UNITBIT32;
+    z.z_d = (phase - DSP_UNITBIT) + OSC_UNITBIT;
     
-    z.z_i[PD_RAWCAST64_MSB] = OSC_UNITBIT32_MSB;
+    z.z_i[PD_RAWCAST64_MSB] = OSC_UNITBIT_MSB;
     
-    x->x_phase = z.z_d - OSC_UNITBIT32;
+    x->x_phase = z.z_d - OSC_UNITBIT;
     
     return (w + 5);
 }
