@@ -86,7 +86,7 @@ static t_int *osc_tilde_perform (t_int *w)
     //
     }
 
-    /* Wrap the phase (keep only the fractional part). */
+    /* Wrap the phase to cosine table size (keep only the fractional part). */
     
     z.z_d = (phase - DSP_UNITBIT32) + OSC_UNITBIT32;
     
