@@ -62,7 +62,7 @@ void cos_tilde_initialize (void)
     /* Phase and increment use simple precision for compatibility with legacy. */
     
     t_float phase = 0.0;
-    t_float phaseIncrement = (2.0 * PD_PI) / COSINE_TABLE_SIZE;
+    t_float phaseIncrement = PD_2PI / COSINE_TABLE_SIZE;
     int i;
     
     cos_tilde_table = (t_float *)PD_MEMORY_GET (sizeof (t_float) * (COSINE_TABLE_SIZE + 1));

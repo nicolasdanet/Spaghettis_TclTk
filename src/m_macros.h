@@ -207,6 +207,7 @@ t_glist *cast_glistChecked                  (t_pd *x);
 #pragma mark -
 
 #define PD_PI                               3.14159
+#define PD_2PI                              6.28318
 #define PD_LOGTEN                           2.302585092994
 #define PD_EPSILON                          1E-9
 

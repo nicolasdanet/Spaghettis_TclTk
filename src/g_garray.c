@@ -251,7 +251,7 @@ static void garray_setWithSumOfFourierComponents (t_garray *x,
     
     garray_resizeWithInteger (x, numberOfPoints + 3);
     
-    phaseIncrement = 2.0 * (double)PD_PI / numberOfPoints;
+    phaseIncrement = PD_2PI / numberOfPoints;
     
     for (i = 0, phase = -phaseIncrement; i < array_getSize (array); i++, phase += phaseIncrement) {
     //
