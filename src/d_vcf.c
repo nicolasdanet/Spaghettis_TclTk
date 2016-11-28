@@ -1,67 +1,72 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-/* sinusoidal oscillator and table lookup; see also tabosc4~ in d_array.c.
+/* 
+    Copyright (c) 1997-2016 Miller Puckette and others.
 */
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "math.h"
 #include "d_dsp.h"
 #include "d_osc.h"
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* Resonant filter with audio-rate center frequency input. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 extern t_float *cos_tilde_table;
 
-/* ---- vcf~ - resonant filter with audio-rate center frequency input ----- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct vcfctl
-{
-    float c_re;
-    float c_im;
-    float c_q;
-    float c_isr;
-} t_vcfctl;
+t_class *vcf_tilde_class;
 
-typedef struct sigvcf
-{
-    t_object x_obj;
-    t_vcfctl x_cspace;
-    t_vcfctl *x_ctl;
-    float x_f;
-} t_sigvcf;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-t_class *sigvcf_class;
+typedef struct _vcf_tilde_ctl {
+    t_float             c_re;
+    t_float             c_im;
+    t_float             c_q;
+    t_float             c_isr;
+    } t_vcf_tilde_ctl;
 
-static void *sigvcf_new(t_float q)
-{
-    t_sigvcf *x = (t_sigvcf *)pd_new(sigvcf_class);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, sym_inlet2);
-    outlet_new(&x->x_obj, &s_signal);
-    outlet_new(&x->x_obj, &s_signal);
-    x->x_ctl = &x->x_cspace;
-    x->x_cspace.c_re = 0;
-    x->x_cspace.c_im = 0;
-    x->x_cspace.c_q = q;
-    x->x_cspace.c_isr = 0;
-    x->x_f = 0;
-    return (x);
-}
+typedef struct _vcf_tilde {
+    t_object            x_obj;
+    t_float             x_f;
+    t_vcf_tilde_ctl     x_cspace;
+    t_vcf_tilde_ctl     *x_ctl;
+    } t_vcf_tilde;
 
-static void sigvcf_ft1(t_sigvcf *x, t_float f)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void vcf_tilde_qFactor (t_vcf_tilde *x, t_float f)
 {
     x->x_ctl->c_q = (f > 0 ? f : 0.f);
 }
 
-static t_int *sigvcf_perform(t_int *w)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static t_int *vcf_tilde_perform(t_int *w)
 {
     float *in1 = (float *)(w[1]);
     float *in2 = (float *)(w[2]);
     float *out1 = (float *)(w[3]);
     float *out2 = (float *)(w[4]);
-    t_vcfctl *c = (t_vcfctl *)(w[5]);
+    t_vcf_tilde_ctl *c = (t_vcf_tilde_ctl *)(w[5]);
     int n = (t_int)(w[6]);
     int i;
     float re = c->c_re, re2;
@@ -118,22 +123,50 @@ static t_int *sigvcf_perform(t_int *w)
     return (w+7);
 }
 
-static void sigvcf_dsp(t_sigvcf *x, t_signal **sp)
+static void vcf_tilde_dsp(t_vcf_tilde *x, t_signal **sp)
 {
     x->x_ctl->c_isr = 6.28318f/sp[0]->s_sampleRate;
-    dsp_add(sigvcf_perform, 6,
+    dsp_add(vcf_tilde_perform, 6,
         sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[3]->s_vector, 
             x->x_ctl, sp[0]->s_vectorSize);
 
 }
 
-void sigvcf_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *vcf_tilde_new(t_float q)
 {
-    sigvcf_class = class_new(sym_vcf__tilde__, (t_newmethod)sigvcf_new, 0,
-        sizeof(t_sigvcf), 0, A_DEFFLOAT, 0);
-    CLASS_SIGNAL(sigvcf_class, t_sigvcf, x_f);
-    class_addMethod(sigvcf_class, (t_method)sigvcf_dsp,
+    t_vcf_tilde *x = (t_vcf_tilde *)pd_new(vcf_tilde_class);
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, sym_inlet2);
+    outlet_new(&x->x_obj, &s_signal);
+    outlet_new(&x->x_obj, &s_signal);
+    x->x_ctl = &x->x_cspace;
+    x->x_cspace.c_re = 0;
+    x->x_cspace.c_im = 0;
+    x->x_cspace.c_q = q;
+    x->x_cspace.c_isr = 0;
+    x->x_f = 0;
+    return (x);
+}
+
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void vcf_tilde_setup (void)
+{
+    vcf_tilde_class = class_new(sym_vcf__tilde__, (t_newmethod)vcf_tilde_new, 0,
+        sizeof(t_vcf_tilde), 0, A_DEFFLOAT, 0);
+    CLASS_SIGNAL(vcf_tilde_class, t_vcf_tilde, x_f);
+    class_addMethod(vcf_tilde_class, (t_method)vcf_tilde_dsp,
         sym_dsp, A_CANT, 0);
-    class_addMethod(sigvcf_class, (t_method)sigvcf_ft1,
+    class_addMethod(vcf_tilde_class, (t_method)vcf_tilde_qFactor,
         sym_inlet2, A_FLOAT, 0);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
