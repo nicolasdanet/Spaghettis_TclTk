@@ -240,12 +240,12 @@ static inline unsigned long sys_nextPowerOf2 (unsigned long v)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define SECONDS_TO_MILLISECONDS(n)          ((n) * (double)1000.0)
-#define MILLISECONDS_TO_SECONDS(n)          ((n) * (double)1e-3)
-#define SECONDS_TO_MICROSECONDS(n)          ((n) * (double)1000000.0)
-#define MICROSECONDS_TO_SECONDS(n)          ((n) * (double)1e-6)
-#define MILLISECONDS_TO_MICROSECONDS(n)     ((n) * (double)1000.0)
-#define MICROSECONDS_TO_MILLISECONDS(n)     ((n) * (double)1e-3)
+#define SECONDS_TO_MILLISECONDS(n)          ((double)(n) * 1000.0)
+#define MILLISECONDS_TO_SECONDS(n)          ((double)(n) * 1e-3)
+#define SECONDS_TO_MICROSECONDS(n)          ((double)(n) * 1000000.0)
+#define MICROSECONDS_TO_SECONDS(n)          ((double)(n) * 1e-6)
+#define MILLISECONDS_TO_MICROSECONDS(n)     ((double)(n) * 1000.0)
+#define MICROSECONDS_TO_MILLISECONDS(n)     ((double)(n) * 1e-3)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

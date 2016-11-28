@@ -64,7 +64,7 @@
 
 /* LCM (32000, 44100, 48000, 88200, 96000). */
     
-#define SYSTIME_PER_MILLISECOND                 (double)(32.0 * 441.0)
+#define SYSTIME_PER_MILLISECOND                 (32.0 * 441.0)
 #define SYSTIME_PER_SECOND                      (SYSTIME_PER_MILLISECOND * 1000.0)
 
 // -----------------------------------------------------------------------------------------------------------

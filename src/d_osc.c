@@ -13,7 +13,6 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "d_dsp.h"
-#include "d_osc.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -88,11 +87,11 @@ static t_int *osc_tilde_perform (t_int *w)
 
     /* Wrap the phase to cosine table size (keep only the fractional part). */
     
-    z.z_d = (phase - DSP_UNITBIT) + OSC_UNITBIT;
+    z.z_d = (phase - DSP_UNITBIT) + COSINE_UNITBIT;
     
-    z.z_i[PD_RAWCAST64_MSB] = OSC_UNITBIT_MSB;
+    z.z_i[PD_RAWCAST64_MSB] = COSINE_UNITBIT_MSB;
     
-    x->x_phase = z.z_d - OSC_UNITBIT;
+    x->x_phase = z.z_d - COSINE_UNITBIT;
     
     return (w + 5);
 }

@@ -13,7 +13,6 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "d_dsp.h"
-#include "d_osc.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -52,9 +51,9 @@ void cos_tilde_initialize (void)
     PD_ABORT (!(z.z_i[PD_RAWCAST64_LSB] == 0x80000000));
     PD_ABORT (!(z.z_i[PD_RAWCAST64_MSB] == DSP_UNITBIT_MSB));
     
-    z.z_d = OSC_UNITBIT;
-    PD_ASSERT ((z.z_i[PD_RAWCAST64_MSB] == OSC_UNITBIT_MSB));
-    PD_ABORT (!(z.z_i[PD_RAWCAST64_MSB] == OSC_UNITBIT_MSB));
+    z.z_d = COSINE_UNITBIT;
+    PD_ASSERT ((z.z_i[PD_RAWCAST64_MSB] == COSINE_UNITBIT_MSB));
+    PD_ABORT (!(z.z_i[PD_RAWCAST64_MSB] == COSINE_UNITBIT_MSB));
     //
     }
     
