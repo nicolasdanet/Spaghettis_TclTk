@@ -151,7 +151,7 @@ void voutlet_dspEpilog (t_voutlet *x,
     int phaseRead   = (int)((phase) & (t_phase)(bigPeriod - 1));
     int phaseWrite  = (int)((phase + period - 1) & (t_phase)(- period) & (t_phase)(bigPeriod - 1));
     
-    /* Variable above is the multiple of the hop size (modulo the window period). */
+    /* Variable above is next multiple of the hop size (modulo the window period). */
     /* http://stackoverflow.com/a/1766566 */
     /* Note that ~(n - 1) is equal to (-n) for power of 2 (assume two's complement). */
     

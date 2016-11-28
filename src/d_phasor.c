@@ -43,31 +43,33 @@ static void phasor_tilde_phase (t_phasor_tilde *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_int *phasor_tilde_perform(t_int *w)
+static t_int *phasor_tilde_perform (t_int *w)
 {
     t_phasor_tilde *x = (t_phasor_tilde *)(w[1]);
-    t_float *in = (t_float *)(w[2]);
-    t_float *out = (t_float *)(w[3]);
+    PD_RESTRICTED in  = (t_float *)(w[2]);
+    PD_RESTRICTED out = (t_float *)(w[3]);
     int n = (int)(w[4]);
-    double dphase = x->x_phase + (double)DSP_UNITBIT;
-    t_rawcast64 tf;
-    int normhipart;
-    float conv = x->x_conversion;
+    
+    double phase = x->x_phase + DSP_UNITBIT;
+    t_float k = x->x_conversion;
+    t_rawcast64 z;
+    
+    z.z_d = phase;
 
-    tf.z_d = DSP_UNITBIT;
-    normhipart = tf.z_i[PD_RAWCAST64_MSB];
-    tf.z_d = dphase;
-
-    while (n--)
-    {
-        tf.z_i[PD_RAWCAST64_MSB] = normhipart;
-        dphase += *in++ * conv;
-        *out++ = tf.z_d - DSP_UNITBIT;
-        tf.z_d = dphase;
+    while (n--) {
+    //
+    z.z_i[PD_RAWCAST64_MSB] = DSP_UNITBIT_MSB;      /* Wrap the phase (keep only the fractional part). */
+    phase += (*in++) * k;
+    *out++ = z.z_d - DSP_UNITBIT;
+    z.z_d = phase;
+    //
     }
-    tf.z_i[PD_RAWCAST64_MSB] = normhipart;
-    x->x_phase = tf.z_d - DSP_UNITBIT;
-    return (w+5);
+    
+    z.z_i[PD_RAWCAST64_MSB] = DSP_UNITBIT_MSB;      /* Ditto. */
+    
+    x->x_phase = z.z_d - DSP_UNITBIT;
+    
+    return (w + 5);
 }
 
 static void phasor_tilde_dsp (t_phasor_tilde *x, t_signal **sp)

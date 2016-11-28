@@ -112,7 +112,18 @@ typedef int64_t t_phase;        /* Assumed -1 has all bits set (two's complement
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* In the style of R. Hoeldrich (ICMC 1995 Banff). */
+/*
+    In the style of R. Hoeldrich (ICMC 1995 Banff).
+    
+    The trick is based on the IEEE 754 floating-point format. 
+    It uses a constant offset to get the integer and the fractional parts split over
+    the fourth and fifth bytes.
+    Using raw cast to 32-bit integer it is therefore possible to get or to set them
+    independently and (that is the goal) efficiently.
+    
+    Thanks to let me know links to original paper.
+    
+*/
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
