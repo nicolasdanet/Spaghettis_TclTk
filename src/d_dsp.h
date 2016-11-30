@@ -352,4 +352,35 @@ static inline t_sample *resample_vector (t_resample *x)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* Notice that the trick below seems broken for index with a large value. */
+/* Must be inferior to 1024 (that is 2 ^ 19 / COSINE_TABLE_SIZE). */
+
+extern t_float *cos_tilde_table;
+
+static inline t_float dsp_getCosineAt (double index)
+{
+    t_float f1, f2, f;
+    t_rawcast64 z;
+    int i;
+        
+    z.z_d = index + DSP_UNITBIT;
+    
+    i = (int)(z.z_i[PD_RAWCAST64_MSB] & (COSINE_TABLE_SIZE - 1));   /* Integer part. */
+    
+    z.z_i[PD_RAWCAST64_MSB] = DSP_UNITBIT_MSB;
+    
+    f = z.z_d - DSP_UNITBIT;  /* Fractional part. */
+    
+    /* Linear interpolation. */
+    
+    f1 = cos_tilde_table[i + 0];
+    f2 = cos_tilde_table[i + 1];
+    
+    return (f1 + f * (f2 - f1));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #endif // __d_dsp_h_

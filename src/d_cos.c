@@ -84,37 +84,13 @@ void cos_tilde_release (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Notice that the trick below seems broken for signals with a large amplitude. */
-/* Must be inferior to 1024 (that is 2 ^ 19 / COSINE_TABLE_SIZE). */
-
 static t_int *cos_tilde_perform (t_int *w)
 {
     PD_RESTRICTED in = (t_sample *)(w[1]);
     PD_RESTRICTED out = (t_sample *)(w[2]);
     int n = (int)(w[3]);
     
-    while (n--) {
-    //
-    t_float f1, f2, f;
-    t_rawcast64 z;
-    int i;
-        
-    z.z_d = ((double)((*in++) * (t_sample)(COSINE_TABLE_SIZE)) + DSP_UNITBIT);
-    
-    i = (int)(z.z_i[PD_RAWCAST64_MSB] & (COSINE_TABLE_SIZE - 1));   /* Integer part. */
-    
-    z.z_i[PD_RAWCAST64_MSB] = DSP_UNITBIT_MSB;
-    
-    f = z.z_d - DSP_UNITBIT;  /* Fractional part. */
-    
-    /* Linear interpolation. */
-    
-    f1 = cos_tilde_table[i + 0];
-    f2 = cos_tilde_table[i + 1];
-    
-    *out++ = f1 + f * (f2 - f1);
-    //
-    }
+    while (n--) { *out++ = (t_sample)dsp_getCosineAt ((*in++) * COSINE_TABLE_SIZE); }
 
     return (w + 4);
 }
