@@ -261,6 +261,12 @@ static inline t_float dsp_getCosineAt (double index)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define dsp_getSineAt(index)    dsp_getCosineAt ((double)(index) - (COSINE_TABLE_SIZE / 4.0))
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static inline t_sample *resample_vector (t_resample *x)
 {
     return x->r_vector;
