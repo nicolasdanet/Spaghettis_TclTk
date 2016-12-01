@@ -39,8 +39,6 @@ typedef struct _osc_tilde {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Must be inferior to 1024 (that is 2 ^ 19 / COSINE_TABLE_SIZE). */
-
 static void osc_tilde_phase (t_osc_tilde *x, t_float f)
 {
     x->x_phase = (double)COSINE_TABLE_SIZE * f;

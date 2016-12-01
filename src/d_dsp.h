@@ -154,7 +154,6 @@ typedef int64_t t_phase;        /* Assumed -1 has all bits set (two's complement
 // DSP_UNITBIT + 1.0
 // DSP_UNITBIT + 2.0
 // DSP_UNITBIT + 4.0
-// ...
 
 // 0 10000010011 1000 00000000 00000001     00000000 00000000 00000000 00000000
 // 0 10000010011 1000 00000000 00000010     00000000 00000000 00000000 00000000
@@ -163,6 +162,33 @@ typedef int64_t t_phase;        /* Assumed -1 has all bits set (two's complement
 // 0x41380001 00000000
 // 0x41380002 00000000
 // 0x41380004 00000000
+
+// DSP_UNITBIT - 0.5
+// DSP_UNITBIT - 0.25
+// DSP_UNITBIT - 0.125
+// DSP_UNITBIT - 0.0625
+
+// DSP_UNITBIT - 1.0
+// DSP_UNITBIT - 2.0
+// DSP_UNITBIT - 4.0
+
+// 0 10000010011 0111 11111111 11111111     10000000 00000000 00000000 00000000
+// 0 10000010011 0111 11111111 11111111     11000000 00000000 00000000 00000000
+// 0 10000010011 0111 11111111 11111111     11100000 00000000 00000000 00000000
+// 0 10000010011 0111 11111111 11111111     11110000 00000000 00000000 00000000
+
+// 0 10000010011 0111 11111111 11111111     00000000 00000000 00000000 00000000
+// 0 10000010011 0111 11111111 11111110     00000000 00000000 00000000 00000000
+// 0 10000010011 0111 11111111 11111100     00000000 00000000 00000000 00000000
+
+// 0x4137ffff 80000000
+// 0x4137ffff c0000000  
+// 0x4137ffff e0000000 
+// 0x4137ffff f0000000
+
+// 0x4137ffff 00000000
+// 0x4137fffe 00000000
+// 0x4137fffc 00000000
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -198,6 +224,47 @@ typedef int64_t t_phase;        /* Assumed -1 has all bits set (two's complement
 // 0x41c80000 00000000
 // 0x41c80000 80000000
 // 0x41c80000 40000000
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* Notice that the trick below seems broken for index with a large value. */
+
+/* Does it worth the cost? */
+
+extern t_float *cos_tilde_table;
+
+static inline t_float dsp_getCosineAt (double index)
+{
+    t_float f1, f2, f;
+    t_rawcast64 z;
+    int i;
+        
+    z.z_d = index + DSP_UNITBIT;
+    
+    i = (int)(z.z_i[PD_RAWCAST64_MSB] & (COSINE_TABLE_SIZE - 1));   /* Integer part. */
+    
+    z.z_i[PD_RAWCAST64_MSB] = DSP_UNITBIT_MSB;
+    
+    f = z.z_d - DSP_UNITBIT;  /* Fractional part. */
+    
+    /* Linear interpolation. */
+    
+    f1 = cos_tilde_table[i + 0];
+    f2 = cos_tilde_table[i + 1];
+    
+    return (f1 + f * (f2 - f1));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline t_sample *resample_vector (t_resample *x)
+{
+    return x->r_vector;
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -340,46 +407,6 @@ void            mayer_fft                   (int n, t_sample *real, t_sample *im
 void            mayer_ifft                  (int n, t_sample *real, t_sample *imaginary);
 void            mayer_realfft               (int n, t_sample *real);
 void            mayer_realifft              (int n, t_sample *real);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static inline t_sample *resample_vector (t_resample *x)
-{
-    return x->r_vector;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-/* Notice that the trick below seems broken for index with a large value. */
-/* Must be inferior to 1024 (that is 2 ^ 19 / COSINE_TABLE_SIZE). */
-
-extern t_float *cos_tilde_table;
-
-static inline t_float dsp_getCosineAt (double index)
-{
-    t_float f1, f2, f;
-    t_rawcast64 z;
-    int i;
-        
-    z.z_d = index + DSP_UNITBIT;
-    
-    i = (int)(z.z_i[PD_RAWCAST64_MSB] & (COSINE_TABLE_SIZE - 1));   /* Integer part. */
-    
-    z.z_i[PD_RAWCAST64_MSB] = DSP_UNITBIT_MSB;
-    
-    f = z.z_d - DSP_UNITBIT;  /* Fractional part. */
-    
-    /* Linear interpolation. */
-    
-    f1 = cos_tilde_table[i + 0];
-    f2 = cos_tilde_table[i + 1];
-    
-    return (f1 + f * (f2 - f1));
-}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
