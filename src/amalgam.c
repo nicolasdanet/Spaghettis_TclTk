@@ -255,7 +255,7 @@
 #include "d_send.c"
 #include "d_receive.c"
 
-#include "d_plus.c"
+#include "d_add.c"
 #include "d_minus.c"
 #include "d_multiply.c"
 #include "d_divide.c"
