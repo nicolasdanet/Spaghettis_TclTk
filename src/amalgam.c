@@ -256,6 +256,7 @@
 #include "d_receive.c"
 
 #include "d_arithmetic.c"
+#include "d_max.c"
 #include "d_min.c"
 
 #include "d_osc.c"
