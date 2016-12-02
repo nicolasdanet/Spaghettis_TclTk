@@ -391,29 +391,31 @@ void            block_getParameters         (t_block *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            dsp_addZeroPerform          (t_sample *s, int n);
-void            dsp_addPlusPerform          (t_sample *src1, t_sample *src2, t_sample *dest, int n);
-void            dsp_addScalarPerform        (t_float *f, t_sample *dest, int n);
+void    dsp_addZeroPerform              (t_sample *s, int n);
+void    dsp_addPlusPerform              (t_sample *src1, t_sample *src2, t_sample *dest, int n);
+void    dsp_addSubtractPerform          (PD_RESTRICTED src1, PD_RESTRICTED src2, PD_RESTRICTED dest, int n);
+void    dsp_addScalarPerform            (t_float *f, t_sample *dest, int n);
 
-void            dsp_addPlusScalarPerform    (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n);
-void            dsp_addCopyPerform          (PD_RESTRICTED src, PD_RESTRICTED dest, int n);
-void            dsp_addCopyZeroPerform      (PD_RESTRICTED src, PD_RESTRICTED dest, int n);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void            cos_tilde_initialize        (void);
-void            cos_tilde_release           (void);
+void    dsp_addPlusScalarPerform        (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n);
+void    dsp_addSubtractScalarPerform    (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n);
+void    dsp_addCopyPerform              (PD_RESTRICTED src, PD_RESTRICTED dest, int n);
+void    dsp_addCopyZeroPerform          (PD_RESTRICTED src, PD_RESTRICTED dest, int n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            mayer_fft                   (int n, t_sample *real, t_sample *imaginary);
-void            mayer_ifft                  (int n, t_sample *real, t_sample *imaginary);
-void            mayer_realfft               (int n, t_sample *real);
-void            mayer_realifft              (int n, t_sample *real);
+void    cos_tilde_initialize            (void);
+void    cos_tilde_release               (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void    mayer_fft                       (int n, t_sample *real, t_sample *imaginary);
+void    mayer_ifft                      (int n, t_sample *real, t_sample *imaginary);
+void    mayer_realfft                   (int n, t_sample *real);
+void    mayer_realifft                  (int n, t_sample *real);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
