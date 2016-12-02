@@ -395,6 +395,7 @@ void            dsp_addZeroPerform          (t_sample *s, int n);
 void            dsp_addPlusPerform          (t_sample *src1, t_sample *src2, t_sample *dest, int n);
 void            dsp_addScalarPerform        (t_float *f, t_sample *dest, int n);
 
+void            dsp_addPlusScalarPerform    (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n);
 void            dsp_addCopyPerform          (PD_RESTRICTED src, PD_RESTRICTED dest, int n);
 void            dsp_addCopyZeroPerform      (PD_RESTRICTED src, PD_RESTRICTED dest, int n);
 

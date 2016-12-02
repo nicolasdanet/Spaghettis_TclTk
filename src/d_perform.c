@@ -81,6 +81,18 @@ static t_int *perform_plus (t_int *w)
     return (w + 5);
 }
 
+/* No aliasing. */
+
+static t_int *perform_plusScalar (t_int *w)
+{
+    t_sample *in = (t_sample *)(w[1]);
+    t_float f = *(t_float *)(w[2]);
+    t_sample *out = (t_sample *)(w[3]);
+    int n = (int)(w[4]);
+    while (n--) *out++ = *in++ + f; 
+    return (w+5);
+}
+
 static t_int *perform_scalar (t_int *w)
 {
     t_float f = *(t_float *)(w[1]);
@@ -250,6 +262,25 @@ static t_int *vPerform_plus (t_int *w)
     return (w + 5);
 }
 
+/* No aliasing. */
+
+static t_int *vPerform_plusScalar(t_int *w)
+{
+    t_sample *in = (t_sample *)(w[1]);
+    t_float g = *(t_float *)(w[2]);
+    t_sample *out = (t_sample *)(w[3]);
+    int n = (int)(w[4]);
+    for (; n; n -= 8, in += 8, out += 8)
+    {
+        t_sample f0 = in[0], f1 = in[1], f2 = in[2], f3 = in[3];
+        t_sample f4 = in[4], f5 = in[5], f6 = in[6], f7 = in[7];
+
+        out[0] = f0 + g; out[1] = f1 + g; out[2] = f2 + g; out[3] = f3 + g;
+        out[4] = f4 + g; out[5] = f5 + g; out[6] = f6 + g; out[7] = f7 + g;
+    }
+    return (w+5);
+}
+
 static t_int *vPerform_scalar (t_int *w)
 {
     t_float f = *(t_float *)(w[1]);
@@ -324,6 +355,19 @@ void dsp_addPlusPerform (t_sample *src1, t_sample *src2, t_sample *dest, int n)
     if (n & 7) { dsp_add (perform_plus, 4, src1, src2, dest, n); }
     else {      
         dsp_add (vPerform_plus, 4, src1, src2, dest, n);
+    }
+}
+
+/* No aliasing. */
+
+void dsp_addPlusScalarPerform (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n)
+{
+    PD_ASSERT (n > 0);
+    PD_ASSERT (src != dest);
+    
+    if (n & 7) { dsp_add (perform_plusScalar, 4, src, f, dest, n); }
+    else {     
+        dsp_add (vPerform_plusScalar, 4, src, f, dest, n);
     }
 }
 
