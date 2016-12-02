@@ -1,19 +1,22 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-/*  arithmetic binops (+, -, *, /).
-If no creation argument is given, there are two signal inlets for vector/vector
-operation; otherwise it's vector/scalar and the second inlet takes a float
-to reset the value.
+/* 
+    Copyright (c) 1997-2016 Miller Puckette and others.
 */
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
 #include "d_dsp.h"
 
-/* ----------------------------- plus ----------------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static t_class *plus_class, *scalarplus_class;
 
 typedef struct _plus
@@ -93,7 +96,7 @@ static void scalarplus_dsp(t_scalarplus *x, t_signal **sp)
             sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
-static void plus_setup(void)
+void plus_tilde_setup(void)
 {
     plus_class = class_new(sym___plus____tilde__, (t_newmethod)plus_new, 0,
         sizeof(t_plus), 0, A_GIMME, 0);
@@ -223,7 +226,7 @@ static void scalarminus_dsp(t_scalarminus *x, t_signal **sp)
             sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
-static void minus_setup(void)
+void minus_tilde_setup(void)
 {
     minus_class = class_new(sym___minus____tilde__, (t_newmethod)minus_new, 0,
         sizeof(t_minus), 0, A_GIMME, 0);
@@ -354,7 +357,7 @@ static void scalartimes_dsp(t_scalartimes *x, t_signal **sp)
             sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
-static void times_setup(void)
+void times_tilde_setup(void)
 {
     times_class = class_new(sym___asterisk____tilde__, (t_newmethod)times_new, 0,
         sizeof(t_times), 0, A_GIMME, 0);
@@ -496,7 +499,7 @@ static void scalarover_dsp(t_scalarover *x, t_signal **sp)
             sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
-static void over_setup(void)
+void over_tilde_setup(void)
 {
     over_class = class_new(sym___slash____tilde__, (t_newmethod)over_new, 0,
         sizeof(t_over), 0, A_GIMME, 0);
@@ -638,7 +641,7 @@ static void scalarmax_dsp(t_scalarmax *x, t_signal **sp)
             sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
-static void max_setup(void)
+void max_tilde_setup(void)
 {
     max_class = class_new(sym_max__tilde__, (t_newmethod)max_new, 0,
         sizeof(t_max), 0, A_GIMME, 0);
@@ -780,7 +783,7 @@ static void scalarmin_dsp(t_scalarmin *x, t_signal **sp)
             sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
-static void min_setup(void)
+void min_tilde_setup(void)
 {
     min_class = class_new(sym_min__tilde__, (t_newmethod)min_new, 0,
         sizeof(t_min), 0, A_GIMME, 0);
@@ -795,14 +798,6 @@ static void min_setup(void)
     class_setHelpName(scalarmin_class, sym_max__tilde__);
 }
 
-/* ----------------------- global setup routine ---------------- */
-void d_arithmetic_setup(void)
-{
-    plus_setup();
-    minus_setup();
-    times_setup();
-    over_setup();
-    max_setup();
-    min_setup();
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 

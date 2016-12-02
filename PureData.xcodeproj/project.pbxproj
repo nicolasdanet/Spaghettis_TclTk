@@ -1072,6 +1072,15 @@
 			name = Array;
 			sourceTree = "<group>";
 		};
+		377C79961DF08AD0008195B0 /* Math */ = {
+			isa = PBXGroup;
+			children = (
+				378971B01C4F716700263434 /* d_arithmetic.c */,
+				378971B91C4F716700263434 /* d_math.c */,
+			);
+			name = Math;
+			sourceTree = "<group>";
+		};
 		3789717E1C4F712A00263434 /* Scripts */ = {
 			isa = PBXGroup;
 			children = (
@@ -1276,14 +1285,13 @@
 			isa = PBXGroup;
 			children = (
 				37C000571DE2FE4B00F90584 /* Global */,
+				377C79961DF08AD0008195B0 /* Math */,
 				370D017F1DE6BFA4005918D4 /* Osc */,
 				37E4DA031DEC6BB500190484 /* Filters */,
 				37C000561DE2FE3800F90584 /* Miscellaneous */,
 				378971B11C4F716700263434 /* d_array.c */,
 				378971B41C4F716700263434 /* d_delay.c */,
 				378971B71C4F716700263434 /* d_filter.c */,
-				378971B01C4F716700263434 /* d_arithmetic.c */,
-				378971B91C4F716700263434 /* d_math.c */,
 				378971B21C4F716700263434 /* d_ctl.c */,
 				378971BD1C4F716700263434 /* d_soundfile.c */,
 				378971B61C4F716700263434 /* d_fft.c */,
