@@ -85,12 +85,14 @@ static t_int *perform_plus (t_int *w)
 
 static t_int *perform_plusScalar (t_int *w)
 {
-    t_sample *in = (t_sample *)(w[1]);
+    PD_RESTRICTED s1 = (t_sample *)(w[1]);
     t_float f = *(t_float *)(w[2]);
-    t_sample *out = (t_sample *)(w[3]);
+    PD_RESTRICTED s2 = (t_sample *)(w[3]);
     int n = (int)(w[4]);
-    while (n--) *out++ = *in++ + f; 
-    return (w+5);
+    
+    while (n--) { *s2 = *s1 + f; s2++; s1++; }
+    
+    return (w + 5);
 }
 
 static t_int *perform_scalar (t_int *w)
@@ -264,21 +266,40 @@ static t_int *vPerform_plus (t_int *w)
 
 /* No aliasing. */
 
-static t_int *vPerform_plusScalar(t_int *w)
+static t_int *vPerform_plusScalar (t_int *w)
 {
-    t_sample *in = (t_sample *)(w[1]);
+    PD_RESTRICTED s1 = (t_sample *)(w[1]);
     t_float g = *(t_float *)(w[2]);
-    t_sample *out = (t_sample *)(w[3]);
+    PD_RESTRICTED s2 = (t_sample *)(w[3]);
     int n = (int)(w[4]);
-    for (; n; n -= 8, in += 8, out += 8)
-    {
-        t_sample f0 = in[0], f1 = in[1], f2 = in[2], f3 = in[3];
-        t_sample f4 = in[4], f5 = in[5], f6 = in[6], f7 = in[7];
+    
+    while (n) {
+    //
+    t_sample f0 = s1[0];
+    t_sample f1 = s1[1];
+    t_sample f2 = s1[2];
+    t_sample f3 = s1[3];
+    t_sample f4 = s1[4];
+    t_sample f5 = s1[5];
+    t_sample f6 = s1[6];
+    t_sample f7 = s1[7];
 
-        out[0] = f0 + g; out[1] = f1 + g; out[2] = f2 + g; out[3] = f3 + g;
-        out[4] = f4 + g; out[5] = f5 + g; out[6] = f6 + g; out[7] = f7 + g;
+    s2[0] = f0 + g;
+    s2[1] = f1 + g;
+    s2[2] = f2 + g;
+    s2[3] = f3 + g;
+    s2[4] = f4 + g;
+    s2[5] = f5 + g;
+    s2[6] = f6 + g;
+    s2[7] = f7 + g;
+    
+    n -= 8; 
+    s1 += 8;
+    s2 += 8;
+    //
     }
-    return (w+5);
+    
+    return (w + 5);
 }
 
 static t_int *vPerform_scalar (t_int *w)
