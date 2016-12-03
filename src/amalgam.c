@@ -255,13 +255,6 @@
 #include "d_send.c"
 #include "d_receive.c"
 
-#include "d_add.c"
-#include "d_subtract.c"
-#include "d_multiply.c"
-#include "d_divide.c"
-#include "d_max.c"
-#include "d_min.c"
-
 #include "d_osc.c"
 #include "d_phasor.c"
 #include "d_cos.c"
@@ -271,6 +264,13 @@
 #include "d_bang.c"
 #include "d_samplerate.c"
 #include "d_noise.c"
+
+#include "d_add.c"
+#include "d_subtract.c"
+#include "d_multiply.c"
+#include "d_divide.c"
+#include "d_max.c"
+#include "d_min.c"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
