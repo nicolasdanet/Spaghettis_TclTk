@@ -177,7 +177,7 @@ void listtosymbol_setup     (void);
 void add_tilde_setup        (void);
 void subtract_tilde_setup   (void);
 void multiply_tilde_setup   (void);
-void over_tilde_setup       (void);
+void divide_tilde_setup     (void);
 void max_tilde_setup        (void);
 void min_tilde_setup        (void);
 void d_array_setup          (void);
@@ -345,7 +345,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     add_tilde_setup();
     subtract_tilde_setup();
     multiply_tilde_setup();
-    over_tilde_setup();
+    divide_tilde_setup();
     max_tilde_setup();
     min_tilde_setup();
     d_array_setup();

@@ -14,43 +14,30 @@
 #include "m_macros.h"
 #include "d_dsp.h"
 
-/* ----------------------------- over ----------------------------- */
-static t_class *over_class, *scalarover_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct _over
-{
-    t_object x_obj;
-    t_float x_f;
-} t_over;
+static t_class *divide_tilde_class;             /* Shared. */
+static t_class *divideScalar_tilde_class;       /* Shared. */
 
-typedef struct _scalarover
-{
-    t_object x_obj;
-    t_float x_f;
-    t_float x_g;
-} t_scalarover;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static void *over_new(t_symbol *s, int argc, t_atom *argv)
-{
-    if (argc > 1) post("/~: extra arguments ignored");
-    if (argc) 
-    {
-        t_scalarover *x = (t_scalarover *)pd_new(scalarover_class);
-        inlet_newFloat(&x->x_obj, &x->x_g);
-        x->x_g = atom_getFloatAtIndex(0, argc, argv);
-        outlet_new(&x->x_obj, &s_signal);
-        x->x_f = 0;
-        return (x);
-    }
-    else
-    {
-        t_over *x = (t_over *)pd_new(over_class);
-        inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
-        outlet_new(&x->x_obj, &s_signal);
-        x->x_f = 0;
-        return (x);
-    }
-}
+typedef struct _divide_tilde {
+    t_object    x_obj;                          /* Must be the first. */
+    t_float     x_f;
+    t_outlet    *x_outlet;
+    } t_divide_tilde;
+
+typedef struct _dividescalar_tilde {
+    t_object    x_obj;                          /* Must be the first. */
+    t_float     x_f;
+    t_float     x_scalar;
+    t_outlet    *x_outlet;
+    } t_dividescalar_tilde;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 t_int *over_perform(t_int *w)
 {
@@ -121,7 +108,7 @@ t_int *scalarover_perf8(t_int *w)
     return (w+5);
 }
 
-static void over_dsp(t_over *x, t_signal **sp)
+static void divide_tilde_dsp (t_divide_tilde *x, t_signal **sp)
 {
     if (sp[0]->s_vectorSize&7)
         dsp_add(over_perform, 4,
@@ -131,29 +118,83 @@ static void over_dsp(t_over *x, t_signal **sp)
             sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
 }
 
-static void scalarover_dsp(t_scalarover *x, t_signal **sp)
+static void divideScalar_tilde_dsp (t_dividescalar_tilde *x, t_signal **sp)
 {
     if (sp[0]->s_vectorSize&7)
-        dsp_add(scalarover_perform, 4, sp[0]->s_vector, &x->x_g,
+        dsp_add(scalarover_perform, 4, sp[0]->s_vector, &x->x_scalar,
             sp[1]->s_vector, sp[0]->s_vectorSize);
     else        
-        dsp_add(scalarover_perf8, 4, sp[0]->s_vector, &x->x_g,
+        dsp_add(scalarover_perf8, 4, sp[0]->s_vector, &x->x_scalar,
             sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
-void over_tilde_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *divide_tilde_newWithScalar (t_symbol *s, int argc, t_atom *argv)
 {
-    over_class = class_new(sym___slash____tilde__, (t_newmethod)over_new, 0,
-        sizeof(t_over), 0, A_GIMME, 0);
-    CLASS_SIGNAL(over_class, t_over, x_f);
-    class_addMethod(over_class, (t_method)over_dsp, sym_dsp, A_CANT, 0);
-    class_setHelpName(over_class, sym_max__tilde__);
-    scalarover_class = class_new(sym___slash____tilde__, 0, 0,
-        sizeof(t_scalarover), 0, 0);
-    CLASS_SIGNAL(scalarover_class, t_scalarover, x_f);
-    class_addMethod(scalarover_class, (t_method)scalarover_dsp,
-        sym_dsp, A_CANT, 0);
-    class_setHelpName(scalarover_class, sym_max__tilde__);
+    if (argc > 1) { warning_unusedArguments (s, argc + 1, argv - 1); }
+    
+    t_dividescalar_tilde *x = (t_dividescalar_tilde *)pd_new (divideScalar_tilde_class);
+
+    x->x_scalar = atom_getFloatAtIndex (0, argc, argv);
+    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    
+    inlet_newFloat (cast_object (x), &x->x_scalar);
+        
+    return x;
+}
+
+static void *divide_tilde_newWithSignal (t_symbol *s, int argc, t_atom *argv)
+{
+    t_divide_tilde *x = (t_divide_tilde *)pd_new (divide_tilde_class);
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    
+    inlet_new (cast_object (x), cast_pd (x), &s_signal, &s_signal);
+
+    return x;
+}
+
+static void *divide_tilde_new (t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc) {
+        return divide_tilde_newWithScalar (s, argc, argv);
+    } else {
+        return divide_tilde_newWithSignal (s, argc, argv);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void divide_tilde_setup (void)
+{
+    divide_tilde_class = class_new (sym___slash____tilde__,
+                                    (t_newmethod)divide_tilde_new,
+                                    NULL,
+                                    sizeof (t_divide_tilde),
+                                    CLASS_DEFAULT,
+                                    A_GIMME,
+                                    A_NULL);
+                        
+    divideScalar_tilde_class = class_new (sym___slash____tilde__,
+                                    NULL,
+                                    NULL,
+                                    sizeof (t_dividescalar_tilde),
+                                    CLASS_DEFAULT,
+                                    A_NULL);
+        
+    CLASS_SIGNAL (divide_tilde_class, t_divide_tilde, x_f);
+    CLASS_SIGNAL (divideScalar_tilde_class, t_dividescalar_tilde, x_f);
+        
+    class_addDSP (divide_tilde_class, divide_tilde_dsp);
+    class_addDSP (divideScalar_tilde_class, divideScalar_tilde_dsp);
+    
+    class_setHelpName (divide_tilde_class, sym_max__tilde__);
+    class_setHelpName (divideScalar_tilde_class, sym_max__tilde__);
 }
 
 // -----------------------------------------------------------------------------------------------------------
