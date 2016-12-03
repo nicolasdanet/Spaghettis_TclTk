@@ -230,6 +230,38 @@ static t_int *perform_divideScalar (t_int *w)
     return (w + 5);
 }
 
+/* Aliasing. */
+
+static t_int *perform_maximum (t_int *w)
+{
+    t_sample *in1 = (t_sample *)(w[1]);
+    t_sample *in2 = (t_sample *)(w[2]);
+    t_sample *out = (t_sample *)(w[3]);
+    int n = (int)(w[4]);
+    while (n--)
+    {
+        t_sample f = *in1++, g = *in2++;
+        *out++ = (f > g ? f : g); 
+    }
+    return (w+5);
+}
+
+/* No aliasing. */
+
+static t_int *perform_maximumScalar (t_int *w)
+{
+    t_sample *in = (t_sample *)(w[1]);
+    t_float f = *(t_float *)(w[2]);
+    t_sample *out = (t_sample *)(w[3]);
+    int n = (int)(w[4]);
+    while (n--)
+    {
+        t_sample g = *in++;
+        *out++ = (f > g ? f : g); 
+    }
+    return (w+5);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -718,6 +750,51 @@ static t_int *vPerform_divideScalar (t_int *w)
     return (w + 5);
 }
 
+/* Aliasing. */
+
+static t_int *vPerform_maximum (t_int *w)
+{
+    t_sample *in1 = (t_sample *)(w[1]);
+    t_sample *in2 = (t_sample *)(w[2]);
+    t_sample *out = (t_sample *)(w[3]);
+    int n = (int)(w[4]);
+    for (; n; n -= 8, in1 += 8, in2 += 8, out += 8)
+    {
+        t_sample f0 = in1[0], f1 = in1[1], f2 = in1[2], f3 = in1[3];
+        t_sample f4 = in1[4], f5 = in1[5], f6 = in1[6], f7 = in1[7];
+
+        t_sample g0 = in2[0], g1 = in2[1], g2 = in2[2], g3 = in2[3];
+        t_sample g4 = in2[4], g5 = in2[5], g6 = in2[6], g7 = in2[7];
+
+        out[0] = (f0 > g0 ? f0 : g0); out[1] = (f1 > g1 ? f1 : g1);
+        out[2] = (f2 > g2 ? f2 : g2); out[3] = (f3 > g3 ? f3 : g3);
+        out[4] = (f4 > g4 ? f4 : g4); out[5] = (f5 > g5 ? f5 : g5);
+        out[6] = (f6 > g6 ? f6 : g6); out[7] = (f7 > g7 ? f7 : g7);
+    }
+    return (w+5);
+}
+
+/* No aliasing. */
+
+static t_int *vPerform_maximumScalar (t_int *w)
+{
+    t_sample *in = (t_sample *)(w[1]);
+    t_float g = *(t_float *)(w[2]);
+    t_sample *out = (t_sample *)(w[3]);
+    int n = (int)(w[4]);
+    for (; n; n -= 8, in += 8, out += 8)
+    {
+        t_sample f0 = in[0], f1 = in[1], f2 = in[2], f3 = in[3];
+        t_sample f4 = in[4], f5 = in[5], f6 = in[6], f7 = in[7];
+
+        out[0] = (f0 > g ? f0 : g); out[1] = (f1 > g ? f1 : g);
+        out[2] = (f2 > g ? f2 : g); out[3] = (f3 > g ? f3 : g);
+        out[4] = (f4 > g ? f4 : g); out[5] = (f5 > g ? f5 : g);
+        out[6] = (f6 > g ? f6 : g); out[7] = (f7 > g ? f7 : g);
+    }
+    return (w+5);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -872,6 +949,31 @@ void dsp_addDivideScalarPerform (PD_RESTRICTED src, t_float *f, PD_RESTRICTED de
     if (n & 7) { dsp_add (perform_divideScalar, 4, src, f, dest, n); }
     else {     
         dsp_add (vPerform_divideScalar, 4, src, f, dest, n);
+    }
+}
+
+/* Aliasing. */
+
+void dsp_addMaximumPerform (t_sample *src1, t_sample *src2, t_sample *dest, int n)
+{
+    PD_ASSERT (n > 0);
+    
+    if (n & 7) { dsp_add (perform_maximum, 4, src1, src2, dest, n); }
+    else {      
+        dsp_add (vPerform_maximum, 4, src1, src2, dest, n);
+    }
+}
+
+/* No aliasing. */
+
+void dsp_addMaximumScalarPerform (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n)
+{
+    PD_ASSERT (n > 0);
+    PD_ASSERT (src != dest);
+    
+    if (n & 7) { dsp_add (perform_maximumScalar, 4, src, f, dest, n); }
+    else {     
+        dsp_add (vPerform_maximumScalar, 4, src, f, dest, n);
     }
 }
 
