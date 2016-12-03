@@ -392,12 +392,16 @@ void            block_getParameters         (t_block *x,
 #pragma mark -
 
 void    dsp_addZeroPerform              (t_sample *s, int n);
-void    dsp_addPlusPerform              (t_sample *src1, t_sample *src2, t_sample *dest, int n);
-void    dsp_addSubtractPerform          (PD_RESTRICTED src1, PD_RESTRICTED src2, PD_RESTRICTED dest, int n);
 void    dsp_addScalarPerform            (t_float *f, t_sample *dest, int n);
+
+void    dsp_addPlusPerform              (t_sample *src1, t_sample *src2, t_sample *dest, int n);
+void    dsp_addSubtractPerform          (t_sample *src1, t_sample *src2, t_sample *dest, int n);
+void    dsp_addMultiplyPerform          (t_sample *src1, t_sample *src2, t_sample *dest, int n);
 
 void    dsp_addPlusScalarPerform        (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n);
 void    dsp_addSubtractScalarPerform    (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n);
+void    dsp_addMultiplyScalarPerform    (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n);
+
 void    dsp_addCopyPerform              (PD_RESTRICTED src, PD_RESTRICTED dest, int n);
 void    dsp_addCopyZeroPerform          (PD_RESTRICTED src, PD_RESTRICTED dest, int n);
 
