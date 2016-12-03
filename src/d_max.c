@@ -14,43 +14,30 @@
 #include "m_macros.h"
 #include "d_dsp.h"
 
-/* ----------------------------- max ----------------------------- */
-static t_class *max_class, *scalarmax_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct _max
-{
-    t_object x_obj;
-    t_float x_f;
-} t_max;
+static t_class *max_tilde_class;                /* Shared. */
+static t_class *maxScalar_tilde_class;          /* Shared. */
 
-typedef struct _scalarmax
-{
-    t_object x_obj;
-    t_float x_f;
-    t_float x_g;
-} t_scalarmax;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static void *max_new(t_symbol *s, int argc, t_atom *argv)
-{
-    if (argc > 1) post("max~: extra arguments ignored");
-    if (argc) 
-    {
-        t_scalarmax *x = (t_scalarmax *)pd_new(scalarmax_class);
-        inlet_newFloat(&x->x_obj, &x->x_g);
-        x->x_g = atom_getFloatAtIndex(0, argc, argv);
-        outlet_new(&x->x_obj, &s_signal);
-        x->x_f = 0;
-        return (x);
-    }
-    else
-    {
-        t_max *x = (t_max *)pd_new(max_class);
-        inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
-        outlet_new(&x->x_obj, &s_signal);
-        x->x_f = 0;
-        return (x);
-    }
-}
+typedef struct _max_tilde {
+    t_object    x_obj;                          /* Must be the first. */
+    t_float     x_f;
+    t_outlet    *x_outlet;
+    } t_max_tilde;
+
+typedef struct _maxscalar_tilde {
+    t_object    x_obj;                          /* Must be the first. */
+    t_float     x_f;
+    t_float     x_scalar;
+    t_outlet    *x_outlet;
+    } t_maxscalar_tilde;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 t_int *max_perform(t_int *w)
 {
@@ -121,7 +108,11 @@ t_int *scalarmax_perf8(t_int *w)
     return (w+5);
 }
 
-static void max_dsp(t_max *x, t_signal **sp)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void max_tilde_dsp (t_max_tilde *x, t_signal **sp)
 {
     if (sp[0]->s_vectorSize&7)
         dsp_add(max_perform, 4,
@@ -131,29 +122,83 @@ static void max_dsp(t_max *x, t_signal **sp)
             sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
 }
 
-static void scalarmax_dsp(t_scalarmax *x, t_signal **sp)
+static void maxscalar_tilde_dsp (t_maxscalar_tilde *x, t_signal **sp)
 {
     if (sp[0]->s_vectorSize&7)
-        dsp_add(scalarmax_perform, 4, sp[0]->s_vector, &x->x_g,
+        dsp_add(scalarmax_perform, 4, sp[0]->s_vector, &x->x_scalar,
             sp[1]->s_vector, sp[0]->s_vectorSize);
     else        
-        dsp_add(scalarmax_perf8, 4, sp[0]->s_vector, &x->x_g,
+        dsp_add(scalarmax_perf8, 4, sp[0]->s_vector, &x->x_scalar,
             sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
-void max_tilde_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *max_tilde_newWithScalar (t_symbol *s, int argc, t_atom *argv)
 {
-    max_class = class_new(sym_max__tilde__, (t_newmethod)max_new, 0,
-        sizeof(t_max), 0, A_GIMME, 0);
-    CLASS_SIGNAL(max_class, t_max, x_f);
-    class_addMethod(max_class, (t_method)max_dsp, sym_dsp, A_CANT, 0);
-    class_setHelpName(max_class, sym_max__tilde__);
-    scalarmax_class = class_new(sym_max__tilde__, 0, 0,
-        sizeof(t_scalarmax), 0, 0);
-    CLASS_SIGNAL(scalarmax_class, t_scalarmax, x_f);
-    class_addMethod(scalarmax_class, (t_method)scalarmax_dsp,
-        sym_dsp, A_CANT, 0);
-    class_setHelpName(scalarmax_class, sym_max__tilde__);
+    if (argc > 1) { warning_unusedArguments (s, argc + 1, argv - 1); }
+    
+    t_maxscalar_tilde *x = (t_maxscalar_tilde *)pd_new (maxScalar_tilde_class);
+    
+    x->x_scalar = atom_getFloatAtIndex (0, argc, argv);
+    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    
+    inlet_newFloat (cast_object (x), &x->x_scalar);
+            
+    return x;
+}
+
+static void *max_tilde_newWithSignal (t_symbol *s, int argc, t_atom *argv)
+{
+    t_max_tilde *x = (t_max_tilde *)pd_new (max_tilde_class);
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    
+    inlet_new (cast_object (x), cast_pd (x), &s_signal, &s_signal);
+
+    return x;
+}
+
+static void *max_tilde_new (t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc) {
+        return max_tilde_newWithScalar (s, argc, argv);
+    } else {
+        return max_tilde_newWithSignal (s, argc, argv);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void max_tilde_setup (void)
+{
+    max_tilde_class = class_new (sym_max__tilde__,
+                                    (t_newmethod)max_tilde_new,
+                                    NULL,
+                                    sizeof (t_max_tilde),
+                                    CLASS_DEFAULT,
+                                    A_GIMME,
+                                    A_NULL);
+    
+    maxScalar_tilde_class = class_new (sym_max__tilde__,
+                                    NULL,
+                                    NULL,
+                                    sizeof (t_maxscalar_tilde),
+                                    CLASS_DEFAULT,
+                                    A_NULL);
+        
+    CLASS_SIGNAL (max_tilde_class, t_max_tilde, x_f);
+    CLASS_SIGNAL (maxScalar_tilde_class, t_maxscalar_tilde, x_f);
+        
+    class_addDSP (max_tilde_class, max_tilde_dsp);
+    class_addDSP (maxScalar_tilde_class, maxscalar_tilde_dsp);
+
+    class_setHelpName (max_tilde_class, sym_max__tilde__);
+    class_setHelpName (maxScalar_tilde_class, sym_max__tilde__);
 }
 
 // -----------------------------------------------------------------------------------------------------------

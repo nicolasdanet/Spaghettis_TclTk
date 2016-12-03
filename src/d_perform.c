@@ -199,7 +199,7 @@ static t_int *perform_divide (t_int *w)
     
     if (f2) { *s3++ = f1 / f2; }
     else {
-        *s3++ = 0.0;
+        *s3++ = 0;
     }
     //
     }
@@ -220,7 +220,7 @@ static t_int *perform_divideScalar (t_int *w)
     //
     if (f) { *s2 = *s1 / f; }
     else {
-        *s2 = 0.0;
+        *s2 = 0;
     } 
     
     s2++; s1++;
@@ -659,14 +659,14 @@ static t_int *vPerform_divide (t_int *w)
     t_sample g6 = s2[6];
     t_sample g7 = s2[7];
 
-    s3[0] = g0 ? f0 / g0 : 0.0;
-    s3[1] = g1 ? f1 / g1 : 0.0;
-    s3[2] = g2 ? f2 / g2 : 0.0;
-    s3[3] = g3 ? f3 / g3 : 0.0;
-    s3[4] = g4 ? f4 / g4 : 0.0;
-    s3[5] = g5 ? f5 / g5 : 0.0;
-    s3[6] = g6 ? f6 / g6 : 0.0;
-    s3[7] = g7 ? f7 / g7 : 0.0;
+    s3[0] = g0 ? f0 / g0 : 0;
+    s3[1] = g1 ? f1 / g1 : 0;
+    s3[2] = g2 ? f2 / g2 : 0;
+    s3[3] = g3 ? f3 / g3 : 0;
+    s3[4] = g4 ? f4 / g4 : 0;
+    s3[5] = g5 ? f5 / g5 : 0;
+    s3[6] = g6 ? f6 / g6 : 0;
+    s3[7] = g7 ? f7 / g7 : 0;
     
     n -= 8; 
     s1 += 8;
