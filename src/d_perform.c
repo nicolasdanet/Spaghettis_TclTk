@@ -187,29 +187,47 @@ static t_int *perform_multiplyScalar (t_int *w)
 
 static t_int *perform_divide (t_int *w)
 {
-    t_sample *in1 = (t_sample *)(w[1]);
-    t_sample *in2 = (t_sample *)(w[2]);
-    t_sample *out = (t_sample *)(w[3]);
+    t_sample *s1 = (t_sample *)(w[1]);
+    t_sample *s2 = (t_sample *)(w[2]);
+    t_sample *s3 = (t_sample *)(w[3]);
     int n = (int)(w[4]);
-    while (n--)
-    {
-        t_sample g = *in2++;
-        *out++ = (g ? *in1++ / g : 0); 
+    
+    while (n--) {
+    //
+    t_sample f1 = *s1++;
+    t_sample f2 = *s2++;
+    
+    if (f2) { *s3++ = f1 / f2; }
+    else {
+        *s3++ = 0.0;
     }
-    return (w+5);
+    //
+    }
+    
+    return (w + 5);
 }
 
 /* No aliasing. */
 
 static t_int *perform_divideScalar (t_int *w)
 {
-    t_sample *in = (t_sample *)(w[1]);
+    PD_RESTRICTED s1 = (t_sample *)(w[1]);
     t_float f = *(t_float *)(w[2]);
-    t_sample *out = (t_sample *)(w[3]);
+    PD_RESTRICTED s2 = (t_sample *)(w[3]);
     int n = (int)(w[4]);
-    if(f) f = 1./f;
-    while (n--) *out++ = *in++ * f; 
-    return (w+5);
+    
+    while (n--) {
+    //
+    if (f) { *s2 = *s1 / f; }
+    else {
+        *s2 = 0.0;
+    } 
+    
+    s2++; s1++;
+    //
+    }
+    
+    return (w + 5);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -616,48 +634,88 @@ static t_int *vPerform_multiplyScalar (t_int *w)
 
 static t_int *vPerform_divide (t_int *w)
 {
-    t_sample *in1 = (t_sample *)(w[1]);
-    t_sample *in2 = (t_sample *)(w[2]);
-    t_sample *out = (t_sample *)(w[3]);
+    t_sample *s1 = (t_sample *)(w[1]);
+    t_sample *s2 = (t_sample *)(w[2]);
+    t_sample *s3 = (t_sample *)(w[3]);
     int n = (int)(w[4]);
-    for (; n; n -= 8, in1 += 8, in2 += 8, out += 8)
-    {
-        t_sample f0 = in1[0], f1 = in1[1], f2 = in1[2], f3 = in1[3];
-        t_sample f4 = in1[4], f5 = in1[5], f6 = in1[6], f7 = in1[7];
+    
+    while (n) {
+    //
+    t_sample f0 = s1[0];
+    t_sample f1 = s1[1];
+    t_sample f2 = s1[2];
+    t_sample f3 = s1[3];
+    t_sample f4 = s1[4];
+    t_sample f5 = s1[5];
+    t_sample f6 = s1[6];
+    t_sample f7 = s1[7];
 
-        t_sample g0 = in2[0], g1 = in2[1], g2 = in2[2], g3 = in2[3];
-        t_sample g4 = in2[4], g5 = in2[5], g6 = in2[6], g7 = in2[7];
+    t_sample g0 = s2[0];
+    t_sample g1 = s2[1];
+    t_sample g2 = s2[2];
+    t_sample g3 = s2[3];
+    t_sample g4 = s2[4];
+    t_sample g5 = s2[5];
+    t_sample g6 = s2[6];
+    t_sample g7 = s2[7];
 
-        out[0] = (g0? f0 / g0 : 0);
-        out[1] = (g1? f1 / g1 : 0);
-        out[2] = (g2? f2 / g2 : 0);
-        out[3] = (g3? f3 / g3 : 0);
-        out[4] = (g4? f4 / g4 : 0);
-        out[5] = (g5? f5 / g5 : 0);
-        out[6] = (g6? f6 / g6 : 0);
-        out[7] = (g7? f7 / g7 : 0);
+    s3[0] = g0 ? f0 / g0 : 0.0;
+    s3[1] = g1 ? f1 / g1 : 0.0;
+    s3[2] = g2 ? f2 / g2 : 0.0;
+    s3[3] = g3 ? f3 / g3 : 0.0;
+    s3[4] = g4 ? f4 / g4 : 0.0;
+    s3[5] = g5 ? f5 / g5 : 0.0;
+    s3[6] = g6 ? f6 / g6 : 0.0;
+    s3[7] = g7 ? f7 / g7 : 0.0;
+    
+    n -= 8; 
+    s1 += 8;
+    s2 += 8;
+    s3 += 8;
+    //
     }
-    return (w+5);
+    
+    return (w + 5);
 }
 
 /* No aliasing. */
 
 static t_int *vPerform_divideScalar (t_int *w)
 {
-    t_sample *in = (t_sample *)(w[1]);
+    PD_RESTRICTED s1 = (t_sample *)(w[1]);
     t_float g = *(t_float *)(w[2]);
-    t_sample *out = (t_sample *)(w[3]);
+    PD_RESTRICTED s2 = (t_sample *)(w[3]);
     int n = (int)(w[4]);
-    if (g) g = 1.f / g;
-    for (; n; n -= 8, in += 8, out += 8)
-    {
-        t_sample f0 = in[0], f1 = in[1], f2 = in[2], f3 = in[3];
-        t_sample f4 = in[4], f5 = in[5], f6 = in[6], f7 = in[7];
+    
+    if (g) { g = 1.0 / g; }
+    
+    while (n) {
+    //
+    t_sample f0 = s1[0];
+    t_sample f1 = s1[1];
+    t_sample f2 = s1[2];
+    t_sample f3 = s1[3];
+    t_sample f4 = s1[4];
+    t_sample f5 = s1[5];
+    t_sample f6 = s1[6];
+    t_sample f7 = s1[7];
 
-        out[0] = f0 * g; out[1] = f1 * g; out[2] = f2 * g; out[3] = f3 * g;
-        out[4] = f4 * g; out[5] = f5 * g; out[6] = f6 * g; out[7] = f7 * g;
+    s2[0] = f0 * g;
+    s2[1] = f1 * g;
+    s2[2] = f2 * g;
+    s2[3] = f3 * g;
+    s2[4] = f4 * g;
+    s2[5] = f5 * g;
+    s2[6] = f6 * g;
+    s2[7] = f7 * g;
+    
+    n -= 8; 
+    s1 += 8;
+    s2 += 8;
+    //
     }
-    return (w+5);
+    
+    return (w + 5);
 }
 
 // -----------------------------------------------------------------------------------------------------------
