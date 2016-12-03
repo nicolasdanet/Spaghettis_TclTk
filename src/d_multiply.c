@@ -14,44 +14,30 @@
 #include "m_macros.h"
 #include "d_dsp.h"
 
-/* ----------------------------- times ----------------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static t_class *times_class, *scalartimes_class;
+static t_class *multiply_tilde_class;               /* Shared. */
+static t_class *multiplyScalar_tilde_class;         /* Shared. */
 
-typedef struct _times
-{
-    t_object x_obj;
-    t_float x_f;
-} t_times;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct _scalartimes
-{
-    t_object x_obj;
-    t_float x_f;
-    t_float x_g;
-} t_scalartimes;
+typedef struct _multiply_tilde {
+    t_object    x_obj;                              /* Must be the first. */
+    t_float     x_f;
+    t_outlet    *x_outlet;
+    } t_multiply_tilde;
 
-static void *times_new(t_symbol *s, int argc, t_atom *argv)
-{
-    if (argc > 1) post("*~: extra arguments ignored");
-    if (argc) 
-    {
-        t_scalartimes *x = (t_scalartimes *)pd_new(scalartimes_class);
-        inlet_newFloat(&x->x_obj, &x->x_g);
-        x->x_g = atom_getFloatAtIndex(0, argc, argv);
-        outlet_new(&x->x_obj, &s_signal);
-        x->x_f = 0;
-        return (x);
-    }
-    else
-    {
-        t_times *x = (t_times *)pd_new(times_class);
-        inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
-        outlet_new(&x->x_obj, &s_signal);
-        x->x_f = 0;
-        return (x);
-    }
-}
+typedef struct _multiplyscalar_tilde {
+    t_object    x_obj;                              /* Must be the first. */
+    t_float     x_f;
+    t_float     x_scalar;
+    t_outlet    *x_outlet;
+    } t_multiplyscalar_tilde;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 t_int *times_perform(t_int *w)
 {
@@ -110,7 +96,11 @@ t_int *scalartimes_perf8(t_int *w)
     return (w+5);
 }
 
-static void times_dsp(t_times *x, t_signal **sp)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void multiply_tilde_dsp (t_multiply_tilde *x, t_signal **sp)
 {
     if (sp[0]->s_vectorSize&7)
         dsp_add(times_perform, 4,
@@ -120,29 +110,83 @@ static void times_dsp(t_times *x, t_signal **sp)
             sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
 }
 
-static void scalartimes_dsp(t_scalartimes *x, t_signal **sp)
+static void multiplyScalar_tilde_dsp (t_multiplyscalar_tilde *x, t_signal **sp)
 {
     if (sp[0]->s_vectorSize&7)
-        dsp_add(scalartimes_perform, 4, sp[0]->s_vector, &x->x_g,
+        dsp_add(scalartimes_perform, 4, sp[0]->s_vector, &x->x_scalar,
             sp[1]->s_vector, sp[0]->s_vectorSize);
     else        
-        dsp_add(scalartimes_perf8, 4, sp[0]->s_vector, &x->x_g,
+        dsp_add(scalartimes_perf8, 4, sp[0]->s_vector, &x->x_scalar,
             sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
-void times_tilde_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *multiply_tilde_newWithScalar (t_symbol *s, int argc, t_atom *argv)
 {
-    times_class = class_new(sym___asterisk____tilde__, (t_newmethod)times_new, 0,
-        sizeof(t_times), 0, A_GIMME, 0);
-    CLASS_SIGNAL(times_class, t_times, x_f);
-    class_addMethod(times_class, (t_method)times_dsp, sym_dsp, A_CANT, 0);
-    class_setHelpName(times_class, sym_max__tilde__);
-    scalartimes_class = class_new(sym___asterisk____tilde__, 0, 0,
-        sizeof(t_scalartimes), 0, 0);
-    CLASS_SIGNAL(scalartimes_class, t_scalartimes, x_f);
-    class_addMethod(scalartimes_class, (t_method)scalartimes_dsp,
-        sym_dsp, A_CANT, 0);
-    class_setHelpName(scalartimes_class, sym_max__tilde__);
+    if (argc > 1) { warning_unusedArguments (s, argc + 1, argv - 1); }
+    
+    t_multiplyscalar_tilde *x = (t_multiplyscalar_tilde *)pd_new (multiplyScalar_tilde_class);
+    
+    x->x_scalar = atom_getFloatAtIndex (0, argc, argv);
+    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+        
+    inlet_newFloat (cast_object (x), &x->x_scalar);
+
+    return x;
+}
+
+static void *multiply_tilde_newWithSignal (t_symbol *s, int argc, t_atom *argv)
+{
+    t_multiply_tilde *x = (t_multiply_tilde *)pd_new (multiply_tilde_class);
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    
+    inlet_new (cast_object (x), cast_pd (x), &s_signal, &s_signal);
+        
+    return x;
+}
+
+static void *multiply_tilde_new (t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc) {
+        return multiply_tilde_newWithScalar (s, argc, argv);
+    } else {
+        return multiply_tilde_newWithSignal (s, argc, argv);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void multiply_tilde_setup (void)
+{
+    multiply_tilde_class = class_new (sym___asterisk____tilde__,
+                                    (t_newmethod)multiply_tilde_new,
+                                    NULL,
+                                    sizeof (t_multiply_tilde),
+                                    CLASS_DEFAULT,
+                                    A_GIMME,
+                                    A_NULL);
+    
+    multiplyScalar_tilde_class = class_new (sym___asterisk____tilde__,
+                                    NULL,
+                                    NULL,
+                                    sizeof (t_multiplyscalar_tilde),
+                                    CLASS_DEFAULT,
+                                    A_NULL);
+        
+    CLASS_SIGNAL (multiply_tilde_class, t_multiply_tilde, x_f);
+    CLASS_SIGNAL (multiplyScalar_tilde_class, t_multiplyscalar_tilde, x_f);
+        
+    class_addDSP (multiply_tilde_class, multiply_tilde_dsp);
+    class_addDSP (multiplyScalar_tilde_class, multiplyScalar_tilde_dsp);
+        
+    class_setHelpName (multiply_tilde_class, sym_max__tilde__);
+    class_setHelpName (multiplyScalar_tilde_class, sym_max__tilde__);
 }
 
 // -----------------------------------------------------------------------------------------------------------
