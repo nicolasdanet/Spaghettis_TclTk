@@ -272,6 +272,7 @@
 #include "d_max.c"
 #include "d_min.c"
 #include "d_math.c"
+#include "d_ftom.c"
 #include "d_dbtorms.c"
 #include "d_rmstodb.c"
 #include "d_dbtopow.c"
