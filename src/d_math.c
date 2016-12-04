@@ -11,22 +11,22 @@
 #include "m_macros.h"
 #include "d_dsp.h"
 #include <math.h>
-#define LOGTEN 2.302585092994
+
 
 /* ------------------------- clip~ -------------------------- */
 static t_class *clip_class;
 
-typedef struct _clip
+typedef struct _clip_tilde
 {
     t_object x_obj;
     t_float x_f;
     t_float x_lo;
     t_float x_hi;
-} t_clip;
+} t_clip_tilde;
 
-static void *clip_new(t_float lo, t_float hi)
+static void *clip_tilde_new(t_float lo, t_float hi)
 {
-    t_clip *x = (t_clip *)pd_new(clip_class);
+    t_clip_tilde *x = (t_clip_tilde *)pd_new(clip_class);
     x->x_lo = lo;
     x->x_hi = hi;
     outlet_new(&x->x_obj, &s_signal);
@@ -38,7 +38,7 @@ static void *clip_new(t_float lo, t_float hi)
 
 static t_int *clip_perform(t_int *w)
 {
-    t_clip *x = (t_clip *)(w[1]);
+    t_clip_tilde *x = (t_clip_tilde *)(w[1]);
     t_sample *in = (t_sample *)(w[2]);
     t_sample *out = (t_sample *)(w[3]);
     int n = (int)(w[4]);
@@ -52,16 +52,16 @@ static t_int *clip_perform(t_int *w)
     return (w+5);
 }
 
-static void clip_dsp(t_clip *x, t_signal **sp)
+static void clip_dsp(t_clip_tilde *x, t_signal **sp)
 {
     dsp_add(clip_perform, 4, x, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
-static void clip_setup(void)
+void clip_tilde_setup(void)
 {
-    clip_class = class_new(sym_clip__tilde__, (t_newmethod)clip_new, 0,
-        sizeof(t_clip), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
-    CLASS_SIGNAL(clip_class, t_clip, x_f);
+    clip_class = class_new(sym_clip__tilde__, (t_newmethod)clip_tilde_new, 0,
+        sizeof(t_clip_tilde), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
+    CLASS_SIGNAL(clip_class, t_clip_tilde, x_f);
     class_addMethod(clip_class, (t_method)clip_dsp, sym_dsp, A_CANT, 0);
 }
 
@@ -163,7 +163,7 @@ static void sigrsqrt_dsp(t_sigrsqrt *x, t_signal **sp)
     dsp_add(sigrsqrt_perform, 3, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
-void sigrsqrt_setup(void)
+void sigrsqrt_tilde_setup(void)
 {
     init_rsqrt();
     sigrsqrt_class = class_new(sym_rsqrt__tilde__, (t_newmethod)sigrsqrt_new, 0,
@@ -222,7 +222,7 @@ static void sigsqrt_dsp(t_sigsqrt *x, t_signal **sp)
     dsp_add(sigsqrt_perform, 3, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
-void sigsqrt_setup(void)
+void sigsqrt_tilde_setup(void)
 {
     sigsqrt_class = class_new(sym_sqrt__tilde__, (t_newmethod)sigsqrt_new, 0,
         sizeof(t_sigsqrt), 0, 0);
@@ -269,7 +269,7 @@ static void sigwrap_dsp(t_sigwrap *x, t_signal **sp)
     dsp_add(sigwrap_perform, 3, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
-void sigwrap_setup(void)
+void sigwrap_tilde_setup(void)
 {
     sigwrap_class = class_new(sym_wrap__tilde__, (t_newmethod)sigwrap_new, 0,
         sizeof(t_sigwrap), 0, 0);
@@ -325,6 +325,7 @@ void mtof_tilde_setup(void)
     CLASS_SIGNAL(mtof_tilde_class, t_mtof_tilde, x_f);
     class_addMethod(mtof_tilde_class, (t_method)mtof_tilde_dsp,
         sym_dsp, A_CANT, 0);
+    class_setHelpName(mtof_tilde_class, sym_mtof__tilde__);
 }
 
 /* ------------------------------ ftom_tilde~ -------------------------- */
@@ -369,6 +370,7 @@ void ftom_tilde_setup(void)
     CLASS_SIGNAL(ftom_tilde_class, t_ftom_tilde, x_f);
     class_addMethod(ftom_tilde_class, (t_method)ftom_tilde_dsp,
         sym_dsp, A_CANT, 0);
+    class_setHelpName(ftom_tilde_class, sym_mtof__tilde__);
 }
 
 /* ------------------------------ dbtorms~ -------------------------- */
@@ -401,7 +403,7 @@ static t_int *dbtorms_tilde_perform(t_int *w)
         {
             if (f > 485)
                 f = 485;
-            *out = exp((LOGTEN * 0.05) * (f-100.));
+            *out = exp((PD_LOGTEN * 0.05) * (f-100.));
         }
     }
     return (w + 4);
@@ -419,6 +421,7 @@ void dbtorms_tilde_setup(void)
     CLASS_SIGNAL(dbtorms_tilde_class, t_dbtorms_tilde, x_f);
     class_addMethod(dbtorms_tilde_class, (t_method)dbtorms_tilde_dsp,
         sym_dsp, A_CANT, 0);
+    class_setHelpName(dbtorms_tilde_class, sym_mtof__tilde__);
 }
 
 /* ------------------------------ rmstodb~ -------------------------- */
@@ -449,7 +452,7 @@ static t_int *rmstodb_tilde_perform(t_int *w)
         if (f <= 0) *out = 0;
         else
         {
-            t_sample g = 100 + 20./LOGTEN * log(f);
+            t_sample g = 100 + 20./PD_LOGTEN * log(f);
             *out = (g < 0 ? 0 : g);
         }
     }
@@ -468,6 +471,7 @@ void rmstodb_tilde_setup(void)
     CLASS_SIGNAL(rmstodb_tilde_class, t_rmstodb_tilde, x_f);
     class_addMethod(rmstodb_tilde_class, (t_method)rmstodb_tilde_dsp,
         sym_dsp, A_CANT, 0);
+    class_setHelpName(rmstodb_tilde_class, sym_mtof__tilde__);
 }
 
 /* ------------------------------ dbtopow~ -------------------------- */
@@ -500,7 +504,7 @@ static t_int *dbtopow_tilde_perform(t_int *w)
         {
             if (f > 870)
                 f = 870;
-            *out = exp((LOGTEN * 0.1) * (f-100.));
+            *out = exp((PD_LOGTEN * 0.1) * (f-100.));
         }
     }
     return (w + 4);
@@ -518,6 +522,7 @@ void dbtopow_tilde_setup(void)
     CLASS_SIGNAL(dbtopow_tilde_class, t_dbtopow_tilde, x_f);
     class_addMethod(dbtopow_tilde_class, (t_method)dbtopow_tilde_dsp,
         sym_dsp, A_CANT, 0);
+    class_setHelpName(dbtopow_tilde_class, sym_mtof__tilde__);
 }
 
 /* ------------------------------ powtodb~ -------------------------- */
@@ -548,7 +553,7 @@ static t_int *powtodb_tilde_perform(t_int *w)
         if (f <= 0) *out = 0;
         else
         {
-            t_sample g = 100 + 10./LOGTEN * log(f);
+            t_sample g = 100 + 10./PD_LOGTEN * log(f);
             *out = (g < 0 ? 0 : g);
         }
     }
@@ -567,6 +572,7 @@ void powtodb_tilde_setup(void)
     CLASS_SIGNAL(powtodb_tilde_class, t_powtodb_tilde, x_f);
     class_addMethod(powtodb_tilde_class, (t_method)powtodb_tilde_dsp,
         sym_dsp, A_CANT, 0);
+    class_setHelpName(powtodb_tilde_class, sym_mtof__tilde__);
 }
 
 /* ----------------------------- pow ----------------------------- */
@@ -612,7 +618,7 @@ static void pow_tilde_dsp(t_pow_tilde *x, t_signal **sp)
         sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
 }
 
-static void pow_tilde_setup(void)
+void pow_tilde_setup(void)
 {
     pow_tilde_class = class_new(sym_pow__tilde__, (t_newmethod)pow_tilde_new, 0,
         sizeof(t_pow_tilde), 0, A_DEFFLOAT, 0);
@@ -653,7 +659,7 @@ static void exp_tilde_dsp(t_exp_tilde *x, t_signal **sp)
         sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
-static void exp_tilde_setup(void)
+void exp_tilde_setup(void)
 {
     exp_tilde_class = class_new(sym_exp__tilde__, (t_newmethod)exp_tilde_new, 0,
         sizeof(t_exp_tilde), 0, 0);
@@ -705,7 +711,7 @@ static void log_tilde_dsp(t_log_tilde *x, t_signal **sp)
         sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
 }
 
-static void log_tilde_setup(void)
+void log_tilde_setup(void)
 {
     log_tilde_class = class_new(sym_log__tilde__, (t_newmethod)log_tilde_new, 0,
         sizeof(t_log_tilde), 0, A_DEFFLOAT, 0);
@@ -749,40 +755,12 @@ static void abs_tilde_dsp(t_abs_tilde *x, t_signal **sp)
         sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
-static void abs_tilde_setup(void)
+void abs_tilde_setup(void)
 {
     abs_tilde_class = class_new(sym_abs__tilde__, (t_newmethod)abs_tilde_new, 0,
         sizeof(t_abs_tilde), 0, 0);
     CLASS_SIGNAL(abs_tilde_class, t_abs_tilde, x_f);
     class_addMethod(abs_tilde_class, (t_method)abs_tilde_dsp,
         sym_dsp, A_CANT, 0);
-}
-
-/* ------------------------ global setup routine ------------------------- */
-
-void d_math_setup(void)
-{
-    t_symbol *s = sym_mtof__tilde__;
-    clip_setup();
-    sigrsqrt_setup();
-    sigsqrt_setup();
-    sigwrap_setup();
-    mtof_tilde_setup();
-    ftom_tilde_setup();
-    dbtorms_tilde_setup();
-    rmstodb_tilde_setup();
-    dbtopow_tilde_setup();
-    powtodb_tilde_setup();
-    pow_tilde_setup();
-    exp_tilde_setup();
-    log_tilde_setup();
-    abs_tilde_setup();
-
-    class_setHelpName(mtof_tilde_class, s);
-    class_setHelpName(ftom_tilde_class, s);
-    class_setHelpName(dbtorms_tilde_class, s);
-    class_setHelpName(rmstodb_tilde_class, s);
-    class_setHelpName(dbtopow_tilde_class, s);
-    class_setHelpName(powtodb_tilde_class, s);
 }
 
