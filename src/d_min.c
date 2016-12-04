@@ -17,43 +17,28 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* ----------------------------- min ----------------------------- */
-static t_class *min_class, *scalarmin_class;
+static t_class *min_tilde_class;                /* Shared. */
+static t_class *minScalar_tilde_class;          /* Shared. */
 
-typedef struct _min
-{
-    t_object x_obj;
-    t_float x_f;
-} t_min;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct _scalarmin
-{
-    t_object x_obj;
-    t_float x_g;
-    t_float x_f;
-} t_scalarmin;
+typedef struct _min_tilde {
+    t_object    x_obj;                          /* Must be the first. */
+    t_float     x_f;
+    t_outlet    *x_outlet;
+    } t_min_tilde;
 
-static void *min_new(t_symbol *s, int argc, t_atom *argv)
-{
-    if (argc > 1) post("min~: extra arguments ignored");
-    if (argc) 
-    {
-        t_scalarmin *x = (t_scalarmin *)pd_new(scalarmin_class);
-        inlet_newFloat(&x->x_obj, &x->x_g);
-        x->x_g = atom_getFloatAtIndex(0, argc, argv);
-        outlet_new(&x->x_obj, &s_signal);
-        x->x_f = 0;
-        return (x);
-    }
-    else
-    {
-        t_min *x = (t_min *)pd_new(min_class);
-        inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
-        outlet_new(&x->x_obj, &s_signal);
-        x->x_f = 0;
-        return (x);
-    }
-}
+typedef struct _minscalar_tilde {
+    t_object    x_obj;                          /* Must be the first. */
+    t_float     x_f;
+    t_float     x_scalar;
+    t_outlet    *x_outlet;
+    } t_minscalar_tilde;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 t_int *min_perform(t_int *w)
 {
@@ -124,7 +109,7 @@ t_int *scalarmin_perf8(t_int *w)
     return (w+5);
 }
 
-static void min_dsp(t_min *x, t_signal **sp)
+static void min_tilde_dsp (t_min_tilde *x, t_signal **sp)
 {
     if (sp[0]->s_vectorSize&7)
         dsp_add(min_perform, 4,
@@ -134,29 +119,83 @@ static void min_dsp(t_min *x, t_signal **sp)
             sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
 }
 
-static void scalarmin_dsp(t_scalarmin *x, t_signal **sp)
+static void minScalar_tilde_dsp (t_minscalar_tilde *x, t_signal **sp)
 {
     if (sp[0]->s_vectorSize&7)
-        dsp_add(scalarmin_perform, 4, sp[0]->s_vector, &x->x_g,
+        dsp_add(scalarmin_perform, 4, sp[0]->s_vector, &x->x_scalar,
             sp[1]->s_vector, sp[0]->s_vectorSize);
     else        
-        dsp_add(scalarmin_perf8, 4, sp[0]->s_vector, &x->x_g,
+        dsp_add(scalarmin_perf8, 4, sp[0]->s_vector, &x->x_scalar,
             sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
-void min_tilde_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *min_tilde_newWithScalar (t_symbol *s, int argc, t_atom *argv)
 {
-    min_class = class_new(sym_min__tilde__, (t_newmethod)min_new, 0,
-        sizeof(t_min), 0, A_GIMME, 0);
-    CLASS_SIGNAL(min_class, t_min, x_f);
-    class_addMethod(min_class, (t_method)min_dsp, sym_dsp, A_CANT, 0);
-    class_setHelpName(min_class, sym_max__tilde__);
-    scalarmin_class = class_new(sym_min__tilde__, 0, 0,
-        sizeof(t_scalarmin), 0, 0);
-    CLASS_SIGNAL(scalarmin_class, t_scalarmin, x_f);
-    class_addMethod(scalarmin_class, (t_method)scalarmin_dsp,
-        sym_dsp, A_CANT, 0);
-    class_setHelpName(scalarmin_class, sym_max__tilde__);
+    if (argc > 1) { warning_unusedArguments (s, argc + 1, argv - 1); }
+    
+    t_minscalar_tilde *x = (t_minscalar_tilde *)pd_new (minScalar_tilde_class);
+    
+    x->x_scalar = atom_getFloatAtIndex (0, argc, argv);
+    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+        
+    inlet_newFloat (cast_object (x), &x->x_scalar);
+
+    return x;
+}
+
+static void *min_tilde_newWithSignal (t_symbol *s, int argc, t_atom *argv)
+{
+    t_min_tilde *x = (t_min_tilde *)pd_new (min_tilde_class);
+
+    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+
+    inlet_new (cast_object (x), cast_pd (x), &s_signal, &s_signal);
+        
+    return x;
+}
+
+static void *min_tilde_new (t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc) {
+        return min_tilde_newWithScalar (s, argc, argv);
+    } else {
+        return min_tilde_newWithSignal (s, argc, argv);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void min_tilde_setup (void)
+{
+    min_tilde_class = class_new (sym_min__tilde__,
+                                    (t_newmethod)min_tilde_new,
+                                    NULL,
+                                    sizeof (t_min_tilde),
+                                    CLASS_DEFAULT,
+                                    A_GIMME,
+                                    A_NULL);
+                    
+    minScalar_tilde_class = class_new (sym_min__tilde__,
+                                    NULL,
+                                    NULL,
+                                    sizeof (t_minscalar_tilde),
+                                    CLASS_DEFAULT,
+                                    A_NULL);
+        
+    CLASS_SIGNAL (min_tilde_class, t_min_tilde, x_f);
+    CLASS_SIGNAL (minScalar_tilde_class, t_minscalar_tilde, x_f);
+
+    class_addDSP (min_tilde_class, min_tilde_dsp);
+    class_addDSP (minScalar_tilde_class, minScalar_tilde_dsp);
+    
+    class_setHelpName (min_tilde_class, sym_max__tilde__);
+    class_setHelpName (minScalar_tilde_class, sym_max__tilde__);
 }
 
 // -----------------------------------------------------------------------------------------------------------

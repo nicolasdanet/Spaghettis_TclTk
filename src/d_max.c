@@ -45,7 +45,7 @@ static void max_tilde_dsp (t_max_tilde *x, t_signal **sp)
     dsp_addMaximumPerform (sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
 }
 
-static void maxscalar_tilde_dsp (t_maxscalar_tilde *x, t_signal **sp)
+static void maxScalar_tilde_dsp (t_maxscalar_tilde *x, t_signal **sp)
 {
     dsp_addMaximumScalarPerform (sp[0]->s_vector, &x->x_scalar, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
@@ -113,7 +113,7 @@ void max_tilde_setup (void)
     CLASS_SIGNAL (maxScalar_tilde_class, t_maxscalar_tilde, x_f);
         
     class_addDSP (max_tilde_class, max_tilde_dsp);
-    class_addDSP (maxScalar_tilde_class, maxscalar_tilde_dsp);
+    class_addDSP (maxScalar_tilde_class, maxScalar_tilde_dsp);
 
     class_setHelpName (max_tilde_class, sym_max__tilde__);
     class_setHelpName (maxScalar_tilde_class, sym_max__tilde__);
