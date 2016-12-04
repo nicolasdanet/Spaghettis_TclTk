@@ -46,8 +46,8 @@ static void phasor_tilde_phase (t_phasor_tilde *x, t_float f)
 static t_int *phasor_tilde_perform (t_int *w)
 {
     t_phasor_tilde *x = (t_phasor_tilde *)(w[1]);
-    PD_RESTRICTED in  = (t_float *)(w[2]);
-    PD_RESTRICTED out = (t_float *)(w[3]);
+    PD_RESTRICTED in  = (t_sample *)(w[2]);
+    PD_RESTRICTED out = (t_sample *)(w[3]);
     int n = (int)(w[4]);
     
     double phase = x->x_phase + DSP_UNITBIT;
