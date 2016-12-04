@@ -63,6 +63,8 @@ static void vcf_tilde_qFactor (t_vcf_tilde *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* No aliasing. */
+
 static t_int *vcf_tilde_perform (t_int *w)
 {
     t_vcf_tilde_ctl *c = (t_vcf_tilde_ctl *)(w[1]);
