@@ -128,6 +128,12 @@ static t_int *vcf_tilde_perform (t_int *w)
 static void vcf_tilde_dsp (t_vcf_tilde *x, t_signal **sp)
 {
     x->x_space.c_conversion = PD_2PI / sp[0]->s_sampleRate;
+   
+    PD_ASSERT (sp[0]->s_vector != sp[2]->s_vector);
+    PD_ASSERT (sp[0]->s_vector != sp[3]->s_vector);
+    PD_ASSERT (sp[1]->s_vector != sp[2]->s_vector);
+    PD_ASSERT (sp[1]->s_vector != sp[3]->s_vector);
+    PD_ASSERT (sp[2]->s_vector != sp[3]->s_vector);
     
     dsp_add (vcf_tilde_perform, 6, &x->x_space,
         sp[0]->s_vector,

@@ -76,6 +76,8 @@ static void phasor_tilde_dsp (t_phasor_tilde *x, t_signal **sp)
 {
     x->x_conversion = 1.0 / sp[0]->s_sampleRate;
     
+    PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
+    
     dsp_add (phasor_tilde_perform, 4, x, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
