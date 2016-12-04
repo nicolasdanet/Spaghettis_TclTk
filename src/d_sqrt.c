@@ -13,9 +13,7 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "d_dsp.h"
-
-extern float rsqrt_exptab[];
-extern float rsqrt_mantissatab[];
+#include "d_math.h"
 
 /* sigsqrt -  square root good to 8 mantissa bits  */
 
@@ -50,8 +48,8 @@ t_int *sigsqrt_perform(t_int *w)    /* not static; also used in d_fft.c */
         if (f < 0) *out++ = 0;
         else
         {
-            t_sample g = rsqrt_exptab[(u.l >> 23) & 0xff] *
-                rsqrt_mantissatab[(u.l >> 13) & 0x3ff];
+            t_sample g = rsqrt_tableExponential[(u.l >> 23) & 0xff] *
+                rsqrt_tableMantissa[(u.l >> 13) & 0x3ff];
             *out++ = f * (1.5 * g - 0.5 * g * g * g * f);
         }
     }
@@ -65,6 +63,7 @@ static void sigsqrt_dsp(t_sigsqrt *x, t_signal **sp)
 
 void sigsqrt_tilde_setup(void)
 {
+    //rsqrt_tilde_initialize();
     sigsqrt_class = class_new(sym_sqrt__tilde__, (t_newmethod)sigsqrt_new, 0,
         sizeof(t_sigsqrt), 0, 0);
     class_addCreator(sigsqrt_new, sym_q8_sqrt__tilde__, 0);   /* LEGACY !!! */
