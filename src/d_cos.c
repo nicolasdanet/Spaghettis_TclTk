@@ -84,6 +84,8 @@ void cos_tilde_release (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* No aliasing. */
+
 static t_int *cos_tilde_perform (t_int *w)
 {
     PD_RESTRICTED in = (t_sample *)(w[1]);

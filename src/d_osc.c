@@ -48,6 +48,8 @@ static void osc_tilde_phase (t_osc_tilde *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* No aliasing. */
+
 static t_int *osc_tilde_perform (t_int *w)
 {
     t_osc_tilde *x = (t_osc_tilde *)(w[1]);

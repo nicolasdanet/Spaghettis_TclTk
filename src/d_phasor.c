@@ -43,6 +43,8 @@ static void phasor_tilde_phase (t_phasor_tilde *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* No aliasing. */
+
 static t_int *phasor_tilde_perform (t_int *w)
 {
     t_phasor_tilde *x = (t_phasor_tilde *)(w[1]);
