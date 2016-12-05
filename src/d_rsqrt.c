@@ -18,6 +18,26 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+/* Reciprocal square root good to 8 mantissa bits. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* Assumed IEEE 754 floating-point format. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* Note that a float can be factorized into two floats. */
+/* For one keep the mantissa and set the exponent to zero (i.e 0x7f with the bias). */
+/* For the other keep the exponent and set the mantissa to zero. */
+/* Thus the rsqrt is approximated by the product of two (with fast lookup) rsqrt. */
+
+/* < https://en.wikipedia.org/wiki/Fast_inverse_square_root#Newton.27s_method > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static t_class *rsqrt_tilde_class;      /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -33,8 +53,8 @@ typedef struct _rsqrt_tilde {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_float rsqrt_tableMantissa[RSQRT_MANTISSA_SIZE];                   /* Shared. */
-t_float rsqrt_tableExponential[RSQRT_EXPONENTIAL_SIZE];             /* Shared. */
+t_float rsqrt_tableMantissa[RSQRT_MANTISSA_SIZE];           /* Shared. */
+t_float rsqrt_tableExponential[RSQRT_EXPONENTIAL_SIZE];     /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -42,20 +62,24 @@ t_float rsqrt_tableExponential[RSQRT_EXPONENTIAL_SIZE];             /* Shared. *
 void rsqrt_tilde_initialize (void)
 {
     int i;
-    for (i = 0; i < RSQRT_EXPONENTIAL_SIZE; i++)
-    {
-        union {
-          float f;
-          long l;
-        } u;
-        int32_t l = (i ? (i == RSQRT_EXPONENTIAL_SIZE-1 ? RSQRT_EXPONENTIAL_SIZE-2 : i) : 1)<< 23;
-        u.l = l;
-        rsqrt_tableExponential[i] = 1./sqrt(u.f);   
+    
+    for (i = 0; i < RSQRT_EXPONENTIAL_SIZE; i++) {
+
+        t_rawcast32 z;
+        
+        if (i == 0) { z.z_i = 1 << 23; }
+        else {
+            z.z_i = (i == RSQRT_EXPONENTIAL_SIZE - 1 ? RSQRT_EXPONENTIAL_SIZE - 2 : i) << 23;
+        }
+
+        rsqrt_tableExponential[i] = 1.0 / sqrt (z.z_f);
     }
-    for (i = 0; i < RSQRT_MANTISSA_SIZE; i++)
-    {
-        float f = 1 + (1./RSQRT_MANTISSA_SIZE) * i;
-        rsqrt_tableMantissa[i] = 1./sqrt(f);      
+    
+    for (i = 0; i < RSQRT_MANTISSA_SIZE; i++) {
+    
+        t_float f = 1.0 + (1.0 / RSQRT_MANTISSA_SIZE) * i;      /* Exponent is zero in 1.0 to 2.0 range. */
+        
+        rsqrt_tableMantissa[i] = 1.0 / sqrt (f);      
     }
 }
 
@@ -63,26 +87,33 @@ void rsqrt_tilde_initialize (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* No aliasing. */
+
 static t_int *rsqrt_tilde_perform (t_int *w)
 {
-    t_sample *in = *(t_sample **)(w+1), *out = *(t_sample **)(w+2);
-    t_int n = *(t_int *)(w+3);
-    while (n--)
-    {   
-        t_sample f = *in++;
-        union {
-          float f;
-          long l;
-        } u;
-        u.f = f;
-        if (f < 0) *out++ = 0;
-        else
-        {
-            t_sample g = rsqrt_tableExponential[(u.l >> 23) & 0xff] *
-                rsqrt_tableMantissa[(u.l >> 13) & 0x3ff];
-            *out++ = 1.5 * g - 0.5 * g * g * g * f;
-        }
+    PD_RESTRICTED in  = (t_sample *)(w[1]);
+    PD_RESTRICTED out = (t_sample *)(w[2]);
+    int n = (int)(w[3]);
+    
+    while (n--) {
+    //
+    t_rawcast32 z;
+
+    z.z_f = *in++;
+        
+    if (z.z_f < 0.0) { *out++ = 0.0; }
+    else {
+    //
+    int e = (z.z_i >> 23) & (RSQRT_EXPONENTIAL_SIZE - 1);
+    int m = (z.z_i >> 13) & (RSQRT_MANTISSA_SIZE - 1);
+    t_sample g = rsqrt_tableExponential[e] * rsqrt_tableMantissa[m];
+    
+    *out++ = 1.5 * g - 0.5 * g * g * g * z.z_f;
+    //
     }
+    //
+    }
+    
     return (w + 4);
 }
 

@@ -252,6 +252,8 @@ static inline unsigned long sys_nextPowerOf2 (unsigned long v)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* Assumed IEEE 754 floating-point format. */
+
 typedef union {
     t_float     z_f;
     uint32_t    z_i;
