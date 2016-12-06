@@ -14,53 +14,90 @@
 #include "m_macros.h"
 #include "d_dsp.h"
 
-static t_class *pow_tilde_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct _pow_tilde
-{
-    t_object x_obj;
-    t_float x_f;
-} t_pow_tilde;
+static t_class *pow_tilde_class;            /* Shared .*/
 
-static void *pow_tilde_new(t_float f)
-{
-    t_pow_tilde *x = (t_pow_tilde *)pd_new(pow_tilde_class);
-    inlet_newSignal(&x->x_obj, f);
-    outlet_new(&x->x_obj, &s_signal);
-    x->x_f = 0;
-    
-    return x;
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-t_int *pow_tilde_perform(t_int *w)
+typedef struct _pow_tilde {
+    t_object    x_obj;                      /* Must be the first. */
+    t_float     x_f;
+    t_outlet    *x_outlet;
+    } t_pow_tilde;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* Aliasing. */
+
+t_int *pow_tilde_perform (t_int *w)
 {
     t_sample *in1 = (t_sample *)(w[1]);
     t_sample *in2 = (t_sample *)(w[2]);
     t_sample *out = (t_sample *)(w[3]);
     int n = (int)(w[4]);
-    while (n--)
-    {
-        float f = *in1++;
-        if (f > 0)
-            *out = pow(f, *in2);
-        else *out = 0;
-        out++;
-        in2++;
+    
+    while (n--) {
+    //
+    t_sample f = *in1++;
+    t_sample g = *in2++;
+
+    if (f > 0.0) { *out++ = (t_sample)pow (f, g); }
+    else {
+        *out++ = 0.0;
     }
-    return (w+5);
+    //
+    }
+    
+    return (w + 5);
 }
 
-static void pow_tilde_dsp(t_pow_tilde *x, t_signal **sp)
+static void pow_tilde_dsp (t_pow_tilde *x, t_signal **sp)
 {
-    dsp_add(pow_tilde_perform, 4,
-        sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
+    dsp_add (pow_tilde_perform, 4, sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
 }
 
-void pow_tilde_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *pow_tilde_new (t_float f)
 {
-    pow_tilde_class = class_new(sym_pow__tilde__, (t_newmethod)pow_tilde_new, 0,
-        sizeof(t_pow_tilde), 0, A_DEFFLOAT, 0);
-    CLASS_SIGNAL(pow_tilde_class, t_pow_tilde, x_f);
-    class_addMethod(pow_tilde_class, (t_method)pow_tilde_dsp,
-        sym_dsp, A_CANT, 0);
+    t_pow_tilde *x = (t_pow_tilde *)pd_new (pow_tilde_class);
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    
+    inlet_newSignal (cast_object (x), f);
+    
+    return x;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void pow_tilde_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_pow__tilde__,
+            (t_newmethod)pow_tilde_new,
+            NULL,
+            sizeof (t_pow_tilde),
+            CLASS_DEFAULT,
+            A_DEFFLOAT,
+            A_NULL);
+            
+    CLASS_SIGNAL (c, t_pow_tilde, x_f);
+    
+    class_addDSP (c, pow_tilde_dsp);
+    
+    pow_tilde_class = c;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
