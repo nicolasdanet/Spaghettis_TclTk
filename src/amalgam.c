@@ -261,6 +261,7 @@
 #include "d_vcf.c"
 
 #include "d_array.c"
+#include "d_tabosc4.c"
 #include "d_tabsend.c"
 #include "d_tabreceive.c"
 #include "d_tabread.c"
