@@ -38,6 +38,8 @@ typedef struct sqrt_tilde {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* No aliasing. */
+
 t_int *sqrt_tilde_perform (t_int *w)
 {
     PD_RESTRICTED in  = (t_sample *)(w[1]);

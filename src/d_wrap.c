@@ -14,23 +14,27 @@
 #include "m_macros.h"
 #include "d_dsp.h"
 
-typedef struct wrap
-{
-    t_object x_obj;
-    t_float x_f;
-} t_sigwrap;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-t_class *sigwrap_class;
+static t_class *wrap_tilde_class;       /* Shared. */
 
-static void *sigwrap_new(void)
-{
-    t_sigwrap *x = (t_sigwrap *)pd_new(sigwrap_class);
-    outlet_new(&x->x_obj, &s_signal);
-    x->x_f = 0;
-    return (x);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static t_int *sigwrap_perform(t_int *w)
+typedef struct _wrap_tilde {
+    t_object    x_obj;                  /* Must be the first. */
+    t_float     x_f;
+    t_outlet    *x_outlet;
+    } t_wrap_tilde;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* No aliasing. */
+
+static t_int *wrap_tilde_perform(t_int *w)
 {
     t_sample *in = *(t_sample **)(w+1), *out = *(t_sample **)(w+2);
     t_int n = *(t_int *)(w+3);
@@ -44,16 +48,47 @@ static t_int *sigwrap_perform(t_int *w)
     return (w + 4);
 }
 
-static void sigwrap_dsp(t_sigwrap *x, t_signal **sp)
+static void wrap_tilde_dsp (t_wrap_tilde *x, t_signal **sp)
 {
-    dsp_add(sigwrap_perform, 3, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
+    PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
+    
+    dsp_add (wrap_tilde_perform, 3, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
-void sigwrap_tilde_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *wrap_tilde_new (void)
 {
-    sigwrap_class = class_new(sym_wrap__tilde__, (t_newmethod)sigwrap_new, 0,
-        sizeof(t_sigwrap), 0, 0);
-    CLASS_SIGNAL(sigwrap_class, t_sigwrap, x_f);
-    class_addMethod(sigwrap_class, (t_method)sigwrap_dsp,
-        sym_dsp, A_CANT, 0);
+    t_wrap_tilde *x = (t_wrap_tilde *)pd_new (wrap_tilde_class);
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+
+    return x;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void wrap_tilde_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_wrap__tilde__,
+            (t_newmethod)wrap_tilde_new,
+            NULL,
+            sizeof (t_wrap_tilde),
+            CLASS_DEFAULT,
+            A_NULL);
+        
+    CLASS_SIGNAL (c, t_wrap_tilde, x_f);
+    
+    class_addDSP (c, wrap_tilde_dsp);
+    
+    wrap_tilde_class = c;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
