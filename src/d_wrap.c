@@ -34,17 +34,18 @@ typedef struct _wrap_tilde {
 
 /* No aliasing. */
 
-static t_int *wrap_tilde_perform(t_int *w)
+static t_int *wrap_tilde_perform (t_int *w)
 {
-    t_sample *in = *(t_sample **)(w+1), *out = *(t_sample **)(w+2);
-    t_int n = *(t_int *)(w+3);
-    while (n--)
-    {   
+    PD_RESTRICTED in  = (t_sample *)(w[1]);
+    PD_RESTRICTED out = (t_sample *)(w[2]);
+    int n = (int)(w[3]);
+    
+    while (n--) {
         t_sample f = *in++;
-        int k = f;
-        if (f > 0) *out++ = f-k;
-        else *out++ = f - (k-1);
+        int k = (int)f;
+        if (f > 0.0) { *out++ = f - k; } else { *out++ = f - (k - 1); }
     }
+    
     return (w + 4);
 }
 
