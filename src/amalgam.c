@@ -260,10 +260,7 @@
 #include "d_cos.c"
 #include "d_vcf.c"
 
-#include "d_print.c"
-#include "d_bang.c"
-#include "d_samplerate.c"
-#include "d_noise.c"
+#include "d_array.c"
 
 #include "d_add.c"
 #include "d_subtract.c"
@@ -285,6 +282,11 @@
 #include "d_exp.c"
 #include "d_log.c"
 #include "d_abs.c"
+
+#include "d_print.c"
+#include "d_bang.c"
+#include "d_samplerate.c"
+#include "d_noise.c"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

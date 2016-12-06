@@ -1343,9 +1343,9 @@
 				37C000571DE2FE4B00F90584 /* Global */,
 				370D017F1DE6BFA4005918D4 /* Osc */,
 				37E4DA031DEC6BB500190484 /* Filters */,
-				37C000561DE2FE3800F90584 /* Miscellaneous */,
+				37C9FADD1DF718CD00309D57 /* Tab */,
 				377C79961DF08AD0008195B0 /* Math */,
-				378971B11C4F716700263434 /* d_array.c */,
+				37C000561DE2FE3800F90584 /* Miscellaneous */,
 				378971B41C4F716700263434 /* d_delay.c */,
 				378971B71C4F716700263434 /* d_filter.c */,
 				378971B21C4F716700263434 /* d_ctl.c */,
@@ -1395,6 +1395,14 @@
 				37C000A51DE3070D00F90584 /* d_receive.c */,
 			);
 			name = Global;
+			sourceTree = "<group>";
+		};
+		37C9FADD1DF718CD00309D57 /* Tab */ = {
+			isa = PBXGroup;
+			children = (
+				378971B11C4F716700263434 /* d_array.c */,
+			);
+			name = Tab;
 			sourceTree = "<group>";
 		};
 		37CD71BA1D9A9DDF00A61BD3 /* Atom */ = {
