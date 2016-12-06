@@ -14,45 +14,80 @@
 #include "m_macros.h"
 #include "d_dsp.h"
 
-typedef struct ftom_tilde
-{
-    t_object x_obj;
-    t_float x_f;
-} t_ftom_tilde;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-t_class *ftom_tilde_class;
+static t_class *ftom_tilde_class;           /* Shared. */
 
-static void *ftom_tilde_new(void)
-{
-    t_ftom_tilde *x = (t_ftom_tilde *)pd_new(ftom_tilde_class);
-    outlet_new(&x->x_obj, &s_signal);
-    x->x_f = 0;
-    return (x);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static t_int *ftom_tilde_perform(t_int *w)
+typedef struct ftom_tilde {
+    t_object    x_obj;                      /* Must be the first. */
+    t_float     x_f;
+    t_outlet    *x_outlet;
+    } t_ftom_tilde;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* No aliasing. */
+
+static t_int *ftom_tilde_perform (t_int *w)
 {
-    t_sample *in = *(t_sample **)(w+1), *out = *(t_sample **)(w+2);
-    t_int n = *(t_int *)(w+3);
-    for (; n--; in++, out++)
-    {
-        t_sample f = *in;
-        *out = (f > 0 ? 17.3123405046 * log(.12231220585 * f) : -1500);
-    }
+    PD_RESTRICTED in  = (t_sample *)(w[1]);
+    PD_RESTRICTED out = (t_sample *)(w[2]);
+    int n = (int)(w[3]);
+    
+    while (n--) { *out++ = math_frequencyToMidi (*in++); }
+    
     return (w + 4);
 }
 
-static void ftom_tilde_dsp(t_ftom_tilde *x, t_signal **sp)
+static void ftom_tilde_dsp (t_ftom_tilde *x, t_signal **sp)
 {
-    dsp_add(ftom_tilde_perform, 3, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
+    PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
+    
+    dsp_add (ftom_tilde_perform, 3, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
-void ftom_tilde_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *ftom_tilde_new (void)
 {
-    ftom_tilde_class = class_new(sym_ftom__tilde__, (t_newmethod)ftom_tilde_new, 0,
-        sizeof(t_ftom_tilde), 0, 0);
-    CLASS_SIGNAL(ftom_tilde_class, t_ftom_tilde, x_f);
-    class_addMethod(ftom_tilde_class, (t_method)ftom_tilde_dsp,
-        sym_dsp, A_CANT, 0);
-    class_setHelpName(ftom_tilde_class, sym_mtof__tilde__);
+    t_ftom_tilde *x = (t_ftom_tilde *)pd_new (ftom_tilde_class);
+
+    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    
+    return x;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void ftom_tilde_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_ftom__tilde__,
+            (t_newmethod)ftom_tilde_new,
+            NULL,
+            sizeof (t_ftom_tilde),
+            CLASS_DEFAULT,
+            A_NULL);
+        
+    CLASS_SIGNAL (c, t_ftom_tilde, x_f);
+    
+    class_addDSP (c, ftom_tilde_dsp);
+    
+    class_setHelpName (c, sym_mtof__tilde__);
+    
+    ftom_tilde_class = c;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
