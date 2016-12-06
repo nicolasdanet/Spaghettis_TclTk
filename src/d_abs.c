@@ -14,46 +14,78 @@
 #include "m_macros.h"
 #include "d_dsp.h"
 
-static t_class *abs_tilde_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct _abs_tilde
-{
-    t_object x_obj;
-    t_float x_f;
-} t_abs_tilde;
+static t_class *abs_tilde_class;        /* Shared. */
 
-static void *abs_tilde_new( void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _abs_tilde {
+    t_object    x_obj;                  /* Must be the first. */
+    t_float     x_f;
+    t_outlet    *x_outlet;
+    } t_abs_tilde;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* No aliasing. */
+
+t_int *abs_tilde_perform (t_int *w)
 {
-    t_abs_tilde *x = (t_abs_tilde *)pd_new(abs_tilde_class);
-    outlet_new(&x->x_obj, &s_signal);
+    PD_RESTRICTED in  = (t_sample *)(w[1]);
+    PD_RESTRICTED out = (t_sample *)(w[2]);
+    int n = (int)(w[3]);
+    
+    while (n--) { t_sample f = *in++; *out++ = PD_ABS (f); }
+    
+    return (w + 4);
+}
+
+static void abs_tilde_dsp (t_abs_tilde *x, t_signal **sp)
+{
+    PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
+    
+    dsp_add (abs_tilde_perform, 3, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *abs_tilde_new (void)
+{
+    t_abs_tilde *x = (t_abs_tilde *)pd_new (abs_tilde_class);
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    
     return x;
 }
 
-t_int *abs_tilde_perform(t_int *w)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void abs_tilde_setup (void)
 {
-    t_sample *in1 = (t_sample *)(w[1]);
-    t_sample *out = (t_sample *)(w[2]);
-    int n = (int)(w[3]);
-    while (n--)
-    {
-        float f = *in1++;
-        *out++ = (f >= 0 ? f : -f);
-    }
-    return (w+4);
+    t_class *c = NULL;
+    
+    c = class_new (sym_abs__tilde__,
+            (t_newmethod)abs_tilde_new,
+            NULL,
+            sizeof (t_abs_tilde),
+            CLASS_DEFAULT,
+            A_NULL);
+            
+    CLASS_SIGNAL (c, t_abs_tilde, x_f);
+    
+    class_addDSP (c, abs_tilde_dsp);
+    
+    abs_tilde_class = c;
 }
 
-static void abs_tilde_dsp(t_abs_tilde *x, t_signal **sp)
-{
-    dsp_add(abs_tilde_perform, 3,
-        sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
-}
-
-void abs_tilde_setup(void)
-{
-    abs_tilde_class = class_new(sym_abs__tilde__, (t_newmethod)abs_tilde_new, 0,
-        sizeof(t_abs_tilde), 0, 0);
-    CLASS_SIGNAL(abs_tilde_class, t_abs_tilde, x_f);
-    class_addMethod(abs_tilde_class, (t_method)abs_tilde_dsp,
-        sym_dsp, A_CANT, 0);
-}
-
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
