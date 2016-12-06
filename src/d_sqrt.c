@@ -18,7 +18,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Square root good to 8 mantissa bits.  */
+/* Square root good to 8 mantissa bits. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -40,24 +40,29 @@ typedef struct sqrt_tilde {
 
 t_int *sqrt_tilde_perform (t_int *w)
 {
-    t_sample *in = *(t_sample **)(w+1), *out = *(t_sample **)(w+2);
-    t_int n = *(t_int *)(w+3);
-    while (n--)
-    {   
-        t_sample f = *in++;
-        union {
-          float f;
-          long l;
-        } u;
-        u.f = f;
-        if (f < 0) *out++ = 0;
-        else
-        {
-            t_sample g = rsqrt_tableExponential[(u.l >> 23) & 0xff] *
-                rsqrt_tableMantissa[(u.l >> 13) & 0x3ff];
-            *out++ = f * (1.5 * g - 0.5 * g * g * g * f);
-        }
+    PD_RESTRICTED in  = (t_sample *)(w[1]);
+    PD_RESTRICTED out = (t_sample *)(w[2]);
+    int n = (int)(w[3]);
+    
+    while (n--) {
+    //
+    t_rawcast32 z;
+
+    z.z_f = *in++;
+        
+    if (z.z_f < 0.0) { *out++ = 0.0; }
+    else {
+    //
+    int e = (z.z_i >> 23) & (RSQRT_EXPONENTIAL_SIZE - 1);
+    int m = (z.z_i >> 13) & (RSQRT_MANTISSA_SIZE - 1);
+    t_sample g = rsqrt_tableExponential[e] * rsqrt_tableMantissa[m];
+    
+    *out++ = z.z_f * (1.5 * g - 0.5 * g * g * g * z.z_f);
+    //
     }
+    //
+    }
+    
     return (w + 4);
 }
 
