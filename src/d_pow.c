@@ -29,7 +29,7 @@ static void *pow_tilde_new(t_float f)
     outlet_new(&x->x_obj, &s_signal);
     x->x_f = 0;
     
-    return (x);
+    return x;
 }
 
 t_int *pow_tilde_perform(t_int *w)

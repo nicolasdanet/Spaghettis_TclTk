@@ -55,7 +55,7 @@ static void *sigfft_new(void)
     outlet_new(&x->x_obj, &s_signal);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
     x->x_f = 0;
-    return (x);
+    return x;
 }
 
 static void *sigifft_new(void)
@@ -65,7 +65,7 @@ static void *sigifft_new(void)
     outlet_new(&x->x_obj, &s_signal);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
     x->x_f = 0;
-    return (x);
+    return x;
 }
 
 static t_int *sigfft_perform(t_int *w)
@@ -150,7 +150,7 @@ static void *sigrfft_new(void)
     outlet_new(&x->x_obj, &s_signal);
     outlet_new(&x->x_obj, &s_signal);
     x->x_f = 0;
-    return (x);
+    return x;
 }
 
 static t_int *sigrfft_perform(t_int *w)
@@ -208,7 +208,7 @@ static void *sigrifft_new(void)
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
     outlet_new(&x->x_obj, &s_signal);
     x->x_f = 0;
-    return (x);
+    return x;
 }
 
 static t_int *sigrifft_perform(t_int *w)
@@ -270,7 +270,7 @@ static void *sigframp_new(void)
     outlet_new(&x->x_obj, &s_signal);
     outlet_new(&x->x_obj, &s_signal);
     x->x_f = 0;
-    return (x);
+    return x;
 }
 
 static t_int *sigframp_perform(t_int *w)

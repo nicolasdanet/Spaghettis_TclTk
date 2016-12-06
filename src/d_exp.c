@@ -26,7 +26,7 @@ static void *exp_tilde_new( void)
 {
     t_exp_tilde *x = (t_exp_tilde *)pd_new(exp_tilde_class);
     outlet_new(&x->x_obj, &s_signal);
-    return (x);
+    return x;
 }
 
 t_int *exp_tilde_perform(t_int *w)

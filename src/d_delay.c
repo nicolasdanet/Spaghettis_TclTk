@@ -82,7 +82,7 @@ static void *sigdelwrite_new(t_symbol *s, t_float msec)
     x->x_sortno = 0;
     x->x_vecsize = 0;
     x->x_f = 0;
-    return (x);
+    return x;
 }
 
 static t_int *sigdelwrite_perform(t_int *w)
@@ -163,7 +163,7 @@ static void *sigdelread_new(t_symbol *s, t_float f)
     x->x_zerodel = 0;
     sigdelread_float(x, f);
     outlet_new(&x->x_obj, &s_signal);
-    return (x);
+    return x;
 }
 
 static void sigdelread_float(t_sigdelread *x, t_float f)
@@ -253,7 +253,7 @@ static void *sigvd_new(t_symbol *s)
     x->x_zerodel = 0;
     outlet_new(&x->x_obj, &s_signal);
     x->x_f = 0;
-    return (x);
+    return x;
 }
 
 static t_int *sigvd_perform(t_int *w)

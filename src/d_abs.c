@@ -26,7 +26,7 @@ static void *abs_tilde_new( void)
 {
     t_abs_tilde *x = (t_abs_tilde *)pd_new(abs_tilde_class);
     outlet_new(&x->x_obj, &s_signal);
-    return (x);
+    return x;
 }
 
 t_int *abs_tilde_perform(t_int *w)

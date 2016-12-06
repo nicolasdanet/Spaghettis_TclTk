@@ -38,7 +38,7 @@ static void *sig_tilde_new(t_float f)
     t_sig *x = (t_sig *)pd_new(sig_tilde_class);
     x->x_f = f;
     outlet_new(&x->x_obj, &s_signal);
-    return (x);
+    return x;
 }
 
 static void sig_tilde_setup(void)
@@ -179,7 +179,7 @@ static void *line_tilde_new(void)
     inlet_newFloat(&x->x_obj, &x->x_inletvalue);
     x->x_ticksleft = x->x_retarget = 0;
     x->x_value = x->x_target = x->x_inletvalue = x->x_inletwas = 0;
-    return (x);
+    return x;
 }
 
 static void line_tilde_setup(void)
@@ -374,7 +374,7 @@ static void *vline_tilde_new(void)
     x->x_list = 0;
     x->x_samppermsec = 0;
     x->x_targettime = 1e20;
-    return (x);
+    return x;
 }
 
 static void vline_tilde_setup(void)
@@ -404,7 +404,7 @@ static void *snapshot_tilde_new(void)
     x->x_value = 0;
     outlet_new(&x->x_obj, &s_float);
     x->x_f = 0;
-    return (x);
+    return x;
 }
 
 static t_int *snapshot_tilde_perform(t_int *w)
@@ -465,7 +465,7 @@ static void *vsnapshot_tilde_new(void)
     x->x_n = 0;
     x->x_vec = 0;
     x->x_gotone = 0;
-    return (x);
+    return x;
 }
 
 static t_int *vsnapshot_tilde_perform(t_int *w)
@@ -584,7 +584,7 @@ static void *env_tilde_new(t_float fnpoints, t_float fperiod)
     x->x_outlet = outlet_new(&x->x_obj, &s_float);
     x->x_f = 0;
     x->x_allocforvs = INITVSTAKEN;
-    return (x);
+    return x;
 }
 
 static t_int *env_tilde_perform(t_int *w)
@@ -706,7 +706,7 @@ static t_threshold_tilde *threshold_tilde_new(t_float hithresh,
     x->x_msecpertick = 0.;
     x->x_f = 0;
     threshold_tilde_set(x, hithresh, hideadtime, lothresh, lodeadtime);
-    return (x);
+    return x;
 }
 
     /* "set" message to specify thresholds and dead times */

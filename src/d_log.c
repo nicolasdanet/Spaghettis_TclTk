@@ -28,7 +28,7 @@ static void *log_tilde_new( void)
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
     outlet_new(&x->x_obj, &s_signal);
     x->x_f = 0;
-    return (x);
+    return x;
 }
 
 t_int *log_tilde_perform(t_int *w)

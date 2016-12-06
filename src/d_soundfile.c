@@ -1165,7 +1165,7 @@ static t_soundfiler *soundfiler_new(void)
     t_soundfiler *x = (t_soundfiler *)pd_new(soundfiler_class);
     x->x_canvas = canvas_getCurrent();
     outlet_new(&x->x_obj, &s_float);
-    return (x);
+    return x;
 }
 
     /* soundfiler_read ...
@@ -1942,7 +1942,7 @@ static void *readsf_new(t_float fnchannels, t_float fbufsize)
     x->x_bufsize = bufsize;
     x->x_fifosize = x->x_fifohead = x->x_fifotail = x->x_requestcode = 0;
     pthread_create(&x->x_childthread, 0, readsf_child_main, x);
-    return (x);
+    return x;
 }
 
 static void readsf_tick(t_readsf *x)
@@ -2447,7 +2447,7 @@ static void *writesf_new(t_float fnchannels, t_float fbufsize)
     x->x_bufsize = bufsize;
     x->x_fifosize = x->x_fifohead = x->x_fifotail = x->x_requestcode = 0;
     pthread_create(&x->x_childthread, 0, writesf_child_main, x);
-    return (x);
+    return x;
 }
 
 static t_int *writesf_perform(t_int *w)

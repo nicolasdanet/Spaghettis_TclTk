@@ -36,7 +36,7 @@ static void *tabwrite_tilde_new(t_symbol *s)
     x->x_phase = PD_INT_MAX;
     x->x_arrayname = s;
     x->x_f = 0;
-    return (x);
+    return x;
 }
 
 static void tabwrite_tilde_redraw(t_tabwrite_tilde *x)
@@ -166,7 +166,7 @@ static void *tabplay_tilde_new(t_symbol *s)
     x->x_arrayname = s;
     outlet_new(&x->x_obj, &s_signal);
     x->x_bangout = outlet_new(&x->x_obj, &s_bang);
-    return (x);
+    return x;
 }
 
 static t_int *tabplay_tilde_perform(t_int *w)
@@ -290,7 +290,7 @@ static void *tabread_tilde_new(t_symbol *s)
     x->x_vec = 0;
     outlet_new(&x->x_obj, &s_signal);
     x->x_f = 0;
-    return (x);
+    return x;
 }
 
 static t_int *tabread_tilde_perform(t_int *w)
@@ -390,7 +390,7 @@ static void *tabread4_tilde_new(t_symbol *s)
     inlet_newFloat(&x->x_obj, &x->x_onset);
     x->x_f = 0;
     x->x_onset = 0;
-    return (x);
+    return x;
 }
 
 static t_int *tabread4_tilde_perform(t_int *w)
@@ -525,7 +525,7 @@ static void *tabosc4_tilde_new(t_symbol *s)
     outlet_new(&x->x_obj, &s_signal);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, sym_inlet2);
     x->x_f = 0;
-    return (x);
+    return x;
 }
 
 static t_int *tabosc4_tilde_perform(t_int *w)
@@ -665,7 +665,7 @@ static void *tabsend_new(t_symbol *s)
     x->x_graphcount = 0;
     x->x_arrayname = s;
     x->x_f = 0;
-    return (x);
+    return x;
 }
 
 static t_int *tabsend_perform(t_int *w)
@@ -805,7 +805,7 @@ static void *tabreceive_new(t_symbol *s)
     t_tabreceive *x = (t_tabreceive *)pd_new(tabreceive_class);
     x->x_arrayname = s;
     outlet_new(&x->x_obj, &s_signal);
-    return (x);
+    return x;
 }
 
 static void tabreceive_setup(void)
@@ -858,7 +858,7 @@ static void *tabread_new(t_symbol *s)
     t_tabread *x = (t_tabread *)pd_new(tabread_class);
     x->x_arrayname = s;
     outlet_new(&x->x_obj, &s_float);
-    return (x);
+    return x;
 }
 
 static void tabread_setup(void)
@@ -926,7 +926,7 @@ static void *tabread4_new(t_symbol *s)
     t_tabread4 *x = (t_tabread4 *)pd_new(tabread4_class);
     x->x_arrayname = s;
     outlet_new(&x->x_obj, &s_float);
-    return (x);
+    return x;
 }
 
 static void tabread4_setup(void)
@@ -982,7 +982,7 @@ static void *tabwrite_new(t_symbol *s)
     x->x_ft1 = 0;
     x->x_arrayname = s;
     inlet_newFloat(&x->x_obj, &x->x_ft1);
-    return (x);
+    return x;
 }
 
 void tabwrite_setup(void)

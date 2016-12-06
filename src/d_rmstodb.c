@@ -27,7 +27,7 @@ static void *rmstodb_tilde_new(void)
     t_rmstodb_tilde *x = (t_rmstodb_tilde *)pd_new(rmstodb_tilde_class);
     outlet_new(&x->x_obj, &s_signal);
     x->x_f = 0;
-    return (x);
+    return x;
 }
 
 static t_int *rmstodb_tilde_perform(t_int *w)

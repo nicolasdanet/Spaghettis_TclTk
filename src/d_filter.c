@@ -41,7 +41,7 @@ static void *sighip_new(t_float f)
     x->x_cspace.c_x = 0;
     sighip_ft1(x, f);
     x->x_f = 0;
-    return (x);
+    return x;
 }
 
 static void sighip_ft1(t_sighip *x, t_float f)
@@ -174,7 +174,7 @@ static void *siglop_new(t_float f)
     x->x_cspace.c_x = 0;
     siglop_ft1(x, f);
     x->x_f = 0;
-    return (x);
+    return x;
 }
 
 static void siglop_ft1(t_siglop *x, t_float f)
@@ -271,7 +271,7 @@ static void *sigbp_new(t_float f, t_float q)
     x->x_cspace.c_x2 = 0;
     sigbp_docoef(x, f, q);
     x->x_f = 0;
-    return (x);
+    return x;
 }
 
 static t_float sigbp_qcos(t_float f)
@@ -403,7 +403,7 @@ static void *sigbiquad_new(t_symbol *s, int argc, t_atom *argv)
     x->x_cspace.c_x1 = x->x_cspace.c_x2 = 0;
     sigbiquad_list(x, s, argc, argv);
     x->x_f = 0;
-    return (x);
+    return x;
 }
 
 static t_int *sigbiquad_perform(t_int *w)
@@ -517,7 +517,7 @@ static void *sigsamphold_new(void)
     x->x_lastin = 0;
     x->x_lastout = 0;
     x->x_f = 0;
-    return (x);
+    return x;
 }
 
 static t_int *sigsamphold_perform(t_int *w)
@@ -593,7 +593,7 @@ static void *sigrpole_new(t_float f)
             f);
     outlet_new(&x->x_obj, &s_signal);
     x->x_last = 0;
-    return (x);
+    return x;
 }
 
 static t_int *sigrpole_perform(t_int *w)
@@ -666,7 +666,7 @@ static void *sigrzero_new(t_float f)
             f);
     outlet_new(&x->x_obj, &s_signal);
     x->x_last = 0;
-    return (x);
+    return x;
 }
 
 static t_int *sigrzero_perform(t_int *w)
@@ -738,7 +738,7 @@ static void *sigrzero_rev_new(t_float f)
             f);
     outlet_new(&x->x_obj, &s_signal);
     x->x_last = 0;
-    return (x);
+    return x;
 }
 
 static t_int *sigrzero_rev_perform(t_int *w)
@@ -818,7 +818,7 @@ static void *sigcpole_new(t_float re, t_float im)
     outlet_new(&x->x_obj, &s_signal);
     x->x_lastre = x->x_lastim = 0;
     x->x_f = 0;
-    return (x);
+    return x;
 }
 
 static t_int *sigcpole_perform(t_int *w)
@@ -911,7 +911,7 @@ static void *sigczero_new(t_float re, t_float im)
     outlet_new(&x->x_obj, &s_signal);
     x->x_lastre = x->x_lastim = 0;
     x->x_f = 0;
-    return (x);
+    return x;
 }
 
 static t_int *sigczero_perform(t_int *w)
@@ -1001,7 +1001,7 @@ static void *sigczero_rev_new(t_float re, t_float im)
     outlet_new(&x->x_obj, &s_signal);
     x->x_lastre = x->x_lastim = 0;
     x->x_f = 0;
-    return (x);
+    return x;
 }
 
 static t_int *sigczero_rev_perform(t_int *w)
