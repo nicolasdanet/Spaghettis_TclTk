@@ -14,53 +14,91 @@
 #include "m_macros.h"
 #include "d_dsp.h"
 
-static t_class *log_tilde_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct _log_tilde
-{
-    t_object x_obj;
-    t_float x_f;
-} t_log_tilde;
+static t_class *log_tilde_class;        /* Shared. */
 
-static void *log_tilde_new( void)
-{
-    t_log_tilde *x = (t_log_tilde *)pd_new(log_tilde_class);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
-    outlet_new(&x->x_obj, &s_signal);
-    x->x_f = 0;
-    return x;
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-t_int *log_tilde_perform(t_int *w)
+typedef struct _log_tilde {
+    t_object    x_obj;                  /* Must be the first. */
+    t_float     x_f;
+    t_outlet    *x_outlet;
+    } t_log_tilde;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* Aliasing. */
+
+t_int *log_tilde_perform (t_int *w)
 {
     t_sample *in1 = (t_sample *)(w[1]);
     t_sample *in2 = (t_sample *)(w[2]);
     t_sample *out = (t_sample *)(w[3]);
     int n = (int)(w[4]);
-    while (n--)
-    {
-        float f = *in1++, g = *in2++;
-        if (f <= 0)
-            *out = -1000;   /* rather than blow up, output a number << 0 */
-        else if (g <= 0)
-            *out = log(f);
-        else *out = log(f)/log(g);
-        out++;
+    
+    while (n--) {
+    //
+    t_sample f = *in1++;
+    t_sample g = *in2++;
+    
+    if (f <= 0.0)      { *out++ = -1000.0; }
+    else if (g <= 0.0) { *out++ = log (f); }
+    else {
+        *out++ = log (f) / log (g);
     }
-    return (w+5);
+    //
+    }
+    
+    return (w + 5);
 }
 
-static void log_tilde_dsp(t_log_tilde *x, t_signal **sp)
+static void log_tilde_dsp (t_log_tilde *x, t_signal **sp)
 {
-    dsp_add(log_tilde_perform, 4,
-        sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
+    dsp_add (log_tilde_perform, 4, sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
 }
 
-void log_tilde_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *log_tilde_new (void)
 {
-    log_tilde_class = class_new(sym_log__tilde__, (t_newmethod)log_tilde_new, 0,
-        sizeof(t_log_tilde), 0, A_DEFFLOAT, 0);
-    CLASS_SIGNAL(log_tilde_class, t_log_tilde, x_f);
-    class_addMethod(log_tilde_class, (t_method)log_tilde_dsp,
-        sym_dsp, A_CANT, 0);
+    t_log_tilde *x = (t_log_tilde *)pd_new (log_tilde_class);
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    
+    inlet_new (cast_object (x), cast_pd (x), &s_signal, &s_signal);
+
+    return x;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void log_tilde_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_log__tilde__,
+            (t_newmethod)log_tilde_new,
+            NULL,
+            sizeof (t_log_tilde),
+            CLASS_DEFAULT,
+            A_DEFFLOAT,
+            A_NULL);
+            
+    CLASS_SIGNAL (c, t_log_tilde, x_f);
+    
+    class_addDSP (c, log_tilde_dsp);
+    
+    log_tilde_class = c;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
