@@ -1,10 +1,13 @@
-/* Copyright (c) 1997-1999 Miller Puckette and others.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-/* sampling */
+/* 
+    Copyright (c) 1997-2016 Miller Puckette and others.
+*/
 
-/* LATER make tabread4 and tabread~ */
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #include "m_pd.h"
 #include "m_core.h"
@@ -122,7 +125,7 @@ static void tabwrite_tilde_stop(t_tabwrite_tilde *x)
     }
 }
 
-static void tabwrite_tilde_setup(void)
+void tabwrite_tilde_setup(void)
 {
     tabwrite_tilde_class = class_new(sym_tabwrite__tilde__,
         (t_newmethod)tabwrite_tilde_new, 0,
@@ -138,6 +141,10 @@ static void tabwrite_tilde_setup(void)
         sym_start, A_DEFFLOAT, 0);
     class_addBang(tabwrite_tilde_class, tabwrite_tilde_bang);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* ------------ tabplay~ - non-transposing sample playback --------------- */
 
@@ -256,7 +263,7 @@ static void tabplay_tilde_free(t_tabplay_tilde *x)
     clock_free(x->x_clock);
 }
 
-static void tabplay_tilde_setup(void)
+void tabplay_tilde_setup(void)
 {
     tabplay_tilde_class = class_new(sym_tabplay__tilde__,
         (t_newmethod)tabplay_tilde_new, (t_method)tabplay_tilde_free,
@@ -270,7 +277,9 @@ static void tabplay_tilde_setup(void)
     class_addList(tabplay_tilde_class, tabplay_tilde_list);
 }
 
-/******************** tabread~ ***********************/
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static t_class *tabread_tilde_class;
 
@@ -355,7 +364,7 @@ static void tabread_tilde_free(t_tabread_tilde *x)
 {
 }
 
-static void tabread_tilde_setup(void)
+void tabread_tilde_setup(void)
 {
     tabread_tilde_class = class_new(sym_tabread__tilde__,
         (t_newmethod)tabread_tilde_new, (t_method)tabread_tilde_free,
@@ -367,7 +376,9 @@ static void tabread_tilde_setup(void)
         sym_set, A_SYMBOL, 0);
 }
 
-/******************** tabread4~ ***********************/
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static t_class *tabread4_tilde_class;
 
@@ -487,7 +498,7 @@ static void tabread4_tilde_free(t_tabread4_tilde *x)
 {
 }
 
-static void tabread4_tilde_setup(void)
+void tabread4_tilde_setup(void)
 {
     tabread4_tilde_class = class_new(sym_tabread4__tilde__,
         (t_newmethod)tabread4_tilde_new, (t_method)tabread4_tilde_free,
@@ -499,7 +510,9 @@ static void tabread4_tilde_setup(void)
         sym_set, A_SYMBOL, 0);
 }
 
-/******************** tabosc4~ ***********************/
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static t_class *tabosc4_tilde_class;
 
@@ -628,7 +641,7 @@ static void tabosc4_tilde_dsp(t_tabosc4_tilde *x, t_signal **sp)
         sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
-static void tabosc4_tilde_setup(void)
+void tabosc4_tilde_setup(void)
 {
     tabosc4_tilde_class = class_new(sym_tabosc4__tilde__,
         (t_newmethod)tabosc4_tilde_new, 0,
@@ -642,7 +655,9 @@ static void tabosc4_tilde_setup(void)
         sym_inlet2, A_FLOAT, 0);
 }
 
-/* ------------------------ tabsend~ ------------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static t_class *tabsend_class;
 
@@ -728,7 +743,7 @@ static void tabsend_dsp(t_tabsend *x, t_signal **sp)
     dsp_add(tabsend_perform, 3, x, sp[0]->s_vector, n);
 }
 
-static void tabsend_setup(void)
+void tabsend_setup(void)
 {
     tabsend_class = class_new(sym_tabsend__tilde__, (t_newmethod)tabsend_new,
         0, sizeof(t_tabsend), 0, A_DEFSYMBOL, 0);
@@ -739,7 +754,9 @@ static void tabsend_setup(void)
         sym_set, A_SYMBOL, 0);
 }
 
-/* ------------------------ tabreceive~ ------------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static t_class *tabreceive_class;
 
@@ -808,7 +825,7 @@ static void *tabreceive_new(t_symbol *s)
     return x;
 }
 
-static void tabreceive_setup(void)
+void tabreceive_setup(void)
 {
     tabreceive_class = class_new(sym_tabreceive__tilde__,
         (t_newmethod)tabreceive_new, 0,
@@ -819,7 +836,9 @@ static void tabreceive_setup(void)
         sym_set, A_SYMBOL, 0);
 }
 
-/* ---------- tabread: control, non-interpolating ------------------------ */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static t_class *tabread_class;
 
@@ -861,7 +880,7 @@ static void *tabread_new(t_symbol *s)
     return x;
 }
 
-static void tabread_setup(void)
+void tabread_setup(void)
 {
     tabread_class = class_new(sym_tabread, (t_newmethod)tabread_new,
         0, sizeof(t_tabread), 0, A_DEFSYMBOL, 0);
@@ -870,7 +889,9 @@ static void tabread_setup(void)
         A_SYMBOL, 0);
 }
 
-/* ---------- tabread4: control, 4-point interpolation --------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static t_class *tabread4_class;
 
@@ -929,7 +950,7 @@ static void *tabread4_new(t_symbol *s)
     return x;
 }
 
-static void tabread4_setup(void)
+void tabread4_setup(void)
 {
     tabread4_class = class_new(sym_tabread4, (t_newmethod)tabread4_new,
         0, sizeof(t_tabread4), 0, A_DEFSYMBOL, 0);
@@ -938,7 +959,9 @@ static void tabread4_setup(void)
         A_SYMBOL, 0);
 }
 
-/* ------------------ tabwrite: control ------------------------ */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static t_class *tabwrite_class;
 
@@ -994,19 +1017,5 @@ void tabwrite_setup(void)
         A_SYMBOL, 0);
 }
 
-/* ------------------------ global setup routine ------------------------- */
-
-void d_array_setup(void)
-{
-    tabwrite_tilde_setup();
-    tabplay_tilde_setup();
-    tabread_tilde_setup();
-    tabread4_tilde_setup();
-    tabosc4_tilde_setup();
-    tabsend_setup();
-    tabreceive_setup();
-    tabread_setup();
-    tabread4_setup();
-    tabwrite_setup();
-}
-
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
