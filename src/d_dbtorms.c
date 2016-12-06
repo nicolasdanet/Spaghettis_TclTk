@@ -14,51 +14,80 @@
 #include "m_macros.h"
 #include "d_dsp.h"
 
-typedef struct dbtorms_tilde
-{
-    t_object x_obj;
-    t_float x_f;
-} t_dbtorms_tilde;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-t_class *dbtorms_tilde_class;
+static t_class *dbtorms_tilde_class;        /* Shared. */
 
-static void *dbtorms_tilde_new(void)
-{
-    t_dbtorms_tilde *x = (t_dbtorms_tilde *)pd_new(dbtorms_tilde_class);
-    outlet_new(&x->x_obj, &s_signal);
-    x->x_f = 0;
-    return x;
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static t_int *dbtorms_tilde_perform(t_int *w)
+typedef struct dbtorms_tilde {
+    t_object    x_obj;                      /* Must be the first. */
+    t_float     x_f;
+    t_outlet    *x_outlet;
+    } t_dbtorms_tilde;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* No aliasing. */
+
+static t_int *dbtorms_tilde_perform (t_int *w)
 {
-    t_sample *in = *(t_sample **)(w+1), *out = *(t_sample **)(w+2);
-    t_int n = *(t_int *)(w+3);
-    for (; n--; in++, out++)
-    {
-        t_sample f = *in;
-        if (f <= 0) *out = 0;
-        else
-        {
-            if (f > 485)
-                f = 485;
-            *out = exp((PD_LOGTEN * 0.05) * (f-100.));
-        }
-    }
+    PD_RESTRICTED in  = (t_sample *)(w[1]);
+    PD_RESTRICTED out = (t_sample *)(w[2]);
+    int n = (int)(w[3]);
+    
+    while (n--) { *out++ = math_decibelToRootMeanSquare (*in++); }
+    
     return (w + 4);
 }
 
-static void dbtorms_tilde_dsp(t_dbtorms_tilde *x, t_signal **sp)
+static void dbtorms_tilde_dsp (t_dbtorms_tilde *x, t_signal **sp)
 {
-    dsp_add(dbtorms_tilde_perform, 3, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
+    PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
+    
+    dsp_add (dbtorms_tilde_perform, 3, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
-void dbtorms_tilde_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *dbtorms_tilde_new (void)
 {
-    dbtorms_tilde_class = class_new(sym_dbtorms__tilde__, (t_newmethod)dbtorms_tilde_new, 0,
-        sizeof(t_dbtorms_tilde), 0, 0);
-    CLASS_SIGNAL(dbtorms_tilde_class, t_dbtorms_tilde, x_f);
-    class_addMethod(dbtorms_tilde_class, (t_method)dbtorms_tilde_dsp,
-        sym_dsp, A_CANT, 0);
-    class_setHelpName(dbtorms_tilde_class, sym_mtof__tilde__);
+    t_dbtorms_tilde *x = (t_dbtorms_tilde *)pd_new (dbtorms_tilde_class);
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+
+    return x;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void dbtorms_tilde_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_dbtorms__tilde__,
+            (t_newmethod)dbtorms_tilde_new,
+            NULL,
+            sizeof (t_dbtorms_tilde),
+            CLASS_DEFAULT,
+            A_NULL);
+        
+    CLASS_SIGNAL (c, t_dbtorms_tilde, x_f);
+    
+    class_addDSP (c, dbtorms_tilde_dsp);
+    
+    class_setHelpName (c, sym_mtof__tilde__);
+    
+    dbtorms_tilde_class = c;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
