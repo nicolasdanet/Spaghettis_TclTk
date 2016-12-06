@@ -126,7 +126,7 @@
 		378233EB1D6C7F9400C128AD /* x_textsize.c in Sources */ = {isa = PBXBuildFile; fileRef = 378233EA1D6C7F9400C128AD /* x_textsize.c */; };
 		3782340D1D6C812200C128AD /* x_textset.c in Sources */ = {isa = PBXBuildFile; fileRef = 3782340C1D6C812200C128AD /* x_textset.c */; };
 		378234271D6C826800C128AD /* x_textget.c in Sources */ = {isa = PBXBuildFile; fileRef = 378234261D6C826800C128AD /* x_textget.c */; };
-		378972151C4F716800263434 /* d_array.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B11C4F716700263434 /* d_array.c */; };
+		378972151C4F716800263434 /* d_tabplay.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B11C4F716700263434 /* d_tabplay.c */; };
 		378972161C4F716800263434 /* d_ctl.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B21C4F716700263434 /* d_ctl.c */; };
 		378972171C4F716800263434 /* d_dac.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B31C4F716700263434 /* d_dac.c */; };
 		378972181C4F716800263434 /* d_delay.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B41C4F716700263434 /* d_delay.c */; };
@@ -519,7 +519,7 @@
 		378971941C4F712A00263434 /* ui_path.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.tcl; path = ui_path.tcl; sourceTree = "<group>"; };
 		378971951C4F712A00263434 /* ui_text.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.tcl; path = ui_text.tcl; sourceTree = "<group>"; };
 		378971961C4F712A00263434 /* ui_x11.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.tcl; path = ui_x11.tcl; sourceTree = "<group>"; };
-		378971B11C4F716700263434 /* d_array.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_array.c; path = src/d_array.c; sourceTree = "<group>"; };
+		378971B11C4F716700263434 /* d_tabplay.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_tabplay.c; path = src/d_tabplay.c; sourceTree = "<group>"; };
 		378971B21C4F716700263434 /* d_ctl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_ctl.c; path = src/d_ctl.c; sourceTree = "<group>"; };
 		378971B31C4F716700263434 /* d_dac.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_dac.c; path = src/d_dac.c; sourceTree = "<group>"; };
 		378971B41C4F716700263434 /* d_delay.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_delay.c; path = src/d_delay.c; sourceTree = "<group>"; };
@@ -1412,7 +1412,7 @@
 		37C9FADD1DF718CD00309D57 /* Tab */ = {
 			isa = PBXGroup;
 			children = (
-				378971B11C4F716700263434 /* d_array.c */,
+				378971B11C4F716700263434 /* d_tabplay.c */,
 				37C9FBB21DF723AF00309D57 /* d_tabosc4.c */,
 				37C9FB941DF722D800309D57 /* d_tabsend.c */,
 				37C9FB801DF7224300309D57 /* d_tabreceive.c */,
@@ -1633,7 +1633,7 @@
 				371655951BA3466000ABDE22 /* pmutil.c in Sources */,
 				371655971BA3466600ABDE22 /* portmidi.c in Sources */,
 				371655991BA3467500ABDE22 /* ptmacosx_cf.c in Sources */,
-				378972151C4F716800263434 /* d_array.c in Sources */,
+				378972151C4F716800263434 /* d_tabplay.c in Sources */,
 				378972161C4F716800263434 /* d_ctl.c in Sources */,
 				378972171C4F716800263434 /* d_dac.c in Sources */,
 				378972181C4F716800263434 /* d_delay.c in Sources */,
