@@ -261,6 +261,7 @@
 #include "d_vcf.c"
 
 #include "d_array.c"
+#include "d_tabread.c"
 #include "d_tabread4.c"
 #include "d_tabwrite.c"
 
