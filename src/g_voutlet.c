@@ -83,7 +83,7 @@ static void *voutlet_newSignal (t_symbol *s)
     x->vo_owner      = canvas_getCurrent();
     x->vo_outlet     = canvas_addOutlet (x->vo_owner, cast_pd (x), &s_signal);
     
-    inlet_new (cast_object (x), cast_pd (x), &s_signal, &s_signal);
+    inlet_newSignal (cast_object (x));
 
     return x;
 }

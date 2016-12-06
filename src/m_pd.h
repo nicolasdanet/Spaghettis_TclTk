@@ -661,7 +661,8 @@ PD_DLL void         inlet_free                  (t_inlet *x);
 PD_DLL t_inlet      *inlet_newPointer           (t_object *owner, t_gpointer *gp);
 PD_DLL t_inlet      *inlet_newFloat             (t_object *owner, t_float *fp);
 PD_DLL t_inlet      *inlet_newSymbol            (t_object *owner, t_symbol **sp);
-PD_DLL t_inlet      *inlet_newSignal            (t_object *owner, t_float f);
+PD_DLL t_inlet      *inlet_newSignal            (t_object *owner);
+PD_DLL t_inlet      *inlet_newSignalDefault     (t_object *owner, t_float f);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

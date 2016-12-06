@@ -74,7 +74,7 @@ static void *multiply_tilde_newWithSignal (t_symbol *s, int argc, t_atom *argv)
     
     x->x_outlet = outlet_new (cast_object (x), &s_signal);
     
-    inlet_new (cast_object (x), cast_pd (x), &s_signal, &s_signal);
+    inlet_newSignal (cast_object (x));
         
     return x;
 }

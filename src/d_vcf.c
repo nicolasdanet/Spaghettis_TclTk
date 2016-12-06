@@ -159,7 +159,7 @@ static void *vcf_tilde_new (t_float f)
     x->x_outletLeft  = outlet_new (cast_object (x), &s_signal);
     x->x_outletRight = outlet_new (cast_object (x), &s_signal);
 
-    inlet_new (cast_object (x), cast_pd (x), &s_signal, &s_signal);
+    inlet_newSignal (cast_object (x));
     inlet_new (cast_object (x), cast_pd (x), &s_float, sym_inlet2);
 
     return x;

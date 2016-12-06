@@ -96,9 +96,7 @@ static void *dac_new (t_symbol *s, int argc, t_atom *argv)
         for (i = 0; i < argc; i++) { x->x_vector[i] = (int)atom_getFloatAtIndex (i, argc, argv); }
     }
     
-    for (i = 1; i < x->x_size; i++) {
-        inlet_new (cast_object (x), cast_pd (x), &s_signal, &s_signal);
-    }
+    for (i = 1; i < x->x_size; i++) { inlet_newSignal (cast_object (x)); }
     
     return x;
 }
