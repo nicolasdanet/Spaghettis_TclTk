@@ -66,13 +66,13 @@ static void log_tilde_dsp (t_log_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *log_tilde_new (void)
+static void *log_tilde_new (t_float f)
 {
     t_log_tilde *x = (t_log_tilde *)pd_new (log_tilde_class);
     
     x->x_outlet = outlet_new (cast_object (x), &s_signal);
     
-    inlet_new (cast_object (x), cast_pd (x), &s_signal, &s_signal);
+    inlet_newSignal (cast_object (x), f);
 
     return x;
 }
