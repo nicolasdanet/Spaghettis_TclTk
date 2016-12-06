@@ -260,13 +260,13 @@
 #include "d_cos.c"
 #include "d_vcf.c"
 
+#include "d_tabwrite.c"
+#include "d_tabread.c"
 #include "d_tabplay.c"
 #include "d_tabosc4.c"
+#include "d_tabread4.c"
 #include "d_tabsend.c"
 #include "d_tabreceive.c"
-#include "d_tabread.c"
-#include "d_tabread4.c"
-#include "d_tabwrite.c"
 
 #include "d_add.c"
 #include "d_subtract.c"
