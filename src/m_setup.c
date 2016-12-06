@@ -193,7 +193,7 @@ void catch_tilde_setup      (void);
 void throw_tilde_setup      (void);
 void clip_tilde_setup       (void);
 void rsqrt_tilde_setup      (void);
-void sigsqrt_tilde_setup    (void);
+void sqrt_tilde_setup       (void);
 void sigwrap_tilde_setup    (void);
 void mtof_tilde_setup       (void);
 void ftom_tilde_setup       (void);
@@ -374,7 +374,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     throw_tilde_setup();
     clip_tilde_setup();
     rsqrt_tilde_setup();
-    sigsqrt_tilde_setup();
+    sqrt_tilde_setup();
     sigwrap_tilde_setup();
     mtof_tilde_setup();
     ftom_tilde_setup();

@@ -15,25 +15,30 @@
 #include "d_dsp.h"
 #include "d_math.h"
 
-/* sigsqrt -  square root good to 8 mantissa bits  */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct sigsqrt
-{
-    t_object x_obj;
-    t_float x_f;
-} t_sigsqrt;
+/* Square root good to 8 mantissa bits.  */
 
-static t_class *sigsqrt_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static void *sigsqrt_new(void)
-{
-    t_sigsqrt *x = (t_sigsqrt *)pd_new(sigsqrt_class);
-    outlet_new(&x->x_obj, &s_signal);
-    x->x_f = 0;
-    return (x);
-}
+static t_class *sqrt_tilde_class;           /* Shared. */
 
-t_int *sigsqrt_perform(t_int *w)    /* not static; also used in d_fft.c */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct sqrt_tilde {
+    t_object    x_obj;                      /* Must be the first. */
+    t_float     x_f;
+    t_outlet    *x_outlet;
+    } t_sqrt_tilde;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_int *sqrt_tilde_perform (t_int *w)
 {
     t_sample *in = *(t_sample **)(w+1), *out = *(t_sample **)(w+2);
     t_int n = *(t_int *)(w+3);
@@ -56,18 +61,54 @@ t_int *sigsqrt_perform(t_int *w)    /* not static; also used in d_fft.c */
     return (w + 4);
 }
 
-static void sigsqrt_dsp(t_sigsqrt *x, t_signal **sp)
+static void sqrt_tilde_dsp (t_sqrt_tilde *x, t_signal **sp)
 {
-    dsp_add(sigsqrt_perform, 3, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
+    PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
+    
+    dsp_add (sqrt_tilde_perform, 3, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
-void sigsqrt_tilde_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *sqrt_tilde_new (void)
 {
-    //rsqrt_tilde_initialize();
-    sigsqrt_class = class_new(sym_sqrt__tilde__, (t_newmethod)sigsqrt_new, 0,
-        sizeof(t_sigsqrt), 0, 0);
-    class_addCreator(sigsqrt_new, sym_q8_sqrt__tilde__, 0);   /* LEGACY !!! */
-    CLASS_SIGNAL(sigsqrt_class, t_sigsqrt, x_f);
-    class_addMethod(sigsqrt_class, (t_method)sigsqrt_dsp,
-        sym_dsp, A_CANT, 0);
+    t_sqrt_tilde *x = (t_sqrt_tilde *)pd_new (sqrt_tilde_class);
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+
+    return x;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void sqrt_tilde_setup (void)
+{
+    t_class *c = NULL;
+    
+    rsqrt_tilde_initialize();
+    
+    c = class_new (sym_sqrt__tilde__,
+            (t_newmethod)sqrt_tilde_new,
+            NULL,
+            sizeof (t_sqrt_tilde),
+            CLASS_DEFAULT,
+            A_NULL);
+    
+    CLASS_SIGNAL (c, t_sqrt_tilde, x_f);
+    
+    class_addDSP (c, sqrt_tilde_dsp);
+    
+    #if PD_WITH_LEGACY
+    
+    class_addCreator (sqrt_tilde_new, sym_q8_sqrt__tilde__, A_NULL);
+    
+    #endif
+    
+    sqrt_tilde_class = c;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

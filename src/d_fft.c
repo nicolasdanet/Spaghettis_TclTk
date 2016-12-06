@@ -6,6 +6,8 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "d_dsp.h"
+#include "d_math.h"
+
 /* ---------------- utility functions for DSP chains ---------------------- */
 
     /* swap two arrays */
@@ -315,8 +317,6 @@ static t_int *sigframp_perform(t_int *w)
     return (w+6);
 }
 
-t_int *sigsqrt_perform(t_int *w);
-
 static void sigframp_dsp(t_sigframp *x, t_signal **sp)
 {
     int n = sp[0]->s_vectorSize, n2 = (n>>1);
@@ -327,7 +327,7 @@ static void sigframp_dsp(t_sigframp *x, t_signal **sp)
     }
     dsp_add(sigframp_perform, 5, sp[0]->s_vector, sp[1]->s_vector,
         sp[2]->s_vector, sp[3]->s_vector, n2);
-    dsp_add(sigsqrt_perform, 3, sp[3]->s_vector, sp[3]->s_vector, n2);
+    dsp_add(sqrt_tilde_perform, 3, sp[3]->s_vector, sp[3]->s_vector, n2);
 }
 
 static void sigframp_setup(void)

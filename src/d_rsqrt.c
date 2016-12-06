@@ -68,6 +68,10 @@ t_float rsqrt_tableExponential[RSQRT_EXPONENTIAL_SIZE];     /* Shared. */
 
 void rsqrt_tilde_initialize (void)
 {
+    static int rsqrt_initialized = 0;
+    
+    if (!rsqrt_initialized++) {
+    //
     int i;
     
     for (i = 0; i < RSQRT_EXPONENTIAL_SIZE; i++) {
@@ -87,6 +91,8 @@ void rsqrt_tilde_initialize (void)
         t_float f = 1.0 + (1.0 / RSQRT_MANTISSA_SIZE) * i;      /* Exponent is zero in 1.0 to 2.0 range. */
         
         rsqrt_tableMantissa[i] = 1.0 / sqrt (f);      
+    }
+    //
     }
 }
 
