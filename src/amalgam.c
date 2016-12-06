@@ -261,6 +261,7 @@
 #include "d_vcf.c"
 
 #include "d_array.c"
+#include "d_tabwrite.c"
 
 #include "d_add.c"
 #include "d_subtract.c"
