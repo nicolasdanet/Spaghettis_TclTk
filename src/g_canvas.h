@@ -690,6 +690,7 @@ t_symbol        *garray_getName                         (t_garray *x);
 int             garray_isSingle                         (t_glist *glist);
 
 int             garray_getData                          (t_garray *x, int *size, t_word **w);
+void            garray_setDataAtIndex                   (t_garray *x, int i, t_float f);
 void            garray_setAsUsedInDSP                   (t_garray *x);
 void            garray_setSaveWithParent                (t_garray *x, int savedWithParent);
 void            garray_redraw                           (t_garray *x);
