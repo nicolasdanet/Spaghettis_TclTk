@@ -260,6 +260,7 @@
 #include "d_cos.c"
 #include "d_vcf.c"
 
+#include "x_tabwrite.c"
 #include "d_tabwrite.c"
 #include "d_tabread.c"
 #include "d_tabplay.c"

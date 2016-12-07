@@ -15,65 +15,19 @@
 #include "g_graphics.h"
 #include "d_dsp.h"
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 extern t_class *garray_class;
 
-static t_class *tabwrite_class;
-
-typedef struct _tabwrite
-{
-    t_object x_obj;
-    t_symbol *x_arrayname;
-    t_float x_ft1;
-} t_tabwrite;
-
-static void tabwrite_float(t_tabwrite *x, t_float f)
-{
-    int i, vecsize;
-    t_garray *a;
-    t_word *vec;
-
-    if (!(a = (t_garray *)pd_getThingByClass(x->x_arrayname, garray_class)))
-        post_error ("%s: no such array", x->x_arrayname->s_name);
-    else if (!garray_getData(a, &vecsize, &vec)) /* Always true now !!! */
-        post_error ("%s: bad template for tabwrite", x->x_arrayname->s_name);
-    else
-    {
-        int n = x->x_ft1;
-        if (n < 0)
-            n = 0;
-        else if (n >= vecsize)
-            n = vecsize-1;
-        vec[n].w_float = f;
-        garray_redraw(a);
-    }
-}
-
-static void tabwrite_set(t_tabwrite *x, t_symbol *s)
-{
-    x->x_arrayname = s;
-}
-
-static void *tabwrite_new(t_symbol *s)
-{
-    t_tabwrite *x = (t_tabwrite *)pd_new(tabwrite_class);
-    x->x_ft1 = 0;
-    x->x_arrayname = s;
-    inlet_newFloat(&x->x_obj, &x->x_ft1);
-    return x;
-}
-
-void tabwrite_setup(void)
-{
-    tabwrite_class = class_new(sym_tabwrite, (t_newmethod)tabwrite_new,
-        0, sizeof(t_tabwrite), 0, A_DEFSYMBOL, 0);
-    class_addFloat(tabwrite_class, (t_method)tabwrite_float);
-    class_addMethod(tabwrite_class, (t_method)tabwrite_set, sym_set,
-        A_SYMBOL, 0);
-}
-
-/* ------------------------- tabwrite~ -------------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static t_class *tabwrite_tilde_class;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 typedef struct _tabwrite_tilde
 {
@@ -85,16 +39,9 @@ typedef struct _tabwrite_tilde
     t_float x_f;
 } t_tabwrite_tilde;
 
-static void tabwrite_tilde_tick(t_tabwrite_tilde *x);
-
-static void *tabwrite_tilde_new(t_symbol *s)
-{
-    t_tabwrite_tilde *x = (t_tabwrite_tilde *)pd_new(tabwrite_tilde_class);
-    x->x_phase = PD_INT_MAX;
-    x->x_arrayname = s;
-    x->x_f = 0;
-    return x;
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void tabwrite_tilde_redraw(t_tabwrite_tilde *x)
 {
@@ -102,6 +49,52 @@ static void tabwrite_tilde_redraw(t_tabwrite_tilde *x)
     if (!a) { PD_BUG; }
     else garray_redraw(a);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void tabwrite_tilde_bang(t_tabwrite_tilde *x)
+{
+    x->x_phase = 0;
+}
+
+static void tabwrite_tilde_set(t_tabwrite_tilde *x, t_symbol *s)
+{
+    t_garray *a;
+
+    x->x_arrayname = s;
+    if (!(a = (t_garray *)pd_getThingByClass(x->x_arrayname, garray_class)))
+    {
+        if (*s->s_name) post_error ("tabwrite~: %s: no such array",
+            x->x_arrayname->s_name);
+        x->x_vec = 0;
+    }
+    else if (!garray_getData(a, &x->x_nsampsintab, &x->x_vec))  /* Always true now !!! */
+    {
+        post_error ("%s: bad template for tabwrite~", x->x_arrayname->s_name);
+        x->x_vec = 0;
+    }
+    else garray_setAsUsedInDSP(a);
+}
+
+static void tabwrite_tilde_start(t_tabwrite_tilde *x, t_float f)
+{
+    x->x_phase = (f > 0 ? f : 0);
+}
+
+static void tabwrite_tilde_stop(t_tabwrite_tilde *x)
+{
+    if (x->x_phase != PD_INT_MAX)
+    {
+        tabwrite_tilde_redraw(x);
+        x->x_phase = PD_INT_MAX;
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static t_int *tabwrite_tilde_perform(t_int *w)
 {
@@ -135,49 +128,28 @@ bad:
     return (w+4);
 }
 
-static void tabwrite_tilde_set(t_tabwrite_tilde *x, t_symbol *s)
-{
-    t_garray *a;
-
-    x->x_arrayname = s;
-    if (!(a = (t_garray *)pd_getThingByClass(x->x_arrayname, garray_class)))
-    {
-        if (*s->s_name) post_error ("tabwrite~: %s: no such array",
-            x->x_arrayname->s_name);
-        x->x_vec = 0;
-    }
-    else if (!garray_getData(a, &x->x_nsampsintab, &x->x_vec))  /* Always true now !!! */
-    {
-        post_error ("%s: bad template for tabwrite~", x->x_arrayname->s_name);
-        x->x_vec = 0;
-    }
-    else garray_setAsUsedInDSP(a);
-}
-
 static void tabwrite_tilde_dsp(t_tabwrite_tilde *x, t_signal **sp)
 {
     tabwrite_tilde_set(x, x->x_arrayname);
     dsp_add(tabwrite_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
 }
 
-static void tabwrite_tilde_bang(t_tabwrite_tilde *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *tabwrite_tilde_new(t_symbol *s)
 {
-    x->x_phase = 0;
+    t_tabwrite_tilde *x = (t_tabwrite_tilde *)pd_new(tabwrite_tilde_class);
+    x->x_phase = PD_INT_MAX;
+    x->x_arrayname = s;
+    x->x_f = 0;
+    return x;
 }
 
-static void tabwrite_tilde_start(t_tabwrite_tilde *x, t_float f)
-{
-    x->x_phase = (f > 0 ? f : 0);
-}
-
-static void tabwrite_tilde_stop(t_tabwrite_tilde *x)
-{
-    if (x->x_phase != PD_INT_MAX)
-    {
-        tabwrite_tilde_redraw(x);
-        x->x_phase = PD_INT_MAX;
-    }
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void tabwrite_tilde_setup(void)
 {
@@ -195,7 +167,6 @@ void tabwrite_tilde_setup(void)
         sym_start, A_DEFFLOAT, 0);
     class_addBang(tabwrite_tilde_class, tabwrite_tilde_bang);
 }
-
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
