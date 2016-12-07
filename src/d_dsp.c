@@ -123,7 +123,7 @@ void dsp_state (void *dummy, t_symbol *s, int argc, t_atom *argv)
 
 void dsp_update (void)
 {
-    if (pd_this->pd_dspState) { dsp_start(); }
+    dsp_resume (dsp_suspend());
 }
 
 int dsp_suspend (void)
