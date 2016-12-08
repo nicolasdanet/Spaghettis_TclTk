@@ -264,9 +264,10 @@
 #include "d_tabwrite.c"
 #include "x_tabread.c"
 #include "d_tabread.c"
+#include "x_tabread4.c"
+#include "d_tabread4.c"
 #include "d_tabplay.c"
 #include "d_tabosc4.c"
-#include "d_tabread4.c"
 #include "d_tabsend.c"
 #include "d_tabreceive.c"
 
