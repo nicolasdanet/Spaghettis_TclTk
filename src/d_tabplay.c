@@ -15,15 +15,18 @@
 #include "g_graphics.h"
 #include "d_dsp.h"
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 extern t_class *garray_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-/* ------------ tabplay~ - non-transposing sample playback --------------- */
 
 static t_class *tabplay_tilde_class;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 typedef struct _tabplay_tilde
 {
@@ -37,19 +40,63 @@ typedef struct _tabplay_tilde
     t_clock *x_clock;
 } t_tabplay_tilde;
 
-static void tabplay_tilde_tick(t_tabplay_tilde *x);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void *tabplay_tilde_new(t_symbol *s)
+static void tabplay_tilde_tick(t_tabplay_tilde *x)
 {
-    t_tabplay_tilde *x = (t_tabplay_tilde *)pd_new(tabplay_tilde_class);
-    x->x_clock = clock_new(x, (t_method)tabplay_tilde_tick);
-    x->x_phase = PD_INT_MAX;
-    x->x_limit = 0;
-    x->x_arrayname = s;
-    outlet_new(&x->x_obj, &s_signal);
-    x->x_bangout = outlet_new(&x->x_obj, &s_bang);
-    return x;
+    outlet_bang(x->x_bangout);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void tabplay_tilde_list(t_tabplay_tilde *x, t_symbol *s,
+    int argc, t_atom *argv)
+{
+    long start = atom_getFloatAtIndex(0, argc, argv);
+    long length = atom_getFloatAtIndex(1, argc, argv);
+    if (start < 0) start = 0;
+    if (length <= 0)
+        x->x_limit = PD_INT_MAX;
+    else
+        x->x_limit = start + length;
+    x->x_phase = start;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void tabplay_tilde_set(t_tabplay_tilde *x, t_symbol *s)
+{
+    t_garray *a;
+
+    x->x_arrayname = s;
+    if (!(a = (t_garray *)pd_getThingByClass(x->x_arrayname, garray_class)))
+    {
+        if (*s->s_name) post_error ("tabplay~: %s: no such array",
+            x->x_arrayname->s_name);
+        x->x_vec = 0;
+    }
+    else if (!garray_getData(a, &x->x_nsampsintab, &x->x_vec)) /* Always true now !!! */
+    {
+        post_error ("%s: bad template for tabplay~", x->x_arrayname->s_name);
+        x->x_vec = 0;
+    }
+    else garray_setAsUsedInDSP(a);
+}
+
+static void tabplay_tilde_stop(t_tabplay_tilde *x)
+{
+    x->x_phase = PD_INT_MAX;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static t_int *tabplay_tilde_perform(t_int *w)
 {
@@ -85,58 +132,36 @@ zero:
     return (w+4);
 }
 
-static void tabplay_tilde_set(t_tabplay_tilde *x, t_symbol *s)
-{
-    t_garray *a;
-
-    x->x_arrayname = s;
-    if (!(a = (t_garray *)pd_getThingByClass(x->x_arrayname, garray_class)))
-    {
-        if (*s->s_name) post_error ("tabplay~: %s: no such array",
-            x->x_arrayname->s_name);
-        x->x_vec = 0;
-    }
-    else if (!garray_getData(a, &x->x_nsampsintab, &x->x_vec)) /* Always true now !!! */
-    {
-        post_error ("%s: bad template for tabplay~", x->x_arrayname->s_name);
-        x->x_vec = 0;
-    }
-    else garray_setAsUsedInDSP(a);
-}
-
 static void tabplay_tilde_dsp(t_tabplay_tilde *x, t_signal **sp)
 {
     tabplay_tilde_set(x, x->x_arrayname);
     dsp_add(tabplay_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
 }
 
-static void tabplay_tilde_list(t_tabplay_tilde *x, t_symbol *s,
-    int argc, t_atom *argv)
-{
-    long start = atom_getFloatAtIndex(0, argc, argv);
-    long length = atom_getFloatAtIndex(1, argc, argv);
-    if (start < 0) start = 0;
-    if (length <= 0)
-        x->x_limit = PD_INT_MAX;
-    else
-        x->x_limit = start + length;
-    x->x_phase = start;
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void tabplay_tilde_stop(t_tabplay_tilde *x)
+static void *tabplay_tilde_new(t_symbol *s)
 {
+    t_tabplay_tilde *x = (t_tabplay_tilde *)pd_new(tabplay_tilde_class);
+    x->x_clock = clock_new(x, (t_method)tabplay_tilde_tick);
     x->x_phase = PD_INT_MAX;
-}
-
-static void tabplay_tilde_tick(t_tabplay_tilde *x)
-{
-    outlet_bang(x->x_bangout);
+    x->x_limit = 0;
+    x->x_arrayname = s;
+    outlet_new(&x->x_obj, &s_signal);
+    x->x_bangout = outlet_new(&x->x_obj, &s_bang);
+    return x;
 }
 
 static void tabplay_tilde_free(t_tabplay_tilde *x)
 {
     clock_free(x->x_clock);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void tabplay_tilde_setup(void)
 {
