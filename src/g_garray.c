@@ -338,6 +338,17 @@ void garray_setDataAtIndex (t_garray *x, int i, t_float f)
     GARRAY_AT (n) = f;
 }
 
+t_float garray_getDataAtIndex (t_garray *x, int i)
+{
+    t_array *array = garray_getArray (x);
+    
+    int size = array_getSize (array);
+    int n = PD_CLAMP (i, 0, size - 1);
+    t_float f = GARRAY_AT (n);
+    
+    return f;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
