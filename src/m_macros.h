@@ -155,6 +155,15 @@ t_glist *cast_glistChecked                  (t_pd *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define WORD_FLOAT(w)                       ((w)->w_float)
+#define WORD_SYMBOL(w)                      ((w)->w_symbol)
+#define WORD_ARRAY(w)                       ((w)->w_array)
+#define WORD_BUFFER(w)                      ((w)->w_buffer)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #define class_addDSP(c, m)                  class_addMethod ((c), (t_method)(m), \
                                                 sym_dsp, \
                                                 A_CANT, \

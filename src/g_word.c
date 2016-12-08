@@ -27,10 +27,10 @@ void word_init (t_word *w, t_template *tmpl, t_gpointer *gp)
     int type = v->ds_type;
     
     switch (type) {
-        case DATA_FLOAT  : w->w_float  = 0.0;                                       break;
-        case DATA_SYMBOL : w->w_symbol = &s_symbol;                                 break;
-        case DATA_TEXT   : w->w_buffer = buffer_new();                              break;
-        case DATA_ARRAY  : w->w_array  = array_new (v->ds_templateIdentifier, gp);  break;
+        case DATA_FLOAT  : WORD_FLOAT (w)  = 0.0;                                       break;
+        case DATA_SYMBOL : WORD_SYMBOL (w) = &s_symbol;                                 break;
+        case DATA_TEXT   : WORD_BUFFER (w) = buffer_new();                              break;
+        case DATA_ARRAY  : WORD_ARRAY (w)  = array_new (v->ds_templateIdentifier, gp);  break;
     }
     //
     }
@@ -45,8 +45,8 @@ void word_free (t_word *w, t_template *tmpl)
     t_dataslot *v = template_getSlots (tmpl);
     
     for (i = 0; i < template_getSize (tmpl); i++) {
-        if (v->ds_type == DATA_ARRAY) { array_free (w[i].w_array); }
-        else if (v->ds_type == DATA_TEXT) { buffer_free (w[i].w_buffer); }
+        if (v->ds_type == DATA_ARRAY) { array_free (WORD_ARRAY (w + i)); }
+        else if (v->ds_type == DATA_TEXT) { buffer_free (WORD_BUFFER (w + i)); }
         v++;
     }
     //

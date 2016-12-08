@@ -52,9 +52,9 @@ static void set_bang (t_set *x)
     
     if (gpointer_hasField (&x->x_gpointer, s)) {
         if (x->x_asSymbol && gpointer_fieldIsSymbol (&x->x_gpointer, s)) {
-            gpointer_setSymbol (&x->x_gpointer, s, x->x_fields[i].sv_w.w_symbol);
+            gpointer_setSymbol (&x->x_gpointer, s, WORD_SYMBOL (&x->x_fields[i].sv_w));
         } else if (!x->x_asSymbol && gpointer_fieldIsFloat (&x->x_gpointer, s)) {
-            gpointer_setFloat (&x->x_gpointer, s, x->x_fields[i].sv_w.w_float);
+            gpointer_setFloat (&x->x_gpointer, s, WORD_FLOAT (&x->x_fields[i].sv_w));
         } else {
             error_mismatch (sym_set, sym_type);
         }
@@ -74,7 +74,7 @@ static void set_float (t_set *x, t_float f)
 {
     if (x->x_asSymbol) { error_mismatch (sym_set, sym_type); }
     else {
-        x->x_fields[0].sv_w.w_float = f;
+        WORD_FLOAT (&x->x_fields[0].sv_w) = f;
         set_bang (x);
     }
 }
@@ -83,7 +83,7 @@ static void set_symbol (t_set *x, t_symbol *s)
 {
     if (!x->x_asSymbol) { error_mismatch (sym_set, sym_type); }
     else {
-        x->x_fields[0].sv_w.w_symbol = s; 
+        WORD_SYMBOL (&x->x_fields[0].sv_w) = s; 
         set_bang (x);
     }
 }
@@ -100,9 +100,9 @@ static void set_set (t_set *x, t_symbol *templateName, t_symbol *fieldName)
         x->x_fields[0].sv_fieldName = fieldName;
        
         if (x->x_asSymbol) {
-            x->x_fields[0].sv_w.w_symbol = &s_;
+            WORD_SYMBOL (&x->x_fields[0].sv_w) = &s_;
         } else {
-            x->x_fields[0].sv_w.w_float  = 0.0;
+            WORD_FLOAT (&x->x_fields[0].sv_w) = 0.0;
         }
     }
 }
@@ -136,16 +136,16 @@ static void *set_new (t_symbol *s, int argc, t_atom *argv)
         int i;
         for (i = 0; i < x->x_fieldsSize; i++) {
             x->x_fields[i].sv_fieldName  = atom_getSymbolAtIndex (i + 1, argc, argv);
-            x->x_fields[i].sv_w.w_symbol = &s_;
-            if (i) { inlet_newSymbol (cast_object (x), &x->x_fields[i].sv_w.w_symbol); }
+            WORD_SYMBOL (&x->x_fields[i].sv_w) = &s_;
+            if (i) { inlet_newSymbol (cast_object (x), (t_symbol **)&x->x_fields[i].sv_w); }
         }
         
     } else {
         int i;
         for (i = 0; i < x->x_fieldsSize; i++) {
             x->x_fields[i].sv_fieldName  = atom_getSymbolAtIndex (i + 1, argc, argv);
-            x->x_fields[i].sv_w.w_float  = 0.0;
-            if (i) { inlet_newFloat (cast_object (x), &x->x_fields[i].sv_w.w_float); }
+            WORD_FLOAT (&x->x_fields[i].sv_w) = 0.0;
+            if (i) { inlet_newFloat (cast_object (x), (t_float *)&x->x_fields[i].sv_w); }
         }
     }
     
