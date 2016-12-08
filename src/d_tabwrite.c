@@ -109,7 +109,7 @@ static t_int *tabwrite_tilde_perform (t_int *w)
     
     if (end > phase) {
     //
-    t_word *w = x->x_vector + phase;
+    t_word *data = x->x_vector + phase;
     int size = PD_MIN (n, end - phase);
     
     phase += size; if (phase >= end) { x->x_redraw = 1; phase = PD_INT_MAX; }
@@ -120,8 +120,8 @@ static t_int *tabwrite_tilde_perform (t_int *w)
     //
     t_sample f = *in++;
     if (PD_BIG_OR_SMALL (f)) { f = 0.0; }
-    WORD_FLOAT (w) = f;
-    w++;
+    WORD_FLOAT (data) = f;
+    data++;
     //
     }
     //
