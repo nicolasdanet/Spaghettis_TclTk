@@ -262,6 +262,7 @@
 
 #include "x_tabwrite.c"
 #include "d_tabwrite.c"
+#include "x_tabread.c"
 #include "d_tabread.c"
 #include "d_tabplay.c"
 #include "d_tabosc4.c"
