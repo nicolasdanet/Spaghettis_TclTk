@@ -64,7 +64,7 @@ static void tabread4_tilde_set (t_tabread4_tilde *x, t_symbol *s)
 
 /* No aliasing. */
 
-static t_int *tabread4_tilde_perform(t_int *w)
+static t_int *tabread4_tilde_perform (t_int *w)
 {
     t_tabread4_tilde *x = (t_tabread4_tilde *)(w[1]);
     PD_RESTRICTED in  = (t_sample *)(w[2]);
