@@ -278,13 +278,13 @@ static inline t_sample *resample_vector (t_resample *x)
 
 static inline t_float dsp_4PointsInterpolation (t_float f, t_word *data)
 {
-    t_float a = WORD_FLOAT (data + 0);
-    t_float b = WORD_FLOAT (data + 1);
-    t_float c = WORD_FLOAT (data + 2);
-    t_float d = WORD_FLOAT (data + 3);
-    t_float t = c - b;
+    double a = (double)WORD_FLOAT (data + 0);
+    double b = (double)WORD_FLOAT (data + 1);
+    double c = (double)WORD_FLOAT (data + 2);
+    double d = (double)WORD_FLOAT (data + 3);
+    double t = c - b;
     
-    return (b + f * (t - 0.1666667f * (1. - f) * ((d - a - 3.0f * t) * f + (d + 2.0f * a - 3.0f * b))));
+    return (t_float)(b + f * (t - 0.1666667 * (1.0 - f) * ((d - a - 3.0 * t) * f + (d + 2.0 * a - 3.0 * b))));
 }
 
 // -----------------------------------------------------------------------------------------------------------
