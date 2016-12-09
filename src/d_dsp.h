@@ -128,6 +128,12 @@ typedef int64_t t_phase;        /* Assumed -1 has all bits set (two's complement
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+/* Notice that this approach implies limitation in the range of signals allowed. */
+/* An efficient mechanism to protect from it should be implemented. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 /* Double precision floating-point representation (binary and hexadecimal). */
 
 // DSP_UNITBIT
