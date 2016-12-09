@@ -14,102 +14,141 @@
 #include "m_macros.h"
 #include "g_graphics.h"
 #include "d_dsp.h"
+#include "d_tab.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 extern t_class *garray_class;
 
-static t_class *tabsend_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct _tabsend
+static t_class *tabsend_tilde_class;        /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _tabsend_tilde {
+    t_object    x_obj;                      /* Must be the first. */
+    t_float     x_f;
+    int         x_redraw;
+    int         x_size;
+    t_word      *x_vector;
+    t_symbol    *x_name;
+    } t_tabsend_tilde;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void tabsend_tilde_polling (t_tabsend_tilde *x)
 {
-    t_object x_obj;
-    t_word *x_vec;
-    int x_graphperiod;
-    int x_graphcount;
-    t_symbol *x_arrayname;
-    t_float x_f;
-    int x_npoints;
-} t_tabsend;
+    if (x->x_redraw) {
+    //
+    t_garray *a = (t_garray *)pd_getThingByClass (x->x_name, garray_class);
+    
+    if (a) { garray_redraw (a); }
 
-static void tabsend_tick(t_tabsend *x);
+    x->x_redraw = 0;
+    //
+    }
+}
 
-static void *tabsend_new(t_symbol *s)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void tabsend_tilde_set (t_tabsend_tilde *x, t_symbol *s)
 {
-    t_tabsend *x = (t_tabsend *)pd_new(tabsend_class);
-    x->x_graphcount = 0;
-    x->x_arrayname = s;
-    x->x_f = 0;
+    tab_fetchArray ((x->x_name = s), &x->x_size, &x->x_vector, sym_tabsend__tilde__);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* No aliasing. */
+
+static t_int *tabsend_tilde_perform (t_int *w)
+{
+    t_tabsend_tilde *x = (t_tabsend_tilde *)(w[1]);
+    PD_RESTRICTED in = (t_sample *)(w[2]);
+    int n = w[3];
+    
+    t_word *data = x->x_vector;
+
+    if (data) {
+    //
+    n = PD_MIN (x->x_size, n);
+
+    while (n--) {
+    //  
+    t_sample f = *in++;
+    if (PD_BIG_OR_SMALL (f)) { f = 0.0; }
+    WORD_FLOAT (data) = f;
+    data++;
+    //
+    }
+    
+    x->x_redraw = 1;
+    //
+    }
+
+    return (w + 4);
+}
+
+static void tabsend_tilde_dsp (t_tabsend_tilde *x, t_signal **sp)
+{
+    tabsend_tilde_set (x, x->x_name);
+    
+    dsp_add (tabsend_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *tabsend_tilde_new (t_symbol *s)
+{
+    t_tabsend_tilde *x = (t_tabsend_tilde *)pd_new (tabsend_tilde_class);
+    
+    x->x_name = s;
+    
+    poll_add (cast_pd (x));
+    
     return x;
 }
 
-static t_int *tabsend_perform(t_int *w)
+static void tabsend_tilde_free (t_tabsend_tilde *x)
 {
-    t_tabsend *x = (t_tabsend *)(w[1]);
-    t_sample *in = (t_sample *)(w[2]);
-    int n = w[3];
-    t_word *dest = x->x_vec;
-    int i = x->x_graphcount;
-    if (!x->x_vec) goto bad;
-    if (n > x->x_npoints)
-        n = x->x_npoints;
-    while (n--)
-    {   
-        t_sample f = *in++;
-        if (PD_BIG_OR_SMALL(f))
-            f = 0;
-         (dest++)->w_float = f;
-    }
-    if (!i--)
-    {
-        t_garray *a = (t_garray *)pd_getThingByClass(x->x_arrayname, garray_class);
-        if (!a) { PD_BUG; }
-        else garray_redraw(a);
-        i = x->x_graphperiod;
-    }
-    x->x_graphcount = i;
-bad:
-    return (w+4);
+    poll_remove (cast_pd (x));
 }
 
-static void tabsend_set(t_tabsend *x, t_symbol *s)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void tabsend_tilde_setup (void)
 {
-    t_garray *a;
+    t_class *c = NULL;
     
-    x->x_arrayname = s;
-    if (!(a = (t_garray *)pd_getThingByClass(x->x_arrayname, garray_class)))
-    {
-        if (*s->s_name)
-            post_error ("tabsend~: %s: no such array", x->x_arrayname->s_name);
-        x->x_vec = 0;
-    }
-    else if (!garray_getData(a, &x->x_npoints, &x->x_vec)) /* Always true now !!! */
-    {
-        post_error ("%s: bad template for tabsend~", x->x_arrayname->s_name);
-        x->x_vec = 0;
-    }
-    else garray_setAsUsedInDSP(a);
-}
-
-static void tabsend_dsp(t_tabsend *x, t_signal **sp)
-{
-    int i, vecsize;
-    int n = sp[0]->s_vectorSize;
-    int ticksper = sp[0]->s_sampleRate/n;
-    tabsend_set(x, x->x_arrayname);
-    if (ticksper < 1) ticksper = 1;
-    x->x_graphperiod = ticksper;
-    if (x->x_graphcount > ticksper) x->x_graphcount = ticksper;
-    dsp_add(tabsend_perform, 3, x, sp[0]->s_vector, n);
-}
-
-void tabsend_setup(void)
-{
-    tabsend_class = class_new(sym_tabsend__tilde__, (t_newmethod)tabsend_new,
-        0, sizeof(t_tabsend), 0, A_DEFSYMBOL, 0);
-    CLASS_SIGNAL(tabsend_class, t_tabsend, x_f);
-    class_addMethod(tabsend_class, (t_method)tabsend_dsp,
-        sym_dsp, A_CANT, 0);
-    class_addMethod(tabsend_class, (t_method)tabsend_set,
-        sym_set, A_SYMBOL, 0);
+    c = class_new (sym_tabsend__tilde__,
+            (t_newmethod)tabsend_tilde_new,
+            tabsend_tilde_free,
+            sizeof (t_tabsend_tilde),
+            CLASS_DEFAULT,
+            A_DEFSYMBOL,
+            A_NULL);
+            
+    CLASS_SIGNAL (c, t_tabsend_tilde, x_f);
+    
+    class_addDSP (c, tabsend_tilde_dsp);
+    class_addPolling (c, tabsend_tilde_polling);
+    
+    class_addMethod (c, (t_method)tabsend_tilde_set, sym_set, A_SYMBOL, A_NULL);
+    
+    tabsend_tilde_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
