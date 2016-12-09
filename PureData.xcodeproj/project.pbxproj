@@ -1426,8 +1426,8 @@
 				37C9FB6F1DF721A400309D57 /* d_tabread.c */,
 				37F0BB8C1DF9BEC30003B2C7 /* x_tabread4.c */,
 				37C9FB4D1DF720CC00309D57 /* d_tabread4.c */,
-				378971B11C4F716700263434 /* d_tabplay.c */,
 				37C9FBB21DF723AF00309D57 /* d_tabosc4.c */,
+				378971B11C4F716700263434 /* d_tabplay.c */,
 				37C9FB941DF722D800309D57 /* d_tabsend.c */,
 				37C9FB801DF7224300309D57 /* d_tabreceive.c */,
 			);

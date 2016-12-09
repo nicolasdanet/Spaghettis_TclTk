@@ -14,11 +14,7 @@
 #include "m_macros.h"
 #include "g_graphics.h"
 #include "d_dsp.h"
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-extern t_class *garray_class;
+#include "d_tab.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -68,18 +64,7 @@ static void tabplay_tilde_list (t_tabplay_tilde *x, t_symbol *s, int argc, t_ato
 
 static void tabplay_tilde_set (t_tabplay_tilde *x, t_symbol *s)
 {
-    x->x_vector = NULL;
-    x->x_name   = s;
-    
-    {
-        t_garray *a = (t_garray *)pd_getThingByClass (x->x_name, garray_class);
-        
-        if (!a) { if (s != &s_) { error_canNotFind (sym_tabplay__tilde__, x->x_name); } }
-        else {
-            garray_getData (a, &x->x_size, &x->x_vector);
-            garray_setAsUsedInDSP (a);
-        }
-    }
+    tab_fetchArray ((x->x_name = s), &x->x_size, &x->x_vector, sym_tabplay__tilde__);
 }
 
 static void tabplay_tilde_stop (t_tabplay_tilde *x)
