@@ -14,6 +14,7 @@
 #include "m_macros.h"
 #include "g_graphics.h"
 #include "d_dsp.h"
+#include "d_tab.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -37,6 +38,26 @@ typedef struct _tabwrite_tilde {
     t_word      *x_vector;
     t_symbol    *x_name;
     } t_tabwrite_tilde;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void tab_fetchArray (t_symbol *s, int *size, t_word **data, t_symbol *err)
+{
+    (*size) = 0;
+    (*data) = NULL;
+    
+    {
+        t_garray *a = (t_garray *)pd_getThingByClass (s, garray_class);
+        
+        if (!a) { if (s != &s_) { error_canNotFind (err, s); } }
+        else {
+            garray_getData (a, size, data);
+            garray_setAsUsedInDSP (a);
+        }
+    }
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -66,18 +87,7 @@ static void tabwrite_tilde_polling (t_tabwrite_tilde *x)
 
 static void tabwrite_tilde_set (t_tabwrite_tilde *x, t_symbol *s)
 {
-    x->x_vector = NULL;
-    x->x_name   = s;
-    
-    {
-        t_garray *a = (t_garray *)pd_getThingByClass (x->x_name, garray_class);
-        
-        if (!a) { if (s != &s_) { error_canNotFind (sym_tabwrite__tilde__, x->x_name); } }
-        else {
-            garray_getData (a, &x->x_size, &x->x_vector);
-            garray_setAsUsedInDSP (a);
-        }
-    }
+    tab_fetchArray ((x->x_name = s), &x->x_size, &x->x_vector, sym_tabwrite__tilde__);
 }
 
 static void tabwrite_tilde_start (t_tabwrite_tilde *x, t_float f)

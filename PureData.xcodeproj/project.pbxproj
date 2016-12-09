@@ -663,6 +663,7 @@
 		37C5234B1DBB4D44008753D1 /* x_pgmout.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_pgmout.c; path = src/x_pgmout.c; sourceTree = "<group>"; };
 		37C5236A1DBB4DFC008753D1 /* x_ctlout.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_ctlout.c; path = src/x_ctlout.c; sourceTree = "<group>"; };
 		37C523731DBB4EA1008753D1 /* x_noteout.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_noteout.c; path = src/x_noteout.c; sourceTree = "<group>"; };
+		37C597B41DFABC39004C02F0 /* d_tab.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_tab.h; path = src/d_tab.h; sourceTree = "<group>"; };
 		37C76DA41C5CF20D00AE4CBF /* s_handlers.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_handlers.c; path = src/s_handlers.c; sourceTree = "<group>"; };
 		37C76E111C5CF93000AE4CBF /* s_time.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_time.c; path = src/s_time.c; sourceTree = "<group>"; };
 		37C95C621DF7E9E100AC247B /* x_tabwrite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_tabwrite.c; path = src/x_tabwrite.c; sourceTree = "<group>"; };
@@ -1418,6 +1419,7 @@
 		37C9FADD1DF718CD00309D57 /* Tab */ = {
 			isa = PBXGroup;
 			children = (
+				37C597B41DFABC39004C02F0 /* d_tab.h */,
 				37C95C621DF7E9E100AC247B /* x_tabwrite.c */,
 				37C9FB271DF71F3100309D57 /* d_tabwrite.c */,
 				37E7F89E1DF9569800ED7493 /* x_tabread.c */,
