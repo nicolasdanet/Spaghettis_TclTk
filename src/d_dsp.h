@@ -276,6 +276,21 @@ static inline t_sample *resample_vector (t_resample *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static inline t_float dsp_4PointsInterpolation (t_float f, t_word *data)
+{
+    t_float a = WORD_FLOAT (data + 0);
+    t_float b = WORD_FLOAT (data + 1);
+    t_float c = WORD_FLOAT (data + 2);
+    t_float d = WORD_FLOAT (data + 3);
+    t_float t = c - b;
+    
+    return (b + f * (t - 0.1666667f * (1. - f) * ((d - a - 3.0f * t) * f + (d + 2.0f * a - 3.0f * b))));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void            dsp_state                   (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void            dsp_update                  (void);
 int             dsp_suspend                 (void);
