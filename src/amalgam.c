@@ -258,6 +258,9 @@
 #include "d_osc.c"
 #include "d_phasor.c"
 #include "d_cos.c"
+
+#include "d_ctl.c"
+
 #include "d_vcf.c"
 
 #include "x_tabwrite.c"

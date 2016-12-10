@@ -60,7 +60,7 @@ LIB += -ljack
 
 SRC = amalgam.c \
     d_delay.c d_filter.c \
-    d_ctl.c d_soundfile.c d_fft.c d_fft_fftsg.c
+    d_soundfile.c d_fft.c d_fft_fftsg.c
 
 OBJ = $(SRC:.c=.o) $(MIDI_SRC:.c=.o) $(AUDIO_SRC:.c=.o)
 
