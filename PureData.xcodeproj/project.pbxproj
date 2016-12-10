@@ -52,6 +52,7 @@
 		371D2C761DFBF228004EAB69 /* d_env.c in Sources */ = {isa = PBXBuildFile; fileRef = 371D2C751DFBF228004EAB69 /* d_env.c */; };
 		371D2C9E1DFBF2C4004EAB69 /* d_vsnapshot.c in Sources */ = {isa = PBXBuildFile; fileRef = 371D2C9D1DFBF2C4004EAB69 /* d_vsnapshot.c */; };
 		371D2CBB1DFBF35C004EAB69 /* d_snapshot.c in Sources */ = {isa = PBXBuildFile; fileRef = 371D2CBA1DFBF35C004EAB69 /* d_snapshot.c */; };
+		371D2CEC1DFBF3F2004EAB69 /* d_vline.c in Sources */ = {isa = PBXBuildFile; fileRef = 371D2CEB1DFBF3F2004EAB69 /* d_vline.c */; };
 		3720EBB61D239650001675BD /* g_vinlet.c in Sources */ = {isa = PBXBuildFile; fileRef = 3720EBB41D239650001675BD /* g_vinlet.c */; };
 		3720EBB71D239650001675BD /* g_voutlet.c in Sources */ = {isa = PBXBuildFile; fileRef = 3720EBB51D239650001675BD /* g_voutlet.c */; };
 		372220561D884C6B0045BC57 /* g_table.c in Sources */ = {isa = PBXBuildFile; fileRef = 372220551D884C6B0045BC57 /* g_table.c */; };
@@ -400,6 +401,7 @@
 		371D2C751DFBF228004EAB69 /* d_env.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_env.c; path = src/d_env.c; sourceTree = "<group>"; };
 		371D2C9D1DFBF2C4004EAB69 /* d_vsnapshot.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_vsnapshot.c; path = src/d_vsnapshot.c; sourceTree = "<group>"; };
 		371D2CBA1DFBF35C004EAB69 /* d_snapshot.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_snapshot.c; path = src/d_snapshot.c; sourceTree = "<group>"; };
+		371D2CEB1DFBF3F2004EAB69 /* d_vline.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_vline.c; path = src/d_vline.c; sourceTree = "<group>"; };
 		371E068F1DF47599006317FF /* d_math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_math.h; path = src/d_math.h; sourceTree = "<group>"; };
 		3720EBB41D239650001675BD /* g_vinlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_vinlet.c; path = src/g_vinlet.c; sourceTree = "<group>"; };
 		3720EBB51D239650001675BD /* g_voutlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_voutlet.c; path = src/g_voutlet.c; sourceTree = "<group>"; };
@@ -1140,6 +1142,7 @@
 			isa = PBXGroup;
 			children = (
 				378971B21C4F716700263434 /* d_ctl.c */,
+				371D2CEB1DFBF3F2004EAB69 /* d_vline.c */,
 				371D2CBA1DFBF35C004EAB69 /* d_snapshot.c */,
 				371D2C9D1DFBF2C4004EAB69 /* d_vsnapshot.c */,
 				371D2C751DFBF228004EAB69 /* d_env.c */,
@@ -1924,6 +1927,7 @@
 				371D2C761DFBF228004EAB69 /* d_env.c in Sources */,
 				371D2C9E1DFBF2C4004EAB69 /* d_vsnapshot.c in Sources */,
 				371D2CBB1DFBF35C004EAB69 /* d_snapshot.c in Sources */,
+				371D2CEC1DFBF3F2004EAB69 /* d_vline.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

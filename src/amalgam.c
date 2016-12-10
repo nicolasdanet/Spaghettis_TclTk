@@ -260,6 +260,7 @@
 #include "d_cos.c"
 
 #include "d_ctl.c"
+#include "d_vline.c"
 #include "d_snapshot.c"
 #include "d_vsnapshot.c"
 #include "d_env.c"
