@@ -260,6 +260,7 @@
 #include "d_cos.c"
 
 #include "d_ctl.c"
+#include "d_threshold.c"
 
 #include "d_vcf.c"
 
