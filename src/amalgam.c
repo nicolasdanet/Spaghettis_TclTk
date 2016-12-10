@@ -259,7 +259,8 @@
 #include "d_phasor.c"
 #include "d_cos.c"
 
-#include "d_ctl.c"
+#include "d_sig.c"
+#include "d_line.c"
 #include "d_vline.c"
 #include "d_snapshot.c"
 #include "d_vsnapshot.c"
