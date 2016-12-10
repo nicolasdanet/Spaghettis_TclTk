@@ -186,7 +186,7 @@ void tabread_tilde_setup    (void);
 void tabread4_tilde_setup   (void);
 void tabosc4_tilde_setup    (void);
 void tabsend_tilde_setup    (void);
-void tabreceive_setup       (void);
+void tabreceive_tilde_setup (void);
 void tabread_setup          (void);
 void tabread4_setup         (void);
 void tabwrite_setup         (void);
@@ -376,7 +376,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     tabread4_tilde_setup();
     tabosc4_tilde_setup();
     tabsend_tilde_setup();
-    tabreceive_setup();
+    tabreceive_tilde_setup();
     tabread_setup();
     tabread4_setup();
     tabwrite_setup();
