@@ -1,17 +1,19 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-/*  sig~ and line~ control-to-signal converters;
-    snapshot~ signal-to-control converter.
+/* 
+    Copyright (c) 1997-2016 Miller Puckette and others.
 */
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
 #include "d_dsp.h"
-#include "math.h"
 
 /* -------------------------- sig~ ------------------------------ */
 static t_class *sig_tilde_class;
@@ -41,7 +43,7 @@ static void *sig_tilde_new(t_float f)
     return x;
 }
 
-static void sig_tilde_setup(void)
+void sig_tilde_setup(void)
 {
     sig_tilde_class = class_new(sym_sig__tilde__, (t_newmethod)sig_tilde_new, 0,
         sizeof(t_sig), 0, A_DEFFLOAT, 0);
@@ -49,6 +51,10 @@ static void sig_tilde_setup(void)
     class_addMethod(sig_tilde_class, (t_method)sig_tilde_dsp,
         sym_dsp, A_CANT, 0);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* -------------------------- line~ ------------------------------ */
 static t_class *line_tilde_class;
@@ -182,7 +188,7 @@ static void *line_tilde_new(void)
     return x;
 }
 
-static void line_tilde_setup(void)
+void line_tilde_setup(void)
 {
     line_tilde_class = class_new(sym_line__tilde__, line_tilde_new, 0,
         sizeof(t_line_tilde), 0, 0);
@@ -192,6 +198,10 @@ static void line_tilde_setup(void)
     class_addMethod(line_tilde_class, (t_method)line_tilde_stop,
         sym_stop, 0);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* -------------------------- vline~ ------------------------------ */
 static t_class *vline_tilde_class;
@@ -377,7 +387,7 @@ static void *vline_tilde_new(void)
     return x;
 }
 
-static void vline_tilde_setup(void)
+void vline_tilde_setup(void)
 {
     vline_tilde_class = class_new(sym_vline__tilde__, vline_tilde_new, 
         (t_method)vline_tilde_stop, sizeof(t_vline), 0, 0);
@@ -387,6 +397,10 @@ static void vline_tilde_setup(void)
     class_addMethod(vline_tilde_class, (t_method)vline_tilde_stop,
         sym_stop, 0);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* -------------------------- snapshot~ ------------------------------ */
 static t_class *snapshot_tilde_class;
@@ -431,7 +445,7 @@ static void snapshot_tilde_set(t_snapshot *x, t_float f)
     x->x_value = f;
 }
 
-static void snapshot_tilde_setup(void)
+void snapshot_tilde_setup(void)
 {
     snapshot_tilde_class = class_new(sym_snapshot__tilde__, snapshot_tilde_new, 0,
         sizeof(t_snapshot), 0, 0);
@@ -443,6 +457,9 @@ static void snapshot_tilde_setup(void)
     class_addBang(snapshot_tilde_class, snapshot_tilde_bang);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 /* -------------------------- vsnapshot~ ------------------------------ */
 static t_class *vsnapshot_tilde_class;
 
@@ -518,7 +535,7 @@ static void vsnapshot_tilde_ff(t_vsnapshot *x)
         PD_MEMORY_FREE(x->x_vec);
 }
 
-static void vsnapshot_tilde_setup(void)
+void vsnapshot_tilde_setup(void)
 {
     vsnapshot_tilde_class = class_new(sym_vsnapshot__tilde__,
         vsnapshot_tilde_new, (t_method)vsnapshot_tilde_ff,
@@ -529,6 +546,9 @@ static void vsnapshot_tilde_setup(void)
     class_addBang(vsnapshot_tilde_class, vsnapshot_tilde_bang);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* ---------------- env~ - simple envelope follower. ----------------- */
 
@@ -667,6 +687,10 @@ void env_tilde_setup(void )
         sym_dsp, A_CANT, 0);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 /* --------------------- threshold~ ----------------------------- */
 
 static t_class *threshold_tilde_class;
@@ -787,7 +811,7 @@ static void threshold_tilde_ff(t_threshold_tilde *x)
     clock_free(x->x_clock);
 }
 
-static void threshold_tilde_setup( void)
+void threshold_tilde_setup( void)
 {
     threshold_tilde_class = class_new(sym_threshold__tilde__,
         (t_newmethod)threshold_tilde_new, (t_method)threshold_tilde_ff,
@@ -802,16 +826,5 @@ static void threshold_tilde_setup( void)
         sym_dsp, A_CANT, 0);
 }
 
-/* ------------------------ global setup routine ------------------------- */
-
-void d_ctl_setup(void)
-{
-    sig_tilde_setup();
-    line_tilde_setup();
-    vline_tilde_setup();
-    snapshot_tilde_setup();
-    vsnapshot_tilde_setup();
-    env_tilde_setup();
-    threshold_tilde_setup();
-}
-
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
