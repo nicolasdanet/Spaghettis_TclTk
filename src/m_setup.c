@@ -194,7 +194,6 @@ void sig_tilde_setup        (void);
 void line_tilde_setup       (void);
 void vline_tilde_setup      (void);
 void snapshot_tilde_setup   (void);
-void vsnapshot_tilde_setup  (void);
 void env_tilde_setup        (void);
 void threshold_tilde_setup  (void);
 void dac_setup              (void);
@@ -390,7 +389,6 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     line_tilde_setup();
     vline_tilde_setup();
     snapshot_tilde_setup();
-    vsnapshot_tilde_setup();
     env_tilde_setup();
     threshold_tilde_setup();
     dac_setup();

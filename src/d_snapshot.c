@@ -23,23 +23,23 @@ static t_class *snapshot_tilde_class;       /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _snapshot {
+typedef struct _snapshot_tilde {
     t_object    x_obj;                      /* Must be the first. */
     t_float     x_f;
     t_sample    x_value;
     t_outlet    *x_outlet
-    } t_snapshot;
+    } t_snapshot_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void snapshot_tilde_bang (t_snapshot *x)
+static void snapshot_tilde_bang (t_snapshot_tilde *x)
 {
     outlet_float (x->x_outlet, x->x_value);
 }
 
-static void snapshot_tilde_set (t_snapshot *x, t_float f)
+static void snapshot_tilde_set (t_snapshot_tilde *x, t_float f)
 {
     x->x_value = f;
 }
@@ -60,7 +60,7 @@ static t_int *snapshot_tilde_perform (t_int *w)
     return (w + 3);
 }
 
-static void snapshot_tilde_dsp (t_snapshot *x, t_signal **sp)
+static void snapshot_tilde_dsp (t_snapshot_tilde *x, t_signal **sp)
 {
     dsp_add (snapshot_tilde_perform, 2, sp[0]->s_vector + (sp[0]->s_vectorSize - 1), &x->x_value);
 }
@@ -71,7 +71,7 @@ static void snapshot_tilde_dsp (t_snapshot *x, t_signal **sp)
 
 static void *snapshot_tilde_new (void)
 {
-    t_snapshot *x = (t_snapshot *)pd_new (snapshot_tilde_class);
+    t_snapshot_tilde *x = (t_snapshot_tilde *)pd_new (snapshot_tilde_class);
     
     x->x_outlet = outlet_new (cast_object (x), &s_float);
 
@@ -89,11 +89,13 @@ void snapshot_tilde_setup (void)
     c = class_new (sym_snapshot__tilde__,
             (t_newmethod)snapshot_tilde_new,
             NULL,
-            sizeof (t_snapshot),
+            sizeof (t_snapshot_tilde),
             CLASS_DEFAULT,
             A_NULL);
-            
-    CLASS_SIGNAL (c, t_snapshot, x_f);
+    
+    class_addCreator ((t_newmethod)snapshot_tilde_new, sym_vsnapshot__tilde__, A_NULL);
+    
+    CLASS_SIGNAL (c, t_snapshot_tilde, x_f);
     
     class_addDSP (c, snapshot_tilde_dsp);
     class_addBang (c, snapshot_tilde_bang);
