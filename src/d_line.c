@@ -139,7 +139,7 @@ void line_tilde_setup (void)
     t_class *c = NULL;
     
     c = class_new (sym_line__tilde__,
-            line_tilde_new,
+            (t_newmethod)line_tilde_new,
             NULL,
             sizeof (t_line_tilde),
             CLASS_DEFAULT,

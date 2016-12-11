@@ -173,7 +173,7 @@ void rsqrt_tilde_setup (void)
     
     #if PD_WITH_LEGACY
     
-    class_addCreator (rsqrt_tilde_new, sym_q8_rsqrt__tilde__, A_NULL);
+    class_addCreator ((t_newmethod)rsqrt_tilde_new, sym_q8_rsqrt__tilde__, A_NULL);
     
     #endif
     

@@ -96,7 +96,7 @@ static void vsnapshot_tilde_ff(t_vsnapshot *x)
 void vsnapshot_tilde_setup(void)
 {
     vsnapshot_tilde_class = class_new(sym_vsnapshot__tilde__,
-        vsnapshot_tilde_new, (t_method)vsnapshot_tilde_ff,
+        (t_newmethod)vsnapshot_tilde_new, (t_method)vsnapshot_tilde_ff,
         sizeof(t_vsnapshot), 0, 0);
     CLASS_SIGNAL(vsnapshot_tilde_class, t_vsnapshot, x_f);
     class_addMethod(vsnapshot_tilde_class, (t_method)vsnapshot_tilde_dsp,

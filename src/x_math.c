@@ -212,63 +212,63 @@ static void atan_float (t_math *x, t_float f)
 void math_setup (void)
 {
     sin_class = class_new (sym_sin,
-                    sin_new,
+                    (t_newmethod)sin_new,
                     NULL,
                     sizeof (t_math),
                     CLASS_DEFAULT,
                     A_NULL);
     
     cos_class = class_new (sym_cos,
-                    cos_new,
+                    (t_newmethod)cos_new,
                     NULL,
                     sizeof (t_math),
                     CLASS_DEFAULT,
                     A_NULL);
                     
     tan_class = class_new (sym_tan,
-                    tan_new,
+                    (t_newmethod)tan_new,
                     NULL,
                     sizeof (t_math),
                     CLASS_DEFAULT,
                     A_NULL);
                     
     log_class = class_new (sym_log,
-                    log_new,
+                    (t_newmethod)log_new,
                     NULL,
                     sizeof (t_math),
                     CLASS_DEFAULT,
                     A_NULL);
                     
     exp_class = class_new (sym_exp,
-                    exp_new,
+                    (t_newmethod)exp_new,
                     NULL,
                     sizeof (t_math),
                     CLASS_DEFAULT,
                     A_NULL);
                     
     abs_class = class_new (sym_abs,
-                    abs_new,
+                    (t_newmethod)abs_new,
                     NULL,
                     sizeof (t_math),
                     CLASS_DEFAULT,
                     A_NULL);
                     
     sqrt_class = class_new (sym_sqrt,
-                    sqrt_new,
+                    (t_newmethod)sqrt_new,
                     NULL,
                     sizeof (t_math),
                     CLASS_DEFAULT,
                     A_NULL);
                     
     wrap_class = class_new (sym_wrap,
-                    wrap_new,
+                    (t_newmethod)wrap_new,
                     NULL,
                     sizeof (t_math),
                     CLASS_DEFAULT,
                     A_NULL);
                     
     atan_class = class_new (sym_atan,
-                    atan_new,
+                    (t_newmethod)atan_new,
                     NULL,
                     sizeof (t_math),
                     CLASS_DEFAULT,

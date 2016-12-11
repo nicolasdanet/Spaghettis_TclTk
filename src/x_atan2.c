@@ -57,7 +57,7 @@ void atan2_setup (void)
     t_class *c = NULL;
 
     c = class_new (sym_atan2,
-            atan2_new,
+            (t_newmethod)atan2_new,
             NULL,
             sizeof (t_atan2),
             CLASS_DEFAULT,

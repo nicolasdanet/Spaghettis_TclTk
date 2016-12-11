@@ -146,42 +146,42 @@ static void dbtorms_float (t_acoustic *x, t_float f)
 void acoustic_setup (void)
 {
     mtof_class = class_new (sym_mtof, 
-                        mtof_new,
+                        (t_newmethod)mtof_new,
                         NULL,
                         sizeof (t_acoustic),
                         CLASS_DEFAULT,
                         A_NULL);
 
     ftom_class = class_new (sym_ftom,
-                        ftom_new,
+                        (t_newmethod)ftom_new,
                         NULL,
                         sizeof (t_acoustic),
                         CLASS_DEFAULT,
                         A_NULL);
 
     powtodb_class = class_new (sym_powtodb,
-                        powtodb_new,
+                        (t_newmethod)powtodb_new,
                         NULL,
                         sizeof (t_acoustic),
                         CLASS_DEFAULT,
                         A_NULL);
                         
     dbtopow_class = class_new (sym_dbtopow, 
-                        dbtopow_new,
+                        (t_newmethod)dbtopow_new,
                         NULL,
                         sizeof (t_acoustic),
                         CLASS_DEFAULT,
                         A_NULL);
 
     rmstodb_class = class_new (sym_rmstodb,
-                        rmstodb_new,
+                        (t_newmethod)rmstodb_new,
                         NULL,
                         sizeof (t_acoustic),
                         CLASS_DEFAULT,
                         A_NULL);
 
     dbtorms_class = class_new (sym_dbtorms,
-                        dbtorms_new,
+                        (t_newmethod)dbtorms_new,
                         NULL,
                         sizeof (t_acoustic),
                         CLASS_DEFAULT,

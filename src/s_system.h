@@ -127,16 +127,20 @@ int         main_entry                              (int argc, char **argv);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_error     scheduler_main                          (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* Usable in DSP perform. */
+
 t_systime   scheduler_getLogicalTime                (void);
 t_systime   scheduler_getLogicalTimeAfter           (double ms);
-double      scheduler_getMillisecondsSince          (t_systime systime);
+double      scheduler_getMillisecondsSince          (t_systime systime);    
 double      scheduler_getUnitsSince                 (t_systime systime, double unit, int isSamples);
 void        scheduler_setAudioMode                  (int flag);
 void        scheduler_needToExit                    (void);
 void        scheduler_needToExitWithError           (void);
-void        scheduler_lock                          (void);
-void        scheduler_unlock                        (void);
-t_error     scheduler_main                          (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

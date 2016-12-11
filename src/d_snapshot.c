@@ -60,7 +60,7 @@ static void snapshot_tilde_set(t_snapshot *x, t_float f)
 
 void snapshot_tilde_setup(void)
 {
-    snapshot_tilde_class = class_new(sym_snapshot__tilde__, snapshot_tilde_new, 0,
+    snapshot_tilde_class = class_new(sym_snapshot__tilde__, (t_newmethod)snapshot_tilde_new, 0,
         sizeof(t_snapshot), 0, 0);
     CLASS_SIGNAL(snapshot_tilde_class, t_snapshot, x_f);
     class_addMethod(snapshot_tilde_class, (t_method)snapshot_tilde_dsp,
