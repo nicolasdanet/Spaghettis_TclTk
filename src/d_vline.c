@@ -43,7 +43,7 @@ typedef struct _vline_tilde {
     double                          x_timePrevious;
     double                          x_timeBlock;
     double                          x_millisecondsPerSample;
-    t_float                         x_duration;
+    t_float                         x_timeRamp;
     t_float                         x_delay;
     t_vline_tilde_segment           *x_segments;
     t_outlet                        *x_outlet;
@@ -70,8 +70,8 @@ static int vline_tilde_isBeforeSegment (t_vline_tilde *x, double start, t_vline_
     if (s->s_timeStart > start)       { return 1; }
     else if (s->s_timeStart == start) {
     //
-    PD_ASSERT (x->x_duration >= 0.0);
-    if (x->x_duration == 0.0)                   { return 1; }    /* Before if new one is instantaneous. */
+    PD_ASSERT (x->x_timeRamp >= 0.0);
+    if (x->x_timeRamp == 0.0)                   { return 1; }    /* Before if new one is instantaneous. */
     else if (s->s_timeTarget > s->s_timeStart)  { return 1; }    /* Before if old one isn't. */
     //
     }
@@ -101,7 +101,7 @@ static void vline_tilde_float (t_vline_tilde *x, t_float f)
     double now = scheduler_getMillisecondsSince (x->x_systime);
     double start = now + (double)x->x_delay;
     
-    x->x_duration = PD_MAX (0.0, x->x_duration);
+    x->x_timeRamp = PD_MAX (0.0, x->x_timeRamp);
     
     if (vline_tilde_replaceFirstSegment (x, start)) { deleted = x->x_segments; x->x_segments = segment; }
     else {
@@ -132,11 +132,11 @@ static void vline_tilde_float (t_vline_tilde *x, t_float f)
     segment->s_next       = NULL;
     segment->s_target     = (t_sample)f;
     segment->s_timeStart  = start;
-    segment->s_timeTarget = start + (double)x->x_duration;
+    segment->s_timeTarget = start + (double)x->x_timeRamp;
     //
     }
     
-    x->x_duration = 0.0;
+    x->x_timeRamp = 0.0;
     x->x_delay    = 0.0;
 }
 
@@ -148,7 +148,7 @@ static void vline_tilde_stop (t_vline_tilde *x)
     for (s1 = x->x_segments; s1; s1 = s2) { s2 = s1->s_next; PD_MEMORY_FREE (s1); }
     
     x->x_increment  = 0.0;
-    x->x_duration   = 0.0;
+    x->x_timeRamp   = 0.0;
     x->x_delay      = 0.0;
     x->x_segments   = NULL;
     
@@ -200,9 +200,9 @@ static t_int *vline_tilde_perform (t_int *w)
             increment = incrementPerMillisecond * millisecondsPerSample;
         }
         
-        x->x_increment  = increment;
-        x->x_target     = s->s_target;
-        x->x_timeTarget = s->s_timeTarget;
+        x->x_increment      = increment;
+        x->x_target         = s->s_target;
+        x->x_timeTarget     = s->s_timeTarget;
         
         x->x_segments = s->s_next; PD_MEMORY_FREE (s); s = x->x_segments;
     }
@@ -241,7 +241,7 @@ static void *vline_tilde_new (void)
     x->x_timeBlock      = x->x_timePrevious;
     x->x_outlet         = outlet_new (cast_object (x), &s_signal);
     
-    inlet_newFloat (cast_object (x), &x->x_duration);
+    inlet_newFloat (cast_object (x), &x->x_timeRamp);
     inlet_newFloat (cast_object (x), &x->x_delay);
 
     return x;

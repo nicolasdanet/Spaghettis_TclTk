@@ -31,8 +31,8 @@ typedef struct _line_tilde {
     t_sample    x_incrementPerSample;
     t_float     x_inverseOfVectorSize;
     t_float     x_millisecondsToTicks;
-    t_float     x_time;
-    t_float     x_timePerformed;
+    t_float     x_timeRamp;
+    t_float     x_timeRampCurrent;
     int         x_ticksLeft;
     int         x_retarget;
     t_outlet    *x_outlet;
@@ -44,19 +44,19 @@ typedef struct _line_tilde {
 
 static void line_tilde_float (t_line_tilde *x, t_float f)
 {
-    if (x->x_time <= 0) {
+    if (x->x_timeRamp <= 0) {
     
-        x->x_target         = f;
-        x->x_current        = f;
-        x->x_ticksLeft      = 0;
-        x->x_retarget       = 0;
+        x->x_target             = f;
+        x->x_current            = f;
+        x->x_ticksLeft          = 0;
+        x->x_retarget           = 0;
         
     } else {
     
-        x->x_target         = f;
-        x->x_retarget       = 1;
-        x->x_timePerformed  = x->x_time;
-        x->x_time           = 0.0;
+        x->x_target             = f;
+        x->x_retarget           = 1;
+        x->x_timeRampCurrent    = x->x_timeRamp;
+        x->x_timeRamp           = 0.0;
     }
 }
 
@@ -83,7 +83,7 @@ static t_int *line_tilde_perform (t_int *w)
     
     if (x->x_retarget) {
     
-        int numberOfTicks = PD_MAX (1, (int)(x->x_timePerformed * x->x_millisecondsToTicks));
+        int numberOfTicks = PD_MAX (1, (int)(x->x_timeRampCurrent * x->x_millisecondsToTicks));
         
         x->x_ticksLeft          = numberOfTicks;
         x->x_incrementPerTick   = (x->x_target - x->x_current) / (t_float)(numberOfTicks);
@@ -125,7 +125,7 @@ static void *line_tilde_new (void)
     
     x->x_outlet = outlet_new (cast_object (x), &s_signal);
     
-    inlet_newFloat (cast_object (x), &x->x_time);
+    inlet_newFloat (cast_object (x), &x->x_timeRamp);
     
     return x;
 }
