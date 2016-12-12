@@ -354,6 +354,7 @@ t_symbol *sym_pad;
 t_symbol *sym_panelsize;
 t_symbol *sym_path;
 t_symbol *sym_pd;
+t_symbol *sym_period;
 t_symbol *sym_permillisecond;
 t_symbol *sym_perminute;
 t_symbol *sym_persecond;
@@ -908,6 +909,7 @@ void symbols_initialize (void)
     sym_panelsize                               = gensym ("panelsize");
     sym_path                                    = gensym ("path");
     sym_pd                                      = gensym ("pd");
+    sym_period                                  = gensym ("period");
     sym_permillisecond                          = gensym ("permillisecond");
     sym_perminute                               = gensym ("perminute");
     sym_persecond                               = gensym ("persecond");

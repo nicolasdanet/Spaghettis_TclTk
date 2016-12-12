@@ -359,6 +359,7 @@ extern t_symbol *sym_pad;
 extern t_symbol *sym_panelsize;
 extern t_symbol *sym_path;
 extern t_symbol *sym_pd;
+extern t_symbol *sym_period;
 extern t_symbol *sym_permillisecond;
 extern t_symbol *sym_perminute;
 extern t_symbol *sym_persecond;

@@ -17,143 +17,169 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+static t_class *env_tilde_class;        /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#define ENV_MAXIMUM_OVERLAP             32
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* ---------------- env~ - simple envelope follower. ----------------- */
+typedef struct _env_tilde {
+    t_object    x_obj;                  /* Must be the first. */
+    t_float     x_f;
+    int         x_phase;
+    int         x_period;
+    t_sample    x_sum[ENV_MAXIMUM_OVERLAP + 1];
+    t_float     x_result;
+    int         x_window;
+    t_sample    *x_vector;
+    t_clock     *x_clock;
+    t_outlet    *x_outlet;
+    } t_env_tilde;
 
-#define MAXOVERLAP 32
-#define INITVSTAKEN 64
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-typedef struct sigenv
+static void env_tilde_task (t_env_tilde *x)
 {
-    t_object x_obj;                 /* header */
-    void *x_outlet;                 /* a "float" outlet */
-    void *x_clock;                  /* a "clock" object */
-    t_sample *x_buf;                   /* a Hanning window */
-    int x_phase;                    /* number of points since last output */
-    int x_period;                   /* requested period of output */
-    int x_realperiod;               /* period rounded up to vecsize multiple */
-    int x_npoints;                  /* analysis window size in samples */
-    t_float x_result;                 /* result to output */
-    t_sample x_sumbuf[MAXOVERLAP];     /* summing buffer */
-    t_float x_f;
-    int x_allocforvs;               /* extra buffer for DSP vector size */
-} t_sigenv;
+    outlet_float (x->x_outlet, math_powerToDecibel (x->x_result));
+}
 
-t_class *env_tilde_class;
-static void env_tilde_tick(t_sigenv *x);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void *env_tilde_new(t_float fnpoints, t_float fperiod)
+/* No aliasing. */
+
+static t_int *env_tilde_perform (t_int *w)
 {
-    int npoints = fnpoints;
-    int period = fperiod;
-    t_sigenv *x;
-    t_sample *buf;
+    t_env_tilde *x    = (t_env_tilde *)(w[1]);
+    PD_RESTRICTED in  = (t_sample *)(w[2]);
+    int n = (int)(w[3]);
+    
+    PD_RESTRICTED sum = x->x_sum;
+    
     int i;
-
-    if (npoints < 1) npoints = 1024;
-    if (period < 1) period = npoints/2;
-    if (period < npoints / MAXOVERLAP + 1)
-        period = npoints / MAXOVERLAP + 1;
-    if (!(buf = PD_MEMORY_GET(sizeof(t_sample) * (npoints + INITVSTAKEN))))
-    {
-        post_error ("env: couldn't allocate buffer");
-        return (0);
+    
+    for (i = x->x_phase; i < x->x_window; i += x->x_period) {
+    //
+    PD_RESTRICTED hann = x->x_vector + i;
+    t_sample t = *sum;
+    int j;
+    
+    in += n;
+    
+    for (j = 0; j < n; j++) {
+        in--;
+        t += (*hann) * ((*in) * (*in));
+        hann++;
     }
-    x = (t_sigenv *)pd_new(env_tilde_class);
-    x->x_buf = buf;
-    x->x_npoints = npoints;
-    x->x_phase = 0;
-    x->x_period = period;
-    for (i = 0; i < MAXOVERLAP; i++) x->x_sumbuf[i] = 0;
-    for (i = 0; i < npoints; i++)
-        buf[i] = (1. - cos((2 * PD_PI * i) / npoints))/npoints;
-    for (; i < npoints+INITVSTAKEN; i++) buf[i] = 0;
-    x->x_clock = clock_new(x, (t_method)env_tilde_tick);
-    x->x_outlet = outlet_new(&x->x_obj, &s_float);
-    x->x_f = 0;
-    x->x_allocforvs = INITVSTAKEN;
+    
+    *sum++ = t;
+    //
+    }
+    
+    *sum = 0.0;
+    
+    x->x_phase -= n;
+    
+    if (x->x_phase < 0) {
+    //
+    sum = x->x_sum; x->x_result = *sum;
+    
+    for (i = x->x_period; i < x->x_window; i += x->x_period) { *sum = *(sum + 1); sum++; } 
+    
+    *sum = 0.0;
+    
+    x->x_phase = x->x_period - n;
+    
+    clock_delay (x->x_clock, 0.0);
+    //
+    }
+    
+    return (w + 4);
+}
+
+static void env_tilde_dsp (t_env_tilde *x, t_signal **sp)
+{
+    if (x->x_period % sp[0]->s_vectorSize)      { error_invalid (sym_env__tilde__, sym_period); }
+    else if (x->x_window < sp[0]->s_vectorSize) { error_invalid (sym_env__tilde__, sym_window); }
+    else {
+        dsp_add (env_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *env_tilde_new (t_float f1, t_float f2)
+{
+    t_env_tilde *x = (t_env_tilde *)pd_new (env_tilde_class);
+    
+    int window = f1;
+    int period = f2;
+    int i, k = 0;
+    
+    if (window < 2) { window = 1024; }
+    else if (!PD_IS_POWER_2 (window))  { window = (int)PD_NEXT_POWER_2 (window); }
+    if (period < 1 || period > window) { period = window / 2; }
+    else if (!PD_IS_POWER_2 (period))  { period = (int)PD_NEXT_POWER_2 (period); }
+    
+    x->x_period = PD_MAX (period, (window / ENV_MAXIMUM_OVERLAP));
+    x->x_window = window;
+    x->x_vector = PD_MEMORY_GET (x->x_window * sizeof (t_sample));
+    x->x_clock  = clock_new ((void *)x, (t_method)env_tilde_task);
+    x->x_outlet = outlet_new (cast_object (x), &s_float);
+
+    if ((int)f1 && x->x_window != (int)f1) { warning_invalid (sym_env__tilde__, sym_window); k = 1; }
+    if ((int)f2 && x->x_period != (int)f2) { warning_invalid (sym_env__tilde__, sym_period); k = 1; }
+    if (k) { 
+        post ("%s: window %d period %d", sym_env__tilde__->s_name, x->x_window, x->x_period); 
+    }
+    
+    for (i = 0; i < x->x_window; i++) { 
+        x->x_vector[i] = (1.0 - cos ((PD_2PI * i) / x->x_window)) / x->x_window;    /* Hanning window. */
+    }
+    
     return x;
 }
 
-static t_int *env_tilde_perform(t_int *w)
+static void env_tilde_free (t_env_tilde *x)
 {
-    t_sigenv *x = (t_sigenv *)(w[1]);
-    t_sample *in = (t_sample *)(w[2]);
-    int n = (int)(w[3]);
-    int count;
-    t_sample *sump; 
-    in += n;
-    for (count = x->x_phase, sump = x->x_sumbuf;
-        count < x->x_npoints; count += x->x_realperiod, sump++)
-    {
-        t_sample *hp = x->x_buf + count;
-        t_sample *fp = in;
-        t_sample sum = *sump;
-        int i;
-        
-        for (i = 0; i < n; i++)
-        {
-            fp--;
-            sum += *hp++ * (*fp * *fp);
-        }
-        *sump = sum;
-    }
-    sump[0] = 0;
-    x->x_phase -= n;
-    if (x->x_phase < 0)
-    {
-        x->x_result = x->x_sumbuf[0];
-        for (count = x->x_realperiod, sump = x->x_sumbuf;
-            count < x->x_npoints; count += x->x_realperiod, sump++)
-                sump[0] = sump[1];
-        sump[0] = 0;
-        x->x_phase = x->x_realperiod - n;
-        clock_delay(x->x_clock, 0L);
-    }
-    return (w+4);
+    clock_free (x->x_clock);
+    
+    PD_MEMORY_FREE (x->x_vector);
 }
 
-static void env_tilde_dsp(t_sigenv *x, t_signal **sp)
-{
-    if (x->x_period % sp[0]->s_vectorSize) x->x_realperiod =
-        x->x_period + sp[0]->s_vectorSize - (x->x_period % sp[0]->s_vectorSize);
-    else x->x_realperiod = x->x_period;
-    if (sp[0]->s_vectorSize > x->x_allocforvs)
-    {
-        void *xx = PD_MEMORY_RESIZE(x->x_buf,
-            (x->x_npoints + x->x_allocforvs) * sizeof(t_sample),
-            (x->x_npoints + sp[0]->s_vectorSize) * sizeof(t_sample));
-        if (!xx)
-        {
-            post_error ("env~: out of memory");
-            return;
-        }
-        x->x_buf = (t_sample *)xx;
-        x->x_allocforvs = sp[0]->s_vectorSize;
-    }
-    dsp_add(env_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void env_tilde_tick(t_sigenv *x) /* callback function for the clock */
+void env_tilde_setup (void)
 {
-    outlet_float(x->x_outlet, math_powerToDecibel(x->x_result));
-}
-
-static void env_tilde_ff(t_sigenv *x)           /* cleanup on free */
-{
-    clock_free(x->x_clock);
-    PD_MEMORY_FREE(x->x_buf);
-}
-
-
-void env_tilde_setup(void )
-{
-    env_tilde_class = class_new(sym_env__tilde__, (t_newmethod)env_tilde_new,
-        (t_method)env_tilde_ff, sizeof(t_sigenv), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
-    CLASS_SIGNAL(env_tilde_class, t_sigenv, x_f);
-    class_addMethod(env_tilde_class, (t_method)env_tilde_dsp,
-        sym_dsp, A_CANT, 0);
+    t_class *c = NULL;
+    
+    c = class_new (sym_env__tilde__,
+            (t_newmethod)env_tilde_new,
+            (t_method)env_tilde_free,
+            sizeof (t_env_tilde),
+            CLASS_DEFAULT,
+            A_DEFFLOAT,
+            A_DEFFLOAT,
+            A_NULL);
+            
+    CLASS_SIGNAL (c, t_env_tilde, x_f);
+    
+    class_addDSP (c, env_tilde_dsp);
+    
+    env_tilde_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
