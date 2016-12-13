@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		370157EC1DFFD62900F3FE0C /* d_vd.c in Sources */ = {isa = PBXBuildFile; fileRef = 370157EB1DFFD62900F3FE0C /* d_vd.c */; };
 		370241501DAB95AC00AB5440 /* x_serial.c in Sources */ = {isa = PBXBuildFile; fileRef = 3702414F1DAB95AC00AB5440 /* x_serial.c */; };
 		370793031DBB4F4B00183F74 /* x_midiout.c in Sources */ = {isa = PBXBuildFile; fileRef = 370793021DBB4F4B00183F74 /* x_midiout.c */; };
 		3707931F1DBB507700183F74 /* x_midirealtimein.c in Sources */ = {isa = PBXBuildFile; fileRef = 3707931E1DBB507700183F74 /* x_midirealtimein.c */; };
@@ -355,6 +356,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		370157EB1DFFD62900F3FE0C /* d_vd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_vd.c; path = src/d_vd.c; sourceTree = "<group>"; };
+		370157FC1DFFD6CE00F3FE0C /* d_delay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_delay.h; path = src/d_delay.h; sourceTree = "<group>"; };
 		3702414F1DAB95AC00AB5440 /* x_serial.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_serial.c; path = src/x_serial.c; sourceTree = "<group>"; };
 		370793021DBB4F4B00183F74 /* x_midiout.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_midiout.c; path = src/x_midiout.c; sourceTree = "<group>"; };
 		3707931E1DBB507700183F74 /* x_midirealtimein.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_midirealtimein.c; path = src/x_midirealtimein.c; sourceTree = "<group>"; };
@@ -818,7 +821,9 @@
 		370157B71DFFD41700F3FE0C /* Delay */ = {
 			isa = PBXGroup;
 			children = (
+				370157FC1DFFD6CE00F3FE0C /* d_delay.h */,
 				378971B41C4F716700263434 /* d_delay.c */,
+				370157EB1DFFD62900F3FE0C /* d_vd.c */,
 			);
 			name = Delay;
 			sourceTree = "<group>";
@@ -1936,6 +1941,7 @@
 				371D2CEC1DFBF3F2004EAB69 /* d_vline.c in Sources */,
 				371D2D021DFBF492004EAB69 /* d_line.c in Sources */,
 				371D2D031DFBF492004EAB69 /* d_sig.c in Sources */,
+				370157EC1DFFD62900F3FE0C /* d_vd.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -269,6 +269,7 @@
 #include "d_vcf.c"
 
 #include "d_delay.c"
+#include "d_vd.c"
 
 #include "x_tabwrite.c"
 #include "d_tabwrite.c"
