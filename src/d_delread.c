@@ -47,28 +47,28 @@ static void *sigdelread_new(t_symbol *s, t_float f)
 static void sigdelread_float(t_sigdelread *x, t_float f)
 {
     int samps;
-    t_sigdelwrite *delwriter =
-        (t_sigdelwrite *)pd_getThingByClass(x->x_sym, sigdelwrite_class);
+    t_delwrite_tilde *delwriter =
+        (t_delwrite_tilde *)pd_getThingByClass(x->x_sym, sigdelwrite_class);
     x->x_deltime = f;
     if (delwriter)
     {
-        int delsize = delwriter->x_cspace.c_n;
+        int delsize = delwriter->dw_space.c_size;
         x->x_delsamps = (int)(0.5 + x->x_sr * x->x_deltime)
             + x->x_n - x->x_zerodel;
         if (x->x_delsamps < x->x_n) x->x_delsamps = x->x_n;
-        else if (x->x_delsamps > delwriter->x_cspace.c_n)
-            x->x_delsamps = delwriter->x_cspace.c_n;
+        else if (x->x_delsamps > delwriter->dw_space.c_size)
+            x->x_delsamps = delwriter->dw_space.c_size;
     }
 }
 
 static t_int *sigdelread_perform(t_int *w)
 {
     t_sample *out = (t_sample *)(w[1]);
-    t_delwritectl *c = (t_delwritectl *)(w[2]);
+    t_delwrite_tilde_control *c = (t_delwrite_tilde_control *)(w[2]);
     int delsamps = *(int *)(w[3]);
     int n = (int)(w[4]);
-    int phase = c->c_phase - delsamps, nsamps = c->c_n;
-    t_sample *vp = c->c_vec, *bp, *ep = vp + (c->c_n + XTRASAMPS);
+    int phase = c->c_phase - delsamps, nsamps = c->c_size;
+    t_sample *vp = c->c_vector, *bp, *ep = vp + (c->c_size + DELAY_EXTRA_SAMPLES);
     if (phase < 0) phase += nsamps;
     bp = vp + phase;
 
@@ -82,19 +82,19 @@ static t_int *sigdelread_perform(t_int *w)
 
 static void sigdelread_dsp(t_sigdelread *x, t_signal **sp)
 {
-    t_sigdelwrite *delwriter =
-        (t_sigdelwrite *)pd_getThingByClass(x->x_sym, sigdelwrite_class);
+    t_delwrite_tilde *delwriter =
+        (t_delwrite_tilde *)pd_getThingByClass(x->x_sym, sigdelwrite_class);
     x->x_sr = sp[0]->s_sampleRate * 0.001;
     x->x_n = sp[0]->s_vectorSize;
     if (delwriter)
     {
         sigdelwrite_updatesr(delwriter, sp[0]->s_sampleRate);
         sigdelwrite_checkvecsize(delwriter, sp[0]->s_vectorSize);
-        x->x_zerodel = (delwriter->x_sortno == ugen_getBuildIdentifier() ?
-            0 : delwriter->x_vecsize);
+        x->x_zerodel = (delwriter->dw_buildIdentifier == ugen_getBuildIdentifier() ?
+            0 : delwriter->dw_vectorSize);
         sigdelread_float(x, x->x_deltime);
         dsp_add(sigdelread_perform, 4,
-            sp[0]->s_vector, &delwriter->x_cspace, &x->x_delsamps, sp[0]->s_vectorSize);
+            sp[0]->s_vector, &delwriter->dw_space, &x->x_delsamps, sp[0]->s_vectorSize);
     }
     else if (*x->x_sym->s_name)
         post_error ("delread~: %s: no such delwrite~",x->x_sym->s_name);

@@ -44,14 +44,14 @@ static t_int *sigvd_perform(t_int *w)
 {
     t_sample *in = (t_sample *)(w[1]);
     t_sample *out = (t_sample *)(w[2]);
-    t_delwritectl *ctl = (t_delwritectl *)(w[3]);
+    t_delwrite_tilde_control *ctl = (t_delwrite_tilde_control *)(w[3]);
     t_sigvd *x = (t_sigvd *)(w[4]);
     int n = (int)(w[5]);
 
-    int nsamps = ctl->c_n;
+    int nsamps = ctl->c_size;
     t_sample limit = nsamps - n;
     t_sample fn = n-1;
-    t_sample *vp = ctl->c_vec, *bp, *wp = vp + ctl->c_phase;
+    t_sample *vp = ctl->c_vector, *bp, *wp = vp + ctl->c_phase;
     t_sample zerodel = x->x_zerodel;
     while (n--)
     {
@@ -84,17 +84,17 @@ static t_int *sigvd_perform(t_int *w)
 
 static void sigvd_dsp(t_sigvd *x, t_signal **sp)
 {
-    t_sigdelwrite *delwriter =
-        (t_sigdelwrite *)pd_getThingByClass(x->x_sym, sigdelwrite_class);
+    t_delwrite_tilde *delwriter =
+        (t_delwrite_tilde *)pd_getThingByClass(x->x_sym, sigdelwrite_class);
     x->x_sr = sp[0]->s_sampleRate * 0.001;
     if (delwriter)
     {
         sigdelwrite_checkvecsize(delwriter, sp[0]->s_vectorSize);
-        x->x_zerodel = (delwriter->x_sortno == ugen_getBuildIdentifier() ?
-            0 : delwriter->x_vecsize);
+        x->x_zerodel = (delwriter->dw_buildIdentifier == ugen_getBuildIdentifier() ?
+            0 : delwriter->dw_vectorSize);
         dsp_add(sigvd_perform, 5,
             sp[0]->s_vector, sp[1]->s_vector,
-                &delwriter->x_cspace, x, sp[0]->s_vectorSize);
+                &delwriter->dw_space, x, sp[0]->s_vectorSize);
     }
     else if (*x->x_sym->s_name)
         post_error ("vd~: %s: no such delwrite~",x->x_sym->s_name);

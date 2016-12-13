@@ -16,38 +16,36 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef struct delwritectl
-{
-    int c_n;
-    t_sample *c_vec;
-    int c_phase;
-} t_delwritectl;
+typedef struct delwrite_tilde_control {
+    int                         c_phase;
+    int                         c_size;
+    t_sample                    *c_vector;
+    } t_delwrite_tilde_control;
 
-typedef struct _sigdelwrite
-{
-    t_object x_obj;
-    t_symbol *x_sym;
-    t_float x_deltime;  /* delay in msec (added by Mathieu Bouchard) */
-    t_delwritectl x_cspace;
-    int x_sortno;   /* DSP sort number at which this was last put on chain */
-    int x_rsortno;  /* DSP sort # for first delread or write in chain */
-    int x_vecsize;  /* vector size for delread~ to use */
-    t_float x_f;
-} t_sigdelwrite;
+typedef struct _delwrite_tilde {
+    t_object                    dw_obj;                     /* Must be the first. */
+    t_float                     dw_f;
+    t_float                     dw_delayTime;
+    int                         dw_buildIdentifier;
+    int                         dw_buildIdentifierCheck;
+    int                         dw_vectorSize;
+    t_delwrite_tilde_control    dw_space;
+    t_symbol                    *dw_name;
+    } t_delwrite_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define XTRASAMPS 4
-#define SAMPBLK 4
-#define DEFDELVS 64             /* LATER get this from canvas at DSP time */
+#define DELAY_EXTRA_SAMPLES     4
+#define DELAY_BLANK_SAMPLES     4
+#define DELAY_BLOCK_SIZE        64
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void sigdelwrite_checkvecsize   (t_sigdelwrite *x, int vecsize);
+void sigdelwrite_checkvecsize   (t_delwrite_tilde *x, int vecsize);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
