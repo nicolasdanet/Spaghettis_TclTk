@@ -1,8 +1,13 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-/*  send~, delread~, throw~, catch~ */
+/* 
+    Copyright (c) 1997-2016 Miller Puckette and others.
+*/
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #include "m_pd.h"
 #include "m_core.h"
@@ -128,7 +133,7 @@ static void sigdelwrite_free(t_sigdelwrite *x)
     PD_MEMORY_FREE(x->x_cspace.c_vec);
 }
 
-static void sigdelwrite_setup(void)
+void sigdelwrite_setup(void)
 {
     sigdelwrite_class = class_new(sym_delwrite__tilde__, 
         (t_newmethod)sigdelwrite_new, (t_method)sigdelwrite_free,
@@ -137,6 +142,10 @@ static void sigdelwrite_setup(void)
     class_addMethod(sigdelwrite_class, (t_method)sigdelwrite_dsp,
         sym_dsp, A_CANT, 0);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* ----------------------------- delread~ ----------------------------- */
 static t_class *sigdelread_class;
@@ -222,7 +231,7 @@ static void sigdelread_dsp(t_sigdelread *x, t_signal **sp)
         post_error ("delread~: %s: no such delwrite~",x->x_sym->s_name);
 }
 
-static void sigdelread_setup(void)
+void sigdelread_setup(void)
 {
     sigdelread_class = class_new(sym_delread__tilde__,
         (t_newmethod)sigdelread_new, 0,
@@ -232,6 +241,9 @@ static void sigdelread_setup(void)
     class_addFloat(sigdelread_class, (t_method)sigdelread_float);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* ----------------------------- vd~ ----------------------------- */
 static t_class *sigvd_class;
@@ -316,7 +328,7 @@ static void sigvd_dsp(t_sigvd *x, t_signal **sp)
         post_error ("vd~: %s: no such delwrite~",x->x_sym->s_name);
 }
 
-static void sigvd_setup(void)
+void sigvd_setup(void)
 {
     sigvd_class = class_new(sym_vd__tilde__, (t_newmethod)sigvd_new, 0,
         sizeof(t_sigvd), 0, A_DEFSYMBOL, 0);
@@ -325,12 +337,6 @@ static void sigvd_setup(void)
     CLASS_SIGNAL(sigvd_class, t_sigvd, x_f);
 }
 
-/* ----------------------- global setup routine ---------------- */
-
-void d_delay_setup(void)
-{
-    sigdelwrite_setup();
-    sigdelread_setup();
-    sigvd_setup();
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
