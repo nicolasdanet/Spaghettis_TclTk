@@ -815,6 +815,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		370157B71DFFD41700F3FE0C /* Delay */ = {
+			isa = PBXGroup;
+			children = (
+				378971B41C4F716700263434 /* d_delay.c */,
+			);
+			name = Delay;
+			sourceTree = "<group>";
+		};
 		370D017F1DE6BFA4005918D4 /* Osc */ = {
 			isa = PBXGroup;
 			children = (
@@ -1386,10 +1394,10 @@
 				370D017F1DE6BFA4005918D4 /* Osc */,
 				3772C0401DFBDF450036466E /* Convert */,
 				37E4DA031DEC6BB500190484 /* Filters */,
+				370157B71DFFD41700F3FE0C /* Delay */,
 				37C9FADD1DF718CD00309D57 /* Tab */,
 				377C79961DF08AD0008195B0 /* Math */,
 				37C000561DE2FE3800F90584 /* Miscellaneous */,
-				378971B41C4F716700263434 /* d_delay.c */,
 				378971B71C4F716700263434 /* d_filter.c */,
 				378971BD1C4F716700263434 /* d_soundfile.c */,
 				378971B61C4F716700263434 /* d_fft.c */,
