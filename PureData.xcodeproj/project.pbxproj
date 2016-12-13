@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		370157EC1DFFD62900F3FE0C /* d_vd.c in Sources */ = {isa = PBXBuildFile; fileRef = 370157EB1DFFD62900F3FE0C /* d_vd.c */; };
+		370158391DFFD81B00F3FE0C /* d_delread.c in Sources */ = {isa = PBXBuildFile; fileRef = 370158381DFFD81B00F3FE0C /* d_delread.c */; };
 		370241501DAB95AC00AB5440 /* x_serial.c in Sources */ = {isa = PBXBuildFile; fileRef = 3702414F1DAB95AC00AB5440 /* x_serial.c */; };
 		370793031DBB4F4B00183F74 /* x_midiout.c in Sources */ = {isa = PBXBuildFile; fileRef = 370793021DBB4F4B00183F74 /* x_midiout.c */; };
 		3707931F1DBB507700183F74 /* x_midirealtimein.c in Sources */ = {isa = PBXBuildFile; fileRef = 3707931E1DBB507700183F74 /* x_midirealtimein.c */; };
@@ -135,7 +136,7 @@
 		378234271D6C826800C128AD /* x_textget.c in Sources */ = {isa = PBXBuildFile; fileRef = 378234261D6C826800C128AD /* x_textget.c */; };
 		378972151C4F716800263434 /* d_tabplay.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B11C4F716700263434 /* d_tabplay.c */; };
 		378972171C4F716800263434 /* d_dac.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B31C4F716700263434 /* d_dac.c */; };
-		378972181C4F716800263434 /* d_delay.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B41C4F716700263434 /* d_delay.c */; };
+		378972181C4F716800263434 /* d_delwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B41C4F716700263434 /* d_delwrite.c */; };
 		378972191C4F716800263434 /* d_fft_fftsg.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B51C4F716700263434 /* d_fft_fftsg.c */; };
 		3789721A1C4F716800263434 /* d_fft.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B61C4F716700263434 /* d_fft.c */; };
 		3789721B1C4F716800263434 /* d_filter.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B71C4F716700263434 /* d_filter.c */; };
@@ -358,6 +359,7 @@
 /* Begin PBXFileReference section */
 		370157EB1DFFD62900F3FE0C /* d_vd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_vd.c; path = src/d_vd.c; sourceTree = "<group>"; };
 		370157FC1DFFD6CE00F3FE0C /* d_delay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_delay.h; path = src/d_delay.h; sourceTree = "<group>"; };
+		370158381DFFD81B00F3FE0C /* d_delread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_delread.c; path = src/d_delread.c; sourceTree = "<group>"; };
 		3702414F1DAB95AC00AB5440 /* x_serial.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_serial.c; path = src/x_serial.c; sourceTree = "<group>"; };
 		370793021DBB4F4B00183F74 /* x_midiout.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_midiout.c; path = src/x_midiout.c; sourceTree = "<group>"; };
 		3707931E1DBB507700183F74 /* x_midirealtimein.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_midirealtimein.c; path = src/x_midirealtimein.c; sourceTree = "<group>"; };
@@ -538,7 +540,7 @@
 		378971961C4F712A00263434 /* ui_x11.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.tcl; path = ui_x11.tcl; sourceTree = "<group>"; };
 		378971B11C4F716700263434 /* d_tabplay.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_tabplay.c; path = src/d_tabplay.c; sourceTree = "<group>"; };
 		378971B31C4F716700263434 /* d_dac.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_dac.c; path = src/d_dac.c; sourceTree = "<group>"; };
-		378971B41C4F716700263434 /* d_delay.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_delay.c; path = src/d_delay.c; sourceTree = "<group>"; };
+		378971B41C4F716700263434 /* d_delwrite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_delwrite.c; path = src/d_delwrite.c; sourceTree = "<group>"; };
 		378971B51C4F716700263434 /* d_fft_fftsg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_fft_fftsg.c; path = src/d_fft_fftsg.c; sourceTree = "<group>"; };
 		378971B61C4F716700263434 /* d_fft.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_fft.c; path = src/d_fft.c; sourceTree = "<group>"; };
 		378971B71C4F716700263434 /* d_filter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_filter.c; path = src/d_filter.c; sourceTree = "<group>"; };
@@ -822,7 +824,8 @@
 			isa = PBXGroup;
 			children = (
 				370157FC1DFFD6CE00F3FE0C /* d_delay.h */,
-				378971B41C4F716700263434 /* d_delay.c */,
+				378971B41C4F716700263434 /* d_delwrite.c */,
+				370158381DFFD81B00F3FE0C /* d_delread.c */,
 				370157EB1DFFD62900F3FE0C /* d_vd.c */,
 			);
 			name = Delay;
@@ -1682,7 +1685,7 @@
 				371655991BA3467500ABDE22 /* ptmacosx_cf.c in Sources */,
 				378972151C4F716800263434 /* d_tabplay.c in Sources */,
 				378972171C4F716800263434 /* d_dac.c in Sources */,
-				378972181C4F716800263434 /* d_delay.c in Sources */,
+				378972181C4F716800263434 /* d_delwrite.c in Sources */,
 				378972191C4F716800263434 /* d_fft_fftsg.c in Sources */,
 				3789721A1C4F716800263434 /* d_fft.c in Sources */,
 				3789721B1C4F716800263434 /* d_filter.c in Sources */,
@@ -1942,6 +1945,7 @@
 				371D2D021DFBF492004EAB69 /* d_line.c in Sources */,
 				371D2D031DFBF492004EAB69 /* d_sig.c in Sources */,
 				370157EC1DFFD62900F3FE0C /* d_vd.c in Sources */,
+				370158391DFFD81B00F3FE0C /* d_delread.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
