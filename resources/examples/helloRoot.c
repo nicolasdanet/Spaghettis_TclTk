@@ -43,11 +43,14 @@ static void *hello_new (void)
 
 PD_STUB void helloRoot_setup (t_symbol *s)
 {
-    int flags = CLASS_BOX | CLASS_NOINLET;      /* Avoid the default inlet. */
-    
     t_class *c = NULL;
     
-    c = class_new (gensym ("helloRoot"), (t_newmethod)hello_new, NULL, sizeof (t_hello), flags, A_NULL);
+    c = class_new (gensym ("helloRoot"),
+            (t_newmethod)hello_new,
+            NULL,
+            sizeof (t_hello),
+            CLASS_BOX | CLASS_NOINLET,          /* Avoid the default inlet. */
+            A_NULL);
     
     hello_class = c;
     

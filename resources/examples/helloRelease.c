@@ -71,11 +71,14 @@ static void *hello_new (void)
 
 PD_STUB void helloRelease_setup (t_symbol *s)
 {
-    int flags = CLASS_BOX | CLASS_NOINLET;
-    
     t_class *c = NULL;
     
-    c = class_new (gensym ("helloRelease"), (t_newmethod)hello_new, NULL, sizeof (t_hello), flags, A_NULL);
+    c = class_new (gensym ("helloRelease"),
+            (t_newmethod)hello_new,
+            NULL,
+            sizeof (t_hello),
+            CLASS_BOX | CLASS_NOINLET,
+            A_NULL);
     
     hello_class = c;
 }
