@@ -15,7 +15,7 @@
 #include "d_dsp.h"
 #include "d_delay.h"
 
-extern t_class *sigdelwrite_class;
+extern t_class *delwrite_tilde_class;
 /* ----------------------------- delread~ ----------------------------- */
 static t_class *sigdelread_class;
 
@@ -48,7 +48,7 @@ static void sigdelread_float(t_sigdelread *x, t_float f)
 {
     int samps;
     t_delwrite_tilde *delwriter =
-        (t_delwrite_tilde *)pd_getThingByClass(x->x_sym, sigdelwrite_class);
+        (t_delwrite_tilde *)pd_getThingByClass(x->x_sym, delwrite_tilde_class);
     x->x_deltime = f;
     if (delwriter)
     {
@@ -83,13 +83,14 @@ static t_int *sigdelread_perform(t_int *w)
 static void sigdelread_dsp(t_sigdelread *x, t_signal **sp)
 {
     t_delwrite_tilde *delwriter =
-        (t_delwrite_tilde *)pd_getThingByClass(x->x_sym, sigdelwrite_class);
+        (t_delwrite_tilde *)pd_getThingByClass(x->x_sym, delwrite_tilde_class);
     x->x_sr = sp[0]->s_sampleRate * 0.001;
     x->x_n = sp[0]->s_vectorSize;
     if (delwriter)
     {
-        sigdelwrite_updatesr(delwriter, sp[0]->s_sampleRate);
-        sigdelwrite_checkvecsize(delwriter, sp[0]->s_vectorSize);
+        delwrite_tilde_setVectorSize (delwriter, sp[0]->s_vectorSize);
+        delwrite_tilde_updateBuffer (delwriter, sp[0]->s_sampleRate);
+        
         x->x_zerodel = (delwriter->dw_buildIdentifier == ugen_getBuildIdentifier() ?
             0 : delwriter->dw_vectorSize);
         sigdelread_float(x, x->x_deltime);

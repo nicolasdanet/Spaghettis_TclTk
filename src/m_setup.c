@@ -198,7 +198,7 @@ void env_tilde_setup        (void);
 void threshold_tilde_setup  (void);
 void dac_setup              (void);
 void adc_setup              (void);
-void sigdelwrite_setup      (void);
+void delwrite_tilde_setup   (void);
 void sigdelread_setup       (void);
 void sigvd_setup            (void);
 void d_fft_setup            (void);
@@ -395,7 +395,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     threshold_tilde_setup();
     dac_setup();
     adc_setup();
-    sigdelwrite_setup();
+    delwrite_tilde_setup();
     sigdelread_setup();
     sigvd_setup();
     d_fft_setup();

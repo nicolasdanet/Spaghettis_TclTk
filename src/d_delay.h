@@ -25,9 +25,9 @@ typedef struct delwrite_tilde_control {
 typedef struct _delwrite_tilde {
     t_object                    dw_obj;                     /* Must be the first. */
     t_float                     dw_f;
-    t_float                     dw_delayTime;
+    t_float                     dw_delay;
     int                         dw_buildIdentifier;
-    int                         dw_buildIdentifierCheck;
+    int                         dw_buildIdentifierForVectorSize;
     int                         dw_vectorSize;
     t_delwrite_tilde_control    dw_space;
     t_symbol                    *dw_name;
@@ -38,14 +38,15 @@ typedef struct _delwrite_tilde {
 #pragma mark -
 
 #define DELAY_EXTRA_SAMPLES     4
-#define DELAY_BLANK_SAMPLES     4
+#define DELAY_ROUND_SAMPLES     4
 #define DELAY_BLOCK_SIZE        64
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void sigdelwrite_checkvecsize   (t_delwrite_tilde *x, int vecsize);
+void delwrite_tilde_setVectorSize   (t_delwrite_tilde *x, int vectorSize);
+void delwrite_tilde_updateBuffer    (t_delwrite_tilde *x, t_float sampleRate);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
