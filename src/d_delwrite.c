@@ -57,33 +57,49 @@ void delwrite_tilde_updateBuffer (t_delwrite_tilde *x, t_float sampleRate)
 
 /* No aliasing. */
 
-static t_int *delwrite_tilde_perform(t_int *w)
+static t_int *delwrite_tilde_perform (t_int *w)
 {
-    t_sample *in = (t_sample *)(w[1]);
-    t_delwrite_tilde_control *c = (t_delwrite_tilde_control *)(w[2]);
+    t_delwrite_tilde_control *c = (t_delwrite_tilde_control *)(w[1]);
+    PD_RESTRICTED in = (t_sample *)(w[2]);
     int n = (int)(w[3]);
-    int phase = c->c_phase, nsamps = c->c_size;
-    t_sample *vp = c->c_vector, *bp = vp + phase, *ep = vp + (c->c_size + DELAY_EXTRA_SAMPLES);
+    
+    int phase = c->c_phase;
+    
+    PD_RESTRICTED p = c->c_vector + phase;
+    
     phase += n;
 
-    while (n--)
-    {
-        t_sample f = *in++;
-        if (PD_BIG_OR_SMALL(f))
-            f = 0;
-        *bp++ = f;
-        if (bp == ep)
-        {
-            vp[0] = ep[-4];
-            vp[1] = ep[-3];
-            vp[2] = ep[-2];
-            vp[3] = ep[-1];
-            bp = vp + DELAY_EXTRA_SAMPLES;
-            phase -= nsamps;
-        }
+    while (n--) {
+    //
+    t_sample f = *in++;
+    
+    if (PD_BIG_OR_SMALL (f)) { f = 0.0; }
+    
+    *p++ = f;
+    
+    if (p == c->c_vector + (c->c_size + DELAY_EXTRA_SAMPLES)) {
+    //
+    t_sample f1 = *(p - 4);
+    t_sample f2 = *(p - 3);
+    t_sample f3 = *(p - 2);
+    t_sample f4 = *(p - 1);
+    
+    p = c->c_vector;
+    
+    *p++ = f1;
+    *p++ = f2;
+    *p++ = f3;
+    *p++ = f4;  // DELAY_EXTRA_SAMPLES
+    
+    phase -= c->c_size;
+    //
     }
-    c->c_phase = phase; 
-    return (w+4);
+    //
+    }
+    
+    c->c_phase = phase;
+    
+    return (w + 4);
 }
 
 static void delwrite_tilde_dsp (t_delwrite_tilde *x, t_signal **sp)
@@ -93,7 +109,7 @@ static void delwrite_tilde_dsp (t_delwrite_tilde *x, t_signal **sp)
     delwrite_tilde_setVectorSize (x, sp[0]->s_vectorSize);
     delwrite_tilde_updateBuffer (x, sp[0]->s_sampleRate);
     
-    dsp_add (delwrite_tilde_perform, 3, sp[0]->s_vector, &x->dw_space, sp[0]->s_vectorSize);
+    dsp_add (delwrite_tilde_perform, 3, &x->dw_space, sp[0]->s_vector, sp[0]->s_vectorSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -104,10 +120,10 @@ static void *delwrite_tilde_new (t_symbol *s, t_float milliseconds)
 {
     t_delwrite_tilde *x = (t_delwrite_tilde *)pd_new (delwrite_tilde_class);
 
-    x->dw_delay             = milliseconds;
-    x->dw_space.c_size      = 0;
-    x->dw_space.c_vector    = PD_MEMORY_GET ((x->dw_space.c_size + DELAY_EXTRA_SAMPLES) * sizeof (t_sample));
-    x->dw_name              = (s == &s_) ? sym_delwrite__tilde__ : s;
+    x->dw_delay          = milliseconds;
+    x->dw_space.c_size   = 0;
+    x->dw_space.c_vector = PD_MEMORY_GET ((x->dw_space.c_size + DELAY_EXTRA_SAMPLES) * sizeof (t_sample));
+    x->dw_name           = (s == &s_) ? sym_delwrite__tilde__ : s;
     
     pd_bind (cast_pd (x), x->dw_name);
     
