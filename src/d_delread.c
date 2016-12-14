@@ -52,6 +52,7 @@ static void delread_tilde_setDelayInSamples (t_delread_tilde *x)
     int d = (int)((x->x_delayInMilliseconds * x->x_samplesPerMilliseconds) + 0.5);
     
     /* Note that the master vector size is reported as zero in non-recirculating cases. */
+    /* In order to compensate the advance of the writer's head. */
     
     x->x_delayInSamples = d + (x->x_vectorSize - x->x_masterVectorSize);
     x->x_delayInSamples = PD_CLAMP (x->x_delayInSamples, x->x_vectorSize, m->dw_space.c_size);
@@ -72,23 +73,31 @@ static void delread_tilde_float (t_delread_tilde *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_int *delread_tilde_perform(t_int *w)
-{
-    t_sample *out = (t_sample *)(w[1]);
-    t_delwrite_tilde_control *c = (t_delwrite_tilde_control *)(w[2]);
-    int delsamps = *(int *)(w[3]);
-    int n = (int)(w[4]);
-    int phase = c->c_phase - delsamps, nsamps = c->c_size;
-    t_sample *vp = c->c_vector, *bp, *ep = vp + (c->c_size + DELAY_EXTRA_SAMPLES);
-    if (phase < 0) phase += nsamps;
-    bp = vp + phase;
+/* No aliasing. */
 
-    while (n--)
+static t_int *delread_tilde_perform (t_int *w)
+{
+    t_delwrite_tilde_control *c = (t_delwrite_tilde_control *)(w[1]);
+    int delayInSamples = *(int *)(w[2]);
+    PD_RESTRICTED out = (t_sample *)(w[3]);
+    int n = (int)(w[4]);
+    
+    int phase = c->c_phase - delayInSamples;
+    
+    if (phase < 0) { phase += c->c_size; }
+    
     {
-        *out++ = *bp++;
-        if (bp == ep) bp -= nsamps;
+        PD_RESTRICTED p = c->c_vector + phase;
+
+        while (n--) {
+            *out++ = *p++;
+            if (p == c->c_vector + (c->c_size + DELAY_EXTRA_SAMPLES)) { 
+                p -= c->c_size;
+            }
+        }
     }
-    return (w+5);
+    
+    return (w + 5);
 }
 
 static void delread_tilde_dsp (t_delread_tilde *x, t_signal **sp)
@@ -105,16 +114,15 @@ static void delread_tilde_dsp (t_delread_tilde *x, t_signal **sp)
     delwrite_tilde_updateDelayLine (m, sp[0]->s_sampleRate);
         
     /* Set master vector size as zero in non-recirculating cases. */
-    /* In order to compensate the advance of the writer's head. */
         
     x->x_masterVectorSize = (m->dw_buildIdentifier == ugen_getBuildIdentifier() ? 0 : m->dw_vectorSize);
         
     delread_tilde_setDelayInSamples (x);
         
     dsp_add (delread_tilde_perform, 4,
-        sp[0]->s_vector,
         &m->dw_space,
         &x->x_delayInSamples,
+        sp[0]->s_vector,
         sp[0]->s_vectorSize);
     //
     }
