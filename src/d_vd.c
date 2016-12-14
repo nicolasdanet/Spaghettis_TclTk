@@ -94,11 +94,11 @@ static void vd_tilde_dsp (t_vd_tilde *x, t_signal **sp)
     if (!m) { if (x->x_name != &s_) { error_canNotFind (sym_delread__tilde__, x->x_name); } }
     else {
     //
-    delwrite_tilde_setVectorSize (m, sp[0]->s_vectorSize);
+    delwrite_tilde_setMasterVectorSize (m, sp[0]->s_vectorSize);
     
     /* Set master vector size as zero in non-recirculating cases. */
     
-    x->x_masterVectorSize = (m->dw_buildIdentifier == ugen_getBuildIdentifier() ? 0 : m->dw_vectorSize);
+    x->x_masterVectorSize = (m->dw_buildIdentifier == ugen_getBuildIdentifier() ? 0 : m->dw_masterVectorSize);
     
     dsp_add (vd_tilde_perform, 5, x, &m->dw_space, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
     //

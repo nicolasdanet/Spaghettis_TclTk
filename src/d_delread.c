@@ -110,12 +110,12 @@ static void delread_tilde_dsp (t_delread_tilde *x, t_signal **sp)
     if (!m) { if (x->x_name != &s_) { error_canNotFind (sym_delread__tilde__, x->x_name); } }
     else {
     //
-    delwrite_tilde_setVectorSize (m, sp[0]->s_vectorSize);
+    delwrite_tilde_setMasterVectorSize (m, sp[0]->s_vectorSize);
     delwrite_tilde_updateDelayLine (m, sp[0]->s_sampleRate);
         
     /* Set master vector size as zero in non-recirculating cases. */
         
-    x->x_masterVectorSize = (m->dw_buildIdentifier == ugen_getBuildIdentifier() ? 0 : m->dw_vectorSize);
+    x->x_masterVectorSize = (m->dw_buildIdentifier == ugen_getBuildIdentifier() ? 0 : m->dw_masterVectorSize);
         
     delread_tilde_setDelayInSamples (x);
         

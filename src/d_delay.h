@@ -27,8 +27,8 @@ typedef struct _delwrite_tilde {
     t_float                     dw_f;
     t_float                     dw_delayInMilliseconds;
     int                         dw_buildIdentifier;
-    int                         dw_buildIdentifierForVectorSize;
-    int                         dw_vectorSize;
+    int                         dw_buildIdentifierForMasterVectorSize;
+    int                         dw_masterVectorSize;
     t_delwrite_tilde_control    dw_space;
     t_symbol                    *dw_name;
     } t_delwrite_tilde;
@@ -45,8 +45,8 @@ typedef struct _delwrite_tilde {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void delwrite_tilde_setVectorSize   (t_delwrite_tilde *x, int vectorSize);
-void delwrite_tilde_updateDelayLine (t_delwrite_tilde *x, t_float sampleRate);
+void delwrite_tilde_setMasterVectorSize (t_delwrite_tilde *x, int vectorSize);
+void delwrite_tilde_updateDelayLine     (t_delwrite_tilde *x, t_float sampleRate);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -23,11 +23,13 @@ t_class *delwrite_tilde_class;      /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void delwrite_tilde_setVectorSize (t_delwrite_tilde *x, int vectorSize)
+void delwrite_tilde_setMasterVectorSize (t_delwrite_tilde *x, int vectorSize)
 {
-    if (x->dw_buildIdentifierForVectorSize != ugen_getBuildIdentifier()) {
-        x->dw_vectorSize = vectorSize;
-        x->dw_buildIdentifierForVectorSize = ugen_getBuildIdentifier();
+    int buildIdentifier = ugen_getBuildIdentifier();
+    
+    if (x->dw_buildIdentifierForMasterVectorSize != buildIdentifier) {
+        x->dw_masterVectorSize = vectorSize;
+        x->dw_buildIdentifierForMasterVectorSize = buildIdentifier;
     }
 }
 
@@ -106,7 +108,7 @@ static void delwrite_tilde_dsp (t_delwrite_tilde *x, t_signal **sp)
 {
     x->dw_buildIdentifier = ugen_getBuildIdentifier();
     
-    delwrite_tilde_setVectorSize (x, sp[0]->s_vectorSize);
+    delwrite_tilde_setMasterVectorSize (x, sp[0]->s_vectorSize);
     delwrite_tilde_updateDelayLine (x, sp[0]->s_sampleRate);
     
     dsp_add (delwrite_tilde_perform, 3, &x->dw_space, sp[0]->s_vector, sp[0]->s_vectorSize);
