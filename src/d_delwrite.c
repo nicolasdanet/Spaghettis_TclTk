@@ -31,9 +31,9 @@ void delwrite_tilde_setVectorSize (t_delwrite_tilde *x, int vectorSize)
     }
 }
 
-void delwrite_tilde_updateBuffer (t_delwrite_tilde *x, t_float sampleRate)
+void delwrite_tilde_updateDelayLine (t_delwrite_tilde *x, t_float sampleRate)
 {
-    int n = MILLISECONDS_TO_SECONDS (x->dw_delay) * sampleRate;
+    int n = MILLISECONDS_TO_SECONDS (x->dw_delayInMilliseconds) * sampleRate;
     
     n = PD_MAX (1, n);
     n += ((- n) & (DELAY_ROUND_SAMPLES - 1));   /* Snap to the next multiple of DELAY_ROUND_SAMPLES. */
@@ -107,7 +107,7 @@ static void delwrite_tilde_dsp (t_delwrite_tilde *x, t_signal **sp)
     x->dw_buildIdentifier = ugen_getBuildIdentifier();
     
     delwrite_tilde_setVectorSize (x, sp[0]->s_vectorSize);
-    delwrite_tilde_updateBuffer (x, sp[0]->s_sampleRate);
+    delwrite_tilde_updateDelayLine (x, sp[0]->s_sampleRate);
     
     dsp_add (delwrite_tilde_perform, 3, &x->dw_space, sp[0]->s_vector, sp[0]->s_vectorSize);
 }
@@ -120,10 +120,10 @@ static void *delwrite_tilde_new (t_symbol *s, t_float milliseconds)
 {
     t_delwrite_tilde *x = (t_delwrite_tilde *)pd_new (delwrite_tilde_class);
 
-    x->dw_delay          = milliseconds;
-    x->dw_space.c_size   = 0;
-    x->dw_space.c_vector = PD_MEMORY_GET ((x->dw_space.c_size + DELAY_EXTRA_SAMPLES) * sizeof (t_sample));
-    x->dw_name           = (s == &s_) ? sym_delwrite__tilde__ : s;
+    x->dw_delayInMilliseconds   = milliseconds;
+    x->dw_space.c_size          = 0;
+    x->dw_space.c_vector        = PD_MEMORY_GET ((0 + DELAY_EXTRA_SAMPLES) * sizeof (t_sample));
+    x->dw_name                  = (s == &s_) ? sym_delwrite__tilde__ : s;
     
     pd_bind (cast_pd (x), x->dw_name);
     
