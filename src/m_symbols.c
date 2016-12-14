@@ -215,6 +215,7 @@ t_symbol *sym_define;
 t_symbol *sym_del;
 t_symbol *sym_delay;
 t_symbol *sym_delread__tilde__;
+t_symbol *sym_delread4__tilde__;
 t_symbol *sym_delwrite__tilde__;
 t_symbol *sym_deselect;
 t_symbol *sym_dirty;
@@ -770,6 +771,7 @@ void symbols_initialize (void)
     sym_del                                     = gensym ("del");
     sym_delay                                   = gensym ("delay");
     sym_delread__tilde__                        = gensym ("delread~");
+    sym_delread4__tilde__                       = gensym ("delread4~");
     sym_delwrite__tilde__                       = gensym ("delwrite~");
     sym_deselect                                = gensym ("deselect");
     sym_dirty                                   = gensym ("dirty");

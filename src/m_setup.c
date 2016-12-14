@@ -200,7 +200,7 @@ void dac_setup              (void);
 void adc_setup              (void);
 void delwrite_tilde_setup   (void);
 void delread_tilde_setup    (void);
-void sigvd_setup            (void);
+void vd_tilde_setup         (void);
 void d_fft_setup            (void);
 void d_filter_setup         (void);
 void send_tilde_setup       (void);
@@ -397,7 +397,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     adc_setup();
     delwrite_tilde_setup();
     delread_tilde_setup();
-    sigvd_setup();
+    vd_tilde_setup();
     d_fft_setup();
     d_filter_setup();
     send_tilde_setup();

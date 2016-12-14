@@ -220,6 +220,7 @@ extern t_symbol *sym_define;
 extern t_symbol *sym_del;
 extern t_symbol *sym_delay;
 extern t_symbol *sym_delread__tilde__;
+extern t_symbol *sym_delread4__tilde__;
 extern t_symbol *sym_delwrite__tilde__;
 extern t_symbol *sym_deselect;
 extern t_symbol *sym_dirty;
