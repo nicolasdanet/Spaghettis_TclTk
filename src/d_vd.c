@@ -43,46 +43,36 @@ typedef struct _vd_tilde {
 
 /* No aliasing. */
 
-static t_int *vd_tilde_perform(t_int *w)
+static t_int *vd_tilde_perform (t_int *w)
 {
     t_vd_tilde *x = (t_vd_tilde *)(w[1]);
-    t_delwrite_tilde_control *ctl = (t_delwrite_tilde_control *)(w[2]);
-    t_sample *in = (t_sample *)(w[3]);
-    t_sample *out = (t_sample *)(w[4]);
+    t_delwrite_tilde_control *c = (t_delwrite_tilde_control *)(w[2]);
+    PD_RESTRICTED in  = (t_sample *)(w[3]);
+    PD_RESTRICTED out = (t_sample *)(w[4]);
     int n = (int)(w[5]);
 
-    int nsamps = ctl->c_size;
-    t_sample limit = nsamps - n;
-    t_sample fn = n-1;
-    t_sample *vp = ctl->c_vector, *bp, *wp = vp + ctl->c_phase;
-    t_sample zerodel = x->x_masterVectorSize;
-    while (n--)
+    t_float limit = c->c_size - n;
+    
+    while (n--) {
+    //
+    t_float delayInSamples = (x->x_samplesPerMilliseconds * (*in++)) - x->x_masterVectorSize;
+    
+    delayInSamples = PD_CLAMP (delayInSamples, 1.00001f, limit);
+    delayInSamples += (t_float)n;
+    
     {
-        t_sample delsamps = x->x_samplesPerMilliseconds * *in++ - zerodel, frac;
-        int idelsamps;
-        t_sample a, b, c, d, cminusb;
-        if (!(delsamps >= 1.00001f))    /* too small or NAN */
-            delsamps = 1.00001f;
-        if (delsamps > limit)           /* too big */
-            delsamps = limit;
-        delsamps += fn;
-        fn = fn - 1.0f;
-        idelsamps = delsamps;
-        frac = delsamps - (t_sample)idelsamps;
-        bp = wp - idelsamps;
-        if (bp < vp + 4) bp += nsamps;
-        d = bp[-3];
-        c = bp[-2];
-        b = bp[-1];
-        a = bp[0];
-        cminusb = c-b;
-        *out++ = b + frac * (
-            cminusb - 0.1666667f * (1.-frac) * (
-                (d - a - 3.0f * cminusb) * frac + (d + 2.0f*a - 3.0f*b)
-            )
-        );
+        int integer = delayInSamples;
+        t_float fractional = delayInSamples - (t_float)integer;
+        PD_RESTRICTED p = c->c_vector + (c->c_phase - integer);
+        
+        if (p < c->c_vector + DELAY_EXTRA_SAMPLES) { p += c->c_size; }
+        
+        *out++ = (t_sample)dsp_4PointsInterpolationWithFloats (fractional, p[0], p[-1], p[-2], p[-3]);
     }
-    return (w+6);
+    //
+    }
+    
+    return (w + 6);
 }
 
 static void vd_tilde_dsp (t_vd_tilde *x, t_signal **sp)
@@ -91,7 +81,7 @@ static void vd_tilde_dsp (t_vd_tilde *x, t_signal **sp)
     
     x->x_samplesPerMilliseconds = sp[0]->s_sampleRate / 1000.0;
     
-    if (!m) { if (x->x_name != &s_) { error_canNotFind (sym_delread__tilde__, x->x_name); } }
+    if (!m) { if (x->x_name != &s_) { error_canNotFind (sym_vd__tilde__, x->x_name); } }
     else {
     //
     delwrite_tilde_setMasterVectorSize (m, sp[0]->s_vectorSize);

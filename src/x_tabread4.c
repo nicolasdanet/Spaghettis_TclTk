@@ -55,7 +55,7 @@ static void tabread4_float (t_tabread4 *x, t_float f)
     else if (n < 1)         { outlet_float (x->x_outlet, WORD_FLOAT (data + 1)); }
     else if (n > size - 3)  { outlet_float (x->x_outlet, WORD_FLOAT (data + size - 2)); }
     else {
-        outlet_float (x->x_outlet, dsp_4PointsInterpolation ((f - n), data + n - 1));
+        outlet_float (x->x_outlet, dsp_4PointsInterpolationWithWords ((f - n), data + n - 1));
     }
     //
     }

@@ -293,21 +293,27 @@ typedef union {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 #if ! ( PD_MSVC )
 
     #if ( PD_CPU_x86 || PD_CPU_AMD64 || PD_CPU_ARM )
         
-        static inline int PD_DENORMAL_OR_ZERO (t_float f)   /* Is malformed (denormal, infinite, NaN)? */
+        static inline int PD_NAN (t_float f)                /* True if NaN. */
+        {
+            t_rawcast32 z;
+            z.z_f = f;
+            return ((z.z_i & 0x7f800000 == 0x7f800000) && (z.z_i & 0x7fffff != 0));
+        }
+
+        static inline int PD_DENORMAL_OR_ZERO (t_float f)   /* True if zero, denormal, infinite, or NaN. */
         {
             t_rawcast32 z;
             z.z_f = f;
             z.z_i &= 0x7f800000;
-            return ((z.z_i == 0) | (z.z_i == 0x7f800000));
+            return ((z.z_i == 0) || (z.z_i == 0x7f800000));
         }
         
-        static inline int PD_BIG_OR_SMALL (t_float f)       /* If exponent falls out (-64, 64) range. */
+        static inline int PD_BIG_OR_SMALL (t_float f)       /* True if exponent falls out (-64, 64) range. */
         {
             t_rawcast32 z;
             z.z_f = f;
@@ -318,9 +324,6 @@ typedef union {
     
         #error
         
-        #define PD_DENORMAL_OR_ZERO(f)  0
-        #define PD_BIG_OR_SMALL(f)      0
-        
     #endif
 
 // -----------------------------------------------------------------------------------------------------------
@@ -328,6 +331,9 @@ typedef union {
 
 #else
 
+        #define PD_NAN(f)               ((((*(unsigned int*)&(f)) & 0x7f800000) == 0x7f800000) && \
+                                            (((*(unsigned int*)&(f)) & 0x7fffff) != 0))
+                                            
         #define PD_DENORMAL_OR_ZERO(f)  ((((*(unsigned int*)&(f)) & 0x7f800000) == 0) || \
                                             (((*(unsigned int*)&(f)) & 0x7f800000) == 0x7f800000))
     
