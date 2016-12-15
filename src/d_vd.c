@@ -55,8 +55,11 @@ static t_int *vd_tilde_perform (t_int *w)
     
     while (n--) {
     //
-    t_float delayInSamples = (x->x_samplesPerMilliseconds * (*in++)) - x->x_masterVectorSize;
+    t_float delayInSamples, f = (t_float)(*in++);
     
+    if (PD_IS_NAN (f)) { f = 0.0; }
+    
+    delayInSamples = (x->x_samplesPerMilliseconds * f) - x->x_masterVectorSize;
     delayInSamples = PD_CLAMP (delayInSamples, 1.00001, limit);
     delayInSamples += (t_float)n;
     

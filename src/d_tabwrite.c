@@ -129,7 +129,7 @@ static t_int *tabwrite_tilde_perform (t_int *w)
     while (size--) {
     //
     t_sample f = *in++;
-    if (PD_BIG_OR_SMALL (f)) { f = 0.0; }
+    if (PD_IS_BIG_OR_SMALL (f)) { f = 0.0; }
     WORD_FLOAT (data) = f;
     data++;
     //
