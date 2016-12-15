@@ -52,7 +52,6 @@ static void delread_tilde_setDelayInSamples (t_delread_tilde *x)
     int d = (int)((x->x_delayInMilliseconds * x->x_samplesPerMilliseconds) + 0.5);
     
     /* Note that the master vector size is reported as zero in non-recirculating cases. */
-    /* In order to compensate the advance of the writer's head. */
     
     x->x_delayInSamples = d + (x->x_vectorSize - x->x_masterVectorSize);
     x->x_delayInSamples = PD_CLAMP (x->x_delayInSamples, x->x_vectorSize, m->dw_space.c_size);
