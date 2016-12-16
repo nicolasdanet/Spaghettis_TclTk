@@ -59,23 +59,23 @@ static inline char *logger_stringWithFloat (char *dest, double f)
 {
     char digits[] = "0123456789";
     
-    int minus        = (f < 0.0);
-    double absolute  = PD_ABS (f);
-    double clamped   = PD_MIN (2147483647.0, absolute);
-    long integer     = (long)clamped;
-    long fractional  = (long)(((double)clamped - (double)integer) * 1000000.0);
+    int minus         = (f < 0.0);
+    double absolute   = PD_ABS (f);
+    double clamped    = PD_MIN (2147483647.0, absolute);
+    long integer      = (long)clamped;
+    double fractional = clamped - (double)integer;
        
     char *s = dest + (LOGGER_FLOAT_STRING - 1);
     
     *s-- = 0;
     
     if (fractional > 0) {
-        do {
-        //
-        *s-- = digits[fractional % 10]; fractional /= 10; 
-        //
-        } while (fractional != 0);
-        
+        *s-- = digits[(int)(fractional * 1000000.0) % 10];
+        *s-- = digits[(int)(fractional * 100000.0)  % 10];
+        *s-- = digits[(int)(fractional * 10000.0)   % 10];
+        *s-- = digits[(int)(fractional * 1000.0)    % 10];
+        *s-- = digits[(int)(fractional * 100.0)     % 10];
+        *s-- = digits[(int)(fractional * 10.0)      % 10];    
         *s-- = '.';
     }
     
