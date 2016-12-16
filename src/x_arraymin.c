@@ -96,8 +96,8 @@ void arraymin_setup (void)
             A_GIMME,
             A_NULL);
     
-    class_addBang (c, arraymin_bang);
-    class_addFloat (c, arraymin_float);
+    class_addBang (c, (t_method)arraymin_bang);
+    class_addFloat (c, (t_method)arraymin_float);
 
     class_setHelpName (c, sym_array);
     

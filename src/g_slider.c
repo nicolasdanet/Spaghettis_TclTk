@@ -786,10 +786,10 @@ void slider_setup (void)
 
     class_addCreator ((t_newmethod)slider_new, sym_vslider, A_GIMME, A_NULL);
 
-    class_addBang (c, slider_bang);
-    class_addFloat (c, slider_float);
-    class_addClick (c, slider_click);
-    class_addMotion (c, slider_motion);
+    class_addBang (c, (t_method)slider_bang);
+    class_addFloat (c, (t_method)slider_float);
+    class_addClick (c, (t_method)slider_click);
+    class_addMotion (c, (t_method)slider_motion);
     
     class_addMethod (c, (t_method)slider_loadbang,          sym_loadbang,               A_NULL);
     class_addMethod (c, (t_method)slider_initialize,        sym_initialize,             A_FLOAT, A_NULL);

@@ -301,15 +301,15 @@ void binop3_setup (void)
                                     A_DEFFLOAT,
                                     A_NULL);
                                     
-    class_addBang (binopBitwiseAnd_class,           binopBitwiseAnd_bang);
-    class_addBang (binopLogicalAnd_class,           binopLogicalAnd_bang);
-    class_addBang (binopBitwiseOr_class,            binopBitwiseOr_bang);
-    class_addBang (binopLogicalOr_class,            binopLogicalOr_bang);
-    class_addBang (binopShiftLeft_class,            binopShiftLeft_bang);
-    class_addBang (binopShiftRight_class,           binopShiftRight_bang);  
-    class_addBang (binopModulo_class,               binopModulo_bang);
-    class_addBang (binopIntegerModulo_class,        binopIntegerModulo_bang);
-    class_addBang (binopIntegerDivide_class,        binopIntegerDivide_bang);
+    class_addBang (binopBitwiseAnd_class,           (t_method)binopBitwiseAnd_bang);
+    class_addBang (binopLogicalAnd_class,           (t_method)binopLogicalAnd_bang);
+    class_addBang (binopBitwiseOr_class,            (t_method)binopBitwiseOr_bang);
+    class_addBang (binopLogicalOr_class,            (t_method)binopLogicalOr_bang);
+    class_addBang (binopShiftLeft_class,            (t_method)binopShiftLeft_bang);
+    class_addBang (binopShiftRight_class,           (t_method)binopShiftRight_bang);  
+    class_addBang (binopModulo_class,               (t_method)binopModulo_bang);
+    class_addBang (binopIntegerModulo_class,        (t_method)binopIntegerModulo_bang);
+    class_addBang (binopIntegerDivide_class,        (t_method)binopIntegerDivide_bang);
         
     class_addFloat (binopBitwiseAnd_class,          (t_method)binopBitwiseAnd_float);
     class_addFloat (binopLogicalAnd_class,          (t_method)binopLogicalAnd_float);

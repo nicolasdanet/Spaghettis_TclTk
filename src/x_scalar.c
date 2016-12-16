@@ -199,11 +199,11 @@ void scalardefine_setup (void)
     
     class_addCreator ((t_newmethod)scalardefine_makeObject, sym_scalar, A_GIMME, A_NULL);
         
-    class_addKey (c, canvas_key);
-    class_addClick (c, canvas_click);
-    class_addMotion (c, canvas_motion);
-    class_addMouse (c, canvas_mouse);
-    class_addMouseUp (c, canvas_mouseUp);
+    class_addKey (c, (t_method)canvas_key);
+    class_addClick (c, (t_method)canvas_click);
+    class_addMotion (c, (t_method)canvas_motion);
+    class_addMouse (c, (t_method)canvas_mouse);
+    class_addMouseUp (c, (t_method)canvas_mouseUp);
     
     class_addMethod (c, (t_method)scalardefine_send,    sym_send,       A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)scalardefine_set,     sym_set,        A_GIMME, A_NULL);
@@ -221,7 +221,7 @@ void scalardefine_setup (void)
         A_FLOAT,
         A_NULL);
 
-    class_addAnything (c, scalardefine_anything);
+    class_addAnything (c, (t_method)scalardefine_anything);
 
     #if PD_WITH_LEGACY
     

@@ -90,7 +90,7 @@ void noise_tilde_setup (void)
             CLASS_DEFAULT,
             A_NULL);
             
-    class_addDSP (c, noise_tilde_dsp);
+    class_addDSP (c, (t_method)noise_tilde_dsp);
     
     noise_tilde_class = c;
 }

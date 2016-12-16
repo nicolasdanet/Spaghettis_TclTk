@@ -459,7 +459,7 @@ void template_setup (void)
         CLASS_NOBOX,
         A_NULL);
     
-    class_addAnything (c, template_anything);
+    class_addAnything (c, (t_method)template_anything);
     
     template_class = c;
 }

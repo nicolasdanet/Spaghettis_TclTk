@@ -69,8 +69,8 @@ void listlength_setup (void)
             A_GIMME,
             A_NULL);
         
-    class_addList (c, listlength_list);
-    class_addAnything (c, listlength_anything);
+    class_addList (c, (t_method)listlength_list);
+    class_addAnything (c, (t_method)listlength_anything);
     
     class_setHelpName (c, &s_list);
     

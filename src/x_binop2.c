@@ -191,12 +191,12 @@ void binop2_setup (void)
                                 A_DEFFLOAT,
                                 A_NULL);
                                 
-    class_addBang (binopEquals_class,               binopEquals_bang);
-    class_addBang (binopNotEquals_class,            binopNotEquals_bang);
-    class_addBang (binopGreater_class,              binopGreater_bang);
-    class_addBang (binopLess_class,                 binopLess_bang);
-    class_addBang (binopGreaterEquals_class,        binopGreaterEquals_bang);
-    class_addBang (binopLessEquals_class,           binopLessEquals_bang);
+    class_addBang (binopEquals_class,               (t_method)binopEquals_bang);
+    class_addBang (binopNotEquals_class,            (t_method)binopNotEquals_bang);
+    class_addBang (binopGreater_class,              (t_method)binopGreater_bang);
+    class_addBang (binopLess_class,                 (t_method)binopLess_bang);
+    class_addBang (binopGreaterEquals_class,        (t_method)binopGreaterEquals_bang);
+    class_addBang (binopLessEquals_class,           (t_method)binopLessEquals_bang);
         
     class_addFloat (binopEquals_class,              (t_method)binopEquals_float);
     class_addFloat (binopNotEquals_class,           (t_method)binopNotEquals_float);

@@ -112,8 +112,8 @@ void multiply_tilde_setup (void)
     CLASS_SIGNAL (multiply_tilde_class, t_multiply_tilde, x_f);
     CLASS_SIGNAL (multiplyScalar_tilde_class, t_multiplyscalar_tilde, x_f);
         
-    class_addDSP (multiply_tilde_class, multiply_tilde_dsp);
-    class_addDSP (multiplyScalar_tilde_class, multiplyScalar_tilde_dsp);
+    class_addDSP (multiply_tilde_class, (t_method)multiply_tilde_dsp);
+    class_addDSP (multiplyScalar_tilde_class, (t_method)multiplyScalar_tilde_dsp);
         
     class_setHelpName (multiply_tilde_class, sym_max__tilde__);
     class_setHelpName (multiplyScalar_tilde_class, sym_max__tilde__);

@@ -131,8 +131,8 @@ void delay_setup (void)
             
     class_addCreator ((t_newmethod)delay_new, sym_del, A_DEFFLOAT, A_DEFFLOAT, A_DEFSYMBOL, A_NULL);
     
-    class_addBang (c, delay_bang);
-    class_addFloat (c, delay_float);
+    class_addBang (c, (t_method)delay_bang);
+    class_addFloat (c, (t_method)delay_float);
         
     class_addMethod (c, (t_method)delay_floatDelay, sym_inlet2, A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)delay_stop,       sym_stop,   A_NULL);

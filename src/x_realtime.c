@@ -78,7 +78,7 @@ void realtime_setup (void)
     
     class_addCreator ((t_newmethod)realtime_new, sym_cputime, A_NULL);      /* Currently the same thing. */
     
-    class_addBang (c, realtime_bang);
+    class_addBang (c, (t_method)realtime_bang);
     
     class_addMethod (c, (t_method)realtime_elapsed, sym_inlet2, A_NULL);
     

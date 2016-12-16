@@ -184,11 +184,11 @@ void arraydefine_setup (void)
     
     class_addCreator ((t_newmethod)arraydefine_makeObject, sym_array, A_GIMME, A_NULL);
     
-    class_addKey (c, canvas_key);
-    class_addMouse (c, canvas_mouse);
-    class_addMouseUp (c, canvas_mouseUp);
-    class_addClick (c, canvas_click);
-    class_addMotion (c, canvas_motion);
+    class_addKey (c, (t_method)canvas_key);
+    class_addMouse (c, (t_method)canvas_mouse);
+    class_addMouseUp (c, (t_method)canvas_mouseUp);
+    class_addClick (c, (t_method)canvas_click);
+    class_addMotion (c, (t_method)canvas_motion);
     
     class_addMethod (c, (t_method)canvas_map,           sym__map,       A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_close,         sym_close,      A_DEFFLOAT, A_NULL);
@@ -212,7 +212,7 @@ void arraydefine_setup (void)
         A_FLOAT,
         A_NULL);
         
-    class_addAnything (c, arraydefine_anything);
+    class_addAnything (c, (t_method)arraydefine_anything);
     
     #if PD_WITH_LEGACY
     

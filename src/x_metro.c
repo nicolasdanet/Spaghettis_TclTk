@@ -153,8 +153,8 @@ void metro_setup (void)
             A_DEFSYMBOL,
             A_NULL);
             
-    class_addBang (c, metro_bang);
-    class_addFloat (c, metro_float);
+    class_addBang (c, (t_method)metro_bang);
+    class_addFloat (c, (t_method)metro_float);
     
     class_addMethod (c, (t_method)metro_floatDelay, sym_inlet2, A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)metro_stop,       sym_stop,   A_NULL);

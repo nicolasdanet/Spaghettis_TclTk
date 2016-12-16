@@ -93,12 +93,12 @@ void send_setup (void)
             
     class_addCreator ((t_newmethod)send_new, sym_s, A_DEFSYMBOL, A_NULL);
     
-    class_addBang (c, send_bang);
-    class_addFloat (c, send_float);
-    class_addSymbol (c, send_symbol);
-    class_addPointer (c, send_pointer);
-    class_addList (c, send_list);
-    class_addAnything (c, send_anything);
+    class_addBang (c, (t_method)send_bang);
+    class_addFloat (c, (t_method)send_float);
+    class_addSymbol (c, (t_method)send_symbol);
+    class_addPointer (c, (t_method)send_pointer);
+    class_addList (c, (t_method)send_list);
+    class_addAnything (c, (t_method)send_anything);
     
     send_class = c;
 }

@@ -101,7 +101,7 @@ void clip_tilde_setup (void)
             
     CLASS_SIGNAL (c, t_clip_tilde, x_f);
     
-    class_addDSP (c, clip_tilde_dsp);
+    class_addDSP (c, (t_method)clip_tilde_dsp);
     
     clip_class = c;
 }

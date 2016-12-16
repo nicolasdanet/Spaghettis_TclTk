@@ -109,7 +109,7 @@ void samplerate_tilde_setup (void)
             CLASS_DEFAULT,
             A_NULL);
             
-    class_addBang (c, samplerate_tilde_bang);
+    class_addBang (c, (t_method)samplerate_tilde_bang);
     
     samplerate_tilde_class = c;
 }

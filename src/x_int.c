@@ -80,8 +80,8 @@ void int_setup (void)
             
     class_addCreator ((t_newmethod)int_new, sym_i, A_DEFFLOAT, A_NULL);
     
-    class_addBang (c, int_bang);
-    class_addFloat (c, int_float);
+    class_addBang (c, (t_method)int_bang);
+    class_addFloat (c, (t_method)int_float);
     
     class_addMethod (c, (t_method)int_send, sym_send, A_SYMBOL, A_NULL);
     

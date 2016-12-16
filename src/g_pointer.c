@@ -230,8 +230,8 @@ void pointer_setup (void)
             A_GIMME,
             A_NULL);
     
-    class_addBang (c, pointer_bang); 
-    class_addPointer (c, pointer_pointer); 
+    class_addBang (c, (t_method)pointer_bang); 
+    class_addPointer (c, (t_method)pointer_pointer); 
         
     class_addMethod (c, (t_method)pointer_sendwindow,   sym_sendwindow,             A_GIMME, A_NULL); 
     class_addMethod (c, (t_method)pointer_send,         sym_send,                   A_SYMBOL, A_NULL);

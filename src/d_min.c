@@ -112,8 +112,8 @@ void min_tilde_setup (void)
     CLASS_SIGNAL (min_tilde_class, t_min_tilde, x_f);
     CLASS_SIGNAL (minScalar_tilde_class, t_minscalar_tilde, x_f);
 
-    class_addDSP (min_tilde_class, min_tilde_dsp);
-    class_addDSP (minScalar_tilde_class, minScalar_tilde_dsp);
+    class_addDSP (min_tilde_class, (t_method)min_tilde_dsp);
+    class_addDSP (minScalar_tilde_class, (t_method)minScalar_tilde_dsp);
     
     class_setHelpName (min_tilde_class, sym_max__tilde__);
     class_setHelpName (minScalar_tilde_class, sym_max__tilde__);

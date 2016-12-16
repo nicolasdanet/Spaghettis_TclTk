@@ -77,7 +77,7 @@ void midiin_setup (void)
             CLASS_DEFAULT | CLASS_NOINLET,
             A_NULL);
             
-    class_addList (c, midiin_list);
+    class_addList (c, (t_method)midiin_list);
     
     class_setHelpName (c, sym_midiout);
     

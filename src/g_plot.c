@@ -1265,7 +1265,7 @@ void plot_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addFloat (c, plot_float);
+    class_addFloat (c, (t_method)plot_float);
     
     class_setPainterWidgetBehavior (c, &plot_widgetBehavior);
     

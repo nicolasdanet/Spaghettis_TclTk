@@ -97,8 +97,8 @@ void snapshot_tilde_setup (void)
     
     CLASS_SIGNAL (c, t_snapshot_tilde, x_f);
     
-    class_addDSP (c, snapshot_tilde_dsp);
-    class_addBang (c, snapshot_tilde_bang);
+    class_addDSP (c, (t_method)snapshot_tilde_dsp);
+    class_addBang (c, (t_method)snapshot_tilde_bang);
         
     class_addMethod (c, (t_method)snapshot_tilde_set, sym_set, A_DEFFLOAT, A_NULL);
 

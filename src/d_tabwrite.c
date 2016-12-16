@@ -188,9 +188,9 @@ void tabwrite_tilde_setup (void)
             
     CLASS_SIGNAL (c, t_tabwrite_tilde, x_f);
     
-    class_addDSP (c, tabwrite_tilde_dsp);
-    class_addBang (c, tabwrite_tilde_bang);
-    class_addPolling (c, tabwrite_tilde_polling);
+    class_addDSP (c, (t_method)tabwrite_tilde_dsp);
+    class_addBang (c, (t_method)tabwrite_tilde_bang);
+    class_addPolling (c, (t_method)tabwrite_tilde_polling);
         
     class_addMethod (c, (t_method)tabwrite_tilde_set,   sym_set,    A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)tabwrite_tilde_start, sym_start,  A_DEFFLOAT, A_NULL);

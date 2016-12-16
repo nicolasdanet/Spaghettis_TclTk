@@ -102,8 +102,8 @@ void unpack_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addList (c, unpack_list);
-    class_addAnything (c, unpack_anything);
+    class_addList (c, (t_method)unpack_list);
+    class_addAnything (c, (t_method)unpack_anything);
     
     unpack_class = c;
 }

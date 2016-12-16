@@ -537,9 +537,9 @@ void toggle_setup (void)
             A_GIMME,
             A_NULL);
     
-    class_addBang (c, toggle_bang);
-    class_addFloat (c, toggle_float);
-    class_addClick (c, toggle_click);
+    class_addBang (c, (t_method)toggle_bang);
+    class_addFloat (c, (t_method)toggle_float);
+    class_addClick (c, (t_method)toggle_click);
     
     class_addMethod (c, (t_method)toggle_loadbang,          sym_loadbang,           A_NULL);
     class_addMethod (c, (t_method)toggle_initialize,        sym_initialize,         A_FLOAT, A_NULL);

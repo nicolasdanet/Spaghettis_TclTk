@@ -159,7 +159,7 @@ void guistub_setup (void)
             CLASS_NOBOX, 
             A_NULL);
         
-    class_addAnything (c, guistub_anything);
+    class_addAnything (c, (t_method)guistub_anything);
 
     class_addMethod (c, (t_method)guistub_signoff, sym__signoff, A_NULL);
     

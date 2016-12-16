@@ -145,8 +145,8 @@ void line_tilde_setup (void)
             CLASS_DEFAULT,
             A_NULL);
         
-    class_addDSP (c, line_tilde_dsp);
-    class_addFloat (c, line_tilde_float);
+    class_addDSP (c, (t_method)line_tilde_dsp);
+    class_addFloat (c, (t_method)line_tilde_float);
     
     class_addMethod (c, (t_method)line_tilde_stop, sym_stop, A_NULL);
         

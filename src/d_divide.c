@@ -112,8 +112,8 @@ void divide_tilde_setup (void)
     CLASS_SIGNAL (divide_tilde_class, t_divide_tilde, x_f);
     CLASS_SIGNAL (divideScalar_tilde_class, t_dividescalar_tilde, x_f);
         
-    class_addDSP (divide_tilde_class, divide_tilde_dsp);
-    class_addDSP (divideScalar_tilde_class, divideScalar_tilde_dsp);
+    class_addDSP (divide_tilde_class, (t_method)divide_tilde_dsp);
+    class_addDSP (divideScalar_tilde_class, (t_method)divideScalar_tilde_dsp);
     
     class_setHelpName (divide_tilde_class, sym_max__tilde__);
     class_setHelpName (divideScalar_tilde_class, sym_max__tilde__);

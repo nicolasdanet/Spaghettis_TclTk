@@ -82,7 +82,7 @@ void rmstodb_tilde_setup (void)
             
     CLASS_SIGNAL (c, t_rmstodb_tilde, x_f);
     
-    class_addDSP (c, rmstodb_tilde_dsp);
+    class_addDSP (c, (t_method)rmstodb_tilde_dsp);
     
     class_setHelpName (c, sym_mtof__tilde__);
     

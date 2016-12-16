@@ -764,7 +764,7 @@ void garray_setup (void)
         CLASS_GRAPHIC,
         A_NULL);
         
-    class_addList (c, garray_list);
+    class_addList (c, (t_method)garray_list);
     
     class_addMethod (c, (t_method)garray_constant,      sym_constant,       A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)garray_normalize,     sym_normalize,      A_DEFFLOAT, A_NULL);

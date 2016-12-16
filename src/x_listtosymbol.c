@@ -74,7 +74,7 @@ void listtosymbol_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addList (c, listtosymbol_list);
+    class_addList (c, (t_method)listtosymbol_list);
     
     class_setHelpName (c, &s_list);
     

@@ -276,7 +276,7 @@ void text_setup (void)
             CLASS_DEFAULT | CLASS_NOINLET,
             A_NULL);
         
-    class_addAnything (c, text_anything);
+    class_addAnything (c, (t_method)text_anything);
     
     text_class = c;
 }

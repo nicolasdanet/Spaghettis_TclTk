@@ -76,8 +76,8 @@ void change_setup (void)
             A_DEFFLOAT,
             A_NULL);
             
-    class_addBang (c, change_bang);
-    class_addFloat (c, change_float);
+    class_addBang (c, (t_method)change_bang);
+    class_addFloat (c, (t_method)change_float);
     
     class_addMethod (c, (t_method)change_set, sym_set, A_DEFFLOAT, A_NULL);
         

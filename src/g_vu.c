@@ -673,8 +673,8 @@ void vu_setup (void)
             A_GIMME,
             A_NULL);
         
-    class_addBang (c, vu_bang);
-    class_addFloat (c, vu_float);
+    class_addBang (c, (t_method)vu_bang);
+    class_addFloat (c, (t_method)vu_float);
     
     class_addMethod (c, (t_method)vu_floatPeak,             sym_inlet2,             A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)vu_fromDialog,            sym__iemdialog,         A_GIMME, A_NULL);

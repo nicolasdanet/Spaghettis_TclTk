@@ -65,7 +65,7 @@ void serial_setup (void)
             A_DEFFLOAT,
             A_NULL);
         
-    class_addFloat (c, serial_float);
+    class_addFloat (c, (t_method)serial_float);
     
     serial_class = c;
 }

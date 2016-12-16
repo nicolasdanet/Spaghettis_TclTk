@@ -139,7 +139,7 @@ void append_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addFloat (c, append_float); 
+    class_addFloat (c, (t_method)append_float); 
     
     class_addMethod (c, (t_method)append_set, sym_set, A_SYMBOL, A_SYMBOL, A_NULL);
     

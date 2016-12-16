@@ -534,10 +534,10 @@ void gatom_setup (void)
             CLASS_DEFAULT,
             A_NULL);
             
-    class_addBang (c, gatom_bang);
-    class_addFloat (c, gatom_float);
-    class_addSymbol (c, gatom_symbol);
-    class_addClick (c, gatom_click);
+    class_addBang (c, (t_method)gatom_bang);
+    class_addFloat (c, (t_method)gatom_float);
+    class_addSymbol (c, (t_method)gatom_symbol);
+    class_addClick (c, (t_method)gatom_click);
         
     class_addMethod (c, (t_method)gatom_set,        sym_set,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)gatom_fromDialog, sym__gatomdialog,   A_GIMME, A_NULL);

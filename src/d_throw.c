@@ -110,7 +110,7 @@ void throw_tilde_setup (void)
         
     CLASS_SIGNAL (c, t_throw_tilde, x_f);
     
-    class_addDSP (c, throw_tilde_dsp);
+    class_addDSP (c, (t_method)throw_tilde_dsp);
     
     class_addMethod (c, (t_method)throw_tilde_set, sym_set, A_SYMBOL, A_NULL);
         

@@ -167,7 +167,7 @@ void threshold_tilde_setup (void)
             
     CLASS_SIGNAL (c, t_threshold_tilde, x_f);
     
-    class_addDSP (c, threshold_tilde_dsp);
+    class_addDSP (c, (t_method)threshold_tilde_dsp);
         
     class_addMethod (c, (t_method)threshold_tilde_state, sym_inlet2, A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)threshold_tilde_set,

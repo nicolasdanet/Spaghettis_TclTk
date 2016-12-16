@@ -84,7 +84,7 @@ void getsize_setup (void)
             A_DEFSYMBOL,
             A_NULL);
             
-    class_addPointer (c, getsize_pointer);
+    class_addPointer (c, (t_method)getsize_pointer);
     
     class_addMethod (c, (t_method)getsize_set, sym_set, A_SYMBOL, A_SYMBOL, A_NULL);
     

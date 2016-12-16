@@ -192,7 +192,7 @@ void poly_setup (void)
             A_DEFFLOAT,
             A_NULL);
         
-    class_addFloat (c, poly_float);
+    class_addFloat (c, (t_method)poly_float);
     
     class_addMethod (c, (t_method)poly_stop,    sym_stop,   A_NULL);
     class_addMethod (c, (t_method)poly_clear,   sym_clear,  A_NULL);

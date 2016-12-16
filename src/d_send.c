@@ -75,7 +75,7 @@ void send_tilde_setup (void)
     
     CLASS_SIGNAL (c, t_send_tilde, x_f);
     
-    class_addDSP (c, send_tilde_dsp);
+    class_addDSP (c, (t_method)send_tilde_dsp);
         
     send_tilde_class = c;
 }

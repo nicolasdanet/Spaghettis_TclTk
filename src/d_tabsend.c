@@ -135,7 +135,7 @@ void tabsend_tilde_setup (void)
     
     c = class_new (sym_tabsend__tilde__,
             (t_newmethod)tabsend_tilde_new,
-            tabsend_tilde_free,
+            (t_method)tabsend_tilde_free,
             sizeof (t_tabsend_tilde),
             CLASS_DEFAULT,
             A_DEFSYMBOL,
@@ -143,8 +143,8 @@ void tabsend_tilde_setup (void)
             
     CLASS_SIGNAL (c, t_tabsend_tilde, x_f);
     
-    class_addDSP (c, tabsend_tilde_dsp);
-    class_addPolling (c, tabsend_tilde_polling);
+    class_addDSP (c, (t_method)tabsend_tilde_dsp);
+    class_addPolling (c, (t_method)tabsend_tilde_polling);
     
     class_addMethod (c, (t_method)tabsend_tilde_set, sym_set, A_SYMBOL, A_NULL);
     

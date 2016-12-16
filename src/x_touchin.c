@@ -86,7 +86,7 @@ void touchin_setup (void)
             A_DEFFLOAT,
             A_NULL);
             
-    class_addList (c, touchin_list);
+    class_addList (c, (t_method)touchin_list);
     
     class_setHelpName (c, sym_midiout);
     

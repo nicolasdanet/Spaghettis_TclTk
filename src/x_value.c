@@ -123,8 +123,8 @@ void value_setup (void)
                                 
     class_addCreator ((t_newmethod)value_new, sym_v, A_DEFSYMBOL, A_NULL);
     
-    class_addBang (value_class, value_bang);
-    class_addFloat (value_class, value_float);
+    class_addBang (value_class, (t_method)value_bang);
+    class_addFloat (value_class, (t_method)value_float);
 }
 
 // -----------------------------------------------------------------------------------------------------------

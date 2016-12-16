@@ -80,7 +80,7 @@ void dbtopow_tilde_setup (void)
             
     CLASS_SIGNAL (c, t_dbtopow_tilde, x_f);
     
-    class_addDSP (c, dbtopow_tilde_dsp);
+    class_addDSP (c, (t_method)dbtopow_tilde_dsp);
     
     class_setHelpName (c, sym_mtof__tilde__);
     

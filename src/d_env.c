@@ -177,7 +177,7 @@ void env_tilde_setup (void)
             
     CLASS_SIGNAL (c, t_env_tilde, x_f);
     
-    class_addDSP (c, env_tilde_dsp);
+    class_addDSP (c, (t_method)env_tilde_dsp);
     
     env_tilde_class = c;
 }

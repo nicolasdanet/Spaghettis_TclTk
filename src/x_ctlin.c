@@ -90,7 +90,7 @@ void ctlin_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addList (c, ctlin_list);
+    class_addList (c, (t_method)ctlin_list);
     
     class_setHelpName (c, sym_midiout);
     

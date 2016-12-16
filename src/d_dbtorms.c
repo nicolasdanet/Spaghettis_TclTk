@@ -82,7 +82,7 @@ void dbtorms_tilde_setup (void)
         
     CLASS_SIGNAL (c, t_dbtorms_tilde, x_f);
     
-    class_addDSP (c, dbtorms_tilde_dsp);
+    class_addDSP (c, (t_method)dbtorms_tilde_dsp);
     
     class_setHelpName (c, sym_mtof__tilde__);
     

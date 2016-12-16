@@ -119,8 +119,8 @@ void guiconnect_setup (void)
             CLASS_NOBOX,
             A_NULL);
         
-    class_addAnything (c, guiconnect_anything);
-    class_addAutorelease (c, guiconnect_autorelease);
+    class_addAnything (c, (t_method)guiconnect_anything);
+    class_addAutorelease (c, (t_method)guiconnect_autorelease);
     
     class_addMethod (c, (t_method)guiconnect_signoff, sym__signoff, A_NULL);
     

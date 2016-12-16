@@ -97,7 +97,7 @@ void timer_setup (void)
             A_DEFSYMBOL,
             A_NULL);
             
-    class_addBang (c, timer_bang);
+    class_addBang (c, (t_method)timer_bang);
     
     class_addMethod (c, (t_method)timer_bangElapsed,    sym_inlet2, A_NULL);
     class_addMethod (c, (t_method)timer_unit,           sym_unit,   A_FLOAT, A_SYMBOL, A_NULL);

@@ -72,7 +72,7 @@ void arrayquantile_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addFloat (c, arrayquantile_float);
+    class_addFloat (c, (t_method)arrayquantile_float);
     
     class_setHelpName (c, sym_array);
     

@@ -98,7 +98,7 @@ void element_setup (void)
             A_DEFSYMBOL,
             A_NULL);
             
-    class_addFloat (c, element_float);
+    class_addFloat (c, (t_method)element_float);
      
     class_addMethod (c, (t_method)element_set, sym_set, A_SYMBOL, A_SYMBOL, A_NULL); 
     

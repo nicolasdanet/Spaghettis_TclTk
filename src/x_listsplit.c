@@ -87,8 +87,8 @@ void listsplit_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addList (c, listsplit_list);
-    class_addAnything (c, listsplit_anything);
+    class_addList (c, (t_method)listsplit_list);
+    class_addAnything (c, (t_method)listsplit_anything);
     
     class_setHelpName (c, &s_list);
     

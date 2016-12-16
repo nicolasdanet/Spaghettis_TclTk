@@ -134,7 +134,7 @@ void cos_tilde_setup (void)
             
     CLASS_SIGNAL (c, t_cos_tilde, x_f);
     
-    class_addDSP (c, cos_tilde_dsp);
+    class_addDSP (c, (t_method)cos_tilde_dsp);
     
     cos_tilde_initialize();
     

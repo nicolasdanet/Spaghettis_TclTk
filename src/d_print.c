@@ -167,9 +167,9 @@ void print_tilde_setup (void)
             
     CLASS_SIGNAL (c, t_print_tilde, x_f);
     
-    class_addDSP (c, print_tilde_dsp);
-    class_addBang (c, print_tilde_bang);
-    class_addPolling (c, print_tilde_polling);
+    class_addDSP (c, (t_method)print_tilde_dsp);
+    class_addBang (c, (t_method)print_tilde_bang);
+    class_addPolling (c, (t_method)print_tilde_polling);
     
     class_addMethod (c, (t_method)print_tilde_count, sym_count, A_FLOAT, A_NULL);
     

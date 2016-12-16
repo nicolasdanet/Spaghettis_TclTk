@@ -169,7 +169,7 @@ void rsqrt_tilde_setup (void)
             
     CLASS_SIGNAL (c, t_rsqrt_tilde, x_f);
     
-    class_addDSP (c, rsqrt_tilde_dsp);
+    class_addDSP (c, (t_method)rsqrt_tilde_dsp);
     
     #if PD_WITH_LEGACY
     

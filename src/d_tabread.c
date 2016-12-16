@@ -114,7 +114,7 @@ void tabread_tilde_setup (void)
         
     CLASS_SIGNAL (c, t_tabread_tilde, x_f);
     
-    class_addDSP (c, tabread_tilde_dsp);
+    class_addDSP (c, (t_method)tabread_tilde_dsp);
     
     class_addMethod (c, (t_method)tabread_tilde_set, sym_set, A_SYMBOL, A_NULL);
     

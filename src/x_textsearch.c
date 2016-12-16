@@ -243,7 +243,8 @@ void textsearch_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addList (c, textsearch_list);
+    class_addList (c, (t_method)textsearch_list);
+    
     class_setHelpName (c, sym_text);
     
     textsearch_class = c;

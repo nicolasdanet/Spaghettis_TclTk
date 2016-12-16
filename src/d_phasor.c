@@ -117,7 +117,7 @@ void phasor_tilde_setup (void)
             
     CLASS_SIGNAL (c, t_phasor_tilde, x_f);
     
-    class_addDSP (c, phasor_tilde_dsp);
+    class_addDSP (c, (t_method)phasor_tilde_dsp);
     
     class_addMethod (c, (t_method)phasor_tilde_phase, sym_inlet2, A_FLOAT, A_NULL);
     

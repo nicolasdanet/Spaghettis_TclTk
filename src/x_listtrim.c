@@ -73,8 +73,8 @@ void listtrim_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addList (c, listtrim_list);
-    class_addAnything (c, listtrim_anything);
+    class_addList (c, (t_method)listtrim_list);
+    class_addAnything (c, (t_method)listtrim_anything);
     
     class_setHelpName (c, &s_list);
     

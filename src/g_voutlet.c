@@ -127,13 +127,13 @@ void voutlet_setup (void)
             
     class_addCreator ((t_newmethod)voutlet_newSignal, sym_outlet__tilde__, A_DEFSYMBOL, A_NULL);
     
-    class_addDSP (c, voutlet_dsp);
-    class_addBang (c, voutlet_bang);
-    class_addFloat (c, voutlet_float);
-    class_addSymbol (c, voutlet_symbol);
-    class_addPointer (c, voutlet_pointer);
-    class_addList (c, voutlet_list);
-    class_addAnything (c, voutlet_anything);
+    class_addDSP (c, (t_method)voutlet_dsp);
+    class_addBang (c, (t_method)voutlet_bang);
+    class_addFloat (c, (t_method)voutlet_float);
+    class_addSymbol (c, (t_method)voutlet_symbol);
+    class_addPointer (c, (t_method)voutlet_pointer);
+    class_addList (c, (t_method)voutlet_list);
+    class_addAnything (c, (t_method)voutlet_anything);
     
     class_setHelpName (c, sym_pd);
     

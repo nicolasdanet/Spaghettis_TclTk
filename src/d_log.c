@@ -95,7 +95,7 @@ void log_tilde_setup (void)
             
     CLASS_SIGNAL (c, t_log_tilde, x_f);
     
-    class_addDSP (c, log_tilde_dsp);
+    class_addDSP (c, (t_method)log_tilde_dsp);
     
     log_tilde_class = c;
 }

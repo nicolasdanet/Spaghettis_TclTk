@@ -93,7 +93,7 @@ void polytouchin_setup (void)
             A_DEFFLOAT,
             A_NULL);
             
-    class_addList (c, polytouchin_list);
+    class_addList (c, (t_method)polytouchin_list);
     
     class_setHelpName (c, sym_midiout);
     

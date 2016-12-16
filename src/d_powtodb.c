@@ -80,7 +80,7 @@ void powtodb_tilde_setup (void)
             
     CLASS_SIGNAL (c, t_powtodb_tilde, x_f);
     
-    class_addDSP (c, powtodb_tilde_dsp);
+    class_addDSP (c, (t_method)powtodb_tilde_dsp);
     
     class_setHelpName (c, sym_mtof__tilde__);
     

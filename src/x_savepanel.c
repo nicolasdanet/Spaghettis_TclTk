@@ -81,8 +81,8 @@ void savepanel_setup (void)
             CLASS_DEFAULT,
             A_NULL);
             
-    class_addBang (c, savepanel_bang);
-    class_addSymbol (c, savepanel_symbol);
+    class_addBang (c, (t_method)savepanel_bang);
+    class_addSymbol (c, (t_method)savepanel_symbol);
     
     class_addMethod (c, (t_method)savepanel_callback, sym_callback, A_SYMBOL, A_NULL);
     

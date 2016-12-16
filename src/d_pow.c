@@ -94,7 +94,7 @@ void pow_tilde_setup (void)
             
     CLASS_SIGNAL (c, t_pow_tilde, x_f);
     
-    class_addDSP (c, pow_tilde_dsp);
+    class_addDSP (c, (t_method)pow_tilde_dsp);
     
     pow_tilde_class = c;
 }

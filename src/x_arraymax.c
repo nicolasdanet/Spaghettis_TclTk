@@ -95,8 +95,8 @@ void arraymax_setup (void)
             A_GIMME,
             A_NULL);
     
-    class_addBang (c, arraymax_bang);
-    class_addFloat (c, arraymax_float);
+    class_addBang (c, (t_method)arraymax_bang);
+    class_addFloat (c, (t_method)arraymax_float);
 
     class_setHelpName (c, sym_array);
     

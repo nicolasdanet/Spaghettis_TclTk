@@ -73,7 +73,7 @@ void keyname_setup (void)
             CLASS_DEFAULT | CLASS_NOINLET,
             A_NULL);
             
-    class_addList (c, keyname_list);
+    class_addList (c, (t_method)keyname_list);
 
     class_setHelpName (c, sym_key);
     

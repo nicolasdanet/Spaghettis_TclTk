@@ -871,12 +871,12 @@ void canvas_setup (void)
 
     class_addCreator ((t_newmethod)subpatch_new, sym_pd, A_DEFSYMBOL, A_NULL);
     
-    class_addDSP (c, canvas_dsp);
-    class_addKey (c, canvas_key);
-    class_addClick (c, canvas_click);
-    class_addMotion (c, canvas_motion);
-    class_addMouse (c, canvas_mouse);
-    class_addMouseUp (c, canvas_mouseUp);
+    class_addDSP (c, (t_method)canvas_dsp);
+    class_addKey (c, (t_method)canvas_key);
+    class_addClick (c, (t_method)canvas_click);
+    class_addMotion (c, (t_method)canvas_motion);
+    class_addMouse (c, (t_method)canvas_mouse);
+    class_addMouseUp (c, (t_method)canvas_mouseUp);
 
     class_addMethod (c, (t_method)canvas_window,
         sym_window,

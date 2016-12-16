@@ -137,7 +137,8 @@ void textget_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addFloat (c, textget_float);
+    class_addFloat (c, (t_method)textget_float);
+    
     class_setHelpName (c, sym_text);
     
     textget_class = c;

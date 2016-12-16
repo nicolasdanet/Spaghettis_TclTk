@@ -98,8 +98,8 @@ void arrayrandom_setup (void)
             A_GIMME,
             A_NULL);
     
-    class_addBang (c, arrayrandom_bang);
-    class_addFloat (c, arrayrandom_float);
+    class_addBang (c, (t_method)arrayrandom_bang);
+    class_addFloat (c, (t_method)arrayrandom_float);
     
     class_addMethod (c, (t_method)arrayrandom_seed, sym_seed, A_FLOAT, A_NULL);
 

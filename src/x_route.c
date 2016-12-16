@@ -214,8 +214,8 @@ void route_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addList (c, route_list);
-    class_addAnything (c, route_anything);
+    class_addList (c, (t_method)route_list);
+    class_addAnything (c, (t_method)route_anything);
     
     route_class = c;
 }

@@ -82,7 +82,7 @@ void abs_tilde_setup (void)
             
     CLASS_SIGNAL (c, t_abs_tilde, x_f);
     
-    class_addDSP (c, abs_tilde_dsp);
+    class_addDSP (c, (t_method)abs_tilde_dsp);
     
     abs_tilde_class = c;
 }

@@ -85,8 +85,8 @@ void arraysum_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addBang (c, arraysum_bang);
-    class_addFloat (c, arraysum_float);
+    class_addBang (c, (t_method)arraysum_bang);
+    class_addFloat (c, (t_method)arraysum_float);
     
     class_setHelpName (c, sym_array);
     

@@ -91,8 +91,8 @@ void arrayget_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addBang (c, arrayget_bang);
-    class_addFloat (c, arrayget_float);
+    class_addBang (c, (t_method)arrayget_bang);
+    class_addFloat (c, (t_method)arrayget_float);
     
     class_setHelpName (c, sym_array);
     

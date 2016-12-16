@@ -81,8 +81,8 @@ void clip_setup (void)
             A_DEFFLOAT,
             A_NULL);
             
-    class_addBang (c, clip_bang);
-    class_addFloat (c, clip_float); 
+    class_addBang (c, (t_method)clip_bang);
+    class_addFloat (c, (t_method)clip_float); 
     
     clip_class = c;
 }

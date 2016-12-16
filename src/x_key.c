@@ -70,7 +70,7 @@ void key_setup (void)
             CLASS_DEFAULT | CLASS_NOINLET,
             A_NULL);
         
-    class_addFloat (c, key_float);
+    class_addFloat (c, (t_method)key_float);
     
     key_class = c;
 }

@@ -104,8 +104,8 @@ void listprepend_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addList (c, listprepend_list);
-    class_addAnything (c, listprepend_anything);
+    class_addList (c, (t_method)listprepend_list);
+    class_addAnything (c, (t_method)listprepend_anything);
     
     class_setHelpName (c, &s_list);
     

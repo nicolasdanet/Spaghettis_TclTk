@@ -100,12 +100,12 @@ void receive_setup (void)
             
     class_addCreator ((t_newmethod)receive_new, sym_r, A_DEFSYMBOL, A_NULL);
     
-    class_addBang (c, receive_bang);
-    class_addFloat (c, receive_float);
-    class_addSymbol (c, receive_symbol);
-    class_addPointer (c, receive_pointer);
-    class_addList (c, receive_list);
-    class_addAnything (c, receive_anything);
+    class_addBang (c, (t_method)receive_bang);
+    class_addFloat (c, (t_method)receive_float);
+    class_addSymbol (c, (t_method)receive_symbol);
+    class_addPointer (c, (t_method)receive_pointer);
+    class_addList (c, (t_method)receive_list);
+    class_addAnything (c, (t_method)receive_anything);
     
     receive_class = c;
 }

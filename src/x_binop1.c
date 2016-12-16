@@ -235,13 +235,13 @@ void binop1_setup (void)
                             A_DEFFLOAT,
                             A_NULL);
 
-    class_addBang (binopAdd_class,          binopAdd_bang);
-    class_addBang (binopSubtract_class,     binopSubtract_bang);
-    class_addBang (binopMultiply_class,     binopMultiply_bang);
-    class_addBang (binopDivide_class,       binopDivide_bang);
-    class_addBang (binopPower_class,        binopPower_bang);
-    class_addBang (binopMaximum_class,      binopMaximum_bang);
-    class_addBang (binopMinimum_class,      binopMinimum_bang);
+    class_addBang (binopAdd_class,          (t_method)binopAdd_bang);
+    class_addBang (binopSubtract_class,     (t_method)binopSubtract_bang);
+    class_addBang (binopMultiply_class,     (t_method)binopMultiply_bang);
+    class_addBang (binopDivide_class,       (t_method)binopDivide_bang);
+    class_addBang (binopPower_class,        (t_method)binopPower_bang);
+    class_addBang (binopMaximum_class,      (t_method)binopMaximum_bang);
+    class_addBang (binopMinimum_class,      (t_method)binopMinimum_bang);
         
     class_addFloat (binopAdd_class,         (t_method)binopAdd_float);
     class_addFloat (binopSubtract_class,    (t_method)binopSubtract_float);

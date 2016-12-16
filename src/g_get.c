@@ -110,7 +110,7 @@ void get_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addPointer (c, get_pointer); 
+    class_addPointer (c, (t_method)get_pointer); 
     
     class_addMethod (c, (t_method)get_set, sym_set, A_SYMBOL, A_SYMBOL, A_NULL); 
     

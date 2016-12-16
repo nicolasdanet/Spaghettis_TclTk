@@ -115,8 +115,8 @@ void add_tilde_setup (void)
     CLASS_SIGNAL (add_tilde_class, t_add_tilde, x_f);
     CLASS_SIGNAL (addScalar_tilde_class, t_addscalar_tilde, x_f);
             
-    class_addDSP (add_tilde_class, add_tilde_dsp);
-    class_addDSP (addScalar_tilde_class, addScalar_tilde_dsp);
+    class_addDSP (add_tilde_class, (t_method)add_tilde_dsp);
+    class_addDSP (addScalar_tilde_class, (t_method)addScalar_tilde_dsp);
     
     class_setHelpName (add_tilde_class, sym_max__tilde__);
     class_setHelpName (addScalar_tilde_class, sym_max__tilde__);

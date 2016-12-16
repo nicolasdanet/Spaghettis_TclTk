@@ -826,11 +826,11 @@ void dial_setup (void)
             A_GIMME,
             A_NULL);
         
-    class_addBang (c, dial_bang);
-    class_addFloat (c, dial_float);
-    class_addList (c, dial_list);
-    class_addClick (c, dial_click);
-    class_addMotion (c, dial_motion);
+    class_addBang (c, (t_method)dial_bang);
+    class_addFloat (c, (t_method)dial_float);
+    class_addList (c, (t_method)dial_list);
+    class_addClick (c, (t_method)dial_click);
+    class_addMotion (c, (t_method)dial_motion);
 
     class_addMethod (c, (t_method)dial_loadbang,            sym_loadbang,           A_NULL);
     class_addMethod (c, (t_method)dial_initialize,          sym_initialize,         A_FLOAT, A_NULL);

@@ -100,7 +100,7 @@ void random_setup (void)
             A_DEFFLOAT,
             A_NULL);
             
-    class_addBang (c, random_bang);
+    class_addBang (c, (t_method)random_bang);
     
     class_addMethod (c, (t_method)random_seed, sym_seed, A_FLOAT, A_NULL);
     

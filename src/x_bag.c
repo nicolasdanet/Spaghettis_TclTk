@@ -147,7 +147,7 @@ void bag_setup (void)
             CLASS_DEFAULT,
             A_NULL);
             
-    class_addFloat (c, bag_float);
+    class_addFloat (c, (t_method)bag_float);
     
     class_addMethod (c, (t_method)bag_flush,    sym_flush,  A_NULL);
     class_addMethod (c, (t_method)bag_clear,    sym_clear,  A_NULL);

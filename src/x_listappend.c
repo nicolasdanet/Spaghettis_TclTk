@@ -104,8 +104,8 @@ void listappend_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addList (c, listappend_list);
-    class_addAnything (c, listappend_anything);
+    class_addList (c, (t_method)listappend_list);
+    class_addAnything (c, (t_method)listappend_anything);
     
     class_setHelpName (c, &s_list);
     

@@ -75,7 +75,7 @@ void listfromsymbol_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addSymbol (c, listfromsymbol_symbol);
+    class_addSymbol (c, (t_method)listfromsymbol_symbol);
     
     class_setHelpName (c, &s_list);
     

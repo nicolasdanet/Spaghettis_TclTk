@@ -106,7 +106,7 @@ void sqrt_tilde_setup (void)
     
     CLASS_SIGNAL (c, t_sqrt_tilde, x_f);
     
-    class_addDSP (c, sqrt_tilde_dsp);
+    class_addDSP (c, (t_method)sqrt_tilde_dsp);
     
     #if PD_WITH_LEGACY
     

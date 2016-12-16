@@ -170,7 +170,7 @@ void line_setup (void)
             A_DEFFLOAT,
             A_NULL);
         
-    class_addFloat (c, line_float);
+    class_addFloat (c, (t_method)line_float);
         
     class_addMethod (c, (t_method)line_floatRamp,   sym_inlet2, A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)line_floatGrain,  sym_inlet3, A_FLOAT, A_NULL);

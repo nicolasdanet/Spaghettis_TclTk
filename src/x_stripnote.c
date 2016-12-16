@@ -71,7 +71,7 @@ void stripnote_setup (void)
             CLASS_DEFAULT,
             A_NULL);
             
-    class_addFloat (c, stripnote_float);
+    class_addFloat (c, (t_method)stripnote_float);
     
     stripnote_class = c;
 }

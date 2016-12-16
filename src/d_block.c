@@ -251,8 +251,8 @@ void block_tilde_setup (void)
             A_DEFFLOAT,
             A_NULL);
             
-    class_addDSP (c, block_dsp);
-    class_addFloat (c, block_float);
+    class_addDSP (c, (t_method)block_dsp);
+    class_addFloat (c, (t_method)block_float);
     
     class_addMethod (c, (t_method)block_set, sym_set, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, A_NULL);
     

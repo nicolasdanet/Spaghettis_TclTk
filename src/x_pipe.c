@@ -235,7 +235,7 @@ void pipe_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addList (c, pipe_list);
+    class_addList (c, (t_method)pipe_list);
     
     class_addMethod (c, (t_method)pipe_flush,   sym_flush,  A_NULL);
     class_addMethod (c, (t_method)pipe_clear,   sym_clear,  A_NULL);

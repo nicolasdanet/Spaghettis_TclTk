@@ -184,7 +184,7 @@ void vcf_tilde_setup (void)
             
     CLASS_SIGNAL (c, t_vcf_tilde, x_f);
     
-    class_addDSP (c, vcf_tilde_dsp);
+    class_addDSP (c, (t_method)vcf_tilde_dsp);
     
     class_addMethod (c, (t_method)vcf_tilde_qFactor, sym_inlet2, A_FLOAT, A_NULL);
         

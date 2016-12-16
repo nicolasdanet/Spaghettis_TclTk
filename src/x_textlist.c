@@ -133,7 +133,7 @@ void textlist_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addBang (c, texttolist_bang);
+    class_addBang (c, (t_method)texttolist_bang);
     class_setHelpName (c, sym_text);
 
     texttolist_class = c;
@@ -146,7 +146,8 @@ void textlist_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addList (c, textfromlist_list);
+    class_addList (c, (t_method)textfromlist_list);
+    
     class_setHelpName (c, sym_text);
     
     textfromlist_class = c;

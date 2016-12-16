@@ -145,7 +145,7 @@ void textset_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addList (c, textset_list);
+    class_addList (c, (t_method)textset_list);
     
     class_setHelpName (c, sym_text);
     

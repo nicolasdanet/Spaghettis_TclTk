@@ -73,7 +73,7 @@ void moses_setup (void)
             A_DEFFLOAT,
             A_NULL);
         
-    class_addFloat (c, moses_float);
+    class_addFloat (c, (t_method)moses_float);
     
     moses_class = c;
 }

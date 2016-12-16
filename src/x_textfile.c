@@ -82,9 +82,8 @@ void textfile_setup (void)
             CLASS_DEFAULT,
             A_NULL);
     
-    class_addBang (c, textfile_bang);
-    
-    class_addClick (c, textbuffer_click);
+    class_addBang (c, (t_method)textfile_bang);
+    class_addClick (c, (t_method)textbuffer_click);
         
     class_addMethod (c, (t_method)textfile_rewind,      sym_rewind,     A_NULL);
     

@@ -356,8 +356,8 @@ void oscformat_setup (void)
             A_GIMME,
             A_NULL);
         
-    class_addList (c, oscformat_list);
-    class_addAnything (c, oscformat_anything);
+    class_addList (c, (t_method)oscformat_list);
+    class_addAnything (c, (t_method)oscformat_anything);
     
     class_addMethod (c, (t_method)oscformat_set,    sym_set,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)oscformat_format, sym_format, A_DEFSYMBOL, A_NULL);

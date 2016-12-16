@@ -181,10 +181,10 @@ void select_setup (void)
     class_addCreator ((t_newmethod)select_new, sym_select,  A_GIMME, A_NULL);
     class_addCreator ((t_newmethod)select_new, sym_sel,     A_GIMME, A_NULL);
     
-    class_addFloat (select1_class,  select1_float);
-    class_addFloat (select2_class,  select2_float);
-    class_addSymbol (select1_class, select1_symbol);
-    class_addSymbol (select2_class, select2_symbol);
+    class_addFloat (select1_class,  (t_method)select1_float);
+    class_addFloat (select2_class,  (t_method)select2_float);
+    class_addSymbol (select1_class, (t_method)select1_symbol);
+    class_addSymbol (select2_class, (t_method)select2_symbol);
 }
 
 // -----------------------------------------------------------------------------------------------------------

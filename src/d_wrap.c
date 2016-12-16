@@ -86,7 +86,7 @@ void wrap_tilde_setup (void)
         
     CLASS_SIGNAL (c, t_wrap_tilde, x_f);
     
-    class_addDSP (c, wrap_tilde_dsp);
+    class_addDSP (c, (t_method)wrap_tilde_dsp);
     
     wrap_tilde_class = c;
 }

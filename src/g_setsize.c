@@ -92,7 +92,7 @@ void setsize_setup (void)
             A_DEFSYMBOL,
             A_NULL);
             
-    class_addFloat (c, setsize_float);
+    class_addFloat (c, (t_method)setsize_float);
     
     class_addMethod (c, (t_method)setsize_set, sym_set, A_SYMBOL, A_SYMBOL, A_NULL); 
     

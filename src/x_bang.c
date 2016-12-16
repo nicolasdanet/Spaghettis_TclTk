@@ -78,11 +78,11 @@ void bang_setup (void)
             
     class_addCreator ((t_newmethod)bang_newByRegular, sym_b, A_NULL);
     
-    class_addBang (c, bang_bang);
-    class_addFloat (c, bang_bang);
-    class_addSymbol (c, bang_bang);
-    class_addList (c, bang_bang);
-    class_addAnything (c, bang_bang);
+    class_addBang (c, (t_method)bang_bang);
+    class_addFloat (c, (t_method)bang_bang);
+    class_addSymbol (c, (t_method)bang_bang);
+    class_addList (c, (t_method)bang_bang);
+    class_addAnything (c, (t_method)bang_bang);
     
     bang_class = c;
 }

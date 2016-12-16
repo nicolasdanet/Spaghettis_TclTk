@@ -105,12 +105,12 @@ void print_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addBang (c, print_bang);
-    class_addFloat (c, print_float);
-    class_addSymbol (c, print_symbol);
-    class_addPointer (c, print_pointer);
-    class_addList (c, print_list);
-    class_addAnything (c, print_anything);
+    class_addBang (c, (t_method)print_bang);
+    class_addFloat (c, (t_method)print_float);
+    class_addSymbol (c, (t_method)print_symbol);
+    class_addPointer (c, (t_method)print_pointer);
+    class_addList (c, (t_method)print_list);
+    class_addAnything (c, (t_method)print_anything);
     
     print_class = c;
 }

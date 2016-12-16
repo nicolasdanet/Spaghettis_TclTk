@@ -159,7 +159,7 @@ void delwrite_tilde_setup (void)
             
     CLASS_SIGNAL (c, t_delwrite_tilde, dw_f);
     
-    class_addDSP (c, delwrite_tilde_dsp);
+    class_addDSP (c, (t_method)delwrite_tilde_dsp);
     
     delwrite_tilde_class = c;
 }

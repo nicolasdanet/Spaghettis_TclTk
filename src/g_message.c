@@ -263,13 +263,13 @@ void message_setup (void)
             CLASS_DEFAULT,
             A_NULL);
     
-    class_addBang (c, message_bang);
-    class_addFloat (c, message_float);
-    class_addSymbol (c, message_symbol);
-    class_addList (c, message_list);
-    class_addAnything (c, message_list);
+    class_addBang (c, (t_method)message_bang);
+    class_addFloat (c, (t_method)message_float);
+    class_addSymbol (c, (t_method)message_symbol);
+    class_addList (c, (t_method)message_list);
+    class_addAnything (c, (t_method)message_list);
 
-    class_addClick (c, message_click);
+    class_addClick (c, (t_method)message_click);
         
     class_addMethod (c, (t_method)message_set,              sym_set,                A_GIMME, A_NULL);
     class_addMethod (c, (t_method)message_add,              sym_add,                A_GIMME, A_NULL);
@@ -296,11 +296,11 @@ void message_setup (void)
             CLASS_ABSTRACT,
             A_NULL);
             
-    class_addBang (c, messageresponder_bang);
-    class_addFloat (c, messageresponder_float);
-    class_addSymbol (c, messageresponder_symbol);
-    class_addList (c, messageresponder_list);
-    class_addAnything (c, messageresponder_anything);
+    class_addBang (c, (t_method)messageresponder_bang);
+    class_addFloat (c, (t_method)messageresponder_float);
+    class_addSymbol (c, (t_method)messageresponder_symbol);
+    class_addList (c, (t_method)messageresponder_list);
+    class_addAnything (c, (t_method)messageresponder_anything);
     
     messageresponder_class = c;
 }

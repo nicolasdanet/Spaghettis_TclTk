@@ -160,8 +160,8 @@ void listinlet_setup (void)
             CLASS_ABSTRACT,
             A_NULL);
 
-    class_addList (c, listinlet_list);
-    class_addAnything (c, listinlet_anything);
+    class_addList (c, (t_method)listinlet_list);
+    class_addAnything (c, (t_method)listinlet_anything);
     
     listinlet_class = c;
 }

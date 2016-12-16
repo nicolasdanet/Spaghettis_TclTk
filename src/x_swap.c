@@ -80,8 +80,8 @@ void swap_setup (void)
 
     class_addCreator ((t_newmethod)swap_new, sym_fswap, A_DEFFLOAT, A_NULL);
     
-    class_addBang (c, swap_bang);
-    class_addFloat (c, swap_float);
+    class_addBang (c, (t_method)swap_bang);
+    class_addFloat (c, (t_method)swap_float);
     
     swap_class = c;
 }

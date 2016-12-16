@@ -87,9 +87,9 @@ void symbol_setup (void)
             A_SYMBOL,
             A_NULL);
             
-    class_addBang (c, symbol_bang);
-    class_addSymbol (c, symbol_symbol);
-    class_addAnything (c, symbol_anything);
+    class_addBang (c, (t_method)symbol_bang);
+    class_addSymbol (c, (t_method)symbol_symbol);
+    class_addAnything (c, (t_method)symbol_anything);
     
     symbol_class = c;
 }

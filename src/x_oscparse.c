@@ -436,7 +436,7 @@ void oscparse_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addList (c, oscparse_list);
+    class_addList (c, (t_method)oscparse_list);
     
     oscparse_class = c;
 }

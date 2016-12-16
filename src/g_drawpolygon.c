@@ -418,7 +418,7 @@ void drawpolygon_setup (void)
     class_addCreator ((t_newmethod)drawpolygon_new, sym_filledpolygon,  A_GIMME, A_NULL);
     class_addCreator ((t_newmethod)drawpolygon_new, sym_filledcurve,    A_GIMME, A_NULL);
     
-    class_addFloat (c, drawpolygon_float);
+    class_addFloat (c, (t_method)drawpolygon_float);
         
     class_setPainterWidgetBehavior (c, &drawpolygon_widgetBehavior);
     

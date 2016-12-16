@@ -112,8 +112,8 @@ void arraysize_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addBang (c, arraysize_bang);
-    class_addFloat (c, arraysize_float);
+    class_addBang (c, (t_method)arraysize_bang);
+    class_addFloat (c, (t_method)arraysize_float);
     
     class_setHelpName (c, sym_array);
     

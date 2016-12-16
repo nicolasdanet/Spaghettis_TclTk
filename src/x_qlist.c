@@ -269,9 +269,8 @@ void qlist_setup (void)
             CLASS_DEFAULT,
             A_NULL);
     
-    class_addBang (c, qlist_bang);
-    
-    class_addClick (c, textbuffer_click);
+    class_addBang (c, (t_method)qlist_bang);
+    class_addClick (c, (t_method)textbuffer_click);
         
     class_addMethod (c, (t_method)qlist_rewind,         sym_rewind,     A_NULL);
     class_addMethod (c, (t_method)qlist_clear,          sym_clear,      A_NULL);

@@ -95,8 +95,8 @@ void float_setup (void)
             
     class_addCreator ((t_newmethod)float_newByRegular, sym_f, A_DEFFLOAT, A_NULL);
     
-    class_addBang (c, float_bang);
-    class_addFloat (c, float_float);
+    class_addBang (c, (t_method)float_bang);
+    class_addFloat (c, (t_method)float_float);
     
     class_addMethod (c, (t_method)float_send, sym_send, A_SYMBOL, A_NULL);
 

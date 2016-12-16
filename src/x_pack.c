@@ -141,12 +141,12 @@ void pack_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addBang (c, pack_bang);
-    class_addFloat (c, pack_float);
-    class_addSymbol (c, pack_symbol);
-    class_addPointer (c, pack_pointer);
-    class_addList (c, pack_list);
-    class_addAnything (c, pack_anything);
+    class_addBang (c, (t_method)pack_bang);
+    class_addFloat (c, (t_method)pack_float);
+    class_addSymbol (c, (t_method)pack_symbol);
+    class_addPointer (c, (t_method)pack_pointer);
+    class_addList (c, (t_method)pack_list);
+    class_addAnything (c, (t_method)pack_anything);
     
     pack_class = c;
 }

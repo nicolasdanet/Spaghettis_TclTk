@@ -70,7 +70,7 @@ void keyup_setup (void)
             CLASS_DEFAULT | CLASS_NOINLET,
             A_NULL);
         
-    class_addFloat (c, keyup_float);
+    class_addFloat (c, (t_method)keyup_float);
 
     class_setHelpName (c, sym_key);
     

@@ -82,7 +82,7 @@ void mtof_tilde_setup (void)
         
     CLASS_SIGNAL (c, t_mtof_tilde, x_f);
     
-    class_addDSP (c, mtof_tilde_dsp);
+    class_addDSP (c, (t_method)mtof_tilde_dsp);
     
     mtof_tilde_class = c;
 }

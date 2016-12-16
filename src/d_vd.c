@@ -132,7 +132,7 @@ void vd_tilde_setup (void)
     
     CLASS_SIGNAL (c, t_vd_tilde, x_f);
     
-    class_addDSP (c, vd_tilde_dsp);
+    class_addDSP (c, (t_method)vd_tilde_dsp);
     
     vd_tilde_class = c;
 }

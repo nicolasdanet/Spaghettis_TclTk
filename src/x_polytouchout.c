@@ -70,7 +70,7 @@ void polytouchout_setup (void)
             A_DEFFLOAT,
             A_NULL);
             
-    class_addFloat (c, polytouchout_float);
+    class_addFloat (c, (t_method)polytouchout_float);
     
     class_setHelpName (c, sym_midiout);
     

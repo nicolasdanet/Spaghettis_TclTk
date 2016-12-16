@@ -153,9 +153,9 @@ void tabplay_tilde_setup (void)
             A_DEFSYMBOL,
             A_NULL);
             
-    class_addDSP (c, tabplay_tilde_dsp);
+    class_addDSP (c, (t_method)tabplay_tilde_dsp);
     
-    class_addList (c, tabplay_tilde_list);
+    class_addList (c, (t_method)tabplay_tilde_list);
         
     class_addMethod (c, (t_method)tabplay_tilde_set,    sym_set,    A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)tabplay_tilde_stop,   sym_stop,   A_NULL);

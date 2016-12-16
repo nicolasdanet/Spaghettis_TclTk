@@ -151,12 +151,12 @@ void trigger_setup (void)
             
     class_addCreator ((t_newmethod)trigger_new, sym_t, A_GIMME, A_NULL);
     
-    class_addBang (c, trigger_bang);
-    class_addFloat (c, trigger_float);
-    class_addSymbol (c, trigger_symbol);
-    class_addPointer (c, trigger_pointer);
-    class_addList (c, trigger_list);
-    class_addAnything (c, trigger_anything);
+    class_addBang (c, (t_method)trigger_bang);
+    class_addFloat (c, (t_method)trigger_float);
+    class_addSymbol (c, (t_method)trigger_symbol);
+    class_addPointer (c, (t_method)trigger_pointer);
+    class_addList (c, (t_method)trigger_list);
+    class_addAnything (c, (t_method)trigger_anything);
     
     trigger_class = c;
 }

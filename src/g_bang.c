@@ -565,13 +565,13 @@ void bng_setup (void)
             A_GIMME, 
             A_NULL);
     
-    class_addBang (c, bng_bang);
-    class_addFloat (c, bng_float);
-    class_addSymbol (c, bng_symbol);
-    class_addPointer (c, bng_pointer);
-    class_addList (c, bng_list);
-    class_addAnything (c, bng_anything);
-    class_addClick (c, bng_click);
+    class_addBang (c, (t_method)bng_bang);
+    class_addFloat (c, (t_method)bng_float);
+    class_addSymbol (c, (t_method)bng_symbol);
+    class_addPointer (c, (t_method)bng_pointer);
+    class_addList (c, (t_method)bng_list);
+    class_addAnything (c, (t_method)bng_anything);
+    class_addClick (c, (t_method)bng_click);
     
     class_addMethod (c, (t_method)bng_loadbang,             sym_loadbang,           A_NULL);
     class_addMethod (c, (t_method)bng_initialize,           sym_initialize,         A_FLOAT, A_NULL);

@@ -92,7 +92,7 @@ void bang_tilde_setup (void)
             CLASS_DEFAULT,
             A_NULL);
             
-    class_addDSP (c, bang_tilde_dsp);
+    class_addDSP (c, (t_method)bang_tilde_dsp);
     
     bang_tilde_class = c;
 }

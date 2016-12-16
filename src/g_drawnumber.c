@@ -316,7 +316,7 @@ void drawnumber_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addFloat (c, drawnumber_float);
+    class_addFloat (c, (t_method)drawnumber_float);
     
     class_addCreator ((t_newmethod)drawnumber_new, sym_drawsymbol, A_GIMME, A_NULL);
     class_addCreator ((t_newmethod)drawnumber_new, sym_drawnumber, A_GIMME, A_NULL);

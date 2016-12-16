@@ -159,7 +159,7 @@ void delread_tilde_setup (void)
             A_DEFFLOAT,
             A_NULL);
             
-    class_addDSP (c, delread_tilde_dsp);
+    class_addDSP (c, (t_method)delread_tilde_dsp);
     
     class_addFloat (c, (t_method)delread_tilde_float);
     

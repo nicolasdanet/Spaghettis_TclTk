@@ -102,8 +102,8 @@ void textsize_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addBang (c, textsize_bang);
-    class_addFloat (c, textsize_float);
+    class_addBang (c, (t_method)textsize_bang);
+    class_addFloat (c, (t_method)textsize_float);
     
     class_setHelpName (c, sym_text);
     

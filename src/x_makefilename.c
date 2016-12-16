@@ -165,8 +165,8 @@ void makefilename_setup (void)
             A_DEFSYMBOL,
             A_NULL);
             
-    class_addFloat (c, makefilename_float);
-    class_addSymbol (c, makefilename_symbol);
+    class_addFloat (c, (t_method)makefilename_float);
+    class_addSymbol (c, (t_method)makefilename_symbol);
     
     class_addMethod (c, (t_method)makefilename_set, sym_set, A_SYMBOL, A_NULL);
     

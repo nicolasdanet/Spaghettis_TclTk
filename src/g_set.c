@@ -179,9 +179,9 @@ void set_setup (void)
             A_GIMME,
             A_NULL);
     
-    class_addBang (c, set_bang); 
-    class_addFloat (c, set_float); 
-    class_addSymbol (c, set_symbol); 
+    class_addBang (c, (t_method)set_bang); 
+    class_addFloat (c, (t_method)set_float); 
+    class_addSymbol (c, (t_method)set_symbol); 
 
     class_addMethod (c, (t_method)set_set, sym_set, A_SYMBOL, A_SYMBOL, A_NULL); 
     

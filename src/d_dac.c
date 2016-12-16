@@ -124,7 +124,7 @@ void dac_setup (void)
         
     CLASS_SIGNAL (c, t_dac, x_f);
     
-    class_addDSP (c, dac_dsp);
+    class_addDSP (c, (t_method)dac_dsp);
     
     class_addMethod (c, (t_method)dac_set, sym_set, A_GIMME, A_NULL);
     

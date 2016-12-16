@@ -420,8 +420,8 @@ void textsequence_setup (void)
             A_GIMME,
             A_NULL);
     
-    class_addBang (c, textsequence_bang);
-    class_addList (c, textsequence_list);
+    class_addBang (c, (t_method)textsequence_bang);
+    class_addList (c, (t_method)textsequence_list);
     
     class_addMethod (c, (t_method)textsequence_stop,        sym_stop,       A_NULL);
     class_addMethod (c, (t_method)textsequence_step,        sym_step,       A_NULL);

@@ -112,8 +112,8 @@ void subtract_tilde_setup (void)
     CLASS_SIGNAL (subtract_tilde_class, t_subtract_tilde, x_f);
     CLASS_SIGNAL (subtractScalar_tilde_class, t_subtractscalar_tilde, x_f);
         
-    class_addDSP (subtract_tilde_class, subtract_tilde_dsp);
-    class_addDSP (subtractScalar_tilde_class, subtractScalar_tilde_dsp);
+    class_addDSP (subtract_tilde_class, (t_method)subtract_tilde_dsp);
+    class_addDSP (subtractScalar_tilde_class, (t_method)subtractScalar_tilde_dsp);
         
     class_setHelpName (subtract_tilde_class, sym_max__tilde__);
     class_setHelpName (subtractScalar_tilde_class, sym_max__tilde__);

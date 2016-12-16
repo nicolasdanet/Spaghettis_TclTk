@@ -162,7 +162,7 @@ void tabosc4_tilde_setup (void)
             
     CLASS_SIGNAL (c, t_tabosc4_tilde, x_f);
     
-    class_addDSP (c, tabosc4_tilde_dsp);
+    class_addDSP (c, (t_method)tabosc4_tilde_dsp);
     
     class_addMethod (c, (t_method)tabosc4_tilde_set,    sym_set,    A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)tabosc4_tilde_phase,  sym_inlet2, A_FLOAT, A_NULL);

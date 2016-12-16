@@ -106,7 +106,7 @@ void global_initialize (void)
         
     #endif
 
-    class_addAnything (c, global_default);
+    class_addAnything (c, (t_method)global_default);
     
     global_object = c;
         

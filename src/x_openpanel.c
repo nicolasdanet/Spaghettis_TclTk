@@ -86,8 +86,8 @@ void openpanel_setup (void)
             CLASS_DEFAULT,
             A_NULL);
             
-    class_addBang (c, openpanel_bang);
-    class_addSymbol (c, openpanel_symbol);
+    class_addBang (c, (t_method)openpanel_bang);
+    class_addSymbol (c, (t_method)openpanel_symbol);
     
     class_addMethod (c, (t_method)openpanel_callback, sym_callback, A_SYMBOL, A_NULL);
     
