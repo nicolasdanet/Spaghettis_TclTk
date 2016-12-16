@@ -228,7 +228,9 @@ void cos_tilde_setup        (void);
 void osc_tilde_setup        (void);
 void vcf_tilde_setup        (void);
 void noise_tilde_setup      (void);
-void d_soundfile_setup      (void);
+void soundfiler_setup       (void);
+void readsf_setup           (void);
+void writesf_setup          (void);
 void block_tilde_setup      (void);
 void samplerate_tilde_setup (void);
 
@@ -425,7 +427,9 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     osc_tilde_setup();
     vcf_tilde_setup();
     noise_tilde_setup();
-    d_soundfile_setup();
+    soundfiler_setup();
+    readsf_setup();
+    writesf_setup();
     block_tilde_setup();
     samplerate_tilde_setup();
     

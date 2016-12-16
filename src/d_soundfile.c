@@ -1,29 +1,13 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-/* this file contains, first, a collection of soundfile access routines, a
-sort of soundfile library.  Second, the "soundfiler" object is defined which
-uses the routines to read or write soundfiles, synchronously, from garrays.
-These operations are not to be done in "real time" as they may have to wait
-for disk accesses (even the write routine.)  Finally, the realtime objects
-readsf~ and writesf~ are defined which confine disk operations to a separate
-thread so that they can be used in real time.  The readsf~ and writesf~
-objects use Posix-like threads.  */
+/* 
+    Copyright (c) 1997-2016 Miller Puckette and others.
+*/
 
-#ifdef _WIN32
-    #include <io.h>
-#else
-    #include <unistd.h>
-#endif
+/* < https://opensource.org/licenses/BSD-3-Clause > */
 
-
-#include <pthread.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
-#include <math.h>
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #include "m_pd.h"
 #include "m_core.h"
@@ -1147,6 +1131,10 @@ static void soundfile_xferout_float(int nchannels, t_float **vecs,
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 /* ------- soundfiler - reads and writes soundfiles to/from "garrays" ---- */
 #define DEFMAXSIZE 4000000      /* default maximum 16 MB per channel */
 #define SAMPBUFSIZE 1024
@@ -1496,7 +1484,7 @@ static void soundfiler_write(t_soundfiler *x, t_symbol *s,
     outlet_float(x->x_obj.te_outlet, (t_float)bozo); 
 }
 
-static void soundfiler_setup(void)
+void soundfiler_setup(void)
 {
     soundfiler_class = class_new(sym_soundfiler, (t_newmethod)soundfiler_new, 
         0, sizeof(t_soundfiler), 0, 0);
@@ -1506,6 +1494,10 @@ static void soundfiler_setup(void)
         sym_write, A_GIMME, 0);
 }
 
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /************************* readsf object ******************************/
 
@@ -2151,7 +2143,7 @@ static void readsf_free(t_readsf *x)
     clock_free(x->x_clock);
 }
 
-static void readsf_setup(void)
+void readsf_setup(void)
 {
     readsf_class = class_new(sym_readsf__tilde__, (t_newmethod)readsf_new, 
         (t_method)readsf_free, sizeof(t_readsf), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
@@ -2166,6 +2158,9 @@ static void readsf_setup(void)
 }
 
 /******************************* writesf *******************/
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static t_class *writesf_class;
 
@@ -2634,7 +2629,7 @@ static void writesf_free(t_writesf *x)
     PD_MEMORY_FREE(x->x_buf);
 }
 
-static void writesf_setup(void)
+void writesf_setup(void)
 {
     writesf_class = class_new(sym_writesf__tilde__, (t_newmethod)writesf_new, 
         (t_method)writesf_free, sizeof(t_writesf), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
@@ -2648,12 +2643,5 @@ static void writesf_setup(void)
     CLASS_SIGNAL(writesf_class, t_writesf, x_f);
 }
 
-/* ------------------------ global setup routine ------------------------- */
-
-void d_soundfile_setup(void)
-{
-    soundfiler_setup();
-    readsf_setup();
-    writesf_setup();
-}
-
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
