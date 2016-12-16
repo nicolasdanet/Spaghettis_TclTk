@@ -60,11 +60,11 @@ static t_int *vd_tilde_perform (t_int *w)
     if (PD_IS_NAN (f)) { f = 0.0; }
     
     delayInSamples = (x->x_samplesPerMilliseconds * f) - x->x_masterVectorSize;
-    delayInSamples = PD_CLAMP (delayInSamples, 1.00001, limit);
+    delayInSamples = PD_CLAMP (delayInSamples, 1.0, limit);
     delayInSamples += (t_float)n;
     
     {
-        int integer = delayInSamples;
+        int integer = (int)delayInSamples;
         t_float fractional = delayInSamples - (t_float)integer;
         PD_RESTRICTED p = c->c_vector + (c->c_phase - integer);
         
