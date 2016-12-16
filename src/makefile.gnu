@@ -58,9 +58,7 @@ LIB += -ljack
 
 # The sources (filepath must NOT contain space).
 
-SRC = amalgam.c \
-    d_filter.c \
-    d_soundfile.c d_fft.c d_fft_fftsg.c
+SRC = amalgam.c d_filter.c d_fft.c d_fft_fftsg.c
 
 OBJ = $(SRC:.c=.o) $(MIDI_SRC:.c=.o) $(AUDIO_SRC:.c=.o)
 
