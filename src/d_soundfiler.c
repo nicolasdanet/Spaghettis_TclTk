@@ -64,8 +64,8 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
         maxsize = DEFMAXSIZE, itemsread = 0, bytelimit  = PD_INT_MAX;
     int fd = -1;
     char endianness, *filename;
-    t_garray *garrays[MAXSFCHANS];
-    t_word *vecs[MAXSFCHANS];
+    t_garray *garrays[SOUNDFILE_MAXIMUM_CHANNELS];
+    t_word *vecs[SOUNDFILE_MAXIMUM_CHANNELS];
     char sampbuf[SAMPBUFSIZE];
     int bufframes, nitems;
     FILE *fp;
@@ -87,7 +87,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
                 ((headersize = argv[1].a_w.w_float) < 0) ||
                 argv[2].a_type != A_FLOAT ||
                 ((channels = argv[2].a_w.w_float) < 1) ||
-                (channels > MAXSFCHANS) || 
+                (channels > SOUNDFILE_MAXIMUM_CHANNELS) || 
                 argv[3].a_type != A_FLOAT ||
                 ((bytespersamp = argv[3].a_w.w_float) < 2) || 
                     (bytespersamp > 4) ||
@@ -118,7 +118,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
         }
         else goto usage;
     }
-    if (argc < 2 || argc > MAXSFCHANS + 1 || argv[0].a_type != A_SYMBOL)
+    if (argc < 2 || argc > SOUNDFILE_MAXIMUM_CHANNELS + 1 || argv[0].a_type != A_SYMBOL)
         goto usage;
     filename = argv[0].a_w.w_symbol->s_name;
     argc--; argv++;
@@ -257,8 +257,8 @@ long soundfiler_dowrite(void *obj, t_glist *canvas,
         endianness, swap, filetype, normalize, i, j, nchannels;
     long onset, nframes, itemsleft,
         maxsize = DEFMAXSIZE, itemswritten = 0;
-    t_garray *garrays[MAXSFCHANS];
-    t_word *vecs[MAXSFCHANS];
+    t_garray *garrays[SOUNDFILE_MAXIMUM_CHANNELS];
+    t_word *vecs[SOUNDFILE_MAXIMUM_CHANNELS];
     char sampbuf[SAMPBUFSIZE];
     int bufframes, nitems;
     int fd = -1;
@@ -271,7 +271,7 @@ long soundfiler_dowrite(void *obj, t_glist *canvas,
             &samplerate))
                 goto usage;
     nchannels = argc;
-    if (nchannels < 1 || nchannels > MAXSFCHANS)
+    if (nchannels < 1 || nchannels > SOUNDFILE_MAXIMUM_CHANNELS)
         goto usage;
     if (samplerate < 0)
         samplerate = audio_getSampleRate();

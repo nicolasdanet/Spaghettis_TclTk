@@ -59,7 +59,7 @@ static void pute(char *s)   /* debug routine */
 
 static void *readsf_child_main(void *zz)
 {
-    t_readsf *x = zz;
+    t_readsf_tilde *x = zz;
 #ifdef DEBUG_SOUNDFILE
     pute("1\n");
 #endif
@@ -71,18 +71,18 @@ static void *readsf_child_main(void *zz)
 #ifdef DEBUG_SOUNDFILE
         pute("0\n");
 #endif
-        if (x->x_requestcode == REQUEST_NOTHING)
+        if (x->x_requestcode == SOUNDFILE_NOTHING)
         {
 #ifdef DEBUG_SOUNDFILE
             pute("wait 2\n");
 #endif
-            sfread_cond_signal(&x->x_answercondition);
-            sfread_cond_wait(&x->x_requestcondition, &x->x_mutex);
+            pthread_cond_signal(&x->x_answercondition);
+            pthread_cond_wait(&x->x_requestcondition, &x->x_mutex);
 #ifdef DEBUG_SOUNDFILE
             pute("3\n");
 #endif
         }
-        else if (x->x_requestcode == REQUEST_OPEN)
+        else if (x->x_requestcode == SOUNDFILE_OPEN)
         {
             char boo[80];
             int sysrtn, wantbytes;
@@ -102,7 +102,7 @@ static void *readsf_child_main(void *zz)
 #ifdef DEBUG_SOUNDFILE
             pute("4\n");
 #endif
-            x->x_requestcode = REQUEST_BUSY;
+            x->x_requestcode = SOUNDFILE_BUSY;
             x->x_fileerror = 0;
 
                 /* if there's already a file open, close it */
@@ -113,7 +113,7 @@ static void *readsf_child_main(void *zz)
                 close (fd);
                 pthread_mutex_lock(&x->x_mutex);
                 x->x_fd = -1;
-                if (x->x_requestcode != REQUEST_BUSY)
+                if (x->x_requestcode != SOUNDFILE_BUSY)
                     goto lost;
             }
                 /* open the soundfile with the mutex unlocked */
@@ -144,7 +144,7 @@ static void *readsf_child_main(void *zz)
                 goto lost;
             }
                 /* check if another request has been made; if so, field it */
-            if (x->x_requestcode != REQUEST_BUSY)
+            if (x->x_requestcode != SOUNDFILE_BUSY)
                 goto lost;
 #ifdef DEBUG_SOUNDFILE
             pute("6\n");
@@ -152,12 +152,12 @@ static void *readsf_child_main(void *zz)
             x->x_fifohead = 0;
                     /* set fifosize from bufsize.  fifosize must be a
                     multiple of the number of bytes eaten for each DSP
-                    tick.  We pessimistically assume MAXVECSIZE samples
+                    tick.  We pessimistically assume SOUNDFILE_SIZE_VECTOR samples
                     per tick since that could change.  There could be a
                     problem here if the vector size increases while a
                     soundfile is being played...  */
             x->x_fifosize = x->x_bufsize - (x->x_bufsize %
-                (x->x_bytespersample * x->x_sfchannels * MAXVECSIZE));
+                (x->x_bytespersample * x->x_sfchannels * SOUNDFILE_SIZE_VECTOR));
                     /* arrange for the "request" condition to be signalled 16
                     times per buffer */
 #ifdef DEBUG_SOUNDFILE
@@ -171,7 +171,7 @@ static void *readsf_child_main(void *zz)
                         x->x_vecsize));
                 /* in a loop, wait for the fifo to get hungry and feed it */
 
-            while (x->x_requestcode == REQUEST_BUSY)
+            while (x->x_requestcode == SOUNDFILE_BUSY)
             {
                 int fifosize = x->x_fifosize;
 #ifdef DEBUG_SOUNDFILE
@@ -187,11 +187,11 @@ static void *readsf_child_main(void *zz)
                         "tail" is zero; this would fill the buffer completely
                         which isn't allowed because you can't tell a completely
                         full buffer from an empty one. */
-                    if (x->x_fifotail || (fifosize - x->x_fifohead > READSIZE))
+                    if (x->x_fifotail || (fifosize - x->x_fifohead > SOUNDFILE_SIZE_READ))
                     {
                         wantbytes = fifosize - x->x_fifohead;
-                        if (wantbytes > READSIZE)
-                            wantbytes = READSIZE;
+                        if (wantbytes > SOUNDFILE_SIZE_READ)
+                            wantbytes = SOUNDFILE_SIZE_READ;
                         if (wantbytes > x->x_bytelimit)
                             wantbytes = x->x_bytelimit;
 #ifdef DEBUG_SOUNDFILE
@@ -205,11 +205,11 @@ static void *readsf_child_main(void *zz)
 #ifdef DEBUG_SOUNDFILE
                         pute("wait 7a ...\n");
 #endif
-                        sfread_cond_signal(&x->x_answercondition);
+                        pthread_cond_signal(&x->x_answercondition);
 #ifdef DEBUG_SOUNDFILE
                         pute("signalled\n");
 #endif
-                        sfread_cond_wait(&x->x_requestcondition,
+                        pthread_cond_wait(&x->x_requestcondition,
                             &x->x_mutex);
 #ifdef DEBUG_SOUNDFILE
                         pute("7a done\n");
@@ -219,23 +219,23 @@ static void *readsf_child_main(void *zz)
                 }
                 else
                 {
-                        /* otherwise check if there are at least READSIZE
+                        /* otherwise check if there are at least SOUNDFILE_SIZE_READ
                         bytes to read.  If not, wait and loop back. */
                     wantbytes =  x->x_fifotail - x->x_fifohead - 1;
-                    if (wantbytes < READSIZE)
+                    if (wantbytes < SOUNDFILE_SIZE_READ)
                     {
 #ifdef DEBUG_SOUNDFILE
                         pute("wait 7...\n");
 #endif
-                        sfread_cond_signal(&x->x_answercondition);
-                        sfread_cond_wait(&x->x_requestcondition,
+                        pthread_cond_signal(&x->x_answercondition);
+                        pthread_cond_wait(&x->x_requestcondition,
                             &x->x_mutex);
 #ifdef DEBUG_SOUNDFILE
                         pute("7 done\n");
 #endif
                         continue;
                     }
-                    else wantbytes = READSIZE;
+                    else wantbytes = SOUNDFILE_SIZE_READ;
                     if (wantbytes > x->x_bytelimit)
                         wantbytes = x->x_bytelimit;
                 }
@@ -248,7 +248,7 @@ static void *readsf_child_main(void *zz)
                 pthread_mutex_unlock(&x->x_mutex);
                 sysrtn = read(fd, buf + fifohead, wantbytes);
                 pthread_mutex_lock(&x->x_mutex);
-                if (x->x_requestcode != REQUEST_BUSY)
+                if (x->x_requestcode != SOUNDFILE_BUSY)
                     break;
                 if (sysrtn < 0)
                 {
@@ -281,12 +281,12 @@ static void *readsf_child_main(void *zz)
                 pute(boo);
 #endif
                     /* signal parent in case it's waiting for data */
-                sfread_cond_signal(&x->x_answercondition);
+                pthread_cond_signal(&x->x_answercondition);
             }
         lost:
 
-            if (x->x_requestcode == REQUEST_BUSY)
-                x->x_requestcode = REQUEST_NOTHING;
+            if (x->x_requestcode == SOUNDFILE_BUSY)
+                x->x_requestcode = SOUNDFILE_NOTHING;
                 /* fell out of read loop: close file if necessary,
                 set EOF and signal once more */
             if (x->x_fd >= 0)
@@ -297,10 +297,10 @@ static void *readsf_child_main(void *zz)
                 pthread_mutex_lock(&x->x_mutex);
                 x->x_fd = -1;
             }
-            sfread_cond_signal(&x->x_answercondition);
+            pthread_cond_signal(&x->x_answercondition);
 
         }
-        else if (x->x_requestcode == REQUEST_CLOSE)
+        else if (x->x_requestcode == SOUNDFILE_CLOSE)
         {
             if (x->x_fd >= 0)
             {
@@ -310,11 +310,11 @@ static void *readsf_child_main(void *zz)
                 pthread_mutex_lock(&x->x_mutex);
                 x->x_fd = -1;
             }
-            if (x->x_requestcode == REQUEST_CLOSE)
-                x->x_requestcode = REQUEST_NOTHING;
-            sfread_cond_signal(&x->x_answercondition);
+            if (x->x_requestcode == SOUNDFILE_CLOSE)
+                x->x_requestcode = SOUNDFILE_NOTHING;
+            pthread_cond_signal(&x->x_answercondition);
         }
-        else if (x->x_requestcode == REQUEST_QUIT)
+        else if (x->x_requestcode == SOUNDFILE_QUIT)
         {
             if (x->x_fd >= 0)
             {
@@ -324,8 +324,8 @@ static void *readsf_child_main(void *zz)
                 pthread_mutex_lock(&x->x_mutex);
                 x->x_fd = -1;
             }
-            x->x_requestcode = REQUEST_NOTHING;
-            sfread_cond_signal(&x->x_answercondition);
+            x->x_requestcode = SOUNDFILE_NOTHING;
+            pthread_cond_signal(&x->x_answercondition);
             break;
         }
         else
@@ -344,27 +344,27 @@ static void *readsf_child_main(void *zz)
 
 /******** the object proper runs in the calling (parent) thread ****/
 
-static void readsf_tick(t_readsf *x);
+static void readsf_tick(t_readsf_tilde *x);
 
 static void *readsf_new(t_float fnchannels, t_float fbufsize)
 {
-    t_readsf *x;
+    t_readsf_tilde *x;
     int nchannels = fnchannels, bufsize = fbufsize, i;
     char *buf;
     
     if (nchannels < 1)
         nchannels = 1;
-    else if (nchannels > MAXSFCHANS)
-        nchannels = MAXSFCHANS;
-    if (bufsize <= 0) bufsize = DEFBUFPERCHAN * nchannels;
-    else if (bufsize < MINBUFSIZE)
-        bufsize = MINBUFSIZE;
-    else if (bufsize > MAXBUFSIZE)
-        bufsize = MAXBUFSIZE;
+    else if (nchannels > SOUNDFILE_MAXIMUM_CHANNELS)
+        nchannels = SOUNDFILE_MAXIMUM_CHANNELS;
+    if (bufsize <= 0) bufsize = SOUNDFILE_BUFFER_MINIMUM * nchannels;
+    else if (bufsize < SOUNDFILE_BUFFER_MINIMUM)
+        bufsize = SOUNDFILE_BUFFER_MINIMUM;
+    else if (bufsize > SOUNDFILE_BUFFER_MAXIMUM)
+        bufsize = SOUNDFILE_BUFFER_MAXIMUM;
     buf = PD_MEMORY_GET(bufsize);
     if (!buf) return (0);
     
-    x = (t_readsf *)pd_new(readsf_class);
+    x = (t_readsf_tilde *)pd_new(readsf_class);
     
     for (i = 0; i < nchannels; i++)
         outlet_new(&x->x_obj, &s_signal);
@@ -373,8 +373,8 @@ static void *readsf_new(t_float fnchannels, t_float fbufsize)
     pthread_mutex_init(&x->x_mutex, 0);
     pthread_cond_init(&x->x_requestcondition, 0);
     pthread_cond_init(&x->x_answercondition, 0);
-    x->x_vecsize = MAXVECSIZE;
-    x->x_state = STATE_IDLE;
+    x->x_vecsize = SOUNDFILE_SIZE_VECTOR;
+    x->x_state = SOUNDFILE_IDLE;
     x->x_clock = clock_new(x, (t_method)readsf_tick);
     x->x_canvas = canvas_getCurrent();
     x->x_bytespersample = 2;
@@ -387,19 +387,19 @@ static void *readsf_new(t_float fnchannels, t_float fbufsize)
     return x;
 }
 
-static void readsf_tick(t_readsf *x)
+static void readsf_tick(t_readsf_tilde *x)
 {
     outlet_bang(x->x_bangout);
 }
 
 static t_int *readsf_perform(t_int *w)
 {
-    t_readsf *x = (t_readsf *)(w[1]);
+    t_readsf_tilde *x = (t_readsf_tilde *)(w[1]);
     int vecsize = x->x_vecsize, noutlets = x->x_noutlets, i, j,
         bytespersample = x->x_bytespersample,
         bigendian = x->x_bigendian;
     t_sample *fp;
-    if (x->x_state == STATE_STREAM)
+    if (x->x_state == SOUNDFILE_STREAM)
     {
         int wantbytes, nchannels, sfchannels = x->x_sfchannels;
         pthread_mutex_lock(&x->x_mutex);
@@ -411,8 +411,8 @@ static t_int *readsf_perform(t_int *w)
 #ifdef DEBUG_SOUNDFILE
             pute("wait...\n");
 #endif
-            sfread_cond_signal(&x->x_requestcondition);
-            sfread_cond_wait(&x->x_answercondition, &x->x_mutex);
+            pthread_cond_signal(&x->x_requestcondition);
+            pthread_cond_wait(&x->x_answercondition, &x->x_mutex);
                 /* resync local cariables -- bug fix thanks to Shahrokh */
             vecsize = x->x_vecsize;
             bytespersample = x->x_bytespersample;
@@ -435,7 +435,7 @@ static t_int *readsf_perform(t_int *w)
                             strerror(x->x_fileerror)));
             }
             clock_delay(x->x_clock, 0);
-            x->x_state = STATE_IDLE;
+            x->x_state = SOUNDFILE_IDLE;
 
                 /* if there's a partial buffer left, copy it out. */
             xfersize = (x->x_fifohead - x->x_fifotail + 1) /
@@ -452,7 +452,7 @@ static t_int *readsf_perform(t_int *w)
                 for (j = vecsize, fp = x->x_outvec[i] + xfersize; j--; )
                     *fp++ = 0;
 
-            sfread_cond_signal(&x->x_requestcondition);
+            pthread_cond_signal(&x->x_requestcondition);
             pthread_mutex_unlock(&x->x_mutex);
             return (w+2); 
         }
@@ -466,7 +466,7 @@ static t_int *readsf_perform(t_int *w)
             x->x_fifotail = 0;
         if ((--x->x_sigcountdown) <= 0)
         {
-            sfread_cond_signal(&x->x_requestcondition);
+            pthread_cond_signal(&x->x_requestcondition);
             x->x_sigcountdown = x->x_sigperiod;
         }
         pthread_mutex_unlock(&x->x_mutex);
@@ -480,26 +480,26 @@ static t_int *readsf_perform(t_int *w)
     return (w+2);
 }
 
-static void readsf_start(t_readsf *x)
+static void readsf_start(t_readsf_tilde *x)
 {
     /* start making output.  If we're in the "startup" state change
     to the "running" state. */
-    if (x->x_state == STATE_STARTUP)
-        x->x_state = STATE_STREAM;
+    if (x->x_state == SOUNDFILE_START)
+        x->x_state = SOUNDFILE_STREAM;
     else post_error ("readsf: start requested with no prior 'open'");
 }
 
-static void readsf_stop(t_readsf *x)
+static void readsf_stop(t_readsf_tilde *x)
 {
         /* LATER rethink whether you need the mutex just to set a variable? */
     pthread_mutex_lock(&x->x_mutex);
-    x->x_state = STATE_IDLE;
-    x->x_requestcode = REQUEST_CLOSE;
-    sfread_cond_signal(&x->x_requestcondition);
+    x->x_state = SOUNDFILE_IDLE;
+    x->x_requestcode = SOUNDFILE_CLOSE;
+    pthread_cond_signal(&x->x_requestcondition);
     pthread_mutex_unlock(&x->x_mutex);
 }
 
-static void readsf_float(t_readsf *x, t_float f)
+static void readsf_float(t_readsf_tilde *x, t_float f)
 {
     if (f != 0)
         readsf_start(x);
@@ -512,7 +512,7 @@ static void readsf_float(t_readsf *x, t_float f)
         detected; thus, use the special "-1" to mean a truly headerless file.)
     */
 
-static void readsf_open(t_readsf *x, t_symbol *s, int argc, t_atom *argv)
+static void readsf_open(t_readsf_tilde *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_symbol *filesym = atom_getSymbolAtIndex(0, argc, argv);
     t_float onsetframes = atom_getFloatAtIndex(1, argc, argv);
@@ -523,7 +523,7 @@ static void readsf_open(t_readsf *x, t_symbol *s, int argc, t_atom *argv)
     if (!*filesym->s_name)
         return;
     pthread_mutex_lock(&x->x_mutex);
-    x->x_requestcode = REQUEST_OPEN;
+    x->x_requestcode = SOUNDFILE_OPEN;
     x->x_filename = filesym->s_name;
     x->x_fifotail = 0;
     x->x_fifohead = 0;
@@ -541,12 +541,12 @@ static void readsf_open(t_readsf *x, t_symbol *s, int argc, t_atom *argv)
     x->x_bytespersample = (bytespersamp > 2 ? bytespersamp : 2);
     x->x_eof = 0;
     x->x_fileerror = 0;
-    x->x_state = STATE_STARTUP;
-    sfread_cond_signal(&x->x_requestcondition);
+    x->x_state = SOUNDFILE_START;
+    pthread_cond_signal(&x->x_requestcondition);
     pthread_mutex_unlock(&x->x_mutex);
 }
 
-static void readsf_dsp(t_readsf *x, t_signal **sp)
+static void readsf_dsp(t_readsf_tilde *x, t_signal **sp)
 {
     int i, noutlets = x->x_noutlets;
     pthread_mutex_lock(&x->x_mutex);
@@ -560,7 +560,7 @@ static void readsf_dsp(t_readsf *x, t_signal **sp)
     dsp_add(readsf_perform, 1, x);
 }
 
-static void readsf_print(t_readsf *x)
+static void readsf_print(t_readsf_tilde *x)
 {
     post("state %d", x->x_state);
     post("fifo head %d", x->x_fifohead);
@@ -570,17 +570,17 @@ static void readsf_print(t_readsf *x)
     post("eof %d", x->x_eof);
 }
 
-static void readsf_free(t_readsf *x)
+static void readsf_free(t_readsf_tilde *x)
 {
         /* request QUIT and wait for acknowledge */
     void *threadrtn;
     pthread_mutex_lock(&x->x_mutex);
-    x->x_requestcode = REQUEST_QUIT;
-    sfread_cond_signal(&x->x_requestcondition);
-    while (x->x_requestcode != REQUEST_NOTHING)
+    x->x_requestcode = SOUNDFILE_QUIT;
+    pthread_cond_signal(&x->x_requestcondition);
+    while (x->x_requestcode != SOUNDFILE_NOTHING)
     {
-        sfread_cond_signal(&x->x_requestcondition);
-        sfread_cond_wait(&x->x_answercondition, &x->x_mutex);
+        pthread_cond_signal(&x->x_requestcondition);
+        pthread_cond_wait(&x->x_answercondition, &x->x_mutex);
     }
     pthread_mutex_unlock(&x->x_mutex);
     if (pthread_join(x->x_childthread, &threadrtn))
@@ -596,7 +596,7 @@ static void readsf_free(t_readsf *x)
 void readsf_setup(void)
 {
     readsf_class = class_new(sym_readsf__tilde__, (t_newmethod)readsf_new, 
-        (t_method)readsf_free, sizeof(t_readsf), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
+        (t_method)readsf_free, sizeof(t_readsf_tilde), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
     class_addFloat(readsf_class, (t_method)readsf_float);
     class_addMethod(readsf_class, (t_method)readsf_start, sym_start, 0);
     class_addMethod(readsf_class, (t_method)readsf_stop, sym_stop, 0);

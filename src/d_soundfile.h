@@ -9,53 +9,60 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#ifndef __d_sound_h_
-#define __d_sound_h_
+#ifndef __d_soundfile_h_
+#define __d_soundfile_h_
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define MAXSFCHANS 64
-
-#define MAXBYTESPERSAMPLE 4
-#define MAXVECSIZE 128
-
-#define READSIZE 65536
-#define WRITESIZE 65536
-#define DEFBUFPERCHAN 262144
-#define MINBUFSIZE (4 * READSIZE)
-#define MAXBUFSIZE 16777216     /* arbitrary; just don't want to hang malloc */
-
-#define REQUEST_NOTHING 0
-#define REQUEST_OPEN 1
-#define REQUEST_CLOSE 2
-#define REQUEST_QUIT 3
-#define REQUEST_BUSY 4
-
-#define STATE_IDLE 0
-#define STATE_STARTUP 1
-#define STATE_STREAM 2
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#define sfread_cond_wait pthread_cond_wait
-#define sfread_cond_signal pthread_cond_signal
+#define SOUNDFILE_MAXIMUM_CHANNELS      64
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef struct _readsf
-{
+#define SOUNDFILE_SIZE_VECTOR           128
+#define SOUNDFILE_SIZE_READ             65536
+#define SOUNDFILE_SIZE_WRITE            65536
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define SOUNDFILE_BUFFER_MINIMUM        (SOUNDFILE_SIZE_READ * 4)
+#define SOUNDFILE_BUFFER_MAXIMUM        (SOUNDFILE_SIZE_READ * 256)             /* Arbitrary. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define SOUNDFILE_NOTHING               0
+#define SOUNDFILE_OPEN                  1
+#define SOUNDFILE_CLOSE                 2
+#define SOUNDFILE_QUIT                  3
+#define SOUNDFILE_BUSY                  4
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define SOUNDFILE_IDLE                  0
+#define SOUNDFILE_START                 1
+#define SOUNDFILE_STREAM                2
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+typedef struct _readsf_tilde {
     t_object x_obj;
     t_glist *x_canvas;
     t_clock *x_clock;
     char *x_buf;                            /* soundfile buffer */
     int x_bufsize;                          /* buffer size in bytes */
     int x_noutlets;                         /* number of audio outlets */
-    t_sample *(x_outvec[MAXSFCHANS]);       /* audio vectors */
+    t_sample *(x_outvec[SOUNDFILE_MAXIMUM_CHANNELS]);       /* audio vectors */
     int x_vecsize;                          /* vector size for transfers */
     t_outlet *x_bangout;                    /* bang-on-done outlet */
     int x_state;                            /* opened, running, or idle */
@@ -86,7 +93,7 @@ typedef struct _readsf
     pthread_cond_t x_requestcondition;
     pthread_cond_t x_answercondition;
     pthread_t x_childthread;
-} t_readsf;
+    } t_readsf_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -117,4 +124,4 @@ void soundfile_xferout_float(int nchannels, t_float **vecs,
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#endif // __d_sound_h_
+#endif // __d_soundfile_h_
