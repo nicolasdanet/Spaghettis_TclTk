@@ -56,43 +56,42 @@
 #pragma mark -
 
 typedef struct _readsf_tilde {
-    t_object x_obj;
-    t_glist *x_canvas;
-    t_clock *x_clock;
-    char *x_buf;                            /* soundfile buffer */
-    int x_bufsize;                          /* buffer size in bytes */
-    int x_noutlets;                         /* number of audio outlets */
-    t_sample *(x_outvec[SOUNDFILE_MAXIMUM_CHANNELS]);       /* audio vectors */
-    int x_vecsize;                          /* vector size for transfers */
-    t_outlet *x_bangout;                    /* bang-on-done outlet */
-    int x_state;                            /* opened, running, or idle */
-    t_float x_insamplerate;   /* sample rate of input signal if known */
-        /* parameters to communicate with subthread */
-    int x_requestcode;      /* pending request from parent to I/O thread */
-    char *x_filename;       /* file to open (string is permanently allocated) */
-    int x_fileerror;        /* slot for "errno" return */
-    int x_skipheaderbytes;  /* size of header we'll skip */
-    int x_bytespersample;   /* bytes per sample (2 or 3) */
-    int x_bigendian;        /* true if file is big-endian */
-    int x_sfchannels;       /* number of channels in soundfile */
-    t_float x_samplerate;     /* sample rate of soundfile */
-    long x_onsetframes;     /* number of sample frames to skip */
-    long x_bytelimit;       /* max number of data bytes to read */
-    int x_fd;               /* filedesc */
-    int x_fifosize;         /* buffer size appropriately rounded down */            
-    int x_fifohead;         /* index of next byte to get from file */
-    int x_fifotail;         /* index of next byte the ugen will read */
-    int x_eof;              /* true if fifohead has stopped changing */
-    int x_sigcountdown;     /* counter for signalling child for more data */
-    int x_sigperiod;        /* number of ticks per signal */
-    int x_filetype;         /* writesf~ only; type of file to create */
-    int x_itemswritten;     /* writesf~ only; items writen */
-    int x_swap;             /* writesf~ only; true if byte swapping */
-    t_float x_f;              /* writesf~ only; scalar for signal inlet */
-    pthread_mutex_t x_mutex;
-    pthread_cond_t x_requestcondition;
-    pthread_cond_t x_answercondition;
-    pthread_t x_childthread;
+    t_object            sf_obj;                 /* Must be the first. */
+    t_float             sf_f;
+    t_float             sf_sampleRateOfInput;
+    t_float             sf_sampleRate;
+    int                 sf_bufferSize;
+    int                 sf_numberOfAudioOutlets;
+    int                 sf_vectorSize;
+    int                 sf_state;
+    int                 sf_request;
+    int                 sf_error;
+    int                 sf_headerSize;
+    int                 sf_bytesPerSample;
+    int                 sf_isFileBigEndian;
+    int                 sf_numberOfChannels;
+    long                sf_numberOfFramesToSkip;
+    long                sf_maximumBytesToRead;
+    int                 sf_fileDescriptor;
+    int                 sf_fifoSize;
+    int                 sf_fifoHead;
+    int                 sf_fifoTail;
+    int                 sf_isEndOfFile;
+    int                 sf_count;
+    int                 sf_period;
+    int                 sf_fileType;
+    int                 sf_itemsWritten;
+    int                 sf_needToSwapBytes;
+    pthread_mutex_t     sf_mutex;
+    pthread_cond_t      sf_condRequest;
+    pthread_cond_t      sf_condAnswer;
+    pthread_t           sf_thread;
+    t_sample            *(sf_vectorsOut[SOUNDFILE_MAXIMUM_CHANNELS]);
+    char                *sf_buffer;
+    char                *sf_filename;
+    t_glist             *sf_owner;
+    t_clock             *sf_clock;
+    t_outlet            *sf_outlet;
     } t_readsf_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
