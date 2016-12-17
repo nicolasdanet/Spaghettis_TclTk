@@ -17,24 +17,14 @@
 #include "d_dsp.h"
 #include "d_soundfile.h"
 
-extern t_class *garray_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
+typedef t_rawcast32 t_sampleuint;
 
-
-/* Microsoft Visual Studio does not define these... arg */
-#ifdef _MSC_VER
-#define off_t long
-#define O_CREAT   _O_CREAT
-#define O_TRUNC   _O_TRUNC
-#define O_WRONLY  _O_WRONLY
-#endif
-
-/***************** soundfile header structures ************************/
-
-typedef union _samplelong {
-  t_sample f;
-  long     l;
-} t_sampleuint;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #define FORMAT_WAVE 0
 #define FORMAT_AIFF 1
@@ -148,6 +138,10 @@ typedef struct _aiff
 #define READHDRSIZE (16 > WHDR2 + 2 ? 16 : WHDR2 + 2)
 
 #define OBUFSIZE PD_STRING  /* assume PD_STRING is bigger than headers */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* this routine returns 1 if the high order byte comes at the lower
 address on our architecture (big-endianness.).  It's 1 for Motorola,
@@ -836,7 +830,7 @@ int create_soundfile(t_glist *canvas, const char *filename,
     }
 
     canvas_makeFilePath(canvas, filenamebuf, buf2, PD_STRING);
-    if ((fd = file_openRaw(buf2, O_WRONLY | O_CREAT | O_TRUNC)) < 0)
+    if ((fd = file_openRaw(buf2, O_CREAT | O_TRUNC | O_WRONLY)) < 0)
         return (-1);
 
     if (write(fd, headerbuf, headersize) < headersize)
@@ -1005,9 +999,9 @@ void soundfile_xferout_sample(int nchannels, t_sample **vecs,
                     j < nitems; j++, sp2 += bytesperframe, fp += spread)
                 {
                     t_sampleuint f2;
-                    f2.f = *fp * normalfactor;
-                    sp2[0] = (f2.l >> 24); sp2[1] = (f2.l >> 16);
-                    sp2[2] = (f2.l >> 8); sp2[3] = f2.l;
+                    f2.z_f = *fp * normalfactor;
+                    sp2[0] = (f2.z_i >> 24); sp2[1] = (f2.z_i >> 16);
+                    sp2[2] = (f2.z_i >> 8); sp2[3] = f2.z_i;
                 }
             }
             else
@@ -1016,9 +1010,9 @@ void soundfile_xferout_sample(int nchannels, t_sample **vecs,
                     j < nitems; j++, sp2 += bytesperframe, fp += spread)
                 {
                     t_sampleuint f2;
-                    f2.f = *fp * normalfactor;
-                    sp2[3] = (f2.l >> 24); sp2[2] = (f2.l >> 16);
-                    sp2[1] = (f2.l >> 8); sp2[0] = f2.l;
+                    f2.z_f = *fp * normalfactor;
+                    sp2[3] = (f2.z_i >> 24); sp2[2] = (f2.z_i >> 16);
+                    sp2[1] = (f2.z_i >> 8); sp2[0] = f2.z_i;
                 }
             }
         }
@@ -1113,9 +1107,9 @@ void soundfile_xferout_float(int nchannels, t_float **vecs,
                     j < nitems; j++, sp2 += bytesperframe, fp += spread)
                 {
                     t_sampleuint f2;
-                    f2.f = *fp * normalfactor;
-                    sp2[0] = (f2.l >> 24); sp2[1] = (f2.l >> 16);
-                    sp2[2] = (f2.l >> 8); sp2[3] = f2.l;
+                    f2.z_f = *fp * normalfactor;
+                    sp2[0] = (f2.z_i >> 24); sp2[1] = (f2.z_i >> 16);
+                    sp2[2] = (f2.z_i >> 8); sp2[3] = f2.z_i;
                 }
             }
             else
@@ -1124,9 +1118,9 @@ void soundfile_xferout_float(int nchannels, t_float **vecs,
                     j < nitems; j++, sp2 += bytesperframe, fp += spread)
                 {
                     t_sampleuint f2;
-                    f2.f = *fp * normalfactor;
-                    sp2[3] = (f2.l >> 24); sp2[2] = (f2.l >> 16);
-                    sp2[1] = (f2.l >> 8); sp2[0] = f2.l;
+                    f2.z_f = *fp * normalfactor;
+                    sp2[3] = (f2.z_i >> 24); sp2[2] = (f2.z_i >> 16);
+                    sp2[1] = (f2.z_i >> 8); sp2[0] = f2.z_i;
                 }
             }
         }
