@@ -15,7 +15,7 @@
 #include "s_system.h"
 #include "g_graphics.h"
 #include "d_dsp.h"
-#include "d_sound.h"
+#include "d_soundfile.h"
 
 extern t_class *garray_class;
 

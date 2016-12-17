@@ -105,6 +105,9 @@ void soundfile_xferout_sample(int nchannels, t_sample **vecs,
 int create_soundfile(t_glist *canvas, const char *filename,
     int filetype, int nframes, int bytespersamp,
     int bigendian, int nchannels, int swap, t_float samplerate);
+void soundfile_xferin_sample(int sfchannels, int nvecs, t_sample **vecs,
+    long itemsread, unsigned char *buf, int nitems, int bytespersamp,
+    int bigendian, int spread);
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
