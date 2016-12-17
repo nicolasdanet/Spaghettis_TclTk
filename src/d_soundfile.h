@@ -98,29 +98,84 @@ typedef struct _readsf_tilde {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int garray_ambigendian(void);
-int soundfiler_writeargparse(void *obj, int *p_argc, t_atom **p_argv,
-    t_symbol **p_filesym,
-    int *p_filetype, int *p_bytespersamp, int *p_swap, int *p_bigendian,
-    int *p_normalize, long *p_onset, long *p_nframes, t_float *p_rate);
-void soundfile_finishwrite(void *obj, char *filename, int fd,
-    int filetype, long nframes, long itemswritten, int bytesperframe, int swap);
-void soundfile_xferout_sample(int nchannels, t_sample **vecs,
-    unsigned char *buf, int nitems, long onset, int bytespersamp,
-    int bigendian, t_sample normalfactor, int spread);
-int create_soundfile(t_glist *canvas, const char *filename,
-    int filetype, int nframes, int bytespersamp,
-    int bigendian, int nchannels, int swap, t_float samplerate);
-void soundfile_xferin_sample(int sfchannels, int nvecs, t_sample **vecs,
-    long itemsread, unsigned char *buf, int nitems, int bytespersamp,
-    int bigendian, int spread);
-void soundfile_xferin_float(int sfchannels, int nvecs, t_float **vecs,
-    long itemsread, unsigned char *buf, int nitems, int bytespersamp,
-    int bigendian, int spread);
-void soundfile_xferout_float(int nchannels, t_float **vecs,
-    unsigned char *buf, int nitems, long onset, int bytespersamp,
-    int bigendian, t_sample normalfactor, int spread);
-    
+int     garray_ambigendian              (void);
+
+int     soundfiler_writeargparse        (void *obj,
+                                            int *p_argc,
+                                            t_atom **p_argv,
+                                            t_symbol **p_filesym,
+                                            int *p_filetype,
+                                            int *p_bytespersamp,
+                                            int *p_swap,
+                                            int *p_bigendian,
+                                            int *p_normalize,
+                                            long *p_onset,
+                                            long *p_nframes,
+                                            t_float *p_rate);
+
+void    soundfile_finishwrite           (void *obj,
+                                            char *filename,
+                                            int fd,
+                                            int filetype,
+                                            long nframes,
+                                            long itemswritten,
+                                            int bytesperframe,
+                                            int swap);
+
+int     create_soundfile                (t_glist *canvas,
+                                            const char *filename,
+                                            int filetype,
+                                            int nframes,
+                                            int bytespersamp,
+                                            int bigendian,
+                                            int nchannels,
+                                            int swap,
+                                            t_float samplerate);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void    soundfile_xferin_sample         (int sfchannels,
+                                            int nvecs,
+                                            t_sample **vecs,
+                                            long itemsread,
+                                            unsigned char *buf,
+                                            int nitems,
+                                            int bytespersamp,
+                                            int bigendian,
+                                            int spread);
+
+void    soundfile_xferin_float          (int sfchannels,
+                                            int nvecs,
+                                            t_float **vecs,
+                                            long itemsread,
+                                            unsigned char *buf,
+                                            int nitems,
+                                            int bytespersamp,
+                                            int bigendian,
+                                            int spread);
+
+void    soundfile_xferout_sample        (int nchannels,
+                                            t_sample **vecs,
+                                            unsigned char *buf,
+                                            int nitems,
+                                            long onset,
+                                            int bytespersamp,
+                                            int bigendian,
+                                            t_sample normalfactor,
+                                            int spread);
+
+void    soundfile_xferout_float         (int nchannels,
+                                            t_float **vecs,
+                                            unsigned char *buf,
+                                            int nitems,
+                                            long onset,
+                                            int bytespersamp,
+                                            int bigendian,
+                                            t_sample normalfactor,
+                                            int spread);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #endif // __d_soundfile_h_
