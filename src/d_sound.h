@@ -18,6 +18,31 @@
 
 #define MAXSFCHANS 64
 
+#define MAXBYTESPERSAMPLE 4
+#define MAXVECSIZE 128
+
+#define READSIZE 65536
+#define WRITESIZE 65536
+#define DEFBUFPERCHAN 262144
+#define MINBUFSIZE (4 * READSIZE)
+#define MAXBUFSIZE 16777216     /* arbitrary; just don't want to hang malloc */
+
+#define REQUEST_NOTHING 0
+#define REQUEST_OPEN 1
+#define REQUEST_CLOSE 2
+#define REQUEST_QUIT 3
+#define REQUEST_BUSY 4
+
+#define STATE_IDLE 0
+#define STATE_STARTUP 1
+#define STATE_STREAM 2
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define sfread_cond_wait pthread_cond_wait
+#define sfread_cond_signal pthread_cond_signal
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -63,6 +88,24 @@ typedef struct _readsf
     pthread_t x_childthread;
 } t_readsf;
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int garray_ambigendian(void);
+int soundfiler_writeargparse(void *obj, int *p_argc, t_atom **p_argv,
+    t_symbol **p_filesym,
+    int *p_filetype, int *p_bytespersamp, int *p_swap, int *p_bigendian,
+    int *p_normalize, long *p_onset, long *p_nframes, t_float *p_rate);
+void soundfile_finishwrite(void *obj, char *filename, int fd,
+    int filetype, long nframes, long itemswritten, int bytesperframe, int swap);
+void soundfile_xferout_sample(int nchannels, t_sample **vecs,
+    unsigned char *buf, int nitems, long onset, int bytespersamp,
+    int bigendian, t_sample normalfactor, int spread);
+int create_soundfile(t_glist *canvas, const char *filename,
+    int filetype, int nframes, int bytespersamp,
+    int bigendian, int nchannels, int swap, t_float samplerate);
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #endif // __d_sound_h_
