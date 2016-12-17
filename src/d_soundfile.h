@@ -108,6 +108,12 @@ int create_soundfile(t_glist *canvas, const char *filename,
 void soundfile_xferin_sample(int sfchannels, int nvecs, t_sample **vecs,
     long itemsread, unsigned char *buf, int nitems, int bytespersamp,
     int bigendian, int spread);
+void soundfile_xferin_float(int sfchannels, int nvecs, t_float **vecs,
+    long itemsread, unsigned char *buf, int nitems, int bytespersamp,
+    int bigendian, int spread);
+void soundfile_xferout_float(int nchannels, t_float **vecs,
+    unsigned char *buf, int nitems, long onset, int bytespersamp,
+    int bigendian, t_sample normalfactor, int spread);
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
