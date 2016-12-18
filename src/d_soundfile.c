@@ -781,7 +781,7 @@ int create_soundfile(t_glist *canvas, const char *filename,
         nexthdr->ns_samplingRate = soundfile_swap4BytesIfNecessary(samplerate, swap);
         nexthdr->ns_channelCount = soundfile_swap4BytesIfNecessary(nchannels, swap);
         strcpy(nexthdr->ns_info, PD_NAME_SHORT " ");
-        soundfile_swap4bytesInfoIfNecessary(nexthdr->ns_info, swap);
+        soundfile_swapInfoIfNecessary(nexthdr->ns_info, swap);
         headersize = sizeof(t_nextstep);
     }
     else if (filetype == SOUNDFILE_AIFF)

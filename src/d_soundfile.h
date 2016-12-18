@@ -131,7 +131,7 @@ static inline uint16_t soundfile_swap2BytesIfNecessary (uint32_t n, int needToSw
     }
 }
 
-static inline void soundfile_swap4bytesInfoIfNecessary (char *s, int needToSwap)
+static inline void soundfile_swapInfoIfNecessary (char *s, int needToSwap)
 {
     if (needToSwap) {
     //
