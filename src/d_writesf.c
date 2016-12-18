@@ -114,7 +114,7 @@ static void *writesf_child_main(void *zz)
             pthread_mutex_unlock(&x->sf_mutex);
             fd = create_soundfile(canvas, filename, filetype, 0,
                     bytespersample, bigendian, sfchannels, 
-                        garray_ambigendian() != bigendian, samplerate);
+                        soundfile_systemIsBigEndian() != bigendian, samplerate);
             pthread_mutex_lock(&x->sf_mutex);
 #ifdef DEBUG_SOUNDFILE
             pute("5\n");
@@ -141,7 +141,7 @@ static void *writesf_child_main(void *zz)
             x->sf_fileDescriptor = fd;
             x->sf_fifoTail = 0;
             x->sf_itemsWritten = 0;
-            x->sf_needToSwapBytes = garray_ambigendian() != bigendian;      
+            x->sf_needToSwapBytes = soundfile_systemIsBigEndian() != bigendian;      
                 /* in a loop, wait for the fifo to have data and write it
                     to disk */
             while (x->sf_request == SOUNDFILE_BUSY ||

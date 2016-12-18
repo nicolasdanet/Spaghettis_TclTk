@@ -28,7 +28,7 @@ void canvas_initialize      (void);
 void garray_initialize      (void);
 void textdefine_initialize  (void);
 void loader_initialize      (void);
-
+void soundfile_initialize   (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -46,6 +46,7 @@ void canvas_release         (void);
 void garray_release         (void);
 void textdefine_release     (void);
 void loader_release         (void);
+void soundfile_release      (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -437,10 +438,12 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     garray_initialize();
     textdefine_initialize();
     loader_initialize();
+    soundfile_initialize();
 }
 
 void setup_release (void)
 {
+    soundfile_release();
     loader_release();
     textdefine_release();
     garray_release();

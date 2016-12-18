@@ -98,7 +98,80 @@ typedef struct _readsf_tilde {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int     garray_ambigendian              (void);
+static inline int soundfile_systemIsBigEndian (void)
+{
+    #if PD_LITTLE_ENDIAN
+    
+        return 0;
+        
+    #else
+    
+        return 1;
+        
+    #endif
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline uint32_t soundfile_swap4BytesIfNecessary (uint32_t n, int needToSwap)
+{
+    if (!needToSwap) { return n; }
+    else {
+        return (((n & 0xff) << 24) | ((n & 0xff00) << 8) | ((n & 0xff0000) >> 8) | ((n & 0xff000000) >> 24));
+    }
+}
+
+static inline uint16_t soundfile_swap2BytesIfNecessary (uint32_t n, int needToSwap)
+{
+    if (!needToSwap) { return n; }
+    else {
+        return (((n & 0xff) << 8) | ((n & 0xff00) >> 8));
+    }
+}
+
+static inline void soundfile_swap4bytesInfoIfNecessary (char *s, int needToSwap)
+{
+    if (needToSwap) {
+    //
+    char a = s[0];
+    char b = s[1];
+    char c = s[2];
+    char d = s[3];
+    
+    s[0] = d;
+    s[1] = c;
+    s[2] = b;
+    s[3] = a;
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline void soundfile_makeAiff80BitFloat (double sampleRate, unsigned char *s)
+{
+    int e;
+    unsigned long m = ldexp (frexp (sampleRate, &e), 32);
+    
+    s[0] = (e + 16382) >> 8;
+    s[1] = (e + 16382);
+    s[2] = m >> 24;
+    s[3] = m >> 16;
+    s[4] = m >> 8;
+    s[5] = m;
+    s[6] = 0;
+    s[7] = 0;
+    s[8] = 0;
+    s[9] = 0;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 int     soundfiler_writeargparse        (void *obj,
                                             int *p_argc,

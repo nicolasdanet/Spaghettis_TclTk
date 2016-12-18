@@ -533,7 +533,7 @@ static void readsf_open(t_readsf_tilde *x, t_symbol *s, int argc, t_atom *argv)
          x->sf_isFileBigEndian = 0;
     else if (*endian->s_name)
         post_error ("endianness neither 'b' nor 'l'");
-    else x->sf_isFileBigEndian = garray_ambigendian();
+    else x->sf_isFileBigEndian = soundfile_systemIsBigEndian();
     x->sf_numberOfFramesToSkip = (onsetframes > 0 ? onsetframes : 0);
     x->sf_headerSize = (headerbytes > 0 ? headerbytes : 
         (headerbytes == 0 ? -1 : 0));
