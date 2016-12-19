@@ -194,18 +194,7 @@ void soundfile_release (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/******************** soundfile access routines **********************/
-
-/* This routine opens a file, looks for either a nextstep or "wave" header,
-* seeks to end of it, and fills in bytes per sample and number of channels.
-* Only 2- and 3-byte fixed-point samples and 4-byte floating point samples
-* are supported.  If "headersize" is nonzero, the
-* caller should supply the number of channels, endinanness, and bytes per
-* sample; the header is ignored.  Otherwise, the routine tries to read the
-* header and fill in the properties.
-*/
-
-int open_soundfile_via_fd(int fd, int headersize,
+static int open_soundfile_via_fd(int fd, int headersize,
     int *p_bytespersamp, int *p_bigendian, int *p_nchannels, long *p_bytelimit,
     long skipframes)
 {
@@ -412,37 +401,43 @@ badheader:
     return (-1);
 }
 
-    /* open a soundfile, using file_openConsideringSearchPath().  This is used by readsf~ in
-    a not-perfectly-threadsafe way.  LATER replace with a thread-hardened
-    version of open_soundfile_via_canvas() */
-int open_soundfile(const char *dirname, const char *filename, int headersize,
-    int *p_bytespersamp, int *p_bigendian, int *p_nchannels, long *p_bytelimit,
-    long skipframes)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int soundfile_openFile (t_glist *glist,
+    const char *name,
+    int  headerSize,
+    int  *bytesPerSample,
+    int  *isBigEndian,
+    int  *numberOfChannels,
+    long *byteLimit,
+    long skipFrames)
 {
-    char buf[SOUNDFILE_STRING], *bufptr;
-    int fd;
-    fd = file_openConsideringSearchPath(dirname, filename, "", buf, &bufptr, PD_STRING);
-    if (fd < 0)
-        return (-1);
-    else return (open_soundfile_via_fd(fd, headersize, p_bytespersamp,
-        p_bigendian, p_nchannels, p_bytelimit, skipframes));
+    char t[PD_STRING] = { 0 };
+    char *s;
+    
+    int f = canvas_openFile (glist, name, "", t, &s, PD_STRING);
+    
+    if (f >= 0) {
+    
+        f = open_soundfile_via_fd (f, 
+                headerSize, 
+                bytesPerSample, 
+                isBigEndian, 
+                numberOfChannels, 
+                byteLimit, 
+                skipFrames);
+    
+        return f;
+    }
+    
+    return -1;
 }
 
-    /* open a soundfile, using open_via_canvas().  This is used by readsf~ in
-    a not-perfectly-threadsafe way.  LATER replace with a thread-hardened
-    version of open_soundfile_via_canvas() */
-int open_soundfile_via_canvas(t_glist *canvas, const char *filename, int headersize,
-    int *p_bytespersamp, int *p_bigendian, int *p_nchannels, long *p_bytelimit,
-    long skipframes)
-{
-    char buf[SOUNDFILE_STRING], *bufptr;
-    int fd;
-    fd = canvas_openFile(canvas, filename, "", buf, &bufptr, PD_STRING);
-    if (fd < 0)
-        return (-1);
-    else return (open_soundfile_via_fd(fd, headersize, p_bytespersamp,
-        p_bigendian, p_nchannels, p_bytelimit, skipframes));
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void soundfile_xferin_sample(int sfchannels, int nvecs, t_sample **vecs,
     long itemsread, unsigned char *buf, int nitems, int bytespersamp,

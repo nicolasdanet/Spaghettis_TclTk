@@ -145,7 +145,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
         }
         finalsize = vecsize;
     }
-    fd = open_soundfile_via_canvas(x->x_canvas, filename,
+    fd = soundfile_openFile(x->x_canvas, filename,
         headersize, &bytespersamp, &bigendian, &channels, &bytelimit,
             skipframes);
     

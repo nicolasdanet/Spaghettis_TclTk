@@ -67,7 +67,7 @@ static void *writesf_child_main(void *zz)
             int sfchannels = x->sf_numberOfChannels;
             int bigendian = x->sf_isFileBigEndian;
             int filetype = x->sf_fileType;
-            char *filename = x->sf_filename;
+            char *filename = x->sf_fileName;
             t_glist *canvas = x->sf_owner;
             t_float samplerate = x->sf_sampleRate;
 
@@ -86,7 +86,7 @@ static void *writesf_child_main(void *zz)
             {
                 int bytesperframe = x->sf_bytesPerSample * x->sf_numberOfChannels;
                 int bigendian = x->sf_isFileBigEndian;
-                char *filename = x->sf_filename;
+                char *filename = x->sf_fileName;
                 int fd = x->sf_fileDescriptor;
                 int filetype = x->sf_fileType;
                 int itemswritten = x->sf_itemsWritten;
@@ -227,7 +227,7 @@ static void *writesf_child_main(void *zz)
             {
                 int bytesperframe = x->sf_bytesPerSample * x->sf_numberOfChannels;
                 int bigendian = x->sf_isFileBigEndian;
-                char *filename = x->sf_filename;
+                char *filename = x->sf_fileName;
                 int fd = x->sf_fileDescriptor;
                 int filetype = x->sf_fileType;
                 int itemswritten = x->sf_itemsWritten;
@@ -414,7 +414,7 @@ static void writesf_open(t_writesf *x, t_symbol *s, int argc, t_atom *argv)
     x->sf_bytesPerSample = bytespersamp;
     x->sf_needToSwapBytes = swap;
     x->sf_isFileBigEndian = bigendian;
-    x->sf_filename = filesym->s_name;
+    x->sf_fileName = filesym->s_name;
     x->sf_fileType = filetype;
     x->sf_itemsWritten = 0;
     x->sf_request = SOUNDFILE_OPEN;

@@ -88,7 +88,7 @@ typedef struct _readsf_tilde {
     pthread_t           sf_thread;
     t_sample            *(sf_vectorsOut[SOUNDFILE_MAXIMUM_CHANNELS]);
     char                *sf_buffer;
-    char                *sf_filename;
+    char                *sf_fileName;
     t_glist             *sf_owner;
     t_clock             *sf_clock;
     t_outlet            *sf_outlet;
@@ -169,6 +169,19 @@ static inline void soundfile_makeAiff80BitFloat (double sampleRate, unsigned cha
     s[9] = 0;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int     soundfile_openFile              (t_glist *glist,
+                                            const char *name,
+                                            int  headerSize,
+                                            int  *bytesPerSample,
+                                            int  *isBigEndian,
+                                            int  *numberOfChannels,
+                                            long *byteLimit,
+                                            long skipFrames);
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

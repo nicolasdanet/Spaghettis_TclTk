@@ -95,8 +95,8 @@ static void *readsf_child_main(void *zz)
             int bytespersample = x->sf_bytesPerSample;
             int sfchannels = x->sf_numberOfChannels;
             int bigendian = x->sf_isFileBigEndian;
-            char *filename = x->sf_filename;
-            char *dirname = canvas_getEnvironment (x->sf_owner)->ce_directory->s_name;
+            char *filename = x->sf_fileName;
+            // char *dirname = canvas_getEnvironment (x->sf_owner)->ce_directory->s_name;
                 /* alter the request code so that an ensuing "open" will get
                 noticed. */
 #ifdef DEBUG_SOUNDFILE
@@ -118,7 +118,7 @@ static void *readsf_child_main(void *zz)
             }
                 /* open the soundfile with the mutex unlocked */
             pthread_mutex_unlock(&x->sf_mutex);
-            fd = open_soundfile(dirname, filename,
+            fd = soundfile_openFile (x->sf_owner, filename,
                 skipheaderbytes, &bytespersample, &bigendian,
                 &sfchannels, &bytelimit, onsetframes);      
             pthread_mutex_lock(&x->sf_mutex);
@@ -429,7 +429,7 @@ static t_int *readsf_perform(t_int *w)
             int xfersize;
             if (x->sf_error)
             {
-                post_error ("dsp: %s: %s", x->sf_filename,
+                post_error ("dsp: %s: %s", x->sf_fileName,
                     (x->sf_error == EIO ?
                         "unknown or bad header format" :
                             strerror(x->sf_error)));
@@ -524,7 +524,7 @@ static void readsf_open(t_readsf_tilde *x, t_symbol *s, int argc, t_atom *argv)
         return;
     pthread_mutex_lock(&x->sf_mutex);
     x->sf_request = SOUNDFILE_OPEN;
-    x->sf_filename = filesym->s_name;
+    x->sf_fileName = filesym->s_name;
     x->sf_fifoTail = 0;
     x->sf_fifoHead = 0;
     if (*endian->s_name == 'b')
