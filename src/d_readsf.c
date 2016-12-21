@@ -118,9 +118,22 @@ static void *readsf_child_main(void *zz)
             }
                 /* open the soundfile with the mutex unlocked */
             pthread_mutex_unlock(&x->sf_mutex);
-            fd = soundfile_openFile (x->sf_owner, filename,
-                skipheaderbytes, &bytespersample, &bigendian,
-                &sfchannels, &bytelimit, onsetframes);      
+            
+            t_audioproperties args;
+            args.ap_headerSize = skipheaderbytes;
+            args.ap_isBigEndian = bigendian;
+            args.ap_bytesPerSample = bytespersample;
+            args.ap_numberOfChannels = sfchannels;
+            args.ap_dataSizeInBytes = bytelimit;
+    
+            fd = soundfile_openFile (x->sf_owner, filename, onsetframes, &args);
+                
+            skipheaderbytes = args.ap_headerSize;
+            bigendian = args.ap_isBigEndian;
+            bytespersample = args.ap_bytesPerSample;
+            sfchannels = args.ap_numberOfChannels;
+            bytelimit = args.ap_dataSizeInBytes;
+         
             pthread_mutex_lock(&x->sf_mutex);
 
 #ifdef DEBUG_SOUNDFILE

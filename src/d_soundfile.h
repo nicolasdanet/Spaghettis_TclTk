@@ -123,7 +123,7 @@ static inline uint32_t soundfile_swap4BytesIfNecessary (uint32_t n, int needToSw
     }
 }
 
-static inline uint16_t soundfile_swap2BytesIfNecessary (uint32_t n, int needToSwap)
+static inline uint16_t soundfile_swap2BytesIfNecessary (uint16_t n, int needToSwap)
 {
     if (!needToSwap) { return n; }
     else {
@@ -173,14 +173,22 @@ static inline void soundfile_makeAiff80BitFloat (double sampleRate, unsigned cha
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+typedef struct _audioproperties {
+    int     ap_headerSize;
+    int     ap_isBigEndian;
+    int     ap_bytesPerSample;
+    int     ap_numberOfChannels;
+    int64_t ap_dataSizeInBytes;
+    } t_audioproperties;
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 int     soundfile_openFile              (t_glist *glist,
                                             const char *name,
-                                            int  headerSize,
-                                            int  *bytesPerSample,
-                                            int  *isBigEndian,
-                                            int  *numberOfChannels,
-                                            long *byteLimit,
-                                            long skipFrames);
+                                            long skipFrames,
+                                            t_audioproperties *args);
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

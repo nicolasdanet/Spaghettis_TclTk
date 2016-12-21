@@ -145,9 +145,20 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
         }
         finalsize = vecsize;
     }
-    fd = soundfile_openFile(x->x_canvas, filename,
-        headersize, &bytespersamp, &bigendian, &channels, &bytelimit,
-            skipframes);
+    t_audioproperties args;
+    args.ap_headerSize = headersize;
+    args.ap_isBigEndian = bigendian;
+    args.ap_bytesPerSample = bytespersamp;
+    args.ap_numberOfChannels = channels;
+    args.ap_dataSizeInBytes = bytelimit;
+    
+    fd = soundfile_openFile(x->x_canvas, filename, skipframes, &args);
+    
+    headersize = args.ap_headerSize;
+    bigendian = args.ap_isBigEndian;
+    bytespersamp = args.ap_bytesPerSample;
+    channels = args.ap_numberOfChannels;
+    bytelimit = args.ap_dataSizeInBytes;
     
     if (fd < 0)
     {

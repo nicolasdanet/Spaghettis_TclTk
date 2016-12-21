@@ -20,9 +20,85 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+/* Basic (linear PCM only) audio files handling. */
+/* Note that for now unsupported sub-chunks are not preserved at save. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 #define SOUNDFILE_WAVE          0
 #define SOUNDFILE_AIFF          1
 #define SOUNDFILE_NEXT          2
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#define SOUNDFILE_NONE          3
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* The WAVE header. */ 
+/* All WAVE files are little-endian. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* < http://soundfile.sapp.org/doc/WaveFormat/ > */
+/* < http://tiny.systems/software/soundProgrammer/WavFormatDocs.pdf > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _wave {
+    char        w_fileID[4];
+    uint32_t    w_chunkSize;
+    char        w_waveID[4];
+    char        w_fmtID[4];
+    uint32_t    w_fmtChunkSize;
+    uint16_t    w_audioFormat;
+    uint16_t    w_numberOfChannels;
+    uint32_t    w_samplesPerSecond;
+    uint32_t    w_bytesPerSecond;
+    uint16_t    w_blockAlign;
+    uint16_t    w_bitsPerSample;
+    char        w_dataChunkID[4];
+    uint32_t    w_dataChunkSize;
+    } t_wave;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* The AIFF header. */
+/* All AIFF files are big-endian. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* < http://muratnkonar.com/aiff/index.html > */
+/* < http://paulbourke.net/dataformats/audio/ > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _aiff {
+    char            a_fileID[4];
+    uint32_t        a_chunkSize;
+    char            a_aiffID[4];
+    char            a_fmtID[4];
+    uint32_t        a_fmtChunkSize;
+    uint16_t        a_numberOfChannels;
+    uint16_t        a_numberOfFramesHigh;
+    uint16_t        a_numberOfFramesLow;
+    uint16_t        a_bitsPerSample;
+    unsigned char   a_sampleRate[10];
+    char            a_dataChunkID[4];
+    uint32_t        a_dataChunkSize;
+    uint32_t        a_dataOffset;
+    uint32_t        a_dataBlock;
+    } t_aiff;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -53,116 +129,17 @@ typedef struct _nextstep {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define NS_FORMAT_LINEAR_16     3
-#define NS_FORMAT_LINEAR_24     4
-#define NS_FORMAT_FLOAT         6
+#define NS_FORMAT_LINEAR_16             3
+#define NS_FORMAT_LINEAR_24             4
+#define NS_FORMAT_FLOAT                 6
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* The WAVE header. */ 
-/* All WAVE files are little-endian. */
-/* Assume that "fmt" chunk comes first. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-/* < http://soundfile.sapp.org/doc/WaveFormat/ > */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-typedef struct _wave {                      /* Contains fmt chunk for convenience. */
-    char        w_fileID[4];
-    uint32_t    w_chunkSize;
-    char        w_waveID[4];
-    char        w_fmtID[4];
-    uint32_t    w_fmtChunkSize;
-    uint16_t    w_fmtTag;
-    uint16_t    w_numberOfChannels;
-    uint32_t    w_samplesPerSecond;
-    uint32_t    w_bytesPerSecond;
-    uint16_t    w_blockAlign;
-    uint16_t    w_bitsPerSample;
-    char        w_dataChunkID[4];
-    uint32_t    w_dataChunkSize;
-    } t_wave;
-
-typedef struct _fmt {
-    uint16_t    f_fmtTag;
-    uint16_t    f_numberOfChannels;
-    uint32_t    f_samplesPerSecond;
-    uint32_t    f_bytesPerSecond;
-    uint16_t    f_blockAlign;
-    uint16_t    f_bitsPerSamples;
-    } t_fmt;
-
-typedef struct _wavechunk {
-    char        wc_ID[4];
-    uint32_t    wc_size;
-    } t_wavechunk;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#define WAV_INT                 1
-#define WAV_FLOAT               3
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-/* The AIFF header. */
-/* All WAVE files are big-endian. */
-/* Assumed that "COMM" chunk comes first. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-/* < http://muratnkonar.com/aiff/index.html > */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-typedef struct _aiff {                      /* Contains COMM chunk for convenience. */
-    char            a_fileID[4];
-    uint32_t        a_chunkSize;
-    char            a_aiffID[4];
-    char            a_fmtID[4];
-    uint32_t        a_fmtChunkSize;
-    uint16_t        a_numberOfChannels;
-    uint16_t        a_framesHigh;
-    uint16_t        a_framesLow;
-    uint16_t        a_bitsPerSample;
-    unsigned char   a_sampleRate[10];
-    } t_aiff;
-
-typedef struct _comm {
-    uint16_t        c_numberOfChannels;
-    uint16_t        c_framesHigh;
-    uint16_t        c_framesLow;
-    uint16_t        c_bitsPerSamples;
-    unsigned char   c_sampleRate[10];
-    } t_comm;
-
-typedef struct _aiffchunk {
-    char            ac_ID[4];
-    uint32_t        ac_size;
-    uint32_t        ac_offset;
-    uint32_t        ac_block;
-    } t_aiffchunk;
-    
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#define SOUNDFILE_SIZE_NEXTSTEP         28
-#define SOUNDFILE_SIZE_WAVE             44
-#define SOUNDFILE_SIZE_WAVECHUNK        8
-#define SOUNDFILE_SIZE_AIFF             38
-#define SOUNDFILE_SIZE_AIFFCHUNK        16
+#define SOUNDFILE_HEADER_NEXT           28
+#define SOUNDFILE_HEADER_WAVE           44
+#define SOUNDFILE_HEADER_AIFF           54
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -170,7 +147,19 @@ typedef struct _aiffchunk {
 
 #define SOUNDFILE_SCALE                 (1.0 / (1024.0 * 1024.0 * 1024.0 * 2.0))
 
-#define SOUNDFILE_STRING                PD_STRING
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#define SOUNDFILE_BUFFER                PD_STRING
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+typedef struct _checkheader {
+    char    ch_c[SOUNDFILE_BUFFER];
+    int     ch_bytesRead;
+    } t_checkheader;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -178,11 +167,9 @@ typedef struct _aiffchunk {
 
 void soundfile_initialize (void)
 {
-    PD_ASSERT (sizeof (t_nextstep)  == SOUNDFILE_SIZE_NEXTSTEP);
-    PD_ASSERT (sizeof (t_wave)      == SOUNDFILE_SIZE_WAVE);
-    PD_ASSERT (sizeof (t_wavechunk) == SOUNDFILE_SIZE_WAVECHUNK);
-    //PD_ASSERT (sizeof (t_aiff)    == SOUNDFILE_SIZE_AIFF);
-    PD_ASSERT (sizeof (t_aiffchunk) == SOUNDFILE_SIZE_AIFFCHUNK);
+    PD_ASSERT (SOUNDFILE_BUFFER > 16);
+    PD_ASSERT (SOUNDFILE_BUFFER > SOUNDFILE_HEADER_WAVE);
+    PD_ASSERT (SOUNDFILE_BUFFER > SOUNDFILE_HEADER_AIFF);
 }
 
 void soundfile_release (void)
@@ -194,243 +181,201 @@ void soundfile_release (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int open_soundfile_via_fd(int fd, int headersize,
-    int *p_bytespersamp, int *p_bigendian, int *p_nchannels, long *p_bytelimit,
-    long skipframes)
+/* Note that currently only the canonical file format is supported. */
+/* A properly way to traverse and fetch sub-chunks should be implemented. */
+/* < http://stackoverflow.com/a/19991594 > */
+
+static t_error soundfile_openFilePerformWAVE (int f, int swap, t_checkheader *t, t_audioproperties *args)
 {
-    int format, nchannels, bigendian, bytespersamp, swap, sysrtn;
-    long bytelimit = PD_INT_MAX;
-    errno = 0;
-    if (headersize >= 0) /* header detection overridden */
-    {
-        bigendian = *p_bigendian;
-        nchannels = *p_nchannels;
-        bytespersamp = *p_bytespersamp;
-        bytelimit = *p_bytelimit;
+    t_error err = PD_ERROR;
+
+    if (t->ch_bytesRead > SOUNDFILE_HEADER_WAVE) {
+    //
+    if (!strncmp (t->ch_c + 12, "fmt ", 4)) {
+    if (!strncmp (t->ch_c + 36, "data", 4)) {
+    //
+    int fmtSize          = (int)soundfile_swap4BytesIfNecessary (*((uint32_t *)(t->ch_c + 16)), swap);
+    int audioFormat      = (int)soundfile_swap2BytesIfNecessary (*((uint16_t *)(t->ch_c + 20)), swap);
+    int numberOfChannels = (int)soundfile_swap2BytesIfNecessary (*((uint16_t *)(t->ch_c + 22)), swap);
+    int bitsPerSample    = (int)soundfile_swap2BytesIfNecessary (*((uint16_t *)(t->ch_c + 34)), swap);
+    int64_t dataSize     = (int64_t)soundfile_swap4BytesIfNecessary (*((uint32_t *)(t->ch_c + 40)), swap);
+    
+    PD_ASSERT (fmtSize == 16);
+    PD_ASSERT (audioFormat == 1);   /* Linear PCM. */
+
+    if (audioFormat == 1) {
+    //
+    if (bitsPerSample == 16 || bitsPerSample == 24 || bitsPerSample == 32) {
+    //
+    args->ap_headerSize        = SOUNDFILE_HEADER_WAVE;
+    args->ap_bytesPerSample    = bitsPerSample / 8;
+    args->ap_numberOfChannels  = numberOfChannels;
+    args->ap_dataSizeInBytes   = (int64_t)dataSize;
+    
+    err = PD_ERROR_NONE;
+    //
     }
-    else
-    {
-        union
-        {
-            char b_c[SOUNDFILE_STRING];
-            t_fmt b_fmt;
-            t_nextstep b_nextstep;
-            t_wavechunk b_wavechunk;
-            t_aiffchunk b_datachunk;
-            t_comm b_commchunk;
-        } buf;
-        
-        int SOUNDFILE_HEADER_READ = (PD_MAX (16, (PD_MAX (sizeof (t_wave), sizeof (t_nextstep)) + 2)));
-        int bytesread = read(fd, buf.b_c, SOUNDFILE_HEADER_READ);
-        int format;
-        if (bytesread < 4)
-            goto badheader;
-        if (!strncmp(buf.b_c, ".snd", 4))
-            format = SOUNDFILE_NEXT, bigendian = 1;
-        else if (!strncmp(buf.b_c, "dns.", 4))
-            format = SOUNDFILE_NEXT, bigendian = 0;
-        else if (!strncmp(buf.b_c, "RIFF", 4))
-        {
-            if (bytesread < 12 || strncmp(buf.b_c + 8, "WAVE", 4))
-                goto badheader;
-            format = SOUNDFILE_WAVE, bigendian = 0;
-        }
-        else if (!strncmp(buf.b_c, "FORM", 4))
-        {
-            if (bytesread < 12 || strncmp(buf.b_c + 8, "AIFF", 4))
-                goto badheader;
-            format = SOUNDFILE_AIFF, bigendian = 1;
-        }
-        else
-            goto badheader;
-        swap = (bigendian != soundfile_systemIsBigEndian());
-        if (format == SOUNDFILE_NEXT)   /* nextstep header */
-        {
-            t_nextstep *nsbuf = &buf.b_nextstep;
-            if (bytesread < (int)sizeof(t_nextstep))
-                goto badheader;
-            nchannels = soundfile_swap4BytesIfNecessary(nsbuf->ns_channelCount, swap);
-            format = soundfile_swap4BytesIfNecessary(nsbuf->ns_dataFormat, swap);
-            headersize = soundfile_swap4BytesIfNecessary(nsbuf->ns_dataLocation, swap);
-            if (format == NS_FORMAT_LINEAR_16)
-                bytespersamp = 2;
-            else if (format == NS_FORMAT_LINEAR_24)
-                bytespersamp = 3;
-            else if (format == NS_FORMAT_FLOAT)
-                bytespersamp = 4;
-            else goto badheader;
-            bytelimit = PD_INT_MAX;
-        }
-        else if (format == SOUNDFILE_WAVE)     /* wave header */
-        {
-               t_wavechunk *wavechunk = &buf.b_wavechunk;
-               /*  This is awful.  You have to skip over chunks,
-               except that if one happens to be a "fmt" chunk, you want to
-               find out the format from that one.  The case where the
-               "fmt" chunk comes after the audio isn't handled. */
-            headersize = 12;
-            if (bytesread < 20)
-                goto badheader;
-                /* First we guess a number of channels, etc., in case there's
-                no "fmt" chunk to follow. */
-            nchannels = 1;
-            bytespersamp = 2;
-                /* copy the first chunk header to beginnning of buffer. */
-            memcpy(buf.b_c, buf.b_c + headersize, sizeof(t_wavechunk));
-            /* post("chunk %c %c %c %c",
-                    ((t_wavechunk *)buf)->wc_ID[0],
-                    ((t_wavechunk *)buf)->wc_ID[1],
-                    ((t_wavechunk *)buf)->wc_ID[2],
-                    ((t_wavechunk *)buf)->wc_ID[3]); */
-                /* read chunks in loop until we get to the data chunk */
-            while (strncmp(wavechunk->wc_ID, "data", 4))
-            {
-                long chunksize = soundfile_swap4BytesIfNecessary(wavechunk->wc_size,
-                    swap), seekto = headersize + chunksize + 8, seekout;
-                if (seekto & 1)     /* pad up to even number of bytes */
-                    seekto++;                
-                if (!strncmp(wavechunk->wc_ID, "fmt ", 4))
-                {
-                    long commblockonset = headersize + 8;
-                    seekout = lseek(fd, commblockonset, SEEK_SET);
-                    if (seekout != commblockonset)
-                        goto badheader;
-                    if (read(fd, buf.b_c, sizeof(t_fmt)) < (int) sizeof(t_fmt))
-                            goto badheader;
-                    nchannels = soundfile_swap2BytesIfNecessary(buf.b_fmt.f_numberOfChannels, swap);
-                    format = soundfile_swap2BytesIfNecessary(buf.b_fmt.f_bitsPerSamples, swap);
-                    if (format == 16)
-                        bytespersamp = 2;
-                    else if (format == 24)
-                        bytespersamp = 3;
-                    else if (format == 32)
-                        bytespersamp = 4;
-                    else goto badheader;
-                }
-                seekout = lseek(fd, seekto, SEEK_SET);
-                if (seekout != seekto)
-                    goto badheader;
-                if (read(fd, buf.b_c, sizeof(t_wavechunk)) <
-                    (int) sizeof(t_wavechunk))
-                        goto badheader;
-                /* post("new chunk %c %c %c %c at %d",
-                    wavechunk->wc_ID[0],
-                    wavechunk->wc_ID[1],
-                    wavechunk->wc_ID[2],
-                    wavechunk->wc_ID[3], seekto); */
-                headersize = seekto;
-            }
-            bytelimit = soundfile_swap4BytesIfNecessary(wavechunk->wc_size, swap);
-            headersize += 8;
-        }
-        else
-        {
-                /* AIFF.  same as WAVE; actually predates it.  Disgusting. */
-            t_aiffchunk *datachunk;
-            headersize = 12;
-            if (bytesread < 20)
-                goto badheader;
-                /* First we guess a number of channels, etc., in case there's
-                no COMM block to follow. */
-            nchannels = 1;
-            bytespersamp = 2;
-                /* copy the first chunk header to beginnning of buffer. */
-            memcpy(buf.b_c, buf.b_c + headersize, sizeof(t_aiffchunk));
-                /* read chunks in loop until we get to the data chunk */
-            datachunk = &buf.b_datachunk;
-            while (strncmp(datachunk->ac_ID, "SSND", 4))
-            {
-                long chunksize = soundfile_swap4BytesIfNecessary(datachunk->ac_size,
-                    swap), seekto = headersize + chunksize + 8, seekout;
-                if (seekto & 1)     /* pad up to even number of bytes */
-                    seekto++;
-                /* post("chunk %c %c %c %c seek %d",
-                    datachunk->ac_ID[0],
-                    datachunk->ac_ID[1],
-                    datachunk->ac_ID[2],
-                    datachunk->ac_ID[3], seekto); */
-                if (!strncmp(datachunk->ac_ID, "COMM", 4))
-                {
-                    long commblockonset = headersize + 8;
-                    t_comm *commchunk;
-                    seekout = lseek(fd, commblockonset, SEEK_SET);
-                    if (seekout != commblockonset)
-                        goto badheader;
-                    if (read(fd, buf.b_c, sizeof(t_comm)) <
-                        (int) sizeof(t_comm))
-                            goto badheader;
-                    commchunk = &buf.b_commchunk;
-                    nchannels = soundfile_swap2BytesIfNecessary(commchunk->c_numberOfChannels, swap);
-                    format = soundfile_swap2BytesIfNecessary(commchunk->c_bitsPerSamples, swap);
-                    if (format == 16)
-                        bytespersamp = 2;
-                    else if (format == 24)
-                        bytespersamp = 3;
-                    else goto badheader;
-                }
-                seekout = lseek(fd, seekto, SEEK_SET);
-                if (seekout != seekto)
-                    goto badheader;
-                if (read(fd, buf.b_c, sizeof(t_aiffchunk)) <
-                    (int) sizeof(t_aiffchunk))
-                        goto badheader;
-                headersize = seekto;
-            }
-            bytelimit = soundfile_swap4BytesIfNecessary(datachunk->ac_size, swap) - 8;
-            headersize += sizeof(t_aiffchunk);
-        }
+    //
     }
-        /* seek past header and any sample frames to skip */
-    sysrtn = lseek(fd,
-        ((off_t)nchannels) * bytespersamp * skipframes + headersize, 0);
-    if (sysrtn != nchannels * bytespersamp * skipframes + headersize)
-        return (-1);
-     bytelimit -= nchannels * bytespersamp * skipframes;
-     if (bytelimit < 0)
-        bytelimit = 0;
-        /* copy sample format back to caller */
-    *p_bigendian = bigendian;
-    *p_nchannels = nchannels;
-    *p_bytespersamp = bytespersamp;
-    *p_bytelimit = bytelimit;
-    return (fd);
-badheader:
-        /* the header wasn't recognized.  We're threadable here so let's not
-        print out the error... */
-    errno = EIO;
-    return (-1);
+    //
+    }
+    }
+    //
+    }
+    
+    return err;
+}
+
+/* See comments above. */
+
+static t_error soundfile_openFilePerformAIFF (int f, int swap, t_checkheader *t, t_audioproperties *args)
+{
+    t_error err = PD_ERROR;
+    
+    if (t->ch_bytesRead > SOUNDFILE_HEADER_AIFF) {
+    //
+    if (!strncmp (t->ch_c + 12, "COMM", 4)) {
+    if (!strncmp (t->ch_c + 38, "SSND", 4)) {
+    //
+    int numberOfChannels = (int)soundfile_swap2BytesIfNecessary (*((uint16_t *)(t->ch_c + 20)), swap);
+    int bitsPerSample    = (int)soundfile_swap2BytesIfNecessary (*((uint16_t *)(t->ch_c + 26)), swap);
+    int64_t dataSize     = (int64_t)soundfile_swap4BytesIfNecessary (*((uint32_t *)(t->ch_c + 42)), swap);
+    int offset           = (int)soundfile_swap4BytesIfNecessary (*((uint32_t *)(t->ch_c + 46)), swap);
+    int blockAlign       = (int)soundfile_swap4BytesIfNecessary (*((uint32_t *)(t->ch_c + 50)), swap);
+    
+    PD_ASSERT (offset == 0);
+    PD_ASSERT (blockAlign == 0);
+
+    if (bitsPerSample == 16 || bitsPerSample == 24 || bitsPerSample == 32) {
+    //
+    args->ap_headerSize        = SOUNDFILE_HEADER_AIFF;
+    args->ap_bytesPerSample    = bitsPerSample / 8;
+    args->ap_numberOfChannels  = numberOfChannels;
+    args->ap_dataSizeInBytes   = (int64_t)dataSize;
+    
+    err = PD_ERROR_NONE;
+    //
+    }
+    //
+    }
+    }
+    //
+    }
+    
+    return err;
+}
+
+static t_error soundfile_openFilePerformNEXT (int f, int swap, t_checkheader *t, t_audioproperties *args)
+{
+    t_error err = PD_ERROR;
+    
+    if (t->ch_bytesRead > SOUNDFILE_HEADER_NEXT) {
+    //
+    int dataLocation     = (int)soundfile_swap4BytesIfNecessary (*((uint32_t *)(t->ch_c + 4)), swap);
+    int64_t dataSize     = (int64_t)soundfile_swap4BytesIfNecessary (*((uint32_t *)(t->ch_c + 8)), swap);
+    int audioFormat      = (int)soundfile_swap4BytesIfNecessary (*((uint32_t *)(t->ch_c + 12)), swap);
+    int numberOfChannels = (int)soundfile_swap4BytesIfNecessary (*((uint32_t *)(t->ch_c + 20)), swap);
+    int bytesPerSample   = 0;
+    
+    /* Mu-law format NOT handled. */
+    
+    /* < https://en.wikipedia.org/wiki/Mu-law > */
+    
+    if (audioFormat == NS_FORMAT_LINEAR_16)      { bytesPerSample = 2; }
+    else if (audioFormat == NS_FORMAT_LINEAR_24) { bytesPerSample = 3; }
+    else if (audioFormat == NS_FORMAT_FLOAT)     { bytesPerSample = 4; }
+            
+    if (bytesPerSample) {
+    //
+    args->ap_headerSize        = dataLocation;
+    args->ap_bytesPerSample    = bytesPerSample;
+    args->ap_numberOfChannels  = numberOfChannels;
+    args->ap_dataSizeInBytes   = (int64_t)dataSize;
+    
+    err = PD_ERROR_NONE;
+    //
+    }
+    //
+    }
+    
+    return err;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int soundfile_openFile (t_glist *glist,
-    const char *name,
-    int  headerSize,
-    int  *bytesPerSample,
-    int  *isBigEndian,
-    int  *numberOfChannels,
-    long *byteLimit,
-    long skipFrames)
+static t_error soundfile_openFilePerformParseFormat (int f, t_audioproperties *args)
+{
+    t_error err = PD_ERROR;
+    
+    t_checkheader t;
+
+    t.ch_bytesRead = read (f, t.ch_c, SOUNDFILE_BUFFER);
+
+    if (t.ch_bytesRead >= 4) {
+    //
+    int format = SOUNDFILE_NONE;
+    
+    if (!strncmp (t.ch_c,         ".snd", 4)) { format = SOUNDFILE_NEXT; args->ap_isBigEndian = 1; }
+    else if (!strncmp (t.ch_c,    "dns.", 4)) { format = SOUNDFILE_NEXT; args->ap_isBigEndian = 0; }
+    else if (t.ch_bytesRead >= 12) {
+    //
+    if (!strncmp (t.ch_c,         "RIFF", 4)) {
+        if (!strncmp (t.ch_c + 8, "WAVE", 4)) { format = SOUNDFILE_WAVE; args->ap_isBigEndian = 0; }
+    } else if (!strncmp (t.ch_c,  "FORM", 4)) {
+        if (!strncmp (t.ch_c + 8, "AIFF", 4)) { format = SOUNDFILE_AIFF; args->ap_isBigEndian = 1; }
+    }
+    //
+    }
+    
+    if (format != SOUNDFILE_NONE) {
+        int swap = (args->ap_isBigEndian != soundfile_systemIsBigEndian());
+        if (format == SOUNDFILE_WAVE) { err = soundfile_openFilePerformWAVE (f, swap, &t, args); }
+        if (format == SOUNDFILE_AIFF) { err = soundfile_openFilePerformAIFF (f, swap, &t, args); }
+        if (format == SOUNDFILE_NEXT) { err = soundfile_openFilePerformNEXT (f, swap, &t, args); }
+    }
+    //
+    }
+
+    return err;
+}
+        
+static int soundfile_openFilePerform (int f, long skipFrames, t_audioproperties *args)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    if (args->ap_headerSize < 0) { err = soundfile_openFilePerformParseFormat (f, args); }
+    
+    if (!err) {
+    //
+    int m   = args->ap_numberOfChannels * args->ap_bytesPerSample * skipFrames;
+    off_t n = args->ap_headerSize + m;
+
+    err = (lseek (f, n, SEEK_SET) != n);
+        
+    if (!err) {
+        args->ap_dataSizeInBytes = PD_MAX (0, args->ap_dataSizeInBytes - m);
+        return f;
+    }
+    //
+    }
+    
+    return -1;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int soundfile_openFile (t_glist *glist, const char *name, long skipFrames, t_audioproperties *args)
 {
     char t[PD_STRING] = { 0 };
     char *s;
     
     int f = canvas_openFile (glist, name, "", t, &s, PD_STRING);
     
-    if (f >= 0) {
-    
-        f = open_soundfile_via_fd (f, 
-                headerSize, 
-                bytesPerSample, 
-                isBigEndian, 
-                numberOfChannels, 
-                byteLimit, 
-                skipFrames);
-    
-        return f;
-    }
+    if (f >= 0) { return soundfile_openFilePerform (f, skipFrames, args); }
     
     return -1;
 }
@@ -753,7 +698,7 @@ int create_soundfile(t_glist *canvas, const char *filename,
     int bigendian, int nchannels, int swap, t_float samplerate)
 {
     char filenamebuf[PD_STRING], buf2[PD_STRING];
-    char headerbuf[SOUNDFILE_STRING];
+    char headerbuf[SOUNDFILE_BUFFER];
     t_wave *wavehdr = (t_wave *)headerbuf;
     t_nextstep *nexthdr = (t_nextstep *)headerbuf;
     t_aiff *aiffhdr = (t_aiff *)headerbuf;
@@ -793,14 +738,14 @@ int create_soundfile(t_glist *canvas, const char *filename,
         aiffhdr->a_fmtChunkSize = soundfile_swap4BytesIfNecessary(18, swap);
         aiffhdr->a_numberOfChannels = soundfile_swap2BytesIfNecessary(nchannels, swap);
         longtmp = soundfile_swap4BytesIfNecessary(nframes, swap);
-        memcpy(&aiffhdr->a_framesHigh, &longtmp, 4);
+        memcpy(&aiffhdr->a_numberOfFramesHigh, &longtmp, 4);
         aiffhdr->a_bitsPerSample = soundfile_swap2BytesIfNecessary(8 * bytespersamp, swap);
         soundfile_makeAiff80BitFloat(samplerate, aiffhdr->a_sampleRate);
         strncpy(((char *)(&aiffhdr->a_sampleRate))+10, "SSND", 4);
         longtmp = soundfile_swap4BytesIfNecessary(datasize + 8, swap);
         memcpy(((char *)(&aiffhdr->a_sampleRate))+14, &longtmp, 4);
         memset(((char *)(&aiffhdr->a_sampleRate))+18, 0, 8);
-        headersize = SOUNDFILE_SIZE_AIFF + SOUNDFILE_SIZE_AIFFCHUNK;
+        headersize = SOUNDFILE_HEADER_AIFF;
     }
     else    /* WAVE format */
     {
@@ -812,8 +757,8 @@ int create_soundfile(t_glist *canvas, const char *filename,
         strncpy(wavehdr->w_waveID, "WAVE", 4);
         strncpy(wavehdr->w_fmtID, "fmt ", 4);
         wavehdr->w_fmtChunkSize = soundfile_swap4BytesIfNecessary(16, swap);
-        wavehdr->w_fmtTag =
-            soundfile_swap2BytesIfNecessary((bytespersamp == 4 ? WAV_FLOAT : WAV_INT), swap);
+        wavehdr->w_audioFormat =
+            soundfile_swap2BytesIfNecessary((bytespersamp == 4 ? 3 : 1), swap);
         wavehdr->w_numberOfChannels = soundfile_swap2BytesIfNecessary(nchannels, swap);
         wavehdr->w_samplesPerSecond = soundfile_swap4BytesIfNecessary(samplerate, swap);
         wavehdr->w_bytesPerSecond =
@@ -869,7 +814,7 @@ void soundfile_finishwrite(void *obj, char *filename, int fd,
         {
             long mofo;
             if (lseek(fd,
-                ((char *)(&((t_aiff *)0)->a_framesHigh)) - (char *)0,
+                ((char *)(&((t_aiff *)0)->a_numberOfFramesHigh)) - (char *)0,
                     SEEK_SET) == 0)
                         goto baddonewrite;
             mofo = soundfile_swap4BytesIfNecessary(itemswritten, swap);
@@ -879,10 +824,11 @@ void soundfile_finishwrite(void *obj, char *filename, int fd,
                 ((char *)(&((t_aiff *)0)->a_chunkSize)) - (char *)0,
                     SEEK_SET) == 0)
                         goto baddonewrite;
-            mofo = soundfile_swap4BytesIfNecessary(itemswritten*bytesperframe+SOUNDFILE_SIZE_AIFF, swap);
+            /* SOUNDFILE_HEADER_AIFF ??? 38 ??? */
+            mofo = soundfile_swap4BytesIfNecessary(itemswritten*bytesperframe+SOUNDFILE_HEADER_AIFF, swap);
             if (write(fd, (char *)(&mofo), 4) < 4)
                 goto baddonewrite;
-            if (lseek(fd, (SOUNDFILE_SIZE_AIFF+4), SEEK_SET) == 0)
+            if (lseek(fd, (SOUNDFILE_HEADER_AIFF+4), SEEK_SET) == 0)
                 goto baddonewrite;
             mofo = soundfile_swap4BytesIfNecessary(itemswritten*bytesperframe, swap);
             if (write(fd, (char *)(&mofo), 4) < 4)
