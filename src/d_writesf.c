@@ -93,7 +93,7 @@ static void *writesf_child_main(void *zz)
                 int swap = x->sf_needToSwapBytes;
                 pthread_mutex_unlock(&x->sf_mutex);
                 
-                soundfile_finishwrite(x, filename, fd,
+                soundfile_writeFileClose (x, filename, fd,
                     filetype, PD_INT_MAX, itemswritten,
                     bytesperframe, swap);
                 close (fd);
@@ -112,7 +112,7 @@ static void *writesf_child_main(void *zz)
             }
                 /* open the soundfile with the mutex unlocked */
             pthread_mutex_unlock(&x->sf_mutex);
-            fd = create_soundfile(canvas, filename, filetype, 0,
+            fd = soundfile_writeFile (canvas, filename, filetype, 0,
                     bytespersample, bigendian, sfchannels, 
                         soundfile_systemIsBigEndian() != bigendian, samplerate);
             pthread_mutex_lock(&x->sf_mutex);
@@ -234,7 +234,7 @@ static void *writesf_child_main(void *zz)
                 int swap = x->sf_needToSwapBytes;
                 pthread_mutex_unlock(&x->sf_mutex);
 
-                soundfile_finishwrite(x, filename, fd,
+                soundfile_writeFileClose (x, filename, fd,
                     filetype, PD_INT_MAX, itemswritten,
                     bytesperframe, swap);
                 close (fd);
@@ -380,7 +380,7 @@ static void writesf_stop(t_writesf *x)
 
 
     /* open method.  Called as: open [args] filename with args as in
-        soundfiler_writeargparse().
+        soundfile_writeFileParse().
     */
 
 static void writesf_open(t_writesf *x, t_symbol *s, int argc, t_atom *argv)
@@ -393,7 +393,7 @@ static void writesf_open(t_writesf *x, t_symbol *s, int argc, t_atom *argv)
     {
         writesf_stop(x);
     }
-    if (soundfiler_writeargparse(x, &argc,
+    if (soundfile_writeFileParse(x, &argc,
         &argv, &filesym, &filetype, &bytespersamp, &swap, &bigendian,
         &normalize, &onset, &nframes, &samplerate))
     {

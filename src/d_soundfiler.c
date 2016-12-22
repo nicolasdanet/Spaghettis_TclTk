@@ -277,7 +277,7 @@ long soundfiler_dowrite(void *obj, t_glist *canvas,
     t_float samplerate;
     t_symbol *filesym;
 
-    if (soundfiler_writeargparse(obj, &argc, &argv, &filesym, &filetype,
+    if (soundfile_writeFileParse(obj, &argc, &argv, &filesym, &filetype,
         &bytespersamp, &swap, &bigendian, &normalize, &onset, &nframes,
             &samplerate))
                 goto usage;
@@ -317,7 +317,7 @@ long soundfiler_dowrite(void *obj, t_glist *canvas,
         goto fail;
     }
 
-    if ((fd = create_soundfile(canvas, filesym->s_name, filetype,
+    if ((fd = soundfile_writeFile (canvas, filesym->s_name, filetype,
         nframes, bytespersamp, bigendian, nchannels,
             swap, samplerate)) < 0)
     {
@@ -359,7 +359,7 @@ long soundfiler_dowrite(void *obj, t_glist *canvas,
     }
     if (fd >= 0)
     {
-        soundfile_finishwrite(obj, filesym->s_name, fd,
+        soundfile_writeFileClose (obj, filesym->s_name, fd,
             filetype, nframes, itemswritten, nchannels * bytespersamp, swap);
         close (fd);
     }

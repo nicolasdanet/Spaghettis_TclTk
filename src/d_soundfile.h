@@ -194,7 +194,7 @@ int     soundfile_openFile              (t_glist *glist,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int     soundfiler_writeargparse        (void *obj,
+int     soundfile_writeFileParse        (void *obj,
                                             int *p_argc,
                                             t_atom **p_argv,
                                             t_symbol **p_filesym,
@@ -207,16 +207,7 @@ int     soundfiler_writeargparse        (void *obj,
                                             long *p_nframes,
                                             t_float *p_rate);
 
-void    soundfile_finishwrite           (void *obj,
-                                            char *filename,
-                                            int fd,
-                                            int filetype,
-                                            long nframes,
-                                            long itemswritten,
-                                            int bytesperframe,
-                                            int swap);
-
-int     create_soundfile                (t_glist *canvas,
+int     soundfile_writeFile             (t_glist *canvas,
                                             const char *filename,
                                             int filetype,
                                             int nframes,
@@ -226,6 +217,15 @@ int     create_soundfile                (t_glist *canvas,
                                             int swap,
                                             t_float samplerate);
 
+void    soundfile_writeFileClose        (void *obj,
+                                            char *filename,
+                                            int fd,
+                                            int filetype,
+                                            long nframes,
+                                            long itemswritten,
+                                            int bytesperframe,
+                                            int swap);
+                                            
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
