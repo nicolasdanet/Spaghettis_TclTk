@@ -384,155 +384,135 @@ int soundfile_openFile (t_glist *glist, const char *name, long skipFrames, t_aud
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int soundfile_writeFileParse (void *obj, int *p_argc, t_atom **p_argv,
-    t_symbol **p_filesym,
-    int *p_filetype, int *p_bytespersamp, int *p_swap, int *p_bigendian,
-    int *p_normalize, long *p_onset, long *p_nframes, t_float *p_rate)
+t_error soundfile_writeFileParse (t_symbol *s,
+    int     *ac,
+    t_atom   **av,
+    t_symbol **fileName,
+    int      *fileType,
+    int      *bytesPerSample,
+    int      *needToSwap,
+    int      *isBigEndian,
+    int      *needToNormalize,
+    long     *onset,
+    long     *numberOfFrames,
+    t_float  *sampleRate)
 {
-    int argc = *p_argc;
-    t_atom *argv = *p_argv;
-    int bytespersamp = 2, bigendian = 0,
-        endianness = -1, swap, filetype = -1, normalize = 0;
-    long onset = 0, nframes = PD_INT_MAX;
-    t_symbol *filesym;
-    t_float rate = -1;
+    t_error err = PD_ERROR_NONE;
     
-    while (argc > 0 && argv->a_type == A_SYMBOL &&
-        *argv->a_w.w_symbol->s_name == '-')
-    {
-        char *flag = argv->a_w.w_symbol->s_name + 1;
-        if (!strcmp(flag, "skip"))
-        {
-            if (argc < 2 || argv[1].a_type != A_FLOAT ||
-                ((onset = argv[1].a_w.w_float) < 0))
-                    goto usage;
-            argc -= 2; argv += 2;
-        }
-        else if (!strcmp(flag, "nframes"))
-        {
-            if (argc < 2 || argv[1].a_type != A_FLOAT ||
-                ((nframes = argv[1].a_w.w_float) < 0))
-                    goto usage;
-            argc -= 2; argv += 2;
-        }
-        else if (!strcmp(flag, "bytes"))
-        {
-            if (argc < 2 || argv[1].a_type != A_FLOAT ||
-                ((bytespersamp = argv[1].a_w.w_float) < 2) ||
-                    bytespersamp > 4)
-                        goto usage;
-            argc -= 2; argv += 2;
-        }
-        else if (!strcmp(flag, "normalize"))
-        {
-            normalize = 1;
-            argc -= 1; argv += 1;
-        }
-        else if (!strcmp(flag, "wave"))
-        {
-            filetype = SOUNDFILE_WAVE;
-            argc -= 1; argv += 1;
-        }
-        else if (!strcmp(flag, "nextstep"))
-        {
-            filetype = SOUNDFILE_NEXT;
-            argc -= 1; argv += 1;
-        }
-        else if (!strcmp(flag, "aiff"))
-        {
-            filetype = SOUNDFILE_AIFF;
-            argc -= 1; argv += 1;
-        }
-        else if (!strcmp(flag, "big"))
-        {
-            endianness = 1;
-            argc -= 1; argv += 1;
-        }
-        else if (!strcmp(flag, "little"))
-        {
-            endianness = 0;
-            argc -= 1; argv += 1;
-        }
-        else if (!strcmp(flag, "r") || !strcmp(flag, "rate"))
-        {
-            if (argc < 2 || argv[1].a_type != A_FLOAT ||
-                ((rate = argv[1].a_w.w_float) <= 0))
-                    goto usage;
-            argc -= 2; argv += 2;
-        }
-        else goto usage;
-    }
-    if (!argc || argv->a_type != A_SYMBOL)
-        goto usage;
-    filesym = argv->a_w.w_symbol;
+    int argc        = *ac;
+    t_atom *argv    = *av;
+    t_symbol *name  = NULL;
+    int type        = SOUNDFILE_NONE;
+    int bytes       = 2;
+    int swap        = 0;
+    int big         = 0;
+    int normalize   = 0;
+    long skip       = 0;
+    long frames     = PD_INT_MAX;
+    t_float rate    = -1.0;
     
-        /* check if format not specified and fill in */
-    if (filetype < 0) 
-    {
-        if (strlen(filesym->s_name) >= 5 &&
-                        (!strcmp(filesym->s_name + strlen(filesym->s_name) - 4, ".aif") ||
-                        !strcmp(filesym->s_name + strlen(filesym->s_name) - 4, ".AIF")))
-                filetype = SOUNDFILE_AIFF;
-        if (strlen(filesym->s_name) >= 6 &&
-                        (!strcmp(filesym->s_name + strlen(filesym->s_name) - 5, ".aiff") ||
-                        !strcmp(filesym->s_name + strlen(filesym->s_name) - 5, ".AIFF")))
-                filetype = SOUNDFILE_AIFF;
-        if (strlen(filesym->s_name) >= 5 &&
-                        (!strcmp(filesym->s_name + strlen(filesym->s_name) - 4, ".snd") ||
-                        !strcmp(filesym->s_name + strlen(filesym->s_name) - 4, ".SND")))
-                filetype = SOUNDFILE_NEXT;
-        if (strlen(filesym->s_name) >= 4 &&
-                        (!strcmp(filesym->s_name + strlen(filesym->s_name) - 3, ".au") ||
-                        !strcmp(filesym->s_name + strlen(filesym->s_name) - 3, ".AU")))
-                filetype = SOUNDFILE_NEXT;
-        if (filetype < 0)
-            filetype = SOUNDFILE_WAVE;
+    int endianness = soundfile_systemIsBigEndian();
+        
+    while (argc > 0) {
+    //
+    t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
+    
+    if (argc > 1 && (t == sym___dash__s || t == sym___dash__skip)) {
+        skip = atom_getFloat (argv + 1);
+        skip = PD_MAX (0, skip);
+        argc -= 2; argv += 2;
+        
+    } else if (argc > 1 && (t == sym___dash__f || t == sym___dash__frames || t == sym___dash__nframes)) {
+        frames = atom_getFloat (argv + 1);
+        frames = PD_MAX (0, frames);
+        argc -= 2; argv += 2;
+        
+    } else if (argc > 1 && (t == sym___dash__b || t == sym___dash__bytes)) {
+        bytes = atom_getFloat (argv + 1);
+        bytes = PD_CLAMP (bytes, 2, 4);
+        argc -= 2; argv += 2;
+        
+    } else if (argc > 1 && (t == sym___dash__r || t == sym___dash__rate || t == sym___dash__samplerate)) {
+        rate = atom_getFloat (argv + 1);
+        rate = PD_MAX (1.0, rate);
+        argc -= 2; argv += 2;
+        
+    } else if (t == sym___dash__n || t == sym___dash__normalize) {
+        normalize = 1;
+        argc --; argv++;
+    
+    } else if (t == sym___dash__nextstep)   {
+        type = SOUNDFILE_NEXT;
+        argc --; argv++;
+        
+    } else if (t == sym___dash__wave)   {
+        type = SOUNDFILE_WAVE;
+        argc --; argv++;
+        
+    } else if (t == sym___dash__aiff)   {
+        type = SOUNDFILE_AIFF;
+        argc --; argv++;
+        
+    } else if (t == sym___dash__big)    {
+        endianness = 1;
+        argc --; argv++;
+        
+    } else if (t == sym___dash__little) {
+        endianness = 0;
+        argc --; argv++;
+        
+    } else { break; }
+    //
     }
-        /* don't handle AIFF floating point samples */
-    if (bytespersamp == 4)
-    {
-        if (filetype == SOUNDFILE_AIFF)
-        {
-            post_error ("AIFF floating-point file format unavailable");
-            goto usage;
-        }
-    }
-        /* for WAVE force little endian; for nextstep use machine native */
-    if (filetype == SOUNDFILE_WAVE)
-    {
-        bigendian = 0;
-        if (endianness == 1)
-            post_error ("WAVE file forced to little endian");
-    }
-    else if (filetype == SOUNDFILE_AIFF)
-    {
-        bigendian = 1;
-        if (endianness == 0)
-            post_error ("AIFF file forced to big endian");
-    }
-    else if (endianness == -1)
-    {
-        bigendian = soundfile_systemIsBigEndian();
-    }
-    else bigendian = endianness;
-    swap = (bigendian != soundfile_systemIsBigEndian());
+    
+    if (!err) { err = (error__options (s, argc, argv) != 0); }
+    if (!err) { err = (!argc || !IS_SYMBOL (argv)); }
+    
+    if (!err) {
+    //
+    name = GET_SYMBOL (argv); 
     
     argc--; argv++;
     
-    *p_argc = argc;
-    *p_argv = argv;
-    *p_filesym = filesym;
-    *p_filetype = filetype;
-    *p_bytespersamp = bytespersamp;
-    *p_swap = swap;
-    *p_normalize = normalize;
-    *p_onset = onset;
-    *p_nframes = nframes;
-    *p_bigendian = bigendian;
-    *p_rate = rate;
-    return (0);
-usage:
-    return (-1);
+    if (type == SOUNDFILE_NONE) {
+
+        if (string_endWith (name->s_name, ".aif"))          { type = SOUNDFILE_AIFF; }
+        else if (string_endWith (name->s_name, ".AIF"))     { type = SOUNDFILE_AIFF; }
+        else if (string_endWith (name->s_name, ".aiff"))    { type = SOUNDFILE_AIFF; }
+        else if (string_endWith (name->s_name, ".AIFF"))    { type = SOUNDFILE_AIFF; }
+        else if (string_endWith (name->s_name, ".snd"))     { type = SOUNDFILE_NEXT; }
+        else if (string_endWith (name->s_name, ".SND"))     { type = SOUNDFILE_NEXT; }
+        else if (string_endWith (name->s_name, ".au"))      { type = SOUNDFILE_NEXT; }
+        else if (string_endWith (name->s_name, ".AU"))      { type = SOUNDFILE_NEXT; }
+        else {
+            type = SOUNDFILE_WAVE;
+        }
+    }
+
+    if (bytes == 4 && type == SOUNDFILE_AIFF) { PD_BUG; return PD_ERROR; }
+    if (type == SOUNDFILE_WAVE)      { big = 0; }
+    else if (type == SOUNDFILE_AIFF) { big = 1; }
+    else {
+        big = endianness;
+    }
+    
+    swap = (big != soundfile_systemIsBigEndian());
+    
+    *ac              = argc;
+    *av              = argv;
+    *fileName        = name;
+    *fileType        = type;
+    *bytesPerSample  = bytes;
+    *needToSwap      = swap;
+    *needToNormalize = normalize;
+    *onset           = skip;
+    *numberOfFrames  = frames;
+    *isBigEndian     = big;
+    *sampleRate      = rate;
+    //
+    }
+    
+    return err;
 }
 
 int soundfile_writeFile (t_glist *canvas, const char *filename,
@@ -624,7 +604,7 @@ int soundfile_writeFile (t_glist *canvas, const char *filename,
     return (fd);
 }
 
-void soundfile_writeFileClose (void *obj, char *filename, int fd,
+void soundfile_writeFileClose (char *filename, int fd,
     int filetype, long nframes, long itemswritten, int bytesperframe, int swap)
 {
     if (itemswritten < nframes) 

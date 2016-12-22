@@ -25,6 +25,7 @@ t_error     string_addAtom                              (char *dest, size_t size
 t_error     string_clear                                (char *dest, size_t size);
 
 int         string_startWith                            (const char *s, const char *isStartWith);
+int         string_endWith                              (const char *s, const char *isEndWith);
 int         string_containsCharacterAtStart             (const char *s, const char *isContained);
 
 int         string_indexOfFirstOccurrenceUntil          (char *s, const char *c, size_t n);

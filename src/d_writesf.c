@@ -93,7 +93,7 @@ static void *writesf_child_main(void *zz)
                 int swap = x->sf_needToSwapBytes;
                 pthread_mutex_unlock(&x->sf_mutex);
                 
-                soundfile_writeFileClose (x, filename, fd,
+                soundfile_writeFileClose (filename, fd,
                     filetype, PD_INT_MAX, itemswritten,
                     bytesperframe, swap);
                 close (fd);
@@ -234,7 +234,7 @@ static void *writesf_child_main(void *zz)
                 int swap = x->sf_needToSwapBytes;
                 pthread_mutex_unlock(&x->sf_mutex);
 
-                soundfile_writeFileClose (x, filename, fd,
+                soundfile_writeFileClose (filename, fd,
                     filetype, PD_INT_MAX, itemswritten,
                     bytesperframe, swap);
                 close (fd);
@@ -393,9 +393,10 @@ static void writesf_open(t_writesf *x, t_symbol *s, int argc, t_atom *argv)
     {
         writesf_stop(x);
     }
-    if (soundfile_writeFileParse(x, &argc,
+    
+    if (soundfile_writeFileParse(sym_writesf__tilde__, &argc,
         &argv, &filesym, &filetype, &bytespersamp, &swap, &bigendian,
-        &normalize, &onset, &nframes, &samplerate))
+        &normalize, &onset, &nframes, &samplerate) == PD_ERROR)
     {
         post_error ("writesf~: usage: open [-bytes [234]] [-wave,-nextstep,-aiff] ...");
         post("... [-big,-little] [-rate ####] filename");

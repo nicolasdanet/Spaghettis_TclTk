@@ -68,6 +68,7 @@ t_symbol *sym___dash__normalize;
 t_symbol *sym___dash__r;
 t_symbol *sym___dash__rate;
 t_symbol *sym___dash__s;
+t_symbol *sym___dash__samplerate;
 t_symbol *sym___dash__skip;
 t_symbol *sym___dash__symbol;
 t_symbol *sym___dash__t;
@@ -636,6 +637,7 @@ void symbols_initialize (void)
     sym___dash__r                               = gensym ("-r");
     sym___dash__rate                            = gensym ("-rate");
     sym___dash__s                               = gensym ("-s");
+    sym___dash__samplerate                      = gensym ("-samplerate");
     sym___dash__skip                            = gensym ("-skip");
     sym___dash__symbol                          = gensym ("-symbol");
     sym___dash__t                               = gensym ("-t");

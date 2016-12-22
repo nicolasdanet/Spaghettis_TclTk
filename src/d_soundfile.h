@@ -194,18 +194,18 @@ int     soundfile_openFile              (t_glist *glist,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int     soundfile_writeFileParse        (void *obj,
-                                            int *p_argc,
-                                            t_atom **p_argv,
-                                            t_symbol **p_filesym,
-                                            int *p_filetype,
-                                            int *p_bytespersamp,
-                                            int *p_swap,
-                                            int *p_bigendian,
-                                            int *p_normalize,
-                                            long *p_onset,
-                                            long *p_nframes,
-                                            t_float *p_rate);
+t_error soundfile_writeFileParse        (t_symbol *s,
+                                            int  *argc,
+                                            t_atom **argv,
+                                            t_symbol **fileName,
+                                            int  *fileType,
+                                            int  *bytesPerSample,
+                                            int  *needToSwap,
+                                            int  *isBigEndian,
+                                            int  *needToNormalize,
+                                            long *onset,
+                                            long *numberOfFrames,
+                                            t_float *sampleRate);
 
 int     soundfile_writeFile             (t_glist *canvas,
                                             const char *filename,
@@ -217,8 +217,7 @@ int     soundfile_writeFile             (t_glist *canvas,
                                             int swap,
                                             t_float samplerate);
 
-void    soundfile_writeFileClose        (void *obj,
-                                            char *filename,
+void    soundfile_writeFileClose        (char *filename,
                                             int fd,
                                             int filetype,
                                             long nframes,

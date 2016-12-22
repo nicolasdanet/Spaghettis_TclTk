@@ -122,6 +122,16 @@ int string_startWith (const char *s, const char *isStartWith)
     return 0;
 }
 
+int string_endWith (const char *s, const char *isEndWith)
+{
+    size_t n = strlen (isEndWith);
+    size_t m = strlen (s);
+    
+    if (m >= n) { return (strncmp (s + (m - n), isEndWith, n) == 0); }
+    
+    return 0;
+}
+
 int string_containsCharacterAtStart (const char *s, const char *isContained)
 {
     return (strchr (isContained, *s) != NULL);

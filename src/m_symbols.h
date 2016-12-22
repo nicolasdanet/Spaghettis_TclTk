@@ -73,6 +73,7 @@ extern t_symbol *sym___dash__normalize;
 extern t_symbol *sym___dash__r;
 extern t_symbol *sym___dash__rate;
 extern t_symbol *sym___dash__s;
+extern t_symbol *sym___dash__samplerate;
 extern t_symbol *sym___dash__skip;
 extern t_symbol *sym___dash__symbol;
 extern t_symbol *sym___dash__t;

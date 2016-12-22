@@ -276,10 +276,10 @@ long soundfiler_dowrite(void *obj, t_glist *canvas,
     t_sample normfactor, biggest = 0;
     t_float samplerate;
     t_symbol *filesym;
-
-    if (soundfile_writeFileParse(obj, &argc, &argv, &filesym, &filetype,
+    
+    if (soundfile_writeFileParse(sym_soundfiler, &argc, &argv, &filesym, &filetype,
         &bytespersamp, &swap, &bigendian, &normalize, &onset, &nframes,
-            &samplerate))
+            &samplerate) == PD_ERROR)
                 goto usage;
     nchannels = argc;
     if (nchannels < 1 || nchannels > SOUNDFILE_MAXIMUM_CHANNELS)
@@ -359,7 +359,7 @@ long soundfiler_dowrite(void *obj, t_glist *canvas,
     }
     if (fd >= 0)
     {
-        soundfile_writeFileClose (obj, filesym->s_name, fd,
+        soundfile_writeFileClose (filesym->s_name, fd,
             filetype, nframes, itemswritten, nchannels * bytespersamp, swap);
         close (fd);
     }
