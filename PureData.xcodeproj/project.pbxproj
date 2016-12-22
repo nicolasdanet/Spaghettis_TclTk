@@ -1413,7 +1413,7 @@
 				37C9FADD1DF718CD00309D57 /* Tab */,
 				377C79961DF08AD0008195B0 /* Math */,
 				37C000561DE2FE3800F90584 /* Miscellaneous */,
-				37E0CBA81E03FA6C00993022 /* Sound */,
+				37E0CBA81E03FA6C00993022 /* Soundfile */,
 				378971B71C4F716700263434 /* d_filter.c */,
 				378971B61C4F716700263434 /* d_fft.c */,
 				378971B51C4F716700263434 /* d_fft_fftsg.c */,
@@ -1503,7 +1503,7 @@
 			name = Time;
 			sourceTree = "<group>";
 		};
-		37E0CBA81E03FA6C00993022 /* Sound */ = {
+		37E0CBA81E03FA6C00993022 /* Soundfile */ = {
 			isa = PBXGroup;
 			children = (
 				3798AC9D1E045003004EBFDD /* d_soundfile.h */,
@@ -1512,7 +1512,7 @@
 				3762D2FC1E05308C00385DB9 /* d_readsf.c */,
 				3762D2BC1E051E2700385DB9 /* d_writesf.c */,
 			);
-			name = Sound;
+			name = Soundfile;
 			sourceTree = "<group>";
 		};
 		37E4DA031DEC6BB500190484 /* Filters */ = {

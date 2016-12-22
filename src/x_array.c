@@ -112,7 +112,11 @@ static void *arraydefine_new (t_symbol *s, int argc, t_atom *argv)
         if (t == sym___dash__k || t == sym___dash__keep) {
             keep = 1; argc--; argv++;
             
-        } else if (t == sym___dash__yrange && (argc >= 3) && IS_FLOAT (argv + 1) && IS_FLOAT (argv + 2)) {
+        } else if ((t == sym___dash__y || t == sym___dash__yrange)
+            && (argc >= 3) 
+            && IS_FLOAT (argv + 1) 
+            && IS_FLOAT (argv + 2)) {
+            
             down = atom_getFloatAtIndex (1, argc, argv);
             up   = atom_getFloatAtIndex (2, argc, argv);
             argc -= 3; argv += 3;
