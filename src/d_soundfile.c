@@ -20,7 +20,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Basic (linear PCM only) audio files handling. */
+/* Basic audio files handling. */
+/* Uncompressed 16-bit, 24-bit integer and 32-bit float. */
 /* Note that for now unsupported sub-chunks are not preserved at save. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -73,8 +74,8 @@ typedef struct _wave {
 
 #define WAVE_FORMAT_PCM         1
 #define WAVE_FORMAT_FLOAT       3
-#define WAVE_FORMAT_ALAW        6
-#define WAVE_FORMAT_MULAW       7
+//#define WAVE_FORMAT_ALAW      6
+//#define WAVE_FORMAT_MULAW     7
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -217,9 +218,9 @@ static t_error soundfile_openFilePerformWAVE (int f, int swap, t_soundfileheader
     int dataSize         = (int)soundfile_swap4Bytes (*((uint32_t *)(t->h_c + 40)), swap);
     
     PD_ASSERT (fmtSize == 16);
-    PD_ASSERT (audioFormat == 1);   /* Linear PCM. */
+    PD_ASSERT (audioFormat == WAVE_FORMAT_PCM || audioFormat == WAVE_FORMAT_FLOAT);
 
-    if (audioFormat == 1) {
+    if (audioFormat == WAVE_FORMAT_PCM || audioFormat == WAVE_FORMAT_FLOAT) {
     //
     if (bitsPerSample == 16 || bitsPerSample == 24 || bitsPerSample == 32) {
     //
