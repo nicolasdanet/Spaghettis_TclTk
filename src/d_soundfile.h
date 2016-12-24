@@ -70,8 +70,8 @@ typedef struct _readsf_tilde {
     int                 sf_bytesPerSample;
     int                 sf_isFileBigEndian;
     int                 sf_numberOfChannels;
-    long                sf_numberOfFramesToSkip;
-    long                sf_maximumBytesToRead;
+    int                 sf_numberOfFramesToSkip;
+    int                 sf_maximumBytesToRead;
     int                 sf_fileDescriptor;
     int                 sf_fifoSize;
     int                 sf_fifoHead;
@@ -89,6 +89,7 @@ typedef struct _readsf_tilde {
     t_sample            *(sf_vectorsOut[SOUNDFILE_MAXIMUM_CHANNELS]);
     char                *sf_buffer;
     char                *sf_fileName;
+    char                *sf_fileExtension;
     t_glist             *sf_owner;
     t_clock             *sf_clock;
     t_outlet            *sf_outlet;
@@ -115,7 +116,7 @@ static inline int soundfile_systemIsBigEndian (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static inline uint32_t soundfile_swap4BytesIfNecessary (uint32_t n, int needToSwap)
+static inline uint32_t soundfile_swap4Bytes (uint32_t n, int needToSwap)
 {
     if (!needToSwap) { return n; }
     else {
@@ -123,28 +124,11 @@ static inline uint32_t soundfile_swap4BytesIfNecessary (uint32_t n, int needToSw
     }
 }
 
-static inline uint16_t soundfile_swap2BytesIfNecessary (uint16_t n, int needToSwap)
+static inline uint16_t soundfile_swap2Bytes (uint16_t n, int needToSwap)
 {
     if (!needToSwap) { return n; }
     else {
         return (((n & 0xff) << 8) | ((n & 0xff00) >> 8));
-    }
-}
-
-static inline void soundfile_swapInfoIfNecessary (char *s, int needToSwap)
-{
-    if (needToSwap) {
-    //
-    char a = s[0];
-    char b = s[1];
-    char c = s[2];
-    char d = s[3];
-    
-    s[0] = d;
-    s[1] = c;
-    s[2] = b;
-    s[3] = a;
-    //
     }
 }
 
@@ -174,11 +158,11 @@ static inline void soundfile_makeAiff80BitFloat (double sampleRate, unsigned cha
 #pragma mark -
 
 typedef struct _audioproperties {
-    int     ap_headerSize;
-    int     ap_isBigEndian;
-    int     ap_bytesPerSample;
-    int     ap_numberOfChannels;
-    int64_t ap_dataSizeInBytes;
+    int ap_headerSize;
+    int ap_isBigEndian;
+    int ap_bytesPerSample;
+    int ap_numberOfChannels;
+    int ap_dataSizeInBytes;
     } t_audioproperties;
     
 // -----------------------------------------------------------------------------------------------------------
@@ -187,7 +171,7 @@ typedef struct _audioproperties {
 
 int     soundfile_openFile              (t_glist *glist,
                                             const char *name,
-                                            long skipFrames,
+                                            int skipFrames,
                                             t_audioproperties *args);
     
 // -----------------------------------------------------------------------------------------------------------
@@ -195,33 +179,35 @@ int     soundfile_openFile              (t_glist *glist,
 #pragma mark -
 
 t_error soundfile_writeFileParse        (t_symbol *s,
-                                            int  *argc,
+                                            int *argc,
                                             t_atom **argv,
                                             t_symbol **fileName,
-                                            int  *fileType,
-                                            int  *bytesPerSample,
-                                            int  *needToSwap,
-                                            int  *isBigEndian,
-                                            int  *needToNormalize,
-                                            long *onset,
-                                            long *numberOfFrames,
+                                            t_symbol **fileExtension,
+                                            int *fileType,
+                                            int *bytesPerSample,
+                                            int *needToSwap,
+                                            int *isBigEndian,
+                                            int *needToNormalize,
+                                            int *onset,
+                                            int *numberOfFrames,
                                             t_float *sampleRate);
 
-int     soundfile_writeFile             (t_glist *canvas,
-                                            const char *filename,
-                                            int filetype,
-                                            int nframes,
-                                            int bytespersamp,
-                                            int bigendian,
-                                            int nchannels,
-                                            int swap,
-                                            t_float samplerate);
+int     soundfile_writeFileHeader       (t_glist *glist,
+                                            const char *fileName,
+                                            const char *fileExtension,
+                                            int fileType,
+                                            int numberOfFrames,
+                                            int bytesPerSample,
+                                            int isBigEndian,
+                                            int numberOfChannels,
+                                            int needToSwap,
+                                            t_float sampleRate);
 
 void    soundfile_writeFileClose        (char *filename,
                                             int fd,
                                             int filetype,
-                                            long nframes,
-                                            long itemswritten,
+                                            int nframes,
+                                            int itemswritten,
                                             int bytesperframe,
                                             int swap);
                                             

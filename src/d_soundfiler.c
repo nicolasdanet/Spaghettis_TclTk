@@ -276,8 +276,9 @@ long soundfiler_dowrite(void *obj, t_glist *canvas,
     t_sample normfactor, biggest = 0;
     t_float samplerate;
     t_symbol *filesym;
+    t_symbol *fileExtension;
     
-    if (soundfile_writeFileParse(sym_soundfiler, &argc, &argv, &filesym, &filetype,
+    if (soundfile_writeFileParse(sym_soundfiler, &argc, &argv, &filesym, &fileExtension, &filetype,
         &bytespersamp, &swap, &bigendian, &normalize, &onset, &nframes,
             &samplerate) == PD_ERROR)
                 goto usage;
@@ -317,7 +318,7 @@ long soundfiler_dowrite(void *obj, t_glist *canvas,
         goto fail;
     }
 
-    if ((fd = soundfile_writeFile (canvas, filesym->s_name, filetype,
+    if ((fd = soundfile_writeFileHeader (canvas, filesym->s_name, fileExtension->s_name, filetype,
         nframes, bytespersamp, bigendian, nchannels,
             swap, samplerate)) < 0)
     {
