@@ -95,7 +95,7 @@ static void *writesf_child_main(void *zz)
                 int swap = x->sf_needToSwapBytes;
                 pthread_mutex_unlock(&x->sf_mutex);
                 
-                soundfile_writeFileClose (filename, fd,
+                soundfile_writeFileClose (fd,
                     filetype, PD_INT_MAX, itemswritten,
                     bytesperframe, swap);
                 close (fd);
@@ -236,7 +236,7 @@ static void *writesf_child_main(void *zz)
                 int swap = x->sf_needToSwapBytes;
                 pthread_mutex_unlock(&x->sf_mutex);
 
-                soundfile_writeFileClose (filename, fd,
+                soundfile_writeFileClose (fd,
                     filetype, PD_INT_MAX, itemswritten,
                     bytesperframe, swap);
                 close (fd);

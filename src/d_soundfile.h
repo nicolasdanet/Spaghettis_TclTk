@@ -203,12 +203,11 @@ int     soundfile_writeFileHeader       (t_glist *glist,
                                             int needToSwap,
                                             t_float sampleRate);
 
-void    soundfile_writeFileClose        (char *filename,
-                                            int fd,
-                                            int filetype,
-                                            int nframes,
-                                            int itemswritten,
-                                            int bytesperframe,
+t_error soundfile_writeFileClose        (int f,
+                                            int fileType,
+                                            int numberOfFrames,
+                                            int itemsWritten,
+                                            int bytesPerFrame,
                                             int swap);
                                             
 // -----------------------------------------------------------------------------------------------------------

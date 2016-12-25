@@ -360,7 +360,7 @@ long soundfiler_dowrite(void *obj, t_glist *canvas,
     }
     if (fd >= 0)
     {
-        soundfile_writeFileClose (filesym->s_name, fd,
+        soundfile_writeFileClose (fd,
             filetype, nframes, itemswritten, nchannels * bytespersamp, swap);
         close (fd);
     }

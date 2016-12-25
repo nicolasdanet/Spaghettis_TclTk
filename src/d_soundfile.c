@@ -22,7 +22,13 @@
 
 /* Basic audio files handling. */
 /* Uncompressed 16-bit, 24-bit integer and 32-bit float. */
-/* Note that for now unsupported sub-chunks are not preserved at save. */
+/* Mu-law, A-law formats and such NOT handled. */
+/* Note that unsupported sub-chunks are not preserved at save. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* < https://en.wikipedia.org/wiki/Mu-law > */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -100,8 +106,7 @@ typedef struct _aiff {
     char            a_commID[4];
     uint32_t        a_commChunkSize;
     uint16_t        a_numberOfChannels;
-    uint16_t        a_numberOfFramesHigh;
-    uint16_t        a_numberOfFramesLow;
+    uint32_t        a_numberOfFrames;
     uint16_t        a_bitsPerSample;
     unsigned char   a_sampleRate[10];
     char            a_dataChunkID[4];
@@ -260,8 +265,8 @@ static t_error soundfile_openFilePerformAIFF (int f, int swap, t_soundfileheader
     int offset           = (int)soundfile_swap4Bytes (*((uint32_t *)(t->h_c + 46)), swap);
     int blockAlign       = (int)soundfile_swap4Bytes (*((uint32_t *)(t->h_c + 50)), swap);
     
-    PD_ASSERT (offset == 0);
-    PD_ASSERT (blockAlign == 0);
+    PD_ASSERT (offset == 0);        /* Not tested nor implemented for now. */
+    PD_ASSERT (blockAlign == 0);    /* Ditto. */
 
     if (bitsPerSample == 16 || bitsPerSample == 24 || bitsPerSample == 32) {
     //
@@ -293,10 +298,6 @@ static t_error soundfile_openFilePerformNEXT (int f, int swap, t_soundfileheader
     int audioFormat      = (int)soundfile_swap4Bytes (*((uint32_t *)(t->h_c + 12)), swap);
     int numberOfChannels = (int)soundfile_swap4Bytes (*((uint32_t *)(t->h_c + 20)), swap);
     int bytesPerSample   = 0;
-    
-    /* Mu-law format NOT handled. */
-    
-    /* < https://en.wikipedia.org/wiki/Mu-law > */
     
     if (audioFormat == NS_FORMAT_LINEAR_16)      { bytesPerSample = 2; }
     else if (audioFormat == NS_FORMAT_LINEAR_24) { bytesPerSample = 3; }
@@ -537,6 +538,10 @@ t_error soundfile_writeFileParse (t_symbol *s,
     return err;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static t_error soundfile_writeFileHeaderWAVE (t_soundfileheader *t, 
     int numberOfFrames,
     int bytesPerSample,
@@ -598,7 +603,7 @@ static t_error soundfile_writeFileHeaderAIFF (t_soundfileheader *t,
     h.a_chunkSize           = soundfile_swap4Bytes ((uint32_t)(SOUNDFILE_HEADER_AIFF - 8 + dataSize), swap);
     h.a_commChunkSize       = soundfile_swap4Bytes ((uint32_t)(18), swap);
     h.a_numberOfChannels    = soundfile_swap2Bytes ((uint16_t)numberOfChannels, swap);
-    uint32_t frames         = soundfile_swap4Bytes ((uint32_t)numberOfFrames, swap);
+    h.a_numberOfFrames      = soundfile_swap4Bytes ((uint32_t)numberOfFrames, swap);
     h.a_bitsPerSample       = soundfile_swap2Bytes ((uint16_t)(8 * bytesPerSample), swap);
     h.a_dataChunkSize       = soundfile_swap4Bytes ((uint32_t)(dataSize + 8), swap);
     h.a_dataOffset          = (uint32_t)(0);
@@ -610,7 +615,7 @@ static t_error soundfile_writeFileHeaderAIFF (t_soundfileheader *t,
     strncpy (t->h_c + 12, "COMM", 4);
     memcpy  (t->h_c + 16,  &h.a_commChunkSize, 4);
     memcpy  (t->h_c + 20,  &h.a_numberOfChannels, 2);
-    memcpy  (t->h_c + 22,  &frames, 4);
+    memcpy  (t->h_c + 22,  &h.a_numberOfFrames, 4);
     memcpy  (t->h_c + 26,  &h.a_bitsPerSample, 2);
     soundfile_makeAiff80BitFloat (sampleRate, t->h_c + 28);
     strncpy (t->h_c + 38, "SSND", 4);
@@ -737,75 +742,90 @@ int soundfile_writeFileHeader (t_glist *glist,
     return f;
 }
 
-void soundfile_writeFileClose (char *filename, int fd,
-    int filetype, int nframes, int itemswritten, int bytesperframe, int swap)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_error soundfile_writeFileCloseWAVE (int f, int itemsWritten, int bytesPerFrame, int swap)
 {
-    if (itemswritten < nframes) 
-    {
-        if (nframes < PD_INT_MAX)
-            post_error ("soundfiler_write: %ld out of %ld bytes written",
-                itemswritten, nframes);
-            /* try to fix size fields in header */
-        if (filetype == SOUNDFILE_WAVE)
-        {
-            long datasize = itemswritten * bytesperframe, mofo;
-            
-            if (lseek(fd,
-                ((char *)(&((t_wave *)0)->w_chunkSize)) - (char *)0,
-                    SEEK_SET) == 0)
-                        goto baddonewrite;
-            mofo = soundfile_swap4Bytes(datasize + sizeof(t_wave) - 8, swap);
-            if (write(fd, (char *)(&mofo), 4) < 4)
-                goto baddonewrite;
-            if (lseek(fd,
-                ((char *)(&((t_wave *)0)->w_dataChunkSize)) - (char *)0,
-                    SEEK_SET) == 0)
-                        goto baddonewrite;
-            mofo = soundfile_swap4Bytes(datasize, swap);
-            if (write(fd, (char *)(&mofo), 4) < 4)
-                goto baddonewrite;
-        }
-        if (filetype == SOUNDFILE_AIFF)
-        {
-            long mofo;
-            if (lseek(fd,
-                ((char *)(&((t_aiff *)0)->a_numberOfFramesHigh)) - (char *)0,
-                    SEEK_SET) == 0)
-                        goto baddonewrite;
-            mofo = soundfile_swap4Bytes(itemswritten, swap);
-            if (write(fd, (char *)(&mofo), 4) < 4)
-                goto baddonewrite;
-            if (lseek(fd,
-                ((char *)(&((t_aiff *)0)->a_chunkSize)) - (char *)0,
-                    SEEK_SET) == 0)
-                        goto baddonewrite;
-            /* SOUNDFILE_HEADER_AIFF ??? 38 ??? */
-            mofo = soundfile_swap4Bytes(itemswritten*bytesperframe+SOUNDFILE_HEADER_AIFF, swap);
-            if (write(fd, (char *)(&mofo), 4) < 4)
-                goto baddonewrite;
-            if (lseek(fd, (SOUNDFILE_HEADER_AIFF+4), SEEK_SET) == 0)
-                goto baddonewrite;
-            mofo = soundfile_swap4Bytes(itemswritten*bytesperframe, swap);
-            if (write(fd, (char *)(&mofo), 4) < 4)
-                goto baddonewrite;
-        }
-        if (filetype == SOUNDFILE_NEXT)
-        {
-            /* do it the lazy way: just set the size field to 'unknown size'*/
-            uint32_t nextsize = 0xffffffff;
-            if (lseek(fd, 8, SEEK_SET) == 0)
-            {
-                goto baddonewrite;
-            }
-            if (write(fd, &nextsize, 4) < 4)
-            {
-                goto baddonewrite;
+    int dataSize = itemsWritten * bytesPerFrame;
+    uint32_t t;
+    
+    if (lseek (f, 4, SEEK_SET) == 4)  { 
+        t = soundfile_swap4Bytes ((uint32_t)(SOUNDFILE_HEADER_WAVE - 8 + dataSize), swap);
+        if (write (f, (char *)(&t), 4) == 4) {
+            if (lseek (f, 40, SEEK_SET) == 40) {
+                t = soundfile_swap4Bytes ((uint32_t)dataSize, swap);
+                if (write (f, (char *)(&t), 4) == 4) { return PD_ERROR_NONE; }
             }
         }
     }
-    return;
-baddonewrite:
-    post("%s: %s", filename, strerror (errno));
+    
+    return PD_ERROR;
+}
+
+t_error soundfile_writeFileCloseAIFF (int f, int itemsWritten, int bytesPerFrame, int swap)
+{
+    int dataSize = itemsWritten * bytesPerFrame;
+    uint32_t t;
+    
+    if (lseek (f, 4, SEEK_SET) == 4)  { 
+        t = soundfile_swap4Bytes ((uint32_t)(SOUNDFILE_HEADER_AIFF - 8 + dataSize), swap);
+        if (write (f, (char *)(&t), 4) == 4) {
+            if (lseek (f, 42, SEEK_SET) == 42) {
+                t = soundfile_swap4Bytes ((uint32_t)(dataSize + 8), swap);
+                if (write (f, (char *)(&t), 4) == 4) { return PD_ERROR_NONE; }
+            }
+        }
+    }
+    
+    return PD_ERROR;
+}
+
+t_error soundfile_writeFileCloseNEXT (int f, int itemsWritten, int bytesPerFrame, int swap)
+{
+    int dataSize = itemsWritten * bytesPerFrame;
+    uint32_t t;
+    
+    if (lseek (f, 8, SEEK_SET) == 8)  { 
+        t = soundfile_swap4Bytes ((uint32_t)dataSize, swap);
+        if (write (f, (char *)(&t), 4) == 4) { return PD_ERROR_NONE; }
+    }
+    
+    return PD_ERROR;
+}
+
+t_error soundfile_writeFileClose (int f,
+    int fileType,
+    int numberOfFrames, 
+    int itemsWritten,
+    int bytesPerFrame,
+    int swap)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    if (itemsWritten < numberOfFrames) {    /* Set properly the data size. */
+    //
+    err = (numberOfFrames != PD_INT_MAX);
+    
+    if (fileType == SOUNDFILE_WAVE) {
+        err = soundfile_writeFileCloseWAVE (f, itemsWritten, bytesPerFrame, swap);
+        
+    } else if (fileType == SOUNDFILE_AIFF) {
+        err = soundfile_writeFileCloseAIFF (f, itemsWritten, bytesPerFrame, swap);
+        
+    } else if (fileType == SOUNDFILE_NEXT) {
+        err = soundfile_writeFileCloseNEXT (f, itemsWritten, bytesPerFrame, swap);
+        
+    } else {
+        err = PD_ERROR;
+    }
+    
+    PD_ASSERT (!err);
+    //
+    }
+    
+    return err;
 }
 
 // -----------------------------------------------------------------------------------------------------------
