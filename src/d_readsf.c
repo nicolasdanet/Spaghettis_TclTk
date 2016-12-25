@@ -455,7 +455,7 @@ static t_int *readsf_perform(t_int *w)
                 (sfchannels * bytespersample);
             if (xfersize)
             {
-                soundfile_deinterleave(sfchannels, noutlets, x->sf_vectorsOut, 0,
+                soundfile_decode(sfchannels, noutlets, x->sf_vectorsOut, 0,
                     (unsigned char *)(x->sf_buffer + x->sf_fifoTail), xfersize,
                         bytespersample, bigendian, 1);
                 vecsize -= xfersize;
@@ -470,7 +470,7 @@ static t_int *readsf_perform(t_int *w)
             return (w+2); 
         }
 
-        soundfile_deinterleave(sfchannels, noutlets, x->sf_vectorsOut, 0,
+        soundfile_decode(sfchannels, noutlets, x->sf_vectorsOut, 0,
             (unsigned char *)(x->sf_buffer + x->sf_fifoTail), vecsize,
                 bytespersample, bigendian, 1);
         

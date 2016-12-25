@@ -24,8 +24,8 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void soundfile_interleave (int nchannels, t_sample **vecs,
-    unsigned char *buf, int nitems, long onset, int bytespersamp,
+void soundfile_encode (int nchannels, t_sample **vecs,
+    unsigned char *buf, int nitems, int onset, int bytespersamp,
     int bigendian, t_sample normalfactor, int spread)
 {
     int i, j;
@@ -132,7 +132,7 @@ void soundfile_interleave (int nchannels, t_sample **vecs,
     }
 }
 
-void soundfile_deinterleave(int sfchannels, int nvecs, t_sample **vecs,
+void soundfile_decode(int sfchannels, int nvecs, t_sample **vecs,
     long itemsread, unsigned char *buf, int nitems, int bytespersamp,
     int bigendian, int spread)
 {

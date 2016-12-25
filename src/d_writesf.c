@@ -337,7 +337,7 @@ static t_int *writesf_perform(t_int *w)
                 roominfifo += x->sf_fifoSize;
         }
 
-        soundfile_interleave (sfchannels, x->sf_vectorsOut,
+        soundfile_encode (sfchannels, x->sf_vectorsOut,
             (unsigned char *)(x->sf_buffer + x->sf_fifoHead), vecsize, 0,
                 bytespersample, bigendian, 1., 1);
         

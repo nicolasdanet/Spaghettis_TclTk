@@ -219,7 +219,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
         thisread = (thisread > bufframes ? bufframes : thisread);
         nitems = fread(sampbuf, channels * bytespersamp, thisread, fp);
         if (nitems <= 0) break;
-        soundfile_deinterleave (channels, argc, (t_float **)vecs, itemsread,
+        soundfile_decode (channels, argc, (t_float **)vecs, itemsread,
             (unsigned char *)sampbuf, nitems, bytespersamp, bigendian,
                 sizeof (t_word)/sizeof(t_sample));
         itemsread += nitems;
@@ -344,7 +344,7 @@ long soundfiler_dowrite(void *obj, t_glist *canvas,
     {
         int thiswrite = nframes - itemswritten, nitems, nbytes;
         thiswrite = (thiswrite > bufframes ? bufframes : thiswrite);
-        soundfile_interleave(argc, (t_float **)vecs, (unsigned char *)sampbuf,
+        soundfile_encode(argc, (t_float **)vecs, (unsigned char *)sampbuf,
             thiswrite, onset, bytespersamp, bigendian, normfactor,
                  sizeof (t_word)/sizeof(t_sample));
         nbytes = write(fd, sampbuf, nchannels * bytespersamp * thiswrite);

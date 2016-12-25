@@ -214,17 +214,17 @@ t_error soundfile_writeFileClose        (int f,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    soundfile_interleave            (int nchannels,
-                                            t_sample **vecs,
-                                            unsigned char *buf,
-                                            int nitems,
-                                            long onset,
-                                            int bytespersamp,
-                                            int bigendian,
-                                            t_sample normalfactor,
+void    soundfile_encode                (int numberOfChannels,
+                                            t_sample **v,
+                                            unsigned char *t,
+                                            int numberOfFrames,
+                                            int onset,
+                                            int bytesPerSamples,
+                                            int isBigEndian,
+                                            t_sample normalFactor,
                                             int spread);
                                             
-void    soundfile_deinterleave          (int sfchannels,
+void    soundfile_decode                (int sfchannels,
                                             int nvecs,
                                             t_sample **vecs,
                                             long itemsread,
