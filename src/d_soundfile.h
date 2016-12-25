@@ -214,27 +214,7 @@ t_error soundfile_writeFileClose        (int f,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    soundfile_xferin_sample         (int sfchannels,
-                                            int nvecs,
-                                            t_sample **vecs,
-                                            long itemsread,
-                                            unsigned char *buf,
-                                            int nitems,
-                                            int bytespersamp,
-                                            int bigendian,
-                                            int spread);
-
-void    soundfile_xferin_float          (int sfchannels,
-                                            int nvecs,
-                                            t_float **vecs,
-                                            long itemsread,
-                                            unsigned char *buf,
-                                            int nitems,
-                                            int bytespersamp,
-                                            int bigendian,
-                                            int spread);
-
-void    soundfile_xferout_sample        (int nchannels,
+void    soundfile_interleave            (int nchannels,
                                             t_sample **vecs,
                                             unsigned char *buf,
                                             int nitems,
@@ -243,15 +223,15 @@ void    soundfile_xferout_sample        (int nchannels,
                                             int bigendian,
                                             t_sample normalfactor,
                                             int spread);
-
-void    soundfile_xferout_float         (int nchannels,
-                                            t_float **vecs,
+                                            
+void    soundfile_deinterleave          (int sfchannels,
+                                            int nvecs,
+                                            t_sample **vecs,
+                                            long itemsread,
                                             unsigned char *buf,
                                             int nitems,
-                                            long onset,
                                             int bytespersamp,
                                             int bigendian,
-                                            t_sample normalfactor,
                                             int spread);
 
 // -----------------------------------------------------------------------------------------------------------
