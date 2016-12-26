@@ -117,6 +117,7 @@ static void soundfiler_read (t_soundfiler *x, t_symbol *s, int argc, t_atom *arg
     if (argc < 2 || argc > SOUNDFILE_MAXIMUM_CHANNELS + 1 || argv[0].a_type != A_SYMBOL)
         goto usage;
     filename = argv[0].a_w.w_symbol->s_name;
+    t_symbol *fileNameSym = GET_SYMBOL (argv);
     argc--; argv++;
     
     for (i = 0; i < argc; i++)
@@ -142,6 +143,8 @@ static void soundfiler_read (t_soundfiler *x, t_symbol *s, int argc, t_atom *arg
         finalsize = vecsize;
     }
     t_audioproperties args;
+    args.ap_fileName = fileNameSym;
+    args.ap_fileExtension = &s_;
     args.ap_headerSize = headersize;
     args.ap_isBigEndian = bigendian;
     args.ap_bytesPerSample = bytespersamp;
@@ -149,7 +152,7 @@ static void soundfiler_read (t_soundfiler *x, t_symbol *s, int argc, t_atom *arg
     args.ap_dataSizeInBytes = bytelimit;
     args.ap_onset = skipframes;
     
-    fd = soundfile_readFileHeader (x->x_owner, filename, &args);
+    fd = soundfile_readFileHeader (x->x_owner, &args);
     
     headersize = args.ap_headerSize;
     bigendian = args.ap_isBigEndian;

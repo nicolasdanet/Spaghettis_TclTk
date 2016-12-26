@@ -389,12 +389,20 @@ static int soundfile_readFileHeaderPerform (int f, t_audioproperties *args)
     return -1;
 }
 
-int soundfile_readFileHeader (t_glist *glist, const char *name, t_audioproperties *args)
+int soundfile_readFileHeader (t_glist *glist, t_audioproperties *args)
 {
     char t[PD_STRING] = { 0 };
     char *s;
     
-    int f = canvas_openFile (glist, name, "", t, &s, PD_STRING);
+    PD_ASSERT (args->ap_fileName);
+    PD_ASSERT (args->ap_fileExtension);
+    
+    int f = canvas_openFile (glist, 
+                args->ap_fileName->s_name, 
+                args->ap_fileExtension->s_name,
+                t,
+                &s,
+                PD_STRING);
     
     if (f >= 0) { return soundfile_readFileHeaderPerform (f, args); }
     

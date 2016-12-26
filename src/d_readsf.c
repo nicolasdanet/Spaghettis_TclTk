@@ -120,6 +120,8 @@ static void *readsf_child_main(void *zz)
             pthread_mutex_unlock(&x->sf_mutex);
             
             t_audioproperties args;
+            args.ap_fileName = gensym (filename);
+            args.ap_fileExtension = &s_;
             args.ap_headerSize = skipheaderbytes;
             args.ap_isBigEndian = bigendian;
             args.ap_bytesPerSample = bytespersample;
@@ -127,7 +129,7 @@ static void *readsf_child_main(void *zz)
             args.ap_dataSizeInBytes = bytelimit;
             args.ap_onset = onsetframes;
             
-            fd = soundfile_readFileHeader (x->sf_owner, filename, &args);
+            fd = soundfile_readFileHeader (x->sf_owner, &args);
                 
             skipheaderbytes = args.ap_headerSize;
             bigendian = args.ap_isBigEndian;

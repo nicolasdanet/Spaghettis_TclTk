@@ -158,6 +158,8 @@ static inline void soundfile_makeAiff80BitFloat (double sampleRate, unsigned cha
 #pragma mark -
 
 typedef struct _audioproperties {
+    t_symbol *ap_fileName;
+    t_symbol *ap_fileExtension;
     int ap_headerSize;
     int ap_numberOfChannels;
     int ap_bytesPerSample;
@@ -171,7 +173,7 @@ typedef struct _audioproperties {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int     soundfile_readFileHeader        (t_glist *glist, const char *name, t_audioproperties *args);
+int     soundfile_readFileHeader        (t_glist *glist, t_audioproperties *args);
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
