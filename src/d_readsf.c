@@ -126,7 +126,7 @@ static void *readsf_child_main(void *zz)
             args.ap_numberOfChannels = sfchannels;
             args.ap_dataSizeInBytes = bytelimit;
     
-            fd = soundfile_openFile (x->sf_owner, filename, onsetframes, &args);
+            fd = soundfile_readFile (x->sf_owner, filename, onsetframes, &args);
                 
             skipheaderbytes = args.ap_headerSize;
             bigendian = args.ap_isBigEndian;
