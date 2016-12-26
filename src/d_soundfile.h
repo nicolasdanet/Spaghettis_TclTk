@@ -224,14 +224,14 @@ void    soundfile_encode                (int numberOfChannels,
                                             t_sample normalFactor,
                                             int spread);
                                             
-void    soundfile_decode                (int sfchannels,
-                                            int nvecs,
-                                            t_sample **vecs,
-                                            long itemsread,
-                                            unsigned char *buf,
-                                            int nitems,
-                                            int bytespersamp,
-                                            int bigendian,
+void    soundfile_decode                (int numberOfChannels,
+                                            int n,
+                                            t_sample **v,
+                                            unsigned char *t,
+                                            int numberOfFrames,
+                                            int onset,
+                                            int bytesPerSamples,
+                                            int isBigEndian,
                                             int spread);
 
 // -----------------------------------------------------------------------------------------------------------

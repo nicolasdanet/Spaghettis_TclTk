@@ -188,7 +188,9 @@ void soundfile_initialize (void)
     PD_ASSERT (SOUNDFILE_BUFFER > SOUNDFILE_HEADER_AIFF);
     PD_ASSERT (SOUNDFILE_BUFFER > SOUNDFILE_HEADER_NEXT);
     
-    PD_ASSERT (sizeof (t_sample) == sizeof (t_float));  /* Required for interleaving and de-interleaving. */
+    PD_ASSERT (sizeof (t_sample) == sizeof (t_float));          /* Required for encoding. */
+    PD_ASSERT (sizeof (t_word) > sizeof (t_sample));
+    PD_ASSERT (sizeof (t_word) % sizeof (t_sample) == 0);
 }
 
 void soundfile_release (void)

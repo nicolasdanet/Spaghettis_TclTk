@@ -219,8 +219,8 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
         thisread = (thisread > bufframes ? bufframes : thisread);
         nitems = fread(sampbuf, channels * bytespersamp, thisread, fp);
         if (nitems <= 0) break;
-        soundfile_decode (channels, argc, (t_float **)vecs, itemsread,
-            (unsigned char *)sampbuf, nitems, bytespersamp, bigendian,
+        soundfile_decode (channels, argc, (t_float **)vecs, 
+            (unsigned char *)sampbuf, nitems, itemsread, bytespersamp, bigendian,
                 sizeof (t_word)/sizeof(t_sample));
         itemsread += nitems;
     }
