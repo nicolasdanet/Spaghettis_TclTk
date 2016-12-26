@@ -206,7 +206,7 @@ void soundfile_release (void)
 /* A properly way to traverse and fetch sub-chunks should be implemented. */
 /* < http://stackoverflow.com/a/19991594 > */
 
-static t_error soundfile_readFilePerformWAVE (int f, int swap, t_soundfileheader *t, t_audioproperties *args)
+static t_error soundfile_readFileHeaderWAVE (int f, t_soundfileheader *t, t_audioproperties *args)
 {
     t_error err = PD_ERROR;
 
@@ -215,6 +215,8 @@ static t_error soundfile_readFilePerformWAVE (int f, int swap, t_soundfileheader
     if (!strncmp (t->h_c + 12, "fmt ", 4)) {
     if (!strncmp (t->h_c + 36, "data", 4)) {
     //
+    int swap = args->ap_needToSwap;
+    
     int fmtSize          = (int)soundfile_swap4Bytes (*((uint32_t *)(t->h_c + 16)), swap);
     int audioFormat      = (int)soundfile_swap2Bytes (*((uint16_t *)(t->h_c + 20)), swap);
     int numberOfChannels = (int)soundfile_swap2Bytes (*((uint16_t *)(t->h_c + 22)), swap);
@@ -249,7 +251,7 @@ static t_error soundfile_readFilePerformWAVE (int f, int swap, t_soundfileheader
 
 /* See comments above. */
 
-static t_error soundfile_readFilePerformAIFF (int f, int swap, t_soundfileheader *t, t_audioproperties *args)
+static t_error soundfile_readFileHeaderAIFF (int f, t_soundfileheader *t, t_audioproperties *args)
 {
     t_error err = PD_ERROR;
     
@@ -258,6 +260,8 @@ static t_error soundfile_readFilePerformAIFF (int f, int swap, t_soundfileheader
     if (!strncmp (t->h_c + 12, "COMM", 4)) {
     if (!strncmp (t->h_c + 38, "SSND", 4)) {
     //
+    int swap = args->ap_needToSwap;
+    
     int numberOfChannels = (int)soundfile_swap2Bytes (*((uint16_t *)(t->h_c + 20)), swap);
     int bitsPerSample    = (int)soundfile_swap2Bytes (*((uint16_t *)(t->h_c + 26)), swap);
     int dataSize         = (int)soundfile_swap4Bytes (*((uint32_t *)(t->h_c + 42)), swap);
@@ -286,12 +290,14 @@ static t_error soundfile_readFilePerformAIFF (int f, int swap, t_soundfileheader
     return err;
 }
 
-static t_error soundfile_readFilePerformNEXT (int f, int swap, t_soundfileheader *t, t_audioproperties *args)
+static t_error soundfile_readFileHeaderNEXT (int f, t_soundfileheader *t, t_audioproperties *args)
 {
     t_error err = PD_ERROR;
     
     if (t->h_bytesSet > SOUNDFILE_HEADER_NEXT) {
     //
+    int swap = args->ap_needToSwap;
+    
     int dataLocation     = (int)soundfile_swap4Bytes (*((uint32_t *)(t->h_c + 4)), swap);
     int dataSize         = (int)soundfile_swap4Bytes (*((uint32_t *)(t->h_c + 8)), swap);
     int audioFormat      = (int)soundfile_swap4Bytes (*((uint32_t *)(t->h_c + 12)), swap);
@@ -318,11 +324,7 @@ static t_error soundfile_readFilePerformNEXT (int f, int swap, t_soundfileheader
     return err;
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static t_error soundfile_readFilePerformParseFormat (int f, t_audioproperties *args)
+static t_error soundfile_readFileHeaderFormat (int f, t_audioproperties *args)
 {
     t_error err = PD_ERROR;
     
@@ -347,22 +349,28 @@ static t_error soundfile_readFilePerformParseFormat (int f, t_audioproperties *a
     }
     
     if (format != SOUNDFILE_NONE) {
-        int swap = (args->ap_isBigEndian != soundfile_systemIsBigEndian());
-        if (format == SOUNDFILE_WAVE) { err = soundfile_readFilePerformWAVE (f, swap, &t, args); }
-        if (format == SOUNDFILE_AIFF) { err = soundfile_readFilePerformAIFF (f, swap, &t, args); }
-        if (format == SOUNDFILE_NEXT) { err = soundfile_readFilePerformNEXT (f, swap, &t, args); }
+    
+        args->ap_needToSwap = (args->ap_isBigEndian != soundfile_systemIsBigEndian());
+        
+        if (format == SOUNDFILE_WAVE) { err = soundfile_readFileHeaderWAVE (f, &t, args); }
+        if (format == SOUNDFILE_AIFF) { err = soundfile_readFileHeaderAIFF (f, &t, args); }
+        if (format == SOUNDFILE_NEXT) { err = soundfile_readFileHeaderNEXT (f, &t, args); }
     }
     //
     }
 
     return err;
 }
-        
-static int soundfile_readFilePerform (int f, t_audioproperties *args)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static int soundfile_readFileHeaderPerform (int f, t_audioproperties *args)
 {
     t_error err = PD_ERROR_NONE;
     
-    if (args->ap_headerSize < 0) { err = soundfile_readFilePerformParseFormat (f, args); }
+    if (args->ap_headerSize < 0) { err = soundfile_readFileHeaderFormat (f, args); }
     
     if (!err) {
     //
@@ -381,18 +389,14 @@ static int soundfile_readFilePerform (int f, t_audioproperties *args)
     return -1;
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int soundfile_readFile (t_glist *glist, const char *name, t_audioproperties *args)
+int soundfile_readFileHeader (t_glist *glist, const char *name, t_audioproperties *args)
 {
     char t[PD_STRING] = { 0 };
     char *s;
     
     int f = canvas_openFile (glist, name, "", t, &s, PD_STRING);
     
-    if (f >= 0) { return soundfile_readFilePerform (f, args); }
+    if (f >= 0) { return soundfile_readFileHeaderPerform (f, args); }
     
     return -1;
 }

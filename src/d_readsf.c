@@ -127,7 +127,7 @@ static void *readsf_child_main(void *zz)
             args.ap_dataSizeInBytes = bytelimit;
             args.ap_onset = onsetframes;
             
-            fd = soundfile_readFile (x->sf_owner, filename, &args);
+            fd = soundfile_readFileHeader (x->sf_owner, filename, &args);
                 
             skipheaderbytes = args.ap_headerSize;
             bigendian = args.ap_isBigEndian;
