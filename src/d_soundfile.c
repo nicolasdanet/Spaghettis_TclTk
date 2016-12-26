@@ -413,34 +413,22 @@ int soundfile_readFileHeader (t_glist *glist, t_audioproperties *args)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error soundfile_writeFileParse (t_symbol *s,
-    int     *ac,
-    t_atom   **av,
-    t_symbol **fileName,
-    t_symbol **fileExtension,
-    int      *fileType,
-    int      *numberOfFrames,
-    int      *bytesPerSample,
-    int      *isBigEndian,
-    int      *needToSwap,
-    int      *needToNormalize,
-    int      *onset,
-    t_float  *sampleRate)
+t_error soundfile_writeFileParse (t_symbol *s, int *ac, t_atom **av, t_audioproperties *args)
 {
     t_error err = PD_ERROR_NONE;
     
-    int argc            = *ac;
-    t_atom *argv        = *av;
-    t_symbol *name      = NULL;
-    t_symbol *extension = &s_;
-    int type            = SOUNDFILE_NONE;
-    int frames          = PD_INT_MAX;
-    int bytes           = 2;
-    int big             = 0;
-    int swap            = 0;
-    int normalize       = 0;
-    int skip            = 0;
-    t_float rate        = -1.0;
+    int argc                = *ac;
+    t_atom *argv            = *av;
+    t_symbol *fileName      = NULL;
+    t_symbol *fileExtension = &s_;
+    t_float sampleRate      = -1.0;
+    int fileType            = SOUNDFILE_NONE;
+    int bytesPerSample      = 2;
+    int isBigEndian         = 0;
+    int needToSwap          = 0;
+    int onset               = 0;
+    int numberOfFrames      = PD_INT_MAX;
+    int needToNormalize     = 0;
     
     int endianness = 1;     /* Default is big-endian (used only by NeXT/Sun soundfile format). */
         
@@ -449,39 +437,39 @@ t_error soundfile_writeFileParse (t_symbol *s,
     t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
     
     if (argc > 1 && (t == sym___dash__s || t == sym___dash__skip)) {
-        skip = (int)atom_getFloat (argv + 1);
-        skip = PD_MAX (0, skip);
+        onset = (int)atom_getFloat (argv + 1);
+        onset = PD_MAX (0, onset);
         argc -= 2; argv += 2;
         
     } else if (argc > 1 && (t == sym___dash__f || t == sym___dash__frames || t == sym___dash__nframes)) {
-        frames = (int)atom_getFloat (argv + 1);
-        frames = PD_MAX (0, frames);
+        numberOfFrames = (int)atom_getFloat (argv + 1);
+        numberOfFrames = PD_MAX (0, numberOfFrames);
         argc -= 2; argv += 2;
         
     } else if (argc > 1 && (t == sym___dash__b || t == sym___dash__bytes)) {
-        bytes = (int)atom_getFloat (argv + 1);
-        bytes = PD_CLAMP (bytes, 2, 4);
+        bytesPerSample = (int)atom_getFloat (argv + 1);
+        bytesPerSample = PD_CLAMP (bytesPerSample, 2, 4);
         argc -= 2; argv += 2;
         
     } else if (argc > 1 && (t == sym___dash__r || t == sym___dash__rate || t == sym___dash__samplerate)) {
-        rate = atom_getFloat (argv + 1);
-        rate = PD_MAX (1.0, rate);
+        sampleRate = atom_getFloat (argv + 1);
+        sampleRate = PD_MAX (1.0, sampleRate);
         argc -= 2; argv += 2;
         
     } else if (t == sym___dash__n || t == sym___dash__normalize) {
-        normalize = 1;
+        needToNormalize = 1;
         argc --; argv++;
     
     } else if (t == sym___dash__nextstep)   {
-        type = SOUNDFILE_NEXT; extension = sym___point__snd;
+        fileType = SOUNDFILE_NEXT; fileExtension = sym___point__snd;
         argc --; argv++;
         
     } else if (t == sym___dash__wave)   {
-        type = SOUNDFILE_WAVE; extension = sym___point__wav;
+        fileType = SOUNDFILE_WAVE; fileExtension = sym___point__wav;
         argc --; argv++;
         
     } else if (t == sym___dash__aiff)   {
-        type = SOUNDFILE_AIFF; extension = sym___point__aif;
+        fileType = SOUNDFILE_AIFF; fileExtension = sym___point__aif;
         argc --; argv++;
         
     } else if (t == sym___dash__big)    {
@@ -501,48 +489,49 @@ t_error soundfile_writeFileParse (t_symbol *s,
     
     if (!err) {
     //
-    name = GET_SYMBOL (argv); 
+    fileName = GET_SYMBOL (argv); 
     
     argc--; argv++;
     
-    if (type == SOUNDFILE_NONE) {
+    if (fileType == SOUNDFILE_NONE) {
 
-        if (string_endWith (name->s_name, ".wav"))          { type = SOUNDFILE_WAVE; }
-        else if (string_endWith (name->s_name, ".WAV"))     { type = SOUNDFILE_WAVE; }
-        else if (string_endWith (name->s_name, ".aif"))     { type = SOUNDFILE_AIFF; }
-        else if (string_endWith (name->s_name, ".AIF"))     { type = SOUNDFILE_AIFF; }
-        else if (string_endWith (name->s_name, ".aiff"))    { type = SOUNDFILE_AIFF; }
-        else if (string_endWith (name->s_name, ".AIFF"))    { type = SOUNDFILE_AIFF; }
-        else if (string_endWith (name->s_name, ".snd"))     { type = SOUNDFILE_NEXT; }
-        else if (string_endWith (name->s_name, ".SND"))     { type = SOUNDFILE_NEXT; }
-        else if (string_endWith (name->s_name, ".au"))      { type = SOUNDFILE_NEXT; }
-        else if (string_endWith (name->s_name, ".AU"))      { type = SOUNDFILE_NEXT; }
+        if (string_endWith (fileName->s_name, ".wav"))          { fileType = SOUNDFILE_WAVE; }
+        else if (string_endWith (fileName->s_name, ".WAV"))     { fileType = SOUNDFILE_WAVE; }
+        else if (string_endWith (fileName->s_name, ".aif"))     { fileType = SOUNDFILE_AIFF; }
+        else if (string_endWith (fileName->s_name, ".AIF"))     { fileType = SOUNDFILE_AIFF; }
+        else if (string_endWith (fileName->s_name, ".aiff"))    { fileType = SOUNDFILE_AIFF; }
+        else if (string_endWith (fileName->s_name, ".AIFF"))    { fileType = SOUNDFILE_AIFF; }
+        else if (string_endWith (fileName->s_name, ".snd"))     { fileType = SOUNDFILE_NEXT; }
+        else if (string_endWith (fileName->s_name, ".SND"))     { fileType = SOUNDFILE_NEXT; }
+        else if (string_endWith (fileName->s_name, ".au"))      { fileType = SOUNDFILE_NEXT; }
+        else if (string_endWith (fileName->s_name, ".AU"))      { fileType = SOUNDFILE_NEXT; }
         else {
-            type = SOUNDFILE_WAVE; extension = sym___point__wav;
+            fileType = SOUNDFILE_WAVE; fileExtension = sym___point__wav;
         }
     }
 
-    if (bytes == 4 && type == SOUNDFILE_AIFF) { PD_BUG; return PD_ERROR; }
-    if (type == SOUNDFILE_WAVE)      { big = 0; }
-    else if (type == SOUNDFILE_AIFF) { big = 1; }
+    if (bytesPerSample == 4 && fileType == SOUNDFILE_AIFF) { PD_BUG; return PD_ERROR; }
+    if (fileType == SOUNDFILE_WAVE)      { isBigEndian = 0; }
+    else if (fileType == SOUNDFILE_AIFF) { isBigEndian = 1; }
     else {
-        big = endianness;
+        isBigEndian = endianness;
     }
     
-    swap = (big != soundfile_systemIsBigEndian());
+    needToSwap = (isBigEndian != soundfile_systemIsBigEndian());
     
-    *ac              = argc;
-    *av              = argv;
-    *fileName        = name;
-    *fileExtension   = extension;
-    *fileType        = type;
-    *numberOfFrames  = frames;
-    *bytesPerSample  = bytes;
-    *isBigEndian     = big;
-    *needToSwap      = swap;
-    *needToNormalize = normalize;
-    *onset           = skip;
-    *sampleRate      = rate;
+    args->ap_fileName           = fileName;
+    args->ap_fileExtension      = fileExtension;
+    args->sampleRate            = sampleRate;
+    args->ap_fileType           = fileType;
+    args->ap_bytesPerSample     = bytesPerSample;
+    args->ap_isBigEndian        = isBigEndian;
+    args->ap_needToSwap         = needToSwap;
+    args->ap_onset              = onset;
+    args->ap_numberOfFrames     = numberOfFrames;
+    args->ap_needToNormalize    = needToNormalize;
+    
+    *ac = argc;
+    *av = argv;
     //
     }
     

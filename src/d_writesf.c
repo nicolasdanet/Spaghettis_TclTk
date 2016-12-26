@@ -392,14 +392,26 @@ static void writesf_open(t_writesf *x, t_symbol *s, int argc, t_atom *argv)
         writesf_stop(x);
     }
     
-    if (soundfile_writeFileParse(sym_writesf__tilde__, &argc,
-        &argv, &filesym, &fileExtension, &filetype, &nframes, &bytespersamp, &bigendian, &swap,
-        &normalize, &onset, &samplerate) == PD_ERROR)
+    t_audioproperties prop;
+    
+    if (soundfile_writeFileParse(sym_writesf__tilde__, &argc, &argv, &prop) == PD_ERROR)
     {
         post_error ("writesf~: usage: open [-bytes [234]] [-wave,-nextstep,-aiff] ...");
         post("... [-big,-little] [-rate ####] filename");
         return;
     }
+    
+    filesym = prop.ap_fileName;
+    fileExtension = prop.ap_fileExtension;
+    samplerate = prop.sampleRate;
+    filetype = prop.ap_fileType;
+    bytespersamp = prop.ap_bytesPerSample;
+    bigendian = prop.ap_isBigEndian;
+    swap = prop.ap_needToSwap;
+    onset = prop.ap_onset;
+    nframes = prop.ap_numberOfFrames;
+    normalize = prop.ap_needToNormalize;
+    
     if (normalize || onset || (nframes != PD_INT_MAX))
         post_error ("normalize/onset/nframes argument to writesf~: ignored");
     if (argc)

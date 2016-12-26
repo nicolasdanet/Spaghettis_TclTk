@@ -158,17 +158,21 @@ static inline void soundfile_makeAiff80BitFloat (double sampleRate, unsigned cha
 #pragma mark -
 
 typedef struct _audioproperties {
-    t_symbol *ap_fileName;
-    t_symbol *ap_fileExtension;
-    int ap_headerSize;
-    int ap_numberOfChannels;
-    int ap_bytesPerSample;
-    int ap_isBigEndian;
-    int ap_dataSizeInBytes;
-    int ap_onset;
-    int ap_needToSwap;
+    t_symbol    *ap_fileName;
+    t_symbol    *ap_fileExtension;
+    t_float     sampleRate;
+    int         ap_fileType;
+    int         ap_headerSize;
+    int         ap_numberOfChannels;
+    int         ap_bytesPerSample;
+    int         ap_isBigEndian;
+    int         ap_needToSwap;
+    int         ap_dataSizeInBytes;
+    int         ap_onset;
+    int         ap_numberOfFrames;
+    int         ap_needToNormalize;
     } t_audioproperties;
-    
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -179,19 +183,7 @@ int     soundfile_readFileHeader        (t_glist *glist, t_audioproperties *args
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error soundfile_writeFileParse        (t_symbol *s,
-                                            int *argc,
-                                            t_atom **argv,
-                                            t_symbol **fileName,
-                                            t_symbol **fileExtension,
-                                            int *fileType,
-                                            int *numberOfFrames,
-                                            int *bytesPerSample,
-                                            int *isBigEndian,
-                                            int *needToSwap,
-                                            int *needToNormalize,
-                                            int *onset,
-                                            t_float *sampleRate);
+t_error soundfile_writeFileParse        (t_symbol *s, int *argc, t_atom **argv, t_audioproperties *args);
 
 int     soundfile_writeFileHeader       (t_glist *glist,
                                             const char *fileName,

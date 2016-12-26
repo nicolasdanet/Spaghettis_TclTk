@@ -274,10 +274,23 @@ long soundfiler_performWrite (void *dummy, t_glist *canvas, int argc, t_atom *ar
     t_symbol *filesym;
     t_symbol *fileExtension;
     
-    if (soundfile_writeFileParse(sym_soundfiler, &argc, &argv, &filesym, &fileExtension, &filetype,
-        &nframes, &bytespersamp, &bigendian, &swap, &normalize, &onset,
-            &samplerate) == PD_ERROR)
+    t_audioproperties prop;
+    
+    
+    if (soundfile_writeFileParse(sym_soundfiler, &argc, &argv, &prop) == PD_ERROR)
                 goto usage;
+                
+    filesym = prop.ap_fileName;
+    fileExtension = prop.ap_fileExtension;
+    samplerate = prop.sampleRate;
+    filetype = prop.ap_fileType;
+    bytespersamp = prop.ap_bytesPerSample;
+    bigendian = prop.ap_isBigEndian;
+    swap = prop.ap_needToSwap;
+    onset = prop.ap_onset;
+    nframes = prop.ap_numberOfFrames;
+    normalize = prop.ap_needToNormalize;
+    
     nchannels = argc;
     if (nchannels < 1 || nchannels > SOUNDFILE_MAXIMUM_CHANNELS)
         goto usage;
