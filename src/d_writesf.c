@@ -339,7 +339,7 @@ static t_int *writesf_perform(t_int *w)
 
         soundfile_encode (sfchannels, x->sf_vectorsOut,
             (unsigned char *)(x->sf_buffer + x->sf_fifoHead), vecsize, 0,
-                bytespersample, bigendian, 1., 1);
+                bytespersample, bigendian, 1, 1.);
         
         x->sf_fifoHead += wantbytes;
         if (x->sf_fifoHead >= x->sf_fifoSize)

@@ -234,8 +234,8 @@ void soundfile_encode (int numberOfChannels,
     int onset,
     int bytesPerSample,
     int isBigEndian,
-    t_sample normalFactor,
-    int spread)
+    int spread, 
+    t_sample normalFactor)
 {
     if (bytesPerSample == 2) {
     
@@ -283,7 +283,7 @@ void soundfile_encode (int numberOfChannels,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Left operand of the shift operator is promote to int type (assumed 32-bit). */
+/* Left operand of the shift operator is promote to the int type (assumed 32-bit). */
 
 static inline t_sample soundfile_decodeLinear16BigEndian (unsigned char *p)
 {
@@ -451,14 +451,14 @@ void soundfile_decodeFloat (int numberOfChannels,
 }
 
 void soundfile_decode (int numberOfChannels,
-    int n,
     t_sample **v,
     unsigned char *t,
     int numberOfFrames,
     int onset,
     int bytesPerSample,
     int isBigEndian,
-    int spread)
+    int spread, 
+    int n)
 {
     if (bytesPerSample == 2) {
         
