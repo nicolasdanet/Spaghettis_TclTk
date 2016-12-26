@@ -184,12 +184,12 @@ t_error soundfile_writeFileParse        (t_symbol *s,
                                             t_symbol **fileName,
                                             t_symbol **fileExtension,
                                             int *fileType,
+                                            int *numberOfFrames,
                                             int *bytesPerSample,
-                                            int *needToSwap,
                                             int *isBigEndian,
+                                            int *needToSwap,
                                             int *needToNormalize,
                                             int *onset,
-                                            int *numberOfFrames,
                                             t_float *sampleRate);
 
 int     soundfile_writeFileHeader       (t_glist *glist,
@@ -208,7 +208,7 @@ t_error soundfile_writeFileClose        (int f,
                                             int numberOfFrames,
                                             int itemsWritten,
                                             int bytesPerFrame,
-                                            int swap);
+                                            int needToSwap);
                                             
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -393,8 +393,8 @@ static void writesf_open(t_writesf *x, t_symbol *s, int argc, t_atom *argv)
     }
     
     if (soundfile_writeFileParse(sym_writesf__tilde__, &argc,
-        &argv, &filesym, &fileExtension, &filetype, &bytespersamp, &swap, &bigendian,
-        &normalize, &onset, &nframes, &samplerate) == PD_ERROR)
+        &argv, &filesym, &fileExtension, &filetype, &nframes, &bytespersamp, &bigendian, &swap,
+        &normalize, &onset, &samplerate) == PD_ERROR)
     {
         post_error ("writesf~: usage: open [-bytes [234]] [-wave,-nextstep,-aiff] ...");
         post("... [-big,-little] [-rate ####] filename");

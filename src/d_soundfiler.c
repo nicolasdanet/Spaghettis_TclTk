@@ -279,7 +279,7 @@ long soundfiler_dowrite(void *obj, t_glist *canvas,
     t_symbol *fileExtension;
     
     if (soundfile_writeFileParse(sym_soundfiler, &argc, &argv, &filesym, &fileExtension, &filetype,
-        &bytespersamp, &swap, &bigendian, &normalize, &onset, &nframes,
+        &nframes, &bytespersamp, &bigendian, &swap, &normalize, &onset,
             &samplerate) == PD_ERROR)
                 goto usage;
     nchannels = argc;

@@ -407,12 +407,12 @@ t_error soundfile_writeFileParse (t_symbol *s,
     t_symbol **fileName,
     t_symbol **fileExtension,
     int      *fileType,
+    int      *numberOfFrames,
     int      *bytesPerSample,
-    int      *needToSwap,
     int      *isBigEndian,
+    int      *needToSwap,
     int      *needToNormalize,
     int      *onset,
-    int      *numberOfFrames,
     t_float  *sampleRate)
 {
     t_error err = PD_ERROR_NONE;
@@ -422,12 +422,12 @@ t_error soundfile_writeFileParse (t_symbol *s,
     t_symbol *name      = NULL;
     t_symbol *extension = &s_;
     int type            = SOUNDFILE_NONE;
+    int frames          = PD_INT_MAX;
     int bytes           = 2;
-    int swap            = 0;
     int big             = 0;
+    int swap            = 0;
     int normalize       = 0;
     int skip            = 0;
-    int frames          = PD_INT_MAX;
     t_float rate        = -1.0;
     
     int endianness = 1;     /* Default is big-endian (used only by NeXT/Sun soundfile format). */
@@ -524,12 +524,12 @@ t_error soundfile_writeFileParse (t_symbol *s,
     *fileName        = name;
     *fileExtension   = extension;
     *fileType        = type;
+    *numberOfFrames  = frames;
     *bytesPerSample  = bytes;
+    *isBigEndian     = big;
     *needToSwap      = swap;
     *needToNormalize = normalize;
     *onset           = skip;
-    *numberOfFrames  = frames;
-    *isBigEndian     = big;
     *sampleRate      = rate;
     //
     }
