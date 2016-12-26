@@ -358,7 +358,7 @@ static t_error soundfile_readFilePerformParseFormat (int f, t_audioproperties *a
     return err;
 }
         
-static int soundfile_readFilePerform (int f, int onset, t_audioproperties *args)
+static int soundfile_readFilePerform (int f, t_audioproperties *args)
 {
     t_error err = PD_ERROR_NONE;
     
@@ -366,7 +366,7 @@ static int soundfile_readFilePerform (int f, int onset, t_audioproperties *args)
     
     if (!err) {
     //
-    int m = args->ap_numberOfChannels * args->ap_bytesPerSample * onset;
+    int m = args->ap_numberOfChannels * args->ap_bytesPerSample * args->ap_onset;
     off_t n = args->ap_headerSize + m;
 
     err = ((lseek (f, n, SEEK_SET)) != n);
@@ -385,14 +385,14 @@ static int soundfile_readFilePerform (int f, int onset, t_audioproperties *args)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int soundfile_readFile (t_glist *glist, const char *name, int onset, t_audioproperties *args)
+int soundfile_readFile (t_glist *glist, const char *name, t_audioproperties *args)
 {
     char t[PD_STRING] = { 0 };
     char *s;
     
     int f = canvas_openFile (glist, name, "", t, &s, PD_STRING);
     
-    if (f >= 0) { return soundfile_readFilePerform (f, onset, args); }
+    if (f >= 0) { return soundfile_readFilePerform (f, args); }
     
     return -1;
 }

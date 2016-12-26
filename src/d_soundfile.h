@@ -163,16 +163,14 @@ typedef struct _audioproperties {
     int ap_bytesPerSample;
     int ap_isBigEndian;
     int ap_dataSizeInBytes;
+    int ap_onset;
     } t_audioproperties;
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int     soundfile_readFile              (t_glist *glist,
-                                            const char *name,
-                                            int onset,
-                                            t_audioproperties *args);
+int     soundfile_readFile              (t_glist *glist, const char *name, t_audioproperties *args);
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

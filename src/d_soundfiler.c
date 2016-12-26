@@ -147,8 +147,9 @@ static void soundfiler_read (t_soundfiler *x, t_symbol *s, int argc, t_atom *arg
     args.ap_bytesPerSample = bytespersamp;
     args.ap_numberOfChannels = channels;
     args.ap_dataSizeInBytes = bytelimit;
+    args.ap_onset = skipframes;
     
-    fd = soundfile_readFile(x->x_owner, filename, skipframes, &args);
+    fd = soundfile_readFile(x->x_owner, filename, &args);
     
     headersize = args.ap_headerSize;
     bigendian = args.ap_isBigEndian;
