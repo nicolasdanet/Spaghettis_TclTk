@@ -17,56 +17,52 @@
 #include "d_dsp.h"
 #include "d_soundfile.h"
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 extern t_class *garray_class;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_class *soundfiler_class;       /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _soundfiler {
+    t_object    x_obj;                  /* Must be the first. */
+    t_glist     *x_owner;
+    t_outlet    *x_outlet;
+    } t_soundfiler;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* ------- soundfiler - reads and writes soundfiles to/from "garrays" ---- */
-#define DEFMAXSIZE 4000000      /* default maximum 16 MB per channel */
-#define SAMPBUFSIZE 1024
+#define SOUNDFILER_MAXIMUM_SIZE         (1024 * 1024 * 4)
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static t_class *soundfiler_class;
+#define SOUNDFILER_BUFFER_SIZE          1024
 
-typedef struct _soundfiler
-{
-    t_object x_obj;
-    t_glist *x_canvas;
-} t_soundfiler;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static t_soundfiler *soundfiler_new(void)
-{
-    t_soundfiler *x = (t_soundfiler *)pd_new(soundfiler_class);
-    x->x_canvas = canvas_getCurrent();
-    outlet_new(&x->x_obj, &s_float);
-    return x;
-}
-
-    /* soundfiler_read ...
-    
-    usage: read [flags] filename table ...
-    flags:
-        -skip <frames> ... frames to skip in file
-        -onset <frames> ... onset in table to read into (NOT DONE YET)
-        -raw <headersize channels bytes endian>
-        -resize
-        -maxsize <max-size>
-    */
-
-static void soundfiler_read(t_soundfiler *x, t_symbol *s,
-    int argc, t_atom *argv)
+static void soundfiler_read (t_soundfiler *x, t_symbol *s, int argc, t_atom *argv)
 {
     int headersize = -1, channels = 0, bytespersamp = 0, bigendian = 0,
         resize = 0, i, j;
     long skipframes = 0, finalsize = 0, itemsleft,
-        maxsize = DEFMAXSIZE, itemsread = 0, bytelimit  = PD_INT_MAX;
+        maxsize = SOUNDFILER_MAXIMUM_SIZE, itemsread = 0, bytelimit  = PD_INT_MAX;
     int fd = -1;
     char endianness, *filename;
     t_garray *garrays[SOUNDFILE_MAXIMUM_CHANNELS];
     t_word *vecs[SOUNDFILE_MAXIMUM_CHANNELS];
-    char sampbuf[SAMPBUFSIZE];
+    char sampbuf[SOUNDFILER_BUFFER_SIZE];
     int bufframes, nitems;
     FILE *fp;
     while (argc > 0 && argv->a_type == A_SYMBOL &&
@@ -152,7 +148,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
     args.ap_numberOfChannels = channels;
     args.ap_dataSizeInBytes = bytelimit;
     
-    fd = soundfile_openFile(x->x_canvas, filename, skipframes, &args);
+    fd = soundfile_openFile(x->x_owner, filename, skipframes, &args);
     
     headersize = args.ap_headerSize;
     bigendian = args.ap_isBigEndian;
@@ -211,7 +207,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
     if (finalsize > bytelimit / (channels * bytespersamp))
         finalsize = bytelimit / (channels * bytespersamp);
     fp = fdopen(fd, "rb");
-    bufframes = SAMPBUFSIZE / (channels * bytespersamp);
+    bufframes = SOUNDFILER_BUFFER_SIZE / (channels * bytespersamp);
 
     for (itemsread = 0; itemsread < finalsize; )
     {
@@ -258,19 +254,15 @@ done:
     outlet_float(x->x_obj.te_outlet, (t_float)itemsread); 
 }
 
-    /* this is broken out from soundfiler_write below so garray_write can
-    call it too... not done yet though. */
-
-long soundfiler_dowrite(void *obj, t_glist *canvas,
-    int argc, t_atom *argv)
+long soundfiler_performWrite (void *dummy, t_glist *canvas, int argc, t_atom *argv)
 {
     int headersize, bytespersamp, bigendian,
         endianness, swap, filetype, normalize, i, j, nchannels;
     long onset, nframes, itemsleft,
-        maxsize = DEFMAXSIZE, itemswritten = 0;
+        maxsize = SOUNDFILER_MAXIMUM_SIZE, itemswritten = 0;
     t_garray *garrays[SOUNDFILE_MAXIMUM_CHANNELS];
     t_word *vecs[SOUNDFILE_MAXIMUM_CHANNELS];
-    char sampbuf[SAMPBUFSIZE];
+    char sampbuf[SOUNDFILER_BUFFER_SIZE];
     int bufframes, nitems;
     int fd = -1;
     t_sample normfactor, biggest = 0;
@@ -338,7 +330,7 @@ long soundfiler_dowrite(void *obj, t_glist *canvas,
         normfactor = (biggest > 0 ? 32767./(32768. * biggest) : 1);
     else normfactor = 1;
 
-    bufframes = SAMPBUFSIZE / (nchannels * bytespersamp);
+    bufframes = SOUNDFILER_BUFFER_SIZE / (nchannels * bytespersamp);
 
     for (itemswritten = 0; itemswritten < nframes; )
     {
@@ -376,22 +368,44 @@ fail:
     return (0); 
 }
 
-static void soundfiler_write(t_soundfiler *x, t_symbol *s,
-    int argc, t_atom *argv)
+static void soundfiler_write (t_soundfiler *x, t_symbol *s, int argc, t_atom *argv)
 {
-    long bozo = soundfiler_dowrite(x, x->x_canvas,
-        argc, argv);
-    outlet_float(x->x_obj.te_outlet, (t_float)bozo); 
+    outlet_float (x->x_obj.te_outlet, (t_float)soundfiler_performWrite (x, x->x_owner, argc, argv)); 
 }
 
-void soundfiler_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static t_soundfiler *soundfiler_new (void)
 {
-    soundfiler_class = class_new(sym_soundfiler, (t_newmethod)soundfiler_new, 
-        0, sizeof(t_soundfiler), 0, 0);
-    class_addMethod(soundfiler_class, (t_method)soundfiler_read, sym_read, 
-        A_GIMME, 0);
-    class_addMethod(soundfiler_class, (t_method)soundfiler_write,
-        sym_write, A_GIMME, 0);
+    t_soundfiler *x = (t_soundfiler *)pd_new (soundfiler_class);
+    
+    x->x_owner  = canvas_getCurrent();
+    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    
+    return x;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void soundfiler_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_soundfiler,
+            (t_newmethod)soundfiler_new, 
+            NULL,
+            sizeof (t_soundfiler),
+            CLASS_DEFAULT,
+            A_NULL);
+            
+    class_addMethod (c, (t_method)soundfiler_read,  sym_read,   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)soundfiler_write, sym_write,  A_GIMME, A_NULL);
+    
+    soundfiler_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
