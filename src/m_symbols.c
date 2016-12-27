@@ -60,10 +60,8 @@ t_symbol *sym___dash__inhibit;
 t_symbol *sym___dash__k;
 t_symbol *sym___dash__keep;
 t_symbol *sym___dash__little;
-t_symbol *sym___dash__maxsize;
 t_symbol *sym___dash__n;
 t_symbol *sym___dash__nextstep;
-t_symbol *sym___dash__nframes;
 t_symbol *sym___dash__none;
 t_symbol *sym___dash__normalize;
 t_symbol *sym___dash__r;
@@ -554,6 +552,8 @@ t_symbol *sym_Up;
 
 #if PD_WITH_LEGACY
 
+t_symbol *sym___dash__maxsize;
+t_symbol *sym___dash__nframes;
 t_symbol *sym_add2;
 t_symbol *sym_adddollsym;
 t_symbol *sym_addsemi;
@@ -638,10 +638,8 @@ void symbols_initialize (void)
     sym___dash__k                               = gensym ("-k");
     sym___dash__keep                            = gensym ("-keep");
     sym___dash__little                          = gensym ("-little");
-    sym___dash__maxsize                         = gensym ("-maxsize");
     sym___dash__n                               = gensym ("-n");
     sym___dash__nextstep                        = gensym ("-nextstep");
-    sym___dash__nframes                         = gensym ("-nframes");
     sym___dash__none                            = gensym ("-none");
     sym___dash__normalize                       = gensym ("-normalize");
     sym___dash__r                               = gensym ("-r");
@@ -1129,6 +1127,8 @@ void symbols_initialize (void)
     
     #if PD_WITH_LEGACY
 
+    sym___dash__maxsize                         = gensym ("-maxsize");
+    sym___dash__nframes                         = gensym ("-nframes");
     sym_add2                                    = gensym ("add2");
     sym_adddollsym                              = gensym ("adddollsym");
     sym_addsemi                                 = gensym ("addsemi");

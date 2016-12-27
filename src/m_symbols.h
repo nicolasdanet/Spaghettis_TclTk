@@ -65,10 +65,8 @@ extern t_symbol *sym___dash__inhibit;
 extern t_symbol *sym___dash__k;
 extern t_symbol *sym___dash__keep;
 extern t_symbol *sym___dash__little;
-extern t_symbol *sym___dash__maxsize;
 extern t_symbol *sym___dash__n;
 extern t_symbol *sym___dash__nextstep;
-extern t_symbol *sym___dash__nframes;
 extern t_symbol *sym___dash__none;
 extern t_symbol *sym___dash__normalize;
 extern t_symbol *sym___dash__r;
@@ -559,6 +557,8 @@ extern t_symbol *sym_Up;
 
 #if PD_WITH_LEGACY
 
+extern t_symbol *sym___dash__maxsize;
+extern t_symbol *sym___dash__nframes;
 extern t_symbol *sym_add2;
 extern t_symbol *sym_adddollsym;
 extern t_symbol *sym_addsemi;

@@ -424,12 +424,18 @@ t_error soundfile_writeFileParse (t_symbol *s, int *ac, t_atom **av, t_audioprop
     //
     t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
     
+    #if PD_WITH_LEGACY
+    
+    if (t == sym___dash__nframes) { t = sym___dash__frames; }
+    
+    #endif
+    
     if (argc > 1 && (t == sym___dash__s || t == sym___dash__skip)) {
         onset = (int)atom_getFloat (argv + 1);
         onset = PD_MAX (0, onset);
         argc -= 2; argv += 2;
         
-    } else if (argc > 1 && (t == sym___dash__f || t == sym___dash__frames || t == sym___dash__nframes)) {
+    } else if (argc > 1 && (t == sym___dash__f || t == sym___dash__frames)) {
         numberOfFrames = (int)atom_getFloat (argv + 1);
         numberOfFrames = PD_MAX (0, numberOfFrames);
         argc -= 2; argv += 2;
