@@ -57,7 +57,7 @@ static void soundfiler_read (t_soundfiler *x, t_symbol *s, int argc, t_atom *arg
     int headersize = -1, channels = 0, bytespersamp = 0, bigendian = 0,
         resize = 0, i, j;
     long skipframes = 0, finalsize = 0, itemsleft,
-        maxsize = SOUNDFILER_MAXIMUM_SIZE, itemsread = 0, bytelimit  = PD_INT_MAX;
+        maxsize = SOUNDFILER_MAXIMUM_SIZE, itemsread = 0, bytelimit  = SOUNDFILE_UNKNOWN;
     int fd = -1;
     char endianness, *filename;
     t_garray *garrays[SOUNDFILE_MAXIMUM_CHANNELS];
@@ -208,7 +208,7 @@ static void soundfiler_read (t_soundfiler *x, t_symbol *s, int argc, t_atom *arg
             }
         }
     }
-    if (!finalsize) finalsize = PD_INT_MAX;
+    if (!finalsize) finalsize = SOUNDFILE_UNKNOWN;
     if (finalsize > bytelimit / (channels * bytespersamp))
         finalsize = bytelimit / (channels * bytespersamp);
     fp = fdopen(fd, "rb");
@@ -327,7 +327,6 @@ long soundfiler_performWrite (void *dummy, t_glist *canvas, int argc, t_atom *ar
         post_error ("soundfiler_write: no samples at onset %ld", onset);
         goto fail;
     }
-
     prop.ap_fileName = filesym;
     prop.ap_fileExtension = fileExtension;
     prop.ap_sampleRate = samplerate;

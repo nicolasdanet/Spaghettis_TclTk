@@ -53,6 +53,7 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #define SOUNDFILE_WAVE                  0
 #define SOUNDFILE_AIFF                  1
@@ -60,8 +61,15 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-#define SOUNDFILE_NONE                  3
+#define SOUNDFILE_UNDEFINED            -1
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define SOUNDFILE_UNKNOWN               PD_INT_MAX
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -193,17 +201,17 @@ static inline void soundfile_initProperties (t_audioproperties *args)
 {
     args->ap_fileName           = &s_;
     args->ap_fileExtension      = &s_;
-    args->ap_sampleRate         = 0.0;
-    args->ap_fileType           = SOUNDFILE_NONE;
-    args->ap_headerSize         = 0;
-    args->ap_numberOfChannels   = 0;
-    args->ap_bytesPerSample     = 0;
-    args->ap_isBigEndian        = 0;
-    args->ap_needToSwap         = 0;
-    args->ap_dataSizeInBytes    = 0;
-    args->ap_onset              = 0;
-    args->ap_numberOfFrames     = 0;
-    args->ap_needToNormalize    = 0;
+    args->ap_sampleRate         = SOUNDFILE_UNDEFINED;
+    args->ap_fileType           = SOUNDFILE_UNDEFINED;
+    args->ap_headerSize         = SOUNDFILE_UNDEFINED;
+    args->ap_numberOfChannels   = SOUNDFILE_UNDEFINED;
+    args->ap_bytesPerSample     = SOUNDFILE_UNDEFINED;
+    args->ap_isBigEndian        = SOUNDFILE_UNDEFINED;
+    args->ap_needToSwap         = SOUNDFILE_UNDEFINED;
+    args->ap_dataSizeInBytes    = SOUNDFILE_UNDEFINED;
+    args->ap_onset              = SOUNDFILE_UNDEFINED;
+    args->ap_numberOfFrames     = SOUNDFILE_UNKNOWN;
+    args->ap_needToNormalize    = SOUNDFILE_UNDEFINED;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -322,7 +322,7 @@ static t_error soundfile_readFileHeaderFormat (int f, t_audioproperties *args)
 
     if (t.h_bytesSet >= 4) {
     //
-    int format = SOUNDFILE_NONE;
+    int format = SOUNDFILE_UNDEFINED;
     
     if (!strncmp (t.h_c,         ".snd", 4)) { format = SOUNDFILE_NEXT; args->ap_isBigEndian = 1; }
     else if (!strncmp (t.h_c,    "dns.", 4)) { format = SOUNDFILE_NEXT; args->ap_isBigEndian = 0; }
@@ -336,7 +336,7 @@ static t_error soundfile_readFileHeaderFormat (int f, t_audioproperties *args)
     //
     }
     
-    if (format != SOUNDFILE_NONE) {
+    if (format != SOUNDFILE_UNDEFINED) {
     
         args->ap_needToSwap = (args->ap_isBigEndian != soundfile_systemIsBigEndian());
         
@@ -409,13 +409,13 @@ t_error soundfile_writeFileParse (t_symbol *s, int *ac, t_atom **av, t_audioprop
     t_atom *argv            = *av;
     t_symbol *fileName      = &s_;
     t_symbol *fileExtension = &s_;
-    t_float sampleRate      = -1.0;
-    int fileType            = SOUNDFILE_NONE;
+    t_float sampleRate      = SOUNDFILE_UNDEFINED;
+    int fileType            = SOUNDFILE_UNDEFINED;
     int bytesPerSample      = 2;
     int isBigEndian         = 0;
     int needToSwap          = 0;
     int onset               = 0;
-    int numberOfFrames      = PD_INT_MAX;
+    int numberOfFrames      = SOUNDFILE_UNKNOWN;
     int needToNormalize     = 0;
     
     int endianness = 1;     /* Default is big-endian (used only by NeXT/Sun soundfile format). */
@@ -481,7 +481,7 @@ t_error soundfile_writeFileParse (t_symbol *s, int *ac, t_atom **av, t_audioprop
     
     argc--; argv++;
     
-    if (fileType == SOUNDFILE_NONE) {
+    if (fileType == SOUNDFILE_UNDEFINED) {
 
         if (string_endWith (fileName->s_name, ".wav"))          { fileType = SOUNDFILE_WAVE; }
         else if (string_endWith (fileName->s_name, ".WAV"))     { fileType = SOUNDFILE_WAVE; }
@@ -532,10 +532,11 @@ t_error soundfile_writeFileParse (t_symbol *s, int *ac, t_atom **av, t_audioprop
 
 static t_error soundfile_writeFileHeaderWAVE (t_soundfileheader *t, t_audioproperties *args)
 {
-    int dataSize    = args->ap_numberOfChannels * args->ap_bytesPerSample * args->ap_numberOfFrames;
-    int byteRate    = args->ap_numberOfChannels * args->ap_bytesPerSample * args->ap_sampleRate;
-    int blockAlign  = args->ap_numberOfChannels * args->ap_bytesPerSample;
-    int audioFormat = WAVE_FORMAT_PCM;
+    int numberOfFrames = (args->ap_numberOfFrames == SOUNDFILE_UNKNOWN) ? 0 : args->ap_numberOfFrames;
+    int dataSize       = args->ap_numberOfChannels * args->ap_bytesPerSample * numberOfFrames;
+    int byteRate       = args->ap_numberOfChannels * args->ap_bytesPerSample * args->ap_sampleRate;
+    int blockAlign     = args->ap_numberOfChannels * args->ap_bytesPerSample;
+    int audioFormat    = WAVE_FORMAT_PCM;
     
     int swap = args->ap_needToSwap;
     
@@ -569,12 +570,16 @@ static t_error soundfile_writeFileHeaderWAVE (t_soundfileheader *t, t_audioprope
 
     t->h_bytesSet = SOUNDFILE_HEADER_WAVE;
     
+    args->ap_headerSize      = SOUNDFILE_HEADER_WAVE;
+    args->ap_dataSizeInBytes = dataSize;
+
     return PD_ERROR_NONE;
 }
 
 static t_error soundfile_writeFileHeaderAIFF (t_soundfileheader *t, t_audioproperties *args)
 {
-    int dataSize = args->ap_numberOfChannels * args->ap_bytesPerSample * args->ap_numberOfFrames;
+    int numberOfFrames = (args->ap_numberOfFrames == SOUNDFILE_UNKNOWN) ? 0 : args->ap_numberOfFrames;
+    int dataSize       = args->ap_numberOfChannels * args->ap_bytesPerSample * numberOfFrames;
     
     int swap = args->ap_needToSwap;
     
@@ -605,13 +610,17 @@ static t_error soundfile_writeFileHeaderAIFF (t_soundfileheader *t, t_audioprope
     
     t->h_bytesSet = SOUNDFILE_HEADER_AIFF;
 
+    args->ap_headerSize      = SOUNDFILE_HEADER_AIFF;
+    args->ap_dataSizeInBytes = dataSize;
+    
     return PD_ERROR_NONE;
 }
 
 static t_error soundfile_writeFileHeaderNEXT (t_soundfileheader *t, t_audioproperties *args)
 {
-    int dataSize    = args->ap_numberOfChannels * args->ap_bytesPerSample * args->ap_numberOfFrames;
-    int audioFormat = NS_FORMAT_LINEAR_16;
+    int numberOfFrames = (args->ap_numberOfFrames == SOUNDFILE_UNKNOWN) ? 0 : args->ap_numberOfFrames;
+    int dataSize       = args->ap_numberOfChannels * args->ap_bytesPerSample * numberOfFrames;
+    int audioFormat    = NS_FORMAT_LINEAR_16;
     
     int swap = args->ap_needToSwap;
     
@@ -640,6 +649,9 @@ static t_error soundfile_writeFileHeaderNEXT (t_soundfileheader *t, t_audioprope
     memset (t->h_c + 24, 0, 4);
     
     t->h_bytesSet = SOUNDFILE_HEADER_NEXT;
+    
+    args->ap_headerSize      = SOUNDFILE_HEADER_NEXT;
+    args->ap_dataSizeInBytes = dataSize;
 
     return PD_ERROR_NONE;
 }
@@ -654,9 +666,10 @@ int soundfile_writeFileHeader (t_glist *glist, t_audioproperties *args)
     
     PD_ASSERT (args->ap_fileName != NULL);
     PD_ASSERT (args->ap_fileExtension != NULL);
-    PD_ASSERT (args->ap_numberOfChannels != 0);
-    PD_ASSERT (args->ap_headerSize == 0);
-    PD_ASSERT (args->ap_dataSizeInBytes == 0);
+    PD_ASSERT (args->ap_numberOfChannels != SOUNDFILE_UNDEFINED);
+    PD_ASSERT (args->ap_sampleRate != SOUNDFILE_UNDEFINED);
+    PD_ASSERT (args->ap_headerSize == SOUNDFILE_UNDEFINED);
+    PD_ASSERT (args->ap_dataSizeInBytes == SOUNDFILE_UNDEFINED);
 
     err = string_copy (name, PD_STRING, args->ap_fileName->s_name);
     err |= string_add (name, PD_STRING, args->ap_fileExtension->s_name);
@@ -691,69 +704,82 @@ int soundfile_writeFileHeader (t_glist *glist, t_audioproperties *args)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error soundfile_writeFileCloseWAVE (int f, int itemsWritten, t_audioproperties *args)
+t_error soundfile_writeFileCloseWAVE (int f, t_audioproperties *args)
 {
-    int dataSize = itemsWritten * args->ap_bytesPerSample * args->ap_numberOfChannels;
-    int swap = args->ap_needToSwap;
+    t_error err  = PD_ERROR;
+    int dataSize = args->ap_numberOfFrames * args->ap_bytesPerSample * args->ap_numberOfChannels;
+    int swap     = args->ap_needToSwap;
     uint32_t t;
+    
+    args->ap_dataSizeInBytes = dataSize;
     
     if (lseek (f, 4, SEEK_SET) == 4)  { 
         t = soundfile_swap4Bytes ((uint32_t)(SOUNDFILE_HEADER_WAVE - 8 + dataSize), swap);
         if (write (f, (char *)(&t), 4) == 4) {
             if (lseek (f, 40, SEEK_SET) == 40) {
                 t = soundfile_swap4Bytes ((uint32_t)dataSize, swap);
-                if (write (f, (char *)(&t), 4) == 4) { return PD_ERROR_NONE; }
+                if (write (f, (char *)(&t), 4) == 4) { err = PD_ERROR_NONE; }
             }
         }
     }
     
-    return PD_ERROR;
+    return err;
 }
 
-t_error soundfile_writeFileCloseAIFF (int f, int itemsWritten, t_audioproperties *args)
+t_error soundfile_writeFileCloseAIFF (int f, t_audioproperties *args)
 {
-    int dataSize = itemsWritten * args->ap_bytesPerSample * args->ap_numberOfChannels;
-    int swap = args->ap_needToSwap;
+    t_error err  = PD_ERROR;
+    int dataSize = args->ap_numberOfFrames * args->ap_bytesPerSample * args->ap_numberOfChannels;
+    int swap     = args->ap_needToSwap;
     uint32_t t;
+    
+    args->ap_dataSizeInBytes = dataSize;
     
     if (lseek (f, 4, SEEK_SET) == 4)  { 
         t = soundfile_swap4Bytes ((uint32_t)(SOUNDFILE_HEADER_AIFF - 8 + dataSize), swap);
         if (write (f, (char *)(&t), 4) == 4) {
             if (lseek (f, 42, SEEK_SET) == 42) {
                 t = soundfile_swap4Bytes ((uint32_t)(dataSize + 8), swap);
-                if (write (f, (char *)(&t), 4) == 4) { return PD_ERROR_NONE; }
+                if (write (f, (char *)(&t), 4) == 4) { err = PD_ERROR_NONE; }
             }
         }
     }
     
-    return PD_ERROR;
+    return err;
 }
 
-t_error soundfile_writeFileCloseNEXT (int f, int itemsWritten, t_audioproperties *args)
+t_error soundfile_writeFileCloseNEXT (int f, t_audioproperties *args)
 {
-    int dataSize = itemsWritten * args->ap_bytesPerSample * args->ap_numberOfChannels;
-    int swap = args->ap_needToSwap;
+    t_error err  = PD_ERROR;
+    int dataSize = args->ap_numberOfFrames * args->ap_bytesPerSample * args->ap_numberOfChannels;
+    int swap     = args->ap_needToSwap;
     uint32_t t;
+    
+    args->ap_dataSizeInBytes = dataSize;
     
     if (lseek (f, 8, SEEK_SET) == 8)  { 
         t = soundfile_swap4Bytes ((uint32_t)dataSize, swap);
-        if (write (f, (char *)(&t), 4) == 4) { return PD_ERROR_NONE; }
+        if (write (f, (char *)(&t), 4) == 4) { err = PD_ERROR_NONE; }
     }
     
-    return PD_ERROR;
+    return err;
 }
+
+/* Report the proper data size if necessary. */
 
 t_error soundfile_writeFileClose (int f, int items, t_audioproperties *args)
 {
     t_error err = PD_ERROR_NONE;
     
-    if (items < args->ap_numberOfFrames) {                   /* Report properly the data size. */
+    if ((args->ap_numberOfFrames == SOUNDFILE_UNKNOWN) || (items < args->ap_numberOfFrames)) {
     //
-    err = (args->ap_numberOfFrames != PD_INT_MAX);
+    err = (args->ap_numberOfFrames != SOUNDFILE_UNKNOWN);
     
-    if (args->ap_fileType == SOUNDFILE_WAVE)      { err = soundfile_writeFileCloseWAVE (f, items, args); } 
-    else if (args->ap_fileType == SOUNDFILE_AIFF) { err = soundfile_writeFileCloseAIFF (f, items, args); }
-    else if (args->ap_fileType == SOUNDFILE_NEXT) { err = soundfile_writeFileCloseNEXT (f, items, args); }
+    args->ap_numberOfFrames = items;
+    
+    if (args->ap_fileType == SOUNDFILE_WAVE)      { err |= soundfile_writeFileCloseWAVE (f, args); } 
+    else if (args->ap_fileType == SOUNDFILE_AIFF) { err |= soundfile_writeFileCloseAIFF (f, args); }
+    else if (args->ap_fileType == SOUNDFILE_NEXT) { err |= soundfile_writeFileCloseNEXT (f, args); }
     else {
         err = PD_ERROR;
     }

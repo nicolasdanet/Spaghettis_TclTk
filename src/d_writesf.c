@@ -61,7 +61,7 @@ static void *writesf_child_main(void *zz)
                 /* copy file stuff out of the data structure so we can
                 relinquish the mutex while we're in open_soundfile(). */
             long onsetframes = x->sf_numberOfFramesToSkip;
-            long bytelimit = PD_INT_MAX;
+            long bytelimit = SOUNDFILE_UNKNOWN;
             int skipheaderbytes = x->sf_headerSize;
             int bytespersample = x->sf_bytesPerSample;
             int sfchannels = x->sf_numberOfChannels;
@@ -98,7 +98,7 @@ static void *writesf_child_main(void *zz)
                 t_audioproperties toto;  soundfile_initProperties (&toto);
                 
                 toto.ap_fileType = x->sf_fileType;
-                toto.ap_numberOfFrames = PD_INT_MAX;
+                toto.ap_numberOfFrames = SOUNDFILE_UNKNOWN;
                 toto.ap_numberOfChannels = x->sf_numberOfChannels;
                 toto.ap_bytesPerSample = x->sf_bytesPerSample;
                 toto.ap_isBigEndian = x->sf_isFileBigEndian;
@@ -259,7 +259,7 @@ static void *writesf_child_main(void *zz)
                 t_audioproperties toto;  soundfile_initProperties (&toto);
                 
                 toto.ap_fileType = x->sf_fileType;
-                toto.ap_numberOfFrames = PD_INT_MAX;
+                toto.ap_numberOfFrames = SOUNDFILE_UNKNOWN;
                 toto.ap_numberOfChannels = x->sf_numberOfChannels;
                 toto.ap_bytesPerSample = x->sf_bytesPerSample;
                 toto.ap_isBigEndian = x->sf_isFileBigEndian;
@@ -440,7 +440,7 @@ static void writesf_open(t_writesf *x, t_symbol *s, int argc, t_atom *argv)
     nframes = prop.ap_numberOfFrames;
     normalize = prop.ap_needToNormalize;
     
-    if (normalize || onset || (nframes != PD_INT_MAX))
+    if (normalize || onset || (nframes != SOUNDFILE_UNKNOWN))
         post_error ("normalize/onset/nframes argument to writesf~: ignored");
     if (argc)
         post_error ("extra argument(s) to writesf~: ignored");

@@ -90,7 +90,7 @@ static void *readsf_child_main(void *zz)
                 /* copy file stuff out of the data structure so we can
                 relinquish the mutex while we're in open_soundfile(). */
             long onsetframes = x->sf_numberOfFramesToSkip;
-            long bytelimit = PD_INT_MAX;
+            long bytelimit = SOUNDFILE_UNKNOWN;
             int skipheaderbytes = x->sf_headerSize;
             int bytespersample = x->sf_bytesPerSample;
             int sfchannels = x->sf_numberOfChannels;
