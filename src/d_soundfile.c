@@ -419,7 +419,7 @@ t_error soundfile_writeFileParse (t_symbol *s, int *ac, t_atom **av, t_audioprop
     
     int argc                = *ac;
     t_atom *argv            = *av;
-    t_symbol *fileName      = NULL;
+    t_symbol *fileName      = &s_;
     t_symbol *fileExtension = &s_;
     t_float sampleRate      = -1.0;
     int fileType            = SOUNDFILE_NONE;
@@ -521,7 +521,7 @@ t_error soundfile_writeFileParse (t_symbol *s, int *ac, t_atom **av, t_audioprop
     
     args->ap_fileName           = fileName;
     args->ap_fileExtension      = fileExtension;
-    args->sampleRate            = sampleRate;
+    args->ap_sampleRate         = sampleRate;
     args->ap_fileType           = fileType;
     args->ap_bytesPerSample     = bytesPerSample;
     args->ap_isBigEndian        = isBigEndian;
@@ -668,16 +668,7 @@ static t_error soundfile_writeFileHeaderNEXT (t_soundfileheader *t,
     return PD_ERROR_NONE;
 }
 
-int soundfile_writeFileHeader (t_glist *glist,
-    const char *fileName,
-    const char *fileExtension,
-    int fileType,
-    int numberOfFrames,
-    int bytesPerSample,
-    int isBigEndian,
-    int numberOfChannels,
-    int swap,
-    t_float sampleRate)
+int soundfile_writeFileHeader (t_glist *glist, t_audioproperties *args)
 {
     t_error err = PD_ERROR_NONE;
     char name[PD_STRING] = { 0 };
@@ -685,40 +676,43 @@ int soundfile_writeFileHeader (t_glist *glist,
     
     t_soundfileheader t; SOUNDFILE_HEADER_INIT (&t);
     
-    err = string_copy (name, PD_STRING, fileName);
-    err |= string_add (name, PD_STRING, fileExtension);
+    PD_ASSERT (args->ap_fileName);
+    PD_ASSERT (args->ap_fileExtension);
+    
+    err = string_copy (name, PD_STRING, args->ap_fileName->s_name);
+    err |= string_add (name, PD_STRING, args->ap_fileExtension->s_name);
     
     if (!err) {
     
-        if (fileType == SOUNDFILE_WAVE) {
+        if (args->ap_fileType == SOUNDFILE_WAVE) {
         
             err = soundfile_writeFileHeaderWAVE (&t, 
-                    numberOfFrames,
-                    bytesPerSample,
-                    isBigEndian,
-                    numberOfChannels, 
-                    swap, 
-                    sampleRate);
+                    args->ap_numberOfFrames,
+                    args->ap_bytesPerSample,
+                    args->ap_isBigEndian,
+                    args->ap_numberOfChannels, 
+                    args->ap_needToSwap, 
+                    args->ap_sampleRate);
                     
-        } else if (fileType == SOUNDFILE_AIFF) {
+        } else if (args->ap_fileType == SOUNDFILE_AIFF) {
         
             err = soundfile_writeFileHeaderAIFF (&t, 
-                    numberOfFrames,
-                    bytesPerSample,
-                    isBigEndian,
-                    numberOfChannels, 
-                    swap, 
-                    sampleRate);
+                    args->ap_numberOfFrames,
+                    args->ap_bytesPerSample,
+                    args->ap_isBigEndian,
+                    args->ap_numberOfChannels, 
+                    args->ap_needToSwap, 
+                    args->ap_sampleRate);
         
-        } else if (fileType == SOUNDFILE_NEXT) {
+        } else if (args->ap_fileType == SOUNDFILE_NEXT) {
         
             err = soundfile_writeFileHeaderNEXT (&t, 
-                    numberOfFrames,
-                    bytesPerSample,
-                    isBigEndian,
-                    numberOfChannels, 
-                    swap, 
-                    sampleRate);
+                    args->ap_numberOfFrames,
+                    args->ap_bytesPerSample,
+                    args->ap_isBigEndian,
+                    args->ap_numberOfChannels, 
+                    args->ap_needToSwap, 
+                    args->ap_sampleRate);
                     
         } else {
             err = PD_ERROR;

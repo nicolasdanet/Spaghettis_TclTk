@@ -282,7 +282,7 @@ long soundfiler_performWrite (void *dummy, t_glist *canvas, int argc, t_atom *ar
                 
     filesym = prop.ap_fileName;
     fileExtension = prop.ap_fileExtension;
-    samplerate = prop.sampleRate;
+    samplerate = prop.ap_sampleRate;
     filetype = prop.ap_fileType;
     bytespersamp = prop.ap_bytesPerSample;
     bigendian = prop.ap_isBigEndian;
@@ -327,9 +327,18 @@ long soundfiler_performWrite (void *dummy, t_glist *canvas, int argc, t_atom *ar
         goto fail;
     }
 
-    if ((fd = soundfile_writeFileHeader (canvas, filesym->s_name, fileExtension->s_name, filetype,
-        nframes, bytespersamp, bigendian, nchannels,
-            swap, samplerate)) < 0)
+    prop.ap_fileName = filesym;
+    prop.ap_fileExtension = fileExtension;
+    prop.ap_sampleRate = samplerate;
+    prop.ap_fileType = filetype;
+    prop.ap_numberOfChannels = nchannels;
+    prop.ap_bytesPerSample = bytespersamp;
+    prop.ap_isBigEndian = bigendian;
+    prop.ap_needToSwap = swap;
+    prop.ap_numberOfFrames = nframes;
+    prop.ap_needToNormalize;
+    
+    if ((fd = soundfile_writeFileHeader (canvas, &prop)) < 0)
     {
         post("%s: %s\n", filesym->s_name, strerror(errno));
         goto fail;

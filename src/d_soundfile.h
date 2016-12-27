@@ -160,7 +160,7 @@ static inline void soundfile_makeAiff80BitFloat (double sampleRate, unsigned cha
 typedef struct _audioproperties {
     t_symbol    *ap_fileName;
     t_symbol    *ap_fileExtension;
-    t_float     sampleRate;
+    t_float     ap_sampleRate;
     int         ap_fileType;
     int         ap_headerSize;
     int         ap_numberOfChannels;
@@ -184,17 +184,7 @@ int     soundfile_readFileHeader        (t_glist *glist, t_audioproperties *args
 #pragma mark -
 
 t_error soundfile_writeFileParse        (t_symbol *s, int *argc, t_atom **argv, t_audioproperties *args);
-
-int     soundfile_writeFileHeader       (t_glist *glist,
-                                            const char *fileName,
-                                            const char *fileExtension,
-                                            int fileType,
-                                            int numberOfFrames,
-                                            int bytesPerSample,
-                                            int isBigEndian,
-                                            int numberOfChannels,
-                                            int needToSwap,
-                                            t_float sampleRate);
+int     soundfile_writeFileHeader       (t_glist *glist, t_audioproperties *args);
 
 t_error soundfile_writeFileClose        (int f,
                                             int fileType,

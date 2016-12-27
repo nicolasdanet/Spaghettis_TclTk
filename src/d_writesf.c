@@ -114,9 +114,21 @@ static void *writesf_child_main(void *zz)
             }
                 /* open the soundfile with the mutex unlocked */
             pthread_mutex_unlock(&x->sf_mutex);
-            fd = soundfile_writeFileHeader (canvas, filename, fileExtension, filetype, 0,
-                    bytespersample, bigendian, sfchannels, 
-                        soundfile_systemIsBigEndian() != bigendian, samplerate);
+            
+            t_audioproperties prop;
+            
+            prop.ap_fileName = gensym (filename);
+            prop.ap_fileExtension = gensym (fileExtension);
+            prop.ap_sampleRate = samplerate;
+            prop.ap_fileType = filetype;
+            prop.ap_numberOfChannels = sfchannels;
+            prop.ap_bytesPerSample = bytespersample;
+            prop.ap_isBigEndian = bigendian;
+            prop.ap_needToSwap = soundfile_systemIsBigEndian() != bigendian;
+            prop.ap_numberOfFrames = 0;
+    
+            fd = soundfile_writeFileHeader (canvas, &prop);
+                    
             pthread_mutex_lock(&x->sf_mutex);
 #ifdef DEBUG_SOUNDFILE
             pute("5\n");
@@ -403,7 +415,7 @@ static void writesf_open(t_writesf *x, t_symbol *s, int argc, t_atom *argv)
     
     filesym = prop.ap_fileName;
     fileExtension = prop.ap_fileExtension;
-    samplerate = prop.sampleRate;
+    samplerate = prop.ap_sampleRate;
     filetype = prop.ap_fileType;
     bytespersamp = prop.ap_bytesPerSample;
     bigendian = prop.ap_isBigEndian;
