@@ -378,8 +378,7 @@ long soundfiler_performWrite (void *dummy, t_glist *canvas, int argc, t_atom *ar
     }
     if (fd >= 0)
     {
-        soundfile_writeFileClose (fd,
-            filetype, nframes, itemswritten, nchannels * bytespersamp, swap);
+        soundfile_writeFileClose (fd, itemswritten, &prop);
         close (fd);
     }
     return ((float)itemswritten); 

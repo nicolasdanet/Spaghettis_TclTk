@@ -185,13 +185,7 @@ int     soundfile_readFileHeader        (t_glist *glist, t_audioproperties *args
 
 t_error soundfile_writeFileParse        (t_symbol *s, int *argc, t_atom **argv, t_audioproperties *args);
 int     soundfile_writeFileHeader       (t_glist *glist, t_audioproperties *args);
-
-t_error soundfile_writeFileClose        (int f,
-                                            int fileType,
-                                            int numberOfFrames,
-                                            int itemsWritten,
-                                            int bytesPerFrame,
-                                            int needToSwap);
+t_error soundfile_writeFileClose        (int f, int itemsWritten, t_audioproperties *args);
                                             
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

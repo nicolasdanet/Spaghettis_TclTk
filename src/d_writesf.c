@@ -95,9 +95,16 @@ static void *writesf_child_main(void *zz)
                 int swap = x->sf_needToSwapBytes;
                 pthread_mutex_unlock(&x->sf_mutex);
                 
-                soundfile_writeFileClose (fd,
-                    filetype, PD_INT_MAX, itemswritten,
-                    bytesperframe, swap);
+                t_audioproperties toto; 
+                
+                toto.ap_fileType = x->sf_fileType;
+                toto.ap_numberOfFrames = PD_INT_MAX;
+                toto.ap_numberOfChannels = x->sf_numberOfChannels;
+                toto.ap_bytesPerSample = x->sf_bytesPerSample;
+                toto.ap_isBigEndian = x->sf_isFileBigEndian;
+                toto.ap_needToSwap = x->sf_needToSwapBytes;
+                
+                soundfile_writeFileClose (fd, itemswritten, &toto);
                 close (fd);
 
                 pthread_mutex_lock(&x->sf_mutex);
@@ -246,11 +253,20 @@ static void *writesf_child_main(void *zz)
                 int filetype = x->sf_fileType;
                 int itemswritten = x->sf_itemsWritten;
                 int swap = x->sf_needToSwapBytes;
+                
                 pthread_mutex_unlock(&x->sf_mutex);
 
-                soundfile_writeFileClose (fd,
-                    filetype, PD_INT_MAX, itemswritten,
-                    bytesperframe, swap);
+                t_audioproperties toto; 
+                
+                toto.ap_fileType = x->sf_fileType;
+                toto.ap_numberOfFrames = PD_INT_MAX;
+                toto.ap_numberOfChannels = x->sf_numberOfChannels;
+                toto.ap_bytesPerSample = x->sf_bytesPerSample;
+                toto.ap_isBigEndian = x->sf_isFileBigEndian;
+                toto.ap_needToSwap = x->sf_needToSwapBytes;
+
+    
+                soundfile_writeFileClose (fd, itemswritten, &toto);
                 close (fd);
 
                 pthread_mutex_lock(&x->sf_mutex);

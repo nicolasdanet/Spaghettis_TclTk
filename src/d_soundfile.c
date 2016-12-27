@@ -749,27 +749,24 @@ t_error soundfile_writeFileCloseNEXT (int f, int itemsWritten, int bytesPerFrame
     return PD_ERROR;
 }
 
-t_error soundfile_writeFileClose (int f,
-    int fileType,
-    int numberOfFrames, 
-    int itemsWritten,
-    int bytesPerFrame,
-    int swap)
+t_error soundfile_writeFileClose (int f, int itemsWritten, t_audioproperties *args)
 {
     t_error err = PD_ERROR_NONE;
     
-    if (itemsWritten < numberOfFrames) {    /* Set properly the data size. */
-    //
-    err = (numberOfFrames != PD_INT_MAX);
+    int bytesPerFrame = args->ap_bytesPerSample * args->ap_numberOfChannels;
     
-    if (fileType == SOUNDFILE_WAVE) {
-        err = soundfile_writeFileCloseWAVE (f, itemsWritten, bytesPerFrame, swap);
+    if (itemsWritten < args->ap_numberOfFrames) {    /* Report properly the data size. */
+    //
+    err = (args->ap_numberOfFrames != PD_INT_MAX);
+    
+    if (args->ap_fileType == SOUNDFILE_WAVE) {
+        err = soundfile_writeFileCloseWAVE (f, itemsWritten, bytesPerFrame, args->ap_needToSwap);
         
-    } else if (fileType == SOUNDFILE_AIFF) {
-        err = soundfile_writeFileCloseAIFF (f, itemsWritten, bytesPerFrame, swap);
+    } else if (args->ap_fileType == SOUNDFILE_AIFF) {
+        err = soundfile_writeFileCloseAIFF (f, itemsWritten, bytesPerFrame, args->ap_needToSwap);
         
-    } else if (fileType == SOUNDFILE_NEXT) {
-        err = soundfile_writeFileCloseNEXT (f, itemsWritten, bytesPerFrame, swap);
+    } else if (args->ap_fileType == SOUNDFILE_NEXT) {
+        err = soundfile_writeFileCloseNEXT (f, itemsWritten, bytesPerFrame, args->ap_needToSwap);
         
     } else {
         err = PD_ERROR;
