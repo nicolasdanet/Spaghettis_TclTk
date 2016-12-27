@@ -119,7 +119,7 @@ static void *readsf_child_main(void *zz)
                 /* open the soundfile with the mutex unlocked */
             pthread_mutex_unlock(&x->sf_mutex);
             
-            t_audioproperties args;
+            t_audioproperties args; soundfile_initProperties (&args);
             args.ap_fileName = gensym (filename);
             args.ap_fileExtension = &s_;
             args.ap_headerSize = skipheaderbytes;

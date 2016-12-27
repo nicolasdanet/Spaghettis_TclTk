@@ -32,18 +32,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-#define SOUNDFILE_WAVE          0
-#define SOUNDFILE_AIFF          1
-#define SOUNDFILE_NEXT          2
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#define SOUNDFILE_NONE          3
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 /* The WAVE header. */ 
@@ -664,9 +652,12 @@ int soundfile_writeFileHeader (t_glist *glist, t_audioproperties *args)
     
     t_soundfileheader t; SOUNDFILE_HEADER_INIT (&t);
     
-    PD_ASSERT (args->ap_fileName);
-    PD_ASSERT (args->ap_fileExtension);
-    
+    PD_ASSERT (args->ap_fileName != NULL);
+    PD_ASSERT (args->ap_fileExtension != NULL);
+    PD_ASSERT (args->ap_numberOfChannels != 0);
+    PD_ASSERT (args->ap_headerSize == 0);
+    PD_ASSERT (args->ap_dataSizeInBytes == 0);
+
     err = string_copy (name, PD_STRING, args->ap_fileName->s_name);
     err |= string_add (name, PD_STRING, args->ap_fileExtension->s_name);
     
@@ -752,24 +743,18 @@ t_error soundfile_writeFileCloseNEXT (int f, int itemsWritten, t_audioproperties
     return PD_ERROR;
 }
 
-t_error soundfile_writeFileClose (int f, int itemsWritten, t_audioproperties *args)
+t_error soundfile_writeFileClose (int f, int items, t_audioproperties *args)
 {
     t_error err = PD_ERROR_NONE;
     
-    if (itemsWritten < args->ap_numberOfFrames) {                   /* Report properly the data size. */
+    if (items < args->ap_numberOfFrames) {                   /* Report properly the data size. */
     //
     err = (args->ap_numberOfFrames != PD_INT_MAX);
     
-    if (args->ap_fileType == SOUNDFILE_WAVE) {
-        err = soundfile_writeFileCloseWAVE (f, itemsWritten, args);
-        
-    } else if (args->ap_fileType == SOUNDFILE_AIFF) {
-        err = soundfile_writeFileCloseAIFF (f, itemsWritten, args);
-        
-    } else if (args->ap_fileType == SOUNDFILE_NEXT) {
-        err = soundfile_writeFileCloseNEXT (f, itemsWritten, args);
-        
-    } else {
+    if (args->ap_fileType == SOUNDFILE_WAVE)      { err = soundfile_writeFileCloseWAVE (f, items, args); } 
+    else if (args->ap_fileType == SOUNDFILE_AIFF) { err = soundfile_writeFileCloseAIFF (f, items, args); }
+    else if (args->ap_fileType == SOUNDFILE_NEXT) { err = soundfile_writeFileCloseNEXT (f, items, args); }
+    else {
         err = PD_ERROR;
     }
     

@@ -95,7 +95,7 @@ static void *writesf_child_main(void *zz)
                 int swap = x->sf_needToSwapBytes;
                 pthread_mutex_unlock(&x->sf_mutex);
                 
-                t_audioproperties toto; 
+                t_audioproperties toto;  soundfile_initProperties (&toto);
                 
                 toto.ap_fileType = x->sf_fileType;
                 toto.ap_numberOfFrames = PD_INT_MAX;
@@ -122,7 +122,7 @@ static void *writesf_child_main(void *zz)
                 /* open the soundfile with the mutex unlocked */
             pthread_mutex_unlock(&x->sf_mutex);
             
-            t_audioproperties prop;
+            t_audioproperties prop; soundfile_initProperties (&prop);
             
             prop.ap_fileName = gensym (filename);
             prop.ap_fileExtension = gensym (fileExtension);
@@ -256,7 +256,7 @@ static void *writesf_child_main(void *zz)
                 
                 pthread_mutex_unlock(&x->sf_mutex);
 
-                t_audioproperties toto; 
+                t_audioproperties toto;  soundfile_initProperties (&toto);
                 
                 toto.ap_fileType = x->sf_fileType;
                 toto.ap_numberOfFrames = PD_INT_MAX;
@@ -420,7 +420,7 @@ static void writesf_open(t_writesf *x, t_symbol *s, int argc, t_atom *argv)
         writesf_stop(x);
     }
     
-    t_audioproperties prop;
+    t_audioproperties prop; soundfile_initProperties (&prop);
     
     if (soundfile_writeFileParse(sym_writesf__tilde__, &argc, &argv, &prop) == PD_ERROR)
     {

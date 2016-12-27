@@ -142,7 +142,8 @@ static void soundfiler_read (t_soundfiler *x, t_symbol *s, int argc, t_atom *arg
         }
         finalsize = vecsize;
     }
-    t_audioproperties args;
+    t_audioproperties args; soundfile_initProperties (&args);
+    
     args.ap_fileName = fileNameSym;
     args.ap_fileExtension = &s_;
     args.ap_headerSize = headersize;
@@ -274,7 +275,7 @@ long soundfiler_performWrite (void *dummy, t_glist *canvas, int argc, t_atom *ar
     t_symbol *filesym;
     t_symbol *fileExtension;
     
-    t_audioproperties prop;
+    t_audioproperties prop; soundfile_initProperties (&prop);
     
     
     if (soundfile_writeFileParse(sym_soundfiler, &argc, &argv, &prop) == PD_ERROR)
