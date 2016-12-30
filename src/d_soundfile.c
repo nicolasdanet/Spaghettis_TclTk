@@ -32,7 +32,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 /* The WAVE header. */ 
 /* All WAVE files are little-endian. */
@@ -176,14 +175,96 @@ void soundfile_initialize (void)
     PD_ASSERT (SOUNDFILE_BUFFER > SOUNDFILE_HEADER_AIFF);
     PD_ASSERT (SOUNDFILE_BUFFER > SOUNDFILE_HEADER_NEXT);
     
-    PD_ASSERT (sizeof (t_sample) == sizeof (t_float));          /* Required for encoding. */
-    PD_ASSERT (sizeof (t_word) > sizeof (t_sample));
-    PD_ASSERT (sizeof (t_word) % sizeof (t_sample) == 0);
+    /* A way to test at compile time? */
+    
+    PD_ASSERT (sizeof (t_sample) == sizeof (t_float));      /* Required for encoding and decoding. */
+    PD_ASSERT (sizeof (t_word) > sizeof (t_sample));        /* Ditto. */
+    PD_ASSERT (sizeof (t_word) % sizeof (t_sample) == 0);   /* Ditto. */
 }
 
 void soundfile_release (void)
 {
 
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_error soundfile_readFileParse (t_symbol *s, int *ac, t_atom **av, t_audioproperties *args)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    int argc                = *ac;
+    t_atom *argv            = *av;
+    t_symbol *fileName      = &s_;
+    t_symbol *fileExtension = &s_;
+    int needToResize        = 0;
+    int onset               = 0;
+    int numberOfFrames      = SOUNDFILE_UNKNOWN;
+    
+    while (argc > 0) {
+    //
+    t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
+    
+    #if PD_WITH_LEGACY
+    
+    if (t == sym___dash__maxsize) { t = sym___dash__frames; }
+    
+    #endif
+    
+    if (argc > 1 && (t == sym___dash__s || t == sym___dash__skip)) {
+        onset = (int)atom_getFloat (argv + 1);
+        onset = PD_MAX (0, onset);
+        argc -= 2; argv += 2;
+        
+    } else if (argc > 1 && (t == sym___dash__f || t == sym___dash__frames)) {
+        numberOfFrames = (int)atom_getFloat (argv + 1);
+        numberOfFrames = PD_MAX (0, numberOfFrames);
+        needToResize = 1;     
+        argc -= 2; argv += 2;
+    
+    } else if (t == sym___dash__resize)   {
+        needToResize = 1;
+        argc --; argv++;
+        
+    } else if (t == sym___dash__nextstep) {
+        fileExtension = sym___point__snd;
+        argc --; argv++;
+        
+    } else if (t == sym___dash__wave)     {
+        fileExtension = sym___point__wav;
+        argc --; argv++;
+        
+    } else if (t == sym___dash__aiff)     {
+        fileExtension = sym___point__aif;
+        argc --; argv++;
+        
+    } else { break; }
+    //
+    }
+    
+    if (!err) { err = (error__options (s, argc, argv) != 0); }
+    if (!err) { err = (!argc || !IS_SYMBOL (argv)); }
+    
+    if (!err) {
+    //
+    fileName = GET_SYMBOL (argv); 
+    
+    argc--; argv++;
+    
+    args->ap_fileName       = fileName;
+    args->ap_fileExtension  = fileExtension;
+    args->ap_onset          = onset;
+    args->ap_numberOfFrames = numberOfFrames;
+    args->ap_needToResize   = needToResize;
+    
+    *ac = argc;
+    *av = argv;
+    //
+    }
+    
+    return err;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -252,7 +333,7 @@ static t_error soundfile_readFileHeaderAIFF (int f, t_soundfileheader *t, t_audi
     
     int numberOfChannels = (int)soundfile_swap2Bytes (*((uint16_t *)(t->h_c + 20)), swap);
     int bitsPerSample    = (int)soundfile_swap2Bytes (*((uint16_t *)(t->h_c + 26)), swap);
-    int dataSize         = (int)soundfile_swap4Bytes (*((uint32_t *)(t->h_c + 42)), swap);
+    int chunkSize        = (int)soundfile_swap4Bytes (*((uint32_t *)(t->h_c + 42)), swap);
     int offset           = (int)soundfile_swap4Bytes (*((uint32_t *)(t->h_c + 46)), swap);
     int blockAlign       = (int)soundfile_swap4Bytes (*((uint32_t *)(t->h_c + 50)), swap);
     
@@ -264,7 +345,7 @@ static t_error soundfile_readFileHeaderAIFF (int f, t_soundfileheader *t, t_audi
     args->ap_headerSize        = SOUNDFILE_HEADER_AIFF;
     args->ap_bytesPerSample    = bitsPerSample / 8;
     args->ap_numberOfChannels  = numberOfChannels;
-    args->ap_dataSizeInBytes   = dataSize;
+    args->ap_dataSizeInBytes   = chunkSize - 8;
     
     err = PD_ERROR_NONE;
     //
@@ -356,9 +437,7 @@ static t_error soundfile_readFileHeaderFormat (int f, t_audioproperties *args)
 
 static int soundfile_readFileHeaderPerform (int f, t_audioproperties *args)
 {
-    t_error err = PD_ERROR_NONE;
-    
-    if (args->ap_headerSize < 0) { err = soundfile_readFileHeaderFormat (f, args); }
+    t_error err = soundfile_readFileHeaderFormat (f, args);
     
     if (!err) {
     //
@@ -377,6 +456,8 @@ static int soundfile_readFileHeaderPerform (int f, t_audioproperties *args)
     return -1;
 }
 
+/* Caller is responsible to close the file. */
+
 int soundfile_readFileHeader (t_glist *glist, t_audioproperties *args)
 {
     char t[PD_STRING] = { 0 };
@@ -392,7 +473,18 @@ int soundfile_readFileHeader (t_glist *glist, t_audioproperties *args)
                 &s,
                 PD_STRING);
     
-    if (f >= 0) { return soundfile_readFileHeaderPerform (f, args); }
+    if (f >= 0) {
+    //
+    f = soundfile_readFileHeaderPerform (f, args);
+    
+    PD_ASSERT (args->ap_headerSize       != SOUNDFILE_UNDEFINED);
+    PD_ASSERT (args->ap_numberOfChannels != SOUNDFILE_UNDEFINED);
+    PD_ASSERT (args->ap_isBigEndian      != SOUNDFILE_UNDEFINED);
+    PD_ASSERT (args->ap_dataSizeInBytes  != SOUNDFILE_UNDEFINED);
+    
+    return f;
+    //
+    }
     
     return -1;
 }

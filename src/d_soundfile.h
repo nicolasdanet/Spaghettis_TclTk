@@ -55,15 +55,15 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define SOUNDFILE_WAVE                  0
-#define SOUNDFILE_AIFF                  1
-#define SOUNDFILE_NEXT                  2
+#define SOUNDFILE_UNDEFINED            -1
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define SOUNDFILE_UNDEFINED            -1
+#define SOUNDFILE_WAVE                  0
+#define SOUNDFILE_AIFF                  1
+#define SOUNDFILE_NEXT                  2
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -191,6 +191,7 @@ typedef struct _audioproperties {
     int         ap_onset;
     int         ap_numberOfFrames;
     int         ap_needToNormalize;
+    int         ap_needToResize;
     } t_audioproperties;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -212,12 +213,14 @@ static inline void soundfile_initProperties (t_audioproperties *args)
     args->ap_onset              = SOUNDFILE_UNDEFINED;
     args->ap_numberOfFrames     = SOUNDFILE_UNKNOWN;
     args->ap_needToNormalize    = SOUNDFILE_UNDEFINED;
+    args->ap_needToResize       = SOUNDFILE_UNDEFINED;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_error soundfile_readFileParse         (t_symbol *s, int *argc, t_atom **argv, t_audioproperties *args);
 int     soundfile_readFileHeader        (t_glist *glist, t_audioproperties *args);
     
 // -----------------------------------------------------------------------------------------------------------

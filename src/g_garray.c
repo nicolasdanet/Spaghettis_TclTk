@@ -319,6 +319,11 @@ t_array *garray_getArray (t_garray *x)
     return scalar_getArray (x->x_scalar, sym_z);
 }
 
+int garray_getSize (t_garray *x)
+{
+    return array_getSize (garray_getArray (x));
+}
+
 int garray_getData (t_garray *x, int *size, t_word **w)
 {
     t_array *array = garray_getArray (x);
@@ -347,6 +352,15 @@ t_float garray_getDataAtIndex (t_garray *x, int i)
     t_float f = GARRAY_AT (n);
     
     return f;
+}
+
+void garray_setDataFromIndex (t_garray *x, int i, t_float f)
+{
+    t_array *array = garray_getArray (x);
+    
+    int n, size = array_getSize (array);
+    
+    for (n = PD_CLAMP (i, 0, size - 1); n < size; n++) { GARRAY_AT (n) = f; }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -435,11 +449,7 @@ static void garray_list (t_garray *x, t_symbol *s, int argc, t_atom *argv)
 
 static void garray_constant (t_garray *x, t_float f)
 {
-    int i;
-    t_array *array = garray_getArray (x);
-
-    for (i = 0; i < array_getSize (array); i++) { GARRAY_AT (i) = f; }
-    
+    garray_setDataFromIndex (x, 0, f);
     garray_redraw (x);
 }
 
@@ -488,7 +498,8 @@ static void garray_read (t_garray *x, t_symbol *name)
 {
     t_error err = PD_ERROR_NONE;
     char *p = NULL;
-    char t[PD_STRING] = { 0 }; 
+    char t[PD_STRING] = { 0 };
+    
     int f = canvas_openFile (canvas_getView (x->x_owner), name->s_name, "", t, &p, PD_STRING);
     
     if (!(err |= (f < 0))) {
@@ -496,20 +507,25 @@ static void garray_read (t_garray *x, t_symbol *name)
     FILE *file = fdopen (f, "r");
     
     if (!(err |= (file == NULL))) {
-    //
-    int i;
-    t_array *array = garray_getArray (x);
 
-    for (i = 0; i < array_getSize (array); i++) {
-        double v = 0.0; if (!fscanf (file, "%lf", &v)) { break; } else { GARRAY_AT (i) = v; }
-    }
-    
-    while (i < array_getSize (array)) { GARRAY_AT (i) = 0.0; i++; }
-    
-    fclose (file);
-    
-    garray_redraw (x);
-    //
+        int i;
+        t_array *array = garray_getArray (x);
+
+        for (i = 0; i < array_getSize (array); i++) {
+        //
+        double v = 0.0;
+        if (!fscanf (file, "%lf", &v)) { break; }
+        else {
+            GARRAY_AT (i) = v; 
+        }
+        //
+        }
+        
+        while (i < array_getSize (array)) { GARRAY_AT (i) = 0.0; i++; }
+        
+        fclose (file);      /* < http://stackoverflow.com/a/13691168 > */
+        
+        garray_redraw (x);
     }
     //
     }
@@ -526,16 +542,17 @@ static void garray_write (t_garray *x, t_symbol *name)
     
     if (err || !(file = file_openWrite (t))) { error_canNotCreate (name); }
     else {
-    //
-    int i;
-    t_array *array = garray_getArray (x);
-    
-    for (i = 0; i < array_getSize (array); i++) {
-        if (fprintf (file, "%g\n", GARRAY_AT (i)) < 1) { PD_BUG; break; }
-    }
-    
-    fclose (file);
-    //
+
+        int i;
+        t_array *array = garray_getArray (x);
+        
+        for (i = 0; i < array_getSize (array); i++) {
+            if (fprintf (file, "%g\n", GARRAY_AT (i)) < 1) {
+                PD_BUG; break;
+            }
+        }
+        
+        fclose (file);
     }
 }
 

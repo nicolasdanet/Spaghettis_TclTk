@@ -40,231 +40,219 @@ typedef struct _soundfiler {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define SOUNDFILER_MAXIMUM_SIZE         (1024 * 1024 * 4)
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 #define SOUNDFILER_BUFFER_SIZE          1024
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static t_error soundfiler_readFetch (int argc,
+    t_atom *argv,
+    t_garray **a,
+    t_word **w,
+    int *m, 
+    t_audioproperties *args)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    int i, k;
+    int size = SOUNDFILE_UNKNOWN;
+    
+    for (i = 0; i < argc; i++) {
+    //
+    t_symbol *t = atom_getSymbolAtIndex (i, argc, argv);
+    
+    a[i] = (t_garray *)pd_getThingByClass (t, garray_class);
+    
+    if (a[i] == NULL) { error_canNotFind (sym_soundfiler, t); err = PD_ERROR; break; }
+    else {
+        garray_getData (a[i], &k, &w[i]);
+        if (size != SOUNDFILE_UNKNOWN && size != k) {       /* Resized if unequally allocated at first. */
+            args->ap_needToResize = 1;
+        }
+        size = k;
+    }
+    //
+    }
+    
+    *m = args->ap_needToResize ? SOUNDFILE_UNKNOWN : size;
+    
+    return err;
+}
+
+static t_error soundfiler_readResizeIfNecessary (int f,
+    int channelsRequired,
+    t_garray **a,
+    t_word **w,
+    int *m,
+    t_audioproperties *args)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    /* Note that at this point the file is positioned at start of the sound. */
+    
+    if (args->ap_needToResize) {
+    //
+    off_t current     = lseek (f, 0, SEEK_CUR);
+    off_t end         = lseek (f, 0, SEEK_END);
+    int bytesPerFrame = args->ap_numberOfChannels * args->ap_bytesPerSample;
+    int dataSize      = end - current;
+    int frames        = dataSize / bytesPerFrame;
+    
+    if (current < 0 || end < 0 || dataSize < 0) { PD_BUG; err = PD_ERROR; }
+    else {
+    //
+    int i;
+    
+    /* If the data size header field of the audio file is wrong correct it. */
+    /* It is done silently for convenience. */
+    
+    if (dataSize != args->ap_dataSizeInBytes) { args->ap_dataSizeInBytes = dataSize; PD_BUG; }
+
+    lseek (f, current, SEEK_SET);
+    
+    if (frames > args->ap_numberOfFrames) {                 /* Maximum number of frames required by user. */
+        frames = args->ap_numberOfFrames; 
+    }
+
+    for (i = 0; i < channelsRequired; i++) {
+        int size;
+        garray_resizeWithInteger (a[i], frames);
+        garray_setSaveWithParent (a[i], 0);
+        garray_getData (a[i], &size, &w[i]);
+        PD_ASSERT (size == frames);
+    }
+    
+    *m = frames;
+    //
+    }
+    //
+    }
+
+    return err;
+}
+
+static int soundfiler_readDecode (int f,
+    int channelsRequired,
+    t_garray **a,
+    t_word **w,
+    int *m,
+    t_audioproperties *args)
+{
+    int bytesPerFrame      = args->ap_numberOfChannels * args->ap_bytesPerSample;
+    int frames             = args->ap_dataSizeInBytes / bytesPerFrame;
+    int framesToRead       = PD_MIN (frames, *m);
+    int framesAlreadyRead  = 0;
+    int framesBufferSize   = SOUNDFILER_BUFFER_SIZE / bytesPerFrame;
+    
+    FILE *fp = fdopen (f, "rb");
+    
+    PD_ASSERT (fp);
+    PD_ASSERT (*m != SOUNDFILE_UNKNOWN);
+    
+    #if PD_WITH_DEBUG
+    
+    {
+    
+    int i;
+    PD_ASSERT (fp);
+    PD_ASSERT (*m != SOUNDFILE_UNKNOWN);
+    for (i = 0; i < channelsRequired; i++) {
+        PD_ASSERT (framesToRead <= garray_getSize (a[i]));
+    }
+    
+    }
+    
+    #endif
+    
+    while (framesAlreadyRead < framesToRead) {
+    //
+    char t[SOUNDFILER_BUFFER_SIZE] = { 0 };
+    int framesRemaining = framesToRead - framesAlreadyRead;
+    size_t size = PD_MIN (framesRemaining, framesBufferSize);
+    
+    if (fread (t, (size_t)bytesPerFrame, (size_t)size, fp) != size) { PD_BUG; break; }
+    else {
+        soundfile_decode (args->ap_numberOfChannels,
+            (t_sample **)w, 
+            (unsigned char *)t,
+            size,
+            framesAlreadyRead,
+            args->ap_bytesPerSample,
+            args->ap_isBigEndian,
+            sizeof (t_word) / sizeof (t_sample),
+            channelsRequired);
+    }
+            
+    framesAlreadyRead += size;
+    //
+    }
+    
+    fclose (fp);
+    
+    return framesAlreadyRead;
+}
+
 static void soundfiler_read (t_soundfiler *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int headersize = -1, channels = 0, bytespersamp = 0, bigendian = 0,
-        resize = 0, i, j;
-    long skipframes = 0, finalsize = 0, itemsleft,
-        maxsize = SOUNDFILER_MAXIMUM_SIZE, itemsread = 0, bytelimit  = SOUNDFILE_UNKNOWN;
-    int fd = -1;
-    char endianness, *filename;
-    t_garray *garrays[SOUNDFILE_MAXIMUM_CHANNELS];
-    t_word *vecs[SOUNDFILE_MAXIMUM_CHANNELS];
-    char sampbuf[SOUNDFILER_BUFFER_SIZE];
-    int bufframes, nitems;
-    FILE *fp;
-    while (argc > 0 && argv->a_type == A_SYMBOL &&
-        *argv->a_w.w_symbol->s_name == '-')
-    {
-        char *flag = argv->a_w.w_symbol->s_name + 1;
-        if (!strcmp(flag, "skip"))
-        {
-            if (argc < 2 || argv[1].a_type != A_FLOAT ||
-                ((skipframes = argv[1].a_w.w_float) < 0))
-                    goto usage;
-            argc -= 2; argv += 2;
-        }
-        else if (!strcmp(flag, "raw"))
-        {
-            if (argc < 5 ||
-                argv[1].a_type != A_FLOAT ||
-                ((headersize = argv[1].a_w.w_float) < 0) ||
-                argv[2].a_type != A_FLOAT ||
-                ((channels = argv[2].a_w.w_float) < 1) ||
-                (channels > SOUNDFILE_MAXIMUM_CHANNELS) || 
-                argv[3].a_type != A_FLOAT ||
-                ((bytespersamp = argv[3].a_w.w_float) < 2) || 
-                    (bytespersamp > 4) ||
-                argv[4].a_type != A_SYMBOL ||
-                    ((endianness = argv[4].a_w.w_symbol->s_name[0]) != 'b'
-                    && endianness != 'l' && endianness != 'n'))
-                        goto usage;
-            if (endianness == 'b')
-                bigendian = 1;
-            else if (endianness == 'l')
-                bigendian = 0;
-            else
-                bigendian = soundfile_systemIsBigEndian();
-            argc -= 5; argv += 5;
-        }
-        else if (!strcmp(flag, "resize"))
-        {
-            resize = 1;
-            argc -= 1; argv += 1;
-        }
-        else if (!strcmp(flag, "maxsize"))
-        {
-            if (argc < 2 || argv[1].a_type != A_FLOAT ||
-                ((maxsize = argv[1].a_w.w_float) < 0))
-                    goto usage;
-            resize = 1;     /* maxsize implies resize. */
-            argc -= 2; argv += 2;
-        }
-        else goto usage;
-    }
-    if (argc < 2 || argc > SOUNDFILE_MAXIMUM_CHANNELS + 1 || argv[0].a_type != A_SYMBOL)
-        goto usage;
-    filename = argv[0].a_w.w_symbol->s_name;
-    t_symbol *fileNameSym = GET_SYMBOL (argv);
-    argc--; argv++;
+    t_audioproperties properties; soundfile_initProperties (&properties);
     
-    for (i = 0; i < argc; i++)
-    {
-        int vecsize;
-        if (argv[i].a_type != A_SYMBOL)
-            goto usage;
-        if (!(garrays[i] =
-            (t_garray *)pd_getThingByClass(argv[i].a_w.w_symbol, garray_class)))
-        {
-            post_error ("%s: no such table", argv[i].a_w.w_symbol->s_name);
-            goto done;
-        }
-        else if (!garray_getData(garrays[i], &vecsize,  /* Always true now !!! */
-                &vecs[i]))
-            post_error ("%s: bad template for tabwrite",
-                argv[i].a_w.w_symbol->s_name);
-        if (finalsize && finalsize != vecsize && !resize)
-        {
-            post("soundfiler_read: arrays have different lengths; resizing...");
-            resize = 1;
-        }
-        finalsize = vecsize;
-    }
-    t_audioproperties args; soundfile_initProperties (&args);
+    t_error err = soundfile_readFileParse (sym_soundfiler, &argc, &argv, &properties);
     
-    args.ap_fileName = fileNameSym;
-    args.ap_fileExtension = &s_;
-    args.ap_headerSize = headersize;
-    args.ap_isBigEndian = bigendian;
-    args.ap_bytesPerSample = bytespersamp;
-    args.ap_numberOfChannels = channels;
-    args.ap_dataSizeInBytes = bytelimit;
-    args.ap_onset = skipframes;
-    
-    fd = soundfile_readFileHeader (x->x_owner, &args);
-    
-    headersize = args.ap_headerSize;
-    bigendian = args.ap_isBigEndian;
-    bytespersamp = args.ap_bytesPerSample;
-    channels = args.ap_numberOfChannels;
-    bytelimit = args.ap_dataSizeInBytes;
-    
-    if (fd < 0)
-    {
-        post_error ("soundfiler_read: %s: %s", filename, (errno == EIO ?
-            "unknown or bad header format" : strerror(errno)));
-        goto done;
-    }
+    if (!err) {
+    //
+    t_word   *w[SOUNDFILE_MAXIMUM_CHANNELS] = { NULL };
+    t_garray *a[SOUNDFILE_MAXIMUM_CHANNELS] = { NULL };
 
-    if (resize)
-    {
-            /* figure out what to resize to */
-        long poswas, eofis, framesinfile;
+    int arraysSize = SOUNDFILE_UNKNOWN;
+    
+    /* Fetch the garrays. */
+    
+    err = soundfiler_readFetch (argc, argv, a, w, &arraysSize, &properties);
+    
+    if (!err) {
+    //
+    int f = soundfile_readFileHeader (x->x_owner, &properties);     /* WAVE, AIFF or NeXT supported. */
+    
+    err = (f < 0);
+    
+    if (!err) {
+    
+        err = soundfiler_readResizeIfNecessary (f, argc, a, w, &arraysSize, &properties);
         
-        poswas = lseek(fd, 0, SEEK_CUR);
-        eofis = lseek(fd, 0, SEEK_END);
-        if (poswas < 0 || eofis < 0 || eofis < poswas)
-        {
-            post_error ("soundfiler_read: lseek failed");
-            goto done;
-        }
-        lseek(fd, poswas, SEEK_SET);
-        framesinfile = (eofis - poswas) / (channels * bytespersamp);
-        if (framesinfile > maxsize)
-        {
-            post_error ("soundfiler_read: truncated to %ld elements", maxsize);
-            framesinfile = maxsize;
-        }
-        if (framesinfile > bytelimit / (channels * bytespersamp))
-            framesinfile = bytelimit / (channels * bytespersamp);
-        finalsize = framesinfile;
-        for (i = 0; i < argc; i++)
-        {
-            int vecsize;
-
-            garray_resizeWithInteger (garrays[i], (int)finalsize);   /* 64-32 CAST !!! */
-            
-                /* for sanity's sake let's clear the save-in-patch flag here */
-            garray_setSaveWithParent(garrays[i], 0);
-            garray_getData(garrays[i], &vecsize, 
-                &vecs[i]);
-                /* if the resize failed, garray_resize reported the error */
-            if (vecsize != framesinfile)
-            {
-                post_error ("resize failed");
-                goto done;
+        if (err) { close (f); }     /* < http://stackoverflow.com/a/13691168 > */
+        else {
+        
+            int i, numberOfFramesRead = soundfiler_readDecode (f, argc, a, w, &arraysSize, &properties);
+                
+            for (i = 0; i < argc; i++) {
+                if (i >= properties.ap_numberOfChannels) { garray_setDataFromIndex (a[i], 0, 0.0); }
+                else {
+                    garray_setDataFromIndex (a[i], numberOfFramesRead, 0.0);
+                }
+                garray_redraw (a[i]);
             }
+                
+            outlet_float (x->x_outlet, (t_float)numberOfFramesRead);
         }
     }
-    if (!finalsize) finalsize = SOUNDFILE_UNKNOWN;
-    if (finalsize > bytelimit / (channels * bytespersamp))
-        finalsize = bytelimit / (channels * bytespersamp);
-    fp = fdopen(fd, "rb");
-    bufframes = SOUNDFILER_BUFFER_SIZE / (channels * bytespersamp);
-
-    for (itemsread = 0; itemsread < finalsize; )
-    {
-        int thisread = finalsize - itemsread;
-        thisread = (thisread > bufframes ? bufframes : thisread);
-        nitems = fread(sampbuf, channels * bytespersamp, thisread, fp);
-        if (nitems <= 0) break;
-        soundfile_decode (channels, (t_float **)vecs, 
-            (unsigned char *)sampbuf, nitems, itemsread, bytespersamp, bigendian,
-                sizeof (t_word)/sizeof(t_sample), argc);
-        itemsread += nitems;
+    //
     }
-        /* zero out remaining elements of vectors */
-        
-    for (i = 0; i < argc; i++)
-    {
-        int nzero, vecsize;
-        garray_getData(garrays[i], &vecsize, &vecs[i]);
-        for (j = itemsread; j < vecsize; j++)
-            vecs[i][j].w_float = 0;
+    //
     }
-        /* zero out vectors in excess of number of channels */
-    for (i = channels; i < argc; i++)
-    {
-        int vecsize;
-        t_word *foo;
-        garray_getData(garrays[i], &vecsize, &foo);
-        for (j = 0; j < vecsize; j++)
-            foo[j].w_float = 0;
-    }
-        /* do all graphics updates */
-    for (i = 0; i < argc; i++)
-        garray_redraw(garrays[i]);
-    fclose(fp);
-    fd = -1;
-    goto done;
-usage:
-    post_error ("usage: read [flags] filename tablename...");
-    post("flags: -skip <n> -resize -maxsize <n> ...");
-    post("-raw <headerbytes> <channels> <bytespersamp> <endian (b, l, or n)>.");
-done:
-    if (fd >= 0)
-        close (fd);
-    outlet_float(x->x_obj.te_outlet, (t_float)itemsread); 
+    
+    if (err) { error_failsToRead (sym_soundfiler); }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 long soundfiler_performWrite (void *dummy, t_glist *canvas, int argc, t_atom *argv)
 {
     int headersize, bytespersamp, bigendian,
         endianness, swap, filetype, normalize, i, j, nchannels;
-    long onset, nframes, itemsleft,
-        maxsize = SOUNDFILER_MAXIMUM_SIZE, itemswritten = 0;
+    long onset, nframes, itemsleft, itemswritten = 0;
     t_garray *garrays[SOUNDFILE_MAXIMUM_CHANNELS];
     t_word *vecs[SOUNDFILE_MAXIMUM_CHANNELS];
     char sampbuf[SOUNDFILER_BUFFER_SIZE];
