@@ -130,10 +130,11 @@ void soundfile_encodeLinear16 (int numberOfChannels,
     int bytesPerFrame = bytesPerSample * numberOfChannels;
     
     t_sample k = normalFactor * 32768.0;
+    int offset = spread * onset;
     
     if (isBigEndian) {
         for (i = 0; i < numberOfChannels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + onset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
             soundfile_encodeLinear16BigEndian (*s, k, p2);
         }
         
@@ -142,7 +143,7 @@ void soundfile_encodeLinear16 (int numberOfChannels,
         
     } else {
         for (i = 0; i < numberOfChannels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + onset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
             soundfile_encodeLinear16LittleEndian (*s, k, p2);
         }
         
@@ -169,10 +170,11 @@ void soundfile_encodeLinear24 (int numberOfChannels,
     int bytesPerFrame = bytesPerSample * numberOfChannels;
     
     t_sample k = normalFactor * 8388608.0;
+    int offset = spread * onset;
     
     if (isBigEndian) {
         for (i = 0; i < numberOfChannels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + onset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
             soundfile_encodeLinear24BigEndian (*s, k, p2);
         }
         
@@ -181,7 +183,7 @@ void soundfile_encodeLinear24 (int numberOfChannels,
         
     } else {
         for (i = 0; i < numberOfChannels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + onset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
             soundfile_encodeLinear24LittleEndian (*s, k, p2);
         }
         
@@ -206,10 +208,11 @@ void soundfile_encodeFloat (int numberOfChannels,
     t_sample *s = NULL;
     
     int bytesPerFrame = bytesPerSample * numberOfChannels;
+    int offset = spread * onset;
     
     if (isBigEndian) {
         for (i = 0; i < numberOfChannels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + onset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
             soundfile_encodeFloatBigEndian (*s, normalFactor, p2);
         }
         
@@ -218,7 +221,7 @@ void soundfile_encodeFloat (int numberOfChannels,
         
     } else {
         for (i = 0; i < numberOfChannels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + onset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
             soundfile_encodeFloatLittleEndian (*s, normalFactor, p2);
         }
         
@@ -350,11 +353,11 @@ void soundfile_decodeLinear16 (int numberOfChannels,
     
     int channels = PD_MIN (numberOfChannels, n);
     int bytesPerFrame = bytesPerSample * numberOfChannels;
-    int k = spread * onset;
+    int offset = spread * onset;
     
     if (isBigEndian) {
         for (i = 0; i < channels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + k; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
             *s = soundfile_decodeLinear16BigEndian (p2);
         }
         
@@ -363,7 +366,7 @@ void soundfile_decodeLinear16 (int numberOfChannels,
         
     } else {
         for (i = 0; i < channels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + k; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
             *s = soundfile_decodeLinear16LittleEndian (p2);
         }
         
@@ -389,11 +392,11 @@ void soundfile_decodeLinear24 (int numberOfChannels,
     
     int channels = PD_MIN (numberOfChannels, n);
     int bytesPerFrame = bytesPerSample * numberOfChannels;
-    int k = spread * onset;
+    int offset = spread * onset;
     
     if (isBigEndian) {
         for (i = 0; i < channels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + k; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
             *s = soundfile_decodeLinear24BigEndian (p2);
         }
         
@@ -402,7 +405,7 @@ void soundfile_decodeLinear24 (int numberOfChannels,
         
     } else {
         for (i = 0; i < channels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + k; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
             *s = soundfile_decodeLinear24LittleEndian (p2);
         }
         
@@ -428,11 +431,11 @@ void soundfile_decodeFloat (int numberOfChannels,
     
     int channels = PD_MIN (numberOfChannels, n);
     int bytesPerFrame = bytesPerSample * numberOfChannels;
-    int k = spread * onset;
+    int offset = spread * onset;
     
     if (isBigEndian) {
         for (i = 0; i < channels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + k; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
             *s = soundfile_decodeFloatBigEndian (p2);
         }
         
@@ -441,7 +444,7 @@ void soundfile_decodeFloat (int numberOfChannels,
         
     } else {
         for (i = 0; i < channels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + k; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
             *s = soundfile_decodeFloatLittleEndian (p2);
         }
         

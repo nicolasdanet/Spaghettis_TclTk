@@ -90,6 +90,7 @@ static t_error soundfiler_readResizeIfNecessary (int f,
     t_error err = PD_ERROR_NONE;
     
     /* Note that at this point the file is positioned at start of the sound. */
+    /* Onset is already handled. */
     
     if (args->ap_needToResize) {
     //
@@ -111,7 +112,7 @@ static t_error soundfiler_readResizeIfNecessary (int f,
 
     lseek (f, current, SEEK_SET);
     
-    if (frames > args->ap_numberOfFrames) {                 /* Maximum number of frames required by user. */
+    if (frames > args->ap_numberOfFrames) {     /* Maximum number of frames required by user. */
         frames = args->ap_numberOfFrames; 
     }
 
@@ -193,7 +194,7 @@ static int soundfiler_readDecode (int f,
     return framesAlreadyRead;
 }
 
-static void soundfiler_read (t_soundfiler *x, t_symbol *s, int argc, t_atom *argv)
+static int soundfiler_readPerform (t_glist *glist, int argc, t_atom *argv)
 {
     t_audioproperties properties; soundfile_initProperties (&properties);
     
@@ -212,7 +213,7 @@ static void soundfiler_read (t_soundfiler *x, t_symbol *s, int argc, t_atom *arg
     
     if (!err) {
     //
-    int f = soundfile_readFileHeader (x->x_owner, &properties);     /* WAVE, AIFF or NeXT supported. */
+    int f = soundfile_readFileHeader (glist, &properties);     /* WAVE, AIFF or NeXT supported. */
     
     err = (f < 0);
     
@@ -224,7 +225,9 @@ static void soundfiler_read (t_soundfiler *x, t_symbol *s, int argc, t_atom *arg
         else {
         
             int i, numberOfFramesRead = soundfiler_readDecode (f, argc, a, w, &arraysSize, &properties);
-                
+            
+            /* Note that file is closed in function called above. */
+            
             for (i = 0; i < argc; i++) {
                 if (i >= properties.ap_numberOfChannels) { garray_setDataFromIndex (a[i], 0, 0.0); }
                 else {
@@ -233,7 +236,7 @@ static void soundfiler_read (t_soundfiler *x, t_symbol *s, int argc, t_atom *arg
                 garray_redraw (a[i]);
             }
                 
-            outlet_float (x->x_outlet, (t_float)numberOfFramesRead);
+            return numberOfFramesRead;
         }
     }
     //
@@ -241,149 +244,178 @@ static void soundfiler_read (t_soundfiler *x, t_symbol *s, int argc, t_atom *arg
     //
     }
     
-    if (err) { error_failsToRead (sym_soundfiler); }
+    if (err) { error_failsToRead (sym_soundfiler); return 0; } 
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-long soundfiler_performWrite (void *dummy, t_glist *canvas, int argc, t_atom *argv)
+static void soundfiler_read (t_soundfiler *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int headersize, bytespersamp, bigendian,
-        endianness, swap, filetype, normalize, i, j, nchannels;
-    long onset, nframes, itemsleft, itemswritten = 0;
-    t_garray *garrays[SOUNDFILE_MAXIMUM_CHANNELS];
-    t_word *vecs[SOUNDFILE_MAXIMUM_CHANNELS];
-    char sampbuf[SOUNDFILER_BUFFER_SIZE];
-    int bufframes, nitems;
-    int fd = -1;
-    t_sample normfactor, biggest = 0;
-    t_float samplerate;
-    t_symbol *filesym;
-    t_symbol *fileExtension;
+    outlet_float (x->x_outlet, (t_float)soundfiler_readPerform (x->x_owner, argc, argv));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static t_error soundfiler_writeFetch (int argc,
+    t_atom *argv,
+    t_garray **a,
+    t_word **w,
+    t_sample *m, 
+    t_audioproperties *args)
+{
+    t_error err = (argc < 1 || argc > SOUNDFILE_MAXIMUM_CHANNELS);
     
-    t_audioproperties prop; soundfile_initProperties (&prop);
-    
-    
-    if (soundfile_writeFileParse(sym_soundfiler, &argc, &argv, &prop) == PD_ERROR)
-                goto usage;
-                
-    filesym = prop.ap_fileName;
-    fileExtension = prop.ap_fileExtension;
-    samplerate = prop.ap_sampleRate;
-    filetype = prop.ap_fileType;
-    bytespersamp = prop.ap_bytesPerSample;
-    bigendian = prop.ap_isBigEndian;
-    swap = prop.ap_needToSwap;
-    onset = prop.ap_onset;
-    nframes = prop.ap_numberOfFrames;
-    normalize = prop.ap_needToNormalize;
-    
-    nchannels = argc;
-    if (nchannels < 1 || nchannels > SOUNDFILE_MAXIMUM_CHANNELS)
-        goto usage;
-    if (samplerate < 0)
-        samplerate = audio_getSampleRate();
-    for (i = 0; i < nchannels; i++)
-    {
-        int vecsize;
-        if (argv[i].a_type != A_SYMBOL)
-            goto usage;
-        if (!(garrays[i] =
-            (t_garray *)pd_getThingByClass(argv[i].a_w.w_symbol, garray_class)))
-        {
-            post_error ("%s: no such table", argv[i].a_w.w_symbol->s_name);
-            goto fail;
-        }
-        else if (!garray_getData(garrays[i], &vecsize, &vecs[i])) /* Always true now !!! */
-            post_error ("%s: bad template for tabwrite",
-                argv[i].a_w.w_symbol->s_name);
-        if (nframes > vecsize - onset)
-            nframes = vecsize - onset;
+    if (!err) {
+    //
+    t_sample maximum = 0.0;
+    int i;
         
-        for (j = 0; j < vecsize; j++)
-        {
-            if (vecs[i][j].w_float > biggest)
-                biggest = vecs[i][j].w_float;
-            else if (-vecs[i][j].w_float > biggest)
-                biggest = -vecs[i][j].w_float;
-        }
-    }
-    if (nframes <= 0)
-    {
-        post_error ("soundfiler_write: no samples at onset %ld", onset);
-        goto fail;
-    }
-    prop.ap_fileName = filesym;
-    prop.ap_fileExtension = fileExtension;
-    prop.ap_sampleRate = samplerate;
-    prop.ap_fileType = filetype;
-    prop.ap_numberOfChannels = nchannels;
-    prop.ap_bytesPerSample = bytespersamp;
-    prop.ap_isBigEndian = bigendian;
-    prop.ap_needToSwap = swap;
-    prop.ap_numberOfFrames = nframes;
-    prop.ap_needToNormalize;
+    for (i = 0; i < argc; i++) {
+    //
+    t_symbol *t = atom_getSymbolAtIndex (i, argc, argv);
+
+    a[i] = (t_garray *)pd_getThingByClass (t, garray_class);
     
-    if ((fd = soundfile_writeFileHeader (canvas, &prop)) < 0)
-    {
-        post("%s: %s\n", filesym->s_name, strerror(errno));
-        goto fail;
+    if (a[i] == NULL) { error_canNotFind (sym_soundfiler, t); err = PD_ERROR; break; }
+    else {
+        int size;
+        t_sample f = garray_getAmplitude (a[i]);
+        maximum = PD_MAX (maximum, f);
+        garray_getData (a[i], &size, &w[i]);
+        args->ap_numberOfFrames = PD_MIN (size - args->ap_onset, args->ap_numberOfFrames);
+        err |= (args->ap_numberOfFrames <= 0);
     }
-    if (!normalize)
-    {
-        if ((bytespersamp != 4) && (biggest > 1))
-        {
-            post("%s: normalizing max amplitude %g to 1", filesym->s_name, biggest);
-            normalize = 1;
-        }
-        else post("%s: biggest amplitude = %g", filesym->s_name, biggest);
+    //
     }
-    if (normalize)
-        normfactor = (biggest > 0 ? 32767./(32768. * biggest) : 1);
-    else normfactor = 1;
+    
+    *m = maximum;
+    
+    args->ap_numberOfChannels = argc;
+    //
+    }
+    
+    return err;
+}
 
-    bufframes = SOUNDFILER_BUFFER_SIZE / (nchannels * bytespersamp);
+static t_sample soundfiler_writeGetFactor (t_sample maximumAmplitude, t_audioproperties *args)
+{
+    t_sample f = 1.0;
+    
+    /* Linear PCM encoding requires a signal in common range. */
+    
+    if (args->ap_bytesPerSample != 4) { 
+        if (maximumAmplitude > 1.0) { args->ap_needToNormalize = 1; }
+    }
+    
+    if (args->ap_needToNormalize) {
+        if (maximumAmplitude > 0.0) { f = 32767.0 / (32768.0 * maximumAmplitude); }
+    }
+    
+    return f;
+}
 
-    for (itemswritten = 0; itemswritten < nframes; )
+static int soundfiler_writeEncode (int f,
+    int channelsRequired,
+    t_garray **a,
+    t_word **w,
+    t_sample *m,
+    t_audioproperties *args)
+{
+    t_sample normalizationFactor = soundfiler_writeGetFactor (*m, args);
+    int bytesPerFrame            = args->ap_numberOfChannels * args->ap_bytesPerSample;
+    int framesToWrite            = args->ap_numberOfFrames;
+    int framesAlreadyWritten     = 0;
+    int framesBufferSize         = SOUNDFILER_BUFFER_SIZE / bytesPerFrame;
+
+    PD_ASSERT (args->ap_onset            != SOUNDFILE_UNKNOWN);
+    PD_ASSERT (args->ap_numberOfFrames   != SOUNDFILE_UNKNOWN);
+    PD_ASSERT (args->ap_numberOfChannels == channelsRequired);
+    
+    while (framesAlreadyWritten < framesToWrite) {
+    //
+    char t[SOUNDFILER_BUFFER_SIZE] = { 0 };
+    int framesRemaining = framesToWrite - framesAlreadyWritten;
+    size_t sizeInFrames = PD_MIN (framesRemaining, framesBufferSize);
+    size_t sizeInBytes  = sizeInFrames * bytesPerFrame;
+    
+    soundfile_encode (args->ap_numberOfChannels,
+        (t_float **)w,
+        (unsigned char *)t,
+        sizeInFrames,
+        args->ap_onset,
+        args->ap_bytesPerSample,
+        args->ap_isBigEndian,
+        sizeof (t_word) / sizeof (t_sample),
+        normalizationFactor);
+   
     {
-        int thiswrite = nframes - itemswritten, nitems, nbytes;
-        thiswrite = (thiswrite > bufframes ? bufframes : thiswrite);
-        soundfile_encode(argc, (t_float **)vecs, (unsigned char *)sampbuf,
-            thiswrite, onset, bytespersamp, bigendian,
-                 sizeof (t_word)/sizeof(t_sample), normfactor);
-        nbytes = write(fd, sampbuf, nchannels * bytespersamp * thiswrite);
-        if (nbytes < nchannels * bytespersamp * thiswrite)
-        {
-            post("%s: %s", filesym->s_name, strerror(errno));
-            if (nbytes > 0)
-                itemswritten += nbytes / (nchannels * bytespersamp);
+        size_t s = write (f, t, sizeInBytes);
+    
+        if (s < sizeInBytes) { 
+            if (s > 0) { framesAlreadyWritten += s / bytesPerFrame; }
+            PD_ASSERT (s == 0);
             break;
         }
-        itemswritten += thiswrite;
-        onset += thiswrite * (sizeof (t_word)/sizeof(float));
     }
-    if (fd >= 0)
-    {
-        soundfile_writeFileClose (fd, itemswritten, &prop);
-        close (fd);
+    
+    framesAlreadyWritten += sizeInFrames;
+    args->ap_onset       += sizeInFrames;
+    //
     }
-    return ((float)itemswritten); 
-usage:
-    post_error ("usage: write [flags] filename tablename...");
-    post("flags: -skip <n> -nframes <n> -bytes <n> -wave -aiff -nextstep ...");
-    post("-big -little -normalize");
-    post("(defaults to a 16-bit wave file).");
-fail:
-    if (fd >= 0)
-        close (fd);
-    return (0); 
+    
+    if (soundfile_writeFileClose (f, framesAlreadyWritten, args) == PD_ERROR) {
+        PD_BUG;     /* File corrupted; what to do? */
+    }
+    
+    close (f);
+    
+    return framesAlreadyWritten;
 }
+    
+static int soundfiler_writePerform (t_glist *canvas, int argc, t_atom *argv)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    t_audioproperties properties; soundfile_initProperties (&properties);
+    
+    err = soundfile_writeFileParse (sym_soundfiler, &argc, &argv, &properties);
+
+    if (!err) {
+    //
+    t_garray *a[SOUNDFILE_MAXIMUM_CHANNELS] = { NULL };
+    t_word   *w[SOUNDFILE_MAXIMUM_CHANNELS] = { NULL };
+
+    t_sample maximumAmplitude = 0.0;
+    
+    err = soundfiler_writeFetch (argc, argv, a, w, &maximumAmplitude, &properties);
+    
+    if (!err) {
+    
+        int f = soundfile_writeFileHeader (canvas, &properties);
+    
+        err = (f < 0);
+        
+        if (!err) { return soundfiler_writeEncode (f, argc, a, w, &maximumAmplitude, &properties); }
+        
+        /* Opened file is closed in function called above. */
+    }
+    //
+    }
+    
+    if (err) { error_failsToWrite (sym_soundfiler); return 0; }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void soundfiler_write (t_soundfiler *x, t_symbol *s, int argc, t_atom *argv)
 {
-    outlet_float (x->x_obj.te_outlet, (t_float)soundfiler_performWrite (x, x->x_owner, argc, argv)); 
+    outlet_float (x->x_outlet, (t_float)soundfiler_writePerform (x->x_owner, argc, argv)); 
 }
 
 // -----------------------------------------------------------------------------------------------------------

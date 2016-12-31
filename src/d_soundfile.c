@@ -501,7 +501,7 @@ t_error soundfile_writeFileParse (t_symbol *s, int *ac, t_atom **av, t_audioprop
     t_atom *argv            = *av;
     t_symbol *fileName      = &s_;
     t_symbol *fileExtension = &s_;
-    t_float sampleRate      = SOUNDFILE_UNDEFINED;
+    t_float sampleRate      = audio_getSampleRate();
     int fileType            = SOUNDFILE_UNDEFINED;
     int bytesPerSample      = 2;
     int isBigEndian         = 0;
@@ -753,6 +753,8 @@ static t_error soundfile_writeFileHeaderNEXT (t_soundfileheader *t, t_audioprope
 
     return PD_ERROR_NONE;
 }
+
+/* Caller is responsible to close the file. */
 
 int soundfile_writeFileHeader (t_glist *glist, t_audioproperties *args)
 {

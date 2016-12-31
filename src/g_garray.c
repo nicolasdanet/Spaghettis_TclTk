@@ -363,6 +363,19 @@ void garray_setDataFromIndex (t_garray *x, int i, t_float f)
     for (n = PD_CLAMP (i, 0, size - 1); n < size; n++) { GARRAY_AT (n) = f; }
 }
 
+t_float garray_getAmplitude (t_garray *x)
+{
+    t_array *array = garray_getArray (x);
+    
+    int i, size = array_getSize (array);
+    
+    t_float f = 0.0;
+    
+    for (i = 0; i < size; i++) { t_float t = GARRAY_AT (i); f = PD_MAX (f, PD_ABS (t)); }
+
+    return f;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
