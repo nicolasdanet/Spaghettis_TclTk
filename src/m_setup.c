@@ -230,7 +230,7 @@ void osc_tilde_setup        (void);
 void vcf_tilde_setup        (void);
 void noise_tilde_setup      (void);
 void soundfiler_setup       (void);
-void readsf_setup           (void);
+void readsf_tilde_setup     (void);
 void writesf_setup          (void);
 void block_tilde_setup      (void);
 void samplerate_tilde_setup (void);
@@ -429,7 +429,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     vcf_tilde_setup();
     noise_tilde_setup();
     soundfiler_setup();
-    readsf_setup();
+    readsf_tilde_setup();
     writesf_setup();
     block_tilde_setup();
     samplerate_tilde_setup();

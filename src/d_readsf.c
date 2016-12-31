@@ -17,35 +17,18 @@
 #include "d_dsp.h"
 #include "d_soundfile.h"
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 extern t_class *garray_class;
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
+static t_class *readsf_tilde_class;             /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-/************************* readsf object ******************************/
-
-/* READSF uses the Posix threads package; for the moment we're Linux
-only although this should be portable to the other platforms.
-
-Each instance of readsf~ owns a "child" thread for doing the unix (MSW?) file
-reading.  The parent thread signals the child each time:
-    (1) a file wants opening or closing;
-    (2) we've eaten another 1/16 of the shared buffer (so that the
-        child thread should check if it's time to read some more.)
-The child signals the parent whenever a read has completed.  Signalling
-is done by setting "conditions" and putting data in mutex-controlled common
-areas.
-*/
-
-
-
-static t_class *readsf_class;
-
-
-
 
 /************** the child thread which performs file I/O ***********/
 
@@ -57,7 +40,7 @@ static void pute(char *s)   /* debug routine */
 #define DEBUG_SOUNDFILE
 #endif
 
-static void *readsf_child_main(void *zz)
+static void *readsf_tilde_child_main(void *zz)
 {
     t_readsf_tilde *x = zz;
 #ifdef DEBUG_SOUNDFILE
@@ -95,7 +78,7 @@ static void *readsf_child_main(void *zz)
             int bytespersample = x->sf_bytesPerSample;
             int sfchannels = x->sf_numberOfChannels;
             int bigendian = x->sf_isFileBigEndian;
-            char *filename = x->sf_fileName;
+            char *filename = x->sf_fileName->s_name;
             // char *dirname = canvas_getEnvironment (x->sf_owner)->ce_directory->s_name;
                 /* alter the request code so that an ensuing "open" will get
                 noticed. */
@@ -360,9 +343,9 @@ static void *readsf_child_main(void *zz)
 
 /******** the object proper runs in the calling (parent) thread ****/
 
-static void readsf_tick(t_readsf_tilde *x);
+static void readsf_tilde_tick(t_readsf_tilde *x);
 
-static void *readsf_new(t_float fnchannels, t_float fbufsize)
+static void *readsf_tilde_new(t_float fnchannels, t_float fbufsize)
 {
     t_readsf_tilde *x;
     int nchannels = fnchannels, bufsize = fbufsize, i;
@@ -380,7 +363,7 @@ static void *readsf_new(t_float fnchannels, t_float fbufsize)
     buf = PD_MEMORY_GET(bufsize);
     if (!buf) return (0);
     
-    x = (t_readsf_tilde *)pd_new(readsf_class);
+    x = (t_readsf_tilde *)pd_new(readsf_tilde_class);
     
     for (i = 0; i < nchannels; i++)
         outlet_new (cast_object (x), &s_signal);
@@ -391,7 +374,7 @@ static void *readsf_new(t_float fnchannels, t_float fbufsize)
     pthread_cond_init(&x->sf_condAnswer, 0);
     x->sf_vectorSize = SOUNDFILE_SIZE_VECTOR;
     x->sf_state = SOUNDFILE_IDLE;
-    x->sf_clock = clock_new(x, (t_method)readsf_tick);
+    x->sf_clock = clock_new(x, (t_method)readsf_tilde_tick);
     x->sf_owner = canvas_getCurrent();
     x->sf_bytesPerSample = 2;
     x->sf_numberOfChannels = 1;
@@ -399,16 +382,16 @@ static void *readsf_new(t_float fnchannels, t_float fbufsize)
     x->sf_buffer = buf;
     x->sf_bufferSize = bufsize;
     x->sf_fifoSize = x->sf_fifoHead = x->sf_fifoTail = x->sf_request = 0;
-    pthread_create(&x->sf_thread, 0, readsf_child_main, x);
+    pthread_create(&x->sf_thread, 0, readsf_tilde_child_main, x);
     return x;
 }
 
-static void readsf_tick(t_readsf_tilde *x)
+static void readsf_tilde_tick(t_readsf_tilde *x)
 {
     outlet_bang(x->sf_outlet);
 }
 
-static t_int *readsf_perform(t_int *w)
+static t_int *readsf_tilde_perform(t_int *w)
 {
     t_readsf_tilde *x = (t_readsf_tilde *)(w[1]);
     int vecsize = x->sf_vectorSize, noutlets = x->sf_numberOfAudioOutlets, i, j,
@@ -445,7 +428,7 @@ static t_int *readsf_perform(t_int *w)
             int xfersize;
             if (x->sf_error)
             {
-                post_error ("dsp: %s: %s", x->sf_fileName,
+                post_error ("dsp: %s: %s", x->sf_fileName->s_name,
                     (x->sf_error == EIO ?
                         "unknown or bad header format" :
                             strerror(x->sf_error)));
@@ -496,7 +479,7 @@ static t_int *readsf_perform(t_int *w)
     return (w+2);
 }
 
-static void readsf_start(t_readsf_tilde *x)
+static void readsf_tilde_start(t_readsf_tilde *x)
 {
     /* start making output.  If we're in the "startup" state change
     to the "running" state. */
@@ -505,7 +488,7 @@ static void readsf_start(t_readsf_tilde *x)
     else post_error ("readsf: start requested with no prior 'open'");
 }
 
-static void readsf_stop(t_readsf_tilde *x)
+static void readsf_tilde_stop(t_readsf_tilde *x)
 {
         /* LATER rethink whether you need the mutex just to set a variable? */
     pthread_mutex_lock(&x->sf_mutex);
@@ -515,11 +498,11 @@ static void readsf_stop(t_readsf_tilde *x)
     pthread_mutex_unlock(&x->sf_mutex);
 }
 
-static void readsf_float(t_readsf_tilde *x, t_float f)
+static void readsf_tilde_float(t_readsf_tilde *x, t_float f)
 {
     if (f != 0)
-        readsf_start(x);
-    else readsf_stop(x);
+        readsf_tilde_start(x);
+    else readsf_tilde_stop(x);
 }
 
     /* open method.  Called as:
@@ -528,7 +511,7 @@ static void readsf_float(t_readsf_tilde *x, t_float f)
         detected; thus, use the special "-1" to mean a truly headerless file.)
     */
 
-static void readsf_open(t_readsf_tilde *x, t_symbol *s, int argc, t_atom *argv)
+static void readsf_tilde_open(t_readsf_tilde *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_symbol *filesym = atom_getSymbolAtIndex(0, argc, argv);
     t_float onsetframes = atom_getFloatAtIndex(1, argc, argv);
@@ -540,7 +523,7 @@ static void readsf_open(t_readsf_tilde *x, t_symbol *s, int argc, t_atom *argv)
         return;
     pthread_mutex_lock(&x->sf_mutex);
     x->sf_request = SOUNDFILE_OPEN;
-    x->sf_fileName = filesym->s_name;
+    x->sf_fileName = filesym;
     x->sf_fifoTail = 0;
     x->sf_fifoHead = 0;
     if (*endian->s_name == 'b')
@@ -562,7 +545,7 @@ static void readsf_open(t_readsf_tilde *x, t_symbol *s, int argc, t_atom *argv)
     pthread_mutex_unlock(&x->sf_mutex);
 }
 
-static void readsf_dsp(t_readsf_tilde *x, t_signal **sp)
+static void readsf_tilde_dsp(t_readsf_tilde *x, t_signal **sp)
 {
     int i, noutlets = x->sf_numberOfAudioOutlets;
     pthread_mutex_lock(&x->sf_mutex);
@@ -573,10 +556,10 @@ static void readsf_dsp(t_readsf_tilde *x, t_signal **sp)
     for (i = 0; i < noutlets; i++)
         x->sf_vectorsOut[i] = sp[i]->s_vector;
     pthread_mutex_unlock(&x->sf_mutex);
-    dsp_add(readsf_perform, 1, x);
+    dsp_add(readsf_tilde_perform, 1, x);
 }
 
-static void readsf_print(t_readsf_tilde *x)
+static void readsf_tilde_print(t_readsf_tilde *x)
 {
     post("state %d", x->sf_state);
     post("fifo head %d", x->sf_fifoHead);
@@ -586,7 +569,7 @@ static void readsf_print(t_readsf_tilde *x)
     post("eof %d", x->sf_isEndOfFile);
 }
 
-static void readsf_free(t_readsf_tilde *x)
+static void readsf_tilde_free(t_readsf_tilde *x)
 {
         /* request QUIT and wait for acknowledge */
     void *threadrtn;
@@ -600,7 +583,7 @@ static void readsf_free(t_readsf_tilde *x)
     }
     pthread_mutex_unlock(&x->sf_mutex);
     if (pthread_join(x->sf_thread, &threadrtn))
-        post_error ("readsf_free: join failed");
+        post_error ("readsf_tilde_free: join failed");
     
     pthread_cond_destroy(&x->sf_condRequest);
     pthread_cond_destroy(&x->sf_condAnswer);
@@ -609,18 +592,18 @@ static void readsf_free(t_readsf_tilde *x)
     clock_free(x->sf_clock);
 }
 
-void readsf_setup(void)
+void readsf_tilde_setup(void)
 {
-    readsf_class = class_new(sym_readsf__tilde__, (t_newmethod)readsf_new, 
-        (t_method)readsf_free, sizeof(t_readsf_tilde), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
-    class_addFloat(readsf_class, (t_method)readsf_float);
-    class_addMethod(readsf_class, (t_method)readsf_start, sym_start, 0);
-    class_addMethod(readsf_class, (t_method)readsf_stop, sym_stop, 0);
-    class_addMethod(readsf_class, (t_method)readsf_dsp,
+    readsf_tilde_class = class_new(sym_readsf__tilde__, (t_newmethod)readsf_tilde_new, 
+        (t_method)readsf_tilde_free, sizeof(t_readsf_tilde), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
+    class_addFloat(readsf_tilde_class, (t_method)readsf_tilde_float);
+    class_addMethod(readsf_tilde_class, (t_method)readsf_tilde_start, sym_start, 0);
+    class_addMethod(readsf_tilde_class, (t_method)readsf_tilde_stop, sym_stop, 0);
+    class_addMethod(readsf_tilde_class, (t_method)readsf_tilde_dsp,
         sym_dsp, A_CANT, 0);
-    class_addMethod(readsf_class, (t_method)readsf_open, sym_open, 
+    class_addMethod(readsf_tilde_class, (t_method)readsf_tilde_open, sym_open, 
         A_GIMME, 0);
-    class_addMethod(readsf_class, (t_method)readsf_print, sym_print, 0);
+    class_addMethod(readsf_tilde_class, (t_method)readsf_tilde_print, sym_print, 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

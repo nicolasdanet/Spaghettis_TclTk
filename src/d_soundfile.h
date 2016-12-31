@@ -108,8 +108,8 @@ typedef struct _readsf_tilde {
     pthread_t           sf_thread;
     t_sample            *(sf_vectorsOut[SOUNDFILE_MAXIMUM_CHANNELS]);
     char                *sf_buffer;
-    char                *sf_fileName;
-    char                *sf_fileExtension;
+    t_symbol            *sf_fileName;
+    t_symbol            *sf_fileExtension;
     t_glist             *sf_owner;
     t_clock             *sf_clock;
     t_outlet            *sf_outlet;
