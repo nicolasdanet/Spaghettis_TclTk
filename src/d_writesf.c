@@ -7,6 +7,17 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+/* Note that this object use a nasty mutex inside the DSP method. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* < http://www.rossbencina.com/code/real-time-audio-programming-101-time-waits-for-nothing */
+/* < http://atastypixel.com/blog/four-common-mistakes-in-audio-development/ */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 #include "m_pd.h"
@@ -26,8 +37,46 @@ extern t_class *garray_class;
 
 static t_class *writesf_class;
 
-#define t_writesf t_readsf_tilde      /* just re-use the structure */
-
+typedef struct _writesf {
+    t_object            sf_obj;                 /* Must be the first. */
+    t_float             sf_f;
+    t_float             sf_sampleRate;
+    int                 sf_fileType;
+    int                 sf_headerSize;
+    int                 sf_numberOfChannels;
+    int                 sf_bytesPerSample;
+    int                 sf_isBigEndian;
+    int                 sf_needToSwap;
+    int                 sf_onset;
+    t_float             sf_sampleRateOfInput;
+    int                 sf_maximumBytesToRead;
+    int                 sf_bufferSize;
+    int                 sf_numberOfAudioOutlets;
+    int                 sf_vectorSize;
+    int                 sf_state;
+    int                 sf_request;
+    int                 sf_error;
+    int                 sf_fileDescriptor;
+    int                 sf_fifoSize;
+    int                 sf_fifoHead;
+    int                 sf_fifoTail;
+    int                 sf_isEndOfFile;
+    int                 sf_count;
+    int                 sf_period;
+    int                 sf_itemsWritten;
+    pthread_mutex_t     sf_mutex;
+    pthread_cond_t      sf_condRequest;
+    pthread_cond_t      sf_condAnswer;
+    pthread_t           sf_thread;
+    t_sample            *(sf_vectorsOut[SOUNDFILE_MAXIMUM_CHANNELS]);
+    char                *sf_buffer;
+    t_symbol            *sf_fileName;
+    t_symbol            *sf_fileExtension;
+    t_glist             *sf_owner;
+    t_clock             *sf_clock;
+    t_outlet            *sf_outlet;
+    } t_writesf;
+    
 /************** the child thread which performs file I/O ***********/
 
 static void *writesf_child_main(void *zz)
@@ -42,7 +91,7 @@ static void *writesf_child_main(void *zz)
 #ifdef DEBUG_SOUNDFILE
         pute("0\n");
 #endif
-        if (x->sf_request == SOUNDFILE_NOTHING)
+        if (x->sf_request == SOUNDFILE_REQUEST_NOTHING)
         {
 #ifdef DEBUG_SOUNDFILE
             pute("wait 2\n");
@@ -53,19 +102,19 @@ static void *writesf_child_main(void *zz)
             pute("3\n");
 #endif
         }
-        else if (x->sf_request == SOUNDFILE_OPEN)
+        else if (x->sf_request == SOUNDFILE_REQUEST_OPEN)
         {
             char boo[80];
             int fd, sysrtn, writebytes;
             
                 /* copy file stuff out of the data structure so we can
                 relinquish the mutex while we're in open_soundfile(). */
-            long onsetframes = x->sf_numberOfFramesToSkip;
+            long onsetframes = x->sf_onset;
             long bytelimit = SOUNDFILE_UNKNOWN;
             int skipheaderbytes = x->sf_headerSize;
             int bytespersample = x->sf_bytesPerSample;
             int sfchannels = x->sf_numberOfChannels;
-            int bigendian = x->sf_isFileBigEndian;
+            int bigendian = x->sf_isBigEndian;
             int filetype = x->sf_fileType;
             char *filename = x->sf_fileName->s_name;
             char *fileExtension = x->sf_fileExtension->s_name;
@@ -77,7 +126,7 @@ static void *writesf_child_main(void *zz)
 #ifdef DEBUG_SOUNDFILE
             pute("4\n");
 #endif
-            x->sf_request = SOUNDFILE_BUSY;
+            x->sf_request = SOUNDFILE_REQUEST_BUSY;
             x->sf_error = 0;
 
                 /* if there's already a file open, close it.  This
@@ -86,13 +135,13 @@ static void *writesf_child_main(void *zz)
             if (x->sf_fileDescriptor >= 0)
             {
                 int bytesperframe = x->sf_bytesPerSample * x->sf_numberOfChannels;
-                int bigendian = x->sf_isFileBigEndian;
+                int bigendian = x->sf_isBigEndian;
                 char *filename = x->sf_fileName->s_name;
                 char *fileExtension = x->sf_fileExtension->s_name;
                 int fd = x->sf_fileDescriptor;
                 int filetype = x->sf_fileType;
                 int itemswritten = x->sf_itemsWritten;
-                int swap = x->sf_needToSwapBytes;
+                int swap = x->sf_needToSwap;
                 pthread_mutex_unlock(&x->sf_mutex);
                 
                 t_audioproperties toto;  soundfile_initProperties (&toto);
@@ -101,8 +150,8 @@ static void *writesf_child_main(void *zz)
                 toto.ap_numberOfFrames = SOUNDFILE_UNKNOWN;
                 toto.ap_numberOfChannels = x->sf_numberOfChannels;
                 toto.ap_bytesPerSample = x->sf_bytesPerSample;
-                toto.ap_isBigEndian = x->sf_isFileBigEndian;
-                toto.ap_needToSwap = x->sf_needToSwapBytes;
+                toto.ap_isBigEndian = x->sf_isBigEndian;
+                toto.ap_needToSwap = x->sf_needToSwap;
                 
                 soundfile_writeFileClose (fd, itemswritten, &toto);
                 close (fd);
@@ -116,7 +165,7 @@ static void *writesf_child_main(void *zz)
                     pute(s);
                 }
 #endif  
-                if (x->sf_request != SOUNDFILE_BUSY)
+                if (x->sf_request != SOUNDFILE_REQUEST_BUSY)
                     continue;
             }
                 /* open the soundfile with the mutex unlocked */
@@ -150,11 +199,11 @@ static void *writesf_child_main(void *zz)
                 pute("open failed\n");
                 pute(filename);
 #endif
-                x->sf_request = SOUNDFILE_NOTHING;
+                x->sf_request = SOUNDFILE_REQUEST_NOTHING;
                 continue;
             }
             /* check if another request has been made; if so, field it */
-            if (x->sf_request != SOUNDFILE_BUSY)
+            if (x->sf_request != SOUNDFILE_REQUEST_BUSY)
                 continue;
 #ifdef DEBUG_SOUNDFILE
             pute("6\n");
@@ -162,11 +211,11 @@ static void *writesf_child_main(void *zz)
             x->sf_fileDescriptor = fd;
             x->sf_fifoTail = 0;
             x->sf_itemsWritten = 0;
-            x->sf_needToSwapBytes = soundfile_systemIsBigEndian() != bigendian;      
+            x->sf_needToSwap = soundfile_systemIsBigEndian() != bigendian;      
                 /* in a loop, wait for the fifo to have data and write it
                     to disk */
-            while (x->sf_request == SOUNDFILE_BUSY ||
-                (x->sf_request == SOUNDFILE_CLOSE &&
+            while (x->sf_request == SOUNDFILE_REQUEST_BUSY ||
+                (x->sf_request == SOUNDFILE_REQUEST_CLOSE &&
                     x->sf_fifoHead != x->sf_fifoTail))
             {
                 int fifosize = x->sf_fifoSize, fifotail;
@@ -176,17 +225,17 @@ static void *writesf_child_main(void *zz)
 #endif
                     /* if the head is < the tail, we can immediately write
                     from tail to end of fifo to disk; otherwise we hold off
-                    writing until there are at least SOUNDFILE_SIZE_WRITE bytes in the
+                    writing until there are at least SOUNDFILE_CHUNK_SIZE bytes in the
                     buffer */
                 if (x->sf_fifoHead < x->sf_fifoTail ||
-                    x->sf_fifoHead >= x->sf_fifoTail + SOUNDFILE_SIZE_WRITE
-                    || (x->sf_request == SOUNDFILE_CLOSE &&
+                    x->sf_fifoHead >= x->sf_fifoTail + SOUNDFILE_CHUNK_SIZE
+                    || (x->sf_request == SOUNDFILE_REQUEST_CLOSE &&
                         x->sf_fifoHead != x->sf_fifoTail))
                 {
                     writebytes = (x->sf_fifoHead < x->sf_fifoTail ?
                         fifosize : x->sf_fifoHead) - x->sf_fifoTail;
-                    if (writebytes > SOUNDFILE_SIZE_READ)
-                        writebytes = SOUNDFILE_SIZE_READ;
+                    if (writebytes > SOUNDFILE_CHUNK_SIZE)
+                        writebytes = SOUNDFILE_CHUNK_SIZE;
                 }
                 else
                 {
@@ -212,8 +261,8 @@ static void *writesf_child_main(void *zz)
                 pthread_mutex_unlock(&x->sf_mutex);
                 sysrtn = write(fd, buf + fifotail, writebytes);
                 pthread_mutex_lock(&x->sf_mutex);
-                if (x->sf_request != SOUNDFILE_BUSY &&
-                    x->sf_request != SOUNDFILE_CLOSE)
+                if (x->sf_request != SOUNDFILE_REQUEST_BUSY &&
+                    x->sf_request != SOUNDFILE_REQUEST_CLOSE)
                         break;
                 if (sysrtn < writebytes)
                 {
@@ -240,19 +289,19 @@ static void *writesf_child_main(void *zz)
                 pthread_cond_signal(&x->sf_condAnswer);
             }
         }
-        else if (x->sf_request == SOUNDFILE_CLOSE ||
-            x->sf_request == SOUNDFILE_QUIT)
+        else if (x->sf_request == SOUNDFILE_REQUEST_CLOSE ||
+            x->sf_request == SOUNDFILE_REQUEST_QUIT)
         {
-            int quit = (x->sf_request == SOUNDFILE_QUIT);
+            int quit = (x->sf_request == SOUNDFILE_REQUEST_QUIT);
             if (x->sf_fileDescriptor >= 0)
             {
                 int bytesperframe = x->sf_bytesPerSample * x->sf_numberOfChannels;
-                int bigendian = x->sf_isFileBigEndian;
+                int bigendian = x->sf_isBigEndian;
                 char *filename = x->sf_fileName->s_name;
                 int fd = x->sf_fileDescriptor;
                 int filetype = x->sf_fileType;
                 int itemswritten = x->sf_itemsWritten;
-                int swap = x->sf_needToSwapBytes;
+                int swap = x->sf_needToSwap;
                 
                 pthread_mutex_unlock(&x->sf_mutex);
 
@@ -262,8 +311,8 @@ static void *writesf_child_main(void *zz)
                 toto.ap_numberOfFrames = SOUNDFILE_UNKNOWN;
                 toto.ap_numberOfChannels = x->sf_numberOfChannels;
                 toto.ap_bytesPerSample = x->sf_bytesPerSample;
-                toto.ap_isBigEndian = x->sf_isFileBigEndian;
-                toto.ap_needToSwap = x->sf_needToSwapBytes;
+                toto.ap_isBigEndian = x->sf_isBigEndian;
+                toto.ap_needToSwap = x->sf_needToSwap;
 
     
                 soundfile_writeFileClose (fd, itemswritten, &toto);
@@ -272,7 +321,7 @@ static void *writesf_child_main(void *zz)
                 pthread_mutex_lock(&x->sf_mutex);
                 x->sf_fileDescriptor = -1;
             }
-            x->sf_request = SOUNDFILE_NOTHING;
+            x->sf_request = SOUNDFILE_REQUEST_NOTHING;
             pthread_cond_signal(&x->sf_condAnswer);
             if (quit)
                 break;
@@ -305,11 +354,11 @@ static void *writesf_new(t_float fnchannels, t_float fbufsize)
         nchannels = 1;
     else if (nchannels > SOUNDFILE_MAXIMUM_CHANNELS)
         nchannels = SOUNDFILE_MAXIMUM_CHANNELS;
-    if (bufsize <= 0) bufsize = SOUNDFILE_BUFFER_MINIMUM * nchannels;
-    else if (bufsize < SOUNDFILE_BUFFER_MINIMUM)
-        bufsize = SOUNDFILE_BUFFER_MINIMUM;
-    else if (bufsize > SOUNDFILE_BUFFER_MAXIMUM)
-        bufsize = SOUNDFILE_BUFFER_MAXIMUM;
+    if (bufsize <= 0) bufsize = SOUNDFILE_CHUNK_SIZE * 4 * nchannels;
+    else if (bufsize < SOUNDFILE_CHUNK_SIZE * 4)
+        bufsize = SOUNDFILE_CHUNK_SIZE * 4;
+    else if (bufsize > SOUNDFILE_CHUNK_SIZE * 256)
+        bufsize = SOUNDFILE_CHUNK_SIZE * 256;
     buf = PD_MEMORY_GET(bufsize);
     if (!buf) return (0);
     
@@ -323,9 +372,9 @@ static void *writesf_new(t_float fnchannels, t_float fbufsize)
     pthread_mutex_init(&x->sf_mutex, 0);
     pthread_cond_init(&x->sf_condRequest, 0);
     pthread_cond_init(&x->sf_condAnswer, 0);
-    x->sf_vectorSize = SOUNDFILE_SIZE_VECTOR;
+    x->sf_vectorSize = AUDIO_DEFAULT_BLOCKSIZE;
     x->sf_sampleRateOfInput = x->sf_sampleRate = 0;
-    x->sf_state = SOUNDFILE_IDLE;
+    x->sf_state = SOUNDFILE_STATE_IDLE;
     x->sf_clock = 0;     /* no callback needed here */
     x->sf_owner = canvas_getCurrent();
     x->sf_bytesPerSample = 2;
@@ -342,9 +391,9 @@ static t_int *writesf_perform(t_int *w)
     t_writesf *x = (t_writesf *)(w[1]);
     int vecsize = x->sf_vectorSize, sfchannels = x->sf_numberOfChannels, i, j,
         bytespersample = x->sf_bytesPerSample,
-        bigendian = x->sf_isFileBigEndian;
+        bigendian = x->sf_isBigEndian;
     t_sample *fp;
-    if (x->sf_state == SOUNDFILE_STREAM)
+    if (x->sf_state == SOUNDFILE_STATE_STREAM)
     {
         int wantbytes, roominfifo;
         pthread_mutex_lock(&x->sf_mutex);
@@ -389,8 +438,8 @@ static void writesf_start(t_writesf *x)
 {
     /* start making output.  If we're in the "startup" state change
     to the "running" state. */
-    if (x->sf_state == SOUNDFILE_START)
-        x->sf_state = SOUNDFILE_STREAM;
+    if (x->sf_state == SOUNDFILE_STATE_START)
+        x->sf_state = SOUNDFILE_STATE_STREAM;
     else
         post_error ("writesf: start requested with no prior 'open'");
 }
@@ -399,8 +448,8 @@ static void writesf_stop(t_writesf *x)
 {
         /* LATER rethink whether you need the mutex just to set a Svariable? */
     pthread_mutex_lock(&x->sf_mutex);
-    x->sf_state = SOUNDFILE_IDLE;
-    x->sf_request = SOUNDFILE_CLOSE;
+    x->sf_state = SOUNDFILE_STATE_IDLE;
+    x->sf_request = SOUNDFILE_REQUEST_CLOSE;
 #ifdef DEBUG_SOUNDFILE
     pute("signal 2\n");
 #endif
@@ -415,7 +464,7 @@ static void writesf_open(t_writesf *x, t_symbol *s, int argc, t_atom *argv)
     int filetype, bytespersamp, swap, bigendian, normalize;
     long onset, nframes;
     t_float samplerate;
-    if (x->sf_state != SOUNDFILE_IDLE)
+    if (x->sf_state != SOUNDFILE_STATE_IDLE)
     {
         writesf_stop(x);
     }
@@ -445,24 +494,24 @@ static void writesf_open(t_writesf *x, t_symbol *s, int argc, t_atom *argv)
     if (argc)
         post_error ("extra argument(s) to writesf~: ignored");
     pthread_mutex_lock(&x->sf_mutex);
-    while (x->sf_request != SOUNDFILE_NOTHING)
+    while (x->sf_request != SOUNDFILE_REQUEST_NOTHING)
     {
         pthread_cond_signal(&x->sf_condRequest);
         pthread_cond_wait(&x->sf_condAnswer, &x->sf_mutex);
     }
     x->sf_bytesPerSample = bytespersamp;
-    x->sf_needToSwapBytes = swap;
-    x->sf_isFileBigEndian = bigendian;
+    x->sf_needToSwap = swap;
+    x->sf_isBigEndian = bigendian;
     x->sf_fileName = filesym;
     x->sf_fileExtension = fileExtension;
     x->sf_fileType = filetype;
     x->sf_itemsWritten = 0;
-    x->sf_request = SOUNDFILE_OPEN;
+    x->sf_request = SOUNDFILE_REQUEST_OPEN;
     x->sf_fifoTail = 0;
     x->sf_fifoHead = 0;
     x->sf_isEndOfFile = 0;
     x->sf_error = 0;
-    x->sf_state = SOUNDFILE_START;
+    x->sf_state = SOUNDFILE_STATE_START;
     x->sf_bytesPerSample = (bytespersamp > 2 ? bytespersamp : 2);
     if (samplerate > 0)
         x->sf_sampleRate = samplerate;
@@ -473,7 +522,7 @@ static void writesf_open(t_writesf *x, t_symbol *s, int argc, t_atom *argv)
         multiple of the number of bytes eaten for each DSP
         tick.  */
     x->sf_fifoSize = x->sf_bufferSize - (x->sf_bufferSize %
-        (x->sf_bytesPerSample * x->sf_numberOfChannels * SOUNDFILE_SIZE_VECTOR));
+        (x->sf_bytesPerSample * x->sf_numberOfChannels * x->sf_vectorSize));
             /* arrange for the "request" condition to be signalled 16
             times per buffer */
     x->sf_count = x->sf_period = (x->sf_fifoSize /
@@ -484,6 +533,8 @@ static void writesf_open(t_writesf *x, t_symbol *s, int argc, t_atom *argv)
 
 static void writesf_dsp(t_writesf *x, t_signal **sp)
 {
+    PD_ASSERT (sp[0]->s_vectorSize == AUDIO_DEFAULT_BLOCKSIZE);
+
     int i, ninlets = x->sf_numberOfChannels;
     pthread_mutex_lock(&x->sf_mutex);
     x->sf_vectorSize = sp[0]->s_vectorSize;
@@ -511,10 +562,10 @@ static void writesf_free(t_writesf *x)
         /* request QUIT and wait for acknowledge */
     void *threadrtn;
     pthread_mutex_lock(&x->sf_mutex);
-    x->sf_request = SOUNDFILE_QUIT;
+    x->sf_request = SOUNDFILE_REQUEST_QUIT;
     /* post("stopping writesf thread..."); */
     pthread_cond_signal(&x->sf_condRequest);
-    while (x->sf_request != SOUNDFILE_NOTHING)
+    while (x->sf_request != SOUNDFILE_REQUEST_NOTHING)
     {
         /* post("signalling..."); */
         pthread_cond_signal(&x->sf_condRequest);

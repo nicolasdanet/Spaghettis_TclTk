@@ -7,6 +7,18 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+/* Note that this object use a nasty mutex inside the DSP method. */
+/* Probably best to rewrite it entirely with a lock-free circular buffer. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* < http://www.rossbencina.com/code/real-time-audio-programming-101-time-waits-for-nothing */
+/* < http://atastypixel.com/blog/four-common-mistakes-in-audio-development/ */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 #include "m_pd.h"
@@ -30,580 +42,544 @@ static t_class *readsf_tilde_class;             /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/************** the child thread which performs file I/O ***********/
+typedef struct _readsf_tilde {
+    t_object            sf_obj;                 /* Must be the first. */
+    t_audioproperties   sf_properties;
+    int                 sf_vectorSize;
+    int                 sf_threadState;
+    int                 sf_threadRequest;
+    int                 sf_fileDescriptor;
+    int                 sf_fifoSize;
+    int                 sf_fifoHead;
+    int                 sf_fifoTail;
+    int                 sf_fifoCount;
+    int                 sf_fifoPeriod;
+    int                 sf_isEndOfFile;
+    int                 sf_numberOfAudioOutlets;
+    int                 sf_bufferSize;
+    char                *sf_buffer;
+    t_glist             *sf_owner;
+    t_clock             *sf_clock;
+    t_sample            *(sf_vectorsOut[SOUNDFILE_MAXIMUM_CHANNELS]);
+    t_outlet            *(sf_audioOutlets[SOUNDFILE_MAXIMUM_CHANNELS]);
+    t_outlet            *sf_outletTopRight;
+    pthread_mutex_t     sf_mutex;
+    pthread_cond_t      sf_condRequest;
+    pthread_cond_t      sf_condAnswer;
+    pthread_t           sf_thread;
+    } t_readsf_tilde;
 
-#if 0
-static void pute(char *s)   /* debug routine */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void readsf_tilde_start  (t_readsf_tilde *);
+static void readsf_tilde_stop   (t_readsf_tilde *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define READSF_NO_REQUEST       (x->sf_threadRequest == SOUNDFILE_REQUEST_BUSY)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void readsf_tilde_threadCloseFile (t_readsf_tilde * x)
 {
-    write(2, s, strlen(s));
+    if (x->sf_fileDescriptor >= 0) {
+    //
+    int f = x->sf_fileDescriptor;
+    
+    x->sf_fileDescriptor = -1;
+    
+    pthread_mutex_unlock (&x->sf_mutex);
+    
+        close (f);
+    
+    pthread_mutex_lock (&x->sf_mutex);
+    //
+    }
 }
-#define DEBUG_SOUNDFILE
-#endif
 
-static void *readsf_tilde_child_main(void *zz)
+static void readsf_tilde_threadCloseFileAndSignal (t_readsf_tilde * x, int n)
 {
-    t_readsf_tilde *x = zz;
-#ifdef DEBUG_SOUNDFILE
-    pute("1\n");
-#endif
-    pthread_mutex_lock(&x->sf_mutex);
-    while (1)
-    {
-        int fd, fifohead;
-        char *buf;
-#ifdef DEBUG_SOUNDFILE
-        pute("0\n");
-#endif
-        if (x->sf_request == SOUNDFILE_NOTHING)
-        {
-#ifdef DEBUG_SOUNDFILE
-            pute("wait 2\n");
-#endif
-            pthread_cond_signal(&x->sf_condAnswer);
-            pthread_cond_wait(&x->sf_condRequest, &x->sf_mutex);
-#ifdef DEBUG_SOUNDFILE
-            pute("3\n");
-#endif
-        }
-        else if (x->sf_request == SOUNDFILE_OPEN)
-        {
-            char boo[80];
-            int sysrtn, wantbytes;
-            
-                /* copy file stuff out of the data structure so we can
-                relinquish the mutex while we're in open_soundfile(). */
-            long onsetframes = x->sf_numberOfFramesToSkip;
-            long bytelimit = SOUNDFILE_UNKNOWN;
-            int skipheaderbytes = x->sf_headerSize;
-            int bytespersample = x->sf_bytesPerSample;
-            int sfchannels = x->sf_numberOfChannels;
-            int bigendian = x->sf_isFileBigEndian;
-            char *filename = x->sf_fileName->s_name;
-            // char *dirname = canvas_getEnvironment (x->sf_owner)->ce_directory->s_name;
-                /* alter the request code so that an ensuing "open" will get
-                noticed. */
-#ifdef DEBUG_SOUNDFILE
-            pute("4\n");
-#endif
-            x->sf_request = SOUNDFILE_BUSY;
-            x->sf_error = 0;
+    readsf_tilde_threadCloseFile (x);
+    
+    if (n == SOUNDFILE_REQUEST_QUIT || n == x->sf_threadRequest) {
+        x->sf_threadRequest = SOUNDFILE_REQUEST_NOTHING;
+    }
 
-                /* if there's already a file open, close it */
-            if (x->sf_fileDescriptor >= 0)
-            {
-                fd = x->sf_fileDescriptor;
-                pthread_mutex_unlock(&x->sf_mutex);
-                close (fd);
-                pthread_mutex_lock(&x->sf_mutex);
-                x->sf_fileDescriptor = -1;
-                if (x->sf_request != SOUNDFILE_BUSY)
-                    goto lost;
-            }
-                /* open the soundfile with the mutex unlocked */
-            pthread_mutex_unlock(&x->sf_mutex);
-            
-            t_audioproperties args; soundfile_initProperties (&args);
-            args.ap_fileName = gensym (filename);
-            args.ap_fileExtension = &s_;
-            args.ap_headerSize = skipheaderbytes;
-            args.ap_isBigEndian = bigendian;
-            args.ap_bytesPerSample = bytespersample;
-            args.ap_numberOfChannels = sfchannels;
-            args.ap_dataSizeInBytes = bytelimit;
-            args.ap_onset = onsetframes;
-            
-            fd = soundfile_readFileHeader (x->sf_owner, &args);
+    pthread_cond_signal (&x->sf_condAnswer);
+}
+
+static size_t readsf_tilde_threadOpenLoopRead (t_readsf_tilde * x, int n)
+{
+    char *t = x->sf_buffer + x->sf_fifoHead;
+    int f   = x->sf_fileDescriptor;
+    
+    size_t bytes;
+    
+    pthread_mutex_unlock (&x->sf_mutex);
+        
+        bytes = read (f, t, (size_t)n);
+        
+    pthread_mutex_lock (&x->sf_mutex);
+    
+    return bytes;
+}
+
+static void readsf_tilde_threadOpenLoop (t_readsf_tilde * x)
+{
+    while (READSF_NO_REQUEST) {
+    //
+    if (x->sf_isEndOfFile) { break; }
+    else {
+    //
+    int bytesToRead = 0;
+    
+    if (x->sf_fifoHead >= x->sf_fifoTail) {
+        bytesToRead = x->sf_fifoSize - x->sf_fifoHead;
+        /*
+        if (x->sf_fifoTail || (x->sf_fifoSize - x->sf_fifoHead > SOUNDFILE_CHUNK_SIZE)) {
+            bytesToRead = x->sf_fifoSize - x->sf_fifoHead;
+        }
+        */
+    } else {
+        bytesToRead = x->sf_fifoTail - x->sf_fifoHead - 1;
+        bytesToRead = bytesToRead < SOUNDFILE_CHUNK_SIZE ? 0 : SOUNDFILE_CHUNK_SIZE;
+    }
+
+    if (bytesToRead > 0) { 
+      
+        size_t bytesRead;
+        
+        bytesToRead = PD_MIN (bytesToRead, SOUNDFILE_CHUNK_SIZE);
+        bytesToRead = PD_MIN (bytesToRead, x->sf_properties.ap_dataSizeInBytes);
+        bytesRead   = readsf_tilde_threadOpenLoopRead (x, bytesToRead);
+
+        if (bytesRead < 0)          { break; }
+        else if (bytesRead == 0)    { x->sf_isEndOfFile = 1; }
+        else if (READSF_NO_REQUEST) {
+        
+            x->sf_fifoHead += bytesRead;
+            x->sf_properties.ap_dataSizeInBytes -= bytesRead;
                 
-            skipheaderbytes = args.ap_headerSize;
-            bigendian = args.ap_isBigEndian;
-            bytespersample = args.ap_bytesPerSample;
-            sfchannels = args.ap_numberOfChannels;
-            bytelimit = args.ap_dataSizeInBytes;
-         
-            pthread_mutex_lock(&x->sf_mutex);
-
-#ifdef DEBUG_SOUNDFILE
-            pute("5\n");
-#endif
-                /* copy back into the instance structure. */
-            x->sf_bytesPerSample = bytespersample;
-            x->sf_numberOfChannels = sfchannels;
-            x->sf_isFileBigEndian = bigendian;
-            x->sf_fileDescriptor = fd;
-            x->sf_maximumBytesToRead = bytelimit;
-            if (fd < 0)
-            {
-                x->sf_error = errno;
-                x->sf_isEndOfFile = 1;
-#ifdef DEBUG_SOUNDFILE
-                pute("open failed\n");
-                pute(filename);
-                pute(dirname);
-#endif
-                goto lost;
-            }
-                /* check if another request has been made; if so, field it */
-            if (x->sf_request != SOUNDFILE_BUSY)
-                goto lost;
-#ifdef DEBUG_SOUNDFILE
-            pute("6\n");
-#endif
-            x->sf_fifoHead = 0;
-                    /* set fifosize from bufsize.  fifosize must be a
-                    multiple of the number of bytes eaten for each DSP
-                    tick.  We pessimistically assume SOUNDFILE_SIZE_VECTOR samples
-                    per tick since that could change.  There could be a
-                    problem here if the vector size increases while a
-                    soundfile is being played...  */
-            x->sf_fifoSize = x->sf_bufferSize - (x->sf_bufferSize %
-                (x->sf_bytesPerSample * x->sf_numberOfChannels * SOUNDFILE_SIZE_VECTOR));
-                    /* arrange for the "request" condition to be signalled 16
-                    times per buffer */
-#ifdef DEBUG_SOUNDFILE
-            sprintf(boo, "fifosize %d\n", 
-                x->sf_fifoSize);
-            pute(boo);
-#endif
-            x->sf_count = x->sf_period =
-                (x->sf_fifoSize /
-                    (16 * x->sf_bytesPerSample * x->sf_numberOfChannels *
-                        x->sf_vectorSize));
-                /* in a loop, wait for the fifo to get hungry and feed it */
-
-            while (x->sf_request == SOUNDFILE_BUSY)
-            {
-                int fifosize = x->sf_fifoSize;
-#ifdef DEBUG_SOUNDFILE
-                pute("77\n");
-#endif
-                if (x->sf_isEndOfFile)
-                    break;
-                if (x->sf_fifoHead >= x->sf_fifoTail)
-                {
-                        /* if the head is >= the tail, we can immediately read
-                        to the end of the fifo.  Unless, that is, we would
-                        read all the way to the end of the buffer and the 
-                        "tail" is zero; this would fill the buffer completely
-                        which isn't allowed because you can't tell a completely
-                        full buffer from an empty one. */
-                    if (x->sf_fifoTail || (fifosize - x->sf_fifoHead > SOUNDFILE_SIZE_READ))
-                    {
-                        wantbytes = fifosize - x->sf_fifoHead;
-                        if (wantbytes > SOUNDFILE_SIZE_READ)
-                            wantbytes = SOUNDFILE_SIZE_READ;
-                        if (wantbytes > x->sf_maximumBytesToRead)
-                            wantbytes = x->sf_maximumBytesToRead;
-#ifdef DEBUG_SOUNDFILE
-                        sprintf(boo, "head %d, tail %d, size %d\n", 
-                            x->sf_fifoHead, x->sf_fifoTail, wantbytes);
-                        pute(boo);
-#endif
-                    }
-                    else
-                    {
-#ifdef DEBUG_SOUNDFILE
-                        pute("wait 7a ...\n");
-#endif
-                        pthread_cond_signal(&x->sf_condAnswer);
-#ifdef DEBUG_SOUNDFILE
-                        pute("signalled\n");
-#endif
-                        pthread_cond_wait(&x->sf_condRequest,
-                            &x->sf_mutex);
-#ifdef DEBUG_SOUNDFILE
-                        pute("7a done\n");
-#endif
-                        continue;
-                    }
-                }
-                else
-                {
-                        /* otherwise check if there are at least SOUNDFILE_SIZE_READ
-                        bytes to read.  If not, wait and loop back. */
-                    wantbytes =  x->sf_fifoTail - x->sf_fifoHead - 1;
-                    if (wantbytes < SOUNDFILE_SIZE_READ)
-                    {
-#ifdef DEBUG_SOUNDFILE
-                        pute("wait 7...\n");
-#endif
-                        pthread_cond_signal(&x->sf_condAnswer);
-                        pthread_cond_wait(&x->sf_condRequest,
-                            &x->sf_mutex);
-#ifdef DEBUG_SOUNDFILE
-                        pute("7 done\n");
-#endif
-                        continue;
-                    }
-                    else wantbytes = SOUNDFILE_SIZE_READ;
-                    if (wantbytes > x->sf_maximumBytesToRead)
-                        wantbytes = x->sf_maximumBytesToRead;
-                }
-#ifdef DEBUG_SOUNDFILE
-                pute("8\n");
-#endif
-                fd = x->sf_fileDescriptor;
-                buf = x->sf_buffer;
-                fifohead = x->sf_fifoHead;
-                pthread_mutex_unlock(&x->sf_mutex);
-                sysrtn = read(fd, buf + fifohead, wantbytes);
-                pthread_mutex_lock(&x->sf_mutex);
-                if (x->sf_request != SOUNDFILE_BUSY)
-                    break;
-                if (sysrtn < 0)
-                {
-#ifdef DEBUG_SOUNDFILE
-                    pute("fileerror\n");
-#endif
-                    x->sf_error = errno;
-                    break;
-                }
-                else if (sysrtn == 0)
-                {
-                    x->sf_isEndOfFile = 1;
-                    break;
-                }
-                else
-                {
-                    x->sf_fifoHead += sysrtn;
-                    x->sf_maximumBytesToRead -= sysrtn;
-                    if (x->sf_fifoHead == fifosize)
-                        x->sf_fifoHead = 0;
-                    if (x->sf_maximumBytesToRead <= 0)
-                    {
-                        x->sf_isEndOfFile = 1;
-                        break;
-                    }
-                }
-#ifdef DEBUG_SOUNDFILE
-                sprintf(boo, "after: head %d, tail %d\n", 
-                    x->sf_fifoHead, x->sf_fifoTail);
-                pute(boo);
-#endif
-                    /* signal parent in case it's waiting for data */
-                pthread_cond_signal(&x->sf_condAnswer);
-            }
-        lost:
-
-            if (x->sf_request == SOUNDFILE_BUSY)
-                x->sf_request = SOUNDFILE_NOTHING;
-                /* fell out of read loop: close file if necessary,
-                set EOF and signal once more */
-            if (x->sf_fileDescriptor >= 0)
-            {
-                fd = x->sf_fileDescriptor;
-                pthread_mutex_unlock(&x->sf_mutex);
-                close (fd);
-                pthread_mutex_lock(&x->sf_mutex);
-                x->sf_fileDescriptor = -1;
-            }
-            pthread_cond_signal(&x->sf_condAnswer);
-
+            if (x->sf_fifoHead == x->sf_fifoSize) { x->sf_fifoHead = 0; }
+            if (x->sf_properties.ap_dataSizeInBytes <= 0) { x->sf_isEndOfFile = 1; }
+                
+            pthread_cond_signal (&x->sf_condAnswer);
         }
-        else if (x->sf_request == SOUNDFILE_CLOSE)
-        {
-            if (x->sf_fileDescriptor >= 0)
-            {
-                fd = x->sf_fileDescriptor;
-                pthread_mutex_unlock(&x->sf_mutex);
-                close (fd);
-                pthread_mutex_lock(&x->sf_mutex);
-                x->sf_fileDescriptor = -1;
-            }
-            if (x->sf_request == SOUNDFILE_CLOSE)
-                x->sf_request = SOUNDFILE_NOTHING;
-            pthread_cond_signal(&x->sf_condAnswer);
+
+    } else { pthread_cond_signal (&x->sf_condAnswer); pthread_cond_wait (&x->sf_condRequest, &x->sf_mutex); }
+    //
+    }
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static void readsf_tilde_threadNothing (t_readsf_tilde * x)
+{ 
+    pthread_cond_signal (&x->sf_condAnswer); pthread_cond_wait (&x->sf_condRequest, &x->sf_mutex);
+}
+
+static void readsf_tilde_threadOpen (t_readsf_tilde * x)
+{
+    x->sf_threadRequest = SOUNDFILE_REQUEST_BUSY;
+
+    readsf_tilde_threadCloseFile (x);
+
+    if (READSF_NO_REQUEST) {        /* The request could have been changed once releasing the lock. */
+    //
+    int f = -1;
+    
+    /* Make a local copy to used it unlocked. */
+    
+    t_audioproperties copy; soundfile_setPropertiesByCopy (&copy, &x->sf_properties);
+    
+    pthread_mutex_unlock (&x->sf_mutex);
+    
+        f = soundfile_readFileHeader (x->sf_owner, &copy);
+        
+    pthread_mutex_lock (&x->sf_mutex);
+
+    x->sf_fileDescriptor = f;
+    
+    soundfile_setPropertiesByCopy (&x->sf_properties, &copy);
+    
+    if (x->sf_fileDescriptor < 0) { x->sf_isEndOfFile = 1; }
+    else if (READSF_NO_REQUEST) {
+
+        int bytesPerFrame = x->sf_properties.ap_bytesPerSample * x->sf_properties.ap_numberOfChannels;
+        int bytesPerTick  = bytesPerFrame * x->sf_vectorSize;
+        
+        /* The size of the fifo must be a multiple of the number of bytes per DSP tick. */
+        /* The "request" condition will be signalled 16 times among the buffer. */
+        
+        x->sf_fifoHead   = 0;
+        x->sf_fifoTail   = 0;
+        x->sf_fifoSize   = x->sf_bufferSize - (x->sf_bufferSize % bytesPerTick);
+        x->sf_fifoPeriod = x->sf_fifoSize / (16 * bytesPerTick);
+        x->sf_fifoCount  = x->sf_fifoPeriod;
+        
+        /* Wait for the fifo to get hungry and feed it. */
+        
+        readsf_tilde_threadOpenLoop (x);
+    }
+    //
+    }
+
+    readsf_tilde_threadCloseFileAndSignal (x, SOUNDFILE_REQUEST_BUSY);
+}
+
+static void readsf_tilde_threadClose (t_readsf_tilde * x)
+{
+    readsf_tilde_threadCloseFileAndSignal (x, SOUNDFILE_REQUEST_CLOSE);
+}
+
+static void readsf_tilde_threadQuit (t_readsf_tilde * x)
+{
+    readsf_tilde_threadCloseFileAndSignal (x, SOUNDFILE_REQUEST_QUIT);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static void *readsf_tilde_thread (void *z)
+{
+    t_readsf_tilde *x = z;
+
+    pthread_mutex_lock (&x->sf_mutex);
+    
+        while (1) {
+        //
+        int t = x->sf_threadRequest;
+        
+        if (t == SOUNDFILE_REQUEST_NOTHING)     { readsf_tilde_threadNothing (x); }
+        else if (t == SOUNDFILE_REQUEST_OPEN)   { readsf_tilde_threadOpen (x);    }        
+        else if (t == SOUNDFILE_REQUEST_CLOSE)  { readsf_tilde_threadClose (x);   }
+        else if (t == SOUNDFILE_REQUEST_QUIT)   {
+        //
+        readsf_tilde_threadQuit (x);
+        break;
+        //
         }
-        else if (x->sf_request == SOUNDFILE_QUIT)
-        {
-            if (x->sf_fileDescriptor >= 0)
-            {
-                fd = x->sf_fileDescriptor;
-                pthread_mutex_unlock(&x->sf_mutex);
-                close (fd);
-                pthread_mutex_lock(&x->sf_mutex);
-                x->sf_fileDescriptor = -1;
-            }
-            x->sf_request = SOUNDFILE_NOTHING;
-            pthread_cond_signal(&x->sf_condAnswer);
-            break;
+        //
         }
-        else
-        {
-#ifdef DEBUG_SOUNDFILE
-            pute("13\n");
-#endif
+
+    pthread_mutex_unlock (&x->sf_mutex);
+    
+    return (NULL);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void readsf_tilde_task (t_readsf_tilde *x)
+{
+    outlet_bang (x->sf_outletTopRight);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void readsf_tilde_float (t_readsf_tilde *x, t_float f)
+{
+    if (f != 0.0) { readsf_tilde_start (x); }
+    else { 
+        readsf_tilde_stop (x);
+    }
+}
+
+static void readsf_tilde_start (t_readsf_tilde *x)
+{
+    if (x->sf_threadState == SOUNDFILE_STATE_START) { x->sf_threadState = SOUNDFILE_STATE_STREAM; }
+    else { 
+        error_unexpected (sym_readsf__tilde__, sym_start);
+    }
+}
+
+static void readsf_tilde_stop (t_readsf_tilde *x)
+{
+    pthread_mutex_lock (&x->sf_mutex);
+    
+        x->sf_threadState   = SOUNDFILE_STATE_IDLE;
+        x->sf_threadRequest = SOUNDFILE_REQUEST_CLOSE;
+    
+    pthread_cond_signal (&x->sf_condRequest);
+    pthread_mutex_unlock (&x->sf_mutex);
+}
+
+static void readsf_tilde_open (t_readsf_tilde *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_symbol *name = atom_getSymbolAtIndex (0, argc, argv);
+    t_float onset  = atom_getFloatAtIndex (1, argc, argv);
+
+    if (name != &s_) {
+    //
+    pthread_mutex_lock (&x->sf_mutex);
+    
+        soundfile_initProperties (&x->sf_properties);
+        
+        x->sf_threadState            = SOUNDFILE_STATE_START;
+        x->sf_threadRequest          = SOUNDFILE_REQUEST_OPEN;
+        x->sf_properties.ap_fileName = name;
+        x->sf_properties.ap_onset    = PD_MAX ((int)onset, 0);
+        x->sf_fifoTail               = 0;
+        x->sf_fifoHead               = 0;
+        x->sf_isEndOfFile            = 0;
+    
+    pthread_cond_signal (&x->sf_condRequest);
+    pthread_mutex_unlock (&x->sf_mutex);
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline int readsf_tilde_performGetBytesPerTick (t_readsf_tilde * x)
+{
+    return (x->sf_properties.ap_numberOfChannels * x->sf_properties.ap_bytesPerSample * x->sf_vectorSize);
+}
+
+static inline int readsf_tilde_performIsAlmostEmpty (t_readsf_tilde * x, int n)
+{
+    return (x->sf_fifoHead >= x->sf_fifoTail && x->sf_fifoHead < x->sf_fifoTail + n - 1);
+}
+
+static inline void readsf_tilde_performLoadIfNecessary (t_readsf_tilde * x)
+{
+    x->sf_fifoCount--;
+    
+    if (x->sf_fifoCount <= 0) {
+        pthread_cond_signal (&x->sf_condRequest); x->sf_fifoCount = x->sf_fifoPeriod;
+    }
+}
+
+static inline void readsf_tilde_performZero (t_readsf_tilde * x, int onset)
+{
+    int i, j;
+    
+    for (i = 0; i < x->sf_numberOfAudioOutlets; i++) {
+
+        PD_RESTRICTED out = x->sf_vectorsOut[i] + onset;
+        for (j = 0; j < (x->sf_vectorSize - onset); j++) {
+            *out++ = 0.0;
         }
     }
-#ifdef DEBUG_SOUNDFILE
-    pute("thread exit\n");
-#endif
-    pthread_mutex_unlock(&x->sf_mutex);
-    return (0);
 }
 
-/******** the object proper runs in the calling (parent) thread ****/
-
-static void readsf_tilde_tick(t_readsf_tilde *x);
-
-static void *readsf_tilde_new(t_float fnchannels, t_float fbufsize)
+static inline void readsf_tilde_performEnd (t_readsf_tilde * x)
 {
-    t_readsf_tilde *x;
-    int nchannels = fnchannels, bufsize = fbufsize, i;
-    char *buf;
+    int bytesPerFrames = x->sf_properties.ap_numberOfChannels * x->sf_properties.ap_bytesPerSample;
+    int framesRemains  = (x->sf_fifoHead - x->sf_fifoTail + 1) / bytesPerFrames;
     
-    if (nchannels < 1)
-        nchannels = 1;
-    else if (nchannels > SOUNDFILE_MAXIMUM_CHANNELS)
-        nchannels = SOUNDFILE_MAXIMUM_CHANNELS;
-    if (bufsize <= 0) bufsize = SOUNDFILE_BUFFER_MINIMUM * nchannels;
-    else if (bufsize < SOUNDFILE_BUFFER_MINIMUM)
-        bufsize = SOUNDFILE_BUFFER_MINIMUM;
-    else if (bufsize > SOUNDFILE_BUFFER_MAXIMUM)
-        bufsize = SOUNDFILE_BUFFER_MAXIMUM;
-    buf = PD_MEMORY_GET(bufsize);
-    if (!buf) return (0);
+    clock_delay (x->sf_clock, 0.0);
     
-    x = (t_readsf_tilde *)pd_new(readsf_tilde_class);
+    x->sf_threadState = SOUNDFILE_STATE_IDLE;
+
+    if (framesRemains) {
     
-    for (i = 0; i < nchannels; i++)
-        outlet_new (cast_object (x), &s_signal);
-    x->sf_numberOfAudioOutlets = nchannels;
-    x->sf_outlet = outlet_new (cast_object (x), &s_bang);
-    pthread_mutex_init(&x->sf_mutex, 0);
-    pthread_cond_init(&x->sf_condRequest, 0);
-    pthread_cond_init(&x->sf_condAnswer, 0);
-    x->sf_vectorSize = SOUNDFILE_SIZE_VECTOR;
-    x->sf_state = SOUNDFILE_IDLE;
-    x->sf_clock = clock_new(x, (t_method)readsf_tilde_tick);
-    x->sf_owner = canvas_getCurrent();
-    x->sf_bytesPerSample = 2;
-    x->sf_numberOfChannels = 1;
-    x->sf_fileDescriptor = -1;
-    x->sf_buffer = buf;
-    x->sf_bufferSize = bufsize;
-    x->sf_fifoSize = x->sf_fifoHead = x->sf_fifoTail = x->sf_request = 0;
-    pthread_create(&x->sf_thread, 0, readsf_tilde_child_main, x);
+        soundfile_decode (x->sf_properties.ap_numberOfChannels,
+            x->sf_vectorsOut,
+            (unsigned char *)(x->sf_buffer + x->sf_fifoTail),
+            framesRemains,
+            0,
+            x->sf_properties.ap_bytesPerSample,
+            x->sf_properties.ap_isBigEndian,
+            1,
+            x->sf_numberOfAudioOutlets);
+    }
+    
+    readsf_tilde_performZero (x, framesRemains);
+    
+    pthread_cond_signal (&x->sf_condRequest);
+}
+
+static inline void readsf_tilde_performRead (t_readsf_tilde * x, int n)
+{
+    soundfile_decode (x->sf_properties.ap_numberOfChannels,
+        x->sf_vectorsOut,
+        (unsigned char *)(x->sf_buffer + x->sf_fifoTail),
+        x->sf_vectorSize,
+        0,
+        x->sf_properties.ap_bytesPerSample,
+        x->sf_properties.ap_isBigEndian,
+        1,
+        x->sf_numberOfAudioOutlets);
+    
+    x->sf_fifoTail += n;
+    
+    if (x->sf_fifoTail >= x->sf_fifoSize) { x->sf_fifoTail = 0; }
+    
+    readsf_tilde_performLoadIfNecessary (x);
+}
+
+static t_int *readsf_tilde_perform (t_int *w)
+{
+    t_readsf_tilde *x = (t_readsf_tilde *)(w[1]);
+    
+    if (x->sf_threadState != SOUNDFILE_STATE_STREAM) { readsf_tilde_performZero (x, 0); }
+    else {
+    //
+    pthread_mutex_lock (&x->sf_mutex);
+    
+    {
+        int eof, bytesToRead = readsf_tilde_performGetBytesPerTick (x);
+        
+        while (!x->sf_isEndOfFile && readsf_tilde_performIsAlmostEmpty (x, bytesToRead)) {
+        //
+        pthread_cond_signal (&x->sf_condRequest);
+        pthread_cond_wait (&x->sf_condAnswer, &x->sf_mutex);
+            
+        bytesToRead = readsf_tilde_performGetBytesPerTick (x);
+        //
+        }
+        
+        eof = (x->sf_isEndOfFile && readsf_tilde_performIsAlmostEmpty (x, bytesToRead));
+        
+        if (eof) { readsf_tilde_performEnd (x); }
+        else {
+            readsf_tilde_performRead (x, bytesToRead);
+        }
+    }
+    
+    pthread_mutex_unlock (&x->sf_mutex);
+    //
+    }
+    
+    return (w + 2);
+}
+
+static void readsf_tilde_dsp (t_readsf_tilde *x, t_signal **sp)
+{
+    PD_ASSERT (sp[0]->s_vectorSize == AUDIO_DEFAULT_BLOCKSIZE);         /* Not implemented yet. */
+    PD_ABORT  (sp[0]->s_vectorSize != AUDIO_DEFAULT_BLOCKSIZE);
+    
+    pthread_mutex_lock (&x->sf_mutex);
+    
+    { 
+        int bytesPerFrame = x->sf_properties.ap_bytesPerSample * x->sf_properties.ap_numberOfChannels;
+        int bytesPerTick  = bytesPerFrame * x->sf_vectorSize;
+        int i;
+        
+        x->sf_vectorSize = sp[0]->s_vectorSize;
+        x->sf_fifoPeriod = x->sf_fifoSize / bytesPerTick;
+        
+        for (i = 0; i < x->sf_numberOfAudioOutlets; i++) { x->sf_vectorsOut[i] = sp[i]->s_vector; }
+    }
+    
+    pthread_mutex_unlock (&x->sf_mutex);
+    
+    dsp_add (readsf_tilde_perform, 1, x);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *readsf_tilde_new (t_float f1, t_float f2)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    int i, n = PD_CLAMP ((int)f1, 1, SOUNDFILE_MAXIMUM_CHANNELS);
+    int size = PD_CLAMP ((int)f2, SOUNDFILE_CHUNK_SIZE * 4 * n, SOUNDFILE_CHUNK_SIZE * 256 * n);
+    
+    t_readsf_tilde *x = (t_readsf_tilde *)pd_new (readsf_tilde_class);
+    
+    soundfile_initProperties (&x->sf_properties);
+    
+    x->sf_properties.ap_bytesPerSample   = 2;
+    x->sf_properties.ap_numberOfChannels = 1;
+    
+    x->sf_vectorSize            = AUDIO_DEFAULT_BLOCKSIZE;
+    x->sf_threadState           = SOUNDFILE_STATE_IDLE;
+    x->sf_threadRequest         = SOUNDFILE_REQUEST_NOTHING;
+    x->sf_fileDescriptor        = -1;
+    x->sf_numberOfAudioOutlets  = n;
+    x->sf_bufferSize            = size;
+    x->sf_buffer                = PD_MEMORY_GET (x->sf_bufferSize);
+    x->sf_owner                 = canvas_getCurrent();
+    x->sf_clock                 = clock_new ((void *)x, (t_method)readsf_tilde_task);
+    
+    for (i = 0; i < n; i++) { x->sf_audioOutlets[i] = outlet_new (cast_object (x), &s_signal); }
+    
+    x->sf_outletTopRight = outlet_new (cast_object (x), &s_bang);
+    
+    err |= (pthread_mutex_init (&x->sf_mutex, NULL) != 0);
+    err |= (pthread_cond_init (&x->sf_condRequest, NULL) != 0);
+    err |= (pthread_cond_init (&x->sf_condAnswer, NULL) != 0);
+    err |= (pthread_create (&x->sf_thread, NULL, readsf_tilde_thread, (void *)x) != 0);
+    
+    PD_ASSERT (!err);
+    
     return x;
 }
 
-static void readsf_tilde_tick(t_readsf_tilde *x)
+static void readsf_tilde_free (t_readsf_tilde *x)
 {
-    outlet_bang(x->sf_outlet);
-}
-
-static t_int *readsf_tilde_perform(t_int *w)
-{
-    t_readsf_tilde *x = (t_readsf_tilde *)(w[1]);
-    int vecsize = x->sf_vectorSize, noutlets = x->sf_numberOfAudioOutlets, i, j,
-        bytespersample = x->sf_bytesPerSample,
-        bigendian = x->sf_isFileBigEndian;
-    t_sample *fp;
-    if (x->sf_state == SOUNDFILE_STREAM)
-    {
-        int wantbytes, nchannels, sfchannels = x->sf_numberOfChannels;
-        pthread_mutex_lock(&x->sf_mutex);
-        wantbytes = sfchannels * vecsize * bytespersample;
-        while (
-            !x->sf_isEndOfFile && x->sf_fifoHead >= x->sf_fifoTail &&
-                x->sf_fifoHead < x->sf_fifoTail + wantbytes-1)
-        {
-#ifdef DEBUG_SOUNDFILE
-            pute("wait...\n");
-#endif
-            pthread_cond_signal(&x->sf_condRequest);
-            pthread_cond_wait(&x->sf_condAnswer, &x->sf_mutex);
-                /* resync local cariables -- bug fix thanks to Shahrokh */
-            vecsize = x->sf_vectorSize;
-            bytespersample = x->sf_bytesPerSample;
-            sfchannels = x->sf_numberOfChannels;
-            wantbytes = sfchannels * vecsize * bytespersample;
-            bigendian = x->sf_isFileBigEndian;
-#ifdef DEBUG_SOUNDFILE
-            pute("done\n");
-#endif
-        }
-        if (x->sf_isEndOfFile && x->sf_fifoHead >= x->sf_fifoTail &&
-            x->sf_fifoHead < x->sf_fifoTail + wantbytes-1)
-        {
-            int xfersize;
-            if (x->sf_error)
-            {
-                post_error ("dsp: %s: %s", x->sf_fileName->s_name,
-                    (x->sf_error == EIO ?
-                        "unknown or bad header format" :
-                            strerror(x->sf_error)));
-            }
-            clock_delay(x->sf_clock, 0);
-            x->sf_state = SOUNDFILE_IDLE;
-
-                /* if there's a partial buffer left, copy it out. */
-            xfersize = (x->sf_fifoHead - x->sf_fifoTail + 1) /
-                (sfchannels * bytespersample);
-            if (xfersize)
-            {
-                soundfile_decode(sfchannels, x->sf_vectorsOut,
-                    (unsigned char *)(x->sf_buffer + x->sf_fifoTail), xfersize, 0,
-                        bytespersample, bigendian, 1, noutlets);
-                vecsize -= xfersize;
-            }
-                /* then zero out the (rest of the) output */
-            for (i = 0; i < noutlets; i++)
-                for (j = vecsize, fp = x->sf_vectorsOut[i] + xfersize; j--; )
-                    *fp++ = 0;
-
-            pthread_cond_signal(&x->sf_condRequest);
-            pthread_mutex_unlock(&x->sf_mutex);
-            return (w+2); 
-        }
-
-        soundfile_decode(sfchannels, x->sf_vectorsOut,
-            (unsigned char *)(x->sf_buffer + x->sf_fifoTail), vecsize, 0,
-                bytespersample, bigendian, 1, noutlets);
+    void *dummy = NULL;
+    
+    /* Release the worker thread. */
+    
+    pthread_mutex_lock (&x->sf_mutex);
+    
+        x->sf_threadRequest = SOUNDFILE_REQUEST_QUIT;
+        pthread_cond_signal (&x->sf_condRequest);
         
-        x->sf_fifoTail += wantbytes;
-        if (x->sf_fifoTail >= x->sf_fifoSize)
-            x->sf_fifoTail = 0;
-        if ((--x->sf_count) <= 0)
-        {
-            pthread_cond_signal(&x->sf_condRequest);
-            x->sf_count = x->sf_period;
+        while (x->sf_threadRequest != SOUNDFILE_REQUEST_NOTHING) {
+            pthread_cond_signal (&x->sf_condRequest); 
+            pthread_cond_wait (&x->sf_condAnswer, &x->sf_mutex);
         }
-        pthread_mutex_unlock(&x->sf_mutex);
-    }
-    else
-    {
-        for (i = 0; i < noutlets; i++)
-            for (j = vecsize, fp = x->sf_vectorsOut[i]; j--; )
-                *fp++ = 0;
-    }
-    return (w+2);
-}
-
-static void readsf_tilde_start(t_readsf_tilde *x)
-{
-    /* start making output.  If we're in the "startup" state change
-    to the "running" state. */
-    if (x->sf_state == SOUNDFILE_START)
-        x->sf_state = SOUNDFILE_STREAM;
-    else post_error ("readsf: start requested with no prior 'open'");
-}
-
-static void readsf_tilde_stop(t_readsf_tilde *x)
-{
-        /* LATER rethink whether you need the mutex just to set a variable? */
-    pthread_mutex_lock(&x->sf_mutex);
-    x->sf_state = SOUNDFILE_IDLE;
-    x->sf_request = SOUNDFILE_CLOSE;
-    pthread_cond_signal(&x->sf_condRequest);
-    pthread_mutex_unlock(&x->sf_mutex);
-}
-
-static void readsf_tilde_float(t_readsf_tilde *x, t_float f)
-{
-    if (f != 0)
-        readsf_tilde_start(x);
-    else readsf_tilde_stop(x);
-}
-
-    /* open method.  Called as:
-    open filename [skipframes headersize channels bytespersamp endianness]
-        (if headersize is zero, header is taken to be automatically
-        detected; thus, use the special "-1" to mean a truly headerless file.)
-    */
-
-static void readsf_tilde_open(t_readsf_tilde *x, t_symbol *s, int argc, t_atom *argv)
-{
-    t_symbol *filesym = atom_getSymbolAtIndex(0, argc, argv);
-    t_float onsetframes = atom_getFloatAtIndex(1, argc, argv);
-    t_float headerbytes = atom_getFloatAtIndex(2, argc, argv);
-    t_float channels = atom_getFloatAtIndex(3, argc, argv);
-    t_float bytespersamp = atom_getFloatAtIndex(4, argc, argv);
-    t_symbol *endian = atom_getSymbolAtIndex(5, argc, argv);
-    if (!*filesym->s_name)
-        return;
-    pthread_mutex_lock(&x->sf_mutex);
-    x->sf_request = SOUNDFILE_OPEN;
-    x->sf_fileName = filesym;
-    x->sf_fifoTail = 0;
-    x->sf_fifoHead = 0;
-    if (*endian->s_name == 'b')
-         x->sf_isFileBigEndian = 1;
-    else if (*endian->s_name == 'l')
-         x->sf_isFileBigEndian = 0;
-    else if (*endian->s_name)
-        post_error ("endianness neither 'b' nor 'l'");
-    else x->sf_isFileBigEndian = soundfile_systemIsBigEndian();
-    x->sf_numberOfFramesToSkip = (onsetframes > 0 ? onsetframes : 0);
-    x->sf_headerSize = (headerbytes > 0 ? headerbytes : 
-        (headerbytes == 0 ? -1 : 0));
-    x->sf_numberOfChannels = (channels >= 1 ? channels : 1);
-    x->sf_bytesPerSample = (bytespersamp > 2 ? bytespersamp : 2);
-    x->sf_isEndOfFile = 0;
-    x->sf_error = 0;
-    x->sf_state = SOUNDFILE_START;
-    pthread_cond_signal(&x->sf_condRequest);
-    pthread_mutex_unlock(&x->sf_mutex);
-}
-
-static void readsf_tilde_dsp(t_readsf_tilde *x, t_signal **sp)
-{
-    int i, noutlets = x->sf_numberOfAudioOutlets;
-    pthread_mutex_lock(&x->sf_mutex);
-    x->sf_vectorSize = sp[0]->s_vectorSize;
     
-    x->sf_period = (x->sf_fifoSize /
-        (x->sf_bytesPerSample * x->sf_numberOfChannels * x->sf_vectorSize));
-    for (i = 0; i < noutlets; i++)
-        x->sf_vectorsOut[i] = sp[i]->s_vector;
-    pthread_mutex_unlock(&x->sf_mutex);
-    dsp_add(readsf_tilde_perform, 1, x);
-}
-
-static void readsf_tilde_print(t_readsf_tilde *x)
-{
-    post("state %d", x->sf_state);
-    post("fifo head %d", x->sf_fifoHead);
-    post("fifo tail %d", x->sf_fifoTail);
-    post("fifo size %d", x->sf_fifoSize);
-    post("fd %d", x->sf_fileDescriptor);
-    post("eof %d", x->sf_isEndOfFile);
-}
-
-static void readsf_tilde_free(t_readsf_tilde *x)
-{
-        /* request QUIT and wait for acknowledge */
-    void *threadrtn;
-    pthread_mutex_lock(&x->sf_mutex);
-    x->sf_request = SOUNDFILE_QUIT;
-    pthread_cond_signal(&x->sf_condRequest);
-    while (x->sf_request != SOUNDFILE_NOTHING)
-    {
-        pthread_cond_signal(&x->sf_condRequest);
-        pthread_cond_wait(&x->sf_condAnswer, &x->sf_mutex);
-    }
-    pthread_mutex_unlock(&x->sf_mutex);
-    if (pthread_join(x->sf_thread, &threadrtn))
-        post_error ("readsf_tilde_free: join failed");
+    pthread_mutex_unlock (&x->sf_mutex);
     
-    pthread_cond_destroy(&x->sf_condRequest);
-    pthread_cond_destroy(&x->sf_condAnswer);
-    pthread_mutex_destroy(&x->sf_mutex);
-    PD_MEMORY_FREE(x->sf_buffer);
-    clock_free(x->sf_clock);
+    if (pthread_join (x->sf_thread, &dummy)) { PD_BUG; }
+    
+    /* Once done, free the object. */
+    
+    pthread_cond_destroy (&x->sf_condRequest);
+    pthread_cond_destroy (&x->sf_condAnswer);
+    pthread_mutex_destroy (&x->sf_mutex);
+    
+    clock_free (x->sf_clock);
+    
+    PD_MEMORY_FREE (x->sf_buffer);
 }
 
-void readsf_tilde_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void readsf_tilde_setup (void)
 {
-    readsf_tilde_class = class_new(sym_readsf__tilde__, (t_newmethod)readsf_tilde_new, 
-        (t_method)readsf_tilde_free, sizeof(t_readsf_tilde), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
-    class_addFloat(readsf_tilde_class, (t_method)readsf_tilde_float);
-    class_addMethod(readsf_tilde_class, (t_method)readsf_tilde_start, sym_start, 0);
-    class_addMethod(readsf_tilde_class, (t_method)readsf_tilde_stop, sym_stop, 0);
-    class_addMethod(readsf_tilde_class, (t_method)readsf_tilde_dsp,
-        sym_dsp, A_CANT, 0);
-    class_addMethod(readsf_tilde_class, (t_method)readsf_tilde_open, sym_open, 
-        A_GIMME, 0);
-    class_addMethod(readsf_tilde_class, (t_method)readsf_tilde_print, sym_print, 0);
+    t_class *c = NULL;
+    
+    c = class_new (sym_readsf__tilde__,
+            (t_newmethod)readsf_tilde_new, 
+            (t_method)readsf_tilde_free,
+            sizeof (t_readsf_tilde),
+            CLASS_DEFAULT, 
+            A_DEFFLOAT, 
+            A_DEFFLOAT,
+            A_NULL);
+    
+    class_addDSP (c, (t_method)readsf_tilde_dsp);
+    class_addFloat (c, (t_method)readsf_tilde_float);
+    
+    class_addMethod (c, (t_method)readsf_tilde_start,   sym_start,  A_NULL);
+    class_addMethod (c, (t_method)readsf_tilde_stop,    sym_stop,   A_NULL);
+    class_addMethod (c, (t_method)readsf_tilde_open,    sym_open,   A_GIMME, A_NULL);
+    
+    readsf_tilde_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
