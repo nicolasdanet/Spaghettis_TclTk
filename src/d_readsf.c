@@ -321,29 +321,30 @@ static void readsf_tilde_stop (t_readsf_tilde *x)
 
 static void readsf_tilde_open (t_readsf_tilde *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_symbol *name = atom_getSymbolAtIndex (0, argc, argv);
-    t_float onset  = atom_getFloatAtIndex (1, argc, argv);
+    t_audioproperties properties; soundfile_initProperties (&properties);
+    
+    t_error err = soundfile_readFileParse (sym_readsf__tilde__, &argc, &argv, &properties);
+    
+    if (!err) {
+    //
+    if (canvas_openFileIsValid (x->sf_owner, 
+        properties.ap_fileName->s_name, 
+        properties.ap_fileExtension->s_name)) {
 
-    if (name != &s_) {
-    //
-    if (canvas_openFileIsValid (x->sf_owner, name->s_name, "")) {
-    //
-    pthread_mutex_lock (&x->sf_mutex);
-    
-        soundfile_initProperties (&x->sf_properties);
+        pthread_mutex_lock (&x->sf_mutex);
         
-        x->sf_threadState            = SOUNDFILE_STATE_START;
-        x->sf_threadRequest          = SOUNDFILE_REQUEST_OPEN;
-        x->sf_properties.ap_fileName = name;
-        x->sf_properties.ap_onset    = PD_MAX ((int)onset, 0);
-        x->sf_fifoTail               = 0;
-        x->sf_fifoHead               = 0;
-        x->sf_isEndOfFile            = 0;
-    
-    pthread_cond_signal (&x->sf_condRequest);
-    pthread_mutex_unlock (&x->sf_mutex);
-    //
-    } else { error_canNotFind (sym_readsf__tilde__, name); }
+            soundfile_setPropertiesByCopy (&x->sf_properties, &properties);
+            
+            x->sf_threadState            = SOUNDFILE_STATE_START;
+            x->sf_threadRequest          = SOUNDFILE_REQUEST_OPEN;
+            x->sf_fifoTail               = 0;
+            x->sf_fifoHead               = 0;
+            x->sf_isEndOfFile            = 0;
+        
+        pthread_cond_signal (&x->sf_condRequest);
+        pthread_mutex_unlock (&x->sf_mutex);
+
+    } else { error_canNotFind (sym_readsf__tilde__, properties.ap_fileName); }
     //
     }
 }

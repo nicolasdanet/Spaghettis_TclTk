@@ -460,7 +460,7 @@ static void *writesf_tilde_new (t_float f1, t_float f2)
     
     soundfile_initProperties (&x->sf_properties);
     
-    x->sf_properties.ap_bytesPerSample   = 2;
+    x->sf_properties.ap_bytesPerSample   = 2;       /* ??? */
     x->sf_properties.ap_numberOfChannels = n;
     
     x->sf_vectorSize        = AUDIO_DEFAULT_BLOCKSIZE;
