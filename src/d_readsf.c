@@ -326,6 +326,8 @@ static void readsf_tilde_open (t_readsf_tilde *x, t_symbol *s, int argc, t_atom 
 
     if (name != &s_) {
     //
+    if (canvas_openFileIsValid (x->sf_owner, name->s_name, "")) {
+    //
     pthread_mutex_lock (&x->sf_mutex);
     
         soundfile_initProperties (&x->sf_properties);
@@ -340,6 +342,8 @@ static void readsf_tilde_open (t_readsf_tilde *x, t_symbol *s, int argc, t_atom 
     
     pthread_cond_signal (&x->sf_condRequest);
     pthread_mutex_unlock (&x->sf_mutex);
+    //
+    } else { error_canNotFind (sym_readsf__tilde__, name); }
     //
     }
 }
@@ -464,20 +468,14 @@ static t_int *readsf_tilde_perform (t_int *w)
 
 static void readsf_tilde_dsp (t_readsf_tilde *x, t_signal **sp)
 {
-    PD_ASSERT (sp[0]->s_vectorSize == AUDIO_DEFAULT_BLOCKSIZE);         /* Not implemented yet. */
+    int i;
+    
+    PD_ASSERT (sp[0]->s_vectorSize == AUDIO_DEFAULT_BLOCKSIZE);     /* Not implemented yet. */
     PD_ABORT  (sp[0]->s_vectorSize != AUDIO_DEFAULT_BLOCKSIZE);
     
     pthread_mutex_lock (&x->sf_mutex);
     
-    { 
-        int bytesPerFrame = x->sf_properties.ap_bytesPerSample * x->sf_properties.ap_numberOfChannels;
-        int i;
-        
-        x->sf_vectorSize = sp[0]->s_vectorSize;
-        x->sf_fifoPeriod = x->sf_fifoSize / (bytesPerFrame * x->sf_vectorSize);
-        
         for (i = 0; i < x->sf_numberOfAudioOutlets; i++) { x->sf_vectorsOut[i] = sp[i]->s_vector; }
-    }
     
     pthread_mutex_unlock (&x->sf_mutex);
     
@@ -498,9 +496,6 @@ static void *readsf_tilde_new (t_float f1, t_float f2)
     t_readsf_tilde *x = (t_readsf_tilde *)pd_new (readsf_tilde_class);
     
     soundfile_initProperties (&x->sf_properties);
-    
-    x->sf_properties.ap_bytesPerSample   = 2;           /* If DSP is pushed on without any file opened. */
-    x->sf_properties.ap_numberOfChannels = 1;
     
     x->sf_vectorSize            = AUDIO_DEFAULT_BLOCKSIZE;
     x->sf_threadState           = SOUNDFILE_STATE_IDLE;

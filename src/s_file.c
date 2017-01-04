@@ -93,7 +93,7 @@ FILE *file_openWrite (const char *filepath)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int file_openWithDirectoryAndName (const char *directory, 
+static int file_openWithDirectoryAndName (const char *directory, 
     const char *name, 
     const char *extension,
     char *directoryResult, 

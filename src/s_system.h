@@ -217,13 +217,6 @@ t_error     interface_start                         (void);
 FILE        *file_openWrite                         (const char *filepath);
 int         file_openRaw                            (const char *filepath, int oflag);
 
-int         file_openWithDirectoryAndName           (const char *directory,
-                                                        const char *name,
-                                                        const char *extension,
-                                                        char *directoryResult,
-                                                        char **nameResult,
-                                                        size_t size);
-                                                        
 int         file_openConsideringSearchPath          (const char *directory, 
                                                         const char *name,
                                                         const char *extension,

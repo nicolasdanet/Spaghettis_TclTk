@@ -364,6 +364,13 @@ void canvas_setAsGraphOnParent (t_glist *glist, int flags)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+int canvas_openFileIsValid (t_glist *glist, const char *name, const char *extension)
+{
+    char *p = NULL; char t[PD_STRING] = { 0 };
+    
+    return ((canvas_openFile (glist, name, extension, t, &p, PD_STRING)) >= 0);
+}
+                                                            
 /* Caller is responsible to close the file. */
 
 int canvas_openFile (t_glist *glist,
