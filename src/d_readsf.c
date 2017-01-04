@@ -45,6 +45,7 @@ static t_class *readsf_tilde_class;             /* Shared. */
 typedef struct _readsf_tilde {
     t_object            sf_obj;                 /* Must be the first. */
     t_audioproperties   sf_properties;
+    t_error             sf_error;
     int                 sf_vectorSize;
     int                 sf_threadState;
     int                 sf_threadRequest;
@@ -191,7 +192,8 @@ static void readsf_tilde_threadNothing (t_readsf_tilde * x)
 static void readsf_tilde_threadOpen (t_readsf_tilde * x)
 {
     x->sf_threadRequest = SOUNDFILE_REQUEST_BUSY;
-
+    x->sf_error = PD_ERROR_NONE;
+    
     readsf_tilde_threadCloseFile (x);
 
     if (READSF_NO_REQUEST) {        /* The request could have been changed once releasing the lock. */
@@ -212,7 +214,7 @@ static void readsf_tilde_threadOpen (t_readsf_tilde * x)
     
     soundfile_setPropertiesByCopy (&x->sf_properties, &copy);
     
-    if (x->sf_fileDescriptor < 0) { x->sf_isEndOfFile = 1; }
+    if (x->sf_fileDescriptor < 0) { x->sf_error = PD_ERROR; }
     else if (READSF_NO_REQUEST) {
 
         int bytesPerFrame = x->sf_properties.ap_bytesPerSample * x->sf_properties.ap_numberOfChannels;
@@ -428,7 +430,7 @@ static t_int *readsf_tilde_perform (t_int *w)
 {
     t_readsf_tilde *x = (t_readsf_tilde *)(w[1]);
     
-    if (x->sf_threadState != SOUNDFILE_STATE_STREAM) { readsf_tilde_performZero (x, 0); }
+    if (x->sf_error || x->sf_threadState != SOUNDFILE_STATE_STREAM) { readsf_tilde_performZero (x, 0); }
     else {
     //
     pthread_mutex_lock (&x->sf_mutex);
@@ -497,7 +499,7 @@ static void *readsf_tilde_new (t_float f1, t_float f2)
     
     soundfile_initProperties (&x->sf_properties);
     
-    x->sf_properties.ap_bytesPerSample   = 2;
+    x->sf_properties.ap_bytesPerSample   = 2;           /* If DSP is pushed on without any file opened. */
     x->sf_properties.ap_numberOfChannels = 1;
     
     x->sf_vectorSize            = AUDIO_DEFAULT_BLOCKSIZE;
