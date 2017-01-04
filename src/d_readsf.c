@@ -140,12 +140,13 @@ static void readsf_tilde_threadOpenLoop (t_readsf_tilde * x)
     int bytesToRead = 0;
     
     if (x->sf_fifoHead >= x->sf_fifoTail) {
+    
+    /* Avoid to completely fill the buffer and overwrite previously loaded samples. */
+        
+    if (x->sf_fifoTail || (x->sf_fifoSize - x->sf_fifoHead > SOUNDFILE_CHUNK_SIZE)) {
         bytesToRead = x->sf_fifoSize - x->sf_fifoHead;
-        /*
-        if (x->sf_fifoTail || (x->sf_fifoSize - x->sf_fifoHead > SOUNDFILE_CHUNK_SIZE)) {
-            bytesToRead = x->sf_fifoSize - x->sf_fifoHead;
-        }
-        */
+    }
+
     } else {
         bytesToRead = x->sf_fifoTail - x->sf_fifoHead - 1;
         bytesToRead = bytesToRead < SOUNDFILE_CHUNK_SIZE ? 0 : SOUNDFILE_CHUNK_SIZE;
@@ -159,7 +160,7 @@ static void readsf_tilde_threadOpenLoop (t_readsf_tilde * x)
         bytesToRead = PD_MIN (bytesToRead, x->sf_properties.ap_dataSizeInBytes);
         bytesRead   = readsf_tilde_threadOpenLoopRead (x, bytesToRead);
 
-        if (bytesRead < 0)          { break; }
+        if (bytesRead < 0)          { PD_BUG; break; }
         else if (bytesRead == 0)    { x->sf_isEndOfFile = 1; }
         else if (READSF_NO_REQUEST) {
         
@@ -468,11 +469,10 @@ static void readsf_tilde_dsp (t_readsf_tilde *x, t_signal **sp)
     
     { 
         int bytesPerFrame = x->sf_properties.ap_bytesPerSample * x->sf_properties.ap_numberOfChannels;
-        int bytesPerTick  = bytesPerFrame * x->sf_vectorSize;
         int i;
         
         x->sf_vectorSize = sp[0]->s_vectorSize;
-        x->sf_fifoPeriod = x->sf_fifoSize / bytesPerTick;
+        x->sf_fifoPeriod = x->sf_fifoSize / (bytesPerFrame * x->sf_vectorSize);
         
         for (i = 0; i < x->sf_numberOfAudioOutlets; i++) { x->sf_vectorsOut[i] = sp[i]->s_vector; }
     }
