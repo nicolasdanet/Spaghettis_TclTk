@@ -9,6 +9,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 /* Note that this object use a nasty mutex inside the DSP method. */
+/* Probably best to rewrite it entirely with a lock-free circular buffer. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -28,16 +29,20 @@
 #include "d_dsp.h"
 #include "d_soundfile.h"
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 extern t_class *garray_class;
 
-/******************************* writesf *******************/
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
-static t_class *writesf_class;
+static t_class *writesf_tilde_class;            /* Shared. */
 
-typedef struct _writesf {
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _writesf_tilde {
     t_object            sf_obj;                 /* Must be the first. */
     t_float             sf_f;
     t_float             sf_sampleRate;
@@ -75,13 +80,15 @@ typedef struct _writesf {
     t_glist             *sf_owner;
     t_clock             *sf_clock;
     t_outlet            *sf_outlet;
-    } t_writesf;
+    } t_writesf_tilde;
     
-/************** the child thread which performs file I/O ***********/
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void *writesf_child_main(void *zz)
+static void *writesf_tilde_child_main(void *zz)
 {
-    t_writesf *x = zz;
+    t_writesf_tilde *x = zz;
 #ifdef DEBUG_SOUNDFILE
     pute("1\n");
 #endif
@@ -130,7 +137,7 @@ static void *writesf_child_main(void *zz)
             x->sf_error = 0;
 
                 /* if there's already a file open, close it.  This
-                should never happen since writesf_open() calls stop if
+                should never happen since writesf_tilde_open() calls stop if
                 needed and then waits until we're idle. */
             if (x->sf_fileDescriptor >= 0)
             {
@@ -340,101 +347,11 @@ static void *writesf_child_main(void *zz)
     return (0);
 }
 
-/******** the object proper runs in the calling (parent) thread ****/
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void writesf_tick(t_writesf *x);
-
-static void *writesf_new(t_float fnchannels, t_float fbufsize)
-{
-    t_writesf *x;
-    int nchannels = fnchannels, bufsize = fbufsize, i;
-    char *buf;
-    
-    if (nchannels < 1)
-        nchannels = 1;
-    else if (nchannels > SOUNDFILE_MAXIMUM_CHANNELS)
-        nchannels = SOUNDFILE_MAXIMUM_CHANNELS;
-    if (bufsize <= 0) bufsize = SOUNDFILE_CHUNK_SIZE * 4 * nchannels;
-    else if (bufsize < SOUNDFILE_CHUNK_SIZE * 4)
-        bufsize = SOUNDFILE_CHUNK_SIZE * 4;
-    else if (bufsize > SOUNDFILE_CHUNK_SIZE * 256)
-        bufsize = SOUNDFILE_CHUNK_SIZE * 256;
-    buf = PD_MEMORY_GET(bufsize);
-    if (!buf) return (0);
-    
-    x = (t_writesf *)pd_new(writesf_class);
-    
-    for (i = 1; i < nchannels; i++)
-        inlet_new (cast_object (x), cast_pd (x), &s_signal, &s_signal);
-
-    x->sf_f = 0;
-    x->sf_numberOfChannels = nchannels;
-    pthread_mutex_init(&x->sf_mutex, 0);
-    pthread_cond_init(&x->sf_condRequest, 0);
-    pthread_cond_init(&x->sf_condAnswer, 0);
-    x->sf_vectorSize = AUDIO_DEFAULT_BLOCKSIZE;
-    x->sf_sampleRateOfInput = x->sf_sampleRate = 0;
-    x->sf_state = SOUNDFILE_STATE_IDLE;
-    x->sf_clock = 0;     /* no callback needed here */
-    x->sf_owner = canvas_getCurrent();
-    x->sf_bytesPerSample = 2;
-    x->sf_fileDescriptor = -1;
-    x->sf_buffer = buf;
-    x->sf_bufferSize = bufsize;
-    x->sf_fifoSize = x->sf_fifoHead = x->sf_fifoTail = x->sf_request = 0;
-    pthread_create(&x->sf_thread, 0, writesf_child_main, x);
-    return x;
-}
-
-static t_int *writesf_perform(t_int *w)
-{
-    t_writesf *x = (t_writesf *)(w[1]);
-    int vecsize = x->sf_vectorSize, sfchannels = x->sf_numberOfChannels, i, j,
-        bytespersample = x->sf_bytesPerSample,
-        bigendian = x->sf_isBigEndian;
-    t_sample *fp;
-    if (x->sf_state == SOUNDFILE_STATE_STREAM)
-    {
-        int wantbytes, roominfifo;
-        pthread_mutex_lock(&x->sf_mutex);
-        wantbytes = sfchannels * vecsize * bytespersample;
-        roominfifo = x->sf_fifoTail - x->sf_fifoHead;
-        if (roominfifo <= 0)
-            roominfifo += x->sf_fifoSize;
-        while (roominfifo < wantbytes + 1)
-        {
-            fprintf(stderr, "writesf waiting for disk write..\n");
-            fprintf(stderr, "(head %d, tail %d, room %d, want %d)\n",
-                x->sf_fifoHead, x->sf_fifoTail, roominfifo, wantbytes);
-            pthread_cond_signal(&x->sf_condRequest);
-            pthread_cond_wait(&x->sf_condAnswer, &x->sf_mutex);
-            fprintf(stderr, "... done waiting.\n");
-            roominfifo = x->sf_fifoTail - x->sf_fifoHead;
-            if (roominfifo <= 0)
-                roominfifo += x->sf_fifoSize;
-        }
-
-        soundfile_encode (sfchannels, x->sf_vectorsOut,
-            (unsigned char *)(x->sf_buffer + x->sf_fifoHead), vecsize, 0,
-                bytespersample, bigendian, 1, 1.);
-        
-        x->sf_fifoHead += wantbytes;
-        if (x->sf_fifoHead >= x->sf_fifoSize)
-            x->sf_fifoHead = 0;
-        if ((--x->sf_count) <= 0)
-        {
-#ifdef DEBUG_SOUNDFILE
-            pute("signal 1\n");
-#endif
-            pthread_cond_signal(&x->sf_condRequest);
-            x->sf_count = x->sf_period;
-        }
-        pthread_mutex_unlock(&x->sf_mutex);
-    }
-    return (w+2);
-}
-
-static void writesf_start(t_writesf *x)
+static void writesf_tilde_start(t_writesf_tilde *x)
 {
     /* start making output.  If we're in the "startup" state change
     to the "running" state. */
@@ -444,7 +361,7 @@ static void writesf_start(t_writesf *x)
         post_error ("writesf: start requested with no prior 'open'");
 }
 
-static void writesf_stop(t_writesf *x)
+static void writesf_tilde_stop(t_writesf_tilde *x)
 {
         /* LATER rethink whether you need the mutex just to set a Svariable? */
     pthread_mutex_lock(&x->sf_mutex);
@@ -457,7 +374,7 @@ static void writesf_stop(t_writesf *x)
     pthread_mutex_unlock(&x->sf_mutex);
 }
 
-static void writesf_open(t_writesf *x, t_symbol *s, int argc, t_atom *argv)
+static void writesf_tilde_open(t_writesf_tilde *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_symbol *filesym;
     t_symbol *fileExtension;
@@ -466,7 +383,7 @@ static void writesf_open(t_writesf *x, t_symbol *s, int argc, t_atom *argv)
     t_float samplerate;
     if (x->sf_state != SOUNDFILE_STATE_IDLE)
     {
-        writesf_stop(x);
+        writesf_tilde_stop(x);
     }
     
     t_audioproperties prop; soundfile_initProperties (&prop);
@@ -531,7 +448,59 @@ static void writesf_open(t_writesf *x, t_symbol *s, int argc, t_atom *argv)
     pthread_mutex_unlock(&x->sf_mutex);
 }
 
-static void writesf_dsp(t_writesf *x, t_signal **sp)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static t_int *writesf_tilde_perform(t_int *w)
+{
+    t_writesf_tilde *x = (t_writesf_tilde *)(w[1]);
+    int vecsize = x->sf_vectorSize, sfchannels = x->sf_numberOfChannels, i, j,
+        bytespersample = x->sf_bytesPerSample,
+        bigendian = x->sf_isBigEndian;
+    t_sample *fp;
+    if (x->sf_state == SOUNDFILE_STATE_STREAM)
+    {
+        int wantbytes, roominfifo;
+        pthread_mutex_lock(&x->sf_mutex);
+        wantbytes = sfchannels * vecsize * bytespersample;
+        roominfifo = x->sf_fifoTail - x->sf_fifoHead;
+        if (roominfifo <= 0)
+            roominfifo += x->sf_fifoSize;
+        while (roominfifo < wantbytes + 1)
+        {
+            fprintf(stderr, "writesf waiting for disk write..\n");
+            fprintf(stderr, "(head %d, tail %d, room %d, want %d)\n",
+                x->sf_fifoHead, x->sf_fifoTail, roominfifo, wantbytes);
+            pthread_cond_signal(&x->sf_condRequest);
+            pthread_cond_wait(&x->sf_condAnswer, &x->sf_mutex);
+            fprintf(stderr, "... done waiting.\n");
+            roominfifo = x->sf_fifoTail - x->sf_fifoHead;
+            if (roominfifo <= 0)
+                roominfifo += x->sf_fifoSize;
+        }
+
+        soundfile_encode (sfchannels, x->sf_vectorsOut,
+            (unsigned char *)(x->sf_buffer + x->sf_fifoHead), vecsize, 0,
+                bytespersample, bigendian, 1, 1.);
+        
+        x->sf_fifoHead += wantbytes;
+        if (x->sf_fifoHead >= x->sf_fifoSize)
+            x->sf_fifoHead = 0;
+        if ((--x->sf_count) <= 0)
+        {
+#ifdef DEBUG_SOUNDFILE
+            pute("signal 1\n");
+#endif
+            pthread_cond_signal(&x->sf_condRequest);
+            x->sf_count = x->sf_period;
+        }
+        pthread_mutex_unlock(&x->sf_mutex);
+    }
+    return (w+2);
+}
+
+static void writesf_tilde_dsp(t_writesf_tilde *x, t_signal **sp)
 {
     PD_ASSERT (sp[0]->s_vectorSize == AUDIO_DEFAULT_BLOCKSIZE);
 
@@ -544,20 +513,56 @@ static void writesf_dsp(t_writesf *x, t_signal **sp)
         x->sf_vectorsOut[i] = sp[i]->s_vector;
     x->sf_sampleRateOfInput = sp[0]->s_sampleRate;
     pthread_mutex_unlock(&x->sf_mutex);
-    dsp_add(writesf_perform, 1, x);
+    dsp_add(writesf_tilde_perform, 1, x);
 }
 
-static void writesf_print(t_writesf *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *writesf_tilde_new(t_float fnchannels, t_float fbufsize)
 {
-    post("state %d", x->sf_state);
-    post("fifo head %d", x->sf_fifoHead);
-    post("fifo tail %d", x->sf_fifoTail);
-    post("fifo size %d", x->sf_fifoSize);
-    post("fd %d", x->sf_fileDescriptor);
-    post("eof %d", x->sf_isEndOfFile);
+    t_writesf_tilde *x;
+    int nchannels = fnchannels, bufsize = fbufsize, i;
+    char *buf;
+    
+    if (nchannels < 1)
+        nchannels = 1;
+    else if (nchannels > SOUNDFILE_MAXIMUM_CHANNELS)
+        nchannels = SOUNDFILE_MAXIMUM_CHANNELS;
+    if (bufsize <= 0) bufsize = SOUNDFILE_CHUNK_SIZE * 4 * nchannels;
+    else if (bufsize < SOUNDFILE_CHUNK_SIZE * 4)
+        bufsize = SOUNDFILE_CHUNK_SIZE * 4;
+    else if (bufsize > SOUNDFILE_CHUNK_SIZE * 256)
+        bufsize = SOUNDFILE_CHUNK_SIZE * 256;
+    buf = PD_MEMORY_GET(bufsize);
+    if (!buf) return (0);
+    
+    x = (t_writesf_tilde *)pd_new(writesf_tilde_class);
+    
+    for (i = 1; i < nchannels; i++)
+        inlet_new (cast_object (x), cast_pd (x), &s_signal, &s_signal);
+
+    x->sf_f = 0;
+    x->sf_numberOfChannels = nchannels;
+    pthread_mutex_init(&x->sf_mutex, 0);
+    pthread_cond_init(&x->sf_condRequest, 0);
+    pthread_cond_init(&x->sf_condAnswer, 0);
+    x->sf_vectorSize = AUDIO_DEFAULT_BLOCKSIZE;
+    x->sf_sampleRateOfInput = x->sf_sampleRate = 0;
+    x->sf_state = SOUNDFILE_STATE_IDLE;
+    x->sf_clock = 0;     /* no callback needed here */
+    x->sf_owner = canvas_getCurrent();
+    x->sf_bytesPerSample = 2;
+    x->sf_fileDescriptor = -1;
+    x->sf_buffer = buf;
+    x->sf_bufferSize = bufsize;
+    x->sf_fifoSize = x->sf_fifoHead = x->sf_fifoTail = x->sf_request = 0;
+    pthread_create(&x->sf_thread, 0, writesf_tilde_child_main, x);
+    return x;
 }
 
-static void writesf_free(t_writesf *x)
+static void writesf_tilde_free(t_writesf_tilde *x)
 {
         /* request QUIT and wait for acknowledge */
     void *threadrtn;
@@ -573,7 +578,7 @@ static void writesf_free(t_writesf *x)
     }
     pthread_mutex_unlock(&x->sf_mutex);
     if (pthread_join(x->sf_thread, &threadrtn))
-        post_error ("writesf_free: join failed");
+        post_error ("writesf_tilde_free: join failed");
     /* post("... done."); */
     
     pthread_cond_destroy(&x->sf_condRequest);
@@ -582,18 +587,22 @@ static void writesf_free(t_writesf *x)
     PD_MEMORY_FREE(x->sf_buffer);
 }
 
-void writesf_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void writesf_tilde_setup (void)
 {
-    writesf_class = class_new(sym_writesf__tilde__, (t_newmethod)writesf_new, 
-        (t_method)writesf_free, sizeof(t_writesf), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
-    class_addMethod(writesf_class, (t_method)writesf_start, sym_start, 0);
-    class_addMethod(writesf_class, (t_method)writesf_stop, sym_stop, 0);
-    class_addMethod(writesf_class, (t_method)writesf_dsp,
+    writesf_tilde_class = class_new(sym_writesf__tilde__, (t_newmethod)writesf_tilde_new, 
+        (t_method)writesf_tilde_free, sizeof(t_writesf_tilde), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
+    class_addMethod(writesf_tilde_class, (t_method)writesf_tilde_start, sym_start, 0);
+    class_addMethod(writesf_tilde_class, (t_method)writesf_tilde_stop, sym_stop, 0);
+    class_addMethod(writesf_tilde_class, (t_method)writesf_tilde_dsp,
         sym_dsp, A_CANT, 0);
-    class_addMethod(writesf_class, (t_method)writesf_open, sym_open, 
+    class_addMethod(writesf_tilde_class, (t_method)writesf_tilde_open, sym_open, 
         A_GIMME, 0);
-    class_addMethod(writesf_class, (t_method)writesf_print, sym_print, 0);
-    CLASS_SIGNAL(writesf_class, t_writesf, sf_f);
+
+    CLASS_SIGNAL(writesf_tilde_class, t_writesf_tilde, sf_f);
 }
 
 // -----------------------------------------------------------------------------------------------------------
