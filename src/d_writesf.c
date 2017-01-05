@@ -45,7 +45,7 @@ static t_class *writesf_tilde_class;                /* Shared. */
 typedef struct _writesf_tilde {
     t_object            sf_obj;                     /* Must be the first. */
     t_float             sf_f;
-    t_float             sf_sampleRateOfSignal;
+    t_float             sf_signalSampleRate;
     t_audioproperties   sf_properties;
     t_error             sf_error;
     int                 sf_vectorSize;
@@ -59,6 +59,7 @@ typedef struct _writesf_tilde {
     int                 sf_fifoPeriod;
     int                 sf_isEndOfFile;
     int                 sf_itemsWritten;
+    int                 sf_numberOfChannels;
     int                 sf_bufferSize;
     char                *sf_buffer;
     t_glist             *sf_owner;
@@ -68,219 +69,196 @@ typedef struct _writesf_tilde {
     pthread_cond_t      sf_condAnswer;
     pthread_t           sf_thread;
     } t_writesf_tilde;
-    
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *writesf_tilde_thread(void *zz)
+#define WRITESF_NO_REQUEST      (x->sf_threadRequest == SOUNDFILE_REQUEST_BUSY)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void writesf_tilde_threadCloseFile (t_writesf_tilde *x)
 {
-    t_writesf_tilde *x = zz;
-
-    pthread_mutex_lock(&x->sf_mutex);
-    while (1)
-    {
-        if (x->sf_threadRequest == SOUNDFILE_REQUEST_NOTHING)
-        {
-            pthread_cond_signal(&x->sf_condAnswer);
-            pthread_cond_wait(&x->sf_condRequest, &x->sf_mutex);
-        }
-        else if (x->sf_threadRequest == SOUNDFILE_REQUEST_OPEN)
-        {
-            char boo[80];
-            int fd, sysrtn, writebytes;
-            
-                /* copy file stuff out of the data structure so we can
-                relinquish the mutex while we're in open_soundfile(). */
-            long onsetframes = x->sf_properties.ap_onset;
-            long bytelimit = SOUNDFILE_UNKNOWN;
-            int skipheaderbytes = x->sf_properties.ap_headerSize;
-            int bytespersample = x->sf_properties.ap_bytesPerSample;
-            int sfchannels = x->sf_properties.ap_numberOfChannels;
-            int bigendian = x->sf_properties.ap_isBigEndian;
-            int filetype = x->sf_properties.ap_fileType;
-            char *filename = x->sf_properties.ap_fileName->s_name;
-            char *fileExtension = x->sf_properties.ap_fileExtension->s_name;
-            t_glist *canvas = x->sf_owner;
-            t_float samplerate = x->sf_properties.ap_sampleRate;
-
-                /* alter the request code so that an ensuing "open" will get
-                noticed. */
-            x->sf_threadRequest = SOUNDFILE_REQUEST_BUSY;
-            //x->sf_error = 0;
-
-                /* if there's already a file open, close it.  This
-                should never happen since writesf_tilde_open() calls stop if
-                needed and then waits until we're idle. */
-            if (x->sf_fileDescriptor >= 0)
-            {
-                int bytesperframe = x->sf_properties.ap_bytesPerSample * x->sf_properties.ap_numberOfChannels;
-                int bigendian = x->sf_properties.ap_isBigEndian;
-                char *filename = x->sf_properties.ap_fileName->s_name;
-                char *fileExtension = x->sf_properties.ap_fileExtension->s_name;
-                int fd = x->sf_fileDescriptor;
-                int filetype = x->sf_properties.ap_fileType;
-                int itemswritten = x->sf_itemsWritten;
-                int swap = x->sf_properties.ap_needToSwap;
-                pthread_mutex_unlock(&x->sf_mutex);
-                
-                t_audioproperties toto;  soundfile_initProperties (&toto);
-                
-                toto.ap_fileType = x->sf_properties.ap_fileType;
-                toto.ap_numberOfFrames = SOUNDFILE_UNKNOWN;
-                toto.ap_numberOfChannels = x->sf_properties.ap_numberOfChannels;
-                toto.ap_bytesPerSample = x->sf_properties.ap_bytesPerSample;
-                toto.ap_isBigEndian = x->sf_properties.ap_isBigEndian;
-                toto.ap_needToSwap = x->sf_properties.ap_needToSwap;
-                
-                soundfile_writeFileClose (fd, itemswritten, &toto);
-                close (fd);
-
-                pthread_mutex_lock(&x->sf_mutex);
-                x->sf_fileDescriptor = -1;
-
-                if (x->sf_threadRequest != SOUNDFILE_REQUEST_BUSY)
-                    continue;
-            }
-                /* open the soundfile with the mutex unlocked */
-            pthread_mutex_unlock(&x->sf_mutex);
-            
-            t_audioproperties prop; soundfile_initProperties (&prop);
-            
-            prop.ap_fileName = gensym (filename);
-            prop.ap_fileExtension = gensym (fileExtension);
-            prop.ap_sampleRate = samplerate;
-            prop.ap_fileType = filetype;
-            prop.ap_numberOfChannels = sfchannels;
-            prop.ap_bytesPerSample = bytespersample;
-            prop.ap_isBigEndian = bigendian;
-            prop.ap_needToSwap = soundfile_systemIsBigEndian() != bigendian;
-            prop.ap_numberOfFrames = 0;
+    if (x->sf_fileDescriptor >= 0) {
+    //
+    int f = x->sf_fileDescriptor;
+    int itemsWritten = x->sf_itemsWritten;
     
-            fd = soundfile_writeFileHeader (canvas, &prop);
-                    
-            pthread_mutex_lock(&x->sf_mutex);
-
-            if (fd < 0)
-            {
-                x->sf_fileDescriptor = -1;
-                x->sf_isEndOfFile = 1;
-                //x->sf_error = errno;
-                x->sf_threadRequest = SOUNDFILE_REQUEST_NOTHING;
-                continue;
-            }
-            /* check if another request has been made; if so, field it */
-            if (x->sf_threadRequest != SOUNDFILE_REQUEST_BUSY)
-                continue;
-
-            x->sf_fileDescriptor = fd;
-            x->sf_fifoTail = 0;
-            x->sf_itemsWritten = 0;
-            x->sf_properties.ap_needToSwap = soundfile_systemIsBigEndian() != bigendian;      
-                /* in a loop, wait for the fifo to have data and write it
-                    to disk */
-            while (x->sf_threadRequest == SOUNDFILE_REQUEST_BUSY ||
-                (x->sf_threadRequest == SOUNDFILE_REQUEST_CLOSE &&
-                    x->sf_fifoHead != x->sf_fifoTail))
-            {
-                int fifosize = x->sf_fifoSize, fifotail;
-                char *buf = x->sf_buffer;
-
-                    /* if the head is < the tail, we can immediately write
-                    from tail to end of fifo to disk; otherwise we hold off
-                    writing until there are at least SOUNDFILE_CHUNK_SIZE bytes in the
-                    buffer */
-                if (x->sf_fifoHead < x->sf_fifoTail ||
-                    x->sf_fifoHead >= x->sf_fifoTail + SOUNDFILE_CHUNK_SIZE
-                    || (x->sf_threadRequest == SOUNDFILE_REQUEST_CLOSE &&
-                        x->sf_fifoHead != x->sf_fifoTail))
-                {
-                    writebytes = (x->sf_fifoHead < x->sf_fifoTail ?
-                        fifosize : x->sf_fifoHead) - x->sf_fifoTail;
-                    if (writebytes > SOUNDFILE_CHUNK_SIZE)
-                        writebytes = SOUNDFILE_CHUNK_SIZE;
-                }
-                else
-                {
-
-                    pthread_cond_signal(&x->sf_condAnswer);
-
-                    pthread_cond_wait(&x->sf_condRequest,
-                        &x->sf_mutex);
-
-                    continue;
-                }
-                fifotail = x->sf_fifoTail;
-                fd = x->sf_fileDescriptor;
-                pthread_mutex_unlock(&x->sf_mutex);
-                sysrtn = write(fd, buf + fifotail, writebytes);
-                pthread_mutex_lock(&x->sf_mutex);
-                if (x->sf_threadRequest != SOUNDFILE_REQUEST_BUSY &&
-                    x->sf_threadRequest != SOUNDFILE_REQUEST_CLOSE)
-                        break;
-                if (sysrtn < writebytes)
-                {
-                    //x->sf_error = errno;
-                    break;
-                }
-                else
-                {
-                    x->sf_fifoTail += sysrtn;
-                    if (x->sf_fifoTail == fifosize)
-                        x->sf_fifoTail = 0;
-                }
-                x->sf_itemsWritten +=
-                    sysrtn / (x->sf_properties.ap_bytesPerSample * x->sf_properties.ap_numberOfChannels);
-
-                    /* signal parent in case it's waiting for data */
-                pthread_cond_signal(&x->sf_condAnswer);
-            }
-        }
-        else if (x->sf_threadRequest == SOUNDFILE_REQUEST_CLOSE ||
-            x->sf_threadRequest == SOUNDFILE_REQUEST_QUIT)
-        {
-            int quit = (x->sf_threadRequest == SOUNDFILE_REQUEST_QUIT);
-            if (x->sf_fileDescriptor >= 0)
-            {
-                int bytesperframe = x->sf_properties.ap_bytesPerSample * x->sf_properties.ap_numberOfChannels;
-                int bigendian = x->sf_properties.ap_isBigEndian;
-                char *filename = x->sf_properties.ap_fileName->s_name;
-                int fd = x->sf_fileDescriptor;
-                int filetype = x->sf_properties.ap_fileType;
-                int itemswritten = x->sf_itemsWritten;
-                int swap = x->sf_properties.ap_needToSwap;
-                
-                pthread_mutex_unlock(&x->sf_mutex);
-
-                t_audioproperties toto;  soundfile_initProperties (&toto);
-                
-                toto.ap_fileType = x->sf_properties.ap_fileType;
-                toto.ap_numberOfFrames = SOUNDFILE_UNKNOWN;
-                toto.ap_numberOfChannels = x->sf_properties.ap_numberOfChannels;
-                toto.ap_bytesPerSample = x->sf_properties.ap_bytesPerSample;
-                toto.ap_isBigEndian = x->sf_properties.ap_isBigEndian;
-                toto.ap_needToSwap = x->sf_properties.ap_needToSwap;
-
+    t_audioproperties properties; soundfile_setPropertiesByCopy (&properties, &x->sf_properties);
     
-                soundfile_writeFileClose (fd, itemswritten, &toto);
-                close (fd);
+    properties.ap_numberOfFrames = SOUNDFILE_UNKNOWN;
+    
+    pthread_mutex_unlock (&x->sf_mutex);
 
-                pthread_mutex_lock(&x->sf_mutex);
-                x->sf_fileDescriptor = -1;
-            }
-            x->sf_threadRequest = SOUNDFILE_REQUEST_NOTHING;
-            pthread_cond_signal(&x->sf_condAnswer);
-            if (quit)
-                break;
-        }
-        else
-        {
+        soundfile_writeFileClose (f, itemsWritten, &properties);
+        
+        close (f);
 
+    pthread_mutex_lock (&x->sf_mutex);
+    
+    x->sf_fileDescriptor = -1;
+    //
+    }
+}
+
+static inline int writesf_tilde_threadOpenLoopRun (t_writesf_tilde *x)
+{
+    if (x->sf_threadRequest == SOUNDFILE_REQUEST_QUIT)  { return 0; }
+    if (x->sf_threadRequest == SOUNDFILE_REQUEST_BUSY)  { return 1; }
+    if (x->sf_threadRequest == SOUNDFILE_REQUEST_CLOSE) {
+        if (x->sf_fifoHead != x->sf_fifoTail) {
+            return 1; 
         }
     }
+    
+    return 0;
+}
 
-    pthread_mutex_unlock(&x->sf_mutex);
-    return (0);
+static inline int writesf_tilde_threadOpenLoopNeedToWrite (t_writesf_tilde *x)
+{
+    if (x->sf_fifoHead < x->sf_fifoTail) { return 1; }
+    if (x->sf_fifoHead >= x->sf_fifoTail + SOUNDFILE_CHUNK_SIZE) { return 1; }
+    if (x->sf_threadRequest == SOUNDFILE_REQUEST_CLOSE) {
+        if (x->sf_fifoHead != x->sf_fifoTail) {
+            return 1; 
+        }
+    }
+    
+    return 0;
+}
+
+static size_t writesf_tilde_threadOpenLoopWrite (t_writesf_tilde * x, int n)
+{
+    int f   = x->sf_fileDescriptor;
+    char *t = x->sf_buffer + x->sf_fifoTail;
+    
+    size_t bytes;
+    
+    pthread_mutex_unlock (&x->sf_mutex);
+        
+        bytes = write (f, t, n);
+        
+    pthread_mutex_lock (&x->sf_mutex);
+    
+    return bytes;
+}
+
+static void writesf_tilde_threadOpenLoop (t_writesf_tilde *x)
+{
+    while (writesf_tilde_threadOpenLoopRun (x)) {
+    //
+    if (writesf_tilde_threadOpenLoopNeedToWrite (x)) {
+    //
+    int bytesToWrite = 0;
+    
+    if (x->sf_fifoHead < x->sf_fifoTail) { bytesToWrite = x->sf_fifoSize - x->sf_fifoTail; }
+    else {
+        bytesToWrite = x->sf_fifoHead - x->sf_fifoTail;
+    }
+    
+    bytesToWrite = PD_MIN (bytesToWrite, SOUNDFILE_CHUNK_SIZE);
+    
+    if (bytesToWrite) {
+
+        int bytesPerFrame   = x->sf_properties.ap_bytesPerSample * x->sf_properties.ap_numberOfChannels;
+        size_t bytesWritten = writesf_tilde_threadOpenLoopWrite (x, bytesToWrite);
+
+        if (bytesWritten > 0) { x->sf_itemsWritten += bytesWritten / bytesPerFrame; }
+        
+        if (bytesWritten < bytesToWrite) { x->sf_error = PD_ERROR; break; }
+        else {
+            x->sf_fifoTail += bytesWritten;
+            if (x->sf_fifoTail == x->sf_fifoSize) {
+                x->sf_fifoTail = 0;
+            }
+            pthread_cond_signal (&x->sf_condAnswer);
+        }
+    //
+    }
+    //
+    } else {
+        pthread_cond_signal (&x->sf_condAnswer); pthread_cond_wait (&x->sf_condRequest, &x->sf_mutex);
+    }
+    //
+    }
+}
+
+static void writesf_tilde_threadNothing (t_writesf_tilde *x)
+{
+    pthread_cond_signal (&x->sf_condAnswer); pthread_cond_wait (&x->sf_condRequest, &x->sf_mutex);
+}
+
+static void writesf_tilde_threadOpen (t_writesf_tilde *x)
+{
+    x->sf_threadRequest = SOUNDFILE_REQUEST_BUSY;
+    x->sf_error = PD_ERROR_NONE;
+        
+    writesf_tilde_threadCloseFile (x);
+
+    if (WRITESF_NO_REQUEST) {       /* The request could have been changed once releasing the lock. */
+    //
+    int f = -1;
+    
+    /* Make a local copy to used it unlocked. */
+    
+    t_audioproperties copy; soundfile_setPropertiesByCopy (&copy, &x->sf_properties);
+    
+    pthread_mutex_unlock (&x->sf_mutex);
+    
+        f = soundfile_writeFileHeader (x->sf_owner, &copy);
+            
+    pthread_mutex_lock (&x->sf_mutex);
+
+    x->sf_fileDescriptor = f;
+    
+    if (x->sf_fileDescriptor < 0) { x->sf_error = PD_ERROR; }
+    else if (WRITESF_NO_REQUEST)  {
+    
+        /* Wait for the fifo to have data and write it to disk. */
+        
+        writesf_tilde_threadOpenLoop (x);
+    }
+    //
+    }
+    
+    x->sf_threadRequest = SOUNDFILE_REQUEST_NOTHING; 
+}
+
+static void writesf_tilde_threadClose (t_writesf_tilde *x)
+{
+    writesf_tilde_threadCloseFile (x);
+    
+    x->sf_threadRequest = SOUNDFILE_REQUEST_NOTHING;
+    
+    pthread_cond_signal (&x->sf_condAnswer);
+}
+
+static void *writesf_tilde_thread (void *z)
+{
+    t_writesf_tilde *x = z;
+
+    pthread_mutex_lock (&x->sf_mutex);
+    
+        while (1) {
+        //
+        int t = x->sf_threadRequest;
+        
+        if (t == SOUNDFILE_REQUEST_NOTHING)     { writesf_tilde_threadNothing (x);  }
+        else if (t == SOUNDFILE_REQUEST_OPEN)   { writesf_tilde_threadOpen (x);     }
+        else if (t == SOUNDFILE_REQUEST_CLOSE)  { writesf_tilde_threadClose (x);    }
+        else if (t == SOUNDFILE_REQUEST_QUIT)   {
+            writesf_tilde_threadClose (x);
+            break;
+        }
+        //
+        }
+
+    pthread_mutex_unlock (&x->sf_mutex);
+    
+    return (NULL);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -308,141 +286,132 @@ static void writesf_tilde_stop (t_writesf_tilde *x)
 
 static void writesf_tilde_open (t_writesf_tilde *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_symbol *filesym;
-    t_symbol *fileExtension;
-    int filetype, bytespersamp, swap, bigendian, normalize;
-    long onset, nframes;
-    t_float samplerate;
-    if (x->sf_threadState != SOUNDFILE_STATE_IDLE)
-    {
-        writesf_tilde_stop(x);
+    t_error err = PD_ERROR_NONE;
+    
+    t_audioproperties properties; soundfile_initProperties (&properties);
+    
+    if (x->sf_threadState != SOUNDFILE_STATE_IDLE) { writesf_tilde_stop (x); }
+    
+    err = soundfile_writeFileParse (sym_writesf__tilde__, &argc, &argv, &properties);
+
+    if (x->sf_signalSampleRate > 0) { properties.ap_sampleRate = x->sf_signalSampleRate; }
+    
+    if (!err) {
+    //
+    pthread_mutex_lock (&x->sf_mutex);
+    
+        while (x->sf_threadRequest != SOUNDFILE_REQUEST_NOTHING) {
+            pthread_cond_signal (&x->sf_condRequest);
+            pthread_cond_wait (&x->sf_condAnswer, &x->sf_mutex);
+        }
+        
+        soundfile_setPropertiesByCopy (&x->sf_properties, &properties);
+        
+        x->sf_properties.ap_numberOfChannels = x->sf_numberOfChannels;
+        
+        {
+            x->sf_threadState   = SOUNDFILE_STATE_START;
+            x->sf_threadRequest = SOUNDFILE_REQUEST_OPEN;
+            x->sf_isEndOfFile   = 0;
+            x->sf_itemsWritten  = 0;
+        
+            /* The size of the fifo must be a multiple of the number of bytes per DSP tick. */
+            /* The "request" condition will be signalled 16 times among the buffer. */
+            
+            int bytesPerFrame   = x->sf_properties.ap_bytesPerSample * x->sf_properties.ap_numberOfChannels;
+            int bytesPerTick    = bytesPerFrame * x->sf_vectorSize;
+            
+            x->sf_fifoTail      = 0;
+            x->sf_fifoHead      = 0;
+            x->sf_fifoSize      = x->sf_bufferSize - (x->sf_bufferSize % bytesPerTick);
+            x->sf_fifoPeriod    = x->sf_fifoSize / (16 * bytesPerTick);
+            x->sf_fifoCount     = x->sf_fifoPeriod;
+        }
+        
+    pthread_cond_signal (&x->sf_condRequest);
+    pthread_mutex_unlock (&x->sf_mutex);
+    //
     }
-    
-    t_audioproperties prop; soundfile_initProperties (&prop);
-    
-    if (soundfile_writeFileParse(sym_writesf__tilde__, &argc, &argv, &prop) == PD_ERROR)
-    {
-        post_error ("writesf~: usage: open [-bytes [234]] [-wave,-nextstep,-aiff] ...");
-        post("... [-big,-little] [-rate ####] filename");
-        return;
-    }
-    
-    filesym = prop.ap_fileName;
-    fileExtension = prop.ap_fileExtension;
-    samplerate = prop.ap_sampleRate;
-    filetype = prop.ap_fileType;
-    bytespersamp = prop.ap_bytesPerSample;
-    bigendian = prop.ap_isBigEndian;
-    swap = prop.ap_needToSwap;
-    onset = prop.ap_onset;
-    nframes = prop.ap_numberOfFrames;
-    normalize = prop.ap_needToNormalize;
-    
-    if (normalize || onset || (nframes != SOUNDFILE_UNKNOWN))
-        post_error ("normalize/onset/nframes argument to writesf~: ignored");
-    if (argc)
-        post_error ("extra argument(s) to writesf~: ignored");
-    pthread_mutex_lock(&x->sf_mutex);
-    while (x->sf_threadRequest != SOUNDFILE_REQUEST_NOTHING)
-    {
-        pthread_cond_signal(&x->sf_condRequest);
-        pthread_cond_wait(&x->sf_condAnswer, &x->sf_mutex);
-    }
-    x->sf_properties.ap_bytesPerSample = bytespersamp;
-    x->sf_properties.ap_needToSwap = swap;
-    x->sf_properties.ap_isBigEndian = bigendian;
-    x->sf_properties.ap_fileName = filesym;
-    x->sf_properties.ap_fileExtension = fileExtension;
-    x->sf_properties.ap_fileType = filetype;
-    x->sf_itemsWritten = 0;
-    x->sf_threadRequest = SOUNDFILE_REQUEST_OPEN;
-    x->sf_fifoTail = 0;
-    x->sf_fifoHead = 0;
-    x->sf_isEndOfFile = 0;
-    //x->sf_error = 0;
-    x->sf_threadState = SOUNDFILE_STATE_START;
-    x->sf_properties.ap_bytesPerSample = (bytespersamp > 2 ? bytespersamp : 2);
-    if (samplerate > 0)
-        x->sf_properties.ap_sampleRate = samplerate;
-    else if (x->sf_sampleRateOfSignal > 0)
-        x->sf_properties.ap_sampleRate = x->sf_sampleRateOfSignal;
-    else x->sf_properties.ap_sampleRate = audio_getSampleRate();
-        /* set fifosize from bufsize.  fifosize must be a
-        multiple of the number of bytes eaten for each DSP
-        tick.  */
-    x->sf_fifoSize = x->sf_bufferSize - (x->sf_bufferSize %
-        (x->sf_properties.ap_bytesPerSample * x->sf_properties.ap_numberOfChannels * x->sf_vectorSize));
-            /* arrange for the "request" condition to be signalled 16
-            times per buffer */
-    x->sf_fifoCount = x->sf_fifoPeriod = (x->sf_fifoSize /
-            (16 * x->sf_properties.ap_bytesPerSample * x->sf_properties.ap_numberOfChannels * x->sf_vectorSize));
-    pthread_cond_signal(&x->sf_condRequest);
-    pthread_mutex_unlock(&x->sf_mutex);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_int *writesf_tilde_perform(t_int *w)
+static inline int writesf_tilde_performGetAvailableSize (t_writesf_tilde *x)
+{
+    int k = x->sf_fifoTail - x->sf_fifoHead;
+    if (k <= 0) {
+        k += x->sf_fifoSize;
+    }
+    
+    return k;
+}
+
+static inline void readsf_tilde_performStoreIfNecessary (t_writesf_tilde * x)
+{
+    x->sf_fifoCount--;
+    
+    if (x->sf_fifoCount <= 0) {
+        pthread_cond_signal (&x->sf_condRequest); x->sf_fifoCount = x->sf_fifoPeriod;
+    }
+}
+
+static t_int *writesf_tilde_perform (t_int *w)
 {
     t_writesf_tilde *x = (t_writesf_tilde *)(w[1]);
-    int vecsize = x->sf_vectorSize, sfchannels = x->sf_properties.ap_numberOfChannels, i, j,
-        bytespersample = x->sf_properties.ap_bytesPerSample,
-        bigendian = x->sf_properties.ap_isBigEndian;
-    t_sample *fp;
-    if (x->sf_threadState == SOUNDFILE_STATE_STREAM)
-    {
-        int wantbytes, roominfifo;
-        pthread_mutex_lock(&x->sf_mutex);
-        wantbytes = sfchannels * vecsize * bytespersample;
-        roominfifo = x->sf_fifoTail - x->sf_fifoHead;
-        if (roominfifo <= 0)
-            roominfifo += x->sf_fifoSize;
-        while (roominfifo < wantbytes + 1)
-        {
-            fprintf(stderr, "writesf waiting for disk write..\n");
-            fprintf(stderr, "(head %d, tail %d, room %d, want %d)\n",
-                x->sf_fifoHead, x->sf_fifoTail, roominfifo, wantbytes);
-            pthread_cond_signal(&x->sf_condRequest);
-            pthread_cond_wait(&x->sf_condAnswer, &x->sf_mutex);
-            fprintf(stderr, "... done waiting.\n");
-            roominfifo = x->sf_fifoTail - x->sf_fifoHead;
-            if (roominfifo <= 0)
-                roominfifo += x->sf_fifoSize;
-        }
 
-        soundfile_encode (sfchannels, x->sf_vectorsOut,
-            (unsigned char *)(x->sf_buffer + x->sf_fifoHead), vecsize, 0,
-                bytespersample, bigendian, 1, 1.);
+    pthread_mutex_lock (&x->sf_mutex);
+    
+    if (x->sf_threadState == SOUNDFILE_STATE_STREAM) {
+    //
+    int bytesPerFrame = x->sf_properties.ap_numberOfChannels * x->sf_properties.ap_bytesPerSample;
+    int bytesToWrite  = x->sf_vectorSize * bytesPerFrame;
+    int availableSize = writesf_tilde_performGetAvailableSize (x);
         
-        x->sf_fifoHead += wantbytes;
-        if (x->sf_fifoHead >= x->sf_fifoSize)
-            x->sf_fifoHead = 0;
-        if ((--x->sf_fifoCount) <= 0)
-        {
-            pthread_cond_signal(&x->sf_condRequest);
-            x->sf_fifoCount = x->sf_fifoPeriod;
-        }
-        pthread_mutex_unlock(&x->sf_mutex);
+    while (availableSize < bytesToWrite + 1) {
+        pthread_cond_signal (&x->sf_condRequest);
+        pthread_cond_wait (&x->sf_condAnswer, &x->sf_mutex);
+        availableSize = writesf_tilde_performGetAvailableSize (x);
     }
-    return (w+2);
+
+    soundfile_encode (x->sf_properties.ap_numberOfChannels,
+        x->sf_vectorsOut,
+        (unsigned char *)(x->sf_buffer + x->sf_fifoHead),
+        x->sf_vectorSize,
+        0,
+        x->sf_properties.ap_bytesPerSample,
+        x->sf_properties.ap_isBigEndian,
+        1,
+        1.);
+    
+    x->sf_fifoHead += bytesToWrite; if (x->sf_fifoHead >= x->sf_fifoSize) { x->sf_fifoHead = 0; }
+    
+    readsf_tilde_performStoreIfNecessary (x);
+    //
+    }
+    
+    pthread_mutex_unlock (&x->sf_mutex);
+    
+    return (w + 2);
 }
 
 static void writesf_tilde_dsp(t_writesf_tilde *x, t_signal **sp)
 {
-    PD_ASSERT (sp[0]->s_vectorSize == AUDIO_DEFAULT_BLOCKSIZE);
-
-    int i, ninlets = x->sf_properties.ap_numberOfChannels;
-    pthread_mutex_lock(&x->sf_mutex);
-    x->sf_vectorSize = sp[0]->s_vectorSize;
-    x->sf_fifoPeriod = (x->sf_fifoSize /
-            (16 * x->sf_properties.ap_bytesPerSample * x->sf_properties.ap_numberOfChannels * x->sf_vectorSize));
-    for (i = 0; i < ninlets; i++)
-        x->sf_vectorsOut[i] = sp[i]->s_vector;
-    x->sf_sampleRateOfSignal = sp[0]->s_sampleRate;
-    pthread_mutex_unlock(&x->sf_mutex);
-    dsp_add(writesf_tilde_perform, 1, x);
+    PD_ASSERT (sp[0]->s_vectorSize == AUDIO_DEFAULT_BLOCKSIZE);     /* Not implemented yet. */
+    PD_ABORT  (sp[0]->s_vectorSize != AUDIO_DEFAULT_BLOCKSIZE);
+    
+    int i;
+    
+    pthread_mutex_lock (&x->sf_mutex);
+    
+        x->sf_signalSampleRate = sp[0]->s_sampleRate;
+    
+        for (i = 0; i < x->sf_numberOfChannels; i++) { x->sf_vectorsOut[i] = sp[i]->s_vector; }
+    
+    pthread_mutex_unlock (&x->sf_mutex);
+    
+    dsp_add (writesf_tilde_perform, 1, x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -460,18 +429,16 @@ static void *writesf_tilde_new (t_float f1, t_float f2)
     
     soundfile_initProperties (&x->sf_properties);
     
-    x->sf_properties.ap_bytesPerSample   = 2;       /* ??? */
-    x->sf_properties.ap_numberOfChannels = n;
-    
     x->sf_vectorSize        = AUDIO_DEFAULT_BLOCKSIZE;
     x->sf_threadState       = SOUNDFILE_STATE_IDLE;
     x->sf_threadRequest     = SOUNDFILE_REQUEST_NOTHING;
     x->sf_fileDescriptor    = -1;
+    x->sf_numberOfChannels  = n;
     x->sf_bufferSize        = size;
     x->sf_buffer            = PD_MEMORY_GET (x->sf_bufferSize);
     x->sf_owner             = canvas_getCurrent();
     
-    for (i = 1; i < n; i++) { inlet_newSignal (cast_object (x)); }
+    for (i = 1; i < x->sf_numberOfChannels; i++) { inlet_newSignal (cast_object (x)); }
 
     err |= (pthread_mutex_init (&x->sf_mutex, NULL) != 0);
     err |= (pthread_cond_init (&x->sf_condRequest, NULL) != 0);

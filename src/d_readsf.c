@@ -435,12 +435,11 @@ static t_int *readsf_tilde_perform (t_int *w)
 {
     t_readsf_tilde *x = (t_readsf_tilde *)(w[1]);
     
-    if (x->sf_error || x->sf_threadState != SOUNDFILE_STATE_STREAM) { readsf_tilde_performZero (x, 0); }
-    else {
-    //
     pthread_mutex_lock (&x->sf_mutex);
     
-    {
+    if (x->sf_error || x->sf_threadState != SOUNDFILE_STATE_STREAM) { readsf_tilde_performZero (x, 0); }
+    else {
+
         int eof, bytesToRead = readsf_tilde_performGetBytesPerTick (x);
         
         while (!x->sf_isEndOfFile && readsf_tilde_performIsAlmostEmpty (x, bytesToRead)) {
@@ -458,11 +457,10 @@ static t_int *readsf_tilde_perform (t_int *w)
         else {
             readsf_tilde_performRead (x, bytesToRead);
         }
+    //
     }
     
     pthread_mutex_unlock (&x->sf_mutex);
-    //
-    }
     
     return (w + 2);
 }
