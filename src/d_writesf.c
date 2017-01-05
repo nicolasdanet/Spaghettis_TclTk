@@ -214,15 +214,15 @@ static void writesf_tilde_threadOpen (t_writesf_tilde *x)
 
     x->sf_fileDescriptor = f;
     
-    if (x->sf_fileDescriptor < 0) { x->sf_error = PD_ERROR; }
-    else if (WRITESF_NO_REQUEST)  {
-        
-        writesf_tilde_threadOpenLoop (x);       /* Wait for the fifo to have data and write it to disk. */
-    }
+    if (x->sf_fileDescriptor < 0) {
+        x->sf_error = PD_ERROR;
+        x->sf_threadRequest = SOUNDFILE_REQUEST_NOTHING;
+    
+    /* Wait for the fifo to have data and write it to disk. */
+    
+    } else if (WRITESF_NO_REQUEST) { writesf_tilde_threadOpenLoop (x); }
     //
     }
-    
-    x->sf_threadRequest = SOUNDFILE_REQUEST_NOTHING; 
 }
 
 static void writesf_tilde_threadClose (t_writesf_tilde *x)
@@ -361,7 +361,7 @@ static t_int *writesf_tilde_perform (t_int *w)
 
     pthread_mutex_lock (&x->sf_mutex);
     
-    if (x->sf_threadState == SOUNDFILE_STATE_STREAM) {
+    if (!x->sf_error && x->sf_threadState == SOUNDFILE_STATE_STREAM) {
     //
     int bytesPerFrame = x->sf_properties.ap_numberOfChannels * x->sf_properties.ap_bytesPerSample;
     int bytesToWrite  = x->sf_vectorSize * bytesPerFrame;

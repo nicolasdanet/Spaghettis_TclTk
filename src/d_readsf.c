@@ -161,7 +161,7 @@ static void readsf_tilde_threadOpenLoop (t_readsf_tilde * x)
         bytesToRead = PD_MIN (bytesToRead, x->sf_properties.ap_dataSizeInBytes);
         bytesRead   = readsf_tilde_threadOpenLoopRead (x, bytesToRead);
 
-        if (bytesRead < 0)          { PD_BUG; break; }
+        if (bytesRead < 0)          { break; }
         else if (bytesRead == 0)    { x->sf_isEndOfFile = 1; }
         else if (READSF_NO_REQUEST) {
         
