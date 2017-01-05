@@ -216,10 +216,8 @@ static void writesf_tilde_threadOpen (t_writesf_tilde *x)
     
     if (x->sf_fileDescriptor < 0) { x->sf_error = PD_ERROR; }
     else if (WRITESF_NO_REQUEST)  {
-    
-        /* Wait for the fifo to have data and write it to disk. */
         
-        writesf_tilde_threadOpenLoop (x);
+        writesf_tilde_threadOpenLoop (x);       /* Wait for the fifo to have data and write it to disk. */
     }
     //
     }
