@@ -346,7 +346,7 @@ static inline int writesf_tilde_performGetAvailableSize (t_writesf_tilde *x)
     return k;
 }
 
-static inline void readsf_tilde_performStoreIfNecessary (t_writesf_tilde * x)
+static inline void writesf_tilde_performStoreIfNecessary (t_writesf_tilde * x)
 {
     x->sf_fifoCount--;
     
@@ -385,7 +385,7 @@ static t_int *writesf_tilde_perform (t_int *w)
     
     x->sf_fifoHead += bytesToWrite; if (x->sf_fifoHead >= x->sf_fifoSize) { x->sf_fifoHead = 0; }
     
-    readsf_tilde_performStoreIfNecessary (x);
+    writesf_tilde_performStoreIfNecessary (x);
     //
     }
     
