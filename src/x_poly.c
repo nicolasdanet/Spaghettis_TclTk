@@ -24,14 +24,14 @@ static t_class *poly_class;                 /* Shared. */
 typedef struct voice {
     t_float         v_pitch;
     int             v_used;
-    unsigned long   v_serial;
+    uint64_t        v_serial;
     } t_voice;
 
 typedef struct poly {
     t_object        x_obj;                  /* Must be the first. */
     t_float         x_velocity;
     int             x_hasStealMode;
-    unsigned long   x_serial;
+    uint64_t        x_serial;
     int             x_size;
     t_voice         *x_vector;
     t_outlet        *x_outletLeft;
@@ -39,6 +39,12 @@ typedef struct poly {
     t_outlet        *x_outletRight;
     } t_poly;
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define POLY_UNDEFINED  ULLONG_MAX
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -81,8 +87,8 @@ static void poly_add (t_poly *x, t_float f)
     int i;
     int m = -1;
     int n = -1;
-    unsigned long used  = (~0L);
-    unsigned long empty = (~0L);
+    uint64_t used  = POLY_UNDEFINED;
+    uint64_t empty = POLY_UNDEFINED;
     
     for (i = 0; i < x->x_size; i++) {
         if (x->x_vector[i].v_used && x->x_vector[i].v_serial < used) {
@@ -106,7 +112,7 @@ static void poly_remove (t_poly *x, t_float f)
 {
     int i;
     int m = -1;
-    unsigned long used = (~0L);
+    uint64_t used = POLY_UNDEFINED;
     
     for (i = 0; i < x->x_size; i++) {
         if (x->x_vector[i].v_used && x->x_vector[i].v_pitch == f && x->x_vector[i].v_serial < used) {
