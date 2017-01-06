@@ -227,25 +227,27 @@ t_glist *cast_glistChecked                  (t_pd *x);
 #pragma mark -
 
 #define PD_IS_POWER_2(v)                    (!((v) & ((v) - 1)))
-#define PD_NEXT_POWER_2(v)                  sys_nextPowerOf2 ((unsigned long)(v))
+#define PD_NEXT_POWER_2(v)                  sys_nextPowerOf2 ((uint64_t)(v))
 #define PD_TO_RADIANS(degrees)              ((PD_PI * (degrees)) / 180.0)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Returns the next power of two (zero on overflow). */
+/* Notice that it returns zero with an argument of zero. */
 
-static inline unsigned long sys_nextPowerOf2 (unsigned long v) 
+static inline uint64_t sys_nextPowerOf2 (uint64_t v) 
 {
+    v--;
     v |= (v >> 1);
     v |= (v >> 2);
     v |= (v >> 4);
     v |= (v >> 8);
     v |= (v >> 16);
     v |= (v >> 32);
+    v++;
     
-    return v + 1;
+    return v;
 }
 
 // -----------------------------------------------------------------------------------------------------------
