@@ -106,6 +106,7 @@ t_symbol *sym___plus____tilde__;
 t_symbol *sym___point__aif;
 t_symbol *sym___point__snd;
 t_symbol *sym___point__wav;
+t_symbol *sym___question__;
 t_symbol *sym___semicolon__;
 t_symbol *sym___slash__;
 t_symbol *sym___slash____tilde__;
@@ -681,6 +682,7 @@ void symbols_initialize (void)
     sym___point__aif                            = gensym (".aif");
     sym___point__snd                            = gensym (".snd");
     sym___point__wav                            = gensym (".wav");
+    sym___question__                            = gensym ("?");
     sym___semicolon__                           = gensym (";");
     sym___slash__                               = gensym ("/");
     sym___slash____tilde__                      = gensym ("/~");
