@@ -275,7 +275,7 @@ int             canvas_isSubpatch                       (t_glist *glist);
 int             canvas_isDirty                          (t_glist *glist);
 int             canvas_isGraph                          (t_glist *glist);
 
-int             canvas_openFileIsValid                  (t_glist *glist,
+int             canvas_openFileExist                    (t_glist *glist,
                                                             const char *name,
                                                             const char *extension);
                                                             

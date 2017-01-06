@@ -364,7 +364,7 @@ void canvas_setAsGraphOnParent (t_glist *glist, int flags)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int canvas_openFileIsValid (t_glist *glist, const char *name, const char *extension)
+int canvas_openFileExist (t_glist *glist, const char *name, const char *extension)
 {
     char *p = NULL; char t[PD_STRING] = { 0 };
     
