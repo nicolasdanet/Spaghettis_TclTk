@@ -310,9 +310,10 @@ static void readsf_tilde_start (t_readsf_tilde *x)
 
 static void readsf_tilde_stop (t_readsf_tilde *x)
 {
+    x->sf_threadState = SOUNDFILE_STATE_IDLE;
+    
     pthread_mutex_lock (&x->sf_mutex);
     
-        x->sf_threadState   = SOUNDFILE_STATE_IDLE;
         x->sf_threadRequest = SOUNDFILE_REQUEST_CLOSE;
     
     pthread_cond_signal (&x->sf_condRequest);

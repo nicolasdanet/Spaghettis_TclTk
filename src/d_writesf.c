@@ -91,6 +91,8 @@ static void writesf_tilde_threadCloseFile (t_writesf_tilde *x)
     
     properties.ap_numberOfFrames = SOUNDFILE_UNKNOWN;
     
+    x->sf_fileDescriptor = -1;
+    
     pthread_mutex_unlock (&x->sf_mutex);
 
         soundfile_writeFileClose (f, itemsWritten, &properties);
@@ -98,8 +100,6 @@ static void writesf_tilde_threadCloseFile (t_writesf_tilde *x)
         close (f);
 
     pthread_mutex_lock (&x->sf_mutex);
-    
-    x->sf_fileDescriptor = -1;
     //
     }
 }
@@ -139,7 +139,7 @@ static size_t writesf_tilde_threadOpenLoopWrite (t_writesf_tilde * x, int n)
     
     pthread_mutex_unlock (&x->sf_mutex);
         
-        bytes = write (f, t, n);
+        bytes = write (f, t, (size_t)n);
         
     pthread_mutex_lock (&x->sf_mutex);
     
@@ -201,7 +201,7 @@ static void writesf_tilde_threadOpen (t_writesf_tilde *x)
     if (WRITESF_NO_REQUEST) {       /* The request could have been changed once releasing the lock. */
     //
     int f = -1;
-    
+        
     /* Make a local copy to used it unlocked. */
     
     t_audioproperties copy; soundfile_setPropertiesByCopy (&copy, &x->sf_properties);
@@ -273,9 +273,10 @@ static void writesf_tilde_start (t_writesf_tilde *x)
 
 static void writesf_tilde_stop (t_writesf_tilde *x)
 {
-    pthread_mutex_lock (&x->sf_mutex);
+    x->sf_threadState = SOUNDFILE_STATE_IDLE;
     
-        x->sf_threadState   = SOUNDFILE_STATE_IDLE;
+    pthread_mutex_lock (&x->sf_mutex);
+        
         x->sf_threadRequest = SOUNDFILE_REQUEST_CLOSE;
 
     pthread_cond_signal (&x->sf_condRequest);
