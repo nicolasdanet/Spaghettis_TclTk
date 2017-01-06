@@ -62,7 +62,7 @@ static inline char *logger_stringWithFloat (char *dest, double f)
     int minus         = (f < 0.0);
     double absolute   = PD_ABS (f);
     double clamped    = PD_MIN (2147483647.0, absolute);
-    long integer      = (long)clamped;
+    int    integer    = (int)clamped;
     double fractional = clamped - (double)integer;
        
     char *s = dest + (LOGGER_FLOAT_STRING - 1);

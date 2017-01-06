@@ -106,7 +106,7 @@ static inline uint16_t soundfile_swap2Bytes (uint16_t n, int needToSwap)
 static inline void soundfile_makeAiff80BitFloat (double sampleRate, unsigned char *s)
 {
     int e;
-    unsigned long m = ldexp (frexp (sampleRate, &e), 32);
+    unsigned int m = (unsigned int)ldexp (frexp (sampleRate, &e), 32);
     
     s[0] = (e + 16382) >> 8;
     s[1] = (e + 16382);
