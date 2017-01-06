@@ -40,6 +40,12 @@ typedef struct _soundfiler {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define SOUNDFILER_LIMIT_SIZE           (1024 * 1024 * 4)       /* Arbitrary limited to 4 MB. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #define SOUNDFILER_BUFFER_SIZE          1024
 
 // -----------------------------------------------------------------------------------------------------------
@@ -216,6 +222,8 @@ static int soundfiler_readPerform (t_glist *glist, int argc, t_atom *argv)
     int f = soundfile_readFileHeader (glist, &properties);     /* WAVE, AIFF or NeXT supported. */
     
     err = (f < 0);
+    
+    if (!err) { err = (properties.ap_dataSizeInBytes >= SOUNDFILER_LIMIT_SIZE); }
     
     if (!err) {
     
