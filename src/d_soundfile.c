@@ -251,7 +251,7 @@ t_error soundfile_readFileParse (t_symbol *s, int *ac, t_atom **av, t_audioprope
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_error soundfile_readFileHeaderWAVE (int f, t_headerhelper *t, t_audioproperties *args)
+static t_error soundfile_readFileHeaderCanonicalWAVE (int f, t_headerhelper *t, t_audioproperties *args)
 {
     t_error err = PD_ERROR;
 
@@ -294,7 +294,7 @@ static t_error soundfile_readFileHeaderWAVE (int f, t_headerhelper *t, t_audiopr
     return err;
 }
 
-static t_error soundfile_readFileHeaderAIFF (int f, t_headerhelper *t, t_audioproperties *args)
+static t_error soundfile_readFileHeaderCanonicalAIFF (int f, t_headerhelper *t, t_audioproperties *args)
 {
     t_error err = PD_ERROR;
     
@@ -333,7 +333,7 @@ static t_error soundfile_readFileHeaderAIFF (int f, t_headerhelper *t, t_audiopr
     return err;
 }
 
-static t_error soundfile_readFileHeaderNEXT (int f, t_headerhelper *t, t_audioproperties *args)
+static t_error soundfile_readFileHeaderCanonicalNEXT (int f, t_headerhelper *t, t_audioproperties *args)
 {
     t_error err = PD_ERROR;
     
@@ -395,9 +395,19 @@ static t_error soundfile_readFileHeaderFormat (int f, t_audioproperties *args)
     
         args->ap_needToSwap = (args->ap_isBigEndian != soundfile_systemIsBigEndian());
         
-        if (format == SOUNDFILE_WAVE) { err = soundfile_readFileHeaderWAVE (f, &t, args); }
-        if (format == SOUNDFILE_AIFF) { err = soundfile_readFileHeaderAIFF (f, &t, args); }
-        if (format == SOUNDFILE_NEXT) { err = soundfile_readFileHeaderNEXT (f, &t, args); }
+        if (format == SOUNDFILE_WAVE) {
+            if ((err = soundfile_readFileHeaderCanonicalWAVE (f, &t, args))) {
+                err = soundfile_readFileHeaderWAVE (f, &t, args);
+            }
+        }
+        
+        if (format == SOUNDFILE_AIFF) {
+            if ((err = soundfile_readFileHeaderCanonicalAIFF (f, &t, args))) {
+                err = soundfile_readFileHeaderAIFF (f, &t, args);
+            }
+        }
+            
+        if (format == SOUNDFILE_NEXT) { err = soundfile_readFileHeaderCanonicalNEXT (f, &t, args); }
     }
     //
     }
