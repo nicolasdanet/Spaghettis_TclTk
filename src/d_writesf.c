@@ -130,18 +130,22 @@ static inline int writesf_tilde_threadOpenLoopNeedToWrite (t_writesf_tilde *x)
     return 0;
 }
 
-static size_t writesf_tilde_threadOpenLoopWrite (t_writesf_tilde * x, int n)
+static ssize_t writesf_tilde_threadOpenLoopWrite (t_writesf_tilde * x, int m, int n)
 {
+    ssize_t bytes = -1;
+    
+    if (m < (PD_INT_MAX - n)) {                  /* Reached the soundfile limit? */
+    //
     int f   = x->sf_fileDescriptor;
     char *t = x->sf_buffer + x->sf_fifoTail;
     
-    size_t bytes;
-    
     pthread_mutex_unlock (&x->sf_mutex);
         
-        bytes = write (f, t, (size_t)n);
+        bytes = write (f, t, (size_t)m);
         
     pthread_mutex_lock (&x->sf_mutex);
+    //
+    }
     
     return bytes;
 }
@@ -163,13 +167,18 @@ static void writesf_tilde_threadOpenLoop (t_writesf_tilde *x)
     
     if (bytesToWrite) {
 
-        int bytesPerFrame   = x->sf_properties.ap_bytesPerSample * x->sf_properties.ap_numberOfChannels;
-        size_t bytesWritten = writesf_tilde_threadOpenLoopWrite (x, bytesToWrite);
+        int bytesPerFrame       = x->sf_properties.ap_bytesPerSample * x->sf_properties.ap_numberOfChannels;
+        int bytesAlreadyWritten = x->sf_itemsWritten * bytesPerFrame;
+        ssize_t bytesWritten    = writesf_tilde_threadOpenLoopWrite (x, bytesToWrite, bytesAlreadyWritten);
 
         if (bytesWritten > 0) { x->sf_itemsWritten += bytesWritten / bytesPerFrame; }
         
-        if (bytesWritten < bytesToWrite) { x->sf_error = PD_ERROR; break; }
-        else {
+        if (bytesWritten < bytesToWrite) {
+            x->sf_error = PD_ERROR; 
+            x->sf_threadRequest = SOUNDFILE_REQUEST_NOTHING;
+            break;
+            
+        } else {
             x->sf_fifoTail += bytesWritten;
             if (x->sf_fifoTail == x->sf_fifoSize) {
                 x->sf_fifoTail = 0;

@@ -115,12 +115,12 @@ static void readsf_tilde_threadCloseFileAndSignal (t_readsf_tilde * x, int n)
     pthread_cond_signal (&x->sf_condAnswer);
 }
 
-static size_t readsf_tilde_threadOpenLoopRead (t_readsf_tilde * x, int n)
+static ssize_t readsf_tilde_threadOpenLoopRead (t_readsf_tilde * x, int n)
 {
     char *t = x->sf_buffer + x->sf_fifoHead;
     int f   = x->sf_fileDescriptor;
     
-    size_t bytes;
+    ssize_t bytes;
     
     pthread_mutex_unlock (&x->sf_mutex);
         
@@ -155,7 +155,7 @@ static void readsf_tilde_threadOpenLoop (t_readsf_tilde * x)
 
     if (bytesToRead > 0) { 
       
-        size_t bytesRead;
+        ssize_t bytesRead;
         
         bytesToRead = PD_MIN (bytesToRead, SOUNDFILE_CHUNK_SIZE);
         bytesToRead = PD_MIN (bytesToRead, x->sf_properties.ap_dataSizeInBytes);

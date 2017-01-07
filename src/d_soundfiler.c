@@ -361,7 +361,7 @@ static int soundfiler_writeEncode (int f,
         normalizationFactor);
    
     {
-        size_t s = write (f, t, sizeInBytes);
+        ssize_t s = write (f, t, sizeInBytes);
     
         if (s < sizeInBytes) { 
             if (s > 0) { framesAlreadyWritten += s / bytesPerFrame; }
