@@ -107,15 +107,11 @@ static t_error soundfiler_readResizeIfNecessary (int f,
     int frames        = dataSize / bytesPerFrame;
     
     if (current < 0 || end < 0 || dataSize < 0) { PD_BUG; err = PD_ERROR; }
+    if (dataSize != args->ap_dataSizeInBytes)   { PD_BUG; err = PD_ERROR; }
     else {
     //
     int i;
     
-    /* If the data size header field of the audio file is wrong correct it. */
-    /* It is done silently for convenience. */
-    
-    if (dataSize != args->ap_dataSizeInBytes) { args->ap_dataSizeInBytes = dataSize; PD_BUG; }
-
     lseek (f, current, SEEK_SET);
     
     if (frames > args->ap_numberOfFrames) {     /* Maximum number of frames required by user. */
