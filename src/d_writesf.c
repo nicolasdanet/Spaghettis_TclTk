@@ -120,7 +120,7 @@ static inline int writesf_tilde_threadOpenLoopRun (t_writesf_tilde *x)
 static inline int writesf_tilde_threadOpenLoopNeedToWrite (t_writesf_tilde *x)
 {
     if (x->sf_fifoHead < x->sf_fifoTail) { return 1; }
-    if (x->sf_fifoHead >= x->sf_fifoTail + SOUNDFILE_CHUNK_SIZE) { return 1; }
+    if (x->sf_fifoHead >= x->sf_fifoTail + SOUNDFILE_BUFFER_SIZE) { return 1; }
     if (x->sf_threadRequest == SOUNDFILE_REQUEST_CLOSE) {
         if (x->sf_fifoHead != x->sf_fifoTail) {
             return 1; 
@@ -163,7 +163,7 @@ static void writesf_tilde_threadOpenLoop (t_writesf_tilde *x)
         bytesToWrite = x->sf_fifoHead - x->sf_fifoTail;
     }
     
-    bytesToWrite = PD_MIN (bytesToWrite, SOUNDFILE_CHUNK_SIZE);
+    bytesToWrite = PD_MIN (bytesToWrite, SOUNDFILE_BUFFER_SIZE);
     
     if (bytesToWrite) {
 
@@ -431,7 +431,7 @@ static void *writesf_tilde_new (t_float f1, t_float f2)
     t_error err = PD_ERROR_NONE;
     
     int i, n = PD_CLAMP ((int)f1, 1, SOUNDFILE_MAXIMUM_CHANNELS);
-    int size = PD_CLAMP ((int)f2, SOUNDFILE_CHUNK_SIZE * 4 * n, SOUNDFILE_CHUNK_SIZE * 256 * n);
+    int size = PD_CLAMP ((int)f2, SOUNDFILE_BUFFER_SIZE * 4 * n, SOUNDFILE_BUFFER_SIZE * 256 * n);
 
     t_writesf_tilde *x = (t_writesf_tilde *)pd_new (writesf_tilde_class);
     

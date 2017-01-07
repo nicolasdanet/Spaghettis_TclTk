@@ -16,6 +16,7 @@
 #include "g_graphics.h"
 #include "d_dsp.h"
 #include "d_soundfile.h"
+#include "d_chunk.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -147,33 +148,12 @@ typedef struct _nextstep {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define SOUNDFILE_BUFFER                PD_STRING
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-typedef struct _soundfileheader {
-    unsigned char   h_c[SOUNDFILE_BUFFER];
-    int             h_bytesSet;
-    } t_soundfileheader;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#define SOUNDFILE_HEADER_INIT(x)        { *((x)->h_c) = 0; (x)->h_bytesSet = 0; }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void soundfile_initialize (void)
 {
-    PD_ASSERT (SOUNDFILE_BUFFER > 16);
-    PD_ASSERT (SOUNDFILE_BUFFER > SOUNDFILE_HEADER_WAVE);
-    PD_ASSERT (SOUNDFILE_BUFFER > SOUNDFILE_HEADER_AIFF);
-    PD_ASSERT (SOUNDFILE_BUFFER > SOUNDFILE_HEADER_NEXT);
+    PD_ASSERT (SOUNDFILE_HELPER_SIZE > 16);
+    PD_ASSERT (SOUNDFILE_HELPER_SIZE > SOUNDFILE_HEADER_WAVE);
+    PD_ASSERT (SOUNDFILE_HELPER_SIZE > SOUNDFILE_HEADER_AIFF);
+    PD_ASSERT (SOUNDFILE_HELPER_SIZE > SOUNDFILE_HEADER_NEXT);
     
     /* A way to test at compile time? */
     
@@ -271,11 +251,7 @@ t_error soundfile_readFileParse (t_symbol *s, int *ac, t_atom **av, t_audioprope
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Note that currently only the canonical file format is supported. */
-/* A properly way to traverse and fetch sub-chunks should be implemented. */
-/* < http://stackoverflow.com/a/19991594 > */
-
-static t_error soundfile_readFileHeaderWAVE (int f, t_soundfileheader *t, t_audioproperties *args)
+static t_error soundfile_readFileHeaderWAVE (int f, t_headerhelper *t, t_audioproperties *args)
 {
     t_error err = PD_ERROR;
 
@@ -318,9 +294,7 @@ static t_error soundfile_readFileHeaderWAVE (int f, t_soundfileheader *t, t_audi
     return err;
 }
 
-/* See comments above. */
-
-static t_error soundfile_readFileHeaderAIFF (int f, t_soundfileheader *t, t_audioproperties *args)
+static t_error soundfile_readFileHeaderAIFF (int f, t_headerhelper *t, t_audioproperties *args)
 {
     t_error err = PD_ERROR;
     
@@ -359,7 +333,7 @@ static t_error soundfile_readFileHeaderAIFF (int f, t_soundfileheader *t, t_audi
     return err;
 }
 
-static t_error soundfile_readFileHeaderNEXT (int f, t_soundfileheader *t, t_audioproperties *args)
+static t_error soundfile_readFileHeaderNEXT (int f, t_headerhelper *t, t_audioproperties *args)
 {
     t_error err = PD_ERROR;
     
@@ -397,9 +371,9 @@ static t_error soundfile_readFileHeaderFormat (int f, t_audioproperties *args)
 {
     t_error err = PD_ERROR;
     
-    t_soundfileheader t; SOUNDFILE_HEADER_INIT (&t); 
+    t_headerhelper t; SOUNDFILE_HELPER_INIT (&t); 
     
-    t.h_bytesSet = read (f, t.h_c, SOUNDFILE_BUFFER);
+    t.h_bytesSet = read (f, t.h_c, SOUNDFILE_HELPER_SIZE);
 
     if (t.h_bytesSet >= 4) {
     //
@@ -624,7 +598,7 @@ t_error soundfile_writeFileParse (t_symbol *s, int *ac, t_atom **av, t_audioprop
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_error soundfile_writeFileHeaderWAVE (t_soundfileheader *t, t_audioproperties *args)
+static t_error soundfile_writeFileHeaderWAVE (t_headerhelper *t, t_audioproperties *args)
 {
     int numberOfFrames = (args->ap_numberOfFrames == SOUNDFILE_UNKNOWN) ? 0 : args->ap_numberOfFrames;
     int dataSize       = args->ap_numberOfChannels * args->ap_bytesPerSample * numberOfFrames;
@@ -670,7 +644,7 @@ static t_error soundfile_writeFileHeaderWAVE (t_soundfileheader *t, t_audioprope
     return PD_ERROR_NONE;
 }
 
-static t_error soundfile_writeFileHeaderAIFF (t_soundfileheader *t, t_audioproperties *args)
+static t_error soundfile_writeFileHeaderAIFF (t_headerhelper *t, t_audioproperties *args)
 {
     int numberOfFrames = (args->ap_numberOfFrames == SOUNDFILE_UNKNOWN) ? 0 : args->ap_numberOfFrames;
     int dataSize       = args->ap_numberOfChannels * args->ap_bytesPerSample * numberOfFrames;
@@ -710,7 +684,7 @@ static t_error soundfile_writeFileHeaderAIFF (t_soundfileheader *t, t_audioprope
     return PD_ERROR_NONE;
 }
 
-static t_error soundfile_writeFileHeaderNEXT (t_soundfileheader *t, t_audioproperties *args)
+static t_error soundfile_writeFileHeaderNEXT (t_headerhelper *t, t_audioproperties *args)
 {
     int numberOfFrames = (args->ap_numberOfFrames == SOUNDFILE_UNKNOWN) ? 0 : args->ap_numberOfFrames;
     int dataSize       = args->ap_numberOfChannels * args->ap_bytesPerSample * numberOfFrames;
@@ -758,7 +732,7 @@ int soundfile_writeFileHeader (t_glist *glist, t_audioproperties *args)
     char name[PD_STRING] = { 0 };
     int f = -1;
     
-    t_soundfileheader t; SOUNDFILE_HEADER_INIT (&t);
+    t_headerhelper t; SOUNDFILE_HELPER_INIT (&t);
     
     PD_ASSERT (args->ap_fileName != NULL);
     PD_ASSERT (args->ap_fileExtension != NULL);

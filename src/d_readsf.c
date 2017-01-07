@@ -144,20 +144,20 @@ static void readsf_tilde_threadOpenLoop (t_readsf_tilde * x)
     
     /* Avoid to completely fill the buffer and overwrite previously loaded samples. */
         
-    if (x->sf_fifoTail || (x->sf_fifoSize - x->sf_fifoHead > SOUNDFILE_CHUNK_SIZE)) {
+    if (x->sf_fifoTail || (x->sf_fifoSize - x->sf_fifoHead > SOUNDFILE_BUFFER_SIZE)) {
         bytesToRead = x->sf_fifoSize - x->sf_fifoHead;
     }
 
     } else {
         bytesToRead = x->sf_fifoTail - x->sf_fifoHead - 1;
-        bytesToRead = bytesToRead < SOUNDFILE_CHUNK_SIZE ? 0 : SOUNDFILE_CHUNK_SIZE;
+        bytesToRead = bytesToRead < SOUNDFILE_BUFFER_SIZE ? 0 : SOUNDFILE_BUFFER_SIZE;
     }
 
     if (bytesToRead > 0) { 
       
         ssize_t bytesRead;
         
-        bytesToRead = PD_MIN (bytesToRead, SOUNDFILE_CHUNK_SIZE);
+        bytesToRead = PD_MIN (bytesToRead, SOUNDFILE_BUFFER_SIZE);
         bytesToRead = PD_MIN (bytesToRead, x->sf_properties.ap_dataSizeInBytes);
         bytesRead   = readsf_tilde_threadOpenLoopRead (x, bytesToRead);
 
@@ -491,7 +491,7 @@ static void *readsf_tilde_new (t_float f1, t_float f2)
     t_error err = PD_ERROR_NONE;
     
     int i, n = PD_CLAMP ((int)f1, 1, SOUNDFILE_MAXIMUM_CHANNELS);
-    int size = PD_CLAMP ((int)f2, SOUNDFILE_CHUNK_SIZE * 4 * n, SOUNDFILE_CHUNK_SIZE * 256 * n);
+    int size = PD_CLAMP ((int)f2, SOUNDFILE_BUFFER_SIZE * 4 * n, SOUNDFILE_BUFFER_SIZE * 256 * n);
     
     t_readsf_tilde *x = (t_readsf_tilde *)pd_new (readsf_tilde_class);
     
