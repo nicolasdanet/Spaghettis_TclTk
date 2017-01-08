@@ -310,7 +310,7 @@
 #include "d_noise.c"
 
 #include "d_soundfile.c"
-#include "d_chunk.c"
+#include "d_subchunk.c"
 #include "d_codec.c"
 #include "d_soundfiler.c"
 #include "d_readsf.c"

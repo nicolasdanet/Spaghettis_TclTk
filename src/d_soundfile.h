@@ -201,7 +201,16 @@ static inline void soundfile_setPropertiesByCopy (t_audioproperties *args, t_aud
 
 #define SOUNDFILE_HELPER_SIZE           PD_STRING
 
-#define SOUNDFILE_HELPER_INIT(x)        { *((x)->h_c) = 0; (x)->h_bytesSet = 0; }
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#define SOUNDFILE_HELPER_INIT(x)        {                           \
+                                            *((x)->h_c)      = 0;   \
+                                            (x)->h_bytesSet  = 0;   \
+                                            (x)->h_onset     = 0;   \
+                                            *((x)->h_ID)     = 0;   \
+                                            (x)->h_chunkSize = 0;   \
+                                        }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -210,6 +219,9 @@ static inline void soundfile_setPropertiesByCopy (t_audioproperties *args, t_aud
 typedef struct _headerhelper {
     unsigned char   h_c[SOUNDFILE_HELPER_SIZE];
     int             h_bytesSet;
+    int             h_onset;
+    char            h_ID[5];
+    int             h_chunkSize;
     } t_headerhelper;
 
 // -----------------------------------------------------------------------------------------------------------
