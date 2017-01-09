@@ -93,46 +93,29 @@ static t_error soundfiler_readResizeIfNecessary (int f,
     int *m,
     t_audioproperties *args)
 {
-    t_error err = PD_ERROR_NONE;
-    
-    /* Note that at this point the file is positioned at start of the sound. */
-    /* Onset is already handled. */
-    
     if (args->ap_needToResize) {
     //
-    off_t current     = lseek (f, 0, SEEK_CUR);
-    off_t end         = lseek (f, 0, SEEK_END);
-    int bytesPerFrame = args->ap_numberOfChannels * args->ap_bytesPerSample;
-    int dataSize      = end - current;
-    int frames        = dataSize / bytesPerFrame;
-    
-    if (current < 0 || end < 0 || dataSize < 0) { PD_BUG; err = PD_ERROR; }
-    if (dataSize != args->ap_dataSizeInBytes)   { PD_BUG; err = PD_ERROR; }
-    else {
-    //
+    int bytesPerFrame    = args->ap_numberOfChannels * args->ap_bytesPerSample;
+    int dataSizeInFrames = args->ap_dataSizeInBytes / bytesPerFrame;
     int i;
     
-    lseek (f, current, SEEK_SET);
-    
-    if (frames > args->ap_numberOfFrames) {     /* Maximum number of frames required by user. */
-        frames = args->ap_numberOfFrames; 
+    if (dataSizeInFrames > args->ap_numberOfFrames) {     /* Maximum number of frames required by user. */
+        dataSizeInFrames = args->ap_numberOfFrames; 
     }
 
     for (i = 0; i < channelsRequired; i++) {
         int size;
-        garray_resizeWithInteger (a[i], frames);
+        garray_resizeWithInteger (a[i], dataSizeInFrames);
         garray_setSaveWithParent (a[i], 0);
         garray_getData (a[i], &size, &w[i]);
-        PD_ASSERT (size == frames);
+        PD_ASSERT (size == dataSizeInFrames);
     }
     
-    *m = frames;
-    //
-    }
+    *m = dataSizeInFrames;
     //
     }
 
-    return err;
+    return PD_ERROR_NONE;
 }
 
 static int soundfiler_readDecode (int f,
@@ -220,6 +203,9 @@ static int soundfiler_readPerform (t_glist *glist, int argc, t_atom *argv)
     err = (f < 0);
     
     if (!err) { err = (properties.ap_dataSizeInBytes >= SOUNDFILER_LIMIT_SIZE); }
+    
+    /* Note that at this point the file is positioned at start of the sound. */
+    /* Onset is already handled. */
     
     if (!err) {
     
