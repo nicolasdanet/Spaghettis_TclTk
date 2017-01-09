@@ -265,6 +265,7 @@
 #include "d_snapshot.c"
 #include "d_env.c"
 #include "d_threshold.c"
+#include "d_samphold.c"
 
 #include "d_vcf.c"
 #include "d_filter.c"

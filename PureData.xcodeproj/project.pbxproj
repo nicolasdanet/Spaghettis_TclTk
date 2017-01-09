@@ -112,6 +112,7 @@
 		375252CE1E23CA2200863F79 /* d_rzeroreverse.c in Sources */ = {isa = PBXBuildFile; fileRef = 375252CD1E23CA2200863F79 /* d_rzeroreverse.c */; };
 		375252D71E23CACE00863F79 /* d_rzero.c in Sources */ = {isa = PBXBuildFile; fileRef = 375252D61E23CACE00863F79 /* d_rzero.c */; };
 		375252E01E23CB6C00863F79 /* d_rpole.c in Sources */ = {isa = PBXBuildFile; fileRef = 375252DF1E23CB6C00863F79 /* d_rpole.c */; };
+		375252E91E23CC3200863F79 /* d_samphold.c in Sources */ = {isa = PBXBuildFile; fileRef = 375252E81E23CC3200863F79 /* d_samphold.c */; };
 		375BED391DABC801009BFCD7 /* x_netreceive.c in Sources */ = {isa = PBXBuildFile; fileRef = 375BED371DABC801009BFCD7 /* x_netreceive.c */; };
 		375BED3A1DABC801009BFCD7 /* x_netsend.c in Sources */ = {isa = PBXBuildFile; fileRef = 375BED381DABC801009BFCD7 /* x_netsend.c */; };
 		375D72E71D86A5F000D079B1 /* x_arrayclient.c in Sources */ = {isa = PBXBuildFile; fileRef = 375D72E61D86A5F000D079B1 /* x_arrayclient.c */; };
@@ -480,6 +481,7 @@
 		375252CD1E23CA2200863F79 /* d_rzeroreverse.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_rzeroreverse.c; path = src/d_rzeroreverse.c; sourceTree = "<group>"; };
 		375252D61E23CACE00863F79 /* d_rzero.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_rzero.c; path = src/d_rzero.c; sourceTree = "<group>"; };
 		375252DF1E23CB6C00863F79 /* d_rpole.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_rpole.c; path = src/d_rpole.c; sourceTree = "<group>"; };
+		375252E81E23CC3200863F79 /* d_samphold.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_samphold.c; path = src/d_samphold.c; sourceTree = "<group>"; };
 		375BED371DABC801009BFCD7 /* x_netreceive.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_netreceive.c; path = src/x_netreceive.c; sourceTree = "<group>"; };
 		375BED381DABC801009BFCD7 /* x_netsend.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_netsend.c; path = src/x_netsend.c; sourceTree = "<group>"; };
 		375D72E61D86A5F000D079B1 /* x_arrayclient.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arrayclient.c; path = src/x_arrayclient.c; sourceTree = "<group>"; };
@@ -1186,6 +1188,7 @@
 				371D2CBA1DFBF35C004EAB69 /* d_snapshot.c */,
 				371D2C751DFBF228004EAB69 /* d_env.c */,
 				371D2C491DFBF15F004EAB69 /* d_threshold.c */,
+				375252E81E23CC3200863F79 /* d_samphold.c */,
 			);
 			name = Convert;
 			sourceTree = "<group>";
@@ -2000,6 +2003,7 @@
 				375252CE1E23CA2200863F79 /* d_rzeroreverse.c in Sources */,
 				375252D71E23CACE00863F79 /* d_rzero.c in Sources */,
 				375252E01E23CB6C00863F79 /* d_rpole.c in Sources */,
+				375252E91E23CC3200863F79 /* d_samphold.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
