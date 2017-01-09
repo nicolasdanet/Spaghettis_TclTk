@@ -115,6 +115,7 @@
 		375252E91E23CC3200863F79 /* d_samphold.c in Sources */ = {isa = PBXBuildFile; fileRef = 375252E81E23CC3200863F79 /* d_samphold.c */; };
 		375252F21E23CCD700863F79 /* d_biquad.c in Sources */ = {isa = PBXBuildFile; fileRef = 375252F11E23CCD700863F79 /* d_biquad.c */; };
 		375252FC1E23CD8E00863F79 /* d_bp.c in Sources */ = {isa = PBXBuildFile; fileRef = 375252FB1E23CD8E00863F79 /* d_bp.c */; };
+		375253051E23CE1E00863F79 /* d_lop.c in Sources */ = {isa = PBXBuildFile; fileRef = 375253041E23CE1E00863F79 /* d_lop.c */; };
 		375BED391DABC801009BFCD7 /* x_netreceive.c in Sources */ = {isa = PBXBuildFile; fileRef = 375BED371DABC801009BFCD7 /* x_netreceive.c */; };
 		375BED3A1DABC801009BFCD7 /* x_netsend.c in Sources */ = {isa = PBXBuildFile; fileRef = 375BED381DABC801009BFCD7 /* x_netsend.c */; };
 		375D72E71D86A5F000D079B1 /* x_arrayclient.c in Sources */ = {isa = PBXBuildFile; fileRef = 375D72E61D86A5F000D079B1 /* x_arrayclient.c */; };
@@ -152,7 +153,7 @@
 		378972181C4F716800263434 /* d_delwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B41C4F716700263434 /* d_delwrite.c */; };
 		378972191C4F716800263434 /* d_fft_fftsg.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B51C4F716700263434 /* d_fft_fftsg.c */; };
 		3789721A1C4F716800263434 /* d_fft.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B61C4F716700263434 /* d_fft.c */; };
-		3789721B1C4F716800263434 /* d_filter.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B71C4F716700263434 /* d_filter.c */; };
+		3789721B1C4F716800263434 /* d_hip.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B71C4F716700263434 /* d_hip.c */; };
 		3789721D1C4F716800263434 /* d_clip.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B91C4F716700263434 /* d_clip.c */; };
 		3789721F1C4F716800263434 /* d_osc.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971BB1C4F716700263434 /* d_osc.c */; };
 		378972201C4F716800263434 /* d_resample.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971BC1C4F716700263434 /* d_resample.c */; };
@@ -486,6 +487,7 @@
 		375252E81E23CC3200863F79 /* d_samphold.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_samphold.c; path = src/d_samphold.c; sourceTree = "<group>"; };
 		375252F11E23CCD700863F79 /* d_biquad.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_biquad.c; path = src/d_biquad.c; sourceTree = "<group>"; };
 		375252FB1E23CD8E00863F79 /* d_bp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_bp.c; path = src/d_bp.c; sourceTree = "<group>"; };
+		375253041E23CE1E00863F79 /* d_lop.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_lop.c; path = src/d_lop.c; sourceTree = "<group>"; };
 		375BED371DABC801009BFCD7 /* x_netreceive.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_netreceive.c; path = src/x_netreceive.c; sourceTree = "<group>"; };
 		375BED381DABC801009BFCD7 /* x_netsend.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_netsend.c; path = src/x_netsend.c; sourceTree = "<group>"; };
 		375D72E61D86A5F000D079B1 /* x_arrayclient.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arrayclient.c; path = src/x_arrayclient.c; sourceTree = "<group>"; };
@@ -570,7 +572,7 @@
 		378971B41C4F716700263434 /* d_delwrite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_delwrite.c; path = src/d_delwrite.c; sourceTree = "<group>"; };
 		378971B51C4F716700263434 /* d_fft_fftsg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_fft_fftsg.c; path = src/d_fft_fftsg.c; sourceTree = "<group>"; };
 		378971B61C4F716700263434 /* d_fft.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_fft.c; path = src/d_fft.c; sourceTree = "<group>"; };
-		378971B71C4F716700263434 /* d_filter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_filter.c; path = src/d_filter.c; sourceTree = "<group>"; };
+		378971B71C4F716700263434 /* d_hip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_hip.c; path = src/d_hip.c; sourceTree = "<group>"; };
 		378971B91C4F716700263434 /* d_clip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_clip.c; path = src/d_clip.c; sourceTree = "<group>"; };
 		378971BB1C4F716700263434 /* d_osc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_osc.c; path = src/d_osc.c; sourceTree = "<group>"; };
 		378971BC1C4F716700263434 /* d_resample.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_resample.c; path = src/d_resample.c; sourceTree = "<group>"; };
@@ -1543,7 +1545,8 @@
 			isa = PBXGroup;
 			children = (
 				3741A8EA1DE845EA00B32300 /* d_vcf.c */,
-				378971B71C4F716700263434 /* d_filter.c */,
+				378971B71C4F716700263434 /* d_hip.c */,
+				375253041E23CE1E00863F79 /* d_lop.c */,
 				375252FB1E23CD8E00863F79 /* d_bp.c */,
 				375252F11E23CCD700863F79 /* d_biquad.c */,
 				375252DF1E23CB6C00863F79 /* d_rpole.c */,
@@ -1740,7 +1743,7 @@
 				378972181C4F716800263434 /* d_delwrite.c in Sources */,
 				378972191C4F716800263434 /* d_fft_fftsg.c in Sources */,
 				3789721A1C4F716800263434 /* d_fft.c in Sources */,
-				3789721B1C4F716800263434 /* d_filter.c in Sources */,
+				3789721B1C4F716800263434 /* d_hip.c in Sources */,
 				3789721D1C4F716800263434 /* d_clip.c in Sources */,
 				3789721F1C4F716800263434 /* d_osc.c in Sources */,
 				378972201C4F716800263434 /* d_resample.c in Sources */,
@@ -2012,6 +2015,7 @@
 				375252E91E23CC3200863F79 /* d_samphold.c in Sources */,
 				375252F21E23CCD700863F79 /* d_biquad.c in Sources */,
 				375252FC1E23CD8E00863F79 /* d_bp.c in Sources */,
+				375253051E23CE1E00863F79 /* d_lop.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

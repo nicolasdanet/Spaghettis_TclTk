@@ -268,7 +268,8 @@
 #include "d_samphold.c"
 
 #include "d_vcf.c"
-#include "d_filter.c"
+#include "d_hip.c"
+#include "d_lop.c"
 #include "d_bp.c"
 #include "d_biquad.c"
 #include "d_rpole.c"
