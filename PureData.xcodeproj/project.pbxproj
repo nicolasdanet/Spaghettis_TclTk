@@ -1418,7 +1418,6 @@
 				377C79961DF08AD0008195B0 /* Math */,
 				37C000561DE2FE3800F90584 /* Miscellaneous */,
 				37E0CBA81E03FA6C00993022 /* Soundfile */,
-				378971B71C4F716700263434 /* d_filter.c */,
 				378971B61C4F716700263434 /* d_fft.c */,
 				378971B51C4F716700263434 /* d_fft_fftsg.c */,
 			);
@@ -1524,6 +1523,7 @@
 		37E4DA031DEC6BB500190484 /* Filters */ = {
 			isa = PBXGroup;
 			children = (
+				378971B71C4F716700263434 /* d_filter.c */,
 				3741A8EA1DE845EA00B32300 /* d_vcf.c */,
 			);
 			name = Filters;

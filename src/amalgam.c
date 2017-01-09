@@ -267,6 +267,7 @@
 #include "d_threshold.c"
 
 #include "d_vcf.c"
+#include "d_filter.c"
 
 #include "d_delwrite.c"
 #include "d_delread.c"
