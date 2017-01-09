@@ -14,8 +14,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* < http://www.rossbencina.com/code/real-time-audio-programming-101-time-waits-for-nothing */
-/* < http://atastypixel.com/blog/four-common-mistakes-in-audio-development/ */
+/* < http://www.rossbencina.com/code/real-time-audio-programming-101-time-waits-for-nothing > */
+/* < http://atastypixel.com/blog/four-common-mistakes-in-audio-development/ > */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -14,8 +14,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* < http://www.rossbencina.com/code/real-time-audio-programming-101-time-waits-for-nothing */
-/* < http://atastypixel.com/blog/four-common-mistakes-in-audio-development/ */
+/* < http://www.rossbencina.com/code/real-time-audio-programming-101-time-waits-for-nothing > */
+/* < http://atastypixel.com/blog/four-common-mistakes-in-audio-development/ > */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -415,7 +415,7 @@ static t_int *writesf_tilde_perform (t_int *w)
         x->sf_properties.ap_bytesPerSample,
         x->sf_properties.ap_isBigEndian,
         1,
-        1.);
+        1.0);
     
     x->sf_fifoHead += bytesToWrite; if (x->sf_fifoHead >= x->sf_fifoSize) { x->sf_fifoHead = 0; }
     
@@ -428,7 +428,7 @@ static t_int *writesf_tilde_perform (t_int *w)
     return (w + 2);
 }
 
-static void writesf_tilde_dsp(t_writesf_tilde *x, t_signal **sp)
+static void writesf_tilde_dsp (t_writesf_tilde *x, t_signal **sp)
 {
     PD_ASSERT (sp[0]->s_vectorSize == AUDIO_DEFAULT_BLOCKSIZE);     /* Not implemented yet. */
     PD_ABORT  (sp[0]->s_vectorSize != AUDIO_DEFAULT_BLOCKSIZE);

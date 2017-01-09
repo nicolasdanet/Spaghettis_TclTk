@@ -99,19 +99,19 @@ t_error soundfile_readFileParse (t_symbol *s, int *ac, t_atom **av, t_audioprope
     
     } else if (t == sym___dash__resize)   {
         needToResize = 1;
-        argc --; argv++;
+        argc--; argv++;
         
     } else if (t == sym___dash__nextstep) {
         fileExtension = sym___point__snd;
-        argc --; argv++;
+        argc--; argv++;
         
     } else if (t == sym___dash__wave)     {
         fileExtension = sym___point__wav;
-        argc --; argv++;
+        argc--; argv++;
         
     } else if (t == sym___dash__aiff)     {
         fileExtension = sym___point__aif;
-        argc --; argv++;
+        argc--; argv++;
         
     } else { break; }
     //
@@ -422,27 +422,27 @@ t_error soundfile_writeFileParse (t_symbol *s, int *ac, t_atom **av, t_audioprop
         
     } else if (t == sym___dash__n || t == sym___dash__normalize) {
         needToNormalize = 1;
-        argc --; argv++;
+        argc--; argv++;
     
     } else if (t == sym___dash__nextstep)   {
         fileType = SOUNDFILE_NEXT; fileExtension = sym___point__snd;
-        argc --; argv++;
+        argc--; argv++;
         
     } else if (t == sym___dash__wave)   {
         fileType = SOUNDFILE_WAVE; fileExtension = sym___point__wav;
-        argc --; argv++;
+        argc--; argv++;
         
     } else if (t == sym___dash__aiff)   {
         fileType = SOUNDFILE_AIFF; fileExtension = sym___point__aif;
-        argc --; argv++;
+        argc--; argv++;
         
     } else if (t == sym___dash__big)    {
         endianness = 1;
-        argc --; argv++;
+        argc--; argv++;
         
     } else if (t == sym___dash__little) {
         endianness = 0;
-        argc --; argv++;
+        argc--; argv++;
         
     } else { break; }
     //
