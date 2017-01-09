@@ -268,6 +268,7 @@
 
 #include "d_vcf.c"
 #include "d_filter.c"
+#include "d_rpole.c"
 #include "d_rzero.c"
 #include "d_rzeroreverse.c"
 #include "d_cpole.c"
