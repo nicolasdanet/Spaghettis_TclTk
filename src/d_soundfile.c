@@ -317,13 +317,15 @@ static int soundfile_readFileHeaderPerform (int f, t_audioproperties *args)
     t_error err = soundfile_readFileHeaderFormat (f, args);
     
     if (!err) {
-    
-        PD_ASSERT (args->ap_headerSize       != SOUNDFILE_UNDEFINED);
-        PD_ASSERT (args->ap_numberOfChannels != SOUNDFILE_UNDEFINED);
-        PD_ASSERT (args->ap_isBigEndian      != SOUNDFILE_UNDEFINED);
-        PD_ASSERT (args->ap_dataSizeInBytes  != SOUNDFILE_UNDEFINED);
+    //
+    PD_ASSERT (args->ap_headerSize       != SOUNDFILE_UNDEFINED);
+    PD_ASSERT (args->ap_numberOfChannels != SOUNDFILE_UNDEFINED);
+    PD_ASSERT (args->ap_isBigEndian      != SOUNDFILE_UNDEFINED);
+    PD_ASSERT (args->ap_dataSizeInBytes  != SOUNDFILE_UNDEFINED);
         
-        err = (args->ap_dataSizeInBytes < 0); 
+    err |= (args->ap_dataSizeInBytes < 0);
+    err |= (args->ap_dataSizeInBytes + args->ap_headerSize > lseek (f, 0, SEEK_END));
+    //
     }
     
     if (!err) {
