@@ -69,9 +69,7 @@
 #pragma mark -
 
 #define PD_INT_MAX          0x7fffffff
-#define PD_FLT_MIN          FLT_MIN
 #define PD_FLT_MAX          FLT_MAX
-#define PD_DBL_MIN          DBL_MIN
 #define PD_DBL_MAX          DBL_MAX
 
 // -----------------------------------------------------------------------------------------------------------

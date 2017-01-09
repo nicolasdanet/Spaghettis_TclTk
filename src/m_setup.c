@@ -207,7 +207,7 @@ void sighip_setup           (void);
 void siglop_setup           (void);
 void sigbp_setup            (void);
 void sigbiquad_setup        (void);
-void sigsamphold_setup      (void);
+void samphold_tilde_setup   (void);
 void sigrpole_setup         (void);
 void sigrzero_setup         (void);
 void sigrzero_rev_setup     (void);
@@ -416,7 +416,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     siglop_setup();
     sigbp_setup();
     sigbiquad_setup();
-    sigsamphold_setup();
+    samphold_tilde_setup();
     sigrpole_setup();
     sigrzero_setup();
     sigrzero_rev_setup();

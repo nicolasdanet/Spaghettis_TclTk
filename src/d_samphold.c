@@ -14,81 +14,123 @@
 #include "m_macros.h"
 #include "d_dsp.h"
 
-/* ---------------- samphold~ - sample and hold  ----------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct sigsamphold
+static t_class *samphold_tilde_class;       /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _samphold_tilde {
+    t_object    x_obj;                      /* Must be the first. */
+    t_float     x_f;
+    t_sample    x_lastControl;
+    t_sample    x_lastOut;
+    t_outlet    *x_outlet;
+    } t_samphold_tilde;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void samphold_tilde_reset (t_samphold_tilde *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_object x_obj;
-    t_float x_f;
-    t_sample x_lastin;
-    t_sample x_lastout;
-} t_sigsamphold;
+    if (argc && IS_FLOAT (argv)) { x->x_lastControl = GET_FLOAT (argv); }
+    else {
+        x->x_lastControl = PD_FLT_MAX;
+    }
+}
 
-t_class *sigsamphold_class;
-
-static void *sigsamphold_new(void)
+static void samphold_tilde_set (t_samphold_tilde *x, t_float f)
 {
-    t_sigsamphold *x = (t_sigsamphold *)pd_new(sigsamphold_class);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
-    outlet_new(&x->x_obj, &s_signal);
-    x->x_lastin = 0;
-    x->x_lastout = 0;
-    x->x_f = 0;
+    x->x_lastOut = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* Aliasing. */
+
+static t_int *samphold_tilde_perform (t_int *w)
+{
+    t_samphold_tilde *x = (t_samphold_tilde *)(w[1]);
+    t_sample *in1 = (t_sample *)(w[2]);
+    t_sample *in2 = (t_sample *)(w[3]);
+    t_sample *out = (t_sample *)(w[4]);
+    int n = (t_int)(w[5]);
+    
+    t_sample lastControl = x->x_lastControl;
+    t_sample lastOut = x->x_lastOut;
+    int i;
+        
+    for (i = 0; i < n; i++) {
+    //
+    t_sample f = *in2;
+    
+    if (f < lastControl) { lastOut = *in1; }
+    *out++ = lastOut;
+    lastControl = f;
+    
+    in1++;
+    in2++;
+    //
+    }
+    
+    x->x_lastControl = lastControl;
+    x->x_lastOut = lastOut;
+    
+    return (w + 6);
+}
+
+static void samphold_tilde_dsp (t_samphold_tilde *x, t_signal **sp)
+{
+    dsp_add (samphold_tilde_perform, 5, x,
+        sp[0]->s_vector,
+        sp[1]->s_vector,
+        sp[2]->s_vector, 
+        sp[0]->s_vectorSize);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *samphold_tilde_new (void)
+{
+    t_samphold_tilde *x = (t_samphold_tilde *)pd_new (samphold_tilde_class);
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+        
+    inlet_newSignal (cast_object (x));
+    
     return x;
 }
 
-static t_int *sigsamphold_perform(t_int *w)
-{
-    t_sample *in1 = (t_sample *)(w[1]);
-    t_sample *in2 = (t_sample *)(w[2]);
-    t_sample *out = (t_sample *)(w[3]);
-    t_sigsamphold *x = (t_sigsamphold *)(w[4]);
-    int n = (t_int)(w[5]);
-    int i;
-    t_sample lastin = x->x_lastin;
-    t_sample lastout = x->x_lastout;
-    for (i = 0; i < n; i++, in1++)
-    {
-        t_sample next = *in2++;
-        if (next < lastin) lastout = *in1;
-        *out++ = lastout;
-        lastin = next;
-    }
-    x->x_lastin = lastin;
-    x->x_lastout = lastout;
-    return (w+6);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void sigsamphold_dsp(t_sigsamphold *x, t_signal **sp)
+void samphold_tilde_setup (void)
 {
-    dsp_add(sigsamphold_perform, 5,
-        sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, 
-            x, sp[0]->s_vectorSize);
-}
+    t_class *c = NULL;
+    
+    c = class_new (sym_samphold__tilde__,
+            (t_newmethod)samphold_tilde_new,
+            NULL,
+            sizeof (t_samphold_tilde),
+            CLASS_DEFAULT,
+            A_NULL);
+            
+    CLASS_SIGNAL (c, t_samphold_tilde, x_f);
+    
+    class_addDSP (c, (t_method)samphold_tilde_dsp);
+        
+    class_addMethod (c, (t_method)samphold_tilde_reset, sym_reset,  A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)samphold_tilde_set,   sym_set,    A_DEFFLOAT, A_NULL);
 
-static void sigsamphold_reset(t_sigsamphold *x, t_symbol *s, int argc,
-    t_atom *argv)
-{
-    x->x_lastin = ((argc > 0 && (argv[0].a_type == A_FLOAT)) ?
-        argv[0].a_w.w_float : 1e20);
-}
-
-static void sigsamphold_set(t_sigsamphold *x, t_float f)
-{
-    x->x_lastout = f;
-}
-
-void sigsamphold_setup(void)
-{
-    sigsamphold_class = class_new(sym_samphold__tilde__,
-        (t_newmethod)sigsamphold_new, 0, sizeof(t_sigsamphold), 0, 0);
-    CLASS_SIGNAL(sigsamphold_class, t_sigsamphold, x_f);
-    class_addMethod(sigsamphold_class, (t_method)sigsamphold_set,
-        sym_set, A_DEFFLOAT, 0);
-    class_addMethod(sigsamphold_class, (t_method)sigsamphold_reset,
-        sym_reset, A_GIMME, 0);
-    class_addMethod(sigsamphold_class, (t_method)sigsamphold_dsp,
-        sym_dsp, A_CANT, 0);
+    samphold_tilde_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

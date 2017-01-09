@@ -41,7 +41,7 @@ static void arraymax_bang (t_arraymax *x)
     t_array *a = arrayrange_getRange (&x->x_arrayrange, &start, &n);
     
     t_float maxIndex = -1.0;
-    t_float maxValue = PD_FLT_MIN;
+    t_float maxValue = -PD_FLT_MAX;
     
     for (i = 0; i < n; i++) {
         t_float t = array_getFloatAtIndex (a, start + i, arrayrange_getFieldName (&x->x_arrayrange));
