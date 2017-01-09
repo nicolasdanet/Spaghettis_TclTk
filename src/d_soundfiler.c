@@ -187,8 +187,8 @@ static int soundfiler_readPerform (t_glist *glist, int argc, t_atom *argv)
     
     if (!err) {
     //
-    t_word   *w[SOUNDFILE_MAXIMUM_CHANNELS] = { NULL };
-    t_garray *a[SOUNDFILE_MAXIMUM_CHANNELS] = { NULL };
+    t_word   *w[SOUNDFILE_CHANNELS] = { NULL };
+    t_garray *a[SOUNDFILE_CHANNELS] = { NULL };
 
     int arraysSize = SOUNDFILE_UNKNOWN;
     
@@ -257,7 +257,7 @@ static t_error soundfiler_writeFetch (int argc,
     t_sample *m, 
     t_audioproperties *args)
 {
-    t_error err = (argc < 1 || argc > SOUNDFILE_MAXIMUM_CHANNELS);
+    t_error err = (argc < 1 || argc > SOUNDFILE_CHANNELS);
     
     if (!err) {
     //
@@ -376,8 +376,8 @@ static int soundfiler_writePerform (t_glist *canvas, int argc, t_atom *argv)
 
     if (!err) {
     //
-    t_garray *a[SOUNDFILE_MAXIMUM_CHANNELS] = { NULL };
-    t_word   *w[SOUNDFILE_MAXIMUM_CHANNELS] = { NULL };
+    t_garray *a[SOUNDFILE_CHANNELS] = { NULL };
+    t_word   *w[SOUNDFILE_CHANNELS] = { NULL };
 
     t_sample maximumAmplitude = 0.0;
     

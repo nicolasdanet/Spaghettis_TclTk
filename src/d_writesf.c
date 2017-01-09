@@ -63,7 +63,7 @@ typedef struct _writesf_tilde {
     int                 sf_bufferSize;
     char                *sf_buffer;
     t_glist             *sf_owner;
-    t_sample            *(sf_vectorsOut[SOUNDFILE_MAXIMUM_CHANNELS]);
+    t_sample            *(sf_vectorsOut[SOUNDFILE_CHANNELS]);
     pthread_mutex_t     sf_mutex;
     pthread_cond_t      sf_condRequest;
     pthread_cond_t      sf_condAnswer;
@@ -74,7 +74,31 @@ typedef struct _writesf_tilde {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define WRITESF_NO_REQUEST      (x->sf_threadRequest == SOUNDFILE_REQUEST_BUSY)
+#define WRITESF_BUFFER_SIZE         65536
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define WRITESF_REQUEST_NOTHING     0
+#define WRITESF_REQUEST_OPEN        1
+#define WRITESF_REQUEST_CLOSE       2
+#define WRITESF_REQUEST_QUIT        3
+#define WRITESF_REQUEST_BUSY        4
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define WRITESF_STATE_IDLE          0
+#define WRITESF_STATE_START         1
+#define WRITESF_STATE_STREAM        2
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define WRITESF_NO_REQUEST          (x->sf_threadRequest == WRITESF_REQUEST_BUSY)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -106,9 +130,9 @@ static void writesf_tilde_threadCloseFile (t_writesf_tilde *x)
 
 static inline int writesf_tilde_threadOpenLoopRun (t_writesf_tilde *x)
 {
-    if (x->sf_threadRequest == SOUNDFILE_REQUEST_QUIT)  { return 0; }
-    if (x->sf_threadRequest == SOUNDFILE_REQUEST_BUSY)  { return 1; }
-    if (x->sf_threadRequest == SOUNDFILE_REQUEST_CLOSE) {
+    if (x->sf_threadRequest == WRITESF_REQUEST_QUIT)  { return 0; }
+    if (x->sf_threadRequest == WRITESF_REQUEST_BUSY)  { return 1; }
+    if (x->sf_threadRequest == WRITESF_REQUEST_CLOSE) {
         if (x->sf_fifoHead != x->sf_fifoTail) {
             return 1; 
         }
@@ -120,8 +144,8 @@ static inline int writesf_tilde_threadOpenLoopRun (t_writesf_tilde *x)
 static inline int writesf_tilde_threadOpenLoopNeedToWrite (t_writesf_tilde *x)
 {
     if (x->sf_fifoHead < x->sf_fifoTail) { return 1; }
-    if (x->sf_fifoHead >= x->sf_fifoTail + SOUNDFILE_BUFFER_SIZE) { return 1; }
-    if (x->sf_threadRequest == SOUNDFILE_REQUEST_CLOSE) {
+    if (x->sf_fifoHead >= x->sf_fifoTail + WRITESF_BUFFER_SIZE) { return 1; }
+    if (x->sf_threadRequest == WRITESF_REQUEST_CLOSE) {
         if (x->sf_fifoHead != x->sf_fifoTail) {
             return 1; 
         }
@@ -163,7 +187,7 @@ static void writesf_tilde_threadOpenLoop (t_writesf_tilde *x)
         bytesToWrite = x->sf_fifoHead - x->sf_fifoTail;
     }
     
-    bytesToWrite = PD_MIN (bytesToWrite, SOUNDFILE_BUFFER_SIZE);
+    bytesToWrite = PD_MIN (bytesToWrite, WRITESF_BUFFER_SIZE);
     
     if (bytesToWrite) {
 
@@ -175,7 +199,7 @@ static void writesf_tilde_threadOpenLoop (t_writesf_tilde *x)
         
         if (bytesWritten < bytesToWrite) {
             x->sf_error = PD_ERROR; 
-            x->sf_threadRequest = SOUNDFILE_REQUEST_NOTHING;
+            x->sf_threadRequest = WRITESF_REQUEST_NOTHING;
             break;
             
         } else {
@@ -202,7 +226,7 @@ static void writesf_tilde_threadNothing (t_writesf_tilde *x)
 
 static void writesf_tilde_threadOpen (t_writesf_tilde *x)
 {
-    x->sf_threadRequest = SOUNDFILE_REQUEST_BUSY;
+    x->sf_threadRequest = WRITESF_REQUEST_BUSY;
     x->sf_error = PD_ERROR_NONE;
         
     writesf_tilde_threadCloseFile (x);
@@ -225,7 +249,7 @@ static void writesf_tilde_threadOpen (t_writesf_tilde *x)
     
     if (x->sf_fileDescriptor < 0) {
         x->sf_error = PD_ERROR;
-        x->sf_threadRequest = SOUNDFILE_REQUEST_NOTHING;
+        x->sf_threadRequest = WRITESF_REQUEST_NOTHING;
     
     /* Wait for the fifo to have data and write it to disk. */
     
@@ -238,7 +262,7 @@ static void writesf_tilde_threadClose (t_writesf_tilde *x)
 {
     writesf_tilde_threadCloseFile (x);
     
-    x->sf_threadRequest = SOUNDFILE_REQUEST_NOTHING;
+    x->sf_threadRequest = WRITESF_REQUEST_NOTHING;
     
     pthread_cond_signal (&x->sf_condAnswer);
 }
@@ -253,10 +277,10 @@ static void *writesf_tilde_thread (void *z)
         //
         int t = x->sf_threadRequest;
         
-        if (t == SOUNDFILE_REQUEST_NOTHING)     { writesf_tilde_threadNothing (x);  }
-        else if (t == SOUNDFILE_REQUEST_OPEN)   { writesf_tilde_threadOpen (x);     }
-        else if (t == SOUNDFILE_REQUEST_CLOSE)  { writesf_tilde_threadClose (x);    }
-        else if (t == SOUNDFILE_REQUEST_QUIT)   {
+        if (t == WRITESF_REQUEST_NOTHING)    { writesf_tilde_threadNothing (x);  }
+        else if (t == WRITESF_REQUEST_OPEN)  { writesf_tilde_threadOpen (x);     }
+        else if (t == WRITESF_REQUEST_CLOSE) { writesf_tilde_threadClose (x);    }
+        else if (t == WRITESF_REQUEST_QUIT)  {
             writesf_tilde_threadClose (x);
             break;
         }
@@ -274,7 +298,7 @@ static void *writesf_tilde_thread (void *z)
 
 static void writesf_tilde_start (t_writesf_tilde *x)
 {
-    if (x->sf_threadState == SOUNDFILE_STATE_START) { x->sf_threadState = SOUNDFILE_STATE_STREAM; }
+    if (x->sf_threadState == WRITESF_STATE_START) { x->sf_threadState = WRITESF_STATE_STREAM; }
     else {
         error_unexpected (sym_writesf__tilde__, sym_start);
     }
@@ -282,11 +306,11 @@ static void writesf_tilde_start (t_writesf_tilde *x)
 
 static void writesf_tilde_stop (t_writesf_tilde *x)
 {
-    x->sf_threadState = SOUNDFILE_STATE_IDLE;
+    x->sf_threadState = WRITESF_STATE_IDLE;
     
     pthread_mutex_lock (&x->sf_mutex);
         
-        x->sf_threadRequest = SOUNDFILE_REQUEST_CLOSE;
+        x->sf_threadRequest = WRITESF_REQUEST_CLOSE;
 
     pthread_cond_signal (&x->sf_condRequest);
     pthread_mutex_unlock (&x->sf_mutex);
@@ -298,7 +322,7 @@ static void writesf_tilde_open (t_writesf_tilde *x, t_symbol *s, int argc, t_ato
     
     t_audioproperties properties; soundfile_initProperties (&properties);
     
-    if (x->sf_threadState != SOUNDFILE_STATE_IDLE) { writesf_tilde_stop (x); }
+    if (x->sf_threadState != WRITESF_STATE_IDLE) { writesf_tilde_stop (x); }
     
     err = soundfile_writeFileParse (sym_writesf__tilde__, &argc, &argv, &properties);
 
@@ -308,7 +332,7 @@ static void writesf_tilde_open (t_writesf_tilde *x, t_symbol *s, int argc, t_ato
     //
     pthread_mutex_lock (&x->sf_mutex);
     
-        while (x->sf_threadRequest != SOUNDFILE_REQUEST_NOTHING) {
+        while (x->sf_threadRequest != WRITESF_REQUEST_NOTHING) {
             pthread_cond_signal (&x->sf_condRequest);
             pthread_cond_wait (&x->sf_condAnswer, &x->sf_mutex);
         }
@@ -318,8 +342,8 @@ static void writesf_tilde_open (t_writesf_tilde *x, t_symbol *s, int argc, t_ato
         x->sf_properties.ap_numberOfChannels = x->sf_numberOfChannels;
         
         {
-            x->sf_threadState   = SOUNDFILE_STATE_START;
-            x->sf_threadRequest = SOUNDFILE_REQUEST_OPEN;
+            x->sf_threadState   = WRITESF_STATE_START;
+            x->sf_threadRequest = WRITESF_REQUEST_OPEN;
             x->sf_isEndOfFile   = 0;
             x->sf_itemsWritten  = 0;
         
@@ -371,7 +395,7 @@ static t_int *writesf_tilde_perform (t_int *w)
 
     pthread_mutex_lock (&x->sf_mutex);
     
-    if (!x->sf_error && x->sf_threadState == SOUNDFILE_STATE_STREAM) {
+    if (!x->sf_error && x->sf_threadState == WRITESF_STATE_STREAM) {
     //
     int bytesPerFrame = x->sf_properties.ap_numberOfChannels * x->sf_properties.ap_bytesPerSample;
     int bytesToWrite  = x->sf_vectorSize * bytesPerFrame;
@@ -430,16 +454,16 @@ static void *writesf_tilde_new (t_float f1, t_float f2)
 {
     t_error err = PD_ERROR_NONE;
     
-    int i, n = PD_CLAMP ((int)f1, 1, SOUNDFILE_MAXIMUM_CHANNELS);
-    int size = PD_CLAMP ((int)f2, SOUNDFILE_BUFFER_SIZE * 4 * n, SOUNDFILE_BUFFER_SIZE * 256 * n);
+    int i, n = PD_CLAMP ((int)f1, 1, SOUNDFILE_CHANNELS);
+    int size = PD_CLAMP ((int)f2, WRITESF_BUFFER_SIZE * 4 * n, WRITESF_BUFFER_SIZE * 256 * n);
 
     t_writesf_tilde *x = (t_writesf_tilde *)pd_new (writesf_tilde_class);
     
     soundfile_initProperties (&x->sf_properties);
     
     x->sf_vectorSize        = AUDIO_DEFAULT_BLOCKSIZE;
-    x->sf_threadState       = SOUNDFILE_STATE_IDLE;
-    x->sf_threadRequest     = SOUNDFILE_REQUEST_NOTHING;
+    x->sf_threadState       = WRITESF_STATE_IDLE;
+    x->sf_threadRequest     = WRITESF_REQUEST_NOTHING;
     x->sf_fileDescriptor    = -1;
     x->sf_numberOfChannels  = n;
     x->sf_bufferSize        = size;
@@ -466,10 +490,10 @@ static void writesf_tilde_free (t_writesf_tilde *x)
     
     pthread_mutex_lock (&x->sf_mutex);
     
-        x->sf_threadRequest = SOUNDFILE_REQUEST_QUIT;
+        x->sf_threadRequest = WRITESF_REQUEST_QUIT;
         pthread_cond_signal (&x->sf_condRequest);
         
-        while (x->sf_threadRequest != SOUNDFILE_REQUEST_NOTHING) {
+        while (x->sf_threadRequest != WRITESF_REQUEST_NOTHING) {
             pthread_cond_signal (&x->sf_condRequest);
             pthread_cond_wait (&x->sf_condAnswer, &x->sf_mutex);
         }

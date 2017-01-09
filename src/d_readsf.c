@@ -61,8 +61,8 @@ typedef struct _readsf_tilde {
     char                *sf_buffer;
     t_glist             *sf_owner;
     t_clock             *sf_clock;
-    t_sample            *(sf_vectorsOut[SOUNDFILE_MAXIMUM_CHANNELS]);
-    t_outlet            *(sf_audioOutlets[SOUNDFILE_MAXIMUM_CHANNELS]);
+    t_sample            *(sf_vectorsOut[SOUNDFILE_CHANNELS]);
+    t_outlet            *(sf_audioOutlets[SOUNDFILE_CHANNELS]);
     t_outlet            *sf_outletTopRight;
     pthread_mutex_t     sf_mutex;
     pthread_cond_t      sf_condRequest;
@@ -81,7 +81,31 @@ static void readsf_tilde_stop   (t_readsf_tilde *);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define READSF_NO_REQUEST       (x->sf_threadRequest == SOUNDFILE_REQUEST_BUSY)
+#define READSF_BUFFER_SIZE          65536
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define READSF_REQUEST_NOTHING      0
+#define READSF_REQUEST_OPEN         1
+#define READSF_REQUEST_CLOSE        2
+#define READSF_REQUEST_QUIT         3
+#define READSF_REQUEST_BUSY         4
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define READSF_STATE_IDLE           0
+#define READSF_STATE_START          1
+#define READSF_STATE_STREAM         2
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define READSF_NO_REQUEST           (x->sf_threadRequest == READSF_REQUEST_BUSY)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -108,8 +132,8 @@ static void readsf_tilde_threadCloseFileAndSignal (t_readsf_tilde * x, int n)
 {
     readsf_tilde_threadCloseFile (x);
     
-    if (n == SOUNDFILE_REQUEST_QUIT || n == x->sf_threadRequest) {
-        x->sf_threadRequest = SOUNDFILE_REQUEST_NOTHING;
+    if (n == READSF_REQUEST_QUIT || n == x->sf_threadRequest) {
+        x->sf_threadRequest = READSF_REQUEST_NOTHING;
     }
 
     pthread_cond_signal (&x->sf_condAnswer);
@@ -144,20 +168,20 @@ static void readsf_tilde_threadOpenLoop (t_readsf_tilde * x)
     
     /* Avoid to completely fill the buffer and overwrite previously loaded samples. */
         
-    if (x->sf_fifoTail || (x->sf_fifoSize - x->sf_fifoHead > SOUNDFILE_BUFFER_SIZE)) {
+    if (x->sf_fifoTail || (x->sf_fifoSize - x->sf_fifoHead > READSF_BUFFER_SIZE)) {
         bytesToRead = x->sf_fifoSize - x->sf_fifoHead;
     }
 
     } else {
         bytesToRead = x->sf_fifoTail - x->sf_fifoHead - 1;
-        bytesToRead = bytesToRead < SOUNDFILE_BUFFER_SIZE ? 0 : SOUNDFILE_BUFFER_SIZE;
+        bytesToRead = bytesToRead < READSF_BUFFER_SIZE ? 0 : READSF_BUFFER_SIZE;
     }
 
     if (bytesToRead > 0) { 
       
         ssize_t bytesRead;
         
-        bytesToRead = PD_MIN (bytesToRead, SOUNDFILE_BUFFER_SIZE);
+        bytesToRead = PD_MIN (bytesToRead, READSF_BUFFER_SIZE);
         bytesToRead = PD_MIN (bytesToRead, x->sf_properties.ap_dataSizeInBytes);
         bytesRead   = readsf_tilde_threadOpenLoopRead (x, bytesToRead);
 
@@ -191,7 +215,7 @@ static void readsf_tilde_threadNothing (t_readsf_tilde * x)
 
 static void readsf_tilde_threadOpen (t_readsf_tilde * x)
 {
-    x->sf_threadRequest = SOUNDFILE_REQUEST_BUSY;
+    x->sf_threadRequest = READSF_REQUEST_BUSY;
     x->sf_error = PD_ERROR_NONE;
     
     readsf_tilde_threadCloseFile (x);
@@ -236,17 +260,17 @@ static void readsf_tilde_threadOpen (t_readsf_tilde * x)
     //
     }
 
-    readsf_tilde_threadCloseFileAndSignal (x, SOUNDFILE_REQUEST_BUSY);
+    readsf_tilde_threadCloseFileAndSignal (x, READSF_REQUEST_BUSY);
 }
 
 static void readsf_tilde_threadClose (t_readsf_tilde * x)
 {
-    readsf_tilde_threadCloseFileAndSignal (x, SOUNDFILE_REQUEST_CLOSE);
+    readsf_tilde_threadCloseFileAndSignal (x, READSF_REQUEST_CLOSE);
 }
 
 static void readsf_tilde_threadQuit (t_readsf_tilde * x)
 {
-    readsf_tilde_threadCloseFileAndSignal (x, SOUNDFILE_REQUEST_QUIT);
+    readsf_tilde_threadCloseFileAndSignal (x, READSF_REQUEST_QUIT);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -262,10 +286,10 @@ static void *readsf_tilde_thread (void *z)
         //
         int t = x->sf_threadRequest;
         
-        if (t == SOUNDFILE_REQUEST_NOTHING)     { readsf_tilde_threadNothing (x); }
-        else if (t == SOUNDFILE_REQUEST_OPEN)   { readsf_tilde_threadOpen (x);    }        
-        else if (t == SOUNDFILE_REQUEST_CLOSE)  { readsf_tilde_threadClose (x);   }
-        else if (t == SOUNDFILE_REQUEST_QUIT)   {
+        if (t == READSF_REQUEST_NOTHING)    { readsf_tilde_threadNothing (x); }
+        else if (t == READSF_REQUEST_OPEN)  { readsf_tilde_threadOpen (x);    }        
+        else if (t == READSF_REQUEST_CLOSE) { readsf_tilde_threadClose (x);   }
+        else if (t == READSF_REQUEST_QUIT)  {
         //
         readsf_tilde_threadQuit (x);
         break;
@@ -302,7 +326,7 @@ static void readsf_tilde_float (t_readsf_tilde *x, t_float f)
 
 static void readsf_tilde_start (t_readsf_tilde *x)
 {
-    if (x->sf_threadState == SOUNDFILE_STATE_START) { x->sf_threadState = SOUNDFILE_STATE_STREAM; }
+    if (x->sf_threadState == READSF_STATE_START) { x->sf_threadState = READSF_STATE_STREAM; }
     else { 
         error_unexpected (sym_readsf__tilde__, sym_start);
     }
@@ -310,11 +334,11 @@ static void readsf_tilde_start (t_readsf_tilde *x)
 
 static void readsf_tilde_stop (t_readsf_tilde *x)
 {
-    x->sf_threadState = SOUNDFILE_STATE_IDLE;
+    x->sf_threadState = READSF_STATE_IDLE;
     
     pthread_mutex_lock (&x->sf_mutex);
     
-        x->sf_threadRequest = SOUNDFILE_REQUEST_CLOSE;
+        x->sf_threadRequest = READSF_REQUEST_CLOSE;
     
     pthread_cond_signal (&x->sf_condRequest);
     pthread_mutex_unlock (&x->sf_mutex);
@@ -336,8 +360,8 @@ static void readsf_tilde_open (t_readsf_tilde *x, t_symbol *s, int argc, t_atom 
         
             soundfile_setPropertiesByCopy (&x->sf_properties, &properties);
             
-            x->sf_threadState            = SOUNDFILE_STATE_START;
-            x->sf_threadRequest          = SOUNDFILE_REQUEST_OPEN;
+            x->sf_threadState            = READSF_STATE_START;
+            x->sf_threadRequest          = READSF_REQUEST_OPEN;
             x->sf_fifoTail               = 0;
             x->sf_fifoHead               = 0;
             x->sf_isEndOfFile            = 0;
@@ -393,7 +417,7 @@ static inline void readsf_tilde_performEnd (t_readsf_tilde * x)
     
     clock_delay (x->sf_clock, 0.0);
     
-    x->sf_threadState = SOUNDFILE_STATE_IDLE;
+    x->sf_threadState = READSF_STATE_IDLE;
 
     if (framesRemains) {
     
@@ -438,7 +462,7 @@ static t_int *readsf_tilde_perform (t_int *w)
     
     pthread_mutex_lock (&x->sf_mutex);
     
-    if (x->sf_error || x->sf_threadState != SOUNDFILE_STATE_STREAM) { readsf_tilde_performZero (x, 0); }
+    if (x->sf_error || x->sf_threadState != READSF_STATE_STREAM) { readsf_tilde_performZero (x, 0); }
     else {
 
         int eof, bytesToRead = readsf_tilde_performGetBytesPerTick (x);
@@ -490,16 +514,16 @@ static void *readsf_tilde_new (t_float f1, t_float f2)
 {
     t_error err = PD_ERROR_NONE;
     
-    int i, n = PD_CLAMP ((int)f1, 1, SOUNDFILE_MAXIMUM_CHANNELS);
-    int size = PD_CLAMP ((int)f2, SOUNDFILE_BUFFER_SIZE * 4 * n, SOUNDFILE_BUFFER_SIZE * 256 * n);
+    int i, n = PD_CLAMP ((int)f1, 1, SOUNDFILE_CHANNELS);
+    int size = PD_CLAMP ((int)f2, READSF_BUFFER_SIZE * 4 * n, READSF_BUFFER_SIZE * 256 * n);
     
     t_readsf_tilde *x = (t_readsf_tilde *)pd_new (readsf_tilde_class);
     
     soundfile_initProperties (&x->sf_properties);
     
     x->sf_vectorSize            = AUDIO_DEFAULT_BLOCKSIZE;
-    x->sf_threadState           = SOUNDFILE_STATE_IDLE;
-    x->sf_threadRequest         = SOUNDFILE_REQUEST_NOTHING;
+    x->sf_threadState           = READSF_STATE_IDLE;
+    x->sf_threadRequest         = READSF_REQUEST_NOTHING;
     x->sf_fileDescriptor        = -1;
     x->sf_numberOfAudioOutlets  = n;
     x->sf_bufferSize            = size;
@@ -529,10 +553,10 @@ static void readsf_tilde_free (t_readsf_tilde *x)
     
     pthread_mutex_lock (&x->sf_mutex);
     
-        x->sf_threadRequest = SOUNDFILE_REQUEST_QUIT;
+        x->sf_threadRequest = READSF_REQUEST_QUIT;
         pthread_cond_signal (&x->sf_condRequest);
         
-        while (x->sf_threadRequest != SOUNDFILE_REQUEST_NOTHING) {
+        while (x->sf_threadRequest != READSF_REQUEST_NOTHING) {
             pthread_cond_signal (&x->sf_condRequest); 
             pthread_cond_wait (&x->sf_condAnswer, &x->sf_mutex);
         }

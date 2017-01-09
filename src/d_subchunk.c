@@ -80,6 +80,8 @@ static int subchunk_getSize (t_headerhelper *t)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* AIFF minimum subchunks required. */
+
 static int subchunk_isCOMM (t_headerhelper *t)
 {
     if (!strncmp (subchunk_getID (t), "COMM", 4)) {
@@ -138,9 +140,107 @@ static int subchunk_parseSSND (t_headerhelper *t, t_audioproperties *args)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* WAVE minimum subchunks required. */
+
+static int subchunk_isFMT (t_headerhelper *t)
+{
+    if (!strncmp (subchunk_getID (t), "fmt ", 4)) {
+    if (t->h_chunkSize == 16) {
+    if (t->h_bytesSet  >= 16 + SOUNDFILE_SUBCHUNK_HEADER) {
+        return 1;
+    }
+    }
+    }
+    
+    return 0;
+}
+
+static int subchunk_isDATA (t_headerhelper *t)
+{
+    if (!strncmp (subchunk_getID (t), "data", 4)) {
+    if (t->h_chunkSize >= 0) {
+    if (t->h_bytesSet  >= 0 + SOUNDFILE_SUBCHUNK_HEADER) {
+        return 1;
+    }
+    }
+    }
+    
+    return 0;
+}
+
+static int subchunk_parseFMT (t_headerhelper *t, t_audioproperties *args)
+{
+    char *p = t->h_c + SOUNDFILE_SUBCHUNK_HEADER;
+    
+    int audioFormat      = (int)soundfile_swap2Bytes (*((uint16_t *)(p + 0)),  args->ap_needToSwap);
+    int numberOfChannels = (int)soundfile_swap2Bytes (*((uint16_t *)(p + 2)),  args->ap_needToSwap);
+    int bitsPerSample    = (int)soundfile_swap2Bytes (*((uint16_t *)(p + 14)), args->ap_needToSwap);
+    
+    args->ap_numberOfChannels = numberOfChannels;
+    
+    PD_ASSERT (audioFormat == WAVE_FORMAT_PCM || audioFormat == WAVE_FORMAT_FLOAT);
+    
+    if (audioFormat == WAVE_FORMAT_PCM || audioFormat == WAVE_FORMAT_FLOAT) {
+    //
+    args->ap_bytesPerSample = bitsPerSample / 8;
+    //
+    }
+    
+    return 16 + SOUNDFILE_SUBCHUNK_HEADER;
+}
+
+static int subchunk_parseDATA (t_headerhelper *t, t_audioproperties *args)
+{
+    args->ap_dataSizeInBytes = t->h_chunkSize;
+    
+    return SOUNDFILE_SUBCHUNK_HEADER;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_error soundfile_readFileHeaderWAVE (int f, t_headerhelper *t, t_audioproperties *args)
 {
-    return PD_ERROR;
+    t_error end = subchunk_traverseStart (t);
+    t_error err = PD_ERROR_NONE;
+    
+    int hasFMT  = 0;
+    int hasDATA = 0;
+    int headerSize = SOUNDFILE_CHUNK_HEADER;
+    
+    while (!end && !err) {
+    //
+    if (!(end = subchunk_traverseNext (f, t, args))) {
+    //
+    if (subchunk_isFMT (t)) {
+        if (hasFMT) { err = PD_ERROR; }
+        else {
+            headerSize += subchunk_parseFMT (t, args);
+            hasFMT = 1;
+        }
+        
+    } else if (subchunk_isDATA (t)) {
+        if (hasDATA) { err = PD_ERROR; }
+        else {
+            headerSize += subchunk_parseDATA (t, args);
+            hasDATA = 1;
+        }
+        
+    } else if (!hasDATA) { headerSize += SOUNDFILE_SUBCHUNK_HEADER + subchunk_getSize (t); }
+    //
+    }
+    //
+    }
+    
+    err |= (hasFMT == 0);
+    err |= (hasDATA == 0);
+    err |= (args->ap_bytesPerSample < 2);
+    err |= (args->ap_bytesPerSample > 4);
+    
+    args->ap_headerSize = headerSize;
+    
+    return err;
 }
 
 t_error soundfile_readFileHeaderAIFF (int f, t_headerhelper *t, t_audioproperties *args)
