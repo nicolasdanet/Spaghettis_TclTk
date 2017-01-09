@@ -1,14 +1,18 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-/*  "filters", both linear and nonlinear. 
+/* 
+    Copyright (c) 1997-2016 Miller Puckette and others.
 */
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
 #include "d_dsp.h"
-#include <math.h>
 
 /* ---------------- hip~ - 1-pole 1-zero hipass filter. ----------------- */
 
@@ -142,6 +146,10 @@ void sighip_setup(void)
     class_addMethod(sighip_class, (t_method)sighip_clear, sym_clear, 0);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 /* ---------------- lop~ - 1-pole lopass filter. ----------------- */
 
 typedef struct lopctl
@@ -232,6 +240,10 @@ void siglop_setup(void)
         sym_inlet2, A_FLOAT, 0);
     class_addMethod(siglop_class, (t_method)siglop_clear, sym_clear, 0);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* ---------------- bp~ - 2-pole bandpass filter. ----------------- */
 
@@ -369,6 +381,10 @@ void sigbp_setup(void)
         sym_inlet3, A_FLOAT, 0);
     class_addMethod(sigbp_class, (t_method)sigbp_clear, sym_clear, 0);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* ---------------- biquad~ - raw biquad filter ----------------- */
 
@@ -574,6 +590,10 @@ void sigsamphold_setup(void)
         sym_dsp, A_CANT, 0);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 /* ---------------- rpole~ - real one-pole filter (raw) ----------------- */
 
 typedef struct sigrpole
@@ -647,6 +667,10 @@ void sigrpole_setup(void)
         sym_dsp, A_CANT, 0);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 /* ---------------- rzero~ - real one-zero filter (raw) ----------------- */
 
 typedef struct sigrzero
@@ -718,6 +742,10 @@ void sigrzero_setup(void)
     class_addMethod(sigrzero_class, (t_method)sigrzero_dsp,
         sym_dsp, A_CANT, 0);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* ---------- rzero_rev~ - real, reverse one-zero filter (raw) ------------ */
 
@@ -791,6 +819,10 @@ void sigrzero_rev_setup(void)
     class_addMethod(sigrzero_rev_class, (t_method)sigrzero_rev_dsp,
         sym_dsp, A_CANT, 0);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* -------------- cpole~ - complex one-pole filter (raw) --------------- */
 
@@ -885,6 +917,10 @@ void sigcpole_setup(void)
         sym_dsp, A_CANT, 0);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 /* -------------- czero~ - complex one-zero filter (raw) --------------- */
 
 typedef struct sigczero
@@ -974,6 +1010,10 @@ void sigczero_setup(void)
     class_addMethod(sigczero_class, (t_method)sigczero_dsp,
         sym_dsp, A_CANT, 0);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* ------ czero_rev~ - complex one-zero filter (raw, reverse form) ----- */
 
@@ -1067,19 +1107,5 @@ void sigczero_rev_setup(void)
         sym_dsp, A_CANT, 0);
 }
 
-/* ------------------------ setup routine ------------------------- */
-
-void d_filter_setup(void)
-{
-    sighip_setup();
-    siglop_setup();
-    sigbp_setup();
-    sigbiquad_setup();
-    sigsamphold_setup();
-    sigrpole_setup();
-    sigrzero_setup();
-    sigrzero_rev_setup();
-    sigcpole_setup();
-    sigczero_setup();
-    sigczero_rev_setup();
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
