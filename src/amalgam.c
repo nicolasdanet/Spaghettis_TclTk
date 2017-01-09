@@ -268,6 +268,7 @@
 
 #include "d_vcf.c"
 #include "d_filter.c"
+#include "d_cpole.c"
 #include "d_czero.c"
 #include "d_czeroreverse.c"
 
