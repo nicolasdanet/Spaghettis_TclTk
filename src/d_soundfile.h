@@ -228,6 +228,24 @@ typedef struct _headerhelper {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static inline t_error soundfile_helperRead (int f, t_headerhelper *t, off_t offset)
+{
+    t_error err = ((lseek (f, offset, SEEK_SET)) != offset);
+    
+    if (err) { t->h_bytesSet = 0; }
+    else { 
+        t->h_bytesSet = read (f, t->h_c, SOUNDFILE_HELPER_SIZE);
+    }
+    
+    err = (t->h_bytesSet <= 0);
+    
+    return err;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_error soundfile_readFileParse         (t_symbol *s, int *argc, t_atom **argv, t_audioproperties *args);
 int     soundfile_readFileHeader        (t_glist *glist, t_audioproperties *args);
     
