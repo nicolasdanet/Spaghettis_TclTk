@@ -269,6 +269,7 @@
 
 #include "d_vcf.c"
 #include "d_filter.c"
+#include "d_bp.c"
 #include "d_biquad.c"
 #include "d_rpole.c"
 #include "d_rzero.c"
