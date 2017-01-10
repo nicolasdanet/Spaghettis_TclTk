@@ -51,14 +51,16 @@ static void samphold_tilde_set (t_samphold_tilde *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Aliasing. */
+/* No aliasing. */
+/* Notice that the two signals incoming could be theoretically just one. */
+/* But as only loads are performed, it is assumed safe to use restricted pointers. */
 
 static t_int *samphold_tilde_perform (t_int *w)
 {
     t_samphold_tilde *x = (t_samphold_tilde *)(w[1]);
-    t_sample *in1 = (t_sample *)(w[2]);
-    t_sample *in2 = (t_sample *)(w[3]);
-    t_sample *out = (t_sample *)(w[4]);
+    PD_RESTRICTED in1 = (t_sample *)(w[2]);
+    PD_RESTRICTED in2 = (t_sample *)(w[3]);
+    PD_RESTRICTED out = (t_sample *)(w[4]);
     int n = (t_int)(w[5]);
     
     t_sample lastControl = x->x_lastControl;
@@ -86,6 +88,9 @@ static t_int *samphold_tilde_perform (t_int *w)
 
 static void samphold_tilde_dsp (t_samphold_tilde *x, t_signal **sp)
 {
+    PD_ASSERT (sp[0]->s_vector != sp[2]->s_vector);
+    PD_ASSERT (sp[1]->s_vector != sp[2]->s_vector);
+    
     dsp_add (samphold_tilde_perform, 5, x,
         sp[0]->s_vector,
         sp[1]->s_vector,

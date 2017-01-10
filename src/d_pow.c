@@ -32,13 +32,15 @@ typedef struct _pow_tilde {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Aliasing. */
+/* No aliasing. */
+/* Notice that the two signals incoming could be theoretically just one. */
+/* But as only loads are performed, it is assumed safe to use restricted pointers. */
 
 t_int *pow_tilde_perform (t_int *w)
 {
-    t_sample *in1 = (t_sample *)(w[1]);
-    t_sample *in2 = (t_sample *)(w[2]);
-    t_sample *out = (t_sample *)(w[3]);
+    PD_RESTRICTED in1 = (t_sample *)(w[1]);
+    PD_RESTRICTED in2 = (t_sample *)(w[2]);
+    PD_RESTRICTED out = (t_sample *)(w[3]);
     int n = (int)(w[4]);
     
     while (n--) {
@@ -58,6 +60,9 @@ t_int *pow_tilde_perform (t_int *w)
 
 static void pow_tilde_dsp (t_pow_tilde *x, t_signal **sp)
 {
+    PD_ASSERT (sp[0]->s_vector != sp[2]->s_vector);
+    PD_ASSERT (sp[1]->s_vector != sp[2]->s_vector);
+    
     dsp_add (pow_tilde_perform, 4, sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
 }
 

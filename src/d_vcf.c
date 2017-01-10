@@ -64,7 +64,7 @@ static void vcf_tilde_qFactor (t_vcf_tilde *x, t_float f)
 #pragma mark -
 
 /* No aliasing. */
-/* Notice that the two signals in could be theoretically just one. */
+/* Notice that the two signals incoming could be theoretically just one. */
 /* But as only loads are performed, it is assumed safe to use restricted pointers. */
 
 static t_int *vcf_tilde_perform (t_int *w)
