@@ -18,9 +18,13 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Resonant filter with audio-rate center frequency input. */
+/* Resonant filter (complex one-pole) with audio-rate center frequency input. */
 
-/* One-pole complex filter with coefficients built in. */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* < https://ccrma.stanford.edu/~jos/filters/Complex_Resonator.html > */
+/* < http://www.katjaas.nl/complexintegrator/complexresonator.html > */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -87,28 +91,27 @@ static t_int *vcf_tilde_perform (t_int *w)
     while (n--) {
     //
     double centerFrequency;
-    double r;
-    double oneMinusR;
-    double coefficientReal;
-    double coefficientImaginary;
+    double r, g;
+    double pReal;
+    double pImaginary;
     
     centerFrequency = (*in2++) * k; 
     centerFrequency = PD_MAX (0.0, centerFrequency);
     
     r = (qInverse > 0.0 ? 1.0 - centerFrequency * qInverse : 0.0);
     r = PD_MAX (0.0, r);
-    oneMinusR = 1.0 - r;
+    g = correction * (1.0 - r);
     
-    coefficientReal      = r * dsp_getCosineAt (centerFrequency * (COSINE_TABLE_SIZE / PD_2PI));
-    coefficientImaginary = r * dsp_getSineAt (centerFrequency * (COSINE_TABLE_SIZE / PD_2PI));
+    pReal      = r * dsp_getCosineAt (centerFrequency * (COSINE_TABLE_SIZE / PD_2PI));
+    pImaginary = r * dsp_getSineAt   (centerFrequency * (COSINE_TABLE_SIZE / PD_2PI));
     
     {
-        double s = *in1++;
+        double s = (*in1++);
         double tReal = re;
         double tImaginary = im;
         
-        re = correction * oneMinusR * s + coefficientReal * tReal - coefficientImaginary * tImaginary;
-        im = coefficientImaginary * tReal + coefficientReal * tImaginary;
+        re = (g * s) + (pReal * tReal - pImaginary * tImaginary);
+        im = (pImaginary * tReal + pReal * tImaginary);
         
         *out1++ = re;
         *out2++ = im;
