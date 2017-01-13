@@ -79,23 +79,23 @@ static t_int *hip_tilde_perform (t_int *w)
     PD_RESTRICTED out = (t_sample *)(w[3]);
     int n = (t_int)(w[4]);
     
-    t_sample coefficient = c->c_coefficient;
+    t_sample a = c->c_coefficient;
     
-    if (coefficient < 1.0) {
-    //
-    t_sample normalize = 0.5 * (1.0 + coefficient);
-    t_sample last = c->c_real;
-    
-    while (n--) {
-        t_sample f = (*in++) + (coefficient * last);
-        *out++ = normalize * (f - last);
-        last = f;
-    }
-    
-    if (PD_IS_BIG_OR_SMALL (last)) { last = 0.0; }
-    
-    c->c_real = last;
-    //
+    if (a < 1.0) {
+
+        t_sample normalize = 0.5 * (1.0 + a);
+        t_sample last = c->c_real;
+        
+        while (n--) {
+            t_sample f = (*in++) + (a * last);
+            *out++ = normalize * (f - last);
+            last = f;
+        }
+        
+        if (PD_IS_BIG_OR_SMALL (last)) { last = 0.0; }
+        
+        c->c_real = last;
+
     } else { while (n--) { *out++ = *in++; } c->c_real = 0; }
     
     return (w + 5);
@@ -106,6 +106,8 @@ static void hip_tilde_dsp (t_hip_tilde *x, t_signal **sp)
     x->x_sampleRate = sp[0]->s_sampleRate;
     
     hip_tilde_frequency (x, x->x_frequency);
+    
+    PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     
     dsp_add (hip_tilde_perform, 4, &x->x_space, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
