@@ -18,13 +18,12 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Resonant filter (complex one-pole) with audio-rate center frequency input. */
+/* Complex one-pole resonant filter (with audio-rate center frequency input). */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 /* < https://ccrma.stanford.edu/~jos/filters/Complex_Resonator.html > */
-/* < http://www.katjaas.nl/complexintegrator/complexresonator.html > */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -39,17 +38,17 @@ t_class *vcf_tilde_class;                   /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _vcf_tilde_ctl {
+typedef struct _vcf_tilde_control {
     t_float             c_real;
     t_float             c_imaginary;
     t_float             c_q;
     t_float             c_conversion;
-    } t_vcf_tilde_ctl;
+    } t_vcf_tilde_control;
 
 typedef struct _vcf_tilde {
     t_object            x_obj;              /* Must be the first. */
     t_float             x_f;
-    t_vcf_tilde_ctl     x_space;
+    t_vcf_tilde_control x_space;
     t_outlet            *x_outletLeft;
     t_outlet            *x_outletRight;
     } t_vcf_tilde;
@@ -73,7 +72,7 @@ static void vcf_tilde_qFactor (t_vcf_tilde *x, t_float f)
 
 static t_int *vcf_tilde_perform (t_int *w)
 {
-    t_vcf_tilde_ctl *c = (t_vcf_tilde_ctl *)(w[1]);
+    t_vcf_tilde_control *c = (t_vcf_tilde_control *)(w[1]);
     PD_RESTRICTED in1  = (t_sample *)(w[2]);
     PD_RESTRICTED in2  = (t_sample *)(w[3]);
     PD_RESTRICTED out1 = (t_sample *)(w[4]);

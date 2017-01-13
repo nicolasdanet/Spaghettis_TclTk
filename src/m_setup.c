@@ -203,7 +203,7 @@ void delwrite_tilde_setup   (void);
 void delread_tilde_setup    (void);
 void vd_tilde_setup         (void);
 void d_fft_setup            (void);
-void sighip_setup           (void);
+void hip_tilde_setup        (void);
 void siglop_setup           (void);
 void sigbp_setup            (void);
 void sigbiquad_setup        (void);
@@ -412,7 +412,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     delread_tilde_setup();
     vd_tilde_setup();
     d_fft_setup();
-    sighip_setup();
+    hip_tilde_setup();
     siglop_setup();
     sigbp_setup();
     sigbiquad_setup();

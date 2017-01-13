@@ -12,138 +12,145 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
+#include "s_system.h"
 #include "d_dsp.h"
 
-/* ---------------- hip~ - 1-pole 1-zero hipass filter. ----------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct hipctl
+/* One-pole one-zero hipass filter. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* < http://www.embedded.com/print/4007653 > */
+/* < https://ccrma.stanford.edu/~jos/fp/DC_Blocker.html > */
+/* < http://msp.ucsd.edu/techniques/v0.11/book-html/node141.html > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_class *hip_tilde_class;                /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _hip_tilde_control {
+    t_sample            c_real;
+    t_sample            c_coefficient;
+    } t_hip_tilde_control;
+
+typedef struct _hip_tilde {
+    t_object            x_obj;                  /* Must be the first. */
+    t_float             x_f;
+    t_float             x_frequency;
+    t_float             x_sampleRate;
+    t_hip_tilde_control x_space;
+    t_outlet            *x_outlet;
+    } t_hip_tilde;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void hip_tilde_frequency (t_hip_tilde *x, t_float f)
 {
-    t_sample c_x;
-    t_sample c_coef;
-} t_hipctl;
+    x->x_frequency           = PD_MAX (0.0, f);
+    x->x_sampleRate          = (x->x_sampleRate <= 0) ? AUDIO_DEFAULT_SAMPLERATE : x->x_sampleRate;
+    x->x_space.c_coefficient = 1.0 - x->x_frequency * PD_2PI / x->x_sampleRate;
+    x->x_space.c_coefficient = PD_CLAMP (x->x_space.c_coefficient, 0.0, 1.0);
+}
 
-typedef struct sighip
+static void hip_tilde_clear (t_hip_tilde *x)
 {
-    t_object x_obj;
-    t_float x_sr;
-    t_float x_hz;
-    t_hipctl x_cspace;
-    t_hipctl *x_ctl;
-    t_float x_f;
-} t_sighip;
+    x->x_space.c_real = 0;
+}
 
-t_class *sighip_class;
-static void sighip_ft1(t_sighip *x, t_float f);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void *sighip_new(t_float f)
+/* No aliasing. */
+
+static t_int *hip_tilde_perform (t_int *w)
 {
-    t_sighip *x = (t_sighip *)pd_new(sighip_class);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, sym_inlet2);
-    outlet_new(&x->x_obj, &s_signal);
-    x->x_sr = 44100;
-    x->x_ctl = &x->x_cspace;
-    x->x_cspace.c_x = 0;
-    sighip_ft1(x, f);
-    x->x_f = 0;
+    t_hip_tilde_control *c = (t_hip_tilde_control *)(w[1]);
+    PD_RESTRICTED in  = (t_sample *)(w[2]);
+    PD_RESTRICTED out = (t_sample *)(w[3]);
+    int n = (t_int)(w[4]);
+    
+    t_sample coefficient = c->c_coefficient;
+    
+    if (coefficient < 1.0) {
+    //
+    t_sample normalize = 0.5 * (1.0 + coefficient);
+    t_sample last = c->c_real;
+    
+    while (n--) {
+        t_sample f = (*in++) + (coefficient * last);
+        *out++ = normalize * (f - last);
+        last = f;
+    }
+    
+    if (PD_IS_BIG_OR_SMALL (last)) { last = 0.0; }
+    
+    c->c_real = last;
+    //
+    } else { while (n--) { *out++ = *in++; } c->c_real = 0; }
+    
+    return (w + 5);
+}
+
+static void hip_tilde_dsp (t_hip_tilde *x, t_signal **sp)
+{
+    x->x_sampleRate = sp[0]->s_sampleRate;
+    
+    hip_tilde_frequency (x, x->x_frequency);
+    
+    dsp_add (hip_tilde_perform, 4, &x->x_space, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *hip_tilde_new (t_float f)
+{
+    t_hip_tilde *x = (t_hip_tilde *)pd_new (hip_tilde_class);
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    
+    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_inlet2);
+    
+    hip_tilde_frequency (x, f);
+
     return x;
 }
 
-static void sighip_ft1(t_sighip *x, t_float f)
-{
-    if (f < 0) f = 0;
-    x->x_hz = f;
-    x->x_ctl->c_coef = 1 - f * (2 * PD_PI) / x->x_sr;
-    if (x->x_ctl->c_coef < 0)
-        x->x_ctl->c_coef = 0;
-    else if (x->x_ctl->c_coef > 1)
-        x->x_ctl->c_coef = 1;
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static t_int *sighip_perform(t_int *w)
+void hip_tilde_setup (void)
 {
-    t_sample *in = (t_sample *)(w[1]);
-    t_sample *out = (t_sample *)(w[2]);
-    t_hipctl *c = (t_hipctl *)(w[3]);
-    int n = (t_int)(w[4]);
-    int i;
-    t_sample last = c->c_x;
-    t_sample coef = c->c_coef;
-    if (coef < 1)
-    {
-        t_sample normal = 0.5*(1+coef);
-        for (i = 0; i < n; i++)
-        {
-            t_sample new = *in++ + coef * last;
-            *out++ = normal * (new - last);
-            last = new;
-        }
-        if (PD_IS_BIG_OR_SMALL(last))
-            last = 0; 
-        c->c_x = last;
-    }
-    else
-    {
-        for (i = 0; i < n; i++)
-            *out++ = *in++;
-        c->c_x = 0;
-    }
-    return (w+5);
-}
-
-static t_int *sighip_perform_old(t_int *w)
-{
-    t_sample *in = (t_sample *)(w[1]);
-    t_sample *out = (t_sample *)(w[2]);
-    t_hipctl *c = (t_hipctl *)(w[3]);
-    int n = (t_int)(w[4]);
-    int i;
-    t_sample last = c->c_x;
-    t_sample coef = c->c_coef;
-    if (coef < 1)
-    {
-        for (i = 0; i < n; i++)
-        {
-            t_sample new = *in++ + coef * last;
-            *out++ = new - last;
-            last = new;
-        }
-        if (PD_IS_BIG_OR_SMALL(last))
-            last = 0; 
-        c->c_x = last;
-    }
-    else
-    {
-        for (i = 0; i < n; i++)
-            *out++ = *in++;
-        c->c_x = 0;
-    }
-    return (w+5);
-}
-
-static void sighip_dsp(t_sighip *x, t_signal **sp)
-{
-    x->x_sr = sp[0]->s_sampleRate;
-    sighip_ft1(x,  x->x_hz);
-    dsp_add((1 ?
-        sighip_perform : sighip_perform_old),
-            4, sp[0]->s_vector, sp[1]->s_vector, x->x_ctl, sp[0]->s_vectorSize);
-}
-
-static void sighip_clear(t_sighip *x, t_float q)
-{
-    x->x_cspace.c_x = 0;
-}
-
-void sighip_setup(void)
-{
-    sighip_class = class_new(sym_hip__tilde__, (t_newmethod)sighip_new, 0,
-        sizeof(t_sighip), 0, A_DEFFLOAT, 0);
-    CLASS_SIGNAL(sighip_class, t_sighip, x_f);
-    class_addMethod(sighip_class, (t_method)sighip_dsp,
-        sym_dsp, A_CANT, 0);
-    class_addMethod(sighip_class, (t_method)sighip_ft1,
-        sym_inlet2, A_FLOAT, 0);
-    class_addMethod(sighip_class, (t_method)sighip_clear, sym_clear, 0);
+    t_class *c = NULL;
+    
+    c = class_new (sym_hip__tilde__,
+            (t_newmethod)hip_tilde_new,
+            NULL,
+            sizeof (t_hip_tilde),
+            CLASS_DEFAULT,
+            A_DEFFLOAT,
+            A_NULL);
+    
+    CLASS_SIGNAL (c, t_hip_tilde, x_f);
+    
+    class_addDSP (c, (t_method)hip_tilde_dsp);
+    
+    class_addMethod (c, (t_method)hip_tilde_frequency,  sym_inlet2, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)hip_tilde_clear,      sym_clear,  A_NULL);
+    
+    hip_tilde_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
