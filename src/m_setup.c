@@ -205,7 +205,7 @@ void vd_tilde_setup         (void);
 void d_fft_setup            (void);
 void hip_tilde_setup        (void);
 void lop_tilde_setup        (void);
-void sigbp_setup            (void);
+void bp_tilde_setup         (void);
 void sigbiquad_setup        (void);
 void samphold_tilde_setup   (void);
 void sigrpole_setup         (void);
@@ -414,7 +414,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     d_fft_setup();
     hip_tilde_setup();
     lop_tilde_setup();
-    sigbp_setup();
+    bp_tilde_setup();
     sigbiquad_setup();
     samphold_tilde_setup();
     sigrpole_setup();

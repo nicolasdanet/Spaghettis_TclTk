@@ -12,143 +12,184 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
+#include "s_system.h"
 #include "d_dsp.h"
 
-/* ---------------- bp~ - 2-pole bandpass filter. ----------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct bpctl
+/* Two-pole bandpass filter. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* < https://ccrma.stanford.edu/~jos/filters/Two_Pole.html > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_class *bp_tilde_class;                 /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _bp_tilde_control {
+    t_sample            c_real1;
+    t_sample            c_real2;
+    t_sample            c_coefficient1;
+    t_sample            c_coefficient2;
+    t_sample            c_gain;
+    } t_bp_tilde_control;
+
+typedef struct _bp_tilde {
+    t_object            x_obj;                  /* Must be the first. */
+    t_float             x_f;
+    t_float             x_sampleRate;
+    t_float             x_frequency;
+    t_float             x_q;
+    t_bp_tilde_control  x_space;
+    t_outlet            *x_outlet;
+    } t_bp_tilde;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline double bp_tilde_coefficientsPerformQCosine (double f)
 {
-    t_sample c_x1;
-    t_sample c_x2;
-    t_sample c_coef1;
-    t_sample c_coef2;
-    t_sample c_gain;
-} t_bpctl;
+    if (f < -PD_PI / 2.0) { return 0.0; }
+    if (f >  PD_PI / 2.0) { return 0.0; }
 
-typedef struct sigbp
+    return cos (f);
+}
+
+static void bp_tilde_coefficientsPerform (t_bp_tilde *x, t_float f, t_float q)
 {
-    t_object x_obj;
-    t_float x_sr;
-    t_float x_freq;
-    t_float x_q;
-    t_bpctl x_cspace;
-    t_bpctl *x_ctl;
-    t_float x_f;
-} t_sigbp;
+    x->x_frequency  = (f < 0.001) ? 10.0 : f;
+    x->x_q          = PD_MAX (0.0, q);
+    x->x_sampleRate = (x->x_sampleRate <= 0) ? AUDIO_DEFAULT_SAMPLERATE : x->x_sampleRate;
+    
+    {
+        double omega                = x->x_frequency * PD_2PI / x->x_sampleRate;
+        double omegaPerQ            = PD_MIN ((x->x_q < 0.001) ? 1.0 : (omega / x->x_q), 1.0);
+        double r                    = 1.0 - omegaPerQ;
+        
+        x->x_space.c_coefficient1   = 2.0 * bp_tilde_coefficientsPerformQCosine (omega) * r;
+        x->x_space.c_coefficient2   = - r * r;
+        x->x_space.c_gain           = 2.0 * omegaPerQ * (omegaPerQ + r * omega);
+    }
+}
 
-t_class *sigbp_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void sigbp_docoef(t_sigbp *x, t_float f, t_float q);
-
-static void *sigbp_new(t_float f, t_float q)
+static void bp_tilde_frequency (t_bp_tilde *x, t_float f)
 {
-    t_sigbp *x = (t_sigbp *)pd_new(sigbp_class);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, sym_inlet2);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, sym_inlet3);
-    outlet_new(&x->x_obj, &s_signal);
-    x->x_sr = 44100;
-    x->x_ctl = &x->x_cspace;
-    x->x_cspace.c_x1 = 0;
-    x->x_cspace.c_x2 = 0;
-    sigbp_docoef(x, f, q);
-    x->x_f = 0;
+    bp_tilde_coefficientsPerform (x, f, x->x_q);
+}
+
+static void bp_tilde_q (t_bp_tilde *x, t_float q)
+{
+    bp_tilde_coefficientsPerform (x, x->x_frequency, q);
+}
+
+static void bp_tilde_clear (t_bp_tilde *x)
+{
+    x->x_space.c_real1 = 0.0;
+    x->x_space.c_real2 = 0.0;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* No aliasing. */
+
+static t_int *bp_tilde_perform (t_int *w)
+{
+    t_bp_tilde_control *c = (t_bp_tilde_control *)(w[1]);
+    PD_RESTRICTED in  = (t_sample *)(w[2]);
+    PD_RESTRICTED out = (t_sample *)(w[3]);
+    int n = (t_int)(w[4]);
+
+    t_sample last1  = c->c_real1;
+    t_sample last2  = c->c_real2;
+    t_sample a1     = c->c_coefficient1;
+    t_sample a2     = c->c_coefficient2;
+    t_sample gain   = c->c_gain;
+    
+    while (n--) {
+        t_sample f = (*in++) + a1 * last1 + a2 * last2;
+        *out++ = gain * f; 
+        last2  = last1;
+        last1  = f;
+    }
+    
+    if (PD_IS_BIG_OR_SMALL (last1)) { last1 = 0.0; }
+    if (PD_IS_BIG_OR_SMALL (last2)) { last2 = 0.0; }
+    
+    c->c_real1 = last1;
+    c->c_real2 = last2;
+    
+    return (w + 5);
+}
+
+static void bp_tilde_dsp(t_bp_tilde *x, t_signal **sp)
+{
+    x->x_sampleRate = sp[0]->s_sampleRate;
+    
+    bp_tilde_coefficientsPerform (x, x->x_frequency, x->x_q);
+    
+    PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
+    
+    dsp_add (bp_tilde_perform, 4, &x->x_space, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *bp_tilde_new (t_float f, t_float q)
+{
+    t_bp_tilde *x = (t_bp_tilde *)pd_new (bp_tilde_class);
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    
+    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_inlet2);
+    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_inlet3);
+    
+    bp_tilde_coefficientsPerform (x, f, q);
+
     return x;
 }
 
-static t_float sigbp_qcos(t_float f)
-{
-    if (f >= -(0.5f*PD_PI) && f <= 0.5f*PD_PI)
-    {
-        t_float g = f*f;
-        return (((g*g*g * (-1.0f/720.0f) + g*g*(1.0f/24.0f)) - g*0.5) + 1);
-    }
-    else return (0);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void sigbp_docoef(t_sigbp *x, t_float f, t_float q)
+void bp_tilde_setup (void)
 {
-    t_float r, oneminusr, omega;
-    if (f < 0.001) f = 10;
-    if (q < 0) q = 0;
-    x->x_freq = f;
-    x->x_q = q;
-    omega = f * (2.0f * PD_PI) / x->x_sr;
-    if (q < 0.001) oneminusr = 1.0f;
-    else oneminusr = omega/q;
-    if (oneminusr > 1.0f) oneminusr = 1.0f;
-    r = 1.0f - oneminusr;
-    x->x_ctl->c_coef1 = 2.0f * sigbp_qcos(omega) * r;
-    x->x_ctl->c_coef2 = - r * r;
-    x->x_ctl->c_gain = 2 * oneminusr * (oneminusr + r * omega);
-    /* post("r %f, omega %f, coef1 %f, coef2 %f",
-        r, omega, x->x_ctl->c_coef1, x->x_ctl->c_coef2); */
-}
-
-static void sigbp_ft1(t_sigbp *x, t_float f)
-{
-    sigbp_docoef(x, f, x->x_q);
-}
-
-static void sigbp_ft2(t_sigbp *x, t_float q)
-{
-    sigbp_docoef(x, x->x_freq, q);
-}
-
-static void sigbp_clear(t_sigbp *x, t_float q)
-{
-    x->x_ctl->c_x1 = x->x_ctl->c_x2 = 0;
-}
-
-static t_int *sigbp_perform(t_int *w)
-{
-    t_sample *in = (t_sample *)(w[1]);
-    t_sample *out = (t_sample *)(w[2]);
-    t_bpctl *c = (t_bpctl *)(w[3]);
-    int n = (t_int)(w[4]);
-    int i;
-    t_sample last = c->c_x1;
-    t_sample prev = c->c_x2;
-    t_sample coef1 = c->c_coef1;
-    t_sample coef2 = c->c_coef2;
-    t_sample gain = c->c_gain;
-    for (i = 0; i < n; i++)
-    {
-        t_sample output =  *in++ + coef1 * last + coef2 * prev;
-        *out++ = gain * output;
-        prev = last;
-        last = output;
-    }
-    if (PD_IS_BIG_OR_SMALL(last))
-        last = 0;
-    if (PD_IS_BIG_OR_SMALL(prev))
-        prev = 0;
-    c->c_x1 = last;
-    c->c_x2 = prev;
-    return (w+5);
-}
-
-static void sigbp_dsp(t_sigbp *x, t_signal **sp)
-{
-    x->x_sr = sp[0]->s_sampleRate;
-    sigbp_docoef(x, x->x_freq, x->x_q);
-    dsp_add(sigbp_perform, 4,
-        sp[0]->s_vector, sp[1]->s_vector, 
-            x->x_ctl, sp[0]->s_vectorSize);
-
-}
-
-void sigbp_setup(void)
-{
-    sigbp_class = class_new(sym_bp__tilde__, (t_newmethod)sigbp_new, 0,
-        sizeof(t_sigbp), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
-    CLASS_SIGNAL(sigbp_class, t_sigbp, x_f);
-    class_addMethod(sigbp_class, (t_method)sigbp_dsp,
-        sym_dsp, A_CANT, 0);
-    class_addMethod(sigbp_class, (t_method)sigbp_ft1,
-        sym_inlet2, A_FLOAT, 0);
-    class_addMethod(sigbp_class, (t_method)sigbp_ft2,
-        sym_inlet3, A_FLOAT, 0);
-    class_addMethod(sigbp_class, (t_method)sigbp_clear, sym_clear, 0);
+    t_class *c = NULL;
+    
+    c = class_new (sym_bp__tilde__,
+            (t_newmethod)bp_tilde_new,
+            NULL,
+            sizeof (t_bp_tilde),
+            CLASS_DEFAULT,
+            A_DEFFLOAT,
+            A_DEFFLOAT,
+            A_NULL);
+            
+    CLASS_SIGNAL (c, t_bp_tilde, x_f);
+    
+    class_addDSP (c, (t_method)bp_tilde_dsp);
+    
+    class_addMethod (c, (t_method)bp_tilde_frequency,   sym_inlet2, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)bp_tilde_q,           sym_inlet3, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)bp_tilde_clear,       sym_clear,  A_NULL);
+    
+    bp_tilde_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

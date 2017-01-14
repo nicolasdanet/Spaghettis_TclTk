@@ -61,7 +61,7 @@ static void lop_tilde_frequency (t_lop_tilde *x, t_float f)
 
 static void lop_tilde_clear (t_lop_tilde *x)
 {
-    x->x_space.c_real = 0;
+    x->x_space.c_real = 0.0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
