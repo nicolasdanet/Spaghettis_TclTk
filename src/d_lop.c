@@ -55,7 +55,7 @@ static void lop_tilde_frequency (t_lop_tilde *x, t_float f)
 {
     x->x_frequency           = PD_MAX (0.0, f);
     x->x_sampleRate          = (x->x_sampleRate <= 0) ? AUDIO_DEFAULT_SAMPLERATE : x->x_sampleRate;
-    x->x_space.c_coefficient = f * PD_2PI / x->x_sampleRate;
+    x->x_space.c_coefficient = f * PD_TWO_PI / x->x_sampleRate;
     x->x_space.c_coefficient = PD_CLAMP (x->x_space.c_coefficient, 0.0, 1.0);
 }
 

@@ -145,7 +145,7 @@ static void *env_tilde_new (t_float f1, t_float f2)
     }
     
     for (i = 0; i < x->x_window; i++) { 
-        x->x_vector[i] = (1.0 - cos ((PD_2PI * i) / x->x_window)) / x->x_window;    /* Hanning window. */
+        x->x_vector[i] = (1.0 - cos ((PD_TWO_PI * i) / x->x_window)) / x->x_window;     /* Hanning window. */
     }
     
     return x;

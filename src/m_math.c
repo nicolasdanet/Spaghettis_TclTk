@@ -73,7 +73,7 @@ t_float math_powerToDecibel (t_float f)
 {
     if (f <= 0.0) { return 0.0; }
     else {
-        t_float t = 100.0 + (10.0 / PD_LOGTEN * log (f)); return (t < 0.0 ? 0.0 : t);
+        t_float t = 100.0 + (10.0 / PD_LOG_TEN * log (f)); return (t < 0.0 ? 0.0 : t);
     }
 }
 
@@ -81,7 +81,7 @@ t_float math_decibelToPower (t_float f)
 {
     if (f <= 0.0)  { return 0.0; }
     else {
-        f = PD_MIN (f, 870.0); return (exp ((PD_LOGTEN * 0.10) * (f - 100.0)));
+        f = PD_MIN (f, 870.0); return (exp ((PD_LOG_TEN * 0.10) * (f - 100.0)));
     }
 }
 
@@ -89,7 +89,7 @@ t_float math_rootMeanSquareToDecibel (t_float f)
 {
     if (f <= 0.0) { return 0.0; }
     else {
-        t_float t = 100.0 + (20.0 / PD_LOGTEN * log (f)); return (t < 0.0 ? 0.0 : t);
+        t_float t = 100.0 + (20.0 / PD_LOG_TEN * log (f)); return (t < 0.0 ? 0.0 : t);
     }
 }
 
@@ -97,7 +97,7 @@ t_float math_decibelToRootMeanSquare (t_float f)
 {
     if (f <= 0.0) { return 0.0; }
     else {
-        f = PD_MIN (f, 485.0); return (exp ((PD_LOGTEN * 0.05) * (f - 100.0)));
+        f = PD_MIN (f, 485.0); return (exp ((PD_LOG_TEN * 0.05) * (f - 100.0)));
     }
 }
 

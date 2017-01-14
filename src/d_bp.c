@@ -57,10 +57,10 @@ typedef struct _bp_tilde {
 
 static inline double bp_tilde_coefficientsPerformQCosine (double f)
 {
-    if (f < -PD_PI / 2.0) { return 0.0; }
-    if (f >  PD_PI / 2.0) { return 0.0; }
-
-    return cos (f);
+    if (f < -PD_HALF_PI || f > PD_HALF_PI) { return 0.0; }
+    else {
+        return cos (f);
+    }
 }
 
 static void bp_tilde_coefficientsPerform (t_bp_tilde *x, t_float f, t_float q)
@@ -70,7 +70,7 @@ static void bp_tilde_coefficientsPerform (t_bp_tilde *x, t_float f, t_float q)
     x->x_sampleRate = (x->x_sampleRate <= 0) ? AUDIO_DEFAULT_SAMPLERATE : x->x_sampleRate;
     
     {
-        double omega                = x->x_frequency * PD_2PI / x->x_sampleRate;
+        double omega                = x->x_frequency * PD_TWO_PI / x->x_sampleRate;
         double omegaPerQ            = PD_MIN ((x->x_q < 0.001) ? 1.0 : (omega / x->x_q), 1.0);
         double r                    = 1.0 - omegaPerQ;
         
@@ -135,7 +135,7 @@ static t_int *bp_tilde_perform (t_int *w)
     return (w + 5);
 }
 
-static void bp_tilde_dsp(t_bp_tilde *x, t_signal **sp)
+static void bp_tilde_dsp (t_bp_tilde *x, t_signal **sp)
 {
     x->x_sampleRate = sp[0]->s_sampleRate;
     

@@ -101,8 +101,8 @@ static t_int *vcf_tilde_perform (t_int *w)
     r = PD_MAX (0.0, r);
     g = correction * (1.0 - r);
     
-    pReal      = r * dsp_getCosineAt (centerFrequency * (COSINE_TABLE_SIZE / PD_2PI));
-    pImaginary = r * dsp_getSineAt   (centerFrequency * (COSINE_TABLE_SIZE / PD_2PI));
+    pReal      = r * dsp_getCosineAt (centerFrequency * (COSINE_TABLE_SIZE / PD_TWO_PI));
+    pImaginary = r * dsp_getSineAt   (centerFrequency * (COSINE_TABLE_SIZE / PD_TWO_PI));
     
     {
         double s = (*in1++);
@@ -129,7 +129,7 @@ static t_int *vcf_tilde_perform (t_int *w)
 
 static void vcf_tilde_dsp (t_vcf_tilde *x, t_signal **sp)
 {
-    x->x_space.c_conversion = PD_2PI / sp[0]->s_sampleRate;
+    x->x_space.c_conversion = PD_TWO_PI / sp[0]->s_sampleRate;
    
     PD_ASSERT (sp[0]->s_vector != sp[2]->s_vector);
     PD_ASSERT (sp[0]->s_vector != sp[3]->s_vector);
