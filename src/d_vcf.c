@@ -39,10 +39,10 @@ t_class *vcf_tilde_class;                   /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _vcf_tilde_control {
-    t_float             c_real;
-    t_float             c_imaginary;
-    t_float             c_q;
-    t_float             c_conversion;
+    t_sample            c_real;
+    t_sample            c_imaginary;
+    t_sample            c_q;
+    t_sample            c_conversion;
     } t_vcf_tilde_control;
 
 typedef struct _vcf_tilde {
@@ -79,10 +79,10 @@ static t_int *vcf_tilde_perform (t_int *w)
     PD_RESTRICTED out2 = (t_sample *)(w[5]);
     int n = (t_int)(w[6]);
     
-    t_float re = c->c_real;
-    t_float im = c->c_imaginary;
-    t_float q  = c->c_q;
-    t_float k  = c->c_conversion;
+    t_sample re = c->c_real;
+    t_sample im = c->c_imaginary;
+    t_sample q  = c->c_q;
+    t_sample k  = c->c_conversion;
     
     double qInverse = (q > 0.0 ? 1.0 / q : 0.0);
     double correction = 2.0 - (2.0 / (q + 2.0));

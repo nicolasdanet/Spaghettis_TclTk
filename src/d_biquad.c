@@ -14,131 +14,155 @@
 #include "m_macros.h"
 #include "d_dsp.h"
 
-/* ---------------- biquad~ - raw biquad filter ----------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct biquadctl
+/* Biquad filter. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* < https://ccrma.stanford.edu/~jos/filters/Direct_Form_II.html > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_class *biquad_tilde_class;             /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _biquad_tilde_control {
+    t_sample                c_real1;
+    t_sample                c_real2;
+    t_sample                c_a1;
+    t_sample                c_a2;
+    t_sample                c_b0;
+    t_sample                c_b1;
+    t_sample                c_b2;
+    } t_biquad_tilde_control;
+
+typedef struct biquad_tilde {
+    t_object                x_obj;              /* Must be the first. */
+    t_float                 x_f;
+    t_biquad_tilde_control  x_space;
+    t_outlet                *x_outlet;
+    } t_biquad_tilde;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void biquad_tilde_list (t_biquad_tilde *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_sample c_x1;
-    t_sample c_x2;
-    t_sample c_fb1;
-    t_sample c_fb2;
-    t_sample c_ff1;
-    t_sample c_ff2;
-    t_sample c_ff3;
-} t_biquadctl;
+    t_float a1 = atom_getFloatAtIndex (0, argc, argv);
+    t_float a2 = atom_getFloatAtIndex (1, argc, argv);
+    t_float b0 = atom_getFloatAtIndex (2, argc, argv);
+    t_float b1 = atom_getFloatAtIndex (3, argc, argv);
+    t_float b2 = atom_getFloatAtIndex (4, argc, argv);
+    
+    x->x_space.c_a1 = a1;
+    x->x_space.c_a2 = a2;
+    x->x_space.c_b0 = b0;
+    x->x_space.c_b1 = b1;
+    x->x_space.c_b2 = b2;
+}
 
-typedef struct sigbiquad
+static void biquad_tilde_set (t_biquad_tilde *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_object x_obj;
-    t_float x_f;
-    t_biquadctl x_cspace;
-    t_biquadctl *x_ctl;
-} t_sigbiquad;
+    t_float real1 = atom_getFloatAtIndex (0, argc, argv);
+    t_float real2 = atom_getFloatAtIndex (1, argc, argv);
+    
+    x->x_space.c_real1 = real1;
+    x->x_space.c_real2 = real2;
+}
 
-t_class *sigbiquad_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void sigbiquad_list(t_sigbiquad *x, t_symbol *s, int argc, t_atom *argv);
+/* No aliasing. */
 
-static void *sigbiquad_new(t_symbol *s, int argc, t_atom *argv)
+static t_int *biquad_tilde_perform (t_int *w)
 {
-    t_sigbiquad *x = (t_sigbiquad *)pd_new(sigbiquad_class);
-    outlet_new(&x->x_obj, &s_signal);
-    x->x_ctl = &x->x_cspace;
-    x->x_cspace.c_x1 = x->x_cspace.c_x2 = 0;
-    sigbiquad_list(x, s, argc, argv);
-    x->x_f = 0;
+    t_biquad_tilde_control *c = (t_biquad_tilde_control *)(w[1]);
+    PD_RESTRICTED in  = (t_sample *)(w[2]);
+    PD_RESTRICTED out = (t_sample *)(w[3]);
+    int n = (t_int)(w[4]);
+    
+    t_sample last1  = c->c_real1;
+    t_sample last2  = c->c_real2;
+    t_sample a1     = c->c_a1;
+    t_sample a2     = c->c_a2;
+    t_sample b0     = c->c_b0;
+    t_sample b1     = c->c_b1;
+    t_sample b2     = c->c_b2;
+    
+    while (n--) {
+    //
+    t_sample f = (*in++) + a1 * last1 + a2 * last2; 
+        
+    if (PD_IS_BIG_OR_SMALL (f)) { f = 0.0; }
+        
+    *out++ = b0 * f + b1 * last1 + b2 * last2;
+    last2  = last1;
+    last1  = f;
+    //
+    }
+    
+    c->c_real1 = last1;
+    c->c_real2 = last2;
+    
+    return (w + 5);
+}
+
+static void biquad_tilde_dsp (t_biquad_tilde *x, t_signal **sp)
+{
+    PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
+    
+    dsp_add (biquad_tilde_perform, 4, &x->x_space, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *biquad_tilde_new (t_symbol *s, int argc, t_atom *argv)
+{
+    t_biquad_tilde *x = (t_biquad_tilde *)pd_new (biquad_tilde_class);
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    
+    biquad_tilde_list (x, s, argc, argv);
+
     return x;
 }
 
-static t_int *sigbiquad_perform(t_int *w)
-{
-    t_sample *in = (t_sample *)(w[1]);
-    t_sample *out = (t_sample *)(w[2]);
-    t_biquadctl *c = (t_biquadctl *)(w[3]);
-    int n = (t_int)(w[4]);
-    int i;
-    t_sample last = c->c_x1;
-    t_sample prev = c->c_x2;
-    t_sample fb1 = c->c_fb1;
-    t_sample fb2 = c->c_fb2;
-    t_sample ff1 = c->c_ff1;
-    t_sample ff2 = c->c_ff2;
-    t_sample ff3 = c->c_ff3;
-    for (i = 0; i < n; i++)
-    {
-        t_sample output =  *in++ + fb1 * last + fb2 * prev;
-        if (PD_IS_BIG_OR_SMALL(output))
-            output = 0; 
-        *out++ = ff1 * output + ff2 * last + ff3 * prev;
-        prev = last;
-        last = output;
-    }
-    c->c_x1 = last;
-    c->c_x2 = prev;
-    return (w+5);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void sigbiquad_list(t_sigbiquad *x, t_symbol *s, int argc, t_atom *argv)
+void biquad_tilde_setup (void)
 {
-    t_float fb1 = atom_getFloatAtIndex(0, argc, argv);
-    t_float fb2 = atom_getFloatAtIndex(1, argc, argv);
-    t_float ff1 = atom_getFloatAtIndex(2, argc, argv);
-    t_float ff2 = atom_getFloatAtIndex(3, argc, argv);
-    t_float ff3 = atom_getFloatAtIndex(4, argc, argv);
-    t_float discriminant = fb1 * fb1 + 4 * fb2;
-    t_biquadctl *c = x->x_ctl;
-    if (discriminant < 0) /* imaginary roots -- resonant filter */
-    {
-            /* they're conjugates so we just check that the product
-            is less than one */
-        if (fb2 >= -1.0f) goto stable;
-    }
-    else    /* real roots */
-    {
-            /* check that the parabola 1 - fb1 x - fb2 x^2 has a
-                vertex between -1 and 1, and that it's nonnegative
-                at both ends, which implies both roots are in [1-,1]. */
-        if (fb1 <= 2.0f && fb1 >= -2.0f &&
-            1.0f - fb1 -fb2 >= 0 && 1.0f + fb1 - fb2 >= 0)
-                goto stable;
-    }
-        /* if unstable, just bash to zero */
-    fb1 = fb2 = ff1 = ff2 = ff3 = 0;
-stable:
-    c->c_fb1 = fb1;
-    c->c_fb2 = fb2;
-    c->c_ff1 = ff1;
-    c->c_ff2 = ff2;
-    c->c_ff3 = ff3;
-}
-
-static void sigbiquad_set(t_sigbiquad *x, t_symbol *s, int argc, t_atom *argv)
-{
-    t_biquadctl *c = x->x_ctl;
-    c->c_x1 = atom_getFloatAtIndex(0, argc, argv);
-    c->c_x2 = atom_getFloatAtIndex(1, argc, argv);
-}
-
-static void sigbiquad_dsp(t_sigbiquad *x, t_signal **sp)
-{
-    dsp_add(sigbiquad_perform, 4,
-        sp[0]->s_vector, sp[1]->s_vector, 
-            x->x_ctl, sp[0]->s_vectorSize);
-
-}
-
-void sigbiquad_setup(void)
-{
-    sigbiquad_class = class_new(sym_biquad__tilde__, (t_newmethod)sigbiquad_new,
-        0, sizeof(t_sigbiquad), 0, A_GIMME, 0);
-    CLASS_SIGNAL(sigbiquad_class, t_sigbiquad, x_f);
-    class_addMethod(sigbiquad_class, (t_method)sigbiquad_dsp,
-        sym_dsp, A_CANT, 0);
-    class_addList(sigbiquad_class, (t_method)sigbiquad_list);
-    class_addMethod(sigbiquad_class, (t_method)sigbiquad_set, sym_set,
-        A_GIMME, 0);
-    class_addMethod(sigbiquad_class, (t_method)sigbiquad_set, sym_clear,
-        A_GIMME, 0);
+    t_class *c = NULL;
+    
+    c = class_new (sym_biquad__tilde__,
+            (t_newmethod)biquad_tilde_new,
+            NULL,
+            sizeof (t_biquad_tilde),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+            
+    CLASS_SIGNAL (c, t_biquad_tilde, x_f);
+    
+    class_addDSP (c, (t_method)biquad_tilde_dsp);
+    class_addList (c, (t_method)biquad_tilde_list);
+    
+    class_addMethod (c, (t_method)biquad_tilde_set, sym_set,    A_GIMME, NULL);
+    class_addMethod (c, (t_method)biquad_tilde_set, sym_clear,  A_GIMME, NULL);
+    
+    biquad_tilde_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

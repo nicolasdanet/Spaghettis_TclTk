@@ -36,8 +36,8 @@ static t_class *bp_tilde_class;                 /* Shared. */
 typedef struct _bp_tilde_control {
     t_sample            c_real1;
     t_sample            c_real2;
-    t_sample            c_coefficient1;
-    t_sample            c_coefficient2;
+    t_sample            c_a1;
+    t_sample            c_a2;
     t_sample            c_gain;
     } t_bp_tilde_control;
 
@@ -70,13 +70,13 @@ static void bp_tilde_coefficientsPerform (t_bp_tilde *x, t_float f, t_float q)
     x->x_sampleRate = (x->x_sampleRate <= 0) ? AUDIO_DEFAULT_SAMPLERATE : x->x_sampleRate;
     
     {
-        double omega                = x->x_frequency * PD_TWO_PI / x->x_sampleRate;
-        double omegaPerQ            = PD_MIN ((x->x_q < 0.001) ? 1.0 : (omega / x->x_q), 1.0);
-        double r                    = 1.0 - omegaPerQ;
+        double omega      = x->x_frequency * PD_TWO_PI / x->x_sampleRate;
+        double omegaPerQ  = PD_MIN ((x->x_q < 0.001) ? 1.0 : (omega / x->x_q), 1.0);
+        double r          = 1.0 - omegaPerQ;
         
-        x->x_space.c_coefficient1   = 2.0 * bp_tilde_coefficientsPerformQCosine (omega) * r;
-        x->x_space.c_coefficient2   = - r * r;
-        x->x_space.c_gain           = 2.0 * omegaPerQ * (omegaPerQ + r * omega);
+        x->x_space.c_a1   = 2.0 * bp_tilde_coefficientsPerformQCosine (omega) * r;
+        x->x_space.c_a2   = - r * r;
+        x->x_space.c_gain = 2.0 * omegaPerQ * (omegaPerQ + r * omega);
     }
 }
 
@@ -115,8 +115,8 @@ static t_int *bp_tilde_perform (t_int *w)
 
     t_sample last1  = c->c_real1;
     t_sample last2  = c->c_real2;
-    t_sample a1     = c->c_coefficient1;
-    t_sample a2     = c->c_coefficient2;
+    t_sample a1     = c->c_a1;
+    t_sample a2     = c->c_a2;
     t_sample gain   = c->c_gain;
     
     while (n--) {
