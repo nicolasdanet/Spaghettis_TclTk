@@ -43,14 +43,14 @@ typedef struct _rpole_tilde {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void rpole_tilde_clear (t_rpole_tilde *x)
-{
-    x->x_real = 0;
-}
-
 static void rpole_tilde_set (t_rpole_tilde *x, t_float f)
 {
     x->x_real = f;
+}
+
+static void rpole_tilde_clear (t_rpole_tilde *x)
+{
+    rpole_tilde_set (x, 0.0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

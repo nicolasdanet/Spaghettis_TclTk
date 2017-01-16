@@ -43,14 +43,14 @@ typedef struct _rzero_tilde {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void rzero_tilde_clear (t_rzero_tilde *x)
-{
-    x->x_real = 0;
-}
-
 static void rzero_tilde_set (t_rzero_tilde *x, t_float f)
 {
     x->x_real = f;
+}
+
+static void rzero_tilde_clear (t_rzero_tilde *x)
+{
+    rzero_tilde_set (x, 0.0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
