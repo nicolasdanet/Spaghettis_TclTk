@@ -210,7 +210,7 @@ void biquad_tilde_setup     (void);
 void samphold_tilde_setup   (void);
 void rpole_tilde_setup      (void);
 void zero_tilde_setup       (void);
-void sigrzero_rev_setup     (void);
+void rzero_rev_tilde_setup  (void);
 void sigcpole_setup         (void);
 void sigczero_setup         (void);
 void sigczero_rev_setup     (void);
@@ -419,7 +419,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     samphold_tilde_setup();
     rpole_tilde_setup();
     zero_tilde_setup();
-    sigrzero_rev_setup();
+    rzero_rev_tilde_setup();
     sigcpole_setup();
     sigczero_setup();
     sigczero_rev_setup();

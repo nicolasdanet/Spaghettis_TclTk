@@ -72,13 +72,10 @@ static t_int *rzero_tilde_perform (t_int *w)
     t_sample last = x->x_real;
     
     while (n--) {
-    //
-    t_sample f = *in1++;
-    t_sample b = *in2++;
-    
-    *out++ = f - b * last; 
-    last   = f;
-    //
+        t_sample f = *in1++;
+        t_sample b = *in2++;
+        *out++ = f - b * last; 
+        last   = f;
     }
     
     x->x_real = last;

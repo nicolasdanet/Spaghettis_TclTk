@@ -14,77 +14,126 @@
 #include "m_macros.h"
 #include "d_dsp.h"
 
-/* ---------- rzero_rev~ - real, reverse one-zero filter (raw) ------------ */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct sigrzero_rev
-{
-    t_object x_obj;
-    t_float x_f;
-    t_sample x_last;
-} t_sigrzero_rev;
+/* Real reverse one-zero filter. */
 
-t_class *sigrzero_rev_class;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static void *sigrzero_rev_new(t_float f)
-{
-    t_sigrzero_rev *x = (t_sigrzero_rev *)pd_new(sigrzero_rev_class);
-    pd_float(
-        (t_pd *)inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal),
-            f);
-    outlet_new(&x->x_obj, &s_signal);
-    x->x_last = 0;
-    return x;
-}
+/* < https://ccrma.stanford.edu/~jos/filters/One_Zero.html > */
 
-static t_int *sigrzero_rev_perform(t_int *w)
-{
-    t_sample *in1 = (t_sample *)(w[1]);
-    t_sample *in2 = (t_sample *)(w[2]);
-    t_sample *out = (t_sample *)(w[3]);
-    t_sigrzero_rev *x = (t_sigrzero_rev *)(w[4]);
-    int n = (t_int)(w[5]);
-    int i;
-    t_sample last = x->x_last;
-    for (i = 0; i < n; i++)
-    {
-        t_sample next = *in1++;
-        t_sample coef = *in2++;
-        *out++ = last - coef * next;
-        last = next;
-    }
-    x->x_last = last;
-    return (w+6);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static void sigrzero_rev_dsp(t_sigrzero_rev *x, t_signal **sp)
-{
-    dsp_add(sigrzero_rev_perform, 5,
-        sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, 
-            x, sp[0]->s_vectorSize);
-}
+static t_class *rzero_rev_tilde_class;          /* Shared. */
 
-static void sigrzero_rev_clear(t_sigrzero_rev *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _rzero_rev_tilde {
+    t_object    x_obj;                          /* Must be the first. */
+    t_float     x_f;
+    t_sample    x_last;
+    t_outlet    *x_outlet;
+    } t_rzero_tilde_rev;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void rzero_tilde_rev_clear (t_rzero_tilde_rev *x)
 {
     x->x_last = 0;
 }
 
-static void sigrzero_rev_set(t_sigrzero_rev *x, t_float f)
+static void rzero_tilde_rev_set (t_rzero_tilde_rev *x, t_float f)
 {
     x->x_last = f;
 }
 
-void sigrzero_rev_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* No aliasing. */
+/* Notice that the two signals incoming could be theoretically just one. */
+/* But as only loads are performed, it is assumed safe to use restricted pointers. */
+
+static t_int *rzero_tilde_rev_perform (t_int *w)
 {
-    sigrzero_rev_class = class_new(sym_rzero_rev__tilde__,
-        (t_newmethod)sigrzero_rev_new, 0, sizeof(t_sigrzero_rev),
-        0, A_DEFFLOAT, 0);
-    CLASS_SIGNAL(sigrzero_rev_class, t_sigrzero_rev, x_f);
-    class_addMethod(sigrzero_rev_class, (t_method)sigrzero_rev_set,
-        sym_set, A_DEFFLOAT, 0);
-    class_addMethod(sigrzero_rev_class, (t_method)sigrzero_rev_clear,
-        sym_clear, 0);
-    class_addMethod(sigrzero_rev_class, (t_method)sigrzero_rev_dsp,
-        sym_dsp, A_CANT, 0);
+    t_rzero_tilde_rev *x = (t_rzero_tilde_rev *)(w[1]);
+    PD_RESTRICTED in1 = (t_sample *)(w[2]);
+    PD_RESTRICTED in2 = (t_sample *)(w[3]);
+    PD_RESTRICTED out = (t_sample *)(w[4]);
+    int n = (t_int)(w[5]);
+    
+    t_sample last = x->x_last;
+    
+    while (n--) {
+        t_sample f = *in1++;
+        t_sample b = *in2++;
+        *out++ = last - b * f;
+        last   = f;
+    }
+    
+    x->x_last = last;
+    
+    return (w + 6);
+}
+
+static void rzero_tilde_rev_dsp (t_rzero_tilde_rev *x, t_signal **sp)
+{
+    PD_ASSERT (sp[0]->s_vector != sp[2]->s_vector);
+    PD_ASSERT (sp[1]->s_vector != sp[2]->s_vector);
+    
+    dsp_add (rzero_tilde_rev_perform, 5, x,
+        sp[0]->s_vector,
+        sp[1]->s_vector,
+        sp[2]->s_vector, 
+        sp[0]->s_vectorSize);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *rzero_tilde_rev_new (t_float f)
+{
+    t_rzero_tilde_rev *x = (t_rzero_tilde_rev *)pd_new (rzero_rev_tilde_class);
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    
+    pd_float ((t_pd *)inlet_newSignal (cast_object (x)), f);
+    
+    return x;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void rzero_rev_tilde_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_rzero_rev__tilde__,
+            (t_newmethod)rzero_tilde_rev_new,
+            NULL,
+            sizeof (t_rzero_tilde_rev),
+            CLASS_DEFAULT,
+            A_DEFFLOAT,
+            A_NULL);
+            
+    CLASS_SIGNAL (c, t_rzero_tilde_rev, x_f);
+    
+    class_addDSP (c, (t_method)rzero_tilde_rev_dsp);
+        
+    class_addMethod (c, (t_method)rzero_tilde_rev_set,      sym_set,    A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)rzero_tilde_rev_clear,    sym_clear,  A_NULL);
+
+    rzero_rev_tilde_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
