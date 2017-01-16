@@ -34,7 +34,6 @@
 #include "m_setup.c"
 #include "m_dollar.c"
 #include "m_error.c"
-
 #include "m_utils.c"
 #include "m_string.c"
 #include "m_math.c"
@@ -94,7 +93,6 @@
 #include "g_garray.c"
 #include "g_vinlet.c"
 #include "g_voutlet.c"
-
 #include "g_iem.c"
 #include "g_bang.c"
 #include "g_toggle.c"
@@ -103,7 +101,6 @@
 #include "g_dial.c"
 #include "g_vu.c"
 #include "g_panel.c"
-
 #include "g_word.c"
 #include "g_scalar.c"
 #include "g_field.c"
@@ -132,12 +129,10 @@
 #include "x_arrayrange.c"
 #include "x_listinlet.c"
 #include "x_atomoutlet.c"
-
 #include "x_int.c"
 #include "x_float.c"
 #include "x_symbol.c"
 #include "x_bang.c"
-
 #include "x_list.c"
 #include "x_listappend.c"
 #include "x_listprepend.c"
@@ -146,9 +141,7 @@
 #include "x_listlength.c"
 #include "x_listfromsymbol.c"
 #include "x_listtosymbol.c"
-
 #include "x_scalar.c"
-
 #include "x_text.c"
 #include "x_textget.c"
 #include "x_textset.c"
@@ -158,7 +151,6 @@
 #include "x_textsequence.c"
 #include "x_qlist.c"
 #include "x_textfile.c"
-
 #include "x_array.c"
 #include "x_arraysize.c"
 #include "x_arraysum.c"
@@ -168,7 +160,6 @@
 #include "x_arrayrandom.c"
 #include "x_arraymax.c"
 #include "x_arraymin.c"
-
 #include "x_acoustic.c"
 #include "x_math.c"
 #include "x_atan2.c"
@@ -176,13 +167,11 @@
 #include "x_binop2.c"
 #include "x_binop3.c"
 #include "x_random.c"
-
 #include "x_metro.c"
 #include "x_delay.c"
 #include "x_line.c"
 #include "x_timer.c"
 #include "x_pipe.c"
-
 #include "x_send.c"
 #include "x_receive.c"
 #include "x_select.c"
@@ -197,7 +186,6 @@
 #include "x_change.c"
 #include "x_clip.c"
 #include "x_value.c"
-
 #include "x_print.c"
 #include "x_key.c"
 #include "x_keyup.c"
@@ -213,12 +201,10 @@
 #include "x_netreceive.c"
 #include "x_oscparse.c"
 #include "x_oscformat.c"
-
 #include "x_makenote.c"
 #include "x_stripnote.c"
 #include "x_bag.c"
 #include "x_poly.c"
-
 #include "x_midiin.c"
 #include "x_midiout.c"
 #include "x_notein.c"
@@ -249,16 +235,13 @@
 #include "d_resample.c"
 #include "d_block.c"
 #include "d_perform.c"
-
 #include "d_throw.c"
 #include "d_catch.c"
 #include "d_send.c"
 #include "d_receive.c"
-
 #include "d_osc.c"
 #include "d_phasor.c"
 #include "d_cos.c"
-
 #include "d_sig.c"
 #include "d_line.c"
 #include "d_vline.c"
@@ -266,11 +249,9 @@
 #include "d_env.c"
 #include "d_threshold.c"
 #include "d_samphold.c"
-
 #include "d_delwrite.c"
 #include "d_delread.c"
 #include "d_vd.c"
-
 #include "x_tabwrite.c"
 #include "d_tabwrite.c"
 #include "x_tabread.c"
@@ -281,7 +262,6 @@
 #include "d_tabosc4.c"
 #include "d_tabsend.c"
 #include "d_tabreceive.c"
-
 #include "d_add.c"
 #include "d_subtract.c"
 #include "d_multiply.c"
@@ -302,19 +282,16 @@
 #include "d_exp.c"
 #include "d_log.c"
 #include "d_abs.c"
-
 #include "d_print.c"
 #include "d_bang.c"
 #include "d_samplerate.c"
 #include "d_noise.c"
-
 #include "d_soundfile.c"
 #include "d_subchunk.c"
 #include "d_codec.c"
 #include "d_soundfiler.c"
 #include "d_readsf.c"
 #include "d_writesf.c"
-
 #include "d_vcf.c"
 #include "d_hip.c"
 #include "d_lop.c"
@@ -326,7 +303,6 @@
 #include "d_cpole.c"
 #include "d_czero.c"
 #include "d_czeroreverse.c"
-
 #include "d_fft.c"
 #include "d_fftsg.c"
 

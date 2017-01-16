@@ -1,6 +1,13 @@
-/* Copyright (c) 1997- Miller Puckette and others.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
+
+/* 
+    Copyright (c) 1997-2016 Miller Puckette and others.
+*/
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #include "m_pd.h"
 #include "m_core.h"
@@ -38,6 +45,10 @@ static t_int *sigrfft_flip(t_int *w)
         *(--out) = - *in++;
     return (w+4);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* ------------------------ fft~ and ifft~ -------------------------------- */
 static t_class *sigfft_class, *sigifft_class;
@@ -118,7 +129,7 @@ static void sigifft_dsp(t_sigfft *x, t_signal **sp)
     sigfft_dspx(x, sp, sigifft_perform);
 }
 
-static void sigfft_setup(void)
+void fft_tilde_setup(void)
 {
     sigfft_class = class_new(sym_fft__tilde__, sigfft_new, 0,
         sizeof(t_sigfft), 0, 0);
@@ -133,6 +144,10 @@ static void sigfft_setup(void)
         sym_dsp, A_CANT, 0);
     class_setHelpName(sigifft_class, sym_fft__tilde__);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* ----------------------- rfft~ -------------------------------- */
 
@@ -182,7 +197,7 @@ static void sigrfft_dsp(t_sigrfft *x, t_signal **sp)
     dsp_addZeroPerform(out2, 1);
 }
 
-static void sigrfft_setup(void)
+void rfft_tilde_setup(void)
 {
     sigrfft_class = class_new(sym_rfft__tilde__, sigrfft_new, 0,
         sizeof(t_sigrfft), 0, 0);
@@ -192,7 +207,9 @@ static void sigrfft_setup(void)
     class_setHelpName(sigrfft_class, sym_fft__tilde__);
 }
 
-/* ----------------------- rifft~ -------------------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static t_class *sigrifft_class;
 
@@ -243,7 +260,7 @@ static void sigrifft_dsp(t_sigrifft *x, t_signal **sp)
     dsp_add(sigrifft_perform, 2, out1, n);
 }
 
-static void sigrifft_setup(void)
+void rifft_tilde_setup(void)
 {
     sigrifft_class = class_new(sym_rifft__tilde__, sigrifft_new, 0,
         sizeof(t_sigrifft), 0, 0);
@@ -252,6 +269,10 @@ static void sigrifft_setup(void)
         sym_dsp, A_CANT, 0);
     class_setHelpName(sigrifft_class, sym_fft__tilde__);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* ----------------------- framp~ -------------------------------- */
 
@@ -330,21 +351,11 @@ static void sigframp_dsp(t_sigframp *x, t_signal **sp)
     dsp_add(sqrt_tilde_perform, 3, sp[3]->s_vector, sp[3]->s_vector, n2);
 }
 
-static void sigframp_setup(void)
+void framp_tilde_setup(void)
 {
     sigframp_class = class_new(sym_framp__tilde__, sigframp_new, 0,
         sizeof(t_sigframp), 0, 0);
     CLASS_SIGNAL(sigframp_class, t_sigframp, x_f);
     class_addMethod(sigframp_class, (t_method)sigframp_dsp,
         sym_dsp, A_CANT, 0);
-}
-
-/* ------------------------ global setup routine ------------------------- */
-
-void d_fft_setup(void)
-{
-    sigfft_setup();
-    sigrfft_setup();
-    sigrifft_setup();
-    sigframp_setup();
 }
