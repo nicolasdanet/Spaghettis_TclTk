@@ -151,7 +151,7 @@
 		378972151C4F716800263434 /* d_tabplay.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B11C4F716700263434 /* d_tabplay.c */; };
 		378972171C4F716800263434 /* d_dac.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B31C4F716700263434 /* d_dac.c */; };
 		378972181C4F716800263434 /* d_delwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B41C4F716700263434 /* d_delwrite.c */; };
-		378972191C4F716800263434 /* d_fft_fftsg.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B51C4F716700263434 /* d_fft_fftsg.c */; };
+		378972191C4F716800263434 /* d_fftsg.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B51C4F716700263434 /* d_fftsg.c */; };
 		3789721A1C4F716800263434 /* d_fft.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B61C4F716700263434 /* d_fft.c */; };
 		3789721B1C4F716800263434 /* d_hip.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B71C4F716700263434 /* d_hip.c */; };
 		3789721D1C4F716800263434 /* d_clip.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B91C4F716700263434 /* d_clip.c */; };
@@ -570,7 +570,7 @@
 		378971B11C4F716700263434 /* d_tabplay.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_tabplay.c; path = src/d_tabplay.c; sourceTree = "<group>"; };
 		378971B31C4F716700263434 /* d_dac.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_dac.c; path = src/d_dac.c; sourceTree = "<group>"; };
 		378971B41C4F716700263434 /* d_delwrite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_delwrite.c; path = src/d_delwrite.c; sourceTree = "<group>"; };
-		378971B51C4F716700263434 /* d_fft_fftsg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_fft_fftsg.c; path = src/d_fft_fftsg.c; sourceTree = "<group>"; };
+		378971B51C4F716700263434 /* d_fftsg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_fftsg.c; path = src/d_fftsg.c; sourceTree = "<group>"; };
 		378971B61C4F716700263434 /* d_fft.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_fft.c; path = src/d_fft.c; sourceTree = "<group>"; };
 		378971B71C4F716700263434 /* d_hip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_hip.c; path = src/d_hip.c; sourceTree = "<group>"; };
 		378971B91C4F716700263434 /* d_clip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_clip.c; path = src/d_clip.c; sourceTree = "<group>"; };
@@ -1258,6 +1258,15 @@
 			path = tcl;
 			sourceTree = "<group>";
 		};
+		378B85961E2D2D6B00BDF703 /* FFT */ = {
+			isa = PBXGroup;
+			children = (
+				378971B61C4F716700263434 /* d_fft.c */,
+				378971B51C4F716700263434 /* d_fftsg.c */,
+			);
+			name = FFT;
+			sourceTree = "<group>";
+		};
 		379079D31D96D7EC0055CBFF /* Math */ = {
 			isa = PBXGroup;
 			children = (
@@ -1433,14 +1442,13 @@
 				37C000571DE2FE4B00F90584 /* Global */,
 				370D017F1DE6BFA4005918D4 /* Osc */,
 				3772C0401DFBDF450036466E /* Convert */,
-				37E4DA031DEC6BB500190484 /* Filters */,
 				370157B71DFFD41700F3FE0C /* Delay */,
 				37C9FADD1DF718CD00309D57 /* Tab */,
 				377C79961DF08AD0008195B0 /* Math */,
 				37C000561DE2FE3800F90584 /* Miscellaneous */,
 				37E0CBA81E03FA6C00993022 /* Soundfile */,
-				378971B61C4F716700263434 /* d_fft.c */,
-				378971B51C4F716700263434 /* d_fft_fftsg.c */,
+				37E4DA031DEC6BB500190484 /* Filters */,
+				378B85961E2D2D6B00BDF703 /* FFT */,
 			);
 			name = Objects;
 			sourceTree = "<group>";
@@ -1741,7 +1749,7 @@
 				378972151C4F716800263434 /* d_tabplay.c in Sources */,
 				378972171C4F716800263434 /* d_dac.c in Sources */,
 				378972181C4F716800263434 /* d_delwrite.c in Sources */,
-				378972191C4F716800263434 /* d_fft_fftsg.c in Sources */,
+				378972191C4F716800263434 /* d_fftsg.c in Sources */,
 				3789721A1C4F716800263434 /* d_fft.c in Sources */,
 				3789721B1C4F716800263434 /* d_hip.c in Sources */,
 				3789721D1C4F716800263434 /* d_clip.c in Sources */,

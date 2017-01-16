@@ -267,18 +267,6 @@
 #include "d_threshold.c"
 #include "d_samphold.c"
 
-#include "d_vcf.c"
-#include "d_hip.c"
-#include "d_lop.c"
-#include "d_bp.c"
-#include "d_biquad.c"
-#include "d_rpole.c"
-#include "d_rzero.c"
-#include "d_rzeroreverse.c"
-#include "d_cpole.c"
-#include "d_czero.c"
-#include "d_czeroreverse.c"
-
 #include "d_delwrite.c"
 #include "d_delread.c"
 #include "d_vd.c"
@@ -326,6 +314,21 @@
 #include "d_soundfiler.c"
 #include "d_readsf.c"
 #include "d_writesf.c"
+
+#include "d_vcf.c"
+#include "d_hip.c"
+#include "d_lop.c"
+#include "d_bp.c"
+#include "d_biquad.c"
+#include "d_rpole.c"
+#include "d_rzero.c"
+#include "d_rzeroreverse.c"
+#include "d_cpole.c"
+#include "d_czero.c"
+#include "d_czeroreverse.c"
+
+#include "d_fft.c"
+#include "d_fftsg.c"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
