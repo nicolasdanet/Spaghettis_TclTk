@@ -14,96 +14,156 @@
 #include "m_macros.h"
 #include "d_dsp.h"
 
-/* ------ czero_rev~ - complex one-zero filter (raw, reverse form) ----- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct sigczero_rev
+/* Complex reverse one-zero filter. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* < https://ccrma.stanford.edu/~jos/filters/One_Zero.html > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_class *czero_rev_tilde_class;          /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _czero_rev_tilde {
+    t_object    x_obj;                          /* Must be the first. */
+    t_float     x_f;
+    t_sample    x_real;
+    t_sample    x_imaginary;
+    t_outlet    *x_outletLeft;
+    t_outlet    *x_outletRight;
+    } t_czero_rev_tilde;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void czero_rev_tilde_set (t_czero_rev_tilde *x, t_float real, t_float imaginary)
 {
-    t_object x_obj;
-    t_float x_f;
-    t_sample x_lastre;
-    t_sample x_lastim;
-} t_sigczero_rev;
+    x->x_real      = real;
+    x->x_imaginary = imaginary;
+}
 
-t_class *sigczero_rev_class;
-
-static void *sigczero_rev_new(t_float re, t_float im)
+static void czero_rev_tilde_clear (t_czero_rev_tilde *x)
 {
-    t_sigczero_rev *x = (t_sigczero_rev *)pd_new(sigczero_rev_class);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
-    pd_float(
-        (t_pd *)inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal),
-            re);
-    pd_float(
-        (t_pd *)inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal),
-            im);
-    outlet_new(&x->x_obj, &s_signal);
-    outlet_new(&x->x_obj, &s_signal);
-    x->x_lastre = x->x_lastim = 0;
-    x->x_f = 0;
+    czero_rev_tilde_set (x, 0.0, 0.0);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* No aliasing. */
+/* Notice that the fourth signals incoming could be theoretically just one. */
+/* But as only loads are performed, it is assumed safe to use restricted pointers. */
+
+static t_int *czero_rev_tilde_perform (t_int *w)
+{
+    t_czero_rev_tilde *x = (t_czero_rev_tilde *)(w[1]);
+    PD_RESTRICTED in1  = (t_sample *)(w[2]);
+    PD_RESTRICTED in2  = (t_sample *)(w[3]);
+    PD_RESTRICTED in3  = (t_sample *)(w[4]);
+    PD_RESTRICTED in4  = (t_sample *)(w[5]);
+    PD_RESTRICTED out1 = (t_sample *)(w[6]);
+    PD_RESTRICTED out2 = (t_sample *)(w[7]);
+    int n = (t_int)(w[8]);
+    
+    t_sample lastReal      = x->x_real;
+    t_sample lastImaginary = x->x_imaginary;
+    
+    while (n--) {
+    
+        t_sample real       = *in1++;
+        t_sample imaginary  = *in2++;
+        t_sample bReal      = *in3++;
+        t_sample bImaginary = *in4++;
+
+        *out1++ = lastReal - real * bReal - imaginary * bImaginary;
+        *out2++ = lastImaginary - real * bImaginary + imaginary * bReal;
+        
+        lastReal      = real;
+        lastImaginary = imaginary;
+    }
+    
+    x->x_real      = lastReal;
+    x->x_imaginary = lastImaginary;
+    
+    return (w + 9);
+}
+
+static void czero_rev_tilde_dsp (t_czero_rev_tilde *x, t_signal **sp)
+{
+    PD_ASSERT (sp[0]->s_vector != sp[4]->s_vector);
+    PD_ASSERT (sp[1]->s_vector != sp[4]->s_vector);
+    PD_ASSERT (sp[2]->s_vector != sp[4]->s_vector);
+    PD_ASSERT (sp[3]->s_vector != sp[4]->s_vector);
+    PD_ASSERT (sp[0]->s_vector != sp[5]->s_vector);
+    PD_ASSERT (sp[1]->s_vector != sp[5]->s_vector);
+    PD_ASSERT (sp[2]->s_vector != sp[5]->s_vector);
+    PD_ASSERT (sp[3]->s_vector != sp[5]->s_vector);
+    PD_ASSERT (sp[4]->s_vector != sp[5]->s_vector);
+    
+    dsp_add (czero_rev_tilde_perform, 8, x,
+        sp[0]->s_vector,
+        sp[1]->s_vector,
+        sp[2]->s_vector,
+        sp[3]->s_vector, 
+        sp[4]->s_vector,
+        sp[5]->s_vector,
+        sp[0]->s_vectorSize);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *czero_rev_tilde_new (t_float real, t_float imaginary)
+{
+    t_czero_rev_tilde *x = (t_czero_rev_tilde *)pd_new (czero_rev_tilde_class);
+    
+    x->x_outletLeft  = outlet_new (cast_object (x), &s_signal);
+    x->x_outletRight = outlet_new (cast_object (x), &s_signal);
+    
+    inlet_newSignal (cast_object (x));
+    
+    pd_float ((t_pd *)inlet_newSignal (cast_object (x)), real);
+    pd_float ((t_pd *)inlet_newSignal (cast_object (x)), imaginary);
+    
     return x;
 }
 
-static t_int *sigczero_rev_perform(t_int *w)
-{
-    t_sample *inre1 = (t_sample *)(w[1]);
-    t_sample *inim1 = (t_sample *)(w[2]);
-    t_sample *inre2 = (t_sample *)(w[3]);
-    t_sample *inim2 = (t_sample *)(w[4]);
-    t_sample *outre = (t_sample *)(w[5]);
-    t_sample *outim = (t_sample *)(w[6]);
-    t_sigczero_rev *x = (t_sigczero_rev *)(w[7]);
-    int n = (t_int)(w[8]);
-    int i;
-    t_sample lastre = x->x_lastre;
-    t_sample lastim = x->x_lastim;
-    for (i = 0; i < n; i++)
-    {
-        t_sample nextre = *inre1++;
-        t_sample nextim = *inim1++;
-        t_sample coefre = *inre2++;
-        t_sample coefim = *inim2++;
-            /* transfer function is (A bar) - Z^-1, for the same
-            frequency response as 1 - AZ^-1 from czero_tilde. */
-        *outre++ = lastre - nextre * coefre - nextim * coefim;
-        *outim++ = lastim - nextre * coefim + nextim * coefre;
-        lastre = nextre;
-        lastim = nextim;
-    }
-    x->x_lastre = lastre;
-    x->x_lastim = lastim;
-    return (w+9);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void sigczero_rev_dsp(t_sigczero_rev *x, t_signal **sp)
+void czero_rev_tilde_setup (void)
 {
-    dsp_add(sigczero_rev_perform, 8,
-        sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[3]->s_vector, 
-        sp[4]->s_vector, sp[5]->s_vector, x, sp[0]->s_vectorSize);
-}
-
-static void sigczero_rev_clear(t_sigczero_rev *x)
-{
-    x->x_lastre = x->x_lastim = 0;
-}
-
-static void sigczero_rev_set(t_sigczero_rev *x, t_float re, t_float im)
-{
-    x->x_lastre = re;
-    x->x_lastim = im;
-}
-
-void sigczero_rev_setup(void)
-{
-    sigczero_rev_class = class_new(sym_czero_rev__tilde__,
-        (t_newmethod)sigczero_rev_new, 0, sizeof(t_sigczero_rev), 0, 
-            A_DEFFLOAT, A_DEFFLOAT, 0);
-    CLASS_SIGNAL(sigczero_rev_class, t_sigczero_rev, x_f);
-    class_addMethod(sigczero_rev_class, (t_method)sigczero_rev_set,
-        sym_set, A_DEFFLOAT, A_DEFFLOAT, 0);
-    class_addMethod(sigczero_rev_class, (t_method)sigczero_rev_clear,
-        sym_clear, 0);
-    class_addMethod(sigczero_rev_class, (t_method)sigczero_rev_dsp,
-        sym_dsp, A_CANT, 0);
+    t_class *c = NULL;
+    
+    c = class_new (sym_czero_rev__tilde__,
+            (t_newmethod)czero_rev_tilde_new,
+            NULL,
+            sizeof (t_czero_rev_tilde),
+            CLASS_DEFAULT, 
+            A_DEFFLOAT,
+            A_DEFFLOAT,
+            A_NULL);
+            
+    CLASS_SIGNAL (c, t_czero_rev_tilde, x_f);
+    
+    class_addDSP (c, (t_method)czero_rev_tilde_dsp);
+        
+    class_addMethod (c, (t_method)czero_rev_tilde_set,      sym_set,    A_DEFFLOAT, A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)czero_rev_tilde_clear,    sym_clear,  A_NULL);
+        
+    czero_rev_tilde_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

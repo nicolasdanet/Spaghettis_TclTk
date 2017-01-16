@@ -85,8 +85,8 @@ static t_int *czero_tilde_perform (t_int *w)
         t_sample bReal      = *in3++;
         t_sample bImaginary = *in4++;
         
-        *out1++ = real - (lastReal * bReal + lastImaginary * bImaginary);
-        *out2++ = imaginary - (lastReal * bImaginary - lastImaginary * bReal);
+        *out1++ = real - lastReal * bReal + lastImaginary * bImaginary;
+        *out2++ = imaginary - lastReal * bImaginary - lastImaginary * bReal;
         
         lastReal      = real;
         lastImaginary = imaginary;
