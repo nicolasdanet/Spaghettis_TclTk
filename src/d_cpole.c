@@ -75,7 +75,7 @@ static t_int *cpole_tilde_perform (t_int *w)
     PD_RESTRICTED out2 = (t_sample *)(w[7]);
     int n = (t_int)(w[8]);
 
-    t_sample lastReal = x->x_real;
+    t_sample lastReal      = x->x_real;
     t_sample lastImaginary = x->x_imaginary;
     
     while (n--) {
@@ -92,7 +92,7 @@ static t_int *cpole_tilde_perform (t_int *w)
     if (PD_IS_BIG_OR_SMALL (lastReal))      { lastReal = 0.0; }
     if (PD_IS_BIG_OR_SMALL (lastImaginary)) { lastImaginary = 0.0; }
     
-    x->x_real = lastReal;
+    x->x_real      = lastReal;
     x->x_imaginary = lastImaginary;
     
     return (w + 9);

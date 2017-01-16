@@ -212,7 +212,7 @@ void rpole_tilde_setup      (void);
 void zero_tilde_setup       (void);
 void rzero_rev_tilde_setup  (void);
 void cpole_tilde_setup      (void);
-void sigczero_setup         (void);
+void czero_tilde_setup      (void);
 void sigczero_rev_setup     (void);
 void send_tilde_setup       (void);
 void receive_tilde_setup    (void);
@@ -421,7 +421,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     zero_tilde_setup();
     rzero_rev_tilde_setup();
     cpole_tilde_setup();
-    sigczero_setup();
+    czero_tilde_setup();
     sigczero_rev_setup();
     send_tilde_setup();
     receive_tilde_setup();
