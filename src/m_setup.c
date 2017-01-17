@@ -203,6 +203,7 @@ void delwrite_tilde_setup   (void);
 void delread_tilde_setup    (void);
 void vd_tilde_setup         (void);
 void fft_tilde_setup        (void);
+void ifft_tilde_setup       (void);
 void rfft_tilde_setup       (void);
 void rifft_tilde_setup      (void);
 void framp_tilde_setup      (void);
@@ -415,6 +416,7 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     delread_tilde_setup();
     vd_tilde_setup();
     fft_tilde_setup();
+    ifft_tilde_setup();
     rfft_tilde_setup();
     rifft_tilde_setup();
     framp_tilde_setup();
