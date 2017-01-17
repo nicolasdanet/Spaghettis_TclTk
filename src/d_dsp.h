@@ -14,6 +14,37 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+/*
+
+    Ugen's routines build a graph from the DSP objects.
+    It is sorted next to obtain a linear list of operations to perform. 
+    Memory for signals is allocated according to the interconnections.
+    Once that's been done, the graph is deleted (while the signals remain).
+    
+    Prologue and epilogue functions manage nested graphs relations.
+    With resampling and reblocking it could require additional buffers.
+
+    In case of resampling techniques, the "block~" object maintains the
+    synchronisation with the parent's DSP process.
+    It does NOT do any computation in its own right.
+    It triggers associated ugens at a supermultiple or submultiple of the upstream.
+    Note that it can also be invoked just as a switch.
+    
+    The overall order of scheduling is,
+
+        - inlet and outlet prologue code (1)
+        - block prologue (2)
+        - the ugens in the graph, including inlets and outlets
+        - block epilogue (2)
+        - outlet epilogue code (2)
+
+    where (1) means, "if reblocked" and (2) means, "if reblocked or switched".
+
+*/
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 struct _signal {
@@ -129,7 +160,7 @@ typedef int64_t t_phase;        /* Assumed -1 has all bits set (two's complement
 // -----------------------------------------------------------------------------------------------------------
 
 /* Notice that this approach implies limitation in the range of signals allowed. */
-/* An efficient mechanism to protect from it should be implemented. */
+/* An efficient mechanism to protect to overflow should be implemented. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -418,41 +449,41 @@ void            block_getParameters         (t_block *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    dsp_addZeroPerform              (t_sample *s, int n);
-void    dsp_addScalarPerform            (t_float *f, t_sample *dest, int n);
+void    dsp_addZeroPerform                  (t_sample *s, int n);
+void    dsp_addScalarPerform                (t_float *f, t_sample *dest, int n);
 
-void    dsp_addPlusPerform              (t_sample *src1, t_sample *src2, t_sample *dest, int n);
-void    dsp_addSubtractPerform          (t_sample *src1, t_sample *src2, t_sample *dest, int n);
-void    dsp_addMultiplyPerform          (t_sample *src1, t_sample *src2, t_sample *dest, int n);
-void    dsp_addDividePerform            (t_sample *src1, t_sample *src2, t_sample *dest, int n);
-void    dsp_addMaximumPerform           (t_sample *src1, t_sample *src2, t_sample *dest, int n);
-void    dsp_addMinimumPerform           (t_sample *src1, t_sample *src2, t_sample *dest, int n);
+void    dsp_addPlusPerform                  (t_sample *src1, t_sample *src2, t_sample *dest, int n);
+void    dsp_addSubtractPerform              (t_sample *src1, t_sample *src2, t_sample *dest, int n);
+void    dsp_addMultiplyPerform              (t_sample *src1, t_sample *src2, t_sample *dest, int n);
+void    dsp_addDividePerform                (t_sample *src1, t_sample *src2, t_sample *dest, int n);
+void    dsp_addMaximumPerform               (t_sample *src1, t_sample *src2, t_sample *dest, int n);
+void    dsp_addMinimumPerform               (t_sample *src1, t_sample *src2, t_sample *dest, int n);
 
-void    dsp_addPlusScalarPerform        (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n);
-void    dsp_addSubtractScalarPerform    (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n);
-void    dsp_addMultiplyScalarPerform    (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n);
-void    dsp_addDivideScalarPerform      (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n);
-void    dsp_addMaximumScalarPerform     (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n);
-void    dsp_addMinimumScalarPerform     (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n);
+void    dsp_addPlusScalarPerform            (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n);
+void    dsp_addSubtractScalarPerform        (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n);
+void    dsp_addMultiplyScalarPerform        (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n);
+void    dsp_addDivideScalarPerform          (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n);
+void    dsp_addMaximumScalarPerform         (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n);
+void    dsp_addMinimumScalarPerform         (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n);
 
-void    dsp_addCopyPerform              (PD_RESTRICTED src, PD_RESTRICTED dest, int n);
-void    dsp_addCopyZeroPerform          (PD_RESTRICTED src, PD_RESTRICTED dest, int n);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void    cos_tilde_initialize            (void);
-void    cos_tilde_release               (void);
+void    dsp_addCopyPerform                  (PD_RESTRICTED src, PD_RESTRICTED dest, int n);
+void    dsp_addCopyZeroPerform              (PD_RESTRICTED src, PD_RESTRICTED dest, int n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    mayer_fft                       (int n, t_sample *real, t_sample *imaginary);
-void    mayer_ifft                      (int n, t_sample *real, t_sample *imaginary);
-void    mayer_realfft                   (int n, t_sample *real);
-void    mayer_realifft                  (int n, t_sample *real);
+void    cos_tilde_initialize                (void);
+void    cos_tilde_release                   (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void    mayer_fft                           (int n, t_sample *real, t_sample *imaginary);
+void    mayer_ifft                          (int n, t_sample *real, t_sample *imaginary);
+void    mayer_realfft                       (int n, t_sample *real);
+void    mayer_realifft                      (int n, t_sample *real);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
