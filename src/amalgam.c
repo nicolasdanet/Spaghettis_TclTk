@@ -304,6 +304,7 @@
 #include "d_czero.c"
 #include "d_czeroreverse.c"
 #include "d_fft.c"
+#include "d_framp.c"
 #include "d_fftsg.c"
 
 // -----------------------------------------------------------------------------------------------------------
