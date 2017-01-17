@@ -26,6 +26,7 @@
 		3709BE1E1D016C9400D9B48C /* m_eval.c in Sources */ = {isa = PBXBuildFile; fileRef = 3709BE1D1D016C9400D9B48C /* m_eval.c */; };
 		3709BE591D01726800D9B48C /* m_parse.c in Sources */ = {isa = PBXBuildFile; fileRef = 3709BE581D01726800D9B48C /* m_parse.c */; };
 		371196C41E2DF28F007214B2 /* d_framp.c in Sources */ = {isa = PBXBuildFile; fileRef = 371196C31E2DF28F007214B2 /* d_framp.c */; };
+		371196CB1E2DF324007214B2 /* d_rifft.c in Sources */ = {isa = PBXBuildFile; fileRef = 371196CA1E2DF324007214B2 /* d_rifft.c */; };
 		37128AF81D43640300EFB4FC /* m_color.c in Sources */ = {isa = PBXBuildFile; fileRef = 37128AF71D43640300EFB4FC /* m_color.c */; };
 		371430B11D0D46BC00E68D11 /* g_paint.c in Sources */ = {isa = PBXBuildFile; fileRef = 371430B01D0D46BC00E68D11 /* g_paint.c */; };
 		3716554F1BA3452E00ABDE22 /* pa_allocation.c in Sources */ = {isa = PBXBuildFile; fileRef = 3716554E1BA3452E00ABDE22 /* pa_allocation.c */; };
@@ -393,6 +394,7 @@
 		3709BE1D1D016C9400D9B48C /* m_eval.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_eval.c; path = src/m_eval.c; sourceTree = "<group>"; };
 		3709BE581D01726800D9B48C /* m_parse.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_parse.c; path = src/m_parse.c; sourceTree = "<group>"; };
 		371196C31E2DF28F007214B2 /* d_framp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_framp.c; path = src/d_framp.c; sourceTree = "<group>"; };
+		371196CA1E2DF324007214B2 /* d_rifft.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_rifft.c; path = src/d_rifft.c; sourceTree = "<group>"; };
 		37128AF71D43640300EFB4FC /* m_color.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_color.c; path = src/m_color.c; sourceTree = "<group>"; };
 		37128B5F1D43691300EFB4FC /* m_color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_color.h; path = src/m_color.h; sourceTree = "<group>"; };
 		371430B01D0D46BC00E68D11 /* g_paint.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_paint.c; path = src/g_paint.c; sourceTree = "<group>"; };
@@ -1264,6 +1266,7 @@
 			isa = PBXGroup;
 			children = (
 				378971B61C4F716700263434 /* d_fft.c */,
+				371196CA1E2DF324007214B2 /* d_rifft.c */,
 				371196C31E2DF28F007214B2 /* d_framp.c */,
 				378971B51C4F716700263434 /* d_fftsg.c */,
 			);
@@ -2028,6 +2031,7 @@
 				375252FC1E23CD8E00863F79 /* d_bp.c in Sources */,
 				375253051E23CE1E00863F79 /* d_lop.c in Sources */,
 				371196C41E2DF28F007214B2 /* d_framp.c in Sources */,
+				371196CB1E2DF324007214B2 /* d_rifft.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
