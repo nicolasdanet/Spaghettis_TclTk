@@ -428,6 +428,13 @@ void            block_getProperties         (t_block *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void    cos_tilde_initialize                (void);
+void    cos_tilde_release                   (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void    dsp_addZeroPerform                  (t_sample *s, int n);
 void    dsp_addScalarPerform                (t_float *f, t_sample *dest, int n);
 
@@ -447,22 +454,6 @@ void    dsp_addMinimumScalarPerform         (PD_RESTRICTED src, t_float *f, PD_R
 
 void    dsp_addCopyPerform                  (PD_RESTRICTED src, PD_RESTRICTED dest, int n);
 void    dsp_addCopyZeroPerform              (PD_RESTRICTED src, PD_RESTRICTED dest, int n);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void    cos_tilde_initialize                (void);
-void    cos_tilde_release                   (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void    mayer_fft                           (int n, t_sample *real, t_sample *imaginary);
-void    mayer_ifft                          (int n, t_sample *real, t_sample *imaginary);
-void    mayer_realfft                       (int n, t_sample *real);
-void    mayer_realifft                      (int n, t_sample *real);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

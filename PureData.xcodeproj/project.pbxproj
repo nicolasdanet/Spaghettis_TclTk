@@ -677,6 +677,7 @@
 		37978A1C1D742E070055E010 /* m_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_utils.h; path = src/m_utils.h; sourceTree = "<group>"; };
 		3798AC9D1E045003004EBFDD /* d_soundfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_soundfile.h; path = src/d_soundfile.h; sourceTree = "<group>"; };
 		379920471CD2649B00750527 /* g_select.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_select.c; path = src/g_select.c; sourceTree = "<group>"; };
+		37998F781E2F688200632A45 /* d_fft.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_fft.h; path = src/d_fft.h; sourceTree = "<group>"; };
 		379A42051BA3F4FD00C1CED0 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = /System/Library/Frameworks/CoreAudio.framework; sourceTree = "<absolute>"; };
 		379A42071BA3F50600C1CED0 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = /System/Library/Frameworks/AudioUnit.framework; sourceTree = "<absolute>"; };
 		379A42091BA3F51100C1CED0 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = /System/Library/Frameworks/AudioToolbox.framework; sourceTree = "<absolute>"; };
@@ -1269,6 +1270,7 @@
 		378B85961E2D2D6B00BDF703 /* FFT */ = {
 			isa = PBXGroup;
 			children = (
+				37998F781E2F688200632A45 /* d_fft.h */,
 				378971B61C4F716700263434 /* d_fft.c */,
 				3711970B1E2DF6FE007214B2 /* d_ifft.c */,
 				371196D11E2DF3D2007214B2 /* d_rfft.c */,
