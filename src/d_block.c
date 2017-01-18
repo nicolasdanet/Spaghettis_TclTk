@@ -36,26 +36,16 @@ t_float block_getRatio (t_block *x)
     return ((t_float)x->bk_upsample / (t_float)x->bk_downsample);
 }
 
-void block_getParameters (t_block *x, 
-    int *a,
-    int *b,
-    int *c,
-    t_float *d,
-    int *e,
-    int *f,
-    int *g,
-    int *h,
-    int parentBlockSize,
-    t_float parentSampleRate)
+void block_getProperties (t_block *x, int parentBlockSize, t_float parentSampleRate, t_blockproperties *p)
 {
-    int switchable      = *a;
-    int reblocked       = *b;
-    int blockSize       = *c;
-    t_float sampleRate  = *d;
-    int period          = *e;
-    int frequency       = *f;
-    int downsample      = *g;
-    int upsample        = *h;
+    int switchable      = p->bp_switchable;
+    int reblocked       = p->bp_reblocked;
+    int blockSize       = p->bp_blockSize;
+    t_float sampleRate  = p->bp_sampleRate;
+    int period          = p->bp_period;
+    int frequency       = p->bp_frequency;
+    int downsample      = p->bp_downsample;
+    int upsample        = p->bp_upsample;
     
     int overlap = x->bk_overlap;
     t_phase phase = ugen_getPhase();
@@ -79,24 +69,24 @@ void block_getParameters (t_block *x,
     reblocked |= (downsample != 1);
     reblocked |= (upsample != 1);
     
-    x->bk_phase       = (int)(phase & (t_phase)(period - 1));
-    x->bk_period      = period;
-    x->bk_frequency   = frequency;
-    x->bk_isReblocked = reblocked;
+    x->bk_phase         = (int)(phase & (t_phase)(period - 1));
+    x->bk_period        = period;
+    x->bk_frequency     = frequency;
+    x->bk_isReblocked   = reblocked;
 
-    *a = switchable;
-    *b = reblocked;
-    *c = blockSize;
-    *d = sampleRate;
-    *e = period;
-    *f = frequency;
-    *g = downsample;
-    *h = upsample;
+    p->bp_switchable    = switchable;
+    p->bp_reblocked     = reblocked;
+    p->bp_blockSize     = blockSize;
+    p->bp_sampleRate    = sampleRate;
+    p->bp_period        = period;
+    p->bp_frequency     = frequency;
+    p->bp_downsample    = downsample;
+    p->bp_upsample      = upsample;
 }
 
 void block_setPerformLength (t_block *x, int context, int epilog)
 {
-    x->bk_allContextLength = context;
+    x->bk_allContextLength   = context;
     x->bk_outletEpilogLength = epilog;
 }
 

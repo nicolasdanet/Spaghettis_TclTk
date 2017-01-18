@@ -65,40 +65,32 @@ static t_int *vinlet_perform (t_int *w)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void vinlet_dspProlog (t_vinlet *x,
-    t_signal **signals,
-    int switchable,
-    int reblocked,
-    int blockSize,
-    int period,
-    int frequency,
-    int downsample,
-    int upsample)
+void vinlet_dspProlog (t_vinlet *x, t_signal **signals, t_blockproperties *p)
 {
     if (vinlet_isSignal (x)) {
     //
-    if (!reblocked) {       /* Vector sizes are equal thus no buffering is required. */
+    if (!p->bp_reblocked) {     /* Vector sizes are equal thus no buffering is required. */
     
         PD_ASSERT (signals); x->vi_directSignal = signals[object_getIndexOfSignalInlet (x->vi_inlet)]; 
 
-    } else {                /* Buffering required. */
+    } else {                    /* Buffering required. */
     //
     t_signal *s = NULL;
     int parentVectorSize = 1;
     int vectorSize = 1;
     int bufferSize;
 
-    resample_setRatio (&x->vi_resample, downsample, upsample);
+    resample_setRatio (&x->vi_resample, p->bp_downsample, p->bp_upsample);
     
     x->vi_directSignal = NULL;
     
     if (signals) {
         s = signals[object_getIndexOfSignalInlet (x->vi_inlet)];
         parentVectorSize = s->s_vectorSize;
-        vectorSize = parentVectorSize * upsample / downsample;
+        vectorSize = parentVectorSize * p->bp_upsample / p->bp_downsample;
     }
 
-    bufferSize = PD_MAX (blockSize, vectorSize);
+    bufferSize = PD_MAX (p->bp_blockSize, vectorSize);
     
     if (bufferSize != x->vi_bufferSize) {
         PD_MEMORY_FREE (x->vi_buffer);
@@ -111,9 +103,9 @@ void vinlet_dspProlog (t_vinlet *x,
     else {
     //
     t_sample *t = NULL;
-    int phase = (int)((ugen_getPhase() - 1) & (t_phase)(period - 1));
+    int phase = (int)((ugen_getPhase() - 1) & (t_phase)(p->bp_period - 1));
     
-    x->vi_hopSize     = period * vectorSize;
+    x->vi_hopSize     = p->bp_period * vectorSize;
     x->vi_bufferWrite = x->vi_bufferEnd - (x->vi_hopSize - (phase * vectorSize));
 
     PD_ASSERT (x->vi_hopSize <= x->vi_bufferSize);

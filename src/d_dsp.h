@@ -118,6 +118,17 @@ typedef struct _block {
     int             bk_count;
     } t_block;
 
+typedef struct _blockproperties {
+    int             bp_switchable;
+    int             bp_reblocked;
+    int             bp_blockSize;
+    t_float         bp_sampleRate;
+    int             bp_period;
+    int             bp_frequency;
+    int             bp_downsample;
+    int             bp_upsample;
+    } t_blockproperties;
+                                                
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
@@ -378,40 +389,15 @@ void            canvas_dspPerform           (t_glist *glist, int isTopLevel, t_s
 #pragma mark -
 
 void            vinlet_dsp                  (t_vinlet *x, t_signal **sp);
-void            vinlet_dspProlog            (t_vinlet *x,
-                                                t_signal **signals,
-                                                int switchable,
-                                                int reblocked,
-                                                int blockSize,
-                                                int period,
-                                                int frequency,
-                                                int downsample,
-                                                int upsample);
+void            vinlet_dspProlog            (t_vinlet *x, t_signal **signals, t_blockproperties *properties);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 void            voutlet_dsp                 (t_voutlet *x, t_signal **sp);
-void            voutlet_dspProlog           (t_voutlet *x,
-                                                t_signal **signals,
-                                                int switchable,
-                                                int reblocked,
-                                                int blockSize,
-                                                int period,
-                                                int frequency,
-                                                int downsample,
-                                                int upsample);
-                                                            
-void            voutlet_dspEpilog           (t_voutlet *x,
-                                                t_signal **signals,
-                                                int switchable,
-                                                int reblocked,
-                                                int blockSize,
-                                                int period,
-                                                int frequency,
-                                                int downsample,
-                                                int upsample);
+void            voutlet_dspProlog           (t_voutlet *x, t_signal **signals, t_blockproperties *properties);
+void            voutlet_dspEpilog           (t_voutlet *x, t_signal **signals, t_blockproperties *properties);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -433,17 +419,10 @@ t_int           *block_performEpilog        (t_int *w);
 
 t_float         block_getRatio              (t_block *x);
 void            block_setPerformLength      (t_block *x, int allContextLength, int epilogLength);
-void            block_getParameters         (t_block *x, 
-                                                int *switchable,
-                                                int *reblocked,
-                                                int *blockSize,
-                                                t_float *sampleRate,
-                                                int *period,
-                                                int *frequency,
-                                                int *downsample,
-                                                int *upsample,
+void            block_getProperties         (t_block *x, 
                                                 int parentBlockSize,
-                                                t_float parentSampleRate);
+                                                t_float parentSampleRate, 
+                                                t_blockproperties *properties);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

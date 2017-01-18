@@ -218,82 +218,28 @@ static int ugen_graphIsUgenReady (t_ugenbox *u)
     return 1;
 }
 
-static void ugen_graphProlog (t_dspcontext *context, 
-    int switchable,
-    int reblocked, 
-    int blockSize,
-    int period, 
-    int frequency,
-    int downsample,
-    int upsample)
+static void ugen_graphProlog (t_dspcontext *context, t_blockproperties *p)
 {
     t_signal **i = context->dc_signals;
     t_signal **o = i ? i + context->dc_numberOfInlets : NULL;
     t_ugenbox *u = NULL;
     
     for (u = context->dc_ugens; u; u = u->u_next) {
-    //
-    t_object *object = u->u_owner;
-
-    if (pd_class (object) == vinlet_class) {
-    
-        vinlet_dspProlog ((t_vinlet *)object, 
-            i,
-            switchable,
-            reblocked,
-            blockSize,
-            period,
-            frequency,
-            downsample,
-            upsample);
-    }
-    
-    if (pd_class (object) == voutlet_class) {
-    
-        voutlet_dspProlog ((t_voutlet *)object, 
-            o,
-            switchable,
-            reblocked,
-            blockSize,
-            period,
-            frequency,
-            downsample,
-            upsample);
-    }
-    //
+        t_object *object = u->u_owner;
+        if (pd_class (object) == vinlet_class)  { vinlet_dspProlog ((t_vinlet *)object, i, p);   }
+        if (pd_class (object) == voutlet_class) { voutlet_dspProlog ((t_voutlet *)object, o, p); }
     }
 }
 
-static void ugen_graphEpilog (t_dspcontext *context,
-    int switchable,
-    int reblocked, 
-    int blockSize,
-    int period, 
-    int frequency,
-    int downsample,
-    int upsample)
+static void ugen_graphEpilog (t_dspcontext *context, t_blockproperties *p)
 {
     t_signal **i = context->dc_signals;
     t_signal **o = i ? i + context->dc_numberOfInlets : NULL;
     t_ugenbox *u = NULL;
         
     for (u = context->dc_ugens; u; u = u->u_next) {
-    //
-    t_object *object = u->u_owner;
-    
-    if (pd_class (object) == voutlet_class) {
-
-        voutlet_dspEpilog ((t_voutlet *)object,
-            o,
-            switchable,
-            reblocked,
-            blockSize,
-            period,
-            frequency,
-            downsample,
-            upsample);
-    }
-    //
+        t_object *object = u->u_owner;
+        if (pd_class (object) == voutlet_class) { voutlet_dspEpilog ((t_voutlet *)object, o, p); }
     }
 }
 
@@ -538,66 +484,41 @@ void ugen_graphClose (t_dspcontext *context)
     t_dspcontext *parentContext = context->dc_parentContext;
     t_float parentSampleRate    = parentContext ? parentContext->dc_sampleRate : audio_getSampleRate();
     int parentBlockSize         = parentContext ? parentContext->dc_blockSize  : AUDIO_DEFAULT_BLOCKSIZE;
-    t_float sampleRate          = parentSampleRate;
-    int blockSize               = parentBlockSize;
-    int period                  = 1;
-    int frequency               = 1;
-    int downsample              = 1;
-    int upsample                = 1;
-    int switchable              = 0;
-    int reblocked               = parentContext ? 0 : 1;
     int chainBegin;
     int chainEnd;
     int chainEpilog; 
     
     t_block *block = ugen_graphGetBlockIfContainsAny (context);
-        
-    if (block) {
-    //
-    block_getParameters (block,
-        &switchable,
-        &reblocked,
-        &blockSize,
-        &sampleRate,
-        &period,
-        &frequency,
-        &downsample,
-        &upsample,
-        parentBlockSize,
-        parentSampleRate);
-    //
-    }
-
-    context->dc_sampleRate = sampleRate;
-    context->dc_blockSize  = blockSize;
     
-    ugen_graphProlog (context,
-        switchable,
-        reblocked,
-        blockSize,
-        period,
-        frequency,
-        downsample,
-        upsample);
+    t_blockproperties p;
+    
+    p.bp_switchable = 0;
+    p.bp_reblocked  = parentContext ? 0 : 1;
+    p.bp_blockSize  = parentBlockSize;
+    p.bp_sampleRate = parentSampleRate;
+    p.bp_period     = 1;
+    p.bp_frequency  = 1;
+    p.bp_downsample = 1;
+    p.bp_upsample   = 1;
+    
+    if (block) { block_getProperties (block, parentBlockSize, parentSampleRate, &p); }
+
+    context->dc_sampleRate = p.bp_sampleRate;
+    context->dc_blockSize  = p.bp_blockSize;
+    
+    ugen_graphProlog (context, &p);
     
     chainBegin = pd_this->pd_dspChainSize;
     
-    if (block && (switchable || reblocked)) { dsp_add (block_performProlog, 1, block); }   
+    if (block && (p.bp_switchable || p.bp_reblocked)) { dsp_add (block_performProlog, 1, block); }   
 
     ugen_graphMain (context);
 
-    if (block && (switchable || reblocked)) { dsp_add (block_performEpilog, 1, block); }
+    if (block && (p.bp_switchable || p.bp_reblocked)) { dsp_add (block_performEpilog, 1, block); }
     
     chainEnd = pd_this->pd_dspChainSize;
 
-    ugen_graphEpilog (context,
-        switchable,
-        reblocked,
-        blockSize,
-        period,
-        frequency,
-        downsample,
-        upsample);
+    ugen_graphEpilog (context, &p);
 
     chainEpilog = pd_this->pd_dspChainSize;
     

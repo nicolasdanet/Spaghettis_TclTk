@@ -84,22 +84,14 @@ void voutlet_dsp (t_voutlet *x, t_signal **sp)
     }
 }
 
-void voutlet_dspProlog (t_voutlet *x,
-    t_signal **signals,
-    int switchable,
-    int reblocked,
-    int blockSize,
-    int period,
-    int frequency,
-    int downsample,
-    int upsample)
+void voutlet_dspProlog (t_voutlet *x, t_signal **signals, t_blockproperties *p)
 {
     if (voutlet_isSignal (x)) {
     //
-    if (reblocked) { x->vo_directSignal = NULL; }
+    if (p->bp_reblocked)  { x->vo_directSignal = NULL; }
     else {
     //
-    if (switchable) { x->vo_copyOut = 1; }
+    if (p->bp_switchable) { x->vo_copyOut = 1; }
     PD_ASSERT (signals);
     x->vo_directSignal = signals[object_getIndexOfSignalOutlet (x->vo_outlet)];
     //
@@ -108,34 +100,26 @@ void voutlet_dspProlog (t_voutlet *x,
     }
 }
 
-void voutlet_dspEpilog (t_voutlet *x,
-    t_signal **signals,
-    int switchable,
-    int reblocked,
-    int blockSize,
-    int period,
-    int frequency,
-    int downsample,
-    int upsample)
+void voutlet_dspEpilog (t_voutlet *x, t_signal **signals, t_blockproperties *p)
 {
     if (voutlet_isSignal (x)) {
     //
-    if (reblocked) {
+    if (p->bp_reblocked) {
     //
     t_signal *s = NULL;
     int parentVectorSize = 1;
     int vectorSize = 1;
     int bufferSize;
     
-    resample_setRatio (&x->vo_resample, downsample, upsample);
+    resample_setRatio (&x->vo_resample, p->bp_downsample, p->bp_upsample);
     
     if (signals) {
         s = signals[object_getIndexOfSignalOutlet (x->vo_outlet)];
         parentVectorSize = s->s_vectorSize;
-        vectorSize = parentVectorSize * upsample / downsample;
+        vectorSize = parentVectorSize * p->bp_upsample / p->bp_downsample;
     }
     
-    bufferSize = PD_MAX (blockSize, vectorSize);
+    bufferSize = PD_MAX (p->bp_blockSize, vectorSize);
     
     if (bufferSize != x->vo_bufferSize) {
         PD_MEMORY_FREE (x->vo_buffer);
@@ -147,7 +131,8 @@ void voutlet_dspEpilog (t_voutlet *x,
     {
     
     t_phase phase   = ugen_getPhase();
-    int bigPeriod   = PD_MAX (1, (int)(blockSize / vectorSize));
+    int period      = p->bp_period;
+    int bigPeriod   = PD_MAX (1, (int)(p->bp_blockSize / vectorSize));
     int phaseRead   = (int)((phase) & (t_phase)(bigPeriod - 1));
     int phaseWrite  = (int)((phase + period - 1) & (t_phase)(- period) & (t_phase)(bigPeriod - 1));
     
@@ -160,10 +145,10 @@ void voutlet_dspEpilog (t_voutlet *x,
     
     }
     
-    if (x->vo_bufferWrite == x->vo_bufferEnd) { x->vo_bufferWrite = x->vo_buffer; }
-    if (period == 1 && frequency > 1) { x->vo_hopSize = vectorSize / frequency; }
+    if (x->vo_bufferWrite == x->vo_bufferEnd)     { x->vo_bufferWrite = x->vo_buffer; }
+    if (p->bp_period == 1 && p->bp_frequency > 1) { x->vo_hopSize = vectorSize / p->bp_frequency; }
     else { 
-        x->vo_hopSize = period * vectorSize;
+        x->vo_hopSize = p->bp_period * vectorSize;
     }
     
     if (signals) {
@@ -179,7 +164,7 @@ void voutlet_dspEpilog (t_voutlet *x,
     //
     }
     //
-    } else if (switchable) {
+    } else if (p->bp_switchable) {
         if (signals) {
             t_signal *s = signals[object_getIndexOfSignalOutlet (x->vo_outlet)];
             dsp_addZeroPerform (s->s_vector, s->s_vectorSize);
