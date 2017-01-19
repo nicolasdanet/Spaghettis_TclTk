@@ -28,6 +28,7 @@ typedef struct _print_tilde {
     int         x_count;
     int         x_overflow;
     int         x_index;
+    int         x_hasPolling;
     t_sample    *x_buffer;
     t_symbol    *x_name;
     } t_print_tilde;
@@ -56,7 +57,8 @@ static void print_tilde_bang (t_print_tilde *x)
 
 static void print_tilde_count (t_print_tilde *x, t_float f)
 {
-    x->x_count = (int)PD_MAX (1.0, f);
+    x->x_count      = (int)PD_MAX (1.0, f);
+    x->x_hasPolling = 1;
     
     poll_add (cast_pd (x));
 }
@@ -89,8 +91,9 @@ static void print_tilde_polling (t_print_tilde *x)
     //
     }
 
-    x->x_overflow = 0;
-    x->x_index    = 0;
+    x->x_overflow   = 0;
+    x->x_index      = 0;
+    x->x_hasPolling = 0;
     
     poll_remove (cast_pd (x));
     //
@@ -144,7 +147,7 @@ static void *print_tilde_new (t_symbol *s)
 
 static void print_tilde_free (t_print_tilde *x)
 {
-    if (x->x_count) { poll_remove (cast_pd (x)); }
+    if (x->x_hasPolling) { poll_remove (cast_pd (x)); }
     
     PD_MEMORY_FREE (x->x_buffer);
 }
