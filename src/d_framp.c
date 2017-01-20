@@ -19,86 +19,160 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *sigframp_class;
+static t_class *framp_tilde_class;          /* Shared. */
 
-typedef struct framp
-{
-    t_object x_obj;
-    t_float x_f;
-} t_sigframp;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static void *sigframp_new(void)
+typedef struct _framp_tilde {
+    t_object    x_obj;                      /* Must be the first. */
+    t_float     x_f;
+    t_outlet    *x_outletLeft;
+    t_outlet    *x_outletRight;
+    } t_framp_tilde;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* Aliasing. */
+/* Notice that the two signals incoming could be theoretically just one. */
+/* But as only loads are performed, it is assumed safe to use restricted pointers. */
+
+static t_int *framp_tilde_perform (t_int *w)
 {
-    t_sigframp *x = (t_sigframp *)pd_new(sigframp_class);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
-    outlet_new(&x->x_obj, &s_signal);
-    outlet_new(&x->x_obj, &s_signal);
-    x->x_f = 0;
+    PD_RESTRICTED in1  = (t_sample *)(w[1]);
+    PD_RESTRICTED in2  = (t_sample *)(w[2]);
+    PD_RESTRICTED out1 = (t_sample *)(w[3]);
+    PD_RESTRICTED out2 = (t_sample *)(w[4]);
+    int n = w[5];
+    int m = n + 1;
+    
+    double realLast         = 0.0;
+    double realCurrent      = in1[0];
+    double realNext         = in1[1];
+    double imaginaryLast    = 0.0;
+    double imaginaryCurrent = in2[0];
+    double imaginaryNext    = in2[1];
+    
+    double frequency = 1.0;
+    double k = 1.0 / (t_sample)(n * n);
+    
+    in1 += 2;
+    in2 += 2;
+    
+    *out1++ = 0.0;
+    *out2++ = 0.0;
+
+    n -= 2;
+    
+    while (n--) {
+    //
+    realLast            = realCurrent;
+    realCurrent         = realNext;
+    realNext            = *in1++;
+    imaginaryLast       = imaginaryCurrent;
+    imaginaryCurrent    = imaginaryNext;
+    imaginaryNext       = *in2++;
+    
+    { 
+        double real      = realCurrent - 0.5 * (realLast + realNext);
+        double imaginary = imaginaryCurrent - 0.5 * (imaginaryLast + imaginaryNext);
+        double pow       = real * real + imaginary * imaginary;
+        double f;
+        
+        if (pow > 1e-19) {
+        
+            double deltaReal      = realLast - realNext;
+            double deltaImaginary = imaginaryLast - imaginaryNext;
+            double detune         = (deltaReal * real + deltaImaginary * imaginary) / (2.0 * pow);
+            
+            if (detune > 2.0 || detune < -2.0) { f = pow = 0.0; }
+            else {
+                f = frequency + detune;
+            }
+            
+        } else {
+            f = pow = 0.0;
+        }
+        
+        *out1++ = (t_sample)(f);
+        *out2++ = (t_sample)(k * pow);
+        frequency += 1.0;
+    }
+    //
+    }
+    
+    while (m--) { *out1++ = 0.0; *out2++ = 0.0; }
+    
+    return (w + 6);
+}
+
+static void framp_tilde_dsp (t_framp_tilde *x, t_signal **sp)
+{
+    int size = sp[0]->s_vectorSize;
+    
+    PD_ASSERT (PD_IS_POWER_2 (size));
+    PD_ASSERT (sp[0]->s_vector != sp[2]->s_vector);
+    PD_ASSERT (sp[1]->s_vector != sp[2]->s_vector);
+    PD_ASSERT (sp[0]->s_vector != sp[3]->s_vector);
+    PD_ASSERT (sp[1]->s_vector != sp[3]->s_vector);
+    PD_ASSERT (sp[2]->s_vector != sp[3]->s_vector);
+        
+    if (size < 4) { error_invalid (sym_framp__tilde__, sym_size); }
+    else {
+    //
+    int half = (size >> 1);
+    
+    dsp_add (framp_tilde_perform, 5,
+        sp[0]->s_vector,
+        sp[1]->s_vector,
+        sp[2]->s_vector,
+        sp[3]->s_vector,
+        half);
+        
+    dsp_add (sqrt_tilde_perform,  3, sp[3]->s_vector, sp[3]->s_vector, half);
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *framp_tilde_new (void)
+{
+    t_framp_tilde *x = (t_framp_tilde *)pd_new (framp_tilde_class);
+    
+    x->x_outletLeft  = outlet_new (cast_object (x), &s_signal);
+    x->x_outletRight = outlet_new (cast_object (x), &s_signal);
+    
+    inlet_newSignal (cast_object (x));
+
     return x;
 }
 
-static t_int *sigframp_perform(t_int *w)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void framp_tilde_setup (void)
 {
-    t_sample *inreal = (t_sample *)(w[1]);
-    t_sample *inimag = (t_sample *)(w[2]);
-    t_sample *outfreq = (t_sample *)(w[3]);
-    t_sample *outamp = (t_sample *)(w[4]);
-    t_sample lastreal = 0, currentreal = inreal[0], nextreal = inreal[1];
-    t_sample lastimag = 0, currentimag = inimag[0], nextimag = inimag[1];
-    int n = w[5];
-    int m = n + 1;
-    t_sample fbin = 1, oneovern2 = 1.f/((t_sample)n * (t_sample)n);
+    t_class *c = NULL;
     
-    inreal += 2;
-    inimag += 2;
-    *outamp++ = *outfreq++ = 0;
-    n -= 2;
-    while (n--)
-    {
-        t_sample re, im, pow, freq;
-        lastreal = currentreal;
-        currentreal = nextreal;
-        nextreal = *inreal++;
-        lastimag = currentimag;
-        currentimag = nextimag;
-        nextimag = *inimag++;
-        re = currentreal - 0.5f * (lastreal + nextreal);
-        im = currentimag - 0.5f * (lastimag + nextimag);
-        pow = re * re + im * im;
-        if (pow > 1e-19)
-        {
-            t_sample detune = ((lastreal - nextreal) * re +
-                    (lastimag - nextimag) * im) / (2.0f * pow);
-            if (detune > 2 || detune < -2) freq = pow = 0;
-            else freq = fbin + detune;
-        }
-        else freq = pow = 0;
-        *outfreq++ = freq;
-        *outamp++ = oneovern2 * pow;
-        fbin += 1.0f;
-    }
-    while (m--) *outamp++ = *outfreq++ = 0;
-    return (w+6);
+    c = class_new (sym_framp__tilde__,
+            framp_tilde_new,
+            NULL,
+            sizeof (t_framp_tilde),
+            CLASS_DEFAULT,
+            A_NULL);
+            
+    CLASS_SIGNAL (c, t_framp_tilde, x_f);
+    
+    class_addDSP (c, (t_method)framp_tilde_dsp);
+        
+    framp_tilde_class = c;
 }
 
-static void sigframp_dsp(t_sigframp *x, t_signal **sp)
-{
-    int n = sp[0]->s_vectorSize, n2 = (n>>1);
-    if (n < 4)
-    {
-        post_error ("framp: minimum 4 points");
-        return;
-    }
-    dsp_add(sigframp_perform, 5, sp[0]->s_vector, sp[1]->s_vector,
-        sp[2]->s_vector, sp[3]->s_vector, n2);
-    dsp_add(sqrt_tilde_perform, 3, sp[3]->s_vector, sp[3]->s_vector, n2);
-}
-
-void framp_tilde_setup(void)
-{
-    sigframp_class = class_new(sym_framp__tilde__, sigframp_new, 0,
-        sizeof(t_sigframp), 0, 0);
-    CLASS_SIGNAL(sigframp_class, t_sigframp, x_f);
-    class_addMethod(sigframp_class, (t_method)sigframp_dsp,
-        sym_dsp, A_CANT, 0);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

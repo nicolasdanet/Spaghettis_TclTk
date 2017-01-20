@@ -88,7 +88,9 @@ void rsqrt_tilde_initialize (void)
     
     for (i = 0; i < RSQRT_MANTISSA_SIZE; i++) {
     
-        t_float f = 1.0 + (1.0 / RSQRT_MANTISSA_SIZE) * i;      /* Exponent is zero in 1.0 to 2.0 range. */
+        /* Exponent is zero with a float inside the 1.0 to 2.0 range. */
+        
+        t_float f = 1.0 + (1.0 / RSQRT_MANTISSA_SIZE) * i;
         
         rsqrt_tableMantissa[i] = 1.0 / sqrt (f);      
     }

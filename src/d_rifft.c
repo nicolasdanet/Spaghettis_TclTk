@@ -76,7 +76,6 @@ static void rifft_tilde_dsp (t_rifft_tilde *x, t_signal **sp)
     PD_RESTRICTED out1 = sp[2]->s_vector;
 
     dsp_addCopyPerform (in1, out1, half + 1);
-    
     dsp_add (rifft_tilde_performFlip, 3, in2 + 1, out1 + size, half - 1);
     dsp_add (rifft_tilde_perform, 2, out1, size);
     //

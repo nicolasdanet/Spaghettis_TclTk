@@ -74,7 +74,6 @@ static void rfft_tilde_dsp (t_rfft_tilde *x, t_signal **sp)
     int half = (size >> 1);
     
     dsp_addCopyPerform (in1, out1, size);
-    
     dsp_add (rfft_tilde_perform, 2, out1, size);
     dsp_add (rfft_tilde_performFlipZero, 3, out1 + half + 1, out2 + half, half - 1);
     
