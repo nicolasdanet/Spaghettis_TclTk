@@ -42,7 +42,7 @@ static t_int *ifft_tilde_perform (t_int *w)
     PD_RESTRICTED in2 = (t_sample *)(w[2]);
     int n = w[3];
     
-    mayer_inverseFFT (n, in1, in2);
+    fft_complexInverseFFT (n, in1, in2);
     
     return (w + 4);
 }
