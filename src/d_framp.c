@@ -97,7 +97,7 @@ static t_int *framp_tilde_perform (t_int *w)
         }
         
         *out1++ = (t_sample)(f);
-        *out2++ = (t_sample)(k * pow);
+        *out2++ = (t_sample)sqrt_fast ((t_float)(k * pow));
         frequency += 1.0;
     }
     //
@@ -130,8 +130,6 @@ static void framp_tilde_dsp (t_framp_tilde *x, t_signal **sp)
         sp[2]->s_vector,
         sp[3]->s_vector,
         half);
-        
-    dsp_add (sqrt_tilde_perform,  3, sp[3]->s_vector, sp[3]->s_vector, half);
     //
     }
 }
