@@ -46,7 +46,6 @@ static t_int *framp_tilde_perform (t_int *w)
     PD_RESTRICTED out1 = (t_sample *)(w[3]);
     PD_RESTRICTED out2 = (t_sample *)(w[4]);
     int n = w[5];
-    int m = n + 1;
     
     double realLast         = 0.0;
     double realCurrent      = in1[0];
@@ -102,8 +101,6 @@ static t_int *framp_tilde_perform (t_int *w)
     }
     //
     }
-    
-    while (m--) { *out1++ = 0.0; *out2++ = 0.0; }
     
     return (w + 6);
 }
