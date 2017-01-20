@@ -49,7 +49,7 @@ static t_int *rifft_tilde_perform (t_int *w)
     PD_RESTRICTED in = (t_sample *)(w[1]);
     int n = w[2];
     
-    mayer_realifft (n, in);
+    mayer_realInverseFFT (n, in);
     
     return (w + 3);
 }

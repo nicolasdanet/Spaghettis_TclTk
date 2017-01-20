@@ -20,12 +20,30 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+/*
+    Copyright Takuya OOURA, 1996-2001
+
+    You may use, copy, modify and distribute this code for any purpose
+    (include commercial use) and without fee.
+    
+    Please refer to this package when you modify this code.
+    
+*/
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* < http://www.kurims.kyoto-u.ac.jp/~ooura/fft.html > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    mayer_fft       (int n, t_sample *real, t_sample *imaginary);
-void    mayer_ifft      (int n, t_sample *real, t_sample *imaginary);
-void    mayer_realfft   (int n, t_sample *real);
-void    mayer_realifft  (int n, t_sample *real);
+void    mayer_FFT               (int n, t_sample *real, t_sample *imaginary);
+void    mayer_inverseFFT        (int n, t_sample *real, t_sample *imaginary);
+void    mayer_realFFT           (int n, t_sample *real);
+void    mayer_realInverseFFT    (int n, t_sample *real);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

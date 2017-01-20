@@ -308,6 +308,7 @@
 #include "d_rfft.c"
 #include "d_rifft.c"
 #include "d_framp.c"
+#include "d_fftAPI.c"
 #include "d_fftsg.c"
 
 // -----------------------------------------------------------------------------------------------------------
