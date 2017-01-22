@@ -66,19 +66,19 @@ typedef int  (*t_paintermousefn)        (t_gobj *x, t_gpointer *gp,
 // -----------------------------------------------------------------------------------------------------------
 
 struct _widgetbehavior {
-    t_getrectanglefn                w_fnGetRectangle;
-    t_displacedfn                   w_fnDisplaced;
-    t_selectedfn                    w_fnSelected;
-    t_activatedfn                   w_fnActivated;
-    t_deletedfn                     w_fnDeleted;
-    t_visibilityfn                  w_fnVisibilityChanged;
-    t_mousefn                       w_fnMouse;
+    t_getrectanglefn            w_fnGetRectangle;
+    t_displacedfn               w_fnDisplaced;
+    t_selectedfn                w_fnSelected;
+    t_activatedfn               w_fnActivated;
+    t_deletedfn                 w_fnDeleted;
+    t_visibilityfn              w_fnVisibilityChanged;
+    t_mousefn                   w_fnMouse;
     };
     
 struct _painterwidgetbehavior {
-    t_paintergetrectanglefn         w_fnPainterGetRectangle;
-    t_paintervisibilityfn           w_fnPainterVisibilityChanged;
-    t_paintermousefn                w_fnPainterMouse;
+    t_paintergetrectanglefn     w_fnPainterGetRectangle;
+    t_paintervisibilityfn       w_fnPainterVisibilityChanged;
+    t_paintermousefn            w_fnPainterMouse;
     };
 
 // -----------------------------------------------------------------------------------------------------------

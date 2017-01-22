@@ -9,8 +9,8 @@
 // -----------------------------------------------------------------------------------------------------------
 
 #include "m_pd.h"
-#include "m_core.h"
 #include "m_macros.h"
+#include "m_core.h"
 #include "s_system.h"
 #include "s_utf8.h"
 

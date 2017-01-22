@@ -9,8 +9,8 @@
 // -----------------------------------------------------------------------------------------------------------
 
 #include "m_pd.h"
-#include "m_core.h"
 #include "m_macros.h"
+#include "m_core.h"
 #include "m_alloca.h"
 #include "s_system.h"
 #include "g_graphics.h"
