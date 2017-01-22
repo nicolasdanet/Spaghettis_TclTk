@@ -107,19 +107,19 @@ static t_int *framp_tilde_perform (t_int *w)
 
 static void framp_tilde_dsp (t_framp_tilde *x, t_signal **sp)
 {
-    int size = sp[0]->s_vectorSize;
+    int n = sp[0]->s_vectorSize;
     
-    PD_ASSERT (PD_IS_POWER_2 (size));
+    PD_ASSERT (PD_IS_POWER_2 (n));
     PD_ASSERT (sp[0]->s_vector != sp[2]->s_vector);
     PD_ASSERT (sp[1]->s_vector != sp[2]->s_vector);
     PD_ASSERT (sp[0]->s_vector != sp[3]->s_vector);
     PD_ASSERT (sp[1]->s_vector != sp[3]->s_vector);
     PD_ASSERT (sp[2]->s_vector != sp[3]->s_vector);
         
-    if (size < 4) { error_invalid (sym_framp__tilde__, sym_size); }
+    if (n < FFT_MINIMUM || n > FFT_MAXIMUM) { error_invalid (sym_framp__tilde__, sym_size); }
     else {
     //
-    int half = (size >> 1);
+    int half = (n >> 1);
     
     dsp_add (framp_tilde_perform, 5,
         sp[0]->s_vector,
