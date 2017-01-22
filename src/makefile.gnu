@@ -46,7 +46,7 @@ CPPFLAGS = -DNDEBUG -DPD_BUILDING_APPLICATION
 
 CFLAGS = -O3 -ffast-math -fvisibility=hidden -w $(ARCH)
 
-# Midi with ALSA.
+# MIDI with ALSA.
 
 MIDI_SRC = s_midi_alsa.c
 LIB += -lasound
@@ -56,7 +56,7 @@ LIB += -lasound
 AUDIO_SRC = s_logger_jack.c s_audio_jack.c
 LIB += -ljack
 
-# The sources (filepath must NOT contain space).
+# Sources (application amalgamated).
 
 SRC = amalgam.c
 

@@ -89,11 +89,12 @@ extension=".pdbundle32"
 
 # Build the binaries.
 
+#make -f makefile.mac "WITH_JACK=TRUE"                          || exit 1
+#make -f makefile.mac "WITH_PORTAUDIO=TRUE" "WITH_DEBUG=TRUE"   || exit 1
+
 cd "${rep}/src"                                                 || exit 1
 
-#echo "Build with JACK ..."
-#make -f makefile.mac "WITH_JACK=TRUE"                          || exit 1
-
+echo "Build with PORTMIDI ..."
 echo "Build with PORTAUDIO ..."
 echo "Build with DEBUG ..."
 make -f makefile.mac "WITH_PORTAUDIO=TRUE" "WITH_DEBUG=TRUE"    || exit 1

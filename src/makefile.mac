@@ -101,7 +101,7 @@ PORTAUDIO_SRC = $(PA_DIR)/src/common/pa_allocation.c \
     $(PA_DIR)/src/hostapi/coreaudio/pa_mac_core_blocking.c \
     $(PA_DIR)/src/hostapi/coreaudio/pa_mac_core_utilities.c
         
-# Midi with PortMidi.
+# MIDI with PortMidi.
 
 MIDI_SRC = s_midi_pm.c $(PORTMIDI_SRC)
 
@@ -126,7 +126,7 @@ ifdef WITH_JACK
     AUDIO_SRC += s_logger_jack.c s_audio_jack.c
 endif
 
-# The sources (filepath must NOT contain space).
+# Sources (application amalgamated).
 
 SRC = amalgam.c
 
