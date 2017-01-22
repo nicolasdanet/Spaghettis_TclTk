@@ -16,24 +16,42 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-char    *midi_nameNative                (void);
+char        *midi_nameNative                (void);
 
-void    midi_initializeNative           (void);
-void    midi_releaseNative              (void);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-void    midi_openNative                 (int numberOfDevicesIn, 
-                                            int *devicesIn, 
-                                            int numberOfDevicesOut, 
-                                            int *devicesOut);
+t_error     midi_getListsNative             (char *devicesIn, 
+                                                int  *numberOfDevicesIn, 
+                                                char *devicesOut, 
+                                                int  *numberOfDevicesOut);
+                                                
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        midi_initializeNative           (void);
+void        midi_releaseNative              (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        midi_openNative                 (int numberOfDevicesIn, 
+                                                int *devicesIn, 
+                                                int numberOfDevicesOut, 
+                                                int *devicesOut);
                                         
-void    midi_closeNative                (void);
-void    midi_pushNextMessageNative      (int port, int a, int b, int c);
-void    midi_pushNextByteNative         (int port, int a);
-void    midi_pollNative                 (void);
-t_error midi_getListsNative             (char *devicesIn, 
-                                            int  *numberOfDevicesIn, 
-                                            char *devicesOut, 
-                                            int  *numberOfDevicesOut);
+void        midi_closeNative                (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        midi_pushNextMessageNative      (int port, int a, int b, int c);
+void        midi_pushNextByteNative         (int port, int a);
+void        midi_pollNative                 (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

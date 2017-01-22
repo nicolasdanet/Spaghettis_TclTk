@@ -17,16 +17,28 @@
 #pragma mark -
 
 char        *audio_nameNative               (void);
-int         audio_getPriorityNative         (int min, int max, int isWatchdog);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int         audio_getPriorityNative         (int min, int max, int isWatchdog);
+t_error     audio_getListsNative            (char *devicesIn,
+                                                int  *numberOfDevicesIn,
+                                                char *devicesOut,
+                                                int  *numberOfDevicesOut,
+                                                int  *canMultiple);
+                                                
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 t_error     audio_initializeNative          (void);
 void        audio_releaseNative             (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void        audio_closeNative               (void);
 t_error     audio_openNative                (int sampleRate,
@@ -38,13 +50,9 @@ t_error     audio_openNative                (int sampleRate,
                                             
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 int         audio_pollDSPNative             (void);
-t_error     audio_getListsNative            (char *devicesIn,
-                                                int  *numberOfDevicesIn,
-                                                char *devicesOut,
-                                                int  *numberOfDevicesOut,
-                                                int  *canMultiple);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
