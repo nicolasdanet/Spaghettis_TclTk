@@ -148,6 +148,12 @@ struct _pdinstance {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void        pd_bang                                     (t_pd *x);
+void        pd_pointer                                  (t_pd *x, t_gpointer *gp);
+void        pd_float                                    (t_pd *x, t_float f);
+void        pd_symbol                                   (t_pd *x, t_symbol *s);
+void        pd_list                                     (t_pd *x, int argc, t_atom *argv);
+void        pd_message                                  (t_pd *x, t_symbol *s, int argc, t_atom *argv);
 void        pd_empty                                    (t_pd *x);
 void        pd_vMessage                                 (t_pd *x, t_symbol *s, char *fmt, ...);
 
@@ -236,6 +242,20 @@ t_float     *object_getSignalValueAtIndex               (t_object *x, int m);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_inlet     *inlet_new                                  (t_object *owner,
+                                                            t_pd *dest,
+                                                            t_symbol *s1,
+                                                            t_symbol *s2);
+
+t_inlet     *inlet_newSignalDefault                     (t_object *owner, t_float f);
+
+void        inlet_free                                  (t_inlet *x);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        outlet_free                                 (t_outlet *x);
 int         outlet_isSignal                             (t_outlet *x);
 
 // -----------------------------------------------------------------------------------------------------------

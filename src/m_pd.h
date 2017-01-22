@@ -637,12 +637,6 @@ PD_DLL void         sys_freeMemory              (void *ptr);
 PD_DLL t_pd         *pd_new                     (t_class *c);
 
 PD_DLL void         pd_free                     (t_pd *x);
-PD_DLL void         pd_bang                     (t_pd *x);
-PD_DLL void         pd_pointer                  (t_pd *x, t_gpointer *gp);
-PD_DLL void         pd_float                    (t_pd *x, t_float f);
-PD_DLL void         pd_symbol                   (t_pd *x, t_symbol *s);
-PD_DLL void         pd_list                     (t_pd *x, int argc, t_atom *argv);
-PD_DLL void         pd_message                  (t_pd *x, t_symbol *s, int argc, t_atom *argv);
 PD_DLL void         pd_bind                     (t_pd *x, t_symbol *s);
 PD_DLL void         pd_unbind                   (t_pd *x, t_symbol *s);
 
@@ -672,19 +666,10 @@ PD_DLL void         class_addAnything           (t_class *c, t_method fn);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_DLL t_inlet      *inlet_new                  (t_object *owner, t_pd *dest, t_symbol *s1, t_symbol *s2);
-
-PD_DLL void         inlet_free                  (t_inlet *x);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 PD_DLL t_inlet      *inlet_newPointer           (t_object *owner, t_gpointer *gp);
 PD_DLL t_inlet      *inlet_newFloat             (t_object *owner, t_float *fp);
 PD_DLL t_inlet      *inlet_newSymbol            (t_object *owner, t_symbol **sp);
 PD_DLL t_inlet      *inlet_newSignal            (t_object *owner);
-PD_DLL t_inlet      *inlet_newSignalDefault     (t_object *owner, t_float f);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -692,7 +677,6 @@ PD_DLL t_inlet      *inlet_newSignalDefault     (t_object *owner, t_float f);
 
 PD_DLL t_outlet     *outlet_new                 (t_object *owner, t_symbol *s);
 
-PD_DLL void         outlet_free                 (t_outlet *x);
 PD_DLL void         outlet_bang                 (t_outlet *x);
 PD_DLL void         outlet_pointer              (t_outlet *x, t_gpointer *gp);
 PD_DLL void         outlet_float                (t_outlet *x, t_float f);
