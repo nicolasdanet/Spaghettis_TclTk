@@ -37,7 +37,7 @@ static t_error field_setAsFloatVariableParsed (t_fielddescriptor *fd,
         
     fd->fd_un.fd_variableName = gensym (t);
     
-    k = sscanf (firstOpeningParenthesis, "(%lf:%lf)(%lf:%lf)(%lf)", &a, &b, &c, &d, &e);
+    k = sscanf (firstOpeningParenthesis, "(%lf:%lf)(%lf:%lf)(%lf)", &a, &b, &c, &d, &e);    // --
             
     fd->fd_v1       = 0.0;
     fd->fd_v2       = 0.0;
@@ -83,7 +83,7 @@ void field_setAsFloatConstant (t_fielddescriptor *fd, t_float f)
 
 void field_setAsFloatVariable (t_fielddescriptor *fd, t_symbol *s)
 {
-    char *firstOpeningParenthesis = strchr (s->s_name, '(');
+    char *firstOpeningParenthesis = strchr (s->s_name, '(');    // --
     char *firstClosingParenthesis = strchr (s->s_name, ')');
 
     int parse = 1;

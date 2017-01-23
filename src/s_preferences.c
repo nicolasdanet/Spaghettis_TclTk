@@ -147,7 +147,7 @@ static int preferences_getKey (const char *key, char *value, int size)
 
 static void preferences_setKey (const char *key, const char *value)
 {
-    if (preferences_saveFile) { fprintf (preferences_saveFile, "%s: %s\n", key, value); }
+    if (preferences_saveFile) { fprintf (preferences_saveFile, "%s: %s\n", key, value); }   // --
 }
 
 // -----------------------------------------------------------------------------------------------------------

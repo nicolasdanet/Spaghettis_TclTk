@@ -103,7 +103,7 @@ void canvas_saveAs (t_glist *glist, float destroy)
 {
     t_glist *root = canvas_getRoot (glist);
     
-    sys_vGui ("::ui_file::saveAs .x%lx {%s} {%s} %d\n",
+    sys_vGui ("::ui_file::saveAs .x%lx {%s} {%s} %d\n",     // --
                     root,
                     root->gl_name->s_name,
                     canvas_getEnvironment (root)->ce_directory->s_name, 
@@ -119,7 +119,7 @@ void canvas_saveToFile (t_glist *glist, t_symbol *name, t_symbol *directory, flo
     
     if (buffer_write (b, name->s_name, directory->s_name)) { PD_BUG; }
     else {
-        post (PD_TRANSLATE ("file: saved to %s/%s"), directory->s_name, name->s_name);
+        post (PD_TRANSLATE ("file: saved to %s/%s"), directory->s_name, name->s_name);  // --
         canvas_dirty (glist, 0);
         if (destroy != 0.0) {
             pd_vMessage (cast_pd (glist), sym_close, "f", (destroy == 2.0 ? 3.0 : 1.0)); 

@@ -44,7 +44,9 @@ static void openpanel_bang (t_openpanel *x)
 
 static void openpanel_symbol (t_openpanel *x, t_symbol *s)
 {
-    sys_vGui ("::ui_file::openPanel {%s} {%s}\n", guiconnect_getBoundAsString (x->x_guiconnect), s->s_name);
+    sys_vGui ("::ui_file::openPanel {%s} {%s}\n",   // --
+                    guiconnect_getBoundAsString (x->x_guiconnect),
+                    s->s_name);
 }
 
 static void openpanel_callback (t_openpanel *x, t_symbol *s)

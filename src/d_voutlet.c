@@ -137,7 +137,7 @@ void voutlet_dspEpilog (t_voutlet *x, t_signal **signals, t_blockproperties *p)
     int phaseWrite  = (int)((phase + period - 1) & (t_phase)(- period) & (t_phase)(bigPeriod - 1));
     
     /* Variable above is next multiple of the hop size (modulo the window period). */
-    /* http://stackoverflow.com/a/1766566 */
+    /* < http://stackoverflow.com/a/1766566 > */
     /* Note that ~(n - 1) is equal to (-n) for power of 2 (assume two's complement). */
     
     x->vo_bufferRead  = x->vo_buffer + (vectorSize * phaseRead);

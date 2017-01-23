@@ -161,9 +161,9 @@ void toggle_drawNew (t_toggle *x, t_glist *glist)
                     thickness,
                     (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
                     x);
-    sys_vGui (".x%lx.c create text %d %d -text {%s}"
+    sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
                     " -anchor w"
-                    " -font [::getFont %d]"
+                    " -font [::getFont %d]"             // --
                     " -fill #%06x"
                     " -tags %lxLABEL\n",
                     canvas,
@@ -223,7 +223,7 @@ void toggle_drawConfig (t_toggle *x, t_glist *glist)
                     canvas,
                     x,
                     (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
                     canvas,
                     x,
                     font_getHostFontSize (x->x_gui.iem_fontSize),
@@ -395,11 +395,11 @@ static void toggle_functionProperties (t_gobj *z, t_glist *owner)
     
     err = string_sprintf (t, PD_STRING,
             "::ui_iem::create %%s Toggle"
-            " %d %d Size 0 0 $::var(nil)"
-            " %g {Non-Zero Value} 0 $::var(nil)"
-            " -1 $::var(nil) $::var(nil)"
+            " %d %d Size 0 0 $::var(nil)"           // --
+            " %g {Non-Zero Value} 0 $::var(nil)"    // --
+            " -1 $::var(nil) $::var(nil)"           // --
             " %d"
-            " -1 -1 $::var(nil)"
+            " -1 -1 $::var(nil)"                    // --
             " %s %s"
             " %s %d %d"
             " %d"
@@ -456,7 +456,7 @@ static void *toggle_new (t_symbol *s, int argc, t_atom *argv)
     t_float state       = 0.0;
     t_float nonZero     = 1.0;
 
-    if (argc >= 13
+    if (argc >= 13                                              // --
             && IS_FLOAT (argv)                                  // Size.
             && IS_FLOAT (argv + 1)                              // Loadbang.
             && IS_SYMBOL_OR_FLOAT (argv + 2)                    // Send.

@@ -396,7 +396,7 @@ static void plot_behaviorGetRectangle (t_gobj *z,
     t_float style;
     int visible;
     
-    if (!plot_fetchScalarFields (x, gp,
+    if (!plot_fetchScalarFields (x, gp,     // --
             &array,
             &width,
             &positionX,
@@ -481,7 +481,7 @@ static void plot_behaviorVisibilityChangedDrawPoint (t_plot *x,
     t_symbol *color)
 {
     int numberOfElements  = array_getSize (array);
-    t_float minimumValueY =  PLOT_MAX;
+    t_float minimumValueY = PLOT_MAX;
     t_float maximumValueY = -PLOT_MAX;
     int i;
     
@@ -542,7 +542,7 @@ static void plot_behaviorVisibilityChangedDrawPoint (t_plot *x,
                         color->s_name,
                         w);
     
-        minimumValueY =  PLOT_MAX;
+        minimumValueY = PLOT_MAX;
         maximumValueY = -PLOT_MAX;
     }
     //
@@ -827,7 +827,7 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
     t_float style;
     int visible;
     
-    if (!plot_fetchScalarFields (x, gp,
+    if (!plot_fetchScalarFields (x, gp,     // --
             &array,
             &width,
             &positionX,
@@ -1138,7 +1138,7 @@ static int plot_behaviorMouse (t_gobj *z,
     t_float style;
     int visible;
     
-    if (!plot_fetchScalarFields (x, gp,
+    if (!plot_fetchScalarFields (x, gp,     // --
             &array,
             &width,
             &positionX,

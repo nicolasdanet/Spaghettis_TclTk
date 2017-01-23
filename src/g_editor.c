@@ -514,7 +514,7 @@ static void canvas_performCopy (t_glist *glist)
     int m = canvas_isObjectSelected (glist, cast_gobj (t.tr_srcObject));
     int n = canvas_isObjectSelected (glist, cast_gobj (t.tr_destObject));
     
-    if (m &&n) {
+    if (m && n) {
         buffer_vAppend (b, "ssiiii;", 
             sym___hash__X, 
             sym_connect,
@@ -594,8 +594,8 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
     
     /* Forbid following characters to avoid mislead interpretations at script level. */
     
-    k |= (n == '{');
-    k |= (n == '}');
+    k |= (n == '{');    // --
+    k |= (n == '}');    // --
     k |= (n == '\\');
     
     if (k) { error_ignored (sym_key); return; }

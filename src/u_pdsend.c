@@ -55,7 +55,7 @@
 
 int pdsend_usage (void)
 {
-    fprintf (stderr, "usage: pdsend < portnumber > [ host ] [ udp | tcp ]\n");
+    fprintf (stderr, "usage: pdsend < portnumber > [ host ] [ udp | tcp ]\n");  // --
     fprintf (stderr, "(default is localhost and tcp)\n");
 }
 
@@ -69,7 +69,7 @@ void pdsend_socketError (char *s)
 {
     int err = WSAGetLastError();
     
-    if (err != 10054) { fprintf (stderr, "%s: error %d / %s\n", s, err, strerror (err)); }
+    if (err != 10054) { fprintf (stderr, "%s: error %d / %s\n", s, err, strerror (err)); }  // --
 }
 
 void pdsend_socketClose (int fd)
@@ -84,7 +84,7 @@ void pdsend_socketClose (int fd)
 
 void pdsend_socketError (char *s)
 {
-    int err = errno; fprintf (stderr, "%s: error %d / %s\n", s, err, strerror (err));
+    int err = errno; fprintf (stderr, "%s: error %d / %s\n", s, err, strerror (err));   // --
 }
 
 void pdsend_socketClose (int fd)
@@ -142,7 +142,7 @@ int main (int argc, char **argv)
     //
     struct hostent *host = gethostbyname (hostName);
     
-    if (host == NULL) { err = 1; fprintf (stderr, "%s: unknown host\n", hostName); }
+    if (host == NULL) { err = 1; fprintf (stderr, "%s: unknown host\n", hostName); }    // --
     else {
     //
     struct sockaddr_in server;

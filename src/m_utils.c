@@ -247,7 +247,7 @@ int utils_isTokenWhitespace (char c)
 
 int utils_isAlphanumericOrUnderscore (char c)
 {
-    return ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z')|| (c >='a' && c <='z') || (c == '_'));
+    return ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c == '_'));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -260,7 +260,7 @@ t_unique utils_unique (void)
     
     unique++;
     
-    return (unique == 0 ? ++unique : unique);        
+    return (unique == 0 ? (++unique) : unique);        
 }
 
 t_error utils_version (char *dest, size_t size)

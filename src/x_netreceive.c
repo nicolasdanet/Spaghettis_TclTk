@@ -236,7 +236,7 @@ static void netreceive_listen (t_netreceive *x, t_float f)
     
     struct sockaddr_in server;
 
-    post ("netreceive: listening on port %d", portNumber);
+    post ("netreceive: listening on port %d", portNumber);  // --
     
     netreceive_socketOptions (x, fd);
     

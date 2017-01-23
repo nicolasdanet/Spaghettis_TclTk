@@ -83,7 +83,7 @@ static void print_tilde_polling (t_print_tilde *x)
     else {
         err |= string_addSprintf (t, PD_STRING, "%g", x->x_buffer[i]); 
         PD_ASSERT (!err);
-        post ("%s: %s", x->x_name->s_name, t);
+        post ("%s: %s", x->x_name->s_name, t);  // --
         string_clear (t, PD_STRING);
     }
     //

@@ -264,16 +264,16 @@ void u8_dec (char *s, int *i)
 
 static char *borisVian = "Le sentier longeait la falaise."
     " Il \xc3\xa9tait bord\xc3\xa9 de calamines en fleur et de brouillouses un peu pass\xc3\xa9"
-    "es dont les p\xc3\xa9tales noircis jonchaient le sol. Des insectes pointus avaient creus\xc3\xa9"
-    " le sol de mille petits trous ; sous les pieds, c\xe2\x80\x99\xc3\xa9tait comme "
+    "es dont les p\xc3\xa9tales noircis jonchaient le sol. Des insectes pointus avaient creus\xc3\xa9"  // --
+    " le sol de mille petits trous ; sous les pieds, c\xe2\x80\x99\xc3\xa9tait comme "                  // --
     "de l\xe2\x80\x99\xc3\xa9ponge morte de froid.";
 
-static char *arnoSchmidt = "Mein Leben ? ! : ist kein Kontinuum!"
+static char *arnoSchmidt = "Mein Leben ? ! : ist kein Kontinuum!"                                       // --
     " (nicht blo\xc3\x9f Tag und Nacht in wei\xc3\x9f und schwarze St\xc3\xbc""cke zerbroche"
-    "n ! Denn auch am Tage ist bei mir der ein Anderer, der zur Bahn geht; im Amt sitzt; b\xc3\xbc"
+    "n ! Denn auch am Tage ist bei mir der ein Anderer, der zur Bahn geht; im Amt sitzt; b\xc3\xbc"     // --
     "chert; durch Haine stelzt; begattet; schwatzt; schreibt;"
     " Tausendsdenker; auseinanderfallender F\xc3\xa4"
-    "cher; der rennt; raucht; kotet; radioh\xc3\xb6rt; \'Herr Landrat\' sagt: that\'s me!)"
+    "cher; der rennt; raucht; kotet; radioh\xc3\xb6rt; \'Herr Landrat\' sagt: that\'s me!)"             // --
     " ein Tablett voll glitzender snapshots.";
 
 // -----------------------------------------------------------------------------------------------------------

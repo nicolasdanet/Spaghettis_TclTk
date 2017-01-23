@@ -90,7 +90,7 @@ static t_error main_parseArguments (int argc, char **argv)
     }
 
     if (err) {
-        fprintf (stderr, "Usage: pd [ --version ] [ -port port ]\n");
+        fprintf (stderr, "Usage: pd [ --version ] [ -port port ]\n");   // --
     }
     
     return err;
@@ -226,7 +226,7 @@ t_error main_setPaths (t_symbol *root)
     //
     t_error err = PD_ERROR_NONE;
     
-    char t[PD_STRING] =  { 0 };
+    char t[PD_STRING] = { 0 };
     
     const char *s = root->s_name;
     

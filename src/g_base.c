@@ -428,7 +428,7 @@ void canvas_setName (t_glist *glist, t_symbol *name)
 
 void canvas_updateTitle (t_glist *glist)
 {
-    sys_vGui ("::ui_patch::setTitle .x%lx {%s} {%s} %d\n",
+    sys_vGui ("::ui_patch::setTitle .x%lx {%s} {%s} %d\n",  // --
                     glist,
                     canvas_getEnvironment (glist)->ce_directory->s_name,
                     glist->gl_name->s_name,

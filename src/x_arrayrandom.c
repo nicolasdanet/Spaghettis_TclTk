@@ -50,7 +50,7 @@ static void arrayrandom_bang (t_arrayrandom *x)
 
 static void arrayrandom_float (t_arrayrandom *x, t_float f)
 {
-    arrayrange_setFirst (&x->x_arrayrange, f); arrayrandom_bang(x);
+    arrayrange_setFirst (&x->x_arrayrange, f); arrayrandom_bang (x);
 }
 
 static void arrayrandom_seed (t_arrayrandom *x, t_float f)

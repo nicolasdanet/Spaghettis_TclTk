@@ -724,7 +724,7 @@ static t_error interface_startGui (void)
         t_pathlist *l = NULL;
         sys_vGui ("::initialize\n");
         for (l = path_search; l; l = pathlist_getNext (l)) {
-            sys_vGui ("lappend ::var(searchPath) {%s}\n", pathlist_getFile (l));
+            sys_vGui ("lappend ::var(searchPath) {%s}\n", pathlist_getFile (l));    // --
         }
     }
     

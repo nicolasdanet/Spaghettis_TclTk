@@ -103,7 +103,7 @@ void textbuffer_update (t_textbuffer *x)
         
         /* < http://stackoverflow.com/a/13289324 > */
         
-        sys_vGui ("::ui_text::append .x%lx {%.*s\n}\n", x, (int)(newline - start), start);  
+        sys_vGui ("::ui_text::append .x%lx {%.*s\n}\n", x, (int)(newline - start), start);  // --
         
         i = (newline - text) + 1;
     }

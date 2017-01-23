@@ -13,8 +13,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* < http://atastypixel.com/blog/four-common-mistakes-in-audio-development/ */
-/* < http://www.rossbencina.com/code/real-time-audio-programming-101-time-waits-for-nothing */
+/* < http://atastypixel.com/blog/four-common-mistakes-in-audio-development/ > */
+/* < http://www.rossbencina.com/code/real-time-audio-programming-101-time-waits-for-nothing > */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -173,7 +173,7 @@ static void jack_fetchClientNames (void)
     //
     int i, n = 0;
     
-    regex_t e; regcomp (&e, "^[^:]*", REG_EXTENDED);
+    regex_t e; regcomp (&e, "^[^:]*", REG_EXTENDED);    // --
 
     for (i = 0; ports[i] != NULL && n < JACK_MAXIMUM_CLIENTS; i++) {
     //
@@ -182,7 +182,7 @@ static void jack_fetchClientNames (void)
     regmatch_t info;
     char t[PD_STRING] = { 0 };
     
-    /* Parse "clientname:portname" syntax (i.e. "system:playback_1" to "system"). */
+    // -- Parse "clientname:portname" syntax (i.e. "system:playback_1" to "system").
     
     regexec (&e, ports[i], 1, &info, 0);
     size = PD_MIN (info.rm_eo - info.rm_so, PD_STRING - 1);
@@ -227,7 +227,7 @@ static void jack_connectAllPortsToFirstClient (void)
     const char **ports;
     char t[PD_STRING] = { 0 };
 
-    string_sprintf (t, PD_STRING, "%s:.*", jack_clientNames[0]);
+    string_sprintf (t, PD_STRING, "%s:.*", jack_clientNames[0]);    // --
 
     ports = jack_get_ports (jack_client, t, NULL, JackPortIsOutput);
     

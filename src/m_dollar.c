@@ -255,7 +255,7 @@ t_symbol *dollar_toHash (t_symbol *s)
     if (strlen (s->s_name) >= PD_STRING) { PD_BUG; return s; }
     else {
     //
-    for (s1 = s->s_name, s2 = t; ; s1++, s2++) {
+    for (s1 = s->s_name, s2 = t;; s1++, s2++) {
         if (*s1 == '$') { *s2 = '#'; }
         else if (!(*s2 = *s1)) {
             break;
@@ -276,7 +276,7 @@ t_symbol *dollar_fromHash (t_symbol *s)
     if (strlen (s->s_name) >= PD_STRING) { return s; }
     else {
     //
-    for (s1 = s->s_name, s2 = t; ; s1++, s2++) {
+    for (s1 = s->s_name, s2 = t;; s1++, s2++) {
         if (*s1 == '#') { *s2 = '$'; }
         else if (!(*s2 = *s1)) {
             break;

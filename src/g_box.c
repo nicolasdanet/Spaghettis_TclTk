@@ -250,7 +250,7 @@ static int boxtext_send (t_boxtext *x, int action, int a, int b)
         x->box_checked = 1;                     /* Used once at creation time. */
         
     } else if (action == BOX_FIRST) {
-        sys_vGui ("::ui_box::newText .x%lx.c %s %d %d {%s} %d #%06x\n",
+        sys_vGui ("::ui_box::newText .x%lx.c %s %d %d {%s} %d #%06x\n",     // --
                         canvas,
                         x->box_tag,
                         (int)(text_getPixelX (x->box_object, x->box_glist) + BOX_MARGIN_LEFT), 
@@ -260,7 +260,7 @@ static int boxtext_send (t_boxtext *x, int action, int a, int b)
                         (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
                                 
     } else if (action == BOX_UPDATE) {
-        sys_vGui ("::ui_box::setText .x%lx.c %s {%s}\n",
+        sys_vGui ("::ui_box::setText .x%lx.c %s {%s}\n",    // --
                         canvas,
                         x->box_tag,
                         buffer);
@@ -493,7 +493,7 @@ void boxtext_activate (t_boxtext *x, int state)
     //
     } else {
     //
-    sys_vGui ("::ui_box::setEditing .x%lx {} 0\n", x->box_glist);
+    sys_vGui ("::ui_box::setEditing .x%lx {} 0\n", x->box_glist);   // --
                     
     if (x->box_glist->gl_editor->e_selectedText == x) { x->box_glist->gl_editor->e_selectedText = NULL; }
     
@@ -523,8 +523,8 @@ void boxtext_mouse (t_boxtext *x, int a, int b, int flag)
     } else if (flag == BOXTEXT_DOUBLE) {
 
         int k = x->box_stringSizeInBytes - i;
-        int m = string_indexOfFirstOccurrenceFrom (x->box_string, " ;,\n", i);
-        int n = string_indexOfFirstOccurrenceUntil (x->box_string + i, " ;,\n", k);
+        int m = string_indexOfFirstOccurrenceFrom (x->box_string, " ;,\n", i);          // --
+        int n = string_indexOfFirstOccurrenceUntil (x->box_string + i, " ;,\n", k);     // --
         
         x->box_draggedFrom    = -1;
         x->box_selectionStart = (m == -1) ? 0 : m + 1;

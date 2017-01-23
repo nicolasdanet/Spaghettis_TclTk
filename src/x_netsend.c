@@ -138,7 +138,7 @@ static void netsend_connect (t_netsend *x, t_symbol *hostName, t_float f)
     //
     struct sockaddr_in server;
     
-    post ("netsend: connecting to port %d", portNumber);
+    post ("netsend: connecting to port %d", portNumber);    // --
     
     server.sin_family = AF_INET;
     server.sin_port = htons ((u_short)portNumber);

@@ -34,7 +34,9 @@ typedef struct _savepanel {
 
 static void savepanel_symbol (t_savepanel *x, t_symbol *s)
 {
-    sys_vGui ("::ui_file::savePanel {%s} {%s}\n", guiconnect_getBoundAsString (x->x_guiconnect), s->s_name);
+    sys_vGui ("::ui_file::savePanel {%s} {%s}\n",   // --
+                    guiconnect_getBoundAsString (x->x_guiconnect),
+                    s->s_name);
 }
 
 static void savepanel_bang (t_savepanel *x)

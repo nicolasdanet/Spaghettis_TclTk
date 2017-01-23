@@ -90,7 +90,7 @@ static void dsp_stop (void)
 
 static void dsp_notify (int n)
 {
-    sys_vGui ("set ::var(isDsp) %d\n", n);
+    sys_vGui ("set ::var(isDsp) %d\n", n);  // --
 }
 
 // -----------------------------------------------------------------------------------------------------------

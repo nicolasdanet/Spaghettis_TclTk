@@ -154,7 +154,7 @@ static void canvas_drawBoxObject (t_glist *glist,
     int c,
     int d)
 {
-    char *pattern = (pd_class (o) == text_class) ? "{6 4}" : "{}";
+    char *pattern = (pd_class (o) == text_class) ? "{6 4}" : "{}";  // --
     
     if (create) {
         sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d"
@@ -302,7 +302,7 @@ static void canvas_drawBoxComment (t_glist *glist,
     //
     if (create) {
         sys_vGui (".x%lx.c create line %d %d %d %d"
-                        " -tags [list %sBORDER COMMENTBAR]\n",
+                        " -tags [list %sBORDER COMMENTBAR]\n",      // --
                         canvas_getView (glist),
                         c,
                         b,
@@ -446,7 +446,7 @@ void canvas_drawGraphOnParentRectangle (t_glist *glist)
     int d = glist->gl_graphMarginTop + glist->gl_graphHeight;
     
     sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d"
-                    " -dash {2 4}"
+                    " -dash {2 4}"  // --
                     " -fill " DRAW_GRAPH_ON_PARENT_COLOR
                     " -tags RECTANGLE\n",
                     canvas_getView (glist),

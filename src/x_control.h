@@ -125,8 +125,8 @@ typedef struct _atomoutlet {
 
 #define OSC_WRITE4INT(x, i)                 SET_FLOAT ((x) + 0, (((unsigned int)(i) >> 24) & 0xff)); \
                                             SET_FLOAT ((x) + 1, (((unsigned int)(i) >> 16) & 0xff)); \
-                                            SET_FLOAT ((x) + 2, (((unsigned int)(i) >>  8) & 0xff)); \
-                                            SET_FLOAT ((x) + 3, (((unsigned int)(i)      ) & 0xff))
+                                            SET_FLOAT ((x) + 2, (((unsigned int)(i) >> 8)  & 0xff)); \
+                                            SET_FLOAT ((x) + 3, (((unsigned int)(i))       & 0xff))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

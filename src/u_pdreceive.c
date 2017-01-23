@@ -77,7 +77,7 @@ static int      pdreceive_socketIsBinary;
 
 int pdreceive_usage (void)
 {
-    fprintf (stderr, "usage: pdreceive < portnumber > [ udp | tcp ] [ binary ]\n");
+    fprintf (stderr, "usage: pdreceive < portnumber > [ udp | tcp ] [ binary ]\n");     // --
     fprintf (stderr, "(default is tcp)\n");
 }
 
@@ -91,7 +91,7 @@ void pdreceive_socketError (char *s)
 {
     int err = WSAGetLastError();
     
-    if (err != 10054) { fprintf (stderr, "%s: error %d / %s\n", s, err, strerror (err)); }
+    if (err != 10054) { fprintf (stderr, "%s: error %d / %s\n", s, err, strerror (err)); }  // --
 }
 
 void pdreceive_socketClose (int fd)
@@ -106,7 +106,7 @@ void pdreceive_socketClose (int fd)
 
 void pdreceive_socketError (char *s)
 {
-    int err = errno; fprintf (stderr, "%s: error %d / %s\n", s, err, strerror (err));
+    int err = errno; fprintf (stderr, "%s: error %d / %s\n", s, err, strerror (err));   // --
 }
 
 void pdreceive_socketClose (int fd)
@@ -212,7 +212,7 @@ static int pdreceive_outputTCP (t_poll *x, char *t, int size)
     if (c != '\n') { p[length++] = c; }
     
     if (length >= (PDRECEIVE_BUFFER_SIZE - 1)) {
-        fprintf (stderr, "overflow: discard message\n");
+        fprintf (stderr, "overflow: discard message\n");    // --
         length = 0;
         x->p_messageIsTruncated = 1;
     }  

@@ -238,7 +238,7 @@ void iemgui_setLabel (void *x, t_iem *iem, t_symbol *s)
     iem->iem_label = iemgui_expandDollar (iem->iem_owner, t);
 
     if (canvas_isMapped (iem->iem_owner)) {
-        sys_vGui (".x%lx.c itemconfigure %lxLABEL -text {%s}\n",
+        sys_vGui (".x%lx.c itemconfigure %lxLABEL -text {%s}\n",    // --
                         canvas_getView (iem->iem_owner),
                         x,
                         iem->iem_label != utils_empty() ? iem->iem_label->s_name : "");
@@ -271,7 +271,7 @@ void iemgui_setLabelFont (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *ar
     f = PD_MAX (f, IEM_MINIMUM_FONTSIZE);
     iem->iem_fontSize = f;
     if (canvas_isMapped (iem->iem_owner)) {
-        sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d]\n",
+        sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d]\n",      // --
                         canvas_getView (iem->iem_owner), 
                         x,
                         font_getHostFontSize (iem->iem_fontSize));

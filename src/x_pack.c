@@ -41,7 +41,7 @@ static void pack_bang (t_pack *x)
         
     ATOMS_ALLOCA (a, x->x_size);
     
-    for (i = 0; i < x->x_size; i++) { atomoutlet_copyAtom (x->x_vector + i, a + i);}
+    for (i = 0; i < x->x_size; i++) { atomoutlet_copyAtom (x->x_vector + i, a + i); }
     
     outlet_list (x->x_outlet, x->x_size, a);
     

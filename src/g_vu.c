@@ -307,8 +307,8 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
                     x->x_thickness - 1,
                     x->x_gui.iem_colorBackground,
                     x);
-    sys_vGui (".x%lx.c create text %d %d -text {%s} -anchor w"
-                    " -font [::getFont %d] -fill #%06x -tags %lxLABEL\n",
+    sys_vGui (".x%lx.c create text %d %d -text {%s} -anchor w"              // --
+                    " -font [::getFont %d] -fill #%06x -tags %lxLABEL\n",   // --
                     canvas,
                     a + x->x_gui.iem_labelX,
                     b + x->x_gui.iem_labelY,
@@ -383,7 +383,7 @@ static void vu_drawConfig (t_vu* x, t_glist *glist)
     //
     }
 
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
                     canvas,
                     x,
                     font_getHostFontSize (x->x_gui.iem_fontSize),
@@ -534,12 +534,12 @@ static void vu_functionProperties (t_gobj *z, t_glist *owner)
     iemgui_serializeNames (&x->x_gui, &names);
     
     err = string_sprintf (t, PD_STRING, "::ui_iem::create %%s VU"
-            " %d %d {Meter Width}"
-            " %d %d {Led Thickness}"
-            " 0 $::var(nil) 0 $::var(nil)"
-            " 0 $::var(nil) $::var(nil)"
+            " %d %d {Meter Width}"          // --
+            " %d %d {Led Thickness}"        // --
+            " 0 $::var(nil) 0 $::var(nil)"  // --
+            " 0 $::var(nil) $::var(nil)"    // --
             " -1"
-            " -1 -1 $::var(nil)"
+            " -1 -1 $::var(nil)"            // --
             " %s %s"
             " %s %d %d"
             " %d"
@@ -592,7 +592,7 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
     int hasScale        = 0;
 
-    if (argc >= 11
+    if (argc >= 11                                                  // --
             && IS_FLOAT (argv + 0)                                  // Width.
             && IS_FLOAT (argv + 1)                                  // Height.
             && IS_SYMBOL_OR_FLOAT (argv + 2)                        // Receive.

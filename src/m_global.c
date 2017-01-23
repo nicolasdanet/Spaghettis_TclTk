@@ -44,7 +44,7 @@ void global_shouldQuit (void *dummy)
     sys_vGui ("::ui_confirm::checkClose .x%lx"
                     " { ::ui_interface::pdsend $top save 2 }"
                     " { ::ui_interface::pdsend $top close 2 }"
-                    " {}\n",
+                    " {}\n",    // --
                     glist);
     return;
     //

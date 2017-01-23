@@ -45,7 +45,7 @@ static t_int *mtof_tilde_perform (t_int *w)
     return (w + 4);
 }
 
-static void mtof_tilde_dsp(t_mtof_tilde *x, t_signal **sp)
+static void mtof_tilde_dsp (t_mtof_tilde *x, t_signal **sp)
 {
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     

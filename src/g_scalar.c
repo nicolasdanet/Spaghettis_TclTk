@@ -83,7 +83,7 @@ static void scalar_drawSelectRectangle (t_scalar *x, t_glist *glist, int isSelec
         sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d"
                         " -width 0"
                         " -fill #%06x"
-                        " -dash {2 4}"
+                        " -dash {2 4}"  // --
                         " -tags %lxHANDLE\n",
                         canvas_getView (glist),
                         a,

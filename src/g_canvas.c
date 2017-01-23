@@ -305,7 +305,7 @@ void canvas_close (t_glist *glist, t_float f)
             sys_vGui ("::ui_confirm::checkClose .x%lx"
                             " { ::ui_interface::pdsend $top save 1 }"
                             " { ::ui_interface::pdsend $top close 1 }"
-                            " {}\n",
+                            " {}\n",    // --
                             glist);
             return;
             
@@ -367,7 +367,7 @@ void canvas_visible (t_glist *glist, t_float f)
         else {
             canvas_createEditorIfNone (glist);
             
-            sys_vGui ("::ui_patch::create .x%lx %d %d +%d+%d %d\n",
+            sys_vGui ("::ui_patch::create .x%lx %d %d +%d+%d %d\n",     // --
                             glist,
                             (int)(glist->gl_windowBottomRightX - glist->gl_windowTopLeftX),
                             (int)(glist->gl_windowBottomRightY - glist->gl_windowTopLeftY),
@@ -508,8 +508,8 @@ static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
     
     if (g->gl_isGraphOnParent) {
         err = string_sprintf (t, PD_STRING, "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
-                                    0.,
-                                    0.,
+                                    0.0,
+                                    0.0,
                                     g->gl_isGraphOnParent,
                                     g->gl_valueLeft,
                                     g->gl_valueTop,
@@ -524,10 +524,10 @@ static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
                                     canvas_valueForOnePixelX (g),
                                     canvas_valueForOnePixelY (g),
                                     g->gl_isGraphOnParent,
-                                    0.,
-                                    1.,
-                                    1.,
-                                   -1., 
+                                    0.0,
+                                    1.0,
+                                    1.0,
+                                   -1.0, 
                                     g->gl_graphWidth, 
                                     g->gl_graphHeight,
                                     g->gl_graphMarginLeft,

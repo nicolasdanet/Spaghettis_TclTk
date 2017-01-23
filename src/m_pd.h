@@ -428,7 +428,7 @@ typedef unsigned long           t_unique;
 // -----------------------------------------------------------------------------------------------------------
 
 #if PD_LP64
-    typedef unsigned int        t_keycode;          /* uint32_t */
+    typedef unsigned int        t_keycode;          // uint32_t
 #else
     typedef unsigned long       t_keycode;
 #endif

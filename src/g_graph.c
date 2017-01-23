@@ -535,14 +535,14 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
         //
         if (pd_class (y) == garray_class) {
         //
-        sys_vGui (".x%lx.c create text %d %d -text {%s}"
+        sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
                         " -anchor nw"
-                        " -font [::getFont %d]"
+                        " -font [::getFont %d]"             // --
                         " -fill #%06x"
                         " -tags %s\n",
                         canvas_getView (x->gl_parent),
                         x1,
-                        y1 - ++i * (int)font_getHostFontHeight (canvas_getFontSize (x)),
+                        y1 - (++i) * (int)font_getHostFontHeight (canvas_getFontSize (x)),
                         garray_getName ((t_garray *)y)->s_name,
                         font_getHostFontSize (canvas_getFontSize (x)),
                         (x->gl_isSelected ? COLOR_SELECTED : COLOR_NORMAL),

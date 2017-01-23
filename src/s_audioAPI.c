@@ -361,14 +361,14 @@ static t_error audio_requireDialogInitialize (int *multiple)
     char t2[PD_STRING] = { 0 };
     int k;
     
-    err |= string_copy (t1, PD_STRING, "set ::ui_audio::audioIn [list ");
-    err |= string_copy (t2, PD_STRING, "set ::ui_audio::audioOut [list ");
+    err |= string_copy (t1, PD_STRING, "set ::ui_audio::audioIn [list ");                   // --
+    err |= string_copy (t2, PD_STRING, "set ::ui_audio::audioOut [list ");                  // --
     
     for (k = 0; k < m; k++) {
-        err |= string_addSprintf (t1, PD_STRING, " {%s}", i + (k * MAXIMUM_DESCRIPTION));
+        err |= string_addSprintf (t1, PD_STRING, " {%s}", i + (k * MAXIMUM_DESCRIPTION));   // --
     }
     for (k = 0; k < n; k++) {
-        err |= string_addSprintf (t2, PD_STRING, " {%s}", o + (k * MAXIMUM_DESCRIPTION));
+        err |= string_addSprintf (t2, PD_STRING, " {%s}", o + (k * MAXIMUM_DESCRIPTION));   // --
     }
     
     err |= string_add (t1, PD_STRING, "]\n");

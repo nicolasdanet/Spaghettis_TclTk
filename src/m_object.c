@@ -731,7 +731,7 @@ int object_getIndexOfSignalOutlet (t_outlet *x)
 #pragma mark -
 
 /* Fetch the nth outlet of an object. */
-/* Return its first connection.  */
+/* Return its first connection. */
 
 t_outconnect *object_traverseOutletStart (t_object *x, t_outlet **ptr, int n)
 {
