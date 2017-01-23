@@ -480,7 +480,7 @@ t_gobj *canvas_getHitObject (t_glist *glist,
     t_gobj *y = NULL;
     t_gobj *object = NULL;
     
-    int x1, y1, x2, y2;
+    int xA, yA, xB, yB;
     
     *a = *b = *c = *d = 0;
     
@@ -489,8 +489,8 @@ t_gobj *canvas_getHitObject (t_glist *glist,
     t_selection *selection = NULL;
     for (selection = glist->gl_editor->e_selectedObjects; selection; selection = selection->sel_next) {
     //
-    if (gobj_hit (selection->sel_what, glist, positionX, positionY, &x1, &y1, &x2, &y2)) {
-        *a = x1; *b = y1; *c = x2; *d = y2;
+    if (gobj_hit (selection->sel_what, glist, positionX, positionY, &xA, &yA, &xB, &yB)) {
+        *a = xA; *b = yA; *c = xB; *d = yB;
         object = selection->sel_what; 
     }
     //
@@ -503,10 +503,10 @@ t_gobj *canvas_getHitObject (t_glist *glist,
     int t = -PD_INT_MAX;
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (gobj_hit (y, glist, positionX, positionY, &x1, &y1, &x2, &y2)) {
-            if (x1 > t) {
-                *a = x1; *b = y1; *c = x2; *d = y2;
-                object = y; t = x1;
+        if (gobj_hit (y, glist, positionX, positionY, &xA, &yA, &xB, &yB)) {
+            if (xA > t) {
+                *a = xA; *b = yA; *c = xB; *d = yB;
+                object = y; t = xA;
             }
         }
     }

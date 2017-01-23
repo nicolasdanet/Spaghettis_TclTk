@@ -350,20 +350,20 @@ static void plot_behaviorGetRectangleRecursive (t_plot *x,
         
         if (behavior) {
         
-            int x1, y1, x2, y2;
+            int xA, yA, xB, yB;
             
             t_gpointer gp = GPOINTER_INIT;
             
             gpointer_setAsWord (&gp, array, array_getElementAtIndex (array, i));
             
-            (*behavior->w_fnPainterGetRectangle) (y, &gp, baseX, baseY, &x1, &y1, &x2, &y2);
+            (*behavior->w_fnPainterGetRectangle) (y, &gp, baseX, baseY, &xA, &yA, &xB, &yB);
             
             gpointer_unset (&gp);
             
-            *a = PD_MIN (*a, x1);
-            *b = PD_MIN (*b, y1);
-            *c = PD_MAX (*c, x2);
-            *d = PD_MAX (*d, y2);
+            *a = PD_MIN (*a, xA);
+            *b = PD_MIN (*b, yA);
+            *c = PD_MAX (*c, xB);
+            *d = PD_MAX (*d, yB);
         }
     }
 }
@@ -381,11 +381,11 @@ static void plot_behaviorGetRectangle (t_gobj *z,
 
     t_glist *glist = gpointer_getView (gp);
         
-    int x1, y1, x2, y2;
+    int xA, yA, xB, yB;
         
-    rectangle_setNowhere (&x1, &y1, &x2, &y2);
+    rectangle_setNowhere (&xA, &yA, &xB, &yB);
     
-    if (garray_isSingle (glist)) { rectangle_setEverything (&x1, &y1, &x2, &y2); }
+    if (garray_isSingle (glist)) { rectangle_setEverything (&xA, &yA, &xB, &yB); }
     else {
     //
     t_array *array = NULL;
@@ -440,13 +440,13 @@ static void plot_behaviorGetRectangle (t_gobj *z,
         pixelW = PD_ABS (pixelW);
         pixelW = PD_MAX (pixelW, width - 1.0);
 
-        x1 = PD_MIN (x1, pixelX);
-        x2 = PD_MAX (x2, pixelX);
-        y1 = PD_MIN (y1, pixelY - pixelW);
-        y2 = PD_MAX (y2, pixelY + pixelW);
+        xA = PD_MIN (xA, pixelX);
+        xB = PD_MAX (xB, pixelX);
+        yA = PD_MIN (yA, pixelY - pixelW);
+        yB = PD_MAX (yB, pixelY + pixelW);
         
         if (view) {
-            plot_behaviorGetRectangleRecursive (x, view, array, i, valueX, valueY, &x1, &y1, &x2, &y2);
+            plot_behaviorGetRectangleRecursive (x, view, array, i, valueX, valueY, &xA, &yA, &xB, &yB);
         }
     }
     //
@@ -456,10 +456,10 @@ static void plot_behaviorGetRectangle (t_gobj *z,
     //
     }
     
-    *a = x1;
-    *b = y1;
-    *c = x2;
-    *d = y2;
+    *a = xA;
+    *b = yA;
+    *c = xB;
+    *d = yB;
 }
 
 // -----------------------------------------------------------------------------------------------------------

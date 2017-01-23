@@ -220,11 +220,11 @@ static int drawnumber_behaviorMouse (t_gobj *z,
 {
     t_drawnumber *x = (t_drawnumber *)z;
     
-    int x1, y1, x2, y2;
+    int xA, yA, xB, yB;
      
-    drawnumber_behaviorGetRectangle (z, gp, baseX, baseY, &x1, &y1, &x2, &y2);
+    drawnumber_behaviorGetRectangle (z, gp, baseX, baseY, &xA, &yA, &xB, &yB);
 
-    if (a >= x1 && a <= x2 && b >= y1 && b <= y2) {
+    if (a >= xA && a <= xB && b >= yA && b <= yB) {
     //
     if (gpointer_fieldIsFloat (gp, x->x_fieldName)) {
     //

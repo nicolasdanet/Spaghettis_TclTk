@@ -72,8 +72,8 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
     int previousX = glist->gl_editor->e_previousX;
     int previousY = glist->gl_editor->e_previousY;
     
-    t_gobj *y1 = canvas_getHitObject (glist, previousX, previousY, &a, &b, &c, &d);
-    t_gobj *y2 = canvas_getHitObject (glist, positionX, positionY, &m, &n, &o, &p);
+    t_gobj *yA = canvas_getHitObject (glist, previousX, previousY, &a, &b, &c, &d);
+    t_gobj *yB = canvas_getHitObject (glist, positionX, positionY, &m, &n, &o, &p);
     
     if (create) { sys_vGui (".x%lx.c delete TEMPORARY\n", canvas_getView (glist)); }
     else {
@@ -85,10 +85,10 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
                         positionY);
     }
 
-    if (y1 && y2) {
+    if (yA && yB) {
     //
-    t_object *object1 = cast_objectIfPatchable (y1);
-    t_object *object2 = cast_objectIfPatchable (y2);
+    t_object *object1 = cast_objectIfPatchable (yA);
+    t_object *object2 = cast_objectIfPatchable (yB);
     
     if (object1 && object2 && object1 != object2) {
     //

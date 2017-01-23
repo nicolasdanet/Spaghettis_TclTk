@@ -84,7 +84,7 @@ t_error     utils_version                               (char *dest, size_t size
 int         math_ilog2                                  (int n);
 
 int         math_compareFloat                           (t_float a, t_float b);
-t_float     math_euclideanDistance                      (t_float x1, t_float y1, t_float x2, t_float y2);
+t_float     math_euclideanDistance                      (t_float xA, t_float yA, t_float xB, t_float yB);
 
 t_float     math_midiToFrequency                        (t_float f);
 t_float     math_frequencyToMidi                        (t_float f);

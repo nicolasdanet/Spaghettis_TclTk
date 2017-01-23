@@ -41,14 +41,14 @@ static t_guistub    *guistub_list;              /* Shared. */
 
 static void guistub_removeFromList (t_guistub *x)
 {
-    t_guistub *y1 = NULL;
-    t_guistub *y2 = NULL;
+    t_guistub *yA = NULL;
+    t_guistub *yB = NULL;
     
     if (guistub_list == x) { guistub_list = x->x_next; }
     else {
-        for (y1 = guistub_list; y2 = y1->x_next; y1 = y2) {
-            if (y2 == x) { 
-                y1->x_next = y2->x_next; break; 
+        for (yA = guistub_list; yB = yA->x_next; yA = yB) {
+            if (yB == x) { 
+                yA->x_next = yB->x_next; break; 
             }
         }
     }

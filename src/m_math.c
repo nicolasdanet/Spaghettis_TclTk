@@ -41,10 +41,10 @@ int math_compareFloat (t_float a, t_float b)
     if (a < b) { return -1; } else if (b > a) { return 1; } else { return 0; }
 }
 
-t_float math_euclideanDistance (t_float x1, t_float y1, t_float x2, t_float y2)
+t_float math_euclideanDistance (t_float xA, t_float yA, t_float xB, t_float yB)
 {
-    double x = ((double)x2 - x1);
-    double y = ((double)y2 - y1);
+    double x = ((double)xB - xA);
+    double y = ((double)yB - yA);
     
     return (t_float)sqrt (x * x + y * y);
 }

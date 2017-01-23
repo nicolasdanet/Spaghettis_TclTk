@@ -160,10 +160,10 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
 {
     t_scalar *x = cast_scalar (z);
     
-    int x1 = 0;
-    int y1 = 0;
-    int x2 = 0;
-    int y2 = 0;
+    int xA = 0;
+    int yA = 0;
+    int xB = 0;
+    int yB = 0;
     
     t_template *template = scalar_getTemplate (x);
     t_glist *view = template_getFirstInstanceView (template);
@@ -172,16 +172,16 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
 
     if (!view) {
     
-        x1 = canvas_valueToPixelX (glist, baseX);
-        y1 = canvas_valueToPixelY (glist, baseY);
-        x2 = x1 + SCALAR_WRONG_SIZE;
-        y2 = y1 + SCALAR_WRONG_SIZE;
+        xA = canvas_valueToPixelX (glist, baseX);
+        yA = canvas_valueToPixelY (glist, baseY);
+        xB = xA + SCALAR_WRONG_SIZE;
+        yB = yA + SCALAR_WRONG_SIZE;
         
     } else {
     
         t_gobj *y = NULL;
         
-        rectangle_setNowhere (&x1, &y1, &x2, &y2);
+        rectangle_setNowhere (&xA, &yA, &xB, &yB);
         
         for (y = view->gl_graphics; y; y = y->g_next) {
         //
@@ -199,27 +199,27 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
         
         gpointer_unset (&gp);
         
-        x1 = PD_MIN (x1, e); y1 = PD_MIN (y1, f); x2 = PD_MAX (x2, g); y2 = PD_MAX (y2, h);
+        xA = PD_MIN (xA, e); yA = PD_MIN (yA, f); xB = PD_MAX (xB, g); yB = PD_MAX (yB, h);
         //
         }
         //
         }
         
-        if (x2 < x1 || y2 < y1) { rectangle_setNothing (&x1, &y1, &x2, &y2); }
+        if (xB < xA || yB < yA) { rectangle_setNothing (&xA, &yA, &xB, &yB); }
         else {
-            if (!rectangle_isEverything (x1, y1, x2, y2)) {
-                x1 -= SCALAR_SELECT_MARGIN;
-                y1 -= SCALAR_SELECT_MARGIN;
-                x2 += SCALAR_SELECT_MARGIN;
-                y2 += SCALAR_SELECT_MARGIN;
+            if (!rectangle_isEverything (xA, yA, xB, yB)) {
+                xA -= SCALAR_SELECT_MARGIN;
+                yA -= SCALAR_SELECT_MARGIN;
+                xB += SCALAR_SELECT_MARGIN;
+                yB += SCALAR_SELECT_MARGIN;
             }
         }
     }
 
-    *a = x1;
-    *b = y1;
-    *c = x2;
-    *d = y2; 
+    *a = xA;
+    *b = yA;
+    *c = xB;
+    *d = yB; 
 }
 
 static void scalar_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)

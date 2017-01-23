@@ -553,9 +553,9 @@ static void canvas_fromPopupDialog (t_glist *glist, t_float action, t_float posi
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
     //
-    int x1, y1, x2, y2;
+    int xA, yA, xB, yB;
     
-    if (gobj_hit (y, glist, positionX, positionY, &x1, &y1, &x2, &y2)) {
+    if (gobj_hit (y, glist, positionX, positionY, &xA, &yA, &xB, &yB)) {
     //
     if (action == 0) {                                                                  /* Properties. */
         if (class_hasPropertiesFunction (pd_class (y))) {

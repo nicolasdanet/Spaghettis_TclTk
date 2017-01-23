@@ -84,7 +84,7 @@
 
 #define INLET_OFFSET(width, i, n)       ((((width) - INLET_WIDTH) * (i)) / (((n) == 1) ? 1 : ((n) - 1)))
 #define INLET_MIDDLE(width, i, n)       INLET_OFFSET (width, i, n) + ((INLET_WIDTH - 1) / 2)
-#define INLET_NEXTTO(y, x1, x2, n)      (((y - x1) * (n - 1) + ((x2 - x1) / 2)) / (x2 - x1))
+#define INLET_NEXTTO(y, xA, xB, n)      (((y - xA) * (n - 1) + ((xB - xA) / 2)) / (xB - xA))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -274,15 +274,15 @@ static void canvas_getGraphOnParentRectangle (t_gobj *z, t_glist *glist, int *a,
     
     PD_ASSERT (pd_class (z) == canvas_class);
     
-    int x1 = text_getPixelX (cast_object (x), glist);
-    int y1 = text_getPixelY (cast_object (x), glist);
-    int x2 = x1 + x->gl_graphWidth;
-    int y2 = y1 + x->gl_graphHeight;
+    int xA = text_getPixelX (cast_object (x), glist);
+    int yA = text_getPixelY (cast_object (x), glist);
+    int xB = xA + x->gl_graphWidth;
+    int yB = yA + x->gl_graphHeight;
 
-    *a = x1;
-    *b = y1;
-    *c = x2;
-    *d = y2;
+    *a = xA;
+    *b = yA;
+    *c = xB;
+    *d = yB;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -400,19 +400,19 @@ static void canvas_behaviorGetRectangle (t_gobj *z,
     int *c,
     int *d)
 {
-    int x1, y1, x2, y2;
+    int xA, yA, xB, yB;
 
     t_glist *x = cast_glist (z);
     
-    if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnGetRectangle (z, glist, &x1, &y1, &x2, &y2); }
+    if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnGetRectangle (z, glist, &xA, &yA, &xB, &yB); }
     else {
-        canvas_getGraphOnParentRectangle (z, glist, &x1, &y1, &x2, &y2);
+        canvas_getGraphOnParentRectangle (z, glist, &xA, &yA, &xB, &yB);
     }
     
-    *a = x1;
-    *b = y1;
-    *c = x2;
-    *d = y2;
+    *a = xA;
+    *b = yA;
+    *c = xB;
+    *d = yB;
 }
 
 static void canvas_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
@@ -473,9 +473,9 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     //
     char tag[PD_STRING] = { 0 };
     t_error err = string_sprintf (tag, PD_STRING, "%lxGRAPH", x);
-    int x1, y1, x2, y2;
+    int xA, yA, xB, yB;
     
-    canvas_behaviorGetRectangle (z, glist, &x1, &y1, &x2, &y2);
+    canvas_behaviorGetRectangle (z, glist, &xA, &yA, &xB, &yB);
     
     PD_ASSERT (!err);
         
@@ -487,16 +487,16 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                         " -fill #%06x"
                         " -tags %s\n",
                         canvas_getView (x->gl_parent),
-                        x1,
-                        y1,
-                        x1,
-                        y2,
-                        x2,
-                        y2,
-                        x2,
-                        y1,
-                        x1,
-                        y1,
+                        xA,
+                        yA,
+                        xA,
+                        yB,
+                        xB,
+                        yB,
+                        xB,
+                        yA,
+                        xA,
+                        yA,
                         COLOR_MASKED,
                         tag);
     } else {
@@ -518,16 +518,16 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                         " -fill #%06x"
                         " -tags %s\n",
                         canvas_getView (x->gl_parent),
-                        x1,
-                        y1,
-                        x1,
-                        y2,
-                        x2,
-                        y2,
-                        x2,
-                        y1,
-                        x1,
-                        y1,
+                        xA,
+                        yA,
+                        xA,
+                        yB,
+                        xB,
+                        yB,
+                        xB,
+                        yA,
+                        xA,
+                        yA,
                         (x->gl_isSelected ? COLOR_SELECTED : COLOR_NORMAL),
                         tag);
         
@@ -541,8 +541,8 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                         " -fill #%06x"
                         " -tags %s\n",
                         canvas_getView (x->gl_parent),
-                        x1,
-                        y1 - (++i) * (int)font_getHostFontHeight (canvas_getFontSize (x)),
+                        xA,
+                        yA - (++i) * (int)font_getHostFontHeight (canvas_getFontSize (x)),
                         garray_getName ((t_garray *)y)->s_name,
                         font_getHostFontSize (canvas_getFontSize (x)),
                         (x->gl_isSelected ? COLOR_SELECTED : COLOR_NORMAL),
@@ -592,8 +592,8 @@ static int canvas_behaviorMouse (t_gobj *z,
         t_gobj *y = NULL;
             
         for (y = x->gl_graphics; y; y = y->g_next) {
-            int x1, y1, x2, y2;
-            if (gobj_hit (y, x, a, b, &x1, &y1, &x2, &y2)) {
+            int xA, yA, xB, yB;
+            if (gobj_hit (y, x, a, b, &xA, &yA, &xB, &yB)) {
                 if (k = gobj_mouse (y, x, a, b, shift, ctrl, alt, 0, clicked)) {
                     break;
                 }

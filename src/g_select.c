@@ -66,26 +66,26 @@ static void canvas_cacheLines (t_glist *glist)
     t_gobj *selectedTail = NULL;
     t_gobj *unselectedHead = NULL;
     t_gobj *unselectedTail = NULL;
-    t_gobj *y1 = NULL;
-    t_gobj *y2 = NULL;
+    t_gobj *yA = NULL;
+    t_gobj *yB = NULL;
     t_linetraverser t;
     t_outconnect *connection;
     
     /* Split selected object from uneselected ones and move it to the end. */
     
-    for (y1 = glist->gl_graphics; y1; y1 = y2) {
+    for (yA = glist->gl_graphics; yA; yA = yB) {
     //
-    y2 = y1->g_next;
+    yB = yA->g_next;
     
-    if (canvas_isObjectSelected (glist, y1)) {
-        if (selectedTail) { selectedTail->g_next = y1; selectedTail = y1; y1->g_next = NULL; }
+    if (canvas_isObjectSelected (glist, yA)) {
+        if (selectedTail) { selectedTail->g_next = yA; selectedTail = yA; yA->g_next = NULL; }
         else {
-            selectedHead = selectedTail = y1; selectedTail->g_next = NULL;
+            selectedHead = selectedTail = yA; selectedTail->g_next = NULL;
         }
     } else {
-        if (unselectedTail) { unselectedTail->g_next = y1; unselectedTail = y1; y1->g_next = NULL; }
+        if (unselectedTail) { unselectedTail->g_next = yA; unselectedTail = yA; yA->g_next = NULL; }
         else {
-            unselectedHead = unselectedTail = y1; unselectedTail->g_next = NULL;
+            unselectedHead = unselectedTail = yA; unselectedTail->g_next = NULL;
         }
     }
     //
@@ -136,8 +136,8 @@ void canvas_restoreCachedLines (t_glist *glist)
 
 void canvas_removeSelectedObjects (t_glist *glist)
 {
-    t_gobj *y1 = NULL;
-    t_gobj *y2 = NULL;
+    t_gobj *yA = NULL;
+    t_gobj *yB = NULL;
         
     int state = dsp_suspend();
     
@@ -148,15 +148,15 @@ void canvas_removeSelectedObjects (t_glist *glist)
         pd_newest = NULL;
         canvas_deselectAll (glist);
         if (pd_newest) {
-            for (y1 = glist->gl_graphics; y1; y1 = y1->g_next) {
-                if (cast_pd (y1) == pd_newest) { canvas_selectObject (glist, y1); }
+            for (yA = glist->gl_graphics; yA; yA = yA->g_next) {
+                if (cast_pd (yA) == pd_newest) { canvas_selectObject (glist, yA); }
             }
         }
     }
     
-    for (y1 = glist->gl_graphics; y1; y1 = y2) {
-        y2 = y1->g_next;
-        if (canvas_isObjectSelected (glist, y1)) { canvas_removeObject (glist, y1); }
+    for (yA = glist->gl_graphics; yA; yA = yB) {
+        yB = yA->g_next;
+        if (canvas_isObjectSelected (glist, yA)) { canvas_removeObject (glist, yA); }
     }
 
     dsp_resume (state);
@@ -266,11 +266,11 @@ void canvas_selectObjectsInRectangle (t_glist *glist, int a, int b, int c, int d
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
     //
-    int x1, y1, x2, y2;
+    int xA, yA, xB, yB;
     
-    gobj_getRectangle (y, glist, &x1, &y1, &x2, &y2);
+    gobj_getRectangle (y, glist, &xA, &yA, &xB, &yB);
     
-    if (c >= x1 && a <= x2 && d >= y1 && b <= y2 && !canvas_isObjectSelected (glist, y)) {
+    if (c >= xA && a <= xB && d >= yA && b <= yB && !canvas_isObjectSelected (glist, y)) {
         canvas_selectObject (glist, y);
     }
     //

@@ -95,16 +95,16 @@ int gobj_hit (t_gobj *x,
 {
     if (gobj_isVisible (x, owner)) {
     //
-    int x1, y1, x2, y2;
+    int xA, yA, xB, yB;
         
-    gobj_getRectangle (x, owner, &x1, &y1, &x2, &y2);
+    gobj_getRectangle (x, owner, &xA, &yA, &xB, &yB);
     
-    if (positionX >= x1 && positionX <= x2 && positionY >= y1 && positionY <= y2) {
+    if (positionX >= xA && positionX <= xB && positionY >= yA && positionY <= yB) {
     //
-    *a = x1;
-    *b = y1;
-    *c = x2;
-    *d = y2;
+    *a = xA;
+    *b = yA;
+    *c = xB;
+    *d = yB;
     
     return 1;
     //

@@ -174,8 +174,8 @@ static void pointerinlet_forPointer (t_inlet *x, t_gpointer *gp)
 t_inlet *inlet_new (t_object *owner, t_pd *destination, t_symbol *s1, t_symbol *s2)
 {
     t_inlet *x = (t_inlet *)pd_new (inlet_class);
-    t_inlet *y1 = NULL;
-    t_inlet *y2 = NULL;
+    t_inlet *yA = NULL;
+    t_inlet *yB = NULL;
     
     x->i_owner = owner;
     x->i_destination = destination;
@@ -188,7 +188,7 @@ t_inlet *inlet_new (t_object *owner, t_pd *destination, t_symbol *s1, t_symbol *
     x->i_from = s1;
     x->i_next = NULL;
     
-    if (y1 = owner->te_inlet) { while (y2 = y1->i_next) { y1 = y2; } y1->i_next = x; } 
+    if (yA = owner->te_inlet) { while (yB = yA->i_next) { yA = yB; } yA->i_next = x; } 
     else { 
         owner->te_inlet = x;
     }
@@ -199,13 +199,13 @@ t_inlet *inlet_new (t_object *owner, t_pd *destination, t_symbol *s1, t_symbol *
 void inlet_free (t_inlet *x)
 {
     t_object *y = x->i_owner;
-    t_inlet *x2 = NULL;
+    t_inlet *xB = NULL;
     
     if (y->te_inlet == x) { y->te_inlet = x->i_next; }
     else {
-        for (x2 = y->te_inlet; x2; x2 = x2->i_next) {
-            if (x2->i_next == x) {
-                x2->i_next = x->i_next; break;
+        for (xB = y->te_inlet; xB; xB = xB->i_next) {
+            if (xB->i_next == x) {
+                xB->i_next = x->i_next; break;
             }
         }
     }
@@ -220,8 +220,8 @@ void inlet_free (t_inlet *x)
 t_inlet *inlet_newPointer (t_object *owner, t_gpointer *gp)
 {
     t_inlet *x = (t_inlet *)pd_new (pointerinlet_class);
-    t_inlet *y1 = NULL;
-    t_inlet *y2 = NULL;
+    t_inlet *yA = NULL;
+    t_inlet *yB = NULL;
     
     x->i_owner = owner;
     x->i_destination = NULL;
@@ -229,7 +229,7 @@ t_inlet *inlet_newPointer (t_object *owner, t_gpointer *gp)
     x->i_un.i_pointer = gp;
     x->i_next = NULL;
     
-    if (y1 = owner->te_inlet) { while (y2 = y1->i_next) { y1 = y2; } y1->i_next = x; }
+    if (yA = owner->te_inlet) { while (yB = yA->i_next) { yA = yB; } yA->i_next = x; }
     else {
         owner->te_inlet = x;
     }
@@ -240,8 +240,8 @@ t_inlet *inlet_newPointer (t_object *owner, t_gpointer *gp)
 t_inlet *inlet_newFloat (t_object *owner, t_float *fp)
 {
     t_inlet *x = (t_inlet *)pd_new (floatinlet_class);
-    t_inlet *y1 = NULL;
-    t_inlet *y2 = NULL;
+    t_inlet *yA = NULL;
+    t_inlet *yB = NULL;
     
     x->i_owner = owner;
     x->i_destination = NULL;
@@ -249,7 +249,7 @@ t_inlet *inlet_newFloat (t_object *owner, t_float *fp)
     x->i_un.i_float = fp;
     x->i_next = NULL;
     
-    if (y1 = owner->te_inlet) { while (y2 = y1->i_next) { y1 = y2; } y1->i_next = x; }
+    if (yA = owner->te_inlet) { while (yB = yA->i_next) { yA = yB; } yA->i_next = x; }
     else {
         owner->te_inlet = x;
     }
@@ -260,8 +260,8 @@ t_inlet *inlet_newFloat (t_object *owner, t_float *fp)
 t_inlet *inlet_newSymbol (t_object *owner, t_symbol **sp)
 {
     t_inlet *x = (t_inlet *)pd_new (symbolinlet_class);
-    t_inlet *y1 = NULL;
-    t_inlet *y2 = NULL;
+    t_inlet *yA = NULL;
+    t_inlet *yB = NULL;
     
     x->i_owner = owner;
     x->i_destination = NULL;
@@ -269,7 +269,7 @@ t_inlet *inlet_newSymbol (t_object *owner, t_symbol **sp)
     x->i_un.i_symbol = sp;
     x->i_next = NULL;
     
-    if (y1 = owner->te_inlet) { while (y2 = y1->i_next) { y1 = y2; } y1->i_next = x; }
+    if (yA = owner->te_inlet) { while (yB = yA->i_next) { yA = yB; } yA->i_next = x; }
     else {
         owner->te_inlet = x;
     }
@@ -298,13 +298,13 @@ t_inlet *inlet_newSignalDefault (t_object *owner, t_float f)
 t_outlet *outlet_new (t_object *owner, t_symbol *s)
 {
     t_outlet *x = (t_outlet *)PD_MEMORY_GET (sizeof (t_outlet));
-    t_outlet *y1 = NULL;
-    t_outlet *y2 = NULL;
+    t_outlet *yA = NULL;
+    t_outlet *yB = NULL;
     
     x->o_next  = NULL;
     x->o_owner = owner;
 
-    if (y1 = owner->te_outlet) { while (y2 = y1->o_next) { y1 = y2; } y1->o_next = x; }
+    if (yA = owner->te_outlet) { while (yB = yA->o_next) { yA = yB; } yA->o_next = x; }
     else {
         owner->te_outlet = x;
     }
@@ -318,12 +318,12 @@ t_outlet *outlet_new (t_object *owner, t_symbol *s)
 void outlet_free (t_outlet *x)
 {
     t_object *y = x->o_owner;
-    t_outlet *x2 = NULL;
+    t_outlet *xB = NULL;
     
     if (y->te_outlet == x) { y->te_outlet = x->o_next; }
     else {
-        for (x2 = y->te_outlet; x2; x2 = x2->o_next) {
-            if (x2->o_next == x) { x2->o_next = x->o_next; break; }
+        for (xB = y->te_outlet; xB; xB = xB->o_next) {
+            if (xB->o_next == x) { xB->o_next = x->o_next; break; }
         }
     }
     

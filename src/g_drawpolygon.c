@@ -149,11 +149,11 @@ static void drawpolygon_behaviorGetRectangle (t_gobj *z,
 {
     t_drawpolygon *x = (t_drawpolygon *)z;
     
-    int x1, y1, x2, y2;
+    int xA, yA, xB, yB;
 
     int visible = (int)gpointer_getFloatByDescriptor (gp, &x->x_isVisible);
     
-    rectangle_setNowhere (&x1, &y1, &x2, &y2);
+    rectangle_setNowhere (&xA, &yA, &xB, &yB);
         
     if (visible && !(x->x_flags & DRAWPOLYGON_INHIBIT)) {
     //
@@ -168,19 +168,19 @@ static void drawpolygon_behaviorGetRectangle (t_gobj *z,
     m = canvas_valueToPixelX (glist, baseX + gpointer_getFloatByDescriptorAsPosition (gp, fd + i));
     n = canvas_valueToPixelY (glist, baseY + gpointer_getFloatByDescriptorAsPosition (gp, fd + i + 1));
     
-    x1 = PD_MIN (m, x1);
-    x2 = PD_MAX (m, x2);
-    y1 = PD_MIN (n, y1);
-    y2 = PD_MAX (n, y2);
+    xA = PD_MIN (m, xA);
+    xB = PD_MAX (m, xB);
+    yA = PD_MIN (n, yA);
+    yB = PD_MAX (n, yB);
     //
     }
     //
     }
     
-    *a = x1;
-    *b = y1;
-    *c = x2;
-    *d = y2; 
+    *a = xA;
+    *b = yA;
+    *c = xB;
+    *d = yB; 
 }
 
 static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
