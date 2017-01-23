@@ -161,9 +161,9 @@ static void canvas_width (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     t_object *o = NULL;
     
-    for (g1 = glist->gl_graphics; g2 = g1->g_next; g1 = g2) { }
+    for ((g1 = glist->gl_graphics); (g2 = g1->g_next); (g1 = g2)) { }
     
-    if (o = cast_objectIfPatchable (g1)) {
+    if ((o = cast_objectIfPatchable (g1))) {
     //
     int w = atom_getFloatAtIndex (0, argc, argv);
     
@@ -247,7 +247,7 @@ void canvas_disconnect (t_glist *glist,
         
     canvas_traverseLinesStart (&t, glist);
     
-    while (connection = canvas_traverseLinesNext (&t)) {
+    while ((connection = canvas_traverseLinesNext (&t))) {
     //
     if ((t.tr_srcIndexOfOutlet == (int)indexOfOutlet) && (t.tr_destIndexOfInlet == (int)indexOfInlet)) {
     
