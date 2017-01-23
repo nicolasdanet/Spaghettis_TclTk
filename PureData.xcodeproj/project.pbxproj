@@ -31,28 +31,28 @@
 		3711970C1E2DF6FE007214B2 /* d_ifft.c in Sources */ = {isa = PBXBuildFile; fileRef = 3711970B1E2DF6FE007214B2 /* d_ifft.c */; };
 		37128AF81D43640300EFB4FC /* m_color.c in Sources */ = {isa = PBXBuildFile; fileRef = 37128AF71D43640300EFB4FC /* m_color.c */; };
 		371430B11D0D46BC00E68D11 /* g_paint.c in Sources */ = {isa = PBXBuildFile; fileRef = 371430B01D0D46BC00E68D11 /* g_paint.c */; };
-		3716554F1BA3452E00ABDE22 /* pa_allocation.c in Sources */ = {isa = PBXBuildFile; fileRef = 3716554E1BA3452E00ABDE22 /* pa_allocation.c */; };
-		371655511BA3453500ABDE22 /* pa_converters.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655501BA3453500ABDE22 /* pa_converters.c */; };
-		371655531BA3453E00ABDE22 /* pa_cpuload.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655521BA3453E00ABDE22 /* pa_cpuload.c */; };
-		371655551BA3455900ABDE22 /* pa_dither.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655541BA3455900ABDE22 /* pa_dither.c */; };
-		371655571BA3456300ABDE22 /* pa_front.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655561BA3456300ABDE22 /* pa_front.c */; };
-		371655671BA3457600ABDE22 /* pa_process.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655661BA3457600ABDE22 /* pa_process.c */; };
-		371655691BA3458300ABDE22 /* pa_stream.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655681BA3458300ABDE22 /* pa_stream.c */; };
-		3716556B1BA3458D00ABDE22 /* pa_trace.c in Sources */ = {isa = PBXBuildFile; fileRef = 3716556A1BA3458D00ABDE22 /* pa_trace.c */; };
-		3716556D1BA3459F00ABDE22 /* pa_debugprint.c in Sources */ = {isa = PBXBuildFile; fileRef = 3716556C1BA3459F00ABDE22 /* pa_debugprint.c */; };
-		3716556F1BA345AD00ABDE22 /* pa_ringbuffer.c in Sources */ = {isa = PBXBuildFile; fileRef = 3716556E1BA345AD00ABDE22 /* pa_ringbuffer.c */; };
-		371655711BA345C100ABDE22 /* pa_unix_util.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655701BA345C100ABDE22 /* pa_unix_util.c */; };
-		371655731BA345CB00ABDE22 /* pa_mac_hostapis.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655721BA345CB00ABDE22 /* pa_mac_hostapis.c */; };
-		371655751BA345E400ABDE22 /* pa_mac_core.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655741BA345E400ABDE22 /* pa_mac_core.c */; };
-		371655771BA345EE00ABDE22 /* pa_mac_core_blocking.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655761BA345EE00ABDE22 /* pa_mac_core_blocking.c */; };
-		371655791BA345F800ABDE22 /* pa_mac_core_utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655781BA345F800ABDE22 /* pa_mac_core_utilities.c */; };
-		3716558D1BA3463700ABDE22 /* pmmac.c in Sources */ = {isa = PBXBuildFile; fileRef = 3716558C1BA3463700ABDE22 /* pmmac.c */; };
-		3716558F1BA3464100ABDE22 /* pmmacosxcm.c in Sources */ = {isa = PBXBuildFile; fileRef = 3716558E1BA3464100ABDE22 /* pmmacosxcm.c */; };
-		371655911BA3464900ABDE22 /* finddefault.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655901BA3464900ABDE22 /* finddefault.c */; };
-		371655931BA3465100ABDE22 /* readbinaryplist.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655921BA3465100ABDE22 /* readbinaryplist.c */; };
-		371655951BA3466000ABDE22 /* pmutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655941BA3466000ABDE22 /* pmutil.c */; };
-		371655971BA3466600ABDE22 /* portmidi.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655961BA3466600ABDE22 /* portmidi.c */; };
-		371655991BA3467500ABDE22 /* ptmacosx_cf.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655981BA3467500ABDE22 /* ptmacosx_cf.c */; };
+		3716554F1BA3452E00ABDE22 /* pa_allocation.c in Sources */ = {isa = PBXBuildFile; fileRef = 3716554E1BA3452E00ABDE22 /* pa_allocation.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		371655511BA3453500ABDE22 /* pa_converters.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655501BA3453500ABDE22 /* pa_converters.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		371655531BA3453E00ABDE22 /* pa_cpuload.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655521BA3453E00ABDE22 /* pa_cpuload.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		371655551BA3455900ABDE22 /* pa_dither.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655541BA3455900ABDE22 /* pa_dither.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		371655571BA3456300ABDE22 /* pa_front.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655561BA3456300ABDE22 /* pa_front.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		371655671BA3457600ABDE22 /* pa_process.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655661BA3457600ABDE22 /* pa_process.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		371655691BA3458300ABDE22 /* pa_stream.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655681BA3458300ABDE22 /* pa_stream.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		3716556B1BA3458D00ABDE22 /* pa_trace.c in Sources */ = {isa = PBXBuildFile; fileRef = 3716556A1BA3458D00ABDE22 /* pa_trace.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		3716556D1BA3459F00ABDE22 /* pa_debugprint.c in Sources */ = {isa = PBXBuildFile; fileRef = 3716556C1BA3459F00ABDE22 /* pa_debugprint.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		3716556F1BA345AD00ABDE22 /* pa_ringbuffer.c in Sources */ = {isa = PBXBuildFile; fileRef = 3716556E1BA345AD00ABDE22 /* pa_ringbuffer.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		371655711BA345C100ABDE22 /* pa_unix_util.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655701BA345C100ABDE22 /* pa_unix_util.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		371655731BA345CB00ABDE22 /* pa_mac_hostapis.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655721BA345CB00ABDE22 /* pa_mac_hostapis.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		371655751BA345E400ABDE22 /* pa_mac_core.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655741BA345E400ABDE22 /* pa_mac_core.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		371655771BA345EE00ABDE22 /* pa_mac_core_blocking.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655761BA345EE00ABDE22 /* pa_mac_core_blocking.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		371655791BA345F800ABDE22 /* pa_mac_core_utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655781BA345F800ABDE22 /* pa_mac_core_utilities.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		3716558D1BA3463700ABDE22 /* pmmac.c in Sources */ = {isa = PBXBuildFile; fileRef = 3716558C1BA3463700ABDE22 /* pmmac.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		3716558F1BA3464100ABDE22 /* pmmacosxcm.c in Sources */ = {isa = PBXBuildFile; fileRef = 3716558E1BA3464100ABDE22 /* pmmacosxcm.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		371655911BA3464900ABDE22 /* finddefault.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655901BA3464900ABDE22 /* finddefault.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		371655931BA3465100ABDE22 /* readbinaryplist.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655921BA3465100ABDE22 /* readbinaryplist.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		371655951BA3466000ABDE22 /* pmutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655941BA3466000ABDE22 /* pmutil.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		371655971BA3466600ABDE22 /* portmidi.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655961BA3466600ABDE22 /* portmidi.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		371655991BA3467500ABDE22 /* ptmacosx_cf.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655981BA3467500ABDE22 /* ptmacosx_cf.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		3716C79D1D6335C400022709 /* h_iterator.c in Sources */ = {isa = PBXBuildFile; fileRef = 3716C79C1D6335C400022709 /* h_iterator.c */; };
 		371D2C4A1DFBF15F004EAB69 /* d_threshold.c in Sources */ = {isa = PBXBuildFile; fileRef = 371D2C491DFBF15F004EAB69 /* d_threshold.c */; };
 		371D2C761DFBF228004EAB69 /* d_env.c in Sources */ = {isa = PBXBuildFile; fileRef = 371D2C751DFBF228004EAB69 /* d_env.c */; };
@@ -155,7 +155,7 @@
 		378972151C4F716800263434 /* d_tabplay.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B11C4F716700263434 /* d_tabplay.c */; };
 		378972171C4F716800263434 /* d_dac.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B31C4F716700263434 /* d_dac.c */; };
 		378972181C4F716800263434 /* d_delwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B41C4F716700263434 /* d_delwrite.c */; };
-		378972191C4F716800263434 /* d_fftsg.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B51C4F716700263434 /* d_fftsg.c */; };
+		378972191C4F716800263434 /* d_fftsg.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B51C4F716700263434 /* d_fftsg.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		3789721A1C4F716800263434 /* d_fft.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B61C4F716700263434 /* d_fft.c */; };
 		3789721B1C4F716800263434 /* d_hip.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B71C4F716700263434 /* d_hip.c */; };
 		3789721D1C4F716800263434 /* d_clip.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B91C4F716700263434 /* d_clip.c */; };
@@ -2067,10 +2067,10 @@
 			buildSettings = {
 				ARCHS = "$(NATIVE_ARCH)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					PD_WITH_DEBUG,
 					PD_BUILDING_APPLICATION,
 					PA_USE_COREAUDIO,
 				);
-				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
 				HEADER_SEARCH_PATHS = (
 					portaudio/include,
 					portaudio/src/common,
@@ -2086,6 +2086,13 @@
 				);
 				PRODUCT_NAME = pd;
 				VALID_ARCHS = "i386 x86_64";
+				WARNING_CFLAGS = (
+					"-Wall",
+					"-Wextra",
+					"-Wshadow",
+					"-Wno-unused-parameter",
+					"-Wno-unknown-pragmas",
+				);
 			};
 			name = Debug;
 		};
@@ -2093,13 +2100,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(NATIVE_ARCH)";
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					PD_BUILDING_APPLICATION,
 					PA_USE_COREAUDIO,
 				);
-				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
 				HEADER_SEARCH_PATHS = (
 					portaudio/include,
 					portaudio/src/common,

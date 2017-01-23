@@ -176,7 +176,7 @@ static inline uint16_t soundfile_swap2Bytes (uint16_t n, int needToSwap)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static inline void soundfile_makeAiff80BitFloat (double sampleRate, unsigned char *s)
+static inline void soundfile_makeAiff80BitFloat (double sampleRate, char *s)
 {
     int e;
     unsigned int m = (unsigned int)ldexp (frexp (sampleRate, &e), 32);
@@ -276,11 +276,11 @@ static inline void soundfile_setPropertiesByCopy (t_audioproperties *args, t_aud
 #pragma mark -
 
 typedef struct _headerhelper {
-    unsigned char   h_c[SOUNDFILE_HELPER_SIZE];
-    int             h_bytesSet;
-    int             h_onset;
-    char            h_ID[5];
-    int             h_chunkSize;
+    char    h_c[SOUNDFILE_HELPER_SIZE];
+    int     h_bytesSet;
+    int     h_onset;
+    char    h_ID[5];
+    int     h_chunkSize;
     } t_headerhelper;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -300,6 +300,13 @@ static inline t_error soundfile_helperRead (int f, t_headerhelper *t, off_t offs
     
     return err;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_error soundfile_readFileHeaderWAVE    (int f, t_headerhelper *t, t_audioproperties *args);
+t_error soundfile_readFileHeaderAIFF    (int f, t_headerhelper *t, t_audioproperties *args);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

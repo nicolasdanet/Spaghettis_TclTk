@@ -770,8 +770,6 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_float size, t_flo
 
 static void garray_free (t_garray *x)
 {
-    t_pd *t = NULL;
-    
     interface_guiQueueRemove (cast_gobj (x));
     guistub_destroyWithKey ((void *)x);
     pd_setBoundA (NULL);

@@ -282,13 +282,13 @@ typedef int64_t t_phase;        /* Assumed -1 has all bits set (two's complement
 
 extern t_float *cos_tilde_table;
 
-static inline t_float dsp_getCosineAt (double index)
+static inline t_float dsp_getCosineAt (double position)
 {
     t_float f1, f2, f;
     t_rawcast64 z;
     int i;
         
-    z.z_d = index + DSP_UNITBIT;
+    z.z_d = position + DSP_UNITBIT;
     
     i = (int)(z.z_i[PD_RAWCAST64_MSB] & (COSINE_TABLE_SIZE - 1));   /* Integer part. */
     
