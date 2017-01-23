@@ -82,8 +82,8 @@ extension=".pdobject32"
 # Build the binaries (for now with JACK API only).
 
 cd "${rep}/src"                                                 || exit 1
-echo "MIDI with ALSA ... " 
-echo "Audio with JACK ... "
+echo "Build MIDI with ALSA ... " 
+echo "Build Audio with JACK ... "
 make -f makefile.gnu                                            || exit 1
 cd "${rep}"                                                     || exit 1
 
