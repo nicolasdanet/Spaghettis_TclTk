@@ -48,7 +48,7 @@ static void bag_add (t_bag *x, t_float f)
     else {
         t_bagelement *e1 = NULL;
         t_bagelement *e2 = NULL;
-        for (e1 = x->x_elements; e2 = e1->e_next; e1 = e2) { }
+        for ((e1 = x->x_elements); (e2 = e1->e_next); (e1 = e2)) { }
         e1->e_next = e;
     }
 }
@@ -66,7 +66,7 @@ static void bag_remove (t_bag *x, t_float f)
     } else {
         t_bagelement *e1 = NULL;
         t_bagelement *e2 = NULL;
-        for (e1 = x->x_elements; e2 = e1->e_next; e1 = e2) {
+        for ((e1 = x->x_elements); (e2 = e1->e_next); (e1 = e2)) {
             if (e2->e_value == f) { e1->e_next = e2->e_next; PD_MEMORY_FREE (e2); break; }
         }
     }
@@ -78,7 +78,7 @@ static void bag_removeAll (t_bag *x, int dump)
 {
     t_bagelement *e = NULL;
     
-    while (e = x->x_elements) {
+    while ((e = x->x_elements)) {
         if (dump) { outlet_float (x->x_outlet, e->e_value); }
         x->x_elements = e->e_next; PD_MEMORY_FREE (e);
     }

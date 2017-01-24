@@ -27,7 +27,7 @@ typedef struct _snapshot_tilde {
     t_object    x_obj;                      /* Must be the first. */
     t_float     x_f;
     t_sample    x_value;
-    t_outlet    *x_outlet
+    t_outlet    *x_outlet;
     } t_snapshot_tilde;
 
 // -----------------------------------------------------------------------------------------------------------

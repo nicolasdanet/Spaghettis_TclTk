@@ -77,26 +77,26 @@ static t_int *framp_tilde_perform (t_int *w)
     { 
         double real      = realCurrent - 0.5 * (realLast + realNext);
         double imaginary = imaginaryCurrent - 0.5 * (imaginaryLast + imaginaryNext);
-        double pow       = real * real + imaginary * imaginary;
+        double power     = real * real + imaginary * imaginary;
         double f;
         
-        if (pow > 1e-19) {
+        if (power > 1e-19) {
         
             double deltaReal      = realLast - realNext;
             double deltaImaginary = imaginaryLast - imaginaryNext;
-            double detune         = (deltaReal * real + deltaImaginary * imaginary) / (2.0 * pow);
+            double detune         = (deltaReal * real + deltaImaginary * imaginary) / (2.0 * power);
             
-            if (detune > 2.0 || detune < -2.0) { f = pow = 0.0; }
+            if (detune > 2.0 || detune < -2.0) { f = power = 0.0; }
             else {
                 f = frequency + detune;
             }
             
         } else {
-            f = pow = 0.0;
+            f = power = 0.0;
         }
         
         *out1++ = (t_sample)(f);
-        *out2++ = (t_sample)sqrt_fast ((t_float)(k * pow));
+        *out2++ = (t_sample)sqrt_fast ((t_float)(k * power));
         frequency += 1.0;
     }
     //

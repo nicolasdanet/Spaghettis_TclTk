@@ -69,7 +69,7 @@ void signal_clean (void)
 {
     t_signal *s = NULL;
     
-    while (s = pd_this->pd_signals) {
+    while ((s = pd_this->pd_signals)) {
     //
     pd_this->pd_signals = s->s_next;
     

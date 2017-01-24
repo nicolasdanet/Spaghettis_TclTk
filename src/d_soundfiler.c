@@ -234,7 +234,9 @@ static int soundfiler_readPerform (t_glist *glist, int argc, t_atom *argv)
     //
     }
     
-    if (err) { error_failsToRead (sym_soundfiler); return 0; } 
+    if (err) { error_failsToRead (sym_soundfiler); }
+    
+    return 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -345,7 +347,7 @@ static int soundfiler_writeEncode (int f,
     {
         ssize_t s = write (f, t, sizeInBytes);
     
-        if (s < sizeInBytes) { 
+        if (s < (ssize_t)sizeInBytes) { 
             if (s > 0) { framesAlreadyWritten += s / bytesPerFrame; }
             PD_ASSERT (s == 0);
             break;
@@ -396,7 +398,9 @@ static int soundfiler_writePerform (t_glist *canvas, int argc, t_atom *argv)
     //
     }
     
-    if (err) { error_failsToWrite (sym_soundfiler); return 0; }
+    if (err) { error_failsToWrite (sym_soundfiler); }
+    
+    return 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------

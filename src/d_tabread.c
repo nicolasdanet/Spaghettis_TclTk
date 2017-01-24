@@ -63,9 +63,10 @@ static t_int *tabread_tilde_perform (t_int *w)
     while (n--) {
     //
     t_sample f = *in++;
-    int index  = PD_CLAMP ((int)f, 0, size - 1);
-    t_sample g = WORD_FLOAT (data + index);
+    int position = PD_CLAMP ((int)f, 0, size - 1);
+    t_sample g = WORD_FLOAT (data + position);
     *out++ = g;
+    //
     }
     //
     } else { while (n--) { *out++ = 0; } }

@@ -63,9 +63,9 @@ static t_int *tabread4_tilde_perform (t_int *w)
     //
     while (n--) {
     //
-    double index = (*in++) + (double)x->x_onset;
-    int i = (int)index;
-    double fractional = index - i;
+    double position = (*in++) + (double)x->x_onset;
+    int i = (int)position;
+    double fractional = position - i;
     
     if (i < 1) { i = 1; fractional = 0.0; }
     else if (i > size - 3) { i = size - 3; fractional = 1.0; }

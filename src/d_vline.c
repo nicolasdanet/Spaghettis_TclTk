@@ -110,7 +110,7 @@ static void vline_tilde_float (t_vline_tilde *x, t_float f)
         t_vline_tilde_segment *s2 = NULL;
         int k = 0;
         
-        for (s1 = x->x_segments; s2 = s1->s_next; s1 = s2) {
+        for ((s1 = x->x_segments); (s2 = s1->s_next); (s1 = s2)) {
         //
         if (vline_tilde_isBeforeSegment (x, start, s2)) {
             deleted = s2; s1->s_next = segment;

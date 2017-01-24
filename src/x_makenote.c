@@ -54,7 +54,7 @@ static void makenote_task (t_hang *h)
         t_hang *h1 = NULL;
         t_hang *h2 = NULL;
         
-        for (h1 = x->x_hangs; h2 = h1->h_next; h1 = h2) {
+        for ((h1 = x->x_hangs); (h2 = h1->h_next); (h1 = h2)) {
             if (h2 == h) { 
                 h1->h_next = h2->h_next; break; 
             }
@@ -84,7 +84,7 @@ static void makenote_removeAll (t_makenote *x, int dump)
 {
     t_hang *h = NULL;
     
-    while (h = x->x_hangs) {
+    while ((h = x->x_hangs)) {
     //
     if (dump) {
         outlet_float (x->x_outletRight, 0.0);
