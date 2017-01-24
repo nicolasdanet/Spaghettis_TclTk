@@ -456,7 +456,7 @@ static void canvas_behaviorDeleted (t_gobj *z, t_glist *glist)
     
     t_gobj *y = NULL;
     
-    while (y = x->gl_graphics)  { canvas_removeObject (x, y); }
+    while ((y = x->gl_graphics))  { canvas_removeObject (x, y); }
     
     if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnDeleted (z, glist); }
     else {
@@ -594,7 +594,7 @@ static int canvas_behaviorMouse (t_gobj *z,
         for (y = x->gl_graphics; y; y = y->g_next) {
             int xA, yA, xB, yB;
             if (gobj_hit (y, x, a, b, &xA, &yA, &xB, &yB)) {
-                if (k = gobj_mouse (y, x, a, b, shift, ctrl, alt, 0, clicked)) {
+                if ((k = gobj_mouse (y, x, a, b, shift, ctrl, alt, 0, clicked))) {
                     break;
                 }
             }

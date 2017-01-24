@@ -241,7 +241,7 @@ static void panel_getPosition (t_panel *x)
 
 static void panel_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
 {
-    t_panel *x = (t_radio *)z;
+    t_panel *x = (t_panel *)z;
     
     *a = text_getPixelX (cast_object (z), glist);
     *b = text_getPixelY (cast_object (z), glist);
@@ -252,7 +252,6 @@ static void panel_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *
 static void panel_functionSave (t_gobj *z, t_buffer *b)
 {
     t_panel *x = (t_panel *)z;
-    t_error err = PD_ERROR_NONE;
     t_iemnames names;
     t_iemcolors colors;
 
@@ -404,7 +403,7 @@ static void *panel_new (t_symbol *s, int argc, t_atom *argv)
 
 static void panel_free (t_panel *x)
 {
-    if (x->x_gui.iem_canReceive) { pd_unbind (cast_object (x), x->x_gui.iem_receive); }
+    if (x->x_gui.iem_canReceive) { pd_unbind (cast_pd (x), x->x_gui.iem_receive); }
     
     guistub_destroyWithKey ((void *)x);
 }

@@ -21,6 +21,7 @@
 #include "m_pd.h"
 #include "m_macros.h"
 #include "m_core.h"
+#include "s_system.h"
 #include "g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -31,9 +32,9 @@ extern t_class *panel_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_symbol *iemgui_expandDollar (t_iem *iem, t_symbol *s)
+static t_symbol *iemgui_expandDollar (t_glist *glist, t_symbol *s)
 {
-    t_symbol *t = canvas_expandDollar (iem, s); return (t == NULL ? utils_empty() : t);
+    t_symbol *t = canvas_expandDollar (glist, s); return (t == NULL ? utils_empty() : t);
 }
 
 // -----------------------------------------------------------------------------------------------------------

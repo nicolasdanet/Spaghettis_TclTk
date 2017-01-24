@@ -26,11 +26,11 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
     
     if (canvas_isSubpatch (glist)) {
     
-        t_buffer *t = buffer_new();
+        t_buffer *z = buffer_new();
         t_symbol *s = NULL;
-        buffer_serialize (t, glist->gl_obj.te_buffer);
-        s = atom_getSymbolAtIndex (1, buffer_size (t), buffer_atoms (t));
-        buffer_free (t);
+        buffer_serialize (z, cast_object (glist)->te_buffer);
+        s = atom_getSymbolAtIndex (1, buffer_size (z), buffer_atoms (z));
+        buffer_free (z);
         
         buffer_vAppend (b, "ssiiiisi;", 
             sym___hash__N, 

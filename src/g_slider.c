@@ -292,7 +292,7 @@ static void slider_drawConfig (t_slider *x, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void slider_draw (t_toggle *x, t_glist *glist, int mode)
+void slider_draw (t_slider *x, t_glist *glist, int mode)
 {
     switch (mode) {
         case IEM_DRAW_UPDATE    : slider_drawUpdate (x, glist); break;
@@ -536,8 +536,6 @@ static void slider_linear (t_slider *x)
 
 static void slider_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
 {
-    t_slider *x = (t_slider *)z;
-    
     *a = text_getPixelX (cast_object (z), glist);
     *b = text_getPixelY (cast_object (z), glist);
     *c = *a + cast_iem (z)->iem_width;
@@ -765,7 +763,7 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
 
 static void slider_free (t_slider *x)
 {
-    if (x->x_gui.iem_canReceive) { pd_unbind (cast_object (x), x->x_gui.iem_receive); }
+    if (x->x_gui.iem_canReceive) { pd_unbind (cast_pd (x), x->x_gui.iem_receive); }
         
     guistub_destroyWithKey ((void *)x);
 }

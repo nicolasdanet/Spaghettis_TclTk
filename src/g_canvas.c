@@ -835,7 +835,7 @@ void canvas_free (t_glist *glist)
         
     if (glist->gl_editor) { canvas_deselectAll (glist); }
     
-    while (y = glist->gl_graphics) { canvas_removeObject (glist, y); }
+    while ((y = glist->gl_graphics)) { canvas_removeObject (glist, y); }
     if (glist == canvas_getView (glist)) { canvas_visible (glist, 0); }
     
     canvas_destroyEditorIfAny (glist);

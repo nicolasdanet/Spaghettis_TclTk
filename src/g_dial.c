@@ -315,7 +315,7 @@ static void dial_drawSelect (t_dial *x, t_glist *glist)
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel);
 }
 
-static void dial_drawErase (t_dial* x, t_glist *glist)
+static void dial_drawErase (t_dial *x, t_glist *glist)
 {
     t_glist *canvas = canvas_getView (glist);
 
@@ -336,7 +336,7 @@ static void dial_drawErase (t_dial* x, t_glist *glist)
                     x);
 }
 
-static void dial_drawConfig (t_dial* x, t_glist *glist)
+static void dial_drawConfig (t_dial *x, t_glist *glist)
 {
     t_glist *canvas = canvas_getView (glist);
 
@@ -369,7 +369,7 @@ static void dial_drawConfig (t_dial* x, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void dial_draw (t_toggle *x, t_glist *glist, int mode)
+void dial_draw (t_dial *x, t_glist *glist, int mode)
 {
     switch (mode) {
         case IEM_DRAW_UPDATE    : dial_drawUpdate (x, glist);   break;
@@ -805,7 +805,7 @@ static void *dial_new (t_symbol *s, int argc, t_atom *argv)
 
 static void dial_free (t_dial *x)
 {
-    if (x->x_gui.iem_canReceive) { pd_unbind (cast_object (x), x->x_gui.iem_receive); }
+    if (x->x_gui.iem_canReceive) { pd_unbind (cast_pd (x), x->x_gui.iem_receive); }
     
     guistub_destroyWithKey ((void *)x);
 }

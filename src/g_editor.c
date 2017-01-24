@@ -397,7 +397,7 @@ static int canvas_performMouseLines (t_glist *glist, int positionX, int position
         
     canvas_traverseLinesStart (&t, canvas);
     
-    while (connection = canvas_traverseLinesNext (&t)) {
+    while ((connection = canvas_traverseLinesNext (&t))) {
     //
     t_float a = t.tr_lineStartX;
     t_float b = t.tr_lineStartY;
@@ -509,7 +509,7 @@ static void canvas_performCopy (t_glist *glist)
     
     canvas_traverseLinesStart (&t, glist);
     
-    while (connection = canvas_traverseLinesNext (&t)) {
+    while ((connection = canvas_traverseLinesNext (&t))) {
     //
     int m = canvas_isObjectSelected (glist, cast_gobj (t.tr_srcObject));
     int n = canvas_isObjectSelected (glist, cast_gobj (t.tr_destObject));
@@ -933,7 +933,7 @@ void canvas_createEditorIfNone (t_glist *glist)
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
         t_object *o = NULL;
-        if (o = cast_objectIfPatchable (y)) { boxtext_new (glist, o); }
+        if ((o = cast_objectIfPatchable (y))) { boxtext_new (glist, o); }
     }
     //
     }
@@ -946,7 +946,7 @@ void canvas_destroyEditorIfAny (t_glist *glist)
     t_boxtext *text = NULL;
     
     canvas_deselectAll (glist);
-    while (text = glist->gl_editor->e_boxtexts) { boxtext_free (text); }
+    while ((text = glist->gl_editor->e_boxtexts)) { boxtext_free (text); }
     
     editor_free (glist->gl_editor);
     glist->gl_editor = NULL;
