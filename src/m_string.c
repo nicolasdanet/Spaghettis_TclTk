@@ -46,7 +46,7 @@ t_error string_append (char *dest, size_t size, const char *src, int n)
     
     if (n < 0) { s = strlen (src); }
     else {
-        const char *t = src; while (*t && s < n) { s++; t++; }
+        const char *t = src; while (*t && s < (size_t)n) { s++; t++; }
     }
     
     strncat (dest, src, PD_MIN (s, k));
@@ -106,7 +106,7 @@ t_error string_addAtom (char *dest, size_t size, t_atom *a)
 
 t_error string_clear (char *dest, size_t size)
 {
-    int i; for (i = 0; i < size; i++) { dest[i] = 0; } return PD_ERROR_NONE;
+    size_t i; for (i = 0; i < size; i++) { dest[i] = 0; } return PD_ERROR_NONE;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -141,11 +141,14 @@ void string_getNumberOfColumnsAndLines (char *s, int *numberOfColumns, int *numb
 {
     char *end = NULL;
     char *start = NULL;
-    size_t m = 0;
-    size_t n = 1;
+    int m = 0;
+    int n = 1;
         
-    for (start = s; end = strchr (start, '\n'); start = end + 1) { m = PD_MAX (m, end - start); n++; }
-    if (strlen (start) > m) { m = strlen (start); }
+    for ((start = s); (end = strchr (start, '\n')); (start = end + 1)) { 
+        m = PD_MAX (m, end - start); n++; 
+    }
+    
+    if ((int)(strlen (start)) > m) { m = strlen (start); }
         
     *numberOfColumns = m;
     *numberOfLines   = n;
@@ -155,7 +158,7 @@ void string_getNumberOfColumnsAndLines (char *s, int *numberOfColumns, int *numb
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int string_indexOfFirstCharUntil (char *s, char c, size_t n)
+static int string_indexOfFirstCharUntil (char *s, char c, int n)
 {
     char *s2 = s + n;
     
@@ -170,7 +173,7 @@ static int string_indexOfFirstCharUntil (char *s, char c, size_t n)
     return -1;
 }
 
-static int string_indexOfFirstCharFrom (char *s, char c, size_t n)
+static int string_indexOfFirstCharFrom (char *s, char c, int n)
 {
     char *s2 = s + n;
     
@@ -183,7 +186,7 @@ static int string_indexOfFirstCharFrom (char *s, char c, size_t n)
     return -1;
 }
 
-int string_indexOfFirstOccurrenceUntil (char *s, const char *c, size_t n)
+int string_indexOfFirstOccurrenceUntil (char *s, const char *c, int n)
 {
     int k = n;
     int t = 0;
@@ -197,7 +200,7 @@ int string_indexOfFirstOccurrenceUntil (char *s, const char *c, size_t n)
     return (k < n ? k : -1);
 }
 
-int string_indexOfFirstOccurrenceFrom (char *s, const char *c, size_t n)
+int string_indexOfFirstOccurrenceFrom (char *s, const char *c, int n)
 {
     int k = -1;
     int t = 0;

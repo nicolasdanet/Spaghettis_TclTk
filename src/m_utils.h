@@ -28,8 +28,8 @@ int         string_startWith                            (const char *s, const ch
 int         string_endWith                              (const char *s, const char *isEndWith);
 int         string_containsCharacterAtStart             (const char *s, const char *isContained);
 
-int         string_indexOfFirstOccurrenceUntil          (char *s, const char *c, size_t n);
-int         string_indexOfFirstOccurrenceFrom           (char *s, const char *c, size_t n);
+int         string_indexOfFirstOccurrenceUntil          (char *s, const char *c, int n);
+int         string_indexOfFirstOccurrenceFrom           (char *s, const char *c, int n);
 
 void        string_getNumberOfColumnsAndLines           (char *s, int *numberOfColumns, int *numberOfLines);
 
