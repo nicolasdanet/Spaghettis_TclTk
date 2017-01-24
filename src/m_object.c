@@ -358,7 +358,7 @@ void outlet_bang (t_outlet *x)
 void outlet_pointer (t_outlet *x, t_gpointer *gp)
 {
     t_outconnect *oc = NULL;
-    t_gpointer gpointer = GPOINTER_INIT;
+    t_gpointer gpointer; GPOINTER_INIT (&gpointer);
     
     if (++object_stackCount >= OBJECT_MAXIMUM_ITERATION)  { error_stackOverflow(); }
     else {

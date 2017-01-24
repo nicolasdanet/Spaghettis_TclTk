@@ -51,7 +51,7 @@ static t_pdinstance *pdinstance_new()
     return x;
 }
 
-static pdinstance_free (t_pdinstance *x)
+static void pdinstance_free (t_pdinstance *x)
 {
     PD_ASSERT (x->pd_roots == NULL);
     

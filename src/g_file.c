@@ -58,7 +58,7 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
 
     canvas_traverseLinesStart (&t, glist);
     
-    while (connection = canvas_traverseLinesNext (&t)) {
+    while ((connection = canvas_traverseLinesNext (&t))) {
     
         buffer_vAppend (b, "ssiiii;", 
             sym___hash__X,

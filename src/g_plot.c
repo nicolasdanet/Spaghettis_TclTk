@@ -352,7 +352,7 @@ static void plot_behaviorGetRectangleRecursive (t_plot *x,
         
             int xA, yA, xB, yB;
             
-            t_gpointer gp = GPOINTER_INIT;
+            t_gpointer gp; GPOINTER_INIT (&gp);
             
             gpointer_setAsWord (&gp, array, array_getElementAtIndex (array, i));
             
@@ -794,7 +794,7 @@ static void plot_behaviorVisibilityChangedRecursive (t_plot *x,
         
         if (behavior) {
         
-            t_gpointer gp = GPOINTER_INIT;
+            t_gpointer gp; GPOINTER_INIT (&gp);
             
             gpointer_setAsWord (&gp, array, array_getElementAtIndex (array, i));
             

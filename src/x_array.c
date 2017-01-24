@@ -51,7 +51,7 @@ static void arraydefine_send (t_glist *x, t_symbol *s)
     if (pd_isThing (s)) {
     //
     t_garray *t = arraydefine_getContentChecked (x);
-    t_gpointer gp = GPOINTER_INIT;
+    t_gpointer gp; GPOINTER_INIT (&gp);
     gpointer_setAsScalar (&gp, garray_getView (t), garray_getScalar (t));
     pd_pointer (pd_getThing (s), &gp);
     gpointer_unset (&gp);

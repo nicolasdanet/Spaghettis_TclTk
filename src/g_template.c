@@ -136,7 +136,7 @@ void template_notify (t_template *x,
 {
     t_atom *a = NULL;
     int i, n = argc + 1;
-    t_gpointer gp = GPOINTER_INIT;
+    t_gpointer gp; GPOINTER_INIT (&gp);
     
     ATOMS_ALLOCA (a, n);
     

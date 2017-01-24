@@ -37,7 +37,7 @@ static void scalardefine_send (t_glist *x, t_symbol *s)
     t_gobj *y = x->gl_graphics;
 
     if (pd_class (y) == scalar_class) {
-        t_gpointer gp = GPOINTER_INIT;
+        t_gpointer gp; GPOINTER_INIT (&gp);
         gpointer_setAsScalar (&gp, x, cast_scalar (y));
         pd_pointer (pd_getThing (s), &gp);
         gpointer_unset (&gp);
