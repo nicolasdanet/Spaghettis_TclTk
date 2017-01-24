@@ -25,7 +25,7 @@ t_pathlist  *path_search;        /* Shared. */
 void path_slashToBackslashIfNecessary (char *dest, char *src)
 {
     char c;
-    while (c = *src++) {
+    while ((c = *src++)) {
         #if PD_WINDOWS
         if (c == '/') { c = '\\'; }
         #endif
@@ -37,7 +37,7 @@ void path_slashToBackslashIfNecessary (char *dest, char *src)
 void path_backslashToSlashIfNecessary (char *dest, char *src)
 {
     char c;
-    while (c = *src++) {
+    while ((c = *src++)) {
         #if PD_WINDOWS
         if (c == '\\') { c = '/'; }
         #endif

@@ -33,12 +33,12 @@ static t_symbol *error__replaceIfEmpty (t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void error__error1 (char *s)
+void error__error1 (const char *s)
 {
     error__error2 ("", s);
 }
 
-void error__error2 (char *s1, char *s2)
+void error__error2 (const char *s1, const char *s2)
 {
     post_error ("%s: %s", s1, s2);
 }

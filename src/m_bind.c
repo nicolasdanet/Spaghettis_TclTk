@@ -195,7 +195,7 @@ void pd_unbind (t_pd *x, t_symbol *s)
             b->b_list = e1->e_next;
             PD_MEMORY_FREE (e1);
         } else {
-            for (e1 = b->b_list; e2 = e1->e_next; e1 = e2) {
+            for ((e1 = b->b_list); (e2 = e1->e_next); (e1 = e2)) {
                 if (e2->e_what == x) {
                     e1->e_next = e2->e_next;
                     if (e2 == b->b_cached) { b->b_cached = e2->e_next; }

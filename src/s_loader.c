@@ -39,7 +39,7 @@ typedef void (*t_stub) (t_symbol *s);
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _loadedlist {
-    struct _loadlist    *ll_next;
+    struct _loadedlist  *ll_next;
     t_symbol            *ll_name;
     t_handle            ll_handle;
     } t_loadedlist;

@@ -16,8 +16,8 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void error__error1                          (char *);
-void error__error2                          (char *, char *);
+void error__error1                          (const char *);
+void error__error2                          (const char *, const char *);
 int  error__options                         (t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------

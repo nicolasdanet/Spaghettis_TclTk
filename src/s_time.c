@@ -121,21 +121,21 @@ void clock_unset (t_clock *x)
     }
 }
 
-static void clock_set (t_clock *x, t_systime time)
+static void clock_set (t_clock *x, t_systime systime)
 {
-    if (time < pd_this->pd_systime) { time = pd_this->pd_systime; }
+    if (systime < pd_this->pd_systime) { systime = pd_this->pd_systime; }
     
     clock_unset (x);
     
-    x->c_systime = time;
+    x->c_systime = systime;
     
-    if (pd_this->pd_clocks && pd_this->pd_clocks->c_systime <= time) {
+    if (pd_this->pd_clocks && pd_this->pd_clocks->c_systime <= systime) {
     
         t_clock *m = NULL;
         t_clock *n = NULL;
         
         for (m = pd_this->pd_clocks, n = pd_this->pd_clocks->c_next; m; m = n, n = m->c_next) {
-            if (!n || n->c_systime > time) {
+            if (!n || n->c_systime > systime) {
                 m->c_next = x; x->c_next = n; return;
             }
         }
@@ -148,16 +148,16 @@ static void clock_set (t_clock *x, t_systime time)
 void clock_delay (t_clock *x, double delay)     /* Could be in milliseconds or in samples. */
 {
     double d;
-    t_systime time;
+    t_systime systime;
     
     if (x->c_unit > 0) { d = x->c_unit; }
     else {
         d = -(x->c_unit * (SYSTIME_PER_SECOND / audio_getSampleRate()));
     }
 
-    time = pd_this->pd_systime + (d * delay);
+    systime = pd_this->pd_systime + (d * delay);
     
-    clock_set (x, time);
+    clock_set (x, systime);
 }
 
 // -----------------------------------------------------------------------------------------------------------

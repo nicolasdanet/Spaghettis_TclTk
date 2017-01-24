@@ -260,7 +260,7 @@ void interface_guiQueueRemove (void *owner)
     if (interface_outGuiQueue) {
         t_guiqueue *q1 = NULL;
         t_guiqueue *q2 = NULL;
-        for (q1 = interface_outGuiQueue; q2 = q1->gq_next; q1 = q2) {
+        for ((q1 = interface_outGuiQueue); (q2 = q1->gq_next); (q1 = q2)) {
             if (q2->gq_p == owner) { q1->gq_next = q2->gq_next; PD_MEMORY_FREE (q2); break; }
         }
     }
@@ -364,9 +364,9 @@ static int interface_flushBuffer (void)
     if (done < 0) { PD_BUG; scheduler_needToExitWithError(); }
     else {
         if (done == 0) { return 0; }    
-        else if (done == need) { interface_outGuiBufferHead = interface_outGuiBufferTail = 0; }
+        else if ((size_t)done == need) { interface_outGuiBufferHead = interface_outGuiBufferTail = 0; }
         else {
-            PD_ASSERT (done < need); interface_outGuiBufferTail += done;
+            PD_ASSERT ((size_t)done < need); interface_outGuiBufferTail += done;
         }
         
         return 1;
@@ -603,7 +603,7 @@ static t_error interface_launchGuiSpawnProcess (void)
 
     if (!err) {
     //
-    if (err = (path_isFileExist (path) == 0)) { PD_BUG; }
+    if ((err = (path_isFileExist (path) == 0))) { PD_BUG; }
     else {
     //
     pid_t pid = fork();
