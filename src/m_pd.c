@@ -39,7 +39,9 @@ t_pd *pd_new (t_class *c)
         PD_ASSERT (cast_object (x)->te_inlet  == NULL);
         PD_ASSERT (cast_object (x)->te_outlet == NULL);
 
-        cast_object (x)->te_buffer = cast_object (x)->te_inlet = cast_object (x)->te_outlet = NULL;
+        cast_object (x)->te_buffer = NULL;
+        cast_object (x)->te_inlet  = NULL;
+        cast_object (x)->te_outlet = NULL;
     }
     
     return x;

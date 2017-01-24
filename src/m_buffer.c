@@ -60,7 +60,7 @@ void buffer_append (t_buffer *x, int argc, t_atom *argv)
     if (argc > 0) {
     //
     t_atom *a = NULL;
-    int i, n = x->b_size + argc;
+    int n = x->b_size + argc;
 
     x->b_vector = PD_MEMORY_RESIZE (x->b_vector, x->b_size * sizeof (t_atom), n * sizeof (t_atom));
 

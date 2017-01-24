@@ -215,7 +215,7 @@ t_symbol *template_getFieldAtIndex (t_template *x, int n)
 
 int template_getRaw (t_template *x,
     t_symbol *fieldName,
-    int *index,
+    int *position,
     int *type,
     t_symbol **templateIdentifier)
 {
@@ -229,7 +229,7 @@ int template_getRaw (t_template *x,
     //
     if (x->tp_vector[i].ds_fieldName == fieldName) {
     
-        *index              = i;
+        *position           = i;
         *type               = x->tp_vector[i].ds_type;
         *templateIdentifier = x->tp_vector[i].ds_templateIdentifier;
         

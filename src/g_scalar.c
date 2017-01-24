@@ -437,7 +437,7 @@ void scalar_deserialize (t_scalar *x, t_glist *glist, int argc, t_atom *argv)
 {
     t_template *template = scalar_getTemplate (x);
     
-    if (!template_isValid (x)) { PD_BUG; }
+    if (!template_isValid (template)) { PD_BUG; }
     else {
     //
     t_iterator *iter = iterator_new (argc, argv);

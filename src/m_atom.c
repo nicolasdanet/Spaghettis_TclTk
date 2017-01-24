@@ -160,8 +160,9 @@ t_error atom_toString (t_atom *a, char *dest, int size)
         case A_SEMICOLON    : err = string_copy (dest,  (size_t)size, ";");                     break;
         case A_COMMA        : err = string_copy (dest,  (size_t)size, ",");                     break;
         case A_POINTER      : err = string_copy (dest,  (size_t)size, s_pointer.s_name);        break;
+        default             : PD_BUG;
     }
-
+    
     return err;
 }
 

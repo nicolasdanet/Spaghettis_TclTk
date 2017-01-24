@@ -320,7 +320,7 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
 }
 
-static void vu_drawSelect (t_vu* x, t_glist *glist)
+static void vu_drawSelect (t_vu *x, t_glist *glist)
 {
     t_glist *canvas = canvas_getView (glist);
 
@@ -334,7 +334,7 @@ static void vu_drawSelect (t_vu* x, t_glist *glist)
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel);
 }
 
-static void vu_drawErase (t_vu* x, t_glist *glist)
+static void vu_drawErase (t_vu *x, t_glist *glist)
 {
     t_glist *canvas = canvas_getView (glist);
     int i;
@@ -363,7 +363,7 @@ static void vu_drawErase (t_vu* x, t_glist *glist)
                     x);
 }
 
-static void vu_drawConfig (t_vu* x, t_glist *glist)
+static void vu_drawConfig (t_vu *x, t_glist *glist)
 {
     t_glist *canvas = canvas_getView (glist);
     int i;
@@ -405,7 +405,7 @@ static void vu_drawConfig (t_vu* x, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void vu_draw (t_toggle *x, t_glist *glist, int mode)
+void vu_draw (t_vu *x, t_glist *glist, int mode)
 {
     switch (mode) {
         case IEM_DRAW_UPDATE    : vu_drawUpdate (x, glist); break;
@@ -652,7 +652,7 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
 
 static void vu_free (t_vu *x)
 {
-    if (x->x_gui.iem_canReceive) { pd_unbind (cast_object (x), x->x_gui.iem_receive); }
+    if (x->x_gui.iem_canReceive) { pd_unbind (cast_pd (x), x->x_gui.iem_receive); }
         
     guistub_destroyWithKey ((void *)x);
 }

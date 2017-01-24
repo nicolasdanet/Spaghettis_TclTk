@@ -95,7 +95,7 @@ t_symbol *generateSymbol (const char *s, t_symbol *alreadyAllocatedSymbol)
     
     next = message_hashTable + (hash & (MESSAGE_HASH_SIZE - 1));
     
-    while (sym = *next) {
+    while ((sym = *next)) {
         if (!strcmp (sym->s_name, s)) { return sym; }
         next = &sym->s_next;
     }
@@ -342,7 +342,7 @@ static t_error pd_messageMethods (t_entry *m, t_pd *x, t_symbol *s, int argc, t_
     if (x != &pd_objectMaker) { *ip = (t_int)x; ip++; n++;   }
     if (argc > PD_ARGUMENTS)  { PD_BUG; argc = PD_ARGUMENTS; }
         
-    while (t = *p++) {
+    while ((t = *p++)) {
     //
     switch (t) {
     //
@@ -449,7 +449,7 @@ void pd_message (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 void pd_vMessage (t_pd *x, t_symbol *s, char *fmt, ...)
 {
     va_list ap;
-    t_atom arg[MESSAGE_MAXIMUM_ARGUMENTS] = { 0 };
+    t_atom arg[MESSAGE_MAXIMUM_ARGUMENTS];
     t_atom *a = arg;
     int n = 0;
     char *p = fmt;

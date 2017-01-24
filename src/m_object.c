@@ -188,7 +188,7 @@ t_inlet *inlet_new (t_object *owner, t_pd *destination, t_symbol *s1, t_symbol *
     x->i_from = s1;
     x->i_next = NULL;
     
-    if (yA = owner->te_inlet) { while (yB = yA->i_next) { yA = yB; } yA->i_next = x; } 
+    if ((yA = owner->te_inlet)) { while ((yB = yA->i_next)) { yA = yB; } yA->i_next = x; } 
     else { 
         owner->te_inlet = x;
     }
@@ -229,7 +229,7 @@ t_inlet *inlet_newPointer (t_object *owner, t_gpointer *gp)
     x->i_un.i_pointer = gp;
     x->i_next = NULL;
     
-    if (yA = owner->te_inlet) { while (yB = yA->i_next) { yA = yB; } yA->i_next = x; }
+    if ((yA = owner->te_inlet)) { while ((yB = yA->i_next)) { yA = yB; } yA->i_next = x; }
     else {
         owner->te_inlet = x;
     }
@@ -249,7 +249,7 @@ t_inlet *inlet_newFloat (t_object *owner, t_float *fp)
     x->i_un.i_float = fp;
     x->i_next = NULL;
     
-    if (yA = owner->te_inlet) { while (yB = yA->i_next) { yA = yB; } yA->i_next = x; }
+    if ((yA = owner->te_inlet)) { while ((yB = yA->i_next)) { yA = yB; } yA->i_next = x; }
     else {
         owner->te_inlet = x;
     }
@@ -269,7 +269,7 @@ t_inlet *inlet_newSymbol (t_object *owner, t_symbol **sp)
     x->i_un.i_symbol = sp;
     x->i_next = NULL;
     
-    if (yA = owner->te_inlet) { while (yB = yA->i_next) { yA = yB; } yA->i_next = x; }
+    if ((yA = owner->te_inlet)) { while ((yB = yA->i_next)) { yA = yB; } yA->i_next = x; }
     else {
         owner->te_inlet = x;
     }
@@ -304,7 +304,7 @@ t_outlet *outlet_new (t_object *owner, t_symbol *s)
     x->o_next  = NULL;
     x->o_owner = owner;
 
-    if (yA = owner->te_outlet) { while (yB = yA->o_next) { yA = yB; } yA->o_next = x; }
+    if ((yA = owner->te_outlet)) { while ((yB = yA->o_next)) { yA = yB; } yA->o_next = x; }
     else {
         owner->te_outlet = x;
     }
@@ -570,7 +570,7 @@ void object_disconnect (t_object *src, int m, t_object *dest, int n)
         o->o_connections = oc1->oc_next; PD_MEMORY_FREE (oc1);
         
     } else {
-        while (oc2 = oc1->oc_next) {
+        while ((oc2 = oc1->oc_next)) {
             if (oc2->oc_to != to) { oc1 = oc2; }
             else {
                 oc1->oc_next = oc2->oc_next; PD_MEMORY_FREE (oc2); break;
@@ -686,7 +686,6 @@ int object_isSignalInlet (t_object *x, int m)
 
 int object_isSignalOutlet (t_object *x, int m)
 {
-    int n = 0;
     t_outlet *o = NULL;
     
     for (o = x->te_outlet; o && m--; o = o->o_next) { }

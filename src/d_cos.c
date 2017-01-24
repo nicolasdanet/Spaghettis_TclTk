@@ -77,7 +77,7 @@ void cos_tilde_initialize (void)
 
 void cos_tilde_release (void)
 {
-    PD_MEMORY_FREE (cos_tilde_table);
+    if (cos_tilde_table) { PD_MEMORY_FREE (cos_tilde_table); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

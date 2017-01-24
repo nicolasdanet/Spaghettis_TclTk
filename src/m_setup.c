@@ -44,6 +44,7 @@ void drawpolygon_release    (void);
 void plot_release           (void);
 void drawnumber_release     (void);
 void canvas_release         (void);
+void cos_tilde_release      (void);
 void garray_release         (void);
 void textdefine_release     (void);
 void loader_release         (void);
