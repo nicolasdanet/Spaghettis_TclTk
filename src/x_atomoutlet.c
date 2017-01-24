@@ -91,7 +91,7 @@ t_error atomoutlet_outputAtom (t_atomoutlet *x, t_atom *a)
     if (!atom_typesAreEqual (&x->ao_atom, a)) { return PD_ERROR; }
     else {
     //
-    switch (atomoutlet_getType (&x->ao_atom)) {
+    switch (atomoutlet_getType (x)) {
         case A_FLOAT    : outlet_float (x->ao_outlet, GET_FLOAT (a));     break;
         case A_SYMBOL   : outlet_symbol (x->ao_outlet, GET_SYMBOL (a));   break;
         case A_POINTER  : outlet_pointer (x->ao_outlet, GET_POINTER (a)); break;

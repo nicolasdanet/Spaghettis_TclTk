@@ -172,8 +172,8 @@ static void netreceive_callbackConnected (t_netreceive *x)
     else {
         t_receiver *t = receiver_new ((void *)x,
                             fd,
-                            netreceive_callbackClosed,
-                            netreceive_callbackReceived,
+                            (t_notifyfn)netreceive_callbackClosed,
+                            (t_receivefn)netreceive_callbackReceived,
                             0,
                             x->nr_isBinary);
         
@@ -253,7 +253,7 @@ static void netreceive_listen (t_netreceive *x, t_float f)
         t_receiver *t = receiver_new ((void *)x,
                             fd,
                             NULL,
-                            netreceive_callbackReceived,
+                            (t_receivefn)netreceive_callbackReceived,
                             1,
                             x->nr_isBinary);
                             

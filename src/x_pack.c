@@ -112,7 +112,7 @@ static void *pack_new (t_symbol *s, int argc, t_atom *argv)
 {
     if (argc) { return pack_newPerform (argc, argv); }
     else {
-        t_atom a[2]; SET_FLOAT (&a[0], 0.0); SET_FLOAT (&a[1], 0.0); return pack_newPerform (2, &a);
+        t_atom a[2]; SET_FLOAT (&a[0], 0.0); SET_FLOAT (&a[1], 0.0); return pack_newPerform (2, a);
     }
 }
 

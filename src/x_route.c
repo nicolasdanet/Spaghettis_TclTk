@@ -174,7 +174,7 @@ static void *route_newPerform (int argc, t_atom *argv)
         
     } else {
         error_mismatch (sym_route, sym_type);
-        pd_free (x);
+        pd_free (cast_pd (x));
         x = NULL;
     }
     
