@@ -46,7 +46,7 @@ static void guistub_removeFromList (t_guistub *x)
     
     if (guistub_list == x) { guistub_list = x->x_next; }
     else {
-        for (yA = guistub_list; yB = yA->x_next; yA = yB) {
+        for ((yA = guistub_list); (yB = yA->x_next); (yA = yB)) {
             if (yB == x) { 
                 yA->x_next = yB->x_next; break; 
             }

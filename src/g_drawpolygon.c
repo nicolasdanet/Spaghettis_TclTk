@@ -195,7 +195,7 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     
     if (!isVisible || visible) {
     //
-    int i, n = x->x_numberOfPoints;
+    int n = x->x_numberOfPoints;
     
     if (n > 1) {
     //

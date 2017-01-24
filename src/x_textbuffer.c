@@ -30,8 +30,6 @@ void textbuffer_init (t_textbuffer *x)
 
 void textbuffer_free (t_textbuffer *x)
 {
-    t_pd *t = NULL;
-    
     buffer_free (x->tb_buffer);
     
     if (x->tb_guiconnect) {

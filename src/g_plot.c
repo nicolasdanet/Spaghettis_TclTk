@@ -1014,9 +1014,9 @@ static int plot_behaviorMouseRegular (t_plot *x, t_array *array,
     
     int bestIndex = -1;
         
-    int i, k = plot_getStep (array);
+    int i, step = plot_getStep (array);
     
-    for (i = 0; i < array_getSize (array); i += k) {
+    for (i = 0; i < array_getSize (array); i += step) {
     //
     t_float valueX;
     t_float valueY;

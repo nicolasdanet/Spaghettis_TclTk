@@ -115,10 +115,9 @@ void array_deserialize (t_array *x, t_iterator *iter)
 {
     t_template *template = array_getTemplate (x);
     t_atom *atoms = NULL;
-    int count, i = 0;
-    int n = 0;
+    int count, n = 0;
     
-    while (count = iterator_next (iter, &atoms)) {
+    while ((count = iterator_next (iter, &atoms))) {
     //
     int j;
     t_word *w = NULL;

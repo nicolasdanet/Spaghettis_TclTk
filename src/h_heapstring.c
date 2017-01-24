@@ -59,7 +59,7 @@ t_error heapstring_append (t_heapstring *x, const char *src, int n)
         
     if (n < 0) { size = strlen (src); }
     else {
-        const char *t = src; while (*t && size < n) { size++; t++; }
+        const char *t = src; while (*t && size < (size_t)n) { size++; t++; }
     }
     
     heapstring_reserve (x, x->hs_used + size + 1);

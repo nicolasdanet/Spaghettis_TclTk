@@ -26,7 +26,7 @@ static t_error field_setAsFloatVariableParsed (t_fielddescriptor *fd,
     t_symbol *s, 
     char *firstOpeningParenthesis)
 {
-    char *t[PD_STRING] = { 0 };
+    char t[PD_STRING] = { 0 };
     
     t_error err = string_append (t, PD_STRING, s->s_name, (int)(firstOpeningParenthesis - s->s_name));
     

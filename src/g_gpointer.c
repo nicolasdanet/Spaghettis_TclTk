@@ -42,6 +42,11 @@ struct _gmaster {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static t_gpointer gpointer_empty;     /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 t_gmaster *gpointer_masterCreateWithGlist (t_glist *glist)
 {
     t_gmaster *master = PD_MEMORY_GET (sizeof (t_gmaster));
@@ -125,11 +130,9 @@ static int gpointer_isValidRaw (t_gpointer *gp, int nullPointerIsValid)
 
 const t_gpointer *gpointer_getEmpty (void)
 {
-    static t_gpointer emptyPointer = { NULL, NULL, 0 };     /* Shared. */
+    PD_ASSERT (!gpointer_isSet (&gpointer_empty));
     
-    PD_ASSERT (!gpointer_isSet (&emptyPointer));
-    
-    return &emptyPointer;
+    return &gpointer_empty;
 }
 
 // -----------------------------------------------------------------------------------------------------------
