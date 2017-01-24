@@ -69,7 +69,7 @@ void *arrayget_new (t_symbol *s, int argc, t_atom *argv)
     if (x) { x->x_outlet = outlet_new (cast_object (x), &s_list); }
     else {
         error_invalidArguments (sym_array__space__get, argc, argv);
-        pd_free (x); x = NULL; 
+        pd_free (cast_pd (x)); x = NULL; 
     }
     
     return x;

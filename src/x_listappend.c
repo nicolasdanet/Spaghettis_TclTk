@@ -62,7 +62,7 @@ static void listappend_list (t_listappend *x, t_symbol *s, int argc, t_atom *arg
 
 static void listappend_anything (t_listappend *x, t_symbol *s, int argc, t_atom *argv)
 {
-    utils_anythingToList (cast_pd (x), listappend_list, s, argc, argv);
+    utils_anythingToList (cast_pd (x), (t_listmethod)listappend_list, s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------

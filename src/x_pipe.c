@@ -62,7 +62,9 @@ static void callback_task (t_pipecallback *h)
     else {
         t_pipecallback *m = NULL;
         t_pipecallback *n = NULL;
-        for (m = owner->x_callbacks; n = m->h_next; m = n) { if (n == h) { m->h_next = n->h_next; break; } }
+        for ((m = owner->x_callbacks); (n = m->h_next); (m = n)) { 
+            if (n == h) { m->h_next = n->h_next; break; }
+        }
     }
     
     for (i = owner->x_size - 1; i >= 0; i--) {
@@ -158,7 +160,7 @@ static void pipe_flush (t_pipe *x)      /* FIFO. */
     t_pipecallback *m = NULL;
     t_pipecallback *n = NULL;
     
-    for (m = x->x_callbacks; n = m->h_next; m = n) { }
+    for ((m = x->x_callbacks); (n = m->h_next); (m = n)) { }
     
     callback_task (m);
     //
@@ -167,7 +169,7 @@ static void pipe_flush (t_pipe *x)      /* FIFO. */
 
 static void pipe_clear (t_pipe *x)
 {
-    t_pipecallback *h = NULL; while (h = x->x_callbacks) { x->x_callbacks = h->h_next; callback_free (h); }
+    t_pipecallback *h = NULL; while ((h = x->x_callbacks)) { x->x_callbacks = h->h_next; callback_free (h); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -82,7 +82,7 @@ static void pack_list (t_pack *x, t_symbol *s, int argc, t_atom *argv)
 
 static void pack_anything (t_pack *x, t_symbol *s, int argc, t_atom *argv)
 {
-    utils_anythingToList (cast_pd (x), pack_list, s, argc, argv);
+    utils_anythingToList (cast_pd (x), (t_listmethod)pack_list, s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------

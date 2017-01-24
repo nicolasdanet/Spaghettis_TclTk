@@ -142,7 +142,7 @@ static void listinlet_list (t_listinlet *x, t_symbol *s, int argc, t_atom *argv)
 
 static void listinlet_anything (t_listinlet *x, t_symbol *s, int argc, t_atom *argv)
 {
-    utils_anythingToList (cast_pd (x), listinlet_list, s, argc, argv);
+    utils_anythingToList (cast_pd (x), (t_listmethod)listinlet_list, s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------

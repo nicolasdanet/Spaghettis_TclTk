@@ -81,7 +81,7 @@ void arrayrange_update (t_arrayrange *x)
 }
 
 
-int arrayrange_setFirst (t_arrayrange *x, t_float f)
+void arrayrange_setFirst (t_arrayrange *x, t_float f)
 {
     x->ar_first = f;
 }

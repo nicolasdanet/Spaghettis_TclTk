@@ -267,7 +267,7 @@ static void oscformat_list (t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
 
 static void oscformat_anything (t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
 {
-    utils_anythingToList (cast_pd (x), oscformat_list, s, argc, argv);
+    utils_anythingToList (cast_pd (x), (t_listmethod)oscformat_list, s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------

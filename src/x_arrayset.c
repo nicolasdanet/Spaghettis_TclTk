@@ -60,7 +60,7 @@ void *arrayset_new (t_symbol *s, int argc, t_atom *argv)
     
     if (!x) {
         error_invalidArguments (sym_array__space__set, argc, argv);
-        pd_free (x); x = NULL; 
+        pd_free (cast_pd (x)); x = NULL; 
     }
     
     return x;

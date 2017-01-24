@@ -80,7 +80,7 @@ void *textsize_new (t_symbol *s, int argc, t_atom *argv)
     } else {
         
         error_invalidArguments (sym_text__space__size, argc, argv);
-        pd_free (x); x = NULL; 
+        pd_free (cast_pd (x)); x = NULL; 
     }
     
     return x;

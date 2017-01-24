@@ -92,7 +92,7 @@ static void trigger_list (t_trigger *x, t_symbol *s, int argc, t_atom *argv)
 
 static void trigger_anything (t_trigger *x, t_symbol *s, int argc, t_atom *argv)
 {
-    utils_anythingToList (cast_pd (x), trigger_list, s, argc, argv);
+    utils_anythingToList (cast_pd (x), (t_listmethod)trigger_list, s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -13,6 +13,7 @@
 #include "m_macros.h"
 #include "m_core.h"
 #include "m_alloca.h"
+#include "s_system.h"
 #include "x_control.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -143,25 +144,25 @@ static void textsequence_performOutContentMain (t_textsequence *x, t_atom *t, in
 static void textsequence_performOutContentGlobal (t_textsequence *x, t_atom *t, int count, t_atomtype type)
 {
     int shitfRight = 0;
-    t_symbol *send = x->x_sendTo;
+    t_symbol *symSend = x->x_sendTo;
     
     PD_ASSERT (count > 0);
     
-    if (!send) { if (IS_SYMBOL (t)) { send = GET_SYMBOL (t); } else { PD_BUG; } shitfRight = 1; }
+    if (!symSend) { if (IS_SYMBOL (t)) { symSend = GET_SYMBOL (t); } else { PD_BUG; } shitfRight = 1; }
     
-    if (pd_isThing (send)) {
+    if (pd_isThing (symSend)) {
     //    
     int n = count - shitfRight;
     t_atom *v = t + shitfRight;
     
-    if (n > 0 && IS_SYMBOL (v)) { pd_message (pd_getThing (send), GET_SYMBOL (v), n - 1, v + 1); }
+    if (n > 0 && IS_SYMBOL (v)) { pd_message (pd_getThing (symSend), GET_SYMBOL (v), n - 1, v + 1); }
     else {
-        pd_list (pd_getThing (send), n, v);
+        pd_list (pd_getThing (symSend), n, v);
     }
     //
     }
     
-    x->x_sendTo = (type != A_COMMA ? NULL : send);
+    x->x_sendTo = (type != A_COMMA ? NULL : symSend);
 }
 
 static void textsequence_performOutContent (t_textsequence *x, 
@@ -200,9 +201,9 @@ static void textsequence_perform (t_textsequence *x, int argc, t_atom *argv)
         
     if (b && buffer_getMessageAtWithTypeOfEnd (b, x->x_indexOfMessage, &start, &end, &type)) { 
         
-        int advance, wait = textsequence_performNeedToWait (x, b, start, end);
+        int advance, needToWait = textsequence_performNeedToWait (x, b, start, end);
         
-        if (wait) {
+        if (needToWait) {
             advance = textsequence_performSetWaitRange (x, b, start, end); 
             textsequence_performOutWait (x, b, start, end);
         } else {
@@ -390,7 +391,7 @@ void *textsequence_new (t_symbol *s, int argc, t_atom *argv)
         
     } else {
         error_invalidArguments (sym_text__space__search, argc, argv);
-        pd_free (x); x = NULL;
+        pd_free (cast_pd (x)); x = NULL;
     }
     
     return x;

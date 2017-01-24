@@ -62,7 +62,7 @@ static void listprepend_list (t_listprepend *x, t_symbol *s, int argc, t_atom *a
 
 static void listprepend_anything (t_listprepend *x, t_symbol *s, int argc, t_atom *argv)
 {
-    utils_anythingToList (cast_pd (x), listprepend_list, s, argc, argv);
+    utils_anythingToList (cast_pd (x), (t_listmethod)listprepend_list, s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------

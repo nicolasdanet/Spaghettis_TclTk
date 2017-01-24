@@ -90,7 +90,7 @@ void until_setup (void)
     class_addBang (c, (t_method)until_bang);
     class_addFloat (c, (t_method)until_float);
     
-    class_addMethod (c, until_stop, sym_inlet2, A_NULL);
+    class_addMethod (c, (t_method)until_stop, sym_inlet2, A_NULL);
     
     until_class = c;
 }

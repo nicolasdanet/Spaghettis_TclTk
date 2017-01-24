@@ -49,7 +49,7 @@ static void listsplit_list (t_listsplit *x, t_symbol *s, int argc, t_atom *argv)
 
 static void listsplit_anything (t_listsplit *x, t_symbol *s, int argc, t_atom *argv)
 {
-    utils_anythingToList (cast_pd (x), listsplit_list, s, argc, argv);
+    utils_anythingToList (cast_pd (x), (t_listmethod)listsplit_list, s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------

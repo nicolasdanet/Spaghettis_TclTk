@@ -128,7 +128,7 @@ static int gpointer_isValidRaw (t_gpointer *gp, int nullPointerIsValid)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-const t_gpointer *gpointer_getEmpty (void)
+t_gpointer *gpointer_getEmpty (void)
 {
     PD_ASSERT (!gpointer_isSet (&gpointer_empty));
     

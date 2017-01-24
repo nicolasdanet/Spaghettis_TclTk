@@ -207,7 +207,7 @@ t_symbol    *arrayrange_getFieldName        (t_arrayrange *x);
 
 void        arrayrange_update               (t_arrayrange *x);
 int         arrayrange_isValid              (t_arrayrange *x);
-int         arrayrange_setFirst             (t_arrayrange *x, t_float f);
+void        arrayrange_setFirst             (t_arrayrange *x, t_float f);
 t_float     arrayrange_quantile             (t_arrayrange *x, t_float f);
 
 // -----------------------------------------------------------------------------------------------------------
