@@ -224,7 +224,7 @@ t_symbol *dollar_expandGetIfSymbolByEnvironment (t_atom *a, t_glist *glist)
 
 /* True if the string start with a dollar following by zero or more numbers. */
 
-int dollar_isDollarNumber (char *s)
+int dollar_isDollarNumber (const char *s)
 {
     if (*s != '$') { return 0; } while (*(++s)) { if (*s < '0' || *s > '9') { return 0; } }
     
@@ -233,7 +233,7 @@ int dollar_isDollarNumber (char *s)
 
 /* True if the string start with a dollar following by one number. */
 
-int dollar_isPointingToDollarAndNumber (char *s)
+int dollar_isPointingToDollarAndNumber (const char *s)
 {
     PD_ASSERT (s[0] != 0);
     

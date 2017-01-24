@@ -39,7 +39,7 @@ void canvas_dspPerform (t_glist *glist, int isTopLevel, t_signal **sp)
 
     canvas_traverseLinesStart (&t, glist);
     
-    while (connection = canvas_traverseLinesNext (&t)) {
+    while ((connection = canvas_traverseLinesNext (&t))) {
         if (object_isSignalOutlet (t.tr_srcObject, t.tr_srcIndexOfOutlet)) {
             ugen_graphConnect (context, 
                 t.tr_srcObject, 

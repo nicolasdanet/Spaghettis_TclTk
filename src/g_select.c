@@ -100,7 +100,7 @@ static void canvas_cacheLines (t_glist *glist)
     
     canvas_traverseLinesStart (&t, glist);
     
-    while (connection = canvas_traverseLinesNext (&t)) {
+    while ((connection = canvas_traverseLinesNext (&t))) {
     //
     int s1 = canvas_isObjectSelected (glist, cast_gobj (t.tr_srcObject));
     int s2 = canvas_isObjectSelected (glist, cast_gobj (t.tr_destObject));
@@ -222,9 +222,9 @@ int canvas_isObjectSelected (t_glist *glist, t_gobj *y)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_selectingByLasso (t_glist *glist, int positionX, int positionY, int close)
+static void canvas_selectingByLasso (t_glist *glist, int positionX, int positionY, int end)
 {
-    if (close) {
+    if (end) {
     
         int a = PD_MIN (glist->gl_editor->e_previousX, positionX);
         int c = PD_MAX (glist->gl_editor->e_previousX, positionX);
@@ -360,7 +360,7 @@ int canvas_deselectObject (t_glist *glist, t_gobj *y)
         PD_MEMORY_FREE (selection1);
         
     } else {
-        for (; selection2 = selection1->sel_next; selection1 = selection2) {
+        for (; (selection2 = selection1->sel_next); (selection1 = selection2)) {
             if (selection2->sel_what == y) {
                 selection1->sel_next = selection2->sel_next;
                 gobj_selected (y, glist, 0);

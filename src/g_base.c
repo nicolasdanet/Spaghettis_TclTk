@@ -262,7 +262,7 @@ void canvas_clear (t_glist *glist)
     int dspSuspended = 0;
     t_gobj *y = NULL;
         
-    while (y = glist->gl_graphics) {
+    while ((y = glist->gl_graphics)) {
     //
     if (!dspSuspended) {
         if (cast_objectIfPatchable (y) && class_hasDSP (pd_class (y))) {
@@ -523,7 +523,7 @@ int canvas_hasLine (t_glist *glist, t_object *objectOut, int m, t_object *object
     
     canvas_traverseLinesStart (&t, glist);
     
-    while (connection = canvas_traverseLinesNext (&t)) {
+    while ((connection = canvas_traverseLinesNext (&t))) {
         if (t.tr_srcObject == objectOut && t.tr_destObject == objectIn) {
             if (t.tr_srcIndexOfOutlet == m && t.tr_destIndexOfInlet == n) {
                 return 1;

@@ -329,8 +329,8 @@ void        buffer_fileOpen                             (void *dummy, t_symbol *
 t_symbol    *dollar_toHash                              (t_symbol *s);
 t_symbol    *dollar_fromHash                            (t_symbol *s);
 
-int         dollar_isDollarNumber                       (char *s);
-int         dollar_isPointingToDollarAndNumber          (char *s);
+int         dollar_isDollarNumber                       (const char *s);
+int         dollar_isPointingToDollarAndNumber          (const char *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

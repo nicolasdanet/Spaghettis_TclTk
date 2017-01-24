@@ -327,23 +327,18 @@ static void gatom_functionSave (t_gobj *z, t_buffer *b)
 {
     t_gatom *x = (t_gatom *)z;
     
-    t_symbol *type      = (IS_SYMBOL (&x->a_atom) ? sym_symbolatom : sym_floatatom);
-    t_symbol *label     = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedLabel, 1));
-    t_symbol *receive   = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedReceive, 1));
-    t_symbol *send      = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedSend, 1));
-    
     buffer_vAppend (b, "ssiiifffsss",
         sym___hash__X,
-        type,
+        (IS_SYMBOL (&x->a_atom) ? sym_symbolatom : sym_floatatom),
         cast_object (x)->te_xCoordinate,
         cast_object (x)->te_yCoordinate,
         cast_object (x)->te_width,
         (double)x->a_lowRange,
         (double)x->a_highRange,
         (double)x->a_position,
-        label,
-        receive,
-        send);
+        dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedLabel, 1)),
+        dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedReceive, 1)),
+        dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedSend, 1)));
 
     buffer_appendSemicolon (b);
     object_saveWidth (cast_object (x), b);
@@ -355,9 +350,9 @@ static void gatom_functionProperties (t_gobj *z, t_glist *owner)
     t_error err = PD_ERROR_NONE;
     char t[PD_STRING] = { 0 };
     
-    t_symbol *send    = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedSend, 0));
-    t_symbol *receive = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedReceive, 0));
-    t_symbol *label   = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedLabel, 0));
+    t_symbol *symSend    = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedSend, 0));
+    t_symbol *symReceive = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedReceive, 0));
+    t_symbol *symLabel   = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedLabel, 0));
     
     if (IS_FLOAT (&x->a_atom)) {
     
@@ -368,9 +363,9 @@ static void gatom_functionProperties (t_gobj *z, t_glist *owner)
                 x->a_highRange,
                 sym_floatatom->s_name,
                 GET_FLOAT (&x->a_atom),
-                send->s_name,
-                receive->s_name,
-                label->s_name, 
+                symSend->s_name,
+                symReceive->s_name,
+                symLabel->s_name, 
                 x->a_position);
             
     } else {
@@ -382,9 +377,9 @@ static void gatom_functionProperties (t_gobj *z, t_glist *owner)
                 x->a_highRange,
                 sym_symbolatom->s_name,
                 GET_SYMBOL (&x->a_atom)->s_name,
-                send->s_name,
-                receive->s_name,
-                label->s_name, 
+                symSend->s_name,
+                symReceive->s_name,
+                symLabel->s_name, 
                 x->a_position);
     }
     
@@ -397,13 +392,13 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc == ATOM_DIALOG_SIZE) {
     //
-    t_float width       = atom_getFloatAtIndex (0, argc, argv);
-    t_float lowRange    = atom_getFloatAtIndex (1, argc, argv);
-    t_float highRange   = atom_getFloatAtIndex (2, argc, argv);
-    t_symbol *send      = gatom_parse (atom_getSymbolAtIndex (4, argc, argv));
-    t_symbol *receive   = gatom_parse (atom_getSymbolAtIndex (5, argc, argv));
-    t_symbol *label     = gatom_parse (atom_getSymbolAtIndex (6, argc, argv));
-    int position        = (int)atom_getFloatAtIndex (7, argc, argv);
+    t_float width           = atom_getFloatAtIndex (0, argc, argv);
+    t_float lowRange        = atom_getFloatAtIndex (1, argc, argv);
+    t_float highRange       = atom_getFloatAtIndex (2, argc, argv);
+    t_symbol *symSend       = gatom_parse (atom_getSymbolAtIndex (4, argc, argv));
+    t_symbol *symReceive    = gatom_parse (atom_getSymbolAtIndex (5, argc, argv));
+    t_symbol *symLabel      = gatom_parse (atom_getSymbolAtIndex (6, argc, argv));
+    int position            = (int)atom_getFloatAtIndex (7, argc, argv);
 
     gobj_visibilityChanged (cast_gobj (x), x->a_owner, 0);
 
@@ -413,9 +408,9 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     x->a_lowRange               = PD_MIN (lowRange, highRange);
     x->a_highRange              = PD_MAX (lowRange, highRange);
     x->a_position               = PD_CLAMP (position, ATOM_LABEL_LEFT, ATOM_LABEL_DOWN);
-    x->a_unexpandedSend         = send;
-    x->a_unexpandedReceive      = receive;
-    x->a_unexpandedLabel        = label;
+    x->a_unexpandedSend         = symSend;
+    x->a_unexpandedReceive      = symReceive;
+    x->a_unexpandedLabel        = symLabel;
     x->a_send                   = canvas_expandDollar (x->a_owner, x->a_unexpandedSend);
     x->a_receive                = canvas_expandDollar (x->a_owner, x->a_unexpandedReceive);
     x->a_label                  = canvas_expandDollar (x->a_owner, x->a_unexpandedLabel);

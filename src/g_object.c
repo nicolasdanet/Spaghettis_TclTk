@@ -143,7 +143,7 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
     //
     }
     
-    if (object = cast_objectIfPatchable (x)) {
+    if ((object = cast_objectIfPatchable (x))) {
     //
     if (object_isBox (object)) {
     // 

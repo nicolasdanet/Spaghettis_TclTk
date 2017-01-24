@@ -372,7 +372,7 @@ void radio_drawConfig (t_radio *x, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void radio_draw (t_toggle *x, t_glist *glist, int mode)
+void radio_draw (t_radio *x, t_glist *glist, int mode)
 {
     switch (mode) {
         case IEM_DRAW_UPDATE    : radio_drawUpdate (x, glist);  break;
@@ -626,7 +626,6 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
     {
     //
     int size            = IEM_DEFAULT_SIZE;
-    int state           = 0;
     int labelX          = x->x_isVertical ? IEM_DEFAULT_LABELX_NEXT : IEM_DEFAULT_LABELX_TOP;
     int labelY          = x->x_isVertical ? IEM_DEFAULT_LABELY_NEXT : IEM_DEFAULT_LABELY_TOP;
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
@@ -702,7 +701,7 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
 
 static void radio_free (t_radio *x)
 {
-    if (x->x_gui.iem_canReceive) { pd_unbind (cast_object (x), x->x_gui.iem_receive); }
+    if (x->x_gui.iem_canReceive) { pd_unbind (cast_pd (x), x->x_gui.iem_receive); }
     
     guistub_destroyWithKey ((void *)x);
 }
