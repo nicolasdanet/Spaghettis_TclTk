@@ -154,10 +154,7 @@ void binopModulo_bang (t_binop *x)
     int n1 = (int)x->bo_f1;
     int n2 = (int)x->bo_f2 == 0 ? 1 : (int)x->bo_f2;
     
-    if (n2 == -1) { outlet_float (x->bo_outlet, 0.0); }     /* Apparently "%" raises an exception for -1. */
-    else {
-        outlet_float (x->bo_outlet, (t_float)(n1 % n2));
-    }
+    outlet_float (x->bo_outlet, (t_float)(n1 % n2));
 }
 
 void binopModulo_float (t_binop *x, t_float f)

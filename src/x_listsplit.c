@@ -37,7 +37,7 @@ typedef struct _listsplit {
 
 static void listsplit_list (t_listsplit *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int n = PD_MAX (0.0, x->x_f);
+    int n = (int)PD_MAX (0.0, x->x_f);
     
     if (argc >= n) {
         outlet_list (x->x_outletMiddle, argc - n, argv + n);

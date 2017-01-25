@@ -32,7 +32,7 @@ void *binop_new (t_class *class, t_float f)
 {
     t_binop *x = (t_binop *)pd_new (class);
     
-    x->bo_f1 = 0.0;
+    x->bo_f1 = (t_float)0.0;
     x->bo_f2 = f;
     x->bo_outlet = outlet_new (cast_object (x), &s_float);
     
@@ -108,7 +108,7 @@ static void *binopDivide_new (t_float f)
 
 static void binopDivide_bang (t_binop *x)
 {
-    outlet_float (x->bo_outlet, (x->bo_f2 != 0.0 ? x->bo_f1 / x->bo_f2 : 0.0));
+    outlet_float (x->bo_outlet, (x->bo_f2 != 0.0 ? x->bo_f1 / x->bo_f2 : (t_float)0.0));
 }
 
 static void binopDivide_float (t_binop *x, t_float f)
@@ -127,7 +127,7 @@ static void *binopPower_new (t_float f)
 
 static void binopPower_bang (t_binop *x)
 {
-    outlet_float (x->bo_outlet, (x->bo_f1 > 0.0 ? powf (x->bo_f1, x->bo_f2) : 0.0));
+    outlet_float (x->bo_outlet, (x->bo_f1 > 0.0 ? powf (x->bo_f1, x->bo_f2) : (t_float)0.0));
 }
 
 static void binopPower_float (t_binop *x, t_float f)

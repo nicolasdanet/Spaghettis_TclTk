@@ -181,7 +181,7 @@ static void *pipe_new (t_symbol *s, int argc, t_atom *argv)
     t_pipe *x = (t_pipe *)pd_new (pipe_class);
     int i;
     
-    x->x_delay  = 0.0;
+    x->x_delay = (t_float)0.0;
         
     if (argc) {
     //
@@ -192,7 +192,7 @@ static void *pipe_new (t_symbol *s, int argc, t_atom *argv)
     x->x_size   = PD_MAX (1, argc);     
     x->x_vector = (t_atomoutlet *)PD_MEMORY_GET (x->x_size * sizeof (t_atomoutlet));
 
-    if (!argc) { atomoutlet_makeFloat (x->x_vector + 0, cast_object (x), 0.0, 0, 1); }
+    if (!argc) { atomoutlet_makeFloat (x->x_vector + 0, cast_object (x), (t_float)0.0, 0, 1); }
     else {
     //
     for (i = 0; i < argc; i++) {

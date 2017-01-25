@@ -42,7 +42,7 @@ static void timer_bang (t_timer *x)
 
 static void timer_bangElapsed (t_timer *x)
 {
-    outlet_float (x->x_outlet, scheduler_getUnitsSince (x->x_start, x->x_unit, x->x_isSamples));
+    outlet_float (x->x_outlet, (t_float)scheduler_getUnitsSince (x->x_start, x->x_unit, x->x_isSamples));
 }
 
 /* Note that float arguments are always passed at last. */

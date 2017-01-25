@@ -111,7 +111,7 @@ static void line_floatRamp (t_line *x, t_float f)
 
 static void line_floatGrain (t_line *x, t_float f)
 {
-    x->x_grain = (f <= 0.0 ? TIME_DEFAULT_GRAIN : f);
+    x->x_grain = (f <= 0.0 ? (t_float)TIME_DEFAULT_GRAIN : f);
 }
 
 static void line_stop (t_line *x)

@@ -40,7 +40,7 @@ static void arraymax_bang (t_arraymax *x)
     int i, start, n;
     t_array *a = arrayrange_getRange (&x->x_arrayrange, &start, &n);
     
-    t_float maxIndex = -1.0;
+    t_float maxIndex = (t_float)-1.0;
     t_float maxValue = -PD_FLT_MAX;
     
     for (i = 0; i < n; i++) {

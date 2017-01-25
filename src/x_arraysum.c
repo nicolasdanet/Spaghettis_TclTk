@@ -42,7 +42,7 @@ static void arraysum_bang (t_arraysum *x)
     for (i = 0; i < n; i++) {
         sum += array_getFloatAtIndex (a, start + i, arrayrange_getFieldName (&x->x_arrayrange)); 
     }
-    outlet_float (x->x_outlet, sum);
+    outlet_float (x->x_outlet, (t_float)sum);
     //
     }
 }

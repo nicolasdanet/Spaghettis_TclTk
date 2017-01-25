@@ -111,8 +111,8 @@ static int textsearch_listIsBetter (t_textsearch *x,
     t_float f            = GET_FLOAT (argv + j);
     t_float bestValue    = GET_FLOAT (buffer_atomAtIndex (b, bestLineStart + field));
     t_float thisValue    = GET_FLOAT (buffer_atomAtIndex (b, start + field)); 
-    t_float bestDistance = math_euclideanDistance (f, 0.0, bestValue, 0.0);
-    t_float thisDistance = math_euclideanDistance (f, 0.0, thisValue, 0.0);
+    t_float bestDistance = math_euclideanDistance (f, (t_float)0.0, bestValue, (t_float)0.0);
+    t_float thisDistance = math_euclideanDistance (f, (t_float)0.0, thisValue, (t_float)0.0);
     
     if (type != TEXTSEARCH_EQUAL) { 
         int cmp = math_compareFloat (thisDistance, bestDistance);
@@ -186,7 +186,7 @@ void *textsearch_new (t_symbol *s, int argc, t_atom *argv)
         for (i = 0; i < argc; i++) {
         //
         if (IS_FLOAT (argv + i)) {
-            x->x_keys[key].k_field = PD_MAX (0.0, (int)GET_FLOAT (argv + i));
+            x->x_keys[key].k_field = (int)PD_MAX (0.0, GET_FLOAT (argv + i));
             x->x_keys[key].k_type  = PD_MAX (TEXTSEARCH_EQUAL, op);
             op = -1;
             key++;

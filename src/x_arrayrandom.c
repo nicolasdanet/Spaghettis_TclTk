@@ -44,7 +44,7 @@ static void arrayrandom_bang (t_arrayrandom *x)
         double k;
         x->x_state = x->x_state * 472940017 + 832416023;
         k = (1.0 / 4294967296.0) * (double)(x->x_state);
-        outlet_float (x->x_outlet, arrayrange_quantile (&x->x_arrayrange, k));
+        outlet_float (x->x_outlet, arrayrange_quantile (&x->x_arrayrange, (t_float)k));
     }
 }
 

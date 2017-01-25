@@ -41,7 +41,7 @@ static void arraymin_bang (t_arraymin *x)
     int i, start, n;
     t_array *a = arrayrange_getRange (&x->x_arrayrange, &start, &n);
     
-    t_float minIndex = -1.0;
+    t_float minIndex = (t_float)-1.0;
     t_float minValue = PD_FLT_MAX;
     
     for (i = 0; i < n; i++) {
