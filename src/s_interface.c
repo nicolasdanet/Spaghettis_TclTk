@@ -43,7 +43,7 @@
 #pragma mark -
 
 #define INTERFACE_GUI_BUFFER_START_SIZE     (1024 * 128)
-#define INTERFACE_GUI_BUFFER_ABORT_SIZE     (1024 * 1024 * 1024)
+#define INTERFACE_GUI_BUFFER_ABORT_SIZE     (1024 * 128 * 1024)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -178,8 +178,8 @@ int interface_monitorNonBlocking (void)
 void interface_monitorAddPoller (int fd, t_pollfn fn, void *ptr)
 {
     int n = interface_inPollersSize;
-    int oldSize = n * sizeof (t_fdpoll);
-    int newSize = oldSize + sizeof (t_fdpoll);
+    int oldSize = (int)(n * sizeof (t_fdpoll));
+    int newSize = (int)(oldSize + sizeof (t_fdpoll));
     int i;
     t_fdpoll *p = NULL;
     
@@ -199,8 +199,8 @@ void interface_monitorAddPoller (int fd, t_pollfn fn, void *ptr)
 void interface_monitorRemovePoller (int fd)
 {
     int n = interface_inPollersSize;
-    int oldSize = n * sizeof (t_fdpoll);
-    int newSize = oldSize - sizeof (t_fdpoll);
+    int oldSize = (int)(n * sizeof (t_fdpoll));
+    int newSize = (int)(oldSize - sizeof (t_fdpoll));
     int i;
     t_fdpoll *p;
     
@@ -354,19 +354,19 @@ void interface_watchdog (void *dummy)
 
 static int interface_flushBuffer (void)
 {
-    size_t need = interface_outGuiBufferHead - interface_outGuiBufferTail;
+    int need = interface_outGuiBufferHead - interface_outGuiBufferTail;
     
     if (need > 0) {
     //
     char *p = interface_outGuiBuffer + interface_outGuiBufferTail;
-    ssize_t done = send (interface_guiSocket, (void *)p, need, 0);
+    int done = (int)send (interface_guiSocket, (void *)p, need, 0);
 
     if (done < 0) { PD_BUG; scheduler_needToExitWithError(); }
     else {
         if (done == 0) { return 0; }    
-        else if ((size_t)done == need) { interface_outGuiBufferHead = interface_outGuiBufferTail = 0; }
+        else if (done == need) { interface_outGuiBufferHead = interface_outGuiBufferTail = 0; }
         else {
-            PD_ASSERT ((size_t)done < need); interface_outGuiBufferTail += done;
+            PD_ASSERT (done < need); interface_outGuiBufferTail += done;
         }
         
         return 1;

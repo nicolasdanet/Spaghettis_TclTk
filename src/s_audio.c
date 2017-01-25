@@ -68,8 +68,8 @@ int audio_pollDSP (void)
 
 void audio_initializeMemory (int usedChannelsIn, int usedChannelsOut)
 {
-    int m = (INTERNAL_BLOCKSIZE * sizeof (t_sample)) * (usedChannelsIn ? usedChannelsIn : 2);
-    int n = (INTERNAL_BLOCKSIZE * sizeof (t_sample)) * (usedChannelsOut ? usedChannelsOut : 2);
+    int m = (int)((INTERNAL_BLOCKSIZE * sizeof (t_sample)) * (usedChannelsIn ? usedChannelsIn : 2));
+    int n = (int)((INTERNAL_BLOCKSIZE * sizeof (t_sample)) * (usedChannelsOut ? usedChannelsOut : 2));
 
     PD_ASSERT (usedChannelsIn >= 0);
     PD_ASSERT (usedChannelsOut >= 0);

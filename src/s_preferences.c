@@ -137,7 +137,7 @@ static int preferences_getKey (const char *key, char *value, int size)
     size_t length = pEnd + 1 - p;
     
     if (length > 0) { 
-        if (!string_append (value, size, p, length)) { return 1; }
+        if (!string_append (value, size, p, (int)length)) { return 1; }
     }
     //
     }
