@@ -227,13 +227,13 @@ t_error clock_parseUnit (t_float f, t_symbol *s, t_float *n, int *isSamples)
     
     if (!err) {
     //
-    if (s == sym_permillisecond)    { *n = 1.0 / f;           }
-    else if (s == sym_persecond)    { *n = 1000.0 / f;        }
-    else if (s == sym_perminute)    { *n = 60000.0 / f;       }
-    else if (s == sym_millisecond)  { *n = f;                 }
-    else if (s == sym_second)       { *n = 1000.0 * f;        }
-    else if (s == sym_minute)       { *n = 60000.0 * f;       }
-    else if (s == sym_sample)       { *n = f; *isSamples = 1; }
+    if (s == sym_permillisecond)    { *n = (t_float)(1.0 / f);     }
+    else if (s == sym_persecond)    { *n = (t_float)(1000.0 / f);  }
+    else if (s == sym_perminute)    { *n = (t_float)(60000.0 / f); }
+    else if (s == sym_millisecond)  { *n = f;                      }
+    else if (s == sym_second)       { *n = (t_float)(1000.0 * f);  }
+    else if (s == sym_minute)       { *n = (t_float)(60000.0 * f); }
+    else if (s == sym_sample)       { *n = f; *isSamples = 1;      }
     else {
         #if PD_WITH_LEGACY
         

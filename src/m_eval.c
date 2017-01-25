@@ -48,7 +48,7 @@ static t_error buffer_fromFile (t_buffer *x, char *name, char *directory)
     if (err) { PD_BUG; }
     else {
         char *t = (char *)PD_MEMORY_GET ((size_t)length);
-        err = (read (f, t, length) != length);
+        err = (read (f, t, (size_t)length) != length);
         if (err) { PD_BUG; } else { buffer_withStringUnzeroed (x, t, (int)length); }
         PD_MEMORY_FREE (t);
     }

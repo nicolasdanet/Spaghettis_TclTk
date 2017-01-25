@@ -639,8 +639,8 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
     if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
         
     x->x_hasScale    = (hasScale != 0);
-    x->x_peakValue   = -101.0;
-    x->x_rmsValue    = -101.0;
+    x->x_peakValue   = (t_float)-101.0;
+    x->x_rmsValue    = (t_float)-101.0;
     
     inlet_new (cast_object (x), cast_pd (x), &s_float, sym_inlet2);
     

@@ -180,7 +180,7 @@ t_inlet *inlet_new (t_object *owner, t_pd *destination, t_symbol *s1, t_symbol *
     x->i_owner = owner;
     x->i_destination = destination;
     
-    if (s1 == &s_signal) { x->i_un.i_signal = 0.0; }
+    if (s1 == &s_signal) { x->i_un.i_signal = (t_float)0.0; }
     else { 
         x->i_un.i_to = s2;
     }

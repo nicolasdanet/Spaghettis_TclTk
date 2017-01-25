@@ -62,9 +62,9 @@ static t_error preferences_loadBegin (void)
     
     if (!err) {
     //
-    preferences_loadBuffer = (char *)PD_MEMORY_GET (length + 2);
+    preferences_loadBuffer = (char *)PD_MEMORY_GET ((size_t)length + 2);
     preferences_loadBuffer[0] = '\n';
-    err |= (read (f, preferences_loadBuffer + 1, length) < length);
+    err |= (read (f, preferences_loadBuffer + 1, (size_t)length) < length);
     //
     }
     

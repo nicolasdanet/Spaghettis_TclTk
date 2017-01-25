@@ -27,7 +27,7 @@ void word_init (t_word *w, t_template *tmpl, t_gpointer *gp)
     int type = v->ds_type;
     
     switch (type) {
-        case DATA_FLOAT  : WORD_FLOAT (w)  = 0.0;                                       break;
+        case DATA_FLOAT  : WORD_FLOAT (w)  = (t_float)0.0;                              break;
         case DATA_SYMBOL : WORD_SYMBOL (w) = &s_symbol;                                 break;
         case DATA_TEXT   : WORD_BUFFER (w) = buffer_new();                              break;
         case DATA_ARRAY  : WORD_ARRAY (w)  = array_new (v->ds_templateIdentifier, gp);  break;
@@ -67,7 +67,7 @@ t_float word_getFloat (t_word *w, t_template *tmpl, t_symbol *fieldName)
         }
     }
 
-    return 0.0;
+    return (t_float)0.0;
 }
 
 t_symbol *word_getSymbol (t_word *w, t_template *tmpl, t_symbol *fieldName)
@@ -197,7 +197,7 @@ t_float word_getFloatByDescriptor (t_word *w, t_template *tmpl, t_fielddescripto
 
     PD_BUG;
     
-    return 0.0;
+    return (t_float)0.0;
 }
 
 t_float word_getFloatByDescriptorAsPosition (t_word *w, t_template *tmpl, t_fielddescriptor *fd)
@@ -214,7 +214,7 @@ t_float word_getFloatByDescriptorAsPosition (t_word *w, t_template *tmpl, t_fiel
 
     PD_BUG; 
     
-    return 0.0;
+    return (t_float)0.0;
 }
 
 void word_setFloatByDescriptorAsPosition (t_word *w,

@@ -92,7 +92,7 @@ static void *tan_new (void)
 static void tan_float (t_math *x, t_float f)
 {
     t_float c = cosf (f);
-    t_float t = (c == 0.0 ? 0.0 : sinf (f) / c);
+    t_float t = (t_float)(c == 0.0 ? 0.0 : sinf (f) / c);
     
     outlet_float (x->x_outlet, t);
 }
@@ -130,7 +130,7 @@ static void *exp_new (void)
 
 static void exp_float (t_math *x, t_float f)
 {
-    outlet_float (x->x_outlet, expf (PD_MIN (f, MATH_MAXIMUM_LOGARITHM)));
+    outlet_float (x->x_outlet, expf ((t_float)PD_MIN (f, MATH_MAXIMUM_LOGARITHM)));
 }
 
 // -----------------------------------------------------------------------------------------------------------

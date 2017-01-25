@@ -128,12 +128,12 @@ static void *scalardefine_new (t_symbol *s, int argc, t_atom *argv)
     
     if (argc) { warning_unusedArguments (s, argc, argv); }
     
-    SET_FLOAT  (a + 0, 0.0);
+    SET_FLOAT  (a + 0, (t_float)0.0);
     SET_FLOAT  (a + 1, WINDOW_HEADER);
     SET_FLOAT  (a + 2, WINDOW_WIDTH);
     SET_FLOAT  (a + 3, WINDOW_HEIGHT);
     SET_SYMBOL (a + 4, sym_Scalar);
-    SET_FLOAT  (a + 5, 0.0);
+    SET_FLOAT  (a + 5, (t_float)0.0);
     
     x = canvas_new (NULL, NULL, 6, a);
 
@@ -153,7 +153,7 @@ static void *scalardefine_new (t_symbol *s, int argc, t_atom *argv)
     //
     }
 
-    canvas_pop (x, 0.0);
+    canvas_pop (x, (t_float)0.0);
     
     pd_class (x) = scalardefine_class;
     

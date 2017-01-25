@@ -141,7 +141,7 @@ void dollar_expandDollarNumber (t_atom *dollar, t_atom *a, int argc, t_atom *arg
     if (n > 0 && n <= argc) { *a = *(argv + n - 1); }
     else if (n == 0)        { SET_FLOAT (a, dollar_getDollarZero (glist)); }
     else {
-        error_invalid (&s_, sym_expansion); SET_FLOAT (a, 0.0);
+        error_invalid (&s_, sym_expansion); SET_FLOAT (a, (t_float)0.0);
     }
 }
 

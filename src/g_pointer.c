@@ -177,7 +177,7 @@ static void pointer_nextSelected (t_pointer *x, t_float f)
 
 static void pointer_next (t_pointer *x)
 {
-    pointer_nextSelected (x, 0.0);
+    pointer_nextSelected (x, (t_float)0.0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

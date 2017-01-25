@@ -257,7 +257,7 @@ static void gatom_motion (void *z, t_float deltaX, t_float deltaY, t_float modif
         f -= deltaY;
     }
     
-    gatom_setFloat (x, f);
+    gatom_setFloat (x, (t_float)f);
     //
     }
 }
@@ -453,8 +453,8 @@ void gatom_makeObject (t_glist *glist, t_atomtype type, t_symbol *s, int argc, t
     
     if (type == A_FLOAT) {
         t_atom a;
-        SET_FLOAT (&x->a_atom, 0.0);
-        SET_FLOAT (&a, 0.0);
+        SET_FLOAT (&x->a_atom, (t_float)0.0);
+        SET_FLOAT (&a, (t_float)0.0);
         buffer_appendAtom (cast_object (x)->te_buffer, &a);
         
     } else {

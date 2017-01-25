@@ -68,7 +68,7 @@ t_float atom_getFloat (t_atom *a)
 {
     if (IS_FLOAT (a)) { return GET_FLOAT (a); }
     else {
-        return 0.0;
+        return (t_float)0.0;
     }
 }
 
@@ -76,7 +76,7 @@ t_float atom_getFloatAtIndex (int n, int argc, t_atom *argv)
 {
     if (n >= 0 && n < argc) { return atom_getFloat (argv + n); }
     else {
-        return 0.0;
+        return (t_float)0.0;
     }
 }
 

@@ -266,7 +266,7 @@ static void toggle_out (t_toggle *x)
 
 static void toggle_bang (t_toggle *x)
 {
-    toggle_set (x, (x->x_state == 0.0) ? x->x_nonZero : 0.0);
+    toggle_set (x, (x->x_state == 0.0) ? x->x_nonZero : (t_float)0.0);
     toggle_out (x);
 }
 
@@ -453,8 +453,8 @@ static void *toggle_new (t_symbol *s, int argc, t_atom *argv)
     int labelX          = IEM_DEFAULT_LABELX_NEXT;
     int labelY          = IEM_DEFAULT_LABELY_NEXT;
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
-    t_float state       = 0.0;
-    t_float nonZero     = 1.0;
+    t_float state       = (t_float)0.0;
+    t_float nonZero     = (t_float)1.0;
 
     if (argc >= 13                                              // --
             && IS_FLOAT (argv)                                  // Size.
@@ -476,7 +476,7 @@ static void *toggle_new (t_symbol *s, int argc, t_atom *argv)
         labelY                      = (int)atom_getFloatAtIndex (6, argc,  argv);
         labelFontSize               = (int)atom_getFloatAtIndex (8, argc,  argv);
         state                       = (t_float)atom_getFloatAtIndex (12, argc, argv);
-        nonZero                     = (argc == 14) ? atom_getFloatAtIndex (13, argc, argv) : 1.0;
+        nonZero                     = (argc == 14) ? atom_getFloatAtIndex (13, argc, argv) : (t_float)1.0;
         
         iemgui_deserializeLoadbang (&x->x_gui, (int)atom_getFloatAtIndex (1, argc, argv));
         iemgui_deserializeNamesByIndex (&x->x_gui, 2, argv);
@@ -502,11 +502,11 @@ static void *toggle_new (t_symbol *s, int argc, t_atom *argv)
     
     if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
         
-    x->x_nonZero = (nonZero != 0.0) ? nonZero : 1.0;
+    x->x_nonZero = (nonZero != 0.0) ? nonZero : (t_float)1.0;
     
-    if (x->x_gui.iem_loadbang) { x->x_state = (state != 0.0) ? nonZero : 0.0; }
+    if (x->x_gui.iem_loadbang) { x->x_state = (state != 0.0) ? nonZero : (t_float)0.0; }
     else {
-        x->x_state = 0.0;
+        x->x_state = (t_float)0.0;
     }
 
     x->x_outlet = outlet_new (cast_object (x), &s_float);

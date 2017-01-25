@@ -188,7 +188,7 @@ static void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int prea
         *p = 0;
 
         if (buffer_parseIsValidState (floatState)) {
-            SET_FLOAT (a, atof (buffer));
+            SET_FLOAT (a, (t_float)atof (buffer));
                         
         } else if (dollar) {
             if (dollar_isDollarNumber (buffer)) { SET_DOLLAR (a, atoi (buffer + 1)); }

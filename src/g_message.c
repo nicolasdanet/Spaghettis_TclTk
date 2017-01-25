@@ -115,7 +115,7 @@ void message_click (t_message *x, t_float a, t_float b, t_float shift, t_float c
     //
     }
     
-    message_float (x, 0.0);
+    message_float (x, (t_float)0.0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

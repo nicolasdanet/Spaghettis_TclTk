@@ -631,7 +631,7 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
     int changed         = 1;
     int numberOfButtons = IEM_RADIO_DEFAULT_BUTTONS;
-    t_float floatValue  = 0.0;
+    t_float floatValue  = (t_float)0.0;
     
     if (argc == 15                                                  // --
             && IS_FLOAT (argv + 0)                                  // Size.

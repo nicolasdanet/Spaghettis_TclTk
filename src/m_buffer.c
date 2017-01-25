@@ -119,11 +119,11 @@ void buffer_vAppend (t_buffer *x, char *fmt, ...)
         if (n >= BUFFER_MAXIMUM_ARGUMENTS) { PD_BUG; break; }
 
         switch (*p++) {
-            case 'i'    : SET_FLOAT     (a, va_arg (ap, int));          break;
-            case 'f'    : SET_FLOAT     (a, va_arg (ap, double));       break;
-            case 's'    : SET_SYMBOL    (a, va_arg (ap, t_symbol *));   break;
-            case ';'    : SET_SEMICOLON (a);                            break;
-            case ','    : SET_COMMA     (a);                            break;
+            case 'i'    : SET_FLOAT     (a, (t_float)va_arg (ap, int));     break;
+            case 'f'    : SET_FLOAT     (a, (t_float)va_arg (ap, double));  break;
+            case 's'    : SET_SYMBOL    (a, va_arg (ap, t_symbol *));       break;
+            case ';'    : SET_SEMICOLON (a);                                break;
+            case ','    : SET_COMMA     (a);                                break;
             default     : k = 0;
         }
         

@@ -247,7 +247,7 @@ t_error audio_openNative (int sampleRate,
     
     {
         size_t k = PD_MAX (size, INTERNAL_BLOCKSIZE) * pa_channelsIn;
-        k = PD_NEXT_POWER_2 (k + 1);
+        k = (size_t)PD_NEXT_POWER_2 (k + 1);
         pa_bufferIn = PD_MEMORY_GET (k * sizeof (t_sample));
         PD_ASSERT ((ring_buffer_size_t)k > 0);
         if (PaUtil_InitializeRingBuffer (&pa_ringIn, sizeof (t_sample), k, pa_bufferIn)) { 
@@ -256,7 +256,7 @@ t_error audio_openNative (int sampleRate,
     }
     {
         size_t k = PD_MAX (size, INTERNAL_BLOCKSIZE) * pa_channelsOut;
-        k = PD_NEXT_POWER_2 (k + 1);
+        k = (size_t)PD_NEXT_POWER_2 (k + 1);
         pa_bufferOut = PD_MEMORY_GET (k * sizeof (t_sample));
         PD_ASSERT ((ring_buffer_size_t)k > 0);
         if (PaUtil_InitializeRingBuffer (&pa_ringOut, sizeof (t_sample), k, pa_bufferOut)) { 
@@ -321,7 +321,7 @@ int audio_pollDSPNative (void)
         for (i = 0, sound = audio_soundOut, p1 = t; i < pa_channelsOut; i++, p1++) {
             for (k = 0, p2 = p1; k < INTERNAL_BLOCKSIZE; k++, sound++, p2 += pa_channelsOut) {
                 *p2 = *sound;
-                *sound = 0.0;
+                *sound = (t_sample)0.0;
             }
         }
         PaUtil_WriteRingBuffer (&pa_ringOut, t, requiredOut);

@@ -287,7 +287,7 @@ static t_error pd_messageSlots (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     if (s == &s_float) {
         if (argc && IS_FLOAT (argv)) { (*c->c_methodFloat) (x, GET_FLOAT (argv)); }
         else {
-            if (!argc) { (*c->c_methodFloat) (x, 0.0); }
+            if (!argc) { (*c->c_methodFloat) (x, (t_float)0.0); }
             else {
                 err = PD_ERROR;
             }
@@ -357,7 +357,7 @@ static t_error pd_messageMethods (t_entry *m, t_pd *x, t_symbol *s, int argc, t_
                         n++; ip++; break;
                         
     case A_FLOAT     :  if (!argc) { return PD_ERROR; }         /* Notice that break is missing. */
-    case A_DEFFLOAT  :  if (!argc) { *fp = 0.0; }
+    case A_DEFFLOAT  :  if (!argc) { *fp = (t_float)0.0; }
                         else {
                             if (IS_FLOAT (argv)) { *fp = GET_FLOAT (argv); }
                             else { 
@@ -462,10 +462,10 @@ void pd_vMessage (t_pd *x, t_symbol *s, char *fmt, ...)
         if (n >= MESSAGE_MAXIMUM_ARGUMENTS) { PD_BUG; break; }
         
         switch (*p++) {
-            case 'f'    : SET_FLOAT   (a, va_arg (ap, double));       break;
-            case 's'    : SET_SYMBOL  (a, va_arg (ap, t_symbol *));   break;
-            case 'i'    : SET_FLOAT   (a, va_arg (ap, t_int));        break;       
-            case 'p'    : SET_POINTER (a, va_arg (ap, t_gpointer *)); break;
+            case 'f'    : SET_FLOAT   (a, (t_float)va_arg (ap, double));    break;
+            case 's'    : SET_SYMBOL  (a, va_arg (ap, t_symbol *));         break;
+            case 'i'    : SET_FLOAT   (a, (t_float)va_arg (ap, t_int));     break;       
+            case 'p'    : SET_POINTER (a, va_arg (ap, t_gpointer *));       break;
             default     : k = 0;
         }
         

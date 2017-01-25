@@ -191,19 +191,19 @@ static void plot_getCoordinates (t_plot *x,
 
     int size = array_getSize (array);
     
-    if (fieldX) { valueX = (i < size) ? array_getFloatAtIndex (array, i, fieldX) : 0.0; }
+    if (fieldX) { valueX = (i < size) ? array_getFloatAtIndex (array, i, fieldX) : (t_float)0.0; }
     else { 
         valueX = i * incrementX;
     }
     
-    if (fieldY) { valueY = (i < size) ? array_getFloatAtIndex (array, i, fieldY) : 0.0; }
+    if (fieldY) { valueY = (i < size) ? array_getFloatAtIndex (array, i, fieldY) : (t_float)0.0; }
     else { 
-        valueY = 0.0;
+        valueY = (t_float)0.0;
     }
     
-    if (fieldW) { valueW = (i < size) ? array_getFloatAtIndex (array, i, fieldW) : 0.0; }
+    if (fieldW) { valueW = (i < size) ? array_getFloatAtIndex (array, i, fieldW) : (t_float)0.0; }
     else {
-        valueW = 0.0;
+        valueW = (t_float)0.0;
     }
     
     *a = relativeX + field_convertValueToPosition (&x->x_fieldX, valueX);
@@ -260,7 +260,7 @@ static void plot_motionHorizontalVertical (t_array *array)
 
 static void plot_motionVertical (t_array *array)
 {
-    t_float distanceX   = (plot_cumulativeX / plot_incrementX) + 0.5;
+    t_float distanceX   = (t_float)((plot_cumulativeX / plot_incrementX) + 0.5);
     int currentX        = PD_CLAMP ((int)(plot_startX + distanceX), 0, array_getSize (array) - 1);
     
     int i = PD_MIN (currentX, plot_previousX);
@@ -300,7 +300,7 @@ static void plot_motion (void *dummy, t_float deltaX, t_float deltaY, t_float mo
     t_array *array = gpointer_getArray (&plot_gpointer, s);
     
     plot_cumulativeX += deltaX * plot_stepX;
-    plot_cumulativeY += deltaY * plot_stepY * (plot_thickness ? plot_direction : 1.0);
+    plot_cumulativeY += deltaY * plot_stepY * (plot_thickness ? plot_direction : (t_float)1.0);
     
     if (plot_fieldDescriptorX)      { plot_motionHorizontalVertical (array); }
     else if (plot_fieldDescriptorY) { plot_motionVertical (array); }
@@ -437,8 +437,8 @@ static void plot_behaviorGetRectangle (t_gobj *z,
         pixelY = canvas_valueToPixelY (glist, valueY);
         pixelW = canvas_valueToPixelY (glist, valueY + valueW) - pixelY;
         
-        pixelW = PD_ABS (pixelW);
-        pixelW = PD_MAX (pixelW, width - 1.0);
+        pixelW = (t_float)PD_ABS (pixelW);
+        pixelW = (t_float)PD_MAX (pixelW, width - 1.0);
 
         xA = PD_MIN (xA, pixelX);
         xB = PD_MAX (xB, pixelX);
@@ -481,8 +481,8 @@ static void plot_behaviorVisibilityChangedDrawPoint (t_plot *x,
     t_symbol *color)
 {
     int numberOfElements  = array_getSize (array);
-    t_float minimumValueY = PLOT_MAX;
-    t_float maximumValueY = -PLOT_MAX;
+    t_float minimumValueY = (t_float)PLOT_MAX;
+    t_float maximumValueY = (t_float)-PLOT_MAX;
     int i;
     
     for (i = 0; i < numberOfElements; i++) {
@@ -542,8 +542,8 @@ static void plot_behaviorVisibilityChangedDrawPoint (t_plot *x,
                         color->s_name,
                         w);
     
-        minimumValueY = PLOT_MAX;
-        maximumValueY = -PLOT_MAX;
+        minimumValueY = (t_float)PLOT_MAX;
+        maximumValueY = (t_float)-PLOT_MAX;
     }
     //
     }
@@ -600,8 +600,8 @@ static void plot_behaviorVisibilityChangedDrawPolygonFill (t_plot *x,
     t_float pixelY = canvas_valueToPixelY (glist, valueY);
     t_float pixelW = canvas_valueToPixelY (glist, valueY + valueW) - pixelY;
     
-    pixelW = PD_ABS (pixelW);
-    pixelW = PD_MAX (pixelW, width - 1.0);
+    pixelW = (t_float)PD_ABS (pixelW);
+    pixelW = (t_float)PD_MAX (pixelW, width - 1.0);
 
     coordinatesX[elementsDrawn] = pixelX;
     coordinatesL[elementsDrawn] = pixelY - pixelW;
@@ -945,7 +945,7 @@ static int plot_behaviorMouseRegularMatch (t_plot *x, t_array *array,
     int i = bestIndex;
     
     plot_thickness = PLOT_THICKNESS_NONE;
-    plot_direction = 1.0;
+    plot_direction = (t_float)1.0;
     
     if (fieldW) {
         if (bestDeltaY < (PLOT_HANDLE_SIZE / 2)) { }
@@ -958,8 +958,8 @@ static int plot_behaviorMouseRegularMatch (t_plot *x, t_array *array,
 
     if (clicked) {
     //
-    plot_cumulativeX          = 0.0;
-    plot_cumulativeY          = 0.0;
+    plot_cumulativeX          = (t_float)0.0;
+    plot_cumulativeY          = (t_float)0.0;
     plot_startX               = i;
     plot_previousX            = i;
     plot_fieldDescriptorX     = NULL;
@@ -979,8 +979,8 @@ static int plot_behaviorMouseRegularMatch (t_plot *x, t_array *array,
         plot_cumulativeY      = array_getFloatAtIndexByDescriptorAsPosition (array, i, &x->x_fieldY);
     }
 
-    if (plot_thickness == PLOT_THICKNESS_UP   && plot_cumulativeY >= 0.0) { plot_direction = -1.0; }
-    if (plot_thickness == PLOT_THICKNESS_DOWN && plot_cumulativeY <= 0.0) { plot_direction = -1.0; }
+    if (plot_thickness == PLOT_THICKNESS_UP   && plot_cumulativeY >= 0.0) { plot_direction = (t_float)-1.0; }
+    if (plot_thickness == PLOT_THICKNESS_DOWN && plot_cumulativeY <= 0.0) { plot_direction = (t_float)-1.0; }
         
     canvas_setMotionFunction (gpointer_getView (&plot_gpointer), NULL, (t_motionfn)plot_motion, a, b);
     //
@@ -1040,8 +1040,8 @@ static int plot_behaviorMouseRegular (t_plot *x, t_array *array,
     pixelX = canvas_valueToPixelX (gpointer_getView (&plot_gpointer), valueX);
     pixelY = canvas_valueToPixelY (gpointer_getView (&plot_gpointer), valueY);
     pixelW = canvas_valueToPixelY (gpointer_getView (&plot_gpointer), valueY + valueW) - pixelY;
-    pixelW = PD_ABS (pixelW);
-    pixelW = PD_MAX (pixelW, plot_width - 1.0);
+    pixelW = (t_float)PD_ABS (pixelW);
+    pixelW = (t_float)PD_MAX (pixelW, plot_width - 1.0);
     
     deltaY = (int)math_euclideanDistance (pixelX, pixelY, a, b);
     deltaL = (int)math_euclideanDistance (pixelX, pixelY - pixelW, a, b);
@@ -1093,13 +1093,13 @@ static int plot_behaviorMouseSingle (t_plot *x, t_array *array,
     PD_ASSERT (plot_relativeY  == 0.0);
     PD_ASSERT (plot_incrementX == 1.0);
         
-    int i = ((int)plot_style == PLOT_POINTS) ? valueX : valueX + 0.5;
+    int i = (int)(((int)plot_style == PLOT_POINTS) ? valueX : valueX + 0.5);
     
     i = PD_CLAMP (i, 0, array_getSize (array) - 1);
     
     plot_thickness          = PLOT_THICKNESS_NONE;
-    plot_direction          = 1.0;
-    plot_cumulativeX        = 0.0;
+    plot_direction          = (t_float)1.0;
+    plot_cumulativeX        = (t_float)0.0;
     plot_cumulativeY        = valueY;
     plot_startX             = i;
     plot_previousX          = i;
@@ -1187,14 +1187,14 @@ static void *plot_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_plot *x = (t_plot *)pd_new (plot_class);
     
-    field_setAsFloatConstant (&x->x_array,          0.0);       /* Default is invalid. */
-    field_setAsFloatConstant (&x->x_colorOutline,   0.0);
-    field_setAsFloatConstant (&x->x_width,          1.0);
-    field_setAsFloatConstant (&x->x_positionX,      1.0);
-    field_setAsFloatConstant (&x->x_positionY,      1.0);
-    field_setAsFloatConstant (&x->x_incrementX,     1.0);
+    field_setAsFloatConstant (&x->x_array,          (t_float)0.0);      /* Default is invalid. */
+    field_setAsFloatConstant (&x->x_colorOutline,   (t_float)0.0);
+    field_setAsFloatConstant (&x->x_width,          (t_float)1.0);
+    field_setAsFloatConstant (&x->x_positionX,      (t_float)1.0);
+    field_setAsFloatConstant (&x->x_positionY,      (t_float)1.0);
+    field_setAsFloatConstant (&x->x_incrementX,     (t_float)1.0);
     field_setAsFloatConstant (&x->x_style,          (t_float)PLOT_POLYGONS);
-    field_setAsFloatConstant (&x->x_isVisible,      1.0);
+    field_setAsFloatConstant (&x->x_isVisible,      (t_float)1.0);
     
     field_setAsFloatVariable (&x->x_fieldX,         sym_x);
     field_setAsFloatVariable (&x->x_fieldY,         sym_y);
