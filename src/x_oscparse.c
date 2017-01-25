@@ -38,7 +38,7 @@ typedef struct _oscparse {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_error oscparse_perform (t_oscparse *, int, t_atom *);
+static t_error oscparse_proceed (t_oscparse *, int, t_atom *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -103,7 +103,7 @@ static int oscparse_isValidTypetag (char c)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_error oscparse_performArgumentsFloat (t_oscparse *x,
+static t_error oscparse_proceedArgumentsFloat (t_oscparse *x,
     int argc,
     t_atom *argv,
     int *dataOffset,
@@ -132,7 +132,7 @@ static t_error oscparse_performArgumentsFloat (t_oscparse *x,
     return err;
 }
 
-static t_error oscparse_performArgumentsInteger (t_oscparse *x,
+static t_error oscparse_proceedArgumentsInteger (t_oscparse *x,
     int argc,
     t_atom *argv,
     int *dataOffset,
@@ -157,7 +157,7 @@ static t_error oscparse_performArgumentsInteger (t_oscparse *x,
     return err;
 }
 
-static t_error oscparse_performArgumentsString (t_oscparse *x,
+static t_error oscparse_proceedArgumentsString (t_oscparse *x,
     int argc,
     t_atom *argv,
     int *dataOffset,
@@ -179,7 +179,7 @@ static t_error oscparse_performArgumentsString (t_oscparse *x,
     return err;
 }
 
-static t_error oscparse_performArgumentsBlob (t_oscparse *x,
+static t_error oscparse_proceedArgumentsBlob (t_oscparse *x,
     int argc,
     t_atom *argv,
     int *dataOffset,
@@ -221,7 +221,7 @@ static t_error oscparse_performArgumentsBlob (t_oscparse *x,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_error oscparse_performArguments (t_oscparse *x,
+static t_error oscparse_proceedArguments (t_oscparse *x,
     int argc,
     t_atom *argv,
     int i,
@@ -231,16 +231,16 @@ static t_error oscparse_performArguments (t_oscparse *x,
     int size)
 {
     switch (OSC_GETCHAR (argv + i)) {
-        case 'f': return oscparse_performArgumentsFloat (x, argc, argv, k, n, a, size);
-        case 'i': return oscparse_performArgumentsInteger (x, argc, argv, k, n, a, size);
-        case 's': return oscparse_performArgumentsString (x, argc, argv, k, n, a, size);
-        case 'b': return oscparse_performArgumentsBlob (x, argc, argv, k, n, a, size);
+        case 'f': return oscparse_proceedArgumentsFloat (x, argc, argv, k, n, a, size);
+        case 'i': return oscparse_proceedArgumentsInteger (x, argc, argv, k, n, a, size);
+        case 's': return oscparse_proceedArgumentsString (x, argc, argv, k, n, a, size);
+        case 'b': return oscparse_proceedArgumentsBlob (x, argc, argv, k, n, a, size);
     }
     
     PD_BUG; return PD_ERROR;
 }
 
-static int oscparse_performFetch (t_oscparse *x,
+static int oscparse_proceedFetch (t_oscparse *x,
     int argc,
     t_atom *argv,
     int typeOnset,
@@ -264,13 +264,13 @@ static int oscparse_performFetch (t_oscparse *x,
     int k = OSC_ROUND4 (typeOnset + numberOfTypeTags + 1);
     
     for (i = typeOnset; i < typeOnset + numberOfTypeTags; i++) {
-        if (n >= size || oscparse_performArguments (x, argc, argv, i, &k, &n, a, size)) { return -1; }
+        if (n >= size || oscparse_proceedArguments (x, argc, argv, i, &k, &n, a, size)) { return -1; }
     }
     
     return n;
 }
 
-static t_error oscparse_performBundle (t_oscparse *x, int argc, t_atom *argv)
+static t_error oscparse_proceedBundle (t_oscparse *x, int argc, t_atom *argv)
 {
     t_error err = PD_ERROR;
     
@@ -290,7 +290,7 @@ static t_error oscparse_performBundle (t_oscparse *x, int argc, t_atom *argv)
     err = (length <= 0 || length & 3);  /* Must be a multiple of 4. */
     
     if (!err) { 
-        err = oscparse_perform (x, length, argv + i + headerMessage);
+        err = oscparse_proceed (x, length, argv + i + headerMessage);
         i += headerMessage + length;
     }
     //
@@ -303,9 +303,9 @@ static t_error oscparse_performBundle (t_oscparse *x, int argc, t_atom *argv)
     return err;
 }
 
-static t_error oscparse_perform (t_oscparse *x, int argc, t_atom *argv)
+static t_error oscparse_proceed (t_oscparse *x, int argc, t_atom *argv)
 {
-    if (OSC_GETCHAR (argv) == '#') { return oscparse_performBundle (x, argc, argv); }
+    if (OSC_GETCHAR (argv) == '#') { return oscparse_proceedBundle (x, argc, argv); }
     else if (OSC_GETCHAR (argv) == '/') {
     //
     t_error err = PD_ERROR_NONE;
@@ -359,7 +359,7 @@ static t_error oscparse_perform (t_oscparse *x, int argc, t_atom *argv)
     
     /* Fetch adress and arguments. */
     
-    n = oscparse_performFetch (x, argc, argv, typeOnset, numberOfTypeTags, a, size);
+    n = oscparse_proceedFetch (x, argc, argv, typeOnset, numberOfTypeTags, a, size);
     
     if (n == -1) { err = PD_ERROR; }
     else {
@@ -397,7 +397,7 @@ static void oscparse_list (t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
     }
         
     if (!err) {
-        err = oscparse_perform (x, argc, argv);
+        err = oscparse_proceed (x, argc, argv);
     }
     
     if (err) { 

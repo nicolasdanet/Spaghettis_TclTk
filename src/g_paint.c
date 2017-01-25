@@ -33,7 +33,7 @@ extern t_pdinstance     *pd_this;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void paint_performAllRecursive (t_glist *glist, int action)
+static void paint_proceedAllRecursive (t_glist *glist, int action)
 {
     t_gobj *y = NULL;
     
@@ -43,7 +43,7 @@ static void paint_performAllRecursive (t_glist *glist, int action)
     //
     t_glist *z = cast_glistChecked (cast_pd (y));
     
-    if (z) { paint_performAllRecursive (z, action); }
+    if (z) { paint_proceedAllRecursive (z, action); }
     else {
         if (visible && pd_class (y) == scalar_class) {
             switch (action) {
@@ -57,13 +57,13 @@ static void paint_performAllRecursive (t_glist *glist, int action)
     }
 }
 
-static void paint_performAll (int action)
+static void paint_proceedAll (int action)
 {
     t_glist *glist = NULL;
 
     for (glist = pd_this->pd_roots; glist; glist = glist->gl_next) {
     //
-    paint_performAllRecursive (glist, action);
+    paint_proceedAllRecursive (glist, action);
     //
     }
 }
@@ -74,17 +74,17 @@ static void paint_performAll (int action)
 
 void paint_scalarsEraseAll (void)
 {
-    paint_performAll (PAINT_ERASE);
+    paint_proceedAll (PAINT_ERASE);
 }
 
 void paint_scalarsDrawAll (void)
 {
-    paint_performAll (PAINT_DRAW);
+    paint_proceedAll (PAINT_DRAW);
 }
 
 void paint_scalarsRedrawAll (void)
 {
-    paint_performAll (PAINT_REDRAW);
+    paint_proceedAll (PAINT_REDRAW);
 }
 
 // -----------------------------------------------------------------------------------------------------------

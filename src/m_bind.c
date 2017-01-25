@@ -223,7 +223,7 @@ static void pd_isThingError (t_symbol *s)
     }
 }
 
-static int pd_isThingPerform (t_symbol *s, int withError)
+static int pd_isThingProceed (t_symbol *s, int withError)
 {
     int k = 0;
     
@@ -243,12 +243,12 @@ static int pd_isThingPerform (t_symbol *s, int withError)
 
 int pd_isThingQuiet (t_symbol *s)
 {
-    return pd_isThingPerform (s, 0);
+    return pd_isThingProceed (s, 0);
 }
 
 int pd_isThing (t_symbol *s)
 {
-    return pd_isThingPerform (s, 1);
+    return pd_isThingProceed (s, 1);
 }
 
 // -----------------------------------------------------------------------------------------------------------

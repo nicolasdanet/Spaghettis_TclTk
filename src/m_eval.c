@@ -285,7 +285,7 @@ void buffer_fileOpen (void *dummy, t_symbol *name, t_symbol *directory)
     
     while ((x != pd_getBoundX()) && pd_getBoundX()) { x = pd_getBoundX(); pd_vMessage (x, sym__pop, "i", 1); }
     
-    stack_performLoadbang();
+    stack_proceedLoadbang();
     
     dsp_resume (state); pd_setBoundX (boundX);
 }

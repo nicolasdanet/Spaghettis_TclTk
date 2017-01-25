@@ -202,14 +202,14 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_performMouseResetGrabbed (t_glist *glist)
+static void canvas_proceedMouseResetGrabbed (t_glist *glist)
 {
     if (glist->gl_editor->e_grabbed) { canvas_setMotionFunction (glist, NULL, NULL, 0, 0); }
     
     PD_ASSERT (!glist->gl_editor->e_grabbed);
 }
 
-static void canvas_performMouseClickRight (t_glist *glist, t_gobj *y, int positionX, int positionY)
+static void canvas_proceedMouseClickRight (t_glist *glist, t_gobj *y, int positionX, int positionY)
 {
     int canProperties = (!y || (y && class_hasPropertiesFunction (pd_class (y))));
     int canOpen = (y && class_hasMethod (pd_class (y), sym_open));
@@ -224,7 +224,7 @@ static void canvas_performMouseClickRight (t_glist *glist, t_gobj *y, int positi
                     canOpen);
 }
 
-static void canvas_performMouseClick (t_glist *glist, int positionX, int positionY, int modifier, int clicked)
+static void canvas_proceedMouseClick (t_glist *glist, int positionX, int positionY, int modifier, int clicked)
 {
     t_gobj *y = NULL;
     
@@ -256,7 +256,7 @@ static void canvas_performMouseClick (t_glist *glist, int positionX, int positio
     }
 }
 
-static int canvas_performMouseHitResizeZone (t_object *object, int positionX, int positionY, int c, int d)
+static int canvas_proceedMouseHitResizeZone (t_object *object, int positionX, int positionY, int c, int d)
 {
     if (object) {
         if (object_isBox (object) || cast_glistChecked (cast_pd (object))) {
@@ -269,7 +269,7 @@ static int canvas_performMouseHitResizeZone (t_object *object, int positionX, in
     return 0;
 }
 
-static int canvas_performMouseHitOutlets (t_object *object,
+static int canvas_proceedMouseHitOutlets (t_object *object,
     int positionX,
     int positionY,
     int a,  
@@ -299,7 +299,7 @@ static int canvas_performMouseHitOutlets (t_object *object,
     return -1;
 }
 
-static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY, int modifier, int clicked)
+static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY, int modifier, int clicked)
 {
     int n, h, a, b, c, d;
     
@@ -310,7 +310,7 @@ static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY,
     //
     t_object *object = cast_objectIfPatchable (y);
 
-    if (modifier & MODIFIER_RIGHT) { canvas_performMouseClickRight (glist, y, positionX, positionY); }
+    if (modifier & MODIFIER_RIGHT) { canvas_proceedMouseClickRight (glist, y, positionX, positionY); }
     else if (modifier & MODIFIER_SHIFT) {
     
         if (clicked) {
@@ -334,7 +334,7 @@ static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY,
         
     } else {
           
-        if (canvas_performMouseHitResizeZone (object, positionX, positionY, c, d)) {
+        if (canvas_proceedMouseHitResizeZone (object, positionX, positionY, c, d)) {
         
             if (!clicked) { canvas_setCursorType (glist, CURSOR_RESIZE); }
             else {
@@ -346,7 +346,7 @@ static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY,
                 glist->gl_editor->e_newY = positionY;
             }  
                                              
-        } else if ((n = canvas_performMouseHitOutlets (object, positionX, positionY, a, c, d, &h)) != -1) {
+        } else if ((n = canvas_proceedMouseHitOutlets (object, positionX, positionY, a, c, d, &h)) != -1) {
             
             if (!clicked) { canvas_setCursorType (glist, CURSOR_CONNECT); }
             else {
@@ -389,7 +389,7 @@ static int canvas_performMouseHit (t_glist *glist, int positionX, int positionY,
     return 1;
 }
 
-static int canvas_performMouseLines (t_glist *glist, int positionX, int positionY, int clicked)
+static int canvas_proceedMouseLines (t_glist *glist, int positionX, int positionY, int clicked)
 {
     t_glist *canvas = canvas_getView (glist);
     t_outconnect *connection = NULL;
@@ -435,7 +435,7 @@ static int canvas_performMouseLines (t_glist *glist, int positionX, int position
     return 0;
 }
 
-static void canvas_performMouseLassoStart (t_glist *glist, int positionX, int positionY, int modifier)
+static void canvas_proceedMouseLassoStart (t_glist *glist, int positionX, int positionY, int modifier)
 {
     int newlyCreated = 0;
     
@@ -457,28 +457,28 @@ static void canvas_performMouseLassoStart (t_glist *glist, int positionX, int po
     }
 }
 
-static void canvas_performMouse (t_glist *glist, int a, int b, int modifier, int clicked)
+static void canvas_proceedMouse (t_glist *glist, int a, int b, int modifier, int clicked)
 {
     int hasShift     = (modifier & MODIFIER_SHIFT);
     int isRightClick = (modifier & MODIFIER_RIGHT);
     int isRunMode    = (modifier & MODIFIER_CTRL) || (!glist->gl_isEditMode);
     
-    if (clicked) { canvas_performMouseResetGrabbed (glist); glist->gl_editor->e_action = ACTION_NONE; }
+    if (clicked) { canvas_proceedMouseResetGrabbed (glist); glist->gl_editor->e_action = ACTION_NONE; }
 
     if (glist->gl_editor->e_action == ACTION_NONE) {
 
         glist->gl_editor->e_previousX = a;
         glist->gl_editor->e_previousY = b;
 
-        if (isRunMode && !isRightClick) { canvas_performMouseClick (glist, a, b, modifier, clicked); }
-        else if (canvas_performMouseHit (glist, a, b, modifier, clicked)) { } 
+        if (isRunMode && !isRightClick) { canvas_proceedMouseClick (glist, a, b, modifier, clicked); }
+        else if (canvas_proceedMouseHit (glist, a, b, modifier, clicked)) { } 
         else {
         
-            if (isRightClick)    { canvas_performMouseClickRight (glist, NULL, a, b); }
+            if (isRightClick)    { canvas_proceedMouseClickRight (glist, NULL, a, b); }
             else if (!isRunMode) {
-                if (!hasShift && canvas_performMouseLines (glist, a, b, clicked)) {
+                if (!hasShift && canvas_proceedMouseLines (glist, a, b, clicked)) {
                 } else if (clicked) {
-                    canvas_performMouseLassoStart (glist, a, b, modifier);
+                    canvas_proceedMouseLassoStart (glist, a, b, modifier);
                 }
             }
             
@@ -491,7 +491,7 @@ static void canvas_performMouse (t_glist *glist, int a, int b, int modifier, int
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_performCopy (t_glist *glist)
+static void canvas_proceedCopy (t_glist *glist)
 {
     if (glist->gl_editor->e_selectedObjects) {
     //
@@ -532,7 +532,7 @@ static void canvas_performCopy (t_glist *glist)
     }
 }
 
-static void canvas_performPaste (t_glist *glist)
+static void canvas_proceedPaste (t_glist *glist)
 {
     t_gobj *y = NULL;
     t_selection *s = NULL;
@@ -722,7 +722,7 @@ void canvas_motion (t_glist *glist, t_float positionX, t_float positionY, t_floa
         canvas_motionResize (glist, positionX, positionY);
 
     } else {
-        canvas_performMouse (glist, (int)positionX, (int)positionY, (int)modifier, 0);
+        canvas_proceedMouse (glist, (int)positionX, (int)positionY, (int)modifier, 0);
     }
     //
     }
@@ -732,7 +732,7 @@ void canvas_mouse (t_glist *glist, t_float positionX, t_float positionY, t_float
 {
     if (!glist->gl_editor) { return; } 
     else {
-        canvas_performMouse (glist, (int)positionX, (int)positionY, (int)modifier, 1);
+        canvas_proceedMouse (glist, (int)positionX, (int)positionY, (int)modifier, 1);
     }
 }
 
@@ -851,7 +851,7 @@ void canvas_copy (t_glist *glist)
         sys_vGui ("clipboard append {%.*s}\n", s, t);       /* < http://stackoverflow.com/a/13289324 > */
         
     } else {
-        canvas_performCopy (glist);
+        canvas_proceedCopy (glist);
     }
     //
     }
@@ -865,7 +865,7 @@ void canvas_paste (t_glist *glist)
     if (glist->gl_editor->e_selectedText) {
         sys_vGui ("::ui_bind::pasteText .x%lx\n", glist);
     } else {
-        canvas_performPaste (glist);
+        canvas_proceedPaste (glist);
     }
     //
     }
@@ -877,7 +877,7 @@ void canvas_duplicate (t_glist *glist)
     else {
     //
     canvas_copy (glist);
-    canvas_performPaste (glist);
+    canvas_proceedPaste (glist);
     //
     }
 }

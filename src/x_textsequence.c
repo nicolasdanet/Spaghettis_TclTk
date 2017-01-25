@@ -53,7 +53,7 @@ static void textsequence_message    (t_textsequence *, t_float);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int textsequence_performNeedToWait (t_textsequence *x, t_buffer *b, int start, int end) 
+static int textsequence_proceedNeedToWait (t_textsequence *x, t_buffer *b, int start, int end) 
 {
     if (end - start == 0)    { return 0; }
     else if (x->x_waitCount) { return 0; }
@@ -67,7 +67,7 @@ static int textsequence_performNeedToWait (t_textsequence *x, t_buffer *b, int s
     }
 }
 
-static int textsequence_performSetWaitRange (t_textsequence *x, t_buffer *b, int start, int end)
+static int textsequence_proceedSetWaitRange (t_textsequence *x, t_buffer *b, int start, int end)
 {
     if (IS_FLOAT (buffer_atomAtIndex (b, start))) {
         int n = start + x->x_waitNumberOfLeading;
@@ -85,7 +85,7 @@ static int textsequence_performSetWaitRange (t_textsequence *x, t_buffer *b, int
     return (x->x_waitCount == (end - start));       /* Advance if nothing remains to output. */
 }
 
-static void textsequence_performOutWaitForSymbol (t_textsequence *x, t_buffer *b, int start, int end)
+static void textsequence_proceedOutWaitForSymbol (t_textsequence *x, t_buffer *b, int start, int end)
 {
     if (x->x_isAutomatic && x->x_waitCount == 2 && IS_FLOAT (buffer_atomAtIndex (b, start + 1))) { 
         x->x_delay = GET_FLOAT (buffer_atomAtIndex (b, start + 1)); 
@@ -98,7 +98,7 @@ static void textsequence_performOutWaitForSymbol (t_textsequence *x, t_buffer *b
     }
 }
 
-static void textsequence_performOutWaitForFloat (t_textsequence *x, t_buffer *b, int start, int end)
+static void textsequence_proceedOutWaitForFloat (t_textsequence *x, t_buffer *b, int start, int end)
 {
     if (x->x_isAutomatic && x->x_waitCount == 1) { 
         x->x_delay = GET_FLOAT (buffer_atomAtIndex (b, start)); 
@@ -111,18 +111,18 @@ static void textsequence_performOutWaitForFloat (t_textsequence *x, t_buffer *b,
     }
 }
 
-static void textsequence_performOutWait (t_textsequence *x, t_buffer *b, int start, int end)
+static void textsequence_proceedOutWait (t_textsequence *x, t_buffer *b, int start, int end)
 {
     int k = IS_FLOAT (buffer_atomAtIndex (b, start));
     
     x->x_sendTo    = NULL;
     x->x_isLooping = 0;
 
-    if (k) { textsequence_performOutWaitForFloat (x, b, start, end);  } 
-    else   { textsequence_performOutWaitForSymbol (x, b, start, end); }
+    if (k) { textsequence_proceedOutWaitForFloat (x, b, start, end);  } 
+    else   { textsequence_proceedOutWaitForSymbol (x, b, start, end); }
 }
 
-static void textsequence_performOutContentMain (t_textsequence *x, t_atom *t, int count, t_atomtype type)
+static void textsequence_proceedOutContentMain (t_textsequence *x, t_atom *t, int count, t_atomtype type)
 {
     /* Ensure that comma separated messages are well prepended. */
     /* For instance "toto a b c, 1 2;" results in "toto a b c" and "toto 1 2". */
@@ -141,7 +141,7 @@ static void textsequence_performOutContentMain (t_textsequence *x, t_atom *t, in
     outlet_list (x->x_outletMain, count, t);
 }
 
-static void textsequence_performOutContentGlobal (t_textsequence *x, t_atom *t, int count, t_atomtype type)
+static void textsequence_proceedOutContentGlobal (t_textsequence *x, t_atom *t, int count, t_atomtype type)
 {
     int shitfRight = 0;
     t_symbol *symSend = x->x_sendTo;
@@ -165,7 +165,7 @@ static void textsequence_performOutContentGlobal (t_textsequence *x, t_atom *t, 
     x->x_sendTo = (type != A_COMMA ? NULL : symSend);
 }
 
-static void textsequence_performOutContent (t_textsequence *x, 
+static void textsequence_proceedOutContent (t_textsequence *x, 
     t_buffer *b, 
     int start, 
     int end, 
@@ -187,13 +187,13 @@ static void textsequence_performOutContent (t_textsequence *x,
         dollar_copyExpandAtomsByEnvironment (a, count, t, count, view);
     }
     
-    if (x->x_outletMain) { textsequence_performOutContentMain (x, t, count, type); }
-    else if (count > 0)  { textsequence_performOutContentGlobal (x, t, count, type); }
+    if (x->x_outletMain) { textsequence_proceedOutContentMain (x, t, count, type); }
+    else if (count > 0)  { textsequence_proceedOutContentGlobal (x, t, count, type); }
     
     ATOMS_FREEA (t, size);
 }
 
-static void textsequence_perform (t_textsequence *x, int argc, t_atom *argv)
+static void textsequence_proceed (t_textsequence *x, int argc, t_atom *argv)
 {
     t_buffer *b = textclient_fetchBuffer (&x->x_textclient);
     int start, end;
@@ -201,14 +201,14 @@ static void textsequence_perform (t_textsequence *x, int argc, t_atom *argv)
         
     if (b && buffer_getMessageAtWithTypeOfEnd (b, x->x_indexOfMessage, &start, &end, &type)) { 
         
-        int advance, needToWait = textsequence_performNeedToWait (x, b, start, end);
+        int advance, needToWait = textsequence_proceedNeedToWait (x, b, start, end);
         
         if (needToWait) {
-            advance = textsequence_performSetWaitRange (x, b, start, end); 
-            textsequence_performOutWait (x, b, start, end);
+            advance = textsequence_proceedSetWaitRange (x, b, start, end); 
+            textsequence_proceedOutWait (x, b, start, end);
         } else {
             advance = 1;
-            textsequence_performOutContent (x, b, start, end, type, argc, argv);
+            textsequence_proceedOutContent (x, b, start, end, type, argc, argv);
         }
         
         if (advance) { x->x_waitCount = 0; x->x_indexOfMessage += 1; }
@@ -235,7 +235,7 @@ static void textsequence_task (t_textsequence *x)
     x->x_delay  = (t_float)0.0;
     
     while (x->x_isAutomatic) {
-        x->x_isLooping = 1; while (x->x_isLooping) { textsequence_perform (x, x->x_argc, x->x_argv); }
+        x->x_isLooping = 1; while (x->x_isLooping) { textsequence_proceed (x, x->x_argc, x->x_argv); }
         if (x->x_delay > 0.0) { break; }
     }
     
@@ -248,7 +248,7 @@ static void textsequence_task (t_textsequence *x)
 
 static void textsequence_bang (t_textsequence *x)
 {
-    x->x_isLooping = 1; while (x->x_isLooping) { textsequence_perform (x, x->x_argc, x->x_argv); }
+    x->x_isLooping = 1; while (x->x_isLooping) { textsequence_proceed (x, x->x_argc, x->x_argv); }
 }
 
 static void textsequence_list (t_textsequence *x, t_symbol *s, int argc, t_atom *argv)
@@ -257,9 +257,9 @@ static void textsequence_list (t_textsequence *x, t_symbol *s, int argc, t_atom 
     
     while (x->x_isLooping) {
     //
-    if (argc) { textsequence_perform (x, argc, argv); }
+    if (argc) { textsequence_proceed (x, argc, argv); }
     else {
-        textsequence_perform (x, x->x_argc, x->x_argv);
+        textsequence_proceed (x, x->x_argc, x->x_argv);
     }
     //
     }
@@ -272,7 +272,7 @@ static void textsequence_stop (t_textsequence *x)
 
 static void textsequence_step (t_textsequence *x)
 {
-    textsequence_stop (x); textsequence_perform (x, x->x_argc, x->x_argv);
+    textsequence_stop (x); textsequence_proceed (x, x->x_argc, x->x_argv);
 }
 
 static void textsequence_automatic (t_textsequence *x)

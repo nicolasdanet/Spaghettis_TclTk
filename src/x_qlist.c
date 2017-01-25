@@ -23,7 +23,7 @@ static t_class *qlist_class;        /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void qlist_performWait (t_qlist *x, int doNotSend, int isAutomatic, int start, int end)
+static void qlist_proceedWait (t_qlist *x, int doNotSend, int isAutomatic, int start, int end)
 {
     t_buffer *b = textbuffer_getBuffer (&x->ql_textbuffer);
     int i = start + 1;
@@ -38,7 +38,7 @@ static void qlist_performWait (t_qlist *x, int doNotSend, int isAutomatic, int s
     }
 }
 
-static int qlist_performNext (t_qlist *x,
+static int qlist_proceedNext (t_qlist *x,
     int doNotSend,
     int isAutomatic,
     int start,
@@ -85,7 +85,7 @@ static int qlist_performNext (t_qlist *x,
     return 0;
 }
 
-static void qlist_perform (t_qlist *x, int doNotSend, int isAutomatic)
+static void qlist_proceed (t_qlist *x, int doNotSend, int isAutomatic)
 {
     t_buffer *b = textbuffer_getBuffer (&x->ql_textbuffer);
     t_error err = PD_ERROR_NONE;
@@ -111,14 +111,14 @@ static void qlist_perform (t_qlist *x, int doNotSend, int isAutomatic)
         size = end - start;
         
         if (size && !x->ql_target && IS_FLOAT (buffer_atomAtIndex (b, start))) {
-            qlist_performWait (x, doNotSend, isAutomatic, start, end);
+            qlist_proceedWait (x, doNotSend, isAutomatic, start, end);
             break;
             
         } else {
             x->ql_waitCount = 0;
             x->ql_indexOfMessage += 1;
             
-            if (qlist_performNext (x, doNotSend, isAutomatic, start, end, type)) {
+            if (qlist_proceedNext (x, doNotSend, isAutomatic, start, end, type)) {
                 break;
             }
         }
@@ -137,7 +137,7 @@ static void qlist_perform (t_qlist *x, int doNotSend, int isAutomatic)
 
 static void qlist_task (t_qlist *x)
 {
-    qlist_perform (x, 0, 1);
+    qlist_proceed (x, 0, 1);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -148,7 +148,7 @@ static void qlist_bang (t_qlist *x)
 {
     qlist_rewind (x);
 
-    if (!x->ql_flagReentrant) { qlist_perform (x, 0, 1); }
+    if (!x->ql_flagReentrant) { qlist_proceed (x, 0, 1); }
     else {
         clock_delay (x->ql_clock, 0.0);
     }
@@ -156,7 +156,7 @@ static void qlist_bang (t_qlist *x)
 
 static void qlist_next (t_qlist *x, t_float f)
 {
-    if (!x->ql_flagReentrant) { qlist_perform (x, (f != 0.0), 0); }
+    if (!x->ql_flagReentrant) { qlist_proceed (x, (f != 0.0), 0); }
     else {
         error_unexpected (sym_qlist, sym_next);
     }

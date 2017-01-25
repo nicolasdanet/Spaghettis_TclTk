@@ -154,7 +154,7 @@ static void route_anything (t_route *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *route_newPerform (int argc, t_atom *argv)
+static void *route_newProceed (int argc, t_atom *argv)
 {
     t_error err = PD_ERROR_NONE;
     t_route *x = (t_route *)pd_new (route_class);
@@ -183,9 +183,9 @@ static void *route_newPerform (int argc, t_atom *argv)
 
 static void *route_new (t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == 0) { t_atom a; SET_FLOAT (&a, (t_float)0.0); return route_newPerform (1, &a); }
+    if (argc == 0) { t_atom a; SET_FLOAT (&a, (t_float)0.0); return route_newProceed (1, &a); }
     else {
-        return route_newPerform (argc, argv);
+        return route_newProceed (argc, argv);
     }
 }
 

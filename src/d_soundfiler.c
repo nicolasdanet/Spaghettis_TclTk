@@ -179,7 +179,7 @@ static int soundfiler_readDecode (int f,
     return framesAlreadyRead;
 }
 
-static int soundfiler_readPerform (t_glist *glist, int argc, t_atom *argv)
+static int soundfiler_readProceed (t_glist *glist, int argc, t_atom *argv)
 {
     t_audioproperties properties; soundfile_initProperties (&properties);
     
@@ -245,7 +245,7 @@ static int soundfiler_readPerform (t_glist *glist, int argc, t_atom *argv)
 
 static void soundfiler_read (t_soundfiler *x, t_symbol *s, int argc, t_atom *argv)
 {
-    outlet_float (x->x_outlet, (t_float)soundfiler_readPerform (x->x_owner, argc, argv));
+    outlet_float (x->x_outlet, (t_float)soundfiler_readProceed (x->x_owner, argc, argv));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -368,7 +368,7 @@ static int soundfiler_writeEncode (int f,
     return framesAlreadyWritten;
 }
     
-static int soundfiler_writePerform (t_glist *canvas, int argc, t_atom *argv)
+static int soundfiler_writeProceed (t_glist *canvas, int argc, t_atom *argv)
 {
     t_error err = PD_ERROR_NONE;
     
@@ -409,7 +409,7 @@ static int soundfiler_writePerform (t_glist *canvas, int argc, t_atom *argv)
 
 static void soundfiler_write (t_soundfiler *x, t_symbol *s, int argc, t_atom *argv)
 {
-    outlet_float (x->x_outlet, (t_float)soundfiler_writePerform (x->x_owner, argc, argv)); 
+    outlet_float (x->x_outlet, (t_float)soundfiler_writeProceed (x->x_owner, argc, argv)); 
 }
 
 // -----------------------------------------------------------------------------------------------------------

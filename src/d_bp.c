@@ -55,7 +55,7 @@ typedef struct _bp_tilde {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static inline double bp_tilde_coefficientsPerformQCosine (double f)
+static inline double bp_tilde_coefficientsProceedQCosine (double f)
 {
     if (f < -PD_HALF_PI || f > PD_HALF_PI) { return 0.0; }
     else {
@@ -63,7 +63,7 @@ static inline double bp_tilde_coefficientsPerformQCosine (double f)
     }
 }
 
-static void bp_tilde_coefficientsPerform (t_bp_tilde *x, t_float f, t_float q)
+static void bp_tilde_coefficientsProceed (t_bp_tilde *x, t_float f, t_float q)
 {
     x->x_frequency  = (f < 0.001) ? (t_float)10.0 : f;
     x->x_q          = (t_float)PD_MAX (0.0, q);
@@ -74,7 +74,7 @@ static void bp_tilde_coefficientsPerform (t_bp_tilde *x, t_float f, t_float q)
         double omegaPerQ  = PD_MIN ((x->x_q < 0.001) ? 1.0 : (omega / x->x_q), 1.0);
         double r          = 1.0 - omegaPerQ;
         
-        x->x_space.c_a1   = (t_sample)(2.0 * bp_tilde_coefficientsPerformQCosine (omega) * r);
+        x->x_space.c_a1   = (t_sample)(2.0 * bp_tilde_coefficientsProceedQCosine (omega) * r);
         x->x_space.c_a2   = (t_sample)(- r * r);
         x->x_space.c_gain = (t_sample)(2.0 * omegaPerQ * (omegaPerQ + r * omega));
     }
@@ -86,12 +86,12 @@ static void bp_tilde_coefficientsPerform (t_bp_tilde *x, t_float f, t_float q)
 
 static void bp_tilde_frequency (t_bp_tilde *x, t_float f)
 {
-    bp_tilde_coefficientsPerform (x, f, x->x_q);
+    bp_tilde_coefficientsProceed (x, f, x->x_q);
 }
 
 static void bp_tilde_q (t_bp_tilde *x, t_float q)
 {
-    bp_tilde_coefficientsPerform (x, x->x_frequency, q);
+    bp_tilde_coefficientsProceed (x, x->x_frequency, q);
 }
 
 static void bp_tilde_clear (t_bp_tilde *x)
@@ -139,7 +139,7 @@ static void bp_tilde_dsp (t_bp_tilde *x, t_signal **sp)
 {
     x->x_sampleRate = sp[0]->s_sampleRate;
     
-    bp_tilde_coefficientsPerform (x, x->x_frequency, x->x_q);
+    bp_tilde_coefficientsProceed (x, x->x_frequency, x->x_q);
     
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     
@@ -159,7 +159,7 @@ static void *bp_tilde_new (t_float f, t_float q)
     inlet_new (cast_object (x), cast_pd (x), &s_float, sym_inlet2);
     inlet_new (cast_object (x), cast_pd (x), &s_float, sym_inlet3);
     
-    bp_tilde_coefficientsPerform (x, f, q);
+    bp_tilde_coefficientsProceed (x, f, q);
 
     return x;
 }

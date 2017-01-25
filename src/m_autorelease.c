@@ -82,7 +82,7 @@ void autorelease_add (t_pd *x)
     }
 }
 
-void autorelease_perform (t_pd *x)
+void autorelease_proceed (t_pd *x)
 {
     pd_unbind (x, sym__autorelease); pd_free (x);
 }

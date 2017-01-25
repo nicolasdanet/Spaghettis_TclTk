@@ -73,7 +73,7 @@ static void oscformat_setString (t_atom *a, int *i, const char *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int oscformat_performGetArgumentsSize (t_oscformat *x, int argc, t_atom *argv, int *numberOfTypeTags)
+static int oscformat_proceedGetArgumentsSize (t_oscformat *x, int argc, t_atom *argv, int *numberOfTypeTags)
 {
     int i = 0; 
     int k = 0;
@@ -112,7 +112,7 @@ static int oscformat_performGetArgumentsSize (t_oscformat *x, int argc, t_atom *
     return size;
 }
 
-static int oscformat_performFillFloat (t_oscformat *x, int argc, t_atom *argv, int j, int *m, t_atom *a)
+static int oscformat_proceedFillFloat (t_oscformat *x, int argc, t_atom *argv, int j, int *m, t_atom *a)
 {
     int n = *m;
     
@@ -124,7 +124,7 @@ static int oscformat_performFillFloat (t_oscformat *x, int argc, t_atom *argv, i
     *m = n; j++; return j;
 }
 
-static int oscformat_performFillInteger (t_oscformat *x, int argc, t_atom *argv, int j, int *m, t_atom *a)
+static int oscformat_proceedFillInteger (t_oscformat *x, int argc, t_atom *argv, int j, int *m, t_atom *a)
 {
     int n = *m;
 
@@ -135,7 +135,7 @@ static int oscformat_performFillInteger (t_oscformat *x, int argc, t_atom *argv,
     *m = n; j++; return j;
 }
 
-static int oscformat_performFillString (t_oscformat *x, int argc, t_atom *argv, int j, int *m, t_atom *a)
+static int oscformat_proceedFillString (t_oscformat *x, int argc, t_atom *argv, int j, int *m, t_atom *a)
 {
     t_symbol *s = IS_SYMBOL (argv + j) ? GET_SYMBOL (argv + j) : sym___arrobe__;
     
@@ -144,7 +144,7 @@ static int oscformat_performFillString (t_oscformat *x, int argc, t_atom *argv, 
     j++; return j;
 }
 
-static int oscformat_performFillBlob (t_oscformat *x, int argc, t_atom *argv, int j, int *m, t_atom *a)
+static int oscformat_proceedFillBlob (t_oscformat *x, int argc, t_atom *argv, int j, int *m, t_atom *a)
 {
     int n = *m;
 
@@ -176,7 +176,7 @@ static int oscformat_performFillBlob (t_oscformat *x, int argc, t_atom *argv, in
     *m = n; j++; return j;
 }
 
-static t_error oscformat_performFill (t_oscformat *x,
+static t_error oscformat_proceedFill (t_oscformat *x,
     int argc,
     t_atom *argv,
     int argumentsStart,
@@ -204,10 +204,10 @@ static t_error oscformat_performFill (t_oscformat *x,
         i++;
         
         switch (type) {
-            case 'f':   j = oscformat_performFillFloat (x, argc, argv, j, &n, a);   break;
-            case 'i':   j = oscformat_performFillInteger (x, argc, argv, j, &n, a); break;
-            case 's':   j = oscformat_performFillString (x, argc, argv, j, &n, a);  break;
-            case 'b':   j = oscformat_performFillBlob (x, argc, argv, j, &n, a);    break;
+            case 'f':   j = oscformat_proceedFillFloat (x, argc, argv, j, &n, a);   break;
+            case 'i':   j = oscformat_proceedFillInteger (x, argc, argv, j, &n, a); break;
+            case 's':   j = oscformat_proceedFillString (x, argc, argv, j, &n, a);  break;
+            case 'b':   j = oscformat_proceedFillBlob (x, argc, argv, j, &n, a);    break;
             default :   return PD_ERROR;
         }
     }
@@ -223,12 +223,12 @@ static t_error oscformat_performFill (t_oscformat *x,
     return PD_ERROR_NONE;
 }
 
-static t_error oscformat_perform (t_oscformat *x, int argc, t_atom *argv)
+static t_error oscformat_proceed (t_oscformat *x, int argc, t_atom *argv)
 {
     t_error err = PD_ERROR_NONE;
     
     int numberOfTypeTags = 0;
-    int argumentsSize    = oscformat_performGetArgumentsSize (x, argc, argv, &numberOfTypeTags);
+    int argumentsSize    = oscformat_proceedGetArgumentsSize (x, argc, argv, &numberOfTypeTags);
     int argumentsStart   = OSC_ROUND4 (strlen (x->x_path) + 1) + OSC_ROUND4 (numberOfTypeTags + 2);
     int size             = argumentsStart + argumentsSize;
     
@@ -236,7 +236,7 @@ static t_error oscformat_perform (t_oscformat *x, int argc, t_atom *argv)
     
     ATOMS_ALLOCA (a, size);
 
-    err = oscformat_performFill (x, argc, argv, argumentsStart, a, size);
+    err = oscformat_proceedFill (x, argc, argv, argumentsStart, a, size);
     
     if (!err) { outlet_list (x->x_outlet, size, a); }
     
@@ -255,7 +255,7 @@ static void oscformat_list (t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
     //
     if ((*x->x_path) == 0) { error_unspecified (sym_oscformat, sym_path); }
     else {
-        t_error err = oscformat_perform (x, argc, argv);
+        t_error err = oscformat_proceed (x, argc, argv);
         
         if (err) { 
             error_failed (sym_oscformat);

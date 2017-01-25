@@ -312,7 +312,7 @@ static t_error soundfile_readFileHeaderFormat (int f, t_audioproperties *args)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int soundfile_readFileHeaderPerform (int f, t_audioproperties *args)
+static int soundfile_readFileHeaderProceed (int f, t_audioproperties *args)
 {
     t_error err = soundfile_readFileHeaderFormat (f, args);
     
@@ -362,7 +362,7 @@ int soundfile_readFileHeader (t_glist *glist, t_audioproperties *args)
                 &s,
                 PD_STRING);
     
-    if (f >= 0) { return soundfile_readFileHeaderPerform (f, args); }
+    if (f >= 0) { return soundfile_readFileHeaderProceed (f, args); }
     
     return -1;
 }

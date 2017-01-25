@@ -382,7 +382,7 @@ void            ugen_graphClose             (t_dspcontext *context);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            canvas_dspPerform           (t_glist *glist, int isTopLevel, t_signal **sp);
+void            canvas_dspProceed           (t_glist *glist, int isTopLevel, t_signal **sp);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -418,7 +418,7 @@ t_int           *block_performProlog        (t_int *w);
 t_int           *block_performEpilog        (t_int *w);
 
 t_float         block_getRatio              (t_block *x);
-void            block_setPerformLength      (t_block *x, int allContextLength, int epilogLength);
+void            block_setPerformsLength     (t_block *x, int allContextLength, int epilogLength);
 void            block_getProperties         (t_block *x, 
                                                 int parentBlockSize,
                                                 t_float parentSampleRate, 

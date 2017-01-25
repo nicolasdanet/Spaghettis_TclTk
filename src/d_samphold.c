@@ -53,7 +53,7 @@ static void samphold_tilde_set (t_samphold_tilde *x, t_float f)
 
 /* No aliasing. */
 /* Notice that the two signals incoming could be theoretically just one. */
-/* But as only loads are performed, it is assumed safe to use restricted pointers. */
+/* But as only loads are done, it is assumed safe to use restricted pointers. */
 
 static t_int *samphold_tilde_perform (t_int *w)
 {

@@ -36,7 +36,7 @@ typedef struct _clip_tilde {
 
 /* No aliasing. */
 
-static t_int *clip_perform (t_int *w)
+static t_int *clip_tilde_perform (t_int *w)
 {
     t_clip_tilde *x = (t_clip_tilde *)(w[1]);
     PD_RESTRICTED in  = (t_sample *)(w[2]);
@@ -61,7 +61,7 @@ static void clip_tilde_dsp (t_clip_tilde *x, t_signal **sp)
 {
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     
-    dsp_add (clip_perform, 4, x, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
+    dsp_add (clip_tilde_perform, 4, x, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------

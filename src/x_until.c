@@ -32,7 +32,7 @@ typedef struct _until {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void until_perform (t_until *x)
+static void until_proceed (t_until *x)
 {
     while (x->x_run && x->x_count) { x->x_count--; outlet_bang (x->x_outlet); }
 }
@@ -43,12 +43,12 @@ static void until_perform (t_until *x)
 
 static void until_bang (t_until *x)
 {
-    x->x_run = 1; x->x_count = -1; until_perform (x);
+    x->x_run = 1; x->x_count = -1; until_proceed (x);
 }
 
 static void until_float (t_until *x, t_float f)
 {
-    x->x_run = 1; x->x_count = (int)PD_MAX (0.0, f); until_perform (x);
+    x->x_run = 1; x->x_count = (int)PD_MAX (0.0, f); until_proceed (x);
 }
 
 static void until_stop (t_until *x)

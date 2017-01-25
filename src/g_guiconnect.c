@@ -48,7 +48,7 @@ static void guiconnect_signoff (t_guiconnect *x)
 
 static void guiconnect_autorelease (t_guiconnect *x)
 {
-    autorelease_perform (cast_pd (x));
+    autorelease_proceed (cast_pd (x));
 }
 
 // -----------------------------------------------------------------------------------------------------------

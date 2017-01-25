@@ -54,7 +54,7 @@ static void netsend_socketClose (t_netsend *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error netsend_sendPerformRaw (t_netsend *x, int fd, char *t, int length)
+static t_error netsend_sendProceedRaw (t_netsend *x, int fd, char *t, int length)
 {
     t_error err = PD_ERROR_NONE;
     
@@ -75,7 +75,7 @@ t_error netsend_sendPerformRaw (t_netsend *x, int fd, char *t, int length)
     return err;
 }
 
-t_error netsend_sendPerformText (t_netsend *x, int fd, t_symbol *s, int argc, t_atom *argv)
+static t_error netsend_sendProceedText (t_netsend *x, int fd, t_symbol *s, int argc, t_atom *argv)
 {   
     t_error err = PD_ERROR_NONE;
     
@@ -86,7 +86,7 @@ t_error netsend_sendPerformText (t_netsend *x, int fd, t_symbol *s, int argc, t_
     buffer_appendSemicolon (b);
     buffer_toStringUnzeroed (b, &t, &length);
     
-    err = netsend_sendPerformRaw (x, fd, t, length);
+    err = netsend_sendProceedRaw (x, fd, t, length);
 
     PD_MEMORY_FREE (t);
     buffer_free (b);
@@ -94,7 +94,7 @@ t_error netsend_sendPerformText (t_netsend *x, int fd, t_symbol *s, int argc, t_
     return err;
 }
 
-t_error netsend_sendPerformBinary (t_netsend *x, int fd, t_symbol *s, int argc, t_atom *argv)
+static t_error netsend_sendProceedBinary (t_netsend *x, int fd, t_symbol *s, int argc, t_atom *argv)
 {
     t_error err = PD_ERROR_NONE;
     
@@ -107,7 +107,7 @@ t_error netsend_sendPerformBinary (t_netsend *x, int fd, t_symbol *s, int argc, 
         *(t + i) = (unsigned char)byte; 
     }
     
-    err = netsend_sendPerformRaw (x, fd, (char *)t, argc);
+    err = netsend_sendProceedRaw (x, fd, (char *)t, argc);
 
     PD_MEMORY_FREE (t);
 
@@ -171,9 +171,9 @@ static void netsend_send (t_netsend *x, t_symbol *s, int argc, t_atom *argv)
     //
     t_error err = PD_ERROR_NONE;
     
-    if (x->ns_isBinary) { err = netsend_sendPerformBinary (x, x->ns_fd, s, argc, argv); }
+    if (x->ns_isBinary) { err = netsend_sendProceedBinary (x, x->ns_fd, s, argc, argv); }
     else {
-        err = netsend_sendPerformText (x, x->ns_fd, s, argc, argv);
+        err = netsend_sendProceedText (x, x->ns_fd, s, argc, argv);
     }
     
     if (err) { netsend_disconnect (x); }

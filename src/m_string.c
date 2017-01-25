@@ -16,7 +16,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_error string_appendPerform (char *dest, size_t size, const char *src, int n)
+static t_error string_appendProceed (char *dest, size_t size, const char *src, int n)
 {
     size_t d = strlen (dest);
     size_t k = (size - 1) - d;
@@ -59,14 +59,14 @@ t_error string_copy (char *dest, size_t size, const char *src)
 
 t_error string_add (char *dest, size_t size, const char *src)
 {
-    return string_appendPerform (dest, size, src, -1);
+    return string_appendProceed (dest, size, src, -1);
 }
 
 t_error string_append (char *dest, size_t size, const char *src, int n)
 {
     if (n < 0) { PD_BUG; return PD_ERROR; }
     else {
-        return string_appendPerform (dest, size, src, n);
+        return string_appendProceed (dest, size, src, n);
     }
 }
 

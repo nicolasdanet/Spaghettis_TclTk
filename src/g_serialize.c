@@ -24,7 +24,7 @@ extern t_class *canvas_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void canvas_findTemplatesAppendPerform (t_symbol *templateIdentifier, int *n, t_symbol ***v)
+static void canvas_findTemplatesAppendProceed (t_symbol *templateIdentifier, int *n, t_symbol ***v)
 {
     int t = *n;
     t_symbol **templates = *v;
@@ -51,7 +51,7 @@ static void canvas_findTemplatesAppendRecursive (t_template *tmpl, int *n, t_sym
 {
     int i;
 
-    canvas_findTemplatesAppendPerform (template_getTemplateIdentifier (tmpl), n, v);
+    canvas_findTemplatesAppendProceed (template_getTemplateIdentifier (tmpl), n, v);
 
     for (i = 0; i < template_getSize (tmpl); i++) {
         t_template *t = template_getTemplateIfArrayAtIndex (tmpl, i);

@@ -52,7 +52,7 @@ static void unpack_anything (t_unpack *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *unpack_newPerform (int argc, t_atom *argv)
+static void *unpack_newProceed (int argc, t_atom *argv)
 {
     t_unpack *x = (t_unpack *)pd_new (unpack_class);
     int i;
@@ -71,12 +71,12 @@ static void *unpack_newPerform (int argc, t_atom *argv)
 
 static void *unpack_new (t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc) { return unpack_newPerform (argc, argv); }
+    if (argc) { return unpack_newProceed (argc, argv); }
     else {
         t_atom a[2];
         SET_FLOAT (&a[0], (t_float)0.0);
         SET_FLOAT (&a[1], (t_float)0.0);
-        return unpack_newPerform (2, a);
+        return unpack_newProceed (2, a);
     }
 }
 

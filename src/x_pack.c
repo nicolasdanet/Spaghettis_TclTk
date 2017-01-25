@@ -89,7 +89,7 @@ static void pack_anything (t_pack *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *pack_newPerform (int argc, t_atom *argv)
+static void *pack_newProceed (int argc, t_atom *argv)
 {
     t_pack *x = (t_pack *)pd_new (pack_class);
     int i;
@@ -110,12 +110,12 @@ static void *pack_newPerform (int argc, t_atom *argv)
 
 static void *pack_new (t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc) { return pack_newPerform (argc, argv); }
+    if (argc) { return pack_newProceed (argc, argv); }
     else {
         t_atom a[2];
         SET_FLOAT (&a[0], (t_float)0.0);
         SET_FLOAT (&a[1], (t_float)0.0);
-        return pack_newPerform (2, a);
+        return pack_newProceed (2, a);
     }
 }
 

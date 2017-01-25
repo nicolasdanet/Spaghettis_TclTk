@@ -59,7 +59,7 @@ static void rzero_tilde_clear (t_rzero_tilde *x)
 
 /* No aliasing. */
 /* Notice that the two signals incoming could be theoretically just one. */
-/* But as only loads are performed, it is assumed safe to use restricted pointers. */
+/* But as only loads are done, it is assumed safe to use restricted pointers. */
 
 static t_int *rzero_tilde_perform (t_int *w)
 {

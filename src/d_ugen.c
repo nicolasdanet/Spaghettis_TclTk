@@ -522,7 +522,7 @@ void ugen_graphClose (t_dspcontext *context)
 
     chainEpilog = pd_this->pd_dspChainSize;
     
-    if (block) { block_setPerformLength (block, chainEnd - chainBegin, chainEpilog - chainEnd); }
+    if (block) { block_setPerformsLength (block, chainEnd - chainBegin, chainEpilog - chainEnd); }
 
     ugen_graphDelete (context);
 }

@@ -18,7 +18,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void canvas_dspPerform (t_glist *glist, int isTopLevel, t_signal **sp)
+void canvas_dspProceed (t_glist *glist, int isTopLevel, t_signal **sp)
 {
     t_gobj          *y = NULL;
     t_dspcontext    *context = NULL;
@@ -54,7 +54,7 @@ void canvas_dspPerform (t_glist *glist, int isTopLevel, t_signal **sp)
 
 void canvas_dsp (t_glist *x, t_signal **sp)
 {
-    canvas_dspPerform (x, 0, sp);
+    canvas_dspProceed (x, 0, sp);
 }
 
 // -----------------------------------------------------------------------------------------------------------

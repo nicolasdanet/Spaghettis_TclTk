@@ -62,7 +62,7 @@ static void czero_tilde_clear (t_czero_tilde *x)
 
 /* No aliasing. */
 /* Notice that the fourth signals incoming could be theoretically just one. */
-/* But as only loads are performed, it is assumed safe to use restricted pointers. */
+/* But as only loads are done, it is assumed safe to use restricted pointers. */
 
 static t_int *czero_tilde_perform (t_int *w)
 {

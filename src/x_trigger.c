@@ -99,7 +99,7 @@ static void trigger_anything (t_trigger *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *trigger_newPerform (int argc, t_atom *argv)
+static void *trigger_newProceed (int argc, t_atom *argv)
 {
     t_trigger *x = (t_trigger *)pd_new (trigger_class);
     int i;
@@ -118,9 +118,9 @@ static void *trigger_newPerform (int argc, t_atom *argv)
 
 static void *trigger_new (t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc) { return trigger_newPerform (argc, argv); }
+    if (argc) { return trigger_newProceed (argc, argv); }
     else {
-        t_atom a; SET_SYMBOL (&a, &s_bang); return trigger_newPerform (1, &a);
+        t_atom a; SET_SYMBOL (&a, &s_bang); return trigger_newProceed (1, &a);
     }
 }
 

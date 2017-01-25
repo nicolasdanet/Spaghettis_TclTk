@@ -178,7 +178,7 @@ void        pd_setBoundA                                (t_pd *x);
 
 void        stack_push                                  (t_pd *x);
 void        stack_pop                                   (t_pd *x);
-void        stack_performLoadbang                       (void);
+void        stack_proceedLoadbang                       (void);
 int         stack_setLoadingAbstraction                 (t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -379,7 +379,7 @@ void        autorelease_run                             (void);
 void        autorelease_stop                            (void);
 void        autorelease_drain                           (void);
 void        autorelease_add                             (t_pd *x);
-void        autorelease_perform                         (t_pd *x);
+void        autorelease_proceed                         (t_pd *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
