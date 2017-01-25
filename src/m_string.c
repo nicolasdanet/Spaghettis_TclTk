@@ -16,27 +16,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error string_copy (char *dest, size_t size, const char *src)
-{
-    size_t s = strlen (src);
-    
-    PD_ASSERT (size > 0);
-    
-    strncpy (dest, src, PD_MIN (s, size));
-    dest[PD_MIN (size - 1, s)] = 0;
-    
-    if (s < size) { return PD_ERROR_NONE; }
-    else {
-        return PD_ERROR;
-    }
-}
-
-t_error string_add (char *dest, size_t size, const char *src)
-{
-    return string_append (dest, size, src, -1);
-}
-
-t_error string_append (char *dest, size_t size, const char *src, int n)
+static t_error string_appendPerform (char *dest, size_t size, const char *src, int n)
 {
     size_t d = strlen (dest);
     size_t k = (size - 1) - d;
@@ -55,6 +35,38 @@ t_error string_append (char *dest, size_t size, const char *src, int n)
     if (s <= k) { return PD_ERROR_NONE; }
     else {
         return PD_ERROR;
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_error string_copy (char *dest, size_t size, const char *src)
+{
+    size_t s = strlen (src);
+    
+    PD_ASSERT (size > 0);
+    
+    strncpy (dest, src, PD_MIN (s, size));
+    dest[PD_MIN (size - 1, s)] = 0;
+    
+    if (s < size) { return PD_ERROR_NONE; }
+    else {
+        return PD_ERROR;
+    }
+}
+
+t_error string_add (char *dest, size_t size, const char *src)
+{
+    return string_appendPerform (dest, size, src, -1);
+}
+
+t_error string_append (char *dest, size_t size, const char *src, int n)
+{
+    if (n < 0) { PD_BUG; return PD_ERROR; }
+    else {
+        return string_appendPerform (dest, size, src, n);
     }
 }
 
