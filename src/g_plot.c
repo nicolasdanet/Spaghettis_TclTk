@@ -1008,10 +1008,9 @@ static int plot_behaviorMouseRegular (t_plot *x, t_array *array,
     if (!plot_fetchElementFieldNames (x, array, &fieldX, &fieldY, &fieldW)) {
     //
     int best = PD_INT_MAX;
-    int bestDeltaY;
-    int bestDeltaL;
-    int bestDeltaH;
-    
+    int bestDeltaY = 0;
+    int bestDeltaL = 0;
+    int bestDeltaH = 0;
     int bestIndex = -1;
         
     int i, step = plot_getStep (array);

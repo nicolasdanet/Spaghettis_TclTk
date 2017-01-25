@@ -140,7 +140,7 @@ static void textsearch_list (t_textsearch *x, t_symbol *s, int argc, t_atom *arg
     //
     int numberOfLines = buffer_getNumberOfMessages (b);
     int bestLine = -1;
-    int bestLineStart;
+    int bestLineStart = 0;
     int i, start, end;
         
     for (i = 0; i < numberOfLines; i++) {

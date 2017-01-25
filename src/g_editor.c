@@ -584,7 +584,8 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
 {
     if (argc > 1) { 
     //
-    int k, isDown = ((int)(atom_getFloat (argv + 0)) != 0);
+    int isDown = ((int)(atom_getFloat (argv + 0)) != 0);
+    int k = 0;
     
     t_symbol *s = sym__dummy;
     

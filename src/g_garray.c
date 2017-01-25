@@ -132,6 +132,8 @@ void garray_release (void)
 {
 }
 
+#if PD_WITH_DEBUG
+    
 static void garray_check (t_garray *x)
 {
     t_array *array = NULL; t_template *template = NULL;
@@ -155,6 +157,8 @@ static void garray_check (t_garray *x)
     PD_ASSERT (template_getIndexOfField (template, sym_y) == 0);    /* Just one field. */
     PD_ASSERT (array_getElementSize (array) == 1);                  /* Just one field. */
 }
+
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

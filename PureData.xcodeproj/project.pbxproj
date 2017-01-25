@@ -2120,6 +2120,13 @@
 				);
 				PRODUCT_NAME = pd;
 				VALID_ARCHS = "i386 x86_64";
+				WARNING_CFLAGS = (
+					"-Wall",
+					"-Wextra",
+					"-Wshadow",
+					"-Wno-unused-parameter",
+					"-Wno-unknown-pragmas",
+				);
 			};
 			name = Release;
 		};
