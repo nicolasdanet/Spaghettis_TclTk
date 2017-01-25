@@ -40,7 +40,7 @@ static void ooura_release (void);
 
 static int ooura_getNextSize (int n)
 {
-    int t = (int)((math_ilog2 (PD_NEXT_POWER_2 (n)) / 2.0) + 0.5);
+    int t = (int)((math_ilog2 ((int)PD_NEXT_POWER_2 (n)) / 2.0) + 0.5);
     
     return (1 << (t * 2));
 }
@@ -68,7 +68,7 @@ void ooura_initialize (int n)
     
     if (n > ooura_maximum) {
     //
-    int t    = sqrt (n);
+    int t    = (int)sqrt (n);
     size_t a = 2 + t;
     size_t b = n / 2;
     

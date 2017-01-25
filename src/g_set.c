@@ -102,7 +102,7 @@ static void set_set (t_set *x, t_symbol *templateName, t_symbol *fieldName)
         if (x->x_asSymbol) {
             WORD_SYMBOL (&x->x_fields[0].sv_w) = &s_;
         } else {
-            WORD_FLOAT (&x->x_fields[0].sv_w) = 0.0;
+            WORD_FLOAT (&x->x_fields[0].sv_w)  = (t_float)0.0;
         }
     }
 }
@@ -144,7 +144,7 @@ static void *set_new (t_symbol *s, int argc, t_atom *argv)
         int i;
         for (i = 0; i < x->x_fieldsSize; i++) {
             x->x_fields[i].sv_fieldName  = atom_getSymbolAtIndex (i + 1, argc, argv);
-            WORD_FLOAT (&x->x_fields[i].sv_w) = 0.0;
+            WORD_FLOAT (&x->x_fields[i].sv_w) = (t_float)0.0;
             if (i) { inlet_newFloat (cast_object (x), (t_float *)&x->x_fields[i].sv_w); }
         }
     }

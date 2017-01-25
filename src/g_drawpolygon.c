@@ -312,8 +312,8 @@ static int drawpolygon_behaviorMouse (t_gobj *z,
         
             drawpolygon_stepX       = canvas_valueForOnePixelX (glist);
             drawpolygon_stepY       = canvas_valueForOnePixelY (glist);
-            drawpolygon_cumulativeX = 0.0;
-            drawpolygon_cumulativeY = 0.0;
+            drawpolygon_cumulativeX = (t_float)0.0;
+            drawpolygon_cumulativeY = (t_float)0.0;
             drawpolygon_field       = bestField;
             
             gpointer_setByCopy (gp, &drawpolygon_gpointer);
@@ -354,10 +354,10 @@ static void *drawpolygon_new (t_symbol *s, int argc, t_atom *argv)
     if (s == sym_filledcurve || s == sym_filledpolygon) { x->x_flags |= DRAWPOLYGON_CLOSED; }
     if (s == sym_filledcurve || s == sym_drawcurve)     { x->x_flags |= DRAWPOLYGON_BEZIER; }
     
-    field_setAsFloatConstant (&x->x_colorFill, 0.0);
-    field_setAsFloatConstant (&x->x_colorOutline, 0.0);
-    field_setAsFloatConstant (&x->x_width, 1.0);
-    field_setAsFloatConstant (&x->x_isVisible, 1.0);
+    field_setAsFloatConstant (&x->x_colorFill,    (t_float)0.0);
+    field_setAsFloatConstant (&x->x_colorOutline, (t_float)0.0);
+    field_setAsFloatConstant (&x->x_width,        (t_float)1.0);
+    field_setAsFloatConstant (&x->x_isVisible,    (t_float)1.0);
     
     while (argc > 0) {
 

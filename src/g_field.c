@@ -39,18 +39,22 @@ static t_error field_setAsFloatVariableParsed (t_fielddescriptor *fd,
     
     k = sscanf (firstOpeningParenthesis, "(%lf:%lf)(%lf:%lf)(%lf)", &a, &b, &c, &d, &e);    // --
             
-    fd->fd_v1       = 0.0;
-    fd->fd_v2       = 0.0;
-    fd->fd_screen1  = 0.0;
-    fd->fd_screen2  = 0.0;
-    fd->fd_quantum  = 0.0;
+    fd->fd_v1       = (t_float)0.0;
+    fd->fd_v2       = (t_float)0.0;
+    fd->fd_screen1  = (t_float)0.0;
+    fd->fd_screen2  = (t_float)0.0;
+    fd->fd_quantum  = (t_float)0.0;
     
-    if (k == 2) { fd->fd_v1 = a; fd->fd_v2 = b; fd->fd_screen1 = a; fd->fd_screen2 = b; }
-    else if (k == 4 || k == 5) { 
-        fd->fd_v1 = a; fd->fd_v2 = b; fd->fd_screen1 = c; fd->fd_screen2 = d;
-        if (k == 5) {
-            fd->fd_quantum = e;
-        }
+    if (k == 2) { fd->fd_screen1 = fd->fd_v1 = (t_float)a; fd->fd_screen2 = fd->fd_v2 = (t_float)b; }
+    else if (k == 4 || k == 5) {
+    //
+    fd->fd_v1      = (t_float)a;
+    fd->fd_v2      = (t_float)b;
+    fd->fd_screen1 = (t_float)c;
+    fd->fd_screen2 = (t_float)d;
+    
+    if (k == 5) { fd->fd_quantum = (t_float)e; }
+    //
     }
     //
     }
@@ -62,7 +66,7 @@ static t_error field_setAsFloatVariableParsed (t_fielddescriptor *fd,
 
 static void field_setAsReset (t_fielddescriptor *fd)
 {
-    field_setAsFloatConstant (fd, 0.0);
+    field_setAsFloatConstant (fd, (t_float)0.0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -74,11 +78,11 @@ void field_setAsFloatConstant (t_fielddescriptor *fd, t_float f)
     fd->fd_type         = DATA_FLOAT;
     fd->fd_isVariable   = 0;
     fd->fd_un.fd_float  = f;
-    fd->fd_v1           = 0.0;
-    fd->fd_v2           = 0.0;
-    fd->fd_screen1      = 0.0;
-    fd->fd_screen2      = 0.0;
-    fd->fd_quantum      = 0.0;
+    fd->fd_v1           = (t_float)0.0;
+    fd->fd_v2           = (t_float)0.0;
+    fd->fd_screen1      = (t_float)0.0;
+    fd->fd_screen2      = (t_float)0.0;
+    fd->fd_quantum      = (t_float)0.0;
 }
 
 void field_setAsFloatVariable (t_fielddescriptor *fd, t_symbol *s)
@@ -100,11 +104,11 @@ void field_setAsFloatVariable (t_fielddescriptor *fd, t_symbol *s)
     if (parse && !field_setAsFloatVariableParsed (fd, s, firstOpeningParenthesis)) { }
     else {
         fd->fd_un.fd_variableName   = s;
-        fd->fd_v1                   = 0.0;
-        fd->fd_v2                   = 0.0;
-        fd->fd_screen1              = 0.0;
-        fd->fd_screen2              = 0.0; 
-        fd->fd_quantum              = 0.0;
+        fd->fd_v1                   = (t_float)0.0;
+        fd->fd_v2                   = (t_float)0.0;
+        fd->fd_screen1              = (t_float)0.0;
+        fd->fd_screen2              = (t_float)0.0; 
+        fd->fd_quantum              = (t_float)0.0;
     }
 }
 

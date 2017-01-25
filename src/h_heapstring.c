@@ -26,7 +26,7 @@ static void heapstring_reserve (t_heapstring *x, size_t size)
 {
     if (size > x->hs_size) {
     //
-    size_t newSize = PD_NEXT_POWER_2 (size);
+    size_t newSize = (size_t)PD_NEXT_POWER_2 (size);
     size_t oldSize = x->hs_size;
 
     x->hs_raw  = PD_MEMORY_RESIZE (x->hs_raw, oldSize, newSize);

@@ -85,7 +85,7 @@ static void append_set (t_append *x, t_symbol *templateName, t_symbol *fieldName
     else {
         x->x_templateIdentifier     = template_makeIdentifierWithWildcard (templateName); 
         x->x_fields[0].gv_fieldName = fieldName;
-        x->x_fields[0].gv_f         = 0.0;
+        x->x_fields[0].gv_f         = (t_float)0.0;
     }
 }
 
@@ -107,7 +107,7 @@ static void *append_new (t_symbol *s, int argc, t_atom *argv)
     
     for (i = 0; i < x->x_fieldsSize; i++) {
         x->x_fields[i].gv_fieldName = atom_getSymbolAtIndex (i + 1, argc, argv);
-        x->x_fields[i].gv_f = 0.0;
+        x->x_fields[i].gv_f = (t_float)0.0;
         if (i) { inlet_newFloat (cast_object (x), &x->x_fields[i].gv_f); }
     }
     

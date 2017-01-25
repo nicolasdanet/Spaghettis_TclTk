@@ -53,15 +53,15 @@ typedef struct _lop_tilde {
 
 static void lop_tilde_frequency (t_lop_tilde *x, t_float f)
 {
-    x->x_frequency           = PD_MAX (0.0, f);
+    x->x_frequency           = (t_float)PD_MAX (0.0, f);
     x->x_sampleRate          = (x->x_sampleRate <= 0) ? AUDIO_DEFAULT_SAMPLERATE : x->x_sampleRate;
-    x->x_space.c_coefficient = f * PD_TWO_PI / x->x_sampleRate;
-    x->x_space.c_coefficient = PD_CLAMP (x->x_space.c_coefficient, 0.0, 1.0);
+    x->x_space.c_coefficient = (t_sample)(f * PD_TWO_PI / x->x_sampleRate);
+    x->x_space.c_coefficient = (t_sample)(PD_CLAMP (x->x_space.c_coefficient, 0.0, 1.0));
 }
 
 static void lop_tilde_clear (t_lop_tilde *x)
 {
-    x->x_space.c_real = 0.0;
+    x->x_space.c_real = (t_sample)0.0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -79,14 +79,14 @@ static t_int *lop_tilde_perform (t_int *w)
     
     t_sample last = c->c_real;
     t_sample b = c->c_coefficient;
-    t_sample a = 1.0 - b;
+    t_sample a = (t_sample)(1.0 - b);
     
     while (n--) {
         t_sample f = b * (*in++) + a * last;
         *out++ = last = f;
     }
     
-    if (PD_IS_BIG_OR_SMALL (last)) { last = 0.0; }
+    if (PD_IS_BIG_OR_SMALL (last)) { last = (t_sample)0.0; }
     
     c->c_real = last;
     

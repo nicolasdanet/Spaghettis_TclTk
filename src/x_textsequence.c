@@ -232,7 +232,7 @@ static void textsequence_perform (t_textsequence *x, int argc, t_atom *argv)
 static void textsequence_task (t_textsequence *x)
 {
     x->x_sendTo = NULL;
-    x->x_delay  = 0.0;
+    x->x_delay  = (t_float)0.0;
     
     while (x->x_isAutomatic) {
         x->x_isLooping = 1; while (x->x_isLooping) { textsequence_perform (x, x->x_argc, x->x_argv); }
@@ -286,7 +286,7 @@ static void textsequence_automatic (t_textsequence *x)
 
 static void textsequence_rewind (t_textsequence *x)
 {
-    textsequence_message (x, 0.0);
+    textsequence_message (x, (t_float)0.0);
 }
 
 static void textsequence_message (t_textsequence *x, t_float f)
