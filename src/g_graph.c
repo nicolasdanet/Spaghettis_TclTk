@@ -292,7 +292,7 @@ static void canvas_getGraphOnParentRectangle (t_gobj *z, t_glist *glist, int *a,
 t_float canvas_pixelToValueX (t_glist *glist, t_float f)
 {
     t_float range = glist->gl_valueRight - glist->gl_valueLeft;
-    t_float v = 0.0;
+    t_float v = (t_float)0.0;
         
     if (!glist->gl_isGraphOnParent) { v = f; }      /* Scalars. */
     else {
@@ -310,7 +310,7 @@ t_float canvas_pixelToValueX (t_glist *glist, t_float f)
 t_float canvas_pixelToValueY (t_glist *glist, t_float f)
 {
     t_float range = glist->gl_valueBottom - glist->gl_valueTop;
-    t_float v = 0.0;
+    t_float v = (t_float)0.0;
         
     if (!glist->gl_isGraphOnParent) { v = f; }      /* Scalars. */
     else {
@@ -328,8 +328,8 @@ t_float canvas_pixelToValueY (t_glist *glist, t_float f)
 t_float canvas_valueToPixelX (t_glist *glist, t_float f)
 {
     t_float range = glist->gl_valueRight - glist->gl_valueLeft;
-    t_float v = 1.0;
-    t_float x = 0.0;
+    t_float v = (t_float)1.0;
+    t_float x = (t_float)0.0;
     
     if (!glist->gl_isGraphOnParent) { }     /* Scalars. */
     else {
@@ -348,8 +348,8 @@ t_float canvas_valueToPixelX (t_glist *glist, t_float f)
 t_float canvas_valueToPixelY (t_glist *glist, t_float f)
 {
     t_float range = glist->gl_valueBottom - glist->gl_valueTop;
-    t_float v = 1.0;
-    t_float x = 0.0;
+    t_float v = (t_float)1.0;
+    t_float x = (t_float)0.0;
     
     if (!glist->gl_isGraphOnParent) { }     /* Scalars. */
     else {
@@ -381,12 +381,12 @@ t_float canvas_valueForDeltaInPixelY (t_glist *glist, t_float f)
 
 t_float canvas_valueForOnePixelX (t_glist *glist)
 {
-    return (canvas_pixelToValueX (glist, 1.0) - canvas_pixelToValueX (glist, 0.0));
+    return (canvas_pixelToValueX (glist, (t_float)1.0) - canvas_pixelToValueX (glist, (t_float)0.0));
 }
 
 t_float canvas_valueForOnePixelY (t_glist *glist)
 {
-    return (canvas_pixelToValueY (glist, 1.0) - canvas_pixelToValueY (glist, 0.0));
+    return (canvas_pixelToValueY (glist, (t_float)1.0) - canvas_pixelToValueY (glist, (t_float)0.0));
 }
 
 // -----------------------------------------------------------------------------------------------------------

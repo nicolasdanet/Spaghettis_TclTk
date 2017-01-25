@@ -101,8 +101,8 @@ static t_int *resample_performUpsamplingLinear (t_int *w)
     int i = (int)f;
     t_sample fractional = f - (t_sample)i;
     
-    if (fractional == 0.0) { fractional = 1.0; }
-    *s2++ = fractional * b + (1.0 - fractional) * a;
+    if (fractional == 0.0) { fractional = (t_sample)1.0; }
+    *s2++ = (t_sample)(fractional * b + (1.0 - fractional) * a);
     
     if (i < size) { b = *(s1 + i); }
     if (i != 0)   { a = *(s1 + i - 1); }

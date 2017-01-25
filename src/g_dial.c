@@ -108,12 +108,12 @@ static double dial_getNeedleAngle (t_dial *x)
 
 static int dial_getNeedleTopX (t_dial *x, int m, double distance)
 {
-    return (m + PD_MAX (distance, 1.0) * cos (dial_getNeedleAngle (x)));
+    return (int)(m + PD_MAX (distance, 1.0) * cos (dial_getNeedleAngle (x)));
 }
 
 static int dial_getNeedleTopY (t_dial *x, int n, double distance)
 {
-    return (n + PD_MAX (distance, 1.0) * sin (dial_getNeedleAngle (x)));
+    return (int)(n + PD_MAX (distance, 1.0) * sin (dial_getNeedleAngle (x)));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -540,7 +540,7 @@ static void dial_set (t_dial *x, t_float f)
 {
     t_float old = x->x_floatValue;
     
-    f = PD_CLAMP (f, x->x_minimum, x->x_maximum);
+    f = (t_float)PD_CLAMP (f, x->x_minimum, x->x_maximum);
     
     if (x->x_isLogarithmic) { 
         x->x_position = (int)(log (f / x->x_minimum) / dial_getStepValue (x));
@@ -793,9 +793,9 @@ static void *dial_new (t_symbol *s, int argc, t_atom *argv)
     
     dial_setRange (x, minimum, maximum);
     
-    if (x->x_gui.iem_loadbang) { dial_set (x, value); }
+    if (x->x_gui.iem_loadbang) { dial_set (x, (t_float)value); }
     else {
-        dial_set (x, 0.0);
+        dial_set (x, (t_float)0.0);
     }
 
     x->x_outlet = outlet_new (cast_object (x), &s_float);

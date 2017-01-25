@@ -417,7 +417,7 @@ t_error soundfile_writeFileParse (t_symbol *s, int *ac, t_atom **av, t_audioprop
         
     } else if (argc > 1 && (t == sym___dash__r || t == sym___dash__rate || t == sym___dash__samplerate)) {
         sampleRate = atom_getFloat (argv + 1);
-        sampleRate = PD_MAX (1.0, sampleRate);
+        sampleRate = (t_sample)PD_MAX (1.0, sampleRate);
         argc -= 2; argv += 2;
         
     } else if (t == sym___dash__n || t == sym___dash__normalize) {

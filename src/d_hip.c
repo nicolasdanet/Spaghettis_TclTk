@@ -55,15 +55,15 @@ typedef struct _hip_tilde {
 
 static void hip_tilde_frequency (t_hip_tilde *x, t_float f)
 {
-    x->x_frequency           = PD_MAX (0.0, f);
+    x->x_frequency           = (t_float)PD_MAX (0.0, f);
     x->x_sampleRate          = (x->x_sampleRate <= 0) ? AUDIO_DEFAULT_SAMPLERATE : x->x_sampleRate;
-    x->x_space.c_coefficient = 1.0 - x->x_frequency * PD_TWO_PI / x->x_sampleRate;
-    x->x_space.c_coefficient = PD_CLAMP (x->x_space.c_coefficient, 0.0, 1.0);
+    x->x_space.c_coefficient = (t_sample)(1.0 - x->x_frequency * PD_TWO_PI / x->x_sampleRate);
+    x->x_space.c_coefficient = (t_sample)PD_CLAMP (x->x_space.c_coefficient, 0.0, 1.0);
 }
 
 static void hip_tilde_clear (t_hip_tilde *x)
 {
-    x->x_space.c_real = 0.0;
+    x->x_space.c_real = (t_sample)0.0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -83,7 +83,7 @@ static t_int *hip_tilde_perform (t_int *w)
     
     if (a < 1.0) {
 
-        t_sample normalize = 0.5 * (1.0 + a);
+        t_sample normalize = (t_sample)(0.5 * (1.0 + a));
         t_sample last = c->c_real;
         
         while (n--) {
@@ -92,7 +92,7 @@ static t_int *hip_tilde_perform (t_int *w)
             last = f;
         }
         
-        if (PD_IS_BIG_OR_SMALL (last)) { last = 0.0; }
+        if (PD_IS_BIG_OR_SMALL (last)) { last = (t_sample)0.0; }
         
         c->c_real = last;
 

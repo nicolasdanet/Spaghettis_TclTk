@@ -89,12 +89,12 @@ static void *subpatch_new (t_symbol *s)
     
     if (s == &s_) { s = sym_Patch; }
     
-    SET_FLOAT  (a + 0, 0.0);
+    SET_FLOAT  (a + 0, (t_float)0.0);
     SET_FLOAT  (a + 1, WINDOW_HEADER);
     SET_FLOAT  (a + 2, WINDOW_WIDTH);
     SET_FLOAT  (a + 3, WINDOW_HEIGHT);
     SET_SYMBOL (a + 4, s);
-    SET_FLOAT  (a + 5, 1.0);
+    SET_FLOAT  (a + 5, (t_float)1.0);
     
     x = canvas_new (NULL, NULL, 6, a);
     x->gl_parent = z;
@@ -631,8 +631,8 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
     glist->gl_graphMarginLeft   = marginX;
     glist->gl_graphMarginTop    = marginY;
 
-    if (scaleX == 0.0) { scaleX = 1.0; }
-    if (scaleY == 0.0) { scaleY = 1.0; }
+    if (scaleX == 0.0) { scaleX = (t_float)1.0; }
+    if (scaleY == 0.0) { scaleY = (t_float)1.0; }
 
     if (flags & 1) {    /* Graph on parent. */
     
@@ -646,9 +646,9 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
         
     } else {
     
-        glist->gl_valueLeft     = 0.0;
+        glist->gl_valueLeft     = (t_float)0.0;
         glist->gl_valueRight    = PD_ABS (scaleX);
-        glist->gl_valueTop      = 0.0;
+        glist->gl_valueTop      = (t_float)0.0;
         glist->gl_valueBottom   = PD_ABS (scaleY);
     }
     
@@ -689,10 +689,10 @@ t_glist *canvas_newGraphOnParent (t_glist *glist,
     
     if (valueStart >= valueEnd || valueUp == valueDown) {
     //
-    valueStart  = GRAPH_DEFAULT_START;
-    valueEnd    = GRAPH_DEFAULT_END;
-    valueUp     = GRAPH_DEFAULT_UP;
-    valueDown   = GRAPH_DEFAULT_DOWN;
+    valueStart  = (t_float)GRAPH_DEFAULT_START;
+    valueEnd    = (t_float)GRAPH_DEFAULT_END;
+    valueUp     = (t_float)GRAPH_DEFAULT_UP;
+    valueDown   = (t_float)GRAPH_DEFAULT_DOWN;
     //
     }
     
@@ -808,10 +808,10 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     //
     }
 
-    x->gl_valueLeft             = 0.0;
-    x->gl_valueTop              = 0.0;
-    x->gl_valueRight            = 1.0;
-    x->gl_valueBottom           = 1.0;
+    x->gl_valueLeft             = (t_float)0.0;
+    x->gl_valueTop              = (t_float)0.0;
+    x->gl_valueRight            = (t_float)1.0;
+    x->gl_valueBottom           = (t_float)1.0;
     x->gl_windowTopLeftX        = topLeftX;
     x->gl_windowTopLeftY        = topLeftY;
     x->gl_windowBottomRightX    = topLeftX + width;

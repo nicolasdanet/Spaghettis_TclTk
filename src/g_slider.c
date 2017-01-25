@@ -497,9 +497,9 @@ static void slider_set (t_slider *x, t_float f)
     
     x->x_floatValue = f;
     
-    if (x->x_minimum > x->x_maximum) { f = PD_CLAMP (f, x->x_maximum, x->x_minimum); }
+    if (x->x_minimum > x->x_maximum) { f = (t_float)PD_CLAMP (f, x->x_maximum, x->x_minimum); }
     else {
-        f = PD_CLAMP (f, x->x_minimum, x->x_maximum);
+        f = (t_float)PD_CLAMP (f, x->x_minimum, x->x_maximum);
     }
     
     if (x->x_isLogarithmic) { 
@@ -682,7 +682,7 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
     double minimum      = 0.0;
     double maximum      = (double)(x->x_isVertical ? (height - 1) : (width - 1));
-    t_float position    = 0.0;
+    t_float position    = (t_float)0.0;
 
     if (argc >= 17                                                      // --
             && IS_FLOAT (argv + 0)                                      // Width.

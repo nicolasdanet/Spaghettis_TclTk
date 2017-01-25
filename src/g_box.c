@@ -154,7 +154,7 @@ static int boxtext_sendTypeset (t_boxtext *x,
     /* Locate the insertion point. */
     
     if (numberOfLines == (int)(b / fontHeight)) {
-        int k = (a / fontWidth) + 0.5;
+        int k = (int)((a / fontWidth) + 0.5);
         indexOfMouse = headInBytes + u8_offset (head, PD_CLAMP (k, 0, charactersUntilWrap));
     }
     

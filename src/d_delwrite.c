@@ -35,7 +35,7 @@ void delwrite_tilde_setMasterVectorSize (t_delwrite_tilde *x, int vectorSize)
 
 void delwrite_tilde_updateDelayLine (t_delwrite_tilde *x, t_float sampleRate)
 {
-    int n = MILLISECONDS_TO_SECONDS (x->dw_delayInMilliseconds) * sampleRate;
+    int n = (int)(MILLISECONDS_TO_SECONDS (x->dw_delayInMilliseconds) * sampleRate);
     
     n = PD_MAX (1, n);
     n += ((- n) & (DELAY_ROUND_SAMPLES - 1));   /* Snap to the next multiple of DELAY_ROUND_SAMPLES. */
@@ -75,7 +75,7 @@ static t_int *delwrite_tilde_perform (t_int *w)
     //
     t_sample f = *in++;
     
-    if (PD_IS_BIG_OR_SMALL (f)) { f = 0.0; }
+    if (PD_IS_BIG_OR_SMALL (f)) { f = (t_sample)0.0; }
     
     *p++ = f;
     

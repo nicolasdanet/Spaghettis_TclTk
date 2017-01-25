@@ -2090,6 +2090,7 @@
 					"-Wall",
 					"-Wextra",
 					"-Wshadow",
+					"-Wshorten-64-to-32",
 					"-Wno-unused-parameter",
 					"-Wno-unknown-pragmas",
 				);
@@ -2124,6 +2125,7 @@
 					"-Wall",
 					"-Wextra",
 					"-Wshadow",
+					"-Wshorten-64-to-32",
 					"-Wno-unused-parameter",
 					"-Wno-unknown-pragmas",
 				);

@@ -280,7 +280,7 @@ static void garray_setWithSumOfFourierComponents (t_garray *x,
         }
     }
     
-    GARRAY_AT (i) = sum;
+    GARRAY_AT (i) = (t_float)sum;
     //
     }
     
@@ -373,7 +373,7 @@ t_float garray_getAmplitude (t_garray *x)
     
     int i, size = array_getSize (array);
     
-    t_float f = 0.0;
+    t_float f = (t_float)0.0;
     
     for (i = 0; i < size; i++) { t_float t = GARRAY_AT (i); f = PD_MAX (f, PD_ABS (t)); }
 
@@ -476,7 +476,7 @@ static void garray_normalize (t_garray *x, t_float f)
     double maximum  = 0.0;
     t_array *array = garray_getArray (x);
 
-    if (f <= 0.0) { f = 1.0; }
+    if (f <= 0.0) { f = (t_float)1.0; }
 
     for (i = 0; i < array_getSize (array); i++) {
         double t = GARRAY_AT (i);
@@ -485,7 +485,7 @@ static void garray_normalize (t_garray *x, t_float f)
     
     if (maximum > 0.0) {
         double k = f / maximum;
-        for (i = 0; i < array_getSize (array); i++) { GARRAY_AT (i) *= k; }
+        for (i = 0; i < array_getSize (array); i++) { GARRAY_AT (i) *= (t_float)k; }
     }
     
     garray_redraw (x);
@@ -533,12 +533,12 @@ static void garray_read (t_garray *x, t_symbol *name)
         double v = 0.0;
         if (!fscanf (file, "%lf", &v)) { break; }
         else {
-            GARRAY_AT (i) = v; 
+            GARRAY_AT (i) = (t_float)v; 
         }
         //
         }
         
-        while (i < array_getSize (array)) { GARRAY_AT (i) = 0.0; i++; }
+        while (i < array_getSize (array)) { GARRAY_AT (i) = (t_float)0.0; i++; }
         
         fclose (file);      /* < http://stackoverflow.com/a/13691168 > */
         
@@ -678,7 +678,7 @@ void garray_functionProperties (t_garray *x)
 void garray_fromDialog (t_garray *x, t_symbol *name, t_float size, t_float flags)
 {
     t_symbol *newName    = dollar_fromHash (name);
-    int newSize          = PD_MAX (1.0, size);
+    int newSize          = (int)PD_MAX (1.0, size);
     int save             = (((int)flags & 1) != 0);
     int newStyle         = (((int)flags & 6) >> 1);
     int oldStyle         = (int)scalar_getFloat (x->x_scalar, sym_style);

@@ -294,7 +294,7 @@ static inline t_float dsp_getCosineAt (double position)
     
     z.z_i[PD_RAWCAST64_MSB] = DSP_UNITBIT_MSB;
     
-    f = z.z_d - DSP_UNITBIT;  /* Fractional part. */
+    f = (t_float)(z.z_d - DSP_UNITBIT);  /* Fractional part. */
     
     /* Linear interpolation. */
     
