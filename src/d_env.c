@@ -85,7 +85,7 @@ static t_int *env_tilde_perform (t_int *w)
     //
     }
     
-    *sum = 0.0;
+    *sum = (t_sample)0.0;
     
     x->x_phase -= n;
     
@@ -95,7 +95,7 @@ static t_int *env_tilde_perform (t_int *w)
     
     for (i = x->x_period; i < x->x_window; i += x->x_period) { *sum = *(sum + 1); sum++; } 
     
-    *sum = 0.0;
+    *sum = (t_sample)0.0;
     
     x->x_phase = x->x_period - n;
     
@@ -144,8 +144,10 @@ static void *env_tilde_new (t_float f1, t_float f2)
         post ("%s: window %d period %d", sym_env__tilde__->s_name, x->x_window, x->x_period);   // --
     }
     
+    /* Hanning window. */
+    
     for (i = 0; i < x->x_window; i++) { 
-        x->x_vector[i] = (1.0 - cos ((PD_TWO_PI * i) / x->x_window)) / x->x_window;     /* Hanning window. */
+        x->x_vector[i] = (t_sample)((1.0 - cos ((PD_TWO_PI * i) / x->x_window)) / x->x_window);
     }
     
     return x;

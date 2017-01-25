@@ -114,12 +114,12 @@ void garray_initialize (void)
     t_buffer *b = buffer_new();
     
     canvas_setActiveFileNameAndDirectory (sym__floattemplate, sym___dot__);
-    buffer_withStringUnzeroed (b, floatTemplateFile, strlen (floatTemplateFile));
+    buffer_withStringUnzeroed (b, floatTemplateFile, (int)strlen (floatTemplateFile));
     buffer_eval (b, &pd_canvasMaker, 0, NULL);
     pd_vMessage (pd_getBoundX(), sym__pop, "i", 0);
     
     canvas_setActiveFileNameAndDirectory (sym__floatarraytemplate, sym___dot__);
-    buffer_withStringUnzeroed (b, floatArrayTemplateFile, strlen (floatArrayTemplateFile));
+    buffer_withStringUnzeroed (b, floatArrayTemplateFile, (int)strlen (floatArrayTemplateFile));
     buffer_eval (b, &pd_canvasMaker, 0, NULL);
     pd_vMessage (pd_getBoundX(), sym__pop, "i", 0);
 

@@ -40,7 +40,7 @@ static t_int *fft_tilde_perform (t_int *w)
 {
     PD_RESTRICTED in1 = (t_sample *)(w[1]);
     PD_RESTRICTED in2 = (t_sample *)(w[2]);
-    int n = w[3];
+    int n = (int)w[3];
     
     fft_complexFFT (n, in1, in2);
     

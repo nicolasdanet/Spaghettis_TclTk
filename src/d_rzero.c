@@ -50,7 +50,7 @@ static void rzero_tilde_set (t_rzero_tilde *x, t_float f)
 
 static void rzero_tilde_clear (t_rzero_tilde *x)
 {
-    rzero_tilde_set (x, 0.0);
+    rzero_tilde_set (x, (t_float)0.0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -67,7 +67,7 @@ static t_int *rzero_tilde_perform (t_int *w)
     PD_RESTRICTED in1 = (t_sample *)(w[2]);
     PD_RESTRICTED in2 = (t_sample *)(w[3]);
     PD_RESTRICTED out = (t_sample *)(w[4]);
-    int n = (t_int)(w[5]);
+    int n = (int)(w[5]);
     
     t_sample last = x->x_real;
     

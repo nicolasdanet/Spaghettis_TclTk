@@ -50,7 +50,7 @@ t_int *pow_tilde_perform (t_int *w)
 
     if (f > 0.0) { *out++ = (t_sample)pow (f, g); }
     else {
-        *out++ = 0.0;
+        *out++ = (t_sample)0.0;
     }
     //
     }

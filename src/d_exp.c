@@ -40,7 +40,7 @@ t_int *exp_tilde_perform (t_int *w)
     PD_RESTRICTED out = (t_sample *)(w[2]);
     int n = (int)(w[3]);
     
-    while (n--) { *out++ = exp (*in1++); }
+    while (n--) { *out++ = (t_sample)exp (*in1++); }
     
     return (w + 4);
 }

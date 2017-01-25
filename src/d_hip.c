@@ -77,7 +77,7 @@ static t_int *hip_tilde_perform (t_int *w)
     t_hip_tilde_control *c = (t_hip_tilde_control *)(w[1]);
     PD_RESTRICTED in  = (t_sample *)(w[2]);
     PD_RESTRICTED out = (t_sample *)(w[3]);
-    int n = (t_int)(w[4]);
+    int n = (int)(w[4]);
     
     t_sample a = c->c_coefficient;
     

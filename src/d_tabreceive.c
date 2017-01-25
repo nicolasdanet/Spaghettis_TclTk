@@ -60,10 +60,10 @@ static t_int *tabreceive_tilde_perform (t_int *w)
     int size = PD_MIN (n, x->x_size);
     int pad  = n - size;
     
-    while (size--) { *out++ = WORD_FLOAT (data); data++; }
-    while (pad--)  { *out++ = 0.0; }
+    while (size--) { *out++ = (t_sample)WORD_FLOAT (data); data++; }
+    while (pad--)  { *out++ = (t_sample)0.0; }
     //
-    } else { while (n--) { *out++ = 0.0; } }
+    } else { while (n--) { *out++ = (t_sample)0.0; } }
     
     return (w + 4);
 }

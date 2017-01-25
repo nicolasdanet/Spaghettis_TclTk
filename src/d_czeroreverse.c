@@ -53,7 +53,7 @@ static void czero_rev_tilde_set (t_czero_rev_tilde *x, t_float real, t_float ima
 
 static void czero_rev_tilde_clear (t_czero_rev_tilde *x)
 {
-    czero_rev_tilde_set (x, 0.0, 0.0);
+    czero_rev_tilde_set (x, (t_float)0.0, (t_float)0.0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -73,7 +73,7 @@ static t_int *czero_rev_tilde_perform (t_int *w)
     PD_RESTRICTED in4  = (t_sample *)(w[5]);
     PD_RESTRICTED out1 = (t_sample *)(w[6]);
     PD_RESTRICTED out2 = (t_sample *)(w[7]);
-    int n = (t_int)(w[8]);
+    int n = (int)(w[8]);
     
     t_sample lastReal      = x->x_real;
     t_sample lastImaginary = x->x_imaginary;

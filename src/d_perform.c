@@ -757,7 +757,7 @@ static t_int *vPerform_divideScalar (t_int *w)
     PD_RESTRICTED s2 = (t_sample *)(w[3]);
     int n = (int)(w[4]);
     
-    if (g) { g = 1.0 / g; }
+    if (g) { g = (t_float)(1.0 / g); }
     
     while (n) {
     //

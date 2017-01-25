@@ -48,10 +48,10 @@ t_int *log_tilde_perform (t_int *w)
     t_sample f = *in1++;
     t_sample g = *in2++;
     
-    if (f <= 0.0)      { *out++ = -1000.0; }
-    else if (g <= 0.0) { *out++ = log (f); }
+    if (f <= 0.0)      { *out++ = (t_sample)-1000.0; }
+    else if (g <= 0.0) { *out++ = (t_sample)log (f); }
     else {
-        *out++ = log (f) / log (g);
+        *out++ = (t_sample)(log (f) / log (g));
     }
     //
     }

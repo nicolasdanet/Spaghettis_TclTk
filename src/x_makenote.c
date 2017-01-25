@@ -46,7 +46,7 @@ static void makenote_task (t_hang *h)
 {
     t_makenote *x = h->h_owner;
     
-    outlet_float (x->x_outletRight, 0.0);
+    outlet_float (x->x_outletRight, (t_float)0.0);
     outlet_float (x->x_outletLeft,  h->h_pitch);
     
     if (x->x_hangs == h) { x->x_hangs = h->h_next; }
@@ -87,7 +87,7 @@ static void makenote_removeAll (t_makenote *x, int dump)
     while ((h = x->x_hangs)) {
     //
     if (dump) {
-        outlet_float (x->x_outletRight, 0.0);
+        outlet_float (x->x_outletRight, (t_float)0.0);
         outlet_float (x->x_outletLeft,  h->h_pitch);
     }
 

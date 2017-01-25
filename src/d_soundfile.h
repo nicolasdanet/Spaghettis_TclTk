@@ -293,7 +293,7 @@ static inline t_error soundfile_helperRead (int f, t_headerhelper *t, off_t offs
     
     if (err) { t->h_bytesSet = 0; }
     else { 
-        t->h_bytesSet = read (f, t->h_c, SOUNDFILE_HELPER_SIZE);
+        t->h_bytesSet = (int)read (f, t->h_c, (size_t)SOUNDFILE_HELPER_SIZE);
     }
     
     err = (t->h_bytesSet <= 0);

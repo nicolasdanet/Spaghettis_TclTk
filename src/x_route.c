@@ -183,7 +183,7 @@ static void *route_newPerform (int argc, t_atom *argv)
 
 static void *route_new (t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == 0) { t_atom a; SET_FLOAT (&a, 0.0); return route_newPerform (1, &a); }
+    if (argc == 0) { t_atom a; SET_FLOAT (&a, (t_float)0.0); return route_newPerform (1, &a); }
     else {
         return route_newPerform (argc, argv);
     }

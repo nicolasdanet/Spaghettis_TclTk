@@ -57,8 +57,8 @@ static void *ctlin_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_ctlin *x = (t_ctlin *)pd_new (ctlin_class);
     
-    x->x_control    = argc > 0 ? atom_getFloatAtIndex (0, argc, argv) : -1.0;
-    x->x_channel    = argc > 1 ? atom_getFloatAtIndex (1, argc, argv) :  0.0;
+    x->x_control    = argc > 0 ? atom_getFloatAtIndex (0, argc, argv) : (t_float)-1.0;
+    x->x_channel    = argc > 1 ? atom_getFloatAtIndex (1, argc, argv) : (t_float)0.0;
     x->x_outletLeft = outlet_new (cast_object (x), &s_float);
     
     if (x->x_control < 0.0)  { x->x_outletMiddle = outlet_new (cast_object (x), &s_float); }

@@ -415,7 +415,7 @@ static t_int *writesf_tilde_perform (t_int *w)
         x->sf_properties.ap_bytesPerSample,
         x->sf_properties.ap_isBigEndian,
         1,
-        1.0);
+        (t_sample)1.0);
     
     x->sf_fifoHead += bytesToWrite; if (x->sf_fifoHead >= x->sf_fifoSize) { x->sf_fifoHead = 0; }
     

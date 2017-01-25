@@ -39,7 +39,7 @@ static t_int *rifft_tilde_performFlip (t_int *w)
 {
     PD_RESTRICTED in  = (t_sample *)(w[1]);
     PD_RESTRICTED out = (t_sample *)(w[2]);
-    int n = w[3];
+    int n = (int)w[3];
     
     while (n--) { t_sample f = *in; --out; *out = - f; in++; }
     
@@ -51,7 +51,7 @@ static t_int *rifft_tilde_performFlip (t_int *w)
 static t_int *rifft_tilde_perform (t_int *w)
 {
     PD_RESTRICTED in = (t_sample *)(w[1]);
-    int n = w[2];
+    int n = (int)w[2];
     
     fft_realInverseFFT (n, in);
     

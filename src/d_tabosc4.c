@@ -55,7 +55,7 @@ static void tabosc4_tilde_set (t_tabosc4_tilde *x, t_symbol *s)
     
     if (size > 0 && PD_IS_POWER_2 (size)) { 
         x->x_size = size;
-        x->x_sizeInverse = 1.0 / x->x_size;
+        x->x_sizeInverse = (t_float)(1.0 / x->x_size);
         
     } else {
         x->x_vector = NULL; if (s != &s_) { error_invalid (sym_tabosc4__tilde__, sym_array); }
@@ -112,14 +112,14 @@ static t_int *tabosc4_tilde_perform (t_int *w)
     z.z_i[PD_RAWCAST64_MSB] = t;
     x->x_phase = (z.z_d - DSP_UNITBIT * size) * x->x_sizeInverse;
     //
-    } else { while (n--) { *out++ = 0.0; } }
+    } else { while (n--) { *out++ = (t_sample)0.0; } }
     
     return (w + 5);
 }
 
 static void tabosc4_tilde_dsp (t_tabosc4_tilde *x, t_signal **sp)
 {
-    x->x_conversion = 1.0 / sp[0]->s_sampleRate;
+    x->x_conversion = (t_float)(1.0 / sp[0]->s_sampleRate);
     
     tabosc4_tilde_set (x, x->x_name);
 

@@ -62,7 +62,7 @@ static t_int *phasor_tilde_perform (t_int *w)
     //
     z.z_i[PD_RAWCAST64_MSB] = DSP_UNITBIT_MSB;      /* Wrap the phase (keep only the fractional part). */
     phase += (*in++) * k;
-    *out++ = z.z_d - DSP_UNITBIT;
+    *out++ = (t_sample)(z.z_d - DSP_UNITBIT);
     z.z_d = phase;
     //
     }
@@ -76,7 +76,7 @@ static t_int *phasor_tilde_perform (t_int *w)
 
 static void phasor_tilde_dsp (t_phasor_tilde *x, t_signal **sp)
 {
-    x->x_conversion = 1.0 / sp[0]->s_sampleRate;
+    x->x_conversion = (t_float)(1.0 / sp[0]->s_sampleRate);
     
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     

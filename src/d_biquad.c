@@ -88,7 +88,7 @@ static t_int *biquad_tilde_perform (t_int *w)
     t_biquad_tilde_control *c = (t_biquad_tilde_control *)(w[1]);
     PD_RESTRICTED in  = (t_sample *)(w[2]);
     PD_RESTRICTED out = (t_sample *)(w[3]);
-    int n = (t_int)(w[4]);
+    int n = (int)(w[4]);
     
     t_sample last1  = c->c_real1;
     t_sample last2  = c->c_real2;
@@ -102,7 +102,7 @@ static t_int *biquad_tilde_perform (t_int *w)
     //
     t_sample f = (*in++) + a1 * last1 + a2 * last2; 
         
-    if (PD_IS_BIG_OR_SMALL (f)) { f = 0.0; }
+    if (PD_IS_BIG_OR_SMALL (f)) { f = (t_sample)0.0; }
         
     *out++ = b0 * f + b1 * last1 + b2 * last2;
     last2  = last1;

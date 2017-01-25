@@ -41,7 +41,8 @@ t_error string_append (char *dest, size_t size, const char *src, int n)
     size_t d = strlen (dest);
     size_t k = (size - 1) - d;
     size_t s = 0;
-        
+    
+    PD_ASSERT (n >= -1);
     PD_ASSERT (size > d);
     
     if (n < 0) { s = strlen (src); }

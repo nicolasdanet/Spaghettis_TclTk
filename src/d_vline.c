@@ -101,7 +101,7 @@ static void vline_tilde_float (t_vline_tilde *x, t_float f)
     double now = scheduler_getMillisecondsSince (x->x_systime);
     double start = now + (double)x->x_delay;
     
-    x->x_timeRamp = PD_MAX (0.0, x->x_timeRamp);
+    x->x_timeRamp = (t_float)PD_MAX (0.0, x->x_timeRamp);
     
     if (vline_tilde_replaceFirstSegment (x, start)) { deleted = x->x_segments; x->x_segments = segment; }
     else {
@@ -136,8 +136,8 @@ static void vline_tilde_float (t_vline_tilde *x, t_float f)
     //
     }
     
-    x->x_timeRamp = 0.0;
-    x->x_delay    = 0.0;
+    x->x_timeRamp = (t_float)0.0;
+    x->x_delay    = (t_float)0.0;
 }
 
 static void vline_tilde_stop (t_vline_tilde *x)
@@ -148,11 +148,11 @@ static void vline_tilde_stop (t_vline_tilde *x)
     for (s1 = x->x_segments; s1; s1 = s2) { s2 = s1->s_next; PD_MEMORY_FREE (s1); }
     
     x->x_increment  = 0.0;
-    x->x_timeRamp   = 0.0;
-    x->x_delay      = 0.0;
+    x->x_timeRamp   = (t_float)0.0;
+    x->x_delay      = (t_float)0.0;
     x->x_segments   = NULL;
     
-    x->x_target     = x->x_current;
+    x->x_target     = (t_sample)x->x_current;
     x->x_timeTarget = VLINE_TIME_NONE;
 }
 
@@ -211,7 +211,7 @@ static t_int *vline_tilde_perform (t_int *w)
         f = x->x_target; x->x_timeTarget = VLINE_TIME_NONE; x->x_increment = 0.0; increment = 0.0;
     }
     
-    *out++ = f; f += increment; timeSample = timeNextSample;
+    *out++ = (t_sample)f; f += increment; timeSample = timeNextSample;
     //
     }
     

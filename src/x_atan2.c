@@ -35,7 +35,7 @@ static void *atan2_new (void)
 {
     t_atan2 *x = (t_atan2 *)pd_new (atan2_class);
     
-    x->x_f = 0.0;
+    x->x_f = (t_float)0.0;
     x->x_outlet = outlet_new (cast_object (x), &s_float);
         
     inlet_newFloat (cast_object (x), &x->x_f);
@@ -45,7 +45,7 @@ static void *atan2_new (void)
 
 static void atan2_float (t_atan2 *x, t_float f)
 {
-    outlet_float (x->x_outlet, (f == 0.0 && x->x_f == 0.0 ? 0.0 : atan2f (f, x->x_f)));
+    outlet_float (x->x_outlet, (f == 0.0 && x->x_f == 0.0 ? (t_float)0.0 : atan2f (f, x->x_f)));
 }
 
 // -----------------------------------------------------------------------------------------------------------

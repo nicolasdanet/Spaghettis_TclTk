@@ -405,7 +405,7 @@ static inline void readsf_tilde_performZero (t_readsf_tilde * x, int onset)
 
         PD_RESTRICTED out = x->sf_vectorsOut[i] + onset;
         for (j = 0; j < (x->sf_vectorSize - onset); j++) {
-            *out++ = 0.0;
+            *out++ = (t_sample)0.0;
         }
     }
 }

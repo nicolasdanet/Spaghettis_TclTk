@@ -52,7 +52,7 @@ static void print_tilde_count (t_print_tilde *, t_float);
 
 static void print_tilde_bang (t_print_tilde *x)
 {
-    print_tilde_count (x, 1.0);
+    print_tilde_count (x, (t_float)1.0);
 }
 
 static void print_tilde_count (t_print_tilde *x, t_float f)

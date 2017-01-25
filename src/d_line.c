@@ -56,7 +56,7 @@ static void line_tilde_float (t_line_tilde *x, t_float f)
         x->x_target             = f;
         x->x_retarget           = 1;
         x->x_timeRampCurrent    = x->x_timeRamp;
-        x->x_timeRamp           = 0.0;
+        x->x_timeRamp           = (t_float)0.0;
     }
 }
 
@@ -109,8 +109,8 @@ static t_int *line_tilde_perform (t_int *w)
 
 static void line_tilde_dsp (t_line_tilde *x, t_signal **sp)
 {
-    x->x_inverseOfVectorSize = 1.0 / sp[0]->s_vectorSize;
-    x->x_millisecondsToTicks = sp[0]->s_sampleRate / (1000.0 * sp[0]->s_vectorSize);
+    x->x_inverseOfVectorSize = (t_float)(1.0 / sp[0]->s_vectorSize);
+    x->x_millisecondsToTicks = (t_float)(sp[0]->s_sampleRate / (1000.0 * sp[0]->s_vectorSize));
     
     dsp_add (line_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
 }

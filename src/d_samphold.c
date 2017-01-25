@@ -61,7 +61,7 @@ static t_int *samphold_tilde_perform (t_int *w)
     PD_RESTRICTED in1 = (t_sample *)(w[2]);
     PD_RESTRICTED in2 = (t_sample *)(w[3]);
     PD_RESTRICTED out = (t_sample *)(w[4]);
-    int n = (t_int)(w[5]);
+    int n = (int)(w[5]);
     
     t_sample lastControl = x->x_lastControl;
     t_sample lastOut = x->x_lastOut;

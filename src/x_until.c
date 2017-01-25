@@ -48,7 +48,7 @@ static void until_bang (t_until *x)
 
 static void until_float (t_until *x, t_float f)
 {
-    x->x_run = 1; x->x_count = PD_MAX (0.0, f); until_perform (x);
+    x->x_run = 1; x->x_count = (int)PD_MAX (0.0, f); until_perform (x);
 }
 
 static void until_stop (t_until *x)

@@ -54,7 +54,7 @@ typedef struct _vcf_tilde {
 
 static void vcf_tilde_qFactor (t_vcf_tilde *x, t_float f)
 {
-    x->x_space.c_q = PD_MAX (0.0, f);
+    x->x_space.c_q = (t_sample)PD_MAX (0.0, f);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -104,8 +104,8 @@ static t_int *vcf_tilde_perform (t_int *w)
         double tReal = re;
         double tImaginary = im;
         
-        re = (g * s) + (pReal * tReal - pImaginary * tImaginary);
-        im = (pImaginary * tReal + pReal * tImaginary);
+        re = (t_sample)((g * s) + (pReal * tReal - pImaginary * tImaginary));
+        im = (t_sample)((pImaginary * tReal + pReal * tImaginary));
         
         *out1++ = re;
         *out2++ = im;
@@ -113,8 +113,8 @@ static t_int *vcf_tilde_perform (t_int *w)
     //
     }
     
-    if (PD_IS_BIG_OR_SMALL (re)) { re = 0.0; }
-    if (PD_IS_BIG_OR_SMALL (im)) { im = 0.0; }
+    if (PD_IS_BIG_OR_SMALL (re)) { re = (t_sample)0.0; }
+    if (PD_IS_BIG_OR_SMALL (im)) { im = (t_sample)0.0; }
     
     c->c_real = re;
     c->c_imaginary = im;
@@ -124,7 +124,7 @@ static t_int *vcf_tilde_perform (t_int *w)
 
 static void vcf_tilde_dsp (t_vcf_tilde *x, t_signal **sp)
 {
-    x->x_space.c_conversion = PD_TWO_PI / sp[0]->s_sampleRate;
+    x->x_space.c_conversion = (t_sample)(PD_TWO_PI / sp[0]->s_sampleRate);
    
     PD_ASSERT (sp[0]->s_vector != sp[2]->s_vector);
     PD_ASSERT (sp[0]->s_vector != sp[3]->s_vector);
@@ -148,10 +148,10 @@ static void *vcf_tilde_new (t_float f)
 {
     t_vcf_tilde *x = (t_vcf_tilde *)pd_new (vcf_tilde_class);
 
-    x->x_space.c_real       = 0.0;
-    x->x_space.c_imaginary  = 0.0;
-    x->x_space.c_q          = f;
-    x->x_space.c_conversion = 0.0;
+    x->x_space.c_real       = (t_sample)0.0;
+    x->x_space.c_imaginary  = (t_sample)0.0;
+    x->x_space.c_q          = (t_sample)f;
+    x->x_space.c_conversion = (t_sample)0.0;
 
     x->x_outletLeft  = outlet_new (cast_object (x), &s_signal);
     x->x_outletRight = outlet_new (cast_object (x), &s_signal);

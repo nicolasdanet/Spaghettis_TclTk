@@ -87,7 +87,7 @@ t_symbol *dollar_expandDollarSymbol (t_symbol *s, int argc, t_atom *argv, t_glis
     
     if (!substr) { return s; }
     else {
-        err |= string_append (result, PD_STRING, str, (substr - str));
+        err |= string_append (result, PD_STRING, str, (int)(substr - str));
         str = substr + 1;
     }
 
@@ -100,7 +100,7 @@ t_symbol *dollar_expandDollarSymbol (t_symbol *s, int argc, t_atom *argv, t_glis
     
     substr = strchr (str, '$');
     
-    if (substr) { err |= string_append (result, PD_STRING, str, (substr - str)); str = substr + 1; }
+    if (substr) { err |= string_append (result, PD_STRING, str, (int)(substr - str)); str = substr + 1; }
     else {
         err |= string_add (result, PD_STRING, str);
         break;

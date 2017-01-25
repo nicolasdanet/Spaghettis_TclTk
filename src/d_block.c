@@ -104,14 +104,14 @@ static void block_float (t_block *x, t_float f)
 
 static void block_set (t_block *x, t_float f1, t_float f2, t_float f3)
 {
-    int blockSize   = PD_MAX (0.0, f1);
-    int overlap     = PD_MAX (1.0, f2);
+    int blockSize   = (int)PD_MAX (0.0, f1);
+    int overlap     = (int)PD_MAX (1.0, f2);
     int upsample    = 1;
     int downsample  = 1;
     int oldState    = dsp_suspend();
     
-    if (blockSize && !PD_IS_POWER_2 (blockSize)) { blockSize = PD_NEXT_POWER_2 (blockSize); }
-    if (!PD_IS_POWER_2 (overlap)) { overlap = PD_NEXT_POWER_2 (overlap); }
+    if (blockSize && !PD_IS_POWER_2 (blockSize)) { blockSize = (int)PD_NEXT_POWER_2 (blockSize); }
+    if (!PD_IS_POWER_2 (overlap)) { overlap = (int)PD_NEXT_POWER_2 (overlap); }
     
     if (f3 > 0.0) {
     //

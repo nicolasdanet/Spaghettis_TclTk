@@ -57,10 +57,10 @@ static t_int *vd_tilde_perform (t_int *w)
     //
     t_float delayInSamples, f = (t_float)(*in++);
     
-    if (PD_IS_NAN (f)) { f = 0.0; }
+    if (PD_IS_NAN (f)) { f = (t_float)0.0; }
     
     delayInSamples = (x->x_samplesPerMilliseconds * f) - x->x_masterVectorSize;
-    delayInSamples = PD_CLAMP (delayInSamples, 1.0, limit) + (t_float)n;
+    delayInSamples = (t_float)(PD_CLAMP (delayInSamples, 1.0, limit) + n);
     
     {
         int integer = (int)delayInSamples;
@@ -81,7 +81,7 @@ static void vd_tilde_dsp (t_vd_tilde *x, t_signal **sp)
 {
     t_delwrite_tilde *m = (t_delwrite_tilde *)pd_getThingByClass (x->x_name, delwrite_tilde_class);
     
-    x->x_samplesPerMilliseconds = sp[0]->s_sampleRate * 0.001;
+    x->x_samplesPerMilliseconds = (t_float)(sp[0]->s_sampleRate * 0.001);
     
     if (!m) { if (x->x_name != &s_) { error_canNotFind (sym_vd__tilde__, x->x_name); } }
     else {

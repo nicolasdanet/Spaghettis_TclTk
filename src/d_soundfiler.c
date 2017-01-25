@@ -219,9 +219,9 @@ static int soundfiler_readPerform (t_glist *glist, int argc, t_atom *argv)
             /* Note that file is closed in function called above. */
             
             for (i = 0; i < argc; i++) {
-                if (i >= properties.ap_numberOfChannels) { garray_setDataFromIndex (a[i], 0, 0.0); }
+                if (i >= properties.ap_numberOfChannels) { garray_setDataFromIndex (a[i], 0, (t_float)0.0); }
                 else {
-                    garray_setDataFromIndex (a[i], numberOfFramesRead, 0.0);
+                    garray_setDataFromIndex (a[i], numberOfFramesRead, (t_float)0.0);
                 }
                 garray_redraw (a[i]);
             }
@@ -263,7 +263,7 @@ static t_error soundfiler_writeFetch (int argc,
     
     if (!err) {
     //
-    t_sample maximum = 0.0;
+    t_sample maximum = (t_sample)0.0;
     int i;
         
     for (i = 0; i < argc; i++) {
@@ -295,7 +295,7 @@ static t_error soundfiler_writeFetch (int argc,
 
 static t_sample soundfiler_writeGetFactor (t_sample maximumAmplitude, t_audioproperties *args)
 {
-    t_sample f = 1.0;
+    t_sample f = (t_sample)1.0;
     
     /* Linear PCM encoding requires a signal in common range. */
     
@@ -304,7 +304,7 @@ static t_sample soundfiler_writeGetFactor (t_sample maximumAmplitude, t_audiopro
     }
     
     if (args->ap_needToNormalize) {
-        if (maximumAmplitude > 0.0) { f = 32767.0 / (32768.0 * maximumAmplitude); }
+        if (maximumAmplitude > 0.0) { f = (t_sample)(32767.0 / (32768.0 * maximumAmplitude)); }
     }
     
     return f;
@@ -381,7 +381,7 @@ static int soundfiler_writePerform (t_glist *canvas, int argc, t_atom *argv)
     t_garray *a[SOUNDFILE_CHANNELS] = { NULL };
     t_word   *w[SOUNDFILE_CHANNELS] = { NULL };
 
-    t_sample maximumAmplitude = 0.0;
+    t_sample maximumAmplitude = (t_sample)0.0;
     
     err = soundfiler_writeFetch (argc, argv, a, w, &maximumAmplitude, &properties);
     

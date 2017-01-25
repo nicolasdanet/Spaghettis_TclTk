@@ -69,7 +69,7 @@ static void threshold_tilde_set (t_threshold_tilde *x,
 static void threshold_tilde_state (t_threshold_tilde *x, t_float f)
 {
     x->x_state = (f != 0.0);
-    x->x_wait  = 0.0;
+    x->x_wait  = (t_float)0.0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -117,7 +117,7 @@ static t_int *threshold_tilde_perform (t_int *w)
 
 void threshold_tilde_dsp (t_threshold_tilde *x, t_signal **sp)
 {
-    x->x_millisecondsPerTick = 1000.0 * sp[0]->s_vectorSize / sp[0]->s_sampleRate;
+    x->x_millisecondsPerTick = (t_float)(1000.0 * sp[0]->s_vectorSize / sp[0]->s_sampleRate);
     
     dsp_add (threshold_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
 }

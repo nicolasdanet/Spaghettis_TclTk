@@ -65,8 +65,8 @@ static inline double bp_tilde_coefficientsPerformQCosine (double f)
 
 static void bp_tilde_coefficientsPerform (t_bp_tilde *x, t_float f, t_float q)
 {
-    x->x_frequency  = (f < 0.001) ? 10.0 : f;
-    x->x_q          = PD_MAX (0.0, q);
+    x->x_frequency  = (f < 0.001) ? (t_float)10.0 : f;
+    x->x_q          = (t_float)PD_MAX (0.0, q);
     x->x_sampleRate = (x->x_sampleRate <= 0) ? AUDIO_DEFAULT_SAMPLERATE : x->x_sampleRate;
     
     {
@@ -74,9 +74,9 @@ static void bp_tilde_coefficientsPerform (t_bp_tilde *x, t_float f, t_float q)
         double omegaPerQ  = PD_MIN ((x->x_q < 0.001) ? 1.0 : (omega / x->x_q), 1.0);
         double r          = 1.0 - omegaPerQ;
         
-        x->x_space.c_a1   = 2.0 * bp_tilde_coefficientsPerformQCosine (omega) * r;
-        x->x_space.c_a2   = - r * r;
-        x->x_space.c_gain = 2.0 * omegaPerQ * (omegaPerQ + r * omega);
+        x->x_space.c_a1   = (t_sample)(2.0 * bp_tilde_coefficientsPerformQCosine (omega) * r);
+        x->x_space.c_a2   = (t_sample)(- r * r);
+        x->x_space.c_gain = (t_sample)(2.0 * omegaPerQ * (omegaPerQ + r * omega));
     }
 }
 
@@ -96,8 +96,8 @@ static void bp_tilde_q (t_bp_tilde *x, t_float q)
 
 static void bp_tilde_clear (t_bp_tilde *x)
 {
-    x->x_space.c_real1 = 0.0;
-    x->x_space.c_real2 = 0.0;
+    x->x_space.c_real1 = (t_sample)0.0;
+    x->x_space.c_real2 = (t_sample)0.0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -111,7 +111,7 @@ static t_int *bp_tilde_perform (t_int *w)
     t_bp_tilde_control *c = (t_bp_tilde_control *)(w[1]);
     PD_RESTRICTED in  = (t_sample *)(w[2]);
     PD_RESTRICTED out = (t_sample *)(w[3]);
-    int n = (t_int)(w[4]);
+    int n = (int)(w[4]);
 
     t_sample last1  = c->c_real1;
     t_sample last2  = c->c_real2;
@@ -126,8 +126,8 @@ static t_int *bp_tilde_perform (t_int *w)
         last1  = f;
     }
     
-    if (PD_IS_BIG_OR_SMALL (last1)) { last1 = 0.0; }
-    if (PD_IS_BIG_OR_SMALL (last2)) { last2 = 0.0; }
+    if (PD_IS_BIG_OR_SMALL (last1)) { last1 = (t_sample)0.0; }
+    if (PD_IS_BIG_OR_SMALL (last2)) { last2 = (t_sample)0.0; }
     
     c->c_real1 = last1;
     c->c_real2 = last2;

@@ -32,7 +32,7 @@
 
 static inline int soundfile_encodeLinear16Value (t_sample f, t_sample k)
 {
-    int v = 32768.0 + (f * k);
+    int v = (int)(32768.0 + (f * k));
     v -= 32768;
     return PD_CLAMP (v, -32767, 32767);
 }
@@ -58,7 +58,7 @@ static inline void soundfile_encodeLinear16LittleEndian (t_sample f, t_sample k,
 
 static inline int soundfile_encodeLinear24Value (t_sample f, t_sample k)
 {
-    int v = 8388608.0 + (f * k);
+    int v = (int)(8388608.0 + (f * k));
     v -= 8388608;
     return PD_CLAMP (v, -8388607, 8388607);
 }
@@ -129,7 +129,7 @@ void soundfile_encodeLinear16 (int numberOfChannels,
     
     int bytesPerFrame = bytesPerSample * numberOfChannels;
     
-    t_sample k = normalFactor * 32768.0;
+    t_sample k = (t_sample)(normalFactor * 32768.0);
     int offset = spread * onset;
     
     if (isBigEndian) {
@@ -169,7 +169,7 @@ void soundfile_encodeLinear24 (int numberOfChannels,
     
     int bytesPerFrame = bytesPerSample * numberOfChannels;
     
-    t_sample k = normalFactor * 8388608.0;
+    t_sample k = (t_sample)(normalFactor * 8388608.0);
     int offset = spread * onset;
     
     if (isBigEndian) {
@@ -290,12 +290,12 @@ void soundfile_encode (int numberOfChannels,
 
 static inline t_sample soundfile_decodeLinear16BigEndian (unsigned char *p)
 {
-    return (SOUNDFILE_SCALE * ((p[0] << 24) | (p[1] << 16)));
+    return (t_sample)(SOUNDFILE_SCALE * ((p[0] << 24) | (p[1] << 16)));
 }
 
 static inline t_sample soundfile_decodeLinear16LittleEndian (unsigned char *p)
 {
-    return (SOUNDFILE_SCALE * ((p[1] << 24) | (p[0] << 16)));
+    return (t_sample)(SOUNDFILE_SCALE * ((p[1] << 24) | (p[0] << 16)));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -303,12 +303,12 @@ static inline t_sample soundfile_decodeLinear16LittleEndian (unsigned char *p)
 
 static inline t_sample soundfile_decodeLinear24BigEndian (unsigned char *p)
 {
-    return (SOUNDFILE_SCALE * ((p[0] << 24) | (p[1] << 16) | (p[2] << 8)));
+    return (t_sample)(SOUNDFILE_SCALE * ((p[0] << 24) | (p[1] << 16) | (p[2] << 8)));
 }
 
 static inline t_sample soundfile_decodeLinear24LittleEndian (unsigned char *p)
 {
-    return (SOUNDFILE_SCALE * ((p[2] << 24) | (p[1] << 16) | (p[0] << 8)));
+    return (t_sample)(SOUNDFILE_SCALE * ((p[2] << 24) | (p[1] << 16) | (p[0] << 8)));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -512,7 +512,7 @@ void soundfile_decode (int numberOfChannels,
         
         for (i = numberOfChannels; i < n; i++) {
             for (j = 0, s = v[i] + (spread * onset); j < numberOfFrames; j++, s += spread) { 
-                *s = 0.0; 
+                *s = (t_sample)0.0; 
             }
         }
     }

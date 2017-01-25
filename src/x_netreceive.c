@@ -98,7 +98,7 @@ static void netreceive_receiversClean (t_netreceive *x)
     //
     }
     
-    if (x->nr_protocol == SOCK_STREAM) { outlet_float (x->nr_outletRight, 0.0); }
+    if (x->nr_protocol == SOCK_STREAM) { outlet_float (x->nr_outletRight, (t_float)0.0); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

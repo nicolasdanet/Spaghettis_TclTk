@@ -50,7 +50,7 @@ static void rpole_tilde_set (t_rpole_tilde *x, t_float f)
 
 static void rpole_tilde_clear (t_rpole_tilde *x)
 {
-    rpole_tilde_set (x, 0.0);
+    rpole_tilde_set (x, (t_float)0.0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -67,7 +67,7 @@ static t_int *rpole_tilde_perform (t_int *w)
     PD_RESTRICTED in1 = (t_sample *)(w[2]);
     PD_RESTRICTED in2 = (t_sample *)(w[3]);
     PD_RESTRICTED out = (t_sample *)(w[4]);
-    int n = (t_int)(w[5]);
+    int n = (int)(w[5]);
     
     t_sample last = x->x_real;
     
@@ -77,7 +77,7 @@ static t_int *rpole_tilde_perform (t_int *w)
         *out++ = last = f;
     }
     
-    if (PD_IS_BIG_OR_SMALL (last)) { last = 0.0; }
+    if (PD_IS_BIG_OR_SMALL (last)) { last = (t_sample)0.0; }
         
     x->x_real = last;
     

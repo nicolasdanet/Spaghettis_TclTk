@@ -109,7 +109,7 @@ t_error atomoutlet_outputAtom (t_atomoutlet *x, t_atom *a)
 
 void atomoutlet_init (t_atomoutlet *x)
 {
-    SET_FLOAT (&x->ao_atom, 0.0);
+    SET_FLOAT (&x->ao_atom, (t_float)0.0);
     gpointer_init (&x->ao_gpointer); 
     x->ao_outlet = NULL;
 }
@@ -194,7 +194,7 @@ t_error atomoutlet_makeTypedOutletParse (t_atomoutlet *x, t_object *owner, t_ato
         
     } else {
         x->ao_outlet = outlet_new (owner, &s_float);
-        SET_FLOAT (&x->ao_atom, 0.0);
+        SET_FLOAT (&x->ao_atom, (t_float)0.0);
         
         if (t != sym_f && t != &s_float) { 
             return PD_ERROR;

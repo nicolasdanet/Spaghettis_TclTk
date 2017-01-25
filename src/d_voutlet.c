@@ -50,7 +50,7 @@ static t_int *voutlet_performEpilog (t_int *w)
     
     if (out == NULL) { out = resample_vector (&x->vo_resample); }
 
-    while (n--) { *out = *in; *in = 0.0; out++; in++; }
+    while (n--) { *out = *in; *in = (t_sample)0.0; out++; in++; }
     if (in == x->vo_bufferEnd) { in = x->vo_buffer; }
     
     x->vo_bufferRead = in;
