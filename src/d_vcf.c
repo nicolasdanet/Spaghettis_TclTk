@@ -72,7 +72,7 @@ static t_int *vcf_tilde_perform (t_int *w)
     PD_RESTRICTED in2  = (t_sample *)(w[3]);
     PD_RESTRICTED out1 = (t_sample *)(w[4]);
     PD_RESTRICTED out2 = (t_sample *)(w[5]);
-    int n = (t_int)(w[6]);
+    int n = (int)(w[6]);
     
     t_sample re = c->c_real;
     t_sample im = c->c_imaginary;

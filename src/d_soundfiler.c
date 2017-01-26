@@ -155,9 +155,9 @@ static int soundfiler_readDecode (int f,
     //
     char t[SOUNDFILER_BUFFER_SIZE] = { 0 };
     int framesRemaining = framesToRead - framesAlreadyRead;
-    size_t size = PD_MIN (framesRemaining, framesBufferSize);
+    int size = PD_MIN (framesRemaining, framesBufferSize);
     
-    if (fread (t, (size_t)bytesPerFrame, (size_t)size, fp) != size) { PD_BUG; break; }
+    if ((int)(fread (t, (size_t)bytesPerFrame, (size_t)size, fp)) != size) { PD_BUG; break; }
     else {
         soundfile_decode (args->ap_numberOfChannels,
             (t_sample **)w, 
@@ -166,7 +166,7 @@ static int soundfiler_readDecode (int f,
             framesAlreadyRead,
             args->ap_bytesPerSample,
             args->ap_isBigEndian,
-            sizeof (t_word) / sizeof (t_sample),
+            (int)(sizeof (t_word) / sizeof (t_sample)),
             channelsRequired);
     }
             
@@ -331,8 +331,8 @@ static int soundfiler_writeEncode (int f,
     //
     char t[SOUNDFILER_BUFFER_SIZE] = { 0 };
     int framesRemaining = framesToWrite - framesAlreadyWritten;
-    size_t sizeInFrames = PD_MIN (framesRemaining, framesBufferSize);
-    size_t sizeInBytes  = sizeInFrames * bytesPerFrame;
+    int sizeInFrames = PD_MIN (framesRemaining, framesBufferSize);
+    int sizeInBytes  = sizeInFrames * bytesPerFrame;
     
     soundfile_encode (args->ap_numberOfChannels,
         (t_float **)w,
@@ -341,13 +341,13 @@ static int soundfiler_writeEncode (int f,
         args->ap_onset,
         args->ap_bytesPerSample,
         args->ap_isBigEndian,
-        sizeof (t_word) / sizeof (t_sample),
+        (int)(sizeof (t_word) / sizeof (t_sample)),
         normalizationFactor);
    
     {
-        ssize_t s = write (f, t, sizeInBytes);
+        int s = (int)write (f, t, sizeInBytes);
     
-        if (s < (ssize_t)sizeInBytes) { 
+        if (s < sizeInBytes) { 
             if (s > 0) { framesAlreadyWritten += s / bytesPerFrame; }
             PD_ASSERT (s == 0);
             break;

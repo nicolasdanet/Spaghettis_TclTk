@@ -90,7 +90,7 @@ static int oscformat_proceedGetArgumentsSize (t_oscformat *x, int argc, t_atom *
     
     if (type == 's') {
         t_symbol *s = IS_SYMBOL (a) ? GET_SYMBOL (a) : sym___arrobe__;
-        size += OSC_ROUND4 (strlen (s->s_name) + 1);
+        size += OSC_ROUND4 ((int)strlen (s->s_name) + 1);
         
     } else if (type == 'b') {
         int blobSize = (IS_FLOAT (a) && GET_FLOAT (a) >= 0) ? GET_FLOAT (a) : PD_INT_MAX;
@@ -229,7 +229,7 @@ static t_error oscformat_proceed (t_oscformat *x, int argc, t_atom *argv)
     
     int numberOfTypeTags = 0;
     int argumentsSize    = oscformat_proceedGetArgumentsSize (x, argc, argv, &numberOfTypeTags);
-    int argumentsStart   = OSC_ROUND4 (strlen (x->x_path) + 1) + OSC_ROUND4 (numberOfTypeTags + 2);
+    int argumentsStart   = OSC_ROUND4 ((int)strlen (x->x_path) + 1) + OSC_ROUND4 (numberOfTypeTags + 2);
     int size             = argumentsStart + argumentsSize;
     
     t_atom *a = NULL;

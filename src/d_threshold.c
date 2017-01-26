@@ -82,7 +82,7 @@ static t_int *threshold_tilde_perform (t_int *w)
 {
     t_threshold_tilde *x = (t_threshold_tilde *)(w[1]);
     PD_RESTRICTED in = (t_sample *)(w[2]);
-    int n = (t_int)(w[3]);
+    int n = (int)(w[3]);
     
     if (x->x_wait > 0.0) { x->x_wait -= x->x_millisecondsPerTick; }
     else if (x->x_state) {

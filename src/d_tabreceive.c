@@ -51,7 +51,7 @@ static t_int *tabreceive_tilde_perform (t_int *w)
 {
     t_tabreceive_tilde *x = (t_tabreceive_tilde *)(w[1]);
     PD_RESTRICTED out = (t_sample *)(w[2]);
-    int n = w[3];
+    int n = (int)w[3];
     
     t_word *data = x->x_vector;
     

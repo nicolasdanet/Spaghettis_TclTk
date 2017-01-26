@@ -91,7 +91,7 @@ t_symbol *generateSymbol (const char *s, t_symbol *alreadyAllocatedSymbol)
         s2++;
     }
     
-    PD_ASSERT (length < PD_STRING);
+    PD_ASSERT (length < PD_STRING);             /* For efficiency should be prohibited. */
     
     next = message_hashTable + (hash & (MESSAGE_HASH_SIZE - 1));
     

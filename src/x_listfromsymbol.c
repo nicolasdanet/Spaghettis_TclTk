@@ -34,7 +34,7 @@ typedef struct _listfromsymbol {
 static void listfromsymbol_symbol (t_listfromsymbol *x, t_symbol *s)
 {
     t_atom *t = NULL;
-    int count = strlen (s->s_name);
+    int count = (int)(strlen (s->s_name));
     int n;
         
     ATOMS_ALLOCA (t, count);
