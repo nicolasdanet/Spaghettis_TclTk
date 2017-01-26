@@ -250,7 +250,7 @@ t_error audio_openNative (int sampleRate,
         k = (size_t)PD_NEXT_POWER_2 (k + 1);
         pa_bufferIn = PD_MEMORY_GET (k * sizeof (t_sample));
         PD_ASSERT ((ring_buffer_size_t)k > 0);
-        if (PaUtil_InitializeRingBuffer (&pa_ringIn,
+        if (PaUtil_InitializeRingBuffer (&pa_ringIn,    // --
                 (ring_buffer_size_t)sizeof (t_sample),
                 (ring_buffer_size_t)k,
                 (void *)pa_bufferIn)) { 
@@ -262,7 +262,7 @@ t_error audio_openNative (int sampleRate,
         k = (size_t)PD_NEXT_POWER_2 (k + 1);
         pa_bufferOut = PD_MEMORY_GET (k * sizeof (t_sample));
         PD_ASSERT ((ring_buffer_size_t)k > 0);
-        if (PaUtil_InitializeRingBuffer (&pa_ringOut,
+        if (PaUtil_InitializeRingBuffer (&pa_ringOut,   // --
                 (ring_buffer_size_t)sizeof (t_sample),
                 (ring_buffer_size_t)k,
                 (void *)pa_bufferOut)) { 
