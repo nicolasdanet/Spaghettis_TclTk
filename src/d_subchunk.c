@@ -57,7 +57,7 @@ static t_error subchunk_traverseNext (int f, t_headerhelper *t, t_audiopropertie
     t->h_ID[3] = t->h_c[3];
     t->h_ID[4] = 0;
     
-    t->h_chunkSize = (int)soundfile_swap4Bytes (*((uint32_t *)(t->h_c + 4)), swap);
+    t->h_chunkSize = (int)soundfile_swap4Pointer (t->h_c + 4, swap);
     //
     }
     //
@@ -112,8 +112,8 @@ static int subchunk_parseCOMM (t_headerhelper *t, t_audioproperties *args)
 {
     char *p = t->h_c + SOUNDFILE_SUBCHUNK_HEADER;
         
-    int numberOfChannels = (int)soundfile_swap2Bytes (*((uint16_t *)(p + 0)), args->ap_needToSwap);
-    int bitsPerSample    = (int)soundfile_swap2Bytes (*((uint16_t *)(p + 6)), args->ap_needToSwap);
+    int numberOfChannels = (int)soundfile_swap2Pointer (p + 0, args->ap_needToSwap);
+    int bitsPerSample    = (int)soundfile_swap2Pointer (p + 6, args->ap_needToSwap);
 
     args->ap_bytesPerSample   = bitsPerSample / 8;
     args->ap_numberOfChannels = numberOfChannels;
@@ -125,8 +125,8 @@ static int subchunk_parseSSND (t_headerhelper *t, t_audioproperties *args)
 {
     char *p = t->h_c + SOUNDFILE_SUBCHUNK_HEADER;
     
-    int offset      = (int)soundfile_swap4Bytes (*((uint32_t *)(p + 0)), args->ap_needToSwap);
-    int blockAlign  = (int)soundfile_swap4Bytes (*((uint32_t *)(p + 4)), args->ap_needToSwap);
+    int offset      = (int)soundfile_swap4Pointer (p + 0, args->ap_needToSwap);
+    int blockAlign  = (int)soundfile_swap4Pointer (p + 4, args->ap_needToSwap);
     
     PD_ASSERT (offset == 0);        /* Not tested nor implemented for now. */
     PD_ASSERT (blockAlign == 0);    /* Ditto. */
@@ -172,9 +172,9 @@ static int subchunk_parseFMT (t_headerhelper *t, t_audioproperties *args)
 {
     char *p = t->h_c + SOUNDFILE_SUBCHUNK_HEADER;
     
-    int audioFormat      = (int)soundfile_swap2Bytes (*((uint16_t *)(p + 0)),  args->ap_needToSwap);
-    int numberOfChannels = (int)soundfile_swap2Bytes (*((uint16_t *)(p + 2)),  args->ap_needToSwap);
-    int bitsPerSample    = (int)soundfile_swap2Bytes (*((uint16_t *)(p + 14)), args->ap_needToSwap);
+    int audioFormat      = (int)soundfile_swap2Pointer (p + 0,  args->ap_needToSwap);
+    int numberOfChannels = (int)soundfile_swap2Pointer (p + 2,  args->ap_needToSwap);
+    int bitsPerSample    = (int)soundfile_swap2Pointer (p + 14, args->ap_needToSwap);
     
     args->ap_numberOfChannels = numberOfChannels;
     

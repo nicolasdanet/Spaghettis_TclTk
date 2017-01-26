@@ -152,7 +152,7 @@ static inline int soundfile_systemIsBigEndian (void)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static inline uint32_t soundfile_swap4Bytes (uint32_t n, int needToSwap)
+static inline uint32_t soundfile_swap4Integer (uint32_t n, int needToSwap)
 {
     if (!needToSwap) { return n; }
     else {
@@ -160,12 +160,22 @@ static inline uint32_t soundfile_swap4Bytes (uint32_t n, int needToSwap)
     }
 }
 
-static inline uint16_t soundfile_swap2Bytes (uint16_t n, int needToSwap)
+static inline uint16_t soundfile_swap2Integer (uint16_t n, int needToSwap)
 {
     if (!needToSwap) { return n; }
     else {
         return (((n & 0xff) << 8) | ((n & 0xff00) >> 8));
     }
+}
+
+static inline uint32_t soundfile_swap4Pointer (char *c, int needToSwap)
+{
+    uint32_t n; memcpy ((char *)&n, c, 4); return soundfile_swap4Integer (n, needToSwap);
+}
+
+static inline uint16_t soundfile_swap2Pointer (char *c, int needToSwap)
+{
+    uint16_t n; memcpy ((char *)&n, c, 2); return soundfile_swap2Integer (n, needToSwap);
 }
 
 // -----------------------------------------------------------------------------------------------------------
