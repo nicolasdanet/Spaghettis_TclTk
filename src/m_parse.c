@@ -259,7 +259,7 @@ void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)     /* Caller ac
     }
     
     err = atom_toString (a, t, PD_STRING); PD_ASSERT (!err);
-    n = strlen (t) + 1;
+    n = (int)(strlen (t) + 1);
     buffer = PD_MEMORY_RESIZE (buffer, length, length + n);
     strcpy (buffer + length, t);
     length += n;
@@ -395,7 +395,7 @@ void buffer_deserialize (t_buffer *x, int argc, t_atom *argv)
     if (!IS_SYMBOL (argv + i)) { *a = *(argv + i); }
     else {
         char *s = GET_SYMBOL (argv + i)->s_name;
-        t_error err = atom_withStringUnzeroed (a, s, strlen (s));
+        t_error err = atom_withStringUnzeroed (a, s, (int)strlen (s));
         PD_ASSERT (!err);
     }
     //

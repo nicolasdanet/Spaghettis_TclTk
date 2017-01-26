@@ -137,7 +137,7 @@ static int receiver_readHandleTCP (t_receiver *x)
 
     if (c == ';' && (top || !receiver_readHandleIsSemicolonEscaped (x, i))) {
         x->r_inTail = (i + 1) & (RECEIVER_BUFFER_SIZE - 1);
-        buffer_withStringUnzeroed (x->r_message, t, p - t);
+        buffer_withStringUnzeroed (x->r_message, t, (int)(p - t));
         return 1;
     }
     //
@@ -193,7 +193,7 @@ static void receiver_readUDP (t_receiver *x, int fd)
         else {
             char *semicolon = strchr (t, ';');
             if (semicolon) { *semicolon = 0; }
-            buffer_withStringUnzeroed (x->r_message, t, strlen (t));
+            buffer_withStringUnzeroed (x->r_message, t, (int)strlen (t));
             if (x->r_fnReceive) { (*x->r_fnReceive) (x->r_owner, x->r_message); }
         }
     }
@@ -209,7 +209,7 @@ static void receiver_readTCP (t_receiver *x, int fd)
     if (sizeOfAvailableSpace == 0) { x->r_inHead = x->r_inTail = 0; PD_BUG; }
     else {
     //
-    ssize_t length = recv (fd, (void *)(x->r_inRaw + x->r_inHead), sizeOfAvailableSpace, 0);
+    int length = (int)recv (fd, (void *)(x->r_inRaw + x->r_inHead), sizeOfAvailableSpace, 0);
     
     if (length < 0)       { receiver_readHandleDisconnect (x, fd, 1); PD_BUG; }
     else if (length == 0) { receiver_readHandleDisconnect (x, fd, 0); }

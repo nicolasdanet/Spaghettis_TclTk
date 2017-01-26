@@ -35,8 +35,8 @@ static void canvas_findTemplatesAppendProceed (t_symbol *templateIdentifier, int
 
     if (!alreadyExist) {
     //
-    int oldSize = sizeof (t_symbol *) * (t);
-    int newSize = sizeof (t_symbol *) * (t + 1);
+    int oldSize = (int)(sizeof (t_symbol *) * (t));
+    int newSize = (int)(sizeof (t_symbol *) * (t + 1));
         
     templates    = (t_symbol **)PD_MEMORY_RESIZE (templates, oldSize, newSize);
     templates[t] = templateIdentifier;

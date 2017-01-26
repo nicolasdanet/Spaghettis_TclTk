@@ -50,7 +50,7 @@ void textdefine_initialize (void)
     t_buffer *b = buffer_new();
     
     canvas_setActiveFileNameAndDirectory (sym__texttemplate, sym___dot__);
-    buffer_withStringUnzeroed (b, textTemplateFile, strlen (textTemplateFile));
+    buffer_withStringUnzeroed (b, textTemplateFile, (int)strlen (textTemplateFile));
     buffer_eval (b, &pd_canvasMaker, 0, NULL);
     pd_vMessage (pd_getBoundX(), sym__pop, "i", 0);
     

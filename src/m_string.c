@@ -109,7 +109,7 @@ t_error string_addAtom (char *dest, size_t size, t_atom *a)
     
     char *t = (char *)PD_MEMORY_GET (size * sizeof (char));
     
-    err |= atom_toString (a, t, size);
+    err |= atom_toString (a, t, (int)size);
     err |= string_add (dest, size, t);
 
     PD_MEMORY_FREE (t);
@@ -158,10 +158,10 @@ void string_getNumberOfColumnsAndLines (char *s, int *numberOfColumns, int *numb
     int n = 1;
         
     for ((start = s); (end = strchr (start, '\n')); (start = end + 1)) { 
-        m = PD_MAX (m, end - start); n++; 
+        m = PD_MAX (m, (int)(end - start)); n++; 
     }
     
-    if ((int)(strlen (start)) > m) { m = strlen (start); }
+    if ((int)(strlen (start)) > m) { m = (int)strlen (start); }
         
     *numberOfColumns = m;
     *numberOfLines   = n;
