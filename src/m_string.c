@@ -157,11 +157,18 @@ void string_getNumberOfColumnsAndLines (char *s, int *numberOfColumns, int *numb
     int m = 0;
     int n = 1;
         
-    for ((start = s); (end = strchr (start, '\n')); (start = end + 1)) { 
-        m = PD_MAX (m, (int)(end - start)); n++; 
+    for ((start = s); (end = strchr (start, '\n')); (start = end + 1)) {
+        ptrdiff_t t = end - start;
+        int size = (int)(PD_MIN (t, PD_INT_MAX));
+        m = PD_MAX (m, size);
+        n++; 
     }
     
-    if ((int)(strlen (start)) > m) { m = (int)strlen (start); }
+    {
+        size_t t = strlen (start);
+        int size = (int)(PD_MIN (t, PD_INT_MAX));
+        m = PD_MAX (m, size);
+    }
         
     *numberOfColumns = m;
     *numberOfLines   = n;

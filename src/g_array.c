@@ -233,7 +233,7 @@ void array_resize (t_array *x, int n)
     int oldSize = x->a_size;
     int newSize = PD_MAX (1, n);
 
-    int m = x->a_elementSize * sizeof (t_word);
+    int m = (int)(x->a_elementSize * sizeof (t_word));
     
     /* Release. */
     
