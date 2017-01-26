@@ -223,7 +223,7 @@ static void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int prea
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void buffer_toString (t_buffer *x, char **s)        /* Caller acquires string ownership. */
+void buffer_toString (t_buffer *x, char **s)                        /* Caller acquires string ownership. */
 {
     char *buffer = NULL;
     int n, length = 0;
@@ -259,10 +259,15 @@ void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)     /* Caller ac
     }
     
     err = atom_toString (a, t, PD_STRING); PD_ASSERT (!err);
+    
     n = (int)(strlen (t) + 1);
-    buffer = PD_MEMORY_RESIZE (buffer, length, length + n);
-    strcpy (buffer + length, t);
-    length += n;
+    
+    if (length > (PD_INT_MAX - n)) { PD_BUG; }
+    else {
+        buffer = PD_MEMORY_RESIZE (buffer, length, length + n);
+        strcpy (buffer + length, t);
+        length += n;
+    }
     
     if (IS_SEMICOLON (a)) { buffer[length - 1] = '\n'; }
     else { 

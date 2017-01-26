@@ -92,7 +92,7 @@ void textbuffer_update (t_textbuffer *x)
     
     sys_vGui ("::ui_text::clear .x%lx\n", x);
     
-    while (i < size) {  /* Send it line by line. */
+    while (i < size) {                              /* Send it line by line. */
 
         char *start   = text + i;
         char *newline = strchr (start, '\n');
@@ -103,7 +103,7 @@ void textbuffer_update (t_textbuffer *x)
         
         sys_vGui ("::ui_text::append .x%lx {%.*s\n}\n", x, (int)(newline - start), start);  // --
         
-        i = (newline - text) + 1;
+        i = (int)(newline - text) + 1;
     }
     
     sys_vGui ("::ui_text::dirty .x%lx 0\n", x);
