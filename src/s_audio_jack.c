@@ -98,13 +98,13 @@ static int jack_pollCallback (jack_nframes_t numberOfFrames, void *dummy)
         PD_ASSERT (jack_framesFilled == numberOfFrames);
         
         for (i = 0; i < jack_numberOfPortsOut; i++) {
-            if (out = jack_port_get_buffer (jack_portsOut[i], numberOfFrames)) {
+            if ((out = jack_port_get_buffer (jack_portsOut[i], numberOfFrames))) {
                 memcpy (out, jack_bufferOut + (i * JACK_BUFFER_SIZE), size);
             }
         }
         
         for (i = 0; i < jack_numberOfPortsIn; i++) {
-            if (in = jack_port_get_buffer (jack_portsIn[i], numberOfFrames)) {
+            if ((in = jack_port_get_buffer (jack_portsIn[i], numberOfFrames))) {
                 memcpy (jack_bufferIn + (i * JACK_BUFFER_SIZE), in, size);
             }
         }
@@ -112,7 +112,7 @@ static int jack_pollCallback (jack_nframes_t numberOfFrames, void *dummy)
     } else {    /* Fill with zeros. */
 
         for (i = 0; i < jack_numberOfPortsOut; i++) {
-            if (out = jack_port_get_buffer (jack_portsOut[i], numberOfFrames)) {
+            if ((out = jack_port_get_buffer (jack_portsOut[i], numberOfFrames))) {
                 memset (out, 0, size);
             }
         }

@@ -75,7 +75,7 @@ static int      pdreceive_socketIsBinary;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int pdreceive_usage (void)
+void pdreceive_usage (void)
 {
     fprintf (stderr, "usage: pdreceive < portnumber > [ udp | tcp ] [ binary ]\n");     // --
     fprintf (stderr, "(default is tcp)\n");
@@ -199,7 +199,7 @@ static int pdreceive_outputUDP (char *t, int size)
 
 static int pdreceive_outputTCP (t_poll *x, char *t, int size)
 {
-    if (pdreceive_socketIsBinary) { pdreceive_outputRaw (t, size); }
+    if (pdreceive_socketIsBinary) { return pdreceive_outputRaw (t, size); }
     else {
     //
     char *p = x->p_buffer;
@@ -239,7 +239,7 @@ static int pdreceive_outputTCP (t_poll *x, char *t, int size)
 static int pdreceive_readUDP (void)
 {
     char t[PDRECEIVE_BUFFER_SIZE] = { 0 };
-    ssize_t n = recv (pdreceive_socketFileDescriptor, (void *)t, PDRECEIVE_BUFFER_SIZE, 0);
+    int n = (int)recv (pdreceive_socketFileDescriptor, (void *)t, PDRECEIVE_BUFFER_SIZE, 0);
     
     if (n < 0) { pdreceive_socketError ("recv"); return 1; }
     else {
@@ -254,7 +254,7 @@ static int pdreceive_readUDP (void)
 static int pdreceive_readTCP (t_poll *x)
 {
     char t[PDRECEIVE_BUFFER_SIZE] = { 0 };
-    ssize_t n = recv (x->p_fd, (void *)t, PDRECEIVE_BUFFER_SIZE, 0);
+    int n = (int)recv (x->p_fd, (void *)t, PDRECEIVE_BUFFER_SIZE, 0);
     
     if (n <= 0) { if (n) { pdreceive_socketError ("recv"); } return pdreceive_removePort (x); }
     else { 

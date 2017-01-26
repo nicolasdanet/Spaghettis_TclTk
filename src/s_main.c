@@ -164,7 +164,7 @@ static t_error main_getExecutablePathNative (char *dest, size_t length)
     if (!(err = (t < 0 || t >= PATH_MAX))) {
         char *s = NULL;
         path[t] = 0;
-        if (s = realpath (path, NULL)) { err |= string_copy (dest, length, s); free (s); }
+        if ((s = realpath (path, NULL))) { err |= string_copy (dest, length, s); free (s); }
     }
     
     return err;

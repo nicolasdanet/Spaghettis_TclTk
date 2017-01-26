@@ -53,7 +53,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int pdsend_usage (void)
+void pdsend_usage (void)
 {
     fprintf (stderr, "usage: pdsend < portnumber > [ host ] [ udp | tcp ]\n");  // --
     fprintf (stderr, "(default is localhost and tcp)\n");
@@ -163,7 +163,7 @@ int main (int argc, char **argv)
         if (!fgets (t, PDSEND_BUFFER_SIZE, stdin)) { break; }
         else {
         //
-        int numberOfCharactersToSend = strlen (t);
+        int numberOfCharactersToSend = (int)strlen (t);
         ssize_t alreadySent = 0; char *p = t;
                     
         while (alreadySent < numberOfCharactersToSend) {
