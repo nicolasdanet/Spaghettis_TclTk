@@ -34,6 +34,10 @@ libpdtcldir     = $(libpddir)/tcl
 libpdhelpdir    = $(libpddir)/help
 libpdextrasdir  = $(libpddir)/extras
 
+# Warnings
+
+WARNINGS = -Wall -Wextra -Wshadow -Wno-unused-parameter -Wno-unknown-pragmas
+
 # Linker flags.
 
 LIB = -ldl -lpthread -lm
@@ -44,7 +48,7 @@ LDFLAGS = -rdynamic $(ARCH)
 
 CPPFLAGS = -DNDEBUG -DPD_BUILDING_APPLICATION
 
-CFLAGS = -O3 -ffast-math -fvisibility=hidden -w $(ARCH)
+CFLAGS = -O3 -ffast-math -fvisibility=hidden $(WARNINGS) $(ARCH)
 
 # MIDI with ALSA.
 

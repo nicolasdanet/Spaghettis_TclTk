@@ -38,6 +38,10 @@ libpdtcldir     = $(libpddir)/tcl
 libpdhelpdir    = $(libpddir)/help
 libpdextrasdir  = $(libpddir)/extras
 
+# Warnings
+
+WARNINGS = -w
+
 # Linker flags.
 
 LIB = -ldl -lpthread
@@ -48,7 +52,7 @@ LDFLAGS = -framework CoreAudio \
     -framework AudioToolbox \
     -framework Carbon \
     $(ARCH)
-    
+
 # Preprocessor and compiler flags.
 
 ifdef WITH_DEBUG
@@ -59,7 +63,7 @@ CPPFLAGS = -DPD_WITH_DEBUG \
     -I$(PM_DIR)/pm_mac \
     -I$(PM_DIR)/porttime
 
-CFLAGS = -gstabs -ffast-math -w $(ARCH)
+CFLAGS = -gstabs -ffast-math $(WARNINGS) $(ARCH)
 
 else
 
@@ -69,7 +73,7 @@ CPPFLAGS = -DNDEBUG \
     -I$(PM_DIR)/pm_mac \
     -I$(PM_DIR)/porttime
 
-CFLAGS = -O3 -ffast-math -fvisibility=hidden -w $(ARCH)
+CFLAGS = -O3 -ffast-math -fvisibility=hidden $(WARNINGS) $(ARCH)
 
 endif
 
