@@ -42,7 +42,6 @@
 		3716556D1BA3459F00ABDE22 /* pa_debugprint.c in Sources */ = {isa = PBXBuildFile; fileRef = 3716556C1BA3459F00ABDE22 /* pa_debugprint.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		3716556F1BA345AD00ABDE22 /* pa_ringbuffer.c in Sources */ = {isa = PBXBuildFile; fileRef = 3716556E1BA345AD00ABDE22 /* pa_ringbuffer.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		371655711BA345C100ABDE22 /* pa_unix_util.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655701BA345C100ABDE22 /* pa_unix_util.c */; settings = {COMPILER_FLAGS = "-w"; }; };
-		371655731BA345CB00ABDE22 /* pa_mac_hostapis.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655721BA345CB00ABDE22 /* pa_mac_hostapis.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		371655751BA345E400ABDE22 /* pa_mac_core.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655741BA345E400ABDE22 /* pa_mac_core.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		371655771BA345EE00ABDE22 /* pa_mac_core_blocking.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655761BA345EE00ABDE22 /* pa_mac_core_blocking.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		371655791BA345F800ABDE22 /* pa_mac_core_utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655781BA345F800ABDE22 /* pa_mac_core_utilities.c */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -67,6 +66,7 @@
 		3722C5311C4F91F500D2BF6F /* u_pdsend.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972041C4F716700263434 /* u_pdsend.c */; };
 		3722C5321C4F91FC00D2BF6F /* u_watchdog.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972051C4F716700263434 /* u_watchdog.c */; };
 		372BDF771DCF36D00045ECE8 /* d_adc.c in Sources */ = {isa = PBXBuildFile; fileRef = 372BDF761DCF36D00045ECE8 /* d_adc.c */; };
+		372F9C6D1E3B461100A0BEF8 /* pa_mac_hostapis.c in Sources */ = {isa = PBXBuildFile; fileRef = 372F9C6C1E3B461100A0BEF8 /* pa_mac_hostapis.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		373393801DBA6E4E00A76E6E /* s_inmidi.c in Sources */ = {isa = PBXBuildFile; fileRef = 3733937E1DBA6E4E00A76E6E /* s_inmidi.c */; };
 		373393811DBA6E4E00A76E6E /* s_outmidi.c in Sources */ = {isa = PBXBuildFile; fileRef = 3733937F1DBA6E4E00A76E6E /* s_outmidi.c */; };
 		373393C01DBA702D00A76E6E /* x_bag.c in Sources */ = {isa = PBXBuildFile; fileRef = 373393BF1DBA702D00A76E6E /* x_bag.c */; };
@@ -414,7 +414,6 @@
 		3716556C1BA3459F00ABDE22 /* pa_debugprint.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_debugprint.c; path = portaudio/src/common/pa_debugprint.c; sourceTree = "<group>"; };
 		3716556E1BA345AD00ABDE22 /* pa_ringbuffer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_ringbuffer.c; path = portaudio/src/common/pa_ringbuffer.c; sourceTree = "<group>"; };
 		371655701BA345C100ABDE22 /* pa_unix_util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_unix_util.c; path = portaudio/src/os/unix/pa_unix_util.c; sourceTree = "<group>"; };
-		371655721BA345CB00ABDE22 /* pa_mac_hostapis.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_mac_hostapis.c; path = portaudio/src/os/mac_osx/pa_mac_hostapis.c; sourceTree = "<group>"; };
 		371655741BA345E400ABDE22 /* pa_mac_core.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_mac_core.c; path = portaudio/src/hostapi/coreaudio/pa_mac_core.c; sourceTree = "<group>"; };
 		371655761BA345EE00ABDE22 /* pa_mac_core_blocking.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_mac_core_blocking.c; path = portaudio/src/hostapi/coreaudio/pa_mac_core_blocking.c; sourceTree = "<group>"; };
 		371655781BA345F800ABDE22 /* pa_mac_core_utilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_mac_core_utilities.c; path = portaudio/src/hostapi/coreaudio/pa_mac_core_utilities.c; sourceTree = "<group>"; };
@@ -437,6 +436,7 @@
 		3720EBB51D239650001675BD /* g_voutlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_voutlet.c; path = src/g_voutlet.c; sourceTree = "<group>"; };
 		372220551D884C6B0045BC57 /* g_table.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_table.c; path = src/g_table.c; sourceTree = "<group>"; };
 		372BDF761DCF36D00045ECE8 /* d_adc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_adc.c; path = src/d_adc.c; sourceTree = "<group>"; };
+		372F9C6C1E3B461100A0BEF8 /* pa_mac_hostapis.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_mac_hostapis.c; path = src/pa_mac_hostapis.c; sourceTree = "<group>"; };
 		3733937E1DBA6E4E00A76E6E /* s_inmidi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_inmidi.c; path = src/s_inmidi.c; sourceTree = "<group>"; };
 		3733937F1DBA6E4E00A76E6E /* s_outmidi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_outmidi.c; path = src/s_outmidi.c; sourceTree = "<group>"; };
 		373393BF1DBA702D00A76E6E /* x_bag.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_bag.c; path = src/x_bag.c; sourceTree = "<group>"; };
@@ -918,7 +918,6 @@
 				3716556C1BA3459F00ABDE22 /* pa_debugprint.c */,
 				3716556E1BA345AD00ABDE22 /* pa_ringbuffer.c */,
 				371655701BA345C100ABDE22 /* pa_unix_util.c */,
-				371655721BA345CB00ABDE22 /* pa_mac_hostapis.c */,
 				371655741BA345E400ABDE22 /* pa_mac_core.c */,
 				371655761BA345EE00ABDE22 /* pa_mac_core_blocking.c */,
 				371655781BA345F800ABDE22 /* pa_mac_core_utilities.c */,
@@ -1300,6 +1299,7 @@
 		37961C251CAD85DB00859402 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				372F9C6C1E3B461100A0BEF8 /* pa_mac_hostapis.c */,
 				371655871BA3461600ABDE22 /* PortMidi */,
 				371655471BA3451000ABDE22 /* PortAudio */,
 			);
@@ -1762,7 +1762,6 @@
 				3716556D1BA3459F00ABDE22 /* pa_debugprint.c in Sources */,
 				3716556F1BA345AD00ABDE22 /* pa_ringbuffer.c in Sources */,
 				371655711BA345C100ABDE22 /* pa_unix_util.c in Sources */,
-				371655731BA345CB00ABDE22 /* pa_mac_hostapis.c in Sources */,
 				371655751BA345E400ABDE22 /* pa_mac_core.c in Sources */,
 				371655771BA345EE00ABDE22 /* pa_mac_core_blocking.c in Sources */,
 				371655791BA345F800ABDE22 /* pa_mac_core_utilities.c in Sources */,
@@ -2056,6 +2055,7 @@
 				371196D21E2DF3D2007214B2 /* d_rfft.c in Sources */,
 				3711970C1E2DF6FE007214B2 /* d_ifft.c in Sources */,
 				37ACC4191E32190F0026E5FA /* d_fftOOURA.c in Sources */,
+				372F9C6D1E3B461100A0BEF8 /* pa_mac_hostapis.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2074,7 +2074,8 @@
 				HEADER_SEARCH_PATHS = (
 					portaudio/include,
 					portaudio/src/common,
-					portaudio/src/os/mac_osx,
+					portaudio/src/hostapi,
+					portaudio/src/os,
 					portmidi/pm_common,
 					portmidi/pm_mac,
 					portmidi/porttime,
@@ -2109,7 +2110,8 @@
 				HEADER_SEARCH_PATHS = (
 					portaudio/include,
 					portaudio/src/common,
-					portaudio/src/os/mac_osx,
+					portaudio/src/hostapi,
+					portaudio/src/os,
 					portmidi/pm_common,
 					portmidi/pm_mac,
 					portmidi/porttime,

@@ -100,7 +100,6 @@ PORTAUDIO_SRC = $(PA_DIR)/src/common/pa_allocation.c \
     $(PA_DIR)/src/common/pa_debugprint.c \
     $(PA_DIR)/src/common/pa_ringbuffer.c \
     $(PA_DIR)/src/os/unix/pa_unix_util.c \
-    $(PA_DIR)/src/os/mac_osx/pa_mac_hostapis.c \
     $(PA_DIR)/src/hostapi/coreaudio/pa_mac_core.c \
     $(PA_DIR)/src/hostapi/coreaudio/pa_mac_core_blocking.c \
     $(PA_DIR)/src/hostapi/coreaudio/pa_mac_core_utilities.c
@@ -118,9 +117,8 @@ AUDIO_SRC =
 ifdef WITH_PORTAUDIO
     CPPFLAGS += -I$(PA_DIR)/include \
         -I$(PA_DIR)/src/common \
-        -I$(PA_DIR)/src/os/mac_osx \
         -DPA_USE_COREAUDIO
-    AUDIO_SRC += s_logger_pa.c s_audio_pa.c $(PORTAUDIO_SRC)
+    AUDIO_SRC += s_logger_pa.c s_audio_pa.c pa_mac_hostapis.c $(PORTAUDIO_SRC)
 endif
 
 # Audio with JACK.
@@ -177,6 +175,7 @@ clean:
 	@echo "Remove objects ..."
 	@-rm -f $(PORTAUDIO_SRC:.c=.o)
 	@-rm -f $(OBJ)
+	@-rm -f "pa_mac_hostapis.o"
 	@-rm -f "s_audio_pa.o"
 	@-rm -f "s_audio_jack.o"
 	@-rm -f "s_logger_pa.o"
