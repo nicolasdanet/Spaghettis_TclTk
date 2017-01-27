@@ -318,6 +318,8 @@ int buffer_getNumberOfMessages (t_buffer *x)
 
 int buffer_getMessageAt (t_buffer *x, int n, int *start, int *end)
 {
+    *start = 0; *end = 0;
+    
     if (n >= 0) {
     //
     int i, k = 0;
