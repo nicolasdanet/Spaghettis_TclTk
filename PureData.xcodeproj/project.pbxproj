@@ -10,6 +10,8 @@
 		370157EC1DFFD62900F3FE0C /* d_vd.c in Sources */ = {isa = PBXBuildFile; fileRef = 370157EB1DFFD62900F3FE0C /* d_vd.c */; };
 		370158391DFFD81B00F3FE0C /* d_delread.c in Sources */ = {isa = PBXBuildFile; fileRef = 370158381DFFD81B00F3FE0C /* d_delread.c */; };
 		370241501DAB95AC00AB5440 /* x_serial.c in Sources */ = {isa = PBXBuildFile; fileRef = 3702414F1DAB95AC00AB5440 /* x_serial.c */; };
+		3703031E1E3B586D009D8A6D /* readbinaryplist.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655921BA3465100ABDE22 /* readbinaryplist.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		370303231E3B587E009D8A6D /* finddefault.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655901BA3464900ABDE22 /* finddefault.c */; };
 		370793031DBB4F4B00183F74 /* x_midiout.c in Sources */ = {isa = PBXBuildFile; fileRef = 370793021DBB4F4B00183F74 /* x_midiout.c */; };
 		3707931F1DBB507700183F74 /* x_midirealtimein.c in Sources */ = {isa = PBXBuildFile; fileRef = 3707931E1DBB507700183F74 /* x_midirealtimein.c */; };
 		3707935C1DBB520A00183F74 /* x_polytouchin.c in Sources */ = {isa = PBXBuildFile; fileRef = 3707935B1DBB520A00183F74 /* x_polytouchin.c */; };
@@ -47,8 +49,6 @@
 		371655791BA345F800ABDE22 /* pa_mac_core_utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655781BA345F800ABDE22 /* pa_mac_core_utilities.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		3716558D1BA3463700ABDE22 /* pmmac.c in Sources */ = {isa = PBXBuildFile; fileRef = 3716558C1BA3463700ABDE22 /* pmmac.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		3716558F1BA3464100ABDE22 /* pmmacosxcm.c in Sources */ = {isa = PBXBuildFile; fileRef = 3716558E1BA3464100ABDE22 /* pmmacosxcm.c */; settings = {COMPILER_FLAGS = "-w"; }; };
-		371655911BA3464900ABDE22 /* finddefault.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655901BA3464900ABDE22 /* finddefault.c */; settings = {COMPILER_FLAGS = "-w"; }; };
-		371655931BA3465100ABDE22 /* readbinaryplist.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655921BA3465100ABDE22 /* readbinaryplist.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		371655951BA3466000ABDE22 /* pmutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655941BA3466000ABDE22 /* pmutil.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		371655971BA3466600ABDE22 /* portmidi.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655961BA3466600ABDE22 /* portmidi.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		371655991BA3467500ABDE22 /* ptmacosx_cf.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655981BA3467500ABDE22 /* ptmacosx_cf.c */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -1767,8 +1767,6 @@
 				371655791BA345F800ABDE22 /* pa_mac_core_utilities.c in Sources */,
 				3716558D1BA3463700ABDE22 /* pmmac.c in Sources */,
 				3716558F1BA3464100ABDE22 /* pmmacosxcm.c in Sources */,
-				371655911BA3464900ABDE22 /* finddefault.c in Sources */,
-				371655931BA3465100ABDE22 /* readbinaryplist.c in Sources */,
 				371655951BA3466000ABDE22 /* pmutil.c in Sources */,
 				371655971BA3466600ABDE22 /* portmidi.c in Sources */,
 				371655991BA3467500ABDE22 /* ptmacosx_cf.c in Sources */,
@@ -2056,6 +2054,8 @@
 				3711970C1E2DF6FE007214B2 /* d_ifft.c in Sources */,
 				37ACC4191E32190F0026E5FA /* d_fftOOURA.c in Sources */,
 				372F9C6D1E3B461100A0BEF8 /* pa_mac_hostapis.c in Sources */,
+				3703031E1E3B586D009D8A6D /* readbinaryplist.c in Sources */,
+				370303231E3B587E009D8A6D /* finddefault.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

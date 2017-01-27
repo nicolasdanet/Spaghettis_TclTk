@@ -22,7 +22,7 @@
 #define MIDI_F9         0xF9
 #define MIDI_FD         0xFD
 #define MIDI_RESET      0xFF
-#define MIDI_NOTEON    0x90
+#define MIDI_NOTE_ON    0x90
 #define MIDI_NOTE_OFF   0x80
 #define MIDI_CHANNEL_AT 0xD0
 #define MIDI_POLY_AT    0xA0
@@ -420,7 +420,7 @@ PMEXPORT PmError Pm_Poll( PortMidiStream *stream )
         return pm_errmsg(err);
     }
 
-    return !Pm_QueueEmpty(midi->queue);
+    return (PmError) !Pm_QueueEmpty(midi->queue);
 }
 
 
@@ -968,7 +968,7 @@ PMEXPORT PmError Pm_Abort( PortMidiStream* stream ) {
 
 
 /*
-    return  ((status == MIDI_NOTEON) && (filters & PM_FILT_NOTE))
+    return  ((status == MIDI_NOTE_ON) && (filters & PM_FILT_NOTE))
             ||  ((status == MIDI_NOTE_OFF) && (filters & PM_FILT_NOTE))
             ||  ((status == MIDI_CHANNEL_AT) && (filters & PM_FILT_CHANNEL_AFTERTOUCH))
             ||  ((status == MIDI_POLY_AT) && (filters & PM_FILT_POLY_AFTERTOUCH))
