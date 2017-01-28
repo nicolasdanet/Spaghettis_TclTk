@@ -244,7 +244,7 @@
 #define PD_NAME_SHORT           "Pd"
 
 #define PD_VERSION              "0.9"
-
+               
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -597,9 +597,15 @@ typedef void *(*t_newmethod)(void);
 
 #if ! ( PD_WITH_DEBUG )
 
-#define PD_MEMORY_GET(n)                                sys_getMemory (n)
-#define PD_MEMORY_RESIZE(ptr, oldSize, newSize)         sys_getMemoryResize ((ptr), (oldSize), (newSize))
-#define PD_MEMORY_FREE(ptr)                             sys_freeMemory (ptr)
+#define PD_MEMORY_GET(n)                sys_getMemory (n)
+#define PD_MEMORY_RESIZE(ptr, m, n)     sys_getMemoryResize ((ptr), (m), (n))
+#define PD_MEMORY_FREE(ptr)             sys_freeMemory (ptr)
+
+#else
+
+#define PD_MEMORY_GET(n)                sys_getMemoryChecked (n, __FUNCTION__, __LINE__)
+#define PD_MEMORY_RESIZE(ptr, m, n)     sys_getMemoryResizeChecked ((ptr), (m), (n), __FUNCTION__, __LINE__)
+#define PD_MEMORY_FREE(ptr)             sys_freeMemoryChecked (ptr, __FUNCTION__, __LINE__);
 
 #endif
 
@@ -607,24 +613,7 @@ typedef void *(*t_newmethod)(void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#if PD_WITH_DEBUG
-
-#define PD_MEMORY_GET(n) \
-    sys_getMemoryChecked (n, __FUNCTION__, __LINE__)
-    
-#define PD_MEMORY_RESIZE(ptr, oldSize, newSize) \
-    sys_getMemoryResizeChecked ((ptr), (oldSize), (newSize), __FUNCTION__, __LINE__)
-    
-#define PD_MEMORY_FREE(ptr) \
-    { sys_freeMemoryChecked (ptr, __FUNCTION__, __LINE__); ptr = (void *)0xDEADBEEF; }
-
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#define CLASS_SIGNAL(c, t, field)   class_addSignal (c, (char *)(&((t *)0)->field) - (char *)0)
+#define CLASS_SIGNAL(c, t, field)       class_addSignal (c, (char *)(&((t *)0)->field) - (char *)0)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

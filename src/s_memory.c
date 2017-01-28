@@ -50,3 +50,26 @@ void sys_freeMemory (void *ptr)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#if ! ( PD_WITH_DEBUG )
+
+void *sys_getMemoryChecked (size_t n, const char *f, const int line)
+{
+    return sys_getMemory (n);
+}
+
+void *sys_getMemoryResizeChecked (void *ptr, size_t oldSize, size_t newSize, const char *f, const int line)
+{
+    return sys_getMemoryResize (ptr, oldSize, newSize);
+}
+
+void sys_freeMemoryChecked (void *ptr, const char *f, const int line)
+{
+    return sys_freeMemory (ptr);
+}
+
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
