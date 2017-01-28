@@ -596,7 +596,6 @@ typedef void *(*t_newmethod)(void);
 #pragma mark -
 
 #define PD_MEMORY_GET(n)                                sys_getMemory (n)
-#define PD_MEMORY_GET_COPY(src, n)                      sys_getMemoryCopy (src, n)
 #define PD_MEMORY_RESIZE(ptr, oldSize, newSize)         sys_getMemoryResize (ptr, oldSize, newSize)
 #define PD_MEMORY_FREE(ptr)                             sys_freeMemory (ptr)
 
@@ -626,7 +625,6 @@ PD_DLL t_symbol     *gensym                     (const char *s);
 #pragma mark -
 
 PD_DLL void         *sys_getMemory              (size_t n);
-PD_DLL void         *sys_getMemoryCopy          (void *src, size_t n);
 PD_DLL void         *sys_getMemoryResize        (void *ptr, size_t oldSize, size_t newSize);
 
 PD_DLL void         sys_freeMemory              (void *ptr);

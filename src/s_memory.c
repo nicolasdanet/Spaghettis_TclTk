@@ -26,15 +26,6 @@ void *sys_getMemory (size_t n)
     return r;
 }
 
-void *sys_getMemoryCopy (void *src, size_t n)
-{
-    void *r = PD_MEMORY_GET (n);
-    
-    if (n > 0) { memcpy (r, src, n); }
-    
-    return r;
-}
-
 void *sys_getMemoryResize (void *ptr, size_t oldSize, size_t newSize)
 {
     void *r = NULL;

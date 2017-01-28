@@ -72,7 +72,9 @@ void canvas_setActiveArguments (int argc, t_atom *argv)
     if (canvas_argv) { PD_MEMORY_FREE (canvas_argv); }
     
     canvas_argc = argc;
-    canvas_argv = PD_MEMORY_GET_COPY (argv, argc * sizeof (t_atom));
+    canvas_argv = PD_MEMORY_GET (argc * sizeof (t_atom));
+    
+    if (argc) { atom_copyAtomsUnchecked (argc, argv, canvas_argv); }
 }
 
 void canvas_newPatch (void *dummy, t_symbol *name, t_symbol *directory)
