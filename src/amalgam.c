@@ -67,6 +67,7 @@
 #include "s_inmidi.c"
 #include "s_outmidi.c"
 #include "s_memory.c"
+#include "s_leak.c"
 #include "s_font.c"
 #include "s_post.c"
 #include "s_logger.c"

@@ -595,9 +595,30 @@ typedef void *(*t_newmethod)(void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#if ! ( PD_WITH_DEBUG )
+
 #define PD_MEMORY_GET(n)                                sys_getMemory (n)
-#define PD_MEMORY_RESIZE(ptr, oldSize, newSize)         sys_getMemoryResize (ptr, oldSize, newSize)
+#define PD_MEMORY_RESIZE(ptr, oldSize, newSize)         sys_getMemoryResize ((ptr), (oldSize), (newSize))
 #define PD_MEMORY_FREE(ptr)                             sys_freeMemory (ptr)
+
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#if PD_WITH_DEBUG
+
+#define PD_MEMORY_GET(n) \
+    sys_getMemoryChecked (n, __FUNCTION__, __LINE__)
+    
+#define PD_MEMORY_RESIZE(ptr, oldSize, newSize) \
+    sys_getMemoryResizeChecked ((ptr), (oldSize), (newSize), __FUNCTION__, __LINE__)
+    
+#define PD_MEMORY_FREE(ptr) \
+    { sys_freeMemoryChecked (ptr, __FUNCTION__, __LINE__); ptr = (void *)0xDEADBEEF; }
+
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -618,111 +639,124 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_DLL t_symbol     *gensym                     (const char *s);
+PD_DLL t_symbol *gensym                         (const char *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_DLL void         *sys_getMemory              (size_t n);
-PD_DLL void         *sys_getMemoryResize        (void *ptr, size_t oldSize, size_t newSize);
+PD_DLL void     *sys_getMemory                  (size_t n);
+PD_DLL void     *sys_getMemoryResize            (void *ptr, size_t oldSize, size_t newSize);
 
-PD_DLL void         sys_freeMemory              (void *ptr);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-PD_DLL t_pd         *pd_new                     (t_class *c);
-
-PD_DLL void         pd_free                     (t_pd *x);
-PD_DLL void         pd_bind                     (t_pd *x, t_symbol *s);
-PD_DLL void         pd_unbind                   (t_pd *x, t_symbol *s);
+PD_DLL void     sys_freeMemory                  (void *ptr);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_DLL t_class      *class_new                  (t_symbol *name,
+PD_DLL void     *sys_getMemoryChecked           (size_t n, const char *f, const int line);
+PD_DLL void     *sys_getMemoryResizeChecked     (void *ptr,
+                                                    size_t oldSize,
+                                                    size_t newSize,
+                                                    const char *f,
+                                                    const int line);
+
+PD_DLL void     sys_freeMemoryChecked           (void *ptr, const char *f, const int line);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+PD_DLL t_pd     *pd_new                         (t_class *c);
+
+PD_DLL void     pd_free                         (t_pd *x);
+PD_DLL void     pd_bind                         (t_pd *x, t_symbol *s);
+PD_DLL void     pd_unbind                       (t_pd *x, t_symbol *s);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+PD_DLL t_class  *class_new                      (t_symbol *name,
                                                     t_newmethod newMethod,
                                                     t_method freeMethod,
                                                     size_t size,
                                                     int flags,
                                                     t_atomtype type1, ...);
 
-PD_DLL void         class_addSignal             (t_class *c, int offset);
-PD_DLL void         class_addCreator            (t_newmethod newMethod, t_symbol *s, t_atomtype type1, ...);
-PD_DLL void         class_addMethod             (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ...);
+PD_DLL void     class_addSignal                 (t_class *c, int offset);
+PD_DLL void     class_addCreator                (t_newmethod newMethod, t_symbol *s, t_atomtype type1, ...);
+PD_DLL void     class_addMethod                 (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ...);
 
-PD_DLL void         class_addBang               (t_class *c, t_method fn);
-PD_DLL void         class_addFloat              (t_class *c, t_method fn);
-PD_DLL void         class_addSymbol             (t_class *c, t_method fn);
-PD_DLL void         class_addPointer            (t_class *c, t_method fn);
-PD_DLL void         class_addList               (t_class *c, t_method fn);
-PD_DLL void         class_addAnything           (t_class *c, t_method fn);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-PD_DLL t_inlet      *inlet_newPointer           (t_object *owner, t_gpointer *gp);
-PD_DLL t_inlet      *inlet_newFloat             (t_object *owner, t_float *fp);
-PD_DLL t_inlet      *inlet_newSymbol            (t_object *owner, t_symbol **sp);
-PD_DLL t_inlet      *inlet_newSignal            (t_object *owner);
+PD_DLL void     class_addBang                   (t_class *c, t_method fn);
+PD_DLL void     class_addFloat                  (t_class *c, t_method fn);
+PD_DLL void     class_addSymbol                 (t_class *c, t_method fn);
+PD_DLL void     class_addPointer                (t_class *c, t_method fn);
+PD_DLL void     class_addList                   (t_class *c, t_method fn);
+PD_DLL void     class_addAnything               (t_class *c, t_method fn);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_DLL t_outlet     *outlet_new                 (t_object *owner, t_symbol *s);
-
-PD_DLL void         outlet_bang                 (t_outlet *x);
-PD_DLL void         outlet_pointer              (t_outlet *x, t_gpointer *gp);
-PD_DLL void         outlet_float                (t_outlet *x, t_float f);
-PD_DLL void         outlet_symbol               (t_outlet *x, t_symbol *s);
-PD_DLL void         outlet_list                 (t_outlet *x, int argc, t_atom *argv);
-PD_DLL void         outlet_anything             (t_outlet *x, t_symbol *s, int argc, t_atom *argv);
+PD_DLL t_inlet  *inlet_newPointer               (t_object *owner, t_gpointer *gp);
+PD_DLL t_inlet  *inlet_newFloat                 (t_object *owner, t_float *fp);
+PD_DLL t_inlet  *inlet_newSymbol                (t_object *owner, t_symbol **sp);
+PD_DLL t_inlet  *inlet_newSignal                (t_object *owner);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_DLL t_symbol     *atom_getSymbol             (t_atom *a);
-PD_DLL t_symbol     *atom_getSymbolAtIndex      (int n, int argc, t_atom *argv);
+PD_DLL t_outlet *outlet_new                     (t_object *owner, t_symbol *s);
 
-PD_DLL t_float      atom_getFloat               (t_atom *a);
-PD_DLL t_float      atom_getFloatAtIndex        (int n, int argc, t_atom *argv);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-PD_DLL t_buffer     *buffer_new                 (void);
-PD_DLL t_atom       *buffer_atoms               (t_buffer *x);
-
-PD_DLL void         buffer_free                 (t_buffer *x);
-PD_DLL int          buffer_size                 (t_buffer *x);
-PD_DLL void         buffer_reset                (t_buffer *x);
-PD_DLL void         buffer_append               (t_buffer *x, int argc, t_atom *argv);
+PD_DLL void     outlet_bang                     (t_outlet *x);
+PD_DLL void     outlet_pointer                  (t_outlet *x, t_gpointer *gp);
+PD_DLL void     outlet_float                    (t_outlet *x, t_float f);
+PD_DLL void     outlet_symbol                   (t_outlet *x, t_symbol *s);
+PD_DLL void     outlet_list                     (t_outlet *x, int argc, t_atom *argv);
+PD_DLL void     outlet_anything                 (t_outlet *x, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_DLL t_clock      *clock_new                  (void *owner, t_method fn);
+PD_DLL t_symbol *atom_getSymbol                 (t_atom *a);
+PD_DLL t_symbol *atom_getSymbolAtIndex          (int n, int argc, t_atom *argv);
 
-PD_DLL void         clock_free                  (t_clock *x);
-PD_DLL void         clock_unset                 (t_clock *x);
-PD_DLL void         clock_delay                 (t_clock *x, double delay);     /* Usable in DSP perform. */
+PD_DLL t_float  atom_getFloat                   (t_atom *a);
+PD_DLL t_float  atom_getFloatAtIndex            (int n, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_DLL void         post                        (const char *fmt, ...);
-PD_DLL void         post_warning                (const char *fmt, ...);
-PD_DLL void         post_error                  (const char *fmt, ...);
-PD_DLL void         post_log                    (const char *fmt, ...);
+PD_DLL t_buffer *buffer_new                     (void);
+PD_DLL t_atom   *buffer_atoms                   (t_buffer *x);
+
+PD_DLL void     buffer_free                     (t_buffer *x);
+PD_DLL int      buffer_size                     (t_buffer *x);
+PD_DLL void     buffer_reset                    (t_buffer *x);
+PD_DLL void     buffer_append                   (t_buffer *x, int argc, t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+PD_DLL t_clock  *clock_new                      (void *owner, t_method fn);
+
+PD_DLL void     clock_free                      (t_clock *x);
+PD_DLL void     clock_unset                     (t_clock *x);
+PD_DLL void     clock_delay                     (t_clock *x, double delay);     /* Usable in DSP perform. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+PD_DLL void     post                            (const char *fmt, ...);
+PD_DLL void     post_warning                    (const char *fmt, ...);
+PD_DLL void     post_error                      (const char *fmt, ...);
+PD_DLL void     post_log                        (const char *fmt, ...);
                                        
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
