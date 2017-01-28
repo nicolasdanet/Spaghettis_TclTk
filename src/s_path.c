@@ -99,7 +99,7 @@ t_error path_withDirectoryAndName (char *dest,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#ifdef PD_WINDOWS
+#if PD_WINDOWS
 
 t_error path_expandEnvironment (const char *dest, size_t size, char *src)
 {

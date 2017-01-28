@@ -38,18 +38,22 @@ extern int interface_watchdogPipe;
 #pragma mark -
 
 #if defined ( _POSIX_MEMLOCK ) && ( _POSIX_MEMLOCK > 0 )
-    #define PRIORITY_MEMLOCK
+    #define PRIORITY_MEMLOCK        1
+#else
+    #define PRIORITY_MEMLOCK        0
 #endif
 
 #if defined ( _POSIX_PRIORITY_SCHEDULING ) && ( _POSIX_PRIORITY_SCHEDULING > 0 )
-    #define PRIORITY_SCHEDULING
+    #define PRIORITY_SCHEDULING     1
+#else 
+    #define PRIORITY_SCHEDULING     0
 #endif 
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#ifdef PRIORITY_SCHEDULING
+#if PRIORITY_SCHEDULING
 
 static t_error priority_setRealTimeScheduling (int isWatchdog) 
 {
@@ -64,7 +68,7 @@ static t_error priority_setRealTimeScheduling (int isWatchdog)
 
 #endif // PRIORITY_SCHEDULING
 
-#ifdef PRIORITY_MEMLOCK
+#if PRIORITY_MEMLOCK
 
 static t_error priority_setRealTimeMemoryLocking (void) 
 {       
@@ -77,11 +81,11 @@ static t_error priority_setRealTime (int isWatchdog)
 {
     t_error err = PD_ERROR_NONE;
     
-    #ifdef PRIORITY_SCHEDULING
+    #if PRIORITY_SCHEDULING
         err |= priority_setRealTimeScheduling (isWatchdog);
     #endif
 
-    #ifdef PRIORITY_MEMLOCK
+    #if PRIORITY_MEMLOCK
         err |= priority_setRealTimeMemoryLocking();
     #endif
     

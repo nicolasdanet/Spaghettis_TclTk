@@ -184,61 +184,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#ifndef PD_WITH_DEBUG
-#define PD_WITH_DEBUG           0           /* Debug mode. */
-#endif
-
-#ifndef PD_WITH_LOGGER
-#define PD_WITH_LOGGER          0           /* Debug with wait-free logger. */
-#endif
-
-#ifndef PD_WITH_ALLOCA
-#define PD_WITH_ALLOCA          1           /* Message passing uses alloca function. */
-#endif
-
-#ifndef PD_WITH_NOGUI           
-#define PD_WITH_NOGUI           0           /* Don't use the GUI. */
-#endif
-
-#ifndef PD_WITH_LEGACY
-#define PD_WITH_LEGACY          1           /* Compatibility. */
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#if ( PD_LINUX || PD_BSD || PD_HURD || PD_CYGWIN || PD_APPLE )
-
-#ifndef PD_WITH_REALTIME
-#define PD_WITH_REALTIME        1
-#endif
-
-#else
-
-#ifndef PD_WITH_REALTIME
-#define PD_WITH_REALTIME        0
-#endif
-
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#if ( PD_WITH_REALTIME && ( PD_LINUX || PD_BSD || PD_HURD ) )
-
-#define PD_WATCHDOG             1
-
-#else
-
-#define PD_WATCHDOG             0
-
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 #define PD_NAME                 "PureData"
 #define PD_NAME_LOWERCASE       "puredata"
 #define PD_NAME_SHORT           "Pd"
@@ -377,6 +322,61 @@
 #include <mach-o/dyld.h>
 
 #endif // PD_APPLE
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#ifndef PD_WITH_DEBUG
+#define PD_WITH_DEBUG           0           /* Debug mode. */
+#endif
+
+#ifndef PD_WITH_LOGGER
+#define PD_WITH_LOGGER          0           /* Debug with wait-free logger. */
+#endif
+
+#ifndef PD_WITH_ALLOCA
+#define PD_WITH_ALLOCA          1           /* Message passing uses alloca function. */
+#endif
+
+#ifndef PD_WITH_NOGUI           
+#define PD_WITH_NOGUI           0           /* Don't use the GUI. */
+#endif
+
+#ifndef PD_WITH_LEGACY
+#define PD_WITH_LEGACY          1           /* Compatibility. */
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if ( PD_LINUX || PD_BSD || PD_HURD || PD_CYGWIN || PD_APPLE )
+
+#ifndef PD_WITH_REALTIME
+#define PD_WITH_REALTIME        1
+#endif
+
+#else
+
+#ifndef PD_WITH_REALTIME
+#define PD_WITH_REALTIME        0
+#endif
+
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#if ( PD_WITH_REALTIME && ( PD_LINUX || PD_BSD || PD_HURD ) )
+
+#define PD_WATCHDOG             1
+
+#else
+
+#define PD_WATCHDOG             0
+
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -595,17 +595,17 @@ typedef void *(*t_newmethod)(void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#if ! ( PD_WITH_DEBUG )
-
-#define PD_MEMORY_GET(n)                sys_getMemory (n)
-#define PD_MEMORY_RESIZE(ptr, m, n)     sys_getMemoryResize ((ptr), (m), (n))
-#define PD_MEMORY_FREE(ptr)             sys_freeMemory (ptr)
-
-#else
+#if ( PD_WITH_DEBUG && PD_BUILDING_APPLICATION )
 
 #define PD_MEMORY_GET(n)                sys_getMemoryChecked (n, __FUNCTION__, __LINE__)
 #define PD_MEMORY_RESIZE(ptr, m, n)     sys_getMemoryResizeChecked ((ptr), (m), (n), __FUNCTION__, __LINE__)
 #define PD_MEMORY_FREE(ptr)             sys_freeMemoryChecked (ptr, __FUNCTION__, __LINE__);
+
+#else
+
+#define PD_MEMORY_GET(n)                sys_getMemory (n)
+#define PD_MEMORY_RESIZE(ptr, m, n)     sys_getMemoryResize ((ptr), (m), (n))
+#define PD_MEMORY_FREE(ptr)             sys_freeMemory (ptr)
 
 #endif
 
@@ -638,19 +638,6 @@ PD_DLL void     *sys_getMemory                  (size_t n);
 PD_DLL void     *sys_getMemoryResize            (void *ptr, size_t oldSize, size_t newSize);
 
 PD_DLL void     sys_freeMemory                  (void *ptr);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-PD_DLL void     *sys_getMemoryChecked           (size_t n, const char *f, const int line);
-PD_DLL void     *sys_getMemoryResizeChecked     (void *ptr,
-                                                    size_t oldSize,
-                                                    size_t newSize,
-                                                    const char *f,
-                                                    const int line);
-
-PD_DLL void     sys_freeMemoryChecked           (void *ptr, const char *f, const int line);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

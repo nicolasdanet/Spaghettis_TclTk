@@ -109,6 +109,19 @@ typedef struct _receiver {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void        *sys_getMemoryChecked                   (size_t n, const char *f, const int line);
+void        *sys_getMemoryResizeChecked             (void *ptr,
+                                                        size_t oldSize,
+                                                        size_t newSize,
+                                                        const char *f,
+                                                        const int line);
+
+void        sys_freeMemoryChecked                   (void *ptr, const char *f, const int line);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void        font_withHostMeasured                   (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void        font_setDefaultFontSize                 (int size);
 t_fontsize  font_getDefaultFontSize                 (void);
