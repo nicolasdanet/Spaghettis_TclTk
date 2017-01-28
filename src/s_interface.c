@@ -42,8 +42,8 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define INTERFACE_GUI_BUFFER_START_SIZE     (1024 * 128)
-#define INTERFACE_GUI_BUFFER_ABORT_SIZE     (1024 * 128 * 1024)
+#define INTERFACE_GUI_BUFFER_SIZE_START     (1024 * 128)
+#define INTERFACE_GUI_BUFFER_SIZE_ABORT     (1024 * 128 * 1024)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -154,8 +154,8 @@ static void interface_increaseGuiBuffer()
     int oldSize = interface_outGuiBufferSize;
     int newSize = oldSize * 2;
     
-    PD_ASSERT (newSize <= INTERFACE_GUI_BUFFER_ABORT_SIZE); 
-    PD_ABORT (newSize > INTERFACE_GUI_BUFFER_ABORT_SIZE);           /* GUI buffer no more consumed? */
+    PD_ASSERT (newSize <= INTERFACE_GUI_BUFFER_SIZE_ABORT); 
+    PD_ABORT (newSize > INTERFACE_GUI_BUFFER_SIZE_ABORT);           /* GUI buffer no more consumed? */
     
     interface_outGuiBuffer = PD_MEMORY_RESIZE (interface_outGuiBuffer, oldSize, newSize);
     interface_outGuiBufferSize = newSize;
@@ -309,8 +309,8 @@ void interface_initialize (void)
     
     #if ! ( PD_WITH_NOGUI )
     
-    interface_outGuiBuffer     = (char *)PD_MEMORY_GET (INTERFACE_GUI_BUFFER_START_SIZE);
-    interface_outGuiBufferSize = INTERFACE_GUI_BUFFER_START_SIZE;
+    interface_outGuiBuffer     = (char *)PD_MEMORY_GET (INTERFACE_GUI_BUFFER_SIZE_START);
+    interface_outGuiBufferSize = INTERFACE_GUI_BUFFER_SIZE_START;
     
     #endif
 }
