@@ -21,18 +21,76 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define LEAK_BUFFER_SIZE        65536
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static int              leak_maximum;                           /* Shared. */
+static t_int            leak_allocated[LEAK_BUFFER_SIZE];       /* Shared. */
+static const char *     leak_function[LEAK_BUFFER_SIZE];        /* Shared. */
+static int              leak_line[LEAK_BUFFER_SIZE];            /* Shared. */
+static pthread_mutex_t  leak_mutex;                             /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void leak_add (t_int t, const char *f, const int line)
+{
+
+}
+
+static void leak_update (t_int ptr, t_int t, const char *f, const int line)
+{
+
+}
+
+static void leak_remove (t_int ptr)
+{
+
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void leak_initialize (void)
+{
+    pthread_mutex_init (&leak_mutex, NULL);
+}
+
+void leak_release (void)
+{
+    pthread_mutex_destroy (&leak_mutex);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void *sys_getMemoryChecked (size_t n, const char *f, const int line)
 {
-    return sys_getMemory (n);
+    void *t = sys_getMemory (n);
+    
+    leak_add ((t_int)t, f, line);
+    
+    return t;
 }
 
 void *sys_getMemoryResizeChecked (void *ptr, size_t oldSize, size_t newSize, const char *f, const int line)
 {
-    return sys_getMemoryResize (ptr, oldSize, newSize);
+    void *t = sys_getMemoryResize (ptr, oldSize, newSize);
+    
+    leak_update ((t_int)ptr, (t_int)t, f, line);
+    
+    return t;
 }
 
 void sys_freeMemoryChecked (void *ptr, const char *f, const int line)
 {
+    leak_remove ((t_int)ptr);
+    
     return sys_freeMemory (ptr);
 }
 

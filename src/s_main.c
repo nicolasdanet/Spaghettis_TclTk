@@ -252,7 +252,11 @@ int main_entry (int argc, char **argv)
     //
     main_entryNative();
     
-    /* Note that the order of operations below is crucial. */
+    /* Note that order of calls below may be critical. */
+    
+    #if PD_WITH_DEBUG
+        leak_initialize();
+    #endif
     
     message_initialize();
     
@@ -301,12 +305,12 @@ int main_entry (int argc, char **argv)
     }
     
     message_release();
-    //
-    }
     
     #if PD_WITH_DEBUG
-        post_log ("Shutdown");
+        leak_release(); post_log ("Shutdown");
     #endif
+    //
+    }
     
     return err;
 }

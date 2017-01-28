@@ -109,31 +109,6 @@ typedef struct _receiver {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        *sys_getMemoryChecked                   (size_t n, const char *f, const int line);
-void        *sys_getMemoryResizeChecked             (void *ptr,
-                                                        size_t oldSize,
-                                                        size_t newSize,
-                                                        const char *f,
-                                                        const int line);
-
-void        sys_freeMemoryChecked                   (void *ptr, const char *f, const int line);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void        font_withHostMeasured                   (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void        font_setDefaultFontSize                 (int size);
-t_fontsize  font_getDefaultFontSize                 (void);
-t_fontsize  font_getNearestValidFontSize            (int size);
-int         font_getHostFontSize                    (t_fontsize fontSize);
-double      font_getHostFontWidth                   (t_fontsize fontSize);
-double      font_getHostFontHeight                  (t_fontsize fontSize);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 int         main_entry                              (int argc, char **argv);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -184,14 +159,6 @@ t_error     clock_parseUnit                         (t_float f,
 
 void        sys_setSignalHandlers                   (void);
 double      sys_getRealTimeInSeconds                (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_error     logger_initialize                       (void);
-void        logger_release                          (void);
-int         logger_isRunning                        (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -268,6 +235,46 @@ int         loader_loadExternal                     (t_glist *canvas, char *name
 
 void        preferences_load                        (void);
 void        preferences_save                        (void *dummy);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        leak_initialize                         (void);
+void        leak_release                            (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        *sys_getMemoryChecked                   (size_t n, const char *f, const int line);
+void        *sys_getMemoryResizeChecked             (void *ptr,
+                                                        size_t oldSize,
+                                                        size_t newSize,
+                                                        const char *f,
+                                                        const int line);
+
+void        sys_freeMemoryChecked                   (void *ptr, const char *f, const int line);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        font_withHostMeasured                   (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void        font_setDefaultFontSize                 (int size);
+t_fontsize  font_getDefaultFontSize                 (void);
+t_fontsize  font_getNearestValidFontSize            (int size);
+int         font_getHostFontSize                    (t_fontsize fontSize);
+double      font_getHostFontWidth                   (t_fontsize fontSize);
+double      font_getHostFontHeight                  (t_fontsize fontSize);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_error     logger_initialize                       (void);
+void        logger_release                          (void);
+int         logger_isRunning                        (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
