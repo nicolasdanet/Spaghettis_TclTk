@@ -180,37 +180,37 @@ static t_error main_getExecutablePathNative (char *dest, size_t length)
 static t_error main_getRootDirectory (void)
 {
     t_error err = PD_ERROR_NONE;
-    char buf1[PD_STRING] = { 0 };
-    char buf2[PD_STRING] = { 0 };
+    char t1[PD_STRING] = { 0 };
+    char t2[PD_STRING] = { 0 };
     char *slash = NULL; 
     
     #if PD_WINDOWS
-        err |= main_getExecutablePathNative (buf1, PD_STRING);
-        path_backslashToSlashIfNecessary (buf1, buf1);
+        err |= main_getExecutablePathNative (t1, PD_STRING);
+        path_backslashToSlashIfNecessary (t1, t1);
     #else
-        err |= main_getExecutablePathNative (buf1, PD_STRING);
+        err |= main_getExecutablePathNative (t1, PD_STRING);
     #endif
     
-    /* Dirname of the executable's parent directory. */
+    /* Name of the executable's parent directory. */
     
     if (!err) { 
-        if (!(err |= !(slash = strrchr (buf1, '/')))) { *slash = 0; }
-        if (!(err |= !(slash = strrchr (buf1, '/')))) { *slash = 0; }
+        if (!(err |= !(slash = strrchr (t1, '/')))) { *slash = 0; }
+        if (!(err |= !(slash = strrchr (t1, '/')))) { *slash = 0; }
     }
 
     if (!err) {
     //
     #if PD_WINDOWS
-        main_directoryRoot = gensym (buf1);
+        main_directoryRoot = gensym (t1);
     #else
-        err = string_copy (buf2, PD_STRING, buf1);
-        err |= string_add (buf2, PD_STRING, "/lib/pd");
+        err = string_copy (t2, PD_STRING, t1);
+        err |= string_add (t2, PD_STRING, "/lib/pd");
         
-        if (!err && path_isFileExist (buf2)) {                                              /* Complexe. */
-            main_directoryRoot = gensym (buf2); main_directoryWriteRequirePrivileges = 1;
+        if (!err && path_isFileExist (t2)) {                                              /* Complexe. */
+            main_directoryRoot = gensym (t2); main_directoryWriteRequirePrivileges = 1;
             
         } else {
-            main_directoryRoot = gensym (buf1);                                             /* Simple. */
+            main_directoryRoot = gensym (t1);                                             /* Simple. */
         }
     #endif
     //
@@ -270,14 +270,13 @@ int main_entry (int argc, char **argv)
     PD_ASSERT (main_directoryHelp   != NULL);
     PD_ASSERT (main_directoryExtras != NULL);
     
+    if (main_version) { err |= main_entryVersion (0); }
+    else {
+    //
     err |= logger_initialize();
 
     if (!err) {
     //
-    if (main_version) { 
-        return main_entryVersion (0); 
-    }
-    
     err |= audio_initialize();
     
     if (!err) {
@@ -301,6 +300,8 @@ int main_entry (int argc, char **argv)
     }
     
     logger_release();
+    //
+    }
     //
     }
     
