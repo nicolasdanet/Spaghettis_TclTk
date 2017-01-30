@@ -43,10 +43,6 @@ typedef struct _drawnumber {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void drawnumber_initialize (void)
-{
-}
-
 void drawnumber_release (void)
 {
     gpointer_unset (&drawnumber_gpointer);

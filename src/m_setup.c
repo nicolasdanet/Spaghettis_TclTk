@@ -19,8 +19,7 @@
 
 void bindlist_initialize    (void);
 void canvas_initialize      (void);
-void drawnumber_initialize  (void);
-void drawpolygon_initialize (void);
+void cos_tilde_initialize   (void);
 void editor_initialize      (void);
 void fft_initialize         (void);
 void garray_initialize      (void);
@@ -28,7 +27,6 @@ void global_initialize      (void);
 void interface_initialize   (void);
 void loader_initialize      (void);
 void object_initialize      (void);
-void plot_initialize        (void);
 void soundfile_initialize   (void);
 void textdefine_initialize  (void);
 
@@ -260,19 +258,15 @@ void zero_tilde_setup       (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+/* Note that order of calls below may be critical. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void setup_initialize (void)        /* Note that order of calls below may be critical. */
+void setup_setup (void)
 {
-    interface_initialize();
-    object_initialize();
-    bindlist_initialize();
-    global_initialize();
-    editor_initialize();
-    drawpolygon_initialize();
-    plot_initialize();
-    drawnumber_initialize();
-    
     garray_setup();
     canvas_setup();
     guistub_setup();
@@ -470,6 +464,27 @@ void setup_initialize (void)        /* Note that order of calls below may be cri
     writesf_tilde_setup();
     block_tilde_setup();
     samplerate_tilde_setup();
+}
+
+void setup_destroy (void)        
+{
+    
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void setup_initialize (void)
+{
+    interface_initialize();
+    object_initialize();
+    bindlist_initialize();
+    global_initialize();
+    editor_initialize();
+    cos_tilde_initialize();
+    
+    setup_setup();
     
     canvas_initialize();
     garray_initialize();
@@ -488,11 +503,12 @@ void setup_release (void)
     garray_release();
     canvas_release();
     
-    cos_tilde_release();
+    setup_destroy(); 
     
     drawnumber_release();
     plot_release();
     drawpolygon_release();
+    cos_tilde_release();
     editor_release();
     global_release();
     bindlist_release();

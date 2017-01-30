@@ -101,10 +101,6 @@ static void plot_motion (void *, t_float, t_float, t_float);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void plot_initialize (void)
-{
-}
-
 void plot_release (void)
 {
     gpointer_unset (&plot_check);

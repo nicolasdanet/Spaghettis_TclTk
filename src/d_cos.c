@@ -60,16 +60,14 @@ void cos_tilde_initialize (void)
     
     if (!cos_tilde_table) {
     //
-    /* Phase and increment use simple precision for compatibility with legacy. */
-    
-    t_float phase = (t_float)0.0;
-    t_float phaseIncrement = (t_float)(PD_TWO_PI / COSINE_TABLE_SIZE);
+    double phase = 0.0;
+    double phaseIncrement = PD_TWO_PI / COSINE_TABLE_SIZE;
     int i;
     
     cos_tilde_table = (t_float *)PD_MEMORY_GET (sizeof (t_float) * (COSINE_TABLE_SIZE + 1));
     
     for (i = 0; i < COSINE_TABLE_SIZE + 1; i++) {
-        cos_tilde_table[i] = (t_float)cos ((double)phase);
+        cos_tilde_table[i] = (t_float)cos (phase);
         phase += phaseIncrement;
     }
     //
@@ -136,8 +134,6 @@ void cos_tilde_setup (void)
     CLASS_SIGNAL (c, t_cos_tilde, x_f);
     
     class_addDSP (c, (t_method)cos_tilde_dsp);
-    
-    cos_tilde_initialize();
     
     cos_tilde_class = c;
 }

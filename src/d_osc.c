@@ -114,8 +114,6 @@ void osc_tilde_setup (void)
     
     class_addMethod (c, (t_method)osc_tilde_phase, sym_inlet2, A_FLOAT, A_NULL);
 
-    cos_tilde_initialize();
-        
     osc_tilde_class = c;
 }
 

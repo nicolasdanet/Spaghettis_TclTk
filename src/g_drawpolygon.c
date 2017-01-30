@@ -66,10 +66,6 @@ typedef struct _drawpolygon {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void drawpolygon_initialize (void)
-{
-}
-
 void drawpolygon_release (void)
 {
     gpointer_unset (&drawpolygon_gpointer);
