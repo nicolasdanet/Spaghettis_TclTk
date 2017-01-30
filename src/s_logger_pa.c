@@ -57,7 +57,7 @@ void *logger_task (void *dummy)
 {
     while (!logger_quit) {
     //
-    usleep (MILLISECONDS_TO_MICROSECONDS (PA_LOGGER_SLEEP));
+    usleep ((useconds_t)MILLISECONDS_TO_MICROSECONDS (PA_LOGGER_SLEEP));
     
     {
         char t[PA_LOGGER_CHUNK + 1] = { 0 };
@@ -90,7 +90,10 @@ t_error logger_initializeNative (void)
     //
     logger_buffer = PD_MEMORY_GET (k);
     
-    if (!PaUtil_InitializeRingBuffer (&logger_ring, sizeof (char), k, logger_buffer)) {
+    if (!PaUtil_InitializeRingBuffer (&logger_ring,     // --
+            (ring_buffer_size_t)sizeof (char),
+            (ring_buffer_size_t)k,
+            (void *)logger_buffer)) {
         pthread_attr_init (&logger_attribute);
         pthread_attr_setdetachstate (&logger_attribute, PTHREAD_CREATE_JOINABLE);
         if (!(err = (pthread_create (&logger_thread, &logger_attribute, logger_task, NULL) != 0))) {

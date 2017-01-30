@@ -11,6 +11,7 @@
 #include "m_pd.h"
 #include "m_macros.h"
 #include "m_core.h"
+#include "s_system.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -25,7 +26,6 @@ void fft_initialize         (void);
 void garray_initialize      (void);
 void global_initialize      (void);
 void interface_initialize   (void);
-void leak_initialize        (void);
 void loader_initialize      (void);
 void object_initialize      (void);
 void plot_initialize        (void);
@@ -46,7 +46,6 @@ void fft_release            (void);
 void garray_release         (void);
 void global_release         (void);
 void interface_release      (void);
-void leak_release           (void);
 void loader_release         (void);
 void object_release         (void);
 void plot_release           (void);
