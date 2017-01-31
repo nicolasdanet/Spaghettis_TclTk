@@ -73,7 +73,7 @@ static void global_default (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void global_initialize (void)
+void global_setup (void)
 {
     t_class *c = NULL;
     
@@ -113,7 +113,7 @@ void global_initialize (void)
     pd_bind (&global_object, sym_pd);
 }
 
-void global_release (void)
+void global_destroy (void)
 {
     pd_unbind (&global_object, sym_pd);
 }

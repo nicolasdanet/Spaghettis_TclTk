@@ -432,7 +432,7 @@ static void object_errorUnexpected (t_inlet *x, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void object_initialize (void)
+void object_setup (void)
 {
     inlet_class         = class_new (sym_inlet, NULL, NULL, sizeof (t_inlet), CLASS_NOBOX, A_NULL);
     pointerinlet_class  = class_new (sym_inlet, NULL, NULL, sizeof (t_inlet), CLASS_NOBOX, A_NULL);
@@ -455,7 +455,7 @@ void object_initialize (void)
     class_addAnything (pointerinlet_class,  (t_method)object_errorUnexpected);
 }
 
-void object_release (void)
+void object_destroy (void)
 {
 }
 

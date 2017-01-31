@@ -21,10 +21,8 @@ void cos_tilde_initialize   (void);
 void editor_initialize      (void);
 void fft_initialize         (void);
 void garray_initialize      (void);
-void global_initialize      (void);
 void instance_initialize    (void);
 void interface_initialize   (void);
-void object_initialize      (void);
 void rsqrt_tilde_initialize (void);
 void soundfile_initialize   (void);
 void textdefine_initialize  (void);
@@ -38,11 +36,9 @@ void drawnumber_release     (void);
 void drawpolygon_release    (void);
 void editor_release         (void);
 void fft_release            (void);
-void global_release         (void);
 void instance_release       (void);
 void interface_release      (void);
 void loader_release         (void);
-void object_release         (void);
 void plot_release           (void);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -84,6 +80,7 @@ void garray_setup           (void);
 void gatom_setup            (void);
 void get_setup              (void);
 void getsize_setup          (void);
+void global_setup           (void);
 void guiconnect_setup       (void);
 void guistub_setup          (void);
 void int_setup              (void);
@@ -115,6 +112,7 @@ void netreceive_setup       (void);
 void netsend_setup          (void);
 void notein_setup           (void);
 void noteout_setup          (void);
+void object_setup           (void);
 void openpanel_setup        (void);
 void oscformat_setup        (void);
 void oscparse_setup         (void);
@@ -250,6 +248,214 @@ void vline_tilde_setup      (void);
 void wrap_tilde_setup       (void);
 void writesf_tilde_setup    (void);
 void zero_tilde_setup       (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void acoustic_destroy           (void);
+void append_destroy             (void);
+void arraydefine_destroy        (void);
+void arrayget_destroy           (void);
+void arraymax_destroy           (void);
+void arraymin_destroy           (void);
+void arrayquantile_destroy      (void);
+void arrayrandom_destroy        (void);
+void arrayset_destroy           (void);
+void arraysize_destroy          (void);
+void arraysum_destroy           (void);
+void atan2_destroy              (void);
+void bag_destroy                (void);
+void bang_destroy               (void);
+void bendin_destroy             (void);
+void bendout_destroy            (void);
+void binop1_destroy             (void);
+void binop2_destroy             (void);
+void binop3_destroy             (void); 
+void bng_destroy                (void);
+void canvas_destroy             (void);
+void change_destroy             (void);
+void clip_destroy               (void);
+void ctlin_destroy              (void);
+void ctlout_destroy             (void);
+void delay_destroy              (void);
+void dial_destroy               (void);
+void drawnumber_destroy         (void);
+void drawpolygon_destroy        (void);
+void element_destroy            (void);
+void float_destroy              (void);
+void garray_destroy             (void);
+void gatom_destroy              (void);
+void get_destroy                (void);
+void getsize_destroy            (void);
+void global_destroy             (void);
+void guiconnect_destroy         (void);
+void guistub_destroy            (void);
+void int_destroy                (void);
+void key_destroy                (void);
+void keyname_destroy            (void);
+void keyup_destroy              (void);
+void line_destroy               (void);
+void list_destroy               (void);
+void listappend_destroy         (void);
+void listfromsymbol_destroy     (void);
+void listinlet_destroy          (void);
+void listlength_destroy         (void);
+void listprepend_destroy        (void);
+void listsplit_destroy          (void);
+void listtosymbol_destroy       (void);
+void listtrim_destroy           (void);
+void loadbang_destroy           (void);
+void makefilename_destroy       (void);
+void makenote_destroy           (void);
+void math_destroy               (void);
+void message_destroy            (void);
+void metro_destroy              (void);
+void midiin_destroy             (void);
+void midiout_destroy            (void);
+void midirealtimein_destroy     (void);
+void moses_destroy              (void);
+void namecanvas_destroy         (void);
+void netreceive_destroy         (void);
+void netsend_destroy            (void);
+void notein_destroy             (void);
+void noteout_destroy            (void);
+void object_destroy             (void);
+void openpanel_destroy          (void);
+void oscformat_destroy          (void);
+void oscparse_destroy           (void);
+void pack_destroy               (void);
+void panel_destroy              (void);
+void pgmin_destroy              (void);
+void pgmout_destroy             (void);
+void pipe_destroy               (void);
+void plot_destroy               (void);
+void pointer_destroy            (void);
+void poly_destroy               (void);
+void polytouchin_destroy        (void);
+void polytouchout_destroy       (void);
+void print_destroy              (void);
+void qlist_destroy              (void);
+void radio_destroy              (void);
+void random_destroy             (void);
+void realtime_destroy           (void);
+void receive_destroy            (void);
+void route_destroy              (void);
+void savepanel_destroy          (void);
+void scalar_destroy             (void);
+void scalardefine_destroy       (void);
+void select_destroy             (void);
+void send_destroy               (void);
+void serial_destroy             (void);
+void set_destroy                (void);
+void setsize_destroy            (void);
+void slider_destroy             (void);
+void spigot_destroy             (void);
+void stripnote_destroy          (void);
+void struct_destroy             (void);
+void swap_destroy               (void);
+void symbol_destroy             (void);
+void sysexin_destroy            (void);
+void table_destroy              (void);
+void tabread_destroy            (void);
+void tabread4_destroy           (void);
+void tabwrite_destroy           (void);
+void template_destroy           (void);
+void text_destroy               (void);
+void textdefine_destroy         (void);
+void textfile_destroy           (void);
+void textget_destroy            (void);
+void textlist_destroy           (void);
+void textsearch_destroy         (void);
+void textsequence_destroy       (void);
+void textset_destroy            (void);
+void textsize_destroy           (void);
+void timer_destroy              (void);
+void toggle_destroy             (void);
+void touchin_destroy            (void);
+void touchout_destroy           (void);
+void trigger_destroy            (void);
+void unpack_destroy             (void);
+void until_destroy              (void);
+void value_destroy              (void);
+void vinlet_destroy             (void);
+void voutlet_destroy            (void);
+void vu_destroy                 (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void abs_tilde_destroy          (void);
+void adc_destroy                (void);
+void add_tilde_destroy          (void);
+void bang_tilde_destroy         (void);
+void biquad_tilde_destroy       (void);
+void block_tilde_destroy        (void);
+void bp_tilde_destroy           (void);
+void catch_tilde_destroy        (void);
+void clip_tilde_destroy         (void);
+void cos_tilde_destroy          (void);
+void cpole_tilde_destroy        (void);
+void czero_rev_tilde_destroy    (void);
+void czero_tilde_destroy        (void);
+void dac_destroy                (void);
+void dbtopow_tilde_destroy      (void);
+void dbtorms_tilde_destroy      (void);
+void delread_tilde_destroy      (void);
+void delwrite_tilde_destroy     (void);
+void divide_tilde_destroy       (void);
+void env_tilde_destroy          (void);
+void exp_tilde_destroy          (void);
+void fft_tilde_destroy          (void);
+void framp_tilde_destroy        (void);
+void ftom_tilde_destroy         (void);
+void hip_tilde_destroy          (void);
+void ifft_tilde_destroy         (void);
+void line_tilde_destroy         (void);
+void log_tilde_destroy          (void);
+void lop_tilde_destroy          (void);
+void max_tilde_destroy          (void);
+void min_tilde_destroy          (void);
+void mtof_tilde_destroy         (void);
+void multiply_tilde_destroy     (void);
+void noise_tilde_destroy        (void);
+void osc_tilde_destroy          (void);
+void phasor_tilde_destroy       (void);
+void pow_tilde_destroy          (void);
+void powtodb_tilde_destroy      (void);
+void print_tilde_destroy        (void);
+void readsf_tilde_destroy       (void);
+void receive_tilde_destroy      (void);
+void rmstodb_tilde_destroy      (void);
+void rpole_tilde_destroy        (void);
+void rfft_tilde_destroy         (void);
+void rifft_tilde_destroy        (void);
+void rsqrt_tilde_destroy        (void);
+void rzero_rev_tilde_destroy    (void);
+void samphold_tilde_destroy     (void);
+void samplerate_tilde_destroy   (void);
+void send_tilde_destroy         (void);
+void sig_tilde_destroy          (void);
+void snapshot_tilde_destroy     (void);
+void soundfiler_destroy         (void);
+void sqrt_tilde_destroy         (void);
+void subtract_tilde_destroy     (void);
+void tabosc4_tilde_destroy      (void);
+void tabplay_tilde_destroy      (void);
+void tabread_tilde_destroy      (void);
+void tabread4_tilde_destroy     (void);
+void tabreceive_tilde_destroy   (void);
+void tabsend_tilde_destroy      (void);
+void tabwrite_tilde_destroy     (void);
+void threshold_tilde_destroy    (void);
+void throw_tilde_destroy        (void);
+void vcf_tilde_destroy          (void);
+void vd_tilde_destroy           (void);
+void vline_tilde_destroy        (void);
+void wrap_tilde_destroy         (void);
+void writesf_tilde_destroy      (void);
+void zero_tilde_destroy         (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -468,20 +674,23 @@ void setup_destroy (void)
 
 void setup_initialize (void)
 {
-    /* First (alphabetically sorted there) various initializations. */
+    /* First. */
+    
+    instance_initialize();
+        
+    /* Second various initializations (alphabetically sorted there). */
     
     cos_tilde_initialize();
     editor_initialize();
     fft_initialize();
-    global_initialize();
-    instance_initialize();
     interface_initialize();
-    object_initialize();
     rsqrt_tilde_initialize();
     soundfile_initialize();
     
     /* Then setup native objects. */
     
+    global_setup();
+    object_setup();
     setup_setup();
     
     /* At last instantiate the invisible patches required. */
@@ -503,19 +712,22 @@ void setup_release (void)
     /* Destroy native objects. */
     
     setup_destroy(); 
+    object_destroy();
+    global_destroy();
     
-    /* At last various cleaning (reverse order). */
+    /* Various cleaning (reverse order). */
     
     plot_release();
-    object_release();
     interface_release();
-    instance_release();
-    global_release();
     fft_release();
     editor_release();
     drawpolygon_release();
     drawnumber_release();
     cos_tilde_release();
+    
+    /* At last. */
+    
+    instance_release();
 }
 
 // -----------------------------------------------------------------------------------------------------------
