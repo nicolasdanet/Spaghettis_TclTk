@@ -266,6 +266,12 @@ void class_addCreator (t_newmethod newMethod, t_symbol *s, t_atomtype type1, ...
     class_addMethod (pd_objectMaker, (t_method)newMethod, s, arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]);
 }
 
+void class_free (t_class *c)
+{
+    PD_MEMORY_FREE (c->c_methods);
+    PD_MEMORY_FREE (c);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

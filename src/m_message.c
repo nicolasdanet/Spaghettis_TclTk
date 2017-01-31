@@ -74,8 +74,8 @@ static t_symbol *message_hashTable[MESSAGE_HASH_SIZE];      /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void bindlist_initialize    (void);
-void bindlist_release       (void);
+void bindlist_setup     (void);
+void bindlist_destroy   (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -158,7 +158,7 @@ void message_initialize (void)
     PD_ASSERT (sym___hash__X == &s__X);
     PD_ASSERT (sym___hash__A == &s__A);
     
-    bindlist_initialize();
+    bindlist_setup();
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -195,8 +195,6 @@ void message_release (void)
     
     int i;
     
-    bindlist_release();
-    
     for (i = 0; i < MESSAGE_HASH_SIZE; i++) {
     //
     sym1 = message_hashTable[i];
@@ -206,7 +204,7 @@ void message_release (void)
     sym1 = sym2->s_next;
     
     if (sym2->s_thing) {
-        pd_free (sym2->s_thing);
+        pd_free (sym2->s_thing);        /* For example templates and bindlists. */
     }
     
     if (!message_isStaticSymbol (sym2)) { PD_MEMORY_FREE (sym2->s_name); PD_MEMORY_FREE (sym2); }
@@ -214,6 +212,8 @@ void message_release (void)
     }
     //
     }
+    
+    bindlist_destroy();
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -120,7 +120,7 @@ static void bindlist_free (t_bindlist *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void bindlist_initialize (void)
+void bindlist_setup (void)
 {
     t_class *c = NULL;
     
@@ -141,8 +141,9 @@ void bindlist_initialize (void)
     bindlist_class = c;
 }
 
-void bindlist_release (void)
+void bindlist_destroy (void)
 {
+    CLASS_FREE (bindlist_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------
