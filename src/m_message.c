@@ -74,6 +74,13 @@ static t_symbol *message_hashTable[MESSAGE_HASH_SIZE];      /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+void bindlist_initialize    (void);
+void bindlist_release       (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 /* < http://www.cse.yorku.ca/~oz/hash.html > */
 
 t_symbol *generateSymbol (const char *s, t_symbol *alreadyAllocatedSymbol)
@@ -150,6 +157,8 @@ void message_initialize (void)
     PD_ASSERT (sym___hash__N == &s__N);
     PD_ASSERT (sym___hash__X == &s__X);
     PD_ASSERT (sym___hash__A == &s__A);
+    
+    bindlist_initialize();
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -185,6 +194,8 @@ void message_release (void)
     t_symbol *sym2 = NULL;
     
     int i;
+    
+    bindlist_release();
     
     for (i = 0; i < MESSAGE_HASH_SIZE; i++) {
     //

@@ -54,7 +54,12 @@ static t_pdinstance *pdinstance_new()
 
 static void pdinstance_free (t_pdinstance *x)
 {
-    PD_ASSERT (x->pd_roots == NULL);
+    PD_ASSERT (x->pd_dspChain       == NULL);
+    PD_ASSERT (x->pd_clocks         == NULL);
+    PD_ASSERT (x->pd_signals        == NULL);
+    PD_ASSERT (x->pd_roots          == NULL);
+    PD_ASSERT (x->pd_polling        == NULL);
+    PD_ASSERT (x->pd_autorelease    == NULL);
     
     PD_MEMORY_FREE (x);
 }
@@ -75,6 +80,23 @@ void instance_removeFromRoots (t_glist *glist)
         t_glist *z = NULL;
         for (z = pd_this->pd_roots; z->gl_next != glist; z = z->gl_next) { }
         z->gl_next = glist->gl_next;
+    }
+}
+
+/* At release close remaining (i.e. NOT dirty) and invisible patches. */
+
+void instance_removeAllFromRoots (void)
+{    
+    while (1) {
+    //
+    t_glist *glist = pd_this->pd_roots;
+    
+    if (glist == NULL) { break; }
+    else {
+        pd_free (cast_pd (glist)); 
+        if (glist == pd_this->pd_roots) { PD_BUG; break; }      /* Not removed? */
+    }
+    //
     }
 }
 

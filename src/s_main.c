@@ -47,6 +47,8 @@ static void main_entryNative (void)
     SetConsoleOutputCP (CP_UTF8);
     
     #endif
+    
+    sys_setSignalHandlers();
 }
 
 static t_error main_entryVersion (int console)
@@ -244,6 +246,8 @@ t_error main_setPaths (t_symbol *root)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* Note that order of calls below may be critical. */
+
 int main_entry (int argc, char **argv)
 {
     t_error err = priority_privilegeStart();
@@ -252,13 +256,11 @@ int main_entry (int argc, char **argv)
     //
     main_entryNative();
     
-    /* Note that order of calls below may be critical. */
-    
     #if PD_WITH_DEBUG
         leak_initialize();
     #endif
     
-    message_initialize();
+    message_initialize();   /* Preallocate symbols first. */
     
     err |= main_getRootDirectory();
     err |= main_parseArguments (argc - 1, argv + 1);
@@ -282,9 +284,6 @@ int main_entry (int argc, char **argv)
     if (!err) {
     //
     midi_initialize();
-    instance_initialize();
-    sys_setSignalHandlers();
-    
     setup_initialize();
     preferences_load();
     
@@ -293,7 +292,6 @@ int main_entry (int argc, char **argv)
     }
     
     setup_release();
-    instance_release();
     midi_release();
     audio_release(); 
     //

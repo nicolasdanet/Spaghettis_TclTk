@@ -68,10 +68,6 @@ t_float rsqrt_tableExponential[RSQRT_EXPONENTIAL_SIZE];     /* Shared. */
 
 void rsqrt_tilde_initialize (void)
 {
-    static int rsqrt_initialized = 0;
-    
-    if (!rsqrt_initialized++) {
-    //
     int i;
     
     for (i = 0; i < RSQRT_EXPONENTIAL_SIZE; i++) {
@@ -93,8 +89,6 @@ void rsqrt_tilde_initialize (void)
         t_float f = (t_float)(1.0 + (1.0 / RSQRT_MANTISSA_SIZE) * i);
         
         rsqrt_tableMantissa[i] = (t_float)(1.0 / sqrt (f));      
-    }
-    //
     }
 }
 
@@ -159,8 +153,6 @@ static void *rsqrt_tilde_new (void)
 void rsqrt_tilde_setup (void)
 {
     t_class *c = NULL;
-    
-    rsqrt_tilde_initialize();
     
     c = class_new (sym_rsqrt__tilde__,
             (t_newmethod)rsqrt_tilde_new,

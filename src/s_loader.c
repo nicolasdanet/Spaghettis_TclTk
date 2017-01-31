@@ -84,10 +84,6 @@ static void loader_addLoaded (char *o, t_handle handle)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void loader_initialize (void)
-{
-}
-
 void loader_release (void)
 {
     t_loadedlist *l = loader_alreadyLoaded;

@@ -128,10 +128,6 @@ void garray_initialize (void)
     buffer_free (b);
 }
 
-void garray_release (void)
-{
-}
-
 #if PD_WITH_DEBUG
     
 static void garray_check (t_garray *x)

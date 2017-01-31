@@ -76,8 +76,6 @@ void sqrt_tilde_setup (void)
 {
     t_class *c = NULL;
     
-    rsqrt_tilde_initialize();
-    
     c = class_new (sym_sqrt__tilde__,
             (t_newmethod)sqrt_tilde_new,
             NULL,

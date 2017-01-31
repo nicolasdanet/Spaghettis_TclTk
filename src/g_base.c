@@ -702,26 +702,3 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void canvas_initialize (void)
-{
-}
-
-void canvas_release (void)      /* Close remaining (i.e. NOT dirty) and invisible patches. */
-{    
-    while (1) {
-    //
-    t_glist *glist = pd_this->pd_roots;
-    
-    if (glist == NULL) { break; }
-    else {
-        pd_free (cast_pd (glist));
-        if (glist == pd_this->pd_roots) { PD_BUG; break; }
-    }
-    //
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------

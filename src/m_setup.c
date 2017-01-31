@@ -17,16 +17,15 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void bindlist_initialize    (void);
-void canvas_initialize      (void);
 void cos_tilde_initialize   (void);
 void editor_initialize      (void);
 void fft_initialize         (void);
 void garray_initialize      (void);
 void global_initialize      (void);
+void instance_initialize    (void);
 void interface_initialize   (void);
-void loader_initialize      (void);
 void object_initialize      (void);
+void rsqrt_tilde_initialize (void);
 void soundfile_initialize   (void);
 void textdefine_initialize  (void);
 
@@ -34,21 +33,17 @@ void textdefine_initialize  (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void bindlist_release       (void);
-void canvas_release         (void);
 void cos_tilde_release      (void);
 void drawnumber_release     (void);
 void drawpolygon_release    (void);
 void editor_release         (void);
 void fft_release            (void);
-void garray_release         (void);
 void global_release         (void);
+void instance_release       (void);
 void interface_release      (void);
 void loader_release         (void);
 void object_release         (void);
 void plot_release           (void);
-void soundfile_release      (void);
-void textdefine_release     (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -255,11 +250,6 @@ void vline_tilde_setup      (void);
 void wrap_tilde_setup       (void);
 void writesf_tilde_setup    (void);
 void zero_tilde_setup       (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-/* Note that order of calls below may be critical. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -475,45 +465,58 @@ void setup_destroy (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* Note that order of calls below may be critical. */
+
 void setup_initialize (void)
 {
+    /* First (alphabetically sorted there) various initializations. */
+    
+    cos_tilde_initialize();
+    editor_initialize();
+    fft_initialize();
+    global_initialize();
+    instance_initialize();
     interface_initialize();
     object_initialize();
-    bindlist_initialize();
-    global_initialize();
-    editor_initialize();
-    cos_tilde_initialize();
+    rsqrt_tilde_initialize();
+    soundfile_initialize();
+    
+    /* Then setup native objects. */
     
     setup_setup();
     
-    canvas_initialize();
+    /* At last instantiate the invisible patches required. */
+    
     garray_initialize();
     textdefine_initialize();
-    loader_initialize();
-    soundfile_initialize();
-    fft_initialize();
 }
 
 void setup_release (void)
 {
-    fft_release();
-    soundfile_release();
+    /* Close all remaining patches (invisible ones also thus). */
+    
+    instance_removeAllFromRoots();
+    
+    /* Destroy all the third-party externals. */
+    
     loader_release();
-    textdefine_release();
-    garray_release();
-    canvas_release();
+    
+    /* Destroy native objects. */
     
     setup_destroy(); 
     
-    drawnumber_release();
+    /* At last various cleaning (reverse order). */
+    
     plot_release();
-    drawpolygon_release();
-    cos_tilde_release();
-    editor_release();
-    global_release();
-    bindlist_release();
     object_release();
     interface_release();
+    instance_release();
+    global_release();
+    fft_release();
+    editor_release();
+    drawpolygon_release();
+    drawnumber_release();
+    cos_tilde_release();
 }
 
 // -----------------------------------------------------------------------------------------------------------
