@@ -213,5 +213,15 @@ void binop2_setup (void)
     class_setHelpName (binopLessEquals_class,       sym___ampersand____ampersand__);
 }
 
+void binop2_destroy (void)
+{
+    CLASS_FREE (binopEquals_class);
+    CLASS_FREE (binopNotEquals_class);
+    CLASS_FREE (binopGreater_class);
+    CLASS_FREE (binopLess_class);
+    CLASS_FREE (binopGreaterEquals_class);
+    CLASS_FREE (binopLessEquals_class);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

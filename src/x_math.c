@@ -295,5 +295,18 @@ void math_setup (void)
     class_setHelpName (atan_class,  sym_sqrt);
 }
 
+void math_destroy (void)
+{
+    CLASS_FREE (sin_class);
+    CLASS_FREE (cos_class);
+    CLASS_FREE (tan_class);
+    CLASS_FREE (log_class);
+    CLASS_FREE (exp_class);
+    CLASS_FREE (abs_class);
+    CLASS_FREE (sqrt_class);
+    CLASS_FREE (wrap_class);
+    CLASS_FREE (atan_class);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

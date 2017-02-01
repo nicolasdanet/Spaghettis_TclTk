@@ -260,5 +260,16 @@ void binop1_setup (void)
     class_setHelpName (binopMinimum_class,  sym_pow);
 }
 
+void binop1_destroy (void)
+{
+    CLASS_FREE (binopAdd_class);
+    CLASS_FREE (binopSubtract_class);
+    CLASS_FREE (binopMultiply_class);
+    CLASS_FREE (binopDivide_class);
+    CLASS_FREE (binopPower_class);
+    CLASS_FREE (binopMaximum_class);
+    CLASS_FREE (binopMinimum_class);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

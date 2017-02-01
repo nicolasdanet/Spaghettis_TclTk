@@ -188,5 +188,11 @@ void select_setup (void)
     class_addSymbol (select2_class, (t_method)select2_symbol);
 }
 
+void select_destroy (void)
+{
+    CLASS_FREE (select1_class);
+    CLASS_FREE (select2_class);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

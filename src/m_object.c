@@ -457,6 +457,10 @@ void object_setup (void)
 
 void object_destroy (void)
 {
+    CLASS_FREE (inlet_class);
+    CLASS_FREE (pointerinlet_class);
+    CLASS_FREE (floatinlet_class);
+    CLASS_FREE (symbolinlet_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

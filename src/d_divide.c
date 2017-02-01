@@ -119,6 +119,12 @@ void divide_tilde_setup (void)
     class_setHelpName (divideScalar_tilde_class, sym_max__tilde__);
 }
 
+void divide_tilde_destroy (void)
+{
+    CLASS_FREE (divide_tilde_class);
+    CLASS_FREE (divideScalar_tilde_class);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 

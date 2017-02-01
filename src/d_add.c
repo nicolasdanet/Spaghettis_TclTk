@@ -122,6 +122,12 @@ void add_tilde_setup (void)
     class_setHelpName (addScalar_tilde_class, sym_max__tilde__);
 }
 
+void add_tilde_destroy (void)
+{
+    CLASS_FREE (add_tilde_class);
+    CLASS_FREE (addScalar_tilde_class);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 

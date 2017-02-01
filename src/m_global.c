@@ -116,6 +116,8 @@ void global_setup (void)
 void global_destroy (void)
 {
     pd_unbind (&global_object, sym_pd);
+    
+    CLASS_FREE (global_object);
 }
 
 // -----------------------------------------------------------------------------------------------------------

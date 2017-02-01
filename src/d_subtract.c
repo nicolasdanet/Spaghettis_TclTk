@@ -119,6 +119,12 @@ void subtract_tilde_setup (void)
     class_setHelpName (subtractScalar_tilde_class, sym_max__tilde__);
 }
 
+void subtract_tilde_destroy (void)
+{
+    CLASS_FREE (subtract_tilde_class);
+    CLASS_FREE (subtractScalar_tilde_class);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 

@@ -182,8 +182,8 @@ void instance_release (void)
     pd_setBoundN (NULL);
     pd_setBoundX (NULL);
     
-    CLASS_FREE (pd_canvasMaker);
     CLASS_FREE (pd_objectMaker);
+    CLASS_FREE (pd_canvasMaker);
     
     pdinstance_free (pd_this);
 }

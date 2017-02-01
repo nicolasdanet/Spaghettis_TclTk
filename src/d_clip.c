@@ -17,13 +17,13 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *clip_class;         /* Shared. */
+static t_class *clip_tilde_class;       /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _clip_tilde {
-    t_object    x_obj;              /* Must be the first. */
+    t_object    x_obj;                  /* Must be the first. */
     t_float     x_f;
     t_float     x_low;
     t_float     x_high;
@@ -70,7 +70,7 @@ static void clip_tilde_dsp (t_clip_tilde *x, t_signal **sp)
 
 static void *clip_tilde_new (t_float low, t_float high)
 {
-    t_clip_tilde *x = (t_clip_tilde *)pd_new (clip_class);
+    t_clip_tilde *x = (t_clip_tilde *)pd_new (clip_tilde_class);
     
     x->x_low    = low;
     x->x_high   = high;
@@ -103,7 +103,12 @@ void clip_tilde_setup (void)
     
     class_addDSP (c, (t_method)clip_tilde_dsp);
     
-    clip_class = c;
+    clip_tilde_class = c;
+}
+
+void clip_tilde_destroy (void)
+{
+    CLASS_FREE (clip_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

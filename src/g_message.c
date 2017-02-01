@@ -305,5 +305,11 @@ void message_setup (void)
     messageresponder_class = c;
 }
 
+void message_destroy (void)
+{
+    CLASS_FREE (message_class);
+    CLASS_FREE (messageresponder_class);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -179,7 +179,7 @@ void vu_setup               (void);
 #pragma mark -
 
 void abs_tilde_setup        (void);
-void adc_setup              (void);
+void adc_tilde_setup        (void);
 void add_tilde_setup        (void);
 void bang_tilde_setup       (void);
 void biquad_tilde_setup     (void);
@@ -191,7 +191,7 @@ void cos_tilde_setup        (void);
 void cpole_tilde_setup      (void);
 void czero_rev_tilde_setup  (void);
 void czero_tilde_setup      (void);
-void dac_setup              (void);
+void dac_tilde_setup        (void);
 void dbtopow_tilde_setup    (void);
 void dbtorms_tilde_setup    (void);
 void delread_tilde_setup    (void);
@@ -296,7 +296,6 @@ void key_destroy                (void);
 void keyname_destroy            (void);
 void keyup_destroy              (void);
 void line_destroy               (void);
-void list_destroy               (void);
 void listappend_destroy         (void);
 void listfromsymbol_destroy     (void);
 void listinlet_destroy          (void);
@@ -356,7 +355,6 @@ void struct_destroy             (void);
 void swap_destroy               (void);
 void symbol_destroy             (void);
 void sysexin_destroy            (void);
-void table_destroy              (void);
 void tabread_destroy            (void);
 void tabread4_destroy           (void);
 void tabwrite_destroy           (void);
@@ -387,7 +385,7 @@ void vu_destroy                 (void);
 #pragma mark -
 
 void abs_tilde_destroy          (void);
-void adc_destroy                (void);
+void adc_tilde_destroy          (void);
 void add_tilde_destroy          (void);
 void bang_tilde_destroy         (void);
 void biquad_tilde_destroy       (void);
@@ -399,7 +397,7 @@ void cos_tilde_destroy          (void);
 void cpole_tilde_destroy        (void);
 void czero_rev_tilde_destroy    (void);
 void czero_tilde_destroy        (void);
-void dac_destroy                (void);
+void dac_tilde_destroy          (void);
 void dbtopow_tilde_destroy      (void);
 void dbtorms_tilde_destroy      (void);
 void delread_tilde_destroy      (void);
@@ -591,7 +589,7 @@ void setup_setup (void)
     vu_setup();
     
     abs_tilde_setup();
-    adc_setup();
+    adc_tilde_setup();
     add_tilde_setup();
     bang_tilde_setup();
     biquad_tilde_setup();
@@ -603,7 +601,7 @@ void setup_setup (void)
     cpole_tilde_setup();
     czero_tilde_setup();
     czero_rev_tilde_setup();
-    dac_setup();
+    dac_tilde_setup();
     dbtopow_tilde_setup();
     delread_tilde_setup();
     delwrite_tilde_setup();
@@ -663,7 +661,200 @@ void setup_setup (void)
 
 void setup_destroy (void)        
 {
+    acoustic_destroy();
+    append_destroy();
+    arraydefine_destroy();
+    arrayget_destroy();
+    arraymax_destroy();
+    arraymin_destroy();
+    arrayquantile_destroy();
+    arrayrandom_destroy();
+    arrayset_destroy();
+    arraysize_destroy();
+    arraysum_destroy();
+    atan2_destroy();
+    bag_destroy();
+    bang_destroy();
+    bendin_destroy();
+    bendout_destroy();
+    binop1_destroy();
+    binop2_destroy();
+    binop3_destroy();
+    bng_destroy();
+    canvas_destroy();
+    change_destroy();
+    clip_destroy();
+    ctlin_destroy();
+    ctlout_destroy();
+    delay_destroy();
+    dial_destroy();
+    drawnumber_destroy();
+    drawpolygon_destroy();
+    element_destroy();
+    float_destroy();
+    garray_destroy();
+    gatom_destroy();
+    get_destroy();
+    getsize_destroy();
+    guiconnect_destroy();
+    guistub_destroy();
+    int_destroy();
+    key_destroy();
+    keyname_destroy();
+    keyup_destroy();
+    line_destroy();
+    listappend_destroy();
+    listfromsymbol_destroy();
+    listinlet_destroy();
+    listlength_destroy();
+    listprepend_destroy();
+    listsplit_destroy();
+    listtosymbol_destroy();
+    listtrim_destroy();
+    loadbang_destroy();
+    makefilename_destroy();
+    makenote_destroy();
+    math_destroy();
+    message_destroy();
+    metro_destroy();
+    midiin_destroy();
+    midiout_destroy();
+    midirealtimein_destroy();
+    moses_destroy();
+    namecanvas_destroy();
+    netreceive_destroy();
+    netsend_destroy();
+    notein_destroy();
+    noteout_destroy();
+    openpanel_destroy();
+    oscformat_destroy();
+    oscparse_destroy();
+    pack_destroy();
+    panel_destroy();
+    pgmin_destroy();
+    pgmout_destroy();
+    pipe_destroy();
+    plot_destroy();
+    pointer_destroy();
+    poly_destroy();
+    polytouchin_destroy();
+    polytouchout_destroy();
+    print_destroy();
+    qlist_destroy();
+    radio_destroy();
+    random_destroy();
+    realtime_destroy();
+    receive_destroy();
+    route_destroy();
+    savepanel_destroy();
+    scalar_destroy();
+    scalardefine_destroy();
+    select_destroy();
+    send_destroy();
+    serial_destroy();
+    set_destroy();
+    setsize_destroy();
+    slider_destroy();
+    spigot_destroy();
+    stripnote_destroy();
+    struct_destroy();
+    swap_destroy();
+    symbol_destroy();
+    sysexin_destroy();
+    tabread_destroy();
+    tabread4_destroy();
+    tabwrite_destroy();
+    template_destroy();
+    text_destroy();
+    textdefine_destroy();
+    textfile_destroy();
+    textget_destroy();
+    textlist_destroy();
+    textsearch_destroy();
+    textsequence_destroy();
+    textset_destroy();
+    textsize_destroy();
+    timer_destroy();
+    toggle_destroy();
+    touchin_destroy();
+    touchout_destroy();
+    trigger_destroy();
+    unpack_destroy();
+    until_destroy();
+    value_destroy();
+    vinlet_destroy();
+    voutlet_destroy();
+    vu_destroy();
     
+    abs_tilde_destroy();
+    adc_tilde_destroy();
+    add_tilde_destroy();
+    bang_tilde_destroy();
+    biquad_tilde_destroy();
+    block_tilde_destroy();
+    bp_tilde_destroy();
+    catch_tilde_destroy();
+    clip_tilde_destroy();
+    cos_tilde_destroy();
+    cpole_tilde_destroy();
+    czero_tilde_destroy();
+    czero_rev_tilde_destroy();
+    dac_tilde_destroy();
+    dbtopow_tilde_destroy();
+    delread_tilde_destroy();
+    delwrite_tilde_destroy();
+    divide_tilde_destroy();
+    env_tilde_destroy();
+    exp_tilde_destroy();
+    fft_tilde_destroy();
+    framp_tilde_destroy();
+    ftom_tilde_destroy();
+    hip_tilde_destroy();
+    ifft_tilde_destroy();
+    line_tilde_destroy();
+    log_tilde_destroy();
+    lop_tilde_destroy();
+    max_tilde_destroy();
+    min_tilde_destroy();
+    mtof_tilde_destroy();
+    multiply_tilde_destroy();
+    noise_tilde_destroy();
+    osc_tilde_destroy();
+    phasor_tilde_destroy();
+    pow_tilde_destroy();
+    powtodb_tilde_destroy();
+    print_tilde_destroy();
+    readsf_tilde_destroy();
+    receive_tilde_destroy();
+    rfft_tilde_destroy();
+    rifft_tilde_destroy();
+    rmstodb_tilde_destroy();
+    rpole_tilde_destroy();
+    rsqrt_tilde_destroy();
+    rzero_rev_tilde_destroy();
+    samphold_tilde_destroy();
+    samplerate_tilde_destroy();
+    send_tilde_destroy();
+    sig_tilde_destroy();
+    snapshot_tilde_destroy();
+    soundfiler_destroy();
+    sqrt_tilde_destroy();
+    subtract_tilde_destroy();
+    tabosc4_tilde_destroy();
+    tabplay_tilde_destroy();
+    tabread_tilde_destroy();
+    tabread4_tilde_destroy();
+    tabreceive_tilde_destroy();
+    tabsend_tilde_destroy();
+    tabwrite_tilde_destroy();
+    threshold_tilde_destroy();
+    throw_tilde_destroy();
+    vcf_tilde_destroy();
+    vd_tilde_destroy();
+    vline_tilde_destroy();
+    wrap_tilde_destroy();
+    writesf_tilde_destroy();
+    zero_tilde_destroy();
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -687,7 +878,7 @@ void setup_initialize (void)
     rsqrt_tilde_initialize();
     soundfile_initialize();
     
-    /* Then setup native objects. */
+    /* Then setup native classes. */
     
     global_setup();
     object_setup();
@@ -701,7 +892,7 @@ void setup_initialize (void)
 
 void setup_release (void)
 {
-    /* Close all remaining patches (invisible ones also thus). */
+    /* Close all remaining patches (included invisible ones). */
     
     instance_removeAllFromRoots();
     
@@ -709,7 +900,7 @@ void setup_release (void)
     
     loader_release();
     
-    /* Destroy native objects. */
+    /* Destroy the native classes. */
     
     setup_destroy(); 
     object_destroy();

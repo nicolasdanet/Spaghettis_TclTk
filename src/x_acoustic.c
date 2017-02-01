@@ -202,6 +202,16 @@ void acoustic_setup (void)
     class_setHelpName (dbtorms_class, sym_mtof);
 }
 
+void acoustic_destroy (void)
+{
+    CLASS_FREE (mtof_class);
+    CLASS_FREE (ftom_class);
+    CLASS_FREE (powtodb_class);
+    CLASS_FREE (dbtopow_class);
+    CLASS_FREE (rmstodb_class);
+    CLASS_FREE (dbtorms_class);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 

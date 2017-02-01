@@ -329,5 +329,18 @@ void binop3_setup (void)
     class_setHelpName (binopIntegerDivide_class,    sym___ampersand____ampersand__);
 }
 
+void binop3_destroy (void)
+{
+    CLASS_FREE (binopBitwiseAnd_class);
+    CLASS_FREE (binopLogicalAnd_class);
+    CLASS_FREE (binopBitwiseOr_class);
+    CLASS_FREE (binopLogicalOr_class);
+    CLASS_FREE (binopShiftLeft_class);
+    CLASS_FREE (binopShiftRight_class);
+    CLASS_FREE (binopModulo_class);
+    CLASS_FREE (binopIntegerModulo_class);
+    CLASS_FREE (binopIntegerDivide_class);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

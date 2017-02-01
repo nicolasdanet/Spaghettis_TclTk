@@ -119,6 +119,12 @@ void min_tilde_setup (void)
     class_setHelpName (minScalar_tilde_class, sym_max__tilde__);
 }
 
+void min_tilde_destroy (void)
+{
+    CLASS_FREE (min_tilde_class);
+    CLASS_FREE (minScalar_tilde_class);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 

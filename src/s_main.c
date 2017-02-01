@@ -260,7 +260,7 @@ int main_entry (int argc, char **argv)
         leak_initialize();
     #endif
     
-    message_initialize();   /* Preallocate symbols first. */
+    message_initialize();   /* Preallocate symbols and binding mechanism first. */
     
     err |= main_getRootDirectory();
     err |= main_parseArguments (argc - 1, argv + 1);

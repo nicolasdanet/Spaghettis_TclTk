@@ -127,5 +127,11 @@ void value_setup (void)
     class_addFloat (value_class, (t_method)value_float);
 }
 
+void value_destroy (void)
+{
+    CLASS_FREE (valuecommon_class);
+    CLASS_FREE (value_class);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

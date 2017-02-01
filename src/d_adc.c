@@ -23,22 +23,22 @@ extern t_sample *audio_soundIn;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class  *adc_class;         /* Shared. */
+static t_class  *adc_tilde_class;       /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _adc {
-    t_object    x_obj;              /* Must be the first. */
+typedef struct _adc_tilde {
+    t_object    x_obj;                  /* Must be the first. */
     int         x_size;
     int         *x_vector;
-    } t_adc;
+    } t_adc_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void adc_set (t_adc *x, t_symbol *s, int argc, t_atom *argv)
+static void adc_tilde_set (t_adc_tilde *x, t_symbol *s, int argc, t_atom *argv)
 {
     int i, k = PD_MIN (argc, x->x_size);
     
@@ -51,7 +51,7 @@ static void adc_set (t_adc *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void adc_dsp (t_adc *x, t_signal **sp)
+static void adc_tilde_dsp (t_adc_tilde *x, t_signal **sp)
 {
     t_signal **s = sp;
     int i;
@@ -83,9 +83,9 @@ static void adc_dsp (t_adc *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *adc_new (t_symbol *s, int argc, t_atom *argv)
+static void *adc_tilde_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_adc *x = (t_adc *)pd_new (adc_class);
+    t_adc_tilde *x = (t_adc_tilde *)pd_new (adc_tilde_class);
     int i;
     
     x->x_size   = argc ? argc : 2;
@@ -103,7 +103,7 @@ static void *adc_new (t_symbol *s, int argc, t_atom *argv)
     return x;
 }
 
-static void adc_free (t_adc *x)
+static void adc_tilde_free (t_adc_tilde *x)
 {
     PD_MEMORY_FREE (x->x_vector);
 }
@@ -112,23 +112,28 @@ static void adc_free (t_adc *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void adc_setup (void)
+void adc_tilde_setup (void)
 {
     t_class *c = NULL;
     
     c = class_new (sym_adc__tilde__,
-            (t_newmethod)adc_new,
-            (t_method)adc_free,
-            sizeof (t_adc),
+            (t_newmethod)adc_tilde_new,
+            (t_method)adc_tilde_free,
+            sizeof (t_adc_tilde),
             CLASS_DEFAULT,
             A_GIMME,
             A_NULL);
             
-    class_addDSP (c, (t_method)adc_dsp);
+    class_addDSP (c, (t_method)adc_tilde_dsp);
     
-    class_addMethod (c, (t_method)adc_set, sym_set, A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)adc_tilde_set, sym_set, A_GIMME, A_NULL);
     
-    adc_class = c;
+    adc_tilde_class = c;
+}
+
+void adc_tilde_destroy (void)
+{
+    CLASS_FREE (adc_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------
