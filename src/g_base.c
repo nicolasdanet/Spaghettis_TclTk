@@ -27,13 +27,9 @@ extern t_class              *arraydefine_class;
 extern t_class              *scalardefine_class;
 extern t_pd                 *pd_newest;
 extern t_pdinstance         *pd_this;
-extern t_symbol             *canvas_fileName;
-extern t_symbol             *canvas_directory;
-extern t_atom               *canvas_argv;
 
 extern t_pd                 pd_objectMaker;
 extern t_widgetbehavior     text_widgetBehavior;
-extern int                  canvas_argc;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -61,25 +57,9 @@ t_glist *cast_glistChecked (t_pd *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_setActiveFileNameAndDirectory (t_symbol *name, t_symbol *directory)
-{
-    canvas_fileName  = name;
-    canvas_directory = directory;
-}
-
-void canvas_setActiveArguments (int argc, t_atom *argv)
-{
-    if (canvas_argv) { PD_MEMORY_FREE (canvas_argv); }
-    
-    canvas_argc = argc;
-    canvas_argv = PD_MEMORY_GET (argc * sizeof (t_atom));
-    
-    if (argc) { atom_copyAtomsUnchecked (argc, argv, canvas_argv); }
-}
-
 void canvas_newPatch (void *dummy, t_symbol *name, t_symbol *directory)
 {
-    canvas_setActiveFileNameAndDirectory (name, directory);
+    environment_setActiveFile (name, directory);
     canvas_new (NULL, NULL, 0, NULL);
     canvas_pop (cast_glist (pd_getBoundX()), 1);
 }

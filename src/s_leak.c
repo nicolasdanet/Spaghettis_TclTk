@@ -141,7 +141,7 @@ static void leak_remove (t_int ptr, const char *f, const int line)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void *sys_getMemoryChecked (size_t n, const char *f, const int line)
+void *sys_getMemoryChecked (size_t n, const char *f, int line)
 {
     void *t = sys_getMemory (n);
     
@@ -154,7 +154,7 @@ void *sys_getMemoryChecked (size_t n, const char *f, const int line)
     return t;
 }
 
-void *sys_getMemoryResizeChecked (void *ptr, size_t oldSize, size_t newSize, const char *f, const int line)
+void *sys_getMemoryResizeChecked (void *ptr, size_t oldSize, size_t newSize, const char *f, int line)
 {
     void *t = sys_getMemoryResize (ptr, oldSize, newSize);
     
@@ -167,7 +167,7 @@ void *sys_getMemoryResizeChecked (void *ptr, size_t oldSize, size_t newSize, con
     return t;
 }
 
-void sys_freeMemoryChecked (void *ptr, const char *f, const int line)
+void sys_freeMemoryChecked (void *ptr, const char *f, int line)
 {
     pthread_mutex_lock (&leak_mutex);
     

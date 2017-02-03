@@ -247,14 +247,14 @@ void        leak_release                            (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        *sys_getMemoryChecked                   (size_t n, const char *f, const int line);
+void        *sys_getMemoryChecked                   (size_t n, const char *f, int line);
 void        *sys_getMemoryResizeChecked             (void *ptr,
                                                         size_t oldSize,
                                                         size_t newSize,
                                                         const char *f,
-                                                        const int line);
+                                                        int line);
 
-void        sys_freeMemoryChecked                   (void *ptr, const char *f, const int line);
+void        sys_freeMemoryChecked                   (void *ptr, const char *f, int line);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

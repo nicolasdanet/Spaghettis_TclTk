@@ -34,12 +34,7 @@ extern t_widgetbehavior     canvas_widgetbehavior;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_class         *canvas_class;                              /* Shared. */
-t_symbol        *canvas_fileName  = &s_;                    /* Shared. */
-t_symbol        *canvas_directory = &s_;                    /* Shared. */
-t_atom          *canvas_argv;                               /* Shared. */
-
-int             canvas_argc;                                /* Shared. */
+t_class *canvas_class;      /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -780,34 +775,13 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     
     x->gl_master = gpointer_masterCreateWithGlist (x);
     x->gl_parent = owner;
-    x->gl_name   = (name != &s_ ? name : (canvas_fileName ? canvas_fileName : sym_Patch));
     
     x->gl_uniqueIdentifier = utils_unique();
     
     if (!owner) { instance_addToRoots (x); }
     
-    if (canvas_directory == &s_) { x->gl_environment = NULL; }
-    else {
-    //
-    static int dollarZero = 1000;       /* Shared. */
-    
-    x->gl_environment = (t_environment *)PD_MEMORY_GET (sizeof (t_environment));
-
-    if (!canvas_argv) { 
-        canvas_argv = PD_MEMORY_GET (0); 
-    }
-    
-    x->gl_environment->ce_directory         = canvas_directory;
-    x->gl_environment->ce_argc              = canvas_argc;
-    x->gl_environment->ce_argv              = canvas_argv;
-    x->gl_environment->ce_dollarZeroValue   = dollarZero++;
-
-    canvas_directory    = &s_;
-    canvas_argc         = 0;
-    canvas_argv         = NULL;
-    //
-    }
-
+    x->gl_environment           = environment_fetchActiveIfAny();
+    x->gl_name                  = (name != &s_ ? name : environment_getFileName (x->gl_environment));
     x->gl_valueLeft             = (t_float)0.0;
     x->gl_valueTop              = (t_float)0.0;
     x->gl_valueRight            = (t_float)1.0;
@@ -841,10 +815,7 @@ void canvas_free (t_glist *glist)
     canvas_destroyEditorIfAny (glist);
     canvas_unbind (glist);
 
-    if (glist->gl_environment) {
-        PD_MEMORY_FREE (glist->gl_environment->ce_argv);
-        PD_MEMORY_FREE (glist->gl_environment);
-    }
+    environment_free (glist->gl_environment);
     
     dsp_resume (dspstate);
     

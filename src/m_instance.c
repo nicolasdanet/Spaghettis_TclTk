@@ -143,13 +143,13 @@ static void instance_newAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     if (stack_setLoadingAbstraction (s)) { error_recursiveInstantiation (s); }
     else {
         t_pd *t = pd_getBoundX();
-        canvas_setActiveArguments (argc, argv);
+        environment_setActiveArguments (argc, argv);
         buffer_fileEval (gensym (name), gensym (directory));
         if (pd_getBoundX() && t != pd_getBoundX()) { instance_popAbstraction (cast_glist (pd_getBoundX())); }
         else { 
             pd_setBoundX (t); 
         }
-        canvas_setActiveArguments (0, NULL);
+        environment_setActiveArguments (0, NULL);
     }
     //
     }

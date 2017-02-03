@@ -131,6 +131,7 @@ struct _environment {
     int                 ce_argc;
     t_atom              *ce_argv;
     t_symbol            *ce_directory;
+    t_symbol            *ce_fileName;
 };
 
 typedef struct _linetraverser {
@@ -239,9 +240,20 @@ void            guiconnect_release                      (t_guiconnect *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_symbol        *environment_getActiveFilename          (void);
+t_environment   *environment_fetchActiveIfAny           (void);
+
+void            environment_free                        (t_environment *environment);
+void            environment_setActiveFile               (t_symbol *name, t_symbol *directory);
+void            environment_setActiveArguments          (int argc, t_atom *argv);
+
+t_symbol        *environment_getFileName                (t_environment *environment);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void            canvas_newPatch                         (void *dummy, t_symbol *name, t_symbol *directory);
-void            canvas_setActiveFileNameAndDirectory    (t_symbol *name, t_symbol *directory);
-void            canvas_setActiveArguments               (int argc, t_atom *argv);
 
 t_symbol        *canvas_expandDollar                    (t_glist *glist, t_symbol *s);
 
