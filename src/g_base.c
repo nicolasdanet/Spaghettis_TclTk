@@ -274,11 +274,9 @@ void canvas_makeTextObject (t_glist *glist,
     {
     //
     t_environment *e = canvas_getEnvironment (canvas_getCurrent());
-    int argc = e->ce_argc;
-    t_atom *argv = e->ce_argv;
     t_object *x = NULL;
     
-    buffer_eval (b, &pd_objectMaker, argc, argv);
+    buffer_eval (b, &pd_objectMaker, environment_getNumberOfArguments (e), environment_getArguments (e));
 
     if (pd_newest) { x = cast_objectIfPatchable (pd_newest); }
 
@@ -362,7 +360,7 @@ int canvas_openFile (t_glist *glist,
     char **nameResult,
     size_t size)
 {
-    const char *directory = glist ? canvas_getEnvironment (glist)->ce_directory->s_name : ".";
+    const char *directory = glist ? environment_getDirectoryAsString (canvas_getEnvironment (glist)) : ".";
     
     int f = file_openConsideringSearchPath (directory, 
                 name,
@@ -386,7 +384,7 @@ t_error canvas_makeFilePath (t_glist *glist, char *name, char *dest, size_t size
 {
     t_error err = PD_ERROR_NONE;
     
-    char *directory = canvas_getEnvironment (glist)->ce_directory->s_name;
+    char *directory = environment_getDirectoryAsString (canvas_getEnvironment (glist));
     
     if (name[0] == '/' || (name[0] && name[1] == ':') || !(*directory)) { 
         err |= string_copy (dest, size, name);
@@ -412,7 +410,7 @@ void canvas_updateTitle (t_glist *glist)
 {
     sys_vGui ("::ui_patch::setTitle .x%lx {%s} {%s} %d\n",  // --
                     glist,
-                    canvas_getEnvironment (glist)->ce_directory->s_name,
+                    environment_getDirectoryAsString (canvas_getEnvironment (glist)),
                     glist->gl_name->s_name,
                     glist->gl_isDirty);
 }

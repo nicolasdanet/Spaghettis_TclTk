@@ -573,7 +573,7 @@ static void canvas_fromPopupDialog (t_glist *glist, t_float action, t_float posi
         t_atom *argv = buffer_atoms (cast_object (y)->te_buffer);
         if (!(err = (argc < 1))) {
             atom_toString (argv, name, PD_STRING);
-            directory = canvas_getEnvironment (cast_glist (y))->ce_directory->s_name;
+            directory = environment_getDirectoryAsString (canvas_getEnvironment (cast_glist (y)));
         }
         
     } else {

@@ -95,7 +95,12 @@ void canvas_save (t_glist *glist, float destroy)
     
     if (root->gl_name == &s_) { canvas_saveAs (root, destroy); }
     else {
-        canvas_saveToFile (root, root->gl_name, canvas_getEnvironment (root)->ce_directory, destroy);
+    //
+    canvas_saveToFile (root,
+        root->gl_name,
+        environment_getDirectory (canvas_getEnvironment (root)),
+        destroy);
+    //
     }
 }
 
@@ -106,7 +111,7 @@ void canvas_saveAs (t_glist *glist, float destroy)
     sys_vGui ("::ui_file::saveAs .x%lx {%s} {%s} %d\n",     // --
                     root,
                     root->gl_name->s_name,
-                    canvas_getEnvironment (root)->ce_directory->s_name, 
+                    environment_getDirectoryAsString (canvas_getEnvironment (root)), 
                     (int)destroy);
 }
 

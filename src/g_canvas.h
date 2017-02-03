@@ -248,7 +248,13 @@ void            environment_setActiveFile               (t_symbol *name, t_symbo
 void            environment_setActiveArguments          (int argc, t_atom *argv);
 void            environment_resetActiveArguments        (void);
 
+int             environment_getDollarZero               (t_environment *environment);
+int             environment_getNumberOfArguments        (t_environment *environment);
+
+t_atom          *environment_getArguments               (t_environment *environment);
+t_symbol        *environment_getDirectory               (t_environment *environment);
 t_symbol        *environment_getFileName                (t_environment *environment);
+char            *environment_getDirectoryAsString       (t_environment *environment);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -18,9 +18,9 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_symbol    *environment_fileName  = &s_;        /* Shared. */
-static t_symbol    *environment_directory = &s_;        /* Shared. */
-static t_atom      *environment_argv;                   /* Shared. */
+static t_symbol     *environment_fileName  = &s_;       /* Shared. */
+static t_symbol     *environment_directory = &s_;       /* Shared. */
+static t_atom       *environment_argv;                  /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -75,10 +75,10 @@ t_environment *environment_fetchActiveIfAny (void)
 
     PD_ASSERT (environment_argv != NULL || environment_argc == 0);
     
-    environment_argc = 0;
-    environment_argv = NULL;
-    
-    environment_setActiveFile (&s_, &s_);
+    environment_argc      = 0;
+    environment_argv      = NULL;
+    environment_fileName  = &s_;
+    environment_directory = &s_;
     
     return e;
     //
@@ -87,11 +87,11 @@ t_environment *environment_fetchActiveIfAny (void)
     return NULL;
 }
 
-void environment_free (t_environment *environment)
+void environment_free (t_environment *e)
 {
-    if (environment) {
-        PD_MEMORY_FREE (environment->ce_argv);
-        PD_MEMORY_FREE (environment);
+    if (e) {
+        PD_MEMORY_FREE (e->ce_argv);
+        PD_MEMORY_FREE (e);
     }
 }
 
@@ -99,9 +99,34 @@ void environment_free (t_environment *environment)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol *environment_getFileName (t_environment *environment)
+int environment_getDollarZero (t_environment *e)
 {
-    if (environment) { return environment->ce_fileName; }
+    return e->ce_dollarZeroValue;
+}
+
+int environment_getNumberOfArguments (t_environment *e)
+{
+    return e->ce_argc;
+}
+
+t_atom *environment_getArguments (t_environment *e)
+{
+    return e->ce_argv;
+}
+
+t_symbol *environment_getDirectory (t_environment *e)
+{
+    return e->ce_directory;
+}
+
+char *environment_getDirectoryAsString (t_environment *e)
+{
+    return e->ce_directory->s_name;
+}
+
+t_symbol *environment_getFileName (t_environment *e)
+{
+    if (e) { return e->ce_fileName; }
     else {
         return sym_Patch;
     }

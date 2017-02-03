@@ -24,7 +24,7 @@ static int dollar_getDollarZero (t_glist *glist)
     glist       = (glist == NULL) ? canvas_getCurrent() : glist;
     environment = (glist != NULL) ? canvas_getEnvironment (glist) : NULL;
     
-    if (environment) { return (environment->ce_dollarZeroValue); }
+    if (environment) { return environment_getDollarZero (environment); }
     else {
         return 0;
     }
@@ -52,7 +52,7 @@ static int dollar_expand (char *s, char *buffer, int size, int argc, t_atom *arg
     if (n < 0 || n > argc) { return 0; }
 
     if (ptr == s) {                                       
-        err = string_sprintf (buffer, size, "$");                  /* Unsubstituted dollars are preserved. */
+        err = string_sprintf (buffer, size, "$");       /* Unsubstituted dollars are preserved. */
         return 0;
 
     } else if (n == 0) {                                    
@@ -114,23 +114,7 @@ t_symbol *dollar_expandDollarSymbol (t_symbol *s, int argc, t_atom *argv, t_glis
     }
 }
 
-t_symbol *dollar_expandDollarSymbolByEnvironment (t_symbol *s, t_glist *glist)
-{
-    t_environment *environment = NULL;
-    
-    if (glist) { environment = canvas_getEnvironment (glist); }
-
-    if (!environment) { return dollar_expandDollarSymbol (s, 0, NULL, glist); }
-    else {
-        return dollar_expandDollarSymbol (s, environment->ce_argc, environment->ce_argv, glist);
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-/* Dollar expansion (e.g. '$1' to 'foo'). */
+/* Dollar number expansion (e.g. '$1' to 'foo'). */
 
 void dollar_expandDollarNumber (t_atom *dollar, t_atom *a, int argc, t_atom *argv, t_glist *glist)
 {
@@ -144,22 +128,6 @@ void dollar_expandDollarNumber (t_atom *dollar, t_atom *a, int argc, t_atom *arg
         error_invalid (&s_, sym_expansion); SET_FLOAT (a, (t_float)0.0);
     }
 }
-
-void dollar_expandDollarNumberByEnvironment (t_atom *dollar, t_atom *a, t_glist *glist)
-{
-    t_environment *environment = NULL;
-    
-    if (glist) { environment = canvas_getEnvironment (glist); }
-
-    if (!environment) { dollar_expandDollarNumber (dollar, a, 0, NULL, glist); }
-    else {
-        dollar_expandDollarNumber (dollar, a, environment->ce_argc, environment->ce_argv, glist);
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 void dollar_copyExpandAtoms (t_atom *src, int m, t_atom *dest, int n, int argc, t_atom *argv, t_glist *glist)
 {
@@ -182,15 +150,62 @@ void dollar_copyExpandAtoms (t_atom *src, int m, t_atom *dest, int n, int argc, 
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_symbol *dollar_expandDollarSymbolByEnvironment (t_symbol *s, t_glist *glist)
+{
+    t_environment *e = NULL;
+    
+    if (glist) { e = canvas_getEnvironment (glist); }
+
+    if (!e) { return dollar_expandDollarSymbol (s, 0, NULL, glist); }
+    else {
+    //
+    return dollar_expandDollarSymbol (s,
+        environment_getNumberOfArguments (e),
+        environment_getArguments (e),
+        glist);
+    //
+    }
+}
+
+void dollar_expandDollarNumberByEnvironment (t_atom *dollar, t_atom *a, t_glist *glist)
+{
+    t_environment *e = NULL;
+    
+    if (glist) { e = canvas_getEnvironment (glist); }
+
+    if (!e) { dollar_expandDollarNumber (dollar, a, 0, NULL, glist); }
+    else {
+    //
+    dollar_expandDollarNumber (dollar,
+        a,
+        environment_getNumberOfArguments (e),
+        environment_getArguments (e),
+        glist);
+    //
+    }
+}
+
 void dollar_copyExpandAtomsByEnvironment (t_atom *src, int m, t_atom *dest, int n, t_glist *glist)
 {
-    t_environment *environment = NULL;
+    t_environment *e = NULL;
     
-    if (glist) { environment = canvas_getEnvironment (glist); }
+    if (glist) { e = canvas_getEnvironment (glist); }
 
-    if (!environment) { dollar_copyExpandAtoms (src, m, dest, n, 0, NULL, glist); }
+    if (!e) { dollar_copyExpandAtoms (src, m, dest, n, 0, NULL, glist); }
     else {
-        dollar_copyExpandAtoms (src, m, dest, n, environment->ce_argc, environment->ce_argv, glist);
+    //
+    dollar_copyExpandAtoms (src,
+        m,
+        dest,
+        n,
+        environment_getNumberOfArguments (e),
+        environment_getArguments (e),
+        glist);
+    //
     }
 }
 
