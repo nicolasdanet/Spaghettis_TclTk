@@ -51,8 +51,12 @@ void soundfile_initialize (void)
     /* A way to test at compile time? */
     
     PD_ASSERT (sizeof (t_sample) == sizeof (t_float));      /* Required for encoding and decoding. */
-    PD_ASSERT (sizeof (t_word) > sizeof (t_sample));        /* Ditto. */
+    PD_ASSERT (sizeof (t_word) >= sizeof (t_sample));       /* Ditto. */
     PD_ASSERT (sizeof (t_word) % sizeof (t_sample) == 0);   /* Ditto. */
+    
+    PD_ABORT (sizeof (t_sample) != sizeof (t_float));
+    PD_ABORT (sizeof (t_word) < sizeof (t_sample));
+    PD_ABORT (sizeof (t_word) % sizeof (t_sample) != 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
