@@ -48,6 +48,11 @@ void environment_setActiveArguments (int argc, t_atom *argv)
     if (argc) { atom_copyAtomsUnchecked (argc, argv, environment_argv); }
 }
 
+void environment_resetActiveArguments (void)
+{
+    environment_setActiveArguments (0, NULL);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -100,6 +105,15 @@ t_symbol *environment_getFileName (t_environment *environment)
     else {
         return sym_Patch;
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void environment_release (void)
+{
+    if (environment_argv) { PD_MEMORY_FREE (environment_argv); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

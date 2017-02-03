@@ -246,6 +246,7 @@ t_environment   *environment_fetchActiveIfAny           (void);
 void            environment_free                        (t_environment *environment);
 void            environment_setActiveFile               (t_symbol *name, t_symbol *directory);
 void            environment_setActiveArguments          (int argc, t_atom *argv);
+void            environment_resetActiveArguments        (void);
 
 t_symbol        *environment_getFileName                (t_environment *environment);
 

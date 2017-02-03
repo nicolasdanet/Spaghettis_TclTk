@@ -149,7 +149,7 @@ static void instance_newAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
         else { 
             pd_setBoundX (t); 
         }
-        environment_setActiveArguments (0, NULL);
+        environment_resetActiveArguments();
     }
     //
     }
