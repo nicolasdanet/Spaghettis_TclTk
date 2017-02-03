@@ -252,6 +252,7 @@ t_error scheduler_main (void)
     scheduler_mainLoop();
     poll_stop();
     autorelease_stop();
+    dsp_suspend();
     audio_close();
     midi_close();
     
