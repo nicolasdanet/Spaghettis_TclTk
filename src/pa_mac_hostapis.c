@@ -1,3 +1,6 @@
+
+// ====================================
+
 /*
  * $Id: pa_mac_hostapis.c 1097 2006-08-26 08:27:53Z rossb $
  * Portable Audio I/O Library Macintosh initialization table
