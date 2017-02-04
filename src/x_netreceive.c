@@ -210,7 +210,7 @@ static void netreceive_close (t_netreceive *x)
     if (x->nr_protocol == SOCK_STREAM) {
     if (x->nr_fd >= 0) {
         interface_monitorRemovePoller (x->nr_fd);
-        interface_closeSocket (x->nr_fd);
+        sys_closeSocket (x->nr_fd);
     }
     }
     
@@ -270,7 +270,7 @@ static void netreceive_listen (t_netreceive *x, t_float f)
     //
     }
     
-    if (err) { interface_closeSocket (fd); error_failed (sym_netreceive); }
+    if (err) { sys_closeSocket (fd); error_failed (sym_netreceive); }
     else {
         x->nr_fd = fd;
     }

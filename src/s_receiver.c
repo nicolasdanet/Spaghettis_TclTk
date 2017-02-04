@@ -37,7 +37,7 @@ static void receiver_read (t_receiver *, int);
 static void receiver_closeSocketAndRemoveCallback (t_receiver *x)
 {
     if (!x->r_isClosed) {
-        interface_closeSocket (x->r_fd);
+        sys_closeSocket (x->r_fd);
         interface_monitorRemovePoller (x->r_fd);
         x->r_isClosed = 1;
     }
