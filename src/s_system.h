@@ -185,6 +185,7 @@ void        interface_monitorRemovePoller           (int fd);
 void        interface_guiQueueAddIfNotAlreadyThere  (void *owner, t_glist *glist, t_drawfn f);
 void        interface_guiQueueRemove                (void *owner);
 int         interface_pollOrFlushGui                (void);
+int         interface_flushBufferAndQueue           (void);
 void        interface_closeSocket                   (int fd);
 void        interface_quit                          (void *dummy);
 void        interface_watchdog                      (void *dummy);

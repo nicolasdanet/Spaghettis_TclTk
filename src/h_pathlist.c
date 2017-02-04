@@ -63,17 +63,7 @@ void pathlist_free (t_pathlist *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-char *pathlist_getFileAtIndex (t_pathlist *x, int n)
-{
-    int i;
-    t_pathlist *l = x;
-    
-    for (i = 0; i < n && l; i++, l = l->pl_next) { }
-    
-    return (l ? l->pl_string : NULL);
-}
-
-char *pathlist_getFile (t_pathlist *x)
+char *pathlist_getPath (t_pathlist *x)
 {
     return (x ? x->pl_string : NULL);
 }

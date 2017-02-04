@@ -37,8 +37,9 @@ void drawpolygon_release    (void);
 void editor_release         (void);
 void environment_release    (void);
 void fft_release            (void);
-void instance_release       (void);
+void gui_release            (void);
 void interface_release      (void);
+void instance_release       (void);
 void loader_release         (void);
 void plot_release           (void);
 
@@ -893,6 +894,10 @@ void setup_initialize (void)
 
 void setup_release (void)
 {
+    /* Stop listening and close GUI socket. */
+    
+    interface_release();
+    
     /* Close all remaining patches (included invisible ones). */
     
     instance_removeAllFromRoots();
@@ -910,7 +915,7 @@ void setup_release (void)
     /* Various cleaning (reverse order). */
     
     plot_release();
-    interface_release();
+    gui_release();
     fft_release();
     environment_release();
     editor_release();

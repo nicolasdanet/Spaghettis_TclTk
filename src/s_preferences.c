@@ -399,7 +399,7 @@ void preferences_save (void *dummy)
     
     for (i = 0; 1; i++) {
     //
-    char *path = pathlist_getFile (list);
+    char *path = pathlist_getPath (list);
     if (!path) { break; }
     else {
         string_sprintf (key, PD_STRING, "Path%d", i + 1); 

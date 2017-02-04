@@ -142,7 +142,7 @@ int file_openConsideringSearchPath (const char *directory,
     if (f < 0) {
         t_pathlist *l = NULL;
         for (l = path_search; l; l = pathlist_getNext (l)) {
-            char *path = pathlist_getFile (l);
+            char *path = pathlist_getPath (l);
             f = file_openWithDirectoryAndName (path, name, extension, directoryResult, nameResult, size);
             if (f >= 0) { break; }
         }

@@ -17,12 +17,12 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define RECEIVER_BUFFER_SIZE    4096        /* Must be a power of two. */
+#define RECEIVER_BUFFER_SIZE    4096                /* Must be a power of two. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_receiver   *interface_inGuiReceiver;
+extern t_receiver *interface_guiReceiver;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -148,16 +148,16 @@ static int receiver_readHandleTCP (t_receiver *x)
 
 static void receiver_readHandleDisconnect (t_receiver *x, int fd, int withError)
 {
-    if (x == interface_inGuiReceiver) { 
+    if (x == interface_guiReceiver) {
+    
         if (withError) { scheduler_needToExitWithError(); }
         else {
             scheduler_needToExit(); 
         }
         
     } else {
-        if (x->r_fnNotify) { 
-            (*x->r_fnNotify) (x->r_owner, fd); 
-        }
+    
+        if (x->r_fnNotify) { (*x->r_fnNotify) (x->r_owner, fd); }
 
         receiver_closeSocketAndRemoveCallback (x);
     }

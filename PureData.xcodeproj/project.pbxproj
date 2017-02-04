@@ -134,6 +134,7 @@
 		3770AE001DC2396E00ADAE26 /* d_dsp.c in Sources */ = {isa = PBXBuildFile; fileRef = 3770ADFF1DC2396E00ADAE26 /* d_dsp.c */; };
 		3770AE3B1DC23D2000ADAE26 /* d_signal.c in Sources */ = {isa = PBXBuildFile; fileRef = 3770AE3A1DC23D2000ADAE26 /* d_signal.c */; };
 		3770FAA61CB1036A007C7E66 /* g_radio.c in Sources */ = {isa = PBXBuildFile; fileRef = 3770FAA51CB1036A007C7E66 /* g_radio.c */; };
+		377381FF1E45CEF40009F18D /* s_socket.c in Sources */ = {isa = PBXBuildFile; fileRef = 377381FE1E45CEF40009F18D /* s_socket.c */; };
 		377899491CFED1B10056BE61 /* g_new.c in Sources */ = {isa = PBXBuildFile; fileRef = 377899481CFED1B10056BE61 /* g_new.c */; };
 		377899A51CFED7B60056BE61 /* g_message.c in Sources */ = {isa = PBXBuildFile; fileRef = 377899A41CFED7B60056BE61 /* g_message.c */; };
 		377899DD1CFEDB5B0056BE61 /* g_gatom.c in Sources */ = {isa = PBXBuildFile; fileRef = 377899DC1CFEDB5B0056BE61 /* g_gatom.c */; };
@@ -294,6 +295,7 @@
 		37C9FB811DF7224300309D57 /* d_tabreceive.c in Sources */ = {isa = PBXBuildFile; fileRef = 37C9FB801DF7224300309D57 /* d_tabreceive.c */; };
 		37C9FB951DF722D800309D57 /* d_tabsend.c in Sources */ = {isa = PBXBuildFile; fileRef = 37C9FB941DF722D800309D57 /* d_tabsend.c */; };
 		37C9FBB31DF723AF00309D57 /* d_tabosc4.c in Sources */ = {isa = PBXBuildFile; fileRef = 37C9FBB21DF723AF00309D57 /* d_tabosc4.c */; };
+		37CC95F21E45AEB800D9BA64 /* s_gui.c in Sources */ = {isa = PBXBuildFile; fileRef = 37CC95F11E45AEB800D9BA64 /* s_gui.c */; };
 		37CD71031D9A99E500A61BD3 /* x_receive.c in Sources */ = {isa = PBXBuildFile; fileRef = 37CD71021D9A99E500A61BD3 /* x_receive.c */; };
 		37CD71191D9A9AAB00A61BD3 /* x_send.c in Sources */ = {isa = PBXBuildFile; fileRef = 37CD71181D9A9AAB00A61BD3 /* x_send.c */; };
 		37CD71381D9A9B7600A61BD3 /* x_bang.c in Sources */ = {isa = PBXBuildFile; fileRef = 37CD71371D9A9B7600A61BD3 /* x_bang.c */; };
@@ -516,6 +518,7 @@
 		3770ADFF1DC2396E00ADAE26 /* d_dsp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_dsp.c; path = src/d_dsp.c; sourceTree = "<group>"; };
 		3770AE3A1DC23D2000ADAE26 /* d_signal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_signal.c; path = src/d_signal.c; sourceTree = "<group>"; };
 		3770FAA51CB1036A007C7E66 /* g_radio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_radio.c; path = src/g_radio.c; sourceTree = "<group>"; };
+		377381FE1E45CEF40009F18D /* s_socket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_socket.c; path = src/s_socket.c; sourceTree = "<group>"; };
 		377899481CFED1B10056BE61 /* g_new.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_new.c; path = src/g_new.c; sourceTree = "<group>"; };
 		377899A41CFED7B60056BE61 /* g_message.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_message.c; path = src/g_message.c; sourceTree = "<group>"; };
 		377899DC1CFEDB5B0056BE61 /* g_gatom.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_gatom.c; path = src/g_gatom.c; sourceTree = "<group>"; };
@@ -734,6 +737,7 @@
 		37C9FB801DF7224300309D57 /* d_tabreceive.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_tabreceive.c; path = src/d_tabreceive.c; sourceTree = "<group>"; };
 		37C9FB941DF722D800309D57 /* d_tabsend.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_tabsend.c; path = src/d_tabsend.c; sourceTree = "<group>"; };
 		37C9FBB21DF723AF00309D57 /* d_tabosc4.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_tabosc4.c; path = src/d_tabosc4.c; sourceTree = "<group>"; };
+		37CC95F11E45AEB800D9BA64 /* s_gui.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_gui.c; path = src/s_gui.c; sourceTree = "<group>"; };
 		37CD71021D9A99E500A61BD3 /* x_receive.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_receive.c; path = src/x_receive.c; sourceTree = "<group>"; };
 		37CD71181D9A9AAB00A61BD3 /* x_send.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_send.c; path = src/x_send.c; sourceTree = "<group>"; };
 		37CD71371D9A9B7600A61BD3 /* x_bang.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_bang.c; path = src/x_bang.c; sourceTree = "<group>"; };
@@ -1028,6 +1032,8 @@
 				37E3E9651C5E1EDE00D9717B /* s_priority.c */,
 				37C76DA41C5CF20D00AE4CBF /* s_handlers.c */,
 				37C76E111C5CF93000AE4CBF /* s_time.c */,
+				377381FE1E45CEF40009F18D /* s_socket.c */,
+				37CC95F11E45AEB800D9BA64 /* s_gui.c */,
 				37E3EB9B1C5F6ACA00D9717B /* s_receiver.c */,
 				378971F41C4F716700263434 /* s_interface.c */,
 				378B47381C6C660B004099AA /* s_file.c */,
@@ -2064,6 +2070,8 @@
 				370303231E3B587E009D8A6D /* finddefault.c in Sources */,
 				37D4D9AC1E3C7B33002CE930 /* s_leak.c in Sources */,
 				370B1FB01E421D22003D95A0 /* g_environment.c in Sources */,
+				37CC95F21E45AEB800D9BA64 /* s_gui.c in Sources */,
+				377381FF1E45CEF40009F18D /* s_socket.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
