@@ -53,7 +53,7 @@ void hello_initialize (void)
 
 void hello_release (void) 
 {
-    post_log ("'- Tomorrow?'");                 /* While application quitting. */
+    post_log ("'- Tomorrow?'");                 /* At last while application quitting. */
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -73,6 +73,8 @@ PD_STUB void helloRelease_setup (t_symbol *s)
 {
     t_class *c = NULL;
     
+    post_log ("'- !'");
+    
     c = class_new (gensym ("helloRelease"),
             (t_newmethod)hello_new,
             NULL,
@@ -81,6 +83,13 @@ PD_STUB void helloRelease_setup (t_symbol *s)
             A_NULL);
     
     hello_class = c;
+}
+
+PD_STUB void helloRelease_destroy (void)
+{
+    class_free (hello_class);
+    
+    post_log ("'- ?'");                         /* While application quitting. */
 }
 
 // -----------------------------------------------------------------------------------------------------------

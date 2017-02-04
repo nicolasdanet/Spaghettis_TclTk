@@ -126,7 +126,7 @@ static void instance_newAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 
     pd_newest = NULL;
     
-    if (loader_loadExternal (canvas_getCurrent(), s->s_name)) {
+    if (loader_load (canvas_getCurrent(), s->s_name)) {
         instance_recursiveDepth++;
         pd_message (x, s, argc, argv);
         instance_recursiveDepth--;

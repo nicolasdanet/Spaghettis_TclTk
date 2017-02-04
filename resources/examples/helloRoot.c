@@ -57,5 +57,10 @@ PD_STUB void helloRoot_setup (t_symbol *s)
     post ("My name is %s", s->s_name);          /* Absolute path of the external. */
 }
 
+PD_STUB void helloRoot_destroy (void)
+{
+    class_free (hello_class);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -52,7 +52,7 @@ static void *hello_new (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_STUB void hello_setup (t_symbol *s)       /* MUST be the name of the file with _setup appended. */
+PD_STUB void hello_setup (t_symbol *s)          /* MUST be the name of the file with _setup appended. */
 {
     t_class *c = NULL;
     
@@ -63,6 +63,11 @@ PD_STUB void hello_setup (t_symbol *s)       /* MUST be the name of the file wit
     class_addBang (c, (t_method)hello_bang); 
     
     hello_class = c;
+}
+
+PD_STUB void hello_destroy (void)               /* MUST be the name of the file with _destroy appended. */
+{
+    class_free (hello_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------
