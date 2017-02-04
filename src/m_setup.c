@@ -21,6 +21,7 @@ void cos_tilde_initialize   (void);
 void editor_initialize      (void);
 void fft_initialize         (void);
 void garray_initialize      (void);
+void gui_initialize         (void);
 void instance_initialize    (void);
 void interface_initialize   (void);
 void rsqrt_tilde_initialize (void);
@@ -42,6 +43,7 @@ void interface_release      (void);
 void instance_release       (void);
 void loader_release         (void);
 void plot_release           (void);
+void queue_release          (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -876,6 +878,7 @@ void setup_initialize (void)
     cos_tilde_initialize();
     editor_initialize();
     fft_initialize();
+    gui_initialize();
     interface_initialize();
     rsqrt_tilde_initialize();
     soundfile_initialize();
@@ -914,6 +917,7 @@ void setup_release (void)
     
     /* Various cleaning (reverse order). */
     
+    queue_release();
     plot_release();
     gui_release();
     fft_release();

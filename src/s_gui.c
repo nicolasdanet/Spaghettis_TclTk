@@ -16,32 +16,155 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern char *interface_outGuiBuffer;
+extern int  interface_guiSocket;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern int  interface_outGuiBufferSize;
-extern int  interface_outGuiBufferHead;
-extern int  interface_outGuiBufferTail;
+static char *gui_buffer;        /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static int  gui_bufferSize;     /* Shared. */
+static int  gui_bufferHead;     /* Shared. */
+static int  gui_bufferTail;     /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void sys_guiEnlarge()
+#define GUI_BUFFER_SIZE     (1024 * 128)
+#define GUI_BUFFER_ABORT    (1024 * 128 * 1024)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#if ! ( PD_WITH_NOGUI )
+
+static void gui_enlargeBuffer()
 {
-    const int overflow = (1024 * 128 * 1024);
-    
-    int oldSize = interface_outGuiBufferSize;
+    int oldSize = gui_bufferSize;
     int newSize = oldSize * 2;
     
-    PD_ASSERT (newSize <= overflow); 
-    PD_ABORT (newSize > overflow);      /* GUI buffer no more consumed? */
+    PD_ASSERT (newSize <= GUI_BUFFER_ABORT); 
+    PD_ABORT (newSize > GUI_BUFFER_ABORT);          /* GUI buffer no more consumed? */
     
-    interface_outGuiBuffer = PD_MEMORY_RESIZE (interface_outGuiBuffer, oldSize, newSize);
-    interface_outGuiBufferSize = newSize;
+    gui_buffer = PD_MEMORY_RESIZE (gui_buffer, oldSize, newSize);
+    gui_bufferSize = newSize;
 }
+
+static int gui_flushBuffer (void)
+{
+    int need = gui_bufferHead - gui_bufferTail;
+    
+    if (need > 0) {
+    //
+    char *p = gui_buffer + gui_bufferTail;
+    int done = (int)send (interface_guiSocket, (void *)p, need, 0);
+
+    if (done < 0) { PD_BUG; scheduler_needToExitWithError(); }
+    else {
+        if (done == 0) { return 0; }    
+        else if (done == need) { gui_bufferHead = gui_bufferTail = 0; }
+        else {
+            PD_ASSERT (done < need); gui_bufferTail += done;
+        }
+        
+        return 1;
+    }
+    //
+    }
+    
+    return 0;
+}
+
+static int gui_flushBufferAndQueue (void)
+{
+    int didSomething = 0;
+    
+    didSomething |= interface_flushQueue();
+    didSomething |= gui_flushBuffer();
+
+    return didSomething;
+}
+
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void gui_initialize (void)
+{
+    #if ! ( PD_WITH_NOGUI )
+    
+    gui_buffer = (char *)PD_MEMORY_GET (GUI_BUFFER_SIZE);
+    gui_bufferSize = GUI_BUFFER_SIZE;
+    
+    #endif
+}
+
+void gui_release (void)
+{
+    #if ! ( PD_WITH_NOGUI )
+    
+    PD_MEMORY_FREE (gui_buffer);
+    
+    #endif
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#if ! ( PD_WITH_NOGUI )
+
+void sys_vGui (char *format, ...)
+{
+    int bufferWasTooSmall = 1;
+    
+    do {
+    //
+    int t;
+    size_t size;
+    char *dest = NULL;
+    va_list ap;
+    
+    va_start (ap, format);
+    dest = gui_buffer + gui_bufferHead;
+    size = gui_bufferSize - gui_bufferHead;
+    t = vsnprintf (dest, size, format, ap);
+    va_end (ap);
+    
+    if (t < 0) { PD_BUG; return; }
+    
+    if ((size_t)t >= size) { gui_enlargeBuffer(); }
+    else {
+        bufferWasTooSmall = 0;
+        gui_bufferHead += t;
+    }
+    //
+    } while (bufferWasTooSmall);
+}
+
+void sys_gui (char *s)
+{
+    sys_vGui ("%s", s);
+}
+
+int sys_guiPollOrFlush (void)
+{
+    return (interface_monitorNonBlocking() || gui_flushBufferAndQueue());
+}
+
+void sys_guiFlush (void)
+{
+    gui_flushBufferAndQueue();
+}
+
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -64,67 +187,6 @@ int sys_guiPollOrFlush (void)
 
 void sys_guiFlush (void)
 {
-}
-
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#if ! ( PD_WITH_NOGUI )
-
-void sys_vGui (char *format, ...)
-{
-    int bufferWasTooSmall = 1;
-    
-    do {
-    //
-    int t;
-    size_t size;
-    char *dest = NULL;
-    va_list ap;
-    
-    va_start (ap, format);
-    dest = interface_outGuiBuffer + interface_outGuiBufferHead;
-    size = interface_outGuiBufferSize - interface_outGuiBufferHead;
-    t = vsnprintf (dest, size, format, ap);
-    va_end (ap);
-    
-    if (t < 0) { PD_BUG; return; }
-    
-    if ((size_t)t >= size) { sys_guiEnlarge(); }
-    else {
-        bufferWasTooSmall = 0;
-        interface_outGuiBufferHead += t;
-    }
-    //
-    } while (bufferWasTooSmall);
-}
-
-void sys_gui (char *s)
-{
-    sys_vGui ("%s", s);
-}
-
-static int sys_guiFlushBufferAndQueue (void)
-{
-    int didSomething = 0;
-    
-    didSomething |= interface_flushQueue();
-    didSomething |= interface_flushBuffer();
-
-    return didSomething;
-}
-
-int sys_guiPollOrFlush (void)
-{
-    return (interface_monitorNonBlocking() || sys_guiFlushBufferAndQueue());
-}
-
-void sys_guiFlush (void)
-{
-    sys_guiFlushBufferAndQueue();
 }
 
 #endif

@@ -18,12 +18,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define INTERFACE_GUI_BUFFER_SIZE_START     (1024 * 128)
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 typedef struct _fdpoll {
     void        *fdp_p;
     int         fdp_fd;
@@ -54,17 +48,6 @@ static int                  interface_inMaximumFileDescriptor;      /* Shared. *
 // -----------------------------------------------------------------------------------------------------------
 
 static t_guiqueue           *interface_outGuiQueue;                 /* Shared. */
-
-char                 *interface_outGuiBuffer;                /* Shared. */
-
-int                  interface_outGuiBufferSize;             /* Shared. */
-int                  interface_outGuiBufferHead;             /* Shared. */
-int                  interface_outGuiBufferTail;             /* Shared. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-extern int interface_guiSocket;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -248,20 +231,12 @@ void interface_initialize (void)
     #endif
     
     interface_inPollers = (t_fdpoll *)PD_MEMORY_GET (0);
-    
-    #if ! ( PD_WITH_NOGUI )
-    
-    interface_outGuiBuffer     = (char *)PD_MEMORY_GET (INTERFACE_GUI_BUFFER_SIZE_START);
-    interface_outGuiBufferSize = INTERFACE_GUI_BUFFER_SIZE_START;
-    
-    #endif
 }
 
-void gui_release (void)
+void queue_release (void)
 {
     #if ! ( PD_WITH_NOGUI )
     
-    PD_MEMORY_FREE (interface_outGuiBuffer);
     interface_guiQueueRelease();
     
     #endif
@@ -274,31 +249,6 @@ void gui_release (void)
 #pragma mark -
 
 #if ! ( PD_WITH_NOGUI )
-
-int interface_flushBuffer (void)
-{
-    int need = interface_outGuiBufferHead - interface_outGuiBufferTail;
-    
-    if (need > 0) {
-    //
-    char *p = interface_outGuiBuffer + interface_outGuiBufferTail;
-    int done = (int)send (interface_guiSocket, (void *)p, need, 0);
-
-    if (done < 0) { PD_BUG; scheduler_needToExitWithError(); }
-    else {
-        if (done == 0) { return 0; }    
-        else if (done == need) { interface_outGuiBufferHead = interface_outGuiBufferTail = 0; }
-        else {
-            PD_ASSERT (done < need); interface_outGuiBufferTail += done;
-        }
-        
-        return 1;
-    }
-    //
-    }
-    
-    return 0;
-}
 
 int interface_flushQueue (void)
 {
