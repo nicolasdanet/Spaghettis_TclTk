@@ -184,9 +184,22 @@ void        interface_monitorAddPoller              (int fd, t_pollfn fn, void *
 void        interface_monitorRemovePoller           (int fd);
 void        interface_guiQueueAddIfNotAlreadyThere  (void *owner, t_glist *glist, t_drawfn f);
 void        interface_guiQueueRemove                (void *owner);
-int         interface_pollOrFlushGui                (void);
-int         interface_flushBufferAndQueue           (void);
+
+int         interface_flushBuffer                   (void);
+int         interface_flushQueue                    (void);
 void        interface_closeSocket                   (int fd);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int         sys_guiPollOrFlush                      (void);
+void        sys_guiFlush                            (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void        interface_quit                          (void *dummy);
 void        interface_watchdog                      (void *dummy);
 t_error     interface_start                         (void);

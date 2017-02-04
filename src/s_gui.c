@@ -57,16 +57,22 @@ void sys_gui (char *s)
 {
 }
 
+int sys_guiPollOrFlush (void)
+{
+    return interface_monitorNonBlocking();
+}
+
 void sys_guiFlush (void)
 {
-
 }
+
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#else
+#if ! ( PD_WITH_NOGUI )
 
 void sys_vGui (char *format, ...)
 {
@@ -101,12 +107,27 @@ void sys_gui (char *s)
     sys_vGui ("%s", s);
 }
 
-void sys_guiFlush (void)
+static int sys_guiFlushBufferAndQueue (void)
 {
-    interface_flushBufferAndQueue();
+    int didSomething = 0;
+    
+    didSomething |= interface_flushQueue();
+    didSomething |= interface_flushBuffer();
+
+    return didSomething;
 }
 
-#endif // PD_WITH_NOGUI
+int sys_guiPollOrFlush (void)
+{
+    return (interface_monitorNonBlocking() || sys_guiFlushBufferAndQueue());
+}
+
+void sys_guiFlush (void)
+{
+    sys_guiFlushBufferAndQueue();
+}
+
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

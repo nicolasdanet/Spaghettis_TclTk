@@ -226,7 +226,7 @@ static void scheduler_mainLoop (void)
 
     midi_poll();
     
-    if (!scheduler_quit && interface_pollOrFlushGui()) { didSomething = 1; }
+    if (!scheduler_quit && sys_guiPollOrFlush()) { didSomething = 1; }
     if (!scheduler_quit && !didSomething) {
         scheduler_pollWatchdog();
         if (timeForward != DACS_SLEPT) {

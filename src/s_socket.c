@@ -275,7 +275,7 @@ void gui_release (void)
 
 #if ! ( PD_WITH_NOGUI )
 
-static int interface_flushBuffer (void)
+int interface_flushBuffer (void)
 {
     int need = interface_outGuiBufferHead - interface_outGuiBufferTail;
     
@@ -300,7 +300,7 @@ static int interface_flushBuffer (void)
     return 0;
 }
 
-static int interface_flushQueue (void)
+int interface_flushQueue (void)
 {
     if (interface_outGuiQueue) {
     
@@ -319,33 +319,7 @@ static int interface_flushQueue (void)
     return 0;
 }
 
-int interface_flushBufferAndQueue (void)
-{
-    int didSomething = 0;
-    
-    didSomething |= interface_flushQueue();
-    didSomething |= interface_flushBuffer();
-
-    return didSomething;
-}
-
 #endif // !PD_WITH_NOGUI
-
-#if PD_WITH_NOGUI
-
-int interface_pollOrFlushGui (void)
-{
-    return interface_monitorNonBlocking();
-}
-
-#else
-
-int interface_pollOrFlushGui (void)
-{
-    return (interface_monitorNonBlocking() || interface_flushBufferAndQueue());
-}
-
-#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
