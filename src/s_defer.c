@@ -12,6 +12,7 @@
 #include "m_macros.h"
 #include "m_core.h"
 #include "s_system.h"
+#include "g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -29,18 +30,17 @@ typedef struct _guiqueue {
 
 #if ! ( PD_WITH_NOGUI )
 
-static t_guiqueue   *defer_queue;       /* Shared. */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-#endif
+static t_guiqueue   *defer_queue;       /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void defer_addTask (void *owner, t_glist *glist, t_drawfn f)    /* Add draw job if not already there. */
+void defer_addJob (void *owner, t_glist *glist, t_drawfn f)    /* Add draw job if not already there. */
 {
-    #if ! ( PD_WITH_NOGUI )
-    
     t_guiqueue **qNext = NULL;
     t_guiqueue *q = NULL;
     
@@ -62,14 +62,10 @@ void defer_addTask (void *owner, t_glist *glist, t_drawfn f)    /* Add draw job 
     q->gq_next  = NULL;
     
     *qNext = q;
-    
-    #endif
 }
 
-void defer_removeTask (void *owner)
+void defer_removeJob (void *owner)
 {
-    #if ! ( PD_WITH_NOGUI )
-    
     while (defer_queue && defer_queue->gq_p == owner) {
         t_guiqueue *first = defer_queue;
         defer_queue = defer_queue->gq_next;
@@ -83,13 +79,9 @@ void defer_removeTask (void *owner)
             if (q2->gq_p == owner) { q1->gq_next = q2->gq_next; PD_MEMORY_FREE (q2); break; }
         }
     }
-    
-    #endif
 }
 
-#if ! ( PD_WITH_NOGUI )
-
-int defer_flushQueue (void)
+int defer_flushJobs (void)
 {
     if (defer_queue) {
     
@@ -97,7 +89,7 @@ int defer_flushQueue (void)
         //
         t_guiqueue *first = defer_queue;
         defer_queue = defer_queue->gq_next;
-        (*first->gq_fn) (first->gq_p, first->gq_glist);
+        if (canvas_isMapped (first->gq_glist)) { (*first->gq_fn) (first->gq_p, first->gq_glist); }
         PD_MEMORY_FREE (first);
         //
         }
@@ -108,16 +100,8 @@ int defer_flushQueue (void)
     return 0;
 }
 
-#endif // !PD_WITH_NOGUI
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void defer_release (void)
 {
-    #if ! ( PD_WITH_NOGUI )
-    
     while (defer_queue) {
     //
     t_guiqueue *first = defer_queue;
@@ -125,9 +109,33 @@ void defer_release (void)
     PD_MEMORY_FREE (first);
     //
     }
-    
-    #endif
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#else
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void defer_addJob (void *owner, t_glist *glist, t_drawfn f) 
+{
+}
+
+void defer_removeJob (void *owner)
+{
+}
+
+void defer_release (void)
+{
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#endif // PD_WITH_NOGUI
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

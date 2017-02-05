@@ -430,7 +430,7 @@ void iemgui_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
     if (isVisible) { (*x->iem_draw) ((void *)z, glist, IEM_DRAW_NEW); }
     else {
         (*x->iem_draw) ((void *)z, glist, IEM_DRAW_ERASE);
-        defer_removeTask ((void *)z);
+        defer_removeJob ((void *)z);
     }
 }
 

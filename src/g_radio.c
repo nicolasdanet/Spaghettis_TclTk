@@ -244,9 +244,6 @@ void radio_drawNewHorizontal (t_radio *x, t_glist *glist)
 void radio_drawJob (t_gobj *z, t_glist *glist)
 {
     t_radio *x = (t_radio *)z;
-    
-    if (canvas_isMapped (glist)) {
-    //
     t_glist *canvas = canvas_getView (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBUTTON%d -fill #%06x -outline #%06x\n",
@@ -263,8 +260,6 @@ void radio_drawJob (t_gobj *z, t_glist *glist)
                     x->x_gui.iem_colorForeground);
                 
     x->x_stateDrawn = x->x_state;
-    //
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -273,7 +268,7 @@ void radio_drawJob (t_gobj *z, t_glist *glist)
 
 void radio_drawUpdate (t_radio *x, t_glist *glist)
 {
-    defer_addTask ((void *)x, glist, radio_drawJob);
+    defer_addJob ((void *)x, glist, radio_drawJob);
 }
 
 void radio_drawMove (t_radio *x, t_glist *glist)

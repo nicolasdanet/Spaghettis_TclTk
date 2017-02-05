@@ -136,8 +136,6 @@ static void dial_drawJob (t_gobj *z, t_glist *glist)
 {
     t_dial *x = (t_dial *)z;
     
-    if (canvas_isMapped (glist)) {
-    //
     t_glist *canvas = canvas_getView (glist);
     
     int a = text_getPixelX (cast_object (x), glist);
@@ -162,8 +160,6 @@ static void dial_drawJob (t_gobj *z, t_glist *glist)
                     x,
                     x->x_gui.iem_colorForeground,
                     x->x_t);
-    //
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -172,7 +168,7 @@ static void dial_drawJob (t_gobj *z, t_glist *glist)
 
 static void dial_drawUpdate (t_dial *x, t_glist *glist)
 {
-    defer_addTask ((void *)x, glist, dial_drawJob);
+    defer_addJob ((void *)x, glist, dial_drawJob);
 }
 
 static void dial_drawMove (t_dial *x, t_glist *glist)

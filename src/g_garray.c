@@ -415,7 +415,7 @@ void garray_setSaveWithParent (t_garray *x, int savedWithParent)
 
 void garray_redraw (t_garray *x)
 {
-    if (canvas_isMapped (x->x_owner)) { defer_addTask ((void *)x, x->x_owner, garray_drawJob); }
+    defer_addJob ((void *)x, x->x_owner, garray_drawJob);
 }
 
 int garray_isSingle (t_glist *glist)       /* Legacy patches might contain several arrays. */
@@ -766,7 +766,7 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_float size, t_flo
 
 static void garray_free (t_garray *x)
 {
-    defer_removeTask (cast_gobj (x));
+    defer_removeJob (cast_gobj (x));
     guistub_destroyWithKey ((void *)x);
     pd_setBoundA (NULL);
     pd_unbind (cast_pd (x), x->x_name);

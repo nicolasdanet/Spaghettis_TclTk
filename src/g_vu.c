@@ -150,9 +150,6 @@ static t_widgetbehavior vu_widgetBehavior =         /* Shared. */
 static void vu_drawJob (t_gobj *z, t_glist *glist)
 {
     t_vu *x = (t_vu *)z;
-    
-    if (canvas_isMapped (glist)) {
-    //
     t_glist *canvas = canvas_getView (glist);
 
     int a = text_getPixelX (cast_object (x), glist);
@@ -200,8 +197,6 @@ static void vu_drawJob (t_gobj *z, t_glist *glist)
                     x->x_gui.iem_colorBackground);
     //
     }
-    //
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -210,7 +205,7 @@ static void vu_drawJob (t_gobj *z, t_glist *glist)
 
 static void vu_drawUpdate (t_vu *x, t_glist *glist)
 {
-    defer_addTask ((void *)x, glist, vu_drawJob);
+    defer_addJob ((void *)x, glist, vu_drawJob);
 }
 
 static void vu_drawMove (t_vu *x, t_glist *glist)

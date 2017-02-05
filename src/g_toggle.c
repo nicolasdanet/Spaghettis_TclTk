@@ -55,9 +55,6 @@ static t_widgetbehavior toggle_widgetBehavior =         /* Shared. */
 void toggle_drawJob (t_gobj *z, t_glist *glist)
 {
     t_toggle *x = (t_toggle *)z;
-    
-    if (canvas_isMapped (glist)) {
-    //
     t_glist *canvas = canvas_getView (glist);
     
     sys_vGui (".x%lx.c itemconfigure %lxCROSS1 -fill #%06x\n",
@@ -68,8 +65,6 @@ void toggle_drawJob (t_gobj *z, t_glist *glist)
                     canvas,
                     x,
                     (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
-    //
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -78,7 +73,7 @@ void toggle_drawJob (t_gobj *z, t_glist *glist)
 
 void toggle_drawUpdate (t_toggle *x, t_glist *glist)
 {
-    defer_addTask ((void *)x, glist, toggle_drawJob);
+    defer_addJob ((void *)x, glist, toggle_drawJob);
 }
 
 void toggle_drawMove (t_toggle *x, t_glist *glist)

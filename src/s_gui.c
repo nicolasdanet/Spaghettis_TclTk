@@ -94,7 +94,7 @@ static int gui_flushBufferAndQueue (void)
 {
     int didSomething = 0;
     
-    didSomething |= defer_flushQueue();
+    didSomething |= defer_flushJobs();
     didSomething |= gui_flushBuffer();
 
     return didSomething;

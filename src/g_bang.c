@@ -66,17 +66,12 @@ static t_widgetbehavior bng_widgetBehavior =        /* Shared. */
 static void bng_drawJob (t_gobj *z, t_glist *glist)
 {
     t_bng *x = (t_bng *)z;
-    
-    if (canvas_isMapped (glist)) {
-    //
     t_glist *canvas = canvas_getView (glist);
     
     sys_vGui (".x%lx.c itemconfigure %lxBUTTON -fill #%06x\n", 
                     canvas,
                     x,
                     x->x_flashed ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
-    //
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -85,7 +80,7 @@ static void bng_drawJob (t_gobj *z, t_glist *glist)
 
 void bng_drawUpdate (t_bng *x, t_glist *glist)
 {
-    defer_addTask ((void *)x, glist, bng_drawJob);
+    defer_addJob ((void *)x, glist, bng_drawJob);
 }
 
 void bng_drawMove (t_bng *x, t_glist *glist)

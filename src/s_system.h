@@ -200,9 +200,9 @@ void        monitor_removePoller                    (int fd);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        defer_addTask                           (void *owner, t_glist *glist, t_drawfn f);
-void        defer_removeTask                        (void *owner);
-int         defer_flushQueue                        (void);
+void        defer_addJob                            (void *owner, t_glist *glist, t_drawfn f);
+void        defer_removeJob                         (void *owner);
+int         defer_flushJobs                         (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

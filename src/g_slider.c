@@ -95,8 +95,6 @@ static t_widgetbehavior slider_widgetBehavior =         /* Shared. */
 
 static void slider_drawUpdateVertical (t_slider *x, t_glist *glist)
 {
-    if (canvas_isMapped (glist)) {
-    //
     t_glist *canvas = canvas_getView (glist);
     
     int a = text_getPixelX (cast_object (x), glist);
@@ -111,14 +109,10 @@ static void slider_drawUpdateVertical (t_slider *x, t_glist *glist)
                     k,
                     a + x->x_gui.iem_width - IEM_SLIDER_PIXEL, 
                     k);
-    //
-    }
 }
 
 static void slider_drawUpdateHorizontal (t_slider *x, t_glist *glist)
 {
-    if (canvas_isMapped (glist)) {
-    //
     t_glist *canvas = canvas_getView (glist);
     
     int k = text_getPixelX (cast_object (x), glist) + slider_stepsToPixels (x->x_position);
@@ -131,8 +125,6 @@ static void slider_drawUpdateHorizontal (t_slider *x, t_glist *glist)
                     b + 1,
                     k, 
                     b + x->x_gui.iem_height - IEM_SLIDER_PIXEL);
-    //
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -155,7 +147,7 @@ static void slider_drawJob (t_gobj *z, t_glist *glist)
 
 static void slider_drawUpdate (t_slider *x, t_glist *glist)
 {
-    defer_addTask ((void *)x, glist, slider_drawJob);
+    defer_addJob ((void *)x, glist, slider_drawJob);
 }
 
 static void slider_drawMove (t_slider *x, t_glist *glist)
