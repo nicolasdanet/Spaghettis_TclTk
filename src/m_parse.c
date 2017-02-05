@@ -386,6 +386,7 @@ void buffer_serialize (t_buffer *x, t_buffer *y)
     }
     
     buffer_appendBuffer (x, copy);
+    buffer_free (copy);
 }
 
 void buffer_deserialize (t_buffer *x, int argc, t_atom *argv)
