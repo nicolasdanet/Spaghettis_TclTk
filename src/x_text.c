@@ -179,7 +179,13 @@ static void textdefine_free (t_textdefine *x)
     if (x->x_name != &s_) { pd_unbind (cast_pd (x), x->x_name); }
     
     pd_setBoundA (NULL);
-        
+    
+    {
+        t_error err = scalar_unsetInternalBuffer (x->x_scalar, sym_t);
+        PD_ASSERT (!err);
+    }
+    
+    pd_free (cast_pd (x->x_scalar));
     gpointer_unset (&x->x_gpointer);
     textbuffer_free (&x->x_textbuffer);
 }

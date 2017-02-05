@@ -133,6 +133,10 @@ t_error     word_setInternalBuffer                      (t_word *w,
                                                             t_template *tmpl,
                                                             t_symbol *fieldName,
                                                             t_buffer *b);
+
+t_error     word_unsetInternalBuffer                    (t_word *w,
+                                                            t_template *tmpl,
+                                                            t_symbol *fieldName);
                                                             
 t_float     word_getFloatByDescriptor                   (t_word *w, t_template *tmpl, t_fielddescriptor *fd);
 t_float     word_getFloatByDescriptorAsPosition         (t_word *w, t_template *tmpl, t_fielddescriptor *fd);
@@ -152,6 +156,7 @@ t_symbol    *scalar_getTemplateIdentifier               (t_scalar *x);
 t_array     *scalar_getArray                            (t_scalar *x, t_symbol *fieldName);
 
 t_error     scalar_setInternalBuffer                    (t_scalar *x, t_symbol *fieldName, t_buffer *b);
+t_error     scalar_unsetInternalBuffer                  (t_scalar *x, t_symbol *fieldName);
 
 int         scalar_fieldIsFloat                         (t_scalar *x, t_symbol *fieldName);
 t_float     scalar_getFloat                             (t_scalar *x, t_symbol *fieldName);

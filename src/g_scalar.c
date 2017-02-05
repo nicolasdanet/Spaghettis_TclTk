@@ -551,6 +551,11 @@ t_error scalar_setInternalBuffer (t_scalar *x, t_symbol *fieldName, t_buffer *b)
     return word_setInternalBuffer (x->sc_vector, scalar_getTemplate (x), fieldName, b);
 }
 
+t_error scalar_unsetInternalBuffer (t_scalar *x, t_symbol *fieldName)
+{
+    return word_unsetInternalBuffer (x->sc_vector, scalar_getTemplate (x), fieldName);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

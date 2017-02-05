@@ -179,7 +179,28 @@ t_error word_setInternalBuffer (t_word *w, t_template *tmpl, t_symbol *fieldName
     
     return err;
 }
-                                                            
+
+t_error word_unsetInternalBuffer (t_word *w, t_template *tmpl, t_symbol *fieldName)
+{
+    t_error err = PD_ERROR;
+    
+    if (template_fieldIsText (tmpl, fieldName)) {
+    //
+    int i, type;
+    t_symbol *dummy = NULL;
+    
+    if (template_getRaw (tmpl, fieldName, &i, &type, &dummy)) {
+        if (type == DATA_TEXT) {
+            *(t_buffer **)(w + i) = buffer_new();
+            err = PD_ERROR_NONE;
+        }
+    }
+    //
+    }
+    
+    return err;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
