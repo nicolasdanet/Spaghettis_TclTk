@@ -170,7 +170,7 @@ void *textsearch_new (t_symbol *s, int argc, t_atom *argv)
     
     if (!err) {
         
-    int i, numberOfKeys = 0;
+        int i, numberOfKeys = 0;
             
         for (i = 0; i < argc; i++) { if (IS_FLOAT (argv + i)) { numberOfKeys++; } }
         
@@ -228,6 +228,13 @@ void *textsearch_new (t_symbol *s, int argc, t_atom *argv)
     return x;
 }
 
+static void textsearch_free (t_textsearch *x)
+{
+    if (x->x_keys) { PD_MEMORY_FREE (x->x_keys); }
+     
+    textclient_free (&x->x_textclient);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -238,7 +245,7 @@ void textsearch_setup (void)
     
     c = class_new (sym_text__space__search,
             (t_newmethod)textsearch_new,
-            (t_method)textclient_free,
+            (t_method)textsearch_free,
             sizeof (t_textsearch),
             CLASS_DEFAULT,
             A_GIMME,
