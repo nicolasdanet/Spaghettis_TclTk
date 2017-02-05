@@ -145,11 +145,7 @@ static void scalar_notifySelected (t_scalar *x,
 
 void scalar_redraw (t_scalar *x, t_glist *glist)
 {
-    if (canvas_isMapped (glist)) {
-    //
-    interface_guiQueueAddIfNotAlreadyThere ((void *)x, glist, scalar_drawJob);
-    //
-    }
+    if (canvas_isMapped (glist)) { defer_addTask ((void *)x, glist, scalar_drawJob); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

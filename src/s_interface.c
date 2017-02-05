@@ -12,7 +12,6 @@
 #include "m_macros.h"
 #include "m_core.h"
 #include "s_system.h"
-#include "g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -337,6 +336,18 @@ void interface_watchdog (void *dummy)
 }
 
 #endif
+
+void interface_initialize (void)
+{
+    #if PD_WINDOWS
+
+    WSADATA d;
+    short version = MAKEWORD (2, 0);
+    
+    if (WSAStartup (version, &d)) { PD_BUG; }
+    
+    #endif
+}
 
 void interface_release (void)
 {

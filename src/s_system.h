@@ -191,14 +191,18 @@ int         receiver_isClosed                       (t_receiver *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int         interface_monitorBlocking               (int microseconds);
-int         interface_monitorNonBlocking            (void);
-void        interface_monitorAddPoller              (int fd, t_pollfn fn, void *ptr);
-void        interface_monitorRemovePoller           (int fd);
-void        interface_guiQueueAddIfNotAlreadyThere  (void *owner, t_glist *glist, t_drawfn f);
-void        interface_guiQueueRemove                (void *owner);
+int         monitor_blocking                        (int microseconds);
+int         monitor_nonBlocking                     (void);
+void        monitor_addPoller                       (int fd, t_pollfn fn, void *ptr);
+void        monitor_removePoller                    (int fd);
 
-int         interface_flushQueue                    (void);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        defer_addTask                           (void *owner, t_glist *glist, t_drawfn f);
+void        defer_removeTask                        (void *owner);
+int         defer_flushQueue                        (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

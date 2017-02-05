@@ -172,7 +172,7 @@ static void dial_drawJob (t_gobj *z, t_glist *glist)
 
 static void dial_drawUpdate (t_dial *x, t_glist *glist)
 {
-    interface_guiQueueAddIfNotAlreadyThere ((void *)x, glist, dial_drawJob);
+    defer_addTask ((void *)x, glist, dial_drawJob);
 }
 
 static void dial_drawMove (t_dial *x, t_glist *glist)

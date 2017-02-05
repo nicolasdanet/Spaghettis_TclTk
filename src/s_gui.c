@@ -84,7 +84,7 @@ static int gui_flushBufferAndQueue (void)
 {
     int didSomething = 0;
     
-    didSomething |= interface_flushQueue();
+    didSomething |= defer_flushQueue();
     didSomething |= gui_flushBuffer();
 
     return didSomething;
@@ -156,7 +156,7 @@ void sys_gui (char *s)
 
 int sys_guiPollOrFlush (void)
 {
-    return (interface_monitorNonBlocking() || gui_flushBufferAndQueue());
+    return (monitor_nonBlocking() || gui_flushBufferAndQueue());
 }
 
 void sys_guiFlush (void)
@@ -182,7 +182,7 @@ void sys_gui (char *s)
 
 int sys_guiPollOrFlush (void)
 {
-    return interface_monitorNonBlocking();
+    return monitor_nonBlocking();
 }
 
 void sys_guiFlush (void)

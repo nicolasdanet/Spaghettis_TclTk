@@ -85,7 +85,7 @@ static void bng_drawJob (t_gobj *z, t_glist *glist)
 
 void bng_drawUpdate (t_bng *x, t_glist *glist)
 {
-    interface_guiQueueAddIfNotAlreadyThere ((void *)x, glist, bng_drawJob);
+    defer_addTask ((void *)x, glist, bng_drawJob);
 }
 
 void bng_drawMove (t_bng *x, t_glist *glist)

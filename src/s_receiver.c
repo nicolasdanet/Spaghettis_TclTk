@@ -38,7 +38,7 @@ static void receiver_closeSocketAndRemoveCallback (t_receiver *x)
 {
     if (!x->r_isClosed) {
         sys_closeSocket (x->r_fd);
-        interface_monitorRemovePoller (x->r_fd);
+        monitor_removePoller (x->r_fd);
         x->r_isClosed = 1;
     }
 }
@@ -75,7 +75,7 @@ t_receiver *receiver_new (void *owner,
 
     PD_ASSERT (x->r_fnNotify == NULL || x->r_isUdp == 0);
     
-    interface_monitorAddPoller (x->r_fd, (t_pollfn)receiver_read, x);
+    monitor_addPoller (x->r_fd, (t_pollfn)receiver_read, x);
     
     return x;
 }

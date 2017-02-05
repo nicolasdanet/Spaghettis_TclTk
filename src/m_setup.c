@@ -24,6 +24,7 @@ void garray_initialize      (void);
 void gui_initialize         (void);
 void instance_initialize    (void);
 void interface_initialize   (void);
+void monitor_initialize     (void);
 void rsqrt_tilde_initialize (void);
 void soundfile_initialize   (void);
 void textdefine_initialize  (void);
@@ -33,6 +34,7 @@ void textdefine_initialize  (void);
 #pragma mark -
 
 void cos_tilde_release      (void);
+void defer_release          (void);
 void drawnumber_release     (void);
 void drawpolygon_release    (void);
 void editor_release         (void);
@@ -42,8 +44,8 @@ void gui_release            (void);
 void interface_release      (void);
 void instance_release       (void);
 void loader_release         (void);
+void monitor_release        (void);
 void plot_release           (void);
-void queue_release          (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -880,6 +882,7 @@ void setup_initialize (void)
     fft_initialize();
     gui_initialize();
     interface_initialize();
+    monitor_initialize();
     rsqrt_tilde_initialize();
     soundfile_initialize();
     
@@ -917,14 +920,15 @@ void setup_release (void)
     
     /* Various cleaning (reverse order). */
     
-    queue_release();
     plot_release();
+    monitor_release();
     gui_release();
     fft_release();
     environment_release();
     editor_release();
     drawpolygon_release();
     drawnumber_release();
+    defer_release();
     cos_tilde_release();
     
     /* At last. */

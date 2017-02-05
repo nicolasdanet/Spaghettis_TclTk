@@ -155,7 +155,7 @@ static void slider_drawJob (t_gobj *z, t_glist *glist)
 
 static void slider_drawUpdate (t_slider *x, t_glist *glist)
 {
-    interface_guiQueueAddIfNotAlreadyThere ((void *)x, glist, slider_drawJob);
+    defer_addTask ((void *)x, glist, slider_drawJob);
 }
 
 static void slider_drawMove (t_slider *x, t_glist *glist)

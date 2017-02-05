@@ -230,7 +230,7 @@ static void scheduler_mainLoop (void)
     if (!scheduler_quit && !didSomething) {
         scheduler_pollWatchdog();
         if (timeForward != DACS_SLEPT) {
-            interface_monitorBlocking (SCHEDULER_BLOCKING_LAPSE);
+            monitor_blocking (SCHEDULER_BLOCKING_LAPSE);
         }
     }
     //

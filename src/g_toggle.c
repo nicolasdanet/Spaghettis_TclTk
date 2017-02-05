@@ -78,7 +78,7 @@ void toggle_drawJob (t_gobj *z, t_glist *glist)
 
 void toggle_drawUpdate (t_toggle *x, t_glist *glist)
 {
-    interface_guiQueueAddIfNotAlreadyThere ((void *)x, glist, toggle_drawJob);
+    defer_addTask ((void *)x, glist, toggle_drawJob);
 }
 
 void toggle_drawMove (t_toggle *x, t_glist *glist)

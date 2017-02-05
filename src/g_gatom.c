@@ -126,11 +126,7 @@ static void gatom_update (t_gatom *x)
     buffer_reset (cast_object (x)->te_buffer);
     buffer_appendAtom (cast_object (x)->te_buffer, &x->a_atom);
     
-    if (canvas_isMapped (x->a_owner)) { 
-    //
-    interface_guiQueueAddIfNotAlreadyThere ((void *)x, x->a_owner, gatom_drawJob);
-    //
-    }
+    if (canvas_isMapped (x->a_owner)) { defer_addTask ((void *)x, x->a_owner, gatom_drawJob); }
 }
 
 static void gatom_setFloat (t_gatom *x, t_float f)
@@ -320,7 +316,7 @@ static void gatom_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVi
     //
     }
     
-    if (!isVisible) { interface_guiQueueRemove ((void *)x); }
+    if (!isVisible) { defer_removeTask ((void *)x); }
 }
 
 static void gatom_functionSave (t_gobj *z, t_buffer *b)
