@@ -669,8 +669,13 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     t_slider *x = (t_slider *)pd_new (slider_class);
     
     if (s == sym_vslider) { x->x_isVertical = 1; }
+    
+    #if PD_WITH_LEGACY 
+    
     if (s == sym_vsl)     { x->x_isVertical = 1; }
 
+    #endif
+    
     {
     //
     int width           = x->x_isVertical ? IEM_VSLIDER_DEFAULT_WIDTH  : IEM_HSLIDER_DEFAULT_WIDTH;
