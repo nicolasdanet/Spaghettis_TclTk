@@ -114,6 +114,8 @@
 #include "g_template.c"
 #include "g_struct.c"
 #include "g_pointer.c"
+#include "g_paint.c"
+#include "g_serialize.c"
 #include "g_get.c"
 #include "g_set.c"
 #include "g_element.c"
@@ -123,8 +125,6 @@
 #include "g_drawpolygon.c"
 #include "g_plot.c"
 #include "g_drawnumber.c"
-#include "g_paint.c"
-#include "g_serialize.c"
 
 /* Control. */
 

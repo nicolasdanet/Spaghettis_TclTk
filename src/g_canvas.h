@@ -607,7 +607,6 @@ char            *boxtext_getTag                         (t_boxtext *x);
 void            boxtext_retext                          (t_glist *glist, t_object *object);
 
 void            boxtext_free                            (t_boxtext *x);
-void            boxtext_restore                         (t_boxtext *x);
 int             boxtext_getWidth                        (t_boxtext *x);
 int             boxtext_getHeight                       (t_boxtext *x);
 void            boxtext_getText                         (t_boxtext *x, char **p, int *size);

@@ -78,22 +78,20 @@ struct _boxtext {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void boxtext_sendTypesetEllipsis (t_boxtext *x)
+static void boxtext_ellipsis (t_boxtext *x)
 {
     t_object *o = x->box_object;
     
-    if (o->te_type == TYPE_ATOM && o->te_width && x->box_stringSizeInBytes > o->te_width) {
-    //
-    int i, n = PD_MIN (o->te_width, 3);
-    PD_ASSERT (o->te_width > 0);
-    x->box_string = PD_MEMORY_RESIZE (x->box_string, x->box_stringSizeInBytes, n);
-    x->box_stringSizeInBytes = n;
-    for (i = 0; i < x->box_stringSizeInBytes; i++) { x->box_string[i] = '.'; }
-    //
+    if (o->te_type == TYPE_ATOM) {
+        if ((o->te_width > 0) && (x->box_stringSizeInBytes > o->te_width)) {
+            x->box_string = PD_MEMORY_RESIZE (x->box_string, x->box_stringSizeInBytes, o->te_width);
+            x->box_stringSizeInBytes = o->te_width;
+            x->box_string[x->box_stringSizeInBytes - 1] = '*';
+        }
     }
 }
 
-static int boxtext_sendTypeset (t_boxtext *x,
+static int boxtext_typeset (t_boxtext *x,
     int a, 
     int b,
     int fontSize,
@@ -104,7 +102,7 @@ static int boxtext_sendTypeset (t_boxtext *x,
     int *widthInPixels, 
     int *heightInPixels)
 {
-    boxtext_sendTypesetEllipsis (x);
+    boxtext_ellipsis (x);
     
     {
     //
@@ -130,7 +128,7 @@ static int boxtext_sendTypeset (t_boxtext *x,
     int bytesUntilWrap              = string_indexOfFirstOccurrenceUntil (head, "\n", bytesToConsider);
     int accumulatedOffset           = bufferPosition - headInBytes;
         
-    int eatCharacter = 1;       /* Remove the character used to wrap (i.e. space and new line). */
+    int eatCharacter = 1;           /* Remove the character used to wrap (i.e. space and new line). */
     
     if (bytesUntilWrap >= 0) { charactersUntilWrap = u8_charnum (head, bytesUntilWrap); }
     else {
@@ -224,7 +222,7 @@ static int boxtext_send (t_boxtext *x, int action, int a, int b)
     int bufferSize          = PD_MAX (BOX_DEFAULT_WIDTH, (2 * x->box_stringSizeInBytes)) + 1;
     char *buffer            = (char *)PD_MEMORY_GET (bufferSize);
         
-    int indexOfMouse        = boxtext_sendTypeset (x,
+    int indexOfMouse        = boxtext_typeset (x,
                                     a, 
                                     b,
                                     fontSize,
@@ -300,9 +298,12 @@ static int boxtext_send (t_boxtext *x, int action, int a, int b)
     return indexOfMouse;
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+static void boxtext_restore (t_boxtext *x)
+{
+    PD_MEMORY_FREE (x->box_string);
+    
+    buffer_toStringUnzeroed (x->box_object->te_buffer, &x->box_string, &x->box_stringSizeInBytes);
+}
 
 static void boxtext_delete (t_boxtext *x)
 {
@@ -320,53 +321,6 @@ static void boxtext_delete (t_boxtext *x)
     x->box_glist->gl_editor->e_isTextDirty = 1;
     //
     }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_boxtext *boxtext_new (t_glist *glist, t_object *object)
-{
-    t_boxtext *x  = (t_boxtext *)PD_MEMORY_GET (sizeof (t_boxtext));
-
-    x->box_next   = glist->gl_editor->e_boxtexts;
-    x->box_object = object;
-    x->box_glist  = glist;
-
-    buffer_toStringUnzeroed (object->te_buffer, &x->box_string, &x->box_stringSizeInBytes);
-    
-    {
-    //
-    t_glist *canvas = canvas_getView (glist);
-    t_error err = string_sprintf (x->box_tag, BOX_TAG_SIZE, ".x%lx.%lxBOXTEXT", canvas, x);
-    PD_ASSERT (!err);
-    //
-    }
-    
-    glist->gl_editor->e_boxtexts = x;
-    
-    return x;
-}
-
-void boxtext_free (t_boxtext *x)
-{
-    if (x->box_glist->gl_editor->e_selectedText == x) {
-        x->box_glist->gl_editor->e_selectedText = NULL;
-    }
-    
-    if (x->box_glist->gl_editor->e_boxtexts == x) { x->box_glist->gl_editor->e_boxtexts = x->box_next; }
-    else {
-        t_boxtext *t = NULL;
-        for (t = x->box_glist->gl_editor->e_boxtexts; t; t = t->box_next) {
-            if (t->box_next == x) { 
-                t->box_next = x->box_next; break; 
-            }
-        }
-    }
-
-    PD_MEMORY_FREE (x->box_string);
-    PD_MEMORY_FREE (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -392,16 +346,7 @@ void boxtext_retext (t_glist *glist, t_object *object)
     
     PD_ASSERT (text);
     
-    if (text) {
-        boxtext_restore (text); if (canvas_isMapped (glist)) { boxtext_update (text);  }
-    }
-}
-
-void boxtext_restore (t_boxtext *x)
-{
-    PD_MEMORY_FREE (x->box_string);
-    
-    buffer_toStringUnzeroed (x->box_object->te_buffer, &x->box_string, &x->box_stringSizeInBytes);
+    if (text) { boxtext_restore (text); if (canvas_isMapped (glist)) { boxtext_update (text); } }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -662,6 +607,53 @@ void boxtext_key (t_boxtext *x, t_keycode n, t_symbol *s)
     }
 
     boxtext_send (x, BOX_UPDATE, 0, 0);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_boxtext *boxtext_new (t_glist *glist, t_object *object)
+{
+    t_boxtext *x  = (t_boxtext *)PD_MEMORY_GET (sizeof (t_boxtext));
+
+    x->box_next   = glist->gl_editor->e_boxtexts;
+    x->box_object = object;
+    x->box_glist  = glist;
+
+    buffer_toStringUnzeroed (object->te_buffer, &x->box_string, &x->box_stringSizeInBytes);
+    
+    {
+    //
+    t_glist *canvas = canvas_getView (glist);
+    t_error err = string_sprintf (x->box_tag, BOX_TAG_SIZE, ".x%lx.%lxBOXTEXT", canvas, x);
+    PD_ASSERT (!err);
+    //
+    }
+    
+    glist->gl_editor->e_boxtexts = x;
+    
+    return x;
+}
+
+void boxtext_free (t_boxtext *x)
+{
+    if (x->box_glist->gl_editor->e_selectedText == x) {
+        x->box_glist->gl_editor->e_selectedText = NULL;
+    }
+    
+    if (x->box_glist->gl_editor->e_boxtexts == x) { x->box_glist->gl_editor->e_boxtexts = x->box_next; }
+    else {
+        t_boxtext *t = NULL;
+        for (t = x->box_glist->gl_editor->e_boxtexts; t; t = t->box_next) {
+            if (t->box_next == x) { 
+                t->box_next = x->box_next; break; 
+            }
+        }
+    }
+
+    PD_MEMORY_FREE (x->box_string);
+    PD_MEMORY_FREE (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------

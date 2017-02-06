@@ -962,7 +962,6 @@
 				378971E21C4F716700263434 /* m_pd.h */,
 				3722C5331C4F920B00D2BF6F /* Core */,
 				3722C5341C4F921F00D2BF6F /* System */,
-				3722C53E1C4F955500D2BF6F /* API */,
 				3722C5351C4F924900D2BF6F /* Graphics */,
 				3722C5361C4F925600D2BF6F /* Control */,
 				3722C5371C4F926300D2BF6F /* DSP */,
@@ -1055,6 +1054,7 @@
 				378971FD1C4F716700263434 /* s_post.c */,
 				37F5138B1C9B0EA80076A0C4 /* s_logger.c */,
 				378972011C4F716700263434 /* s_utf8.c */,
+				3722C53E1C4F955500D2BF6F /* API */,
 			);
 			name = System;
 			sourceTree = "<group>";
@@ -1399,6 +1399,8 @@
 				378971D01C4F716700263434 /* g_template.c */,
 				379C1BDF1D3796B800C4D92C /* g_struct.c */,
 				378971D31C4F716700263434 /* g_pointer.c */,
+				371430B01D0D46BC00E68D11 /* g_paint.c */,
+				374A76321CF5FA81001A57EB /* g_serialize.c */,
 				37D643751D4796C700071C3C /* g_get.c */,
 				37D643531D4795ED00071C3C /* g_set.c */,
 				37D643351D47955B00071C3C /* g_element.c */,
@@ -1408,8 +1410,6 @@
 				379C1BAF1D37954000C4D92C /* g_drawpolygon.c */,
 				379C1B711D37934500C4D92C /* g_plot.c */,
 				379C1B3F1D3790C200C4D92C /* g_drawnumber.c */,
-				371430B01D0D46BC00E68D11 /* g_paint.c */,
-				374A76321CF5FA81001A57EB /* g_serialize.c */,
 			);
 			name = Scalars;
 			sourceTree = "<group>";

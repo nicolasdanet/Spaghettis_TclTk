@@ -118,13 +118,9 @@ void text_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
     //
     t_boxtext *text = boxtext_fetch (glist, x);
     
-    if (isVisible) {
-        boxtext_draw (text);
-        canvas_drawBox (glist, x, boxtext_getTag (text), 1);
-
-    } else {
-        canvas_eraseBox (glist, x, boxtext_getTag (text));
-        boxtext_erase (text);
+    if (isVisible) { boxtext_draw (text); canvas_drawBox (glist, x, boxtext_getTag (text), 1); } 
+    else {
+        canvas_eraseBox (glist, x, boxtext_getTag (text)); boxtext_erase (text);
     }
     //
     }
@@ -264,6 +260,10 @@ int text_getPixelY (t_object *x, t_glist *glist)
 static void text_anything (t_object *x, t_symbol *s, int argc, t_atom *argv)
 {
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void text_setup (void)
 {
