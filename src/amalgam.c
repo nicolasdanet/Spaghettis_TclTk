@@ -291,6 +291,7 @@
 #include "d_bang.c"
 #include "d_samplerate.c"
 #include "d_noise.c"
+#include "d_lrshift.c"
 #include "d_soundfile.c"
 #include "d_subchunk.c"
 #include "d_codec.c"

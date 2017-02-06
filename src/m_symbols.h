@@ -323,6 +323,7 @@ extern t_symbol *sym_log;
 extern t_symbol *sym_log__tilde__;
 extern t_symbol *sym_logarithmic;
 extern t_symbol *sym_lop__tilde__;
+extern t_symbol *sym_lrshift__tilde__;
 extern t_symbol *sym_makefilename;
 extern t_symbol *sym_makenote;
 extern t_symbol *sym_max;

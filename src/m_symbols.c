@@ -323,6 +323,7 @@ t_symbol *sym_log;
 t_symbol *sym_log__tilde__;
 t_symbol *sym_logarithmic;
 t_symbol *sym_lop__tilde__;
+t_symbol *sym_lrshift__tilde__;
 t_symbol *sym_makefilename;
 t_symbol *sym_makenote;
 t_symbol *sym_max;
@@ -899,6 +900,7 @@ void symbols_initialize (void)
     sym_log__tilde__                            = gensym ("log~");
     sym_logarithmic                             = gensym ("logarithmic");
     sym_lop__tilde__                            = gensym ("lop~");
+    sym_lrshift__tilde__                        = gensym ("lrshift~");
     sym_makefilename                            = gensym ("makefilename");
     sym_makenote                                = gensym ("makenote");
     sym_max                                     = gensym ("max");
