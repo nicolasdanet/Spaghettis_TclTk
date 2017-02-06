@@ -158,7 +158,7 @@
 		378972151C4F716800263434 /* d_tabplay.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B11C4F716700263434 /* d_tabplay.c */; };
 		378972171C4F716800263434 /* d_dac.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B31C4F716700263434 /* d_dac.c */; };
 		378972181C4F716800263434 /* d_delwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B41C4F716700263434 /* d_delwrite.c */; };
-		378972191C4F716800263434 /* d_fftsg.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B51C4F716700263434 /* d_fftsg.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		378972191C4F716800263434 /* fftsg.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B51C4F716700263434 /* fftsg.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		3789721A1C4F716800263434 /* d_fft.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B61C4F716700263434 /* d_fft.c */; };
 		3789721B1C4F716800263434 /* d_hip.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B71C4F716700263434 /* d_hip.c */; };
 		3789721D1C4F716800263434 /* d_clip.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B91C4F716700263434 /* d_clip.c */; };
@@ -588,7 +588,7 @@
 		378971B11C4F716700263434 /* d_tabplay.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_tabplay.c; path = src/d_tabplay.c; sourceTree = "<group>"; };
 		378971B31C4F716700263434 /* d_dac.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_dac.c; path = src/d_dac.c; sourceTree = "<group>"; };
 		378971B41C4F716700263434 /* d_delwrite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_delwrite.c; path = src/d_delwrite.c; sourceTree = "<group>"; };
-		378971B51C4F716700263434 /* d_fftsg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_fftsg.c; path = src/d_fftsg.c; sourceTree = "<group>"; };
+		378971B51C4F716700263434 /* fftsg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fftsg.c; path = src/fftsg.c; sourceTree = "<group>"; };
 		378971B61C4F716700263434 /* d_fft.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_fft.c; path = src/d_fft.c; sourceTree = "<group>"; };
 		378971B71C4F716700263434 /* d_hip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_hip.c; path = src/d_hip.c; sourceTree = "<group>"; };
 		378971B91C4F716700263434 /* d_clip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_clip.c; path = src/d_clip.c; sourceTree = "<group>"; };
@@ -1445,7 +1445,7 @@
 				37A853431E34AC8D00A4491D /* d_fft.h */,
 				37998F781E2F688200632A45 /* d_fftOOURA.h */,
 				37ACC4181E32190F0026E5FA /* d_fftOOURA.c */,
-				378971B51C4F716700263434 /* d_fftsg.c */,
+				378971B51C4F716700263434 /* fftsg.c */,
 			);
 			name = Shared;
 			sourceTree = "<group>";
@@ -1791,7 +1791,7 @@
 				378972151C4F716800263434 /* d_tabplay.c in Sources */,
 				378972171C4F716800263434 /* d_dac.c in Sources */,
 				378972181C4F716800263434 /* d_delwrite.c in Sources */,
-				378972191C4F716800263434 /* d_fftsg.c in Sources */,
+				378972191C4F716800263434 /* fftsg.c in Sources */,
 				3789721A1C4F716800263434 /* d_fft.c in Sources */,
 				3789721B1C4F716800263434 /* d_hip.c in Sources */,
 				3789721D1C4F716800263434 /* d_clip.c in Sources */,

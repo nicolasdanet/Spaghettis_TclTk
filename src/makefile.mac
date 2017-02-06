@@ -38,7 +38,7 @@ libpdtcldir     = $(libpddir)/tcl
 libpdhelpdir    = $(libpddir)/help
 libpdextrasdir  = $(libpddir)/extras
 
-# Warnings
+# Warnings (prohibited due to PortAudio and PortMidi).
 
 WARNINGS = -w
 
