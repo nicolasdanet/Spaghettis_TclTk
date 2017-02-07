@@ -27,9 +27,11 @@ t_error     string_clear                                (char *dest, size_t size
 int         string_startWith                            (const char *s, const char *isStartWith);
 int         string_endWith                              (const char *s, const char *isEndWith);
 int         string_containsCharacterAtStart             (const char *s, const char *isContained);
-
+int         string_contains                             (const char *s, const char *isContained);
+        
 int         string_indexOfFirstOccurrenceUntil          (char *s, const char *c, int n);
 int         string_indexOfFirstOccurrenceFrom           (char *s, const char *c, int n);
+void        string_replaceCharacter                     (char *s, char toBeReplaced, char c);
 
 void        string_getNumberOfColumnsAndLines           (char *s, int *numberOfColumns, int *numberOfLines);
 

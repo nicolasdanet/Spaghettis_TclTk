@@ -34,6 +34,7 @@
 		3711970C1E2DF6FE007214B2 /* d_ifft.c in Sources */ = {isa = PBXBuildFile; fileRef = 3711970B1E2DF6FE007214B2 /* d_ifft.c */; };
 		37128AF81D43640300EFB4FC /* m_color.c in Sources */ = {isa = PBXBuildFile; fileRef = 37128AF71D43640300EFB4FC /* m_color.c */; };
 		371430B11D0D46BC00E68D11 /* g_paint.c in Sources */ = {isa = PBXBuildFile; fileRef = 371430B01D0D46BC00E68D11 /* g_paint.c */; };
+		371526B61E49D03E00712D43 /* x_expr.c in Sources */ = {isa = PBXBuildFile; fileRef = 371526B51E49D03E00712D43 /* x_expr.c */; };
 		3716554F1BA3452E00ABDE22 /* pa_allocation.c in Sources */ = {isa = PBXBuildFile; fileRef = 3716554E1BA3452E00ABDE22 /* pa_allocation.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		371655511BA3453500ABDE22 /* pa_converters.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655501BA3453500ABDE22 /* pa_converters.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		371655531BA3453E00ABDE22 /* pa_cpuload.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655521BA3453E00ABDE22 /* pa_cpuload.c */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -411,6 +412,7 @@
 		37128AF71D43640300EFB4FC /* m_color.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_color.c; path = src/m_color.c; sourceTree = "<group>"; };
 		37128B5F1D43691300EFB4FC /* m_color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_color.h; path = src/m_color.h; sourceTree = "<group>"; };
 		371430B01D0D46BC00E68D11 /* g_paint.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_paint.c; path = src/g_paint.c; sourceTree = "<group>"; };
+		371526B51E49D03E00712D43 /* x_expr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_expr.c; path = src/x_expr.c; sourceTree = "<group>"; };
 		3716554E1BA3452E00ABDE22 /* pa_allocation.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_allocation.c; path = portaudio/src/common/pa_allocation.c; sourceTree = "<group>"; };
 		371655501BA3453500ABDE22 /* pa_converters.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_converters.c; path = portaudio/src/common/pa_converters.c; sourceTree = "<group>"; };
 		371655521BA3453E00ABDE22 /* pa_cpuload.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_cpuload.c; path = portaudio/src/common/pa_cpuload.c; sourceTree = "<group>"; };
@@ -1311,6 +1313,7 @@
 				37FFF6871D97C17C00669135 /* x_binop2.c */,
 				37FFF6431D97BF0600669135 /* x_binop3.c */,
 				377CEF461DAA831E00E60461 /* x_random.c */,
+				371526B51E49D03E00712D43 /* x_expr.c */,
 			);
 			name = Math;
 			sourceTree = "<group>";
@@ -2086,6 +2089,7 @@
 				37329A6B1E4631D5008AA5E4 /* s_monitor.c in Sources */,
 				37ECBA031E488A3000F1CFD1 /* d_lrshift.c in Sources */,
 				3759441E1E48E04A00CF3FD7 /* tinyexpr.c in Sources */,
+				371526B61E49D03E00712D43 /* x_expr.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

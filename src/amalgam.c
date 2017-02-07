@@ -172,6 +172,7 @@
 #include "x_binop2.c"
 #include "x_binop3.c"
 #include "x_random.c"
+#include "x_expr.c"
 #include "x_metro.c"
 #include "x_delay.c"
 #include "x_line.c"

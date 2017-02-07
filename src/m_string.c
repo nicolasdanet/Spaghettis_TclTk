@@ -151,6 +151,11 @@ int string_containsCharacterAtStart (const char *s, const char *isContained)
     return (strchr (isContained, *s) != NULL);
 }
 
+int string_contains (const char *s, const char *isContained)
+{
+    return (strstr (s, isContained) != NULL);
+}
+
 void string_getNumberOfColumnsAndLines (char *s, int *numberOfColumns, int *numberOfLines)
 {
     char *end = NULL;
@@ -233,6 +238,17 @@ int string_indexOfFirstOccurrenceFrom (char *s, const char *c, int n)
     }
     
     return k;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void string_replaceCharacter (char *s, char toBeReplaced, char c)
+{
+    PD_ASSERT (c && toBeReplaced);
+    
+    while (*s) { if (*s == toBeReplaced) { *s = c; } s++; }
 }
 
 // -----------------------------------------------------------------------------------------------------------

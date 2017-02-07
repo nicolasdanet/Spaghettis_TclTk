@@ -257,6 +257,7 @@ t_symbol *sym_env__tilde__;
 t_symbol *sym_exp;
 t_symbol *sym_exp__tilde__;
 t_symbol *sym_expansion;
+t_symbol *sym_expr;
 t_symbol *sym_f;
 t_symbol *sym_fft__tilde__;
 t_symbol *sym_field;
@@ -834,6 +835,7 @@ void symbols_initialize (void)
     sym_exp                                     = gensym ("exp");
     sym_exp__tilde__                            = gensym ("exp~");
     sym_expansion                               = gensym ("expansion");
+    sym_expr                                    = gensym ("expr");
     sym_f                                       = gensym ("f");
     sym_fft__tilde__                            = gensym ("fft~");
     sym_field                                   = gensym ("field");

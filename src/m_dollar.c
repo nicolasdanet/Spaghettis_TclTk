@@ -288,7 +288,7 @@ t_symbol *dollar_fromHash (t_symbol *s)
     char *s1 = NULL;
     char *s2 = NULL;
     
-    if (strlen (s->s_name) >= PD_STRING) { return s; }
+    if (strlen (s->s_name) >= PD_STRING) { PD_BUG; return s; }
     else {
     //
     for (s1 = s->s_name, s2 = t;; s1++, s2++) {

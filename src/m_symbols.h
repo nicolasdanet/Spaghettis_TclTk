@@ -257,6 +257,7 @@ extern t_symbol *sym_env__tilde__;
 extern t_symbol *sym_exp;
 extern t_symbol *sym_exp__tilde__;
 extern t_symbol *sym_expansion;
+extern t_symbol *sym_expr;
 extern t_symbol *sym_f;
 extern t_symbol *sym_fft__tilde__;
 extern t_symbol *sym_field;
