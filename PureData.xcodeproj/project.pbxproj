@@ -1473,14 +1473,14 @@
 		37AEFD551DB5182A0039FB59 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				3759441D1E48E04A00CF3FD7 /* tinyexpr.h */,
-				3759441C1E48E04A00CF3FD7 /* tinyexpr.c */,
 				378232431D6C4A3300C128AD /* x_textbuffer.c */,
 				378232A21D6C50D600C128AD /* x_textclient.c */,
 				375D72E61D86A5F000D079B1 /* x_arrayclient.c */,
 				375148DA1D86D9E5005679B0 /* x_arrayrange.c */,
 				375E88DE1D901BA90052D22C /* x_listinlet.c */,
 				37B145831D9E97A1003A354F /* x_atomoutlet.c */,
+				3759441D1E48E04A00CF3FD7 /* tinyexpr.h */,
+				3759441C1E48E04A00CF3FD7 /* tinyexpr.c */,
 			);
 			name = Shared;
 			sourceTree = "<group>";
