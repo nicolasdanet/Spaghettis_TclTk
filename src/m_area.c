@@ -16,17 +16,17 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void rectangle_setEverything (int *a, int *b, int *c, int *d)
+void area_setEverything (int *a, int *b, int *c, int *d)
 {
     *a = -PD_INT_MAX; *b = -PD_INT_MAX; *c = PD_INT_MAX; *d = PD_INT_MAX;
 }
 
-void rectangle_setNothing (int *a, int *b, int *c, int *d)
+void area_setNothing (int *a, int *b, int *c, int *d)
 {
     *a = 0; *b = 0; *c = 0; *d = 0;
 }
 
-void rectangle_setNowhere (int *a, int *b, int *c, int *d)
+void area_setNowhere (int *a, int *b, int *c, int *d)
 {
     *a = PD_INT_MAX; *b = PD_INT_MAX; *c = -PD_INT_MAX; *d = -PD_INT_MAX;
 }
@@ -35,12 +35,12 @@ void rectangle_setNowhere (int *a, int *b, int *c, int *d)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int rectangle_isEverything (int a, int b, int c, int d)
+int area_isEverything (int a, int b, int c, int d)
 {
     return (a == -PD_INT_MAX && b == -PD_INT_MAX && c == PD_INT_MAX && d == PD_INT_MAX);
 }
 
-int rectangle_isNothing (int a, int b, int c, int d)
+int area_isNothing (int a, int b, int c, int d)
 {
     return (a == 0 && b == 0 && c == 0 && d == 0);
 }
