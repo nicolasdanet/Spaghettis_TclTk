@@ -264,42 +264,24 @@ int dollar_isPointingToDollarAndNumber (const char *s)
 t_symbol *dollar_toHash (t_symbol *s)
 {
     char t[PD_STRING + 1] = { 0 };
-    char *s1 = NULL;
-    char *s2 = NULL;
     
     if (strlen (s->s_name) >= PD_STRING) { PD_BUG; return s; }
     else {
-    //
-    for (s1 = s->s_name, s2 = t;; s1++, s2++) {
-        if (*s1 == '$') { *s2 = '#'; }
-        else if (!(*s2 = *s1)) {
-            break;
-        }
-    }
-    
-    return gensym (t);
-    //
+        string_copy (t, PD_STRING, s->s_name);
+        string_replaceCharacter (t, '$', '#');
+        return gensym (t);
     }
 }
 
 t_symbol *dollar_fromHash (t_symbol *s)
 {
     char t[PD_STRING + 1] = { 0 };
-    char *s1 = NULL;
-    char *s2 = NULL;
     
     if (strlen (s->s_name) >= PD_STRING) { PD_BUG; return s; }
     else {
-    //
-    for (s1 = s->s_name, s2 = t;; s1++, s2++) {
-        if (*s1 == '#') { *s2 = '$'; }
-        else if (!(*s2 = *s1)) {
-            break;
-        }
-    }
-    
-    return gensym (t);
-    //
+        string_copy (t, PD_STRING, s->s_name);
+        string_replaceCharacter (t, '#', '$');
+        return gensym (t);
     }
 }
 
