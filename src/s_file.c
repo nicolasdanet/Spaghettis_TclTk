@@ -32,7 +32,7 @@ static int file_openRawNative (const char *filepath, int oflag)
     wchar_t ucs2path[PD_STRING] = { 0 };
     
     if (string_copy (t, PD_STRING, filepath)) { PD_BUG; }
-    path_slashToBackslashIfNecessary (t, t);
+    path_slashToBackslashIfNecessary (t);
     u8_utf8toucs2 (ucs2path, PD_STRING, t, -1);
 
     if (oflag & O_CREAT) { return _wopen (ucs2path, oflag | O_BINARY, _S_IREAD | _S_IWRITE); }
@@ -48,7 +48,7 @@ static FILE *file_openModeNative (const char *filepath, const char *mode)
     wchar_t ucs2mode[PD_STRING] = { 0 };
     
     if (string_copy (t, PD_STRING, filepath)) { PD_BUG; }
-    path_slashToBackslashIfNecessary (t, t);
+    path_slashToBackslashIfNecessary (t);
     u8_utf8toucs2 (ucs2path, PD_STRING, t, -1);
     
     mbstowcs (ucs2mode, mode, PD_STRING);

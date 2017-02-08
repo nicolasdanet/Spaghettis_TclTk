@@ -29,7 +29,7 @@ t_pathlist *pathlist_newAppend (t_pathlist *x, const char *s)
     l2->pl_string = (char *)PD_MEMORY_GET (strlen (s) + 1);
     
     strcpy (l2->pl_string, s);
-    path_backslashToSlashIfNecessary (l2->pl_string, l2->pl_string);
+    path_backslashToSlashIfNecessary (l2->pl_string);
     
     if (!l1) { return l2; }
     else {

@@ -113,7 +113,7 @@ static t_handle loader_openExternalNative (char *filepath, char *stub, t_symbol 
 {
     t_handle handle;
     
-    path_slashToBackslashIfNecessary (filepath, filepath);
+    path_slashToBackslashIfNecessary (filepath);
 
     handle = LoadLibrary (filepath);
     

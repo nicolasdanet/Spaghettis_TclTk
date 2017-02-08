@@ -188,7 +188,7 @@ static t_error main_getRootDirectory (void)
     
     #if PD_WINDOWS
         err |= main_getExecutablePathNative (t1, PD_STRING);
-        path_backslashToSlashIfNecessary (t1, t1);
+        path_backslashToSlashIfNecessary (t1);
     #else
         err |= main_getExecutablePathNative (t1, PD_STRING);
     #endif

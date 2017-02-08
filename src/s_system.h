@@ -239,8 +239,8 @@ void        file_openHelp                           (const char *directory, cons
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        path_slashToBackslashIfNecessary        (char *dest, char *src);
-void        path_backslashToSlashIfNecessary        (char *dest, char *src);
+void        path_slashToBackslashIfNecessary        (char *s);
+void        path_backslashToSlashIfNecessary        (char *s);
 int         path_isFileExist                        (const char *filepath);
 int         path_isFileExistAsRegularFile           (const char *filepath);
 t_error     path_withDirectoryAndName               (char *dest, 

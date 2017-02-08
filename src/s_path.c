@@ -22,28 +22,22 @@ t_pathlist  *path_search;        /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void path_slashToBackslashIfNecessary (char *dest, char *src)
+void path_slashToBackslashIfNecessary (char *s)
 {
-    char c;
-    while ((c = *src++)) {
-        #if PD_WINDOWS
-        if (c == '/') { c = '\\'; }
-        #endif
-        *dest++ = c;
-    }
-    *dest = 0;
+    #if PD_WINDOWS
+    
+    string_replaceCharacter (s, '/', '\\');
+    
+    #endif
 }
 
-void path_backslashToSlashIfNecessary (char *dest, char *src)
+void path_backslashToSlashIfNecessary (char *s)
 {
-    char c;
-    while ((c = *src++)) {
-        #if PD_WINDOWS
-        if (c == '\\') { c = '/'; }
-        #endif
-        *dest++ = c;
-    }
-    *dest = 0;
+    #if PD_WINDOWS
+    
+    string_replaceCharacter (s, '\\', '/');
+    
+    #endif
 }
 
 // -----------------------------------------------------------------------------------------------------------
