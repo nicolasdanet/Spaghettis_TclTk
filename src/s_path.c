@@ -83,7 +83,7 @@ t_error path_withDirectoryAndName (char *dest,
     
         err = PD_ERROR_NONE;
         
-        if (expandEnvironment) { err |= path_expandEnvironment (dest, size, directory); } 
+        if (expandEnvironment) { err |= path_expandHomeDirectory (dest, size, directory); } 
         else {
             err |= string_copy (dest, size, directory);
         }
@@ -101,14 +101,14 @@ t_error path_withDirectoryAndName (char *dest,
 
 #if PD_WINDOWS
 
-t_error path_expandEnvironment (const char *dest, size_t size, char *src)
+t_error path_expandHomeDirectory (const char *dest, size_t size, char *src)
 {
     return string_copy (dest, size, src);
 }
 
 #else
 
-t_error path_expandEnvironment (char *dest, size_t size, const char *src)
+t_error path_expandHomeDirectory (char *dest, size_t size, const char *src)
 {
     t_error err = PD_ERROR_NONE;
 
@@ -146,6 +146,15 @@ void path_setSearchPath (void *dummy, t_symbol *s, int argc, t_atom *argv)
         t_symbol *path = utils_decode (atom_getSymbolAtIndex (i, argc, argv));
         path_search = pathlist_newAppend (path_search, path->s_name);
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void path_release (void)
+{
+    pathlist_free (path_search); path_search = NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -249,7 +249,7 @@ t_error     path_withDirectoryAndName               (char *dest,
                                                         const char *name,
                                                         int expandEnvironment);
                                                         
-t_error     path_expandEnvironment                  (char *dest, size_t size, const char *src);
+t_error     path_expandHomeDirectory                (char *dest, size_t size, const char *src);
 void        path_setSearchPath                      (void *dummy, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
