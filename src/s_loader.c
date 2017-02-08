@@ -164,7 +164,7 @@ static void loader_closeExternalNative (t_handle handle, char *stub)
 {
     t_dtor dtor = (t_dtor)GetProcAddress (handle, stub);
     
-    if (dtor) { (*dtor) (); }
+    if (dtor) { (*dtor)(); }
 }
 
 #else
@@ -173,7 +173,7 @@ static void loader_closeExternalNative (t_handle handle, char *stub)
 {
     t_dtor dtor = (t_dtor)dlsym (handle, stub);
     
-    if (dtor) { (*dtor) (); }
+    if (dtor) { (*dtor)(); }
 }
 
 #endif // PD_WINDOWS

@@ -324,6 +324,7 @@
 		37DFBC5D1D2937BA00FCDEEE /* g_guiconnect.c in Sources */ = {isa = PBXBuildFile; fileRef = 37DFBC5B1D2937BA00FCDEEE /* g_guiconnect.c */; };
 		37DFBC5E1D2937BA00FCDEEE /* g_guistub.c in Sources */ = {isa = PBXBuildFile; fileRef = 37DFBC5C1D2937BA00FCDEEE /* g_guistub.c */; };
 		37E0BC371C53E0B700114412 /* h_pathlist.c in Sources */ = {isa = PBXBuildFile; fileRef = 37E0BC361C53E0B700114412 /* h_pathlist.c */; };
+		37E224BF1E4B542B00314AA4 /* s_properties.c in Sources */ = {isa = PBXBuildFile; fileRef = 37E224BE1E4B542B00314AA4 /* s_properties.c */; };
 		37E3E9661C5E1EDE00D9717B /* s_priority.c in Sources */ = {isa = PBXBuildFile; fileRef = 37E3E9651C5E1EDE00D9717B /* s_priority.c */; };
 		37E3EB9C1C5F6ACA00D9717B /* s_receiver.c in Sources */ = {isa = PBXBuildFile; fileRef = 37E3EB9B1C5F6ACA00D9717B /* s_receiver.c */; };
 		37E7F89F1DF9569800ED7493 /* x_tabread.c in Sources */ = {isa = PBXBuildFile; fileRef = 37E7F89E1DF9569800ED7493 /* x_tabread.c */; };
@@ -772,6 +773,7 @@
 		37DFBC5B1D2937BA00FCDEEE /* g_guiconnect.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_guiconnect.c; path = src/g_guiconnect.c; sourceTree = "<group>"; };
 		37DFBC5C1D2937BA00FCDEEE /* g_guistub.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_guistub.c; path = src/g_guistub.c; sourceTree = "<group>"; };
 		37E0BC361C53E0B700114412 /* h_pathlist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = h_pathlist.c; path = src/h_pathlist.c; sourceTree = "<group>"; };
+		37E224BE1E4B542B00314AA4 /* s_properties.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_properties.c; path = src/s_properties.c; sourceTree = "<group>"; };
 		37E3E9651C5E1EDE00D9717B /* s_priority.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_priority.c; path = src/s_priority.c; sourceTree = "<group>"; };
 		37E3EB9B1C5F6ACA00D9717B /* s_receiver.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_receiver.c; path = src/s_receiver.c; sourceTree = "<group>"; };
 		37E7F89E1DF9569800ED7493 /* x_tabread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_tabread.c; path = src/x_tabread.c; sourceTree = "<group>"; };
@@ -1056,6 +1058,7 @@
 				378971FD1C4F716700263434 /* s_post.c */,
 				37F5138B1C9B0EA80076A0C4 /* s_logger.c */,
 				378972011C4F716700263434 /* s_utf8.c */,
+				37E224BE1E4B542B00314AA4 /* s_properties.c */,
 				378971F31C4F716700263434 /* s_preferences.c */,
 				378971FB1C4F716700263434 /* s_midi.c */,
 				37A402671C77524D00001FD3 /* s_midiAPI.c */,
@@ -2090,6 +2093,7 @@
 				37ECBA031E488A3000F1CFD1 /* d_lrshift.c in Sources */,
 				3759441E1E48E04A00CF3FD7 /* tinyexpr.c in Sources */,
 				371526B61E49D03E00712D43 /* x_expr.c in Sources */,
+				37E224BF1E4B542B00314AA4 /* s_properties.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

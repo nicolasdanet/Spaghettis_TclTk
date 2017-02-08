@@ -29,7 +29,7 @@
 
 static int              leak_maximum;                           /* Shared. */
 static t_int            leak_allocated[LEAK_BUFFER_SIZE];       /* Shared. */
-static const char *     leak_function[LEAK_BUFFER_SIZE];        /* Shared. */
+static const char       *leak_function[LEAK_BUFFER_SIZE];       /* Shared. */
 static int              leak_line[LEAK_BUFFER_SIZE];            /* Shared. */
 static pthread_mutex_t  leak_mutex;                             /* Shared. */
 

@@ -262,6 +262,17 @@ int         loader_load                             (t_glist *canvas, char *name
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_error     properties_loadBegin                    (void);
+void        properties_loadClose                    (void);
+t_error     properties_saveBegin                    (void);
+void        properties_saveClose                    (void);
+int         properties_getKey                       (const char *key, char *value, int size);
+void        properties_setKey                       (const char *key, const char *value);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void        preferences_load                        (void);
 void        preferences_save                        (void *dummy);
 
