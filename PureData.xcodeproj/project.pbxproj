@@ -1060,10 +1060,10 @@
 				378972011C4F716700263434 /* s_utf8.c */,
 				37E224BE1E4B542B00314AA4 /* s_properties.c */,
 				378971F31C4F716700263434 /* s_preferences.c */,
-				378971FB1C4F716700263434 /* s_midi.c */,
 				37A402671C77524D00001FD3 /* s_midiAPI.c */,
-				378971F11C4F716700263434 /* s_audio.c */,
+				378971FB1C4F716700263434 /* s_midi.c */,
 				373F78241C7E097A0083D316 /* s_audioAPI.c */,
+				378971F11C4F716700263434 /* s_audio.c */,
 				3722C53E1C4F955500D2BF6F /* API */,
 			);
 			name = System;

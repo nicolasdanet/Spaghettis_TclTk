@@ -16,14 +16,13 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_symbol     *main_directoryTcl;
-extern t_symbol     *main_directoryBin;
-extern t_pathlist   *path_search;
+extern t_symbol *main_directoryTcl;
+extern t_symbol *main_directoryBin;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern int          main_portNumber;
+extern int  main_portNumber;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -290,10 +289,11 @@ static t_error interface_startGui (void)
     /* Initialize GUI. */
     
     if (!err) {
-        t_pathlist *l = NULL;
+        t_pathlist *l = path_getSearchPath();
         sys_vGui ("::initialize\n");
-        for (l = path_search; l; l = pathlist_getNext (l)) {
+        while (l) {
             sys_vGui ("lappend ::var(searchPath) {%s}\n", pathlist_getPath (l));    // --
+            l = pathlist_getNext (l);
         }
     }
     

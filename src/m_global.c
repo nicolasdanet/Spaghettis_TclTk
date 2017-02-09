@@ -84,21 +84,21 @@ void global_setup (void)
             CLASS_ABSTRACT,
             A_NULL);
 
-    class_addMethod (c, (t_method)canvas_newPatch,          sym_new,    A_SYMBOL, A_SYMBOL, A_NULL);
-    class_addMethod (c, (t_method)buffer_fileOpen,          sym_open,   A_SYMBOL, A_SYMBOL, A_NULL);
-    class_addMethod (c, (t_method)dsp_state,                sym_dsp,    A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)global_key,               sym_key,    A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)interface_quit,           sym_quit,   A_NULL);
+    class_addMethod (c, (t_method)canvas_newPatch,              sym_new,    A_SYMBOL, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)buffer_fileOpen,              sym_open,   A_SYMBOL, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)dsp_state,                    sym_dsp,    A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)global_key,                   sym_key,    A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)interface_quit,               sym_quit,   A_NULL);
     
-    class_addMethod (c, (t_method)font_withHostMeasured,    sym__font,              A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)audio_requireDialog,      sym__audioproperties,   A_NULL);
-    class_addMethod (c, (t_method)audio_fromDialog,         sym__audiodialog,       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)midi_requireDialog,       sym__midiproperties,    A_NULL);
-    class_addMethod (c, (t_method)midi_fromDialog,          sym__mididialog,        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)path_setSearchPath,       sym__path,              A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)global_shouldQuit,        sym__quit,              A_NULL);
-    class_addMethod (c, (t_method)preferences_save,         sym__savepreferences,   A_NULL);
-    class_addMethod (c, (t_method)global_dummy,             sym__dummy,             A_NULL);
+    class_addMethod (c, (t_method)font_withHostMeasured,        sym__font,              A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)audio_requireDialog,          sym__audioproperties,   A_NULL);
+    class_addMethod (c, (t_method)audio_fromDialog,             sym__audiodialog,       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)midi_requireDialog,           sym__midiproperties,    A_NULL);
+    class_addMethod (c, (t_method)midi_fromDialog,              sym__mididialog,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)path_setSearchPathEncoded,    sym__path,              A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)global_shouldQuit,            sym__quit,              A_NULL);
+    class_addMethod (c, (t_method)preferences_save,             sym__savepreferences,   A_NULL);
+    class_addMethod (c, (t_method)global_dummy,                 sym__dummy,             A_NULL);
     
     #if PD_WATCHDOG
     

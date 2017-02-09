@@ -17,8 +17,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pathlist   *path_search;
-extern t_symbol     *main_directoryHelp;
+extern t_symbol *main_directoryHelp;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -140,9 +139,10 @@ int file_openConsideringSearchPath (const char *directory,
     int f = file_openWithDirectoryAndName (directory, name, extension, directoryResult, nameResult, size);
     
     if (f < 0) {
-        t_pathlist *l = NULL;
-        for (l = path_search; l; l = pathlist_getNext (l)) {
+        t_pathlist *l = path_getSearchPath();
+        while (l) {
             char *path = pathlist_getPath (l);
+            l = pathlist_getNext (l);
             f = file_openWithDirectoryAndName (path, name, extension, directoryResult, nameResult, size);
             if (f >= 0) { break; }
         }

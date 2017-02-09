@@ -16,7 +16,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_pathlist  *path_search;        /* Shared. */
+static t_pathlist *path_search;     /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -129,7 +129,17 @@ t_error path_expandHomeDirectory (char *dest, size_t size, const char *src)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void path_setSearchPath (void *dummy, t_symbol *s, int argc, t_atom *argv)
+t_pathlist *path_getSearchPath (void)
+{
+    return path_search;
+}
+
+void path_appendToSearchPath (char *filepath)
+{
+    path_search = pathlist_newAppend (path_search, filepath);
+}
+
+void path_setSearchPathEncoded (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
     
