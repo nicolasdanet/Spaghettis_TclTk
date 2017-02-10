@@ -31,6 +31,8 @@
 #pragma mark -
 
 typedef struct _devicesproperties {
+    int d_blockSize;
+    int d_sampleRate;
     int d_inSize;
     int d_outSize;
     int d_in            [DEVICES_MAXIMUM_IO];
@@ -43,18 +45,35 @@ typedef struct _devicesproperties {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        devices_init                (t_devicesproperties *p);
-void        devices_setDefaultsMidi     (t_devicesproperties *p);
-void        devices_setDefaultsAudio    (t_devicesproperties *p);
+void        devices_init                        (t_devicesproperties *p);
+void        devices_setDefaultsMidi             (t_devicesproperties *p);
+void        devices_setDefaultsAudio            (t_devicesproperties *p);
+void        devices_setBlockSize                (t_devicesproperties *p, int n);
+void        devices_setSampleRate               (t_devicesproperties *p, int n);
+void        devices_checkForDisabledChannels    (t_devicesproperties *p);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error     devices_appendMidiIn        (t_devicesproperties *p, char *device);
-t_error     devices_appendMidiOut       (t_devicesproperties *p, char *device);
-t_error     devices_appendAudioIn       (t_devicesproperties *p, char *device, int channels);
-t_error     devices_appendAudioOut      (t_devicesproperties *p, char *device, int channels);
+t_error     devices_appendMidiIn                (t_devicesproperties *p, char *device);
+t_error     devices_appendMidiOut               (t_devicesproperties *p, char *device);
+t_error     devices_appendAudioIn               (t_devicesproperties *p, char *device, int channels);
+t_error     devices_appendAudioOut              (t_devicesproperties *p, char *device, int channels);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark-
+
+static inline int devices_getBlockSize (t_devicesproperties *p)
+{
+    return p->d_blockSize;
+}
+
+static inline int devices_getSampleRate (t_devicesproperties *p)
+{
+    return p->d_sampleRate;
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

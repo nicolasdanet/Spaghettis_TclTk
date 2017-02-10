@@ -36,14 +36,58 @@ static char midi_devicesOutNames[DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION];     
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static t_error midi_getLists (char *i, int *m, char *o, int *n)
+{
+    return midi_getListsNative (i, m, o, n);
+}
+
+static t_error midi_requireDialogInitialize (void)
+{
+    int  m = 0;
+    int  n = 0;
+    char i[DEVICES_MAXIMUM_DEVICES * DEVICES_DESCRIPTION] = { 0 };
+    char o[DEVICES_MAXIMUM_DEVICES * DEVICES_DESCRIPTION] = { 0 };
+    
+    t_error err = midi_getLists (i, &m, o, &n);
+    
+    if (!err) {
+    //
+    char t1[PD_STRING] = { 0 };
+    char t2[PD_STRING] = { 0 };
+    int k;
+    
+    err |= string_copy (t1, PD_STRING, "set ::ui_midi::midiIn [list {none}");   // --
+    err |= string_copy (t2, PD_STRING, "set ::ui_midi::midiOut [list {none}");  // --
+    
+    for (k = 0; k < m; k++) {
+        err |= string_addSprintf (t1, PD_STRING, " {%s}", i + (k * DEVICES_DESCRIPTION));   // --
+    }
+    for (k = 0; k < n; k++) {
+        err |= string_addSprintf (t2, PD_STRING, " {%s}", o + (k * DEVICES_DESCRIPTION));   // --
+    }
+    
+    err |= string_add (t1, PD_STRING, "]\n");
+    err |= string_add (t2, PD_STRING, "]\n");
+    
+    sys_gui (t1);
+    sys_gui (t2);
+    //
+    }
+    
+    return err;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void midi_open (void)
 {
-    int m, n;
-    int i[DEVICES_MAXIMUM_IO]  = { 0 };
-    int o[DEVICES_MAXIMUM_IO] = { 0 };
+    t_devicesproperties midi; devices_init (&midi);
+     
+    midi_getDevices (&midi);
     
-    midi_getDevices (&m, i, &n, o); 
-    midi_openNative (m, i, n, o);
+    midi_openNative (midi.d_inSize, midi.d_in, midi.d_outSize, midi.d_out);
 }
 
 void midi_close (void)
@@ -55,24 +99,17 @@ void midi_close (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void midi_getDevices (int *numberOfDevicesIn, int *devicesIn, int *numberOfDevicesOut, int *devicesOut)
+void midi_getDevices (t_devicesproperties *p)
 {
     int i;
-    int m = 0;
-    int n = 0;
     
     for (i = 0; i < midi_numberOfDevicesIn; i++) {
-        char *s = &midi_devicesInNames[i * DEVICES_DESCRIPTION];
-        int t = midi_deviceAsNumberWithString (0, s); if (t != -1) { devicesIn[m] = t; m++; }
+        devices_appendMidiIn (p, &midi_devicesInNames[i * DEVICES_DESCRIPTION]);
     }
         
     for (i = 0; i < midi_numberOfDevicesOut; i++) {
-        char *s = &midi_devicesOutNames[i * DEVICES_DESCRIPTION];
-        int t = midi_deviceAsNumberWithString (1, s); if (t != -1) { devicesOut[n] = t; n++; }
+        devices_appendMidiOut (p, &midi_devicesOutNames[i * DEVICES_DESCRIPTION]);
     }
-    
-    *numberOfDevicesIn  = m;
-    *numberOfDevicesOut = n;
 }
 
 void midi_setDevices (t_devicesproperties *p)
@@ -103,11 +140,6 @@ void midi_setDevices (t_devicesproperties *p)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-static t_error midi_getLists (char *i, int *m, char *o, int *n)
-{
-    return midi_getListsNative (i, m, o, n);
-}
 
 int midi_deviceAsNumberWithString (int isOutput, char *name)
 {
@@ -158,44 +190,10 @@ t_error midi_deviceAsStringWithNumber (int isOutput, int k, char *dest, size_t s
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_error midi_requireDialogInitialize (void)
-{
-    int  m = 0;
-    int  n = 0;
-    char i[DEVICES_MAXIMUM_DEVICES * DEVICES_DESCRIPTION] = { 0 };
-    char o[DEVICES_MAXIMUM_DEVICES * DEVICES_DESCRIPTION] = { 0 };
-    
-    t_error err = midi_getLists (i, &m, o, &n);
-    
-    if (!err) {
-    //
-    char t1[PD_STRING] = { 0 };
-    char t2[PD_STRING] = { 0 };
-    int k;
-    
-    err |= string_copy (t1, PD_STRING, "set ::ui_midi::midiIn [list {none}");   // --
-    err |= string_copy (t2, PD_STRING, "set ::ui_midi::midiOut [list {none}");  // --
-    
-    for (k = 0; k < m; k++) {
-        err |= string_addSprintf (t1, PD_STRING, " {%s}", i + (k * DEVICES_DESCRIPTION));   // --
-    }
-    for (k = 0; k < n; k++) {
-        err |= string_addSprintf (t2, PD_STRING, " {%s}", o + (k * DEVICES_DESCRIPTION));   // --
-    }
-    
-    err |= string_add (t1, PD_STRING, "]\n");
-    err |= string_add (t2, PD_STRING, "]\n");
-    
-    sys_gui (t1);
-    sys_gui (t2);
-    //
-    }
-    
-    return err;
-}
-
 void midi_requireDialog (void *dummy)
 {
+    #if 0
+    
     int m = 0;
     int n = 0;
     int i[DEVICES_MAXIMUM_IO]  = { 0 };
@@ -255,6 +253,8 @@ void midi_requireDialog (void *dummy)
     }
     //
     }
+    
+    #endif
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -262,6 +262,8 @@ void midi_requireDialog (void *dummy)
 
 void midi_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
+    #if 0
+    
     int m = 0;
     int n = 0;
     int i[DEVICES_MAXIMUM_IO]  = { 0 };
@@ -284,6 +286,8 @@ void midi_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
     //midi_close();
     //midi_setDevices (m, i, n, o);
     //midi_open();
+    
+    #endif
 }
 
 // -----------------------------------------------------------------------------------------------------------

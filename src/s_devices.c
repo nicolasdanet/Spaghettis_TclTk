@@ -17,10 +17,18 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark-
 
+#define DEVICES_MAXIMUM_BLOCKSIZE   2048
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark-
+
 void devices_init (t_devicesproperties *p)
 {
-    p->d_inSize  = 0;
-    p->d_outSize = 0;
+    p->d_blockSize  = AUDIO_DEFAULT_BLOCKSIZE;
+    p->d_sampleRate = AUDIO_DEFAULT_SAMPLERATE;
+    p->d_inSize     = 0;
+    p->d_outSize    = 0;
 
     memset (p->d_in,            0, DEVICES_MAXIMUM_IO * sizeof (int));
     memset (p->d_out,           0, DEVICES_MAXIMUM_IO * sizeof (int));
@@ -55,7 +63,31 @@ void devices_setDefaultsMidi (t_devicesproperties *p)
         p->d_outSize            = 1;
     }
 }
+
+void devices_setBlockSize (t_devicesproperties *p, int n)
+{
+    if (!PD_IS_POWER_2 (n)) { n = AUDIO_DEFAULT_BLOCKSIZE; }
     
+    p->d_blockSize = PD_CLAMP (n, INTERNAL_BLOCKSIZE, DEVICES_MAXIMUM_BLOCKSIZE);
+}
+
+void devices_setSampleRate (t_devicesproperties *p, int n)
+{
+    if (n < 1) { n = AUDIO_DEFAULT_SAMPLERATE; }
+    
+    p->d_sampleRate = n;
+}
+
+void devices_checkForDisabledChannels (t_devicesproperties *p)
+{
+    int i;
+    
+    for (i = 0; i < DEVICES_MAXIMUM_IO; i++) {
+        p->d_inChannels[i]  = PD_MAX (0, p->d_inChannels[i]);
+        p->d_outChannels[i] = PD_MAX (0, p->d_outChannels[i]);
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark-
