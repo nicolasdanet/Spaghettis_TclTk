@@ -205,6 +205,71 @@ t_error     interface_start                         (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void        midi_start                              (void);
+void        midi_synchronise                        (void);
+void        midi_poll                               (void);
+void        midi_receive                            (int port, int byte);
+void        midi_broadcast                          (int port, int hasOneByte, int a, int b, int c);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void        midi_requireDialog                      (void *dummy);
+void        midi_fromDialog                         (void *dummy, t_symbol *s, int argc, t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        inmidi_noteOn                           (int port, int channel, int pitch, int velocity);
+void        inmidi_controlChange                    (int port, int channel, int control, int value);
+void        inmidi_programChange                    (int port, int channel, int value);
+void        inmidi_pitchBend                        (int port, int channel, int value);
+void        inmidi_afterTouch                       (int port, int channel, int value);
+void        inmidi_polyPressure                     (int port, int channel, int pitch, int value);
+void        inmidi_byte                             (int port, int byte);
+void        inmidi_sysex                            (int port, int byte);
+void        inmidi_realTime                         (int port, int byte);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        outmidi_noteOn                          (int channel, int pitch, int velocity);
+void        outmidi_controlChange                   (int channel, int control, int value);
+void        outmidi_programChange                   (int channel, int value);
+void        outmidi_pitchBend                       (int channel, int value);
+void        outmidi_afterTouch                      (int channel, int value);
+void        outmidi_polyPressure                    (int channel, int pitch, int value);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_error     audio_initialize                        (void);
+void        audio_release                           (void);
+int         audio_pollDSP                           (void);
+t_error     audio_stopDSP                           (void);
+t_error     audio_startDSP                          (void);
+
+void        audio_initializeMemory                  (int usedChannelsIn, int usedChannelsOut);
+void        audio_shrinkChannelsIn                  (int numberOfChannelsIn);
+void        audio_shrinkChannelsOut                 (int numberOfChannelsOut);
+
+void        audio_setSampleRate                     (t_float sampleRate);
+void        audio_setBlockSize                      (int blockSize);
+
+int         audio_getChannelsIn                     (void);
+int         audio_getChannelsOut                    (void);
+t_float     audio_getSampleRate                     (void);
+
+void        audio_requireDialog                     (void *dummy);
+void        audio_fromDialog                        (void *dummy, t_symbol *s, int argc, t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 FILE        *file_openWrite                         (const char *filepath);
 int         file_openRaw                            (const char *filepath, int oflag);
 
@@ -270,13 +335,6 @@ void        preferences_save                        (void *dummy);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        leak_initialize                         (void);
-void        leak_release                            (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void        *sys_getMemoryChecked                   (size_t n, const char *f, int line);
 void        *sys_getMemoryResizeChecked             (void *ptr,
                                                         size_t oldSize,
@@ -285,6 +343,13 @@ void        *sys_getMemoryResizeChecked             (void *ptr,
                                                         int line);
 
 void        sys_freeMemoryChecked                   (void *ptr, const char *f, int line);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        leak_initialize                         (void);
+void        leak_release                            (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -305,31 +370,6 @@ double      font_getHostFontHeight                  (t_fontsize fontSize);
 t_error     logger_initialize                       (void);
 void        logger_release                          (void);
 int         logger_isRunning                        (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void        inmidi_noteOn                           (int port, int channel, int pitch, int velocity);
-void        inmidi_controlChange                    (int port, int channel, int control, int value);
-void        inmidi_programChange                    (int port, int channel, int value);
-void        inmidi_pitchBend                        (int port, int channel, int value);
-void        inmidi_afterTouch                       (int port, int channel, int value);
-void        inmidi_polyPressure                     (int port, int channel, int pitch, int value);
-void        inmidi_byte                             (int port, int byte);
-void        inmidi_sysex                            (int port, int byte);
-void        inmidi_realTime                         (int port, int byte);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void        outmidi_noteOn                          (int channel, int pitch, int velocity);
-void        outmidi_controlChange                   (int channel, int control, int value);
-void        outmidi_programChange                   (int channel, int value);
-void        outmidi_pitchBend                       (int channel, int value);
-void        outmidi_afterTouch                      (int channel, int value);
-void        outmidi_polyPressure                    (int channel, int pitch, int value);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
