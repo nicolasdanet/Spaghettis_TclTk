@@ -51,7 +51,7 @@ static t_midiqelem  midi_inQueue[MIDI_QUEUE_SIZE];                          /* S
 static int          midi_inHead;                                            /* Shared. */
 static int          midi_inTail;                                            /* Shared. */
 
-static t_midiparser midi_parser[MAXIMUM_MIDI_IN];                           /* Shared. */
+static t_midiparser midi_parser[DEVICES_MAXIMUM_IO];                           /* Shared. */
     
 static double       midi_realTimeAtStart;                                   /* Shared. */
 static t_systime    midi_logicalTimeAtStart;                                /* Shared. */
@@ -144,7 +144,7 @@ static void midi_dispatchNext (void)
     t_midiparser *p = midi_parser + port;
         
     PD_ASSERT (midi_inQueue[midi_inTail].q_hasOneByte);
-    PD_ASSERT (port >= 0 || port < MAXIMUM_MIDI_IN);
+    PD_ASSERT (port >= 0 || port < DEVICES_MAXIMUM_IO);
     
     if (byte >= MIDI_CLOCK) { inmidi_realTime (port, byte); }
     else {

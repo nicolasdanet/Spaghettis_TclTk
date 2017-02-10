@@ -16,47 +16,29 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define DACS_NO                                 0
-#define DACS_YES                                1 
-#define DACS_SLEPT                              2
+#define DACS_NO                         0
+#define DACS_YES                        1 
+#define DACS_SLEPT                      2
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define INTERNAL_BLOCKSIZE                      64
+#define INTERNAL_BLOCKSIZE              64
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define SCHEDULER_AUDIO_NONE                    0
-#define SCHEDULER_AUDIO_POLL                    1 
+#define SCHEDULER_AUDIO_NONE            0
+#define SCHEDULER_AUDIO_POLL            1 
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define MAXIMUM_MIDI_IN                         8
-#define MAXIMUM_MIDI_OUT                        8
-#define MAXIMUM_AUDIO_IN                        4
-#define MAXIMUM_AUDIO_OUT                       4
-#define MAXIMUM_CHANNELS_IN                     32
-#define MAXIMUM_CHANNELS_OUT                    32
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#define MAXIMUM_DEVICES                         16
-#define MAXIMUM_DESCRIPTION                     128
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#define AUDIO_DEFAULT_BLOCKSIZE                 64
-#define AUDIO_DEFAULT_SAMPLERATE                44100
+#define AUDIO_DEFAULT_BLOCKSIZE         64
+#define AUDIO_DEFAULT_SAMPLERATE        44100
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -64,8 +46,8 @@
 
 /* LCM (32000, 44100, 48000, 88200, 96000). */
     
-#define SYSTIME_PER_MILLISECOND                 (32.0 * 441.0)
-#define SYSTIME_PER_SECOND                      (SYSTIME_PER_MILLISECOND * 1000.0)
+#define SYSTIME_PER_MILLISECOND         (32.0 * 441.0)
+#define SYSTIME_PER_SECOND              (SYSTIME_PER_MILLISECOND * 1000.0)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -328,36 +310,6 @@ int         logger_isRunning                        (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        midi_start                              (void);
-void        midi_synchronise                        (void);
-void        midi_poll                               (void);
-void        midi_receive                            (int port, int byte);
-void        midi_broadcast                          (int port, int hasOneByte, int a, int b, int c);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-void        midi_requireDialog                      (void *dummy);
-void        midi_fromDialog                         (void *dummy, t_symbol *s, int argc, t_atom *argv);
-int         midi_numberWithName                     (int isOutput, const char *name);
-t_error     midi_numberToName                       (int isOutput, int k, char *dest, size_t size);
-void        midi_open                               (void);
-void        midi_close                              (void);
-
-void        midi_getDevices                         (int *numberOfDevicesIn,
-                                                        int *devicesIn,
-                                                        int *numberOfDevicesOut,
-                                                        int *devicesOut);
-
-void        midi_setDefaultDevices                  (int numberOfDevicesIn, 
-                                                        int *devicesIn, 
-                                                        int numberOfDevicesOut, 
-                                                        int *devicesOut);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void        inmidi_noteOn                           (int port, int channel, int pitch, int velocity);
 void        inmidi_controlChange                    (int port, int channel, int control, int value);
 void        inmidi_programChange                    (int port, int channel, int value);
@@ -381,53 +333,9 @@ void        outmidi_polyPressure                    (int channel, int pitch, int
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
-t_error     audio_initialize                        (void);
-void        audio_release                           (void);
-int         audio_pollDSP                           (void);
-t_error     audio_stopDSP                           (void);
-t_error     audio_startDSP                          (void);
-
-void        audio_initializeMemory                  (int usedChannelsIn, int usedChannelsOut);
-
-void        audio_shrinkChannelsIn                  (int numberOfChannelsIn);
-void        audio_shrinkChannelsOut                 (int numberOfChannelsOut);
-void        audio_setSampleRate                     (t_float sampleRate);
-void        audio_setBlockSize                      (int blockSize);
-int         audio_getChannelsIn                     (void);
-int         audio_getChannelsOut                    (void);
-t_float     audio_getSampleRate                     (void);
-
-void        audio_requireDialog                     (void *dummy);
-void        audio_fromDialog                        (void *dummy, t_symbol *s, int argc, t_atom *argv);
-int         audio_numberWithName                    (int isOutput, const char *name);
-t_error     audio_numberToName                      (int isOutput, int k, char *dest, size_t size);
-t_error     audio_open                              (void);
-void        audio_close                             (void);
-int         audio_isOpened                          (void);
-
-void        audio_getDevices                        (int *numberOfDevicesIn,
-                                                        int *devicesIn,
-                                                        int *channelsIn,
-                                                        int *numberOfDevicesOut,
-                                                        int *devicesOut,
-                                                        int *channelsOut,
-                                                        int *sampleRate,
-                                                        int *blockSize);
-
-void        audio_setDevicesWithDefault             (int numberOfDevicesIn,
-                                                        int *devicesIn,
-                                                        int *channelsIn,
-                                                        int numberOfDevicesOut,
-                                                        int *devicesOut,
-                                                        int *channelsOut,
-                                                        int sampleRate,
-                                                        int blockSize);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
+#include "s_devices.h"
+#include "s_apis.h"
 #include "s_midi_apis.h"
 #include "s_audio_apis.h"
 #include "s_logger_apis.h"

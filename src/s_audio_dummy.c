@@ -79,8 +79,8 @@ t_error audio_getListsNative (char *devicesIn,
 {
     t_error err = PD_ERROR_NONE;
     
-    err |= string_copy (devicesIn,  MAXIMUM_DESCRIPTION, "Dummy");
-    err |= string_copy (devicesOut, MAXIMUM_DESCRIPTION, "Dummy");
+    err |= string_copy (devicesIn,  DEVICES_DESCRIPTION, "Dummy");
+    err |= string_copy (devicesOut, DEVICES_DESCRIPTION, "Dummy");
     
     *numberOfDevicesIn  = 1;
     *numberOfDevicesOut = 1;

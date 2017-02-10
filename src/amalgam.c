@@ -70,6 +70,7 @@
 #include "s_post.c"
 #include "s_logger.c"
 #include "s_utf8.c"
+#include "s_devices.c"
 #include "s_properties.c"
 #include "s_preferences.c"
 #include "s_midiAPI.c"

@@ -33,8 +33,8 @@
 static int midialsa_numberOfDevicesIn;                                      /* Shared. */
 static int midialsa_numberOfDevicesOut;                                     /* Shared. */
 
-static int midialsa_devicesIn[MAXIMUM_MIDI_IN];                             /* Shared. */
-static int midialsa_devicesOut[MAXIMUM_MIDI_OUT];                           /* Shared. */
+static int midialsa_devicesIn[DEVICES_MAXIMUM_IO];                             /* Shared. */
+static int midialsa_devicesOut[DEVICES_MAXIMUM_IO];                           /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -240,20 +240,20 @@ t_error midi_getListsNative (char *devicesIn,
     int *numberOfDevicesOut)
 {
     int i;
-    int m = PD_MIN (4, MAXIMUM_DEVICES);
-    int n = PD_MIN (4, MAXIMUM_DEVICES);
+    int m = PD_MIN (4, DEVICES_MAXIMUM_DEVICES);
+    int n = PD_MIN (4, DEVICES_MAXIMUM_DEVICES);
     
     t_error err = PD_ERROR_NONE;
     
     for (i = 0; i < m; i++) {
     //
-    err |= string_copy (devicesIn + (i * MAXIMUM_DESCRIPTION), MAXIMUM_DESCRIPTION, "ALSA virtual device");
+    err |= string_copy (devicesIn + (i * DEVICES_DESCRIPTION), DEVICES_DESCRIPTION, "ALSA virtual device");
     //
     }
     
     for (i = 0; i < n; i++) {
     //
-    err |= string_copy (devicesOut + (i * MAXIMUM_DESCRIPTION), MAXIMUM_DESCRIPTION, "ALSA virtual device");
+    err |= string_copy (devicesOut + (i * DEVICES_DESCRIPTION), DEVICES_DESCRIPTION, "ALSA virtual device");
     //
     }
     

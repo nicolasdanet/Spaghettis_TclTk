@@ -19,134 +19,103 @@
 
 void preferences_load (void)
 {
-    int sampleRate                      = AUDIO_DEFAULT_SAMPLERATE;
-    int blockSize                       = AUDIO_DEFAULT_BLOCKSIZE;
+    int sampleRate  = AUDIO_DEFAULT_SAMPLERATE;
+    int blockSize   = AUDIO_DEFAULT_BLOCKSIZE;
 
-    int numberOfAudioIn                 = 0;
-    int numberOfAudioOut                = 0;
-    int numberOfMidiIn                  = 0;
-    int numberOfMidiOut                 = 0;
+    t_devicesproperties midi;    
+    t_devicesproperties audio;   
 
-    int audioIn[MAXIMUM_AUDIO_IN]       = { 0 };
-    int audioOut[MAXIMUM_AUDIO_OUT]     = { 0 };
-    int channelIn[MAXIMUM_AUDIO_IN]     = { 0 };
-    int channelOut[MAXIMUM_AUDIO_OUT]   = { 0 };
-    int midiIn[MAXIMUM_MIDI_IN]         = { 0 };
-    int midiOut[MAXIMUM_MIDI_OUT]       = { 0 };
-    
-    char key[PD_STRING]                 = { 0 };
-    char value[PD_STRING]               = { 0 };
+    devices_init (&midi);
+    devices_init (&audio);
     
     if (properties_loadBegin() == PD_ERROR_NONE) {
     //
     int i;
 
-    /* Properties. */
+    char k[PD_STRING] = { 0 };
+    char v[PD_STRING] = { 0 };
     
-    if (properties_getKey ("SampleRate",   value, PD_STRING)) { sscanf (value, "%d", &sampleRate);   }
-    if (properties_getKey ("BlockSize",    value, PD_STRING)) { sscanf (value, "%d", &blockSize);    }
+    /* Audio settings. */
+    
+    if (properties_getKey ("SampleRate", v, PD_STRING)) { sscanf (v, "%d", &sampleRate); }
+    if (properties_getKey ("BlockSize",  v, PD_STRING)) { sscanf (v, "%d", &blockSize);  }
     
     /* Search paths. */
     
     for (i = 0; 1; i++) {
-    //
-    string_sprintf (key, PD_STRING, "Path%d", i + 1);
-    if (!properties_getKey (key, value, PD_STRING)) { break; }
-    else {
-        path_appendToSearchPath (value);
-    }
-    //
+
+        string_sprintf (k, PD_STRING, "Path%d", i + 1);
+        
+        if (!properties_getKey (k, v, PD_STRING)) { break; }
+        else {
+            path_appendToSearchPath (v);
+        }
     }
     
     /* Audio devices. */
     
-    for (i = 0; i < MAXIMUM_AUDIO_IN; i++) {
-    //
-    int done = 0;
-    
-    string_sprintf (key, PD_STRING, "AudioInDeviceChannels%d", i + 1);
-    
-    if (properties_getKey (key, value, PD_STRING)) {
-        if (sscanf (value, "%d", &channelIn[i]) == 1) {    
-            string_sprintf (key, PD_STRING, "AudioInDeviceName%d", i + 1);
-            if (properties_getKey (key, value, PD_STRING)) {
-                int device = audio_numberWithName (0, value); 
-                if (device >= 0) { audioIn[i] = device; numberOfAudioIn++; done = 1; }
+    for (i = 0; i < DEVICES_MAXIMUM_IO; i++) {
+
+        int channels;
+        
+        string_sprintf (k, PD_STRING, "AudioInDeviceChannels%d", i + 1);
+        
+        if (properties_getKey (k, v, PD_STRING)) {
+            if (sscanf (v, "%d", &channels) == 1) {    
+                string_sprintf (k, PD_STRING, "AudioInDeviceName%d", i + 1);
+                if (properties_getKey (k, v, PD_STRING)) {
+                    devices_appendAudioIn (&audio, v, channels);
+                }
             }
         }
     }
     
-    if (!done) { break; }
-    //
-    }
-    
-    for (i = 0; i < MAXIMUM_AUDIO_OUT; i++) {
-    //
-    int done = 0;
-    
-    string_sprintf (key, PD_STRING, "AudioOutDeviceChannels%d", i + 1);
-    
-    if (properties_getKey (key, value, PD_STRING)) {
-        if (sscanf (value, "%d", &channelOut[i]) == 1) {    
-            string_sprintf (key, PD_STRING, "AudioOutDeviceName%d", i + 1);
-            if (properties_getKey (key, value, PD_STRING)) {
-                int device = audio_numberWithName (1, value); 
-                if (device >= 0) { audioOut[i] = device; numberOfAudioOut++; done = 1; }
+    for (i = 0; i < DEVICES_MAXIMUM_IO; i++) {
+
+        int channels;
+        
+        string_sprintf (k, PD_STRING, "AudioOutDeviceChannels%d", i + 1);
+        
+        if (properties_getKey (k, v, PD_STRING)) {
+            if (sscanf (v, "%d", &channels) == 1) {    
+                string_sprintf (k, PD_STRING, "AudioOutDeviceName%d", i + 1);
+                if (properties_getKey (k, v, PD_STRING)) {
+                    devices_appendAudioOut (&audio, v, channels);
+                }
             }
         }
-    }
-    
-    if (!done) { break; }
-    //
     }
         
     /* MIDI devices. */
     
-    for (i = 0; i < MAXIMUM_MIDI_IN; i++) {
-    //
-    int device;
-    
-    string_sprintf (key, PD_STRING, "MidiInDeviceName%d", i + 1);
-    
-    if (!properties_getKey (key, value, PD_STRING)) { break; }
-    else {
-        if ((device = midi_numberWithName (0, value)) >= 0) { 
-            midiIn[i] = device;
-            numberOfMidiIn++;
+    for (i = 0; i < DEVICES_MAXIMUM_IO; i++) {
+
+        string_sprintf (k, PD_STRING, "MidiInDeviceName%d", i + 1);
+        
+        if (!properties_getKey (k, v, PD_STRING)) { break; }
+        else {
+            devices_appendMidiIn (&midi, v);
         }
-    }
-    //
     }
 
-    for (i = 0; i < MAXIMUM_MIDI_OUT; i++) {
-    //
-    int device;
-    
-    string_sprintf (key, PD_STRING, "MidiOutDeviceName%d", i + 1);
-    
-    if (!properties_getKey (key, value, PD_STRING)) { break; }
-    else { 
-        if ((device = midi_numberWithName (1, value)) >= 0) {
-            midiOut[i] = device;
-            numberOfMidiOut++;
+    for (i = 0; i < DEVICES_MAXIMUM_IO; i++) {
+
+        string_sprintf (k, PD_STRING, "MidiOutDeviceName%d", i + 1);
+        
+        if (!properties_getKey (k, v, PD_STRING)) { break; }
+        else { 
+            devices_appendMidiOut (&midi, v);
         }
     }
     //
     }
-    //
-    }
     
-    audio_setDevicesWithDefault (numberOfAudioIn,
-        audioIn, 
-        channelIn,
-        numberOfAudioOut,
-        audioOut,
-        channelOut, 
-        sampleRate,
-        blockSize);
-                            
-    midi_setDefaultDevices (numberOfMidiIn, midiIn, numberOfMidiOut, midiOut);
-        
+    devices_setDefaultsMidi (&midi);
+    devices_setDefaultsAudio (&audio);
+    
+    midi_setDevices (&midi);
+    audio_setDevices (&audio, sampleRate, blockSize);
+    
     properties_loadClose();
 }
 
@@ -169,12 +138,12 @@ void preferences_save (void *dummy)
     int numberOfMidiIn                  = 0;
     int numberOfMidiOut                 = 0;
     
-    int audioIn[MAXIMUM_AUDIO_IN]       = { 0 };
-    int audioOut[MAXIMUM_AUDIO_OUT]     = { 0 };
-    int midiIn[MAXIMUM_MIDI_IN]         = { 0 };
-    int midiOut[MAXIMUM_MIDI_OUT]       = { 0 };
-    int channelIn[MAXIMUM_AUDIO_IN]     = { 0 };
-    int channelOut[MAXIMUM_AUDIO_OUT]   = { 0 };
+    int audioIn[DEVICES_MAXIMUM_IO]       = { 0 };
+    int audioOut[DEVICES_MAXIMUM_IO]     = { 0 };
+    int midiIn[DEVICES_MAXIMUM_IO]         = { 0 };
+    int midiOut[DEVICES_MAXIMUM_IO]       = { 0 };
+    int channelIn[DEVICES_MAXIMUM_IO]     = { 0 };
+    int channelOut[DEVICES_MAXIMUM_IO]   = { 0 };
     
     char key[PD_STRING]                 = { 0 };
     char value[PD_STRING]               = { 0 };
@@ -216,7 +185,7 @@ void preferences_save (void *dummy)
     for (i = 0; i < numberOfAudioIn; i++) {
     //
     string_sprintf (key, PD_STRING, "AudioInDeviceName%d", i + 1);
-    if (audio_numberToName (0, audioIn[i], value, PD_STRING)) { break; }
+    if (audio_deviceAsStringWithNumber (0, audioIn[i], value, PD_STRING)) { break; }
     else {
         properties_setKey (key, value);
         string_sprintf (key, PD_STRING, "AudioInDeviceChannels%d", i + 1);
@@ -229,7 +198,7 @@ void preferences_save (void *dummy)
     for (i = 0; i < numberOfAudioOut; i++) {
     //
     string_sprintf (key, PD_STRING, "AudioOutDeviceName%d", i + 1);
-    if (audio_numberToName (1, audioOut[i], value, PD_STRING)) { break; }
+    if (audio_deviceAsStringWithNumber (1, audioOut[i], value, PD_STRING)) { break; }
     else {
         properties_setKey (key, value);
         string_sprintf (key, PD_STRING, "AudioOutDeviceChannels%d", i + 1);
@@ -244,7 +213,7 @@ void preferences_save (void *dummy)
     for (i = 0; i < numberOfMidiIn; i++) {
     //
     string_sprintf (key, PD_STRING, "MidiInDeviceName%d", i + 1);
-    midi_numberToName (0, midiIn[i], value, PD_STRING);
+    midi_deviceAsStringWithNumber (0, midiIn[i], value, PD_STRING);
     properties_setKey (key, value);
     //
     }
@@ -252,7 +221,7 @@ void preferences_save (void *dummy)
     for (i = 0; i < numberOfMidiOut; i++) {
     //
     string_sprintf (key, PD_STRING, "MidiOutDeviceName%d", i + 1);
-    midi_numberToName (1, midiOut[i], value, PD_STRING);
+    midi_deviceAsStringWithNumber (1, midiOut[i], value, PD_STRING);
     properties_setKey (key, value);
     //
     }

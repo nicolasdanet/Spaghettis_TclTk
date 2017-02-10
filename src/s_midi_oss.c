@@ -32,8 +32,8 @@ static char midioss_detectedOutNames[MIDIOSS_DEVICES * MIDIOSS_DESCRIPTION];    
 
 static int  midioss_numberOfDevicesIn;
 static int  midioss_numberOfDevicesOut;
-static int  midioss_devicesIn[MAXIMUM_MIDI_IN];
-static int  midioss_devicesOut[MAXIMUM_MIDI_OUT];
+static int  midioss_devicesIn[DEVICES_MAXIMUM_IO];
+static int  midioss_devicesOut[DEVICES_MAXIMUM_IO];
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -232,18 +232,18 @@ t_error midi_getListsNative (char *devicesIn,
     int *numberOfDevicesOut)
 {
     int i;
-    int m = PD_MIN (midioss_numberOfDetectedIn, MAXIMUM_DEVICES);
-    int n = PD_MIN (midioss_numberOfDetectedOut, MAXIMUM_DEVICES);
+    int m = PD_MIN (midioss_numberOfDetectedIn, DEVICES_MAXIMUM_DEVICES);
+    int n = PD_MIN (midioss_numberOfDetectedOut, DEVICES_MAXIMUM_DEVICES);
 
     t_error err = PD_ERROR_NONE;
     
     for (i = 0; i < m; i++) {
-        char *s = devicesIn + (i * MAXIMUM_DESCRIPTION);
+        char *s = devicesIn + (i * DEVICES_DESCRIPTION);
         err |= string_sprintf (s, "/dev/midi%s", midioss_detectedInNames[i]);
     }
     
     for (i = 0; i < n; i++) {
-        char *s = devicesOut + (i * MAXIMUM_DESCRIPTION);
+        char *s = devicesOut + (i * DEVICES_DESCRIPTION);
         err |= string_sprintf (s, "/dev/midi%s", midioss_detectedOutNames[i]);
     }
     

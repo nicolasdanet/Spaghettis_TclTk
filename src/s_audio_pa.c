@@ -374,13 +374,13 @@ t_error audio_getListsNative (char *devicesIn,
     //
     const PaDeviceInfo *info = Pa_GetDeviceInfo (i);
         
-    if (info->maxInputChannels > 0 && m < MAXIMUM_DEVICES) {
-        err |= string_copy (devicesIn + (m * MAXIMUM_DESCRIPTION),  MAXIMUM_DESCRIPTION, info->name);
+    if (info->maxInputChannels > 0 && m < DEVICES_MAXIMUM_DEVICES) {
+        err |= string_copy (devicesIn + (m * DEVICES_DESCRIPTION),  DEVICES_DESCRIPTION, info->name);
         m++;
     }
     
-    if (info->maxOutputChannels > 0 && n < MAXIMUM_DEVICES) {
-        err |= string_copy (devicesOut + (n * MAXIMUM_DESCRIPTION), MAXIMUM_DESCRIPTION, info->name);
+    if (info->maxOutputChannels > 0 && n < DEVICES_MAXIMUM_DEVICES) {
+        err |= string_copy (devicesOut + (n * DEVICES_DESCRIPTION), DEVICES_DESCRIPTION, info->name);
         n++;
     }
     //

@@ -468,8 +468,8 @@ t_error audio_getListsNative (char *devicesIn,
 {
     t_error err = PD_ERROR_NONE;
     
-    err |= string_copy (devicesIn,  MAXIMUM_DESCRIPTION, "JACK ports");
-    err |= string_copy (devicesOut, MAXIMUM_DESCRIPTION, "JACK ports");
+    err |= string_copy (devicesIn,  DEVICES_DESCRIPTION, "JACK ports");
+    err |= string_copy (devicesOut, DEVICES_DESCRIPTION, "JACK ports");
     
     *numberOfDevicesIn  = 1;
     *numberOfDevicesOut = 1;

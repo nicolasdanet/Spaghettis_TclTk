@@ -272,6 +272,7 @@
 		37B6D30B1DBBB16000ECF049 /* x_sysexin.c in Sources */ = {isa = PBXBuildFile; fileRef = 37B6D30A1DBBB16000ECF049 /* x_sysexin.c */; };
 		37B79AFB1DCB775900EB423B /* d_vinlet.c in Sources */ = {isa = PBXBuildFile; fileRef = 37B79AFA1DCB775900EB423B /* d_vinlet.c */; };
 		37B79B4A1DCB7E0300EB423B /* d_voutlet.c in Sources */ = {isa = PBXBuildFile; fileRef = 37B79B491DCB7E0300EB423B /* d_voutlet.c */; };
+		37B911AB1E4C78FE001D9136 /* s_devices.c in Sources */ = {isa = PBXBuildFile; fileRef = 37B911A91E4C78FE001D9136 /* s_devices.c */; };
 		37B9B6141DA949CE007FEB07 /* m_autorelease.c in Sources */ = {isa = PBXBuildFile; fileRef = 37B9B6131DA949CE007FEB07 /* m_autorelease.c */; };
 		37BA30821CD1DB0F0091113F /* g_object.c in Sources */ = {isa = PBXBuildFile; fileRef = 37BA30811CD1DB0F0091113F /* g_object.c */; };
 		37C000551DE2FE1B00F90584 /* d_throw.c in Sources */ = {isa = PBXBuildFile; fileRef = 37C000541DE2FE1B00F90584 /* d_throw.c */; };
@@ -522,6 +523,7 @@
 		3762D32D1E0531D900385DB9 /* d_soundfiler.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_soundfiler.c; path = src/d_soundfiler.c; sourceTree = "<group>"; };
 		376962D01DBFAF50001B91B5 /* d_dsp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_dsp.h; path = src/d_dsp.h; sourceTree = "<group>"; };
 		3769632F1DBFB4C4001B91B5 /* d_perform.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_perform.c; path = src/d_perform.c; sourceTree = "<group>"; };
+		376CF0681E4CBB0400B17967 /* s_apis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = s_apis.h; path = src/s_apis.h; sourceTree = "<group>"; };
 		37702F321D41E7FE00AE3FE2 /* g_scalar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_scalar.h; path = src/g_scalar.h; sourceTree = "<group>"; };
 		37702F511D41EA3300AE3FE2 /* g_canvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_canvas.h; path = src/g_canvas.h; sourceTree = "<group>"; };
 		3770AD891DC2338300ADAE26 /* d_block.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_block.c; path = src/d_block.c; sourceTree = "<group>"; };
@@ -719,6 +721,8 @@
 		37B6D30A1DBBB16000ECF049 /* x_sysexin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_sysexin.c; path = src/x_sysexin.c; sourceTree = "<group>"; };
 		37B79AFA1DCB775900EB423B /* d_vinlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_vinlet.c; path = src/d_vinlet.c; sourceTree = "<group>"; };
 		37B79B491DCB7E0300EB423B /* d_voutlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_voutlet.c; path = src/d_voutlet.c; sourceTree = "<group>"; };
+		37B911A91E4C78FE001D9136 /* s_devices.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_devices.c; path = src/s_devices.c; sourceTree = "<group>"; };
+		37B911AA1E4C78FE001D9136 /* s_devices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = s_devices.h; path = src/s_devices.h; sourceTree = "<group>"; };
 		37B9B6131DA949CE007FEB07 /* m_autorelease.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_autorelease.c; path = src/m_autorelease.c; sourceTree = "<group>"; };
 		37BA30811CD1DB0F0091113F /* g_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_object.c; path = src/g_object.c; sourceTree = "<group>"; };
 		37C000541DE2FE1B00F90584 /* d_throw.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_throw.c; path = src/d_throw.c; sourceTree = "<group>"; };
@@ -1036,6 +1040,8 @@
 				378972001C4F716700263434 /* s_system.h */,
 				37A404B71C789F6200001FD3 /* s_midi.h */,
 				378972021C4F716700263434 /* s_utf8.h */,
+				37B911AA1E4C78FE001D9136 /* s_devices.h */,
+				376CF0681E4CBB0400B17967 /* s_apis.h */,
 				378971F21C4F716700263434 /* s_entry.c */,
 				378971F61C4F716700263434 /* s_main.c */,
 				378971E41C4F716700263434 /* s_scheduler.c */,
@@ -1058,6 +1064,7 @@
 				378971FD1C4F716700263434 /* s_post.c */,
 				37F5138B1C9B0EA80076A0C4 /* s_logger.c */,
 				378972011C4F716700263434 /* s_utf8.c */,
+				37B911A91E4C78FE001D9136 /* s_devices.c */,
 				37E224BE1E4B542B00314AA4 /* s_properties.c */,
 				378971F31C4F716700263434 /* s_preferences.c */,
 				37A402671C77524D00001FD3 /* s_midiAPI.c */,
@@ -2094,6 +2101,7 @@
 				3759441E1E48E04A00CF3FD7 /* tinyexpr.c in Sources */,
 				371526B61E49D03E00712D43 /* x_expr.c in Sources */,
 				37E224BF1E4B542B00314AA4 /* s_properties.c in Sources */,
+				37B911AB1E4C78FE001D9136 /* s_devices.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

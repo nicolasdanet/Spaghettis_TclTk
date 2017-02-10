@@ -28,8 +28,8 @@
 static int midipm_numberOfDevicesIn;                        /* Shared. */
 static int midipm_numberOfDevicesOut;                       /* Shared. */
 
-static PmStream *midipm_devicesIn[MAXIMUM_MIDI_IN];         /* Shared. */
-static PmStream *midipm_devicesOut[MAXIMUM_MIDI_OUT];       /* Shared. */
+static PmStream *midipm_devicesIn[DEVICES_MAXIMUM_IO];         /* Shared. */
+static PmStream *midipm_devicesOut[DEVICES_MAXIMUM_IO];       /* Shared. */
 
 static int midipm_sysexFlag;                                /* Shared. */
 
@@ -319,13 +319,13 @@ t_error midi_getListsNative (char *devicesIn,
     //
     const PmDeviceInfo *info = Pm_GetDeviceInfo (i);
 
-    if (info->input && m < MAXIMUM_DEVICES) {
-        err |= string_copy (devicesIn + (m * MAXIMUM_DESCRIPTION), MAXIMUM_DESCRIPTION, info->name);
+    if (info->input && m < DEVICES_MAXIMUM_DEVICES) {
+        err |= string_copy (devicesIn + (m * DEVICES_DESCRIPTION), DEVICES_DESCRIPTION, info->name);
         m++;
     }
     
-    if (info->output && n < MAXIMUM_DEVICES) {
-        err |= string_copy (devicesOut + (n * MAXIMUM_DESCRIPTION), MAXIMUM_DESCRIPTION, info->name);
+    if (info->output && n < DEVICES_MAXIMUM_DEVICES) {
+        err |= string_copy (devicesOut + (n * DEVICES_DESCRIPTION), DEVICES_DESCRIPTION, info->name);
         n++;
     }
     //
