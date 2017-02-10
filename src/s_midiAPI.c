@@ -83,7 +83,7 @@ static t_error midi_requireDialogInitialize (void)
 
 void midi_open (void)
 {
-    t_devicesproperties midi; devices_init (&midi);
+    t_devicesproperties midi; devices_initAsMidi (&midi);
      
     midi_getDevices (&midi);
     

@@ -126,7 +126,7 @@ t_error audio_open (void)
 {
     t_error err = PD_ERROR;
     
-    t_devicesproperties audio; devices_init (&audio);
+    t_devicesproperties audio; devices_initAsAudio (&audio);
     
     audio_getDevices (&audio);
     

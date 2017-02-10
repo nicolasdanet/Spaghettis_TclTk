@@ -39,15 +39,17 @@ typedef struct _devicesproperties {
     int d_out           [DEVICES_MAXIMUM_IO];
     int d_inChannels    [DEVICES_MAXIMUM_IO];
     int d_outChannels   [DEVICES_MAXIMUM_IO];
+    int d_isMidi;
     } t_devicesproperties;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        devices_init                        (t_devicesproperties *p);
-void        devices_setDefaultsMidi             (t_devicesproperties *p);
-void        devices_setDefaultsAudio            (t_devicesproperties *p);
+void        devices_initAsAudio                 (t_devicesproperties *p);
+void        devices_initAsMidi                  (t_devicesproperties *p);
+void        devices_setDefaults                 (t_devicesproperties *p);
+
 void        devices_setBlockSize                (t_devicesproperties *p, int n);
 void        devices_setSampleRate               (t_devicesproperties *p, int n);
 void        devices_checkForDisabledChannels    (t_devicesproperties *p);
@@ -60,6 +62,9 @@ t_error     devices_appendMidiIn                (t_devicesproperties *p, char *d
 t_error     devices_appendMidiOut               (t_devicesproperties *p, char *device);
 t_error     devices_appendAudioIn               (t_devicesproperties *p, char *device, int channels);
 t_error     devices_appendAudioOut              (t_devicesproperties *p, char *device, int channels);
+
+t_error     devices_getInAtIndexAsString        (t_devicesproperties *p, int i, char *dest, size_t size);
+t_error     devices_getOutAtIndexAsString       (t_devicesproperties *p, int i, char *dest, size_t size);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -93,6 +98,7 @@ static inline int devices_getInAtIndex (t_devicesproperties *p, int i)
 
 static inline int devices_getInChannelsAtIndex (t_devicesproperties *p, int i)
 {
+    PD_ASSERT (!p->d_isMidi);
     PD_ASSERT (i < DEVICES_MAXIMUM_IO);
     
     return p->d_inChannels[i];
@@ -112,6 +118,7 @@ static inline int devices_getOutAtIndex (t_devicesproperties *p, int i)
 
 static inline int devices_getOutChannelsAtIndex (t_devicesproperties *p, int i)
 {
+    PD_ASSERT (!p->d_isMidi);
     PD_ASSERT (i < DEVICES_MAXIMUM_IO);
     
     return p->d_outChannels[i];
