@@ -33,10 +33,40 @@ static t_deviceslist    midi_devices;       /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#if 1
+
+/* The APIs provided detect devices only at startup thus it can be cached. */
+
+static t_error midi_getLists (t_deviceslist *l)
+{
+    static int cacheLoaded = 0;
+    static t_deviceslist cache;
+    
+    t_error err = PD_ERROR_NONE;
+    
+    if (!cacheLoaded) {
+    //
+    deviceslist_init (&cache);
+    err = midi_getListsNative (&cache);
+    if (!err) { cacheLoaded = 1; }
+    //
+    }
+    
+    deviceslist_copy (l, &cache);
+    
+    return err;
+}
+
+#endif
+
+#if 0
+
 static t_error midi_getLists (t_deviceslist *l)
 {
     deviceslist_init (l); return midi_getListsNative (l);
 }
+
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

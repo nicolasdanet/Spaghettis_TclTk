@@ -153,6 +153,7 @@ typedef struct _deviceslist {
 #pragma mark -
 
 void        deviceslist_init                        (t_deviceslist *p);
+void        deviceslist_copy                        (t_deviceslist *dest, t_deviceslist *src);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
