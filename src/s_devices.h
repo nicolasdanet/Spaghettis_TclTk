@@ -52,7 +52,7 @@ void        devices_setDefaults                 (t_devicesproperties *p);
 
 void        devices_setBlockSize                (t_devicesproperties *p, int n);
 void        devices_setSampleRate               (t_devicesproperties *p, int n);
-void        devices_checkForDisabledChannels    (t_devicesproperties *p);
+void        devices_checkChannels               (t_devicesproperties *p);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -133,28 +133,30 @@ typedef struct _deviceslist {
     int     d_outSize;
     char    d_inNames   [DEVICES_MAXIMUM_DEVICES * DEVICES_DESCRIPTION];
     char    d_outNames  [DEVICES_MAXIMUM_DEVICES * DEVICES_DESCRIPTION];
-    int     d_isMidi;
     } t_deviceslist;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        deviceslist_initAsAudio             (t_deviceslist *p);
-void        deviceslist_initAsMidi              (t_deviceslist *p);
+void        deviceslist_init                    (t_deviceslist *p);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error     deviceslist_appendIn                (t_deviceslist *p, int n);
-t_error     deviceslist_appendOut               (t_deviceslist *p, int n);
+t_error     deviceslist_appendIn                (t_deviceslist *p, const char *device);
+t_error     deviceslist_appendOut               (t_deviceslist *p, const char *device);
+t_error     deviceslist_appendMidiInAsNumber    (t_deviceslist *p, int n);
+t_error     deviceslist_appendMidiOutAsNumber   (t_deviceslist *p, int n);
+t_error     deviceslist_appendAudioInAsNumber   (t_deviceslist *p, int n);
+t_error     deviceslist_appendAudioOutAsNumber  (t_deviceslist *p, int n);
 
 char        *deviceslist_getInAtIndex           (t_deviceslist *p, int i);
 char        *deviceslist_getOutAtIndex          (t_deviceslist *p, int i);
 
-int         deviceslist_containsIn              (t_deviceslist *p, char *s);
-int         deviceslist_containsOut             (t_deviceslist *p, char *s);
+int         deviceslist_containsIn              (t_deviceslist *p, char *device);
+int         deviceslist_containsOut             (t_deviceslist *p, char *device);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

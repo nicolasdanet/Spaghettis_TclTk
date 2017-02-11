@@ -226,10 +226,7 @@ void midi_pollNative (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error midi_getListsNative (char *devicesIn,
-    int *numberOfDevicesIn,
-    char *devicesOut,
-    int *numberOfDevicesOut)
+t_error midi_getListsNative (t_deviceslist *p)
 {
     int i;
     int m = PD_MIN (midioss_numberOfDetectedIn, DEVICES_MAXIMUM_DEVICES);
@@ -238,17 +235,16 @@ t_error midi_getListsNative (char *devicesIn,
     t_error err = PD_ERROR_NONE;
     
     for (i = 0; i < m; i++) {
-        char *s = devicesIn + (i * DEVICES_DESCRIPTION);
-        err |= string_sprintf (s, PD_STRING, "/dev/midi%s", midioss_detectedInNames[i]);
+        char t[DEVICES_DESCRIPTION] = { 0 };
+        err |= string_sprintf (t, DEVICES_DESCRIPTION, "/dev/midi%s", midioss_detectedInNames[i]);
+        deviceslist_appendIn (p, t);
     }
     
     for (i = 0; i < n; i++) {
-        char *s = devicesOut + (i * DEVICES_DESCRIPTION);
-        err |= string_sprintf (s, PD_STRING, "/dev/midi%s", midioss_detectedOutNames[i]);
+        char t[DEVICES_DESCRIPTION] = { 0 };
+        err |= string_sprintf (t, DEVICES_DESCRIPTION, "/dev/midi%s", midioss_detectedOutNames[i]);
+        deviceslist_appendOut (p, t);
     }
-    
-    *numberOfDevicesIn  = m;
-    *numberOfDevicesOut = n;
     
     return err;
 }

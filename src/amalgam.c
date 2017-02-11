@@ -66,7 +66,6 @@
 #include "s_file.c"
 #include "s_path.c"
 #include "s_loader.c"
-#include "s_devices.c"
 #include "s_properties.c"
 #include "s_preferences.c"
 #include "s_memory.c"
@@ -75,6 +74,8 @@
 #include "s_post.c"
 #include "s_logger.c"
 #include "s_utf8.c"
+#include "s_devices.c"
+#include "s_deviceslist.c"
 #include "s_midiAPI.c"
 #include "s_audioAPI.c"
 

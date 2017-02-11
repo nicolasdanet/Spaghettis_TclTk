@@ -234,10 +234,7 @@ void midi_pollNative (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error midi_getListsNative (char *devicesIn, 
-    int *numberOfDevicesIn, 
-    char *devicesOut, 
-    int *numberOfDevicesOut)
+t_error midi_getListsNative (t_deviceslist *p)
 {
     int i;
     int m = PD_MIN (4, DEVICES_MAXIMUM_DEVICES);
@@ -245,20 +242,8 @@ t_error midi_getListsNative (char *devicesIn,
     
     t_error err = PD_ERROR_NONE;
     
-    for (i = 0; i < m; i++) {
-    //
-    err |= string_copy (devicesIn + (i * DEVICES_DESCRIPTION), DEVICES_DESCRIPTION, "ALSA virtual device");
-    //
-    }
-    
-    for (i = 0; i < n; i++) {
-    //
-    err |= string_copy (devicesOut + (i * DEVICES_DESCRIPTION), DEVICES_DESCRIPTION, "ALSA virtual device");
-    //
-    }
-    
-    *numberOfDevicesIn  = m;
-    *numberOfDevicesOut = n;
+    for (i = 0; i < m; i++) { err |= deviceslist_appendIn (p, "ALSA virtual device");  }
+    for (i = 0; i < n; i++) { err |= deviceslist_appendOut (p, "ALSA virtual device"); }
   
     return err;
 }

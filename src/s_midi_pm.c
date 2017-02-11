@@ -304,35 +304,18 @@ void midi_pollNative (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error midi_getListsNative (char *devicesIn,
-    int *numberOfDevicesIn, 
-    char *devicesOut, 
-    int *numberOfDevicesOut)
+t_error midi_getListsNative (t_deviceslist *p)
 {
-    int i;
-    int m = 0;
-    int n = 0;
-    
     t_error err = PD_ERROR_NONE;
-    
+    int i;
+        
     for (i = 0; i < Pm_CountDevices(); i++) {
-    //
-    const PmDeviceInfo *info = Pm_GetDeviceInfo (i);
 
-    if (info->input && m < DEVICES_MAXIMUM_DEVICES) {
-        err |= string_copy (devicesIn + (m * DEVICES_DESCRIPTION), DEVICES_DESCRIPTION, info->name);
-        m++;
+        const PmDeviceInfo *info = Pm_GetDeviceInfo (i);
+
+        if (info->input)  { err |= deviceslist_appendIn (p, info->name);  }
+        if (info->output) { err |= deviceslist_appendOut (p, info->name); }
     }
-    
-    if (info->output && n < DEVICES_MAXIMUM_DEVICES) {
-        err |= string_copy (devicesOut + (n * DEVICES_DESCRIPTION), DEVICES_DESCRIPTION, info->name);
-        n++;
-    }
-    //
-    }
-    
-    *numberOfDevicesIn  = m;
-    *numberOfDevicesOut = n;
     
     return err;
 }

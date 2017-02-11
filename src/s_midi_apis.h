@@ -22,10 +22,7 @@ char        *midi_nameNative                (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error     midi_getListsNative             (char *devicesIn, 
-                                                int  *numberOfDevicesIn, 
-                                                char *devicesOut, 
-                                                int  *numberOfDevicesOut);
+t_error     midi_getListsNative             (t_deviceslist *p);
                                                 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

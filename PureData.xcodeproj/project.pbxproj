@@ -130,6 +130,8 @@
 		375D72E71D86A5F000D079B1 /* x_arrayclient.c in Sources */ = {isa = PBXBuildFile; fileRef = 375D72E61D86A5F000D079B1 /* x_arrayclient.c */; };
 		375D73211D86ACAC00D079B1 /* x_arraymin.c in Sources */ = {isa = PBXBuildFile; fileRef = 375D73201D86ACAC00D079B1 /* x_arraymin.c */; };
 		375E88DF1D901BA90052D22C /* x_listinlet.c in Sources */ = {isa = PBXBuildFile; fileRef = 375E88DE1D901BA90052D22C /* x_listinlet.c */; };
+		376209A61E4F0FC300D97CF4 /* s_deviceslist.c in Sources */ = {isa = PBXBuildFile; fileRef = 376209A51E4F0FC300D97CF4 /* s_deviceslist.c */; };
+		37620A121E4F201A00D97CF4 /* s_midi_pm.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971FA1C4F716700263434 /* s_midi_pm.c */; };
 		3762D2BD1E051E2700385DB9 /* d_writesf.c in Sources */ = {isa = PBXBuildFile; fileRef = 3762D2BC1E051E2700385DB9 /* d_writesf.c */; };
 		3762D2FD1E05308C00385DB9 /* d_readsf.c in Sources */ = {isa = PBXBuildFile; fileRef = 3762D2FC1E05308C00385DB9 /* d_readsf.c */; };
 		3762D32E1E0531D900385DB9 /* d_soundfiler.c in Sources */ = {isa = PBXBuildFile; fileRef = 3762D32D1E0531D900385DB9 /* d_soundfiler.c */; };
@@ -204,7 +206,6 @@
 		3789724F1C4F716800263434 /* s_interface.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971F41C4F716700263434 /* s_interface.c */; };
 		378972501C4F716800263434 /* s_loader.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971F51C4F716700263434 /* s_loader.c */; };
 		378972511C4F716800263434 /* s_main.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971F61C4F716700263434 /* s_main.c */; };
-		378972551C4F716800263434 /* s_midi_pm.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971FA1C4F716700263434 /* s_midi_pm.c */; };
 		378972561C4F716800263434 /* s_midi.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971FB1C4F716700263434 /* s_midi.c */; };
 		378972571C4F716800263434 /* s_path.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971FC1C4F716700263434 /* s_path.c */; };
 		378972581C4F716800263434 /* s_post.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971FD1C4F716700263434 /* s_post.c */; };
@@ -518,6 +519,7 @@
 		375D72E61D86A5F000D079B1 /* x_arrayclient.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arrayclient.c; path = src/x_arrayclient.c; sourceTree = "<group>"; };
 		375D73201D86ACAC00D079B1 /* x_arraymin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arraymin.c; path = src/x_arraymin.c; sourceTree = "<group>"; };
 		375E88DE1D901BA90052D22C /* x_listinlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_listinlet.c; path = src/x_listinlet.c; sourceTree = "<group>"; };
+		376209A51E4F0FC300D97CF4 /* s_deviceslist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_deviceslist.c; path = src/s_deviceslist.c; sourceTree = "<group>"; };
 		3762D2BC1E051E2700385DB9 /* d_writesf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_writesf.c; path = src/d_writesf.c; sourceTree = "<group>"; };
 		3762D2FC1E05308C00385DB9 /* d_readsf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_readsf.c; path = src/d_readsf.c; sourceTree = "<group>"; };
 		3762D32D1E0531D900385DB9 /* d_soundfiler.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_soundfiler.c; path = src/d_soundfiler.c; sourceTree = "<group>"; };
@@ -1040,7 +1042,6 @@
 				378972001C4F716700263434 /* s_system.h */,
 				37A404B71C789F6200001FD3 /* s_midi.h */,
 				378972021C4F716700263434 /* s_utf8.h */,
-				37B911AA1E4C78FE001D9136 /* s_devices.h */,
 				378971F21C4F716700263434 /* s_entry.c */,
 				378971F61C4F716700263434 /* s_main.c */,
 				378971E41C4F716700263434 /* s_scheduler.c */,
@@ -1059,7 +1060,6 @@
 				378B47381C6C660B004099AA /* s_file.c */,
 				378971FC1C4F716700263434 /* s_path.c */,
 				378971F51C4F716700263434 /* s_loader.c */,
-				37B911A91E4C78FE001D9136 /* s_devices.c */,
 				37E224BE1E4B542B00314AA4 /* s_properties.c */,
 				378971F31C4F716700263434 /* s_preferences.c */,
 				378971DE1C4F716700263434 /* s_memory.c */,
@@ -1109,8 +1109,11 @@
 			isa = PBXGroup;
 			children = (
 				376CF0681E4CBB0400B17967 /* s_apis.h */,
+				37B911AA1E4C78FE001D9136 /* s_devices.h */,
 				37A402671C77524D00001FD3 /* s_midiAPI.c */,
 				373F78241C7E097A0083D316 /* s_audioAPI.c */,
+				37B911A91E4C78FE001D9136 /* s_devices.c */,
+				376209A51E4F0FC300D97CF4 /* s_deviceslist.c */,
 				37F513891C9B0E7E0076A0C4 /* Log */,
 				37A59CDB1C538B3200FBD0AD /* MIDI */,
 				37A59CDC1C538B4800FBD0AD /* Audio */,
@@ -1853,7 +1856,6 @@
 				3789724F1C4F716800263434 /* s_interface.c in Sources */,
 				378972501C4F716800263434 /* s_loader.c in Sources */,
 				378972511C4F716800263434 /* s_main.c in Sources */,
-				378972551C4F716800263434 /* s_midi_pm.c in Sources */,
 				378972561C4F716800263434 /* s_midi.c in Sources */,
 				378972571C4F716800263434 /* s_path.c in Sources */,
 				378972581C4F716800263434 /* s_post.c in Sources */,
@@ -2102,6 +2104,8 @@
 				371526B61E49D03E00712D43 /* x_expr.c in Sources */,
 				37E224BF1E4B542B00314AA4 /* s_properties.c in Sources */,
 				37B911AB1E4C78FE001D9136 /* s_devices.c in Sources */,
+				376209A61E4F0FC300D97CF4 /* s_deviceslist.c in Sources */,
+				37620A121E4F201A00D97CF4 /* s_midi_pm.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

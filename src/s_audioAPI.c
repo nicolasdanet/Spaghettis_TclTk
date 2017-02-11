@@ -51,6 +51,8 @@ static t_error audio_getLists (char *i, int *m, char *o, int *n, int *multiple)
     return audio_getListsNative (i, m, o, n, multiple);
 }
 
+#if 0
+
 static t_error audio_requireDialogInitialize (int *multiple)
 {
     int  m = 0;
@@ -86,6 +88,8 @@ static t_error audio_requireDialogInitialize (int *multiple)
     
     return err;
 }
+
+#endif
 
 static void audio_setDevicesProceed (t_devicesproperties *p)
 {
@@ -138,7 +142,7 @@ t_error audio_open (void)
     audio_setSampleRate (devices_getSampleRate (&audio));
     audio_initializeMemory (audio_getChannelsIn(), audio_getChannelsOut());
     
-    devices_checkForDisabledChannels (&audio);
+    devices_checkChannels (&audio);
     
     err = audio_openNative (devices_getSampleRate (&audio),
             (m > 0 ? devices_getInChannelsAtIndex (&audio, 0) : 0),
