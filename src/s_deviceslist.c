@@ -132,7 +132,7 @@ t_error deviceslist_appendAudioOutAsNumber (t_deviceslist *p, int n)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-char *deviceslist_getInAtIndex (t_deviceslist *p, int i)
+char *deviceslist_getInAtIndexAsString (t_deviceslist *p, int i)
 {
     PD_ASSERT (i >= 0);
     PD_ASSERT (i < DEVICES_MAXIMUM_DEVICES);
@@ -143,7 +143,7 @@ char *deviceslist_getInAtIndex (t_deviceslist *p, int i)
     }
 }
 
-char *deviceslist_getOutAtIndex (t_deviceslist *p, int i)
+char *deviceslist_getOutAtIndexAsString (t_deviceslist *p, int i)
 {
     PD_ASSERT (i >= 0);
     PD_ASSERT (i < DEVICES_MAXIMUM_DEVICES);

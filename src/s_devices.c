@@ -126,12 +126,10 @@ void devices_checkChannels (t_devicesproperties *p)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark-
+#pragma mark -
 
-t_error devices_appendMidiIn (t_devicesproperties *p, char *device)
+t_error devices_appendMidiInAsNumber (t_devicesproperties *p, int n)
 {
-    int n = midi_deviceAsNumberWithString (0, device);
-    
     PD_ASSERT (p->d_isMidi);
     
     if (n < 0 || p->d_inSize >= DEVICES_MAXIMUM_IO) { return PD_ERROR; }
@@ -143,10 +141,8 @@ t_error devices_appendMidiIn (t_devicesproperties *p, char *device)
     return PD_ERROR_NONE;
 }
 
-t_error devices_appendMidiOut (t_devicesproperties *p, char *device)
+t_error devices_appendMidiOutAsNumber (t_devicesproperties *p, int n)
 {
-    int n = midi_deviceAsNumberWithString (1, device);
-    
     PD_ASSERT (p->d_isMidi);
     
     if (n < 0 || p->d_outSize >= DEVICES_MAXIMUM_IO) { return PD_ERROR; }
@@ -158,10 +154,8 @@ t_error devices_appendMidiOut (t_devicesproperties *p, char *device)
     return PD_ERROR_NONE;
 }
 
-t_error devices_appendAudioIn (t_devicesproperties *p, char *device, int channels)
+t_error devices_appendAudioInAsNumber (t_devicesproperties *p, int n, int channels)
 {
-    int n = audio_deviceAsNumberWithString (0, device);
-    
     PD_ASSERT (!p->d_isMidi);
     
     if (n < 0 || p->d_inSize >= DEVICES_MAXIMUM_IO) { return PD_ERROR; }
@@ -174,10 +168,8 @@ t_error devices_appendAudioIn (t_devicesproperties *p, char *device, int channel
     return PD_ERROR_NONE;
 }
 
-t_error devices_appendAudioOut (t_devicesproperties *p, char *device, int channels)
+t_error devices_appendAudioOutAsNumber (t_devicesproperties *p, int n, int channels)
 {
-    int n = audio_deviceAsNumberWithString (1, device); 
-    
     PD_ASSERT (!p->d_isMidi);
     
     if (n < 0 || p->d_outSize >= DEVICES_MAXIMUM_IO) { return PD_ERROR; }
@@ -188,6 +180,30 @@ t_error devices_appendAudioOut (t_devicesproperties *p, char *device, int channe
     }
     
     return PD_ERROR_NONE;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark-
+
+t_error devices_appendMidiIn (t_devicesproperties *p, char *device)
+{
+    return devices_appendMidiInAsNumber (p, midi_deviceAsNumberWithString (0, device));
+}
+
+t_error devices_appendMidiOut (t_devicesproperties *p, char *device)
+{
+    return devices_appendMidiOutAsNumber (p, midi_deviceAsNumberWithString (1, device));
+}
+
+t_error devices_appendAudioIn (t_devicesproperties *p, char *device, int channels)
+{
+    return devices_appendAudioInAsNumber (p, audio_deviceAsNumberWithString (0, device), channels);
+}
+
+t_error devices_appendAudioOut (t_devicesproperties *p, char *device, int channels)
+{
+    return devices_appendAudioOutAsNumber (p, audio_deviceAsNumberWithString (1, device), channels);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -262,7 +262,7 @@ void midi_pollNative (void)
         int data1  = Pm_MessageData1  (buffer.message);
         int data2  = Pm_MessageData2  (buffer.message);
         int data3  = ((buffer.message >> 24) & 0xff);
-        int type   = ((status & 0xf0) == 0xf0 ? status : (status & 0xf0));      /* LSB kept only for SYSEX. */
+        int type   = ((status & 0xf0) == 0xf0 ? status : (status & 0xf0));  /* LSB kept only for SYSEX. */
         
         if (midipm_sysexFlag) { midipm_sysexWordIn (port, status, data1, data2, data3); }
         else switch (type) {
@@ -308,7 +308,7 @@ t_error midi_getListsNative (t_deviceslist *p)
 {
     t_error err = PD_ERROR_NONE;
     int i;
-        
+    
     for (i = 0; i < Pm_CountDevices(); i++) {
 
         const PmDeviceInfo *info = Pm_GetDeviceInfo (i);

@@ -63,6 +63,19 @@ t_error     devices_appendMidiOut               (t_devicesproperties *p, char *d
 t_error     devices_appendAudioIn               (t_devicesproperties *p, char *device, int channels);
 t_error     devices_appendAudioOut              (t_devicesproperties *p, char *device, int channels);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_error     devices_appendMidiInAsNumber        (t_devicesproperties *p, int n);
+t_error     devices_appendMidiOutAsNumber       (t_devicesproperties *p, int n);
+t_error     devices_appendAudioInAsNumber       (t_devicesproperties *p, int n, int channels);
+t_error     devices_appendAudioOutAsNumber      (t_devicesproperties *p, int n, int channels);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_error     devices_getInAtIndexAsString        (t_devicesproperties *p, int i, char *dest, size_t size);
 t_error     devices_getOutAtIndexAsString       (t_devicesproperties *p, int i, char *dest, size_t size);
 
@@ -91,9 +104,7 @@ static inline int devices_getInSize (t_devicesproperties *p)
 
 static inline int devices_getInAtIndex (t_devicesproperties *p, int i)
 {
-    PD_ASSERT (i < DEVICES_MAXIMUM_IO);
-    
-    return p->d_in[i];
+    return (i < p->d_inSize) ? p->d_in[i] : -1;
 }
 
 static inline int devices_getInChannelsAtIndex (t_devicesproperties *p, int i)
@@ -104,6 +115,10 @@ static inline int devices_getInChannelsAtIndex (t_devicesproperties *p, int i)
     return p->d_inChannels[i];
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark-
+
 static inline int devices_getOutSize (t_devicesproperties *p)
 {
     return p->d_outSize;
@@ -111,9 +126,7 @@ static inline int devices_getOutSize (t_devicesproperties *p)
 
 static inline int devices_getOutAtIndex (t_devicesproperties *p, int i)
 {
-    PD_ASSERT (i < DEVICES_MAXIMUM_IO);
-    
-    return p->d_out[i];
+    return (i < p->d_outSize) ? p->d_out[i] : -1;
 }
 
 static inline int devices_getOutChannelsAtIndex (t_devicesproperties *p, int i)
@@ -139,24 +152,37 @@ typedef struct _deviceslist {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        deviceslist_init                    (t_deviceslist *p);
+void        deviceslist_init                        (t_deviceslist *p);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error     deviceslist_appendIn                (t_deviceslist *p, const char *device);
-t_error     deviceslist_appendOut               (t_deviceslist *p, const char *device);
-t_error     deviceslist_appendMidiInAsNumber    (t_deviceslist *p, int n);
-t_error     deviceslist_appendMidiOutAsNumber   (t_deviceslist *p, int n);
-t_error     deviceslist_appendAudioInAsNumber   (t_deviceslist *p, int n);
-t_error     deviceslist_appendAudioOutAsNumber  (t_deviceslist *p, int n);
+t_error     deviceslist_appendIn                    (t_deviceslist *p, const char *device);
+t_error     deviceslist_appendOut                   (t_deviceslist *p, const char *device);
 
-char        *deviceslist_getInAtIndex           (t_deviceslist *p, int i);
-char        *deviceslist_getOutAtIndex          (t_deviceslist *p, int i);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark-
 
-int         deviceslist_containsIn              (t_deviceslist *p, char *device);
-int         deviceslist_containsOut             (t_deviceslist *p, char *device);
+t_error     deviceslist_appendMidiInAsNumber        (t_deviceslist *p, int n);
+t_error     deviceslist_appendMidiOutAsNumber       (t_deviceslist *p, int n);
+t_error     deviceslist_appendAudioInAsNumber       (t_deviceslist *p, int n);
+t_error     deviceslist_appendAudioOutAsNumber      (t_deviceslist *p, int n);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark-
+
+char        *deviceslist_getInAtIndexAsString       (t_deviceslist *p, int i);
+char        *deviceslist_getOutAtIndexAsString      (t_deviceslist *p, int i);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark-
+
+int         deviceslist_containsIn                  (t_deviceslist *p, char *device);
+int         deviceslist_containsOut                 (t_deviceslist *p, char *device);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
