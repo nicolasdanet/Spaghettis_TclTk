@@ -119,16 +119,16 @@ void midi_releaseNative (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void midi_openNative (int numberOfDevicesIn, int *devicesIn, int numberOfDevicesOut, int *devicesOut)
+void midi_openNative (t_devicesproperties *p)
 {
     int i;
     
     midioss_numberOfDevicesIn  = 0;
     midioss_numberOfDevicesOut = 0;
     
-    for (i = 0; i < numberOfDevicesIn; i++) {
+    for (i = 0; i < devices_getInSize (p); i++) {
     //
-    int f, n = devicesIn[i];
+    int f, n = devices_getInAtIndex (p, i);
     
     if (n >= 0 && n < midioss_numberOfDetectedIn) {
         char t[PD_STRING] = { 0 };
@@ -140,9 +140,9 @@ void midi_openNative (int numberOfDevicesIn, int *devicesIn, int numberOfDevices
     //
     }
     
-    for (i = 0; i < numberOfDevicesOut; i++) {
+    for (i = 0; i < devices_getOutSize (p); i++) {
     //
-    int f, n = devicesOut[i];
+    int f, n = devices_getOutAtIndex (p, i);
     
     if (n >= 0 && n < midioss_numberOfDetectedOut) {
         char t[PD_STRING] = { 0 };

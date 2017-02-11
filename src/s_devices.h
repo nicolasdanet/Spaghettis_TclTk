@@ -126,4 +126,50 @@ static inline int devices_getOutChannelsAtIndex (t_devicesproperties *p, int i)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+typedef struct _deviceslist {
+    int     d_inSize;
+    int     d_outSize;
+    char    d_inNames   [DEVICES_MAXIMUM_DEVICES * DEVICES_DESCRIPTION];
+    char    d_outNames  [DEVICES_MAXIMUM_DEVICES * DEVICES_DESCRIPTION];
+    int     d_isMidi;
+    } t_deviceslist;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        deviceslist_initAsAudio             (t_deviceslist *p);
+void        deviceslist_initAsMidi              (t_deviceslist *p);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_error     deviceslist_appendIn                (t_deviceslist *p, int n);
+t_error     deviceslist_appendOut               (t_deviceslist *p, int n);
+
+char        *deviceslist_getInAtIndex           (t_deviceslist *p, int i);
+char        *deviceslist_getOutAtIndex          (t_deviceslist *p, int i);
+
+int         deviceslist_containsIn              (t_deviceslist *p, char *s);
+int         deviceslist_containsOut             (t_deviceslist *p, char *s);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline int deviceslist_getInSize (t_deviceslist *p)
+{
+    return p->d_inSize;
+}
+
+static inline int deviceslist_getOutSize (t_deviceslist *p)
+{
+    return p->d_outSize;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #endif // __s_devices_h_

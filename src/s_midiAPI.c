@@ -86,8 +86,7 @@ void midi_open (void)
     t_devicesproperties midi; devices_initAsMidi (&midi);
      
     midi_getDevices (&midi);
-    
-    midi_openNative (midi.d_inSize, midi.d_in, midi.d_outSize, midi.d_out);
+    midi_openNative (&midi);
 }
 
 void midi_close (void)

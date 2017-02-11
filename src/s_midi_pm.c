@@ -28,8 +28,8 @@
 static int midipm_numberOfDevicesIn;                        /* Shared. */
 static int midipm_numberOfDevicesOut;                       /* Shared. */
 
-static PmStream *midipm_devicesIn[DEVICES_MAXIMUM_IO];         /* Shared. */
-static PmStream *midipm_devicesOut[DEVICES_MAXIMUM_IO];       /* Shared. */
+static PmStream *midipm_devicesIn[DEVICES_MAXIMUM_IO];      /* Shared. */
+static PmStream *midipm_devicesOut[DEVICES_MAXIMUM_IO];     /* Shared. */
 
 static int midipm_sysexFlag;                                /* Shared. */
 
@@ -85,21 +85,21 @@ void midi_releaseNative (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void midi_openNative (int numberOfDevicesIn, int *devicesIn, int numberOfDevicesOut, int *devicesOut)
+void midi_openNative (t_devicesproperties *p)
 {
     int i, j, n;
 
     midipm_numberOfDevicesIn  = 0;
     midipm_numberOfDevicesOut = 0;
     
-    for (i = 0; i < numberOfDevicesIn; i++) {
+    for (i = 0; i < devices_getInSize (p); i++) {
     //
     for (j = 0, n = 0; j < Pm_CountDevices(); j++) {
     //
     const PmDeviceInfo *info = Pm_GetDeviceInfo (j);
     
     if (info->input) {
-        if (devicesIn[i] == n) {
+        if (devices_getInAtIndex (p, i) == n) {
             PmStream **t = &midipm_devicesIn[midipm_numberOfDevicesIn];
             PmError err = Pm_OpenInput (t, j, NULL, 100, NULL, NULL);
             if (err) { error__error1 (Pm_GetErrorText (err)); }
@@ -114,14 +114,14 @@ void midi_openNative (int numberOfDevicesIn, int *devicesIn, int numberOfDevices
     //
     }   
     
-    for (i = 0; i < numberOfDevicesOut; i++) {
+    for (i = 0; i < devices_getOutSize (p); i++) {
     //
     for (j = 0, n = 0; j < Pm_CountDevices(); j++) {
     //
     const PmDeviceInfo *info = Pm_GetDeviceInfo (j);
     
     if (info->output) {
-        if (devicesOut[i] == n) {
+        if (devices_getOutAtIndex (p, i) == n) {
             PmStream **t = &midipm_devicesOut[midipm_numberOfDevicesOut];
             PmError err = Pm_OpenOutput (t, j, NULL, 0, NULL, NULL, 0);
             if (err) { error__error1 (Pm_GetErrorText (err)); }

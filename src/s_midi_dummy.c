@@ -34,7 +34,7 @@ void midi_releaseNative (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void midi_openNative (int numberOfDevicesIn, int *devicesIn, int numberOfDevicesOut, int *devicesOut)
+void midi_openNative (t_devicesproperties *p)
 {
 }
 

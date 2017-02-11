@@ -30,11 +30,11 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int midialsa_numberOfDevicesIn;                                      /* Shared. */
-static int midialsa_numberOfDevicesOut;                                     /* Shared. */
+static int midialsa_numberOfDevicesIn;                  /* Shared. */
+static int midialsa_numberOfDevicesOut;                 /* Shared. */
 
-static int midialsa_devicesIn[DEVICES_MAXIMUM_IO];                             /* Shared. */
-static int midialsa_devicesOut[DEVICES_MAXIMUM_IO];                           /* Shared. */
+static int midialsa_devicesIn[DEVICES_MAXIMUM_IO];      /* Shared. */
+static int midialsa_devicesOut[DEVICES_MAXIMUM_IO];     /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -62,11 +62,11 @@ void midi_releaseNative (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void midi_openNative (int numberOfDevicesIn,
-    int *dummyIn,
-    int numberOfDevicesOut,
-    int *dummyOut)
+void midi_openNative (t_devicesproperties *p)
 {
+    int numberOfDevicesIn   = devices_getInSize (p);
+    int numberOfDevicesOut  = devices_getOutSize (p);
+    
     midialsa_numberOfDevicesIn  = 0;
     midialsa_numberOfDevicesOut = 0;
 
