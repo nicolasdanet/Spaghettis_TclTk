@@ -149,16 +149,16 @@ static t_error midi_requireDialogInitialize (void)
     //
     char t1[PD_STRING] = { 0 };
     char t2[PD_STRING] = { 0 };
-    int k;
+    int i;
     
     err |= string_copy (t1, PD_STRING, "set ::ui_midi::midiIn [list {none}");                           // --
     err |= string_copy (t2, PD_STRING, "set ::ui_midi::midiOut [list {none}");                          // --
     
-    for (k = 0; k < deviceslist_getInSize (&l); k++) {
-        err |= string_addSprintf (t1, PD_STRING, " {%s}", deviceslist_getInAtIndexAsString (&l, k));    // --
+    for (i = 0; i < deviceslist_getInSize (&l); i++) {
+        err |= string_addSprintf (t1, PD_STRING, " {%s}", deviceslist_getInAtIndexAsString (&l, i));    // --
     }
-    for (k = 0; k < deviceslist_getOutSize (&l); k++) {
-        err |= string_addSprintf (t2, PD_STRING, " {%s}", deviceslist_getOutAtIndexAsString (&l, k));   // --
+    for (i = 0; i < deviceslist_getOutSize (&l); i++) {
+        err |= string_addSprintf (t2, PD_STRING, " {%s}", deviceslist_getOutAtIndexAsString (&l, i));   // --
     }
     
     err |= string_add (t1, PD_STRING, "]\n");
@@ -187,8 +187,8 @@ void midi_requireDialog (void *dummy)
     {
         char t[PD_STRING] = { 0 };
         
-        int i[8];
-        int o[8];
+        int i[8] = { 0 };
+        int o[8] = { 0 };
         int j;
         
         for (j = 0; j < 8; j++) {

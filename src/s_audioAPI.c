@@ -185,31 +185,26 @@ t_error audio_deviceAsStringWithNumber (int isOutput, int k, char *dest, size_t 
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#if 0
-
-static t_error audio_requireDialogInitialize (int *multiple)
+static t_error audio_requireDialogInitialize (void)
 {
-    int  m = 0;
-    int  n = 0;
-    char i[DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION] = { 0 };
-    char o[DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION] = { 0 };
+    t_deviceslist l;
     
-    t_error err = audio_getLists (i, &m, o, &n, multiple);
+    t_error err = audio_getLists (&l);
     
     if (!err) {
     //
     char t1[PD_STRING] = { 0 };
     char t2[PD_STRING] = { 0 };
-    int k;
+    int i;
     
-    err |= string_copy (t1, PD_STRING, "set ::ui_audio::audioIn [list ");                   // --
-    err |= string_copy (t2, PD_STRING, "set ::ui_audio::audioOut [list ");                  // --
+    err |= string_copy (t1, PD_STRING, "set ::ui_audio::audioIn [list ");                               // --
+    err |= string_copy (t2, PD_STRING, "set ::ui_audio::audioOut [list ");                              // --
     
-    for (k = 0; k < m; k++) {
-        err |= string_addSprintf (t1, PD_STRING, " {%s}", i + (k * DEVICES_DESCRIPTION));   // --
+    for (i = 0; i < deviceslist_getInSize (&l); i++) {
+        err |= string_addSprintf (t1, PD_STRING, " {%s}", deviceslist_getInAtIndexAsString (&l, i));    // --
     }
-    for (k = 0; k < n; k++) {
-        err |= string_addSprintf (t2, PD_STRING, " {%s}", o + (k * DEVICES_DESCRIPTION));   // --
+    for (i = 0; i < deviceslist_getOutSize (&l); i++) {
+        err |= string_addSprintf (t2, PD_STRING, " {%s}", deviceslist_getOutAtIndexAsString (&l, i));   // --
     }
     
     err |= string_add (t1, PD_STRING, "]\n");
@@ -223,63 +218,67 @@ static t_error audio_requireDialogInitialize (int *multiple)
     return err;
 }
 
-#endif
-
 void audio_requireDialog (void *dummy)
 {
-    #if 0
+    t_error err = audio_requireDialogInitialize();
     
-    int m = 0;
-    int n = 0;
-    int i[DEVICES_MAXIMUM_IO]  = { 0 };
-    int j[DEVICES_MAXIMUM_IO]  = { 0 };
-    int o[DEVICES_MAXIMUM_IO] = { 0 };
-    int p[DEVICES_MAXIMUM_IO] = { 0 };
-    int sampleRate;
-    int blockSize;
+    PD_ASSERT (DEVICES_MAXIMUM_IO >= 4);
     
-    int canMultiple;
-
-    t_error err = audio_requireDialogInitialize (&canMultiple);
-    
-    audio_getDevices (&m, i, j, &n, o, p, &sampleRate, &blockSize);
-
     if (!err) {
     //
-    char t[PD_STRING] = { 0 };
+    t_devicesproperties audio; devices_initAsAudio (&audio);
     
-    int i1          = (m > 0 && i[0] >= 0 ? i[0] : 0);
-    int i2          = (m > 1 && i[1] >= 0 ? i[1] : 0);
-    int i3          = (m > 2 && i[2] >= 0 ? i[2] : 0);
-    int i4          = (m > 3 && i[3] >= 0 ? i[3] : 0);
-    int iChannels1  = (m > 0 ? j[0] : 0);
-    int iChannels2  = (m > 1 ? j[1] : 0);
-    int iChannels3  = (m > 2 ? j[2] : 0);
-    int iChannels4  = (m > 3 ? j[3] : 0);
-    int o1          = (n > 0 && o[0] >= 0 ? o[0] : 0);  
-    int o2          = (n > 1 && o[1] >= 0 ? o[1] : 0);  
-    int o3          = (n > 2 && o[2] >= 0 ? o[2] : 0);  
-    int o4          = (n > 3 && o[3] >= 0 ? o[3] : 0); 
-    int oChannels1  = (n > 0 ? p[0] : 0);
-    int oChannels2  = (n > 1 ? p[1] : 0);
-    int oChannels3  = (n > 2 ? p[2] : 0);
-    int oChannels4  = (n > 3 ? p[3] : 0);
+    audio_getDevices (&audio);
     
-    err |= string_sprintf (t, PD_STRING,
-        "::ui_audio::show %%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
-        i1, i2, i3, i4, iChannels1, iChannels2, iChannels3, iChannels4, 
-        o1, o2, o3, o4, oChannels1, oChannels2, oChannels3, oChannels4, 
-        sampleRate,
-        blockSize,
-        canMultiple);
+    {
+        char t[PD_STRING] = { 0 };
         
-    if (!err) {
-        guistub_new (&global_object, (void *)audio_requireDialog, t);
+        int i[4] = { 0 };
+        int m[4] = { 0 };
+        int o[4] = { 0 };
+        int n[4] = { 0 };
+        int j;
+        
+        for (j = 0; j < 4; j++) {
+            int k = devices_getInAtIndex (&audio, j); 
+            i[j] = (k >= 0) ? k : 0;
+            m[j] = (k >= 0) ? devices_getInChannelsAtIndex (&audio, j) : 0;
+        } 
+        
+        for (j = 0; j < 4; j++) {
+            int k = devices_getOutAtIndex (&audio, j);
+            o[j] = (k >= 0) ? k : 0;
+            n[j] = (k >= 0) ? devices_getInChannelsAtIndex (&audio, j) : 0;
+        } 
+        
+        err |= string_sprintf (t, PD_STRING,
+            "::ui_audio::show %%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
+            i[0],
+            i[1],
+            i[2],
+            i[3], 
+            m[0],
+            m[1],
+            m[2],
+            m[3], 
+            o[0],
+            o[1],
+            o[2],
+            o[3],
+            n[0],
+            n[1],
+            n[2],
+            n[3], 
+            devices_getSampleRate (&audio),
+            devices_getBlockSize (&audio),
+            0);
+            
+        if (!err) {
+            guistub_new (&global_object, (void *)audio_requireDialog, t);
+        }
     }
     //
     }
-    
-    #endif
 }
 
 // -----------------------------------------------------------------------------------------------------------
