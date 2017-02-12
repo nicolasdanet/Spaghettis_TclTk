@@ -237,8 +237,8 @@ void midi_pollNative (void)
 t_error midi_getListsNative (t_deviceslist *p)
 {
     int i;
-    int m = PD_MIN (4, DEVICES_MAXIMUM_DEVICES);
-    int n = PD_MIN (4, DEVICES_MAXIMUM_DEVICES);
+    int m = PD_MIN (4, DEVICES_MAXIMUM_IO);
+    int n = PD_MIN (4, DEVICES_MAXIMUM_IO);
     
     t_error err = PD_ERROR_NONE;
     

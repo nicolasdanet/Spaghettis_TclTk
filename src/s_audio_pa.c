@@ -358,38 +358,24 @@ int audio_pollDSPNative (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error audio_getListsNative (char *devicesIn,
-    int *numberOfDevicesIn,
-    char *devicesOut,
-    int *numberOfDevicesOut,
-    int *canMultiple)
+t_error audio_getListsNative (t_deviceslist *p)
 {
-    int i;
-    int m = 0;
-    int n = 0;
-    
     t_error err = PD_ERROR_NONE;
-        
-    *canMultiple = 1;           /* One device each for input and for output. */
     
+    int i;
+        
     for (i = 0; i < Pa_GetDeviceCount(); i++) {
-    //
-    const PaDeviceInfo *info = Pa_GetDeviceInfo (i);
+    
+        const PaDeviceInfo *info = Pa_GetDeviceInfo (i);
+            
+        if (info->maxInputChannels > 0) {
+            err |= deviceslist_appendAudioIn (p, info->name, info->maxInputChannels);
+        }
         
-    if (info->maxInputChannels > 0 && m < DEVICES_MAXIMUM_DEVICES) {
-        err |= string_copy (devicesIn + (m * DEVICES_DESCRIPTION),  DEVICES_DESCRIPTION, info->name);
-        m++;
+        if (info->maxOutputChannels > 0) {
+            err |= deviceslist_appendAudioOut (p, info->name, info->maxOutputChannels);
+        }
     }
-    
-    if (info->maxOutputChannels > 0 && n < DEVICES_MAXIMUM_DEVICES) {
-        err |= string_copy (devicesOut + (n * DEVICES_DESCRIPTION), DEVICES_DESCRIPTION, info->name);
-        n++;
-    }
-    //
-    }
-    
-    *numberOfDevicesIn  = m;
-    *numberOfDevicesOut = n;
     
     return err;
 }

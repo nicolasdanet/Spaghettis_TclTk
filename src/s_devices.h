@@ -18,7 +18,6 @@
 
 #define DEVICES_MAXIMUM_IO          8
 #define DEVICES_MAXIMUM_CHANNELS    32
-#define DEVICES_MAXIMUM_DEVICES     16
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -147,10 +146,10 @@ typedef struct _deviceslist {
     int     d_sampleRate;
     int     d_inSize;
     int     d_outSize;
-    int     d_inChannels    [DEVICES_MAXIMUM_DEVICES];
-    int     d_outChannels   [DEVICES_MAXIMUM_DEVICES];
-    char    d_inNames       [DEVICES_MAXIMUM_DEVICES * DEVICES_DESCRIPTION];
-    char    d_outNames      [DEVICES_MAXIMUM_DEVICES * DEVICES_DESCRIPTION];
+    int     d_inChannels    [DEVICES_MAXIMUM_IO];
+    int     d_outChannels   [DEVICES_MAXIMUM_IO];
+    char    d_inNames       [DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION];
+    char    d_outNames      [DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION];
     } t_deviceslist;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -246,14 +245,14 @@ static inline int deviceslist_getOutSize (t_deviceslist *p)
 
 static inline int deviceslist_getInChannelsAtIndex (t_deviceslist *p, int i)
 {
-    PD_ASSERT (i < DEVICES_MAXIMUM_DEVICES);
+    PD_ASSERT (i < DEVICES_MAXIMUM_IO);
     
     return p->d_inChannels[i];
 }
 
 static inline int deviceslist_getOutChannelsAtIndex (t_deviceslist *p, int i)
 {
-    PD_ASSERT (i < DEVICES_MAXIMUM_DEVICES);
+    PD_ASSERT (i < DEVICES_MAXIMUM_IO);
     
     return p->d_outChannels[i];
 }

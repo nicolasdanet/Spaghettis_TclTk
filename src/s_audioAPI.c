@@ -37,10 +37,40 @@ static int      audio_state;                /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_error audio_getLists (char *i, int *m, char *o, int *n, int *multiple)
+#if 1
+
+/* The APIs provided detect devices only at startup thus it can be cached. */
+
+static t_error audio_getLists (t_deviceslist *l)
 {
-    return audio_getListsNative (i, m, o, n, multiple);
+    static int cacheLoaded = 0;
+    static t_deviceslist cache;
+    
+    t_error err = PD_ERROR_NONE;
+    
+    if (!cacheLoaded) {
+    //
+    deviceslist_init (&cache);
+    err = audio_getListsNative (&cache);
+    if (!err) { cacheLoaded = 1; }
+    //
+    }
+    
+    deviceslist_copy (l, &cache);
+    
+    return err;
 }
+
+#endif
+
+#if 0
+
+static t_error audio_getLists (t_deviceslist *l)
+{
+    deviceslist_init (l); return audio_getListsNative (l);
+}
+
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -121,25 +151,13 @@ void audio_setDevices (t_devicesproperties *p)
 
 int audio_deviceAsNumberWithString (int isOutput, char *name)
 {
-    int  m = 0;
-    int  n = 0;
-    char i[DEVICES_MAXIMUM_DEVICES * DEVICES_DESCRIPTION] = { 0 };
-    char o[DEVICES_MAXIMUM_DEVICES * DEVICES_DESCRIPTION] = { 0 };
-    int  canMultiple;
-    int  k;
+    t_deviceslist l;
     
-    if (!audio_getLists (i, &m, o, &n, &canMultiple)) {
-    //
-    if (isOutput) {
-        for (k = 0; k < n; k++) {
-            if (!strcmp (name, o + (k * DEVICES_DESCRIPTION))) { return k; }
+    if (!audio_getLists (&l)) {
+        if (isOutput) { return deviceslist_containsOut (&l, name); }
+        else { 
+            return deviceslist_containsIn (&l, name);
         }
-    } else {
-        for (k = 0; k < m; k++) {
-            if (!strcmp (name, i + (k * DEVICES_DESCRIPTION))) { return k; }
-        }
-    }
-    //
     }
     
     return -1;
@@ -147,17 +165,15 @@ int audio_deviceAsNumberWithString (int isOutput, char *name)
 
 t_error audio_deviceAsStringWithNumber (int isOutput, int k, char *dest, size_t size)
 {
-    int  m = 0;
-    int  n = 0;
-    char i[DEVICES_MAXIMUM_DEVICES*DEVICES_DESCRIPTION];
-    char o[DEVICES_MAXIMUM_DEVICES*DEVICES_DESCRIPTION];
-    int  canMultiple;
-    
     t_error err = PD_ERROR;
     
-    if (k >= 0 && !audio_getLists (i, &m, o, &n, &canMultiple)) { 
-        if (isOutput && (k < n))        { err = string_copy (dest, size, o + (k * DEVICES_DESCRIPTION)); }
-        else if (!isOutput && (k < m))  { err = string_copy (dest, size, i + (k * DEVICES_DESCRIPTION)); }
+    t_deviceslist l;
+    
+    if (k >= 0 && !audio_getLists (&l)) {
+    //
+    char *t = isOutput ? deviceslist_getOutAtIndexAsString (&l, k) : deviceslist_getInAtIndexAsString (&l, k);
+    if (t) { err = string_copy (dest, size, t); }
+    //
     }
     
     if (err) { *dest = 0; }
@@ -175,8 +191,8 @@ static t_error audio_requireDialogInitialize (int *multiple)
 {
     int  m = 0;
     int  n = 0;
-    char i[DEVICES_MAXIMUM_DEVICES * DEVICES_DESCRIPTION] = { 0 };
-    char o[DEVICES_MAXIMUM_DEVICES * DEVICES_DESCRIPTION] = { 0 };
+    char i[DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION] = { 0 };
+    char o[DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION] = { 0 };
     
     t_error err = audio_getLists (i, &m, o, &n, multiple);
     

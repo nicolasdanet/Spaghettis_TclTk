@@ -24,11 +24,10 @@ void deviceslist_init (t_deviceslist *p)
     p->d_inSize     = 0;
     p->d_outSize    = 0;
 
-    memset (p->d_inChannels,    0, DEVICES_MAXIMUM_DEVICES * sizeof (int));
-    memset (p->d_outChannels,   0, DEVICES_MAXIMUM_DEVICES * sizeof (int));
-    
-    memset (p->d_inNames,   0, DEVICES_MAXIMUM_DEVICES * DEVICES_DESCRIPTION * sizeof (char));
-    memset (p->d_outNames,  0, DEVICES_MAXIMUM_DEVICES * DEVICES_DESCRIPTION * sizeof (char));
+    memset (p->d_inChannels,  0, DEVICES_MAXIMUM_IO * sizeof (int));
+    memset (p->d_outChannels, 0, DEVICES_MAXIMUM_IO * sizeof (int));
+    memset (p->d_inNames,     0, DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION * sizeof (char));
+    memset (p->d_outNames,    0, DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION * sizeof (char));
 }
 
 void deviceslist_copy (t_deviceslist *dest, t_deviceslist *src)
@@ -38,11 +37,10 @@ void deviceslist_copy (t_deviceslist *dest, t_deviceslist *src)
     dest->d_inSize     = src->d_inSize;
     dest->d_outSize    = src->d_outSize;
     
-    memcpy (dest->d_inChannels,  src->d_inChannels,  DEVICES_MAXIMUM_DEVICES * sizeof (int));
-    memcpy (dest->d_outChannels, src->d_outChannels, DEVICES_MAXIMUM_DEVICES * sizeof (int));
-    
-    memcpy (dest->d_inNames,  src->d_inNames,  DEVICES_MAXIMUM_DEVICES * DEVICES_DESCRIPTION * sizeof (char));
-    memcpy (dest->d_outNames, src->d_outNames, DEVICES_MAXIMUM_DEVICES * DEVICES_DESCRIPTION * sizeof (char));
+    memcpy (dest->d_inChannels,  src->d_inChannels,  DEVICES_MAXIMUM_IO * sizeof (int));
+    memcpy (dest->d_outChannels, src->d_outChannels, DEVICES_MAXIMUM_IO * sizeof (int));
+    memcpy (dest->d_inNames,     src->d_inNames,  DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION * sizeof (char));
+    memcpy (dest->d_outNames,    src->d_outNames, DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION * sizeof (char));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -123,7 +121,7 @@ void deviceslist_getDevices (t_deviceslist *l, t_devicesproperties *p)
 
 t_error deviceslist_appendMidiIn (t_deviceslist *p, const char *device)
 {
-    if (p->d_inSize < DEVICES_MAXIMUM_DEVICES) {
+    if (p->d_inSize < DEVICES_MAXIMUM_IO) {
         char *s = p->d_inNames + (p->d_inSize * DEVICES_DESCRIPTION);
         t_error err = string_copy (s, DEVICES_DESCRIPTION, device);
         if (!err) { p->d_inSize++; }
@@ -138,7 +136,7 @@ t_error deviceslist_appendMidiIn (t_deviceslist *p, const char *device)
 
 t_error deviceslist_appendMidiOut (t_deviceslist *p, const char *device)
 {
-    if (p->d_outSize < DEVICES_MAXIMUM_DEVICES) {
+    if (p->d_outSize < DEVICES_MAXIMUM_IO) {
         char *s = p->d_outNames + (p->d_outSize * DEVICES_DESCRIPTION);
         t_error err = string_copy (s, DEVICES_DESCRIPTION, device);
         if (!err) { p->d_outSize++; }
@@ -153,7 +151,7 @@ t_error deviceslist_appendMidiOut (t_deviceslist *p, const char *device)
 
 t_error deviceslist_appendAudioIn (t_deviceslist *p, const char *device, int channels)
 {
-    if (p->d_inSize < DEVICES_MAXIMUM_DEVICES) {
+    if (p->d_inSize < DEVICES_MAXIMUM_IO) {
         char *s = p->d_inNames + (p->d_inSize * DEVICES_DESCRIPTION);
         t_error err = string_copy (s, DEVICES_DESCRIPTION, device);
         int t = PD_CLAMP (channels, -DEVICES_MAXIMUM_CHANNELS, DEVICES_MAXIMUM_CHANNELS);
@@ -169,7 +167,7 @@ t_error deviceslist_appendAudioIn (t_deviceslist *p, const char *device, int cha
 
 t_error deviceslist_appendAudioOut (t_deviceslist *p, const char *device, int channels)
 {
-    if (p->d_outSize < DEVICES_MAXIMUM_DEVICES) {
+    if (p->d_outSize < DEVICES_MAXIMUM_IO) {
         char *s = p->d_outNames + (p->d_outSize * DEVICES_DESCRIPTION);
         t_error err = string_copy (s, DEVICES_DESCRIPTION, device);
         int t = PD_CLAMP (channels, -DEVICES_MAXIMUM_CHANNELS, DEVICES_MAXIMUM_CHANNELS);
@@ -189,7 +187,7 @@ t_error deviceslist_appendAudioOut (t_deviceslist *p, const char *device, int ch
 
 t_error deviceslist_appendMidiInAsNumber (t_deviceslist *p, int n)
 {
-    if (p->d_inSize < DEVICES_MAXIMUM_DEVICES) {
+    if (p->d_inSize < DEVICES_MAXIMUM_IO) {
     //
     char *s = p->d_inNames + (p->d_inSize * DEVICES_DESCRIPTION);
     
@@ -205,7 +203,7 @@ t_error deviceslist_appendMidiInAsNumber (t_deviceslist *p, int n)
 
 t_error deviceslist_appendMidiOutAsNumber (t_deviceslist *p, int n)
 {
-    if (p->d_outSize < DEVICES_MAXIMUM_DEVICES) {
+    if (p->d_outSize < DEVICES_MAXIMUM_IO) {
     //
     char *s = p->d_outNames + (p->d_outSize * DEVICES_DESCRIPTION);
 
@@ -221,7 +219,7 @@ t_error deviceslist_appendMidiOutAsNumber (t_deviceslist *p, int n)
 
 t_error deviceslist_appendAudioInAsNumber (t_deviceslist *p, int n, int channels)
 {
-    if (p->d_inSize < DEVICES_MAXIMUM_DEVICES) {
+    if (p->d_inSize < DEVICES_MAXIMUM_IO) {
     //
     char *s = p->d_inNames + (p->d_inSize * DEVICES_DESCRIPTION);
     
@@ -240,7 +238,7 @@ t_error deviceslist_appendAudioInAsNumber (t_deviceslist *p, int n, int channels
 
 t_error deviceslist_appendAudioOutAsNumber (t_deviceslist *p, int n, int channels)
 {
-    if (p->d_outSize < DEVICES_MAXIMUM_DEVICES) {
+    if (p->d_outSize < DEVICES_MAXIMUM_IO) {
     //
     char *s = p->d_outNames + (p->d_outSize * DEVICES_DESCRIPTION);
     
@@ -264,7 +262,7 @@ t_error deviceslist_appendAudioOutAsNumber (t_deviceslist *p, int n, int channel
 char *deviceslist_getInAtIndexAsString (t_deviceslist *p, int i)
 {
     PD_ASSERT (i >= 0);
-    PD_ASSERT (i < DEVICES_MAXIMUM_DEVICES);
+    PD_ASSERT (i < DEVICES_MAXIMUM_IO);
     
     if (i < p->d_inSize) { return (p->d_inNames + (i * DEVICES_DESCRIPTION)); }
     else {
@@ -275,7 +273,7 @@ char *deviceslist_getInAtIndexAsString (t_deviceslist *p, int i)
 char *deviceslist_getOutAtIndexAsString (t_deviceslist *p, int i)
 {
     PD_ASSERT (i >= 0);
-    PD_ASSERT (i < DEVICES_MAXIMUM_DEVICES);
+    PD_ASSERT (i < DEVICES_MAXIMUM_IO);
     
     if (i < p->d_outSize) { return (p->d_outNames + (i * DEVICES_DESCRIPTION)); }
     else {

@@ -453,21 +453,13 @@ int audio_pollDSPNative (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error audio_getListsNative (char *devicesIn, 
-    int *numberOfDevicesIn,
-    char *devicesOut,
-    int *numberOfDevicesOut,
-    int *canMultiple) 
+t_error audio_getListsNative (t_deviceslist *p) 
 {
     t_error err = PD_ERROR_NONE;
     
-    err |= string_copy (devicesIn,  DEVICES_DESCRIPTION, "JACK ports");
-    err |= string_copy (devicesOut, DEVICES_DESCRIPTION, "JACK ports");
-    
-    *numberOfDevicesIn  = 1;
-    *numberOfDevicesOut = 1;
-    *canMultiple        = 0;
-  
+    err |= deviceslist_appendAudioIn (p,  "JACK ports", 0);
+    err |= deviceslist_appendAudioOut (p, "JACK ports", 0);
+
     return err;
 }
 

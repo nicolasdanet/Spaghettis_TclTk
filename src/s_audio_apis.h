@@ -23,11 +23,7 @@ char        *audio_nameNative               (void);
 #pragma mark -
 
 int         audio_getPriorityNative         (int min, int max, int isWatchdog);
-t_error     audio_getListsNative            (char *devicesIn,
-                                                int  *numberOfDevicesIn,
-                                                char *devicesOut,
-                                                int  *numberOfDevicesOut,
-                                                int  *canMultiple);
+t_error     audio_getListsNative            (t_deviceslist *p);
                                                 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
