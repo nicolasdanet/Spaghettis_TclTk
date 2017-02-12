@@ -112,7 +112,7 @@ void devices_setSampleRate (t_devicesproperties *p, int n)
     p->d_sampleRate = n;
 }
 
-void devices_checkChannels (t_devicesproperties *p)
+void devices_checkDisabled (t_devicesproperties *p)
 {
     int i;
     
@@ -160,9 +160,11 @@ t_error devices_appendAudioInAsNumber (t_devicesproperties *p, int n, int channe
     
     if (n < 0 || p->d_inSize >= DEVICES_MAXIMUM_IO) { return PD_ERROR; }
     else {
-        p->d_in[p->d_inSize] = n;
-        p->d_inChannels[p->d_inSize] = channels;
-        p->d_inSize++;
+    //
+    p->d_in[p->d_inSize] = n;
+    p->d_inChannels[p->d_inSize] = PD_CLAMP (channels, -DEVICES_MAXIMUM_CHANNELS, DEVICES_MAXIMUM_CHANNELS);
+    p->d_inSize++;
+    //
     }
     
     return PD_ERROR_NONE;
@@ -174,9 +176,11 @@ t_error devices_appendAudioOutAsNumber (t_devicesproperties *p, int n, int chann
     
     if (n < 0 || p->d_outSize >= DEVICES_MAXIMUM_IO) { return PD_ERROR; }
     else {
-        p->d_out[p->d_outSize] = n;
-        p->d_outChannels[p->d_outSize] = channels;
-        p->d_outSize++;
+    //
+    p->d_out[p->d_outSize] = n;
+    p->d_outChannels[p->d_outSize] = PD_CLAMP (channels, -DEVICES_MAXIMUM_CHANNELS, DEVICES_MAXIMUM_CHANNELS);
+    p->d_outSize++;
+    //
     }
     
     return PD_ERROR_NONE;

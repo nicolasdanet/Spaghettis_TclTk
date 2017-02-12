@@ -91,30 +91,12 @@ void midi_close (void)
 
 void midi_getDevices (t_devicesproperties *p)
 {
-    int i;
-    
-    for (i = 0; i < deviceslist_getInSize (&midi_devices); i++) {
-        devices_appendMidiIn (p, deviceslist_getInAtIndexAsString (&midi_devices, i));
-    }
-        
-    for (i = 0; i < deviceslist_getOutSize (&midi_devices); i++) {
-        devices_appendMidiOut (p, deviceslist_getOutAtIndexAsString (&midi_devices, i));
-    }
+    deviceslist_getDevices (&midi_devices, p);
 }
 
 void midi_setDevices (t_devicesproperties *p)
 {
-    int i;
-    
-    deviceslist_init (&midi_devices);
-    
-    for (i = 0; i < devices_getInSize (p); i++) {
-        deviceslist_appendMidiInAsNumber (&midi_devices, devices_getInAtIndex (p, i));
-    }
-    
-    for (i = 0; i < devices_getOutSize (p); i++) {
-        deviceslist_appendMidiOutAsNumber (&midi_devices, devices_getOutAtIndex (p, i));
-    }
+    deviceslist_setDevices (&midi_devices, p);
 }
 
 // -----------------------------------------------------------------------------------------------------------

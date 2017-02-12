@@ -252,7 +252,7 @@ int         audio_pollDSP                           (void);
 t_error     audio_stopDSP                           (void);
 t_error     audio_startDSP                          (void);
 
-void        audio_initializeMemory                  (int usedChannelsIn, int usedChannelsOut);
+void        audio_initializeMemory                  (t_float sampleRate, int channelsIn, int channelsOut);
 void        audio_shrinkChannelsIn                  (int numberOfChannelsIn);
 void        audio_shrinkChannelsOut                 (int numberOfChannelsOut);
 

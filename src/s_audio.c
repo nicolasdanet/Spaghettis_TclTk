@@ -16,6 +16,11 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+extern t_deviceslist audio_devices;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 t_sample *audio_soundIn;                            /* Shared. */
 t_sample *audio_soundOut;                           /* Shared. */
 
@@ -66,7 +71,7 @@ int audio_pollDSP (void)
     return audio_pollDSPNative();
 }
 
-void audio_initializeMemory (int usedChannelsIn, int usedChannelsOut)
+void audio_initializeMemory (t_float sampleRate, int usedChannelsIn, int usedChannelsOut)
 {
     int m = (int)((INTERNAL_BLOCKSIZE * sizeof (t_sample)) * (usedChannelsIn ? usedChannelsIn : 2));
     int n = (int)((INTERNAL_BLOCKSIZE * sizeof (t_sample)) * (usedChannelsOut ? usedChannelsOut : 2));
@@ -82,6 +87,8 @@ void audio_initializeMemory (int usedChannelsIn, int usedChannelsOut)
     
     audio_channelsIn  = usedChannelsIn;
     audio_channelsOut = usedChannelsOut;
+    
+    audio_setSampleRate (sampleRate);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -117,6 +124,8 @@ void audio_shrinkChannelsOut (int numberOfChannelsOut)
     audio_channelsOut = numberOfChannelsOut;
 }
 
+/* Called by JACK. */
+
 void audio_setSampleRate (t_float sampleRate)
 {
     #if PD_32BIT
@@ -124,6 +133,13 @@ void audio_setSampleRate (t_float sampleRate)
     #endif 
     
     audio_sampleRate = sampleRate;      
+}
+
+/* Called by JACK to notify the number of frames used. */
+
+void audio_setBlockSize (int blockSize)
+{
+    deviceslist_setBlockSize (&audio_devices, blockSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------

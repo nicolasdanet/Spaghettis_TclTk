@@ -57,7 +57,7 @@ void        devices_initAsMidi                  (t_devicesproperties *p);
 void        devices_setDefaults                 (t_devicesproperties *p);
 void        devices_setBlockSize                (t_devicesproperties *p, int n);
 void        devices_setSampleRate               (t_devicesproperties *p, int n);
-void        devices_checkChannels               (t_devicesproperties *p);
+void        devices_checkDisabled               (t_devicesproperties *p);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -143,6 +143,8 @@ static inline int devices_getOutChannelsAtIndex (t_devicesproperties *p, int i)
 #pragma mark -
 
 typedef struct _deviceslist {
+    int     d_blockSize;
+    int     d_sampleRate;
     int     d_inSize;
     int     d_outSize;
     int     d_inChannels    [DEVICES_MAXIMUM_DEVICES];
@@ -150,6 +152,13 @@ typedef struct _deviceslist {
     char    d_inNames       [DEVICES_MAXIMUM_DEVICES * DEVICES_DESCRIPTION];
     char    d_outNames      [DEVICES_MAXIMUM_DEVICES * DEVICES_DESCRIPTION];
     } t_deviceslist;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        deviceslist_setDevices                  (t_deviceslist *l, t_devicesproperties *p);
+void        deviceslist_getDevices                  (t_deviceslist *l, t_devicesproperties *p);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -192,6 +201,37 @@ int         deviceslist_containsOut                 (t_deviceslist *p, char *dev
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark-
+
+int         deviceslist_getTotalOfChannelsIn        (t_deviceslist *p);
+int         deviceslist_getTotalOfChannelsOut       (t_deviceslist *p);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline void deviceslist_setBlockSize (t_deviceslist *p, int n)
+{
+    p->d_blockSize = n;         /* Expect store to be thread-safe. */
+}
+
+static inline void deviceslist_setSampleRate (t_deviceslist *p, int n)
+{
+    p->d_sampleRate = n;
+}
+
+static inline int deviceslist_getBlockSize (t_deviceslist *p)
+{
+    return p->d_blockSize;
+}
+
+static inline int deviceslist_getSampleRate (t_deviceslist *p)
+{
+    return p->d_sampleRate;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 static inline int deviceslist_getInSize (t_deviceslist *p)
@@ -204,14 +244,14 @@ static inline int deviceslist_getOutSize (t_deviceslist *p)
     return p->d_outSize;
 }
 
-static inline int deviceslist_getInChannelsAtIndex (t_devicesproperties *p, int i)
+static inline int deviceslist_getInChannelsAtIndex (t_deviceslist *p, int i)
 {
     PD_ASSERT (i < DEVICES_MAXIMUM_DEVICES);
     
     return p->d_inChannels[i];
 }
 
-static inline int deviceslist_getOutChannelsAtIndex (t_devicesproperties *p, int i)
+static inline int deviceslist_getOutChannelsAtIndex (t_deviceslist *p, int i)
 {
     PD_ASSERT (i < DEVICES_MAXIMUM_DEVICES);
     
