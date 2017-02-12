@@ -80,6 +80,7 @@
 		373B40141DF1729F00568C3A /* d_multiply.c in Sources */ = {isa = PBXBuildFile; fileRef = 373B40131DF1729F00568C3A /* d_multiply.c */; };
 		373B403D1DF1736900568C3A /* d_subtract.c in Sources */ = {isa = PBXBuildFile; fileRef = 373B403B1DF1736900568C3A /* d_subtract.c */; };
 		373B403E1DF1736900568C3A /* d_add.c in Sources */ = {isa = PBXBuildFile; fileRef = 373B403C1DF1736900568C3A /* d_add.c */; };
+		373B8EFD1E505F82001AF811 /* s_audio_pa.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971F01C4F716700263434 /* s_audio_pa.c */; };
 		373D6CCA1C610AAF00106641 /* m_bind.c in Sources */ = {isa = PBXBuildFile; fileRef = 373D6CC91C610AAF00106641 /* m_bind.c */; };
 		373F78251C7E097A0083D316 /* s_audioAPI.c in Sources */ = {isa = PBXBuildFile; fileRef = 373F78241C7E097A0083D316 /* s_audioAPI.c */; };
 		3741A8BF1DE8196E00B32300 /* d_noise.c in Sources */ = {isa = PBXBuildFile; fileRef = 3741A8BE1DE8196E00B32300 /* d_noise.c */; };
@@ -199,7 +200,6 @@
 		378972421C4F716800263434 /* s_scheduler.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971E41C4F716700263434 /* s_scheduler.c */; };
 		378972431C4F716800263434 /* m_setup.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971E51C4F716700263434 /* m_setup.c */; };
 		378972441C4F716800263434 /* m_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971E61C4F716700263434 /* m_utils.c */; };
-		3789724B1C4F716800263434 /* s_audio_pa.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971F01C4F716700263434 /* s_audio_pa.c */; };
 		3789724C1C4F716800263434 /* s_audio.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971F11C4F716700263434 /* s_audio.c */; };
 		3789724D1C4F716800263434 /* s_entry.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971F21C4F716700263434 /* s_entry.c */; };
 		3789724E1C4F716800263434 /* s_preferences.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971F31C4F716700263434 /* s_preferences.c */; };
@@ -1849,7 +1849,6 @@
 				378972421C4F716800263434 /* s_scheduler.c in Sources */,
 				378972431C4F716800263434 /* m_setup.c in Sources */,
 				378972441C4F716800263434 /* m_utils.c in Sources */,
-				3789724B1C4F716800263434 /* s_audio_pa.c in Sources */,
 				3789724C1C4F716800263434 /* s_audio.c in Sources */,
 				3789724D1C4F716800263434 /* s_entry.c in Sources */,
 				3789724E1C4F716800263434 /* s_preferences.c in Sources */,
@@ -2106,6 +2105,7 @@
 				37B911AB1E4C78FE001D9136 /* s_devices.c in Sources */,
 				376209A61E4F0FC300D97CF4 /* s_deviceslist.c in Sources */,
 				37620A121E4F201A00D97CF4 /* s_midi_pm.c in Sources */,
+				373B8EFD1E505F82001AF811 /* s_audio_pa.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

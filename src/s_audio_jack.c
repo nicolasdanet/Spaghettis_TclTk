@@ -279,17 +279,10 @@ void audio_releaseNative (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error audio_openNative (int sampleRate, 
-    int numberOfChannelsIn, 
-    int numberOfChannelsOut, 
-    int blockSize, 
-    int deviceIn, 
-    int deviceOut)
+t_error audio_openNative (t_devicesproperties *p)
 {
-    (void)sampleRate;
-    (void)blockSize;
-    (void)deviceIn;
-    (void)deviceOut;
+    int numberOfChannelsIn  = devices_getInSize (p)  ? devices_getInChannelsAtIndex (p, 0)  : 0;
+    int numberOfChannelsOut = devices_getOutSize (p) ? devices_getOutChannelsAtIndex (p, 0) : 0;
     
     #if PD_APPLE    /* Jackmp linked as a weak framework. */
         

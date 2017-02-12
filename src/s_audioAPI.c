@@ -32,12 +32,12 @@ static int  audio_state;                                                        
 // -----------------------------------------------------------------------------------------------------------
 
 static int  audio_numberOfDevicesIn;                                            /* Shared. */
-static int  audio_devicesInChannels[DEVICES_MAXIMUM_IO];                         /* Shared. */
-static char audio_devicesInNames[DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION];       /* Shared. */
+static int  audio_devicesInChannels[DEVICES_MAXIMUM_IO];                        /* Shared. */
+static char audio_devicesInNames[DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION];     /* Shared. */
 
 static int  audio_numberOfDevicesOut;                                           /* Shared. */
-static int  audio_devicesOutChannels[DEVICES_MAXIMUM_IO];                        /* Shared. */
-static char audio_devicesOutNames[DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION];      /* Shared. */
+static int  audio_devicesOutChannels[DEVICES_MAXIMUM_IO];                       /* Shared. */
+static char audio_devicesOutNames[DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION];    /* Shared. */
 
 static int  audio_tempSampleRate = AUDIO_DEFAULT_SAMPLERATE;                    /* Shared. */
 static int  audio_tempBlockSize  = AUDIO_DEFAULT_BLOCKSIZE;                     /* Shared. */
@@ -135,22 +135,12 @@ t_error audio_open (void)
     audio_getDevices (&audio);
     
     if (devices_getInSize (&audio) || devices_getOutSize (&audio)) {
-    //
-    int m = devices_getInSize (&audio);
-    int n = devices_getOutSize (&audio);
+    
+        audio_setSampleRate (devices_getSampleRate (&audio));
+        audio_initializeMemory (audio_getChannelsIn(), audio_getChannelsOut());
+        devices_checkChannels (&audio);
         
-    audio_setSampleRate (devices_getSampleRate (&audio));
-    audio_initializeMemory (audio_getChannelsIn(), audio_getChannelsOut());
-    
-    devices_checkChannels (&audio);
-    
-    err = audio_openNative (devices_getSampleRate (&audio),
-            (m > 0 ? devices_getInChannelsAtIndex (&audio, 0) : 0),
-            (n > 0 ? devices_getOutChannelsAtIndex (&audio, 0) : 0),
-            devices_getBlockSize (&audio), 
-            (m > 0 ? devices_getInAtIndex (&audio, 0) : 0),
-            (n > 0 ? devices_getOutAtIndex (&audio, 0) : 0));
-    //
+        err = audio_openNative (&audio); 
     }
     
     if (err) {

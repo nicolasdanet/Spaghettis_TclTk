@@ -22,14 +22,20 @@ void deviceslist_init (t_deviceslist *p)
     p->d_inSize  = 0;
     p->d_outSize = 0;
 
-    memset (p->d_inNames,  0, DEVICES_MAXIMUM_DEVICES * DEVICES_DESCRIPTION * sizeof (char));
-    memset (p->d_outNames, 0, DEVICES_MAXIMUM_DEVICES * DEVICES_DESCRIPTION * sizeof (char));
+    memset (p->d_inChannels,    0, DEVICES_MAXIMUM_DEVICES * sizeof (int));
+    memset (p->d_outChannels,   0, DEVICES_MAXIMUM_DEVICES * sizeof (int));
+    
+    memset (p->d_inNames,   0, DEVICES_MAXIMUM_DEVICES * DEVICES_DESCRIPTION * sizeof (char));
+    memset (p->d_outNames,  0, DEVICES_MAXIMUM_DEVICES * DEVICES_DESCRIPTION * sizeof (char));
 }
 
 void deviceslist_copy (t_deviceslist *dest, t_deviceslist *src)
 {
     dest->d_inSize  = src->d_inSize;
     dest->d_outSize = src->d_outSize;
+    
+    memcpy (dest->d_inChannels,  src->d_inChannels,  DEVICES_MAXIMUM_DEVICES * sizeof (int));
+    memcpy (dest->d_outChannels, src->d_outChannels, DEVICES_MAXIMUM_DEVICES * sizeof (int));
     
     memcpy (dest->d_inNames,  src->d_inNames,  DEVICES_MAXIMUM_DEVICES * DEVICES_DESCRIPTION * sizeof (char));
     memcpy (dest->d_outNames, src->d_outNames, DEVICES_MAXIMUM_DEVICES * DEVICES_DESCRIPTION * sizeof (char));
@@ -39,7 +45,7 @@ void deviceslist_copy (t_deviceslist *dest, t_deviceslist *src)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error deviceslist_appendIn (t_deviceslist *p, const char *device)
+t_error deviceslist_appendMidiIn (t_deviceslist *p, const char *device)
 {
     if (p->d_inSize < DEVICES_MAXIMUM_DEVICES) {
         char *s = p->d_inNames + (p->d_inSize * DEVICES_DESCRIPTION);
@@ -54,12 +60,42 @@ t_error deviceslist_appendIn (t_deviceslist *p, const char *device)
     return PD_ERROR;
 }
 
-t_error deviceslist_appendOut (t_deviceslist *p, const char *device)
+t_error deviceslist_appendMidiOut (t_deviceslist *p, const char *device)
 {
     if (p->d_outSize < DEVICES_MAXIMUM_DEVICES) {
         char *s = p->d_outNames + (p->d_outSize * DEVICES_DESCRIPTION);
         t_error err = string_copy (s, DEVICES_DESCRIPTION, device);
         if (!err) { p->d_outSize++; }
+        else {
+            string_clear (s, DEVICES_DESCRIPTION);
+        }
+        return err;
+    }
+    
+    return PD_ERROR;
+}
+
+t_error deviceslist_appendAudioIn (t_deviceslist *p, const char *device, int channels)
+{
+    if (p->d_inSize < DEVICES_MAXIMUM_DEVICES) {
+        char *s = p->d_inNames + (p->d_inSize * DEVICES_DESCRIPTION);
+        t_error err = string_copy (s, DEVICES_DESCRIPTION, device);
+        if (!err) { p->d_inChannels[p->d_inSize] = channels; p->d_inSize++; }
+        else {
+            string_clear (s, DEVICES_DESCRIPTION);
+        }
+        return err;
+    }
+    
+    return PD_ERROR;
+}
+
+t_error deviceslist_appendAudioOut (t_deviceslist *p, const char *device, int channels)
+{
+    if (p->d_outSize < DEVICES_MAXIMUM_DEVICES) {
+        char *s = p->d_outNames + (p->d_outSize * DEVICES_DESCRIPTION);
+        t_error err = string_copy (s, DEVICES_DESCRIPTION, device);
+        if (!err) { p->d_outChannels[p->d_outSize] = channels; p->d_outSize++; }
         else {
             string_clear (s, DEVICES_DESCRIPTION);
         }
@@ -105,13 +141,14 @@ t_error deviceslist_appendMidiOutAsNumber (t_deviceslist *p, int n)
     return PD_ERROR;
 }
 
-t_error deviceslist_appendAudioInAsNumber (t_deviceslist *p, int n)
+t_error deviceslist_appendAudioInAsNumber (t_deviceslist *p, int n, int channels)
 {
     if (p->d_inSize < DEVICES_MAXIMUM_DEVICES) {
     //
     char *s = p->d_inNames + (p->d_inSize * DEVICES_DESCRIPTION);
     
     if (!audio_deviceAsStringWithNumber (0, n, s, DEVICES_DESCRIPTION)) {
+        p->d_inChannels[p->d_inSize] = channels;
         p->d_inSize++;
         return PD_ERROR_NONE;
     }
@@ -121,13 +158,14 @@ t_error deviceslist_appendAudioInAsNumber (t_deviceslist *p, int n)
     return PD_ERROR;
 }
 
-t_error deviceslist_appendAudioOutAsNumber (t_deviceslist *p, int n)
+t_error deviceslist_appendAudioOutAsNumber (t_deviceslist *p, int n, int channels)
 {
     if (p->d_outSize < DEVICES_MAXIMUM_DEVICES) {
     //
     char *s = p->d_outNames + (p->d_outSize * DEVICES_DESCRIPTION);
     
     if (!audio_deviceAsStringWithNumber (1, n, s, DEVICES_DESCRIPTION)) {
+        p->d_outChannels[p->d_outSize] = channels;
         p->d_outSize++;
         return PD_ERROR_NONE;
     }

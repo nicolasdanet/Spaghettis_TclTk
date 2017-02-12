@@ -242,8 +242,8 @@ t_error midi_getListsNative (t_deviceslist *p)
     
     t_error err = PD_ERROR_NONE;
     
-    for (i = 0; i < m; i++) { err |= deviceslist_appendIn (p, "ALSA virtual device");  }
-    for (i = 0; i < n; i++) { err |= deviceslist_appendOut (p, "ALSA virtual device"); }
+    for (i = 0; i < m; i++) { err |= deviceslist_appendMidiIn (p, "ALSA virtual device");  }
+    for (i = 0; i < n; i++) { err |= deviceslist_appendMidiOut (p, "ALSA virtual device"); }
   
     return err;
 }

@@ -185,13 +185,15 @@ void audio_releaseNative (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error audio_openNative (int sampleRate,
-    int numberOfChannelsIn, 
-    int numberOfChannelsOut,
-    int blockSize,
-    int deviceIn,
-    int deviceOut)
+t_error audio_openNative (t_devicesproperties *p)
 {
+    int deviceIn            = devices_getInSize (p)  ? devices_getInAtIndex (p, 0)          : 0;
+    int deviceOut           = devices_getOutSize (p) ? devices_getOutAtIndex (p, 0)         : 0;
+    int numberOfChannelsIn  = devices_getInSize (p)  ? devices_getInChannelsAtIndex (p, 0)  : 0;
+    int numberOfChannelsOut = devices_getOutSize (p) ? devices_getOutChannelsAtIndex (p, 0) : 0;
+    int blockSize           = devices_getBlockSize (p);
+    int sampleRate          = devices_getSampleRate (p);
+    
     int t;
     int n;
     int i = -1;

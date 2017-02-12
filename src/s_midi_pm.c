@@ -313,8 +313,8 @@ t_error midi_getListsNative (t_deviceslist *p)
 
         const PmDeviceInfo *info = Pm_GetDeviceInfo (i);
 
-        if (info->input)  { err |= deviceslist_appendIn (p, info->name);  }
-        if (info->output) { err |= deviceslist_appendOut (p, info->name); }
+        if (info->input)  { err |= deviceslist_appendMidiIn (p, info->name);  }
+        if (info->output) { err |= deviceslist_appendMidiOut (p, info->name); }
     }
     
     return err;

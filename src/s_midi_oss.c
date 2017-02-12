@@ -237,13 +237,13 @@ t_error midi_getListsNative (t_deviceslist *p)
     for (i = 0; i < m; i++) {
         char t[DEVICES_DESCRIPTION] = { 0 };
         err |= string_sprintf (t, DEVICES_DESCRIPTION, "/dev/midi%s", midioss_detectedInNames[i]);
-        deviceslist_appendIn (p, t);
+        deviceslist_appendMidiIn (p, t);
     }
     
     for (i = 0; i < n; i++) {
         char t[DEVICES_DESCRIPTION] = { 0 };
         err |= string_sprintf (t, DEVICES_DESCRIPTION, "/dev/midi%s", midioss_detectedOutNames[i]);
-        deviceslist_appendOut (p, t);
+        deviceslist_appendMidiOut (p, t);
     }
     
     return err;
