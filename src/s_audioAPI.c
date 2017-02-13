@@ -253,7 +253,7 @@ void audio_requireDialog (void *dummy)
         } 
         
         err |= string_sprintf (t, PD_STRING,
-            "::ui_audio::show %%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
+            "::ui_audio::show %%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
             i[0],
             i[1],
             i[2],
@@ -271,8 +271,7 @@ void audio_requireDialog (void *dummy)
             n[2],
             n[3], 
             devices_getSampleRate (&audio),
-            devices_getBlockSize (&audio),
-            0);
+            devices_getBlockSize (&audio));
             
         if (!err) {
             guistub_new (&global_object, (void *)audio_requireDialog, t);

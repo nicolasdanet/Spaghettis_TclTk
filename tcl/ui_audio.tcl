@@ -48,8 +48,7 @@ proc show {top \
            i1 i2 i3 i4 iChannels1 iChannels2 iChannels3 iChannels4 \
            o1 o2 o3 o4 oChannels1 oChannels2 oChannels3 oChannels4 \
            sampleRate \
-           blockSize \
-           multiple} {
+           blockSize} {
     
     variable audioIn
     variable audioOut
@@ -127,11 +126,6 @@ proc show {top \
     grid $top.f.properties.blockSizeLabel               -row 1 -column 0 -sticky ew
     grid $top.f.properties.blockSize                    -row 1 -column 2 -sticky ew
     
-    if {$multiple > 1} {
-        foreach e $audioIn  { ::ui_audio::_makeIn  $top.f.inputs  [incr i] }
-        foreach e $audioOut { ::ui_audio::_makeOut $top.f.outputs [incr j] }
-    }
-
     if {![llength [winfo children $top.f.inputs]]}  { ::ui_audio::_makeIn  $top.f.inputs  1 }
     if {![llength [winfo children $top.f.outputs]]} { ::ui_audio::_makeOut $top.f.outputs 1 }
 
