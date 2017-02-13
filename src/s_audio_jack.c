@@ -81,6 +81,13 @@ static pthread_mutex_t      jack_mutex;                                         
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void audio_vectorShrinkIn   (int);
+void audio_vectorShrinkOut  (int);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static int jack_pollCallback (jack_nframes_t numberOfFrames, void *dummy)
 {
     int i;
@@ -340,7 +347,7 @@ t_error audio_openNative (t_devicesproperties *p)
     //
     }
 
-    audio_shrinkChannelsIn (jack_numberOfPortsIn = numberOfChannelsIn = i);
+    audio_vectorShrinkIn (jack_numberOfPortsIn = numberOfChannelsIn = i);
     
     for (i = 0; i < numberOfChannelsOut; i++) {
     //
@@ -354,7 +361,7 @@ t_error audio_openNative (t_devicesproperties *p)
     //
     }
     
-    audio_shrinkChannelsOut (jack_numberOfPortsOut = numberOfChannelsOut = i);
+    audio_vectorShrinkOut (jack_numberOfPortsOut = numberOfChannelsOut = i);
     
     if (!jack_activate (jack_client)) {
     //
@@ -407,7 +414,7 @@ void audio_closeNative (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int audio_pollDSPNative (void)
+int audio_pollNative (void)
 {
     int status = DACS_YES;
     

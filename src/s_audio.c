@@ -27,57 +27,84 @@ t_sample *audio_soundOut;                           /* Static. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int      audio_channelsIn;                   /* Static. */
-static int      audio_channelsOut;                  /* Static. */
+static int      audio_totalOfChannelsIn;            /* Static. */
+static int      audio_totalOfChannelsOut;           /* Static. */
 static t_float  audio_sampleRate;                   /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_error audio_setDSP (int isOn)
+t_error audio_stop (void)
 {
-    t_error err = PD_ERROR_NONE;
-    
-    if (isOn) { if (!audio_isOpened()) { err = audio_open(); } } 
-    else {
-        if (audio_isOpened()) { audio_close(); }
-    }
-    
-    return err;
+    if (audio_isOpened()) { audio_close(); } return PD_ERROR_NONE;
+}
+
+
+t_error audio_start (void)
+{
+    if (!audio_isOpened()) { return audio_open(); } else { return PD_ERROR_NONE; }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error audio_stopDSP (void)
+int audio_poll (void)
 {
-    return audio_setDSP (0);
-}
-
-
-t_error audio_startDSP (void)
-{
-    return audio_setDSP (1);
+    return audio_pollNative();
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int audio_pollDSP (void)
+/* Called by JACK (expect following stores to be atomic.) */
+
+void audio_setSampleRate (t_float sampleRate)
 {
-    return audio_pollDSPNative();
+    #if PD_32BIT
+        PD_ASSERT (sizeof (t_float) == 4);
+    #endif 
+    
+    audio_sampleRate = sampleRate;      
 }
 
-void audio_initializeMemory (t_float sampleRate, int usedChannelsIn, int usedChannelsOut)
+void audio_setBlockSize (int blockSize)
 {
-    int m = (int)((INTERNAL_BLOCKSIZE * sizeof (t_sample)) * (usedChannelsIn ? usedChannelsIn : 2));
-    int n = (int)((INTERNAL_BLOCKSIZE * sizeof (t_sample)) * (usedChannelsOut ? usedChannelsOut : 2));
+    deviceslist_setBlockSize (&audio_devices, blockSize);
+}
 
-    PD_ASSERT (usedChannelsIn >= 0);
-    PD_ASSERT (usedChannelsOut >= 0);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_float audio_getSampleRate (void)
+{
+    return audio_sampleRate;
+}
+
+int audio_getTotalOfChannelsIn (void) 
+{
+    return audio_totalOfChannelsIn;
+}
+
+int audio_getTotalOfChannelsOut (void)
+{
+    return audio_totalOfChannelsOut; 
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void audio_vectorInitialize (t_float sampleRate, int totalOfChannelsIn, int totalOfChannelsOut)
+{
+    int m = (int)((INTERNAL_BLOCKSIZE * sizeof (t_sample)) * (totalOfChannelsIn ? totalOfChannelsIn : 2));
+    int n = (int)((INTERNAL_BLOCKSIZE * sizeof (t_sample)) * (totalOfChannelsOut ? totalOfChannelsOut : 2));
+
+    PD_ASSERT (totalOfChannelsIn >= 0);
+    PD_ASSERT (totalOfChannelsOut >= 0);
     
     if (audio_soundIn)  { PD_MEMORY_FREE (audio_soundIn);  audio_soundIn  = NULL; }
     if (audio_soundOut) { PD_MEMORY_FREE (audio_soundOut); audio_soundOut = NULL; }
@@ -85,10 +112,22 @@ void audio_initializeMemory (t_float sampleRate, int usedChannelsIn, int usedCha
     audio_soundIn  = (t_sample *)PD_MEMORY_GET (m);
     audio_soundOut = (t_sample *)PD_MEMORY_GET (n);
     
-    audio_channelsIn  = usedChannelsIn;
-    audio_channelsOut = usedChannelsOut;
+    audio_totalOfChannelsIn  = totalOfChannelsIn;
+    audio_totalOfChannelsOut = totalOfChannelsOut;
     
     audio_setSampleRate (sampleRate);
+}
+
+void audio_vectorShrinkIn (int totalOfChannelsIn)
+{
+    PD_ASSERT (totalOfChannelsIn <= audio_totalOfChannelsIn); 
+    audio_totalOfChannelsIn = totalOfChannelsIn;
+}
+
+void audio_vectorShrinkOut (int totalOfChannelsOut)
+{
+    PD_ASSERT (totalOfChannelsOut <= audio_totalOfChannelsOut);
+    audio_totalOfChannelsOut = totalOfChannelsOut;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -104,61 +143,13 @@ void audio_release (void)
 {
     audio_releaseNative();
     
-    if (audio_soundIn)  { PD_MEMORY_FREE (audio_soundIn);  audio_soundIn  = NULL; }
-    if (audio_soundOut) { PD_MEMORY_FREE (audio_soundOut); audio_soundOut = NULL; }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void audio_shrinkChannelsIn (int numberOfChannelsIn)
-{
-    PD_ASSERT (numberOfChannelsIn <= audio_channelsIn); 
-    audio_channelsIn = numberOfChannelsIn;
-}
-
-void audio_shrinkChannelsOut (int numberOfChannelsOut)
-{
-    PD_ASSERT (numberOfChannelsOut <= audio_channelsOut);
-    audio_channelsOut = numberOfChannelsOut;
-}
-
-/* Called by JACK. */
-
-void audio_setSampleRate (t_float sampleRate)
-{
-    #if PD_32BIT
-        PD_ASSERT (sizeof (t_float) == 4);      /* Expect following store to be atomic. */
-    #endif 
+    if (audio_soundIn)  {
+        PD_MEMORY_FREE (audio_soundIn);  audio_soundIn  = NULL; 
+    }
     
-    audio_sampleRate = sampleRate;      
-}
-
-/* Called by JACK to notify the number of frames used. */
-
-void audio_setBlockSize (int blockSize)
-{
-    deviceslist_setBlockSize (&audio_devices, blockSize);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int audio_getChannelsIn (void) 
-{
-    return audio_channelsIn;
-}
-
-int audio_getChannelsOut (void)
-{
-    return audio_channelsOut; 
-}
-
-t_float audio_getSampleRate (void)
-{
-    return audio_sampleRate;
+    if (audio_soundOut) {
+        PD_MEMORY_FREE (audio_soundOut); audio_soundOut = NULL; 
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

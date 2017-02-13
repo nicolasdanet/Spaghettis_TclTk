@@ -248,20 +248,20 @@ void        outmidi_polyPressure                    (int channel, int pitch, int
 
 t_error     audio_initialize                        (void);
 void        audio_release                           (void);
-int         audio_pollDSP                           (void);
-t_error     audio_stopDSP                           (void);
-t_error     audio_startDSP                          (void);
-
-void        audio_initializeMemory                  (t_float sampleRate, int channelsIn, int channelsOut);
-void        audio_shrinkChannelsIn                  (int numberOfChannelsIn);
-void        audio_shrinkChannelsOut                 (int numberOfChannelsOut);
+int         audio_poll                              (void);
+t_error     audio_stop                              (void);
+t_error     audio_start                             (void);
 
 void        audio_setSampleRate                     (t_float sampleRate);
 void        audio_setBlockSize                      (int blockSize);
 
-int         audio_getChannelsIn                     (void);
-int         audio_getChannelsOut                    (void);
 t_float     audio_getSampleRate                     (void);
+int         audio_getBlockSize                      (void);
+int         audio_getTotalOfChannelsIn              (void);
+int         audio_getTotalOfChannelsOut             (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 void        audio_requireDialog                     (void *dummy);
 void        audio_fromDialog                        (void *dummy, t_symbol *s, int argc, t_atom *argv);

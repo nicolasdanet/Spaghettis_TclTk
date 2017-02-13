@@ -64,6 +64,13 @@ static int              pa_channelsOut;                 /* Static. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void audio_vectorShrinkIn   (int);
+void audio_vectorShrinkOut  (int);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static int pa_ringCallback (const void *input,
     void *output,
     unsigned long frameCount,
@@ -158,13 +165,13 @@ char *audio_nameNative (void)
     static char *name = "PortAudio"; return name;
 }
 
-/*
+#if 0
 
 int audio_getPriorityNative (int min, int max, int isWatchdog)
 {
 }
 
-*/
+#endif
 
 t_error audio_initializeNative (void)
 {
@@ -236,8 +243,8 @@ t_error audio_openNative (t_devicesproperties *p)
     if (i == -1 || (int)(Pa_GetDeviceInfo (i)->defaultSampleRate) != sampleRate) { numberOfChannelsIn  = 0; }
     if (o == -1 || (int)(Pa_GetDeviceInfo (o)->defaultSampleRate) != sampleRate) { numberOfChannelsOut = 0; }
     
-    audio_shrinkChannelsIn (pa_channelsIn = numberOfChannelsIn);        /* Cached for convenience. */
-    audio_shrinkChannelsOut (pa_channelsOut = numberOfChannelsOut);     /* Ditto. */
+    audio_vectorShrinkIn (pa_channelsIn = numberOfChannelsIn);        /* Cached for convenience. */
+    audio_vectorShrinkOut (pa_channelsOut = numberOfChannelsOut);     /* Ditto. */
 
     if (pa_bufferIn)  { PD_MEMORY_FREE (pa_bufferIn);  pa_bufferIn  = NULL; }
     if (pa_bufferOut) { PD_MEMORY_FREE (pa_bufferOut); pa_bufferOut = NULL; }
@@ -301,7 +308,7 @@ void audio_closeNative (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int audio_pollDSPNative (void)
+int audio_pollNative (void)
 {
     t_sample *sound;
     t_sample *p1 = NULL;

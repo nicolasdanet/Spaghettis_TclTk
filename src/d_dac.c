@@ -60,7 +60,7 @@ static void dac_tilde_dsp (t_dac_tilde *x, t_signal **sp)
     for (i = 0; i < x->x_size; i++) {
     //
     int channel = x->x_vector[i] - 1;
-    int k = audio_getChannelsOut();
+    int k = audio_getTotalOfChannelsOut();
     t_signal *t = (*s);
     
     PD_ASSERT (t->s_vectorSize == AUDIO_DEFAULT_BLOCKSIZE);

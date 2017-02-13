@@ -200,7 +200,7 @@ static void scheduler_mainLoop (void)
     int timeForward, didSomething = 0;
 
     if (scheduler_audioMode != SCHEDULER_AUDIO_NONE) {
-        if ((timeForward = audio_pollDSP())) { idleCount = 0; }
+        if ((timeForward = audio_poll())) { idleCount = 0; }
         else {
             if (!(++idleCount % 31)) { 
                 scheduler_pollStuck (idleCount == 32);

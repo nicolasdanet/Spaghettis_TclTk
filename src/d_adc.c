@@ -59,7 +59,7 @@ static void adc_tilde_dsp (t_adc_tilde *x, t_signal **sp)
     for (i = 0; i < x->x_size; i++) {
     //
     int channel = x->x_vector[i] - 1;
-    int k = audio_getChannelsIn();
+    int k = audio_getTotalOfChannelsIn();
     t_signal *t = (*s);
     
     PD_ASSERT (t->s_vectorSize == AUDIO_DEFAULT_BLOCKSIZE);

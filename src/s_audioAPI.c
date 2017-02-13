@@ -37,6 +37,12 @@ static int      audio_state;                /* Static. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void audio_vectorInitialize (t_float, int, int);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #if 1
 
 /* The APIs provided detect devices only at startup thus it can be cached. */
@@ -84,14 +90,12 @@ t_error audio_open (void)
     
     audio_getDevices (&audio);
     
-    if (devices_getInSize (&audio) || devices_getOutSize (&audio)) {
+    devices_checkDisabled (&audio);
     
-        devices_checkDisabled (&audio);
-        
-        audio_initializeMemory (devices_getSampleRate (&audio),
-            audio_getChannelsIn(),
-            audio_getChannelsOut());
-        
+    if (devices_getInSize (&audio) || devices_getOutSize (&audio)) {
+        int m = audio_getTotalOfChannelsIn();
+        int n = audio_getTotalOfChannelsOut();
+        audio_vectorInitialize (devices_getSampleRate (&audio), m, n);
         err = audio_openNative (&audio); 
     }
     
@@ -142,7 +146,7 @@ void audio_setDevices (t_devicesproperties *p)
     m = deviceslist_getTotalOfChannelsIn (&audio_devices);
     n = deviceslist_getTotalOfChannelsOut (&audio_devices);
     
-    audio_initializeMemory (devices_getSampleRate (p), m, n);
+    audio_vectorInitialize (devices_getSampleRate (p), m, n);
 }
 
 // -----------------------------------------------------------------------------------------------------------

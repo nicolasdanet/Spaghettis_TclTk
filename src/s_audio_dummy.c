@@ -57,7 +57,7 @@ void audio_closeNative()
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int audio_pollDSPNative() 
+int audio_pollNative() 
 {
     return DACS_NO;
 }

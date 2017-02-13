@@ -105,9 +105,9 @@ void dsp_state (void *dummy, t_symbol *s, int argc, t_atom *argv)
     
     if (n != pd_this->pd_dspState) {
     //
-    if (n) { if (audio_startDSP() == PD_ERROR_NONE) { dsp_start(); } }
+    if (n) { if (audio_start() == PD_ERROR_NONE) { dsp_start(); } }
     else {
-        dsp_stop(); audio_stopDSP();
+        dsp_stop(); audio_stop();
     }
     
     dsp_notify (pd_this->pd_dspState);
