@@ -180,15 +180,6 @@ t_error     deviceslist_appendAudioOut              (t_deviceslist *p, const cha
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark-
 
-t_error     deviceslist_appendMidiInAsNumber        (t_deviceslist *p, int n);
-t_error     deviceslist_appendMidiOutAsNumber       (t_deviceslist *p, int n);
-t_error     deviceslist_appendAudioInAsNumber       (t_deviceslist *p, int n, int channels);
-t_error     deviceslist_appendAudioOutAsNumber      (t_deviceslist *p, int n, int channels);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark-
-
 char        *deviceslist_getInAtIndexAsString       (t_deviceslist *p, int i);
 char        *deviceslist_getOutAtIndexAsString      (t_deviceslist *p, int i);
 

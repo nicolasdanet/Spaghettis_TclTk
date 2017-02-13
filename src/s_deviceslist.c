@@ -47,78 +47,6 @@ void deviceslist_copy (t_deviceslist *dest, t_deviceslist *src)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void deviceslist_setDevices (t_deviceslist *l, t_devicesproperties *p)
-{
-    int i;
-    
-    deviceslist_init (l);
-        
-    if (p->d_isMidi) {
-    
-        for (i = 0; i < devices_getInSize (p); i++) {
-            deviceslist_appendMidiInAsNumber (l, devices_getInAtIndex (p, i));
-        }
-        
-        for (i = 0; i < devices_getOutSize (p); i++) {
-            deviceslist_appendMidiOutAsNumber (l, devices_getOutAtIndex (p, i));
-        }
-    
-    } else {
-        
-        deviceslist_setBlockSize (l, devices_getBlockSize (p));
-        deviceslist_setSampleRate (l, devices_getSampleRate (p));
-        
-        for (i = 0; i < devices_getInSize (p); i++) {
-            deviceslist_appendAudioInAsNumber (l,
-                devices_getInAtIndex (p, i),
-                devices_getInChannelsAtIndex (p, i));
-        }
-
-        for (i = 0; i < devices_getOutSize (p); i++) {
-            deviceslist_appendAudioOutAsNumber (l,
-                devices_getOutAtIndex (p, i),
-                devices_getOutChannelsAtIndex (p, i));
-        }
-    }
-}
-
-void deviceslist_getDevices (t_deviceslist *l, t_devicesproperties *p)
-{
-    int i;
-    
-    if (p->d_isMidi) {
-        
-        for (i = 0; i < deviceslist_getInSize (l); i++) {
-            devices_appendMidiIn (p, deviceslist_getInAtIndexAsString (l, i));
-        }
-            
-        for (i = 0; i < deviceslist_getOutSize (l); i++) {
-            devices_appendMidiOut (p, deviceslist_getOutAtIndexAsString (l, i));
-        }
-    
-    } else {
-    
-        devices_setBlockSize (p, deviceslist_getBlockSize (l));
-        devices_setSampleRate (p, deviceslist_getSampleRate (l));
-        
-        for (i = 0; i < deviceslist_getInSize (l); i++) {
-            devices_appendAudioIn (p,
-                deviceslist_getInAtIndexAsString (l, i),
-                deviceslist_getInChannelsAtIndex (l, i));
-        }
-        
-        for (i = 0; i < deviceslist_getOutSize (l); i++) {
-            devices_appendAudioOut (p,
-                deviceslist_getOutAtIndexAsString (l, i),
-                deviceslist_getOutChannelsAtIndex (l, i));
-        }
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 t_error deviceslist_appendMidiIn (t_deviceslist *p, const char *device)
 {
     if (p->d_inSize < DEVICES_MAXIMUM_IO) {
@@ -185,7 +113,7 @@ t_error deviceslist_appendAudioOut (t_deviceslist *p, const char *device, int ch
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error deviceslist_appendMidiInAsNumber (t_deviceslist *p, int n)
+static t_error deviceslist_appendMidiInAsNumber (t_deviceslist *p, int n)
 {
     if (p->d_inSize < DEVICES_MAXIMUM_IO) {
     //
@@ -201,7 +129,7 @@ t_error deviceslist_appendMidiInAsNumber (t_deviceslist *p, int n)
     return PD_ERROR;
 }
 
-t_error deviceslist_appendMidiOutAsNumber (t_deviceslist *p, int n)
+static t_error deviceslist_appendMidiOutAsNumber (t_deviceslist *p, int n)
 {
     if (p->d_outSize < DEVICES_MAXIMUM_IO) {
     //
@@ -217,7 +145,7 @@ t_error deviceslist_appendMidiOutAsNumber (t_deviceslist *p, int n)
     return PD_ERROR;
 }
 
-t_error deviceslist_appendAudioInAsNumber (t_deviceslist *p, int n, int channels)
+static t_error deviceslist_appendAudioInAsNumber (t_deviceslist *p, int n, int channels)
 {
     if (p->d_inSize < DEVICES_MAXIMUM_IO) {
     //
@@ -236,7 +164,7 @@ t_error deviceslist_appendAudioInAsNumber (t_deviceslist *p, int n, int channels
     return PD_ERROR;
 }
 
-t_error deviceslist_appendAudioOutAsNumber (t_deviceslist *p, int n, int channels)
+static t_error deviceslist_appendAudioOutAsNumber (t_deviceslist *p, int n, int channels)
 {
     if (p->d_outSize < DEVICES_MAXIMUM_IO) {
     //
@@ -278,6 +206,78 @@ char *deviceslist_getOutAtIndexAsString (t_deviceslist *p, int i)
     if (i < p->d_outSize) { return (p->d_outNames + (i * DEVICES_DESCRIPTION)); }
     else {
         return NULL;
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void deviceslist_setDevices (t_deviceslist *l, t_devicesproperties *p)
+{
+    int i;
+    
+    deviceslist_init (l);
+        
+    if (p->d_isMidi) {
+    
+        for (i = 0; i < devices_getInSize (p); i++) {
+            deviceslist_appendMidiInAsNumber (l, devices_getInAtIndex (p, i));
+        }
+        
+        for (i = 0; i < devices_getOutSize (p); i++) {
+            deviceslist_appendMidiOutAsNumber (l, devices_getOutAtIndex (p, i));
+        }
+    
+    } else {
+        
+        deviceslist_setBlockSize (l, devices_getBlockSize (p));
+        deviceslist_setSampleRate (l, devices_getSampleRate (p));
+        
+        for (i = 0; i < devices_getInSize (p); i++) {
+            deviceslist_appendAudioInAsNumber (l,
+                devices_getInAtIndex (p, i),
+                devices_getInChannelsAtIndex (p, i));
+        }
+
+        for (i = 0; i < devices_getOutSize (p); i++) {
+            deviceslist_appendAudioOutAsNumber (l,
+                devices_getOutAtIndex (p, i),
+                devices_getOutChannelsAtIndex (p, i));
+        }
+    }
+}
+
+void deviceslist_getDevices (t_deviceslist *l, t_devicesproperties *p)
+{
+    int i;
+    
+    if (p->d_isMidi) {
+        
+        for (i = 0; i < deviceslist_getInSize (l); i++) {
+            devices_appendMidiIn (p, deviceslist_getInAtIndexAsString (l, i));
+        }
+            
+        for (i = 0; i < deviceslist_getOutSize (l); i++) {
+            devices_appendMidiOut (p, deviceslist_getOutAtIndexAsString (l, i));
+        }
+    
+    } else {
+    
+        devices_setBlockSize (p, deviceslist_getBlockSize (l));
+        devices_setSampleRate (p, deviceslist_getSampleRate (l));
+        
+        for (i = 0; i < deviceslist_getInSize (l); i++) {
+            devices_appendAudioIn (p,
+                deviceslist_getInAtIndexAsString (l, i),
+                deviceslist_getInChannelsAtIndex (l, i));
+        }
+        
+        for (i = 0; i < deviceslist_getOutSize (l); i++) {
+            devices_appendAudioOut (p,
+                deviceslist_getOutAtIndexAsString (l, i),
+                deviceslist_getOutChannelsAtIndex (l, i));
+        }
     }
 }
 
