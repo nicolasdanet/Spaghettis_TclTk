@@ -238,17 +238,18 @@ void audio_requireDialog (void *dummy)
         int o[4] = { 0 };
         int n[4] = { 0 };
         int j;
+        int k;
         
         for (j = 0; j < 4; j++) {
-            int k = devices_getInAtIndex (&audio, j); 
+            k = devices_getInAtIndex (&audio, j); 
             i[j] = (k >= 0) ? k : 0;
             m[j] = (k >= 0) ? devices_getInChannelsAtIndex (&audio, j) : 0;
         } 
         
         for (j = 0; j < 4; j++) {
-            int k = devices_getOutAtIndex (&audio, j);
+            k = devices_getOutAtIndex (&audio, j);
             o[j] = (k >= 0) ? k : 0;
-            n[j] = (k >= 0) ? devices_getInChannelsAtIndex (&audio, j) : 0;
+            n[j] = (k >= 0) ? devices_getOutChannelsAtIndex (&audio, j) : 0;
         } 
         
         err |= string_sprintf (t, PD_STRING,
@@ -287,44 +288,32 @@ void audio_requireDialog (void *dummy)
 
 void audio_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
-    #if 0
+    t_devicesproperties audio; devices_initAsAudio (&audio);
     
-    int m = 0;
-    int n = 0;
-    int i[DEVICES_MAXIMUM_IO] = { 0 };
-    int j[DEVICES_MAXIMUM_IO] = { 0 };
-    int o[DEVICES_MAXIMUM_IO] = { 0 };
-    int p[DEVICES_MAXIMUM_IO] = { 0 };
-        
-    int sampleRate;
-    int blockSize;
-
-    int t;
+    int i;
     
     PD_ASSERT (argc == 18);
     PD_ASSERT (DEVICES_MAXIMUM_IO >= 4);
-    PD_ASSERT (DEVICES_MAXIMUM_IO >= 4);
     
-    for (t = 0; t < 4; t++) {
-        i[t] = (int)atom_getFloatAtIndex (t + 0,  argc, argv);
-        j[t] = (int)atom_getFloatAtIndex (t + 4,  argc, argv);
-        o[t] = (int)atom_getFloatAtIndex (t + 8,  argc, argv);
-        p[t] = (int)atom_getFloatAtIndex (t + 12, argc, argv);
+    for (i = 0; i < 4; i++) {
+        int t = (int)atom_getFloatAtIndex (i + 4,  argc, argv);
+        if (t != 0) {
+            devices_appendAudioInAsNumber (&audio, (int)atom_getFloatAtIndex (i + 0,  argc, argv), t);
+        }
     }
     
-    sampleRate   = (int)atom_getFloatAtIndex (16, argc, argv);
-    blockSize    = (int)atom_getFloatAtIndex (17, argc, argv);
+    for (i = 0; i < 4; i++) {
+        int t = (int)atom_getFloatAtIndex (i + 12, argc, argv);
+        if (t != 0) {
+            devices_appendAudioOutAsNumber (&audio, (int)atom_getFloatAtIndex (i + 8,  argc, argv), t);
+        }
+    }
     
-    /* Remove devices with number of channels set to zero. */
+    devices_setSampleRate (&audio, (int)atom_getFloatAtIndex (16, argc, argv));
+    devices_setBlockSize (&audio,  (int)atom_getFloatAtIndex (17, argc, argv));
     
-    for (t = 0; t < 4; t++) { if (j[t] != 0) { i[m] = i[t]; j[m] = j[t]; m++; } }
-    for (t = 0; t < 4; t++) { if (p[t] != 0) { o[n] = o[t]; p[n] = p[t]; n++; } }
-    
-    // audio_close();
-        
-    // audio_setDevices (m, i, j, n, o, p, sampleRate, blockSize);
-    
-    #endif
+    audio_close();
+    audio_setDevices (&audio);
 }
 
 // -----------------------------------------------------------------------------------------------------------

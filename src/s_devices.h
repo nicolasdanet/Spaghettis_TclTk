@@ -16,14 +16,15 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define DEVICES_MAXIMUM_IO          8
-#define DEVICES_MAXIMUM_CHANNELS    32
+#define DEVICES_MAXIMUM_IO              8
+#define DEVICES_MAXIMUM_CHANNELS        32
+#define DEVICES_MAXIMUM_BLOCKSIZE       2048
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define DEVICES_DESCRIPTION         128
+#define DEVICES_DESCRIPTION             128
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -34,10 +35,10 @@ typedef struct _devicesproperties {
     int d_sampleRate;
     int d_inSize;
     int d_outSize;
-    int d_in            [DEVICES_MAXIMUM_IO];
-    int d_out           [DEVICES_MAXIMUM_IO];
-    int d_inChannels    [DEVICES_MAXIMUM_IO];
-    int d_outChannels   [DEVICES_MAXIMUM_IO];
+    int d_in[DEVICES_MAXIMUM_IO];
+    int d_out[DEVICES_MAXIMUM_IO];
+    int d_inChannels[DEVICES_MAXIMUM_IO];
+    int d_outChannels[DEVICES_MAXIMUM_IO];
     int d_isMidi;
     } t_devicesproperties;
 
@@ -146,10 +147,10 @@ typedef struct _deviceslist {
     int     d_sampleRate;
     int     d_inSize;
     int     d_outSize;
-    int     d_inChannels    [DEVICES_MAXIMUM_IO];
-    int     d_outChannels   [DEVICES_MAXIMUM_IO];
-    char    d_inNames       [DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION];
-    char    d_outNames      [DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION];
+    int     d_inChannels[DEVICES_MAXIMUM_IO];
+    int     d_outChannels[DEVICES_MAXIMUM_IO];
+    char    d_inNames[DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION];
+    char    d_outNames[DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION];
     } t_deviceslist;
 
 // -----------------------------------------------------------------------------------------------------------
