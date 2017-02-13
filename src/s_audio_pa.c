@@ -45,15 +45,15 @@ extern t_sample *audio_soundOut;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static PaStream         *pa_stream;                     /* Shared. */
-static char             *pa_bufferIn;                   /* Shared. */
-static char             *pa_bufferOut;                  /* Shared. */
+static PaStream         *pa_stream;                     /* Static. */
+static char             *pa_bufferIn;                   /* Static. */
+static char             *pa_bufferOut;                  /* Static. */
 
-static PaUtilRingBuffer pa_ringIn;                      /* Shared. */
-static PaUtilRingBuffer pa_ringOut;                     /* Shared. */
+static PaUtilRingBuffer pa_ringIn;                      /* Static. */
+static PaUtilRingBuffer pa_ringOut;                     /* Static. */
 
-static int              pa_channelsIn;                  /* Shared. */
-static int              pa_channelsOut;                 /* Shared. */
+static int              pa_channelsIn;                  /* Static. */
+static int              pa_channelsOut;                 /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

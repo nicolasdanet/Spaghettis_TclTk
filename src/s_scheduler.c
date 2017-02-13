@@ -37,12 +37,12 @@ extern t_pdinstance *pd_this;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static volatile sig_atomic_t scheduler_quit;            /* Shared. */
+static volatile sig_atomic_t scheduler_quit;            /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int      scheduler_audioMode;                    /* Shared. */
+static int      scheduler_audioMode;                    /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -50,8 +50,8 @@ static int      scheduler_audioMode;                    /* Shared. */
 #if PD_WATCHDOG 
 #if PD_WITH_NOGUI
 
-static int      scheduler_didDSP;                       /* Shared. */
-static int      scheduler_nextPing;                     /* Shared. */
+static int      scheduler_didDSP;                       /* Static. */
+static int      scheduler_nextPing;                     /* Static. */
 
 #endif
 #endif

@@ -52,25 +52,25 @@ extern t_sample *audio_soundOut;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static char                 *jack_clientNames[JACK_MAXIMUM_CLIENTS];            /* Shared. */
-static jack_client_t        *jack_client;                                       /* Shared. */
+static char                 *jack_clientNames[JACK_MAXIMUM_CLIENTS];            /* Static. */
+static jack_client_t        *jack_client;                                       /* Static. */
 
-static t_sample             *jack_bufferIn;                                     /* Shared. */
-static t_sample             *jack_bufferOut;                                    /* Shared. */
-static jack_port_t          *jack_portsIn[JACK_MAXIMUM_PORTS];                  /* Shared. */
-static jack_port_t          *jack_portsOut[JACK_MAXIMUM_PORTS];                 /* Shared. */
+static t_sample             *jack_bufferIn;                                     /* Static. */
+static t_sample             *jack_bufferOut;                                    /* Static. */
+static jack_port_t          *jack_portsIn[JACK_MAXIMUM_PORTS];                  /* Static. */
+static jack_port_t          *jack_portsOut[JACK_MAXIMUM_PORTS];                 /* Static. */
 
-static int                  jack_numberOfPortsIn;                               /* Shared. */
-static int                  jack_numberOfPortsOut;                              /* Shared. */
+static int                  jack_numberOfPortsIn;                               /* Static. */
+static int                  jack_numberOfPortsOut;                              /* Static. */
 
-static jack_nframes_t       jack_framesRequired;                                /* Shared. */
-static jack_nframes_t       jack_framesFilled;                                  /* Shared. */
+static jack_nframes_t       jack_framesRequired;                                /* Static. */
+static jack_nframes_t       jack_framesFilled;                                  /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static pthread_cond_t       jack_cond;                                          /* Shared. */
-static pthread_mutex_t      jack_mutex;                                         /* Shared. */
+static pthread_cond_t       jack_cond;                                          /* Static. */
+static pthread_mutex_t      jack_mutex;                                         /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

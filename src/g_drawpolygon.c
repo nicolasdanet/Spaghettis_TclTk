@@ -32,14 +32,14 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int          drawpolygon_field;                  /* Shared. */
-static t_float      drawpolygon_cumulativeX;            /* Shared. */
-static t_float      drawpolygon_cumulativeY;            /* Shared. */
-static t_float      drawpolygon_valueX;                 /* Shared. */
-static t_float      drawpolygon_valueY;                 /* Shared. */
-static t_float      drawpolygon_stepX;                  /* Shared. */
-static t_float      drawpolygon_stepY;                  /* Shared. */
-static t_gpointer   drawpolygon_gpointer;               /* Shared. */
+static int          drawpolygon_field;                  /* Static. */
+static t_float      drawpolygon_cumulativeX;            /* Static. */
+static t_float      drawpolygon_cumulativeY;            /* Static. */
+static t_float      drawpolygon_valueX;                 /* Static. */
+static t_float      drawpolygon_valueY;                 /* Static. */
+static t_float      drawpolygon_stepX;                  /* Static. */
+static t_float      drawpolygon_stepY;                  /* Static. */
+static t_gpointer   drawpolygon_gpointer;               /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

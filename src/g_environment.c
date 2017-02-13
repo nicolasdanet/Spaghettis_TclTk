@@ -18,14 +18,14 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_symbol     *environment_fileName  = &s_;       /* Shared. */
-static t_symbol     *environment_directory = &s_;       /* Shared. */
-static t_atom       *environment_argv;                  /* Shared. */
+static t_symbol     *environment_fileName  = &s_;       /* Static. */
+static t_symbol     *environment_directory = &s_;       /* Static. */
+static t_atom       *environment_argv;                  /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int          environment_argc;                   /* Shared. */
+static int          environment_argc;                   /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -61,7 +61,7 @@ void environment_resetActiveArguments (void)
 
 t_environment *environment_fetchActiveIfAny (void)
 {
-    static int dollarZero = 1000;       /* Shared. */
+    static int dollarZero = 1000;       /* Static. */
     
     if (environment_directory != &s_) {
     //

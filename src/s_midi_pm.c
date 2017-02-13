@@ -25,13 +25,13 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int midipm_numberOfDevicesIn;                        /* Shared. */
-static int midipm_numberOfDevicesOut;                       /* Shared. */
+static int midipm_numberOfDevicesIn;                        /* Static. */
+static int midipm_numberOfDevicesOut;                       /* Static. */
 
-static PmStream *midipm_devicesIn[DEVICES_MAXIMUM_IO];      /* Shared. */
-static PmStream *midipm_devicesOut[DEVICES_MAXIMUM_IO];     /* Shared. */
+static PmStream *midipm_devicesIn[DEVICES_MAXIMUM_IO];      /* Static. */
+static PmStream *midipm_devicesOut[DEVICES_MAXIMUM_IO];     /* Static. */
 
-static int midipm_sysexFlag;                                /* Shared. */
+static int midipm_sysexFlag;                                /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -168,9 +168,9 @@ void midi_pushNextMessageNative (int port, int a, int b, int c)
 
 void midi_pushNextByteNative (int port, int byte)
 {
-    static int t[4];            /* Shared. */
-    static int n = 0;           /* Shared. */
-    static int sysex = 0;       /* Shared. */
+    static int t[4];            /* Static. */
+    static int n = 0;           /* Static. */
+    static int sysex = 0;       /* Static. */
     
     if (port >= 0 && port < midipm_numberOfDevicesOut) {
     //

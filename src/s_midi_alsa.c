@@ -30,11 +30,11 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int midialsa_numberOfDevicesIn;                  /* Shared. */
-static int midialsa_numberOfDevicesOut;                 /* Shared. */
+static int midialsa_numberOfDevicesIn;                  /* Static. */
+static int midialsa_numberOfDevicesOut;                 /* Static. */
 
-static int midialsa_devicesIn[DEVICES_MAXIMUM_IO];      /* Shared. */
-static int midialsa_devicesOut[DEVICES_MAXIMUM_IO];     /* Shared. */
+static int midialsa_devicesIn[DEVICES_MAXIMUM_IO];      /* Static. */
+static int midialsa_devicesOut[DEVICES_MAXIMUM_IO];     /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

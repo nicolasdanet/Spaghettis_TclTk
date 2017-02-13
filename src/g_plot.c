@@ -27,25 +27,25 @@ static t_class  *plot_class;                            /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_float              plot_cumulativeX;           /* Shared. */
-static t_float              plot_cumulativeY;           /* Shared. */
-static t_float              plot_stepX;                 /* Shared. */
-static t_float              plot_stepY;                 /* Shared. */
-static t_float              plot_relativeX;             /* Shared. */
-static t_float              plot_relativeY;             /* Shared. */
-static t_float              plot_incrementX;            /* Shared. */
-static t_float              plot_width;                 /* Shared. */
-static t_float              plot_style;                 /* Shared. */
-static int                  plot_startX;                /* Shared. */
-static int                  plot_previousX;             /* Shared. */
-static int                  plot_thickness;             /* Shared. */
-static t_float              plot_direction;             /* Shared. */
-static t_gpointer           plot_gpointer;              /* Shared. */
-static t_gpointer           plot_check;                 /* Shared. */
+static t_float              plot_cumulativeX;           /* Static. */
+static t_float              plot_cumulativeY;           /* Static. */
+static t_float              plot_stepX;                 /* Static. */
+static t_float              plot_stepY;                 /* Static. */
+static t_float              plot_relativeX;             /* Static. */
+static t_float              plot_relativeY;             /* Static. */
+static t_float              plot_incrementX;            /* Static. */
+static t_float              plot_width;                 /* Static. */
+static t_float              plot_style;                 /* Static. */
+static int                  plot_startX;                /* Static. */
+static int                  plot_previousX;             /* Static. */
+static int                  plot_thickness;             /* Static. */
+static t_float              plot_direction;             /* Static. */
+static t_gpointer           plot_gpointer;              /* Static. */
+static t_gpointer           plot_check;                 /* Static. */
 
-static t_fielddescriptor    *plot_fieldDescriptorX;     /* Shared. */
-static t_fielddescriptor    *plot_fieldDescriptorY;     /* Shared. */
-static t_fielddescriptor    *plot_fieldArray;           /* Shared. */
+static t_fielddescriptor    *plot_fieldDescriptorX;     /* Static. */
+static t_fielddescriptor    *plot_fieldDescriptorY;     /* Static. */
+static t_fielddescriptor    *plot_fieldArray;           /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -34,10 +34,10 @@ extern t_widgetbehavior     text_widgetBehavior;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_glist              *canvas_lastCanvas;             /* Shared. */
+static t_glist              *canvas_lastCanvas;             /* Static. */
 
-static int                  canvas_lastCanvasX;             /* Shared. */
-static int                  canvas_lastCanvasY;             /* Shared. */
+static int                  canvas_lastCanvasX;             /* Static. */
+static int                  canvas_lastCanvasY;             /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -428,9 +428,9 @@ t_fontsize canvas_getFontSize (t_glist *glist)
 
 void canvas_setCursorType (t_glist *glist, int type)
 {
-    static t_glist *lastGlist = NULL;           /* Shared. */
-    static int lastType = CURSOR_NOTHING;       /* Shared. */
-    static char *cursors[] =                    /* Shared. */
+    static t_glist *lastGlist = NULL;           /* Static. */
+    static int lastType = CURSOR_NOTHING;       /* Static. */
+    static char *cursors[] =                    /* Static. */
         {
             "left_ptr",             // CURSOR_NOTHING
             "hand2",                // CURSOR_CLICK

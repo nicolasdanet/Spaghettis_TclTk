@@ -33,13 +33,13 @@ extern t_symbol *main_directoryExtras;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static jack_ringbuffer_t    *logger_ring;                   /* Shared. */
+static jack_ringbuffer_t    *logger_ring;                   /* Static. */
 
-static int                  logger_file;                    /* Shared. */
-static pthread_t            logger_thread;                  /* Shared. */
-static pthread_attr_t       logger_attribute;               /* Shared. */
-static int                  logger_quit;                    /* Shared. */
-static int                  logger_running;                 /* Shared. */
+static int                  logger_file;                    /* Static. */
+static pthread_t            logger_thread;                  /* Static. */
+static pthread_attr_t       logger_attribute;               /* Static. */
+static int                  logger_quit;                    /* Static. */
+static int                  logger_running;                 /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

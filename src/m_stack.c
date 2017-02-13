@@ -26,9 +26,9 @@ typedef struct _gstack {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_gstack *stack_stackHead;               /* Shared. */
-static t_pd     *stack_lastPopped;              /* Shared. */
-static t_symbol *stack_loadingAbstraction;      /* Shared. */
+static t_gstack *stack_stackHead;               /* Static. */
+static t_pd     *stack_lastPopped;              /* Static. */
+static t_symbol *stack_loadingAbstraction;      /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

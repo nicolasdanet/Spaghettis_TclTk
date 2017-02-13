@@ -32,8 +32,8 @@ extern int          main_directoryWriteRequirePrivileges;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark-
 
-static char *properties_loadBuffer;     /* Shared. */
-static FILE *properties_saveFile;       /* Shared. */
+static char *properties_loadBuffer;     /* Static. */
+static FILE *properties_saveFile;       /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

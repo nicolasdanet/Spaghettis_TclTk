@@ -257,7 +257,7 @@ int utils_isAlphanumericOrUnderscore (char c)
 
 t_unique utils_unique (void)
 {
-    static t_unique unique = 10000;     /* Shared. */
+    static t_unique unique = 10000;     /* Static. */
     
     unique++;
     

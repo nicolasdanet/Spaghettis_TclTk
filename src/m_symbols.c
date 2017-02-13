@@ -20,16 +20,16 @@
 // -----------------------------------------------------------------------------------------------------------
 
 t_symbol s_pointer  = { "pointer"   , NULL, NULL };         /* Shared. */
-t_symbol s_float    = { "float"     , NULL, NULL };         /* Shared. */
-t_symbol s_symbol   = { "symbol"    , NULL, NULL };         /* Shared. */
-t_symbol s_bang     = { "bang"      , NULL, NULL };         /* Shared. */
-t_symbol s_list     = { "list"      , NULL, NULL };         /* Shared. */
-t_symbol s_anything = { "anything"  , NULL, NULL };         /* Shared. */
-t_symbol s_signal   = { "signal"    , NULL, NULL };         /* Shared. */
-t_symbol s__N       = { "#N"        , NULL, NULL };         /* Shared. */
-t_symbol s__X       = { "#X"        , NULL, NULL };         /* Shared. */
-t_symbol s__A       = { "#A"        , NULL, NULL };         /* Shared. */
-t_symbol s_         = { ""          , NULL, NULL };         /* Shared. */
+t_symbol s_float    = { "float"     , NULL, NULL };
+t_symbol s_symbol   = { "symbol"    , NULL, NULL };
+t_symbol s_bang     = { "bang"      , NULL, NULL };
+t_symbol s_list     = { "list"      , NULL, NULL };
+t_symbol s_anything = { "anything"  , NULL, NULL };
+t_symbol s_signal   = { "signal"    , NULL, NULL };
+t_symbol s__N       = { "#N"        , NULL, NULL };
+t_symbol s__X       = { "#X"        , NULL, NULL };
+t_symbol s__A       = { "#A"        , NULL, NULL };
+t_symbol s_         = { ""          , NULL, NULL };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

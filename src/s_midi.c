@@ -43,23 +43,23 @@ typedef struct _midiparser {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_midiqelem  midi_outQueue[MIDI_QUEUE_SIZE];                         /* Shared. */
-static int          midi_outHead;                                           /* Shared. */
-static int          midi_outTail;                                           /* Shared. */
+static t_midiqelem  midi_outQueue[MIDI_QUEUE_SIZE];                         /* Static. */
+static int          midi_outHead;                                           /* Static. */
+static int          midi_outTail;                                           /* Static. */
 
-static t_midiqelem  midi_inQueue[MIDI_QUEUE_SIZE];                          /* Shared. */
-static int          midi_inHead;                                            /* Shared. */
-static int          midi_inTail;                                            /* Shared. */
+static t_midiqelem  midi_inQueue[MIDI_QUEUE_SIZE];                          /* Static. */
+static int          midi_inHead;                                            /* Static. */
+static int          midi_inTail;                                            /* Static. */
 
-static t_midiparser midi_parser[DEVICES_MAXIMUM_IO];                           /* Shared. */
+static t_midiparser midi_parser[DEVICES_MAXIMUM_IO];                        /* Static. */
     
-static double       midi_realTimeAtStart;                                   /* Shared. */
-static t_systime    midi_logicalTimeAtStart;                                /* Shared. */
-static double       midi_dacOffset;                                         /* Shared. */
-static double       midi_adcOffset;                                         /* Shared. */
-static double       midi_dacNewOffset = MIDI_UNDEFINED_OFFSET;              /* Shared. */
-static double       midi_adcNewOffset = MIDI_UNDEFINED_OFFSET;              /* Shared. */
-static double       midi_needToUpdateTime;                                  /* Shared. */
+static double       midi_realTimeAtStart;                                   /* Static. */
+static t_systime    midi_logicalTimeAtStart;                                /* Static. */
+static double       midi_dacOffset;                                         /* Static. */
+static double       midi_adcOffset;                                         /* Static. */
+static double       midi_dacNewOffset = MIDI_UNDEFINED_OFFSET;              /* Static. */
+static double       midi_adcNewOffset = MIDI_UNDEFINED_OFFSET;              /* Static. */
+static double       midi_needToUpdateTime;                                  /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

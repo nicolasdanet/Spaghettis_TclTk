@@ -25,10 +25,10 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int  midioss_numberOfDetectedIn;                                                 /* Shared. */
-static int  midioss_numberOfDetectedOut;                                                /* Shared. */
-static char midioss_detectedInNames[MIDIOSS_DEVICES * MIDIOSS_DESCRIPTION];             /* Shared. */
-static char midioss_detectedOutNames[MIDIOSS_DEVICES * MIDIOSS_DESCRIPTION];            /* Shared. */
+static int  midioss_numberOfDetectedIn;                                                 /* Static. */
+static int  midioss_numberOfDetectedOut;                                                /* Static. */
+static char midioss_detectedInNames[MIDIOSS_DEVICES * MIDIOSS_DESCRIPTION];             /* Static. */
+static char midioss_detectedOutNames[MIDIOSS_DEVICES * MIDIOSS_DESCRIPTION];            /* Static. */
 
 static int  midioss_numberOfDevicesIn;
 static int  midioss_numberOfDevicesOut;

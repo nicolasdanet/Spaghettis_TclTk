@@ -17,19 +17,19 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol    *main_directoryRoot;                        /* Shared. */
-t_symbol    *main_directoryBin;                         /* Shared. */
-t_symbol    *main_directoryTcl;                         /* Shared. */
-t_symbol    *main_directoryHelp;                        /* Shared. */
-t_symbol    *main_directoryExtras;                      /* Shared. */
+t_symbol    *main_directoryRoot;                        /* Static. */
+t_symbol    *main_directoryBin;                         /* Static. */
+t_symbol    *main_directoryTcl;                         /* Static. */
+t_symbol    *main_directoryHelp;                        /* Static. */
+t_symbol    *main_directoryExtras;                      /* Static. */
 
-int         main_portNumber;                            /* Shared. */
-int         main_directoryWriteRequirePrivileges;       /* Shared. */
+int         main_portNumber;                            /* Static. */
+int         main_directoryWriteRequirePrivileges;       /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int  main_version;                               /* Shared. */
+static int  main_version;                               /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

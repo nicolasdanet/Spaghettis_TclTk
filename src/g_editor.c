@@ -26,14 +26,14 @@ extern t_widgetbehavior     text_widgetBehavior;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_glist                     *editor_pasteCurrentCanvas;                         /* Shared. */
-int                         editor_pasteOffsetWhileConnectingObjects;           /* Shared. */
+t_glist                     *editor_pasteCurrentCanvas;                         /* Static. */
+int                         editor_pasteOffsetWhileConnectingObjects;           /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_buffer             *editor_buffer;                                     /* Shared. */
-static int                  editor_pasteCount;                                  /* Shared. */
+static t_buffer             *editor_buffer;                                     /* Static. */
+static int                  editor_pasteCount;                                  /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -60,8 +60,8 @@ typedef struct _rsqrt_tilde {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_float rsqrt_tableMantissa[RSQRT_MANTISSA_SIZE];           /* Shared. */
-t_float rsqrt_tableExponential[RSQRT_EXPONENTIAL_SIZE];     /* Shared. */
+t_float rsqrt_tableMantissa[RSQRT_MANTISSA_SIZE];           /* Static. */
+t_float rsqrt_tableExponential[RSQRT_EXPONENTIAL_SIZE];     /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
