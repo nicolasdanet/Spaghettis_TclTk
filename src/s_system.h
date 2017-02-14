@@ -206,7 +206,6 @@ t_error     interface_start                         (void);
 #pragma mark -
 
 void        midi_start                              (void);
-void        midi_synchronise                        (void);
 void        midi_poll                               (void);
 void        midi_receive                            (int port, int byte);
 void        midi_broadcast                          (int port, int hasOneByte, int a, int b, int c);

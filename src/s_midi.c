@@ -18,8 +18,12 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define MIDI_QUEUE_SIZE                 1024
-#define MIDI_UNDEFINED_OFFSET           (-(DBL_MAX))
+#define MIDI_QUEUE_SIZE             1024
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#define MIDI_QUEUE_NEXT(n)          ((n) + 1 == MIDI_QUEUE_SIZE ? 0 : (n) + 1)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -53,13 +57,7 @@ static int          midi_inTail;                                            /* S
 
 static t_midiparser midi_parser[DEVICES_MAXIMUM_IO];                        /* Static. */
     
-static double       midi_realTimeAtStart;                                   /* Static. */
 static t_systime    midi_logicalTimeAtStart;                                /* Static. */
-static double       midi_dacOffset;                                         /* Static. */
-static double       midi_adcOffset;                                         /* Static. */
-static double       midi_dacNewOffset = MIDI_UNDEFINED_OFFSET;              /* Static. */
-static double       midi_adcNewOffset = MIDI_UNDEFINED_OFFSET;              /* Static. */
-static double       midi_needToUpdateTime;                                  /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -67,49 +65,12 @@ static double       midi_needToUpdateTime;                                  /* S
 
 void midi_start (void)
 {
-    midi_realTimeAtStart    = sys_getRealTimeInSeconds();
     midi_logicalTimeAtStart = scheduler_getLogicalTime();
-    midi_dacOffset          = 0.0;
-    midi_adcOffset          = 0.0;
-}
-
-void midi_synchronise (void)
-{
-    double realLapse    = sys_getRealTimeInSeconds() - midi_realTimeAtStart;
-    double logicalLapse = MILLISECONDS_TO_SECONDS (scheduler_getMillisecondsSince (midi_logicalTimeAtStart));
-    double offset       = logicalLapse - realLapse;
-    
-    if (offset > midi_dacNewOffset) { midi_dacNewOffset = offset; }
-    if (offset > midi_adcNewOffset) { midi_adcNewOffset = offset; }
-        
-    if (realLapse > midi_needToUpdateTime) {
-    //
-    midi_dacOffset    = midi_dacNewOffset;
-    midi_adcOffset    = midi_adcNewOffset;
-    midi_dacNewOffset = MIDI_UNDEFINED_OFFSET;
-    midi_adcNewOffset = MIDI_UNDEFINED_OFFSET;
-    
-    midi_needToUpdateTime = realLapse + 1.0;
-    //
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-static double midi_getTimeIn (void)
-{
-    return (sys_getRealTimeInSeconds() + midi_adcOffset);
-}
-
-static double midi_getTimeOut (void)
-{
-    return (sys_getRealTimeInSeconds() + midi_dacOffset);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 
 static void midi_pushNextByte (int port, int a)
 {
@@ -130,7 +91,7 @@ static void midi_pushNext (void)
         midi_pushNextMessage (e->q_portNumber, e->q_byte1, e->q_byte2, e->q_byte3);
     }   
     
-    midi_outTail = (midi_outTail + 1 == MIDI_QUEUE_SIZE ? 0 : midi_outTail + 1);
+    midi_outTail = MIDI_QUEUE_NEXT (midi_outTail);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -234,7 +195,7 @@ static void midi_dispatchNext (void)
     //
     }
     
-    midi_inTail = (midi_inTail + 1 == MIDI_QUEUE_SIZE ? 0 : midi_inTail + 1);
+    midi_inTail = MIDI_QUEUE_NEXT (midi_inTail);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -243,7 +204,7 @@ static void midi_dispatchNext (void)
 
 static void midi_pollIn (void)
 {
-    double t = MILLISECONDS_TO_SECONDS (scheduler_getMillisecondsSince (midi_logicalTimeAtStart));
+    double t = scheduler_getMillisecondsSince (midi_logicalTimeAtStart);
 
     while (midi_inHead != midi_inTail) {
     //
@@ -257,7 +218,7 @@ static void midi_pollIn (void)
 
 static void midi_pollOut (void)
 {
-    double t = midi_getTimeOut();
+    double t = scheduler_getMillisecondsSince (midi_logicalTimeAtStart);
 
     while (midi_outHead != midi_outTail) {
         if (midi_outQueue[midi_outTail].q_time <= t) { midi_pushNext(); }
@@ -283,7 +244,8 @@ void midi_poll (void)
 void midi_receive (int port, int byte)
 {
     t_midiqelem *e = NULL;
-    int newHead = (midi_inHead + 1 == MIDI_QUEUE_SIZE ? 0 : midi_inHead + 1);
+    int newHead = MIDI_QUEUE_NEXT (midi_inHead);
+    
     if (newHead == midi_inTail) { midi_dispatchNext(); }
     
     e = midi_inQueue + midi_inHead;
@@ -291,7 +253,7 @@ void midi_receive (int port, int byte)
     e->q_portNumber = port;
     e->q_hasOneByte = 1;
     e->q_byte1      = byte;
-    e->q_time       = midi_getTimeIn();
+    e->q_time       = scheduler_getMillisecondsSince (midi_logicalTimeAtStart);
     
     midi_inHead = newHead;
     
@@ -301,7 +263,8 @@ void midi_receive (int port, int byte)
 void midi_broadcast (int port, int hasOneByte, int a, int b, int c)
 {
     t_midiqelem *e = NULL;
-    int newHead = (midi_outHead + 1 == MIDI_QUEUE_SIZE ? 0 : midi_outHead + 1);
+    int newHead = MIDI_QUEUE_NEXT (midi_outHead);
+    
     if (newHead == midi_outTail) { midi_pushNext(); }
     
     e = midi_outQueue + midi_outHead;
@@ -311,7 +274,7 @@ void midi_broadcast (int port, int hasOneByte, int a, int b, int c)
     e->q_byte1      = a;
     e->q_byte2      = b;
     e->q_byte3      = c;
-    e->q_time       = MILLISECONDS_TO_SECONDS (scheduler_getMillisecondsSince (midi_logicalTimeAtStart));
+    e->q_time       = scheduler_getMillisecondsSince (midi_logicalTimeAtStart);
         
     midi_outHead = newHead;
     

@@ -219,8 +219,6 @@ static void scheduler_mainLoop (void)
     
     if (!scheduler_quit) {
     //
-    midi_synchronise();
-    
     if (timeForward != DACS_NO)  { scheduler_tick(); }
     if (timeForward == DACS_YES) { didSomething = 1; }
 
