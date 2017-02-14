@@ -568,7 +568,7 @@ typedef struct _scalar {
     t_word          *sc_vector;
     } t_scalar;
 
-typedef struct _text {
+typedef struct _object {
     t_gobj          te_g;                       /* MUST be the first. */
     t_buffer        *te_buffer;
     t_inlet         *te_inlet;
@@ -577,12 +577,7 @@ typedef struct _text {
     int             te_yCoordinate;
     int             te_width;                   /* Zero for undefined. */
     int             te_type;
-    } t_text;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-typedef struct _text t_object;
+    } t_object;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
