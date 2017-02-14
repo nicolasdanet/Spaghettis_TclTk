@@ -449,14 +449,9 @@ t_float gpointer_getFloatByDescriptor (t_gpointer *gp, t_fielddescriptor *fd)
     return word_getFloatByDescriptor (gpointer_getData (gp), gpointer_getTemplate (gp), fd);
 }
 
-t_float gpointer_getFloatByDescriptorAsPosition (t_gpointer *gp, t_fielddescriptor *fd)
+void gpointer_setFloatByDescriptor (t_gpointer *gp, t_fielddescriptor *fd, t_float position)
 {
-    return word_getFloatByDescriptorAsPosition (gpointer_getData (gp), gpointer_getTemplate (gp), fd);
-}
-
-void gpointer_setFloatByDescriptorAsPosition (t_gpointer *gp, t_fielddescriptor *fd, t_float position)
-{
-    word_setFloatByDescriptorAsPosition (gpointer_getData (gp), gpointer_getTemplate (gp), fd, position);
+    word_setFloatByDescriptor (gpointer_getData (gp), gpointer_getTemplate (gp), fd, position);
 }
                                                             
 // -----------------------------------------------------------------------------------------------------------

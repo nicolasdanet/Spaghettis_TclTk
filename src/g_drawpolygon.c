@@ -110,11 +110,11 @@ static void drawpolygon_motion (void *z, t_float deltaX, t_float deltaY, t_float
     t_float positionY = drawpolygon_valueY + (drawpolygon_cumulativeY * drawpolygon_stepY);
     
     if (field_isVariable (fd + 0)) {
-        gpointer_setFloatByDescriptorAsPosition (&drawpolygon_gpointer, fd + 0, positionX); 
+        gpointer_setFloatByDescriptor (&drawpolygon_gpointer, fd + 0, positionX); 
     }
     
     if (field_isVariable (fd + 1)) {
-        gpointer_setFloatByDescriptorAsPosition (&drawpolygon_gpointer, fd + 1, positionY);
+        gpointer_setFloatByDescriptor (&drawpolygon_gpointer, fd + 1, positionY);
     }
     
     PD_ASSERT (gpointer_isScalar (&drawpolygon_gpointer));
@@ -162,8 +162,8 @@ static void drawpolygon_behaviorGetRectangle (t_gobj *z,
     //
     int m, n;
     
-    m = canvas_valueToPixelX (glist, baseX + gpointer_getFloatByDescriptorAsPosition (gp, fd + i));
-    n = canvas_valueToPixelY (glist, baseY + gpointer_getFloatByDescriptorAsPosition (gp, fd + i + 1));
+    m = canvas_valueToPixelX (glist, baseX + gpointer_getFloatByDescriptor (gp, fd + i));
+    n = canvas_valueToPixelY (glist, baseY + gpointer_getFloatByDescriptor (gp, fd + i + 1));
     
     xA = PD_MIN (m, xA);
     xB = PD_MAX (m, xB);
@@ -222,8 +222,8 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     //
     int a, b;
     
-    a = canvas_valueToPixelX (glist, baseX + gpointer_getFloatByDescriptorAsPosition (gp, fd + i));
-    b = canvas_valueToPixelY (glist, baseY + gpointer_getFloatByDescriptorAsPosition (gp, fd + i + 1));
+    a = canvas_valueToPixelX (glist, baseX + gpointer_getFloatByDescriptor (gp, fd + i));
+    b = canvas_valueToPixelY (glist, baseY + gpointer_getFloatByDescriptor (gp, fd + i + 1));
         
     heapstring_addSprintf (t, " %d %d", a, b);
     //
@@ -286,8 +286,8 @@ static int drawpolygon_behaviorMouse (t_gobj *z,
     //
     if (field_isVariable (fd + i) || field_isVariable (fd + i + 1)) {
     //
-    int valueX = gpointer_getFloatByDescriptorAsPosition (gp, fd + i);
-    int valueY = gpointer_getFloatByDescriptorAsPosition (gp, fd + i + 1);
+    int valueX = gpointer_getFloatByDescriptor (gp, fd + i);
+    int valueY = gpointer_getFloatByDescriptor (gp, fd + i + 1);
     int pixelX = canvas_valueToPixelX (glist, baseX + valueX);
     int pixelY = canvas_valueToPixelY (glist, baseY + valueY);
     int error  = (int)math_euclideanDistance (pixelX, pixelY, a, b);

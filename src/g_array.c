@@ -200,14 +200,14 @@ void array_setFloatAtIndex (t_array *x, int n, t_symbol *fieldName, t_float f)
     word_setFloat (array_getElementAtIndex (x, n), array_getTemplate (x), fieldName, f);
 }
 
-t_float array_getFloatAtIndexByDescriptorAsPosition (t_array *x, int n, t_fielddescriptor *fd)
+t_float array_getFloatAtIndexByDescriptor (t_array *x, int n, t_fielddescriptor *fd)
 {
-    return word_getFloatByDescriptorAsPosition (array_getElementAtIndex (x, n), array_getTemplate (x), fd);
+    return word_getFloatByDescriptor (array_getElementAtIndex (x, n), array_getTemplate (x), fd);
 }
 
-void array_setFloatAtIndexByDescriptorAsPosition (t_array *x, int n, t_fielddescriptor *fd, t_float f)
+void array_setFloatAtIndexByDescriptor (t_array *x, int n, t_fielddescriptor *fd, t_float f)
 {
-    word_setFloatByDescriptorAsPosition (array_getElementAtIndex (x, n), array_getTemplate (x), fd, f);
+    word_setFloatByDescriptor (array_getElementAtIndex (x, n), array_getTemplate (x), fd, f);
 }
 
 // -----------------------------------------------------------------------------------------------------------

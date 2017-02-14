@@ -137,8 +137,8 @@ static void drawnumber_behaviorGetRectangle (t_gobj *z,
     char t[PD_STRING] = { 0 };
     int m, n;
         
-    t_float valueX      = baseX + gpointer_getFloatByDescriptorAsPosition (gp, &x->x_positionX);
-    t_float valueY      = baseY + gpointer_getFloatByDescriptorAsPosition (gp, &x->x_positionY);
+    t_float valueX      = baseX + gpointer_getFloatByDescriptor (gp, &x->x_positionX);
+    t_float valueY      = baseY + gpointer_getFloatByDescriptor (gp, &x->x_positionY);
     int pixelX          = canvas_valueToPixelX (glist, valueX);
     int pixelY          = canvas_valueToPixelY (glist, valueY);
     t_fontsize fontSize = canvas_getFontSize (glist);
@@ -177,8 +177,8 @@ static void drawnumber_behaviorVisibilityChanged (t_gobj *z,
     char t[PD_STRING] = { 0 };
     
     t_color color   = color_withDigits ((int)gpointer_getFloatByDescriptor (gp, &x->x_color));
-    t_float valueX  = baseX + gpointer_getFloatByDescriptorAsPosition (gp, &x->x_positionX);
-    t_float valueY  = baseY + gpointer_getFloatByDescriptorAsPosition (gp, &x->x_positionY);
+    t_float valueX  = baseX + gpointer_getFloatByDescriptor (gp, &x->x_positionX);
+    t_float valueY  = baseY + gpointer_getFloatByDescriptor (gp, &x->x_positionY);
     int pixelX      = canvas_valueToPixelX (glist, valueX);
     int pixelY      = canvas_valueToPixelY (glist, valueY);
     

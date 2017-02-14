@@ -202,9 +202,9 @@ static void plot_getCoordinates (t_plot *x,
         valueW = (t_float)0.0;
     }
     
-    *a = relativeX + field_convertValueToPosition (&x->x_fieldX, valueX);
-    *b = relativeY + field_convertValueToPosition (&x->x_fieldY, valueY);
-    *c = field_convertValueToPosition (&x->x_fieldY, valueW);
+    *a = relativeX + valueX;
+    *b = relativeY + valueY;
+    *c = valueW;
 }
 
 static int plot_getStep (t_array *array)
@@ -240,14 +240,14 @@ void plot_float (t_plot *x, t_float f)
 static void plot_motionHorizontalVertical (t_array *array)
 {
     if (plot_fieldDescriptorX) {
-        array_setFloatAtIndexByDescriptorAsPosition (array, 
+        array_setFloatAtIndexByDescriptor (array, 
             plot_startX, 
             plot_fieldDescriptorX,
             plot_cumulativeX);
     }
     
     if (plot_fieldDescriptorY) {
-        array_setFloatAtIndexByDescriptorAsPosition (array, 
+        array_setFloatAtIndexByDescriptor (array, 
             plot_startX,
             plot_fieldDescriptorY,
             plot_cumulativeY);
@@ -266,18 +266,18 @@ static void plot_motionVertical (t_array *array)
         
     if (n > 0) {    /* Distribute change linearly between samples. */
     //
-    t_float startY = array_getFloatAtIndexByDescriptorAsPosition (array, back ? j : i, plot_fieldDescriptorY);
+    t_float startY = array_getFloatAtIndexByDescriptor (array, back ? j : i, plot_fieldDescriptorY);
     t_float stepY  = (plot_cumulativeY - startY) / n;
     
     int k = back ? n : 0;
     
     for (; i <= j; i++) {
-        array_setFloatAtIndexByDescriptorAsPosition (array, i, plot_fieldDescriptorY, startY + (stepY * k));
+        array_setFloatAtIndexByDescriptor (array, i, plot_fieldDescriptorY, startY + (stepY * k));
         if (back) { k--; } else { k++; }
     }
     //
     } else {
-        array_setFloatAtIndexByDescriptorAsPosition (array, i, plot_fieldDescriptorY, plot_cumulativeY);
+        array_setFloatAtIndexByDescriptor (array, i, plot_fieldDescriptorY, plot_cumulativeY);
     }
     
     plot_previousX = currentX;
@@ -963,16 +963,16 @@ static int plot_behaviorMouseRegularMatch (t_plot *x, t_array *array,
     
     if (fieldX) {
         plot_fieldDescriptorX = &x->x_fieldX;
-        plot_cumulativeX      = array_getFloatAtIndexByDescriptorAsPosition (array, i, &x->x_fieldX);
+        plot_cumulativeX      = array_getFloatAtIndexByDescriptor (array, i, &x->x_fieldX);
     }
     
     if (plot_thickness) {
         plot_fieldDescriptorY = &x->x_fieldW;
-        plot_cumulativeY      = array_getFloatAtIndexByDescriptorAsPosition (array, i, &x->x_fieldW);
+        plot_cumulativeY      = array_getFloatAtIndexByDescriptor (array, i, &x->x_fieldW);
 
     } else if (fieldY) {
         plot_fieldDescriptorY = &x->x_fieldY;
-        plot_cumulativeY      = array_getFloatAtIndexByDescriptorAsPosition (array, i, &x->x_fieldY);
+        plot_cumulativeY      = array_getFloatAtIndexByDescriptor (array, i, &x->x_fieldY);
     }
 
     if (plot_thickness == PLOT_THICKNESS_UP   && plot_cumulativeY >= 0.0) { plot_direction = (t_float)-1.0; }
@@ -1103,7 +1103,7 @@ static int plot_behaviorMouseSingle (t_plot *x, t_array *array,
     plot_fieldDescriptorY   = &x->x_fieldY;
 
     if (clicked) {
-        array_setFloatAtIndexByDescriptorAsPosition (array, i, &x->x_fieldY, valueY);
+        array_setFloatAtIndexByDescriptor (array, i, &x->x_fieldY, valueY);
         canvas_setMotionFunction (gpointer_getView (&plot_gpointer), NULL, (t_motionfn)plot_motion, a, b);
         gpointer_redraw (&plot_gpointer);
     }

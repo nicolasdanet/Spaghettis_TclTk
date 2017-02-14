@@ -59,17 +59,12 @@ struct _array {
 // -----------------------------------------------------------------------------------------------------------
 
 struct _fielddescriptor {
-    char                fd_type;
-    char                fd_isVariable;
+    int                 fd_type;
+    int                 fd_isVariable;
     union {
         t_float         fd_float;
         t_symbol        *fd_variableName;
     } fd_un;
-    t_float             fd_v1;
-    t_float             fd_v2;
-    t_float             fd_screen1;
-    t_float             fd_screen2;
-    t_float             fd_quantum;
 };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -139,8 +134,7 @@ t_error     word_unsetInternalBuffer                    (t_word *w,
                                                             t_symbol *fieldName);
                                                             
 t_float     word_getFloatByDescriptor                   (t_word *w, t_template *tmpl, t_fielddescriptor *fd);
-t_float     word_getFloatByDescriptorAsPosition         (t_word *w, t_template *tmpl, t_fielddescriptor *fd);
-void        word_setFloatByDescriptorAsPosition         (t_word *w,
+void        word_setFloatByDescriptor                   (t_word *w,
                                                             t_template *tmpl,
                                                             t_fielddescriptor *fd,
                                                             t_float f);
@@ -182,8 +176,8 @@ int         array_getElementSize                        (t_array *x);
 t_float     array_getFloatAtIndex                       (t_array *x, int n, t_symbol *fieldName);
 void        array_setFloatAtIndex                       (t_array *x, int n, t_symbol *fieldName, t_float f);
 
-t_float     array_getFloatAtIndexByDescriptorAsPosition (t_array *x, int n, t_fielddescriptor *fd);
-void        array_setFloatAtIndexByDescriptorAsPosition (t_array *x, int n, t_fielddescriptor *fd, t_float f);
+t_float     array_getFloatAtIndexByDescriptor           (t_array *x, int n, t_fielddescriptor *fd);
+void        array_setFloatAtIndexByDescriptor           (t_array *x, int n, t_fielddescriptor *fd, t_float f);
                                                             
 void        array_free                                  (t_array *x);
 void        array_resize                                (t_array *x, int n);
@@ -269,11 +263,7 @@ void        gpointer_setFloat                           (t_gpointer *gp, t_symbo
 void        gpointer_setSymbol                          (t_gpointer *gp, t_symbol *fieldName, t_symbol *s);
 
 t_float     gpointer_getFloatByDescriptor               (t_gpointer *gp, t_fielddescriptor *fd);
-t_float     gpointer_getFloatByDescriptorAsPosition     (t_gpointer *gp, t_fielddescriptor *fd);
-
-void        gpointer_setFloatByDescriptorAsPosition     (t_gpointer *gp,
-                                                            t_fielddescriptor *fd,
-                                                            t_float f);
+void        gpointer_setFloatByDescriptor               (t_gpointer *gp, t_fielddescriptor *fd, t_float f);
                                                             
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -347,10 +337,8 @@ int         field_isArray                               (t_fielddescriptor *fd);
 int         field_isVariable                            (t_fielddescriptor *fd);
 
 t_float     field_getFloatConstant                      (t_fielddescriptor *fd);
-t_symbol    *field_getVariableName                      (t_fielddescriptor *fd);
 
-t_float     field_convertValueToPosition                (t_fielddescriptor *fd, t_float v);
-t_float     field_convertPositionToValue                (t_fielddescriptor *fd, t_float v);
+t_symbol    *field_getVariableName                      (t_fielddescriptor *fd);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
