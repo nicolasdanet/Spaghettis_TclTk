@@ -1151,7 +1151,7 @@ static int plot_behaviorMouse (t_gobj *z,
     plot_style      = style;
     plot_fieldArray = &x->x_array;
         
-    gpointer_setByCopy (gp, &plot_gpointer);
+    gpointer_setByCopy (&plot_gpointer, gp);
     gpointer_setAsWord (&plot_check, array, array_getElements (array));
     
     if (garray_isSingle (glist)) {

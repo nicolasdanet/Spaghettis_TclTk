@@ -24,7 +24,13 @@ static t_array *array_getTop (t_array *x)
     
     PD_ASSERT (a);
     
-    while (gpointer_isWord (&a->a_parent)) { a = gpointer_getParentArray (&a->a_parent); }
+    /* For now, an array is always owned by a scalar. */
+    /* Furthermore it is never nested. */
+    
+    while (gpointer_isWord (&a->a_parent)) {
+        a = gpointer_getParentWord (&a->a_parent);
+        PD_BUG;
+    }
     
     return a;
 }
@@ -48,7 +54,7 @@ t_array *array_new (t_symbol *templateIdentifier, t_gpointer *parent)
     x->a_holder             = gmaster_createWithArray (x);
     x->a_uniqueIdentifier   = utils_unique();
     
-    gpointer_setByCopy (parent, &x->a_parent);
+    gpointer_setByCopy (&x->a_parent, parent);
 
     word_init (x->a_elements, template, parent);
     

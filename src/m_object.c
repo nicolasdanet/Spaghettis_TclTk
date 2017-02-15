@@ -165,7 +165,7 @@ static void symbolinlet_forSymbol (t_inlet *x, t_symbol *s)
 
 static void pointerinlet_forPointer (t_inlet *x, t_gpointer *gp)
 {
-    gpointer_setByCopy (gp, x->i_un.i_pointer);
+    gpointer_setByCopy (x->i_un.i_pointer, gp);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -363,7 +363,7 @@ void outlet_pointer (t_outlet *x, t_gpointer *gp)
     
     if (++object_stackCount >= OBJECT_MAXIMUM_ITERATION)  { error_stackOverflow(); }
     else {
-        gpointer_setByCopy (gp, &gpointer);     /* Temporary copy cached on the stack. */
+        gpointer_setByCopy (&gpointer, gp);     /* Temporary copy cached on the stack. */
         for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_pointer (oc->oc_to, &gpointer); }
         gpointer_unset (&gpointer);
     }

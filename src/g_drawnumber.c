@@ -228,7 +228,7 @@ static int drawnumber_behaviorMouse (t_gobj *z,
     
         drawnumber_cumulativeY = gpointer_getFloat (gp, x->x_fieldName);
 
-        gpointer_setByCopy (gp, &drawnumber_gpointer);
+        gpointer_setByCopy (&drawnumber_gpointer, gp);
         
         canvas_setMotionFunction (gpointer_getView (gp), z, (t_motionfn)drawnumber_motion, a, b);
     }

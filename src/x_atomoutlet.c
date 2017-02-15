@@ -77,8 +77,8 @@ t_error atomoutlet_setAtom (t_atomoutlet *x, t_atom *a)
     switch (atom_getType (&x->ao_atom)) {
         case A_FLOAT   : SET_FLOAT (&x->ao_atom,  GET_FLOAT (a));               break;
         case A_SYMBOL  : SET_SYMBOL (&x->ao_atom, GET_SYMBOL (a));              break;
-        case A_POINTER : gpointer_setByCopy (GET_POINTER (a), &x->ao_gpointer); break;
-        default         : PD_BUG; return PD_ERROR;
+        case A_POINTER : gpointer_setByCopy (&x->ao_gpointer, GET_POINTER (a)); break;
+        default        : PD_BUG; return PD_ERROR;
     }
     //
     }

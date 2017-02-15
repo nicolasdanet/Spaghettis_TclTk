@@ -97,7 +97,7 @@ static void callback_new (t_pipe *x, int argc, t_atom *argv)
         if (!atomoutlet_isPointer (a)) { atomoutlet_copyAtom (a, h->h_atoms + i); }
         else {
             SET_POINTER (&h->h_atoms[i], h->h_gpointers + i);
-            gpointer_setByCopy (atomoutlet_getPointer (a), h->h_gpointers + i);
+            gpointer_setByCopy (h->h_gpointers + i, atomoutlet_getPointer (a));
         }
     }
     

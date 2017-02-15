@@ -159,6 +159,44 @@ void word_setText (t_word *w, t_template *tmpl, t_symbol *fieldName, t_buffer *b
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_float word_getFloatByDescriptor (t_word *w, t_template *tmpl, t_fielddescriptor *fd)
+{
+    if (fd->fd_type == DATA_FLOAT) {
+    //
+    if (fd->fd_isVariable) { return word_getFloat (w, tmpl, fd->fd_un.fd_variableName); }
+    else {
+        return (fd->fd_un.fd_float);
+    }
+    //
+    }
+
+    PD_BUG;
+    
+    return (t_float)0.0;
+}
+
+void word_setFloatByDescriptor (t_word *w,
+    t_template *tmpl,
+    t_fielddescriptor *fd,
+    t_float position)
+{
+    if (fd->fd_type == DATA_FLOAT) {
+    //
+    if (fd->fd_isVariable) {
+        word_setFloat (w, tmpl, fd->fd_un.fd_variableName, position);
+    } else {
+        fd->fd_un.fd_float = position;
+    }
+    //
+    } else {
+        PD_BUG;
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_error word_setInternalBuffer (t_word *w, t_template *tmpl, t_symbol *fieldName, t_buffer *b)
 {
     t_error err = PD_ERROR;
@@ -199,44 +237,6 @@ t_error word_unsetInternalBuffer (t_word *w, t_template *tmpl, t_symbol *fieldNa
     }
     
     return err;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_float word_getFloatByDescriptor (t_word *w, t_template *tmpl, t_fielddescriptor *fd)
-{
-    if (fd->fd_type == DATA_FLOAT) {
-    //
-    if (fd->fd_isVariable) { return word_getFloat (w, tmpl, fd->fd_un.fd_variableName); }
-    else {
-        return (fd->fd_un.fd_float);
-    }
-    //
-    }
-
-    PD_BUG;
-    
-    return (t_float)0.0;
-}
-
-void word_setFloatByDescriptor (t_word *w,
-    t_template *tmpl,
-    t_fielddescriptor *fd,
-    t_float position)
-{
-    if (fd->fd_type == DATA_FLOAT) {
-    //
-    if (fd->fd_isVariable) {
-        word_setFloat (w, tmpl, fd->fd_un.fd_variableName, position);
-    } else {
-        fd->fd_un.fd_float = position;
-    }
-    //
-    } else {
-        PD_BUG;
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

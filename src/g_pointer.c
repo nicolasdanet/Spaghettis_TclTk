@@ -83,7 +83,7 @@ static void pointer_bang (t_pointer *x)
 
 static void pointer_pointer (t_pointer *x, t_gpointer *gp)
 {
-    gpointer_setByCopy (gp, &x->x_gpointer);
+    gpointer_setByCopy (&x->x_gpointer, gp);
     
     pointer_bang (x);
 }
@@ -127,7 +127,7 @@ static void pointer_traverse (t_pointer *x, t_symbol *s)
 static void pointer_rewind (t_pointer *x)
 {
     if (gpointer_isValidNullAllowed (&x->x_gpointer) && gpointer_isScalar (&x->x_gpointer)) {
-        gpointer_setAsScalar (&x->x_gpointer, gpointer_getParentGlist (&x->x_gpointer), NULL);
+        gpointer_setAsScalar (&x->x_gpointer, gpointer_getParentScalar (&x->x_gpointer), NULL);
     } else {
         error_invalid (&s_pointer, &s_pointer);
     }
@@ -139,7 +139,7 @@ static void pointer_nextSelected (t_pointer *x, t_float f)
     
     if (gpointer_isValidNullAllowed (&x->x_gpointer) && gpointer_isScalar (&x->x_gpointer)) {
     //
-    t_glist *glist = gpointer_getParentGlist (&x->x_gpointer);
+    t_glist *glist = gpointer_getParentScalar (&x->x_gpointer);
 
     if (!wantSelected || canvas_isMapped (glist)) {
     //

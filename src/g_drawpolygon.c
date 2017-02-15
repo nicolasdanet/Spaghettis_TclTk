@@ -313,7 +313,7 @@ static int drawpolygon_behaviorMouse (t_gobj *z,
             drawpolygon_cumulativeY = (t_float)0.0;
             drawpolygon_field       = bestField;
             
-            gpointer_setByCopy (gp, &drawpolygon_gpointer);
+            gpointer_setByCopy (&drawpolygon_gpointer, gp);
             
             canvas_setMotionFunction (glist, z, (t_motionfn)drawpolygon_motion, a, b);
         }

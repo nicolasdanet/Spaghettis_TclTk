@@ -27,7 +27,7 @@
     For now only one instance at time is allowed.
     
     An array is a vector of elements.
-    An array can NOT contain another array.
+    For now an array can NOT contain another array.
     
     A scalar is an object that wrap an element.
     A scalars is rendering by painter objects (i.e. plot).

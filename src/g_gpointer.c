@@ -173,13 +173,13 @@ void gpointer_setAsWord (t_gpointer *gp, t_array *array, t_word *w)
     gmaster_increment (gp->gp_refer);
 }
 
-void gpointer_setByCopy (t_gpointer *gp, t_gpointer *toSet)
+void gpointer_setByCopy (t_gpointer *gp, t_gpointer *toCopy)
 {
-    gpointer_unset (toSet);
+    gpointer_unset (gp);
     
-    *toSet = *gp;
+    *gp = *toCopy;
     
-    if (toSet->gp_refer) { gmaster_increment (toSet->gp_refer); }
+    if (gp->gp_refer) { gmaster_increment (gp->gp_refer); }
 }
 
 void gpointer_unset (t_gpointer *gp)
@@ -237,14 +237,14 @@ t_word *gpointer_getWord (t_gpointer *gp)
     PD_ASSERT (gpointer_isWord (gp)); return (gp->gp_un.gp_w);
 }
 
-t_glist *gpointer_getParentGlist (t_gpointer *gp)
+t_glist *gpointer_getParentScalar (t_gpointer *gp)
 {
     PD_ASSERT (gp->gp_refer->gm_type == GMASTER_GLIST);
     
     return (gp->gp_refer->gm_un.gm_glist);
 }
 
-t_array *gpointer_getParentArray (t_gpointer *gp)
+t_array *gpointer_getParentWord (t_gpointer *gp)
 {
     PD_ASSERT (gp->gp_refer->gm_type == GMASTER_ARRAY);
     
@@ -265,9 +265,9 @@ t_word *gpointer_getElement (t_gpointer *gp)
 
 t_glist *gpointer_getView (t_gpointer *gp)
 {
-    if (gpointer_isScalar (gp)) { return gpointer_getParentGlist (gp); }
+    if (gpointer_isScalar (gp)) { return gpointer_getParentScalar (gp); }
     else {
-        return gpointer_getParentGlist (array_getTopParent (gpointer_getParentArray (gp)));
+        return gpointer_getParentScalar (array_getTopParent (gpointer_getParentWord (gp)));
     }
 }
 
@@ -302,7 +302,7 @@ static t_scalar *gpointer_getBase (t_gpointer *gp)
     
     if (gpointer_isScalar (gp)) { scalar = gpointer_getScalar (gp); }
     else {
-        scalar = gpointer_getScalar (array_getTopParent (gpointer_getParentArray (gp)));
+        scalar = gpointer_getScalar (array_getTopParent (gpointer_getParentWord (gp)));
     }
     
     return scalar;

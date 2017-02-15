@@ -41,7 +41,7 @@ static void listinlet_list (t_listinlet *, t_symbol *, int, t_atom *);
 static void listinlet_cachePointer (t_listinlet *x, int i, t_atom *a)
 {
     if (IS_POINTER (a)) {
-        gpointer_setByCopy (GET_POINTER (a), &x->li_vector[i].le_gpointer);
+        gpointer_setByCopy (&x->li_vector[i].le_gpointer, GET_POINTER (a));
         SET_POINTER (&x->li_vector[i].le_atom, &x->li_vector[i].le_gpointer);
         x->li_hasPointer = 1;
     }
