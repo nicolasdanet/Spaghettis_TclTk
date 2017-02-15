@@ -43,14 +43,14 @@ t_array *array_new (t_symbol *templateIdentifier, t_gpointer *parent)
     
     x->a_size               = 1;
     x->a_elementSize        = template_getSize (template);
-    x->a_vector             = (t_word *)PD_MEMORY_GET (x->a_elementSize * sizeof (t_word));
+    x->a_elements           = (t_word *)PD_MEMORY_GET (x->a_elementSize * sizeof (t_word));
     x->a_templateIdentifier = templateIdentifier;
     x->a_master             = gpointer_masterCreateWithArray (x);
     x->a_uniqueIdentifier   = utils_unique();
     
     gpointer_setByCopy (parent, &x->a_parent);
 
-    word_init (x->a_vector, template, parent);
+    word_init (x->a_elements, template, parent);
     
     return x;
 }
@@ -66,11 +66,11 @@ void array_free (t_array *x)
     gpointer_masterRelease (x->a_master);
     
     for (i = 0; i < x->a_size; i++) {
-        t_word *w = x->a_vector + (x->a_elementSize * i);
+        t_word *w = x->a_elements + (x->a_elementSize * i);
         word_free (w, template);
     }
     
-    PD_MEMORY_FREE (x->a_vector);
+    PD_MEMORY_FREE (x->a_elements);
     PD_MEMORY_FREE (x);
 }
 
@@ -152,7 +152,7 @@ void array_deserialize (t_array *x, t_iterator *iter)
 
 t_word *array_getData (t_array *x)
 {
-    return x->a_vector;
+    return x->a_elements;
 }
 
 t_word *array_getElementAtIndex (t_array *x, int n)
@@ -239,20 +239,20 @@ void array_resize (t_array *x, int n)
     /* Release. */
     
     if (newSize < oldSize) {
-        t_word *t = x->a_vector + (x->a_elementSize * newSize);
+        t_word *t = x->a_elements + (x->a_elementSize * newSize);
         int count = oldSize - newSize;
         for (; count--; t += x->a_elementSize) { word_free (t, template); }
     }
     
     /* Reallocate. */
     
-    x->a_vector = (t_word *)PD_MEMORY_RESIZE (x->a_vector, oldSize * m, newSize * m);
-    x->a_size   = n;
+    x->a_elements = (t_word *)PD_MEMORY_RESIZE (x->a_elements, oldSize * m, newSize * m);
+    x->a_size     = n;
     
     /* Initialize. */
     
     if (newSize > oldSize) {
-        t_word *t = x->a_vector + (x->a_elementSize * oldSize);
+        t_word *t = x->a_elements + (x->a_elementSize * oldSize);
         int count = newSize - oldSize;
         for (; count--; t += x->a_elementSize) { word_init (t, template, &x->a_parent); }
     }

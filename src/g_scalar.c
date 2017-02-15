@@ -36,6 +36,13 @@ t_class *scalar_class;                                  /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+t_error word_setInternalBuffer      (t_word *, t_template *, t_symbol *, t_buffer *);
+t_error word_unsetInternalBuffer    (t_word *, t_template *, t_symbol *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void scalar_behaviorGetRectangle         (t_gobj *, t_glist *, int *, int *, int *, int *);
 static void scalar_behaviorDisplaced            (t_gobj *, t_glist *, int, int);
 static void scalar_behaviorSelected             (t_gobj *, t_glist *, int);
@@ -46,7 +53,6 @@ static int  scalar_behaviorMouse                (t_gobj *, t_glist *, int, int, 
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 static t_widgetbehavior scalar_widgetBehavior =         /* Shared. */
     {

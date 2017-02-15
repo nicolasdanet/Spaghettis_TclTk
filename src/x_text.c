@@ -41,6 +41,13 @@ typedef struct _textdefine {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_error scalar_setInternalBuffer    (t_scalar *, t_symbol *, t_buffer *);
+t_error scalar_unsetInternalBuffer  (t_scalar *, t_symbol *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void textdefine_initialize (void)
 {
     static char *textTemplateFile = 

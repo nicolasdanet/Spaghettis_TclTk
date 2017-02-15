@@ -31,7 +31,7 @@ int template_getSize (t_template *x)
 
 t_dataslot *template_getSlots (t_template *x)
 {
-    return x->tp_vector;
+    return x->tp_slots;
 }
 
 t_symbol *template_getTemplateIdentifier (t_template *x)
@@ -45,8 +45,8 @@ t_template *template_getTemplateIfArrayAtIndex (t_template *x, int n)
     PD_ASSERT (n >= 0);
     PD_ASSERT (n < x->tp_size);
     
-    if (x->tp_vector[n].ds_type == DATA_ARRAY) {
-        return template_findByIdentifier (x->tp_vector[n].ds_templateIdentifier);
+    if (x->tp_slots[n].ds_type == DATA_ARRAY) {
+        return template_findByIdentifier (x->tp_slots[n].ds_templateIdentifier);
     }
     
     return NULL;
@@ -100,23 +100,23 @@ void template_serialize (t_template *x, t_buffer *b)
     //
     t_symbol *type = &s_float;
     
-    switch (x->tp_vector[i].ds_type) {
+    switch (x->tp_slots[i].ds_type) {
         case DATA_FLOAT     : type = &s_float;  break;
         case DATA_SYMBOL    : type = &s_symbol; break;
         case DATA_ARRAY     : type = sym_array; break;
         case DATA_TEXT      : type = sym_text;  break;
     }
     
-    if (x->tp_vector[i].ds_type == DATA_ARRAY) {
+    if (x->tp_slots[i].ds_type == DATA_ARRAY) {
         buffer_vAppend (b, "sss",
             type,
-            x->tp_vector[i].ds_fieldName,
-            utils_stripTemplateIdentifier (x->tp_vector[i].ds_templateIdentifier));
+            x->tp_slots[i].ds_fieldName,
+            utils_stripTemplateIdentifier (x->tp_slots[i].ds_templateIdentifier));
             
     } else {
         buffer_vAppend (b,  "ss",
             type,
-            x->tp_vector[i].ds_fieldName);
+            x->tp_slots[i].ds_fieldName);
     }
     //
     }
@@ -169,7 +169,7 @@ int template_isValid (t_template *x)
     else {
     //
     int i, size = x->tp_size;
-    t_dataslot *v = x->tp_vector;
+    t_dataslot *v = x->tp_slots;
     
     for (i = 0; i < size; i++, v++) {
     //
@@ -208,7 +208,7 @@ int template_getIndexOfField (t_template *x, t_symbol *fieldName)
 
 t_symbol *template_getFieldAtIndex (t_template *x, int n)
 {
-    if (n >= 0 && n < x->tp_size) { return x->tp_vector[n].ds_fieldName; }
+    if (n >= 0 && n < x->tp_size) { return x->tp_slots[n].ds_fieldName; }
     else {
         return NULL;
     }
@@ -228,11 +228,11 @@ int template_getRaw (t_template *x,
     
     for (i = 0; i < x->tp_size; i++) {
     //
-    if (x->tp_vector[i].ds_fieldName == fieldName) {
+    if (x->tp_slots[i].ds_fieldName == fieldName) {
     
         *position           = i;
-        *type               = x->tp_vector[i].ds_type;
-        *templateIdentifier = x->tp_vector[i].ds_templateIdentifier;
+        *type               = x->tp_slots[i].ds_type;
+        *templateIdentifier = x->tp_slots[i].ds_templateIdentifier;
         
         return 1;
     }
@@ -389,12 +389,12 @@ static t_error template_newParse (t_template *x, int *ac, t_atom **av)
         size_t m = oldSize * sizeof (t_dataslot);
         size_t n = newSize * sizeof (t_dataslot);
         
-        x->tp_vector = (t_dataslot *)PD_MEMORY_RESIZE (x->tp_vector, m, n);
-        x->tp_size   = newSize;
+        x->tp_slots = (t_dataslot *)PD_MEMORY_RESIZE (x->tp_slots, m, n);
+        x->tp_size  = newSize;
         
-        x->tp_vector[newSize - 1].ds_type               = k;
-        x->tp_vector[newSize - 1].ds_fieldName          = fieldName;
-        x->tp_vector[newSize - 1].ds_templateIdentifier = templateIdentifier;
+        x->tp_slots[newSize - 1].ds_type               = k;
+        x->tp_slots[newSize - 1].ds_fieldName          = fieldName;
+        x->tp_slots[newSize - 1].ds_templateIdentifier = templateIdentifier;
         //
         }
         //
@@ -421,7 +421,7 @@ t_template *template_new (t_symbol *templateIdentifier, int argc, t_atom *argv)
     PD_ASSERT (utils_stripTemplateIdentifier (templateIdentifier) != &s_); 
         
     x->tp_size               = 0;
-    x->tp_vector             = (t_dataslot *)PD_MEMORY_GET (0);
+    x->tp_slots              = (t_dataslot *)PD_MEMORY_GET (0);
     x->tp_templateIdentifier = templateIdentifier;
     x->tp_instance           = NULL;
     
@@ -442,7 +442,7 @@ void template_free (t_template *x)
 {
     pd_unbind (cast_pd (x), x->tp_templateIdentifier);
     
-    PD_MEMORY_FREE (x->tp_vector);
+    PD_MEMORY_FREE (x->tp_slots);
 }
 
 // -----------------------------------------------------------------------------------------------------------
