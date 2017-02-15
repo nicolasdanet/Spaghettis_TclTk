@@ -41,8 +41,8 @@ t_array *array_new (t_symbol *templateIdentifier, t_gpointer *parent)
 
     PD_ASSERT (template);
     
-    x->a_size               = 1;
     x->a_elementSize        = template_getSize (template);
+    x->a_size               = 1;
     x->a_elements           = (t_word *)PD_MEMORY_GET (x->a_elementSize * sizeof (t_word));
     x->a_templateIdentifier = templateIdentifier;
     x->a_master             = gmaster_createWithArray (x);

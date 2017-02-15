@@ -235,17 +235,17 @@ static void scalar_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int
     //
     if (template_fieldIsFloat (template, sym_x)) {
     //
-    t_float f = word_getFloat (x->sc_vector, template, sym_x);
+    t_float f = word_getFloat (x->sc_element, template, sym_x);
     f += canvas_valueForDeltaInPixelX (glist, deltaX);
-    word_setFloat (x->sc_vector, template, sym_x, f);
+    word_setFloat (x->sc_element, template, sym_x, f);
     //
     }
     
     if (template_fieldIsFloat (template, sym_y)) {
     //
-    t_float f = word_getFloat (x->sc_vector, template, sym_y);
+    t_float f = word_getFloat (x->sc_element, template, sym_y);
     f += canvas_valueForDeltaInPixelY (glist, deltaY);
-    word_setFloat (x->sc_vector, template, sym_y, f);
+    word_setFloat (x->sc_element, template, sym_y, f);
     //
     }
     
@@ -408,12 +408,12 @@ void scalar_serialize (t_scalar *x, t_buffer *b)
         
         if (template_fieldIsFloat (template, fieldName)) {
             t_atom t;
-            SET_FLOAT (&t, word_getFloat (x->sc_vector, template, fieldName));
+            SET_FLOAT (&t, word_getFloat (x->sc_element, template, fieldName));
             buffer_appendAtom (b, &t);
             
         } else if (template_fieldIsSymbol (template, fieldName)) {
             t_atom t;
-            SET_SYMBOL (&t, word_getSymbol (x->sc_vector, template, fieldName));
+            SET_SYMBOL (&t, word_getSymbol (x->sc_element, template, fieldName));
             buffer_appendAtom (b, &t);
         }
     }
@@ -425,11 +425,11 @@ void scalar_serialize (t_scalar *x, t_buffer *b)
         t_symbol *fieldName = template_getFieldAtIndex (template, i);
             
         if (template_fieldIsArray (template, fieldName)) {
-            array_serialize (word_getArray (x->sc_vector, template, fieldName), b);
+            array_serialize (word_getArray (x->sc_element, template, fieldName), b);
             buffer_appendSemicolon (b);
             
         } else if (template_fieldIsText (template, fieldName)) {
-            buffer_serialize (b, word_getText (x->sc_vector, template, fieldName));
+            buffer_serialize (b, word_getText (x->sc_element, template, fieldName));
             buffer_appendSemicolon (b);
         }
     }
@@ -454,12 +454,12 @@ void scalar_deserialize (t_scalar *x, t_glist *glist, int argc, t_atom *argv)
     if (template_fieldIsFloat (template, fieldName)) {
         t_float f = (t_float)0.0;
         if (count) { f = atom_getFloat (atoms); atoms++; count--; }
-        word_setFloat (x->sc_vector, template, fieldName, f);
+        word_setFloat (x->sc_element, template, fieldName, f);
         
     } else if (template_fieldIsSymbol (template, fieldName)) {
         t_symbol *s = &s_;
         if (count) { s = atom_getSymbol (atoms); atoms++; count--; }
-        word_setSymbol (x->sc_vector, template, fieldName, s);
+        word_setSymbol (x->sc_element, template, fieldName, s);
     }
     //
     }
@@ -471,13 +471,13 @@ void scalar_deserialize (t_scalar *x, t_glist *glist, int argc, t_atom *argv)
     t_symbol *fieldName = template_getFieldAtIndex (template, i);
     
     if (template_fieldIsArray (template, fieldName)) {
-        array_deserialize (word_getArray (x->sc_vector, template, fieldName), iter);
+        array_deserialize (word_getArray (x->sc_element, template, fieldName), iter);
 
     } else if (template_fieldIsText (template, fieldName)) {
         t_buffer *t = buffer_new();
         count = iterator_next (iter, &atoms);
         buffer_deserialize (t, count, atoms);
-        word_setText (x->sc_vector, template, fieldName, t);
+        word_setText (x->sc_element, template, fieldName, t);
         buffer_free (t);
     }
     //
@@ -511,7 +511,7 @@ static void scalar_functionSave (t_gobj *z, t_buffer *b)
 
 t_word *scalar_getData (t_scalar *x)
 {
-    return x->sc_vector;
+    return x->sc_element;
 }
 
 t_template *scalar_getTemplate (t_scalar *x)
@@ -530,17 +530,17 @@ t_symbol *scalar_getTemplateIdentifier (t_scalar *x)
 
 t_array *scalar_getArray (t_scalar *x, t_symbol *fieldName)
 {
-    return word_getArray (x->sc_vector, scalar_getTemplate (x), fieldName);
+    return word_getArray (x->sc_element, scalar_getTemplate (x), fieldName);
 }
 
 t_float scalar_getFloat (t_scalar *x, t_symbol *fieldName)
 {
-    return word_getFloat (x->sc_vector, scalar_getTemplate (x), fieldName);
+    return word_getFloat (x->sc_element, scalar_getTemplate (x), fieldName);
 }
 
 void scalar_setFloat (t_scalar *x, t_symbol *fieldName, t_float f)
 {
-    word_setFloat (x->sc_vector, scalar_getTemplate (x), fieldName, f);  
+    word_setFloat (x->sc_element, scalar_getTemplate (x), fieldName, f);  
 }
 
 int scalar_fieldIsFloat (t_scalar *x, t_symbol *fieldName)
@@ -554,12 +554,12 @@ int scalar_fieldIsFloat (t_scalar *x, t_symbol *fieldName)
 
 t_error scalar_setInternalBuffer (t_scalar *x, t_symbol *fieldName, t_buffer *b)
 {
-    return word_setInternalBuffer (x->sc_vector, scalar_getTemplate (x), fieldName, b);
+    return word_setInternalBuffer (x->sc_element, scalar_getTemplate (x), fieldName, b);
 }
 
 t_error scalar_unsetInternalBuffer (t_scalar *x, t_symbol *fieldName)
 {
-    return word_unsetInternalBuffer (x->sc_vector, scalar_getTemplate (x), fieldName);
+    return word_unsetInternalBuffer (x->sc_element, scalar_getTemplate (x), fieldName);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -580,10 +580,10 @@ t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
         x = (t_scalar *)pd_new (scalar_class);
         
         x->sc_templateIdentifier = templateIdentifier;
-        x->sc_vector = (t_word *)PD_MEMORY_GET (template_getSize (template) * sizeof (t_word));
+        x->sc_element = (t_word *)PD_MEMORY_GET (template_getSize (template) * sizeof (t_word));
         
         gpointer_setAsScalar (&gp, owner, x);
-        word_init (x->sc_vector, template, &gp);
+        word_init (x->sc_element, template, &gp);
         gpointer_unset (&gp);
     }
     
@@ -592,9 +592,9 @@ t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
 
 static void scalar_free (t_scalar *x)
 {
-    word_free (x->sc_vector, scalar_getTemplate (x));
+    word_free (x->sc_element, scalar_getTemplate (x));
 
-    PD_MEMORY_FREE (x->sc_vector);
+    PD_MEMORY_FREE (x->sc_element);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -565,7 +565,7 @@ typedef struct _gobj {
 typedef struct _scalar {
     t_gobj          sc_g;                       /* MUST be the first. */
     t_symbol        *sc_templateIdentifier;
-    t_word          *sc_vector;
+    t_word          *sc_element;
     } t_scalar;
 
 typedef struct _object {

@@ -46,8 +46,8 @@ struct _gpointer {
 // -----------------------------------------------------------------------------------------------------------
 
 struct _array {
-    int                     a_size;
     int                     a_elementSize;
+    int                     a_size;
     t_word                  *a_elements;
     t_symbol                *a_templateIdentifier;
     t_gmaster               *a_master;
