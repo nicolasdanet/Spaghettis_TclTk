@@ -16,14 +16,14 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_gmaster   *gpointer_masterCreateWithGlist     (t_glist *glist);
-t_gmaster   *gpointer_masterCreateWithArray     (t_array *array);
+t_gmaster   *gmaster_createWithGlist        (t_glist *glist);
+t_gmaster   *gmaster_createWithArray        (t_array *array);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        gpointer_masterRelease              (t_gmaster *master);
+void        gmaster_reset                   (t_gmaster *master);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

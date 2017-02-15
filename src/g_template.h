@@ -40,8 +40,32 @@ struct _template {
 t_symbol    *template_makeIdentifierWithWildcard    (t_symbol *s);
 t_symbol    *template_getWildcard                   (void);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_template  *template_findByIdentifier              (t_symbol *templateIdentifier);
 t_template  *template_new                           (t_symbol *templateIdentifier, int argc, t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+int         template_hasInstance                    (t_template *x);
+void        template_registerInstance               (t_template *x, t_struct *o);
+void        template_unregisterInstance             (t_template *x, t_struct *o);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        template_create                         (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void        template_free                           (t_template *x);
+int         template_getSize                        (t_template *x);
+int         template_isValid                        (t_template *x);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 t_dataslot  *template_getSlots                      (t_template *x);
 t_symbol    *template_getTemplateIdentifier         (t_template *x);
@@ -49,22 +73,9 @@ t_glist     *template_getFirstInstanceView          (t_template *x);
 t_template  *template_getTemplateIfArrayAtIndex     (t_template *x, int n);
 t_symbol    *template_getFieldAtIndex               (t_template *x, int n);
 
-void        template_create                         (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void        template_free                           (t_template *x);
-int         template_getSize                        (t_template *x);
-int         template_isValid                        (t_template *x);
-
-int         template_hasInstance                    (t_template *x);
-void        template_registerInstance               (t_template *x, t_struct *o);
-void        template_unregisterInstance             (t_template *x, t_struct *o);
-
-void        template_serialize                      (t_template *x, t_buffer *b);
-void        template_notify                         (t_template *x, 
-                                                        t_glist *owner,
-                                                        t_scalar *scalar,
-                                                        t_symbol *s,
-                                                        int argc,
-                                                        t_atom *argv);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 int         template_hasField                       (t_template *x, t_symbol *field);
 int         template_getIndexOfField                (t_template *x, t_symbol *field);
@@ -80,6 +91,18 @@ int         template_fieldIsText                    (t_template *x, t_symbol *fi
 int         template_fieldIsArray                   (t_template *x, t_symbol *field);
 int         template_fieldIsArrayAndValid           (t_template *x, t_symbol *field);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        template_serialize                      (t_template *x, t_buffer *b);
+void        template_notify                         (t_template *x, 
+                                                        t_glist *owner,
+                                                        t_scalar *scalar,
+                                                        t_symbol *s,
+                                                        int argc,
+                                                        t_atom *argv);
+                                                        
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
