@@ -80,9 +80,9 @@ static void drawnumber_float (t_drawnumber *x, t_float f)
     
     if (k != (int)(field_getFloatConstant (&x->x_isVisible))) {
     //
-    paint_scalarsEraseAll();
+    paint_erase();
     field_setAsFloatConstant (&x->x_isVisible, (t_float)k);
-    paint_scalarsDrawAll();
+    paint_draw();
     //
     }
     //
@@ -168,7 +168,7 @@ static void drawnumber_behaviorVisibilityChanged (t_gobj *z,
 
     if (!isVisible || visible) {
     //
-    t_word *tag    = gpointer_getData (gp);
+    t_word *tag    = gpointer_getElement (gp);
     t_glist *glist = gpointer_getView (gp);
     
     if (!isVisible) { sys_vGui(".x%lx.c delete %lxNUMBER\n", canvas_getView (glist), tag); }    // --

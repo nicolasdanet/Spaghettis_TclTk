@@ -509,7 +509,7 @@ static void scalar_functionSave (t_gobj *z, t_buffer *b)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_word *scalar_getData (t_scalar *x)
+t_word *scalar_getElement (t_scalar *x)
 {
     return x->sc_element;
 }

@@ -30,7 +30,7 @@ struct _template {
     int         tp_size;    
     t_dataslot  *tp_slots;   
     t_symbol    *tp_templateIdentifier; 
-    t_struct    *tp_instance;                       /* Only one instance is allowed. */
+    t_struct    *tp_instance;
     };
     
 // -----------------------------------------------------------------------------------------------------------

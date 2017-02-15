@@ -14,6 +14,34 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+/*
+
+    An element is a group of words. 
+    A word can be a float, a symbol, a text or an array.
+    The content of an element is defined and labelled by its template.
+    
+    A template is identify and fetch by its unique name.
+    A template cannot be changed during its lifetime. 
+    A template is instantiated by the struct object.
+    For now only one instance at time is allowed.
+    
+    An array is a vector of elements.
+    An array can NOT contain another array.
+    
+    A scalar is an object that wrap an element.
+    A scalars is rendering by painter objects (i.e. plot).
+    To be considered painters must be disposed in an instance's window.
+    
+    A gpointer can maintain a pointer onto a scalar.
+    A gpointer can maintain a pointer onto one element of an array.
+    A gpointer can be query about the validity of its target.
+    A gpointer can modify the pointed element (indifferently of its type).
+    
+*/
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 #define DATA_FLOAT          0
@@ -31,14 +59,13 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 struct _gpointer {
     union {   
         struct _scalar      *gp_scalar;
         t_word              *gp_w;
     } gp_un;
-    t_gmaster               *gp_master;
+    t_gmaster               *gp_refer;
     t_unique                gp_uniqueIdentifier;
     };
 
@@ -50,7 +77,7 @@ struct _array {
     int                     a_size;
     t_word                  *a_elements;
     t_symbol                *a_templateIdentifier;
-    t_gmaster               *a_master;
+    t_gmaster               *a_holder;
     t_unique                a_uniqueIdentifier;
     t_gpointer              a_parent;
     };
@@ -72,7 +99,7 @@ struct _fielddescriptor {
 #pragma mark -
 
 t_scalar    *scalar_new                         (t_glist *owner, t_symbol *templateIdentifier);
-t_word      *scalar_getData                     (t_scalar *x);
+t_word      *scalar_getElement                  (t_scalar *x);
 t_template  *scalar_getTemplate                 (t_scalar *x);
 t_symbol    *scalar_getTemplateIdentifier       (t_scalar *x);
 t_array     *scalar_getArray                    (t_scalar *x, t_symbol *field);
@@ -89,24 +116,10 @@ void        scalar_redraw                       (t_scalar *x, t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        word_init                           (t_word *w, t_template *tmpl, t_gpointer *gp);
-void        word_free                           (t_word *w, t_template *tmpl);
+void        paint_erase                         (void);
+void        paint_draw                          (void);
+void        paint_redraw                        (void);
 
-t_float     word_getFloat                       (t_word *w, t_template *tmpl, t_symbol *field);
-t_symbol    *word_getSymbol                     (t_word *w, t_template *tmpl, t_symbol *field);
-t_buffer    *word_getText                       (t_word *w, t_template *tmpl, t_symbol *field);
-t_array     *word_getArray                      (t_word *w, t_template *tmpl, t_symbol *field);
-
-void        word_setFloat                       (t_word *w, t_template *tmpl, t_symbol *field, t_float f);
-void        word_setSymbol                      (t_word *w, t_template *tmpl, t_symbol *field, t_symbol *s);
-void        word_setText                        (t_word *w, t_template *tmpl, t_symbol *field, t_buffer *b);
-
-t_float     word_getFloatByDescriptor           (t_word *w, t_template *tmpl, t_fielddescriptor *fd);
-void        word_setFloatByDescriptor           (t_word *w,
-                                                    t_template *tmpl,
-                                                    t_fielddescriptor *fd,
-                                                    t_float f);
-                                                    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -114,7 +127,7 @@ void        word_setFloatByDescriptor           (t_word *w,
 t_array     *array_new                          (t_symbol *templateIdentifier, t_gpointer *parent);
 t_symbol    *array_getTemplateIdentifier        (t_array *x);
 t_template  *array_getTemplate                  (t_array *x);
-t_word      *array_getData                      (t_array *x);
+t_word      *array_getElements                  (t_array *x);
 t_word      *array_getElementAtIndex            (t_array *x, int n);
 t_gpointer  *array_getTopParent                 (t_array *x);
 
@@ -155,10 +168,24 @@ t_symbol    *field_getVariableName              (t_fielddescriptor *fd);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        paint_scalarsEraseAll               (void);
-void        paint_scalarsDrawAll                (void);
-void        paint_scalarsRedrawAll              (void);
+void        word_init                           (t_word *w, t_template *tmpl, t_gpointer *gp);
+void        word_free                           (t_word *w, t_template *tmpl);
 
+t_float     word_getFloat                       (t_word *w, t_template *tmpl, t_symbol *field);
+t_symbol    *word_getSymbol                     (t_word *w, t_template *tmpl, t_symbol *field);
+t_buffer    *word_getText                       (t_word *w, t_template *tmpl, t_symbol *field);
+t_array     *word_getArray                      (t_word *w, t_template *tmpl, t_symbol *field);
+
+void        word_setFloat                       (t_word *w, t_template *tmpl, t_symbol *field, t_float f);
+void        word_setSymbol                      (t_word *w, t_template *tmpl, t_symbol *field, t_symbol *s);
+void        word_setText                        (t_word *w, t_template *tmpl, t_symbol *field, t_buffer *b);
+
+t_float     word_getFloatByDescriptor           (t_word *w, t_template *tmpl, t_fielddescriptor *fd);
+void        word_setFloatByDescriptor           (t_word *w,
+                                                    t_template *tmpl,
+                                                    t_fielddescriptor *fd,
+                                                    t_float f);
+                                                    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 

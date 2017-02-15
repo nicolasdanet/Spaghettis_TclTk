@@ -18,7 +18,7 @@
 
 #define GPOINTER_INIT(x)    { \
                                 (x)->gp_un.gp_scalar = NULL; \
-                                (x)->gp_master = NULL; \
+                                (x)->gp_refer = NULL; \
                                 (x)->gp_uniqueIdentifier = 0; \
                             }
 
@@ -61,7 +61,7 @@ int         gpointer_isWord                     (t_gpointer *gp);
 #pragma mark -
 
 t_glist     *gpointer_getView                   (t_gpointer *gp);
-t_word      *gpointer_getData                   (t_gpointer *gp);
+t_word      *gpointer_getElement                (t_gpointer *gp);
 t_symbol    *gpointer_getTemplateIdentifier     (t_gpointer *gp);
 t_template  *gpointer_getTemplate               (t_gpointer *gp);
 

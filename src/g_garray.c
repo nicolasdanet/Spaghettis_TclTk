@@ -90,7 +90,7 @@ static t_widgetbehavior garray_widgetBehavior =             /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define GARRAY_AT(n)    *((t_float *)(array_getData (array) + (int)n))
+#define GARRAY_AT(n)    *((t_float *)(array_getElements (array) + (int)n))
 
 // *((t_float *)(array_getElementAtIndex (array, (int)n)))
 
@@ -328,7 +328,7 @@ int garray_getData (t_garray *x, int *size, t_word **w)
 {
     t_array *array = garray_getArray (x);
     
-    *size = array_getSize (array); *w = array_getData (array);
+    *size = array_getSize (array); *w = array_getElements (array);
     
     return 1; 
 }

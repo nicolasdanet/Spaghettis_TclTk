@@ -186,7 +186,7 @@ void canvas_addObject (t_glist *glist, t_gobj *y)
     if (glist->gl_editor && (object = cast_objectIfPatchable (y))) { boxtext_new (glist, object); }
     if (canvas_isMapped (canvas_getView (glist))) { gobj_visibilityChanged (y, glist, 1); }
     
-    if (needToPaintScalars) { paint_scalarsRedrawAll(); }
+    if (needToPaintScalars) { paint_redraw(); }
 }
 
 void canvas_removeObject (t_glist *glist, t_gobj *y)
@@ -208,7 +208,7 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     //
     }
     
-    if (needToPaintScalars) { paint_scalarsEraseAll(); }
+    if (needToPaintScalars) { paint_erase(); }
     
     if (canvas_isMapped (canvas)) { gobj_visibilityChanged (y, glist, 0); }
     
@@ -231,7 +231,7 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     if (text) { boxtext_free (text); }
     
     if (needToUpdateDSPChain) { dsp_update(); }
-    if (needToPaintScalars)   { paint_scalarsDrawAll(); }
+    if (needToPaintScalars)   { paint_draw(); }
     
     canvas->gl_isDeleting = deletingState;
     

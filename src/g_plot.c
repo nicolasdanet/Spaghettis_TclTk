@@ -224,9 +224,9 @@ void plot_float (t_plot *x, t_float f)
     
     if (k != (int)(field_getFloatConstant (&x->x_isVisible))) {
     //
-    paint_scalarsEraseAll();
+    paint_erase();
     field_setAsFloatConstant (&x->x_isVisible, (t_float)k);
-    paint_scalarsDrawAll();
+    paint_draw();
     //
     }
     //
@@ -812,7 +812,7 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
     int isVisible)
 {
     t_plot *x = (t_plot *)z;
-    t_word *w = gpointer_getData (gp);
+    t_word *w = gpointer_getElement (gp);
     t_glist *glist = gpointer_getView (gp);
     
     t_array *array = NULL;
@@ -1152,7 +1152,7 @@ static int plot_behaviorMouse (t_gobj *z,
     plot_fieldArray = &x->x_array;
         
     gpointer_setByCopy (gp, &plot_gpointer);
-    gpointer_setAsWord (&plot_check, array, array_getData (array));
+    gpointer_setAsWord (&plot_check, array, array_getElements (array));
     
     if (garray_isSingle (glist)) {
         return plot_behaviorMouseSingle (x, array, a, b, shift, alt, dbl, clicked); 

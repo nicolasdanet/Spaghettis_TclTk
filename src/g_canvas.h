@@ -194,7 +194,7 @@ typedef struct _editor {
 struct _glist {  
     t_object            gl_obj;                     /* MUST be the first. */
     t_gobj              *gl_graphics;
-    t_gmaster           *gl_master;
+    t_gmaster           *gl_holder;
     t_glist             *gl_parent;
     t_glist             *gl_next;
     t_environment       *gl_environment;

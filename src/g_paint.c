@@ -23,7 +23,6 @@ extern t_pdinstance     *pd_this;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 #define PAINT_REDRAW    0
 #define PAINT_DRAW      1
@@ -72,17 +71,17 @@ static void paint_proceedAll (int action)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void paint_scalarsEraseAll (void)
+void paint_erase (void)
 {
     paint_proceedAll (PAINT_ERASE);
 }
 
-void paint_scalarsDrawAll (void)
+void paint_draw (void)
 {
     paint_proceedAll (PAINT_DRAW);
 }
 
-void paint_scalarsRedrawAll (void)
+void paint_redraw (void)
 {
     paint_proceedAll (PAINT_REDRAW);
 }

@@ -106,7 +106,7 @@ static int gpointer_isValidProceed (t_gpointer *gp, int nullPointerIsValid)
     if (!nullPointerIsValid && gpointer_isNull (gp)) { return 0; }
     else {
     //
-    t_gmaster *master = gp->gp_master;
+    t_gmaster *master = gp->gp_refer;
         
     if (master->gm_type == GMASTER_ARRAY) {
         if (master->gm_un.gm_array->a_uniqueIdentifier == gp->gp_uniqueIdentifier)  { return 1; }
@@ -143,7 +143,7 @@ t_gpointer *gpointer_getEmpty (void)
 void gpointer_init (t_gpointer *gp)
 {
     gp->gp_un.gp_scalar     = NULL;
-    gp->gp_master           = NULL;
+    gp->gp_refer            = NULL;
     gp->gp_uniqueIdentifier = 0;
 }
 
@@ -154,10 +154,10 @@ void gpointer_setAsScalar (t_gpointer *gp, t_glist *glist, t_scalar *scalar)
     gpointer_unset (gp);
     
     gp->gp_un.gp_scalar     = scalar;
-    gp->gp_master           = glist->gl_master;
+    gp->gp_refer            = glist->gl_holder;
     gp->gp_uniqueIdentifier = glist->gl_uniqueIdentifier;
 
-    gmaster_increment (gp->gp_master);
+    gmaster_increment (gp->gp_refer);
 }
 
 /* Point to an element (i.e. a chunk of t_word) from an array. */
@@ -167,10 +167,10 @@ void gpointer_setAsWord (t_gpointer *gp, t_array *array, t_word *w)
     gpointer_unset (gp);
     
     gp->gp_un.gp_w          = w;
-    gp->gp_master           = array->a_master;
+    gp->gp_refer            = array->a_holder;
     gp->gp_uniqueIdentifier = array->a_uniqueIdentifier;
 
-    gmaster_increment (gp->gp_master);
+    gmaster_increment (gp->gp_refer);
 }
 
 void gpointer_setByCopy (t_gpointer *gp, t_gpointer *toSet)
@@ -179,19 +179,19 @@ void gpointer_setByCopy (t_gpointer *gp, t_gpointer *toSet)
     
     *toSet = *gp;
     
-    if (toSet->gp_master) { gmaster_increment (toSet->gp_master); }
+    if (toSet->gp_refer) { gmaster_increment (toSet->gp_refer); }
 }
 
 void gpointer_unset (t_gpointer *gp)
 {
-    if (gpointer_isSet (gp)) { gmaster_decrement (gp->gp_master); }
+    if (gpointer_isSet (gp)) { gmaster_decrement (gp->gp_refer); }
     
     gpointer_init (gp);
 }
 
 int gpointer_isSet (t_gpointer *gp)
 {
-    return (gp->gp_master != NULL);
+    return (gp->gp_refer != NULL);
 }
 
 int gpointer_isNull (t_gpointer *gp)
@@ -215,12 +215,12 @@ int gpointer_isValidNullAllowed (t_gpointer *gp)
 
 int gpointer_isScalar (t_gpointer *gp)
 {
-    return (gp->gp_master->gm_type == GMASTER_GLIST);
+    return (gp->gp_refer->gm_type == GMASTER_GLIST);
 }
 
 int gpointer_isWord (t_gpointer *gp)
 {
-    return (gp->gp_master->gm_type == GMASTER_ARRAY);
+    return (gp->gp_refer->gm_type == GMASTER_ARRAY);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -239,26 +239,26 @@ t_word *gpointer_getWord (t_gpointer *gp)
 
 t_glist *gpointer_getParentGlist (t_gpointer *gp)
 {
-    PD_ASSERT (gp->gp_master->gm_type == GMASTER_GLIST);
+    PD_ASSERT (gp->gp_refer->gm_type == GMASTER_GLIST);
     
-    return (gp->gp_master->gm_un.gm_glist);
+    return (gp->gp_refer->gm_un.gm_glist);
 }
 
 t_array *gpointer_getParentArray (t_gpointer *gp)
 {
-    PD_ASSERT (gp->gp_master->gm_type == GMASTER_ARRAY);
+    PD_ASSERT (gp->gp_refer->gm_type == GMASTER_ARRAY);
     
-    return (gp->gp_master->gm_un.gm_array);
+    return (gp->gp_refer->gm_un.gm_array);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_word *gpointer_getData (t_gpointer *gp)
+t_word *gpointer_getElement (t_gpointer *gp)
 {
     if (gpointer_isWord (gp))       { return gpointer_getWord (gp); } 
-    else if (!gpointer_isNull (gp)) { return scalar_getData (gpointer_getScalar (gp)); }
+    else if (!gpointer_isNull (gp)) { return scalar_getElement (gpointer_getScalar (gp)); }
     
     return NULL;
 }
@@ -273,7 +273,7 @@ t_glist *gpointer_getView (t_gpointer *gp)
 
 t_symbol *gpointer_getTemplateIdentifier (t_gpointer *gp)
 {
-    t_gmaster *master = gp->gp_master;
+    t_gmaster *master = gp->gp_refer;
     
     PD_ASSERT (gpointer_isValidNullAllowed (gp));
     
@@ -412,32 +412,32 @@ int gpointer_fieldIsArrayAndValid (t_gpointer *gp, t_symbol *fieldName)
 
 t_float gpointer_getFloat (t_gpointer *gp, t_symbol *fieldName)
 {
-    return word_getFloat (gpointer_getData (gp), gpointer_getTemplate (gp), fieldName);
+    return word_getFloat (gpointer_getElement (gp), gpointer_getTemplate (gp), fieldName);
 }
 
 t_symbol *gpointer_getSymbol (t_gpointer *gp, t_symbol *fieldName)
 {
-    return word_getSymbol (gpointer_getData (gp), gpointer_getTemplate (gp), fieldName);
+    return word_getSymbol (gpointer_getElement (gp), gpointer_getTemplate (gp), fieldName);
 }
 
 t_buffer *gpointer_getText (t_gpointer *gp, t_symbol *fieldName)
 {
-    return word_getText (gpointer_getData (gp), gpointer_getTemplate (gp), fieldName);
+    return word_getText (gpointer_getElement (gp), gpointer_getTemplate (gp), fieldName);
 }
 
 t_array *gpointer_getArray (t_gpointer *gp, t_symbol *fieldName)
 {
-    return word_getArray (gpointer_getData (gp), gpointer_getTemplate (gp), fieldName);
+    return word_getArray (gpointer_getElement (gp), gpointer_getTemplate (gp), fieldName);
 }
 
 void gpointer_setFloat (t_gpointer *gp, t_symbol *fieldName, t_float f)
 {
-    word_setFloat (gpointer_getData (gp), gpointer_getTemplate (gp), fieldName, f);
+    word_setFloat (gpointer_getElement (gp), gpointer_getTemplate (gp), fieldName, f);
 }
 
 void gpointer_setSymbol (t_gpointer *gp, t_symbol *fieldName, t_symbol *s)
 {
-    word_setSymbol (gpointer_getData (gp), gpointer_getTemplate (gp), fieldName, s);
+    word_setSymbol (gpointer_getElement (gp), gpointer_getTemplate (gp), fieldName, s);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -446,12 +446,12 @@ void gpointer_setSymbol (t_gpointer *gp, t_symbol *fieldName, t_symbol *s)
 
 t_float gpointer_getFloatByDescriptor (t_gpointer *gp, t_fielddescriptor *fd)
 {
-    return word_getFloatByDescriptor (gpointer_getData (gp), gpointer_getTemplate (gp), fd);
+    return word_getFloatByDescriptor (gpointer_getElement (gp), gpointer_getTemplate (gp), fd);
 }
 
 void gpointer_setFloatByDescriptor (t_gpointer *gp, t_fielddescriptor *fd, t_float position)
 {
-    word_setFloatByDescriptor (gpointer_getData (gp), gpointer_getTemplate (gp), fd, position);
+    word_setFloatByDescriptor (gpointer_getElement (gp), gpointer_getTemplate (gp), fd, position);
 }
                                                             
 // -----------------------------------------------------------------------------------------------------------

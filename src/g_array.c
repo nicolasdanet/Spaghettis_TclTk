@@ -45,7 +45,7 @@ t_array *array_new (t_symbol *templateIdentifier, t_gpointer *parent)
     x->a_size               = 1;
     x->a_elements           = (t_word *)PD_MEMORY_GET (x->a_elementSize * sizeof (t_word));
     x->a_templateIdentifier = templateIdentifier;
-    x->a_master             = gmaster_createWithArray (x);
+    x->a_holder             = gmaster_createWithArray (x);
     x->a_uniqueIdentifier   = utils_unique();
     
     gpointer_setByCopy (parent, &x->a_parent);
@@ -63,7 +63,7 @@ void array_free (t_array *x)
     PD_ASSERT (template);
     
     gpointer_unset (&x->a_parent);
-    gmaster_reset (x->a_master);
+    gmaster_reset (x->a_holder);
     
     for (i = 0; i < x->a_size; i++) {
         t_word *w = x->a_elements + (x->a_elementSize * i);
@@ -150,7 +150,7 @@ void array_deserialize (t_array *x, t_iterator *iter)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_word *array_getData (t_array *x)
+t_word *array_getElements (t_array *x)
 {
     return x->a_elements;
 }
@@ -159,7 +159,7 @@ t_word *array_getElementAtIndex (t_array *x, int n)
 {
     int offset = x->a_elementSize * PD_CLAMP (n, 0, x->a_size - 1);
         
-    return (array_getData (x) + offset);
+    return (array_getElements (x) + offset);
 }
 
 t_symbol *array_getTemplateIdentifier (t_array *x)

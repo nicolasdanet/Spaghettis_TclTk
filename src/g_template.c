@@ -63,9 +63,9 @@ int template_hasInstance (t_template *x)
 
 void template_registerInstance (t_template *x, t_struct *o)
 {
-    paint_scalarsEraseAll();
+    paint_erase();
     x->tp_instance = o;
-    paint_scalarsDrawAll();
+    paint_draw();
 }
 
 void template_unregisterInstance (t_template *x, t_struct *o)

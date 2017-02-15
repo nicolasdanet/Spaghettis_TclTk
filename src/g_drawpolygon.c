@@ -83,9 +83,9 @@ void drawpolygon_float (t_drawpolygon *x, t_float f)
     
     if (k != (int)(field_getFloatConstant (&x->x_isVisible))) {
     //
-    paint_scalarsEraseAll();
+    paint_erase();
     field_setAsFloatConstant (&x->x_isVisible, (t_float)k);
-    paint_scalarsDrawAll();
+    paint_draw();
     //
     }
     //
@@ -196,7 +196,7 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     
     if (n > 1) {
     //
-    t_word *tag    = gpointer_getData (gp);
+    t_word *tag    = gpointer_getElement (gp);
     t_glist *glist = gpointer_getView (gp);
     t_glist *view  = canvas_getView (glist);
     
