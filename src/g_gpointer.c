@@ -99,6 +99,16 @@ static void gmaster_decrement (t_gmaster *master)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+int gpointer_isSet (t_gpointer *gp)
+{
+    return (gp->gp_refer != NULL);
+}
+
+int gpointer_isNull (t_gpointer *gp)
+{
+    return (gp->gp_un.gp_scalar == NULL);
+}
+
 static int gpointer_isValidProceed (t_gpointer *gp, int nullPointerIsValid)
 {
     if (gpointer_isSet (gp)) {
@@ -189,22 +199,12 @@ void gpointer_unset (t_gpointer *gp)
     gpointer_init (gp);
 }
 
-int gpointer_isSet (t_gpointer *gp)
-{
-    return (gp->gp_refer != NULL);
-}
-
-int gpointer_isNull (t_gpointer *gp)
-{
-    return (gp->gp_un.gp_scalar == NULL);
-}
-
 int gpointer_isValid (t_gpointer *gp)
 {
     return gpointer_isValidProceed (gp, 0); 
 }
 
-int gpointer_isValidNullAllowed (t_gpointer *gp)
+int gpointer_isValidOrNull (t_gpointer *gp)
 {
     return gpointer_isValidProceed (gp, 1); 
 }
@@ -275,7 +275,7 @@ t_symbol *gpointer_getTemplateIdentifier (t_gpointer *gp)
 {
     t_gmaster *master = gp->gp_refer;
     
-    PD_ASSERT (gpointer_isValidNullAllowed (gp));
+    PD_ASSERT (gpointer_isValidOrNull (gp));
     
     if (master->gm_type == GMASTER_GLIST) {
         if (!gpointer_isNull (gp)) { return scalar_getTemplateIdentifier (gpointer_getScalar (gp)); }
@@ -449,9 +449,9 @@ t_float gpointer_getFloatByDescriptor (t_gpointer *gp, t_fielddescriptor *fd)
     return word_getFloatByDescriptor (gpointer_getElement (gp), gpointer_getTemplate (gp), fd);
 }
 
-void gpointer_setFloatByDescriptor (t_gpointer *gp, t_fielddescriptor *fd, t_float position)
+void gpointer_setFloatByDescriptor (t_gpointer *gp, t_fielddescriptor *fd, t_float f)
 {
-    word_setFloatByDescriptor (gpointer_getElement (gp), gpointer_getTemplate (gp), fd, position);
+    word_setFloatByDescriptor (gpointer_getElement (gp), gpointer_getTemplate (gp), fd, f);
 }
                                                             
 // -----------------------------------------------------------------------------------------------------------

@@ -48,7 +48,7 @@ static void append_float (t_append *x, t_float f)
     if (!template) { error_canNotFind (sym_append, sym_template); }
     else {
     //
-    if (gpointer_isValidNullAllowed (&x->x_gpointer) && gpointer_isScalar (&x->x_gpointer)) {
+    if (gpointer_isValidOrNull (&x->x_gpointer) && gpointer_isScalar (&x->x_gpointer)) {
     //
     t_scalar *scalar = scalar_new (gpointer_getView (&x->x_gpointer), x->x_templateIdentifier);
     

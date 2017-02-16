@@ -19,8 +19,9 @@
 
 void word_init (t_word *w, t_template *tmpl, t_gpointer *gp)
 {
-    int i, size = template_getSize (tmpl);
     t_dataslot *v = template_getSlots (tmpl);
+    int size = template_getSize (tmpl);
+    int i;
     
     for (i = 0; i < size; i++, v++, w++) {
     //
@@ -45,7 +46,7 @@ void word_free (t_word *w, t_template *tmpl)
     t_dataslot *v = template_getSlots (tmpl);
     
     for (i = 0; i < template_getSize (tmpl); i++) {
-        if (v->ds_type == DATA_ARRAY) { array_free (WORD_ARRAY (w + i)); }
+        if (v->ds_type == DATA_ARRAY)     { array_free (WORD_ARRAY (w + i)); }
         else if (v->ds_type == DATA_TEXT) { buffer_free (WORD_BUFFER (w + i)); }
         v++;
     }
@@ -128,8 +129,7 @@ void word_setFloat (t_word *w, t_template *tmpl, t_symbol *fieldName, t_float f)
 
 void word_setSymbol (t_word *w, t_template *tmpl, t_symbol *fieldName, t_symbol *s)
 {
-    int i, type;
-    t_symbol *dummy = NULL;
+    int i, type; t_symbol *dummy = NULL;
     
     PD_ASSERT (template_fieldIsSymbol (tmpl, fieldName));
     
@@ -142,8 +142,7 @@ void word_setSymbol (t_word *w, t_template *tmpl, t_symbol *fieldName, t_symbol 
 
 void word_setText (t_word *w, t_template *tmpl, t_symbol *fieldName, t_buffer *b)
 {
-    int i, type;
-    t_symbol *dummy = NULL;
+    int i, type; t_symbol *dummy = NULL;
     
     PD_ASSERT (b);
     PD_ASSERT (template_fieldIsText (tmpl, fieldName));
@@ -175,17 +174,14 @@ t_float word_getFloatByDescriptor (t_word *w, t_template *tmpl, t_fielddescripto
     return (t_float)0.0;
 }
 
-void word_setFloatByDescriptor (t_word *w,
-    t_template *tmpl,
-    t_fielddescriptor *fd,
-    t_float position)
+void word_setFloatByDescriptor (t_word *w, t_template *tmpl, t_fielddescriptor *fd, t_float f)
 {
     if (fd->fd_type == DATA_FLOAT) {
     //
     if (fd->fd_isVariable) {
-        word_setFloat (w, tmpl, fd->fd_un.fd_variableName, position);
+        word_setFloat (w, tmpl, fd->fd_un.fd_variableName, f);
     } else {
-        fd->fd_un.fd_float = position;
+        fd->fd_un.fd_float = f;
     }
     //
     } else {
@@ -196,6 +192,9 @@ void word_setFloatByDescriptor (t_word *w,
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+/* Edge case in which the buffer is replaced by an outside one. */
+/* Requires extra care. */
 
 t_error word_setInternalBuffer (t_word *w, t_template *tmpl, t_symbol *fieldName, t_buffer *b)
 {
