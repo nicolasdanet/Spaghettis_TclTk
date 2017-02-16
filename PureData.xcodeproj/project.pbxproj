@@ -912,6 +912,30 @@
 			name = Osc;
 			sourceTree = "<group>";
 		};
+		3715DB131E560F7D002B5FB7 /* Accessors */ = {
+			isa = PBXGroup;
+			children = (
+				378971D31C4F716700263434 /* g_pointer.c */,
+				37D643751D4796C700071C3C /* g_get.c */,
+				37D643531D4795ED00071C3C /* g_set.c */,
+				37D643351D47955B00071C3C /* g_element.c */,
+				37D6430D1D47944400071C3C /* g_getsize.c */,
+				37D642F21D4793A800071C3C /* g_setsize.c */,
+				37D642BB1D47924100071C3C /* g_append.c */,
+			);
+			name = Accessors;
+			sourceTree = "<group>";
+		};
+		3715DB171E560FF6002B5FB7 /* Painters */ = {
+			isa = PBXGroup;
+			children = (
+				379C1BAF1D37954000C4D92C /* g_drawpolygon.c */,
+				379C1B711D37934500C4D92C /* g_plot.c */,
+				379C1B3F1D3790C200C4D92C /* g_drawnumber.c */,
+			);
+			name = Painters;
+			sourceTree = "<group>";
+		};
 		371655471BA3451000ABDE22 /* PortAudio */ = {
 			isa = PBXGroup;
 			children = (
@@ -1427,16 +1451,8 @@
 				378971CF1C4F716700263434 /* g_scalar.c */,
 				371430B01D0D46BC00E68D11 /* g_paint.c */,
 				374A76321CF5FA81001A57EB /* g_serialize.c */,
-				378971D31C4F716700263434 /* g_pointer.c */,
-				37D643751D4796C700071C3C /* g_get.c */,
-				37D643531D4795ED00071C3C /* g_set.c */,
-				37D643351D47955B00071C3C /* g_element.c */,
-				37D6430D1D47944400071C3C /* g_getsize.c */,
-				37D642F21D4793A800071C3C /* g_setsize.c */,
-				37D642BB1D47924100071C3C /* g_append.c */,
-				379C1BAF1D37954000C4D92C /* g_drawpolygon.c */,
-				379C1B711D37934500C4D92C /* g_plot.c */,
-				379C1B3F1D3790C200C4D92C /* g_drawnumber.c */,
+				3715DB131E560F7D002B5FB7 /* Accessors */,
+				3715DB171E560FF6002B5FB7 /* Painters */,
 			);
 			name = Scalars;
 			sourceTree = "<group>";

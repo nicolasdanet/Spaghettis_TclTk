@@ -67,16 +67,13 @@ static t_widgetbehavior scalar_widgetBehavior =         /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void scalar_drawJob (t_gobj *z, t_glist *glist)
 {
     scalar_behaviorVisibilityChanged (z, glist, 0);
     scalar_behaviorVisibilityChanged (z, glist, 1);
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 static void scalar_drawSelectRectangle (t_scalar *x, t_glist *glist, int isSelected)
 {
@@ -109,6 +106,10 @@ static void scalar_drawSelectRectangle (t_scalar *x, t_glist *glist, int isSelec
         sys_vGui (".x%lx.c delete %lxHANDLE\n", canvas_getView (glist), x);
     }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void scalar_notifyClicked (t_scalar *x, 
     t_glist *glist,
@@ -234,19 +235,17 @@ static void scalar_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int
     else {
     //
     if (template_fieldIsFloat (template, sym_x)) {
-    //
-    t_float f = word_getFloat (x->sc_element, template, sym_x);
-    f += canvas_valueForDeltaInPixelX (glist, deltaX);
-    word_setFloat (x->sc_element, template, sym_x, f);
-    //
+
+        t_float f = word_getFloat (x->sc_element, template, sym_x);
+        f += canvas_valueForDeltaInPixelX (glist, deltaX);
+        word_setFloat (x->sc_element, template, sym_x, f);
     }
     
     if (template_fieldIsFloat (template, sym_y)) {
-    //
-    t_float f = word_getFloat (x->sc_element, template, sym_y);
-    f += canvas_valueForDeltaInPixelY (glist, deltaY);
-    word_setFloat (x->sc_element, template, sym_y, f);
-    //
+
+        t_float f = word_getFloat (x->sc_element, template, sym_y);
+        f += canvas_valueForDeltaInPixelY (glist, deltaY);
+        word_setFloat (x->sc_element, template, sym_y, f);
     }
     
     scalar_notifyDisplaced (x, glist, template, (t_float)deltaX, (t_float)deltaY);
@@ -488,10 +487,6 @@ void scalar_deserialize (t_scalar *x, t_glist *glist, int argc, t_atom *argv)
     }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void scalar_functionSave (t_gobj *z, t_buffer *b)
 {
     t_scalar *x = cast_scalar (z);
@@ -514,6 +509,11 @@ t_word *scalar_getElement (t_scalar *x)
     return x->sc_element;
 }
 
+t_symbol *scalar_getTemplateIdentifier (t_scalar *x)
+{
+    return x->sc_templateIdentifier;
+}
+
 t_template *scalar_getTemplate (t_scalar *x)
 {
     t_template *template = template_findByIdentifier (x->sc_templateIdentifier);
@@ -523,10 +523,9 @@ t_template *scalar_getTemplate (t_scalar *x)
     return template;
 }
 
-t_symbol *scalar_getTemplateIdentifier (t_scalar *x)
-{
-    return x->sc_templateIdentifier;
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 t_array *scalar_getArray (t_scalar *x, t_symbol *fieldName)
 {
@@ -542,6 +541,10 @@ void scalar_setFloat (t_scalar *x, t_symbol *fieldName, t_float f)
 {
     word_setFloat (x->sc_element, scalar_getTemplate (x), fieldName, f);  
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 int scalar_fieldIsFloat (t_scalar *x, t_symbol *fieldName)
 {

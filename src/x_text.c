@@ -88,7 +88,7 @@ static void textdefine_clear (t_textdefine *x)
     textbuffer_update (&x->x_textbuffer);
 }
 
-static void textdefine_save (t_gobj *z, t_buffer *b)
+static void textdefine_functionSave (t_gobj *z, t_buffer *b)
 {
     t_textdefine *x = (t_textdefine *)z;
     
@@ -226,7 +226,7 @@ void textdefine_setup (void)
     class_addMethod (c, (t_method)textdefine_set,       sym_set,        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)textdefine_clear,     sym_clear,      A_NULL);
         
-    class_setSaveFunction (c, textdefine_save);
+    class_setSaveFunction (c, textdefine_functionSave);
     class_setHelpName (c, sym_text);
 
     textdefine_class = c;

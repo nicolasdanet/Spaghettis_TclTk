@@ -65,7 +65,7 @@ static void scalardefine_set (t_glist *x, t_symbol *s, int argc, t_atom *argv)
     } else { PD_BUG; }
 }
 
-static void scalardefine_save (t_gobj *z, t_buffer *b)
+static void scalardefine_functionSave (t_gobj *z, t_buffer *b)
 {
     t_glist *x = cast_glist (z);
     
@@ -233,7 +233,7 @@ void scalardefine_setup (void)
     #endif 
         
     class_setHelpName (c, sym_scalar);
-    class_setSaveFunction (c, scalardefine_save);
+    class_setSaveFunction (c, scalardefine_functionSave);
 
     scalardefine_class = c;
 }

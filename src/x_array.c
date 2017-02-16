@@ -73,7 +73,7 @@ static void arraydefine_anything (t_glist *x, t_symbol *s, int argc, t_atom *arg
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void arraydefine_save (t_gobj *z, t_buffer *b)
+void arraydefine_functionSave (t_gobj *z, t_buffer *b)
 {
     t_glist *x  = cast_glist (z);
     t_garray *t = arraydefine_getContentChecked (x);
@@ -235,7 +235,7 @@ void arraydefine_setup (void)
     #endif
     
     class_setHelpName (c, sym_array);
-    class_setSaveFunction (c, arraydefine_save);
+    class_setSaveFunction (c, arraydefine_functionSave);
     
     arraydefine_class = c;
 }
