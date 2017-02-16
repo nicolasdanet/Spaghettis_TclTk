@@ -1415,9 +1415,9 @@
 			isa = PBXGroup;
 			children = (
 				37702F321D41E7FE00AE3FE2 /* g_scalar.h */,
-				379093481E5432B300A811A8 /* g_template.h */,
 				379093811E54382C00A811A8 /* g_gmaster.h */,
 				379092DA1E5366E300A811A8 /* g_gpointer.h */,
+				379093481E5432B300A811A8 /* g_template.h */,
 				37ED6A051D2CFD00007EC73D /* g_word.c */,
 				379C1BCA1D37961E00C4D92C /* g_field.c */,
 				37ED6A041D2CFD00007EC73D /* g_array.c */,

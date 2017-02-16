@@ -22,15 +22,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void field_setAsReset (t_fielddescriptor *fd)
-{
-    field_setAsFloatConstant (fd, (t_float)0.0);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void field_setAsFloatConstant (t_fielddescriptor *fd, t_float f)
 {
     fd->fd_type                 = DATA_FLOAT;
@@ -47,7 +38,7 @@ void field_setAsFloatVariable (t_fielddescriptor *fd, t_symbol *s)
 
 void field_setAsFloat (t_fielddescriptor *fd, int argc, t_atom *argv)
 {
-    field_setAsReset (fd);
+    field_setAsFloatConstant (fd, (t_float)0.0);
         
     if (argc > 0) {
         if (IS_SYMBOL (argv)) { field_setAsFloatVariable (fd, GET_SYMBOL (argv)); }
@@ -59,15 +50,15 @@ void field_setAsFloat (t_fielddescriptor *fd, int argc, t_atom *argv)
 
 void field_setAsArray (t_fielddescriptor *fd, int argc, t_atom *argv)
 {
-    field_setAsReset (fd);
+    field_setAsFloatConstant (fd, (t_float)0.0);
     
     if (argc > 0) {
         if (IS_SYMBOL (argv)) {
             fd->fd_type                 = DATA_ARRAY;
             fd->fd_isVariable           = 1;
             fd->fd_un.fd_variableName   = GET_SYMBOL (argv);
-        } else { 
-            field_setAsFloatConstant (fd, atom_getFloatAtIndex (0, argc, argv));
+        } else {
+            PD_BUG;
         }
     }
 }

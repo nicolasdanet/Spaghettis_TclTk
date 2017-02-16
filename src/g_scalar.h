@@ -98,27 +98,41 @@ struct _fielddescriptor {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_scalar    *scalar_new                         (t_glist *owner, t_symbol *templateIdentifier);
-t_word      *scalar_getElement                  (t_scalar *x);
-t_template  *scalar_getTemplate                 (t_scalar *x);
-t_symbol    *scalar_getTemplateIdentifier       (t_scalar *x);
-t_array     *scalar_getArray                    (t_scalar *x, t_symbol *field);
+void        word_init                           (t_word *w, t_template *tmpl, t_gpointer *gp);
+void        word_free                           (t_word *w, t_template *tmpl);
 
-int         scalar_fieldIsFloat                 (t_scalar *x, t_symbol *field);
-t_float     scalar_getFloat                     (t_scalar *x, t_symbol *field);
-void        scalar_setFloat                     (t_scalar *x, t_symbol *field, t_float f);
+t_float     word_getFloat                       (t_word *w, t_template *tmpl, t_symbol *field);
+t_symbol    *word_getSymbol                     (t_word *w, t_template *tmpl, t_symbol *field);
+t_buffer    *word_getText                       (t_word *w, t_template *tmpl, t_symbol *field);
+t_array     *word_getArray                      (t_word *w, t_template *tmpl, t_symbol *field);
 
-void        scalar_serialize                    (t_scalar *x, t_buffer *b);
-void        scalar_deserialize                  (t_scalar *x, t_glist *glist, int argc, t_atom *argv);
-void        scalar_redraw                       (t_scalar *x, t_glist *glist);
+void        word_setFloat                       (t_word *w, t_template *tmpl, t_symbol *field, t_float f);
+void        word_setSymbol                      (t_word *w, t_template *tmpl, t_symbol *field, t_symbol *s);
+void        word_setText                        (t_word *w, t_template *tmpl, t_symbol *field, t_buffer *b);
+
+t_float     word_getFloatByDescriptor           (t_word *w, t_template *tmpl, t_fielddescriptor *fd);
+void        word_setFloatByDescriptor           (t_word *w,
+                                                    t_template *tmpl,
+                                                    t_fielddescriptor *fd,
+                                                    t_float f);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        paint_erase                         (void);
-void        paint_draw                          (void);
-void        paint_redraw                        (void);
+void        field_setAsFloatConstant            (t_fielddescriptor *fd, t_float f);
+void        field_setAsFloatVariable            (t_fielddescriptor *fd, t_symbol *s);
+void        field_setAsFloat                    (t_fielddescriptor *fd, int argc, t_atom *argv);
+void        field_setAsArray                    (t_fielddescriptor *fd, int argc, t_atom *argv);
+
+int         field_isFloat                       (t_fielddescriptor *fd);
+int         field_isFloatConstant               (t_fielddescriptor *fd);
+int         field_isArray                       (t_fielddescriptor *fd);
+int         field_isVariable                    (t_fielddescriptor *fd);
+
+t_float     field_getFloatConstant              (t_fielddescriptor *fd);
+
+t_symbol    *field_getVariableName              (t_fielddescriptor *fd);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -150,42 +164,28 @@ void        array_deserialize                   (t_array *x, t_iterator *iter);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        field_setAsFloatConstant            (t_fielddescriptor *fd, t_float f);
-void        field_setAsFloatVariable            (t_fielddescriptor *fd, t_symbol *s);
-void        field_setAsFloat                    (t_fielddescriptor *fd, int argc, t_atom *argv);
-void        field_setAsArray                    (t_fielddescriptor *fd, int argc, t_atom *argv);
+t_scalar    *scalar_new                         (t_glist *owner, t_symbol *templateIdentifier);
+t_word      *scalar_getElement                  (t_scalar *x);
+t_template  *scalar_getTemplate                 (t_scalar *x);
+t_symbol    *scalar_getTemplateIdentifier       (t_scalar *x);
+t_array     *scalar_getArray                    (t_scalar *x, t_symbol *field);
 
-int         field_isFloat                       (t_fielddescriptor *fd);
-int         field_isFloatConstant               (t_fielddescriptor *fd);
-int         field_isArray                       (t_fielddescriptor *fd);
-int         field_isVariable                    (t_fielddescriptor *fd);
+int         scalar_fieldIsFloat                 (t_scalar *x, t_symbol *field);
+t_float     scalar_getFloat                     (t_scalar *x, t_symbol *field);
+void        scalar_setFloat                     (t_scalar *x, t_symbol *field, t_float f);
 
-t_float     field_getFloatConstant              (t_fielddescriptor *fd);
-
-t_symbol    *field_getVariableName              (t_fielddescriptor *fd);
+void        scalar_serialize                    (t_scalar *x, t_buffer *b);
+void        scalar_deserialize                  (t_scalar *x, t_glist *glist, int argc, t_atom *argv);
+void        scalar_redraw                       (t_scalar *x, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        word_init                           (t_word *w, t_template *tmpl, t_gpointer *gp);
-void        word_free                           (t_word *w, t_template *tmpl);
+void        paint_erase                         (void);
+void        paint_draw                          (void);
+void        paint_redraw                        (void);
 
-t_float     word_getFloat                       (t_word *w, t_template *tmpl, t_symbol *field);
-t_symbol    *word_getSymbol                     (t_word *w, t_template *tmpl, t_symbol *field);
-t_buffer    *word_getText                       (t_word *w, t_template *tmpl, t_symbol *field);
-t_array     *word_getArray                      (t_word *w, t_template *tmpl, t_symbol *field);
-
-void        word_setFloat                       (t_word *w, t_template *tmpl, t_symbol *field, t_float f);
-void        word_setSymbol                      (t_word *w, t_template *tmpl, t_symbol *field, t_symbol *s);
-void        word_setText                        (t_word *w, t_template *tmpl, t_symbol *field, t_buffer *b);
-
-t_float     word_getFloatByDescriptor           (t_word *w, t_template *tmpl, t_fielddescriptor *fd);
-void        word_setFloatByDescriptor           (t_word *w,
-                                                    t_template *tmpl,
-                                                    t_fielddescriptor *fd,
-                                                    t_float f);
-                                                    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
