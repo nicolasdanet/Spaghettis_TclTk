@@ -124,7 +124,7 @@ static t_error plot_fetchScalarFields (t_plot *x, t_gpointer *gp,
     //
     t_symbol *s = field_getVariableName (&x->x_array);
     
-    if (gpointer_hasField (gp, s) && gpointer_fieldIsArrayAndValid (gp, s)) {
+    if (gpointer_hasField (gp, s) && gpointer_fieldIsArrayAndExist (gp, s)) {
     //
     *array      = gpointer_getArray (gp, s);
     *width      = gpointer_getFloatByDescriptor (gp, &x->x_width);
@@ -291,7 +291,7 @@ static void plot_motion (void *dummy, t_float deltaX, t_float deltaY, t_float mo
     //
     t_symbol *s = field_getVariableName (plot_fieldArray);
     
-    if (gpointer_hasField (&plot_gpointer, s) && gpointer_fieldIsArrayAndValid (&plot_gpointer, s)) {
+    if (gpointer_hasField (&plot_gpointer, s) && gpointer_fieldIsArrayAndExist (&plot_gpointer, s)) {
     //
     t_array *array = gpointer_getArray (&plot_gpointer, s);
     

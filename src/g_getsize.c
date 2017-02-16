@@ -37,7 +37,7 @@ static void getsize_pointer (t_getsize *x, t_gpointer *gp)
 {
     if (gpointer_isValidInstanceOf (gp, x->x_templateIdentifier)) {
         if (gpointer_hasField (gp, x->x_fieldName)) {
-            if (gpointer_fieldIsArrayAndValid (gp, x->x_fieldName)) {
+            if (gpointer_fieldIsArrayAndExist (gp, x->x_fieldName)) {
                 t_float size = (t_float)array_getSize (gpointer_getArray (gp, x->x_fieldName));
                 outlet_float (x->x_outlet, size);
         

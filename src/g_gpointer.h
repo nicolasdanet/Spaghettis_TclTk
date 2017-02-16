@@ -106,9 +106,9 @@ static inline int gpointer_fieldIsArray (t_gpointer *gp, t_symbol *fieldName)
     return template_fieldIsArray (gpointer_getTemplate (gp), fieldName);
 }
 
-static inline int gpointer_fieldIsArrayAndValid (t_gpointer *gp, t_symbol *fieldName)
+static inline int gpointer_fieldIsArrayAndExist (t_gpointer *gp, t_symbol *fieldName)
 {
-    return template_fieldIsArrayAndValid (gpointer_getTemplate (gp), fieldName);
+    return template_fieldIsArrayAndExist (gpointer_getTemplate (gp), fieldName);
 }
 
 // -----------------------------------------------------------------------------------------------------------

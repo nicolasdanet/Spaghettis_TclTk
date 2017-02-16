@@ -19,149 +19,10 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class  *template_class;                    /* Shared. */
+static t_class *template_class;         /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-int template_getSize (t_template *x)
-{
-    return x->tp_size;
-}
-
-t_dataslot *template_getSlots (t_template *x)
-{
-    return x->tp_slots;
-}
-
-t_symbol *template_getTemplateIdentifier (t_template *x)
-{
-    return x->tp_templateIdentifier;
-}
-
-t_template *template_getTemplateIfArrayAtIndex (t_template *x, int n)
-{
-    PD_ASSERT (x);
-    PD_ASSERT (n >= 0);
-    PD_ASSERT (n < x->tp_size);
-    
-    if (x->tp_slots[n].ds_type == DATA_ARRAY) {
-        return template_findByIdentifier (x->tp_slots[n].ds_templateIdentifier);
-    }
-    
-    return NULL;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int template_hasInstance (t_template *x)
-{
-    return (x->tp_instance != NULL);
-}
-
-void template_registerInstance (t_template *x, t_struct *o)
-{
-    paint_erase();
-    x->tp_instance = o;
-    paint_draw();
-}
-
-void template_unregisterInstance (t_template *x, t_struct *o)
-{
-    template_registerInstance (x, NULL);
-}
-
-t_glist *template_getFirstInstanceView (t_template *x)
-{
-    PD_ASSERT (x);
-    
-    if (!x->tp_instance) { return NULL; }
-    else { 
-        return struct_getView (x->tp_instance);
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void template_serialize (t_template *x, t_buffer *b)
-{
-    int i;
-    
-    buffer_vAppend (b, "sss",
-        sym___hash__N,
-        sym_struct,
-        utils_stripTemplateIdentifier (x->tp_templateIdentifier));
-    
-    for (i = 0; i < x->tp_size; i++) {
-    //
-    t_symbol *type = &s_float;
-    
-    switch (x->tp_slots[i].ds_type) {
-        case DATA_FLOAT     : type = &s_float;  break;
-        case DATA_SYMBOL    : type = &s_symbol; break;
-        case DATA_ARRAY     : type = sym_array; break;
-        case DATA_TEXT      : type = sym_text;  break;
-    }
-    
-    if (x->tp_slots[i].ds_type == DATA_ARRAY) {
-        buffer_vAppend (b, "sss",
-            type,
-            x->tp_slots[i].ds_fieldName,
-            utils_stripTemplateIdentifier (x->tp_slots[i].ds_templateIdentifier));
-            
-    } else {
-        buffer_vAppend (b,  "ss",
-            type,
-            x->tp_slots[i].ds_fieldName);
-    }
-    //
-    }
-    
-    buffer_appendSemicolon (b);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void template_notify (t_template *x,
-    t_glist *owner,
-    t_scalar *scalar,
-    t_symbol *s,
-    int argc,
-    t_atom *argv)
-{
-    t_atom *a = NULL;
-    int i, n = argc + 1;
-    t_gpointer gp; GPOINTER_INIT (&gp);
-    
-    ATOMS_ALLOCA (a, n);
-    
-    gpointer_setAsScalar (&gp, owner, scalar);
-    SET_POINTER (a, &gp);
-    for (i = 0; i < argc; i++) { *(a + i + 1) = *(argv + i); }
-    if (x->tp_instance) { struct_notify (x->tp_instance, s, n, a); }
-    gpointer_unset (&gp);
-    
-    ATOMS_FREEA (a, n);
-}
-
-static void template_anything (t_template *x, t_symbol *s, int argc, t_atom *argv)
-{
-    #if PD_WITH_DEBUG
-    
-    post ("My name is %s.", utils_stripTemplateIdentifier (x->tp_templateIdentifier)->s_name);
-    
-    #endif
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 int template_isValid (t_template *x)
 {
@@ -188,6 +49,10 @@ int template_isValid (t_template *x)
     
     return 1;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 int template_hasField (t_template *x, t_symbol *fieldName)
 {
@@ -244,6 +109,19 @@ int template_getRaw (t_template *x,
     return 0;
 }
 
+t_template *template_getTemplateIfArrayAtIndex (t_template *x, int n)
+{
+    PD_ASSERT (x);
+    PD_ASSERT (n >= 0);
+    PD_ASSERT (n < x->tp_size);
+    
+    if (x->tp_slots[n].ds_type == DATA_ARRAY) {
+        return template_findByIdentifier (x->tp_slots[n].ds_templateIdentifier);
+    }
+    
+    return NULL;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -284,7 +162,7 @@ int template_fieldIsArray (t_template *x, t_symbol *fieldName)
     return 0;
 }
 
-int template_fieldIsArrayAndValid (t_template *x, t_symbol *fieldName)
+int template_fieldIsArrayAndExist (t_template *x, t_symbol *fieldName)
 {
     int i, type; t_symbol *templateIdentifier = NULL;
     
@@ -301,19 +179,103 @@ int template_fieldIsArrayAndValid (t_template *x, t_symbol *fieldName)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol *template_makeIdentifierWithWildcard (t_symbol *s)
+void template_serialize (t_template *x, t_buffer *b)
 {
-    PD_ASSERT (s);
+    int i;
     
-    if (s == &s_ || s == sym___dash__) { return template_getWildcard(); }
-    else { 
-        return utils_makeTemplateIdentifier (s);
+    buffer_vAppend (b, "sss",
+        sym___hash__N,
+        sym_struct,
+        utils_stripTemplateIdentifier (x->tp_templateIdentifier));
+    
+    for (i = 0; i < x->tp_size; i++) {
+    //
+    t_symbol *type = &s_float;
+    
+    switch (x->tp_slots[i].ds_type) {
+        case DATA_FLOAT     : type = &s_float;  break;
+        case DATA_SYMBOL    : type = &s_symbol; break;
+        case DATA_ARRAY     : type = sym_array; break;
+        case DATA_TEXT      : type = sym_text;  break;
     }
+    
+    if (x->tp_slots[i].ds_type == DATA_ARRAY) {
+        buffer_vAppend (b, "sss",
+            type,
+            x->tp_slots[i].ds_fieldName,
+            utils_stripTemplateIdentifier (x->tp_slots[i].ds_templateIdentifier));
+            
+    } else {
+        buffer_vAppend (b,  "ss",
+            type,
+            x->tp_slots[i].ds_fieldName);
+    }
+    //
+    }
+    
+    buffer_appendSemicolon (b);
 }
 
-t_symbol *template_getWildcard (void)
+void template_notify (t_template *x,
+    t_glist *owner,
+    t_scalar *scalar,
+    t_symbol *s,
+    int argc,
+    t_atom *argv)
 {
-    return &s_;
+    t_atom *a = NULL;
+    int i, n = argc + 1;
+    t_gpointer gp; GPOINTER_INIT (&gp);
+    
+    ATOMS_ALLOCA (a, n);
+    
+    gpointer_setAsScalar (&gp, owner, scalar);
+    SET_POINTER (a, &gp);
+    for (i = 0; i < argc; i++) { *(a + i + 1) = *(argv + i); }
+    if (x->tp_instance) { struct_notify (x->tp_instance, s, n, a); }
+    gpointer_unset (&gp);
+    
+    ATOMS_FREEA (a, n);
+}
+
+static void template_anything (t_template *x, t_symbol *s, int argc, t_atom *argv)
+{
+    #if PD_WITH_DEBUG
+    
+    post ("My name is %s.", utils_stripTemplateIdentifier (x->tp_templateIdentifier)->s_name);
+    
+    #endif
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int template_hasInstance (t_template *x)
+{
+    return (x->tp_instance != NULL);
+}
+
+void template_registerInstance (t_template *x, t_struct *o)
+{
+    paint_erase();
+    x->tp_instance = o;
+    paint_draw();
+}
+
+void template_unregisterInstance (t_template *x, t_struct *o)
+{
+    template_registerInstance (x, NULL);
+}
+
+t_glist *template_getFirstInstanceView (t_template *x)
+{
+    PD_ASSERT (x);
+    
+    if (!x->tp_instance) { return NULL; }
+    else { 
+        return struct_getView (x->tp_instance);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
