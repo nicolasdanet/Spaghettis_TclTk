@@ -318,9 +318,9 @@ int gpointer_isInstanceOf (t_gpointer *gp, t_symbol *templateIdentifier)
 
 int gpointer_isValidInstanceOf (t_gpointer *gp, t_symbol *templateIdentifier)
 {
-    if (!gpointer_isValid (gp))                             { return 0; }
-    if (!gpointer_isInstanceOf (gp, templateIdentifier))    { return 0; }
-    if (!gpointer_getTemplate (gp))                         { return 0; }
+    if (!gpointer_isValid (gp))                                     { return 0; }
+    if (!gpointer_isInstanceOf (gp, templateIdentifier))            { return 0; }
+    if (!gpointer_getTemplate (gp))                                 { return 0; }
     
     return 1;
 }
@@ -371,88 +371,6 @@ t_error gpointer_fieldToString (t_gpointer *gp, t_symbol *fieldName, char *dest,
     
     return err;
 }
-                                                            
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
-int gpointer_hasField (t_gpointer *gp, t_symbol *fieldName)
-{
-    return template_hasField (gpointer_getTemplate (gp), fieldName);
-}
-
-int gpointer_fieldIsFloat (t_gpointer *gp, t_symbol *fieldName)
-{
-    return template_fieldIsFloat (gpointer_getTemplate (gp), fieldName);
-}
-
-int gpointer_fieldIsSymbol (t_gpointer *gp, t_symbol *fieldName)
-{
-    return template_fieldIsSymbol (gpointer_getTemplate (gp), fieldName);
-}
-
-int gpointer_fieldIsText (t_gpointer *gp, t_symbol *fieldName)
-{
-    return template_fieldIsText (gpointer_getTemplate (gp), fieldName);
-}
-
-int gpointer_fieldIsArray (t_gpointer *gp, t_symbol *fieldName)
-{
-    return template_fieldIsArray (gpointer_getTemplate (gp), fieldName);
-}
-
-int gpointer_fieldIsArrayAndValid (t_gpointer *gp, t_symbol *fieldName)
-{
-    return template_fieldIsArrayAndValid (gpointer_getTemplate (gp), fieldName);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_float gpointer_getFloat (t_gpointer *gp, t_symbol *fieldName)
-{
-    return word_getFloat (gpointer_getElement (gp), gpointer_getTemplate (gp), fieldName);
-}
-
-t_symbol *gpointer_getSymbol (t_gpointer *gp, t_symbol *fieldName)
-{
-    return word_getSymbol (gpointer_getElement (gp), gpointer_getTemplate (gp), fieldName);
-}
-
-t_buffer *gpointer_getText (t_gpointer *gp, t_symbol *fieldName)
-{
-    return word_getText (gpointer_getElement (gp), gpointer_getTemplate (gp), fieldName);
-}
-
-t_array *gpointer_getArray (t_gpointer *gp, t_symbol *fieldName)
-{
-    return word_getArray (gpointer_getElement (gp), gpointer_getTemplate (gp), fieldName);
-}
-
-void gpointer_setFloat (t_gpointer *gp, t_symbol *fieldName, t_float f)
-{
-    word_setFloat (gpointer_getElement (gp), gpointer_getTemplate (gp), fieldName, f);
-}
-
-void gpointer_setSymbol (t_gpointer *gp, t_symbol *fieldName, t_symbol *s)
-{
-    word_setSymbol (gpointer_getElement (gp), gpointer_getTemplate (gp), fieldName, s);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_float gpointer_getFloatByDescriptor (t_gpointer *gp, t_fielddescriptor *fd)
-{
-    return word_getFloatByDescriptor (gpointer_getElement (gp), gpointer_getTemplate (gp), fd);
-}
-
-void gpointer_setFloatByDescriptor (t_gpointer *gp, t_fielddescriptor *fd, t_float f)
-{
-    word_setFloatByDescriptor (gpointer_getElement (gp), gpointer_getTemplate (gp), fd, f);
-}
-                                                            
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
