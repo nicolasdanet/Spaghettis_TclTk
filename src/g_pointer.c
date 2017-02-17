@@ -49,7 +49,7 @@ typedef struct _ptrobj {
 
 static int pointer_nextSkip (t_gobj *z, t_glist *glist, int wantSelected)
 {
-    if (pd_class (z) != scalar_class) { return 1; }
+    if (pd_class (z) != scalar_class)                             { return 1; }
     else if (wantSelected && !canvas_isObjectSelected (glist, z)) { return 1; }
     else {
         return 0;
@@ -80,7 +80,6 @@ static void pointer_bang (t_pointer *x)
     } 
 }
 
-
 static void pointer_pointer (t_pointer *x, t_gpointer *gp)
 {
     gpointer_setByCopy (&x->x_gpointer, gp);
@@ -95,9 +94,13 @@ static void pointer_pointer (t_pointer *x, t_gpointer *gp)
 static void pointer_sendwindow (t_pointer *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (!gpointer_isValidOrNull (&x->x_gpointer)) { error_invalid (&s_pointer, &s_pointer); }
-    else if (argc && IS_SYMBOL (argv)) {
+    else {
+    //
+    if (argc && IS_SYMBOL (argv)) {
         t_glist *view = canvas_getView (gpointer_getView (&x->x_gpointer));
         pd_message (cast_pd (view), GET_SYMBOL (argv), argc - 1, argv + 1);
+    }
+    //
     }
 }
 
@@ -142,33 +145,23 @@ static void pointer_nextSelected (t_pointer *x, t_float f)
     t_glist *glist = gpointer_getParentScalar (&x->x_gpointer);
 
     if (!wantSelected || canvas_isMapped (glist)) {
-    //
-    t_gobj *z = cast_gobj (gpointer_getScalar (&x->x_gpointer));
-    
-    if (!z) { z = glist->gl_graphics; }
-    else { 
-        z = z->g_next;
-    }
-    
-    while (z && pointer_nextSkip (z, glist, wantSelected)) { z = z->g_next; }
-    
-    if (!z) { gpointer_unset (&x->x_gpointer); outlet_bang (x->x_outletRight); }
-    else {
-        int i;
-        t_symbol *templateIdentifier = scalar_getTemplateIdentifier (cast_scalar (z));
-        
-        gpointer_setAsScalar (&x->x_gpointer, glist, cast_scalar (z));
 
-        for (i = 0; i < x->x_outletTypedSize; i++) {
-            if (x->x_outletTyped[i].to_type == templateIdentifier) {
-                outlet_pointer (x->x_outletTyped[i].to_outlet, &x->x_gpointer); return;
-            }
+        t_gobj *z = cast_gobj (gpointer_getScalar (&x->x_gpointer));
+        
+        if (!z) { z = glist->gl_graphics; }
+        else { 
+            z = z->g_next;
         }
         
-        outlet_pointer (x->x_outletBeforeRight, &x->x_gpointer);
-    }
-    
-    return;
+        while (z && pointer_nextSkip (z, glist, wantSelected)) { z = z->g_next; }
+        
+        if (!z) { gpointer_unset (&x->x_gpointer); outlet_bang (x->x_outletRight); }
+        else {
+            gpointer_setAsScalar (&x->x_gpointer, glist, cast_scalar (z));
+            pointer_bang (x);
+        }
+        
+        return;
     }
     //
     }
