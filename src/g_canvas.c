@@ -105,6 +105,8 @@ static void *subpatch_new (t_symbol *s)
 
 static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
+    int flags = atom_getFloatAtIndex (6, argc, argv);
+    
     glist->gl_valueLeft         = atom_getFloatAtIndex (0, argc, argv);
     glist->gl_valueTop          = atom_getFloatAtIndex (1, argc, argv);
     glist->gl_valueRight        = atom_getFloatAtIndex (2, argc, argv);
@@ -114,7 +116,7 @@ static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     glist->gl_graphMarginLeft   = (int)atom_getFloatAtIndex (7, argc, argv);
     glist->gl_graphMarginTop    = (int)atom_getFloatAtIndex (8, argc, argv);
     
-    canvas_setAsGraphOnParent (glist, (int)atom_getFloatAtIndex (6, argc, argv));
+    canvas_setAsGraphOnParent (glist, flags);
 }
 
 void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)

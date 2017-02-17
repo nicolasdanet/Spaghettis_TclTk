@@ -331,7 +331,22 @@ void canvas_setAsGraphOnParent (t_glist *glist, int flags)
     
     if (glist->gl_graphWidth <= 0)  { glist->gl_graphWidth  = GRAPH_DEFAULT_WIDTH;  }
     if (glist->gl_graphHeight <= 0) { glist->gl_graphHeight = GRAPH_DEFAULT_HEIGHT; }
+    
+    #if PD_WITH_LEGACY
+    
+    if (!isGraphOnParent) {
+    
+        t_float scaleX = canvas_valueForOnePixelX (glist);
+        t_float scaleY = canvas_valueForOnePixelY (glist);
         
+        glist->gl_valueLeft   = (t_float)0.0;
+        glist->gl_valueRight  = PD_ABS (scaleX);
+        glist->gl_valueTop    = (t_float)0.0;
+        glist->gl_valueBottom = PD_ABS (scaleY);
+    }
+    
+    #endif
+    
     if (needToUpdate) {
         if (!glist->gl_isLoading && glist->gl_parent && canvas_isMapped (glist->gl_parent)) {
             gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
