@@ -120,13 +120,15 @@ void audio_vectorInitialize (t_float sampleRate, int totalOfChannelsIn, int tota
 
 void audio_vectorShrinkIn (int totalOfChannelsIn)
 {
-    PD_ASSERT (totalOfChannelsIn <= audio_totalOfChannelsIn); 
+    PD_ASSERT (totalOfChannelsIn <= audio_totalOfChannelsIn);
+    
     audio_totalOfChannelsIn = totalOfChannelsIn;
 }
 
 void audio_vectorShrinkOut (int totalOfChannelsOut)
 {
     PD_ASSERT (totalOfChannelsOut <= audio_totalOfChannelsOut);
+    
     audio_totalOfChannelsOut = totalOfChannelsOut;
 }
 

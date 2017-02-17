@@ -264,7 +264,7 @@ void canvas_disconnect (t_glist *glist,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_requireArray (t_glist *glist)
+static void canvas_requireDialog (t_glist *glist)
 {
     char t[PD_STRING] = { 0 };
     t_symbol *s = utils_getDefaultBindName (garray_class, sym_array);
@@ -908,7 +908,7 @@ void canvas_setup (void)
         A_FLOAT,
         A_NULL);
         
-    class_addMethod (c, (t_method)canvas_requireArray,          sym__array,         A_NULL);
+    class_addMethod (c, (t_method)canvas_requireDialog,         sym__array,         A_NULL);
 
     class_addMethod (c, (t_method)canvas_editmode,              sym_editmode,       A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_close,                 sym_close,          A_DEFFLOAT, A_NULL);
@@ -970,7 +970,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_visible,       sym_vis,               A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_save,          sym_menusave,          A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_saveAs,        sym_menusaveas,        A_DEFFLOAT, A_NULL);    
-    class_addMethod (c, (t_method)canvas_requireArray,  sym_menuarray,         A_NULL);
+    class_addMethod (c, (t_method)canvas_requireDialog, sym_menuarray,         A_NULL);
 
     class_addCreator ((t_newmethod)subpatch_new, sym_page, A_DEFSYMBOL, A_NULL);
 
