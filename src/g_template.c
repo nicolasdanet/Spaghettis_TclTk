@@ -275,6 +275,22 @@ t_glist *template_getInstanceView (t_template *x)
     if (!x->tp_instance) { return NULL; } else { return struct_getView (x->tp_instance); }
 }
 
+t_glist *template_getInstanceViewIfPainters (t_template *x)
+{
+    t_glist *view = template_getInstanceView (x);
+    
+    if (view) {
+    
+        t_gobj *y = NULL;
+        
+        for (y = view->gl_graphics; y; y = y->g_next) {
+            if (class_getPainterWidget (pd_class (y))) { return view; }
+        }
+    }
+    
+    return NULL;
+}
+ 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

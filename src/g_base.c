@@ -175,6 +175,8 @@ void canvas_addObject (t_glist *glist, t_gobj *y)
     
     int needToPaintScalars = class_hasDrawCommand (pd_class (y));
     
+    if (needToPaintScalars) { paint_erase(); }
+    
     y->g_next = NULL;
     
     if (!glist->gl_graphics) { glist->gl_graphics = y; }
@@ -186,7 +188,7 @@ void canvas_addObject (t_glist *glist, t_gobj *y)
     if (glist->gl_editor && (object = cast_objectIfPatchable (y))) { boxtext_new (glist, object); }
     if (canvas_isMapped (canvas_getView (glist))) { gobj_visibilityChanged (y, glist, 1); }
     
-    if (needToPaintScalars) { paint_redraw(); }
+    if (needToPaintScalars) { paint_draw(); }
 }
 
 void canvas_removeObject (t_glist *glist, t_gobj *y)
