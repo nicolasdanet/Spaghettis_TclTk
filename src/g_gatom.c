@@ -311,7 +311,7 @@ static void gatom_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVi
     //
     }
     
-    if (!isVisible) { defer_removeJob ((void *)x); }
+    if (!isVisible) { defer_removeJob ((void *)z); }
 }
 
 static void gatom_functionSave (t_gobj *z, t_buffer *b)
@@ -500,6 +500,8 @@ void gatom_makeObject (t_glist *glist, t_atomtype type, t_symbol *s, int argc, t
 
 static void gatom_free (t_gatom *x)
 {
+    defer_removeJob ((void *)x);
+    
     if (x->a_receive != &s_) { pd_unbind (cast_pd (x), x->a_receive); }
     
     guistub_destroyWithKey ((void *)x);

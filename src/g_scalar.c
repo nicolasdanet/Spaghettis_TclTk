@@ -595,6 +595,8 @@ t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
 
 static void scalar_free (t_scalar *x)
 {
+    defer_removeJob ((void *)x);
+    
     word_free (x->sc_element, scalar_getTemplate (x));
 
     PD_MEMORY_FREE (x->sc_element);

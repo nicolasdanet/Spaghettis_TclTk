@@ -24,9 +24,8 @@ extern t_pdinstance     *pd_this;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define PAINT_REDRAW    0
-#define PAINT_DRAW      1
-#define PAINT_ERASE     2
+#define PAINT_DRAW      0
+#define PAINT_ERASE     1
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -46,9 +45,8 @@ static void paint_proceedAllRecursive (t_glist *glist, int action)
     else {
         if (visible && pd_class (y) == scalar_class) {
             switch (action) {
-                case PAINT_REDRAW   : scalar_redraw (cast_scalar (y), glist);   break;
-                case PAINT_DRAW     : gobj_visibilityChanged (y, glist, 1);     break;
-                case PAINT_ERASE    : gobj_visibilityChanged (y, glist, 0);     break;
+                case PAINT_DRAW  : gobj_visibilityChanged (y, glist, 1); break;
+                case PAINT_ERASE : gobj_visibilityChanged (y, glist, 0); break;
             }
         }
     } 
@@ -61,9 +59,7 @@ static void paint_proceedAll (int action)
     t_glist *glist = NULL;
 
     for (glist = pd_this->pd_roots; glist; glist = glist->gl_next) {
-    //
-    paint_proceedAllRecursive (glist, action);
-    //
+        paint_proceedAllRecursive (glist, action);
     }
 }
 
@@ -80,15 +76,6 @@ void paint_draw (void)
 {
     paint_proceedAll (PAINT_DRAW);
 }
-
-#if 0
-
-void paint_redraw (void)
-{
-    paint_proceedAll (PAINT_REDRAW);
-}
-
-#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

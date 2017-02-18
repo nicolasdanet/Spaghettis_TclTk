@@ -607,6 +607,8 @@ static void garray_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     t_garray *x = (t_garray *)z;
     
     gobj_visibilityChanged (cast_gobj (x->x_scalar), glist, isVisible);
+    
+    if (!isVisible) { defer_removeJob ((void *)z); }
 }
 
 static int garray_behaviorMouse (t_gobj *z,
@@ -766,7 +768,7 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_float size, t_flo
 
 static void garray_free (t_garray *x)
 {
-    defer_removeJob (cast_gobj (x));
+    defer_removeJob ((void *)x);
     guistub_destroyWithKey ((void *)x);
     pd_setBoundA (NULL);
     pd_unbind (cast_pd (x), x->x_name);

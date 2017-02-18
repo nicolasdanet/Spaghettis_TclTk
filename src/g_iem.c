@@ -430,12 +430,15 @@ void iemgui_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
     if (isVisible) { (*x->iem_draw) ((void *)z, glist, IEM_DRAW_NEW); }
     else {
         (*x->iem_draw) ((void *)z, glist, IEM_DRAW_ERASE);
-        defer_removeJob ((void *)z);
     }
+    
+    if (!isVisible) { defer_removeJob ((void *)z); }
 }
 
 void iemgui_behaviorDeleted (t_gobj *z, t_glist *glist)
 {
+    defer_removeJob ((void *)z);
+    
     canvas_deleteLinesByObject (glist, cast_object (z));
 }
 
