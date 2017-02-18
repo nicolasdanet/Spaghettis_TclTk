@@ -409,7 +409,7 @@ static void plot_behaviorGetRectangle (t_gobj *z,
     //
     int i, k = plot_getStep (array);
     
-    t_glist *view = template_getFirstInstanceView (array_getTemplate (array));
+    t_glist *view = template_getInstanceView (array_getTemplate (array));
     
     for (i = 0; i < array_getSize (array); i += k) {
 
@@ -756,7 +756,7 @@ static void plot_behaviorVisibilityChangedRecursive (t_plot *x,
     t_float width, 
     int isVisible)
 {
-    t_glist *view = template_getFirstInstanceView (array_getTemplate (array));
+    t_glist *view = template_getInstanceView (array_getTemplate (array));
     
     if (view) {
     //

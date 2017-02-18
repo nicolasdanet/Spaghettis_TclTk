@@ -169,7 +169,7 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
     int yB = 0;
     
     t_template *template = scalar_getTemplate (x);
-    t_glist *view = template_getFirstInstanceView (template);
+    t_glist *view = template_getInstanceView (template);
     t_float baseX = scalar_getFloat (x, sym_x);
     t_float baseY = scalar_getFloat (x, sym_y);
 
@@ -280,7 +280,7 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     t_scalar *x = cast_scalar (z);
     
     t_template *template = scalar_getTemplate (x);
-    t_glist *view = template_getFirstInstanceView (template);
+    t_glist *view = template_getInstanceView (template);
     t_float baseX = scalar_getFloat (x, sym_x);
     t_float baseY = scalar_getFloat (x, sym_y);
 
@@ -345,7 +345,7 @@ static int scalar_behaviorMouse (t_gobj *z,
     t_scalar *x = cast_scalar (z);
     
     t_template *template = scalar_getTemplate (x);
-    t_glist *view = template_getFirstInstanceView (template);
+    t_glist *view = template_getInstanceView (template);
     
     if (view) {
     //

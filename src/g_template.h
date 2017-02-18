@@ -69,7 +69,7 @@ int         template_getRaw                         (t_template *x,
 
 t_symbol    *template_getFieldAtIndex               (t_template *x, int n);
 t_template  *template_getTemplateIfArrayAtIndex     (t_template *x, int n);
-t_glist     *template_getFirstInstanceView          (t_template *x);
+t_glist     *template_getInstanceView               (t_template *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

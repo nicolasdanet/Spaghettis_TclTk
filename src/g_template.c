@@ -268,14 +268,11 @@ void template_unregisterInstance (t_template *x, t_struct *o)
     template_registerInstance (x, NULL);
 }
 
-t_glist *template_getFirstInstanceView (t_template *x)
+t_glist *template_getInstanceView (t_template *x)
 {
     PD_ASSERT (x);
     
-    if (!x->tp_instance) { return NULL; }
-    else { 
-        return struct_getView (x->tp_instance);
-    }
+    if (!x->tp_instance) { return NULL; } else { return struct_getView (x->tp_instance); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -298,8 +295,6 @@ void template_create (void *dummy, t_symbol *s, int argc, t_atom *argv)
     
     if (template_findByIdentifier (templateIdentifier) == NULL) { 
         template_new (templateIdentifier, argc, argv);
-    } else {
-        // PD_BUG;
     }
     //
     }
@@ -325,7 +320,9 @@ static t_error template_newParse (t_template *x, int *ac, t_atom **av)
         
         #if PD_WITH_LEGACY
         
-        if (type == &s_list) { type = sym_text; }
+        if (type == &s_list) {
+            type = sym_text; 
+        }
             
         #endif
         

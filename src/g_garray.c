@@ -312,7 +312,7 @@ t_array *garray_getArray (t_garray *x)
 {
     #if PD_WITH_DEBUG
     
-    garray_check (x);
+    static int once = 0; if (!once) { garray_check (x); once = 1; }
     
     #endif
     
