@@ -88,13 +88,18 @@ int defer_flushJobs (void)
         while (defer_queue) {
         //
         t_guiqueue *first = defer_queue;
+        
         defer_queue = defer_queue->gq_next;
-        if (canvas_isMapped (first->gq_glist)) { (*first->gq_fn) (first->gq_p, first->gq_glist); }
+        if (canvas_isMapped (first->gq_glist)) {
+            (*first->gq_fn) (first->gq_p, first->gq_glist); 
+        }
+        
         PD_MEMORY_FREE (first);
         //
         }
 
         return 1;
+        
     }
     
     return 0;
