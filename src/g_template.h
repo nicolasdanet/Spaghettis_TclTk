@@ -59,6 +59,7 @@ void        template_unregisterInstance             (t_template *x, t_struct *o)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+int         template_containsArray                  (t_template *x);
 int         template_hasField                       (t_template *x, t_symbol *field);
 int         template_getIndexOfField                (t_template *x, t_symbol *field);
 int         template_getRaw                         (t_template *x,
@@ -68,7 +69,7 @@ int         template_getRaw                         (t_template *x,
                                                             t_symbol **templateIdentifier);
 
 t_symbol    *template_getFieldAtIndex               (t_template *x, int n);
-t_template  *template_getTemplateIfArrayAtIndex     (t_template *x, int n);
+t_template  *template_getTemplateIfArrayAtIndex     (t_template *x, int n);   
 t_glist     *template_getInstanceView               (t_template *x);
 t_glist     *template_getInstanceViewIfPainters     (t_template *x);
 
@@ -80,7 +81,7 @@ int         template_fieldIsFloat                   (t_template *x, t_symbol *fi
 int         template_fieldIsSymbol                  (t_template *x, t_symbol *field);
 int         template_fieldIsText                    (t_template *x, t_symbol *field);
 int         template_fieldIsArray                   (t_template *x, t_symbol *field);
-int         template_fieldIsArrayAndExist           (t_template *x, t_symbol *field);
+int         template_fieldIsArrayAndValid           (t_template *x, t_symbol *field);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

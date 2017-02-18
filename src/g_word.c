@@ -20,10 +20,9 @@
 void word_init (t_word *w, t_template *tmpl, t_gpointer *gp)
 {
     t_dataslot *v = template_getSlots (tmpl);
-    int size = template_getSize (tmpl);
     int i;
     
-    for (i = 0; i < size; i++, v++, w++) {
+    for (i = 0; i < template_getSize (tmpl); i++, v++, w++) {
     //
     int type = v->ds_type;
     

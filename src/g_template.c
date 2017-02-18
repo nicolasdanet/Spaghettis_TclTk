@@ -29,18 +29,18 @@ int template_isValid (t_template *x)
     if (!x) { return 0; }
     else {
     //
-    int i, size = x->tp_size;
     t_dataslot *v = x->tp_slots;
+    int i;
     
-    for (i = 0; i < size; i++, v++) {
+    for (i = 0; i < x->tp_size; i++, v++) {
     //
     if (v->ds_type == DATA_ARRAY) {
-    //
-    t_template *elementTemplate = template_findByIdentifier (v->ds_templateIdentifier);
-    if (!elementTemplate || !template_isValid (elementTemplate)) {
-        return 0;
-    }
-    //
+
+        t_template *y = template_findByIdentifier (v->ds_templateIdentifier);
+        
+        if (!y)     { return 0; }                           /* Element's template must exist. */
+        if (y == x) { return 0; }                           /* Forbid circular dependencies. */
+        if (template_containsArray (y)) { return 0; }       /* Forbid nested arrays. */
     }
     //
     }
@@ -53,6 +53,20 @@ int template_isValid (t_template *x)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+int template_containsArray (t_template *x)
+{
+    t_dataslot *v = x->tp_slots;
+    int i;
+    
+    for (i = 0; i < x->tp_size; i++, v++) { 
+        if (v->ds_type == DATA_ARRAY) { 
+            return 1; 
+        } 
+    }
+    
+    return 0;
+}
 
 int template_hasField (t_template *x, t_symbol *fieldName)
 {
@@ -162,13 +176,15 @@ int template_fieldIsArray (t_template *x, t_symbol *fieldName)
     return 0;
 }
 
-int template_fieldIsArrayAndExist (t_template *x, t_symbol *fieldName)
+int template_fieldIsArrayAndValid (t_template *x, t_symbol *fieldName)
 {
     int i, type; t_symbol *templateIdentifier = NULL;
     
     if (template_getRaw (x, fieldName, &i, &type, &templateIdentifier)) { 
         if (type == DATA_ARRAY) {
-            return (template_findByIdentifier (templateIdentifier) != NULL);
+            int isValid = template_isValid (template_findByIdentifier (templateIdentifier)); 
+            PD_ASSERT (isValid); 
+            return isValid;
         }
     }
     

@@ -237,7 +237,7 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     
     canvas->gl_isDeleting = deletingState;
     
-    glist->gl_uniqueIdentifier = utils_unique();        /* Invalidate pointers. */
+    glist->gl_uniqueIdentifier = utils_unique();        /* Invalidate all pointers. */
 }
 
 void canvas_clear (t_glist *glist)
