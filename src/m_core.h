@@ -16,6 +16,17 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+typedef void (*t_bangmethod)            (t_pd *x);
+typedef void (*t_floatmethod)           (t_pd *x, t_float f);
+typedef void (*t_symbolmethod)          (t_pd *x, t_symbol *s);
+typedef void (*t_listmethod)            (t_pd *x, t_symbol *s, int argc, t_atom *argv);
+typedef void (*t_anythingmethod)        (t_pd *x, t_symbol *s, int argc, t_atom *argv);
+typedef void (*t_pointermethod)         (t_pd *x, t_gpointer *gp);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 typedef void (*t_savefn)                (t_gobj *x, t_buffer *b);
 typedef void (*t_propertiesfn)          (t_gobj *x, t_glist *glist);
 typedef void (*t_drawfn)                (t_gobj *x, t_glist *glist);
@@ -85,65 +96,87 @@ struct _painterwidgetbehavior {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef void (*t_bangmethod)        (t_pd *x);
-typedef void (*t_floatmethod)       (t_pd *x, t_float f);
-typedef void (*t_symbolmethod)      (t_pd *x, t_symbol *s);
-typedef void (*t_listmethod)        (t_pd *x, t_symbol *s, int argc, t_atom *argv);
-typedef void (*t_anythingmethod)    (t_pd *x, t_symbol *s, int argc, t_atom *argv);
-typedef void (*t_pointermethod)     (t_pd *x, t_gpointer *gp);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 typedef struct _entry {
-    t_symbol                *me_name;
-    t_method                me_method;
-    t_atomtype              me_arguments[PD_ARGUMENTS + 1];
+    t_symbol                    *me_name;
+    t_method                    me_method;
+    t_atomtype                  me_arguments[PD_ARGUMENTS + 1];
     } t_entry;
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 struct _class {
-    t_symbol                *c_name;
-    t_symbol                *c_helpName;
-    t_symbol                *c_externalDirectory;
-    t_entry                 *c_methods;
-    int                     c_methodsSize;
-    t_method                c_methodFree;
-    t_bangmethod            c_methodBang;
-    t_floatmethod           c_methodFloat;
-    t_symbolmethod          c_methodSymbol;
-    t_listmethod            c_methodList;
-    t_anythingmethod        c_methodAnything;
-    t_pointermethod         c_methodPointer;
-    t_widgetbehavior        *c_behavior;
-    t_painterwidgetbehavior *c_behaviorPainter;
-    t_savefn                c_fnSave;
-    t_propertiesfn          c_fnProperties;
-    int                     c_signalOffset;
-    char                    c_isBox;
-    char                    c_hasFirstInlet;
-    int                     c_type;
-    size_t                  c_size;
+    t_symbol                    *c_name;
+    t_symbol                    *c_helpName;
+    t_symbol                    *c_externalDirectory;
+    t_entry                     *c_methods;
+    int                         c_methodsSize;
+    t_method                    c_methodFree;
+    t_bangmethod                c_methodBang;
+    t_floatmethod               c_methodFloat;
+    t_symbolmethod              c_methodSymbol;
+    t_listmethod                c_methodList;
+    t_anythingmethod            c_methodAnything;
+    t_pointermethod             c_methodPointer;
+    t_widgetbehavior            *c_behavior;
+    t_painterwidgetbehavior     *c_behaviorPainter;
+    t_savefn                    c_fnSave;
+    t_propertiesfn              c_fnProperties;
+    int                         c_signalOffset;
+    char                        c_isBox;
+    char                        c_hasFirstInlet;
+    int                         c_type;
+    size_t                      c_size;
     };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 struct _pdinstance {
-    t_systime               pd_systime;
-    int                     pd_dspState;
-    int                     pd_dspChainSize;
-    t_int                   *pd_dspChain;
-    t_clock                 *pd_clocks;
-    t_signal                *pd_signals;
-    t_glist                 *pd_roots;
-    t_clock                 *pd_polling;
-    t_clock                 *pd_autorelease;
+    t_systime                   pd_systime;
+    int                         pd_dspState;
+    int                         pd_dspChainSize;
+    t_int                       *pd_dspChain;
+    t_clock                     *pd_clocks;
+    t_signal                    *pd_signals;
+    t_glist                     *pd_roots;
+    t_clock                     *pd_polling;
+    t_clock                     *pd_autorelease;
     };
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+struct _outconnect {
+    struct _outconnect          *oc_next;
+    t_pd                        *oc_to;
+    };
+
+struct _outlet {
+    struct _outlet              *o_next;
+    t_object                    *o_owner;
+    t_outconnect                *o_connections;
+    t_symbol                    *o_symbol;
+    };
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+struct _inlet {
+    t_pd                        i_pd;                   /* MUST be the first. */
+    struct _inlet               *i_next;
+    t_object                    *i_owner;
+    t_pd                        *i_destination;
+    t_symbol                    *i_from;
+    union {
+        t_symbol                *i_to;
+        t_gpointer              *i_pointer;
+        t_float                 *i_float;
+        t_symbol                **i_symbol;
+        t_float                 i_signal;
+    } i_un;
+    };
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -185,6 +218,22 @@ int         stack_setLoadingAbstraction                 (t_symbol *s);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void        instance_destroyScalarsByTemplate           (t_template *tmpl);
+void        instance_addToRoots                         (t_glist *glist);
+void        instance_removeFromRoots                    (t_glist *glist);
+void        instance_freeAllRoots                       (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        message_initialize                          (void);
+void        message_release                             (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void        class_setDefaultExternalDirectory           (t_symbol *s);
 t_method    class_getMethod                             (t_class *c, t_symbol *s);
 int         class_hasMethod                             (t_class *c, t_symbol *s);
@@ -208,6 +257,45 @@ char        *class_getExternalDirectoryAsString         (t_class *c);
 
 t_painterwidgetbehavior *class_getPainterWidget         (t_class *c);
 t_propertiesfn          class_getPropertiesFunction     (t_class *c);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        autorelease_run                             (void);
+void        autorelease_stop                            (void);
+void        autorelease_drain                           (void);
+void        autorelease_add                             (t_pd *x);
+void        autorelease_proceed                         (t_pd *x);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        poll_run                                    (void);
+void        poll_stop                                   (void);
+void        poll_add                                    (t_pd *x);
+void        poll_remove                                 (t_pd *x);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_inlet     *inlet_new                                  (t_object *owner,
+                                                            t_pd *dest,
+                                                            t_symbol *s1,
+                                                            t_symbol *s2);
+
+t_inlet     *inlet_newSignalDefault                     (t_object *owner, t_float f);
+
+void        inlet_free                                  (t_inlet *x);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        outlet_free                                 (t_outlet *x);
+int         outlet_isSignal                             (t_outlet *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -237,26 +325,6 @@ t_outconnect    *object_traverseOutletNext              (t_outconnect *last,
                                                             int *n);
 
 t_float     *object_getSignalValueAtIndex               (t_object *x, int m);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_inlet     *inlet_new                                  (t_object *owner,
-                                                            t_pd *dest,
-                                                            t_symbol *s1,
-                                                            t_symbol *s2);
-
-t_inlet     *inlet_newSignalDefault                     (t_object *owner, t_float f);
-
-void        inlet_free                                  (t_inlet *x);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void        outlet_free                                 (t_outlet *x);
-int         outlet_isSignal                             (t_outlet *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -326,6 +394,13 @@ void        buffer_fileOpen                             (void *dummy, t_symbol *
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void        setup_initialize                            (void);
+void        setup_release                               (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_symbol    *dollar_toHash                              (t_symbol *s);
 t_symbol    *dollar_fromHash                            (t_symbol *s);
 
@@ -361,49 +436,6 @@ void        dollar_copyExpandAtoms                      (t_atom *src,
 
 t_symbol    *dollar_expandGetIfSymbolByEnvironment      (t_atom *a, t_glist *glist);
 t_symbol    *dollar_expandGetIfSymbol                   (t_atom *a, int argc, t_atom *argv, t_glist *glist);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void        instance_destroyScalarsByTemplate           (t_template *tmpl);
-
-void        instance_addToRoots                         (t_glist *glist);
-void        instance_removeFromRoots                    (t_glist *glist);
-void        instance_freeAllRoots                       (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void        autorelease_run                             (void);
-void        autorelease_stop                            (void);
-void        autorelease_drain                           (void);
-void        autorelease_add                             (t_pd *x);
-void        autorelease_proceed                         (t_pd *x);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void        poll_run                                    (void);
-void        poll_stop                                   (void);
-void        poll_add                                    (t_pd *x);
-void        poll_remove                                 (t_pd *x);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void        setup_initialize                            (void);
-void        setup_release                               (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void        message_initialize                          (void);
-void        message_release                             (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

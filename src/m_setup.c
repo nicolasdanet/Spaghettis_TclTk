@@ -91,6 +91,7 @@ void getsize_setup          (void);
 void global_setup           (void);
 void guiconnect_setup       (void);
 void guistub_setup          (void);
+void inlet_setup            (void);
 void int_setup              (void);
 void key_setup              (void);
 void keyname_setup          (void);
@@ -120,7 +121,6 @@ void netreceive_setup       (void);
 void netsend_setup          (void);
 void notein_setup           (void);
 void noteout_setup          (void);
-void object_setup           (void);
 void openpanel_setup        (void);
 void oscformat_setup        (void);
 void oscparse_setup         (void);
@@ -301,6 +301,7 @@ void getsize_destroy            (void);
 void global_destroy             (void);
 void guiconnect_destroy         (void);
 void guistub_destroy            (void);
+void inlet_destroy              (void);
 void int_destroy                (void);
 void key_destroy                (void);
 void keyname_destroy            (void);
@@ -329,7 +330,6 @@ void netreceive_destroy         (void);
 void netsend_destroy            (void);
 void notein_destroy             (void);
 void noteout_destroy            (void);
-void object_destroy             (void);
 void openpanel_destroy          (void);
 void oscformat_destroy          (void);
 void oscparse_destroy           (void);
@@ -898,7 +898,7 @@ void setup_initialize (void)
     /* Then setup native classes. */
     
     global_setup();
-    object_setup();
+    inlet_setup();
     setup_setup();
     
     /* At last instantiate the invisible patches required. */
@@ -924,7 +924,7 @@ void setup_release (void)
     /* Destroy the native classes. */
     
     setup_destroy(); 
-    object_destroy();
+    inlet_destroy();
     global_destroy();
     
     /* Various cleaning (reverse order). */

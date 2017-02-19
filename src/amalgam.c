@@ -25,6 +25,8 @@
 #include "m_class.c"
 #include "m_autorelease.c"
 #include "m_poll.c"
+#include "m_inlet.c"
+#include "m_outlet.c"
 #include "m_object.c"
 #include "m_atom.c"
 #include "m_buffer.c"
