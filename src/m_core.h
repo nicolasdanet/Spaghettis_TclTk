@@ -368,7 +368,7 @@ t_symbol    *dollar_expandGetIfSymbol                   (t_atom *a, int argc, t_
 
 void        instance_addToRoots                         (t_glist *glist);
 void        instance_removeFromRoots                    (t_glist *glist);
-void        instance_removeAllFromRoots                 (void);
+void        instance_freeAllRoots                       (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

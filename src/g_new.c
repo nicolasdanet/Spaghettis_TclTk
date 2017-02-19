@@ -44,7 +44,7 @@ static void canvas_makeIemObject (t_glist *glist, t_symbol *name)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_makeGraphWithArray (t_glist *glist, t_symbol *name, t_float size, t_float flags)
+void canvas_fromArrayDialog (t_glist *glist, t_symbol *name, t_float size, t_float flags)
 {
     t_float n = (t_float)PD_MAX (1.0, size);
     int positionX = 0;

@@ -402,7 +402,7 @@ void            canvas_destroyEditorIfAny               (t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            canvas_makeGraphWithArray               (t_glist *glist,
+void            canvas_fromArrayDialog                  (t_glist *glist,
                                                             t_symbol *name,
                                                             t_float size,
                                                             t_float flags);

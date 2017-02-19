@@ -85,7 +85,7 @@ void instance_removeFromRoots (t_glist *glist)
 
 /* At release close remaining (i.e. NOT dirty) and invisible patches. */
 
-void instance_removeAllFromRoots (void)
+void instance_freeAllRoots (void)
 {    
     while (1) {
     //

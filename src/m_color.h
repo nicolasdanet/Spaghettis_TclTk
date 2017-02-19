@@ -31,6 +31,7 @@ t_color     color_withEncodedSymbol     (t_symbol *s);
 #pragma mark -
 
 t_symbol    *color_toEncodedSymbol      (t_color color);
+
 t_error     color_toEncodedString       (char *dest, size_t size, t_color color);
 
 // -----------------------------------------------------------------------------------------------------------

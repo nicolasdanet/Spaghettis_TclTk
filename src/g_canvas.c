@@ -266,7 +266,7 @@ void canvas_disconnect (t_glist *glist,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_requireDialog (t_glist *glist)
+static void canvas_requireArrayDialog (t_glist *glist)
 {
     char t[PD_STRING] = { 0 };
     t_symbol *s = utils_getDefaultBindName (garray_class, sym_array);
@@ -902,15 +902,8 @@ void canvas_setup (void)
         A_SYMBOL,
         A_DEFFLOAT,
         A_NULL);
-    
-    class_addMethod (c, (t_method)canvas_makeGraphWithArray,
-        sym__arraydialog,
-        A_SYMBOL,
-        A_FLOAT,
-        A_FLOAT,
-        A_NULL);
-        
-    class_addMethod (c, (t_method)canvas_requireDialog,         sym__array,         A_NULL);
+            
+    class_addMethod (c, (t_method)canvas_requireArrayDialog,    sym__array,         A_NULL);
 
     class_addMethod (c, (t_method)canvas_editmode,              sym_editmode,       A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_close,                 sym_close,          A_DEFFLOAT, A_NULL);
@@ -947,6 +940,13 @@ void canvas_setup (void)
         A_FLOAT,
         A_FLOAT,
         A_NULL);
+    
+    class_addMethod (c, (t_method)canvas_fromArrayDialog,
+        sym__arraydialog,
+        A_SYMBOL,
+        A_FLOAT,
+        A_FLOAT,
+        A_NULL);
         
     class_addMethod (c, (t_method)canvas_fromPopupDialog,
         sym__popupdialog,
@@ -962,17 +962,17 @@ void canvas_setup (void)
    
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)canvas_open,          sym_menu__dash__open,  A_NULL);
-    class_addMethod (c, (t_method)canvas_close,         sym_menuclose,         A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_makeComment,   sym_text,              A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_makeToggle,    sym_toggle,            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_makeVu,        sym_vumeter,           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_makePanel,     sym_mycnv,             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_makeDial,      sym_numbox,            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_visible,       sym_vis,               A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_save,          sym_menusave,          A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_saveAs,        sym_menusaveas,        A_DEFFLOAT, A_NULL);    
-    class_addMethod (c, (t_method)canvas_requireDialog, sym_menuarray,         A_NULL);
+    class_addMethod (c, (t_method)canvas_open,                  sym_menu__dash__open,   A_NULL);
+    class_addMethod (c, (t_method)canvas_close,                 sym_menuclose,          A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_makeComment,           sym_text,               A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_makeToggle,            sym_toggle,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_makeVu,                sym_vumeter,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_makePanel,             sym_mycnv,              A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_makeDial,              sym_numbox,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_visible,               sym_vis,                A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_save,                  sym_menusave,           A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_saveAs,                sym_menusaveas,         A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_requireArrayDialog,    sym_menuarray,          A_NULL);
 
     class_addCreator ((t_newmethod)subpatch_new, sym_page, A_DEFSYMBOL, A_NULL);
 

@@ -912,7 +912,7 @@
 			name = Osc;
 			sourceTree = "<group>";
 		};
-		3715DB131E560F7D002B5FB7 /* Accessors */ = {
+		3715DB131E560F7D002B5FB7 /* Objects */ = {
 			isa = PBXGroup;
 			children = (
 				378971D31C4F716700263434 /* g_pointer.c */,
@@ -922,18 +922,11 @@
 				37D6430D1D47944400071C3C /* g_getsize.c */,
 				37D642F21D4793A800071C3C /* g_setsize.c */,
 				37D642BB1D47924100071C3C /* g_append.c */,
-			);
-			name = Accessors;
-			sourceTree = "<group>";
-		};
-		3715DB171E560FF6002B5FB7 /* Painters */ = {
-			isa = PBXGroup;
-			children = (
 				379C1BAF1D37954000C4D92C /* g_drawpolygon.c */,
 				379C1B711D37934500C4D92C /* g_plot.c */,
 				379C1B3F1D3790C200C4D92C /* g_drawnumber.c */,
 			);
-			name = Painters;
+			name = Objects;
 			sourceTree = "<group>";
 		};
 		371655471BA3451000ABDE22 /* PortAudio */ = {
@@ -1019,7 +1012,6 @@
 		3716D99C1DAA484F00FDC632 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				37978A1C1D742E070055E010 /* m_utils.h */,
 				37128B5F1D43691300EFB4FC /* m_color.h */,
 				378971E61C4F716700263434 /* m_utils.c */,
 				37A7BBF21D030B45000C7AB5 /* m_string.c */,
@@ -1037,6 +1029,7 @@
 				378971E31C4F716700263434 /* m_core.h */,
 				378971D71C4F716700263434 /* m_alloca.h */,
 				37D5E4271D746170004CB497 /* m_error.h */,
+				37978A1C1D742E070055E010 /* m_utils.h */,
 				3791F2E11CDF064000F7481C /* m_symbols.h */,
 				3791F2E01CDF064000F7481C /* m_symbols.c */,
 				37F182091C70DBF8003D1A3A /* m_instance.c */,
@@ -1146,6 +1139,20 @@
 				37A59CDC1C538B4800FBD0AD /* Audio */,
 			);
 			name = API;
+			sourceTree = "<group>";
+		};
+		3735D9701E5995B300858959 /* Objects */ = {
+			isa = PBXGroup;
+			children = (
+				377899A41CFED7B60056BE61 /* g_message.c */,
+				378971D11C4F716700263434 /* g_text.c */,
+				372220551D884C6B0045BC57 /* g_table.c */,
+				377899DC1CFEDB5B0056BE61 /* g_gatom.c */,
+				378971BF1C4F716700263434 /* g_garray.c */,
+				3720EBB41D239650001675BD /* g_vinlet.c */,
+				3720EBB51D239650001675BD /* g_voutlet.c */,
+			);
+			name = Objects;
 			sourceTree = "<group>";
 		};
 		374905C71D99702300377F1E /* Flow */ = {
@@ -1424,13 +1431,7 @@
 				378971C11C4F716700263434 /* g_canvas.c */,
 				37BA30811CD1DB0F0091113F /* g_object.c */,
 				378971CE1C4F716700263434 /* g_box.c */,
-				377899A41CFED7B60056BE61 /* g_message.c */,
-				378971D11C4F716700263434 /* g_text.c */,
-				372220551D884C6B0045BC57 /* g_table.c */,
-				377899DC1CFEDB5B0056BE61 /* g_gatom.c */,
-				378971BF1C4F716700263434 /* g_garray.c */,
-				3720EBB41D239650001675BD /* g_vinlet.c */,
-				3720EBB51D239650001675BD /* g_voutlet.c */,
+				3735D9701E5995B300858959 /* Objects */,
 			);
 			name = Canvas;
 			sourceTree = "<group>";
@@ -1451,8 +1452,7 @@
 				378971CF1C4F716700263434 /* g_scalar.c */,
 				371430B01D0D46BC00E68D11 /* g_paint.c */,
 				374A76321CF5FA81001A57EB /* g_serialize.c */,
-				3715DB131E560F7D002B5FB7 /* Accessors */,
-				3715DB171E560FF6002B5FB7 /* Painters */,
+				3715DB131E560F7D002B5FB7 /* Objects */,
 			);
 			name = Scalars;
 			sourceTree = "<group>";
