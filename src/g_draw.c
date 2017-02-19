@@ -341,7 +341,7 @@ static void canvas_drawInletsAndOutlets (t_glist *glist,
     
     for (i = 0; i < m; i++) {
     //
-    int offset = a + INLET_OFFSET ((c - a), i, m);
+    int offset = a + inlet_offset ((c - a), i, m);
     
     if (create) {
         sys_vGui (".x%lx.c create rectangle %d %d %d %d -tags %sINLET%d\n",
@@ -367,7 +367,7 @@ static void canvas_drawInletsAndOutlets (t_glist *glist,
     
     for (i = 0; i < n; i++) {
     //
-    int offset = a + INLET_OFFSET ((c - a), i, n);
+    int offset = a + inlet_offset ((c - a), i, n);
     
     if (create) {
         sys_vGui (".x%lx.c create rectangle %d %d %d %d -tags %sOUTLET%d\n",

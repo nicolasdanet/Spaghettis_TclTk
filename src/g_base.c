@@ -334,8 +334,8 @@ void canvas_setAsGraphOnParent (t_glist *glist, int flags)
         glist->gl_isGraphOnParent = 1;
     }
     
-    if (glist->gl_graphWidth <= 0)  { glist->gl_graphWidth  = GRAPH_DEFAULT_WIDTH;  }
-    if (glist->gl_graphHeight <= 0) { glist->gl_graphHeight = GRAPH_DEFAULT_HEIGHT; }
+    if (glist->gl_graphWidth <= 0)  { glist->gl_graphWidth  = GRAPH_WIDTH;  }
+    if (glist->gl_graphHeight <= 0) { glist->gl_graphHeight = GRAPH_HEIGHT; }
     
     #if PD_WITH_LEGACY
     
@@ -545,7 +545,7 @@ void canvas_getLastMotionCoordinates (t_glist *glist, int *a, int *b)
 {
     if (canvas_lastCanvas == glist) { *a = canvas_lastCanvasX; *b = canvas_lastCanvasY; } 
     else {
-        *a = GRAPH_DEFAULT_X; *b = GRAPH_DEFAULT_Y;
+        *a = GRAPH_X; *b = GRAPH_Y;
     }
 }
 
@@ -678,7 +678,7 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
             int i = t->tr_srcIndexOfOutlet;
             int j = t->tr_srcNumberOfOutlets;
         
-            t->tr_lineStartX = t->tr_srcTopLeftX + INLET_MIDDLE (w, i, j);
+            t->tr_lineStartX = t->tr_srcTopLeftX + inlet_middle (w, i, j);
             t->tr_lineStartY = t->tr_srcBottomRightY;
         }
         {
@@ -686,7 +686,7 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
             int i = t->tr_destIndexOfInlet;
             int j = t->tr_destNumberOfInlets;
         
-            t->tr_lineEndX = t->tr_destTopLeftX + INLET_MIDDLE (w, i, j);
+            t->tr_lineEndX = t->tr_destTopLeftX + inlet_middle (w, i, j);
             t->tr_lineEndY = t->tr_destTopLeftY;
         }
         

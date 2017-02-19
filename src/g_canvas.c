@@ -686,19 +686,19 @@ t_glist *canvas_newGraphOnParent (t_glist *glist,
     
     if (valueStart >= valueEnd || valueUp == valueDown) {
     //
-    valueStart  = (t_float)GRAPH_DEFAULT_START;
-    valueEnd    = (t_float)GRAPH_DEFAULT_END;
-    valueUp     = (t_float)GRAPH_DEFAULT_UP;
-    valueDown   = (t_float)GRAPH_DEFAULT_DOWN;
+    valueStart  = (t_float)GRAPH_START;
+    valueEnd    = (t_float)GRAPH_END;
+    valueUp     = (t_float)GRAPH_UP;
+    valueDown   = (t_float)GRAPH_DOWN;
     //
     }
     
     if (topLeftX >= bottomRightX || topLeftY >= bottomRightY) {
     //
-    topLeftX     = GRAPH_DEFAULT_X;
-    topLeftY     = GRAPH_DEFAULT_Y;
-    bottomRightX = topLeftX + GRAPH_DEFAULT_WIDTH;
-    bottomRightY = topLeftY + GRAPH_DEFAULT_HEIGHT;
+    topLeftX     = GRAPH_X;
+    topLeftY     = GRAPH_Y;
+    bottomRightX = topLeftX + GRAPH_WIDTH;
+    bottomRightY = topLeftY + GRAPH_HEIGHT;
     //
     }
         

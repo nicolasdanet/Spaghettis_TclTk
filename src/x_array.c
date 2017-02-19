@@ -100,7 +100,7 @@ static void *arraydefine_new (t_symbol *s, int argc, t_atom *argv)
     t_glist *x = NULL;
     
     t_symbol *name = &s_;
-    t_float size   = (t_float)GRAPH_DEFAULT_END;
+    t_float size   = (t_float)GRAPH_END;
     t_float down   = (t_float)0.0;
     t_float up     = (t_float)0.0;
     int keep = 0;
@@ -126,7 +126,7 @@ static void *arraydefine_new (t_symbol *s, int argc, t_atom *argv)
         }
     }
     
-    if (down == up) { down = (t_float)GRAPH_DEFAULT_DOWN; up = (t_float)GRAPH_DEFAULT_UP; }
+    if (down == up) { down = (t_float)GRAPH_DOWN; up = (t_float)GRAPH_UP; }
     
     if (!error__options (s, argc, argv)) {
     //

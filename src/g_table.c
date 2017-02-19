@@ -32,7 +32,7 @@ void *table_makeObject (t_symbol *name, t_float down, t_float up, t_float size, 
     t_atom a[6];
     
     if (name == &s_) { name = utils_getDefaultBindName (garray_class, sym_table); }
-    if (size < 1.0)  { size = (t_float)GRAPH_DEFAULT_END; }
+    if (size < 1.0)  { size = (t_float)GRAPH_END; }
     
     SET_FLOAT  (a + 0, (t_float)0.0);
     SET_FLOAT  (a + 1, WINDOW_HEADER);
@@ -48,14 +48,14 @@ void *table_makeObject (t_symbol *name, t_float down, t_float up, t_float size, 
     x->gl_parent = z;
 
     y = canvas_newGraphOnParent (x,
-            (t_float)GRAPH_DEFAULT_START,
+            (t_float)GRAPH_START,
             (t_float)up,
             (t_float)size,
             (t_float)down,
-            (t_float)GRAPH_DEFAULT_X,
-            (t_float)GRAPH_DEFAULT_Y,
-            (t_float)GRAPH_DEFAULT_X + GRAPH_DEFAULT_WIDTH,
-            (t_float)GRAPH_DEFAULT_Y + GRAPH_DEFAULT_HEIGHT);
+            (t_float)GRAPH_X,
+            (t_float)GRAPH_Y,
+            (t_float)GRAPH_X + GRAPH_WIDTH,
+            (t_float)GRAPH_Y + GRAPH_HEIGHT);
 
     garray_makeObject (y, name, size, flags);
 
@@ -69,8 +69,8 @@ void *table_makeObject (t_symbol *name, t_float down, t_float up, t_float size, 
 static void *table_new (t_symbol *name, t_float size)
 {
     return table_makeObject (name,
-                (t_float)GRAPH_DEFAULT_DOWN,
-                (t_float)GRAPH_DEFAULT_UP,
+                (t_float)GRAPH_DOWN,
+                (t_float)GRAPH_UP,
                 size,
                 (t_float)0.0);
 }

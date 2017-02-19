@@ -97,8 +97,8 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
     
     if (numberOfOutlets && numberOfInlets) {
     //
-    int closest1 = INLET_NEXTTO (previousX, a, c, numberOfOutlets);
-    int closest2 = INLET_NEXTTO (positionX, m, o, numberOfInlets);
+    int closest1 = inlet_nearby (previousX, a, c, numberOfOutlets);
+    int closest2 = inlet_nearby (positionX, m, o, numberOfInlets);
     
     PD_ASSERT (closest1 >= 0 && closest1 < numberOfOutlets);
     PD_ASSERT (closest2 >= 0 && closest2 < numberOfInlets);
@@ -113,9 +113,9 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
         
         sys_vGui (".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
                         canvas_getView (glist),
-                        a + INLET_MIDDLE ((c - a), closest1, numberOfOutlets),
+                        a + inlet_middle ((c - a), closest1, numberOfOutlets),
                         d,
-                        m + INLET_MIDDLE ((o - m), closest2, numberOfInlets),
+                        m + inlet_middle ((o - m), closest2, numberOfInlets),
                         n,
                         (object_isSignalOutlet (object1, closest1) ? 2 : 1),
                         connection);
@@ -283,8 +283,8 @@ static int canvas_proceedMouseHitOutlets (t_object *object,
     
     if (numberOfOutlets && (positionY >= d - EDITOR_GRIP_SIZE)) {
     //
-    int closest = INLET_NEXTTO (positionX, a, c, numberOfOutlets);
-    int hotspot = a + INLET_MIDDLE ((c - a), closest, numberOfOutlets);
+    int closest = inlet_nearby (positionX, a, c, numberOfOutlets);
+    int hotspot = a + inlet_middle ((c - a), closest, numberOfOutlets);
 
     PD_ASSERT (closest >= 0 && closest < numberOfOutlets);
     

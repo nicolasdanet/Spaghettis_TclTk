@@ -105,6 +105,7 @@ void instance_freeAllRoots (void)
 
 void instance_destroyScalarsByTemplate (t_template *template)
 {
+    /*
     t_glist *glist = pd_this->pd_roots;
     
     while (glist) {
@@ -113,6 +114,7 @@ void instance_destroyScalarsByTemplate (t_template *template)
     glist = glist->gl_next;
     //
     }
+    */
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -56,14 +56,14 @@ void canvas_fromArrayDialog (t_glist *glist, t_symbol *name, t_float size, t_flo
     canvas_getLastMotionCoordinates (glist, &positionX, &positionY);
         
     g = canvas_newGraphOnParent (glist, 
-            (t_float)GRAPH_DEFAULT_START,
-            (t_float)GRAPH_DEFAULT_UP,
+            (t_float)GRAPH_START,
+            (t_float)GRAPH_UP,
             n,
-            (t_float)GRAPH_DEFAULT_DOWN,
+            (t_float)GRAPH_DOWN,
             (t_float)positionX,
             (t_float)positionY,
-            (t_float)(positionX + GRAPH_DEFAULT_WIDTH),
-            (t_float)(positionY + GRAPH_DEFAULT_HEIGHT));
+            (t_float)(positionX + GRAPH_WIDTH),
+            (t_float)(positionY + GRAPH_HEIGHT));
     
     garray_makeObject (g, dollar_fromHash (name), n, flags);
     canvas_dirty (glist, 1);
