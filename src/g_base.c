@@ -20,6 +20,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_class              *text_class;
+extern t_class              *struct_class;
 extern t_class              *canvas_class;
 extern t_class              *vinlet_class;
 extern t_class              *voutlet_class;
@@ -202,7 +203,9 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     int deletingState        = canvas->gl_isDeleting;
     
     canvas->gl_isDeleting = 1;
-        
+    
+    needToPaintScalars |= (pd_class (y) == struct_class);
+    
     if (glist->gl_editor) {
     //
     if (glist->gl_editor->e_grabbed == y)   { glist->gl_editor->e_grabbed = NULL; }

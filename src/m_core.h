@@ -366,6 +366,8 @@ t_symbol    *dollar_expandGetIfSymbol                   (t_atom *a, int argc, t_
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void        instance_destroyScalarsByTemplate           (t_template *tmpl);
+
 void        instance_addToRoots                         (t_glist *glist);
 void        instance_removeFromRoots                    (t_glist *glist);
 void        instance_freeAllRoots                       (void);

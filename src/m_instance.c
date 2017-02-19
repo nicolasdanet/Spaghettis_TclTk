@@ -93,9 +93,24 @@ void instance_freeAllRoots (void)
     
     if (glist == NULL) { break; }
     else {
-        pd_free (cast_pd (glist)); 
-        if (glist == pd_this->pd_roots) { PD_BUG; break; }      /* Not removed? */
+        pd_free (cast_pd (glist)); if (glist == pd_this->pd_roots) { PD_BUG; break; }   /* Not removed? */
     }
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void instance_destroyScalarsByTemplate (t_template *template)
+{
+    t_glist *glist = pd_this->pd_roots;
+    
+    while (glist) {
+    //
+    post_log ("? %s / %s", template_getTemplateIdentifier (template)->s_name, canvas_getName (glist)->s_name);
+    glist = glist->gl_next;
     //
     }
 }
