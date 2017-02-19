@@ -103,7 +103,15 @@ struct _glist {
 
 void            canvas_newPatch                         (void *dummy, t_symbol *name, t_symbol *directory);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_symbol        *canvas_expandDollar                    (t_glist *glist, t_symbol *s);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 t_glist         *canvas_getCurrent                      (void);
 t_glist         *canvas_getRoot                         (t_glist *glist);
@@ -112,6 +120,17 @@ t_glist         *canvas_getView                         (t_glist *glist);
 t_symbol        *canvas_getName                         (t_glist *glist);
 
 void            canvas_setName                          (t_glist *glist, t_symbol *name);
+int             canvas_canHaveWindow                    (t_glist *glist);
+int             canvas_isMapped                         (t_glist *glist);
+int             canvas_isRoot                           (t_glist *glist);
+int             canvas_isAbstraction                    (t_glist *glist);
+int             canvas_isSubpatch                       (t_glist *glist);
+int             canvas_isDirty                          (t_glist *glist);
+int             canvas_isGraph                          (t_glist *glist);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void            canvas_makeTextObject                   (t_glist *glist, 
                                                             int positionX, 
@@ -125,15 +144,9 @@ void            canvas_addObject                        (t_glist *glist, t_gobj 
 void            canvas_removeObject                     (t_glist *glist, t_gobj *y);
 void            canvas_clear                            (t_glist *glist);
 
-void            canvas_setAsGraphOnParent               (t_glist *glist, int flags);
-int             canvas_canHaveWindow                    (t_glist *glist);
-
-int             canvas_isMapped                         (t_glist *glist);
-int             canvas_isRoot                           (t_glist *glist);
-int             canvas_isAbstraction                    (t_glist *glist);
-int             canvas_isSubpatch                       (t_glist *glist);
-int             canvas_isDirty                          (t_glist *glist);
-int             canvas_isGraph                          (t_glist *glist);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 int             canvas_openFileExist                    (t_glist *glist,
                                                             const char *name,
@@ -178,6 +191,7 @@ t_outconnect    *canvas_traverseLinesNext               (t_linetraverser *t);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void            canvas_redraw                           (t_glist *glist);
 void            canvas_redrawGraphOnParent              (t_glist *glist);
@@ -235,6 +249,7 @@ void            canvas_setMotionFunction                (t_glist *glist,
                                     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void            canvas_createEditorIfNone               (t_glist *glist);
 void            canvas_destroyEditorIfAny               (t_glist *glist);
@@ -301,6 +316,7 @@ t_float         canvas_valueForOnePixelY                (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 t_glist         *canvas_newGraphOnParent                (t_glist *glist,
                                                             t_float valueStart,

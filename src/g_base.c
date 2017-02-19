@@ -315,51 +315,6 @@ void canvas_makeTextObject (t_glist *glist,
     stack_pop (cast_pd (glist));
 }
 
-void canvas_setAsGraphOnParent (t_glist *glist, int flags)
-{
-    int isGraphOnParent = (flags & 1) != 0;
-    int hideText        = (flags & 2) != 0;
-    int needToUpdate    = isGraphOnParent || (!isGraphOnParent && glist->gl_isGraphOnParent);
-    
-    if (needToUpdate) {
-        if (!glist->gl_isLoading && glist->gl_parent && canvas_isMapped (glist->gl_parent)) {
-            gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 0);
-        }
-    }
-    
-    glist->gl_hideText = hideText;
-    
-    if (!isGraphOnParent) { glist->gl_isGraphOnParent = 0; } 
-    else {
-        glist->gl_isGraphOnParent = 1;
-    }
-    
-    if (glist->gl_graphWidth <= 0)  { glist->gl_graphWidth  = GRAPH_WIDTH;  }
-    if (glist->gl_graphHeight <= 0) { glist->gl_graphHeight = GRAPH_HEIGHT; }
-    
-    #if PD_WITH_LEGACY
-    
-    if (!isGraphOnParent) {
-    
-        t_float scaleX = canvas_valueForOnePixelX (glist);
-        t_float scaleY = canvas_valueForOnePixelY (glist);
-        
-        glist->gl_valueLeft   = (t_float)0.0;
-        glist->gl_valueRight  = PD_ABS (scaleX);
-        glist->gl_valueTop    = (t_float)0.0;
-        glist->gl_valueBottom = PD_ABS (scaleY);
-    }
-    
-    #endif
-    
-    if (needToUpdate) {
-        if (!glist->gl_isLoading && glist->gl_parent && canvas_isMapped (glist->gl_parent)) {
-            gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
-            canvas_updateLinesByObject (glist->gl_parent, cast_object (glist));
-        }
-    }
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
