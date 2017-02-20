@@ -54,7 +54,7 @@ void plot_release           (void);
 
 void acoustic_setup         (void);
 void append_setup           (void);
-void arraydefine_setup      (void);
+void array_setup            (void);
 void arrayget_setup         (void);
 void arraymax_setup         (void);
 void arraymin_setup         (void);
@@ -155,7 +155,6 @@ void struct_setup           (void);
 void swap_setup             (void);
 void symbol_setup           (void);
 void sysexin_setup          (void);
-void table_setup            (void);
 void tabread_setup          (void);
 void tabread4_setup         (void);
 void tabwrite_setup         (void);
@@ -263,7 +262,6 @@ void zero_tilde_setup       (void);
 
 void acoustic_destroy           (void);
 void append_destroy             (void);
-void arraydefine_destroy        (void);
 void arrayget_destroy           (void);
 void arraymax_destroy           (void);
 void arraymin_destroy           (void);
@@ -472,7 +470,7 @@ void setup_setup (void)
 {
     acoustic_setup();
     append_setup();
-    arraydefine_setup();
+    array_setup();
     arrayget_setup();
     arraymax_setup();
     arraymin_setup();
@@ -571,7 +569,6 @@ void setup_setup (void)
     swap_setup();
     symbol_setup();
     sysexin_setup();
-    table_setup();
     tabread_setup();
     tabread4_setup();
     tabwrite_setup();
@@ -673,7 +670,6 @@ void setup_destroy (void)
 {
     acoustic_destroy();
     append_destroy();
-    arraydefine_destroy();
     arrayget_destroy();
     arraymax_destroy();
     arraymin_destroy();

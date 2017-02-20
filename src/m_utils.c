@@ -215,7 +215,6 @@ t_symbol *utils_stripTemplateIdentifier (t_symbol *s)
 
 int utils_isNameAllowedForWindow (t_symbol *s)
 {
-    if (s == sym_Array)     { return 0; }
     if (s == sym_Patch)     { return 0; }
     if (s == sym_Scalar)    { return 0; }
     if (s == sym_Text)      { return 0; }

@@ -536,9 +536,6 @@ static void canvas_functionSave (t_gobj *x, t_buffer *b)
     int needToSaveContents = 1;
     
     if (canvas_isAbstraction (cast_glist (x))) { needToSaveContents = 0; }
-    else {                                                             
-        if (utils_getFirstAtomOfObjectAsSymbol (cast_object (x)) == sym_table) { needToSaveContents = 0; }
-    }
 
     if (needToSaveContents) { 
         canvas_serialize (cast_glist (x), b);

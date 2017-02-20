@@ -25,7 +25,6 @@ extern t_class              *struct_class;
 extern t_class              *canvas_class;
 extern t_class              *vinlet_class;
 extern t_class              *voutlet_class;
-extern t_class              *arraydefine_class;
 extern t_pd                 *pd_newest;
 extern t_pdinstance         *pd_this;
 
@@ -47,7 +46,7 @@ t_glist *cast_glistChecked (t_pd *x)
 {
     t_class *c = pd_class (x);
     
-    if (c == canvas_class || c == arraydefine_class) { return cast_glist (x); }
+    if (c == canvas_class) { return cast_glist (x); }
     else {
         return NULL;
     }
