@@ -151,7 +151,6 @@
 #include "x_listlength.c"
 #include "x_listfromsymbol.c"
 #include "x_listtosymbol.c"
-#include "x_scalar.c"
 #include "x_text.c"
 #include "x_textget.c"
 #include "x_textset.c"
