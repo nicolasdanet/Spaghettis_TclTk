@@ -1276,6 +1276,22 @@
 			name = Convert;
 			sourceTree = "<group>";
 		};
+		3777AEA71E5B2844003F61A1 /* Canvas */ = {
+			isa = PBXGroup;
+			children = (
+				37702F511D41EA3300AE3FE2 /* g_canvas.h */,
+				370939441CC92BF300827F75 /* g_base.c */,
+				370939431CC92BF300827F75 /* g_draw.c */,
+				379920471CD2649B00750527 /* g_select.c */,
+				378971C31C4F716700263434 /* g_editor.c */,
+				378971CD1C4F716700263434 /* g_file.c */,
+				377899481CFED1B10056BE61 /* g_new.c */,
+				378971C41C4F716700263434 /* g_graph.c */,
+				378971C11C4F716700263434 /* g_canvas.c */,
+			);
+			name = Canvas;
+			sourceTree = "<group>";
+		};
 		377C79961DF08AD0008195B0 /* Math */ = {
 			isa = PBXGroup;
 			children = (
@@ -1415,20 +1431,12 @@
 			isa = PBXGroup;
 			children = (
 				3742465E1E59AAE3009E8DC1 /* g_patch.h */,
-				37702F511D41EA3300AE3FE2 /* g_canvas.h */,
 				37DFBC5C1D2937BA00FCDEEE /* g_guistub.c */,
 				37DFBC5B1D2937BA00FCDEEE /* g_guiconnect.c */,
 				370B1FAF1E421D22003D95A0 /* g_environment.c */,
-				370939441CC92BF300827F75 /* g_base.c */,
-				370939431CC92BF300827F75 /* g_draw.c */,
-				379920471CD2649B00750527 /* g_select.c */,
-				378971C31C4F716700263434 /* g_editor.c */,
-				378971CD1C4F716700263434 /* g_file.c */,
-				377899481CFED1B10056BE61 /* g_new.c */,
-				378971C41C4F716700263434 /* g_graph.c */,
-				378971C11C4F716700263434 /* g_canvas.c */,
 				37BA30811CD1DB0F0091113F /* g_object.c */,
 				378971CE1C4F716700263434 /* g_box.c */,
+				3777AEA71E5B2844003F61A1 /* Canvas */,
 				3735D9701E5995B300858959 /* Objects */,
 			);
 			name = Patch;
