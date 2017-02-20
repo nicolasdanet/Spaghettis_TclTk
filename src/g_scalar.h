@@ -170,6 +170,7 @@ t_template  *scalar_getTemplate                 (t_scalar *x);
 t_symbol    *scalar_getTemplateIdentifier       (t_scalar *x);
 t_array     *scalar_getArray                    (t_scalar *x, t_symbol *field);
 
+int         scalar_containsTemplate             (t_scalar *x, t_symbol *templateIdentifier);
 int         scalar_fieldIsFloat                 (t_scalar *x, t_symbol *field);
 t_float     scalar_getFloat                     (t_scalar *x, t_symbol *field);
 void        scalar_setFloat                     (t_scalar *x, t_symbol *field, t_float f);

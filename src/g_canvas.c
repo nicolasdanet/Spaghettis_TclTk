@@ -495,6 +495,21 @@ void canvas_pop (t_glist *glist, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void canvas_remove (t_glist *glist, t_symbol *s)
+{
+    t_symbol *t = utils_makeTemplateIdentifier (s);
+    
+    if (!template_isPrivate (t)) {
+    //
+    t_template *template = template_findByIdentifier (t);
+    
+    if (template) {
+        canvas_removeScalarsRecursive (glist, template); 
+    }
+    //
+    }
+}
+
 static void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     t_symbol *name = &s_;
@@ -969,6 +984,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_duplicate,             sym__duplicate,     A_NULL);
     class_addMethod (c, (t_method)canvas_selectAll,             sym__selectall,     A_NULL);
     
+    class_addMethod (c, (t_method)canvas_remove,                sym_destroy,        A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)canvas_clear,                 sym_clear,          A_NULL);
     class_addMethod (c, (t_method)canvas_rename,                sym_rename,         A_GIMME, A_NULL);
     

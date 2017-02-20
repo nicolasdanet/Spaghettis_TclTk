@@ -68,6 +68,30 @@ int template_containsArray (t_template *x)
     return 0;
 }
 
+int template_containsTemplate (t_template *x, t_symbol *templateIdentifier)
+{
+    if (x->tp_templateIdentifier == templateIdentifier) { return 1; }
+    else {
+    //
+    t_dataslot *v = x->tp_slots;
+    int i;
+
+    for (i = 0; i < x->tp_size; i++, v++) { 
+        if (v->ds_type == DATA_ARRAY) { 
+            if (v->ds_templateIdentifier == templateIdentifier) { 
+                return 1; 
+            }
+        } 
+    }
+    
+    return 0;
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 int template_hasField (t_template *x, t_symbol *fieldName)
 {
     int i, t; t_symbol *dummy = NULL;
@@ -182,9 +206,8 @@ int template_fieldIsArrayAndValid (t_template *x, t_symbol *fieldName)
     
     if (template_getRaw (x, fieldName, &i, &type, &templateIdentifier)) { 
         if (type == DATA_ARRAY) {
-            int isValid = template_isValid (template_findByIdentifier (templateIdentifier)); 
-            PD_ASSERT (isValid); 
-            return isValid;
+            PD_ASSERT (template_isValid (template_findByIdentifier (templateIdentifier))); 
+            return 1;
         }
     }
     
@@ -284,6 +307,8 @@ void template_registerInstance (t_template *x, t_struct *o)
 void template_unregisterInstance (t_template *x, t_struct *o)
 {
     template_registerInstance (x, NULL);
+    
+    pd_free (cast_pd (x));
 }
 
 t_glist *template_getInstanceView (t_template *x)
@@ -423,8 +448,7 @@ t_template *template_new (t_symbol *templateIdentifier, int argc, t_atom *argv)
     if (template_newParse (x, &argc, &argv)) {      /* It may consume arguments. */
     //
     error_invalidArguments (utils_stripTemplateIdentifier (templateIdentifier), argc, argv);
-    template_free (x);
-    x = NULL;
+    pd_free (cast_pd (x)); x = NULL;
     //
     }
     

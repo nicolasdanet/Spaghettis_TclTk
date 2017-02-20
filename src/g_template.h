@@ -60,6 +60,7 @@ void        template_unregisterInstance             (t_template *x, t_struct *o)
 #pragma mark -
 
 int         template_containsArray                  (t_template *x);
+int         template_containsTemplate               (t_template *x, t_symbol *templateIdentifier);
 int         template_hasField                       (t_template *x, t_symbol *field);
 int         template_getIndexOfField                (t_template *x, t_symbol *field);
 int         template_getRaw                         (t_template *x,
@@ -123,6 +124,20 @@ static inline t_dataslot *template_getSlots (t_template *x)
 static inline t_symbol *template_getTemplateIdentifier (t_template *x)
 {
     return x->tp_templateIdentifier;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline int template_isPrivate (t_symbol *templateIdentifier)
+{
+    if (templateIdentifier == sym___TEMPLATE__float__dash__array) { return 1; }
+    else if (templateIdentifier == sym___TEMPLATE__float)         { return 1; }
+    else if (templateIdentifier == sym___TEMPLATE__text)          { return 1; }
+    else {
+        return 0;
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -527,6 +527,15 @@ t_template *scalar_getTemplate (t_scalar *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+int scalar_containsTemplate (t_scalar *x, t_symbol *templateIdentifier)
+{
+    return template_containsTemplate (scalar_getTemplate (x), templateIdentifier);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_array *scalar_getArray (t_scalar *x, t_symbol *fieldName)
 {
     return word_getArray (x->sc_element, scalar_getTemplate (x), fieldName);
@@ -575,8 +584,7 @@ t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
     
     t_template *template = template_findByIdentifier (templateIdentifier);
 
-    if (!template_isValid (template)) { PD_BUG; }
-    else {
+    if (template_isValid (template)) {
 
         t_gpointer gp; GPOINTER_INIT (&gp);
         

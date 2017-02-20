@@ -36,6 +36,7 @@ extern t_symbol s_;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+extern t_symbol *sym___TEMPLATE__float;
 extern t_symbol *sym___TEMPLATE__float__dash__array;
 extern t_symbol *sym___TEMPLATE__text;
 extern t_symbol *sym___ampersand__;
@@ -415,6 +416,7 @@ extern t_symbol *sym_readsf__tilde__;
 extern t_symbol *sym_realtime;
 extern t_symbol *sym_receive;
 extern t_symbol *sym_receive__tilde__;
+extern t_symbol *sym_remove;
 extern t_symbol *sym_rename;
 extern t_symbol *sym_resampling;
 extern t_symbol *sym_reset;

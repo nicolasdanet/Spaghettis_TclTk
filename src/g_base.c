@@ -20,6 +20,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_class              *text_class;
+extern t_class              *scalar_class;
 extern t_class              *struct_class;
 extern t_class              *canvas_class;
 extern t_class              *vinlet_class;
@@ -241,6 +242,24 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     canvas->gl_isDeleting = deletingState;
     
     glist->gl_uniqueIdentifier = utils_unique();        /* Invalidate all pointers. */
+}
+
+void canvas_removeScalarsRecursive (t_glist *glist, t_template *template)
+{
+    t_gobj *y = NULL;
+
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+    
+        if (pd_class (y) == scalar_class) {
+            if (scalar_containsTemplate (cast_scalar (y), template_getTemplateIdentifier (template))) {
+                canvas_removeObject (glist, y);
+            }
+        }
+        
+        if (pd_class (y) == canvas_class) {
+            canvas_removeScalarsRecursive (cast_glist (y), template);
+        }
+    }
 }
 
 void canvas_clear (t_glist *glist)
