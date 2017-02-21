@@ -516,7 +516,13 @@ void canvas_getLastMotionCoordinates (t_glist *glist, int *a, int *b)
 {
     if (canvas_lastCanvas == glist) { *a = canvas_lastCanvasX; *b = canvas_lastCanvasY; } 
     else {
-        *a = GRAPH_X; *b = GRAPH_Y;
+    //
+    const int x = 40;
+    const int y = 40;
+        
+    *a = x;
+    *b = y;
+    //
     }
 }
 

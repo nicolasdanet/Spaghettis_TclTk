@@ -87,20 +87,6 @@ struct _glist {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define GRAPH_START     0.0
-#define GRAPH_UP        1.0
-#define GRAPH_END       100.0
-#define GRAPH_DOWN      -1.0
-
-#define GRAPH_X         40  
-#define GRAPH_Y         40
-#define GRAPH_WIDTH     200
-#define GRAPH_HEIGHT    140
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void            canvas_newPatch                         (void *dummy, t_symbol *name, t_symbol *directory);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -319,16 +305,6 @@ t_float         canvas_valueForOnePixelY                (t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_glist         *canvas_newGraphOnParent                (t_glist *glist,
-                                                            t_float valueStart,
-                                                            t_float valueUp,
-                                                            t_float valueEnd,
-                                                            t_float valueDown,
-                                                            t_float topLeftX,
-                                                            t_float topLeftY,
-                                                            t_float bottomRightX,
-                                                            t_float bottomRightY);
-                                                            
 t_glist         *canvas_new                             (void *dummy, t_symbol *s, int argc, t_atom *argv);
 
 void            canvas_free                             (t_glist *glist);

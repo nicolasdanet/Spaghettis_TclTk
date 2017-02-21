@@ -12,12 +12,63 @@
 #include "m_pd.h"
 #include "m_macros.h"
 #include "m_core.h"
+#include "s_system.h"
 #include "g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_class *text_class;
+extern t_class *canvas_class;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_glist *canvas_newGraphOnParent (t_glist *glist,
+    t_float valueStart,
+    t_float valueUp,
+    t_float valueEnd,
+    t_float valueDown,
+    t_float topLeftX,
+    t_float topLeftY,
+    t_float bottomRightX,
+    t_float bottomRightY)
+{
+    t_glist *x = (t_glist *)pd_new (canvas_class);
+    
+    t_fontsize fontSize = canvas_getCurrent() ? canvas_getCurrent()->gl_fontSize : font_getDefaultFontSize();
+
+    cast_object (x)->te_buffer          = buffer_new();
+    cast_object (x)->te_xCoordinate     = topLeftX;
+    cast_object (x)->te_yCoordinate     = topLeftY;
+    cast_object (x)->te_type            = TYPE_OBJECT;
+    x->gl_holder                        = gmaster_createWithGlist (x);
+    x->gl_parent                        = glist;
+    x->gl_name                          = utils_getDefaultBindName (canvas_class, sym__graph);
+    x->gl_uniqueIdentifier              = utils_unique();
+    x->gl_graphWidth                    = bottomRightX - topLeftX;
+    x->gl_graphHeight                   = bottomRightY - topLeftY;
+    x->gl_graphMarginLeft               = 0;
+    x->gl_graphMarginTop                = 0;
+    x->gl_valueLeft                     = valueStart;
+    x->gl_valueRight                    = valueEnd;
+    x->gl_valueTop                      = valueUp;
+    x->gl_valueBottom                   = valueDown;
+    x->gl_windowTopLeftX                = 0;
+    x->gl_windowTopLeftY                = WINDOW_HEADER;
+    x->gl_windowBottomRightX            = WINDOW_WIDTH;
+    x->gl_windowBottomRightY            = WINDOW_HEIGHT + WINDOW_HEADER;
+    x->gl_fontSize                      = fontSize;
+    x->gl_isGraphOnParent               = 1;
+    
+    canvas_bind (x);
+    
+    buffer_vAppend (cast_object (x)->te_buffer, "s", sym_graph);
+    
+    canvas_addObject (glist, cast_gobj (x));
+    
+    return x;
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -54,18 +105,20 @@ void canvas_fromArrayDialog (t_glist *glist, t_symbol *name, t_float size, t_flo
     PD_ASSERT (name);
     
     canvas_getLastMotionCoordinates (glist, &positionX, &positionY);
+    
+    { 
+        t_float a      = (t_float)positionX;
+        t_float b      = (t_float)positionY;
+        t_float start  = (t_float)0.0;
+        t_float up     = (t_float)1.0;
+        t_float width  = (t_float)200.0;
+        t_float height = (t_float)140.0;
         
-    g = canvas_newGraphOnParent (glist, 
-            (t_float)GRAPH_START,
-            (t_float)GRAPH_UP,
-            n,
-            (t_float)GRAPH_DOWN,
-            (t_float)positionX,
-            (t_float)positionY,
-            (t_float)(positionX + GRAPH_WIDTH),
-            (t_float)(positionY + GRAPH_HEIGHT));
+        g = canvas_newGraphOnParent (glist, start, up, n, -up, a, b, (a + width), (b + height));
+    }
     
     garray_makeObject (g, dollar_fromHash (name), n, flags);
+    
     canvas_dirty (glist, 1);
 }
 

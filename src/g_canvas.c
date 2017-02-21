@@ -93,8 +93,8 @@ static void canvas_setAsGraphOnParent (t_glist *glist, int flags)
         glist->gl_isGraphOnParent = 1;
     }
     
-    if (glist->gl_graphWidth <= 0)  { glist->gl_graphWidth  = GRAPH_WIDTH;  }
-    if (glist->gl_graphHeight <= 0) { glist->gl_graphHeight = GRAPH_HEIGHT; }
+    glist->gl_graphWidth  = PD_ABS (glist->gl_graphWidth);
+    glist->gl_graphHeight = PD_ABS (glist->gl_graphHeight);
     
     #if PD_WITH_LEGACY
     
@@ -728,72 +728,6 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-/* Create a graph on parent fit for arrays. */
-
-t_glist *canvas_newGraphOnParent (t_glist *glist,
-    t_float valueStart,
-    t_float valueUp,
-    t_float valueEnd,
-    t_float valueDown,
-    t_float topLeftX,
-    t_float topLeftY,
-    t_float bottomRightX,
-    t_float bottomRightY)
-{
-    t_glist *x = (t_glist *)pd_new (canvas_class);
-    
-    t_fontsize fontSize = canvas_getCurrent() ? canvas_getCurrent()->gl_fontSize : font_getDefaultFontSize();
-    
-    if (valueStart >= valueEnd || valueUp == valueDown) {
-    //
-    valueStart  = (t_float)GRAPH_START;
-    valueEnd    = (t_float)GRAPH_END;
-    valueUp     = (t_float)GRAPH_UP;
-    valueDown   = (t_float)GRAPH_DOWN;
-    //
-    }
-    
-    if (topLeftX >= bottomRightX || topLeftY >= bottomRightY) {
-    //
-    topLeftX     = GRAPH_X;
-    topLeftY     = GRAPH_Y;
-    bottomRightX = topLeftX + GRAPH_WIDTH;
-    bottomRightY = topLeftY + GRAPH_HEIGHT;
-    //
-    }
-        
-    cast_object (x)->te_buffer          = buffer_new();
-    cast_object (x)->te_xCoordinate     = topLeftX;
-    cast_object (x)->te_yCoordinate     = topLeftY;
-    cast_object (x)->te_type            = TYPE_OBJECT;
-    x->gl_holder                        = gmaster_createWithGlist (x);
-    x->gl_parent                        = glist;
-    x->gl_name                          = utils_getDefaultBindName (canvas_class, sym__graph);
-    x->gl_uniqueIdentifier              = utils_unique();
-    x->gl_graphWidth                    = bottomRightX - topLeftX;
-    x->gl_graphHeight                   = bottomRightY - topLeftY;
-    x->gl_graphMarginLeft               = 0;
-    x->gl_graphMarginTop                = 0;
-    x->gl_valueLeft                     = valueStart;
-    x->gl_valueRight                    = valueEnd;
-    x->gl_valueTop                      = valueUp;
-    x->gl_valueBottom                   = valueDown;
-    x->gl_windowTopLeftX                = 0;
-    x->gl_windowTopLeftY                = WINDOW_HEADER;
-    x->gl_windowBottomRightX            = WINDOW_WIDTH;
-    x->gl_windowBottomRightY            = WINDOW_HEIGHT + WINDOW_HEADER;
-    x->gl_fontSize                      = fontSize;
-    x->gl_isGraphOnParent               = 1;
-    
-    canvas_bind (x);
-    
-    buffer_vAppend (cast_object (x)->te_buffer, "s", sym_graph);
-    
-    canvas_addObject (glist, cast_gobj (x));
-    
-    return x;
-}
 
 t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
