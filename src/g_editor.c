@@ -234,14 +234,17 @@ static void canvas_proceedMouseClick (t_glist *glist, int positionX, int positio
     //
     if (gobj_hit (y, glist, positionX, positionY, &a, &b, &c, &d)) {
     
-        k = gobj_mouse (y, glist, 
-                positionX, 
-                positionY, 
-                (modifier & MODIFIER_SHIFT), 
-                (modifier & MODIFIER_CTRL), 
-                (modifier & MODIFIER_ALT), 
-                (modifier & MODIFIER_DOUBLE), 
-                clicked);
+        t_mouse m = {
+                        positionX,
+                        positionY,
+                        (modifier & MODIFIER_SHIFT),
+                        (modifier & MODIFIER_CTRL),
+                        (modifier & MODIFIER_ALT),
+                        (modifier & MODIFIER_DOUBLE),
+                        clicked
+                    };
+    
+        k = gobj_mouse (y, glist, &m);
                 
         if (k) { break; }
     }

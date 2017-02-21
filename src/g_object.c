@@ -64,10 +64,10 @@ void gobj_deleted (t_gobj *x, t_glist *owner)
     }
 }
 
-int gobj_mouse (t_gobj *x, t_glist *owner, int a, int b, int shift, int ctrl, int alt, int dbl, int clicked)
+int gobj_mouse (t_gobj *x, t_glist *owner, t_mouse *m)
 {
     if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnMouse) {
-        return (*(pd_class (x)->c_behavior->w_fnMouse)) (x, owner, a, b, shift, ctrl, alt, dbl, clicked);
+        return (*(pd_class (x)->c_behavior->w_fnMouse)) (x, owner, m);
     } else {
         return 0;
     }

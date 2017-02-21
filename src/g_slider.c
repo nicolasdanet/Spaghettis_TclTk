@@ -68,7 +68,7 @@ static inline int slider_stepsToPixels (int n)
 static void slider_set                  (t_slider *, t_float);
 static void slider_motion               (t_slider *, t_float, t_float, t_float);
 static void slider_behaviorGetRectangle (t_gobj *, t_glist *, int *, int *, int *, int *);
-static int  slider_behaviorMouse        (t_gobj *, t_glist *, int, int, int, int, int, int, int);
+static int  slider_behaviorMouse        (t_gobj *, t_glist *, t_mouse *);
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -534,18 +534,10 @@ static void slider_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
     *d = *b + cast_iem (z)->iem_height;
 }
 
-static int slider_behaviorMouse (t_gobj *z, t_glist *glist,
-    int a,
-    int b,
-    int shift,
-    int ctrl,
-    int alt,
-    int dbl,
-    int clicked)
+static int slider_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 {
-    if (clicked) {
-        t_slider *x = (t_slider *)z;
-        slider_click (x, (t_float)a, (t_float)b, (t_float)shift, (t_float)0, (t_float)alt);
+    if (m->m_clicked) {
+        slider_click ((t_slider *)z, m->m_x, m->m_y, m->m_shift, 0, m->m_alt);
     }
     
     return 1;

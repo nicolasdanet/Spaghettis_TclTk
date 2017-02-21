@@ -59,7 +59,7 @@ int audio_poll (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Called by JACK (expect following stores to be atomic.) */
+/* Called by JACK (expect following stores to be atomic). */
 
 void audio_setSampleRate (t_float sampleRate)
 {

@@ -41,7 +41,7 @@
 #pragma mark -
 
 static void bng_behaviorGetRectangle    (t_gobj *, t_glist *, int *, int *, int *, int *);
-static int  bng_behaviorMouse           (t_gobj *, t_glist *, int, int, int, int, int, int, int);
+static int  bng_behaviorMouse           (t_gobj *, t_glist *, t_mouse *);
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -360,17 +360,10 @@ static void bng_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b,
     *d = *b + cast_iem (z)->iem_height;
 }
 
-static int bng_behaviorMouse (t_gobj *z, t_glist *glist,
-    int a,
-    int b,
-    int shift,
-    int ctrl,
-    int alt,
-    int dbl,
-    int clicked)
+static int bng_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 {
-    if (clicked) {
-        bng_click ((t_bng *)z, (t_float)a, (t_float)b, (t_float)shift, (t_float)0, (t_float)alt);
+    if (m->m_clicked) {
+        bng_click ((t_bng *)z, m->m_x, m->m_y, m->m_shift, 0, m->m_alt);
     }
     
     return 1;

@@ -205,11 +205,7 @@ typedef struct _panel {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        iemgui_deserializeColors            (t_iem *iem,
-                                                    t_atom *background,
-                                                    t_atom *foreground,
-                                                    t_atom *label);
-                                                    
+void        iemgui_deserializeColors            (t_iem *iem, t_atom *bgrd, t_atom *fgrd, t_atom *label);
 void        iemgui_serializeColors              (t_iem *iem, t_iemcolors *c);
 void        iemgui_deserializeFontStyle         (t_iem *iem, int n);
 int         iemgui_serializeFontStyle           (t_iem *iem);

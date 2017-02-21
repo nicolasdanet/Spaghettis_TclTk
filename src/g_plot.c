@@ -929,12 +929,7 @@ static int plot_behaviorMouseRegularMatch (t_plot *x, t_array *array,
     int bestDeltaY,
     int bestDeltaL,
     int bestDeltaH,
-    int a,
-    int b,
-    int shift,
-    int alt,
-    int dbl,
-    int clicked)
+    t_mouse *m)
 {
     if (bestIndex >= 0) {
     //
@@ -952,8 +947,11 @@ static int plot_behaviorMouseRegularMatch (t_plot *x, t_array *array,
         }
     }
 
-    if (clicked) {
+    if (m->m_clicked) {
     //
+    int a = m->m_x;
+    int b = m->m_y;
+    
     plot_cumulativeX          = (t_float)0.0;
     plot_cumulativeY          = (t_float)0.0;
     plot_startX               = i;
@@ -989,17 +987,14 @@ static int plot_behaviorMouseRegularMatch (t_plot *x, t_array *array,
     return 0;
 }
 
-static int plot_behaviorMouseRegular (t_plot *x, t_array *array,
-    int a,
-    int b,
-    int shift,
-    int alt,
-    int dbl,
-    int clicked)
+static int plot_behaviorMouseRegular (t_plot *x, t_array *array, t_mouse *m)
 {
     t_symbol *fieldX = NULL;
     t_symbol *fieldY = NULL;
     t_symbol *fieldW = NULL;
+    
+    int a = m->m_x;
+    int b = m->m_y;
     
     if (!plot_fetchElementFieldNames (x, array, &fieldX, &fieldY, &fieldW)) {
     //
@@ -1061,12 +1056,7 @@ static int plot_behaviorMouseRegular (t_plot *x, t_array *array,
                     bestDeltaY,
                     bestDeltaL,
                     bestDeltaH,
-                    a,
-                    b,
-                    shift,
-                    alt, 
-                    dbl,
-                    clicked);
+                    m);
     }
     //
     }
@@ -1074,14 +1064,11 @@ static int plot_behaviorMouseRegular (t_plot *x, t_array *array,
     return 0;
 }
 
-static int plot_behaviorMouseSingle (t_plot *x, t_array *array,
-    int a,
-    int b,
-    int shift,
-    int alt,
-    int dbl,
-    int clicked)
+static int plot_behaviorMouseSingle (t_plot *x, t_array *array, t_mouse *m)
 {
+    int a = m->m_x;
+    int b = m->m_y;
+    
     t_float valueX = canvas_pixelToValueX (gpointer_getView (&plot_gpointer), a);
     t_float valueY = canvas_pixelToValueY (gpointer_getView (&plot_gpointer), b);
     
@@ -1102,7 +1089,7 @@ static int plot_behaviorMouseSingle (t_plot *x, t_array *array,
     plot_fieldDescriptorX   = NULL;
     plot_fieldDescriptorY   = &x->x_fieldY;
 
-    if (clicked) {
+    if (m->m_clicked) {
         array_setFloatAtIndexByDescriptor (array, i, &x->x_fieldY, valueY);
         canvas_setMotionFunction (gpointer_getView (&plot_gpointer), NULL, (t_motionfn)plot_motion, a, b);
         gpointer_redraw (&plot_gpointer);
@@ -1111,16 +1098,7 @@ static int plot_behaviorMouseSingle (t_plot *x, t_array *array,
     return 1;
 }
 
-static int plot_behaviorMouse (t_gobj *z,
-    t_gpointer *gp,
-    t_float baseX,
-    t_float baseY,
-    int a,
-    int b,
-    int shift,
-    int alt,
-    int dbl,
-    int clicked)
+static int plot_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t_float baseY, t_mouse *m)
 {
     t_plot *x = (t_plot *)z;
     t_glist *glist = gpointer_getView (gp);
@@ -1154,10 +1132,9 @@ static int plot_behaviorMouse (t_gobj *z,
     gpointer_setByCopy (&plot_gpointer, gp);
     gpointer_setAsWord (&plot_check, array, array_getElements (array));
     
-    if (garray_isSingle (glist)) {
-        return plot_behaviorMouseSingle (x, array, a, b, shift, alt, dbl, clicked); 
-    } else {
-        return plot_behaviorMouseRegular (x, array, a, b, shift, alt, dbl, clicked);
+    if (garray_isSingle (glist)) { return plot_behaviorMouseSingle (x, array, m); }
+    else {
+        return plot_behaviorMouseRegular (x, array, m);
     }
     //
     }

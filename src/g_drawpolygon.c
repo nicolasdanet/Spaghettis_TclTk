@@ -257,16 +257,7 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     }
 }
 
-static int drawpolygon_behaviorMouse (t_gobj *z,
-    t_gpointer *gp,
-    t_float baseX,
-    t_float baseY,
-    int a,
-    int b,
-    int shift,
-    int alt,
-    int dbl,
-    int clicked)
+static int drawpolygon_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t_float baseY, t_mouse *m)
 {
     t_drawpolygon *x = (t_drawpolygon *)z;
     
@@ -290,7 +281,7 @@ static int drawpolygon_behaviorMouse (t_gobj *z,
     int valueY = gpointer_getFloatByDescriptor (gp, fd + i + 1);
     int pixelX = canvas_valueToPixelX (glist, baseX + valueX);
     int pixelY = canvas_valueToPixelY (glist, baseY + valueY);
-    int error  = (int)math_euclideanDistance (pixelX, pixelY, a, b);
+    int error  = (int)math_euclideanDistance (pixelX, pixelY, m->m_x, m->m_y);
     
     if (error < bestError) {
         drawpolygon_valueX = valueX;
@@ -305,7 +296,7 @@ static int drawpolygon_behaviorMouse (t_gobj *z,
     
     if (bestError <= DRAWPOLYGON_HANDLE_SIZE) {
     
-        if (clicked) {
+        if (m->m_clicked) {
         
             drawpolygon_stepX       = canvas_valueForOnePixelX (glist);
             drawpolygon_stepY       = canvas_valueForOnePixelY (glist);
@@ -315,7 +306,7 @@ static int drawpolygon_behaviorMouse (t_gobj *z,
             
             gpointer_setByCopy (&drawpolygon_gpointer, gp);
             
-            canvas_setMotionFunction (glist, z, (t_motionfn)drawpolygon_motion, a, b);
+            canvas_setMotionFunction (glist, z, (t_motionfn)drawpolygon_motion, m->m_x, m->m_y);
         }
     
         return 1;

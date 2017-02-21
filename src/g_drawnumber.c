@@ -203,18 +203,12 @@ static void drawnumber_behaviorVisibilityChanged (t_gobj *z,
     }
 }
 
-static int drawnumber_behaviorMouse (t_gobj *z,
-    t_gpointer *gp,
-    t_float baseX,
-    t_float baseY,
-    int a,
-    int b,
-    int shift,
-    int alt,
-    int dbl,
-    int clicked)
+static int drawnumber_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t_float baseY, t_mouse *m)
 {
     t_drawnumber *x = (t_drawnumber *)z;
+    
+    int a = m->m_x;
+    int b = m->m_y;
     
     int xA, yA, xB, yB;
      
@@ -224,7 +218,7 @@ static int drawnumber_behaviorMouse (t_gobj *z,
     //
     if (gpointer_fieldIsFloat (gp, x->x_fieldName)) {
     //
-    if (clicked) {
+    if (m->m_clicked) {
     
         drawnumber_cumulativeY = gpointer_getFloat (gp, x->x_fieldName);
 

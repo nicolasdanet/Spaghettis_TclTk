@@ -36,21 +36,27 @@ typedef void (*t_motionfn)              (void *z, t_float deltaX, t_float deltaY
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+typedef struct _mouse {
+    int     m_x;
+    int     m_y;
+    int     m_shift;
+    int     m_ctrl;
+    int     m_alt;
+    int     m_dbl;
+    int     m_clicked;
+    } t_mouse;
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 typedef void (*t_getrectanglefn)        (t_gobj *x, t_glist *glist, int *a, int *b, int *c, int *d);
 typedef void (*t_displacedfn)           (t_gobj *x, t_glist *glist, int deltaX, int deltaY);
 typedef void (*t_selectedfn)            (t_gobj *x, t_glist *glist, int isSelected);
 typedef void (*t_activatedfn)           (t_gobj *x, t_glist *glist, int isActivated);
 typedef void (*t_deletedfn)             (t_gobj *x, t_glist *glist);
 typedef void (*t_visibilityfn)          (t_gobj *x, t_glist *glist, int isVisible);
-typedef int  (*t_mousefn)               (t_gobj *x,
-                                            t_glist *glist,
-                                            int a,
-                                            int b,
-                                            int shift,
-                                            int ctrl,
-                                            int alt,
-                                            int dbl,
-                                            int clicked);
+typedef int  (*t_mousefn)               (t_gobj *x, t_glist *glist, t_mouse *m);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -63,15 +69,7 @@ typedef void (*t_paintergetrectanglefn) (t_gobj *x, t_gpointer *gp, t_float base
                                             int *d);
                                             
 typedef void (*t_paintervisibilityfn)   (t_gobj *x, t_gpointer *gp, t_float baseX, t_float baseY, int flag);
-typedef int  (*t_paintermousefn)        (t_gobj *x, t_gpointer *gp,
-                                            t_float baseX,
-                                            t_float baseY,
-                                            int a,
-                                            int b,
-                                            int shift,
-                                            int alt,
-                                            int dbl,
-                                            int clicked);
+typedef int  (*t_paintermousefn)        (t_gobj *x, t_gpointer *gp, t_float baseX, t_float baseY, t_mouse *m);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -101,7 +99,7 @@ typedef struct _entry {
     t_method                    me_method;
     t_atomtype                  me_arguments[PD_ARGUMENTS + 1];
     } t_entry;
-    
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 

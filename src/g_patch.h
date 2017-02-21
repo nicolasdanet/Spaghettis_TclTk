@@ -201,15 +201,7 @@ void            gobj_selected                           (t_gobj *x, t_glist *own
 void            gobj_activated                          (t_gobj *x, t_glist *owner, int isActivated);
 void            gobj_deleted                            (t_gobj *x, t_glist *owner);
 void            gobj_visibilityChanged                  (t_gobj *x, t_glist *owner, int isVisible);
-int             gobj_mouse                              (t_gobj *x,
-                                                            t_glist *owner,
-                                                            int a,
-                                                            int b,
-                                                            int shift,
-                                                            int ctrl,
-                                                            int alt,
-                                                            int dbl,
-                                                            int clicked);
+int             gobj_mouse                              (t_gobj *x, t_glist *owner, t_mouse *m);
                                                         
 void            gobj_save                               (t_gobj *x, t_buffer *buffer);
 int             gobj_hit                                (t_gobj *x,
@@ -269,15 +261,7 @@ void            text_behaviorSelected                   (t_gobj *x, t_glist *gli
 void            text_behaviorActivated                  (t_gobj *x, t_glist *glist, int isActivated);
 void            text_behaviorDeleted                    (t_gobj *x, t_glist *glist);
 void            text_behaviorVisibilityChanged          (t_gobj *x, t_glist *glist, int isVisible);
-int             text_behaviorMouse                      (t_gobj *x,
-                                                            t_glist *glist,
-                                                            int a,
-                                                            int b,
-                                                            int shift,
-                                                            int ctrl,
-                                                            int alt,
-                                                            int dbl,
-                                                            int clicked);
+int             text_behaviorMouse                      (t_gobj *x, t_glist *glist, t_mouse *m);
 
 void            text_functionSave                       (t_gobj *x, t_buffer *b);
 

@@ -49,7 +49,7 @@ static void scalar_behaviorSelected             (t_gobj *, t_glist *, int);
 static void scalar_behaviorActivated            (t_gobj *, t_glist *, int);
 static void scalar_behaviorDeleted              (t_gobj *, t_glist *);
 static void scalar_behaviorVisibilityChanged    (t_gobj *, t_glist *, int);
-static int  scalar_behaviorMouse                (t_gobj *, t_glist *, int, int, int, int, int, int, int);
+static int  scalar_behaviorMouse                (t_gobj *, t_glist *, t_mouse *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -332,15 +332,7 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     }
 }
 
-static int scalar_behaviorMouse (t_gobj *z,
-    t_glist *glist,
-    int a,
-    int b,
-    int shift,
-    int ctrl,
-    int alt,
-    int dbl,
-    int clicked)
+static int scalar_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 {
     t_scalar *x = cast_scalar (z);
     
@@ -353,7 +345,7 @@ static int scalar_behaviorMouse (t_gobj *z,
     t_float baseY = scalar_getFloat (x, sym_y);
     t_gobj *y = NULL;
         
-    if (clicked) { scalar_notifyClicked (x, glist, template, baseX, baseY); }
+    if (m->m_clicked) { scalar_notifyClicked (x, glist, template, baseX, baseY); }
             
     for (y = view->gl_graphics; y; y = y->g_next) {
     //
@@ -365,16 +357,7 @@ static int scalar_behaviorMouse (t_gobj *z,
         
         gpointer_setAsScalar (&gp, glist, x);
         
-        int k = (*behavior->w_fnPainterMouse) (y,
-                    &gp,
-                    baseX,
-                    baseY,
-                    a,
-                    b,
-                    shift,
-                    alt,
-                    dbl,
-                    clicked);
+        int k = (*behavior->w_fnPainterMouse) (y, &gp, baseX, baseY, m);
         
         gpointer_unset (&gp);
         

@@ -132,38 +132,30 @@ void text_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
     }
 }
 
-int text_behaviorMouse (t_gobj *z,
-    t_glist *glist,
-    int a,
-    int b,
-    int shift,
-    int ctrl,
-    int alt,
-    int dbl,
-    int clicked)
+int text_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 {
     t_object *x = cast_object (z);
     
-    t_float f1 = (t_float)a;
-    t_float f2 = (t_float)b;
-    t_float f3 = (t_float)shift;
-    t_float f4 = (t_float)ctrl;
-    t_float f5 = (t_float)alt;
+    t_float f1 = (t_float)m->m_x;
+    t_float f2 = (t_float)m->m_y;
+    t_float f3 = (t_float)m->m_shift;
+    t_float f4 = (t_float)m->m_ctrl;
+    t_float f5 = (t_float)m->m_alt;
     
     if (x->te_type == TYPE_OBJECT) {
         if (class_hasMethod (pd_class (x), sym_click)) {
         //
-        if (clicked) { pd_vMessage (cast_pd (x), sym_click, "fffff", f1, f2, f3, f4, f5); }
+        if (m->m_clicked) { pd_vMessage (cast_pd (x), sym_click, "fffff", f1, f2, f3, f4, f5); }
         return 1;
         //
         }
         
     } else if (x->te_type == TYPE_ATOM) {
-        if (clicked) { gatom_click ((t_gatom *)x, f1, f2, f3, f4, f5); }
+        if (m->m_clicked) { gatom_click ((t_gatom *)x, f1, f2, f3, f4, f5); }
         return 1;
         
     } else if (x->te_type == TYPE_MESSAGE) {
-        if (clicked) { message_click ((t_message *)x, f1, f2, f3, f4, f5); }
+        if (m->m_clicked) { message_click ((t_message *)x, f1, f2, f3, f4, f5); }
         return 1;
     }
     

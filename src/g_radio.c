@@ -35,7 +35,7 @@
 
 static void radio_buttonsNumber         (t_radio *, t_float);
 static void radio_behaviorGetRectangle  (t_gobj *, t_glist *, int *, int *, int *, int *);
-static int  radio_behaviorMouse         (t_gobj *, t_glist *, int, int, int, int, int, int, int);
+static int  radio_behaviorMouse         (t_gobj *, t_glist *, t_mouse *);
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -499,17 +499,10 @@ static void radio_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *
     }
 }
 
-static int radio_behaviorMouse (t_gobj *z, t_glist *glist,
-    int a,
-    int b,
-    int shift,
-    int ctrl,
-    int alt,
-    int dbl,
-    int clicked)
+static int radio_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 {
-    if (clicked) {
-        radio_click ((t_radio *)z, (t_float)a, (t_float)b, (t_float)shift, (t_float)0, (t_float)alt);
+    if (m->m_clicked) {
+        radio_click ((t_radio *)z, m->m_x, m->m_y, m->m_shift, 0, m->m_alt);
     }
     
     return 1;

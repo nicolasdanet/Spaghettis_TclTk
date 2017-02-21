@@ -37,7 +37,7 @@ static void canvas_behaviorSelected             (t_gobj *, t_glist *, int);
 static void canvas_behaviorActivated            (t_gobj *, t_glist *, int);
 static void canvas_behaviorDeleted              (t_gobj *, t_glist *);
 static void canvas_behaviorVisibilityChanged    (t_gobj *, t_glist *, int);
-static int  canvas_behaviorMouse                (t_gobj *, t_glist *, int, int, int, int, int, int, int);
+static int  canvas_behaviorMouse                (t_gobj *, t_glist *, t_mouse *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -568,33 +568,25 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     }
 }
 
-static int canvas_behaviorMouse (t_gobj *z,
-    t_glist *glist,
-    int a,
-    int b,
-    int shift,
-    int ctrl,
-    int alt,
-    int dbl,
-    int clicked)
+static int canvas_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 {
     t_glist *x = cast_glist (z);
 
-    if (!x->gl_isGraphOnParent) {
-        return (text_widgetBehavior.w_fnMouse (z, glist, a, b, shift, ctrl, alt, dbl, clicked));
-        
-    } else {
+    if (!x->gl_isGraphOnParent) { return (text_widgetBehavior.w_fnMouse (z, glist, m)); }
+    else {
     //
     if (x->gl_hasWindow) { return 0; }
     else {
         int k = 0;
+        int a = m->m_x;
+        int b = m->m_y;
         
         t_gobj *y = NULL;
             
         for (y = x->gl_graphics; y; y = y->g_next) {
             int xA, yA, xB, yB;
             if (gobj_hit (y, x, a, b, &xA, &yA, &xB, &yB)) {
-                if ((k = gobj_mouse (y, x, a, b, shift, ctrl, alt, 0, clicked))) {
+                if ((k = gobj_mouse (y, x, m))) {
                     break;
                 }
             }
