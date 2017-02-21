@@ -99,12 +99,12 @@ t_float     math_decibelToPower                         (t_float f);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        area_setEverything                          (int *a, int *b, int *c, int *d);
-void        area_setNothing                             (int *a, int *b, int *c, int *d);
-void        area_setNowhere                             (int *a, int *b, int *c, int *d);
+void        rectangle_setEverything                     (int *a, int *b, int *c, int *d);
+void        rectangle_setNothing                        (int *a, int *b, int *c, int *d);
+void        rectangle_setNowhere                        (int *a, int *b, int *c, int *d);
 
-int         area_isEverything                           (int a, int b, int c, int d);
-int         area_isNothing                              (int a, int b, int c, int d);
+int         rectangle_isEverything                      (int a, int b, int c, int d);
+int         rectangle_isNothing                         (int a, int b, int c, int d);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
