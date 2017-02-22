@@ -132,22 +132,41 @@ void        rectangle_set                               (t_rectangle *r, int xA,
 void        rectangle_setEverything                     (t_rectangle *r);
 void        rectangle_setNothing                        (t_rectangle *r);
 void        rectangle_setNowhere                        (t_rectangle *r);
-void        rectangle_setByCopy                         (t_rectangle *r, t_rectangle *toCopy);
+void        rectangle_setCopy                           (t_rectangle *r, t_rectangle *toCopy);
+
+int         rectangle_isEverything                      (t_rectangle *r);
+int         rectangle_isNowhere                         (t_rectangle *r);
+int         rectangle_areEquals                         (t_rectangle *r1, t_rectangle *r2);
+
 void        rectangle_boundingBoxAddRectangle           (t_rectangle *r, t_rectangle *toAdd);
 void        rectangle_boundingBoxAddPoint               (t_rectangle *r, int x, int y);
 void        rectangle_enlarge                           (t_rectangle *r, int n);
-
-int         rectangle_areEquals                         (t_rectangle *r1, t_rectangle *r2);
-int         rectangle_isEverything                      (t_rectangle *r);
-int         rectangle_isNowhere                         (t_rectangle *r);
-
 int         rectangle_containsPoint                     (t_rectangle *r, int x, int y);
 int         rectangle_containsRectangle                 (t_rectangle *r, t_rectangle *isContained);
 
-int         rectangle_getTopLeftX                       (t_rectangle *r);
-int         rectangle_getTopLeftY                       (t_rectangle *r);
-int         rectangle_getBottomRightX                   (t_rectangle *r);
-int         rectangle_getBottomRightY                   (t_rectangle *r);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline int rectangle_getTopLeftX (t_rectangle *r)
+{
+    return r->rect_topLeftX;
+}
+
+static inline int rectangle_getTopLeftY (t_rectangle *r)
+{
+    return r->rect_topLeftY;
+}
+
+static inline int rectangle_getBottomRightX (t_rectangle *r)
+{
+    return r->rect_bottomRightX;
+}
+
+static inline int rectangle_getBottomRightY (t_rectangle *r)
+{
+    return r->rect_bottomRightY;
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
