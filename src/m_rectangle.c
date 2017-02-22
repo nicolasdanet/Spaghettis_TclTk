@@ -14,6 +14,17 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+struct _rectangle {
+    int rect_topLeftX;
+    int rect_topLeftY;
+    int rect_bottomRightX;
+    int rect_bottomRightY;
+    int rect_isNothing;
+    };
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 void rectangle_set (t_rectangle *r, int xA, int yA, int xB, int yB)
@@ -139,6 +150,30 @@ int rectangle_containsRectangle (t_rectangle *r, t_rectangle *c)
     else if (!rectangle_containsPoint (r, c->rect_bottomRightX, c->rect_bottomRightY)) { return 0; }
     
     return 1;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int rectangle_getTopLeftX (t_rectangle *r)
+{
+    return r->rect_topLeftX;
+}
+
+int rectangle_getTopLeftY (t_rectangle *r)
+{
+    return r->rect_topLeftY;
+}
+
+int rectangle_getBottomRightX (t_rectangle *r)
+{
+    return r->rect_bottomRightX;
+}
+
+int rectangle_getBottomRightY (t_rectangle *r)
+{
+    return r->rect_bottomRightY;
 }
 
 // -----------------------------------------------------------------------------------------------------------
