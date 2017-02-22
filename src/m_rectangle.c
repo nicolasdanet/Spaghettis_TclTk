@@ -22,7 +22,7 @@ void rectangle_set (t_rectangle *r, int xA, int yA, int xB, int yB)
     r->rect_topLeftY     = PD_MIN (yA, yB);
     r->rect_bottomRightX = PD_MAX (xA, xB);
     r->rect_bottomRightY = PD_MAX (yA, yB);
-    r->rect_isNowhere    = 0;
+    r->rect_isNothing    = 0;
 }
 
 void rectangle_setEverything (t_rectangle *r)
@@ -32,12 +32,7 @@ void rectangle_setEverything (t_rectangle *r)
 
 void rectangle_setNothing (t_rectangle *r)
 {
-    rectangle_set (r, 0, 0, 0, 0);
-}
-
-void rectangle_setNowhere (t_rectangle *r)
-{
-    rectangle_setNothing (r); r->rect_isNowhere = 1;
+    rectangle_set (r, 0, 0, 0, 0); r->rect_isNothing = 1;
 }
 
 void rectangle_setCopy (t_rectangle *r, t_rectangle *toCopy)
@@ -46,7 +41,7 @@ void rectangle_setCopy (t_rectangle *r, t_rectangle *toCopy)
     r->rect_topLeftY     = toCopy->rect_topLeftY;
     r->rect_bottomRightX = toCopy->rect_bottomRightX;
     r->rect_bottomRightY = toCopy->rect_bottomRightY;
-    r->rect_isNowhere    = toCopy->rect_isNowhere;
+    r->rect_isNothing    = toCopy->rect_isNothing;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -55,7 +50,7 @@ void rectangle_setCopy (t_rectangle *r, t_rectangle *toCopy)
 
 int rectangle_areEquals (t_rectangle *r1, t_rectangle *r2)
 {
-    if (r1->rect_isNowhere         != r2->rect_isNowhere)    { return 0; }
+    if (r1->rect_isNothing         != r2->rect_isNothing)    { return 0; }
     else if (r1->rect_topLeftX     != r2->rect_topLeftX)     { return 0; }
     else if (r1->rect_topLeftY     != r2->rect_topLeftY)     { return 0; }
     else if (r1->rect_bottomRightX != r2->rect_bottomRightX) { return 0; }
@@ -75,9 +70,9 @@ int rectangle_isEverything (t_rectangle *r)
     return rectangle_areEquals (r, &t);
 }
 
-int rectangle_isNowhere (t_rectangle *r)
+int rectangle_isNothing (t_rectangle *r)
 {
-    t_rectangle t; rectangle_setNowhere (&t);
+    t_rectangle t; rectangle_setNothing (&t);
     
     return rectangle_areEquals (r, &t);
 }
@@ -88,7 +83,7 @@ int rectangle_isNowhere (t_rectangle *r)
 
 void rectangle_enlarge (t_rectangle *r, int n)
 {
-    if (!rectangle_isNowhere (r)) {
+    if (!rectangle_isNothing (r)) {
 
         r->rect_topLeftX     -= n;
         r->rect_topLeftY     -= n;
@@ -103,14 +98,15 @@ void rectangle_enlarge (t_rectangle *r, int n)
 
 void rectangle_boundingBoxAddRectangle (t_rectangle *r, t_rectangle *toAdd)
 {
-    PD_ASSERT (!rectangle_isNowhere (toAdd)); 
+    if (!rectangle_isNothing (toAdd)) { 
 
-    if (rectangle_isNowhere (r)) { rectangle_setCopy (r, toAdd); }
-    else {
-        r->rect_topLeftX     = PD_MIN (r->rect_topLeftX,     toAdd->rect_topLeftX);
-        r->rect_topLeftY     = PD_MIN (r->rect_topLeftY,     toAdd->rect_topLeftY);
-        r->rect_bottomRightX = PD_MAX (r->rect_bottomRightX, toAdd->rect_bottomRightX);
-        r->rect_bottomRightY = PD_MAX (r->rect_bottomRightY, toAdd->rect_bottomRightY);
+        if (rectangle_isNothing (r)) { rectangle_setCopy (r, toAdd); }
+        else {
+            r->rect_topLeftX     = PD_MIN (r->rect_topLeftX,     toAdd->rect_topLeftX);
+            r->rect_topLeftY     = PD_MIN (r->rect_topLeftY,     toAdd->rect_topLeftY);
+            r->rect_bottomRightX = PD_MAX (r->rect_bottomRightX, toAdd->rect_bottomRightX);
+            r->rect_bottomRightY = PD_MAX (r->rect_bottomRightY, toAdd->rect_bottomRightY);
+        }
     }
 }
 
@@ -127,7 +123,7 @@ void rectangle_boundingBoxAddPoint (t_rectangle *r, int x, int y)
 
 int rectangle_containsPoint (t_rectangle *r, int x, int y)
 {
-    if (r->rect_isNowhere)             { return 0; }
+    if (r->rect_isNothing)             { return 0; }
     else if (x < r->rect_topLeftX)     { return 0; }
     else if (x > r->rect_bottomRightX) { return 0; }
     else if (y < r->rect_topLeftY)     { return 0; }
@@ -138,7 +134,7 @@ int rectangle_containsPoint (t_rectangle *r, int x, int y)
 
 int rectangle_containsRectangle (t_rectangle *r, t_rectangle *c)
 {
-    if (rectangle_isNowhere (r) || rectangle_isNowhere (c))                            { return 0; }
+    if (rectangle_isNothing (r) || rectangle_isNothing (c))                            { return 0; }
     else if (!rectangle_containsPoint (r, c->rect_topLeftX,     c->rect_topLeftY))     { return 0; }
     else if (!rectangle_containsPoint (r, c->rect_bottomRightX, c->rect_bottomRightY)) { return 0; }
     

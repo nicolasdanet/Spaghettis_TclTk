@@ -131,11 +131,10 @@ t_float     math_decibelToPower                         (t_float f);
 void        rectangle_set                               (t_rectangle *r, int xA, int yA, int xB, int yB);
 void        rectangle_setEverything                     (t_rectangle *r);
 void        rectangle_setNothing                        (t_rectangle *r);
-void        rectangle_setNowhere                        (t_rectangle *r);
 void        rectangle_setCopy                           (t_rectangle *r, t_rectangle *toCopy);
 
 int         rectangle_isEverything                      (t_rectangle *r);
-int         rectangle_isNowhere                         (t_rectangle *r);
+int         rectangle_isNothing                         (t_rectangle *r);
 int         rectangle_areEquals                         (t_rectangle *r1, t_rectangle *r2);
 
 void        rectangle_boundingBoxAddRectangle           (t_rectangle *r, t_rectangle *toAdd);

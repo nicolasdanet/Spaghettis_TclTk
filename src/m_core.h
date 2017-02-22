@@ -51,7 +51,7 @@ typedef struct _rectangle {
     int     rect_topLeftY;
     int     rect_bottomRightX;
     int     rect_bottomRightY;
-    int     rect_isNowhere;
+    int     rect_isNothing;
     } t_rectangle;
     
 // -----------------------------------------------------------------------------------------------------------
