@@ -490,9 +490,9 @@ int canvas_hasLine (t_glist *glist, t_object *objectOut, int m, t_object *object
     t_linetraverser t;
     t_outconnect *connection = NULL;
     
-    canvas_traverseLinesStart (&t, glist);
+    linetraverser_start (&t, glist);
     
-    while ((connection = canvas_traverseLinesNext (&t))) {
+    while ((connection = linetraverser_next (&t))) {
         if (t.tr_srcObject == objectOut && t.tr_destObject == objectIn) {
             if (t.tr_srcIndexOfOutlet == m && t.tr_destIndexOfInlet == n) {
                 return 1;

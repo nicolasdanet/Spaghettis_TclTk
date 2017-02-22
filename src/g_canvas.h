@@ -173,9 +173,6 @@ void            canvas_getLastMotionCoordinates         (t_glist *glist, int *a,
 int             canvas_getIndexOfObject                 (t_glist *glist, t_gobj *y);
 t_gobj          *canvas_getObjectAtIndex                (t_glist *glist, int n);
 
-void            canvas_traverseLinesStart               (t_linetraverser *t, t_glist *glist);
-t_outconnect    *canvas_traverseLinesNext               (t_linetraverser *t);
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

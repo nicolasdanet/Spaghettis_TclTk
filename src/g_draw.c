@@ -42,9 +42,9 @@ void canvas_drawLines (t_glist *glist)
     t_outconnect *connection = NULL;
     t_linetraverser t;
 
-    canvas_traverseLinesStart (&t, glist);
+    linetraverser_start (&t, glist);
     
-    while ((connection = canvas_traverseLinesNext (&t))) {
+    while ((connection = linetraverser_next (&t))) {
     //
     sys_vGui (".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
                     canvas_getView (glist),
@@ -63,9 +63,9 @@ void canvas_updateLinesByObject (t_glist *glist, t_object *o)
     t_outconnect *connection = NULL;
     t_linetraverser t;
 
-    canvas_traverseLinesStart (&t, glist);
+    linetraverser_start (&t, glist);
     
-    while ((connection = canvas_traverseLinesNext (&t))) {
+    while ((connection = linetraverser_next (&t))) {
     //
     if (t.tr_srcObject == o || t.tr_destObject == o) {
     //
@@ -91,9 +91,9 @@ void canvas_deleteLinesByObject (t_glist *glist, t_object *o)
     t_outconnect *connection = NULL;
     t_linetraverser t;
 
-    canvas_traverseLinesStart (&t, glist);
+    linetraverser_start (&t, glist);
     
-    while ((connection = canvas_traverseLinesNext (&t))) {
+    while ((connection = linetraverser_next (&t))) {
     //
     if (t.tr_srcObject == o || t.tr_destObject == o) {
     //
@@ -117,9 +117,9 @@ void canvas_deleteLinesByInlets (t_glist *glist, t_object *o, t_inlet *inlet, t_
     t_outconnect *connection = NULL;
     t_linetraverser t;
 
-    canvas_traverseLinesStart (&t, glist);
+    linetraverser_start (&t, glist);
     
-    while ((connection = canvas_traverseLinesNext (&t))) {
+    while ((connection = linetraverser_next (&t))) {
     //
     int m = (t.tr_srcObject == o && t.tr_srcOutlet == outlet);
     int n = (t.tr_destObject == o && t.tr_destInlet == inlet);

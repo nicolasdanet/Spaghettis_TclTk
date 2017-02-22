@@ -56,9 +56,9 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
     
     for (y = glist->gl_graphics; y; y = y->g_next) { gobj_save (y, b); }
 
-    canvas_traverseLinesStart (&t, glist);
+    linetraverser_start (&t, glist);
     
-    while ((connection = canvas_traverseLinesNext (&t))) {
+    while ((connection = linetraverser_next (&t))) {
     
         buffer_vAppend (b, "ssiiii;", 
             sym___hash__X,

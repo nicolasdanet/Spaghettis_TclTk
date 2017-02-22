@@ -18,7 +18,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_traverseLinesStart (t_linetraverser *t, t_glist *glist)
+void linetraverser_start (t_linetraverser *t, t_glist *glist)
 {
     t->tr_owner             = glist;
     t->tr_connectionCached  = NULL;
@@ -30,7 +30,7 @@ void canvas_traverseLinesStart (t_linetraverser *t, t_glist *glist)
 /* Get the lines outlet per outlet, object per object. */
 /* Coordinates are set at the same time. */
 
-t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
+t_outconnect *linetraverser_next (t_linetraverser *t)
 {
     t_outconnect *connection = t->tr_connectionCached;
     

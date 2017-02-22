@@ -398,9 +398,9 @@ static int canvas_proceedMouseLines (t_glist *glist, int positionX, int position
     t_outconnect *connection = NULL;
     t_linetraverser t;
         
-    canvas_traverseLinesStart (&t, canvas);
+    linetraverser_start (&t, canvas);
     
-    while ((connection = canvas_traverseLinesNext (&t))) {
+    while ((connection = linetraverser_next (&t))) {
     //
     t_float a = t.tr_lineStartX;
     t_float b = t.tr_lineStartY;
@@ -510,9 +510,9 @@ static void canvas_proceedCopy (t_glist *glist)
         if (canvas_isObjectSelected (glist, y)) { gobj_save (y, b); }
     }
     
-    canvas_traverseLinesStart (&t, glist);
+    linetraverser_start (&t, glist);
     
-    while ((connection = canvas_traverseLinesNext (&t))) {
+    while ((connection = linetraverser_next (&t))) {
     //
     int m = canvas_isObjectSelected (glist, cast_gobj (t.tr_srcObject));
     int n = canvas_isObjectSelected (glist, cast_gobj (t.tr_destObject));

@@ -37,9 +37,9 @@ void canvas_dspProceed (t_glist *glist, int isTopLevel, t_signal **sp)
     //
     }
 
-    canvas_traverseLinesStart (&t, glist);
+    linetraverser_start (&t, glist);
     
-    while ((connection = canvas_traverseLinesNext (&t))) {
+    while ((connection = linetraverser_next (&t))) {
         if (object_isSignalOutlet (t.tr_srcObject, t.tr_srcIndexOfOutlet)) {
             ugen_graphConnect (context, 
                 t.tr_srcObject, 

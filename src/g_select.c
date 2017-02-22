@@ -99,9 +99,9 @@ static void canvas_cacheLines (t_glist *glist)
 
     buffer_reset (glist->gl_editor->e_buffer);
     
-    canvas_traverseLinesStart (&t, glist);
+    linetraverser_start (&t, glist);
     
-    while ((connection = canvas_traverseLinesNext (&t))) {
+    while ((connection = linetraverser_next (&t))) {
     //
     int s1 = canvas_isObjectSelected (glist, cast_gobj (t.tr_srcObject));
     int s2 = canvas_isObjectSelected (glist, cast_gobj (t.tr_destObject));

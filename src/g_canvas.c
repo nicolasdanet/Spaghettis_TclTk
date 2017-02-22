@@ -291,9 +291,9 @@ void canvas_disconnect (t_glist *glist,
     t_outconnect *connection = NULL;
     t_linetraverser t;
         
-    canvas_traverseLinesStart (&t, glist);
+    linetraverser_start (&t, glist);
     
-    while ((connection = canvas_traverseLinesNext (&t))) {
+    while ((connection = linetraverser_next (&t))) {
     //
     if ((t.tr_srcIndexOfOutlet == (int)indexOfOutlet) && (t.tr_destIndexOfInlet == (int)indexOfInlet)) {
     
