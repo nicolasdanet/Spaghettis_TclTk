@@ -26,10 +26,8 @@ extern t_class              *canvas_class;
 extern t_class              *vinlet_class;
 extern t_class              *voutlet_class;
 extern t_pd                 *pd_newest;
-extern t_pdinstance         *pd_this;
 
 extern t_pd                 pd_objectMaker;
-extern t_widgetbehavior     text_widgetBehavior;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -567,112 +565,6 @@ t_gobj *canvas_getObjectAtIndex (t_glist *glist, int n)
     }
     
     return NULL;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void canvas_traverseLinesStart (t_linetraverser *t, t_glist *glist)
-{
-    t->tr_owner             = glist;
-    t->tr_connectionCached  = NULL;
-    t->tr_srcObject         = NULL;
-    
-    t->tr_srcIndexOfNextOutlet = t->tr_srcNumberOfOutlets = 0;
-}
-
-/* Get the lines outlet per outlet, object per object. */
-/* Coordinates are set at the same time. */
-
-t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
-{
-    t_outconnect *connection = t->tr_connectionCached;
-    
-    while (!connection) {
-    //
-    int n = t->tr_srcIndexOfNextOutlet;
-    
-    while (n == t->tr_srcNumberOfOutlets) {
-    //
-    t_gobj   *y = NULL;
-    t_object *o = NULL;
-    
-    if (!t->tr_srcObject) { y = t->tr_owner->gl_graphics; }
-    else {
-        y = cast_gobj (t->tr_srcObject)->g_next;
-    }
-    
-    for (; y; y = y->g_next) {
-        if ((o = cast_objectIfPatchable (y))) { break; }     /* Only box objects are considered. */
-    }
-    
-    if (!o) { return NULL; }
-    
-    t->tr_srcObject          = o;
-    t->tr_srcNumberOfOutlets = object_numberOfOutlets (o);
-    n = 0;
-    
-    if (canvas_isMapped (t->tr_owner)) {
-    
-        gobj_getRectangle (y, t->tr_owner,
-            &t->tr_srcTopLeftX,
-            &t->tr_srcTopLeftY,
-            &t->tr_srcBottomRightX,
-            &t->tr_srcBottomRightY);
-            
-    } else {
-        t->tr_srcTopLeftX = t->tr_srcTopLeftY = t->tr_srcBottomRightX = t->tr_srcBottomRightY = 0;
-    }
-    //
-    }
-    
-    t->tr_srcIndexOfOutlet     = n;
-    t->tr_srcIndexOfNextOutlet = n + 1;
-    connection = object_traverseOutletStart (t->tr_srcObject, &t->tr_srcOutlet, n);
-    //
-    }
-    
-    t->tr_connectionCached = object_traverseOutletNext (connection,
-        &t->tr_destObject,
-        &t->tr_destInlet,
-        &t->tr_destIndexOfInlet);
-                                                            
-    t->tr_destNumberOfInlets = object_numberOfInlets (t->tr_destObject);
-    
-    PD_ASSERT (t->tr_destNumberOfInlets);
-    
-    if (canvas_isMapped (t->tr_owner)) {
-
-        gobj_getRectangle (cast_gobj (t->tr_destObject), t->tr_owner,
-            &t->tr_destTopLeftX,
-            &t->tr_destTopLeftY,
-            &t->tr_destBottomRightX,
-            &t->tr_destBottomRightY);
-        
-        {
-            int w = t->tr_srcBottomRightX - t->tr_srcTopLeftX;
-            int i = t->tr_srcIndexOfOutlet;
-            int j = t->tr_srcNumberOfOutlets;
-        
-            t->tr_lineStartX = t->tr_srcTopLeftX + inlet_middle (w, i, j);
-            t->tr_lineStartY = t->tr_srcBottomRightY;
-        }
-        {
-            int w = t->tr_destBottomRightX - t->tr_destTopLeftX;
-            int i = t->tr_destIndexOfInlet;
-            int j = t->tr_destNumberOfInlets;
-        
-            t->tr_lineEndX = t->tr_destTopLeftX + inlet_middle (w, i, j);
-            t->tr_lineEndY = t->tr_destTopLeftY;
-        }
-        
-    } else {
-        t->tr_lineStartX   = t->tr_lineStartY   = t->tr_lineEndX         = t->tr_lineEndY         = 0;
-        t->tr_destTopLeftX = t->tr_destTopLeftY = t->tr_destBottomRightX = t->tr_destBottomRightY = 0;
-    }
-    
-    return connection;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -90,6 +90,7 @@
 #include "g_box.c"
 #include "g_text.c"
 #include "g_base.c"
+#include "g_traverse.c"
 #include "g_draw.c"
 #include "g_select.c"
 #include "g_editor.c"
