@@ -121,14 +121,6 @@ static inline int inlet_nearby (int x, int a, int b, int n)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-struct _environment {
-    int                 ce_dollarZeroValue;
-    int                 ce_argc;
-    t_atom              *ce_argv;
-    t_symbol            *ce_directory;
-    t_symbol            *ce_fileName;
-};
-
 typedef struct _linetraverser {
     t_glist             *tr_owner;
     t_outconnect        *tr_connectionCached;
