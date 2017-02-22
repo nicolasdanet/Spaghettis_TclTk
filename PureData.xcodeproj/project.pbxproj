@@ -1013,7 +1013,6 @@
 		3716D99C1DAA484F00FDC632 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				37128B5F1D43691300EFB4FC /* m_color.h */,
 				378971E61C4F716700263434 /* m_utils.c */,
 				37A7BBF21D030B45000C7AB5 /* m_string.c */,
 				374448191D66000B00E54A0D /* m_math.c */,
@@ -1030,6 +1029,7 @@
 				378971E31C4F716700263434 /* m_core.h */,
 				378971D71C4F716700263434 /* m_alloca.h */,
 				37D5E4271D746170004CB497 /* m_error.h */,
+				37128B5F1D43691300EFB4FC /* m_color.h */,
 				37978A1C1D742E070055E010 /* m_utils.h */,
 				3791F2E11CDF064000F7481C /* m_symbols.h */,
 				3791F2E01CDF064000F7481C /* m_symbols.c */,

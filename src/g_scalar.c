@@ -184,7 +184,7 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
     
         t_gobj *y = NULL;
         
-        rectangle_setNowhere (&xA, &yA, &xB, &yB);
+        area_setNowhere (&xA, &yA, &xB, &yB);
         
         for (y = view->gl_graphics; y; y = y->g_next) {
         //
@@ -208,9 +208,9 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
         //
         }
         
-        if (xB < xA || yB < yA) { rectangle_setNothing (&xA, &yA, &xB, &yB); }
+        if (xB < xA || yB < yA) { area_setNothing (&xA, &yA, &xB, &yB); }
         else {
-            if (!rectangle_isEverything (xA, yA, xB, yB)) {
+            if (!area_isEverything (xA, yA, xB, yB)) {
                 xA -= SCALAR_SELECT_MARGIN;
                 yA -= SCALAR_SELECT_MARGIN;
                 xB += SCALAR_SELECT_MARGIN;

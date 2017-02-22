@@ -150,7 +150,7 @@ static void drawpolygon_behaviorGetRectangle (t_gobj *z,
 
     int visible = (int)gpointer_getFloatByDescriptor (gp, &x->x_isVisible);
     
-    rectangle_setNowhere (&xA, &yA, &xB, &yB);
+    area_setNowhere (&xA, &yA, &xB, &yB);
         
     if (visible && !(x->x_flags & DRAWPOLYGON_INHIBIT)) {
     //

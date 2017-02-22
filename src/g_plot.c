@@ -379,9 +379,9 @@ static void plot_behaviorGetRectangle (t_gobj *z,
         
     int xA, yA, xB, yB;
         
-    rectangle_setNowhere (&xA, &yA, &xB, &yB);
+    area_setNowhere (&xA, &yA, &xB, &yB);
     
-    if (garray_isSingle (glist)) { rectangle_setEverything (&xA, &yA, &xB, &yB); }
+    if (garray_isSingle (glist)) { area_setEverything (&xA, &yA, &xB, &yB); }
     else {
     //
     t_array *array = NULL;
