@@ -183,7 +183,7 @@
 		3789722D1C4F716800263434 /* g_panel.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CB1C4F716700263434 /* g_panel.c */; };
 		3789722E1C4F716800263434 /* g_dial.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CC1C4F716700263434 /* g_dial.c */; };
 		3789722F1C4F716800263434 /* g_file.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CD1C4F716700263434 /* g_file.c */; };
-		378972301C4F716800263434 /* g_box.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CE1C4F716700263434 /* g_box.c */; };
+		378972301C4F716800263434 /* g_boxtext.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CE1C4F716700263434 /* g_boxtext.c */; };
 		378972311C4F716800263434 /* g_scalar.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CF1C4F716700263434 /* g_scalar.c */; };
 		378972321C4F716800263434 /* g_template.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971D01C4F716700263434 /* g_template.c */; };
 		378972331C4F716800263434 /* g_text.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971D11C4F716700263434 /* g_text.c */; };
@@ -621,7 +621,7 @@
 		378971CB1C4F716700263434 /* g_panel.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_panel.c; path = src/g_panel.c; sourceTree = "<group>"; };
 		378971CC1C4F716700263434 /* g_dial.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_dial.c; path = src/g_dial.c; sourceTree = "<group>"; };
 		378971CD1C4F716700263434 /* g_file.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_file.c; path = src/g_file.c; sourceTree = "<group>"; };
-		378971CE1C4F716700263434 /* g_box.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_box.c; path = src/g_box.c; sourceTree = "<group>"; };
+		378971CE1C4F716700263434 /* g_boxtext.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_boxtext.c; path = src/g_boxtext.c; sourceTree = "<group>"; };
 		378971CF1C4F716700263434 /* g_scalar.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_scalar.c; path = src/g_scalar.c; sourceTree = "<group>"; };
 		378971D01C4F716700263434 /* g_template.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_template.c; path = src/g_template.c; sourceTree = "<group>"; };
 		378971D11C4F716700263434 /* g_text.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_text.c; path = src/g_text.c; sourceTree = "<group>"; };
@@ -1431,7 +1431,7 @@
 				37DFBC5B1D2937BA00FCDEEE /* g_guiconnect.c */,
 				370B1FAF1E421D22003D95A0 /* g_environment.c */,
 				37BA30811CD1DB0F0091113F /* g_object.c */,
-				378971CE1C4F716700263434 /* g_box.c */,
+				378971CE1C4F716700263434 /* g_boxtext.c */,
 				378971D11C4F716700263434 /* g_text.c */,
 				372A2CE31E5DC57E00546B87 /* g_linetraverser.c */,
 				3777AEA71E5B2844003F61A1 /* Canvas */,
@@ -1855,7 +1855,7 @@
 				3789722D1C4F716800263434 /* g_panel.c in Sources */,
 				3789722E1C4F716800263434 /* g_dial.c in Sources */,
 				3789722F1C4F716800263434 /* g_file.c in Sources */,
-				378972301C4F716800263434 /* g_box.c in Sources */,
+				378972301C4F716800263434 /* g_boxtext.c in Sources */,
 				378972311C4F716800263434 /* g_scalar.c in Sources */,
 				378972321C4F716800263434 /* g_template.c in Sources */,
 				378972331C4F716800263434 /* g_text.c in Sources */,
