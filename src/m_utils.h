@@ -16,6 +16,35 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define COLOR_IEM_BACKGROUND_DARK       0xcccccc        /* Grey. */
+#define COLOR_IEM_BACKGROUND_LIGHT      0xffffff        /* White. */
+#define COLOR_IEM_FOREGROUND            0x000000        /* Black. */
+#define COLOR_IEM_LABEL                 0x000000        /* Black. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define COLOR_MASKED                    0xdddddd        /* Grey. */
+#define COLOR_NORMAL                    0x000000        /* Black. */
+#define COLOR_SELECTED                  0x0000ff        /* Blue. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_color     color_checked                               (t_color color);
+t_color     color_withRGB                               (int argc, t_atom *argv);
+t_color     color_withDigits                            (int c);
+t_color     color_withEncodedSymbol                     (t_symbol *s);
+t_error     color_toEncodedString                       (char *dest, size_t size, t_color color);
+
+t_symbol    *color_toEncodedSymbol                      (t_color color);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_error     string_copy                                 (char *dest, size_t size, const char *src);
 t_error     string_add                                  (char *dest, size_t size, const char *src);
 t_error     string_append                               (char *dest, size_t size, const char *src, int n);
@@ -94,6 +123,31 @@ t_float     math_rootMeanSquareToDecibel                (t_float f);
 t_float     math_decibelToRootMeanSquare                (t_float f);
 t_float     math_powerToDecibel                         (t_float f);
 t_float     math_decibelToPower                         (t_float f);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        rectangle_set                               (t_rectangle *r, int xA, int yA, int xB, int yB);
+void        rectangle_setEverything                     (t_rectangle *r);
+void        rectangle_setNothing                        (t_rectangle *r);
+void        rectangle_setNowhere                        (t_rectangle *r);
+void        rectangle_setByCopy                         (t_rectangle *r, t_rectangle *toCopy);
+void        rectangle_boundingBoxAddRectangle           (t_rectangle *r, t_rectangle *toAdd);
+void        rectangle_boundingBoxAddPoint               (t_rectangle *r, int x, int y);
+void        rectangle_enlarge                           (t_rectangle *r, int n);
+
+int         rectangle_areEquals                         (t_rectangle *r1, t_rectangle *r2);
+int         rectangle_isEverything                      (t_rectangle *r);
+int         rectangle_isNowhere                         (t_rectangle *r);
+
+int         rectangle_containsPoint                     (t_rectangle *r, int x, int y);
+int         rectangle_containsRectangle                 (t_rectangle *r, t_rectangle *isContained);
+
+int         rectangle_getTopLeftX                       (t_rectangle *r);
+int         rectangle_getTopLeftY                       (t_rectangle *r);
+int         rectangle_getBottomRightX                   (t_rectangle *r);
+int         rectangle_getBottomRightY                   (t_rectangle *r);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

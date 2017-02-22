@@ -45,6 +45,13 @@ typedef struct _mouse {
     int     m_dbl;
     int     m_clicked;
     } t_mouse;
+
+typedef struct _rectangle {
+    int     rect_topLeftX;
+    int     rect_topLeftY;
+    int     rect_bottomRightX;
+    int     rect_bottomRightY;
+    } t_rectangle;
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -453,7 +460,6 @@ void        guistub_destroyWithKey                      (void *key);
 // -----------------------------------------------------------------------------------------------------------
 
 #include "h_helpers.h"
-#include "m_color.h"
 #include "m_error.h"
 #include "m_utils.h"
 #include "m_symbols.h"

@@ -413,7 +413,6 @@
 		371196D11E2DF3D2007214B2 /* d_rfft.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_rfft.c; path = src/d_rfft.c; sourceTree = "<group>"; };
 		3711970B1E2DF6FE007214B2 /* d_ifft.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_ifft.c; path = src/d_ifft.c; sourceTree = "<group>"; };
 		37128AF71D43640300EFB4FC /* m_color.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_color.c; path = src/m_color.c; sourceTree = "<group>"; };
-		37128B5F1D43691300EFB4FC /* m_color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_color.h; path = src/m_color.h; sourceTree = "<group>"; };
 		371430B01D0D46BC00E68D11 /* g_paint.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_paint.c; path = src/g_paint.c; sourceTree = "<group>"; };
 		371526B51E49D03E00712D43 /* x_expr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_expr.c; path = src/x_expr.c; sourceTree = "<group>"; };
 		3716554E1BA3452E00ABDE22 /* pa_allocation.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_allocation.c; path = portaudio/src/common/pa_allocation.c; sourceTree = "<group>"; };
@@ -1013,11 +1012,11 @@
 		3716D99C1DAA484F00FDC632 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				378971E61C4F716700263434 /* m_utils.c */,
+				37128AF71D43640300EFB4FC /* m_color.c */,
 				37A7BBF21D030B45000C7AB5 /* m_string.c */,
+				378971E61C4F716700263434 /* m_utils.c */,
 				374448191D66000B00E54A0D /* m_math.c */,
 				374449391D66154D00E54A0D /* m_rectangle.c */,
-				37128AF71D43640300EFB4FC /* m_color.c */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -1029,7 +1028,6 @@
 				378971E31C4F716700263434 /* m_core.h */,
 				378971D71C4F716700263434 /* m_alloca.h */,
 				37D5E4271D746170004CB497 /* m_error.h */,
-				37128B5F1D43691300EFB4FC /* m_color.h */,
 				37978A1C1D742E070055E010 /* m_utils.h */,
 				3791F2E11CDF064000F7481C /* m_symbols.h */,
 				3791F2E01CDF064000F7481C /* m_symbols.c */,
