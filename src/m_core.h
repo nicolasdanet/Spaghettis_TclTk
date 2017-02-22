@@ -46,6 +46,14 @@ typedef struct _mouse {
     int     m_clicked;
     } t_mouse;
 
+typedef struct _rectangle {
+    int     rect_topLeftX;
+    int     rect_topLeftY;
+    int     rect_bottomRightX;
+    int     rect_bottomRightY;
+    int     rect_isNothing;
+    } t_rectangle;
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

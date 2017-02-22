@@ -121,7 +121,7 @@ static inline int inlet_nearby (int x, int a, int b, int n)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-struct _linetraverser {
+typedef struct _linetraverser {
     t_glist             *tr_owner;
     t_outconnect        *tr_connectionCached;
     t_object            *tr_srcObject;
@@ -145,7 +145,7 @@ struct _linetraverser {
     int                 tr_lineStartY;
     int                 tr_lineEndX;
     int                 tr_lineEndY;
-    };
+    } t_linetraverser;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

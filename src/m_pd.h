@@ -460,14 +460,12 @@ struct _gpointer;
 struct _guiconnect;
 struct _inlet;
 struct _iterator;
-struct _linetraverser;
 struct _listinletelement;
 struct _message;
 struct _outconnect;
 struct _outlet;
 struct _painterwidgetbehavior;
 struct _pdinstance;
-struct _rectangle;
 struct _signal;
 struct _struct;
 struct _template;
@@ -490,14 +488,12 @@ struct _widgetbehavior;
 #define t_guiconnect                struct _guiconnect
 #define t_inlet                     struct _inlet
 #define t_iterator                  struct _iterator
-#define t_linetraverser             struct _linetraverser
 #define t_listinletelement          struct _listinletelement
 #define t_message                   struct _message
 #define t_outconnect                struct _outconnect
 #define t_outlet                    struct _outlet
 #define t_painterwidgetbehavior     struct _painterwidgetbehavior
 #define t_pdinstance                struct _pdinstance
-#define t_rectangle                 struct _rectangle
 #define t_signal                    struct _signal
 #define t_struct                    struct _struct
 #define t_template                  struct _template
