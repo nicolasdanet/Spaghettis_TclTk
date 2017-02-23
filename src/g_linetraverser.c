@@ -99,20 +99,20 @@ t_outconnect *linetraverser_next (t_linetraverser *t)
             int i = t->tr_srcIndexOfOutlet;
             int j = t->tr_srcNumberOfOutlets;
         
-            t->tr_lineStartX = t->tr_srcTopLeftX + inlet_middle (w, i, j);
-            t->tr_lineStartY = t->tr_srcBottomRightY;
+            t->tr_cord.tr_lineStartX = t->tr_srcTopLeftX + inlet_middle (w, i, j);
+            t->tr_cord.tr_lineStartY = t->tr_srcBottomRightY;
         }
         {
             int w = t->tr_destBottomRightX - t->tr_destTopLeftX;
             int i = t->tr_destIndexOfInlet;
             int j = t->tr_destNumberOfInlets;
         
-            t->tr_lineEndX = t->tr_destTopLeftX + inlet_middle (w, i, j);
-            t->tr_lineEndY = t->tr_destTopLeftY;
+            t->tr_cord.tr_lineEndX = t->tr_destTopLeftX + inlet_middle (w, i, j);
+            t->tr_cord.tr_lineEndY = t->tr_destTopLeftY;
         }
         
     } else {
-        t->tr_lineStartX   = t->tr_lineStartY   = t->tr_lineEndX         = t->tr_lineEndY         = 0;
+        cord_init (&t->tr_cord);
         t->tr_destTopLeftX = t->tr_destTopLeftY = t->tr_destBottomRightX = t->tr_destBottomRightY = 0;
     }
     

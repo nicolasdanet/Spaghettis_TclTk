@@ -121,6 +121,13 @@ static inline int inlet_nearby (int x, int a, int b, int n)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+typedef struct _cord {
+    int                 tr_lineStartX;
+    int                 tr_lineStartY;
+    int                 tr_lineEndX;
+    int                 tr_lineEndY;
+    } t_cord;
+    
 typedef struct _linetraverser {
     t_glist             *tr_owner;
     t_outconnect        *tr_connectionCached;
@@ -141,10 +148,7 @@ typedef struct _linetraverser {
     int                 tr_destTopLeftY;
     int                 tr_destBottomRightX;
     int                 tr_destBottomRightY;
-    int                 tr_lineStartX;
-    int                 tr_lineStartY;
-    int                 tr_lineEndX;
-    int                 tr_lineEndY;
+    t_cord              tr_cord;
     } t_linetraverser;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -350,22 +354,22 @@ int             linetraverser_isLineBetween             (t_linetraverser *t,
 
 static inline int linetraverser_getStartX (t_linetraverser *t)
 {
-    return t->tr_lineStartX;
+    return t->tr_cord.tr_lineStartX;
 }
 
 static inline int linetraverser_getStartY (t_linetraverser *t)
 {
-    return t->tr_lineStartY;
+    return t->tr_cord.tr_lineStartY;
 }
 
 static inline int linetraverser_getEndX (t_linetraverser *t)
 {
-    return t->tr_lineEndX;
+    return t->tr_cord.tr_lineEndX;
 }
 
 static inline int linetraverser_getEndY (t_linetraverser *t)
 {
-    return t->tr_lineEndY;
+    return t->tr_cord.tr_lineEndY;
 }
 
 static inline t_object *linetraverser_getSource (t_linetraverser *t)
@@ -396,6 +400,15 @@ static inline int linetraverser_getIndexOfOutlet (t_linetraverser *t)
 static inline int linetraverser_getIndexOfInlet (t_linetraverser *t)
 {
     return t->tr_destIndexOfInlet;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline void cord_init (t_cord *c)
+{
+    c->tr_lineStartX = c->tr_lineStartY = c->tr_lineEndX = c->tr_lineEndY = 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
