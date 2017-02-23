@@ -416,10 +416,10 @@ void canvas_visible (t_glist *glist, t_float f)
             
             sys_vGui ("::ui_patch::create .x%lx %d %d +%d+%d %d\n",     // --
                             glist,
-                            (int)(glist->gl_windowBottomRightX - glist->gl_windowTopLeftX),
-                            (int)(glist->gl_windowBottomRightY - glist->gl_windowTopLeftY),
-                            (int)(glist->gl_windowTopLeftX),
-                            (int)(glist->gl_windowTopLeftY),
+                            rectangle_getWidth (&glist->gl_geometry),
+                            rectangle_getHeight (&glist->gl_geometry),
+                            rectangle_getTopLeftX (&glist->gl_geometry),
+                            rectangle_getTopLeftY (&glist->gl_geometry),
                             glist->gl_isEditMode);
                         
             canvas_updateTitle (glist);
@@ -784,14 +784,12 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     x->gl_valueTop              = (t_float)0.0;
     x->gl_valueRight            = (t_float)1.0;
     x->gl_valueBottom           = (t_float)1.0;
-    x->gl_windowTopLeftX        = topLeftX;
-    x->gl_windowTopLeftY        = topLeftY;
-    x->gl_windowBottomRightX    = topLeftX + width;
-    x->gl_windowBottomRightY    = topLeftY + height;
     x->gl_fontSize              = font_getNearestValidFontSize (fontSize);
     x->gl_isLoading             = 1;
     x->gl_isEditMode            = 0;
     x->gl_openedAtLoad          = visible;
+    
+    rectangle_set (&x->gl_geometry, topLeftX, topLeftY, topLeftX + width, topLeftY + height);
     
     canvas_bind (x);
     

@@ -65,10 +65,7 @@ struct _glist {
     t_float             gl_valueRight;
     t_float             gl_valueTop;
     t_float             gl_valueBottom;
-    int                 gl_windowTopLeftX;
-    int                 gl_windowTopLeftY;
-    int                 gl_windowBottomRightX;
-    int                 gl_windowBottomRightY;
+    t_rectangle         gl_geometry;
     t_fontsize          gl_fontSize;
     char                gl_isMapped;
     char                gl_isDirty;

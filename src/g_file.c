@@ -35,10 +35,10 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
         buffer_vAppend (b, "ssiiiisi;", 
             sym___hash__N, 
             sym_canvas,
-            glist->gl_windowTopLeftX,
-            glist->gl_windowTopLeftY,
-            glist->gl_windowBottomRightX - glist->gl_windowTopLeftX,
-            glist->gl_windowBottomRightY - glist->gl_windowTopLeftY,
+            rectangle_getTopLeftX (&glist->gl_geometry),
+            rectangle_getTopLeftY (&glist->gl_geometry),
+            rectangle_getWidth (&glist->gl_geometry),
+            rectangle_getHeight (&glist->gl_geometry),
             (s != &s_ ? s : sym_Patch),
             glist->gl_isMapped);
             
@@ -47,10 +47,10 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
         buffer_vAppend (b, "ssiiiii;", 
             sym___hash__N,
             sym_canvas,
-            glist->gl_windowTopLeftX,
-            glist->gl_windowTopLeftY,
-            glist->gl_windowBottomRightX - glist->gl_windowTopLeftX,
-            glist->gl_windowBottomRightY - glist->gl_windowTopLeftY,
+            rectangle_getTopLeftX (&glist->gl_geometry),
+            rectangle_getTopLeftY (&glist->gl_geometry),
+            rectangle_getWidth (&glist->gl_geometry),
+            rectangle_getHeight (&glist->gl_geometry),
             (int)glist->gl_fontSize);
     }
     

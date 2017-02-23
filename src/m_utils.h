@@ -176,9 +176,19 @@ static inline int rectangle_getWidth (t_rectangle *r)
     return (rectangle_getBottomRightX (r) - rectangle_getTopLeftX (r));
 }
 
+static inline int rectangle_getHeight (t_rectangle *r)
+{
+    return (rectangle_getBottomRightY (r) - rectangle_getTopLeftY (r));
+}
+
 static inline int rectangle_getMiddleX (t_rectangle *r)
 {
     return ((rectangle_getTopLeftX (r) + rectangle_getBottomRightX (r)) / 2);
+}
+
+static inline int rectangle_getMiddleY (t_rectangle *r)
+{
+    return ((rectangle_getTopLeftY (r) + rectangle_getBottomRightY (r)) / 2);
 }
 
 // -----------------------------------------------------------------------------------------------------------

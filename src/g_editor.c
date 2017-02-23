@@ -765,10 +765,7 @@ void canvas_mouseUp (t_glist *glist, t_float positionX, t_float positionY)
 
 void canvas_window (t_glist *glist, t_float a, t_float b, t_float c, t_float d)
 {
-    glist->gl_windowTopLeftX     = a;
-    glist->gl_windowTopLeftY     = b;
-    glist->gl_windowBottomRightX = c;
-    glist->gl_windowBottomRightY = d;
+    rectangle_set (&glist->gl_geometry, a, b, c, d);
     
     if (canvas_canHaveWindow (glist) && canvas_isGraph (glist)) { canvas_redraw (glist); }
 }

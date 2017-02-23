@@ -54,12 +54,10 @@ static t_glist *canvas_newGraphOnParent (t_glist *glist,
     x->gl_valueRight                    = valueEnd;
     x->gl_valueTop                      = valueUp;
     x->gl_valueBottom                   = valueDown;
-    x->gl_windowTopLeftX                = 0;
-    x->gl_windowTopLeftY                = WINDOW_HEADER;
-    x->gl_windowBottomRightX            = WINDOW_WIDTH;
-    x->gl_windowBottomRightY            = WINDOW_HEIGHT + WINDOW_HEADER;
     x->gl_fontSize                      = fontSize;
     x->gl_isGraphOnParent               = 1;
+    
+    rectangle_set (&x->gl_geometry, 0, WINDOW_HEADER, WINDOW_WIDTH, WINDOW_HEIGHT + WINDOW_HEADER);
     
     canvas_bind (x);
     
