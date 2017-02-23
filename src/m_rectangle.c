@@ -143,27 +143,3 @@ int rectangle_containsRectangle (t_rectangle *r, t_rectangle *c)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int rectangle_getTopLeftX (t_rectangle *r)
-{
-    return r->rect_topLeftX;
-}
-
-int rectangle_getTopLeftY (t_rectangle *r)
-{
-    return r->rect_topLeftY;
-}
-
-int rectangle_getBottomRightX (t_rectangle *r)
-{
-    return r->rect_bottomRightX;
-}
-
-int rectangle_getBottomRightY (t_rectangle *r)
-{
-    return r->rect_bottomRightY;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------

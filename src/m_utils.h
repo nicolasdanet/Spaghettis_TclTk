@@ -147,6 +147,44 @@ int         rectangle_containsRectangle                 (t_rectangle *r, t_recta
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static inline int rectangle_getTopLeftX (t_rectangle *r)
+{
+    return r->rect_topLeftX;
+}
+
+static inline int rectangle_getTopLeftY (t_rectangle *r)
+{
+    return r->rect_topLeftY;
+}
+
+static inline int rectangle_getBottomRightX (t_rectangle *r)
+{
+    return r->rect_bottomRightX;
+}
+
+static inline int rectangle_getBottomRightY (t_rectangle *r)
+{
+    return r->rect_bottomRightY;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline int rectangle_getWidth (t_rectangle *r)
+{
+    return (rectangle_getBottomRightX (r) - rectangle_getTopLeftX (r));
+}
+
+static inline int rectangle_getMiddleX (t_rectangle *r)
+{
+    return ((rectangle_getTopLeftX (r) + rectangle_getBottomRightX (r)) / 2);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static inline void area_setEverything (int *a, int *b, int *c, int *d)
 {
     *a = -0x7fffffff; *b = -0x7fffffff; *c = 0x7fffffff; *d = 0x7fffffff;

@@ -48,7 +48,7 @@ t_outconnect *linetraverser_next (t_linetraverser *t)
     }
     
     for (; y; y = y->g_next) {
-        if ((o = cast_objectIfPatchable (y))) { break; }     /* Only box objects are considered. */
+        if ((o = cast_objectIfPatchable (y))) { break; }            /* Only box objects are considered. */
     }
     
     if (!o) { return NULL; }
@@ -59,14 +59,12 @@ t_outconnect *linetraverser_next (t_linetraverser *t)
     
     if (canvas_isMapped (t->tr_owner)) {
     
-        gobj_getRectangle (y, t->tr_owner,
-            &t->tr_srcTopLeftX,
-            &t->tr_srcTopLeftY,
-            &t->tr_srcBottomRightX,
-            &t->tr_srcBottomRightY);
+        int xA, yA, xB, yB;
+        gobj_getRectangle (y, t->tr_owner, &xA, &yA, &xB, &yB);
+        rectangle_set (&t->tr_srcBox, xA, yA, xB, yB);
             
     } else {
-        t->tr_srcTopLeftX = t->tr_srcTopLeftY = t->tr_srcBottomRightX = t->tr_srcBottomRightY = 0;
+        rectangle_set (&t->tr_srcBox, 0, 0, 0, 0);
     }
     //
     }
@@ -88,32 +86,29 @@ t_outconnect *linetraverser_next (t_linetraverser *t)
     
     if (canvas_isMapped (t->tr_owner)) {
 
-        gobj_getRectangle (cast_gobj (t->tr_destObject), t->tr_owner,
-            &t->tr_destTopLeftX,
-            &t->tr_destTopLeftY,
-            &t->tr_destBottomRightX,
-            &t->tr_destBottomRightY);
+        int xA, yA, xB, yB;
+        gobj_getRectangle (cast_gobj (t->tr_destObject), t->tr_owner, &xA, &yA, &xB, &yB);
+        rectangle_set (&t->tr_destBox, xA, yA, xB, yB);
         
         {
-            int w = t->tr_srcBottomRightX - t->tr_srcTopLeftX;
+            int w = rectangle_getWidth (&t->tr_srcBox);
             int i = t->tr_srcIndexOfOutlet;
             int j = t->tr_srcNumberOfOutlets;
         
-            t->tr_cord.tr_lineStartX = t->tr_srcTopLeftX + inlet_middle (w, i, j);
-            t->tr_cord.tr_lineStartY = t->tr_srcBottomRightY;
+            t->tr_cord.tr_lineStartX = rectangle_getTopLeftX (&t->tr_srcBox) + inlet_middle (w, i, j);
+            t->tr_cord.tr_lineStartY = rectangle_getBottomRightY (&t->tr_srcBox);
         }
         {
-            int w = t->tr_destBottomRightX - t->tr_destTopLeftX;
+            int w = rectangle_getWidth (&t->tr_destBox);
             int i = t->tr_destIndexOfInlet;
             int j = t->tr_destNumberOfInlets;
         
-            t->tr_cord.tr_lineEndX = t->tr_destTopLeftX + inlet_middle (w, i, j);
-            t->tr_cord.tr_lineEndY = t->tr_destTopLeftY;
+            t->tr_cord.tr_lineEndX = rectangle_getTopLeftX (&t->tr_destBox) + inlet_middle (w, i, j);
+            t->tr_cord.tr_lineEndY = rectangle_getTopLeftY (&t->tr_destBox);
         }
         
     } else {
-        cord_init (&t->tr_cord);
-        t->tr_destTopLeftX = t->tr_destTopLeftY = t->tr_destBottomRightX = t->tr_destBottomRightY = 0;
+        rectangle_set (&t->tr_destBox, 0, 0, 0, 0); cord_init (&t->tr_cord);
     }
     
     return connection;

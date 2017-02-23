@@ -140,14 +140,8 @@ typedef struct _linetraverser {
     int                 tr_srcNumberOfOutlets;
     int                 tr_destIndexOfInlet;
     int                 tr_destNumberOfInlets;
-    int                 tr_srcTopLeftX;
-    int                 tr_srcTopLeftY;
-    int                 tr_srcBottomRightX;
-    int                 tr_srcBottomRightY;
-    int                 tr_destTopLeftX;
-    int                 tr_destTopLeftY;
-    int                 tr_destBottomRightX;
-    int                 tr_destBottomRightY;
+    t_rectangle         tr_srcBox;
+    t_rectangle         tr_destBox;
     t_cord              tr_cord;
     } t_linetraverser;
 
