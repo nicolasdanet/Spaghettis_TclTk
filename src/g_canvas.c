@@ -295,17 +295,18 @@ void canvas_disconnect (t_glist *glist,
     
     while ((connection = linetraverser_next (&t))) {
     //
-    if ((t.tr_srcIndexOfOutlet == (int)indexOfOutlet) && (t.tr_destIndexOfInlet == (int)indexOfInlet)) {
-    
-    int m = (canvas_getIndexOfObject (glist, cast_gobj (t.tr_srcObject)) == indexOfObjectOut);
-    int n = (canvas_getIndexOfObject (glist, cast_gobj (t.tr_destObject)) == indexOfObjectIn);
+    if ((linetraverser_getIndexOfOutlet (&t) == (int)indexOfOutlet)) {
+        if ((linetraverser_getIndexOfInlet (&t) == (int)indexOfInlet)) {
 
-    if (m && n) {
-        sys_vGui (".x%lx.c delete %lxLINE\n", canvas_getView (glist), connection);
-        object_disconnect (t.tr_srcObject, t.tr_srcIndexOfOutlet, t.tr_destObject, t.tr_destIndexOfInlet);
-        break;
-    }
-    //
+            int m = canvas_getIndexOfObject (glist, cast_gobj (linetraverser_getSource (&t)));
+            int n = canvas_getIndexOfObject (glist, cast_gobj (linetraverser_getDestination (&t)));
+
+            if (m == indexOfObjectOut && n == indexOfObjectIn) {
+                sys_vGui (".x%lx.c delete %lxLINE\n", canvas_getView (glist), connection);
+                linetraverser_disconnect (&t);
+                break;
+            }
+        }
     }
     //
     }

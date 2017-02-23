@@ -103,18 +103,18 @@ static void canvas_cacheLines (t_glist *glist)
     
     while ((connection = linetraverser_next (&t))) {
     //
-    int s1 = canvas_isObjectSelected (glist, cast_gobj (t.tr_srcObject));
-    int s2 = canvas_isObjectSelected (glist, cast_gobj (t.tr_destObject));
+    int s1 = canvas_isObjectSelected (glist, cast_gobj (linetraverser_getSource (&t)));
+    int s2 = canvas_isObjectSelected (glist, cast_gobj (linetraverser_getDestination (&t)));
     
     if (s1 != s2) {
     //
     buffer_vAppend (glist->gl_editor->e_buffer, "ssiiii;",
         sym___hash__X, 
         sym_connect,
-        canvas_getIndexOfObject (glist, cast_gobj (t.tr_srcObject)),
-        t.tr_srcIndexOfOutlet,
-        canvas_getIndexOfObject (glist, cast_gobj (t.tr_destObject)),
-        t.tr_destIndexOfInlet);
+        canvas_getIndexOfObject (glist, cast_gobj (linetraverser_getSource (&t))),
+        linetraverser_getIndexOfOutlet (&t),
+        canvas_getIndexOfObject (glist, cast_gobj (linetraverser_getDestination (&t))),
+        linetraverser_getIndexOfInlet (&t));
     //
     }
     //

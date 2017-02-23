@@ -40,12 +40,12 @@ void canvas_dspProceed (t_glist *glist, int isTopLevel, t_signal **sp)
     linetraverser_start (&t, glist);
     
     while ((connection = linetraverser_next (&t))) {
-        if (object_isSignalOutlet (t.tr_srcObject, t.tr_srcIndexOfOutlet)) {
+        if (object_isSignalOutlet (linetraverser_getSource (&t), linetraverser_getIndexOfOutlet (&t))) {
             ugen_graphConnect (context, 
-                t.tr_srcObject, 
-                t.tr_srcIndexOfOutlet, 
-                t.tr_destObject, 
-                t.tr_destIndexOfInlet);
+                linetraverser_getSource (&t), 
+                linetraverser_getIndexOfOutlet (&t), 
+                linetraverser_getDestination (&t), 
+                linetraverser_getIndexOfInlet (&t));
         }
     }
 

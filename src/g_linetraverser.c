@@ -121,3 +121,27 @@ t_outconnect *linetraverser_next (t_linetraverser *t)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void linetraverser_disconnect (t_linetraverser *t)
+{
+    object_disconnect (t->tr_srcObject, t->tr_srcIndexOfOutlet, t->tr_destObject, t->tr_destIndexOfInlet);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int linetraverser_isLineBetween (t_linetraverser *t, t_object *src, int m, t_object *dest, int n)
+{
+    if (t->tr_srcObject == src && t->tr_destObject == dest) {
+        if (t->tr_srcIndexOfOutlet == m && t->tr_destIndexOfInlet == n) { 
+            return 1;
+        }
+    }
+    
+    return 0;
+}
+                                                            
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

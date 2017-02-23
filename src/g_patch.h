@@ -264,14 +264,6 @@ int             text_getPixelY                          (t_object *x, t_glist *g
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            linetraverser_start                     (t_linetraverser *t, t_glist *glist);
-
-t_outconnect    *linetraverser_next                     (t_linetraverser *t);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void            message_makeObject                      (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 
 void            message_click                           (t_message *x, 
@@ -336,6 +328,75 @@ t_outlet        *voutlet_getOutlet                      (t_pd *x);
 
 int             vinlet_isSignal                         (t_vinlet *x);
 int             voutlet_isSignal                        (t_voutlet *x);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void            linetraverser_start                     (t_linetraverser *t, t_glist *glist);
+
+t_outconnect    *linetraverser_next                     (t_linetraverser *t);
+
+void            linetraverser_disconnect                (t_linetraverser *t);
+int             linetraverser_isLineBetween             (t_linetraverser *t, 
+                                                            t_object *src,
+                                                            int m,
+                                                            t_object *dest,
+                                                            int n);
+                                                            
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline int linetraverser_getStartX (t_linetraverser *t)
+{
+    return t->tr_lineStartX;
+}
+
+static inline int linetraverser_getStartY (t_linetraverser *t)
+{
+    return t->tr_lineStartY;
+}
+
+static inline int linetraverser_getEndX (t_linetraverser *t)
+{
+    return t->tr_lineEndX;
+}
+
+static inline int linetraverser_getEndY (t_linetraverser *t)
+{
+    return t->tr_lineEndY;
+}
+
+static inline t_object *linetraverser_getSource (t_linetraverser *t)
+{
+    return t->tr_srcObject;
+}
+
+static inline t_object *linetraverser_getDestination (t_linetraverser *t)
+{
+    return t->tr_destObject;
+}
+
+static inline t_outlet *linetraverser_getOutlet (t_linetraverser *t)
+{
+    return t->tr_srcOutlet;
+}
+
+static inline t_inlet *linetraverser_getInlet (t_linetraverser *t)
+{
+    return t->tr_destInlet;
+}
+
+static inline int linetraverser_getIndexOfOutlet (t_linetraverser *t)
+{
+    return t->tr_srcIndexOfOutlet;
+}
+
+static inline int linetraverser_getIndexOfInlet (t_linetraverser *t)
+{
+    return t->tr_destIndexOfInlet;
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

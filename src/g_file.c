@@ -63,10 +63,10 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
         buffer_vAppend (b, "ssiiii;", 
             sym___hash__X,
             sym_connect,
-            canvas_getIndexOfObject (glist, cast_gobj (t.tr_srcObject)), 
-            t.tr_srcIndexOfOutlet, 
-            canvas_getIndexOfObject (glist, cast_gobj (t.tr_destObject)), 
-            t.tr_destIndexOfInlet);
+            canvas_getIndexOfObject (glist, cast_gobj (linetraverser_getSource (&t))), 
+            linetraverser_getIndexOfOutlet (&t), 
+            canvas_getIndexOfObject (glist, cast_gobj (linetraverser_getDestination (&t))), 
+            linetraverser_getIndexOfInlet (&t));
     }
     
     {

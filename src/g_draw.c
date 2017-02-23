@@ -48,11 +48,11 @@ void canvas_drawLines (t_glist *glist)
     //
     sys_vGui (".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
                     canvas_getView (glist),
-                    t.tr_lineStartX,
-                    t.tr_lineStartY,
-                    t.tr_lineEndX,
-                    t.tr_lineEndY, 
-                    (outlet_isSignal (t.tr_srcOutlet) ? 2 : 1),
+                    linetraverser_getStartX (&t),
+                    linetraverser_getStartY (&t),
+                    linetraverser_getEndX (&t),
+                    linetraverser_getEndY (&t), 
+                    (outlet_isSignal (linetraverser_getOutlet (&t)) ? 2 : 1),
                     connection);
     //
     }
@@ -67,17 +67,17 @@ void canvas_updateLinesByObject (t_glist *glist, t_object *o)
     
     while ((connection = linetraverser_next (&t))) {
     //
-    if (t.tr_srcObject == o || t.tr_destObject == o) {
+    if (linetraverser_getSource (&t) == o || linetraverser_getDestination (&t) == o) {
     //
     if (canvas_isMapped (glist)) {
     //
     sys_vGui (".x%lx.c coords %lxLINE %d %d %d %d\n",
                     canvas_getView (glist),
                     connection,
-                    t.tr_lineStartX,
-                    t.tr_lineStartY,
-                    t.tr_lineEndX,
-                    t.tr_lineEndY);
+                    linetraverser_getStartX (&t),
+                    linetraverser_getStartY (&t),
+                    linetraverser_getEndX (&t),
+                    linetraverser_getEndY (&t));
     //
     }
     //
@@ -95,7 +95,7 @@ void canvas_deleteLinesByObject (t_glist *glist, t_object *o)
     
     while ((connection = linetraverser_next (&t))) {
     //
-    if (t.tr_srcObject == o || t.tr_destObject == o) {
+    if (linetraverser_getSource (&t) == o || linetraverser_getDestination (&t) == o) {
     //
     if (canvas_isMapped (glist)) {
     //
@@ -105,7 +105,7 @@ void canvas_deleteLinesByObject (t_glist *glist, t_object *o)
     //
     }
 
-    object_disconnect (t.tr_srcObject, t.tr_srcIndexOfOutlet, t.tr_destObject, t.tr_destIndexOfInlet);
+    linetraverser_disconnect (&t);
     //
     }
     //
@@ -121,8 +121,8 @@ void canvas_deleteLinesByInlets (t_glist *glist, t_object *o, t_inlet *inlet, t_
     
     while ((connection = linetraverser_next (&t))) {
     //
-    int m = (t.tr_srcObject == o && t.tr_srcOutlet == outlet);
-    int n = (t.tr_destObject == o && t.tr_destInlet == inlet);
+    int m = (linetraverser_getSource (&t) == o && linetraverser_getOutlet (&t) == outlet);
+    int n = (linetraverser_getDestination (&t) == o && linetraverser_getInlet (&t) == inlet);
     
     if (m || n) {
     //
@@ -134,7 +134,7 @@ void canvas_deleteLinesByInlets (t_glist *glist, t_object *o, t_inlet *inlet, t_
     //
     }
                 
-    object_disconnect (t.tr_srcObject, t.tr_srcIndexOfOutlet, t.tr_destObject, t.tr_destIndexOfInlet);
+    linetraverser_disconnect (&t);
     //
     }
     //

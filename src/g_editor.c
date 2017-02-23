@@ -402,10 +402,10 @@ static int canvas_proceedMouseLines (t_glist *glist, int positionX, int position
     
     while ((connection = linetraverser_next (&t))) {
     //
-    t_float a = t.tr_lineStartX;
-    t_float b = t.tr_lineStartY;
-    t_float c = t.tr_lineEndX;
-    t_float d = t.tr_lineEndY;
+    t_float a = linetraverser_getStartX (&t);
+    t_float b = linetraverser_getStartY (&t);
+    t_float c = linetraverser_getEndX (&t);
+    t_float d = linetraverser_getEndY (&t);
 
     if (positionX < PD_MIN (a, c)) { continue; }
     if (positionX > PD_MAX (a, c)) { continue; }
@@ -424,10 +424,10 @@ static int canvas_proceedMouseLines (t_glist *glist, int positionX, int position
         if (clicked) {
             canvas_selectLine (canvas, 
                 connection, 
-                canvas_getIndexOfObject (canvas, cast_gobj (t.tr_srcObject)), 
-                t.tr_srcIndexOfOutlet,
-                canvas_getIndexOfObject (canvas, cast_gobj (t.tr_destObject)), 
-                t.tr_destIndexOfInlet);
+                canvas_getIndexOfObject (canvas, cast_gobj (linetraverser_getSource (&t))), 
+                linetraverser_getIndexOfOutlet (&t),
+                canvas_getIndexOfObject (canvas, cast_gobj (linetraverser_getDestination (&t))), 
+                linetraverser_getIndexOfInlet (&t));
         }
         
         return 1;
@@ -514,17 +514,17 @@ static void canvas_proceedCopy (t_glist *glist)
     
     while ((connection = linetraverser_next (&t))) {
     //
-    int m = canvas_isObjectSelected (glist, cast_gobj (t.tr_srcObject));
-    int n = canvas_isObjectSelected (glist, cast_gobj (t.tr_destObject));
+    int m = canvas_isObjectSelected (glist, cast_gobj (linetraverser_getSource (&t)));
+    int n = canvas_isObjectSelected (glist, cast_gobj (linetraverser_getDestination (&t)));
     
     if (m && n) {
         buffer_vAppend (b, "ssiiii;", 
             sym___hash__X, 
             sym_connect,
-            canvas_getIndexOfObjectAmongSelected (glist, &t.tr_srcObject->te_g),
-            t.tr_srcIndexOfOutlet,
-            canvas_getIndexOfObjectAmongSelected (glist, &t.tr_destObject->te_g),
-            t.tr_destIndexOfInlet);
+            canvas_getIndexOfObjectAmongSelected (glist, cast_gobj (linetraverser_getSource (&t))),
+            linetraverser_getIndexOfOutlet (&t),
+            canvas_getIndexOfObjectAmongSelected (glist, cast_gobj (linetraverser_getDestination (&t))),
+            linetraverser_getIndexOfInlet (&t));
     }
     //
     }
