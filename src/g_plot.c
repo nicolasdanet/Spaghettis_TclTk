@@ -333,10 +333,7 @@ static void plot_behaviorGetRectangleRecursive (t_plot *x,
     int i,
     t_float baseX,
     t_float baseY,
-    int *a,
-    int *b,
-    int *c,
-    int *d)
+    t_rectangle *r)
 {
     t_gobj *y = NULL;
                         
@@ -346,20 +343,14 @@ static void plot_behaviorGetRectangleRecursive (t_plot *x,
         
         if (behavior) {
         
-            int xA, yA, xB, yB;
-            
+            t_rectangle t;
             t_gpointer gp; GPOINTER_INIT (&gp);
             
             gpointer_setAsWord (&gp, array, array_getElementAtIndex (array, i));
-            
-            (*behavior->w_fnPainterGetRectangle) (y, &gp, baseX, baseY, &xA, &yA, &xB, &yB);
-            
+            (*behavior->w_fnPainterGetRectangle) (y, &gp, baseX, baseY, &t);
             gpointer_unset (&gp);
             
-            *a = PD_MIN (*a, xA);
-            *b = PD_MIN (*b, yA);
-            *c = PD_MAX (*c, xB);
-            *d = PD_MAX (*d, yB);
+            rectangle_boundingBoxAddRectangle (r, &t);
         }
     }
 }
@@ -368,20 +359,15 @@ static void plot_behaviorGetRectangle (t_gobj *z,
     t_gpointer *gp,
     t_float baseX,
     t_float baseY,
-    int *a,
-    int *b,
-    int *c,
-    int *d)
+    t_rectangle *r)
 {
     t_plot *x = (t_plot *)z;
 
     t_glist *glist = gpointer_getView (gp);
         
-    int xA, yA, xB, yB;
-        
-    area_setNowhere (&xA, &yA, &xB, &yB);
+    rectangle_setNothing (r);
     
-    if (garray_isSingle (glist)) { area_setEverything (&xA, &yA, &xB, &yB); }
+    if (garray_isSingle (glist)) { rectangle_setEverything (r); }
     else {
     //
     t_array *array = NULL;
@@ -435,14 +421,12 @@ static void plot_behaviorGetRectangle (t_gobj *z,
         
         pixelW = (t_float)PD_ABS (pixelW);
         pixelW = (t_float)PD_MAX (pixelW, width - 1.0);
-
-        xA = PD_MIN (xA, pixelX);
-        xB = PD_MAX (xB, pixelX);
-        yA = PD_MIN (yA, pixelY - pixelW);
-        yB = PD_MAX (yB, pixelY + pixelW);
+        
+        rectangle_boundingBoxAddPoint (r, pixelX, pixelY - pixelW);
+        rectangle_boundingBoxAddPoint (r, pixelX, pixelY + pixelW);
         
         if (view) {
-            plot_behaviorGetRectangleRecursive (x, view, array, i, valueX, valueY, &xA, &yA, &xB, &yB);
+            plot_behaviorGetRectangleRecursive (x, view, array, i, valueX, valueY, r);
         }
     }
     //
@@ -451,11 +435,6 @@ static void plot_behaviorGetRectangle (t_gobj *z,
     }
     //
     }
-    
-    *a = xA;
-    *b = yA;
-    *c = xB;
-    *d = yB;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -32,9 +32,7 @@ extern t_widgetbehavior text_widgetBehavior;
 void gobj_getRectangle (t_gobj *x, t_glist *owner, t_rectangle *r)
 {
     if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnGetRectangle) {
-        int xA, yA, xB, yB;
-        (*(pd_class (x)->c_behavior->w_fnGetRectangle)) (x, owner, &xA, &yA, &xB, &yB);
-        rectangle_set (r, xA, yA, xB, yB);
+        (*(pd_class (x)->c_behavior->w_fnGetRectangle)) (x, owner, r);
     }
 }
 
@@ -89,12 +87,16 @@ void gobj_save (t_gobj *x, t_buffer *buffer)
 int gobj_hit (t_gobj *x, t_glist *owner, int positionX, int positionY, t_rectangle *r)
 {
     if (gobj_isVisible (x, owner)) {
-
-        t_rectangle t;
-        
-        gobj_getRectangle (x, owner, &t);
-        
-        if (rectangle_containsPoint (&t, positionX, positionY)) { rectangle_setCopy (r, &t); return 1; }
+    //
+    t_rectangle t;
+    
+    gobj_getRectangle (x, owner, &t);
+    
+    if (!rectangle_isNothing (&t) && rectangle_containsPoint (&t, positionX, positionY)) {
+        rectangle_setCopy (r, &t);
+        return 1;
+    }
+    //
     }
     
     return 0;

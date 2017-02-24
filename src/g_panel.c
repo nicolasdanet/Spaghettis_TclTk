@@ -40,7 +40,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void panel_behaviorGetRectangle (t_gobj *, t_glist *, int *, int *, int *, int *);
+static void panel_behaviorGetRectangle (t_gobj *, t_glist *, t_rectangle *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -239,14 +239,16 @@ static void panel_getPosition (t_panel *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void panel_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
+static void panel_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
 {
     t_panel *x = (t_panel *)z;
     
-    *a = text_getPixelX (cast_object (z), glist);
-    *b = text_getPixelY (cast_object (z), glist);
-    *c = *a + x->x_panelWidth;
-    *d = *b + x->x_panelHeight;
+    int a = text_getPixelX (cast_object (z), glist);
+    int b = text_getPixelY (cast_object (z), glist);
+    int c = a + x->x_panelWidth;
+    int d = b + x->x_panelHeight;
+    
+    rectangle_set (r, a, b, c, d);
 }
 
 static void panel_functionSave (t_gobj *z, t_buffer *b)

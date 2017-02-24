@@ -43,7 +43,7 @@ t_error word_unsetInternalBuffer    (t_word *, t_template *, t_symbol *);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void scalar_behaviorGetRectangle         (t_gobj *, t_glist *, int *, int *, int *, int *);
+static void scalar_behaviorGetRectangle         (t_gobj *, t_glist *, t_rectangle *);
 static void scalar_behaviorDisplaced            (t_gobj *, t_glist *, int, int);
 static void scalar_behaviorSelected             (t_gobj *, t_glist *, int);
 static void scalar_behaviorActivated            (t_gobj *, t_glist *, int);
@@ -79,28 +79,37 @@ static void scalar_drawSelectRectangle (t_scalar *x, t_glist *glist, int isSelec
 {
     if (isSelected) {
     
-        int a, b, c, d;
+        t_rectangle r;
        
-        scalar_behaviorGetRectangle (cast_gobj (x), glist, &a, &b, &c, &d);
+        scalar_behaviorGetRectangle (cast_gobj (x), glist, &r);
         
-        sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d"
-                        " -width 0"
-                        " -fill #%06x"
-                        " -dash {2 4}"  // --
-                        " -tags %lxHANDLE\n",
-                        canvas_getView (glist),
-                        a,
-                        b,
-                        a,
-                        d,
-                        c,
-                        d,
-                        c,
-                        b,
-                        a,
-                        b,
-                        COLOR_SELECTED,
-                        x);
+        PD_ASSERT (!rectangle_isNothing (&r));
+        
+        {
+            int a = rectangle_getTopLeftX (&r);
+            int b = rectangle_getTopLeftY (&r);
+            int c = rectangle_getBottomRightX (&r);
+            int d = rectangle_getBottomRightY (&r);
+            
+            sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d"
+                            " -width 0"
+                            " -fill #%06x"
+                            " -dash {2 4}"  // --
+                            " -tags %lxHANDLE\n",
+                            canvas_getView (glist),
+                            a,
+                            b,
+                            a,
+                            d,
+                            c,
+                            d,
+                            c,
+                            b,
+                            a,
+                            b,
+                            COLOR_SELECTED,
+                            x);
+        }
                 
     } else {
         sys_vGui (".x%lx.c delete %lxHANDLE\n", canvas_getView (glist), x);
@@ -159,32 +168,19 @@ void scalar_redraw (t_scalar *x, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
+static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
 {
     t_scalar *x = cast_scalar (z);
-    
-    int xA = 0;
-    int yA = 0;
-    int xB = 0;
-    int yB = 0;
-    
     t_template *template = scalar_getTemplate (x);
     t_glist *view = template_getInstanceViewIfPainters (template);
     t_float baseX = scalar_getFloat (x, sym_x);
     t_float baseY = scalar_getFloat (x, sym_y);
 
-    if (!view) {
+    rectangle_setNothing (r);
     
-        xA = canvas_valueToPixelX (glist, baseX);
-        yA = canvas_valueToPixelY (glist, baseY);
-        xB = xA + SCALAR_WRONG_SIZE;
-        yB = yA + SCALAR_WRONG_SIZE;
-        
-    } else {
+    if (view) {
     
         t_gobj *y = NULL;
-        
-        area_setNowhere (&xA, &yA, &xB, &yB);
         
         for (y = view->gl_graphics; y; y = y->g_next) {
         //
@@ -192,37 +188,30 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
         
         if (behavior) {
         //
-        int e, f, g, h;
-        
+        t_rectangle t;
         t_gpointer gp; GPOINTER_INIT (&gp);
         
         gpointer_setAsScalar (&gp, glist, x);
-        
-        (*behavior->w_fnPainterGetRectangle) (y, &gp, baseX, baseY, &e, &f, &g, &h);
-        
+        (*behavior->w_fnPainterGetRectangle) (y, &gp, baseX, baseY, &t);
         gpointer_unset (&gp);
         
-        xA = PD_MIN (xA, e); yA = PD_MIN (yA, f); xB = PD_MAX (xB, g); yB = PD_MAX (yB, h);
+        rectangle_boundingBoxAddRectangle (r, &t);
         //
         }
         //
-        }
-        
-        if (xB < xA || yB < yA) { area_setNothing (&xA, &yA, &xB, &yB); }
-        else {
-            if (!area_isEverything (xA, yA, xB, yB)) {
-                xA -= SCALAR_SELECT_MARGIN;
-                yA -= SCALAR_SELECT_MARGIN;
-                xB += SCALAR_SELECT_MARGIN;
-                yB += SCALAR_SELECT_MARGIN;
-            }
         }
     }
-
-    *a = xA;
-    *b = yA;
-    *c = xB;
-    *d = yB; 
+    
+    if (rectangle_isNothing (r)) {
+    
+        int a = canvas_valueToPixelX (glist, baseX);
+        int b = canvas_valueToPixelY (glist, baseY);
+        int c = a + SCALAR_WRONG_SIZE;
+        int d = b + SCALAR_WRONG_SIZE;
+        
+        rectangle_set (r, a, b, c, d);
+        
+    } else if (!rectangle_isEverything (r)) { rectangle_enlarge (r, SCALAR_SELECT_MARGIN); }
 }
 
 static void scalar_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)

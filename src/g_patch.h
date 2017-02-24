@@ -225,13 +225,7 @@ void            boxtext_key                         (t_boxtext *x, t_keycode n, 
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            text_behaviorGetRectangle           (t_gobj *x,
-                                                        t_glist *glist,
-                                                        int *a,
-                                                        int *b,
-                                                        int *c,
-                                                        int *d);
-                                                            
+void            text_behaviorGetRectangle           (t_gobj *x, t_glist *glist, t_rectangle *r);
 void            text_behaviorDisplaced              (t_gobj *x, t_glist *glist, int deltaX, int deltaY);
 void            text_behaviorSelected               (t_gobj *x, t_glist *glist, int isSelected);
 void            text_behaviorActivated              (t_gobj *x, t_glist *glist, int isActivated);

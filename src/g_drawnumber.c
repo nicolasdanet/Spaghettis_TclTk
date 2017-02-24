@@ -121,10 +121,7 @@ static void drawnumber_behaviorGetRectangle (t_gobj *z,
     t_gpointer *gp,
     t_float baseX,
     t_float baseY,
-    int *a,
-    int *b,
-    int *c,
-    int *d)
+    t_rectangle *r)
 {
     t_drawnumber *x = (t_drawnumber *)z;
     
@@ -144,16 +141,20 @@ static void drawnumber_behaviorGetRectangle (t_gobj *z,
     t_fontsize fontSize = canvas_getFontSize (glist);
     
     if (!drawnumber_getContents (x, gp, t, PD_STRING, &m, &n)) {
-        *a = pixelX;
-        *b = pixelY;
-        *c = (int)(pixelX + (m * font_getHostFontWidth (fontSize)));
-        *d = (int)(pixelY + (n * font_getHostFontHeight (fontSize)));
+    
+        int a = pixelX;
+        int b = pixelY;
+        int c = (int)(pixelX + (m * font_getHostFontWidth (fontSize)));
+        int d = (int)(pixelY + (n * font_getHostFontHeight (fontSize)));
+        
+        rectangle_set (r, a, b, c, d); 
+        
         return;
     }
     //
     }
     
-    area_setNowhere (a, b, c, d);
+    rectangle_setNothing (r);
 }
 
 static void drawnumber_behaviorVisibilityChanged (t_gobj *z,
@@ -210,11 +211,13 @@ static int drawnumber_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t
     int a = m->m_x;
     int b = m->m_y;
     
-    int xA, yA, xB, yB;
+    t_rectangle t;
      
-    drawnumber_behaviorGetRectangle (z, gp, baseX, baseY, &xA, &yA, &xB, &yB);
+    drawnumber_behaviorGetRectangle (z, gp, baseX, baseY, &t);
 
-    if (a >= xA && a <= xB && b >= yA && b <= yB) {
+    if (!rectangle_isNothing (&t)) {
+    //
+    if (rectangle_containsPoint (&t, a, b)) {
     //
     if (gpointer_fieldIsFloat (gp, x->x_fieldName)) {
     //
@@ -228,6 +231,8 @@ static int drawnumber_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t
     }
     
     return 1;
+    //
+    }
     //
     }
     //

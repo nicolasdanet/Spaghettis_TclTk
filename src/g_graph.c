@@ -31,7 +31,7 @@ extern t_widgetbehavior text_widgetBehavior;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void canvas_behaviorGetRectangle         (t_gobj *, t_glist *, int *, int *, int *, int *);
+static void canvas_behaviorGetRectangle         (t_gobj *, t_glist *, t_rectangle *);
 static void canvas_behaviorDisplaced            (t_gobj *, t_glist *, int, int);
 static void canvas_behaviorSelected             (t_gobj *, t_glist *, int);
 static void canvas_behaviorActivated            (t_gobj *, t_glist *, int);
@@ -394,31 +394,14 @@ t_float canvas_valueForOnePixelY (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_behaviorGetRectangle (t_gobj *z,
-    t_glist *glist,
-    int *a,
-    int *b,
-    int *c,
-    int *d)
+static void canvas_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
 {
-    int xA, yA, xB, yB;
-
     t_glist *x = cast_glist (z);
     
-    if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnGetRectangle (z, glist, &xA, &yA, &xB, &yB); }
+    if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnGetRectangle (z, glist, r); }
     else {
-        t_rectangle r;
-        canvas_getGraphOnParentRectangle (z, glist, &r);
-        xA = rectangle_getTopLeftX (&r);
-        yA = rectangle_getTopLeftY (&r);
-        xB = rectangle_getBottomRightX (&r);
-        yB = rectangle_getBottomRightY (&r);
+        canvas_getGraphOnParentRectangle (z, glist, r);
     }
-    
-    *a = xA;
-    *b = yA;
-    *c = xB;
-    *d = yB;
 }
 
 static void canvas_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
@@ -477,13 +460,18 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnVisibilityChanged (z, glist, isVisible); }
     else {
     //
-    char tag[PD_STRING] = { 0 };
-    t_error err = string_sprintf (tag, PD_STRING, "%lxGRAPH", x);
-    int xA, yA, xB, yB;
+    char tag[PD_STRING] = { 0 }; t_error err = string_sprintf (tag, PD_STRING, "%lxGRAPH", x);
     
-    canvas_behaviorGetRectangle (z, glist, &xA, &yA, &xB, &yB);
+    t_rectangle r;
     
-    PD_ASSERT (!err);
+    canvas_behaviorGetRectangle (z, glist, &r);
+    
+    if (!err) {
+    //
+    int xA = rectangle_getTopLeftX (&r);
+    int yA = rectangle_getTopLeftY (&r);
+    int xB = rectangle_getBottomRightX (&r);
+    int yB = rectangle_getBottomRightY (&r);
         
     if (x->gl_hasWindow) {
     //
@@ -567,6 +555,8 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                     tag);
                     
         for (y = x->gl_graphics; y; y = y->g_next) { gobj_visibilityChanged (y, x, 0); }
+    }
+    //
     }
     //
     }

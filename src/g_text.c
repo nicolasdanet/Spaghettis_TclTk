@@ -53,18 +53,16 @@ t_widgetbehavior text_widgetBehavior =              /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void text_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
+void text_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
 {
-    t_object *x = cast_object (z);
+    t_object *x     = cast_object (z);
     t_boxtext *text = boxtext_fetch (glist, x);
+    int width       = boxtext_getWidth (text);
+    int height      = boxtext_getHeight (text);
+    int a           = text_getPixelX (x, glist);
+    int b           = text_getPixelY (x, glist);
     
-    int w = boxtext_getWidth (text);
-    int h = boxtext_getHeight (text);
-    
-    *a = text_getPixelX (x, glist);
-    *b = text_getPixelY (x, glist);
-    *c = *a + w;
-    *d = *b + h;
+    rectangle_set (r, a, b, a + width, b + height);
 }
 
 void text_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)

@@ -29,7 +29,7 @@
 
 static void toggle_set                  (t_toggle *, t_float);
 static void toggle_nonZero              (t_toggle *, t_float);
-static void toggle_behaviorGetRectangle (t_gobj *, t_glist *, int *, int *, int *, int *);
+static void toggle_behaviorGetRectangle (t_gobj *, t_glist *, t_rectangle *);
 static int  toggle_behaviorMouse        (t_gobj *, t_glist *, t_mouse *);
     
 // -----------------------------------------------------------------------------------------------------------
@@ -322,12 +322,14 @@ static void toggle_nonZero (t_toggle *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void toggle_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
+static void toggle_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
 {
-    *a = text_getPixelX (cast_object (z), glist);
-    *b = text_getPixelY (cast_object (z), glist);
-    *c = *a + cast_iem (z)->iem_width;
-    *d = *b + cast_iem (z)->iem_height;
+    int a = text_getPixelX (cast_object (z), glist);
+    int b = text_getPixelY (cast_object (z), glist);
+    int c = a + cast_iem (z)->iem_width;
+    int d = b + cast_iem (z)->iem_height;
+    
+    rectangle_set (r, a, b, c, d);
 }
 
 static int toggle_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)

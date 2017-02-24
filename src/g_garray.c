@@ -33,7 +33,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void garray_behaviorGetRectangle         (t_gobj *, t_glist *, int *, int *, int *, int *);
+static void garray_behaviorGetRectangle         (t_gobj *, t_glist *, t_rectangle *);
 static void garray_behaviorDisplaced            (t_gobj *, t_glist *, int, int);
 static void garray_behaviorSelected             (t_gobj *, t_glist *, int);
 static void garray_behaviorActivated            (t_gobj *, t_glist *, int);
@@ -579,18 +579,11 @@ static void garray_bounds (t_garray *x, t_float a, t_float b, t_float c, t_float
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void garray_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
+static void garray_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
 {
     t_garray *x = (t_garray *)z;
     
-    t_rectangle t;
-    
-    gobj_getRectangle (cast_gobj (x->x_scalar), glist, &t);
-    
-    *a = rectangle_getTopLeftX (&t);
-    *b = rectangle_getTopLeftY (&t);
-    *c = rectangle_getBottomRightX (&t);
-    *d = rectangle_getBottomRightY (&t);
+    gobj_getRectangle (cast_gobj (x->x_scalar), glist, r);
 }
 
 static void garray_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)

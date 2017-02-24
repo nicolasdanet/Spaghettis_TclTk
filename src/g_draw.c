@@ -394,10 +394,15 @@ static void canvas_drawInletsAndOutlets (t_glist *glist,
 
 void canvas_drawBox (t_glist *glist, t_object *o, char *tag, int create)
 {
-    int a, b, c, d;
+    t_rectangle r;
     
-    text_behaviorGetRectangle (cast_gobj (o), glist, &a, &b, &c, &d);
+    text_behaviorGetRectangle (cast_gobj (o), glist, &r);
 
+    int a = rectangle_getTopLeftX (&r);
+    int b = rectangle_getTopLeftY (&r);
+    int c = rectangle_getBottomRightX (&r);
+    int d = rectangle_getBottomRightY (&r);
+    
     if (o->te_type == TYPE_OBJECT)          { canvas_drawBoxObject (glist, o, tag, create, a, b, c, d);  }
     else if (o->te_type == TYPE_MESSAGE)    { canvas_drawBoxMessage (glist, o, tag, create, a, b, c, d); }
     else if (o->te_type == TYPE_ATOM)       { canvas_drawBoxAtom (glist, o, tag, create, a, b, c, d);    }

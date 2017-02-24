@@ -125,7 +125,7 @@ static inline int vu_offsetWithStep (t_vu *x, int step)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void vu_behaviorGetRectangle (t_gobj *, t_glist *, int *, int *, int *, int *);
+static void vu_behaviorGetRectangle (t_gobj *, t_glist *, t_rectangle *r);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -480,12 +480,14 @@ static void vu_size (t_vu *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void vu_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
+static void vu_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
 {
-    *a = text_getPixelX (cast_object (z), glist);
-    *b = text_getPixelY (cast_object (z), glist);
-    *c = *a + cast_iem (z)->iem_width;
-    *d = *b + cast_iem (z)->iem_height;
+    int a = text_getPixelX (cast_object (z), glist);
+    int b = text_getPixelY (cast_object (z), glist);
+    int c = a + cast_iem (z)->iem_width;
+    int d = b + cast_iem (z)->iem_height;
+    
+    rectangle_set (r, a, b, c, d);
 }
 
 static void vu_functionSave (t_gobj *z, t_buffer *b)

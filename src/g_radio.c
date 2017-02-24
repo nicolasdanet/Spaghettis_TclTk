@@ -34,7 +34,7 @@
 #pragma mark -
 
 static void radio_buttonsNumber         (t_radio *, t_float);
-static void radio_behaviorGetRectangle  (t_gobj *, t_glist *, int *, int *, int *, int *);
+static void radio_behaviorGetRectangle  (t_gobj *, t_glist *, t_rectangle *);
 static int  radio_behaviorMouse         (t_gobj *, t_glist *, t_mouse *);
     
 // -----------------------------------------------------------------------------------------------------------
@@ -483,20 +483,25 @@ static void radio_buttonsNumber (t_radio *x, t_float numberOfButtons)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void radio_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
+static void radio_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
 {
     t_radio *x = (t_radio *)z;
     
-    *a = text_getPixelX (cast_object (z), glist);
-    *b = text_getPixelY (cast_object (z), glist);
+    int a = text_getPixelX (cast_object (z), glist);
+    int b = text_getPixelY (cast_object (z), glist);
+    int c;
+    int d;
     
     if (x->x_isVertical) {
-        *c = *a + cast_iem (z)->iem_width;
-        *d = *b + cast_iem (z)->iem_height * x->x_numberOfButtons;
+        c = a + cast_iem (z)->iem_width;
+        d = b + cast_iem (z)->iem_height * x->x_numberOfButtons;
+        
     } else {
-        *c = *a + cast_iem (z)->iem_width * x->x_numberOfButtons;
-        *d = *b + cast_iem (z)->iem_height;
+        c = a + cast_iem (z)->iem_width * x->x_numberOfButtons;
+        d = b + cast_iem (z)->iem_height;
     }
+    
+    rectangle_set (r, a, b, c, d);
 }
 
 static int radio_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)

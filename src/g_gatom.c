@@ -133,28 +133,35 @@ static void gatom_setFloat (t_gatom *x, t_float f)
 
 static void gatom_getPostion (t_gatom *x, t_glist *glist, int *positionX, int *positionY)
 {
-    int a, b, c, d;
-    
     double width  = font_getHostFontWidth (x->a_fontSize);
     double height = font_getHostFontHeight (x->a_fontSize);
     
-    text_behaviorGetRectangle (cast_gobj (x), glist, &a, &b, &c, &d);
+    t_rectangle r;
     
-    if (x->a_position == ATOM_LABEL_LEFT) {
-        *positionX = a - 3 - (int)(strlen (x->a_label->s_name) * width);
-        *positionY = b + 2;
+    text_behaviorGetRectangle (cast_gobj (x), glist, &r);
+    
+    {
+        int a = rectangle_getTopLeftX (&r);
+        int b = rectangle_getTopLeftY (&r);
+        int c = rectangle_getBottomRightX (&r);
+        int d = rectangle_getBottomRightY (&r);
         
-    } else if (x->a_position == ATOM_LABEL_RIGHT) {
-        *positionX = c + 3;
-        *positionY = b + 2;
-        
-    } else if (x->a_position == ATOM_LABEL_UP) {
-        *positionX = a;
-        *positionY = b - 3 - (int)height;
-        
-    } else {
-        *positionX = a;
-        *positionY = d + 3;
+        if (x->a_position == ATOM_LABEL_LEFT) {
+            *positionX = a - 3 - (int)(strlen (x->a_label->s_name) * width);
+            *positionY = b + 2;
+            
+        } else if (x->a_position == ATOM_LABEL_RIGHT) {
+            *positionX = c + 3;
+            *positionY = b + 2;
+            
+        } else if (x->a_position == ATOM_LABEL_UP) {
+            *positionX = a;
+            *positionY = b - 3 - (int)height;
+            
+        } else {
+            *positionX = a;
+            *positionY = d + 3;
+        }
     }
 }
 

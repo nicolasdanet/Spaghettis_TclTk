@@ -58,7 +58,7 @@ typedef struct _rectangle {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef void (*t_getrectanglefn)        (t_gobj *x, t_glist *glist, int *a, int *b, int *c, int *d);
+typedef void (*t_getrectanglefn)        (t_gobj *x, t_glist *glist, t_rectangle *r);
 typedef void (*t_displacedfn)           (t_gobj *x, t_glist *glist, int deltaX, int deltaY);
 typedef void (*t_selectedfn)            (t_gobj *x, t_glist *glist, int isSelected);
 typedef void (*t_activatedfn)           (t_gobj *x, t_glist *glist, int isActivated);
@@ -70,14 +70,9 @@ typedef int  (*t_mousefn)               (t_gobj *x, t_glist *glist, t_mouse *m);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef void (*t_paintergetrectanglefn) (t_gobj *x, t_gpointer *gp, t_float baseX, t_float baseY,
-                                            int *a,
-                                            int *b,
-                                            int *c,
-                                            int *d);
-                                            
-typedef void (*t_paintervisibilityfn)   (t_gobj *x, t_gpointer *gp, t_float baseX, t_float baseY, int flag);
-typedef int  (*t_paintermousefn)        (t_gobj *x, t_gpointer *gp, t_float baseX, t_float baseY, t_mouse *m);
+typedef void (*t_paintergetrectanglefn) (t_gobj *x, t_gpointer *gp, t_float a, t_float b, t_rectangle *r);
+typedef void (*t_paintervisibilityfn)   (t_gobj *x, t_gpointer *gp, t_float a, t_float b, int flag);
+typedef int  (*t_paintermousefn)        (t_gobj *x, t_gpointer *gp, t_float a, t_float b, t_mouse *m);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
