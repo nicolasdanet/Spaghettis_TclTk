@@ -29,10 +29,12 @@ extern t_widgetbehavior text_widgetBehavior;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void gobj_getRectangle (t_gobj *x, t_glist *owner, int *a, int *b, int *c, int *d)
+void gobj_getRectangle (t_gobj *x, t_glist *owner, t_rectangle *r)
 {
     if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnGetRectangle) {
-        (*(pd_class (x)->c_behavior->w_fnGetRectangle)) (x, owner, a, b, c, d);
+        int xA, yA, xB, yB;
+        (*(pd_class (x)->c_behavior->w_fnGetRectangle)) (x, owner, &xA, &yA, &xB, &yB);
+        rectangle_set (r, xA, yA, xB, yB);
     }
 }
 
@@ -84,36 +86,21 @@ void gobj_save (t_gobj *x, t_buffer *buffer)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int gobj_hit (t_gobj *x,
-    t_glist *owner, 
-    int positionX,
-    int positionY,
-    int *a,
-    int *b,
-    int *c,
-    int *d)
+int gobj_hit (t_gobj *x, t_glist *owner, int positionX, int positionY, t_rectangle *r)
 {
     if (gobj_isVisible (x, owner)) {
-    //
-    int xA, yA, xB, yB;
+
+        t_rectangle t;
         
-    gobj_getRectangle (x, owner, &xA, &yA, &xB, &yB);
-    
-    if (positionX >= xA && positionX <= xB && positionY >= yA && positionY <= yB) {
-    //
-    *a = xA;
-    *b = yA;
-    *c = xB;
-    *d = yB;
-    
-    return 1;
-    //
-    }
-    //
+        gobj_getRectangle (x, owner, &t);
+        
+        if (rectangle_containsPoint (&t, positionX, positionY)) { rectangle_setCopy (r, &t); return 1; }
     }
     
     return 0;
 }
+
+/* Always true if NOT a GOP. */
 
 int gobj_isVisible (t_gobj *x, t_glist *owner)
 {
@@ -125,32 +112,30 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
     
     if (!gobj_isVisible (cast_gobj (owner), owner->gl_parent)) { return 0; }
     
-    /* Falling outside the graph rectangle? */
-    
-    if (pd_class (x) == scalar_class || pd_class (x) == garray_class) { return 1; }
+    if (pd_class (x) == scalar_class)      { return 1; }    /* Always true. */
+    else if (pd_class (x) == garray_class) { return 1; }    /* Ditto. */
     else {
     //
-    int a, b, c, d, e, f, g, h;
-        
-    gobj_getRectangle (cast_gobj (owner), owner->gl_parent, &a, &b, &c, &d);
     
-    if (a > c) { int t = a; a = c; c = t; }
-    if (b > d) { int t = b; b = d; d = t; }
+    /* Falling outside the graph rectangle? */
     
-    gobj_getRectangle (x, owner, &e, &f, &g, &h);
-    
-    if (e < a || e > c || g < a || g > c || f < b || f > d || h < b || h > d) { return 0; }
+    t_rectangle r1, r2;
+    gobj_getRectangle (cast_gobj (owner), owner->gl_parent, &r1);
+    gobj_getRectangle (x, owner, &r2);
+    if (!rectangle_containsRectangle (&r1, &r2)) {
+        return 0; 
+    }
     //
     }
+    
+    /* In GOP the only regular box type shown is comment. */
     
     if ((object = cast_objectIfPatchable (x))) {
-    //
-    if (object_isBox (object)) {
-    // 
-    if (object->te_type != TYPE_COMMENT) { return 0; }
-    //
-    }
-    //
+        if (object_isBox (object)) {
+            if (object->te_type != TYPE_COMMENT) {
+                return 0; 
+            }
+        }
     }
     //
     }

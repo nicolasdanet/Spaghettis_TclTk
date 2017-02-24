@@ -223,16 +223,16 @@ int canvas_isObjectSelected (t_glist *glist, t_gobj *y)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_selectingByLasso (t_glist *glist, int positionX, int positionY, int end)
+static void canvas_selectingByLasso (t_glist *glist, int a, int b, int end)
 {
     if (end) {
     
-        int a = PD_MIN (glist->gl_editor->e_previousX, positionX);
-        int c = PD_MAX (glist->gl_editor->e_previousX, positionX);
-        int b = PD_MIN (glist->gl_editor->e_previousY, positionY);
-        int d = PD_MAX (glist->gl_editor->e_previousY, positionY);
-
-        canvas_selectObjectsInRectangle (glist, a, b, c, d);
+        t_rectangle r;
+        
+        rectangle_set (&r, glist->gl_editor->e_previousX, glist->gl_editor->e_previousY, a, b);
+        
+        canvas_selectObjectsInRectangle (glist, &r);
+        
         glist->gl_editor->e_action = ACTION_NONE;
         
         sys_vGui (".x%lx.c delete TEMPORARY\n", canvas_getView (glist));
@@ -242,8 +242,8 @@ static void canvas_selectingByLasso (t_glist *glist, int positionX, int position
                         canvas_getView (glist),
                         glist->gl_editor->e_previousX,
                         glist->gl_editor->e_previousY,
-                        positionX,
-                        positionY);
+                        a,
+                        b);
     }
 }
 
@@ -261,17 +261,17 @@ void canvas_selectingByLassoEnd (t_glist *glist, int positionX, int positionY)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_selectObjectsInRectangle (t_glist *glist, int a, int b, int c, int d)
+void canvas_selectObjectsInRectangle (t_glist *glist, t_rectangle *r)
 {
     t_gobj *y;
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
     //
-    int xA, yA, xB, yB;
+    t_rectangle t;
     
-    gobj_getRectangle (y, glist, &xA, &yA, &xB, &yB);
+    gobj_getRectangle (y, glist, &t);
     
-    if (c >= xA && a <= xB && d >= yA && b <= yB && !canvas_isObjectSelected (glist, y)) {
+    if (rectangle_containsRectangle (r, &t) && !canvas_isObjectSelected (glist, y)) {
         canvas_selectObject (glist, y);
     }
     //

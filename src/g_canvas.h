@@ -150,13 +150,7 @@ void            canvas_updateTitle                      (t_glist *glist);
 t_fontsize      canvas_getFontSize                      (t_glist *glist);
 void            canvas_setCursorType                    (t_glist *glist, int type);
 
-t_gobj          *canvas_getHitObject                    (t_glist *glist, 
-                                                            int positionX, 
-                                                            int positionY,
-                                                            int *a, 
-                                                            int *b, 
-                                                            int *c, 
-                                                            int *d);
+t_gobj          *canvas_getHitObject                    (t_glist *glist, int a, int b, t_rectangle *r);
 
 int             canvas_hasLine                          (t_glist *glist,
                                                             t_object *objectOut,
@@ -204,7 +198,7 @@ int             canvas_isObjectSelected                 (t_glist *glist, t_gobj 
 void            canvas_selectingByLassoStart            (t_glist *glist, int positionX, int positionY);
 void            canvas_selectingByLassoEnd              (t_glist *glist, int positionX, int positionY);
 
-void            canvas_selectObjectsInRectangle         (t_glist *glist, int a, int b, int c, int d);
+void            canvas_selectObjectsInRectangle         (t_glist *glist, t_rectangle *r);
 void            canvas_selectObject                     (t_glist *glist, t_gobj *y);
 void            canvas_selectObjectIfNotSelected        (t_glist *glist, t_gobj *y);
 void            canvas_selectLine                       (t_glist *glist, 

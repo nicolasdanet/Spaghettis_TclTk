@@ -66,14 +66,14 @@ static void canvas_taskDisplace (t_glist *glist)
 
 static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int create)
 {
-    int a, b, c, d;
-    int m, n, o, p;
+    t_rectangle r1;
+    t_rectangle r2;
     
     int previousX = glist->gl_editor->e_previousX;
     int previousY = glist->gl_editor->e_previousY;
     
-    t_gobj *yA = canvas_getHitObject (glist, previousX, previousY, &a, &b, &c, &d);
-    t_gobj *yB = canvas_getHitObject (glist, positionX, positionY, &m, &n, &o, &p);
+    t_gobj *yA = canvas_getHitObject (glist, previousX, previousY, &r1);
+    t_gobj *yB = canvas_getHitObject (glist, positionX, positionY, &r2);
     
     if (create) { sys_vGui (".x%lx.c delete TEMPORARY\n", canvas_getView (glist)); }
     else {
@@ -97,6 +97,13 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
     
     if (numberOfOutlets && numberOfInlets) {
     //
+    int a = rectangle_getTopLeftX (&r1);
+    int c = rectangle_getBottomRightX (&r1);
+    int d = rectangle_getBottomRightY (&r1);
+    int m = rectangle_getTopLeftX (&r2);
+    int n = rectangle_getTopLeftY (&r2);
+    int o = rectangle_getBottomRightX (&r2);
+    
     int closest1 = inlet_nearby (previousX, a, c, numberOfOutlets);
     int closest2 = inlet_nearby (positionX, m, o, numberOfInlets);
     
@@ -157,15 +164,12 @@ static void canvas_makeLineEnd (t_glist *glist, int positionX, int positionY)
 
 static void canvas_motionResize (t_glist *glist, t_float positionX, t_float positionY)
 {
-    int a, b, c, d;
-        
-    t_gobj *y = canvas_getHitObject (glist, 
-                        glist->gl_editor->e_previousX, 
-                        glist->gl_editor->e_previousY,
-                        &a,
-                        &b,
-                        &c,
-                        &d);
+    t_rectangle r;
+    
+    int previousX = glist->gl_editor->e_previousX;
+    int previousY = glist->gl_editor->e_previousY;
+    
+    t_gobj *y = canvas_getHitObject (glist, previousX, previousY, &r);
         
     if (y) {
     //
@@ -174,6 +178,7 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
     if (object) {
     //
     if (object_isBox (object)) {
+        int a = rectangle_getTopLeftX (&r);
         int w = (int)((positionX - a) / font_getHostFontWidth (canvas_getFontSize (glist)));
         object->te_width = PD_MAX (1, w);
         gobj_visibilityChanged (y, glist, 0);
@@ -228,11 +233,13 @@ static void canvas_proceedMouseClick (t_glist *glist, int positionX, int positio
 {
     t_gobj *y = NULL;
     
-    int a, b, c, d, k = 0;
+    int k = 0;
         
     for (y = glist->gl_graphics; y; y = y->g_next) {
     //
-    if (gobj_hit (y, glist, positionX, positionY, &a, &b, &c, &d)) {
+    t_rectangle t;
+    
+    if (gobj_hit (y, glist, positionX, positionY, &t)) {
     
         t_mouse m = {
                         positionX,
@@ -304,15 +311,19 @@ static int canvas_proceedMouseHitOutlets (t_object *object,
 
 static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY, int modifier, int clicked)
 {
-    int n, h, a, b, c, d;
+    t_rectangle r;
     
-    t_gobj *y = canvas_getHitObject (glist, positionX, positionY, &a, &b, &c, &d);
+    t_gobj *y = canvas_getHitObject (glist, positionX, positionY, &r);
         
     if (!y) { return 0; }
     else {
     //
     t_object *object = cast_objectIfPatchable (y);
-
+    int a = rectangle_getTopLeftX (&r);
+    int b = rectangle_getTopLeftY (&r);
+    int c = rectangle_getBottomRightX (&r);
+    int d = rectangle_getBottomRightY (&r);
+        
     if (modifier & MODIFIER_RIGHT) { canvas_proceedMouseClickRight (glist, y, positionX, positionY); }
     else if (modifier & MODIFIER_SHIFT) {
     
@@ -336,7 +347,9 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
         }
         
     } else {
-          
+        
+        int n, h;
+        
         if (canvas_proceedMouseHitResizeZone (object, positionX, positionY, c, d)) {
         
             if (!clicked) { canvas_setCursorType (glist, CURSOR_RESIZE); }

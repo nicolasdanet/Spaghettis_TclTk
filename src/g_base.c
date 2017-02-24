@@ -438,28 +438,22 @@ void canvas_setCursorType (t_glist *glist, int type)
     }
 }
 
-t_gobj *canvas_getHitObject (t_glist *glist, 
-    int positionX,
-    int positionY,
-    int *a,
-    int *b,
-    int *c,
-    int *d)
+t_gobj *canvas_getHitObject (t_glist *glist, int positionX, int positionY, t_rectangle *r)
 {
     t_gobj *y = NULL;
     t_gobj *object = NULL;
     
-    int xA, yA, xB, yB;
+    t_rectangle t;
     
-    *a = *b = *c = *d = 0;
+    rectangle_set (r, 0, 0, 0, 0);
     
     if (glist->gl_editor && canvas_getNumberOfSelectedObjects (glist) > 1) {
     //
     t_selection *selection = NULL;
     for (selection = glist->gl_editor->e_selectedObjects; selection; selection = selection->sel_next) {
     //
-    if (gobj_hit (selection->sel_what, glist, positionX, positionY, &xA, &yA, &xB, &yB)) {
-        *a = xA; *b = yA; *c = xB; *d = yB;
+    if (gobj_hit (selection->sel_what, glist, positionX, positionY, &t)) {
+        rectangle_setCopy (r, &t);
         object = selection->sel_what; 
     }
     //
@@ -469,13 +463,13 @@ t_gobj *canvas_getHitObject (t_glist *glist,
     
     if (!object) {
     //
-    int t = -PD_INT_MAX;
+    int k = -PD_INT_MAX;
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (gobj_hit (y, glist, positionX, positionY, &xA, &yA, &xB, &yB)) {
-            if (xA > t) {
-                *a = xA; *b = yA; *c = xB; *d = yB;
-                object = y; t = xA;
+        if (gobj_hit (y, glist, positionX, positionY, &t)) {
+            if (rectangle_getTopLeftX (&t) > k) {
+                rectangle_setCopy (r, &t);
+                object = y; k = rectangle_getTopLeftX (&t);
             }
         }
     }

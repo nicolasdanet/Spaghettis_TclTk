@@ -583,7 +583,14 @@ static void garray_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
 {
     t_garray *x = (t_garray *)z;
     
-    gobj_getRectangle (cast_gobj (x->x_scalar), glist, a, b, c, d);
+    t_rectangle t;
+    
+    gobj_getRectangle (cast_gobj (x->x_scalar), glist, &t);
+    
+    *a = rectangle_getTopLeftX (&t);
+    *b = rectangle_getTopLeftY (&t);
+    *c = rectangle_getBottomRightX (&t);
+    *d = rectangle_getBottomRightY (&t);
 }
 
 static void garray_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)

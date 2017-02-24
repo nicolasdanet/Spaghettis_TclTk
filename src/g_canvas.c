@@ -612,9 +612,9 @@ static void canvas_fromPopupDialog (t_glist *glist, t_float action, t_float posi
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
     //
-    int xA, yA, xB, yB;
+    t_rectangle t;
     
-    if (gobj_hit (y, glist, positionX, positionY, &xA, &yA, &xB, &yB)) {
+    if (gobj_hit (y, glist, positionX, positionY, &t)) {
     //
     if (action == 0) {                                                                  /* Properties. */
         if (class_hasPropertiesFunction (pd_class (y))) {

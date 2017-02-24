@@ -154,9 +154,11 @@ void canvas_resortInlets (t_glist *glist)
     
     for (t = inlets; j--; t++) {
         if (*t) {
-            int a, b, c, d;
-            gobj_getRectangle (*t, glist, &a, &b, &c, &d);
-            if (a > maximumX) { maximumX = a; mostRightObject = t; }
+            t_rectangle r;
+            gobj_getRectangle (*t, glist, &r);
+            if (rectangle_getTopLeftX (&r) > maximumX) {
+                maximumX = rectangle_getTopLeftX (&r); mostRightObject = t; 
+            }
         }
     }
     
@@ -207,9 +209,11 @@ void canvas_resortOutlets (t_glist *glist)
     
     for (t = outlets; j--; t++) {
         if (*t) {
-            int a, b, c, d;
-            gobj_getRectangle (*t, glist, &a, &b, &c, &d);
-            if (a > maximumX) { maximumX = a; mostRightObject = t; }
+            t_rectangle r;
+            gobj_getRectangle (*t, glist, &r);
+            if (rectangle_getTopLeftX (&r) > maximumX) {
+                maximumX = rectangle_getTopLeftX (&r); mostRightObject = t; 
+            }
         }
     }
     
@@ -584,8 +588,8 @@ static int canvas_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
         t_gobj *y = NULL;
             
         for (y = x->gl_graphics; y; y = y->g_next) {
-            int xA, yA, xB, yB;
-            if (gobj_hit (y, x, a, b, &xA, &yA, &xB, &yB)) {
+            t_rectangle t;
+            if (gobj_hit (y, x, a, b, &t)) {
                 if ((k = gobj_mouse (y, x, m))) {
                     break;
                 }

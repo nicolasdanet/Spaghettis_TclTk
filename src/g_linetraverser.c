@@ -57,13 +57,8 @@ t_outconnect *linetraverser_next (t_linetraverser *t)
     t->tr_srcNumberOfOutlets = object_numberOfOutlets (o);
     n = 0;
     
-    if (canvas_isMapped (t->tr_owner)) {
-    
-        int xA, yA, xB, yB;
-        gobj_getRectangle (y, t->tr_owner, &xA, &yA, &xB, &yB);
-        rectangle_set (&t->tr_srcBox, xA, yA, xB, yB);
-            
-    } else {
+    if (canvas_isMapped (t->tr_owner)) { gobj_getRectangle (y, t->tr_owner, &t->tr_srcBox); }
+    else {
         rectangle_set (&t->tr_srcBox, 0, 0, 0, 0);
     }
     //
@@ -86,9 +81,7 @@ t_outconnect *linetraverser_next (t_linetraverser *t)
     
     if (canvas_isMapped (t->tr_owner)) {
 
-        int xA, yA, xB, yB;
-        gobj_getRectangle (cast_gobj (t->tr_destObject), t->tr_owner, &xA, &yA, &xB, &yB);
-        rectangle_set (&t->tr_destBox, xA, yA, xB, yB);
+        gobj_getRectangle (cast_gobj (t->tr_destObject), t->tr_owner, &t->tr_destBox);
         
         {
             int w = rectangle_getWidth (&t->tr_srcBox);
