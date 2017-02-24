@@ -272,21 +272,18 @@ void canvas_bounds (t_glist *glist, t_float a, t_float b, t_float c, t_float d)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_getGraphOnParentRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
+static void canvas_getGraphOnParentRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
 {
     t_glist *x = cast_glist (z);
     
     PD_ASSERT (pd_class (z) == canvas_class);
     
-    int xA = text_getPixelX (cast_object (x), glist);
-    int yA = text_getPixelY (cast_object (x), glist);
-    int xB = xA + x->gl_graphWidth;
-    int yB = yA + x->gl_graphHeight;
-
-    *a = xA;
-    *b = yA;
-    *c = xB;
-    *d = yB;
+    int a = text_getPixelX (cast_object (x), glist);
+    int b = text_getPixelY (cast_object (x), glist);
+    int c = a + x->gl_graphWidth;
+    int d = b + x->gl_graphHeight;
+    
+    rectangle_set (r, a, b, c, d);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -302,9 +299,9 @@ t_float canvas_pixelToValueX (t_glist *glist, t_float f)
     else {
         if (glist->gl_hasWindow)    { v = f / rectangle_getWidth (&glist->gl_geometry); }
         else {
-            int a, b, c, d;
-            canvas_getGraphOnParentRectangle (cast_gobj (glist), glist->gl_parent, &a, &b, &c, &d);
-            v = (f - a) / (c - a);
+            t_rectangle r;
+            canvas_getGraphOnParentRectangle (cast_gobj (glist), glist->gl_parent, &r);
+            v = (f - rectangle_getTopLeftX (&r)) / rectangle_getWidth (&r);
         }
     }
 
@@ -320,9 +317,9 @@ t_float canvas_pixelToValueY (t_glist *glist, t_float f)
     else {
         if (glist->gl_hasWindow)    { v = f / rectangle_getHeight (&glist->gl_geometry); }
         else {
-            int a, b, c, d;
-            canvas_getGraphOnParentRectangle (cast_gobj (glist), glist->gl_parent, &a, &b, &c, &d);
-            v = (f - b) / (d - b);
+            t_rectangle r;
+            canvas_getGraphOnParentRectangle (cast_gobj (glist), glist->gl_parent, &r);
+            v = (f - rectangle_getTopLeftY (&r)) / rectangle_getHeight (&r);
         }
     }
     
@@ -339,10 +336,10 @@ t_float canvas_valueToPixelX (t_glist *glist, t_float f)
     else {
         if (glist->gl_hasWindow)    { v = rectangle_getWidth (&glist->gl_geometry); }
         else {
-            int a, b, c, d;
-            canvas_getGraphOnParentRectangle (cast_gobj (glist), glist->gl_parent, &a, &b, &c, &d);
-            x = a;
-            v = c - a;
+            t_rectangle r;
+            canvas_getGraphOnParentRectangle (cast_gobj (glist), glist->gl_parent, &r);
+            x = rectangle_getTopLeftX (&r);
+            v = rectangle_getWidth (&r);
         }
     }
     
@@ -359,10 +356,10 @@ t_float canvas_valueToPixelY (t_glist *glist, t_float f)
     else {
         if (glist->gl_hasWindow)    { v = rectangle_getHeight (&glist->gl_geometry); }
         else {
-            int a, b, c, d;
-            canvas_getGraphOnParentRectangle (cast_gobj (glist), glist->gl_parent, &a, &b, &c, &d);
-            x = b;
-            v = d - b;
+            t_rectangle r;
+            canvas_getGraphOnParentRectangle (cast_gobj (glist), glist->gl_parent, &r);
+            x = rectangle_getTopLeftY (&r);
+            v = rectangle_getHeight (&r);
         }
     }
     
@@ -410,7 +407,12 @@ static void canvas_behaviorGetRectangle (t_gobj *z,
     
     if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnGetRectangle (z, glist, &xA, &yA, &xB, &yB); }
     else {
-        canvas_getGraphOnParentRectangle (z, glist, &xA, &yA, &xB, &yB);
+        t_rectangle r;
+        canvas_getGraphOnParentRectangle (z, glist, &r);
+        xA = rectangle_getTopLeftX (&r);
+        yA = rectangle_getTopLeftY (&r);
+        xB = rectangle_getBottomRightX (&r);
+        yB = rectangle_getBottomRightY (&r);
     }
     
     *a = xA;
