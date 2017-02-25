@@ -16,12 +16,12 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void rectangle_set (t_rectangle *r, int xA, int yA, int xB, int yB)
+void rectangle_set (t_rectangle *r, int a, int b, int c, int d)
 {
-    r->rect_topLeftX     = PD_MIN (xA, xB);
-    r->rect_topLeftY     = PD_MIN (yA, yB);
-    r->rect_bottomRightX = PD_MAX (xA, xB);
-    r->rect_bottomRightY = PD_MAX (yA, yB);
+    r->rect_topLeftX     = PD_MIN (a, c);
+    r->rect_topLeftY     = PD_MIN (b, d);
+    r->rect_bottomRightX = PD_MAX (a, c);
+    r->rect_bottomRightY = PD_MAX (b, d);
     r->rect_isNothing    = 0;
 }
 

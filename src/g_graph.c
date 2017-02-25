@@ -468,10 +468,10 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     
     if (!err) {
     //
-    int xA = rectangle_getTopLeftX (&r);
-    int yA = rectangle_getTopLeftY (&r);
-    int xB = rectangle_getBottomRightX (&r);
-    int yB = rectangle_getBottomRightY (&r);
+    int a = rectangle_getTopLeftX (&r);
+    int b = rectangle_getTopLeftY (&r);
+    int c = rectangle_getBottomRightX (&r);
+    int d = rectangle_getBottomRightY (&r);
         
     if (x->gl_hasWindow) {
     //
@@ -481,16 +481,16 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                         " -fill #%06x"
                         " -tags %s\n",
                         canvas_getView (x->gl_parent),
-                        xA,
-                        yA,
-                        xA,
-                        yB,
-                        xB,
-                        yB,
-                        xB,
-                        yA,
-                        xA,
-                        yA,
+                        a,
+                        b,
+                        a,
+                        d,
+                        c,
+                        d,
+                        c,
+                        b,
+                        a,
+                        b,
                         COLOR_MASKED,
                         tag);
     } else {
@@ -512,16 +512,16 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                         " -fill #%06x"
                         " -tags %s\n",
                         canvas_getView (x->gl_parent),
-                        xA,
-                        yA,
-                        xA,
-                        yB,
-                        xB,
-                        yB,
-                        xB,
-                        yA,
-                        xA,
-                        yA,
+                        a,
+                        b,
+                        a,
+                        d,
+                        c,
+                        d,
+                        c,
+                        b,
+                        a,
+                        b,
                         (x->gl_isSelected ? COLOR_SELECTED : COLOR_NORMAL),
                         tag);
         
@@ -535,8 +535,8 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                         " -fill #%06x"
                         " -tags %s\n",
                         canvas_getView (x->gl_parent),
-                        xA,
-                        yA - (++i) * (int)font_getHostFontHeight (canvas_getFontSize (x)),
+                        a,
+                        b - (++i) * (int)font_getHostFontHeight (canvas_getFontSize (x)),
                         garray_getName ((t_garray *)y)->s_name,
                         font_getHostFontSize (canvas_getFontSize (x)),
                         (x->gl_isSelected ? COLOR_SELECTED : COLOR_NORMAL),
