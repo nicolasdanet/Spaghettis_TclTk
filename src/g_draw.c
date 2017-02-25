@@ -145,18 +145,17 @@ void canvas_deleteLinesByInlets (t_glist *glist, t_object *o, t_inlet *inlet, t_
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_drawBoxObject (t_glist *glist,
-    t_object *o,
-    char *tag,
-    int create,
-    int a,
-    int b,
-    int c,
-    int d)
+static void canvas_drawBoxObject (t_glist *glist, t_object *o, char *tag, int create, t_rectangle *r)
 {
     char *pattern = (pd_class (o) == text_class) ? "{6 4}" : "{}";  // --
     
+    int a = rectangle_getTopLeftX (r);
+    int b = rectangle_getTopLeftY (r);
+    int c = rectangle_getBottomRightX (r);
+    int d = rectangle_getBottomRightY (r);
+    
     if (create) {
+    
         sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d"
                         " -dash %s"
                         " -tags %sBORDER\n",
@@ -173,7 +172,9 @@ static void canvas_drawBoxObject (t_glist *glist,
                         b,  
                         pattern,        /* Dashes for badly created boxes? */
                         tag);
+                        
     } else {
+    
         sys_vGui (".x%lx.c coords %sBORDER %d %d %d %d %d %d %d %d %d %d\n",
                         canvas_getView (glist),
                         tag,
@@ -187,6 +188,7 @@ static void canvas_drawBoxObject (t_glist *glist,
                         d,
                         a,
                         b);
+                        
         sys_vGui (".x%lx.c itemconfigure %sBORDER -dash %s\n",
                         canvas_getView (glist),
                         tag,
@@ -194,16 +196,15 @@ static void canvas_drawBoxObject (t_glist *glist,
     }
 }
 
-static void canvas_drawBoxMessage (t_glist *glist,
-    t_object *o,
-    char *tag,
-    int create,
-    int a,
-    int b,
-    int c,
-    int d)
+static void canvas_drawBoxMessage (t_glist *glist, t_object *o, char *tag, int create, t_rectangle *r)
 {
+    int a = rectangle_getTopLeftX (r);
+    int b = rectangle_getTopLeftY (r);
+    int c = rectangle_getBottomRightX (r);
+    int d = rectangle_getBottomRightY (r);
+    
     if (create) {
+    
         sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d %d %d %d %d"
                         " -tags %sBORDER\n",
                         canvas_getView (glist),
@@ -224,6 +225,7 @@ static void canvas_drawBoxMessage (t_glist *glist,
                         tag);
                     
     } else {
+    
         sys_vGui (".x%lx.c coords %sBORDER %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
                         canvas_getView (glist),
                         tag,
@@ -244,16 +246,15 @@ static void canvas_drawBoxMessage (t_glist *glist,
     }
 }
 
-static void canvas_drawBoxAtom (t_glist *glist,
-    t_object *o,
-    char *tag,
-    int create,
-    int a,
-    int b,
-    int c,
-    int d)
+static void canvas_drawBoxAtom (t_glist *glist, t_object *o, char *tag, int create, t_rectangle *r)
 {
+    int a = rectangle_getTopLeftX (r);
+    int b = rectangle_getTopLeftY (r);
+    int c = rectangle_getBottomRightX (r);
+    int d = rectangle_getBottomRightY (r);
+    
     if (create) {
+    
         sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d %d %d"
                         " -tags %sBORDER\n",
                         canvas_getView (glist),
@@ -270,7 +271,9 @@ static void canvas_drawBoxAtom (t_glist *glist,
                         a,
                         b,
                         tag);
+                        
     } else {
+    
         sys_vGui (".x%lx.c coords %sBORDER %d %d %d %d %d %d %d %d %d %d %d %d\n",
                         canvas_getView (glist),
                         tag,
@@ -289,18 +292,16 @@ static void canvas_drawBoxAtom (t_glist *glist,
     }
 }
 
-static void canvas_drawBoxComment (t_glist *glist,
-    t_object *o,
-    char *tag,
-    int create,
-    int a,
-    int b,
-    int c,
-    int d)
+static void canvas_drawBoxComment (t_glist *glist, t_object *o, char *tag, int create, t_rectangle *r)
 {
     if (glist->gl_isEditMode) {
     //
+    int b = rectangle_getTopLeftY (r);
+    int c = rectangle_getBottomRightX (r);
+    int d = rectangle_getBottomRightY (r);
+    
     if (create) {
+    
         sys_vGui (".x%lx.c create line %d %d %d %d"
                         " -tags [list %sBORDER COMMENTBAR]\n",      // --
                         canvas_getView (glist),
@@ -309,7 +310,9 @@ static void canvas_drawBoxComment (t_glist *glist,
                         c,
                         d,
                         tag);
+                        
     } else {
+    
         sys_vGui (".x%lx.c coords %sBORDER %d %d %d %d\n",
                         canvas_getView (glist),
                         tag,
@@ -326,24 +329,22 @@ static void canvas_drawBoxComment (t_glist *glist,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_drawInletsAndOutlets (t_glist *glist,
-    t_object *o,
-    char *tag,
-    int create,
-    int a,
-    int b,
-    int c,
-    int d)
+static void canvas_drawInletsAndOutlets (t_glist *glist, t_object *o, char *tag, int create, t_rectangle *r)
 {
     int i;
     int m = object_numberOfInlets (o);
     int n = object_numberOfOutlets (o);
+    int a = rectangle_getTopLeftX (r);
+    int b = rectangle_getTopLeftY (r);
+    int c = rectangle_getBottomRightX (r);
+    int d = rectangle_getBottomRightY (r);
     
     for (i = 0; i < m; i++) {
     //
     int offset = a + inlet_offset ((c - a), i, m);
     
     if (create) {
+    
         sys_vGui (".x%lx.c create rectangle %d %d %d %d -tags %sINLET%d\n",
                         canvas_getView (glist),
                         offset,
@@ -352,7 +353,9 @@ static void canvas_drawInletsAndOutlets (t_glist *glist,
                         b + INLET_HEIGHT,
                         tag,
                         i);
+                        
     } else {
+    
         sys_vGui (".x%lx.c coords %sINLET%d %d %d %d %d\n",
                         canvas_getView (glist),
                         tag,
@@ -370,6 +373,7 @@ static void canvas_drawInletsAndOutlets (t_glist *glist,
     int offset = a + inlet_offset ((c - a), i, n);
     
     if (create) {
+    
         sys_vGui (".x%lx.c create rectangle %d %d %d %d -tags %sOUTLET%d\n",
                         canvas_getView (glist),
                         offset,
@@ -378,7 +382,9 @@ static void canvas_drawInletsAndOutlets (t_glist *glist,
                         d,
                         tag,
                         i);
+                        
     } else {
+    
         sys_vGui (".x%lx.c coords %sOUTLET%d %d %d %d %d\n",
                         canvas_getView (glist),
                         tag,
@@ -398,21 +404,11 @@ void canvas_drawBox (t_glist *glist, t_object *o, char *tag, int create)
     
     text_behaviorGetRectangle (cast_gobj (o), glist, &r);
 
-    int a = rectangle_getTopLeftX (&r);
-    int b = rectangle_getTopLeftY (&r);
-    int c = rectangle_getBottomRightX (&r);
-    int d = rectangle_getBottomRightY (&r);
-    
-    if (o->te_type == TYPE_OBJECT)          { canvas_drawBoxObject (glist, o, tag, create, a, b, c, d);  }
-    else if (o->te_type == TYPE_MESSAGE)    { canvas_drawBoxMessage (glist, o, tag, create, a, b, c, d); }
-    else if (o->te_type == TYPE_ATOM)       { canvas_drawBoxAtom (glist, o, tag, create, a, b, c, d);    }
-    else if (o->te_type == TYPE_COMMENT)    { canvas_drawBoxComment (glist, o, tag, create, a, b, c, d); }
-
-    if (cast_objectIfPatchable (o)) {
-    // 
-    canvas_drawInletsAndOutlets (glist, o, tag, create, a, b, c, d); 
-    //
-    }
+    if (o->te_type == TYPE_OBJECT)       { canvas_drawBoxObject (glist, o, tag, create, &r);        }
+    else if (o->te_type == TYPE_MESSAGE) { canvas_drawBoxMessage (glist, o, tag, create, &r);       }
+    else if (o->te_type == TYPE_ATOM)    { canvas_drawBoxAtom (glist, o, tag, create, &r);          }
+    else if (o->te_type == TYPE_COMMENT) { canvas_drawBoxComment (glist, o, tag, create, &r);       }
+    if (cast_objectIfPatchable (o))      { canvas_drawInletsAndOutlets (glist, o, tag, create, &r); }
 }
 
 static void canvas_eraseInletsAndOutlets (t_glist *glist, t_object *o, char *tag)
