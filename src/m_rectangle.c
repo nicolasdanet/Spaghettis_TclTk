@@ -84,11 +84,14 @@ int rectangle_isNothing (t_rectangle *r)
 void rectangle_enlarge (t_rectangle *r, int n)
 {
     if (!rectangle_isNothing (r)) {
-
-        r->rect_topLeftX     -= n;
-        r->rect_topLeftY     -= n;
-        r->rect_bottomRightX += n;
-        r->rect_bottomRightY += n;
+    //
+    int a = r->rect_topLeftX - n;
+    int b = r->rect_topLeftY - n;
+    int c = r->rect_bottomRightX + n;
+    int d = r->rect_bottomRightY + n;
+    
+    rectangle_set (r, a, b, c, d);
+    //
     }
 }
 

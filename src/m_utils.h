@@ -193,28 +193,4 @@ static inline int rectangle_getMiddleY (t_rectangle *r)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static inline void area_setEverything (int *a, int *b, int *c, int *d)
-{
-    *a = -0x7fffffff; *b = -0x7fffffff; *c = 0x7fffffff; *d = 0x7fffffff;
-}
-
-static inline void area_setNothing (int *a, int *b, int *c, int *d)
-{
-    *a = 0; *b = 0; *c = 0; *d = 0;
-}
-
-static inline void area_setNowhere (int *a, int *b, int *c, int *d)
-{
-    *a = 0x7fffffff; *b = 0x7fffffff; *c = -0x7fffffff; *d = -0x7fffffff;
-}
-
-static inline int area_isEverything (int a, int b, int c, int d)
-{
-    return (a == -0x7fffffff && b == -0x7fffffff && c == 0x7fffffff && d == 0x7fffffff);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #endif // __m_utils_h_
