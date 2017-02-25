@@ -415,25 +415,7 @@ static int canvas_proceedMouseLines (t_glist *glist, int positionX, int position
     
     while ((connection = linetraverser_next (&t))) {
     //
-    t_float a = linetraverser_getStartX (&t);
-    t_float b = linetraverser_getStartY (&t);
-    t_float c = linetraverser_getEndX (&t);
-    t_float d = linetraverser_getEndY (&t);
-
-    if (positionX < PD_MIN (a, c)) { continue; }
-    if (positionX > PD_MAX (a, c)) { continue; }
-    if (positionY < PD_MIN (b, d)) { continue; }
-    if (positionY > PD_MAX (b, d)) { continue; }
-    
-    /* Area of the triangle. */
-    
-    t_float area = a * (positionY - d) + positionX * (d - b) + c * (b - positionY);
-    
-    /* Tolerance proportional to the distance between the line extremities. */
-    
-    t_float k = PD_MAX (PD_ABS (c - a), PD_ABS (d - b));    
-    
-    if (PD_ABS (area) < (k * EDITOR_GRIP_SIZE)) {
+    if (cord_hit (linetraverser_getCord (&t), positionX, positionY)) {
         if (clicked) {
             canvas_selectLine (canvas, 
                 connection, 

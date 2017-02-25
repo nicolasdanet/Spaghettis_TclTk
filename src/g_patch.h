@@ -312,6 +312,13 @@ int             voutlet_isSignal                    (t_voutlet *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void            cord_init                           (t_cord *c);
+int             cord_hit                            (t_cord *c, int positionX, int positionY);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_outconnect    *linetraverser_next                 (t_linetraverser *t);
 
 void            linetraverser_start                 (t_linetraverser *t, t_glist *glist);
@@ -325,6 +332,11 @@ int             linetraverser_isLineBetween         (t_linetraverser *t,
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+static inline t_cord *linetraverser_getCord (t_linetraverser *t)
+{
+    return &t->tr_cord;
+}
 
 static inline int linetraverser_getStartX (t_linetraverser *t)
 {
@@ -374,15 +386,6 @@ static inline int linetraverser_getIndexOfOutlet (t_linetraverser *t)
 static inline int linetraverser_getIndexOfInlet (t_linetraverser *t)
 {
     return t->tr_destIndexOfInlet;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static inline void cord_init (t_cord *c)
-{
-    c->tr_lineStartX = c->tr_lineStartY = c->tr_lineEndX = c->tr_lineEndY = 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------

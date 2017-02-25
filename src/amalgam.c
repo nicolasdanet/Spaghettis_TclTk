@@ -89,6 +89,7 @@
 #include "g_object.c"
 #include "g_boxtext.c"
 #include "g_text.c"
+#include "g_cord.c"
 #include "g_linetraverser.c"
 #include "g_base.c"
 #include "g_draw.c"
