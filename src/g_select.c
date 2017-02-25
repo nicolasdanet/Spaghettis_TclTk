@@ -271,7 +271,7 @@ void canvas_selectObjectsInRectangle (t_glist *glist, t_rectangle *r)
     
     gobj_getRectangle (y, glist, &t);
     
-    if (rectangle_containsRectangle (r, &t) && !canvas_isObjectSelected (glist, y)) {
+    if (rectangle_overlap (r, &t) && !canvas_isObjectSelected (glist, y)) {
         canvas_selectObject (glist, y);
     }
     //

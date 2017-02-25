@@ -136,6 +136,7 @@ void        rectangle_setCopy                           (t_rectangle *r, t_recta
 int         rectangle_isEverything                      (t_rectangle *r);
 int         rectangle_isNothing                         (t_rectangle *r);
 int         rectangle_areEquals                         (t_rectangle *r1, t_rectangle *r2);
+int         rectangle_overlap                           (t_rectangle *r1, t_rectangle *r2);
 
 void        rectangle_boundingBoxAddRectangle           (t_rectangle *r, t_rectangle *toAdd);
 void        rectangle_boundingBoxAddPoint               (t_rectangle *r, int x, int y);

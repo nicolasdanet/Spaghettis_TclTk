@@ -59,6 +59,16 @@ int rectangle_areEquals (t_rectangle *r1, t_rectangle *r2)
     return 1;
 }
 
+int rectangle_overlap (t_rectangle *r1, t_rectangle *r2)
+{
+    int noOverlap = r1->rect_topLeftX > r2->rect_bottomRightX ||
+                    r2->rect_topLeftX > r1->rect_bottomRightX ||
+                    r1->rect_topLeftY > r2->rect_bottomRightY ||
+                    r2->rect_topLeftY > r1->rect_bottomRightY;
+    
+    return !noOverlap;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
