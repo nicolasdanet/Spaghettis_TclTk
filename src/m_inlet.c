@@ -77,15 +77,15 @@ void inlet_moveFirst (t_inlet *x)
     }
 }
 
-int object_getIndexOfSignalInlet (t_inlet *x)
+int inlet_getIndexAsSignal (t_inlet *x)
 {
-    int n = 0;
     t_inlet *i = NULL;
-    
-    PD_ASSERT (x->i_type == &s_signal);
+    int n = 0;
+        
+    PD_ASSERT (inlet_isSignal (x));
     
     for (i = x->i_owner->te_inlet; i && i != x; i = i->i_next) { 
-        if (i->i_type == &s_signal) { n++; }
+        if (inlet_isSignal (i)) { n++; }
     }
     
     return n;

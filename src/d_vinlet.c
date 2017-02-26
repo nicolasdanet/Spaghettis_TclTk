@@ -72,7 +72,7 @@ void vinlet_dspProlog (t_vinlet *x, t_signal **signals, t_blockproperties *p)
     //
     if (!p->bp_reblocked) {     /* Vector sizes are equal thus no buffering is required. */
     
-        PD_ASSERT (signals); x->vi_directSignal = signals[object_getIndexOfSignalInlet (x->vi_inlet)]; 
+        PD_ASSERT (signals); x->vi_directSignal = signals[inlet_getIndexAsSignal (x->vi_inlet)]; 
 
     } else {                    /* Buffering required. */
     //
@@ -86,7 +86,7 @@ void vinlet_dspProlog (t_vinlet *x, t_signal **signals, t_blockproperties *p)
     x->vi_directSignal = NULL;
     
     if (signals) {
-        s = signals[object_getIndexOfSignalInlet (x->vi_inlet)];
+        s = signals[inlet_getIndexAsSignal (x->vi_inlet)];
         parentVectorSize = s->s_vectorSize;
         vectorSize = parentVectorSize * p->bp_upsample / p->bp_downsample;
     }

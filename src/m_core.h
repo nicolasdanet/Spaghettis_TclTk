@@ -292,7 +292,6 @@ int         object_indexAsSignalInlet                   (t_object *x, int m);
 int         object_indexAsSignalOutlet                  (t_object *x, int m);
 int         object_isSignalInlet                        (t_object *x, int m);
 int         object_isSignalOutlet                       (t_object *x, int m);
-int         object_getIndexOfSignalInlet                (t_inlet *x);
 int         object_getIndexOfSignalOutlet               (t_outlet *x);
 void        object_moveOutletFirst                      (t_object *x, t_outlet *i);
 void        object_disconnect                           (t_object *src, int m, t_object *dest, int n);
@@ -444,6 +443,7 @@ t_inlet     *inlet_new                                  (t_object *owner,
 void        inlet_moveFirst                             (t_inlet *x);
 void        inlet_free                                  (t_inlet *x);
 int         inlet_isSignal                              (t_inlet *x);
+int         inlet_getIndexAsSignal                      (t_inlet *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
