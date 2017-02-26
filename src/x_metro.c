@@ -121,7 +121,7 @@ static void *metro_new (t_symbol *unitName, t_float f, t_float unit)
     x->x_clock  = clock_new ((void *)x, (t_method)metro_task);
     x->x_outlet = outlet_new (cast_object (x), &s_bang);
     
-    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_inlet2);
+    inlet_new2 (x, &s_float);
     
     metro_floatDelay (x, f);
     
@@ -156,9 +156,9 @@ void metro_setup (void)
     class_addBang (c, (t_method)metro_bang);
     class_addFloat (c, (t_method)metro_float);
     
-    class_addMethod (c, (t_method)metro_floatDelay, sym_inlet2, A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)metro_stop,       sym_stop,   A_NULL);
-    class_addMethod (c, (t_method)metro_unit,       sym_unit,   A_FLOAT, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)metro_floatDelay, sym__inlet2,    A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)metro_stop,       sym_stop,       A_NULL);
+    class_addMethod (c, (t_method)metro_unit,       sym_unit,       A_FLOAT, A_SYMBOL, A_NULL);
 
     #if PD_WITH_LEGACY 
     

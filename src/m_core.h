@@ -167,10 +167,10 @@ struct _inlet {
     t_pd                        i_pd;                   /* MUST be the first. */
     struct _inlet               *i_next;
     t_object                    *i_owner;
-    t_pd                        *i_destination;
-    t_symbol                    *i_from;
+    t_pd                        *i_receiver;
+    t_symbol                    *i_type;
     union {
-        t_symbol                *i_to;
+        t_symbol                *i_method;
         t_gpointer              *i_pointer;
         t_float                 *i_float;
         t_symbol                **i_symbol;
@@ -283,11 +283,11 @@ void        poll_remove                                 (t_pd *x);
 #pragma mark -
 
 t_inlet     *inlet_new                                  (t_object *owner,
-                                                            t_pd *dest,
-                                                            t_symbol *s1,
-                                                            t_symbol *s2);
+                                                            t_pd *receiver,
+                                                            t_symbol *type,
+                                                            t_symbol *method);
 
-t_inlet     *inlet_newSignalDefault                     (t_object *owner, t_float f);
+t_inlet     *inlet_newSignalWithDefault                 (t_object *owner, t_float f);
 
 void        inlet_free                                  (t_inlet *x);
 

@@ -57,9 +57,9 @@ t_widgetbehavior canvas_widgetbehavior =        /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_inlet *canvas_addInlet (t_glist *glist, t_pd *owner, t_symbol *s)
+t_inlet *canvas_addInlet (t_glist *glist, t_pd *receiver, t_symbol *s)
 {
-    t_inlet *inlet = inlet_new (cast_object (glist), owner, s, NULL);
+    t_inlet *inlet = inlet_new (cast_object (glist), receiver, s, NULL);
     
     if (!glist->gl_isLoading) {
     
@@ -75,7 +75,7 @@ t_inlet *canvas_addInlet (t_glist *glist, t_pd *owner, t_symbol *s)
     return inlet;
 }
 
-t_outlet *canvas_addOutlet (t_glist *glist, t_pd *dummy, t_symbol *s)
+t_outlet *canvas_addOutlet (t_glist *glist, t_symbol *s)
 {
     t_outlet *outlet = outlet_new (cast_object (glist), s);
     

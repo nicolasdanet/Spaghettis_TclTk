@@ -67,7 +67,7 @@ static void *until_new (void)
     x->x_run    = 0;
     x->x_outlet = outlet_new (cast_object (x), &s_bang);
     
-    inlet_new (cast_object (x), cast_pd (x), &s_bang, sym_inlet2);
+    inlet_new2 (x, &s_bang);
 
     return x;
 }
@@ -90,7 +90,7 @@ void until_setup (void)
     class_addBang (c, (t_method)until_bang);
     class_addFloat (c, (t_method)until_float);
     
-    class_addMethod (c, (t_method)until_stop, sym_inlet2, A_NULL);
+    class_addMethod (c, (t_method)until_stop, sym__inlet2, A_NULL);
     
     until_class = c;
 }

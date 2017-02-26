@@ -82,7 +82,7 @@ static void *voutlet_newSignal (t_symbol *s)
     x->vo_buffer     = (t_sample *)PD_MEMORY_GET (0);
     x->vo_bufferEnd  = x->vo_buffer;
     x->vo_owner      = canvas_getCurrent();
-    x->vo_outlet     = canvas_addOutlet (x->vo_owner, cast_pd (x), &s_signal);
+    x->vo_outlet     = canvas_addOutlet (x->vo_owner, &s_signal);
     
     inlet_newSignal (cast_object (x));
 
@@ -94,7 +94,7 @@ static void *voutlet_new (t_symbol *s)
     t_voutlet *x = (t_voutlet *)pd_new (voutlet_class);
     
     x->vo_owner  = canvas_getCurrent();
-    x->vo_outlet = canvas_addOutlet (x->vo_owner, cast_pd (x), &s_anything);
+    x->vo_outlet = canvas_addOutlet (x->vo_owner, &s_anything);
     
     inlet_new (cast_object (x), cast_pd (x), NULL, NULL);
 

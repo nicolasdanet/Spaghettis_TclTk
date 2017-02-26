@@ -156,8 +156,8 @@ static void *bp_tilde_new (t_float f, t_float q)
     
     x->x_outlet = outlet_new (cast_object (x), &s_signal);
     
-    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_inlet2);
-    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_inlet3);
+    inlet_new2 (x, &s_float);
+    inlet_new3 (x, &s_float);
     
     bp_tilde_coefficientsProceed (x, f, q);
 
@@ -185,9 +185,9 @@ void bp_tilde_setup (void)
     
     class_addDSP (c, (t_method)bp_tilde_dsp);
     
-    class_addMethod (c, (t_method)bp_tilde_frequency,   sym_inlet2, A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)bp_tilde_q,           sym_inlet3, A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)bp_tilde_clear,       sym_clear,  A_NULL);
+    class_addMethod (c, (t_method)bp_tilde_frequency,   sym__inlet2,    A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)bp_tilde_q,           sym__inlet3,    A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)bp_tilde_clear,       sym_clear,      A_NULL);
     
     bp_tilde_class = c;
 }

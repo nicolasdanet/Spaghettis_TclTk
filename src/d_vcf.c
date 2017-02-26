@@ -157,7 +157,7 @@ static void *vcf_tilde_new (t_float f)
     x->x_outletRight = outlet_new (cast_object (x), &s_signal);
 
     inlet_newSignal (cast_object (x));
-    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_inlet2);
+    inlet_new2 (x, &s_float);
 
     return x;
 }
@@ -183,7 +183,7 @@ void vcf_tilde_setup (void)
     
     class_addDSP (c, (t_method)vcf_tilde_dsp);
     
-    class_addMethod (c, (t_method)vcf_tilde_qFactor, sym_inlet2, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)vcf_tilde_qFactor, sym__inlet2, A_FLOAT, A_NULL);
         
     vcf_tilde_class = c;
 }

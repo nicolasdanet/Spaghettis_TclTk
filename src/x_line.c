@@ -142,8 +142,8 @@ static void *line_new (t_float f, t_float grain)
     
     line_floatGrain (x, grain);
     
-    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_inlet2);
-    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_inlet3);
+    inlet_new2 (x, &s_float);
+    inlet_new3 (x, &s_float);
     
     return x;
 }
@@ -172,10 +172,10 @@ void line_setup (void)
         
     class_addFloat (c, (t_method)line_float);
         
-    class_addMethod (c, (t_method)line_floatRamp,   sym_inlet2, A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)line_floatGrain,  sym_inlet3, A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)line_stop,        sym_stop,   A_NULL);
-    class_addMethod (c, (t_method)line_set,         sym_set,    A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)line_floatRamp,   sym__inlet2,    A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)line_floatGrain,  sym__inlet3,    A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)line_stop,        sym_stop,       A_NULL);
+    class_addMethod (c, (t_method)line_set,         sym_set,        A_FLOAT, A_NULL);
 
     line_class = c;
 }

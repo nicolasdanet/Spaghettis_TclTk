@@ -134,7 +134,7 @@ static void *threshold_tilde_new (t_float high, t_float highDead, t_float low, t
     x->x_outletLeft  = outlet_new (cast_object (x), &s_bang);
     x->x_outletRight = outlet_new (cast_object (x), &s_bang);
     
-    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_inlet2);
+    inlet_new2 (x, &s_float);
 
     threshold_tilde_set (x, high, highDead, low, lowDead);
     
@@ -169,7 +169,7 @@ void threshold_tilde_setup (void)
     
     class_addDSP (c, (t_method)threshold_tilde_dsp);
         
-    class_addMethod (c, (t_method)threshold_tilde_state, sym_inlet2, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)threshold_tilde_state, sym__inlet2, A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)threshold_tilde_set,
         sym_set,
         A_FLOAT,

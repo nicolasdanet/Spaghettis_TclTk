@@ -639,7 +639,7 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
     x->x_peakValue   = (t_float)-101.0;
     x->x_rmsValue    = (t_float)-101.0;
     
-    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_inlet2);
+    inlet_new2 (x, &s_float);
     
     x->x_outletLeft  = outlet_new (cast_object (x), &s_float);
     x->x_outletRight = outlet_new (cast_object (x), &s_float);
@@ -673,7 +673,7 @@ void vu_setup (void)
     class_addBang (c, (t_method)vu_bang);
     class_addFloat (c, (t_method)vu_float);
     
-    class_addMethod (c, (t_method)vu_floatPeak,             sym_inlet2,             A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)vu_floatPeak,             sym__inlet2,            A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)vu_fromDialog,            sym__iemdialog,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)vu_size,                  sym_size,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_move,             sym_move,               A_GIMME, A_NULL);

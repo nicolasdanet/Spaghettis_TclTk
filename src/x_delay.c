@@ -97,7 +97,7 @@ static void *delay_new (t_symbol *unitName, t_float f, t_float unit)
     x->x_outlet = outlet_new (cast_object (x), &s_bang);
     x->x_clock  = clock_new ((void *)x, (t_method)delay_task);
     
-    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_inlet2);
+    inlet_new2 (x, &s_float);
     
     delay_floatDelay (x, f);
     
@@ -134,9 +134,9 @@ void delay_setup (void)
     class_addBang (c, (t_method)delay_bang);
     class_addFloat (c, (t_method)delay_float);
         
-    class_addMethod (c, (t_method)delay_floatDelay, sym_inlet2, A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)delay_stop,       sym_stop,   A_NULL);
-    class_addMethod (c, (t_method)delay_unit,       sym_unit,   A_FLOAT, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)delay_floatDelay, sym__inlet2,    A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)delay_stop,       sym_stop,       A_NULL);
+    class_addMethod (c, (t_method)delay_unit,       sym_unit,       A_FLOAT, A_SYMBOL, A_NULL);
     
     #if PD_WITH_LEGACY
     

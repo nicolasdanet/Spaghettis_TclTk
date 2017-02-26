@@ -54,7 +54,7 @@ static void *realtime_new (void)
     
     x->x_outlet = outlet_new (cast_object (x), &s_float);
 
-    inlet_new (cast_object (x), cast_pd (x), &s_bang, sym_inlet2);
+    inlet_new2 (x, &s_bang);
 
     realtime_bang (x);
     
@@ -80,7 +80,7 @@ void realtime_setup (void)
     
     class_addBang (c, (t_method)realtime_bang);
     
-    class_addMethod (c, (t_method)realtime_elapsed, sym_inlet2, A_NULL);
+    class_addMethod (c, (t_method)realtime_elapsed, sym__inlet2, A_NULL);
     
     realtime_class = c;
 }

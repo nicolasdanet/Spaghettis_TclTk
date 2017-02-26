@@ -73,7 +73,7 @@ static void *timer_new (t_symbol *unitName, t_float unit)
         
     x->x_outlet = outlet_new (cast_object (x), &s_float);
     
-    inlet_new (cast_object (x), cast_pd (x), &s_bang, sym_inlet2);
+    inlet_new2 (x, &s_bang);
     
     if (unit != 0.0) { timer_unit (x, unitName, unit); }
         
@@ -99,8 +99,8 @@ void timer_setup (void)
             
     class_addBang (c, (t_method)timer_bang);
     
-    class_addMethod (c, (t_method)timer_bangElapsed,    sym_inlet2, A_NULL);
-    class_addMethod (c, (t_method)timer_unit,           sym_unit,   A_FLOAT, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)timer_bangElapsed,    sym__inlet2,    A_NULL);
+    class_addMethod (c, (t_method)timer_unit,           sym_unit,       A_FLOAT, A_SYMBOL, A_NULL);
     
     #if PD_WITH_LEGACY
     

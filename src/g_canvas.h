@@ -264,8 +264,8 @@ void            canvas_makeDial                         (t_glist *glist, t_symbo
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_inlet         *canvas_addInlet                        (t_glist *glist, t_pd *owner, t_symbol *s);
-t_outlet        *canvas_addOutlet                       (t_glist *glist, t_pd *owner, t_symbol *s);
+t_inlet         *canvas_addInlet                        (t_glist *glist, t_pd *receiver, t_symbol *s);
+t_outlet        *canvas_addOutlet                       (t_glist *glist, t_symbol *s);
 
 void            canvas_removeInlet                      (t_glist *glist, t_inlet *inlet);
 void            canvas_removeOutlet                     (t_glist *glist, t_outlet *outlet);

@@ -94,7 +94,7 @@ static void *phasor_tilde_new (t_float f)
     x->x_f = f;
     x->x_outlet = outlet_new (cast_object (x), &s_signal);
     
-    inlet_new (cast_object (x), cast_pd (x), &s_float, sym_inlet2);
+    inlet_new2 (x, &s_float);
         
     return x;
 }
@@ -119,7 +119,7 @@ void phasor_tilde_setup (void)
     
     class_addDSP (c, (t_method)phasor_tilde_dsp);
     
-    class_addMethod (c, (t_method)phasor_tilde_phase, sym_inlet2, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)phasor_tilde_phase, sym__inlet2, A_FLOAT, A_NULL);
     
     phasor_tilde_class = c;
 }
