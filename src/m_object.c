@@ -36,7 +36,7 @@ void object_distributeOnInlets (t_object *x, int argc, t_atom *argv)
     t_atom *a = NULL;
     t_inlet *i = x->te_inlet;
     
-    for (count = argc - 1, a = argv + 1; i && count--; a++, i = i->i_next) {
+    for (count = argc - 1, a = argv + 1; i && count--; a++, i = inlet_getNext (i)) {
     //
     if (IS_POINTER (a))        { pd_pointer (cast_pd (i), GET_POINTER (a)); }
     else if (IS_FLOAT (a))     { pd_float (cast_pd (i), GET_FLOAT (a)); }
@@ -78,7 +78,7 @@ t_outconnect *object_connect (t_object *src, int m, t_object *dest, int n)
     if (pd_class (dest)->c_hasFirstInlet) { if (!n) { to = cast_pd (dest); } else { n--; } }
     
     if (to == NULL) {
-        for (i = dest->te_inlet; i && n; i = i->i_next, n--) { }
+        for (i = dest->te_inlet; i && n; i = inlet_getNext (i), n--) { }
         if (i == NULL) { return NULL; }
         else {
             to = cast_pd (i);
@@ -122,7 +122,7 @@ void object_disconnect (t_object *src, int m, t_object *dest, int n)
     if (pd_class (dest)->c_hasFirstInlet) { if (!n) { to = cast_pd (dest); } else { n--; } }
     
     if (to == NULL) {
-        for (i = dest->te_inlet; i && n; i = i->i_next, n--) { }
+        for (i = dest->te_inlet; i && n; i = inlet_getNext (i), n--) { }
         if (i == NULL) { return; }
         to = cast_pd (i);
     }
@@ -157,7 +157,7 @@ int object_numberOfInlets (t_object *x)
     int n = 0;
     t_inlet *i = NULL;
     if (pd_class (x)->c_hasFirstInlet) { n++; }
-    for (i = x->te_inlet; i; i = i->i_next) { n++; }
+    for (i = x->te_inlet; i; i = inlet_getNext (i)) { n++; }
     return n;
 }
 
@@ -174,7 +174,7 @@ int object_numberOfSignalInlets (t_object *x)
     int n = 0;
     t_inlet *i = NULL;
     if (pd_class (x)->c_hasFirstInlet && pd_class (x)->c_signalOffset) { n++; }
-    for (i = x->te_inlet; i; i = i->i_next) { if (i->i_type == &s_signal) { n++; } }
+    for (i = x->te_inlet; i; i = inlet_getNext (i)) { if (inlet_isSignal (i)) { n++; } }
     return n;
 }
 
@@ -202,8 +202,8 @@ int object_indexAsSignalInlet (t_object *x, int m)
         m--;
     }
     
-    for (i = x->te_inlet; i; i = i->i_next, m--) {
-        if (i->i_type == &s_signal) { 
+    for (i = x->te_inlet; i; i = inlet_getNext (i), m--) {
+        if (inlet_isSignal (i)) { 
             if (m == 0) { return n; } 
             else { 
                 n++; 
@@ -244,9 +244,9 @@ int object_isSignalInlet (t_object *x, int m)
         }
     }
     
-    for (i = x->te_inlet; i && m; i = i->i_next, m--) { }
+    for (i = x->te_inlet; i && m; i = inlet_getNext (i), m--) { }
     
-    return (i && (i->i_type == &s_signal));
+    return (i && inlet_isSignal (i));
 }
 
 int object_isSignalOutlet (t_object *x, int m)
@@ -261,20 +261,6 @@ int object_isSignalOutlet (t_object *x, int m)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-int object_getIndexOfSignalInlet (t_inlet *x)
-{
-    int n = 0;
-    t_inlet *i = NULL;
-    
-    PD_ASSERT (x->i_type == &s_signal);
-    
-    for (i = x->i_owner->te_inlet; i && i != x; i = i->i_next) { 
-        if (i->i_type == &s_signal) { n++; }
-    }
-    
-    return n;
-}
 
 int object_getIndexOfSignalOutlet (t_outlet *x)
 {
@@ -323,9 +309,9 @@ t_outconnect *object_traverseOutletNext (t_outconnect *last, t_object **dest, t_
     if (c == inlet_class || c == pointerinlet_class || c == floatinlet_class || c == symbolinlet_class) {
         t_inlet *i1 = (t_inlet *)y;
         t_inlet *i2 = NULL;
-        t_object *o = i1->i_owner;
+        t_object *o = inlet_getOwner (i1);
         int k = pd_class (o)->c_hasFirstInlet;
-        for (i2 = o->te_inlet; i2 && i2 != i1; i2 = i2->i_next) { k++; }
+        for (i2 = o->te_inlet; i2 && i2 != i1; i2 = inlet_getNext (i2)) { k++; }
         *n    = k;
         *ptr  = i1;
         *dest = o;
@@ -381,9 +367,11 @@ t_float *object_getSignalValueAtIndex (t_object *x, int m)
         m--;
     }
     
-    for (i = x->te_inlet; i; i = i->i_next, m--) {
-        if (i->i_type == &s_signal) {
-            if (m == 0) { return &i->i_un.i_signal; }
+    for (i = x->te_inlet; i; i = inlet_getNext (i), m--) {
+        if (inlet_isSignal (i)) { 
+            if (m == 0) { 
+                return inlet_getSignalValue (i); 
+            } 
         }
     }
     

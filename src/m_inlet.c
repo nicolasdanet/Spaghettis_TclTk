@@ -50,8 +50,10 @@ static void inlet_add (t_inlet *x, t_object *owner)
     }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
+int inlet_isSignal (t_inlet *x)
+{
+    return (x->i_type == &s_signal);
+}
 
 void inlet_moveFirst (t_inlet *x)
 {
@@ -73,6 +75,20 @@ void inlet_moveFirst (t_inlet *x)
     PD_BUG;
     //
     }
+}
+
+int object_getIndexOfSignalInlet (t_inlet *x)
+{
+    int n = 0;
+    t_inlet *i = NULL;
+    
+    PD_ASSERT (x->i_type == &s_signal);
+    
+    for (i = x->i_owner->te_inlet; i && i != x; i = i->i_next) { 
+        if (i->i_type == &s_signal) { n++; }
+    }
+    
+    return n;
 }
 
 // -----------------------------------------------------------------------------------------------------------
