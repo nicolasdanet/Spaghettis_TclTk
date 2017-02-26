@@ -52,6 +52,31 @@ static void inlet_add (t_inlet *x, t_object *owner)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+void inlet_moveFirst (t_inlet *x)
+{
+    t_object *owner = x->i_owner;
+    
+    if (owner->te_inlet != x) {
+    //
+    t_inlet *i = NULL;
+        
+    for (i = owner->te_inlet; i; i = i->i_next) {
+        if (i->i_next == x) {
+            i->i_next = x->i_next;
+            x->i_next = owner->te_inlet;
+            owner->te_inlet = x;
+            return;
+        }
+    }
+    
+    PD_BUG;
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 /* For background compatibility the broadcasting rules below must be changed with care. */

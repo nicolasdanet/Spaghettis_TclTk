@@ -163,8 +163,7 @@ void canvas_resortInlets (t_glist *glist)
     }
     
     if (mostRightObject) {
-        object_moveInletFirst (cast_object (glist), vinlet_getInlet (cast_pd (*mostRightObject)));
-        *mostRightObject = NULL;
+        inlet_moveFirst (vinlet_getInlet (cast_pd (*mostRightObject))); *mostRightObject = NULL;
     }
     //
     }

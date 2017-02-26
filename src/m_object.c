@@ -339,24 +339,6 @@ t_outconnect *object_traverseOutletNext (t_outconnect *last, t_object **dest, t_
     return last->oc_next;
 }
 
-void object_moveInletFirst (t_object *x, t_inlet *i)
-{
-    if (x->te_inlet != i) {
-    //
-    t_inlet *i2 = NULL;
-        
-    for (i2 = x->te_inlet; i2; i2 = i2->i_next) {
-        if (i2->i_next == i) {
-            i2->i_next = i->i_next;
-            i->i_next = x->te_inlet;
-            x->te_inlet = i;
-            break;
-        }
-    }
-    //
-    }
-}
-
 void object_moveOutletFirst (t_object *x, t_outlet *o)
 {
     if (x->te_outlet != o) {

@@ -282,26 +282,6 @@ void        poll_remove                                 (t_pd *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_inlet     *inlet_new                                  (t_object *owner,
-                                                            t_pd *receiver,
-                                                            t_symbol *type,
-                                                            t_symbol *method);
-
-t_inlet     *inlet_newSignalDefault                     (t_object *owner, t_float f);
-
-void        inlet_free                                  (t_inlet *x);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void        outlet_free                                 (t_outlet *x);
-int         outlet_isSignal                             (t_outlet *x);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void        object_distributeOnInlets                   (t_object *x, int argc, t_atom *argv);
 void        object_saveWidth                            (t_object *x, t_buffer *b);
 int         object_numberOfInlets                       (t_object *x);
@@ -314,7 +294,6 @@ int         object_isSignalInlet                        (t_object *x, int m);
 int         object_isSignalOutlet                       (t_object *x, int m);
 int         object_getIndexOfSignalInlet                (t_inlet *x);
 int         object_getIndexOfSignalOutlet               (t_outlet *x);
-void        object_moveInletFirst                       (t_object *x, t_inlet *i);
 void        object_moveOutletFirst                      (t_object *x, t_outlet *i);
 void        object_disconnect                           (t_object *src, int m, t_object *dest, int n);
 
@@ -451,6 +430,35 @@ void        sys_gui                                     (char *s);
 
 t_error     guistub_new                                 (t_pd *owner, void *key, const char *cmd);
 void        guistub_destroyWithKey                      (void *key);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_inlet     *inlet_newSignalDefault                     (t_object *owner, t_float f);
+t_inlet     *inlet_new                                  (t_object *owner,
+                                                            t_pd *receiver,
+                                                            t_symbol *type,
+                                                            t_symbol *method);
+
+void        inlet_moveFirst                             (t_inlet *x);
+void        inlet_free                                  (t_inlet *x);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline t_inlet *inlet_getNext (t_inlet *x)
+{
+    return x->i_next;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        outlet_free                                 (t_outlet *x);
+int         outlet_isSignal                             (t_outlet *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
