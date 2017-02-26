@@ -146,7 +146,7 @@ static void inlet_forPointer (t_inlet *x, t_gpointer *gp)
 
 /* Typed inlet that just store the incoming value. */
 
-t_inlet *inlet_newSignalWithDefault (t_object *owner, t_float f)
+t_inlet *inlet_newSignalDefault (t_object *owner, t_float f)
 {
     t_inlet *x = inlet_new (owner, NULL, &s_signal, NULL);
     
@@ -157,7 +157,7 @@ t_inlet *inlet_newSignalWithDefault (t_object *owner, t_float f)
 
 t_inlet *inlet_newSignal (t_object *owner)
 {
-    return inlet_newSignalWithDefault (owner, (t_float)0.0);
+    return inlet_newSignalDefault (owner, (t_float)0.0);
 }
 
 t_inlet *inlet_newFloat (t_object *owner, t_float *fp)

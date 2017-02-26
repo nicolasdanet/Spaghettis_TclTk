@@ -287,7 +287,7 @@ t_inlet     *inlet_new                                  (t_object *owner,
                                                             t_symbol *type,
                                                             t_symbol *method);
 
-t_inlet     *inlet_newSignalWithDefault                 (t_object *owner, t_float f);
+t_inlet     *inlet_newSignalDefault                     (t_object *owner, t_float f);
 
 void        inlet_free                                  (t_inlet *x);
 
