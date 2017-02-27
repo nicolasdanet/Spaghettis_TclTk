@@ -295,11 +295,6 @@ int         object_isSignalOutlet                       (t_object *x, int m);
 void        object_disconnect                           (t_object *src, int m, t_object *dest, int n);
 
 t_outconnect    *object_connect                         (t_object *src, int m, t_object *dest, int n);
-t_outconnect    *object_traverseOutletStart             (t_object *x, t_outlet **ptr, int n);
-t_outconnect    *object_traverseOutletNext              (t_outconnect *last,
-                                                            t_object **dest,
-                                                            t_inlet **ptr,
-                                                            int *n);
 
 t_float     *object_getSignalValueAtIndex               (t_object *x, int m);
 
@@ -486,6 +481,20 @@ static inline t_outlet *outlet_getNext (t_outlet *x)
 static inline t_outconnect *outlet_getConnections (t_outlet *x)
 {
     return x->o_connections;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline t_outconnect *connection_getNext (t_outconnect *x)
+{
+    return x->oc_next;
+}
+
+static inline t_pd *connection_getReceiver (t_outconnect *x)
+{
+    return x->oc_receiver;
 }
 
 // -----------------------------------------------------------------------------------------------------------

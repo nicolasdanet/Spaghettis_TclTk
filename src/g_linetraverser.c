@@ -17,13 +17,71 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+extern t_class *inlet_class;
+extern t_class *pointerinlet_class;
+extern t_class *floatinlet_class;
+extern t_class *symbolinlet_class;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* Fetch the nth outlet of an object. */
+/* Return its first connection. */
+
+static t_outconnect *linetraverser_outletStart  (t_object *x, t_outlet **ptr, int n)
+{
+    t_outlet *o = x->te_outlet;
+    
+    while (n && o) { n--; o = outlet_getNext (o); }
+    
+    *ptr = o;
+    
+    if (o) {
+        return (outlet_getConnections (o)); 
+    }
+
+    return NULL;
+}
+
+/* Given a connection, fetch the object connected, the related inlet and its index. */
+/* Return the next connection of the outlet (NULL if last). */
+
+static t_outconnect *linetraverser_outletNext (t_outconnect *previous, t_object **dest, t_inlet **ptr, int *n)
+{
+    t_pd *y = connection_getReceiver (previous);
+
+    t_class *c = pd_class (y);
+    
+    if (c == inlet_class || c == pointerinlet_class || c == floatinlet_class || c == symbolinlet_class) {
+        t_inlet *i1 = (t_inlet *)y;
+        t_inlet *i2 = NULL;
+        t_object *o = inlet_getOwner (i1);
+        int k = pd_class (o)->c_hasFirstInlet;
+        for (i2 = o->te_inlet; i2 && i2 != i1; i2 = inlet_getNext (i2)) { k++; }
+        *n    = k;
+        *ptr  = i1;
+        *dest = o;
+        
+    } else {
+        *n    = 0;
+        *ptr  = NULL;
+        *dest = (cast_object (y));
+    }
+    
+    return connection_getNext (previous);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void linetraverser_start (t_linetraverser *t, t_glist *glist)
 {
-    t->tr_owner             = glist;
-    t->tr_connectionCached  = NULL;
-    t->tr_srcObject         = NULL;
-    
-    t->tr_srcIndexOfNextOutlet = t->tr_srcNumberOfOutlets = 0;
+    t->tr_owner                 = glist;
+    t->tr_connectionCached      = NULL;
+    t->tr_srcObject             = NULL;
+    t->tr_srcIndexOfNextOutlet  = 0;
+    t->tr_srcNumberOfOutlets    = 0;
 }
 
 /* Get the lines outlet per outlet, object per object. */
@@ -66,11 +124,11 @@ t_outconnect *linetraverser_next (t_linetraverser *t)
     
     t->tr_srcIndexOfOutlet     = n;
     t->tr_srcIndexOfNextOutlet = n + 1;
-    connection = object_traverseOutletStart (t->tr_srcObject, &t->tr_srcOutlet, n);
+    connection = linetraverser_outletStart  (t->tr_srcObject, &t->tr_srcOutlet, n);
     //
     }
     
-    t->tr_connectionCached = object_traverseOutletNext (connection,
+    t->tr_connectionCached = linetraverser_outletNext (connection,
         &t->tr_destObject,
         &t->tr_destInlet,
         &t->tr_destIndexOfInlet);
