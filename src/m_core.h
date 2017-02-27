@@ -150,7 +150,7 @@ struct _pdinstance {
 
 struct _outconnect {
     struct _outconnect          *oc_next;
-    t_pd                        *oc_to;
+    t_pd                        *oc_receiver;
     };
 
 struct _outlet {
@@ -469,6 +469,20 @@ static inline t_object *inlet_getOwner (t_inlet *x)
 static inline t_float *inlet_getSignalValue (t_inlet *x)
 {
     return &x->i_un.i_signal;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline t_outlet *outlet_getNext (t_outlet *x)
+{
+    return x->o_next;
+}
+
+static inline t_outconnect *outlet_getConnections (t_outlet *x)
+{
+    return x->o_connections;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -89,7 +89,7 @@ void outlet_bang (t_outlet *x)
 
         t_outconnect *oc = NULL;
     
-        for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_bang (oc->oc_to); }
+        for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_bang (oc->oc_receiver); }
     }
     
     --outlet_stackCount;
@@ -106,7 +106,7 @@ void outlet_pointer (t_outlet *x, t_gpointer *gp)
             t_gpointer gpointer; GPOINTER_INIT (&gpointer);     /* Use a copy cached on the stack. */
             
             gpointer_setByCopy (&gpointer, gp); 
-                pd_pointer (oc->oc_to, &gpointer);
+                pd_pointer (oc->oc_receiver, &gpointer);
             gpointer_unset (&gpointer);
         }
     }
@@ -120,7 +120,7 @@ void outlet_float (t_outlet *x, t_float f)
 
         t_outconnect *oc = NULL;
         
-        for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_float (oc->oc_to, f); }
+        for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_float (oc->oc_receiver, f); }
     }
     
     --outlet_stackCount;
@@ -132,7 +132,7 @@ void outlet_symbol (t_outlet *x, t_symbol *s)
 
         t_outconnect *oc = NULL;
     
-        for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_symbol (oc->oc_to, s); }
+        for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_symbol (oc->oc_receiver, s); }
     }
     
     --outlet_stackCount;
@@ -144,7 +144,7 @@ void outlet_list (t_outlet *x, int argc, t_atom *argv)
     
         t_outconnect *oc = NULL;
     
-        for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_list (oc->oc_to, argc, argv); }
+        for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_list (oc->oc_receiver, argc, argv); }
     }
     
     --outlet_stackCount;
@@ -156,7 +156,7 @@ void outlet_anything (t_outlet *x, t_symbol *s, int argc, t_atom *argv)
     
         t_outconnect *oc = NULL;
     
-        for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_message (oc->oc_to, s, argc, argv); }
+        for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_message (oc->oc_receiver, s, argc, argv); }
     }
     
     --outlet_stackCount;

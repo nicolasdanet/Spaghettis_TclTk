@@ -66,7 +66,7 @@ t_outconnect *object_connect (t_object *src, int m, t_object *dest, int n)
     PD_ASSERT (m >= 0);
     PD_ASSERT (n >= 0);
     
-    for (o = src->te_outlet; o && m; o = o->o_next, m--) { }
+    for (o = src->te_outlet; o && m; o = outlet_getNext (o), m--) { }
     
     if (o != NULL) { 
     //
@@ -87,7 +87,7 @@ t_outconnect *object_connect (t_object *src, int m, t_object *dest, int n)
 
     oc1 = (t_outconnect *)PD_MEMORY_GET (sizeof (t_outconnect));
     oc1->oc_next = NULL;
-    oc1->oc_to = to;
+    oc1->oc_receiver = to;
 
     if ((oc2 = o->o_connections)) { while (oc2->oc_next) { oc2 = oc2->oc_next; } oc2->oc_next = oc1; }
     else {
@@ -110,7 +110,7 @@ void object_disconnect (t_object *src, int m, t_object *dest, int n)
     PD_ASSERT (m >= 0);
     PD_ASSERT (n >= 0);
     
-    for (o = src->te_outlet; o && m; o = o->o_next, m--) { }
+    for (o = src->te_outlet; o && m; o = outlet_getNext (o), m--) { }
     
     if (o != NULL) {
     //
@@ -131,12 +131,12 @@ void object_disconnect (t_object *src, int m, t_object *dest, int n)
     
     if (oc1 == NULL) { PD_BUG; return; }
     
-    if (oc1->oc_to == to) {
+    if (oc1->oc_receiver == to) {
         o->o_connections = oc1->oc_next; PD_MEMORY_FREE (oc1);
         
     } else {
         while ((oc2 = oc1->oc_next)) {
-            if (oc2->oc_to != to) { oc1 = oc2; }
+            if (oc2->oc_receiver != to) { oc1 = oc2; }
             else {
                 oc1->oc_next = oc2->oc_next; PD_MEMORY_FREE (oc2); break;
             }
@@ -165,7 +165,7 @@ int object_numberOfOutlets (t_object *x)
 {
     int n = 0;
     t_outlet *o = NULL;
-    for (o = x->te_outlet; o; o = o->o_next) { n++; }
+    for (o = x->te_outlet; o; o = outlet_getNext (o)) { n++; }
     return n;
 }
 
@@ -182,7 +182,7 @@ int object_numberOfSignalOutlets (t_object *x)
 {
     int n = 0;
     t_outlet *o = NULL;
-    for (o = x->te_outlet; o; o = o->o_next) { if (o->o_type == &s_signal) { n++; } }
+    for (o = x->te_outlet; o; o = outlet_getNext (o)) { if (outlet_isSignal (o)) { n++; } }
     return n;
 }
 
@@ -221,8 +221,8 @@ int object_indexAsSignalOutlet (t_object *x, int m)
     
     PD_ASSERT (m >= 0);
         
-    for (o = x->te_outlet; o; o = o->o_next, m--) {
-        if (o->o_type == &s_signal) {
+    for (o = x->te_outlet; o; o = outlet_getNext (o), m--) {
+        if (outlet_isSignal (o)) {
             if (m == 0) { return n; }
             else {
                 n++;
@@ -253,9 +253,9 @@ int object_isSignalOutlet (t_object *x, int m)
 {
     t_outlet *o = NULL;
     
-    for (o = x->te_outlet; o && m--; o = o->o_next) { }
+    for (o = x->te_outlet; o && m--; o = outlet_getNext (o)) { }
     
-    return (o && (o->o_type == &s_signal));
+    return (o && outlet_isSignal (o));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -269,7 +269,7 @@ t_outconnect *object_traverseOutletStart (t_object *x, t_outlet **ptr, int n)
 {
     t_outlet *o = x->te_outlet;
     
-    while (n && o) { n--; o = o->o_next; }
+    while (n && o) { n--; o = outlet_getNext (o); }
     
     *ptr = o;
     
@@ -284,7 +284,7 @@ t_outconnect *object_traverseOutletStart (t_object *x, t_outlet **ptr, int n)
 
 t_outconnect *object_traverseOutletNext (t_outconnect *last, t_object **dest, t_inlet **ptr, int *n)
 {
-    t_pd *y = last->oc_to;
+    t_pd *y = last->oc_receiver;
 
     t_class *c = pd_class (y);
     
