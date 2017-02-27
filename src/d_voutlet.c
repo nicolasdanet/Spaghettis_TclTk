@@ -94,7 +94,7 @@ void voutlet_dspProlog (t_voutlet *x, t_signal **signals, t_blockproperties *p)
     //
     if (p->bp_switchable) { x->vo_copyOut = 1; }
     PD_ASSERT (signals);
-    x->vo_directSignal = signals[object_getIndexOfSignalOutlet (x->vo_outlet)];
+    x->vo_directSignal = signals[outlet_getSignalIndex (x->vo_outlet)];
     //
     }
     //
@@ -115,7 +115,7 @@ void voutlet_dspEpilog (t_voutlet *x, t_signal **signals, t_blockproperties *p)
     resample_setRatio (&x->vo_resample, p->bp_downsample, p->bp_upsample);
     
     if (signals) {
-        s = signals[object_getIndexOfSignalOutlet (x->vo_outlet)];
+        s = signals[outlet_getSignalIndex (x->vo_outlet)];
         parentVectorSize = s->s_vectorSize;
         vectorSize = parentVectorSize * p->bp_upsample / p->bp_downsample;
     }
@@ -167,7 +167,7 @@ void voutlet_dspEpilog (t_voutlet *x, t_signal **signals, t_blockproperties *p)
     //
     } else if (p->bp_switchable) {
         if (signals) {
-            t_signal *s = signals[object_getIndexOfSignalOutlet (x->vo_outlet)];
+            t_signal *s = signals[outlet_getSignalIndex (x->vo_outlet)];
             dsp_addZeroPerform (s->s_vector, s->s_vectorSize);
         }
     }

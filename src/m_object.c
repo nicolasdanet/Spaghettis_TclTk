@@ -182,7 +182,7 @@ int object_numberOfSignalOutlets (t_object *x)
 {
     int n = 0;
     t_outlet *o = NULL;
-    for (o = x->te_outlet; o; o = o->o_next) { if (o->o_symbol == &s_signal) { n++; } }
+    for (o = x->te_outlet; o; o = o->o_next) { if (o->o_type == &s_signal) { n++; } }
     return n;
 }
 
@@ -222,7 +222,7 @@ int object_indexAsSignalOutlet (t_object *x, int m)
     PD_ASSERT (m >= 0);
         
     for (o = x->te_outlet; o; o = o->o_next, m--) {
-        if (o->o_symbol == &s_signal) {
+        if (o->o_type == &s_signal) {
             if (m == 0) { return n; }
             else {
                 n++;
@@ -255,25 +255,7 @@ int object_isSignalOutlet (t_object *x, int m)
     
     for (o = x->te_outlet; o && m--; o = o->o_next) { }
     
-    return (o && (o->o_symbol == &s_signal));
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int object_getIndexOfSignalOutlet (t_outlet *x)
-{
-    int n = 0;
-    t_outlet *o = NULL;
-    
-    PD_ASSERT (x->o_symbol == &s_signal);
-    
-    for (o = x->o_owner->te_outlet; o && o != x; o = o->o_next) {
-        if (o->o_symbol == &s_signal) { n++; }
-    }
-    
-    return n;
+    return (o && (o->o_type == &s_signal));
 }
 
 // -----------------------------------------------------------------------------------------------------------

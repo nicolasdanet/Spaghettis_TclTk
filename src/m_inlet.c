@@ -77,7 +77,7 @@ void inlet_moveFirst (t_inlet *x)
     }
 }
 
-int inlet_getIndexAsSignal (t_inlet *x)
+int inlet_getSignalIndex (t_inlet *x)
 {
     t_inlet *i = NULL;
     int n = 0;
