@@ -449,8 +449,8 @@ void ugen_graphAdd (t_dspcontext *context, t_object *o)
 {
     t_ugenbox *x = (t_ugenbox *)PD_MEMORY_GET (sizeof (t_ugenbox));
 
-    x->u_inSize  = object_numberOfSignalInlets (o);
-    x->u_outSize = object_numberOfSignalOutlets (o);
+    x->u_inSize  = object_getNumberOfSignalInlets (o);
+    x->u_outSize = object_getNumberOfSignalOutlets (o);
     x->u_in      = PD_MEMORY_GET (x->u_inSize * sizeof (t_siginlet));
     x->u_out     = PD_MEMORY_GET (x->u_outSize * sizeof (t_sigoutlet));
     x->u_owner   = o;
@@ -464,8 +464,8 @@ void ugen_graphConnect (t_dspcontext *context, t_object *o1, int m, t_object *o2
     t_ugenbox *u1 = ugen_graphFetchUgen (context, o1);
     t_ugenbox *u2 = ugen_graphFetchUgen (context, o2);
     
-    m = object_indexAsSignalOutlet (o1, m);
-    n = object_indexAsSignalInlet (o2, n);
+    m = object_getSignalIndexOfOutlet (o1, m);
+    n = object_getSignalIndexOfInlet (o2, n);
     
     if (!u1 || !u2 || n < 0) { PD_BUG; }
     else if (m < 0 || m >= u1->u_outSize || n >= u2->u_inSize) { PD_BUG; }

@@ -112,7 +112,7 @@ t_outconnect *linetraverser_next (t_linetraverser *t)
     if (!o) { return NULL; }
     
     t->tr_srcObject          = o;
-    t->tr_srcNumberOfOutlets = object_numberOfOutlets (o);
+    t->tr_srcNumberOfOutlets = object_getNumberOfOutlets (o);
     n = 0;
     
     if (canvas_isMapped (t->tr_owner)) { gobj_getRectangle (y, t->tr_owner, &t->tr_srcBox); }
@@ -133,7 +133,7 @@ t_outconnect *linetraverser_next (t_linetraverser *t)
         &t->tr_destInlet,
         &t->tr_destIndexOfInlet);
                                                             
-    t->tr_destNumberOfInlets = object_numberOfInlets (t->tr_destObject);
+    t->tr_destNumberOfInlets = object_getNumberOfInlets (t->tr_destObject);
     
     PD_ASSERT (t->tr_destNumberOfInlets);
     

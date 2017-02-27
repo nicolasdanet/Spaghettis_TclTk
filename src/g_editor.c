@@ -92,8 +92,8 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
     
     if (object1 && object2 && object1 != object2) {
     //
-    int numberOfOutlets = object_numberOfOutlets (object1);
-    int numberOfInlets  = object_numberOfInlets (object2);
+    int numberOfOutlets = object_getNumberOfOutlets (object1);
+    int numberOfInlets  = object_getNumberOfInlets (object2);
     
     if (numberOfOutlets && numberOfInlets) {
     //
@@ -289,7 +289,7 @@ static int canvas_proceedMouseHitOutlets (t_object *object,
 {
     if (object) {
     //
-    int numberOfOutlets = object_numberOfOutlets (object);
+    int numberOfOutlets = object_getNumberOfOutlets (object);
     
     if (numberOfOutlets && (positionY >= d - EDITOR_GRIP_SIZE)) {
     //

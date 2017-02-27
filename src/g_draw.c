@@ -332,8 +332,8 @@ static void canvas_drawBoxComment (t_glist *glist, t_object *o, char *tag, int c
 static void canvas_drawInletsAndOutlets (t_glist *glist, t_object *o, char *tag, int create, t_rectangle *r)
 {
     int i;
-    int m = object_numberOfInlets (o);
-    int n = object_numberOfOutlets (o);
+    int m = object_getNumberOfInlets (o);
+    int n = object_getNumberOfOutlets (o);
     int a = rectangle_getTopLeftX (r);
     int b = rectangle_getTopLeftY (r);
     int c = rectangle_getBottomRightX (r);
@@ -414,8 +414,8 @@ void canvas_drawBox (t_glist *glist, t_object *o, char *tag, int create)
 static void canvas_eraseInletsAndOutlets (t_glist *glist, t_object *o, char *tag)
 {
     int i;
-    int m = object_numberOfInlets (o);
-    int n = object_numberOfOutlets (o);
+    int m = object_getNumberOfInlets (o);
+    int n = object_getNumberOfOutlets (o);
     
     for (i = 0; i < m; i++) { sys_vGui (".x%lx.c delete %sINLET%d\n",  canvas_getView (glist), tag, i); }
     for (i = 0; i < n; i++) { sys_vGui (".x%lx.c delete %sOUTLET%d\n", canvas_getView (glist), tag, i); }

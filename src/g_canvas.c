@@ -247,13 +247,13 @@ void canvas_connect (t_glist *glist,
     /* Creates dummy outlets and inlets (failure at object creation). */
     
     if (pd_class (srcObject) == text_class && srcObject->te_type == TYPE_OBJECT) {
-        while (m >= object_numberOfOutlets (srcObject)) {
+        while (m >= object_getNumberOfOutlets (srcObject)) {
             outlet_new (srcObject, NULL);
         }
     }
     
     if (pd_class (destObject) == text_class && destObject->te_type == TYPE_OBJECT) {
-        while (n >= object_numberOfInlets (destObject)) {
+        while (n >= object_getNumberOfInlets (destObject)) {
             inlet_new (destObject, cast_pd (destObject), NULL, NULL);
         }
     }

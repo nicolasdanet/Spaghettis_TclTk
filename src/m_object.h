@@ -49,48 +49,47 @@ struct _inlet {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        object_distributeOnInlets                   (t_object *x, int argc, t_atom *argv);
-void        object_saveWidth                            (t_object *x, t_buffer *b);
-int         object_numberOfInlets                       (t_object *x);
-int         object_numberOfOutlets                      (t_object *x);
-int         object_numberOfSignalInlets                 (t_object *x);
-int         object_numberOfSignalOutlets                (t_object *x);
-int         object_indexAsSignalInlet                   (t_object *x, int m);
-int         object_indexAsSignalOutlet                  (t_object *x, int m);
-int         object_isSignalInlet                        (t_object *x, int m);
-int         object_isSignalOutlet                       (t_object *x, int m);
-void        object_disconnect                           (t_object *src, int m, t_object *dest, int n);
+t_outconnect    *object_connect                 (t_object *src, int m, t_object *dest, int n);
 
-t_outconnect    *object_connect                         (t_object *src, int m, t_object *dest, int n);
+void        object_disconnect                   (t_object *src, int m, t_object *dest, int n);
 
-t_float     *object_getSignalValueAtIndex               (t_object *x, int m);
+int         object_getNumberOfInlets            (t_object *x);
+int         object_getNumberOfOutlets           (t_object *x);
+int         object_getNumberOfSignalInlets      (t_object *x);
+int         object_getNumberOfSignalOutlets     (t_object *x);
+int         object_getSignalIndexOfInlet        (t_object *x, int m);
+int         object_getSignalIndexOfOutlet       (t_object *x, int m);
+int         object_isSignalInlet                (t_object *x, int m);
+int         object_isSignalOutlet               (t_object *x, int m);
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+void        object_saveWidth                    (t_object *x, t_buffer *b);
+void        object_distributeOnInlets           (t_object *x, int argc, t_atom *argv);
 
-t_inlet     *inlet_newSignalDefault                     (t_object *owner, t_float f);
-t_inlet     *inlet_new                                  (t_object *owner,
-                                                            t_pd *receiver,
-                                                            t_symbol *type,
-                                                            t_symbol *method);
-
-void        inlet_free                                  (t_inlet *x);
-void        inlet_moveFirst                             (t_inlet *x);
-int         inlet_isSignal                              (t_inlet *x);
-int         inlet_getSignalIndex                        (t_inlet *x);
+t_float     *object_getSignalValueAtIndex       (t_object *x, int m);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_outconnect    *outlet_addConnection                   (t_outlet *x, t_pd *receiver);
+t_inlet     *inlet_newSignalDefault             (t_object *owner, t_float f);
+t_inlet     *inlet_new                          (t_object *owner, t_pd *receiver, t_symbol *t, t_symbol *m);
 
-void            outlet_removeConnection                 (t_outlet *x, t_pd *receiver);
-void            outlet_free                             (t_outlet *x);
-void            outlet_moveFirst                        (t_outlet *x);
-int             outlet_isSignal                         (t_outlet *x);
-int             outlet_getSignalIndex                   (t_outlet *x);
+void        inlet_free                          (t_inlet *x);
+void        inlet_moveFirst                     (t_inlet *x);
+int         inlet_isSignal                      (t_inlet *x);
+int         inlet_getSignalIndex                (t_inlet *x);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_outconnect    *outlet_addConnection           (t_outlet *x, t_pd *receiver);
+
+void            outlet_removeConnection         (t_outlet *x, t_pd *receiver);
+void            outlet_free                     (t_outlet *x);
+void            outlet_moveFirst                (t_outlet *x);
+int             outlet_isSignal                 (t_outlet *x);
+int             outlet_getSignalIndex           (t_outlet *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -62,24 +62,25 @@ t_outconnect *object_connect (t_object *src, int m, t_object *dest, int n)
     for (o = src->te_outlet; o && m; o = outlet_getNext (o), m--) { }
     
     if (o != NULL) { 
-
-        t_pd *receiver = NULL;
-        
-        if (pd_class (dest)->c_hasFirstInlet) { if (!n) { receiver = cast_pd (dest); } else { n--; } }
-        
-        if (receiver == NULL) {
-            t_inlet *i = NULL; for (i = dest->te_inlet; i && n; i = inlet_getNext (i), n--) { }
-            if (i == NULL) { return NULL; }
-            else {
-                receiver = cast_pd (i);
-            }
+    //
+    t_pd *receiver = NULL;
+    
+    if (pd_class (dest)->c_hasFirstInlet) { if (!n) { receiver = cast_pd (dest); } else { n--; } }
+    
+    if (receiver == NULL) {
+        t_inlet *i = NULL; for (i = dest->te_inlet; i && n; i = inlet_getNext (i), n--) { }
+        if (i == NULL) { return NULL; }
+        else {
+            receiver = cast_pd (i);
         }
+    }
 
-        oc = outlet_addConnection (o, receiver);
-        
-        if (outlet_isSignal (o)) {
-            dsp_update();
-        }
+    oc = outlet_addConnection (o, receiver);
+    
+    if (outlet_isSignal (o)) {
+        dsp_update();
+    }
+    //
     }
     
     return oc;
@@ -95,24 +96,25 @@ void object_disconnect (t_object *src, int m, t_object *dest, int n)
     for (o = src->te_outlet; o && m; o = outlet_getNext (o), m--) { }
     
     if (o != NULL) {
-
-        t_pd *receiver = NULL;
-        
-        if (pd_class (dest)->c_hasFirstInlet) { if (!n) { receiver = cast_pd (dest); } else { n--; } }
-        
-        if (receiver == NULL) {
-            t_inlet *i = NULL; for (i = dest->te_inlet; i && n; i = inlet_getNext (i), n--) { }
-            if (i == NULL) { return; }
-            else {
-                receiver = cast_pd (i);
-            }
+    //
+    t_pd *receiver = NULL;
+    
+    if (pd_class (dest)->c_hasFirstInlet) { if (!n) { receiver = cast_pd (dest); } else { n--; } }
+    
+    if (receiver == NULL) {
+        t_inlet *i = NULL; for (i = dest->te_inlet; i && n; i = inlet_getNext (i), n--) { }
+        if (i == NULL) { return; }
+        else {
+            receiver = cast_pd (i);
         }
+    }
 
-        outlet_removeConnection (o, receiver);
-        
-        if (outlet_isSignal (o)) {
-            dsp_update(); 
-        }
+    outlet_removeConnection (o, receiver);
+    
+    if (outlet_isSignal (o)) {
+        dsp_update(); 
+    }
+    //
     }
 }
 
@@ -120,7 +122,7 @@ void object_disconnect (t_object *src, int m, t_object *dest, int n)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int object_numberOfInlets (t_object *x)
+int object_getNumberOfInlets (t_object *x)
 {
     int n = 0;
     t_inlet *i = NULL;
@@ -129,7 +131,7 @@ int object_numberOfInlets (t_object *x)
     return n;
 }
 
-int object_numberOfOutlets (t_object *x)
+int object_getNumberOfOutlets (t_object *x)
 {
     int n = 0;
     t_outlet *o = NULL;
@@ -137,7 +139,7 @@ int object_numberOfOutlets (t_object *x)
     return n;
 }
 
-int object_numberOfSignalInlets (t_object *x)
+int object_getNumberOfSignalInlets (t_object *x)
 {
     int n = 0;
     t_inlet *i = NULL;
@@ -146,7 +148,7 @@ int object_numberOfSignalInlets (t_object *x)
     return n;
 }
 
-int object_numberOfSignalOutlets (t_object *x)
+int object_getNumberOfSignalOutlets (t_object *x)
 {
     int n = 0;
     t_outlet *o = NULL;
@@ -158,7 +160,7 @@ int object_numberOfSignalOutlets (t_object *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int object_indexAsSignalInlet (t_object *x, int m)
+int object_getSignalIndexOfInlet (t_object *x, int m)
 {
     int n = 0;
     t_inlet *i = NULL;
@@ -182,7 +184,7 @@ int object_indexAsSignalInlet (t_object *x, int m)
     return -1;
 }
 
-int object_indexAsSignalOutlet (t_object *x, int m)
+int object_getSignalIndexOfOutlet (t_object *x, int m)
 {
     int n = 0;
     t_outlet *o = NULL;
@@ -200,6 +202,10 @@ int object_indexAsSignalOutlet (t_object *x, int m)
     
     return -1;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 int object_isSignalInlet (t_object *x, int m)
 {

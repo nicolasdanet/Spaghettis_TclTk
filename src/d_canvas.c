@@ -25,8 +25,8 @@ void canvas_dspProceed (t_glist *glist, int isTopLevel, t_signal **sp)
     t_outconnect    *connection = NULL;   
     t_linetraverser t;
     
-    int m = object_numberOfSignalInlets (cast_object (glist));
-    int n = object_numberOfSignalOutlets (cast_object (glist));
+    int m = object_getNumberOfSignalInlets (cast_object (glist));
+    int n = object_getNumberOfSignalOutlets (cast_object (glist));
     
     context = ugen_graphStart (isTopLevel, sp, m, n);
     
