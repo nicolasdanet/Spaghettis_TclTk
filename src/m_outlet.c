@@ -38,6 +38,23 @@ static int outlet_hasStackOverflow (t_outlet *x)
     return k;
 }
 
+t_outconnect *outlet_addConnection (t_outlet *x, t_pd *receiver)
+{
+    t_outconnect *oc1 = NULL;
+    t_outconnect *oc2 = NULL;
+    
+    oc1 = (t_outconnect *)PD_MEMORY_GET (sizeof (t_outconnect));
+    oc1->oc_next = NULL;
+    oc1->oc_receiver = receiver;
+
+    if ((oc2 = x->o_connections)) { while (oc2->oc_next) { oc2 = oc2->oc_next; } oc2->oc_next = oc1; }
+    else {
+        x->o_connections = oc1;
+    }
+    
+    return oc1;
+}
+
 int outlet_isSignal (t_outlet *x)
 {
     return (x->o_type == &s_signal);

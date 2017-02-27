@@ -61,46 +61,36 @@ void object_distributeOnInlets (t_object *x, int argc, t_atom *argv)
 
 t_outconnect *object_connect (t_object *src, int m, t_object *dest, int n)
 {
+    t_outconnect *oc = NULL;
     t_outlet *o = NULL;
-
+    
     PD_ASSERT (m >= 0);
     PD_ASSERT (n >= 0);
     
     for (o = src->te_outlet; o && m; o = outlet_getNext (o), m--) { }
     
     if (o != NULL) { 
-    //
-    t_pd *to = NULL;
-    t_inlet *i = NULL;
-    t_outconnect *oc1 = NULL;
-    t_outconnect *oc2 = NULL;
-    
-    if (pd_class (dest)->c_hasFirstInlet) { if (!n) { to = cast_pd (dest); } else { n--; } }
-    
-    if (to == NULL) {
-        for (i = dest->te_inlet; i && n; i = inlet_getNext (i), n--) { }
-        if (i == NULL) { return NULL; }
-        else {
-            to = cast_pd (i);
+
+        t_pd *receiver = NULL;
+        
+        if (pd_class (dest)->c_hasFirstInlet) { if (!n) { receiver = cast_pd (dest); } else { n--; } }
+        
+        if (receiver == NULL) {
+            t_inlet *i = NULL; for (i = dest->te_inlet; i && n; i = inlet_getNext (i), n--) { }
+            if (i == NULL) { return NULL; }
+            else {
+                receiver = cast_pd (i);
+            }
+        }
+
+        oc = outlet_addConnection (o, receiver);
+        
+        if (outlet_isSignal (o)) {
+            dsp_update();
         }
     }
-
-    oc1 = (t_outconnect *)PD_MEMORY_GET (sizeof (t_outconnect));
-    oc1->oc_next = NULL;
-    oc1->oc_receiver = to;
-
-    if ((oc2 = o->o_connections)) { while (oc2->oc_next) { oc2 = oc2->oc_next; } oc2->oc_next = oc1; }
-    else {
-        o->o_connections = oc1;
-    }
     
-    if (outlet_isSignal (o)) { dsp_update(); }
-
-    return oc1;
-    //
-    }
-    
-    return NULL;
+    return oc;
 }
 
 void object_disconnect (t_object *src, int m, t_object *dest, int n)

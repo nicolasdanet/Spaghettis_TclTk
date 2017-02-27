@@ -447,10 +447,12 @@ int         inlet_getSignalIndex                        (t_inlet *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        outlet_free                                 (t_outlet *x);
-void        outlet_moveFirst                            (t_outlet *x);
-int         outlet_isSignal                             (t_outlet *x);
-int         outlet_getSignalIndex                       (t_outlet *x);
+t_outconnect    *outlet_addConnection                   (t_outlet *x, t_pd *receiver);
+
+void            outlet_free                             (t_outlet *x);
+void            outlet_moveFirst                        (t_outlet *x);
+int             outlet_isSignal                         (t_outlet *x);
+int             outlet_getSignalIndex                   (t_outlet *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -478,11 +480,6 @@ static inline t_float *inlet_getSignalValue (t_inlet *x)
 static inline t_outlet *outlet_getNext (t_outlet *x)
 {
     return x->o_next;
-}
-
-static inline t_outconnect *outlet_getConnections (t_outlet *x)
-{
-    return x->o_connections;
 }
 
 // -----------------------------------------------------------------------------------------------------------
