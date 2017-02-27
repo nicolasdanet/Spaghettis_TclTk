@@ -38,6 +38,8 @@ static int outlet_hasStackOverflow (t_outlet *x)
     return k;
 }
 
+/* Assumed below that connection to a receiver is unique. */
+
 t_outconnect *outlet_addConnection (t_outlet *x, t_pd *receiver)
 {
     t_outconnect *oc1 = NULL;
@@ -55,6 +57,27 @@ t_outconnect *outlet_addConnection (t_outlet *x, t_pd *receiver)
     return oc1;
 }
 
+void outlet_removeConnection (t_outlet *x, t_pd *receiver)
+{
+    t_outconnect *oc1 = NULL;
+    t_outconnect *oc2 = NULL;
+    
+    if ((oc1 = x->o_connections)) {
+
+        if (oc1->oc_receiver == receiver) {
+            x->o_connections = oc1->oc_next; PD_MEMORY_FREE (oc1); return;
+            
+        } else {
+            while ((oc2 = oc1->oc_next)) {
+                if (oc2->oc_receiver != receiver) { oc1 = oc2; }
+                else {
+                    oc1->oc_next = oc2->oc_next; PD_MEMORY_FREE (oc2); return;
+                }
+            }
+        }
+    }
+}
+    
 int outlet_isSignal (t_outlet *x)
 {
     return (x->o_type == &s_signal);
@@ -206,6 +229,8 @@ void outlet_free (t_outlet *x)
 {
     t_object *y = x->o_owner;
     t_outlet *o = NULL;
+    
+    PD_ASSERT (x->o_connections == NULL);
     
     if (y->te_outlet == x) { y->te_outlet = x->o_next; }
     else {

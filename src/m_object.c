@@ -103,38 +103,24 @@ void object_disconnect (t_object *src, int m, t_object *dest, int n)
     for (o = src->te_outlet; o && m; o = outlet_getNext (o), m--) { }
     
     if (o != NULL) {
-    //
-    t_pd *to = NULL;
-    t_inlet *i = NULL;
-    t_outconnect *oc1 = NULL;
-    t_outconnect *oc2 = NULL;
-    
-    if (pd_class (dest)->c_hasFirstInlet) { if (!n) { to = cast_pd (dest); } else { n--; } }
-    
-    if (to == NULL) {
-        for (i = dest->te_inlet; i && n; i = inlet_getNext (i), n--) { }
-        if (i == NULL) { return; }
-        to = cast_pd (i);
-    }
 
-    oc1 = o->o_connections;
-    
-    if (oc1 == NULL) { PD_BUG; return; }
-    
-    if (oc1->oc_receiver == to) {
-        o->o_connections = oc1->oc_next; PD_MEMORY_FREE (oc1);
+        t_pd *receiver = NULL;
         
-    } else {
-        while ((oc2 = oc1->oc_next)) {
-            if (oc2->oc_receiver != to) { oc1 = oc2; }
+        if (pd_class (dest)->c_hasFirstInlet) { if (!n) { receiver = cast_pd (dest); } else { n--; } }
+        
+        if (receiver == NULL) {
+            t_inlet *i = NULL; for (i = dest->te_inlet; i && n; i = inlet_getNext (i), n--) { }
+            if (i == NULL) { return; }
             else {
-                oc1->oc_next = oc2->oc_next; PD_MEMORY_FREE (oc2); break;
+                receiver = cast_pd (i);
             }
         }
-    }
 
-    if (outlet_isSignal (o)) { dsp_update(); }
-    //
+        outlet_removeConnection (o, receiver);
+        
+        if (outlet_isSignal (o)) {
+            dsp_update(); 
+        }
     }
 }
 
@@ -263,7 +249,7 @@ t_outconnect *object_traverseOutletStart (t_object *x, t_outlet **ptr, int n)
     
     *ptr = o;
     
-    if (o) { return (o->o_connections); }
+    if (o) { return (outlet_getConnections (o)); }
     else {
         return NULL;
     }
