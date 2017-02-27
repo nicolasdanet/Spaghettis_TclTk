@@ -217,8 +217,7 @@ void canvas_resortOutlets (t_glist *glist)
     }
     
     if (mostRightObject) {
-        object_moveOutletFirst (cast_object (glist), voutlet_getOutlet (cast_pd (*mostRightObject)));
-        *mostRightObject = NULL;
+        outlet_moveFirst (voutlet_getOutlet (cast_pd (*mostRightObject))); *mostRightObject = NULL;
     }
     //
     }

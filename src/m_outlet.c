@@ -43,6 +43,28 @@ int outlet_isSignal (t_outlet *x)
     return (x->o_type == &s_signal);
 }
 
+void outlet_moveFirst (t_outlet *x)
+{
+    t_object *owner = x->o_owner;
+    
+    if (owner->te_outlet != x) {
+    //
+    t_outlet *o = NULL;
+    
+    for (o = owner->te_outlet; o; o = o->o_next) {
+        if (o->o_next == x) {
+            o->o_next = x->o_next;
+            x->o_next = owner->te_outlet;
+            owner->te_outlet = x;
+            return;
+        }
+    }
+    
+    PD_BUG;
+    //
+    }
+}
+
 int outlet_getSignalIndex (t_outlet *x)
 {
     t_outlet *o = NULL;
