@@ -721,6 +721,7 @@
 		379E8AB01C9156E50081E7D3 /* s_audio_apis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = s_audio_apis.h; path = src/s_audio_apis.h; sourceTree = "<group>"; };
 		37A402671C77524D00001FD3 /* s_midiAPI.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_midiAPI.c; path = src/s_midiAPI.c; sourceTree = "<group>"; };
 		37A404B71C789F6200001FD3 /* s_midi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = s_midi.h; path = src/s_midi.h; sourceTree = "<group>"; };
+		37A649691E6472FA002C0A5C /* m_object.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_object.h; path = src/m_object.h; sourceTree = "<group>"; };
 		37A7BBF21D030B45000C7AB5 /* m_string.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_string.c; path = src/m_string.c; sourceTree = "<group>"; };
 		37A853431E34AC8D00A4491D /* d_fft.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_fft.h; path = src/d_fft.h; sourceTree = "<group>"; };
 		37AB28E01E6185F7004F2F7D /* g_cord.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_cord.c; path = src/g_cord.c; sourceTree = "<group>"; };
@@ -1030,6 +1031,7 @@
 			children = (
 				378971DD1C4F716700263434 /* m_macros.h */,
 				378971E31C4F716700263434 /* m_core.h */,
+				37A649691E6472FA002C0A5C /* m_object.h */,
 				378971D71C4F716700263434 /* m_alloca.h */,
 				37D5E4271D746170004CB497 /* m_error.h */,
 				37978A1C1D742E070055E010 /* m_utils.h */,
