@@ -81,6 +81,37 @@ t_float     *object_getSignalValueAtIndex           (t_object *x, int m);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* Viewed as a box (NOT an IEM and NOT a subpatch GOP). */
+/* Note that it can be a comment, a message or an atom. */
+
+int object_isBox (t_object *x);
+
+/* Everything that is NOT a comment, a message, or an atom. */
+
+static inline int object_isObject (t_object *x)
+{
+    return (x->te_type == TYPE_OBJECT);
+}
+
+static inline int object_isComment (t_object *x)
+{
+    return (x->te_type == TYPE_COMMENT);
+}
+
+static inline int object_isMessage (t_object *x)
+{
+    return (x->te_type == TYPE_MESSAGE);
+}
+
+static inline int object_isAtom (t_object *x)
+{
+    return (x->te_type == TYPE_ATOM);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static inline t_buffer *object_getBuffer (t_object *x)
 {
     return x->te_buffer;
@@ -114,26 +145,6 @@ static inline int object_getWidth (t_object *x)
 static inline int object_getType (t_object *x)
 {
     return x->te_type;
-}
-
-static inline int object_isComment (t_object *x)
-{
-    return (x->te_type == TYPE_COMMENT);
-}
-
-static inline int object_isObject (t_object *x)
-{
-    return (x->te_type == TYPE_OBJECT);
-}
-
-static inline int object_isMessage (t_object *x)
-{
-    return (x->te_type == TYPE_MESSAGE);
-}
-
-static inline int object_isAtom (t_object *x)
-{
-    return (x->te_type == TYPE_ATOM);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -188,12 +188,6 @@ int             gobj_isVisible                      (t_gobj *x, t_glist *owner);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int             object_isBox                        (t_object *x);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 t_boxtext       *boxtext_new                        (t_glist *glist, t_object *object);
 t_boxtext       *boxtext_fetch                      (t_glist *glist, t_object *object);
 char            *boxtext_getTag                     (t_boxtext *x);
