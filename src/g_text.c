@@ -69,8 +69,8 @@ void text_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
 {
     t_object *x = cast_object (z);
     
-    x->te_xCoordinate += deltaX;
-    x->te_yCoordinate += deltaY;
+    object_setX (x, object_getX (x) + deltaX);
+    object_setY (x, object_getY (x) + deltaY);
     
     if (canvas_isMapped (glist)) {
     //
@@ -169,13 +169,13 @@ void text_functionSave (t_gobj *z, t_buffer *b)
     t_object *x = cast_object (z);
     
     if (x->te_type == TYPE_COMMENT) {
-        buffer_vAppend (b, "ssii", sym___hash__X, sym_text, x->te_xCoordinate, x->te_yCoordinate);
+        buffer_vAppend (b, "ssii", sym___hash__X, sym_text, object_getX (x), object_getY (x));
         
     } else if (x->te_type == TYPE_OBJECT) {
-        buffer_vAppend (b, "ssii", sym___hash__X, sym_obj,  x->te_xCoordinate, x->te_yCoordinate);
+        buffer_vAppend (b, "ssii", sym___hash__X, sym_obj,  object_getX (x), object_getY (x));
         
     } else if (x->te_type == TYPE_MESSAGE) {
-        buffer_vAppend (b, "ssii", sym___hash__X, sym_msg,  x->te_xCoordinate, x->te_yCoordinate);
+        buffer_vAppend (b, "ssii", sym___hash__X, sym_msg,  object_getX (x), object_getY (x));
         
     } else { 
         PD_BUG;
@@ -210,8 +210,8 @@ void text_set (t_object *x, t_glist *glist, char *s, int size)
         
     } else {
         int w = x->te_width;
-        int a = x->te_xCoordinate;
-        int b = x->te_yCoordinate;
+        int a = object_getX (x);
+        int b = object_getY (x);
         
         canvas_removeObject (glist, cast_gobj (x));
         canvas_makeTextObject (glist, a, b, w, 0, t);
@@ -233,19 +233,19 @@ void text_set (t_object *x, t_glist *glist, char *s, int size)
 
 int text_getPixelX (t_object *x, t_glist *glist)
 {
-    if (canvas_canHaveWindow (glist)) { return x->te_xCoordinate; }
+    if (canvas_canHaveWindow (glist)) { return object_getX (x); }
     else {
         int n = canvas_valueToPixelX (glist, glist->gl_valueLeft) - glist->gl_graphMarginLeft;
-        return (n + x->te_xCoordinate);
+        return (n + object_getX (x));
     }
 }
 
 int text_getPixelY (t_object *x, t_glist *glist)
 {
-    if (canvas_canHaveWindow (glist)) { return x->te_yCoordinate; }
+    if (canvas_canHaveWindow (glist)) { return object_getY (x); }
     else {
         int n = canvas_valueToPixelY (glist, glist->gl_valueTop) - glist->gl_graphMarginTop;
-        return (n + x->te_yCoordinate);
+        return (n + object_getY (x));
     }
 }
 

@@ -213,8 +213,8 @@ void message_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     if (argc > 1) {                                                             /* File creation. */
     
-        cast_object (x)->te_xCoordinate = atom_getFloatAtIndex (0, argc, argv);
-        cast_object (x)->te_yCoordinate = atom_getFloatAtIndex (1, argc, argv);
+        object_setX (cast_object (x), atom_getFloatAtIndex (0, argc, argv));
+        object_setY (cast_object (x), atom_getFloatAtIndex (1, argc, argv));
         
         if (argc > 2) {
             buffer_deserialize (object_getBuffer (cast_object (x)), argc - 2, argv + 2);
@@ -230,8 +230,8 @@ void message_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         canvas_getLastMotionCoordinates (glist, &positionX, &positionY);
         canvas_deselectAll (glist);
     
-        cast_object (x)->te_xCoordinate = positionX;
-        cast_object (x)->te_yCoordinate = positionY;
+        object_setX (cast_object (x), positionX);
+        object_setY (cast_object (x), positionY);
         
         canvas_addObject (glist, cast_gobj (x));
         canvas_selectObject (glist, cast_gobj (x));

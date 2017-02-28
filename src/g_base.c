@@ -307,9 +307,9 @@ void canvas_makeTextObject (t_glist *glist,
     }
 
     object_setBuffer (x, b);
-    
-    x->te_xCoordinate   = positionX;
-    x->te_yCoordinate   = positionY;
+    object_setX (x, positionX);
+    object_setY (x, positionY);
+
     x->te_width         = width;
     x->te_type          = TYPE_OBJECT;
     

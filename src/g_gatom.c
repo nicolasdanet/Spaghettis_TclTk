@@ -328,8 +328,8 @@ static void gatom_functionSave (t_gobj *z, t_buffer *b)
     buffer_vAppend (b, "ssiiifffsss",
         sym___hash__X,
         (IS_SYMBOL (&x->a_atom) ? sym_symbolatom : sym_floatatom),
-        cast_object (x)->te_xCoordinate,
-        cast_object (x)->te_yCoordinate,
+        object_getX (cast_object (x)),
+        object_getY (cast_object (x)),
         cast_object (x)->te_width,
         (double)x->a_lowRange,
         (double)x->a_highRange,
@@ -468,8 +468,9 @@ void gatom_makeObject (t_glist *glist, t_atomtype type, t_symbol *s, int argc, t
         int width    = (int)atom_getFloatAtIndex (2, argc, argv);
         int position = (int)atom_getFloatAtIndex (5, argc, argv);
         
-        cast_object (x)->te_xCoordinate     = atom_getFloatAtIndex (0, argc, argv);
-        cast_object (x)->te_yCoordinate     = atom_getFloatAtIndex (1, argc, argv);
+        object_setX (cast_object (x), atom_getFloatAtIndex (0, argc, argv));
+        object_setY (cast_object (x), atom_getFloatAtIndex (1, argc, argv));
+        
         cast_object (x)->te_width           = PD_CLAMP (width, 0, ATOM_WIDTH_MAXIMUM);
         x->a_lowRange                       = atom_getFloatAtIndex (3, argc, argv);
         x->a_highRange                      = atom_getFloatAtIndex (4, argc, argv);
@@ -495,8 +496,8 @@ void gatom_makeObject (t_glist *glist, t_atomtype type, t_symbol *s, int argc, t
         canvas_getLastMotionCoordinates (glist, &positionX, &positionY);
         canvas_deselectAll (glist);
         
-        cast_object (x)->te_xCoordinate = positionX;
-        cast_object (x)->te_yCoordinate = positionY;
+        object_setX (cast_object (x), positionX);
+        object_setY (cast_object (x), positionY);
         
         x->a_outlet = outlet_new (cast_object (x), IS_FLOAT (&x->a_atom) ? &s_float : &s_symbol);
                 

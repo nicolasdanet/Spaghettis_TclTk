@@ -383,8 +383,8 @@ static void bng_functionSave (t_gobj *z, t_buffer *b)
     buffer_vAppend (b, "ssiisiiiisssiiiisss", 
         sym___hash__X,
         sym_obj,
-        (int)cast_object (z)->te_xCoordinate,
-        (int)cast_object (z)->te_yCoordinate,
+        object_getX (cast_object (z)),
+        object_getY (cast_object (z)),
         sym_bng, 
         x->x_gui.iem_width,                                     // Size.
         x->x_flashTimeHold,                                     // Flash hold.

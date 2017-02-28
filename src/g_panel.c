@@ -262,8 +262,8 @@ static void panel_functionSave (t_gobj *z, t_buffer *b)
     buffer_vAppend (b, "ssiisiiisssiiiiss",
         sym___hash__X,
         sym_obj,
-        (int)cast_object (z)->te_xCoordinate,
-        (int)cast_object (z)->te_yCoordinate,
+        object_getX (cast_object (z)),
+        object_getY (cast_object (z)),
         sym_cnv,
         x->x_gui.iem_width,                                                     // Grip width.
         x->x_panelWidth,                                                        // Panel width.

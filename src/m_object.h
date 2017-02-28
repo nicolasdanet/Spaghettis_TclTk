@@ -76,11 +76,6 @@ static inline t_buffer *object_getBuffer (t_object *x)
     return x->te_buffer;
 }
 
-static inline void object_setBuffer (t_object *x, t_buffer *b)
-{
-    x->te_buffer = b;       /* Acquires ownership. */
-}
-
 static inline t_inlet *object_getFirstInlet (t_object *x)
 {
     return x->te_inlets;
@@ -89,6 +84,35 @@ static inline t_inlet *object_getFirstInlet (t_object *x)
 static inline t_outlet *object_getFirstOutlet (t_object *x)
 {
     return x->te_outlets;
+}
+
+static inline int object_getX (t_object *x)
+{
+    return x->te_xCoordinate;
+}
+
+static inline int object_getY (t_object *x)
+{
+    return x->te_yCoordinate;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline void object_setBuffer (t_object *x, t_buffer *b)
+{
+    x->te_buffer = b;       /* Acquires ownership. */
+}
+
+static inline void object_setX (t_object *x, int n)
+{
+    x->te_xCoordinate = n;
+}
+
+static inline void object_setY (t_object *x, int n)
+{
+    x->te_yCoordinate = n;
 }
 
 // -----------------------------------------------------------------------------------------------------------

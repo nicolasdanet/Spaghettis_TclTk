@@ -306,8 +306,8 @@ void iemgui_setPosition (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *arg
 {
     if (argc > 1) {
     //
-    iem->iem_obj.te_xCoordinate = (int)atom_getFloatAtIndex (0, argc, argv);
-    iem->iem_obj.te_yCoordinate = (int)atom_getFloatAtIndex (1, argc, argv);
+    object_setX (cast_object (iem), atom_getFloatAtIndex (0, argc, argv));
+    object_setY (cast_object (iem), atom_getFloatAtIndex (1, argc, argv));
     
     iemgui_boxChanged (x, iem);
     //
@@ -318,9 +318,9 @@ void iemgui_movePosition (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *ar
 {
     if (argc > 1) {
     //
-    iem->iem_obj.te_xCoordinate += (int)atom_getFloatAtIndex (0, argc, argv);
-    iem->iem_obj.te_yCoordinate += (int)atom_getFloatAtIndex (1, argc, argv);
-    
+    object_setX (cast_object (iem), object_getX (cast_object (iem)) + atom_getFloatAtIndex (0, argc, argv));
+    object_setY (cast_object (iem), object_getY (cast_object (iem)) + atom_getFloatAtIndex (1, argc, argv));
+
     iemgui_boxChanged (x, iem);
     //
     }
@@ -406,8 +406,8 @@ void iemgui_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY
 {
     t_iem *x = cast_iem (z);
 
-    x->iem_obj.te_xCoordinate += deltaX;
-    x->iem_obj.te_yCoordinate += deltaY;
+    object_setX (cast_object (x), object_getX (cast_object (x)) + deltaX);
+    object_setY (cast_object (x), object_getY (cast_object (x)) + deltaY);
     
     (*x->iem_draw) ((void *)z, glist, IEM_DRAW_MOVE);
     

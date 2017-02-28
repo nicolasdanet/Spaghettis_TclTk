@@ -502,8 +502,8 @@ static void vu_functionSave (t_gobj *z, t_buffer *b)
     buffer_vAppend (b, "ssiisiissiiiissii",
         sym___hash__X,
         sym_obj,
-        cast_object (x)->te_xCoordinate,
-        cast_object (x)->te_yCoordinate,
+        object_getX (cast_object (x)),
+        object_getY (cast_object (x)),
         sym_vu,
         x->x_gui.iem_width,                                         // Width.
         x->x_gui.iem_height,                                        // Height.

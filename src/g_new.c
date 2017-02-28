@@ -39,9 +39,9 @@ static t_glist *canvas_newGraphOnParent (t_glist *glist,
     t_fontsize fontSize = canvas_getCurrent() ? canvas_getCurrent()->gl_fontSize : font_getDefaultFontSize();
 
     object_setBuffer (cast_object (x), buffer_new());
+    object_setX (cast_object (x), topLeftX);
+    object_setY (cast_object (x), topLeftY);
     
-    cast_object (x)->te_xCoordinate     = topLeftX;
-    cast_object (x)->te_yCoordinate     = topLeftY;
     cast_object (x)->te_type            = TYPE_OBJECT;
     x->gl_holder                        = gmaster_createWithGlist (x);
     x->gl_parent                        = glist;
@@ -182,9 +182,9 @@ void canvas_makeComment (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     object_setBuffer (x, buffer_new());
     
     if (argc > 1) {                                                             /* File creation. */
-    
-        x->te_xCoordinate = atom_getFloatAtIndex (0, argc, argv);
-        x->te_yCoordinate = atom_getFloatAtIndex (1, argc, argv);
+        
+        object_setX (x, atom_getFloatAtIndex (0, argc, argv));
+        object_setY (x, atom_getFloatAtIndex (1, argc, argv));
         
         if (argc > 2) { buffer_deserialize (object_getBuffer (x), argc - 2, argv + 2); }
         else {
@@ -200,9 +200,9 @@ void canvas_makeComment (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 
         canvas_getLastMotionCoordinates (glist, &positionX, &positionY);
         canvas_deselectAll (glist);
-                
-        x->te_xCoordinate = positionX;
-        x->te_yCoordinate = positionY;
+            
+        object_setX (x, positionX);
+        object_setY (x, positionY);
         
         buffer_deserialize (object_getBuffer (x), 1, &a);
         canvas_addObject (glist, cast_gobj (x));

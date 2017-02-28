@@ -185,13 +185,14 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         t_glist *parent  = cast_glist (z);
         t_object *object = cast_object (glist);
         
-        glist->gl_parent        = parent;
-        object->te_width        = 0;                           
-        object->te_type         = TYPE_OBJECT;
-        object->te_xCoordinate  = atom_getFloatAtIndex (0, argc, argv);
-        object->te_yCoordinate  = atom_getFloatAtIndex (1, argc, argv);
+        glist->gl_parent = parent;
         
         object_setBuffer (object, buffer_new());
+        object_setX (object, atom_getFloatAtIndex (0, argc, argv));
+        object_setY (object, atom_getFloatAtIndex (1, argc, argv));
+        
+        object->te_width = 0;                           
+        object->te_type  = TYPE_OBJECT;
         
         if (argc > 2) { buffer_deserialize (object_getBuffer (object), argc - 2, argv + 2); }
         
@@ -544,14 +545,14 @@ static void canvas_functionSave (t_gobj *x, t_buffer *b)
         buffer_vAppend (b, "ssii",
             sym___hash__X,
             sym_restore,
-            cast_object (x)->te_xCoordinate,
-            cast_object (x)->te_yCoordinate);
+            object_getX (cast_object (x)),
+            object_getY (cast_object (x)));
     } else {
         buffer_vAppend (b, "ssii",
             sym___hash__X,
             sym_obj,
-            cast_object (x)->te_xCoordinate,
-            cast_object (x)->te_yCoordinate);
+            object_getX (cast_object (x)),
+            object_getY (cast_object (x)));
     }
     
     buffer_serialize (b, object_getBuffer (cast_object (x)));

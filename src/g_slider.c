@@ -557,8 +557,8 @@ static void slider_functionSave (t_gobj *z, t_buffer *b)
     buffer_vAppend (b, "ssiisiiffiisssiiiisssii", 
         sym___hash__X,
         sym_obj,
-        (int)cast_object (z)->te_xCoordinate, 
-        (int)cast_object (z)->te_yCoordinate,
+        object_getX (cast_object (z)), 
+        object_getY (cast_object (z)),
         x->x_isVertical ? sym_vslider : sym_hslider, 
         x->x_gui.iem_width,                                             // Width.
         x->x_gui.iem_height,                                            // Height.

@@ -95,8 +95,8 @@ static void textdefine_functionSave (t_gobj *z, t_buffer *b)
     buffer_vAppend (b, "ssii", 
         sym___hash__X,
         sym_obj,
-        cast_object (x)->te_xCoordinate,
-        cast_object (x)->te_yCoordinate);
+        object_getX (cast_object (x)),
+        object_getY (cast_object (x)));
         
     buffer_serialize (b, object_getBuffer (cast_object (x)));
     buffer_appendSemicolon (b);

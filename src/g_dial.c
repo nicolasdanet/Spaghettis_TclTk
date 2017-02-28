@@ -608,8 +608,8 @@ static void dial_functionSave (t_gobj *z, t_buffer *b)
     buffer_vAppend (b, "ssiisiiffiisssiiiisssfi",
         sym___hash__X,
         sym_obj,
-        (int)cast_object (z)->te_xCoordinate,
-        (int)cast_object (z)->te_yCoordinate,
+        object_getX (cast_object (z)),
+        object_getY (cast_object (z)),
         sym_nbx,
         x->x_digitsNumber,                                                      // Number of digits.
         x->x_gui.iem_height,                                                    // Height.

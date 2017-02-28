@@ -351,8 +351,8 @@ static void toggle_functionSave (t_gobj *z, t_buffer *b)
     buffer_vAppend (b, "ssiisiisssiiiisssff", 
         sym___hash__X,
         sym_obj,
-        (int)cast_object (z)->te_xCoordinate,
-        (int)cast_object (z)->te_yCoordinate,
+        object_getX (cast_object (z)),
+        object_getY (cast_object (z)),
         sym_tgl, 
         x->x_gui.iem_width,                                 // Size.
         iemgui_serializeLoadbang (&x->x_gui),               // Loadbang.

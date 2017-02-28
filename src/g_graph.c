@@ -408,8 +408,8 @@ static void canvas_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int
     
     if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnDisplaced (z, glist, deltaX, deltaY); }
     else {
-        cast_object (z)->te_xCoordinate += deltaX;
-        cast_object (z)->te_yCoordinate += deltaY;
+        object_setX (cast_object (z), object_getX (cast_object (z)) + deltaX);
+        object_setY (cast_object (z), object_getY (cast_object (z)) + deltaY);
         canvas_redrawGraphOnParent (x);
         canvas_updateLinesByObject (glist, cast_object (z));
     }
