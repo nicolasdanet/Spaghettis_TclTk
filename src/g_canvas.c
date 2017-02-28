@@ -190,9 +190,8 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         object_setBuffer (object, buffer_new());
         object_setX (object, atom_getFloatAtIndex (0, argc, argv));
         object_setY (object, atom_getFloatAtIndex (1, argc, argv));
-        
-        object->te_width = 0;                           
-        object->te_type  = TYPE_OBJECT;
+        object_setWidth (object, 0);
+        object_setType (object, TYPE_OBJECT);
         
         if (argc > 2) { buffer_deserialize (object_getBuffer (object), argc - 2, argv + 2); }
         
@@ -215,7 +214,7 @@ static void canvas_width (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     //
     int w = atom_getFloatAtIndex (0, argc, argv);
     
-    o->te_width = PD_MAX (1, w);
+    object_setWidth (o, PD_MAX (1, w));
     
     if (canvas_isMapped (glist)) {
         gobj_visibilityChanged (g1, glist, 0);
@@ -248,13 +247,13 @@ void canvas_connect (t_glist *glist,
     
     /* Creates dummy outlets and inlets (failure at object creation). */
     
-    if (pd_class (srcObject) == text_class && srcObject->te_type == TYPE_OBJECT) {
+    if (pd_class (srcObject) == text_class && object_isObject (srcObject)) {
         while (m >= object_getNumberOfOutlets (srcObject)) {
             outlet_new (srcObject, NULL);
         }
     }
     
-    if (pd_class (destObject) == text_class && destObject->te_type == TYPE_OBJECT) {
+    if (pd_class (destObject) == text_class && object_isObject (destObject)) {
         while (n >= object_getNumberOfInlets (destObject)) {
             inlet_new (destObject, cast_pd (destObject), NULL, NULL);
         }
@@ -771,7 +770,7 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     topLeftX = PD_MAX (topLeftX, 0);
     topLeftY = PD_MAX (topLeftY, WINDOW_HEADER);
     
-    cast_object (x)->te_type = TYPE_OBJECT;
+    object_setType (cast_object (x), TYPE_OBJECT);
     
     x->gl_holder = gmaster_createWithGlist (x);
     x->gl_parent = owner;

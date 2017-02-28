@@ -41,8 +41,8 @@ static t_glist *canvas_newGraphOnParent (t_glist *glist,
     object_setBuffer (cast_object (x), buffer_new());
     object_setX (cast_object (x), topLeftX);
     object_setY (cast_object (x), topLeftY);
+    object_setType (cast_object (x), TYPE_OBJECT);
     
-    cast_object (x)->te_type            = TYPE_OBJECT;
     x->gl_holder                        = gmaster_createWithGlist (x);
     x->gl_parent                        = glist;
     x->gl_name                          = utils_getDefaultBindName (canvas_class, sym__graph);
@@ -175,11 +175,10 @@ void canvas_makeComment (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     t_object *x = (t_object *)pd_new (text_class);
     
     t_atom a; SET_SYMBOL (&a, sym_comment);
-            
-    x->te_width  = 0;
-    x->te_type   = TYPE_COMMENT;
-    
+
     object_setBuffer (x, buffer_new());
+    object_setWidth (x, 0);
+    object_setType (x, TYPE_COMMENT);
     
     if (argc > 1) {                                                             /* File creation. */
         

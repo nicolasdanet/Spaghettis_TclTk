@@ -330,7 +330,7 @@ static void gatom_functionSave (t_gobj *z, t_buffer *b)
         (IS_SYMBOL (&x->a_atom) ? sym_symbolatom : sym_floatatom),
         object_getX (cast_object (x)),
         object_getY (cast_object (x)),
-        cast_object (x)->te_width,
+        object_getWidth (cast_object (x)),
         (double)x->a_lowRange,
         (double)x->a_highRange,
         (double)x->a_position,
@@ -356,7 +356,7 @@ static void gatom_functionProperties (t_gobj *z, t_glist *owner)
     
         err = string_sprintf (t, PD_STRING, 
                 "::ui_atom::show %%s %d %g %g %s %g {%s} {%s} {%s} %d\n",       // --
-                cast_object (x)->te_width,
+                object_getWidth (cast_object (x)),
                 x->a_lowRange,
                 x->a_highRange,
                 sym_floatatom->s_name,
@@ -370,7 +370,7 @@ static void gatom_functionProperties (t_gobj *z, t_glist *owner)
     
         err = string_sprintf (t, PD_STRING, 
                 "::ui_atom::show %%s %d %g %g %s {%s} {%s} {%s} {%s} %d\n",     // --
-                cast_object (x)->te_width,
+                object_getWidth (cast_object (x)),
                 x->a_lowRange,
                 x->a_highRange,
                 sym_symbolatom->s_name,
@@ -401,8 +401,9 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     gobj_visibilityChanged (cast_gobj (x), x->a_owner, 0);
 
     if (x->a_receive != &s_) { pd_unbind (cast_pd (x), x->a_receive); }
-        
-    cast_object (x)->te_width   = PD_CLAMP (width, 0, ATOM_WIDTH_MAXIMUM);
+    
+    object_setWidth (cast_object (x), PD_CLAMP (width, 0, ATOM_WIDTH_MAXIMUM));
+
     x->a_lowRange               = PD_MIN (lowRange, highRange);
     x->a_highRange              = PD_MAX (lowRange, highRange);
     x->a_position               = PD_CLAMP (position, ATOM_LABEL_LEFT, ATOM_LABEL_DOWN);
@@ -433,9 +434,9 @@ void gatom_makeObject (t_glist *glist, t_atomtype type, t_symbol *s, int argc, t
     t_gatom *x = (t_gatom *)pd_new (gatom_class);
     
     object_setBuffer (cast_object (x), buffer_new());
+    object_setWidth (cast_object (x), type == A_FLOAT ? ATOM_WIDTH_FLOAT : ATOM_WIDTH_SYMBOL);
+    object_setType (cast_object (x), TYPE_ATOM);
     
-    cast_object (x)->te_width   = (type == A_FLOAT) ? ATOM_WIDTH_FLOAT : ATOM_WIDTH_SYMBOL;
-    cast_object (x)->te_type    = TYPE_ATOM;
     x->a_owner                  = glist;
     x->a_lowRange               = 0;
     x->a_highRange              = 0;
@@ -470,8 +471,8 @@ void gatom_makeObject (t_glist *glist, t_atomtype type, t_symbol *s, int argc, t
         
         object_setX (cast_object (x), atom_getFloatAtIndex (0, argc, argv));
         object_setY (cast_object (x), atom_getFloatAtIndex (1, argc, argv));
-        
-        cast_object (x)->te_width           = PD_CLAMP (width, 0, ATOM_WIDTH_MAXIMUM);
+        object_setWidth (cast_object (x), PD_CLAMP (width, 0, ATOM_WIDTH_MAXIMUM));
+
         x->a_lowRange                       = atom_getFloatAtIndex (3, argc, argv);
         x->a_highRange                      = atom_getFloatAtIndex (4, argc, argv);
         x->a_position                       = PD_CLAMP (position, ATOM_LABEL_LEFT, ATOM_LABEL_DOWN);

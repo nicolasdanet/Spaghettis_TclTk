@@ -23,13 +23,6 @@
 #pragma mark -
 
 enum {
-    TYPE_COMMENT            = 0,
-    TYPE_OBJECT             = 1,
-    TYPE_MESSAGE            = 2,
-    TYPE_ATOM               = 3
-    };
-
-enum {
     ACTION_NONE             = 0,
     ACTION_MOVE             = 1,
     ACTION_CONNECT          = 2,

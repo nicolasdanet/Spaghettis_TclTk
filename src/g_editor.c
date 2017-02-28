@@ -180,7 +180,7 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
     if (object_isBox (object)) {
         int a = rectangle_getTopLeftX (&r);
         int w = (int)((positionX - a) / font_getHostFontWidth (canvas_getFontSize (glist)));
-        object->te_width = PD_MAX (1, w);
+        object_setWidth (object, PD_MAX (1, w));
         gobj_visibilityChanged (y, glist, 0);
         canvas_updateLinesByObject (glist, object);
         gobj_visibilityChanged (y, glist, 1);
@@ -785,7 +785,7 @@ void canvas_editmode (t_glist *glist, t_float f)
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
         t_object *o = NULL;
-        if ((o = cast_objectIfPatchable (y)) && o->te_type == TYPE_COMMENT) {
+        if ((o = cast_objectIfPatchable (y)) && object_isComment (o)) {
             t_boxtext *text = boxtext_fetch (glist, o);
             canvas_drawBox (glist, o, boxtext_getTag (text), 1);
         }

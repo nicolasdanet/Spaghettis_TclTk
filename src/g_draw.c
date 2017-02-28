@@ -404,11 +404,11 @@ void canvas_drawBox (t_glist *glist, t_object *o, char *tag, int create)
     
     text_behaviorGetRectangle (cast_gobj (o), glist, &r);
 
-    if (o->te_type == TYPE_OBJECT)       { canvas_drawBoxObject (glist, o, tag, create, &r);        }
-    else if (o->te_type == TYPE_MESSAGE) { canvas_drawBoxMessage (glist, o, tag, create, &r);       }
-    else if (o->te_type == TYPE_ATOM)    { canvas_drawBoxAtom (glist, o, tag, create, &r);          }
-    else if (o->te_type == TYPE_COMMENT) { canvas_drawBoxComment (glist, o, tag, create, &r);       }
-    if (cast_objectIfPatchable (o))      { canvas_drawInletsAndOutlets (glist, o, tag, create, &r); }
+    if (object_isObject (o))        { canvas_drawBoxObject (glist, o, tag, create, &r);        }
+    else if (object_isMessage (o))  { canvas_drawBoxMessage (glist, o, tag, create, &r);       }
+    else if (object_isAtom (o))     { canvas_drawBoxAtom (glist, o, tag, create, &r);          }
+    else if (object_isComment (o))  { canvas_drawBoxComment (glist, o, tag, create, &r);       }
+    if (cast_objectIfPatchable (o)) { canvas_drawInletsAndOutlets (glist, o, tag, create, &r); }
 }
 
 static void canvas_eraseInletsAndOutlets (t_glist *glist, t_object *o, char *tag)
@@ -423,7 +423,7 @@ static void canvas_eraseInletsAndOutlets (t_glist *glist, t_object *o, char *tag
 
 void canvas_eraseBox (t_glist *glist, t_object *o, char *tag)
 {
-    if (o->te_type != TYPE_COMMENT || glist->gl_isEditMode) {   /* Comments have borders only in edit mode. */
+    if (!object_isComment (o) || glist->gl_isEditMode) {   /* Comments have borders only in edit mode. */
     //
     sys_vGui (".x%lx.c delete %sBORDER\n", canvas_getView (glist), tag); 
     canvas_eraseInletsAndOutlets (glist, o, tag);

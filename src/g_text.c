@@ -140,7 +140,7 @@ int text_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
     t_float f4 = (t_float)m->m_ctrl;
     t_float f5 = (t_float)m->m_alt;
     
-    if (x->te_type == TYPE_OBJECT) {
+    if (object_isObject (x)) {
         if (class_hasMethod (pd_class (x), sym_click)) {
         //
         if (m->m_clicked) { pd_vMessage (cast_pd (x), sym_click, "fffff", f1, f2, f3, f4, f5); }
@@ -148,11 +148,11 @@ int text_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
         //
         }
         
-    } else if (x->te_type == TYPE_ATOM) {
+    } else if (object_isAtom (x)) {
         if (m->m_clicked) { gatom_click ((t_gatom *)x, f1, f2, f3, f4, f5); }
         return 1;
         
-    } else if (x->te_type == TYPE_MESSAGE) {
+    } else if (object_isMessage (x)) {
         if (m->m_clicked) { message_click ((t_message *)x, f1, f2, f3, f4, f5); }
         return 1;
     }
@@ -168,13 +168,13 @@ void text_functionSave (t_gobj *z, t_buffer *b)
 {
     t_object *x = cast_object (z);
     
-    if (x->te_type == TYPE_COMMENT) {
+    if (object_isComment (x)) {
         buffer_vAppend (b, "ssii", sym___hash__X, sym_text, object_getX (x), object_getY (x));
         
-    } else if (x->te_type == TYPE_OBJECT) {
+    } else if (object_isObject (x)) {
         buffer_vAppend (b, "ssii", sym___hash__X, sym_obj,  object_getX (x), object_getY (x));
         
-    } else if (x->te_type == TYPE_MESSAGE) {
+    } else if (object_isMessage (x)) {
         buffer_vAppend (b, "ssii", sym___hash__X, sym_msg,  object_getX (x), object_getY (x));
         
     } else { 
@@ -192,7 +192,7 @@ void text_functionSave (t_gobj *z, t_buffer *b)
 
 void text_set (t_object *x, t_glist *glist, char *s, int size)
 {
-    if (x->te_type != TYPE_OBJECT) { buffer_withStringUnzeroed (object_getBuffer (x), s, size); }
+    if (!object_isObject (x)) { buffer_withStringUnzeroed (object_getBuffer (x), s, size); }
     else {
     //
     t_buffer *t = buffer_new();
@@ -209,7 +209,7 @@ void text_set (t_object *x, t_glist *glist, char *s, int size)
         object_setBuffer (x, t);
         
     } else {
-        int w = x->te_width;
+        int w = object_getWidth (x);
         int a = object_getX (x);
         int b = object_getY (x);
         

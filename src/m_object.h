@@ -15,6 +15,16 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+enum {
+    TYPE_COMMENT    = 0,
+    TYPE_OBJECT     = 1,
+    TYPE_MESSAGE    = 2,
+    TYPE_ATOM       = 3
+    };
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 struct _outconnect {
     struct _outconnect          *oc_next;
     t_pd                        *oc_receiver;
@@ -49,23 +59,23 @@ struct _inlet {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_outconnect    *object_connect                 (t_object *src, int m, t_object *dest, int n);
+t_outconnect    *object_connect                     (t_object *src, int m, t_object *dest, int n);
 
-void        object_disconnect                   (t_object *src, int m, t_object *dest, int n);
+void        object_disconnect                       (t_object *src, int m, t_object *dest, int n);
 
-int         object_getNumberOfInlets            (t_object *x);
-int         object_getNumberOfOutlets           (t_object *x);
-int         object_getNumberOfSignalInlets      (t_object *x);
-int         object_getNumberOfSignalOutlets     (t_object *x);
-int         object_getSignalIndexOfInlet        (t_object *x, int m);
-int         object_getSignalIndexOfOutlet       (t_object *x, int m);
-int         object_isSignalInlet                (t_object *x, int m);
-int         object_isSignalOutlet               (t_object *x, int m);
+int         object_getNumberOfInlets                (t_object *x);
+int         object_getNumberOfOutlets               (t_object *x);
+int         object_getNumberOfSignalInlets          (t_object *x);
+int         object_getNumberOfSignalOutlets         (t_object *x);
+int         object_getSignalIndexOfInlet            (t_object *x, int m);
+int         object_getSignalIndexOfOutlet           (t_object *x, int m);
+int         object_isSignalInlet                    (t_object *x, int m);
+int         object_isSignalOutlet                   (t_object *x, int m);
 
-void        object_saveWidth                    (t_object *x, t_buffer *b);
-void        object_distributeOnInlets           (t_object *x, int argc, t_atom *argv);
+void        object_saveWidth                        (t_object *x, t_buffer *b);
+void        object_distributeOnInlets               (t_object *x, int argc, t_atom *argv);
 
-t_float     *object_getSignalValueAtIndex       (t_object *x, int m);
+t_float     *object_getSignalValueAtIndex           (t_object *x, int m);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -96,6 +106,36 @@ static inline int object_getY (t_object *x)
     return x->te_yCoordinate;
 }
 
+static inline int object_getWidth (t_object *x)
+{
+    return x->te_width;
+}
+
+static inline int object_getType (t_object *x)
+{
+    return x->te_type;
+}
+
+static inline int object_isComment (t_object *x)
+{
+    return (x->te_type == TYPE_COMMENT);
+}
+
+static inline int object_isObject (t_object *x)
+{
+    return (x->te_type == TYPE_OBJECT);
+}
+
+static inline int object_isMessage (t_object *x)
+{
+    return (x->te_type == TYPE_MESSAGE);
+}
+
+static inline int object_isAtom (t_object *x)
+{
+    return (x->te_type == TYPE_ATOM);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -113,6 +153,16 @@ static inline void object_setX (t_object *x, int n)
 static inline void object_setY (t_object *x, int n)
 {
     x->te_yCoordinate = n;
+}
+
+static inline void object_setWidth (t_object *x, int n)
+{
+    x->te_width = n;
+}
+
+static inline void object_setType (t_object *x, int n)
+{
+    x->te_type = n;
 }
 
 // -----------------------------------------------------------------------------------------------------------

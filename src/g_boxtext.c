@@ -82,10 +82,10 @@ static void boxtext_ellipsis (t_boxtext *x)
 {
     t_object *o = x->box_object;
     
-    if (o->te_type == TYPE_ATOM) {
-        if ((o->te_width > 0) && (x->box_stringSizeInBytes > o->te_width)) {
-            x->box_string = PD_MEMORY_RESIZE (x->box_string, x->box_stringSizeInBytes, o->te_width);
-            x->box_stringSizeInBytes = o->te_width;
+    if (object_isAtom (o)) {
+        if ((object_getWidth (o) > 0) && (x->box_stringSizeInBytes > object_getWidth (o))) {
+            x->box_string = PD_MEMORY_RESIZE (x->box_string, x->box_stringSizeInBytes, object_getWidth (o));
+            x->box_stringSizeInBytes = object_getWidth (o);
             x->box_string[x->box_stringSizeInBytes - 1] = '*';
         }
     }
@@ -107,7 +107,7 @@ static int boxtext_typeset (t_boxtext *x,
     {
     //
     int     bufferPosition          = 0;
-    int     widthInCharacters       = x->box_object->te_width;
+    int     widthInCharacters       = object_getWidth (x->box_object);
     int     numberOfCharacters      = u8_charnum (x->box_string, x->box_stringSizeInBytes);
     double  fontWidth               = font_getHostFontWidth (fontSize);
     double  fontHeight              = font_getHostFontHeight (fontSize);
@@ -388,7 +388,7 @@ void boxtext_getSelection (t_boxtext *x, char **p, int *size)
 
 void boxtext_draw (t_boxtext *x)
 {
-    if (x->box_object->te_type == TYPE_ATOM) { boxtext_restore (x); }
+    if (object_isAtom (x->box_object)) { boxtext_restore (x); }
     
     boxtext_send (x, BOX_FIRST, 0, 0);
 }

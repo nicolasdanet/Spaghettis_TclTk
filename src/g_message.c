@@ -203,9 +203,9 @@ void message_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     t_message *x = (t_message *)pd_new (message_class);
     
     object_setBuffer (cast_object (x), buffer_new());
-    
-    cast_object (x)->te_width   = 0;
-    cast_object (x)->te_type    = TYPE_MESSAGE;
+    object_setWidth (cast_object (x), 0);
+    object_setType (cast_object (x), TYPE_MESSAGE);
+
     x->m_responder.mr_pd        = messageresponder_class;
     x->m_responder.mr_outlet    = outlet_new (cast_object (x), &s_anything);
     x->m_owner                  = glist;

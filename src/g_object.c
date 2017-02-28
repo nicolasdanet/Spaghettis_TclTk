@@ -134,7 +134,7 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
     
     if ((object = cast_objectIfPatchable (x))) {
         if (object_isBox (object)) {
-            if (object->te_type != TYPE_COMMENT) {
+            if (!object_isComment (object)) {
                 return 0; 
             }
         }
