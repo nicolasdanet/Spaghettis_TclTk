@@ -302,7 +302,7 @@ static void boxtext_restore (t_boxtext *x)
 {
     PD_MEMORY_FREE (x->box_string);
     
-    buffer_toStringUnzeroed (x->box_object->te_buffer, &x->box_string, &x->box_stringSizeInBytes);
+    buffer_toStringUnzeroed (object_getBuffer (x->box_object), &x->box_string, &x->box_stringSizeInBytes);
 }
 
 static void boxtext_delete (t_boxtext *x)
@@ -621,7 +621,7 @@ t_boxtext *boxtext_new (t_glist *glist, t_object *object)
     x->box_object = object;
     x->box_glist  = glist;
 
-    buffer_toStringUnzeroed (object->te_buffer, &x->box_string, &x->box_stringSizeInBytes);
+    buffer_toStringUnzeroed (object_getBuffer (object), &x->box_string, &x->box_stringSizeInBytes);
     
     {
     //

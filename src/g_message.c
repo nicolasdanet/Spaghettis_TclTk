@@ -76,26 +76,26 @@ static void messageresponder_anything (t_messageresponder *x, t_symbol *s, int a
 
 static void message_bang (t_message *x)
 {
-    buffer_eval (cast_object (x)->te_buffer, cast_pd (&x->m_responder), 0, NULL);
+    buffer_eval (object_getBuffer (cast_object (x)), cast_pd (&x->m_responder), 0, NULL);
 }
 
 static void message_float (t_message *x, t_float f)
 {
     t_atom a; SET_FLOAT (&a, f);
     
-    buffer_eval (cast_object (x)->te_buffer, cast_pd (&x->m_responder), 1, &a);
+    buffer_eval (object_getBuffer (cast_object (x)), cast_pd (&x->m_responder), 1, &a);
 }
 
 static void message_symbol (t_message *x, t_symbol *s)
 {
     t_atom a; SET_SYMBOL (&a, s);
     
-    buffer_eval (cast_object (x)->te_buffer, cast_pd (&x->m_responder), 1, &a);
+    buffer_eval (object_getBuffer (cast_object (x)), cast_pd (&x->m_responder), 1, &a);
 }
 
 static void message_list (t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    buffer_eval (cast_object (x)->te_buffer, cast_pd (&x->m_responder), argc, argv);
+    buffer_eval (object_getBuffer (cast_object (x)), cast_pd (&x->m_responder), argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -125,21 +125,21 @@ void message_click (t_message *x, t_float a, t_float b, t_float shift, t_float c
 
 static void message_set (t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    buffer_reset (cast_object (x)->te_buffer);
-    buffer_append (cast_object (x)->te_buffer, argc, argv);
+    buffer_reset (object_getBuffer (cast_object (x)));
+    buffer_append (object_getBuffer (cast_object (x)), argc, argv);
     boxtext_retext (x->m_owner, cast_object (x));
 }
 
 static void message_add (t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    buffer_append (cast_object (x)->te_buffer, argc, argv);
-    buffer_appendSemicolon (cast_object (x)->te_buffer);
+    buffer_append (object_getBuffer (cast_object (x)), argc, argv);
+    buffer_appendSemicolon (object_getBuffer (cast_object (x)));
     boxtext_retext (x->m_owner, &x->m_obj);
 }
 
 static void message_append (t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    buffer_append (cast_object (x)->te_buffer, argc, argv);
+    buffer_append (object_getBuffer (cast_object (x)), argc, argv);
     boxtext_retext (x->m_owner, cast_object (x));
 }
 
@@ -147,7 +147,7 @@ static void message_addComma (t_message *x)
 {
     t_atom a; SET_COMMA (&a);
     
-    buffer_appendAtom (cast_object (x)->te_buffer, &a);
+    buffer_appendAtom (object_getBuffer (cast_object (x)), &a);
     boxtext_retext (x->m_owner, cast_object (x));
 }
 
@@ -161,7 +161,7 @@ static void message_addDollar (t_message *x, t_float f)
     int n = PD_MAX (0, (int)f);
     t_atom a; SET_DOLLAR (&a, n);
     
-    buffer_appendAtom (cast_object (x)->te_buffer, &a);
+    buffer_appendAtom (object_getBuffer (cast_object (x)), &a);
     boxtext_retext (x->m_owner, cast_object (x));
 }
 
@@ -173,7 +173,7 @@ static void message_addDollarSymbol (t_message *x, t_symbol *s)
     string_sprintf (t, PD_STRING, "$%s", s->s_name);
     SET_DOLLARSYMBOL (&a, gensym (t));
 
-    buffer_appendAtom (cast_object (x)->te_buffer, &a);
+    buffer_appendAtom (object_getBuffer (cast_object (x)), &a);
     boxtext_retext (x->m_owner, cast_object (x));
 }
 
@@ -202,7 +202,8 @@ void message_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     t_message *x = (t_message *)pd_new (message_class);
     
-    cast_object (x)->te_buffer  = buffer_new();
+    object_setBuffer (cast_object (x), buffer_new());
+    
     cast_object (x)->te_width   = 0;
     cast_object (x)->te_type    = TYPE_MESSAGE;
     x->m_responder.mr_pd        = messageresponder_class;
@@ -216,7 +217,7 @@ void message_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         cast_object (x)->te_yCoordinate = atom_getFloatAtIndex (1, argc, argv);
         
         if (argc > 2) {
-            buffer_deserialize (cast_object (x)->te_buffer, argc - 2, argv + 2);
+            buffer_deserialize (object_getBuffer (cast_object (x)), argc - 2, argv + 2);
         }
         
         canvas_addObject (glist, cast_gobj (x));

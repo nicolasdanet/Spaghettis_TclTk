@@ -181,7 +181,7 @@ void text_functionSave (t_gobj *z, t_buffer *b)
         PD_BUG;
     }
     
-    buffer_serialize (b, x->te_buffer);
+    buffer_serialize (b, object_getBuffer (x));
     buffer_appendSemicolon (b);
     object_saveWidth (x, b);
 }
@@ -192,7 +192,7 @@ void text_functionSave (t_gobj *z, t_buffer *b)
 
 void text_set (t_object *x, t_glist *glist, char *s, int size)
 {
-    if (x->te_type != TYPE_OBJECT) { buffer_withStringUnzeroed (x->te_buffer, s, size); }
+    if (x->te_type != TYPE_OBJECT) { buffer_withStringUnzeroed (object_getBuffer (x), s, size); }
     else {
     //
     t_buffer *t = buffer_new();
@@ -205,8 +205,8 @@ void text_set (t_object *x, t_glist *glist, char *s, int size)
     
     if (m && n) {
         pd_message (cast_pd (x), sym_rename, buffer_size (t) - 1, buffer_atoms (t) + 1);
-        buffer_free (x->te_buffer);
-        x->te_buffer = t;
+        buffer_free (object_getBuffer (x)); 
+        object_setBuffer (x, t);
         
     } else {
         int w = x->te_width;

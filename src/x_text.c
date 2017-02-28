@@ -98,7 +98,7 @@ static void textdefine_functionSave (t_gobj *z, t_buffer *b)
         cast_object (x)->te_xCoordinate,
         cast_object (x)->te_yCoordinate);
         
-    buffer_serialize (b, cast_object (x)->te_buffer);
+    buffer_serialize (b, object_getBuffer (cast_object (x)));
     buffer_appendSemicolon (b);
     object_saveWidth (cast_object (x), b);
         

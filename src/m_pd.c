@@ -34,17 +34,6 @@ t_pd *pd_new (t_class *c)
     
     *x = c;
     
-    if (c->c_isBox) {
-
-        PD_ASSERT (cast_object (x)->te_buffer == NULL);
-        PD_ASSERT (cast_object (x)->te_inlet  == NULL);
-        PD_ASSERT (cast_object (x)->te_outlet == NULL);
-
-        cast_object (x)->te_buffer = NULL;
-        cast_object (x)->te_inlet  = NULL;
-        cast_object (x)->te_outlet = NULL;
-    }
-    
     return x;
 }
 
@@ -62,8 +51,8 @@ void pd_free (t_pd *x)
         while (cast_object (x)->te_outlet) { outlet_free (cast_object (x)->te_outlet); }
         while (cast_object (x)->te_inlet)  { inlet_free (cast_object (x)->te_inlet);   }
         
-        if (cast_object (x)->te_buffer) { 
-            buffer_free (cast_object (x)->te_buffer); 
+        if (object_getBuffer (cast_object (x))) { 
+            buffer_free (object_getBuffer (cast_object (x))); 
         }
     }
 

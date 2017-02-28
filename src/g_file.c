@@ -28,7 +28,7 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
     
         t_buffer *z = buffer_new();
         t_symbol *s = NULL;
-        buffer_serialize (z, cast_object (glist)->te_buffer);
+        buffer_serialize (z, object_getBuffer (cast_object (glist)));
         s = atom_getSymbolAtIndex (1, buffer_size (z), buffer_atoms (z));
         buffer_free (z);
         

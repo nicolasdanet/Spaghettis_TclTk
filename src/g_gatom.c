@@ -119,8 +119,8 @@ static t_symbol *gatom_parse (t_symbol *s)
 
 static void gatom_update (t_gatom *x)
 {
-    buffer_reset (cast_object (x)->te_buffer);
-    buffer_appendAtom (cast_object (x)->te_buffer, &x->a_atom);
+    buffer_reset (object_getBuffer (cast_object (x)));
+    buffer_appendAtom (object_getBuffer (cast_object (x)), &x->a_atom);
     defer_addJob ((void *)x, x->a_owner, gatom_drawJob);
 }
 
@@ -432,7 +432,8 @@ void gatom_makeObject (t_glist *glist, t_atomtype type, t_symbol *s, int argc, t
 {
     t_gatom *x = (t_gatom *)pd_new (gatom_class);
     
-    cast_object (x)->te_buffer  = buffer_new();
+    object_setBuffer (cast_object (x), buffer_new());
+    
     cast_object (x)->te_width   = (type == A_FLOAT) ? ATOM_WIDTH_FLOAT : ATOM_WIDTH_SYMBOL;
     cast_object (x)->te_type    = TYPE_ATOM;
     x->a_owner                  = glist;
@@ -453,13 +454,13 @@ void gatom_makeObject (t_glist *glist, t_atomtype type, t_symbol *s, int argc, t
         t_atom a;
         SET_FLOAT (&x->a_atom, (t_float)0.0);
         SET_FLOAT (&a, (t_float)0.0);
-        buffer_appendAtom (cast_object (x)->te_buffer, &a);
+        buffer_appendAtom (object_getBuffer (cast_object (x)), &a);
         
     } else {
         t_atom a;
         SET_SYMBOL (&x->a_atom, &s_symbol);
         SET_SYMBOL (&a, &s_symbol);
-        buffer_appendAtom (cast_object (x)->te_buffer, &a);
+        buffer_appendAtom (object_getBuffer (cast_object (x)), &a);
     }
     
     if (argc > 1) {                                                             /* File creation. */

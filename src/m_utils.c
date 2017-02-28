@@ -55,7 +55,7 @@ t_symbol *utils_gensymWithAtoms (int argc, t_atom *argv)
 
 t_symbol *utils_getFirstAtomOfObjectAsSymbol (t_object *x)
 {
-    return utils_getFirstAtomOfBufferAsSymbol (x->te_buffer);
+    return utils_getFirstAtomOfBufferAsSymbol (object_getBuffer (x));
 }
 
 t_symbol *utils_getFirstAtomOfBufferAsSymbol (t_buffer *x)

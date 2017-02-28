@@ -71,6 +71,20 @@ t_float     *object_getSignalValueAtIndex       (t_object *x, int m);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static inline t_buffer *object_getBuffer (t_object *x)
+{
+    return x->te_buffer;
+}
+
+static inline void object_setBuffer (t_object *x, t_buffer *b)
+{
+    x->te_buffer = b;       /* Acquires ownership. */
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_inlet     *inlet_newSignalDefault             (t_object *owner, t_float f);
 t_inlet     *inlet_new                          (t_object *owner, t_pd *receiver, t_symbol *t, t_symbol *m);
 
@@ -78,18 +92,6 @@ void        inlet_free                          (t_inlet *x);
 void        inlet_moveFirst                     (t_inlet *x);
 int         inlet_isSignal                      (t_inlet *x);
 int         inlet_getSignalIndex                (t_inlet *x);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_outconnect    *outlet_addConnection           (t_outlet *x, t_pd *receiver);
-
-void            outlet_removeConnection         (t_outlet *x, t_pd *receiver);
-void            outlet_free                     (t_outlet *x);
-void            outlet_moveFirst                (t_outlet *x);
-int             outlet_isSignal                 (t_outlet *x);
-int             outlet_getSignalIndex           (t_outlet *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -109,6 +111,18 @@ static inline t_float *inlet_getSignalValue (t_inlet *x)
 {
     return &x->i_un.i_signal;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_outconnect    *outlet_addConnection           (t_outlet *x, t_pd *receiver);
+
+void            outlet_removeConnection         (t_outlet *x, t_pd *receiver);
+void            outlet_free                     (t_outlet *x);
+void            outlet_moveFirst                (t_outlet *x);
+int             outlet_isSignal                 (t_outlet *x);
+int             outlet_getSignalIndex           (t_outlet *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -188,11 +188,12 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         glist->gl_parent        = parent;
         object->te_width        = 0;                           
         object->te_type         = TYPE_OBJECT;
-        object->te_buffer       = buffer_new();
         object->te_xCoordinate  = atom_getFloatAtIndex (0, argc, argv);
         object->te_yCoordinate  = atom_getFloatAtIndex (1, argc, argv);
         
-        if (argc > 2) { buffer_deserialize (object->te_buffer, argc - 2, argv + 2); }
+        object_setBuffer (object, buffer_new());
+        
+        if (argc > 2) { buffer_deserialize (object_getBuffer (object), argc - 2, argv + 2); }
         
         canvas_addObject (parent, cast_gobj (object));
     }
@@ -553,7 +554,7 @@ static void canvas_functionSave (t_gobj *x, t_buffer *b)
             cast_object (x)->te_yCoordinate);
     }
     
-    buffer_serialize (b, cast_object (x)->te_buffer);
+    buffer_serialize (b, object_getBuffer (cast_object (x)));
     buffer_appendSemicolon (b);
     object_saveWidth (cast_object (x), b);
 }
@@ -633,8 +634,8 @@ static void canvas_fromPopupDialog (t_glist *glist, t_float action, t_float posi
     t_error err = PD_ERROR_NONE;
     
     if (pd_class (y) == canvas_class && canvas_isRoot (cast_glist (y))) {
-        int argc = buffer_size (cast_object (y)->te_buffer);
-        t_atom *argv = buffer_atoms (cast_object (y)->te_buffer);
+        int argc = buffer_size (object_getBuffer (cast_object (y)));
+        t_atom *argv = buffer_atoms (object_getBuffer (cast_object (y)));
         if (!(err = (argc < 1))) {
             atom_toString (argv, name, PD_STRING);
             directory = environment_getDirectoryAsString (canvas_getEnvironment (cast_glist (y)));

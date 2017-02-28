@@ -38,7 +38,8 @@ static t_glist *canvas_newGraphOnParent (t_glist *glist,
     
     t_fontsize fontSize = canvas_getCurrent() ? canvas_getCurrent()->gl_fontSize : font_getDefaultFontSize();
 
-    cast_object (x)->te_buffer          = buffer_new();
+    object_setBuffer (cast_object (x), buffer_new());
+    
     cast_object (x)->te_xCoordinate     = topLeftX;
     cast_object (x)->te_yCoordinate     = topLeftY;
     cast_object (x)->te_type            = TYPE_OBJECT;
@@ -61,7 +62,7 @@ static t_glist *canvas_newGraphOnParent (t_glist *glist,
     
     canvas_bind (x);
     
-    buffer_vAppend (cast_object (x)->te_buffer, "s", sym_graph);
+    buffer_vAppend (object_getBuffer (cast_object (x)), "s", sym_graph);
     
     canvas_addObject (glist, cast_gobj (x));
     
@@ -177,16 +178,17 @@ void canvas_makeComment (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
             
     x->te_width  = 0;
     x->te_type   = TYPE_COMMENT;
-    x->te_buffer = buffer_new();
+    
+    object_setBuffer (x, buffer_new());
     
     if (argc > 1) {                                                             /* File creation. */
     
         x->te_xCoordinate = atom_getFloatAtIndex (0, argc, argv);
         x->te_yCoordinate = atom_getFloatAtIndex (1, argc, argv);
         
-        if (argc > 2) { buffer_deserialize (x->te_buffer, argc - 2, argv + 2); }
+        if (argc > 2) { buffer_deserialize (object_getBuffer (x), argc - 2, argv + 2); }
         else {
-            buffer_deserialize (x->te_buffer, 1, &a);
+            buffer_deserialize (object_getBuffer (x), 1, &a);
         }
         
         canvas_addObject (glist, cast_gobj (x));
@@ -202,7 +204,7 @@ void canvas_makeComment (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         x->te_xCoordinate = positionX;
         x->te_yCoordinate = positionY;
         
-        buffer_deserialize (x->te_buffer, 1, &a);
+        buffer_deserialize (object_getBuffer (x), 1, &a);
         canvas_addObject (glist, cast_gobj (x));
         canvas_selectObject (glist, cast_gobj (x));
     }
