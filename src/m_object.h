@@ -81,6 +81,16 @@ static inline void object_setBuffer (t_object *x, t_buffer *b)
     x->te_buffer = b;       /* Acquires ownership. */
 }
 
+static inline t_inlet *object_getFirstInlet (t_object *x)
+{
+    return x->te_inlets;
+}
+
+static inline t_outlet *object_getFirstOutlet (t_object *x)
+{
+    return x->te_outlets;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -137,10 +147,6 @@ static inline t_outconnect *outlet_getConnections (t_outlet *x)
 {
     return x->o_connections;
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 static inline t_outconnect *connection_getNext (t_outconnect *x)
 {

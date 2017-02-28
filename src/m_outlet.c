@@ -87,15 +87,15 @@ void outlet_moveFirst (t_outlet *x)
 {
     t_object *owner = x->o_owner;
     
-    if (owner->te_outlet != x) {
+    if (owner->te_outlets != x) {
     //
     t_outlet *o = NULL;
     
-    for (o = owner->te_outlet; o; o = o->o_next) {
+    for (o = owner->te_outlets; o; o = o->o_next) {
         if (o->o_next == x) {
             o->o_next = x->o_next;
-            x->o_next = owner->te_outlet;
-            owner->te_outlet = x;
+            x->o_next = owner->te_outlets;
+            owner->te_outlets = x;
             return;
         }
     }
@@ -112,7 +112,7 @@ int outlet_getSignalIndex (t_outlet *x)
         
     PD_ASSERT (outlet_isSignal (x));
     
-    for (o = x->o_owner->te_outlet; o && o != x; o = o->o_next) {
+    for (o = x->o_owner->te_outlets; o && o != x; o = o->o_next) {
         if (outlet_isSignal (o)) { n++; }
     }
     
@@ -217,9 +217,9 @@ t_outlet *outlet_new (t_object *owner, t_symbol *s)
     x->o_connections = NULL;
     x->o_type        = s;
     
-    if ((o1 = owner->te_outlet)) { while ((o2 = o1->o_next)) { o1 = o2; } o1->o_next = x; }
+    if ((o1 = owner->te_outlets)) { while ((o2 = o1->o_next)) { o1 = o2; } o1->o_next = x; }
     else {
-        owner->te_outlet = x;
+        owner->te_outlets = x;
     }
 
     return x;
@@ -232,9 +232,9 @@ void outlet_free (t_outlet *x)
     
     PD_ASSERT (x->o_connections == NULL);
     
-    if (y->te_outlet == x) { y->te_outlet = x->o_next; }
+    if (y->te_outlets == x) { y->te_outlets = x->o_next; }
     else {
-        for (o = y->te_outlet; o; o = o->o_next) {
+        for (o = y->te_outlets; o; o = o->o_next) {
             if (o->o_next == x) { o->o_next = x->o_next; break; }
         }
     }

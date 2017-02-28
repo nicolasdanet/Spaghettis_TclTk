@@ -26,7 +26,7 @@ void object_distributeOnInlets (t_object *x, int argc, t_atom *argv)
     //
     int count;
     t_atom *a = NULL;
-    t_inlet *i = x->te_inlet;
+    t_inlet *i = x->te_inlets;
     
     for (count = argc - 1, a = argv + 1; i && count--; a++, i = inlet_getNext (i)) {
     //
@@ -59,7 +59,7 @@ t_outconnect *object_connect (t_object *src, int m, t_object *dest, int n)
     PD_ASSERT (m >= 0);
     PD_ASSERT (n >= 0);
     
-    for (o = src->te_outlet; o && m; o = outlet_getNext (o), m--) { }
+    for (o = src->te_outlets; o && m; o = outlet_getNext (o), m--) { }
     
     if (o != NULL) { 
     //
@@ -68,7 +68,7 @@ t_outconnect *object_connect (t_object *src, int m, t_object *dest, int n)
     if (pd_class (dest)->c_hasFirstInlet) { if (!n) { receiver = cast_pd (dest); } else { n--; } }
     
     if (receiver == NULL) {
-        t_inlet *i = NULL; for (i = dest->te_inlet; i && n; i = inlet_getNext (i), n--) { }
+        t_inlet *i = NULL; for (i = dest->te_inlets; i && n; i = inlet_getNext (i), n--) { }
         if (i == NULL) { return NULL; }
         else {
             receiver = cast_pd (i);
@@ -93,7 +93,7 @@ void object_disconnect (t_object *src, int m, t_object *dest, int n)
     PD_ASSERT (m >= 0);
     PD_ASSERT (n >= 0);
     
-    for (o = src->te_outlet; o && m; o = outlet_getNext (o), m--) { }
+    for (o = src->te_outlets; o && m; o = outlet_getNext (o), m--) { }
     
     if (o != NULL) {
     //
@@ -102,7 +102,7 @@ void object_disconnect (t_object *src, int m, t_object *dest, int n)
     if (pd_class (dest)->c_hasFirstInlet) { if (!n) { receiver = cast_pd (dest); } else { n--; } }
     
     if (receiver == NULL) {
-        t_inlet *i = NULL; for (i = dest->te_inlet; i && n; i = inlet_getNext (i), n--) { }
+        t_inlet *i = NULL; for (i = dest->te_inlets; i && n; i = inlet_getNext (i), n--) { }
         if (i == NULL) { return; }
         else {
             receiver = cast_pd (i);
@@ -127,7 +127,7 @@ int object_getNumberOfInlets (t_object *x)
     int n = 0;
     t_inlet *i = NULL;
     if (pd_class (x)->c_hasFirstInlet) { n++; }
-    for (i = x->te_inlet; i; i = inlet_getNext (i)) { n++; }
+    for (i = x->te_inlets; i; i = inlet_getNext (i)) { n++; }
     return n;
 }
 
@@ -135,7 +135,7 @@ int object_getNumberOfOutlets (t_object *x)
 {
     int n = 0;
     t_outlet *o = NULL;
-    for (o = x->te_outlet; o; o = outlet_getNext (o)) { n++; }
+    for (o = x->te_outlets; o; o = outlet_getNext (o)) { n++; }
     return n;
 }
 
@@ -144,7 +144,7 @@ int object_getNumberOfSignalInlets (t_object *x)
     int n = 0;
     t_inlet *i = NULL;
     if (pd_class (x)->c_hasFirstInlet && pd_class (x)->c_signalOffset) { n++; }
-    for (i = x->te_inlet; i; i = inlet_getNext (i)) { if (inlet_isSignal (i)) { n++; } }
+    for (i = x->te_inlets; i; i = inlet_getNext (i)) { if (inlet_isSignal (i)) { n++; } }
     return n;
 }
 
@@ -152,7 +152,7 @@ int object_getNumberOfSignalOutlets (t_object *x)
 {
     int n = 0;
     t_outlet *o = NULL;
-    for (o = x->te_outlet; o; o = outlet_getNext (o)) { if (outlet_isSignal (o)) { n++; } }
+    for (o = x->te_outlets; o; o = outlet_getNext (o)) { if (outlet_isSignal (o)) { n++; } }
     return n;
 }
 
@@ -172,7 +172,7 @@ int object_getSignalIndexOfInlet (t_object *x, int m)
         m--;
     }
     
-    for (i = x->te_inlet; i; i = inlet_getNext (i), m--) {
+    for (i = x->te_inlets; i; i = inlet_getNext (i), m--) {
         if (inlet_isSignal (i)) { 
             if (m == 0) { return n; } 
             else { 
@@ -191,7 +191,7 @@ int object_getSignalIndexOfOutlet (t_object *x, int m)
     
     PD_ASSERT (m >= 0);
         
-    for (o = x->te_outlet; o; o = outlet_getNext (o), m--) {
+    for (o = x->te_outlets; o; o = outlet_getNext (o), m--) {
         if (outlet_isSignal (o)) {
             if (m == 0) { return n; }
             else {
@@ -218,7 +218,7 @@ int object_isSignalInlet (t_object *x, int m)
         }
     }
     
-    for (i = x->te_inlet; i && m; i = inlet_getNext (i), m--) { }
+    for (i = x->te_inlets; i && m; i = inlet_getNext (i), m--) { }
     
     return (i && inlet_isSignal (i));
 }
@@ -227,7 +227,7 @@ int object_isSignalOutlet (t_object *x, int m)
 {
     t_outlet *o = NULL;
     
-    for (o = x->te_outlet; o && m--; o = outlet_getNext (o)) { }
+    for (o = x->te_outlets; o && m--; o = outlet_getNext (o)) { }
     
     return (o && outlet_isSignal (o));
 }
@@ -256,7 +256,7 @@ t_float *object_getSignalValueAtIndex (t_object *x, int m)
         m--;
     }
     
-    for (i = x->te_inlet; i; i = inlet_getNext (i), m--) {
+    for (i = x->te_inlets; i; i = inlet_getNext (i), m--) {
         if (inlet_isSignal (i)) { 
             if (m == 0) { 
                 return inlet_getSignalValue (i); 

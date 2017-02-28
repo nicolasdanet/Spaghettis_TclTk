@@ -30,7 +30,7 @@ extern t_class *symbolinlet_class;
 
 static t_outconnect *linetraverser_outletStart  (t_object *x, t_outlet **ptr, int n)
 {
-    t_outlet *o = x->te_outlet;
+    t_outlet *o = object_getFirstOutlet (x);
     
     while (n && o) { n--; o = outlet_getNext (o); }
     
@@ -57,7 +57,7 @@ static t_outconnect *linetraverser_outletNext (t_outconnect *previous, t_object 
         t_inlet *i2 = NULL;
         t_object *o = inlet_getOwner (i1);
         int k = pd_class (o)->c_hasFirstInlet;
-        for (i2 = o->te_inlet; i2 && i2 != i1; i2 = inlet_getNext (i2)) { k++; }
+        for (i2 = object_getFirstInlet (o); i2 && i2 != i1; i2 = inlet_getNext (i2)) { k++; }
         *n    = k;
         *ptr  = i1;
         *dest = o;

@@ -44,9 +44,9 @@ static void inlet_add (t_inlet *x, t_object *owner)
     
     PD_ASSERT (owner);
     
-    if ((i1 = owner->te_inlet)) { while ((i2 = i1->i_next)) { i1 = i2; } i1->i_next = x; } 
+    if ((i1 = owner->te_inlets)) { while ((i2 = i1->i_next)) { i1 = i2; } i1->i_next = x; } 
     else { 
-        owner->te_inlet = x;
+        owner->te_inlets = x;
     }
 }
 
@@ -59,15 +59,15 @@ void inlet_moveFirst (t_inlet *x)
 {
     t_object *owner = x->i_owner;
     
-    if (owner->te_inlet != x) {
+    if (owner->te_inlets != x) {
     //
     t_inlet *i = NULL;
         
-    for (i = owner->te_inlet; i; i = i->i_next) {
+    for (i = owner->te_inlets; i; i = i->i_next) {
         if (i->i_next == x) {
             i->i_next = x->i_next;
-            x->i_next = owner->te_inlet;
-            owner->te_inlet = x;
+            x->i_next = owner->te_inlets;
+            owner->te_inlets = x;
             return;
         }
     }
@@ -84,7 +84,7 @@ int inlet_getSignalIndex (t_inlet *x)
         
     PD_ASSERT (inlet_isSignal (x));
     
-    for (i = x->i_owner->te_inlet; i && i != x; i = i->i_next) { 
+    for (i = x->i_owner->te_inlets; i && i != x; i = i->i_next) { 
         if (inlet_isSignal (i)) { n++; }
     }
     
@@ -278,9 +278,9 @@ void inlet_free (t_inlet *x)
     t_object *y = x->i_owner;
     t_inlet *i  = NULL;
     
-    if (y->te_inlet == x) { y->te_inlet = x->i_next; }
+    if (y->te_inlets == x) { y->te_inlets = x->i_next; }
     else {
-        for (i = y->te_inlet; i; i = i->i_next) {
+        for (i = y->te_inlets; i; i = i->i_next) {
             if (i->i_next == x) {
                 i->i_next = x->i_next;
                 break;

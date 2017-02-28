@@ -571,8 +571,8 @@ typedef struct _scalar {
 typedef struct _object {
     t_gobj          te_g;                       /* MUST be the first. */
     t_buffer        *te_buffer;
-    t_inlet         *te_inlet;
-    t_outlet        *te_outlet;
+    t_inlet         *te_inlets;
+    t_outlet        *te_outlets;
     int             te_xCoordinate;
     int             te_yCoordinate;
     int             te_width;                   /* Zero for undefined. */
