@@ -190,6 +190,16 @@ static t_error plot_fetchElementProperties (t_plot *x, t_plotproperties *p, t_pl
     return PD_ERROR_NONE;
 }
 
+t_float plot_getRelativeX (t_plotproperties *p, t_float baseX)
+{
+    return baseX + p->x_positionX;
+}
+
+t_float plot_getRelativeY (t_plotproperties *p, t_float baseY)
+{
+    return baseY + p->x_positionY;
+}
+
 static void plot_getCoordinates (t_plot *x,
     t_array *array,
     t_symbol *fieldX,
@@ -414,8 +424,8 @@ static void plot_behaviorGetRectangle (t_gobj *z,
         
         plot_getCoordinates (x, p.x_array, ep.x_fieldX, ep.x_fieldY, ep.x_fieldW,
             i,
-            baseX + p.x_positionX,
-            baseY + p.x_positionY,
+            plot_getRelativeX (&p, baseX),
+            plot_getRelativeY (&p, baseY),
             p.x_incrementX,
             &valueX,
             &valueY,
@@ -809,6 +819,9 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
     //
     if (!plot_fetchElementProperties (x, &p, &ep)) {
 
+        t_float relativeX = plot_getRelativeX (&p, baseX);
+        t_float relativeY = plot_getRelativeY (&p, baseY);
+        
         if (isVisible) {
         
             int color = (int)gpointer_getFloatByDescriptor (gp, &x->x_colorOutline);
@@ -822,8 +835,8 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
                     ep.x_fieldX, 
                     ep.x_fieldY,
                     ep.x_fieldW,
-                    baseX + p.x_positionX,
-                    baseY + p.x_positionY,
+                    relativeX,
+                    relativeY,
                     p.x_incrementX, 
                     p.x_width,
                     p.x_style, 
@@ -840,8 +853,8 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
                         ep.x_fieldX, 
                         ep.x_fieldY, 
                         ep.x_fieldW, 
-                        baseX + p.x_positionX, 
-                        baseY + p.x_positionY, 
+                        relativeX,
+                        relativeY, 
                         p.x_incrementX,
                         p.x_width, 
                         p.x_style, 
@@ -856,8 +869,8 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
                         ep.x_fieldX, 
                         ep.x_fieldY, 
                         ep.x_fieldW, 
-                        baseX + p.x_positionX, 
-                        baseY + p.x_positionY, 
+                        relativeX,
+                        relativeY,
                         p.x_incrementX,
                         p.x_width, 
                         p.x_style, 
@@ -874,8 +887,8 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
             ep.x_fieldX, 
             ep.x_fieldY,
             ep.x_fieldW,
-            baseX + p.x_positionX,
-            baseY + p.x_positionY,
+            relativeX,
+            relativeY,
             p.x_incrementX, 
             p.x_width,
             isVisible);
@@ -1071,8 +1084,8 @@ static int plot_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t_float
     //
     plot_stepX      = canvas_valueForOnePixelX (glist);
     plot_stepY      = canvas_valueForOnePixelY (glist);
-    plot_relativeX  = baseX + p.x_positionX;
-    plot_relativeY  = baseY + p.x_positionY;
+    plot_relativeX  = plot_getRelativeX (&p, baseX);
+    plot_relativeY  = plot_getRelativeY (&p, baseY);
     plot_incrementX = p.x_incrementX;
     plot_width      = p.x_width;
     plot_style      = p.x_style;
