@@ -114,6 +114,20 @@ static t_painterwidgetbehavior plot_widgetBehavior =
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+typedef struct _plotproperties {
+    t_array     *x_array;
+    t_float     x_width;
+    t_float     x_positionX;
+    t_float     x_positionY;
+    t_float     x_incrementX;
+    t_float     x_style;
+    int         x_visible;
+    } t_plotproperties;
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void plot_release (void)
 {
     gpointer_unset (&plot_check);
@@ -124,14 +138,7 @@ void plot_release (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_error plot_fetchScalarFields (t_plot *x, t_gpointer *gp, 
-    t_array **array,
-    t_float *width,
-    t_float *positionX,
-    t_float *positionY,
-    t_float *incrementX,
-    t_float *style,
-    int *visible)
+static t_error plot_fetchProperties (t_plot *x, t_gpointer *gp, t_plotproperties *p)
 {
     if (field_isArray (&x->x_array)) {
     //
@@ -139,13 +146,13 @@ static t_error plot_fetchScalarFields (t_plot *x, t_gpointer *gp,
     
     if (gpointer_hasField (gp, s) && gpointer_fieldIsArrayAndValid (gp, s)) {
     //
-    *array      = gpointer_getArray (gp, s);
-    *width      = gpointer_getFloatByDescriptor (gp, &x->x_width);
-    *positionX  = gpointer_getFloatByDescriptor (gp, &x->x_positionX);
-    *positionY  = gpointer_getFloatByDescriptor (gp, &x->x_positionY);
-    *incrementX = gpointer_getFloatByDescriptor (gp, &x->x_incrementX);
-    *style      = gpointer_getFloatByDescriptor (gp, &x->x_style);
-    *visible    = (int)gpointer_getFloatByDescriptor (gp, &x->x_isVisible);
+    p->x_array      = gpointer_getArray (gp, s);
+    p->x_width      = gpointer_getFloatByDescriptor (gp, &x->x_width);
+    p->x_positionX  = gpointer_getFloatByDescriptor (gp, &x->x_positionX);
+    p->x_positionY  = gpointer_getFloatByDescriptor (gp, &x->x_positionY);
+    p->x_incrementX = gpointer_getFloatByDescriptor (gp, &x->x_incrementX);
+    p->x_style      = gpointer_getFloatByDescriptor (gp, &x->x_style);
+    p->x_visible    = (int)gpointer_getFloatByDescriptor (gp, &x->x_isVisible);
     
     return PD_ERROR_NONE;
     //
@@ -383,34 +390,21 @@ static void plot_behaviorGetRectangle (t_gobj *z,
     if (garray_isSingle (glist)) { rectangle_setEverything (r); }
     else {
     //
-    t_array *array = NULL;
-    t_float width;
-    t_float positionX;
-    t_float positionY;
-    t_float incrementX;
-    t_float style;
-    int visible;
+    t_plotproperties p;
     
-    if (!plot_fetchScalarFields (x, gp,     // --
-            &array,
-            &width,
-            &positionX,
-            &positionY,
-            &incrementX,
-            &style,
-            &visible) && (visible != 0)) {
+    if (!plot_fetchProperties (x, gp, &p) && (p.x_visible != 0)) {
     //
     t_symbol *fieldX = NULL;
     t_symbol *fieldY = NULL;
     t_symbol *fieldW = NULL;
     
-    if (!plot_fetchElementFieldNames (x, array, &fieldX, &fieldY, &fieldW)) {
+    if (!plot_fetchElementFieldNames (x, p.x_array, &fieldX, &fieldY, &fieldW)) {
     //
-    int i, k = plot_getStep (array);
+    int i, k = plot_getStep (p.x_array);
     
-    t_glist *view = template_getInstanceView (array_getTemplate (array));
+    t_glist *view = template_getInstanceView (array_getTemplate (p.x_array));
     
-    for (i = 0; i < array_getSize (array); i += k) {
+    for (i = 0; i < array_getSize (p.x_array); i += k) {
 
         t_float valueX;
         t_float valueY;
@@ -419,11 +413,11 @@ static void plot_behaviorGetRectangle (t_gobj *z,
         t_float pixelY;
         t_float pixelW;
         
-        plot_getCoordinates (x, array, fieldX, fieldY, fieldW,
+        plot_getCoordinates (x, p.x_array, fieldX, fieldY, fieldW,
             i,
-            baseX + positionX,
-            baseY + positionY,
-            incrementX,
+            baseX + p.x_positionX,
+            baseY + p.x_positionY,
+            p.x_incrementX,
             &valueX,
             &valueY,
             &valueW);
@@ -433,13 +427,13 @@ static void plot_behaviorGetRectangle (t_gobj *z,
         pixelW = canvas_valueToPixelY (glist, valueY + valueW) - pixelY;
         
         pixelW = (t_float)PD_ABS (pixelW);
-        pixelW = (t_float)PD_MAX (pixelW, width - 1.0);
+        pixelW = (t_float)PD_MAX (pixelW, p.x_width - 1.0);
         
         rectangle_boundingBoxAddPoint (r, pixelX, pixelY - pixelW);
         rectangle_boundingBoxAddPoint (r, pixelX, pixelY + pixelW);
         
         if (view) {
-            plot_behaviorGetRectangleRecursive (x, view, array, i, valueX, valueY, r);
+            plot_behaviorGetRectangleRecursive (x, view, p.x_array, i, valueX, valueY, r);
         }
     }
     //
@@ -807,49 +801,36 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
     t_word *w = gpointer_getElement (gp);
     t_glist *glist = gpointer_getView (gp);
     
-    t_array *array = NULL;
-    t_float width;
-    t_float positionX;
-    t_float positionY;
-    t_float incrementX;
-    t_float style;
-    int visible;
+    t_plotproperties p;
     
-    if (!plot_fetchScalarFields (x, gp,     // --
-            &array,
-            &width,
-            &positionX,
-            &positionY,
-            &incrementX,
-            &style,
-            &visible)) {
+    if (!plot_fetchProperties (x, gp, &p)) {
     //
     t_symbol *fieldX = NULL;
     t_symbol *fieldY = NULL;
     t_symbol *fieldW = NULL;
     
-    if (!isVisible || visible) {
+    if (!isVisible || p.x_visible) {
     //
-    if (!plot_fetchElementFieldNames (x, array, &fieldX, &fieldY, &fieldW)) {
+    if (!plot_fetchElementFieldNames (x, p.x_array, &fieldX, &fieldY, &fieldW)) {
 
         if (isVisible) {
         
             int color = (int)gpointer_getFloatByDescriptor (gp, &x->x_colorOutline);
                             
-            if (style == PLOT_POINTS) { 
+            if (p.x_style == PLOT_POINTS) { 
             
                 plot_behaviorVisibilityChangedDrawPoint (x,
                     glist,
                     w,
-                    array,
+                    p.x_array,
                     fieldX, 
                     fieldY,
                     fieldW,
-                    baseX + positionX,
-                    baseY + positionY,
-                    incrementX, 
-                    width,
-                    style, 
+                    baseX + p.x_positionX,
+                    baseY + p.x_positionY,
+                    p.x_incrementX, 
+                    p.x_width,
+                    p.x_style, 
                     color_toEncodedSymbol (color_withDigits (color)));
                     
             } else {
@@ -859,15 +840,15 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
                     plot_behaviorVisibilityChangedDrawPolygonFill (x,
                         glist,
                         w,
-                        array,
+                        p.x_array,
                         fieldX, 
                         fieldY, 
                         fieldW, 
-                        baseX + positionX, 
-                        baseY + positionY, 
-                        incrementX,
-                        width, 
-                        style, 
+                        baseX + p.x_positionX, 
+                        baseY + p.x_positionY, 
+                        p.x_incrementX,
+                        p.x_width, 
+                        p.x_style, 
                         color_toEncodedSymbol (color_withDigits (color)));
                         
                 } else {
@@ -875,15 +856,15 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
                     plot_behaviorVisibilityChangedDrawPolygonSegment (x,
                         glist,
                         w,
-                        array,
+                        p.x_array,
                         fieldX, 
                         fieldY, 
                         fieldW, 
-                        baseX + positionX, 
-                        baseY + positionY, 
-                        incrementX,
-                        width, 
-                        style, 
+                        baseX + p.x_positionX, 
+                        baseY + p.x_positionY, 
+                        p.x_incrementX,
+                        p.x_width, 
+                        p.x_style, 
                         color_toEncodedSymbol (color_withDigits (color)));
                 }
             }
@@ -893,14 +874,14 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
         }
         
         plot_behaviorVisibilityChangedRecursive (x,
-            array,
+            p.x_array,
             fieldX, 
             fieldY,
             fieldW,
-            baseX + positionX,
-            baseY + positionY,
-            incrementX, 
-            width,
+            baseX + p.x_positionX,
+            baseY + p.x_positionY,
+            p.x_incrementX, 
+            p.x_width,
             isVisible);
     }
     //
@@ -1092,41 +1073,27 @@ static int plot_behaviorMouseSingle (t_plot *x, t_array *array, t_mouse *m)
 
 static int plot_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t_float baseY, t_mouse *m)
 {
-    t_plot *x = (t_plot *)z;
-    t_glist *glist = gpointer_getView (gp);
+    t_plot *x = (t_plot *)z; t_glist *glist = gpointer_getView (gp);
     
-    t_array *array = NULL;
-    t_float width;
-    t_float positionX;
-    t_float positionY;
-    t_float incrementX;
-    t_float style;
-    int visible;
+    t_plotproperties p;
     
-    if (!plot_fetchScalarFields (x, gp,     // --
-            &array,
-            &width,
-            &positionX,
-            &positionY,
-            &incrementX,
-            &style,
-            &visible) && (visible != 0)) {
+    if (!plot_fetchProperties (x, gp, &p) && (p.x_visible != 0)) {
     //
     plot_stepX      = canvas_valueForOnePixelX (glist);
     plot_stepY      = canvas_valueForOnePixelY (glist);
-    plot_relativeX  = baseX + positionX;
-    plot_relativeY  = baseY + positionY;
-    plot_incrementX = incrementX;
-    plot_width      = width;
-    plot_style      = style;
+    plot_relativeX  = baseX + p.x_positionX;
+    plot_relativeY  = baseY + p.x_positionY;
+    plot_incrementX = p.x_incrementX;
+    plot_width      = p.x_width;
+    plot_style      = p.x_style;
     plot_fieldArray = &x->x_array;
         
     gpointer_setByCopy (&plot_gpointer, gp);
-    gpointer_setAsWord (&plot_check, array, array_getElements (array));
+    gpointer_setAsWord (&plot_check, p.x_array, array_getElements (p.x_array));
     
-    if (garray_isSingle (glist)) { return plot_behaviorMouseSingle (x, array, m); }
+    if (garray_isSingle (glist)) { return plot_behaviorMouseSingle (x, p.x_array, m); }
     else {
-        return plot_behaviorMouseRegular (x, array, m);
+        return plot_behaviorMouseRegular (x, p.x_array, m);
     }
     //
     }
