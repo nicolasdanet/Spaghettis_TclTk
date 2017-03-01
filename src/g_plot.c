@@ -69,8 +69,21 @@ typedef struct _plot {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void plot_motion (void *, t_float, t_float, t_float);
+static void plot_motion                    (void *, t_float, t_float, t_float);
+static void plot_behaviorGetRectangle      (t_gobj *, t_gpointer *, t_float, t_float, t_rectangle *);
+static void plot_behaviorVisibilityChanged (t_gobj *, t_gpointer *, t_float, t_float, int);
+static int  plot_behaviorMouse             (t_gobj *, t_gpointer *, t_float, t_float, t_mouse *);
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
+static t_painterwidgetbehavior plot_widgetBehavior =
+    {
+        plot_behaviorGetRectangle,
+        plot_behaviorVisibilityChanged,
+        plot_behaviorMouse,
+    };
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -1120,16 +1133,6 @@ static int plot_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t_float
     
     return 0;
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-t_painterwidgetbehavior plot_widgetBehavior =
-    {
-        plot_behaviorGetRectangle,
-        plot_behaviorVisibilityChanged,
-        plot_behaviorMouse,
-    };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
