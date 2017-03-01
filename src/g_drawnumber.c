@@ -43,6 +43,24 @@ typedef struct _drawnumber {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void drawnumber_behaviorGetRectangle      (t_gobj *, t_gpointer *, t_float, t_float, t_rectangle *);
+static void drawnumber_behaviorVisibilityChanged (t_gobj *, t_gpointer *, t_float, t_float, int);
+static int  drawnumber_behaviorMouse             (t_gobj *, t_gpointer *, t_float, t_float, t_mouse *);
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_painterwidgetbehavior drawnumber_widgetBehavior =
+    {
+        drawnumber_behaviorGetRectangle,
+        drawnumber_behaviorVisibilityChanged,
+        drawnumber_behaviorMouse,
+    };
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void drawnumber_release (void)
 {
     gpointer_unset (&drawnumber_gpointer);
@@ -52,12 +70,7 @@ void drawnumber_release (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_error drawnumber_getContents (t_drawnumber *x,
-    t_gpointer *gp,
-    char *dest,
-    int size,
-    int *m,
-    int *n)
+static t_error drawnumber_getContents (t_drawnumber *x, t_gpointer *gp, char *dest, int size, int *m, int *n)
 {
     if (gpointer_fieldIsArray (gp, x->x_fieldName)) { return PD_ERROR; }
     else {
@@ -243,16 +256,6 @@ static int drawnumber_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-t_painterwidgetbehavior drawnumber_widgetBehavior =
-    {
-        drawnumber_behaviorGetRectangle,
-        drawnumber_behaviorVisibilityChanged,
-        drawnumber_behaviorMouse,
-    };
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 static void *drawnumber_new (t_symbol *s, int argc, t_atom *argv)
@@ -282,6 +285,7 @@ static void *drawnumber_new (t_symbol *s, int argc, t_atom *argv)
     error__options (s, argc, argv);
     
     x->x_fieldName = atom_getSymbolAtIndex (0, argc, argv); 
+
     if (argc) { argc--; argv++; }
     
     if (argc) { field_setAsFloat (&x->x_positionX,  argc--, argv++); }
