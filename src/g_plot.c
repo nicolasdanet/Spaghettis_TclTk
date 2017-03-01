@@ -124,6 +124,7 @@ typedef struct _plotproperties {
     t_float     p_positionY;
     t_float     p_incrementX;
     t_float     p_style;
+    int         p_step;
     int         p_visible;
     } t_plotproperties;
 
@@ -150,6 +151,7 @@ static t_error plot_fetchProperties (t_plot *x, t_gpointer *gp, t_plotproperties
     if (gpointer_hasField (gp, s) && gpointer_fieldIsArrayAndValid (gp, s)) {
     //
     t_template *t = NULL;
+    int size;
     
     p->p_array      = gpointer_getArray (gp, s);
     p->p_fieldX     = sym_x;
@@ -161,6 +163,10 @@ static t_error plot_fetchProperties (t_plot *x, t_gpointer *gp, t_plotproperties
     p->p_incrementX = gpointer_getFloatByDescriptor (gp, &x->x_incrementX);
     p->p_style      = gpointer_getFloatByDescriptor (gp, &x->x_style);
     p->p_visible    = (int)gpointer_getFloatByDescriptor (gp, &x->x_isVisible);
+    
+    size = array_getSize (p->p_array); 
+    
+    p->p_step = (size <= 1000 ? 1 : (int)sqrt ((double)size));
     
     if (field_isVariable (&x->x_fieldX)) { p->p_fieldX = field_getVariableName (&x->x_fieldX); }
     if (field_isVariable (&x->x_fieldY)) { p->p_fieldY = field_getVariableName (&x->x_fieldY); }
@@ -230,11 +236,6 @@ static void plot_getCoordinates (t_plot *x,
     *a = relativeX + valueX;
     *b = relativeY + valueY;
     *c = valueW;
-}
-
-static int plot_getStep (t_array *array)
-{
-    int size = array_getSize (array); return (size <= 1000 ? 1 : (int)sqrt ((double)size));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -399,11 +400,11 @@ static void plot_behaviorGetRectangle (t_gobj *z,
     
     if (!plot_fetchProperties (x, gp, &p) && (p.p_visible != 0)) {
     //
-    int i, k = plot_getStep (p.p_array);
+    int i;
     
     t_glist *view = template_getInstanceView (array_getTemplate (p.p_array));
     
-    for (i = 0; i < array_getSize (p.p_array); i += k) {
+    for (i = 0; i < array_getSize (p.p_array); i += p.p_step) {
 
         t_float valueX;
         t_float valueY;
@@ -902,9 +903,9 @@ static int plot_behaviorMouseRegular (t_plot *x, t_plotproperties *p, t_mouse *m
     int bestDeltaH = 0;
     int bestIndex = -1;
         
-    int i, step = plot_getStep (p->p_array);
+    int i;
     
-    for (i = 0; i < array_getSize (p->p_array); i += step) {
+    for (i = 0; i < array_getSize (p->p_array); i += p->p_step) {
     //
     t_float valueX;
     t_float valueY;
