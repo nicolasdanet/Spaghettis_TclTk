@@ -890,10 +890,9 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int plot_behaviorMouseRegularMatch (t_plot *x, t_array *array,
-    t_symbol *fieldX,
-    t_symbol *fieldY,
-    t_symbol *fieldW,
+static int plot_behaviorMouseRegularMatch (t_plot *x,
+    t_plotproperties *p,
+    t_plotelementproperties *ep,
     int bestIndex,
     int bestDeltaY,
     int bestDeltaL,
@@ -907,7 +906,7 @@ static int plot_behaviorMouseRegularMatch (t_plot *x, t_array *array,
     plot_thickness = PLOT_THICKNESS_NONE;
     plot_direction = (t_float)1.0;
     
-    if (fieldW) {
+    if (ep->x_fieldW) {
         if (bestDeltaY < (PLOT_HANDLE_SIZE / 2)) { }
         else if ((bestDeltaY < bestDeltaL) && (bestDeltaY < bestDeltaH)) { } 
         else if (bestDeltaH < bestDeltaL) { plot_thickness = PLOT_THICKNESS_DOWN; }
@@ -928,18 +927,18 @@ static int plot_behaviorMouseRegularMatch (t_plot *x, t_array *array,
     plot_fieldDescriptorX     = NULL;
     plot_fieldDescriptorY     = NULL;
     
-    if (fieldX) {
+    if (ep->x_fieldX) {
         plot_fieldDescriptorX = &x->x_fieldX;
-        plot_cumulativeX      = array_getFloatAtIndexByDescriptor (array, i, &x->x_fieldX);
+        plot_cumulativeX      = array_getFloatAtIndexByDescriptor (p->x_array, i, &x->x_fieldX);
     }
     
     if (plot_thickness) {
         plot_fieldDescriptorY = &x->x_fieldW;
-        plot_cumulativeY      = array_getFloatAtIndexByDescriptor (array, i, &x->x_fieldW);
+        plot_cumulativeY      = array_getFloatAtIndexByDescriptor (p->x_array, i, &x->x_fieldW);
 
-    } else if (fieldY) {
+    } else if (ep->x_fieldY) {
         plot_fieldDescriptorY = &x->x_fieldY;
-        plot_cumulativeY      = array_getFloatAtIndexByDescriptor (array, i, &x->x_fieldY);
+        plot_cumulativeY      = array_getFloatAtIndexByDescriptor (p->x_array, i, &x->x_fieldY);
     }
 
     if (plot_thickness == PLOT_THICKNESS_UP   && plot_cumulativeY >= 0.0) { plot_direction = (t_float)-1.0; }
@@ -1015,10 +1014,7 @@ static int plot_behaviorMouseRegular (t_plot *x, t_plotproperties *p, t_mouse *m
     
     if (best <= PLOT_HANDLE_SIZE) {
 
-        return plot_behaviorMouseRegularMatch (x, p->x_array,
-                    ep.x_fieldX,
-                    ep.x_fieldY, 
-                    ep.x_fieldW,
+        return plot_behaviorMouseRegularMatch (x, p, &ep,
                     bestIndex,
                     bestDeltaY,
                     bestDeltaL,
