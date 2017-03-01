@@ -199,15 +199,10 @@ t_float plot_getRelativeY (t_plotproperties *p, t_float baseY)
     return baseY + p->p_positionY;
 }
 
-static void plot_getCoordinates (t_plot *x, 
-    t_array *array,
-    t_symbol *fieldX,
-    t_symbol *fieldY,
-    t_symbol *fieldW,
-    int i,
+static void plot_getCoordinates (t_plotproperties *p,
     t_float relativeX,
     t_float relativeY,
-    t_float incrementX,
+    int i,
     t_float *a,
     t_float *b,
     t_float *c)
@@ -216,20 +211,23 @@ static void plot_getCoordinates (t_plot *x,
     t_float valueY;
     t_float valueW;
 
-    int size = array_getSize (array);
+    int size = array_getSize (p->p_array);
     
-    if (fieldX) { valueX = (i < size) ? array_getFloatAtIndex (array, i, fieldX) : (t_float)0.0; }
-    else { 
-        valueX = i * incrementX;
+    if (p->p_fieldX) { 
+        valueX = (i < size) ? array_getFloatAtIndex (p->p_array, i, p->p_fieldX) : (t_float)0.0; 
+    } else { 
+        valueX = i * p->p_incrementX;
     }
     
-    if (fieldY) { valueY = (i < size) ? array_getFloatAtIndex (array, i, fieldY) : (t_float)0.0; }
-    else { 
+    if (p->p_fieldY) {
+        valueY = (i < size) ? array_getFloatAtIndex (p->p_array, i, p->p_fieldY) : (t_float)0.0; 
+    } else { 
         valueY = (t_float)0.0;
     }
     
-    if (fieldW) { valueW = (i < size) ? array_getFloatAtIndex (array, i, fieldW) : (t_float)0.0; }
-    else {
+    if (p->p_fieldW) { 
+        valueW = (i < size) ? array_getFloatAtIndex (p->p_array, i, p->p_fieldW) : (t_float)0.0; 
+    } else {
         valueW = (t_float)0.0;
     }
     
@@ -413,11 +411,10 @@ static void plot_behaviorGetRectangle (t_gobj *z,
         t_float pixelY;
         t_float pixelW;
         
-        plot_getCoordinates (x, p.p_array, p.p_fieldX, p.p_fieldY, p.p_fieldW,
-            i,
+        plot_getCoordinates (&p,
             plot_getRelativeX (&p, baseX),
             plot_getRelativeY (&p, baseY),
-            p.p_incrementX,
+            i,
             &valueX,
             &valueY,
             &valueW);
@@ -466,36 +463,14 @@ static void plot_behaviorVisibilityChangedDrawPoint (t_plot *x,
     t_float valueW;
     int pixelX, nextPixelX;
     
-    plot_getCoordinates (x,
-        p->p_array,
-        p->p_fieldX,
-        p->p_fieldY,
-        p->p_fieldW,
-        i,
-        relativeX,
-        relativeY,
-        p->p_incrementX, 
-        &valueX, 
-        &valueY, 
-        &valueW);
+    plot_getCoordinates (p, relativeX, relativeY, i, &valueX, &valueY, &valueW);
     
     pixelX = (int)canvas_valueToPixelX (glist, valueX);
     
     minimumValueY = PD_MIN (minimumValueY, PLOT_CLIP (valueY));
     maximumValueY = PD_MAX (maximumValueY, PLOT_CLIP (valueY));
     
-    plot_getCoordinates (x, 
-        p->p_array,
-        p->p_fieldX,
-        p->p_fieldY,
-        p->p_fieldW,
-        i + 1,
-        relativeX,
-        relativeY,
-        p->p_incrementX, 
-        &valueX, 
-        &valueY, 
-        &valueW);
+    plot_getCoordinates (p, relativeX, relativeY, i + 1, &valueX, &valueY, &valueW);
         
     nextPixelX = (int)canvas_valueToPixelX (glist, valueX);
 
@@ -546,18 +521,7 @@ static void plot_behaviorVisibilityChangedDrawPolygonFill (t_plot *x,
     t_float valueY;
     t_float valueW;
     
-    plot_getCoordinates (x,
-        p->p_array,
-        p->p_fieldX,
-        p->p_fieldY,
-        p->p_fieldW,
-        i,
-        relativeX,
-        relativeY,
-        p->p_incrementX, 
-        &valueX, 
-        &valueY, 
-        &valueW);
+    plot_getCoordinates (p, relativeX, relativeY, i, &valueX, &valueY, &valueW);
     
     valueY = PLOT_CLIP (valueY);
     valueW = PLOT_CLIP (valueW);
@@ -651,18 +615,7 @@ static void plot_behaviorVisibilityChangedDrawPolygonSegment (t_plot *x,
     t_float valueY;
     t_float valueW;
 
-    plot_getCoordinates (x,
-        p->p_array,
-        p->p_fieldX,
-        p->p_fieldY,
-        p->p_fieldW,
-        i,
-        relativeX,
-        relativeY,
-        p->p_incrementX, 
-        &valueX, 
-        &valueY, 
-        &valueW);
+    plot_getCoordinates (p, relativeX, relativeY, i, &valueX, &valueY, &valueW);
     
     valueY = PLOT_CLIP (valueY);
     pixelX = (int)canvas_valueToPixelX (glist, valueX);
@@ -725,18 +678,7 @@ static void plot_behaviorVisibilityChangedRecursive (t_plot *x,
     t_float valueY;
     t_float valueW;
 
-    plot_getCoordinates (x,
-        p->p_array,
-        p->p_fieldX,
-        p->p_fieldY,
-        p->p_fieldW,
-        i,
-        relativeX,
-        relativeY,
-        p->p_incrementX, 
-        &valueX, 
-        &valueY, 
-        &valueW);
+    plot_getCoordinates (p, relativeX, relativeY, i, &valueX, &valueY, &valueW);
     
     for (y = view->gl_graphics; y; y = y->g_next) {
     
@@ -918,14 +860,7 @@ static int plot_behaviorMouseRegular (t_plot *x, t_plotproperties *p, t_mouse *m
     int deltaH;
     int k = 0;
     
-    plot_getCoordinates (x, p->p_array, p->p_fieldX, p->p_fieldY, p->p_fieldW,
-        i,
-        plot_relativeX,
-        plot_relativeY,
-        plot_incrementX,
-        &valueX,
-        &valueY,
-        &valueW);
+    plot_getCoordinates (p, plot_relativeX, plot_relativeY, i, &valueX, &valueY, &valueW);
     
     pixelX = canvas_valueToPixelX (gpointer_getView (&plot_gpointer), valueX);
     pixelY = canvas_valueToPixelY (gpointer_getView (&plot_gpointer), valueY);
