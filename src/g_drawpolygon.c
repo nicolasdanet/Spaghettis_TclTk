@@ -66,6 +66,24 @@ typedef struct _drawpolygon {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void drawpolygon_behaviorGetRectangle        (t_gobj *, t_gpointer *, t_float, t_float, t_rectangle *);
+static void drawpolygon_behaviorVisibilityChanged   (t_gobj *, t_gpointer *, t_float, t_float, int);
+static int  drawpolygon_behaviorMouse               (t_gobj *, t_gpointer *, t_float, t_float, t_mouse *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_painterwidgetbehavior drawpolygon_widgetBehavior =
+    {
+        drawpolygon_behaviorGetRectangle,
+        drawpolygon_behaviorVisibilityChanged,
+        drawpolygon_behaviorMouse,
+    };
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void drawpolygon_release (void)
 {
     gpointer_unset (&drawpolygon_gpointer);
@@ -302,16 +320,6 @@ static int drawpolygon_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, 
     return 0;
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-t_painterwidgetbehavior drawpolygon_widgetBehavior =
-    {
-        drawpolygon_behaviorGetRectangle,
-        drawpolygon_behaviorVisibilityChanged,
-        drawpolygon_behaviorMouse,
-    };
-    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
