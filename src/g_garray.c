@@ -418,7 +418,7 @@ void garray_redraw (t_garray *x)
     defer_addJob ((void *)x, x->x_owner, garray_drawJob);
 }
 
-int garray_isSingle (t_glist *glist)       /* Legacy patches might contain several arrays. */
+int garray_isSingle (t_glist *glist)       /* Note that legacy patches might contain several arrays. */
 {
     if (glist->gl_graphics && !glist->gl_graphics->g_next) {
         if (pd_class (glist->gl_graphics) == garray_class) { return 1; }

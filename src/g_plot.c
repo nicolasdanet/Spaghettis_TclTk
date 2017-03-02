@@ -229,6 +229,20 @@ static void plot_getValues (t_plotproperties *p,
     c->p_w = valueW;
 }
 
+static void plot_valuesToPixels (t_plotvalues *c, t_glist *view, t_float w)
+{
+    t_float pixelX = canvas_valueToPixelX (view, c->p_x);
+    t_float pixelY = canvas_valueToPixelY (view, c->p_y);
+    t_float pixelW = canvas_valueToPixelY (view, c->p_y + c->p_w) - pixelY;
+
+    pixelW = (t_float)PD_ABS (pixelW);
+    pixelW = (t_float)PD_MAX (pixelW, w - 1.0);
+    
+    c->p_x = pixelX;
+    c->p_y = pixelY;
+    c->p_w = pixelW;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -746,7 +760,7 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int plot_behaviorMouseRegularMatch (t_plot *x,
+static int plot_behaviorMouseMatch (t_plot *x,
     t_plotproperties *p,
     int bestIndex,
     int bestDeltaY,
@@ -810,70 +824,50 @@ static int plot_behaviorMouseRegularMatch (t_plot *x,
     return 0;
 }
 
-static int plot_behaviorMouseRegular (t_plot *x, t_plotproperties *p, t_mouse *m)
+static int plot_behaviorMouseGrab (t_plot *x, t_plotproperties *p, t_mouse *m)
 {
-    int a = m->m_x;
-    int b = m->m_y;
+    int d = PD_INT_MAX;
+    int dY, dL, dH;
+    int deltaY = 0;
+    int deltaL = 0;
+    int deltaH = 0;
+    int best   = 0;
     
-    int best = PD_INT_MAX;
-    int bestDeltaY = 0;
-    int bestDeltaL = 0;
-    int bestDeltaH = 0;
-    int bestIndex = -1;
-        
     int i;
     
     for (i = 0; i < array_getSize (p->p_array); i += p->p_step) {
     //
     t_plotvalues c;
-    t_float pixelX;
-    t_float pixelY;
-    t_float pixelW;
-    int deltaY;
-    int deltaL;
-    int deltaH;
-    int k = 0;
     
     plot_getValues (p, plot_relativeX, plot_relativeY, i, &c);
     
-    pixelX = canvas_valueToPixelX (gpointer_getView (&plot_gpointer), c.p_x);
-    pixelY = canvas_valueToPixelY (gpointer_getView (&plot_gpointer), c.p_y);
-    pixelW = canvas_valueToPixelY (gpointer_getView (&plot_gpointer), c.p_y + c.p_w) - pixelY;
-    pixelW = (t_float)PD_ABS (pixelW);
-    pixelW = (t_float)PD_MAX (pixelW, plot_width - 1.0);
+    plot_valuesToPixels (&c, gpointer_getView (&plot_gpointer), plot_width);
     
-    deltaY = (int)math_euclideanDistance (pixelX, pixelY, a, b);
-    deltaL = (int)math_euclideanDistance (pixelX, pixelY - pixelW, a, b);
-    deltaH = (int)math_euclideanDistance (pixelX, pixelY + pixelW, a, b);
+    /* Compute the distance between the mouse and this point. */
+    /* Up and down width is also considered. */
     
-    if (deltaY < best) { best = deltaY; k = 1; }
-    if (deltaL < best) { best = deltaL; k = 1; }
-    if (deltaH < best) { best = deltaH; k = 1; }
+    dY = (int)math_euclideanDistance (c.p_x, c.p_y, m->m_x, m->m_y);
+    dL = (int)math_euclideanDistance (c.p_x, c.p_y - c.p_w, m->m_x, m->m_y);
+    dH = (int)math_euclideanDistance (c.p_x, c.p_y + c.p_w, m->m_x, m->m_y);
     
-    if (k) { bestIndex = i; bestDeltaY = deltaY; bestDeltaL = deltaL; bestDeltaH = deltaH; }
+    /* The nearest point is matched. */
+    
+    if (dY < d) { d = dY; best = i; deltaY = dY; deltaL = dL; deltaH = dH; }
+    if (dL < d) { d = dL; best = i; deltaY = dY; deltaL = dL; deltaH = dH; }
+    if (dH < d) { d = dH; best = i; deltaY = dY; deltaL = dL; deltaH = dH; }
     //
     }
     
-    if (best <= PLOT_HANDLE_SIZE) {
-
-        return plot_behaviorMouseRegularMatch (x, p,
-                    bestIndex,
-                    bestDeltaY,
-                    bestDeltaL,
-                    bestDeltaH,
-                    m);
+    if (d > PLOT_HANDLE_SIZE) { return 0; }
+    else {
+        return plot_behaviorMouseMatch (x, p, best, deltaY, deltaL, deltaH, m); 
     }
-    
-    return 0;
 }
 
 static int plot_behaviorMouseSingle (t_plot *x, t_plotproperties *p, t_mouse *m)
 {
-    int a = m->m_x;
-    int b = m->m_y;
-    
-    t_float valueX = canvas_pixelToValueX (gpointer_getView (&plot_gpointer), a);
-    t_float valueY = canvas_pixelToValueY (gpointer_getView (&plot_gpointer), b);
+    t_float valueX = canvas_pixelToValueX (gpointer_getView (&plot_gpointer), m->m_x);
+    t_float valueY = canvas_pixelToValueY (gpointer_getView (&plot_gpointer), m->m_y);
     
     PD_ASSERT (plot_relativeX  == 0.0);
     PD_ASSERT (plot_relativeY  == 0.0);
@@ -893,8 +887,15 @@ static int plot_behaviorMouseSingle (t_plot *x, t_plotproperties *p, t_mouse *m)
     plot_fieldDescriptorY   = &x->x_fieldY;
 
     if (m->m_clicked) {
+
         array_setFloatAtIndexByDescriptor (p->p_array, i, &x->x_fieldY, valueY);
-        canvas_setMotionFunction (gpointer_getView (&plot_gpointer), NULL, (t_motionfn)plot_motion, a, b);
+        
+        canvas_setMotionFunction (gpointer_getView (&plot_gpointer), 
+            NULL, 
+            (t_motionfn)plot_motion, 
+            m->m_x, 
+            m->m_y);
+            
         gpointer_redraw (&plot_gpointer);
     }
     
@@ -921,9 +922,11 @@ static int plot_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t_float
         gpointer_setByCopy (&plot_gpointer, gp);
         gpointer_setAsWord (&plot_check, p.p_array, array_getElements (p.p_array));
         
+        /* Note that the garray case is handled differently. */
+        
         if (garray_isSingle (glist)) { return plot_behaviorMouseSingle (x, &p, m); }
         else {
-            return plot_behaviorMouseRegular (x, &p, m);
+            return plot_behaviorMouseGrab (x, &p, m);
         }
     }
     
