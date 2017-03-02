@@ -122,7 +122,7 @@ typedef struct _plotvalues {
     t_float     p_y;
     t_float     p_w;
     } t_plotvalues;
-    
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -194,7 +194,7 @@ t_float plot_getRelativeY (t_plotproperties *p, t_float baseY)
     return baseY + p->p_positionY;
 }
 
-static void plot_getValuesAtIndex (t_plotproperties *p,
+static void plot_getValues (t_plotproperties *p,
     t_float relativeX,
     t_float relativeY,
     int i,
@@ -417,7 +417,7 @@ static void plot_behaviorGetRectangle (t_gobj *z,
         t_float pixelY;
         t_float pixelW;
         
-        plot_getValuesAtIndex (&p, plot_getRelativeX (&p, baseX), plot_getRelativeY (&p, baseY), i, &c);
+        plot_getValues (&p, plot_getRelativeX (&p, baseX), plot_getRelativeY (&p, baseY), i, &c);
         
         pixelX = canvas_valueToPixelX (glist, c.p_x);
         pixelY = canvas_valueToPixelY (glist, c.p_y);
@@ -451,29 +451,28 @@ static void plot_behaviorVisibilityDrawPoint (t_plot *x,
     t_word   *w,
     t_symbol *color)
 {
-    int numberOfElements  = array_getSize (p->p_array);
-    t_float minimumValueY = PD_FLT_MAX;
-    t_float maximumValueY = -minimumValueY;
+    int size = array_getSize (p->p_array);
+    t_float minY = PD_FLT_MAX;
+    t_float maxY = -minY;
     int i;
     
-    for (i = 0; i < numberOfElements; i++) {
+    t_plotvalues here;
+    t_plotvalues next;
+    
+    plot_getValues (p, relativeX, relativeY, 0, &next);
+    plot_valuesToPixels (&next, glist, p->p_width);
+    
+    for (i = 0; i < size; i++) {
     //
-    t_plotvalues c;
+    here = next;
     
-    int pixelX, nextPixelX;
+    plot_getValues (p, relativeX, relativeY, i + 1, &next);
+    plot_valuesToPixels (&next, glist, p->p_width);
     
-    plot_getValuesAtIndex (p, relativeX, relativeY, i, &c);
-    
-    pixelX = (int)canvas_valueToPixelX (glist, c.p_x);
-    
-    minimumValueY = PD_MIN (minimumValueY, c.p_y);
-    maximumValueY = PD_MAX (maximumValueY, c.p_y);
-    
-    plot_getValuesAtIndex (p, relativeX, relativeY, i + 1, &c);
-        
-    nextPixelX = (int)canvas_valueToPixelX (glist, c.p_x);
+    minY = PD_MIN (minY, here.p_y);
+    maxY = PD_MAX (maxY, here.p_y);
 
-    if (p->p_fieldX || i == numberOfElements - 1 || pixelX != nextPixelX) {
+    if (p->p_fieldX || i == size - 1 || (int)here.p_x != (int)next.p_x) {
 
         sys_vGui (".x%lx.c create rectangle %d %d %d %d"
                         " -width %d"
@@ -481,17 +480,17 @@ static void plot_behaviorVisibilityDrawPoint (t_plot *x,
                         " -outline %s"
                         " -tags %lxPLOT\n",
                         canvas_getView (glist),
-                        (p->p_fieldX == NULL) ? pixelX : pixelX - 1,
-                        (int)canvas_valueToPixelY (glist, minimumValueY),
-                        (p->p_fieldX == NULL) ? nextPixelX : pixelX + 1,
-                        (int)canvas_valueToPixelY (glist, maximumValueY),
+                        (p->p_fieldX == NULL) ? (int)here.p_x : (int)here.p_x - 1,
+                        (int)minY,
+                        (p->p_fieldX == NULL) ? (int)next.p_x : (int)here.p_x + 1,
+                        (int)maxY,
                         (int)PD_MAX (0, p->p_width - 1.0),
                         color->s_name,
                         color->s_name,
                         w);
     
-        minimumValueY = (t_float)PD_FLT_MAX;
-        maximumValueY = (t_float)-minimumValueY;
+        minY = (t_float)PD_FLT_MAX;
+        maxY = (t_float)-minY;
     }
     //
     }
@@ -518,7 +517,7 @@ static void plot_behaviorVisibilityDrawPolygonFill (t_plot *x,
     //
     t_plotvalues c;
     
-    plot_getValuesAtIndex (p, relativeX, relativeY, i, &c);
+    plot_getValues (p, relativeX, relativeY, i, &c);
     
     pixelX = (int)canvas_valueToPixelX (glist, c.p_x);
     
@@ -608,7 +607,7 @@ static void plot_behaviorVisibilityDrawPolygonSegment (t_plot *x,
     //
     t_plotvalues c;
 
-    plot_getValuesAtIndex (p, relativeX, relativeY, i, &c);
+    plot_getValues (p, relativeX, relativeY, i, &c);
     
     pixelX = (int)canvas_valueToPixelX (glist, c.p_x);
     
@@ -665,7 +664,7 @@ static void plot_behaviorVisibilityChangedRecursive (t_plot *x,
     //
     t_gobj *y = NULL;
     
-    t_plotvalues c; plot_getValuesAtIndex (p, relativeX, relativeY, i, &c);
+    t_plotvalues c; plot_getValues (p, relativeX, relativeY, i, &c);
     
     for (y = view->gl_graphics; y; y = y->g_next) {
 
@@ -818,7 +817,7 @@ static int plot_behaviorMouseGrab (t_plot *x, t_plotproperties *p, t_mouse *m)
     //
     t_plotvalues c;
     
-    plot_getValuesAtIndex (p, plot_relativeX, plot_relativeY, i, &c);
+    plot_getValues (p, plot_relativeX, plot_relativeY, i, &c);
     
     plot_valuesToPixels (&c, gpointer_getView (&plot_gpointer), plot_width);
     
