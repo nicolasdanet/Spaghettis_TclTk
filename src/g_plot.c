@@ -88,17 +88,6 @@ static t_painterwidgetbehavior plot_widgetBehavior =
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define PLOT_MAX                1e20
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#define PLOT_CLIP(x)            (((x) > -PLOT_MAX && (x) < PLOT_MAX) ? (x) : 0)
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 #define PLOT_MAXIMUM_DRAWN      256
 #define PLOT_HANDLE_SIZE        8
 
@@ -449,8 +438,8 @@ static void plot_behaviorVisibilityChangedDrawPoint (t_plot *x,
     t_symbol *color)
 {
     int numberOfElements  = array_getSize (p->p_array);
-    t_float minimumValueY = (t_float)PLOT_MAX;
-    t_float maximumValueY = (t_float)-PLOT_MAX;
+    t_float minimumValueY = PD_FLT_MAX;
+    t_float maximumValueY = -minimumValueY;
     int i;
     
     for (i = 0; i < numberOfElements; i++) {
@@ -463,8 +452,8 @@ static void plot_behaviorVisibilityChangedDrawPoint (t_plot *x,
     
     pixelX = (int)canvas_valueToPixelX (glist, c.p_x);
     
-    minimumValueY = PD_MIN (minimumValueY, PLOT_CLIP (c.p_y));
-    maximumValueY = PD_MAX (maximumValueY, PLOT_CLIP (c.p_y));
+    minimumValueY = PD_MIN (minimumValueY, c.p_y);
+    maximumValueY = PD_MAX (maximumValueY, c.p_y);
     
     plot_getCoordinates (p, relativeX, relativeY, i + 1, &c);
         
@@ -487,8 +476,8 @@ static void plot_behaviorVisibilityChangedDrawPoint (t_plot *x,
                         color->s_name,
                         w);
     
-        minimumValueY = (t_float)PLOT_MAX;
-        maximumValueY = (t_float)-PLOT_MAX;
+        minimumValueY = (t_float)PD_FLT_MAX;
+        maximumValueY = (t_float)-minimumValueY;
     }
     //
     }
@@ -517,8 +506,6 @@ static void plot_behaviorVisibilityChangedDrawPolygonFill (t_plot *x,
     
     plot_getCoordinates (p, relativeX, relativeY, i, &c);
     
-    c.p_y = PLOT_CLIP (c.p_y);
-    c.p_w = PLOT_CLIP (c.p_w);
     pixelX = (int)canvas_valueToPixelX (glist, c.p_x);
     
     if (p->p_fieldX || pixelX != previousPixelX) {
@@ -609,7 +596,6 @@ static void plot_behaviorVisibilityChangedDrawPolygonSegment (t_plot *x,
 
     plot_getCoordinates (p, relativeX, relativeY, i, &c);
     
-    c.p_y = PLOT_CLIP (c.p_y);
     pixelX = (int)canvas_valueToPixelX (glist, c.p_x);
     
     if (p->p_fieldX || pixelX != previousPixelX) {
@@ -922,24 +908,23 @@ static int plot_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t_float
     t_plotproperties p;
     
     if (!plot_fetchProperties (x, gp, &p) && (p.p_visible != 0)) {
-    //
-    plot_stepX      = canvas_valueForOnePixelX (glist);
-    plot_stepY      = canvas_valueForOnePixelY (glist);
-    plot_relativeX  = plot_getRelativeX (&p, baseX);
-    plot_relativeY  = plot_getRelativeY (&p, baseY);
-    plot_incrementX = p.p_incrementX;
-    plot_width      = p.p_width;
-    plot_style      = p.p_style;
-    plot_fieldArray = &x->x_array;
+
+        plot_stepX      = canvas_valueForOnePixelX (glist);
+        plot_stepY      = canvas_valueForOnePixelY (glist);
+        plot_relativeX  = plot_getRelativeX (&p, baseX);
+        plot_relativeY  = plot_getRelativeY (&p, baseY);
+        plot_incrementX = p.p_incrementX;
+        plot_width      = p.p_width;
+        plot_style      = p.p_style;
+        plot_fieldArray = &x->x_array;
+            
+        gpointer_setByCopy (&plot_gpointer, gp);
+        gpointer_setAsWord (&plot_check, p.p_array, array_getElements (p.p_array));
         
-    gpointer_setByCopy (&plot_gpointer, gp);
-    gpointer_setAsWord (&plot_check, p.p_array, array_getElements (p.p_array));
-    
-    if (garray_isSingle (glist)) { return plot_behaviorMouseSingle (x, &p, m); }
-    else {
-        return plot_behaviorMouseRegular (x, &p, m);
-    }
-    //
+        if (garray_isSingle (glist)) { return plot_behaviorMouseSingle (x, &p, m); }
+        else {
+            return plot_behaviorMouseRegular (x, &p, m);
+        }
     }
     
     return 0;
