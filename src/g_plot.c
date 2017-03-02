@@ -760,35 +760,38 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int plot_behaviorMouseMatch (t_plot *x,
-    t_plotproperties *p,
-    int bestIndex,
-    int bestDeltaY,
-    int bestDeltaL,
-    int bestDeltaH,
-    t_mouse *m)
+static void plot_behaviorMouseThickness (t_plot *x, t_plotproperties *p, int deltaY, int deltaL, int deltaH)
 {
-    if (bestIndex >= 0) {
-    //
-    int i = bestIndex;
-    
     plot_thickness = PLOT_THICKNESS_NONE;
-    plot_direction = (t_float)1.0;
+    
+    /* Does it match the middle point, up or down? */
     
     if (p->p_fieldW) {
-        if (bestDeltaY < (PLOT_HANDLE_SIZE / 2)) { }
-        else if ((bestDeltaY < bestDeltaL) && (bestDeltaY < bestDeltaH)) { } 
-        else if (bestDeltaH < bestDeltaL) { plot_thickness = PLOT_THICKNESS_DOWN; }
+        if (deltaY < (PLOT_HANDLE_SIZE / 2)) { }
+        else if ((deltaY < deltaL) && (deltaY < deltaH)) { } 
+        else if (deltaH < deltaL) { plot_thickness = PLOT_THICKNESS_DOWN; }
         else {
             plot_thickness = PLOT_THICKNESS_UP;
         }
     }
+}
 
+static int plot_behaviorMouseMatch (t_plot *x,
+    t_plotproperties *p,
+    int i,
+    int deltaY, 
+    int deltaL,
+    int deltaH,
+    t_mouse *m)
+{
+    plot_behaviorMouseThickness (x, p, deltaY, deltaL, deltaH);
+    
     if (m->m_clicked) {
     //
     int a = m->m_x;
     int b = m->m_y;
     
+    plot_direction            = (t_float)1.0;
     plot_cumulativeX          = (t_float)0.0;
     plot_cumulativeY          = (t_float)0.0;
     plot_startX               = i;
@@ -818,10 +821,6 @@ static int plot_behaviorMouseMatch (t_plot *x,
     }
     
     return (plot_thickness ? CURSOR_THICKEN : CURSOR_CLICK);
-    //
-    }
-    
-    return 0;
 }
 
 static int plot_behaviorMouseGrab (t_plot *x, t_plotproperties *p, t_mouse *m)
