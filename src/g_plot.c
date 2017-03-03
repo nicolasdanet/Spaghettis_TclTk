@@ -514,77 +514,54 @@ static void plot_behaviorVisibilityDrawPolygonFill (t_plot *x,
     t_symbol *color)
 {
     int numberOfElements = array_getSize (p->p_array);
-    int coordinatesX[PLOT_MAXIMUM_DRAWN] = { 0 };     
-    int coordinatesL[PLOT_MAXIMUM_DRAWN] = { 0 };
-    int coordinatesH[PLOT_MAXIMUM_DRAWN] = { 0 };
+    int cX[PLOT_MAXIMUM_DRAWN] = { 0 };     
+    int cL[PLOT_MAXIMUM_DRAWN] = { 0 };
+    int cH[PLOT_MAXIMUM_DRAWN] = { 0 };
     int elementsDrawn = 0;
     int i;
     
-    int pixelX, previousPixelX = -PD_INT_MAX;
+    int previous = -PD_INT_MAX;
         
     for (i = 0; i < numberOfElements; i++) {
     //
     t_plotvalues c;
     
-    plot_getValuesAtIndex (p, relativeX, relativeY, i, &c);
+    plot_getPixelsAtIndex (p, relativeX, relativeY, i, glist, p->p_width, &c);
     
-    pixelX = (int)canvas_valueToPixelX (glist, c.p_x);
-    
-    if (p->p_fieldX || pixelX != previousPixelX) {
-    //
-    t_float pixelY = canvas_valueToPixelY (glist, c.p_y);
-    t_float pixelW = canvas_valueToPixelY (glist, c.p_y + c.p_w) - pixelY;
-    
-    pixelW = (t_float)PD_ABS (pixelW);
-    pixelW = (t_float)PD_MAX (pixelW, p->p_width - 1.0);
-
-    coordinatesX[elementsDrawn] = pixelX;
-    coordinatesL[elementsDrawn] = pixelY - pixelW;
-    coordinatesH[elementsDrawn] = pixelY + pixelW;
-    elementsDrawn++; 
-    
-    if (elementsDrawn >= PLOT_MAXIMUM_DRAWN) { break; }
-    //
+    if (p->p_fieldX || (int)c.p_x != previous) {
+        cX[elementsDrawn] = (int)(c.p_x);
+        cL[elementsDrawn] = (int)(c.p_y - c.p_w);
+        cH[elementsDrawn] = (int)(c.p_y + c.p_w);
+        if (++elementsDrawn >= PLOT_MAXIMUM_DRAWN) { PD_BUG; break; }
     }
 
-    previousPixelX = pixelX;
+    previous = (int)c.p_x;
     //
     }
     
-    if (elementsDrawn) {        /* Tk requires at least three points (i.e. two elements). */
+    if (elementsDrawn) {
     //
     t_heapstring *t = heapstring_new (0);
     
-    heapstring_addSprintf (t,       ".x%lx.c create polygon", canvas_getView (glist));
+    heapstring_addSprintf (t, ".x%lx.c create polygon", canvas_getView (glist));
   
-    if (elementsDrawn == 1) {
-        heapstring_addSprintf (t,   " %d %d", coordinatesX[0] - 1, coordinatesL[0]);
-        heapstring_addSprintf (t,   " %d %d", coordinatesX[0] + 1, coordinatesL[0]);
+    /* Tk requires at least three points (i.e. two elements). */
+    
+    if (elementsDrawn > 1) {
+        for (i = 0; i < elementsDrawn; i++)      { heapstring_addSprintf (t, " %d %d", cX[i], cL[i]); }
+        for (i = elementsDrawn - 1; i >= 0; i--) { heapstring_addSprintf (t, " %d %d", cX[i], cH[i]); }
+        
     } else {
-    //
-    for (i = 0; i < elementsDrawn; i++) {
-        heapstring_addSprintf (t,   " %d %d", coordinatesX[i], coordinatesL[i]);
-    }
-    //
+        heapstring_addSprintf (t, " %d %d %d %d", cX[0] - 1, cL[0], cX[0] + 1, cL[0]);
+        heapstring_addSprintf (t, " %d %d %d %d", cX[0] + 1, cH[0], cX[0] - 1, cH[0]);
     }
 
-    if (elementsDrawn == 1) {
-        heapstring_addSprintf (t,   " %d %d", coordinatesX[0] + 1, coordinatesH[0]);
-        heapstring_addSprintf (t,   " %d %d", coordinatesX[0] - 1, coordinatesH[0]);
-    } else { 
-    //
-    for (i = elementsDrawn - 1; i >= 0; i--) {
-        heapstring_addSprintf (t,   " %d %d", coordinatesX[i], coordinatesH[i]);
-    }
-    //
-    }
-    
-    heapstring_addSprintf (t,       " -fill %s", color->s_name);
-    heapstring_addSprintf (t,       " -outline %s", color->s_name);
+    heapstring_addSprintf (t, " -fill %s", color->s_name);
+    heapstring_addSprintf (t, " -outline %s", color->s_name);
 
     if (p->p_style == PLOT_CURVES) { heapstring_addSprintf (t, " -width 1 -smooth 1 -tags %lxPLOT\n", w); }
     else { 
-        heapstring_addSprintf (t,   " -width 1 -tags %lxPLOT\n", w);
+        heapstring_addSprintf (t, " -width 1 -tags %lxPLOT\n", w);
     }
     
     sys_gui (heapstring_getRaw (t));
