@@ -17,11 +17,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_class  *garray_class;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 static t_class  *plot_class;                            /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -373,8 +368,8 @@ static void plot_behaviorGetRectangleRecursive (t_plot *x,
     t_glist *view,
     t_array *array,
     int i,
-    t_float baseX,
-    t_float baseY,
+    t_float relativeX,
+    t_float relativeY,
     t_rectangle *r)
 {
     t_gobj *y = NULL;
@@ -389,7 +384,7 @@ static void plot_behaviorGetRectangleRecursive (t_plot *x,
             
             t_gpointer gp; GPOINTER_INIT (&gp);
             gpointer_setAsWord (&gp, array, array_getElementAtIndex (array, i));
-            (*behavior->w_fnPainterGetRectangle) (y, &gp, baseX, baseY, &t);
+            (*behavior->w_fnPainterGetRectangle) (y, &gp, relativeX, relativeY, &t);
             gpointer_unset (&gp);
             
             rectangle_boundingBoxAddRectangle (r, &t);
@@ -403,9 +398,7 @@ static void plot_behaviorGetRectangle (t_gobj *z,
     t_float baseY,
     t_rectangle *r)
 {
-    t_plot *x = (t_plot *)z;
-
-    t_glist *glist = gpointer_getView (gp);
+    t_plot *x = (t_plot *)z; t_glist *glist = gpointer_getView (gp);
         
     rectangle_setNothing (r);
     
@@ -418,27 +411,22 @@ static void plot_behaviorGetRectangle (t_gobj *z,
     //
     int i;
     
-    t_glist *view = template_getInstanceView (array_getTemplate (p.p_array));
+    t_glist *view = template_getInstanceViewIfPainters (array_getTemplate (p.p_array));
     
     for (i = 0; i < array_getSize (p.p_array); i += p.p_step) {
 
         t_plotvalues c;
+    
+        plot_getPixelsAtIndex (&p,
+            plot_getRelativeX (&p, baseX), 
+            plot_getRelativeY (&p, baseY),
+            i,
+            glist, 
+            p.p_width, 
+            &c);
         
-        t_float pixelX;
-        t_float pixelY;
-        t_float pixelW;
-        
-        plot_getValuesAtIndex (&p, plot_getRelativeX (&p, baseX), plot_getRelativeY (&p, baseY), i, &c);
-        
-        pixelX = canvas_valueToPixelX (glist, c.p_x);
-        pixelY = canvas_valueToPixelY (glist, c.p_y);
-        pixelW = canvas_valueToPixelY (glist, c.p_y + c.p_w) - pixelY;
-        
-        pixelW = (t_float)PD_ABS (pixelW);
-        pixelW = (t_float)PD_MAX (pixelW, p.p_width - 1.0);
-        
-        rectangle_boundingBoxAddPoint (r, pixelX, pixelY - pixelW);
-        rectangle_boundingBoxAddPoint (r, pixelX, pixelY + pixelW);
+        rectangle_boundingBoxAddPoint (r, c.p_x, c.p_y - c.p_w);
+        rectangle_boundingBoxAddPoint (r, c.p_x, c.p_y + c.p_w);
         
         if (view) {
             plot_behaviorGetRectangleRecursive (x, view, p.p_array, i, c.p_x, c.p_y, r);

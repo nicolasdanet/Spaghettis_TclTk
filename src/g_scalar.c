@@ -324,9 +324,8 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
 static int scalar_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 {
     t_scalar *x = cast_scalar (z);
-    
     t_template *template = scalar_getTemplate (x);
-    t_glist *view = template_getInstanceView (template);
+    t_glist *view = template_getInstanceViewIfPainters (template);
     
     if (view) {
     //

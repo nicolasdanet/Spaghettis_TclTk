@@ -311,7 +311,7 @@ void template_unregisterInstance (t_template *x, t_struct *o)
     pd_free (cast_pd (x));
 }
 
-t_glist *template_getInstanceView (t_template *x)
+static t_glist *template_getInstanceView (t_template *x)
 {
     PD_ASSERT (x);
     
