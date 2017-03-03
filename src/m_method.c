@@ -69,7 +69,7 @@ extern t_pd pd_objectMaker;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void pd_messageExecuteObject (t_pd *x, t_method f, int n, t_int *ai, t_float *af)
+static void method_executeObject (t_pd *x, t_method f, int n, t_int *ai, t_float *af)
 {
     switch (n) {
     //
@@ -98,7 +98,7 @@ static void pd_messageExecuteObject (t_pd *x, t_method f, int n, t_int *ai, t_fl
     }
 }
 
-static void pd_messageExecuteMaker (t_pd *x, t_method f, int n, t_int *ai, t_float *af)
+static void method_executeMaker (t_pd *x, t_method f, int n, t_int *ai, t_float *af)
 {
     t_pd *o = NULL;
 
@@ -131,15 +131,19 @@ static void pd_messageExecuteMaker (t_pd *x, t_method f, int n, t_int *ai, t_flo
     pd_newest = o;
 }
 
-static void pd_messageExecute (t_pd *x, t_method f, int n, t_int *ai, t_float *af)
+static void method_execute (t_pd *x, t_method f, int n, t_int *ai, t_float *af)
 {
-    if (x == &pd_objectMaker) { pd_messageExecuteMaker (x, f, n, ai, af); }
+    if (x == &pd_objectMaker) { method_executeMaker (x, f, n, ai, af); }
     else {
-        pd_messageExecuteObject (x, f, n, ai, af);
+        method_executeObject (x, f, n, ai, af);
     }
 }
 
-static t_error pd_messageSlots (t_pd *x, t_symbol *s, int argc, t_atom *argv)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static t_error method_typed (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_error err = PD_ERROR_NONE;
     
@@ -180,7 +184,10 @@ static t_error pd_messageSlots (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     return err;
 }
 
-static t_error pd_messageMethods (t_entry *m, t_pd *x, t_symbol *s, int argc, t_atom *argv)
+/* Note that A_FLOAT arguments are always passed at last. */
+/* The A_GIMME signature should always be prefered now. */
+
+static t_error method_untyped (t_entry *m, t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_atomtype t;
     t_method f = m->me_method;
@@ -217,7 +224,7 @@ static t_error pd_messageMethods (t_entry *m, t_pd *x, t_symbol *s, int argc, t_
                         }
                         n++; ip++; break;
                         
-    case A_FLOAT     :  if (!argc) { return PD_ERROR; }         /* Notice that break is missing. */
+    case A_FLOAT     :  if (!argc) { return PD_ERROR; }         /* Break is missing deliberately. */
     case A_DEFFLOAT  :  if (!argc) { *fp = (t_float)0.0; }
                         else {
                             if (IS_FLOAT (argv)) { *fp = GET_FLOAT (argv); }
@@ -245,7 +252,7 @@ static t_error pd_messageMethods (t_entry *m, t_pd *x, t_symbol *s, int argc, t_
     //
     }
 
-    pd_messageExecute (x, f, n, ai, af);
+    method_execute (x, f, n, ai, af);
     
     if (x == &pd_objectMaker) { 
     if (argc) { 
@@ -272,7 +279,7 @@ void pd_message (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     PD_ASSERT (s != &s_pointer || x == &pd_objectMaker);
     
     if (s == &s_bang || s == &s_float || s == &s_symbol || s == &s_list) {
-        err = pd_messageSlots (x, s, argc, argv);
+        err = method_typed (x, s, argc, argv);
         if (!err) { 
             return; 
         }  
@@ -285,7 +292,7 @@ void pd_message (t_pd *x, t_symbol *s, int argc, t_atom *argv)
             
         for (i = c->c_methodsSize, m = c->c_methods; i--; m++) {
             if (m->me_name == s) {
-                err = pd_messageMethods (m, x, s, argc, argv); 
+                err = method_untyped (m, x, s, argc, argv); 
                 if (!err) { return; } 
                 else {
                     break;
@@ -310,8 +317,8 @@ void pd_message (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 void pd_vMessage (t_pd *x, t_symbol *s, char *fmt, ...)
 {
     va_list ap;
-    t_atom arg[METHOD_MAXIMUM_ARGUMENTS];
-    t_atom *a = arg;
+    t_atom args[METHOD_MAXIMUM_ARGUMENTS];
+    t_atom *a = args;
     int n = 0;
     char *p = fmt;
     int k = 1; 
@@ -323,11 +330,11 @@ void pd_vMessage (t_pd *x, t_symbol *s, char *fmt, ...)
         if (n >= METHOD_MAXIMUM_ARGUMENTS) { PD_BUG; break; }
         
         switch (*p++) {
-            case 'f'    : SET_FLOAT   (a, (t_float)va_arg (ap, double));    break;
-            case 's'    : SET_SYMBOL  (a, va_arg (ap, t_symbol *));         break;
-            case 'i'    : SET_FLOAT   (a, (t_float)va_arg (ap, t_int));     break;       
-            case 'p'    : SET_POINTER (a, va_arg (ap, t_gpointer *));       break;
-            default     : k = 0;
+            case 'f' : SET_FLOAT   (a, (t_float)va_arg (ap, double));   break;
+            case 's' : SET_SYMBOL  (a, va_arg (ap, t_symbol *));        break;
+            case 'i' : SET_FLOAT   (a, (t_float)va_arg (ap, t_int));    break;       
+            case 'p' : SET_POINTER (a, va_arg (ap, t_gpointer *));      break;
+            default  : k = 0;
         }
         
         if (k) { a++; n++; }
@@ -335,7 +342,7 @@ void pd_vMessage (t_pd *x, t_symbol *s, char *fmt, ...)
     
     va_end (ap);
     
-    pd_message (x, s, n, arg);
+    pd_message (x, s, n, args);
 }
 
 // -----------------------------------------------------------------------------------------------------------

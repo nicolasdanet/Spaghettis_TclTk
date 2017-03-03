@@ -158,7 +158,7 @@ void message_release (void)
     sym1 = sym2->s_next;
     
     if (sym2->s_thing) {
-        pd_free (sym2->s_thing);        /* For example templates and empty bindlists. */
+        pd_free (sym2->s_thing);        /* Empty bindlists. */
     }
     
     if (!message_isStaticSymbol (sym2)) { PD_MEMORY_FREE (sym2->s_name); PD_MEMORY_FREE (sym2); }
