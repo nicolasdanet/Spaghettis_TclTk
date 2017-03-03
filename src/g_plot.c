@@ -112,11 +112,11 @@ typedef struct _plotproperties {
     int         p_visible;
     } t_plotproperties;
 
-typedef struct _plotvalues {
+typedef struct _plotpixels {
     t_float     p_x;
     t_float     p_y;
     t_float     p_w;
-    } t_plotvalues;
+    } t_plotpixels;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -156,7 +156,7 @@ static t_error plot_fetchProperties (t_plot *x, t_gpointer *gp, t_plotproperties
     
     size = array_getSize (p->p_array); 
     
-    p->p_step = (size <= 1000 ? 1 : (int)sqrt ((double)size));
+    p->p_step = (size <= 1000 ? 1 : (int)sqrt ((double)size));  /* Waveforms for instance. */
     
     if (field_isVariable (&x->x_fieldX)) { p->p_fieldX = field_getVariableName (&x->x_fieldX); }
     if (field_isVariable (&x->x_fieldY)) { p->p_fieldY = field_getVariableName (&x->x_fieldY); }
@@ -189,64 +189,60 @@ static t_float plot_getRelativeY (t_plotproperties *p, t_float baseY)
     return baseY + p->p_positionY;
 }
 
-static void plot_valuesToPixels (t_plotvalues *c, t_glist *view, t_float w)
-{
-    t_float pixelX = canvas_valueToPixelX (view, c->p_x);
-    t_float pixelY = canvas_valueToPixelY (view, c->p_y);
-    t_float pixelW = canvas_valueToPixelY (view, c->p_y + c->p_w) - pixelY;
-
-    pixelW = (t_float)PD_ABS (pixelW);
-    pixelW = (t_float)PD_MAX (pixelW, w - 1.0);
-    
-    c->p_x = pixelX;
-    c->p_y = pixelY;
-    c->p_w = pixelW;
-}
-
-static void plot_getValuesAtIndex (t_plotproperties *p,
-    t_float relativeX,
-    t_float relativeY,
-    int i,
-    t_plotvalues *c)
-{
-    t_float valueX;
-    t_float valueY;
-    t_float valueW;
-
-    int size = array_getSize (p->p_array);
-    
-    if (p->p_fieldX) { 
-        valueX = (i < size) ? array_getFloatAtIndex (p->p_array, i, p->p_fieldX) : (t_float)0.0; 
-    } else { 
-        valueX = i * p->p_incrementX;
-    }
-    
-    if (p->p_fieldY) {
-        valueY = (i < size) ? array_getFloatAtIndex (p->p_array, i, p->p_fieldY) : (t_float)0.0; 
-    } else { 
-        valueY = (t_float)0.0;
-    }
-    
-    if (p->p_fieldW) { 
-        valueW = (i < size) ? array_getFloatAtIndex (p->p_array, i, p->p_fieldW) : (t_float)0.0; 
-    } else {
-        valueW = (t_float)0.0;
-    }
-    
-    c->p_x = relativeX + valueX;
-    c->p_y = relativeY + valueY;
-    c->p_w = valueW;
-}
-
 static void plot_getPixelsAtIndex (t_plotproperties *p,
     t_float relativeX,
     t_float relativeY,
     int i, 
     t_glist *view, 
-    t_float w, 
-    t_plotvalues *c) 
+    t_float maximumWidth, 
+    t_plotpixels *c) 
 {
-    plot_getValuesAtIndex (p, relativeX, relativeY, i, c); plot_valuesToPixels (c, view, w);
+    /* Fetch values for the geometry fields. */
+    
+    {
+        t_float valueX;
+        t_float valueY;
+        t_float valueW;
+
+        int size = array_getSize (p->p_array);
+        
+        if (p->p_fieldX) { 
+            valueX = (i < size) ? array_getFloatAtIndex (p->p_array, i, p->p_fieldX) : (t_float)0.0; 
+        } else { 
+            valueX = i * p->p_incrementX;
+        }
+        
+        if (p->p_fieldY) {
+            valueY = (i < size) ? array_getFloatAtIndex (p->p_array, i, p->p_fieldY) : (t_float)0.0; 
+        } else { 
+            valueY = (t_float)0.0;
+        }
+        
+        if (p->p_fieldW) { 
+            valueW = (i < size) ? array_getFloatAtIndex (p->p_array, i, p->p_fieldW) : (t_float)0.0; 
+        } else {
+            valueW = (t_float)0.0;
+        }
+        
+        c->p_x = relativeX + valueX;
+        c->p_y = relativeY + valueY;
+        c->p_w = valueW;
+    }
+    
+    /* Convert to pixels. */
+    
+    {
+        t_float pixelX = canvas_valueToPixelX (view, c->p_x);
+        t_float pixelY = canvas_valueToPixelY (view, c->p_y);
+        t_float pixelW = canvas_valueToPixelY (view, c->p_y + c->p_w) - pixelY;
+
+        pixelW = (t_float)PD_ABS (pixelW);
+        pixelW = (t_float)PD_MAX (pixelW, maximumWidth - 1.0);
+        
+        c->p_x = pixelX;
+        c->p_y = pixelY;
+        c->p_w = pixelW;
+    }
 }
     
 // -----------------------------------------------------------------------------------------------------------
@@ -415,7 +411,7 @@ static void plot_behaviorGetRectangle (t_gobj *z,
     
     for (i = 0; i < array_getSize (p.p_array); i += p.p_step) {
 
-        t_plotvalues c;
+        t_plotpixels c;
     
         plot_getPixelsAtIndex (&p,
             plot_getRelativeX (&p, baseX), 
@@ -455,8 +451,8 @@ static void plot_behaviorVisibilityDrawPoint (t_plot *x,
     t_float maxY = -minY;
     int i;
     
-    t_plotvalues here;
-    t_plotvalues next;
+    t_plotpixels here;
+    t_plotpixels next;
     
     plot_getPixelsAtIndex (p, relativeX, relativeY, 0, glist, p->p_width, &next);
     
@@ -512,7 +508,7 @@ static void plot_behaviorVisibilityDrawPolygonFill (t_plot *x,
         
     for (i = 0; i < size; i++) {
     //
-    t_plotvalues c;
+    t_plotpixels c;
     
     plot_getPixelsAtIndex (p, relativeX, relativeY, i, glist, p->p_width, &c);
     
@@ -579,7 +575,7 @@ static void plot_behaviorVisibilityDrawPolygonSegment (t_plot *x,
     
     for (i = 0; i < size; i++) {
     //
-    t_plotvalues c;
+    t_plotpixels c;
 
     plot_getPixelsAtIndex (p, relativeX, relativeY, i, glist, p->p_width, &c);
     
@@ -628,7 +624,7 @@ static void plot_behaviorVisibilityChangedRecursive (t_plot *x,
     //
     t_gobj *y = NULL;
     
-    t_plotvalues c; plot_getPixelsAtIndex (p, relativeX, relativeY, i, view, p->p_width, &c);
+    t_plotpixels c; plot_getPixelsAtIndex (p, relativeX, relativeY, i, view, p->p_width, &c);
     
     for (y = view->gl_graphics; y; y = y->g_next) {
 
@@ -706,7 +702,7 @@ static void plot_behaviorMouseThickness (t_plot *x, t_plotproperties *p, int del
 {
     plot_thickness = PLOT_THICKNESS_NONE;
     
-    /* Does it match the middle point, up or down? */
+    /* Does it match the middle, up or down point? */
     
     if (p->p_fieldW) {
         if (deltaY < (PLOT_HANDLE_SIZE / 2)) { }
@@ -779,7 +775,7 @@ static int plot_behaviorMouseGrab (t_plot *x, t_plotproperties *p, t_mouse *m)
     
     for (i = 0; i < array_getSize (p->p_array); i += p->p_step) {
     //
-    t_plotvalues c;
+    t_plotpixels c;
     
     plot_getPixelsAtIndex (p, 
         plot_relativeX, 
