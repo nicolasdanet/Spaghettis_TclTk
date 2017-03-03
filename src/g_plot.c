@@ -513,7 +513,7 @@ static void plot_behaviorVisibilityDrawPolygonFill (t_plot *x,
     t_word   *w,
     t_symbol *color)
 {
-    int numberOfElements = array_getSize (p->p_array);
+    int size = array_getSize (p->p_array);
     int cX[PLOT_MAXIMUM_DRAWN] = { 0 };     
     int cL[PLOT_MAXIMUM_DRAWN] = { 0 };
     int cH[PLOT_MAXIMUM_DRAWN] = { 0 };
@@ -522,7 +522,7 @@ static void plot_behaviorVisibilityDrawPolygonFill (t_plot *x,
     
     int previous = -PD_INT_MAX;
         
-    for (i = 0; i < numberOfElements; i++) {
+    for (i = 0; i < size; i++) {
     //
     t_plotvalues c;
     
@@ -581,57 +581,47 @@ static void plot_behaviorVisibilityDrawPolygonSegment (t_plot *x,
 {
     t_heapstring *t = heapstring_new (0);
     
-    int numberOfElements = array_getSize (p->p_array);
+    int size = array_getSize (p->p_array);
     int elementsDrawn = 0;
     int i;
     
-    int pixelY, pixelX, previousPixelX = -PD_INT_MAX;
+    int previous = -PD_INT_MAX;
         
     heapstring_addSprintf (t, ".x%lx.c create line", canvas_getView (glist));
     
-    for (i = 0; i < numberOfElements; i++) {
+    for (i = 0; i < size; i++) {
     //
     t_plotvalues c;
 
-    plot_getValuesAtIndex (p, relativeX, relativeY, i, &c);
+    plot_getPixelsAtIndex (p, relativeX, relativeY, i, glist, p->p_width, &c);
     
-    pixelX = (int)canvas_valueToPixelX (glist, c.p_x);
-    
-    if (p->p_fieldX || pixelX != previousPixelX) {
-        pixelY = (int)canvas_valueToPixelY (glist, c.p_y);
-        heapstring_addSprintf (t, " %d %d", pixelX, pixelY);
+    if (p->p_fieldX || (int)c.p_x != previous) {
+        heapstring_addSprintf (t, " %d %d", (int)c.p_x, (int)c.p_y);
         elementsDrawn++;
-        previousPixelX = pixelX;
+        previous = (int)c.p_x;
     }
     //
     }
     
-    if (elementsDrawn > 1) {    /* Tk line requires at least two points. */
+    /* Tk requires at least three points (i.e. two elements). */
+    
+    if (elementsDrawn > 1) {
+    //
+    heapstring_addSprintf (t, " -width %d", (int)(PD_MAX (0, p->p_width - 1.0)));
+    heapstring_addSprintf (t, " -fill %s", color->s_name);
 
-        heapstring_addSprintf (t, " -width %d", (int)(PD_MAX (0, p->p_width - 1.0)));
-        heapstring_addSprintf (t, " -fill %s", color->s_name);
-
-        if (p->p_style == PLOT_CURVES) { heapstring_addSprintf (t, " -smooth 1 -tags %lxPLOT\n", w); }
-        else {
-        //
+    if (p->p_style == PLOT_CURVES) { heapstring_addSprintf (t, " -smooth 1 -tags %lxPLOT\n", w); }
+    else {
         heapstring_addSprintf (t, " -tags %lxPLOT\n", w);
-        //
-        }
+    }
 
-        sys_gui (heapstring_getRaw (t));
+    sys_gui (heapstring_getRaw (t));
+    //
+    } else {
+        plot_behaviorVisibilityDrawPoint (x, p, relativeX, relativeY, glist, w, color);
     }
     
     heapstring_free (t);
-    
-    if (elementsDrawn == 1) {
-
-        plot_behaviorVisibilityDrawPoint (x, p,
-            relativeX,
-            relativeY,
-            glist,
-            w,
-            color);
-    }
 }
 
 static void plot_behaviorVisibilityChangedRecursive (t_plot *x,
