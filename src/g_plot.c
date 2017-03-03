@@ -184,17 +184,31 @@ static t_error plot_fetchProperties (t_plot *x, t_gpointer *gp, t_plotproperties
     return PD_ERROR;
 }
 
-t_float plot_getRelativeX (t_plotproperties *p, t_float baseX)
+static t_float plot_getRelativeX (t_plotproperties *p, t_float baseX)
 {
     return baseX + p->p_positionX;
 }
 
-t_float plot_getRelativeY (t_plotproperties *p, t_float baseY)
+static t_float plot_getRelativeY (t_plotproperties *p, t_float baseY)
 {
     return baseY + p->p_positionY;
 }
 
-static void plot_getValues (t_plotproperties *p,
+static void plot_valuesToPixels (t_plotvalues *c, t_glist *view, t_float w)
+{
+    t_float pixelX = canvas_valueToPixelX (view, c->p_x);
+    t_float pixelY = canvas_valueToPixelY (view, c->p_y);
+    t_float pixelW = canvas_valueToPixelY (view, c->p_y + c->p_w) - pixelY;
+
+    pixelW = (t_float)PD_ABS (pixelW);
+    pixelW = (t_float)PD_MAX (pixelW, w - 1.0);
+    
+    c->p_x = pixelX;
+    c->p_y = pixelY;
+    c->p_w = pixelW;
+}
+
+static void plot_getValuesAtIndex (t_plotproperties *p,
     t_float relativeX,
     t_float relativeY,
     int i,
@@ -229,20 +243,17 @@ static void plot_getValues (t_plotproperties *p,
     c->p_w = valueW;
 }
 
-static void plot_valuesToPixels (t_plotvalues *c, t_glist *view, t_float w)
+static void plot_getPixelsAtIndex (t_plotproperties *p,
+    t_float relativeX,
+    t_float relativeY,
+    int i, 
+    t_glist *view, 
+    t_float w, 
+    t_plotvalues *c) 
 {
-    t_float pixelX = canvas_valueToPixelX (view, c->p_x);
-    t_float pixelY = canvas_valueToPixelY (view, c->p_y);
-    t_float pixelW = canvas_valueToPixelY (view, c->p_y + c->p_w) - pixelY;
-
-    pixelW = (t_float)PD_ABS (pixelW);
-    pixelW = (t_float)PD_MAX (pixelW, w - 1.0);
-    
-    c->p_x = pixelX;
-    c->p_y = pixelY;
-    c->p_w = pixelW;
+    plot_getValuesAtIndex (p, relativeX, relativeY, i, c); plot_valuesToPixels (c, view, w);
 }
-
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -417,7 +428,7 @@ static void plot_behaviorGetRectangle (t_gobj *z,
         t_float pixelY;
         t_float pixelW;
         
-        plot_getValues (&p, plot_getRelativeX (&p, baseX), plot_getRelativeY (&p, baseY), i, &c);
+        plot_getValuesAtIndex (&p, plot_getRelativeX (&p, baseX), plot_getRelativeY (&p, baseY), i, &c);
         
         pixelX = canvas_valueToPixelX (glist, c.p_x);
         pixelY = canvas_valueToPixelY (glist, c.p_y);
@@ -459,15 +470,13 @@ static void plot_behaviorVisibilityDrawPoint (t_plot *x,
     t_plotvalues here;
     t_plotvalues next;
     
-    plot_getValues (p, relativeX, relativeY, 0, &next);
-    plot_valuesToPixels (&next, glist, p->p_width);
+    plot_getPixelsAtIndex (p, relativeX, relativeY, 0, glist, p->p_width, &next);
     
     for (i = 0; i < size; i++) {
     //
     here = next;
     
-    plot_getValues (p, relativeX, relativeY, i + 1, &next);
-    plot_valuesToPixels (&next, glist, p->p_width);
+    plot_getPixelsAtIndex (p, relativeX, relativeY, i + 1, glist, p->p_width, &next);
     
     minY = PD_MIN (minY, here.p_y);
     maxY = PD_MAX (maxY, here.p_y);
@@ -517,7 +526,7 @@ static void plot_behaviorVisibilityDrawPolygonFill (t_plot *x,
     //
     t_plotvalues c;
     
-    plot_getValues (p, relativeX, relativeY, i, &c);
+    plot_getValuesAtIndex (p, relativeX, relativeY, i, &c);
     
     pixelX = (int)canvas_valueToPixelX (glist, c.p_x);
     
@@ -607,7 +616,7 @@ static void plot_behaviorVisibilityDrawPolygonSegment (t_plot *x,
     //
     t_plotvalues c;
 
-    plot_getValues (p, relativeX, relativeY, i, &c);
+    plot_getValuesAtIndex (p, relativeX, relativeY, i, &c);
     
     pixelX = (int)canvas_valueToPixelX (glist, c.p_x);
     
@@ -664,7 +673,7 @@ static void plot_behaviorVisibilityChangedRecursive (t_plot *x,
     //
     t_gobj *y = NULL;
     
-    t_plotvalues c; plot_getValues (p, relativeX, relativeY, i, &c);
+    t_plotvalues c; plot_getPixelsAtIndex (p, relativeX, relativeY, i, view, p->p_width, &c);
     
     for (y = view->gl_graphics; y; y = y->g_next) {
 
@@ -817,9 +826,13 @@ static int plot_behaviorMouseGrab (t_plot *x, t_plotproperties *p, t_mouse *m)
     //
     t_plotvalues c;
     
-    plot_getValues (p, plot_relativeX, plot_relativeY, i, &c);
-    
-    plot_valuesToPixels (&c, gpointer_getView (&plot_gpointer), plot_width);
+    plot_getPixelsAtIndex (p, 
+        plot_relativeX, 
+        plot_relativeY, 
+        i,
+        gpointer_getView (&plot_gpointer),
+        plot_width, 
+        &c);
     
     /* Compute the distance between the mouse and this point. */
     /* Up and down width is also considered. */
