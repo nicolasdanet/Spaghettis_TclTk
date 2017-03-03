@@ -223,7 +223,7 @@ t_glist *cast_glistChecked                  (t_pd *x);
 
 #define inlet_new2(x, type)                 inlet_new (cast_object ((x)), cast_pd ((x)), (type), sym__inlet2)
 #define inlet_new3(x, type)                 inlet_new (cast_object ((x)), cast_pd ((x)), (type), sym__inlet3)
-                                                                                                                                
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 

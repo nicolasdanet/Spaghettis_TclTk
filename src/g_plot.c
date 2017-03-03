@@ -270,7 +270,7 @@ void plot_float (t_plot *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void plot_motionHorizontalVertical (t_array *array)
+static void plot_motionHorizontal (t_array *array)
 {
     if (plot_fieldDescriptorX) {
         array_setFloatAtIndexByDescriptor (array, 
@@ -325,30 +325,28 @@ static void plot_motion (void *dummy, t_float deltaX, t_float deltaY, t_float mo
     t_symbol *s = field_getVariableName (plot_fieldArray);
     
     if (gpointer_hasField (&plot_gpointer, s) && gpointer_fieldIsArrayAndValid (&plot_gpointer, s)) {
-    //
-    t_array *array = gpointer_getArray (&plot_gpointer, s);
-    
-    plot_cumulativeX += deltaX * plot_stepX;
-    plot_cumulativeY += deltaY * plot_stepY * (plot_thickness ? plot_direction : (t_float)1.0);
-    
-    if (plot_fieldDescriptorX)      { plot_motionHorizontalVertical (array); }
-    else if (plot_fieldDescriptorY) { plot_motionVertical (array); }
-    
-    if (gpointer_getTemplateIdentifier (&plot_gpointer) != sym___TEMPLATE__float__dash__array) {
-    //
-    PD_ASSERT (gpointer_isScalar (&plot_gpointer));
-    
-    template_notify (gpointer_getTemplate (&plot_gpointer), 
-        gpointer_getView (&plot_gpointer), 
-        gpointer_getScalar (&plot_gpointer),
-        sym_change,
-        0,
-        NULL);
-    //
-    }
-    
-    gpointer_redraw (&plot_gpointer);
-    //
+
+        t_array *array = gpointer_getArray (&plot_gpointer, s);
+        
+        plot_cumulativeX += deltaX * plot_stepX;
+        plot_cumulativeY += deltaY * plot_stepY * (plot_thickness ? plot_direction : (t_float)1.0);
+        
+        if (plot_fieldDescriptorX)      { plot_motionHorizontal (array); }
+        else if (plot_fieldDescriptorY) { plot_motionVertical (array); }
+        
+        if (gpointer_getTemplateIdentifier (&plot_gpointer) != sym___TEMPLATE__float__dash__array) {
+
+            PD_ASSERT (gpointer_isScalar (&plot_gpointer));
+            
+            template_notify (gpointer_getTemplate (&plot_gpointer), 
+                gpointer_getView (&plot_gpointer), 
+                gpointer_getScalar (&plot_gpointer),
+                sym_change,
+                0,
+                NULL);
+        }
+        
+        gpointer_redraw (&plot_gpointer);
     }
     //
     }
