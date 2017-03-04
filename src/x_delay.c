@@ -88,10 +88,12 @@ static void delay_unit (t_delay *x, t_symbol *unitName, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Note that float arguments are always passed at last. */
-
-static void *delay_new (t_symbol *unitName, t_float f, t_float unit)
+static void *delay_new (t_symbol *s, int argc, t_atom *argv)
 {
+    t_float f          = atom_getFloatAtIndex (0, argc, argv);
+    t_float unit       = atom_getFloatAtIndex (1, argc, argv);
+    t_symbol *unitName = atom_getSymbolAtIndex (2, argc, argv);
+    
     t_delay *x = (t_delay *)pd_new (delay_class);
     
     x->x_outlet = outlet_new (cast_object (x), &s_bang);
@@ -124,12 +126,10 @@ void delay_setup (void)
             (t_method)delay_free,
             sizeof (t_delay),
             CLASS_DEFAULT,
-            A_DEFFLOAT,
-            A_DEFFLOAT,
-            A_DEFSYMBOL,
+            A_GIMME,
             A_NULL);
             
-    class_addCreator ((t_newmethod)delay_new, sym_del, A_DEFFLOAT, A_DEFFLOAT, A_DEFSYMBOL, A_NULL);
+    class_addCreator ((t_newmethod)delay_new, sym_del, A_GIMME, A_NULL);
     
     class_addBang (c, (t_method)delay_bang);
     class_addFloat (c, (t_method)delay_float);
@@ -140,7 +140,7 @@ void delay_setup (void)
     
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)delay_unit,       sym_tempo,  A_FLOAT, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)delay_unit,       sym_tempo,      A_FLOAT, A_SYMBOL, A_NULL);
         
     #endif
     
