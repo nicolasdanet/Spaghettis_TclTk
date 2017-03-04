@@ -270,7 +270,7 @@ static void toggle_float (t_toggle *x, t_float f)
     toggle_set (x, f); if (x->x_gui.iem_goThrough) { toggle_out (x); }
 }
 
-static void toggle_click (t_toggle *x, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
+static void toggle_click (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
 {
     toggle_bang (x);
 }
@@ -334,7 +334,7 @@ static void toggle_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle 
 
 static int toggle_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 {
-    if (m->m_clicked) { toggle_click ((t_toggle *)z, m->m_x, m->m_y, m->m_shift, 0, m->m_alt); }
+    if (m->m_clicked) { toggle_click ((t_toggle *)z, NULL, 0, NULL); }
     
     return 1;
 }

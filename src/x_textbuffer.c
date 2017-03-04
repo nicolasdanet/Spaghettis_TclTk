@@ -57,7 +57,7 @@ t_buffer *textbuffer_getBuffer (t_textbuffer *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void textbuffer_click (t_textbuffer *x, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
+void textbuffer_click (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (x->tb_guiconnect) {
         sys_vGui ("wm deiconify .x%lx\n", x);

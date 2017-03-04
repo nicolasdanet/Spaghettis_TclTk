@@ -102,7 +102,7 @@ static void message_list (t_message *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void message_click (t_message *x, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
+void message_click (t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (canvas_isMapped (x->m_owner)) {
     //

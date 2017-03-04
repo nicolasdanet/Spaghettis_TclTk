@@ -134,23 +134,13 @@ int text_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 {
     t_object *x = cast_object (z);
     
-    t_atom a[5];
-    
-    SET_FLOAT (a + 0, (t_float)m->m_x);
-    SET_FLOAT (a + 1, (t_float)m->m_y);
-    SET_FLOAT (a + 2, (t_float)m->m_shift);
-    SET_FLOAT (a + 3, (t_float)m->m_ctrl);
-    SET_FLOAT (a + 4, (t_float)m->m_alt);
-    // SET_FLOAT (a + 5, (t_float)m->m_dbl);
-    
     int k = object_isAtom (x) || object_isMessage (x);
     
-    if (!k) { 
-        k = (object_isObject (x) && class_hasMethod (pd_class (x), sym_click)); 
-    }
-    
-    if (k) { 
-        if (m->m_clicked) { pd_message (cast_pd (x), sym_click, 5, a); }
+    if (k || (object_isObject (x) && class_hasMethod (pd_class (x), sym_click))) { 
+        if (m->m_clicked) {
+            pd_message (cast_pd (x), sym_click, mouse_argc (m), mouse_argv (m)); 
+        }
+        
         return 1;
     }
     

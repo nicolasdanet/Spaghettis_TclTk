@@ -241,15 +241,15 @@ static void canvas_proceedMouseClick (t_glist *glist, int positionX, int positio
     
     if (gobj_hit (y, glist, positionX, positionY, &t)) {
     
-        t_mouse m = {
-                        positionX,
-                        positionY,
-                        (modifier & MODIFIER_SHIFT),
-                        (modifier & MODIFIER_CTRL),
-                        (modifier & MODIFIER_ALT),
-                        (modifier & MODIFIER_DOUBLE),
-                        clicked
-                    };
+        t_mouse m;
+        
+        m.m_x       = positionX;
+        m.m_y       = positionY;
+        m.m_shift   = (modifier & MODIFIER_SHIFT);
+        m.m_ctrl    = (modifier & MODIFIER_CTRL);
+        m.m_alt     = (modifier & MODIFIER_ALT);
+        m.m_dbl     = (modifier & MODIFIER_DOUBLE);
+        m.m_clicked = clicked;
     
         k = gobj_mouse (y, glist, &m);
                 
@@ -677,7 +677,7 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
     }
 }
 
-void canvas_click (t_glist *glist, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
+void canvas_click (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     canvas_visible (glist, 1);
 }

@@ -192,11 +192,7 @@ t_glist *cast_glistChecked                  (t_pd *x);
     
 #define class_addClick(c, m)                class_addMethod ((c), (t_method)(m), \
                                                 sym_click, \
-                                                A_FLOAT, \
-                                                A_FLOAT, \
-                                                A_FLOAT, \
-                                                A_FLOAT, \
-                                                A_FLOAT, \
+                                                A_GIMME, \
                                                 A_NULL);
 
 #define class_addMotion(c, m)               class_addMethod ((c), (t_method)(m), \

@@ -464,8 +464,11 @@ static void dial_list (t_dial *x, t_symbol *s, int argc, t_atom *argv)
     if (argc && IS_FLOAT (argv)) { dial_float (x, atom_getFloatAtIndex (0, argc, argv)); }
 }
 
-static void dial_click (t_dial *x, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
+static void dial_click (t_dial *x, t_symbol *s, int argc, t_atom *argv)
 {
+    t_float a = atom_getFloatAtIndex (0, argc, argv);
+    t_float b = atom_getFloatAtIndex (1, argc, argv);
+    
     canvas_setMotionFunction (x->x_gui.iem_owner, cast_gobj (x), (t_motionfn)dial_motion, a, b);
 }
 
@@ -589,9 +592,7 @@ static void dial_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r
 
 static int dial_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 {
-    if (m->m_clicked) {
-        dial_click ((t_dial *)z, m->m_x, m->m_y, m->m_shift, 0, m->m_alt);
-    }
+    if (m->m_clicked) { dial_click ((t_dial *)z, NULL, mouse_argc (m), mouse_argv (m)); }
     
     return 1;
 }

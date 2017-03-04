@@ -413,8 +413,10 @@ static void radio_float (t_radio *x, t_float f)
     }
 }
 
-static void radio_click (t_radio *x, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
+static void radio_click (t_radio *x, t_symbol *s, int argc, t_atom *argv)
 {
+    t_float a = atom_getFloatAtIndex (0, argc, argv);
+    t_float b = atom_getFloatAtIndex (1, argc, argv);
     t_float f;
     
     if (x->x_isVertical) { 
@@ -506,9 +508,7 @@ static void radio_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *
 
 static int radio_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 {
-    if (m->m_clicked) {
-        radio_click ((t_radio *)z, m->m_x, m->m_y, m->m_shift, 0, m->m_alt);
-    }
+    if (m->m_clicked) { radio_click ((t_radio *)z, NULL, mouse_argc (m), mouse_argv (m)); }
     
     return 1;
 }

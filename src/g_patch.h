@@ -231,13 +231,7 @@ int             text_getPixelY                      (t_object *x, t_glist *glist
 #pragma mark -
 
 void            message_makeObject                  (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-
-void            message_click                       (t_message *x, 
-                                                        t_float a,
-                                                        t_float b,
-                                                        t_float shift,
-                                                        t_float ctrl,
-                                                        t_float alt);
+void            message_click                       (t_message *x, t_symbol *s, int argc, t_atom *argv);
                                                             
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -249,12 +243,7 @@ void            gatom_makeObject                    (t_glist *glist,
                                                         int argc,
                                                         t_atom *argv);
 
-void            gatom_click                         (t_gatom *x,
-                                                        t_float a,
-                                                        t_float b,
-                                                        t_float shift,
-                                                        t_float ctrl,
-                                                        t_float alt);
+void            gatom_click                         (t_gatom *x, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

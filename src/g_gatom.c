@@ -211,10 +211,12 @@ static void gatom_symbol (t_gatom *x, t_symbol *s)
     gatom_bang (x);
 }
 
-void gatom_click (t_gatom *x, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
+void gatom_click (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (IS_FLOAT (&x->a_atom)) {
     //
+    t_float a = atom_getFloatAtIndex (0, argc, argv);
+    t_float b = atom_getFloatAtIndex (1, argc, argv);
     canvas_setMotionFunction (x->a_owner, cast_gobj (x), (t_motionfn)gatom_motion, a, b);
     //
     }

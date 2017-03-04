@@ -134,15 +134,10 @@ typedef struct _atomoutlet {
 
 void        textbuffer_init                 (t_textbuffer *x);
 void        textbuffer_free                 (t_textbuffer *x);
-void        textbuffer_click                (t_textbuffer *x,
-                                                t_float a,
-                                                t_float b,
-                                                t_float shift,
-                                                t_float ctrl,
-                                                t_float alt);
 
 void        textbuffer_close                (t_textbuffer *x);
 void        textbuffer_update               (t_textbuffer *x);
+void        textbuffer_click                (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv);
 void        textbuffer_read                 (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv);
 void        textbuffer_write                (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv);
 void        textbuffer_addLine              (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv);

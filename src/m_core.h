@@ -37,23 +37,24 @@ typedef void (*t_motionfn)              (void *z, t_float deltaX, t_float deltaY
 #pragma mark -
 
 typedef struct _mouse {
-    int     m_x;
-    int     m_y;
-    int     m_shift;
-    int     m_ctrl;
-    int     m_alt;
-    int     m_dbl;
-    int     m_clicked;
+    int         m_x;
+    int         m_y;
+    int         m_shift;
+    int         m_ctrl;
+    int         m_alt;
+    int         m_dbl;
+    int         m_clicked;
+    t_atom      m_atoms[7];
     } t_mouse;
 
 typedef struct _rectangle {
-    int     rect_topLeftX;
-    int     rect_topLeftY;
-    int     rect_bottomRightX;
-    int     rect_bottomRightY;
-    int     rect_isNothing;
+    int         rect_topLeftX;
+    int         rect_topLeftY;
+    int         rect_bottomRightX;
+    int         rect_bottomRightY;
+    int         rect_isNothing;
     } t_rectangle;
-    
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -144,6 +145,28 @@ struct _pdinstance {
     t_clock                     *pd_polling;
     t_clock                     *pd_autorelease;
     };
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline int mouse_argc (t_mouse *m)
+{
+    return 7;
+}
+
+static inline t_atom *mouse_argv (t_mouse *m)
+{
+    SET_FLOAT (m->m_atoms + 0, m->m_x);
+    SET_FLOAT (m->m_atoms + 1, m->m_y);
+    SET_FLOAT (m->m_atoms + 2, m->m_shift);
+    SET_FLOAT (m->m_atoms + 3, m->m_ctrl);
+    SET_FLOAT (m->m_atoms + 4, m->m_alt);
+    SET_FLOAT (m->m_atoms + 5, m->m_dbl);
+    SET_FLOAT (m->m_atoms + 6, m->m_clicked);
+    
+    return m->m_atoms;
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

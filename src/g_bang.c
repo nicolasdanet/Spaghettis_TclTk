@@ -289,7 +289,7 @@ static void bng_anything (t_bng *x, t_symbol *s, int argc, t_atom *argv)
     bng_bang (x);
 }
 
-static void bng_click (t_bng *x, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
+static void bng_click (t_bng *x, t_symbol *s, int argc, t_atom *argv)
 {
     bng_updateFlash (x);
     bng_out (x);
@@ -364,9 +364,7 @@ static void bng_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
 
 static int bng_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 {
-    if (m->m_clicked) {
-        bng_click ((t_bng *)z, m->m_x, m->m_y, m->m_shift, 0, m->m_alt);
-    }
+    if (m->m_clicked) { bng_click ((t_bng *)z, NULL, 0, NULL); }
     
     return 1;
 }
