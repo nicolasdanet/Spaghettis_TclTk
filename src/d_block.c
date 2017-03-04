@@ -102,8 +102,11 @@ static void block_float (t_block *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void block_set (t_block *x, t_float f1, t_float f2, t_float f3)
+static void block_set (t_block *x, t_symbol *s, int argc, t_atom *argv)
 {
+    t_float f1      = atom_getFloatAtIndex (0, argc, argv);
+    t_float f2      = atom_getFloatAtIndex (1, argc, argv);
+    t_float f3      = atom_getFloatAtIndex (2, argc, argv);
     int blockSize   = (int)PD_MAX (0.0, f1);
     int overlap     = (int)PD_MAX (1.0, f2);
     int upsample    = 1;
@@ -191,7 +194,7 @@ t_int *block_performEpilog (t_int *w)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *block_new (t_float blockSize, t_float overlap, t_float upsample)
+static void *block_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_block *x = (t_block *)pd_new (block_class);
     
@@ -201,14 +204,14 @@ static void *block_new (t_float blockSize, t_float overlap, t_float upsample)
     x->bk_isSwitchObject    = 0;
     x->bk_isSwitchedOn      = 1;
     
-    block_set (x, blockSize, overlap, upsample);
+    block_set (x, s, argc, argv);
     
     return x;
 }
 
-static void *block_newSwitch (t_float blockSize, t_float overlap, t_float upsample)
+static void *block_newSwitch (t_symbol *s, int argc, t_atom *argv)
 {
-    t_block *x = block_new (blockSize, overlap, upsample);
+    t_block *x = block_new (s, argc, argv);
     
     x->bk_isSwitchObject    = 1;
     x->bk_isSwitchedOn      = 0;
@@ -229,22 +232,18 @@ void block_tilde_setup (void)
             NULL,
             sizeof (t_block),
             CLASS_DEFAULT, 
-            A_DEFFLOAT,
-            A_DEFFLOAT,
-            A_DEFFLOAT,
+            A_GIMME,
             A_NULL);
             
     class_addCreator ((t_newmethod)block_newSwitch,
             sym_switch__tilde__, 
-            A_DEFFLOAT,
-            A_DEFFLOAT,
-            A_DEFFLOAT,
+            A_GIMME,
             A_NULL);
             
     class_addDSP (c, (t_method)block_dsp);
     class_addFloat (c, (t_method)block_float);
     
-    class_addMethod (c, (t_method)block_set, sym_set, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)block_set, sym_set, A_GIMME, A_NULL);
     
     block_class = c;
 }
