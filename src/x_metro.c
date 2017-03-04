@@ -109,10 +109,12 @@ static void metro_unit (t_metro *x, t_symbol *unitName, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Note that float arguments are always passed at last. */
-
-static void *metro_new (t_symbol *unitName, t_float f, t_float unit)
+static void *metro_new (t_symbol *s, int argc, t_atom *argv)
 {
+    t_float f          = atom_getFloatAtIndex (0, argc, argv);
+    t_float unit       = atom_getFloatAtIndex (1, argc, argv);
+    t_symbol *unitName = atom_getSymbolAtIndex (2, argc, argv);
+        
     t_metro *x = (t_metro *)pd_new (metro_class);
     
     x->x_reentrantStart = 0;
@@ -148,9 +150,7 @@ void metro_setup (void)
             (t_method)metro_free,
             sizeof (t_metro),
             CLASS_DEFAULT,
-            A_DEFFLOAT,
-            A_DEFFLOAT,
-            A_DEFSYMBOL,
+            A_GIMME,
             A_NULL);
             
     class_addBang (c, (t_method)metro_bang);
@@ -162,7 +162,7 @@ void metro_setup (void)
 
     #if PD_WITH_LEGACY 
     
-    class_addMethod (c, (t_method)metro_unit,       sym_tempo,  A_FLOAT, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)metro_unit,       sym_tempo,      A_FLOAT, A_SYMBOL, A_NULL);
     
     #endif
         
