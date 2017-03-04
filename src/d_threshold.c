@@ -54,12 +54,13 @@ static void threshold_tilde_tick (t_threshold_tilde *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void threshold_tilde_set (t_threshold_tilde *x, 
-    t_float high, 
-    t_float highDead, 
-    t_float low, 
-    t_float lowDead)
+static void threshold_tilde_set (t_threshold_tilde *x, t_symbol *s, int argc, t_atom *argv)
 {
+    t_float high      = atom_getFloatAtIndex (0, argc, argv);
+    t_float highDead  = atom_getFloatAtIndex (1, argc, argv);
+    t_float low       = atom_getFloatAtIndex (2, argc, argv);
+    t_float lowDead   = atom_getFloatAtIndex (3, argc, argv);
+    
     x->x_high         = high;
     x->x_highDeadTime = highDead;
     x->x_low          = PD_MIN (low, high);
@@ -126,7 +127,7 @@ void threshold_tilde_dsp (t_threshold_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *threshold_tilde_new (t_float high, t_float highDead, t_float low, t_float lowDead)
+static void *threshold_tilde_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_threshold_tilde *x = (t_threshold_tilde *)pd_new (threshold_tilde_class);
     
@@ -136,7 +137,7 @@ static void *threshold_tilde_new (t_float high, t_float highDead, t_float low, t
     
     inlet_new2 (x, &s_float);
 
-    threshold_tilde_set (x, high, highDead, low, lowDead);
+    threshold_tilde_set (x, s, argc, argv);
     
     return x;
 }
@@ -159,24 +160,15 @@ void threshold_tilde_setup (void)
             (t_method)threshold_tilde_free,
             sizeof (t_threshold_tilde),
             CLASS_DEFAULT,
-            A_DEFFLOAT,
-            A_DEFFLOAT,
-            A_DEFFLOAT,
-            A_DEFFLOAT,
+            A_GIMME,
             A_NULL);
             
     CLASS_SIGNAL (c, t_threshold_tilde, x_f);
     
     class_addDSP (c, (t_method)threshold_tilde_dsp);
         
-    class_addMethod (c, (t_method)threshold_tilde_state, sym__inlet2, A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)threshold_tilde_set,
-        sym_set,
-        A_FLOAT,
-        A_FLOAT,
-        A_FLOAT,
-        A_FLOAT,
-        A_NULL);
+    class_addMethod (c, (t_method)threshold_tilde_state, sym__inlet2,   A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)threshold_tilde_set,   sym_set,       A_GIMME, A_NULL);
         
     threshold_tilde_class = c;
 }
