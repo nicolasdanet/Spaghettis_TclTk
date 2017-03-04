@@ -471,6 +471,10 @@ static void dial_click (t_dial *x, t_symbol *s, int argc, t_atom *argv)
     canvas_setMotionFunction (x->x_gui.iem_owner, cast_gobj (x), (t_motionfn)dial_motion, a, b);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void dial_motion (t_dial *x, t_float deltaX, t_float deltaY, t_float modifier)
 {
     int old = x->x_position;
@@ -820,7 +824,6 @@ void dial_setup (void)
     class_addFloat (c, (t_method)dial_float);
     class_addList (c, (t_method)dial_list);
     class_addClick (c, (t_method)dial_click);
-    class_addMotion (c, (t_method)dial_motion);
 
     class_addMethod (c, (t_method)dial_loadbang,            sym_loadbang,           A_NULL);
     class_addMethod (c, (t_method)dial_initialize,          sym_initialize,         A_FLOAT, A_NULL);

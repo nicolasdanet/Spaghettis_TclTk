@@ -175,31 +175,9 @@ t_glist *cast_glistChecked                  (t_pd *x);
                                                 A_CANT, \
                                                 A_NULL);
                                                 
-#define class_addKey(c, m)                  class_addMethod ((c), (t_method)(m), \
-                                                sym_key, \
-                                                A_GIMME, \
-                                                A_NULL);
-
-#define class_addMouse(c, m)                class_addMethod ((c), (t_method)(m), \
-                                                sym_mouse, \
-                                                A_GIMME, \
-                                                A_NULL);
-                                                
-#define class_addMouseUp(c, m)              class_addMethod ((c), (t_method)(m), \
-                                                sym_mouseup, \
-                                                A_GIMME, \
-                                                A_NULL);
-    
 #define class_addClick(c, m)                class_addMethod ((c), (t_method)(m), \
                                                 sym_click, \
                                                 A_GIMME, \
-                                                A_NULL);
-
-#define class_addMotion(c, m)               class_addMethod ((c), (t_method)(m), \
-                                                sym_motion, \
-                                                A_FLOAT, \
-                                                A_FLOAT, \
-                                                A_FLOAT, \
                                                 A_NULL);
 
 #define class_addPolling(c, m)              class_addMethod ((c), (t_method)(m), \

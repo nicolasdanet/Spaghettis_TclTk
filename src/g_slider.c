@@ -427,6 +427,10 @@ static void slider_click (t_slider *x, t_symbol *s, int argc, t_atom *argv)
     slider_out (x);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void slider_motion (t_slider *x, t_float deltaX, t_float deltaY, t_float modifier)
 {
     int old = x->x_position;
@@ -779,7 +783,6 @@ void slider_setup (void)
     class_addBang (c, (t_method)slider_bang);
     class_addFloat (c, (t_method)slider_float);
     class_addClick (c, (t_method)slider_click);
-    class_addMotion (c, (t_method)slider_motion);
     
     class_addMethod (c, (t_method)slider_loadbang,          sym_loadbang,               A_NULL);
     class_addMethod (c, (t_method)slider_initialize,        sym_initialize,             A_FLOAT, A_NULL);

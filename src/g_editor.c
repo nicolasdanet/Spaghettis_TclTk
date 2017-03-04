@@ -681,45 +681,47 @@ void canvas_click (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     canvas_visible (glist, 1);
 }
 
-void canvas_motion (t_glist *glist, t_float positionX, t_float positionY, t_float modifier)
-{ 
-    if (!glist->gl_editor) { return; }
-    else {
+void canvas_motion (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    if (glist->gl_editor) {
     //
+    int a = atom_getFloatAtIndex (0, argc, argv);
+    int b = atom_getFloatAtIndex (1, argc, argv);
+    int m = atom_getFloatAtIndex (2, argc, argv);
+        
     int action = glist->gl_editor->e_action;
+    int deltaX = a - glist->gl_editor->e_previousX;
+    int deltaY = b - glist->gl_editor->e_previousY;
     
-    int deltaX = positionX - glist->gl_editor->e_previousX;
-    int deltaY = positionY - glist->gl_editor->e_previousY;
-    
-    canvas_setLastMotionCoordinates (glist, positionX, positionY);
+    canvas_setLastMotionCoordinates (glist, a, b);
     
     if (action == ACTION_MOVE) {
         clock_unset (glist->gl_editor->e_clock);
         clock_delay (glist->gl_editor->e_clock, 5.0);
-        glist->gl_editor->e_newX = positionX;
-        glist->gl_editor->e_newY = positionY;
+        glist->gl_editor->e_newX = a;
+        glist->gl_editor->e_newY = b;
     
     } else if (action == ACTION_CONNECT) {
-        canvas_makeLineStart (glist, positionX, positionY);
+        canvas_makeLineStart (glist, a, b);
         
     } else if (action == ACTION_REGION)  {
-        canvas_selectingByLassoStart (glist, positionX, positionY);
+        canvas_selectingByLassoStart (glist, a, b);
         
     } else if (action == ACTION_PASS)    {
         PD_ASSERT (glist->gl_editor->e_fnMotion);
-        (*glist->gl_editor->e_fnMotion) (cast_pd (glist->gl_editor->e_grabbed), deltaX, deltaY, modifier);
-        glist->gl_editor->e_previousX = positionX;
-        glist->gl_editor->e_previousY = positionY;
+        (*glist->gl_editor->e_fnMotion) (cast_pd (glist->gl_editor->e_grabbed), deltaX, deltaY, m);
+        glist->gl_editor->e_previousX = a;
+        glist->gl_editor->e_previousY = b;
         
     } else if (action == ACTION_DRAG)    {
         t_boxtext *text = glist->gl_editor->e_selectedText;
         if (text) { boxtext_mouse (text, deltaX, deltaY, BOXTEXT_DRAG); }
                 
     } else if (action == ACTION_RESIZE)  {
-        canvas_motionResize (glist, positionX, positionY);
+        canvas_motionResize (glist, a, b);
 
     } else {
-        canvas_proceedMouse (glist, (int)positionX, (int)positionY, (int)modifier, 0);
+        canvas_proceedMouse (glist, a, b, m, 0);
     }
     //
     }

@@ -839,11 +839,12 @@ void canvas_setup (void)
     class_addCreator ((t_newmethod)subpatch_new, sym_pd, A_DEFSYMBOL, A_NULL);
     
     class_addDSP (c, (t_method)canvas_dsp);
-    class_addKey (c, (t_method)canvas_key);
     class_addClick (c, (t_method)canvas_click);
-    class_addMotion (c, (t_method)canvas_motion);
-    class_addMouse (c, (t_method)canvas_mouse);
-    class_addMouseUp (c, (t_method)canvas_mouseUp);
+    
+    class_addMethod (c, (t_method)canvas_key,                   sym_key,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_motion,                sym_motion,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_mouse,                 sym_mouse,          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_mouseUp,               sym_mouseup,        A_GIMME, A_NULL);
 
     class_addMethod (c, (t_method)canvas_window,
         sym_window,
@@ -853,9 +854,9 @@ void canvas_setup (void)
         A_FLOAT,
         A_NULL);
                                                 
-    class_addMethod (c, (t_method)canvas_coords,            sym_coords,         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_restore,           sym_restore,        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_width,             sym_f,              A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_coords,                sym_coords,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_restore,               sym_restore,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_width,                 sym_f,              A_GIMME, A_NULL);
     
     class_addMethod (c, (t_method)canvas_connect,
         sym_connect,

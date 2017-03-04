@@ -298,11 +298,7 @@ t_glist         *canvas_new                             (void *dummy, t_symbol *
 void            canvas_free                             (t_glist *glist);
 
 void            canvas_click                            (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_motion                           (t_glist *glist,
-                                                            t_float positionX,
-                                                            t_float positionY,
-                                                            t_float modifier);
-
+void            canvas_motion                           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_mouse                            (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_mouseUp                          (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 
