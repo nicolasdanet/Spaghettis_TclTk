@@ -728,30 +728,30 @@ void canvas_motion (t_glist *glist, t_float positionX, t_float positionY, t_floa
 
 void canvas_mouse (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    t_float a = atom_getFloatAtIndex (0, argc, argv);
-    t_float b = atom_getFloatAtIndex (1, argc, argv);
-    t_float m = atom_getFloatAtIndex (2, argc, argv);
+    int a = (int)atom_getFloatAtIndex (0, argc, argv);
+    int b = (int)atom_getFloatAtIndex (1, argc, argv);
+    int m = (int)atom_getFloatAtIndex (2, argc, argv);
 
-    if (glist->gl_editor) { canvas_proceedMouse (glist, (int)a, (int)b, (int)m, 1); } 
+    if (glist->gl_editor) { canvas_proceedMouse (glist, a, b, m, 1); } 
 }
 
-void canvas_mouseUp (t_glist *glist, t_float positionX, t_float positionY)
+void canvas_mouseUp (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    if (!glist->gl_editor) { return; }
-    else {
+    int a = (int)atom_getFloatAtIndex (0, argc, argv);
+    int b = (int)atom_getFloatAtIndex (1, argc, argv);
+    
+    if (glist->gl_editor) {
     //
     int action = glist->gl_editor->e_action;
     
-    if (action == ACTION_CONNECT) {
-        canvas_makeLineEnd (glist, (int)positionX, (int)positionY);
-        
-    } else if (action == ACTION_REGION) {
-        canvas_selectingByLassoEnd (glist, (int)positionX, (int)positionY);
-        
-    } else if (action == ACTION_MOVE) {
-        if (canvas_getNumberOfSelectedObjects (glist) == 1) {
-            gobj_activated (glist->gl_editor->e_selectedObjects->sel_what, glist, 1);
-        }
+    if (action == ACTION_CONNECT)     { canvas_makeLineEnd (glist, a, b); }
+    else if (action == ACTION_REGION) { canvas_selectingByLassoEnd (glist, a, b); }
+    else if (action == ACTION_MOVE)   {
+    //
+    if (canvas_getNumberOfSelectedObjects (glist) == 1) {
+        gobj_activated (glist->gl_editor->e_selectedObjects->sel_what, glist, 1);
+    }
+    //
     }
 
     glist->gl_editor->e_action = ACTION_NONE;

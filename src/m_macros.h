@@ -187,8 +187,7 @@ t_glist *cast_glistChecked                  (t_pd *x);
                                                 
 #define class_addMouseUp(c, m)              class_addMethod ((c), (t_method)(m), \
                                                 sym_mouseup, \
-                                                A_FLOAT, \
-                                                A_FLOAT, \
+                                                A_GIMME, \
                                                 A_NULL);
     
 #define class_addClick(c, m)                class_addMethod ((c), (t_method)(m), \
