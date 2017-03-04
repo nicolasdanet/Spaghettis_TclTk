@@ -134,26 +134,23 @@ int text_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 {
     t_object *x = cast_object (z);
     
-    t_float f1 = (t_float)m->m_x;
-    t_float f2 = (t_float)m->m_y;
-    t_float f3 = (t_float)m->m_shift;
-    t_float f4 = (t_float)m->m_ctrl;
-    t_float f5 = (t_float)m->m_alt;
+    t_atom a[5];
     
-    if (object_isObject (x)) {
-        if (class_hasMethod (pd_class (x), sym_click)) {
-        //
-        if (m->m_clicked) { pd_vMessage (cast_pd (x), sym_click, "fffff", f1, f2, f3, f4, f5); }
-        return 1;
-        //
-        }
-        
-    } else if (object_isAtom (x)) {
-        if (m->m_clicked) { gatom_click ((t_gatom *)x, f1, f2, f3, f4, f5); }
-        return 1;
-        
-    } else if (object_isMessage (x)) {
-        if (m->m_clicked) { message_click ((t_message *)x, f1, f2, f3, f4, f5); }
+    SET_FLOAT (a + 0, (t_float)m->m_x);
+    SET_FLOAT (a + 1, (t_float)m->m_y);
+    SET_FLOAT (a + 2, (t_float)m->m_shift);
+    SET_FLOAT (a + 3, (t_float)m->m_ctrl);
+    SET_FLOAT (a + 4, (t_float)m->m_alt);
+    // SET_FLOAT (a + 5, (t_float)m->m_dbl);
+    
+    int k = object_isAtom (x) || object_isMessage (x);
+    
+    if (!k) { 
+        k = (object_isObject (x) && class_hasMethod (pd_class (x), sym_click)); 
+    }
+    
+    if (k) { 
+        if (m->m_clicked) { pd_message (cast_pd (x), sym_click, 5, a); }
         return 1;
     }
     
