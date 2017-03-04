@@ -726,12 +726,13 @@ void canvas_motion (t_glist *glist, t_float positionX, t_float positionY, t_floa
     }
 }
 
-void canvas_mouse (t_glist *glist, t_float positionX, t_float positionY, t_float modifier)
+void canvas_mouse (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    if (!glist->gl_editor) { return; } 
-    else {
-        canvas_proceedMouse (glist, (int)positionX, (int)positionY, (int)modifier, 1);
-    }
+    t_float a = atom_getFloatAtIndex (0, argc, argv);
+    t_float b = atom_getFloatAtIndex (1, argc, argv);
+    t_float m = atom_getFloatAtIndex (2, argc, argv);
+
+    if (glist->gl_editor) { canvas_proceedMouse (glist, (int)a, (int)b, (int)m, 1); } 
 }
 
 void canvas_mouseUp (t_glist *glist, t_float positionX, t_float positionY)
