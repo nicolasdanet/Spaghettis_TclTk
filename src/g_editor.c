@@ -760,11 +760,21 @@ void canvas_mouseUp (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-void canvas_window (t_glist *glist, t_float a, t_float b, t_float c, t_float d)
+void canvas_window (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    rectangle_set (&glist->gl_geometry, a, b, c, d);
+    if (argc == 4) {
+    //
+    rectangle_set (&glist->gl_geometry,
+        atom_getFloat (argv + 0),
+        atom_getFloat (argv + 1),
+        atom_getFloat (argv + 2),
+        atom_getFloat (argv + 3));
+    
+    /* Redraw a GOP opened in its own window (required for graph arrays). */
     
     if (canvas_canHaveWindow (glist) && canvas_isGraph (glist)) { canvas_redraw (glist); }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

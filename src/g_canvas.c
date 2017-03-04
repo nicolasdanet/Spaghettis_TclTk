@@ -845,15 +845,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_motion,                sym_motion,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_mouse,                 sym_mouse,          A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_mouseUp,               sym_mouseup,        A_GIMME, A_NULL);
-
-    class_addMethod (c, (t_method)canvas_window,
-        sym_window,
-        A_FLOAT,
-        A_FLOAT,
-        A_FLOAT, 
-        A_FLOAT,
-        A_NULL);
-                                                
+    class_addMethod (c, (t_method)canvas_window,                sym_window,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_coords,                sym_coords,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_restore,               sym_restore,        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_width,                 sym_f,              A_GIMME, A_NULL);
