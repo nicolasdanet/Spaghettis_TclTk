@@ -616,37 +616,43 @@ static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_fromPopupDialog (t_glist *glist, t_float action, t_float positionX, t_float positionY)
+static void canvas_fromPopupDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
+    if (argc == 3) {
+    //
+    int k = (int)atom_getFloat (argv + 0);
+    int a = (int)atom_getFloat (argv + 1);
+    int b = (int)atom_getFloat (argv + 2);
+    
     t_gobj *y = NULL;
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
     //
     t_rectangle t;
     
-    if (gobj_hit (y, glist, positionX, positionY, &t)) {
+    if (gobj_hit (y, glist, a, b, &t)) {
     //
-    if (action == 0) {                                                                  /* Properties. */
+    if (k == 0) {                                                                  /* Properties. */
         if (class_hasPropertiesFunction (pd_class (y))) {
             (*class_getPropertiesFunction (pd_class (y))) (y, glist); return;
         }
     } 
-    if (action == 1) {                                                                  /* Open. */
+    if (k == 1) {                                                                  /* Open. */
         if (class_hasMethod (pd_class (y), sym_open)) {
             pd_vMessage (cast_pd (y), sym_open, ""); return;
         }
     }
-    if (action == 2) {                                                                  /* Help. */
+    if (k == 2) {                                                                  /* Help. */
     //
     char *directory = NULL;
     char name[PD_STRING] = { 0 };
     t_error err = PD_ERROR_NONE;
     
     if (pd_class (y) == canvas_class && canvas_isRoot (cast_glist (y))) {
-        int argc = buffer_size (object_getBuffer (cast_object (y)));
-        t_atom *argv = buffer_atoms (object_getBuffer (cast_object (y)));
-        if (!(err = (argc < 1))) {
-            atom_toString (argv, name, PD_STRING);
+        int ac = buffer_size (object_getBuffer (cast_object (y)));
+        t_atom *av = buffer_atoms (object_getBuffer (cast_object (y)));
+        if (!(err = (ac < 1))) {
+            atom_toString (av, name, PD_STRING);
             directory = environment_getDirectoryAsString (canvas_getEnvironment (cast_glist (y)));
         }
         
@@ -665,7 +671,9 @@ static void canvas_fromPopupDialog (t_glist *glist, t_float action, t_float posi
     //
     }
     
-    if (action == 0) { canvas_functionProperties (cast_gobj (glist), NULL); }
+    if (k == 0) { canvas_functionProperties (cast_gobj (glist), NULL); }
+    //
+    }
 }
 
 static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -905,13 +913,7 @@ void canvas_setup (void)
         
     class_addMethod (c, (t_method)canvas_bounds,                sym_bounds,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_fromArrayDialog,       sym__arraydialog,   A_GIMME, A_NULL);
-        
-    class_addMethod (c, (t_method)canvas_fromPopupDialog,
-        sym__popupdialog,
-        A_FLOAT,
-        A_FLOAT,
-        A_FLOAT,
-        A_NULL);
+    class_addMethod (c, (t_method)canvas_fromPopupDialog,       sym__popupdialog,   A_GIMME, A_NULL);
         
     class_addMethod (c, (t_method)canvas_fromDialog,
         sym__canvasdialog,
