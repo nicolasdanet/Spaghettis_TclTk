@@ -93,8 +93,14 @@ static void canvas_makeIemObject (t_glist *glist, t_symbol *name)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_fromArrayDialog (t_glist *glist, t_symbol *name, t_float size, t_float flags)
+void canvas_fromArrayDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
+    if (argc == 3) {
+    //
+    t_symbol *name = atom_getSymbol (argv + 0);
+    t_float size   = atom_getFloat (argv + 1);
+    t_float flags  = atom_getFloat (argv + 2);
+    
     t_float n = (t_float)PD_MAX (1.0, size);
     int positionX = 0;
     int positionY = 0;
@@ -118,9 +124,9 @@ void canvas_fromArrayDialog (t_glist *glist, t_symbol *name, t_float size, t_flo
     garray_makeObject (g, dollar_fromHash (name), n, flags);
     
     canvas_dirty (glist, 1);
+    //
+    }
 }
-
-// array1 100 float 3
 
 void canvas_makeArray (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {

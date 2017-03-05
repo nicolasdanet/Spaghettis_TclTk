@@ -904,13 +904,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_saveToFile,            sym_savetofile,     A_GIMME, A_NULL);
         
     class_addMethod (c, (t_method)canvas_bounds,                sym_bounds,         A_GIMME, A_NULL);
-    
-    class_addMethod (c, (t_method)canvas_fromArrayDialog,
-        sym__arraydialog,
-        A_SYMBOL,
-        A_FLOAT,
-        A_FLOAT,
-        A_NULL);
+    class_addMethod (c, (t_method)canvas_fromArrayDialog,       sym__arraydialog,   A_GIMME, A_NULL);
         
     class_addMethod (c, (t_method)canvas_fromPopupDialog,
         sym__popupdialog,
