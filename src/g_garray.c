@@ -660,13 +660,19 @@ void garray_functionProperties (t_garray *x)
     guistub_new (cast_pd (x), (void *)x, t);
 }
 
-void garray_fromDialog (t_garray *x, t_symbol *name, t_float size, t_float flags)
+void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_symbol *newName    = dollar_fromHash (name);
-    int newSize          = (int)PD_MAX (1.0, size);
-    int save             = (((int)flags & 1) != 0);
-    int newStyle         = (((int)flags & 6) >> 1);
-    int oldStyle         = (int)scalar_getFloat (x->x_scalar, sym_style);
+    if (argc == 3) {
+    //
+    t_symbol *name = atom_getSymbol (argv + 0);
+    t_float size   = atom_getFloat (argv + 1);
+    t_float flags  = atom_getFloat (argv + 2);
+    
+    t_symbol *newName = dollar_fromHash (name);
+    int newSize       = (int)PD_MAX (1.0, size);
+    int save          = (((int)flags & 1) != 0);
+    int newStyle      = (((int)flags & 6) >> 1);
+    int oldStyle      = (int)scalar_getFloat (x->x_scalar, sym_style);
 
     PD_ASSERT (newSize > 0);
     
@@ -692,6 +698,8 @@ void garray_fromDialog (t_garray *x, t_symbol *name, t_float size, t_float flags
     garray_setSaveWithParent (x, save);
     garray_redraw (x);
     canvas_dirty (x->x_owner, 1);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -792,13 +800,7 @@ void garray_setup (void)
     class_addMethod (c, (t_method)garray_write,         sym_write,          A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)garray_resize,        sym_resize,         A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)garray_bounds,        sym_bounds,         A_GIMME, A_NULL);
-        
-    class_addMethod (c, (t_method)garray_fromDialog,
-        sym__arraydialog,
-        A_SYMBOL,
-        A_FLOAT,
-        A_FLOAT,
-        A_NULL);
+    class_addMethod (c, (t_method)garray_fromDialog,    sym__arraydialog,   A_GIMME, A_NULL);
         
     #if PD_WITH_LEGACY
     
