@@ -30,10 +30,6 @@ typedef struct _editor {
     t_buffer            *e_buffer;
     t_clock             *e_clock;
     t_outconnect        *e_selectedLineConnection;
-    int                 e_selectedLineIndexOfObjectOut;
-    int                 e_selectedLineIndexOfOutlet;
-    int                 e_selectedLineIndexOfObjectIn;
-    int                 e_selectedLineIndexOfInlet;
     t_motionfn          e_fnMotion;
     int                 e_previousX;
     int                 e_previousY;
@@ -42,6 +38,7 @@ typedef struct _editor {
     int                 e_action;
     int                 e_isTextDirty;
     int                 e_isSelectedline;
+    t_atom              e_selectedLine[4];
     } t_editor;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -303,13 +300,7 @@ void            canvas_mouse                            (t_glist *glist, t_symbo
 void            canvas_mouseUp                          (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_window                           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_connect                          (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-
-void            canvas_disconnect                       (t_glist *glist,
-                                                            t_float indexOfObjectOut,
-                                                            t_float indexOfOutlet,
-                                                            t_float indexOfObjectIn,
-                                                            t_float indexOfInlet);
-                                                            
+void            canvas_disconnect                       (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_key                              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_restore                          (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_loadbang                         (t_glist *glist);

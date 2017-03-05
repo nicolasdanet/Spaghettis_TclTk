@@ -167,15 +167,8 @@ void canvas_removeSelectedObjects (t_glist *glist)
 void canvas_removeSelectedLine (t_glist *glist)
 {
     if (glist->gl_editor->e_isSelectedline) {
-    //
-    canvas_disconnect (glist, 
-        glist->gl_editor->e_selectedLineIndexOfObjectOut,
-        glist->gl_editor->e_selectedLineIndexOfOutlet,
-        glist->gl_editor->e_selectedLineIndexOfObjectIn,
-        glist->gl_editor->e_selectedLineIndexOfInlet);
-             
-    canvas_dirty (glist, 1);
-    //
+        canvas_disconnect (glist, NULL, 4, glist->gl_editor->e_selectedLine);
+        canvas_dirty (glist, 1);
     }
 }
 
@@ -310,12 +303,13 @@ void canvas_selectLine (t_glist *glist,
 {
     canvas_deselectAll (glist);
         
-    glist->gl_editor->e_isSelectedline                  = 1;
-    glist->gl_editor->e_selectedLineIndexOfObjectOut    = indexOfObjectOut;
-    glist->gl_editor->e_selectedLineIndexOfOutlet       = indexOfOutlet;
-    glist->gl_editor->e_selectedLineIndexOfObjectIn     = indexOfObjectIn;
-    glist->gl_editor->e_selectedLineIndexOfInlet        = indexOfInlet;
-    glist->gl_editor->e_selectedLineConnection          = connection;
+    glist->gl_editor->e_isSelectedline = 1;
+    glist->gl_editor->e_selectedLineConnection = connection;
+    
+    SET_FLOAT (glist->gl_editor->e_selectedLine + 0, indexOfObjectOut);
+    SET_FLOAT (glist->gl_editor->e_selectedLine + 1, indexOfOutlet);
+    SET_FLOAT (glist->gl_editor->e_selectedLine + 2, indexOfObjectIn);
+    SET_FLOAT (glist->gl_editor->e_selectedLine + 3, indexOfInlet);
     
     sys_vGui (".x%lx.c itemconfigure %lxLINE -fill blue\n",
                     canvas_getView (glist),

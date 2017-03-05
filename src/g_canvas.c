@@ -229,10 +229,10 @@ void canvas_connect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc == 4) {
     //
-    int indexOfObjectOut = atom_getFloat (argv + 0);
-    int indexOfOutlet    = atom_getFloat (argv + 1);
-    int indexOfObjectIn  = atom_getFloat (argv + 2);
-    int indexOfOInlet    = atom_getFloat (argv + 3);
+    int indexOfObjectOut = (int)atom_getFloat (argv + 0);
+    int indexOfOutlet    = (int)atom_getFloat (argv + 1);
+    int indexOfObjectIn  = (int)atom_getFloat (argv + 2);
+    int indexOfOInlet    = (int)atom_getFloat (argv + 3);
     
     int k = (editor_pasteCurrentCanvas == glist) ? editor_pasteOffsetWhileConnectingObjects : 0;
     
@@ -287,12 +287,15 @@ void canvas_connect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     error_failed (sym_connect);
 }
 
-void canvas_disconnect (t_glist *glist,
-    t_float indexOfObjectOut, 
-    t_float indexOfOutlet, 
-    t_float indexOfObjectIn, 
-    t_float indexOfInlet)
+void canvas_disconnect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
+    if (argc == 4) {
+    //
+    int indexOfObjectOut = (int)atom_getFloat (argv + 0);
+    int indexOfOutlet    = (int)atom_getFloat (argv + 1);
+    int indexOfObjectIn  = (int)atom_getFloat (argv + 2);
+    int indexOfInlet     = (int)atom_getFloat (argv + 3);
+    
     t_outconnect *connection = NULL;
     t_linetraverser t;
         
@@ -300,8 +303,8 @@ void canvas_disconnect (t_glist *glist,
     
     while ((connection = linetraverser_next (&t))) {
     //
-    if ((linetraverser_getIndexOfOutlet (&t) == (int)indexOfOutlet)) {
-        if ((linetraverser_getIndexOfInlet (&t) == (int)indexOfInlet)) {
+    if ((linetraverser_getIndexOfOutlet (&t) == indexOfOutlet)) {
+        if ((linetraverser_getIndexOfInlet (&t) == indexOfInlet)) {
 
             int m = canvas_getIndexOfObject (glist, cast_gobj (linetraverser_getSource (&t)));
             int n = canvas_getIndexOfObject (glist, cast_gobj (linetraverser_getDestination (&t)));
@@ -312,6 +315,8 @@ void canvas_disconnect (t_glist *glist,
                 break;
             }
         }
+    }
+    //
     }
     //
     }
@@ -855,15 +860,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_restore,               sym_restore,        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_width,                 sym_f,              A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_connect,               sym_connect,        A_GIMME, A_NULL);
-        
-    class_addMethod (c, (t_method)canvas_disconnect,
-        sym_disconnect,
-        A_FLOAT,
-        A_FLOAT,
-        A_FLOAT,
-        A_FLOAT,
-        A_NULL);
-    
+    class_addMethod (c, (t_method)canvas_disconnect,            sym_disconnect,     A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeObject,            sym_obj,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeMessage,           sym_msg,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeFloatAtom,         sym_floatatom,      A_GIMME, A_NULL);
