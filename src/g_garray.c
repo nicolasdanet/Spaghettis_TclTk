@@ -569,9 +569,9 @@ static void garray_resize (t_garray *x, t_float f)
     garray_resizeWithInteger (x, PD_MAX (1, (int)f));
 }
 
-static void garray_bounds (t_garray *x, t_float a, t_float b, t_float c, t_float d)
+static void garray_bounds (t_garray *x, t_symbol *s, int argc, t_atom *argv)
 {
-    pd_vMessage (cast_pd (x->x_owner), sym_bounds, "ffff", a, b, c, d);
+    pd_message (cast_pd (x->x_owner), s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -791,14 +791,7 @@ void garray_setup (void)
     class_addMethod (c, (t_method)garray_read,          sym_read,           A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)garray_write,         sym_write,          A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)garray_resize,        sym_resize,         A_FLOAT, A_NULL);
-
-    class_addMethod (c, (t_method)garray_bounds,
-        sym_bounds,
-        A_FLOAT,
-        A_FLOAT,
-        A_FLOAT,
-        A_FLOAT,
-        A_NULL);
+    class_addMethod (c, (t_method)garray_bounds,        sym_bounds,         A_GIMME, A_NULL);
         
     class_addMethod (c, (t_method)garray_fromDialog,
         sym__arraydialog,
