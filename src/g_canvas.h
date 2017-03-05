@@ -265,11 +265,7 @@ void            canvas_removeOutlet                     (t_glist *glist, t_outle
 void            canvas_resortInlets                     (t_glist *glist);
 void            canvas_resortOutlets                    (t_glist *glist);
 
-void            canvas_bounds                           (t_glist *glist,
-                                                            t_float a,
-                                                            t_float b,
-                                                            t_float c,
-                                                            t_float d);
+void            canvas_bounds                           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
                                                             
 t_float         canvas_valueToPixelX                    (t_glist *glist, t_float f);
 t_float         canvas_valueToPixelY                    (t_glist *glist, t_float f);

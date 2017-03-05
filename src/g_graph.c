@@ -252,8 +252,15 @@ void canvas_redrawGraphOnParent (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_bounds (t_glist *glist, t_float a, t_float b, t_float c, t_float d)
+void canvas_bounds (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
+    if (argc == 4) {
+    //
+    t_float a = atom_getFloat (argv + 0);
+    t_float b = atom_getFloat (argv + 1);
+    t_float c = atom_getFloat (argv + 2);
+    t_float d = atom_getFloat (argv + 3);
+    
     if ((a == b) || (c == d)) { error_invalid (sym_graph, sym_bounds); }
     else {
         glist->gl_valueLeft   = a;
@@ -262,6 +269,8 @@ void canvas_bounds (t_glist *glist, t_float a, t_float b, t_float c, t_float d)
         glist->gl_valueBottom = d;
     
         canvas_redrawGraphOnParent (glist);
+    }
+    //
     }
 }
 
