@@ -302,12 +302,7 @@ void            canvas_motion                           (t_glist *glist, t_symbo
 void            canvas_mouse                            (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_mouseUp                          (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_window                           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-                                                            
-void            canvas_connect                          (t_glist *glist,
-                                                            t_float indexOfObjectOut,
-                                                            t_float indexOfOutlet,
-                                                            t_float indexOfObjectIn,
-                                                            t_float indexOfInlet);
+void            canvas_connect                          (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 
 void            canvas_disconnect                       (t_glist *glist,
                                                             t_float indexOfObjectOut,

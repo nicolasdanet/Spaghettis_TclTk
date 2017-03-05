@@ -225,23 +225,26 @@ static void canvas_width (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-void canvas_connect (t_glist *glist,
-    t_float indexOfObjectOut,
-    t_float indexOfOutlet,
-    t_float indexOfObjectIn,
-    t_float indexOfOInlet)
+void canvas_connect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
+    if (argc == 4) {
+    //
+    int indexOfObjectOut = atom_getFloat (argv + 0);
+    int indexOfOutlet    = atom_getFloat (argv + 1);
+    int indexOfObjectIn  = atom_getFloat (argv + 2);
+    int indexOfOInlet    = atom_getFloat (argv + 3);
+    
     int k = (editor_pasteCurrentCanvas == glist) ? editor_pasteOffsetWhileConnectingObjects : 0;
     
-    t_gobj *src  = canvas_getObjectAtIndex (glist, k + (int)indexOfObjectOut);
-    t_gobj *dest = canvas_getObjectAtIndex (glist, k + (int)indexOfObjectIn);
+    t_gobj *src  = canvas_getObjectAtIndex (glist, k + indexOfObjectOut);
+    t_gobj *dest = canvas_getObjectAtIndex (glist, k + indexOfObjectIn);
     t_object *srcObject  = cast_objectIfPatchable (src);
     t_object *destObject = cast_objectIfPatchable (dest);
     
     if (srcObject && destObject) {
     //
-    int m = (int)indexOfOutlet;
-    int n = (int)indexOfOInlet;
+    int m = indexOfOutlet;
+    int n = indexOfOInlet;
     t_outconnect *connection = NULL;
     
     /* Creates dummy outlets and inlets (failure at object creation). */
@@ -278,7 +281,9 @@ void canvas_connect (t_glist *glist,
     }
     //
     }
-
+    //
+    }
+    
     error_failed (sym_connect);
 }
 
@@ -849,14 +854,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_coords,                sym_coords,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_restore,               sym_restore,        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_width,                 sym_f,              A_GIMME, A_NULL);
-    
-    class_addMethod (c, (t_method)canvas_connect,
-        sym_connect,
-        A_FLOAT,
-        A_FLOAT,
-        A_FLOAT,
-        A_FLOAT,
-        A_NULL);
+    class_addMethod (c, (t_method)canvas_connect,               sym_connect,        A_GIMME, A_NULL);
         
     class_addMethod (c, (t_method)canvas_disconnect,
         sym_disconnect,
