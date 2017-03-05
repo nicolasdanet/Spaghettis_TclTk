@@ -182,8 +182,8 @@ t_class *class_new (t_symbol *s,
     t_atomtype type1, ...)
 {
     va_list ap;
-    t_atomtype arg[PD_ARGUMENTS + 1] = { 0 };
-    t_atomtype *vp = arg;
+    t_atomtype args[PD_ARGUMENTS + 1] = { 0 };
+    t_atomtype *vp = args;
     int count = 0;
     t_class *c = NULL;
     int type = flags & (CLASS_ABSTRACT | CLASS_NOBOX | CLASS_GRAPHIC | CLASS_BOX);
@@ -203,7 +203,7 @@ t_class *class_new (t_symbol *s,
     
     if (pd_objectMaker && newMethod) {
     //
-    class_addMethod (pd_objectMaker, (t_method)newMethod, s, arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]);
+    class_addMethod (pd_objectMaker, (t_method)newMethod, s, args[0], args[1], args[2]);
     //
     }
     
@@ -247,8 +247,8 @@ void class_addSignal (t_class *c, int offset)
 void class_addCreator (t_newmethod newMethod, t_symbol *s, t_atomtype type1, ...)
 {
     va_list ap;
-    t_atomtype arg[PD_ARGUMENTS + 1] = { 0 };
-    t_atomtype *vp = arg;
+    t_atomtype args[PD_ARGUMENTS + 1] = { 0 };
+    t_atomtype *vp = args;
     int count = 0;
     *vp = type1;
 
@@ -262,7 +262,7 @@ void class_addCreator (t_newmethod newMethod, t_symbol *s, t_atomtype type1, ...
     
     va_end (ap);
     
-    class_addMethod (pd_objectMaker, (t_method)newMethod, s, arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]);
+    class_addMethod (pd_objectMaker, (t_method)newMethod, s, args[0], args[1], args[2]);
 }
 
 void class_free (t_class *c)

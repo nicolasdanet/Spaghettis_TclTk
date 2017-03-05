@@ -388,7 +388,8 @@
 #pragma mark -
 
 #define PD_STRING               1024                /* Maximum size for a string. */
-#define PD_ARGUMENTS            5                   /* Maximum number of typechecked arguments. */
+#define PD_ARGUMENTS            2                   /* Maximum number of typechecked arguments. */
+                                                    /* Use A_GIMME when more are requiered. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
