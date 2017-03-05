@@ -120,9 +120,21 @@ void canvas_fromArrayDialog (t_glist *glist, t_symbol *name, t_float size, t_flo
     canvas_dirty (glist, 1);
 }
 
-void canvas_makeArray (t_glist *glist, t_symbol *s, t_symbol *dummy, t_float size, t_float flags)
+// array1 100 float 3
+
+void canvas_makeArray (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    garray_makeObject (glist, s, size, flags);
+    if (argc > 1) {
+    //
+    t_symbol *name = atom_getSymbol (argv + 0);
+    t_float size   = atom_getFloat (argv + 1);
+    t_float flags  = atom_getFloatAtIndex (3, argc, argv);
+    
+    if (name != &s_) {
+        garray_makeObject (glist, name, size, flags); 
+    }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

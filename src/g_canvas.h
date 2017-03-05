@@ -235,12 +235,7 @@ void            canvas_fromArrayDialog                  (t_glist *glist,
                                                             t_float size,
                                                             t_float flags);
                                                             
-void            canvas_makeArray                        (t_glist *glist,
-                                                            t_symbol *s,
-                                                            t_symbol *type,
-                                                            t_float size,
-                                                            t_float flags);
-                                                            
+void            canvas_makeArray                        (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_makeObject                       (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_makeMessage                      (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_makeFloatAtom                    (t_glist *glist, t_symbol *s, int argc, t_atom *argv);

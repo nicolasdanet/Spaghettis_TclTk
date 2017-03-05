@@ -249,11 +249,7 @@ void            gatom_click                         (t_gatom *x, t_symbol *s, in
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_garray        *garray_makeObject                  (t_glist *glist,
-                                                        t_symbol *name,
-                                                        t_float size,
-                                                        t_float flags);
-                                                            
+t_garray        *garray_makeObject                  (t_glist *glist, t_symbol *s, t_float n, t_float flags);
 t_array         *garray_getArray                    (t_garray *x);
 t_glist         *garray_getView                     (t_garray *x);
 t_scalar        *garray_getScalar                   (t_garray *x);

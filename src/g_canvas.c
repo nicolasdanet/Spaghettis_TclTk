@@ -876,14 +876,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_makeVu,                sym_vu,             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makePanel,             sym_cnv,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeDial,              sym_nbx,            A_GIMME, A_NULL);
-    
-    class_addMethod (c, (t_method)canvas_makeArray,
-        sym_array,
-        A_SYMBOL,
-        A_FLOAT,
-        A_SYMBOL,
-        A_DEFFLOAT,
-        A_NULL);
+    class_addMethod (c, (t_method)canvas_makeArray,             sym_array,          A_GIMME, A_NULL);
             
     class_addMethod (c, (t_method)canvas_requireArrayDialog,    sym__array,         A_NULL);
 
