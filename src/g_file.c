@@ -88,22 +88,25 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_save (t_glist *glist, float destroy)
+void canvas_save (t_glist *glist, t_float destroy)
 {
     t_glist *root = canvas_getRoot (glist);
     
     if (root->gl_name == &s_) { canvas_saveAs (root, destroy); }
     else {
     //
-    canvas_saveToFile (root,
-        root->gl_name,
-        environment_getDirectory (canvas_getEnvironment (root)),
-        destroy);
+    t_atom t[3];
+    
+    SET_SYMBOL (t + 0, root->gl_name);
+    SET_SYMBOL (t + 1, environment_getDirectory (canvas_getEnvironment (root)));
+    SET_FLOAT  (t + 2, destroy);
+    
+    canvas_saveToFile (root, NULL, 3, t);
     //
     }
 }
 
-void canvas_saveAs (t_glist *glist, float destroy)
+void canvas_saveAs (t_glist *glist, t_float destroy)
 {
     t_glist *root = canvas_getRoot (glist);
     
@@ -114,8 +117,14 @@ void canvas_saveAs (t_glist *glist, float destroy)
                     (int)destroy);
 }
 
-void canvas_saveToFile (t_glist *glist, t_symbol *name, t_symbol *directory, float destroy)
+void canvas_saveToFile (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
+    if (argc == 3) {
+    //
+    t_symbol *name      = atom_getSymbol (argv + 0);
+    t_symbol *directory = atom_getSymbol (argv + 1);
+    t_float destroy     = atom_getFloat (argv + 2);
+    
     t_buffer *b = buffer_new();
     
     canvas_serializeTemplates (glist, b);
@@ -131,6 +140,8 @@ void canvas_saveToFile (t_glist *glist, t_symbol *name, t_symbol *directory, flo
     }
     
     buffer_free (b);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

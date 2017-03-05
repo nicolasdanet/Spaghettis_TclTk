@@ -314,10 +314,7 @@ void            canvas_selectAll                        (t_glist *glist);
 
 void            canvas_save                             (t_glist *glist, float destroy);
 void            canvas_saveAs                           (t_glist *glist, float destroy);
-void            canvas_saveToFile                       (t_glist *glist, 
-                                                            t_symbol *name,
-                                                            t_symbol *directory, 
-                                                            float destroy);
+void            canvas_saveToFile                       (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 
 void            canvas_serialize                        (t_glist *glist, t_buffer *b);
 
