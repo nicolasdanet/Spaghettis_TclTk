@@ -89,13 +89,5 @@ void pd_pointer (t_pd *x, t_gpointer *gp)
     (*(pd_class (x)->c_methodPointer)) (x, gp);
 }
 
-void pd_empty (t_pd *x)
-{
-    if (class_hasBang (pd_class (x))) { (*(pd_class (x)->c_methodBang)) (x); }
-    else {
-        (*(pd_class (x)->c_methodAnything)) (x, &s_bang, 0, NULL);
-    }
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

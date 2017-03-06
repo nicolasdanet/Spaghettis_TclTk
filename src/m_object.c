@@ -20,29 +20,34 @@
 
 void object_distributeOnInlets (t_object *x, int argc, t_atom *argv)
 {
-    if (!argc) { pd_empty (cast_pd (x)); }
-    else {
-    //
-    int count;
-    t_atom *a = NULL;
-    t_inlet *i = x->te_inlets;
+    if (argc) { 
+        
+        int count;
+        t_atom *a = NULL;
+        t_inlet *i = x->te_inlets;
+        
+        for (count = argc - 1, a = argv + 1; i && count--; a++, i = inlet_getNext (i)) {
+        //
+        if (IS_POINTER (a))        { pd_pointer (cast_pd (i), GET_POINTER (a)); }
+        else if (IS_FLOAT (a))     { pd_float (cast_pd (i), GET_FLOAT (a)); }
+        else {
+            pd_symbol (cast_pd (i), GET_SYMBOL (a));
+        }
+        //
+        }
+        
+        if (IS_POINTER (argv))      { pd_pointer (cast_pd (x), GET_POINTER (argv)); }
+        else if (IS_FLOAT (argv))   { pd_float (cast_pd (x), GET_FLOAT (argv)); }
+        else {
+            pd_symbol (cast_pd (x), GET_SYMBOL (argv));
+        }
+        
+    } else {
     
-    for (count = argc - 1, a = argv + 1; i && count--; a++, i = inlet_getNext (i)) {
-    //
-    if (IS_POINTER (a))        { pd_pointer (cast_pd (i), GET_POINTER (a)); }
-    else if (IS_FLOAT (a))     { pd_float (cast_pd (i), GET_FLOAT (a)); }
-    else {
-        pd_symbol (cast_pd (i), GET_SYMBOL (a));
-    }
-    //
-    }
-    
-    if (IS_POINTER (argv))      { pd_pointer (cast_pd (x), GET_POINTER (argv)); }
-    else if (IS_FLOAT (argv))   { pd_float (cast_pd (x), GET_FLOAT (argv)); }
-    else {
-        pd_symbol (cast_pd (x), GET_SYMBOL (argv));
-    }
-    //
+        if (class_hasBang (pd_class (x))) { (*(pd_class (x)->c_methodBang)) (cast_pd (x)); }
+        else {
+            (*(pd_class (x)->c_methodAnything)) (cast_pd (x), &s_bang, 0, NULL);
+        }
     }
 } 
 
