@@ -282,7 +282,12 @@ void buffer_fileOpen (void *dummy, t_symbol *name, t_symbol *directory)
     
     buffer_fileEval (name, directory);
     
-    while ((x != pd_getBoundX()) && pd_getBoundX()) { x = pd_getBoundX(); pd_vMessage (x, sym__pop, "i", 1); }
+    while ((x != pd_getBoundX()) && pd_getBoundX()) {
+        t_atom t;
+        SET_FLOAT (&t, 1);
+        x = pd_getBoundX(); 
+        pd_message (x, sym__pop, 1, &t); 
+    }
     
     stack_proceedLoadbang();
     
