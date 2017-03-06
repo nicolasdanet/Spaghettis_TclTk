@@ -60,6 +60,13 @@ typedef struct _rectangle {
     int         rect_isNothing;
     } t_rectangle;
 
+typedef struct _bounds {
+    t_float     b_left;
+    t_float     b_right;
+    t_float     b_top;
+    t_float     b_bottom;
+    } t_bounds;
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -403,6 +410,7 @@ void        guistub_destroyWithKey                      (void *key);
 #include "m_object.h"
 #include "m_error.h"
 #include "m_utils.h"
+#include "m_rectangle.h"
 #include "m_symbols.h"
 
 // -----------------------------------------------------------------------------------------------------------

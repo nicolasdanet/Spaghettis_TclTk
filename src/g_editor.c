@@ -764,7 +764,7 @@ void canvas_window (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc == 4) {
     //
-    rectangle_set (&glist->gl_geometry,
+    rectangle_set (&glist->gl_geometryWindow,
         atom_getFloat (argv + 0),
         atom_getFloat (argv + 1),
         atom_getFloat (argv + 2),

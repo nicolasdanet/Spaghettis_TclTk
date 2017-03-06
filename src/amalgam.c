@@ -41,6 +41,7 @@
 #include "m_string.c"
 #include "m_utils.c"
 #include "m_math.c"
+#include "m_bounds.c"
 #include "m_rectangle.c"
 
 /* Helpers. */

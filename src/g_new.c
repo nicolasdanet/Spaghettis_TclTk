@@ -57,7 +57,7 @@ static t_glist *canvas_newGraphOnParent (t_glist *glist,
     x->gl_fontSize                      = fontSize;
     x->gl_isGraphOnParent               = 1;
     
-    rectangle_set (&x->gl_geometry, 0, WINDOW_HEADER, WINDOW_WIDTH, WINDOW_HEIGHT + WINDOW_HEADER);
+    rectangle_set (&x->gl_geometryWindow, 0, WINDOW_HEADER, WINDOW_WIDTH, WINDOW_HEIGHT + WINDOW_HEADER);
     
     canvas_bind (x);
     
