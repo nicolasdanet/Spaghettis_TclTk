@@ -183,11 +183,14 @@ static void garray_updateGraphSize (t_garray *x, int size, int style)
     //
     if (!glist->gl_isLoading) {
     //
-    pd_vMessage (cast_pd (glist), sym_bounds, "ffff",
-        0.0,
-        glist->gl_valueTop,
-        (double)((style == PLOT_POINTS || size == 1) ? size : size - 1),
-        glist->gl_valueBottom);
+    t_atom t[4]; 
+    
+    SET_FLOAT (t + 0, (t_float)0.0);
+    SET_FLOAT (t + 1, glist->gl_valueTop);
+    SET_FLOAT (t + 2, (t_float)((style == PLOT_POINTS || size == 1) ? size : size - 1));
+    SET_FLOAT (t + 3, glist->gl_valueBottom);
+    
+    pd_message (cast_pd (glist), sym_bounds, 4, t);
     //
     }
     //
