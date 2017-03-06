@@ -62,8 +62,8 @@ typedef struct _rectangle {
 
 typedef struct _bounds {
     t_float     b_left;
-    t_float     b_right;
     t_float     b_top;
+    t_float     b_right;
     t_float     b_bottom;
     } t_bounds;
     

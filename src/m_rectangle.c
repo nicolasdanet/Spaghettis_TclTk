@@ -24,6 +24,20 @@ void rectangle_set (t_rectangle *r, int a, int b, int c, int d)
     r->rect_isNothing    = 0;
 }
 
+void rectangle_setByAtoms (t_rectangle *r, int argc, t_atom *argv)
+{
+    if (argc && argv) {
+    //
+    int a = (int)atom_getFloatAtIndex (0, argc, argv);
+    int b = (int)atom_getFloatAtIndex (1, argc, argv);
+    int c = (int)atom_getFloatAtIndex (2, argc, argv);
+    int d = (int)atom_getFloatAtIndex (3, argc, argv);
+    
+    rectangle_set (r, a, b, c, d);
+    //
+    }
+}
+
 void rectangle_setEverything (t_rectangle *r)
 {
     rectangle_set (r, -PD_INT_MAX, -PD_INT_MAX, PD_INT_MAX, PD_INT_MAX);

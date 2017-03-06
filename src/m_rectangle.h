@@ -16,7 +16,49 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_error bounds_set          (t_bounds *b, t_float left, t_float top, t_float right, t_float bottom);
+t_error bounds_setByAtoms   (t_bounds *b, int argc, t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline t_float bounds_getLeft (t_bounds *b)
+{
+    return b->b_left;
+}
+
+static inline t_float bounds_getTop (t_bounds *b)
+{
+    return b->b_top;
+}
+
+static inline t_float bounds_getRight (t_bounds *b)
+{
+    return b->b_right;
+}
+
+static inline t_float bounds_getBottom (t_bounds *b)
+{
+    return b->b_bottom;
+}
+
+static inline t_float bounds_getRangeX (t_bounds *b)
+{
+    return (b->b_right - b->b_left);
+}
+
+static inline t_float bounds_getRangeY (t_bounds *b)
+{
+    return (b->b_bottom - b->b_top);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void        rectangle_set                               (t_rectangle *r, int a, int b, int c, int d);
+void        rectangle_setByAtoms                        (t_rectangle *r, int argc, t_atom *argv);
 void        rectangle_setEverything                     (t_rectangle *r);
 void        rectangle_setNothing                        (t_rectangle *r);
 void        rectangle_setCopy                           (t_rectangle *r, t_rectangle *toCopy);
