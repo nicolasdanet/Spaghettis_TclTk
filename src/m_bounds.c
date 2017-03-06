@@ -30,7 +30,7 @@ t_error bounds_set (t_bounds *b, t_float left, t_float top, t_float right, t_flo
 
 t_error bounds_setByAtoms (t_bounds *b, int argc, t_atom *argv)
 {
-    if (argc == 4) {
+    if (argc >= 4) {
     //
     t_float left    = atom_getFloat (argv + 0);
     t_float top     = atom_getFloat (argv + 1);

@@ -58,10 +58,7 @@ struct _glist {
     int                 gl_graphHeight;
     int                 gl_graphMarginLeft;
     int                 gl_graphMarginTop;
-    t_float             gl_valueLeft;
-    t_float             gl_valueRight;
-    t_float             gl_valueTop;
-    t_float             gl_valueBottom;
+    t_bounds            gl_bounds;
     t_rectangle         gl_geometryWindow;
     t_fontsize          gl_fontSize;
     char                gl_isMapped;

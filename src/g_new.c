@@ -50,13 +50,10 @@ static t_glist *canvas_newGraphOnParent (t_glist *glist,
     x->gl_graphHeight                   = bottomRightY - topLeftY;
     x->gl_graphMarginLeft               = 0;
     x->gl_graphMarginTop                = 0;
-    x->gl_valueLeft                     = valueStart;
-    x->gl_valueRight                    = valueEnd;
-    x->gl_valueTop                      = valueUp;
-    x->gl_valueBottom                   = valueDown;
     x->gl_fontSize                      = fontSize;
     x->gl_isGraphOnParent               = 1;
     
+    bounds_set (&glist->gl_bounds, valueStart, valueUp, valueEnd, valueDown);
     rectangle_set (&x->gl_geometryWindow, 0, WINDOW_HEADER, WINDOW_WIDTH, WINDOW_HEIGHT + WINDOW_HEADER);
     
     canvas_bind (x);

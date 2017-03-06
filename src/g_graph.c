@@ -256,19 +256,11 @@ void canvas_bounds (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc == 4) {
     //
-    t_float a = atom_getFloat (argv + 0);
-    t_float b = atom_getFloat (argv + 1);
-    t_float c = atom_getFloat (argv + 2);
-    t_float d = atom_getFloat (argv + 3);
+    t_error err = bounds_setByAtoms (&glist->gl_bounds, argc, argv);
     
-    if ((a == b) || (c == d)) { error_invalid (sym_graph, sym_bounds); }
+    if (!err) { canvas_redrawGraphOnParent (glist); }
     else {
-        glist->gl_valueLeft   = a;
-        glist->gl_valueRight  = c;
-        glist->gl_valueTop    = b;
-        glist->gl_valueBottom = d;
-    
-        canvas_redrawGraphOnParent (glist);
+        error_invalid (sym_graph, sym_bounds); 
     }
     //
     }
@@ -298,7 +290,7 @@ static void canvas_getGraphOnParentRectangle (t_gobj *z, t_glist *glist, t_recta
 
 t_float canvas_pixelToValueX (t_glist *glist, t_float f)
 {
-    t_float range = glist->gl_valueRight - glist->gl_valueLeft;
+    t_float range = bounds_getRangeX (&glist->gl_bounds);
     t_float v = (t_float)0.0;
         
     if (!glist->gl_isGraphOnParent) { v = f; }      /* Scalars. */
@@ -311,12 +303,12 @@ t_float canvas_pixelToValueX (t_glist *glist, t_float f)
         }
     }
 
-    return (glist->gl_valueLeft + (range * v));
+    return (bounds_getLeft (&glist->gl_bounds) + (range * v));
 }
 
 t_float canvas_pixelToValueY (t_glist *glist, t_float f)
 {
-    t_float range = glist->gl_valueBottom - glist->gl_valueTop;
+    t_float range = bounds_getRangeY (&glist->gl_bounds);
     t_float v = (t_float)0.0;
         
     if (!glist->gl_isGraphOnParent) { v = f; }      /* Scalars. */
@@ -329,12 +321,12 @@ t_float canvas_pixelToValueY (t_glist *glist, t_float f)
         }
     }
     
-    return (glist->gl_valueTop + (range * v));
+    return (bounds_getTop (&glist->gl_bounds) + (range * v));
 }
 
 t_float canvas_valueToPixelX (t_glist *glist, t_float f)
 {
-    t_float range = glist->gl_valueRight - glist->gl_valueLeft;
+    t_float range = bounds_getRangeX (&glist->gl_bounds);
     t_float v = (t_float)1.0;
     t_float x = (t_float)0.0;
     
@@ -349,12 +341,12 @@ t_float canvas_valueToPixelX (t_glist *glist, t_float f)
         }
     }
     
-    return (x + (v * ((f - glist->gl_valueLeft) / range)));
+    return (x + (v * ((f - bounds_getLeft (&glist->gl_bounds)) / range)));
 }
 
 t_float canvas_valueToPixelY (t_glist *glist, t_float f)
 {
-    t_float range = glist->gl_valueBottom - glist->gl_valueTop;
+    t_float range = bounds_getRangeY (&glist->gl_bounds);
     t_float v = (t_float)1.0;
     t_float x = (t_float)0.0;
     
@@ -369,7 +361,7 @@ t_float canvas_valueToPixelY (t_glist *glist, t_float f)
         }
     }
     
-    return (x + (v * ((f - glist->gl_valueTop) / range)));
+    return (x + (v * ((f - bounds_getTop (&glist->gl_bounds)) / range)));
 }
 
 // -----------------------------------------------------------------------------------------------------------

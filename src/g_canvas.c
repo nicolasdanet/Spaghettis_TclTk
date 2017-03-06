@@ -102,10 +102,7 @@ static void canvas_setAsGraphOnParent (t_glist *glist, int flags)
         t_float scaleX = canvas_valueForOnePixelX (glist);
         t_float scaleY = canvas_valueForOnePixelY (glist);
         
-        glist->gl_valueLeft   = (t_float)0.0;
-        glist->gl_valueRight  = PD_ABS (scaleX);
-        glist->gl_valueTop    = (t_float)0.0;
-        glist->gl_valueBottom = PD_ABS (scaleY);
+        bounds_set (&glist->gl_bounds, (t_float)0.0, (t_float)0.0, PD_ABS (scaleX), PD_ABS (scaleY));
     }
     
     #endif
@@ -155,10 +152,8 @@ static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     int flags = atom_getFloatAtIndex (6, argc, argv);
     
-    glist->gl_valueLeft         = atom_getFloatAtIndex (0, argc, argv);
-    glist->gl_valueTop          = atom_getFloatAtIndex (1, argc, argv);
-    glist->gl_valueRight        = atom_getFloatAtIndex (2, argc, argv);
-    glist->gl_valueBottom       = atom_getFloatAtIndex (3, argc, argv);
+    bounds_setByAtoms (&glist->gl_bounds, argc, argv);
+    
     glist->gl_graphWidth        = (int)atom_getFloatAtIndex (4, argc, argv);
     glist->gl_graphHeight       = (int)atom_getFloatAtIndex (5, argc, argv);
     glist->gl_graphMarginLeft   = (int)atom_getFloatAtIndex (7, argc, argv);
@@ -580,10 +575,10 @@ static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
                                     0.0,
                                     0.0,
                                     g->gl_isGraphOnParent,
-                                    g->gl_valueLeft,
-                                    g->gl_valueTop,
-                                    g->gl_valueRight,
-                                    g->gl_valueBottom, 
+                                    bounds_getLeft (&g->gl_bounds),
+                                    bounds_getTop (&g->gl_bounds),
+                                    bounds_getRight (&g->gl_bounds),
+                                    bounds_getBottom (&g->gl_bounds), 
                                     g->gl_graphWidth,
                                     g->gl_graphHeight,
                                     g->gl_graphMarginLeft,
@@ -711,22 +706,9 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
     if (scaleX == 0.0) { scaleX = (t_float)1.0; }
     if (scaleY == 0.0) { scaleY = (t_float)1.0; }
 
-    if (flags & 1) {    /* Graph on parent. */
-    
-        PD_ASSERT (start != end);
-        PD_ASSERT (up != down);
-        
-        glist->gl_valueLeft     = start;
-        glist->gl_valueRight    = end; 
-        glist->gl_valueTop      = up; 
-        glist->gl_valueBottom   = down;
-        
-    } else {
-    
-        glist->gl_valueLeft     = (t_float)0.0;
-        glist->gl_valueRight    = PD_ABS (scaleX);
-        glist->gl_valueTop      = (t_float)0.0;
-        glist->gl_valueBottom   = PD_ABS (scaleY);
+    if (flags & 1) { bounds_set (&glist->gl_bounds, start, up, end, down); }
+    else {
+        bounds_set (&glist->gl_bounds, (t_float)0.0, (t_float)0.0, PD_ABS (scaleX), PD_ABS (scaleY));
     }
     
     canvas_setAsGraphOnParent (glist, flags);
@@ -798,15 +780,12 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     
     x->gl_environment           = environment_fetchActiveIfAny();
     x->gl_name                  = (name != &s_ ? name : environment_getFileName (x->gl_environment));
-    x->gl_valueLeft             = (t_float)0.0;
-    x->gl_valueTop              = (t_float)0.0;
-    x->gl_valueRight            = (t_float)1.0;
-    x->gl_valueBottom           = (t_float)1.0;
     x->gl_fontSize              = font_getNearestValidFontSize (fontSize);
     x->gl_isLoading             = 1;
     x->gl_isEditMode            = 0;
     x->gl_openedAtLoad          = visible;
     
+    bounds_set (&x->gl_bounds, (t_float)0.0, (t_float)0.0, (t_float)1.0, (t_float)1.0);
     rectangle_set (&x->gl_geometryWindow, topLeftX, topLeftY, topLeftX + width, topLeftY + height);
     
     canvas_bind (x);
