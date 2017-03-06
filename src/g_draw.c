@@ -440,10 +440,10 @@ void canvas_drawGraphOnParentRectangle (t_glist *glist)
     //
     if (!canvas_isGraph (glist)) {
     //
-    int a = glist->gl_graphMarginLeft;
-    int b = glist->gl_graphMarginTop;
-    int c = glist->gl_graphMarginLeft + glist->gl_graphWidth;
-    int d = glist->gl_graphMarginTop + glist->gl_graphHeight;
+    int a = rectangle_getTopLeftX (&glist->gl_geometryGraph);
+    int b = rectangle_getTopLeftY (&glist->gl_geometryGraph);
+    int c = rectangle_getBottomRightX (&glist->gl_geometryGraph);
+    int d = rectangle_getBottomRightY (&glist->gl_geometryGraph);
     
     sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d"
                     " -dash {2 4}"  // --

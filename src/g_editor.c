@@ -186,14 +186,17 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
         canvas_dirty (glist, 1);
         
     } else if (pd_class (object) == canvas_class) {
+        t_glist *t = cast_glist (object);
+        int w = positionX - glist->gl_editor->e_newX;
+        int h = positionY - glist->gl_editor->e_newY;
         gobj_visibilityChanged (y, glist, 0);
-        cast_glist (object)->gl_graphWidth  += positionX - glist->gl_editor->e_newX;
-        cast_glist (object)->gl_graphHeight += positionY - glist->gl_editor->e_newY;
+        rectangle_setWidth (&t->gl_geometryGraph, rectangle_getWidth (&t->gl_geometryGraph) + w);
+        rectangle_setHeight (&t->gl_geometryGraph, rectangle_getHeight (&t->gl_geometryGraph) + h);
         glist->gl_editor->e_newX = positionX;
         glist->gl_editor->e_newY = positionY;
         canvas_updateLinesByObject (glist, object);
         gobj_visibilityChanged (y, glist, 1);
-        canvas_updateGraphOnParentRectangle (cast_glist (object));
+        canvas_updateGraphOnParentRectangle (t);
         canvas_dirty (glist, 1);
     }
     //

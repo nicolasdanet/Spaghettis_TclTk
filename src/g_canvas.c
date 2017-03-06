@@ -91,10 +91,7 @@ static void canvas_setAsGraphOnParent (t_glist *glist, int flags)
     else {
         glist->gl_isGraphOnParent = 1;
     }
-    
-    glist->gl_graphWidth  = PD_ABS (glist->gl_graphWidth);
-    glist->gl_graphHeight = PD_ABS (glist->gl_graphHeight);
-    
+        
     #if PD_WITH_LEGACY
     
     if (!isGraphOnParent) {
@@ -150,14 +147,15 @@ static void *subpatch_new (t_symbol *s)
 
 static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    int flags = atom_getFloatAtIndex (6, argc, argv);
+    int flags   = (int)atom_getFloatAtIndex (6, argc, argv);
+    int a       = (int)atom_getFloatAtIndex (7, argc, argv);
+    int b       = (int)atom_getFloatAtIndex (8, argc, argv);
+    int width   = (int)atom_getFloatAtIndex (4, argc, argv);
+    int height  = (int)atom_getFloatAtIndex (5, argc, argv);
     
     bounds_setByAtoms (&glist->gl_bounds, argc, argv);
     
-    glist->gl_graphWidth        = (int)atom_getFloatAtIndex (4, argc, argv);
-    glist->gl_graphHeight       = (int)atom_getFloatAtIndex (5, argc, argv);
-    glist->gl_graphMarginLeft   = (int)atom_getFloatAtIndex (7, argc, argv);
-    glist->gl_graphMarginTop    = (int)atom_getFloatAtIndex (8, argc, argv);
+    rectangle_setByWidthAndHeight (&glist->gl_geometryGraph, a, b, width, height);
     
     canvas_setAsGraphOnParent (glist, flags);
 }
@@ -579,10 +577,10 @@ static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
                                     bounds_getTop (&g->gl_bounds),
                                     bounds_getRight (&g->gl_bounds),
                                     bounds_getBottom (&g->gl_bounds), 
-                                    g->gl_graphWidth,
-                                    g->gl_graphHeight,
-                                    g->gl_graphMarginLeft,
-                                    g->gl_graphMarginTop);
+                                    rectangle_getWidth (&g->gl_geometryGraph),
+                                    rectangle_getHeight (&g->gl_geometryGraph),
+                                    rectangle_getTopLeftX (&g->gl_geometryGraph),
+                                    rectangle_getTopLeftY (&g->gl_geometryGraph));
     } else {
         err = string_sprintf (t, PD_STRING, "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
                                     canvas_valueForOnePixelX (g),
@@ -592,10 +590,10 @@ static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
                                     1.0,
                                     1.0,
                                    -1.0, 
-                                    g->gl_graphWidth, 
-                                    g->gl_graphHeight,
-                                    g->gl_graphMarginLeft,
-                                    g->gl_graphMarginTop);
+                                    rectangle_getWidth (&g->gl_geometryGraph),
+                                    rectangle_getHeight (&g->gl_geometryGraph),
+                                    rectangle_getTopLeftX (&g->gl_geometryGraph),
+                                    rectangle_getTopLeftY (&g->gl_geometryGraph));
     }
     
     PD_ASSERT (!err);
@@ -698,10 +696,7 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
     int marginX     = (int)atom_getFloatAtIndex (9, argc,  argv);
     int marginY     = (int)atom_getFloatAtIndex (10, argc, argv);
     
-    glist->gl_graphWidth        = width;
-    glist->gl_graphHeight       = height;
-    glist->gl_graphMarginLeft   = marginX;
-    glist->gl_graphMarginTop    = marginY;
+    rectangle_setByWidthAndHeight (&glist->gl_geometryGraph, marginX, marginY, width, height);
 
     if (scaleX == 0.0) { scaleX = (t_float)1.0; }
     if (scaleY == 0.0) { scaleY = (t_float)1.0; }

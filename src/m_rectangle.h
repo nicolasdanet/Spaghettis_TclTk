@@ -58,6 +58,7 @@ static inline t_float bounds_getRangeY (t_bounds *b)
 #pragma mark -
 
 void        rectangle_set                               (t_rectangle *r, int a, int b, int c, int d);
+void        rectangle_setByWidthAndHeight               (t_rectangle *r, int a, int b, int width, int height);
 void        rectangle_setByAtoms                        (t_rectangle *r, int argc, t_atom *argv);
 void        rectangle_setEverything                     (t_rectangle *r);
 void        rectangle_setNothing                        (t_rectangle *r);
@@ -120,6 +121,20 @@ static inline int rectangle_getMiddleX (t_rectangle *r)
 static inline int rectangle_getMiddleY (t_rectangle *r)
 {
     return ((rectangle_getTopLeftY (r) + rectangle_getBottomRightY (r)) / 2);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline void rectangle_setWidth (t_rectangle *r, int width)
+{
+    r->rect_bottomRightX = r->rect_topLeftX + PD_ABS (width);
+}
+
+static inline void rectangle_setHeight (t_rectangle *r, int heigth)
+{
+    r->rect_bottomRightY = r->rect_topLeftY + PD_ABS (heigth);
 }
 
 // -----------------------------------------------------------------------------------------------------------

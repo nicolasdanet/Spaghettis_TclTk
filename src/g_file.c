@@ -76,11 +76,11 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
             bounds_getTop (&glist->gl_bounds),
             bounds_getRight (&glist->gl_bounds),
             bounds_getBottom (&glist->gl_bounds),
-            (double)glist->gl_graphWidth, 
-            (double)glist->gl_graphHeight,
+            (double)rectangle_getWidth (&glist->gl_geometryGraph), 
+            (double)rectangle_getHeight (&glist->gl_geometryGraph),
             (double)((glist->gl_hideText ? 2 : 0) | (glist->gl_isGraphOnParent ? 1 : 0)),
-            (double)glist->gl_graphMarginLeft,
-            (double)glist->gl_graphMarginTop);
+            (double)rectangle_getTopLeftX (&glist->gl_geometryGraph),
+            (double)rectangle_getTopLeftY (&glist->gl_geometryGraph));
     }
 }
 

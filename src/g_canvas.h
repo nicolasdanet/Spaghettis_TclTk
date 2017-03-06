@@ -54,11 +54,8 @@ struct _glist {
     t_symbol            *gl_name;
     t_editor            *gl_editor;
     t_unique            gl_uniqueIdentifier;
-    int                 gl_graphWidth;
-    int                 gl_graphHeight;
-    int                 gl_graphMarginLeft;
-    int                 gl_graphMarginTop;
     t_bounds            gl_bounds;
+    t_rectangle         gl_geometryGraph;
     t_rectangle         gl_geometryWindow;
     t_fontsize          gl_fontSize;
     char                gl_isMapped;

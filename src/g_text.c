@@ -221,8 +221,8 @@ int text_getPixelX (t_object *x, t_glist *glist)
 {
     if (canvas_canHaveWindow (glist)) { return object_getX (x); }
     else {
-        int n = canvas_valueToPixelX (glist, bounds_getLeft (&glist->gl_bounds)) - glist->gl_graphMarginLeft;
-        return (n + object_getX (x));
+        int n = canvas_valueToPixelX (glist, bounds_getLeft (&glist->gl_bounds));
+        return (n - rectangle_getTopLeftX (&glist->gl_geometryGraph) + object_getX (x));
     }
 }
 
@@ -230,8 +230,8 @@ int text_getPixelY (t_object *x, t_glist *glist)
 {
     if (canvas_canHaveWindow (glist)) { return object_getY (x); }
     else {
-        int n = canvas_valueToPixelY (glist, bounds_getTop (&glist->gl_bounds)) - glist->gl_graphMarginTop;
-        return (n + object_getY (x));
+        int n = canvas_valueToPixelY (glist, bounds_getTop (&glist->gl_bounds));
+        return (n - rectangle_getTopLeftY (&glist->gl_geometryGraph) + object_getY (x));
     }
 }
 

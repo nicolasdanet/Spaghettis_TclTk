@@ -30,8 +30,8 @@ static t_glist *canvas_newGraphOnParent (t_glist *glist,
     t_float valueDown,
     t_float topLeftX,
     t_float topLeftY,
-    t_float bottomRightX,
-    t_float bottomRightY)
+    t_float width,
+    t_float height)
 {
     t_glist *x = (t_glist *)pd_new (canvas_class);
     
@@ -46,14 +46,11 @@ static t_glist *canvas_newGraphOnParent (t_glist *glist,
     x->gl_parent                        = glist;
     x->gl_name                          = utils_getDefaultBindName (canvas_class, sym__graph);
     x->gl_uniqueIdentifier              = utils_unique();
-    x->gl_graphWidth                    = bottomRightX - topLeftX;
-    x->gl_graphHeight                   = bottomRightY - topLeftY;
-    x->gl_graphMarginLeft               = 0;
-    x->gl_graphMarginTop                = 0;
     x->gl_fontSize                      = fontSize;
     x->gl_isGraphOnParent               = 1;
     
     bounds_set (&glist->gl_bounds, valueStart, valueUp, valueEnd, valueDown);
+    rectangle_setByWidthAndHeight (&x->gl_geometryGraph, 0, 0, width, height); 
     rectangle_set (&x->gl_geometryWindow, 0, WINDOW_HEADER, WINDOW_WIDTH, WINDOW_HEIGHT + WINDOW_HEADER);
     
     canvas_bind (x);
@@ -115,7 +112,7 @@ void canvas_fromArrayDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv
         t_float width  = (t_float)200.0;
         t_float height = (t_float)140.0;
         
-        g = canvas_newGraphOnParent (glist, start, up, n, -up, a, b, (a + width), (b + height));
+        g = canvas_newGraphOnParent (glist, start, up, n, -up, a, b, width, height);
     }
     
     garray_makeObject (g, dollar_fromHash (name), n, flags);

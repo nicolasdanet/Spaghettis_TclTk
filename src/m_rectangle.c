@@ -38,6 +38,11 @@ void rectangle_setByAtoms (t_rectangle *r, int argc, t_atom *argv)
     }
 }
 
+void rectangle_setByWidthAndHeight (t_rectangle *r, int a, int b, int w, int h)
+{
+    rectangle_set (r, a, b, a + PD_ABS (w), b + PD_ABS (h));
+}
+
 void rectangle_setEverything (t_rectangle *r)
 {
     rectangle_set (r, -PD_INT_MAX, -PD_INT_MAX, PD_INT_MAX, PD_INT_MAX);
