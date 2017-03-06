@@ -64,7 +64,7 @@ static void canvas_loadbangSubpatches (t_glist *glist)
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
         if ((pd_class (y) != canvas_class) && class_hasMethod (pd_class (y), sym_loadbang)) {
-            pd_vMessage (cast_pd (y), sym_loadbang, "");
+            pd_message (cast_pd (y), sym_loadbang, 0, NULL);
         }
     }
 }
@@ -639,7 +639,7 @@ static void canvas_fromPopupDialog (t_glist *glist, t_symbol *s, int argc, t_ato
     } 
     if (k == 1) {                                                                  /* Open. */
         if (class_hasMethod (pd_class (y), sym_open)) {
-            pd_vMessage (cast_pd (y), sym_open, ""); return;
+            pd_message (cast_pd (y), sym_open, 0, NULL); return;
         }
     }
     if (k == 2) {                                                                  /* Help. */

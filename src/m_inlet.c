@@ -98,7 +98,7 @@ int inlet_getSignalIndex (t_inlet *x)
 
 static void inlet_bang (t_inlet *x)
 {
-    if (x->i_type == &s_bang)        { pd_vMessage (x->i_receiver, x->i_un.i_method, ""); }
+    if (x->i_type == &s_bang)        { pd_message (x->i_receiver, x->i_un.i_method, 0, NULL); }
     else if (x->i_type == NULL)      { pd_bang (x->i_receiver); }
     else if (x->i_type == &s_list)   { inlet_list (x, &s_bang, 0, NULL); }
     else {

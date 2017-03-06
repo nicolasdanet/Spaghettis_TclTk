@@ -108,7 +108,7 @@ void instance_destroyScalarsByTemplate (t_template *template)
     
     while (glist) {
     //
-    t_symbol *s = utils_stripTemplateIdentifier (template_getTemplateIdentifier (template));
+    t_symbol *s = utils_stripTemplateIdentifier (template_getTemplateIdentifier (template)); 
     pd_vMessage (cast_pd (glist), sym_destroy, "s", s);
     glist = glist->gl_next;
     //
