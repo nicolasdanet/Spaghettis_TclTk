@@ -184,7 +184,6 @@ void        pd_symbol                                   (t_pd *x, t_symbol *s);
 void        pd_list                                     (t_pd *x, int argc, t_atom *argv);
 void        pd_message                                  (t_pd *x, t_symbol *s, int argc, t_atom *argv);
 void        pd_empty                                    (t_pd *x);
-void        pd_vMessage                                 (t_pd *x, t_symbol *s, char *fmt, ...);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

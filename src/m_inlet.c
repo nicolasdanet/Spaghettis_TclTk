@@ -94,7 +94,7 @@ int inlet_getSignalIndex (t_inlet *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* For background compatibility the broadcasting rules below must be changed with care. */
+/* For background compatibility the broadcasting rules below must be changed with extra care. */
 
 static void inlet_bang (t_inlet *x)
 {
@@ -108,10 +108,14 @@ static void inlet_bang (t_inlet *x)
 
 static void inlet_float (t_inlet *x, t_float f)
 {
-    if (x->i_type == &s_float)       { pd_vMessage (x->i_receiver, x->i_un.i_method, "f", f); }
+    t_atom t;
+    
+    SET_FLOAT (&t, f);
+    
+    if (x->i_type == &s_float)       { pd_message (x->i_receiver, x->i_un.i_method, 1, &t); }
     else if (x->i_type == &s_signal) { x->i_un.i_signal = f; }
     else if (x->i_type == NULL)      { pd_float (x->i_receiver, f); }
-    else if (x->i_type == &s_list)   { t_atom a; SET_FLOAT (&a, f); inlet_list (x, &s_float, 1, &a); }
+    else if (x->i_type == &s_list)   { inlet_list (x, &s_float, 1, &t); }
     else { 
         inlet_unexpected (x, &s_float, 0, NULL);
     }
@@ -119,9 +123,13 @@ static void inlet_float (t_inlet *x, t_float f)
 
 static void inlet_symbol (t_inlet *x, t_symbol *s)
 {
-    if (x->i_type == &s_symbol)      { pd_vMessage (x->i_receiver, x->i_un.i_method, "s", s); }
+    t_atom t; 
+    
+    SET_SYMBOL (&t, s);
+    
+    if (x->i_type == &s_symbol)      { pd_message (x->i_receiver, x->i_un.i_method, 1, &t); }
     else if (x->i_type == NULL)      { pd_symbol (x->i_receiver, s); }
-    else if (x->i_type == &s_list)   { t_atom a; SET_SYMBOL (&a, s); inlet_list (x, &s_symbol, 1, &a); }
+    else if (x->i_type == &s_list)   { inlet_list (x, &s_symbol, 1, &t); }
     else { 
         inlet_unexpected (x, &s_symbol, 0, NULL);
     }
@@ -129,9 +137,13 @@ static void inlet_symbol (t_inlet *x, t_symbol *s)
 
 static void inlet_pointer (t_inlet *x, t_gpointer *gp)
 {
-    if (x->i_type == &s_pointer)     { pd_vMessage (x->i_receiver, x->i_un.i_method, "p", gp); }
+    t_atom t; 
+    
+    SET_POINTER (&t, gp);
+    
+    if (x->i_type == &s_pointer)     { pd_message (x->i_receiver, x->i_un.i_method, 1, &t); }
     else if (x->i_type == NULL)      { pd_pointer (x->i_receiver, gp); }
-    else if (x->i_type == &s_list)   { t_atom a; SET_POINTER (&a, gp); inlet_list (x, &s_pointer, 1, &a); }
+    else if (x->i_type == &s_list)   { inlet_list (x, &s_pointer, 1, &t); }
     else {
         inlet_unexpected (x, &s_pointer, 0, NULL);
     }
