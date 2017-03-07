@@ -24,7 +24,7 @@ extern t_widgetbehavior text_widgetBehavior;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_symbol *class_defaultExternalDirectory = &s_;          /* Static. */
+static t_symbol *class_currentExternalDirectory = &s_;      /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -163,9 +163,9 @@ static void class_defaultAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void class_setDefaultExternalDirectory (t_symbol *s)
+void class_setCurrentExternalDirectory (t_symbol *s)
 {
-    class_defaultExternalDirectory = s;
+    class_currentExternalDirectory = s;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -210,10 +210,10 @@ t_class *class_new (t_symbol *s,
     c = (t_class *)PD_MEMORY_GET (sizeof (t_class));
     c->c_name               = s;
     c->c_helpName           = s;
-    c->c_externalDirectory  = class_defaultExternalDirectory;
+    c->c_externalDirectory  = class_currentExternalDirectory;
     c->c_methods            = (t_entry *)PD_MEMORY_GET (0);             /* Allocate 1 byte of memory. */
     c->c_methodsSize        = 0;
-    c->c_methodFree         = freeMethod;
+    c->c_methodFree         = (t_freemethod)freeMethod;
     c->c_methodBang         = class_defaultBang;
     c->c_methodPointer      = class_defaultPointer;
     c->c_methodFloat        = class_defaultFloat;
@@ -494,7 +494,7 @@ char *class_getHelpNameAsString (t_class *c)
 
 char *class_getExternalDirectoryAsString (t_class *c)
 {
-    return (c->c_externalDirectory->s_name);
+    return c->c_externalDirectory->s_name;
 }
 
 t_painterwidgetbehavior *class_getPainterWidget (t_class *c)

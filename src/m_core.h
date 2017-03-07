@@ -21,6 +21,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+typedef void (*t_freemethod)            (t_pd *x);
 typedef void (*t_bangmethod)            (t_pd *x);
 typedef void (*t_floatmethod)           (t_pd *x, t_float f);
 typedef void (*t_symbolmethod)          (t_pd *x, t_symbol *s);
@@ -125,7 +126,7 @@ struct _class {
     t_symbol                    *c_externalDirectory;
     t_entry                     *c_methods;
     int                         c_methodsSize;
-    t_method                    c_methodFree;
+    t_freemethod                c_methodFree;
     t_bangmethod                c_methodBang;
     t_floatmethod               c_methodFloat;
     t_symbolmethod              c_methodSymbol;
@@ -235,7 +236,8 @@ void        message_release                             (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        class_setDefaultExternalDirectory           (t_symbol *s);
+void        class_setCurrentExternalDirectory           (t_symbol *s);
+
 t_method    class_getMethod                             (t_class *c, t_symbol *s);
 int         class_hasMethod                             (t_class *c, t_symbol *s);
 int         class_hasDSP                                (t_class *c);

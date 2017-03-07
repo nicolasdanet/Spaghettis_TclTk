@@ -198,7 +198,7 @@ static int loader_openExternal (t_glist *glist, char *name)
     if (f >= 0) {
         char filepath[PD_STRING] = { 0 };
         close (f);
-        class_setDefaultExternalDirectory (gensym (directoryResult));
+        class_setCurrentExternalDirectory (gensym (directoryResult));
         if (!path_withDirectoryAndName (filepath, PD_STRING, directoryResult, nameResult, 0)) {
             char stub[PD_STRING] = { 0 };
             t_error err = loader_makeStubName (stub, PD_STRING, name, "_setup");
@@ -206,7 +206,7 @@ static int loader_openExternal (t_glist *glist, char *name)
                 loader_addLoaded (name, handle);
             }
         }
-        class_setDefaultExternalDirectory (&s_);
+        class_setCurrentExternalDirectory (&s_);
     }
     //
     }
