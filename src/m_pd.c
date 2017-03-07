@@ -44,7 +44,7 @@ void pd_free (t_pd *x)
     PD_ASSERT (c->c_type != CLASS_ABSTRACT);
     PD_ASSERT (c->c_size > 0);
     
-    if (c->c_methodFree) { (*(c->c_methodFree))(x); }
+    if (class_hasFreeMethod (c)) { (*(class_getFreeMethod (c))) (x); }
 
     if (c->c_isBox) {
     //

@@ -148,6 +148,15 @@ static inline int class_hasPropertiesFunction (t_class *c)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static inline t_freemethod class_getFreeMethod (t_class *c)
+{
+    return c->c_methodFree;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static inline void class_setHelpName (t_class *c, t_symbol *s)
 {
     c->c_helpName = s;
