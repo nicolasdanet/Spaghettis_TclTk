@@ -122,10 +122,27 @@ void        class_setCurrentExternalDirectory   (t_symbol *s);
 t_method    class_getMethod                     (t_class *c, t_symbol *s);
 int         class_hasMethod                     (t_class *c, t_symbol *s);
 
-int         class_hasDSP                        (t_class *c);
-int         class_hasBang                       (t_class *c);
-int         class_hasDrawCommand                (t_class *c);
-int         class_hasPropertiesFunction         (t_class *c);
+int         class_hasDspMethod                  (t_class *c);
+int         class_hasBangMethod                 (t_class *c);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline int class_hasFreeMethod (t_class *c)
+{
+    return (c->c_methodFree != NULL);
+}
+
+static inline int class_hasDrawCommand (t_class *c)
+{
+    return (c->c_behaviorPainter != NULL);
+}
+
+static inline int class_hasPropertiesFunction (t_class *c)
+{
+    return (c->c_fnProperties != NULL);
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

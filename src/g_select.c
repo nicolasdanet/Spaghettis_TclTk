@@ -343,7 +343,7 @@ int canvas_deselectObject (t_glist *glist, t_gobj *y)
             gobj_activated (y, glist, 0);
         }
         
-        if (class_hasDSP (pd_class (y))) { dspSuspended = dsp_suspend(); }
+        if (class_hasDspMethod (pd_class (y))) { dspSuspended = dsp_suspend(); }
     }
     
     selection1 = glist->gl_editor->e_selectedObjects;

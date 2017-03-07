@@ -32,7 +32,7 @@ void canvas_dspProceed (t_glist *glist, int isTopLevel, t_signal **sp)
     for (y = glist->gl_graphics; y; y = y->g_next) {
     //
     t_object *o = cast_objectIfPatchable (y);
-    if (o && class_hasDSP (pd_class (y))) { ugen_graphAdd (context, o); }
+    if (o && class_hasDspMethod (pd_class (y))) { ugen_graphAdd (context, o); }
     //
     }
 

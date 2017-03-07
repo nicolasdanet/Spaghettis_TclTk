@@ -48,19 +48,6 @@ static void class_floatForSignal (t_pd *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void class_defaultSave (t_gobj *z, t_buffer *b)
-{
-    PD_BUG;
-}
-
-static void class_defaultProperties (t_gobj *z, t_glist *glist)
-{
-    PD_BUG;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 static void class_defaultBang (t_pd *x)
 {
     t_class *c = pd_class (x);
@@ -217,8 +204,8 @@ t_class *class_new (t_symbol *s,
     c->c_methodAnything     = class_defaultAnything;
     c->c_behavior           = (type == CLASS_BOX ? &text_widgetBehavior : NULL);
     c->c_behaviorPainter    = NULL;
-    c->c_fnSave             = (type == CLASS_BOX ? text_functionSave : class_defaultSave);
-    c->c_fnProperties       = class_defaultProperties;
+    c->c_fnSave             = (type == CLASS_BOX ? text_functionSave : NULL);
+    c->c_fnProperties       = NULL;
     c->c_signalOffset       = 0;
     c->c_isBox              = (type == CLASS_BOX);
     c->c_hasFirstInlet      = ((flags & CLASS_NOINLET) == 0);
@@ -415,24 +402,14 @@ int class_hasMethod (t_class *c, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int class_hasDSP (t_class *c)
+int class_hasDspMethod (t_class *c)
 {
     return class_hasMethod (c, sym_dsp);
 }
 
-int class_hasBang (t_class *c)
+int class_hasBangMethod (t_class *c)
 {
     return (c->c_methodBang != class_defaultBang);
-}
-
-int class_hasDrawCommand (t_class *c)
-{
-    return (c->c_behaviorPainter != NULL);
-}
-
-int class_hasPropertiesFunction (t_class *c)
-{
-    return (c->c_fnProperties != class_defaultProperties);
 }
 
 // -----------------------------------------------------------------------------------------------------------
