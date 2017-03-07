@@ -44,9 +44,10 @@ void object_distributeOnInlets (t_object *x, int argc, t_atom *argv)
         
     } else {
     
-        if (class_hasBangMethod (pd_class (x))) { (*(pd_class (x)->c_methodBang)) (cast_pd (x)); }
-        else {
-            (*(pd_class (x)->c_methodAnything)) (cast_pd (x), &s_bang, 0, NULL);
+        if (class_hasOverrideBangMethod (pd_class (x))) { 
+            (*(class_getBangMethod (pd_class (x)))) (cast_pd (x)); 
+        } else {
+            (*(class_getAnythingMethod (pd_class (x)))) (cast_pd (x), &s_bang, 0, NULL);
         }
     }
 } 

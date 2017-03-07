@@ -66,27 +66,27 @@ void pd_free (t_pd *x)
 
 void pd_bang (t_pd *x)
 {
-    (*(pd_class (x)->c_methodBang)) (x);
+    (*(class_getBangMethod (pd_class (x)))) (x);
 }
 
 void pd_float (t_pd *x, t_float f)
 {
-    (*(pd_class (x)->c_methodFloat)) (x, f);
+    (*(class_getFloatMethod (pd_class (x)))) (x, f);
 }
 
 void pd_symbol (t_pd *x, t_symbol *s)
 {
-    (*(pd_class (x)->c_methodSymbol)) (x, s);
+    (*(class_getSymbolMethod (pd_class (x)))) (x, s);
 }
 
 void pd_list (t_pd *x, int argc, t_atom *argv)
 {
-    (*(pd_class (x)->c_methodList)) (x, &s_list, argc, argv);
+    (*(class_getListMethod (pd_class (x)))) (x, &s_list, argc, argv);
 }
 
 void pd_pointer (t_pd *x, t_gpointer *gp)
 {
-    (*(pd_class (x)->c_methodPointer)) (x, gp);
+    (*(class_getPointerMethod (pd_class (x)))) (x, gp);
 }
 
 // -----------------------------------------------------------------------------------------------------------

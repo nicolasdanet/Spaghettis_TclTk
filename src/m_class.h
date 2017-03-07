@@ -123,7 +123,7 @@ t_method    class_getMethod                     (t_class *c, t_symbol *s);
 int         class_hasMethod                     (t_class *c, t_symbol *s);
 
 int         class_hasDspMethod                  (t_class *c);
-int         class_hasBangMethod                 (t_class *c);
+int         class_hasOverrideBangMethod         (t_class *c);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -151,6 +151,36 @@ static inline int class_hasPropertiesFunction (t_class *c)
 static inline t_freemethod class_getFreeMethod (t_class *c)
 {
     return c->c_methodFree;
+}
+
+static inline t_bangmethod class_getBangMethod (t_class *c)
+{
+    return c->c_methodBang;
+}
+
+static inline t_floatmethod class_getFloatMethod (t_class *c)
+{
+    return c->c_methodFloat;
+}
+
+static inline t_symbolmethod class_getSymbolMethod (t_class *c)
+{
+    return c->c_methodSymbol;
+}
+
+static inline t_listmethod class_getListMethod (t_class *c)
+{
+    return c->c_methodList;
+}
+
+static inline t_anythingmethod class_getAnythingMethod (t_class *c)
+{
+    return c->c_methodAnything;
+}
+
+static inline t_pointermethod class_getPointerMethod (t_class *c)
+{
+    return c->c_methodPointer;
 }
 
 // -----------------------------------------------------------------------------------------------------------

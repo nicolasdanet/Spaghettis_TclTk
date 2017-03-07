@@ -196,24 +196,24 @@ static t_error method_typed (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     t_class *c = pd_class (x);
         
     if (s == &s_float) {
-        if (argc && IS_FLOAT (argv)) { (*c->c_methodFloat) (x, GET_FLOAT (argv)); }
+        if (argc && IS_FLOAT (argv)) { (*(class_getFloatMethod (c))) (x, GET_FLOAT (argv)); }
         else {
-            if (!argc) { (*c->c_methodFloat) (x, (t_float)0.0); }
+            if (!argc) { (*(class_getFloatMethod (c))) (x, (t_float)0.0); }
             else {
                 err = PD_ERROR;
             }
         }
         
     } else if (s == &s_bang)   {
-        (*c->c_methodBang) (x);
+        (*(class_getBangMethod (c))) (x);
         
     } else if (s == &s_list)   {
-        (*c->c_methodList) (x, s, argc, argv);
+        (*(class_getListMethod (c))) (x, s, argc, argv);
         
     } else if (s == &s_symbol) {
-        if (argc && IS_SYMBOL (argv)) { (*c->c_methodSymbol) (x, GET_SYMBOL (argv)); }
+        if (argc && IS_SYMBOL (argv)) { (*(class_getSymbolMethod (c))) (x, GET_SYMBOL (argv)); }
         else {
-            if (!argc) { (*c->c_methodSymbol) (x, &s_); }
+            if (!argc) { (*(class_getSymbolMethod (c))) (x, &s_); }
             else {
                 err = PD_ERROR;
             }
@@ -268,7 +268,7 @@ void pd_message (t_pd *x, t_symbol *s, int argc, t_atom *argv)
         }
         
         if (!err) {
-            (*c->c_methodAnything) (x, s, argc, argv); 
+            (*(class_getAnythingMethod (c))) (x, s, argc, argv); 
             return; 
         }
     }

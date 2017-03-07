@@ -407,7 +407,7 @@ int class_hasDspMethod (t_class *c)
     return class_hasMethod (c, sym_dsp);
 }
 
-int class_hasBangMethod (t_class *c)
+int class_hasOverrideBangMethod (t_class *c)
 {
     return (c->c_methodBang != class_defaultBang);
 }
