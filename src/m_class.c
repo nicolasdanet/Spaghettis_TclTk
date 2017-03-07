@@ -402,7 +402,7 @@ int class_hasMethod (t_class *c, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int class_hasDspMethod (t_class *c)
+int class_hasDSP (t_class *c)
 {
     return class_hasMethod (c, sym_dsp);
 }

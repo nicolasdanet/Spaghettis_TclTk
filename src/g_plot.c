@@ -369,7 +369,7 @@ static void plot_behaviorGetRectangleRecursive (t_plot *x,
                         
     for (y = view->gl_graphics; y; y = y->g_next) {
     
-        t_painterwidgetbehavior *behavior = class_getPainterWidget (pd_class (y));
+        t_painterwidgetbehavior *behavior = class_getPainterWidgetBehavior (pd_class (y));
         
         if (behavior) {
         
@@ -625,7 +625,7 @@ static void plot_behaviorVisibilityChangedRecursive (t_plot *x,
     
     for (y = view->gl_graphics; y; y = y->g_next) {
 
-        t_painterwidgetbehavior *behavior = class_getPainterWidget (pd_class (y));
+        t_painterwidgetbehavior *behavior = class_getPainterWidgetBehavior (pd_class (y));
         
         if (behavior) {
         

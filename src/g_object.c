@@ -159,8 +159,8 @@ void gobj_visibilityChanged (t_gobj *x, t_glist *owner, int isVisible)
 
 int object_isBox (t_object *x)
 {
-    return (pd_class (x)->c_behavior == &text_widgetBehavior)
-        || (cast_glistChecked (cast_pd (x)) && !(cast_glist (x)->gl_isGraphOnParent));
+    return ((class_getWidgetBehavior (pd_class (x)) == &text_widgetBehavior)
+        || (cast_glistChecked (cast_pd (x)) && !(cast_glist (x)->gl_isGraphOnParent)));
 }
 
 // -----------------------------------------------------------------------------------------------------------

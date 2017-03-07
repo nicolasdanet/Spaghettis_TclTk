@@ -122,7 +122,7 @@ void        class_setCurrentExternalDirectory   (t_symbol *s);
 t_method    class_getMethod                     (t_class *c, t_symbol *s);
 int         class_hasMethod                     (t_class *c, t_symbol *s);
 
-int         class_hasDspMethod                  (t_class *c);
+int         class_hasDSP                        (t_class *c);
 int         class_hasOverrideBangMethod         (t_class *c);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -236,7 +236,12 @@ static inline char *class_getExternalDirectoryAsString (t_class *c)
     return c->c_externalDirectory->s_name;
 }
 
-static inline t_painterwidgetbehavior *class_getPainterWidget (t_class *c)
+static inline t_widgetbehavior *class_getWidgetBehavior (t_class *c)
+{
+    return c->c_behavior;
+}
+
+static inline t_painterwidgetbehavior *class_getPainterWidgetBehavior (t_class *c)
 {
     return c->c_behaviorPainter;
 }
