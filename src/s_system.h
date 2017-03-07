@@ -57,6 +57,7 @@ typedef void (*t_pollfn)        (void *p, int fd);
 typedef void (*t_notifyfn)      (void *owner, int fd);
 typedef void (*t_receivefn)     (void *owner, t_buffer *b);
 typedef void (*t_clockfn)       (void *owner);
+typedef void (*t_drawfn)        (t_gobj *x, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

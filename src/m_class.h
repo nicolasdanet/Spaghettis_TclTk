@@ -30,8 +30,6 @@ typedef void (*t_pointermethod)             (t_pd *x, t_gpointer *gp);
 
 typedef void (*t_savefn)                    (t_gobj *x, t_buffer *b);
 typedef void (*t_propertiesfn)              (t_gobj *x, t_glist *glist);
-typedef void (*t_drawfn)                    (t_gobj *x, t_glist *glist);
-typedef void (*t_motionfn)                  (void *z, t_float deltaX, t_float deltaY, t_float modifier);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -122,26 +120,19 @@ void        class_setCurrentExternalDirectory   (t_symbol *s);
 t_method    class_getMethod                     (t_class *c, t_symbol *s);
 int         class_hasMethod                     (t_class *c, t_symbol *s);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 int         class_hasDSP                        (t_class *c);
 int         class_hasOverrideBangMethod         (t_class *c);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 static inline int class_hasFreeMethod (t_class *c)
 {
     return (c->c_methodFree != NULL);
-}
-
-static inline int class_hasDrawCommand (t_class *c)
-{
-    return (c->c_behaviorPainter != NULL);
-}
-
-static inline int class_hasPropertiesFunction (t_class *c)
-{
-    return (c->c_fnProperties != NULL);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -187,35 +178,6 @@ static inline t_pointermethod class_getPointerMethod (t_class *c)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static inline void class_setHelpName (t_class *c, t_symbol *s)
-{
-    c->c_helpName = s;
-}
-
-static inline void class_setWidgetBehavior (t_class *c, t_widgetbehavior *w)
-{
-    c->c_behavior = w;
-}
-
-static inline void class_setPainterWidgetBehavior (t_class *c, t_painterwidgetbehavior *pw)
-{
-    c->c_behaviorPainter = pw;
-}
-
-static inline void class_setSaveFunction (t_class *c, t_savefn f)
-{
-    c->c_fnSave = f;
-}
-
-static inline void class_setPropertiesFunction (t_class *c, t_propertiesfn f)
-{
-    c->c_fnProperties = f;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static inline t_symbol *class_getName (t_class *c)
 {
     return c->c_name;
@@ -236,6 +198,43 @@ static inline char *class_getExternalDirectoryAsString (t_class *c)
     return c->c_externalDirectory->s_name;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline void class_setHelpName (t_class *c, t_symbol *s)
+{
+    c->c_helpName = s;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline int class_hasWidgetBehavior (t_class *c)
+{
+    return (c->c_behavior != NULL);
+}
+
+static inline int class_hasPainterWidgetBehavior (t_class *c)
+{
+    return (c->c_behaviorPainter != NULL);
+}
+
+static inline int class_hasSaveFunction (t_class *c)
+{
+    return (c->c_fnSave != NULL);
+}
+
+static inline int class_hasPropertiesFunction (t_class *c)
+{
+    return (c->c_fnProperties != NULL);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static inline t_widgetbehavior *class_getWidgetBehavior (t_class *c)
 {
     return c->c_behavior;
@@ -246,9 +245,38 @@ static inline t_painterwidgetbehavior *class_getPainterWidgetBehavior (t_class *
     return c->c_behaviorPainter;
 }
 
+static inline t_savefn class_getSaveFunction (t_class *c)
+{
+    return c->c_fnSave;
+}
+
 static inline t_propertiesfn class_getPropertiesFunction (t_class *c)
 {
     return c->c_fnProperties;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline void class_setWidgetBehavior (t_class *c, t_widgetbehavior *w)
+{
+    c->c_behavior = w;
+}
+
+static inline void class_setPainterWidgetBehavior (t_class *c, t_painterwidgetbehavior *pw)
+{
+    c->c_behaviorPainter = pw;
+}
+
+static inline void class_setSaveFunction (t_class *c, t_savefn f)
+{
+    c->c_fnSave = f;
+}
+
+static inline void class_setPropertiesFunction (t_class *c, t_propertiesfn f)
+{
+    c->c_fnProperties = f;
 }
 
 // -----------------------------------------------------------------------------------------------------------

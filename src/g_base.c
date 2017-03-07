@@ -169,7 +169,7 @@ void canvas_addObject (t_glist *glist, t_gobj *y)
 {
     t_object *object = NULL;
     
-    int needToPaintScalars = class_hasDrawCommand (pd_class (y));
+    int needToPaintScalars = class_hasPainterWidgetBehavior (pd_class (y));
     
     if (needToPaintScalars) { paint_erase(); }
     
@@ -194,7 +194,7 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     t_glist *canvas  = canvas_getView (glist);
         
     int needToUpdateDSPChain = class_hasDSP (pd_class (y));
-    int needToPaintScalars   = class_hasDrawCommand (pd_class (y));
+    int needToPaintScalars   = class_hasPainterWidgetBehavior (pd_class (y));
     int deletingState        = canvas->gl_isDeleting;
     
     canvas->gl_isDeleting = 1;
