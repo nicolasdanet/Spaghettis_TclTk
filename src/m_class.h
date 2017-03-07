@@ -101,7 +101,7 @@ struct _class {
     t_savefn                    c_fnSave;
     t_propertiesfn              c_fnProperties;
     int                         c_signalOffset;
-    char                        c_hasInlets;
+    char                        c_hasFirstInlet;
     char                        c_isBox;
     int                         c_type;
     size_t                      c_size;
@@ -130,14 +130,19 @@ int         class_hasOverrideBangMethod         (t_class *c);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static inline int class_hasFreeMethod (t_class *c)
+static inline int class_hasFirstInlet (t_class *c)
 {
-    return (c->c_methodFree != NULL);
+    return (c->c_hasFirstInlet != 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+static inline int class_hasFreeMethod (t_class *c)
+{
+    return (c->c_methodFree != NULL);
+}
 
 static inline t_freemethod class_getFreeMethod (t_class *c)
 {

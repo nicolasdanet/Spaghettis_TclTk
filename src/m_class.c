@@ -207,7 +207,7 @@ t_class *class_new (t_symbol *s,
     c->c_fnSave             = (type == CLASS_BOX ? text_functionSave : NULL);
     c->c_fnProperties       = NULL;
     c->c_signalOffset       = 0;
-    c->c_hasInlets          = ((flags & CLASS_NOINLET) == 0);
+    c->c_hasFirstInlet      = ((flags & CLASS_NOINLET) == 0);
     c->c_isBox              = (type == CLASS_BOX);
     c->c_type               = type;
     c->c_size               = size;

@@ -55,7 +55,7 @@ static t_outconnect *linetraverser_outletNext (t_outconnect *previous, t_object 
         t_inlet *i1 = (t_inlet *)y;
         t_inlet *i2 = NULL;
         t_object *o = inlet_getOwner (i1);
-        int k = pd_class (o)->c_hasInlets;
+        int k = class_hasFirstInlet (pd_class (o));
         for (i2 = object_getInlets (o); i2 && i2 != i1; i2 = inlet_getNext (i2)) { k++; }
         *n    = k;
         *ptr  = i1;
