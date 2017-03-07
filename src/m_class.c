@@ -60,7 +60,6 @@ static void class_defaultProperties (t_gobj *z, t_glist *glist)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 static void class_defaultBang (t_pd *x)
 {
@@ -149,10 +148,6 @@ static void class_defaultList (t_pd *x, t_symbol *s, int argc, t_atom *argv)
         class_defaultAnything (x, &s_list, argc, argv); 
     }
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 static void class_defaultAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
@@ -411,14 +406,14 @@ t_method class_getMethod (t_class *c, t_symbol *s)
     return NULL;
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 int class_hasMethod (t_class *c, t_symbol *s)
 {
     return (class_getMethod (c, s) != NULL);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 int class_hasDSP (t_class *c)
 {
@@ -430,10 +425,6 @@ int class_hasBang (t_class *c)
     return (c->c_methodBang != class_defaultBang);
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 int class_hasDrawCommand (t_class *c)
 {
     return (c->c_behaviorPainter != NULL);
@@ -442,69 +433,6 @@ int class_hasDrawCommand (t_class *c)
 int class_hasPropertiesFunction (t_class *c)
 {
     return (c->c_fnProperties != class_defaultProperties);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void class_setHelpName (t_class *c, t_symbol *s)
-{
-    c->c_helpName = s;
-}
-
-void class_setWidgetBehavior (t_class *c, t_widgetbehavior *w)
-{
-    c->c_behavior = w;
-}
-
-void class_setPainterWidgetBehavior (t_class *c, t_painterwidgetbehavior *pw)
-{
-    c->c_behaviorPainter = pw;
-}
-
-void class_setSaveFunction (t_class *c, t_savefn f)
-{
-    c->c_fnSave = f;
-}
-
-void class_setPropertiesFunction (t_class *c, t_propertiesfn f)
-{
-    c->c_fnProperties = f;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_symbol *class_getName (t_class *c)
-{
-    return c->c_name;
-}
-
-char *class_getNameAsString (t_class *c)
-{
-    return c->c_name->s_name;
-}
-
-char *class_getHelpNameAsString (t_class *c)
-{
-    return c->c_helpName->s_name;
-}
-
-char *class_getExternalDirectoryAsString (t_class *c)
-{
-    return c->c_externalDirectory->s_name;
-}
-
-t_painterwidgetbehavior *class_getPainterWidget (t_class *c)
-{
-    return c->c_behaviorPainter;
-}
-
-t_propertiesfn class_getPropertiesFunction (t_class *c)
-{
-    return c->c_fnProperties;
 }
 
 // -----------------------------------------------------------------------------------------------------------

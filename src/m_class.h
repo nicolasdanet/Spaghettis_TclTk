@@ -113,34 +113,82 @@ struct _class {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        class_setCurrentExternalDirectory               (t_symbol *s);
+void        class_setCurrentExternalDirectory   (t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_method    class_getMethod                                 (t_class *c, t_symbol *s);
-int         class_hasMethod                                 (t_class *c, t_symbol *s);
-int         class_hasDSP                                    (t_class *c);
-int         class_hasBang                                   (t_class *c);
-int         class_hasDrawCommand                            (t_class *c);
-int         class_hasPropertiesFunction                     (t_class *c); 
-void        class_setWidgetBehavior                         (t_class *c, t_widgetbehavior *w);
-void        class_setPainterWidgetBehavior                  (t_class *c, t_painterwidgetbehavior *w);
-void        class_setHelpName                               (t_class *c, t_symbol *s);
-void        class_setPropertiesFunction                     (t_class *c, t_propertiesfn f);
-void        class_setSaveFunction                           (t_class *c, t_savefn f);
+t_method    class_getMethod                     (t_class *c, t_symbol *s);
+int         class_hasMethod                     (t_class *c, t_symbol *s);
 
-t_symbol    *class_getName                                  (t_class *c);
-char        *class_getNameAsString                          (t_class *c);
-char        *class_getHelpNameAsString                      (t_class *c);
-char        *class_getExternalDirectoryAsString             (t_class *c);
+int         class_hasDSP                        (t_class *c);
+int         class_hasBang                       (t_class *c);
+int         class_hasDrawCommand                (t_class *c);
+int         class_hasPropertiesFunction         (t_class *c);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-t_painterwidgetbehavior     *class_getPainterWidget         (t_class *c);
-t_propertiesfn              class_getPropertiesFunction     (t_class *c);
+static inline void class_setHelpName (t_class *c, t_symbol *s)
+{
+    c->c_helpName = s;
+}
+
+static inline void class_setWidgetBehavior (t_class *c, t_widgetbehavior *w)
+{
+    c->c_behavior = w;
+}
+
+static inline void class_setPainterWidgetBehavior (t_class *c, t_painterwidgetbehavior *pw)
+{
+    c->c_behaviorPainter = pw;
+}
+
+static inline void class_setSaveFunction (t_class *c, t_savefn f)
+{
+    c->c_fnSave = f;
+}
+
+static inline void class_setPropertiesFunction (t_class *c, t_propertiesfn f)
+{
+    c->c_fnProperties = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline t_symbol *class_getName (t_class *c)
+{
+    return c->c_name;
+}
+
+static inline char *class_getNameAsString (t_class *c)
+{
+    return c->c_name->s_name;
+}
+
+static inline char *class_getHelpNameAsString (t_class *c)
+{
+    return c->c_helpName->s_name;
+}
+
+static inline char *class_getExternalDirectoryAsString (t_class *c)
+{
+    return c->c_externalDirectory->s_name;
+}
+
+static inline t_painterwidgetbehavior *class_getPainterWidget (t_class *c)
+{
+    return c->c_behaviorPainter;
+}
+
+static inline t_propertiesfn class_getPropertiesFunction (t_class *c)
+{
+    return c->c_fnProperties;
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
