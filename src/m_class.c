@@ -279,10 +279,7 @@ void class_addMethod (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ..
 {
     va_list ap;
     t_atomtype argtype = type1;
-    t_entry *m = NULL;
-    size_t oldSize, newSize;
-    int i, n = 0;
-        
+    
     va_start (ap, type1);
     
     if (s == &s_signal) { PD_BUG; return; }                     /* Deprecated. */
@@ -314,32 +311,41 @@ void class_addMethod (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ..
         
     } else {
     //
+    int i;
+    
+    /* Method name must be unique. */
     
     for (i = 0; i < c->c_methodsSize; i++) {
         if (c->c_methods[i].me_name == s) { PD_BUG; return; }
     }
     
-    oldSize = c->c_methodsSize * sizeof (t_entry);
-    newSize = (c->c_methodsSize + 1) * sizeof (t_entry);
-    
-    c->c_methods = PD_MEMORY_RESIZE (c->c_methods, oldSize, newSize);
-    
-    m = c->c_methods + c->c_methodsSize;
-    c->c_methodsSize++;
-    m->me_name = s;
-    m->me_method = fn;
+    {
+        t_entry *m = NULL;
+        int n = 0;
+                
+        size_t oldSize = sizeof (t_entry) * (c->c_methodsSize);
+        size_t newSize = sizeof (t_entry) * (c->c_methodsSize + 1);
+        
+        c->c_methods = PD_MEMORY_RESIZE (c->c_methods, oldSize, newSize);
+        
+        m = c->c_methods + c->c_methodsSize;
+        m->me_name = s;
+        m->me_method = fn;
 
-    while (argtype != A_NULL && n < PD_ARGUMENTS) {
-        m->me_arguments[n] = argtype;
-        n++;
-        argtype = va_arg (ap, t_atomtype);
+        c->c_methodsSize++;
+        
+        while (argtype != A_NULL && n < PD_ARGUMENTS) {
+            m->me_arguments[n] = argtype;
+            n++;
+            argtype = va_arg (ap, t_atomtype);
+        }
+        
+        PD_ASSERT (argtype == A_NULL);
+
+        va_end (ap);
+        
+        m->me_arguments[n] = A_NULL;
     }
-    
-    PD_ASSERT (argtype == A_NULL);
-
-    va_end (ap);
-    
-    m->me_arguments[n] = A_NULL;
     //
     }
 }
