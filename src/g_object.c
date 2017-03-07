@@ -30,52 +30,79 @@ extern t_widgetbehavior text_widgetBehavior;
 
 void gobj_getRectangle (t_gobj *x, t_glist *owner, t_rectangle *r)
 {
-    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnGetRectangle) {
-        (*(pd_class (x)->c_behavior->w_fnGetRectangle)) (x, owner, r);
+    if (class_hasWidgetBehavior (pd_class (x))) {
+        if (class_getWidgetBehavior (pd_class (x))->w_fnGetRectangle) {
+            (*(class_getWidgetBehavior (pd_class (x))->w_fnGetRectangle)) (x, owner, r);
+        }
     }
 }
 
 void gobj_displaced (t_gobj *x, t_glist *owner, int deltaX, int deltaY)
 {
-    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnDisplaced) {
-        (*(pd_class (x)->c_behavior->w_fnDisplaced)) (x, owner, deltaX, deltaY);
+    if (class_hasWidgetBehavior (pd_class (x))) {
+        if (class_getWidgetBehavior (pd_class (x))->w_fnDisplaced) {
+            (*(class_getWidgetBehavior (pd_class (x))->w_fnDisplaced)) (x, owner, deltaX, deltaY);
+        }
     }
 }
 
 void gobj_selected (t_gobj *x, t_glist *owner, int isSelected)
 {
-    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnSelected) {
-        (*(pd_class (x)->c_behavior->w_fnSelected)) (x, owner, isSelected);
+    if (class_hasWidgetBehavior (pd_class (x))) {
+        if (class_getWidgetBehavior (pd_class (x))->w_fnSelected) {
+            (*(class_getWidgetBehavior (pd_class (x))->w_fnSelected)) (x, owner, isSelected);
+        }
     }
 }
 
 void gobj_activated (t_gobj *x, t_glist *owner, int isActivated)
 {
-    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnActivated) {
-        (*(pd_class (x)->c_behavior->w_fnActivated)) (x, owner, isActivated);
+    if (class_hasWidgetBehavior (pd_class (x))) {
+        if (class_getWidgetBehavior (pd_class (x))->w_fnActivated) {
+            (*(class_getWidgetBehavior (pd_class (x))->w_fnActivated)) (x, owner, isActivated);
+        }
     }
 }
 
 void gobj_deleted (t_gobj *x, t_glist *owner)
 {
-    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnDeleted) {
-        (*(pd_class (x)->c_behavior->w_fnDeleted)) (x, owner);
+    if (class_hasWidgetBehavior (pd_class (x))) {
+        if (class_getWidgetBehavior (pd_class (x))->w_fnDeleted) {
+            (*(class_getWidgetBehavior (pd_class (x))->w_fnDeleted)) (x, owner);
+        }
+    }
+}
+
+void gobj_visibilityChanged (t_gobj *x, t_glist *owner, int isVisible)
+{
+    if (class_hasWidgetBehavior (pd_class (x))) {
+        if (class_getWidgetBehavior (pd_class (x))->w_fnVisibilityChanged) {
+            if (gobj_isVisible (x, owner)) {
+                (*(class_getWidgetBehavior (pd_class (x))->w_fnVisibilityChanged)) (x, owner, isVisible);
+            }
+        }
     }
 }
 
 int gobj_mouse (t_gobj *x, t_glist *owner, t_mouse *m)
 {
-    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnMouse) {
-        return (*(pd_class (x)->c_behavior->w_fnMouse)) (x, owner, m);
-    } else {
-        return 0;
-    }
+    if (class_hasWidgetBehavior (pd_class (x))) { 
+        if (class_getWidgetBehavior (pd_class (x))->w_fnMouse) {
+            return (*(class_getWidgetBehavior (pd_class (x))->w_fnMouse)) (x, owner, m);
+        }
+    } 
+
+    return 0;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void gobj_save (t_gobj *x, t_buffer *buffer)
 {
-    if (pd_class (x)->c_fnSave) {
-        (*(pd_class (x)->c_fnSave)) (x, buffer);
+    if (class_hasSaveFunction (pd_class (x))) {
+        (*(class_getSaveFunction (pd_class (x)))) (x, buffer);
     }
 }
 
@@ -83,7 +110,7 @@ void gobj_save (t_gobj *x, t_buffer *buffer)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int gobj_hit (t_gobj *x, t_glist *owner, int positionX, int positionY, t_rectangle *r)
+int gobj_hit (t_gobj *x, t_glist *owner, int a, int b, t_rectangle *r)
 {
     if (gobj_isVisible (x, owner)) {
     //
@@ -91,7 +118,7 @@ int gobj_hit (t_gobj *x, t_glist *owner, int positionX, int positionY, t_rectang
     
     gobj_getRectangle (x, owner, &t);
     
-    if (!rectangle_isNothing (&t) && rectangle_containsPoint (&t, positionX, positionY)) {
+    if (!rectangle_isNothing (&t) && rectangle_containsPoint (&t, a, b)) {
         rectangle_setCopy (r, &t);
         return 1;
     }
@@ -144,18 +171,11 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
     return 1;
 }
 
-void gobj_visibilityChanged (t_gobj *x, t_glist *owner, int isVisible)
-{
-    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnVisibilityChanged) {
-        if (gobj_isVisible (x, owner)) {
-            (*(pd_class (x)->c_behavior->w_fnVisibilityChanged)) (x, owner, isVisible);
-        }
-    }
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+/* True if object is really drawn as a box in the patch. */
 
 int object_isBox (t_object *x)
 {
