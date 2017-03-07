@@ -117,12 +117,12 @@ static inline t_buffer *object_getBuffer (t_object *x)
     return x->te_buffer;
 }
 
-static inline t_inlet *object_getFirstInlet (t_object *x)
+static inline t_inlet *object_getInlets (t_object *x)
 {
     return x->te_inlets;
 }
 
-static inline t_outlet *object_getFirstOutlet (t_object *x)
+static inline t_outlet *object_getOutlets (t_object *x)
 {
     return x->te_outlets;
 }

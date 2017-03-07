@@ -70,7 +70,7 @@ t_outconnect *object_connect (t_object *src, int m, t_object *dest, int n)
     //
     t_pd *receiver = NULL;
     
-    if (pd_class (dest)->c_hasFirstInlet) { if (!n) { receiver = cast_pd (dest); } else { n--; } }
+    if (pd_class (dest)->c_hasInlets) { if (!n) { receiver = cast_pd (dest); } else { n--; } }
     
     if (receiver == NULL) {
         t_inlet *i = NULL; for (i = dest->te_inlets; i && n; i = inlet_getNext (i), n--) { }
@@ -104,7 +104,7 @@ void object_disconnect (t_object *src, int m, t_object *dest, int n)
     //
     t_pd *receiver = NULL;
     
-    if (pd_class (dest)->c_hasFirstInlet) { if (!n) { receiver = cast_pd (dest); } else { n--; } }
+    if (pd_class (dest)->c_hasInlets) { if (!n) { receiver = cast_pd (dest); } else { n--; } }
     
     if (receiver == NULL) {
         t_inlet *i = NULL; for (i = dest->te_inlets; i && n; i = inlet_getNext (i), n--) { }
@@ -131,7 +131,7 @@ int object_getNumberOfInlets (t_object *x)
 {
     int n = 0;
     t_inlet *i = NULL;
-    if (pd_class (x)->c_hasFirstInlet) { n++; }
+    if (pd_class (x)->c_hasInlets) { n++; }
     for (i = x->te_inlets; i; i = inlet_getNext (i)) { n++; }
     return n;
 }
@@ -148,7 +148,7 @@ int object_getNumberOfSignalInlets (t_object *x)
 {
     int n = 0;
     t_inlet *i = NULL;
-    if (pd_class (x)->c_hasFirstInlet && pd_class (x)->c_signalOffset) { n++; }
+    if (pd_class (x)->c_hasInlets && pd_class (x)->c_signalOffset) { n++; }
     for (i = x->te_inlets; i; i = inlet_getNext (i)) { if (inlet_isSignal (i)) { n++; } }
     return n;
 }
@@ -172,7 +172,7 @@ int object_getSignalIndexOfInlet (t_object *x, int m)
     
     PD_ASSERT (m >= 0);
         
-    if (pd_class (x)->c_hasFirstInlet && pd_class (x)->c_signalOffset) {
+    if (pd_class (x)->c_hasInlets && pd_class (x)->c_signalOffset) {
         if (!m) { return 0; } else { n++; } 
         m--;
     }
@@ -216,8 +216,8 @@ int object_isSignalInlet (t_object *x, int m)
 {
     t_inlet *i = NULL;
     
-    if (pd_class (x)->c_hasFirstInlet) {
-        if (!m) { return (pd_class (x)->c_hasFirstInlet && pd_class (x)->c_signalOffset); }
+    if (pd_class (x)->c_hasInlets) {
+        if (!m) { return (pd_class (x)->c_hasInlets && pd_class (x)->c_signalOffset); }
         else {
             m--;
         }
@@ -250,7 +250,7 @@ t_float *object_getSignalValueAtIndex (t_object *x, int m)
 {
     t_inlet *i = NULL;
     
-    if (pd_class (x)->c_hasFirstInlet && pd_class (x)->c_signalOffset) {
+    if (pd_class (x)->c_hasInlets && pd_class (x)->c_signalOffset) {
         if (!m) {
             if (pd_class (x)->c_signalOffset > 0) {
                 return (t_float *)(((char *)x) + pd_class (x)->c_signalOffset);

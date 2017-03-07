@@ -101,8 +101,8 @@ struct _class {
     t_savefn                    c_fnSave;
     t_propertiesfn              c_fnProperties;
     int                         c_signalOffset;
+    char                        c_hasInlets;
     char                        c_isBox;
-    char                        c_hasFirstInlet;
     int                         c_type;
     size_t                      c_size;
     };
