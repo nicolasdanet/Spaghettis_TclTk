@@ -528,6 +528,7 @@
 		375D72E61D86A5F000D079B1 /* x_arrayclient.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arrayclient.c; path = src/x_arrayclient.c; sourceTree = "<group>"; };
 		375D73201D86ACAC00D079B1 /* x_arraymin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arraymin.c; path = src/x_arraymin.c; sourceTree = "<group>"; };
 		375E88DE1D901BA90052D22C /* x_listinlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_listinlet.c; path = src/x_listinlet.c; sourceTree = "<group>"; };
+		376192281E6EA50800E4B2DA /* m_class.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_class.h; path = src/m_class.h; sourceTree = "<group>"; };
 		376209A51E4F0FC300D97CF4 /* s_deviceslist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_deviceslist.c; path = src/s_deviceslist.c; sourceTree = "<group>"; };
 		3762D2BC1E051E2700385DB9 /* d_writesf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_writesf.c; path = src/d_writesf.c; sourceTree = "<group>"; };
 		3762D2FC1E05308C00385DB9 /* d_readsf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_readsf.c; path = src/d_readsf.c; sourceTree = "<group>"; };
@@ -1039,6 +1040,7 @@
 			children = (
 				378971DD1C4F716700263434 /* m_macros.h */,
 				378971E31C4F716700263434 /* m_core.h */,
+				376192281E6EA50800E4B2DA /* m_class.h */,
 				37A649691E6472FA002C0A5C /* m_object.h */,
 				378971D71C4F716700263434 /* m_alloca.h */,
 				37D5E4271D746170004CB497 /* m_error.h */,
