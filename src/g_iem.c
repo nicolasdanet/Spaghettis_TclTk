@@ -211,8 +211,9 @@ void iemgui_checkSendReceiveLoop (t_iem *iem)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void iemgui_setSend (void *x, t_iem *iem, t_symbol *s)
+void iemgui_setSend (void *x, t_symbol *s)
 {
+    t_iem *iem  = cast_iem (x);
     t_symbol *t = dollar_fromHash (utils_substituteIfEmpty (s, 0));
     iem->iem_unexpandedSend = t;
     iem->iem_send = iemgui_expandDollar (iem->iem_owner, t);
@@ -220,8 +221,9 @@ void iemgui_setSend (void *x, t_iem *iem, t_symbol *s)
     iemgui_checkSendReceiveLoop (iem);
 }
 
-void iemgui_setReceive (void *x, t_iem *iem, t_symbol *s)
+void iemgui_setReceive (void *x, t_symbol *s)
 {
+    t_iem *iem  = cast_iem (x);
     t_symbol *t = dollar_fromHash (utils_substituteIfEmpty (s, 0));
     if (iem->iem_canReceive) { pd_unbind (cast_pd (iem), iem->iem_receive); }
     iem->iem_unexpandedReceive = t;
@@ -231,8 +233,9 @@ void iemgui_setReceive (void *x, t_iem *iem, t_symbol *s)
     iemgui_checkSendReceiveLoop (iem);
 }
 
-void iemgui_setLabel (void *x, t_iem *iem, t_symbol *s)
+void iemgui_setLabel (void *x, t_symbol *s)
 {
+    t_iem *iem  = cast_iem (x);
     t_symbol *t = dollar_fromHash (utils_substituteIfEmpty (s, 0));
     iem->iem_unexpandedLabel = t;
     iem->iem_label = iemgui_expandDollar (iem->iem_owner, t);
@@ -245,8 +248,10 @@ void iemgui_setLabel (void *x, t_iem *iem, t_symbol *s)
     }
 }
 
-void iemgui_setLabelPosition (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
+void iemgui_setLabelPosition (void *x, t_symbol *s, int argc, t_atom *argv)
 {
+    t_iem *iem = cast_iem (x);
+    
     if (argc > 1) {
     //
     iem->iem_labelX = (int)atom_getFloatAtIndex (0, argc, argv);
@@ -263,8 +268,10 @@ void iemgui_setLabelPosition (void *x, t_iem *iem, t_symbol *s, int argc, t_atom
     }
 }
 
-void iemgui_setLabelFont (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
+void iemgui_setLabelFont (void *x, t_symbol *s, int argc, t_atom *argv)
 {
+    t_iem *iem = cast_iem (x);
+    
     if (argc > 1) {
     //
     int f = (int)atom_getFloatAtIndex (1, argc, argv);
@@ -280,53 +287,65 @@ void iemgui_setLabelFont (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *ar
     }
 }
 
-void iemgui_setBackgroundColor (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
+void iemgui_setBackgroundColor (void *x, t_symbol *s, int argc, t_atom *argv)
 {
+    t_iem *iem = cast_iem (x);
+    
     iem->iem_colorBackground = color_withRGB (argc, argv);
     
     if (canvas_isMapped (iem->iem_owner)) { (*iem->iem_draw) (x, iem->iem_owner, IEM_DRAW_CONFIG); }
 }
 
-void iemgui_setForegroundColor (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
+void iemgui_setForegroundColor (void *x, t_symbol *s, int argc, t_atom *argv)
 {
+    t_iem *iem = cast_iem (x);
+    
     iem->iem_colorForeground = color_withRGB (argc, argv);
     
     if (canvas_isMapped (iem->iem_owner)) { (*iem->iem_draw) (x, iem->iem_owner, IEM_DRAW_CONFIG); }
 }
 
-void iemgui_setLabelColor (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
+void iemgui_setLabelColor (void *x, t_symbol *s, int argc, t_atom *argv)
 {
+    t_iem *iem = cast_iem (x);
+    
     iem->iem_colorLabel = color_withRGB (argc, argv);
     
     if (canvas_isMapped (iem->iem_owner)) { (*iem->iem_draw) (x, iem->iem_owner, IEM_DRAW_CONFIG); }
 }
 
-void iemgui_setPosition (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
+void iemgui_setPosition (void *x, t_symbol *s, int argc, t_atom *argv)
 {
+    t_iem *iem = cast_iem (x);
+    
     if (argc > 1) {
     //
     object_setX (cast_object (iem), atom_getFloatAtIndex (0, argc, argv));
     object_setY (cast_object (iem), atom_getFloatAtIndex (1, argc, argv));
     
-    iemgui_boxChanged (x, iem);
+    iemgui_boxChanged (x);
     //
     }
 }
 
-void iemgui_movePosition (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
+void iemgui_movePosition (void *x, t_symbol *s, int argc, t_atom *argv)
 {
+    t_iem *iem = cast_iem (x);
+    
     if (argc > 1) {
     //
     object_setX (cast_object (iem), object_getX (cast_object (iem)) + atom_getFloatAtIndex (0, argc, argv));
     object_setY (cast_object (iem), object_getY (cast_object (iem)) + atom_getFloatAtIndex (1, argc, argv));
 
-    iemgui_boxChanged (x, iem);
+    iemgui_boxChanged (x);
     //
     }
 }
 
-void iemgui_boxChanged (void *x, t_iem *iem)
+void iemgui_boxChanged (void *x)
 {
+    t_iem *iem = cast_iem (x);
+    
     if (canvas_isMapped (iem->iem_owner)) {
     //
     (*iem->iem_draw) (x, iem->iem_owner, IEM_DRAW_CONFIG);
@@ -340,59 +359,7 @@ void iemgui_boxChanged (void *x, t_iem *iem)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Trampoline fun. */
-
-void iemjump_send (void *x, t_symbol *s)
-{
-    iemgui_setSend (x, cast_iem (x), s);
-}
-
-void iemjump_receive (void *x, t_symbol *s)
-{
-    iemgui_setReceive (x, cast_iem (x), s);
-}
-
-void iemjump_label (void *x, t_symbol *s)
-{
-    iemgui_setLabel (x, cast_iem (x), s);
-}
-
-void iemjump_labelPosition (void *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_setLabelPosition (x, cast_iem (x), s, argc, argv);
-}
-
-void iemjump_labelFont (void *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_setLabelFont (x, cast_iem (x), s, argc, argv);
-}
-
-void iemjump_backgroundColor (void *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_setBackgroundColor (x, cast_iem (x), s, argc, argv);
-}
-
-void iemjump_foregroundColor (void *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_setForegroundColor (x, cast_iem (x), s, argc, argv);
-}
-
-void iemjump_labelColor (void *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_setLabelColor (x, cast_iem (x), s, argc, argv);
-}
-
-void iemjump_position (void *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_setPosition (x, cast_iem (x), s, argc, argv);
-}
-
-void iemjump_move (void *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_movePosition (x, cast_iem (x), s, argc, argv);
-}
-
-void iemjump_dummy (void *x, t_symbol *s, int argc, t_atom *argv)
+void iemgui_dummy (void *x, t_symbol *s, int argc, t_atom *argv)
 {
     /* Dummy. */
 }

@@ -470,7 +470,7 @@ static void vu_size (t_vu *x, t_symbol *s, int argc, t_atom *argv)
     int width = atom_getFloatAtIndex (0, argc, argv);
     x->x_gui.iem_width = PD_MAX (width, IEM_MINIMUM_WIDTH);
     if (argc > 1) { vu_setHeight (x, (int)atom_getFloatAtIndex (1, argc, argv)); }
-    iemgui_boxChanged ((void *)x, &x->x_gui);
+    iemgui_boxChanged ((void *)x);
     //
     }
 }
@@ -568,7 +568,7 @@ static void vu_fromDialog (t_vu *x, t_symbol *s, int argc, t_atom *argv)
     
     vu_setHeight (x, (thickness + 1) * IEM_VUMETER_STEPS);
     
-    iemgui_boxChanged ((void *)x, &x->x_gui);
+    iemgui_boxChanged ((void *)x);
     //
     }
 }
@@ -672,26 +672,26 @@ void vu_setup (void)
     class_addBang (c, (t_method)vu_bang);
     class_addFloat (c, (t_method)vu_float);
     
-    class_addMethod (c, (t_method)vu_floatPeak,             sym__inlet2,            A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)vu_fromDialog,            sym__iemdialog,         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vu_size,                  sym_size,               A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_move,             sym_move,               A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_position,         sym_position,           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_labelFont,        sym_labelfont,          A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_labelPosition,    sym_labelposition,      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_backgroundColor,  sym_backgroundcolor,    A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_labelColor,       sym_labelcolor,         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_receive,          sym_receive,            A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)iemjump_label,            sym_label,              A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)vu_floatPeak,                 sym__inlet2,            A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)vu_fromDialog,                sym__iemdialog,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vu_size,                      sym_size,               A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemgui_movePosition,          sym_move,               A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemgui_setPosition,           sym_position,           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemgui_setLabelFont,          sym_labelfont,          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemgui_setLabelPosition,      sym_labelposition,      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemgui_setBackgroundColor,    sym_backgroundcolor,    A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemgui_setLabelColor,         sym_labelcolor,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemgui_setReceive,            sym_receive,            A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemgui_setLabel,              sym_label,              A_DEFSYMBOL, A_NULL);
     
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)iemjump_move,             sym_delta,              A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_position,         sym_pos,                A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_dummy,            sym_color,              A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_labelPosition,    sym_label_pos,          A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_labelFont,        sym_label_font,         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemjump_dummy,            sym_scale,              A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemgui_movePosition,          sym_delta,              A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemgui_setPosition,           sym_pos,                A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemgui_dummy,                 sym_color,              A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemgui_setLabelPosition,      sym_label_pos,          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemgui_setLabelFont,          sym_label_font,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemgui_dummy,                 sym_scale,              A_GIMME, A_NULL);
 
     #endif
     

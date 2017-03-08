@@ -236,33 +236,23 @@ void        iemgui_fromDialog                   (t_iem *iem, int argc, t_atom *a
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        iemgui_setSend                      (void *x, t_iem *iem, t_symbol *s);
-void        iemgui_setReceive                   (void *x, t_iem *iem, t_symbol *s);
-void        iemgui_setLabel                     (void *x, t_iem *iem, t_symbol *s);
-void        iemgui_setLabelPosition             (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv);
-void        iemgui_setLabelFont                 (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv);
-void        iemgui_setBackgroundColor           (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv);
-void        iemgui_setForegroundColor           (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv);
-void        iemgui_setLabelColor                (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv);
-void        iemgui_setPosition                  (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv);
-void        iemgui_movePosition                 (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv);
-void        iemgui_boxChanged                   (void *x, t_iem *iem);
+void        iemgui_setSend                      (void *x, t_symbol *s);
+void        iemgui_setReceive                   (void *x, t_symbol *s);
+void        iemgui_setLabel                     (void *x, t_symbol *s);
+void        iemgui_setLabelPosition             (void *x, t_symbol *s, int argc, t_atom *argv);
+void        iemgui_setLabelFont                 (void *x, t_symbol *s, int argc, t_atom *argv);
+void        iemgui_setBackgroundColor           (void *x, t_symbol *s, int argc, t_atom *argv);
+void        iemgui_setForegroundColor           (void *x, t_symbol *s, int argc, t_atom *argv);
+void        iemgui_setLabelColor                (void *x, t_symbol *s, int argc, t_atom *argv);
+void        iemgui_setPosition                  (void *x, t_symbol *s, int argc, t_atom *argv);
+void        iemgui_movePosition                 (void *x, t_symbol *s, int argc, t_atom *argv);
+void        iemgui_boxChanged                   (void *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        iemjump_send                        (void *x, t_symbol *s);
-void        iemjump_receive                     (void *x, t_symbol *s);
-void        iemjump_label                       (void *x, t_symbol *s);
-void        iemjump_labelPosition               (void *x, t_symbol *s, int argc, t_atom *argv);
-void        iemjump_labelFont                   (void *x, t_symbol *s, int argc, t_atom *argv);
-void        iemjump_backgroundColor             (void *x, t_symbol *s, int argc, t_atom *argv);
-void        iemjump_foregroundColor             (void *x, t_symbol *s, int argc, t_atom *argv);
-void        iemjump_labelColor                  (void *x, t_symbol *s, int argc, t_atom *argv);
-void        iemjump_position                    (void *x, t_symbol *s, int argc, t_atom *argv);
-void        iemjump_move                        (void *x, t_symbol *s, int argc, t_atom *argv);
-void        iemjump_dummy                       (void *x, t_symbol *s, int argc, t_atom *argv);
+void        iemgui_dummy                        (void *x, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
