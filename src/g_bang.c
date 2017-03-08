@@ -386,13 +386,13 @@ static void bng_functionSave (t_gobj *z, t_buffer *b)
         x->x_gui.iem_width,                                     // Size.
         x->x_flashTimeHold,                                     // Flash hold.
         x->x_flashTimeBreak,                                    // Flash break.
-        iemgui_serializeLoadbang (&x->x_gui),                   // Loadbang.
+        iemgui_serializeLoadbang (cast_iem (z)),                // Loadbang.
         names.n_unexpandedSend,                                 // Send.
         names.n_unexpandedReceive,                              // Receive.
         names.n_unexpandedLabel,                                // Label.
         x->x_gui.iem_labelX,                                    // Label X.
         x->x_gui.iem_labelY,                                    // Label Y.
-        iemgui_serializeFontStyle (&x->x_gui),                  // Label font.
+        iemgui_serializeFontStyle (cast_iem (z)),               // Label font.
         x->x_gui.iem_fontSize,                                  // Label font size.
         colors.c_symColorBackground,                            // Background color.
         colors.c_symColorForeground,                            // Foreground color.
@@ -408,7 +408,7 @@ static void bng_functionProperties (t_gobj *z, t_glist *owner)
     char t[PD_STRING] = { 0 };
     t_iemnames names;
 
-    iemgui_serializeNames (&x->x_gui, &names);
+    iemgui_serializeNames (cast_iem (z), &names);
     
     err = string_sprintf (t, PD_STRING,
             "::ui_iem::create %%s Bang"
@@ -443,7 +443,7 @@ static void bng_fromDialog (t_bng *x, t_symbol *s, int argc, t_atom *argv)
     int flashHold   = (int)atom_getFloatAtIndex (2, argc, argv);
     int flashBreak  = (int)atom_getFloatAtIndex (3, argc, argv);
     
-    iemgui_fromDialog (&x->x_gui, argc, argv);
+    iemgui_fromDialog (cast_iem (x), argc, argv);
 
     x->x_gui.iem_width  = PD_MAX (size, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = PD_MAX (size, IEM_MINIMUM_WIDTH);
@@ -493,14 +493,14 @@ static void *bng_new (t_symbol *s, int argc, t_atom *argv)
         labelY                      = (int)atom_getFloatAtIndex (8,  argc, argv);
         labelFontSize               = (int)atom_getFloatAtIndex (10, argc, argv);
         
-        iemgui_deserializeLoadbang (&x->x_gui, (int)atom_getFloatAtIndex (3, argc, argv));
-        iemgui_deserializeNamesByIndex (&x->x_gui, 4, argv);
-        iemgui_deserializeFontStyle (&x->x_gui, (int)atom_getFloatAtIndex (9, argc, argv));
-        iemgui_deserializeColors (&x->x_gui, argv + 11, argv + 12, argv + 13);
+        iemgui_deserializeLoadbang (cast_iem (x), (int)atom_getFloatAtIndex (3, argc, argv));
+        iemgui_deserializeNamesByIndex (cast_iem (x), 4, argv);
+        iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (9, argc, argv));
+        iemgui_deserializeColors (cast_iem (x), argv + 11, argv + 12, argv + 13);
         
     } else {
-        iemgui_deserializeNamesByIndex (&x->x_gui, 4, NULL);
-        iemgui_deserializeColors (&x->x_gui, NULL, NULL, NULL);
+        iemgui_deserializeNamesByIndex (cast_iem (x), 4, NULL);
+        iemgui_deserializeColors (cast_iem (x), NULL, NULL, NULL);
     }
 
     x->x_gui.iem_owner      = canvas_getCurrent();
@@ -513,7 +513,7 @@ static void *bng_new (t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_labelY     = labelY;
     x->x_gui.iem_fontSize   = PD_MAX (labelFontSize, IEM_MINIMUM_FONTSIZE);
     
-    iemgui_checkSendReceiveLoop (&x->x_gui);
+    iemgui_checkSendReceiveLoop (cast_iem (x));
     
     if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
         

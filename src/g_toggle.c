@@ -345,7 +345,7 @@ static void toggle_functionSave (t_gobj *z, t_buffer *b)
     t_iemnames names;
     t_iemcolors colors;
 
-    iemgui_serialize (&x->x_gui, &names, &colors);
+    iemgui_serialize (cast_iem (z), &names, &colors);
     
     buffer_vAppend (b, "ssiisiisssiiiisssff", 
         sym___hash__X,
@@ -354,13 +354,13 @@ static void toggle_functionSave (t_gobj *z, t_buffer *b)
         object_getY (cast_object (z)),
         sym_tgl, 
         x->x_gui.iem_width,                                 // Size.
-        iemgui_serializeLoadbang (&x->x_gui),               // Loadbang.
+        iemgui_serializeLoadbang (cast_iem (z)),            // Loadbang.
         names.n_unexpandedSend,                             // Send.
         names.n_unexpandedReceive,                          // Receive.
         names.n_unexpandedLabel,                            // Label.
         x->x_gui.iem_labelX,                                // Label X.
         x->x_gui.iem_labelY,                                // Label Y.
-        iemgui_serializeFontStyle (&x->x_gui),              // Label font.
+        iemgui_serializeFontStyle (cast_iem (z)),           // Label font.
         x->x_gui.iem_fontSize,                              // Label font size.
         colors.c_symColorBackground,                        // Backround color.
         colors.c_symColorForeground,                        // Foreground color.
@@ -378,7 +378,7 @@ static void toggle_functionProperties (t_gobj *z, t_glist *owner)
     char t[PD_STRING] = { 0 };
     t_iemnames names;
 
-    iemgui_serializeNames (&x->x_gui, &names);
+    iemgui_serializeNames (cast_iem (z), &names);
     
     err = string_sprintf (t, PD_STRING,
             "::ui_iem::create %%s Toggle"
@@ -415,7 +415,7 @@ static void toggle_fromDialog (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_width  = PD_MAX (size, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = PD_MAX (size, IEM_MINIMUM_WIDTH);
     
-    iemgui_fromDialog (&x->x_gui, argc, argv);
+    iemgui_fromDialog (cast_iem (x), argc, argv);
         
     toggle_nonZero (x, nonZero);
     
@@ -465,14 +465,14 @@ static void *toggle_new (t_symbol *s, int argc, t_atom *argv)
         state                       = (t_float)atom_getFloatAtIndex (12, argc, argv);
         nonZero                     = (argc == 14) ? atom_getFloatAtIndex (13, argc, argv) : (t_float)1.0;
         
-        iemgui_deserializeLoadbang (&x->x_gui, (int)atom_getFloatAtIndex (1, argc, argv));
-        iemgui_deserializeNamesByIndex (&x->x_gui, 2, argv);
-        iemgui_deserializeFontStyle (&x->x_gui, (int)atom_getFloatAtIndex (7, argc, argv));
-        iemgui_deserializeColors (&x->x_gui, argv + 9, argv + 10, argv + 11);
+        iemgui_deserializeLoadbang (cast_iem (x), (int)atom_getFloatAtIndex (1, argc, argv));
+        iemgui_deserializeNamesByIndex (cast_iem (x), 2, argv);
+        iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (7, argc, argv));
+        iemgui_deserializeColors (cast_iem (x), argv + 9, argv + 10, argv + 11);
         
     } else {
-        iemgui_deserializeNamesByIndex (&x->x_gui, 2, NULL);
-        iemgui_deserializeColors (&x->x_gui, NULL, NULL, NULL);
+        iemgui_deserializeNamesByIndex (cast_iem (x), 2, NULL);
+        iemgui_deserializeColors (cast_iem (x), NULL, NULL, NULL);
     }
     
     x->x_gui.iem_owner      = canvas_getCurrent();
@@ -485,7 +485,7 @@ static void *toggle_new (t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_labelY     = labelY;
     x->x_gui.iem_fontSize   = PD_MAX (labelFontSize, IEM_MINIMUM_FONTSIZE);
     
-    iemgui_checkSendReceiveLoop (&x->x_gui);
+    iemgui_checkSendReceiveLoop (cast_iem (x));
     
     if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
         

@@ -256,7 +256,7 @@ static void panel_functionSave (t_gobj *z, t_buffer *b)
     t_iemnames names;
     t_iemcolors colors;
 
-    iemgui_serialize (&x->x_gui, &names, &colors);
+    iemgui_serialize (cast_iem (z), &names, &colors);
     
     buffer_vAppend (b, "ssiisiiisssiiiiss",
         sym___hash__X,
@@ -272,7 +272,7 @@ static void panel_functionSave (t_gobj *z, t_buffer *b)
         names.n_unexpandedLabel,                                                // Label.
         x->x_gui.iem_labelX,                                                    // Label X.
         x->x_gui.iem_labelY,                                                    // Label Y.
-        iemgui_serializeFontStyle (&x->x_gui),                                  // Label font.
+        iemgui_serializeFontStyle (cast_iem (z)),                               // Label font.
         x->x_gui.iem_fontSize,                                                  // Label font size.
         colors.c_symColorBackground,                                            // Background color.
         colors.c_symColorLabel);                                                // Label color.
@@ -287,7 +287,7 @@ static void panel_functionProperties (t_gobj *z, t_glist *owner)
     char t[PD_STRING] = { 0 };
     t_iemnames names;
 
-    iemgui_serializeNames (&x->x_gui, &names);
+    iemgui_serializeNames (cast_iem (z), &names);
     
     err = string_sprintf (t, PD_STRING, "::ui_iem::create %%s Panel"
             " %d %d {Grip Size} 0 0 $::var(nil)"    // --
@@ -320,7 +320,7 @@ static void panel_fromDialog (t_panel *x, t_symbol *s, int argc, t_atom *argv)
     int panelWidth  = (int)atom_getFloatAtIndex (2, argc, argv);
     int panelHeight = (int)atom_getFloatAtIndex (3, argc, argv);
     
-    iemgui_fromDialog (&x->x_gui, argc, argv);
+    iemgui_fromDialog (cast_iem (x), argc, argv);
 
     x->x_gui.iem_width  = PD_MAX (gripSize,    IEM_PANEL_MINIMUM_SIZE);
     x->x_gui.iem_height = PD_MAX (gripSize,    IEM_PANEL_MINIMUM_SIZE);
@@ -369,13 +369,13 @@ static void *panel_new (t_symbol *s, int argc, t_atom *argv)
         labelY                      = (int)atom_getFloatAtIndex (7,  argc, argv);
         labelFontSize               = (int)atom_getFloatAtIndex (9,  argc, argv);
         
-        iemgui_deserializeNamesByIndex (&x->x_gui, 3, argv);
-        iemgui_deserializeFontStyle (&x->x_gui, (int)atom_getFloatAtIndex (8, argc, argv));
-        iemgui_deserializeColors (&x->x_gui, argv + 10, NULL, argv + 11);
+        iemgui_deserializeNamesByIndex (cast_iem (x), 3, argv);
+        iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (8, argc, argv));
+        iemgui_deserializeColors (cast_iem (x), argv + 10, NULL, argv + 11);
                 
     } else {
-        iemgui_deserializeNamesByIndex (&x->x_gui, 3, NULL);
-        iemgui_deserializeColors (&x->x_gui, NULL, NULL, NULL);
+        iemgui_deserializeNamesByIndex (cast_iem (x), 3, NULL);
+        iemgui_deserializeColors (cast_iem (x), NULL, NULL, NULL);
     }
 
     x->x_gui.iem_owner      = canvas_getCurrent();
@@ -389,7 +389,7 @@ static void *panel_new (t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_labelY     = labelY;
     x->x_gui.iem_fontSize   = PD_MAX (labelFontSize, IEM_MINIMUM_FONTSIZE);
     
-    iemgui_checkSendReceiveLoop (&x->x_gui);
+    iemgui_checkSendReceiveLoop (cast_iem (x));
     
     if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
     

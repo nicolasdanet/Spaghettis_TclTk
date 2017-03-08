@@ -555,7 +555,7 @@ static void slider_functionSave (t_gobj *z, t_buffer *b)
     t_iemnames names;
     t_iemcolors colors;
 
-    iemgui_serialize (&x->x_gui, &names, &colors);
+    iemgui_serialize (cast_iem (z), &names, &colors);
     
     buffer_vAppend (b, "ssiisiiffiisssiiiisssii", 
         sym___hash__X,
@@ -568,13 +568,13 @@ static void slider_functionSave (t_gobj *z, t_buffer *b)
         (t_float)x->x_minimum,                                          // Range minimum.
         (t_float)x->x_maximum,                                          // Range maximum.
         x->x_isLogarithmic,                                             // Is logarithmic.
-        iemgui_serializeLoadbang (&x->x_gui),                           // Loadbang.
+        iemgui_serializeLoadbang (cast_iem (z)),                        // Loadbang.
         names.n_unexpandedSend,                                         // Send.
         names.n_unexpandedReceive,                                      // Receive.
         names.n_unexpandedLabel,                                        // Label.
         x->x_gui.iem_labelX,                                            // Label X.
         x->x_gui.iem_labelY,                                            // Label Y.
-        iemgui_serializeFontStyle (&x->x_gui),                          // Label font.
+        iemgui_serializeFontStyle (cast_iem (z)),                       // Label font.
         x->x_gui.iem_fontSize,                                          // label font size.
         colors.c_symColorBackground,                                    // Background color.
         colors.c_symColorForeground,                                    // Foreground color.
@@ -592,7 +592,7 @@ static void slider_functionProperties (t_gobj *z, t_glist *owner)
     char t[PD_STRING] = { 0 };
     t_iemnames names;
 
-    iemgui_serializeNames (&x->x_gui, &names);
+    iemgui_serializeNames (cast_iem (z), &names);
 
     err = string_sprintf (t, PD_STRING, "::ui_iem::create %%s Slider"
             " %d %d {Slider Width} %d %d {Slider Height}"               // --
@@ -633,7 +633,7 @@ static void slider_fromDialog (t_slider *x, t_symbol *s, int argc, t_atom *argv)
     int isLogarithmic = (int)atom_getFloatAtIndex (4, argc, argv);
     int isSteady      = (int)atom_getFloatAtIndex (16, argc, argv);
 
-    iemgui_fromDialog (&x->x_gui, argc, argv);
+    iemgui_fromDialog (cast_iem (x), argc, argv);
     
     x->x_isLogarithmic   = (isLogarithmic != 0);
     x->x_isSteadyOnClick = (isSteady != 0);
@@ -711,14 +711,14 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
             isSteady = (int)atom_getFloatAtIndex (17, argc, argv);
         }
         
-        iemgui_deserializeLoadbang (&x->x_gui, (int)atom_getFloatAtIndex (5, argc, argv));
-        iemgui_deserializeNamesByIndex (&x->x_gui, 6, argv);
-        iemgui_deserializeFontStyle (&x->x_gui, (int)atom_getFloatAtIndex (11, argc, argv));
-        iemgui_deserializeColors (&x->x_gui, argv + 13, argv + 14, argv + 15);
+        iemgui_deserializeLoadbang (cast_iem (x), (int)atom_getFloatAtIndex (5, argc, argv));
+        iemgui_deserializeNamesByIndex (cast_iem (x), 6, argv);
+        iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (11, argc, argv));
+        iemgui_deserializeColors (cast_iem (x), argv + 13, argv + 14, argv + 15);
         
     } else {
-        iemgui_deserializeNamesByIndex (&x->x_gui, 6, NULL);
-        iemgui_deserializeColors (&x->x_gui, NULL, NULL, NULL);
+        iemgui_deserializeNamesByIndex (cast_iem (x), 6, NULL);
+        iemgui_deserializeColors (cast_iem (x), NULL, NULL, NULL);
     }
     
     x->x_gui.iem_owner      = canvas_getCurrent();
@@ -732,7 +732,7 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     slider_setHeight (x, height);
     slider_setWidth (x, width);
     
-    iemgui_checkSendReceiveLoop (&x->x_gui);
+    iemgui_checkSendReceiveLoop (cast_iem (x));
     
     if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
     

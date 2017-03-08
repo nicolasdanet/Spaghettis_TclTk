@@ -496,7 +496,7 @@ static void vu_functionSave (t_gobj *z, t_buffer *b)
     t_iemnames names;
     t_iemcolors colors;
 
-    iemgui_serialize (&x->x_gui, &names, &colors);
+    iemgui_serialize (cast_iem (z), &names, &colors);
     
     buffer_vAppend (b, "ssiisiissiiiissii",
         sym___hash__X,
@@ -510,7 +510,7 @@ static void vu_functionSave (t_gobj *z, t_buffer *b)
         names.n_unexpandedLabel,                                    // Label.
         x->x_gui.iem_labelX,                                        // Label X.
         x->x_gui.iem_labelY,                                        // Label Y.
-        iemgui_serializeFontStyle (&x->x_gui),                      // Label font.
+        iemgui_serializeFontStyle (cast_iem (z)),                   // Label font.
         x->x_gui.iem_fontSize,                                      // Label font size.
         colors.c_symColorBackground,                                // Background color.
         colors.c_symColorLabel,                                     // Label color.
@@ -527,7 +527,7 @@ static void vu_functionProperties (t_gobj *z, t_glist *owner)
     char t[PD_STRING] = { 0 };
     t_iemnames names;
 
-    iemgui_serializeNames (&x->x_gui, &names);
+    iemgui_serializeNames (cast_iem (z), &names);
     
     err = string_sprintf (t, PD_STRING, "::ui_iem::create %%s VU"
             " %d %d {Meter Width}"          // --
@@ -560,7 +560,7 @@ static void vu_fromDialog (t_vu *x, t_symbol *s, int argc, t_atom *argv)
     int width     = (int)atom_getFloatAtIndex (0, argc, argv);
     int thickness = (int)atom_getFloatAtIndex (1, argc, argv);
     
-    iemgui_fromDialog (&x->x_gui, argc, argv);
+    iemgui_fromDialog (cast_iem (x), argc, argv);
     
     x->x_gui.iem_canSend = 0;    /* Force values that could be misguidedly set. */
     
@@ -610,13 +610,13 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
         
         /* Note that a fake float value is pitiably attribute to the send symbol. */
         
-        iemgui_deserializeNamesByIndex (&x->x_gui, 1, argv);
-        iemgui_deserializeFontStyle (&x->x_gui, (int)atom_getFloatAtIndex (6, argc, argv));
-        iemgui_deserializeColors (&x->x_gui, argv + 8, NULL, argv + 9);
+        iemgui_deserializeNamesByIndex (cast_iem (x), 1, argv);
+        iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (6, argc, argv));
+        iemgui_deserializeColors (cast_iem (x), argv + 8, NULL, argv + 9);
         
     } else {
-        iemgui_deserializeNamesByIndex (&x->x_gui, 1, NULL);
-        iemgui_deserializeColors (&x->x_gui, NULL, NULL, NULL);
+        iemgui_deserializeNamesByIndex (cast_iem (x), 1, NULL);
+        iemgui_deserializeColors (cast_iem (x), NULL, NULL, NULL);
     }
 
     x->x_gui.iem_owner      = canvas_getCurrent();
@@ -630,7 +630,7 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
         
     vu_setHeight (x, height);
     
-    iemgui_checkSendReceiveLoop (&x->x_gui);
+    iemgui_checkSendReceiveLoop (cast_iem (x));
     
     if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
         
