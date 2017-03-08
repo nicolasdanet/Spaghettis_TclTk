@@ -39,7 +39,7 @@ static void class_defaultAnything   (t_pd *, t_symbol *, int, t_atom *);
 
 static void class_floatForSignal (t_pd *x, t_float f)
 {
-    *(t_float *)(((char *)x) + pd_class (x)->c_signalOffset) = f;
+    *(class_getFirstInletSignalValue (x)) = f;
 }
 
 // -----------------------------------------------------------------------------------------------------------

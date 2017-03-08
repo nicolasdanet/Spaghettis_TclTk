@@ -256,9 +256,7 @@ t_float *object_getSignalValueAtIndex (t_object *x, int m)
     t_inlet *i = NULL;
     
     if (class_hasFirstInletAsSignal (pd_class (x))) {
-        if (!m) {
-            return (t_float *)(((char *)x) + pd_class (x)->c_signalOffset);
-        }
+        if (!m) { return class_getFirstInletSignalValue (cast_pd (x)); }
         m--;
     }
     
