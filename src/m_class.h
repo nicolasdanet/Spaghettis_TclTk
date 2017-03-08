@@ -145,6 +145,9 @@ static inline int class_hasFirstInletAsSignal (t_class *c)
     return (class_hasFirstInlet (c) && class_firstInletIsSignal (c));
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static inline t_float *class_getFirstInletSignalValue (t_pd *x)
 {
     return (t_float *)(((char *)x) + pd_class (x)->c_signalOffset);

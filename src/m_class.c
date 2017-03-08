@@ -152,7 +152,9 @@ void class_setCurrentExternalDirectory (t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Note that the class name needs to be unique only if it contains a constructor. */
+/* For now the class name needs to be unique only if it contains a constructor. */
+/* For now it is valid to add inlets with CLASS_NOINLET set at first. */
+/* Probably best to make that more restrictive in the future. */
 
 t_class *class_new (t_symbol *s, 
     t_newmethod newMethod, 
