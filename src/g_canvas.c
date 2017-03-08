@@ -202,7 +202,7 @@ static void canvas_width (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     for ((g1 = glist->gl_graphics); (g2 = g1->g_next); (g1 = g2)) { }
     
-    if ((o = cast_objectIfPatchable (g1))) {
+    if ((o = cast_objectIfConnectable (g1))) {
     //
     int w = atom_getFloatAtIndex (0, argc, argv);
     
@@ -231,8 +231,8 @@ void canvas_connect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     t_gobj *src  = canvas_getObjectAtIndex (glist, k + indexOfObjectOut);
     t_gobj *dest = canvas_getObjectAtIndex (glist, k + indexOfObjectIn);
-    t_object *srcObject  = cast_objectIfPatchable (src);
-    t_object *destObject = cast_objectIfPatchable (dest);
+    t_object *srcObject  = cast_objectIfConnectable (src);
+    t_object *destObject = cast_objectIfConnectable (dest);
     
     if (srcObject && destObject) {
     //

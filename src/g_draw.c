@@ -403,11 +403,11 @@ void canvas_drawBox (t_glist *glist, t_object *o, char *tag, int create)
     
     text_behaviorGetRectangle (cast_gobj (o), glist, &r);
 
-    if (object_isObject (o))        { canvas_drawBoxObject (glist, o, tag, create, &r);        }
-    else if (object_isMessage (o))  { canvas_drawBoxMessage (glist, o, tag, create, &r);       }
-    else if (object_isAtom (o))     { canvas_drawBoxAtom (glist, o, tag, create, &r);          }
-    else if (object_isComment (o))  { canvas_drawBoxComment (glist, o, tag, create, &r);       }
-    if (cast_objectIfPatchable (o)) { canvas_drawInletsAndOutlets (glist, o, tag, create, &r); }
+    if (object_isObject (o))            { canvas_drawBoxObject (glist, o, tag, create, &r);        }
+    else if (object_isMessage (o))      { canvas_drawBoxMessage (glist, o, tag, create, &r);       }
+    else if (object_isAtom (o))         { canvas_drawBoxAtom (glist, o, tag, create, &r);          }
+    else if (object_isComment (o))      { canvas_drawBoxComment (glist, o, tag, create, &r);       }
+    if (cast_objectIfConnectable (o))   { canvas_drawInletsAndOutlets (glist, o, tag, create, &r); }
 }
 
 static void canvas_eraseInletsAndOutlets (t_glist *glist, t_object *o, char *tag)

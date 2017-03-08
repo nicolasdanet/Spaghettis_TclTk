@@ -130,7 +130,12 @@ int         class_hasOverrideBangMethod         (t_class *c);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static inline int class_firstInletIsSignal (t_class *c)
+static inline int class_isConnectable (t_class *c)
+{
+    return (c->c_isBox != 0);
+}
+
+static inline int class_isFirstInletIsSignal (t_class *c)
 {
     return (c->c_signalOffset > 0);
 }
@@ -142,7 +147,7 @@ static inline int class_hasFirstInlet (t_class *c)
 
 static inline int class_hasFirstInletAsSignal (t_class *c)
 {
-    return (class_hasFirstInlet (c) && class_firstInletIsSignal (c));
+    return (class_hasFirstInlet (c) && class_isFirstInletIsSignal (c));
 }
 
 // -----------------------------------------------------------------------------------------------------------

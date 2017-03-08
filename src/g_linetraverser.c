@@ -105,7 +105,7 @@ t_outconnect *linetraverser_next (t_linetraverser *t)
     }
     
     for (; y; y = y->g_next) {
-        if ((o = cast_objectIfPatchable (y))) { break; }            /* Only box objects are considered. */
+        if ((o = cast_objectIfConnectable (y))) { break; }          /* Only box objects are considered. */
     }
     
     if (!o) { return NULL; }

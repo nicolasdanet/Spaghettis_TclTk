@@ -93,9 +93,9 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Roughly everything that is not a scalar. */
+/* Roughly every object that is not a scalar. */
 
-#define cast_objectIfPatchable(x)           (pd_class (x)->c_isBox ? (t_object *)(x) : NULL)
+#define cast_objectIfConnectable(x)         (class_isConnectable (pd_class (x)) ? (t_object *)(x) : NULL)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

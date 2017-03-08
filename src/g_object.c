@@ -158,7 +158,7 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
     
     /* In GOP the only regular box type shown is comment. */
     
-    if ((object = cast_objectIfPatchable (x))) {
+    if ((object = cast_objectIfConnectable (x))) {
         if (object_isBox (object)) {
             if (!object_isComment (object)) {
                 return 0; 

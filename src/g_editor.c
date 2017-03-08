@@ -86,8 +86,8 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
 
     if (yA && yB) {
     //
-    t_object *object1 = cast_objectIfPatchable (yA);
-    t_object *object2 = cast_objectIfPatchable (yB);
+    t_object *object1 = cast_objectIfConnectable (yA);
+    t_object *object2 = cast_objectIfConnectable (yB);
     
     if (object1 && object2 && object1 != object2) {
     //
@@ -172,7 +172,7 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
         
     if (y) {
     //
-    t_object *object = cast_objectIfPatchable (y);
+    t_object *object = cast_objectIfConnectable (y);
     
     if (object) {
     //
@@ -320,7 +320,7 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
     if (!y) { return 0; }
     else {
     //
-    t_object *object = cast_objectIfPatchable (y);
+    t_object *object = cast_objectIfConnectable (y);
     int a = rectangle_getTopLeftX (&r);
     int b = rectangle_getTopLeftY (&r);
     int c = rectangle_getBottomRightX (&r);
@@ -796,7 +796,7 @@ void canvas_editmode (t_glist *glist, t_float f)
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
         t_object *o = NULL;
-        if ((o = cast_objectIfPatchable (y)) && object_isComment (o)) {
+        if ((o = cast_objectIfConnectable (y)) && object_isComment (o)) {
             t_boxtext *text = boxtext_fetch (glist, o);
             canvas_drawBox (glist, o, boxtext_getTag (text), 1);
         }
@@ -940,7 +940,7 @@ void canvas_createEditorIfNone (t_glist *glist)
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
         t_object *o = NULL;
-        if ((o = cast_objectIfPatchable (y))) { boxtext_new (glist, o); }
+        if ((o = cast_objectIfConnectable (y))) { boxtext_new (glist, o); }
     }
     //
     }

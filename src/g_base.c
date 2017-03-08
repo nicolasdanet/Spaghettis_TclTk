@@ -181,7 +181,7 @@ void canvas_addObject (t_glist *glist, t_gobj *y)
         t->g_next = y;
     }
     
-    if (glist->gl_editor && (object = cast_objectIfPatchable (y))) { boxtext_new (glist, object); }
+    if (glist->gl_editor && (object = cast_objectIfConnectable (y))) { boxtext_new (glist, object); }
     if (canvas_isMapped (canvas_getView (glist))) { gobj_visibilityChanged (y, glist, 1); }
     
     if (needToPaintScalars) { paint_draw(); }
@@ -222,7 +222,7 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
         }
     }
     
-    if (glist->gl_editor && (object = cast_objectIfPatchable (y))) {
+    if (glist->gl_editor && (object = cast_objectIfConnectable (y))) {
         text = boxtext_fetch (glist, object);
     }
     
@@ -265,7 +265,7 @@ void canvas_clear (t_glist *glist)
     while ((y = glist->gl_graphics)) {
     //
     if (!dspSuspended) {
-        if (cast_objectIfPatchable (y) && class_hasDSP (pd_class (y))) {
+        if (cast_objectIfConnectable (y) && class_hasDSP (pd_class (y))) {
             dspState = dsp_suspend();
             dspSuspended = 1;
         }
@@ -296,7 +296,7 @@ void canvas_makeTextObject (t_glist *glist,
     
     buffer_eval (b, &pd_objectMaker, environment_getNumberOfArguments (e), environment_getArguments (e));
 
-    if (pd_newest) { x = cast_objectIfPatchable (pd_newest); }
+    if (pd_newest) { x = cast_objectIfConnectable (pd_newest); }
 
     if (!x) {
         x = (t_object *)pd_new (text_class);    /* Create a dummy box. */

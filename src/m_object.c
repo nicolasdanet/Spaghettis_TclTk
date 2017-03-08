@@ -222,7 +222,7 @@ int object_isSignalInlet (t_object *x, int m)
     t_inlet *i = NULL;
     
     if (class_hasFirstInlet (pd_class (x))) {
-        if (!m) { return (class_firstInletIsSignal (pd_class (x))); }
+        if (!m) { return (class_isFirstInletIsSignal (pd_class (x))); }
         else {
             m--;
         }
