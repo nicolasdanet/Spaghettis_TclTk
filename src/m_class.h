@@ -102,7 +102,6 @@ struct _class {
     t_propertiesfn              c_fnProperties;
     t_int                       c_signalOffset;
     char                        c_hasFirstInlet;
-    char                        c_isBox;
     int                         c_type;
     size_t                      c_size;
     };
@@ -132,7 +131,12 @@ int         class_hasOverrideBangMethod         (t_class *c);
 
 static inline int class_isConnectable (t_class *c)
 {
-    return (c->c_isBox != 0);
+    return (c->c_type == CLASS_BOX);
+}
+
+static inline int class_isAbstract (t_class *c)
+{
+    return (c->c_type == CLASS_ABSTRACT);
 }
 
 static inline int class_isFirstInletIsSignal (t_class *c)

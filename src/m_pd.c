@@ -26,7 +26,7 @@ t_pd *pd_new (t_class *c)
     t_pd *x;
     
     PD_ASSERT (c != NULL);
-    PD_ASSERT (c->c_type != CLASS_ABSTRACT);
+    PD_ASSERT (!class_isAbstract (c));
     PD_ASSERT (c->c_size > 0);
 
     x = (t_pd *)PD_MEMORY_GET (c->c_size);
@@ -41,7 +41,7 @@ void pd_free (t_pd *x)
     t_class *c = pd_class (x);
 
     PD_ASSERT (c != NULL);
-    PD_ASSERT (c->c_type != CLASS_ABSTRACT);
+    PD_ASSERT (!class_isAbstract (c));
     PD_ASSERT (c->c_size > 0);
     
     if (class_hasFreeMethod (c)) { (*(class_getFreeMethod (c))) (x); }

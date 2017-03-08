@@ -128,7 +128,7 @@ static void class_defaultList (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     }
 
     if ((*c->c_methodAnything) != class_defaultAnything) { (*c->c_methodAnything) (x, &s_list, argc, argv); }
-    else if (c->c_isBox) { object_distributeOnInlets (cast_object (x), argc, argv); }
+    else if (class_isConnectable (c)) { object_distributeOnInlets (cast_object (x), argc, argv); }
     else { 
         class_defaultAnything (x, &s_list, argc, argv); 
     }
@@ -208,7 +208,6 @@ t_class *class_new (t_symbol *s,
     c->c_fnProperties       = NULL;
     c->c_signalOffset       = 0;
     c->c_hasFirstInlet      = ((flags & CLASS_NOINLET) == 0);
-    c->c_isBox              = (type == CLASS_BOX);
     c->c_type               = type;
     c->c_size               = size;
 
