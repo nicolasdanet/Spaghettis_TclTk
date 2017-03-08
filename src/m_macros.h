@@ -95,7 +95,7 @@
 
 /* Roughly every object that is not a scalar. */
 
-#define cast_objectIfConnectable(x)         (class_isConnectable (pd_class (x)) ? (t_object *)(x) : NULL)
+#define cast_objectIfConnectable(x)         (class_isBox (pd_class (x)) ? (t_object *)(x) : NULL)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

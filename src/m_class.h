@@ -129,7 +129,7 @@ int         class_hasOverrideBangMethod         (t_class *c);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static inline int class_isConnectable (t_class *c)
+static inline int class_isBox (t_class *c)
 {
     return (c->c_type == CLASS_BOX);
 }

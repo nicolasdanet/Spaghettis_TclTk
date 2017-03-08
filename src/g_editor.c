@@ -176,7 +176,7 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
     
     if (object) {
     //
-    if (object_isBox (object)) {
+    if (object_isViewAsBox (object)) {
         int a = rectangle_getTopLeftX (&r);
         int w = (int)((positionX - a) / font_getHostFontWidth (canvas_getFontSize (glist)));
         object_setWidth (object, PD_MAX (1, w));
@@ -271,7 +271,7 @@ static void canvas_proceedMouseClick (t_glist *glist, int positionX, int positio
 static int canvas_proceedMouseHitResizeZone (t_object *object, int positionX, int positionY, int c, int d)
 {
     if (object) {
-        if (object_isBox (object) || cast_glistChecked (cast_pd (object))) {
+        if (object_isViewAsBox (object) || cast_glistChecked (cast_pd (object))) {
             if (positionX > (c - EDITOR_GRIP_SIZE) && positionY < (d - EDITOR_GRIP_SIZE)) {
                 return 1;
             }

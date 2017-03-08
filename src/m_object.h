@@ -84,7 +84,7 @@ t_float     *object_getSignalValueAtIndex           (t_object *x, int m);
 /* Viewed as a box (NOT an IEM and NOT a subpatch GOP). */
 /* Note that it can be a comment, a message or an atom. */
 
-int object_isBox (t_object *x);
+int object_isViewAsBox (t_object *x);
 
 /* Everything that is NOT a comment, a message, or an atom. */
 
