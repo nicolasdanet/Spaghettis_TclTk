@@ -100,7 +100,7 @@ struct _class {
     t_painterwidgetbehavior     *c_behaviorPainter;
     t_savefn                    c_fnSave;
     t_propertiesfn              c_fnProperties;
-    int                         c_signalOffset;
+    t_int                       c_signalOffset;
     char                        c_hasFirstInlet;
     char                        c_isBox;
     int                         c_type;
@@ -122,17 +122,27 @@ int         class_hasMethod                     (t_class *c, t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 int         class_hasDSP                        (t_class *c);
 int         class_hasOverrideBangMethod         (t_class *c);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline int class_firstInletIsSignal (t_class *c)
+{
+    return (c->c_signalOffset > 0);
+}
 
 static inline int class_hasFirstInlet (t_class *c)
 {
     return (c->c_hasFirstInlet != 0);
+}
+
+static inline int class_hasFirstInletAsSignal (t_class *c)
+{
+    return (class_hasFirstInlet (c) && class_firstInletIsSignal (c));
 }
 
 // -----------------------------------------------------------------------------------------------------------

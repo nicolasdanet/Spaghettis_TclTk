@@ -656,7 +656,7 @@ PD_DLL t_class  *class_new                      (t_symbol *name,
                                                     int flags,
                                                     t_atomtype type1, ...);
 
-PD_DLL void     class_addSignal                 (t_class *c, int offset);
+PD_DLL void     class_addSignal                 (t_class *c, t_int offset);
 PD_DLL void     class_addCreator                (t_newmethod newMethod, t_symbol *s, t_atomtype type1, ...);
 PD_DLL void     class_addMethod                 (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ...);
 PD_DLL void     class_free                      (t_class *c);

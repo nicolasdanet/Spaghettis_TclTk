@@ -39,9 +39,7 @@ static void class_defaultAnything   (t_pd *, t_symbol *, int, t_atom *);
 
 static void class_floatForSignal (t_pd *x, t_float f)
 {
-    int offset = pd_class (x)->c_signalOffset;
-    PD_ASSERT (offset > 0);
-    *(t_float *)(((char *)x) + offset) = f;
+    *(t_float *)(((char *)x) + pd_class (x)->c_signalOffset) = f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -215,7 +213,7 @@ t_class *class_new (t_symbol *s,
     return c;
 }
 
-void class_addSignal (t_class *c, int offset)
+void class_addSignal (t_class *c, t_int offset)
 {
     PD_ASSERT (c->c_methodFloat == class_defaultFloat);
     
