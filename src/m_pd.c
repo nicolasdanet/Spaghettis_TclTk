@@ -27,9 +27,9 @@ t_pd *pd_new (t_class *c)
     
     PD_ASSERT (c != NULL);
     PD_ASSERT (!class_isAbstract (c));
-    PD_ASSERT (c->c_size > 0);
+    PD_ASSERT (class_getInstanceSize (c) > 0);
 
-    x = (t_pd *)PD_MEMORY_GET (c->c_size);
+    x = (t_pd *)PD_MEMORY_GET (class_getInstanceSize (c));
     
     *x = c;
     
@@ -42,7 +42,7 @@ void pd_free (t_pd *x)
 
     PD_ASSERT (c != NULL);
     PD_ASSERT (!class_isAbstract (c));
-    PD_ASSERT (c->c_size > 0);
+    PD_ASSERT (class_getInstanceSize (c) > 0);
     
     if (class_hasFreeMethod (c)) { (*(class_getFreeMethod (c))) (x); }
 
@@ -52,7 +52,7 @@ void pd_free (t_pd *x)
         if (object_getBuffer (cast_object (x)))     { buffer_free (object_getBuffer (cast_object (x)));  }
     }
 
-    if (c->c_size) { PD_MEMORY_FREE (x); }
+    PD_MEMORY_FREE (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -139,10 +139,18 @@ static inline int class_isAbstract (t_class *c)
     return (c->c_type == CLASS_ABSTRACT);
 }
 
-static inline int class_isFirstInletIsSignal (t_class *c)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline size_t class_getInstanceSize (t_class *c)
 {
-    return (c->c_signalOffset > 0);
+    return c->c_size;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static inline int class_hasFirstInlet (t_class *c)
 {
@@ -151,11 +159,8 @@ static inline int class_hasFirstInlet (t_class *c)
 
 static inline int class_hasFirstInletAsSignal (t_class *c)
 {
-    return (class_hasFirstInlet (c) && class_isFirstInletIsSignal (c));
+    return (class_hasFirstInlet (c) && (c->c_signalOffset > 0));
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 
 static inline t_float *class_getFirstInletSignalValue (t_pd *x)
 {
