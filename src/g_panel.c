@@ -218,7 +218,7 @@ static void panel_panelSize (t_panel *x, t_symbol *s, int argc, t_atom *argv)
     
     x->x_panelHeight = PD_MAX (i, IEM_PANEL_MINIMUM_SIZE);
     
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_MOVE);
+    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_MOVE);
     //
     }
 }
@@ -327,8 +327,8 @@ static void panel_fromDialog (t_panel *x, t_symbol *s, int argc, t_atom *argv)
     x->x_panelWidth     = PD_MAX (panelWidth,  IEM_PANEL_MINIMUM_SIZE);
     x->x_panelHeight    = PD_MAX (panelHeight, IEM_PANEL_MINIMUM_SIZE);
     
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_CONFIG);
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_MOVE);
+    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_CONFIG);
+    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_MOVE);
     //
     }
 }
@@ -369,17 +369,17 @@ static void *panel_new (t_symbol *s, int argc, t_atom *argv)
         labelY                      = (int)atom_getFloatAtIndex (7,  argc, argv);
         labelFontSize               = (int)atom_getFloatAtIndex (9,  argc, argv);
         
-        iemgui_deserializeNamesByIndex (cast_iem (x), 3, argv);
+        iemgui_deserializeNames (cast_iem (x), 3, argv);
         iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (8, argc, argv));
         iemgui_deserializeColors (cast_iem (x), argv + 10, NULL, argv + 11);
                 
     } else {
-        iemgui_deserializeNamesByIndex (cast_iem (x), 3, NULL);
+        iemgui_deserializeNames (cast_iem (x), 3, NULL);
         iemgui_deserializeColors (cast_iem (x), NULL, NULL, NULL);
     }
 
     x->x_gui.iem_owner      = canvas_getCurrent();
-    x->x_gui.iem_draw       = (t_iemfn)panel_draw;
+    x->x_gui.iem_fnDraw     = (t_iemfn)panel_draw;
     x->x_gui.iem_canSend    = (x->x_gui.iem_send == utils_empty()) ? 0 : 1;
     x->x_gui.iem_canReceive = (x->x_gui.iem_receive == utils_empty()) ? 0 : 1;
 

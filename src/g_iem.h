@@ -100,7 +100,7 @@ typedef void (*t_iemfn) (void *x, t_glist *glist, int mode);
 typedef struct _iem {
     t_object    iem_obj;                        /* MUST be the first. */
     t_glist     *iem_owner;
-    t_iemfn     iem_draw;
+    t_iemfn     iem_fnDraw;
     char        iem_fontStyle;                  /* Unused but kept for compatibility. */
     char        iem_canSend;
     char        iem_canReceive;
@@ -211,7 +211,7 @@ void        iemgui_deserializeFontStyle         (t_iem *iem, int n);
 int         iemgui_serializeFontStyle           (t_iem *iem);
 void        iemgui_deserializeLoadbang          (t_iem *iem, int n);
 int         iemgui_serializeLoadbang            (t_iem *iem);
-void        iemgui_deserializeNamesByIndex      (t_iem *iem, int i, t_atom *argv);
+void        iemgui_deserializeNames      (t_iem *iem, int i, t_atom *argv);
 void        iemgui_serializeNames               (t_iem *iem, t_iemnames *n);
 
 // -----------------------------------------------------------------------------------------------------------

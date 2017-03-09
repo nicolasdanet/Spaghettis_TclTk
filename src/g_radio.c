@@ -405,7 +405,7 @@ static void radio_float (t_radio *x, t_float f)
     x->x_state = PD_CLAMP ((int)f, 0, x->x_numberOfButtons - 1);
     x->x_floatValue = f;
     
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
     
     if (x->x_gui.iem_goThrough) {
         radio_out (x); 
@@ -427,7 +427,7 @@ static void radio_click (t_radio *x, t_symbol *s, int argc, t_atom *argv)
     x->x_state = PD_CLAMP ((int)f, 0, x->x_numberOfButtons - 1);
     x->x_floatValue = x->x_state;
     
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
         
     radio_out (x);
 }
@@ -463,7 +463,7 @@ static void radio_set (t_radio *x, t_float f)
     x->x_state = PD_CLAMP ((int)f, 0, x->x_numberOfButtons - 1);
     x->x_floatValue = f;
     
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
 }
 
 static void radio_buttonsNumber (t_radio *x, t_float numberOfButtons)
@@ -471,11 +471,11 @@ static void radio_buttonsNumber (t_radio *x, t_float numberOfButtons)
     int n = PD_CLAMP ((int)numberOfButtons, 1, IEM_MAXIMUM_BUTTONS);
 
     if (n != x->x_numberOfButtons) {
-        (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_ERASE);
+        (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_ERASE);
         x->x_numberOfButtons = numberOfButtons;
         x->x_state = PD_MIN (x->x_state, x->x_numberOfButtons - 1);
         x->x_floatValue = x->x_state;
-        (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_NEW);
+        (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_NEW);
         canvas_updateLinesByObject (x->x_gui.iem_owner, cast_object (x));
     }
 }
@@ -651,17 +651,17 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
         floatValue                  = atom_getFloatAtIndex (14, argc, argv);
         
         iemgui_deserializeLoadbang (cast_iem (x), (int)atom_getFloatAtIndex (2, argc, argv));
-        iemgui_deserializeNamesByIndex (cast_iem (x), 4, argv);
+        iemgui_deserializeNames (cast_iem (x), 4, argv);
         iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (9, argc, argv));
         iemgui_deserializeColors (cast_iem (x), argv + 11, argv + 12, argv + 13);
         
     } else {
-        iemgui_deserializeNamesByIndex (cast_iem (x), 4, NULL);
+        iemgui_deserializeNames (cast_iem (x), 4, NULL);
         iemgui_deserializeColors (cast_iem (x), NULL, NULL, NULL);
     }
     
     x->x_gui.iem_owner      = canvas_getCurrent();
-    x->x_gui.iem_draw       = (t_iemfn)radio_draw;
+    x->x_gui.iem_fnDraw     = (t_iemfn)radio_draw;
     x->x_gui.iem_canSend    = (x->x_gui.iem_send == utils_empty()) ? 0 : 1;
     x->x_gui.iem_canReceive = (x->x_gui.iem_receive == utils_empty()) ? 0 : 1;
     x->x_gui.iem_width      = PD_MAX (size, IEM_MINIMUM_WIDTH);

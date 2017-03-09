@@ -309,7 +309,7 @@ static void toggle_set (t_toggle *x, t_float f)
     
     x->x_state = f;
 
-    if (draw) { (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
+    if (draw) { (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
 }
 
 static void toggle_nonZero (t_toggle *x, t_float f)
@@ -466,17 +466,17 @@ static void *toggle_new (t_symbol *s, int argc, t_atom *argv)
         nonZero                     = (argc == 14) ? atom_getFloatAtIndex (13, argc, argv) : (t_float)1.0;
         
         iemgui_deserializeLoadbang (cast_iem (x), (int)atom_getFloatAtIndex (1, argc, argv));
-        iemgui_deserializeNamesByIndex (cast_iem (x), 2, argv);
+        iemgui_deserializeNames (cast_iem (x), 2, argv);
         iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (7, argc, argv));
         iemgui_deserializeColors (cast_iem (x), argv + 9, argv + 10, argv + 11);
         
     } else {
-        iemgui_deserializeNamesByIndex (cast_iem (x), 2, NULL);
+        iemgui_deserializeNames (cast_iem (x), 2, NULL);
         iemgui_deserializeColors (cast_iem (x), NULL, NULL, NULL);
     }
     
     x->x_gui.iem_owner      = canvas_getCurrent();
-    x->x_gui.iem_draw       = (t_iemfn)toggle_draw;
+    x->x_gui.iem_fnDraw     = (t_iemfn)toggle_draw;
     x->x_gui.iem_canSend    = (x->x_gui.iem_send == utils_empty()) ? 0 : 1;
     x->x_gui.iem_canReceive = (x->x_gui.iem_receive == utils_empty()) ? 0 : 1;
     x->x_gui.iem_width      = PD_MAX (size, IEM_MINIMUM_WIDTH);

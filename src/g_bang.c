@@ -232,12 +232,12 @@ void bng_setFlashTimes (t_bng *x, int flashBreak, int flashHold)
 static void bng_updateFlash (t_bng *x)
 {
     if (x->x_flashed) {
-        x->x_flashed = 0; (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+        x->x_flashed = 0; (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
         x->x_flashed = 1;
         clock_delay (x->x_clockBreak, x->x_flashTimeBreak);
         
     } else {
-        x->x_flashed = 1; (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+        x->x_flashed = 1; (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
     }
     
     clock_delay (x->x_clockHold, x->x_flashTimeHold);
@@ -339,12 +339,12 @@ static void bng_taskHold (t_bng *x)
 {
     x->x_flashed = 0;
     
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
 }
 
 static void bng_taskBreak (t_bng *x)
 {
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -494,17 +494,17 @@ static void *bng_new (t_symbol *s, int argc, t_atom *argv)
         labelFontSize               = (int)atom_getFloatAtIndex (10, argc, argv);
         
         iemgui_deserializeLoadbang (cast_iem (x), (int)atom_getFloatAtIndex (3, argc, argv));
-        iemgui_deserializeNamesByIndex (cast_iem (x), 4, argv);
+        iemgui_deserializeNames (cast_iem (x), 4, argv);
         iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (9, argc, argv));
         iemgui_deserializeColors (cast_iem (x), argv + 11, argv + 12, argv + 13);
         
     } else {
-        iemgui_deserializeNamesByIndex (cast_iem (x), 4, NULL);
+        iemgui_deserializeNames (cast_iem (x), 4, NULL);
         iemgui_deserializeColors (cast_iem (x), NULL, NULL, NULL);
     }
 
     x->x_gui.iem_owner      = canvas_getCurrent();
-    x->x_gui.iem_draw       = (t_iemfn)bng_draw;
+    x->x_gui.iem_fnDraw     = (t_iemfn)bng_draw;
     x->x_gui.iem_canSend    = (x->x_gui.iem_send == utils_empty()) ? 0 : 1;
     x->x_gui.iem_canReceive = (x->x_gui.iem_receive == utils_empty()) ? 0 : 1;
     x->x_gui.iem_width      = PD_MAX (size, IEM_MINIMUM_WIDTH);

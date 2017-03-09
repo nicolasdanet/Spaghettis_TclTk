@@ -137,6 +137,25 @@ void iemgui_serializeColors (t_iem *iem, t_iemcolors *c)
     c->c_symColorLabel      = color_toEncodedSymbol (iem->iem_colorLabel);
 }
 
+int iemgui_serializeFontStyle (t_iem *iem)
+{
+    return (int)iem->iem_fontStyle;
+}
+
+int iemgui_serializeLoadbang (t_iem *iem)
+{
+    return (iem->iem_loadbang ? 1 : 0);
+}
+
+void iemgui_serializeNames (t_iem *iem, t_iemnames *n)
+{
+    iemgui_fetchUnexpandedNames (iem, n);
+    
+    n->n_unexpandedSend    = dollar_toHash (n->n_unexpandedSend);
+    n->n_unexpandedReceive = dollar_toHash (n->n_unexpandedReceive);
+    n->n_unexpandedLabel   = dollar_toHash (n->n_unexpandedLabel);
+}
+
 void iemgui_deserializeColors (t_iem *iem, t_atom *background, t_atom *foreground, t_atom *label)
 {
     iem->iem_colorForeground = COLOR_IEM_FOREGROUND;
@@ -157,22 +176,12 @@ void iemgui_deserializeFontStyle (t_iem *iem, int n)
     iem->iem_fontStyle = (char)n;
 }
 
-int iemgui_serializeFontStyle (t_iem *iem)
-{
-    return (int)iem->iem_fontStyle;
-}
-
 void iemgui_deserializeLoadbang (t_iem *iem, int n)
 {
     iem->iem_loadbang = ((n & 1) != 0);
 }
 
-int iemgui_serializeLoadbang (t_iem *iem)
-{
-    return (iem->iem_loadbang ? 1 : 0);
-}
-
-void iemgui_deserializeNamesByIndex (t_iem *iem, int i, t_atom *argv)
+void iemgui_deserializeNames (t_iem *iem, int i, t_atom *argv)
 {
     iem->iem_send    = (argv ? iemgui_fetchName (i + 0, argv) : utils_empty());
     iem->iem_receive = (argv ? iemgui_fetchName (i + 1, argv) : utils_empty());
@@ -183,15 +192,6 @@ void iemgui_deserializeNamesByIndex (t_iem *iem, int i, t_atom *argv)
     iem->iem_unexpandedLabel   = NULL;
     
     iem->iem_cacheIndex = i;    /* Cache this index for later lookup. */
-}
-
-void iemgui_serializeNames (t_iem *iem, t_iemnames *n)
-{
-    iemgui_fetchUnexpandedNames (iem, n);
-    
-    n->n_unexpandedSend    = dollar_toHash (n->n_unexpandedSend);
-    n->n_unexpandedReceive = dollar_toHash (n->n_unexpandedReceive);
-    n->n_unexpandedLabel   = dollar_toHash (n->n_unexpandedLabel);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -237,10 +237,12 @@ void iemgui_setLabel (void *x, t_symbol *s)
 {
     t_iem *iem  = cast_iem (x);
     t_symbol *t = dollar_fromHash (utils_substituteIfEmpty (s, 0));
+    
     iem->iem_unexpandedLabel = t;
     iem->iem_label = iemgui_expandDollar (iem->iem_owner, t);
 
     if (canvas_isMapped (iem->iem_owner)) {
+    
         sys_vGui (".x%lx.c itemconfigure %lxLABEL -text {%s}\n",    // --
                         canvas_getView (iem->iem_owner),
                         x,
@@ -258,6 +260,7 @@ void iemgui_setLabelPosition (void *x, t_symbol *s, int argc, t_atom *argv)
     iem->iem_labelY = (int)atom_getFloatAtIndex (1, argc, argv);
     
     if (canvas_isMapped (iem->iem_owner)) {
+    
         sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
                         canvas_getView (iem->iem_owner),
                         x,
@@ -278,6 +281,7 @@ void iemgui_setLabelFont (void *x, t_symbol *s, int argc, t_atom *argv)
     f = PD_MAX (f, IEM_MINIMUM_FONTSIZE);
     iem->iem_fontSize = f;
     if (canvas_isMapped (iem->iem_owner)) {
+    
         sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d]\n",      // --
                         canvas_getView (iem->iem_owner), 
                         x,
@@ -293,7 +297,7 @@ void iemgui_setBackgroundColor (void *x, t_symbol *s, int argc, t_atom *argv)
     
     iem->iem_colorBackground = color_withRGB (argc, argv);
     
-    if (canvas_isMapped (iem->iem_owner)) { (*iem->iem_draw) (x, iem->iem_owner, IEM_DRAW_CONFIG); }
+    if (canvas_isMapped (iem->iem_owner)) { (*iem->iem_fnDraw) (x, iem->iem_owner, IEM_DRAW_CONFIG); }
 }
 
 void iemgui_setForegroundColor (void *x, t_symbol *s, int argc, t_atom *argv)
@@ -302,7 +306,7 @@ void iemgui_setForegroundColor (void *x, t_symbol *s, int argc, t_atom *argv)
     
     iem->iem_colorForeground = color_withRGB (argc, argv);
     
-    if (canvas_isMapped (iem->iem_owner)) { (*iem->iem_draw) (x, iem->iem_owner, IEM_DRAW_CONFIG); }
+    if (canvas_isMapped (iem->iem_owner)) { (*iem->iem_fnDraw) (x, iem->iem_owner, IEM_DRAW_CONFIG); }
 }
 
 void iemgui_setLabelColor (void *x, t_symbol *s, int argc, t_atom *argv)
@@ -311,7 +315,7 @@ void iemgui_setLabelColor (void *x, t_symbol *s, int argc, t_atom *argv)
     
     iem->iem_colorLabel = color_withRGB (argc, argv);
     
-    if (canvas_isMapped (iem->iem_owner)) { (*iem->iem_draw) (x, iem->iem_owner, IEM_DRAW_CONFIG); }
+    if (canvas_isMapped (iem->iem_owner)) { (*iem->iem_fnDraw) (x, iem->iem_owner, IEM_DRAW_CONFIG); }
 }
 
 void iemgui_setPosition (void *x, t_symbol *s, int argc, t_atom *argv)
@@ -348,8 +352,8 @@ void iemgui_boxChanged (void *x)
     
     if (canvas_isMapped (iem->iem_owner)) {
     //
-    (*iem->iem_draw) (x, iem->iem_owner, IEM_DRAW_CONFIG);
-    (*iem->iem_draw) (x, iem->iem_owner, IEM_DRAW_MOVE);
+    (*iem->iem_fnDraw) (x, iem->iem_owner, IEM_DRAW_CONFIG);
+    (*iem->iem_fnDraw) (x, iem->iem_owner, IEM_DRAW_MOVE);
     canvas_updateLinesByObject (iem->iem_owner, cast_object (x));
     //
     }
@@ -375,7 +379,7 @@ void iemgui_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY
     object_setX (cast_object (x), object_getX (cast_object (x)) + deltaX);
     object_setY (cast_object (x), object_getY (cast_object (x)) + deltaY);
     
-    (*x->iem_draw) ((void *)z, glist, IEM_DRAW_MOVE);
+    (*x->iem_fnDraw) ((void *)z, glist, IEM_DRAW_MOVE);
     
     canvas_updateLinesByObject (glist, cast_object (z));
 }
@@ -386,16 +390,16 @@ void iemgui_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
 
     x->iem_isSelected = isSelected;
     
-    (*x->iem_draw) ((void *)z, glist, IEM_DRAW_SELECT);
+    (*x->iem_fnDraw) ((void *)z, glist, IEM_DRAW_SELECT);
 }
 
 void iemgui_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
 {
     t_iem *x = cast_iem (z);
 
-    if (isVisible) { (*x->iem_draw) ((void *)z, glist, IEM_DRAW_NEW); }
+    if (isVisible) { (*x->iem_fnDraw) ((void *)z, glist, IEM_DRAW_NEW); }
     else {
-        (*x->iem_draw) ((void *)z, glist, IEM_DRAW_ERASE);
+        (*x->iem_fnDraw) ((void *)z, glist, IEM_DRAW_ERASE);
     }
     
     if (!isVisible) { defer_removeJob ((void *)z); }

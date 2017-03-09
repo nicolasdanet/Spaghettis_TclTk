@@ -491,7 +491,7 @@ static void dial_motion (t_dial *x, t_float deltaX, t_float deltaY, t_float modi
     if (t != old) {
         x->x_position   = t;
         x->x_floatValue = dial_getValue (x);
-        (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+        (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
         dial_out (x);
     }
 }
@@ -552,7 +552,7 @@ static void dial_set (t_dial *x, t_float f)
     
     x->x_floatValue = dial_getValue (x);
     
-    if (x->x_floatValue != old) { (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
+    if (x->x_floatValue != old) { (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
 }
 
 static void dial_steps (t_dial *x, t_float f)
@@ -695,9 +695,9 @@ static void dial_fromDialog (t_dial *x, t_symbol *s, int argc, t_atom *argv)
     
     x->x_floatValue = dial_getValue (x);
         
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_CONFIG);
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_MOVE);
+    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_CONFIG);
+    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_MOVE);
     
     canvas_updateLinesByObject (x->x_gui.iem_owner, cast_object (x));
     //
@@ -757,17 +757,17 @@ static void *dial_new (t_symbol *s, int argc, t_atom *argv)
         }
     
         iemgui_deserializeLoadbang (cast_iem (x), (int)atom_getFloatAtIndex (5, argc, argv));
-        iemgui_deserializeNamesByIndex (cast_iem (x), 6, argv);
+        iemgui_deserializeNames (cast_iem (x), 6, argv);
         iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (11, argc, argv));
         iemgui_deserializeColors (cast_iem (x), argv + 13, argv + 14, argv + 15);
         
     } else {
-        iemgui_deserializeNamesByIndex (cast_iem (x), 6, NULL);
+        iemgui_deserializeNames (cast_iem (x), 6, NULL);
         iemgui_deserializeColors (cast_iem (x), NULL, NULL, NULL);
     }
     
     x->x_gui.iem_owner      = canvas_getCurrent();
-    x->x_gui.iem_draw       = (t_iemfn)dial_draw;
+    x->x_gui.iem_fnDraw     = (t_iemfn)dial_draw;
     x->x_gui.iem_canSend    = (x->x_gui.iem_send == utils_empty()) ? 0 : 1;
     x->x_gui.iem_canReceive = (x->x_gui.iem_receive == utils_empty()) ? 0 : 1;
     x->x_gui.iem_width      = 0;

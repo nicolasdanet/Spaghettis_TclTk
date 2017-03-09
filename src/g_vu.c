@@ -244,7 +244,7 @@ static void vu_drawMove (t_vu *x, t_glist *glist)
                     a + x->x_gui.iem_labelX,
                     b + x->x_gui.iem_labelY);
              
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
 }
 
 static void vu_drawNew (t_vu *x, t_glist *glist)
@@ -311,7 +311,7 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
                     x->x_gui.iem_colorLabel,
                     x);
 
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
 }
 
 static void vu_drawSelect (t_vu *x, t_glist *glist)
@@ -432,7 +432,7 @@ static void vu_bang (t_vu *x)
     outlet_float (x->x_outletRight, x->x_peakValue);
     outlet_float (x->x_outletLeft, x->x_rmsValue);
     
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
 }
 
 static void vu_float (t_vu *x, t_float rms)
@@ -442,7 +442,7 @@ static void vu_float (t_vu *x, t_float rms)
     x->x_rmsValue = rms;
     x->x_rms = vu_stepWithDecibels (rms);
     
-    if (x->x_rms != old) { (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
+    if (x->x_rms != old) { (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
     
     outlet_float (x->x_outletLeft, rms);
 }
@@ -454,7 +454,7 @@ static void vu_floatPeak (t_vu *x, t_float peak)
     x->x_peakValue = peak;
     x->x_peak = vu_stepWithDecibels (peak);
     
-    if (x->x_peak != old) { (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
+    if (x->x_peak != old) { (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
         
     outlet_float (x->x_outletRight, peak);
 }
@@ -610,17 +610,17 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
         
         /* Note that a fake float value is pitiably attribute to the send symbol. */
         
-        iemgui_deserializeNamesByIndex (cast_iem (x), 1, argv);
+        iemgui_deserializeNames (cast_iem (x), 1, argv);
         iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (6, argc, argv));
         iemgui_deserializeColors (cast_iem (x), argv + 8, NULL, argv + 9);
         
     } else {
-        iemgui_deserializeNamesByIndex (cast_iem (x), 1, NULL);
+        iemgui_deserializeNames (cast_iem (x), 1, NULL);
         iemgui_deserializeColors (cast_iem (x), NULL, NULL, NULL);
     }
 
     x->x_gui.iem_owner      = canvas_getCurrent();
-    x->x_gui.iem_draw       = (t_iemfn)vu_draw;
+    x->x_gui.iem_fnDraw     = (t_iemfn)vu_draw;
     x->x_gui.iem_canSend    = 0;
     x->x_gui.iem_canReceive = (x->x_gui.iem_receive == utils_empty()) ? 0 : 1;
     x->x_gui.iem_width      = PD_MAX (width, IEM_MINIMUM_WIDTH);
