@@ -113,24 +113,6 @@ void instance_rootsFreeAll (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void instance_destroyAllScalarsByTemplate (t_template *template)
-{
-    t_glist *glist = instance_get()->pd_roots;
-    
-    while (glist) {
-
-        t_symbol *s = utils_stripTemplateIdentifier (template_getTemplateIdentifier (template));
-        t_atom t;
-        SET_SYMBOL (&t, s); 
-        pd_message (cast_pd (glist), sym_destroy, 1, &t);
-        glist = glist->gl_next;
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void instance_dspChainInitialize (void)
 {
     PD_ASSERT (instance_get()->pd_dspChain == NULL);
@@ -181,6 +163,71 @@ void instance_dspChainAppend (t_perform f, int n, ...)
     
     instance_get()->pd_dspChain[size - 1] = (t_int)instance_dspDone;
     instance_get()->pd_dspChainSize = size;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void instance_clockAdd (t_clock *c)
+{
+    t_systime systime = c->c_systime;
+    
+    if (instance_get()->pd_clocks && instance_get()->pd_clocks->c_systime <= systime) {
+    
+        t_clock *m = NULL;
+        t_clock *n = NULL;
+        
+        for (m = instance_get()->pd_clocks, n = instance_get()->pd_clocks->c_next; m; m = n, n = m->c_next) {
+            if (!n || n->c_systime > systime) {
+                m->c_next = c; c->c_next = n; return;
+            }
+        }
+        
+    } else {
+        c->c_next = instance_get()->pd_clocks; instance_get()->pd_clocks = c;
+    }
+}
+
+void instance_clockUnset (t_clock *c)
+{
+    if (c == instance_get()->pd_clocks) { instance_get()->pd_clocks = c->c_next; }
+    else {
+        t_clock *t = instance_get()->pd_clocks;
+        while (t->c_next != c) { t = t->c_next; } t->c_next = c->c_next;
+    }
+}
+
+void instance_clockTick (t_systime t)
+{
+    while (instance_get()->pd_clocks && instance_get()->pd_clocks->c_systime < t) {
+    //
+    t_clock *c = instance_get()->pd_clocks;
+    instance_get()->pd_systime = c->c_systime;
+    clock_unset (c);
+    (*c->c_fn)(c->c_owner);
+    //
+    }
+    
+    instance_get()->pd_systime = t;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void instance_destroyAllScalarsByTemplate (t_template *template)
+{
+    t_glist *glist = instance_get()->pd_roots;
+    
+    while (glist) {
+
+        t_symbol *s = utils_stripTemplateIdentifier (template_getTemplateIdentifier (template));
+        t_atom t;
+        SET_SYMBOL (&t, s); 
+        pd_message (cast_pd (glist), sym_destroy, 1, &t);
+        glist = glist->gl_next;
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

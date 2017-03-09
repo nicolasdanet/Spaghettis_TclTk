@@ -105,14 +105,7 @@ void clock_free (t_clock *x)
 
 void clock_unset (t_clock *x)
 {
-    if (x->c_systime >= 0.0) {
-        if (x == pd_this->pd_clocks) { pd_this->pd_clocks = x->c_next; }
-        else {
-            t_clock *c = pd_this->pd_clocks;
-            while (c->c_next != x) { c = c->c_next; } c->c_next = x->c_next;
-        }
-        x->c_systime = -1.0;
-    }
+    if (x->c_systime >= 0.0) { instance_clockUnset (x); x->c_systime = -1.0; }
 }
 
 static void clock_set (t_clock *x, t_systime systime)
@@ -123,20 +116,7 @@ static void clock_set (t_clock *x, t_systime systime)
     
     x->c_systime = systime;
     
-    if (pd_this->pd_clocks && pd_this->pd_clocks->c_systime <= systime) {
-    
-        t_clock *m = NULL;
-        t_clock *n = NULL;
-        
-        for (m = pd_this->pd_clocks, n = pd_this->pd_clocks->c_next; m; m = n, n = m->c_next) {
-            if (!n || n->c_systime > systime) {
-                m->c_next = x; x->c_next = n; return;
-            }
-        }
-        
-    } else {
-        x->c_next = pd_this->pd_clocks; pd_this->pd_clocks = x;
-    }
+    instance_clockAdd (x);
 }
 
 void clock_delay (t_clock *x, double delay)     /* Could be in milliseconds or in samples. */

@@ -151,20 +151,16 @@ static void scheduler_pollStuck (int init)
 
 static void scheduler_tick (void)
 {
-    t_systime nextSystime = instance_getLogicalTime() + scheduler_getSystimePerDSPTick();
-    
-    while (pd_this->pd_clocks && pd_this->pd_clocks->c_systime < nextSystime) {
+    if (!scheduler_quit) { 
     //
-    t_clock *c = pd_this->pd_clocks;
-    instance_setLogicalTime (c->c_systime);
-    clock_unset (c);
-    (*c->c_fn)(c->c_owner);
-    if (scheduler_quit) { return; }
+    t_systime t = instance_getLogicalTime() + scheduler_getSystimePerDSPTick();
+    
+    instance_clockTick (t);
     //
     }
     
-    instance_setLogicalTime (nextSystime);
-    
+    if (!scheduler_quit) {
+    //
     ugen_dspTick();
     
     #if PD_WATCHDOG
@@ -174,6 +170,8 @@ static void scheduler_tick (void)
         
     #endif
     #endif
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

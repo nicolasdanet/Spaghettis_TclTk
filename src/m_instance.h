@@ -59,6 +59,10 @@ void    instance_dspChainInitialize             (void);
 void    instance_dspChainRelease                (void);
 void    instance_dspChainAppend                 (t_perform f, int n, ...);
 
+void    instance_clockAdd                       (t_clock *c);
+void    instance_clockUnset                     (t_clock *c);
+void    instance_clockTick                      (t_systime systime);
+
 void    instance_destroyAllScalarsByTemplate    (t_template *tmpl);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -93,11 +97,6 @@ static inline t_pd *instance_getBoundX (void)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-static inline void instance_setLogicalTime (t_systime t)
-{
-    instance_get()->pd_systime = t;
-}
 
 static inline void instance_setDspState (int n)
 {
