@@ -31,7 +31,7 @@ struct _pdinstance {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define dsp_add     instance_appendToDspChain
+#define dsp_add     instance_dspChainAppend
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -51,14 +51,15 @@ static inline t_pdinstance *instance_get (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    instance_addToRoots                     (t_glist *glist);
-void    instance_removeFromRoots                (t_glist *glist);
-void    instance_freeAllRoots                   (void);
+void    instance_rootsAdd                       (t_glist *glist);
+void    instance_rootsRemove                    (t_glist *glist);
+void    instance_rootsFreeAll                   (void);
+
+void    instance_dspChainInitialize             (void);
+void    instance_dspChainRelease                (void);
+void    instance_dspChainAppend                 (t_perform f, int n, ...);
 
 void    instance_destroyAllScalarsByTemplate    (t_template *tmpl);
-
-void    instance_initializeDspChain             (void);
-void    instance_appendToDspChain               (t_perform f, int n, ...);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -77,6 +78,11 @@ static inline int instance_getDspState (void)
 static inline int instance_getDspChainSize (void)
 {
     return instance_get()->pd_dspChainSize;
+}
+
+static inline t_int *instance_getDspChain (void)
+{
+    return instance_get()->pd_dspChain;
 }
 
 static inline t_pd *instance_getBoundX (void)

@@ -111,27 +111,21 @@ void ugen_dspInitialize (void)
     
     PD_ASSERT (ugen_context == NULL);
     
-    instance_initializeDspChain();
+    instance_dspChainInitialize();
     
     ugen_buildIdentifier++;
 }
 
 void ugen_dspTick (void)
 {
-    if (pd_this->pd_dspChain) {
-    //
-    t_int *t = pd_this->pd_dspChain; while (t) { t = (*(t_perform)(*t))(t); } ugen_dspPhase++;
-    //
-    }
+    t_int *t = instance_getDspChain();
+    
+    if (t) { while (t) { t = (*(t_perform)(*t))(t); } ugen_dspPhase++; }
 }
 
 void ugen_dspRelease (void)
 {
-    if (pd_this->pd_dspChain) {
-    //
-    PD_MEMORY_FREE (pd_this->pd_dspChain); pd_this->pd_dspChain = NULL;
-    //
-    }
+    instance_dspChainRelease();
     
     signal_clean();
 }

@@ -76,12 +76,12 @@ static void instance_free (t_pdinstance *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void instance_addToRoots (t_glist *glist)
+void instance_rootsAdd (t_glist *glist)
 {
     glist->gl_next = instance_get()->pd_roots; instance_get()->pd_roots = glist;
 }
 
-void instance_removeFromRoots (t_glist *glist)
+void instance_rootsRemove (t_glist *glist)
 {
     if (glist == instance_get()->pd_roots) { instance_get()->pd_roots = glist->gl_next; }
     else {
@@ -93,7 +93,7 @@ void instance_removeFromRoots (t_glist *glist)
 
 /* At release close remaining (i.e. NOT dirty) and invisible patches. */
 
-void instance_freeAllRoots (void)
+void instance_rootsFreeAll (void)
 {    
     while (1) {
 
@@ -131,16 +131,31 @@ void instance_destroyAllScalarsByTemplate (t_template *template)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void instance_initializeDspChain (void)
+void instance_dspChainInitialize (void)
 {
+    PD_ASSERT (instance_get()->pd_dspChain == NULL);
+    
     instance_get()->pd_dspChainSize = 1;
     instance_get()->pd_dspChain     = (t_int *)PD_MEMORY_GET (sizeof (t_int));
     instance_get()->pd_dspChain[0]  = (t_int)instance_dspDone;
 }
 
-void instance_appendToDspChain (t_perform f, int n, ...)
+void instance_dspChainRelease (void)
+{
+    if (instance_get()->pd_dspChain != NULL) {
+    //
+    PD_MEMORY_FREE (instance_get()->pd_dspChain);
+    
+    instance_get()->pd_dspChain = NULL;
+    //
+    }
+}
+
+void instance_dspChainAppend (t_perform f, int n, ...)
 {
     int size = instance_get()->pd_dspChainSize + n + 1;
+    
+    PD_ASSERT (instance_get()->pd_dspChain != NULL);
     
     size_t newSize = sizeof (t_int) * size;
     size_t oldSize = sizeof (t_int) * instance_get()->pd_dspChainSize;

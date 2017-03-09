@@ -906,7 +906,7 @@ void setup_release (void)
     
     /* Close all remaining patches (included invisible ones). */
     
-    instance_freeAllRoots();
+    instance_rootsFreeAll();
     
     /* Destroy all the third-party externals. */
     

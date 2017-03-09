@@ -771,7 +771,7 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     
     x->gl_uniqueIdentifier = utils_unique();
     
-    if (!owner) { instance_addToRoots (x); }
+    if (!owner) { instance_rootsAdd (x); }
     
     x->gl_environment           = environment_fetchActiveIfAny();
     x->gl_name                  = (name != &s_ ? name : environment_getFileName (x->gl_environment));
@@ -810,7 +810,7 @@ void canvas_free (t_glist *glist)
     gmaster_reset (glist->gl_holder);
     guistub_destroyWithKey ((void *)glist);
     
-    if (!glist->gl_parent) { instance_removeFromRoots (glist); }
+    if (!glist->gl_parent) { instance_rootsRemove (glist); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
