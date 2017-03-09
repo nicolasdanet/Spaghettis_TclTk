@@ -44,14 +44,23 @@ static int instance_recursiveDepth;             /* Static. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_pdinstance *pdinstance_new()
+static t_int instance_dspDone (t_int *w)
+{
+    return 0;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static t_pdinstance *instance_new()
 {
     t_pdinstance *x = (t_pdinstance *)PD_MEMORY_GET (sizeof (t_pdinstance));
     
     return x;
 }
 
-static void pdinstance_free (t_pdinstance *x)
+static void instance_free (t_pdinstance *x)
 {
     PD_ASSERT (x->pd_dspChain       == NULL);
     PD_ASSERT (x->pd_clocks         == NULL);
@@ -69,15 +78,15 @@ static void pdinstance_free (t_pdinstance *x)
 
 void instance_addToRoots (t_glist *glist)
 {
-    glist->gl_next = pd_this->pd_roots; pd_this->pd_roots = glist;
+    glist->gl_next = instance_get()->pd_roots; instance_get()->pd_roots = glist;
 }
 
 void instance_removeFromRoots (t_glist *glist)
 {
-    if (glist == pd_this->pd_roots) { pd_this->pd_roots = glist->gl_next; }
+    if (glist == instance_get()->pd_roots) { instance_get()->pd_roots = glist->gl_next; }
     else {
         t_glist *z = NULL;
-        for (z = pd_this->pd_roots; z->gl_next != glist; z = z->gl_next) { }
+        for (z = instance_get()->pd_roots; z->gl_next != glist; z = z->gl_next) { }
         z->gl_next = glist->gl_next;
     }
 }
@@ -87,14 +96,16 @@ void instance_removeFromRoots (t_glist *glist)
 void instance_freeAllRoots (void)
 {    
     while (1) {
-    //
-    t_glist *glist = pd_this->pd_roots;
-    
-    if (glist == NULL) { break; }
-    else {
-        pd_free (cast_pd (glist)); if (glist == pd_this->pd_roots) { PD_BUG; break; }   /* Not removed? */
-    }
-    //
+
+        t_glist *glist = instance_get()->pd_roots;
+        
+        if (glist == NULL) { break; }
+        else {
+            pd_free (cast_pd (glist)); 
+            if (glist == instance_get()->pd_roots) { 
+                PD_BUG; break;                                      /* Not removed? */
+            }   
+        }
     }
 }
 
@@ -104,17 +115,57 @@ void instance_freeAllRoots (void)
 
 void instance_destroyAllScalarsByTemplate (t_template *template)
 {
-    t_glist *glist = pd_this->pd_roots;
+    t_glist *glist = instance_get()->pd_roots;
     
     while (glist) {
+
+        t_symbol *s = utils_stripTemplateIdentifier (template_getTemplateIdentifier (template));
+        t_atom t;
+        SET_SYMBOL (&t, s); 
+        pd_message (cast_pd (glist), sym_destroy, 1, &t);
+        glist = glist->gl_next;
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void instance_initializeDspChain (void)
+{
+    instance_get()->pd_dspChainSize = 1;
+    instance_get()->pd_dspChain     = (t_int *)PD_MEMORY_GET (sizeof (t_int));
+    instance_get()->pd_dspChain[0]  = (t_int)instance_dspDone;
+}
+
+void instance_appendToDspChain (t_perform f, int n, ...)
+{
+    int size = instance_get()->pd_dspChainSize + n + 1;
+    
+    size_t newSize = sizeof (t_int) * size;
+    size_t oldSize = sizeof (t_int) * instance_get()->pd_dspChainSize;
+    
+    instance_get()->pd_dspChain = PD_MEMORY_RESIZE (instance_get()->pd_dspChain, oldSize, newSize);
+    
+    {
     //
-    t_symbol *s = utils_stripTemplateIdentifier (template_getTemplateIdentifier (template));
-    t_atom t;
-    SET_SYMBOL (&t, s); 
-    pd_message (cast_pd (glist), sym_destroy, 1, &t);
-    glist = glist->gl_next;
+    int i;
+    va_list ap;
+
+    instance_get()->pd_dspChain[instance_get()->pd_dspChainSize - 1] = (t_int)f;
+
+    va_start (ap, n);
+    
+    for (i = 0; i < n; i++) { 
+        instance_get()->pd_dspChain[instance_get()->pd_dspChainSize + i] = va_arg (ap, t_int);
+    }
+    
+    va_end (ap);
     //
     }
+    
+    instance_get()->pd_dspChain[size - 1] = (t_int)instance_dspDone;
+    instance_get()->pd_dspChainSize = size;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -179,7 +230,7 @@ static void instance_newAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 
 void instance_initialize (void)
 {
-    pd_this = pdinstance_new();
+    pd_this = instance_new();
     
     PD_ASSERT (!pd_objectMaker);
     PD_ASSERT (!pd_canvasMaker);
@@ -204,7 +255,7 @@ void instance_release (void)
     CLASS_FREE (pd_objectMaker);
     CLASS_FREE (pd_canvasMaker);
     
-    pdinstance_free (pd_this);
+    instance_free (pd_this);
 }
 
 // -----------------------------------------------------------------------------------------------------------

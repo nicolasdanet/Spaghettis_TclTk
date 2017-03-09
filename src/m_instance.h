@@ -31,12 +31,18 @@ struct _pdinstance {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define dsp_add     instance_appendToDspChain
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 extern t_pdinstance *pd_this;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static inline t_pdinstance *instance_getInstance (void)
+static inline t_pdinstance *instance_get (void)
 {
     return pd_this;
 }
@@ -45,10 +51,14 @@ static inline t_pdinstance *instance_getInstance (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    instance_destroyAllScalarsByTemplate    (t_template *tmpl);
 void    instance_addToRoots                     (t_glist *glist);
 void    instance_removeFromRoots                (t_glist *glist);
 void    instance_freeAllRoots                   (void);
+
+void    instance_destroyAllScalarsByTemplate    (t_template *tmpl);
+
+void    instance_initializeDspChain             (void);
+void    instance_appendToDspChain               (t_perform f, int n, ...);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -56,12 +66,22 @@ void    instance_freeAllRoots                   (void);
 
 static inline t_systime instance_getLogicalTime (void)
 {
-    return instance_getInstance()->pd_systime;
+    return instance_get()->pd_systime;
 }
 
 static inline int instance_getDspState (void)
 {
-    return instance_getInstance()->pd_dspState;
+    return instance_get()->pd_dspState;
+}
+
+static inline int instance_getDspChainSize (void)
+{
+    return instance_get()->pd_dspChainSize;
+}
+
+static inline t_pd *instance_getBoundX (void)
+{
+    return s__X.s_thing;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -70,12 +90,12 @@ static inline int instance_getDspState (void)
 
 static inline void instance_setLogicalTime (t_systime t)
 {
-    instance_getInstance()->pd_systime = t;
+    instance_get()->pd_systime = t;
 }
 
 static inline void instance_setDspState (int n)
 {
-    instance_getInstance()->pd_dspState = (n != 0);
+    instance_get()->pd_dspState = (n != 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -95,15 +115,6 @@ static inline void instance_setBoundX (t_pd *x)
 static inline void instance_setBoundA (t_pd *x)
 {
     s__A.s_thing = x;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static inline t_pd *instance_getBoundX (void)
-{
-    return s__X.s_thing;
 }
 
 // -----------------------------------------------------------------------------------------------------------

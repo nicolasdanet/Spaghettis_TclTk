@@ -111,9 +111,7 @@ void ugen_dspInitialize (void)
     
     PD_ASSERT (ugen_context == NULL);
     
-    pd_this->pd_dspChainSize = 1;
-    pd_this->pd_dspChain     = (t_int *)PD_MEMORY_GET (pd_this->pd_dspChainSize * sizeof (t_int));
-    pd_this->pd_dspChain[0]  = (t_int)dsp_done;
+    instance_initializeDspChain();
     
     ugen_buildIdentifier++;
 }
@@ -505,7 +503,7 @@ void ugen_graphClose (t_dspcontext *context)
     
     ugen_graphProlog (context, &p);
     
-    chainBegin = pd_this->pd_dspChainSize;
+    chainBegin = instance_getDspChainSize();
     
     if (block && (p.bp_switchable || p.bp_reblocked)) { dsp_add (block_performProlog, 1, block); }   
 
@@ -513,11 +511,11 @@ void ugen_graphClose (t_dspcontext *context)
 
     if (block && (p.bp_switchable || p.bp_reblocked)) { dsp_add (block_performEpilog, 1, block); }
     
-    chainEnd = pd_this->pd_dspChainSize;
+    chainEnd = instance_getDspChainSize();
 
     ugen_graphEpilog (context, &p);
 
-    chainEpilog = pd_this->pd_dspChainSize;
+    chainEpilog = instance_getDspChainSize();
     
     if (block) { block_setPerformsLength (block, chainEnd - chainBegin, chainEpilog - chainEnd); }
 
