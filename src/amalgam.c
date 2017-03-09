@@ -56,7 +56,7 @@
 #include "s_scheduler.c"
 #include "s_priority.c"
 #include "s_handlers.c"
-#include "s_time.c"
+#include "s_clock.c"
 #include "s_receiver.c"
 #include "s_defer.c"
 #include "s_monitor.c"
