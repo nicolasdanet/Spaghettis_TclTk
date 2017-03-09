@@ -123,15 +123,6 @@ int         stack_setLoadingAbstraction                 (t_symbol *s);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        instance_destroyScalarsByTemplate           (t_template *tmpl);
-void        instance_addToRoots                         (t_glist *glist);
-void        instance_removeFromRoots                    (t_glist *glist);
-void        instance_freeAllRoots                       (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void        message_initialize                          (void);
 void        message_release                             (void);
 
@@ -278,6 +269,15 @@ void        sys_gui                                     (char *s);
 
 t_error     guistub_new                                 (t_pd *owner, void *key, const char *cmd);
 void        guistub_destroyWithKey                      (void *key);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        instance_destroyScalarsByTemplate           (t_template *tmpl);
+void        instance_addToRoots                         (t_glist *glist);
+void        instance_removeFromRoots                    (t_glist *glist);
+void        instance_freeAllRoots                       (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

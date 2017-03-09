@@ -19,7 +19,6 @@
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_pdinstance     *pd_this;
-extern t_class          *canvas_class;
 extern t_class          *vinlet_class; 
 extern t_class          *voutlet_class;
 extern t_class          *block_class;
