@@ -15,11 +15,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pdinstance *pd_this;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 #if PD_WINDOWS
 
 static LARGE_INTEGER    time_NTTime;
@@ -122,7 +117,7 @@ void clock_unset (t_clock *x)
 
 static void clock_set (t_clock *x, t_systime systime)
 {
-    if (systime < pd_this->pd_systime) { systime = pd_this->pd_systime; }
+    if (systime < instance_getLogicalTime()) { systime = instance_getLogicalTime(); }
     
     clock_unset (x);
     
@@ -154,7 +149,7 @@ void clock_delay (t_clock *x, double delay)     /* Could be in milliseconds or i
         d = -(x->c_unit * (SYSTIME_PER_SECOND / audio_getSampleRate()));
     }
 
-    systime = pd_this->pd_systime + (d * delay);
+    systime = instance_getLogicalTime() + (d * delay);
     
     clock_set (x, systime);
 }
@@ -177,7 +172,7 @@ static void clock_setUnit (t_clock *x, double unit, int isSamples)
     if (x->c_systime >= 0.0) {
     //
     double d = (x->c_unit > 0) ? x->c_unit : (x->c_unit * (SYSTIME_PER_SECOND / audio_getSampleRate()));
-    timeLeft = (x->c_systime - pd_this->pd_systime) / d;
+    timeLeft = (x->c_systime - instance_getLogicalTime()) / d;
     //
     }
     

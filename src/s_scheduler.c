@@ -31,11 +31,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pdinstance *pd_this;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 static volatile sig_atomic_t scheduler_quit;            /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -61,18 +56,18 @@ static int      scheduler_nextPing;                     /* Static. */
 
 t_systime scheduler_getLogicalTime (void)
 {
-    return pd_this->pd_systime;
+    return instance_getLogicalTime();
 }
 
 t_systime scheduler_getLogicalTimeAfter (double ms)
 {
-    return (pd_this->pd_systime + (SYSTIME_PER_MILLISECOND * ms));
+    return (instance_getLogicalTime() + (SYSTIME_PER_MILLISECOND * ms));
 }
 
 double scheduler_getUnitsSince (t_systime systime, double unit, int isSamples)
 {
     double d;
-    t_systime elapsed = pd_this->pd_systime - systime;
+    t_systime elapsed = instance_getLogicalTime() - systime;
     
     PD_ASSERT (elapsed >= 0.0);
     
@@ -86,7 +81,7 @@ double scheduler_getUnitsSince (t_systime systime, double unit, int isSamples)
 
 double scheduler_getMillisecondsSince (t_systime systime)
 {
-    t_systime elapsed = pd_this->pd_systime - systime;
+    t_systime elapsed = instance_getLogicalTime() - systime;
     
     return (elapsed / SYSTIME_PER_MILLISECOND);
 }
@@ -156,19 +151,19 @@ static void scheduler_pollStuck (int init)
 
 static void scheduler_tick (void)
 {
-    t_systime nextSystime = pd_this->pd_systime + scheduler_getSystimePerDSPTick();
+    t_systime nextSystime = instance_getLogicalTime() + scheduler_getSystimePerDSPTick();
     
     while (pd_this->pd_clocks && pd_this->pd_clocks->c_systime < nextSystime) {
     //
     t_clock *c = pd_this->pd_clocks;
-    pd_this->pd_systime = c->c_systime;
+    instance_setLogicalTime (c->c_systime);
     clock_unset (c);
     (*c->c_fn)(c->c_owner);
     if (scheduler_quit) { return; }
     //
     }
     
-    pd_this->pd_systime = nextSystime;
+    instance_setLogicalTime (nextSystime);
     
     ugen_dspTick();
     
