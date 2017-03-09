@@ -169,19 +169,23 @@ void instance_dspChainAppend (t_perform f, int n, ...)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* Enqueue the clock sorted up by logical time. */
+
 void instance_clockAdd (t_clock *c)
 {
-    t_systime systime = c->c_systime;
+    t_systime systime = clock_getLogicalTime (c);
     
-    if (instance_get()->pd_clocks && instance_get()->pd_clocks->c_systime <= systime) {
+    if (instance_get()->pd_clocks && clock_getLogicalTime (instance_get()->pd_clocks) <= systime) {
     
-        t_clock *m = NULL;
-        t_clock *n = NULL;
+        t_clock *m = instance_get()->pd_clocks;
+        t_clock *n = instance_get()->pd_clocks->c_next;
         
-        for (m = instance_get()->pd_clocks, n = instance_get()->pd_clocks->c_next; m; m = n, n = m->c_next) {
-            if (!n || n->c_systime > systime) {
+        while (m) {
+            if (!n || clock_getLogicalTime (n) > systime) {
                 m->c_next = c; c->c_next = n; return;
             }
+            m = n;
+            n = m->c_next;
         }
         
     } else {
@@ -200,12 +204,12 @@ void instance_clockUnset (t_clock *c)
 
 void instance_clockTick (t_systime t)
 {
-    while (instance_get()->pd_clocks && instance_get()->pd_clocks->c_systime < t) {
+    while (instance_get()->pd_clocks && clock_getLogicalTime (instance_get()->pd_clocks) < t) {
     //
     t_clock *c = instance_get()->pd_clocks;
-    instance_get()->pd_systime = c->c_systime;
+    instance_get()->pd_systime = clock_getLogicalTime (c);
     clock_unset (c);
-    (*c->c_fn)(c->c_owner);
+    clock_execute (c);
     //
     }
     
