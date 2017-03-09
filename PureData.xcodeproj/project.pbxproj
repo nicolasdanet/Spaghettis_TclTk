@@ -787,6 +787,7 @@
 		37D724D31D9279A800408D24 /* x_line.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_line.c; path = src/x_line.c; sourceTree = "<group>"; };
 		37D724FB1D927A9A00408D24 /* x_delay.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_delay.c; path = src/x_delay.c; sourceTree = "<group>"; };
 		37D724FD1D927AAE00408D24 /* x_metro.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_metro.c; path = src/x_metro.c; sourceTree = "<group>"; };
+		37D7D91F1E71AE6400CED977 /* s_clock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = s_clock.h; path = src/s_clock.h; sourceTree = "<group>"; };
 		37DB520F1D97D03100FEEBE0 /* x_clip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_clip.c; path = src/x_clip.c; sourceTree = "<group>"; };
 		37DB52951D97FA1700FEEBE0 /* x_atan2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_atan2.c; path = src/x_atan2.c; sourceTree = "<group>"; };
 		37DFBC5B1D2937BA00FCDEEE /* g_guiconnect.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_guiconnect.c; path = src/g_guiconnect.c; sourceTree = "<group>"; };
@@ -1076,6 +1077,7 @@
 			isa = PBXGroup;
 			children = (
 				378972001C4F716700263434 /* s_system.h */,
+				37D7D91F1E71AE6400CED977 /* s_clock.h */,
 				37A404B71C789F6200001FD3 /* s_midi.h */,
 				378972021C4F716700263434 /* s_utf8.h */,
 				378971F21C4F716700263434 /* s_entry.c */,

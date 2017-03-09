@@ -63,17 +63,6 @@ typedef void (*t_drawfn)        (t_gobj *x, t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-struct _clock {
-    t_systime           c_systime;      /* Negative for unset clocks. */
-    double              c_unit;         /* A positive value is in ticks, negative for number of samples. */
-    t_clockfn           c_fn;
-    void                *c_owner;
-    struct _clock       *c_next;
-    };
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 typedef struct _receiver {
     void                *r_owner;
     t_buffer            *r_message;
@@ -137,18 +126,6 @@ t_error     priority_privilegeRelinquish            (void);
 
 t_error     priority_setPolicy                      (void);
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_error     clock_setUnitParsed                     (t_clock *x, t_float f, t_symbol *unitName);
-void        clock_setUnitAsSamples                  (t_clock *x, double samples);
-void        clock_setUnitAsMilliseconds             (t_clock *x, double ms);
-t_error     clock_parseUnit                         (t_float f, 
-                                                        t_symbol *unitName,
-                                                        t_float *result,
-                                                        int *isSamples);
-                                                            
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -374,6 +351,7 @@ int         logger_isRunning                        (void);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#include "s_clock.h"
 #include "s_devices.h"
 #include "s_apis.h"
 #include "s_midi_apis.h"
