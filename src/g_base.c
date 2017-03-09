@@ -57,7 +57,7 @@ void canvas_newPatch (void *dummy, t_symbol *name, t_symbol *directory)
 {
     environment_setActiveFile (name, directory);
     canvas_new (NULL, NULL, 0, NULL);
-    canvas_pop (cast_glist (pd_getBoundX()), 1);
+    canvas_pop (cast_glist (instance_getBoundX()), 1);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -66,7 +66,7 @@ void canvas_newPatch (void *dummy, t_symbol *name, t_symbol *directory)
 
 t_glist *canvas_getCurrent (void)
 {
-    return cast_glist (pd_getBoundX());
+    return cast_glist (instance_getBoundX());
 }
 
 t_glist *canvas_getRoot (t_glist *glist)

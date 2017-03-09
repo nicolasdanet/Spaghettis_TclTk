@@ -115,12 +115,12 @@ void garray_initialize (void)
     environment_setActiveFile (sym__floattemplate, sym___dot__);
     buffer_withStringUnzeroed (b, floatTemplateFile, (int)strlen (floatTemplateFile));
     buffer_eval (b, &pd_canvasMaker, 0, NULL);
-    pd_message (pd_getBoundX(), sym__pop, 0, NULL);
+    pd_message (instance_getBoundX(), sym__pop, 0, NULL);
     
     environment_setActiveFile (sym__floatarraytemplate, sym___dot__);
     buffer_withStringUnzeroed (b, floatArrayTemplateFile, (int)strlen (floatArrayTemplateFile));
     buffer_eval (b, &pd_canvasMaker, 0, NULL);
-    pd_message (pd_getBoundX(), sym__pop, 0, NULL);
+    pd_message (instance_getBoundX(), sym__pop, 0, NULL);
 
     environment_setActiveFile (&s_, &s_);
     
@@ -754,7 +754,7 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_float size, t_flo
     scalar_setFloat (x->x_scalar, sym_style, style);
     scalar_setFloat (x->x_scalar, sym_linewidth, 1);
 
-    pd_setBoundA (cast_pd (x));
+    instance_setBoundA (cast_pd (x));
     
     garray_redraw (x);
     garray_updateGraphSize (x, n, style);
@@ -772,7 +772,7 @@ static void garray_free (t_garray *x)
 {
     defer_removeJob ((void *)x);
     guistub_destroyWithKey ((void *)x);
-    pd_setBoundA (NULL);
+    instance_setBoundA (NULL);
     pd_unbind (cast_pd (x), x->x_name);
     pd_free (cast_pd (x->x_scalar));
 }

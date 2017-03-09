@@ -122,7 +122,7 @@ void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
     t_pd *next = NULL;
     int args = 0;
     
-    pd_setBoundA (NULL);
+    instance_setBoundA (NULL);
     
     ATOMS_ALLOCA (message, x->b_size);
     
@@ -276,22 +276,22 @@ t_error buffer_fileEval (t_symbol *name, t_symbol *directory)
 void buffer_fileOpen (void *dummy, t_symbol *name, t_symbol *directory)
 {
     t_pd *x = NULL;
-    t_pd *boundX = pd_getBoundX(); int state = dsp_suspend();
+    t_pd *boundX = instance_getBoundX(); int state = dsp_suspend();
     
-    pd_setBoundX (NULL);
+    instance_setBoundX (NULL);
     
     buffer_fileEval (name, directory);
     
-    while ((x != pd_getBoundX()) && pd_getBoundX()) {
+    while ((x != instance_getBoundX()) && instance_getBoundX()) {
         t_atom t;
         SET_FLOAT (&t, 1);
-        x = pd_getBoundX(); 
+        x = instance_getBoundX(); 
         pd_message (x, sym__pop, 1, &t); 
     }
     
     stack_proceedLoadbang();
     
-    dsp_resume (state); pd_setBoundX (boundX);
+    dsp_resume (state); instance_setBoundX (boundX);
 }
 
 // -----------------------------------------------------------------------------------------------------------

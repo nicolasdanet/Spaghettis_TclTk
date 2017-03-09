@@ -172,7 +172,7 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     canvas_pop (glist, glist->gl_openedAtLoad);
 
-    if (!(z = pd_getBoundX()) || (pd_class (z) != canvas_class)) { PD_BUG; }
+    if (!(z = instance_getBoundX()) || (pd_class (z) != canvas_class)) { PD_BUG; }
     else {
         t_glist *parent  = cast_glist (z);
         t_object *object = cast_object (glist);

@@ -298,7 +298,7 @@ void template_registerInstance (t_template *x, t_struct *o)
 {
     paint_erase();
     
-    x->tp_instance = o; if (!o) { instance_destroyScalarsByTemplate (x); }
+    x->tp_instance = o; if (!o) { instance_destroyAllScalarsByTemplate (x); }
     
     paint_draw();
 }

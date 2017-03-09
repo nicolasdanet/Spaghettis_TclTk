@@ -58,7 +58,7 @@ void textdefine_initialize (void)
     environment_setActiveFile (sym__texttemplate, sym___dot__);
     buffer_withStringUnzeroed (b, textTemplateFile, (int)strlen (textTemplateFile));
     buffer_eval (b, &pd_canvasMaker, 0, NULL);
-    pd_message (pd_getBoundX(), sym__pop, 0, NULL);
+    pd_message (instance_getBoundX(), sym__pop, 0, NULL);
     
     environment_setActiveFile (&s_, &s_);
     
@@ -149,7 +149,7 @@ static void *textdefine_new (t_symbol *s, int argc, t_atom *argv)
 
     x->x_outlet = outlet_new (cast_object (x), &s_pointer);
     
-    pd_setBoundA (cast_pd (x));
+    instance_setBoundA (cast_pd (x));
     
     return x;
 }
@@ -184,7 +184,7 @@ static void textdefine_free (t_textdefine *x)
 {
     if (x->x_name != &s_) { pd_unbind (cast_pd (x), x->x_name); }
     
-    pd_setBoundA (NULL);
+    instance_setBoundA (NULL);
     
     {
         t_error err = scalar_unsetInternalBuffer (x->x_scalar, sym_t);

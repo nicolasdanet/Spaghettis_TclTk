@@ -102,7 +102,7 @@ void instance_freeAllRoots (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void instance_destroyScalarsByTemplate (t_template *template)
+void instance_destroyAllScalarsByTemplate (t_template *template)
 {
     t_glist *glist = pd_this->pd_roots;
     
@@ -159,12 +159,13 @@ static void instance_newAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     
     if (stack_setLoadingAbstraction (s)) { error_recursiveInstantiation (s); }
     else {
-        t_pd *t = pd_getBoundX();
+        t_pd *t = instance_getBoundX();
         environment_setActiveArguments (argc, argv);
         buffer_fileEval (gensym (name), gensym (directory));
-        if (pd_getBoundX() && t != pd_getBoundX()) { instance_popAbstraction (cast_glist (pd_getBoundX())); }
-        else { 
-            pd_setBoundX (t); 
+        if (instance_getBoundX() && t != instance_getBoundX()) { 
+            instance_popAbstraction (cast_glist (instance_getBoundX())); 
+        } else { 
+            instance_setBoundX (t); 
         }
         environment_resetActiveArguments();
     }
@@ -181,6 +182,7 @@ void instance_initialize (void)
     pd_this = pdinstance_new();
     
     PD_ASSERT (!pd_objectMaker);
+    PD_ASSERT (!pd_canvasMaker);
     
     pd_objectMaker = class_new (sym_objectmaker, NULL, NULL, 0, CLASS_ABSTRACT, A_NULL);
     pd_canvasMaker = class_new (sym_canvasmaker, NULL, NULL, 0, CLASS_ABSTRACT, A_NULL);
@@ -190,14 +192,14 @@ void instance_initialize (void)
     class_addMethod (pd_canvasMaker, (t_method)canvas_new,      sym_canvas, A_GIMME, A_NULL);
     class_addMethod (pd_canvasMaker, (t_method)template_create, sym_struct, A_GIMME, A_NULL);
     
-    pd_setBoundN (&pd_canvasMaker);
+    instance_setBoundN (&pd_canvasMaker);
 }
 
 void instance_release (void)
 {
-    pd_setBoundA (NULL);
-    pd_setBoundN (NULL);
-    pd_setBoundX (NULL);
+    instance_setBoundA (NULL);
+    instance_setBoundN (NULL);
+    instance_setBoundX (NULL);
     
     CLASS_FREE (pd_objectMaker);
     CLASS_FREE (pd_canvasMaker);
