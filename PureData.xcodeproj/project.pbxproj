@@ -511,6 +511,7 @@
 		375149D61D86E243005679B0 /* x_arrayget.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arrayget.c; path = src/x_arrayget.c; sourceTree = "<group>"; };
 		37514A0A1D86E38F005679B0 /* x_arraysum.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arraysum.c; path = src/x_arraysum.c; sourceTree = "<group>"; };
 		37514A401D86E4DF005679B0 /* x_arraysize.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arraysize.c; path = src/x_arraysize.c; sourceTree = "<group>"; };
+		3751C80D1E7142C4002AB689 /* m_instance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_instance.h; path = src/m_instance.h; sourceTree = "<group>"; };
 		3752529C1E23C7FC00863F79 /* d_czeroreverse.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_czeroreverse.c; path = src/d_czeroreverse.c; sourceTree = "<group>"; };
 		375252BB1E23C8C700863F79 /* d_czero.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_czero.c; path = src/d_czero.c; sourceTree = "<group>"; };
 		375252C41E23C96F00863F79 /* d_cpole.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_cpole.c; path = src/d_cpole.c; sourceTree = "<group>"; };
@@ -1040,6 +1041,7 @@
 			children = (
 				378971DD1C4F716700263434 /* m_macros.h */,
 				378971E31C4F716700263434 /* m_core.h */,
+				3751C80D1E7142C4002AB689 /* m_instance.h */,
 				376192281E6EA50800E4B2DA /* m_class.h */,
 				37A649691E6472FA002C0A5C /* m_object.h */,
 				378971D71C4F716700263434 /* m_alloca.h */,
