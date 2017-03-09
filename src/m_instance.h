@@ -31,10 +31,38 @@ struct _pdinstance {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        instance_destroyScalarsByTemplate           (t_template *tmpl);
-void        instance_addToRoots                         (t_glist *glist);
-void        instance_removeFromRoots                    (t_glist *glist);
-void        instance_freeAllRoots                       (void);
+void    instance_destroyScalarsByTemplate       (t_template *tmpl);
+void    instance_addToRoots                     (t_glist *glist);
+void    instance_removeFromRoots                (t_glist *glist);
+void    instance_freeAllRoots                   (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline t_pd *pd_getBoundX (void)
+{
+    return s__X.s_thing;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline void pd_setBoundN (t_pd *x)
+{
+    s__N.s_thing = x;
+}
+
+static inline void pd_setBoundX (t_pd *x)
+{
+    s__X.s_thing = x;
+}
+
+static inline void pd_setBoundA (t_pd *x)
+{
+    s__A.s_thing = x;
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

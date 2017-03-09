@@ -86,14 +86,9 @@ void        pd_message                                  (t_pd *x, t_symbol *s, i
 
 t_pd        *pd_getThing                                (t_symbol *s);
 t_pd        *pd_getThingByClass                         (t_symbol *s, t_class *c);
-t_pd        *pd_getBoundX                               (void);
 
 int         pd_isThing                                  (t_symbol *s);
 int         pd_isThingQuiet                             (t_symbol *s);
-
-void        pd_setBoundN                                (t_pd *x);
-void        pd_setBoundX                                (t_pd *x);
-void        pd_setBoundA                                (t_pd *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -244,13 +239,13 @@ void        guistub_destroyWithKey                      (void *key);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#include "m_symbols.h"
 #include "m_instance.h"
 #include "m_class.h"
 #include "m_object.h"
 #include "m_error.h"
 #include "m_utils.h"
 #include "m_rectangle.h"
-#include "m_symbols.h"
 #include "h_helpers.h"
 
 // -----------------------------------------------------------------------------------------------------------
