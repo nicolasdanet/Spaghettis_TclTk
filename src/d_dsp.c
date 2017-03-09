@@ -69,17 +69,17 @@ static void dsp_start (void)
     
     for (glist = pd_this->pd_roots; glist; glist = glist->gl_next) { canvas_dspProceed (glist, 1, NULL); }
     
-    pd_this->pd_dspState = 1;
+    instance_setDspState (1);
 }
 
 
 static void dsp_stop (void)
 {
-    PD_ASSERT (pd_this->pd_dspState);
+    PD_ASSERT (instance_getDspState());
     
     ugen_dspRelease();
     
-    pd_this->pd_dspState = 0;
+    instance_setDspState (0);
 }
 
 static void dsp_notify (int n)
@@ -97,14 +97,14 @@ void dsp_state (void *dummy, t_symbol *s, int argc, t_atom *argv)
     //
     int n = (int)atom_getFloatAtIndex (0, argc, argv);
     
-    if (n != pd_this->pd_dspState) {
+    if (n != instance_getDspState()) {
     //
     if (n) { if (audio_start() == PD_ERROR_NONE) { dsp_start(); } }
     else {
         dsp_stop(); audio_stop();
     }
     
-    dsp_notify (pd_this->pd_dspState);
+    dsp_notify (instance_getDspState());
     //
     }
     //
@@ -113,7 +113,7 @@ void dsp_state (void *dummy, t_symbol *s, int argc, t_atom *argv)
 
 int dsp_isRunning (void)
 {
-    return (pd_this->pd_dspState != 0);
+    return (instance_getDspState() != 0);
 }   
 
 // -----------------------------------------------------------------------------------------------------------
@@ -127,7 +127,7 @@ void dsp_update (void)
 
 int dsp_suspend (void)
 {
-    int oldState = pd_this->pd_dspState;
+    int oldState = instance_getDspState();
     
     if (oldState) { dsp_stop(); }
     

@@ -59,9 +59,23 @@ static inline t_systime instance_getLogicalTime (void)
     return instance_getInstance()->pd_systime;
 }
 
+static inline int instance_getDspState (void)
+{
+    return instance_getInstance()->pd_dspState;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static inline void instance_setLogicalTime (t_systime t)
 {
     instance_getInstance()->pd_systime = t;
+}
+
+static inline void instance_setDspState (int n)
+{
+    instance_getInstance()->pd_dspState = (n != 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
