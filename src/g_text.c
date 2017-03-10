@@ -28,7 +28,6 @@
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_class  *canvas_class;
-extern t_pd     *pd_newest;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -203,8 +202,8 @@ void text_set (t_object *x, t_glist *glist, char *s, int size)
         canvas_makeTextObject (glist, a, b, w, 0, t);
         canvas_restoreCachedLines (canvas_getView (glist));
         
-        if (pd_newest) {
-            if (pd_class (pd_newest) == canvas_class) { canvas_loadbang (cast_glist (pd_newest)); }
+        if (instance_getNewestObject() && pd_class (instance_getNewestObject()) == canvas_class) {
+            canvas_loadbang (cast_glist (instance_getNewestObject())); 
         }
     }
     //

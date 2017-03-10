@@ -16,36 +16,35 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pd *pd_newest;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 /* Called by the t_listmethod of the object maker class. */
 
 static void *list_makeObject (t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
 {
-    pd_newest = NULL;
+    t_pd *newest = NULL;
     
-    if (!argc || !IS_SYMBOL (argv)) { pd_newest = listappend_new (s, argc, argv); }
+    instance_setNewestObject (NULL);
+    
+    if (!argc || !IS_SYMBOL (argv)) { newest = listappend_new (s,       argc, argv); }
     else {
     //
     t_symbol *t = atom_getSymbol (argv);
     
-    if (t == sym_append)            { pd_newest = listappend_new (s,        argc - 1, argv + 1); }
-    else if (t == sym_prepend)      { pd_newest = listprepend_new (s,       argc - 1, argv + 1); }
-    else if (t == sym_split)        { pd_newest = listsplit_new (s,         argc - 1, argv + 1); }
-    else if (t == sym_trim)         { pd_newest = listtrim_new (s,          argc - 1, argv + 1); }
-    else if (t == sym_length)       { pd_newest = listlength_new (s,        argc - 1, argv + 1); }
-    else if (t == sym_fromsymbol)   { pd_newest = listfromsymbol_new (s,    argc - 1, argv + 1); }
-    else if (t == sym_tosymbol)     { pd_newest = listtosymbol_new (s,      argc - 1, argv + 1); }
+    if (t == sym_append)            { newest = listappend_new (s,       argc - 1, argv + 1); }
+    else if (t == sym_prepend)      { newest = listprepend_new (s,      argc - 1, argv + 1); }
+    else if (t == sym_split)        { newest = listsplit_new (s,        argc - 1, argv + 1); }
+    else if (t == sym_trim)         { newest = listtrim_new (s,         argc - 1, argv + 1); }
+    else if (t == sym_length)       { newest = listlength_new (s,       argc - 1, argv + 1); }
+    else if (t == sym_fromsymbol)   { newest = listfromsymbol_new (s,   argc - 1, argv + 1); }
+    else if (t == sym_tosymbol)     { newest = listtosymbol_new (s,     argc - 1, argv + 1); }
     else {
         error_unexpected (&s_list, t);
     }
     //
     }
     
-    return pd_newest;   /* Unused but kept due to t_newmethod signature. */
+    instance_setNewestObject (newest);
+    
+    return newest;  /* Unused but kept due to t_newmethod signature. */
 }
 
 // -----------------------------------------------------------------------------------------------------------

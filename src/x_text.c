@@ -16,7 +16,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pd         *pd_newest;
 extern t_pd         pd_canvasMaker;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -156,28 +155,32 @@ static void *textdefine_new (t_symbol *s, int argc, t_atom *argv)
 
 static void *textdefine_makeObject (t_symbol *s, int argc, t_atom *argv)
 {
-    pd_newest = NULL;
+    t_pd *newest = NULL;
     
-    if (!argc || !IS_SYMBOL (argv)) { pd_newest = textdefine_new (s, argc, argv); }
+    instance_setNewestObject (NULL);
+    
+    if (!argc || !IS_SYMBOL (argv))     { newest = textdefine_new (s,   argc, argv); }
     else {
     //
     t_symbol *t = atom_getSymbol (argv);
     
-    if (t == sym_d || t == sym_define)  { pd_newest = textdefine_new (s,        argc - 1, argv + 1); }
-    else if (t == sym_get)              { pd_newest = textget_new (s,           argc - 1, argv + 1); }
-    else if (t == sym_set)              { pd_newest = textset_new (s,           argc - 1, argv + 1); }
-    else if (t == sym_size)             { pd_newest = textsize_new (s,          argc - 1, argv + 1); }
-    else if (t == sym_tolist)           { pd_newest = texttolist_new (s,        argc - 1, argv + 1); }
-    else if (t == sym_fromlist)         { pd_newest = textfromlist_new (s,      argc - 1, argv + 1); }
-    else if (t == sym_search)           { pd_newest = textsearch_new (s,        argc - 1, argv + 1); }
-    else if (t == sym_sequence)         { pd_newest = textsequence_new (s,      argc - 1, argv + 1); }
+    if (t == sym_d || t == sym_define)  { newest = textdefine_new (s,   argc - 1, argv + 1); }
+    else if (t == sym_get)              { newest = textget_new (s,      argc - 1, argv + 1); }
+    else if (t == sym_set)              { newest = textset_new (s,      argc - 1, argv + 1); }
+    else if (t == sym_size)             { newest = textsize_new (s,     argc - 1, argv + 1); }
+    else if (t == sym_tolist)           { newest = texttolist_new (s,   argc - 1, argv + 1); }
+    else if (t == sym_fromlist)         { newest = textfromlist_new (s, argc - 1, argv + 1); }
+    else if (t == sym_search)           { newest = textsearch_new (s,   argc - 1, argv + 1); }
+    else if (t == sym_sequence)         { newest = textsequence_new (s, argc - 1, argv + 1); }
     else {
         error_unexpected (sym_text, t);
     }
     //
     }
     
-    return pd_newest;
+    instance_setNewestObject (newest);
+    
+    return newest;
 }
 
 static void textdefine_free (t_textdefine *x)

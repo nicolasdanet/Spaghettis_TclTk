@@ -43,11 +43,6 @@ typedef t_pd *(*t_newmethod20)  (t_int, t_int);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pd *pd_newest;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 extern t_pd pd_objectMaker;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -78,7 +73,7 @@ static void method_execute (t_pd *x, t_method f, int m, t_int *ai, int n, t_floa
         //
         }
         
-        pd_newest = o;
+        instance_setNewestObject (o);
 
     } else { 
     
@@ -180,9 +175,11 @@ static t_error method_untyped (t_entry *e, t_pd *x, t_symbol *s, int argc, t_ato
     
     if (*p != A_GIMME) { return method_untypedCheck (e, x, s, argc, argv); }
     else {
-        if (x == &pd_objectMaker) { pd_newest = (*((t_newgimme)e->me_method)) (s, argc, argv); }
-        else { 
-            (*((t_gimme)e->me_method)) (x, s, argc, argv); 
+        if (x != &pd_objectMaker) { (*((t_gimme)e->me_method)) (x, s, argc, argv); }
+        else {
+            t_pd *t = ((*((t_newgimme)e->me_method)) (s, argc, argv));
+            
+            instance_setNewestObject (t);
         }
     }
     

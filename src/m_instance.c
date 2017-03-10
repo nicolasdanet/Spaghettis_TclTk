@@ -31,11 +31,6 @@ t_pdinstance *pd_this;                          /* Static. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_pd *pd_newest;                                /* Static. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 t_pd pd_objectMaker;                            /* Static. */
 t_pd pd_canvasMaker;                            /* Static. */
 
@@ -359,7 +354,7 @@ void instance_destroyAllScalarsByTemplate (t_template *template)
 
 static void instance_popAbstraction (t_glist *glist)
 {
-    pd_newest = cast_pd (glist);
+    instance_get()->pd_newest = cast_pd (glist);
     stack_pop (cast_pd (glist));
     
     glist->gl_isLoading = 0;
@@ -377,7 +372,7 @@ static void instance_newAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     
     if (instance_recursiveDepth > INSTANCE_MAXIMUM_RECURSION) { PD_BUG; return; }
 
-    pd_newest = NULL;
+    instance_get()->pd_newest = NULL;
     
     if (loader_load (canvas_getCurrent(), s->s_name)) {
         instance_recursiveDepth++;
@@ -388,7 +383,7 @@ static void instance_newAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     
     err = (f = canvas_openFile (canvas_getCurrent(), s->s_name, PD_PATCH, directory, &name, PD_STRING)) < 0;
     
-    if (err) { pd_newest = NULL; }
+    if (err) { instance_get()->pd_newest = NULL; }
     else {
     //
     close (f);

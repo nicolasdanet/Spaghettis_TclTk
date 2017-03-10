@@ -16,30 +16,28 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pd *pd_newest;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 static void *array_makeObject (t_symbol *s, int argc, t_atom *argv)
 {
-    t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
+    t_symbol *t  = atom_getSymbolAtIndex (0, argc, argv);
+    t_pd *newest = NULL;
     
-    pd_newest = NULL;
+    instance_setNewestObject (NULL);
     
-    if (t == sym_size)          { pd_newest = arraysize_new (s,     argc - 1, argv + 1); }
-    else if (t == sym_sum)      { pd_newest = arraysum_new (s,      argc - 1, argv + 1); }
-    else if (t == sym_get)      { pd_newest = arrayget_new (s,      argc - 1, argv + 1); }
-    else if (t == sym_set)      { pd_newest = arrayset_new (s,      argc - 1, argv + 1); }
-    else if (t == sym_quantile) { pd_newest = arrayquantile_new (s, argc - 1, argv + 1); }
-    else if (t == sym_random)   { pd_newest = arrayrandom_new (s,   argc - 1, argv + 1); }
-    else if (t == sym_max)      { pd_newest = arraymax_new (s,      argc - 1, argv + 1); }
-    else if (t == sym_min)      { pd_newest = arraymin_new (s,      argc - 1, argv + 1); }
+    if (t == sym_size)          { newest = arraysize_new (s,        argc - 1, argv + 1); }
+    else if (t == sym_sum)      { newest = arraysum_new (s,         argc - 1, argv + 1); }
+    else if (t == sym_get)      { newest = arrayget_new (s,         argc - 1, argv + 1); }
+    else if (t == sym_set)      { newest = arrayset_new (s,         argc - 1, argv + 1); }
+    else if (t == sym_quantile) { newest = arrayquantile_new (s,    argc - 1, argv + 1); }
+    else if (t == sym_random)   { newest = arrayrandom_new (s,      argc - 1, argv + 1); }
+    else if (t == sym_max)      { newest = arraymax_new (s,         argc - 1, argv + 1); }
+    else if (t == sym_min)      { newest = arraymin_new (s,         argc - 1, argv + 1); }
     else {
         error_unexpected (sym_array, t);
     }
     
-    return pd_newest;
+    instance_setNewestObject (newest);
+    
+    return newest;
 }
 
 // -----------------------------------------------------------------------------------------------------------

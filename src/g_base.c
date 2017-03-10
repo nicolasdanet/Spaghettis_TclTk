@@ -24,7 +24,6 @@ extern t_class              *struct_class;
 extern t_class              *canvas_class;
 extern t_class              *vinlet_class;
 extern t_class              *voutlet_class;
-extern t_pd                 *pd_newest;
 
 extern t_pd                 pd_objectMaker;
 
@@ -285,7 +284,7 @@ void canvas_makeTextObject (t_glist *glist,
     int isSelected,
     t_buffer *b)
 {
-    pd_newest = NULL;
+    instance_setNewestObject (NULL);
     
     stack_push (cast_pd (glist));
     
@@ -296,7 +295,7 @@ void canvas_makeTextObject (t_glist *glist,
     
     buffer_eval (b, &pd_objectMaker, environment_getNumberOfArguments (e), environment_getArguments (e));
 
-    if (pd_newest) { x = cast_objectIfConnectable (pd_newest); }
+    if (instance_getNewestObject()) { x = cast_objectIfConnectable (instance_getNewestObject()); }
 
     if (!x) {
         x = (t_object *)pd_new (text_class);    /* Create a dummy box. */

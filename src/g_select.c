@@ -18,7 +18,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pd     *pd_newest;
 extern t_class  *canvas_class;
 extern t_class  *vinlet_class;
 extern t_class  *voutlet_class;
@@ -145,11 +144,11 @@ void canvas_removeSelectedObjects (t_glist *glist)
     /* Workaround by deselecting it first and looking for a "new" object next. */
         
     if (glist->gl_editor->e_selectedText) {
-        pd_newest = NULL;
+        instance_setNewestObject (NULL);
         canvas_deselectAll (glist);
-        if (pd_newest) {
+        if (instance_getNewestObject()) {
             for (yA = glist->gl_graphics; yA; yA = yA->g_next) {
-                if (cast_pd (yA) == pd_newest) { canvas_selectObject (glist, yA); }
+                if (cast_pd (yA) == instance_getNewestObject()) { canvas_selectObject (glist, yA); }
             }
         }
     }

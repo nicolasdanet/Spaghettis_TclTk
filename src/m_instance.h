@@ -25,6 +25,7 @@ struct _pdinstance {
     t_glist     *pd_roots;
     t_clock     *pd_polling;
     t_clock     *pd_autorelease;
+    t_pd        *pd_newest;
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -112,6 +113,11 @@ static inline t_pd *instance_getBoundX (void)
     return s__X.s_thing;
 }
 
+static inline t_pd *instance_getNewestObject (void)
+{
+    return instance_get()->pd_newest;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -120,10 +126,6 @@ static inline void instance_setDspState (int n)
 {
     instance_get()->pd_dspState = (n != 0);
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 static inline void instance_setBoundN (t_pd *x)
 {
@@ -138,6 +140,11 @@ static inline void instance_setBoundX (t_pd *x)
 static inline void instance_setBoundA (t_pd *x)
 {
     s__A.s_thing = x;
+}
+
+static inline void instance_setNewestObject (t_pd *x)
+{
+    instance_get()->pd_newest = x;
 }
 
 // -----------------------------------------------------------------------------------------------------------
