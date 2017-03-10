@@ -71,6 +71,11 @@ void    instance_pollingStop                    (void);
 void    instance_pollingRegister                (t_pd *x);
 void    instance_pollingUnregister              (t_pd *x);
 
+void    instance_autoreleaseRun                 (void);
+void    instance_autoreleaseStop                (void);
+void    instance_autoreleaseRegister            (t_pd *x);
+void    instance_autoreleaseProceed             (t_pd *x);
+
 void    instance_destroyAllScalarsByTemplate    (t_template *tmpl);
 
 // -----------------------------------------------------------------------------------------------------------

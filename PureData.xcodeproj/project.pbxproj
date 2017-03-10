@@ -277,7 +277,6 @@
 		37B79AFB1DCB775900EB423B /* d_vinlet.c in Sources */ = {isa = PBXBuildFile; fileRef = 37B79AFA1DCB775900EB423B /* d_vinlet.c */; };
 		37B79B4A1DCB7E0300EB423B /* d_voutlet.c in Sources */ = {isa = PBXBuildFile; fileRef = 37B79B491DCB7E0300EB423B /* d_voutlet.c */; };
 		37B911AB1E4C78FE001D9136 /* s_devices.c in Sources */ = {isa = PBXBuildFile; fileRef = 37B911A91E4C78FE001D9136 /* s_devices.c */; };
-		37B9B6141DA949CE007FEB07 /* m_autorelease.c in Sources */ = {isa = PBXBuildFile; fileRef = 37B9B6131DA949CE007FEB07 /* m_autorelease.c */; };
 		37BA30821CD1DB0F0091113F /* g_object.c in Sources */ = {isa = PBXBuildFile; fileRef = 37BA30811CD1DB0F0091113F /* g_object.c */; };
 		37C000551DE2FE1B00F90584 /* d_throw.c in Sources */ = {isa = PBXBuildFile; fileRef = 37C000541DE2FE1B00F90584 /* d_throw.c */; };
 		37C000831DE3053200F90584 /* d_catch.c in Sources */ = {isa = PBXBuildFile; fileRef = 37C000821DE3053200F90584 /* d_catch.c */; };
@@ -737,7 +736,6 @@
 		37B79B491DCB7E0300EB423B /* d_voutlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_voutlet.c; path = src/d_voutlet.c; sourceTree = "<group>"; };
 		37B911A91E4C78FE001D9136 /* s_devices.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_devices.c; path = src/s_devices.c; sourceTree = "<group>"; };
 		37B911AA1E4C78FE001D9136 /* s_devices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = s_devices.h; path = src/s_devices.h; sourceTree = "<group>"; };
-		37B9B6131DA949CE007FEB07 /* m_autorelease.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_autorelease.c; path = src/m_autorelease.c; sourceTree = "<group>"; };
 		37BA30811CD1DB0F0091113F /* g_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_object.c; path = src/g_object.c; sourceTree = "<group>"; };
 		37C000541DE2FE1B00F90584 /* d_throw.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_throw.c; path = src/d_throw.c; sourceTree = "<group>"; };
 		37C000821DE3053200F90584 /* d_catch.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_catch.c; path = src/d_catch.c; sourceTree = "<group>"; };
@@ -1052,7 +1050,6 @@
 				378971E11C4F716700263434 /* m_pd.c */,
 				3710DC551E69C79C00B65CE9 /* m_method.c */,
 				378971DA1C4F716700263434 /* m_class.c */,
-				37B9B6131DA949CE007FEB07 /* m_autorelease.c */,
 				374247521E59E46F009E8DC1 /* m_inlet.c */,
 				374247531E59E46F009E8DC1 /* m_outlet.c */,
 				378971E01C4F716700263434 /* m_object.c */,
@@ -2018,7 +2015,6 @@
 				374D7B061DA3E0A500FECF8F /* x_keyup.c in Sources */,
 				374D7B301DA3E1E900FECF8F /* x_key.c in Sources */,
 				374D7B5E1DA3E30500FECF8F /* x_savepanel.c in Sources */,
-				37B9B6141DA949CE007FEB07 /* m_autorelease.c in Sources */,
 				377CEE201DAA7BEE00E60461 /* x_oscformat.c in Sources */,
 				377CEE471DAA7D9700E60461 /* x_oscparse.c in Sources */,
 				377CEEAB1DAA7FFE00E60461 /* x_realtime.c in Sources */,

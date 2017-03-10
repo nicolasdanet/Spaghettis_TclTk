@@ -36,7 +36,7 @@ void guiconnect_release (t_guiconnect *x)
     
     if (!x->x_bound) { pd_free (cast_pd (x)); }
     else {
-        autorelease_add (cast_pd (x));
+        instance_autoreleaseRegister (cast_pd (x));
     }    
 }
 
@@ -47,7 +47,7 @@ static void guiconnect_signoff (t_guiconnect *x)
 
 static void guiconnect_autorelease (t_guiconnect *x)
 {
-    autorelease_proceed (cast_pd (x));
+    instance_autoreleaseProceed (cast_pd (x));
 }
 
 // -----------------------------------------------------------------------------------------------------------

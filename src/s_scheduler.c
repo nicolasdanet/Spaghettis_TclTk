@@ -237,11 +237,11 @@ static void scheduler_mainLoop (void)
 t_error scheduler_main (void)
 {
     midi_open();
-    autorelease_run();
+    instance_autoreleaseRun();
     instance_pollingRun();
     scheduler_mainLoop();
     instance_pollingStop();
-    autorelease_stop();
+    instance_autoreleaseStop();
     dsp_suspend();
     audio_close();
     midi_close();
