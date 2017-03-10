@@ -159,14 +159,14 @@ static void *tabwrite_tilde_new (t_symbol *s)
     x->x_phase = PD_INT_MAX;
     x->x_name  = s;
     
-    poll_add (cast_pd (x));
+    instance_pollingRegister (cast_pd (x));
     
     return x;
 }
 
 static void tabwrite_tilde_free (t_tabwrite_tilde *x)
 {
-    poll_remove (cast_pd (x));
+    instance_pollingUnregister (cast_pd (x));
 }
 
 // -----------------------------------------------------------------------------------------------------------

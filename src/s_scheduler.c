@@ -238,9 +238,9 @@ t_error scheduler_main (void)
 {
     midi_open();
     autorelease_run();
-    poll_run();
+    instance_pollingRun();
     scheduler_mainLoop();
-    poll_stop();
+    instance_pollingStop();
     autorelease_stop();
     dsp_suspend();
     audio_close();

@@ -24,7 +24,6 @@
 #include "m_method.c"
 #include "m_class.c"
 #include "m_autorelease.c"
-#include "m_poll.c"
 #include "m_inlet.c"
 #include "m_outlet.c"
 #include "m_object.c"

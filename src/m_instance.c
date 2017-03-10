@@ -18,7 +18,8 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define INSTANCE_MAXIMUM_RECURSION   1000
+#define INSTANCE_MAXIMUM_RECURSION      1000
+#define INSTANCE_POLLING_PERIOD         47.0
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -45,7 +46,18 @@ static int instance_recursiveDepth;             /* Static. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_int instance_dspDone (t_int *w)
+static void instance_pollingTask (void *dummy)
+{
+    if (pd_isThingQuiet (sym__polling)) {
+    //
+    pd_message (pd_getThing (sym__polling), sym__polling, 0, NULL);
+    //
+    }  
+    
+    clock_delay (instance_get()->pd_polling, INSTANCE_POLLING_PERIOD);
+}
+
+static t_int instance_dspDone (t_int *dummy)
 {
     return 0;
 }
@@ -246,6 +258,36 @@ void instance_clockTick (t_systime t)
     }
     
     instance_get()->pd_systime = t;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void instance_pollingRun (void)
+{
+    instance_get()->pd_polling = clock_new ((void *)NULL, (t_method)instance_pollingTask);
+    
+    clock_delay (instance_get()->pd_polling, INSTANCE_POLLING_PERIOD);
+}
+
+void instance_pollingStop (void)
+{
+    clock_free (instance_get()->pd_polling); instance_get()->pd_polling = NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void instance_pollingRegister (t_pd *x)
+{
+    pd_bind (x, sym__polling);
+}
+
+void instance_pollingUnregister (t_pd *x)
+{
+    pd_unbind (x, sym__polling);
 }
 
 // -----------------------------------------------------------------------------------------------------------

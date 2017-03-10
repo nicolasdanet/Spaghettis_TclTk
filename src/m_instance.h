@@ -66,6 +66,11 @@ void    instance_clockAdd                       (t_clock *c);
 void    instance_clockUnset                     (t_clock *c);
 void    instance_clockTick                      (t_systime systime);
 
+void    instance_pollingRun                     (void);
+void    instance_pollingStop                    (void);
+void    instance_pollingRegister                (t_pd *x);
+void    instance_pollingUnregister              (t_pd *x);
+
 void    instance_destroyAllScalarsByTemplate    (t_template *tmpl);
 
 // -----------------------------------------------------------------------------------------------------------

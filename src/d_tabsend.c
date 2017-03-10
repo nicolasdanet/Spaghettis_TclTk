@@ -114,14 +114,14 @@ static void *tabsend_tilde_new (t_symbol *s)
     
     x->x_name = s;
     
-    poll_add (cast_pd (x));
+    instance_pollingRegister (cast_pd (x));
     
     return x;
 }
 
 static void tabsend_tilde_free (t_tabsend_tilde *x)
 {
-    poll_remove (cast_pd (x));
+    instance_pollingUnregister (cast_pd (x));
 }
 
 // -----------------------------------------------------------------------------------------------------------
