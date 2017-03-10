@@ -42,11 +42,6 @@ typedef t_pd *(*t_newmethod20)  (t_int, t_int);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-extern t_pd pd_objectMaker;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 #define METHOD_COMBINE(m, n)    (((m) << 2) | (n))
@@ -57,7 +52,7 @@ extern t_pd pd_objectMaker;
 
 static void method_execute (t_pd *x, t_method f, int m, t_int *ai, int n, t_float *af)
 {
-    if (x == &pd_objectMaker) {
+    if (instance_isMakerObject (x)) {
     
         t_pd *o = NULL;
 
@@ -111,8 +106,8 @@ static t_error method_untypedCheck (t_entry *e, t_pd *x, t_symbol *s, int argc, 
     int m = 0;
     int n = 0;
     
-    if (x != &pd_objectMaker) { *ip = (t_int)x; ip++; m++;   }
-    if (argc > PD_ARGUMENTS)  { PD_BUG; argc = PD_ARGUMENTS; }
+    if (!instance_isMakerObject (x)) { *ip = (t_int)x; ip++; m++; }
+    if (argc > PD_ARGUMENTS) { PD_BUG; argc = PD_ARGUMENTS; }
         
     while ((t = *p++)) {
     //
@@ -158,7 +153,7 @@ static t_error method_untypedCheck (t_entry *e, t_pd *x, t_symbol *s, int argc, 
 
     method_execute (x, f, m, ai, n, af);
     
-    if (x == &pd_objectMaker) { 
+    if (instance_isMakerObject (x)) { 
     if (argc) { 
         warning_unusedArguments (s, argc, argv); 
     }
@@ -175,7 +170,7 @@ static t_error method_untyped (t_entry *e, t_pd *x, t_symbol *s, int argc, t_ato
     
     if (*p != A_GIMME) { return method_untypedCheck (e, x, s, argc, argv); }
     else {
-        if (x != &pd_objectMaker) { (*((t_gimme)e->me_method)) (x, s, argc, argv); }
+        if (!instance_isMakerObject (x)) { (*((t_gimme)e->me_method)) (x, s, argc, argv); }
         else {
             t_pd *t = ((*((t_newgimme)e->me_method)) (s, argc, argv));
             
@@ -217,7 +212,7 @@ static t_error method_typed (t_pd *x, t_symbol *s, int argc, t_atom *argv)
         }
     }
     
-    if (!err && x == &pd_objectMaker) {
+    if (!err && instance_isMakerObject (x)) {
     //
     if (argc > 0 && s == &s_bang)       { warning_unusedArguments (s, argc, argv); }
     else if (argc > 1 && s != &s_list)  { warning_unusedArguments (s, argc - 1, argv + 1); }
@@ -240,7 +235,7 @@ void pd_message (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     /* Note that "pointer" is not catched. */
     /* It aims to let the pointer object be A_GIMME initialized. */
 
-    PD_ASSERT (s != &s_pointer || x == &pd_objectMaker);
+    PD_ASSERT (s != &s_pointer || instance_isMakerObject (x));
     
     if (s == &s_bang || s == &s_float || s == &s_symbol || s == &s_list) {
         err = method_typed (x, s, argc, argv);

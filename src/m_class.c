@@ -17,8 +17,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-extern t_pd pd_objectMaker;
-
 extern t_widgetbehavior text_widgetBehavior;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -183,9 +181,9 @@ t_class *class_new (t_symbol *s,
     
     va_end (ap);
     
-    if (pd_objectMaker && newMethod) {
+    if (newMethod) {
     //
-    class_addMethod (pd_objectMaker, (t_method)newMethod, s, args[0], args[1], args[2]);
+    class_addMethod (instance_getMakerObjectClass(), (t_method)newMethod, s, args[0], args[1], args[2]);
     //
     }
     
@@ -243,7 +241,7 @@ void class_addCreator (t_newmethod newMethod, t_symbol *s, t_atomtype type1, ...
     
     va_end (ap);
     
-    class_addMethod (pd_objectMaker, (t_method)newMethod, s, args[0], args[1], args[2]);
+    class_addMethod (instance_getMakerObjectClass(), (t_method)newMethod, s, args[0], args[1], args[2]);
 }
 
 void class_free (t_class *c)

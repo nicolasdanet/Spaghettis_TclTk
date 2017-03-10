@@ -26,6 +26,7 @@ struct _pdinstance {
     t_clock     *pd_polling;
     t_clock     *pd_autorelease;
     t_pd        *pd_newest;
+    t_class     *pd_objectMaker;
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -78,6 +79,29 @@ void    instance_autoreleaseRegister            (t_pd *x);
 void    instance_autoreleaseProceed             (t_pd *x);
 
 void    instance_destroyAllScalarsByTemplate    (t_template *tmpl);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline int instance_isMakerObject (t_pd *x)
+{
+    return (x == &(instance_get()->pd_objectMaker));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline t_pd *instance_getMakerObject (void)
+{
+    return &(instance_get()->pd_objectMaker);
+}
+
+static inline t_class *instance_getMakerObjectClass (void)
+{
+    return (instance_get()->pd_objectMaker);
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

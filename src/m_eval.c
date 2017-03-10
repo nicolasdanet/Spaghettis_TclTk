@@ -17,11 +17,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-extern t_pd pd_objectMaker;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 static t_error buffer_fromFile (t_buffer *x, char *name, char *directory)
@@ -83,12 +78,12 @@ static int buffer_evalGetMessage (t_atom *v, t_pd *object, t_pd **next, t_atom *
     
     switch (atom_getType (v)) {
     //
-    case A_SEMICOLON    :   if (object == &pd_objectMaker) { SET_SYMBOL (m, sym___semicolon__); }
+    case A_SEMICOLON    :   if (instance_isMakerObject (object)) { SET_SYMBOL (m, sym___semicolon__); }
                             else { 
                                 *next = NULL; end = 1; 
                             }
                             break;
-    case A_COMMA        :   if (object == &pd_objectMaker) { SET_SYMBOL (m, sym___comma__); }
+    case A_COMMA        :   if (instance_isMakerObject (object)) { SET_SYMBOL (m, sym___comma__); }
                             else { 
                                 end = 1; 
                             }

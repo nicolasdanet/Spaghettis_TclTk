@@ -25,8 +25,6 @@ extern t_class              *canvas_class;
 extern t_class              *vinlet_class;
 extern t_class              *voutlet_class;
 
-extern t_pd                 pd_objectMaker;
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
@@ -293,7 +291,10 @@ void canvas_makeTextObject (t_glist *glist,
     t_environment *e = canvas_getEnvironment (canvas_getCurrent());
     t_object *x = NULL;
     
-    buffer_eval (b, &pd_objectMaker, environment_getNumberOfArguments (e), environment_getArguments (e));
+    buffer_eval (b, 
+        instance_getMakerObject(), 
+        environment_getNumberOfArguments (e), 
+        environment_getArguments (e));
 
     if (instance_getNewestObject()) { x = cast_objectIfConnectable (instance_getNewestObject()); }
 

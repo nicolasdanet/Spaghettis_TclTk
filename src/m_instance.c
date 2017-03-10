@@ -31,8 +31,7 @@ t_pdinstance *pd_this;                          /* Static. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_pd pd_objectMaker;                            /* Static. */
-t_pd pd_canvasMaker;                            /* Static. */
+t_class *pd_canvasMaker;                        /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -412,13 +411,10 @@ void instance_initialize (void)
 {
     pd_this = instance_new();
     
-    PD_ASSERT (!pd_objectMaker);
-    PD_ASSERT (!pd_canvasMaker);
-    
-    pd_objectMaker = class_new (sym_objectmaker, NULL, NULL, 0, CLASS_ABSTRACT, A_NULL);
+    pd_this->pd_objectMaker = class_new (sym_objectmaker, NULL, NULL, 0, CLASS_ABSTRACT, A_NULL);
     pd_canvasMaker = class_new (sym_canvasmaker, NULL, NULL, 0, CLASS_ABSTRACT, A_NULL);
     
-    class_addAnything (pd_objectMaker, (t_method)instance_newAnything);
+    class_addAnything (pd_this->pd_objectMaker, (t_method)instance_newAnything);
         
     class_addMethod (pd_canvasMaker, (t_method)canvas_new,      sym_canvas, A_GIMME, A_NULL);
     class_addMethod (pd_canvasMaker, (t_method)template_create, sym_struct, A_GIMME, A_NULL);
@@ -432,7 +428,7 @@ void instance_release (void)
     instance_setBoundN (NULL);
     instance_setBoundX (NULL);
     
-    CLASS_FREE (pd_objectMaker);
+    CLASS_FREE (pd_this->pd_objectMaker);
     CLASS_FREE (pd_canvasMaker);
     
     instance_free (pd_this);
