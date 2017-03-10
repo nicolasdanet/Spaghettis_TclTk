@@ -12,6 +12,7 @@
 #include "m_core.h"
 #include "s_system.h"
 #include "g_graphics.h"
+#include "d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -163,6 +164,37 @@ void instance_dspChainAppend (t_perform f, int n, ...)
     
     instance_get()->pd_dspChain[size - 1] = (t_int)instance_dspDone;
     instance_get()->pd_dspChainSize = size;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void instance_signalAdd (t_signal *s)
+{
+    s->s_next = instance_get()->pd_signals;
+    
+    instance_get()->pd_signals = s;
+}
+
+void instance_signalFreeAll (void)
+{
+    t_signal *s = NULL;
+    
+    while ((s = instance_get()->pd_signals)) {
+    //
+    instance_get()->pd_signals = s->s_next;
+    
+    if (!s->s_hasBorrowed) { PD_MEMORY_FREE (s->s_vector); }
+    else {
+    //
+    PD_ASSERT (s->s_unused); PD_MEMORY_FREE (s->s_unused);
+    //
+    }
+    
+    PD_MEMORY_FREE (s);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

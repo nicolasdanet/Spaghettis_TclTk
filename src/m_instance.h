@@ -59,6 +59,9 @@ void    instance_dspChainInitialize             (void);
 void    instance_dspChainRelease                (void);
 void    instance_dspChainAppend                 (t_perform f, int n, ...);
 
+void    instance_signalAdd                      (t_signal *s);
+void    instance_signalFreeAll                  (void);
+
 void    instance_clockAdd                       (t_clock *c);
 void    instance_clockUnset                     (t_clock *c);
 void    instance_clockTick                      (t_systime systime);

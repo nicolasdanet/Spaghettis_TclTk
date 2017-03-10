@@ -126,8 +126,7 @@ void ugen_dspTick (void)
 void ugen_dspRelease (void)
 {
     instance_dspChainRelease();
-    
-    signal_clean();
+    instance_signalFreeAll();
 }
 
 // -----------------------------------------------------------------------------------------------------------

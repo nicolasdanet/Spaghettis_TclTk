@@ -28,9 +28,8 @@ t_signal *signal_new (int vectorSize, t_float sampleRate)
     s->s_vectorSize = vectorSize;
     s->s_vector     = (t_sample *)PD_MEMORY_GET (vectorSize * sizeof (t_sample));
     s->s_unused     = NULL;
-    s->s_next       = pd_this->pd_signals;
     
-    pd_this->pd_signals = s;
+    instance_signalAdd (s);
     
     return s;
 }
@@ -54,30 +53,6 @@ t_signal *signal_borrow (t_signal *s, t_signal *toBeBorrowed)
     s->s_vector         = toBeBorrowed->s_vector;
     
     return s;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void signal_clean (void)
-{
-    t_signal *s = NULL;
-    
-    while ((s = pd_this->pd_signals)) {
-    //
-    pd_this->pd_signals = s->s_next;
-    
-    if (!s->s_hasBorrowed) { PD_MEMORY_FREE (s->s_vector); }
-    else {
-    //
-    PD_ASSERT (s->s_unused); PD_MEMORY_FREE (s->s_unused);
-    //
-    }
-    
-    PD_MEMORY_FREE (s);
-    //
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
