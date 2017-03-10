@@ -16,11 +16,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pd         pd_canvasMaker;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 t_class             *textdefine_class;                  /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -56,7 +51,7 @@ void textdefine_initialize (void)
     
     environment_setActiveFile (sym__texttemplate, sym___dot__);
     buffer_withStringUnzeroed (b, textTemplateFile, (int)strlen (textTemplateFile));
-    buffer_eval (b, &pd_canvasMaker, 0, NULL);
+    buffer_eval (b, instance_getMakerCanvas(), 0, NULL);
     pd_message (instance_getBoundX(), sym__pop, 0, NULL);
     
     environment_setActiveFile (&s_, &s_);

@@ -31,11 +31,6 @@ t_pdinstance *pd_this;                          /* Static. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_class *pd_canvasMaker;                        /* Static. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 static int instance_recursiveDepth;             /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -407,19 +402,22 @@ static void instance_newAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* The factories are local to the instance. */
+/* Requiered global to all instances in the future? */
+
 void instance_initialize (void)
 {
     pd_this = instance_new();
     
     pd_this->pd_objectMaker = class_new (sym_objectmaker, NULL, NULL, 0, CLASS_ABSTRACT, A_NULL);
-    pd_canvasMaker = class_new (sym_canvasmaker, NULL, NULL, 0, CLASS_ABSTRACT, A_NULL);
+    pd_this->pd_canvasMaker = class_new (sym_canvasmaker, NULL, NULL, 0, CLASS_ABSTRACT, A_NULL);
     
     class_addAnything (pd_this->pd_objectMaker, (t_method)instance_newAnything);
         
-    class_addMethod (pd_canvasMaker, (t_method)canvas_new,      sym_canvas, A_GIMME, A_NULL);
-    class_addMethod (pd_canvasMaker, (t_method)template_create, sym_struct, A_GIMME, A_NULL);
+    class_addMethod (pd_this->pd_canvasMaker, (t_method)canvas_new,      sym_canvas, A_GIMME, A_NULL);
+    class_addMethod (pd_this->pd_canvasMaker, (t_method)template_create, sym_struct, A_GIMME, A_NULL);
     
-    instance_setBoundN (&pd_canvasMaker);
+    instance_setBoundN (&(pd_this->pd_canvasMaker));
 }
 
 void instance_release (void)
@@ -429,7 +427,7 @@ void instance_release (void)
     instance_setBoundX (NULL);
     
     CLASS_FREE (pd_this->pd_objectMaker);
-    CLASS_FREE (pd_canvasMaker);
+    CLASS_FREE (pd_this->pd_canvasMaker);
     
     instance_free (pd_this);
 }

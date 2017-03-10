@@ -44,11 +44,6 @@ static int  garray_behaviorMouse                (t_gobj *, t_glist *, t_mouse *)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-extern t_pd pd_canvasMaker;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 t_class *garray_class;                                      /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -114,12 +109,12 @@ void garray_initialize (void)
     
     environment_setActiveFile (sym__floattemplate, sym___dot__);
     buffer_withStringUnzeroed (b, floatTemplateFile, (int)strlen (floatTemplateFile));
-    buffer_eval (b, &pd_canvasMaker, 0, NULL);
+    buffer_eval (b, instance_getMakerCanvas(), 0, NULL);
     pd_message (instance_getBoundX(), sym__pop, 0, NULL);
     
     environment_setActiveFile (sym__floatarraytemplate, sym___dot__);
     buffer_withStringUnzeroed (b, floatArrayTemplateFile, (int)strlen (floatArrayTemplateFile));
-    buffer_eval (b, &pd_canvasMaker, 0, NULL);
+    buffer_eval (b, instance_getMakerCanvas(), 0, NULL);
     pd_message (instance_getBoundX(), sym__pop, 0, NULL);
 
     environment_setActiveFile (&s_, &s_);
