@@ -90,6 +90,10 @@ static inline int instance_isMakerObject (t_pd *x)
     return (x == &(instance_get()->pd_objectMaker));
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static inline t_pd *instance_getMakerObject (void)
 {
     return &(instance_get()->pd_objectMaker);
@@ -103,6 +107,11 @@ static inline t_class *instance_getMakerObjectClass (void)
 static inline t_pd *instance_getMakerCanvas (void)
 {
     return &(instance_get()->pd_canvasMaker);
+}
+
+static inline t_class *instance_getMakerCanvasClass (void)
+{
+    return (instance_get()->pd_canvasMaker);
 }
 
 // -----------------------------------------------------------------------------------------------------------

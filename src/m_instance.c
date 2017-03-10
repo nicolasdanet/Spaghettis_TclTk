@@ -19,8 +19,8 @@
 #pragma mark -
 
 #define INSTANCE_MAXIMUM_RECURSION      1000
-#define INSTANCE_POLLING_PERIOD         47.0
-#define INSTANCE_AUTORELEASE_PERIOD     SECONDS_TO_MILLISECONDS (5.0)
+#define INSTANCE_PERIOD_POLLING         47.0
+#define INSTANCE_PERIOD_AUTORELEASE     SECONDS_TO_MILLISECONDS (5.0)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -46,13 +46,13 @@ static void instance_autoreleaseDrain (void)
 static void instance_autoreleaseTask (void *dummy)
 {
     instance_autoreleaseDrain();
-    clock_delay (instance_get()->pd_autorelease, INSTANCE_AUTORELEASE_PERIOD);
+    clock_delay (instance_get()->pd_autorelease, INSTANCE_PERIOD_AUTORELEASE);
 }
 
 static void instance_autoreleaseReschedule (void)
 {
     clock_unset (instance_get()->pd_autorelease); 
-    clock_delay (instance_get()->pd_autorelease, INSTANCE_AUTORELEASE_PERIOD);
+    clock_delay (instance_get()->pd_autorelease, INSTANCE_PERIOD_AUTORELEASE);
 }
 
 static void instance_pollingTask (void *dummy)
@@ -61,35 +61,12 @@ static void instance_pollingTask (void *dummy)
         pd_message (pd_getThing (sym__polling), sym__polling, 0, NULL);
     }  
     
-    clock_delay (instance_get()->pd_polling, INSTANCE_POLLING_PERIOD);
+    clock_delay (instance_get()->pd_polling, INSTANCE_PERIOD_POLLING);
 }
 
 static t_int instance_dspDone (t_int *dummy)
 {
     return 0;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static t_pdinstance *instance_new()
-{
-    t_pdinstance *x = (t_pdinstance *)PD_MEMORY_GET (sizeof (t_pdinstance));
-    
-    return x;
-}
-
-static void instance_free (t_pdinstance *x)
-{
-    PD_ASSERT (x->pd_dspChain       == NULL);
-    PD_ASSERT (x->pd_clocks         == NULL);
-    PD_ASSERT (x->pd_signals        == NULL);
-    PD_ASSERT (x->pd_roots          == NULL);
-    PD_ASSERT (x->pd_polling        == NULL);
-    PD_ASSERT (x->pd_autorelease    == NULL);
-    
-    PD_MEMORY_FREE (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -275,7 +252,7 @@ void instance_pollingRun (void)
 {
     instance_get()->pd_polling = clock_new ((void *)NULL, (t_method)instance_pollingTask);
     
-    clock_delay (instance_get()->pd_polling, INSTANCE_POLLING_PERIOD);
+    clock_delay (instance_get()->pd_polling, INSTANCE_PERIOD_POLLING);
 }
 
 void instance_pollingStop (void)
@@ -300,7 +277,7 @@ void instance_pollingUnregister (t_pd *x)
 void instance_autoreleaseRun (void)
 {
     instance_get()->pd_autorelease = clock_new ((void *)NULL, (t_method)instance_autoreleaseTask);
-    clock_delay (instance_get()->pd_autorelease, INSTANCE_AUTORELEASE_PERIOD);
+    clock_delay (instance_get()->pd_autorelease, INSTANCE_PERIOD_AUTORELEASE);
 }
 
 void instance_autoreleaseStop (void)
@@ -322,24 +299,6 @@ void instance_autoreleaseRegister (t_pd *x)
 void instance_autoreleaseProceed (t_pd *x)
 {
     pd_unbind (x, sym__autorelease); pd_free (x);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void instance_destroyAllScalarsByTemplate (t_template *template)
-{
-    t_glist *glist = instance_get()->pd_roots;
-    
-    while (glist) {
-
-        t_symbol *s = utils_stripTemplateIdentifier (template_getTemplateIdentifier (template));
-        t_atom t;
-        SET_SYMBOL (&t, s); 
-        pd_message (cast_pd (glist), sym_destroy, 1, &t);
-        glist = glist->gl_next;
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -402,6 +361,58 @@ static void instance_newAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static t_pdinstance *instance_new()
+{
+    t_pdinstance *x = (t_pdinstance *)PD_MEMORY_GET (sizeof (t_pdinstance));
+    
+    x->pd_objectMaker = class_new (sym_objectmaker, NULL, NULL, 0, CLASS_ABSTRACT, A_NULL);
+    x->pd_canvasMaker = class_new (sym_canvasmaker, NULL, NULL, 0, CLASS_ABSTRACT, A_NULL);
+    
+    class_addAnything (x->pd_objectMaker, (t_method)instance_newAnything);
+        
+    class_addMethod (x->pd_canvasMaker, (t_method)canvas_new,      sym_canvas, A_GIMME, A_NULL);
+    class_addMethod (x->pd_canvasMaker, (t_method)template_create, sym_struct, A_GIMME, A_NULL);
+    
+    return x;
+}
+
+static void instance_free (t_pdinstance *x)
+{
+    PD_ASSERT (x->pd_dspChain       == NULL);
+    PD_ASSERT (x->pd_clocks         == NULL);
+    PD_ASSERT (x->pd_signals        == NULL);
+    PD_ASSERT (x->pd_roots          == NULL);
+    PD_ASSERT (x->pd_polling        == NULL);
+    PD_ASSERT (x->pd_autorelease    == NULL);
+    
+    CLASS_FREE (x->pd_canvasMaker);
+    CLASS_FREE (x->pd_objectMaker);
+    
+    PD_MEMORY_FREE (x);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void instance_destroyAllScalarsByTemplate (t_template *template)
+{
+    t_glist *glist = instance_get()->pd_roots;
+    
+    while (glist) {
+
+        t_symbol *s = utils_stripTemplateIdentifier (template_getTemplateIdentifier (template));
+        t_atom t;
+        SET_SYMBOL (&t, s); 
+        pd_message (cast_pd (glist), sym_destroy, 1, &t);
+        glist = glist->gl_next;
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 /* The factories are local to the instance. */
 /* Requiered global to all instances in the future? */
 
@@ -409,15 +420,7 @@ void instance_initialize (void)
 {
     pd_this = instance_new();
     
-    pd_this->pd_objectMaker = class_new (sym_objectmaker, NULL, NULL, 0, CLASS_ABSTRACT, A_NULL);
-    pd_this->pd_canvasMaker = class_new (sym_canvasmaker, NULL, NULL, 0, CLASS_ABSTRACT, A_NULL);
-    
-    class_addAnything (pd_this->pd_objectMaker, (t_method)instance_newAnything);
-        
-    class_addMethod (pd_this->pd_canvasMaker, (t_method)canvas_new,      sym_canvas, A_GIMME, A_NULL);
-    class_addMethod (pd_this->pd_canvasMaker, (t_method)template_create, sym_struct, A_GIMME, A_NULL);
-    
-    instance_setBoundN (&(pd_this->pd_canvasMaker));
+    instance_setBoundN (&(instance_get()->pd_canvasMaker));
 }
 
 void instance_release (void)
@@ -425,9 +428,6 @@ void instance_release (void)
     instance_setBoundA (NULL);
     instance_setBoundN (NULL);
     instance_setBoundX (NULL);
-    
-    CLASS_FREE (pd_this->pd_objectMaker);
-    CLASS_FREE (pd_this->pd_canvasMaker);
     
     instance_free (pd_this);
 }
