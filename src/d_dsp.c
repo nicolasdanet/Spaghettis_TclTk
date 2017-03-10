@@ -25,7 +25,7 @@ static void dsp_start (void)
 
     ugen_dspInitialize();
     
-    for (glist = pd_this->pd_roots; glist; glist = glist->gl_next) { canvas_dspProceed (glist, 1, NULL); }
+    for (glist = instance_getRoots(); glist; glist = glist->gl_next) { canvas_dspProceed (glist, 1, NULL); }
     
     instance_setDspState (1);
 }

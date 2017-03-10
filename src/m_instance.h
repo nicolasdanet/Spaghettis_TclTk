@@ -92,6 +92,11 @@ static inline t_int *instance_getDspChain (void)
     return instance_get()->pd_dspChain;
 }
 
+static inline t_glist *instance_getRoots (void)
+{
+    return instance_get()->pd_roots;
+}
+
 static inline t_pd *instance_getBoundX (void)
 {
     return s__X.s_thing;
