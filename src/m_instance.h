@@ -18,6 +18,7 @@
 struct _pdinstance {
     t_systime   pd_systime;
     int         pd_dspState;
+    int         pd_recursiveDepth;
     int         pd_dspChainSize;
     t_int       *pd_dspChain;
     t_clock     *pd_clocks;

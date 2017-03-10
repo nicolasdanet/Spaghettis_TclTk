@@ -26,12 +26,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_pdinstance *pd_this;                          /* Static. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-static int instance_recursiveDepth;             /* Static. */
+t_pdinstance *pd_this;                  /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -305,6 +300,24 @@ void instance_autoreleaseProceed (t_pd *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void instance_destroyAllScalarsByTemplate (t_template *template)
+{
+    t_glist *glist = instance_get()->pd_roots;
+    
+    while (glist) {
+
+        t_symbol *s = utils_stripTemplateIdentifier (template_getTemplateIdentifier (template));
+        t_atom t;
+        SET_SYMBOL (&t, s); 
+        pd_message (cast_pd (glist), sym_destroy, 1, &t);
+        glist = glist->gl_next;
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void instance_popAbstraction (t_glist *glist)
 {
     instance_get()->pd_newest = cast_pd (glist);
@@ -323,14 +336,14 @@ static void instance_newAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     char *name = NULL;
     t_error err = PD_ERROR_NONE;
     
-    if (instance_recursiveDepth > INSTANCE_MAXIMUM_RECURSION) { PD_BUG; return; }
+    if (instance_get()->pd_recursiveDepth > INSTANCE_MAXIMUM_RECURSION) { PD_BUG; return; }
 
     instance_get()->pd_newest = NULL;
     
     if (loader_load (canvas_getCurrent(), s->s_name)) {
-        instance_recursiveDepth++;
+        instance_get()->pd_recursiveDepth++;
         pd_message (x, s, argc, argv);
-        instance_recursiveDepth--;
+        instance_get()->pd_recursiveDepth--;
         return;
     }
     
@@ -389,24 +402,6 @@ static void instance_free (t_pdinstance *x)
     CLASS_FREE (x->pd_objectMaker);
     
     PD_MEMORY_FREE (x);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void instance_destroyAllScalarsByTemplate (t_template *template)
-{
-    t_glist *glist = instance_get()->pd_roots;
-    
-    while (glist) {
-
-        t_symbol *s = utils_stripTemplateIdentifier (template_getTemplateIdentifier (template));
-        t_atom t;
-        SET_SYMBOL (&t, s); 
-        pd_message (cast_pd (glist), sym_destroy, 1, &t);
-        glist = glist->gl_next;
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
