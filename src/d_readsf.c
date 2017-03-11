@@ -346,7 +346,7 @@ static void readsf_tilde_open (t_readsf_tilde *x, t_symbol *s, int argc, t_atom 
     
     if (!err) {
     //
-    if (canvas_openFileExist (x->sf_owner,  // --
+    if (canvas_fileExist (x->sf_owner,  // --
         properties.ap_fileName->s_name, 
         properties.ap_fileExtension->s_name)) {
 

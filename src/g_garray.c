@@ -506,7 +506,7 @@ static void garray_read (t_garray *x, t_symbol *name)
     char *p = NULL;
     char t[PD_STRING] = { 0 };
     
-    int f = canvas_openFile (canvas_getView (x->x_owner), name->s_name, "", t, &p, PD_STRING);
+    int f = canvas_fileOpen (canvas_getView (x->x_owner), name->s_name, "", t, &p, PD_STRING);
     
     if (!(err |= (f < 0))) {
     //

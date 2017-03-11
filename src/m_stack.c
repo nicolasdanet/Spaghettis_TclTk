@@ -112,14 +112,8 @@ void stack_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
 {
     char directory[PD_STRING] = { 0 }; char *name = NULL;
     
-    int f = canvas_openFile (canvas_getCurrent(), s->s_name, PD_PATCH, directory, &name, PD_STRING);
-    
-    if (f >= 0) {
-    //
-    close (f);
-    
-    stack_loadAbstractionProceed (gensym (name), gensym (directory), argc, argv);
-    //
+    if (canvas_fileFind (canvas_getCurrent(), s->s_name, PD_PATCH, directory, &name, PD_STRING)) {
+        stack_loadAbstractionProceed (gensym (name), gensym (directory), argc, argv);
     }
 }
 

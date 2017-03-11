@@ -188,18 +188,13 @@ t_error buffer_read (t_buffer *x, t_symbol *name, t_glist *glist)
 {
     t_error err = PD_ERROR;
     
-    char *filepath = NULL;
-    char directory[PD_STRING] = { 0 };
+    char directory[PD_STRING] = { 0 }; char *filepath = NULL;
     
-    int f = canvas_openFile (glist, name->s_name, "", directory, &filepath, PD_STRING);
-    
-    err = (f < 0);
-    
-    if (err) { error_canNotOpen (name); }
-    else {
-        close (f);
+    if (canvas_fileFind (glist, name->s_name, "", directory, &filepath, PD_STRING)) {
         err = buffer_fromFile (x, filepath, directory);
     }
+    
+    if (err) { error_canNotOpen (name); }
     
     return err;
 }

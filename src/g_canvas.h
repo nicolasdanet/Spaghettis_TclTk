@@ -129,11 +129,18 @@ void            canvas_clear                            (t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int             canvas_openFileExist                    (t_glist *glist,
+int             canvas_fileExist                        (t_glist *glist,
                                                             const char *name,
                                                             const char *extension);
+
+int             canvas_fileFind                         (t_glist *glist,
+                                                            const char *name,
+                                                            const char *extension,
+                                                            char *directoryResult,
+                                                            char **nameResult,
+                                                            size_t size);
                                                             
-int             canvas_openFile                         (t_glist *glist,
+int             canvas_fileOpen                         (t_glist *glist,
                                                             const char *name,
                                                             const char *extension,
                                                             char *directoryResult,

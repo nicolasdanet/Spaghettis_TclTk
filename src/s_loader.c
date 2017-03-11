@@ -189,23 +189,25 @@ static int loader_openExternal (t_glist *glist, t_symbol *name)
     if (loader_isAlreadyLoaded (name)) { return 1; }
     else {
     //
+    char directoryResult[PD_STRING] = { 0 }; 
     char *nameResult = NULL;
-    char directoryResult[PD_STRING] = { 0 };
 
-    int f = canvas_openFile (glist, name->s_name, PD_PLUGIN, directoryResult, &nameResult, PD_STRING);
+    if (canvas_fileFind (glist, name->s_name, PD_PLUGIN, directoryResult, &nameResult, PD_STRING)) {
+    //
+    char filepath[PD_STRING] = { 0 };
     
-    if (f >= 0) {
-        char filepath[PD_STRING] = { 0 };
-        close (f);
-        class_setCurrentExternalDirectory (gensym (directoryResult));
-        if (!path_withDirectoryAndName (filepath, PD_STRING, directoryResult, nameResult, 0)) {
-            char stub[PD_STRING] = { 0 };
-            t_error err = loader_makeStubName (stub, PD_STRING, name, "_setup");
-            if (!err && (handle = loader_openExternalNative (filepath, stub, gensym (filepath)))) {
-                loader_addLoaded (name, handle);
-            }
+    class_setCurrentExternalDirectory (gensym (directoryResult));
+    
+    if (!path_withDirectoryAndName (filepath, PD_STRING, directoryResult, nameResult, 0)) {
+        char stub[PD_STRING] = { 0 };
+        t_error err = loader_makeStubName (stub, PD_STRING, name, "_setup");
+        if (!err && (handle = loader_openExternalNative (filepath, stub, gensym (filepath)))) {
+            loader_addLoaded (name, handle);
         }
-        class_setCurrentExternalDirectory (&s_);
+    }
+    
+    class_setCurrentExternalDirectory (&s_);
+    //
     }
     //
     }

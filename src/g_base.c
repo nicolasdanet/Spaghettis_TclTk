@@ -332,20 +332,34 @@ void canvas_makeTextObject (t_glist *glist,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int canvas_openFileExist (t_glist *glist, const char *name, const char *extension)
+int canvas_fileExist (t_glist *glist, const char *name, const char *extension)
 {
     char *p = NULL; char t[PD_STRING] = { 0 };
     
-    int f = canvas_openFile (glist, name, extension, t, &p, PD_STRING);
+    int f = canvas_fileOpen (glist, name, extension, t, &p, PD_STRING);
     
     if (f >= 0) { close (f); return 1; }
     
     return 0;
 }
-                                                            
+
+int canvas_fileFind (t_glist *glist,
+    const char *name,
+    const char *extension,
+    char *directoryResult,
+    char **nameResult,
+    size_t size)
+{
+    int f = canvas_fileOpen (glist, name, extension, directoryResult, nameResult, size);
+    
+    if (f >= 0) { close (f); return 1; }
+    
+    return 0;
+}
+
 /* Caller is responsible to close the file. */
 
-int canvas_openFile (t_glist *glist,
+int canvas_fileOpen (t_glist *glist,
     const char *name,
     const char *extension,
     char *directoryResult,
@@ -363,6 +377,10 @@ int canvas_openFile (t_glist *glist,
         
     return f;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 t_symbol *canvas_expandDollar (t_glist *glist, t_symbol *s)
 {
