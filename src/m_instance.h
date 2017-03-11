@@ -59,6 +59,8 @@ void    instance_rootsAdd                       (t_glist *glist);
 void    instance_rootsRemove                    (t_glist *glist);
 void    instance_rootsFreeAll                   (void);
 
+void    instance_dspStart                       (void);
+void    instance_dspStop                        (void);
 void    instance_dspChainInitialize             (void);
 void    instance_dspChainRelease                (void);
 void    instance_dspChainAppend                 (t_perform f, int n, ...);

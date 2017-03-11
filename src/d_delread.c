@@ -64,7 +64,7 @@ static void delread_tilde_setDelayInSamples (t_delread_tilde *x)
 
 static void delread_tilde_float (t_delread_tilde *x, t_float f)
 {
-    x->x_delayInMilliseconds = f; if (dsp_isRunning()) { delread_tilde_setDelayInSamples (x); }
+    x->x_delayInMilliseconds = f; if (instance_getDspState()) { delread_tilde_setDelayInSamples (x); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

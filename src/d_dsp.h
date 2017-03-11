@@ -343,7 +343,6 @@ void            dsp_state                   (void *dummy, t_symbol *s, int argc,
 void            dsp_update                  (void);
 int             dsp_suspend                 (void);
 void            dsp_resume                  (int oldState);
-int             dsp_isRunning               (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -12,42 +12,10 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "s_system.h"
-#include "g_graphics.h"
 #include "d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void dsp_start (void)
-{
-    t_glist *glist;
-
-    ugen_dspInitialize();
-    
-    for (glist = instance_getRoots(); glist; glist = glist->gl_next) { canvas_dspProceed (glist, 1, NULL); }
-    
-    instance_setDspState (1);
-}
-
-
-static void dsp_stop (void)
-{
-    PD_ASSERT (instance_getDspState());
-    
-    ugen_dspRelease();
-    
-    instance_setDspState (0);
-}
-
-static void dsp_notify (int n)
-{
-    sys_vGui ("set ::var(isDsp) %d\n", n);  // --
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 void dsp_state (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
@@ -57,22 +25,17 @@ void dsp_state (void *dummy, t_symbol *s, int argc, t_atom *argv)
     
     if (n != instance_getDspState()) {
     //
-    if (n) { if (audio_start() == PD_ERROR_NONE) { dsp_start(); } }
+    if (n) { if (audio_start() == PD_ERROR_NONE) { instance_dspStart(); } }
     else {
-        dsp_stop(); audio_stop();
+        instance_dspStop(); audio_stop();
     }
     
-    dsp_notify (instance_getDspState());
+    sys_vGui ("set ::var(isDsp) %d\n", instance_getDspState());     // --
     //
     }
     //
     }
 }
-
-int dsp_isRunning (void)
-{
-    return (instance_getDspState() != 0);
-}   
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -85,16 +48,12 @@ void dsp_update (void)
 
 int dsp_suspend (void)
 {
-    int oldState = instance_getDspState();
-    
-    if (oldState) { dsp_stop(); }
-    
-    return oldState;
+    int n = instance_getDspState(); if (n) { instance_dspStop(); } return n;
 }
 
-void dsp_resume (int oldState)
+void dsp_resume (int n)
 {
-    if (oldState) { dsp_start(); }
+    if (n) { instance_dspStart(); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

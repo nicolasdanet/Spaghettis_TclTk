@@ -110,6 +110,27 @@ void instance_rootsFreeAll (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void instance_dspStart (void)
+{
+    t_glist *glist;
+
+    ugen_dspInitialize();
+    
+    for (glist = instance_getRoots(); glist; glist = glist->gl_next) { canvas_dspProceed (glist, 1, NULL); }
+    
+    instance_setDspState (1);
+}
+
+
+void instance_dspStop (void)
+{
+    PD_ASSERT (instance_getDspState());
+    
+    ugen_dspRelease();
+    
+    instance_setDspState (0);
+}
+
 void instance_dspChainInitialize (void)
 {
     PD_ASSERT (instance_get()->pd_dspChain == NULL);
