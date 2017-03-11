@@ -340,16 +340,11 @@ static void instance_popAbstraction (t_glist *glist)
 
 static void instance_factory (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (instance_get()->pd_loaded > 0) { error_invalid (sym_loader, sym_class); }
-    else {
-    //
-    int f;
-    char directory[PD_STRING] = { 0 };
-    char *name = NULL;
-    t_error err = PD_ERROR_NONE;
-
     instance_get()->pd_newest = NULL;
     
+    if (instance_get()->pd_loaded > 0) { error_canNotFind (sym_loader, sym_class); }
+    else {
+
     /* First search an external and retry the creation if any. */
     /* It MUST provide a properly named creator. */
     
@@ -357,13 +352,17 @@ static void instance_factory (t_pd *x, t_symbol *s, int argc, t_atom *argv)
         instance_get()->pd_loaded++;
         pd_message (x, s, argc, argv);
         instance_get()->pd_loaded--;
-        return;
-    }
+        
+    } else {
     
-    err = (f = canvas_openFile (canvas_getCurrent(), s->s_name, PD_PATCH, directory, &name, PD_STRING)) < 0;
+    /* Next look for an abstraction. */
     
-    if (err) { instance_get()->pd_newest = NULL; }
-    else {
+    char directory[PD_STRING] = { 0 };
+    char *name = NULL;
+    
+    int f = canvas_openFile (canvas_getCurrent(), s->s_name, PD_PATCH, directory, &name, PD_STRING);
+    
+    if (f >= 0) {
     //
     close (f);
     
@@ -378,6 +377,8 @@ static void instance_factory (t_pd *x, t_symbol *s, int argc, t_atom *argv)
             instance_setBoundX (t); 
         }
         environment_resetActiveArguments();
+    }
+    //
     }
     //
     }
