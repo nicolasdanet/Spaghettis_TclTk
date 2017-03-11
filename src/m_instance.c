@@ -50,6 +50,9 @@ static void instance_autoreleaseReschedule (void)
     clock_delay (instance_get()->pd_autorelease, INSTANCE_PERIOD_AUTORELEASE);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static void instance_pollingTask (void *dummy)
 {
     if (pd_isThingQuiet (sym__polling)) {
@@ -58,6 +61,9 @@ static void instance_pollingTask (void *dummy)
     
     clock_delay (instance_get()->pd_polling, INSTANCE_PERIOD_POLLING);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 static t_int instance_dspDone (t_int *dummy)
 {
@@ -83,7 +89,7 @@ void instance_rootsRemove (t_glist *glist)
     }
 }
 
-/* At release close remaining (i.e. NOT dirty) and invisible patches. */
+/* At release, close remaining (i.e. NOT dirty) and invisible patches. */
 
 void instance_rootsFreeAll (void)
 {    
@@ -291,6 +297,8 @@ void instance_autoreleaseRegister (t_pd *x)
     }
 }
 
+/* Function that might be called at last by registered object while autoreleased. */
+
 void instance_autoreleaseProceed (t_pd *x)
 {
     pd_unbind (x, sym__autorelease); pd_free (x);
@@ -329,18 +337,19 @@ static void instance_popAbstraction (t_glist *glist)
     canvas_resortOutlets (glist);
 }
 
-static void instance_newAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
+static void instance_factory (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
+    if (instance_get()->pd_recursiveDepth > INSTANCE_MAXIMUM_RECURSION) { PD_BUG; }
+    else {
+    //
     int f;
     char directory[PD_STRING] = { 0 };
     char *name = NULL;
     t_error err = PD_ERROR_NONE;
-    
-    if (instance_get()->pd_recursiveDepth > INSTANCE_MAXIMUM_RECURSION) { PD_BUG; return; }
 
     instance_get()->pd_newest = NULL;
     
-    if (loader_load (canvas_getCurrent(), s->s_name)) {
+    if (loader_load (canvas_getCurrent(), s)) {
         instance_get()->pd_recursiveDepth++;
         pd_message (x, s, argc, argv);
         instance_get()->pd_recursiveDepth--;
@@ -368,6 +377,8 @@ static void instance_newAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     }
     //
     }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -381,7 +392,7 @@ static t_pdinstance *instance_new()
     x->pd_objectMaker = class_new (sym_objectmaker, NULL, NULL, 0, CLASS_ABSTRACT, A_NULL);
     x->pd_canvasMaker = class_new (sym_canvasmaker, NULL, NULL, 0, CLASS_ABSTRACT, A_NULL);
     
-    class_addAnything (x->pd_objectMaker, (t_method)instance_newAnything);
+    class_addAnything (x->pd_objectMaker, (t_method)instance_factory);
         
     class_addMethod (x->pd_canvasMaker, (t_method)canvas_new,      sym_canvas, A_GIMME, A_NULL);
     class_addMethod (x->pd_canvasMaker, (t_method)template_create, sym_struct, A_GIMME, A_NULL);

@@ -59,31 +59,30 @@ static void loader_closeExternal (t_handle handle, t_symbol *name);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int loader_isAlreadyLoaded (char *o)
+static int loader_isAlreadyLoaded (t_symbol *name)
 {
     t_loadedlist *l = NULL;
-    t_symbol *s = gensym (o);
     
-    for (l = loader_alreadyLoaded; l; l = l->ll_next) { if (l->ll_name == s) { return 1; } }
+    for (l = loader_alreadyLoaded; l; l = l->ll_next) { if (l->ll_name == name) { return 1; } }
     
     return 0;
 }
 
-static void loader_addLoaded (char *o, t_handle handle)
+static void loader_addLoaded (t_symbol *name, t_handle handle)
 {
     t_loadedlist *l = (t_loadedlist *)PD_MEMORY_GET (sizeof (t_loadedlist));
     
     l->ll_next   = loader_alreadyLoaded;
-    l->ll_name   = gensym (o);
+    l->ll_name   = name;
     l->ll_handle = handle;
     
     loader_alreadyLoaded = l;
 }
 
-static t_error loader_makeStubName (char *dest, size_t size, char *name, const char *suffix)
+static t_error loader_makeStubName (char *dest, size_t size, t_symbol *name, const char *suffix)
 {
     t_error err = PD_ERROR_NONE;
-    char *n = name;
+    char *n = name->s_name;
 
     while (*n && !err) {
     //
@@ -181,11 +180,11 @@ static void loader_closeExternalNative (t_handle handle, char *stub)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int loader_openExternal (t_glist *glist, char *name)
+static int loader_openExternal (t_glist *glist, t_symbol *name)
 {
     t_handle handle = NULL;
     
-    PD_ASSERT (strrchr (name, '/') == NULL); 
+    PD_ASSERT (strrchr (name->s_name, '/') == NULL); 
     
     if (loader_isAlreadyLoaded (name)) { return 1; }
     else {
@@ -193,7 +192,7 @@ static int loader_openExternal (t_glist *glist, char *name)
     char *nameResult = NULL;
     char directoryResult[PD_STRING] = { 0 };
 
-    int f = canvas_openFile (glist, name, PD_PLUGIN, directoryResult, &nameResult, PD_STRING);
+    int f = canvas_openFile (glist, name->s_name, PD_PLUGIN, directoryResult, &nameResult, PD_STRING);
     
     if (f >= 0) {
         char filepath[PD_STRING] = { 0 };
@@ -220,7 +219,7 @@ static void loader_closeExternal (t_handle handle, t_symbol *name)
     //
     char stub[PD_STRING] = { 0 };
             
-    if (!(loader_makeStubName (stub, PD_STRING, name->s_name, "_destroy"))) { 
+    if (!(loader_makeStubName (stub, PD_STRING, name, "_destroy"))) { 
         loader_closeExternalNative (handle, stub); 
     }
     //
@@ -237,7 +236,7 @@ static void loader_closeExternal (t_handle handle, t_symbol *name)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int loader_load (t_glist *glist, char *name)
+int loader_load (t_glist *glist, t_symbol *name)
 {
     int state = dsp_suspend();
     int done  = loader_openExternal (glist, name);
