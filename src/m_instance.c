@@ -18,7 +18,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define INSTANCE_MAXIMUM_RECURSION      1000
 #define INSTANCE_PERIOD_POLLING         47.0
 #define INSTANCE_PERIOD_AUTORELEASE     SECONDS_TO_MILLISECONDS (5.0)
 
@@ -337,9 +336,11 @@ static void instance_popAbstraction (t_glist *glist)
     canvas_resortOutlets (glist);
 }
 
+/* Called if no method match in the object factory. */
+
 static void instance_factory (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (instance_get()->pd_recursiveDepth > INSTANCE_MAXIMUM_RECURSION) { PD_BUG; }
+    if (instance_get()->pd_loaded > 0) { error_invalid (sym_loader, sym_class); }
     else {
     //
     int f;
@@ -349,10 +350,13 @@ static void instance_factory (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 
     instance_get()->pd_newest = NULL;
     
+    /* First search an external and retry the creation if any. */
+    /* It MUST provide a properly named creator. */
+    
     if (loader_load (canvas_getCurrent(), s)) {
-        instance_get()->pd_recursiveDepth++;
+        instance_get()->pd_loaded++;
         pd_message (x, s, argc, argv);
-        instance_get()->pd_recursiveDepth--;
+        instance_get()->pd_loaded--;
         return;
     }
     

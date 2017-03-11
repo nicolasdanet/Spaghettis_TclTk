@@ -34,6 +34,7 @@ void error_stubNotFound                     (void);
 #pragma mark -
 
 void error_recursiveInstantiation           (t_symbol *);
+void error_badClassName                     (t_symbol *);
 void error_sendReceiveLoop                  (t_symbol *);
 void error_canNotSetMultipleFields          (t_symbol *);
 void error_alreadyExists                    (t_symbol *);
