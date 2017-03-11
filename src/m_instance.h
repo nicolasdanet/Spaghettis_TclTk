@@ -14,21 +14,34 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+typedef struct _stack {
+    t_pd            *g_what;                /* MUST be the first. */
+    t_symbol        *g_abstraction;
+    struct _stack   *g_next;
+    } t_stack;
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 struct _pdinstance {
-    t_systime   pd_systime;
-    int         pd_dspState;
-    int         pd_loadingExternal;
-    int         pd_dspChainSize;
-    t_int       *pd_dspChain;
-    t_clock     *pd_clocks;
-    t_signal    *pd_signals;
-    t_glist     *pd_roots;
-    t_clock     *pd_polling;
-    t_clock     *pd_autorelease;
-    t_pd        *pd_newest;
-    t_class     *pd_objectMaker;
-    t_class     *pd_canvasMaker;
+    t_systime       pd_systime;
+    int             pd_dspState;
+    int             pd_loadingExternal;
+    int             pd_dspChainSize;
+    t_int           *pd_dspChain;
+    t_clock         *pd_clocks;
+    t_signal        *pd_signals;
+    t_glist         *pd_roots;
+    t_clock         *pd_polling;
+    t_clock         *pd_autorelease;
+    t_pd            *pd_newest;
+    t_class         *pd_objectMaker;
+    t_class         *pd_canvasMaker;
+    t_stack         *pd_stackHead;
+    t_pd            *pd_stackPopped;
+    t_symbol        *pd_loadingAbstraction;
     };
 
 // -----------------------------------------------------------------------------------------------------------

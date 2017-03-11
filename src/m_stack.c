@@ -17,43 +17,26 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef struct _gstack {
-    t_pd            *g_what;                    /* MUST be the first. */
-    t_symbol        *g_loadingAbstraction;
-    struct _gstack  *g_next;
-    } t_gstack;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-static t_gstack *stack_stackHead;               /* Static. */
-static t_pd     *stack_lastPopped;              /* Static. */
-static t_symbol *stack_loadingAbstraction;      /* Static. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void stack_push (t_pd *x)
 {
-    t_gstack *p = (t_gstack *)PD_MEMORY_GET (sizeof (t_gstack));
+    t_stack *p = (t_stack *)PD_MEMORY_GET (sizeof (t_stack));
     p->g_what = instance_getBoundX();
-    p->g_next = stack_stackHead;
-    p->g_loadingAbstraction  = stack_loadingAbstraction;
-    stack_loadingAbstraction = NULL;
-    stack_stackHead = p;
+    p->g_next = instance_get()->pd_stackHead;
+    p->g_abstraction = instance_get()->pd_loadingAbstraction;
+    instance_get()->pd_loadingAbstraction = NULL;
+    instance_get()->pd_stackHead = p;
     instance_setBoundX (x);
 }
 
 void stack_pop (t_pd *x)
 {
-    if (!stack_stackHead || instance_getBoundX() != x) { PD_BUG; }
+    if (!instance_get()->pd_stackHead || instance_getBoundX() != x) { PD_BUG; }
     else {
-        t_gstack *p = stack_stackHead;
+        t_stack *p = instance_get()->pd_stackHead;
         instance_setBoundX (p->g_what);
-        stack_stackHead = p->g_next;
+        instance_get()->pd_stackHead = p->g_next;
         PD_MEMORY_FREE (p);
-        stack_lastPopped = x;
+        instance_get()->pd_stackPopped = x;
     }
 }
 
@@ -63,20 +46,22 @@ void stack_pop (t_pd *x)
 
 void stack_proceedLoadbang (void)
 {
-    if (stack_lastPopped) { pd_message (stack_lastPopped, sym_loadbang, 0, NULL); }
+    if (instance_get()->pd_stackPopped) { 
+        pd_message (instance_get()->pd_stackPopped, sym_loadbang, 0, NULL); 
+    }
     
-    stack_lastPopped = NULL;
+    instance_get()->pd_stackPopped = NULL;
 }
 
 int stack_setLoadingAbstraction (t_symbol *s)
 {
-    t_gstack *p = stack_stackHead;
+    t_stack *p = instance_get()->pd_stackHead;
     
-    for (p = stack_stackHead; p; p = p->g_next) {
-        if (p->g_loadingAbstraction == s) { return 1; }
+    for (p = instance_get()->pd_stackHead; p; p = p->g_next) {
+        if (p->g_abstraction == s) { return 1; }
     }
     
-    stack_loadingAbstraction = s;
+    instance_get()->pd_loadingAbstraction = s;
     
     return 0;
 }
