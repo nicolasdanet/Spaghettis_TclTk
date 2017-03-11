@@ -54,13 +54,16 @@ static void global_key (void *dummy, t_symbol *s, int argc, t_atom *argv)
     canvas_key (NULL, s, argc, argv);
 }
 
-static void global_dummy (void *dummy)
-{
-}
-
 static void global_default (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
     error_unknownMethod (class_getName (pd_class (x)), s);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static void global_dummy (void *dummy)
+{
 }
 
 // -----------------------------------------------------------------------------------------------------------
