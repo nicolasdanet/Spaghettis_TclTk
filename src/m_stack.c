@@ -17,7 +17,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void stack_push (t_pd *x)
+void instance_stackPush (t_pd *x)
 {
     t_stack *p = (t_stack *)PD_MEMORY_GET (sizeof (t_stack));
     p->g_what = instance_getBoundX();
@@ -28,7 +28,7 @@ void stack_push (t_pd *x)
     instance_setBoundX (x);
 }
 
-void stack_pop (t_pd *x)
+void instance_stackPop (t_pd *x)
 {
     if (!instance_get()->pd_stackHead || instance_getBoundX() != x) { PD_BUG; }
     else {
@@ -69,7 +69,7 @@ int stack_setLoadingAbstraction (t_symbol *s)
 static void instance_popAbstraction (t_glist *glist)
 {
     instance_get()->pd_newest = cast_pd (glist);
-    stack_pop (cast_pd (glist));
+    instance_stackPop (cast_pd (glist));
     
     glist->gl_isLoading = 0;
     

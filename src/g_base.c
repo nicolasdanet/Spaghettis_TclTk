@@ -284,7 +284,7 @@ void canvas_makeTextObject (t_glist *glist,
 {
     instance_setNewestObject (NULL);
     
-    stack_push (cast_pd (glist));
+    instance_stackPush (cast_pd (glist));
     
     {
     //
@@ -325,7 +325,7 @@ void canvas_makeTextObject (t_glist *glist,
     //
     }
     
-    stack_pop (cast_pd (glist));
+    instance_stackPop (cast_pd (glist));
 }
 
 // -----------------------------------------------------------------------------------------------------------
