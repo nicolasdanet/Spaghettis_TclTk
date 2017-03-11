@@ -146,11 +146,6 @@ static inline t_glist *instance_getRoots (void)
     return instance_get()->pd_roots;
 }
 
-static inline t_pd *instance_getBoundX (void)
-{
-    return s__X.s_thing;
-}
-
 static inline t_pd *instance_getNewestObject (void)
 {
     return instance_get()->pd_newest;
@@ -165,14 +160,22 @@ static inline void instance_setDspState (int n)
     instance_get()->pd_dspState = (n != 0);
 }
 
+static inline void instance_setNewestObject (t_pd *x)
+{
+    instance_get()->pd_newest = x;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* The #N symbol is bound to the patcher factory. */
+/* The #X symbol is bound to the patcher currently active. */
+/* The #A symbol can be used to serialize things. */
+
 static inline void instance_setBoundN (t_pd *x)
 {
     s__N.s_thing = x;
-}
-
-static inline void instance_setBoundX (t_pd *x)
-{
-    s__X.s_thing = x;
 }
 
 static inline void instance_setBoundA (t_pd *x)
@@ -180,9 +183,14 @@ static inline void instance_setBoundA (t_pd *x)
     s__A.s_thing = x;
 }
 
-static inline void instance_setNewestObject (t_pd *x)
+static inline void instance_setBoundX (t_pd *x)
 {
-    instance_get()->pd_newest = x;
+    s__X.s_thing = x;
+}
+
+static inline t_pd *instance_getBoundX (void)
+{
+    return s__X.s_thing;
 }
 
 // -----------------------------------------------------------------------------------------------------------

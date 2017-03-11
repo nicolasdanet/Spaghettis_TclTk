@@ -97,7 +97,7 @@ int         pd_isThingQuiet                             (t_symbol *s);
 void        stack_push                                  (t_pd *x);
 void        stack_pop                                   (t_pd *x);
 void        stack_proceedLoadbang                       (void);
-int         stack_setLoadingAbstraction                 (t_symbol *s);
+void        stack_loadAbstraction                       (t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

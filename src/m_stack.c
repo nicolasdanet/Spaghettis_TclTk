@@ -11,6 +11,7 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "s_system.h"
+#include "g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -78,6 +79,48 @@ int stack_setLoadingAbstraction (t_symbol *s)
     stack_loadingAbstraction = s;
     
     return 0;
+}
+
+static void instance_popAbstraction (t_glist *glist)
+{
+    instance_get()->pd_newest = cast_pd (glist);
+    stack_pop (cast_pd (glist));
+    
+    glist->gl_isLoading = 0;
+    
+    canvas_resortInlets (glist);
+    canvas_resortOutlets (glist);
+}
+
+static void stack_loadAbstractionProceed (t_symbol *abstraction, t_symbol *directory, int argc, t_atom *argv)
+{
+    if (stack_setLoadingAbstraction (abstraction)) { error_recursiveInstantiation (abstraction); }
+    else {
+        t_pd *t = instance_getBoundX();
+        environment_setActiveArguments (argc, argv);
+        buffer_fileEval (abstraction, directory);
+        if (instance_getBoundX() && t != instance_getBoundX()) { 
+            instance_popAbstraction (cast_glist (instance_getBoundX())); 
+        } else { 
+            instance_setBoundX (t); 
+        }
+        environment_resetActiveArguments();
+    }
+}
+
+void stack_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
+{
+    char directory[PD_STRING] = { 0 }; char *name = NULL;
+    
+    int f = canvas_openFile (canvas_getCurrent(), s->s_name, PD_PATCH, directory, &name, PD_STRING);
+    
+    if (f >= 0) {
+    //
+    close (f);
+    
+    stack_loadAbstractionProceed (gensym (name), gensym (directory), argc, argv);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

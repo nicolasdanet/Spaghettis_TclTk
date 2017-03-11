@@ -346,18 +346,7 @@ void instance_destroyAllScalarsByTemplate (t_template *template)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void instance_popAbstraction (t_glist *glist)
-{
-    instance_get()->pd_newest = cast_pd (glist);
-    stack_pop (cast_pd (glist));
-    
-    glist->gl_isLoading = 0;
-    
-    canvas_resortInlets (glist);
-    canvas_resortOutlets (glist);
-}
-
-/* Called if no method match in the object factory. */
+/* Called if no method of the object factory match. */
 
 static void instance_factory (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
@@ -368,40 +357,15 @@ static void instance_factory (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 
     /* First search an external and retry the creation if any. */
     /* It MUST provide a properly named creator. */
+    /* Otherwise look for an abstraction. */
     
     if (loader_load (canvas_getCurrent(), s)) {
         instance_get()->pd_loaded++;
         pd_message (x, s, argc, argv);
         instance_get()->pd_loaded--;
-        
+    
     } else {
-    
-    /* Next look for an abstraction. */
-    
-    char directory[PD_STRING] = { 0 };
-    char *name = NULL;
-    
-    int f = canvas_openFile (canvas_getCurrent(), s->s_name, PD_PATCH, directory, &name, PD_STRING);
-    
-    if (f >= 0) {
-    //
-    close (f);
-    
-    if (stack_setLoadingAbstraction (s)) { error_recursiveInstantiation (s); }
-    else {
-        t_pd *t = instance_getBoundX();
-        environment_setActiveArguments (argc, argv);
-        buffer_fileEval (gensym (name), gensym (directory));
-        if (instance_getBoundX() && t != instance_getBoundX()) { 
-            instance_popAbstraction (cast_glist (instance_getBoundX())); 
-        } else { 
-            instance_setBoundX (t); 
-        }
-        environment_resetActiveArguments();
-    }
-    //
-    }
-    //
+        stack_loadAbstraction (s, argc, argv);
     }
     //
     }
