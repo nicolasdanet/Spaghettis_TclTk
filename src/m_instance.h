@@ -18,7 +18,7 @@
 struct _pdinstance {
     t_systime   pd_systime;
     int         pd_dspState;
-    int         pd_loaded;
+    int         pd_loadingExternal;
     int         pd_dspChainSize;
     t_int       *pd_dspChain;
     t_clock     *pd_clocks;
@@ -83,6 +83,11 @@ void    instance_autoreleaseRegister            (t_pd *x);
 void    instance_autoreleaseProceed             (t_pd *x);
 
 void    instance_destroyAllScalarsByTemplate    (t_template *tmpl);
+
+void    stack_push                              (t_pd *x);
+void    stack_pop                               (t_pd *x);
+void    stack_proceedLoadbang                   (void);
+void    instance_loadAbstraction                (t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -347,27 +347,29 @@ void instance_destroyAllScalarsByTemplate (t_template *template)
 #pragma mark -
 
 /* Called if no method of the object factory match. */
+/* Note it can be called recursively with wrong externals. */
 
 static void instance_factory (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
     instance_get()->pd_newest = NULL;
     
-    if (instance_get()->pd_loaded > 0) { error_canNotFind (sym_loader, sym_class); }
-    else {
+    if (!instance_get()->pd_loadingExternal) {
 
-    /* First search an external and retry the creation if any. */
-    /* It MUST provide a properly named creator. */
-    /* Otherwise look for an abstraction. */
-    
-    if (loader_load (canvas_getCurrent(), s)) {
-        instance_get()->pd_loaded++;
-        pd_message (x, s, argc, argv);
-        instance_get()->pd_loaded--;
-    
+        /* First search an external and redo the creation. */
+        
+        if (loader_load (canvas_getCurrent(), s)) {
+            instance_get()->pd_loadingExternal = 1;
+            pd_message (x, s, argc, argv);
+            instance_get()->pd_loadingExternal = 0;
+        
+        /* Otherwise look for an abstraction. */
+        
+        } else {
+            instance_loadAbstraction (s, argc, argv);
+        }
+        
     } else {
-        stack_loadAbstraction (s, argc, argv);
-    }
-    //
+        error_canNotFind (sym_loader, sym_class);   /* External MUST provide a properly named class. */
     }
 }
 

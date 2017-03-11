@@ -92,13 +92,19 @@ static void instance_popAbstraction (t_glist *glist)
     canvas_resortOutlets (glist);
 }
 
-static void stack_loadAbstractionProceed (t_symbol *abstraction, t_symbol *directory, int argc, t_atom *argv)
+void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
 {
-    if (stack_setLoadingAbstraction (abstraction)) { error_recursiveInstantiation (abstraction); }
+    char directory[PD_STRING] = { 0 }; char *name = NULL;
+    
+    if (canvas_fileFind (canvas_getCurrent(), s->s_name, PD_PATCH, directory, &name, PD_STRING)) {
+    //
+    t_symbol *f = gensym (name);
+    
+    if (stack_setLoadingAbstraction (f)) { error_recursiveInstantiation (f); }
     else {
         t_pd *t = instance_getBoundX();
         environment_setActiveArguments (argc, argv);
-        buffer_fileEval (abstraction, directory);
+        buffer_fileEval (f, gensym (directory));
         if (instance_getBoundX() && t != instance_getBoundX()) { 
             instance_popAbstraction (cast_glist (instance_getBoundX())); 
         } else { 
@@ -106,14 +112,7 @@ static void stack_loadAbstractionProceed (t_symbol *abstraction, t_symbol *direc
         }
         environment_resetActiveArguments();
     }
-}
-
-void stack_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
-{
-    char directory[PD_STRING] = { 0 }; char *name = NULL;
-    
-    if (canvas_fileFind (canvas_getCurrent(), s->s_name, PD_PATCH, directory, &name, PD_STRING)) {
-        stack_loadAbstractionProceed (gensym (name), gensym (directory), argc, argv);
+    //
     }
 }
 
