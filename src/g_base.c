@@ -336,7 +336,11 @@ int canvas_openFileExist (t_glist *glist, const char *name, const char *extensio
 {
     char *p = NULL; char t[PD_STRING] = { 0 };
     
-    return ((canvas_openFile (glist, name, extension, t, &p, PD_STRING)) >= 0);
+    int f = canvas_openFile (glist, name, extension, t, &p, PD_STRING);
+    
+    if (f >= 0) { close (f); return 1; }
+    
+    return 0;
 }
                                                             
 /* Caller is responsible to close the file. */
