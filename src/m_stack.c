@@ -50,21 +50,21 @@ void instance_stackPop (t_pd *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void instance_stackContextStore (void)
+void instance_contextStore (void)
 {
     PD_ASSERT (instance_get()->pd_stackCached == NULL);
     
     instance_get()->pd_stackCached = instance_getBoundX();
 }
 
-void instance_stackContextRestore (void)
+void instance_contextRestore (void)
 {
     instance_setBoundX (instance_get()->pd_stackCached);
     
     instance_get()->pd_stackCached = NULL;
 }
 
-int instance_stackContextHasChanged (void)
+int instance_contextHasChanged (void)
 {
     PD_ASSERT (instance_getBoundX() != NULL);
     
@@ -113,17 +113,18 @@ void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
     
     if (instance_loadAbstractionIsNotAlreadyThere (filename)) {
     //
-    instance_stackContextStore();
+    instance_contextStore();
     environment_setActiveArguments (argc, argv);
     
     buffer_fileEval (filename, gensym (directory));
-    if (instance_stackContextHasChanged()) {
+    
+    if (instance_contextHasChanged()) {
         instance_setNewestObject (instance_getBoundX()); 
         canvas_pop (cast_glist (instance_getBoundX()), 0); 
     }
     
     environment_resetActiveArguments();
-    instance_stackContextRestore();
+    instance_contextRestore();
     //
     } else {
         error_recursiveInstantiation (filename);

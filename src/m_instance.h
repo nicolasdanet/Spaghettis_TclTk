@@ -69,6 +69,34 @@ static inline t_pdinstance *instance_get (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* The #N symbol is bound to the patcher factory. */
+/* The #X symbol is bound to the patcher currently active. */
+/* The #A symbol can be used to serialize things. */
+
+static inline void instance_setBoundN (t_pd *x)
+{
+    s__N.s_thing = x;
+}
+
+static inline void instance_setBoundA (t_pd *x)
+{
+    s__A.s_thing = x;
+}
+
+static inline void instance_setBoundX (t_pd *x)
+{
+    s__X.s_thing = x;
+}
+
+static inline t_pd *instance_getBoundX (void)
+{
+    return s__X.s_thing;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void    instance_rootsAdd                       (t_glist *glist);
 void    instance_rootsRemove                    (t_glist *glist);
 void    instance_rootsFreeAll                   (void);
@@ -96,16 +124,31 @@ void    instance_autoreleaseStop                (void);
 void    instance_autoreleaseRegister            (t_pd *x);
 void    instance_autoreleaseProceed             (t_pd *x);
 
-void    instance_stackPush                      (t_pd *x);
-void    instance_stackPop                       (t_pd *x);
-void    instance_stackLoadbang                  (void);
-void    instance_stackContextStore              (void);
-void    instance_stackContextRestore            (void);
-int     instance_stackContextHasChanged         (void);
-
 void    instance_destroyAllScalarsByTemplate    (t_template *tmpl);
 
 void    instance_loadAbstraction                (t_symbol *s, int argc, t_atom *argv);
+
+void    instance_stackPush                      (t_pd *x);
+void    instance_stackPop                       (t_pd *x);
+void    instance_stackLoadbang                  (void);
+
+void    instance_contextStore                   (void);
+void    instance_contextRestore                 (void);
+int     instance_contextHasChanged              (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline void instance_contextSet (t_pd *x)
+{
+    return instance_setBoundX (x);
+}
+
+static inline t_pd *instance_contextGet (void)
+{
+    return instance_getBoundX();
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -186,34 +229,6 @@ static inline void instance_setDspState (int n)
 static inline void instance_setNewestObject (t_pd *x)
 {
     instance_get()->pd_newest = x;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-/* The #N symbol is bound to the patcher factory. */
-/* The #X symbol is bound to the patcher currently active. */
-/* The #A symbol can be used to serialize things. */
-
-static inline void instance_setBoundN (t_pd *x)
-{
-    s__N.s_thing = x;
-}
-
-static inline void instance_setBoundA (t_pd *x)
-{
-    s__A.s_thing = x;
-}
-
-static inline void instance_setBoundX (t_pd *x)
-{
-    s__X.s_thing = x;
-}
-
-static inline t_pd *instance_getBoundX (void)
-{
-    return s__X.s_thing;
 }
 
 // -----------------------------------------------------------------------------------------------------------

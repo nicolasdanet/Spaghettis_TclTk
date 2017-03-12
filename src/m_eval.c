@@ -265,10 +265,11 @@ t_error buffer_fileEval (t_symbol *name, t_symbol *directory)
 
 void buffer_fileOpen (void *dummy, t_symbol *name, t_symbol *directory)
 {
-    t_pd *x = NULL;
-    t_pd *boundX = instance_getBoundX(); int state = dsp_suspend();
+    t_pd *x   = NULL;
+    int state = dsp_suspend();
     
-    instance_setBoundX (NULL);
+    instance_contextStore();
+    instance_contextSet (NULL);
     
     buffer_fileEval (name, directory);
     
@@ -280,8 +281,9 @@ void buffer_fileOpen (void *dummy, t_symbol *name, t_symbol *directory)
     }
     
     instance_stackLoadbang();
+    instance_contextRestore();
     
-    dsp_resume (state); instance_setBoundX (boundX);
+    dsp_resume (state); 
 }
 
 // -----------------------------------------------------------------------------------------------------------
