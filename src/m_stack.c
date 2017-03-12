@@ -50,7 +50,32 @@ void instance_stackPop (t_pd *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void instance_stackLoadbangLastPopped (void)
+void instance_stackContextStore (void)
+{
+    PD_ASSERT (instance_get()->pd_stackCached == NULL);
+    
+    instance_get()->pd_stackCached = instance_getBoundX();
+}
+
+void instance_stackContextRestore (void)
+{
+    instance_setBoundX (instance_get()->pd_stackCached);
+    
+    instance_get()->pd_stackCached = NULL;
+}
+
+int instance_stackContextHasChanged (void)
+{
+    PD_ASSERT (instance_getBoundX() != NULL);
+    
+    return (instance_get()->pd_stackCached != instance_getBoundX());
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void instance_stackLoadbang (void)
 {
     if (instance_get()->pd_stackPopped) {
     // 
@@ -65,17 +90,17 @@ void instance_stackLoadbangLastPopped (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int instance_loadAbstractionAlreadyThereInStack (t_symbol *filename)
+static int instance_loadAbstractionIsNotAlreadyThere (t_symbol *filename)
 {
     t_stack *p = instance_get()->pd_stackHead;
     
     for (p = instance_get()->pd_stackHead; p; p = p->g_next) {
-        if (p->g_abstraction == filename) { return 1; }
+        if (p->g_abstraction == filename) { return 0; }
     }
     
     instance_get()->pd_loadingAbstraction = filename;
     
-    return 0;
+    return 1;
 }
 
 void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
@@ -86,23 +111,22 @@ void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
     //
     t_symbol *filename = gensym (name);
     
-    if (instance_loadAbstractionAlreadyThereInStack (filename)) { error_recursiveInstantiation (filename); }
-    else {
+    if (instance_loadAbstractionIsNotAlreadyThere (filename)) {
     //
-    t_pd *t = instance_getBoundX();
-    
+    instance_stackContextStore();
     environment_setActiveArguments (argc, argv);
-    buffer_fileEval (filename, gensym (directory));
     
-    if (instance_getBoundX() && t != instance_getBoundX()) {
-        instance_get()->pd_newest = cast_pd (instance_getBoundX());
+    buffer_fileEval (filename, gensym (directory));
+    if (instance_stackContextHasChanged()) {
+        instance_setNewestObject (instance_getBoundX()); 
         canvas_pop (cast_glist (instance_getBoundX()), 0); 
-    } else { 
-        instance_setBoundX (t); 
     }
     
     environment_resetActiveArguments();
+    instance_stackContextRestore();
     //
+    } else {
+        error_recursiveInstantiation (filename);
     }
     //
     }

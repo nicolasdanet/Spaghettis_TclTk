@@ -279,7 +279,7 @@ void buffer_fileOpen (void *dummy, t_symbol *name, t_symbol *directory)
         pd_message (x, sym__pop, 1, &t); 
     }
     
-    instance_stackLoadbangLastPopped();
+    instance_stackLoadbang();
     
     dsp_resume (state); instance_setBoundX (boundX);
 }

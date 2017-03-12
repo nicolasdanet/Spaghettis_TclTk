@@ -41,6 +41,7 @@ struct _pdinstance {
     t_class         *pd_canvasMaker;
     t_stack         *pd_stackHead;
     t_pd            *pd_stackPopped;
+    t_pd            *pd_stackCached;
     t_symbol        *pd_loadingAbstraction;
     };
 
@@ -97,7 +98,10 @@ void    instance_autoreleaseProceed             (t_pd *x);
 
 void    instance_stackPush                      (t_pd *x);
 void    instance_stackPop                       (t_pd *x);
-void    instance_stackLoadbangLastPopped        (void);
+void    instance_stackLoadbang                  (void);
+void    instance_stackContextStore              (void);
+void    instance_stackContextRestore            (void);
+int     instance_stackContextHasChanged         (void);
 
 void    instance_destroyAllScalarsByTemplate    (t_template *tmpl);
 
