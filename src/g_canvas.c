@@ -487,7 +487,7 @@ void canvas_pop (t_glist *glist, t_float f)
 {
     if (f != 0.0) { canvas_visible (glist, 1); }
     
-    instance_stackPop (cast_pd (glist));
+    instance_stackPop (glist);
     
     canvas_resortInlets (glist);
     canvas_resortOutlets (glist);
@@ -785,7 +785,7 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     
     canvas_bind (x);
     
-    instance_stackPush (cast_pd (x));
+    instance_stackPush (x);
     
     return x;
 }

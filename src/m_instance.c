@@ -394,15 +394,12 @@ static t_pdinstance *instance_new()
 
 static void instance_free (t_pdinstance *x)
 {
-    PD_ASSERT (x->pd_dspChain           == NULL);
-    PD_ASSERT (x->pd_clocks             == NULL);
-    PD_ASSERT (x->pd_signals            == NULL);
-    PD_ASSERT (x->pd_roots              == NULL);
-    PD_ASSERT (x->pd_polling            == NULL);
-    PD_ASSERT (x->pd_autorelease        == NULL);
-    PD_ASSERT (x->pd_stackHead          == NULL);
-    PD_ASSERT (x->pd_stackPopped        == NULL);
-    PD_ASSERT (x->pd_loadingAbstraction == NULL);
+    PD_ASSERT (x->pd_dspChain       == NULL);
+    PD_ASSERT (x->pd_clocks         == NULL);
+    PD_ASSERT (x->pd_signals        == NULL);
+    PD_ASSERT (x->pd_roots          == NULL);
+    PD_ASSERT (x->pd_polling        == NULL);
+    PD_ASSERT (x->pd_autorelease    == NULL);
     
     CLASS_FREE (x->pd_canvasMaker);
     CLASS_FREE (x->pd_objectMaker);

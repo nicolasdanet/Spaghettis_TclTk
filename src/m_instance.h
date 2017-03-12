@@ -17,7 +17,7 @@
 #pragma mark -
 
 typedef struct _stack {
-    t_pd            *g_what;                /* MUST be the first. */
+    t_glist         *g_what;                /* MUST be the first. */
     t_symbol        *g_abstraction;
     struct _stack   *g_next;
     } t_stack;
@@ -40,8 +40,8 @@ struct _pdinstance {
     t_class         *pd_objectMaker;
     t_class         *pd_canvasMaker;
     t_stack         *pd_stackHead;
-    t_pd            *pd_stackPopped;
-    t_pd            *pd_stackCached;
+    t_glist         *pd_contextPopped;
+    t_glist         *pd_contextCached;
     t_symbol        *pd_loadingAbstraction;
     };
 
@@ -70,7 +70,7 @@ static inline t_pdinstance *instance_get (void)
 #pragma mark -
 
 /* The #N symbol is bound to the patcher factory. */
-/* The #X symbol is bound to the patcher currently active. */
+/* The #X symbol is bound to the context currently active. */
 /* The #A symbol can be used to serialize things. */
 
 static inline void instance_setBoundN (t_pd *x)
@@ -128,8 +128,8 @@ void    instance_destroyAllScalarsByTemplate    (t_template *tmpl);
 
 void    instance_loadAbstraction                (t_symbol *s, int argc, t_atom *argv);
 
-void    instance_stackPush                      (t_pd *x);
-void    instance_stackPop                       (t_pd *x);
+void    instance_stackPush                      (t_glist *x);
+void    instance_stackPop                       (t_glist *x);
 void    instance_stackLoadbang                  (void);
 
 void    instance_contextStore                   (void);
@@ -140,14 +140,14 @@ int     instance_contextHasChanged              (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static inline void instance_contextSet (t_pd *x)
+static inline void instance_contextSet (t_glist *x)
 {
-    return instance_setBoundX (x);
+    return instance_setBoundX (cast_pd (x));
 }
 
-static inline t_pd *instance_contextGet (void)
+static inline t_glist *instance_contextGet (void)
 {
-    return instance_getBoundX();
+    return cast_glist (instance_getBoundX());
 }
 
 // -----------------------------------------------------------------------------------------------------------

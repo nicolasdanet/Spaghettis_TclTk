@@ -17,33 +17,33 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void instance_stackPush (t_pd *x)
+void instance_stackPush (t_glist *x)
 {
     t_stack *p = (t_stack *)PD_MEMORY_GET (sizeof (t_stack));
     
-    p->g_what = instance_getBoundX();
+    p->g_what = instance_contextGet();
     p->g_next = instance_get()->pd_stackHead;
     p->g_abstraction = instance_get()->pd_loadingAbstraction;
     
     instance_get()->pd_loadingAbstraction = NULL;
     instance_get()->pd_stackHead = p;
     
-    instance_setBoundX (x);
+    instance_contextSet (x);
 }
 
-void instance_stackPop (t_pd *x)
+void instance_stackPop (t_glist *x)
 {
     t_stack *p = instance_get()->pd_stackHead;
     
     PD_ASSERT (p != NULL);
-    PD_ASSERT (instance_getBoundX() == x);
+    PD_ASSERT (instance_contextGet() == x);
     
-    instance_setBoundX (p->g_what);
+    instance_contextSet (p->g_what);
     instance_get()->pd_stackHead = p->g_next;
     
     PD_MEMORY_FREE (p);
     
-    instance_get()->pd_stackPopped = x;
+    instance_get()->pd_contextPopped = x;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -52,23 +52,23 @@ void instance_stackPop (t_pd *x)
 
 void instance_contextStore (void)
 {
-    PD_ASSERT (instance_get()->pd_stackCached == NULL);
+    PD_ASSERT (instance_get()->pd_contextCached == NULL);
     
-    instance_get()->pd_stackCached = instance_getBoundX();
+    instance_get()->pd_contextCached = instance_contextGet();
 }
 
 void instance_contextRestore (void)
 {
-    instance_setBoundX (instance_get()->pd_stackCached);
+    instance_contextSet (instance_get()->pd_contextCached);
     
-    instance_get()->pd_stackCached = NULL;
+    instance_get()->pd_contextCached = NULL;
 }
 
 int instance_contextHasChanged (void)
 {
-    PD_ASSERT (instance_getBoundX() != NULL);
+    PD_ASSERT (instance_contextGet() != NULL);
     
-    return (instance_get()->pd_stackCached != instance_getBoundX());
+    return (instance_get()->pd_contextCached != instance_contextGet());
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -77,13 +77,9 @@ int instance_contextHasChanged (void)
 
 void instance_stackLoadbang (void)
 {
-    if (instance_get()->pd_stackPopped) {
-    // 
-    pd_message (instance_get()->pd_stackPopped, sym_loadbang, 0, NULL);
-    // 
-    }
+    if (instance_get()->pd_contextPopped) { canvas_loadbang (instance_get()->pd_contextPopped); }
     
-    instance_get()->pd_stackPopped = NULL;
+    instance_get()->pd_contextPopped = NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -119,8 +115,8 @@ void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
     buffer_fileEval (filename, gensym (directory));
     
     if (instance_contextHasChanged()) {
-        instance_setNewestObject (instance_getBoundX()); 
-        canvas_pop (cast_glist (instance_getBoundX()), 0); 
+        instance_setNewestObject (cast_pd (instance_contextGet())); 
+        canvas_pop (instance_contextGet(), 0); 
     }
     
     environment_resetActiveArguments();
