@@ -50,24 +50,30 @@ void instance_stackPop (t_pd *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void stack_proceedLoadbang (void)
+void instance_stackLoadbangLastPopped (void)
 {
-    if (instance_get()->pd_stackPopped) { 
-        pd_message (instance_get()->pd_stackPopped, sym_loadbang, 0, NULL); 
+    if (instance_get()->pd_stackPopped) {
+    // 
+    pd_message (instance_get()->pd_stackPopped, sym_loadbang, 0, NULL);
+    // 
     }
     
     instance_get()->pd_stackPopped = NULL;
 }
 
-int stack_setLoadingAbstraction (t_symbol *s)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static int instance_loadAbstractionAlreadyThereInStack (t_symbol *filename)
 {
     t_stack *p = instance_get()->pd_stackHead;
     
     for (p = instance_get()->pd_stackHead; p; p = p->g_next) {
-        if (p->g_abstraction == s) { return 1; }
+        if (p->g_abstraction == filename) { return 1; }
     }
     
-    instance_get()->pd_loadingAbstraction = s;
+    instance_get()->pd_loadingAbstraction = filename;
     
     return 0;
 }
@@ -78,23 +84,25 @@ void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
     
     if (canvas_fileFind (canvas_getCurrent(), s->s_name, PD_PATCH, directory, &name, PD_STRING)) {
     //
-    t_symbol *f = gensym (name);
+    t_symbol *filename = gensym (name);
     
-    if (stack_setLoadingAbstraction (f)) { error_recursiveInstantiation (f); }
+    if (instance_loadAbstractionAlreadyThereInStack (filename)) { error_recursiveInstantiation (filename); }
     else {
-        t_pd *t = instance_getBoundX();
-        
-        environment_setActiveArguments (argc, argv);
-        buffer_fileEval (f, gensym (directory));
-        
-        if (instance_getBoundX() && t != instance_getBoundX()) {
-            instance_get()->pd_newest = cast_pd (instance_getBoundX());
-            canvas_pop (cast_glist (instance_getBoundX()), 0); 
-        } else { 
-            instance_setBoundX (t); 
-        }
-        
-        environment_resetActiveArguments();
+    //
+    t_pd *t = instance_getBoundX();
+    
+    environment_setActiveArguments (argc, argv);
+    buffer_fileEval (filename, gensym (directory));
+    
+    if (instance_getBoundX() && t != instance_getBoundX()) {
+        instance_get()->pd_newest = cast_pd (instance_getBoundX());
+        canvas_pop (cast_glist (instance_getBoundX()), 0); 
+    } else { 
+        instance_setBoundX (t); 
+    }
+    
+    environment_resetActiveArguments();
+    //
     }
     //
     }

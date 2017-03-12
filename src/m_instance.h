@@ -95,11 +95,12 @@ void    instance_autoreleaseStop                (void);
 void    instance_autoreleaseRegister            (t_pd *x);
 void    instance_autoreleaseProceed             (t_pd *x);
 
-void    instance_destroyAllScalarsByTemplate    (t_template *tmpl);
-
 void    instance_stackPush                      (t_pd *x);
 void    instance_stackPop                       (t_pd *x);
-void    stack_proceedLoadbang                   (void);
+void    instance_stackLoadbangLastPopped        (void);
+
+void    instance_destroyAllScalarsByTemplate    (t_template *tmpl);
+
 void    instance_loadAbstraction                (t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
