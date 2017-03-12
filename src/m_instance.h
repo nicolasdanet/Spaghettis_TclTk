@@ -130,7 +130,7 @@ void    instance_loadAbstraction                (t_symbol *s, int argc, t_atom *
 
 void    instance_stackPush                      (t_glist *x);
 void    instance_stackPop                       (t_glist *x);
-void    instance_stackLoadbang                  (void);
+void    instance_stackPopAll                    (void);
 
 void    instance_contextStore                   (void);
 void    instance_contextRestore                 (void);

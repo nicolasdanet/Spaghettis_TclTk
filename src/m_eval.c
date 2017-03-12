@@ -265,7 +265,6 @@ t_error buffer_fileEval (t_symbol *name, t_symbol *directory)
 
 void buffer_fileOpen (void *dummy, t_symbol *name, t_symbol *directory)
 {
-    t_pd *x   = NULL;
     int state = dsp_suspend();
     
     instance_contextStore();
@@ -273,14 +272,7 @@ void buffer_fileOpen (void *dummy, t_symbol *name, t_symbol *directory)
     
     buffer_fileEval (name, directory);
     
-    while ((x != instance_getBoundX()) && instance_getBoundX()) {
-        t_atom t;
-        SET_FLOAT (&t, 1);
-        x = instance_getBoundX(); 
-        pd_message (x, sym__pop, 1, &t); 
-    }
-    
-    instance_stackLoadbang();
+    instance_stackPopAll();
     instance_contextRestore();
     
     dsp_resume (state); 
