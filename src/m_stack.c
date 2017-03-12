@@ -20,24 +20,30 @@
 void instance_stackPush (t_pd *x)
 {
     t_stack *p = (t_stack *)PD_MEMORY_GET (sizeof (t_stack));
+    
     p->g_what = instance_getBoundX();
     p->g_next = instance_get()->pd_stackHead;
     p->g_abstraction = instance_get()->pd_loadingAbstraction;
+    
     instance_get()->pd_loadingAbstraction = NULL;
     instance_get()->pd_stackHead = p;
+    
     instance_setBoundX (x);
 }
 
 void instance_stackPop (t_pd *x)
 {
-    if (!instance_get()->pd_stackHead || instance_getBoundX() != x) { PD_BUG; }
-    else {
-        t_stack *p = instance_get()->pd_stackHead;
-        instance_setBoundX (p->g_what);
-        instance_get()->pd_stackHead = p->g_next;
-        PD_MEMORY_FREE (p);
-        instance_get()->pd_stackPopped = x;
-    }
+    t_stack *p = instance_get()->pd_stackHead;
+    
+    PD_ASSERT (p != NULL);
+    PD_ASSERT (instance_getBoundX() == x);
+    
+    instance_setBoundX (p->g_what);
+    instance_get()->pd_stackHead = p->g_next;
+    
+    PD_MEMORY_FREE (p);
+    
+    instance_get()->pd_stackPopped = x;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -66,17 +72,6 @@ int stack_setLoadingAbstraction (t_symbol *s)
     return 0;
 }
 
-static void instance_popAbstraction (t_glist *glist)
-{
-    instance_get()->pd_newest = cast_pd (glist);
-    instance_stackPop (cast_pd (glist));
-    
-    glist->gl_isLoading = 0;
-    
-    canvas_resortInlets (glist);
-    canvas_resortOutlets (glist);
-}
-
 void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
 {
     char directory[PD_STRING] = { 0 }; char *name = NULL;
@@ -88,13 +83,17 @@ void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
     if (stack_setLoadingAbstraction (f)) { error_recursiveInstantiation (f); }
     else {
         t_pd *t = instance_getBoundX();
+        
         environment_setActiveArguments (argc, argv);
         buffer_fileEval (f, gensym (directory));
-        if (instance_getBoundX() && t != instance_getBoundX()) { 
-            instance_popAbstraction (cast_glist (instance_getBoundX())); 
+        
+        if (instance_getBoundX() && t != instance_getBoundX()) {
+            instance_get()->pd_newest = cast_pd (instance_getBoundX());
+            canvas_pop (cast_glist (instance_getBoundX()), 0); 
         } else { 
             instance_setBoundX (t); 
         }
+        
         environment_resetActiveArguments();
     }
     //
