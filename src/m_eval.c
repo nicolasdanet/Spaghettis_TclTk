@@ -264,15 +264,7 @@ void buffer_fileOpen (void *dummy, t_symbol *name, t_symbol *directory)
 {
     int state = dsp_suspend();
     
-    instance_contextStore();
-    
-        instance_contextSetCurrent (NULL);
-        
-        buffer_fileEval (name, directory);
-        
-        instance_stackPopUntil (NULL); instance_loadbang();
-    
-    instance_contextRestore();
+    instance_loadPatch (name, directory);
     
     dsp_resume (state); 
 }

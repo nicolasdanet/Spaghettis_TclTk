@@ -547,7 +547,7 @@ static void canvas_proceedPaste (t_glist *glist)
     editor_pasteCurrentCanvas = glist;
     editor_pasteOffsetWhileConnectingObjects = numberOfObjectsAlreadyThere;
     
-    instance_contextEval (glist, editor_buffer);
+    instance_stackEval (glist, editor_buffer);
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
         if (i >= numberOfObjectsAlreadyThere) { canvas_selectObject (glist, y); }

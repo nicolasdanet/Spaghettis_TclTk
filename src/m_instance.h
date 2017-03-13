@@ -127,29 +127,41 @@ void    instance_autoreleaseProceed             (t_pd *x);
 void    instance_destroyAllScalarsByTemplate    (t_template *tmpl);
 
 void    instance_loadAbstraction                (t_symbol *s, int argc, t_atom *argv);
-void    instance_loadbang                       (void);
+void    instance_loadPatch                      (t_symbol *name, t_symbol *directory);
 
-void    instance_stackPush                      (t_glist *x);
-void    instance_stackPop                       (t_glist *x);
-void    instance_stackPopUntil                  (t_glist *x);
-
-void    instance_contextStore                   (void);
-void    instance_contextRestore                 (void);
-int     instance_contextHasChanged              (void);
-void    instance_contextEval                    (t_glist *x, t_buffer *b);
+void    instance_stackPush                      (t_glist *glist);
+void    instance_stackPop                       (t_glist *glist);
+void    instance_stackEval                      (t_glist *glist, t_buffer *b);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static inline void instance_contextSetCurrent (t_glist *x)
+static inline void instance_contextSetCurrent (t_glist *glist)
 {
-    return instance_setBoundX (cast_pd (x));
+    return instance_setBoundX (cast_pd (glist));
 }
 
 static inline t_glist *instance_contextGetCurrent (void)
 {
     return cast_glist (instance_getBoundX());
+}
+
+static inline void instance_contextStore (void)
+{
+    instance_get()->pd_contextCached = instance_contextGetCurrent();
+}
+
+static inline void instance_contextRestore (void)
+{
+    instance_contextSetCurrent (instance_get()->pd_contextCached);
+    
+    instance_get()->pd_contextCached = NULL;
+}
+
+static inline int instance_contextHasChanged (void)
+{
+    return (instance_get()->pd_contextCached != instance_contextGetCurrent());
 }
 
 // -----------------------------------------------------------------------------------------------------------

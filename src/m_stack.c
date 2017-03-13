@@ -46,46 +46,13 @@ void instance_stackPop (t_glist *x)
     instance_get()->pd_contextPopped = x;
 }
 
-void instance_stackPopUntil (t_glist *x)
-{
-    t_glist *glist = x;
-        
-    while (instance_contextGetCurrent() && (glist != instance_contextGetCurrent())) {
-        glist = instance_contextGetCurrent(); 
-        canvas_pop (glist, 1); 
-    }
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void instance_contextStore (void)
-{
-    PD_ASSERT (instance_get()->pd_contextCached == NULL);
-    
-    instance_get()->pd_contextCached = instance_contextGetCurrent();
-}
+/* Stack context temporary bypassed to eval the buffer. */
 
-void instance_contextRestore (void)
-{
-    instance_contextSetCurrent (instance_get()->pd_contextCached);
-    
-    instance_get()->pd_contextCached = NULL;
-}
-
-int instance_contextHasChanged (void)
-{
-    PD_ASSERT (instance_contextGetCurrent() != NULL);
-    
-    return (instance_get()->pd_contextCached != instance_contextGetCurrent());
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void instance_contextEval (t_glist *glist, t_buffer *b)
+void instance_stackEval (t_glist *glist, t_buffer *b)
 {
     instance_contextStore();
     instance_contextSetCurrent (glist);
@@ -99,19 +66,7 @@ void instance_contextEval (t_glist *glist, t_buffer *b)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void instance_loadbang (void)
-{
-    if (instance_get()->pd_contextPopped) { 
-        canvas_loadbang (instance_get()->pd_contextPopped);
-        instance_get()->pd_contextPopped = NULL;
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static int instance_loadAbstractionIsNotAlreadyThere (t_symbol *filename)
+static int instance_loadAbstractionIsValid (t_symbol *filename)
 {
     t_stack *p = instance_get()->pd_stackHead;
     
@@ -132,7 +87,7 @@ void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
     //
     t_symbol *filename = gensym (name);
     
-    if (instance_loadAbstractionIsNotAlreadyThere (filename)) {
+    if (instance_loadAbstractionIsValid (filename)) {
     //
     instance_contextStore();
     environment_setActiveArguments (argc, argv);
@@ -152,6 +107,39 @@ void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
     }
     //
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void instance_loadPatchPopUntil (t_glist *x)
+{
+    t_glist *glist = x;
+        
+    while (instance_contextGetCurrent() && (glist != instance_contextGetCurrent())) {
+        glist = instance_contextGetCurrent(); 
+        canvas_pop (glist, 1); 
+    }
+}
+
+static void instance_loadPatchLoadbang (void)
+{
+    if (instance_get()->pd_contextPopped) { 
+        canvas_loadbang (instance_get()->pd_contextPopped);
+        instance_get()->pd_contextPopped = NULL;
+    }
+}
+
+void instance_loadPatch (t_symbol *name, t_symbol *directory)
+{
+    instance_contextStore();
+    instance_contextSetCurrent (NULL);          /* The root canvas do NOT have parent. */
+        
+        buffer_fileEval (name, directory);
+        
+    instance_loadPatchPopUntil (NULL); instance_loadPatchLoadbang();
+    instance_contextRestore();
 }
 
 // -----------------------------------------------------------------------------------------------------------

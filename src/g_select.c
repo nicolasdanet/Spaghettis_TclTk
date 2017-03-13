@@ -121,7 +121,7 @@ static void canvas_cacheLines (t_glist *glist)
 
 void canvas_restoreCachedLines (t_glist *glist)
 {
-    instance_contextEval (glist, glist->gl_editor->e_buffer);
+    instance_stackEval (glist, glist->gl_editor->e_buffer);
 }
 
 // -----------------------------------------------------------------------------------------------------------
