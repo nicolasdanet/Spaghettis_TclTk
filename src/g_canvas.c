@@ -162,8 +162,6 @@ static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 
 void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    t_pd *z = NULL;
-    
     t_symbol *name = &s_;
     
     if (argc > 3) { name = dollar_expandGetIfSymbolByEnvironment (argv + 3, canvas_getCurrent()); }
@@ -172,22 +170,23 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     canvas_pop (glist, glist->gl_openedAtLoad);
 
-    if (!(z = instance_getBoundX()) || (pd_class (z) != canvas_class)) { PD_BUG; }
-    else {
-        t_glist *parent  = cast_glist (z);
-        t_object *object = cast_object (glist);
+    {
+        t_glist *parent = instance_contextGet();
+    
+        PD_ASSERT (parent);
+        PD_ABORT (!parent);     /* Hot to manage corrupted files? */
         
         glist->gl_parent = parent;
         
-        object_setBuffer (object, buffer_new());
-        object_setX (object, atom_getFloatAtIndex (0, argc, argv));
-        object_setY (object, atom_getFloatAtIndex (1, argc, argv));
-        object_setWidth (object, 0);
-        object_setType (object, TYPE_OBJECT);
+        object_setBuffer (cast_object (glist), buffer_new());
+        object_setX (cast_object (glist), atom_getFloatAtIndex (0, argc, argv));
+        object_setY (cast_object (glist), atom_getFloatAtIndex (1, argc, argv));
+        object_setWidth (cast_object (glist), 0);
+        object_setType (cast_object (glist), TYPE_OBJECT);
         
-        if (argc > 2) { buffer_deserialize (object_getBuffer (object), argc - 2, argv + 2); }
+        if (argc > 2) { buffer_deserialize (object_getBuffer (cast_object (glist)), argc - 2, argv + 2); }
         
-        canvas_addObject (parent, cast_gobj (object));
+        canvas_addObject (parent, cast_gobj (glist));
     }
 }
 
