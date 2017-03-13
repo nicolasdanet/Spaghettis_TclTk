@@ -96,30 +96,17 @@ static t_widgetbehavior garray_widgetBehavior =             /* Shared. */
 
 void garray_initialize (void)
 {
-    static char *floatTemplateFile = 
-        "canvas 0 0 458 153 10;\n"
+    static char *floatTemplate = 
+        "#N canvas 0 0 458 153 10;\n"
         "#X obj 39 26 struct float float y;\n";
 
-    static char *floatArrayTemplateFile = 
-        "canvas 0 0 458 153 10;\n"
+    static char *floatArrayTemplate = 
+        "#N canvas 0 0 458 153 10;\n"
         "#X obj 43 31 struct float-array array z float float style float linewidth float color;\n"
         "#X obj 43 70 plot z color linewidth 0 0 1 style;\n";
-        
-    t_buffer *b = buffer_new();
     
-    environment_setActiveFile (sym__floattemplate, sym___dot__);
-    buffer_withStringUnzeroed (b, floatTemplateFile, (int)strlen (floatTemplateFile));
-    buffer_eval (b, instance_getMakerCanvas(), 0, NULL);
-    canvas_pop (instance_contextGetCurrent(), 0);
-    
-    environment_setActiveFile (sym__floatarraytemplate, sym___dot__);
-    buffer_withStringUnzeroed (b, floatArrayTemplateFile, (int)strlen (floatArrayTemplateFile));
-    buffer_eval (b, instance_getMakerCanvas(), 0, NULL);
-    canvas_pop (instance_contextGetCurrent(), 0);
-
-    environment_setActiveFile (&s_, &s_);
-    
-    buffer_free (b);
+    instance_loadInvisible (sym__floattemplate, sym___dot__, floatTemplate);
+    instance_loadInvisible (sym__floatarraytemplate, sym___dot__, floatArrayTemplate);
 }
 
 #if PD_WITH_DEBUG

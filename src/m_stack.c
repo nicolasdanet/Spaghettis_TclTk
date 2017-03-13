@@ -113,13 +113,13 @@ void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void instance_loadPatchPopUntil (t_glist *x)
+static void instance_loadPatchPopUntil (t_glist *x, int visible)
 {
     t_glist *glist = x;
         
     while (instance_contextGetCurrent() && (glist != instance_contextGetCurrent())) {
         glist = instance_contextGetCurrent(); 
-        canvas_pop (glist, 1); 
+        canvas_pop (glist, visible); 
     }
 }
 
@@ -131,15 +131,32 @@ static void instance_loadPatchLoadbang (void)
     }
 }
 
-void instance_loadPatch (t_symbol *name, t_symbol *directory)
+static void instance_loadPatchProceed (t_symbol *name, t_symbol *directory, char *s, int visible)
 {
     instance_contextStore();
     instance_contextSetCurrent (NULL);          /* The root canvas do NOT have parent. */
         
-        buffer_fileEval (name, directory);
+    if (s) { buffer_fileEvalByString (name, directory, s); }
+    else   { buffer_fileEval (name, directory); }
         
-    instance_loadPatchPopUntil (NULL); instance_loadPatchLoadbang();
+    instance_loadPatchPopUntil (NULL, visible); instance_loadPatchLoadbang();
     instance_contextRestore();
+}
+
+void instance_loadPatch (t_symbol *name, t_symbol *directory)
+{
+    instance_loadPatchProceed (name, directory, NULL, 1);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* Load invisible patches (mainly used for built-in templates). */
+
+void instance_loadInvisible (t_symbol *name, t_symbol *directory, char *s)
+{
+    instance_loadPatchProceed (name, directory, s, 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

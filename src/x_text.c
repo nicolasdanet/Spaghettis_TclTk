@@ -44,19 +44,10 @@ t_error scalar_unsetInternalBuffer  (t_scalar *, t_symbol *);
 void textdefine_initialize (void)
 {
     static char *textTemplateFile = 
-        "canvas 0 0 458 153 10;\n"
+        "#N canvas 0 0 458 153 10;\n"
         "#X obj 43 31 struct text float x float y text t;\n";
 
-    t_buffer *b = buffer_new();
-    
-    environment_setActiveFile (sym__texttemplate, sym___dot__);
-    buffer_withStringUnzeroed (b, textTemplateFile, (int)strlen (textTemplateFile));
-    buffer_eval (b, instance_getMakerCanvas(), 0, NULL);
-    canvas_pop (instance_contextGetCurrent(), 0);
-    
-    environment_setActiveFile (&s_, &s_);
-    
-    buffer_free (b);  
+    instance_loadInvisible (sym__texttemplate, sym___dot__, textTemplateFile); 
 }
 
 // -----------------------------------------------------------------------------------------------------------

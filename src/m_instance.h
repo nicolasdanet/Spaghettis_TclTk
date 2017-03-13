@@ -128,6 +128,7 @@ void    instance_destroyAllScalarsByTemplate    (t_template *tmpl);
 
 void    instance_loadAbstraction                (t_symbol *s, int argc, t_atom *argv);
 void    instance_loadPatch                      (t_symbol *name, t_symbol *directory);
+void    instance_loadInvisible                  (t_symbol *name, t_symbol *directory, char *s);
 
 void    instance_stackPush                      (t_glist *glist);
 void    instance_stackPop                       (t_glist *glist);

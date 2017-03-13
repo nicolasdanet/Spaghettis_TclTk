@@ -104,10 +104,6 @@ static int buffer_evalGetMessage (t_atom *v, t_pd *object, t_pd **next, t_atom *
     return end;
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
 {
     int size = x->b_size;
@@ -237,9 +233,9 @@ t_error buffer_write (t_buffer *x, char *name, char *directory)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error buffer_fileEval (t_symbol *name, t_symbol *directory)
+static t_error buffer_fileEvalProceed (t_symbol *name, t_symbol *directory, char *s)
 {
-    t_error err = PD_ERROR;
+    t_error err = PD_ERROR_NONE;
     
     int state = dsp_suspend();
     
@@ -247,7 +243,10 @@ t_error buffer_fileEval (t_symbol *name, t_symbol *directory)
         
         environment_setActiveFile (name, directory);
         
-        err = buffer_fromFile (t, name->s_name, directory->s_name);
+        if (s == NULL) { err = buffer_fromFile (t, name->s_name, directory->s_name); }
+        else {
+            buffer_withStringUnzeroed (t, s, (int)strlen (s));
+        }
         
         if (err) { error_failsToRead (name); } else { buffer_eval (t, NULL, 0, NULL); }
         
@@ -259,6 +258,20 @@ t_error buffer_fileEval (t_symbol *name, t_symbol *directory)
     
     return err;
 }
+
+t_error buffer_fileEvalByString (t_symbol *name, t_symbol *directory, char *s)
+{
+    return buffer_fileEvalProceed (name, directory, s);
+}
+
+t_error buffer_fileEval (t_symbol *name, t_symbol *directory)
+{
+    return buffer_fileEvalProceed (name, directory, NULL);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void buffer_fileOpen (void *dummy, t_symbol *name, t_symbol *directory)
 {

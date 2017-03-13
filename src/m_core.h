@@ -152,6 +152,7 @@ void        buffer_eval                                 (t_buffer *x, t_pd *obje
 t_error     buffer_read                                 (t_buffer *x, t_symbol *name, t_glist *glist);
 t_error     buffer_write                                (t_buffer *x, char *name, char *directory);
 t_error     buffer_fileEval                             (t_symbol *name, t_symbol *directory);
+t_error     buffer_fileEvalByString                     (t_symbol *name, t_symbol *directory, char *s);
 void        buffer_fileOpen                             (void *dummy, t_symbol *name, t_symbol *directory);
 
 // -----------------------------------------------------------------------------------------------------------
