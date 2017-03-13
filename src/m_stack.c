@@ -85,6 +85,20 @@ int instance_contextHasChanged (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void instance_contextEval (t_glist *glist, t_buffer *b)
+{
+    instance_contextStore();
+    instance_contextSet (glist);
+    
+    buffer_eval (b, NULL, 0, NULL);
+    
+    instance_contextRestore();
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void instance_loadbang (void)
 {
     if (instance_get()->pd_contextPopped) { 

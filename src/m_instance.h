@@ -136,6 +136,7 @@ void    instance_stackPopUntil                  (t_glist *x);
 void    instance_contextStore                   (void);
 void    instance_contextRestore                 (void);
 int     instance_contextHasChanged              (void);
+void    instance_contextEval                    (t_glist *x, t_buffer *b);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

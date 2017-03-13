@@ -347,7 +347,7 @@ void instance_destroyAllScalarsByTemplate (t_template *template)
 #pragma mark -
 
 /* Called if no method of the object factory match. */
-/* Note it can be called recursively with wrong externals. */
+/* Note it can be called recursively in case of wrong externals. */
 
 static void instance_factory (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {

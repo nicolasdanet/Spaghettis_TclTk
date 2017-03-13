@@ -121,12 +121,7 @@ static void canvas_cacheLines (t_glist *glist)
 
 void canvas_restoreCachedLines (t_glist *glist)
 {
-    t_pd *boundX = instance_getBoundX();
-    
-    instance_setBoundX (cast_pd (glist));
-    buffer_eval (glist->gl_editor->e_buffer, NULL, 0, NULL);
-    
-    instance_setBoundX (boundX);
+    instance_contextEval (glist, glist->gl_editor->e_buffer);
 }
 
 // -----------------------------------------------------------------------------------------------------------
