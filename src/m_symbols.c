@@ -150,7 +150,6 @@ t_symbol *sym__path;
 t_symbol *sym__pgmin;
 t_symbol *sym__polling;
 t_symbol *sym__polytouchin;
-t_symbol *sym__pop;
 t_symbol *sym__popupdialog;
 t_symbol *sym__quit;
 t_symbol *sym__savepreferences;
@@ -732,7 +731,6 @@ void symbols_initialize (void)
     sym__pgmin                                  = gensym ("_pgmin");
     sym__polling                                = gensym ("_polling");
     sym__polytouchin                            = gensym ("_polytouchin");
-    sym__pop                                    = gensym ("_pop");
     sym__popupdialog                            = gensym ("_popupdialog");
     sym__quit                                   = gensym ("_quit");
     sym__savepreferences                        = gensym ("_savepreferences");

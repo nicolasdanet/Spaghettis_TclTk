@@ -868,7 +868,6 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_dirty,                 sym_dirty,          A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_visible,               sym_visible,        A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_map,                   sym__map,           A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_pop,                   sym__pop,           A_DEFFLOAT, A_NULL);
 
     class_addMethod (c, (t_method)canvas_cut,                   sym__cut,           A_NULL);
     class_addMethod (c, (t_method)canvas_copy,                  sym__copy,          A_NULL);

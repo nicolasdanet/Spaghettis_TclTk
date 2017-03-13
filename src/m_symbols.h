@@ -150,7 +150,6 @@ extern t_symbol *sym__path;
 extern t_symbol *sym__pgmin;
 extern t_symbol *sym__polling;
 extern t_symbol *sym__polytouchin;
-extern t_symbol *sym__pop;
 extern t_symbol *sym__popupdialog;
 extern t_symbol *sym__quit;
 extern t_symbol *sym__savepreferences;
