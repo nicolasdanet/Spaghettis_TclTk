@@ -142,12 +142,12 @@ void    instance_contextEval                    (t_glist *x, t_buffer *b);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static inline void instance_contextSet (t_glist *x)
+static inline void instance_contextSetCurrent (t_glist *x)
 {
     return instance_setBoundX (cast_pd (x));
 }
 
-static inline t_glist *instance_contextGet (void)
+static inline t_glist *instance_contextGetCurrent (void)
 {
     return cast_glist (instance_getBoundX());
 }

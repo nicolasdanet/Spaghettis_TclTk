@@ -21,14 +21,14 @@ void instance_stackPush (t_glist *x)
 {
     t_stack *p = (t_stack *)PD_MEMORY_GET (sizeof (t_stack));
     
-    p->g_what = instance_contextGet();
+    p->g_what = instance_contextGetCurrent();
     p->g_next = instance_get()->pd_stackHead;
     p->g_abstraction = instance_get()->pd_loadingAbstraction;
     
     instance_get()->pd_loadingAbstraction = NULL;
     instance_get()->pd_stackHead = p;
     
-    instance_contextSet (x);
+    instance_contextSetCurrent (x);
 }
 
 void instance_stackPop (t_glist *x)
@@ -36,9 +36,9 @@ void instance_stackPop (t_glist *x)
     t_stack *p = instance_get()->pd_stackHead;
     
     PD_ASSERT (p != NULL);
-    PD_ASSERT (instance_contextGet() == x);
+    PD_ASSERT (instance_contextGetCurrent() == x);
     
-    instance_contextSet (p->g_what);
+    instance_contextSetCurrent (p->g_what);
     instance_get()->pd_stackHead = p->g_next;
     
     PD_MEMORY_FREE (p);
@@ -50,8 +50,8 @@ void instance_stackPopUntil (t_glist *x)
 {
     t_glist *glist = x;
         
-    while (instance_contextGet() && (glist != instance_contextGet())) {
-        glist = instance_contextGet(); 
+    while (instance_contextGetCurrent() && (glist != instance_contextGetCurrent())) {
+        glist = instance_contextGetCurrent(); 
         canvas_pop (glist, 1); 
     }
 }
@@ -64,21 +64,21 @@ void instance_contextStore (void)
 {
     PD_ASSERT (instance_get()->pd_contextCached == NULL);
     
-    instance_get()->pd_contextCached = instance_contextGet();
+    instance_get()->pd_contextCached = instance_contextGetCurrent();
 }
 
 void instance_contextRestore (void)
 {
-    instance_contextSet (instance_get()->pd_contextCached);
+    instance_contextSetCurrent (instance_get()->pd_contextCached);
     
     instance_get()->pd_contextCached = NULL;
 }
 
 int instance_contextHasChanged (void)
 {
-    PD_ASSERT (instance_contextGet() != NULL);
+    PD_ASSERT (instance_contextGetCurrent() != NULL);
     
-    return (instance_get()->pd_contextCached != instance_contextGet());
+    return (instance_get()->pd_contextCached != instance_contextGetCurrent());
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -88,7 +88,7 @@ int instance_contextHasChanged (void)
 void instance_contextEval (t_glist *glist, t_buffer *b)
 {
     instance_contextStore();
-    instance_contextSet (glist);
+    instance_contextSetCurrent (glist);
     
     buffer_eval (b, NULL, 0, NULL);
     
@@ -140,8 +140,8 @@ void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
     buffer_fileEval (filename, gensym (directory));
     
     if (instance_contextHasChanged()) {
-        instance_setNewestObject (cast_pd (instance_contextGet())); 
-        canvas_pop (instance_contextGet(), 0); 
+        instance_setNewestObject (cast_pd (instance_contextGetCurrent())); 
+        canvas_pop (instance_contextGetCurrent(), 0); 
     }
     
     environment_resetActiveArguments();

@@ -266,7 +266,7 @@ void buffer_fileOpen (void *dummy, t_symbol *name, t_symbol *directory)
     
     instance_contextStore();
     
-        instance_contextSet (NULL);
+        instance_contextSetCurrent (NULL);
         
         buffer_fileEval (name, directory);
         

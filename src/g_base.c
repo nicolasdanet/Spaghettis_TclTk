@@ -54,7 +54,7 @@ void canvas_newPatch (void *dummy, t_symbol *name, t_symbol *directory)
 {
     environment_setActiveFile (name, directory);
     canvas_new (NULL, NULL, 0, NULL);
-    canvas_pop (instance_contextGet(), 1);
+    canvas_pop (instance_contextGetCurrent(), 1);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -63,7 +63,7 @@ void canvas_newPatch (void *dummy, t_symbol *name, t_symbol *directory)
 
 t_glist *canvas_getCurrent (void)
 {
-    return instance_contextGet();
+    return instance_contextGetCurrent();
 }
 
 t_glist *canvas_getRoot (t_glist *glist)

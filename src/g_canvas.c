@@ -171,7 +171,7 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     canvas_pop (glist, glist->gl_openedAtLoad);
 
     {
-        t_glist *parent = instance_contextGet();
+        t_glist *parent = instance_contextGetCurrent();
     
         PD_ASSERT (parent);
         PD_ABORT (!parent);     /* Hot to manage corrupted files? */
