@@ -242,22 +242,19 @@ t_error buffer_fileEval (t_symbol *name, t_symbol *directory)
     t_error err = PD_ERROR;
     
     int state = dsp_suspend();
+    
     t_buffer *t = buffer_new();
         
-    environment_setActiveFile (name, directory);
-    
-    err = buffer_fromFile (t, name->s_name, directory->s_name);
-    
-    if (err) { error_failsToRead (name); }
-    else {
-    //
-    buffer_eval (t, NULL, 0, NULL);
-    //
-    }
-    
-    environment_setActiveFile (&s_, &s_);
+        environment_setActiveFile (name, directory);
+        
+        err = buffer_fromFile (t, name->s_name, directory->s_name);
+        
+        if (err) { error_failsToRead (name); } else { buffer_eval (t, NULL, 0, NULL); }
+        
+        environment_setActiveFile (&s_, &s_);
     
     buffer_free (t);
+    
     dsp_resume (state);
     
     return err;
@@ -268,11 +265,13 @@ void buffer_fileOpen (void *dummy, t_symbol *name, t_symbol *directory)
     int state = dsp_suspend();
     
     instance_contextStore();
-    instance_contextSet (NULL);
     
-    buffer_fileEval (name, directory);
+        instance_contextSet (NULL);
+        
+        buffer_fileEval (name, directory);
+        
+        instance_stackPopUntil (NULL); instance_loadbang();
     
-    instance_stackPopAll();
     instance_contextRestore();
     
     dsp_resume (state); 

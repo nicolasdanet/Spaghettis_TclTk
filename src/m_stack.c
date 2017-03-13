@@ -46,18 +46,13 @@ void instance_stackPop (t_glist *x)
     instance_get()->pd_contextPopped = x;
 }
 
-void instance_stackPopAll (void)
+void instance_stackPopUntil (t_glist *x)
 {
-    t_glist *glist = NULL;
+    t_glist *glist = x;
         
     while (instance_contextGet() && (glist != instance_contextGet())) {
         glist = instance_contextGet(); 
         canvas_pop (glist, 1); 
-    }
-    
-    if (instance_get()->pd_contextPopped) { 
-        canvas_loadbang (instance_get()->pd_contextPopped);
-        instance_get()->pd_contextPopped = NULL;
     }
 }
 
@@ -84,6 +79,18 @@ int instance_contextHasChanged (void)
     PD_ASSERT (instance_contextGet() != NULL);
     
     return (instance_get()->pd_contextCached != instance_contextGet());
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void instance_loadbang (void)
+{
+    if (instance_get()->pd_contextPopped) { 
+        canvas_loadbang (instance_get()->pd_contextPopped);
+        instance_get()->pd_contextPopped = NULL;
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -127,10 +127,11 @@ void    instance_autoreleaseProceed             (t_pd *x);
 void    instance_destroyAllScalarsByTemplate    (t_template *tmpl);
 
 void    instance_loadAbstraction                (t_symbol *s, int argc, t_atom *argv);
+void    instance_loadbang                       (void);
 
 void    instance_stackPush                      (t_glist *x);
 void    instance_stackPop                       (t_glist *x);
-void    instance_stackPopAll                    (void);
+void    instance_stackPopUntil                  (t_glist *x);
 
 void    instance_contextStore                   (void);
 void    instance_contextRestore                 (void);
