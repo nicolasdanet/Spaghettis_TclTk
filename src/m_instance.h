@@ -27,7 +27,15 @@ typedef struct _stack       {
     t_glist         *stack_popped;
     t_glist         *stack_cached;
     } t_stack;
-    
+
+typedef struct _environment {
+    int             ce_dollarZeroValue;
+    int             ce_argc;
+    t_atom          *ce_argv;
+    t_symbol        *ce_directory;
+    t_symbol        *ce_fileName;
+    } t_environment;
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
@@ -143,6 +151,26 @@ void    instance_loadInvisible                  (t_symbol *name, t_symbol *direc
 void    instance_stackPush                      (t_glist *glist);
 void    instance_stackPop                       (t_glist *glist);
 void    instance_stackEval                      (t_glist *glist, t_buffer *b);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_symbol        *environment_getActiveFilename      (void);
+t_environment   *environment_fetchActiveIfAny       (void);
+
+void            environment_free                    (t_environment *environment);
+void            environment_setActiveFile           (t_symbol *name, t_symbol *directory);
+void            environment_setActiveArguments      (int argc, t_atom *argv);
+void            environment_resetActiveArguments    (void);
+
+int             environment_getDollarZero           (t_environment *environment);
+int             environment_getNumberOfArguments    (t_environment *environment);
+
+t_atom          *environment_getArguments           (t_environment *environment);
+t_symbol        *environment_getDirectory           (t_environment *environment);
+t_symbol        *environment_getFileName            (t_environment *environment);
+char            *environment_getDirectoryAsString   (t_environment *environment);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

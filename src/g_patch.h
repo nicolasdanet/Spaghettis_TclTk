@@ -151,26 +151,6 @@ void            guiconnect_release                  (t_guiconnect *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol        *environment_getActiveFilename      (void);
-t_environment   *environment_fetchActiveIfAny       (void);
-
-void            environment_free                    (t_environment *environment);
-void            environment_setActiveFile           (t_symbol *name, t_symbol *directory);
-void            environment_setActiveArguments      (int argc, t_atom *argv);
-void            environment_resetActiveArguments    (void);
-
-int             environment_getDollarZero           (t_environment *environment);
-int             environment_getNumberOfArguments    (t_environment *environment);
-
-t_atom          *environment_getArguments           (t_environment *environment);
-t_symbol        *environment_getDirectory           (t_environment *environment);
-t_symbol        *environment_getFileName            (t_environment *environment);
-char            *environment_getDirectoryAsString   (t_environment *environment);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void            gobj_getRectangle                   (t_gobj *x, t_glist *owner, t_rectangle *r);
 void            gobj_displaced                      (t_gobj *x, t_glist *owner, int deltaX, int deltaY);
 void            gobj_selected                       (t_gobj *x, t_glist *owner, int isSelected);
