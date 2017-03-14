@@ -94,7 +94,7 @@ void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
     
     buffer_fileEval (filename, gensym (directory));
     
-    if (instance_contextHasChanged()) {
+    if (instance_contextGetCurrent() != instance_contextGetStore()) {
         instance_setNewestObject (cast_pd (instance_contextGetCurrent())); 
         canvas_pop (instance_contextGetCurrent(), 0); 
     }

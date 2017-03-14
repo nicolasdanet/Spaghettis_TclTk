@@ -158,6 +158,11 @@ static inline t_glist *instance_contextGetCurrent (void)
     return cast_glist (instance_getBoundX());
 }
 
+static inline t_glist *instance_contextGetStore (void)
+{
+    return instance_get()->pd_stack.stack_cached;
+}
+
 static inline void instance_contextStore (void)
 {
     instance_get()->pd_stack.stack_cached = instance_contextGetCurrent();
@@ -168,11 +173,6 @@ static inline void instance_contextRestore (void)
     instance_contextSetCurrent (instance_get()->pd_stack.stack_cached);
     
     instance_get()->pd_stack.stack_cached = NULL;
-}
-
-static inline int instance_contextHasChanged (void)
-{
-    return (instance_get()->pd_stack.stack_cached != instance_contextGetCurrent());
 }
 
 // -----------------------------------------------------------------------------------------------------------
