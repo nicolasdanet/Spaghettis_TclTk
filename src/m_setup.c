@@ -37,7 +37,6 @@ void defer_release          (void);
 void drawnumber_release     (void);
 void drawpolygon_release    (void);
 void editor_release         (void);
-void environment_release    (void);
 void fft_release            (void);
 void gui_release            (void);
 void interface_release      (void);
@@ -925,7 +924,6 @@ void setup_release (void)
     monitor_release();
     gui_release();
     fft_release();
-    environment_release();
     editor_release();
     drawpolygon_release();
     drawnumber_release();

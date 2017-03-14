@@ -35,13 +35,14 @@ typedef struct _environment {
     t_symbol        *ce_directory;
     t_symbol        *ce_fileName;
     } t_environment;
-
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 struct _pdinstance {
     t_systime       pd_systime;
     t_stack         pd_stack;
+    t_environment   pd_environment;
     int             pd_dspState;
     int             pd_dspChainSize;
     int             pd_loadingExternal;
@@ -115,62 +116,91 @@ static inline t_pd *instance_getBoundX (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    instance_rootsAdd                       (t_glist *glist);
-void    instance_rootsRemove                    (t_glist *glist);
-void    instance_rootsFreeAll                   (void);
+void            instance_rootsAdd                       (t_glist *glist);
+void            instance_rootsRemove                    (t_glist *glist);
+void            instance_rootsFreeAll                   (void);
 
-void    instance_dspStart                       (void);
-void    instance_dspStop                        (void);
-void    instance_dspChainInitialize             (void);
-void    instance_dspChainRelease                (void);
-void    instance_dspChainAppend                 (t_perform f, int n, ...);
+void            instance_dspStart                       (void);
+void            instance_dspStop                        (void);
+void            instance_dspChainInitialize             (void);
+void            instance_dspChainRelease                (void);
+void            instance_dspChainAppend                 (t_perform f, int n, ...);
 
-void    instance_signalAdd                      (t_signal *s);
-void    instance_signalFreeAll                  (void);
+void            instance_signalAdd                      (t_signal *s);
+void            instance_signalFreeAll                  (void);
 
-void    instance_clockAdd                       (t_clock *c);
-void    instance_clockUnset                     (t_clock *c);
-void    instance_clockTick                      (t_systime systime);
+void            instance_clockAdd                       (t_clock *c);
+void            instance_clockUnset                     (t_clock *c);
+void            instance_clockTick                      (t_systime systime);
 
-void    instance_pollingRun                     (void);
-void    instance_pollingStop                    (void);
-void    instance_pollingRegister                (t_pd *x);
-void    instance_pollingUnregister              (t_pd *x);
+void            instance_pollingRun                     (void);
+void            instance_pollingStop                    (void);
+void            instance_pollingRegister                (t_pd *x);
+void            instance_pollingUnregister              (t_pd *x);
 
-void    instance_autoreleaseRun                 (void);
-void    instance_autoreleaseStop                (void);
-void    instance_autoreleaseRegister            (t_pd *x);
-void    instance_autoreleaseProceed             (t_pd *x);
+void            instance_autoreleaseRun                 (void);
+void            instance_autoreleaseStop                (void);
+void            instance_autoreleaseRegister            (t_pd *x);
+void            instance_autoreleaseProceed             (t_pd *x);
 
-void    instance_destroyAllScalarsByTemplate    (t_template *tmpl);
+void            instance_destroyAllScalarsByTemplate    (t_template *tmpl);
 
-void    instance_loadAbstraction                (t_symbol *s, int argc, t_atom *argv);
-void    instance_loadPatch                      (t_symbol *name, t_symbol *directory);
-void    instance_loadInvisible                  (t_symbol *name, t_symbol *directory, char *s);
+void            instance_loadAbstraction                (t_symbol *s, int argc, t_atom *argv);
+void            instance_loadPatch                      (t_symbol *name, t_symbol *directory);
+void            instance_loadInvisible                  (t_symbol *name, t_symbol *directory, char *s);
 
-void    instance_stackPush                      (t_glist *glist);
-void    instance_stackPop                       (t_glist *glist);
-void    instance_stackEval                      (t_glist *glist, t_buffer *b);
+void            instance_stackPush                      (t_glist *glist);
+void            instance_stackPop                       (t_glist *glist);
+void            instance_stackEval                      (t_glist *glist, t_buffer *b);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol        *environment_getActiveFilename      (void);
-t_environment   *environment_fetchActiveIfAny       (void);
+t_symbol        *environment_getActiveFilename          (void);
+t_environment   *environment_fetchActiveIfAny           (void);
 
-void            environment_free                    (t_environment *environment);
-void            environment_setActiveFile           (t_symbol *name, t_symbol *directory);
-void            environment_setActiveArguments      (int argc, t_atom *argv);
-void            environment_resetActiveArguments    (void);
+void            environment_free                        (t_environment *environment);
+void            environment_setActiveFile               (t_symbol *name, t_symbol *directory);
+void            environment_setActiveArguments          (int argc, t_atom *argv);
+void            environment_resetActiveArguments        (void);
 
-int             environment_getDollarZero           (t_environment *environment);
-int             environment_getNumberOfArguments    (t_environment *environment);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-t_atom          *environment_getArguments           (t_environment *environment);
-t_symbol        *environment_getDirectory           (t_environment *environment);
-t_symbol        *environment_getFileName            (t_environment *environment);
-char            *environment_getDirectoryAsString   (t_environment *environment);
+static inline int environment_getDollarZero (t_environment *e)
+{
+    return e->ce_dollarZeroValue;
+}
+
+static inline int environment_getNumberOfArguments (t_environment *e)
+{
+    return e->ce_argc;
+}
+
+static inline t_atom *environment_getArguments (t_environment *e)
+{
+    return e->ce_argv;
+}
+
+static inline t_symbol *environment_getDirectory (t_environment *e)
+{
+    return e->ce_directory;
+}
+
+static inline char *environment_getDirectoryAsString (t_environment *e)
+{
+    return e->ce_directory->s_name;
+}
+
+static inline t_symbol *environment_getFileName (t_environment *e)
+{
+    if (e) { return e->ce_fileName; }
+    else {
+        return sym_Patch;
+    }
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
