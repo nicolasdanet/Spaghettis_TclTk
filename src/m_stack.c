@@ -113,16 +113,6 @@ void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void instance_loadPatchPopUntil (t_glist *x, int visible)
-{
-    t_glist *glist = x;
-        
-    while (instance_contextGetCurrent() && (glist != instance_contextGetCurrent())) {
-        glist = instance_contextGetCurrent(); 
-        canvas_pop (glist, visible); 
-    }
-}
-
 static void instance_loadPatchLoadbang (void)
 {
     if (instance_get()->pd_contextPopped) { 
@@ -138,8 +128,12 @@ static void instance_loadPatchProceed (t_symbol *name, t_symbol *directory, char
         
     if (s) { buffer_fileEvalByString (name, directory, s); }
     else   { buffer_fileEval (name, directory); }
-        
-    instance_loadPatchPopUntil (NULL, visible); instance_loadPatchLoadbang();
+    
+    if (instance_contextGetCurrent() != NULL) { canvas_pop (instance_contextGetCurrent(), visible); }
+    
+    PD_ASSERT (instance_contextGetCurrent() == NULL);
+    
+    instance_loadPatchLoadbang();
     instance_contextRestore();
 }
 
