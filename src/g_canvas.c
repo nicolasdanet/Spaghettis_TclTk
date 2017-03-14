@@ -772,7 +772,7 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     
     if (!owner) { instance_rootsAdd (x); }
     
-    x->gl_environment           = environment_fetchActiveIfAny();
+    x->gl_environment           = instance_environmentFetchIfAny();
     x->gl_name                  = (name != &s_ ? name : environment_getFileName (x->gl_environment));
     x->gl_fontSize              = font_getNearestValidFontSize (fontSize);
     x->gl_isLoading             = 1;

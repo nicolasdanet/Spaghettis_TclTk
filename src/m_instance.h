@@ -153,21 +153,18 @@ void            instance_stackPush                      (t_glist *glist);
 void            instance_stackPop                       (t_glist *glist);
 void            instance_stackEval                      (t_glist *glist, t_buffer *b);
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+t_environment   *instance_environmentFetchIfAny         (void);
 
-t_symbol        *environment_getActiveFilename          (void);
-t_environment   *environment_fetchActiveIfAny           (void);
-
-void            environment_free                        (t_environment *environment);
-void            environment_setActiveFile               (t_symbol *name, t_symbol *directory);
-void            environment_setActiveArguments          (int argc, t_atom *argv);
-void            environment_resetActiveArguments        (void);
+void            instance_environmentSetFile             (t_symbol *name, t_symbol *directory);
+void            instance_environmentSetArguments        (int argc, t_atom *argv);
+void            instance_environmentResetFile           (void);
+void            instance_environmentResetArguments      (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+void environment_free (t_environment *e);
 
 static inline int environment_getDollarZero (t_environment *e)
 {

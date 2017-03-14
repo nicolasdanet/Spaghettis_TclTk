@@ -241,7 +241,7 @@ static t_error buffer_fileEvalProceed (t_symbol *name, t_symbol *directory, char
     
     t_buffer *t = buffer_new();
         
-        environment_setActiveFile (name, directory);
+        instance_environmentSetFile (name, directory);
         
         if (s == NULL) { err = buffer_fromFile (t, name->s_name, directory->s_name); }
         else {
@@ -250,7 +250,7 @@ static t_error buffer_fileEvalProceed (t_symbol *name, t_symbol *directory, char
         
         if (err) { error_failsToRead (name); } else { buffer_eval (t, NULL, 0, NULL); }
         
-        environment_setActiveFile (&s_, &s_);
+        instance_environmentResetFile();
     
     buffer_free (t);
     

@@ -52,9 +52,10 @@ t_glist *cast_glistChecked (t_pd *x)
 
 void canvas_newPatch (void *dummy, t_symbol *name, t_symbol *directory)
 {
-    environment_setActiveFile (name, directory);
+    instance_environmentSetFile (name, directory);
     canvas_new (NULL, NULL, 0, NULL);
     canvas_pop (instance_contextGetCurrent(), 1);
+    instance_environmentResetFile();
 }
 
 // -----------------------------------------------------------------------------------------------------------

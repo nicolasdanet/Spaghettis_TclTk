@@ -17,39 +17,36 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_symbol     *environment_fileName  = &s_;       /* Static. */
-static t_symbol     *environment_directory = &s_;       /* Static. */
-static t_atom       *environment_argv;                  /* Static. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-static int          environment_argc;                   /* Static. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-void environment_setActiveFile (t_symbol *name, t_symbol *directory)
+void instance_environmentSetFile (t_symbol *name, t_symbol *directory)
 {
-    environment_fileName  = name;
-    environment_directory = directory;
+    instance_get()->pd_environment.ce_fileName  = name;
+    instance_get()->pd_environment.ce_directory = directory;
 }
 
-void environment_setActiveArguments (int argc, t_atom *argv)
+void instance_environmentSetArguments (int argc, t_atom *argv)
 {
-    if (environment_argv) { PD_MEMORY_FREE (environment_argv); }
+    if (instance_get()->pd_environment.ce_argv) { PD_MEMORY_FREE (instance_get()->pd_environment.ce_argv); }
     
     PD_ASSERT (argc >= 0);
+
+    instance_get()->pd_environment.ce_argc = argc;
+    instance_get()->pd_environment.ce_argv = argc ? PD_MEMORY_GET (argc * sizeof (t_atom)) : NULL;
     
-    environment_argc = argc;
-    environment_argv = PD_MEMORY_GET (argc * sizeof (t_atom));
-    
-    if (argc) { atom_copyAtomsUnchecked (argc, argv, environment_argv); }
+    if (argc) { atom_copyAtomsUnchecked (argc, argv, instance_get()->pd_environment.ce_argv); }
 }
 
-void environment_resetActiveArguments (void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void instance_environmentResetFile (void)
 {
-    environment_setActiveArguments (0, NULL);
+    instance_environmentSetFile (&s_, &s_);
+}
+
+void instance_environmentResetArguments (void)
+{
+    instance_environmentSetArguments (0, NULL);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -58,26 +55,26 @@ void environment_resetActiveArguments (void)
 
 /* Caller is responsible to free the environment returned. */
 
-t_environment *environment_fetchActiveIfAny (void)
+t_environment *instance_environmentFetchIfAny (void)
 {
     static int dollarZero = 1000;       /* Static. */
     
-    if (environment_directory != &s_) {
+    if (instance_get()->pd_environment.ce_directory != &s_) {
     //
     t_environment *e = (t_environment *)PD_MEMORY_GET (sizeof (t_environment));
-
-    e->ce_dollarZeroValue   = dollarZero++;
-    e->ce_argc              = environment_argc;
-    e->ce_argv              = environment_argv ? environment_argv : (t_atom *)PD_MEMORY_GET (0);
-    e->ce_directory         = environment_directory;
-    e->ce_fileName          = environment_fileName;
-
-    PD_ASSERT (environment_argv != NULL || environment_argc == 0);
     
-    environment_argc      = 0;
-    environment_argv      = NULL;
-    environment_fileName  = &s_;
-    environment_directory = &s_;
+    t_atom *argv = instance_get()->pd_environment.ce_argv;
+    
+    e->ce_dollarZeroValue = dollarZero++;
+    e->ce_argc            = instance_get()->pd_environment.ce_argc;
+    e->ce_argv            = argv ? argv : (t_atom *)PD_MEMORY_GET (0);
+    e->ce_directory       = instance_get()->pd_environment.ce_directory;
+    e->ce_fileName        = instance_get()->pd_environment.ce_fileName;
+
+    instance_get()->pd_environment.ce_argc      = 0;
+    instance_get()->pd_environment.ce_argv      = NULL;
+    instance_get()->pd_environment.ce_fileName  = &s_;
+    instance_get()->pd_environment.ce_directory = &s_;
     
     return e;
     //
@@ -85,6 +82,10 @@ t_environment *environment_fetchActiveIfAny (void)
     
     return NULL;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void environment_free (t_environment *e)
 {

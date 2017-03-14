@@ -90,7 +90,7 @@ void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
     if (instance_loadAbstractionIsValid (filename)) {
     //
     instance_contextStore();
-    environment_setActiveArguments (argc, argv);
+    instance_environmentSetArguments (argc, argv);
     
     buffer_fileEval (filename, gensym (directory));
     
@@ -99,7 +99,7 @@ void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
         canvas_pop (instance_contextGetCurrent(), 0); 
     }
     
-    environment_resetActiveArguments();
+    instance_environmentResetArguments();
     instance_contextRestore();
     //
     } else {
