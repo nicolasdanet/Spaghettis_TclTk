@@ -16,10 +16,16 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef struct _stack {
-    t_glist         *g_what;                /* MUST be the first. */
-    t_symbol        *g_abstraction;
-    struct _stack   *g_next;
+typedef struct _stackelement {
+    t_glist                 *g_what;
+    t_symbol                *g_abstraction;
+    struct _stackelement    *g_next;
+    } t_stackelement;
+
+typedef struct _stack       {
+    t_stackelement          *stack_head;
+    t_glist                 *stack_popped;
+    t_glist                 *stack_cached;
     } t_stack;
     
 // -----------------------------------------------------------------------------------------------------------
@@ -27,9 +33,11 @@ typedef struct _stack {
 
 struct _pdinstance {
     t_systime       pd_systime;
+    t_stack         pd_stack;
     int             pd_dspState;
-    int             pd_loadingExternal;
     int             pd_dspChainSize;
+    int             pd_loadingExternal;
+    t_symbol        *pd_loadingAbstraction;
     t_int           *pd_dspChain;
     t_clock         *pd_clocks;
     t_signal        *pd_signals;
@@ -39,10 +47,6 @@ struct _pdinstance {
     t_pd            *pd_newest;
     t_class         *pd_objectMaker;
     t_class         *pd_canvasMaker;
-    t_stack         *pd_stackHead;
-    t_glist         *pd_contextPopped;
-    t_glist         *pd_contextCached;
-    t_symbol        *pd_loadingAbstraction;
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -150,19 +154,19 @@ static inline t_glist *instance_contextGetCurrent (void)
 
 static inline void instance_contextStore (void)
 {
-    instance_get()->pd_contextCached = instance_contextGetCurrent();
+    instance_get()->pd_stack.stack_cached = instance_contextGetCurrent();
 }
 
 static inline void instance_contextRestore (void)
 {
-    instance_contextSetCurrent (instance_get()->pd_contextCached);
+    instance_contextSetCurrent (instance_get()->pd_stack.stack_cached);
     
-    instance_get()->pd_contextCached = NULL;
+    instance_get()->pd_stack.stack_cached = NULL;
 }
 
 static inline int instance_contextHasChanged (void)
 {
-    return (instance_get()->pd_contextCached != instance_contextGetCurrent());
+    return (instance_get()->pd_stack.stack_cached != instance_contextGetCurrent());
 }
 
 // -----------------------------------------------------------------------------------------------------------

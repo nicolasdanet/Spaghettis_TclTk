@@ -19,31 +19,31 @@
 
 void instance_stackPush (t_glist *x)
 {
-    t_stack *p = (t_stack *)PD_MEMORY_GET (sizeof (t_stack));
+    t_stackelement *p = (t_stackelement *)PD_MEMORY_GET (sizeof (t_stackelement));
     
     p->g_what = instance_contextGetCurrent();
-    p->g_next = instance_get()->pd_stackHead;
+    p->g_next = instance_get()->pd_stack.stack_head;
     p->g_abstraction = instance_get()->pd_loadingAbstraction;
     
     instance_get()->pd_loadingAbstraction = NULL;
-    instance_get()->pd_stackHead = p;
+    instance_get()->pd_stack.stack_head = p;
     
     instance_contextSetCurrent (x);
 }
 
 void instance_stackPop (t_glist *x)
 {
-    t_stack *p = instance_get()->pd_stackHead;
+    t_stackelement *p = instance_get()->pd_stack.stack_head;
     
     PD_ASSERT (p != NULL);
     PD_ASSERT (instance_contextGetCurrent() == x);
     
     instance_contextSetCurrent (p->g_what);
-    instance_get()->pd_stackHead = p->g_next;
+    instance_get()->pd_stack.stack_head = p->g_next;
     
     PD_MEMORY_FREE (p);
     
-    instance_get()->pd_contextPopped = x;
+    instance_get()->pd_stack.stack_popped = x;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -68,9 +68,9 @@ void instance_stackEval (t_glist *glist, t_buffer *b)
 
 static int instance_loadAbstractionIsValid (t_symbol *filename)
 {
-    t_stack *p = instance_get()->pd_stackHead;
+    t_stackelement *p = instance_get()->pd_stack.stack_head;
     
-    for (p = instance_get()->pd_stackHead; p; p = p->g_next) {
+    for (p = instance_get()->pd_stack.stack_head; p; p = p->g_next) {
         if (p->g_abstraction == filename) { return 0; }
     }
     
@@ -115,9 +115,9 @@ void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
 
 static void instance_loadPatchLoadbang (void)
 {
-    if (instance_get()->pd_contextPopped) { 
-        canvas_loadbang (instance_get()->pd_contextPopped);
-        instance_get()->pd_contextPopped = NULL;
+    if (instance_get()->pd_stack.stack_popped) { 
+        canvas_loadbang (instance_get()->pd_stack.stack_popped);
+        instance_get()->pd_stack.stack_popped = NULL;
     }
 }
 
