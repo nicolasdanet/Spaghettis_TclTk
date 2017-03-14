@@ -19,29 +19,26 @@
 
 void instance_stackPush (t_glist *x)
 {
-    t_stackelement *p = (t_stackelement *)PD_MEMORY_GET (sizeof (t_stackelement));
+    t_stackelement *e = instance_get()->pd_stack.stack_array + (instance_get()->pd_stack.stack_index++);
     
-    p->g_what = instance_contextGetCurrent();
-    p->g_next = instance_get()->pd_stack.stack_head;
-    p->g_abstraction = instance_get()->pd_loadingAbstraction;
+    PD_ABORT (instance_get()->pd_stack.stack_index >= INSTANCE_STACK_SIZE);     /* Resize? */
+    
+    e->g_context = instance_contextGetCurrent();
+    e->g_abstraction = instance_get()->pd_loadingAbstraction;
     
     instance_get()->pd_loadingAbstraction = NULL;
-    instance_get()->pd_stack.stack_head = p;
     
     instance_contextSetCurrent (x);
 }
 
 void instance_stackPop (t_glist *x)
 {
-    t_stackelement *p = instance_get()->pd_stack.stack_head;
+    t_stackelement *e = instance_get()->pd_stack.stack_array + (--instance_get()->pd_stack.stack_index);
     
-    PD_ASSERT (p != NULL);
+    PD_ASSERT (instance_get()->pd_stack.stack_index >= 0);
     PD_ASSERT (instance_contextGetCurrent() == x);
     
-    instance_contextSetCurrent (p->g_what);
-    instance_get()->pd_stack.stack_head = p->g_next;
-    
-    PD_MEMORY_FREE (p);
+    instance_contextSetCurrent (e->g_context);
     
     instance_get()->pd_stack.stack_popped = x;
 }
@@ -68,10 +65,13 @@ void instance_stackEval (t_glist *glist, t_buffer *b)
 
 static int instance_loadAbstractionIsValid (t_symbol *filename)
 {
-    t_stackelement *p = instance_get()->pd_stack.stack_head;
+    int i;
     
-    for (p = instance_get()->pd_stack.stack_head; p; p = p->g_next) {
-        if (p->g_abstraction == filename) { return 0; }
+    for (i = 0; i < instance_get()->pd_stack.stack_index; i++) {
+    //
+    t_stackelement *e = instance_get()->pd_stack.stack_array + i;
+    if (e->g_abstraction == filename) { return 0; }
+    //
     }
     
     instance_get()->pd_loadingAbstraction = filename;

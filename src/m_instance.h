@@ -17,15 +17,15 @@
 #pragma mark -
 
 typedef struct _stackelement {
-    t_glist                 *g_what;
-    t_symbol                *g_abstraction;
-    struct _stackelement    *g_next;
+    t_glist         *g_context;
+    t_symbol        *g_abstraction;
     } t_stackelement;
 
 typedef struct _stack       {
-    t_stackelement          *stack_head;
-    t_glist                 *stack_popped;
-    t_glist                 *stack_cached;
+    int             stack_index;
+    t_stackelement  *stack_array;
+    t_glist         *stack_popped;
+    t_glist         *stack_cached;
     } t_stack;
     
 // -----------------------------------------------------------------------------------------------------------
@@ -48,6 +48,12 @@ struct _pdinstance {
     t_class         *pd_objectMaker;
     t_class         *pd_canvasMaker;
     };
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define INSTANCE_STACK_SIZE     1024
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -190,16 +196,6 @@ static inline t_pd *instance_getMakerObject (void)
 static inline t_class *instance_getMakerObjectClass (void)
 {
     return (instance_get()->pd_objectMaker);
-}
-
-static inline t_pd *instance_getMakerCanvas (void)
-{
-    return &(instance_get()->pd_canvasMaker);
-}
-
-static inline t_class *instance_getMakerCanvasClass (void)
-{
-    return (instance_get()->pd_canvasMaker);
 }
 
 // -----------------------------------------------------------------------------------------------------------
