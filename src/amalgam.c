@@ -18,6 +18,7 @@
 #include "m_symbols.c"
 #include "m_instance.c"
 #include "m_stack.c"
+#include "m_environment.c"
 #include "m_bind.c"
 #include "m_message.c"
 #include "m_pd.c"
@@ -84,7 +85,6 @@
 
 #include "g_guistub.c"
 #include "g_guiconnect.c"
-#include "g_environment.c"
 #include "g_object.c"
 #include "g_boxtext.c"
 #include "g_text.c"
