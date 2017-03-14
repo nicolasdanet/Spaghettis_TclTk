@@ -347,7 +347,7 @@ static void toggle_functionSave (t_gobj *z, t_buffer *b)
 
     iemgui_serialize (cast_iem (z), &names, &colors);
     
-    buffer_vAppend (b, "ssiisiisssiiiisssff", 
+    buffer_vAppend (b, "ssiisiisssiiiisssff;", 
         sym___hash__X,
         sym_obj,
         object_getX (cast_object (z)),
@@ -367,8 +367,6 @@ static void toggle_functionSave (t_gobj *z, t_buffer *b)
         colors.c_symColorLabel,                             // Label color.
         x->x_state,                                         // Toggle state.
         x->x_nonZero);                                      // Non-zero value.
-        
-    buffer_appendSemicolon (b);
 }
 
 static void toggle_functionProperties (t_gobj *z, t_glist *owner)

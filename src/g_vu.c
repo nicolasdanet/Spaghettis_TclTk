@@ -498,7 +498,7 @@ static void vu_functionSave (t_gobj *z, t_buffer *b)
 
     iemgui_serialize (cast_iem (z), &names, &colors);
     
-    buffer_vAppend (b, "ssiisiissiiiissii",
+    buffer_vAppend (b, "ssiisiissiiiissii;",
         sym___hash__X,
         sym_obj,
         object_getX (cast_object (x)),
@@ -516,8 +516,6 @@ static void vu_functionSave (t_gobj *z, t_buffer *b)
         colors.c_symColorLabel,                                     // Label color.
         x->x_hasScale,                                              // Dummy.
         0);                                                         // Dummy.
-        
-    buffer_appendSemicolon (b);
 }
 
 static void vu_functionProperties (t_gobj *z, t_glist *owner)

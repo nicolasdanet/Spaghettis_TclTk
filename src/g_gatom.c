@@ -326,7 +326,7 @@ static void gatom_functionSave (t_gobj *z, t_buffer *b)
 {
     t_gatom *x = (t_gatom *)z;
     
-    buffer_vAppend (b, "ssiiifffsss",
+    buffer_vAppend (b, "ssiiifffsss;",
         sym___hash__X,
         (IS_SYMBOL (&x->a_atom) ? sym_symbolatom : sym_floatatom),
         object_getX (cast_object (x)),
@@ -339,7 +339,6 @@ static void gatom_functionSave (t_gobj *z, t_buffer *b)
         dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedReceive, 1)),
         dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedSend, 1)));
 
-    buffer_appendSemicolon (b);
     object_saveWidth (cast_object (x), b);
 }
 

@@ -557,7 +557,7 @@ static void slider_functionSave (t_gobj *z, t_buffer *b)
 
     iemgui_serialize (cast_iem (z), &names, &colors);
     
-    buffer_vAppend (b, "ssiisiiffiisssiiiisssii", 
+    buffer_vAppend (b, "ssiisiiffiisssiiiisssii;", 
         sym___hash__X,
         sym_obj,
         object_getX (cast_object (z)), 
@@ -581,8 +581,6 @@ static void slider_functionSave (t_gobj *z, t_buffer *b)
         colors.c_symColorLabel,                                         // Label color.
         x->x_position,                                                  // Position.
         x->x_isSteadyOnClick);                                          // Is steady.
-        
-    buffer_appendSemicolon (b);
 }
 
 static void slider_functionProperties (t_gobj *z, t_glist *owner)

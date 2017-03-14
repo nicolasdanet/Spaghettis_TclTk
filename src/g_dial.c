@@ -609,7 +609,7 @@ static void dial_functionSave (t_gobj *z, t_buffer *b)
 
     iemgui_serialize (cast_iem (z), &names, &colors);
 
-    buffer_vAppend (b, "ssiisiiffiisssiiiisssfi",
+    buffer_vAppend (b, "ssiisiiffiisssiiiisssfi;",
         sym___hash__X,
         sym_obj,
         object_getX (cast_object (z)),
@@ -633,8 +633,6 @@ static void dial_functionSave (t_gobj *z, t_buffer *b)
         colors.c_symColorLabel,                                                 // Label color.
         x->x_floatValue,                                                        // Value.
         x->x_steps);                                                            // Steps.
-        
-    buffer_appendSemicolon (b);
 }
 
 static void dial_functionProperties (t_gobj *z, t_glist *owner)

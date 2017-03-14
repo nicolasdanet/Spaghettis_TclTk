@@ -258,7 +258,7 @@ static void panel_functionSave (t_gobj *z, t_buffer *b)
 
     iemgui_serialize (cast_iem (z), &names, &colors);
     
-    buffer_vAppend (b, "ssiisiiisssiiiiss",
+    buffer_vAppend (b, "ssiisiiisssiiiiss;",
         sym___hash__X,
         sym_obj,
         object_getX (cast_object (z)),
@@ -276,8 +276,6 @@ static void panel_functionSave (t_gobj *z, t_buffer *b)
         x->x_gui.iem_fontSize,                                                  // Label font size.
         colors.c_symColorBackground,                                            // Background color.
         colors.c_symColorLabel);                                                // Label color.
-        
-    buffer_appendSemicolon (b);
 }
 
 static void panel_functionProperties (t_gobj *z, t_glist *owner)
