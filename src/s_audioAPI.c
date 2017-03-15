@@ -278,7 +278,7 @@ void audio_requireDialog (void *dummy)
             devices_getBlockSize (&audio));
             
         if (!err) {
-            guistub_new (&global_object, (void *)audio_requireDialog, t);
+            stub_new (&global_object, (void *)audio_requireDialog, t);
         }
     }
     //

@@ -326,7 +326,7 @@ static void canvas_requireArrayDialog (t_glist *glist)
     
     PD_ASSERT (!err);
     
-    guistub_new (cast_pd (glist), (void *)glist, t);
+    stub_new (cast_pd (glist), (void *)glist, t);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -597,7 +597,7 @@ static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
     
     PD_ASSERT (!err);
     
-    guistub_new (cast_pd (g), (void *)g, t);
+    stub_new (cast_pd (g), (void *)g, t);
 
     for (y = g->gl_graphics; y; y = y->g_next) {
         if (pd_class (y) == garray_class) { garray_functionProperties ((t_garray *)y); }
@@ -807,7 +807,7 @@ void canvas_free (t_glist *glist)
     dsp_resume (dspstate);
     
     gmaster_reset (glist->gl_holder);
-    guistub_destroyWithKey ((void *)glist);
+    stub_destroyWithKey ((void *)glist);
     
     if (!glist->gl_parent) { instance_rootsRemove (glist); }
 }

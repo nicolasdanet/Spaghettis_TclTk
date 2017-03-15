@@ -307,7 +307,7 @@ static void panel_functionProperties (t_gobj *z, t_glist *owner)
             
     PD_ASSERT (!err);
     
-    guistub_new (cast_pd (x), (void *)x, t);
+    stub_new (cast_pd (x), (void *)x, t);
 }
 
 static void panel_fromDialog (t_panel *x, t_symbol *s, int argc, t_atom *argv)
@@ -404,7 +404,7 @@ static void panel_free (t_panel *x)
 {
     if (x->x_gui.iem_canReceive) { pd_unbind (cast_pd (x), x->x_gui.iem_receive); }
     
-    guistub_destroyWithKey ((void *)x);
+    stub_destroyWithKey ((void *)x);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -219,7 +219,7 @@ void midi_requireDialog (void *dummy)
                 o[7]);
                     
         if (!err) {
-            guistub_new (&global_object, (void *)midi_requireDialog, t);
+            stub_new (&global_object, (void *)midi_requireDialog, t);
         }
     }
     //

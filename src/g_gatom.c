@@ -383,7 +383,7 @@ static void gatom_functionProperties (t_gobj *z, t_glist *owner)
     
     PD_ASSERT (!err);
     
-    guistub_new (cast_pd (x), (void *)x, t);
+    stub_new (cast_pd (x), (void *)x, t);
 }
 
 static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
@@ -514,7 +514,7 @@ static void gatom_free (t_gatom *x)
     
     if (x->a_receive != &s_) { pd_unbind (cast_pd (x), x->a_receive); }
     
-    guistub_destroyWithKey ((void *)x);
+    stub_destroyWithKey ((void *)x);
 }
 
 // -----------------------------------------------------------------------------------------------------------

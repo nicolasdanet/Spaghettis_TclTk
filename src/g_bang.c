@@ -430,7 +430,7 @@ static void bng_functionProperties (t_gobj *z, t_glist *owner)
 
     PD_ASSERT (!err);
     
-    guistub_new (cast_pd (x), (void *)x, t);
+    stub_new (cast_pd (x), (void *)x, t);
 }
 
 static void bng_fromDialog (t_bng *x, t_symbol *s, int argc, t_atom *argv)
@@ -531,7 +531,7 @@ static void bng_free (t_bng *x)
     clock_free (x->x_clockBreak);
     clock_free (x->x_clockHold);
     
-    guistub_destroyWithKey ((void *)x);
+    stub_destroyWithKey ((void *)x);
 }
 
 // -----------------------------------------------------------------------------------------------------------

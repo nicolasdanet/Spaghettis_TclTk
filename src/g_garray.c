@@ -643,7 +643,7 @@ void garray_functionProperties (t_garray *x)
     
     PD_ASSERT (!err);
     
-    guistub_new (cast_pd (x), (void *)x, t);
+    stub_new (cast_pd (x), (void *)x, t);
 }
 
 void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
@@ -754,7 +754,7 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_float size, t_flo
 static void garray_free (t_garray *x)
 {
     defer_removeJob ((void *)x);
-    guistub_destroyWithKey ((void *)x);
+    stub_destroyWithKey ((void *)x);
     instance_setBoundA (NULL);
     pd_unbind (cast_pd (x), x->x_name);
     pd_free (cast_pd (x->x_scalar));

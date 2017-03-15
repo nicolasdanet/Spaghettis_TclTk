@@ -17,36 +17,36 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_class *guistub_class;                  /* Shared. */
+static t_class *stub_class;                 /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _guistub {
-    t_pd                x_pd;                   /* Must be the first. */
-    t_pd                *x_owner;
-    void                *x_key;
-    t_symbol            *x_bound;
-    struct _guistub     *x_next;
-    } t_guistub;
+typedef struct _stub {
+    t_pd            x_pd;                   /* Must be the first. */
+    t_pd            *x_owner;
+    void            *x_key;
+    t_symbol        *x_bound;
+    struct _stub    *x_next;
+    } t_stub;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_guistub *guistub_list;                 /* Static. */
+static t_stub *stub_list;                   /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void guistub_removeFromList (t_guistub *x)
+static void stub_removeFromList (t_stub *x)
 {
-    t_guistub *yA = NULL;
-    t_guistub *yB = NULL;
+    t_stub *yA = NULL;
+    t_stub *yB = NULL;
     
-    if (guistub_list == x) { guistub_list = x->x_next; }
+    if (stub_list == x) { stub_list = x->x_next; }
     else {
-        for ((yA = guistub_list); (yB = yA->x_next); (yA = yB)) {
+        for ((yA = stub_list); (yB = yA->x_next); (yA = yB)) {
             if (yB == x) { 
                 yA->x_next = yB->x_next; break; 
             }
@@ -54,15 +54,15 @@ static void guistub_removeFromList (t_guistub *x)
     }
 }
 
-void guistub_destroyWithKey (void *key)
+void stub_destroyWithKey (void *key)
 {
-    t_guistub *y = NULL;
+    t_stub *y = NULL;
     
-    for (y = guistub_list; y; y = y->x_next) {
+    for (y = stub_list; y; y = y->x_next) {
         if (y->x_key == key) {
             sys_vGui ("destroy " PD_GUISTUB "%lx\n", y);
             y->x_owner = NULL;
-            guistub_removeFromList (y);
+            stub_removeFromList (y);
             pd_free (cast_pd (y));
             break;
         }
@@ -73,14 +73,14 @@ void guistub_destroyWithKey (void *key)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void guistub_anything (t_guistub *x, t_symbol *s, int argc, t_atom *argv)
+static void stub_anything (t_stub *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (x->x_owner) { pd_message (x->x_owner, s, argc, argv); }
 }
 
-static void guistub_signoff (t_guistub *x)
+static void stub_signoff (t_stub *x)
 {
-    guistub_removeFromList (x); pd_free (cast_pd (x));
+    stub_removeFromList (x); pd_free (cast_pd (x));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -89,26 +89,26 @@ static void guistub_signoff (t_guistub *x)
 
 /* < http://stackoverflow.com/questions/1860159/how-to-escape-the-sign-in-cs-printf > */
 
-t_error guistub_new (t_pd *owner, void *key, const char *cmd)
+t_error stub_new (t_pd *owner, void *key, const char *cmd)
 {
     t_symbol *s  = NULL;
-    t_guistub *x = NULL;
+    t_stub *x = NULL;
     char name[PD_STRING] = { 0 };
     
     PD_ASSERT (key != NULL);
     
-    guistub_destroyWithKey (key);                   /* Destroy already allocated stub with an equal key. */
+    stub_destroyWithKey (key);                   /* Destroy already allocated stub with an equal key. */
     
-    x = (t_guistub *)pd_new (guistub_class);
+    x = (t_stub *)pd_new (stub_class);
     string_addSprintf (name, PD_STRING, PD_GUISTUB "%lx", x);
     s = gensym (name);
     
     x->x_owner  = owner;
     x->x_bound  = s;
     x->x_key    = key;
-    x->x_next   = guistub_list;
+    x->x_next   = stub_list;
 
-    guistub_list = x;
+    stub_list = x;
     
     pd_bind (cast_pd (x), s);
         
@@ -139,7 +139,7 @@ t_error guistub_new (t_pd *owner, void *key, const char *cmd)
     }
 }
 
-static void guistub_free (t_guistub *x)
+static void stub_free (t_stub *x)
 {
     pd_unbind (cast_pd (x), x->x_bound);
 }
@@ -148,27 +148,27 @@ static void guistub_free (t_guistub *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void guistub_setup (void)
+void stub_setup (void)
 {
     t_class *c = NULL;
     
     c = class_new (sym_guistub,
             NULL, 
-            (t_method)guistub_free,
-            sizeof (t_guistub),
+            (t_method)stub_free,
+            sizeof (t_stub),
             CLASS_NOBOX, 
             A_NULL);
         
-    class_addAnything (c, (t_method)guistub_anything);
+    class_addAnything (c, (t_method)stub_anything);
 
-    class_addMethod (c, (t_method)guistub_signoff, sym__signoff, A_NULL);
+    class_addMethod (c, (t_method)stub_signoff, sym__signoff, A_NULL);
     
-    guistub_class = c;
+    stub_class = c;
 }
 
-void guistub_destroy (void)
+void stub_destroy (void)
 {
-    CLASS_FREE (guistub_class);
+    CLASS_FREE (stub_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------
