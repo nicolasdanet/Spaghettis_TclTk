@@ -142,15 +142,6 @@ typedef struct _linetraverser {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_guiconnect    *guiconnect_new                     (t_pd *owner);
-char            *guiconnect_getBoundAsString        (t_guiconnect *x);
-
-void            guiconnect_release                  (t_guiconnect *x);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void            gobj_getRectangle                   (t_gobj *x, t_glist *owner, t_rectangle *r);
 void            gobj_displaced                      (t_gobj *x, t_glist *owner, int deltaX, int deltaY);
 void            gobj_selected                       (t_gobj *x, t_glist *owner, int isSelected);

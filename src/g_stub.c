@@ -15,16 +15,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-/* It aims to manage properties window. */
-/* While sending attributes it creates a delegate bound to a key name. */
-/* This key is used as a label in order to forward changes from the GUI. */
-/* This key is used as a master name for the GUI widgets. */
-/* Destroying the delegate from the owner side closes the window. */
-/* It can also be freely canceled from the interpreter side. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 static t_class *stub_class;                 /* Shared. */
