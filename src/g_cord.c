@@ -16,7 +16,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define LINE_GRIP_SIZE      4
+#define CORD_GRIP_SIZE      4
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -39,7 +39,7 @@ int cord_hit (t_cord *x, int positionX, int positionY)
     
     t_rectangle r;
     
-    rectangle_set (&r, a, b, c, d); rectangle_enlarge (&r, LINE_GRIP_SIZE / 2);
+    rectangle_set (&r, a, b, c, d); rectangle_enlarge (&r, CORD_GRIP_SIZE / 2);
     
     if (rectangle_containsPoint (&r, positionX, positionY)) {
     //
@@ -51,7 +51,7 @@ int cord_hit (t_cord *x, int positionX, int positionY)
     
     t_float k = PD_MAX (PD_ABS (c - a), PD_ABS (d - b));    
     
-    if (PD_ABS (area) < (k * LINE_GRIP_SIZE)) {
+    if (PD_ABS (area) < (k * CORD_GRIP_SIZE)) {
         return 1;
     }
     //
