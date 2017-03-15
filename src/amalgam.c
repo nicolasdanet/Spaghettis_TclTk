@@ -83,7 +83,7 @@
 
 /* Graphics. */
 
-#include "g_guistub.c"
+#include "g_stub.c"
 #include "g_guiconnect.c"
 #include "g_object.c"
 #include "g_boxtext.c"
