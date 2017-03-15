@@ -23,9 +23,9 @@ static t_class *openpanel_class;            /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _openpanel {
-    t_object        x_obj;                  /* Must be the first. */
-    t_proxy         *x_proxy;
-    t_outlet        *x_outlet;
+    t_object    x_obj;                      /* Must be the first. */
+    t_proxy     *x_proxy;
+    t_outlet    *x_outlet;
     } t_openpanel;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -46,7 +46,7 @@ static void openpanel_bang (t_openpanel *x)
 static void openpanel_symbol (t_openpanel *x, t_symbol *s)
 {
     sys_vGui ("::ui_file::openPanel {%s} {%s}\n",   // --
-                    proxy_getBound (x->x_proxy)->s_name,
+                    proxy_getBoundAsString (x->x_proxy),
                     s->s_name);
 }
 
@@ -58,6 +58,8 @@ static void openpanel_callback (t_openpanel *x, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+/* Notice that this proxy is never signoff. */
 
 static void *openpanel_new (void)
 {

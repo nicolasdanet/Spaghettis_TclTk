@@ -35,16 +35,40 @@ void    stub_destroyWithKey     (void *key);
 
 /* A proxy is used to bind a listener to an unique symbol. */
 /* Messages sent to this symbol are forwarded to it. */
-/* The listener destroyed, the proxy is kept alive only for a short time. */
+/* The listener destroyed, the proxy is kept alive for a short time. */
 /* When the sender is destroyed, listening is cancelled. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_proxy     *proxy_new          (t_pd *owner);
-t_symbol    *proxy_getBound     (t_proxy *x);
+struct _proxy {
+    t_object    x_obj;          /* Must be the first. */
+    t_pd        *x_owner;
+    t_symbol    *x_bound;
+    };
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-void        proxy_release       (t_proxy *x);
+t_proxy *proxy_new      (t_pd *owner);
+
+void    proxy_release   (t_proxy *x);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline t_symbol *proxy_getBound (t_proxy *x)
+{
+    PD_ASSERT (x->x_bound);
+    
+    return x->x_bound;
+}
+
+static inline char *proxy_getBoundAsString (t_proxy *x)
+{
+    return proxy_getBound (x)->s_name;
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

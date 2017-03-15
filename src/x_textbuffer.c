@@ -28,7 +28,7 @@ void textbuffer_free (t_textbuffer *x)
     buffer_free (x->tb_buffer);
     
     if (x->tb_proxy) {
-        sys_vGui ("destroy .x%lx\n", x);
+        sys_vGui ("destroy %s\n", proxy_getBoundAsString (x->tb_proxy));
         proxy_release (x->tb_proxy);
     }
 }
@@ -54,22 +54,23 @@ t_buffer *textbuffer_getBuffer (t_textbuffer *x)
 void textbuffer_click (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (x->tb_proxy) {
-        sys_vGui ("wm deiconify .x%lx\n", x);
-        sys_vGui ("raise .x%lx\n", x);
-        sys_vGui ("focus .x%lx.text\n", x);
+    
+        sys_vGui ("wm deiconify %s\n", proxy_getBoundAsString (x->tb_proxy));
+        sys_vGui ("raise %s\n", proxy_getBoundAsString (x->tb_proxy));
+        sys_vGui ("focus %s.text\n", proxy_getBoundAsString (x->tb_proxy));
         
     } else {
-        sys_vGui ("::ui_text::show .x%lx\n", x);
+    
         x->tb_proxy = proxy_new (cast_pd (x));
+        sys_vGui ("::ui_text::show %s\n", proxy_getBoundAsString (x->tb_proxy));
         textbuffer_update (x);
     }
 }
 
 void textbuffer_close (t_textbuffer *x)
 {
-    sys_vGui ("::ui_text::release .x%lx\n", x);
-    
     if (x->tb_proxy) {
+        sys_vGui ("::ui_text::release %s\n", proxy_getBoundAsString (x->tb_proxy));
         proxy_release (x->tb_proxy); 
         x->tb_proxy = NULL;
     }    
@@ -81,11 +82,12 @@ void textbuffer_update (t_textbuffer *x)
     //
     int size;
     char *text = NULL;
+    char *tag  = proxy_getBoundAsString (x->tb_proxy);
     int i = 0;
-        
+    
     buffer_toStringUnzeroed (x->tb_buffer, &text, &size);
     
-    sys_vGui ("::ui_text::clear .x%lx\n", x);
+    sys_vGui ("::ui_text::clear %s\n", tag);
     
     while (i < size) {                              /* Send it line by line. */
 
@@ -96,12 +98,12 @@ void textbuffer_update (t_textbuffer *x)
         
         /* < http://stackoverflow.com/a/13289324 > */
         
-        sys_vGui ("::ui_text::append .x%lx {%.*s\n}\n", x, (int)(newline - start), start);  // --
+        sys_vGui ("::ui_text::append %s {%.*s\n}\n", tag, (int)(newline - start), start);  // --
         
         i = (int)(newline - text) + 1;
     }
     
-    sys_vGui ("::ui_text::dirty .x%lx 0\n", x);
+    sys_vGui ("::ui_text::dirty %s 0\n", tag);
     
     PD_MEMORY_FREE (text);
     //
