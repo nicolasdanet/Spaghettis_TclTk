@@ -66,7 +66,7 @@
 		3722C5301C4F91EB00D2BF6F /* u_pdreceive.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972031C4F716700263434 /* u_pdreceive.c */; };
 		3722C5311C4F91F500D2BF6F /* u_pdsend.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972041C4F716700263434 /* u_pdsend.c */; };
 		3722C5321C4F91FC00D2BF6F /* u_watchdog.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972051C4F716700263434 /* u_watchdog.c */; };
-		372A2CE41E5DC57E00546B87 /* g_linetraverser.c in Sources */ = {isa = PBXBuildFile; fileRef = 372A2CE31E5DC57E00546B87 /* g_linetraverser.c */; };
+		372A2CE41E5DC57E00546B87 /* g_traverser.c in Sources */ = {isa = PBXBuildFile; fileRef = 372A2CE31E5DC57E00546B87 /* g_traverser.c */; };
 		372BDF771DCF36D00045ECE8 /* d_adc.c in Sources */ = {isa = PBXBuildFile; fileRef = 372BDF761DCF36D00045ECE8 /* d_adc.c */; };
 		372F9C6D1E3B461100A0BEF8 /* pa_mac_hostapis.c in Sources */ = {isa = PBXBuildFile; fileRef = 372F9C6C1E3B461100A0BEF8 /* pa_mac_hostapis.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		37329A6A1E4631D5008AA5E4 /* s_defer.c in Sources */ = {isa = PBXBuildFile; fileRef = 37329A681E4631D5008AA5E4 /* s_defer.c */; };
@@ -184,7 +184,7 @@
 		3789722D1C4F716800263434 /* g_panel.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CB1C4F716700263434 /* g_panel.c */; };
 		3789722E1C4F716800263434 /* g_dial.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CC1C4F716700263434 /* g_dial.c */; };
 		3789722F1C4F716800263434 /* g_file.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CD1C4F716700263434 /* g_file.c */; };
-		378972301C4F716800263434 /* g_boxtext.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CE1C4F716700263434 /* g_boxtext.c */; };
+		378972301C4F716800263434 /* g_box.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CE1C4F716700263434 /* g_box.c */; };
 		378972311C4F716800263434 /* g_scalar.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CF1C4F716700263434 /* g_scalar.c */; };
 		378972321C4F716800263434 /* g_template.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971D01C4F716700263434 /* g_template.c */; };
 		378972331C4F716800263434 /* g_text.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971D11C4F716700263434 /* g_text.c */; };
@@ -447,7 +447,7 @@
 		371E068F1DF47599006317FF /* d_math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_math.h; path = src/d_math.h; sourceTree = "<group>"; };
 		3720EBB41D239650001675BD /* g_vinlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_vinlet.c; path = src/g_vinlet.c; sourceTree = "<group>"; };
 		3720EBB51D239650001675BD /* g_voutlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_voutlet.c; path = src/g_voutlet.c; sourceTree = "<group>"; };
-		372A2CE31E5DC57E00546B87 /* g_linetraverser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_linetraverser.c; path = src/g_linetraverser.c; sourceTree = "<group>"; };
+		372A2CE31E5DC57E00546B87 /* g_traverser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_traverser.c; path = src/g_traverser.c; sourceTree = "<group>"; };
 		372BDF761DCF36D00045ECE8 /* d_adc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_adc.c; path = src/d_adc.c; sourceTree = "<group>"; };
 		372F9C6C1E3B461100A0BEF8 /* pa_mac_hostapis.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_mac_hostapis.c; path = src/pa_mac_hostapis.c; sourceTree = "<group>"; };
 		37329A681E4631D5008AA5E4 /* s_defer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_defer.c; path = src/s_defer.c; sourceTree = "<group>"; };
@@ -625,7 +625,7 @@
 		378971CB1C4F716700263434 /* g_panel.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_panel.c; path = src/g_panel.c; sourceTree = "<group>"; };
 		378971CC1C4F716700263434 /* g_dial.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_dial.c; path = src/g_dial.c; sourceTree = "<group>"; };
 		378971CD1C4F716700263434 /* g_file.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_file.c; path = src/g_file.c; sourceTree = "<group>"; };
-		378971CE1C4F716700263434 /* g_boxtext.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_boxtext.c; path = src/g_boxtext.c; sourceTree = "<group>"; };
+		378971CE1C4F716700263434 /* g_box.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_box.c; path = src/g_box.c; sourceTree = "<group>"; };
 		378971CF1C4F716700263434 /* g_scalar.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_scalar.c; path = src/g_scalar.c; sourceTree = "<group>"; };
 		378971D01C4F716700263434 /* g_template.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_template.c; path = src/g_template.c; sourceTree = "<group>"; };
 		378971D11C4F716700263434 /* g_text.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_text.c; path = src/g_text.c; sourceTree = "<group>"; };
@@ -1440,9 +1440,9 @@
 			children = (
 				3742465E1E59AAE3009E8DC1 /* g_patch.h */,
 				37BA30811CD1DB0F0091113F /* g_object.c */,
-				378971CE1C4F716700263434 /* g_boxtext.c */,
+				378971CE1C4F716700263434 /* g_box.c */,
 				378971D11C4F716700263434 /* g_text.c */,
-				372A2CE31E5DC57E00546B87 /* g_linetraverser.c */,
+				372A2CE31E5DC57E00546B87 /* g_traverser.c */,
 				37AB28E01E6185F7004F2F7D /* g_cord.c */,
 				3777AEA71E5B2844003F61A1 /* Canvas */,
 				3735D9701E5995B300858959 /* Objects */,
@@ -1865,7 +1865,7 @@
 				3789722D1C4F716800263434 /* g_panel.c in Sources */,
 				3789722E1C4F716800263434 /* g_dial.c in Sources */,
 				3789722F1C4F716800263434 /* g_file.c in Sources */,
-				378972301C4F716800263434 /* g_boxtext.c in Sources */,
+				378972301C4F716800263434 /* g_box.c in Sources */,
 				378972311C4F716800263434 /* g_scalar.c in Sources */,
 				378972321C4F716800263434 /* g_template.c in Sources */,
 				378972331C4F716800263434 /* g_text.c in Sources */,
@@ -2138,7 +2138,7 @@
 				373B8EFD1E505F82001AF811 /* s_audio_pa.c in Sources */,
 				374247541E59E46F009E8DC1 /* m_inlet.c in Sources */,
 				374247551E59E46F009E8DC1 /* m_outlet.c in Sources */,
-				372A2CE41E5DC57E00546B87 /* g_linetraverser.c in Sources */,
+				372A2CE41E5DC57E00546B87 /* g_traverser.c in Sources */,
 				37AB28E11E6185F7004F2F7D /* g_cord.c in Sources */,
 				3710DC561E69C79C00B65CE9 /* m_method.c in Sources */,
 				373545611E6D6BF700BCFBE1 /* m_bounds.c in Sources */,
