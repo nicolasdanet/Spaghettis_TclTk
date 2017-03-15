@@ -15,6 +15,16 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+/* It aims to manage properties window. */
+/* While sending attributes it creates a delegate bound to a key name. */
+/* This key is used as a label in order to forward changes from the GUI. */
+/* This key is used as a master name for the GUI widgets. */
+/* Destroying the delegate from the owner side closes the window. */
+/* It can also be freely canceled from the interpreter side. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 static t_class *stub_class;                 /* Shared. */
@@ -41,14 +51,14 @@ static t_stub *stub_list;                   /* Static. */
 
 static void stub_removeFromList (t_stub *x)
 {
-    t_stub *yA = NULL;
-    t_stub *yB = NULL;
+    t_stub *t1 = NULL;
+    t_stub *t2 = NULL;
     
     if (stub_list == x) { stub_list = x->x_next; }
     else {
-        for ((yA = stub_list); (yB = yA->x_next); (yA = yB)) {
-            if (yB == x) { 
-                yA->x_next = yB->x_next; break; 
+        for ((t1 = stub_list); (t2 = t1->x_next); (t1 = t2)) {
+            if (t2 == x) { 
+                t1->x_next = t2->x_next; break; 
             }
         }
     }
@@ -56,14 +66,14 @@ static void stub_removeFromList (t_stub *x)
 
 void stub_destroyWithKey (void *key)
 {
-    t_stub *y = NULL;
+    t_stub *t = NULL;
     
-    for (y = stub_list; y; y = y->x_next) {
-        if (y->x_key == key) {
-            sys_vGui ("destroy " PD_GUISTUB "%lx\n", y);
-            y->x_owner = NULL;
-            stub_removeFromList (y);
-            pd_free (cast_pd (y));
+    for (t = stub_list; t; t = t->x_next) {
+        if (t->x_key == key) {
+            sys_vGui ("destroy " PD_GUISTUB "%lx\n", t);
+            t->x_owner = NULL;
+            stub_removeFromList (t);
+            pd_free (cast_pd (t));
             break;
         }
     }
@@ -100,7 +110,9 @@ t_error stub_new (t_pd *owner, void *key, const char *cmd)
     stub_destroyWithKey (key);                   /* Destroy already allocated stub with an equal key. */
     
     x = (t_stub *)pd_new (stub_class);
+    
     string_addSprintf (name, PD_STRING, PD_GUISTUB "%lx", x);
+    
     s = gensym (name);
     
     x->x_owner  = owner;
