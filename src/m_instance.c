@@ -19,7 +19,7 @@
 #pragma mark -
 
 #define INSTANCE_PERIOD_POLLING         47.0
-#define INSTANCE_PERIOD_AUTORELEASE     SECONDS_TO_MILLISECONDS (5.0)
+#define INSTANCE_PERIOD_AUTORELEASE     SECONDS_TO_MILLISECONDS (29.0)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

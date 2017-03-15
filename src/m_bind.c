@@ -216,7 +216,7 @@ void pd_unbind (t_pd *x, t_symbol *s)
 static void pd_isThingError (t_symbol *s)
 {  
     if (s) {
-    if (!string_startWith (s->s_name, PD_GUISTUB)) {
+    if (!string_startWith (s->s_name, PD_GUISTUB)) {    /* Avoid to moan for proxy binds. */
     if (!string_startWith (s->s_name, ".x")) {
         error_noSuch (s, sym_object);
     }

@@ -26,17 +26,25 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_error     stub_new                        (t_pd *owner, void *key, const char *cmd);
-void        stub_destroyWithKey             (void *key);
+t_error stub_new                (t_pd *owner, void *key, const char *cmd);
+void    stub_destroyWithKey     (void *key);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_proxy     *proxy_new                      (t_pd *owner);
-char        *proxy_getBoundAsString         (t_proxy *x);
+/* A proxy is used to bind a listener to an unique symbol. */
+/* Messages sent to this symbol are forwarded to it. */
+/* The listener destroyed, the proxy is kept alive only for a short time. */
+/* When the sender is destroyed, listening is cancelled. */
 
-void        proxy_release                   (t_proxy *x);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+t_proxy     *proxy_new          (t_pd *owner);
+t_symbol    *proxy_getBound     (t_proxy *x);
+
+void        proxy_release       (t_proxy *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

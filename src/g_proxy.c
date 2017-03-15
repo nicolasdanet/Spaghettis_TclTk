@@ -30,23 +30,34 @@ struct _proxy {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+/* Listener destroyed. */
+/* No sender thus free it now. */
+/* Sender alive thus free it later. */
+ 
 void proxy_release (t_proxy *x)
 {
     x->x_owner = NULL;
     
-    if (!x->x_bound) { pd_free (cast_pd (x)); }
+    if (!x->x_bound) { pd_free (cast_pd (x)); } 
     else {
-        instance_autoreleaseRegister (cast_pd (x));
+        instance_autoreleaseRegister (cast_pd (x)); 
     }    
 }
 
-static void proxy_signoff (t_proxy *x)
+/* Sender destroyed. */
+/* No listener thus free it now. */
+/* Listener alive thus unbind it. */
+
+static void proxy_signoff (t_proxy *x)  
 {
-    if (x->x_owner) { pd_unbind (cast_pd (x), x->x_bound); x->x_bound = NULL; }
+    if (!x->x_owner) { instance_autoreleaseProceed (cast_pd (x)); }     
     else {
-        instance_autoreleaseProceed (cast_pd (x));
+        pd_unbind (cast_pd (x), x->x_bound); x->x_bound = NULL;
     }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 static void proxy_autorelease (t_proxy *x)
 {
@@ -66,11 +77,11 @@ static void proxy_anything (t_proxy *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-char *proxy_getBoundAsString (t_proxy *x)
+t_symbol *proxy_getBound (t_proxy *x)
 {
-    if (x->x_bound) { return x->x_bound->s_name; }
+    PD_ASSERT (x->x_bound);
     
-    return NULL;
+    return x->x_bound;
 }
 
 // -----------------------------------------------------------------------------------------------------------
