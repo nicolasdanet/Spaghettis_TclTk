@@ -154,7 +154,7 @@ void stub_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (sym_guistub,
+    c = class_new (sym_stub,
             NULL, 
             (t_method)stub_free,
             sizeof (t_stub),

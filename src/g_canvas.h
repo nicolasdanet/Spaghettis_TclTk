@@ -28,7 +28,7 @@ typedef struct _selection {
     } t_selection;
     
 typedef struct _editor {
-    t_guiconnect        *e_guiconnect;
+    t_proxy             *e_proxy;
     t_boxtext           *e_boxtexts;
     t_boxtext           *e_selectedText;
     t_selection         *e_selectedObjects;

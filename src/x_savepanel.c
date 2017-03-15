@@ -23,9 +23,9 @@ static t_class *savepanel_class;            /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _savepanel {
-    t_object        x_obj;                  /* Must be the first. */
-    t_guiconnect    *x_guiconnect;
-    t_outlet        *x_outlet;
+    t_object    x_obj;                  /* Must be the first. */
+    t_proxy     *x_proxy;
+    t_outlet    *x_outlet;
     } t_savepanel;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -35,7 +35,7 @@ typedef struct _savepanel {
 static void savepanel_symbol (t_savepanel *x, t_symbol *s)
 {
     sys_vGui ("::ui_file::savePanel {%s} {%s}\n",   // --
-                    guiconnect_getBoundAsString (x->x_guiconnect),
+                    proxy_getBoundAsString (x->x_proxy),
                     s->s_name);
 }
 
@@ -57,15 +57,15 @@ static void *savepanel_new (void)
 {
     t_savepanel *x = (t_savepanel *)pd_new (savepanel_class);
     
-    x->x_guiconnect = guiconnect_new (cast_pd (x));
-    x->x_outlet     = outlet_new (cast_object (x), &s_symbol);
+    x->x_proxy  = proxy_new (cast_pd (x));
+    x->x_outlet = outlet_new (cast_object (x), &s_symbol);
     
     return x;
 }
 
 static void savepanel_free (t_savepanel *x)
 {
-    guiconnect_release (x->x_guiconnect);
+    proxy_release (x->x_proxy);
 }
 
 // -----------------------------------------------------------------------------------------------------------

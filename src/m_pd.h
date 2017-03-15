@@ -457,7 +457,7 @@ struct _gatom;
 struct _glist;
 struct _gmaster;
 struct _gpointer;
-struct _guiconnect;
+struct _proxy;
 struct _inlet;
 struct _iterator;
 struct _listinletelement;
@@ -484,7 +484,7 @@ struct _widgetbehavior;
 #define t_glist                     struct _glist
 #define t_gmaster                   struct _gmaster
 #define t_gpointer                  struct _gpointer
-#define t_guiconnect                struct _guiconnect
+#define t_proxy                     struct _proxy
 #define t_inlet                     struct _inlet
 #define t_iterator                  struct _iterator
 #define t_listinletelement          struct _listinletelement

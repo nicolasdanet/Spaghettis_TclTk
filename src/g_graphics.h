@@ -26,17 +26,17 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_error         stub_new                            (t_pd *owner, void *key, const char *cmd);
-void            stub_destroyWithKey                 (void *key);
+t_error     stub_new                        (t_pd *owner, void *key, const char *cmd);
+void        stub_destroyWithKey             (void *key);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_guiconnect    *guiconnect_new                     (t_pd *owner);
-char            *guiconnect_getBoundAsString        (t_guiconnect *x);
+t_proxy     *proxy_new                      (t_pd *owner);
+char        *proxy_getBoundAsString         (t_proxy *x);
 
-void            guiconnect_release                  (t_guiconnect *x);
+void        proxy_release                   (t_proxy *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

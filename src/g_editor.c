@@ -903,16 +903,16 @@ static t_editor *editor_new (t_glist *owner)
 {
     t_editor *x = (t_editor *)PD_MEMORY_GET (sizeof (t_editor));
  
-    x->e_buffer     = buffer_new();
-    x->e_clock      = clock_new ((void *)owner, (t_method)canvas_taskDisplace);
-    x->e_guiconnect = guiconnect_new (cast_pd (owner));
+    x->e_buffer = buffer_new();
+    x->e_clock  = clock_new ((void *)owner, (t_method)canvas_taskDisplace);
+    x->e_proxy  = proxy_new (cast_pd (owner));
     
     return x;
 }
 
 static void editor_free (t_editor *x)
 {
-    guiconnect_release (x->e_guiconnect);
+    proxy_release (x->e_proxy);
     clock_free (x->e_clock);
     buffer_free (x->e_buffer);
 

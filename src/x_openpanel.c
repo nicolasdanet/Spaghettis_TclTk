@@ -24,7 +24,7 @@ static t_class *openpanel_class;            /* Shared. */
 
 typedef struct _openpanel {
     t_object        x_obj;                  /* Must be the first. */
-    t_guiconnect    *x_guiconnect;
+    t_proxy         *x_proxy;
     t_outlet        *x_outlet;
     } t_openpanel;
 
@@ -46,7 +46,7 @@ static void openpanel_bang (t_openpanel *x)
 static void openpanel_symbol (t_openpanel *x, t_symbol *s)
 {
     sys_vGui ("::ui_file::openPanel {%s} {%s}\n",   // --
-                    guiconnect_getBoundAsString (x->x_guiconnect),
+                    proxy_getBoundAsString (x->x_proxy),
                     s->s_name);
 }
 
@@ -63,15 +63,15 @@ static void *openpanel_new (void)
 {
     t_openpanel *x = (t_openpanel *)pd_new (openpanel_class);
 
-    x->x_guiconnect = guiconnect_new (cast_pd (x));
-    x->x_outlet     = outlet_new (cast_object (x), &s_symbol);
+    x->x_proxy  = proxy_new (cast_pd (x));
+    x->x_outlet = outlet_new (cast_object (x), &s_symbol);
         
     return x;
 }
 
 static void openpanel_free (t_openpanel *x)
 {
-    guiconnect_release (x->x_guiconnect);
+    proxy_release (x->x_proxy);
 }
 
 // -----------------------------------------------------------------------------------------------------------

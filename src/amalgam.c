@@ -84,7 +84,7 @@
 /* Graphics. */
 
 #include "g_stub.c"
-#include "g_guiconnect.c"
+#include "g_proxy.c"
 #include "g_object.c"
 #include "g_boxtext.c"
 #include "g_text.c"

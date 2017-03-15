@@ -25,7 +25,7 @@ typedef struct _textbuffer {
     t_object            tb_obj;                         /* Must be the first. */
     t_buffer            *tb_buffer;
     t_glist             *tb_owner;
-    t_guiconnect        *tb_guiconnect;
+    t_proxy             *tb_proxy;
     } t_textbuffer;
 
 typedef struct _textclient {

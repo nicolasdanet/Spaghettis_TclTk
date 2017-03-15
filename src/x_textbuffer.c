@@ -27,9 +27,9 @@ void textbuffer_free (t_textbuffer *x)
 {
     buffer_free (x->tb_buffer);
     
-    if (x->tb_guiconnect) {
+    if (x->tb_proxy) {
         sys_vGui ("destroy .x%lx\n", x);
-        guiconnect_release (x->tb_guiconnect);
+        proxy_release (x->tb_proxy);
     }
 }
 
@@ -53,14 +53,14 @@ t_buffer *textbuffer_getBuffer (t_textbuffer *x)
 
 void textbuffer_click (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (x->tb_guiconnect) {
+    if (x->tb_proxy) {
         sys_vGui ("wm deiconify .x%lx\n", x);
         sys_vGui ("raise .x%lx\n", x);
         sys_vGui ("focus .x%lx.text\n", x);
         
     } else {
         sys_vGui ("::ui_text::show .x%lx\n", x);
-        x->tb_guiconnect = guiconnect_new (cast_pd (x));
+        x->tb_proxy = proxy_new (cast_pd (x));
         textbuffer_update (x);
     }
 }
@@ -69,15 +69,15 @@ void textbuffer_close (t_textbuffer *x)
 {
     sys_vGui ("::ui_text::release .x%lx\n", x);
     
-    if (x->tb_guiconnect) {
-        guiconnect_release (x->tb_guiconnect); 
-        x->tb_guiconnect = NULL;
+    if (x->tb_proxy) {
+        proxy_release (x->tb_proxy); 
+        x->tb_proxy = NULL;
     }    
 }
 
 void textbuffer_update (t_textbuffer *x)
 {
-    if (x->tb_guiconnect) {
+    if (x->tb_proxy) {
     //
     int size;
     char *text = NULL;
