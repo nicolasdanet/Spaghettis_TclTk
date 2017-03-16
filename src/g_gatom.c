@@ -440,7 +440,7 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void gatom_makeObject (t_glist *glist, t_atomtype type, t_symbol *s, int argc, t_atom *argv)
+static void gatom_makeObjectProceed (t_glist *glist, t_atomtype type, int argc, t_atom *argv)
 {
     t_gatom *x = (t_gatom *)pd_new (gatom_class);
     
@@ -459,8 +459,6 @@ void gatom_makeObject (t_glist *glist, t_atomtype type, t_symbol *s, int argc, t
     x->a_unexpandedSend         = &s_;
     x->a_unexpandedReceive      = &s_;
     x->a_unexpandedLabel        = &s_;
-    
-    PD_ASSERT (type == A_FLOAT || type == A_SYMBOL);
     
     if (type == A_FLOAT) {
         t_atom a;
@@ -517,6 +515,16 @@ void gatom_makeObject (t_glist *glist, t_atomtype type, t_symbol *s, int argc, t
         
         canvas_selectObject (glist, cast_gobj (x));
     }
+}
+
+void gatom_makeObjectFloat (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
+{
+    gatom_makeObjectProceed (glist, A_FLOAT, argc, argv);
+}
+
+void gatom_makeObjectSymbol (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
+{
+    gatom_makeObjectProceed (glist, A_SYMBOL, argc, argv);
 }
 
 static void gatom_free (t_gatom *x)

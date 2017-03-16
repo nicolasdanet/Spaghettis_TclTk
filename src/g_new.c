@@ -173,12 +173,12 @@ void canvas_makeMessage (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 
 void canvas_makeFloatAtom (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    gatom_makeObject (glist, A_FLOAT, s, argc, argv);
+    gatom_makeObjectFloat (glist, s, argc, argv);
 }
 
 void canvas_makeSymbolAtom (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    gatom_makeObject (glist, A_SYMBOL, s, argc, argv);
+    gatom_makeObjectSymbol (glist, s, argc, argv);
 }
 
 void canvas_makeComment (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
