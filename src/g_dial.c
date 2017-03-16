@@ -137,8 +137,8 @@ static void dial_drawJob (t_gobj *z, t_glist *glist)
     
     t_glist *canvas = canvas_getView (glist);
     
-    int a = text_getPixelX (cast_object (x), glist);
-    int b = text_getPixelY (cast_object (x), glist);
+    int a = object_getPixelX (cast_object (x), glist);
+    int b = object_getPixelY (cast_object (x), glist);
     int h = x->x_digitsFontSize;
     int w = dial_getWidth (x);
     int m = a + (w / 2);
@@ -174,8 +174,8 @@ static void dial_drawMove (t_dial *x, t_glist *glist)
 {
     t_glist *canvas = canvas_getView (glist);
     
-    int a = text_getPixelX (cast_object (x), glist);
-    int b = text_getPixelY (cast_object (x), glist);
+    int a = object_getPixelX (cast_object (x), glist);
+    int b = object_getPixelY (cast_object (x), glist);
     int k = x->x_gui.iem_height - (x->x_digitsFontSize / 2);
     int h = x->x_digitsFontSize;
     int w = dial_getWidth (x);
@@ -219,8 +219,8 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
 {
     t_glist *canvas = canvas_getView (glist);
     
-    int a = text_getPixelX (cast_object (x), glist);
-    int b = text_getPixelY (cast_object (x), glist);
+    int a = object_getPixelX (cast_object (x), glist);
+    int b = object_getPixelY (cast_object (x), glist);
     int k = x->x_gui.iem_height - (x->x_digitsFontSize / 2);
     int h = x->x_digitsFontSize;
     int w = dial_getWidth (x);
@@ -585,8 +585,8 @@ static void dial_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r
 {
     t_dial *x = (t_dial *)z;
     
-    int a = text_getPixelX (cast_object (z), glist);
-    int b = text_getPixelY (cast_object (z), glist);
+    int a = object_getPixelX (cast_object (z), glist);
+    int b = object_getPixelY (cast_object (z), glist);
     int c = a + dial_getWidth (x);
     int d = b + cast_iem (z)->iem_height;
     

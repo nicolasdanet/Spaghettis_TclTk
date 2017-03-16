@@ -16,6 +16,74 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+extern t_class *canvas_class;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void object_set (t_object *x, t_glist *glist, char *s, int size)
+{
+    if (!object_isObject (x)) { buffer_withStringUnzeroed (object_getBuffer (x), s, size); }
+    else {
+    //
+    t_buffer *t = buffer_new();
+    buffer_withStringUnzeroed (t, s, size);
+    
+    {
+    //
+    int m = (utils_getFirstAtomOfObjectAsSymbol (x) == sym_pd);
+    int n = (utils_getFirstAtomOfBufferAsSymbol (t) == sym_pd);
+    
+    if (m && n) {
+        pd_message (cast_pd (x), sym_rename, buffer_size (t) - 1, buffer_atoms (t) + 1);
+        buffer_free (object_getBuffer (x)); 
+        object_setBuffer (x, t);
+        
+    } else {
+        int w = object_getWidth (x);
+        int a = object_getX (x);
+        int b = object_getY (x);
+        
+        canvas_removeObject (glist, cast_gobj (x));
+        canvas_makeTextObject (glist, a, b, w, 0, t);
+        canvas_restoreCachedLines (canvas_getView (glist));
+        
+        if (instance_getNewestObject() && pd_class (instance_getNewestObject()) == canvas_class) {
+            canvas_loadbang (cast_glist (instance_getNewestObject())); 
+        }
+    }
+    //
+    }
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int object_getPixelX (t_object *x, t_glist *glist)
+{
+    if (canvas_canHaveWindow (glist)) { return object_getX (x); }
+    else {
+        int n = canvas_valueToPixelX (glist, bounds_getLeft (&glist->gl_bounds));
+        return (n - rectangle_getTopLeftX (&glist->gl_geometryGraph) + object_getX (x));
+    }
+}
+
+int object_getPixelY (t_object *x, t_glist *glist)
+{
+    if (canvas_canHaveWindow (glist)) { return object_getY (x); }
+    else {
+        int n = canvas_valueToPixelY (glist, bounds_getTop (&glist->gl_bounds));
+        return (n - rectangle_getTopLeftY (&glist->gl_geometryGraph) + object_getY (x));
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 void object_distributeOnInlets (t_object *x, int argc, t_atom *argv)

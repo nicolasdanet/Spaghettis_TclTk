@@ -65,8 +65,8 @@ void panel_drawMove (t_panel *x, t_glist *glist)
 {
     t_glist *canvas = canvas_getView (glist);
     
-    int a = text_getPixelX (cast_object (x), glist);
-    int b = text_getPixelY (cast_object (x), glist);
+    int a = object_getPixelX (cast_object (x), glist);
+    int b = object_getPixelY (cast_object (x), glist);
 
     sys_vGui (".x%lx.c coords %lxPANEL %d %d %d %d\n",
                     canvas,
@@ -93,8 +93,8 @@ void panel_drawNew (t_panel *x, t_glist *glist)
 {
     t_glist *canvas = canvas_getView (glist);
     
-    int a = text_getPixelX (cast_object (x), glist);
-    int b = text_getPixelY (cast_object (x), glist);
+    int a = object_getPixelX (cast_object (x), glist);
+    int b = object_getPixelY (cast_object (x), glist);
 
     sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -outline #%06x -tags %lxPANEL\n",
                     canvas,
@@ -226,8 +226,8 @@ static void panel_panelSize (t_panel *x, t_symbol *s, int argc, t_atom *argv)
 static void panel_getPosition (t_panel *x)
 {
     if (x->x_gui.iem_canSend && pd_isThing (x->x_gui.iem_send)) {
-        t_float a = text_getPixelX (cast_object (x), x->x_gui.iem_owner);
-        t_float b = text_getPixelY (cast_object (x), x->x_gui.iem_owner);
+        t_float a = object_getPixelX (cast_object (x), x->x_gui.iem_owner);
+        t_float b = object_getPixelY (cast_object (x), x->x_gui.iem_owner);
         SET_FLOAT (&x->x_t[0], a);
         SET_FLOAT (&x->x_t[1], b);
         pd_list (pd_getThing (x->x_gui.iem_send), 2, x->x_t);
@@ -242,8 +242,8 @@ static void panel_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *
 {
     t_panel *x = (t_panel *)z;
     
-    int a = text_getPixelX (cast_object (z), glist);
-    int b = text_getPixelY (cast_object (z), glist);
+    int a = object_getPixelX (cast_object (z), glist);
+    int b = object_getPixelY (cast_object (z), glist);
     int c = a + x->x_panelWidth;
     int d = b + x->x_panelHeight;
     

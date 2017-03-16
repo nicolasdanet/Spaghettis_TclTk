@@ -183,14 +183,6 @@ void            box_key                             (t_box *x, t_keycode n, t_sy
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            text_set                            (t_object *x, t_glist *glist, char *s, int size);
-int             text_getPixelX                      (t_object *x, t_glist *glist);
-int             text_getPixelY                      (t_object *x, t_glist *glist);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void            message_makeObject                  (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            message_click                       (t_message *x, t_symbol *s, int argc, t_atom *argv);
                                                             

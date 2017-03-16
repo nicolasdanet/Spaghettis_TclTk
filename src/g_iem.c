@@ -264,8 +264,8 @@ void iemgui_setLabelPosition (void *x, t_symbol *s, int argc, t_atom *argv)
         sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
                         canvas_getView (iem->iem_owner),
                         x,
-                        text_getPixelX (cast_object (x), iem->iem_owner) + iem->iem_labelX,
-                        text_getPixelY (cast_object (x), iem->iem_owner) + iem->iem_labelY);
+                        object_getPixelX (cast_object (x), iem->iem_owner) + iem->iem_labelX,
+                        object_getPixelY (cast_object (x), iem->iem_owner) + iem->iem_labelY);
     }
     //
     }

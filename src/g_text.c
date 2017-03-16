@@ -28,12 +28,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_class  *canvas_class;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-t_class *text_class;                                /* Shared. */
+t_class *text_class;                /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -70,8 +65,8 @@ void text_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
     t_box *text = box_fetch (glist, x);
     int width   = box_getWidth (text);
     int height  = box_getHeight (text);
-    int a       = text_getPixelX (x, glist);
-    int b       = text_getPixelY (x, glist);
+    int a       = object_getPixelX (x, glist);
+    int b       = object_getPixelY (x, glist);
     
     rectangle_set (r, a, b, a + width, b + height);
 }
@@ -156,69 +151,6 @@ int text_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
     }
     
     return 0;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void text_set (t_object *x, t_glist *glist, char *s, int size)
-{
-    if (!object_isObject (x)) { buffer_withStringUnzeroed (object_getBuffer (x), s, size); }
-    else {
-    //
-    t_buffer *t = buffer_new();
-    buffer_withStringUnzeroed (t, s, size);
-    
-    {
-    //
-    int m = (utils_getFirstAtomOfObjectAsSymbol (x) == sym_pd);
-    int n = (utils_getFirstAtomOfBufferAsSymbol (t) == sym_pd);
-    
-    if (m && n) {
-        pd_message (cast_pd (x), sym_rename, buffer_size (t) - 1, buffer_atoms (t) + 1);
-        buffer_free (object_getBuffer (x)); 
-        object_setBuffer (x, t);
-        
-    } else {
-        int w = object_getWidth (x);
-        int a = object_getX (x);
-        int b = object_getY (x);
-        
-        canvas_removeObject (glist, cast_gobj (x));
-        canvas_makeTextObject (glist, a, b, w, 0, t);
-        canvas_restoreCachedLines (canvas_getView (glist));
-        
-        if (instance_getNewestObject() && pd_class (instance_getNewestObject()) == canvas_class) {
-            canvas_loadbang (cast_glist (instance_getNewestObject())); 
-        }
-    }
-    //
-    }
-    //
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int text_getPixelX (t_object *x, t_glist *glist)
-{
-    if (canvas_canHaveWindow (glist)) { return object_getX (x); }
-    else {
-        int n = canvas_valueToPixelX (glist, bounds_getLeft (&glist->gl_bounds));
-        return (n - rectangle_getTopLeftX (&glist->gl_geometryGraph) + object_getX (x));
-    }
-}
-
-int text_getPixelY (t_object *x, t_glist *glist)
-{
-    if (canvas_canHaveWindow (glist)) { return object_getY (x); }
-    else {
-        int n = canvas_valueToPixelY (glist, bounds_getTop (&glist->gl_bounds));
-        return (n - rectangle_getTopLeftY (&glist->gl_geometryGraph) + object_getY (x));
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

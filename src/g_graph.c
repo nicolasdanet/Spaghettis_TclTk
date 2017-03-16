@@ -276,8 +276,8 @@ static void canvas_getGraphOnParentRectangle (t_gobj *z, t_glist *glist, t_recta
     
     PD_ASSERT (pd_class (z) == canvas_class);
     
-    int a = text_getPixelX (cast_object (x), glist);
-    int b = text_getPixelY (cast_object (x), glist);
+    int a = object_getPixelX (cast_object (x), glist);
+    int b = object_getPixelY (cast_object (x), glist);
     int c = a + rectangle_getWidth (&x->gl_geometryGraph);
     int d = b + rectangle_getHeight (&x->gl_geometryGraph);
     

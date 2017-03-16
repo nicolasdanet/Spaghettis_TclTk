@@ -250,8 +250,8 @@ static int box_send (t_box *x, int action, int a, int b)
         sys_vGui ("::ui_box::newText .x%lx.c %s %d %d {%s} %d #%06x\n",     // --
                         canvas,
                         x->box_tag,
-                        (int)(text_getPixelX (x->box_object, x->box_glist) + BOX_MARGIN_LEFT), 
-                        (int)(text_getPixelY (x->box_object, x->box_glist) + BOX_MARGIN_TOP),
+                        (int)(object_getPixelX (x->box_object, x->box_glist) + BOX_MARGIN_LEFT), 
+                        (int)(object_getPixelY (x->box_object, x->box_glist) + BOX_MARGIN_TOP),
                         buffer, 
                         font_getHostFontSize (fontSize),
                         (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
