@@ -139,6 +139,33 @@ static void class_defaultAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+/* Default save function for all boxes object. */
+
+static void class_defaultSave (t_gobj *z, t_buffer *b)
+{
+    t_object *x = cast_object (z);
+    
+    if (object_isComment (x)) {
+        buffer_vAppend (b, "ssii", sym___hash__X, sym_text, object_getX (x), object_getY (x));
+        
+    } else if (object_isObject (x)) {
+        buffer_vAppend (b, "ssii", sym___hash__X, sym_obj,  object_getX (x), object_getY (x));
+        
+    } else if (object_isMessage (x)) {
+        buffer_vAppend (b, "ssii", sym___hash__X, sym_msg,  object_getX (x), object_getY (x));
+        
+    } else { 
+        PD_BUG;
+    }
+    
+    buffer_serialize (b, object_getBuffer (x));
+    buffer_appendSemicolon (b);
+    object_saveWidth (x, b);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 void class_setCurrentExternalDirectory (t_symbol *s)
@@ -202,7 +229,7 @@ t_class *class_new (t_symbol *s,
     c->c_methodAnything     = class_defaultAnything;
     c->c_behavior           = (type == CLASS_BOX ? &text_widgetBehavior : NULL);
     c->c_behaviorPainter    = NULL;
-    c->c_fnSave             = (type == CLASS_BOX ? text_functionSave : NULL);
+    c->c_fnSave             = (type == CLASS_BOX ? class_defaultSave : NULL);
     c->c_fnProperties       = NULL;
     c->c_signalOffset       = 0;
     c->c_hasFirstInlet      = ((flags & CLASS_NOINLET) == 0);

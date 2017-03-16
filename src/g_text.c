@@ -162,32 +162,6 @@ int text_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void text_functionSave (t_gobj *z, t_buffer *b)
-{
-    t_object *x = cast_object (z);
-    
-    if (object_isComment (x)) {
-        buffer_vAppend (b, "ssii", sym___hash__X, sym_text, object_getX (x), object_getY (x));
-        
-    } else if (object_isObject (x)) {
-        buffer_vAppend (b, "ssii", sym___hash__X, sym_obj,  object_getX (x), object_getY (x));
-        
-    } else if (object_isMessage (x)) {
-        buffer_vAppend (b, "ssii", sym___hash__X, sym_msg,  object_getX (x), object_getY (x));
-        
-    } else { 
-        PD_BUG;
-    }
-    
-    buffer_serialize (b, object_getBuffer (x));
-    buffer_appendSemicolon (b);
-    object_saveWidth (x, b);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void text_set (t_object *x, t_glist *glist, char *s, int size)
 {
     if (!object_isObject (x)) { buffer_withStringUnzeroed (object_getBuffer (x), s, size); }

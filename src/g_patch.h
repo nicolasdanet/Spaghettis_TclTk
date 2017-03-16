@@ -183,8 +183,6 @@ void            box_key                             (t_box *x, t_keycode n, t_sy
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            text_functionSave                   (t_gobj *x, t_buffer *b);
-
 void            text_set                            (t_object *x, t_glist *glist, char *s, int size);
 int             text_getPixelX                      (t_object *x, t_glist *glist);
 int             text_getPixelY                      (t_object *x, t_glist *glist);
