@@ -19,10 +19,10 @@
 
 void canvas_dspProceed (t_glist *glist, int isTopLevel, t_signal **sp)
 {
-    t_gobj          *y = NULL;
-    t_dspcontext    *context = NULL;
-    t_outconnect    *connection = NULL;   
-    t_linetraverser t;
+    t_gobj       *y = NULL;
+    t_dspcontext *context = NULL;
+    t_outconnect *connection = NULL;   
+    t_traverser  t;
     
     int m = object_getNumberOfSignalInlets (cast_object (glist));
     int n = object_getNumberOfSignalOutlets (cast_object (glist));
@@ -36,15 +36,15 @@ void canvas_dspProceed (t_glist *glist, int isTopLevel, t_signal **sp)
     //
     }
 
-    linetraverser_start (&t, glist);
+    traverser_start (&t, glist);
     
-    while ((connection = linetraverser_next (&t))) {
-        if (object_isSignalOutlet (linetraverser_getSource (&t), linetraverser_getIndexOfOutlet (&t))) {
+    while ((connection = traverser_next (&t))) {
+        if (object_isSignalOutlet (traverser_getSource (&t), traverser_getIndexOfOutlet (&t))) {
             ugen_graphConnect (context, 
-                linetraverser_getSource (&t), 
-                linetraverser_getIndexOfOutlet (&t), 
-                linetraverser_getDestination (&t), 
-                linetraverser_getIndexOfInlet (&t));
+                traverser_getSource (&t), 
+                traverser_getIndexOfOutlet (&t), 
+                traverser_getDestination (&t), 
+                traverser_getIndexOfInlet (&t));
         }
     }
 

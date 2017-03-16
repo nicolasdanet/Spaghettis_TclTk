@@ -40,19 +40,19 @@ void canvas_redraw (t_glist *glist)
 void canvas_drawLines (t_glist *glist)
 {
     t_outconnect *connection = NULL;
-    t_linetraverser t;
+    t_traverser t;
 
-    linetraverser_start (&t, glist);
+    traverser_start (&t, glist);
     
-    while ((connection = linetraverser_next (&t))) {
+    while ((connection = traverser_next (&t))) {
     //
     sys_vGui (".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
                     canvas_getView (glist),
-                    linetraverser_getStartX (&t),
-                    linetraverser_getStartY (&t),
-                    linetraverser_getEndX (&t),
-                    linetraverser_getEndY (&t), 
-                    (outlet_isSignal (linetraverser_getOutlet (&t)) ? 2 : 1),
+                    traverser_getStartX (&t),
+                    traverser_getStartY (&t),
+                    traverser_getEndX (&t),
+                    traverser_getEndY (&t), 
+                    (outlet_isSignal (traverser_getOutlet (&t)) ? 2 : 1),
                     connection);
     //
     }
@@ -61,23 +61,23 @@ void canvas_drawLines (t_glist *glist)
 void canvas_updateLinesByObject (t_glist *glist, t_object *o)
 {
     t_outconnect *connection = NULL;
-    t_linetraverser t;
+    t_traverser t;
 
-    linetraverser_start (&t, glist);
+    traverser_start (&t, glist);
     
-    while ((connection = linetraverser_next (&t))) {
+    while ((connection = traverser_next (&t))) {
     //
-    if (linetraverser_getSource (&t) == o || linetraverser_getDestination (&t) == o) {
+    if (traverser_getSource (&t) == o || traverser_getDestination (&t) == o) {
     //
     if (canvas_isMapped (glist)) {
     //
     sys_vGui (".x%lx.c coords %lxLINE %d %d %d %d\n",
                     canvas_getView (glist),
                     connection,
-                    linetraverser_getStartX (&t),
-                    linetraverser_getStartY (&t),
-                    linetraverser_getEndX (&t),
-                    linetraverser_getEndY (&t));
+                    traverser_getStartX (&t),
+                    traverser_getStartY (&t),
+                    traverser_getEndX (&t),
+                    traverser_getEndY (&t));
     //
     }
     //
@@ -89,13 +89,13 @@ void canvas_updateLinesByObject (t_glist *glist, t_object *o)
 void canvas_deleteLinesByObject (t_glist *glist, t_object *o)
 {
     t_outconnect *connection = NULL;
-    t_linetraverser t;
+    t_traverser t;
 
-    linetraverser_start (&t, glist);
+    traverser_start (&t, glist);
     
-    while ((connection = linetraverser_next (&t))) {
+    while ((connection = traverser_next (&t))) {
     //
-    if (linetraverser_getSource (&t) == o || linetraverser_getDestination (&t) == o) {
+    if (traverser_getSource (&t) == o || traverser_getDestination (&t) == o) {
     //
     if (canvas_isMapped (glist)) {
     //
@@ -105,7 +105,7 @@ void canvas_deleteLinesByObject (t_glist *glist, t_object *o)
     //
     }
 
-    linetraverser_disconnect (&t);
+    traverser_disconnect (&t);
     //
     }
     //
@@ -115,14 +115,14 @@ void canvas_deleteLinesByObject (t_glist *glist, t_object *o)
 void canvas_deleteLinesByInlets (t_glist *glist, t_object *o, t_inlet *inlet, t_outlet *outlet)
 {
     t_outconnect *connection = NULL;
-    t_linetraverser t;
+    t_traverser t;
 
-    linetraverser_start (&t, glist);
+    traverser_start (&t, glist);
     
-    while ((connection = linetraverser_next (&t))) {
+    while ((connection = traverser_next (&t))) {
     //
-    int m = (linetraverser_getSource (&t) == o && linetraverser_getOutlet (&t) == outlet);
-    int n = (linetraverser_getDestination (&t) == o && linetraverser_getInlet (&t) == inlet);
+    int m = (traverser_getSource (&t) == o && traverser_getOutlet (&t) == outlet);
+    int n = (traverser_getDestination (&t) == o && traverser_getInlet (&t) == inlet);
     
     if (m || n) {
     //
@@ -134,7 +134,7 @@ void canvas_deleteLinesByInlets (t_glist *glist, t_object *o, t_inlet *inlet, t_
     //
     }
                 
-    linetraverser_disconnect (&t);
+    traverser_disconnect (&t);
     //
     }
     //

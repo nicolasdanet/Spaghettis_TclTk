@@ -505,12 +505,12 @@ int canvas_hasLine (t_glist *glist, t_object *objectOut, int m, t_object *object
 {
     t_outconnect *connection = NULL;
     
-    t_linetraverser t;
+    t_traverser t;
     
-    linetraverser_start (&t, glist);
+    traverser_start (&t, glist);
     
-    while ((connection = linetraverser_next (&t))) {
-        if (linetraverser_isLineBetween (&t, objectOut, m, objectIn, n)) { return 1; }
+    while ((connection = traverser_next (&t))) {
+        if (traverser_isLineBetween (&t, objectOut, m, objectIn, n)) { return 1; }
     }
     
     return 0;

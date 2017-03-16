@@ -67,7 +67,7 @@ static void canvas_cacheLines (t_glist *glist)
     t_gobj *unselectedTail = NULL;
     t_gobj *yA = NULL;
     t_gobj *yB = NULL;
-    t_linetraverser t;
+    t_traverser t;
     t_outconnect *connection;
     
     /* Split selected object from uneselected ones and move it to the end. */
@@ -97,22 +97,22 @@ static void canvas_cacheLines (t_glist *glist)
 
     buffer_reset (glist->gl_editor->e_buffer);
     
-    linetraverser_start (&t, glist);
+    traverser_start (&t, glist);
     
-    while ((connection = linetraverser_next (&t))) {
+    while ((connection = traverser_next (&t))) {
     //
-    int s1 = canvas_isObjectSelected (glist, cast_gobj (linetraverser_getSource (&t)));
-    int s2 = canvas_isObjectSelected (glist, cast_gobj (linetraverser_getDestination (&t)));
+    int s1 = canvas_isObjectSelected (glist, cast_gobj (traverser_getSource (&t)));
+    int s2 = canvas_isObjectSelected (glist, cast_gobj (traverser_getDestination (&t)));
     
     if (s1 != s2) {
     //
     buffer_vAppend (glist->gl_editor->e_buffer, "ssiiii;",
         sym___hash__X, 
         sym_connect,
-        canvas_getIndexOfObject (glist, cast_gobj (linetraverser_getSource (&t))),
-        linetraverser_getIndexOfOutlet (&t),
-        canvas_getIndexOfObject (glist, cast_gobj (linetraverser_getDestination (&t))),
-        linetraverser_getIndexOfInlet (&t));
+        canvas_getIndexOfObject (glist, cast_gobj (traverser_getSource (&t))),
+        traverser_getIndexOfOutlet (&t),
+        canvas_getIndexOfObject (glist, cast_gobj (traverser_getDestination (&t))),
+        traverser_getIndexOfInlet (&t));
     //
     }
     //

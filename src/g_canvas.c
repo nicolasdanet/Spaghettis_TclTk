@@ -289,21 +289,21 @@ void canvas_disconnect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     int indexOfInlet     = (int)atom_getFloat (argv + 3);
     
     t_outconnect *connection = NULL;
-    t_linetraverser t;
+    t_traverser t;
         
-    linetraverser_start (&t, glist);
+    traverser_start (&t, glist);
     
-    while ((connection = linetraverser_next (&t))) {
+    while ((connection = traverser_next (&t))) {
     //
-    if ((linetraverser_getIndexOfOutlet (&t) == indexOfOutlet)) {
-        if ((linetraverser_getIndexOfInlet (&t) == indexOfInlet)) {
+    if ((traverser_getIndexOfOutlet (&t) == indexOfOutlet)) {
+        if ((traverser_getIndexOfInlet (&t) == indexOfInlet)) {
 
-            int m = canvas_getIndexOfObject (glist, cast_gobj (linetraverser_getSource (&t)));
-            int n = canvas_getIndexOfObject (glist, cast_gobj (linetraverser_getDestination (&t)));
+            int m = canvas_getIndexOfObject (glist, cast_gobj (traverser_getSource (&t)));
+            int n = canvas_getIndexOfObject (glist, cast_gobj (traverser_getDestination (&t)));
 
             if (m == indexOfObjectOut && n == indexOfObjectIn) {
                 sys_vGui (".x%lx.c delete %lxLINE\n", canvas_getView (glist), connection);
-                linetraverser_disconnect (&t);
+                traverser_disconnect (&t);
                 break;
             }
         }

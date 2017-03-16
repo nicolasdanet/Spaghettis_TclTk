@@ -21,7 +21,7 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
 {
     t_gobj *y = NULL;
     t_outconnect *connection = NULL;
-    t_linetraverser t;
+    t_traverser t;
     
     if (canvas_isSubpatch (glist)) {
     
@@ -55,17 +55,17 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
     
     for (y = glist->gl_graphics; y; y = y->g_next) { gobj_save (y, b); }
 
-    linetraverser_start (&t, glist);
+    traverser_start (&t, glist);
     
-    while ((connection = linetraverser_next (&t))) {
+    while ((connection = traverser_next (&t))) {
     
         buffer_vAppend (b, "ssiiii;", 
             sym___hash__X,
             sym_connect,
-            canvas_getIndexOfObject (glist, cast_gobj (linetraverser_getSource (&t))), 
-            linetraverser_getIndexOfOutlet (&t), 
-            canvas_getIndexOfObject (glist, cast_gobj (linetraverser_getDestination (&t))), 
-            linetraverser_getIndexOfInlet (&t));
+            canvas_getIndexOfObject (glist, cast_gobj (traverser_getSource (&t))), 
+            traverser_getIndexOfOutlet (&t), 
+            canvas_getIndexOfObject (glist, cast_gobj (traverser_getDestination (&t))), 
+            traverser_getIndexOfInlet (&t));
     }
     
     {

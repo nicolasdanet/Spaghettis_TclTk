@@ -27,7 +27,7 @@ extern t_class *symbolinlet_class;
 /* Fetch the nth outlet of an object. */
 /* Return its first connection. */
 
-static t_outconnect *linetraverser_outletStart  (t_object *x, t_outlet **ptr, int n)
+static t_outconnect *traverser_outletStart  (t_object *x, t_outlet **ptr, int n)
 {
     t_outlet *o = object_getOutlets (x);
     
@@ -45,7 +45,7 @@ static t_outconnect *linetraverser_outletStart  (t_object *x, t_outlet **ptr, in
 /* Given a connection, fetch the object connected, the related inlet and its index. */
 /* Return the next connection of the outlet (NULL if last). */
 
-static t_outconnect *linetraverser_outletNext (t_outconnect *previous, t_object **dest, t_inlet **ptr, int *n)
+static t_outconnect *traverser_outletNext (t_outconnect *previous, t_object **dest, t_inlet **ptr, int *n)
 {
     t_pd *y = connection_getReceiver (previous);
 
@@ -74,7 +74,7 @@ static t_outconnect *linetraverser_outletNext (t_outconnect *previous, t_object 
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void linetraverser_start (t_linetraverser *t, t_glist *glist)
+void traverser_start (t_traverser *t, t_glist *glist)
 {
     t->tr_owner                 = glist;
     t->tr_connectionCached      = NULL;
@@ -86,7 +86,7 @@ void linetraverser_start (t_linetraverser *t, t_glist *glist)
 /* Get the lines outlet per outlet, object per object. */
 /* Coordinates are set at the same time. */
 
-t_outconnect *linetraverser_next (t_linetraverser *t)
+t_outconnect *traverser_next (t_traverser *t)
 {
     t_outconnect *connection = t->tr_connectionCached;
     
@@ -123,11 +123,11 @@ t_outconnect *linetraverser_next (t_linetraverser *t)
     
     t->tr_srcIndexOfOutlet     = n;
     t->tr_srcIndexOfNextOutlet = n + 1;
-    connection = linetraverser_outletStart  (t->tr_srcObject, &t->tr_srcOutlet, n);
+    connection = traverser_outletStart  (t->tr_srcObject, &t->tr_srcOutlet, n);
     //
     }
     
-    t->tr_connectionCached = linetraverser_outletNext (connection,
+    t->tr_connectionCached = traverser_outletNext (connection,
         &t->tr_destObject,
         &t->tr_destInlet,
         &t->tr_destIndexOfInlet);
@@ -168,7 +168,7 @@ t_outconnect *linetraverser_next (t_linetraverser *t)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void linetraverser_disconnect (t_linetraverser *t)
+void traverser_disconnect (t_traverser *t)
 {
     object_disconnect (t->tr_srcObject, t->tr_srcIndexOfOutlet, t->tr_destObject, t->tr_destIndexOfInlet);
 }
@@ -177,7 +177,7 @@ void linetraverser_disconnect (t_linetraverser *t)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int linetraverser_isLineBetween (t_linetraverser *t, t_object *src, int m, t_object *dest, int n)
+int traverser_isLineBetween (t_traverser *t, t_object *src, int m, t_object *dest, int n)
 {
     if (t->tr_srcObject == src && t->tr_destObject == dest) {
         if (t->tr_srcIndexOfOutlet == m && t->tr_destIndexOfInlet == n) { 

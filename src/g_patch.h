@@ -121,7 +121,7 @@ typedef struct _cord {
     int                 tr_lineEndY;
     } t_cord;
     
-typedef struct _linetraverser {
+typedef struct _traverser {
     t_glist             *tr_owner;
     t_outconnect        *tr_connectionCached;
     t_object            *tr_srcObject;
@@ -136,7 +136,7 @@ typedef struct _linetraverser {
     t_rectangle         tr_srcBox;
     t_rectangle         tr_destBox;
     t_cord              tr_cord;
-    } t_linetraverser;
+    } t_traverser;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -262,11 +262,11 @@ int             cord_hit                            (t_cord *c, int positionX, i
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_outconnect    *linetraverser_next                 (t_linetraverser *t);
+t_outconnect    *traverser_next                     (t_traverser *t);
 
-void            linetraverser_start                 (t_linetraverser *t, t_glist *glist);
-void            linetraverser_disconnect            (t_linetraverser *t);
-int             linetraverser_isLineBetween         (t_linetraverser *t, 
+void            traverser_start                     (t_traverser *t, t_glist *glist);
+void            traverser_disconnect                (t_traverser *t);
+int             traverser_isLineBetween             (t_traverser *t, 
                                                         t_object *src,
                                                         int m,
                                                         t_object *dest,
@@ -276,57 +276,57 @@ int             linetraverser_isLineBetween         (t_linetraverser *t,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static inline t_cord *linetraverser_getCord (t_linetraverser *t)
+static inline t_cord *traverser_getCord (t_traverser *t)
 {
     return &t->tr_cord;
 }
 
-static inline int linetraverser_getStartX (t_linetraverser *t)
+static inline int traverser_getStartX (t_traverser *t)
 {
     return t->tr_cord.tr_lineStartX;
 }
 
-static inline int linetraverser_getStartY (t_linetraverser *t)
+static inline int traverser_getStartY (t_traverser *t)
 {
     return t->tr_cord.tr_lineStartY;
 }
 
-static inline int linetraverser_getEndX (t_linetraverser *t)
+static inline int traverser_getEndX (t_traverser *t)
 {
     return t->tr_cord.tr_lineEndX;
 }
 
-static inline int linetraverser_getEndY (t_linetraverser *t)
+static inline int traverser_getEndY (t_traverser *t)
 {
     return t->tr_cord.tr_lineEndY;
 }
 
-static inline t_object *linetraverser_getSource (t_linetraverser *t)
+static inline t_object *traverser_getSource (t_traverser *t)
 {
     return t->tr_srcObject;
 }
 
-static inline t_object *linetraverser_getDestination (t_linetraverser *t)
+static inline t_object *traverser_getDestination (t_traverser *t)
 {
     return t->tr_destObject;
 }
 
-static inline t_outlet *linetraverser_getOutlet (t_linetraverser *t)
+static inline t_outlet *traverser_getOutlet (t_traverser *t)
 {
     return t->tr_srcOutlet;
 }
 
-static inline t_inlet *linetraverser_getInlet (t_linetraverser *t)
+static inline t_inlet *traverser_getInlet (t_traverser *t)
 {
     return t->tr_destInlet;
 }
 
-static inline int linetraverser_getIndexOfOutlet (t_linetraverser *t)
+static inline int traverser_getIndexOfOutlet (t_traverser *t)
 {
     return t->tr_srcIndexOfOutlet;
 }
 
-static inline int linetraverser_getIndexOfInlet (t_linetraverser *t)
+static inline int traverser_getIndexOfInlet (t_traverser *t)
 {
     return t->tr_destIndexOfInlet;
 }
