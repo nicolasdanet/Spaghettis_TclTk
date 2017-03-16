@@ -513,7 +513,7 @@ void canvas_remove (t_glist *glist, t_symbol *s)
     }
 }
 
-static void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     t_symbol *name = &s_;
     

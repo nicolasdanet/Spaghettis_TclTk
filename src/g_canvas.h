@@ -297,6 +297,7 @@ void            canvas_connect                          (t_glist *glist, t_symbo
 void            canvas_disconnect                       (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_key                              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_restore                          (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_rename                           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_loadbang                         (t_glist *glist);
 void            canvas_editmode                         (t_glist *glist, t_float f);
 void            canvas_close                            (t_glist *glist, t_float f);

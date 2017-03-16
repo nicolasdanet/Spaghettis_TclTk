@@ -33,6 +33,7 @@ void object_set (t_object *x, t_glist *glist, t_box *z)
     else {
     //
     t_buffer *t = buffer_new();
+    
     buffer_withStringUnzeroed (t, s, size);
     
     {
@@ -41,11 +42,17 @@ void object_set (t_object *x, t_glist *glist, t_box *z)
     int n = (utils_getFirstAtomOfBufferAsSymbol (t) == sym_pd);
     
     if (m && n) {
-        pd_message (cast_pd (x), sym_rename, buffer_size (t) - 1, buffer_atoms (t) + 1);
+        
+        /* Subpatch renamed. */
+        
+        canvas_rename (cast_glist (x), sym_rename, buffer_size (t) - 1, buffer_atoms (t) + 1);
         buffer_free (object_getBuffer (x)); 
         object_setBuffer (x, t);
         
     } else {
+    
+        /* Trigger instantiation. */
+        
         int w = object_getWidth (x);
         int a = object_getX (x);
         int b = object_getY (x);
