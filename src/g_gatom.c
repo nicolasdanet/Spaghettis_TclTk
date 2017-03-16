@@ -56,9 +56,20 @@ struct _gatom {
     t_symbol        *a_unexpandedLabel;
     t_outlet        *a_outlet;
     };
-    
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+void text_behaviorGetRectangle      (t_gobj *, t_glist *, t_rectangle *);
+void text_behaviorDisplaced         (t_gobj *, t_glist *, int, int);
+void text_behaviorSelected          (t_gobj *, t_glist *, int);
+void text_behaviorDeleted           (t_gobj *, t_glist *);
+void text_behaviorVisibilityChanged (t_gobj *, t_glist *, int);
+int  text_behaviorMouse             (t_gobj *, t_glist *, t_mouse *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static t_widgetbehavior gatom_widgetBehavior =          /* Shared. */
     {

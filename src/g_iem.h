@@ -211,7 +211,7 @@ void        iemgui_deserializeFontStyle         (t_iem *iem, int n);
 int         iemgui_serializeFontStyle           (t_iem *iem);
 void        iemgui_deserializeLoadbang          (t_iem *iem, int n);
 int         iemgui_serializeLoadbang            (t_iem *iem);
-void        iemgui_deserializeNames      (t_iem *iem, int i, t_atom *argv);
+void        iemgui_deserializeNames             (t_iem *iem, int i, t_atom *argv);
 void        iemgui_serializeNames               (t_iem *iem, t_iemnames *n);
 
 // -----------------------------------------------------------------------------------------------------------

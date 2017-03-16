@@ -38,6 +38,18 @@ t_class *text_class;                                /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+void text_behaviorGetRectangle      (t_gobj *, t_glist *, t_rectangle *);
+void text_behaviorDisplaced         (t_gobj *, t_glist *, int, int);
+void text_behaviorSelected          (t_gobj *, t_glist *, int);
+void text_behaviorActivated         (t_gobj *, t_glist *, int);
+void text_behaviorDeleted           (t_gobj *, t_glist *);
+void text_behaviorVisibilityChanged (t_gobj *, t_glist *, int);
+int  text_behaviorMouse             (t_gobj *, t_glist *, t_mouse *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_widgetbehavior text_widgetBehavior =              /* Shared. */
     {
         text_behaviorGetRectangle,

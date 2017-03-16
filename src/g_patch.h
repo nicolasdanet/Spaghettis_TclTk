@@ -183,14 +183,6 @@ void            box_key                             (t_box *x, t_keycode n, t_sy
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            text_behaviorGetRectangle           (t_gobj *x, t_glist *glist, t_rectangle *r);
-void            text_behaviorDisplaced              (t_gobj *x, t_glist *glist, int deltaX, int deltaY);
-void            text_behaviorSelected               (t_gobj *x, t_glist *glist, int isSelected);
-void            text_behaviorActivated              (t_gobj *x, t_glist *glist, int isActivated);
-void            text_behaviorDeleted                (t_gobj *x, t_glist *glist);
-void            text_behaviorVisibilityChanged      (t_gobj *x, t_glist *glist, int isVisible);
-int             text_behaviorMouse                  (t_gobj *x, t_glist *glist, t_mouse *m);
-
 void            text_functionSave                   (t_gobj *x, t_buffer *b);
 
 void            text_set                            (t_object *x, t_glist *glist, char *s, int size);

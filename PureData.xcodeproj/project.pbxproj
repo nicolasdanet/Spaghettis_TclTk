@@ -1160,6 +1160,7 @@
 			isa = PBXGroup;
 			children = (
 				377899A41CFED7B60056BE61 /* g_message.c */,
+				378971D11C4F716700263434 /* g_text.c */,
 				377899DC1CFEDB5B0056BE61 /* g_gatom.c */,
 				378971BF1C4F716700263434 /* g_garray.c */,
 				3720EBB41D239650001675BD /* g_vinlet.c */,
@@ -1441,7 +1442,6 @@
 				3742465E1E59AAE3009E8DC1 /* g_patch.h */,
 				37BA30811CD1DB0F0091113F /* g_object.c */,
 				378971CE1C4F716700263434 /* g_box.c */,
-				378971D11C4F716700263434 /* g_text.c */,
 				372A2CE31E5DC57E00546B87 /* g_traverser.c */,
 				37AB28E01E6185F7004F2F7D /* g_cord.c */,
 				3777AEA71E5B2844003F61A1 /* Canvas */,
