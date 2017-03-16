@@ -23,8 +23,12 @@ extern t_class *canvas_class;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void object_set (t_object *x, t_glist *glist, char *s, int size)
+void object_set (t_object *x, t_glist *glist, t_box *z)
 {
+    char *s = NULL; int size;
+
+    box_getText (z, &s, &size);
+        
     if (!object_isObject (x)) { buffer_withStringUnzeroed (object_getBuffer (x), s, size); }
     else {
     //
@@ -68,8 +72,14 @@ int object_getPixelX (t_object *x, t_glist *glist)
 {
     if (canvas_canHaveWindow (glist)) { return object_getX (x); }
     else {
-        int n = canvas_valueToPixelX (glist, bounds_getLeft (&glist->gl_bounds));
-        return (n - rectangle_getTopLeftX (&glist->gl_geometryGraph) + object_getX (x));
+    //
+    int n = canvas_valueToPixelX (glist, bounds_getLeft (&glist->gl_bounds));
+    
+    n -= rectangle_getTopLeftX (&glist->gl_geometryGraph);
+    n += object_getX (x);
+    
+    return n;
+    //
     }
 }
 
@@ -77,8 +87,14 @@ int object_getPixelY (t_object *x, t_glist *glist)
 {
     if (canvas_canHaveWindow (glist)) { return object_getY (x); }
     else {
-        int n = canvas_valueToPixelY (glist, bounds_getTop (&glist->gl_bounds));
-        return (n - rectangle_getTopLeftY (&glist->gl_geometryGraph) + object_getY (x));
+    //
+    int n = canvas_valueToPixelY (glist, bounds_getTop (&glist->gl_bounds));
+    
+    n -= rectangle_getTopLeftY (&glist->gl_geometryGraph);
+    n += object_getY (x);
+    
+    return n;
+    //
     }
 }
 

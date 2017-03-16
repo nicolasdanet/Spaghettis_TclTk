@@ -359,10 +359,7 @@ int canvas_deselectObject (t_glist *glist, t_gobj *y)
     }
     
     if (z) {
-        char *t = NULL;
-        int size;
-        box_getText (z, &t, &size);
-        object_set (cast_object (y), glist, t, size);
+        object_set (cast_object (y), glist, z);
         canvas_updateLinesByObject (glist, cast_object (y));
         glist->gl_editor->e_selectedText = NULL;
     }
