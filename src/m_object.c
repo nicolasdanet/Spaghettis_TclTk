@@ -61,6 +61,8 @@ void object_set (t_object *x, t_glist *glist, t_box *z)
         canvas_makeTextObject (glist, a, b, w, 0, t);
         canvas_restoreCachedLines (canvas_getView (glist));
         
+        /* Loadbang if the new object is an abstraction. */
+        
         if (instance_getNewestObject() && pd_class (instance_getNewestObject()) == canvas_class) {
             canvas_loadbang (cast_glist (instance_getNewestObject())); 
         }
