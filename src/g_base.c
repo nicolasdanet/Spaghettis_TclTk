@@ -179,7 +179,7 @@ void canvas_addObject (t_glist *glist, t_gobj *y)
         t->g_next = y;
     }
     
-    if (glist->gl_editor && (object = cast_objectIfConnectable (y))) { boxtext_new (glist, object); }
+    if (glist->gl_editor && (object = cast_objectIfConnectable (y))) { box_new (glist, object); }
     if (canvas_isMapped (canvas_getView (glist))) { gobj_visibilityChanged (y, glist, 1); }
     
     if (needToPaintScalars) { paint_draw(); }
@@ -187,9 +187,9 @@ void canvas_addObject (t_glist *glist, t_gobj *y)
 
 void canvas_removeObject (t_glist *glist, t_gobj *y)
 {
-    t_boxtext *text  = NULL;
+    t_box *text  = NULL;
     t_object *object = NULL;
-    t_glist *canvas  = canvas_getView (glist);
+    t_glist *canvas = canvas_getView (glist);
         
     int needToUpdateDSPChain = class_hasDSP (pd_class (y));
     int needToPaintScalars   = class_hasPainterWidgetBehavior (pd_class (y));
@@ -221,12 +221,12 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     }
     
     if (glist->gl_editor && (object = cast_objectIfConnectable (y))) {
-        text = boxtext_fetch (glist, object);
+        text = box_fetch (glist, object);
     }
     
     pd_free (cast_pd (y));
 
-    if (text) { boxtext_free (text); }
+    if (text) { box_free (text); }
     
     if (needToUpdateDSPChain) { dsp_update(); }
     if (needToPaintScalars)   { paint_draw(); }

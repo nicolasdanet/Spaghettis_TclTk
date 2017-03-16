@@ -101,7 +101,7 @@ static void gatom_drawJob (t_gobj *z, t_glist *glist)
 {
     t_gatom *x = (t_gatom *)z;
     
-    boxtext_retext (x->a_owner, cast_object (x));
+    box_retext (x->a_owner, cast_object (x));
 }
 
 // -----------------------------------------------------------------------------------------------------------

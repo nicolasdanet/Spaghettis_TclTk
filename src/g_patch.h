@@ -51,10 +51,10 @@ enum {
     };
 
 enum {
-    BOXTEXT_DOWN            = 1,
-    BOXTEXT_DRAG            = 2,
-    BOXTEXT_DOUBLE          = 3,
-    BOXTEXT_SHIFT           = 4
+    BOX_DOWN                = 1,
+    BOX_DRAG                = 2,
+    BOX_DOUBLE              = 3,
+    BOX_SHIFT               = 4
     };
     
 // -----------------------------------------------------------------------------------------------------------
@@ -159,25 +159,25 @@ int             gobj_isVisible                      (t_gobj *x, t_glist *owner);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_boxtext       *boxtext_new                        (t_glist *glist, t_object *object);
-t_boxtext       *boxtext_fetch                      (t_glist *glist, t_object *object);
-char            *boxtext_getTag                     (t_boxtext *x);
+t_box           *box_new                            (t_glist *glist, t_object *object);
+t_box           *box_fetch                          (t_glist *glist, t_object *object);
+char            *box_getTag                         (t_box *x);
 
-void            boxtext_retext                      (t_glist *glist, t_object *object);
+void            box_retext                          (t_glist *glist, t_object *object);
 
-void            boxtext_free                        (t_boxtext *x);
-int             boxtext_getWidth                    (t_boxtext *x);
-int             boxtext_getHeight                   (t_boxtext *x);
-void            boxtext_getText                     (t_boxtext *x, char **p, int *size);
-void            boxtext_getSelection                (t_boxtext *x, char **p, int *size);
-void            boxtext_draw                        (t_boxtext *x);
-void            boxtext_update                      (t_boxtext *x);
-void            boxtext_erase                       (t_boxtext *x);
-void            boxtext_displace                    (t_boxtext *x, int deltaX, int deltaY);
-void            boxtext_select                      (t_boxtext *x, int isSelected);
-void            boxtext_activate                    (t_boxtext *x, int state);
-void            boxtext_mouse                       (t_boxtext *x, int a, int b, int flag);
-void            boxtext_key                         (t_boxtext *x, t_keycode n, t_symbol *s);
+void            box_free                            (t_box *x);
+int             box_getWidth                        (t_box *x);
+int             box_getHeight                       (t_box *x);
+void            box_getText                         (t_box *x, char **p, int *size);
+void            box_getSelection                    (t_box *x, char **p, int *size);
+void            box_draw                            (t_box *x);
+void            box_update                          (t_box *x);
+void            box_erase                           (t_box *x);
+void            box_displace                        (t_box *x, int deltaX, int deltaY);
+void            box_select                          (t_box *x, int isSelected);
+void            box_activate                        (t_box *x, int state);
+void            box_mouse                           (t_box *x, int a, int b, int flag);
+void            box_key                             (t_box *x, t_keycode n, t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

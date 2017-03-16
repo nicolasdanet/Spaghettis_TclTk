@@ -317,7 +317,7 @@ int canvas_deselectObject (t_glist *glist, t_gobj *y)
 {
     int dspSuspended = 0;
     
-    t_boxtext *z = NULL;
+    t_box *z = NULL;
     
     t_selection *selection1 = NULL;
     t_selection *selection2 = NULL;
@@ -326,7 +326,7 @@ int canvas_deselectObject (t_glist *glist, t_gobj *y)
     
     if (glist->gl_editor->e_selectedText) {
     
-        t_boxtext *text = boxtext_fetch (glist, cast_object (y));
+        t_box *text = box_fetch (glist, cast_object (y));
         
         if (glist->gl_editor->e_selectedText == text) {
             if (glist->gl_editor->e_isTextDirty) {
@@ -361,7 +361,7 @@ int canvas_deselectObject (t_glist *glist, t_gobj *y)
     if (z) {
         char *t = NULL;
         int size;
-        boxtext_getText (z, &t, &size);
+        box_getText (z, &t, &size);
         text_set (cast_object (y), glist, t, size);
         canvas_updateLinesByObject (glist, cast_object (y));
         glist->gl_editor->e_selectedText = NULL;

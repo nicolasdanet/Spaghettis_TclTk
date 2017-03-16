@@ -447,7 +447,7 @@ typedef unsigned long           t_unique;
 #pragma mark -
 
 struct _array;
-struct _boxtext;
+struct _box;
 struct _class;
 struct _clock;
 struct _dspcontext;
@@ -474,7 +474,7 @@ struct _voutlet;
 struct _widgetbehavior;
 
 #define t_array                     struct _array
-#define t_boxtext                   struct _boxtext
+#define t_box                       struct _box
 #define t_class                     struct _class
 #define t_clock                     struct _clock
 #define t_dspcontext                struct _dspcontext

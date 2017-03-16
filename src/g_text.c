@@ -54,12 +54,12 @@ t_widgetbehavior text_widgetBehavior =              /* Shared. */
 
 void text_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
 {
-    t_object *x     = cast_object (z);
-    t_boxtext *text = boxtext_fetch (glist, x);
-    int width       = boxtext_getWidth (text);
-    int height      = boxtext_getHeight (text);
-    int a           = text_getPixelX (x, glist);
-    int b           = text_getPixelY (x, glist);
+    t_object *x = cast_object (z);
+    t_box *text = box_fetch (glist, x);
+    int width   = box_getWidth (text);
+    int height  = box_getHeight (text);
+    int a       = text_getPixelX (x, glist);
+    int b       = text_getPixelY (x, glist);
     
     rectangle_set (r, a, b, a + width, b + height);
 }
@@ -73,9 +73,9 @@ void text_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
     
     if (canvas_isMapped (glist)) {
     //
-    t_boxtext *text = boxtext_fetch (glist, x);
-    boxtext_displace (text, deltaX, deltaY);
-    canvas_drawBox (glist, x, boxtext_getTag (text), 0);
+    t_box *text = box_fetch (glist, x);
+    box_displace (text, deltaX, deltaY);
+    canvas_drawBox (glist, x, box_getTag (text), 0);
     canvas_updateLinesByObject (glist, x);
     //
     }
@@ -87,15 +87,15 @@ void text_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
 
     if (canvas_isMapped (glist)) {
     //
-    t_boxtext *text = boxtext_fetch (glist, x);
+    t_box *text = box_fetch (glist, x);
     
-    boxtext_select (text, isSelected);
+    box_select (text, isSelected);
     
     if (gobj_isVisible (z, glist)) {
     //
     sys_vGui (".x%lx.c itemconfigure %sBORDER -fill #%06x\n",
                     glist, 
-                    boxtext_getTag (text),
+                    box_getTag (text),
                     (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
     //
     }
@@ -105,7 +105,7 @@ void text_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
 
 void text_behaviorActivated (t_gobj *z, t_glist *glist, int isActivated)
 {
-    boxtext_activate (boxtext_fetch (glist, cast_object (z)), isActivated);
+    box_activate (box_fetch (glist, cast_object (z)), isActivated);
 }
 
 void text_behaviorDeleted (t_gobj *z, t_glist *glist)
@@ -119,11 +119,11 @@ void text_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
     
     if (gobj_isVisible (z, glist)) {
     //
-    t_boxtext *text = boxtext_fetch (glist, x);
+    t_box *text = box_fetch (glist, x);
     
-    if (isVisible) { boxtext_draw (text); canvas_drawBox (glist, x, boxtext_getTag (text), 1); } 
+    if (isVisible) { box_draw (text); canvas_drawBox (glist, x, box_getTag (text), 1); } 
     else {
-        canvas_eraseBox (glist, x, boxtext_getTag (text)); boxtext_erase (text);
+        canvas_eraseBox (glist, x, box_getTag (text)); box_erase (text);
     }
     //
     }
