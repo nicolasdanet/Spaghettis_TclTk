@@ -88,14 +88,22 @@ static void box_ellipsis (t_box *x)
     
     if (object_isAtom (o)) {
     //
-    /* Assume that UTF-8 is equal to ASCII for numeric characters. */
-    
     int width = object_getWidth (o);
     
     if ((width > 0) && (x->box_stringSizeInBytes > width)) {
-        x->box_string = PD_MEMORY_RESIZE (x->box_string, x->box_stringSizeInBytes, width);
-        x->box_stringSizeInBytes = width;
-        x->box_string[x->box_stringSizeInBytes - 1] = '*';
+    //
+    int numberOfCharacters = u8_charnum (x->box_string, x->box_stringSizeInBytes);
+    
+    if (numberOfCharacters > width) {
+    //
+    int t = u8_offset (x->box_string, width - 1) + 1;
+    
+    x->box_string = PD_MEMORY_RESIZE (x->box_string, x->box_stringSizeInBytes, t);
+    x->box_stringSizeInBytes = t;
+    x->box_string[x->box_stringSizeInBytes - 1] = '*';          /* Assumed a single octet long (0x2A). */
+    //
+    }
+    //
     }
     //
     }
