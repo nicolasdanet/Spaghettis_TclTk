@@ -86,6 +86,7 @@
 #include "g_stub.c"
 #include "g_proxy.c"
 #include "g_object.c"
+#include "g_typeset.c"
 #include "g_box.c"
 #include "g_cord.c"
 #include "g_traverser.c"

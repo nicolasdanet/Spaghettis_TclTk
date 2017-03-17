@@ -56,6 +56,12 @@ enum {
     BOX_DOUBLE              = 3,
     BOX_SHIFT               = 4
     };
+
+enum {
+    BOX_CHECK               = 0,
+    BOX_CREATE              = 1,
+    BOX_UPDATE              = 2
+    };
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -114,6 +120,28 @@ static inline int inlet_nearby (int x, int a, int b, int n)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define BOX_TAG_SIZE    50
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+struct _box {
+    struct _box         *box_next;
+    t_object            *box_object;
+    t_glist             *box_glist;
+    char                *box_string;                        /* Unzeroed string UTF-8 formatted. */
+    int                 box_stringSizeInBytes;
+    int                 box_selectionStart; 
+    int                 box_selectionEnd;
+    int                 box_draggedFrom;
+    int                 box_isActivated;
+    int                 box_widthInPixels;
+    int                 box_heightInPixels;
+    int                 box_checked;
+    char                box_tag[BOX_TAG_SIZE];
+    };
+    
 typedef struct _cord {
     int                 tr_lineStartX;
     int                 tr_lineStartY;
@@ -164,6 +192,7 @@ t_box       *box_fetch                      (t_glist *glist, t_object *object);
 char        *box_getTag                     (t_box *x);
 
 void        box_retext                      (t_glist *glist, t_object *object);
+int         box_send                        (t_box *x, int action, int a, int b);
 
 void        box_free                        (t_box *x);
 int         box_getWidth                    (t_box *x);
