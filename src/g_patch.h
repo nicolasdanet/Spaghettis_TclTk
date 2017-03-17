@@ -194,6 +194,7 @@ void        gatom_makeObjectFloat           (t_glist *glist, t_symbol *s, int ar
 void        gatom_makeObjectSymbol          (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 
 void        gatom_click                     (t_gatom *x, t_symbol *s, int argc, t_atom *argv);
+int         gatom_isFloat                   (t_gatom *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

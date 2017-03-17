@@ -23,12 +23,17 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+/* Everything related to the text contained in boxes. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 extern t_class *canvas_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define BOX_TAG_SIZE    50
+#define BOX_TAG_SIZE            50
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -38,7 +43,7 @@ struct _box {
     struct _box     *box_next;
     t_object        *box_object;
     t_glist         *box_glist;
-    char            *box_string;                /* Unzeroed string UTF-8 formatted. */
+    char            *box_string;                        /* Unzeroed string UTF-8 formatted. */
     int             box_stringSizeInBytes;
     int             box_selectionStart; 
     int             box_selectionEnd;
@@ -47,7 +52,7 @@ struct _box {
     int             box_widthInPixels;
     int             box_heightInPixels;
     int             box_checked;
-    char             box_tag[BOX_TAG_SIZE];
+    char            box_tag[BOX_TAG_SIZE];
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -81,12 +86,18 @@ static void box_ellipsis (t_box *x)
 {
     t_object *o = x->box_object;
     
-    if (object_isAtom (o)) {
-        if ((object_getWidth (o) > 0) && (x->box_stringSizeInBytes > object_getWidth (o))) {
-            x->box_string = PD_MEMORY_RESIZE (x->box_string, x->box_stringSizeInBytes, object_getWidth (o));
-            x->box_stringSizeInBytes = object_getWidth (o);
-            x->box_string[x->box_stringSizeInBytes - 1] = '*';
-        }
+    if (object_isAtom (o) && gatom_isFloat ((t_gatom *)o)) {
+    //
+    /* Assume that UTF-8 is equal to ASCII for numeric characters. */
+    
+    int width = object_getWidth (o);
+    
+    if ((width > 0) && (x->box_stringSizeInBytes > width)) {
+        x->box_string = PD_MEMORY_RESIZE (x->box_string, x->box_stringSizeInBytes, width);
+        x->box_stringSizeInBytes = width;
+        x->box_string[x->box_stringSizeInBytes - 1] = '*';
+    }
+    //
     }
 }
 

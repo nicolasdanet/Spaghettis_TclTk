@@ -102,7 +102,10 @@ static t_widgetbehavior gatom_widgetBehavior =          /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define ATOM_DIALOG_SIZE        8
+int gatom_isFloat (t_gatom *x)
+{
+    return IS_FLOAT (&x->a_atom);
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -181,7 +184,7 @@ static void gatom_getPostion (t_gatom *x, t_glist *glist, int *positionX, int *p
 
 static void gatom_bang (t_gatom *x)
 {
-    if (IS_FLOAT (&x->a_atom)) {
+    if (gatom_isFloat (x)) {
     
         outlet_float (x->a_outlet, GET_FLOAT (&x->a_atom));
         
@@ -223,7 +226,7 @@ static void gatom_symbol (t_gatom *x, t_symbol *s)
 
 void gatom_click (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (IS_FLOAT (&x->a_atom)) {
+    if (gatom_isFloat (x)) {
     //
     t_float a = atom_getFloatAtIndex (0, argc, argv);
     t_float b = atom_getFloatAtIndex (1, argc, argv);
@@ -238,7 +241,7 @@ static void gatom_set (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc) {
     //
-    if (IS_FLOAT (&x->a_atom)) { SET_FLOAT (&x->a_atom, atom_getFloat (argv)); }
+    if (gatom_isFloat (x)) { SET_FLOAT (&x->a_atom, atom_getFloat (argv)); }
     else {
         SET_SYMBOL (&x->a_atom, atom_getSymbol (argv));
     }
@@ -256,7 +259,7 @@ static void gatom_motion (void *z, t_float deltaX, t_float deltaY, t_float modif
 {
     t_gatom *x = (t_gatom *)z;
     
-    PD_ASSERT (IS_FLOAT (&x->a_atom));
+    PD_ASSERT (gatom_isFloat (x));
     
     if (deltaY != 0.0) { 
     //
@@ -363,7 +366,7 @@ static void gatom_functionProperties (t_gobj *z, t_glist *owner)
     t_symbol *symReceive = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedReceive, 0));
     t_symbol *symLabel   = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedLabel, 0));
     
-    if (IS_FLOAT (&x->a_atom)) {
+    if (gatom_isFloat (x)) {
     
         err = string_sprintf (t, PD_STRING, 
                 "::ui_atom::show %%s %d %g %g %s %g {%s} {%s} {%s} %d\n",       // --
@@ -399,7 +402,7 @@ static void gatom_functionProperties (t_gobj *z, t_glist *owner)
 
 static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == ATOM_DIALOG_SIZE) {
+    if (argc == 8) {
     //
     t_float width           = atom_getFloatAtIndex (0, argc, argv);
     t_float lowRange        = atom_getFloatAtIndex (1, argc, argv);
@@ -445,8 +448,8 @@ static void gatom_makeObjectProceed (t_glist *glist, t_atomtype type, int argc, 
     t_gatom *x = (t_gatom *)pd_new (gatom_class);
     
     object_setBuffer (cast_object (x), buffer_new());
-    object_setWidth (cast_object (x), type == A_FLOAT ? ATOM_WIDTH_FLOAT : ATOM_WIDTH_SYMBOL);
-    object_setType (cast_object (x), TYPE_ATOM);
+    object_setWidth (cast_object (x),  type == A_FLOAT ? ATOM_WIDTH_FLOAT : ATOM_WIDTH_SYMBOL);
+    object_setType (cast_object (x),   TYPE_ATOM);
     
     x->a_owner                  = glist;
     x->a_lowRange               = 0;
@@ -494,7 +497,7 @@ static void gatom_makeObjectProceed (t_glist *glist, t_atomtype type, int argc, 
                 
         if (x->a_receive != &s_) { pd_bind (cast_pd (x), x->a_receive); }
 
-        x->a_outlet = outlet_new (cast_object (x), IS_FLOAT (&x->a_atom) ? &s_float : &s_symbol);
+        x->a_outlet = outlet_new (cast_object (x), gatom_isFloat (x) ? &s_float : &s_symbol);
         
         canvas_addObject (glist, cast_gobj (x));
         
@@ -509,7 +512,7 @@ static void gatom_makeObjectProceed (t_glist *glist, t_atomtype type, int argc, 
         object_setX (cast_object (x), positionX);
         object_setY (cast_object (x), positionY);
         
-        x->a_outlet = outlet_new (cast_object (x), IS_FLOAT (&x->a_atom) ? &s_float : &s_symbol);
+        x->a_outlet = outlet_new (cast_object (x), gatom_isFloat (x) ? &s_float : &s_symbol);
                 
         canvas_addObject (glist, cast_gobj (x));
         
