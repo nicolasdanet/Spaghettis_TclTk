@@ -102,15 +102,6 @@ static t_widgetbehavior gatom_widgetBehavior =          /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int gatom_isFloat (t_gatom *x)
-{
-    return IS_FLOAT (&x->a_atom);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void gatom_drawJob (t_gobj *z, t_glist *glist)
 {
     t_gatom *x = (t_gatom *)z;
@@ -135,6 +126,11 @@ static void gatom_update (t_gatom *x)
     buffer_reset (object_getBuffer (cast_object (x)));
     buffer_appendAtom (object_getBuffer (cast_object (x)), &x->a_atom);
     defer_addJob ((void *)x, x->a_owner, gatom_drawJob);
+}
+
+static int gatom_isFloat (t_gatom *x)
+{
+    return IS_FLOAT (&x->a_atom);
 }
 
 static void gatom_setFloat (t_gatom *x, t_float f)
@@ -342,7 +338,7 @@ static void gatom_functionSave (t_gobj *z, t_buffer *b)
     
     buffer_vAppend (b, "ssiiifffsss;",
         sym___hash__X,
-        (IS_SYMBOL (&x->a_atom) ? sym_symbolatom : sym_floatatom),
+        (gatom_isFloat (x) ? sym_floatatom : sym_symbolatom),
         object_getX (cast_object (x)),
         object_getY (cast_object (x)),
         object_getWidth (cast_object (x)),
@@ -418,15 +414,15 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     
     object_setWidth (cast_object (x), PD_CLAMP (width, 0, ATOM_WIDTH_MAXIMUM));
 
-    x->a_lowRange               = PD_MIN (lowRange, highRange);
-    x->a_highRange              = PD_MAX (lowRange, highRange);
-    x->a_position               = PD_CLAMP (position, ATOM_LABEL_LEFT, ATOM_LABEL_DOWN);
-    x->a_unexpandedSend         = symSend;
-    x->a_unexpandedReceive      = symReceive;
-    x->a_unexpandedLabel        = symLabel;
-    x->a_send                   = canvas_expandDollar (x->a_owner, x->a_unexpandedSend);
-    x->a_receive                = canvas_expandDollar (x->a_owner, x->a_unexpandedReceive);
-    x->a_label                  = canvas_expandDollar (x->a_owner, x->a_unexpandedLabel);
+    x->a_lowRange           = PD_MIN (lowRange, highRange);
+    x->a_highRange          = PD_MAX (lowRange, highRange);
+    x->a_position           = PD_CLAMP (position, ATOM_LABEL_LEFT, ATOM_LABEL_DOWN);
+    x->a_unexpandedSend     = symSend;
+    x->a_unexpandedReceive  = symReceive;
+    x->a_unexpandedLabel    = symLabel;
+    x->a_send               = canvas_expandDollar (x->a_owner, x->a_unexpandedSend);
+    x->a_receive            = canvas_expandDollar (x->a_owner, x->a_unexpandedReceive);
+    x->a_label              = canvas_expandDollar (x->a_owner, x->a_unexpandedLabel);
     
     if (x->a_receive != &s_) { pd_bind (cast_pd (x), x->a_receive); }
     
@@ -451,17 +447,17 @@ static void gatom_makeObjectProceed (t_glist *glist, t_atomtype type, int argc, 
     object_setWidth (cast_object (x),  type == A_FLOAT ? ATOM_WIDTH_FLOAT : ATOM_WIDTH_SYMBOL);
     object_setType (cast_object (x),   TYPE_ATOM);
     
-    x->a_owner                  = glist;
-    x->a_lowRange               = 0;
-    x->a_highRange              = 0;
-    x->a_fontSize               = canvas_getFontSize (x->a_owner);
-    x->a_position               = ATOM_LABEL_RIGHT;
-    x->a_send                   = &s_;
-    x->a_receive                = &s_;
-    x->a_label                  = &s_;
-    x->a_unexpandedSend         = &s_;
-    x->a_unexpandedReceive      = &s_;
-    x->a_unexpandedLabel        = &s_;
+    x->a_owner              = glist;
+    x->a_lowRange           = 0;
+    x->a_highRange          = 0;
+    x->a_fontSize           = canvas_getFontSize (x->a_owner);
+    x->a_position           = ATOM_LABEL_RIGHT;
+    x->a_send               = &s_;
+    x->a_receive            = &s_;
+    x->a_label              = &s_;
+    x->a_unexpandedSend     = &s_;
+    x->a_unexpandedReceive  = &s_;
+    x->a_unexpandedLabel    = &s_;
     
     if (type == A_FLOAT) {
         t_atom a;
@@ -485,15 +481,15 @@ static void gatom_makeObjectProceed (t_glist *glist, t_atomtype type, int argc, 
         object_setY (cast_object (x), atom_getFloatAtIndex (1, argc, argv));
         object_setWidth (cast_object (x), PD_CLAMP (width, 0, ATOM_WIDTH_MAXIMUM));
 
-        x->a_lowRange                       = atom_getFloatAtIndex (3, argc, argv);
-        x->a_highRange                      = atom_getFloatAtIndex (4, argc, argv);
-        x->a_position                       = PD_CLAMP (position, ATOM_LABEL_LEFT, ATOM_LABEL_DOWN);
-        x->a_unexpandedLabel                = gatom_parse (atom_getSymbolAtIndex (6, argc, argv));
-        x->a_unexpandedReceive              = gatom_parse (atom_getSymbolAtIndex (7, argc, argv));
-        x->a_unexpandedSend                 = gatom_parse (atom_getSymbolAtIndex (8, argc, argv));
-        x->a_send                           = canvas_expandDollar (x->a_owner, x->a_unexpandedSend);
-        x->a_receive                        = canvas_expandDollar (x->a_owner, x->a_unexpandedReceive);
-        x->a_label                          = canvas_expandDollar (x->a_owner, x->a_unexpandedLabel);
+        x->a_lowRange           = atom_getFloatAtIndex (3, argc, argv);
+        x->a_highRange          = atom_getFloatAtIndex (4, argc, argv);
+        x->a_position           = PD_CLAMP (position, ATOM_LABEL_LEFT, ATOM_LABEL_DOWN);
+        x->a_unexpandedLabel    = gatom_parse (atom_getSymbolAtIndex (6, argc, argv));
+        x->a_unexpandedReceive  = gatom_parse (atom_getSymbolAtIndex (7, argc, argv));
+        x->a_unexpandedSend     = gatom_parse (atom_getSymbolAtIndex (8, argc, argv));
+        x->a_send               = canvas_expandDollar (x->a_owner, x->a_unexpandedSend);
+        x->a_receive            = canvas_expandDollar (x->a_owner, x->a_unexpandedReceive);
+        x->a_label              = canvas_expandDollar (x->a_owner, x->a_unexpandedLabel);
                 
         if (x->a_receive != &s_) { pd_bind (cast_pd (x), x->a_receive); }
 

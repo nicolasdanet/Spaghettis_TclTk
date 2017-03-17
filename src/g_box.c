@@ -86,7 +86,7 @@ static void box_ellipsis (t_box *x)
 {
     t_object *o = x->box_object;
     
-    if (object_isAtom (o) && gatom_isFloat ((t_gatom *)o)) {
+    if (object_isAtom (o)) {
     //
     /* Assume that UTF-8 is equal to ASCII for numeric characters. */
     
