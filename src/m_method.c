@@ -58,7 +58,7 @@ static void method_execute (t_pd *x, t_method f, int m, t_int *ai, int n, t_floa
 
         switch (METHOD_COMBINE (m, n)) {
         //
-        case METHOD_COMBINE (0, 0)  : o = (*(t_newmethod00)f) ();               break;
+        case METHOD_COMBINE (0, 0)  : o = (*(t_newmethod00)f)();                break;
         case METHOD_COMBINE (0, 1)  : o = (*(t_newmethod01)f) (af[0]);          break;
         case METHOD_COMBINE (0, 2)  : o = (*(t_newmethod02)f) (af[0], af[1]);   break;
         case METHOD_COMBINE (1, 0)  : o = (*(t_newmethod10)f) (ai[0]);          break;

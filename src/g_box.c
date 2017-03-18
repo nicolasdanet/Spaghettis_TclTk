@@ -27,62 +27,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void box_restore (t_box *x)
-{
-    PD_MEMORY_FREE (x->box_string);
-    
-    buffer_toStringUnzeroed (object_getBuffer (x->box_object), &x->box_string, &x->box_stringSizeInBytes);
-}
-
-static void box_delete (t_box *x)
-{
-    int toDelete = (x->box_selectionEnd - x->box_selectionStart);
-
-    if (toDelete > 0) {
-    //
-    int oldSize = x->box_stringSizeInBytes;
-    int newSize = x->box_stringSizeInBytes - toDelete;
-    int i;
-    for (i = x->box_selectionEnd; i < oldSize; i++) { x->box_string[i - toDelete] = x->box_string[i]; }
-    x->box_string = PD_MEMORY_RESIZE (x->box_string, oldSize, newSize);
-    x->box_stringSizeInBytes = newSize;
-    x->box_selectionEnd = x->box_selectionStart;
-    x->box_glist->gl_editor->e_isTextDirty = 1;
-    //
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_box *box_fetch (t_glist *glist, t_object *object)
-{
-    t_box *x = NULL;
-    
-    canvas_createEditorIfNone (glist);
-    
-    for (x = glist->gl_editor->e_boxes; x && x->box_object != object; x = x->box_next) { }
-    
-    PD_ASSERT (x);
-    
-    return x;
-}
-
-void box_retext (t_glist *glist, t_object *object)
-{
-    t_box *text = box_fetch (glist, object);
-    
-    PD_ASSERT (text);
-    
-    if (text) { box_restore (text); if (canvas_isMapped (glist)) { box_update (text); } }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 char *box_getTag (t_box *x)
 {
@@ -117,16 +61,44 @@ void box_getSelection (t_box *x, char **p, int *size)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void box_draw (t_box *x)
+t_box *box_fetch (t_glist *glist, t_object *object)
 {
-    if (object_isAtom (x->box_object)) { box_restore (x); }
+    t_box *x = NULL;
     
-    box_send (x, BOX_CREATE, 0, 0);
+    canvas_createEditorIfNone (glist);
+    
+    for (x = glist->gl_editor->e_boxes; x && x->box_object != object; x = x->box_next) { }
+    
+    PD_ASSERT (x);
+    
+    return x;
 }
 
-void box_update (t_box *x)
+void box_update (t_glist *glist, t_object *object)
 {
-    box_send (x, BOX_UPDATE, 0, 0);
+    t_box *x = box_fetch (glist, object);
+    
+    PD_ASSERT (x);
+    
+    if (x) {
+    //
+    PD_ASSERT (x->box_string);
+    PD_MEMORY_FREE (x->box_string);
+    
+    buffer_toStringUnzeroed (object_getBuffer (x->box_object), &x->box_string, &x->box_stringSizeInBytes);
+        
+    if (canvas_isMapped (glist)) { box_send (x, BOX_UPDATE, 0, 0); } 
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void box_draw (t_box *x)
+{
+    box_send (x, BOX_CREATE, 0, 0);
 }
 
 void box_erase (t_box *x)
@@ -231,6 +203,47 @@ void box_mouse (t_box *x, int a, int b, int flag)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void box_keyDeleteProceed (t_box *x)
+{
+    int toDelete = (x->box_selectionEnd - x->box_selectionStart);
+
+    if (toDelete > 0) {
+    //
+    int oldSize = x->box_stringSizeInBytes;
+    int newSize = x->box_stringSizeInBytes - toDelete;
+    int i;
+    for (i = x->box_selectionEnd; i < oldSize; i++) { x->box_string[i - toDelete] = x->box_string[i]; }
+    x->box_string = PD_MEMORY_RESIZE (x->box_string, oldSize, newSize);
+    x->box_stringSizeInBytes = newSize;
+    x->box_selectionEnd = x->box_selectionStart;
+    x->box_glist->gl_editor->e_isTextDirty = 1;
+    //
+    }
+}
+
+static int box_keyDelete (t_box *x, t_symbol *s)
+{
+    if (s == sym_BackSpace) {                                           /* Backward. */
+        if (x->box_selectionStart == x->box_selectionEnd) {
+            if (x->box_selectionStart > 0) { 
+                u8_dec (x->box_string, &x->box_selectionStart); 
+            }
+        }
+        
+    } else if (s == sym_Delete) {                                       /* Forward. */
+        if (x->box_selectionStart == x->box_selectionEnd) {
+            if (x->box_selectionEnd < x->box_stringSizeInBytes) {
+                u8_inc (x->box_string, &x->box_selectionEnd);
+            }
+        }
+    }
+    
+    if (s == sym_BackSpace || s == sym_Delete) { box_keyDeleteProceed (x); return 1; }
+    else {
+        return 0;
+    }
+}
+
 static int box_keyArrows (t_box *x, t_symbol *s)
 {
     if (s == sym_Right) {
@@ -257,32 +270,9 @@ static int box_keyArrows (t_box *x, t_symbol *s)
     return (s == sym_Right || s == sym_Left);
 }
 
-static int box_keyDelete (t_box *x, t_symbol *s)
-{
-    if (s == sym_BackSpace) {                                           /* Backward. */
-        if (x->box_selectionStart == x->box_selectionEnd) {
-            if (x->box_selectionStart > 0) { 
-                u8_dec (x->box_string, &x->box_selectionStart); 
-            }
-        }
-        
-    } else if (s == sym_Delete) {                                       /* Forward. */
-        if (x->box_selectionStart == x->box_selectionEnd) {
-            if (x->box_selectionEnd < x->box_stringSizeInBytes) {
-                u8_inc (x->box_string, &x->box_selectionEnd);
-            }
-        }
-    }
-    
-    if (s == sym_BackSpace || s == sym_Delete) { box_delete (x); return 1; }
-    else {
-        return 0;
-    }
-}
-
 static void box_keyASCII (t_box *x, t_keycode n)
 {
-    box_delete (x);
+    box_keyDeleteProceed (x);
     
     {
     //
@@ -300,7 +290,7 @@ static void box_keyASCII (t_box *x, t_keycode n)
 
 static void box_keyCodePoint (t_box *x, t_keycode n, t_symbol *s)
 {
-    box_delete (x);
+    box_keyDeleteProceed (x);
     
     {
     //

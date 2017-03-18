@@ -191,16 +191,15 @@ t_box       *box_new                        (t_glist *glist, t_object *object);
 t_box       *box_fetch                      (t_glist *glist, t_object *object);
 char        *box_getTag                     (t_box *x);
 
-void        box_retext                      (t_glist *glist, t_object *object);
-int         box_send                        (t_box *x, int action, int a, int b);
-
-void        box_free                        (t_box *x);
 int         box_getWidth                    (t_box *x);
 int         box_getHeight                   (t_box *x);
 void        box_getText                     (t_box *x, char **p, int *size);
 void        box_getSelection                (t_box *x, char **p, int *size);
+
+void        box_free                        (t_box *x);
+void        box_update                      (t_glist *glist, t_object *object);
+int         box_send                        (t_box *x, int action, int a, int b);
 void        box_draw                        (t_box *x);
-void        box_update                      (t_box *x);
 void        box_erase                       (t_box *x);
 void        box_displace                    (t_box *x, int deltaX, int deltaY);
 void        box_select                      (t_box *x, int isSelected);

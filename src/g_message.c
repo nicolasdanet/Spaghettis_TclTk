@@ -126,20 +126,20 @@ static void message_set (t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
     buffer_reset (object_getBuffer (cast_object (x)));
     buffer_append (object_getBuffer (cast_object (x)), argc, argv);
-    box_retext (x->m_owner, cast_object (x));
+    box_update (x->m_owner, cast_object (x));
 }
 
 static void message_add (t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
     buffer_append (object_getBuffer (cast_object (x)), argc, argv);
     buffer_appendSemicolon (object_getBuffer (cast_object (x)));
-    box_retext (x->m_owner, &x->m_obj);
+    box_update (x->m_owner, &x->m_obj);
 }
 
 static void message_append (t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
     buffer_append (object_getBuffer (cast_object (x)), argc, argv);
-    box_retext (x->m_owner, cast_object (x));
+    box_update (x->m_owner, cast_object (x));
 }
 
 static void message_addComma (t_message *x)
@@ -147,7 +147,7 @@ static void message_addComma (t_message *x)
     t_atom a; SET_COMMA (&a);
     
     buffer_appendAtom (object_getBuffer (cast_object (x)), &a);
-    box_retext (x->m_owner, cast_object (x));
+    box_update (x->m_owner, cast_object (x));
 }
 
 static void message_addSemicolon (t_message *x)
@@ -161,7 +161,7 @@ static void message_addDollar (t_message *x, t_float f)
     t_atom a; SET_DOLLAR (&a, n);
     
     buffer_appendAtom (object_getBuffer (cast_object (x)), &a);
-    box_retext (x->m_owner, cast_object (x));
+    box_update (x->m_owner, cast_object (x));
 }
 
 static void message_addDollarSymbol (t_message *x, t_symbol *s)
@@ -173,7 +173,7 @@ static void message_addDollarSymbol (t_message *x, t_symbol *s)
     SET_DOLLARSYMBOL (&a, gensym (t));
 
     buffer_appendAtom (object_getBuffer (cast_object (x)), &a);
-    box_retext (x->m_owner, cast_object (x));
+    box_update (x->m_owner, cast_object (x));
 }
 
 // -----------------------------------------------------------------------------------------------------------
