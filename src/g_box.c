@@ -28,6 +28,12 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+int box_send (t_box *x, int, int, int);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 char *box_getTag (t_box *x)
 {
     return x->box_tag;
@@ -82,7 +88,6 @@ void box_update (t_glist *glist, t_object *object)
     
     if (x) {
     //
-    PD_ASSERT (x->box_string);
     PD_MEMORY_FREE (x->box_string);
     
     buffer_toStringUnzeroed (object_getBuffer (x->box_object), &x->box_string, &x->box_stringSizeInBytes);
@@ -98,6 +103,10 @@ void box_update (t_glist *glist, t_object *object)
 
 void box_draw (t_box *x)
 {
+    PD_MEMORY_FREE (x->box_string);
+    
+    buffer_toStringUnzeroed (object_getBuffer (x->box_object), &x->box_string, &x->box_stringSizeInBytes);
+    
     box_send (x, BOX_CREATE, 0, 0);
 }
 
@@ -338,11 +347,11 @@ t_box *box_new (t_glist *glist, t_object *object)
 {
     t_box *x = (t_box *)PD_MEMORY_GET (sizeof (t_box));
 
-    x->box_next   = glist->gl_editor->e_boxes;
-    x->box_object = object;
-    x->box_glist  = glist;
-
-    buffer_toStringUnzeroed (object_getBuffer (object), &x->box_string, &x->box_stringSizeInBytes);
+    x->box_next              = glist->gl_editor->e_boxes;
+    x->box_object            = object;
+    x->box_glist             = glist;
+    x->box_string            = (char *)PD_MEMORY_GET (0);
+    x->box_stringSizeInBytes = 0;
     
     {
     //

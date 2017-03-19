@@ -333,7 +333,7 @@ static void box_sendUpdate (t_box *x, t_typesethelper *p)
 {
     t_glist *glist = canvas_getView (x->box_glist);
     
-    sys_vGui ("::ui_box::setText .x%lx.c %s {%s}\n",    // --
+    sys_vGui ("::ui_box::setText .x%lx.c %s {%s}\n",                    // --
                     glist,
                     x->box_tag,
                     p->p_typeset);

@@ -359,7 +359,7 @@ int canvas_deselectObject (t_glist *glist, t_gobj *y)
     }
     
     if (z) {
-        object_set (cast_object (y), glist, z);
+        object_setFromEntry (cast_object (y), glist, z);
         canvas_updateLinesByObject (glist, cast_object (y));
         glist->gl_editor->e_selectedText = NULL;
     }

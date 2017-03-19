@@ -23,7 +23,7 @@ extern t_class *canvas_class;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void object_set (t_object *x, t_glist *glist, t_box *z)
+void object_setFromEntry (t_object *x, t_glist *glist, t_box *z)
 {
     char *s = NULL; int size;
 
