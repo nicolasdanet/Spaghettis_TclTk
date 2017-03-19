@@ -453,6 +453,7 @@
 		372F9C6C1E3B461100A0BEF8 /* pa_mac_hostapis.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_mac_hostapis.c; path = src/pa_mac_hostapis.c; sourceTree = "<group>"; };
 		37329A681E4631D5008AA5E4 /* s_defer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_defer.c; path = src/s_defer.c; sourceTree = "<group>"; };
 		37329A691E4631D5008AA5E4 /* s_monitor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_monitor.c; path = src/s_monitor.c; sourceTree = "<group>"; };
+		373303351E7EE9D9000DF74C /* g_editor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_editor.h; path = src/g_editor.h; sourceTree = "<group>"; };
 		3733937E1DBA6E4E00A76E6E /* s_inmidi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_inmidi.c; path = src/s_inmidi.c; sourceTree = "<group>"; };
 		3733937F1DBA6E4E00A76E6E /* s_outmidi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_outmidi.c; path = src/s_outmidi.c; sourceTree = "<group>"; };
 		373393BF1DBA702D00A76E6E /* x_bag.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_bag.c; path = src/x_bag.c; sourceTree = "<group>"; };
@@ -1290,6 +1291,7 @@
 		3777AEA71E5B2844003F61A1 /* Canvas */ = {
 			isa = PBXGroup;
 			children = (
+				373303351E7EE9D9000DF74C /* g_editor.h */,
 				37702F511D41EA3300AE3FE2 /* g_canvas.h */,
 				370939441CC92BF300827F75 /* g_base.c */,
 				370939431CC92BF300827F75 /* g_draw.c */,

@@ -14,67 +14,31 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-typedef void (*t_motionfn)  (void *z, t_float deltaX, t_float deltaY, t_float modifier);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-typedef struct _selection {
-    t_gobj              *sel_what;
-    struct _selection   *sel_next;
-    } t_selection;
-    
-typedef struct _editor {
-    t_proxy             *e_proxy;
-    t_box               *e_boxes;
-    t_box               *e_selectedText;
-    t_selection         *e_selectedObjects;
-    t_gobj              *e_grabbed;
-    t_clock             *e_clock;
-    t_buffer            *e_cachedLines;
-    t_outconnect        *e_selectedLineConnection;
-    t_atom              e_selectedLine[4];
-    t_motionfn          e_fnMotion;
-    int                 e_previousX;
-    int                 e_previousY;
-    int                 e_newX;
-    int                 e_newY;
-    int                 e_action;
-    int                 e_isTextDirty;
-    int                 e_hasSelectedline;
-    } t_editor;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 
 struct _glist {  
-    t_object            gl_obj;                         /* MUST be the first. */
-    t_gobj              *gl_graphics;
-    t_gmaster           *gl_holder;
-    t_glist             *gl_parent;
-    t_glist             *gl_next;
-    t_environment       *gl_environment;
-    t_symbol            *gl_name;
-    t_editor            *gl_editor;
-    t_unique            gl_uniqueIdentifier;
-    t_bounds            gl_bounds;
-    t_rectangle         gl_geometryGraph;
-    t_rectangle         gl_geometryWindow;
-    t_fontsize          gl_fontSize;
-    char                gl_isMapped;
-    char                gl_isDirty;
-    char                gl_isLoading;
-    char                gl_isDeleting;
-    char                gl_isEditMode;
-    char                gl_isSelected;
-    char                gl_isGraphOnParent;
-    char                gl_hasWindow;
-    char                gl_hideText;                    /* Unused but kept for compatibility. */
-    char                gl_saveScalar;
-    char                gl_openedAtLoad;
+    t_object        gl_obj;                             /* MUST be the first. */
+    t_gobj          *gl_graphics;
+    t_gmaster       *gl_holder;
+    t_glist         *gl_parent;
+    t_glist         *gl_next;
+    t_environment   *gl_environment;
+    t_symbol        *gl_name;
+    t_editor        *gl_editor;
+    t_unique        gl_uniqueIdentifier;
+    t_bounds        gl_bounds;
+    t_rectangle     gl_geometryGraph;
+    t_rectangle     gl_geometryWindow;
+    t_fontsize      gl_fontSize;
+    char            gl_isMapped;
+    char            gl_isDirty;
+    char            gl_isLoading;
+    char            gl_isDeleting;
+    char            gl_isEditMode;
+    char            gl_isSelected;
+    char            gl_isGraphOnParent;
+    char            gl_hasWindow;
+    char            gl_hideText;                        /* Unused but kept for compatibility. */
+    char            gl_openedAtLoad;
     };
 
 // -----------------------------------------------------------------------------------------------------------

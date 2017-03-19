@@ -74,6 +74,7 @@ static inline char *proxy_getBoundAsString (t_proxy *x)
 // -----------------------------------------------------------------------------------------------------------
 
 #include "g_patch.h"
+#include "g_editor.h"
 #include "g_canvas.h"
 #include "g_iem.h"
 #include "g_scalar.h"
