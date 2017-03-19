@@ -33,9 +33,10 @@ typedef struct _editor {
     t_box               *e_selectedText;
     t_selection         *e_selectedObjects;
     t_gobj              *e_grabbed;
-    t_buffer            *e_buffer;
     t_clock             *e_clock;
+    t_buffer            *e_cachedLines;
     t_outconnect        *e_selectedLineConnection;
+    t_atom              e_selectedLine[4];
     t_motionfn          e_fnMotion;
     int                 e_previousX;
     int                 e_previousY;
@@ -43,8 +44,7 @@ typedef struct _editor {
     int                 e_newY;
     int                 e_action;
     int                 e_isTextDirty;
-    int                 e_isSelectedline;
-    t_atom              e_selectedLine[4];
+    int                 e_hasSelectedline;
     } t_editor;
 
 // -----------------------------------------------------------------------------------------------------------

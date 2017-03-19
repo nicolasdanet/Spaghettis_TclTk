@@ -52,7 +52,7 @@ static void canvas_deselectAllRecursive (t_gobj *y)
 
 static void canvas_deselectLine (t_glist *glist)
 {
-    glist->gl_editor->e_isSelectedline = 0;
+    glist->gl_editor->e_hasSelectedline = 0;
     
     sys_vGui (".x%lx.c itemconfigure %lxLINE -fill black\n",
                     canvas_getView (glist),
@@ -95,7 +95,7 @@ static void canvas_cacheLines (t_glist *glist)
         glist->gl_graphics = unselectedHead; unselectedTail->g_next = selectedHead; 
     }
 
-    buffer_reset (glist->gl_editor->e_buffer);
+    buffer_reset (glist->gl_editor->e_cachedLines);
     
     traverser_start (&t, glist);
     
@@ -106,7 +106,7 @@ static void canvas_cacheLines (t_glist *glist)
     
     if (s1 != s2) {
     //
-    buffer_vAppend (glist->gl_editor->e_buffer, "ssiiii;",
+    buffer_vAppend (glist->gl_editor->e_cachedLines, "ssiiii;",
         sym___hash__X, 
         sym_connect,
         canvas_getIndexOfObject (glist, cast_gobj (traverser_getSource (&t))),
@@ -121,7 +121,7 @@ static void canvas_cacheLines (t_glist *glist)
 
 void canvas_restoreCachedLines (t_glist *glist)
 {
-    instance_stackEval (glist, glist->gl_editor->e_buffer);
+    instance_stackEval (glist, glist->gl_editor->e_cachedLines);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -160,7 +160,7 @@ void canvas_removeSelectedObjects (t_glist *glist)
 
 void canvas_removeSelectedLine (t_glist *glist)
 {
-    if (glist->gl_editor->e_isSelectedline) {
+    if (glist->gl_editor->e_hasSelectedline) {
         canvas_disconnect (glist, NULL, 4, glist->gl_editor->e_selectedLine);
         canvas_dirty (glist, 1);
     }
@@ -268,7 +268,7 @@ void canvas_selectObject (t_glist *glist, t_gobj *y)
 {
     t_selection *selection = (t_selection *)PD_MEMORY_GET (sizeof (t_selection));
     
-    if (glist->gl_editor->e_isSelectedline) { canvas_deselectLine (glist); }
+    if (glist->gl_editor->e_hasSelectedline) { canvas_deselectLine (glist); }
 
     PD_ASSERT (!canvas_isObjectSelected (glist, y));    /* Must NOT be already selected. */
     
@@ -297,7 +297,7 @@ void canvas_selectLine (t_glist *glist,
 {
     canvas_deselectAll (glist);
         
-    glist->gl_editor->e_isSelectedline = 1;
+    glist->gl_editor->e_hasSelectedline = 1;
     glist->gl_editor->e_selectedLineConnection = connection;
     
     SET_FLOAT (glist->gl_editor->e_selectedLine + 0, indexOfObjectOut);
@@ -386,7 +386,7 @@ int canvas_deselectAll (t_glist *glist)
         k |= canvas_deselectObject (glist, glist->gl_editor->e_selectedObjects->sel_what);
     }
 
-    if (glist->gl_editor->e_isSelectedline) { canvas_deselectLine (glist); }
+    if (glist->gl_editor->e_hasSelectedline) { canvas_deselectLine (glist); }
     //
     }
     

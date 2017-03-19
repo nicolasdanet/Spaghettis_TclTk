@@ -661,7 +661,7 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
         }
         
     } else if (s == sym_Delete || s == sym_BackSpace) {
-        if (glist->gl_editor->e_isSelectedline) { canvas_removeSelectedLine (glist); }
+        if (glist->gl_editor->e_hasSelectedline) { canvas_removeSelectedLine (glist); }
         else if (glist->gl_editor->e_selectedObjects) { 
             canvas_removeSelectedObjects (glist); 
         }
@@ -823,7 +823,7 @@ void canvas_cut (t_glist *glist)
     if (!glist->gl_editor || !glist->gl_isEditMode) { return; }
     else {
     //
-    if (glist->gl_editor->e_isSelectedline)    { canvas_removeSelectedLine (glist); }
+    if (glist->gl_editor->e_hasSelectedline)    { canvas_removeSelectedLine (glist); }
     else if (glist->gl_editor->e_selectedText) {
         canvas_copy (glist);
         box_key (glist->gl_editor->e_selectedText, (t_keycode)127, sym_Delete);
@@ -903,9 +903,9 @@ static t_editor *editor_new (t_glist *owner)
 {
     t_editor *x = (t_editor *)PD_MEMORY_GET (sizeof (t_editor));
  
-    x->e_buffer = buffer_new();
-    x->e_clock  = clock_new ((void *)owner, (t_method)canvas_taskDisplace);
-    x->e_proxy  = proxy_new (cast_pd (owner));
+    x->e_cachedLines = buffer_new();
+    x->e_clock       = clock_new ((void *)owner, (t_method)canvas_taskDisplace);
+    x->e_proxy       = proxy_new (cast_pd (owner));
     
     return x;
 }
@@ -914,7 +914,7 @@ static void editor_free (t_editor *x)
 {
     proxy_release (x->e_proxy);
     clock_free (x->e_clock);
-    buffer_free (x->e_buffer);
+    buffer_free (x->e_cachedLines);
 
     PD_MEMORY_FREE (x);
 }
