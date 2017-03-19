@@ -203,7 +203,7 @@ void        box_draw                        (t_box *x);
 void        box_erase                       (t_box *x);
 void        box_displace                    (t_box *x, int deltaX, int deltaY);
 void        box_select                      (t_box *x, int isSelected);
-void        box_activate                    (t_box *x, int state);
+void        box_activate                    (t_box *x, int isActivated);
 void        box_mouse                       (t_box *x, int a, int b, int flag);
 void        box_key                         (t_box *x, t_keycode n, t_symbol *s);
 

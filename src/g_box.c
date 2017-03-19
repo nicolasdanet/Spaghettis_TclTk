@@ -80,7 +80,16 @@ t_box *box_fetch (t_glist *glist, t_object *object)
     return x;
 }
 
+void box_update (t_box *x)
+{
+    PD_ASSERT (x);
 
+    PD_MEMORY_FREE (x->box_string);
+    
+    buffer_toStringUnzeroed (object_getBuffer (x->box_object), &x->box_string, &x->box_stringSizeInBytes);
+        
+    if (canvas_isMapped (x->box_glist)) { box_send (x, BOX_UPDATE, 0, 0); } 
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -121,42 +130,30 @@ void box_select (t_box *x, int isSelected)
                     (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
 }
 
-void box_activate (t_box *x, int state)
+void box_activate (t_box *x, int isActivated)
 {
-    if (state) {
-    //
-    sys_vGui ("::ui_box::setEditing .x%lx %s 1\n", x->box_glist, x->box_tag);
-                    
-    x->box_glist->gl_editor->e_selectedText = x;
-    x->box_glist->gl_editor->e_isTextDirty  = 0;
-    
-    x->box_draggedFrom      = 0;
-    x->box_selectionStart   = 0;
-    x->box_selectionEnd     = x->box_stringSizeInBytes;
-    x->box_isActivated      = 1;
-    //
+    if (isActivated) {
+
+        sys_vGui ("::ui_box::setEditing .x%lx %s 1\n", x->box_glist, x->box_tag);
+                        
+        x->box_glist->gl_editor->e_selectedText = x;
+        x->box_glist->gl_editor->e_isTextDirty  = 0;
+        
+        x->box_draggedFrom      = 0;
+        x->box_selectionStart   = 0;
+        x->box_selectionEnd     = x->box_stringSizeInBytes;
+        x->box_isActivated      = 1;
+
     } else {
-    //
-    sys_vGui ("::ui_box::setEditing .x%lx {} 0\n", x->box_glist);   // --
-                    
-    if (x->box_glist->gl_editor->e_selectedText == x) { x->box_glist->gl_editor->e_selectedText = NULL; }
-    
-    x->box_isActivated = 0;
-    //
+
+        sys_vGui ("::ui_box::setEditing .x%lx {} 0\n", x->box_glist);   // --
+                        
+        if (x->box_glist->gl_editor->e_selectedText == x) { x->box_glist->gl_editor->e_selectedText = NULL; }
+        
+        x->box_isActivated = 0;
     }
 
     box_send (x, BOX_UPDATE, 0, 0);
-}
-
-void box_update (t_box *x)
-{
-    PD_ASSERT (x);
-
-    PD_MEMORY_FREE (x->box_string);
-    
-    buffer_toStringUnzeroed (object_getBuffer (x->box_object), &x->box_string, &x->box_stringSizeInBytes);
-        
-    if (canvas_isMapped (x->box_glist)) { box_send (x, BOX_UPDATE, 0, 0); } 
 }
 
 // -----------------------------------------------------------------------------------------------------------
