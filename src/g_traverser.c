@@ -83,7 +83,37 @@ void traverser_start (t_traverser *t, t_glist *glist)
     t->tr_srcNumberOfOutlets    = 0;
 }
 
-/* Get the lines outlet per outlet, object per object. */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void traverser_nextSetCord (t_traverser *t)
+{
+    gobj_getRectangle (cast_gobj (t->tr_destObject), t->tr_owner, &t->tr_destBox);
+    
+    {
+    //
+    int w = rectangle_getWidth (&t->tr_srcBox);
+    int i = t->tr_srcIndexOfOutlet;
+    int j = t->tr_srcNumberOfOutlets;
+        
+    t->tr_cord.tr_lineStartX = rectangle_getTopLeftX (&t->tr_srcBox) + inlet_middle (w, i, j);
+    t->tr_cord.tr_lineStartY = rectangle_getBottomRightY (&t->tr_srcBox);
+    //
+    }
+    {
+    //
+    int w = rectangle_getWidth (&t->tr_destBox);
+    int i = t->tr_destIndexOfInlet;
+    int j = t->tr_destNumberOfInlets;
+        
+    t->tr_cord.tr_lineEndX = rectangle_getTopLeftX (&t->tr_destBox) + inlet_middle (w, i, j);
+    t->tr_cord.tr_lineEndY = rectangle_getTopLeftY (&t->tr_destBox);
+    //
+    }
+}
+
+/* Get the cords outlet per outlet, object per object. */
 /* Coordinates are set at the same time. */
 
 t_outconnect *traverser_next (t_traverser *t)
@@ -123,7 +153,7 @@ t_outconnect *traverser_next (t_traverser *t)
     
     t->tr_srcIndexOfOutlet     = n;
     t->tr_srcIndexOfNextOutlet = n + 1;
-    connection = traverser_outletStart  (t->tr_srcObject, &t->tr_srcOutlet, n);
+    connection = traverser_outletStart (t->tr_srcObject, &t->tr_srcOutlet, n);
     //
     }
     
@@ -136,29 +166,10 @@ t_outconnect *traverser_next (t_traverser *t)
     
     PD_ASSERT (t->tr_destNumberOfInlets);
     
-    if (canvas_isMapped (t->tr_owner)) {
-
-        gobj_getRectangle (cast_gobj (t->tr_destObject), t->tr_owner, &t->tr_destBox);
-        
-        {
-            int w = rectangle_getWidth (&t->tr_srcBox);
-            int i = t->tr_srcIndexOfOutlet;
-            int j = t->tr_srcNumberOfOutlets;
-        
-            t->tr_cord.tr_lineStartX = rectangle_getTopLeftX (&t->tr_srcBox) + inlet_middle (w, i, j);
-            t->tr_cord.tr_lineStartY = rectangle_getBottomRightY (&t->tr_srcBox);
-        }
-        {
-            int w = rectangle_getWidth (&t->tr_destBox);
-            int i = t->tr_destIndexOfInlet;
-            int j = t->tr_destNumberOfInlets;
-        
-            t->tr_cord.tr_lineEndX = rectangle_getTopLeftX (&t->tr_destBox) + inlet_middle (w, i, j);
-            t->tr_cord.tr_lineEndY = rectangle_getTopLeftY (&t->tr_destBox);
-        }
-        
-    } else {
-        rectangle_set (&t->tr_destBox, 0, 0, 0, 0); cord_init (&t->tr_cord);
+    if (canvas_isMapped (t->tr_owner)) { traverser_nextSetCord (t); }
+    else {
+        rectangle_set (&t->tr_destBox, 0, 0, 0, 0);
+        cord_init (&t->tr_cord);
     }
     
     return connection;
