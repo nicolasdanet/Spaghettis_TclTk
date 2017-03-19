@@ -146,20 +146,19 @@ proc _create {top width low high type value send receive name position} {
                                                         -textvariable ::ui_atom::atomReceive($top) \
                                                         -width $::width(large)
 
-    if {$type eq "symbolatom"} {
-    
-        $top.f.properties.low                       state disabled
-        $top.f.properties.high                      state disabled
-    }
-    
     grid $top.f.properties.widthLabel               -row 0 -column 0 -sticky ew
     grid $top.f.properties.width                    -row 0 -column 1 -sticky ew
     grid $top.f.properties.valueLabel               -row 1 -column 0 -sticky ew
     grid $top.f.properties.value                    -row 1 -column 1 -sticky ew
+    
+    if {$type eq "floatatom"} {
+
     grid $top.f.properties.lowLabel                 -row 2 -column 0 -sticky ew
     grid $top.f.properties.low                      -row 2 -column 1 -sticky ew
     grid $top.f.properties.highLabel                -row 3 -column 0 -sticky ew
     grid $top.f.properties.high                     -row 3 -column 1 -sticky ew
+    
+    }
     
     grid $top.f.label.nameLabel                     -row 0 -column 0 -sticky ew
     grid $top.f.label.name                          -row 0 -column 1 -sticky ew
