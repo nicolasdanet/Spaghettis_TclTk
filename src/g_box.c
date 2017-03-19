@@ -80,26 +80,13 @@ t_box *box_fetch (t_glist *glist, t_object *object)
     return x;
 }
 
-void box_update (t_glist *glist, t_object *object)
-{
-    t_box *x = box_fetch (glist, object);
-    
-    PD_ASSERT (x);
-    
-    if (x) {
-    //
-    PD_MEMORY_FREE (x->box_string);
-    
-    buffer_toStringUnzeroed (object_getBuffer (x->box_object), &x->box_string, &x->box_stringSizeInBytes);
-        
-    if (canvas_isMapped (glist)) { box_send (x, BOX_UPDATE, 0, 0); } 
-    //
-    }
-}
+
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+/* Due to loadbang the content is set here (instead that in constructor). */
 
 void box_draw (t_box *x)
 {
@@ -159,6 +146,17 @@ void box_activate (t_box *x, int state)
     }
 
     box_send (x, BOX_UPDATE, 0, 0);
+}
+
+void box_update (t_box *x)
+{
+    PD_ASSERT (x);
+
+    PD_MEMORY_FREE (x->box_string);
+    
+    buffer_toStringUnzeroed (object_getBuffer (x->box_object), &x->box_string, &x->box_stringSizeInBytes);
+        
+    if (canvas_isMapped (x->box_glist)) { box_send (x, BOX_UPDATE, 0, 0); } 
 }
 
 // -----------------------------------------------------------------------------------------------------------

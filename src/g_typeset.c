@@ -314,7 +314,7 @@ static int box_typeset (t_box *x, t_typesethelper *p)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void box_sendFirst (t_box *x, t_typesethelper *p)
+static void box_sendCreate (t_box *x, t_typesethelper *p)
 {
     t_glist *glist = canvas_getView (x->box_glist);
     int isSelected = canvas_isObjectSelected (x->box_glist, cast_gobj (x->box_object));
@@ -379,8 +379,8 @@ int box_send (t_box *x, int action, int a, int b)
     int indexOfMouse = box_typeset (x, box_typesetAllocate (x, a, b, &p));
     int resized      = box_typesetHasBeenResized (x, &p);
         
-    if (action == BOX_CHECK)       { x->box_checked = 1;    }   /* Required only once at creation time. */
-    else if (action == BOX_CREATE) { box_sendFirst (x, &p); }
+    if (action == BOX_CHECK)       { x->box_checked = 1;     }   /* Required only once at creation time. */
+    else if (action == BOX_CREATE) { box_sendCreate (x, &p); }
     else if (action == BOX_UPDATE) {
     
         box_sendUpdate (x, &p); 

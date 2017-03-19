@@ -189,17 +189,16 @@ int         gobj_isVisible                  (t_gobj *x, t_glist *owner);
 
 t_box       *box_fetch                      (t_glist *glist, t_object *object);
 t_box       *box_new                        (t_glist *glist, t_object *object);
-
-void        box_update                      (t_glist *glist, t_object *object);
-void        box_free                        (t_box *x);
-
 char        *box_getTag                     (t_box *x);
+
+void        box_free                        (t_box *x);
 
 int         box_getWidth                    (t_box *x);
 int         box_getHeight                   (t_box *x);
 void        box_getText                     (t_box *x, char **p, int *size);
 void        box_getSelection                (t_box *x, char **p, int *size);
 
+void        box_update                      (t_box *x);
 void        box_draw                        (t_box *x);
 void        box_erase                       (t_box *x);
 void        box_displace                    (t_box *x, int deltaX, int deltaY);
