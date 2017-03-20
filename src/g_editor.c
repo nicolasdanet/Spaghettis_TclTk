@@ -17,6 +17,21 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static void editor_task (t_editor *x)
+{
+    int deltaX = x->e_newX - x->e_previousX;
+    int deltaY = x->e_newY - x->e_previousY;
+    
+    canvas_displaceSelectedObjects (x->e_owner, deltaX, deltaY);
+        
+    x->e_previousX = x->e_newX;
+    x->e_previousY = x->e_newY;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void editor_selectionAdd (t_editor *x, t_gobj *y)
 {
     t_selection *s = (t_selection *)PD_MEMORY_GET (sizeof (t_selection));
@@ -50,6 +65,31 @@ int editor_selectionRemove (t_editor *x, t_gobj *y)
     }
     
     return 0;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_editor *editor_new (t_glist *owner)
+{
+    t_editor *x = (t_editor *)PD_MEMORY_GET (sizeof (t_editor));
+    
+    x->e_owner          = owner;
+    x->e_proxy          = proxy_new (cast_pd (owner));
+    x->e_clock          = clock_new ((void *)x, (t_method)editor_task);
+    x->e_cachedLines    = buffer_new();
+    
+    return x;
+}
+
+void editor_free (t_editor *x)
+{
+    buffer_free (x->e_cachedLines);
+    clock_free (x->e_clock);
+    proxy_release (x->e_proxy);
+    
+    PD_MEMORY_FREE (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------

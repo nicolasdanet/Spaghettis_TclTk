@@ -28,6 +28,7 @@ typedef struct _selection {
     } t_selection;
     
 typedef struct _editor {
+    t_glist             *e_owner;
     t_proxy             *e_proxy;
     t_box               *e_boxes;
     t_box               *e_selectedText;
@@ -65,8 +66,11 @@ static inline t_selection *selection_getNext (t_selection *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    editor_selectionAdd     (t_editor *x, t_gobj *y);
-int     editor_selectionRemove  (t_editor *x, t_gobj *y);
+t_editor    *editor_new             (t_glist *owner);
+
+void        editor_free             (t_editor *x);
+void        editor_selectionAdd     (t_editor *x, t_gobj *y);
+int         editor_selectionRemove  (t_editor *x, t_gobj *y);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

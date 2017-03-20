@@ -47,21 +47,6 @@ static int                  editor_pasteCount;                                  
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_taskDisplace (t_glist *glist)
-{
-    int deltaX = glist->gl_editor->e_newX - glist->gl_editor->e_previousX;
-    int deltaY = glist->gl_editor->e_newY - glist->gl_editor->e_previousY;
-    
-    canvas_displaceSelectedObjects (glist, deltaX, deltaY);
-        
-    glist->gl_editor->e_previousX = glist->gl_editor->e_newX;
-    glist->gl_editor->e_previousY = glist->gl_editor->e_newY;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int create)
 {
     t_rectangle r1;
@@ -895,30 +880,6 @@ void canvas_selectAll (t_glist *glist)
     }
     //
     }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static t_editor *editor_new (t_glist *owner)
-{
-    t_editor *x = (t_editor *)PD_MEMORY_GET (sizeof (t_editor));
- 
-    x->e_cachedLines = buffer_new();
-    x->e_clock       = clock_new ((void *)owner, (t_method)canvas_taskDisplace);
-    x->e_proxy       = proxy_new (cast_pd (owner));
-    
-    return x;
-}
-
-static void editor_free (t_editor *x)
-{
-    proxy_release (x->e_proxy);
-    clock_free (x->e_clock);
-    buffer_free (x->e_cachedLines);
-
-    PD_MEMORY_FREE (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
