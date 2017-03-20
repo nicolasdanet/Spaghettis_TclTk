@@ -18,11 +18,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-int         editor_pasteCount;                                  /* Static. */
-int         editor_pasteOffsetWhileConnectingObjects;           /* Static. */
-
-t_glist     *editor_pasteCurrentCanvas;                         /* Static. */
-t_buffer    *editor_pasteBuffer;                                /* Static. */
+t_paste editor_paste;   /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -110,12 +106,15 @@ void editor_initialize (void)
 {
     PD_ASSERT (sizeof (t_keycode) == sizeof (UCS4_CODE_POINT));
     
-    editor_pasteBuffer = buffer_new();
+    editor_paste.e_count    = 0;
+    editor_paste.e_offset   = 0;
+    editor_paste.e_current  = NULL;
+    editor_paste.e_buffer   = buffer_new();
 }
 
 void editor_release (void)
 {
-    if (editor_pasteBuffer) { buffer_free (editor_pasteBuffer); }
+    if (editor_paste.e_buffer) { buffer_free (editor_paste.e_buffer); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

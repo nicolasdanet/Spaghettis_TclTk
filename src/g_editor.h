@@ -52,6 +52,17 @@ typedef struct _editor {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+typedef struct _paste {
+    int                 e_count;
+    int                 e_offset;
+    t_glist             *e_current;
+    t_buffer            *e_buffer;
+    } t_paste;
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static inline t_gobj *selection_getObject (t_selection *x)
 {
     return x->sel_what;

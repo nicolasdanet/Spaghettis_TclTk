@@ -19,16 +19,12 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_class      *canvas_class;
+extern t_class  *canvas_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern int          editor_pasteCount;
-extern int          editor_pasteOffsetWhileConnectingObjects;
-
-extern t_glist      *editor_pasteCurrentCanvas;
-extern t_buffer     *editor_pasteBuffer;
+extern t_paste  editor_paste;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -482,7 +478,7 @@ static void canvas_proceedCopy (t_glist *glist)
     t_outconnect *connection = NULL;
     t_traverser t;
     
-    editor_pasteCount = 0;
+    editor_paste.e_count = 0;
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
         if (canvas_isObjectSelected (glist, y)) { gobj_save (y, b); }
@@ -507,8 +503,8 @@ static void canvas_proceedCopy (t_glist *glist)
     //
     }
     
-    buffer_free (editor_pasteBuffer); 
-    editor_pasteBuffer = b;
+    buffer_free (editor_paste.e_buffer); 
+    editor_paste.e_buffer = b;
     //
     }
 }
@@ -519,24 +515,24 @@ static void canvas_proceedPaste (t_glist *glist)
     t_selection *s = NULL;
     int numberOfObjectsAlreadyThere = 0;
     int i = 0;
-    int n = EDITOR_PASTE_OFFSET * ++editor_pasteCount;
+    int n = EDITOR_PASTE_OFFSET * ++editor_paste.e_count;
     int state = dsp_suspend();
      
     canvas_deselectAll (glist);
     
     for (y = glist->gl_graphics; y; y = y->g_next) { numberOfObjectsAlreadyThere++; }
 
-    editor_pasteCurrentCanvas = glist;
-    editor_pasteOffsetWhileConnectingObjects = numberOfObjectsAlreadyThere;
+    editor_paste.e_current = glist;
+    editor_paste.e_offset  = numberOfObjectsAlreadyThere;
     
-    instance_stackEval (glist, editor_pasteBuffer);
+    instance_stackEval (glist, editor_paste.e_buffer);
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
         if (i >= numberOfObjectsAlreadyThere) { canvas_selectObject (glist, y); }
         i++;
     }
     
-    editor_pasteCurrentCanvas = NULL;
+    editor_paste.e_current = NULL;
     
     dsp_resume (state);
         

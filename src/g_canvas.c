@@ -21,9 +21,8 @@
 extern t_class  *text_class;
 extern t_class  *garray_class;
 extern t_class  *canvas_class;
-extern t_glist  *editor_pasteCurrentCanvas;
 
-extern int      editor_pasteOffsetWhileConnectingObjects;
+extern t_paste  editor_paste;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -226,7 +225,7 @@ void canvas_connect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     int indexOfObjectIn  = (int)atom_getFloat (argv + 2);
     int indexOfOInlet    = (int)atom_getFloat (argv + 3);
     
-    int k = (editor_pasteCurrentCanvas == glist) ? editor_pasteOffsetWhileConnectingObjects : 0;
+    int k = (editor_paste.e_current == glist) ? editor_paste.e_offset : 0;
     
     t_gobj *src  = canvas_getObjectAtIndex (glist, k + indexOfObjectOut);
     t_gobj *dest = canvas_getObjectAtIndex (glist, k + indexOfObjectIn);
