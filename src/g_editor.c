@@ -12,7 +12,17 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "s_system.h"
+#include "s_utf8.h"
 #include "g_graphics.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+int         editor_pasteCount;                                  /* Static. */
+int         editor_pasteOffsetWhileConnectingObjects;           /* Static. */
+
+t_glist     *editor_pasteCurrentCanvas;                         /* Static. */
+t_buffer    *editor_pasteBuffer;                                /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -90,6 +100,22 @@ void editor_free (t_editor *x)
     proxy_release (x->e_proxy);
     
     PD_MEMORY_FREE (x);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void editor_initialize (void)
+{
+    PD_ASSERT (sizeof (t_keycode) == sizeof (UCS4_CODE_POINT));
+    
+    editor_pasteBuffer = buffer_new();
+}
+
+void editor_release (void)
+{
+    if (editor_pasteBuffer) { buffer_free (editor_pasteBuffer); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

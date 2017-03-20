@@ -19,19 +19,16 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_class              *canvas_class;
+extern t_class      *canvas_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_glist                     *editor_pasteCurrentCanvas;                         /* Static. */
-int                         editor_pasteOffsetWhileConnectingObjects;           /* Static. */
+extern int          editor_pasteCount;
+extern int          editor_pasteOffsetWhileConnectingObjects;
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-static t_buffer             *editor_buffer;                                     /* Static. */
-static int                  editor_pasteCount;                                  /* Static. */
+extern t_glist      *editor_pasteCurrentCanvas;
+extern t_buffer     *editor_pasteBuffer;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -510,8 +507,8 @@ static void canvas_proceedCopy (t_glist *glist)
     //
     }
     
-    buffer_free (editor_buffer); 
-    editor_buffer = b;
+    buffer_free (editor_pasteBuffer); 
+    editor_pasteBuffer = b;
     //
     }
 }
@@ -532,7 +529,7 @@ static void canvas_proceedPaste (t_glist *glist)
     editor_pasteCurrentCanvas = glist;
     editor_pasteOffsetWhileConnectingObjects = numberOfObjectsAlreadyThere;
     
-    instance_stackEval (glist, editor_buffer);
+    instance_stackEval (glist, editor_pasteBuffer);
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
         if (i >= numberOfObjectsAlreadyThere) { canvas_selectObject (glist, y); }
@@ -915,22 +912,6 @@ void canvas_destroyEditorIfAny (t_glist *glist)
     glist->gl_editor = NULL;
     //
     }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void editor_initialize (void)
-{
-    PD_ASSERT (sizeof (t_keycode) == sizeof (UCS4_CODE_POINT));
-    
-    editor_buffer = buffer_new();
-}
-
-void editor_release (void)
-{
-    if (editor_buffer) { buffer_free (editor_buffer); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
