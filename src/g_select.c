@@ -266,16 +266,11 @@ void canvas_selectObjectsInRectangle (t_glist *glist, t_rectangle *r)
 
 void canvas_selectObject (t_glist *glist, t_gobj *y)
 {
-    t_selection *selection = (t_selection *)PD_MEMORY_GET (sizeof (t_selection));
-    
     if (glist->gl_editor->e_hasSelectedline) { canvas_deselectLine (glist); }
 
     PD_ASSERT (!canvas_isObjectSelected (glist, y));    /* Must NOT be already selected. */
     
-    selection->sel_next = glist->gl_editor->e_selectedObjects;      /* Encapsulate ??? */
-    selection->sel_what = y;                                        /* Encapsulate ??? */
-    
-    glist->gl_editor->e_selectedObjects = selection;
+    editor_selectionAdd (glist->gl_editor, y);
     
     gobj_selected (y, glist, 1);
 }
@@ -319,9 +314,6 @@ int canvas_deselectObject (t_glist *glist, t_gobj *y)
     
     t_box *z = NULL;
     
-    t_selection *selection1 = NULL;
-    t_selection *selection2 = NULL;
-
     PD_ASSERT (canvas_isObjectSelected (glist, y));         /* Must be already selected. */
     
     if (glist->gl_editor->e_selectedText) {
@@ -340,23 +332,7 @@ int canvas_deselectObject (t_glist *glist, t_gobj *y)
         if (class_hasDSP (pd_class (y))) { dspSuspended = dsp_suspend(); }
     }
     
-    selection1 = glist->gl_editor->e_selectedObjects;
-    
-    if (selection_getObject (selection1) == y) {
-        glist->gl_editor->e_selectedObjects = selection_getNext (glist->gl_editor->e_selectedObjects);
-        gobj_selected (y, glist, 0);
-        PD_MEMORY_FREE (selection1);
-        
-    } else {
-        for (; (selection2 = selection_getNext (selection1)); (selection1 = selection2)) {
-            if (selection_getObject (selection2) == y) {
-                selection1->sel_next = selection_getNext (selection2);  /* Encapsulate ??? */
-                gobj_selected (y, glist, 0);
-                PD_MEMORY_FREE (selection2);
-                break;
-            }
-        }
-    }
+    if (editor_selectionRemove (glist->gl_editor, y)) { gobj_selected (y, glist, 0); }
     
     if (z) {
         object_setFromEntry (cast_object (y), glist, z);
