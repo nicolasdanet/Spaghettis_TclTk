@@ -558,12 +558,14 @@ static void canvas_proceedPaste (t_glist *glist)
     
     dsp_resume (state);
         
-    for (s = glist->gl_editor->e_selectedObjects; s; s = s->sel_next) {
-        gobj_displaced (s->sel_what, glist, n, n);
+    for (s = glist->gl_editor->e_selectedObjects; s; s = selection_getNext (s)) {
+        gobj_displaced (selection_getObject (s), glist, n, n);
     }
     
-    for (s = glist->gl_editor->e_selectedObjects; s; s = s->sel_next) {
-        if (pd_class (s->sel_what) == canvas_class) { canvas_loadbang (cast_glist (s->sel_what)); }
+    for (s = glist->gl_editor->e_selectedObjects; s; s = selection_getNext (s)) {
+        if (pd_class (selection_getObject (s)) == canvas_class) { 
+            canvas_loadbang (cast_glist (selection_getObject (s))); 
+        }
     }
     
     canvas_dirty (glist, 1);
@@ -746,7 +748,7 @@ void canvas_mouseUp (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     else if (action == ACTION_MOVE)   {
     //
     if (canvas_getNumberOfSelectedObjects (glist) == 1) {
-        gobj_activated (glist->gl_editor->e_selectedObjects->sel_what, glist, 1);
+        gobj_activated (selection_getObject (glist->gl_editor->e_selectedObjects), glist, 1);
     }
     //
     }

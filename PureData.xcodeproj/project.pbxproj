@@ -1291,12 +1291,10 @@
 		3777AEA71E5B2844003F61A1 /* Canvas */ = {
 			isa = PBXGroup;
 			children = (
-				373303351E7EE9D9000DF74C /* g_editor.h */,
 				37702F511D41EA3300AE3FE2 /* g_canvas.h */,
+				379920471CD2649B00750527 /* g_select.c */,
 				370939441CC92BF300827F75 /* g_base.c */,
 				370939431CC92BF300827F75 /* g_draw.c */,
-				379920471CD2649B00750527 /* g_select.c */,
-				378971C31C4F716700263434 /* g_editor.c */,
 				378971CD1C4F716700263434 /* g_file.c */,
 				377899481CFED1B10056BE61 /* g_new.c */,
 				378971C41C4F716700263434 /* g_graph.c */,
@@ -1444,11 +1442,13 @@
 			isa = PBXGroup;
 			children = (
 				3742465E1E59AAE3009E8DC1 /* g_patch.h */,
+				373303351E7EE9D9000DF74C /* g_editor.h */,
 				37BA30811CD1DB0F0091113F /* g_object.c */,
 				37F6E1711E7C3D6100A42588 /* g_typeset.c */,
 				378971CE1C4F716700263434 /* g_box.c */,
 				372A2CE31E5DC57E00546B87 /* g_traverser.c */,
 				37AB28E01E6185F7004F2F7D /* g_cord.c */,
+				378971C31C4F716700263434 /* g_editor.c */,
 				3777AEA71E5B2844003F61A1 /* Canvas */,
 				3735D9701E5995B300858959 /* Objects */,
 			);

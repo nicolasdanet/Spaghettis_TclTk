@@ -18,20 +18,20 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_class              *text_class;
-extern t_class              *scalar_class;
-extern t_class              *struct_class;
-extern t_class              *canvas_class;
-extern t_class              *vinlet_class;
-extern t_class              *voutlet_class;
+extern t_class  *text_class;
+extern t_class  *scalar_class;
+extern t_class  *struct_class;
+extern t_class  *canvas_class;
+extern t_class  *vinlet_class;
+extern t_class  *voutlet_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_glist              *canvas_lastCanvas;             /* Static. */
+static t_glist  *canvas_lastCanvas;     /* Static. */
 
-static int                  canvas_lastCanvasX;             /* Static. */
-static int                  canvas_lastCanvasY;             /* Static. */
+static int      canvas_lastCanvasX;     /* Static. */
+static int      canvas_lastCanvasY;     /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -471,12 +471,12 @@ t_gobj *canvas_getHitObject (t_glist *glist, int positionX, int positionY, t_rec
     
     if (glist->gl_editor && canvas_getNumberOfSelectedObjects (glist) > 1) {
     //
-    t_selection *selection = NULL;
-    for (selection = glist->gl_editor->e_selectedObjects; selection; selection = selection->sel_next) {
+    t_selection *s = NULL;
+    for (s = glist->gl_editor->e_selectedObjects; s; s = selection_getNext (s)) {
     //
-    if (gobj_hit (selection->sel_what, glist, positionX, positionY, &t)) {
+    if (gobj_hit (selection_getObject (s), glist, positionX, positionY, &t)) {
         rectangle_setCopy (r, &t);
-        object = selection->sel_what; 
+        object = selection_getObject (s); 
     }
     //
     }
