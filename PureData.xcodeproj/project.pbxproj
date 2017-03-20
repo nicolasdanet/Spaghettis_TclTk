@@ -66,6 +66,7 @@
 		3722C5301C4F91EB00D2BF6F /* u_pdreceive.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972031C4F716700263434 /* u_pdreceive.c */; };
 		3722C5311C4F91F500D2BF6F /* u_pdsend.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972041C4F716700263434 /* u_pdsend.c */; };
 		3722C5321C4F91FC00D2BF6F /* u_watchdog.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972051C4F716700263434 /* u_watchdog.c */; };
+		37251FBD1E7FB4BC0067E434 /* g_editor.c in Sources */ = {isa = PBXBuildFile; fileRef = 37251FBC1E7FB4BC0067E434 /* g_editor.c */; };
 		372A2CE41E5DC57E00546B87 /* g_traverser.c in Sources */ = {isa = PBXBuildFile; fileRef = 372A2CE31E5DC57E00546B87 /* g_traverser.c */; };
 		372BDF771DCF36D00045ECE8 /* d_adc.c in Sources */ = {isa = PBXBuildFile; fileRef = 372BDF761DCF36D00045ECE8 /* d_adc.c */; };
 		372F9C6D1E3B461100A0BEF8 /* pa_mac_hostapis.c in Sources */ = {isa = PBXBuildFile; fileRef = 372F9C6C1E3B461100A0BEF8 /* pa_mac_hostapis.c */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -177,7 +178,7 @@
 		378972231C4F716800263434 /* g_garray.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971BF1C4F716700263434 /* g_garray.c */; };
 		378972241C4F716800263434 /* g_bang.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C01C4F716700263434 /* g_bang.c */; };
 		378972251C4F716800263434 /* g_canvas.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C11C4F716700263434 /* g_canvas.c */; };
-		378972261C4F716800263434 /* g_editor.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C31C4F716700263434 /* g_editor.c */; };
+		378972261C4F716800263434 /* g_edit.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C31C4F716700263434 /* g_edit.c */; };
 		378972271C4F716800263434 /* g_graph.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C41C4F716700263434 /* g_graph.c */; };
 		3789722A1C4F716800263434 /* g_slider.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C71C4F716700263434 /* g_slider.c */; };
 		3789722B1C4F716800263434 /* g_iem.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C81C4F716700263434 /* g_iem.c */; };
@@ -448,6 +449,7 @@
 		371E068F1DF47599006317FF /* d_math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_math.h; path = src/d_math.h; sourceTree = "<group>"; };
 		3720EBB41D239650001675BD /* g_vinlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_vinlet.c; path = src/g_vinlet.c; sourceTree = "<group>"; };
 		3720EBB51D239650001675BD /* g_voutlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_voutlet.c; path = src/g_voutlet.c; sourceTree = "<group>"; };
+		37251FBC1E7FB4BC0067E434 /* g_editor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_editor.c; path = src/g_editor.c; sourceTree = "<group>"; };
 		372A2CE31E5DC57E00546B87 /* g_traverser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_traverser.c; path = src/g_traverser.c; sourceTree = "<group>"; };
 		372BDF761DCF36D00045ECE8 /* d_adc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_adc.c; path = src/d_adc.c; sourceTree = "<group>"; };
 		372F9C6C1E3B461100A0BEF8 /* pa_mac_hostapis.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_mac_hostapis.c; path = src/pa_mac_hostapis.c; sourceTree = "<group>"; };
@@ -619,7 +621,7 @@
 		378971C01C4F716700263434 /* g_bang.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_bang.c; path = src/g_bang.c; sourceTree = "<group>"; };
 		378971C11C4F716700263434 /* g_canvas.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_canvas.c; path = src/g_canvas.c; sourceTree = "<group>"; };
 		378971C21C4F716700263434 /* g_graphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_graphics.h; path = src/g_graphics.h; sourceTree = "<group>"; };
-		378971C31C4F716700263434 /* g_editor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_editor.c; path = src/g_editor.c; sourceTree = "<group>"; };
+		378971C31C4F716700263434 /* g_edit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_edit.c; path = src/g_edit.c; sourceTree = "<group>"; };
 		378971C41C4F716700263434 /* g_graph.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_graph.c; path = src/g_graph.c; sourceTree = "<group>"; };
 		378971C71C4F716700263434 /* g_slider.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_slider.c; path = src/g_slider.c; sourceTree = "<group>"; };
 		378971C81C4F716700263434 /* g_iem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_iem.c; path = src/g_iem.c; sourceTree = "<group>"; };
@@ -1292,9 +1294,10 @@
 			isa = PBXGroup;
 			children = (
 				37702F511D41EA3300AE3FE2 /* g_canvas.h */,
-				379920471CD2649B00750527 /* g_select.c */,
 				370939441CC92BF300827F75 /* g_base.c */,
 				370939431CC92BF300827F75 /* g_draw.c */,
+				379920471CD2649B00750527 /* g_select.c */,
+				378971C31C4F716700263434 /* g_edit.c */,
 				378971CD1C4F716700263434 /* g_file.c */,
 				377899481CFED1B10056BE61 /* g_new.c */,
 				378971C41C4F716700263434 /* g_graph.c */,
@@ -1448,7 +1451,7 @@
 				378971CE1C4F716700263434 /* g_box.c */,
 				372A2CE31E5DC57E00546B87 /* g_traverser.c */,
 				37AB28E01E6185F7004F2F7D /* g_cord.c */,
-				378971C31C4F716700263434 /* g_editor.c */,
+				37251FBC1E7FB4BC0067E434 /* g_editor.c */,
 				3777AEA71E5B2844003F61A1 /* Canvas */,
 				3735D9701E5995B300858959 /* Objects */,
 			);
@@ -1863,7 +1866,7 @@
 				378972231C4F716800263434 /* g_garray.c in Sources */,
 				378972241C4F716800263434 /* g_bang.c in Sources */,
 				378972251C4F716800263434 /* g_canvas.c in Sources */,
-				378972261C4F716800263434 /* g_editor.c in Sources */,
+				378972261C4F716800263434 /* g_edit.c in Sources */,
 				378972271C4F716800263434 /* g_graph.c in Sources */,
 				3789722A1C4F716800263434 /* g_slider.c in Sources */,
 				3789722B1C4F716800263434 /* g_iem.c in Sources */,
@@ -2148,6 +2151,7 @@
 				3710DC561E69C79C00B65CE9 /* m_method.c in Sources */,
 				373545611E6D6BF700BCFBE1 /* m_bounds.c in Sources */,
 				37F6E1721E7C3D6100A42588 /* g_typeset.c in Sources */,
+				37251FBD1E7FB4BC0067E434 /* g_editor.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
