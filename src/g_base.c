@@ -206,7 +206,8 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     
     if (glist->gl_editor) {
     //
-    if (glist->gl_editor->e_grabbed == y)   { glist->gl_editor->e_grabbed = NULL; }
+    editor_motionUnset (glist->gl_editor, y);
+    
     if (canvas_isObjectSelected (glist, y)) { canvas_deselectObject (glist, y);   }
     //
     }

@@ -176,13 +176,6 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_proceedMouseResetGrabbed (t_glist *glist)
-{
-    if (glist->gl_editor->e_grabbed) { canvas_setMotionFunction (glist, NULL, NULL, 0, 0); }
-    
-    PD_ASSERT (!glist->gl_editor->e_grabbed);
-}
-
 static void canvas_proceedMouseClickRight (t_glist *glist, t_gobj *y, int positionX, int positionY)
 {
     int canProperties = (!y || (y && class_hasPropertiesFunction (pd_class (y))));
@@ -430,7 +423,7 @@ static void canvas_proceedMouse (t_glist *glist, int a, int b, int modifier, int
     int isRightClick = (modifier & MODIFIER_RIGHT);
     int isRunMode    = (modifier & MODIFIER_CTRL) || (!glist->gl_isEditMode);
     
-    if (clicked) { canvas_proceedMouseResetGrabbed (glist); glist->gl_editor->e_action = ACTION_NONE; }
+    if (clicked) { editor_motionReset (glist->gl_editor); }
 
     if (glist->gl_editor->e_action == ACTION_NONE) {
 
@@ -591,8 +584,7 @@ void canvas_motion (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         canvas_selectingByLassoStart (glist, a, b);
         
     } else if (action == ACTION_PASS)    {
-        PD_ASSERT (glist->gl_editor->e_fnMotion);
-        (*glist->gl_editor->e_fnMotion) (cast_pd (glist->gl_editor->e_grabbed), deltaX, deltaY, m);
+        editor_motionProceed (glist->gl_editor, deltaX, deltaY, m);
         glist->gl_editor->e_previousX = a;
         glist->gl_editor->e_previousY = b;
         

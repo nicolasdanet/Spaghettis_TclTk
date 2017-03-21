@@ -78,7 +78,9 @@ void        editor_free                 (t_editor *x);
 void        editor_selectionAdd         (t_editor *x, t_gobj *y);
 int         editor_selectionRemove      (t_editor *x, t_gobj *y);
 
+void        editor_motionProceed        (t_editor *x, int deltaX, int deltaY, int m);
 void        editor_motionSet            (t_editor *x, t_gobj *y, t_motionfn callback, int a, int b);
+void        editor_motionUnset          (t_editor *x, t_gobj *y);
 void        editor_motionReset          (t_editor *x);
 
 // -----------------------------------------------------------------------------------------------------------

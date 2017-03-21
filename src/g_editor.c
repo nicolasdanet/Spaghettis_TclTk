@@ -135,15 +135,13 @@ int editor_selectionRemove (t_editor *x, t_gobj *y)
 
 void editor_motionSet (t_editor *x, t_gobj *y, t_motionfn callback, int a, int b)
 {
-    if (callback) { x->e_action = ACTION_PASS; }
-    else { 
-       x->e_action = ACTION_NONE;
-    }
+    PD_ASSERT (callback);
     
     x->e_grabbed    = y;
     x->e_fnMotion   = callback;
     x->e_previousX  = a;
     x->e_previousY  = b;
+    x->e_action     = ACTION_PASS;
 }
 
 void editor_motionReset (t_editor *x)
@@ -155,6 +153,19 @@ void editor_motionReset (t_editor *x)
     x->e_action     = ACTION_NONE;
 }
 
+void editor_motionUnset (t_editor *x, t_gobj *y)
+{
+    if (!x->e_grabbed || x->e_grabbed == y) { editor_motionReset (x); }
+}
+
+void editor_motionProceed (t_editor *x, int deltaX, int deltaY, int m)
+{
+    if (x->e_fnMotion) { (*x->e_fnMotion) (cast_pd (x->e_grabbed), deltaX, deltaY, m); }
+    else { 
+        PD_BUG;
+    }
+}
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
