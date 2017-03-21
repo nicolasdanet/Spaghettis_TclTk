@@ -549,7 +549,7 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
         
     } else if (s == sym_Delete || s == sym_BackSpace) {
         if (glist->gl_editor->e_hasSelectedline) { canvas_removeSelectedLine (glist); }
-        else if (glist->gl_editor->e_selectedObjects) { 
+        else if (editor_hasSelection (glist->gl_editor)) { 
             canvas_removeSelectedObjects (glist); 
         }
     }
@@ -633,7 +633,7 @@ void canvas_mouseUp (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     else if (action == ACTION_MOVE)   {
     //
     if (canvas_getNumberOfSelectedObjects (glist) == 1) {
-        gobj_activated (selection_getObject (glist->gl_editor->e_selectedObjects), glist, 1);
+        gobj_activated (selection_getObject (editor_getSelection (glist->gl_editor)), glist, 1);
     }
     //
     }
@@ -716,7 +716,7 @@ void canvas_cut (t_glist *glist)
         box_key (editor_getSelectedBox (glist->gl_editor), (t_keycode)127, sym_Delete);
         canvas_dirty (glist, 1);
         
-    } else if (glist->gl_editor->e_selectedObjects) {
+    } else if (editor_hasSelection (glist->gl_editor)) {
         canvas_copy (glist);
         canvas_removeSelectedObjects (glist);
     }

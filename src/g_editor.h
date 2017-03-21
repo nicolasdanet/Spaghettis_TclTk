@@ -87,9 +87,19 @@ static inline int editor_hasSelectedBox (t_editor *x)
     return (x->e_selectedBox != NULL);
 }
 
+static inline int editor_hasSelection (t_editor *x)
+{
+    return (x->e_selectedObjects != NULL);
+}
+
 static inline t_box *editor_getSelectedBox (t_editor *x)
 {
     return x->e_selectedBox;
+}
+
+static inline t_selection *editor_getSelection (t_editor *x)
+{
+    return x->e_selectedObjects;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -477,7 +477,7 @@ t_gobj *canvas_getHitObject (t_glist *glist, int positionX, int positionY, t_rec
     if (glist->gl_editor && canvas_getNumberOfSelectedObjects (glist) > 1) {
     //
     t_selection *s = NULL;
-    for (s = glist->gl_editor->e_selectedObjects; s; s = selection_getNext (s)) {
+    for (s = editor_getSelection (glist->gl_editor); s; s = selection_getNext (s)) {
     //
     if (gobj_hit (selection_getObject (s), glist, positionX, positionY, &t)) {
         rectangle_setCopy (r, &t);

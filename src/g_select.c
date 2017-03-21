@@ -174,7 +174,7 @@ void canvas_displaceSelectedObjects (t_glist *glist, int deltaX, int deltaY)
     int needToResortOutlets = 0;
     int isDirty = 0;
     
-    for (y = glist->gl_editor->e_selectedObjects; y; y = selection_getNext (y)) {
+    for (y = editor_getSelection (glist->gl_editor); y; y = selection_getNext (y)) {
         gobj_displaced (selection_getObject (y), glist, deltaX, deltaY);
         if (pd_class (selection_getObject (y)) == vinlet_class)  { needToResortInlets  = 1; }
         if (pd_class (selection_getObject (y)) == voutlet_class) { needToResortOutlets = 1; }
@@ -196,7 +196,7 @@ int canvas_isObjectSelected (t_glist *glist, t_gobj *y)
     if (glist->gl_editor) {
     //
     t_selection *s = NULL;
-    for (s = glist->gl_editor->e_selectedObjects; s; s = selection_getNext (s)) {
+    for (s = editor_getSelection (glist->gl_editor); s; s = selection_getNext (s)) {
         if (selection_getObject (s) == y) { return 1; }
     }
     //
@@ -358,8 +358,8 @@ int canvas_deselectAll (t_glist *glist)
     
     if (glist->gl_editor) {         /* Required (for newly recreated subpatch for instance). */
     //
-    while (glist->gl_editor->e_selectedObjects) {
-        k |= canvas_deselectObject (glist, selection_getObject (glist->gl_editor->e_selectedObjects));
+    while (editor_getSelection (glist->gl_editor)) {
+        k |= canvas_deselectObject (glist, selection_getObject (editor_getSelection (glist->gl_editor)));
     }
 
     if (glist->gl_editor->e_hasSelectedline) { canvas_deselectLine (glist); }

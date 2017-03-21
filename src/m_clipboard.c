@@ -76,7 +76,7 @@ static void clipboard_substractOffsetToLineConnections (t_clipboard *x, int i)
 
 void clipboard_copy (t_clipboard *x, t_glist *glist)
 {
-    if (glist->gl_editor->e_selectedObjects) {
+    if (editor_hasSelection (glist->gl_editor)) {
     //
     t_buffer *b = buffer_new();
 
@@ -139,7 +139,7 @@ void clipboard_paste (t_clipboard *x, t_glist *glist)
     
     dsp_resume (state);
         
-    for (s = glist->gl_editor->e_selectedObjects; s; s = selection_getNext (s)) {
+    for (s = editor_getSelection (glist->gl_editor); s; s = selection_getNext (s)) {
         y = selection_getObject (s); gobj_displaced (y, glist, n, n);
         if (pd_class (y) == canvas_class) { 
             canvas_loadbang (cast_glist (y)); 
