@@ -788,29 +788,14 @@ void canvas_selectAll (t_glist *glist)
 
 void canvas_createEditorIfNone (t_glist *glist)
 {
-    if (!glist->gl_editor) {
-    //
-    t_gobj *y = NULL;
-            
-    glist->gl_editor = editor_new (glist);
-    
-    for (y = glist->gl_graphics; y; y = y->g_next) {
-        t_object *o = NULL;
-        if ((o = cast_objectIfConnectable (y))) { editor_addBox (glist->gl_editor, o); }
-    }
-    //
-    }
+    if (!glist->gl_editor) { glist->gl_editor = editor_new (glist); }
 }
 
 void canvas_destroyEditorIfAny (t_glist *glist)
 {
-    if (glist->gl_editor) {
+    if (glist->gl_editor) { 
     //
-    t_box *text = NULL;
-    
-    canvas_deselectAll (glist);
-    while ((text = glist->gl_editor->e_boxes)) { editor_removeBox (glist->gl_editor, text); }
-    
+    canvas_deselectAll (glist); 
     editor_free (glist->gl_editor);
     glist->gl_editor = NULL;
     //

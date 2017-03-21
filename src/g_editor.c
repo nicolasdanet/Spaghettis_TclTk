@@ -127,16 +127,26 @@ t_editor *editor_new (t_glist *owner)
 {
     t_editor *x = (t_editor *)PD_MEMORY_GET (sizeof (t_editor));
     
-    x->e_owner          = owner;
-    x->e_proxy          = proxy_new (cast_pd (owner));
-    x->e_clock          = clock_new ((void *)x, (t_method)editor_task);
-    x->e_cachedLines    = buffer_new();
+    t_gobj *y = NULL;
+    
+    x->e_owner       = owner;
+    x->e_proxy       = proxy_new (cast_pd (owner));
+    x->e_clock       = clock_new ((void *)x, (t_method)editor_task);
+    x->e_cachedLines = buffer_new();
+    
+    for (y = owner->gl_graphics; y; y = y->g_next) {
+        if (cast_objectIfConnectable (y)) { editor_addBox (x, cast_object (y)); }
+    }
     
     return x;
 }
 
 void editor_free (t_editor *x)
 {
+    t_box *box = NULL;
+    
+    while ((box = x->e_boxes)) { editor_removeBox (x, box); }
+    
     buffer_free (x->e_cachedLines);
     clock_free (x->e_clock);
     proxy_release (x->e_proxy);
