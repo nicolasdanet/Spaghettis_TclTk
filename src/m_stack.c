@@ -23,8 +23,8 @@ void instance_stackPush (t_glist *x)
     
     PD_ABORT (instance_get()->pd_stack.stack_index >= INSTANCE_STACK_SIZE);     /* Resize? */
     
-    e->g_context = instance_contextGetCurrent();
-    e->g_abstraction = instance_get()->pd_loadingAbstraction;
+    e->stack_context = instance_contextGetCurrent();
+    e->stack_abstraction = instance_get()->pd_loadingAbstraction;
     
     instance_get()->pd_loadingAbstraction = NULL;
     
@@ -38,7 +38,7 @@ void instance_stackPop (t_glist *x)
     PD_ASSERT (instance_get()->pd_stack.stack_index >= 0);
     PD_ASSERT (instance_contextGetCurrent() == x);
     
-    instance_contextSetCurrent (e->g_context);
+    instance_contextSetCurrent (e->stack_context);
     
     instance_get()->pd_stack.stack_popped = x;
 }
@@ -70,7 +70,7 @@ static int instance_loadAbstractionIsValid (t_symbol *filename)
     for (i = 0; i < instance_get()->pd_stack.stack_index; i++) {
     //
     t_stackelement *e = instance_get()->pd_stack.stack_array + i;
-    if (e->g_abstraction == filename) { return 0; }
+    if (e->stack_abstraction == filename) { return 0; }
     //
     }
     

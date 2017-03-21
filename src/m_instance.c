@@ -383,8 +383,8 @@ static t_pdinstance *instance_new()
     
     x->pd_stack.stack_array = (t_stackelement *)PD_MEMORY_GET (INSTANCE_STACK_SIZE * sizeof (t_stackelement));
     
-    x->pd_environment.ce_directory = &s_;
-    x->pd_environment.ce_fileName  = &s_;
+    x->pd_environment.env_directory = &s_;
+    x->pd_environment.env_fileName  = &s_;
     
     clipboard_init (&x->pd_clipboard);
     
@@ -415,7 +415,7 @@ static void instance_free (t_pdinstance *x)
     
     clipboard_destroy (&x->pd_clipboard);
     
-    if (x->pd_environment.ce_argv) { PD_MEMORY_FREE (x->pd_environment.ce_argv); }
+    if (x->pd_environment.env_argv) { PD_MEMORY_FREE (x->pd_environment.env_argv); }
     
     PD_MEMORY_FREE (x->pd_stack.stack_array);
     PD_MEMORY_FREE (x);

@@ -17,8 +17,8 @@
 #pragma mark -
 
 typedef struct _stackelement {
-    t_glist         *g_context;
-    t_symbol        *g_abstraction;
+    t_glist         *stack_context;
+    t_symbol        *stack_abstraction;
     } t_stackelement;
 
 typedef struct _stack       {
@@ -32,11 +32,11 @@ typedef struct _stack       {
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _environment {
-    int             ce_dollarZeroValue;
-    int             ce_argc;
-    t_atom          *ce_argv;
-    t_symbol        *ce_directory;
-    t_symbol        *ce_fileName;
+    int             env_dollarZeroValue;
+    int             env_argc;
+    t_atom          *env_argv;
+    t_symbol        *env_directory;
+    t_symbol        *env_fileName;
     } t_environment;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -295,32 +295,32 @@ void environment_free       (t_environment *e);
 
 static inline int environment_getDollarZero (t_environment *e)
 {
-    return e->ce_dollarZeroValue;
+    return e->env_dollarZeroValue;
 }
 
 static inline int environment_getNumberOfArguments (t_environment *e)
 {
-    return e->ce_argc;
+    return e->env_argc;
 }
 
 static inline t_atom *environment_getArguments (t_environment *e)
 {
-    return e->ce_argv;
+    return e->env_argv;
 }
 
 static inline t_symbol *environment_getDirectory (t_environment *e)
 {
-    return e->ce_directory;
+    return e->env_directory;
 }
 
 static inline char *environment_getDirectoryAsString (t_environment *e)
 {
-    return e->ce_directory->s_name;
+    return e->env_directory->s_name;
 }
 
 static inline t_symbol *environment_getFileName (t_environment *e)
 {
-    if (e) { return e->ce_fileName; }
+    if (e) { return e->env_fileName; }
     else {
         return sym_Patch;
     }

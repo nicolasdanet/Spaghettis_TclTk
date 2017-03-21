@@ -19,20 +19,20 @@
 
 void instance_environmentSetFile (t_symbol *name, t_symbol *directory)
 {
-    instance_get()->pd_environment.ce_fileName  = name;
-    instance_get()->pd_environment.ce_directory = directory;
+    instance_get()->pd_environment.env_fileName  = name;
+    instance_get()->pd_environment.env_directory = directory;
 }
 
 void instance_environmentSetArguments (int argc, t_atom *argv)
 {
-    if (instance_get()->pd_environment.ce_argv) { PD_MEMORY_FREE (instance_get()->pd_environment.ce_argv); }
+    if (instance_get()->pd_environment.env_argv) { PD_MEMORY_FREE (instance_get()->pd_environment.env_argv); }
     
     PD_ASSERT (argc >= 0);
 
-    instance_get()->pd_environment.ce_argc = argc;
-    instance_get()->pd_environment.ce_argv = argc ? PD_MEMORY_GET (argc * sizeof (t_atom)) : NULL;
+    instance_get()->pd_environment.env_argc = argc;
+    instance_get()->pd_environment.env_argv = argc ? PD_MEMORY_GET (argc * sizeof (t_atom)) : NULL;
     
-    if (argc) { atom_copyAtomsUnchecked (argc, argv, instance_get()->pd_environment.ce_argv); }
+    if (argc) { atom_copyAtomsUnchecked (argc, argv, instance_get()->pd_environment.env_argv); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -59,22 +59,22 @@ t_environment *instance_environmentFetchIfAny (void)
 {
     static int dollarZero = 1000;       /* Static. */
     
-    if (instance_get()->pd_environment.ce_directory != &s_) {
+    if (instance_get()->pd_environment.env_directory != &s_) {
     //
     t_environment *e = (t_environment *)PD_MEMORY_GET (sizeof (t_environment));
     
-    t_atom *argv = instance_get()->pd_environment.ce_argv;
+    t_atom *argv = instance_get()->pd_environment.env_argv;
     
-    e->ce_dollarZeroValue = dollarZero++;
-    e->ce_argc            = instance_get()->pd_environment.ce_argc;
-    e->ce_argv            = argv ? argv : (t_atom *)PD_MEMORY_GET (0);
-    e->ce_directory       = instance_get()->pd_environment.ce_directory;
-    e->ce_fileName        = instance_get()->pd_environment.ce_fileName;
+    e->env_dollarZeroValue  = dollarZero++;
+    e->env_argc             = instance_get()->pd_environment.env_argc;
+    e->env_argv             = argv ? argv : (t_atom *)PD_MEMORY_GET (0);
+    e->env_directory        = instance_get()->pd_environment.env_directory;
+    e->env_fileName         = instance_get()->pd_environment.env_fileName;
 
-    instance_get()->pd_environment.ce_argc      = 0;
-    instance_get()->pd_environment.ce_argv      = NULL;
-    instance_get()->pd_environment.ce_fileName  = &s_;
-    instance_get()->pd_environment.ce_directory = &s_;
+    instance_get()->pd_environment.env_argc      = 0;
+    instance_get()->pd_environment.env_argv      = NULL;
+    instance_get()->pd_environment.env_fileName  = &s_;
+    instance_get()->pd_environment.env_directory = &s_;
     
     return e;
     //
@@ -90,7 +90,7 @@ t_environment *instance_environmentFetchIfAny (void)
 void environment_free (t_environment *e)
 {
     if (e) {
-        PD_MEMORY_FREE (e->ce_argv);
+        PD_MEMORY_FREE (e->env_argv);
         PD_MEMORY_FREE (e);
     }
 }
