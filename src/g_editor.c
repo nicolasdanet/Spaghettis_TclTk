@@ -43,6 +43,27 @@ t_box *editor_fetchBox (t_editor *x, t_object *object)
     return box;
 }
 
+void editor_addBox (t_editor *x, t_object *object)
+{
+    t_box *box = (t_box *)PD_MEMORY_GET (sizeof (t_box));
+
+    box->box_next               = x->e_boxes;
+    box->box_object             = object;
+    box->box_glist              = x->e_owner;
+    box->box_string             = (char *)PD_MEMORY_GET (0);
+    box->box_stringSizeInBytes  = 0;
+    
+    {
+    //
+    t_glist *view = canvas_getView (x->e_owner);
+    t_error err = string_sprintf (box->box_tag, BOX_TAG_SIZE, ".x%lx.%lxBOX", view, box);
+    PD_ASSERT (!err);
+    //
+    }
+    
+    x->e_boxes = box;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

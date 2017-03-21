@@ -330,29 +330,6 @@ void box_key (t_box *x, t_keycode n, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_box *box_new (t_glist *glist, t_object *object)
-{
-    t_box *x = (t_box *)PD_MEMORY_GET (sizeof (t_box));
-
-    x->box_next              = glist->gl_editor->e_boxes;
-    x->box_object            = object;
-    x->box_glist             = glist;
-    x->box_string            = (char *)PD_MEMORY_GET (0);
-    x->box_stringSizeInBytes = 0;
-    
-    {
-    //
-    t_glist *canvas = canvas_getView (glist);
-    t_error err = string_sprintf (x->box_tag, BOX_TAG_SIZE, ".x%lx.%lxBOX", canvas, x);
-    PD_ASSERT (!err);
-    //
-    }
-    
-    glist->gl_editor->e_boxes = x;
-    
-    return x;
-}
-
 void box_free (t_box *x)
 {
     if (x->box_glist->gl_editor->e_selectedText == x) {

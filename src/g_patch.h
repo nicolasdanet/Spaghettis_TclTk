@@ -188,7 +188,6 @@ int         gobj_isVisible                  (t_gobj *x, t_glist *owner);
 #pragma mark -
 
 t_box       *box_fetch                      (t_glist *glist, t_object *object);
-t_box       *box_new                        (t_glist *glist, t_object *object);
 char        *box_getTag                     (t_box *x);
 
 void        box_free                        (t_box *x);

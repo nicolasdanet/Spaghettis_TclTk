@@ -796,7 +796,7 @@ void canvas_createEditorIfNone (t_glist *glist)
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
         t_object *o = NULL;
-        if ((o = cast_objectIfConnectable (y))) { box_new (glist, o); }
+        if ((o = cast_objectIfConnectable (y))) { editor_addBox (glist->gl_editor, o); }
     }
     //
     }

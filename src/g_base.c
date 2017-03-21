@@ -179,8 +179,13 @@ void canvas_addObject (t_glist *glist, t_gobj *y)
         t->g_next = y;
     }
     
-    if (glist->gl_editor && (object = cast_objectIfConnectable (y))) { box_new (glist, object); }
-    if (canvas_isMapped (canvas_getView (glist))) { gobj_visibilityChanged (y, glist, 1); }
+    if (glist->gl_editor && (object = cast_objectIfConnectable (y))) { 
+        editor_addBox (glist->gl_editor, object); 
+    }
+    
+    if (canvas_isMapped (canvas_getView (glist))) {
+        gobj_visibilityChanged (y, glist, 1); 
+    }
     
     if (needToPaintScalars) { paint_draw(); }
 }
