@@ -119,14 +119,12 @@ void clipboard_paste (t_clipboard *x, t_glist *glist)
 {
     t_gobj *y = NULL;
     t_selection *s = NULL;
-    int alreadyThere = 0;
     int i = 0;
     int n = (++x->cb_count) * CLIPBOARD_PASTE_OFFSET;
     int state = dsp_suspend();
-     
-    canvas_deselectAll (glist);
+    int alreadyThere = canvas_getNumberOfObjects (glist);
     
-    for (y = glist->gl_graphics; y; y = y->g_next) { alreadyThere++; }
+    canvas_deselectAll (glist);
     
     clipboard_addOffsetToLineConnections (x, alreadyThere);
     

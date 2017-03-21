@@ -373,6 +373,14 @@ int canvas_deselectAll (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+int canvas_getNumberOfObjects (t_glist *glist)
+{
+    t_gobj *y = NULL; 
+    int n = 0;
+    for (y = glist->gl_graphics; y; y = y->g_next) { n++; }
+    return n;
+}
+
 int canvas_getNumberOfSelectedObjects (t_glist *glist)
 {
     return canvas_getIndexOfObjectAmongSelected (glist, NULL);
