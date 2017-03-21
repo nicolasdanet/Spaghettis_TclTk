@@ -70,6 +70,7 @@ t_editor    *editor_new                 (t_glist *owner);
 t_box       *editor_fetchBox            (t_editor *x, t_object *object);
 
 void        editor_addBox               (t_editor *x, t_object *object);
+void        editor_removeBox            (t_editor *x, t_box *box);
 
 void        editor_free                 (t_editor *x);
 void        editor_selectionAdd         (t_editor *x, t_gobj *y);

@@ -328,27 +328,3 @@ void box_key (t_box *x, t_keycode n, t_symbol *s)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void box_free (t_box *x)
-{
-    if (x->box_owner->gl_editor->e_selectedText == x) {
-        x->box_owner->gl_editor->e_selectedText = NULL;
-    }
-    
-    if (x->box_owner->gl_editor->e_boxes == x) { x->box_owner->gl_editor->e_boxes = x->box_next; }
-    else {
-        t_box *t = NULL;
-        for (t = x->box_owner->gl_editor->e_boxes; t; t = t->box_next) {
-            if (t->box_next == x) { 
-                t->box_next = x->box_next; break; 
-            }
-        }
-    }
-
-    PD_MEMORY_FREE (x->box_string);
-    PD_MEMORY_FREE (x);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------

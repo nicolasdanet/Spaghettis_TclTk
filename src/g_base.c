@@ -231,7 +231,7 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     
     pd_free (cast_pd (y));
 
-    if (text) { box_free (text); }
+    if (text) { editor_removeBox (glist->gl_editor, text); }
     
     if (needToUpdateDSPChain) { dsp_update(); }
     if (needToPaintScalars)   { paint_draw(); }

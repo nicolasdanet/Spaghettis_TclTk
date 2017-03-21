@@ -64,6 +64,22 @@ void editor_addBox (t_editor *x, t_object *object)
     x->e_boxes = box;
 }
 
+void editor_removeBox (t_editor *x, t_box *box)
+{
+    if (x->e_selectedText == box) { x->e_selectedText = NULL; }
+    
+    if (x->e_boxes == box) { x->e_boxes = box->box_next; }
+    else {
+        t_box *t = NULL;
+        for (t = x->e_boxes; t; t = t->box_next) {
+            if (t->box_next == box) { t->box_next = box->box_next; break; }
+        }
+    }
+
+    PD_MEMORY_FREE (box->box_string);
+    PD_MEMORY_FREE (box);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
