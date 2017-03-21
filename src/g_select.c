@@ -337,7 +337,7 @@ int canvas_deselectObject (t_glist *glist, t_gobj *y)
     if (z) {
         object_setFromEntry (cast_object (y), glist, z);
         canvas_updateLinesByObject (glist, cast_object (y));
-        editor_selectBox (glist->gl_editor, NULL);
+        editor_boxSelect (glist->gl_editor, NULL);
     }
     
     if (dspSuspended) { dsp_resume (dspSuspended); }

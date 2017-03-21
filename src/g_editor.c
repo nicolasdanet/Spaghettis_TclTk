@@ -32,7 +32,7 @@ static void editor_task (t_editor *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_box *editor_fetchBox (t_editor *x, t_object *object)
+t_box *editor_boxFetch (t_editor *x, t_object *object)
 {
     t_box *box = NULL;
     
@@ -43,7 +43,7 @@ t_box *editor_fetchBox (t_editor *x, t_object *object)
     return box;
 }
 
-void editor_addBox (t_editor *x, t_object *object)
+void editor_boxAdd (t_editor *x, t_object *object)
 {
     t_box *box = (t_box *)PD_MEMORY_GET (sizeof (t_box));
 
@@ -64,9 +64,9 @@ void editor_addBox (t_editor *x, t_object *object)
     x->e_boxes = box;
 }
 
-void editor_removeBox (t_editor *x, t_box *box)
+void editor_boxRemove (t_editor *x, t_box *box)
 {
-    editor_unselectBox (x, box);
+    editor_boxUnselect (x, box);
     
     if (x->e_boxes == box) { x->e_boxes = box->box_next; }
     else {
@@ -80,14 +80,14 @@ void editor_removeBox (t_editor *x, t_box *box)
     PD_MEMORY_FREE (box);
 }
 
-void editor_selectBox (t_editor *x, t_box *box)
+void editor_boxSelect (t_editor *x, t_box *box)
 {
     x->e_selectedBox = box;
 }
 
-void editor_unselectBox (t_editor *x, t_box *box)
+void editor_boxUnselect (t_editor *x, t_box *box)
 {
-    if (x->e_selectedBox == box) { editor_selectBox (x, NULL); }
+    if (x->e_selectedBox == box) { editor_boxSelect (x, NULL); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -145,7 +145,7 @@ t_editor *editor_new (t_glist *owner)
     x->e_cachedLines = buffer_new();
     
     for (y = owner->gl_graphics; y; y = y->g_next) {
-        if (cast_objectIfConnectable (y)) { editor_addBox (x, cast_object (y)); }
+        if (cast_objectIfConnectable (y)) { editor_boxAdd (x, cast_object (y)); }
     }
     
     return x;
@@ -155,7 +155,7 @@ void editor_free (t_editor *x)
 {
     t_box *box = NULL;
     
-    while ((box = x->e_boxes)) { editor_removeBox (x, box); }
+    while ((box = x->e_boxes)) { editor_boxRemove (x, box); }
     
     buffer_free (x->e_cachedLines);
     clock_free (x->e_clock);

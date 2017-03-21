@@ -180,7 +180,7 @@ void canvas_addObject (t_glist *glist, t_gobj *y)
     }
     
     if (glist->gl_editor && (object = cast_objectIfConnectable (y))) { 
-        editor_addBox (glist->gl_editor, object); 
+        editor_boxAdd (glist->gl_editor, object); 
     }
     
     if (canvas_isMapped (canvas_getView (glist))) {
@@ -231,7 +231,7 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     
     pd_free (cast_pd (y));
 
-    if (text) { editor_removeBox (glist->gl_editor, text); }
+    if (text) { editor_boxRemove (glist->gl_editor, text); }
     
     if (needToUpdateDSPChain) { dsp_update(); }
     if (needToPaintScalars)   { paint_draw(); }

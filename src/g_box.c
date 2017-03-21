@@ -69,7 +69,7 @@ void box_getSelection (t_box *x, char **p, int *size)
 
 t_box *box_fetch (t_glist *glist, t_object *object)
 {
-    canvas_createEditorIfNone (glist); return editor_fetchBox (glist->gl_editor, object);
+    canvas_createEditorIfNone (glist); return editor_boxFetch (glist->gl_editor, object);
 }
 
 void box_update (t_box *x)
@@ -128,7 +128,7 @@ void box_activate (t_box *x, int isActivated)
 
         sys_vGui ("::ui_box::setEditing .x%lx %s 1\n", x->box_owner, x->box_tag);
                         
-        editor_selectBox (x->box_owner->gl_editor, x);
+        editor_boxSelect (x->box_owner->gl_editor, x);
         x->box_owner->gl_editor->e_isTextDirty  = 0;
         
         x->box_draggedFrom      = 0;
@@ -140,7 +140,7 @@ void box_activate (t_box *x, int isActivated)
 
         sys_vGui ("::ui_box::setEditing .x%lx {} 0\n", x->box_owner);   // --
         
-        editor_unselectBox (x->box_owner->gl_editor, x);
+        editor_boxUnselect (x->box_owner->gl_editor, x);
         
         x->box_isActivated = 0;
     }
