@@ -32,6 +32,21 @@ static void editor_task (t_editor *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_box *editor_fetchBox (t_editor *x, t_object *object)
+{
+    t_box *box = NULL;
+    
+    for (box = x->e_boxes; box && box->box_object != object; box = box->box_next) { }
+    
+    PD_ASSERT (box);
+    
+    return box;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void editor_selectionAdd (t_editor *x, t_gobj *y)
 {
     t_selection *s = (t_selection *)PD_MEMORY_GET (sizeof (t_selection));

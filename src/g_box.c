@@ -69,15 +69,7 @@ void box_getSelection (t_box *x, char **p, int *size)
 
 t_box *box_fetch (t_glist *glist, t_object *object)
 {
-    t_box *x = NULL;
-    
-    canvas_createEditorIfNone (glist);
-    
-    for (x = glist->gl_editor->e_boxes; x && x->box_object != object; x = x->box_next) { }
-    
-    PD_ASSERT (x);
-    
-    return x;
+    canvas_createEditorIfNone (glist); return editor_fetchBox (glist->gl_editor, object);
 }
 
 void box_update (t_box *x)
