@@ -78,6 +78,9 @@ void        editor_free                 (t_editor *x);
 void        editor_selectionAdd         (t_editor *x, t_gobj *y);
 int         editor_selectionRemove      (t_editor *x, t_gobj *y);
 
+void        editor_motionSet            (t_editor *x, t_gobj *y, t_motionfn callback, int a, int b);
+void        editor_motionReset          (t_editor *x);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

@@ -133,6 +133,32 @@ int editor_selectionRemove (t_editor *x, t_gobj *y)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void editor_motionSet (t_editor *x, t_gobj *y, t_motionfn callback, int a, int b)
+{
+    if (callback) { x->e_action = ACTION_PASS; }
+    else { 
+       x->e_action = ACTION_NONE;
+    }
+    
+    x->e_grabbed    = y;
+    x->e_fnMotion   = callback;
+    x->e_previousX  = a;
+    x->e_previousY  = b;
+}
+
+void editor_motionReset (t_editor *x)
+{
+    x->e_grabbed    = NULL;
+    x->e_fnMotion   = NULL;
+    x->e_previousX  = 0;
+    x->e_previousY  = 0;
+    x->e_action     = ACTION_NONE;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_editor *editor_new (t_glist *owner)
 {
     t_editor *x = (t_editor *)PD_MEMORY_GET (sizeof (t_editor));
