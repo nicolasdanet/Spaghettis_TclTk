@@ -129,7 +129,7 @@ static inline int inlet_nearby (int x, int a, int b, int n)
 struct _box {
     struct _box         *box_next;
     t_object            *box_object;
-    t_glist             *box_glist;
+    t_glist             *box_owner;
     char                *box_string;                        /* Unzeroed string UTF-8 formatted. */
     int                 box_stringSizeInBytes;
     int                 box_selectionStart; 

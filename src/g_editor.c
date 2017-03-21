@@ -49,7 +49,7 @@ void editor_addBox (t_editor *x, t_object *object)
 
     box->box_next               = x->e_boxes;
     box->box_object             = object;
-    box->box_glist              = x->e_owner;
+    box->box_owner              = x->e_owner;
     box->box_string             = (char *)PD_MEMORY_GET (0);
     box->box_stringSizeInBytes  = 0;
     

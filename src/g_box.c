@@ -80,7 +80,7 @@ void box_update (t_box *x)
     
     buffer_toStringUnzeroed (object_getBuffer (x->box_object), &x->box_string, &x->box_stringSizeInBytes);
         
-    if (canvas_isMapped (x->box_glist)) { box_send (x, BOX_UPDATE, 0, 0); } 
+    if (canvas_isMapped (x->box_owner)) { box_send (x, BOX_UPDATE, 0, 0); } 
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -101,14 +101,14 @@ void box_draw (t_box *x)
 void box_erase (t_box *x)
 {
     sys_vGui (".x%lx.c delete %s\n", 
-                    canvas_getView (x->box_glist), 
+                    canvas_getView (x->box_owner), 
                     x->box_tag);
 }
 
 void box_displace (t_box *x, int deltaX, int deltaY)
 {
     sys_vGui (".x%lx.c move %s %d %d\n", 
-                    canvas_getView (x->box_glist), 
+                    canvas_getView (x->box_owner), 
                     x->box_tag, 
                     deltaX, 
                     deltaY);
@@ -117,7 +117,7 @@ void box_displace (t_box *x, int deltaX, int deltaY)
 void box_select (t_box *x, int isSelected)
 {
     sys_vGui (".x%lx.c itemconfigure %s -fill #%06x\n",
-                    canvas_getView (x->box_glist), 
+                    canvas_getView (x->box_owner), 
                     x->box_tag, 
                     (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
 }
@@ -126,10 +126,10 @@ void box_activate (t_box *x, int isActivated)
 {
     if (isActivated) {
 
-        sys_vGui ("::ui_box::setEditing .x%lx %s 1\n", x->box_glist, x->box_tag);
+        sys_vGui ("::ui_box::setEditing .x%lx %s 1\n", x->box_owner, x->box_tag);
                         
-        x->box_glist->gl_editor->e_selectedText = x;
-        x->box_glist->gl_editor->e_isTextDirty  = 0;
+        x->box_owner->gl_editor->e_selectedText = x;
+        x->box_owner->gl_editor->e_isTextDirty  = 0;
         
         x->box_draggedFrom      = 0;
         x->box_selectionStart   = 0;
@@ -138,9 +138,9 @@ void box_activate (t_box *x, int isActivated)
 
     } else {
 
-        sys_vGui ("::ui_box::setEditing .x%lx {} 0\n", x->box_glist);   // --
+        sys_vGui ("::ui_box::setEditing .x%lx {} 0\n", x->box_owner);   // --
                         
-        if (x->box_glist->gl_editor->e_selectedText == x) { x->box_glist->gl_editor->e_selectedText = NULL; }
+        if (x->box_owner->gl_editor->e_selectedText == x) { x->box_owner->gl_editor->e_selectedText = NULL; }
         
         x->box_isActivated = 0;
     }
@@ -212,7 +212,7 @@ static void box_keyDeleteProceed (t_box *x)
     x->box_string = PD_MEMORY_RESIZE (x->box_string, oldSize, newSize);
     x->box_stringSizeInBytes = newSize;
     x->box_selectionEnd = x->box_selectionStart;
-    x->box_glist->gl_editor->e_isTextDirty = 1;
+    x->box_owner->gl_editor->e_isTextDirty = 1;
     //
     }
 }
@@ -319,7 +319,7 @@ void box_key (t_box *x, t_keycode n, t_symbol *s)
 
         if (n) {
             x->box_selectionEnd = x->box_selectionStart;
-            x->box_glist->gl_editor->e_isTextDirty = 1;
+            x->box_owner->gl_editor->e_isTextDirty = 1;
         }
     }
 
@@ -332,14 +332,14 @@ void box_key (t_box *x, t_keycode n, t_symbol *s)
 
 void box_free (t_box *x)
 {
-    if (x->box_glist->gl_editor->e_selectedText == x) {
-        x->box_glist->gl_editor->e_selectedText = NULL;
+    if (x->box_owner->gl_editor->e_selectedText == x) {
+        x->box_owner->gl_editor->e_selectedText = NULL;
     }
     
-    if (x->box_glist->gl_editor->e_boxes == x) { x->box_glist->gl_editor->e_boxes = x->box_next; }
+    if (x->box_owner->gl_editor->e_boxes == x) { x->box_owner->gl_editor->e_boxes = x->box_next; }
     else {
         t_box *t = NULL;
-        for (t = x->box_glist->gl_editor->e_boxes; t; t = t->box_next) {
+        for (t = x->box_owner->gl_editor->e_boxes; t; t = t->box_next) {
             if (t->box_next == x) { 
                 t->box_next = x->box_next; break; 
             }

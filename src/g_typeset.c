@@ -95,7 +95,7 @@ static t_typesethelper *box_typesetAllocate (t_box *x, int a, int b, t_typesethe
     
     p->p_x                      = a;
     p->p_y                      = b;
-    p->p_fontSize               = canvas_getFontSize (isCanvas ? cast_glist (x->box_object) : x->box_glist);
+    p->p_fontSize               = canvas_getFontSize (isCanvas ? cast_glist (x->box_object) : x->box_owner);
     p->p_fontWidth              = font_getHostFontWidth (p->p_fontSize);
     p->p_fontHeight             = font_getHostFontHeight (p->p_fontSize);
     p->p_numberOfCharacters     = u8_charnum (x->box_string, x->box_stringSizeInBytes);
@@ -316,14 +316,14 @@ static int box_typeset (t_box *x, t_typesethelper *p)
 
 static void box_sendCreate (t_box *x, t_typesethelper *p)
 {
-    t_glist *glist = canvas_getView (x->box_glist);
-    int isSelected = canvas_isObjectSelected (x->box_glist, cast_gobj (x->box_object));
+    t_glist *glist = canvas_getView (x->box_owner);
+    int isSelected = canvas_isObjectSelected (x->box_owner, cast_gobj (x->box_object));
     
     sys_vGui ("::ui_box::newText .x%lx.c %s %d %d {%s} %d #%06x\n",     // --
                     glist,
                     x->box_tag,
-                    (int)(object_getPixelX (x->box_object, x->box_glist) + BOX_MARGIN_LEFT), 
-                    (int)(object_getPixelY (x->box_object, x->box_glist) + BOX_MARGIN_TOP),
+                    (int)(object_getPixelX (x->box_object, x->box_owner) + BOX_MARGIN_LEFT), 
+                    (int)(object_getPixelY (x->box_object, x->box_owner) + BOX_MARGIN_TOP),
                     p->p_typeset, 
                     font_getHostFontSize (p->p_fontSize),
                     (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
@@ -331,7 +331,7 @@ static void box_sendCreate (t_box *x, t_typesethelper *p)
 
 static void box_sendUpdate (t_box *x, t_typesethelper *p)
 {
-    t_glist *glist = canvas_getView (x->box_glist);
+    t_glist *glist = canvas_getView (x->box_owner);
     
     sys_vGui ("::ui_box::setText .x%lx.c %s {%s}\n",                    // --
                     glist,
@@ -386,7 +386,7 @@ int box_send (t_box *x, int action, int a, int b)
         box_sendUpdate (x, &p); 
         
         if (resized) {
-            canvas_drawBox (x->box_glist, x->box_object, x->box_tag, 0); 
+            canvas_drawBox (x->box_owner, x->box_object, x->box_tag, 0); 
         }
     }
 
