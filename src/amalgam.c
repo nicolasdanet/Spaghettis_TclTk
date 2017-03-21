@@ -19,6 +19,7 @@
 #include "m_instance.c"
 #include "m_stack.c"
 #include "m_environment.c"
+#include "m_clipboard.c"
 #include "m_bind.c"
 #include "m_message.c"
 #include "m_pd.c"

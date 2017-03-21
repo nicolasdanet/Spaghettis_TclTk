@@ -52,17 +52,6 @@ typedef struct _editor {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef struct _paste {
-    int                 e_count;
-    int                 e_offset;
-    t_glist             *e_current;
-    t_buffer            *e_buffer;
-    } t_paste;
-    
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static inline t_gobj *selection_getObject (t_selection *x)
 {
     return x->sel_what;
@@ -77,11 +66,11 @@ static inline t_selection *selection_getNext (t_selection *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_editor    *editor_new             (t_glist *owner);
+t_editor    *editor_new                 (t_glist *owner);
 
-void        editor_free             (t_editor *x);
-void        editor_selectionAdd     (t_editor *x, t_gobj *y);
-int         editor_selectionRemove  (t_editor *x, t_gobj *y);
+void        editor_free                 (t_editor *x);
+void        editor_selectionAdd         (t_editor *x, t_gobj *y);
+int         editor_selectionRemove      (t_editor *x, t_gobj *y);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

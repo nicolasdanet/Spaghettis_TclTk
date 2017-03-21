@@ -24,17 +24,7 @@ extern t_class  *canvas_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_paste  editor_paste;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#define EDITOR_GRIP_SIZE        4
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#define EDITOR_PASTE_OFFSET     20
+#define EDITOR_GRIP_SIZE    4
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -468,93 +458,10 @@ static void canvas_proceedMouse (t_glist *glist, int a, int b, int modifier, int
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_proceedCopy (t_glist *glist)
-{
-    if (glist->gl_editor->e_selectedObjects) {
-    //
-    t_buffer *b = buffer_new();
-
-    t_gobj *y = NULL;
-    t_outconnect *connection = NULL;
-    t_traverser t;
-    
-    editor_paste.e_count = 0;
-    
-    for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (canvas_isObjectSelected (glist, y)) { gobj_save (y, b); }
-    }
-    
-    traverser_start (&t, glist);
-    
-    while ((connection = traverser_next (&t))) {
-    //
-    int m = canvas_isObjectSelected (glist, cast_gobj (traverser_getSource (&t)));
-    int n = canvas_isObjectSelected (glist, cast_gobj (traverser_getDestination (&t)));
-    
-    if (m && n) {
-        buffer_vAppend (b, "ssiiii;", 
-            sym___hash__X, 
-            sym_connect,
-            canvas_getIndexOfObjectAmongSelected (glist, cast_gobj (traverser_getSource (&t))),
-            traverser_getIndexOfOutlet (&t),
-            canvas_getIndexOfObjectAmongSelected (glist, cast_gobj (traverser_getDestination (&t))),
-            traverser_getIndexOfInlet (&t));
-    }
-    //
-    }
-    
-    buffer_free (editor_paste.e_buffer); 
-    editor_paste.e_buffer = b;
-    //
-    }
-}
-
-static void canvas_proceedPaste (t_glist *glist)
-{
-    t_gobj *y = NULL;
-    t_selection *s = NULL;
-    int numberOfObjectsAlreadyThere = 0;
-    int i = 0;
-    int n = EDITOR_PASTE_OFFSET * ++editor_paste.e_count;
-    int state = dsp_suspend();
-     
-    canvas_deselectAll (glist);
-    
-    for (y = glist->gl_graphics; y; y = y->g_next) { numberOfObjectsAlreadyThere++; }
-
-    editor_paste.e_current = glist;
-    editor_paste.e_offset  = numberOfObjectsAlreadyThere;
-    
-    instance_stackEval (glist, editor_paste.e_buffer);
-    
-    for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (i >= numberOfObjectsAlreadyThere) { canvas_selectObject (glist, y); }
-        i++;
-    }
-    
-    editor_paste.e_current = NULL;
-    
-    dsp_resume (state);
-        
-    for (s = glist->gl_editor->e_selectedObjects; s; s = selection_getNext (s)) {
-        gobj_displaced (selection_getObject (s), glist, n, n);
-    }
-    
-    for (s = glist->gl_editor->e_selectedObjects; s; s = selection_getNext (s)) {
-        if (pd_class (selection_getObject (s)) == canvas_class) { 
-            canvas_loadbang (cast_glist (selection_getObject (s))); 
-        }
-    }
-    
-    canvas_dirty (glist, 1);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
 {
+    PD_ASSERT (sizeof (t_keycode) == sizeof (UCS4_CODE_POINT));
+    
     if (argc > 1) { 
     //
     int isDown = ((int)(atom_getFloat (argv + 0)) != 0);
@@ -830,7 +737,7 @@ void canvas_copy (t_glist *glist)
         sys_vGui ("clipboard append {%.*s}\n", s, t);       /* < http://stackoverflow.com/a/13289324 > */
         
     } else {
-        canvas_proceedCopy (glist);
+        clipboard_copy (instance_getClipboard(), glist);
     }
     //
     }
@@ -844,7 +751,7 @@ void canvas_paste (t_glist *glist)
     if (glist->gl_editor->e_selectedText) {
         sys_vGui ("::ui_bind::pasteText .x%lx\n", glist);
     } else {
-        canvas_proceedPaste (glist);
+        clipboard_paste (instance_getClipboard(), glist);
     }
     //
     }
@@ -856,7 +763,7 @@ void canvas_duplicate (t_glist *glist)
     else {
     //
     canvas_copy (glist);
-    canvas_proceedPaste (glist);
+    clipboard_paste (instance_getClipboard(), glist);
     //
     }
 }

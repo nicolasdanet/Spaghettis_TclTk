@@ -17,7 +17,6 @@
 #pragma mark -
 
 void cos_tilde_initialize   (void);
-void editor_initialize      (void);
 void fft_initialize         (void);
 void garray_initialize      (void);
 void gui_initialize         (void);
@@ -36,7 +35,6 @@ void cos_tilde_release      (void);
 void defer_release          (void);
 void drawnumber_release     (void);
 void drawpolygon_release    (void);
-void editor_release         (void);
 void fft_release            (void);
 void gui_release            (void);
 void interface_release      (void);
@@ -877,7 +875,6 @@ void setup_initialize (void)
     /* Second various initializations (alphabetically sorted there). */
     
     cos_tilde_initialize();
-    editor_initialize();
     fft_initialize();
     gui_initialize();
     interface_initialize();
@@ -924,7 +921,6 @@ void setup_release (void)
     monitor_release();
     gui_release();
     fft_release();
-    editor_release();
     drawpolygon_release();
     drawnumber_release();
     defer_release();

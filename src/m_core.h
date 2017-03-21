@@ -134,6 +134,8 @@ void        buffer_withStringUnzeroed                   (t_buffer *x, char *s, i
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+/* Could use iterator helper instead. */
+
 int         buffer_isLastMessageProperlyEnded           (t_buffer *x);
 int         buffer_getNumberOfMessages                  (t_buffer *x);
 int         buffer_getMessageAt                         (t_buffer *x, int n, int *start, int *end);

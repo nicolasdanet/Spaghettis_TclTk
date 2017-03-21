@@ -28,6 +28,9 @@ typedef struct _stack       {
     t_glist         *stack_cached;
     } t_stack;
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 typedef struct _environment {
     int             ce_dollarZeroValue;
     int             ce_argc;
@@ -35,6 +38,14 @@ typedef struct _environment {
     t_symbol        *ce_directory;
     t_symbol        *ce_fileName;
     } t_environment;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _clipboard {
+    int             cb_count;
+    t_buffer        *cb_buffer;
+    } t_clipboard;
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -43,6 +54,7 @@ struct _pdinstance {
     t_systime       pd_systime;
     t_stack         pd_stack;
     t_environment   pd_environment;
+    t_clipboard     pd_clipboard;
     int             pd_dspState;
     int             pd_dspChainSize;
     int             pd_loadingExternal;
@@ -164,45 +176,6 @@ void            instance_environmentResetArguments      (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void environment_free (t_environment *e);
-
-static inline int environment_getDollarZero (t_environment *e)
-{
-    return e->ce_dollarZeroValue;
-}
-
-static inline int environment_getNumberOfArguments (t_environment *e)
-{
-    return e->ce_argc;
-}
-
-static inline t_atom *environment_getArguments (t_environment *e)
-{
-    return e->ce_argv;
-}
-
-static inline t_symbol *environment_getDirectory (t_environment *e)
-{
-    return e->ce_directory;
-}
-
-static inline char *environment_getDirectoryAsString (t_environment *e)
-{
-    return e->ce_directory->s_name;
-}
-
-static inline t_symbol *environment_getFileName (t_environment *e)
-{
-    if (e) { return e->ce_fileName; }
-    else {
-        return sym_Patch;
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static inline void instance_contextSetCurrent (t_glist *glist)
 {
     return instance_setBoundX (cast_pd (glist));
@@ -238,10 +211,6 @@ static inline int instance_isMakerObject (t_pd *x)
 {
     return (x == &(instance_get()->pd_objectMaker));
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 static inline t_pd *instance_getMakerObject (void)
 {
@@ -287,6 +256,11 @@ static inline t_pd *instance_getNewestObject (void)
     return instance_get()->pd_newest;
 }
 
+static inline t_clipboard *instance_getClipboard (void)
+{
+    return &instance_get()->pd_clipboard;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -299,6 +273,57 @@ static inline void instance_setDspState (int n)
 static inline void instance_setNewestObject (t_pd *x)
 {
     instance_get()->pd_newest = x;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void clipboard_init         (t_clipboard *x);
+void clipboard_destroy      (t_clipboard *x);
+void clipboard_copy         (t_clipboard *x, t_glist *glist);
+void clipboard_paste        (t_clipboard *x, t_glist *glist);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void environment_free       (t_environment *e);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static inline int environment_getDollarZero (t_environment *e)
+{
+    return e->ce_dollarZeroValue;
+}
+
+static inline int environment_getNumberOfArguments (t_environment *e)
+{
+    return e->ce_argc;
+}
+
+static inline t_atom *environment_getArguments (t_environment *e)
+{
+    return e->ce_argv;
+}
+
+static inline t_symbol *environment_getDirectory (t_environment *e)
+{
+    return e->ce_directory;
+}
+
+static inline char *environment_getDirectoryAsString (t_environment *e)
+{
+    return e->ce_directory->s_name;
+}
+
+static inline t_symbol *environment_getFileName (t_environment *e)
+{
+    if (e) { return e->ce_fileName; }
+    else {
+        return sym_Patch;
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

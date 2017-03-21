@@ -17,7 +17,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define BUFFER_MAXIMUM_ARGUMENTS        64
+#define BUFFER_MAXIMUM_VARIADIC     64
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -106,7 +106,7 @@ t_error buffer_resizeAtBetween (t_buffer *x, int n, int start, int end)
 void buffer_vAppend (t_buffer *x, char *fmt, ...)
 {
     va_list ap;
-    t_atom args[BUFFER_MAXIMUM_ARGUMENTS];
+    t_atom args[BUFFER_MAXIMUM_VARIADIC];
     t_atom *a = args;
     int n = 0;
     char *p = fmt;
@@ -116,7 +116,7 @@ void buffer_vAppend (t_buffer *x, char *fmt, ...)
     
     while (k) {
 
-        if (n >= BUFFER_MAXIMUM_ARGUMENTS) { PD_BUG; break; }
+        if (n >= BUFFER_MAXIMUM_VARIADIC) { PD_BUG; break; }
 
         switch (*p++) {
             case 'i'    : SET_FLOAT     (a, (t_float)va_arg (ap, int));     break;
