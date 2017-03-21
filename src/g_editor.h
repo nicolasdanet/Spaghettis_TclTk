@@ -31,7 +31,7 @@ typedef struct _editor {
     t_glist             *e_owner;
     t_proxy             *e_proxy;
     t_box               *e_boxes;
-    t_box               *e_selectedText;
+    t_box               *e_selectedBox;
     t_selection         *e_selectedObjects;
     t_gobj              *e_grabbed;
     t_clock             *e_clock;
@@ -71,10 +71,26 @@ t_box       *editor_fetchBox            (t_editor *x, t_object *object);
 
 void        editor_addBox               (t_editor *x, t_object *object);
 void        editor_removeBox            (t_editor *x, t_box *box);
+void        editor_selectBox            (t_editor *x, t_box *box);
+void        editor_unselectBox          (t_editor *x, t_box *box);
 
 void        editor_free                 (t_editor *x);
 void        editor_selectionAdd         (t_editor *x, t_gobj *y);
 int         editor_selectionRemove      (t_editor *x, t_gobj *y);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline int editor_hasSelectedBox (t_editor *x)
+{
+    return (x->e_selectedBox != NULL);
+}
+
+static inline t_box *editor_getSelectedBox (t_editor *x)
+{
+    return x->e_selectedBox;
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

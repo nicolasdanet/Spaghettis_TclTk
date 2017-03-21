@@ -298,7 +298,7 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
     
         if (clicked) {
         //
-        t_box *text = glist->gl_editor->e_selectedText;
+        t_box *text = editor_getSelectedBox (glist->gl_editor);
         
         if (object && text && (text == box_fetch (glist, object))) {
             box_mouse (text, positionX - a, positionY - b, BOX_SHIFT);
@@ -350,7 +350,7 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
                 
         } else if (clicked) {
         
-            t_box *text = glist->gl_editor->e_selectedText;
+            t_box *text = editor_getSelectedBox (glist->gl_editor);
             
             if (object && text && (text == box_fetch (glist, object))) {
                 int flag = (modifier & MODIFIER_DOUBLE) ? BOX_DOUBLE : BOX_DOWN;
@@ -541,8 +541,8 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
     //
     if (glist->gl_editor->e_action == ACTION_MOVE) { glist->gl_editor->e_action = ACTION_NONE; }
     
-    if (glist->gl_editor->e_selectedText) {
-        box_key (glist->gl_editor->e_selectedText, (t_keycode)n, s);
+    if (editor_hasSelectedBox (glist->gl_editor)) {
+        box_key (editor_getSelectedBox (glist->gl_editor), (t_keycode)n, s);
         if (glist->gl_editor->e_isTextDirty) { 
             canvas_dirty (glist, 1); 
         }
@@ -597,7 +597,7 @@ void canvas_motion (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         glist->gl_editor->e_previousY = b;
         
     } else if (action == ACTION_DRAG)    {
-        t_box *text = glist->gl_editor->e_selectedText;
+        t_box *text = editor_getSelectedBox (glist->gl_editor);
         if (text) { box_mouse (text, deltaX, deltaY, BOX_DRAG); }
                 
     } else if (action == ACTION_RESIZE)  {
@@ -710,10 +710,10 @@ void canvas_cut (t_glist *glist)
     if (!glist->gl_editor || !glist->gl_isEditMode) { return; }
     else {
     //
-    if (glist->gl_editor->e_hasSelectedline)    { canvas_removeSelectedLine (glist); }
-    else if (glist->gl_editor->e_selectedText) {
+    if (glist->gl_editor->e_hasSelectedline) { canvas_removeSelectedLine (glist); }
+    else if (editor_hasSelectedBox (glist->gl_editor)) {
         canvas_copy (glist);
-        box_key (glist->gl_editor->e_selectedText, (t_keycode)127, sym_Delete);
+        box_key (editor_getSelectedBox (glist->gl_editor), (t_keycode)127, sym_Delete);
         canvas_dirty (glist, 1);
         
     } else if (glist->gl_editor->e_selectedObjects) {
@@ -729,10 +729,10 @@ void canvas_copy (t_glist *glist)
     if (!glist->gl_editor || !glist->gl_isEditMode) { return; }
     else {
     //
-    if (glist->gl_editor->e_selectedText) {
+    if (editor_hasSelectedBox (glist->gl_editor)) {
         char *t = NULL;
         int s = 0;
-        box_getSelection (glist->gl_editor->e_selectedText, &t, &s);
+        box_getSelection (editor_getSelectedBox (glist->gl_editor), &t, &s);
         sys_gui ("clipboard clear\n");
         sys_vGui ("clipboard append {%.*s}\n", s, t);       /* < http://stackoverflow.com/a/13289324 > */
         
@@ -748,7 +748,7 @@ void canvas_paste (t_glist *glist)
     if (!glist->gl_editor || !glist->gl_isEditMode) { return; }
     else {
     //
-    if (glist->gl_editor->e_selectedText) {
+    if (editor_hasSelectedBox (glist->gl_editor)) {
         sys_vGui ("::ui_bind::pasteText .x%lx\n", glist);
     } else {
         clipboard_paste (instance_getClipboard(), glist);

@@ -138,7 +138,7 @@ void canvas_removeSelectedObjects (t_glist *glist)
     /* If box text is selected, deselecting it might recreate the object. */ 
     /* Workaround by deselecting it first and looking for a "new" object next. */
         
-    if (glist->gl_editor->e_selectedText) {
+    if (editor_hasSelectedBox (glist->gl_editor)) {
         instance_setNewestObject (NULL);
         canvas_deselectAll (glist);
         if (instance_getNewestObject()) {
@@ -316,11 +316,11 @@ int canvas_deselectObject (t_glist *glist, t_gobj *y)
     
     PD_ASSERT (canvas_isObjectSelected (glist, y));         /* Must be already selected. */
     
-    if (glist->gl_editor->e_selectedText) {
+    if (editor_hasSelectedBox (glist->gl_editor)) {
     
         t_box *text = box_fetch (glist, cast_object (y));
         
-        if (glist->gl_editor->e_selectedText == text) {
+        if (editor_getSelectedBox (glist->gl_editor) == text) {
             if (glist->gl_editor->e_isTextDirty) {
                 z = text;
                 canvas_cacheLines (canvas_getView (glist));
@@ -337,7 +337,7 @@ int canvas_deselectObject (t_glist *glist, t_gobj *y)
     if (z) {
         object_setFromEntry (cast_object (y), glist, z);
         canvas_updateLinesByObject (glist, cast_object (y));
-        glist->gl_editor->e_selectedText = NULL;
+        editor_selectBox (glist->gl_editor, NULL);
     }
     
     if (dspSuspended) { dsp_resume (dspSuspended); }

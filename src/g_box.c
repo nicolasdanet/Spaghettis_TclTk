@@ -128,7 +128,7 @@ void box_activate (t_box *x, int isActivated)
 
         sys_vGui ("::ui_box::setEditing .x%lx %s 1\n", x->box_owner, x->box_tag);
                         
-        x->box_owner->gl_editor->e_selectedText = x;
+        editor_selectBox (x->box_owner->gl_editor, x);
         x->box_owner->gl_editor->e_isTextDirty  = 0;
         
         x->box_draggedFrom      = 0;
@@ -139,8 +139,8 @@ void box_activate (t_box *x, int isActivated)
     } else {
 
         sys_vGui ("::ui_box::setEditing .x%lx {} 0\n", x->box_owner);   // --
-                        
-        if (x->box_owner->gl_editor->e_selectedText == x) { x->box_owner->gl_editor->e_selectedText = NULL; }
+        
+        editor_unselectBox (x->box_owner->gl_editor, x);
         
         x->box_isActivated = 0;
     }
