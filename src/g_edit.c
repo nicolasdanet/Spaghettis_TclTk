@@ -572,8 +572,7 @@ void canvas_motion (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     canvas_setLastMotionCoordinates (glist, a, b);
     
     if (action == ACTION_MOVE) {
-        clock_unset (glist->gl_editor->e_clock);
-        clock_delay (glist->gl_editor->e_clock, 5.0);
+        editor_selectionDeplace (glist->gl_editor);
         glist->gl_editor->e_newX = a;
         glist->gl_editor->e_newY = b;
     

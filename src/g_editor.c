@@ -129,6 +129,12 @@ int editor_selectionRemove (t_editor *x, t_gobj *y)
     return 0;
 }
 
+void editor_selectionDeplace (t_editor *x)
+{
+    clock_unset (x->e_clock);
+    clock_delay (x->e_clock, 5.0);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
