@@ -541,7 +541,7 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
         }
         
     } else if (s == sym_Delete || s == sym_BackSpace) {
-        if (glist->gl_editor->e_hasSelectedline) { canvas_removeSelectedLine (glist); }
+        if (editor_hasSelectedLine (glist->gl_editor)) { canvas_removeSelectedLine (glist); }
         else if (editor_hasSelection (glist->gl_editor)) { 
             canvas_removeSelectedObjects (glist); 
         }
@@ -701,7 +701,7 @@ void canvas_cut (t_glist *glist)
     if (!glist->gl_editor || !glist->gl_isEditMode) { return; }
     else {
     //
-    if (glist->gl_editor->e_hasSelectedline) { canvas_removeSelectedLine (glist); }
+    if (editor_hasSelectedLine (glist->gl_editor)) { canvas_removeSelectedLine (glist); }
     else if (editor_hasSelectedBox (glist->gl_editor)) {
         canvas_copy (glist);
         box_key (editor_getSelectedBox (glist->gl_editor), (t_keycode)127, sym_Delete);

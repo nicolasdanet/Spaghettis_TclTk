@@ -45,7 +45,6 @@ typedef struct _editor {
     int                 e_newY;
     int                 e_action;
     int                 e_isTextDirty;
-    int                 e_hasSelectedline;
     } t_editor;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -81,6 +80,15 @@ void        editor_selectionDeplace         (t_editor *x);
 void        editor_selectionCacheLines      (t_editor *x);
 void        editor_selectionRestoreLines    (t_editor *x);
 
+void        editor_selectedLineReset        (t_editor *x);
+void        editor_selectedLineDisconnect   (t_editor *x);
+void        editor_selectedLineSet          (t_editor *x, 
+                                                t_outconnect *connection,
+                                                int m,
+                                                int i,
+                                                int n,
+                                                int j);
+    
 void        editor_motionProceed            (t_editor *x, int deltaX, int deltaY, int m);
 void        editor_motionSet                (t_editor *x, t_gobj *y, t_motionfn callback, int a, int b);
 void        editor_motionUnset              (t_editor *x, t_gobj *y);
@@ -100,6 +108,15 @@ static inline int editor_hasSelection (t_editor *x)
     return (x->e_selectedObjects != NULL);
 }
 
+static inline int editor_hasSelectedLine (t_editor *x)
+{
+    return (x->e_selectedLineConnection != NULL);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static inline t_box *editor_getSelectedBox (t_editor *x)
 {
     return x->e_selectedBox;
@@ -108,6 +125,11 @@ static inline t_box *editor_getSelectedBox (t_editor *x)
 static inline t_selection *editor_getSelection (t_editor *x)
 {
     return x->e_selectedObjects;
+}
+
+static inline t_outconnect *editor_getSelectedLineConnection (t_editor *x)
+{
+    return x->e_selectedLineConnection;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -173,6 +173,37 @@ void editor_selectionRestoreLines (t_editor *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void editor_selectedLineSet (t_editor *x, t_outconnect *connection, int m, int i, int n, int j)
+{
+    x->e_selectedLineConnection = connection;
+    
+    SET_FLOAT (x->e_selectedLine + 0, m);
+    SET_FLOAT (x->e_selectedLine + 1, i);
+    SET_FLOAT (x->e_selectedLine + 2, n);
+    SET_FLOAT (x->e_selectedLine + 3, j);
+}
+
+void editor_selectedLineReset (t_editor *x)
+{
+    x->e_selectedLineConnection = NULL;
+    
+    SET_FLOAT (x->e_selectedLine + 0, (t_float)0.0);
+    SET_FLOAT (x->e_selectedLine + 1, (t_float)0.0);
+    SET_FLOAT (x->e_selectedLine + 2, (t_float)0.0);
+    SET_FLOAT (x->e_selectedLine + 3, (t_float)0.0);
+}
+
+void editor_selectedLineDisconnect (t_editor *x)
+{
+    canvas_disconnect (x->e_owner, NULL, 4, x->e_selectedLine);
+    
+    editor_selectedLineReset (x);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void editor_motionSet (t_editor *x, t_gobj *y, t_motionfn callback, int a, int b)
 {
     PD_ASSERT (callback);
