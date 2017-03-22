@@ -31,7 +31,7 @@
 #define IEM_DIAL_DEFAULT_SIZE       40
 #define IEM_DIAL_DEFAULT_MINIMUM    0
 #define IEM_DIAL_DEFAULT_MAXIMUM    127
-
+       
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -49,7 +49,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IEM_DIAL_SELECT_MARGIN      5
+#define IEM_DIAL_SHOW_KNOB          30
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -90,14 +90,6 @@ static int dial_getWidth (t_dial *x)
     return PD_MAX (dial_getWidthDigits (x), x->x_gui.iem_height);
 }
 
-static int dial_getKnobColor (t_dial *x)
-{
-    if (x->x_gui.iem_height < dial_getWidth (x)) { return x->x_gui.iem_colorBackground; }
-    else {
-        return x->x_gui.iem_colorForeground;
-    }
-}
-
 static double dial_getNeedleAngle (t_dial *x)
 {
     int degrees    = (int)(((double)x->x_position / x->x_steps) * IEM_DIAL_ANGULAR_RANGE);
@@ -127,6 +119,38 @@ static void dial_setString (t_dial *x)
     x->x_t[x->x_digitsNumber] = 0;
 }
 
+static int dial_hasKnob (t_dial *x, t_glist *glist)
+{
+    int t = (x->x_gui.iem_height >= IEM_DIAL_SHOW_KNOB);
+    
+    if (x->x_hasKnob != t) {
+    
+        t_glist *canvas = canvas_getView (glist);
+        
+        if (t) {
+        
+            sys_vGui (".x%lx.c itemconfigure %lxARC -state normal\n",
+                            canvas,
+                            x);
+            sys_vGui (".x%lx.c itemconfigure %lxNEEDLE -state normal\n",
+                            canvas,
+                            x);
+        } else {
+            
+            sys_vGui (".x%lx.c itemconfigure %lxARC -state hidden\n",
+                            canvas,
+                            x);
+            sys_vGui (".x%lx.c itemconfigure %lxNEEDLE -state hidden\n",
+                            canvas,
+                            x);
+        }
+        
+        x->x_hasKnob = t;
+    }
+    
+    return x->x_hasKnob;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -145,7 +169,7 @@ static void dial_drawJob (t_gobj *z, t_glist *glist)
     int n = b + ((x->x_gui.iem_height - h) / 2);
     
     dial_setString (x);
-    
+
     sys_vGui (".x%lx.c coords %lxNEEDLE %d %d %d %d\n",
                     canvas,
                     x,
@@ -153,7 +177,7 @@ static void dial_drawJob (t_gobj *z, t_glist *glist)
                     n,
                     dial_getNeedleTopX (x, m, ((w - h) / 2.0) + 2),
                     dial_getNeedleTopY (x, n, ((w - h) / 2.0) + 2));
-                
+    
     sys_vGui (".x%lx.c itemconfigure %lxNUMBER -fill #%06x -text {%s}\n",   // --
                     canvas,
                     x,
@@ -182,13 +206,6 @@ static void dial_drawMove (t_dial *x, t_glist *glist)
     int m = a + (w / 2);
     int n = b + ((x->x_gui.iem_height - h) / 2);
     
-    sys_vGui (".x%lx.c coords %lxBASE %d %d %d %d\n",
-                    canvas,
-                    x,
-                    a - IEM_DIAL_SELECT_MARGIN, 
-                    b - IEM_DIAL_SELECT_MARGIN,
-                    a + IEM_DIAL_SELECT_MARGIN + w, 
-                    b + IEM_DIAL_SELECT_MARGIN + x->x_gui.iem_height);
     sys_vGui (".x%lx.c coords %lxARC %d %d %d %d\n",
                     canvas,
                     x,
@@ -229,19 +246,6 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
     
     dial_setString (x);
     
-    sys_vGui (".x%lx.c create rectangle %d %d %d %d"
-                    " -fill #%06x"
-                    " -outline #%06x"
-                    " -dash {2 4}"      // --
-                    " -tags %lxBASE\n",
-                    canvas,
-                    a - IEM_DIAL_SELECT_MARGIN,
-                    b - IEM_DIAL_SELECT_MARGIN,
-                    a + IEM_DIAL_SELECT_MARGIN + w ,
-                    b + IEM_DIAL_SELECT_MARGIN + x->x_gui.iem_height,
-                    x->x_gui.iem_colorBackground,
-                    x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorBackground,
-                    x);
     sys_vGui (".x%lx.c create arc %d %d %d %d"
                     " -width 2"
                     " -start %d"
@@ -256,7 +260,7 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
                     b - 2 + x->x_gui.iem_height - h,
                     -IEM_DIAL_ANGULAR_OFFSET,
                     -IEM_DIAL_ANGULAR_RANGE,
-                    dial_getKnobColor (x),
+                    x->x_gui.iem_colorForeground,
                     x);
     sys_vGui (".x%lx.c create line %d %d %d %d"
                     " -width 2"
@@ -267,7 +271,7 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
                     n,
                     dial_getNeedleTopX (x, m, ((w - h) / 2.0) + 2),
                     dial_getNeedleTopY (x, n, ((w - h) / 2.0) + 2),
-                    dial_getKnobColor (x),
+                    x->x_gui.iem_colorForeground,
                     x);
     sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
                     " -anchor center"
@@ -293,17 +297,26 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
                     font_getHostFontSize (x->x_gui.iem_fontSize),
                     x->x_gui.iem_colorLabel,
                     x);
+    
+    dial_hasKnob (x, glist);
 }
 
 static void dial_drawSelect (t_dial *x, t_glist *glist)
 {
     t_glist *canvas = canvas_getView (glist);
     
-    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxARC -outline #%06x\n",
                     canvas,
                     x,
-                    x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorBackground);
-                
+                    x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorForeground);
+    sys_vGui (".x%lx.c itemconfigure %lxNEEDLE -fill #%06x\n",
+                    canvas,
+                    x,
+                    x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorForeground);
+    sys_vGui (".x%lx.c itemconfigure %lxNUMBER -fill #%06x\n",
+                    canvas,
+                    x, 
+                    x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorForeground);
     sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%06x\n",
                     canvas,
                     x,
@@ -313,10 +326,7 @@ static void dial_drawSelect (t_dial *x, t_glist *glist)
 static void dial_drawErase (t_dial *x, t_glist *glist)
 {
     t_glist *canvas = canvas_getView (glist);
-
-    sys_vGui (".x%lx.c delete %lxBASE\n",
-                    canvas,
-                    x);
+    
     sys_vGui (".x%lx.c delete %lxARC\n",
                     canvas,
                     x);
@@ -335,18 +345,14 @@ static void dial_drawConfig (t_dial *x, t_glist *glist)
 {
     t_glist *canvas = canvas_getView (glist);
 
-    sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%06x\n",
-                    canvas,
-                    x,
-                    x->x_gui.iem_colorBackground);
     sys_vGui (".x%lx.c itemconfigure %lxARC -outline #%06x\n",
                     canvas,
                     x,
-                    dial_getKnobColor (x));
+                    x->x_gui.iem_colorForeground);
     sys_vGui (".x%lx.c itemconfigure %lxNEEDLE -fill #%06x\n",
                     canvas,
                     x,
-                    dial_getKnobColor (x));
+                    x->x_gui.iem_colorForeground);
     sys_vGui (".x%lx.c itemconfigure %lxNUMBER -font [::getFont %d] -fill #%06x\n",             // --
                     canvas,
                     x, 
@@ -358,6 +364,8 @@ static void dial_drawConfig (t_dial *x, t_glist *glist)
                     font_getHostFontSize (x->x_gui.iem_fontSize),
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel,
                     (x->x_gui.iem_label != utils_empty()) ? x->x_gui.iem_label->s_name : "");
+    
+    dial_hasKnob (x, glist);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -773,6 +781,7 @@ static void *dial_new (t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_labelX     = labelX;
     x->x_gui.iem_labelY     = labelY;
     x->x_gui.iem_fontSize   = PD_MAX (labelFontSize, IEM_MINIMUM_FONTSIZE);
+    x->x_hasKnob            = -1;
     x->x_digitsFontSize     = IEM_DEFAULT_FONTSIZE;
     
     iemgui_checkSendReceiveLoop (cast_iem (x));
