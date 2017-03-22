@@ -29,51 +29,6 @@ extern t_class *canvas_class;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void clipboard_addOffsetToLineConnections (t_clipboard *x, int i)
-{
-    t_iterator *iter = iterator_new (buffer_size (x->cb_buffer), buffer_atoms (x->cb_buffer));
-    t_atom *atoms = NULL;
-    int count;
-    
-    int k = 0;
-    
-    while ((count = iterator_next (iter, &atoms))) {
-    //
-    if (count >= 2) {
-    //
-    t_symbol *s = atom_getSymbolAtIndex (1, count, atoms);
-    
-    if (s == sym_canvas)  { k++; }      /* Connections in subpatches must not be changed. */
-    if (s == sym_restore) { k--; }
-    if (s == sym_connect) {
-    //
-    if (!k && count == 6) {
-    //
-    t_float m = atom_getFloat (atoms + 2);
-    t_float n = atom_getFloat (atoms + 4);
-    SET_FLOAT (atoms + 2, m + i);
-    SET_FLOAT (atoms + 4, n + i);
-    //
-    }
-    //
-    }
-    //
-    }
-    //
-    }
-    
-    iterator_free (iter);
-}
-
-static void clipboard_substractOffsetToLineConnections (t_clipboard *x, int i)
-{
-    clipboard_addOffsetToLineConnections (x, -i);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void clipboard_copy (t_clipboard *x, t_glist *glist)
 {
     if (editor_hasSelection (glist->gl_editor)) {
@@ -126,11 +81,11 @@ void clipboard_paste (t_clipboard *x, t_glist *glist)
     
     canvas_deselectAll (glist);
     
-    clipboard_addOffsetToLineConnections (x, alreadyThere);
+    snippet_addOffsetToLine (x->cb_buffer, alreadyThere);
     
         instance_stackEval (glist, x->cb_buffer);
     
-    clipboard_substractOffsetToLineConnections (x, alreadyThere);
+    snippet_substractOffsetToLine (x->cb_buffer, alreadyThere);
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
         if (i >= alreadyThere) { canvas_selectObject (glist, y); }

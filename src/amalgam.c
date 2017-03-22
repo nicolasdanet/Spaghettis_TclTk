@@ -48,6 +48,7 @@
 #include "h_iterator.c"
 #include "h_pathlist.c"
 #include "h_heapstring.c"
+#include "h_snippet.c"
 
 /* System. */
 
