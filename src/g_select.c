@@ -59,7 +59,13 @@ static void canvas_deselectLine (t_glist *glist)
                     glist->gl_editor->e_selectedLineConnection);   
 }
 
-static void canvas_cacheLines (t_glist *glist)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* Split selected object from uneselected ones and move them to the end. */
+
+void canvas_putSelectedObjectsAtLast (t_glist *glist)
 {
     t_gobj *selectedHead = NULL;
     t_gobj *selectedTail = NULL;
@@ -67,11 +73,7 @@ static void canvas_cacheLines (t_glist *glist)
     t_gobj *unselectedTail = NULL;
     t_gobj *yA = NULL;
     t_gobj *yB = NULL;
-    t_traverser t;
-    t_outconnect *connection;
-    
-    /* Split selected object from uneselected ones and move it to the end. */
-    
+
     for (yA = glist->gl_graphics; yA; yA = yB) {
     //
     yB = yA->g_next;
@@ -94,39 +96,7 @@ static void canvas_cacheLines (t_glist *glist)
     else {
         glist->gl_graphics = unselectedHead; unselectedTail->g_next = selectedHead; 
     }
-
-    buffer_reset (glist->gl_editor->e_cachedLines);
-    
-    traverser_start (&t, glist);
-    
-    while ((connection = traverser_next (&t))) {
-    //
-    int s1 = canvas_isObjectSelected (glist, cast_gobj (traverser_getSource (&t)));
-    int s2 = canvas_isObjectSelected (glist, cast_gobj (traverser_getDestination (&t)));
-    
-    if (s1 != s2) {
-    //
-    buffer_vAppend (glist->gl_editor->e_cachedLines, "ssiiii;",
-        sym___hash__X, 
-        sym_connect,
-        canvas_getIndexOfObject (glist, cast_gobj (traverser_getSource (&t))),
-        traverser_getIndexOfOutlet (&t),
-        canvas_getIndexOfObject (glist, cast_gobj (traverser_getDestination (&t))),
-        traverser_getIndexOfInlet (&t));
-    //
-    }
-    //
-    }
 }
-
-void canvas_restoreCachedLines (t_glist *glist)
-{
-    instance_stackEval (glist, glist->gl_editor->e_cachedLines);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 void canvas_removeSelectedObjects (t_glist *glist)
 {
@@ -323,7 +293,8 @@ int canvas_deselectObject (t_glist *glist, t_gobj *y)
         if (editor_getSelectedBox (glist->gl_editor) == text) {
             if (glist->gl_editor->e_isTextDirty) {
                 z = text;
-                canvas_cacheLines (canvas_getView (glist));
+                canvas_putSelectedObjectsAtLast (glist);
+                editor_selectionCacheLines (canvas_getView (glist)->gl_editor);
                 canvas_deselectAllRecursive (y);
             }
             gobj_activated (y, glist, 0);

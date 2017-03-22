@@ -66,23 +66,25 @@ static inline t_selection *selection_getNext (t_selection *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_editor    *editor_new                 (t_glist *owner);
-t_box       *editor_boxFetch            (t_editor *x, t_object *object);
+t_editor    *editor_new                     (t_glist *owner);
+t_box       *editor_boxFetch                (t_editor *x, t_object *object);
 
-void        editor_boxAdd               (t_editor *x, t_object *object);
-void        editor_boxRemove            (t_editor *x, t_box *box);
-void        editor_boxSelect            (t_editor *x, t_box *box);
-void        editor_boxUnselect          (t_editor *x, t_box *box);
+void        editor_boxAdd                   (t_editor *x, t_object *object);
+void        editor_boxRemove                (t_editor *x, t_box *box);
+void        editor_boxSelect                (t_editor *x, t_box *box);
+void        editor_boxUnselect              (t_editor *x, t_box *box);
 
-void        editor_free                 (t_editor *x);
-void        editor_selectionAdd         (t_editor *x, t_gobj *y);
-int         editor_selectionRemove      (t_editor *x, t_gobj *y);
-void        editor_selectionDeplace     (t_editor *x);
+void        editor_free                     (t_editor *x);
+void        editor_selectionAdd             (t_editor *x, t_gobj *y);
+int         editor_selectionRemove          (t_editor *x, t_gobj *y);
+void        editor_selectionDeplace         (t_editor *x);
+void        editor_selectionCacheLines      (t_editor *x);
+void        editor_selectionRestoreLines    (t_editor *x);
 
-void        editor_motionProceed        (t_editor *x, int deltaX, int deltaY, int m);
-void        editor_motionSet            (t_editor *x, t_gobj *y, t_motionfn callback, int a, int b);
-void        editor_motionUnset          (t_editor *x, t_gobj *y);
-void        editor_motionReset          (t_editor *x);
+void        editor_motionProceed            (t_editor *x, int deltaX, int deltaY, int m);
+void        editor_motionSet                (t_editor *x, t_gobj *y, t_motionfn callback, int a, int b);
+void        editor_motionUnset              (t_editor *x, t_gobj *y);
+void        editor_motionReset              (t_editor *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

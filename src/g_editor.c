@@ -135,6 +135,40 @@ void editor_selectionDeplace (t_editor *x)
     clock_delay (x->e_clock, 5.0);
 }
 
+void editor_selectionCacheLines (t_editor *x)
+{
+    t_outconnect *connection = NULL;
+    t_traverser t;
+    
+    buffer_reset (x->e_cachedLines);
+    
+    traverser_start (&t, x->e_owner);
+    
+    while ((connection = traverser_next (&t))) {
+    //
+    int s1 = canvas_isObjectSelected (x->e_owner, cast_gobj (traverser_getSource (&t)));
+    int s2 = canvas_isObjectSelected (x->e_owner, cast_gobj (traverser_getDestination (&t)));
+    
+    if (s1 != s2) {
+    //
+    buffer_vAppend (x->e_cachedLines, "ssiiii;",
+        sym___hash__X, 
+        sym_connect,
+        canvas_getIndexOfObject (x->e_owner, cast_gobj (traverser_getSource (&t))),
+        traverser_getIndexOfOutlet (&t),
+        canvas_getIndexOfObject (x->e_owner, cast_gobj (traverser_getDestination (&t))),
+        traverser_getIndexOfInlet (&t));
+    //
+    }
+    //
+    }
+}
+
+void editor_selectionRestoreLines (t_editor *x)
+{
+    instance_stackEval (x->e_owner, x->e_cachedLines);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -171,7 +205,7 @@ void editor_motionProceed (t_editor *x, int deltaX, int deltaY, int m)
         PD_BUG;
     }
 }
-    
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

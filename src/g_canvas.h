@@ -156,8 +156,7 @@ void            canvas_updateGraphOnParentRectangle     (t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            canvas_restoreCachedLines               (t_glist *glist);
-
+void            canvas_putSelectedObjectsAtLast         (t_glist *glist);
 void            canvas_removeSelectedObjects            (t_glist *glist);
 void            canvas_removeSelectedLine               (t_glist *glist);
 void            canvas_displaceSelectedObjects          (t_glist *glist, int deltaX, int deltaY);
