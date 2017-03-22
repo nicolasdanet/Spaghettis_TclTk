@@ -19,13 +19,12 @@
 
 static void editor_task (t_editor *x)
 {
-    int deltaX = x->e_newX - x->e_previousX;
-    int deltaY = x->e_newY - x->e_previousY;
+    int deltaX = drag_getMoveX (editor_getDrag (x));
+    int deltaY = drag_getMoveY (editor_getDrag (x));
     
     canvas_displaceSelectedObjects (x->e_owner, deltaX, deltaY);
         
-    x->e_previousX = x->e_newX;
-    x->e_previousY = x->e_newY;
+    drag_close (editor_getDrag (x));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -210,18 +209,18 @@ void editor_motionSet (t_editor *x, t_gobj *y, t_motionfn callback, int a, int b
     
     x->e_grabbed    = y;
     x->e_fnMotion   = callback;
-    x->e_previousX  = a;
-    x->e_previousY  = b;
     x->e_action     = ACTION_PASS;
+    
+    drag_setStart (editor_getDrag (x), a, b);
 }
 
 void editor_motionReset (t_editor *x)
 {
     x->e_grabbed    = NULL;
     x->e_fnMotion   = NULL;
-    x->e_previousX  = 0;
-    x->e_previousY  = 0;
     x->e_action     = ACTION_NONE;
+    
+    drag_close (editor_getDrag (x));
 }
 
 void editor_motionUnset (t_editor *x, t_gobj *y)

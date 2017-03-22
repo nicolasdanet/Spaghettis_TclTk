@@ -139,4 +139,65 @@ static inline void rectangle_setHeight (t_rectangle *r, int heigth)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline void drag_setStart (t_drag *x, int a, int b)
+{
+    x->d_startX = a;
+    x->d_startY = b;
+}
+
+static inline void drag_setEnd (t_drag *x, int a, int b)
+{
+    x->d_endX = a;
+    x->d_endY = b;
+}
+
+static inline void drag_set (t_drag *x, int a, int b, int c, int d)
+{
+    drag_setStart (x, a, b); drag_setEnd (x, c, d);
+}
+
+static inline void drag_close (t_drag *x)
+{
+    x->d_startX = x->d_endX;
+    x->d_startY = x->d_endY;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline int drag_getStartX (t_drag *x)
+{
+    return x->d_startX;
+}
+
+static inline int drag_getStartY (t_drag *x)
+{
+    return x->d_startY;
+}
+
+static inline int drag_getEndX (t_drag *x)
+{
+    return x->d_endX;
+}
+
+static inline int drag_getEndY (t_drag *x)
+{
+    return x->d_endY;
+}
+
+static inline int drag_getMoveX (t_drag *x)
+{
+    return (drag_getEndX (x) - drag_getStartX (x));
+}
+
+static inline int drag_getMoveY (t_drag *x)
+{
+    return (drag_getEndY (x) - drag_getStartY (x));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #endif // __m_rectangle_h_

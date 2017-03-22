@@ -32,6 +32,13 @@ typedef struct _mouse {
     t_atom      m_atoms[7];
     } t_mouse;
 
+typedef struct _drag {
+    int         d_startX;
+    int         d_startY;
+    int         d_endX;
+    int         d_endY;
+    } t_drag;
+    
 typedef struct _rectangle {
     int         rect_topLeftX;
     int         rect_topLeftY;

@@ -185,7 +185,11 @@ static void canvas_selectingByLasso (t_glist *glist, int a, int b, int end)
     
         t_rectangle r;
         
-        rectangle_set (&r, glist->gl_editor->e_previousX, glist->gl_editor->e_previousY, a, b);
+        rectangle_set (&r, 
+            drag_getStartX (editor_getDrag (glist->gl_editor)), 
+            drag_getStartY (editor_getDrag (glist->gl_editor)), 
+            a, 
+            b);
         
         canvas_selectObjectsInRectangle (glist, &r);
         
@@ -196,8 +200,8 @@ static void canvas_selectingByLasso (t_glist *glist, int a, int b, int end)
     } else {
         sys_vGui (".x%lx.c coords TEMPORARY %d %d %d %d\n",
                         canvas_getView (glist),
-                        glist->gl_editor->e_previousX,
-                        glist->gl_editor->e_previousY,
+                        drag_getStartX (editor_getDrag (glist->gl_editor)),
+                        drag_getStartY (editor_getDrag (glist->gl_editor)),
                         a,
                         b);
     }

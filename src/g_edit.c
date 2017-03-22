@@ -35,8 +35,8 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
     t_rectangle r1;
     t_rectangle r2;
     
-    int previousX = glist->gl_editor->e_previousX;
-    int previousY = glist->gl_editor->e_previousY;
+    int previousX = drag_getStartX (editor_getDrag (glist->gl_editor));
+    int previousY = drag_getStartY (editor_getDrag (glist->gl_editor));
     
     t_gobj *yA = canvas_getHitObject (glist, previousX, previousY, &r1);
     t_gobj *yB = canvas_getHitObject (glist, positionX, positionY, &r2);
@@ -45,8 +45,8 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
     else {
         sys_vGui (".x%lx.c coords TEMPORARY %d %d %d %d\n",
                         canvas_getView (glist),
-                        glist->gl_editor->e_previousX,
-                        glist->gl_editor->e_previousY,
+                        previousX,
+                        previousY,
                         positionX,
                         positionY);
     }
@@ -132,8 +132,8 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
 {
     t_rectangle r;
     
-    int previousX = glist->gl_editor->e_previousX;
-    int previousY = glist->gl_editor->e_previousY;
+    int previousX = drag_getStartX (editor_getDrag (glist->gl_editor));
+    int previousY = drag_getStartY (editor_getDrag (glist->gl_editor));
     
     t_gobj *y = canvas_getHitObject (glist, previousX, previousY, &r);
         
@@ -154,13 +154,12 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
         
     } else if (pd_class (object) == canvas_class) {
         t_glist *t = cast_glist (object);
-        int w = positionX - glist->gl_editor->e_newX;
-        int h = positionY - glist->gl_editor->e_newY;
+        int w = positionX - drag_getEndX (editor_getDrag (glist->gl_editor));
+        int h = positionY - drag_getEndY (editor_getDrag (glist->gl_editor));
         gobj_visibilityChanged (y, glist, 0);
         rectangle_setWidth (&t->gl_geometryGraph, rectangle_getWidth (&t->gl_geometryGraph) + w);
         rectangle_setHeight (&t->gl_geometryGraph, rectangle_getHeight (&t->gl_geometryGraph) + h);
-        glist->gl_editor->e_newX = positionX;
-        glist->gl_editor->e_newY = positionY;
+        drag_setEnd (editor_getDrag (glist->gl_editor), positionX, positionY);
         canvas_updateLinesByObject (glist, object);
         gobj_visibilityChanged (y, glist, 1);
         canvas_updateGraphOnParentRectangle (t);
@@ -296,8 +295,7 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
         if (object && text && (text == box_fetch (glist, object))) {
             box_mouse (text, positionX - a, positionY - b, BOX_SHIFT);
             glist->gl_editor->e_action = ACTION_DRAG;
-            glist->gl_editor->e_previousX = a;
-            glist->gl_editor->e_previousY = b;
+            drag_setStart (editor_getDrag (glist->gl_editor), a, b);
             
         } else {
             if (canvas_isObjectSelected (glist, y)) { canvas_deselectObject (glist, y); }
@@ -318,10 +316,7 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
             else {
                 canvas_selectObjectIfNotSelected (glist, y);
                 glist->gl_editor->e_action = ACTION_RESIZE;
-                glist->gl_editor->e_previousX = a;
-                glist->gl_editor->e_previousY = b;
-                glist->gl_editor->e_newX = positionX;
-                glist->gl_editor->e_newY = positionY;
+                drag_set (editor_getDrag (glist->gl_editor), a, b, positionX, positionY);
             }  
                                              
         } else if ((n = canvas_proceedMouseHitOutlets (object, positionX, positionY, a, c, d, &h)) != -1) {
@@ -329,8 +324,7 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
             if (!clicked) { canvas_setCursorType (glist, CURSOR_CONNECT); }
             else {
                 glist->gl_editor->e_action = ACTION_CONNECT;
-                glist->gl_editor->e_previousX = h;
-                glist->gl_editor->e_previousY = d;
+                drag_setStart (editor_getDrag (glist->gl_editor), h, d);
                 
                 sys_vGui (".x%lx.c create line %d %d %d %d -width %d -tags TEMPORARY\n",
                                 canvas_getView (glist),
@@ -349,8 +343,7 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
                 int flag = (modifier & MODIFIER_DOUBLE) ? BOX_DOUBLE : BOX_DOWN;
                 box_mouse (text, positionX - a, positionY - b, flag);
                 glist->gl_editor->e_action = ACTION_DRAG;
-                glist->gl_editor->e_previousX = a;
-                glist->gl_editor->e_previousY = b;
+                drag_setStart (editor_getDrag (glist->gl_editor), a, b);
                 
             } else {
                 canvas_selectObjectIfNotSelected (glist, y);
@@ -411,8 +404,7 @@ static void canvas_proceedMouseLassoStart (t_glist *glist, int positionX, int po
                     positionY);
 
     glist->gl_editor->e_action = ACTION_REGION;
-    glist->gl_editor->e_previousX = positionX;
-    glist->gl_editor->e_previousY = positionY;
+    drag_setStart (editor_getDrag (glist->gl_editor), positionX, positionY);
     //
     }
 }
@@ -427,8 +419,7 @@ static void canvas_proceedMouse (t_glist *glist, int a, int b, int modifier, int
 
     if (glist->gl_editor->e_action == ACTION_NONE) {
 
-        glist->gl_editor->e_previousX = a;
-        glist->gl_editor->e_previousY = b;
+        drag_setStart (editor_getDrag (glist->gl_editor), a, b);
 
         if (isRunMode && !isRightClick) { canvas_proceedMouseClick (glist, a, b, modifier, clicked); }
         else if (canvas_proceedMouseHit (glist, a, b, modifier, clicked)) { } 
@@ -566,15 +557,14 @@ void canvas_motion (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     int m = atom_getFloatAtIndex (2, argc, argv);
         
     int action = glist->gl_editor->e_action;
-    int deltaX = a - glist->gl_editor->e_previousX;
-    int deltaY = b - glist->gl_editor->e_previousY;
+    int deltaX = a - drag_getStartX (editor_getDrag (glist->gl_editor));
+    int deltaY = b - drag_getStartY (editor_getDrag (glist->gl_editor));
     
     canvas_setLastMotionCoordinates (glist, a, b);
     
     if (action == ACTION_MOVE) {
         editor_selectionDeplace (glist->gl_editor);
-        glist->gl_editor->e_newX = a;
-        glist->gl_editor->e_newY = b;
+        drag_setEnd (editor_getDrag (glist->gl_editor), a, b);
     
     } else if (action == ACTION_CONNECT) {
         canvas_makeLineStart (glist, a, b);
@@ -584,8 +574,7 @@ void canvas_motion (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         
     } else if (action == ACTION_PASS)    {
         editor_motionProceed (glist->gl_editor, deltaX, deltaY, m);
-        glist->gl_editor->e_previousX = a;
-        glist->gl_editor->e_previousY = b;
+        drag_setStart (editor_getDrag (glist->gl_editor), a, b);
         
     } else if (action == ACTION_DRAG)    {
         t_box *text = editor_getSelectedBox (glist->gl_editor);

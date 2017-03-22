@@ -39,27 +39,10 @@ typedef struct _editor {
     t_outconnect        *e_selectedLineConnection;
     t_atom              e_selectedLine[4];
     t_motionfn          e_fnMotion;
-    int                 e_previousX;
-    int                 e_previousY;
-    int                 e_newX;
-    int                 e_newY;
+    t_drag              e_drag;
     int                 e_action;
     int                 e_isTextDirty;
     } t_editor;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static inline t_gobj *selection_getObject (t_selection *x)
-{
-    return x->sel_what;
-}
-
-static inline t_selection *selection_getNext (t_selection *x)
-{
-    return x->sel_next;
-}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -130,6 +113,25 @@ static inline t_selection *editor_getSelection (t_editor *x)
 static inline t_outconnect *editor_getSelectedLineConnection (t_editor *x)
 {
     return x->e_selectedLineConnection;
+}
+
+static inline t_drag *editor_getDrag (t_editor *x)
+{
+    return &x->e_drag;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline t_gobj *selection_getObject (t_selection *x)
+{
+    return x->sel_what;
+}
+
+static inline t_selection *selection_getNext (t_selection *x)
+{
+    return x->sel_next;
 }
 
 // -----------------------------------------------------------------------------------------------------------
