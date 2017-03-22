@@ -96,6 +96,11 @@ static inline int editor_hasSelectedLine (t_editor *x)
     return (x->e_selectedLineConnection != NULL);
 }
 
+static inline int editor_hasAction (t_editor *x)
+{
+    return (x->e_action != ACTION_NONE);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -118,6 +123,25 @@ static inline t_outconnect *editor_getSelectedLineConnection (t_editor *x)
 static inline t_drag *editor_getDrag (t_editor *x)
 {
     return &x->e_drag;
+}
+
+static inline int editor_getAction (t_editor *x)
+{
+    return x->e_action;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline void editor_startAction (t_editor *x, int n)
+{
+    x->e_action = n;
+}
+
+static inline void editor_resetAction (t_editor *x)
+{
+    x->e_action = ACTION_NONE;
 }
 
 // -----------------------------------------------------------------------------------------------------------

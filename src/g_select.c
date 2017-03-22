@@ -193,7 +193,7 @@ static void canvas_selectingByLasso (t_glist *glist, int a, int b, int end)
         
         canvas_selectObjectsInRectangle (glist, &r);
         
-        glist->gl_editor->e_action = ACTION_NONE;
+        editor_resetAction (glist->gl_editor);
         
         sys_vGui (".x%lx.c delete TEMPORARY\n", canvas_getView (glist));
         

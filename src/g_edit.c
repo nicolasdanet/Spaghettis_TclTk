@@ -294,7 +294,7 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
         
         if (object && text && (text == box_fetch (glist, object))) {
             box_mouse (text, positionX - a, positionY - b, BOX_SHIFT);
-            glist->gl_editor->e_action = ACTION_DRAG;
+            editor_startAction (glist->gl_editor, ACTION_DRAG);
             drag_setStart (editor_getDrag (glist->gl_editor), a, b);
             
         } else {
@@ -315,7 +315,7 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
             if (!clicked) { canvas_setCursorType (glist, CURSOR_RESIZE); }
             else {
                 canvas_selectObjectIfNotSelected (glist, y);
-                glist->gl_editor->e_action = ACTION_RESIZE;
+                editor_startAction (glist->gl_editor, ACTION_RESIZE);
                 drag_set (editor_getDrag (glist->gl_editor), a, b, positionX, positionY);
             }  
                                              
@@ -323,7 +323,7 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
             
             if (!clicked) { canvas_setCursorType (glist, CURSOR_CONNECT); }
             else {
-                glist->gl_editor->e_action = ACTION_CONNECT;
+                editor_startAction (glist->gl_editor, ACTION_CONNECT);
                 drag_setStart (editor_getDrag (glist->gl_editor), h, d);
                 
                 sys_vGui (".x%lx.c create line %d %d %d %d -width %d -tags TEMPORARY\n",
@@ -342,12 +342,12 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
             if (object && text && (text == box_fetch (glist, object))) {
                 int flag = (modifier & MODIFIER_DOUBLE) ? BOX_DOUBLE : BOX_DOWN;
                 box_mouse (text, positionX - a, positionY - b, flag);
-                glist->gl_editor->e_action = ACTION_DRAG;
+                editor_startAction (glist->gl_editor, ACTION_DRAG);
                 drag_setStart (editor_getDrag (glist->gl_editor), a, b);
                 
             } else {
                 canvas_selectObjectIfNotSelected (glist, y);
-                glist->gl_editor->e_action = ACTION_MOVE;
+                editor_startAction (glist->gl_editor, ACTION_MOVE);
             }
             
         } else { 
@@ -403,7 +403,7 @@ static void canvas_proceedMouseLassoStart (t_glist *glist, int positionX, int po
                     positionX,
                     positionY);
 
-    glist->gl_editor->e_action = ACTION_REGION;
+    editor_startAction (glist->gl_editor, ACTION_REGION);
     drag_setStart (editor_getDrag (glist->gl_editor), positionX, positionY);
     //
     }
@@ -417,7 +417,7 @@ static void canvas_proceedMouse (t_glist *glist, int a, int b, int modifier, int
     
     if (clicked) { editor_motionReset (glist->gl_editor); }
 
-    if (glist->gl_editor->e_action == ACTION_NONE) {
+    if (!editor_hasAction (glist->gl_editor)) {
 
         drag_setStart (editor_getDrag (glist->gl_editor), a, b);
 
@@ -523,7 +523,7 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
     
     if (glist && glist->gl_editor && isDown) {
     //
-    if (glist->gl_editor->e_action == ACTION_MOVE) { glist->gl_editor->e_action = ACTION_NONE; }
+    if (editor_getAction (glist->gl_editor) == ACTION_MOVE) { editor_resetAction (glist->gl_editor); }
     
     if (editor_hasSelectedBox (glist->gl_editor)) {
         box_key (editor_getSelectedBox (glist->gl_editor), (t_keycode)n, s);
@@ -556,7 +556,7 @@ void canvas_motion (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     int b = atom_getFloatAtIndex (1, argc, argv);
     int m = atom_getFloatAtIndex (2, argc, argv);
         
-    int action = glist->gl_editor->e_action;
+    int action = editor_getAction (glist->gl_editor);
     int deltaX = a - drag_getStartX (editor_getDrag (glist->gl_editor));
     int deltaY = b - drag_getStartY (editor_getDrag (glist->gl_editor));
     
@@ -606,7 +606,7 @@ void canvas_mouseUp (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     if (glist->gl_editor) {
     //
-    int action = glist->gl_editor->e_action;
+    int action = editor_getAction (glist->gl_editor);
     
     if (action == ACTION_CONNECT)     { canvas_makeLineEnd (glist, a, b); }
     else if (action == ACTION_REGION) { canvas_selectingByLassoEnd (glist, a, b); }
@@ -618,7 +618,7 @@ void canvas_mouseUp (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     //
     }
 
-    glist->gl_editor->e_action = ACTION_NONE;
+    editor_resetAction (glist->gl_editor);
     //
     }
 }
