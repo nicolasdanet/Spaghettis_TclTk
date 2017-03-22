@@ -129,7 +129,6 @@ void box_activate (t_box *x, int isActivated)
         sys_vGui ("::ui_box::setEditing .x%lx %s 1\n", x->box_owner, x->box_tag);
                         
         editor_boxSelect (x->box_owner->gl_editor, x);
-        x->box_owner->gl_editor->e_isTextDirty  = 0;
         
         x->box_draggedFrom      = 0;
         x->box_selectionStart   = 0;
@@ -212,7 +211,7 @@ static void box_keyDeleteProceed (t_box *x)
     x->box_string = PD_MEMORY_RESIZE (x->box_string, oldSize, newSize);
     x->box_stringSizeInBytes = newSize;
     x->box_selectionEnd = x->box_selectionStart;
-    x->box_owner->gl_editor->e_isTextDirty = 1;
+    editor_setSelectedBoxDirty (x->box_owner->gl_editor);
     //
     }
 }
@@ -319,7 +318,7 @@ void box_key (t_box *x, t_keycode n, t_symbol *s)
 
         if (n) {
             x->box_selectionEnd = x->box_selectionStart;
-            x->box_owner->gl_editor->e_isTextDirty = 1;
+            editor_setSelectedBoxDirty (x->box_owner->gl_editor);
         }
     }
 

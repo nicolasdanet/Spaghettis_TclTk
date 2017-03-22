@@ -81,7 +81,7 @@ void editor_boxRemove (t_editor *x, t_box *box)
 
 void editor_boxSelect (t_editor *x, t_box *box)
 {
-    x->e_selectedBox = box;
+    x->e_selectedBox = box; x->e_isSelectedBoxDirty = 0;
 }
 
 void editor_boxUnselect (t_editor *x, t_box *box)

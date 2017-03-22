@@ -284,7 +284,7 @@ int canvas_deselectObject (t_glist *glist, t_gobj *y)
         t_box *text = box_fetch (glist, cast_object (y));
         
         if (editor_getSelectedBox (glist->gl_editor) == text) {
-            if (glist->gl_editor->e_isTextDirty) {
+            if (editor_hasSelectedBoxDirty (glist->gl_editor)) {
                 z = text;
                 canvas_putSelectedObjectsAtLast (glist);
                 editor_selectionCacheLines (canvas_getView (glist)->gl_editor);

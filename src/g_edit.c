@@ -527,7 +527,7 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
     
     if (editor_hasSelectedBox (glist->gl_editor)) {
         box_key (editor_getSelectedBox (glist->gl_editor), (t_keycode)n, s);
-        if (glist->gl_editor->e_isTextDirty) { 
+        if (editor_hasSelectedBoxDirty (glist->gl_editor)) { 
             canvas_dirty (glist, 1); 
         }
         

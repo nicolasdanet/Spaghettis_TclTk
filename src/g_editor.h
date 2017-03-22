@@ -41,41 +41,41 @@ typedef struct _editor {
     t_motionfn          e_fnMotion;
     t_drag              e_drag;
     int                 e_action;
-    int                 e_isTextDirty;
+    int                 e_isSelectedBoxDirty;
     } t_editor;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_editor    *editor_new                     (t_glist *owner);
-t_box       *editor_boxFetch                (t_editor *x, t_object *object);
+t_editor    *editor_new                         (t_glist *owner);
+t_box       *editor_boxFetch                    (t_editor *x, t_object *object);
 
-void        editor_boxAdd                   (t_editor *x, t_object *object);
-void        editor_boxRemove                (t_editor *x, t_box *box);
-void        editor_boxSelect                (t_editor *x, t_box *box);
-void        editor_boxUnselect              (t_editor *x, t_box *box);
+void        editor_boxAdd                       (t_editor *x, t_object *object);
+void        editor_boxRemove                    (t_editor *x, t_box *box);
+void        editor_boxSelect                    (t_editor *x, t_box *box);
+void        editor_boxUnselect                  (t_editor *x, t_box *box);
 
-void        editor_free                     (t_editor *x);
-void        editor_selectionAdd             (t_editor *x, t_gobj *y);
-int         editor_selectionRemove          (t_editor *x, t_gobj *y);
-void        editor_selectionDeplace         (t_editor *x);
-void        editor_selectionCacheLines      (t_editor *x);
-void        editor_selectionRestoreLines    (t_editor *x);
+void        editor_free                         (t_editor *x);
+void        editor_selectionAdd                 (t_editor *x, t_gobj *y);
+int         editor_selectionRemove              (t_editor *x, t_gobj *y);
+void        editor_selectionDeplace             (t_editor *x);
+void        editor_selectionCacheLines          (t_editor *x);
+void        editor_selectionRestoreLines        (t_editor *x);
 
-void        editor_selectedLineReset        (t_editor *x);
-void        editor_selectedLineDisconnect   (t_editor *x);
-void        editor_selectedLineSet          (t_editor *x, 
-                                                t_outconnect *connection,
-                                                int m,
-                                                int i,
-                                                int n,
-                                                int j);
+void        editor_selectedLineReset            (t_editor *x);
+void        editor_selectedLineDisconnect       (t_editor *x);
+void        editor_selectedLineSet              (t_editor *x, 
+                                                    t_outconnect *connection,
+                                                    int m,
+                                                    int i,
+                                                    int n,
+                                                    int j);
     
-void        editor_motionProceed            (t_editor *x, int deltaX, int deltaY, int m);
-void        editor_motionSet                (t_editor *x, t_gobj *y, t_motionfn callback, int a, int b);
-void        editor_motionUnset              (t_editor *x, t_gobj *y);
-void        editor_motionReset              (t_editor *x);
+void        editor_motionProceed                (t_editor *x, int deltaX, int deltaY, int m);
+void        editor_motionSet                    (t_editor *x, t_gobj *y, t_motionfn callback, int a, int b);
+void        editor_motionUnset                  (t_editor *x, t_gobj *y);
+void        editor_motionReset                  (t_editor *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -84,6 +84,11 @@ void        editor_motionReset              (t_editor *x);
 static inline int editor_hasSelectedBox (t_editor *x)
 {
     return (x->e_selectedBox != NULL);
+}
+
+static inline int editor_hasSelectedBoxDirty (t_editor *x)
+{
+    return x->e_isSelectedBoxDirty;
 }
 
 static inline int editor_hasSelection (t_editor *x)
@@ -128,6 +133,15 @@ static inline t_drag *editor_getDrag (t_editor *x)
 static inline int editor_getAction (t_editor *x)
 {
     return x->e_action;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline void editor_setSelectedBoxDirty (t_editor *x)
+{
+    x->e_isSelectedBoxDirty = 1;
 }
 
 // -----------------------------------------------------------------------------------------------------------
