@@ -165,7 +165,7 @@ void editor_selectionCacheLines (t_editor *x)
 
 void editor_selectionRestoreLines (t_editor *x)
 {
-    instance_stackEval (x->e_owner, x->e_cachedLines);
+    instance_loadSnippet (x->e_owner, x->e_cachedLines);
 }
 
 // -----------------------------------------------------------------------------------------------------------

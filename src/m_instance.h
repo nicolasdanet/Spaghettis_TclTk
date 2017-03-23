@@ -168,10 +168,10 @@ void            instance_destroyAllScalarsByTemplate    (t_template *tmpl);
 void            instance_loadAbstraction                (t_symbol *s, int argc, t_atom *argv);
 void            instance_loadPatch                      (t_symbol *name, t_symbol *directory);
 void            instance_loadInvisible                  (t_symbol *name, t_symbol *directory, char *s);
+void            instance_loadSnippet                    (t_glist *glist, t_buffer *b);
 
 void            instance_stackPush                      (t_glist *glist);
 void            instance_stackPop                       (t_glist *glist);
-void            instance_stackEval                      (t_glist *glist, t_buffer *b);
 
 t_environment   *instance_environmentFetchIfAny         (void);
 
@@ -195,23 +195,6 @@ static inline void instance_contextSetCurrent (t_glist *glist)
 static inline t_glist *instance_contextGetCurrent (void)
 {
     return cast_glist (instance_getBoundX());
-}
-
-static inline t_glist *instance_contextGetStore (void)
-{
-    return instance_get()->pd_stack.stack_cached;
-}
-
-static inline void instance_contextStore (void)
-{
-    instance_get()->pd_stack.stack_cached = instance_contextGetCurrent();
-}
-
-static inline void instance_contextRestore (void)
-{
-    instance_contextSetCurrent (instance_get()->pd_stack.stack_cached);
-    
-    instance_get()->pd_stack.stack_cached = NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------

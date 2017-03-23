@@ -78,7 +78,7 @@ void clipboard_paste (t_clipboard *x, t_glist *glist)
     
     snippet_addOffsetToLine (x->cb_buffer, alreadyThere);
     
-        instance_stackEval (glist, x->cb_buffer);
+        instance_loadSnippet (glist, x->cb_buffer);
     
     snippet_substractOffsetToLine (x->cb_buffer, alreadyThere);
     
