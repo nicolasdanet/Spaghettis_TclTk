@@ -23,7 +23,7 @@
 		370793E71DBB55A700183F74 /* x_notein.c in Sources */ = {isa = PBXBuildFile; fileRef = 370793E51DBB55A700183F74 /* x_notein.c */; };
 		370934821CC6887300827F75 /* d_canvas.c in Sources */ = {isa = PBXBuildFile; fileRef = 370934811CC6887300827F75 /* d_canvas.c */; };
 		370939451CC92BF300827F75 /* g_draw.c in Sources */ = {isa = PBXBuildFile; fileRef = 370939431CC92BF300827F75 /* g_draw.c */; };
-		370939461CC92BF300827F75 /* g_base.c in Sources */ = {isa = PBXBuildFile; fileRef = 370939441CC92BF300827F75 /* g_base.c */; };
+		370939461CC92BF300827F75 /* g_glist.c in Sources */ = {isa = PBXBuildFile; fileRef = 370939441CC92BF300827F75 /* g_glist.c */; };
 		3709BE1E1D016C9400D9B48C /* m_eval.c in Sources */ = {isa = PBXBuildFile; fileRef = 3709BE1D1D016C9400D9B48C /* m_eval.c */; };
 		3709BE591D01726800D9B48C /* m_parse.c in Sources */ = {isa = PBXBuildFile; fileRef = 3709BE581D01726800D9B48C /* m_parse.c */; };
 		370B1FB01E421D22003D95A0 /* m_environment.c in Sources */ = {isa = PBXBuildFile; fileRef = 370B1FAF1E421D22003D95A0 /* m_environment.c */; };
@@ -408,7 +408,7 @@
 		370793E51DBB55A700183F74 /* x_notein.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_notein.c; path = src/x_notein.c; sourceTree = "<group>"; };
 		370934811CC6887300827F75 /* d_canvas.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_canvas.c; path = src/d_canvas.c; sourceTree = "<group>"; };
 		370939431CC92BF300827F75 /* g_draw.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_draw.c; path = src/g_draw.c; sourceTree = "<group>"; };
-		370939441CC92BF300827F75 /* g_base.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_base.c; path = src/g_base.c; sourceTree = "<group>"; };
+		370939441CC92BF300827F75 /* g_glist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_glist.c; path = src/g_glist.c; sourceTree = "<group>"; };
 		3709BE1D1D016C9400D9B48C /* m_eval.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_eval.c; path = src/m_eval.c; sourceTree = "<group>"; };
 		3709BE581D01726800D9B48C /* m_parse.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_parse.c; path = src/m_parse.c; sourceTree = "<group>"; };
 		370B1FAF1E421D22003D95A0 /* m_environment.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_environment.c; path = src/m_environment.c; sourceTree = "<group>"; };
@@ -418,6 +418,7 @@
 		371196D11E2DF3D2007214B2 /* d_rfft.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_rfft.c; path = src/d_rfft.c; sourceTree = "<group>"; };
 		3711970B1E2DF6FE007214B2 /* d_ifft.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_ifft.c; path = src/d_ifft.c; sourceTree = "<group>"; };
 		37128AF71D43640300EFB4FC /* m_color.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_color.c; path = src/m_color.c; sourceTree = "<group>"; };
+		3713CCB51E83A2E100B6867D /* g_glist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_glist.h; path = src/g_glist.h; sourceTree = "<group>"; };
 		371430B01D0D46BC00E68D11 /* g_paint.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_paint.c; path = src/g_paint.c; sourceTree = "<group>"; };
 		371526B51E49D03E00712D43 /* x_expr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_expr.c; path = src/x_expr.c; sourceTree = "<group>"; };
 		3716554E1BA3452E00ABDE22 /* pa_allocation.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_allocation.c; path = portaudio/src/common/pa_allocation.c; sourceTree = "<group>"; };
@@ -1299,7 +1300,6 @@
 			isa = PBXGroup;
 			children = (
 				37702F511D41EA3300AE3FE2 /* g_canvas.h */,
-				370939441CC92BF300827F75 /* g_base.c */,
 				370939431CC92BF300827F75 /* g_draw.c */,
 				379920471CD2649B00750527 /* g_select.c */,
 				378971C31C4F716700263434 /* g_edit.c */,
@@ -1452,12 +1452,14 @@
 			children = (
 				3742465E1E59AAE3009E8DC1 /* g_patch.h */,
 				373303351E7EE9D9000DF74C /* g_editor.h */,
+				3713CCB51E83A2E100B6867D /* g_glist.h */,
 				37BA30811CD1DB0F0091113F /* g_object.c */,
 				37F6E1711E7C3D6100A42588 /* g_typeset.c */,
 				378971CE1C4F716700263434 /* g_box.c */,
 				372A2CE31E5DC57E00546B87 /* g_traverser.c */,
 				37AB28E01E6185F7004F2F7D /* g_cord.c */,
 				37251FBC1E7FB4BC0067E434 /* g_editor.c */,
+				370939441CC92BF300827F75 /* g_glist.c */,
 				3777AEA71E5B2844003F61A1 /* Canvas */,
 				3735D9701E5995B300858959 /* Objects */,
 			);
@@ -1932,7 +1934,7 @@
 				37F085691CC26E5C0070DEAC /* m_stack.c in Sources */,
 				370934821CC6887300827F75 /* d_canvas.c in Sources */,
 				370939451CC92BF300827F75 /* g_draw.c in Sources */,
-				370939461CC92BF300827F75 /* g_base.c in Sources */,
+				370939461CC92BF300827F75 /* g_glist.c in Sources */,
 				37BA30821CD1DB0F0091113F /* g_object.c in Sources */,
 				379920481CD2649B00750527 /* g_select.c in Sources */,
 				3791F2E21CDF064000F7481C /* m_symbols.c in Sources */,
