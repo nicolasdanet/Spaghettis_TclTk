@@ -31,11 +31,11 @@ static void paint_proceedAllRecursive (t_glist *glist, int action)
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
     //
-    t_glist *z = cast_glistChecked (cast_pd (y));
+    t_glist *z = (pd_class (y) == canvas_class) ? cast_glist (y) : NULL;
     
     if (z) { paint_proceedAllRecursive (z, action); }
     else {
-        if (visible && pd_class (y) == scalar_class) {
+        if (visible && (pd_class (y) == scalar_class)) {
             switch (action) {
                 case PAINT_DRAW  : gobj_visibilityChanged (y, glist, 1); break;
                 case PAINT_ERASE : gobj_visibilityChanged (y, glist, 0); break;

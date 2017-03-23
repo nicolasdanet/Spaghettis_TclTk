@@ -173,7 +173,7 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
 int object_isViewAsBox (t_object *x)
 {
     return ((class_getWidgetBehavior (pd_class (x)) == &text_widgetBehavior)
-        || (cast_glistChecked (cast_pd (x)) && !(cast_glist (x)->gl_isGraphOnParent)));
+        || ((pd_class (x) == canvas_class) && !(cast_glist (x)->gl_isGraphOnParent)));
 }
 
 // -----------------------------------------------------------------------------------------------------------

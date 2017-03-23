@@ -1045,8 +1045,8 @@
 		3722C5331C4F920B00D2BF6F /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				378971DD1C4F716700263434 /* m_macros.h */,
 				378971E31C4F716700263434 /* m_core.h */,
+				378971DD1C4F716700263434 /* m_macros.h */,
 				3751C80D1E7142C4002AB689 /* m_instance.h */,
 				376192281E6EA50800E4B2DA /* m_class.h */,
 				37A649691E6472FA002C0A5C /* m_object.h */,
