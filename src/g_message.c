@@ -226,7 +226,7 @@ void message_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         int positionX = 0;
         int positionY = 0;
         
-        canvas_getLastMotionCoordinates (glist, &positionX, &positionY);
+        instance_getDefaultCoordinates (glist, &positionX, &positionY);
         canvas_deselectAll (glist);
     
         object_setX (cast_object (x), positionX);

@@ -74,7 +74,7 @@ static void canvas_makeIemObject (t_glist *glist, t_symbol *name)
     int positionY = 0;
     t_atom a;
         
-    canvas_getLastMotionCoordinates (glist, &positionX, &positionY);
+    instance_getDefaultCoordinates (glist, &positionX, &positionY);
     canvas_deselectAll (glist);
     SET_SYMBOL (&a, name);
     buffer_deserialize (b, 1, &a);
@@ -102,7 +102,7 @@ void canvas_fromArrayDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv
     
     PD_ASSERT (name);
     
-    canvas_getLastMotionCoordinates (glist, &positionX, &positionY);
+    instance_getDefaultCoordinates (glist, &positionX, &positionY);
     
     { 
         t_float a      = (t_float)positionX;
@@ -160,7 +160,7 @@ void canvas_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         
         t_buffer *b = buffer_new();
             
-        canvas_getLastMotionCoordinates (glist, &positionX, &positionY);
+        instance_getDefaultCoordinates (glist, &positionX, &positionY);
         canvas_deselectAll (glist);
         canvas_makeTextObject (glist, positionX, positionY, 0, 1, b);
     }
@@ -208,7 +208,7 @@ void canvas_makeComment (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         int positionX = 0;
         int positionY = 0;
 
-        canvas_getLastMotionCoordinates (glist, &positionX, &positionY);
+        instance_getDefaultCoordinates (glist, &positionX, &positionY);
         canvas_deselectAll (glist);
             
         object_setX (x, positionX);

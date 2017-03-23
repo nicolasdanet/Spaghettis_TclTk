@@ -97,9 +97,6 @@ int             canvas_hasLine                          (t_glist *glist,
                                                             t_object *objectIn,
                                                             int n);
                                                             
-void            canvas_setLastMotionCoordinates         (t_glist *glist, int a, int b);
-void            canvas_getLastMotionCoordinates         (t_glist *glist, int *a, int *b);
-
 int             canvas_getIndexOfObject                 (t_glist *glist, t_gobj *y);
 t_gobj          *canvas_getObjectAtIndex                (t_glist *glist, int n);
 

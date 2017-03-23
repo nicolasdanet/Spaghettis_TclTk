@@ -55,6 +55,8 @@ struct _pdinstance {
     t_stack         pd_stack;
     t_environment   pd_environment;
     t_clipboard     pd_clipboard;
+    int             pd_defaultX;
+    int             pd_defaultY;
     int             pd_dspState;
     int             pd_dspChainSize;
     int             pd_loadingExternal;
@@ -171,6 +173,9 @@ void            instance_environmentSetFile             (t_symbol *name, t_symbo
 void            instance_environmentSetArguments        (int argc, t_atom *argv);
 void            instance_environmentResetFile           (void);
 void            instance_environmentResetArguments      (void);
+
+void            instance_setDefaultCoordinates          (t_glist *glist, int a, int b);
+void            instance_getDefaultCoordinates          (t_glist *glist, int *a, int *b);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

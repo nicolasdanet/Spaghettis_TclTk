@@ -560,7 +560,7 @@ void canvas_motion (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     int deltaX = a - drag_getStartX (editor_getDrag (glist->gl_editor));
     int deltaY = b - drag_getStartY (editor_getDrag (glist->gl_editor));
     
-    canvas_setLastMotionCoordinates (glist, a, b);
+    instance_setDefaultCoordinates (glist, a, b);
     
     if (action == ACTION_MOVE) {
         editor_selectionDeplace (glist->gl_editor);

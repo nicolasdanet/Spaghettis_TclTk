@@ -346,6 +346,22 @@ void instance_destroyAllScalarsByTemplate (t_template *template)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void instance_setDefaultCoordinates (t_glist *glist, int a, int b)
+{
+    instance_get()->pd_defaultX = a;
+    instance_get()->pd_defaultY = b;
+}
+
+void instance_getDefaultCoordinates (t_glist *glist, int *a, int *b)
+{
+    *a = instance_get()->pd_defaultX; 
+    *b = instance_get()->pd_defaultY; 
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 /* Called if no method of the object factory match. */
 /* Note it can be called recursively in case of wrong externals. */
 

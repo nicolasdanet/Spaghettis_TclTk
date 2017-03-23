@@ -28,14 +28,6 @@ extern t_class  *voutlet_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_glist  *canvas_lastCanvas;     /* Static. */
-
-static int      canvas_lastCanvasX;     /* Static. */
-static int      canvas_lastCanvasY;     /* Static. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 t_glist *cast_glistChecked (t_pd *x)
 {
     t_class *c = pd_class (x);
@@ -520,27 +512,6 @@ int canvas_hasLine (t_glist *glist, t_object *objectOut, int m, t_object *object
     }
     
     return 0;
-}
-
-void canvas_setLastMotionCoordinates (t_glist *glist, int a, int b)
-{
-    canvas_lastCanvas   = glist;
-    canvas_lastCanvasX  = a;
-    canvas_lastCanvasY  = b;
-}
-
-void canvas_getLastMotionCoordinates (t_glist *glist, int *a, int *b)
-{
-    if (canvas_lastCanvas == glist) { *a = canvas_lastCanvasX; *b = canvas_lastCanvasY; } 
-    else {
-    //
-    const int x = 40;
-    const int y = 40;
-        
-    *a = x;
-    *b = y;
-    //
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
