@@ -617,7 +617,7 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
         iemgui_deserializeColors (cast_iem (x), NULL, NULL, NULL);
     }
 
-    x->x_gui.iem_owner      = canvas_getCurrent();
+    x->x_gui.iem_owner      = instance_contextGetCurrent();
     x->x_gui.iem_fnDraw     = (t_iemfn)vu_draw;
     x->x_gui.iem_canSend    = 0;
     x->x_gui.iem_canReceive = (x->x_gui.iem_receive == utils_empty()) ? 0 : 1;

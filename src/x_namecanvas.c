@@ -35,7 +35,7 @@ static void *namecanvas_new (t_symbol *s)
 {
     t_namecanvas *x = (t_namecanvas *)pd_new (namecanvas_class);
     
-    x->x_owner = canvas_getCurrent();
+    x->x_owner = instance_contextGetCurrent();
     x->x_name = s;
     
     if (x->x_name != &s_) { pd_bind (cast_pd (x->x_owner), x->x_name); }

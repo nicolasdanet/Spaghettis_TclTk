@@ -82,7 +82,7 @@ static void *samplerate_tilde_new (void)
 {
     t_samplerate_tilde *x = (t_samplerate_tilde *)pd_new (samplerate_tilde_class);
     
-    x->x_owner  = canvas_getCurrent();
+    x->x_owner  = instance_contextGetCurrent();
     x->x_outlet = outlet_new (cast_object (x), &s_float);
     
     return x;

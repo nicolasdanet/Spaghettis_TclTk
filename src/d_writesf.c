@@ -462,7 +462,7 @@ static void *writesf_tilde_new (t_float f1, t_float f2)
     x->sf_numberOfChannels  = n;
     x->sf_bufferSize        = size;
     x->sf_buffer            = PD_MEMORY_GET (x->sf_bufferSize);
-    x->sf_owner             = canvas_getCurrent();
+    x->sf_owner             = instance_contextGetCurrent();
     
     for (i = 1; i < x->sf_numberOfChannels; i++) { inlet_newSignal (cast_object (x)); }
 

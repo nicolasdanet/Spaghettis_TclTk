@@ -31,11 +31,6 @@ void canvas_newPatch (void *dummy, t_symbol *name, t_symbol *directory)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_glist *canvas_getCurrent (void)
-{
-    return instance_contextGetCurrent();
-}
-
 t_glist *canvas_getRoot (t_glist *glist)
 {
     if (canvas_isRoot (glist)) { return glist; }
@@ -264,7 +259,7 @@ void canvas_makeTextObject (t_glist *glist,
     
     {
     //
-    t_environment *e = canvas_getEnvironment (canvas_getCurrent());
+    t_environment *e = canvas_getEnvironment (instance_contextGetCurrent());
     t_object *x = NULL;
     
     buffer_eval (b, 

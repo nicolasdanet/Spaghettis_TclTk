@@ -20,7 +20,7 @@
 void textbuffer_init (t_textbuffer *x)
 {
     x->tb_buffer = buffer_new();
-    x->tb_owner  = canvas_getCurrent();
+    x->tb_owner  = instance_contextGetCurrent();
 }
 
 void textbuffer_free (t_textbuffer *x)

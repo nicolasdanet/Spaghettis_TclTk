@@ -376,7 +376,7 @@ static void instance_factory (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 
         /* First search an external and redo the creation. */
         
-        if (loader_load (canvas_getCurrent(), s)) {
+        if (loader_load (instance_contextGetCurrent(), s)) {
             instance_get()->pd_loadingExternal = 1;
             pd_message (x, s, argc, argv);
             instance_get()->pd_loadingExternal = 0;

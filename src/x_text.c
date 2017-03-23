@@ -125,7 +125,7 @@ static void *textdefine_new (t_symbol *s, int argc, t_atom *argv)
     
     if (argc) { warning_unusedArguments (s, argc, argv); }
     
-    x->x_scalar = scalar_new (canvas_getCurrent(), sym___TEMPLATE__text);
+    x->x_scalar = scalar_new (instance_contextGetCurrent(), sym___TEMPLATE__text);
     
     {
         t_error err = scalar_setInternalBuffer (x->x_scalar, sym_t, textbuffer_getBuffer (&x->x_textbuffer));

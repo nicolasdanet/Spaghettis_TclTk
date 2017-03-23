@@ -83,7 +83,7 @@ void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
 {
     char directory[PD_STRING] = { 0 }; char *name = NULL;
     
-    if (canvas_fileFind (canvas_getCurrent(), s->s_name, PD_PATCH, directory, &name, PD_STRING)) {
+    if (canvas_fileFind (instance_contextGetCurrent(), s->s_name, PD_PATCH, directory, &name, PD_STRING)) {
     //
     t_symbol *filename = gensym (name);
     

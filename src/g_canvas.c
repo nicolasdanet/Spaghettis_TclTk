@@ -110,7 +110,7 @@ static void *subpatch_new (t_symbol *s)
 {
     t_atom a[6];
     t_glist *x = NULL;
-    t_glist *z = canvas_getCurrent();
+    t_glist *z = instance_contextGetCurrent();
     
     if (!utils_isNameAllowedForWindow (s)) { warning_badName (sym_pd, s); }
     
@@ -154,7 +154,7 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     t_symbol *name = &s_;
     
-    if (argc > 3) { name = dollar_expandGetIfSymbolByEnvironment (argv + 3, canvas_getCurrent()); }
+    if (argc > 3) { name = dollar_expandGetIfSymbolByEnvironment (argv + 3, instance_contextGetCurrent()); }
     
     canvas_setName (glist, (name == &s_ ? sym_Patch : name));
     
@@ -715,7 +715,7 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
 t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     t_glist *x          = (t_glist *)pd_new (canvas_class);
-    t_glist *owner      = canvas_getCurrent();
+    t_glist *owner      = instance_contextGetCurrent();
     t_symbol *name      = &s_;
     
     int visible         = 0;

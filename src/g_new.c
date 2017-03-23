@@ -29,7 +29,8 @@ static t_glist *canvas_newGraphOnParent (t_glist *glist,
 {
     t_glist *x = (t_glist *)pd_new (canvas_class);
     
-    t_fontsize fontSize = canvas_getCurrent() ? canvas_getCurrent()->gl_fontSize : font_getDefaultFontSize();
+    t_glist *current = instance_contextGetCurrent();
+    t_fontsize fontSize = current ? current->gl_fontSize : font_getDefaultFontSize();
 
     object_setBuffer (cast_object (x), buffer_new());
     object_setX (cast_object (x), topLeftX);

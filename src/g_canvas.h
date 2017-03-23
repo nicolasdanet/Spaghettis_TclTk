@@ -28,7 +28,6 @@ t_symbol        *canvas_expandDollar                    (t_glist *glist, t_symbo
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_glist         *canvas_getCurrent                      (void);
 t_glist         *canvas_getRoot                         (t_glist *glist);
 t_environment   *canvas_getEnvironment                  (t_glist *glist);
 t_glist         *canvas_getView                         (t_glist *glist);

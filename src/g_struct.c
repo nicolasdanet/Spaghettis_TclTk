@@ -54,7 +54,7 @@ static void *struct_newInstance (t_template *template)
     t_struct *x = (t_struct *)pd_new (struct_class);
     
     x->x_template = template;
-    x->x_owner    = canvas_getCurrent();
+    x->x_owner    = instance_contextGetCurrent();
     x->x_outlet   = outlet_new (cast_object (x), &s_anything);
     
     template_registerInstance (x->x_template, x);
@@ -67,7 +67,7 @@ static void *struct_newEmpty (void)
     t_struct *x = (t_struct *)pd_new (struct_class);
     
     x->x_template = NULL;
-    x->x_owner    = canvas_getCurrent();
+    x->x_owner    = instance_contextGetCurrent();
     x->x_outlet   = outlet_new (cast_object (x), &s_anything);
     
     return x;

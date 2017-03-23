@@ -20,7 +20,7 @@ static int dollar_getDollarZero (t_glist *glist)
 {
     t_environment *environment = NULL;
     
-    glist       = (glist == NULL) ? canvas_getCurrent() : glist;
+    glist       = (glist == NULL) ? instance_contextGetCurrent() : glist;
     environment = (glist != NULL) ? canvas_getEnvironment (glist) : NULL;
     
     if (environment) { return environment_getDollarZero (environment); }

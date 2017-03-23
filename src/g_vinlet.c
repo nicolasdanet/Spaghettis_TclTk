@@ -80,7 +80,7 @@ static void *vinlet_newSignal (t_symbol *s)
     x->vi_bufferSize   = 0;
     x->vi_buffer       = (t_sample *)PD_MEMORY_GET (0);
     x->vi_bufferEnd    = x->vi_buffer;
-    x->vi_owner        = canvas_getCurrent();
+    x->vi_owner        = instance_contextGetCurrent();
     x->vi_outlet       = outlet_new (cast_object (x), &s_signal);
     x->vi_inlet        = canvas_addInlet (x->vi_owner, cast_pd (x), &s_signal);
     x->vi_directSignal = NULL;
@@ -92,7 +92,7 @@ static void *vinlet_new (t_symbol *s)
 {
     t_vinlet *x = (t_vinlet *)pd_new (vinlet_class);
     
-    x->vi_owner  = canvas_getCurrent();
+    x->vi_owner  = instance_contextGetCurrent();
     x->vi_outlet = outlet_new (cast_object (x), &s_anything);
     x->vi_inlet  = canvas_addInlet (x->vi_owner, cast_pd (x), NULL);
     
