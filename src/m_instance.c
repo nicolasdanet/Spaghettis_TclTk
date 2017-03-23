@@ -400,7 +400,7 @@ static t_pdinstance *instance_new()
 {
     t_pdinstance *x = (t_pdinstance *)PD_MEMORY_GET (sizeof (t_pdinstance));
     
-    x->pd_stack.stack_array = (t_stackelement *)PD_MEMORY_GET (INSTANCE_STACK_SIZE * sizeof (t_stackelement));
+    x->pd_stack.s_stack = (t_stackelement *)PD_MEMORY_GET (INSTANCE_STACK_SIZE * sizeof (t_stackelement));
     
     x->pd_environment.env_directory = &s_;
     x->pd_environment.env_fileName  = &s_;
@@ -430,13 +430,13 @@ static void instance_free (t_pdinstance *x)
     CLASS_FREE (x->pd_canvasMaker);
     CLASS_FREE (x->pd_objectMaker);
     
-    PD_ASSERT (x->pd_stack.stack_index == 0);
+    PD_ASSERT (x->pd_stack.s_stackIndex == 0);
     
     clipboard_destroy (&x->pd_clipboard);
     
     if (x->pd_environment.env_argv) { PD_MEMORY_FREE (x->pd_environment.env_argv); }
     
-    PD_MEMORY_FREE (x->pd_stack.stack_array);
+    PD_MEMORY_FREE (x->pd_stack.s_stack);
     PD_MEMORY_FREE (x);
 }
 

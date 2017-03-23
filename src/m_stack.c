@@ -19,19 +19,19 @@
 
 static void instance_contextStore (void)
 {
-    instance_get()->pd_stack.stack_cached = instance_contextGetCurrent();
+    instance_get()->pd_stack.s_cache = instance_contextGetCurrent();
 }
 
 static void instance_contextRestore (void)
 {
-    instance_contextSetCurrent (instance_get()->pd_stack.stack_cached);
+    instance_contextSetCurrent (instance_get()->pd_stack.s_cache);
     
-    instance_get()->pd_stack.stack_cached = NULL;
+    instance_get()->pd_stack.s_cache = NULL;
 }
 
 static t_glist *instance_contextGetStored (void)
 {
-    return instance_get()->pd_stack.stack_cached;
+    return instance_get()->pd_stack.s_cache;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -40,12 +40,12 @@ static t_glist *instance_contextGetStored (void)
 
 void instance_stackPush (t_glist *x)
 {
-    t_stackelement *e = instance_get()->pd_stack.stack_array + (instance_get()->pd_stack.stack_index++);
+    t_stackelement *e = instance_get()->pd_stack.s_stack + (instance_get()->pd_stack.s_stackIndex++);
     
-    PD_ABORT (instance_get()->pd_stack.stack_index >= INSTANCE_STACK_SIZE);     /* Resize? */
+    PD_ABORT (instance_get()->pd_stack.s_stackIndex >= INSTANCE_STACK_SIZE);    /* Resize? */
     
-    e->stack_context = instance_contextGetCurrent();
-    e->stack_abstraction = instance_get()->pd_loadingAbstraction;
+    e->s_context = instance_contextGetCurrent();
+    e->s_abstraction = instance_get()->pd_loadingAbstraction;
     
     instance_get()->pd_loadingAbstraction = NULL;
     
@@ -54,14 +54,14 @@ void instance_stackPush (t_glist *x)
 
 void instance_stackPop (t_glist *x)
 {
-    t_stackelement *e = instance_get()->pd_stack.stack_array + (--instance_get()->pd_stack.stack_index);
+    t_stackelement *e = instance_get()->pd_stack.s_stack + (--instance_get()->pd_stack.s_stackIndex);
     
-    PD_ASSERT (instance_get()->pd_stack.stack_index >= 0);
+    PD_ASSERT (instance_get()->pd_stack.s_stackIndex >= 0);
     PD_ASSERT (instance_contextGetCurrent() == x);
     
-    instance_contextSetCurrent (e->stack_context);
+    instance_contextSetCurrent (e->s_context);
     
-    instance_get()->pd_stack.stack_popped = x;
+    instance_get()->pd_stack.s_popped = x;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -72,10 +72,10 @@ static int instance_loadAbstractionIsValid (t_symbol *filename)
 {
     int i;
     
-    for (i = 0; i < instance_get()->pd_stack.stack_index; i++) {
+    for (i = 0; i < instance_get()->pd_stack.s_stackIndex; i++) {
     //
-    t_stackelement *e = instance_get()->pd_stack.stack_array + i;
-    if (e->stack_abstraction == filename) { return 0; }
+    t_stackelement *e = instance_get()->pd_stack.s_stack + i;
+    if (e->s_abstraction == filename) { return 0; }
     //
     }
     
@@ -120,9 +120,9 @@ void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
 
 static void instance_loadPatchLoadbang (void)
 {
-    if (instance_get()->pd_stack.stack_popped) { 
-        canvas_loadbang (instance_get()->pd_stack.stack_popped);
-        instance_get()->pd_stack.stack_popped = NULL;
+    if (instance_get()->pd_stack.s_popped) { 
+        canvas_loadbang (instance_get()->pd_stack.s_popped);
+        instance_get()->pd_stack.s_popped = NULL;
     }
 }
 

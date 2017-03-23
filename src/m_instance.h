@@ -17,15 +17,15 @@
 #pragma mark -
 
 typedef struct _stackelement {
-    t_glist         *stack_context;
-    t_symbol        *stack_abstraction;
+    t_glist         *s_context;
+    t_symbol        *s_abstraction;
     } t_stackelement;
 
 typedef struct _stack       {
-    int             stack_index;
-    t_stackelement  *stack_array;
-    t_glist         *stack_popped;
-    t_glist         *stack_cached;
+    int             s_stackIndex;
+    t_stackelement  *s_stack;
+    t_glist         *s_cache;
+    t_glist         *s_popped;
     } t_stack;
 
 // -----------------------------------------------------------------------------------------------------------
