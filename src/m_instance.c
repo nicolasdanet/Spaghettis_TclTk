@@ -348,14 +348,17 @@ void instance_destroyAllScalarsByTemplate (t_template *template)
 
 void instance_setDefaultCoordinates (t_glist *glist, int a, int b)
 {
-    instance_get()->pd_defaultX = a;
-    instance_get()->pd_defaultY = b;
+    instance_get()->pd_locate.p_glist = glist;
+    instance_get()->pd_locate.p_x     = a;
+    instance_get()->pd_locate.p_y     = b;
 }
 
 void instance_getDefaultCoordinates (t_glist *glist, int *a, int *b)
 {
-    *a = instance_get()->pd_defaultX; 
-    *b = instance_get()->pd_defaultY; 
+    t_glist *t = instance_get()->pd_locate.p_glist;
+    
+    *a = (t == glist) ? instance_get()->pd_locate.p_x : 40;
+    *b = (t == glist) ? instance_get()->pd_locate.p_y : 40;
 }
 
 // -----------------------------------------------------------------------------------------------------------

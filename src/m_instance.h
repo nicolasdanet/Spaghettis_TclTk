@@ -46,6 +46,12 @@ typedef struct _clipboard {
     int             cb_count;
     t_buffer        *cb_buffer;
     } t_clipboard;
+
+typedef struct _position {
+    int             p_x;
+    int             p_y;
+    t_glist         *p_glist;
+    } t_position;
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -55,8 +61,7 @@ struct _pdinstance {
     t_stack         pd_stack;
     t_environment   pd_environment;
     t_clipboard     pd_clipboard;
-    int             pd_defaultX;
-    int             pd_defaultY;
+    t_position      pd_locate;
     int             pd_dspState;
     int             pd_dspChainSize;
     int             pd_loadingExternal;
@@ -70,6 +75,7 @@ struct _pdinstance {
     t_pd            *pd_newest;
     t_class         *pd_objectMaker;
     t_class         *pd_canvasMaker;
+    t_glist         *pd_defaultContext;
     };
 
 // -----------------------------------------------------------------------------------------------------------
