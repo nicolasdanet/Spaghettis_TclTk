@@ -139,26 +139,29 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
     if (object) {
     //
     if (object_isViewAsBox (object)) {
-        int a = rectangle_getTopLeftX (&r);
-        int w = (int)((positionX - a) / font_getHostFontWidth (glist_getFontSize (glist)));
-        object_setWidth (object, PD_MAX (1, w));
-        gobj_visibilityChanged (y, glist, 0);
-        canvas_updateLinesByObject (glist, object);
-        gobj_visibilityChanged (y, glist, 1);
-        canvas_dirty (glist, 1);
-        
+    //
+    int a = rectangle_getTopLeftX (&r);
+    int w = (int)((positionX - a) / font_getHostFontWidth (glist_getFontSize (glist)));
+    object_setWidth (object, PD_MAX (1, w));
+    gobj_visibilityChanged (y, glist, 0);
+    canvas_updateLinesByObject (glist, object);
+    gobj_visibilityChanged (y, glist, 1);
+    canvas_dirty (glist, 1);
+    //
     } else if (pd_class (object) == canvas_class) {
-        t_glist *t = cast_glist (object);
-        int w = positionX - drag_getEndX (editor_getDrag (glist_getEditor (glist)));
-        int h = positionY - drag_getEndY (editor_getDrag (glist_getEditor (glist)));
-        gobj_visibilityChanged (y, glist, 0);
-        rectangle_setWidth (&t->gl_geometryGraph, rectangle_getWidth (&t->gl_geometryGraph) + w);
-        rectangle_setHeight (&t->gl_geometryGraph, rectangle_getHeight (&t->gl_geometryGraph) + h);
-        drag_setEnd (editor_getDrag (glist_getEditor (glist)), positionX, positionY);
-        canvas_updateLinesByObject (glist, object);
-        gobj_visibilityChanged (y, glist, 1);
-        canvas_updateGraphOnParentRectangle (t);
-        canvas_dirty (glist, 1);
+    //
+    t_glist *t = cast_glist (object);
+    int w = positionX - drag_getEndX (editor_getDrag (glist_getEditor (glist)));
+    int h = positionY - drag_getEndY (editor_getDrag (glist_getEditor (glist)));
+    gobj_visibilityChanged (y, glist, 0);
+    rectangle_setWidth (glist_getGraphGeometry (t), rectangle_getWidth (glist_getGraphGeometry (t)) + w);
+    rectangle_setHeight (glist_getGraphGeometry (t), rectangle_getHeight (glist_getGraphGeometry (t)) + h);
+    drag_setEnd (editor_getDrag (glist_getEditor (glist)), positionX, positionY);
+    canvas_updateLinesByObject (glist, object);
+    gobj_visibilityChanged (y, glist, 1);
+    canvas_updateGraphOnParentRectangle (t);
+    canvas_dirty (glist, 1);
+    //
     }
     //
     }

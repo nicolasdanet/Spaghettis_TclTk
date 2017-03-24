@@ -79,7 +79,7 @@ int object_getPixelX (t_object *x, t_glist *glist)
     //
     int n = canvas_valueToPixelX (glist, bounds_getLeft (glist_getBounds (glist)));
     
-    n -= rectangle_getTopLeftX (&glist->gl_geometryGraph);
+    n -= rectangle_getTopLeftX (glist_getGraphGeometry (glist));
     n += object_getX (x);
     
     return n;
@@ -94,7 +94,7 @@ int object_getPixelY (t_object *x, t_glist *glist)
     //
     int n = canvas_valueToPixelY (glist, bounds_getTop (glist_getBounds (glist)));
     
-    n -= rectangle_getTopLeftY (&glist->gl_geometryGraph);
+    n -= rectangle_getTopLeftY (glist_getGraphGeometry (glist));
     n += object_getY (x);
     
     return n;

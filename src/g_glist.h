@@ -62,11 +62,6 @@ int                 glist_isGraph                           (t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static inline t_gmaster *glist_getMaster (t_glist *glist)
-{
-    return glist->gl_holder;
-}
-
 static inline t_glist *glist_getParent (t_glist *glist)
 {
     return glist->gl_parent;
@@ -90,6 +85,16 @@ static inline t_editor *glist_getEditor (t_glist *glist)
 static inline t_bounds *glist_getBounds (t_glist *glist)
 {
     return &glist->gl_bounds;
+}
+
+static inline t_rectangle *glist_getGraphGeometry (t_glist *glist)
+{
+    return &glist->gl_geometryGraph;
+}
+
+static inline t_gmaster *glist_getMaster (t_glist *glist)
+{
+    return glist->gl_holder;
 }
 
 static inline t_unique glist_getIdentifier (t_glist *glist)
