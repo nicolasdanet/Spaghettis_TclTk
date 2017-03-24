@@ -20,7 +20,7 @@ t_glist *glist_getRoot (t_glist *glist)
 {
     if (glist_isRoot (glist)) { return glist; }
     else {
-        return glist_getRoot (glist->gl_parent);
+        return glist_getRoot (glist_getParent (glist));
     }
 }
 
@@ -28,7 +28,7 @@ t_environment *glist_getEnvironment (t_glist *glist)
 {
     PD_ASSERT (glist);
     
-    while (!glist->gl_environment) { glist = glist->gl_parent; PD_ASSERT (glist); }
+    while (!glist->gl_environment) { glist = glist_getParent (glist); PD_ASSERT (glist); }
     
     PD_ASSERT (glist_isRoot (glist));
     
@@ -37,7 +37,9 @@ t_environment *glist_getEnvironment (t_glist *glist)
 
 t_glist *glist_getView (t_glist *glist)
 {
-    while (glist->gl_parent && !glist_canHaveWindow (glist)) { glist = glist->gl_parent; }
+    while (glist_getParent (glist) && !glist_canHaveWindow (glist)) { 
+        glist = glist_getParent (glist); 
+    }
     
     return glist;
 }
@@ -53,7 +55,7 @@ int glist_isMapped (t_glist *glist)
 
 int glist_isRoot (t_glist *glist)
 {
-    int k = (!glist->gl_parent || glist_isAbstraction (glist));
+    int k = (!glist_getParent (glist) || glist_isAbstraction (glist));
     
     if (k) { PD_ASSERT (glist->gl_environment != NULL); }
     
@@ -62,7 +64,7 @@ int glist_isRoot (t_glist *glist)
 
 int glist_isAbstraction (t_glist *glist)
 {
-    return (glist->gl_parent && glist->gl_environment != NULL);
+    return (glist_getParent (glist) && glist->gl_environment != NULL);
 }
 
 int glist_isSubpatch (t_glist *glist)

@@ -315,7 +315,7 @@ void canvas_updateTitle (t_glist *glist)
 
 t_fontsize canvas_getFontSize (t_glist *glist)
 {
-    while (!glist->gl_environment) { if (!(glist = glist->gl_parent)) { PD_BUG; } }
+    while (!glist->gl_environment) { if (!(glist = glist_getParent (glist))) { PD_BUG; } }
     
     return glist->gl_fontSize;
 }

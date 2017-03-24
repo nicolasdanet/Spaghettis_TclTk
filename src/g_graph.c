@@ -54,10 +54,10 @@ t_inlet *canvas_addInlet (t_glist *glist, t_pd *receiver, t_symbol *s)
     
     if (!glist->gl_isLoading) {
     
-        if (glist->gl_parent && glist_isMapped (glist->gl_parent)) {
-            gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 0);
-            gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
-            canvas_updateLinesByObject (glist->gl_parent, cast_object (glist));
+        if (glist_getParent (glist) && glist_isMapped (glist_getParent (glist))) {
+            gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
+            gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
+            canvas_updateLinesByObject (glist_getParent (glist), cast_object (glist));
         }
     
         canvas_resortInlets (glist);
@@ -72,10 +72,10 @@ t_outlet *canvas_addOutlet (t_glist *glist, t_symbol *s)
     
     if (!glist->gl_isLoading) {
     
-        if (glist->gl_parent && glist_isMapped (glist->gl_parent)) {
-            gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 0);
-            gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
-            canvas_updateLinesByObject (glist->gl_parent, cast_object (glist));
+        if (glist_getParent (glist) && glist_isMapped (glist_getParent (glist))) {
+            gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
+            gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
+            canvas_updateLinesByObject (glist_getParent (glist), cast_object (glist));
         }
         
         canvas_resortOutlets (glist);
@@ -86,7 +86,7 @@ t_outlet *canvas_addOutlet (t_glist *glist, t_symbol *s)
 
 void canvas_removeInlet (t_glist *glist, t_inlet *inlet)
 {
-    t_glist *owner = glist->gl_parent;
+    t_glist *owner = glist_getParent (glist);
     
     int redraw = (owner && !owner->gl_isDeleting && glist_isMapped (owner) && glist_canHaveWindow (owner));
     
@@ -101,7 +101,7 @@ void canvas_removeInlet (t_glist *glist, t_inlet *inlet)
 
 void canvas_removeOutlet (t_glist *glist, t_outlet *outlet)
 {
-    t_glist *owner = glist->gl_parent;
+    t_glist *owner = glist_getParent (glist);
     
     int redraw = (owner && !owner->gl_isDeleting && glist_isMapped (owner) && glist_canHaveWindow (owner));
     
@@ -161,8 +161,8 @@ void canvas_resortInlets (t_glist *glist)
     
     PD_MEMORY_FREE (inlets);
     
-    if (glist->gl_parent && glist_isMapped (glist->gl_parent)) {
-        canvas_updateLinesByObject (glist->gl_parent, cast_object (glist));
+    if (glist_getParent (glist) && glist_isMapped (glist_getParent (glist))) {
+        canvas_updateLinesByObject (glist_getParent (glist), cast_object (glist));
     }
     //
     }
@@ -215,8 +215,8 @@ void canvas_resortOutlets (t_glist *glist)
     
     PD_MEMORY_FREE (outlets);
     
-    if (glist->gl_parent && glist_isMapped (glist->gl_parent)) {
-        canvas_updateLinesByObject (glist->gl_parent, cast_object (glist));
+    if (glist_getParent (glist) && glist_isMapped (glist_getParent (glist))) {
+        canvas_updateLinesByObject (glist_getParent (glist), cast_object (glist));
     }
     //
     }
@@ -232,9 +232,9 @@ void canvas_redrawGraphOnParent (t_glist *glist)
     //
     if (glist_canHaveWindow (glist)) { canvas_redraw (glist); }
     
-    if (glist->gl_parent && glist_isMapped (glist->gl_parent)) {
-        canvas_behaviorVisibilityChanged (cast_gobj (glist), glist->gl_parent, 0); 
-        canvas_behaviorVisibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
+    if (glist_getParent (glist) && glist_isMapped (glist_getParent (glist))) {
+        canvas_behaviorVisibilityChanged (cast_gobj (glist), glist_getParent (glist), 0); 
+        canvas_behaviorVisibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
     }
     //
     }
@@ -290,7 +290,7 @@ t_float canvas_pixelToValueX (t_glist *glist, t_float f)
         if (glist->gl_hasWindow)    { v = f / rectangle_getWidth (&glist->gl_geometryWindow); }
         else {
             t_rectangle r;
-            canvas_getGraphOnParentRectangle (cast_gobj (glist), glist->gl_parent, &r);
+            canvas_getGraphOnParentRectangle (cast_gobj (glist), glist_getParent (glist), &r);
             v = (f - rectangle_getTopLeftX (&r)) / rectangle_getWidth (&r);
         }
     }
@@ -308,7 +308,7 @@ t_float canvas_pixelToValueY (t_glist *glist, t_float f)
         if (glist->gl_hasWindow)    { v = f / rectangle_getHeight (&glist->gl_geometryWindow); }
         else {
             t_rectangle r;
-            canvas_getGraphOnParentRectangle (cast_gobj (glist), glist->gl_parent, &r);
+            canvas_getGraphOnParentRectangle (cast_gobj (glist), glist_getParent (glist), &r);
             v = (f - rectangle_getTopLeftY (&r)) / rectangle_getHeight (&r);
         }
     }
@@ -327,7 +327,7 @@ t_float canvas_valueToPixelX (t_glist *glist, t_float f)
         if (glist->gl_hasWindow)    { v = rectangle_getWidth (&glist->gl_geometryWindow); }
         else {
             t_rectangle r;
-            canvas_getGraphOnParentRectangle (cast_gobj (glist), glist->gl_parent, &r);
+            canvas_getGraphOnParentRectangle (cast_gobj (glist), glist_getParent (glist), &r);
             x = rectangle_getTopLeftX (&r);
             v = rectangle_getWidth (&r);
         }
@@ -347,7 +347,7 @@ t_float canvas_valueToPixelY (t_glist *glist, t_float f)
         if (glist->gl_hasWindow)    { v = rectangle_getHeight (&glist->gl_geometryWindow); }
         else {
             t_rectangle r;
-            canvas_getGraphOnParentRectangle (cast_gobj (glist), glist->gl_parent, &r);
+            canvas_getGraphOnParentRectangle (cast_gobj (glist), glist_getParent (glist), &r);
             x = rectangle_getTopLeftY (&r);
             v = rectangle_getHeight (&r);
         }
@@ -470,7 +470,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
         sys_vGui (".x%lx.c create polygon %d %d %d %d %d %d %d %d %d %d"
                         " -fill #%06x"
                         " -tags %s\n",
-                        glist_getView (x->gl_parent),
+                        glist_getView (glist_getParent (x)),
                         a,
                         b,
                         a,
@@ -486,7 +486,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     } else {
                 
         sys_vGui (".x%lx.c delete %s\n",
-                        glist_getView (x->gl_parent),
+                        glist_getView (glist_getParent (x)),
                         tag);
     }
     //
@@ -501,7 +501,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
         sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d"
                         " -fill #%06x"
                         " -tags %s\n",
-                        glist_getView (x->gl_parent),
+                        glist_getView (glist_getParent (x)),
                         a,
                         b,
                         a,
@@ -524,7 +524,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                         " -font [::getFont %d]"             // --
                         " -fill #%06x"
                         " -tags %s\n",
-                        glist_getView (x->gl_parent),
+                        glist_getView (glist_getParent (x)),
                         a,
                         b - (++i) * (int)font_getHostFontHeight (canvas_getFontSize (x)),
                         garray_getName ((t_garray *)y)->s_name,
@@ -541,7 +541,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     } else {
     
         sys_vGui (".x%lx.c delete %s\n",
-                    glist_getView (x->gl_parent),
+                    glist_getView (glist_getParent (x)),
                     tag);
                     
         for (y = x->gl_graphics; y; y = y->g_next) { gobj_visibilityChanged (y, x, 0); }

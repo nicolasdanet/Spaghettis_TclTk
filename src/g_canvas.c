@@ -70,8 +70,8 @@ static void canvas_setAsGraphOnParent (t_glist *glist, int flags)
     int needToUpdate    = isGraphOnParent || (!isGraphOnParent && glist->gl_isGraphOnParent);
     
     if (needToUpdate) {
-        if (!glist->gl_isLoading && glist->gl_parent && glist_isMapped (glist->gl_parent)) {
-            gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 0);
+        if (!glist->gl_isLoading && glist_getParent (glist) && glist_isMapped (glist_getParent (glist))) {
+            gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
         }
     }
     
@@ -95,9 +95,9 @@ static void canvas_setAsGraphOnParent (t_glist *glist, int flags)
     #endif
     
     if (needToUpdate) {
-        if (!glist->gl_isLoading && glist->gl_parent && glist_isMapped (glist->gl_parent)) {
-            gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
-            canvas_updateLinesByObject (glist->gl_parent, cast_object (glist));
+        if (!glist->gl_isLoading && glist_getParent (glist) && glist_isMapped (glist_getParent (glist))) {
+            gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
+            canvas_updateLinesByObject (glist_getParent (glist), cast_object (glist));
         }
     }
 }
@@ -330,7 +330,7 @@ void canvas_close (t_glist *glist, t_float f)
     if (k == 2) { canvas_dirty (glist, 0); global_shouldQuit (NULL); }      /* While quitting application. */
     else {
     //
-    if (glist->gl_parent) { canvas_visible (glist, 0); }    /* Hide subpatches and abstractions. */
+    if (glist_getParent (glist)) { canvas_visible (glist, 0); }    /* Hide subpatches and abstractions. */
     else {
     //
     if (k == 1 || k == 3) {                                                 /* Has been saved right before. */
@@ -362,15 +362,15 @@ static void canvas_open (t_glist *glist)
     
     if (glist_isMapped (glist) && !glist_canHaveWindow (glist)) {
     //
-    PD_ASSERT (glist->gl_parent);
+    PD_ASSERT (glist_getParent (glist));
     
-    gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 0);
+    gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
     
     canvas_destroyEditorIfAny (glist);
 
     glist->gl_hasWindow = 1;    /* Note that it modifies how things are drawn below. */
     
-    gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
+    gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
     //
     }
     
@@ -428,7 +428,7 @@ void canvas_visible (t_glist *glist, t_float f)
             canvas_destroyEditorIfAny (glist);
             sys_vGui ("destroy .x%lx\n", glist);
             
-            if (glist->gl_isGraphOnParent && (t = glist->gl_parent) && (!t->gl_isDeleting)) {
+            if (glist->gl_isGraphOnParent && (t = glist_getParent (glist)) && (!t->gl_isDeleting)) {
                 if (glist_isMapped (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 0); }
                 glist->gl_hasWindow = 0;
                 if (glist_isMapped (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 1); }
@@ -648,11 +648,11 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
 {
     t_error err = PD_ERROR_NONE;
     
-    if (glist->gl_parent) {
+    if (glist_getParent (glist)) {
         
         /* Activated text box triggering recreation. */
         
-        err = canvas_deselectObjectIfSelected (glist->gl_parent, cast_gobj (glist));
+        err = canvas_deselectObjectIfSelected (glist_getParent (glist), cast_gobj (glist));
     }
     
     PD_ASSERT (argc == 11);
@@ -687,9 +687,9 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
     
     if (glist->gl_hasWindow) { canvas_redraw (glist); }
     else {
-        if (glist_isMapped (glist->gl_parent)) {
-            gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 0);
-            gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
+        if (glist_isMapped (glist_getParent (glist))) {
+            gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
+            gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
         }
     }
     //
@@ -785,7 +785,7 @@ void canvas_free (t_glist *glist)
     gmaster_reset (glist->gl_holder);
     stub_destroyWithKey ((void *)glist);
     
-    if (!glist->gl_parent) { instance_rootsRemove (glist); }
+    if (!glist_getParent (glist)) { instance_rootsRemove (glist); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

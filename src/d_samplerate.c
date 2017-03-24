@@ -49,7 +49,7 @@ static t_block *samplerate_tilde_getBlockIfContainsAny (t_glist **p)
         }
     }
     
-    *p = glist->gl_parent;
+    *p = glist_getParent (glist);
     
     return block;
 }

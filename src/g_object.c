@@ -125,13 +125,13 @@ int gobj_hit (t_gobj *x, t_glist *owner, int a, int b, t_rectangle *r)
 
 int gobj_isVisible (t_gobj *x, t_glist *owner)
 {
-    if (owner->gl_parent && !glist_canHaveWindow (owner)) {
+    if (glist_getParent (owner) && !glist_canHaveWindow (owner)) {
     //
     t_object *object = NULL;
             
     /* Is parent visible? */
     
-    if (!gobj_isVisible (cast_gobj (owner), owner->gl_parent)) { return 0; }
+    if (!gobj_isVisible (cast_gobj (owner), glist_getParent (owner))) { return 0; }
     
     if (pd_class (x) == scalar_class)      { return 1; }    /* Always true. */
     else if (pd_class (x) == garray_class) { return 1; }    /* Ditto. */
@@ -141,7 +141,7 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
     /* Falling outside the graph rectangle? */
     
     t_rectangle r1, r2;
-    gobj_getRectangle (cast_gobj (owner), owner->gl_parent, &r1);
+    gobj_getRectangle (cast_gobj (owner), glist_getParent (owner), &r1);
     gobj_getRectangle (x, owner, &r2);
     if (!rectangle_containsRectangle (&r1, &r2)) {
         return 0; 

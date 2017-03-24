@@ -17,7 +17,7 @@
 #pragma mark -
 
 struct _glist {  
-    t_object        gl_obj;                             /* MUST be the first. */
+    t_object        gl_obj;                                 /* MUST be the first. */
     t_gobj          *gl_graphics;
     t_gmaster       *gl_holder;
     t_glist         *gl_parent;
@@ -61,6 +61,11 @@ int                 glist_isGraph                           (t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+static inline t_glist *glist_getParent (t_glist *glist)
+{
+    return glist->gl_parent;
+}
 
 static inline t_symbol *glist_getName (t_glist *glist)
 {

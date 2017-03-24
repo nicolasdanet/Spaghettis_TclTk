@@ -37,12 +37,12 @@ static t_glist *canvas_newGraphOnParent (t_glist *glist,
     object_setY (cast_object (x), topLeftY);
     object_setType (cast_object (x), TYPE_OBJECT);
     
-    x->gl_holder                        = gmaster_createWithGlist (x);
-    x->gl_parent                        = glist;
-    x->gl_name                          = utils_getDefaultBindName (canvas_class, sym__graph);
-    x->gl_uniqueIdentifier              = utils_unique();
-    x->gl_fontSize                      = fontSize;
-    x->gl_isGraphOnParent               = 1;
+    x->gl_holder            = gmaster_createWithGlist (x);
+    x->gl_parent            = glist;
+    x->gl_name              = utils_getDefaultBindName (canvas_class, sym__graph);
+    x->gl_uniqueIdentifier  = utils_unique();
+    x->gl_fontSize          = fontSize;
+    x->gl_isGraphOnParent   = 1;
     
     bounds_set (&x->gl_bounds, valueStart, valueUp, valueEnd, valueDown);
     rectangle_setByWidthAndHeight (&x->gl_geometryGraph, 0, 0, width, height); 
