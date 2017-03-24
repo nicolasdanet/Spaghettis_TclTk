@@ -169,9 +169,9 @@ static void garray_updateGraphSize (t_garray *x, int size, int style)
     t_atom t[4]; 
     
     SET_FLOAT (t + 0, (t_float)0.0);
-    SET_FLOAT (t + 1, bounds_getTop (&glist->gl_bounds));
+    SET_FLOAT (t + 1, bounds_getTop (glist_getBounds (glist)));
     SET_FLOAT (t + 2, (t_float)((style == PLOT_POINTS || size == 1) ? size : size - 1));
-    SET_FLOAT (t + 3, bounds_getBottom (&glist->gl_bounds));
+    SET_FLOAT (t + 3, bounds_getBottom (glist_getBounds (glist)));
     
     pd_message (cast_pd (glist), sym_bounds, 4, t);
     //

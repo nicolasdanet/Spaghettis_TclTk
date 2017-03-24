@@ -87,6 +87,11 @@ static inline t_editor *glist_getEditor (t_glist *glist)
     return glist->gl_editor;
 }
 
+static inline t_bounds *glist_getBounds (t_glist *glist)
+{
+    return &glist->gl_bounds;
+}
+
 static inline t_unique glist_getIdentifier (t_glist *glist)
 {
     return glist->gl_uniqueIdentifier;

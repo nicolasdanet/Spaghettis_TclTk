@@ -89,7 +89,7 @@ static void canvas_setAsGraphOnParent (t_glist *glist, int flags)
         t_float scaleX = canvas_valueForOnePixelX (glist);
         t_float scaleY = canvas_valueForOnePixelY (glist);
         
-        bounds_set (&glist->gl_bounds, (t_float)0.0, (t_float)0.0, PD_ABS (scaleX), PD_ABS (scaleY));
+        bounds_set (glist_getBounds (glist), (t_float)0.0, (t_float)0.0, PD_ABS (scaleX), PD_ABS (scaleY));
     }
     
     #endif
@@ -143,7 +143,7 @@ static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     int width   = (int)atom_getFloatAtIndex (4, argc, argv);
     int height  = (int)atom_getFloatAtIndex (5, argc, argv);
     
-    bounds_setByAtoms (&glist->gl_bounds, argc, argv);
+    bounds_setByAtoms (glist_getBounds (glist), argc, argv);
     
     rectangle_setByWidthAndHeight (&glist->gl_geometryGraph, a, b, width, height);
     
@@ -548,10 +548,10 @@ static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
                                     0.0,
                                     0.0,
                                     g->gl_isGraphOnParent,
-                                    bounds_getLeft (&g->gl_bounds),
-                                    bounds_getTop (&g->gl_bounds),
-                                    bounds_getRight (&g->gl_bounds),
-                                    bounds_getBottom (&g->gl_bounds), 
+                                    bounds_getLeft (glist_getBounds (g)),
+                                    bounds_getTop (glist_getBounds (g)),
+                                    bounds_getRight (glist_getBounds (g)),
+                                    bounds_getBottom (glist_getBounds (g)), 
                                     rectangle_getWidth (&g->gl_geometryGraph),
                                     rectangle_getHeight (&g->gl_geometryGraph),
                                     rectangle_getTopLeftX (&g->gl_geometryGraph),
@@ -676,9 +676,9 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
     if (scaleX == 0.0) { scaleX = (t_float)1.0; }
     if (scaleY == 0.0) { scaleY = (t_float)1.0; }
 
-    if (flags & 1) { bounds_set (&glist->gl_bounds, start, up, end, down); }
+    if (flags & 1) { bounds_set (glist_getBounds (glist), start, up, end, down); }
     else {
-        bounds_set (&glist->gl_bounds, (t_float)0.0, (t_float)0.0, PD_ABS (scaleX), PD_ABS (scaleY));
+        bounds_set (glist_getBounds (glist), (t_float)0.0, (t_float)0.0, PD_ABS (scaleX), PD_ABS (scaleY));
     }
     
     canvas_setAsGraphOnParent (glist, flags);
@@ -755,7 +755,7 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     x->gl_isEditMode            = 0;
     x->gl_openedAtLoad          = visible;
     
-    bounds_set (&x->gl_bounds, (t_float)0.0, (t_float)0.0, (t_float)1.0, (t_float)1.0);
+    bounds_set (glist_getBounds (x), (t_float)0.0, (t_float)0.0, (t_float)1.0, (t_float)1.0);
     rectangle_set (&x->gl_geometryWindow, topLeftX, topLeftY, topLeftX + width, topLeftY + height);
     
     canvas_bind (x);
