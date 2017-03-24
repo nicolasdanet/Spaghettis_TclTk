@@ -34,10 +34,10 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
         buffer_vAppend (b, "ssiiiisi;", 
             sym___hash__N, 
             sym_canvas,
-            rectangle_getTopLeftX (&glist->gl_geometryWindow),
-            rectangle_getTopLeftY (&glist->gl_geometryWindow),
-            rectangle_getWidth (&glist->gl_geometryWindow),
-            rectangle_getHeight (&glist->gl_geometryWindow),
+            rectangle_getTopLeftX (glist_getWindowGeometry (glist)),
+            rectangle_getTopLeftY (glist_getWindowGeometry (glist)),
+            rectangle_getWidth (glist_getWindowGeometry (glist)),
+            rectangle_getHeight (glist_getWindowGeometry (glist)),
             (s != &s_ ? s : sym_Patch),
             glist->gl_isMapped);
             
@@ -46,10 +46,10 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
         buffer_vAppend (b, "ssiiiii;", 
             sym___hash__N,
             sym_canvas,
-            rectangle_getTopLeftX (&glist->gl_geometryWindow),
-            rectangle_getTopLeftY (&glist->gl_geometryWindow),
-            rectangle_getWidth (&glist->gl_geometryWindow),
-            rectangle_getHeight (&glist->gl_geometryWindow),
+            rectangle_getTopLeftX (glist_getWindowGeometry (glist)),
+            rectangle_getTopLeftY (glist_getWindowGeometry (glist)),
+            rectangle_getWidth (glist_getWindowGeometry (glist)),
+            rectangle_getHeight (glist_getWindowGeometry (glist)),
             (int)glist->gl_fontSize);
     }
     

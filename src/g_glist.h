@@ -92,6 +92,11 @@ static inline t_rectangle *glist_getGraphGeometry (t_glist *glist)
     return &glist->gl_geometryGraph;
 }
 
+static inline t_rectangle *glist_getWindowGeometry (t_glist *glist)
+{
+    return &glist->gl_geometryWindow;
+}
+
 static inline t_gmaster *glist_getMaster (t_glist *glist)
 {
     return glist->gl_holder;

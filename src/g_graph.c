@@ -287,7 +287,7 @@ t_float canvas_pixelToValueX (t_glist *glist, t_float f)
         
     if (!glist->gl_isGraphOnParent) { v = f; }      /* Scalars. */
     else {
-        if (glist->gl_hasWindow)    { v = f / rectangle_getWidth (&glist->gl_geometryWindow); }
+        if (glist->gl_hasWindow)    { v = f / rectangle_getWidth (glist_getWindowGeometry (glist)); }
         else {
             t_rectangle r;
             canvas_getGraphOnParentRectangle (cast_gobj (glist), glist_getParent (glist), &r);
@@ -305,7 +305,7 @@ t_float canvas_pixelToValueY (t_glist *glist, t_float f)
         
     if (!glist->gl_isGraphOnParent) { v = f; }      /* Scalars. */
     else {
-        if (glist->gl_hasWindow)    { v = f / rectangle_getHeight (&glist->gl_geometryWindow); }
+        if (glist->gl_hasWindow)    { v = f / rectangle_getHeight (glist_getWindowGeometry (glist)); }
         else {
             t_rectangle r;
             canvas_getGraphOnParentRectangle (cast_gobj (glist), glist_getParent (glist), &r);
@@ -324,7 +324,7 @@ t_float canvas_valueToPixelX (t_glist *glist, t_float f)
     
     if (!glist->gl_isGraphOnParent) { }     /* Scalars. */
     else {
-        if (glist->gl_hasWindow)    { v = rectangle_getWidth (&glist->gl_geometryWindow); }
+        if (glist->gl_hasWindow)    { v = rectangle_getWidth (glist_getWindowGeometry (glist)); }
         else {
             t_rectangle r;
             canvas_getGraphOnParentRectangle (cast_gobj (glist), glist_getParent (glist), &r);
@@ -344,7 +344,7 @@ t_float canvas_valueToPixelY (t_glist *glist, t_float f)
     
     if (!glist->gl_isGraphOnParent) { }     /* Scalars. */
     else {
-        if (glist->gl_hasWindow)    { v = rectangle_getHeight (&glist->gl_geometryWindow); }
+        if (glist->gl_hasWindow)    { v = rectangle_getHeight (glist_getWindowGeometry (glist)); }
         else {
             t_rectangle r;
             canvas_getGraphOnParentRectangle (cast_gobj (glist), glist_getParent (glist), &r);

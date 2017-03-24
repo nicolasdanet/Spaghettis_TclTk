@@ -406,10 +406,10 @@ void canvas_visible (t_glist *glist, t_float f)
             
             sys_vGui ("::ui_patch::create .x%lx %d %d +%d+%d %d\n",     // --
                             glist,
-                            rectangle_getWidth (&glist->gl_geometryWindow),
-                            rectangle_getHeight (&glist->gl_geometryWindow),
-                            rectangle_getTopLeftX (&glist->gl_geometryWindow),
-                            rectangle_getTopLeftY (&glist->gl_geometryWindow),
+                            rectangle_getWidth (glist_getWindowGeometry (glist)),
+                            rectangle_getHeight (glist_getWindowGeometry (glist)),
+                            rectangle_getTopLeftX (glist_getWindowGeometry (glist)),
+                            rectangle_getTopLeftY (glist_getWindowGeometry (glist)),
                             glist->gl_isEditMode);
                         
             canvas_updateTitle (glist);
@@ -756,7 +756,7 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     x->gl_openedAtLoad          = visible;
     
     bounds_set (glist_getBounds (x), (t_float)0.0, (t_float)0.0, (t_float)1.0, (t_float)1.0);
-    rectangle_set (&x->gl_geometryWindow, topLeftX, topLeftY, topLeftX + width, topLeftY + height);
+    rectangle_set (glist_getWindowGeometry (x), topLeftX, topLeftY, topLeftX + width, topLeftY + height);
     
     canvas_bind (x);
     

@@ -46,7 +46,11 @@ static t_glist *canvas_newGraphOnParent (t_glist *glist,
     
     bounds_set (glist_getBounds (x), valueStart, valueUp, valueEnd, valueDown);
     rectangle_setByWidthAndHeight (glist_getGraphGeometry (x), 0, 0, width, height); 
-    rectangle_set (&x->gl_geometryWindow, 0, WINDOW_HEADER, WINDOW_WIDTH, WINDOW_HEIGHT + WINDOW_HEADER);
+    rectangle_set (glist_getWindowGeometry (x), 
+        0,
+        WINDOW_HEADER,
+        WINDOW_WIDTH,
+        WINDOW_HEIGHT + WINDOW_HEADER);
     
     canvas_bind (x);
     

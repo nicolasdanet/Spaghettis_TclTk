@@ -627,7 +627,7 @@ void canvas_window (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc == 4) {
     //
-    rectangle_setByAtoms (&glist->gl_geometryWindow, argc, argv);
+    rectangle_setByAtoms (glist_getWindowGeometry (glist), argc, argv);
     
     /* Redraw a GOP opened in its own window (required for graph arrays). */
     
