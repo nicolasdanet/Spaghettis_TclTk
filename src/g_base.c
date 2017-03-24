@@ -60,8 +60,8 @@ void canvas_addObject (t_glist *glist, t_gobj *y)
         t->g_next = y;
     }
     
-    if (glist->gl_editor && (object = cast_objectIfConnectable (y))) { 
-        editor_boxAdd (glist->gl_editor, object); 
+    if (glist_hasEditor (glist) && (object = cast_objectIfConnectable (y))) { 
+        editor_boxAdd (glist_getEditor (glist), object); 
     }
     
     if (glist_isMapped (glist_getView (glist))) {
@@ -85,9 +85,9 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     
     needToPaintScalars |= (pd_class (y) == struct_class);
     
-    if (glist->gl_editor) {
+    if (glist_hasEditor (glist)) {
     //
-    editor_motionUnset (glist->gl_editor, y);
+    editor_motionUnset (glist_getEditor (glist), y);
     
     if (canvas_isObjectSelected (glist, y)) { canvas_deselectObject (glist, y);   }
     //
@@ -107,13 +107,13 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
         }
     }
     
-    if (glist->gl_editor && (object = cast_objectIfConnectable (y))) {
+    if (glist_hasEditor (glist) && (object = cast_objectIfConnectable (y))) {
         text = box_fetch (glist, object);
     }
     
     pd_free (cast_pd (y));
 
-    if (text) { editor_boxRemove (glist->gl_editor, text); }
+    if (text) { editor_boxRemove (glist_getEditor (glist), text); }
     
     if (needToUpdateDSPChain) { dsp_update(); }
     if (needToPaintScalars)   { paint_draw(); }
@@ -349,10 +349,10 @@ t_gobj *canvas_getHitObject (t_glist *glist, int positionX, int positionY, t_rec
     
     rectangle_set (r, 0, 0, 0, 0);
     
-    if (glist->gl_editor && canvas_getNumberOfSelectedObjects (glist) > 1) {
+    if (glist_hasEditor (glist) && canvas_getNumberOfSelectedObjects (glist) > 1) {
     //
     t_selection *s = NULL;
-    for (s = editor_getSelection (glist->gl_editor); s; s = selection_getNext (s)) {
+    for (s = editor_getSelection (glist_getEditor (glist)); s; s = selection_getNext (s)) {
     //
     if (gobj_hit (selection_getObject (s), glist, positionX, positionY, &t)) {
         rectangle_setCopy (r, &t);

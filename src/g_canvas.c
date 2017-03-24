@@ -400,7 +400,7 @@ void canvas_visible (t_glist *glist, t_float f)
     
     if (isVisible) {
 
-        if (glist->gl_editor && glist->gl_hasWindow) { sys_vGui ("::bringToFront .x%lx\n", glist); }
+        if (glist_hasEditor (glist) && glist->gl_hasWindow) { sys_vGui ("::bringToFront .x%lx\n", glist); }
         else {
             canvas_createEditorIfNone (glist);
             
@@ -457,7 +457,7 @@ void canvas_map (t_glist *glist, t_float f)
         
         if (!glist->gl_hasWindow) { PD_BUG; canvas_visible (glist, 1); }
         for (y = glist->gl_graphics; y; y = y->g_next) { gobj_visibilityChanged (y, glist, 1); }
-        for (s = editor_getSelection (glist->gl_editor); s; s = selection_getNext (s)) {
+        for (s = editor_getSelection (glist_getEditor (glist)); s; s = selection_getNext (s)) {
             gobj_selected (selection_getObject (s), glist, 1);
         }
 
@@ -770,7 +770,7 @@ void canvas_free (t_glist *glist)
     int dspstate = dsp_suspend();
     t_gobj *y = NULL;
         
-    if (glist->gl_editor) { canvas_deselectAll (glist); }
+    if (glist_hasEditor (glist)) { canvas_deselectAll (glist); }
     
     while ((y = glist->gl_graphics)) { canvas_removeObject (glist, y); }
     if (glist == glist_getView (glist)) { canvas_visible (glist, 0); }

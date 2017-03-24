@@ -26,7 +26,7 @@
 
 void clipboard_copy (t_clipboard *x, t_glist *glist)
 {
-    if (editor_hasSelection (glist->gl_editor)) {
+    if (editor_hasSelection (glist_getEditor (glist))) {
     //
     t_buffer *b = buffer_new();
 
@@ -89,7 +89,7 @@ void clipboard_paste (t_clipboard *x, t_glist *glist)
     
     dsp_resume (state);
         
-    for (s = editor_getSelection (glist->gl_editor); s; s = selection_getNext (s)) {
+    for (s = editor_getSelection (glist_getEditor (glist)); s; s = selection_getNext (s)) {
         y = selection_getObject (s); gobj_displaced (y, glist, n, n);
         if (pd_class (y) == canvas_class) { 
             canvas_loadbang (cast_glist (y)); 

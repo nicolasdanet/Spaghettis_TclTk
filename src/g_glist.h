@@ -77,6 +77,11 @@ static inline t_symbol *glist_getName (t_glist *glist)
     return glist->gl_name;
 }
 
+static inline t_editor *glist_getEditor (t_glist *glist)
+{
+    return glist->gl_editor;
+}
+
 static inline t_fontsize glist_getFontSize (t_glist *glist)
 {
     return glist->gl_fontSize;
@@ -103,6 +108,11 @@ static inline int glist_hasParent (t_glist *glist)
 static inline int glist_hasParentMapped (t_glist *glist)
 {
     return (glist_hasParent (glist) && glist_isMapped (glist_getParent (glist)));
+}
+
+static inline int glist_hasEditor (t_glist *glist)
+{
+    return (glist->gl_editor != NULL);
 }
 
 // -----------------------------------------------------------------------------------------------------------

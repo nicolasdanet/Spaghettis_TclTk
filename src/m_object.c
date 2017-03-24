@@ -54,7 +54,7 @@ void object_setFromEntry (t_object *x, t_glist *glist, t_box *z)
         
         canvas_removeObject (glist, cast_gobj (x));
         canvas_makeTextObject (glist, a, b, w, 0, t);
-        editor_selectionRestoreLines (glist_getView (glist)->gl_editor);
+        editor_selectionRestoreLines (glist_getEditor (glist_getView (glist)));
         
         /* Loadbang if the new object is an abstraction. */
         

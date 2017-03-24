@@ -30,8 +30,8 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
     t_rectangle r1;
     t_rectangle r2;
     
-    int previousX = drag_getStartX (editor_getDrag (glist->gl_editor));
-    int previousY = drag_getStartY (editor_getDrag (glist->gl_editor));
+    int previousX = drag_getStartX (editor_getDrag (glist_getEditor (glist)));
+    int previousY = drag_getStartY (editor_getDrag (glist_getEditor (glist)));
     
     t_gobj *yA = canvas_getHitObject (glist, previousX, previousY, &r1);
     t_gobj *yB = canvas_getHitObject (glist, positionX, positionY, &r2);
@@ -127,8 +127,8 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
 {
     t_rectangle r;
     
-    int previousX = drag_getStartX (editor_getDrag (glist->gl_editor));
-    int previousY = drag_getStartY (editor_getDrag (glist->gl_editor));
+    int previousX = drag_getStartX (editor_getDrag (glist_getEditor (glist)));
+    int previousY = drag_getStartY (editor_getDrag (glist_getEditor (glist)));
     
     t_gobj *y = canvas_getHitObject (glist, previousX, previousY, &r);
         
@@ -149,12 +149,12 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
         
     } else if (pd_class (object) == canvas_class) {
         t_glist *t = cast_glist (object);
-        int w = positionX - drag_getEndX (editor_getDrag (glist->gl_editor));
-        int h = positionY - drag_getEndY (editor_getDrag (glist->gl_editor));
+        int w = positionX - drag_getEndX (editor_getDrag (glist_getEditor (glist)));
+        int h = positionY - drag_getEndY (editor_getDrag (glist_getEditor (glist)));
         gobj_visibilityChanged (y, glist, 0);
         rectangle_setWidth (&t->gl_geometryGraph, rectangle_getWidth (&t->gl_geometryGraph) + w);
         rectangle_setHeight (&t->gl_geometryGraph, rectangle_getHeight (&t->gl_geometryGraph) + h);
-        drag_setEnd (editor_getDrag (glist->gl_editor), positionX, positionY);
+        drag_setEnd (editor_getDrag (glist_getEditor (glist)), positionX, positionY);
         canvas_updateLinesByObject (glist, object);
         gobj_visibilityChanged (y, glist, 1);
         canvas_updateGraphOnParentRectangle (t);
@@ -285,12 +285,12 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
     
         if (clicked) {
         //
-        t_box *text = editor_getSelectedBox (glist->gl_editor);
+        t_box *text = editor_getSelectedBox (glist_getEditor (glist));
         
         if (object && text && (text == box_fetch (glist, object))) {
             box_mouse (text, positionX - a, positionY - b, BOX_SHIFT);
-            editor_startAction (glist->gl_editor, ACTION_DRAG);
-            drag_setStart (editor_getDrag (glist->gl_editor), a, b);
+            editor_startAction (glist_getEditor (glist), ACTION_DRAG);
+            drag_setStart (editor_getDrag (glist_getEditor (glist)), a, b);
             
         } else {
             if (canvas_isObjectSelected (glist, y)) { canvas_deselectObject (glist, y); }
@@ -310,16 +310,16 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
             if (!clicked) { canvas_setCursorType (glist, CURSOR_RESIZE); }
             else {
                 canvas_selectObjectIfNotSelected (glist, y);
-                editor_startAction (glist->gl_editor, ACTION_RESIZE);
-                drag_set (editor_getDrag (glist->gl_editor), a, b, positionX, positionY);
+                editor_startAction (glist_getEditor (glist), ACTION_RESIZE);
+                drag_set (editor_getDrag (glist_getEditor (glist)), a, b, positionX, positionY);
             }  
                                              
         } else if ((n = canvas_proceedMouseHitOutlets (object, positionX, positionY, a, c, d, &h)) != -1) {
             
             if (!clicked) { canvas_setCursorType (glist, CURSOR_CONNECT); }
             else {
-                editor_startAction (glist->gl_editor, ACTION_CONNECT);
-                drag_setStart (editor_getDrag (glist->gl_editor), h, d);
+                editor_startAction (glist_getEditor (glist), ACTION_CONNECT);
+                drag_setStart (editor_getDrag (glist_getEditor (glist)), h, d);
                 
                 sys_vGui (".x%lx.c create line %d %d %d %d -width %d -tags TEMPORARY\n",
                                 glist_getView (glist),
@@ -332,17 +332,17 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
                 
         } else if (clicked) {
         
-            t_box *text = editor_getSelectedBox (glist->gl_editor);
+            t_box *text = editor_getSelectedBox (glist_getEditor (glist));
             
             if (object && text && (text == box_fetch (glist, object))) {
                 int flag = (modifier & MODIFIER_DOUBLE) ? BOX_DOUBLE : BOX_DOWN;
                 box_mouse (text, positionX - a, positionY - b, flag);
-                editor_startAction (glist->gl_editor, ACTION_DRAG);
-                drag_setStart (editor_getDrag (glist->gl_editor), a, b);
+                editor_startAction (glist_getEditor (glist), ACTION_DRAG);
+                drag_setStart (editor_getDrag (glist_getEditor (glist)), a, b);
                 
             } else {
                 canvas_selectObjectIfNotSelected (glist, y);
-                editor_startAction (glist->gl_editor, ACTION_MOVE);
+                editor_startAction (glist_getEditor (glist), ACTION_MOVE);
             }
             
         } else { 
@@ -398,8 +398,8 @@ static void canvas_proceedMouseLassoStart (t_glist *glist, int positionX, int po
                     positionX,
                     positionY);
 
-    editor_startAction (glist->gl_editor, ACTION_REGION);
-    drag_setStart (editor_getDrag (glist->gl_editor), positionX, positionY);
+    editor_startAction (glist_getEditor (glist), ACTION_REGION);
+    drag_setStart (editor_getDrag (glist_getEditor (glist)), positionX, positionY);
     //
     }
 }
@@ -410,11 +410,11 @@ static void canvas_proceedMouse (t_glist *glist, int a, int b, int modifier, int
     int isRightClick = (modifier & MODIFIER_RIGHT);
     int isRunMode    = (modifier & MODIFIER_CTRL) || (!glist->gl_isEditMode);
     
-    if (clicked) { editor_motionReset (glist->gl_editor); }
+    if (clicked) { editor_motionReset (glist_getEditor (glist)); }
 
-    if (!editor_hasAction (glist->gl_editor)) {
+    if (!editor_hasAction (glist_getEditor (glist))) {
 
-        drag_setStart (editor_getDrag (glist->gl_editor), a, b);
+        drag_setStart (editor_getDrag (glist_getEditor (glist)), a, b);
 
         if (isRunMode && !isRightClick) { canvas_proceedMouseClick (glist, a, b, modifier, clicked); }
         else if (canvas_proceedMouseHit (glist, a, b, modifier, clicked)) { } 
@@ -516,19 +516,21 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
     
     /* Handle the event. */
     
-    if (glist && glist->gl_editor && isDown) {
+    if (glist && glist_hasEditor (glist) && isDown) {
     //
-    if (editor_getAction (glist->gl_editor) == ACTION_MOVE) { editor_resetAction (glist->gl_editor); }
+    if (editor_getAction (glist_getEditor (glist)) == ACTION_MOVE) { 
+        editor_resetAction (glist_getEditor (glist)); 
+    }
     
-    if (editor_hasSelectedBox (glist->gl_editor)) {
-        box_key (editor_getSelectedBox (glist->gl_editor), (t_keycode)n, s);
-        if (editor_hasSelectedBoxDirty (glist->gl_editor)) { 
+    if (editor_hasSelectedBox (glist_getEditor (glist))) {
+        box_key (editor_getSelectedBox (glist_getEditor (glist)), (t_keycode)n, s);
+        if (editor_hasSelectedBoxDirty (glist_getEditor (glist))) { 
             canvas_dirty (glist, 1); 
         }
         
     } else if (s == sym_Delete || s == sym_BackSpace) {
-        if (editor_hasSelectedLine (glist->gl_editor)) { canvas_removeSelectedLine (glist); }
-        else if (editor_hasSelection (glist->gl_editor)) { 
+        if (editor_hasSelectedLine (glist_getEditor (glist))) { canvas_removeSelectedLine (glist); }
+        else if (editor_hasSelection (glist_getEditor (glist))) { 
             canvas_removeSelectedObjects (glist); 
         }
     }
@@ -545,21 +547,21 @@ void canvas_click (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 
 void canvas_motion (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    if (glist->gl_editor) {
+    if (glist_hasEditor (glist)) {
     //
     int a = atom_getFloatAtIndex (0, argc, argv);
     int b = atom_getFloatAtIndex (1, argc, argv);
     int m = atom_getFloatAtIndex (2, argc, argv);
         
-    int action = editor_getAction (glist->gl_editor);
-    int deltaX = a - drag_getStartX (editor_getDrag (glist->gl_editor));
-    int deltaY = b - drag_getStartY (editor_getDrag (glist->gl_editor));
+    int action = editor_getAction (glist_getEditor (glist));
+    int deltaX = a - drag_getStartX (editor_getDrag (glist_getEditor (glist)));
+    int deltaY = b - drag_getStartY (editor_getDrag (glist_getEditor (glist)));
     
     instance_setDefaultCoordinates (glist, a, b);
     
     if (action == ACTION_MOVE) {
-        editor_selectionDeplace (glist->gl_editor);
-        drag_setEnd (editor_getDrag (glist->gl_editor), a, b);
+        editor_selectionDeplace (glist_getEditor (glist));
+        drag_setEnd (editor_getDrag (glist_getEditor (glist)), a, b);
     
     } else if (action == ACTION_CONNECT) {
         canvas_makeLineStart (glist, a, b);
@@ -568,11 +570,11 @@ void canvas_motion (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         canvas_selectingByLassoStart (glist, a, b);
         
     } else if (action == ACTION_PASS)    {
-        editor_motionProceed (glist->gl_editor, deltaX, deltaY, m);
-        drag_setStart (editor_getDrag (glist->gl_editor), a, b);
+        editor_motionProceed (glist_getEditor (glist), deltaX, deltaY, m);
+        drag_setStart (editor_getDrag (glist_getEditor (glist)), a, b);
         
     } else if (action == ACTION_DRAG)    {
-        t_box *text = editor_getSelectedBox (glist->gl_editor);
+        t_box *text = editor_getSelectedBox (glist_getEditor (glist));
         if (text) { box_mouse (text, deltaX, deltaY, BOX_DRAG); }
                 
     } else if (action == ACTION_RESIZE)  {
@@ -591,7 +593,7 @@ void canvas_mouse (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     int b = (int)atom_getFloatAtIndex (1, argc, argv);
     int m = (int)atom_getFloatAtIndex (2, argc, argv);
 
-    if (glist->gl_editor) { canvas_proceedMouse (glist, a, b, m, 1); } 
+    if (glist_hasEditor (glist)) { canvas_proceedMouse (glist, a, b, m, 1); } 
 }
 
 void canvas_mouseUp (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -599,21 +601,21 @@ void canvas_mouseUp (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     int a = (int)atom_getFloatAtIndex (0, argc, argv);
     int b = (int)atom_getFloatAtIndex (1, argc, argv);
     
-    if (glist->gl_editor) {
+    if (glist_hasEditor (glist)) {
     //
-    int action = editor_getAction (glist->gl_editor);
+    int action = editor_getAction (glist_getEditor (glist));
     
     if (action == ACTION_CONNECT)     { canvas_makeLineEnd (glist, a, b); }
     else if (action == ACTION_REGION) { canvas_selectingByLassoEnd (glist, a, b); }
     else if (action == ACTION_MOVE)   {
     //
     if (canvas_getNumberOfSelectedObjects (glist) == 1) {
-        gobj_activated (selection_getObject (editor_getSelection (glist->gl_editor)), glist, 1);
+        gobj_activated (selection_getObject (editor_getSelection (glist_getEditor (glist))), glist, 1);
     }
     //
     }
 
-    editor_resetAction (glist->gl_editor);
+    editor_resetAction (glist_getEditor (glist));
     //
     }
 }
@@ -682,16 +684,16 @@ void canvas_editmode (t_glist *glist, t_float f)
 
 void canvas_cut (t_glist *glist)
 {
-    if (!glist->gl_editor || !glist->gl_isEditMode) { return; }
+    if (!glist_hasEditor (glist) || !glist->gl_isEditMode) { return; }
     else {
     //
-    if (editor_hasSelectedLine (glist->gl_editor)) { canvas_removeSelectedLine (glist); }
-    else if (editor_hasSelectedBox (glist->gl_editor)) {
+    if (editor_hasSelectedLine (glist_getEditor (glist))) { canvas_removeSelectedLine (glist); }
+    else if (editor_hasSelectedBox (glist_getEditor (glist))) {
         canvas_copy (glist);
-        box_key (editor_getSelectedBox (glist->gl_editor), (t_keycode)127, sym_Delete);
+        box_key (editor_getSelectedBox (glist_getEditor (glist)), (t_keycode)127, sym_Delete);
         canvas_dirty (glist, 1);
         
-    } else if (editor_hasSelection (glist->gl_editor)) {
+    } else if (editor_hasSelection (glist_getEditor (glist))) {
         canvas_copy (glist);
         canvas_removeSelectedObjects (glist);
     }
@@ -701,13 +703,13 @@ void canvas_cut (t_glist *glist)
 
 void canvas_copy (t_glist *glist)
 {
-    if (!glist->gl_editor || !glist->gl_isEditMode) { return; }
+    if (!glist_hasEditor (glist) || !glist->gl_isEditMode) { return; }
     else {
     //
-    if (editor_hasSelectedBox (glist->gl_editor)) {
+    if (editor_hasSelectedBox (glist_getEditor (glist))) {
         char *t = NULL;
         int s = 0;
-        box_getSelection (editor_getSelectedBox (glist->gl_editor), &t, &s);
+        box_getSelection (editor_getSelectedBox (glist_getEditor (glist)), &t, &s);
         sys_gui ("clipboard clear\n");
         sys_vGui ("clipboard append {%.*s}\n", s, t);       /* < http://stackoverflow.com/a/13289324 > */
         
@@ -720,10 +722,10 @@ void canvas_copy (t_glist *glist)
 
 void canvas_paste (t_glist *glist)
 {
-    if (!glist->gl_editor || !glist->gl_isEditMode) { return; }
+    if (!glist_hasEditor (glist) || !glist->gl_isEditMode) { return; }
     else {
     //
-    if (editor_hasSelectedBox (glist->gl_editor)) {
+    if (editor_hasSelectedBox (glist_getEditor (glist))) {
         sys_vGui ("::ui_bind::pasteText .x%lx\n", glist);
     } else {
         clipboard_paste (instance_getClipboard(), glist);
@@ -734,7 +736,7 @@ void canvas_paste (t_glist *glist)
 
 void canvas_duplicate (t_glist *glist)
 {
-    if (!glist->gl_editor || !glist->gl_isEditMode) { return; }
+    if (!glist_hasEditor (glist) || !glist->gl_isEditMode) { return; }
     else {
     //
     canvas_copy (glist);
@@ -745,7 +747,7 @@ void canvas_duplicate (t_glist *glist)
 
 void canvas_selectAll (t_glist *glist)
 {
-    if (!glist->gl_editor || !glist->gl_isEditMode) { return; }
+    if (!glist_hasEditor (glist) || !glist->gl_isEditMode) { return; }
     else {
     //
     t_gobj *y = NULL;
@@ -763,15 +765,15 @@ void canvas_selectAll (t_glist *glist)
 
 void canvas_createEditorIfNone (t_glist *glist)
 {
-    if (!glist->gl_editor) { glist->gl_editor = editor_new (glist); }
+    if (!glist_hasEditor (glist)) { glist->gl_editor = editor_new (glist); }
 }
 
 void canvas_destroyEditorIfAny (t_glist *glist)
 {
-    if (glist->gl_editor) { 
+    if (glist_hasEditor (glist)) { 
     //
     canvas_deselectAll (glist); 
-    editor_free (glist->gl_editor);
+    editor_free (glist_getEditor (glist));
     glist->gl_editor = NULL;
     //
     }

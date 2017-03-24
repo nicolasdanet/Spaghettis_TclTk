@@ -47,9 +47,9 @@ static void canvas_deselectLine (t_glist *glist)
 {
     sys_vGui (".x%lx.c itemconfigure %lxLINE -fill black\n",
                     glist_getView (glist),
-                    editor_getSelectedLineConnection (glist->gl_editor));
+                    editor_getSelectedLineConnection (glist_getEditor (glist)));
                     
-    editor_selectedLineReset (glist->gl_editor);
+    editor_selectedLineReset (glist_getEditor (glist));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -101,7 +101,7 @@ void canvas_removeSelectedObjects (t_glist *glist)
     /* If box text is selected, deselecting it might recreate the object. */ 
     /* Workaround by deselecting it first and looking for a "new" object next. */
         
-    if (editor_hasSelectedBox (glist->gl_editor)) {
+    if (editor_hasSelectedBox (glist_getEditor (glist))) {
         instance_setNewestObject (NULL);
         canvas_deselectAll (glist);
         if (instance_getNewestObject()) {
@@ -123,8 +123,8 @@ void canvas_removeSelectedObjects (t_glist *glist)
 
 void canvas_removeSelectedLine (t_glist *glist)
 {
-    if (editor_hasSelectedLine (glist->gl_editor)) {
-        editor_selectedLineDisconnect (glist->gl_editor);
+    if (editor_hasSelectedLine (glist_getEditor (glist))) {
+        editor_selectedLineDisconnect (glist_getEditor (glist));
         canvas_dirty (glist, 1);
     }
 }
@@ -137,7 +137,7 @@ void canvas_displaceSelectedObjects (t_glist *glist, int deltaX, int deltaY)
     int needToResortOutlets = 0;
     int isDirty = 0;
     
-    for (y = editor_getSelection (glist->gl_editor); y; y = selection_getNext (y)) {
+    for (y = editor_getSelection (glist_getEditor (glist)); y; y = selection_getNext (y)) {
         gobj_displaced (selection_getObject (y), glist, deltaX, deltaY);
         if (pd_class (selection_getObject (y)) == vinlet_class)  { needToResortInlets  = 1; }
         if (pd_class (selection_getObject (y)) == voutlet_class) { needToResortOutlets = 1; }
@@ -156,10 +156,10 @@ void canvas_displaceSelectedObjects (t_glist *glist, int deltaX, int deltaY)
 
 int canvas_isObjectSelected (t_glist *glist, t_gobj *y)
 {
-    if (glist->gl_editor) {
+    if (glist_hasEditor (glist)) {
     //
     t_selection *s = NULL;
-    for (s = editor_getSelection (glist->gl_editor); s; s = selection_getNext (s)) {
+    for (s = editor_getSelection (glist_getEditor (glist)); s; s = selection_getNext (s)) {
         if (selection_getObject (s) == y) { return 1; }
     }
     //
@@ -179,22 +179,22 @@ static void canvas_selectingByLasso (t_glist *glist, int a, int b, int end)
         t_rectangle r;
         
         rectangle_set (&r, 
-            drag_getStartX (editor_getDrag (glist->gl_editor)), 
-            drag_getStartY (editor_getDrag (glist->gl_editor)), 
+            drag_getStartX (editor_getDrag (glist_getEditor (glist))), 
+            drag_getStartY (editor_getDrag (glist_getEditor (glist))), 
             a, 
             b);
         
         canvas_selectObjectsInRectangle (glist, &r);
         
-        editor_resetAction (glist->gl_editor);
+        editor_resetAction (glist_getEditor (glist));
         
         sys_vGui (".x%lx.c delete TEMPORARY\n", glist_getView (glist));
         
     } else {
         sys_vGui (".x%lx.c coords TEMPORARY %d %d %d %d\n",
                         glist_getView (glist),
-                        drag_getStartX (editor_getDrag (glist->gl_editor)),
-                        drag_getStartY (editor_getDrag (glist->gl_editor)),
+                        drag_getStartX (editor_getDrag (glist_getEditor (glist))),
+                        drag_getStartY (editor_getDrag (glist_getEditor (glist))),
                         a,
                         b);
     }
@@ -233,11 +233,11 @@ void canvas_selectObjectsInRectangle (t_glist *glist, t_rectangle *r)
 
 void canvas_selectObject (t_glist *glist, t_gobj *y)
 {
-    if (editor_hasSelectedLine (glist->gl_editor)) { canvas_deselectLine (glist); }
+    if (editor_hasSelectedLine (glist_getEditor (glist))) { canvas_deselectLine (glist); }
 
     PD_ASSERT (!canvas_isObjectSelected (glist, y));    /* Must NOT be already selected. */
     
-    editor_selectionAdd (glist->gl_editor, y);
+    editor_selectionAdd (glist_getEditor (glist), y);
     
     gobj_selected (y, glist, 1);
 }
@@ -254,11 +254,11 @@ void canvas_selectLine (t_glist *glist, t_outconnect *connection, int m, int i, 
 {
     canvas_deselectAll (glist);
     
-    editor_selectedLineSet (glist->gl_editor, connection, m, i, n, j);
+    editor_selectedLineSet (glist_getEditor (glist), connection, m, i, n, j);
     
     sys_vGui (".x%lx.c itemconfigure %lxLINE -fill blue\n",
                     glist_getView (glist),
-                    editor_getSelectedLineConnection (glist->gl_editor));  
+                    editor_getSelectedLineConnection (glist_getEditor (glist)));  
 }
 
 /* Note that deselecting an object with its text active might recreate it. */
@@ -272,15 +272,15 @@ int canvas_deselectObject (t_glist *glist, t_gobj *y)
     
     PD_ASSERT (canvas_isObjectSelected (glist, y));         /* Must be already selected. */
     
-    if (editor_hasSelectedBox (glist->gl_editor)) {
+    if (editor_hasSelectedBox (glist_getEditor (glist))) {
     
         t_box *text = box_fetch (glist, cast_object (y));
         
-        if (editor_getSelectedBox (glist->gl_editor) == text) {
-            if (editor_hasSelectedBoxDirty (glist->gl_editor)) {
+        if (editor_getSelectedBox (glist_getEditor (glist)) == text) {
+            if (editor_hasSelectedBoxDirty (glist_getEditor (glist))) {
                 z = text;
                 canvas_putSelectedObjectsAtLast (glist);
-                editor_selectionCacheLines (glist_getView (glist)->gl_editor);
+                editor_selectionCacheLines (glist_getEditor (glist_getView (glist)));
                 canvas_deselectAllRecursive (y);
             }
             gobj_activated (y, glist, 0);
@@ -289,12 +289,12 @@ int canvas_deselectObject (t_glist *glist, t_gobj *y)
         if (class_hasDSP (pd_class (y))) { dspSuspended = dsp_suspend(); }
     }
     
-    if (editor_selectionRemove (glist->gl_editor, y)) { gobj_selected (y, glist, 0); }
+    if (editor_selectionRemove (glist_getEditor (glist), y)) { gobj_selected (y, glist, 0); }
     
     if (z) {
         object_setFromEntry (cast_object (y), glist, z);
         canvas_updateLinesByObject (glist, cast_object (y));
-        editor_boxSelect (glist->gl_editor, NULL);
+        editor_boxSelect (glist_getEditor (glist), NULL);
     }
     
     if (dspSuspended) { dsp_resume (dspSuspended); }
@@ -313,13 +313,15 @@ int canvas_deselectAll (t_glist *glist)
 {
     int k = 0;
     
-    if (glist->gl_editor) {         /* Required (for newly recreated subpatch for instance). */
+    if (glist_hasEditor (glist)) {      /* Required (for newly recreated subpatch for instance). */
     //
-    while (editor_getSelection (glist->gl_editor)) {
-        k |= canvas_deselectObject (glist, selection_getObject (editor_getSelection (glist->gl_editor)));
+    while (editor_getSelection (glist_getEditor (glist))) {
+    //
+    k |= canvas_deselectObject (glist, selection_getObject (editor_getSelection (glist_getEditor (glist))));
+    //
     }
 
-    if (editor_hasSelectedLine (glist->gl_editor)) { canvas_deselectLine (glist); }
+    if (editor_hasSelectedLine (glist_getEditor (glist))) { canvas_deselectLine (glist); }
     //
     }
     
@@ -368,7 +370,7 @@ int canvas_getIndexOfObjectAmongUnselected (t_glist *glist, t_gobj *y)
 
 void canvas_setMotionFunction (t_glist *glist, t_gobj *y, t_motionfn callback, int a, int b)
 {
-    editor_motionSet (glist_getView (glist)->gl_editor, y, callback, a, b);
+    editor_motionSet (glist_getEditor (glist_getView (glist)), y, callback, a, b);
 }
 
 // -----------------------------------------------------------------------------------------------------------

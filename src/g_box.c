@@ -69,7 +69,7 @@ void box_getSelection (t_box *x, char **p, int *size)
 
 t_box *box_fetch (t_glist *glist, t_object *object)
 {
-    canvas_createEditorIfNone (glist); return editor_boxFetch (glist->gl_editor, object);
+    canvas_createEditorIfNone (glist); return editor_boxFetch (glist_getEditor (glist), object);
 }
 
 void box_update (t_box *x)
@@ -128,7 +128,7 @@ void box_activate (t_box *x, int isActivated)
 
         sys_vGui ("::ui_box::setEditing .x%lx %s 1\n", x->box_owner, x->box_tag);
                         
-        editor_boxSelect (x->box_owner->gl_editor, x);
+        editor_boxSelect (glist_getEditor (x->box_owner), x);
         
         x->box_draggedFrom      = 0;
         x->box_selectionStart   = 0;
@@ -139,7 +139,7 @@ void box_activate (t_box *x, int isActivated)
 
         sys_vGui ("::ui_box::setEditing .x%lx {} 0\n", x->box_owner);   // --
         
-        editor_boxUnselect (x->box_owner->gl_editor, x);
+        editor_boxUnselect (glist_getEditor (x->box_owner), x);
         
         x->box_isActivated = 0;
     }
@@ -211,7 +211,7 @@ static void box_keyDeleteProceed (t_box *x)
     x->box_string = PD_MEMORY_RESIZE (x->box_string, oldSize, newSize);
     x->box_stringSizeInBytes = newSize;
     x->box_selectionEnd = x->box_selectionStart;
-    editor_setSelectedBoxDirty (x->box_owner->gl_editor);
+    editor_setSelectedBoxDirty (glist_getEditor (x->box_owner));
     //
     }
 }
@@ -318,7 +318,7 @@ void box_key (t_box *x, t_keycode n, t_symbol *s)
 
         if (n) {
             x->box_selectionEnd = x->box_selectionStart;
-            editor_setSelectedBoxDirty (x->box_owner->gl_editor);
+            editor_setSelectedBoxDirty (glist_getEditor (x->box_owner));
         }
     }
 
