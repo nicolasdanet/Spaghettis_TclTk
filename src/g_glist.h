@@ -67,9 +67,23 @@ static inline t_glist *glist_getParent (t_glist *glist)
     return glist->gl_parent;
 }
 
+static inline t_glist *glist_getNext (t_glist *glist)
+{
+    return glist->gl_next;
+}
+
 static inline t_symbol *glist_getName (t_glist *glist)
 {
     return glist->gl_name;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline void glist_setNext (t_glist *glist, t_glist *next)
+{
+    glist->gl_next = next;
 }
 
 // -----------------------------------------------------------------------------------------------------------

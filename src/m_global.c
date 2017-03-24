@@ -31,7 +31,7 @@ void global_shouldQuit (void *dummy)
 {
     t_glist *glist = NULL;
     
-    for (glist = instance_getRoots(); glist; glist = glist->gl_next) {
+    for (glist = instance_getRoots(); glist; glist = glist_getNext (glist)) {
     //
     if (glist_isDirty (glist)) {
     //

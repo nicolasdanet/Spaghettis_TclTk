@@ -50,7 +50,7 @@ static void paint_proceedAll (int action)
 {
     t_glist *glist = NULL;
 
-    for (glist = instance_getRoots(); glist; glist = glist->gl_next) {
+    for (glist = instance_getRoots(); glist; glist = glist_getNext (glist)) {
         paint_proceedAllRecursive (glist, action);
     }
 }

@@ -75,16 +75,16 @@ static t_int instance_dspDone (t_int *dummy)
 
 void instance_rootsAdd (t_glist *glist)
 {
-    glist->gl_next = instance_get()->pd_roots; instance_get()->pd_roots = glist;
+    glist_setNext (glist, instance_get()->pd_roots); instance_get()->pd_roots = glist;
 }
 
 void instance_rootsRemove (t_glist *glist)
 {
-    if (glist == instance_get()->pd_roots) { instance_get()->pd_roots = glist->gl_next; }
+    if (glist == instance_get()->pd_roots) { instance_get()->pd_roots = glist_getNext (glist); }
     else {
         t_glist *z = NULL;
-        for (z = instance_get()->pd_roots; z->gl_next != glist; z = z->gl_next) { }
-        z->gl_next = glist->gl_next;
+        for (z = instance_get()->pd_roots; glist_getNext (z) != glist; z = glist_getNext (z)) { }
+        glist_setNext (z, glist_getNext (glist));
     }
 }
 
@@ -116,7 +116,9 @@ void instance_dspStart (void)
 
     ugen_dspInitialize();
     
-    for (glist = instance_getRoots(); glist; glist = glist->gl_next) { canvas_dspProceed (glist, 1, NULL); }
+    for (glist = instance_getRoots(); glist; glist = glist_getNext (glist)) { 
+        canvas_dspProceed (glist, 1, NULL); 
+    }
     
     instance_setDspState (1);
 }
@@ -338,7 +340,7 @@ void instance_destroyAllScalarsByTemplate (t_template *template)
         t_atom t;
         SET_SYMBOL (&t, s); 
         pd_message (cast_pd (glist), sym_destroy, 1, &t);
-        glist = glist->gl_next;
+        glist = glist_getNext (glist);
     }
 }
 
