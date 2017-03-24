@@ -28,24 +28,6 @@ t_symbol        *canvas_expandDollar                    (t_glist *glist, t_symbo
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_glist         *canvas_getRoot                         (t_glist *glist);
-t_environment   *canvas_getEnvironment                  (t_glist *glist);
-t_glist         *canvas_getView                         (t_glist *glist);
-t_symbol        *canvas_getName                         (t_glist *glist);
-
-void            canvas_setName                          (t_glist *glist, t_symbol *name);
-int             canvas_canHaveWindow                    (t_glist *glist);
-int             canvas_isMapped                         (t_glist *glist);
-int             canvas_isRoot                           (t_glist *glist);
-int             canvas_isAbstraction                    (t_glist *glist);
-int             canvas_isSubpatch                       (t_glist *glist);
-int             canvas_isDirty                          (t_glist *glist);
-int             canvas_isGraph                          (t_glist *glist);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void            canvas_makeTextObject                   (t_glist *glist, 
                                                             int positionX, 
                                                             int positionY, 

@@ -135,6 +135,11 @@ static inline int editor_getAction (t_editor *x)
     return x->e_action;
 }
 
+static inline char *editor_getBoundAsString (t_editor *x)
+{
+    return proxy_getBoundAsString (x->e_proxy);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
