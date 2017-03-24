@@ -44,13 +44,6 @@ t_glist *glist_getView (t_glist *glist)
     return glist;
 }
 
-t_fontsize glist_getFontSize (t_glist *glist)
-{
-    while (!glist->gl_environment) { if (!(glist = glist_getParent (glist))) { PD_BUG; } }
-    
-    return glist->gl_fontSize;
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -63,8 +56,6 @@ int glist_isMapped (t_glist *glist)
 int glist_isRoot (t_glist *glist)
 {
     int k = (!glist_hasParent (glist) || glist_isAbstraction (glist));
-    
-    if (k) { PD_ASSERT (glist->gl_environment != NULL); }
     
     return k;
 }

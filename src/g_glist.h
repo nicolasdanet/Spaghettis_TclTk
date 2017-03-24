@@ -49,8 +49,6 @@ t_glist             *glist_getRoot                          (t_glist *glist);
 t_environment       *glist_getEnvironment                   (t_glist *glist);
 t_glist             *glist_getView                          (t_glist *glist);
 
-t_fontsize          glist_getFontSize                       (t_glist *glist);
-
 void                glist_setName                           (t_glist *glist, t_symbol *name);
 int                 glist_canHaveWindow                     (t_glist *glist);
 int                 glist_isMapped                          (t_glist *glist);
@@ -77,6 +75,11 @@ static inline t_glist *glist_getNext (t_glist *glist)
 static inline t_symbol *glist_getName (t_glist *glist)
 {
     return glist->gl_name;
+}
+
+static inline t_fontsize glist_getFontSize (t_glist *glist)
+{
+    return glist->gl_fontSize;
 }
 
 // -----------------------------------------------------------------------------------------------------------
