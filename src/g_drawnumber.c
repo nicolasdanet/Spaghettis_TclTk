@@ -150,7 +150,7 @@ static void drawnumber_behaviorGetRectangle (t_gobj *z,
     t_float valueY      = baseY + gpointer_getFloatByDescriptor (gp, &x->x_positionY);
     int pixelX          = canvas_valueToPixelX (glist, valueX);
     int pixelY          = canvas_valueToPixelY (glist, valueY);
-    t_fontsize fontSize = canvas_getFontSize (glist);
+    t_fontsize fontSize = glist_getFontSize (glist);
     
     if (!drawnumber_getContents (x, gp, t, PD_STRING, &m, &n)) {
     
@@ -207,7 +207,7 @@ static void drawnumber_behaviorVisibilityChanged (t_gobj *z,
                     pixelX,
                     pixelY,
                     color_toEncodedSymbol (color)->s_name,
-                    font_getHostFontSize (canvas_getFontSize (glist)),
+                    font_getHostFontSize (glist_getFontSize (glist)),
                     t, 
                     tag);
     //

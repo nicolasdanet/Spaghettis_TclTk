@@ -44,6 +44,13 @@ t_glist *glist_getView (t_glist *glist)
     return glist;
 }
 
+t_fontsize glist_getFontSize (t_glist *glist)
+{
+    while (!glist->gl_environment) { if (!(glist = glist_getParent (glist))) { PD_BUG; } }
+    
+    return glist->gl_fontSize;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

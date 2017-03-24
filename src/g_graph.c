@@ -526,9 +526,9 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                         " -tags %s\n",
                         glist_getView (glist_getParent (x)),
                         a,
-                        b - (++i) * (int)font_getHostFontHeight (canvas_getFontSize (x)),
+                        b - (++i) * (int)font_getHostFontHeight (glist_getFontSize (x)),
                         garray_getName ((t_garray *)y)->s_name,
-                        font_getHostFontSize (canvas_getFontSize (x)),
+                        font_getHostFontSize (glist_getFontSize (x)),
                         (x->gl_isSelected ? COLOR_SELECTED : COLOR_NORMAL),
                         tag);
         //

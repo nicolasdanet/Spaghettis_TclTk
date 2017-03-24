@@ -449,7 +449,7 @@ static void gatom_makeObjectProceed (t_glist *glist, t_atomtype type, int argc, 
     x->a_owner              = glist;
     x->a_lowRange           = 0;
     x->a_highRange          = 0;
-    x->a_fontSize           = canvas_getFontSize (x->a_owner);
+    x->a_fontSize           = glist_getFontSize (x->a_owner);
     x->a_position           = ATOM_LABEL_RIGHT;
     x->a_send               = &s_;
     x->a_receive            = &s_;

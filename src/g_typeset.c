@@ -90,7 +90,7 @@ static t_typesethelper *box_typesetAllocate (t_box *x, int a, int b, t_typesethe
     
     p->p_x                      = a;
     p->p_y                      = b;
-    p->p_fontSize               = canvas_getFontSize (isCanvas ? cast_glist (x->box_object) : x->box_owner);
+    p->p_fontSize               = glist_getFontSize (isCanvas ? cast_glist (x->box_object) : x->box_owner);
     p->p_fontWidth              = font_getHostFontWidth (p->p_fontSize);
     p->p_fontHeight             = font_getHostFontHeight (p->p_fontSize);
     p->p_numberOfCharacters     = u8_charnum (x->box_string, x->box_stringSizeInBytes);

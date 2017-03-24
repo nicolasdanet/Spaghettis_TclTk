@@ -313,13 +313,6 @@ void canvas_updateTitle (t_glist *glist)
                     glist->gl_isDirty);
 }
 
-t_fontsize canvas_getFontSize (t_glist *glist)
-{
-    while (!glist->gl_environment) { if (!(glist = glist_getParent (glist))) { PD_BUG; } }
-    
-    return glist->gl_fontSize;
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

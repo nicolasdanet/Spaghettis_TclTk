@@ -140,7 +140,7 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
     //
     if (object_isViewAsBox (object)) {
         int a = rectangle_getTopLeftX (&r);
-        int w = (int)((positionX - a) / font_getHostFontWidth (canvas_getFontSize (glist)));
+        int w = (int)((positionX - a) / font_getHostFontWidth (glist_getFontSize (glist)));
         object_setWidth (object, PD_MAX (1, w));
         gobj_visibilityChanged (y, glist, 0);
         canvas_updateLinesByObject (glist, object);
