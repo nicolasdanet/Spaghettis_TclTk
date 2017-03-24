@@ -62,6 +62,11 @@ int                 glist_isGraph                           (t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static inline t_gmaster *glist_getMaster (t_glist *glist)
+{
+    return glist->gl_holder;
+}
+
 static inline t_glist *glist_getParent (t_glist *glist)
 {
     return glist->gl_parent;
@@ -80,6 +85,11 @@ static inline t_symbol *glist_getName (t_glist *glist)
 static inline t_editor *glist_getEditor (t_glist *glist)
 {
     return glist->gl_editor;
+}
+
+static inline t_unique glist_getIdentifier (t_glist *glist)
+{
+    return glist->gl_uniqueIdentifier;
 }
 
 static inline t_fontsize glist_getFontSize (t_glist *glist)

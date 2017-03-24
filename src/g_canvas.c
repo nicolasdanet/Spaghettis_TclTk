@@ -782,7 +782,7 @@ void canvas_free (t_glist *glist)
     
     dsp_resume (dspstate);
     
-    gmaster_reset (glist->gl_holder);
+    gmaster_reset (glist_getMaster (glist));
     stub_destroyWithKey ((void *)glist);
     
     if (!glist_hasParent (glist)) { instance_rootsRemove (glist); }

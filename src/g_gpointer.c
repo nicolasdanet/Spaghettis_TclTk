@@ -118,10 +118,10 @@ static int gpointer_isValidProceed (t_gpointer *gp, int nullPointerIsValid)
     t_gmaster *master = gp->gp_refer;
         
     if (master->gm_type == GMASTER_ARRAY) {
-        if (master->gm_un.gm_array->a_uniqueIdentifier == gp->gp_uniqueIdentifier)  { return 1; }
+        if (master->gm_un.gm_array->a_uniqueIdentifier == gp->gp_uniqueIdentifier)   { return 1; }
         
     } else if (master->gm_type == GMASTER_GLIST) {
-        if (master->gm_un.gm_glist->gl_uniqueIdentifier == gp->gp_uniqueIdentifier) { return 1; }
+        if (glist_getIdentifier (master->gm_un.gm_glist) == gp->gp_uniqueIdentifier) { return 1; }
         
     } else {
         PD_ASSERT (master->gm_type == GMASTER_NONE);
@@ -163,8 +163,8 @@ void gpointer_setAsScalar (t_gpointer *gp, t_glist *glist, t_scalar *scalar)
     gpointer_unset (gp);
     
     gp->gp_un.gp_scalar     = scalar;
-    gp->gp_refer            = glist->gl_holder;
-    gp->gp_uniqueIdentifier = glist->gl_uniqueIdentifier;
+    gp->gp_refer            = glist_getMaster (glist);
+    gp->gp_uniqueIdentifier = glist_getIdentifier (glist);
 
     gmaster_increment (gp->gp_refer);
 }
