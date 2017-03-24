@@ -103,7 +103,6 @@ void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
     
     if (instance_loadAbstractionIsValid (filename)) {
     //
-    instance_contextStore();
     instance_environmentSetArguments (argc, argv);          /* Get an environment (unique dollar zero). */
     
     buffer_fileEval (filename, gensym (directory));
@@ -114,7 +113,6 @@ void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
     }
     
     instance_environmentResetArguments();
-    instance_contextRestore();
     //
     } else {
         error_recursiveInstantiation (filename);
