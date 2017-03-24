@@ -54,7 +54,7 @@ t_inlet *canvas_addInlet (t_glist *glist, t_pd *receiver, t_symbol *s)
     
     if (!glist->gl_isLoading) {
     
-        if (glist_getParent (glist) && glist_isMapped (glist_getParent (glist))) {
+        if (glist_hasParentMapped (glist)) {
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
             canvas_updateLinesByObject (glist_getParent (glist), cast_object (glist));
@@ -72,7 +72,7 @@ t_outlet *canvas_addOutlet (t_glist *glist, t_symbol *s)
     
     if (!glist->gl_isLoading) {
     
-        if (glist_getParent (glist) && glist_isMapped (glist_getParent (glist))) {
+        if (glist_hasParentMapped (glist)) {
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
             canvas_updateLinesByObject (glist_getParent (glist), cast_object (glist));
@@ -161,7 +161,7 @@ void canvas_resortInlets (t_glist *glist)
     
     PD_MEMORY_FREE (inlets);
     
-    if (glist_getParent (glist) && glist_isMapped (glist_getParent (glist))) {
+    if (glist_hasParentMapped (glist)) {
         canvas_updateLinesByObject (glist_getParent (glist), cast_object (glist));
     }
     //
@@ -215,7 +215,7 @@ void canvas_resortOutlets (t_glist *glist)
     
     PD_MEMORY_FREE (outlets);
     
-    if (glist_getParent (glist) && glist_isMapped (glist_getParent (glist))) {
+    if (glist_hasParentMapped (glist)) {
         canvas_updateLinesByObject (glist_getParent (glist), cast_object (glist));
     }
     //
@@ -232,7 +232,7 @@ void canvas_redrawGraphOnParent (t_glist *glist)
     //
     if (glist_canHaveWindow (glist)) { canvas_redraw (glist); }
     
-    if (glist_getParent (glist) && glist_isMapped (glist_getParent (glist))) {
+    if (glist_hasParentMapped (glist)) {
         canvas_behaviorVisibilityChanged (cast_gobj (glist), glist_getParent (glist), 0); 
         canvas_behaviorVisibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
     }

@@ -74,5 +74,19 @@ static inline t_symbol *glist_getName (t_glist *glist)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline int glist_hasParent (t_glist *glist)
+{
+    return (glist->gl_parent != NULL);
+}
+
+static inline int glist_hasParentMapped (t_glist *glist)
+{
+    return (glist_hasParent (glist) && glist_isMapped (glist_getParent (glist)));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 #endif // __g_glist_h_
