@@ -73,6 +73,18 @@ void instance_stackPop (t_glist *x)
     instance_get()->pd_stack.s_popped = x;
 }
 
+void instance_stackPopPatch (t_glist *glist, int visible)
+{
+    if (visible) { canvas_visible (glist, 1); }
+    
+    instance_stackPop (glist);
+    
+    canvas_resortInlets (glist);
+    canvas_resortOutlets (glist);
+    
+    glist->gl_isLoading = 0;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -108,8 +120,10 @@ void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
     buffer_fileEval (filename, gensym (directory));
     
     if (instance_contextGetCurrent() != instance_contextGetStored()) {
-        instance_setNewestObject (cast_pd (instance_contextGetCurrent())); 
-        canvas_pop (instance_contextGetCurrent(), 0); 
+    
+        instance_setNewestObject (cast_pd (instance_contextGetCurrent()));
+        
+        instance_stackPopPatch (instance_contextGetCurrent(), 0); 
     }
     
     instance_environmentResetArguments();
@@ -141,7 +155,9 @@ static void instance_loadPatchProceed (t_symbol *name, t_symbol *directory, char
     if (s) { buffer_fileEvalByString (name, directory, s); }
     else   { buffer_fileEval (name, directory); }
     
-    if (instance_contextGetCurrent() != NULL) { canvas_pop (instance_contextGetCurrent(), visible); }
+    if (instance_contextGetCurrent() != NULL) { 
+        instance_stackPopPatch (instance_contextGetCurrent(), visible); 
+    }
     
     PD_ASSERT (instance_contextGetCurrent() == NULL);
     
@@ -175,9 +191,7 @@ void instance_loadSnippet (t_glist *glist, t_buffer *b)
 {
     instance_contextStore();
     instance_contextSetCurrent (glist);
-    
-        buffer_eval (b, NULL, 0, NULL);
-    
+    buffer_eval (b, NULL, 0, NULL);
     instance_contextRestore();
 }
 

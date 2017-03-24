@@ -172,6 +172,7 @@ void            instance_loadSnippet                    (t_glist *glist, t_buffe
 
 void            instance_stackPush                      (t_glist *glist);
 void            instance_stackPop                       (t_glist *glist);
+void            instance_stackPopPatch                  (t_glist *glist, int visible);
 
 t_environment   *instance_environmentFetchIfAny         (void);
 

@@ -126,7 +126,7 @@ static void *subpatch_new (t_symbol *s)
     x = canvas_new (NULL, NULL, 6, a);
     x->gl_parent = z;
     
-    canvas_pop (x, 1);
+    instance_stackPopPatch (x, 1);
     
     return x;
 }
@@ -158,7 +158,7 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     canvas_setName (glist, (name == &s_ ? sym_Patch : name));
     
-    canvas_pop (glist, glist->gl_openedAtLoad);
+    instance_stackPopPatch (glist, glist->gl_openedAtLoad);
 
     {
         t_glist *parent = instance_contextGetCurrent();
@@ -468,18 +468,6 @@ void canvas_map (t_glist *glist, t_float f)
     }
     //
     }
-}
-
-void canvas_pop (t_glist *glist, t_float f)
-{
-    if (f != 0.0) { canvas_visible (glist, 1); }
-    
-    instance_stackPop (glist);
-    
-    canvas_resortInlets (glist);
-    canvas_resortOutlets (glist);
-    
-    glist->gl_isLoading = 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------

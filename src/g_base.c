@@ -17,13 +17,12 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 void canvas_newPatch (void *dummy, t_symbol *name, t_symbol *directory)
 {
     instance_environmentSetFile (name, directory);
     canvas_new (NULL, NULL, 0, NULL);
-    canvas_pop (instance_contextGetCurrent(), 1);
+    instance_stackPopPatch (instance_contextGetCurrent(), 1);
     instance_environmentResetFile();
 }
 

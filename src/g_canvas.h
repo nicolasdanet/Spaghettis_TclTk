@@ -235,7 +235,6 @@ void            canvas_close                            (t_glist *glist, t_float
 void            canvas_dirty                            (t_glist *glist, t_float f);
 void            canvas_visible                          (t_glist *glist, t_float f);
 void            canvas_map                              (t_glist *glist, t_float f);
-void            canvas_pop                              (t_glist *glist, t_float f);
 
 void            canvas_cut                              (t_glist *glist);
 void            canvas_copy                             (t_glist *glist);
