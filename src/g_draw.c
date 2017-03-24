@@ -31,7 +31,7 @@ void text_behaviorGetRectangle  (t_gobj *, t_glist *, t_rectangle *);
 
 void canvas_redraw (t_glist *glist)
 {
-    if (canvas_isMapped (glist)) { canvas_map (glist, 0); canvas_map (glist, 1); }
+    if (glist_isMapped (glist)) { canvas_map (glist, 0); canvas_map (glist, 1); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ void canvas_drawLines (t_glist *glist)
     while ((connection = traverser_next (&t))) {
     //
     sys_vGui (".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
-                    canvas_getView (glist),
+                    glist_getView (glist),
                     traverser_getStartX (&t),
                     traverser_getStartY (&t),
                     traverser_getEndX (&t),
@@ -70,10 +70,10 @@ void canvas_updateLinesByObject (t_glist *glist, t_object *o)
     //
     if (traverser_getSource (&t) == o || traverser_getDestination (&t) == o) {
     //
-    if (canvas_isMapped (glist)) {
+    if (glist_isMapped (glist)) {
     //
     sys_vGui (".x%lx.c coords %lxLINE %d %d %d %d\n",
-                    canvas_getView (glist),
+                    glist_getView (glist),
                     connection,
                     traverser_getStartX (&t),
                     traverser_getStartY (&t),
@@ -98,10 +98,10 @@ void canvas_deleteLinesByObject (t_glist *glist, t_object *o)
     //
     if (traverser_getSource (&t) == o || traverser_getDestination (&t) == o) {
     //
-    if (canvas_isMapped (glist)) {
+    if (glist_isMapped (glist)) {
     //
     sys_vGui (".x%lx.c delete %lxLINE\n",
-                    canvas_getView (glist),
+                    glist_getView (glist),
                     connection);
     //
     }
@@ -127,10 +127,10 @@ void canvas_deleteLinesByInlets (t_glist *glist, t_object *o, t_inlet *inlet, t_
     
     if (m || n) {
     //
-    if (canvas_isMapped (glist)) {
+    if (glist_isMapped (glist)) {
     //
     sys_vGui (".x%lx.c delete %lxLINE\n",
-                    canvas_getView (glist),
+                    glist_getView (glist),
                     connection);
     //
     }
@@ -160,7 +160,7 @@ static void canvas_drawBoxObject (t_glist *glist, t_object *o, char *tag, int cr
         sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d"
                         " -dash %s"
                         " -tags %sBORDER\n",
-                        canvas_getView (glist),
+                        glist_getView (glist),
                         a,
                         b,
                         c,
@@ -177,7 +177,7 @@ static void canvas_drawBoxObject (t_glist *glist, t_object *o, char *tag, int cr
     } else {
     
         sys_vGui (".x%lx.c coords %sBORDER %d %d %d %d %d %d %d %d %d %d\n",
-                        canvas_getView (glist),
+                        glist_getView (glist),
                         tag,
                         a,
                         b,
@@ -191,7 +191,7 @@ static void canvas_drawBoxObject (t_glist *glist, t_object *o, char *tag, int cr
                         b);
                         
         sys_vGui (".x%lx.c itemconfigure %sBORDER -dash %s\n",
-                        canvas_getView (glist),
+                        glist_getView (glist),
                         tag,
                         pattern);
     }
@@ -208,7 +208,7 @@ static void canvas_drawBoxMessage (t_glist *glist, t_object *o, char *tag, int c
     
         sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d %d %d %d %d"
                         " -tags %sBORDER\n",
-                        canvas_getView (glist),
+                        glist_getView (glist),
                         a,
                         b,
                         c + 4,
@@ -228,7 +228,7 @@ static void canvas_drawBoxMessage (t_glist *glist, t_object *o, char *tag, int c
     } else {
     
         sys_vGui (".x%lx.c coords %sBORDER %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
-                        canvas_getView (glist),
+                        glist_getView (glist),
                         tag,
                         a,
                         b,
@@ -258,7 +258,7 @@ static void canvas_drawBoxAtom (t_glist *glist, t_object *o, char *tag, int crea
     
         sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d %d %d"
                         " -tags %sBORDER\n",
-                        canvas_getView (glist),
+                        glist_getView (glist),
                         a,
                         b,
                         c - 4,
@@ -276,7 +276,7 @@ static void canvas_drawBoxAtom (t_glist *glist, t_object *o, char *tag, int crea
     } else {
     
         sys_vGui (".x%lx.c coords %sBORDER %d %d %d %d %d %d %d %d %d %d %d %d\n",
-                        canvas_getView (glist),
+                        glist_getView (glist),
                         tag,
                         a,
                         b,
@@ -305,7 +305,7 @@ static void canvas_drawBoxComment (t_glist *glist, t_object *o, char *tag, int c
     
         sys_vGui (".x%lx.c create line %d %d %d %d"
                         " -tags [list %sBORDER COMMENTBAR]\n",      // --
-                        canvas_getView (glist),
+                        glist_getView (glist),
                         c,
                         b,
                         c,
@@ -315,7 +315,7 @@ static void canvas_drawBoxComment (t_glist *glist, t_object *o, char *tag, int c
     } else {
     
         sys_vGui (".x%lx.c coords %sBORDER %d %d %d %d\n",
-                        canvas_getView (glist),
+                        glist_getView (glist),
                         tag,
                         c,
                         b,
@@ -347,7 +347,7 @@ static void canvas_drawInletsAndOutlets (t_glist *glist, t_object *o, char *tag,
     if (create) {
     
         sys_vGui (".x%lx.c create rectangle %d %d %d %d -tags %sINLET%d\n",
-                        canvas_getView (glist),
+                        glist_getView (glist),
                         offset,
                         b,
                         offset + INLET_WIDTH,
@@ -358,7 +358,7 @@ static void canvas_drawInletsAndOutlets (t_glist *glist, t_object *o, char *tag,
     } else {
     
         sys_vGui (".x%lx.c coords %sINLET%d %d %d %d %d\n",
-                        canvas_getView (glist),
+                        glist_getView (glist),
                         tag,
                         i,
                         offset,
@@ -376,7 +376,7 @@ static void canvas_drawInletsAndOutlets (t_glist *glist, t_object *o, char *tag,
     if (create) {
     
         sys_vGui (".x%lx.c create rectangle %d %d %d %d -tags %sOUTLET%d\n",
-                        canvas_getView (glist),
+                        glist_getView (glist),
                         offset,
                         d - INLET_HEIGHT,
                         offset + INLET_WIDTH,
@@ -387,7 +387,7 @@ static void canvas_drawInletsAndOutlets (t_glist *glist, t_object *o, char *tag,
     } else {
     
         sys_vGui (".x%lx.c coords %sOUTLET%d %d %d %d %d\n",
-                        canvas_getView (glist),
+                        glist_getView (glist),
                         tag,
                         i,
                         offset,
@@ -418,15 +418,15 @@ static void canvas_eraseInletsAndOutlets (t_glist *glist, t_object *o, char *tag
     int m = object_getNumberOfInlets (o);
     int n = object_getNumberOfOutlets (o);
     
-    for (i = 0; i < m; i++) { sys_vGui (".x%lx.c delete %sINLET%d\n",  canvas_getView (glist), tag, i); }
-    for (i = 0; i < n; i++) { sys_vGui (".x%lx.c delete %sOUTLET%d\n", canvas_getView (glist), tag, i); }
+    for (i = 0; i < m; i++) { sys_vGui (".x%lx.c delete %sINLET%d\n",  glist_getView (glist), tag, i); }
+    for (i = 0; i < n; i++) { sys_vGui (".x%lx.c delete %sOUTLET%d\n", glist_getView (glist), tag, i); }
 }
 
 void canvas_eraseBox (t_glist *glist, t_object *o, char *tag)
 {
     if (!object_isComment (o) || glist->gl_isEditMode) {   /* Comments have borders only in edit mode. */
     //
-    sys_vGui (".x%lx.c delete %sBORDER\n", canvas_getView (glist), tag); 
+    sys_vGui (".x%lx.c delete %sBORDER\n", glist_getView (glist), tag); 
     canvas_eraseInletsAndOutlets (glist, o, tag);
     //
     }
@@ -440,7 +440,7 @@ void canvas_drawGraphOnParentRectangle (t_glist *glist)
 {
     if (glist->gl_isGraphOnParent && glist->gl_hasWindow) {
     //
-    if (!canvas_isGraph (glist)) {
+    if (!glist_isGraph (glist)) {
     //
     int a = rectangle_getTopLeftX (&glist->gl_geometryGraph);
     int b = rectangle_getTopLeftY (&glist->gl_geometryGraph);
@@ -451,7 +451,7 @@ void canvas_drawGraphOnParentRectangle (t_glist *glist)
                     " -dash {2 4}"  // --
                     " -fill " DRAW_GRAPH_ON_PARENT_COLOR
                     " -tags RECTANGLE\n",
-                    canvas_getView (glist),
+                    glist_getView (glist),
                     a,
                     b,
                     c,
@@ -471,8 +471,8 @@ void canvas_updateGraphOnParentRectangle (t_glist *glist)
 {
     if (glist->gl_isGraphOnParent && glist->gl_hasWindow) {
     //
-    if (!canvas_isGraph (glist)) {
-        sys_vGui (".x%lx.c delete RECTANGLE\n", canvas_getView (glist));
+    if (!glist_isGraph (glist)) {
+        sys_vGui (".x%lx.c delete RECTANGLE\n", glist_getView (glist));
         canvas_drawGraphOnParentRectangle (glist);
     }
     //

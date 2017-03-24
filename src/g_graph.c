@@ -54,7 +54,7 @@ t_inlet *canvas_addInlet (t_glist *glist, t_pd *receiver, t_symbol *s)
     
     if (!glist->gl_isLoading) {
     
-        if (glist->gl_parent && canvas_isMapped (glist->gl_parent)) {
+        if (glist->gl_parent && glist_isMapped (glist->gl_parent)) {
             gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 0);
             gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
             canvas_updateLinesByObject (glist->gl_parent, cast_object (glist));
@@ -72,7 +72,7 @@ t_outlet *canvas_addOutlet (t_glist *glist, t_symbol *s)
     
     if (!glist->gl_isLoading) {
     
-        if (glist->gl_parent && canvas_isMapped (glist->gl_parent)) {
+        if (glist->gl_parent && glist_isMapped (glist->gl_parent)) {
             gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 0);
             gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
             canvas_updateLinesByObject (glist->gl_parent, cast_object (glist));
@@ -88,7 +88,7 @@ void canvas_removeInlet (t_glist *glist, t_inlet *inlet)
 {
     t_glist *owner = glist->gl_parent;
     
-    int redraw = (owner && !owner->gl_isDeleting && canvas_isMapped (owner) && canvas_canHaveWindow (owner));
+    int redraw = (owner && !owner->gl_isDeleting && glist_isMapped (owner) && glist_canHaveWindow (owner));
     
     if (owner)  { canvas_deleteLinesByInlets (owner, cast_object (glist), inlet, NULL); }
     if (redraw) { gobj_visibilityChanged (cast_gobj (glist), owner, 0); }
@@ -103,7 +103,7 @@ void canvas_removeOutlet (t_glist *glist, t_outlet *outlet)
 {
     t_glist *owner = glist->gl_parent;
     
-    int redraw = (owner && !owner->gl_isDeleting && canvas_isMapped (owner) && canvas_canHaveWindow (owner));
+    int redraw = (owner && !owner->gl_isDeleting && glist_isMapped (owner) && glist_canHaveWindow (owner));
     
     if (owner)  { canvas_deleteLinesByInlets (owner, cast_object (glist), NULL, outlet); }
     if (redraw) { gobj_visibilityChanged (cast_gobj (glist), owner, 0); }
@@ -161,7 +161,7 @@ void canvas_resortInlets (t_glist *glist)
     
     PD_MEMORY_FREE (inlets);
     
-    if (glist->gl_parent && canvas_isMapped (glist->gl_parent)) {
+    if (glist->gl_parent && glist_isMapped (glist->gl_parent)) {
         canvas_updateLinesByObject (glist->gl_parent, cast_object (glist));
     }
     //
@@ -215,7 +215,7 @@ void canvas_resortOutlets (t_glist *glist)
     
     PD_MEMORY_FREE (outlets);
     
-    if (glist->gl_parent && canvas_isMapped (glist->gl_parent)) {
+    if (glist->gl_parent && glist_isMapped (glist->gl_parent)) {
         canvas_updateLinesByObject (glist->gl_parent, cast_object (glist));
     }
     //
@@ -228,11 +228,11 @@ void canvas_resortOutlets (t_glist *glist)
 
 void canvas_redrawGraphOnParent (t_glist *glist)
 {  
-    if (canvas_isMapped (glist)) {
+    if (glist_isMapped (glist)) {
     //
-    if (canvas_canHaveWindow (glist)) { canvas_redraw (glist); }
+    if (glist_canHaveWindow (glist)) { canvas_redraw (glist); }
     
-    if (glist->gl_parent && canvas_isMapped (glist->gl_parent)) {
+    if (glist->gl_parent && glist_isMapped (glist->gl_parent)) {
         canvas_behaviorVisibilityChanged (cast_gobj (glist), glist->gl_parent, 0); 
         canvas_behaviorVisibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
     }
@@ -416,7 +416,7 @@ static void canvas_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
     if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnSelected (z, glist, isSelected); }
     else {
         sys_vGui (".x%lx.c itemconfigure %lxGRAPH -fill #%06x\n",
-                        canvas_getView (glist),
+                        glist_getView (glist),
                         x,
                         x->gl_hasWindow ? COLOR_MASKED : (x->gl_isSelected ? COLOR_SELECTED : COLOR_NORMAL));
     }
@@ -470,7 +470,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
         sys_vGui (".x%lx.c create polygon %d %d %d %d %d %d %d %d %d %d"
                         " -fill #%06x"
                         " -tags %s\n",
-                        canvas_getView (x->gl_parent),
+                        glist_getView (x->gl_parent),
                         a,
                         b,
                         a,
@@ -486,7 +486,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     } else {
                 
         sys_vGui (".x%lx.c delete %s\n",
-                        canvas_getView (x->gl_parent),
+                        glist_getView (x->gl_parent),
                         tag);
     }
     //
@@ -501,7 +501,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
         sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d"
                         " -fill #%06x"
                         " -tags %s\n",
-                        canvas_getView (x->gl_parent),
+                        glist_getView (x->gl_parent),
                         a,
                         b,
                         a,
@@ -524,7 +524,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                         " -font [::getFont %d]"             // --
                         " -fill #%06x"
                         " -tags %s\n",
-                        canvas_getView (x->gl_parent),
+                        glist_getView (x->gl_parent),
                         a,
                         b - (++i) * (int)font_getHostFontHeight (canvas_getFontSize (x)),
                         garray_getName ((t_garray *)y)->s_name,
@@ -541,7 +541,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     } else {
     
         sys_vGui (".x%lx.c delete %s\n",
-                    canvas_getView (x->gl_parent),
+                    glist_getView (x->gl_parent),
                     tag);
                     
         for (y = x->gl_graphics; y; y = y->g_next) { gobj_visibilityChanged (y, x, 0); }

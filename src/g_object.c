@@ -125,7 +125,7 @@ int gobj_hit (t_gobj *x, t_glist *owner, int a, int b, t_rectangle *r)
 
 int gobj_isVisible (t_gobj *x, t_glist *owner)
 {
-    if (owner->gl_parent && !canvas_canHaveWindow (owner)) {
+    if (owner->gl_parent && !glist_canHaveWindow (owner)) {
     //
     t_object *object = NULL;
             

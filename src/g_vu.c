@@ -149,7 +149,7 @@ static t_widgetbehavior vu_widgetBehavior =         /* Shared. */
 static void vu_drawJob (t_gobj *z, t_glist *glist)
 {
     t_vu *x = (t_vu *)z;
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
 
     int a = object_getPixelX (cast_object (x), glist);
     int b = object_getPixelY (cast_object (x), glist);
@@ -209,7 +209,7 @@ static void vu_drawUpdate (t_vu *x, t_glist *glist)
 
 static void vu_drawMove (t_vu *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
 
     int a = object_getPixelX (cast_object (x), glist);
     int b = object_getPixelY (cast_object (x), glist);
@@ -249,7 +249,7 @@ static void vu_drawMove (t_vu *x, t_glist *glist)
 
 static void vu_drawNew (t_vu *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
 
     int a = object_getPixelX (cast_object (x), glist);
     int b = object_getPixelY (cast_object (x), glist);
@@ -316,7 +316,7 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
 
 static void vu_drawSelect (t_vu *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
                     canvas,
@@ -330,7 +330,7 @@ static void vu_drawSelect (t_vu *x, t_glist *glist)
 
 static void vu_drawErase (t_vu *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
     int i;
     
     sys_vGui (".x%lx.c delete %lxBASE\n",
@@ -359,7 +359,7 @@ static void vu_drawErase (t_vu *x, t_glist *glist)
 
 static void vu_drawConfig (t_vu *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
     int i;
         
     sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%06x\n",

@@ -80,7 +80,7 @@ void box_update (t_box *x)
     
     buffer_toStringUnzeroed (object_getBuffer (x->box_object), &x->box_string, &x->box_stringSizeInBytes);
         
-    if (canvas_isMapped (x->box_owner)) { box_send (x, BOX_UPDATE, 0, 0); } 
+    if (glist_isMapped (x->box_owner)) { box_send (x, BOX_UPDATE, 0, 0); } 
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -101,14 +101,14 @@ void box_draw (t_box *x)
 void box_erase (t_box *x)
 {
     sys_vGui (".x%lx.c delete %s\n", 
-                    canvas_getView (x->box_owner), 
+                    glist_getView (x->box_owner), 
                     x->box_tag);
 }
 
 void box_displace (t_box *x, int deltaX, int deltaY)
 {
     sys_vGui (".x%lx.c move %s %d %d\n", 
-                    canvas_getView (x->box_owner), 
+                    glist_getView (x->box_owner), 
                     x->box_tag, 
                     deltaX, 
                     deltaY);
@@ -117,7 +117,7 @@ void box_displace (t_box *x, int deltaX, int deltaY)
 void box_select (t_box *x, int isSelected)
 {
     sys_vGui (".x%lx.c itemconfigure %s -fill #%06x\n",
-                    canvas_getView (x->box_owner), 
+                    glist_getView (x->box_owner), 
                     x->box_tag, 
                     (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
 }

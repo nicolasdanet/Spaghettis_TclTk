@@ -54,7 +54,7 @@ static t_widgetbehavior toggle_widgetBehavior =         /* Shared. */
 void toggle_drawJob (t_gobj *z, t_glist *glist)
 {
     t_toggle *x = (t_toggle *)z;
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
     
     sys_vGui (".x%lx.c itemconfigure %lxCROSS1 -fill #%06x\n",
                     canvas,
@@ -77,7 +77,7 @@ void toggle_drawUpdate (t_toggle *x, t_glist *glist)
 
 void toggle_drawMove (t_toggle *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
     
     int a = object_getPixelX (cast_object (x), glist);
     int b = object_getPixelY (cast_object (x), glist);
@@ -122,7 +122,7 @@ void toggle_drawMove (t_toggle *x, t_glist *glist)
 
 void toggle_drawNew (t_toggle *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
     
     int a = object_getPixelX (cast_object (x), glist);
     int b = object_getPixelY (cast_object (x), glist);
@@ -171,7 +171,7 @@ void toggle_drawNew (t_toggle *x, t_glist *glist)
 
 void toggle_drawSelect (t_toggle *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
                     canvas, 
@@ -185,7 +185,7 @@ void toggle_drawSelect (t_toggle *x, t_glist *glist)
 
 void toggle_drawErase (t_toggle *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
 
     sys_vGui (".x%lx.c delete %lxBASE\n",
                     canvas,
@@ -203,7 +203,7 @@ void toggle_drawErase (t_toggle *x, t_glist *glist)
 
 void toggle_drawConfig (t_toggle *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%06x\n",
                     canvas,

@@ -136,7 +136,7 @@ t_outconnect *traverser_next (t_traverser *t)
     t->tr_srcNumberOfOutlets = object_getNumberOfOutlets (o);
     n = 0;
     
-    if (canvas_isMapped (t->tr_owner)) { gobj_getRectangle (y, t->tr_owner, &t->tr_srcBox); }
+    if (glist_isMapped (t->tr_owner)) { gobj_getRectangle (y, t->tr_owner, &t->tr_srcBox); }
     else {
         rectangle_set (&t->tr_srcBox, 0, 0, 0, 0);
     }
@@ -158,7 +158,7 @@ t_outconnect *traverser_next (t_traverser *t)
     
     PD_ASSERT (t->tr_destNumberOfInlets);
     
-    if (canvas_isMapped (t->tr_owner)) { traverser_nextSetCord (t); }
+    if (glist_isMapped (t->tr_owner)) { traverser_nextSetCord (t); }
     else {
         rectangle_set (&t->tr_destBox, 0, 0, 0, 0);
         cord_init (&t->tr_cord);

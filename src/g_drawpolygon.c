@@ -200,7 +200,7 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     //
     t_word *tag    = gpointer_getElement (gp);
     t_glist *glist = gpointer_getView (gp);
-    t_glist *view  = canvas_getView (glist);
+    t_glist *view  = glist_getView (glist);
     
     if (!isVisible) { sys_vGui (".x%lx.c delete %lxCURVE\n", view, tag); }
     else {

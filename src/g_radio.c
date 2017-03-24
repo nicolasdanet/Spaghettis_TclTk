@@ -58,7 +58,7 @@ static t_widgetbehavior radio_widgetBehavior =          /* Shared. */
 
 void radio_drawMoveVertical (t_radio *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
     
     int n = x->x_numberOfButtons;
     int a = object_getPixelX (cast_object (x), glist);
@@ -97,7 +97,7 @@ void radio_drawMoveVertical (t_radio *x, t_glist *glist)
 
 void radio_drawNewVertical (t_radio *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
     
     int n = x->x_numberOfButtons;
     int a = object_getPixelX (cast_object (x), glist);
@@ -148,7 +148,7 @@ void radio_drawNewVertical (t_radio *x, t_glist *glist)
 
 void radio_drawMoveHorizontal (t_radio *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
     
     int n = x->x_numberOfButtons;
     int a = object_getPixelX (cast_object (x), glist);
@@ -187,7 +187,7 @@ void radio_drawMoveHorizontal (t_radio *x, t_glist *glist)
 
 void radio_drawNewHorizontal (t_radio *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
 
     int n = x->x_numberOfButtons;
     int a = object_getPixelX (cast_object (x), glist);
@@ -243,7 +243,7 @@ void radio_drawNewHorizontal (t_radio *x, t_glist *glist)
 void radio_drawJob (t_gobj *z, t_glist *glist)
 {
     t_radio *x = (t_radio *)z;
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBUTTON%d -fill #%06x -outline #%06x\n",
                     canvas, 
@@ -288,7 +288,7 @@ void radio_drawNew (t_radio *x, t_glist *glist)
 
 void radio_drawSelect (t_radio *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
     
     int i;
 
@@ -310,7 +310,7 @@ void radio_drawSelect (t_radio *x, t_glist *glist)
 
 void radio_drawErase (t_radio *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
     
     int i;
 
@@ -334,7 +334,7 @@ void radio_drawErase (t_radio *x, t_glist *glist)
 
 void radio_drawConfig (t_radio *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
     
     int i;
 

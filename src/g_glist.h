@@ -39,25 +39,33 @@ struct _glist {
     char            gl_isGraphOnParent;
     char            gl_hasWindow;
     char            gl_openedAtLoad;
-    char            gl_hideText;                        /* Unused but kept for compatibility. */
+    char            gl_hideText;                            /* Unused but kept for compatibility. */
     };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_glist         *canvas_getRoot                         (t_glist *glist);
-t_environment   *canvas_getEnvironment                  (t_glist *glist);
-t_glist         *canvas_getView                         (t_glist *glist);
-t_symbol        *canvas_getName                         (t_glist *glist);
+t_glist             *glist_getRoot                          (t_glist *glist);
+t_environment       *glist_getEnvironment                   (t_glist *glist);
+t_glist             *glist_getView                          (t_glist *glist);
 
-void            canvas_setName                          (t_glist *glist, t_symbol *name);
-int             canvas_canHaveWindow                    (t_glist *glist);
-int             canvas_isMapped                         (t_glist *glist);
-int             canvas_isRoot                           (t_glist *glist);
-int             canvas_isAbstraction                    (t_glist *glist);
-int             canvas_isSubpatch                       (t_glist *glist);
-int             canvas_isDirty                          (t_glist *glist);
-int             canvas_isGraph                          (t_glist *glist);
+void                glist_setName                           (t_glist *glist, t_symbol *name);
+int                 glist_canHaveWindow                     (t_glist *glist);
+int                 glist_isMapped                          (t_glist *glist);
+int                 glist_isRoot                            (t_glist *glist);
+int                 glist_isAbstraction                     (t_glist *glist);
+int                 glist_isSubpatch                        (t_glist *glist);
+int                 glist_isDirty                           (t_glist *glist);
+int                 glist_isGraph                           (t_glist *glist);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline t_symbol *glist_getName (t_glist *glist)
+{
+    return glist->gl_name;
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

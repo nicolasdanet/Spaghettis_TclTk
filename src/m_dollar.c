@@ -21,7 +21,7 @@ static int dollar_getDollarZero (t_glist *glist)
     t_environment *environment = NULL;
     
     glist       = (glist == NULL) ? instance_contextGetCurrent() : glist;
-    environment = (glist != NULL) ? canvas_getEnvironment (glist) : NULL;
+    environment = (glist != NULL) ? glist_getEnvironment (glist) : NULL;
     
     if (environment) { return environment_getDollarZero (environment); }
     else {
@@ -157,7 +157,7 @@ t_symbol *dollar_expandDollarSymbolByEnvironment (t_symbol *s, t_glist *glist)
 {
     t_environment *e = NULL;
     
-    if (glist) { e = canvas_getEnvironment (glist); }
+    if (glist) { e = glist_getEnvironment (glist); }
 
     if (!e) { return dollar_expandDollarSymbol (s, 0, NULL, glist); }
     else {
@@ -174,7 +174,7 @@ void dollar_expandDollarNumberByEnvironment (t_atom *dollar, t_atom *a, t_glist 
 {
     t_environment *e = NULL;
     
-    if (glist) { e = canvas_getEnvironment (glist); }
+    if (glist) { e = glist_getEnvironment (glist); }
 
     if (!e) { dollar_expandDollarNumber (dollar, a, 0, NULL, glist); }
     else {
@@ -192,7 +192,7 @@ void dollar_copyExpandAtomsByEnvironment (t_atom *src, int m, t_atom *dest, int 
 {
     t_environment *e = NULL;
     
-    if (glist) { e = canvas_getEnvironment (glist); }
+    if (glist) { e = glist_getEnvironment (glist); }
 
     if (!e) { dollar_copyExpandAtoms (src, m, dest, n, 0, NULL, glist); }
     else {

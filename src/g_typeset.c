@@ -311,7 +311,7 @@ static int box_typeset (t_box *x, t_typesethelper *p)
 
 static void box_sendCreate (t_box *x, t_typesethelper *p)
 {
-    t_glist *glist = canvas_getView (x->box_owner);
+    t_glist *glist = glist_getView (x->box_owner);
     int isSelected = canvas_isObjectSelected (x->box_owner, cast_gobj (x->box_object));
     
     sys_vGui ("::ui_box::newText .x%lx.c %s %d %d {%s} %d #%06x\n",     // --
@@ -326,7 +326,7 @@ static void box_sendCreate (t_box *x, t_typesethelper *p)
 
 static void box_sendUpdate (t_box *x, t_typesethelper *p)
 {
-    t_glist *glist = canvas_getView (x->box_owner);
+    t_glist *glist = glist_getView (x->box_owner);
     
     sys_vGui ("::ui_box::setText .x%lx.c %s {%s}\n",                    // --
                     glist,

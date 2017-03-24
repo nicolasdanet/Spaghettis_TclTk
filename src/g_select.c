@@ -46,7 +46,7 @@ static void canvas_deselectAllRecursive (t_gobj *y)
 static void canvas_deselectLine (t_glist *glist)
 {
     sys_vGui (".x%lx.c itemconfigure %lxLINE -fill black\n",
-                    canvas_getView (glist),
+                    glist_getView (glist),
                     editor_getSelectedLineConnection (glist->gl_editor));
                     
     editor_selectedLineReset (glist->gl_editor);
@@ -188,11 +188,11 @@ static void canvas_selectingByLasso (t_glist *glist, int a, int b, int end)
         
         editor_resetAction (glist->gl_editor);
         
-        sys_vGui (".x%lx.c delete TEMPORARY\n", canvas_getView (glist));
+        sys_vGui (".x%lx.c delete TEMPORARY\n", glist_getView (glist));
         
     } else {
         sys_vGui (".x%lx.c coords TEMPORARY %d %d %d %d\n",
-                        canvas_getView (glist),
+                        glist_getView (glist),
                         drag_getStartX (editor_getDrag (glist->gl_editor)),
                         drag_getStartY (editor_getDrag (glist->gl_editor)),
                         a,
@@ -257,7 +257,7 @@ void canvas_selectLine (t_glist *glist, t_outconnect *connection, int m, int i, 
     editor_selectedLineSet (glist->gl_editor, connection, m, i, n, j);
     
     sys_vGui (".x%lx.c itemconfigure %lxLINE -fill blue\n",
-                    canvas_getView (glist),
+                    glist_getView (glist),
                     editor_getSelectedLineConnection (glist->gl_editor));  
 }
 
@@ -280,7 +280,7 @@ int canvas_deselectObject (t_glist *glist, t_gobj *y)
             if (editor_hasSelectedBoxDirty (glist->gl_editor)) {
                 z = text;
                 canvas_putSelectedObjectsAtLast (glist);
-                editor_selectionCacheLines (canvas_getView (glist)->gl_editor);
+                editor_selectionCacheLines (glist_getView (glist)->gl_editor);
                 canvas_deselectAllRecursive (y);
             }
             gobj_activated (y, glist, 0);
@@ -368,7 +368,7 @@ int canvas_getIndexOfObjectAmongUnselected (t_glist *glist, t_gobj *y)
 
 void canvas_setMotionFunction (t_glist *glist, t_gobj *y, t_motionfn callback, int a, int b)
 {
-    editor_motionSet (canvas_getView (glist)->gl_editor, y, callback, a, b);
+    editor_motionSet (glist_getView (glist)->gl_editor, y, callback, a, b);
 }
 
 // -----------------------------------------------------------------------------------------------------------

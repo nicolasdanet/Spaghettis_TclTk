@@ -54,7 +54,7 @@ void object_setFromEntry (t_object *x, t_glist *glist, t_box *z)
         
         canvas_removeObject (glist, cast_gobj (x));
         canvas_makeTextObject (glist, a, b, w, 0, t);
-        editor_selectionRestoreLines (canvas_getView (glist)->gl_editor);
+        editor_selectionRestoreLines (glist_getView (glist)->gl_editor);
         
         /* Loadbang if the new object is an abstraction. */
         
@@ -74,7 +74,7 @@ void object_setFromEntry (t_object *x, t_glist *glist, t_box *z)
 
 int object_getPixelX (t_object *x, t_glist *glist)
 {
-    if (canvas_canHaveWindow (glist)) { return object_getX (x); }
+    if (glist_canHaveWindow (glist)) { return object_getX (x); }
     else {
     //
     int n = canvas_valueToPixelX (glist, bounds_getLeft (&glist->gl_bounds));
@@ -89,7 +89,7 @@ int object_getPixelX (t_object *x, t_glist *glist)
 
 int object_getPixelY (t_object *x, t_glist *glist)
 {
-    if (canvas_canHaveWindow (glist)) { return object_getY (x); }
+    if (glist_canHaveWindow (glist)) { return object_getY (x); }
     else {
     //
     int n = canvas_valueToPixelY (glist, bounds_getTop (&glist->gl_bounds));

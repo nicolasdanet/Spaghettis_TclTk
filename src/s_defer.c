@@ -89,7 +89,7 @@ int defer_flushJobs (void)
         t_guiqueue *first = defer_queue;
         
         defer_queue = defer_queue->gq_next;
-        if (canvas_isMapped (first->gq_glist)) {
+        if (glist_isMapped (first->gq_glist)) {
             (*first->gq_fn) (first->gq_p, first->gq_glist); 
         }
         

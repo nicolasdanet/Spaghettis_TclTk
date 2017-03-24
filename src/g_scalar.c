@@ -95,7 +95,7 @@ static void scalar_drawSelectRectangle (t_scalar *x, t_glist *glist, int isSelec
                             " -fill #%06x"
                             " -dash {2 4}"  // --
                             " -tags %lxHANDLE\n",
-                            canvas_getView (glist),
+                            glist_getView (glist),
                             a,
                             b,
                             a,
@@ -111,7 +111,7 @@ static void scalar_drawSelectRectangle (t_scalar *x, t_glist *glist, int isSelec
         }
                 
     } else {
-        sys_vGui (".x%lx.c delete %lxHANDLE\n", canvas_getView (glist), x);
+        sys_vGui (".x%lx.c delete %lxHANDLE\n", glist_getView (glist), x);
     }
 }
 
@@ -282,7 +282,7 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
             sys_vGui (".x%lx.c create rectangle %d %d %d %d"
                             " -outline #%06x"
                             " -tags %lxSCALAR\n",
-                            canvas_getView (glist),
+                            glist_getView (glist),
                             a,
                             b,
                             a + SCALAR_WRONG_SIZE,
@@ -290,7 +290,7 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                             SCALAR_WRONG_COLOR,
                             x);
         } else {
-            sys_vGui (".x%lx.c delete %lxSCALAR\n", canvas_getView (glist), x);
+            sys_vGui (".x%lx.c delete %lxSCALAR\n", glist_getView (glist), x);
         }
         
     } else {

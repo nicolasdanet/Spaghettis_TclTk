@@ -146,7 +146,7 @@ static void garray_drawJob (t_gobj *z, t_glist *glist)
 {
     t_garray *x = (t_garray *)z;
     
-    if (canvas_isMapped (x->x_owner) && gobj_isVisible (z, glist)) {
+    if (glist_isMapped (x->x_owner) && gobj_isVisible (z, glist)) {
     //
     garray_behaviorVisibilityChanged (z, x->x_owner, 0); 
     garray_behaviorVisibilityChanged (z, x->x_owner, 1);
@@ -182,7 +182,7 @@ static void garray_updateGraphSize (t_garray *x, int size, int style)
 
 static void garray_updateGraphName (t_garray *x)
 {
-    canvas_redrawGraphOnParent (x->x_owner); canvas_setName (x->x_owner, x->x_name);
+    canvas_redrawGraphOnParent (x->x_owner); glist_setName (x->x_owner, x->x_name);
 }
 
 void garray_resizeWithInteger (t_garray *x, int n)
@@ -494,7 +494,7 @@ static void garray_read (t_garray *x, t_symbol *name)
     char *p = NULL;
     char t[PD_STRING] = { 0 };
     
-    int f = canvas_fileOpen (canvas_getView (x->x_owner), name->s_name, "", t, &p, PD_STRING);
+    int f = canvas_fileOpen (glist_getView (x->x_owner), name->s_name, "", t, &p, PD_STRING);
     
     if (!(err |= (f < 0))) {
     //
@@ -532,7 +532,7 @@ static void garray_write (t_garray *x, t_symbol *name)
     char t[PD_STRING] = { 0 };
     FILE *file = NULL;
         
-    t_error err = canvas_makeFilePath (canvas_getView (x->x_owner), name->s_name, t, PD_STRING);
+    t_error err = canvas_makeFilePath (glist_getView (x->x_owner), name->s_name, t, PD_STRING);
     
     if (err || !(file = file_openWrite (t))) { error_canNotCreate (name); }
     else {

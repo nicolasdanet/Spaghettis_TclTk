@@ -63,7 +63,7 @@ static t_widgetbehavior panel_widgetBehavior =          /* Shared. */
 
 void panel_drawMove (t_panel *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
     
     int a = object_getPixelX (cast_object (x), glist);
     int b = object_getPixelY (cast_object (x), glist);
@@ -91,7 +91,7 @@ void panel_drawMove (t_panel *x, t_glist *glist)
 
 void panel_drawNew (t_panel *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
     
     int a = object_getPixelX (cast_object (x), glist);
     int b = object_getPixelY (cast_object (x), glist);
@@ -129,7 +129,7 @@ void panel_drawNew (t_panel *x, t_glist *glist)
 
 void panel_drawSelect (t_panel* x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
                     canvas,
@@ -139,7 +139,7 @@ void panel_drawSelect (t_panel* x, t_glist *glist)
 
 void panel_drawErase (t_panel* x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
 
     sys_vGui (".x%lx.c delete %lxBASE\n",
                     canvas,
@@ -154,7 +154,7 @@ void panel_drawErase (t_panel* x, t_glist *glist)
 
 void panel_drawConfig (t_panel* x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxPANEL -fill #%06x -outline #%06x\n",
                     canvas,

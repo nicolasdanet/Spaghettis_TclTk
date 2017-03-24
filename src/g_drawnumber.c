@@ -184,7 +184,7 @@ static void drawnumber_behaviorVisibilityChanged (t_gobj *z,
     t_word *tag    = gpointer_getElement (gp);
     t_glist *glist = gpointer_getView (gp);
     
-    if (!isVisible) { sys_vGui(".x%lx.c delete %lxNUMBER\n", canvas_getView (glist), tag); }    // --
+    if (!isVisible) { sys_vGui(".x%lx.c delete %lxNUMBER\n", glist_getView (glist), tag); }    // --
     else {
     //
     char t[PD_STRING] = { 0 };
@@ -203,7 +203,7 @@ static void drawnumber_behaviorVisibilityChanged (t_gobj *z,
                     " -font [::getFont %d]"     // --
                     " -text {%s}"               // --
                     " -tags %lxNUMBER\n",
-                    canvas_getView (glist),
+                    glist_getView (glist),
                     pixelX,
                     pixelY,
                     color_toEncodedSymbol (color)->s_name,

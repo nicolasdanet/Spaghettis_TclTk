@@ -90,7 +90,7 @@ static void pointer_sendwindow (t_pointer *x, t_symbol *s, int argc, t_atom *arg
     else {
     //
     if (argc && IS_SYMBOL (argv)) {
-        t_glist *view = canvas_getView (gpointer_getView (&x->x_gpointer));
+        t_glist *view = glist_getView (gpointer_getView (&x->x_gpointer));
         pd_message (cast_pd (view), GET_SYMBOL (argv), argc - 1, argv + 1);
     }
     //
@@ -137,7 +137,7 @@ static void pointer_nextSelected (t_pointer *x, t_float f)
     //
     t_glist *glist = gpointer_getParentScalar (&x->x_gpointer);
 
-    if (!wantSelected || canvas_isMapped (glist)) {
+    if (!wantSelected || glist_isMapped (glist)) {
 
         t_gobj *z = cast_gobj (gpointer_getScalar (&x->x_gpointer));
         

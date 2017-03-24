@@ -23,7 +23,7 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
     t_outconnect *connection = NULL;
     t_traverser t;
     
-    if (canvas_isSubpatch (glist)) {
+    if (glist_isSubpatch (glist)) {
     
         t_buffer *z = buffer_new();
         t_symbol *s = NULL;
@@ -90,7 +90,7 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
 
 void canvas_save (t_glist *glist, t_float destroy)
 {
-    t_glist *root = canvas_getRoot (glist);
+    t_glist *root = glist_getRoot (glist);
     
     if (root->gl_name == &s_) { canvas_saveAs (root, destroy); }
     else {
@@ -98,7 +98,7 @@ void canvas_save (t_glist *glist, t_float destroy)
     t_atom t[3];
     
     SET_SYMBOL (t + 0, root->gl_name);
-    SET_SYMBOL (t + 1, environment_getDirectory (canvas_getEnvironment (root)));
+    SET_SYMBOL (t + 1, environment_getDirectory (glist_getEnvironment (root)));
     SET_FLOAT  (t + 2, destroy);
     
     canvas_saveToFile (root, NULL, 3, t);
@@ -108,12 +108,12 @@ void canvas_save (t_glist *glist, t_float destroy)
 
 void canvas_saveAs (t_glist *glist, t_float destroy)
 {
-    t_glist *root = canvas_getRoot (glist);
+    t_glist *root = glist_getRoot (glist);
     
     sys_vGui ("::ui_file::saveAs .x%lx {%s} {%s} %d\n",     // --
                     root,
                     root->gl_name->s_name,
-                    environment_getDirectoryAsString (canvas_getEnvironment (root)), 
+                    environment_getDirectoryAsString (glist_getEnvironment (root)), 
                     (int)destroy);
 }
 

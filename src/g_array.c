@@ -278,14 +278,14 @@ void array_redraw (t_array *x, t_glist *glist)
 
 void array_resizeAndRedraw (t_array *array, t_glist *glist, int n)
 {
-    if (canvas_isMapped (glist)) {
+    if (glist_isMapped (glist)) {
         t_scalar *scalar = gpointer_getScalar (array_getTopParent (array));
         gobj_visibilityChanged (cast_gobj (scalar), glist, 0);
     }
     
     array_resize (array, n);
     
-    if (canvas_isMapped (glist)) {
+    if (glist_isMapped (glist)) {
         t_scalar *scalar = gpointer_getScalar (array_getTopParent (array));
         gobj_visibilityChanged (cast_gobj (scalar), glist, 1);
     }

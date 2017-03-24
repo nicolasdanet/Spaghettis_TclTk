@@ -41,7 +41,7 @@ void canvas_addScalarNext (t_glist *glist, t_scalar *first, t_scalar *next)
         glist->gl_graphics        = cast_gobj (next);
     }
 
-    if (canvas_isMapped (canvas_getView (glist))) { gobj_visibilityChanged (cast_gobj (next), glist, 1); }
+    if (glist_isMapped (glist_getView (glist))) { gobj_visibilityChanged (cast_gobj (next), glist, 1); }
 }
 
 void canvas_addObject (t_glist *glist, t_gobj *y)
@@ -64,7 +64,7 @@ void canvas_addObject (t_glist *glist, t_gobj *y)
         editor_boxAdd (glist->gl_editor, object); 
     }
     
-    if (canvas_isMapped (canvas_getView (glist))) {
+    if (glist_isMapped (glist_getView (glist))) {
         gobj_visibilityChanged (y, glist, 1); 
     }
     
@@ -75,7 +75,7 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
 {
     t_box *text  = NULL;
     t_object *object = NULL;
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
         
     int needToUpdateDSPChain = class_hasDSP (pd_class (y));
     int needToPaintScalars   = class_hasPainterWidgetBehavior (pd_class (y));
@@ -95,7 +95,7 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     
     if (needToPaintScalars) { paint_erase(); }
     
-    if (canvas_isMapped (canvas)) { gobj_visibilityChanged (y, glist, 0); }
+    if (glist_isMapped (canvas)) { gobj_visibilityChanged (y, glist, 0); }
     
     gobj_deleted (y, glist);
     
@@ -176,7 +176,7 @@ void canvas_makeTextObject (t_glist *glist,
     
     {
     //
-    t_environment *e = canvas_getEnvironment (instance_contextGetCurrent());
+    t_environment *e = glist_getEnvironment (instance_contextGetCurrent());
     t_object *x = NULL;
     
     buffer_eval (b, 
@@ -208,8 +208,8 @@ void canvas_makeTextObject (t_glist *glist,
     //
     }
     
-    if (pd_class (x) == vinlet_class)  { canvas_resortInlets (canvas_getView (glist)); }
-    if (pd_class (x) == voutlet_class) { canvas_resortOutlets (canvas_getView (glist)); }
+    if (pd_class (x) == vinlet_class)  { canvas_resortInlets (glist_getView (glist)); }
+    if (pd_class (x) == voutlet_class) { canvas_resortOutlets (glist_getView (glist)); }
     //
     }
     
@@ -254,7 +254,7 @@ int canvas_fileOpen (t_glist *glist,
     char **nameResult,
     size_t size)
 {
-    const char *directory = glist ? environment_getDirectoryAsString (canvas_getEnvironment (glist)) : ".";
+    const char *directory = glist ? environment_getDirectoryAsString (glist_getEnvironment (glist)) : ".";
     
     int f = file_openConsideringSearchPath (directory, 
                 name,
@@ -282,7 +282,7 @@ t_error canvas_makeFilePath (t_glist *glist, char *name, char *dest, size_t size
 {
     t_error err = PD_ERROR_NONE;
     
-    char *directory = environment_getDirectoryAsString (canvas_getEnvironment (glist));
+    char *directory = environment_getDirectoryAsString (glist_getEnvironment (glist));
     
     if (name[0] == '/' || (name[0] && name[1] == ':') || !(*directory)) { 
         err |= string_copy (dest, size, name);
@@ -295,7 +295,7 @@ t_error canvas_makeFilePath (t_glist *glist, char *name, char *dest, size_t size
     return err;
 }
 
-void canvas_setName (t_glist *glist, t_symbol *name)
+void glist_setName (t_glist *glist, t_symbol *name)
 {
     canvas_unbind (glist);
     glist->gl_name = name;
@@ -308,7 +308,7 @@ void canvas_updateTitle (t_glist *glist)
 {
     sys_vGui ("::ui_patch::setTitle .x%lx {%s} {%s} %d\n",  // --
                     glist,
-                    environment_getDirectoryAsString (canvas_getEnvironment (glist)),
+                    environment_getDirectoryAsString (glist_getEnvironment (glist)),
                     glist->gl_name->s_name,
                     glist->gl_isDirty);
 }

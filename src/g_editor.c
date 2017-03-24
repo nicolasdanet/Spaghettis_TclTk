@@ -54,7 +54,7 @@ void editor_boxAdd (t_editor *x, t_object *object)
     
     {
     //
-    t_glist *view = canvas_getView (x->e_owner);
+    t_glist *view = glist_getView (x->e_owner);
     t_error err = string_sprintf (box->box_tag, BOX_TAG_SIZE, ".x%lx.%lxBOX", view, box);
     PD_ASSERT (!err);
     //

@@ -36,10 +36,10 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
     t_gobj *yA = canvas_getHitObject (glist, previousX, previousY, &r1);
     t_gobj *yB = canvas_getHitObject (glist, positionX, positionY, &r2);
     
-    if (create) { sys_vGui (".x%lx.c delete TEMPORARY\n", canvas_getView (glist)); }
+    if (create) { sys_vGui (".x%lx.c delete TEMPORARY\n", glist_getView (glist)); }
     else {
         sys_vGui (".x%lx.c coords TEMPORARY %d %d %d %d\n",
-                        canvas_getView (glist),
+                        glist_getView (glist),
                         previousX,
                         previousY,
                         positionX,
@@ -80,7 +80,7 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
         t_outconnect *connection = object_connect (object1, closest1, object2, closest2);
         
         sys_vGui (".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
-                        canvas_getView (glist),
+                        glist_getView (glist),
                         a + inlet_middle ((c - a), closest1, numberOfOutlets),
                         d,
                         m + inlet_middle ((o - m), closest2, numberOfInlets),
@@ -322,7 +322,7 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
                 drag_setStart (editor_getDrag (glist->gl_editor), h, d);
                 
                 sys_vGui (".x%lx.c create line %d %d %d %d -width %d -tags TEMPORARY\n",
-                                canvas_getView (glist),
+                                glist_getView (glist),
                                 h,
                                 d,
                                 h,
@@ -357,7 +357,7 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
 
 static int canvas_proceedMouseLines (t_glist *glist, int positionX, int positionY, int clicked)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
     t_outconnect *connection = NULL;
     t_traverser t;
         
@@ -392,7 +392,7 @@ static void canvas_proceedMouseLassoStart (t_glist *glist, int positionX, int po
     if (!newlyCreated) {
     //
     sys_vGui (".x%lx.c create rectangle %d %d %d %d -tags TEMPORARY\n",
-                    canvas_getView (glist),
+                    glist_getView (glist),
                     positionX,
                     positionY,
                     positionX,
@@ -626,7 +626,7 @@ void canvas_window (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     /* Redraw a GOP opened in its own window (required for graph arrays). */
     
-    if (canvas_canHaveWindow (glist) && canvas_isGraph (glist)) { canvas_redraw (glist); }
+    if (glist_canHaveWindow (glist) && glist_isGraph (glist)) { canvas_redraw (glist); }
     //
     }
 }
@@ -645,7 +645,7 @@ void canvas_editmode (t_glist *glist, t_float f)
     
     if (state) {
     //
-    if (canvas_isMapped (glist) && canvas_canHaveWindow (glist)) {
+    if (glist_isMapped (glist) && glist_canHaveWindow (glist)) {
     //
     t_gobj *y = NULL;
     
@@ -663,13 +663,13 @@ void canvas_editmode (t_glist *glist, t_float f)
     //
     canvas_deselectAll (glist);
     
-    if (canvas_isMapped (glist) && canvas_canHaveWindow (glist)) {
-        sys_vGui (".x%lx.c delete COMMENTBAR\n", canvas_getView (glist));
+    if (glist_isMapped (glist) && glist_canHaveWindow (glist)) {
+        sys_vGui (".x%lx.c delete COMMENTBAR\n", glist_getView (glist));
     }
     //
     }
     
-    if (canvas_isMapped (glist)) {
+    if (glist_isMapped (glist)) {
         sys_vGui ("::ui_patch::setEditMode .x%lx %d\n", glist, glist->gl_isEditMode);
     }
     //

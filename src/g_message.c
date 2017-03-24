@@ -103,12 +103,12 @@ static void message_list (t_message *x, t_symbol *s, int argc, t_atom *argv)
 
 void message_click (t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (canvas_isMapped (x->m_owner)) {
+    if (glist_isMapped (x->m_owner)) {
     //
     t_box *text = box_fetch (x->m_owner, cast_object (x));
 
     sys_vGui (".x%lx.c itemconfigure %sBORDER -width 5\n", 
-                    canvas_getView (x->m_owner), 
+                    glist_getView (x->m_owner), 
                     box_getTag (text));
     
     sys_guiFlush(); clock_delay (x->m_clock, 120.0);        /* Force the GUI to update. */
@@ -182,12 +182,12 @@ static void message_addDollarSymbol (t_message *x, t_symbol *s)
 
 static void message_taskTick (t_message *x)
 {
-    if (canvas_isMapped (x->m_owner)) {
+    if (glist_isMapped (x->m_owner)) {
     //
     t_box *text = box_fetch (x->m_owner, cast_object (x));
     
     sys_vGui (".x%lx.c itemconfigure %sBORDER -width 1\n",
-                    canvas_getView (x->m_owner),
+                    glist_getView (x->m_owner),
                     box_getTag (text));
     //
     }
@@ -221,7 +221,7 @@ void message_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         
         canvas_addObject (glist, cast_gobj (x));
         
-    } else if (canvas_isMapped (glist)) {                                       /* Interactive creation. */
+    } else if (glist_isMapped (glist)) {                                       /* Interactive creation. */
 
         int positionX = 0;
         int positionY = 0;

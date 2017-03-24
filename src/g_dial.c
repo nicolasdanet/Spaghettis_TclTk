@@ -125,7 +125,7 @@ static int dial_hasKnob (t_dial *x, t_glist *glist)
     
     if (x->x_hasKnob != t) {
     
-        t_glist *canvas = canvas_getView (glist);
+        t_glist *canvas = glist_getView (glist);
         
         if (t) {
         
@@ -159,7 +159,7 @@ static void dial_drawJob (t_gobj *z, t_glist *glist)
 {
     t_dial *x = (t_dial *)z;
     
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
     
     int a = object_getPixelX (cast_object (x), glist);
     int b = object_getPixelY (cast_object (x), glist);
@@ -196,7 +196,7 @@ static void dial_drawUpdate (t_dial *x, t_glist *glist)
 
 static void dial_drawMove (t_dial *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
     
     int a = object_getPixelX (cast_object (x), glist);
     int b = object_getPixelY (cast_object (x), glist);
@@ -234,7 +234,7 @@ static void dial_drawMove (t_dial *x, t_glist *glist)
 
 static void dial_drawNew (t_dial *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
     
     int a = object_getPixelX (cast_object (x), glist);
     int b = object_getPixelY (cast_object (x), glist);
@@ -303,7 +303,7 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
 
 static void dial_drawSelect (t_dial *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
     
     sys_vGui (".x%lx.c itemconfigure %lxARC -outline #%06x\n",
                     canvas,
@@ -325,7 +325,7 @@ static void dial_drawSelect (t_dial *x, t_glist *glist)
 
 static void dial_drawErase (t_dial *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
     
     sys_vGui (".x%lx.c delete %lxARC\n",
                     canvas,
@@ -343,7 +343,7 @@ static void dial_drawErase (t_dial *x, t_glist *glist)
 
 static void dial_drawConfig (t_dial *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getView (glist);
+    t_glist *canvas = glist_getView (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxARC -outline #%06x\n",
                     canvas,
