@@ -15,6 +15,15 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+/* A canvas is bind to a context (the symbol #X). */
+/* Most of the lines of a file can be considered as messages to the current context. */
+/* Nested canvas are handled with a stack mechanism. */
+/* Contexts are pushed and popped to go down and up in the tree. */
+/* Note that abstractions cannot be recursively instantiated. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 static void instance_contextStore (void)
@@ -95,7 +104,7 @@ void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
     if (instance_loadAbstractionIsValid (filename)) {
     //
     instance_contextStore();
-    instance_environmentSetArguments (argc, argv);
+    instance_environmentSetArguments (argc, argv);          /* Get an environment (unique dollar zero). */
     
     buffer_fileEval (filename, gensym (directory));
     
@@ -162,7 +171,7 @@ void instance_loadInvisible (t_symbol *name, t_symbol *directory, char *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Stack context temporary bypassed to eval the buffer. */
+/* Context of the stack temporary bypassed to eval the buffer. */
 
 void instance_loadSnippet (t_glist *glist, t_buffer *b)
 {
