@@ -631,7 +631,7 @@ void canvas_window (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     /* Redraw a GOP opened in its own window (required for graph arrays). */
     
-    if (glist_canHaveWindow (glist) && glist_isGraph (glist)) { canvas_redraw (glist); }
+    if (glist_canHaveWindow (glist) && glist_isArray (glist)) { canvas_redraw (glist); }
     //
     }
 }

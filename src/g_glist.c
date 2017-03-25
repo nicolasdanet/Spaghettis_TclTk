@@ -77,7 +77,7 @@ int glist_isDirty (t_glist *glist)
 
 /* A graph-on-parent that contains an array of numbers. */
 
-int glist_isGraph (t_glist *glist)
+int glist_isArray (t_glist *glist)
 {
     return (utils_getFirstAtomOfObjectAsSymbol (cast_object (glist)) == sym_graph);
 }
@@ -86,7 +86,7 @@ int glist_isGraph (t_glist *glist)
 
 int glist_canHaveWindow (t_glist *glist)
 {
-    return (glist->gl_hasWindow || !glist->gl_isGraphOnParent);
+    return (glist->gl_hasWindow || !glist_isGraphOnParent (glist));
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -54,7 +54,7 @@ int                 glist_isRoot                            (t_glist *glist);
 int                 glist_isAbstraction                     (t_glist *glist);
 int                 glist_isSubpatch                        (t_glist *glist);
 int                 glist_isDirty                           (t_glist *glist);
-int                 glist_isGraph                           (t_glist *glist);
+int                 glist_isArray                           (t_glist *glist);
 
 int                 glist_canHaveWindow                     (t_glist *glist);
 
@@ -77,6 +77,11 @@ static inline void glist_setNext (t_glist *glist, t_glist *next)
 static inline void glist_setSelected (t_glist *glist, int n)
 {
     glist->gl_isSelected = n;
+}
+
+static inline void glist_setGraphOnParent (t_glist *glist, int n)
+{
+    glist->gl_isGraphOnParent = n;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -208,6 +213,11 @@ static inline int glist_isEditMode (t_glist *glist)
 static inline int glist_isSelected (t_glist *glist)
 {
     return glist->gl_isSelected;
+}
+
+static inline int glist_isGraphOnParent (t_glist *glist)
+{
+    return glist->gl_isGraphOnParent;
 }
 
 // -----------------------------------------------------------------------------------------------------------

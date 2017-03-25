@@ -67,7 +67,7 @@ static void canvas_setAsGraphOnParent (t_glist *glist, int flags)
 {
     int isGraphOnParent = (flags & 1) != 0;
     int hideText        = (flags & 2) != 0;
-    int needToUpdate    = isGraphOnParent || (!isGraphOnParent && glist->gl_isGraphOnParent);
+    int needToUpdate    = isGraphOnParent || (!isGraphOnParent && glist_isGraphOnParent (glist));
     
     if (needToUpdate) {
         if (!glist_isLoading (glist) && glist_hasParentMapped (glist)) {
@@ -77,9 +77,9 @@ static void canvas_setAsGraphOnParent (t_glist *glist, int flags)
     
     glist->gl_hideText = hideText;
     
-    if (!isGraphOnParent) { glist->gl_isGraphOnParent = 0; } 
+    if (!isGraphOnParent) { glist_setGraphOnParent (glist, 0); } 
     else {
-        glist->gl_isGraphOnParent = 1;
+        glist_setGraphOnParent (glist, 1);
     }
         
     #if PD_WITH_LEGACY
@@ -422,7 +422,7 @@ void canvas_visible (t_glist *glist, t_float f)
             canvas_destroyEditorIfAny (glist);
             sys_vGui ("destroy .x%lx\n", glist);
             
-            if (glist->gl_isGraphOnParent && (t = glist_getParent (glist)) && (!glist_isDeleting (t))) {
+            if (glist_isGraphOnParent (glist) && (t = glist_getParent (glist)) && (!glist_isDeleting (t))) {
                 if (glist_isMapped (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 0); }
                 glist->gl_hasWindow = 0;
                 if (glist_isMapped (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 1); }
@@ -537,11 +537,11 @@ static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
     t_error err = PD_ERROR_NONE;
     char t[PD_STRING] = { 0 };
     
-    if (g->gl_isGraphOnParent) {
+    if (glist_isGraphOnParent (g)) {
         err = string_sprintf (t, PD_STRING, "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
                                     0.0,
                                     0.0,
-                                    g->gl_isGraphOnParent,
+                                    glist_isGraphOnParent (g),
                                     bounds_getLeft (glist_getBounds (g)),
                                     bounds_getTop (glist_getBounds (g)),
                                     bounds_getRight (glist_getBounds (g)),
@@ -554,7 +554,7 @@ static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
         err = string_sprintf (t, PD_STRING, "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
                                     canvas_valueForOnePixelX (g),
                                     canvas_valueForOnePixelY (g),
-                                    g->gl_isGraphOnParent,
+                                    glist_isGraphOnParent (g),
                                     0.0,
                                     1.0,
                                     1.0,

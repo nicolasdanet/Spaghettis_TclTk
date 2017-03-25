@@ -42,7 +42,8 @@ static t_glist *canvas_newGraphOnParent (t_glist *glist,
     x->gl_name              = utils_getDefaultBindName (canvas_class, sym__graph);
     x->gl_uniqueIdentifier  = utils_unique();
     x->gl_fontSize          = fontSize;
-    x->gl_isGraphOnParent   = 1;
+    
+    glist_setGraphOnParent (x, 1);
     
     bounds_set (glist_getBounds (x), valueStart, valueUp, valueEnd, valueDown);
     rectangle_setByWidthAndHeight (glist_getGraphGeometry (x), 0, 0, width, height); 

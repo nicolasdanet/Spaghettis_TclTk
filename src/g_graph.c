@@ -285,9 +285,9 @@ t_float canvas_pixelToValueX (t_glist *glist, t_float f)
     t_float range = bounds_getRangeX (glist_getBounds (glist));
     t_float v = (t_float)0.0;
         
-    if (!glist->gl_isGraphOnParent) { v = f; }      /* Scalars. */
+    if (!glist_isGraphOnParent (glist)) { v = f; }      /* Scalars. */
     else {
-        if (glist->gl_hasWindow)    { v = f / rectangle_getWidth (glist_getWindowGeometry (glist)); }
+        if (glist->gl_hasWindow) { v = f / rectangle_getWidth (glist_getWindowGeometry (glist)); }
         else {
             t_rectangle r;
             canvas_getGraphOnParentRectangle (cast_gobj (glist), glist_getParent (glist), &r);
@@ -303,9 +303,9 @@ t_float canvas_pixelToValueY (t_glist *glist, t_float f)
     t_float range = bounds_getRangeY (glist_getBounds (glist));
     t_float v = (t_float)0.0;
         
-    if (!glist->gl_isGraphOnParent) { v = f; }      /* Scalars. */
+    if (!glist_isGraphOnParent (glist)) { v = f; }      /* Scalars. */
     else {
-        if (glist->gl_hasWindow)    { v = f / rectangle_getHeight (glist_getWindowGeometry (glist)); }
+        if (glist->gl_hasWindow) { v = f / rectangle_getHeight (glist_getWindowGeometry (glist)); }
         else {
             t_rectangle r;
             canvas_getGraphOnParentRectangle (cast_gobj (glist), glist_getParent (glist), &r);
@@ -322,9 +322,9 @@ t_float canvas_valueToPixelX (t_glist *glist, t_float f)
     t_float v = (t_float)1.0;
     t_float x = (t_float)0.0;
     
-    if (!glist->gl_isGraphOnParent) { }     /* Scalars. */
+    if (!glist_isGraphOnParent (glist)) { }     /* Scalars. */
     else {
-        if (glist->gl_hasWindow)    { v = rectangle_getWidth (glist_getWindowGeometry (glist)); }
+        if (glist->gl_hasWindow) { v = rectangle_getWidth (glist_getWindowGeometry (glist)); }
         else {
             t_rectangle r;
             canvas_getGraphOnParentRectangle (cast_gobj (glist), glist_getParent (glist), &r);
@@ -342,7 +342,7 @@ t_float canvas_valueToPixelY (t_glist *glist, t_float f)
     t_float v = (t_float)1.0;
     t_float x = (t_float)0.0;
     
-    if (!glist->gl_isGraphOnParent) { }     /* Scalars. */
+    if (!glist_isGraphOnParent (glist)) { }     /* Scalars. */
     else {
         if (glist->gl_hasWindow)    { v = rectangle_getHeight (glist_getWindowGeometry (glist)); }
         else {
@@ -388,7 +388,7 @@ static void canvas_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle 
 {
     t_glist *x = cast_glist (z);
     
-    if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnGetRectangle (z, glist, r); }
+    if (!glist_isGraphOnParent (x)) { text_widgetBehavior.w_fnGetRectangle (z, glist, r); }
     else {
         canvas_getGraphOnParentRectangle (z, glist, r);
     }
@@ -398,7 +398,7 @@ static void canvas_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int
 {
     t_glist *x = cast_glist (z);
     
-    if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnDisplaced (z, glist, deltaX, deltaY); }
+    if (!glist_isGraphOnParent (x)) { text_widgetBehavior.w_fnDisplaced (z, glist, deltaX, deltaY); }
     else {
         object_setX (cast_object (z), object_getX (cast_object (z)) + deltaX);
         object_setY (cast_object (z), object_getY (cast_object (z)) + deltaY);
@@ -413,7 +413,7 @@ static void canvas_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
     
     glist_setSelected (x, (isSelected != 0));
     
-    if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnSelected (z, glist, isSelected); }
+    if (!glist_isGraphOnParent (x)) { text_widgetBehavior.w_fnSelected (z, glist, isSelected); }
     else {
     
     sys_vGui (".x%lx.c itemconfigure %lxGRAPH -fill #%06x\n",
@@ -427,7 +427,7 @@ static void canvas_behaviorActivated (t_gobj *z, t_glist *glist, int isActivated
 {
     t_glist *x = cast_glist (z);
     
-    if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnActivated (z, glist, isActivated); }
+    if (!glist_isGraphOnParent (x)) { text_widgetBehavior.w_fnActivated (z, glist, isActivated); }
 }
 
 static void canvas_behaviorDeleted (t_gobj *z, t_glist *glist)
@@ -438,7 +438,7 @@ static void canvas_behaviorDeleted (t_gobj *z, t_glist *glist)
     
     while ((y = x->gl_graphics)) { canvas_removeObject (x, y); }
     
-    if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnDeleted (z, glist); }
+    if (!glist_isGraphOnParent (x)) { text_widgetBehavior.w_fnDeleted (z, glist); }
     else {
         canvas_deleteLinesByObject (glist, cast_object (z));
     }
@@ -448,7 +448,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
 {
     t_glist *x = cast_glist (z);
 
-    if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnVisibilityChanged (z, glist, isVisible); }
+    if (!glist_isGraphOnParent (x)) { text_widgetBehavior.w_fnVisibilityChanged (z, glist, isVisible); }
     else {
     //
     char tag[PD_STRING] = { 0 }; t_error err = string_sprintf (tag, PD_STRING, "%lxGRAPH", x);
@@ -559,7 +559,7 @@ static int canvas_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 {
     t_glist *x = cast_glist (z);
 
-    if (!x->gl_isGraphOnParent) { return (text_widgetBehavior.w_fnMouse (z, glist, m)); }
+    if (!glist_isGraphOnParent (x)) { return (text_widgetBehavior.w_fnMouse (z, glist, m)); }
     else {
     //
     if (x->gl_hasWindow) { return 0; }

@@ -438,9 +438,9 @@ void canvas_eraseBox (t_glist *glist, t_object *o, char *tag)
 
 void canvas_drawGraphOnParentRectangle (t_glist *glist)
 {
-    if (glist->gl_isGraphOnParent && glist->gl_hasWindow) {
+    if (glist_isGraphOnParent (glist) && glist->gl_hasWindow) {
     //
-    if (!glist_isGraph (glist)) {
+    if (!glist_isArray (glist)) {
     //
     int a = rectangle_getTopLeftX (glist_getGraphGeometry (glist));
     int b = rectangle_getTopLeftY (glist_getGraphGeometry (glist));
@@ -469,9 +469,9 @@ void canvas_drawGraphOnParentRectangle (t_glist *glist)
 
 void canvas_updateGraphOnParentRectangle (t_glist *glist)
 {
-    if (glist->gl_isGraphOnParent && glist->gl_hasWindow) {
+    if (glist_isGraphOnParent (glist) && glist->gl_hasWindow) {
     //
-    if (!glist_isGraph (glist)) {
+    if (!glist_isArray (glist)) {
         sys_vGui (".x%lx.c delete RECTANGLE\n", glist_getView (glist));
         canvas_drawGraphOnParentRectangle (glist);
     }
