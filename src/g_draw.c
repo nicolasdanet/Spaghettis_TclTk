@@ -31,7 +31,7 @@ void text_behaviorGetRectangle  (t_gobj *, t_glist *, t_rectangle *);
 
 void canvas_redraw (t_glist *glist)
 {
-    if (glist_isMapped (glist)) { canvas_map (glist, 0); canvas_map (glist, 1); }
+    if (glist_isOnScreen (glist)) { canvas_map (glist, 0); canvas_map (glist, 1); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -70,7 +70,7 @@ void canvas_updateLinesByObject (t_glist *glist, t_object *o)
     //
     if (traverser_getSource (&t) == o || traverser_getDestination (&t) == o) {
     //
-    if (glist_isMapped (glist)) {
+    if (glist_isOnScreen (glist)) {
     //
     sys_vGui (".x%lx.c coords %lxLINE %d %d %d %d\n",
                     glist_getView (glist),
@@ -98,7 +98,7 @@ void canvas_deleteLinesByObject (t_glist *glist, t_object *o)
     //
     if (traverser_getSource (&t) == o || traverser_getDestination (&t) == o) {
     //
-    if (glist_isMapped (glist)) {
+    if (glist_isOnScreen (glist)) {
     //
     sys_vGui (".x%lx.c delete %lxLINE\n",
                     glist_getView (glist),
@@ -127,7 +127,7 @@ void canvas_deleteLinesByInlets (t_glist *glist, t_object *o, t_inlet *inlet, t_
     
     if (m || n) {
     //
-    if (glist_isMapped (glist)) {
+    if (glist_isOnScreen (glist)) {
     //
     sys_vGui (".x%lx.c delete %lxLINE\n",
                     glist_getView (glist),

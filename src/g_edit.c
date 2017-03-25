@@ -650,7 +650,7 @@ void canvas_editmode (t_glist *glist, t_float f)
     
     if (state) {
     //
-    if (glist_isMapped (glist) && glist_isWindowable (glist)) {
+    if (glist_isOnScreen (glist) && glist_isWindowable (glist)) {
     //
     t_gobj *y = NULL;
     
@@ -668,13 +668,13 @@ void canvas_editmode (t_glist *glist, t_float f)
     //
     canvas_deselectAll (glist);
     
-    if (glist_isMapped (glist) && glist_isWindowable (glist)) {
+    if (glist_isOnScreen (glist) && glist_isWindowable (glist)) {
         sys_vGui (".x%lx.c delete COMMENTBAR\n", glist_getView (glist));
     }
     //
     }
     
-    if (glist_isMapped (glist)) {
+    if (glist_isOnScreen (glist)) {
         sys_vGui ("::ui_patch::setEditMode .x%lx %d\n", glist, glist_hasEditMode (glist));
     }
     //

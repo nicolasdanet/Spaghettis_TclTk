@@ -105,7 +105,7 @@ t_error canvas_deserializeScalar (t_glist *glist, int argc, t_atom *argv)
         canvas_addObject (glist, cast_gobj (scalar));
         scalar_deserialize (scalar, glist, argc - 1, argv + 1);
         
-        if (glist_isMapped (glist)) {
+        if (glist_isOnScreen (glist)) {
             gobj_visibilityChanged (cast_gobj (scalar), glist, 1);
         }
     }

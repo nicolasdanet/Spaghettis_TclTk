@@ -236,7 +236,7 @@ void iemgui_setLabel (void *x, t_symbol *s)
     iem->iem_unexpandedLabel = t;
     iem->iem_label = iemgui_expandDollar (iem->iem_owner, t);
 
-    if (glist_isMapped (iem->iem_owner)) {
+    if (glist_isOnScreen (iem->iem_owner)) {
     
         sys_vGui (".x%lx.c itemconfigure %lxLABEL -text {%s}\n",    // --
                         glist_getView (iem->iem_owner),
@@ -254,7 +254,7 @@ void iemgui_setLabelPosition (void *x, t_symbol *s, int argc, t_atom *argv)
     iem->iem_labelX = (int)atom_getFloatAtIndex (0, argc, argv);
     iem->iem_labelY = (int)atom_getFloatAtIndex (1, argc, argv);
     
-    if (glist_isMapped (iem->iem_owner)) {
+    if (glist_isOnScreen (iem->iem_owner)) {
     
         sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
                         glist_getView (iem->iem_owner),
@@ -275,7 +275,7 @@ void iemgui_setLabelFont (void *x, t_symbol *s, int argc, t_atom *argv)
     int f = (int)atom_getFloatAtIndex (1, argc, argv);
     f = PD_MAX (f, IEM_MINIMUM_FONTSIZE);
     iem->iem_fontSize = f;
-    if (glist_isMapped (iem->iem_owner)) {
+    if (glist_isOnScreen (iem->iem_owner)) {
     
         sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d]\n",      // --
                         glist_getView (iem->iem_owner), 
@@ -292,7 +292,7 @@ void iemgui_setBackgroundColor (void *x, t_symbol *s, int argc, t_atom *argv)
     
     iem->iem_colorBackground = color_withRGB (argc, argv);
     
-    if (glist_isMapped (iem->iem_owner)) { (*iem->iem_fnDraw) (x, iem->iem_owner, IEM_DRAW_CONFIG); }
+    if (glist_isOnScreen (iem->iem_owner)) { (*iem->iem_fnDraw) (x, iem->iem_owner, IEM_DRAW_CONFIG); }
 }
 
 void iemgui_setForegroundColor (void *x, t_symbol *s, int argc, t_atom *argv)
@@ -301,7 +301,7 @@ void iemgui_setForegroundColor (void *x, t_symbol *s, int argc, t_atom *argv)
     
     iem->iem_colorForeground = color_withRGB (argc, argv);
     
-    if (glist_isMapped (iem->iem_owner)) { (*iem->iem_fnDraw) (x, iem->iem_owner, IEM_DRAW_CONFIG); }
+    if (glist_isOnScreen (iem->iem_owner)) { (*iem->iem_fnDraw) (x, iem->iem_owner, IEM_DRAW_CONFIG); }
 }
 
 void iemgui_setLabelColor (void *x, t_symbol *s, int argc, t_atom *argv)
@@ -310,7 +310,7 @@ void iemgui_setLabelColor (void *x, t_symbol *s, int argc, t_atom *argv)
     
     iem->iem_colorLabel = color_withRGB (argc, argv);
     
-    if (glist_isMapped (iem->iem_owner)) { (*iem->iem_fnDraw) (x, iem->iem_owner, IEM_DRAW_CONFIG); }
+    if (glist_isOnScreen (iem->iem_owner)) { (*iem->iem_fnDraw) (x, iem->iem_owner, IEM_DRAW_CONFIG); }
 }
 
 void iemgui_setPosition (void *x, t_symbol *s, int argc, t_atom *argv)
@@ -345,7 +345,7 @@ void iemgui_boxChanged (void *x)
 {
     t_iem *iem = cast_iem (x);
     
-    if (glist_isMapped (iem->iem_owner)) {
+    if (glist_isOnScreen (iem->iem_owner)) {
     //
     (*iem->iem_fnDraw) (x, iem->iem_owner, IEM_DRAW_CONFIG);
     (*iem->iem_fnDraw) (x, iem->iem_owner, IEM_DRAW_MOVE);

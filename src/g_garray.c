@@ -146,7 +146,7 @@ static void garray_drawJob (t_gobj *z, t_glist *glist)
 {
     t_garray *x = (t_garray *)z;
     
-    if (glist_isMapped (x->x_owner) && gobj_isVisible (z, glist)) {
+    if (glist_isOnScreen (x->x_owner) && gobj_isVisible (z, glist)) {
     //
     garray_behaviorVisibilityChanged (z, x->x_owner, 0); 
     garray_behaviorVisibilityChanged (z, x->x_owner, 1);

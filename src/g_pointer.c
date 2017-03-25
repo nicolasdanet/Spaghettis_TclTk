@@ -137,7 +137,7 @@ static void pointer_nextSelected (t_pointer *x, t_float f)
     //
     t_glist *glist = gpointer_getParentScalar (&x->x_gpointer);
 
-    if (!wantSelected || glist_isMapped (glist)) {
+    if (!wantSelected || glist_isOnScreen (glist)) {
 
         t_gobj *z = cast_gobj (gpointer_getScalar (&x->x_gpointer));
         

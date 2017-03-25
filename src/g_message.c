@@ -103,7 +103,7 @@ static void message_list (t_message *x, t_symbol *s, int argc, t_atom *argv)
 
 void message_click (t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (glist_isMapped (x->m_owner)) {
+    if (glist_isOnScreen (x->m_owner)) {
     //
     t_box *text = box_fetch (x->m_owner, cast_object (x));
 
@@ -182,7 +182,7 @@ static void message_addDollarSymbol (t_message *x, t_symbol *s)
 
 static void message_taskTick (t_message *x)
 {
-    if (glist_isMapped (x->m_owner)) {
+    if (glist_isOnScreen (x->m_owner)) {
     //
     t_box *text = box_fetch (x->m_owner, cast_object (x));
     
@@ -221,7 +221,7 @@ void message_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         
         canvas_addObject (glist, cast_gobj (x));
         
-    } else if (glist_isMapped (glist)) {                                       /* Interactive creation. */
+    } else if (glist_isOnScreen (glist)) {                                  /* Interactive creation. */
 
         int positionX = 0;
         int positionY = 0;

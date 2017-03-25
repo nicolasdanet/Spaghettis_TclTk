@@ -54,7 +54,7 @@ t_inlet *canvas_addInlet (t_glist *glist, t_pd *receiver, t_symbol *s)
     
     if (!glist_isLoading (glist)) {
     
-        if (glist_hasParentMapped (glist)) {
+        if (glist_hasParentOnScreen (glist)) {
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
             canvas_updateLinesByObject (glist_getParent (glist), cast_object (glist));
@@ -72,7 +72,7 @@ t_outlet *canvas_addOutlet (t_glist *glist, t_symbol *s)
     
     if (!glist_isLoading (glist)) {
     
-        if (glist_hasParentMapped (glist)) {
+        if (glist_hasParentOnScreen (glist)) {
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
             canvas_updateLinesByObject (glist_getParent (glist), cast_object (glist));
@@ -88,7 +88,7 @@ void canvas_removeInlet (t_glist *glist, t_inlet *inlet)
 {
     t_glist *o = glist_getParent (glist);
     
-    int redraw = (o && !glist_isDeleting (o) && glist_isMapped (o) && glist_isWindowable (o));
+    int redraw = (o && !glist_isDeleting (o) && glist_isOnScreen (o) && glist_isWindowable (o));
     
     if (o) { canvas_deleteLinesByInlets (o, cast_object (glist), inlet, NULL); }
     if (redraw) { gobj_visibilityChanged (cast_gobj (glist), o, 0); }
@@ -103,7 +103,7 @@ void canvas_removeOutlet (t_glist *glist, t_outlet *outlet)
 {
     t_glist *o = glist_getParent (glist);
     
-    int redraw = (o && !glist_isDeleting (o) && glist_isMapped (o) && glist_isWindowable (o));
+    int redraw = (o && !glist_isDeleting (o) && glist_isOnScreen (o) && glist_isWindowable (o));
     
     if (o) { canvas_deleteLinesByInlets (o, cast_object (glist), NULL, outlet); }
     if (redraw) { gobj_visibilityChanged (cast_gobj (glist), o, 0); }
@@ -161,7 +161,7 @@ void canvas_resortInlets (t_glist *glist)
     
     PD_MEMORY_FREE (inlets);
     
-    if (glist_hasParentMapped (glist)) {
+    if (glist_hasParentOnScreen (glist)) {
         canvas_updateLinesByObject (glist_getParent (glist), cast_object (glist));
     }
     //
@@ -215,7 +215,7 @@ void canvas_resortOutlets (t_glist *glist)
     
     PD_MEMORY_FREE (outlets);
     
-    if (glist_hasParentMapped (glist)) {
+    if (glist_hasParentOnScreen (glist)) {
         canvas_updateLinesByObject (glist_getParent (glist), cast_object (glist));
     }
     //
@@ -228,11 +228,11 @@ void canvas_resortOutlets (t_glist *glist)
 
 void canvas_redrawGraphOnParent (t_glist *glist)
 {  
-    if (glist_isMapped (glist)) {
+    if (glist_isOnScreen (glist)) {
     //
     if (glist_isWindowable (glist)) { canvas_redraw (glist); }
     
-    if (glist_hasParentMapped (glist)) {
+    if (glist_hasParentOnScreen (glist)) {
         canvas_behaviorVisibilityChanged (cast_gobj (glist), glist_getParent (glist), 0); 
         canvas_behaviorVisibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
     }

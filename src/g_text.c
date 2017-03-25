@@ -78,7 +78,7 @@ void text_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
     object_setX (x, object_getX (x) + deltaX);
     object_setY (x, object_getY (x) + deltaY);
     
-    if (glist_isMapped (glist)) {
+    if (glist_isOnScreen (glist)) {
     //
     t_box *text = box_fetch (glist, x);
     box_displace (text, deltaX, deltaY);
@@ -92,7 +92,7 @@ void text_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
 {
     t_object *x = cast_object (z);
 
-    if (glist_isMapped (glist)) {
+    if (glist_isOnScreen (glist)) {
     //
     t_box *text = box_fetch (glist, x);
     

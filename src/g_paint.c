@@ -27,7 +27,7 @@ static void paint_proceedAllRecursive (t_glist *glist, int action)
 {
     t_gobj *y = NULL;
     
-    int visible = glist_isMapped (glist);
+    int visible = glist_isOnScreen (glist);
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
     //

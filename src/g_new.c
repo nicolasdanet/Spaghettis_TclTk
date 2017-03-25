@@ -67,7 +67,7 @@ static t_glist *canvas_newGraphOnParent (t_glist *glist,
 
 static void canvas_makeIemObject (t_glist *glist, t_symbol *name)
 {
-    if (glist_isMapped (glist)) {                                              /* Interactive creation. */
+    if (glist_isOnScreen (glist)) {                                         /* Interactive creation. */
     //
     t_buffer *b = buffer_new();
     int positionX = 0;
@@ -156,7 +156,7 @@ void canvas_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         buffer_deserialize (b, argc - 2, argv + 2);
         canvas_makeTextObject (glist, positionX, positionY, 0, 0, b);
     
-    } else if (glist_isMapped (glist)) {                                       /* Interactive creation. */
+    } else if (glist_isOnScreen (glist)) {                                      /* Interactive creation. */
         
         t_buffer *b = buffer_new();
             
@@ -203,7 +203,7 @@ void canvas_makeComment (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         
         canvas_addObject (glist, cast_gobj (x));
         
-    } else if (glist_isMapped (glist)) {                                       /* Interactive creation. */
+    } else if (glist_isOnScreen (glist)) {                                      /* Interactive creation. */
     
         int positionX = 0;
         int positionY = 0;

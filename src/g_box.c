@@ -80,7 +80,7 @@ void box_update (t_box *x)
     
     buffer_toStringUnzeroed (object_getBuffer (x->box_object), &x->box_string, &x->box_stringSizeInBytes);
         
-    if (glist_isMapped (x->box_owner)) { box_send (x, BOX_UPDATE, 0, 0); } 
+    if (glist_isOnScreen (x->box_owner)) { box_send (x, BOX_UPDATE, 0, 0); } 
 }
 
 // -----------------------------------------------------------------------------------------------------------

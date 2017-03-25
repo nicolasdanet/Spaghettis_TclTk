@@ -54,7 +54,7 @@ int                 glist_isAbstraction                     (t_glist *glist);
 int                 glist_isSubpatch                        (t_glist *glist);
 int                 glist_isArray                           (t_glist *glist);
 int                 glist_isDirty                           (t_glist *glist);
-int                 glist_isMapped                          (t_glist *glist);
+int                 glist_isOnScreen                        (t_glist *glist);
 int                 glist_isWindowable                      (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -62,6 +62,7 @@ int                 glist_isWindowable                      (t_glist *glist);
 
 void                glist_setName                           (t_glist *glist, t_symbol *name);
 void                glist_setMapped                         (t_glist *glist, int n);
+void                glist_setWindow                         (t_glist *glist, int n);
 void                glist_setDirty                          (t_glist *glist, int n);
 void                glist_setEditMode                       (t_glist *glist, int n);
 
@@ -81,11 +82,6 @@ static inline void glist_setSelected (t_glist *glist, int n)
 static inline void glist_setGraphOnParent (t_glist *glist, int n)
 {
     glist->gl_isGraphOnParent = n;
-}
-
-static inline void glist_setWindowState (t_glist *glist, int n)
-{
-    glist->gl_hasWindow = n;
 }
 
 static inline void glist_setOpenedAtLoad (t_glist *glist, int n)
@@ -190,9 +186,9 @@ static inline int glist_hasParent (t_glist *glist)
     return (glist->gl_parent != NULL);
 }
 
-static inline int glist_hasParentMapped (t_glist *glist)
+static inline int glist_hasParentOnScreen (t_glist *glist)
 {
-    return (glist_hasParent (glist) && glist_isMapped (glist_getParent (glist)));
+    return (glist_hasParent (glist) && glist_isOnScreen (glist_getParent (glist)));
 }
 
 static inline int glist_hasEditor (t_glist *glist)

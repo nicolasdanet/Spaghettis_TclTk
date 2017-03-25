@@ -41,7 +41,7 @@ void canvas_addScalarNext (t_glist *glist, t_scalar *first, t_scalar *next)
         glist->gl_graphics        = cast_gobj (next);
     }
 
-    if (glist_isMapped (glist_getView (glist))) { gobj_visibilityChanged (cast_gobj (next), glist, 1); }
+    if (glist_isOnScreen (glist_getView (glist))) { gobj_visibilityChanged (cast_gobj (next), glist, 1); }
 }
 
 void canvas_addObject (t_glist *glist, t_gobj *y)
@@ -64,7 +64,7 @@ void canvas_addObject (t_glist *glist, t_gobj *y)
         editor_boxAdd (glist_getEditor (glist), object); 
     }
     
-    if (glist_isMapped (glist_getView (glist))) {
+    if (glist_isOnScreen (glist_getView (glist))) {
         gobj_visibilityChanged (y, glist, 1); 
     }
     
@@ -95,7 +95,7 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     
     if (needToPaintScalars) { paint_erase(); }
     
-    if (glist_isMapped (canvas)) { gobj_visibilityChanged (y, glist, 0); }
+    if (glist_isOnScreen (canvas)) { gobj_visibilityChanged (y, glist, 0); }
     
     gobj_deleted (y, glist);
     

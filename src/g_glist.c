@@ -16,9 +16,9 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* A patch without a parent is root. */
-/* Only abstractions and roots have an environment. */
-/* A subpatch have a parent and no environment. */
+/* A root has no parent and an environment. */
+/* An abstraction has a parent and an environment. */
+/* A subpatch has a parent also but no environment. */
 /* A top patch is either a root or an abstraction. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -52,6 +52,8 @@ int glist_isSubpatch (t_glist *glist)
 /* Array is a GOP patch that contains only a scalar. */
 /* This scalar has an array of numbers as unique field. */
 /* Dirty bit is always owned by the top patch. */
+/* For GOP the place to draw its content is owned higher in the tree. */
+/* Note that if required GOP can be opened in its own window by user. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -66,14 +68,14 @@ int glist_isDirty (t_glist *glist)
     return (glist_getTop (glist)->gl_isDirty != 0);
 }
 
-int glist_isMapped (t_glist *glist)
+int glist_isOnScreen (t_glist *glist)
 {
     return (!glist_isLoading (glist) && glist_getView (glist)->gl_isMapped);
 }
 
 int glist_isWindowable (t_glist *glist)
 {
-    return (glist_hasWindow (glist) || !glist_isGraphOnParent (glist));
+    return (!glist_isGraphOnParent (glist) || glist_hasWindow (glist));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -113,6 +115,11 @@ void glist_setName (t_glist *glist, t_symbol *name)
 void glist_setMapped (t_glist *glist, int n)
 {
     glist->gl_isMapped = (n != 0);
+}
+
+void glist_setWindow (t_glist *glist, int n)
+{
+    glist->gl_hasWindow = (n != 0);
 }
 
 void glist_setDirty (t_glist *glist, int n)

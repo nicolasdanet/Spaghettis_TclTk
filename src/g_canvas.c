@@ -70,7 +70,7 @@ static void canvas_setAsGraphOnParent (t_glist *glist, int flags)
     int needToUpdate    = isGraphOnParent || (!isGraphOnParent && glist_isGraphOnParent (glist));
     
     if (needToUpdate) {
-        if (!glist_isLoading (glist) && glist_hasParentMapped (glist)) {
+        if (!glist_isLoading (glist) && glist_hasParentOnScreen (glist)) {
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
         }
     }
@@ -93,7 +93,7 @@ static void canvas_setAsGraphOnParent (t_glist *glist, int flags)
     #endif
     
     if (needToUpdate) {
-        if (!glist_isLoading (glist) && glist_hasParentMapped (glist)) {
+        if (!glist_isLoading (glist) && glist_hasParentOnScreen (glist)) {
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
             canvas_updateLinesByObject (glist_getParent (glist), cast_object (glist));
         }
@@ -195,7 +195,7 @@ static void canvas_width (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     object_setWidth (o, PD_MAX (1, w));
     
-    if (glist_isMapped (glist)) {
+    if (glist_isOnScreen (glist)) {
         gobj_visibilityChanged (g1, glist, 0);
         gobj_visibilityChanged (g1, glist, 1);
     }
@@ -241,7 +241,7 @@ void canvas_connect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 
     if ((connection = object_connect (srcObject, m, destObject, n))) {
     //
-    if (glist_isMapped (glist)) {
+    if (glist_isOnScreen (glist)) {
     
         sys_vGui (".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
                         glist_getView (glist),
@@ -358,7 +358,7 @@ static void canvas_open (t_glist *glist)
 {
     /* Opening a graph on parent in its own window. */
     
-    if (glist_isMapped (glist) && !glist_isWindowable (glist)) {
+    if (glist_isOnScreen (glist) && !glist_isWindowable (glist)) {
     //
     PD_ASSERT (glist_hasParent (glist));
     
@@ -366,7 +366,7 @@ static void canvas_open (t_glist *glist)
     
     canvas_destroyEditorIfAny (glist);
   
-    glist_setWindowState (glist, 1);    /* Note that it modifies how things are drawn below. */
+    glist_setWindow (glist, 1);     /* Note that it modifies how things are drawn below. */
     
     gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
     //
@@ -406,7 +406,7 @@ void canvas_visible (t_glist *glist, t_float f)
                         
             canvas_updateTitle (glist);
             
-            glist_setWindowState (glist, 1);
+            glist_setWindow (glist, 1);
         }
         
     } else {
@@ -416,16 +416,16 @@ void canvas_visible (t_glist *glist, t_float f)
             t_glist *t = NULL;
             
             canvas_deselectAll (glist);
-            if (glist_isMapped (glist)) { canvas_map (glist, 0); }
+            if (glist_isOnScreen (glist)) { canvas_map (glist, 0); }
             canvas_destroyEditorIfAny (glist);
             sys_vGui ("destroy .x%lx\n", glist);
             
             if (glist_isGraphOnParent (glist) && (t = glist_getParent (glist)) && (!glist_isDeleting (t))) {
-                if (glist_isMapped (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 0); }
-                glist_setWindowState (glist, 0);
-                if (glist_isMapped (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 1); }
+                if (glist_isOnScreen (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 0); }
+                glist_setWindow (glist, 0);
+                if (glist_isOnScreen (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 1); }
             } else {
-                glist_setWindowState (glist, 0);
+                glist_setWindow (glist, 0);
             }
         }
     }
@@ -439,7 +439,7 @@ void canvas_map (t_glist *glist, t_float f)
 {
     int isMapped = (f != 0.0);
 
-    if (isMapped != glist_isMapped (glist)) {
+    if (isMapped != glist_isOnScreen (glist)) {
     //
     if (!isMapped) { sys_vGui (".x%lx.c delete all\n", glist_getView (glist)); glist_setMapped (glist, 0); }
     else {
@@ -679,7 +679,7 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
     
     if (glist_hasWindow (glist)) { canvas_redraw (glist); }
     else {
-        if (glist_hasParentMapped (glist)) {
+        if (glist_hasParentOnScreen (glist)) {
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
         }
