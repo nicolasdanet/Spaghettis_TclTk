@@ -35,11 +35,10 @@ struct _glist {
     int             gl_isDirty;
     int             gl_isLoading;
     int             gl_isDeleting;
-    int             gl_isEditMode;
+    int             gl_isEditing;
     int             gl_isSelected;
     int             gl_isGraphOnParent;
     int             gl_isOpenedAtLoad;
-    int             gl_hideText;                            /* Unused but kept for compatibility. */
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -206,6 +205,11 @@ static inline int glist_hasWindow (t_glist *glist)
     return glist->gl_hasWindow;
 }
 
+static inline int glist_hasEditMode (t_glist *glist)
+{
+    return glist->gl_isEditing;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -220,16 +224,6 @@ static inline int glist_isDeleting (t_glist *glist)
     return glist->gl_isDeleting;
 }
 
-static inline int glist_isEditMode (t_glist *glist)
-{
-    return glist->gl_isEditMode;
-}
-
-static inline int glist_isSelected (t_glist *glist)
-{
-    return glist->gl_isSelected;
-}
-
 static inline int glist_isGraphOnParent (t_glist *glist)
 {
     return glist->gl_isGraphOnParent;
@@ -238,6 +232,11 @@ static inline int glist_isGraphOnParent (t_glist *glist)
 static inline int glist_isOpenedAtLoad (t_glist *glist)
 {
     return glist->gl_isOpenedAtLoad;
+}
+
+static inline int glist_isSelected (t_glist *glist)
+{
+    return glist->gl_isSelected;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -66,7 +66,7 @@ static void canvas_loadbangSubpatches (t_glist *glist)
 static void canvas_setAsGraphOnParent (t_glist *glist, int flags)
 {
     int isGraphOnParent = (flags & 1) != 0;
-    int hideText        = (flags & 2) != 0;
+    //int hideText        = (flags & 2) != 0;
     int needToUpdate    = isGraphOnParent || (!isGraphOnParent && glist_isGraphOnParent (glist));
     
     if (needToUpdate) {
@@ -74,8 +74,6 @@ static void canvas_setAsGraphOnParent (t_glist *glist, int flags)
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
         }
     }
-    
-    glist->gl_hideText = hideText;
     
     if (!isGraphOnParent) { glist_setGraphOnParent (glist, 0); } 
     else {
@@ -404,7 +402,7 @@ void canvas_visible (t_glist *glist, t_float f)
                             rectangle_getHeight (glist_getWindowGeometry (glist)),
                             rectangle_getTopLeftX (glist_getWindowGeometry (glist)),
                             rectangle_getTopLeftY (glist_getWindowGeometry (glist)),
-                            glist_isEditMode (glist));
+                            glist_hasEditMode (glist));
                         
             canvas_updateTitle (glist);
             

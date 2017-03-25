@@ -78,7 +78,7 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
             bounds_getBottom (glist_getBounds (glist)),
             (double)rectangle_getWidth (glist_getGraphGeometry (glist)), 
             (double)rectangle_getHeight (glist_getGraphGeometry (glist)),
-            (double)((glist->gl_hideText ? 2 : 0) | (glist_isGraphOnParent (glist) ? 1 : 0)),
+            (double)(glist_isGraphOnParent (glist) ? 1 : 0),
             (double)rectangle_getTopLeftX (glist_getGraphGeometry (glist)),
             (double)rectangle_getTopLeftY (glist_getGraphGeometry (glist)));
     }
