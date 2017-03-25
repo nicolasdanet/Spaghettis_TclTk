@@ -83,7 +83,7 @@ static inline void glist_setGraphOnParent (t_glist *glist, int n)
     glist->gl_isGraphOnParent = n;
 }
 
-static inline void glist_setWindow (t_glist *glist, int n)
+static inline void glist_setWindowState (t_glist *glist, int n)
 {
     glist->gl_hasWindow = n;
 }
@@ -224,6 +224,11 @@ static inline int glist_isDeleting (t_glist *glist)
     return glist->gl_isDeleting;
 }
 
+static inline int glist_isSelected (t_glist *glist)
+{
+    return glist->gl_isSelected;
+}
+
 static inline int glist_isGraphOnParent (t_glist *glist)
 {
     return glist->gl_isGraphOnParent;
@@ -232,11 +237,6 @@ static inline int glist_isGraphOnParent (t_glist *glist)
 static inline int glist_isOpenedAtLoad (t_glist *glist)
 {
     return glist->gl_isOpenedAtLoad;
-}
-
-static inline int glist_isSelected (t_glist *glist)
-{
-    return glist->gl_isSelected;
 }
 
 // -----------------------------------------------------------------------------------------------------------

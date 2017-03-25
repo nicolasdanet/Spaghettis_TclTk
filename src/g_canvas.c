@@ -366,7 +366,7 @@ static void canvas_open (t_glist *glist)
     
     canvas_destroyEditorIfAny (glist);
   
-    glist_setWindow (glist, 1);     /* Note that it modifies how things are drawn below. */
+    glist_setWindowState (glist, 1);    /* Note that it modifies how things are drawn below. */
     
     gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
     //
@@ -406,7 +406,7 @@ void canvas_visible (t_glist *glist, t_float f)
                         
             canvas_updateTitle (glist);
             
-            glist_setWindow (glist, 1);
+            glist_setWindowState (glist, 1);
         }
         
     } else {
@@ -422,10 +422,10 @@ void canvas_visible (t_glist *glist, t_float f)
             
             if (glist_isGraphOnParent (glist) && (t = glist_getParent (glist)) && (!glist_isDeleting (t))) {
                 if (glist_isMapped (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 0); }
-                glist_setWindow (glist, 0);
+                glist_setWindowState (glist, 0);
                 if (glist_isMapped (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 1); }
             } else {
-                glist_setWindow (glist, 0);
+                glist_setWindowState (glist, 0);
             }
         }
     }

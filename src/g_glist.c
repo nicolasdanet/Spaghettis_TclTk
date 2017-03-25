@@ -49,16 +49,16 @@ int glist_isSubpatch (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* A graph-on-parent that contains only an array of numbers. */
+/* Array is a GOP patch that contains only a scalar. */
+/* This scalar has an array of numbers as unique field. */
+/* Dirty bit is always owned by the top patch. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 int glist_isArray (t_glist *glist)
 {
     return (utils_getFirstAtomOfObjectAsSymbol (cast_object (glist)) == sym_graph);
-}
-
-int glist_isMapped (t_glist *glist)
-{
-    return (!glist_isLoading (glist) && glist_getView (glist)->gl_isMapped);
 }
 
 int glist_isDirty (t_glist *glist)
@@ -66,7 +66,10 @@ int glist_isDirty (t_glist *glist)
     return (glist_getTop (glist)->gl_isDirty != 0);
 }
 
-/* Either a top window a subpacth or a graph-on-parent forced. */
+int glist_isMapped (t_glist *glist)
+{
+    return (!glist_isLoading (glist) && glist_getView (glist)->gl_isMapped);
+}
 
 int glist_isWindowable (t_glist *glist)
 {
@@ -84,20 +87,12 @@ t_glist *glist_getTop (t_glist *glist)
 
 t_environment *glist_getEnvironment (t_glist *glist)
 {
-    PD_ASSERT (glist);
-    
-    while (!glist->gl_environment) { glist = glist_getParent (glist); PD_ASSERT (glist); }
-    
-    PD_ASSERT (glist_isTop (glist));
-    
-    return glist->gl_environment;
+    return (glist_getTop (glist)->gl_environment);
 }
 
 t_glist *glist_getView (t_glist *glist)
 {
-    while (glist_hasParent (glist) && !glist_isWindowable (glist)) { 
-        glist = glist_getParent (glist); 
-    }
+    while (glist_hasParent (glist) && !glist_isWindowable (glist)) { glist = glist_getParent (glist); }
     
     return glist;
 }
