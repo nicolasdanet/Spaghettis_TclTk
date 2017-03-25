@@ -711,7 +711,7 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     int height          = WINDOW_HEIGHT;
     int topLeftX        = 0;
     int topLeftY        = WINDOW_HEADER;
-    t_fontsize fontSize = (owner ? owner->gl_fontSize : font_getDefaultFontSize());
+    t_fontsize fontSize = (owner ? glist_getFontSize (owner) : font_getDefaultFontSize());
     
     /* Top. */
     
