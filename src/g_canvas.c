@@ -158,7 +158,7 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     glist_setName (glist, (name == &s_ ? sym_Patch : name));
     
-    instance_stackPopPatch (glist, glist->gl_openedAtLoad);
+    instance_stackPopPatch (glist, glist_isOpenedAtLoad (glist));
 
     {
         t_glist *parent = instance_contextGetCurrent();
@@ -745,11 +745,11 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     x->gl_environment   = instance_environmentFetchIfAny();
     x->gl_name          = (name != &s_ ? name : environment_getFileName (x->gl_environment));
     x->gl_fontSize      = font_getNearestValidFontSize (fontSize);
-    x->gl_openedAtLoad  = visible;
     
     bounds_set (glist_getBounds (x), (t_float)0.0, (t_float)0.0, (t_float)1.0, (t_float)1.0);
     rectangle_set (glist_getWindowGeometry (x), topLeftX, topLeftY, topLeftX + width, topLeftY + height);
     glist_setEditMode (x, 0);
+    glist_setOpenedAtLoad (x, visible);
     
     glist_loadBegin (x);
     

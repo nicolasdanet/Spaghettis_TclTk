@@ -30,6 +30,7 @@ struct _glist {
     t_rectangle     gl_geometryGraph;
     t_rectangle     gl_geometryWindow;
     t_fontsize      gl_fontSize;
+    int             gl_hasWindow;
     int             gl_isMapped;
     int             gl_isDirty;
     int             gl_isLoading;
@@ -37,8 +38,7 @@ struct _glist {
     int             gl_isEditMode;
     int             gl_isSelected;
     int             gl_isGraphOnParent;
-    int             gl_hasWindow;
-    int             gl_openedAtLoad;
+    int             gl_isOpenedAtLoad;
     int             gl_hideText;                            /* Unused but kept for compatibility. */
     };
 
@@ -87,6 +87,11 @@ static inline void glist_setGraphOnParent (t_glist *glist, int n)
 static inline void glist_setWindow (t_glist *glist, int n)
 {
     glist->gl_hasWindow = n;
+}
+
+static inline void glist_setOpenedAtLoad (t_glist *glist, int n)
+{
+    glist->gl_isOpenedAtLoad = n;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -228,6 +233,11 @@ static inline int glist_isSelected (t_glist *glist)
 static inline int glist_isGraphOnParent (t_glist *glist)
 {
     return glist->gl_isGraphOnParent;
+}
+
+static inline int glist_isOpenedAtLoad (t_glist *glist)
+{
+    return glist->gl_isOpenedAtLoad;
 }
 
 // -----------------------------------------------------------------------------------------------------------
