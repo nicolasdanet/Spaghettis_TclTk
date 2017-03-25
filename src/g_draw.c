@@ -295,7 +295,7 @@ static void canvas_drawBoxAtom (t_glist *glist, t_object *o, char *tag, int crea
 
 static void canvas_drawBoxComment (t_glist *glist, t_object *o, char *tag, int create, t_rectangle *r)
 {
-    if (glist->gl_isEditMode) {
+    if (glist_isEditMode (glist)) {
     //
     int b = rectangle_getTopLeftY (r);
     int c = rectangle_getBottomRightX (r);
@@ -424,7 +424,7 @@ static void canvas_eraseInletsAndOutlets (t_glist *glist, t_object *o, char *tag
 
 void canvas_eraseBox (t_glist *glist, t_object *o, char *tag)
 {
-    if (!object_isComment (o) || glist->gl_isEditMode) {   /* Comments have borders only in edit mode. */
+    if (!object_isComment (o) || glist_isEditMode (glist)) {   /* Comments have borders only in edit mode. */
     //
     sys_vGui (".x%lx.c delete %sBORDER\n", glist_getView (glist), tag); 
     canvas_eraseInletsAndOutlets (glist, o, tag);

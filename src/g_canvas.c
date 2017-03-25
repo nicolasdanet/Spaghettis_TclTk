@@ -404,7 +404,7 @@ void canvas_visible (t_glist *glist, t_float f)
                             rectangle_getHeight (glist_getWindowGeometry (glist)),
                             rectangle_getTopLeftX (glist_getWindowGeometry (glist)),
                             rectangle_getTopLeftY (glist_getWindowGeometry (glist)),
-                            glist->gl_isEditMode);
+                            glist_isEditMode (glist));
                         
             canvas_updateTitle (glist);
             
@@ -745,11 +745,11 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     x->gl_environment   = instance_environmentFetchIfAny();
     x->gl_name          = (name != &s_ ? name : environment_getFileName (x->gl_environment));
     x->gl_fontSize      = font_getNearestValidFontSize (fontSize);
-    x->gl_isEditMode    = 0;
     x->gl_openedAtLoad  = visible;
     
     bounds_set (glist_getBounds (x), (t_float)0.0, (t_float)0.0, (t_float)1.0, (t_float)1.0);
     rectangle_set (glist_getWindowGeometry (x), topLeftX, topLeftY, topLeftX + width, topLeftY + height);
+    glist_setEditMode (x, 0);
     
     glist_loadBegin (x);
     

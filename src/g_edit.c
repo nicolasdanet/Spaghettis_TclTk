@@ -411,7 +411,7 @@ static void canvas_proceedMouse (t_glist *glist, int a, int b, int modifier, int
 {
     int hasShift     = (modifier & MODIFIER_SHIFT);
     int isRightClick = (modifier & MODIFIER_RIGHT);
-    int isRunMode    = (modifier & MODIFIER_CTRL) || (!glist->gl_isEditMode);
+    int isRunMode    = (modifier & MODIFIER_CTRL) || (!glist_isEditMode (glist));
     
     if (clicked) { editor_motionReset (glist_getEditor (glist)); }
 
@@ -644,9 +644,9 @@ void canvas_editmode (t_glist *glist, t_float f)
 {
     int state = (int)(f != 0.0);
      
-    if (glist->gl_isEditMode != state) {
+    if (glist_isEditMode (glist) != state) {
     //
-    glist->gl_isEditMode = state;
+    glist_setEditMode (glist, state);
     
     if (state) {
     //
@@ -675,7 +675,7 @@ void canvas_editmode (t_glist *glist, t_float f)
     }
     
     if (glist_isMapped (glist)) {
-        sys_vGui ("::ui_patch::setEditMode .x%lx %d\n", glist, glist->gl_isEditMode);
+        sys_vGui ("::ui_patch::setEditMode .x%lx %d\n", glist, glist_isEditMode (glist));
     }
     //
     }
@@ -687,7 +687,7 @@ void canvas_editmode (t_glist *glist, t_float f)
 
 void canvas_cut (t_glist *glist)
 {
-    if (!glist_hasEditor (glist) || !glist->gl_isEditMode) { return; }
+    if (!glist_hasEditor (glist) || !glist_isEditMode (glist)) { return; }
     else {
     //
     if (editor_hasSelectedLine (glist_getEditor (glist))) { canvas_removeSelectedLine (glist); }
@@ -706,7 +706,7 @@ void canvas_cut (t_glist *glist)
 
 void canvas_copy (t_glist *glist)
 {
-    if (!glist_hasEditor (glist) || !glist->gl_isEditMode) { return; }
+    if (!glist_hasEditor (glist) || !glist_isEditMode (glist)) { return; }
     else {
     //
     if (editor_hasSelectedBox (glist_getEditor (glist))) {
@@ -725,7 +725,7 @@ void canvas_copy (t_glist *glist)
 
 void canvas_paste (t_glist *glist)
 {
-    if (!glist_hasEditor (glist) || !glist->gl_isEditMode) { return; }
+    if (!glist_hasEditor (glist) || !glist_isEditMode (glist)) { return; }
     else {
     //
     if (editor_hasSelectedBox (glist_getEditor (glist))) {
@@ -739,7 +739,7 @@ void canvas_paste (t_glist *glist)
 
 void canvas_duplicate (t_glist *glist)
 {
-    if (!glist_hasEditor (glist) || !glist->gl_isEditMode) { return; }
+    if (!glist_hasEditor (glist) || !glist_isEditMode (glist)) { return; }
     else {
     //
     canvas_copy (glist);
@@ -750,7 +750,7 @@ void canvas_duplicate (t_glist *glist)
 
 void canvas_selectAll (t_glist *glist)
 {
-    if (!glist_hasEditor (glist) || !glist->gl_isEditMode) { return; }
+    if (!glist_hasEditor (glist) || !glist_isEditMode (glist)) { return; }
     else {
     //
     t_gobj *y = NULL;

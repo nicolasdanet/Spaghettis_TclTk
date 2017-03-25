@@ -64,6 +64,7 @@ int                 glist_canHaveWindow                     (t_glist *glist);
 void                glist_setName                           (t_glist *glist, t_symbol *name);
 void                glist_setMapped                         (t_glist *glist, int n);
 void                glist_setDirty                          (t_glist *glist, int n);
+void                glist_setEditMode                       (t_glist *glist, int n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -188,6 +189,11 @@ static inline int glist_isLoading (t_glist *glist)
 static inline int glist_isDeleting (t_glist *glist)
 {
     return glist->gl_isDeleting;
+}
+
+static inline int glist_isEditMode (t_glist *glist)
+{
+    return glist->gl_isEditMode;
 }
 
 // -----------------------------------------------------------------------------------------------------------
