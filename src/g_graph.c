@@ -411,14 +411,15 @@ static void canvas_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
 {
     t_glist *x = cast_glist (z);
     
-    x->gl_isSelected = (isSelected != 0);
+    glist_setSelected (x, (isSelected != 0));
     
     if (!x->gl_isGraphOnParent) { text_widgetBehavior.w_fnSelected (z, glist, isSelected); }
     else {
-        sys_vGui (".x%lx.c itemconfigure %lxGRAPH -fill #%06x\n",
-                        glist_getView (glist),
-                        x,
-                        x->gl_hasWindow ? COLOR_MASKED : (x->gl_isSelected ? COLOR_SELECTED : COLOR_NORMAL));
+    
+    sys_vGui (".x%lx.c itemconfigure %lxGRAPH -fill #%06x\n",
+                    glist_getView (glist),
+                    x,
+                    x->gl_hasWindow ? COLOR_MASKED : (glist_isSelected (x) ? COLOR_SELECTED : COLOR_NORMAL));
     }
 }
 
@@ -512,7 +513,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                         b,
                         a,
                         b,
-                        (x->gl_isSelected ? COLOR_SELECTED : COLOR_NORMAL),
+                        (glist_isSelected (x) ? COLOR_SELECTED : COLOR_NORMAL),
                         tag);
         
         for (y = x->gl_graphics; y; y = y->g_next) {
@@ -529,7 +530,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                         b - (++i) * (int)font_getHostFontHeight (glist_getFontSize (x)),
                         garray_getName ((t_garray *)y)->s_name,
                         font_getHostFontSize (glist_getFontSize (x)),
-                        (x->gl_isSelected ? COLOR_SELECTED : COLOR_NORMAL),
+                        (glist_isSelected (x) ? COLOR_SELECTED : COLOR_NORMAL),
                         tag);
         //
         }

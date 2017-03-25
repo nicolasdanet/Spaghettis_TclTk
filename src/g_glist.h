@@ -74,6 +74,11 @@ static inline void glist_setNext (t_glist *glist, t_glist *next)
     glist->gl_next = next;
 }
 
+static inline void glist_setSelected (t_glist *glist, int n)
+{
+    glist->gl_isSelected = n;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -181,6 +186,10 @@ static inline int glist_hasEditor (t_glist *glist)
     return (glist->gl_editor != NULL);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static inline int glist_isLoading (t_glist *glist)
 {
     return glist->gl_isLoading;
@@ -194,6 +203,11 @@ static inline int glist_isDeleting (t_glist *glist)
 static inline int glist_isEditMode (t_glist *glist)
 {
     return glist->gl_isEditMode;
+}
+
+static inline int glist_isSelected (t_glist *glist)
+{
+    return glist->gl_isSelected;
 }
 
 // -----------------------------------------------------------------------------------------------------------
