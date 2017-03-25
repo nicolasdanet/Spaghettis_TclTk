@@ -301,7 +301,7 @@ void canvas_updateTitle (t_glist *glist)
                     glist,
                     environment_getDirectoryAsString (glist_getEnvironment (glist)),
                     glist->gl_name->s_name,
-                    glist_isDirty (glist));
+                    glist_getDirty (glist));
 }
 
 // -----------------------------------------------------------------------------------------------------------

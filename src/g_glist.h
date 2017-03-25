@@ -124,6 +124,11 @@ static inline int glist_getMapped (t_glist *glist)
     return glist->gl_isMapped;
 }
 
+static inline int glist_getDirty (t_glist *glist)
+{
+    return glist->gl_isDirty;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
