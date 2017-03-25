@@ -39,7 +39,7 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
             rectangle_getWidth (glist_getWindowGeometry (glist)),
             rectangle_getHeight (glist_getWindowGeometry (glist)),
             (s != &s_ ? s : sym_Patch),
-            glist->gl_isMapped);
+            glist_getMapped (glist));
             
     } else {
     

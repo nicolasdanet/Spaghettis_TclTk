@@ -449,7 +449,7 @@ void canvas_map (t_glist *glist, t_float f)
 
     if (isMapped != glist_isMapped (glist)) {
     //
-    if (!isMapped) { sys_vGui (".x%lx.c delete all\n", glist_getView (glist)); glist->gl_isMapped = 0; }
+    if (!isMapped) { sys_vGui (".x%lx.c delete all\n", glist_getView (glist)); glist_unmap (glist); }
     else {
     
         t_gobj *y = NULL;
@@ -461,7 +461,7 @@ void canvas_map (t_glist *glist, t_float f)
             gobj_selected (selection_getObject (s), glist, 1);
         }
 
-        glist->gl_isMapped = 1;
+        glist_map (glist);
         
         canvas_drawLines (glist);
         canvas_drawGraphOnParentRectangle (glist);

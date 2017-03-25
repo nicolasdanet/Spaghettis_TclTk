@@ -30,16 +30,16 @@ struct _glist {
     t_rectangle     gl_geometryGraph;
     t_rectangle     gl_geometryWindow;
     t_fontsize      gl_fontSize;
-    char            gl_isMapped;
-    char            gl_isDirty;
-    char            gl_isLoading;
-    char            gl_isDeleting;
-    char            gl_isEditMode;
-    char            gl_isSelected;
-    char            gl_isGraphOnParent;
-    char            gl_hasWindow;
-    char            gl_openedAtLoad;
-    char            gl_hideText;                            /* Unused but kept for compatibility. */
+    int             gl_isMapped;
+    int             gl_isDirty;
+    int             gl_isLoading;
+    int             gl_isDeleting;
+    int             gl_isEditMode;
+    int             gl_isSelected;
+    int             gl_isGraphOnParent;
+    int             gl_hasWindow;
+    int             gl_openedAtLoad;
+    int             gl_hideText;                            /* Unused but kept for compatibility. */
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -49,14 +49,21 @@ t_glist             *glist_getRoot                          (t_glist *glist);
 t_environment       *glist_getEnvironment                   (t_glist *glist);
 t_glist             *glist_getView                          (t_glist *glist);
 
-void                glist_setName                           (t_glist *glist, t_symbol *name);
-int                 glist_canHaveWindow                     (t_glist *glist);
 int                 glist_isMapped                          (t_glist *glist);
 int                 glist_isRoot                            (t_glist *glist);
 int                 glist_isAbstraction                     (t_glist *glist);
 int                 glist_isSubpatch                        (t_glist *glist);
 int                 glist_isDirty                           (t_glist *glist);
 int                 glist_isGraph                           (t_glist *glist);
+
+int                 glist_canHaveWindow                     (t_glist *glist);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void                glist_map                               (t_glist *glist);
+void                glist_unmap                             (t_glist *glist);
+void                glist_setName                           (t_glist *glist, t_symbol *name);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -110,6 +117,11 @@ static inline t_unique glist_getIdentifier (t_glist *glist)
 static inline t_fontsize glist_getFontSize (t_glist *glist)
 {
     return glist->gl_fontSize;
+}
+
+static inline int glist_getMapped (t_glist *glist)
+{
+    return glist->gl_isMapped;
 }
 
 // -----------------------------------------------------------------------------------------------------------
