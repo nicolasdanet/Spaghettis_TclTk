@@ -422,7 +422,7 @@ void canvas_visible (t_glist *glist, t_float f)
             canvas_destroyEditorIfAny (glist);
             sys_vGui ("destroy .x%lx\n", glist);
             
-            if (glist->gl_isGraphOnParent && (t = glist_getParent (glist)) && (!t->gl_isDeleting)) {
+            if (glist->gl_isGraphOnParent && (t = glist_getParent (glist)) && (!glist_isDeleting (t))) {
                 if (glist_isMapped (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 0); }
                 glist->gl_hasWindow = 0;
                 if (glist_isMapped (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 1); }

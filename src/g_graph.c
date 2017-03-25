@@ -86,32 +86,32 @@ t_outlet *canvas_addOutlet (t_glist *glist, t_symbol *s)
 
 void canvas_removeInlet (t_glist *glist, t_inlet *inlet)
 {
-    t_glist *owner = glist_getParent (glist);
+    t_glist *o = glist_getParent (glist);
     
-    int redraw = (owner && !owner->gl_isDeleting && glist_isMapped (owner) && glist_canHaveWindow (owner));
+    int redraw = (o && !glist_isDeleting (o) && glist_isMapped (o) && glist_canHaveWindow (o));
     
-    if (owner)  { canvas_deleteLinesByInlets (owner, cast_object (glist), inlet, NULL); }
-    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), owner, 0); }
+    if (o) { canvas_deleteLinesByInlets (o, cast_object (glist), inlet, NULL); }
+    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), o, 0); }
         
     inlet_free (inlet);
     
-    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), owner, 1); }
-    if (owner)  { canvas_updateLinesByObject (owner, cast_object (glist)); }
+    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), o, 1); }
+    if (o) { canvas_updateLinesByObject (o, cast_object (glist)); }
 }
 
 void canvas_removeOutlet (t_glist *glist, t_outlet *outlet)
 {
-    t_glist *owner = glist_getParent (glist);
+    t_glist *o = glist_getParent (glist);
     
-    int redraw = (owner && !owner->gl_isDeleting && glist_isMapped (owner) && glist_canHaveWindow (owner));
+    int redraw = (o && !glist_isDeleting (o) && glist_isMapped (o) && glist_canHaveWindow (o));
     
-    if (owner)  { canvas_deleteLinesByInlets (owner, cast_object (glist), NULL, outlet); }
-    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), owner, 0); }
+    if (o) { canvas_deleteLinesByInlets (o, cast_object (glist), NULL, outlet); }
+    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), o, 0); }
 
     outlet_free (outlet);
     
-    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), owner, 1); }
-    if (owner)  { canvas_updateLinesByObject (owner, cast_object (glist)); }
+    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), o, 1); }
+    if (o) { canvas_updateLinesByObject (o, cast_object (glist)); }
 }
 
 void canvas_resortInlets (t_glist *glist)

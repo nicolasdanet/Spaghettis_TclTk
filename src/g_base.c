@@ -79,9 +79,9 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
         
     int needToUpdateDSPChain = class_hasDSP (pd_class (y));
     int needToPaintScalars   = class_hasPainterWidgetBehavior (pd_class (y));
-    int deletingState        = canvas->gl_isDeleting;
+    int alreadyDeleting      = glist_isDeleting (canvas);
     
-    canvas->gl_isDeleting = 1;
+    if (!alreadyDeleting) { glist_deleteBegin (canvas); }
     
     needToPaintScalars |= (pd_class (y) == struct_class);
     
@@ -118,7 +118,7 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     if (needToUpdateDSPChain) { dsp_update(); }
     if (needToPaintScalars)   { paint_draw(); }
     
-    canvas->gl_isDeleting = deletingState;
+    if (!alreadyDeleting) { glist_deleteEnd (canvas); }
     
     glist->gl_uniqueIdentifier = utils_unique();        /* Invalidate all pointers. */
 }

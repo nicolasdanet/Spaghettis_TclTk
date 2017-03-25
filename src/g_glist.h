@@ -87,6 +87,16 @@ static inline void glist_loadEnd (t_glist *glist)
     glist->gl_isLoading = 0;
 }
 
+static inline void glist_deleteBegin (t_glist *glist)
+{
+    glist->gl_isDeleting = 1;
+}
+
+static inline void glist_deleteEnd (t_glist *glist)
+{
+    glist->gl_isDeleting = 0;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -173,6 +183,11 @@ static inline int glist_hasEditor (t_glist *glist)
 static inline int glist_isLoading (t_glist *glist)
 {
     return glist->gl_isLoading;
+}
+
+static inline int glist_isDeleting (t_glist *glist)
+{
+    return glist->gl_isDeleting;
 }
 
 // -----------------------------------------------------------------------------------------------------------
