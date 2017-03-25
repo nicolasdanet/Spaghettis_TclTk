@@ -358,7 +358,7 @@ static void canvas_open (t_glist *glist)
 {
     /* Opening a graph on parent in its own window. */
     
-    if (glist_isMapped (glist) && !glist_canHaveWindow (glist)) {
+    if (glist_isMapped (glist) && !glist_isWindowable (glist)) {
     //
     PD_ASSERT (glist_hasParent (glist));
     
@@ -608,7 +608,7 @@ static void canvas_fromPopupDialog (t_glist *glist, t_symbol *s, int argc, t_ato
     char name[PD_STRING] = { 0 };
     t_error err = PD_ERROR_NONE;
     
-    if (pd_class (y) == canvas_class && glist_isRoot (cast_glist (y))) {
+    if (pd_class (y) == canvas_class && glist_isTop (cast_glist (y))) {
         int ac = buffer_size (object_getBuffer (cast_object (y)));
         t_atom *av = buffer_atoms (object_getBuffer (cast_object (y)));
         if (!(err = (ac < 1))) {

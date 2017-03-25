@@ -631,7 +631,7 @@ void canvas_window (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     /* Redraw a GOP opened in its own window (required for graph arrays). */
     
-    if (glist_canHaveWindow (glist) && glist_isArray (glist)) { canvas_redraw (glist); }
+    if (glist_isWindowable (glist) && glist_isArray (glist)) { canvas_redraw (glist); }
     //
     }
 }
@@ -650,7 +650,7 @@ void canvas_editmode (t_glist *glist, t_float f)
     
     if (state) {
     //
-    if (glist_isMapped (glist) && glist_canHaveWindow (glist)) {
+    if (glist_isMapped (glist) && glist_isWindowable (glist)) {
     //
     t_gobj *y = NULL;
     
@@ -668,7 +668,7 @@ void canvas_editmode (t_glist *glist, t_float f)
     //
     canvas_deselectAll (glist);
     
-    if (glist_isMapped (glist) && glist_canHaveWindow (glist)) {
+    if (glist_isMapped (glist) && glist_isWindowable (glist)) {
         sys_vGui (".x%lx.c delete COMMENTBAR\n", glist_getView (glist));
     }
     //

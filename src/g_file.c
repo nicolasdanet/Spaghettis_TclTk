@@ -90,7 +90,7 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
 
 void canvas_save (t_glist *glist, t_float destroy)
 {
-    t_glist *root = glist_getRoot (glist);
+    t_glist *root = glist_getTop (glist);
     
     if (root->gl_name == &s_) { canvas_saveAs (root, destroy); }
     else {
@@ -108,7 +108,7 @@ void canvas_save (t_glist *glist, t_float destroy)
 
 void canvas_saveAs (t_glist *glist, t_float destroy)
 {
-    t_glist *root = glist_getRoot (glist);
+    t_glist *root = glist_getTop (glist);
     
     sys_vGui ("::ui_file::saveAs .x%lx {%s} {%s} %d\n",     // --
                     root,

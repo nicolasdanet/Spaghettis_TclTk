@@ -88,7 +88,7 @@ void canvas_removeInlet (t_glist *glist, t_inlet *inlet)
 {
     t_glist *o = glist_getParent (glist);
     
-    int redraw = (o && !glist_isDeleting (o) && glist_isMapped (o) && glist_canHaveWindow (o));
+    int redraw = (o && !glist_isDeleting (o) && glist_isMapped (o) && glist_isWindowable (o));
     
     if (o) { canvas_deleteLinesByInlets (o, cast_object (glist), inlet, NULL); }
     if (redraw) { gobj_visibilityChanged (cast_gobj (glist), o, 0); }
@@ -103,7 +103,7 @@ void canvas_removeOutlet (t_glist *glist, t_outlet *outlet)
 {
     t_glist *o = glist_getParent (glist);
     
-    int redraw = (o && !glist_isDeleting (o) && glist_isMapped (o) && glist_canHaveWindow (o));
+    int redraw = (o && !glist_isDeleting (o) && glist_isMapped (o) && glist_isWindowable (o));
     
     if (o) { canvas_deleteLinesByInlets (o, cast_object (glist), NULL, outlet); }
     if (redraw) { gobj_visibilityChanged (cast_gobj (glist), o, 0); }
@@ -230,7 +230,7 @@ void canvas_redrawGraphOnParent (t_glist *glist)
 {  
     if (glist_isMapped (glist)) {
     //
-    if (glist_canHaveWindow (glist)) { canvas_redraw (glist); }
+    if (glist_isWindowable (glist)) { canvas_redraw (glist); }
     
     if (glist_hasParentMapped (glist)) {
         canvas_behaviorVisibilityChanged (cast_gobj (glist), glist_getParent (glist), 0); 

@@ -44,18 +44,18 @@ struct _glist {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_glist             *glist_getRoot                          (t_glist *glist);
+t_glist             *glist_getTop                           (t_glist *glist);
 t_environment       *glist_getEnvironment                   (t_glist *glist);
 t_glist             *glist_getView                          (t_glist *glist);
 
-int                 glist_isMapped                          (t_glist *glist);
 int                 glist_isRoot                            (t_glist *glist);
+int                 glist_isTop                             (t_glist *glist);
 int                 glist_isAbstraction                     (t_glist *glist);
 int                 glist_isSubpatch                        (t_glist *glist);
-int                 glist_isDirty                           (t_glist *glist);
 int                 glist_isArray                           (t_glist *glist);
-
-int                 glist_canHaveWindow                     (t_glist *glist);
+int                 glist_isDirty                           (t_glist *glist);
+int                 glist_isMapped                          (t_glist *glist);
+int                 glist_isWindowable                      (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

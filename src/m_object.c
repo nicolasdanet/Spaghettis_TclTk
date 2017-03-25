@@ -74,7 +74,7 @@ void object_setFromEntry (t_object *x, t_glist *glist, t_box *z)
 
 int object_getPixelX (t_object *x, t_glist *glist)
 {
-    if (glist_canHaveWindow (glist)) { return object_getX (x); }
+    if (glist_isWindowable (glist)) { return object_getX (x); }
     else {
     //
     int n = canvas_valueToPixelX (glist, bounds_getLeft (glist_getBounds (glist)));
@@ -89,7 +89,7 @@ int object_getPixelX (t_object *x, t_glist *glist)
 
 int object_getPixelY (t_object *x, t_glist *glist)
 {
-    if (glist_canHaveWindow (glist)) { return object_getY (x); }
+    if (glist_isWindowable (glist)) { return object_getY (x); }
     else {
     //
     int n = canvas_valueToPixelY (glist, bounds_getTop (glist_getBounds (glist)));
