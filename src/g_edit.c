@@ -764,23 +764,3 @@ void canvas_selectAll (t_glist *glist)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void canvas_createEditorIfNone (t_glist *glist)
-{
-    if (!glist_hasEditor (glist)) { glist->gl_editor = editor_new (glist); }
-}
-
-void canvas_destroyEditorIfAny (t_glist *glist)
-{
-    if (glist_hasEditor (glist)) { 
-    //
-    canvas_deselectAll (glist); 
-    editor_free (glist_getEditor (glist));
-    glist->gl_editor = NULL;
-    //
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------

@@ -44,6 +44,13 @@ struct _glist {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+void                glist_createEditorIfNone                (t_glist *glist);
+void                glist_destroyEditorIfAny                (t_glist *glist);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_glist             *glist_getTop                           (t_glist *glist);
 t_environment       *glist_getEnvironment                   (t_glist *glist);
 t_glist             *glist_getView                          (t_glist *glist);
@@ -198,6 +205,8 @@ static inline int glist_hasEditor (t_glist *glist)
 
 static inline int glist_hasWindow (t_glist *glist)
 {
+    PD_ASSERT (glist_hasEditor (glist) || !glist->gl_hasWindow);
+    
     return glist->gl_hasWindow;
 }
 

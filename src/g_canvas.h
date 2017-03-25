@@ -142,13 +142,6 @@ void            canvas_setMotionFunction                (t_glist *glist,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            canvas_createEditorIfNone               (t_glist *glist);
-void            canvas_destroyEditorIfAny               (t_glist *glist);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void            canvas_fromArrayDialog                  (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_makeArray                        (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_makeObject                       (t_glist *glist, t_symbol *s, int argc, t_atom *argv);

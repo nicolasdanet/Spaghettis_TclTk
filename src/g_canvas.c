@@ -364,7 +364,7 @@ static void canvas_open (t_glist *glist)
     
     gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
     
-    canvas_destroyEditorIfAny (glist);
+    glist_destroyEditorIfAny (glist);
   
     glist_setWindow (glist, 1);     /* Note that it modifies how things are drawn below. */
     
@@ -394,7 +394,7 @@ void canvas_visible (t_glist *glist, t_float f)
 
         if (glist_hasEditor (glist) && glist_hasWindow (glist)) { sys_vGui ("::bringToFront .x%lx\n", glist); }
         else {
-            canvas_createEditorIfNone (glist);
+            glist_createEditorIfNone (glist);
             
             sys_vGui ("::ui_patch::create .x%lx %d %d +%d+%d %d\n",     // --
                             glist,
@@ -411,13 +411,13 @@ void canvas_visible (t_glist *glist, t_float f)
         
     } else {
 
-        if (!glist_hasWindow (glist)) { canvas_destroyEditorIfAny (glist); }
+        if (!glist_hasWindow (glist)) { glist_destroyEditorIfAny (glist); }
         else {
             t_glist *t = NULL;
             
             canvas_deselectAll (glist);
             if (glist_isOnScreen (glist)) { canvas_map (glist, 0); }
-            canvas_destroyEditorIfAny (glist);
+            glist_destroyEditorIfAny (glist);
             sys_vGui ("destroy .x%lx\n", glist);
             
             if (glist_isGraphOnParent (glist) && (t = glist_getParent (glist)) && (!glist_isDeleting (t))) {
@@ -768,7 +768,7 @@ void canvas_free (t_glist *glist)
     while ((y = glist->gl_graphics)) { canvas_removeObject (glist, y); }
     if (glist == glist_getView (glist)) { canvas_visible (glist, 0); }
     
-    canvas_destroyEditorIfAny (glist);
+    glist_destroyEditorIfAny (glist);
     canvas_unbind (glist);
 
     environment_free (glist->gl_environment);

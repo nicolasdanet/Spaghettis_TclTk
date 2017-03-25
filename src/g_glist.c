@@ -16,6 +16,26 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+void glist_createEditorIfNone (t_glist *glist)
+{
+    if (!glist_hasEditor (glist)) { glist->gl_editor = editor_new (glist); }
+}
+
+void glist_destroyEditorIfAny (t_glist *glist)
+{
+    if (glist_hasEditor (glist)) { 
+    //
+    canvas_deselectAll (glist); 
+    editor_free (glist_getEditor (glist));
+    glist->gl_editor = NULL;
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 /* A root has no parent and an environment. */
 /* An abstraction has a parent and an environment. */
 /* A subpatch has a parent also but no environment. */
