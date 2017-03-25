@@ -327,7 +327,7 @@ void canvas_close (t_glist *glist, t_float f)
 {
     int k = (int)f;
     
-    if (k == 2) { canvas_dirty (glist, 0); global_shouldQuit (NULL); }      /* While quitting application. */
+    if (k == 2) { glist_setDirty (glist, 0); global_shouldQuit (NULL); }    /* While quitting application. */
     else {
     //
     if (glist_hasParent (glist)) { canvas_visible (glist, 0); }     /* Hide subpatches and abstractions. */
@@ -385,13 +385,7 @@ void canvas_loadbang (t_glist *glist)
 
 void canvas_dirty (t_glist *glist, t_float f)
 {
-    int isDirty = (f != 0.0);
-        
-    t_glist *y = glist_getRoot (glist);
-        
-    if (y->gl_isDirty != isDirty) { 
-        y->gl_isDirty = isDirty; if (y->gl_hasWindow) { canvas_updateTitle (y); }
-    }
+    glist_setDirty (glist, (int)f);
 }
 
 void canvas_visible (t_glist *glist, t_float f)
@@ -449,7 +443,7 @@ void canvas_map (t_glist *glist, t_float f)
 
     if (isMapped != glist_isMapped (glist)) {
     //
-    if (!isMapped) { sys_vGui (".x%lx.c delete all\n", glist_getView (glist)); glist_unmap (glist); }
+    if (!isMapped) { sys_vGui (".x%lx.c delete all\n", glist_getView (glist)); glist_setMapped (glist, 0); }
     else {
     
         t_gobj *y = NULL;
@@ -461,7 +455,7 @@ void canvas_map (t_glist *glist, t_float f)
             gobj_selected (selection_getObject (s), glist, 1);
         }
 
-        glist_map (glist);
+        glist_setMapped (glist, 1);
         
         canvas_drawLines (glist);
         canvas_drawGraphOnParentRectangle (glist);
@@ -683,7 +677,7 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
     
     canvas_setAsGraphOnParent (glist, flags);
     
-    canvas_dirty (glist, 1);
+    glist_setDirty (glist, 1);
     
     if (glist->gl_hasWindow) { canvas_redraw (glist); }
     else {

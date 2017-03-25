@@ -88,7 +88,7 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
                         (object_isSignalOutlet (object1, closest1) ? 2 : 1),
                         connection);
                         
-        canvas_dirty (glist, 1);
+        glist_setDirty (glist, 1);
         
     } else { 
         canvas_setCursorType (glist, CURSOR_CONNECT);
@@ -146,7 +146,7 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
     gobj_visibilityChanged (y, glist, 0);
     canvas_updateLinesByObject (glist, object);
     gobj_visibilityChanged (y, glist, 1);
-    canvas_dirty (glist, 1);
+    glist_setDirty (glist, 1);
     //
     } else if (pd_class (object) == canvas_class) {
     //
@@ -160,7 +160,7 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
     canvas_updateLinesByObject (glist, object);
     gobj_visibilityChanged (y, glist, 1);
     canvas_updateGraphOnParentRectangle (t);
-    canvas_dirty (glist, 1);
+    glist_setDirty (glist, 1);
     //
     }
     //
@@ -528,7 +528,7 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
     if (editor_hasSelectedBox (glist_getEditor (glist))) {
         box_key (editor_getSelectedBox (glist_getEditor (glist)), (t_keycode)n, s);
         if (editor_hasSelectedBoxDirty (glist_getEditor (glist))) { 
-            canvas_dirty (glist, 1); 
+            glist_setDirty (glist, 1); 
         }
         
     } else if (s == sym_Delete || s == sym_BackSpace) {
@@ -694,7 +694,7 @@ void canvas_cut (t_glist *glist)
     else if (editor_hasSelectedBox (glist_getEditor (glist))) {
         canvas_copy (glist);
         box_key (editor_getSelectedBox (glist_getEditor (glist)), (t_keycode)127, sym_Delete);
-        canvas_dirty (glist, 1);
+        glist_setDirty (glist, 1);
         
     } else if (editor_hasSelection (glist_getEditor (glist))) {
         canvas_copy (glist);

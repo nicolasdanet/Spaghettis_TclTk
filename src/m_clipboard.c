@@ -96,7 +96,7 @@ void clipboard_paste (t_clipboard *x, t_glist *glist)
         }
     }
     
-    canvas_dirty (glist, 1);
+    glist_setDirty (glist, 1);
 }
 
 // -----------------------------------------------------------------------------------------------------------

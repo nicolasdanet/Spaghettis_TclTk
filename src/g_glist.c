@@ -93,14 +93,33 @@ int glist_canHaveWindow (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void glist_map (t_glist *glist)
+void glist_setName (t_glist *glist, t_symbol *name)
 {
-    glist->gl_isMapped = 1;
+    canvas_unbind (glist);
+    glist->gl_name = name;
+    canvas_bind (glist);
+    
+    if (glist->gl_hasWindow) { canvas_updateTitle (glist); }
 }
 
-void glist_unmap (t_glist *glist)
+void glist_setMapped (t_glist *glist, int n)
 {
-    glist->gl_isMapped = 0;
+    glist->gl_isMapped = (n != 0);
+}
+
+void glist_setDirty (t_glist *glist, int n)
+{
+    int isDirty = (n != 0);
+        
+    t_glist *y = glist_getRoot (glist);
+        
+    if (y->gl_isDirty != isDirty) {
+    //
+    y->gl_isDirty = isDirty; 
+    
+    if (y->gl_hasWindow) { canvas_updateTitle (y); }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -295,22 +295,13 @@ t_error canvas_makeFilePath (t_glist *glist, char *name, char *dest, size_t size
     return err;
 }
 
-void glist_setName (t_glist *glist, t_symbol *name)
-{
-    canvas_unbind (glist);
-    glist->gl_name = name;
-    canvas_bind (glist);
-    
-    if (glist->gl_hasWindow) { canvas_updateTitle (glist); }
-}
-
 void canvas_updateTitle (t_glist *glist)
 {
     sys_vGui ("::ui_patch::setTitle .x%lx {%s} {%s} %d\n",  // --
                     glist,
                     environment_getDirectoryAsString (glist_getEnvironment (glist)),
                     glist->gl_name->s_name,
-                    glist->gl_isDirty);
+                    glist_isDirty (glist));
 }
 
 // -----------------------------------------------------------------------------------------------------------

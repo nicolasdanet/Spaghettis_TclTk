@@ -118,14 +118,14 @@ void canvas_removeSelectedObjects (t_glist *glist)
 
     dsp_resume (state);
     
-    canvas_dirty (glist, 1);
+    glist_setDirty (glist, 1);
 }
 
 void canvas_removeSelectedLine (t_glist *glist)
 {
     if (editor_hasSelectedLine (glist_getEditor (glist))) {
         editor_selectedLineDisconnect (glist_getEditor (glist));
-        canvas_dirty (glist, 1);
+        glist_setDirty (glist, 1);
     }
 }
 
@@ -147,7 +147,7 @@ void canvas_displaceSelectedObjects (t_glist *glist, int deltaX, int deltaY)
     if (needToResortInlets)  { canvas_resortInlets (glist); }
     if (needToResortOutlets) { canvas_resortOutlets (glist); }
         
-    if (isDirty) { canvas_dirty (glist, 1); }
+    if (isDirty) { glist_setDirty (glist, 1); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -429,7 +429,7 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
 
     gobj_visibilityChanged (cast_gobj (x), x->a_owner, 1);
     
-    canvas_dirty (x->a_owner, 1);
+    glist_setDirty (x->a_owner, 1);
     //
     }
 }

@@ -133,7 +133,7 @@ void canvas_saveToFile (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     if (buffer_write (b, name->s_name, directory->s_name)) { PD_BUG; }
     else {
         post (PD_TRANSLATE ("file: saved to %s/%s"), directory->s_name, name->s_name);  // --
-        canvas_dirty (glist, 0);
+        glist_setDirty (glist, 0);
         if (destroy != 0.0) {
             t_atom t;
             SET_FLOAT (&t, (t_float)(destroy == 2.0 ? 3.0 : 1.0));

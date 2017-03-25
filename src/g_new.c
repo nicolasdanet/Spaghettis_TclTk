@@ -116,7 +116,7 @@ void canvas_fromArrayDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv
     
     garray_makeObject (g, dollar_fromHash (name), n, flags);
     
-    canvas_dirty (glist, 1);
+    glist_setDirty (glist, 1);
     //
     }
 }

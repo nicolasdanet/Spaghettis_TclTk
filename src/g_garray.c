@@ -683,7 +683,7 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     garray_updateGraphSize (x, newSize, newStyle); 
     garray_setSaveWithParent (x, save);
     garray_redraw (x);
-    canvas_dirty (x->x_owner, 1);
+    glist_setDirty (x->x_owner, 1);
     //
     }
 }

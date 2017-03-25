@@ -464,7 +464,7 @@ void iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
     
     iemgui_checkSendReceiveLoop (iem);
     
-    canvas_dirty (iem->iem_owner, 1);
+    glist_setDirty (iem->iem_owner, 1);
 }
 
 // -----------------------------------------------------------------------------------------------------------
