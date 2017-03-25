@@ -84,6 +84,11 @@ static inline void glist_setGraphOnParent (t_glist *glist, int n)
     glist->gl_isGraphOnParent = n;
 }
 
+static inline void glist_setWindow (t_glist *glist, int n)
+{
+    glist->gl_hasWindow = n;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -189,6 +194,11 @@ static inline int glist_hasParentMapped (t_glist *glist)
 static inline int glist_hasEditor (t_glist *glist)
 {
     return (glist->gl_editor != NULL);
+}
+
+static inline int glist_hasWindow (t_glist *glist)
+{
+    return glist->gl_hasWindow;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -438,7 +438,7 @@ void canvas_eraseBox (t_glist *glist, t_object *o, char *tag)
 
 void canvas_drawGraphOnParentRectangle (t_glist *glist)
 {
-    if (glist_isGraphOnParent (glist) && glist->gl_hasWindow) {
+    if (glist_isGraphOnParent (glist) && glist_hasWindow (glist)) {
     //
     if (!glist_isArray (glist)) {
     //
@@ -469,7 +469,7 @@ void canvas_drawGraphOnParentRectangle (t_glist *glist)
 
 void canvas_updateGraphOnParentRectangle (t_glist *glist)
 {
-    if (glist_isGraphOnParent (glist) && glist->gl_hasWindow) {
+    if (glist_isGraphOnParent (glist) && glist_hasWindow (glist)) {
     //
     if (!glist_isArray (glist)) {
         sys_vGui (".x%lx.c delete RECTANGLE\n", glist_getView (glist));

@@ -86,7 +86,7 @@ int glist_isArray (t_glist *glist)
 
 int glist_canHaveWindow (t_glist *glist)
 {
-    return (glist->gl_hasWindow || !glist_isGraphOnParent (glist));
+    return (glist_hasWindow (glist) || !glist_isGraphOnParent (glist));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -99,7 +99,7 @@ void glist_setName (t_glist *glist, t_symbol *name)
     glist->gl_name = name;
     canvas_bind (glist);
     
-    if (glist->gl_hasWindow) { canvas_updateTitle (glist); }
+    if (glist_hasWindow (glist)) { canvas_updateTitle (glist); }
 }
 
 void glist_setMapped (t_glist *glist, int n)
@@ -117,7 +117,7 @@ void glist_setDirty (t_glist *glist, int n)
     //
     y->gl_isDirty = isDirty; 
     
-    if (y->gl_hasWindow) { canvas_updateTitle (y); }
+    if (glist_hasWindow (y)) { canvas_updateTitle (y); }
     //
     }
 }
