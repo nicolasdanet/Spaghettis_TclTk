@@ -67,6 +67,28 @@ void                glist_setDirty                          (t_glist *glist, int
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+static inline void glist_setNext (t_glist *glist, t_glist *next)
+{
+    glist->gl_next = next;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline void glist_loadBegin (t_glist *glist)
+{
+    glist->gl_isLoading = 1;
+}
+
+static inline void glist_loadEnd (t_glist *glist)
+{
+    glist->gl_isLoading = 0;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 static inline t_glist *glist_getParent (t_glist *glist)
@@ -133,15 +155,6 @@ static inline int glist_getDirty (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static inline void glist_setNext (t_glist *glist, t_glist *next)
-{
-    glist->gl_next = next;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static inline int glist_hasParent (t_glist *glist)
 {
     return (glist->gl_parent != NULL);
@@ -155,6 +168,11 @@ static inline int glist_hasParentMapped (t_glist *glist)
 static inline int glist_hasEditor (t_glist *glist)
 {
     return (glist->gl_editor != NULL);
+}
+
+static inline int glist_isLoading (t_glist *glist)
+{
+    return glist->gl_isLoading;
 }
 
 // -----------------------------------------------------------------------------------------------------------

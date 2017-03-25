@@ -50,7 +50,7 @@ t_glist *glist_getView (t_glist *glist)
 
 int glist_isMapped (t_glist *glist)
 {
-    return (!glist->gl_isLoading && glist_getView (glist)->gl_isMapped);
+    return (!glist_isLoading (glist) && glist_getView (glist)->gl_isMapped);
 }
 
 int glist_isRoot (t_glist *glist)

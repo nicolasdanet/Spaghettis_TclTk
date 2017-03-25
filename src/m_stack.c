@@ -82,7 +82,7 @@ void instance_stackPopPatch (t_glist *glist, int visible)
     canvas_resortInlets (glist);
     canvas_resortOutlets (glist);
     
-    glist->gl_isLoading = 0;
+    glist_loadEnd (glist);
 }
 
 // -----------------------------------------------------------------------------------------------------------

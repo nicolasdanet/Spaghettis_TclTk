@@ -52,7 +52,7 @@ t_inlet *canvas_addInlet (t_glist *glist, t_pd *receiver, t_symbol *s)
 {
     t_inlet *inlet = inlet_new (cast_object (glist), receiver, s, NULL);
     
-    if (!glist->gl_isLoading) {
+    if (!glist_isLoading (glist)) {
     
         if (glist_hasParentMapped (glist)) {
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
@@ -70,7 +70,7 @@ t_outlet *canvas_addOutlet (t_glist *glist, t_symbol *s)
 {
     t_outlet *outlet = outlet_new (cast_object (glist), s);
     
-    if (!glist->gl_isLoading) {
+    if (!glist_isLoading (glist)) {
     
         if (glist_hasParentMapped (glist)) {
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);

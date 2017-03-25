@@ -70,7 +70,7 @@ static void canvas_setAsGraphOnParent (t_glist *glist, int flags)
     int needToUpdate    = isGraphOnParent || (!isGraphOnParent && glist->gl_isGraphOnParent);
     
     if (needToUpdate) {
-        if (!glist->gl_isLoading && glist_hasParentMapped (glist)) {
+        if (!glist_isLoading (glist) && glist_hasParentMapped (glist)) {
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
         }
     }
@@ -95,7 +95,7 @@ static void canvas_setAsGraphOnParent (t_glist *glist, int flags)
     #endif
     
     if (needToUpdate) {
-        if (!glist->gl_isLoading && glist_hasParentMapped (glist)) {
+        if (!glist_isLoading (glist) && glist_hasParentMapped (glist)) {
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
             canvas_updateLinesByObject (glist_getParent (glist), cast_object (glist));
         }
@@ -742,15 +742,16 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     
     if (!owner) { instance_rootsAdd (x); }
     
-    x->gl_environment           = instance_environmentFetchIfAny();
-    x->gl_name                  = (name != &s_ ? name : environment_getFileName (x->gl_environment));
-    x->gl_fontSize              = font_getNearestValidFontSize (fontSize);
-    x->gl_isLoading             = 1;
-    x->gl_isEditMode            = 0;
-    x->gl_openedAtLoad          = visible;
+    x->gl_environment   = instance_environmentFetchIfAny();
+    x->gl_name          = (name != &s_ ? name : environment_getFileName (x->gl_environment));
+    x->gl_fontSize      = font_getNearestValidFontSize (fontSize);
+    x->gl_isEditMode    = 0;
+    x->gl_openedAtLoad  = visible;
     
     bounds_set (glist_getBounds (x), (t_float)0.0, (t_float)0.0, (t_float)1.0, (t_float)1.0);
     rectangle_set (glist_getWindowGeometry (x), topLeftX, topLeftY, topLeftX + width, topLeftY + height);
+    
+    glist_loadBegin (x);
     
     canvas_bind (x);
     
