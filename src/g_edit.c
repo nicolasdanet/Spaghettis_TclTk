@@ -519,7 +519,7 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
     
     /* Handle the event. */
     
-    if (glist && glist_hasEditor (glist) && isDown) {
+    if (glist && isDown) {
     //
     if (editor_getAction (glist_getEditor (glist)) == ACTION_MOVE) { 
         editor_resetAction (glist_getEditor (glist)); 
@@ -550,8 +550,6 @@ void canvas_click (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 
 void canvas_motion (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    if (glist_hasEditor (glist)) {
-    //
     int a = atom_getFloatAtIndex (0, argc, argv);
     int b = atom_getFloatAtIndex (1, argc, argv);
     int m = atom_getFloatAtIndex (2, argc, argv);
@@ -586,8 +584,6 @@ void canvas_motion (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     } else {
         canvas_proceedMouse (glist, a, b, m, 0);
     }
-    //
-    }
 }
 
 void canvas_mouse (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -596,16 +592,13 @@ void canvas_mouse (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     int b = (int)atom_getFloatAtIndex (1, argc, argv);
     int m = (int)atom_getFloatAtIndex (2, argc, argv);
 
-    if (glist_hasEditor (glist)) { canvas_proceedMouse (glist, a, b, m, 1); } 
+    canvas_proceedMouse (glist, a, b, m, 1);
 }
 
 void canvas_mouseUp (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     int a = (int)atom_getFloatAtIndex (0, argc, argv);
     int b = (int)atom_getFloatAtIndex (1, argc, argv);
-    
-    if (glist_hasEditor (glist)) {
-    //
     int action = editor_getAction (glist_getEditor (glist));
     
     if (action == ACTION_CONNECT)     { canvas_makeLineEnd (glist, a, b); }
@@ -619,8 +612,6 @@ void canvas_mouseUp (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     }
 
     editor_resetAction (glist_getEditor (glist));
-    //
-    }
 }
 
 void canvas_window (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -687,7 +678,7 @@ void canvas_editmode (t_glist *glist, t_float f)
 
 void canvas_cut (t_glist *glist)
 {
-    if (!glist_hasEditor (glist) || !glist_hasEditMode (glist)) { return; }
+    if (!glist_hasEditMode (glist)) { return; }
     else {
     //
     if (editor_hasSelectedLine (glist_getEditor (glist))) { canvas_removeSelectedLine (glist); }
@@ -706,7 +697,7 @@ void canvas_cut (t_glist *glist)
 
 void canvas_copy (t_glist *glist)
 {
-    if (!glist_hasEditor (glist) || !glist_hasEditMode (glist)) { return; }
+    if (!glist_hasEditMode (glist)) { return; }
     else {
     //
     if (editor_hasSelectedBox (glist_getEditor (glist))) {
@@ -725,7 +716,7 @@ void canvas_copy (t_glist *glist)
 
 void canvas_paste (t_glist *glist)
 {
-    if (!glist_hasEditor (glist) || !glist_hasEditMode (glist)) { return; }
+    if (!glist_hasEditMode (glist)) { return; }
     else {
     //
     if (editor_hasSelectedBox (glist_getEditor (glist))) {
@@ -739,7 +730,7 @@ void canvas_paste (t_glist *glist)
 
 void canvas_duplicate (t_glist *glist)
 {
-    if (!glist_hasEditor (glist) || !glist_hasEditMode (glist)) { return; }
+    if (!glist_hasEditMode (glist)) { return; }
     else {
     //
     canvas_copy (glist);
@@ -750,7 +741,7 @@ void canvas_duplicate (t_glist *glist)
 
 void canvas_selectAll (t_glist *glist)
 {
-    if (!glist_hasEditor (glist) || !glist_hasEditMode (glist)) { return; }
+    if (!glist_hasEditMode (glist)) { return; }
     else {
     //
     t_gobj *y = NULL;

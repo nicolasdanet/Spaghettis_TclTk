@@ -39,6 +39,7 @@ static t_glist *canvas_newGraphOnParent (t_glist *glist,
     
     x->gl_holder            = gmaster_createWithGlist (x);
     x->gl_parent            = glist;
+    x->gl_editor            = editor_new (x);
     x->gl_name              = utils_getDefaultBindName (canvas_class, sym__graph);
     x->gl_uniqueIdentifier  = utils_unique();
     x->gl_fontSize          = fontSize;

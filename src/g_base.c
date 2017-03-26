@@ -60,7 +60,7 @@ void canvas_addObject (t_glist *glist, t_gobj *y)
         t->g_next = y;
     }
     
-    if (glist_hasEditor (glist) && (object = cast_objectIfConnectable (y))) { 
+    if ((object = cast_objectIfConnectable (y))) { 
         editor_boxAdd (glist_getEditor (glist), object); 
     }
     
@@ -85,13 +85,9 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
     
     needToPaintScalars |= (pd_class (y) == struct_class);
     
-    if (glist_hasEditor (glist)) {
-    //
     editor_motionUnset (glist_getEditor (glist), y);
     
-    if (canvas_isObjectSelected (glist, y)) { canvas_deselectObject (glist, y);   }
-    //
-    }
+    if (canvas_isObjectSelected (glist, y)) { canvas_deselectObject (glist, y); }
     
     if (needToPaintScalars) { paint_erase(); }
     
@@ -107,7 +103,7 @@ void canvas_removeObject (t_glist *glist, t_gobj *y)
         }
     }
     
-    if (glist_hasEditor (glist) && (object = cast_objectIfConnectable (y))) {
+    if ((object = cast_objectIfConnectable (y))) {
         text = box_fetch (glist, object);
     }
     
@@ -340,7 +336,7 @@ t_gobj *canvas_getHitObject (t_glist *glist, int positionX, int positionY, t_rec
     
     rectangle_set (r, 0, 0, 0, 0);
     
-    if (glist_hasEditor (glist) && canvas_getNumberOfSelectedObjects (glist) > 1) {
+    if (canvas_getNumberOfSelectedObjects (glist) > 1) {
     //
     t_selection *s = NULL;
     for (s = editor_getSelection (glist_getEditor (glist)); s; s = selection_getNext (s)) {

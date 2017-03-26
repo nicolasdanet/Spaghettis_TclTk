@@ -156,13 +156,10 @@ void canvas_displaceSelectedObjects (t_glist *glist, int deltaX, int deltaY)
 
 int canvas_isObjectSelected (t_glist *glist, t_gobj *y)
 {
-    if (glist_hasEditor (glist)) {
-    //
     t_selection *s = NULL;
+    
     for (s = editor_getSelection (glist_getEditor (glist)); s; s = selection_getNext (s)) {
         if (selection_getObject (s) == y) { return 1; }
-    }
-    //
     }
     
     return 0;
@@ -313,8 +310,6 @@ int canvas_deselectAll (t_glist *glist)
 {
     int k = 0;
     
-    if (glist_hasEditor (glist)) {      /* Required (for newly recreated subpatch for instance). */
-    //
     while (editor_getSelection (glist_getEditor (glist))) {
     //
     k |= canvas_deselectObject (glist, selection_getObject (editor_getSelection (glist_getEditor (glist))));
@@ -322,8 +317,6 @@ int canvas_deselectAll (t_glist *glist)
     }
 
     if (editor_hasSelectedLine (glist_getEditor (glist))) { canvas_deselectLine (glist); }
-    //
-    }
     
     return k;   /* Return 1 if an object has been recreated. */
 }

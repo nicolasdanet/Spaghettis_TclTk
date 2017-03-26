@@ -15,25 +15,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-void glist_createEditorIfNone (t_glist *glist)
-{
-    if (!glist_hasEditor (glist)) { glist->gl_editor = editor_new (glist); }
-}
-
-void glist_destroyEditorIfAny (t_glist *glist)
-{
-    if (glist_hasEditor (glist)) { 
-    //
-    canvas_deselectAll (glist); 
-    editor_free (glist_getEditor (glist));
-    glist->gl_editor = NULL;
-    //
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 /* A root has no parent and an environment. */
@@ -72,7 +53,7 @@ int glist_isSubpatch (t_glist *glist)
 /* Array is a GOP patch that contains only a scalar. */
 /* This scalar has an array of numbers as unique field. */
 /* Dirty bit is always owned by the top patch. */
-/* For GOP the place to draw its content is owned higher in the tree. */
+/* For GOP the window to draw is owned higher in the tree. */
 /* Note that if required GOP can be opened in its own window by user. */
 
 // -----------------------------------------------------------------------------------------------------------

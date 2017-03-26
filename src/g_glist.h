@@ -14,7 +14,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 struct _glist {  
     t_object        gl_obj;                                 /* MUST be the first. */
@@ -40,12 +39,6 @@ struct _glist {
     int             gl_isGraphOnParent;
     int             gl_isOpenedAtLoad;
     };
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-void                glist_createEditorIfNone                (t_glist *glist);
-void                glist_destroyEditorIfAny                (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -196,11 +189,6 @@ static inline int glist_hasParent (t_glist *glist)
 static inline int glist_hasParentOnScreen (t_glist *glist)
 {
     return (glist_hasParent (glist) && glist_isOnScreen (glist_getParent (glist)));
-}
-
-static inline int glist_hasEditor (t_glist *glist)
-{
-    return (glist->gl_editor != NULL);
 }
 
 static inline int glist_hasWindow (t_glist *glist)

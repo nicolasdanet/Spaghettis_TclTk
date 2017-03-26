@@ -356,19 +356,21 @@ void canvas_close (t_glist *glist, t_float f)
 
 static void canvas_open (t_glist *glist)
 {
-    /* Opening a graph on parent in its own window. */
+    /* Opening a GOP in its own window. */
     
-    if (glist_isOnScreen (glist) && !glist_isWindowable (glist)) {
+    if (glist_isOnScreen (glist) && !glist_isWindowable (glist)) {      
     //
-    PD_ASSERT (glist_hasParent (glist));
+    PD_ASSERT (!glist_hasWindow (glist));
     
     gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
     
-    glist_destroyEditorIfAny (glist);
-  
-    glist_setWindow (glist, 1);     /* Note that it modifies how things are drawn below. */
+    /* Temporary force the window state in order to properly drawn the content below. */
+    
+    glist_setWindow (glist, 1); 
     
     gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
+    
+    glist_setWindow (glist, 0);
     //
     }
     
@@ -392,9 +394,8 @@ void canvas_visible (t_glist *glist, t_float f)
     
     if (isVisible) {
 
-        if (glist_hasEditor (glist) && glist_hasWindow (glist)) { sys_vGui ("::bringToFront .x%lx\n", glist); }
+        if (glist_hasWindow (glist)) { sys_vGui ("::bringToFront .x%lx\n", glist); }
         else {
-            glist_createEditorIfNone (glist);
             
             sys_vGui ("::ui_patch::create .x%lx %d %d +%d+%d %d\n",     // --
                             glist,
@@ -411,13 +412,13 @@ void canvas_visible (t_glist *glist, t_float f)
         
     } else {
 
-        if (!glist_hasWindow (glist)) { glist_destroyEditorIfAny (glist); }
-        else {
+        if (glist_hasWindow (glist)) { 
+
             t_glist *t = NULL;
             
             canvas_deselectAll (glist);
             if (glist_isOnScreen (glist)) { canvas_map (glist, 0); }
-            glist_destroyEditorIfAny (glist);
+
             sys_vGui ("destroy .x%lx\n", glist);
             
             if (glist_isGraphOnParent (glist) && (t = glist_getParent (glist)) && (!glist_isDeleting (t))) {
@@ -741,6 +742,7 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     if (!owner) { instance_rootsAdd (x); }
     
     x->gl_environment   = instance_environmentFetchIfAny();
+    x->gl_editor        = editor_new (x);
     x->gl_name          = (name != &s_ ? name : environment_getFileName (x->gl_environment));
     x->gl_fontSize      = font_getNearestValidFontSize (fontSize);
     
@@ -763,15 +765,15 @@ void canvas_free (t_glist *glist)
     int dspstate = dsp_suspend();
     t_gobj *y = NULL;
         
-    if (glist_hasEditor (glist)) { canvas_deselectAll (glist); }
+    canvas_deselectAll (glist);
     
     while ((y = glist->gl_graphics)) { canvas_removeObject (glist, y); }
     if (glist == glist_getView (glist)) { canvas_visible (glist, 0); }
     
-    glist_destroyEditorIfAny (glist);
     canvas_unbind (glist);
 
     environment_free (glist->gl_environment);
+    editor_free (glist_getEditor (glist));
     
     dsp_resume (dspstate);
     
