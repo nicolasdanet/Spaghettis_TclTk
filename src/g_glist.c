@@ -106,20 +106,12 @@ t_glist *glist_getView (t_glist *glist)
 void glist_setName (t_glist *glist, t_symbol *name)
 {
     canvas_unbind (glist);
+    
     glist->gl_name = name;
+    
     canvas_bind (glist);
     
     if (glist_hasWindow (glist)) { canvas_updateTitle (glist); }
-}
-
-void glist_setMapped (t_glist *glist, int n)
-{
-    glist->gl_isMapped = (n != 0);
-}
-
-void glist_setWindow (t_glist *glist, int n)
-{
-    glist->gl_hasWindow = (n != 0);
 }
 
 void glist_setDirty (t_glist *glist, int n)
@@ -135,11 +127,6 @@ void glist_setDirty (t_glist *glist, int n)
     if (glist_hasWindow (y)) { canvas_updateTitle (y); }
     //
     }
-}
-
-void glist_setEditMode (t_glist *glist, int n)
-{
-    glist->gl_isEditing = (n != 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

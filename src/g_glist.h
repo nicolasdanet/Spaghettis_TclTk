@@ -48,6 +48,10 @@ t_glist             *glist_getTop                           (t_glist *glist);
 t_environment       *glist_getEnvironment                   (t_glist *glist);
 t_glist             *glist_getView                          (t_glist *glist);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 int                 glist_isRoot                            (t_glist *glist);
 int                 glist_isTop                             (t_glist *glist);
 int                 glist_isAbstraction                     (t_glist *glist);
@@ -59,15 +63,29 @@ int                 glist_isWindowable                      (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void                glist_setName                           (t_glist *glist, t_symbol *name);
-void                glist_setMapped                         (t_glist *glist, int n);
-void                glist_setWindow                         (t_glist *glist, int n);
 void                glist_setDirty                          (t_glist *glist, int n);
-void                glist_setEditMode                       (t_glist *glist, int n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline void glist_setMapped (t_glist *glist, int n)
+{
+    glist->gl_isMapped = (n != 0);
+}
+
+static inline void glist_setWindow (t_glist *glist, int n)
+{
+    glist->gl_hasWindow = (n != 0);
+}
+
+static inline void glist_setEditMode (t_glist *glist, int n)
+{
+    glist->gl_isEditing = (n != 0);
+}
 
 static inline void glist_setNext (t_glist *glist, t_glist *next)
 {
