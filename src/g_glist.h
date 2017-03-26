@@ -65,6 +65,13 @@ int                 glist_isWindowable                      (t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void                glist_addObjectNext                     (t_glist *glist, t_gobj *first, t_gobj *next);
+void                glist_addObject                         (t_glist *glist, t_gobj *y);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void                glist_setName                           (t_glist *glist, t_symbol *name);
 void                glist_setDirty                          (t_glist *glist, int n);
 

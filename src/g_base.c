@@ -30,47 +30,6 @@ void canvas_newPatch (void *dummy, t_symbol *name, t_symbol *directory)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_addScalarNext (t_glist *glist, t_scalar *first, t_scalar *next)
-{
-    if (first != NULL) {
-        cast_gobj (next)->g_next  = cast_gobj (first)->g_next;
-        cast_gobj (first)->g_next = cast_gobj (next);
-        
-    } else {
-        cast_gobj (next)->g_next  = glist->gl_graphics;
-        glist->gl_graphics        = cast_gobj (next);
-    }
-
-    if (glist_isOnScreen (glist_getView (glist))) { gobj_visibilityChanged (cast_gobj (next), glist, 1); }
-}
-
-void canvas_addObject (t_glist *glist, t_gobj *y)
-{
-    t_object *object = NULL;
-    
-    int needToPaintScalars = class_hasPainterWidgetBehavior (pd_class (y));
-    
-    if (needToPaintScalars) { paint_erase(); }
-    
-    y->g_next = NULL;
-    
-    if (!glist->gl_graphics) { glist->gl_graphics = y; }
-    else {
-        t_gobj *t = NULL; for (t = glist->gl_graphics; t->g_next; t = t->g_next) { }
-        t->g_next = y;
-    }
-    
-    if ((object = cast_objectIfConnectable (y))) { 
-        editor_boxAdd (glist_getEditor (glist), object); 
-    }
-    
-    if (glist_isOnScreen (glist_getView (glist))) {
-        gobj_visibilityChanged (y, glist, 1); 
-    }
-    
-    if (needToPaintScalars) { paint_draw(); }
-}
-
 void canvas_removeObject (t_glist *glist, t_gobj *y)
 {
     t_box *text  = NULL;
@@ -195,7 +154,7 @@ void canvas_makeTextObject (t_glist *glist,
     object_setWidth (x, width);
     object_setType (x, TYPE_OBJECT);
     
-    canvas_addObject (glist, cast_gobj (x));
+    glist_addObject (glist, cast_gobj (x));
     
     if (isSelected) {
     //

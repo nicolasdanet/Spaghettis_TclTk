@@ -103,6 +103,45 @@ t_glist *glist_getView (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void glist_addObjectProceed (t_glist *glist, t_gobj *first, t_gobj *next)
+{
+    next->g_next = NULL;
+    
+    if (first != NULL) { next->g_next = first->g_next; first->g_next = next; }
+    else {
+    //    
+    if (!glist->gl_graphics) { glist->gl_graphics = next; }
+    else {
+        t_gobj *t = NULL; for (t = glist->gl_graphics; t->g_next; t = t->g_next) { } 
+        t->g_next = next;
+    }
+    //
+    }
+}
+
+void glist_addObjectNext (t_glist *glist, t_gobj *first, t_gobj *next)
+{
+    int needToPaintScalars = class_hasPainterWidgetBehavior (pd_class (next));
+    
+    if (needToPaintScalars) { paint_erase(); }
+    
+    glist_addObjectProceed (glist, first, next);
+    
+    if (cast_objectIfConnectable (next)) { editor_boxAdd (glist_getEditor (glist), cast_object (next)); }
+    if (glist_isOnScreen (glist_getView (glist))) { gobj_visibilityChanged (next, glist, 1); }
+    
+    if (needToPaintScalars) { paint_draw(); }
+}
+
+void glist_addObject (t_glist *glist, t_gobj *y)
+{
+    glist_addObjectNext (glist, NULL, y);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void glist_setName (t_glist *glist, t_symbol *name)
 {
     canvas_unbind (glist);

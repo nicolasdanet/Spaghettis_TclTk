@@ -174,7 +174,7 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         
         if (argc > 2) { buffer_deserialize (object_getBuffer (cast_object (glist)), argc - 2, argv + 2); }
         
-        canvas_addObject (parent, cast_gobj (glist));
+        glist_addObject (parent, cast_gobj (glist));
     }
 }
 

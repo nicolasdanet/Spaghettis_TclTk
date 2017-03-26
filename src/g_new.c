@@ -58,7 +58,7 @@ static t_glist *canvas_newGraphOnParent (t_glist *glist,
     
     buffer_vAppend (object_getBuffer (cast_object (x)), "s", sym_graph);
     
-    canvas_addObject (glist, cast_gobj (x));
+    glist_addObject (glist, cast_gobj (x));
     
     return x;
 }
@@ -202,7 +202,7 @@ void canvas_makeComment (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
             buffer_deserialize (object_getBuffer (x), 1, &a);
         }
         
-        canvas_addObject (glist, cast_gobj (x));
+        glist_addObject (glist, cast_gobj (x));
         
     } else if (glist_isOnScreen (glist)) {                                      /* Interactive creation. */
     
@@ -216,7 +216,7 @@ void canvas_makeComment (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         object_setY (x, positionY);
         
         buffer_deserialize (object_getBuffer (x), 1, &a);
-        canvas_addObject (glist, cast_gobj (x));
+        glist_addObject (glist, cast_gobj (x));
         canvas_selectObject (glist, cast_gobj (x));
     }
 }

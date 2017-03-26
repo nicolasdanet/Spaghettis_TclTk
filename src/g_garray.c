@@ -710,7 +710,7 @@ static t_garray *garray_makeObjectWithScalar (t_glist *glist,
     
     pd_bind (cast_pd (x), x->x_name);
     
-    canvas_addObject (glist, cast_gobj (x));
+    glist_addObject (glist, cast_gobj (x));
     
     return x;
 }
