@@ -205,8 +205,6 @@ static inline int glist_hasEditor (t_glist *glist)
 
 static inline int glist_hasWindow (t_glist *glist)
 {
-    PD_ASSERT (glist_hasEditor (glist) || !glist->gl_hasWindow);
-    
     return glist->gl_hasWindow;
 }
 
