@@ -15,7 +15,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 /* A root has no parent and an environment. */
 /* An abstraction has a parent and an environment. */
@@ -54,7 +53,7 @@ int glist_isSubpatch (t_glist *glist)
 /* This scalar has an array of numbers as unique field. */
 /* Dirty bit is always owned by the top patch. */
 /* For GOP the window to draw is owned higher in the tree. */
-/* Note that if required GOP can be opened in its own window by user. */
+/* Note that a GOP can be opened in its own window on demand. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
