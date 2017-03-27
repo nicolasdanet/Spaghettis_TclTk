@@ -52,7 +52,7 @@ void object_setFromEntry (t_object *x, t_glist *glist, t_box *z)
         int a = object_getX (x);
         int b = object_getY (x);
         
-        canvas_removeObject (glist, cast_gobj (x));
+        glist_removeObject (glist, cast_gobj (x));
         canvas_makeTextObject (glist, a, b, w, 0, t);
         editor_selectionRestoreLines (glist_getEditor (glist_getView (glist)));
         

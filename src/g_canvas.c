@@ -476,10 +476,15 @@ void canvas_remove (t_glist *glist, t_symbol *s)
     t_template *template = template_findByIdentifier (t);
     
     if (template) {
-        canvas_removeScalarsRecursive (glist, template); 
+        glist_removeAllScalarsByTemplate (glist, template); 
     }
     //
     }
+}
+
+void canvas_clear (t_glist *glist)
+{
+    glist_removeAll (glist);
 }
 
 void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -767,7 +772,7 @@ void canvas_free (t_glist *glist)
         
     canvas_deselectAll (glist);
     
-    while ((y = glist->gl_graphics)) { canvas_removeObject (glist, y); }
+    while ((y = glist->gl_graphics)) { glist_removeObject (glist, y); }
     if (glist == glist_getView (glist)) { canvas_visible (glist, 0); }
     
     canvas_unbind (glist);

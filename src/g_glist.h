@@ -67,6 +67,9 @@ int                 glist_isWindowable                      (t_glist *glist);
 
 void                glist_addObjectNext                     (t_glist *glist, t_gobj *first, t_gobj *next);
 void                glist_addObject                         (t_glist *glist, t_gobj *y);
+void                glist_removeObject                      (t_glist *glist, t_gobj *y);
+void                glist_removeAllScalarsByTemplate        (t_glist *glist, t_template *tmpl);
+void                glist_removeAll                         (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -130,12 +133,12 @@ static inline void glist_loadEnd (t_glist *glist)
 
 static inline void glist_deleteBegin (t_glist *glist)
 {
-    glist->gl_isDeleting = 1;
+    glist->gl_isDeleting++;
 }
 
 static inline void glist_deleteEnd (t_glist *glist)
 {
-    glist->gl_isDeleting = 0;
+    glist->gl_isDeleting--;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -237,7 +240,7 @@ static inline int glist_isLoading (t_glist *glist)
 
 static inline int glist_isDeleting (t_glist *glist)
 {
-    return glist->gl_isDeleting;
+    return (glist->gl_isDeleting > 0);
 }
 
 static inline int glist_isSelected (t_glist *glist)
