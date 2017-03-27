@@ -65,10 +65,10 @@ int path_isFileExistAsRegularFile (const char *filepath)
 #pragma mark -
 
 t_error path_withDirectoryAndName (char *dest, 
-                                    size_t size, 
-                                    const char *directory, 
-                                    const char *name, 
-                                    int expandEnvironment)
+    size_t size, 
+    const char *directory, 
+    const char *name, 
+    int expandEnvironment)
 {
     t_error err = PD_ERROR;
     
