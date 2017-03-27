@@ -288,7 +288,8 @@ void class_addMethod (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ..
     
     va_start (ap, type1);
     
-    if (s == &s_signal) { PD_BUG; return; }                     /* Deprecated. */
+    if (s == &s_signal) { PD_BUG; return;  }            /* Deprecated. */
+    if (s == sym_dsp)   { c->c_hasDSP = 1; }
     
     /* Note that "pointer" is not catched. */
     /* It aims to let the pointer object be A_GIMME initialized. */
@@ -425,11 +426,6 @@ int class_hasMethod (t_class *c, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-int class_hasDSP (t_class *c)
-{
-    return class_hasMethod (c, sym_dsp);
-}
 
 int class_hasOverrideBangMethod (t_class *c)
 {

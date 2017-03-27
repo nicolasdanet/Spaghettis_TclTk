@@ -229,11 +229,8 @@ void glist_removeAll (t_glist *glist)
     
     while ((y = glist->gl_graphics)) {
     //
-    if (!dspSuspended) {
-        if (cast_objectIfConnectable (y) && class_hasDSP (pd_class (y))) {
-            dspState = dsp_suspend();
-            dspSuspended = 1;
-        }
+    if (!dspSuspended) { 
+        if (class_hasDSP (pd_class (y))) { dspState = dsp_suspend(); dspSuspended = 1; }
     }
 
     glist_removeObject (glist, y);

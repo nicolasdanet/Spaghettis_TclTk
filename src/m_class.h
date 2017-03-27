@@ -101,7 +101,8 @@ struct _class {
     t_savefn                    c_fnSave;
     t_propertiesfn              c_fnProperties;
     t_int                       c_signalOffset;
-    char                        c_hasFirstInlet;
+    int                         c_hasFirstInlet;
+    int                         c_hasDSP;
     int                         c_type;
     size_t                      c_size;
     };
@@ -122,7 +123,6 @@ int         class_hasMethod                     (t_class *c, t_symbol *s);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-int         class_hasDSP                        (t_class *c);
 int         class_hasOverrideBangMethod         (t_class *c);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -151,6 +151,11 @@ static inline size_t class_getInstanceSize (t_class *c)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+static inline int class_hasDSP (t_class *c)
+{
+    return (c->c_hasDSP != 0);
+}
 
 static inline int class_hasFirstInlet (t_class *c)
 {
