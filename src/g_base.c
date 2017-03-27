@@ -75,7 +75,7 @@ void canvas_makeTextObject (t_glist *glist,
     //
     }
     
-    if (pd_class (x) == vinlet_class)  { canvas_resortInlets (glist_getView (glist)); }
+    if (pd_class (x) == vinlet_class)  { canvas_resortInlets (glist_getView (glist));  }
     if (pd_class (x) == voutlet_class) { canvas_resortOutlets (glist_getView (glist)); }
     //
     }

@@ -144,7 +144,7 @@ void canvas_displaceSelectedObjects (t_glist *glist, int deltaX, int deltaY)
         isDirty = 1;
     }
     
-    if (needToResortInlets)  { canvas_resortInlets (glist); }
+    if (needToResortInlets)  { canvas_resortInlets (glist);  }
     if (needToResortOutlets) { canvas_resortOutlets (glist); }
         
     if (isDirty) { glist_setDirty (glist, 1); }

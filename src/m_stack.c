@@ -75,14 +75,13 @@ void instance_stackPop (t_glist *x)
 
 void instance_stackPopPatch (t_glist *glist, int visible)
 {
-    if (visible) { canvas_visible (glist, 1); }
-    
     instance_stackPop (glist);
     
-    canvas_resortInlets (glist);
-    canvas_resortOutlets (glist);
+    canvas_resortInlets (glist); canvas_resortOutlets (glist);
     
     glist_loadEnd (glist);
+    
+    if (visible) { canvas_visible (glist, 1); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
