@@ -22,12 +22,6 @@ void            canvas_newPatch                         (void *dummy, t_symbol *
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol        *canvas_expandDollar                    (t_glist *glist, t_symbol *s);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void            canvas_bind                             (t_glist *glist);
 void            canvas_unbind                           (t_glist *glist);
 t_error         canvas_makeFilePath                     (t_glist *glist, char *name, char *dest, size_t size);

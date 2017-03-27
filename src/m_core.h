@@ -202,7 +202,7 @@ int         dollar_isPointingToDollarAndNumber          (const char *s);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_symbol    *dollar_expandDollarSymbolByEnvironment     (t_symbol *s, t_glist *glist);
+t_symbol    *canvas_expandDollarSymbolByEnvironment     (t_symbol *s, t_glist *glist);
 t_symbol    *dollar_expandDollarSymbol                  (t_symbol *s, int argc, t_atom *argv, t_glist *glist);
 
 void        dollar_expandDollarNumberByEnvironment      (t_atom *dollar, t_atom *a, t_glist *glist);

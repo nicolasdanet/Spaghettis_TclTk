@@ -30,14 +30,6 @@ void canvas_newPatch (void *dummy, t_symbol *name, t_symbol *directory)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol *canvas_expandDollar (t_glist *glist, t_symbol *s)
-{
-    if (strchr (s->s_name, '$')) { return dollar_expandDollarSymbolByEnvironment (s, glist); }
-    else {
-        return s;
-    }
-}
-
 t_error canvas_makeFilePath (t_glist *glist, char *name, char *dest, size_t size)
 {
     t_error err = PD_ERROR_NONE;

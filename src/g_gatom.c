@@ -419,9 +419,9 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     x->a_unexpandedSend     = symSend;
     x->a_unexpandedReceive  = symReceive;
     x->a_unexpandedLabel    = symLabel;
-    x->a_send               = canvas_expandDollar (x->a_owner, x->a_unexpandedSend);
-    x->a_receive            = canvas_expandDollar (x->a_owner, x->a_unexpandedReceive);
-    x->a_label              = canvas_expandDollar (x->a_owner, x->a_unexpandedLabel);
+    x->a_send               = canvas_expandDollarSymbolByEnvironment (x->a_unexpandedSend, x->a_owner);
+    x->a_receive            = canvas_expandDollarSymbolByEnvironment (x->a_unexpandedReceive, x->a_owner);
+    x->a_label              = canvas_expandDollarSymbolByEnvironment (x->a_unexpandedLabel, x->a_owner);
     
     if (x->a_receive != &s_) { pd_bind (cast_pd (x), x->a_receive); }
     
@@ -486,9 +486,9 @@ static void gatom_makeObjectProceed (t_glist *glist, t_atomtype type, int argc, 
         x->a_unexpandedLabel    = gatom_parse (atom_getSymbolAtIndex (6, argc, argv));
         x->a_unexpandedReceive  = gatom_parse (atom_getSymbolAtIndex (7, argc, argv));
         x->a_unexpandedSend     = gatom_parse (atom_getSymbolAtIndex (8, argc, argv));
-        x->a_send               = canvas_expandDollar (x->a_owner, x->a_unexpandedSend);
-        x->a_receive            = canvas_expandDollar (x->a_owner, x->a_unexpandedReceive);
-        x->a_label              = canvas_expandDollar (x->a_owner, x->a_unexpandedLabel);
+        x->a_send               = canvas_expandDollarSymbolByEnvironment (x->a_unexpandedSend, x->a_owner);
+        x->a_receive            = canvas_expandDollarSymbolByEnvironment (x->a_unexpandedReceive, x->a_owner);
+        x->a_label              = canvas_expandDollarSymbolByEnvironment (x->a_unexpandedLabel, x->a_owner);
                 
         if (x->a_receive != &s_) { pd_bind (cast_pd (x), x->a_receive); }
 

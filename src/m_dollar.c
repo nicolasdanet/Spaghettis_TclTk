@@ -153,7 +153,7 @@ void dollar_copyExpandAtoms (t_atom *src, int m, t_atom *dest, int n, int argc, 
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol *dollar_expandDollarSymbolByEnvironment (t_symbol *s, t_glist *glist)
+t_symbol *dollar_expandDollarSymbolByEnvironmentProceed (t_symbol *s, t_glist *glist)
 {
     t_environment *e = NULL;
     
@@ -220,7 +220,7 @@ t_symbol *dollar_expandGetIfSymbolByEnvironment (t_atom *a, t_glist *glist)
     
     if (a) {
         if (IS_SYMBOL (a) || IS_DOLLARSYMBOL (a)) { 
-            s = dollar_expandDollarSymbolByEnvironment (GET_SYMBOL (a), glist);
+            s = dollar_expandDollarSymbolByEnvironmentProceed (GET_SYMBOL (a), glist);
             
         } else if (IS_DOLLAR (a)) {
             t_atom t; 
@@ -230,6 +230,14 @@ t_symbol *dollar_expandGetIfSymbolByEnvironment (t_atom *a, t_glist *glist)
     }
     
     return s;
+}
+
+t_symbol *canvas_expandDollarSymbolByEnvironment (t_symbol *s, t_glist *glist)
+{
+    if (strchr (s->s_name, '$')) { return dollar_expandDollarSymbolByEnvironmentProceed (s, glist); }
+    else {
+        return s;
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
