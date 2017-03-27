@@ -116,7 +116,7 @@ void canvas_fromArrayDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv
         g = canvas_newGraphOnParent (glist, start, up, n, -up, a, b, width, height);
     }
     
-    garray_makeObject (g, dollar_fromHash (name), n, flags);
+    garray_makeObject (g, utils_hashToDollar (name), n, flags);
     
     glist_setDirty (glist, 1);
     //

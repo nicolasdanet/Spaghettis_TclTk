@@ -232,63 +232,11 @@ t_symbol *dollar_expandGetIfSymbolByEnvironment (t_atom *a, t_glist *glist)
     return s;
 }
 
-t_symbol *canvas_expandDollarSymbolByEnvironment (t_symbol *s, t_glist *glist)
+t_symbol *dollar_expandDollarSymbolByEnvironment (t_symbol *s, t_glist *glist)
 {
     if (strchr (s->s_name, '$')) { return dollar_expandDollarSymbolByEnvironmentProceed (s, glist); }
     else {
         return s;
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-/* True if the string start with a dollar following by zero or more numbers. */
-
-int dollar_isDollarNumber (const char *s)
-{
-    if (*s != '$') { return 0; } while (*(++s)) { if (*s < '0' || *s > '9') { return 0; } }
-    
-    return 1;
-}
-
-/* True if the string start with a dollar following by one number. */
-
-int dollar_isPointingToDollarAndNumber (const char *s)
-{
-    PD_ASSERT (s[0] != 0);
-    
-    if (s[0] != '$' || s[1] < '0' || s[1] > '9') { return 0; }
-    
-    return 1;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_symbol *dollar_toHash (t_symbol *s)
-{
-    char t[PD_STRING + 1] = { 0 };
-    
-    if (strlen (s->s_name) >= PD_STRING) { PD_BUG; return s; }
-    else {
-        string_copy (t, PD_STRING, s->s_name);
-        string_replaceCharacter (t, '$', '#');
-        return gensym (t);
-    }
-}
-
-t_symbol *dollar_fromHash (t_symbol *s)
-{
-    char t[PD_STRING + 1] = { 0 };
-    
-    if (strlen (s->s_name) >= PD_STRING) { PD_BUG; return s; }
-    else {
-        string_copy (t, PD_STRING, s->s_name);
-        string_replaceCharacter (t, '#', '$');
-        return gensym (t);
     }
 }
 

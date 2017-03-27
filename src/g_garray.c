@@ -482,7 +482,7 @@ static void garray_rename (t_garray *x, t_symbol *s)
 {
     pd_unbind (cast_pd (x), x->x_name);
     x->x_unexpandedName = s;
-    x->x_name = canvas_expandDollarSymbolByEnvironment (s, x->x_owner);
+    x->x_name = dollar_expandDollarSymbolByEnvironment (s, x->x_owner);
     pd_bind (cast_pd (x), x->x_name);
     garray_redraw (x);
     garray_updateGraphName (x);
@@ -637,7 +637,7 @@ void garray_functionProperties (t_garray *x)
     
     err |= string_sprintf (t, PD_STRING,
                 "::ui_array::show %%s %s %d %d\n",
-                dollar_toHash (x->x_unexpandedName)->s_name, 
+                utils_dollarToHash (x->x_unexpandedName)->s_name, 
                 array_getSize (array),
                 flags);
     
@@ -654,7 +654,7 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     t_float size   = atom_getFloat (argv + 1);
     t_float flags  = atom_getFloat (argv + 2);
     
-    t_symbol *newName = dollar_fromHash (name);
+    t_symbol *newName = utils_hashToDollar (name);
     int newSize       = (int)PD_MAX (1.0, size);
     int save          = (((int)flags & 1) != 0);
     int newStyle      = (((int)flags & 6) >> 1);
@@ -668,7 +668,7 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     //
     x->x_unexpandedName = newName;
     pd_unbind (cast_pd (x), x->x_name);
-    x->x_name = canvas_expandDollarSymbolByEnvironment (newName, x->x_owner);
+    x->x_name = dollar_expandDollarSymbolByEnvironment (newName, x->x_owner);
     pd_bind (cast_pd (x), x->x_name);
 
     garray_updateGraphName (x);
@@ -703,7 +703,7 @@ static t_garray *garray_makeObjectWithScalar (t_glist *glist,
     x->x_scalar         = scalar_new (glist, templateIdentifier);
     x->x_owner          = glist;
     x->x_unexpandedName = name;
-    x->x_name           = canvas_expandDollarSymbolByEnvironment (name, glist);
+    x->x_name           = dollar_expandDollarSymbolByEnvironment (name, glist);
     x->x_isUsedInDSP    = 0;
     x->x_saveWithParent = save;
     x->x_hideName       = hide;

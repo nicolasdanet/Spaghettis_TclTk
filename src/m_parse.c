@@ -178,7 +178,7 @@ static void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int prea
         lastSlash = slash; slash = utils_isTokenEscape (c);
 
         if (floatState >= 0) { floatState = buffer_parseNextFloatState (floatState, c); }
-        if (!lastSlash && text != tBound && dollar_isPointingToDollarAndNumber (text - 1)) { dollar = 1; }
+        if (!lastSlash && text != tBound && string_startWithOneDollarAndOneNumber (text - 1)) { dollar = 1; }
         
         if (!slash)         { p++; }
         else if (lastSlash) { p++; slash = 0; }
@@ -191,7 +191,7 @@ static void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int prea
             SET_FLOAT (a, (t_float)atof (buffer));
                         
         } else if (dollar) {
-            if (dollar_isDollarNumber (buffer)) { SET_DOLLAR (a, atoi (buffer + 1)); }
+            if (string_containsOneDollarFollowingByNumbers (buffer)) { SET_DOLLAR (a, atoi (buffer + 1)); }
             else { 
                 SET_DOLLARSYMBOL (a, gensym (buffer));
             }

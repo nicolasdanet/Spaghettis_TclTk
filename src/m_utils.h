@@ -64,6 +64,9 @@ void        string_replaceCharacter                     (char *s, char toBeRepla
 
 void        string_getNumberOfColumnsAndLines           (char *s, int *numberOfColumns, int *numberOfLines);
 
+int         string_containsOneDollarFollowingByNumbers  (const char *s);
+int         string_startWithOneDollarAndOneNumber       (const char *s);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -87,6 +90,8 @@ t_symbol    *utils_gensymWithAtoms                      (int argc, t_atom *argv)
 t_symbol    *utils_getFirstAtomOfObjectAsSymbol         (t_object *x);
 t_symbol    *utils_getFirstAtomOfBufferAsSymbol         (t_buffer *x);
 
+t_symbol    *utils_dollarToHash                         (t_symbol *s);
+t_symbol    *utils_hashToDollar                         (t_symbol *s);
 t_symbol    *utils_decode                               (t_symbol *s);
 t_symbol    *utils_dash                                 (void);
 t_symbol    *utils_empty                                (void); 

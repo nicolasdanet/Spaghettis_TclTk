@@ -116,7 +116,7 @@ static t_symbol *gatom_parse (t_symbol *s)
 {
     if (s == utils_empty() || s == utils_dash()) { return &s_; }
     else { 
-        return dollar_fromHash (s);
+        return utils_hashToDollar (s);
     }
 }
 
@@ -344,9 +344,9 @@ static void gatom_functionSave (t_gobj *z, t_buffer *b)
         (double)x->a_lowRange,
         (double)x->a_highRange,
         (double)x->a_position,
-        dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedLabel, 1)),
-        dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedReceive, 1)),
-        dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedSend, 1)));
+        utils_dollarToHash (utils_substituteIfEmpty (x->a_unexpandedLabel, 1)),
+        utils_dollarToHash (utils_substituteIfEmpty (x->a_unexpandedReceive, 1)),
+        utils_dollarToHash (utils_substituteIfEmpty (x->a_unexpandedSend, 1)));
 
     object_saveWidth (cast_object (x), b);
 }
@@ -357,9 +357,9 @@ static void gatom_functionProperties (t_gobj *z, t_glist *owner)
     t_error err = PD_ERROR_NONE;
     char t[PD_STRING] = { 0 };
     
-    t_symbol *symSend    = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedSend, 0));
-    t_symbol *symReceive = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedReceive, 0));
-    t_symbol *symLabel   = dollar_toHash (utils_substituteIfEmpty (x->a_unexpandedLabel, 0));
+    t_symbol *symSend    = utils_dollarToHash (utils_substituteIfEmpty (x->a_unexpandedSend, 0));
+    t_symbol *symReceive = utils_dollarToHash (utils_substituteIfEmpty (x->a_unexpandedReceive, 0));
+    t_symbol *symLabel   = utils_dollarToHash (utils_substituteIfEmpty (x->a_unexpandedLabel, 0));
     
     if (gatom_isFloat (x)) {
     
@@ -419,9 +419,9 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     x->a_unexpandedSend     = symSend;
     x->a_unexpandedReceive  = symReceive;
     x->a_unexpandedLabel    = symLabel;
-    x->a_send               = canvas_expandDollarSymbolByEnvironment (x->a_unexpandedSend, x->a_owner);
-    x->a_receive            = canvas_expandDollarSymbolByEnvironment (x->a_unexpandedReceive, x->a_owner);
-    x->a_label              = canvas_expandDollarSymbolByEnvironment (x->a_unexpandedLabel, x->a_owner);
+    x->a_send               = dollar_expandDollarSymbolByEnvironment (x->a_unexpandedSend, x->a_owner);
+    x->a_receive            = dollar_expandDollarSymbolByEnvironment (x->a_unexpandedReceive, x->a_owner);
+    x->a_label              = dollar_expandDollarSymbolByEnvironment (x->a_unexpandedLabel, x->a_owner);
     
     if (x->a_receive != &s_) { pd_bind (cast_pd (x), x->a_receive); }
     
@@ -486,9 +486,9 @@ static void gatom_makeObjectProceed (t_glist *glist, t_atomtype type, int argc, 
         x->a_unexpandedLabel    = gatom_parse (atom_getSymbolAtIndex (6, argc, argv));
         x->a_unexpandedReceive  = gatom_parse (atom_getSymbolAtIndex (7, argc, argv));
         x->a_unexpandedSend     = gatom_parse (atom_getSymbolAtIndex (8, argc, argv));
-        x->a_send               = canvas_expandDollarSymbolByEnvironment (x->a_unexpandedSend, x->a_owner);
-        x->a_receive            = canvas_expandDollarSymbolByEnvironment (x->a_unexpandedReceive, x->a_owner);
-        x->a_label              = canvas_expandDollarSymbolByEnvironment (x->a_unexpandedLabel, x->a_owner);
+        x->a_send               = dollar_expandDollarSymbolByEnvironment (x->a_unexpandedSend, x->a_owner);
+        x->a_receive            = dollar_expandDollarSymbolByEnvironment (x->a_unexpandedReceive, x->a_owner);
+        x->a_label              = dollar_expandDollarSymbolByEnvironment (x->a_unexpandedLabel, x->a_owner);
                 
         if (x->a_receive != &s_) { pd_bind (cast_pd (x), x->a_receive); }
 

@@ -252,3 +252,27 @@ void string_replaceCharacter (char *s, char toBeReplaced, char c)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* True if the string start with a dollar following by zero or more numbers. */
+
+int string_containsOneDollarFollowingByNumbers (const char *s)
+{
+    if (*s != '$') { return 0; } while (*(++s)) { if (*s < '0' || *s > '9') { return 0; } }
+    
+    return 1;
+}
+
+/* True if the string start with a dollar following by one number. */
+
+int string_startWithOneDollarAndOneNumber (const char *s)
+{
+    PD_ASSERT (s[0] != 0);
+    
+    if (s[0] != '$' || s[1] < '0' || s[1] > '9') { return 0; }
+    
+    return 1;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
