@@ -255,9 +255,7 @@ int         file_openRaw                            (const char *filepath, int o
 int         file_openConsideringSearchPath          (const char *directory, 
                                                         const char *name,
                                                         const char *extension,
-                                                        char *directoryResult,
-                                                        char **nameResult,
-                                                        size_t size);
+                                                        t_fileproperties *p);
 
 void        file_openHelp                           (const char *directory, const char *name);
 

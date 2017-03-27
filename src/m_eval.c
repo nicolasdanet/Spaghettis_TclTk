@@ -184,10 +184,10 @@ t_error buffer_read (t_buffer *x, t_symbol *name, t_glist *glist)
 {
     t_error err = PD_ERROR;
     
-    char directory[PD_STRING] = { 0 }; char *filepath = NULL;
+    t_fileproperties p;
     
-    if (glist_fileFind (glist, name->s_name, "", directory, &filepath, PD_STRING)) {
-        err = buffer_fromFile (x, filepath, directory);
+    if (glist_fileFind (glist, name->s_name, "", &p)) {
+        err = buffer_fromFile (x, fileproperties_getName (&p), fileproperties_getDirectory (&p));
     }
     
     if (err) { error_canNotOpen (name); }

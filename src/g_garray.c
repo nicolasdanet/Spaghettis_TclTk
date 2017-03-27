@@ -491,10 +491,10 @@ static void garray_rename (t_garray *x, t_symbol *s)
 static void garray_read (t_garray *x, t_symbol *name)
 {
     t_error err = PD_ERROR_NONE;
-    char *p = NULL;
-    char t[PD_STRING] = { 0 };
     
-    int f = glist_fileOpen (glist_getView (x->x_owner), name->s_name, "", t, &p, PD_STRING);
+    t_fileproperties p;
+    
+    int f = glist_fileOpen (glist_getView (x->x_owner), name->s_name, "", &p);
     
     if (!(err |= (f < 0))) {
     //

@@ -347,18 +347,12 @@ static int soundfile_readFileHeaderProceed (int f, t_audioproperties *args)
 
 int soundfile_readFileHeader (t_glist *glist, t_audioproperties *args)
 {
-    char t[PD_STRING] = { 0 };
-    char *s;
+    t_fileproperties p;
     
     PD_ASSERT (args->ap_fileName);
     PD_ASSERT (args->ap_fileExtension);
     
-    int f = glist_fileOpen (glist, 
-                args->ap_fileName->s_name, 
-                args->ap_fileExtension->s_name,
-                t,
-                &s,
-                PD_STRING);
+    int f = glist_fileOpen (glist, args->ap_fileName->s_name, args->ap_fileExtension->s_name, &p);
     
     if (f >= 0) { return soundfile_readFileHeaderProceed (f, args); }
     

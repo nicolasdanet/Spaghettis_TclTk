@@ -318,44 +318,27 @@ void glist_objectRemoveByTemplate (t_glist *glist, t_template *template)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int glist_fileFind (t_glist *glist,
-    const char *name,
-    const char *extension,
-    char *directoryResult,
-    char **nameResult,
-    size_t size)
+int glist_fileExist (t_glist *glist, char *name, char *extension)
 {
-    int f = glist_fileOpen (glist, name, extension, directoryResult, nameResult, size);
+    t_fileproperties p; return glist_fileFind (glist, name, extension, &p);
+}
+
+int glist_fileFind (t_glist *glist, char *name, char *extension, t_fileproperties *p)
+{
+    int f = glist_fileOpen (glist, name, extension, p);
     
     if (f >= 0) { close (f); return 1; }
     
     return 0;
 }
 
-int glist_fileExist (t_glist *glist, const char *name, const char *extension)
-{
-    char *p = NULL; char t[PD_STRING] = { 0 };
-    
-    return glist_fileFind (glist, name, extension, t, &p, PD_STRING);
-}
-
 /* Caller is responsible to close the file. */
 
-int glist_fileOpen (t_glist *glist,
-    const char *name,
-    const char *extension,
-    char *directoryResult,
-    char **nameResult,
-    size_t size)
+int glist_fileOpen (t_glist *glist, char *name, char *extension, t_fileproperties *p)
 {
     const char *directory = glist ? environment_getDirectoryAsString (glist_getEnvironment (glist)) : ".";
     
-    int f = file_openConsideringSearchPath (directory, 
-                name,
-                extension,
-                directoryResult,
-                nameResult, 
-                size);
+    int f = file_openConsideringSearchPath (directory, name, extension, p);
         
     return f;
 }

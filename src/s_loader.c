@@ -189,16 +189,18 @@ static int loader_openExternal (t_glist *glist, t_symbol *name)
     if (loader_isAlreadyLoaded (name)) { return 1; }
     else {
     //
-    char directoryResult[PD_STRING] = { 0 }; 
-    char *nameResult = NULL;
+    t_fileproperties p;
 
-    if (glist_fileFind (glist, name->s_name, PD_PLUGIN, directoryResult, &nameResult, PD_STRING)) {
+    if (glist_fileFind (glist, name->s_name, PD_PLUGIN, &p)) {
     //
     char filepath[PD_STRING] = { 0 };
     
-    class_setCurrentExternalDirectory (gensym (directoryResult));
+    char *filename  = fileproperties_getName (&p);
+    char *directory = fileproperties_getDirectory (&p);
+
+    class_setCurrentExternalDirectory (gensym (directory));
     
-    if (!path_withDirectoryAndName (filepath, PD_STRING, directoryResult, nameResult, 0)) {
+    if (!path_withDirectoryAndName (filepath, PD_STRING, directory, filename, 0)) {
         char stub[PD_STRING] = { 0 };
         t_error err = loader_makeStubName (stub, PD_STRING, name, "_setup");
         if (!err && (handle = loader_openExternalNative (filepath, stub, gensym (filepath)))) {

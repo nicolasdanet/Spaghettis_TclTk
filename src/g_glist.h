@@ -76,21 +76,9 @@ void    glist_objectRemoveAll           (t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int     glist_fileExist                 (t_glist *glist, const char *name, const char *extension);
-
-int     glist_fileFind                  (t_glist *glist,
-                                            const char *name,
-                                            const char *extension,
-                                            char *directoryResult,
-                                            char **nameResult,
-                                            size_t size);
-                                                            
-int     glist_fileOpen                  (t_glist *glist,
-                                            const char *name,
-                                            const char *extension,
-                                            char *directoryResult,
-                                            char **nameResult,
-                                            size_t size);
+int     glist_fileExist                 (t_glist *glist, char *name, char *extension);
+int     glist_fileFind                  (t_glist *glist, char *name, char *extension, t_fileproperties *p);
+int     glist_fileOpen                  (t_glist *glist, char *name, char *extension, t_fileproperties *p);
                                                             
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

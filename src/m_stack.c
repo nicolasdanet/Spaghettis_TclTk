@@ -106,22 +106,21 @@ static int instance_loadAbstractionIsValid (t_symbol *filename)
 
 void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
 {
-    char directory[PD_STRING] = { 0 }; char *name = NULL;
+    t_fileproperties p;
     
-    if (glist_fileFind (instance_contextGetCurrent(), s->s_name, PD_PATCH, directory, &name, PD_STRING)) {
+    if (glist_fileFind (instance_contextGetCurrent(), s->s_name, PD_PATCH, &p)) {
     //
-    t_symbol *filename = gensym (name);
+    t_symbol *filename = gensym (fileproperties_getName (&p));
     
     if (instance_loadAbstractionIsValid (filename)) {
     //
-    instance_environmentSetArguments (argc, argv);          /* Get an environment (unique dollar zero). */
+    instance_environmentSetArguments (argc, argv);
     
-    buffer_fileEval (filename, gensym (directory));
+    buffer_fileEval (filename, gensym (fileproperties_getDirectory (&p)));
     
     if (instance_contextGetCurrent() != instance_contextGetStored()) {
     
         instance_setNewestObject (cast_pd (instance_contextGetCurrent()));
-        
         instance_stackPopPatch (instance_contextGetCurrent(), 0); 
     }
     

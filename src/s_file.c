@@ -94,9 +94,7 @@ FILE *file_openWrite (const char *filepath)
 static int file_openWithDirectoryAndName (const char *directory, 
     const char *name, 
     const char *extension,
-    char *directoryResult, 
-    char **nameResult, 
-    size_t size)
+    t_fileproperties *p)
 {
     int f = -1;
     t_error err = PD_ERROR_NONE;
@@ -104,23 +102,22 @@ static int file_openWithDirectoryAndName (const char *directory,
     PD_ASSERT (directory);
     PD_ASSERT (name);
     
-    err |= path_withDirectoryAndName (directoryResult, size, directory, name, 1);
-    err |= string_add (directoryResult, size, extension);
+    p->f_directory[0] = 0; p->f_name = p->f_directory;
+    
+    err |= path_withDirectoryAndName (p->f_directory, PATH_STRING, directory, name, 1);
+    err |= string_add (p->f_directory, PATH_STRING, extension);
 
-    if (!err && (f = file_openRaw (directoryResult, O_RDONLY)) >= 0) {
+    if (!err && (f = file_openRaw (p->f_directory, O_RDONLY)) >= 0) {
     //
     char *slash = NULL;
-    
-    *nameResult = directoryResult;
-    
-    if ((slash = strrchr (directoryResult, '/'))) { *slash = 0; *nameResult = slash + 1; }
+
+    if ((slash = strrchr (p->f_directory, '/'))) { *slash = 0; p->f_name = slash + 1; }
     
     return f;  
     //
     }
     
-    *nameResult = directoryResult;
-    *directoryResult = 0;
+    p->f_directory[0] = 0; p->f_name = p->f_directory;
     
     return -1;
 }
@@ -131,18 +128,16 @@ static int file_openWithDirectoryAndName (const char *directory,
 int file_openConsideringSearchPath (const char *directory, 
     const char *name, 
     const char *extension,
-    char *directoryResult, 
-    char **nameResult, 
-    size_t size)
+    t_fileproperties *p)
 {
-    int f = file_openWithDirectoryAndName (directory, name, extension, directoryResult, nameResult, size);
+    int f = file_openWithDirectoryAndName (directory, name, extension, p);
     
     if (f < 0) {
         t_pathlist *l = path_getSearchPath();
         while (l) {
             char *path = pathlist_getPath (l);
             l = pathlist_getNext (l);
-            f = file_openWithDirectoryAndName (path, name, extension, directoryResult, nameResult, size);
+            f = file_openWithDirectoryAndName (path, name, extension, p);
             if (f >= 0) { break; }
         }
     }
@@ -160,22 +155,24 @@ int file_openConsideringSearchPath (const char *directory,
 
 void file_openHelp (const char *directory, const char *name)
 {
+    t_fileproperties p;
     int f = -1;
-    char *nameResult = NULL;
-    char directoryResult[PD_STRING] = { 0 };
     
     if (*directory != 0) { 
-        f = file_openWithDirectoryAndName (directory, name, PD_HELP, directoryResult, &nameResult, PD_STRING);
+        f = file_openWithDirectoryAndName (directory, name, PD_HELP, &p);
     }
     
     if (f < 0) {
         char *help = main_directoryHelp->s_name;
-        f = file_openConsideringSearchPath (help, name, PD_HELP, directoryResult, &nameResult, PD_STRING);
+        f = file_openConsideringSearchPath (help, name, PD_HELP, &p);
     }
     
     if (f < 0) { error_canNotFind (gensym (name), sym_help); }
     else {
-        close (f); buffer_fileOpen (NULL, gensym (nameResult), gensym (directoryResult));
+        t_symbol *s1 = gensym (fileproperties_getName (&p));
+        t_symbol *s2 = gensym (fileproperties_getDirectory (&p));
+        close (f); 
+        buffer_fileOpen (NULL, s1, s2);
     }
 }
 
