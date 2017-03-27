@@ -186,7 +186,7 @@ t_error buffer_read (t_buffer *x, t_symbol *name, t_glist *glist)
     
     t_fileproperties p;
     
-    if (glist_fileFind (glist, name->s_name, "", &p)) {
+    if (glist_fileExist (glist, name->s_name, "", &p)) {
         err = buffer_fromFile (x, fileproperties_getName (&p), fileproperties_getDirectory (&p));
     }
     

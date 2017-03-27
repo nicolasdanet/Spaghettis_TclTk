@@ -108,7 +108,7 @@ void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
 {
     t_fileproperties p;
     
-    if (glist_fileFind (instance_contextGetCurrent(), s->s_name, PD_PATCH, &p)) {
+    if (glist_fileExist (instance_contextGetCurrent(), s->s_name, PD_PATCH, &p)) {
     //
     t_symbol *filename = gensym (fileproperties_getName (&p));
     

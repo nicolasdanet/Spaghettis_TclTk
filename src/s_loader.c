@@ -191,7 +191,7 @@ static int loader_openExternal (t_glist *glist, t_symbol *name)
     //
     t_fileproperties p;
 
-    if (glist_fileFind (glist, name->s_name, PD_PLUGIN, &p)) {
+    if (glist_fileExist (glist, name->s_name, PD_PLUGIN, &p)) {
     //
     char filepath[PD_STRING] = { 0 };
     

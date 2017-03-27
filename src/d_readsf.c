@@ -348,7 +348,7 @@ static void readsf_tilde_open (t_readsf_tilde *x, t_symbol *s, int argc, t_atom 
     //
     t_fileproperties t;
     
-    if (glist_fileFind (x->sf_owner, p.ap_fileName->s_name, p.ap_fileExtension->s_name, &t)) {
+    if (glist_fileExist (x->sf_owner, p.ap_fileName->s_name, p.ap_fileExtension->s_name, &t)) {
     //
     pthread_mutex_lock (&x->sf_mutex);
     

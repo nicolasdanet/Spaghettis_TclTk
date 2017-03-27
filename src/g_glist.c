@@ -311,14 +311,14 @@ void glist_objectRemoveByTemplate (t_glist *glist, t_template *template)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Files are searching in the patch directory first. */
+/* Files are searching in the directory of the patch first. */
 /* Without success it tries to find it using the search path. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int glist_fileFind (t_glist *glist, char *name, char *extension, t_fileproperties *p)
+int glist_fileExist (t_glist *glist, char *name, char *extension, t_fileproperties *p)
 {
     int f = glist_fileOpen (glist, name, extension, p);
     
