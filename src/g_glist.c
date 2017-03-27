@@ -134,12 +134,7 @@ void glist_setDirty (t_glist *glist, int n)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void glist_objectMake (t_glist *glist, 
-    int positionX,
-    int positionY,
-    int width,
-    int isSelected,
-    t_buffer *b)
+void glist_objectMake (t_glist *glist, int a, int b, int w, int isSelected, t_buffer *t)
 {
     instance_setNewestObject (NULL);
     
@@ -148,9 +143,10 @@ void glist_objectMake (t_glist *glist,
     {
     //
     t_environment *e = glist_getEnvironment (instance_contextGetCurrent());
+    
     t_object *x = NULL;
     
-    buffer_eval (b, 
+    buffer_eval (t, 
         instance_getMakerObject(), 
         environment_getNumberOfArguments (e), 
         environment_getArguments (e));
@@ -158,16 +154,16 @@ void glist_objectMake (t_glist *glist,
     if (instance_getNewestObject()) { x = cast_objectIfConnectable (instance_getNewestObject()); }
 
     if (!x) {
-        x = (t_object *)pd_new (text_class);    /* Create a dummy box. */
-        if (buffer_size (b)) {
-            error_canNotMake (buffer_size (b), buffer_atoms (b)); 
+        x = (t_object *)pd_new (text_class);    /* If failed create a dummy box. */
+        if (buffer_size (t)) {
+            error_canNotMake (buffer_size (t), buffer_atoms (t)); 
         }
     }
 
-    object_setBuffer (x, b);
-    object_setX (x, positionX);
-    object_setY (x, positionY);
-    object_setWidth (x, width);
+    object_setBuffer (x, t);
+    object_setX (x, a);
+    object_setY (x, b);
+    object_setWidth (x, w);
     object_setType (x, TYPE_OBJECT);
     
     glist_objectAdd (glist, cast_gobj (x));
@@ -187,7 +183,7 @@ void glist_objectMake (t_glist *glist,
     instance_stackPop (glist);
 }
 
-void glist_addObjectProceed (t_glist *glist, t_gobj *first, t_gobj *next)
+void glist_objectAddProceed (t_glist *glist, t_gobj *first, t_gobj *next)
 {
     next->g_next = NULL;
     
@@ -209,7 +205,7 @@ void glist_objectAddNext (t_glist *glist, t_gobj *first, t_gobj *next)
     
     if (needToRepaint) { paint_erase(); }
     
-    glist_addObjectProceed (glist, first, next);
+    glist_objectAddProceed (glist, first, next);
     
     if (cast_objectIfConnectable (next)) { editor_boxAdd (glist_getEditor (glist), cast_object (next)); }
     if (glist_isOnScreen (glist_getView (glist))) { gobj_visibilityChanged (next, glist, 1); }
@@ -225,7 +221,7 @@ void glist_objectAdd (t_glist *glist, t_gobj *y)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void glist_removeObjectProceed (t_glist *glist, t_gobj *y)
+void glist_objectRemoveProceed (t_glist *glist, t_gobj *y)
 {
     if (glist->gl_graphics == y) { glist->gl_graphics = y->g_next; }
     else {
@@ -256,7 +252,7 @@ void glist_objectRemove (t_glist *glist, t_gobj *y)
         if (cast_objectIfConnectable (y)) { box = box_fetch (glist, cast_object (y)); }
         
         gobj_deleted (y, glist); 
-        glist_removeObjectProceed (glist, y); 
+        glist_objectRemoveProceed (glist, y); 
         pd_free (cast_pd (y));
 
         if (box) {
