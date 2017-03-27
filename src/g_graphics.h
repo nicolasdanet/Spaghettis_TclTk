@@ -58,16 +58,16 @@ void    proxy_release   (t_proxy *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static inline t_symbol *proxy_getBound (t_proxy *x)
+static inline t_symbol *proxy_getTag (t_proxy *x)
 {
     PD_ASSERT (x->x_bound);
     
     return x->x_bound;
 }
 
-static inline char *proxy_getBoundAsString (t_proxy *x)
+static inline char *proxy_getTagAsString (t_proxy *x)
 {
-    return proxy_getBound (x)->s_name;
+    return proxy_getTag (x)->s_name;
 }
 
 // -----------------------------------------------------------------------------------------------------------

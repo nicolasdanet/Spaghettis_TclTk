@@ -205,6 +205,11 @@ static inline int glist_getDirty (t_glist *glist)
     return glist->gl_isDirty;
 }
 
+static inline char *glist_getTagAsString (t_glist *glist)
+{
+    return editor_getTagAsString (glist_getEditor (glist));
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
