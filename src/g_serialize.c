@@ -102,7 +102,7 @@ t_error canvas_deserializeScalar (t_glist *glist, int argc, t_atom *argv)
     
     if (scalar) {
     
-        glist_addObject (glist, cast_gobj (scalar));
+        glist_objectAdd (glist, cast_gobj (scalar));
         scalar_deserialize (scalar, glist, argc - 1, argv + 1);
         
         if (glist_isOnScreen (glist)) {

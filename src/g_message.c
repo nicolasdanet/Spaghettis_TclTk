@@ -219,7 +219,7 @@ void message_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
             buffer_deserialize (object_getBuffer (cast_object (x)), argc - 2, argv + 2);
         }
         
-        glist_addObject (glist, cast_gobj (x));
+        glist_objectAdd (glist, cast_gobj (x));
         
     } else if (glist_isOnScreen (glist)) {                                  /* Interactive creation. */
 
@@ -232,7 +232,7 @@ void message_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         object_setX (cast_object (x), positionX);
         object_setY (cast_object (x), positionY);
         
-        glist_addObject (glist, cast_gobj (x));
+        glist_objectAdd (glist, cast_gobj (x));
         canvas_selectObject (glist, cast_gobj (x));
         gobj_activated (cast_gobj (x), glist, 1);
     }

@@ -30,63 +30,6 @@ void canvas_newPatch (void *dummy, t_symbol *name, t_symbol *directory)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_makeTextObject (t_glist *glist, 
-    int positionX,
-    int positionY,
-    int width,
-    int isSelected,
-    t_buffer *b)
-{
-    instance_setNewestObject (NULL);
-    
-    instance_stackPush (glist);
-    
-    {
-    //
-    t_environment *e = glist_getEnvironment (instance_contextGetCurrent());
-    t_object *x = NULL;
-    
-    buffer_eval (b, 
-        instance_getMakerObject(), 
-        environment_getNumberOfArguments (e), 
-        environment_getArguments (e));
-
-    if (instance_getNewestObject()) { x = cast_objectIfConnectable (instance_getNewestObject()); }
-
-    if (!x) {
-        x = (t_object *)pd_new (text_class);    /* Create a dummy box. */
-        if (buffer_size (b)) {
-            error_canNotMake (buffer_size (b), buffer_atoms (b)); 
-        }
-    }
-
-    object_setBuffer (x, b);
-    object_setX (x, positionX);
-    object_setY (x, positionY);
-    object_setWidth (x, width);
-    object_setType (x, TYPE_OBJECT);
-    
-    glist_addObject (glist, cast_gobj (x));
-    
-    if (isSelected) {
-    //
-    canvas_selectObject (glist, cast_gobj (x));
-    gobj_activated (cast_gobj (x), glist, 1);
-    //
-    }
-    
-    if (pd_class (x) == vinlet_class)  { canvas_resortInlets (glist_getView (glist));  }
-    if (pd_class (x) == voutlet_class) { canvas_resortOutlets (glist_getView (glist)); }
-    //
-    }
-    
-    instance_stackPop (glist);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 int canvas_fileExist (t_glist *glist, const char *name, const char *extension)
 {
     char *p = NULL; char t[PD_STRING] = { 0 };

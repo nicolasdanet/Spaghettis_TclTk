@@ -28,17 +28,6 @@ t_symbol        *canvas_expandDollar                    (t_glist *glist, t_symbo
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            canvas_makeTextObject                   (t_glist *glist, 
-                                                            int positionX, 
-                                                            int positionY, 
-                                                            int width, 
-                                                            int isSelected, 
-                                                            t_buffer *b);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 int             canvas_fileExist                        (t_glist *glist,
                                                             const char *name,
                                                             const char *extension);

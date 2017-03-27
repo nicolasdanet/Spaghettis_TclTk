@@ -113,7 +113,7 @@ void canvas_removeSelectedObjects (t_glist *glist)
     
     for (yA = glist->gl_graphics; yA; yA = yB) {
         yB = yA->g_next;
-        if (canvas_isObjectSelected (glist, yA)) { glist_removeObject (glist, yA); }
+        if (canvas_isObjectSelected (glist, yA)) { glist_objectRemove (glist, yA); }
     }
 
     dsp_resume (state);

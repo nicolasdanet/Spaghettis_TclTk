@@ -438,7 +438,7 @@ static void canvas_behaviorDeleted (t_gobj *z, t_glist *glist)
     
     t_gobj *y = NULL;
     
-    while ((y = x->gl_graphics)) { glist_removeObject (x, y); }
+    while ((y = x->gl_graphics)) { glist_objectRemove (x, y); }
     
     if (!glist_isGraphOnParent (x)) { text_widgetBehavior.w_fnDeleted (z, glist); }
     else {

@@ -134,6 +134,59 @@ void glist_setDirty (t_glist *glist, int n)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void glist_objectMake (t_glist *glist, 
+    int positionX,
+    int positionY,
+    int width,
+    int isSelected,
+    t_buffer *b)
+{
+    instance_setNewestObject (NULL);
+    
+    instance_stackPush (glist);
+    
+    {
+    //
+    t_environment *e = glist_getEnvironment (instance_contextGetCurrent());
+    t_object *x = NULL;
+    
+    buffer_eval (b, 
+        instance_getMakerObject(), 
+        environment_getNumberOfArguments (e), 
+        environment_getArguments (e));
+
+    if (instance_getNewestObject()) { x = cast_objectIfConnectable (instance_getNewestObject()); }
+
+    if (!x) {
+        x = (t_object *)pd_new (text_class);    /* Create a dummy box. */
+        if (buffer_size (b)) {
+            error_canNotMake (buffer_size (b), buffer_atoms (b)); 
+        }
+    }
+
+    object_setBuffer (x, b);
+    object_setX (x, positionX);
+    object_setY (x, positionY);
+    object_setWidth (x, width);
+    object_setType (x, TYPE_OBJECT);
+    
+    glist_objectAdd (glist, cast_gobj (x));
+    
+    if (isSelected) {
+    //
+    canvas_selectObject (glist, cast_gobj (x));
+    gobj_activated (cast_gobj (x), glist, 1);
+    //
+    }
+    
+    if (pd_class (x) == vinlet_class)  { canvas_resortInlets (glist_getView (glist));  }
+    if (pd_class (x) == voutlet_class) { canvas_resortOutlets (glist_getView (glist)); }
+    //
+    }
+    
+    instance_stackPop (glist);
+}
+
 void glist_addObjectProceed (t_glist *glist, t_gobj *first, t_gobj *next)
 {
     next->g_next = NULL;
@@ -150,7 +203,7 @@ void glist_addObjectProceed (t_glist *glist, t_gobj *first, t_gobj *next)
     }
 }
 
-void glist_addObjectNext (t_glist *glist, t_gobj *first, t_gobj *next)
+void glist_objectAddNext (t_glist *glist, t_gobj *first, t_gobj *next)
 {
     int needToRepaint = class_hasPainterWidgetBehavior (pd_class (next));
     
@@ -164,9 +217,9 @@ void glist_addObjectNext (t_glist *glist, t_gobj *first, t_gobj *next)
     if (needToRepaint) { paint_draw(); }
 }
 
-void glist_addObject (t_glist *glist, t_gobj *y)
+void glist_objectAdd (t_glist *glist, t_gobj *y)
 {
-    glist_addObjectNext (glist, NULL, y);
+    glist_objectAddNext (glist, NULL, y);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -183,7 +236,7 @@ void glist_removeObjectProceed (t_glist *glist, t_gobj *y)
     }
 }
 
-void glist_removeObject (t_glist *glist, t_gobj *y)
+void glist_objectRemove (t_glist *glist, t_gobj *y)
 {
     t_glist *view     = glist_getView (glist);
     int needToRebuild = class_hasDSP (pd_class (y));
@@ -221,7 +274,7 @@ void glist_removeObject (t_glist *glist, t_gobj *y)
 
 /* If needed the DSP is suspended to avoid multiple rebuilds. */
 
-void glist_removeAll (t_glist *glist)
+void glist_objectRemoveAll (t_glist *glist)
 {
     int dspState = 0;
     int dspSuspended = 0;
@@ -233,14 +286,14 @@ void glist_removeAll (t_glist *glist)
         if (class_hasDSP (pd_class (y))) { dspState = dsp_suspend(); dspSuspended = 1; }
     }
 
-    glist_removeObject (glist, y);
+    glist_objectRemove (glist, y);
     //
     }
     
     if (dspSuspended) { dsp_resume (dspState); }
 }
 
-void glist_removeAllScalarsByTemplate (t_glist *glist, t_template *template)
+void glist_objectRemoveByTemplate (t_glist *glist, t_template *template)
 {
     t_gobj *y = NULL;
 
@@ -248,12 +301,12 @@ void glist_removeAllScalarsByTemplate (t_glist *glist, t_template *template)
     
         if (pd_class (y) == scalar_class) {
             if (scalar_containsTemplate (cast_scalar (y), template_getTemplateIdentifier (template))) {
-                glist_removeObject (glist, y);
+                glist_objectRemove (glist, y);
             }
         }
         
         if (pd_class (y) == canvas_class) {
-            glist_removeAllScalarsByTemplate (cast_glist (y), template);
+            glist_objectRemoveByTemplate (cast_glist (y), template);
         }
     }
 }

@@ -68,7 +68,7 @@ static void append_float (t_append *x, t_float f)
     //
     }
     
-    glist_addObjectNext (gpointer_getView (&x->x_gpointer),
+    glist_objectAddNext (gpointer_getView (&x->x_gpointer),
         cast_gobj (gpointer_getScalar (&x->x_gpointer)), 
         cast_gobj (scalar));
         

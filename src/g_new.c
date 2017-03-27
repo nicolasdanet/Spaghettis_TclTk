@@ -58,7 +58,7 @@ static t_glist *canvas_newGraphOnParent (t_glist *glist,
     
     buffer_vAppend (object_getBuffer (cast_object (x)), "s", sym_graph);
     
-    glist_addObject (glist, cast_gobj (x));
+    glist_objectAdd (glist, cast_gobj (x));
     
     return x;
 }
@@ -79,7 +79,7 @@ static void canvas_makeIemObject (t_glist *glist, t_symbol *name)
     canvas_deselectAll (glist);
     SET_SYMBOL (&a, name);
     buffer_deserialize (b, 1, &a);
-    canvas_makeTextObject (glist, positionX, positionY, 0, 1, b);
+    glist_objectMake (glist, positionX, positionY, 0, 1, b);
     //
     }
 }
@@ -155,7 +155,7 @@ void canvas_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         positionY = (int)atom_getFloatAtIndex (1, argc, argv);
         
         buffer_deserialize (b, argc - 2, argv + 2);
-        canvas_makeTextObject (glist, positionX, positionY, 0, 0, b);
+        glist_objectMake (glist, positionX, positionY, 0, 0, b);
     
     } else if (glist_isOnScreen (glist)) {                                      /* Interactive creation. */
         
@@ -163,7 +163,7 @@ void canvas_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
             
         instance_getDefaultCoordinates (glist, &positionX, &positionY);
         canvas_deselectAll (glist);
-        canvas_makeTextObject (glist, positionX, positionY, 0, 1, b);
+        glist_objectMake (glist, positionX, positionY, 0, 1, b);
     }
 }
 
@@ -202,7 +202,7 @@ void canvas_makeComment (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
             buffer_deserialize (object_getBuffer (x), 1, &a);
         }
         
-        glist_addObject (glist, cast_gobj (x));
+        glist_objectAdd (glist, cast_gobj (x));
         
     } else if (glist_isOnScreen (glist)) {                                      /* Interactive creation. */
     
@@ -216,7 +216,7 @@ void canvas_makeComment (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         object_setY (x, positionY);
         
         buffer_deserialize (object_getBuffer (x), 1, &a);
-        glist_addObject (glist, cast_gobj (x));
+        glist_objectAdd (glist, cast_gobj (x));
         canvas_selectObject (glist, cast_gobj (x));
     }
 }

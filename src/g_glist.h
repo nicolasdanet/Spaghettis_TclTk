@@ -44,39 +44,40 @@ struct _glist {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_glist             *glist_getTop                           (t_glist *glist);
-t_environment       *glist_getEnvironment                   (t_glist *glist);
-t_glist             *glist_getView                          (t_glist *glist);
+t_glist         *glist_getTop           (t_glist *glist);
+t_environment   *glist_getEnvironment   (t_glist *glist);
+t_glist         *glist_getView          (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int                 glist_isRoot                            (t_glist *glist);
-int                 glist_isTop                             (t_glist *glist);
-int                 glist_isAbstraction                     (t_glist *glist);
-int                 glist_isSubpatch                        (t_glist *glist);
-int                 glist_isArray                           (t_glist *glist);
-int                 glist_isDirty                           (t_glist *glist);
-int                 glist_isOnScreen                        (t_glist *glist);
-int                 glist_isWindowable                      (t_glist *glist);
+int     glist_isRoot                    (t_glist *glist);
+int     glist_isTop                     (t_glist *glist);
+int     glist_isAbstraction             (t_glist *glist);
+int     glist_isSubpatch                (t_glist *glist);
+int     glist_isArray                   (t_glist *glist);
+int     glist_isDirty                   (t_glist *glist);
+int     glist_isOnScreen                (t_glist *glist);
+int     glist_isWindowable              (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void                glist_addObjectNext                     (t_glist *glist, t_gobj *first, t_gobj *next);
-void                glist_addObject                         (t_glist *glist, t_gobj *y);
-void                glist_removeObject                      (t_glist *glist, t_gobj *y);
-void                glist_removeAllScalarsByTemplate        (t_glist *glist, t_template *tmpl);
-void                glist_removeAll                         (t_glist *glist);
+void    glist_objectMake                (t_glist *glist, int a, int b, int w, int selected, t_buffer *t);
+void    glist_objectAddNext             (t_glist *glist, t_gobj *first, t_gobj *next);
+void    glist_objectAdd                 (t_glist *glist, t_gobj *y);
+void    glist_objectRemove              (t_glist *glist, t_gobj *y);
+void    glist_objectRemoveByTemplate    (t_glist *glist, t_template *tmpl);
+void    glist_objectRemoveAll           (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void                glist_setName                           (t_glist *glist, t_symbol *name);
-void                glist_setDirty                          (t_glist *glist, int n);
+void    glist_setName                   (t_glist *glist, t_symbol *name);
+void    glist_setDirty                  (t_glist *glist, int n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

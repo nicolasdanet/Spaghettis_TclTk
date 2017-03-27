@@ -52,8 +52,8 @@ void object_setFromEntry (t_object *x, t_glist *glist, t_box *z)
         int a = object_getX (x);
         int b = object_getY (x);
         
-        glist_removeObject (glist, cast_gobj (x));
-        canvas_makeTextObject (glist, a, b, w, 0, t);
+        glist_objectRemove (glist, cast_gobj (x));
+        glist_objectMake (glist, a, b, w, 0, t);
         editor_selectionRestoreLines (glist_getEditor (glist_getView (glist)));
         
         /* Loadbang if the new object is an abstraction. */
