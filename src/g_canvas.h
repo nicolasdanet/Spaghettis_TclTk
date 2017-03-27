@@ -28,24 +28,6 @@ t_symbol        *canvas_expandDollar                    (t_glist *glist, t_symbo
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int             canvas_fileExist                        (t_glist *glist,
-                                                            const char *name,
-                                                            const char *extension);
-
-int             canvas_fileFind                         (t_glist *glist,
-                                                            const char *name,
-                                                            const char *extension,
-                                                            char *directoryResult,
-                                                            char **nameResult,
-                                                            size_t size);
-                                                            
-int             canvas_fileOpen                         (t_glist *glist,
-                                                            const char *name,
-                                                            const char *extension,
-                                                            char *directoryResult,
-                                                            char **nameResult,
-                                                            size_t size);
-
 void            canvas_bind                             (t_glist *glist);
 void            canvas_unbind                           (t_glist *glist);
 t_error         canvas_makeFilePath                     (t_glist *glist, char *name, char *dest, size_t size);

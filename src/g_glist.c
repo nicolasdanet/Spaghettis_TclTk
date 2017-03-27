@@ -11,6 +11,7 @@
 
 #include "m_pd.h"
 #include "m_core.h"
+#include "s_system.h"
 #include "g_graphics.h"
 #include "d_dsp.h"
 
@@ -305,6 +306,58 @@ void glist_objectRemoveByTemplate (t_glist *glist, t_template *template)
             glist_objectRemoveByTemplate (cast_glist (y), template);
         }
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* Files are searching in the patch directory first. */
+/* Without success it tries to find it using the search path. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int glist_fileFind (t_glist *glist,
+    const char *name,
+    const char *extension,
+    char *directoryResult,
+    char **nameResult,
+    size_t size)
+{
+    int f = glist_fileOpen (glist, name, extension, directoryResult, nameResult, size);
+    
+    if (f >= 0) { close (f); return 1; }
+    
+    return 0;
+}
+
+int glist_fileExist (t_glist *glist, const char *name, const char *extension)
+{
+    char *p = NULL; char t[PD_STRING] = { 0 };
+    
+    return glist_fileFind (glist, name, extension, t, &p, PD_STRING);
+}
+
+/* Caller is responsible to close the file. */
+
+int glist_fileOpen (t_glist *glist,
+    const char *name,
+    const char *extension,
+    char *directoryResult,
+    char **nameResult,
+    size_t size)
+{
+    const char *directory = glist ? environment_getDirectoryAsString (glist_getEnvironment (glist)) : ".";
+    
+    int f = file_openConsideringSearchPath (directory, 
+                name,
+                extension,
+                directoryResult,
+                nameResult, 
+                size);
+        
+    return f;
 }
 
 // -----------------------------------------------------------------------------------------------------------

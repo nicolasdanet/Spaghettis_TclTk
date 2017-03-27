@@ -353,7 +353,7 @@ int soundfile_readFileHeader (t_glist *glist, t_audioproperties *args)
     PD_ASSERT (args->ap_fileName);
     PD_ASSERT (args->ap_fileExtension);
     
-    int f = canvas_fileOpen (glist, 
+    int f = glist_fileOpen (glist, 
                 args->ap_fileName->s_name, 
                 args->ap_fileExtension->s_name,
                 t,

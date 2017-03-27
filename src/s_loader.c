@@ -192,7 +192,7 @@ static int loader_openExternal (t_glist *glist, t_symbol *name)
     char directoryResult[PD_STRING] = { 0 }; 
     char *nameResult = NULL;
 
-    if (canvas_fileFind (glist, name->s_name, PD_PLUGIN, directoryResult, &nameResult, PD_STRING)) {
+    if (glist_fileFind (glist, name->s_name, PD_PLUGIN, directoryResult, &nameResult, PD_STRING)) {
     //
     char filepath[PD_STRING] = { 0 };
     

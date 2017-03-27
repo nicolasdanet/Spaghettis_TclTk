@@ -186,7 +186,7 @@ t_error buffer_read (t_buffer *x, t_symbol *name, t_glist *glist)
     
     char directory[PD_STRING] = { 0 }; char *filepath = NULL;
     
-    if (canvas_fileFind (glist, name->s_name, "", directory, &filepath, PD_STRING)) {
+    if (glist_fileFind (glist, name->s_name, "", directory, &filepath, PD_STRING)) {
         err = buffer_fromFile (x, filepath, directory);
     }
     
