@@ -331,7 +331,7 @@ int glist_fileExist (t_glist *glist, char *name, char *extension, t_fileproperti
 
 int glist_fileOpen (t_glist *glist, char *name, char *extension, t_fileproperties *p)
 {
-    const char *directory = glist ? environment_getDirectoryAsString (glist_getEnvironment (glist)) : ".";
+    char *directory = glist ? environment_getDirectoryAsString (glist_getEnvironment (glist)) : ".";
     
     int f = file_openConsideringSearchPath (directory, name, extension, p);
         
