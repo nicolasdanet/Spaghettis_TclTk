@@ -172,7 +172,7 @@ void file_openHelp (const char *directory, const char *name)
         t_symbol *s1 = gensym (fileproperties_getName (&p));
         t_symbol *s2 = gensym (fileproperties_getDirectory (&p));
         close (f); 
-        buffer_fileOpen (NULL, s1, s2);
+        buffer_fileOpen (s1, s2);
     }
 }
 

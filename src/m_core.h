@@ -202,7 +202,7 @@ t_error     buffer_read                                 (t_buffer *x, t_symbol *
 t_error     buffer_write                                (t_buffer *x, char *name, char *directory);
 t_error     buffer_fileEval                             (t_symbol *name, t_symbol *directory);
 t_error     buffer_fileEvalByString                     (t_symbol *name, t_symbol *directory, char *s);
-void        buffer_fileOpen                             (void *dummy, t_symbol *name, t_symbol *directory);
+void        buffer_fileOpen                             (t_symbol *name, t_symbol *directory);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

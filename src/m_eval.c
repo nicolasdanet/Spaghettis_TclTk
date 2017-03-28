@@ -273,7 +273,7 @@ t_error buffer_fileEval (t_symbol *name, t_symbol *directory)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void buffer_fileOpen (void *dummy, t_symbol *name, t_symbol *directory)
+void buffer_fileOpen (t_symbol *name, t_symbol *directory)
 {
     int state = dsp_suspend();
     

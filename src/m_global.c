@@ -49,6 +49,11 @@ void global_shouldQuit (void *dummy)
     interface_quit (NULL);
 }
 
+static void global_open (void *dummy, t_symbol *name, t_symbol *directory)
+{
+    buffer_fileOpen (name, directory);
+}
+
 static void global_key (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     canvas_key (NULL, s, argc, argv);
@@ -82,7 +87,7 @@ void global_setup (void)
             A_NULL);
 
     class_addMethod (c, (t_method)canvas_newPatch,              sym_new,    A_SYMBOL, A_SYMBOL, A_NULL);
-    class_addMethod (c, (t_method)buffer_fileOpen,              sym_open,   A_SYMBOL, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)global_open,                  sym_open,   A_SYMBOL, A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)dsp_state,                    sym_dsp,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_key,                   sym_key,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)interface_quit,               sym_quit,   A_NULL);
