@@ -199,7 +199,7 @@ void        buffer_serialize                            (t_buffer *x, t_buffer *
 void        buffer_deserialize                          (t_buffer *x, int argc, t_atom *argv);
 void        buffer_eval                                 (t_buffer *x, t_pd *object, int argc, t_atom *argv);
 t_error     buffer_read                                 (t_buffer *x, t_symbol *name, t_glist *glist);
-t_error     buffer_write                                (t_buffer *x, char *name, char *directory);
+t_error     buffer_write                                (t_buffer *x, t_symbol *name, t_symbol *directory);
 t_error     buffer_fileEval                             (t_symbol *name, t_symbol *directory);
 t_error     buffer_fileEvalByString                     (t_symbol *name, t_symbol *directory, char *s);
 void        buffer_fileOpen                             (t_symbol *name, t_symbol *directory);

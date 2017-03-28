@@ -195,13 +195,13 @@ t_error buffer_read (t_buffer *x, t_symbol *name, t_glist *glist)
     return err;
 }
 
-t_error buffer_write (t_buffer *x, char *name, char *directory)
+t_error buffer_write (t_buffer *x, t_symbol *name, t_symbol *directory)
 {
     t_error err = PD_ERROR;
 
     char filepath[PD_STRING] = { 0 };
 
-    if (!(err = path_withDirectoryAndName (filepath, PD_STRING, directory, name, 0))) {
+    if (!(err = path_withDirectoryAndName (filepath, PD_STRING, directory->s_name, name->s_name, 0))) {
     //
     FILE *f = 0;
 

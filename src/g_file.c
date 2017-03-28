@@ -130,7 +130,7 @@ void canvas_saveToFile (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     canvas_serializeTemplates (glist, b);
     canvas_serialize (glist, b);
     
-    if (buffer_write (b, name->s_name, directory->s_name)) { PD_BUG; }
+    if (buffer_write (b, name, directory)) { PD_BUG; }
     else {
         post (PD_TRANSLATE ("file: saved to %s/%s"), directory->s_name, name->s_name);  // --
         glist_setDirty (glist, 0);
