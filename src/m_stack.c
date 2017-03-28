@@ -170,7 +170,6 @@ void instance_loadPatch (t_symbol *name, t_symbol *directory)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 /* Load invisible patches (mainly used for built-in templates). */
 
@@ -181,7 +180,6 @@ void instance_loadInvisible (t_symbol *name, t_symbol *directory, char *s)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 /* Context of the stack temporary bypassed to eval the buffer. */
 
@@ -191,6 +189,18 @@ void instance_loadSnippet (t_glist *glist, t_buffer *b)
     instance_contextSetCurrent (glist);
     buffer_eval (b, NULL, 0, NULL);
     instance_contextRestore();
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void instance_makePatch (t_symbol *name, t_symbol *directory)
+{
+    instance_environmentSetFile (name, directory);
+    canvas_new (NULL, NULL, 0, NULL);
+    instance_stackPopPatch (instance_contextGetCurrent(), 1);
+    instance_environmentResetFile();
 }
 
 // -----------------------------------------------------------------------------------------------------------

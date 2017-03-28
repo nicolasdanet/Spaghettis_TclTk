@@ -17,7 +17,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_newPatch            (void *, t_symbol *, t_symbol *);
 void interface_quit             (void *);
 void audio_requireDialog        (void *);
 void midi_requireDialog         (void *);
@@ -36,6 +35,26 @@ t_pd global_object;             /* Static. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+void global_newPatch (void *dummy, t_symbol *name, t_symbol *directory)
+{
+    instance_makePatch (name, directory);
+}
+
+static void global_open (void *dummy, t_symbol *name, t_symbol *directory)
+{
+    buffer_fileOpen (name, directory);
+}
+
+static void global_key (void *dummy, t_symbol *s, int argc, t_atom *argv)
+{
+    canvas_key (NULL, s, argc, argv);
+}
+
+static void global_default (t_pd *x, t_symbol *s, int argc, t_atom *argv)
+{
+    error_unknownMethod (class_getName (pd_class (x)), s);
+}
 
 /* Messy ping-pong required in order to check saving sequentially. */
 /* Furthermore it avoids the application to quit before responding. */
@@ -63,24 +82,6 @@ void global_shouldQuit (void *dummy)
     interface_quit (NULL);
 }
 
-static void global_open (void *dummy, t_symbol *name, t_symbol *directory)
-{
-    buffer_fileOpen (name, directory);
-}
-
-static void global_key (void *dummy, t_symbol *s, int argc, t_atom *argv)
-{
-    canvas_key (NULL, s, argc, argv);
-}
-
-static void global_default (t_pd *x, t_symbol *s, int argc, t_atom *argv)
-{
-    error_unknownMethod (class_getName (pd_class (x)), s);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 static void global_dummy (void *dummy)
 {
 }
@@ -100,7 +101,7 @@ void global_setup (void)
             CLASS_ABSTRACT,
             A_NULL);
 
-    class_addMethod (c, (t_method)canvas_newPatch,              sym_new,    A_SYMBOL, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)global_newPatch,              sym_new,    A_SYMBOL, A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)global_open,                  sym_open,   A_SYMBOL, A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)dsp_state,                    sym_dsp,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_key,                   sym_key,    A_GIMME, A_NULL);
