@@ -193,14 +193,17 @@ void        buffer_fileOpen                             (void *dummy, t_symbol *
 // -----------------------------------------------------------------------------------------------------------
 
 t_symbol    *dollar_expandDollarSymbolByEnvironment     (t_symbol *s, t_glist *glist);
-t_symbol    *dollar_expandDollarSymbol                  (t_symbol *s, int argc, t_atom *argv, t_glist *glist);
+t_symbol    *dollar_expandDollarSymbol                  (t_symbol *s, t_glist *glist, int argc, t_atom *argv);
 
 void        dollar_expandDollarNumberByEnvironment      (t_atom *dollar, t_atom *a, t_glist *glist);
-void        dollar_expandDollarNumber                   (t_atom *dollar,
-                                                            t_atom *a,
+void        dollar_expandDollarNumber                   (t_atom *dollar, t_atom *a, t_glist *glist,
                                                             int argc,
-                                                            t_atom *argv, 
-                                                            t_glist *glist);
+                                                            t_atom *argv);
+
+t_symbol    *dollar_getSymbolExpandIfNeeded             (t_atom *a, t_glist *glist);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 void        dollar_copyExpandAtomsByEnvironment         (t_atom *src,
                                                             int m,
@@ -215,9 +218,6 @@ void        dollar_copyExpandAtoms                      (t_atom *src,
                                                             int argc,
                                                             t_atom *argv, 
                                                             t_glist *glist);
-
-t_symbol    *dollar_expandGetIfSymbolByEnvironment      (t_atom *a, t_glist *glist);
-t_symbol    *dollar_expandGetIfSymbol                   (t_atom *a, int argc, t_atom *argv, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -152,7 +152,7 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     t_symbol *name = &s_;
     
-    if (argc > 3) { name = dollar_expandGetIfSymbolByEnvironment (argv + 3, instance_contextGetCurrent()); }
+    if (argc > 3) { name = dollar_getSymbolExpandIfNeeded (argv + 3, instance_contextGetCurrent()); }
     
     glist_setName (glist, (name == &s_ ? sym_Patch : name));
     
@@ -493,7 +493,7 @@ void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     if (argc) {
     //
-    name = dollar_expandGetIfSymbolByEnvironment (argv, glist);
+    name = dollar_getSymbolExpandIfNeeded (argv, glist);
     if (name != &s_) { argc--; argv++; }
     if (argc) { warning_unusedArguments (class_getName (pd_class (glist)), argc, argv); }
     //

@@ -69,11 +69,36 @@ static int dollar_expand (char *s, char *buffer, int size, int argc, t_atom *arg
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 /* Dollar symbol expansion (e.g. '$1-foo' to 'bar-foo'). */
 
-t_symbol *dollar_expandDollarSymbol (t_symbol *s, int argc, t_atom *argv, t_glist *glist)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_symbol *dollar_expandDollarSymbolByEnvironment (t_symbol *s, t_glist *glist)
+{
+    if (strchr (s->s_name, '$') == NULL) { return s; }
+    else {
+    //
+    t_environment *e = NULL;
+    
+    if (glist) { e = glist_getEnvironment (glist); }
+
+    if (!e) { return dollar_expandDollarSymbol (s, glist, 0, NULL); }
+    else {
+    //
+    return dollar_expandDollarSymbol (s,
+        glist,
+        environment_getNumberOfArguments (e),
+        environment_getArguments (e));
+    //
+    }
+    //
+    }
+}
+
+t_symbol *dollar_expandDollarSymbol (t_symbol *s, t_glist *glist, int argc, t_atom *argv)
 {
     char t[PD_STRING] = { 0 };
     char result[PD_STRING] = { 0 };
@@ -92,7 +117,7 @@ t_symbol *dollar_expandDollarSymbol (t_symbol *s, int argc, t_atom *argv, t_glis
 
     while (!err && ((next = dollar_expand (str, t, PD_STRING, argc, argv, glist)) >= 0)) {
     //
-    if ((next == 0) && (*t == 0)) { return NULL; }          /* Dollar number argument is out of bound. */
+    if ((next == 0) && (*t == 0)) { return NULL; }      /* Dollar's number argument is out of bound. */
 
     err |= string_add (result, PD_STRING, t);
     str += next;
@@ -113,9 +138,34 @@ t_symbol *dollar_expandDollarSymbol (t_symbol *s, int argc, t_atom *argv, t_glis
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 /* Dollar number expansion (e.g. '$1' to 'foo'). */
 
-void dollar_expandDollarNumber (t_atom *dollar, t_atom *a, int argc, t_atom *argv, t_glist *glist)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void dollar_expandDollarNumberByEnvironment (t_atom *dollar, t_atom *a, t_glist *glist)
+{
+    t_environment *e = NULL;
+    
+    if (glist) { e = glist_getEnvironment (glist); }
+
+    if (!e) { dollar_expandDollarNumber (dollar, a, glist, 0, NULL); }
+    else {
+    //
+    dollar_expandDollarNumber (dollar,
+        a,
+        glist,
+        environment_getNumberOfArguments (e),
+        environment_getArguments (e));
+    //
+    }
+}
+
+void dollar_expandDollarNumber (t_atom *dollar, t_atom *a, t_glist *glist, int argc, t_atom *argv)
 {
     int n = GET_DOLLAR (dollar);
         
@@ -128,6 +178,34 @@ void dollar_expandDollarNumber (t_atom *dollar, t_atom *a, int argc, t_atom *arg
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* Force to expand to symbol if possible. */
+
+t_symbol *dollar_getSymbolExpandIfNeeded (t_atom *a, t_glist *glist)
+{
+    t_symbol *s = &s_;
+    
+    if (a) {
+        if (IS_SYMBOL (a) || IS_DOLLARSYMBOL (a)) { 
+            s = dollar_expandDollarSymbolByEnvironment (GET_SYMBOL (a), glist);
+            
+        } else if (IS_DOLLAR (a)) {
+            t_atom t; 
+            dollar_expandDollarNumberByEnvironment (a, &t, glist);
+            if (IS_SYMBOL (&t)) { s = GET_SYMBOL (&t); }
+        }
+    }
+    
+    return s;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void dollar_copyExpandAtoms (t_atom *src, int m, t_atom *dest, int n, int argc, t_atom *argv, t_glist *glist)
 {
     int i;
@@ -139,52 +217,13 @@ void dollar_copyExpandAtoms (t_atom *src, int m, t_atom *dest, int n, int argc, 
         t_atom *b = dest + i;
         
         if (IS_SYMBOL_OR_FLOAT (a))     { *b = *a; }
-        else if (IS_DOLLAR (a))         { dollar_expandDollarNumber (a, b, argc, argv, glist); }
+        else if (IS_DOLLAR (a))         { dollar_expandDollarNumber (a, b, glist, argc, argv); }
         else if (IS_DOLLARSYMBOL (a))   {
-            t_symbol *s = dollar_expandDollarSymbol (GET_SYMBOL (a), argc, argv, glist);
+            t_symbol *s = dollar_expandDollarSymbol (GET_SYMBOL (a), glist, argc, argv);
             if (s) { SET_SYMBOL (b, s); } else { SET_SYMBOL (b, GET_SYMBOL (a)); }
         } else { 
             PD_BUG; 
         }
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_symbol *dollar_expandDollarSymbolByEnvironmentProceed (t_symbol *s, t_glist *glist)
-{
-    t_environment *e = NULL;
-    
-    if (glist) { e = glist_getEnvironment (glist); }
-
-    if (!e) { return dollar_expandDollarSymbol (s, 0, NULL, glist); }
-    else {
-    //
-    return dollar_expandDollarSymbol (s,
-        environment_getNumberOfArguments (e),
-        environment_getArguments (e),
-        glist);
-    //
-    }
-}
-
-void dollar_expandDollarNumberByEnvironment (t_atom *dollar, t_atom *a, t_glist *glist)
-{
-    t_environment *e = NULL;
-    
-    if (glist) { e = glist_getEnvironment (glist); }
-
-    if (!e) { dollar_expandDollarNumber (dollar, a, 0, NULL, glist); }
-    else {
-    //
-    dollar_expandDollarNumber (dollar,
-        a,
-        environment_getNumberOfArguments (e),
-        environment_getArguments (e),
-        glist);
-    //
     }
 }
 
@@ -205,38 +244,6 @@ void dollar_copyExpandAtomsByEnvironment (t_atom *src, int m, t_atom *dest, int 
         environment_getArguments (e),
         glist);
     //
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-/* Force to expand to symbol if possible. */
-
-t_symbol *dollar_expandGetIfSymbolByEnvironment (t_atom *a, t_glist *glist)
-{
-    t_symbol *s = &s_;
-    
-    if (a) {
-        if (IS_SYMBOL (a) || IS_DOLLARSYMBOL (a)) { 
-            s = dollar_expandDollarSymbolByEnvironmentProceed (GET_SYMBOL (a), glist);
-            
-        } else if (IS_DOLLAR (a)) {
-            t_atom t; 
-            dollar_expandDollarNumberByEnvironment (a, &t, glist);
-            if (IS_SYMBOL (&t)) { s = GET_SYMBOL (&t); }
-        }
-    }
-    
-    return s;
-}
-
-t_symbol *dollar_expandDollarSymbolByEnvironment (t_symbol *s, t_glist *glist)
-{
-    if (strchr (s->s_name, '$')) { return dollar_expandDollarSymbolByEnvironmentProceed (s, glist); }
-    else {
-        return s;
     }
 }
 
