@@ -13,11 +13,9 @@
 #include "m_core.h"
 #include "s_system.h"
 #include "g_graphics.h"
-#include "d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 t_error canvas_makeFilePath (t_glist *glist, char *name, char *dest, size_t size)
 {
@@ -41,7 +39,7 @@ void canvas_updateTitle (t_glist *glist)
     sys_vGui ("::ui_patch::setTitle .x%lx {%s} {%s} %d\n",  // --
                     glist,
                     environment_getDirectoryAsString (glist_getEnvironment (glist)),
-                    glist->gl_name->s_name,
+                    glist_getName (glist)->s_name,
                     glist_getDirty (glist));
 }
 
@@ -126,24 +124,6 @@ int canvas_hasLine (t_glist *glist, t_object *objectOut, int m, t_object *object
     }
     
     return 0;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void canvas_bind (t_glist *glist)
-{
-    if (utils_isNameAllowedForWindow (glist->gl_name)) {
-        pd_bind (cast_pd (glist), utils_makeBindSymbol (glist->gl_name));
-    }
-}
-
-void canvas_unbind (t_glist *glist)
-{
-    if (utils_isNameAllowedForWindow (glist->gl_name)) {
-        pd_unbind (cast_pd (glist), utils_makeBindSymbol (glist->gl_name));
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

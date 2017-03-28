@@ -16,8 +16,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            canvas_bind                             (t_glist *glist);
-void            canvas_unbind                           (t_glist *glist);
 t_error         canvas_makeFilePath                     (t_glist *glist, char *name, char *dest, size_t size);
 void            canvas_updateTitle                      (t_glist *glist);
 void            canvas_setCursorType                    (t_glist *glist, int type);

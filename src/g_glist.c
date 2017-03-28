@@ -84,6 +84,24 @@ int glist_isWindowable (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void glist_bind (t_glist *glist)
+{
+    if (utils_isNameAllowedForWindow (glist_getName (glist))) {
+        pd_bind (cast_pd (glist), utils_makeBindSymbol (glist_getName (glist)));
+    }
+}
+
+void glist_unbind (t_glist *glist)
+{
+    if (utils_isNameAllowedForWindow (glist_getName (glist))) {
+        pd_unbind (cast_pd (glist), utils_makeBindSymbol (glist_getName (glist)));
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_glist *glist_getTop (t_glist *glist)
 {
     if (glist_isTop (glist)) { return glist; } else { return glist_getTop (glist_getParent (glist)); }
@@ -107,11 +125,11 @@ t_glist *glist_getView (t_glist *glist)
 
 void glist_setName (t_glist *glist, t_symbol *name)
 {
-    canvas_unbind (glist);
+    glist_unbind (glist);
     
     glist->gl_name = name;
     
-    canvas_bind (glist);
+    glist_bind (glist);
     
     if (glist_hasWindow (glist)) { canvas_updateTitle (glist); }
 }

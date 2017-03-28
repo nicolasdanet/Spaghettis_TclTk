@@ -758,7 +758,7 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     
     glist_loadBegin (x);
     
-    canvas_bind (x);
+    glist_bind (x);
     
     instance_stackPush (x);
     
@@ -775,7 +775,7 @@ void canvas_free (t_glist *glist)
     while ((y = glist->gl_graphics)) { glist_objectRemove (glist, y); }
     if (glist == glist_getView (glist)) { canvas_visible (glist, 0); }
     
-    canvas_unbind (glist);
+    glist_unbind (glist);
 
     environment_free (glist->gl_environment);
     editor_free (glist_getEditor (glist));

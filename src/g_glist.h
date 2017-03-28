@@ -65,6 +65,13 @@ int     glist_isWindowable              (t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void    glist_bind                      (t_glist *glist);
+void    glist_unbind                    (t_glist *glist);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void    glist_objectMake                (t_glist *glist, int a, int b, int w, int selected, t_buffer *t);
 void    glist_objectAddNext             (t_glist *glist, t_gobj *first, t_gobj *next);
 void    glist_objectAdd                 (t_glist *glist, t_gobj *y);

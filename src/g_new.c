@@ -54,7 +54,7 @@ static t_glist *canvas_newGraphOnParent (t_glist *glist,
         WINDOW_WIDTH,
         WINDOW_HEIGHT + WINDOW_HEADER);
     
-    canvas_bind (x);
+    glist_bind (x);
     
     buffer_vAppend (object_getBuffer (cast_object (x)), "s", sym_graph);
     
