@@ -339,7 +339,6 @@ static inline t_float dsp_4PointsInterpolationWithWords (t_float f, t_word *data
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            dsp_state                   (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void            dsp_update                  (void);
 int             dsp_suspend                 (void);
 void            dsp_resume                  (int oldState);

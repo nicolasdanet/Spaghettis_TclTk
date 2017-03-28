@@ -12,12 +12,26 @@
 #include "m_core.h"
 #include "s_system.h"
 #include "g_graphics.h"
-#include "d_dsp.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void canvas_newPatch            (void *, t_symbol *, t_symbol *);
+void interface_quit             (void *);
+void audio_requireDialog        (void *);
+void midi_requireDialog         (void *);
+void preferences_save           (void *);
+void dsp_state                  (void *, t_symbol *, int, t_atom *);
+void font_withHostMeasured      (void *, t_symbol *, int, t_atom *);
+void audio_fromDialog           (void *, t_symbol *, int, t_atom *);
+void midi_fromDialog            (void *, t_symbol *, int, t_atom *);
+void path_setSearchPathEncoded  (void *, t_symbol *, int, t_atom *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_pd global_object;     /* Static. */
+t_pd global_object;             /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

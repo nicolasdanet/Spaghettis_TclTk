@@ -177,7 +177,6 @@ void        sys_gui                                 (char *s);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        interface_quit                          (void *dummy);
 void        interface_watchdog                      (void *dummy);
 t_error     interface_start                         (void);
 
@@ -189,12 +188,6 @@ void        midi_start                              (void);
 void        midi_poll                               (void);
 void        midi_receive                            (int port, int byte);
 void        midi_broadcast                          (int port, int hasOneByte, int a, int b, int c);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-void        midi_requireDialog                      (void *dummy);
-void        midi_fromDialog                         (void *dummy, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -241,12 +234,6 @@ int         audio_getTotalOfChannelsOut             (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-void        audio_requireDialog                     (void *dummy);
-void        audio_fromDialog                        (void *dummy, t_symbol *s, int argc, t_atom *argv);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 FILE        *file_openWrite                         (const char *filepath);
@@ -281,8 +268,6 @@ t_error     path_expandHomeDirectory                (char *dest, size_t size, co
 t_pathlist  *path_getSearchPath                     (void);
 
 void        path_appendToSearchPath                 (char *filepath);
-void        path_setSearchPathEncoded               (void *dummy, t_symbol *s, int argc, t_atom *argv);
-
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -306,7 +291,6 @@ void        properties_setKey                       (const char *key, const char
 #pragma mark -
 
 void        preferences_load                        (void);
-void        preferences_save                        (void *dummy);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -332,7 +316,6 @@ void        leak_release                            (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        font_withHostMeasured                   (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void        font_setDefaultFontSize                 (int size);
 t_fontsize  font_getDefaultFontSize                 (void);
 t_fontsize  font_getNearestValidFontSize            (int size);
