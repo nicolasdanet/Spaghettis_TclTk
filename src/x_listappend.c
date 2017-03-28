@@ -40,7 +40,7 @@ static void listappend_list (t_listappend *x, t_symbol *s, int argc, t_atom *arg
     
     ATOMS_ALLOCA (t, count);
     
-    atom_copyAtomsUnchecked (argc, argv, t);
+    atom_copyAtomsUnchecked (argv, argc, t);
     
     if (listinlet_hasPointer (&x->x_listinlet)) {
     

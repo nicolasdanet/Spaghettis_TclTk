@@ -32,7 +32,7 @@ void instance_environmentSetArguments (int argc, t_atom *argv)
     instance_get()->pd_environment.env_argc = argc;
     instance_get()->pd_environment.env_argv = argc ? PD_MEMORY_GET (argc * sizeof (t_atom)) : NULL;
     
-    if (argc) { atom_copyAtomsUnchecked (argc, argv, instance_get()->pd_environment.env_argv); }
+    if (argc) { atom_copyAtomsUnchecked (argv, argc, instance_get()->pd_environment.env_argv); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

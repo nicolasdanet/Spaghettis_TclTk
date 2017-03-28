@@ -182,9 +182,7 @@ void dollar_expandDollarNumber (t_atom *dollar, t_atom *a, t_glist *glist, int a
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Force to expand to symbol if possible. */
-
-t_symbol *dollar_getSymbolExpandIfNeeded (t_atom *a, t_glist *glist)
+t_symbol *dollar_getSymbolExpandedIfNeeded (t_atom *a, t_glist *glist)
 {
     t_symbol *s = &s_;
     
@@ -200,51 +198,6 @@ t_symbol *dollar_getSymbolExpandIfNeeded (t_atom *a, t_glist *glist)
     }
     
     return s;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void dollar_copyExpandAtoms (t_atom *src, int m, t_atom *dest, int n, int argc, t_atom *argv, t_glist *glist)
-{
-    int i;
-    int size = PD_MIN (m, n);
-    
-    for (i = 0; i < size; i++) {
-
-        t_atom *a = src + i;
-        t_atom *b = dest + i;
-        
-        if (IS_SYMBOL_OR_FLOAT (a))     { *b = *a; }
-        else if (IS_DOLLAR (a))         { dollar_expandDollarNumber (a, b, glist, argc, argv); }
-        else if (IS_DOLLARSYMBOL (a))   {
-            t_symbol *s = dollar_expandDollarSymbol (GET_SYMBOL (a), glist, argc, argv);
-            if (s) { SET_SYMBOL (b, s); } else { SET_SYMBOL (b, GET_SYMBOL (a)); }
-        } else { 
-            PD_BUG; 
-        }
-    }
-}
-
-void dollar_copyExpandAtomsByEnvironment (t_atom *src, int m, t_atom *dest, int n, t_glist *glist)
-{
-    t_environment *e = NULL;
-    
-    if (glist) { e = glist_getEnvironment (glist); }
-
-    if (!e) { dollar_copyExpandAtoms (src, m, dest, n, 0, NULL, glist); }
-    else {
-    //
-    dollar_copyExpandAtoms (src,
-        m,
-        dest,
-        n,
-        environment_getNumberOfArguments (e),
-        environment_getArguments (e),
-        glist);
-    //
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

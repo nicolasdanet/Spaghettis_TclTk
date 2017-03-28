@@ -181,10 +181,8 @@ static void textsequence_proceedOutContent (t_textsequence *x,
     
     ATOMS_ALLOCA (t, size);     /* Extra size reserved for possible labelling (see above). */
     
-    if (argc) { dollar_copyExpandAtoms (a, count, t, count, argc, argv, view); }
-    else {
-        dollar_copyExpandAtomsByEnvironment (a, count, t, count, view);
-    }
+    if (argc) { atom_copyAtomsExpanded (a, count, t, count, view, argc, argv);  }
+    else      { atom_copyAtomsExpandedByEnvironment (a, count, t, count, view); }
     
     if (x->x_outletMain) { textsequence_proceedOutContentMain (x, t, count, type); }
     else if (count > 0)  { textsequence_proceedOutContentGlobal (x, t, count, type); }

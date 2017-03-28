@@ -135,12 +135,27 @@ void        global_shouldQuit                           (void *dummy);
 t_atom      *atom_substituteIfPointer                   (t_atom *a);
 char        *atom_atomsToString                         (int argc, t_atom *argv);
 
-void        atom_copyAtomsUnchecked                     (int argc, t_atom *src, t_atom *dest);
 t_error     atom_withStringUnzeroed                     (t_atom *a, char *s, int size);
 t_error     atom_toString                               (t_atom *a, char *dest, int size);
 t_atomtype  atom_getType                                (t_atom *a);
 int         atom_typesAreEqual                          (t_atom *a, t_atom *b);
 
+void        atom_copyAtomsUnchecked                     (t_atom *src, int m, t_atom *dest);
+
+void        atom_copyAtomsExpandedByEnvironment         (t_atom *src, 
+                                                            int m,
+                                                            t_atom *dest,
+                                                            int n,
+                                                            t_glist *glist);
+                                                            
+void        atom_copyAtomsExpanded                      (t_atom *src,
+                                                            int m,
+                                                            t_atom *dest, 
+                                                            int n,
+                                                            t_glist *glist,
+                                                            int argc,
+                                                            t_atom *argv);
+                                                            
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -196,28 +211,13 @@ t_symbol    *dollar_expandDollarSymbolByEnvironment     (t_symbol *s, t_glist *g
 t_symbol    *dollar_expandDollarSymbol                  (t_symbol *s, t_glist *glist, int argc, t_atom *argv);
 
 void        dollar_expandDollarNumberByEnvironment      (t_atom *dollar, t_atom *a, t_glist *glist);
-void        dollar_expandDollarNumber                   (t_atom *dollar, t_atom *a, t_glist *glist,
+void        dollar_expandDollarNumber                   (t_atom *dollar,
+                                                            t_atom *a,
+                                                            t_glist *glist,
                                                             int argc,
                                                             t_atom *argv);
 
-t_symbol    *dollar_getSymbolExpandIfNeeded             (t_atom *a, t_glist *glist);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-void        dollar_copyExpandAtomsByEnvironment         (t_atom *src,
-                                                            int m,
-                                                            t_atom *dest,
-                                                            int n,
-                                                            t_glist *glist);
-                                                            
-void        dollar_copyExpandAtoms                      (t_atom *src,
-                                                            int m,
-                                                            t_atom *dest,
-                                                            int n,
-                                                            int argc,
-                                                            t_atom *argv, 
-                                                            t_glist *glist);
+t_symbol    *dollar_getSymbolExpandedIfNeeded           (t_atom *a, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

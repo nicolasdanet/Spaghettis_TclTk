@@ -56,7 +56,7 @@ void utils_anythingToList (t_pd *x, t_listmethod fn, t_symbol *s, int argc, t_at
 {
     t_atom *t = NULL;
     ATOMS_ALLOCA (t, argc + 1);
-    atom_copyAtomsUnchecked (argc, argv, t + 1);
+    atom_copyAtomsUnchecked (argv, argc, t + 1);
     SET_SYMBOL (t, s);
     (*fn) (x, &s_anything, argc + 1, t);
     ATOMS_FREEA (t, argc + 1);
