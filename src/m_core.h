@@ -21,12 +21,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define PATH_STRING     PD_STRING
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 typedef struct _mouse {
     int         m_x;
     int         m_y;
@@ -61,7 +55,7 @@ typedef struct _bounds {
     } t_bounds;
 
 typedef struct _fileproperties {
-    char        f_directory[PATH_STRING];
+    char        f_directory[PD_STRING];
     char        *f_name;
     } t_fileproperties;
 
