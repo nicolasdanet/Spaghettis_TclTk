@@ -133,7 +133,7 @@ int file_openConsideringSearchPath (const char *directory,
     int f = file_openWithDirectoryAndName (directory, name, extension, p);
     
     if (f < 0) {
-        t_pathlist *l = path_getSearchPath();
+        t_pathlist *l = instance_getSearchPath();
         while (l) {
             char *path = pathlist_getPath (l);
             l = pathlist_getNext (l);

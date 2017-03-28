@@ -288,7 +288,7 @@ static t_error interface_startGui (void)
     /* Initialize GUI. */
     
     if (!err) {
-        t_pathlist *l = path_getSearchPath();
+        t_pathlist *l = instance_getSearchPath();
         sys_vGui ("::initialize\n");
         while (l) {
             sys_vGui ("lappend ::var(searchPath) {%s}\n", pathlist_getPath (l));    // --

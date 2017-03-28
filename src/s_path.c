@@ -14,11 +14,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-static t_pathlist *path_search;     /* Static. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 #if PD_WINDOWS
@@ -122,42 +117,6 @@ t_error path_withDirectoryAndName (char *dest,
     }
     
     return err;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_pathlist *path_getSearchPath (void)
-{
-    return path_search;
-}
-
-void path_appendToSearchPath (char *filepath)
-{
-    path_search = pathlist_newAppend (path_search, filepath);
-}
-
-void path_setSearchPathEncoded (void *dummy, t_symbol *s, int argc, t_atom *argv)
-{
-    int i;
-    
-    pathlist_free (path_search); 
-    path_search = NULL;
-    
-    for (i = 0; i < argc; i++) {
-        t_symbol *path = utils_decode (atom_getSymbolAtIndex (i, argc, argv));
-        path_search = pathlist_newAppend (path_search, path->s_name);
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void path_release (void)
-{
-    pathlist_free (path_search); path_search = NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------

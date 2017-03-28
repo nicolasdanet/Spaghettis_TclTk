@@ -216,6 +216,7 @@ t_symbol    *dollar_getSymbolExpandedIfRequiered        (t_atom *a, t_glist *gli
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#include "h_helpers.h"
 #include "m_extern.h"
 #include "m_symbols.h"
 #include "m_instance.h"
@@ -224,7 +225,6 @@ t_symbol    *dollar_getSymbolExpandedIfRequiered        (t_atom *a, t_glist *gli
 #include "m_error.h"
 #include "m_utils.h"
 #include "m_rectangle.h"
-#include "h_helpers.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

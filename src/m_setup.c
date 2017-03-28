@@ -41,7 +41,6 @@ void interface_release      (void);
 void instance_release       (void);
 void loader_release         (void);
 void monitor_release        (void);
-void path_release           (void);
 void plot_release           (void);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -917,7 +916,6 @@ void setup_release (void)
     /* Various cleaning (reverse order). */
     
     plot_release();
-    path_release();
     monitor_release();
     gui_release();
     fft_release();

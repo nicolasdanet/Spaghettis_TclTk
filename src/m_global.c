@@ -17,20 +17,19 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void interface_quit             (void *);
-void audio_requireDialog        (void *);
-void midi_requireDialog         (void *);
-void preferences_save           (void *);
-void dsp_state                  (void *, t_symbol *, int, t_atom *);
-void font_withHostMeasured      (void *, t_symbol *, int, t_atom *);
-void audio_fromDialog           (void *, t_symbol *, int, t_atom *);
-void midi_fromDialog            (void *, t_symbol *, int, t_atom *);
-void path_setSearchPathEncoded  (void *, t_symbol *, int, t_atom *);
+void interface_quit                 (void *);
+void audio_requireDialog            (void *);
+void midi_requireDialog             (void *);
+void preferences_save               (void *);
+void dsp_state                      (void *, t_symbol *, int, t_atom *);
+void font_withHostMeasured          (void *, t_symbol *, int, t_atom *);
+void audio_fromDialog               (void *, t_symbol *, int, t_atom *);
+void midi_fromDialog                (void *, t_symbol *, int, t_atom *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_pd global_object;             /* Static. */
+t_pd global_object;                 /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -51,9 +50,14 @@ static void global_key (void *dummy, t_symbol *s, int argc, t_atom *argv)
     canvas_key (NULL, s, argc, argv);
 }
 
-static void global_default (t_pd *x, t_symbol *s, int argc, t_atom *argv)
+static void global_default (void *x, t_symbol *s, int argc, t_atom *argv)
 {
     error_unknownMethod (class_getName (pd_class (x)), s);
+}
+
+static void global_setSearchPath (void *dummy, t_symbol *s, int argc, t_atom *argv)
+{
+    instance_searchPathSetEncoded (argc, argv);
 }
 
 /* Messy ping-pong required in order to check saving sequentially. */
@@ -112,7 +116,7 @@ void global_setup (void)
     class_addMethod (c, (t_method)audio_fromDialog,             sym__audiodialog,       A_GIMME, A_NULL);
     class_addMethod (c, (t_method)midi_requireDialog,           sym__midiproperties,    A_NULL);
     class_addMethod (c, (t_method)midi_fromDialog,              sym__mididialog,        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)path_setSearchPathEncoded,    sym__path,              A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)global_setSearchPath,         sym__path,              A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_shouldQuit,            sym__quit,              A_NULL);
     class_addMethod (c, (t_method)preferences_save,             sym__savepreferences,   A_NULL);
     class_addMethod (c, (t_method)global_dummy,                 sym__dummy,             A_NULL);
