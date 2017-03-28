@@ -211,7 +211,7 @@ void        dollar_expandDollarNumber                   (t_atom *dollar,
                                                             int argc,
                                                             t_atom *argv);
 
-t_symbol    *dollar_getSymbolExpandedIfNeeded           (t_atom *a, t_glist *glist);
+t_symbol    *dollar_getSymbolExpandedIfRequiered        (t_atom *a, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

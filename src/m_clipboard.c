@@ -72,7 +72,7 @@ void clipboard_paste (t_clipboard *x, t_glist *glist)
     int i = 0;
     int n = (++x->cb_count) * CLIPBOARD_PASTE_OFFSET;
     int state = dsp_suspend();
-    int alreadyThere = canvas_getNumberOfObjects (glist);
+    int alreadyThere = glist_objectGetNumberOf (glist);
     
     canvas_deselectAll (glist);
     

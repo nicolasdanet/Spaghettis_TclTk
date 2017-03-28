@@ -182,7 +182,7 @@ void dollar_expandDollarNumber (t_atom *dollar, t_atom *a, t_glist *glist, int a
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol *dollar_getSymbolExpandedIfNeeded (t_atom *a, t_glist *glist)
+t_symbol *dollar_getSymbolExpandedIfRequiered (t_atom *a, t_glist *glist)
 {
     t_symbol *s = &s_;
     

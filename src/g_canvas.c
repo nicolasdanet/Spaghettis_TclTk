@@ -152,7 +152,7 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     t_symbol *name = &s_;
     
-    if (argc > 3) { name = dollar_getSymbolExpandedIfNeeded (argv + 3, instance_contextGetCurrent()); }
+    if (argc > 3) { name = dollar_getSymbolExpandedIfRequiered (argv + 3, instance_contextGetCurrent()); }
     
     glist_setName (glist, (name == &s_ ? sym_Patch : name));
     
@@ -214,8 +214,8 @@ void canvas_connect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     int indexOfObjectIn  = (int)atom_getFloat (argv + 2);
     int indexOfOInlet    = (int)atom_getFloat (argv + 3);
     
-    t_gobj *src  = glist_objectGetAtIndex (glist, indexOfObjectOut);
-    t_gobj *dest = glist_objectGetAtIndex (glist, indexOfObjectIn);
+    t_gobj *src  = glist_objectGetAt (glist, indexOfObjectOut);
+    t_gobj *dest = glist_objectGetAt (glist, indexOfObjectIn);
     t_object *srcObject  = cast_objectIfConnectable (src);
     t_object *destObject = cast_objectIfConnectable (dest);
     
@@ -493,7 +493,7 @@ void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     if (argc) {
     //
-    name = dollar_getSymbolExpandedIfNeeded (argv, glist);
+    name = dollar_getSymbolExpandedIfRequiered (argv, glist);
     if (name != &s_) { argc--; argv++; }
     if (argc) { warning_unusedArguments (class_getName (pd_class (glist)), argc, argv); }
     //

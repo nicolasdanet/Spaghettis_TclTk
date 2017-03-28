@@ -330,7 +330,7 @@ void glist_objectRemoveByTemplate (t_glist *glist, t_template *template)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_gobj *glist_objectGetAtIndex (t_glist *glist, int n)
+t_gobj *glist_objectGetAt (t_glist *glist, int n)
 {
     t_gobj *t = NULL;
     int i = 0;
@@ -353,6 +353,11 @@ int glist_objectGetIndexOf (t_glist *glist, t_gobj *y)
     }
     
     return n;
+}
+
+int glist_objectGetNumberOf (t_glist *glist)
+{
+    return glist_objectGetIndexOf (glist, NULL);
 }
 
 // -----------------------------------------------------------------------------------------------------------
