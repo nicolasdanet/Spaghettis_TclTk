@@ -214,8 +214,8 @@ void canvas_connect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     int indexOfObjectIn  = (int)atom_getFloat (argv + 2);
     int indexOfOInlet    = (int)atom_getFloat (argv + 3);
     
-    t_gobj *src  = canvas_getObjectAtIndex (glist, indexOfObjectOut);
-    t_gobj *dest = canvas_getObjectAtIndex (glist, indexOfObjectIn);
+    t_gobj *src  = glist_objectGetAtIndex (glist, indexOfObjectOut);
+    t_gobj *dest = glist_objectGetAtIndex (glist, indexOfObjectIn);
     t_object *srcObject  = cast_objectIfConnectable (src);
     t_object *destObject = cast_objectIfConnectable (dest);
     
@@ -284,8 +284,8 @@ void canvas_disconnect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     if ((traverser_getIndexOfOutlet (&t) == indexOfOutlet)) {
         if ((traverser_getIndexOfInlet (&t) == indexOfInlet)) {
 
-            int m = canvas_getIndexOfObject (glist, cast_gobj (traverser_getSource (&t)));
-            int n = canvas_getIndexOfObject (glist, cast_gobj (traverser_getDestination (&t)));
+            int m = glist_objectGetIndexOf (glist, cast_gobj (traverser_getSource (&t)));
+            int n = glist_objectGetIndexOf (glist, cast_gobj (traverser_getDestination (&t)));
 
             if (m == indexOfObjectOut && n == indexOfObjectIn) {
                 sys_vGui (".x%lx.c delete %lxLINE\n", glist_getView (glist), connection);

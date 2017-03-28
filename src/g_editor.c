@@ -153,9 +153,9 @@ void editor_selectionCacheLines (t_editor *x)
     buffer_vAppend (x->e_cachedLines, "ssiiii;",
         sym___hash__X, 
         sym_connect,
-        canvas_getIndexOfObject (x->e_owner, cast_gobj (traverser_getSource (&t))),
+        glist_objectGetIndexOf (x->e_owner, cast_gobj (traverser_getSource (&t))),
         traverser_getIndexOfOutlet (&t),
-        canvas_getIndexOfObject (x->e_owner, cast_gobj (traverser_getDestination (&t))),
+        glist_objectGetIndexOf (x->e_owner, cast_gobj (traverser_getDestination (&t))),
         traverser_getIndexOfInlet (&t));
     //
     }

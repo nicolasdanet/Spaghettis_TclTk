@@ -28,9 +28,6 @@ int             canvas_hasLine                          (t_glist *glist,
                                                             t_object *objectIn,
                                                             int n);
                                                             
-int             canvas_getIndexOfObject                 (t_glist *glist, t_gobj *y);
-t_gobj          *canvas_getObjectAtIndex                (t_glist *glist, int n);
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

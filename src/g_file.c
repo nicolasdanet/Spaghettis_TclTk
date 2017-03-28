@@ -62,9 +62,9 @@ void canvas_serialize (t_glist *glist, t_buffer *b)
         buffer_vAppend (b, "ssiiii;", 
             sym___hash__X,
             sym_connect,
-            canvas_getIndexOfObject (glist, cast_gobj (traverser_getSource (&t))), 
+            glist_objectGetIndexOf (glist, cast_gobj (traverser_getSource (&t))), 
             traverser_getIndexOfOutlet (&t), 
-            canvas_getIndexOfObject (glist, cast_gobj (traverser_getDestination (&t))), 
+            glist_objectGetIndexOf (glist, cast_gobj (traverser_getDestination (&t))), 
             traverser_getIndexOfInlet (&t));
     }
     

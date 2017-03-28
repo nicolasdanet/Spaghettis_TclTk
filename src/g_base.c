@@ -128,28 +128,3 @@ int canvas_hasLine (t_glist *glist, t_object *objectOut, int m, t_object *object
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int canvas_getIndexOfObject (t_glist *glist, t_gobj *y)
-{
-    t_gobj *t = NULL;
-    int n = 0;
-    for (t = glist->gl_graphics; t && t != y; t = t->g_next) { n++; }
-    return n;
-}
-
-t_gobj *canvas_getObjectAtIndex (t_glist *glist, int n)
-{
-    t_gobj *t = NULL;
-    int i = 0;
-    
-    for (t = glist->gl_graphics; t; t = t->g_next) {
-        if (i == n) { return t; }
-        i++;
-    }
-    
-    return NULL;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------

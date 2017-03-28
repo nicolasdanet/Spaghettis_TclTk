@@ -372,9 +372,9 @@ static int canvas_proceedMouseLines (t_glist *glist, int positionX, int position
         if (clicked) {
             canvas_selectLine (canvas, 
                 connection, 
-                canvas_getIndexOfObject (canvas, cast_gobj (traverser_getSource (&t))), 
+                glist_objectGetIndexOf (canvas, cast_gobj (traverser_getSource (&t))), 
                 traverser_getIndexOfOutlet (&t),
-                canvas_getIndexOfObject (canvas, cast_gobj (traverser_getDestination (&t))), 
+                glist_objectGetIndexOf (canvas, cast_gobj (traverser_getDestination (&t))), 
                 traverser_getIndexOfInlet (&t));
         }
         

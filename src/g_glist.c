@@ -328,6 +328,35 @@ void glist_objectRemoveByTemplate (t_glist *glist, t_template *template)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_gobj *glist_objectGetAtIndex (t_glist *glist, int n)
+{
+    t_gobj *t = NULL;
+    int i = 0;
+    
+    for (t = glist->gl_graphics; t; t = t->g_next) {
+        if (i == n) { return t; }
+        i++;
+    }
+    
+    return NULL;
+}
+
+int glist_objectGetIndexOf (t_glist *glist, t_gobj *y)
+{
+    t_gobj *t = NULL;
+    int n = 0;
+    
+    for (t = glist->gl_graphics; t && t != y; t = t->g_next) { 
+        n++; 
+    }
+    
+    return n;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 /* Files are searching in the directory of the patch first. */
 /* Without success it tries to find it using the search path. */
