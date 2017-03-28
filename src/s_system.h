@@ -254,14 +254,13 @@ void        path_slashToBackslashIfNecessary        (char *s);
 void        path_backslashToSlashIfNecessary        (char *s);
 int         path_isFileExist                        (const char *filepath);
 int         path_isFileExistAsRegularFile           (const char *filepath);
+
 t_error     path_withDirectoryAndName               (char *dest, 
                                                         size_t size, 
                                                         const char *directory, 
                                                         const char *name,
-                                                        int expandEnvironment);
+                                                        int expandHome);
                                                         
-t_error     path_expandHomeDirectory                (char *dest, size_t size, const char *src);
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 

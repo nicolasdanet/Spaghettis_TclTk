@@ -84,24 +84,6 @@ int glist_isWindowable (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void glist_bind (t_glist *glist)
-{
-    if (utils_isNameAllowedForWindow (glist_getName (glist))) {
-        pd_bind (cast_pd (glist), utils_makeBindSymbol (glist_getName (glist)));
-    }
-}
-
-void glist_unbind (t_glist *glist)
-{
-    if (utils_isNameAllowedForWindow (glist_getName (glist))) {
-        pd_unbind (cast_pd (glist), utils_makeBindSymbol (glist_getName (glist)));
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 t_glist *glist_getTop (t_glist *glist)
 {
     if (glist_isTop (glist)) { return glist; } else { return glist_getTop (glist_getParent (glist)); }
@@ -121,7 +103,6 @@ t_glist *glist_getView (t_glist *glist)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 void glist_setName (t_glist *glist, t_symbol *name)
 {
@@ -146,6 +127,24 @@ void glist_setDirty (t_glist *glist, int n)
     
     if (glist_hasWindow (y)) { canvas_updateTitle (y); }
     //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void glist_bind (t_glist *glist)
+{
+    if (utils_isNameAllowedForWindow (glist_getName (glist))) {
+        pd_bind (cast_pd (glist), utils_makeBindSymbol (glist_getName (glist)));
+    }
+}
+
+void glist_unbind (t_glist *glist)
+{
+    if (utils_isNameAllowedForWindow (glist_getName (glist))) {
+        pd_unbind (cast_pd (glist), utils_makeBindSymbol (glist_getName (glist)));
     }
 }
 
@@ -328,7 +327,6 @@ void glist_objectRemoveByTemplate (t_glist *glist, t_template *template)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 t_gobj *glist_objectGetAt (t_glist *glist, int n)
 {

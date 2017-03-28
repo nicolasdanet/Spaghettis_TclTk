@@ -21,6 +21,42 @@ static t_pathlist *path_search;     /* Static. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#if PD_WINDOWS
+
+static t_error path_expandHomeDirectory (const char *dest, size_t size, char *src)
+{
+    return string_copy (dest, size, src);
+}
+
+#else
+
+static t_error path_expandHomeDirectory (char *dest, size_t size, const char *src)
+{
+    t_error err = PD_ERROR_NONE;
+
+    if ((strlen (src) == 1 && src[0] == '~') || string_startWith (src, "~/")) {
+    
+        const char *home = getenv ("HOME");
+        
+        if (!home) { *dest = 0; }
+        else {
+            err |= string_copy (dest, size, home);
+            err |= string_add (dest, size, src + 1);
+        }
+
+    } else {
+        err |= string_copy (dest, size, src);
+    }
+
+    return err;
+}
+
+#endif // PD_WINDOWS
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void path_slashToBackslashIfNecessary (char *s)
 {
     #if PD_WINDOWS
@@ -68,7 +104,7 @@ t_error path_withDirectoryAndName (char *dest,
     size_t size, 
     const char *directory, 
     const char *name, 
-    int expandEnvironment)
+    int expandHome)
 {
     t_error err = PD_ERROR;
     
@@ -76,7 +112,7 @@ t_error path_withDirectoryAndName (char *dest,
     
         err = PD_ERROR_NONE;
         
-        if (expandEnvironment) { err |= path_expandHomeDirectory (dest, size, directory); } 
+        if (expandHome) { err |= path_expandHomeDirectory (dest, size, directory); } 
         else {
             err |= string_copy (dest, size, directory);
         }
@@ -87,42 +123,6 @@ t_error path_withDirectoryAndName (char *dest,
     
     return err;
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#if PD_WINDOWS
-
-t_error path_expandHomeDirectory (const char *dest, size_t size, char *src)
-{
-    return string_copy (dest, size, src);
-}
-
-#else
-
-t_error path_expandHomeDirectory (char *dest, size_t size, const char *src)
-{
-    t_error err = PD_ERROR_NONE;
-
-    if ((strlen (src) == 1 && src[0] == '~') || string_startWith (src, "~/")) {
-    
-        const char *home = getenv ("HOME");
-        
-        if (!home) { *dest = 0; }
-        else {
-            err |= string_copy (dest, size, home);
-            err |= string_add (dest, size, src + 1);
-        }
-
-    } else {
-        err |= string_copy (dest, size, src);
-    }
-
-    return err;
-}
-
-#endif // PD_WINDOWS
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
