@@ -314,8 +314,8 @@ static void box_sendCreate (t_box *x, t_typesethelper *p)
     t_glist *glist = glist_getView (x->box_owner);
     int isSelected = canvas_isObjectSelected (x->box_owner, cast_gobj (x->box_object));
     
-    sys_vGui ("::ui_box::newText .x%lx.c %s %d %d {%s} %d #%06x\n",     // --
-                    glist,
+    sys_vGui ("::ui_box::newText %s.c %s %d %d {%s} %d #%06x\n",        // --
+                    glist_getTagAsString (glist),
                     x->box_tag,
                     (int)(object_getPixelX (x->box_object, x->box_owner) + BOX_MARGIN_LEFT), 
                     (int)(object_getPixelY (x->box_object, x->box_owner) + BOX_MARGIN_TOP),
@@ -328,8 +328,8 @@ static void box_sendUpdate (t_box *x, t_typesethelper *p)
 {
     t_glist *glist = glist_getView (x->box_owner);
     
-    sys_vGui ("::ui_box::setText .x%lx.c %s {%s}\n",                    // --
-                    glist,
+    sys_vGui ("::ui_box::setText %s.c %s {%s}\n",                       // --
+                    glist_getTagAsString (glist),
                     x->box_tag,
                     p->p_typeset);
                 
@@ -337,27 +337,27 @@ static void box_sendUpdate (t_box *x, t_typesethelper *p)
     
         if (p->p_selectionStart < p->p_selectionEnd) {
         
-            sys_vGui (".x%lx.c select from %s %d\n",
-                            glist, 
+            sys_vGui ("%s.c select from %s %d\n",
+                            glist_getTagAsString (glist), 
                             x->box_tag,
                             u8_charnum (x->box_string, p->p_selectionStart));
-            sys_vGui (".x%lx.c select to %s %d\n",
-                            glist, 
+            sys_vGui ("%s.c select to %s %d\n",
+                            glist_getTagAsString (glist), 
                             x->box_tag,
                             u8_charnum (x->box_string, p->p_selectionEnd) - 1);
-            sys_vGui (".x%lx.c focus \"\"\n",
-                            glist);
+            sys_vGui ("%s.c focus \"\"\n",
+                            glist_getTagAsString (glist));
             
         } else {
         
-            sys_vGui (".x%lx.c select clear\n",
-                            glist);
-            sys_vGui (".x%lx.c icursor %s %d\n",
-                            glist,
+            sys_vGui ("%s.c select clear\n",
+                            glist_getTagAsString (glist));
+            sys_vGui ("%s.c icursor %s %d\n",
+                            glist_getTagAsString (glist),
                             x->box_tag,
                             u8_charnum (x->box_string, p->p_selectionStart));
-            sys_vGui (".x%lx.c focus %s\n",
-                            glist,
+            sys_vGui ("%s.c focus %s\n",
+                            glist_getTagAsString (glist),
                             x->box_tag);        
         }
     }
