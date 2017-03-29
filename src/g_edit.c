@@ -620,7 +620,7 @@ void canvas_window (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     //
     rectangle_setByAtoms (glist_getWindowGeometry (glist), argc, argv);
     
-    if (glist_isArray (glist)) { glist_drawUpdateWindow (glist); }
+    if (glist_isArray (glist)) { glist_updateWindow (glist); }
     //
     }
 }

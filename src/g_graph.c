@@ -230,7 +230,7 @@ void canvas_redrawGraphOnParent (t_glist *glist)
 {  
     if (glist_isOnScreen (glist)) {
     //
-    glist_drawUpdateWindow (glist);
+    glist_updateWindow (glist);
     
     if (glist_hasParentOnScreen (glist)) {
         canvas_behaviorVisibilityChanged (cast_gobj (glist), glist_getParent (glist), 0); 

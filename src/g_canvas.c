@@ -456,7 +456,7 @@ void canvas_map (t_glist *glist, t_float f)
 
         glist_setMapped (glist, 1);
         
-        canvas_drawLines (glist);
+        glist_drawLines (glist);
         canvas_drawGraphOnParentRectangle (glist);
     }
     //
@@ -683,7 +683,7 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
     
     glist_setDirty (glist, 1);
     
-    if (glist_hasWindow (glist)) { glist_drawUpdateWindow (glist); }
+    if (glist_hasWindow (glist)) { glist_updateWindow (glist); }
     else {
         if (glist_hasParentOnScreen (glist)) {
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);

@@ -183,48 +183,6 @@ int glist_fileOpen (t_glist *glist, char *name, char *extension, t_filepropertie
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void glist_updateTitle (t_glist *glist)
-{
-    if (glist_hasWindow (glist)) {
-
-        sys_vGui ("::ui_patch::setTitle %s {%s} {%s} %d\n",  // --
-                        glist_getTagAsString (glist),
-                        environment_getDirectoryAsString (glist_getEnvironment (glist)),
-                        glist_getName (glist)->s_name,
-                        glist_getDirty (glist));
-    }
-}
-
-void glist_updateCursor (t_glist *glist, int type)
-{
-    static t_glist *lastGlist = NULL;           /* Static. */
-    static int lastType = CURSOR_NOTHING;       /* Static. */
-    static char *cursors[] =                    /* Static. */
-        {
-            "left_ptr",             // CURSOR_NOTHING
-            "hand2",                // CURSOR_CLICK
-            "sb_v_double_arrow",    // CURSOR_THICKEN
-            "plus",                 // CURSOR_ADD
-            "circle",               // CURSOR_CONNECT
-            "sb_h_double_arrow"     // CURSOR_RESIZE
-        };
-    
-    type = PD_CLAMP (type, CURSOR_NOTHING, CURSOR_RESIZE);
-    
-    PD_ASSERT (glist_hasWindow (glist));
-    
-    if (lastGlist != glist || lastType != type) {
-        sys_vGui ("%s configure -cursor %s\n", glist_getTagAsString (glist), cursors[type]);
-    }
-    
-    lastType = type; lastGlist = glist;
-}
-
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void glist_objectMake (t_glist *glist, int a, int b, int w, int isSelected, t_buffer *t)
 {
     instance_setNewestObject (NULL);

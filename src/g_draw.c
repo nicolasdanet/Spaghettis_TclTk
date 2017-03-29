@@ -23,7 +23,46 @@ void text_behaviorGetRectangle  (t_gobj *, t_glist *, t_rectangle *);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void glist_drawUpdateWindow (t_glist *glist)
+void glist_updateTitle (t_glist *glist)
+{
+    if (glist_hasWindow (glist)) {
+
+        sys_vGui ("::ui_patch::setTitle %s {%s} {%s} %d\n",  // --
+                        glist_getTagAsString (glist),
+                        environment_getDirectoryAsString (glist_getEnvironment (glist)),
+                        glist_getName (glist)->s_name,
+                        glist_getDirty (glist));
+    }
+}
+
+void glist_updateCursor (t_glist *glist, int type)
+{
+    static t_glist *lastGlist = NULL;           /* Static. */
+    static int lastType = CURSOR_NOTHING;       /* Static. */
+    static char *cursors[] =                    /* Static. */
+        {
+            "left_ptr",             // CURSOR_NOTHING
+            "hand2",                // CURSOR_CLICK
+            "sb_v_double_arrow",    // CURSOR_THICKEN
+            "plus",                 // CURSOR_ADD
+            "circle",               // CURSOR_CONNECT
+            "sb_h_double_arrow"     // CURSOR_RESIZE
+        };
+    
+    type = PD_CLAMP (type, CURSOR_NOTHING, CURSOR_RESIZE);
+    
+    PD_ASSERT (glist_hasWindow (glist));
+    
+    if (lastGlist != glist || lastType != type) {
+    //
+    sys_vGui ("%s configure -cursor %s\n", glist_getTagAsString (glist), cursors[type]);
+    //
+    }
+    
+    lastType = type; lastGlist = glist;
+}
+
+void glist_updateWindow (t_glist *glist)
 {
     if (glist_isWindowable (glist) && glist_isOnScreen (glist)) { 
         canvas_map (glist, 0); 
@@ -35,17 +74,19 @@ void glist_drawUpdateWindow (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_drawLines (t_glist *glist)
+void glist_drawLines (t_glist *glist)
 {
     t_outconnect *connection = NULL;
     t_traverser t;
 
+    PD_ASSERT (glist_hasWindow (glist));
+    
     traverser_start (&t, glist);
     
     while ((connection = traverser_next (&t))) {
     //
-    sys_vGui (".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
-                    glist_getView (glist),
+    sys_vGui ("%s.c create line %d %d %d %d -width %d -tags %lxLINE\n",
+                    glist_getTagAsString (glist),
                     traverser_getStartX (&t),
                     traverser_getStartY (&t),
                     traverser_getEndX (&t),

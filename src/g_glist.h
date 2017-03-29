@@ -86,13 +86,6 @@ void    glist_setDirty                  (t_glist *glist, int n);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    glist_updateTitle               (t_glist *glist);
-void    glist_updateCursor              (t_glist *glist, int type);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void    glist_objectMake                (t_glist *glist, int a, int b, int w, int selected, t_buffer *t);
 void    glist_objectAddNext             (t_glist *glist, t_gobj *first, t_gobj *next);
 void    glist_objectAdd                 (t_glist *glist, t_gobj *y);
@@ -119,8 +112,16 @@ int     glist_lineExist                 (t_glist *glist, t_object *o, int m, t_o
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    glist_drawUpdateWindow          (t_glist *glist);
-                                                            
+void    glist_updateTitle               (t_glist *glist);
+void    glist_updateCursor              (t_glist *glist, int type);
+void    glist_updateWindow              (t_glist *glist);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void    glist_drawLines                 (t_glist *glist);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
