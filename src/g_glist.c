@@ -430,6 +430,49 @@ int glist_objectGetNumberOf (t_glist *glist)
     return glist_objectGetIndexOf (glist, NULL);
 }
 
+void glist_objectDeleteLines (t_glist *glist, t_object *o)
+{
+    t_outconnect *connection = NULL;
+    t_traverser t;
+
+    traverser_start (&t, glist);
+    
+    while ((connection = traverser_next (&t))) {
+        if (traverser_getSource (&t) == o || traverser_getDestination (&t) == o) {
+            glist_eraseLine (glist, connection); traverser_disconnect (&t);
+        }
+    }
+}
+
+static void glist_objectDeleteLinesByInlets (t_glist *glist, t_object *o, t_inlet *inlet, t_outlet *outlet)
+{
+    t_outconnect *connection = NULL;
+    t_traverser t;
+
+    traverser_start (&t, glist);
+    
+    while ((connection = traverser_next (&t))) {
+    //
+    int m = (traverser_getSource (&t) == o && traverser_getOutlet (&t) == outlet);
+    int n = (traverser_getDestination (&t) == o && traverser_getInlet (&t) == inlet);
+    
+    if (m || n) { 
+        glist_eraseLine (glist, connection); traverser_disconnect (&t); 
+    }
+    //
+    }
+}
+
+void glist_objectDeleteLinesByInlet (t_glist *glist, t_object *o, t_inlet *inlet)
+{
+    glist_objectDeleteLinesByInlets (glist, o, inlet, NULL);
+}
+
+void glist_objectDeleteLinesByOutlet (t_glist *glist, t_object *o, t_outlet *outlet)
+{
+    glist_objectDeleteLinesByInlets (glist, o, NULL, outlet);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

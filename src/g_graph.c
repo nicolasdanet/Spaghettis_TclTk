@@ -90,7 +90,7 @@ void canvas_removeInlet (t_glist *glist, t_inlet *inlet)
     
     int redraw = (o && !glist_isDeleting (o) && glist_isOnScreen (o) && glist_isWindowable (o));
     
-    if (o) { canvas_deleteLinesByInlets (o, cast_object (glist), inlet, NULL); }
+    if (o) { glist_objectDeleteLinesByInlet (o, cast_object (glist), inlet); }
     if (redraw) { gobj_visibilityChanged (cast_gobj (glist), o, 0); }
         
     inlet_free (inlet);
@@ -105,7 +105,7 @@ void canvas_removeOutlet (t_glist *glist, t_outlet *outlet)
     
     int redraw = (o && !glist_isDeleting (o) && glist_isOnScreen (o) && glist_isWindowable (o));
     
-    if (o) { canvas_deleteLinesByInlets (o, cast_object (glist), NULL, outlet); }
+    if (o) { glist_objectDeleteLinesByOutlet (o, cast_object (glist), outlet); }
     if (redraw) { gobj_visibilityChanged (cast_gobj (glist), o, 0); }
 
     outlet_free (outlet);
@@ -435,15 +435,11 @@ static void canvas_behaviorActivated (t_gobj *z, t_glist *glist, int isActivated
 static void canvas_behaviorDeleted (t_gobj *z, t_glist *glist)
 {
     t_glist *x = cast_glist (z);
-    
-    t_gobj *y = NULL;
+    t_gobj *y  = NULL;
     
     while ((y = x->gl_graphics)) { glist_objectRemove (x, y); }
     
-    if (!glist_isGraphOnParent (x)) { text_widgetBehavior.w_fnDeleted (z, glist); }
-    else {
-        canvas_deleteLinesByObject (glist, cast_object (z));
-    }
+    text_widgetBehavior.w_fnDeleted (z, glist);
 }
 
 static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)

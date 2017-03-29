@@ -117,7 +117,7 @@ void text_behaviorActivated (t_gobj *z, t_glist *glist, int isActivated)
 
 void text_behaviorDeleted (t_gobj *z, t_glist *glist)
 {
-    canvas_deleteLinesByObject (glist, cast_object (z));
+    glist_objectDeleteLines (glist, cast_object (z));
 }
 
 void text_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)

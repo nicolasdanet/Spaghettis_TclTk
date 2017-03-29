@@ -101,6 +101,9 @@ t_gobj  *glist_objectHit                (t_glist *glist, int a, int b, t_rectang
 
 int     glist_objectGetIndexOf          (t_glist *glist, t_gobj *y);
 int     glist_objectGetNumberOf         (t_glist *glist);
+void    glist_objectDeleteLines         (t_glist *glist, t_object *o);
+void    glist_objectDeleteLinesByInlet  (t_glist *glist, t_object *o, t_inlet *inlet);
+void    glist_objectDeleteLinesByOutlet (t_glist *glist, t_object *o, t_outlet *outlet);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -122,6 +125,12 @@ void    glist_updateLines               (t_glist *glist, t_object *o);
 #pragma mark -
 
 void    glist_drawAllLines              (t_glist *glist);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void    glist_eraseLine                 (t_glist *glist, t_outconnect *connection);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

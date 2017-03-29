@@ -406,7 +406,7 @@ void iemgui_behaviorDeleted (t_gobj *z, t_glist *glist)
 {
     defer_removeJob ((void *)z);
     
-    canvas_deleteLinesByObject (glist, cast_object (z));
+    glist_objectDeleteLines (glist, cast_object (z));
 }
 
 // -----------------------------------------------------------------------------------------------------------

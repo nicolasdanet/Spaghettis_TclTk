@@ -112,6 +112,7 @@ void glist_drawAllLines (t_glist *glist)
     t_traverser t;
 
     PD_ASSERT (glist_hasWindow (glist));        /* Not shown in GOP. */
+    PD_ASSERT (glist_isOnScreen (glist));
     
     traverser_start (&t, glist);
     
@@ -133,55 +134,13 @@ void glist_drawAllLines (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_deleteLinesByObject (t_glist *glist, t_object *o)
+void glist_eraseLine (t_glist *glist, t_outconnect *connection)
 {
-    t_outconnect *connection = NULL;
-    t_traverser t;
-
-    traverser_start (&t, glist);
-    
-    while ((connection = traverser_next (&t))) {
-    //
-    if (traverser_getSource (&t) == o || traverser_getDestination (&t) == o) {
+    if (glist_hasWindow (glist))  {             /* Not shown in GOP. */
     //
     if (glist_isOnScreen (glist)) {
     //
-    sys_vGui (".x%lx.c delete %lxLINE\n",
-                    glist_getView (glist),
-                    connection);
-    //
-    }
-
-    traverser_disconnect (&t);
-    //
-    }
-    //
-    }
-}
-
-void canvas_deleteLinesByInlets (t_glist *glist, t_object *o, t_inlet *inlet, t_outlet *outlet)
-{
-    t_outconnect *connection = NULL;
-    t_traverser t;
-
-    traverser_start (&t, glist);
-    
-    while ((connection = traverser_next (&t))) {
-    //
-    int m = (traverser_getSource (&t) == o && traverser_getOutlet (&t) == outlet);
-    int n = (traverser_getDestination (&t) == o && traverser_getInlet (&t) == inlet);
-    
-    if (m || n) {
-    //
-    if (glist_isOnScreen (glist)) {
-    //
-    sys_vGui (".x%lx.c delete %lxLINE\n",
-                    glist_getView (glist),
-                    connection);
-    //
-    }
-                
-    traverser_disconnect (&t);
+    sys_vGui ("%s.c delete %lxLINE\n", glist_getTagAsString (glist), connection);
     //
     }
     //

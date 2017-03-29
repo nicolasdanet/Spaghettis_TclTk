@@ -18,12 +18,6 @@
 
 void            canvas_redrawGraphOnParent              (t_glist *glist);
 
-void            canvas_deleteLinesByObject              (t_glist *glist, t_object *o);
-void            canvas_deleteLinesByInlets              (t_glist *glist,
-                                                            t_object *o,
-                                                            t_inlet  *inlet,
-                                                            t_outlet *outlet);
-
 void            canvas_drawBox                          (t_glist *glist, t_object *o, char *tag, int create);
 void            canvas_eraseBox                         (t_glist *glist, t_object *o, char *tag);
 
