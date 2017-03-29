@@ -290,7 +290,7 @@ int canvas_deselectObject (t_glist *glist, t_gobj *y)
     
     if (z) {
         object_setFromEntry (cast_object (y), glist, z);
-        canvas_updateLinesByObject (glist, cast_object (y));
+        glist_updateLines (glist, cast_object (y));
         editor_boxSelect (glist_getEditor (glist), NULL);
     }
     

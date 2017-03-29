@@ -57,7 +57,7 @@ t_inlet *canvas_addInlet (t_glist *glist, t_pd *receiver, t_symbol *s)
         if (glist_hasParentOnScreen (glist)) {
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
-            canvas_updateLinesByObject (glist_getParent (glist), cast_object (glist));
+            glist_updateLines (glist_getParent (glist), cast_object (glist));
         }
     
         canvas_resortInlets (glist);
@@ -75,7 +75,7 @@ t_outlet *canvas_addOutlet (t_glist *glist, t_symbol *s)
         if (glist_hasParentOnScreen (glist)) {
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
-            canvas_updateLinesByObject (glist_getParent (glist), cast_object (glist));
+            glist_updateLines (glist_getParent (glist), cast_object (glist));
         }
         
         canvas_resortOutlets (glist);
@@ -96,7 +96,7 @@ void canvas_removeInlet (t_glist *glist, t_inlet *inlet)
     inlet_free (inlet);
     
     if (redraw) { gobj_visibilityChanged (cast_gobj (glist), o, 1); }
-    if (o) { canvas_updateLinesByObject (o, cast_object (glist)); }
+    if (o) { glist_updateLines (o, cast_object (glist)); }
 }
 
 void canvas_removeOutlet (t_glist *glist, t_outlet *outlet)
@@ -111,7 +111,7 @@ void canvas_removeOutlet (t_glist *glist, t_outlet *outlet)
     outlet_free (outlet);
     
     if (redraw) { gobj_visibilityChanged (cast_gobj (glist), o, 1); }
-    if (o) { canvas_updateLinesByObject (o, cast_object (glist)); }
+    if (o) { glist_updateLines (o, cast_object (glist)); }
 }
 
 void canvas_resortInlets (t_glist *glist)
@@ -162,7 +162,7 @@ void canvas_resortInlets (t_glist *glist)
     PD_MEMORY_FREE (inlets);
     
     if (glist_hasParentOnScreen (glist)) {
-        canvas_updateLinesByObject (glist_getParent (glist), cast_object (glist));
+        glist_updateLines (glist_getParent (glist), cast_object (glist));
     }
     //
     }
@@ -216,7 +216,7 @@ void canvas_resortOutlets (t_glist *glist)
     PD_MEMORY_FREE (outlets);
     
     if (glist_hasParentOnScreen (glist)) {
-        canvas_updateLinesByObject (glist_getParent (glist), cast_object (glist));
+        glist_updateLines (glist_getParent (glist), cast_object (glist));
     }
     //
     }
@@ -403,7 +403,7 @@ static void canvas_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int
         object_setX (cast_object (z), object_getX (cast_object (z)) + deltaX);
         object_setY (cast_object (z), object_getY (cast_object (z)) + deltaY);
         canvas_redrawGraphOnParent (x);
-        canvas_updateLinesByObject (glist, cast_object (z));
+        glist_updateLines (glist, cast_object (z));
     }
 }
 

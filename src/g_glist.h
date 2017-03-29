@@ -115,12 +115,13 @@ int     glist_lineExist                 (t_glist *glist, t_object *o, int m, t_o
 void    glist_updateTitle               (t_glist *glist);
 void    glist_updateCursor              (t_glist *glist, int type);
 void    glist_updateWindow              (t_glist *glist);
+void    glist_updateLines               (t_glist *glist, t_object *o);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    glist_drawLines                 (t_glist *glist);
+void    glist_drawAllLines              (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

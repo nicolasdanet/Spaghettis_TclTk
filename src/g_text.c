@@ -83,7 +83,7 @@ void text_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
     t_box *text = box_fetch (glist, x);
     box_displace (text, deltaX, deltaY);
     canvas_drawBox (glist, x, box_getTag (text), 0);
-    canvas_updateLinesByObject (glist, x);
+    glist_updateLines (glist, x);
     //
     }
 }

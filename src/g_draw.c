@@ -70,16 +70,48 @@ void glist_updateWindow (t_glist *glist)
     }
 }
 
+void glist_updateLines (t_glist *glist, t_object *o)
+{
+    if (glist_hasWindow (glist))  {             /* Not shown in GOP. */
+    //
+    if (glist_isOnScreen (glist)) {
+    //
+    t_outconnect *connection = NULL;
+    t_traverser t;
+
+    traverser_start (&t, glist);
+    
+    while ((connection = traverser_next (&t))) {
+    //
+    if (traverser_getSource (&t) == o || traverser_getDestination (&t) == o) {
+
+        sys_vGui ("%s.c coords %lxLINE %d %d %d %d\n",
+                        glist_getTagAsString (glist),
+                        connection,
+                        traverser_getStartX (&t),
+                        traverser_getStartY (&t),
+                        traverser_getEndX (&t),
+                        traverser_getEndY (&t));
+
+    }
+    //
+    }
+    //
+    }
+    //
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void glist_drawLines (t_glist *glist)
+void glist_drawAllLines (t_glist *glist)
 {
     t_outconnect *connection = NULL;
     t_traverser t;
 
-    PD_ASSERT (glist_hasWindow (glist));
+    PD_ASSERT (glist_hasWindow (glist));        /* Not shown in GOP. */
     
     traverser_start (&t, glist);
     
@@ -97,33 +129,9 @@ void glist_drawLines (t_glist *glist)
     }
 }
 
-void canvas_updateLinesByObject (t_glist *glist, t_object *o)
-{
-    t_outconnect *connection = NULL;
-    t_traverser t;
-
-    traverser_start (&t, glist);
-    
-    while ((connection = traverser_next (&t))) {
-    //
-    if (traverser_getSource (&t) == o || traverser_getDestination (&t) == o) {
-    //
-    if (glist_isOnScreen (glist)) {
-    //
-    sys_vGui (".x%lx.c coords %lxLINE %d %d %d %d\n",
-                    glist_getView (glist),
-                    connection,
-                    traverser_getStartX (&t),
-                    traverser_getStartY (&t),
-                    traverser_getEndX (&t),
-                    traverser_getEndY (&t));
-    //
-    }
-    //
-    }
-    //
-    }
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void canvas_deleteLinesByObject (t_glist *glist, t_object *o)
 {

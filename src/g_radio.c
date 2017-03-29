@@ -476,7 +476,7 @@ static void radio_buttonsNumber (t_radio *x, t_float numberOfButtons)
         x->x_state = PD_MIN (x->x_state, x->x_numberOfButtons - 1);
         x->x_floatValue = x->x_state;
         (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_NEW);
-        canvas_updateLinesByObject (x->x_gui.iem_owner, cast_object (x));
+        glist_updateLines (x->x_gui.iem_owner, cast_object (x));
     }
 }
 

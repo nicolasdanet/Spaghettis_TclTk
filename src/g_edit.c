@@ -144,7 +144,7 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
     int w = (int)((positionX - a) / font_getHostFontWidth (glist_getFontSize (glist)));
     object_setWidth (object, PD_MAX (1, w));
     gobj_visibilityChanged (y, glist, 0);
-    canvas_updateLinesByObject (glist, object);
+    glist_updateLines (glist, object);
     gobj_visibilityChanged (y, glist, 1);
     glist_setDirty (glist, 1);
     //
@@ -157,7 +157,7 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
     rectangle_setWidth (glist_getGraphGeometry (t), rectangle_getWidth (glist_getGraphGeometry (t)) + w);
     rectangle_setHeight (glist_getGraphGeometry (t), rectangle_getHeight (glist_getGraphGeometry (t)) + h);
     drag_setEnd (editor_getDrag (glist_getEditor (glist)), positionX, positionY);
-    canvas_updateLinesByObject (glist, object);
+    glist_updateLines (glist, object);
     gobj_visibilityChanged (y, glist, 1);
     canvas_updateGraphOnParentRectangle (t);
     glist_setDirty (glist, 1);

@@ -351,7 +351,7 @@ void iemgui_boxChanged (void *x)
     //
     (*iem->iem_fnDraw) (x, iem->iem_owner, IEM_DRAW_CONFIG);
     (*iem->iem_fnDraw) (x, iem->iem_owner, IEM_DRAW_MOVE);
-    canvas_updateLinesByObject (iem->iem_owner, cast_object (x));
+    glist_updateLines (iem->iem_owner, cast_object (x));
     //
     }
 }
@@ -378,7 +378,7 @@ void iemgui_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY
     
     (*x->iem_fnDraw) ((void *)z, glist, IEM_DRAW_MOVE);
     
-    canvas_updateLinesByObject (glist, cast_object (z));
+    glist_updateLines (glist, cast_object (z));
 }
 
 void iemgui_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)

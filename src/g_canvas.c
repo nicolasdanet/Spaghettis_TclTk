@@ -95,7 +95,7 @@ static void canvas_setAsGraphOnParent (t_glist *glist, int flags)
     if (needToUpdate) {
         if (!glist_isLoading (glist) && glist_hasParentOnScreen (glist)) {
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
-            canvas_updateLinesByObject (glist_getParent (glist), cast_object (glist));
+            glist_updateLines (glist_getParent (glist), cast_object (glist));
         }
     }
 }
@@ -251,7 +251,7 @@ void canvas_connect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
                         0,
                         (object_isSignalOutlet (srcObject, m) ? 2 : 1), connection);
                         
-        canvas_updateLinesByObject (glist, srcObject);
+        glist_updateLines (glist, srcObject);
     }
     
     return;
@@ -456,7 +456,7 @@ void canvas_map (t_glist *glist, t_float f)
 
         glist_setMapped (glist, 1);
         
-        glist_drawLines (glist);
+        glist_drawAllLines (glist);
         canvas_drawGraphOnParentRectangle (glist);
     }
     //
