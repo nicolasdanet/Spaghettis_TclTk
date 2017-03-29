@@ -17,23 +17,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_error canvas_makeFilePath (t_glist *glist, char *name, char *dest, size_t size)
-{
-    t_error err = PD_ERROR_NONE;
-    
-    char *directory = environment_getDirectoryAsString (glist_getEnvironment (glist));
-    
-    if (name[0] == '/' || (name[0] && name[1] == ':') || !(*directory)) { 
-        err |= string_copy (dest, size, name);
-        
-    } else {
-        err |= string_copy (dest, size, directory);
-        err |= string_addSprintf (dest, size, "/%s", name);
-    }
-    
-    return err;
-}
-
 void canvas_updateTitle (t_glist *glist)
 {
     sys_vGui ("::ui_patch::setTitle .x%lx {%s} {%s} %d\n",  // --

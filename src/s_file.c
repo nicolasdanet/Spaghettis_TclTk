@@ -104,7 +104,7 @@ static int file_openWithDirectoryAndName (const char *directory,
     
     p->f_directory[0] = 0; p->f_name = p->f_directory;
     
-    err |= path_withDirectoryAndName (p->f_directory, PD_STRING, directory, name, 1);
+    err |= path_withDirectoryAndName (p->f_directory, PD_STRING, directory, name);
     err |= string_add (p->f_directory, PD_STRING, extension);
 
     if (!err && (f = file_openRaw (p->f_directory, O_RDONLY)) >= 0) {

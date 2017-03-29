@@ -11,42 +11,7 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "s_system.h"
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#if PD_WINDOWS
-
-static t_error path_expandHomeDirectory (const char *dest, size_t size, char *src)
-{
-    return string_copy (dest, size, src);
-}
-
-#else
-
-static t_error path_expandHomeDirectory (char *dest, size_t size, const char *src)
-{
-    t_error err = PD_ERROR_NONE;
-
-    if ((strlen (src) == 1 && src[0] == '~') || string_startWith (src, "~/")) {
-    
-        const char *home = getenv ("HOME");
-        
-        if (!home) { *dest = 0; }
-        else {
-            err |= string_copy (dest, size, home);
-            err |= string_add (dest, size, src + 1);
-        }
-
-    } else {
-        err |= string_copy (dest, size, src);
-    }
-
-    return err;
-}
-
-#endif // PD_WINDOWS
+#include "g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -95,25 +60,30 @@ int path_isFileExistAsRegularFile (const char *filepath)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error path_withDirectoryAndName (char *dest, 
-    size_t size, 
-    const char *directory, 
-    const char *name, 
-    int expandHome)
+t_error path_withDirectoryAndName (char *dest, size_t size, const char *directory, const char *name)
 {
     t_error err = PD_ERROR;
     
-    if (*name) {
+    PD_ASSERT (directory);
+    PD_ASSERT (name);
     
-        err = PD_ERROR_NONE;
-        
-        if (expandHome) { err |= path_expandHomeDirectory (dest, size, directory); } 
-        else {
-            err |= string_copy (dest, size, directory);
-        }
-        
+    if (*name) {
+    //
+    #if PD_WINDOWS 
+        int absolute = (!(*directory) || (name[0] && name[1] == ':'));
+    #else 
+        int absolute = (!(*directory) || (name[0] == '/'));
+    #endif
+    
+    err = PD_ERROR_NONE;
+    
+    if (!absolute) {
+        err |= string_add (dest, size, directory);
         err |= string_add (dest, size, "/");
-        err |= string_add (dest, size, name);
+    }
+    
+    err |= string_add (dest, size, name);
+    //
     }
     
     return err;

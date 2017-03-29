@@ -258,9 +258,8 @@ int         path_isFileExistAsRegularFile           (const char *filepath);
 t_error     path_withDirectoryAndName               (char *dest, 
                                                         size_t size, 
                                                         const char *directory, 
-                                                        const char *name,
-                                                        int expandHome);
-                                                        
+                                                        const char *name);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

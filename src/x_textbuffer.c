@@ -127,7 +127,8 @@ void textbuffer_write (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
     //
     char t[PD_STRING] = { 0 };
     t_symbol *name = GET_SYMBOL (argv);
-    t_error err = canvas_makeFilePath (x->tb_owner, name->s_name, t, PD_STRING);
+    char *directory = environment_getDirectoryAsString (glist_getEnvironment (x->tb_owner));
+    t_error err = path_withDirectoryAndName (t, PD_STRING, directory, name->s_name);
     if (err || buffer_write (x->tb_buffer, gensym (t), &s_)) { error_failsToWrite (name); }
     //
     }

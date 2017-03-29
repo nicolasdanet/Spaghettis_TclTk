@@ -25,7 +25,7 @@ static t_error buffer_fromFile (t_buffer *x, char *name, char *directory)
     
     char filepath[PD_STRING] = { 0 };
 
-    if (!(err = path_withDirectoryAndName (filepath, PD_STRING, directory, name, 0))) {
+    if (!(err = path_withDirectoryAndName (filepath, PD_STRING, directory, name))) {
     //
     int f = file_openRaw (filepath, O_RDONLY);
     
@@ -201,7 +201,7 @@ t_error buffer_write (t_buffer *x, t_symbol *name, t_symbol *directory)
 
     char filepath[PD_STRING] = { 0 };
 
-    if (!(err = path_withDirectoryAndName (filepath, PD_STRING, directory->s_name, name->s_name, 0))) {
+    if (!(err = path_withDirectoryAndName (filepath, PD_STRING, directory->s_name, name->s_name))) {
     //
     FILE *f = 0;
 
